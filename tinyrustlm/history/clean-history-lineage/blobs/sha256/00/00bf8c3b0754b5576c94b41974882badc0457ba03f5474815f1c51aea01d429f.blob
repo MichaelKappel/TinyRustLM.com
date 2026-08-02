@@ -1,0 +1,23 @@
+{
+  "schema": "tinyrustlm.turbovec_reference_comparison_attempt.v1",
+  "experimentId": "turbovec-090-4bit-tqplus-reference-comparison-20260725",
+  "attemptOrdinal": 2,
+  "previousAttemptId": "turbovec-reference-attempt-b8ffb20cebbeccf0",
+  "status": "fail",
+  "startedAtUtc": "2026-07-26T00:16:32.187Z",
+  "completedAtUtc": "2026-07-26T00:18:00.037Z",
+  "sourceRevision": "070f307a26a8b374af1ad356bbd50fcb17f873c0",
+  "preregistrationSha256": "96a3fad0078850e2fe9fb4d619979ca9e5b753f23a3fab6df53aebe9b9afe6ed",
+  "observationId": null,
+  "observationContentHash": null,
+  "failure": {
+    "code": "TURBOVEC_REFERENCE_QUALITY_OUTCOME_REJECTED",
+    "classification": "comparison-outcome",
+    "retryAllowed": false,
+    "errorName": "ObservationFailure",
+    "messageSha256": "9ac653115a22f144ebd20fbbba205f009d2828fba04d4ce22d2f61ca1dfafa48",
+    "causeMessageSha256": "014f2e1a1c433776f7a87a5464cc7eb5878dd429c09c3e03f7b6b68c480e2d33"
+  },
+  "attemptId": "turbovec-reference-attempt-db1a760c3d25893e",
+  "attemptContentHash": "db1a760c3d25893ed9f5ec6025a19e0a121b96bb1fb81092670155eff24e5baa"
+}

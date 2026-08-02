@@ -1,0 +1,306 @@
+{
+  "schema": "tinyrustlm.exact_flat_baseline_evidence_verification_receipt.v1",
+  "experimentId": "exact-flat-sealed-corpus-and-durable-deletion-20260725",
+  "status": "verified-with-bounded-authority",
+  "generatedAtUtc": "2026-07-25T21:56:26.400Z",
+  "observedSourceRevision": "a4675bb7e444a890bdbe7a6b00e964a3d361307c",
+  "verificationSourceRevision": "97585f10961414d288347a753b102d161959bb12",
+  "verificationMode": "content-policy-and-independent-summary-revalidation-without-benchmark-rerun",
+  "verificationTool": {
+    "version": "v24.14.0",
+    "sha256": "63c259c81e5d472b5f11c8d506070130cb04a1ecf84b80377a34ed6ec9048088"
+  },
+  "verificationInputs": [
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/Cargo.toml",
+      "bytes": 312,
+      "sha256": "e962ea7c04a47dd8f72122f1de129e5175d3a40eac2dca511d399fee1f5e52c9"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/accounting.rs",
+      "bytes": 3884,
+      "sha256": "ecd53e96a25fd3753ecd69c6dd7a33e40e5506e424669b0da3575394dece50f0"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/bitpack.rs",
+      "bytes": 10969,
+      "sha256": "685a4b8682d3fea40d8e50975228cb5c06a2101c9a8067b70ab5fe2f92d60cf1"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/codebook.rs",
+      "bytes": 15253,
+      "sha256": "08b58571dbae6c7dcbe857ddacbc5f45d19af6c5fb336df1fabeb4b163ef99bc"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/error.rs",
+      "bytes": 9046,
+      "sha256": "f09f395388ed0c1f6d1160e4ea12b320baec1f01a40f17330989c8bf881fc7db"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/flat_index.rs",
+      "bytes": 40496,
+      "sha256": "4627ee3c0fae6605a415e3a2b917e5346f01b3ac992e938ce724edf3df1aa17b"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/lib.rs",
+      "bytes": 1268,
+      "sha256": "dbbaf1a880646e8769f0188e2a79c1467b3912f272eb00325792e1f787342f63"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/metrics.rs",
+      "bytes": 12071,
+      "sha256": "4fb354c13c0dfda8987de8a54f83c32d28725d79c09c78ca0978dd6ab7d5c05c"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/prng.rs",
+      "bytes": 3167,
+      "sha256": "45d64327c6e7d2184857c87f453fb57172da74315028034abb8a5229172964eb"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/score.rs",
+      "bytes": 9825,
+      "sha256": "c60a9a7c1935f3a6d22ef0d49c32a3c74bc0c1abf174fb267ab293e3e9b45c38"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/sha256.rs",
+      "bytes": 5237,
+      "sha256": "3b9efb7ed1629e7ff80d480f56a76f2c7a9008a8782045188f6ae0d6491c3b6a"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/transform.rs",
+      "bytes": 11797,
+      "sha256": "e1ab84175ac2e0ae3d81416a55da6423f1ebf0189f81dcb463f61ded619336e1"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/tests/flat_index_test.rs",
+      "bytes": 9647,
+      "sha256": "8877f2ebe8fd9ee00155c6d9df41e5d6c0b6227550e7a7c327f41b60a8dd7427"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/tests/lib_test.rs",
+      "bytes": 2731,
+      "sha256": "c7a1a58e37c7fc1e0a96eed26cb3f3c064c1abff44d6ca57b0745d694dd2007e"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/baseline-evidence-attempts/sha256/ab/abff0c29e72eb028977df6445485ae1005e4387eeed3634b05b8d696853fbdc3.json",
+      "bytes": 765,
+      "sha256": "9a87ee56b50844fad121dbc5495e438e52501a370bcbb64dcf913b8dbe4a1206"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/baseline-evidence-attempts/sha256/f9/f9779090bb309fc04bf647d95a233ee8185edadb5ace506cbe370fe11ff6e900.json",
+      "bytes": 827,
+      "sha256": "4f9972bec2009ec29f2f219d096cad4e5ecd698bcc07b2b887f58a6ab7d93678"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-benchmark.rs",
+      "bytes": 79793,
+      "sha256": "b30408458eb2db28c878c98157874771f03eeba09edfd36de50bcd3b91c4053d"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-observation-v1.json",
+      "bytes": 494169,
+      "sha256": "fa04d21ae35555b6a1d500eaf8569c5a7246c1bfde1f0bfc2e62812d6965c45c"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-preregistration.v1.json",
+      "bytes": 19483,
+      "sha256": "f6c1ac0d2c0f40365aca977aeccb894416185dc7069a97bb357510b94d94b4d1"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-verification-v1.json",
+      "bytes": 5054,
+      "sha256": "5c52a2287390f79e6a4971da6a6455a69c4ebd52ac6473bcce5408fd62560157"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-verification-v1.json",
+      "bytes": 9659,
+      "sha256": "4cf29cef23b057677e97ed0e03751bac6ad88d31fe44dff2d93582c22d437c1e"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-verification-v1.json",
+      "bytes": 11753,
+      "sha256": "893e96f461f701f46a3aaaeecddd67bc2b700625ccdb9f0d83ce4b0b67d8c18c"
+    },
+    {
+      "path": "tinyrustlm/tests/campaign-evidence-store.test.js",
+      "bytes": 7764,
+      "sha256": "5a4d4b64c8c0495464605e7d146065d390b7b46042d89a9fca0a7bebc2ed4efe"
+    },
+    {
+      "path": "tinyrustlm/tests/durable-files.test.js",
+      "bytes": 1486,
+      "sha256": "b1164bc752dd3e2e6f2253ab3e1a9e4c3ef6eaa44c7c5626552c6bf4a8791365"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-baseline-evidence-observation.test.js",
+      "bytes": 20783,
+      "sha256": "14d789cf244ec854cfd93921c638f6844ed99634e09e7a9cc4fd1cad6a3bd10a"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-baseline-evidence-preregistration.test.js",
+      "bytes": 6448,
+      "sha256": "7357e1f991750288e4259918544aca2b303019710c9ff054535cbcea77c0638a"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-baseline-evidence-verification.test.js",
+      "bytes": 6778,
+      "sha256": "15cca70eed983d8880e998d732e1c53b7a5be07f8f45769453f9ea58bafefa35"
+    },
+    {
+      "path": "tinyrustlm/tools/campaign-evidence-store.js",
+      "bytes": 22717,
+      "sha256": "26850a67fda5bb8baea15bc2e6fb6f6d13d8244348804d0a20320c6f79ec96e3"
+    },
+    {
+      "path": "tinyrustlm/tools/durable-files.js",
+      "bytes": 2992,
+      "sha256": "be2b3157567161bbbff19f013f706e22b495fde81b6c90b0731ca9578170174f"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-baseline-evidence-observation.js",
+      "bytes": 60416,
+      "sha256": "e33823358758ba2e2ea7a5df93536e2aac479e2d7f280e08063e136641587f88"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-baseline-evidence-preregistration.js",
+      "bytes": 25083,
+      "sha256": "d77282dce0f860997f76eaee3d453e6fcf52e6dd4ea1dab8f7f16bdb54d0ec83"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-baseline-evidence-verification.js",
+      "bytes": 20933,
+      "sha256": "fecd39b53fa1e0f547094843426a1c2900c68bb92dc5af86fc3fbecd7964f104"
+    }
+  ],
+  "preregistration": {
+    "path": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-preregistration.v1.json",
+    "sha256": "f6c1ac0d2c0f40365aca977aeccb894416185dc7069a97bb357510b94d94b4d1"
+  },
+  "observation": {
+    "path": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-observation-v1.json",
+    "observationId": "exact-flat-baseline-evidence-94aab53fab3f93b7",
+    "observationContentHash": "94aab53fab3f93b741490b095da58fd952cfa0122a58106c208fdfd4b8db46bb",
+    "fileBytes": 494169,
+    "fileSha256": "fa04d21ae35555b6a1d500eaf8569c5a7246c1bfde1f0bfc2e62812d6965c45c"
+  },
+  "attempts": [
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/baseline-evidence-attempts/sha256/f9/f9779090bb309fc04bf647d95a233ee8185edadb5ace506cbe370fe11ff6e900.json",
+      "attemptId": "exact-flat-baseline-evidence-attempt-f9779090bb309fc0",
+      "status": "fail",
+      "attemptContentHash": "f9779090bb309fc04bf647d95a233ee8185edadb5ace506cbe370fe11ff6e900",
+      "fileBytes": 827,
+      "fileSha256": "4f9972bec2009ec29f2f219d096cad4e5ecd698bcc07b2b887f58a6ab7d93678",
+      "sourceRevision": "cad4a75d6eb6df0c02e6c33a7b6c5c53f78ed248"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/baseline-evidence-attempts/sha256/ab/abff0c29e72eb028977df6445485ae1005e4387eeed3634b05b8d696853fbdc3.json",
+      "attemptId": "exact-flat-baseline-evidence-attempt-abff0c29e72eb028",
+      "status": "pass",
+      "attemptContentHash": "abff0c29e72eb028977df6445485ae1005e4387eeed3634b05b8d696853fbdc3",
+      "fileBytes": 765,
+      "fileSha256": "9a87ee56b50844fad121dbc5495e438e52501a370bcbb64dcf913b8dbe4a1206",
+      "sourceRevision": "a4675bb7e444a890bdbe7a6b00e964a3d361307c"
+    }
+  ],
+  "evidenceSummary": {
+    "qualityLaneCount": 6,
+    "naturalLaneCount": 2,
+    "syntheticLaneCount": 3,
+    "controlledMemoryLaneCount": 1,
+    "perQueryMetricCount": 790,
+    "allExactNumericalRowsPassed": true,
+    "naturalUtilities": [
+      {
+        "laneId": "fashion-mnist-euclidean-784",
+        "macroLabelPrecisionAt10": 0.6975,
+        "macroLabelMrrAt10": 0.859375,
+        "macroLabelNdcgAt10": 0.7207703669488422
+      },
+      {
+        "laneId": "fashion-mnist-cosine-784",
+        "macroLabelPrecisionAt10": 0.6775,
+        "macroLabelMrrAt10": 0.8458035714285715,
+        "macroLabelNdcgAt10": 0.7001638538707916
+      }
+    ],
+    "controlledMemoryPolicyPassed": true,
+    "crashScenarioCount": 4,
+    "crashRows": [
+      {
+        "scenarioId": "after-snapshot-temp-sync-before-finalize",
+        "observedActiveGenerationBeforeRetry": 1,
+        "deletionCommittedBeforeRetry": false,
+        "retryIdempotent": true,
+        "directoryFlushSucceeded": false
+      },
+      {
+        "scenarioId": "after-snapshot-finalize-before-commit-temp",
+        "observedActiveGenerationBeforeRetry": 1,
+        "deletionCommittedBeforeRetry": false,
+        "retryIdempotent": true,
+        "directoryFlushSucceeded": false
+      },
+      {
+        "scenarioId": "after-commit-temp-sync-before-finalize",
+        "observedActiveGenerationBeforeRetry": 1,
+        "deletionCommittedBeforeRetry": false,
+        "retryIdempotent": true,
+        "directoryFlushSucceeded": false
+      },
+      {
+        "scenarioId": "after-commit-finalize-before-obsolete-cleanup",
+        "observedActiveGenerationBeforeRetry": 2,
+        "deletionCommittedBeforeRetry": true,
+        "retryIdempotent": true,
+        "directoryFlushSucceeded": false
+      }
+    ],
+    "activeDeletionAndRestartPassed": true,
+    "directoryFlushSuccessCount": 0,
+    "powerLossClaimed": false,
+    "preservedFailedAttemptCount": 1,
+    "successfulAttemptCount": 1,
+    "resultDrivenThresholdChanges": false
+  },
+  "authority": {
+    "sealedNumericalRankPreservationVerified": true,
+    "naturalImageNeighborUtilityVerified": true,
+    "controlledMemoryScenarioUtilityVerified": true,
+    "representativeSemanticMemoryQualityVerified": false,
+    "durableActiveIndexDeletionVerified": true,
+    "processCrashRecoveryVerified": true,
+    "powerLossDurabilityVerified": false,
+    "filesystemForensicErasureVerified": false,
+    "compressedRetrievalVerified": false,
+    "turboVecParityVerified": false,
+    "productIntegrationVerified": false,
+    "trainingAuthorized": false,
+    "releaseAuthorized": false
+  },
+  "openGaps": [
+    {
+      "gapId": "representative-semantic-memory-quality",
+      "status": "not-proven",
+      "statement": "Natural image neighbors and controlled numeric memory scenarios do not prove representative natural-language memory usefulness."
+    },
+    {
+      "gapId": "power-loss-durability",
+      "status": "not-tested",
+      "statement": "Process exits at registered write boundaries do not prove behavior under physical power loss or storage-controller cache loss."
+    },
+    {
+      "gapId": "filesystem-forensic-erasure",
+      "status": "not-tested",
+      "statement": "Managed active files are scanned after cleanup, but free-space, journal, snapshot, and forensic media erasure are outside this experiment."
+    },
+    {
+      "gapId": "compressed-retrieval-comparison",
+      "status": "not-run",
+      "statement": "No compressed retrieval method or TurboVec implementation is compared in this baseline observation."
+    }
+  ],
+  "requiredNextGate": "Only after this exact baseline passes may one independently source-pinned compressed numerical comparison arm be preregistered at equal effective bytes. Product semantic-memory usefulness still requires the selected embedding model, a separately sealed natural-language corpus, untouched downstream conversations, and human authority.",
+  "receiptId": "exact-flat-baseline-evidence-verification-6eb3d0e13fe60cbd",
+  "receiptContentHash": "6eb3d0e13fe60cbde24fa1234d8e254506fc7d8a02a8ad6aca5a6735b8e6cdae"
+}

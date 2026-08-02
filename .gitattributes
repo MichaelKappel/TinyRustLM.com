@@ -44,6 +44,13 @@ tinyrustlm/experiments/vector-quantization/** text eol=lf
 tinyrustlm/tests/vector-*.test.js text eol=lf
 tinyrustlm/tools/vector-*.js text eol=lf
 
+# The retained-evidence witness is itself content addressed. Keep its manifest
+# canonical LF text and its detached historical blobs byte-exact on every OS.
+tinyrustlm/history/clean-history-lineage/*.json text eol=lf
+tinyrustlm/history/clean-history-lineage/blobs/sha256/** binary
+tinyrustlm/tests/clean-history-lineage.test.js text eol=lf
+tinyrustlm/tools/clean-history-lineage.js text eol=lf
+
 # Keep clean-slate specialist contracts and their validators byte-stable.
 tinyrustlm/experiments/specialist-portfolio/** text eol=lf
 tinyrustlm/tests/content-identity*.js text eol=lf

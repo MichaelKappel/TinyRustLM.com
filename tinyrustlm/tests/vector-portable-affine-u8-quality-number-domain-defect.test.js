@@ -1,11 +1,16 @@
 "use strict";
 
 const assert = require("node:assert/strict");
-const childProcess = require("node:child_process");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
+const {
+  productionLineageReader
+} = require("../tools/clean-history-lineage.js");
+const {
+  readGitBlob
+} = require("../tools/vector-historical-git-input.js");
 
 const repositoryRoot = path.resolve(__dirname, "../..");
 const summaryRelativePath =
@@ -18,21 +23,6 @@ const relativePathPattern = /^[A-Za-z0-9._/-]+$/u;
 
 function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
-}
-
-function git(argumentsList) {
-  const result = childProcess.spawnSync("git", argumentsList, {
-    cwd: repositoryRoot,
-    encoding: null,
-    windowsHide: true,
-    timeout: 30_000,
-    maxBuffer: 4 * 1024 * 1024
-  });
-  assert.equal(result.error, undefined);
-  assert.equal(result.signal, null);
-  assert.equal(result.status, 0);
-  assert.equal(result.stderr.length, 0);
-  return result.stdout;
 }
 
 function readSummary() {
@@ -93,33 +83,19 @@ test("preserves the red reproduction and fix commits in order", () => {
   const fixed = summary.fix.commit;
   assert.match(red, revisionPattern);
   assert.match(fixed, revisionPattern);
-  const ancestry = childProcess.spawnSync(
-    "git",
-    ["merge-base", "--is-ancestor", red, fixed],
-    {
-      cwd: repositoryRoot,
-      encoding: "utf8",
-      windowsHide: true,
-      timeout: 30_000,
-      maxBuffer: 1024 * 1024
-    }
-  );
-  assert.equal(ancestry.error, undefined);
-  assert.equal(ancestry.signal, null);
-  assert.equal(ancestry.status, 0);
-  assert.equal(ancestry.stderr, "");
-  const redSource = git([
-    "cat-file",
-    "blob",
-    `${red}:tinyrustlm/experiments/vector-quantization/portable-affine-u8-benchmark.rs`
-  ]).toString("utf8");
+  assert.equal(productionLineageReader().isAncestor(red, fixed), true);
+  const redSource = readGitBlob(
+    repositoryRoot,
+    red,
+    "tinyrustlm/experiments/vector-quantization/portable-affine-u8-benchmark.rs"
+  ).toString("utf8");
   assert.match(redSource, /finite_signed_quality_deltas_are_valid_json_numbers/u);
   assert.match(redSource, /JSON metrics must be finite unit-interval values/u);
-  const fixedSource = git([
-    "cat-file",
-    "blob",
-    `${fixed}:tinyrustlm/experiments/vector-quantization/portable-affine-u8-benchmark-v2.rs`
-  ]);
+  const fixedSource = readGitBlob(
+    repositoryRoot,
+    fixed,
+    "tinyrustlm/experiments/vector-quantization/portable-affine-u8-benchmark-v2.rs"
+  );
   assert.equal(sha256(fixedSource), summary.fix.distinctV2Source.sha256);
 });
 

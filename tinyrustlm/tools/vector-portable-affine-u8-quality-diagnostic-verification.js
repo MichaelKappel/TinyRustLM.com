@@ -8,6 +8,9 @@ const path = require("node:path");
 const { canonicalJson } = require("./campaign-evidence-store.js");
 const { atomicCreate } = require("./durable-files.js");
 const {
+  productionLineageReader
+} = require("./clean-history-lineage.js");
+const {
   validateGitInput
 } = require("./vector-historical-git-input.js");
 const {
@@ -205,7 +208,7 @@ function git(argumentsList, label, allowFailure = false) {
 }
 
 function sourceRevision() {
-  const revision = git(["rev-parse", "HEAD"], "source revision").stdout.trim();
+  const revision = productionLineageReader().headRevision();
   invariant(revisionPattern.test(revision), "source revision is invalid");
   return revision;
 }
@@ -215,12 +218,10 @@ function assertAncestor(ancestor, descendant, label) {
     revisionPattern.test(ancestor) && revisionPattern.test(descendant),
     `${label} revision is invalid`
   );
-  const result = git(
-    ["merge-base", "--is-ancestor", ancestor, descendant],
-    `${label} ancestry`,
-    true
+  invariant(
+    productionLineageReader().isAncestor(ancestor, descendant),
+    `${label} ancestry is invalid`
   );
-  invariant(result.status === 0, `${label} ancestry is invalid`);
 }
 
 function assertInputsCommitted(paths) {

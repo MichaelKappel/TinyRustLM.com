@@ -1,6 +1,5 @@
 "use strict";
 
-const childProcess = require("node:child_process");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -8,6 +7,12 @@ const path = require("node:path");
 const {
   validateReceiptFile: validateTerminalVerification
 } = require("./vector-portable-affine-u8-verification.js");
+const {
+  productionLineageReader
+} = require("./clean-history-lineage.js");
+const {
+  validateGitInput
+} = require("./vector-historical-git-input.js");
 
 const schema =
   "tinyrustlm.portable_affine_u8_quality_diagnostic_preregistration.v1";
@@ -525,50 +530,28 @@ function validateReferencedFile(entry, label) {
   invariant(sha256File(file.resolved) === entry.fileSha256, `${label} bytes drifted`);
 }
 
-function git(argumentsList, allowFailure = false) {
-  const result = childProcess.spawnSync("git", argumentsList, {
-    cwd: repositoryRoot,
-    encoding: "utf8",
-    windowsHide: true,
-    timeout: 30000,
-    maxBuffer: 4 * 1024 * 1024
-  });
-  invariant(result.error === undefined, "git invocation failed");
-  if (!allowFailure) {
-    invariant(result.status === 0 && result.signal === null, "git command failed");
-  }
-  return result;
-}
-
 function registrationCommit() {
-  const result = git([
-    "log", "--diff-filter=A", "--format=%H", "--", defaultRelativePath
-  ]);
-  const revisions = result.stdout.trim().split(/\r?\n/u).filter(Boolean);
-  if (revisions.length === 0) return null;
-  invariant(revisions.length === 1, "manifest has multiple addition commits");
-  invariant(revisionPattern.test(revisions[0]), "registration commit is invalid");
-  return revisions[0];
+  return productionLineageReader().pathAdditionCommit(defaultRelativePath);
 }
 
 function pathExistsAtRevision(revision, relativePath) {
-  const result = git(["cat-file", "-e", `${revision}:${relativePath}`], true);
-  invariant([0, 128].includes(result.status), "git path existence check failed");
-  return result.status === 0;
+  return productionLineageReader().pathExistsAtRevision(revision, relativePath);
 }
 
 function validateRegistrationOrdering(manifest) {
-  const current = git(["rev-parse", "HEAD"]).stdout.trim();
+  const history = productionLineageReader();
+  const current = history.headRevision();
   invariant(revisionPattern.test(current), "current revision is invalid");
-  const ancestor = git([
-    "merge-base", "--is-ancestor",
-    manifest.registrationBoundary.parentSourceRevision,
-    current
-  ], true);
-  invariant(ancestor.status === 0, "registration parent is not an ancestor");
+  invariant(
+    history.isAncestor(
+      manifest.registrationBoundary.parentSourceRevision,
+      current
+    ),
+    "registration parent is not an ancestor"
+  );
   const commit = registrationCommit();
   if (commit === null) return null;
-  const parent = git(["rev-parse", `${commit}^`]).stdout.trim();
+  const parent = history.parentRevision(commit);
   invariant(
     parent === manifest.registrationBoundary.parentSourceRevision,
     "registration commit parent is invalid"
@@ -594,11 +577,13 @@ function validateFrozenFiles(manifest, terminal) {
     "terminal verification input count drifted"
   );
   for (const input of manifest.frozenInputClosure.criticalInputs) {
-    const file = resolveRepositoryFile(input.path);
-    invariant(file.stat.size === input.bytes, `critical input ${input.path} size drifted`);
-    invariant(
-      sha256File(file.resolved) === input.sha256,
-      `critical input ${input.path} bytes drifted`
+    validateGitInput(
+      input,
+      repositoryRoot,
+      manifest.registrationBoundary.parentSourceRevision,
+      input.path,
+      `critical input ${input.path}`,
+      maximumInputBytes
     );
     const terminalInput = terminal.receipt.inputs.find(
       (entry) => entry.path === input.path

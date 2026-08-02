@@ -1,0 +1,377 @@
+{
+  "schema": "tinyrustlm.exact_flat_retrieval_verification_receipt.v2",
+  "receiptId": "exact-flat-retrieval-0b5c2896f18fc874",
+  "generatedAtUtc": "2026-07-26T07:39:02.292Z",
+  "status": "experiment-baseline-verified-with-open-promotion-gaps",
+  "gitHead": "b673f519a9af53e1179c0f62c765d9ecc4a96fe4",
+  "dirtyWorktree": true,
+  "productAuthority": false,
+  "trainingAuthority": false,
+  "previousReceipt": {
+    "path": "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-verification-v1.json",
+    "schema": "tinyrustlm.exact_flat_retrieval_verification_receipt.v1",
+    "receiptId": "exact-flat-retrieval-75f95baa316315ea",
+    "sha256": "893e96f461f701f46a3aaaeecddd67bc2b700625ccdb9f0d83ce4b0b67d8c18c"
+  },
+  "parentReceipt": {
+    "path": "tinyrustlm/experiments/vector-quantization/scalar-oracle-verification-v1.json",
+    "receiptId": "scalar-oracle-foundation-51ab608f417c0b82",
+    "sha256": "8772ee70a2de21b294fc3d10c2634059c72062e33397472762462d04e7b7938b"
+  },
+  "sourceLedger": {
+    "path": "tinyrustlm/experiments/vector-quantization/source-claim-ledger.v1.json",
+    "ledgerId": "turbovec-turboquant-review-20260722",
+    "sha256": "7daa7653222914a028e636e6de6e195f94cb5eb50d5bd10a76af624877303808"
+  },
+  "preregistration": {
+    "path": "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-preregistration.v1.json",
+    "experimentId": "exact-flat-f32-baseline-20260722",
+    "sha256": "0d9b6b3d31a25cba843034ceeafca3a88bc1287546f66025b62d13ba14441152"
+  },
+  "inputSetSha256": "0b5c2896f18fc874f6376c11daf0bd4ffc2f29abde360a2c883dd8c02053c3c7",
+  "inputs": [
+    {
+      "path": ".gitattributes",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 5624,
+      "sha256": "4fd514b54e7564c6b23e732028198304aeb3c1880898d64fa81c2004a587b7ba"
+    },
+    {
+      "path": "Cargo.lock",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 14748,
+      "sha256": "9b0a3bf305675e1e3ce9ae781e67786bde5635e9659be08a8b8773e3b29b4374"
+    },
+    {
+      "path": "Cargo.toml",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 1090,
+      "sha256": "5afcef4ff36679f99fbeb438f49af195b76065dd156bcf457fd0f4b807f66ba0"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/Cargo.toml",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 312,
+      "sha256": "e962ea7c04a47dd8f72122f1de129e5175d3a40eac2dca511d399fee1f5e52c9"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/accounting.rs",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 3884,
+      "sha256": "ecd53e96a25fd3753ecd69c6dd7a33e40e5506e424669b0da3575394dece50f0"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/bitpack.rs",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 10969,
+      "sha256": "685a4b8682d3fea40d8e50975228cb5c06a2101c9a8067b70ab5fe2f92d60cf1"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/codebook.rs",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 15253,
+      "sha256": "08b58571dbae6c7dcbe857ddacbc5f45d19af6c5fb336df1fabeb4b163ef99bc"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/error.rs",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 9046,
+      "sha256": "f09f395388ed0c1f6d1160e4ea12b320baec1f01a40f17330989c8bf881fc7db"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/flat_index.rs",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 40496,
+      "sha256": "4627ee3c0fae6605a415e3a2b917e5346f01b3ac992e938ce724edf3df1aa17b"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/lib.rs",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 1268,
+      "sha256": "dbbaf1a880646e8769f0188e2a79c1467b3912f272eb00325792e1f787342f63"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/metrics.rs",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 12071,
+      "sha256": "4fb354c13c0dfda8987de8a54f83c32d28725d79c09c78ca0978dd6ab7d5c05c"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/prng.rs",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 3167,
+      "sha256": "45d64327c6e7d2184857c87f453fb57172da74315028034abb8a5229172964eb"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/score.rs",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 9825,
+      "sha256": "c60a9a7c1935f3a6d22ef0d49c32a3c74bc0c1abf174fb267ab293e3e9b45c38"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/sha256.rs",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 5237,
+      "sha256": "3b9efb7ed1629e7ff80d480f56a76f2c7a9008a8782045188f6ae0d6491c3b6a"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/transform.rs",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 11797,
+      "sha256": "e1ab84175ac2e0ae3d81416a55da6423f1ebf0189f81dcb463f61ded619336e1"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/tests/flat_index_test.rs",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 9647,
+      "sha256": "8877f2ebe8fd9ee00155c6d9df41e5d6c0b6227550e7a7c327f41b60a8dd7427"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/tests/lib_test.rs",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 2731,
+      "sha256": "c7a1a58e37c7fc1e0a96eed26cb3f3c064c1abff44d6ca57b0745d694dd2007e"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/README.md",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 4145,
+      "sha256": "b6de53349aa729c999784308c7f9700e14baead20fe4c02a76b192d2013edb32"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-preregistration.v1.json",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 3713,
+      "sha256": "0d9b6b3d31a25cba843034ceeafca3a88bc1287546f66025b62d13ba14441152"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/source-claim-ledger.v1.json",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 10946,
+      "sha256": "7daa7653222914a028e636e6de6e195f94cb5eb50d5bd10a76af624877303808"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-experiment-isolation.test.js",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 2790,
+      "sha256": "e0acbc6f8ad8e2c0fea3a84fe46c53d9867ef12ac74fcc583e769b7855fc92f2"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-experiment-ledger.test.js",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 5021,
+      "sha256": "8e9925b8895b3b089ebdf899d36349ae527c925bfce6897f15851f2e7d17364f"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-retrieval-preregistration.test.js",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 2847,
+      "sha256": "e6bb9003f3d7a443efd5b5e56ed815e0a08e466918683feede9f50c97ec49efc"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-retrieval-receipt.test.js",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 4126,
+      "sha256": "e107d72dc7d7f2db5668f939b4cf286f3b24e733f530c9bbedee4aa37115a23c"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-experiment-ledger.js",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 15051,
+      "sha256": "b073097acb93ba03d57ed55da802076e2277ef4471f1d4270f26c2d5fc36eeed"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-retrieval-preregistration.js",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 12248,
+      "sha256": "1786de6fea96c4420270c2e91636754589a09fb604a200d3f9339a42a93fb135"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-retrieval-receipt.js",
+      "canonicalization": "utf8-lf-v1",
+      "bytes": 28896,
+      "sha256": "10ec2e181a55b0b9bee8a059beefd81ed373d319fdcb40a04ebf40f719866c94"
+    }
+  ],
+  "toolchain": {
+    "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "cargo": "cargo 1.96.0 (30a34c682 2026-05-25)",
+    "node": "v24.14.0"
+  },
+  "gates": [
+    {
+      "gateId": "ledger-canonical-validation",
+      "command": [
+        "node",
+        "tinyrustlm/tools/vector-experiment-ledger.js",
+        "tinyrustlm/experiments/vector-quantization/source-claim-ledger.v1.json"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "e0e8dccd29237fe54d6f9e6c813c9b95ccc081e96cf9354b4e899a5f9c0d20b1"
+    },
+    {
+      "gateId": "retrieval-preregistration-validation",
+      "command": [
+        "node",
+        "tinyrustlm/tools/vector-retrieval-preregistration.js",
+        "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-preregistration.v1.json"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "e0eca519e75aa332c4e96b43fec6bd5c42e6f17b08809787012b6f9200092dd8"
+    },
+    {
+      "gateId": "research-boundary-tests",
+      "command": [
+        "node",
+        "--test",
+        "tinyrustlm/tests/vector-experiment-ledger.test.js",
+        "tinyrustlm/tests/vector-experiment-isolation.test.js",
+        "tinyrustlm/tests/vector-retrieval-preregistration.test.js"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "2de3ab3a09ca85f271417d64d20c0904d20a7597fc89b708f44c948d520a7520"
+    },
+    {
+      "gateId": "rustfmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "gateId": "exact-flat-native-tests",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tinyrustlm-vector-oracle"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "41954af94f0a8d98227999449d32d455fc023a600483df70ced799e86bb1239a"
+    },
+    {
+      "gateId": "exact-flat-strict-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tinyrustlm-vector-oracle",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "6e42febcbd42c98d166f65e6d51f828c476e87778d13aaef7504afce71f6f297"
+    },
+    {
+      "gateId": "exact-flat-wasm32-check",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tinyrustlm-vector-oracle",
+        "--target",
+        "wasm32-unknown-unknown"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "6e42febcbd42c98d166f65e6d51f828c476e87778d13aaef7504afce71f6f297"
+    },
+    {
+      "gateId": "exact-flat-rustdoc",
+      "command": [
+        "cargo",
+        "doc",
+        "-p",
+        "tinyrustlm-vector-oracle",
+        "--no-deps"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "eb871e28aa2c0b2146a399040d782be82b283ae7920b6e07e3fd8c360e903717"
+    }
+  ],
+  "toolingGaps": [
+    {
+      "gapId": "measured-line-coverage",
+      "probeCommand": [
+        "cargo",
+        "llvm-cov",
+        "--version"
+      ],
+      "status": "unavailable",
+      "requiredTargetPercent": 75,
+      "measuredPercent": null,
+      "exitCode": 101,
+      "outputSha256": "817ae4e6b7bba0b9125aa8fe5935369dfce868520356066cfee5734c7fa990c5",
+      "errorCode": null
+    },
+    {
+      "gapId": "miri-memory-model-check",
+      "probeCommand": [
+        "cargo",
+        "miri",
+        "--version"
+      ],
+      "status": "unavailable",
+      "requiredTargetPercent": null,
+      "measuredPercent": null,
+      "exitCode": 1,
+      "outputSha256": "f55b415bb169e141443a4b706e4cc590ec150066a46a8056ce86e7a31db99619",
+      "errorCode": null
+    }
+  ],
+  "unexecutedGaps": [
+    {
+      "gapId": "durable-filesystem-deletion-proof",
+      "status": "not-run",
+      "requiredForProductPromotion": true,
+      "statement": "No crash-recovered on-disk snapshot has proved tombstoned vector bytes absent after compaction."
+    },
+    {
+      "gapId": "real-browser-wasm-execution",
+      "status": "not-run",
+      "requiredForProductPromotion": true,
+      "statement": "The crate compiles for wasm32 but has not executed in a real browser or browser WASM runtime."
+    },
+    {
+      "gapId": "retrieval-corpus-quality-metrics",
+      "status": "not-run",
+      "requiredForProductPromotion": true,
+      "statement": "No sealed representative corpus has measured recall, MRR, NDCG, or product retrieval usefulness."
+    },
+    {
+      "gapId": "target-hardware-performance",
+      "status": "not-run",
+      "requiredForProductPromotion": true,
+      "statement": "No preregistered target has measured latency, throughput, memory, or energy."
+    }
+  ],
+  "scope": {
+    "scalarFoundationVerified": true,
+    "exactFlatF32BaselineVerified": true,
+    "canonicalPersistenceFormatVerified": true,
+    "deletionAndCompactionSemanticsVerified": true,
+    "realWasmExecutionVerified": false,
+    "nativePerformanceMeasured": false,
+    "browserPerformanceMeasured": false,
+    "namedTurboQuantArmVerified": false,
+    "turboVecParityVerified": false,
+    "compressedRetrievalVerified": false,
+    "productRetrievalQualityVerified": false,
+    "kvCacheQualityVerified": false
+  },
+  "requiredNextGate": "Execute the unchanged exact-flat baseline in a real browser and on preregistered target hardware, then measure sealed-corpus retrieval quality and durable crash-recovered deletion before any product or compressed-retrieval promotion."
+}

@@ -11,6 +11,9 @@ const { pipeline } = require("node:stream/promises");
 const { canonicalJson } = require("./campaign-evidence-store.js");
 const { atomicCreate, syncDirectory } = require("./durable-files.js");
 const {
+  productionLineageReader
+} = require("./clean-history-lineage.js");
+const {
   validateManifestFile
 } = require("./vector-portable-affine-u8-preregistration.js");
 
@@ -1798,54 +1801,36 @@ function assertInputsCommitted() {
   }
   const status = git(["status", "--porcelain=v1", "--", ...inputPaths], "input status");
   invariant(status === "", "observation inputs are not clean and committed");
-  const preregistrationCommit = git(
-    ["log", "-1", "--format=%H", "--", preregistrationRelativePath],
-    "preregistration commit"
-  );
-  const implementationCommit = git(
-    [
-      "log",
-      "-1",
-      "--format=%H",
-      "--",
-      libraryManifestRelativePath,
-      librarySourceRelativePath,
-      affineSourceRelativePath,
-      affineTestRelativePath,
-      benchmarkRelativePath,
-      runnerRelativePath,
-      verifierRelativePath,
-      runnerTestRelativePath,
-      verifierTestRelativePath
-    ],
-    "implementation commit"
-  );
+  const history = productionLineageReader();
+  const preregistrationCommit = history.lastChangeCommit([
+    preregistrationRelativePath
+  ]);
+  const implementationCommit = history.lastChangeCommit([
+    libraryManifestRelativePath,
+    librarySourceRelativePath,
+    affineSourceRelativePath,
+    affineTestRelativePath,
+    benchmarkRelativePath,
+    runnerRelativePath,
+    verifierRelativePath,
+    runnerTestRelativePath,
+    verifierTestRelativePath
+  ]);
   invariant(
     sourceRevisionPattern.test(preregistrationCommit) &&
       sourceRevisionPattern.test(implementationCommit) &&
       preregistrationCommit !== implementationCommit,
     "preregistration and implementation were not committed separately"
   );
-  const ancestry = childProcess.spawnSync(
-    "git",
-    ["merge-base", "--is-ancestor", preregistrationCommit, implementationCommit],
-    {
-      cwd: repositoryRoot,
-      env: offlineEnvironment(),
-      encoding: "utf8",
-      windowsHide: true,
-      timeout: 30000
-    }
-  );
   invariant(
-    ancestry.error === undefined && ancestry.status === 0,
+    history.isAncestor(preregistrationCommit, implementationCommit),
     "implementation does not descend from preregistration"
   );
   return Object.freeze({ preregistrationCommit, implementationCommit });
 }
 
 function sourceRevision() {
-  const revision = git(["rev-parse", "HEAD"], "source revision");
+  const revision = productionLineageReader().headRevision();
   invariant(sourceRevisionPattern.test(revision), "source revision is invalid");
   return revision;
 }

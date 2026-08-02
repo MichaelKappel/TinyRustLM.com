@@ -1,0 +1,267 @@
+"use strict";
+
+const assert = require("node:assert/strict");
+const test = require("node:test");
+
+const {
+  attemptIdentity,
+  authority,
+  canonicalPrettyBytes,
+  expectedExperimentId,
+  finalizeAttempt,
+  finalizeObservation,
+  hashInput,
+  inputPaths,
+  observationIdentity,
+  observationSchema,
+  openPromotionGaps,
+  publicFailure,
+  requiredGates,
+  sha256,
+  validateAttempt,
+  validateObservation
+} = require("../tools/vector-browser-wasm-observation.js");
+const {
+  requiredExports,
+  validateManifestFile
+} = require("../tools/vector-browser-wasm-preregistration-v2.js");
+const { validateReceiptFile: validateParentReceiptFile } =
+  require("../tools/vector-retrieval-receipt.js");
+
+/** Clones a JSON value without retaining shared mutable references. */
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+/** Produces a structurally valid synthetic observation without claiming execution. */
+function sampleObservation() {
+  const preregistration = validateManifestFile();
+  const parent = validateParentReceiptFile();
+  const modules = preregistration.manifest.execution.wasmModules.map((module, index) => ({
+    role: module.role,
+    expectedTestCount: module.expectedTestCount,
+    bytes: 2 * 1024 * 1024 + index,
+    sha256: sha256(Buffer.from(`module-${module.role}`, "utf8")),
+    exports: clone(requiredExports),
+    imports: []
+  }));
+  const runs = [1, 2].map((runNumber) => ({
+    runNumber,
+    browserVersion: "Chromium 140.0.0.0",
+    pageOrigin: "about:blank",
+    moduleResults: modules.map((module) => ({
+      role: module.role,
+      sha256: module.sha256,
+      bytes: module.bytes,
+      expectedTestCount: module.expectedTestCount,
+      exports: clone(module.exports),
+      imports: [],
+      returnCode: 0
+    })),
+    networkRequestCount: 0,
+    consoleErrorCount: 0,
+    pageErrorCount: 0,
+    browserProcessClosed: true,
+    profileDeletion: {
+      schema: "tinyrustlm.browser_profile_deletion.v1",
+      campaignId: expectedExperimentId,
+      round: runNumber,
+      role: "direct-wasm-tests",
+      rootMarkerHash: sha256(Buffer.from(`root-${runNumber}`, "utf8")),
+      profileMarkerHash: sha256(Buffer.from(`profile-${runNumber}`, "utf8")),
+      deleted: true,
+      verifiedAtUtc: `2026-07-22T03:00:0${runNumber}Z`
+    },
+    profileRootDeleted: true
+  }));
+  return finalizeObservation({
+    schema: observationSchema,
+    experimentId: expectedExperimentId,
+    status: "real-browser-wasm-verified-with-open-promotion-gaps",
+    createdAtUtc: "2026-07-22T03:00:00Z",
+    sourceRevision: "a".repeat(40),
+    preregistration: {
+      path: "tinyrustlm/experiments/vector-quantization/" +
+        "exact-flat-browser-wasm-preregistration.v2.json",
+      sha256: preregistration.sha256
+    },
+    parentReceipt: {
+      receiptId: parent.receipt.receiptId,
+      sha256: parent.sha256
+    },
+    inputs: inputPaths.map(hashInput),
+    environment: {
+      operatingSystem: process.platform,
+      architecture: process.arch
+    },
+    tools: {
+      node: {
+        version: process.version,
+        sha256: sha256(Buffer.from("node-executable", "utf8"))
+      },
+      cargo: {
+        version: "cargo 1.96.0",
+        sha256: sha256(Buffer.from("cargo-executable", "utf8"))
+      },
+      rustc: {
+        version: "rustc 1.96.0",
+        sha256: sha256(Buffer.from("rustc-executable", "utf8"))
+      },
+      playwright: {
+        version: "1.61.1",
+        sha256: sha256(Buffer.from("playwright-package", "utf8"))
+      },
+      chromium: {
+        version: "Chromium 140.0.0.0",
+        sha256: sha256(Buffer.from("chromium-executable", "utf8"))
+      }
+    },
+    commands: requiredGates.map((gate) => ({
+      gateId: gate.gateId,
+      executable: gate.executable,
+      arguments: [...gate.arguments],
+      exitCode: 0,
+      outputSha256: sha256(Buffer.from(gate.gateId, "utf8")),
+      spawnErrorCode: null
+    })),
+    modules,
+    runs,
+    authority: clone(authority),
+    openPromotionGaps: clone(openPromotionGaps),
+    requiredNextGate: preregistration.manifest.requiredNextGate
+  });
+}
+
+test("validates a content-addressed two-run browser observation", () => {
+  const observation = sampleObservation();
+  const identity = observationIdentity(observation);
+
+  assert.equal(validateObservation(observation), observation);
+  assert.equal(observation.observationId, identity.id);
+  assert.equal(observation.observationContentHash, identity.hash);
+  assert.equal(observation.modules.length, 3);
+  assert.equal(observation.runs.length, 2);
+  assert.equal(observation.runs.every((run) => run.profileDeletion.deleted), true);
+  assert.equal(observation.authority.realBrowserWasmExecutionVerified, true);
+  assert.equal(observation.authority.productIntegrationAuthorized, false);
+  assert.ok(canonicalPrettyBytes(observation).length < 1024 * 1024);
+});
+
+test("rejects browser return, import, network, and error drift", () => {
+  const returnCode = clone(sampleObservation());
+  returnCode.runs[0].moduleResults[0].returnCode = 1;
+  const finalizedReturn = finalizeObservation((({
+    observationId: _id,
+    observationContentHash: _hash,
+    ...body
+  }) => body)(returnCode));
+  assert.throws(() => validateObservation(finalizedReturn), /module result is invalid/u);
+
+  const imported = clone(sampleObservation());
+  imported.modules[0].imports.push({ module: "env", name: "host", kind: "function" });
+  assert.throws(() => validateObservation(imported), /content identity/u);
+
+  const network = clone(sampleObservation());
+  network.runs[1].networkRequestCount = 1;
+  assert.throws(() => validateObservation(network), /content identity/u);
+
+  const consoleError = clone(sampleObservation());
+  consoleError.runs[0].consoleErrorCount = 1;
+  assert.throws(() => validateObservation(consoleError), /content identity/u);
+});
+
+test("rejects cleanup failure, input drift, and authority inflation", () => {
+  const cleanup = clone(sampleObservation());
+  cleanup.runs[0].profileDeletion.deleted = false;
+  assert.throws(() => validateObservation(cleanup), /content identity/u);
+
+  const input = clone(sampleObservation());
+  input.inputs[0].sha256 = "0".repeat(64);
+  assert.throws(() => validateObservation(input), /content identity/u);
+
+  const product = clone(sampleObservation());
+  product.authority.productIntegrationAuthorized = true;
+  assert.throws(() => validateObservation(product), /content identity/u);
+});
+
+test("rejects recomputed semantic drift after identity is refreshed", () => {
+  const original = clone(sampleObservation());
+  delete original.observationId;
+  delete original.observationContentHash;
+  original.runs[0].networkRequestCount = 1;
+  const drifted = finalizeObservation(original);
+
+  assert.throws(() => validateObservation(drifted), /browser run is invalid/u);
+
+  const duplicateProfile = clone(sampleObservation());
+  delete duplicateProfile.observationId;
+  delete duplicateProfile.observationContentHash;
+  duplicateProfile.runs[1].profileDeletion.rootMarkerHash =
+    duplicateProfile.runs[0].profileDeletion.rootMarkerHash;
+  const duplicateProfileFinalized = finalizeObservation(duplicateProfile);
+  assert.throws(() => validateObservation(duplicateProfileFinalized),
+    /profile roots are not independent/u);
+
+  const browserDrift = clone(sampleObservation());
+  delete browserDrift.observationId;
+  delete browserDrift.observationContentHash;
+  browserDrift.runs[1].browserVersion = "Chromium 141.0.0.0";
+  const browserDriftFinalized = finalizeObservation(browserDrift);
+  assert.throws(() => validateObservation(browserDriftFinalized),
+    /browser version changed/u);
+});
+
+test("failure evidence stores only a stable code, name, and message hash", () => {
+  const privateMessage = "failed at C:\\private\\profile with bearer example-secret";
+  const failure = publicFailure(new Error(privateMessage));
+
+  assert.deepEqual(Object.keys(failure).sort(), ["code", "errorName", "messageSha256"]);
+  assert.equal(failure.code, "browser-wasm-observation-failed");
+  assert.equal(failure.errorName, "Error");
+  assert.equal(failure.messageSha256, sha256(Buffer.from(privateMessage, "utf8")));
+  assert.equal(JSON.stringify(failure).includes("private"), false);
+  assert.equal(JSON.stringify(failure).includes("example-secret"), false);
+});
+
+test("attempt identity is deterministic and changes with status", () => {
+  const body = {
+    schema: "tinyrustlm.exact_flat_browser_wasm_attempt.v1",
+    experimentId: expectedExperimentId,
+    status: "pass",
+    startedAtUtc: "2026-07-22T03:00:00Z",
+    completedAtUtc: "2026-07-22T03:01:00Z",
+    sourceRevision: "a".repeat(40),
+    preregistrationSha256: "b".repeat(64),
+    parentReceiptSha256: "c".repeat(64),
+    observationId: "exact-flat-browser-wasm-0123456789abcdef",
+    observationContentHash: "d".repeat(64),
+    failure: null
+  };
+  const first = finalizeAttempt(body);
+  const second = finalizeAttempt(clone(body));
+  const failed = finalizeAttempt({
+    ...body,
+    status: "fail",
+    observationId: null,
+    observationContentHash: null,
+    failure: {
+      code: "browser-wasm-observation-failed",
+      errorName: "Error",
+      messageSha256: "e".repeat(64)
+    }
+  });
+
+  assert.deepEqual(first, second);
+  assert.notEqual(first.attemptId, failed.attemptId);
+  assert.match(first.attemptContentHash, /^[a-f0-9]{64}$/u);
+  assert.equal(validateAttempt(first), first);
+  assert.equal(validateAttempt(failed), failed);
+  assert.deepEqual(attemptIdentity(first), {
+    id: first.attemptId,
+    hash: first.attemptContentHash
+  });
+
+  const inflatedFailure = clone(failed);
+  inflatedFailure.observationId = body.observationId;
+  assert.throws(() => validateAttempt(inflatedFailure), /content identity/u);
+});

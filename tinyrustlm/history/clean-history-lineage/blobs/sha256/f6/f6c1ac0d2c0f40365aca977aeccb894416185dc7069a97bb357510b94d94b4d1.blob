@@ -1,0 +1,564 @@
+{
+  "schema": "tinyrustlm.exact_flat_baseline_evidence_preregistration.v1",
+  "experimentId": "exact-flat-sealed-corpus-and-durable-deletion-20260725",
+  "registeredAtUtc": "2026-07-25T20:47:01Z",
+  "status": "preregistered-before-corpus-materialization-or-deletion-results",
+  "parents": [
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-verification-v1.json",
+      "receiptId": "exact-flat-retrieval-75f95baa316315ea",
+      "sha256": "893e96f461f701f46a3aaaeecddd67bc2b700625ccdb9f0d83ce4b0b67d8c18c"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-verification-v1.json",
+      "receiptId": "exact-flat-browser-wasm-verification-8fcdeb0b93534ca4",
+      "sha256": "5c52a2287390f79e6a4971da6a6455a69c4ebd52ac6473bcce5408fd62560157"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-verification-v1.json",
+      "receiptId": "exact-flat-physical-target-verification-6b478318ef8747cb",
+      "sha256": "4cf29cef23b057677e97ed0e03751bac6ad88d31fe44dff2d93582c22d437c1e"
+    }
+  ],
+  "exactFlatSourceClosure": [
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/Cargo.toml",
+      "sha256": "e962ea7c04a47dd8f72122f1de129e5175d3a40eac2dca511d399fee1f5e52c9"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/lib.rs",
+      "sha256": "dbbaf1a880646e8769f0188e2a79c1467b3912f272eb00325792e1f787342f63"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/flat_index.rs",
+      "sha256": "4627ee3c0fae6605a415e3a2b917e5346f01b3ac992e938ce724edf3df1aa17b"
+    }
+  ],
+  "externalDataset": {
+    "sourceKind": "pinned-public-natural-image-dataset",
+    "name": "Fashion-MNIST",
+    "sourceRepository": "https://github.com/zalandoresearch/fashion-mnist.git",
+    "revision": "b2617bb6d3ffa2e429640350f613e3291e10b141",
+    "tree": "ec8d5e52c0b9b2b09ea3f9d36b7bfafaf8ec0e97",
+    "licenseExpression": "MIT",
+    "licensePath": "LICENSE",
+    "licenseBytes": 1116,
+    "licenseSha256": "860025a4fd4ca5e669981b245ad022a89818c5b6412177700d7836b909bcf281",
+    "readmePath": "README.md",
+    "readmeBytes": 22994,
+    "readmeSha256": "39c94926ec72ab72920ab57f1c22908b4607c38f803aa85284ae85fc492518db",
+    "files": [
+      {
+        "upstreamPath": "data/fashion/train-images-idx3-ubyte.gz",
+        "split": "train",
+        "content": "images",
+        "compressedBytes": 26421880,
+        "compressedSha256": "3aede38d61863908ad78613f6a32ed271626dd12800ba2636569512369268a84",
+        "decompressedBytes": 47040016,
+        "decompressedSha256": "c59f468a2f672dc815687fe0f83887768d799fd8a3f3276145d20f83aa44d888",
+        "idxMagic": 2051,
+        "itemCount": 60000,
+        "rows": 28,
+        "columns": 28
+      },
+      {
+        "upstreamPath": "data/fashion/train-labels-idx1-ubyte.gz",
+        "split": "train",
+        "content": "labels",
+        "compressedBytes": 29515,
+        "compressedSha256": "a04f17134ac03560a47e3764e11b92fc97de4d1bfaf8ba1a3aa29af54cc90845",
+        "decompressedBytes": 60008,
+        "decompressedSha256": "bad3541b69d912435c50bb6ba87bec294ff4f6a2e1246121d8633921760443d9",
+        "idxMagic": 2049,
+        "itemCount": 60000,
+        "rows": null,
+        "columns": null
+      },
+      {
+        "upstreamPath": "data/fashion/t10k-images-idx3-ubyte.gz",
+        "split": "test",
+        "content": "images",
+        "compressedBytes": 4422102,
+        "compressedSha256": "346e55b948d973a97e58d2351dde16a484bd415d4595297633bb08f03db6a073",
+        "decompressedBytes": 7840016,
+        "decompressedSha256": "5b4141f0afbad91edebe8549f8fcffe087ea10ca49f1dbef5c9a5cd8815ce37b",
+        "idxMagic": 2051,
+        "itemCount": 10000,
+        "rows": 28,
+        "columns": 28
+      },
+      {
+        "upstreamPath": "data/fashion/t10k-labels-idx1-ubyte.gz",
+        "split": "test",
+        "content": "labels",
+        "compressedBytes": 5148,
+        "compressedSha256": "67da17c76eaffca5446c3361aaab5c3cd6d1c2608764d35dfb1850b086bf8dd5",
+        "decompressedBytes": 10008,
+        "decompressedSha256": "0402a96d92fd2663957122ceb108a494c5af83dab82d92729df917d7dec38c34",
+        "idxMagic": 2049,
+        "itemCount": 10000,
+        "rows": null,
+        "columns": null
+      }
+    ],
+    "locatorEnvironmentVariable": "TINYRUSTLM_FASHION_MNIST_ROOT",
+    "locatorValueMayEnterEvidence": false,
+    "externalBytesMayEnterRepository": false,
+    "thirdPartyCodeExecutionAllowed": false,
+    "networkAllowedDuringExecution": false,
+    "datasetMutationAllowed": false
+  },
+  "build": {
+    "librarySource": "rust/experiments/tinyrustlm-vector-oracle/src/lib.rs",
+    "benchmarkSource": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-benchmark.rs",
+    "observationRunnerSource": "tinyrustlm/tools/vector-baseline-evidence-observation.js",
+    "verificationRunnerSource": "tinyrustlm/tools/vector-baseline-evidence-verification.js",
+    "libraryOutput": "<owned-output-directory>/libtinyrustlm_vector_oracle.rlib",
+    "benchmarkOutput": "<owned-output-directory>/exact_flat_baseline_evidence_benchmark.exe",
+    "libraryCommand": [
+      "rustc",
+      "--crate-name",
+      "tinyrustlm_vector_oracle",
+      "--crate-type",
+      "rlib",
+      "--edition=2021",
+      "rust/experiments/tinyrustlm-vector-oracle/src/lib.rs",
+      "-C",
+      "opt-level=2",
+      "-C",
+      "codegen-units=1",
+      "-C",
+      "overflow-checks=yes",
+      "-o",
+      "<owned-output-directory>/libtinyrustlm_vector_oracle.rlib"
+    ],
+    "benchmarkCommand": [
+      "rustc",
+      "--crate-name",
+      "exact_flat_baseline_evidence_benchmark",
+      "--edition=2021",
+      "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-benchmark.rs",
+      "--extern",
+      "tinyrustlm_vector_oracle=<owned-output-directory>/libtinyrustlm_vector_oracle.rlib",
+      "-C",
+      "opt-level=2",
+      "-C",
+      "codegen-units=1",
+      "-C",
+      "overflow-checks=yes",
+      "-o",
+      "<owned-output-directory>/exact_flat_baseline_evidence_benchmark.exe"
+    ],
+    "workspaceManifestMutationAllowed": false,
+    "exactFlatSourceMutationAllowed": false,
+    "unsafeCodeAllowed": false,
+    "thirdPartyDependenciesAllowed": false,
+    "productImportAllowed": false
+  },
+  "corpus": {
+    "selection": {
+      "algorithm": "sha256-seed-split-label-index-smallest-v1",
+      "seed": "6a09e667f3bcc908bb67ae8584caa73b3c6ef372fe94f82ba54ff53a5f1d36f1",
+      "classes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "recordsPerClass": 200,
+      "queriesPerClass": 20,
+      "recordCount": 2000,
+      "queryCount": 200,
+      "selectionTieBreak": "ascending-original-index",
+      "trainTestSplitMustRemainDisjoint": true,
+      "selectedIndicesMayEnterEvidence": false
+    },
+    "naturalLanes": [
+      {
+        "laneId": "fashion-mnist-euclidean-784",
+        "metric": "squared-euclidean",
+        "normalization": "none",
+        "pixelTransform": "u8-divide-255-to-f32",
+        "dimension": 784,
+        "recordCount": 2000,
+        "queryCount": 200,
+        "topKValues": [
+          1,
+          10,
+          100
+        ],
+        "labelCount": 10
+      },
+      {
+        "laneId": "fashion-mnist-cosine-784",
+        "metric": "cosine",
+        "normalization": "l2-unit",
+        "pixelTransform": "u8-divide-255-then-l2-normalize-f32",
+        "dimension": 784,
+        "recordCount": 2000,
+        "queryCount": 200,
+        "topKValues": [
+          1,
+          10,
+          100
+        ],
+        "labelCount": 10
+      }
+    ],
+    "syntheticGenerator": {
+      "algorithm": "oracle-xorshift-13-7-17-factor-mixture-v1",
+      "recordFamilies": [
+        {
+          "family": "isotropic",
+          "count": 300
+        },
+        {
+          "family": "sparse",
+          "count": 240
+        },
+        {
+          "family": "anisotropic",
+          "count": 240
+        },
+        {
+          "family": "duplicate-and-near-tie",
+          "count": 180
+        },
+        {
+          "family": "finite-outlier",
+          "count": 120
+        },
+        {
+          "family": "distribution-drift",
+          "count": 120
+        }
+      ],
+      "queryFamilies": [
+        {
+          "family": "isotropic",
+          "count": 30
+        },
+        {
+          "family": "sparse",
+          "count": 24
+        },
+        {
+          "family": "anisotropic",
+          "count": 24
+        },
+        {
+          "family": "duplicate-and-near-tie",
+          "count": 18
+        },
+        {
+          "family": "finite-outlier",
+          "count": 12
+        },
+        {
+          "family": "distribution-drift",
+          "count": 12
+        }
+      ],
+      "negativeZeroCanonicalizationRequired": true,
+      "duplicateVectorsUseDistinctExternalIds": true,
+      "nearTieDeltaF32": 0.000244140625,
+      "sparseNonzeroFraction": 0.0625,
+      "anisotropicLeadingDimensions": 8,
+      "anisotropicScale": 16,
+      "outlierScale": 1024,
+      "driftMeanShift": 3
+    },
+    "syntheticLanes": [
+      {
+        "laneId": "synthetic-dot-128",
+        "metric": "dot-product",
+        "normalization": "none",
+        "dimension": 128,
+        "recordCount": 1200,
+        "queryCount": 120,
+        "topKValues": [
+          1,
+          10,
+          100
+        ],
+        "seed": "243f6a8885a308d3"
+      },
+      {
+        "laneId": "synthetic-cosine-384",
+        "metric": "cosine",
+        "normalization": "l2-unit",
+        "dimension": 384,
+        "recordCount": 1200,
+        "queryCount": 120,
+        "topKValues": [
+          1,
+          10,
+          100
+        ],
+        "seed": "13198a2e03707344"
+      },
+      {
+        "laneId": "synthetic-euclidean-768",
+        "metric": "squared-euclidean",
+        "normalization": "none",
+        "dimension": 768,
+        "recordCount": 1200,
+        "queryCount": 120,
+        "topKValues": [
+          1,
+          10,
+          100
+        ],
+        "seed": "a4093822299f31d0"
+      }
+    ],
+    "controlledMemoryLane": {
+      "laneId": "controlled-memory-cosine-64",
+      "metric": "cosine",
+      "normalization": "l2-unit",
+      "dimension": 64,
+      "recordCount": 120,
+      "queryCount": 30,
+      "topKValues": [
+        1,
+        10,
+        100
+      ],
+      "topicCount": 10,
+      "recordsPerTopic": 12,
+      "queriesPerTopic": 3,
+      "scenarioFactors": [
+        "current",
+        "superseded",
+        "deleted",
+        "consented",
+        "not-consented",
+        "trusted-source",
+        "untrusted-source",
+        "near-tie",
+        "irrelevant-distractor"
+      ],
+      "allowedIdSetsAreExternalPolicyInputs": true,
+      "rawTextStoredInIndex": false,
+      "untrustedTextPromotedToInstructions": false,
+      "seed": "082efa98ec4e6c89"
+    }
+  },
+  "groundTruth": {
+    "implementation": "independent-benchmark-f64-exhaustive-scan-v1",
+    "mayCallExactFlatSearch": false,
+    "mayReadExactFlatPrivateState": false,
+    "inputCoordinates": "post-declared-f32-normalization-coordinates",
+    "scoreAccumulation": "f64-in-ascending-coordinate-order",
+    "rankDirection": {
+      "dot-product": "descending-score",
+      "cosine": "descending-score",
+      "squared-euclidean": "ascending-score"
+    },
+    "tieBreak": "ascending-external-id-after-f64-total-order",
+    "rankMetrics": [
+      "recallAt1",
+      "recallAt10",
+      "recallAt100",
+      "mrrAt100",
+      "ndcgAt100",
+      "rankInversionsAt100"
+    ],
+    "scoreMetrics": [
+      "maximumAbsoluteScoreError",
+      "meanAbsoluteScoreError"
+    ],
+    "naturalUtilityMetrics": [
+      "macroLabelPrecisionAt10",
+      "macroLabelMrrAt10",
+      "macroLabelNdcgAt10",
+      "perClassQueryCoverage"
+    ],
+    "controlledUtilityMetrics": [
+      "expectedFirstHitRate",
+      "forbiddenHitRateAt10",
+      "deletedHitCount",
+      "filterViolationCount"
+    ],
+    "rawPerQueryMetricsRetained": true,
+    "rawVectorsMayEnterEvidence": false,
+    "rawImagesMayEnterEvidence": false
+  },
+  "thresholds": {
+    "allLanes": {
+      "minimumRecallAt1": 1,
+      "minimumRecallAt10": 1,
+      "minimumRecallAt100": 1,
+      "minimumMrrAt100": 1,
+      "minimumNdcgAt100": 1,
+      "maximumRankInversionsAt100": 0,
+      "maximumAbsoluteScoreError": 1e-12
+    },
+    "naturalLanes": {
+      "minimumMacroLabelPrecisionAt10": 0.5,
+      "minimumMacroLabelMrrAt10": 0.75,
+      "minimumMacroLabelNdcgAt10": 0.7,
+      "requiredPerClassQueryCoverage": 20
+    },
+    "controlledMemoryLane": {
+      "minimumExpectedFirstHitRate": 1,
+      "maximumForbiddenHitRateAt10": 0,
+      "maximumDeletedHitCount": 0,
+      "maximumFilterViolationCount": 0
+    },
+    "resultDrivenChangesAllowed": false,
+    "failedThresholdMayBeLowered": false
+  },
+  "durableDeletion": {
+    "storageDesign": "immutable-versioned-snapshots-and-unique-commit-markers-v1",
+    "ownedRootMarker": ".tinyrustlm-exact-flat-deletion-owned",
+    "sameDirectoryTemporarySuffix": ".tmp",
+    "snapshotName": "snapshot-<generation>-<sha256>.trflat",
+    "commitName": "commit-<generation>-<sha256>.json",
+    "activeGenerationSelection": "highest-valid-generation-with-valid-commit-and-snapshot",
+    "snapshotWriteOrder": [
+      "create-new-same-directory-temp",
+      "write-all-bytes",
+      "flush-language-buffer",
+      "sync-file-data-and-metadata",
+      "rename-to-unique-final-name",
+      "reopen-and-validate-final-bytes"
+    ],
+    "commitWriteOrder": [
+      "create-new-same-directory-temp",
+      "write-canonical-commit-bytes",
+      "flush-language-buffer",
+      "sync-file-data-and-metadata",
+      "rename-to-unique-final-name",
+      "reopen-and-validate-final-bytes"
+    ],
+    "directoryFlush": "attempt-where-platform-permits-and-record-result",
+    "initialRecordCount": 128,
+    "deleteTargetCount": 8,
+    "dimension": 64,
+    "metric": "cosine",
+    "normalization": "l2-unit",
+    "targetVectorGenerator": "oracle-xorshift-13-7-17-unique-f32-v1",
+    "targetSeed": "452821e638d01377",
+    "targetExternalIdBase": 9000000000000000000,
+    "deletionOperation": [
+      "write-and-commit-initial-snapshot",
+      "derive-tombstoned-index-with-zeroed-target-vectors",
+      "compact-to-remove-target-records",
+      "write-and-commit-compacted-snapshot",
+      "recover-active-generation",
+      "remove-obsolete-snapshots-commits-and-temporaries",
+      "reopen-active-snapshot",
+      "scan-every-managed-regular-file-for-target-identifiers-and-vector-fingerprints"
+    ],
+    "crashScenarios": [
+      {
+        "scenarioId": "after-snapshot-temp-sync-before-finalize",
+        "expectedActiveGeneration": 1,
+        "deletionCommitted": false,
+        "recoveryAction": "remove-or-quarantine-and-then-delete-uncommitted-temp"
+      },
+      {
+        "scenarioId": "after-snapshot-finalize-before-commit-temp",
+        "expectedActiveGeneration": 1,
+        "deletionCommitted": false,
+        "recoveryAction": "hash-and-delete-orphan-final-snapshot"
+      },
+      {
+        "scenarioId": "after-commit-temp-sync-before-finalize",
+        "expectedActiveGeneration": 1,
+        "deletionCommitted": false,
+        "recoveryAction": "hash-and-delete-uncommitted-commit-temp-and-orphan-snapshot"
+      },
+      {
+        "scenarioId": "after-commit-finalize-before-obsolete-cleanup",
+        "expectedActiveGeneration": 2,
+        "deletionCommitted": true,
+        "recoveryAction": "validate-generation-two-and-remove-generation-one-and-temporaries"
+      }
+    ],
+    "processCrashExitCode": 73,
+    "powerLossSimulated": false,
+    "filesystemForensicErasureTested": false,
+    "finalManagedFileScanRequired": true,
+    "finalTargetIdentifierMatchesAllowed": 0,
+    "finalTargetVectorFingerprintMatchesAllowed": 0,
+    "activeIndexContainsAnyDeletedTargetAllowed": false,
+    "activeIndexContainsActiveDeletedTargetAllowed": false,
+    "allCrashScenariosMustRecover": true,
+    "retryMustBeIdempotent": true
+  },
+  "execution": {
+    "networkPolicy": "deny-all-during-observation",
+    "parallelProcesses": 1,
+    "qualityProcessCount": 1,
+    "crashScenarioProcessCount": 4,
+    "timeoutMsPerProcess": 300000,
+    "datasetHashBufferBytes": 1048576,
+    "datasetDecompression": "node-zlib-stream-to-marker-owned-external-temp",
+    "temporaryRootsMustBeOutsideRepository": true,
+    "temporaryRootMarkerRequired": true,
+    "recursiveCleanupRequiresResolvedRootAndMarker": true,
+    "stdoutContract": "one-canonical-json-object-and-trailing-newline",
+    "stderrContract": "empty-on-success-except-intentional-crash-processes",
+    "resultOrder": "natural-lanes-then-synthetic-lanes-then-controlled-memory-then-crash-scenarios",
+    "outlierPolicy": "retain-all-valid-query-and-scenario-results",
+    "bestOfNAllowed": false,
+    "resultRepairAllowed": false
+  },
+  "validity": {
+    "allParentsAndSourceClosureMustMatch": true,
+    "allExternalDatasetHashesAndIdxHeadersMustMatch": true,
+    "selectedCorpusCountsAndClassBalanceMustMatch": true,
+    "allSixQualityLanesMustComplete": true,
+    "allPerQueryMetricsMustBeRetained": true,
+    "allFrozenThresholdsMustPass": true,
+    "allFourCrashScenariosMustExitAtRegisteredBoundary": true,
+    "allFourCrashScenariosMustRecoverToExpectedGeneration": true,
+    "committedDeletionMustRemainDeletedAfterRestart": true,
+    "finalManagedFileScanMustPass": true,
+    "ownedTemporaryRootsMustBePhysicallyDeleted": true,
+    "toolSourceBinaryAndDatasetHashesRequired": true,
+    "infrastructureFailuresMayBeRetried": true,
+    "qualityThresholdFailuresMayBeRetried": false,
+    "deletionSemanticFailuresMayBeRetried": false,
+    "resultDrivenThresholdChangesAllowed": false
+  },
+  "evidencePolicy": {
+    "attemptsAreImmutable": true,
+    "failedAttemptsArePreserved": true,
+    "attemptDirectory": "tinyrustlm/experiments/vector-quantization/baseline-evidence-attempts/sha256",
+    "successfulObservationPath": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-observation-v1.json",
+    "verificationReceiptPath": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-verification-v1.json",
+    "externalDatasetBytesAllowed": false,
+    "selectedIndicesAllowed": false,
+    "rawVectorsAllowed": false,
+    "rawImagesAllowed": false,
+    "rawTextAllowed": false,
+    "privateAbsolutePathsAllowed": false,
+    "credentialsAllowed": false,
+    "modelBytesAllowed": false
+  },
+  "authority": {
+    "sealedNumericalRankPreservationMayBeClaimed": true,
+    "naturalImageNeighborUtilityMayBeClaimed": true,
+    "controlledMemoryScenarioUtilityMayBeClaimed": true,
+    "representativeSemanticMemoryQualityMayBeClaimed": false,
+    "durableActiveIndexDeletionMayBeClaimed": true,
+    "processCrashRecoveryMayBeClaimed": true,
+    "powerLossDurabilityMayBeClaimed": false,
+    "filesystemForensicErasureMayBeClaimed": false,
+    "compressedRetrievalMayBeClaimed": false,
+    "turboVecParityMayBeClaimed": false,
+    "productIntegrationMayBeClaimed": false,
+    "trainingMayBeAuthorized": false,
+    "releaseMayBeAuthorized": false
+  },
+  "requiredNextGate": "Only after this exact baseline passes may one independently source-pinned compressed numerical comparison arm be preregistered at equal effective bytes. Product semantic-memory usefulness still requires the selected embedding model, a separately sealed natural-language corpus, untouched downstream conversations, and human authority."
+}

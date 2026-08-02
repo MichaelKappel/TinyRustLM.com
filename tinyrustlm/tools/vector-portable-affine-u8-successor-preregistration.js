@@ -1,6 +1,5 @@
 "use strict";
 
-const childProcess = require("node:child_process");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -8,6 +7,12 @@ const path = require("node:path");
 const {
   validateReceiptFile: validateTerminalDiagnostic
 } = require("./vector-portable-affine-u8-quality-diagnostic-verification.js");
+const {
+  productionLineageReader
+} = require("./clean-history-lineage.js");
+const {
+  validateGitInput
+} = require("./vector-historical-git-input.js");
 const {
   validateReceiptFile: validateTerminalSubject
 } = require("./vector-portable-affine-u8-verification.js");
@@ -623,57 +628,36 @@ function validateSubjectSections(manifest) {
       `subject ${expected.section} hash drifted`);
   }
   for (const input of manifest.frozenSubject.criticalInputs) {
-    validateFileIdentity(input.path, input.bytes, input.sha256, input.path);
-  }
-}
-
-function git(argumentsList, allowFailure = false) {
-  const result = childProcess.spawnSync("git", argumentsList, {
-    cwd: repositoryRoot,
-    encoding: "utf8",
-    windowsHide: true,
-    timeout: 30000,
-    maxBuffer: 4 * 1024 * 1024
-  });
-  invariant(result.error === undefined, "git invocation failed");
-  if (!allowFailure) {
-    invariant(
-      result.status === 0 && result.signal === null && result.stderr === "",
-      "git command failed"
+    validateGitInput(
+      input,
+      repositoryRoot,
+      manifest.successorBoundary.parentSourceRevision,
+      input.path,
+      input.path,
+      maximumInputBytes
     );
   }
-  return result;
 }
 
 function registrationCommit() {
-  const result = git([
-    "log", "--diff-filter=A", "--format=%H", "--", defaultRelativePath
-  ]);
-  const revisions = result.stdout.trim().split(/\r?\n/u).filter(Boolean);
-  if (revisions.length === 0) return null;
-  invariant(revisions.length === 1, "manifest has multiple addition commits");
-  invariant(revisionPattern.test(revisions[0]), "registration commit is invalid");
-  return revisions[0];
+  return productionLineageReader().pathAdditionCommit(defaultRelativePath);
 }
 
 function pathExistsAtRevision(revision, relativePath) {
-  const result = git(["cat-file", "-e", `${revision}:${relativePath}`], true);
-  invariant([0, 128].includes(result.status), "git path existence check failed");
-  return result.status === 0;
+  return productionLineageReader().pathExistsAtRevision(revision, relativePath);
 }
 
 function validateRegistrationOrdering(manifest) {
-  const current = git(["rev-parse", "HEAD"]).stdout.trim();
+  const history = productionLineageReader();
+  const current = history.headRevision();
   invariant(revisionPattern.test(current), "current revision is invalid");
-  const ancestor = git([
-    "merge-base", "--is-ancestor",
-    manifest.successorBoundary.parentSourceRevision,
-    current
-  ], true);
-  invariant(ancestor.status === 0, "successor parent is not an ancestor");
+  invariant(
+    history.isAncestor(manifest.successorBoundary.parentSourceRevision, current),
+    "successor parent is not an ancestor"
+  );
   const commit = registrationCommit();
   if (commit === null) return null;
-  const parent = git(["rev-parse", `${commit}^`]).stdout.trim();
+  const parent = history.parentRevision(commit);
   invariant(
     parent === manifest.successorBoundary.parentSourceRevision,
     "successor registration parent is invalid"

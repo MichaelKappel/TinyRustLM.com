@@ -3,7 +3,6 @@
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
-const { spawnSync } = require("node:child_process");
 const { TextDecoder } = require("node:util");
 
 const { validateLedgerFile } = require("./vector-experiment-ledger.js");
@@ -13,6 +12,9 @@ const {
 const {
   readGitBlob
 } = require("./vector-historical-git-input.js");
+const {
+  productionLineageReader
+} = require("./clean-history-lineage.js");
 
 const receiptSchema = "tinyrustlm.exact_flat_retrieval_verification_receipt.v2";
 const repositoryRoot = path.resolve(__dirname, "../..");
@@ -229,24 +231,9 @@ function hashHistoricalInput(relativePath, revision) {
 
 /** Proves the dirty generation base was sealed by its one exact evidence commit. */
 function validateEvidenceCommitLineage() {
-  const result = spawnSync(
-    "git",
-    ["rev-list", "--parents", "-n", "1", receiptEvidenceCommit],
-    {
-      cwd: repositoryRoot,
-      encoding: "utf8",
-      maxBuffer: 1024 * 1024,
-      shell: false,
-      windowsHide: true
-    }
-  );
   invariant(
-    result.error === undefined &&
-      result.signal === null &&
-      result.status === 0 &&
-      result.stderr === "" &&
-      result.stdout.trim() ===
-        `${receiptEvidenceCommit} ${expectedGenerationBaseCommit}`,
+    productionLineageReader().parentRevision(receiptEvidenceCommit) ===
+      expectedGenerationBaseCommit,
     "receipt evidence commit lineage is invalid"
   );
 }

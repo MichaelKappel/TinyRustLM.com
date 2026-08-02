@@ -1,9 +1,11 @@
 "use strict";
 
-const childProcess = require("node:child_process");
 const crypto = require("node:crypto");
 const path = require("node:path");
 const { TextDecoder } = require("node:util");
+const {
+  productionLineageReader
+} = require("./clean-history-lineage.js");
 
 const defaultMaximumBytes = 16 * 1024 * 1024;
 const relativePathPattern =
@@ -46,31 +48,23 @@ function readGitBlob(
     );
     return Buffer.from(cached);
   }
-  const result = childProcess.spawnSync(
-    "git",
-    ["cat-file", "blob", `${revision}:${relativePath}`],
-    {
-      cwd: repositoryRoot,
-      encoding: null,
-      maxBuffer: maximumBytes + 1024 * 1024,
-      shell: false,
-      windowsHide: true
-    }
-  );
+  let bytes;
+  try {
+    bytes = productionLineageReader().readBlob(
+      revision,
+      relativePath,
+      maximumBytes
+    );
+  } catch (error) {
+    throw new Error(
+      `historical Git blob is unavailable: ${relativePath}`,
+      { cause: error }
+    );
+  }
   invariant(
-    result.error === undefined &&
-      result.signal === null &&
-      result.status === 0 &&
-      Buffer.isBuffer(result.stdout) &&
-      Buffer.isBuffer(result.stderr) &&
-      result.stderr.length === 0,
-    `historical Git blob is unavailable: ${relativePath}`
-  );
-  invariant(
-    result.stdout.length > 0 && result.stdout.length <= maximumBytes,
+    bytes.length > 0 && bytes.length <= maximumBytes,
     `historical Git blob size is invalid: ${relativePath}`
   );
-  const bytes = Buffer.from(result.stdout);
   blobCache.set(cacheKey, bytes);
   return Buffer.from(bytes);
 }

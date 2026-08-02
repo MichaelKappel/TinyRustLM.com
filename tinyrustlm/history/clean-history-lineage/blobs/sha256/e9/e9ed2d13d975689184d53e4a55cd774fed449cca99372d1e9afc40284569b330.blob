@@ -1,0 +1,97 @@
+{
+  "schema": "tinyrustlm.exact_flat_browser_wasm_preregistration.v1",
+  "experimentId": "exact-flat-browser-wasm-20260722",
+  "registeredAtUtc": "2026-07-22T02:32:51.9818625Z",
+  "status": "preregistered-before-browser-results",
+  "parentReceipt": {
+    "path": "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-verification-v1.json",
+    "receiptId": "exact-flat-retrieval-75f95baa316315ea",
+    "sha256": "893e96f461f701f46a3aaaeecddd67bc2b700625ccdb9f0d83ce4b0b67d8c18c"
+  },
+  "execution": {
+    "browserEngine": "chromium",
+    "playwrightPackage": "@playwright/test",
+    "browserMode": "headless-real-process",
+    "profileLifecycle": "owned-persistent-fresh-delete-verify-v1",
+    "requiredIndependentRuns": 2,
+    "networkPolicy": "deny-all",
+    "pageOrigin": "about:blank",
+    "wasmTarget": "wasm32-unknown-unknown",
+    "nativeReferenceTarget": "host-target-recorded-at-execution",
+    "sourceFixturePolicy": "single-rust-definition-shared-by-native-and-wasm",
+    "panicPolicy": "trap-is-failure",
+    "browserTimeoutMs": 120000
+  },
+  "fixtureCases": [
+    "sha256-normative-vectors",
+    "canonical-build-order-and-restart",
+    "dot-filter-and-id-tie-break",
+    "euclidean-and-cosine-ranking",
+    "tombstone-compaction-and-byte-removal",
+    "corruption-truncation-and-extension-rejection",
+    "duplicate-nonfinite-and-zero-norm-rejection",
+    "empty-index-and-bounded-result-behavior"
+  ],
+  "wasmAbi": {
+    "version": 1,
+    "requiredStatusMask": 255,
+    "requiredFunctionExports": [
+      "tinyrustlm_vector_fixture_abi_version",
+      "tinyrustlm_vector_fixture_status",
+      "tinyrustlm_vector_fixture_outcome_word_count",
+      "tinyrustlm_vector_fixture_outcome_word"
+    ],
+    "allowedRuntimeExports": [
+      "memory",
+      "__data_end",
+      "__heap_base"
+    ],
+    "unknownFunctionExportPolicy": "reject",
+    "outcomeEncoding": "ordered-u32-little-endian-v1",
+    "invalidOutcomeWordSentinel": 4294967295
+  },
+  "acceptance": {
+    "actualBrowserProcessRequired": true,
+    "browserExecutableSha256Required": true,
+    "browserVersionRequired": true,
+    "playwrightVersionRequired": true,
+    "wasmModuleSha256Required": true,
+    "wasmModuleMinimumBytes": 1024,
+    "wasmModuleMaximumBytes": 2097152,
+    "nativeBinarySha256Required": true,
+    "nativeAndBrowserOutcomeByteEqualityRequired": true,
+    "crossRunOutcomeByteEqualityRequired": true,
+    "crossRunModuleIdentityEqualityRequired": true,
+    "networkRequestMaximum": 0,
+    "consoleErrorMaximum": 0,
+    "pageErrorMaximum": 0,
+    "profileDeletionRequiredForEveryRun": true,
+    "nativeFixtureTestsRequired": true,
+    "strictClippyRequired": true,
+    "rustdocRequired": true,
+    "receiptInputRevalidationRequired": true
+  },
+  "evidencePolicy": {
+    "attemptsAreImmutable": true,
+    "failedAttemptsArePreserved": true,
+    "successfulObservationPath": "tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-observation-v1.json",
+    "verificationReceiptPath": "tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-verification-v1.json",
+    "rawBrowserProfilePersisted": false,
+    "screenshotsRequired": false,
+    "privateAbsolutePathsAllowed": false,
+    "credentialsAllowed": false,
+    "modelBytesAllowed": false,
+    "promptTextAllowed": false
+  },
+  "authority": {
+    "realBrowserWasmExecutionMayBeVerified": true,
+    "nativePerformanceMayBeClaimed": false,
+    "browserPerformanceMayBeClaimed": false,
+    "compressionMayBeClaimed": false,
+    "turboVecParityMayBeClaimed": false,
+    "productIntegrationMayBeClaimed": false,
+    "trainingMayBeAuthorized": false,
+    "releaseMayBeAuthorized": false
+  },
+  "requiredNextGate": "After this browser gate passes, preregister named physical-target measurements, a sealed representative retrieval corpus, and crash-recovered durable deletion before selecting any compressed comparison arm."
+}

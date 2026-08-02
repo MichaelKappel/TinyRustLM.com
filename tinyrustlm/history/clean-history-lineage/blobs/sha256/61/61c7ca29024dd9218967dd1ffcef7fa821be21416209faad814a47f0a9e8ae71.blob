@@ -1,0 +1,163 @@
+{
+  "schema": "tinyrustlm.portable_affine_u8_flat_successor_verification.v1",
+  "receiptType": "portable-affine-u8-flat-successor-terminal-verification",
+  "experimentId": "portable-affine-u8-flat-successor-20260726",
+  "status": "verified-terminal-quality-process-failure",
+  "verifiedAtUtc": "2026-07-26T12:47:21.512Z",
+  "verificationSourceRevision": "1b708d09ca4c6f3902ede8e356504b453376746f",
+  "registrationCommit": "294d3187b927508759ad342d57a5021a6dff680e",
+  "implementationCommit": "ee369732640b29fa810a21bd3c12559d5fc4332b",
+  "attemptEvidenceCommit": "4e0c12102a18ae5d9a856a7d25765ea129e82c57",
+  "verifierCommit": "1b708d09ca4c6f3902ede8e356504b453376746f",
+  "preregistrationSha256": "5b18411b3d222fd8c259de155165fcdf778cf4d7dd8fb04c4712c9cabec5a90d",
+  "inputs": [
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-successor-preregistration.v1.json",
+      "bytes": 14428,
+      "sha256": "5b18411b3d222fd8c259de155165fcdf778cf4d7dd8fb04c4712c9cabec5a90d"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-successor-preregistration.js",
+      "bytes": 31319,
+      "sha256": "45ca345fb223e2437f59bb4b02195bc110efbc5ccb4a5f334194e3f1eaa63d98"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-successor-preregistration.test.js",
+      "bytes": 5866,
+      "sha256": "6203f595d7e2a0a525215b58b1dd13120a2725fd4f15ede90a20e23bc6014342"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-successor-observation.js",
+      "bytes": 83289,
+      "sha256": "b6c3c9eaa01422181c6702548e8c30a45e8b9b256d6ec56d1085c6b412f7a7e4"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-successor-observation.test.js",
+      "bytes": 12408,
+      "sha256": "ac50690a32c08edfeb4dd640d534b6e743ab6d39b3db0cb2c5c3ce8e83c945e6"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-successor-attempts/sha256/df/df0c29200bd7439d953e09e674abb982db28a1fcf1d0a33e091d85b0492de188.json",
+      "bytes": 41153,
+      "sha256": "a86a9505dc35c1304e6b847153c2421be859ad11b11015359dbf64a8779bd210"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-verification-v1.json",
+      "bytes": 13522,
+      "sha256": "91aa60ccea38222004cd425a5f7a8e5332598978ef4b455a16550d5e931cbf9b"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-quality-diagnostic-verification-v1.json",
+      "bytes": 6009,
+      "sha256": "b7e5d98309b8269640ea27567d0836df556ba613bcf850bac836653332a1a4c0"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-observation.js",
+      "bytes": 157232,
+      "sha256": "3b3a65db1a500f143b9e27092329f0f7e56c56c0427d53ff4d01db7e0fbd177b"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-diagnostic-pending-journal.js",
+      "bytes": 5968,
+      "sha256": "5d1afa5f7fdd8f64b65b5195ca822c5618afc24f6b37e1d8bc90375c875df7a3"
+    },
+    {
+      "path": "tinyrustlm/tools/campaign-evidence-store.js",
+      "bytes": 22717,
+      "sha256": "26850a67fda5bb8baea15bc2e6fb6f6d13d8244348804d0a20320c6f79ec96e3"
+    },
+    {
+      "path": "tinyrustlm/tools/durable-files.js",
+      "bytes": 2992,
+      "sha256": "be2b3157567161bbbff19f013f706e22b495fde81b6c90b0731ca9578170174f"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-successor-verification.js",
+      "bytes": 29391,
+      "sha256": "d79ecba75b13346415d6eb727318c3ce5907c71192ab9be806bc25fa0cf2573c"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-successor-verification.test.js",
+      "bytes": 5772,
+      "sha256": "68102b5a615f7f241ba1bd0c3a80d9f6fc3ab042d9c80401c7b521299686ebed"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-experiment-isolation.test.js",
+      "bytes": 3316,
+      "sha256": "0501848668084d5040f078c223b6daead0637b70dc5c7fa5dbabba513f651935"
+    }
+  ],
+  "independentSummary": {
+    "attempt": {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-successor-attempts/sha256/df/df0c29200bd7439d953e09e674abb982db28a1fcf1d0a33e091d85b0492de188.json",
+      "bytes": 41153,
+      "sha256": "a86a9505dc35c1304e6b847153c2421be859ad11b11015359dbf64a8779bd210",
+      "attemptId": "portable-affine-u8-flat-successor-attempt-df0c29200bd7439d",
+      "attemptContentHash": "df0c29200bd7439d953e09e674abb982db28a1fcf1d0a33e091d85b0492de188",
+      "sourceRevision": "ee369732640b29fa810a21bd3c12559d5fc4332b",
+      "evidenceCommit": "4e0c12102a18ae5d9a856a7d25765ea129e82c57",
+      "status": "fail-comparison-outcome-terminal"
+    },
+    "inputClosure": {
+      "sourceRevision": "ee369732640b29fa810a21bd3c12559d5fc4332b",
+      "inputCount": 43,
+      "rawGitBlobMatchCount": 40,
+      "crlfCheckoutMatchCount": 3,
+      "checkoutTransformationLimitedToLfToCrlf": true,
+      "everyInputRehashedAtSourceRevision": true
+    },
+    "processSummary": {
+      "benchmarkProcessCount": 17,
+      "memoryMonitorProcessCount": 0,
+      "contractProcessPassed": true,
+      "corruptionProcessesPassed": 7,
+      "crashProcessesCompletedWithRegisteredExit": 4,
+      "recoveryProcessesPassed": 4,
+      "qualityProcessStarted": true,
+      "qualityProcessExitCode": 3221226505,
+      "qualityProcessExitCodeHex": "0xC0000409",
+      "qualityStdoutBytes": 0,
+      "qualityStdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "qualityStderrBytes": 294,
+      "qualityStderrSha256": "3d4710a3102ab6329d6332616c7b8beb948c309f2416f596027a340c5c01af71",
+      "qualityRawOutputPersisted": false,
+      "performanceProcessCount": 0
+    },
+    "independentDecision": {
+      "terminalAttemptValid": true,
+      "pendingJournalAbsent": true,
+      "observationAbsent": true,
+      "completeFrozenSuiteExecuted": false,
+      "qualityProcessSucceeded": false,
+      "qualityMetricsPresent": false,
+      "performanceExecuted": false,
+      "rootCauseDetermined": false,
+      "windowsStatusNameClaimed": false,
+      "sameSuccessorRetryAllowed": false,
+      "distinctPreregistrationRequiredBeforeNewOutcome": true,
+      "boundedResearchClaimSupported": false,
+      "productPromotionAllowed": false,
+      "trainingAuthorized": false,
+      "releaseAuthorized": false,
+      "campaignCounterMayBeIncremented": false
+    }
+  },
+  "authority": {
+    "portableAffineU8NumericalBehaviorMayBeClaimed": false,
+    "sameCorpusCompressedRankQualityMayBeClaimed": false,
+    "equalDynamicIndexByteCapacityUtilityMayBeClaimed": false,
+    "completeDynamicIndexByteReductionMayBeClaimed": false,
+    "nativeReferencePerformanceMayBeClaimed": false,
+    "nativeAndWasmDecisionParityMayBeClaimed": false,
+    "wrapperProcessCrashRecoveryMayBeClaimed": false,
+    "representativeSemanticMemoryQualityMayBeClaimed": false,
+    "browserPerformanceMayBeClaimed": false,
+    "productIntegrationMayBeClaimed": false,
+    "trainingMayBeAuthorized": false,
+    "releaseMayBeAuthorized": false,
+    "campaignCounterMayBeIncremented": false
+  },
+  "requiredNextGate": "Preserve this verified terminal successor without retry. Diagnose the quality-process fast-fail through non-outcome unit reproductions, add a generic regression, make a scoped fix, and preregister a distinct full successor before any new quality execution.",
+  "receiptId": "portable-affine-u8-flat-successor-verification-624bbe252915cea5",
+  "receiptContentHash": "624bbe252915cea5d49a07e6b6794e9ee89b9da2a32d626e7714bf1f4b9f1765"
+}

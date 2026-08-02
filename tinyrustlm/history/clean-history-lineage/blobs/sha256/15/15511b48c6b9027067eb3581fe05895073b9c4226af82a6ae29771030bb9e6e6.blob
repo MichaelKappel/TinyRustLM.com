@@ -1,0 +1,160 @@
+{
+  "schema": "tinyrustlm.failure_to_regression_summary.v1",
+  "defectId": "portable-affine-u8-quality-number-domain-abort-20260726",
+  "status": "proven-code-defect-fixed-in-distinct-unexecuted-successor",
+  "createdAtUtc": "2026-07-26T13:13:31.612Z",
+  "terminalEvidence": {
+    "attempt": {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-successor-attempts/sha256/df/df0c29200bd7439d953e09e674abb982db28a1fcf1d0a33e091d85b0492de188.json",
+      "bytes": 41153,
+      "fileSha256": "a86a9505dc35c1304e6b847153c2421be859ad11b11015359dbf64a8779bd210",
+      "attemptId": "portable-affine-u8-flat-successor-attempt-df0c29200bd7439d",
+      "attemptContentHash": "df0c29200bd7439d953e09e674abb982db28a1fcf1d0a33e091d85b0492de188",
+      "sourceRevision": "ee369732640b29fa810a21bd3c12559d5fc4332b",
+      "status": "fail-comparison-outcome-terminal",
+      "startedAtUtc": "2026-07-26T12:36:44.445Z",
+      "completedAtUtc": "2026-07-26T12:37:34.744Z",
+      "qualityProcessOrdinal": 17,
+      "qualityProcessExitCode": 3221226505,
+      "qualityProcessExitCodeHex": "0xC0000409",
+      "qualityProcessStdoutBytes": 0,
+      "qualityProcessStdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "qualityProcessStderrBytes": 294,
+      "qualityProcessStderrSha256": "3d4710a3102ab6329d6332616c7b8beb948c309f2416f596027a340c5c01af71",
+      "rawOutputPersisted": false,
+      "retryAllowed": false
+    },
+    "verification": {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-successor-verification-v1.json",
+      "bytes": 7508,
+      "fileSha256": "61c7ca29024dd9218967dd1ffcef7fa821be21416209faad814a47f0a9e8ae71",
+      "receiptId": "portable-affine-u8-flat-successor-verification-624bbe252915cea5",
+      "status": "verified-terminal-quality-process-failure",
+      "rootCauseDetermined": false,
+      "windowsStatusNameClaimed": false
+    }
+  },
+  "observedFacts": [
+    "The one sealed successor completed contract, seven corruption, and four crash-plus-recovery pairs before starting its sole quality process.",
+    "The quality process returned no stdout, returned 294 stderr bytes retained only by SHA-256, and exited with decimal code 3221226505.",
+    "No quality metrics, performance records, observation, retry authority, product authority, or campaign count survived that terminal attempt.",
+    "The independent terminal verifier did not assign a root cause or a symbolic Windows status name."
+  ],
+  "provenCodeDefect": {
+    "terminalSource": {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-benchmark.rs",
+      "bytes": 122925,
+      "sha256": "96b9d257b2d9a29dcc6c2981cd92ed9a97460a08247796079c66902ba972b8af"
+    },
+    "invalidAssumption": "The v1 json_f64 helper accepts only finite values in [0,1], but the same quality serializer passes signed utility deltas, arbitrary finite raw scores, nonnegative score errors, compression ratios, and effective bit counts through that helper.",
+    "guaranteedNonUnitField": {
+      "field": "effectiveBitsPerOriginalCoordinate",
+      "formula": "8 * candidate_index_bytes / (record_count * dimension)",
+      "candidateIndexBytesFormula": "96 + record_count * (8 + dimension)",
+      "derivedFormula": "8 + 64 / dimension + 768 / (record_count * dimension)",
+      "preconditions": [
+        "record_count > 0",
+        "dimension > 0"
+      ],
+      "derivedLowerBoundExclusive": 8,
+      "unitIntervalAssertionUpperBoundInclusive": 1,
+      "qualityLaneSerializationCanComplete": false
+    },
+    "additionalInvalidDomains": [
+      "Natural utility deltas are signed values in [-1,1].",
+      "Dot-product and cosine raw scores may be negative.",
+      "Raw scores and normalized score errors are not generally bounded by one."
+    ],
+    "historicalOutcomeInterpretation": {
+      "defectNecessarilyPreventsSuccessfulV1QualitySerialization": true,
+      "defectExplainsTheObservedAbort": true,
+      "exactFirstHistoricalPanicSiteProven": false,
+      "rawStderrReconstructedOrClaimed": false,
+      "windowsExitCodeNameClaimed": false
+    }
+  },
+  "deterministicReproduction": {
+    "redTestCommit": "cbc4a832f94f0fe683aeb9a19b34cba2c4b6a0bf",
+    "tests": [
+      "finite_signed_quality_deltas_are_valid_json_numbers",
+      "finite_unbounded_quality_measurements_are_valid_json_numbers"
+    ],
+    "testScope": "standalone Rust unit tests only; no dataset, quality CLI mode, performance CLI mode, or sealed runner",
+    "observedResult": {
+      "passed": 0,
+      "failed": 2,
+      "sharedFailureLine": 3040,
+      "sharedFailureCondition": "JSON metrics must be finite unit-interval values"
+    }
+  },
+  "fix": {
+    "commit": "e6a97380c5b571e069e866421a29f76b56344cd9",
+    "terminalV1Preserved": {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-benchmark.rs",
+      "bytes": 122925,
+      "sha256": "96b9d257b2d9a29dcc6c2981cd92ed9a97460a08247796079c66902ba972b8af"
+    },
+    "distinctV2Source": {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-benchmark-v2.rs",
+      "bytes": 130507,
+      "sha256": "dbe6e343f65e8e501277ebd15ae7081fd91e87aee84582342ab3119e60a24ae9",
+      "experimentId": "portable-affine-u8-flat-json-domain-v2-20260726",
+      "qualitySchema": "tinyrustlm.portable_affine_u8_quality_process.v2"
+    },
+    "regressionTest": {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-benchmark-v2.test.js",
+      "bytes": 4358,
+      "sha256": "ded8d50a3b65d171d6fe50fd096833e05a358946aa2406d781756ca0cb3621b4"
+    },
+    "implementationProperties": [
+      "Finite raw scores use a checked finite-number serializer.",
+      "Nonnegative measurements use a checked nonnegative serializer.",
+      "Rates use a checked unit-interval serializer.",
+      "Utility deltas use a checked signed-unit serializer.",
+      "Invalid values return bounded BenchResult error codes instead of asserting or aborting.",
+      "The v2 source has distinct experiment, quality, contract, performance, recovery, commit, and deletion-marker identities.",
+      "Process-global current-directory tests are serialized under a test-only mutex."
+    ],
+    "observedLocalVerification": [
+      {
+        "scope": "v2 embedded Rust tests",
+        "passed": 9,
+        "failed": 0
+      },
+      {
+        "scope": "v2 CI-facing Node tests",
+        "passed": 2,
+        "failed": 0
+      },
+      {
+        "scope": "historical affine and experiment-isolation Node tests",
+        "passed": 81,
+        "failed": 0
+      },
+      {
+        "scope": "exact release rustc configuration with panic=abort and warnings denied",
+        "exitCode": 0,
+        "binaryExecutedInOutcomeMode": false
+      }
+    ],
+    "independentlyVerifiedOutcome": false
+  },
+  "authority": {
+    "sameExperimentRetryAllowed": false,
+    "v2OutcomeExecutionAllowedBeforePreregistration": false,
+    "qualityClaimSupported": false,
+    "performanceClaimSupported": false,
+    "productPromotionAllowed": false,
+    "trainingAllowed": false,
+    "releaseAllowed": false,
+    "campaignCounterMayBeIncremented": false
+  },
+  "campaignCountersAfterFix": {
+    "qualifiedModels": 0,
+    "cleanBrowserRounds": 0,
+    "liveMemoryRounds": 0,
+    "externallyProvenLanes": 0,
+    "catalogAnnouncements": 0
+  },
+  "requiredNextGate": "Commit this public-safe defect summary, preregister the distinct v2 experiment and complete process schedule, commit the outcome runner and independent verifier only after registration, and execute no v2 quality or performance mode before those gates pass."
+}

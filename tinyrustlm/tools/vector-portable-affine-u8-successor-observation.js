@@ -10,11 +10,18 @@ const vm = require("node:vm");
 const { canonicalJson } = require("./campaign-evidence-store.js");
 const { atomicCreate, syncDirectory } = require("./durable-files.js");
 const {
+  productionLineageReader
+} = require("./clean-history-lineage.js");
+const {
   defaultPath: preregistrationPath,
   expectedManifestSha256,
   experimentId,
   validateManifestFile
 } = require("./vector-portable-affine-u8-successor-preregistration.js");
+const {
+  readGitBlob,
+  validateGitInput
+} = require("./vector-historical-git-input.js");
 
 const pendingSchema =
   "tinyrustlm.portable_affine_u8_flat_successor_pending_attempt.v1";
@@ -269,33 +276,20 @@ function fileEvidence(relativePath) {
 function fileEvidenceAtRevision(relativePath, revision) {
   invariant(relativePathPattern.test(relativePath), "historical path is unsafe");
   invariant(revisionPattern.test(revision), "historical revision is invalid");
-  const result = childProcess.spawnSync(
-    "git",
-    ["cat-file", "blob", `${revision}:${relativePath}`],
-    {
-      cwd: repositoryRoot,
-      env: subject.offlineEnvironment(),
-      encoding: null,
-      windowsHide: true,
-      timeout: 30000,
-      maxBuffer: maximumInputBytes
-    }
+  const bytes = readGitBlob(
+    repositoryRoot,
+    revision,
+    relativePath,
+    maximumInputBytes
   );
   invariant(
-    result.error === undefined &&
-      result.status === 0 &&
-      result.signal === null &&
-      Buffer.isBuffer(result.stdout) &&
-      Buffer.isBuffer(result.stderr) &&
-      result.stderr.length === 0 &&
-      result.stdout.length > 0 &&
-      result.stdout.length <= maximumInputBytes,
+    bytes.length > 0 && bytes.length <= maximumInputBytes,
     `historical input failed: ${relativePath}`
   );
   return Object.freeze({
     path: relativePath,
-    bytes: result.stdout.length,
-    sha256: sha256(result.stdout)
+    bytes: bytes.length,
+    sha256: sha256(bytes)
   });
 }
 
@@ -321,10 +315,7 @@ function git(argumentsList, label, allowFailure = false) {
 }
 
 function currentSourceRevision() {
-  const revision = git(
-    ["rev-parse", "HEAD"],
-    "successor source revision"
-  ).stdout.trim();
+  const revision = productionLineageReader().headRevision();
   invariant(revisionPattern.test(revision), "source revision is invalid");
   return revision;
 }
@@ -353,18 +344,11 @@ function implementationCommit(registrationCommit, revision) {
       revisionPattern.test(revision),
     "successor commit identity is invalid"
   );
-  const result = git(
-    [
-      "log",
-      "-1",
-      "--format=%H",
-      "--",
-      runnerRelativePath,
-      runnerTestRelativePath
-    ],
-    "successor implementation commit"
-  );
-  const implementation = result.stdout.trim();
+  const history = productionLineageReader();
+  const implementation = history.lastChangeCommit([
+    runnerRelativePath,
+    runnerTestRelativePath
+  ]);
   invariant(
     revisionPattern.test(implementation) &&
       implementation !== registrationCommit,
@@ -374,41 +358,27 @@ function implementationCommit(registrationCommit, revision) {
     [registrationCommit, implementation, "registration-to-implementation"],
     [implementation, revision, "implementation-to-source"]
   ]) {
-    const ancestry = git(
-      ["merge-base", "--is-ancestor", ancestor, descendant],
-      label,
-      true
-    );
-    exactValue(ancestry.status, 0, `${label} ancestry`);
+    exactValue(history.isAncestor(ancestor, descendant), true, `${label} ancestry`);
   }
   return implementation;
 }
 
 function implementationCommitAtRevision(registrationCommit, revision) {
-  const result = git(
-    [
-      "log",
-      "-1",
-      "--format=%H",
-      revision,
-      "--",
-      runnerRelativePath,
-      runnerTestRelativePath
-    ],
-    "historical successor implementation commit"
+  const history = productionLineageReader();
+  const implementation = history.lastChangeCommit(
+    [runnerRelativePath, runnerTestRelativePath],
+    revision
   );
-  const implementation = result.stdout.trim();
   invariant(
     revisionPattern.test(implementation) &&
       implementation !== registrationCommit,
     "historical implementation commit is invalid"
   );
-  const ancestry = git(
-    ["merge-base", "--is-ancestor", registrationCommit, implementation],
-    "historical registration ancestry",
-    true
+  exactValue(
+    history.isAncestor(registrationCommit, implementation),
+    true,
+    "historical registration ancestry"
   );
-  exactValue(ancestry.status, 0, "historical registration ancestry");
   return implementation;
 }
 
@@ -1385,7 +1355,14 @@ function validateObservation(value) {
   );
   value.inputs.forEach((entry, index) => {
     validateFileEvidence(entry, inputPaths[index], `observation input ${index}`);
-    exactStructure(entry, fileEvidence(inputPaths[index]), `observation input ${index}`);
+    validateGitInput(
+      entry,
+      repositoryRoot,
+      value.sourceRevision,
+      inputPaths[index],
+      `observation input ${index}`,
+      maximumInputBytes
+    );
   });
   exactKeys(value.tools, ["node", "cargo", "rustc", "powershell"], "tools");
   Object.entries(value.tools).forEach(([name, tool]) =>

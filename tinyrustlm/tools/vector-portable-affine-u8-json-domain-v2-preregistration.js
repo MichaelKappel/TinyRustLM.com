@@ -1,9 +1,14 @@
 "use strict";
 
-const childProcess = require("node:child_process");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
+const {
+  productionLineageReader
+} = require("./clean-history-lineage.js");
+const {
+  readGitBlob
+} = require("./vector-historical-git-input.js");
 
 const repositoryRoot = path.resolve(__dirname, "../..");
 const relativePath =
@@ -103,23 +108,6 @@ function publicSafe(value) {
     "manifest contains private key material");
 }
 
-function git(argumentsList, options = {}) {
-  const result = childProcess.spawnSync("git", argumentsList, {
-    cwd: repositoryRoot,
-    encoding: options.binary === true ? null : "utf8",
-    windowsHide: true,
-    timeout: 30_000,
-    maxBuffer: maximumHistoricalFileBytes + 1024 * 1024
-  });
-  invariant(result.error === undefined, `${options.label ?? "git"} did not spawn`);
-  invariant(result.signal === null, `${options.label ?? "git"} received a signal`);
-  if (options.allowFailure !== true) {
-    invariant(result.status === 0, `${options.label ?? "git"} failed`);
-    invariant(result.stderr.length === 0, `${options.label ?? "git"} wrote stderr`);
-  }
-  return result;
-}
-
 function resolveRepositoryFile(filePath) {
   invariant(relativePathPattern.test(filePath), `unsafe relative path: ${filePath}`);
   const resolved = path.resolve(repositoryRoot, filePath);
@@ -156,15 +144,17 @@ function fileCandidates(filePath, revision = null) {
   }
   invariant(revisionPattern.test(revision), "historical revision is invalid");
   invariant(relativePathPattern.test(filePath), `unsafe historical path: ${filePath}`);
-  const result = git(["cat-file", "blob", `${revision}:${filePath}`], {
-    binary: true,
-    label: `historical file ${filePath}`
-  });
+  const bytes = readGitBlob(
+    repositoryRoot,
+    revision,
+    filePath,
+    maximumHistoricalFileBytes
+  );
   invariant(
-    result.stdout.length > 0 && result.stdout.length <= maximumHistoricalFileBytes,
+    bytes.length > 0 && bytes.length <= maximumHistoricalFileBytes,
     `historical file is invalid: ${filePath}`
   );
-  return checkoutCandidates(result.stdout);
+  return checkoutCandidates(bytes);
 }
 
 function validateFileReference(reference, label, revision = null) {
@@ -622,34 +612,20 @@ function validateManifest(manifest) {
 }
 
 function registrationCommit() {
-  const result = git(
-    ["log", "--diff-filter=A", "--format=%H", "--", relativePath],
-    { label: "registration history" }
-  );
-  const revisions = result.stdout.trim().split(/\r?\n/gu).filter(Boolean);
-  invariant(revisions.length <= 1, "manifest has multiple addition commits");
-  if (revisions.length === 0) return null;
-  invariant(revisionPattern.test(revisions[0]), "registration commit is invalid");
-  return revisions[0];
+  return productionLineageReader().pathAdditionCommit(relativePath);
 }
 
 function pathExistsAtRevision(revision, filePath) {
-  const result = git(["cat-file", "-e", `${revision}:${filePath}`], {
-    allowFailure: true,
-    label: `planned artifact check ${filePath}`
-  });
-  invariant([0, 128].includes(result.status), "planned artifact check failed");
-  return result.status === 0;
+  return productionLineageReader().pathExistsAtRevision(revision, filePath);
 }
 
 function assertAncestor(ancestor, descendant, label) {
   invariant(revisionPattern.test(ancestor) && revisionPattern.test(descendant),
     `${label} revision is invalid`);
-  const result = git(["merge-base", "--is-ancestor", ancestor, descendant], {
-    allowFailure: true,
-    label
-  });
-  invariant(result.status === 0, `${label} ancestry is invalid`);
+  invariant(
+    productionLineageReader().isAncestor(ancestor, descendant),
+    `${label} ancestry is invalid`
+  );
 }
 
 function validateRegistrationOrdering(manifest, commit) {
@@ -663,9 +639,7 @@ function validateRegistrationOrdering(manifest, commit) {
     }
     return null;
   }
-  const parent = git(["rev-parse", `${commit}^`], {
-    label: "registration parent"
-  }).stdout.trim();
+  const parent = productionLineageReader().parentRevision(commit);
   invariant(parent === parentSourceRevision, "registration parent is invalid");
   assertAncestor(redTestCommit, fixCommit, "red-to-fix");
   assertAncestor(fixCommit, parentSourceRevision, "fix-to-registration-parent");

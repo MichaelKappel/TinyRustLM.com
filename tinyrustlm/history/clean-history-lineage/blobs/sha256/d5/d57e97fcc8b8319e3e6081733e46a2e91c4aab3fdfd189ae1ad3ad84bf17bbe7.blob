@@ -1,0 +1,319 @@
+"use strict";
+
+const assert = require("node:assert/strict");
+const test = require("node:test");
+
+const {
+  aggregateSamples,
+  attemptIdentity,
+  attemptSchema,
+  authority,
+  expectedExperimentId,
+  finalizeAttempt,
+  finalizeObservation,
+  hashInput,
+  inputPaths,
+  materializeBuildArguments,
+  normalizeTargetProbe,
+  observationSchema,
+  openGaps,
+  publicFailure,
+  requiredGates,
+  sampleSchema,
+  sha256,
+  validateAttempt,
+  validateObservation,
+  validateSample,
+  validateSampleOutput
+} = require("../tools/vector-physical-target-observation.js");
+const {
+  expectedWorkloads,
+  validateManifestFile
+} = require("../tools/vector-physical-target-preregistration.js");
+const {
+  validateReceiptFile: validateRetrievalReceiptFile
+} = require("../tools/vector-retrieval-receipt.js");
+const {
+  validateReceiptFile: validateBrowserReceiptFile
+} = require("../tools/vector-browser-wasm-verification.js");
+
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function checksum(workload) {
+  return sha256(Buffer.from(workload.workloadId, "utf8")).slice(0, 16);
+}
+
+function sample(workload, processRun) {
+  const serializedIndexBytes = 248 +
+    workload.recordCount * (16 + workload.dimension * 4) + 32;
+  return {
+    schema: sampleSchema,
+    workloadId: workload.workloadId,
+    processRun,
+    metric: workload.metric,
+    normalization: workload.normalization,
+    dimension: workload.dimension,
+    recordCount: workload.recordCount,
+    topK: workload.topK,
+    warmupQueries: workload.warmupQueries,
+    measuredQueries: workload.measuredQueries,
+    seed: workload.seed,
+    implementationReceiptSha256:
+      "893e96f461f701f46a3aaaeecddd67bc2b700625ccdb9f0d83ce4b0b67d8c18c",
+    buildDurationNs: 10_000_000 + processRun,
+    warmupDurationNs: 1_000_000 + processRun,
+    queryDurationNs: Array.from(
+      { length: workload.measuredQueries },
+      (_unused, index) => 100_000 + processRun * 1_000 + index
+    ),
+    validationChecksum: checksum(workload),
+    serializedIndexBytes,
+    workingSetAfterBuildBytes: 10_000_000 + processRun,
+    peakWorkingSetAfterBuildBytes: 20_000_000 + processRun,
+    workingSetAfterSearchBytes: 12_000_000 + processRun,
+    peakWorkingSetAfterSearchBytes: 22_000_000 + processRun,
+    peakWorkingSetAfterSerializationBytes: 30_000_000 + processRun
+  };
+}
+
+function processSample(workload, processRun) {
+  return {
+    ...sample(workload, processRun),
+    stdoutSha256: "a".repeat(64),
+    stderrSha256: "b".repeat(64),
+    exitCode: 0
+  };
+}
+
+function validObservation() {
+  const preregistration = validateManifestFile();
+  const retrieval = validateRetrievalReceiptFile();
+  const browser = validateBrowserReceiptFile();
+  const samples = expectedWorkloads.flatMap((workload) =>
+    [1, 2, 3].map((processRun) => processSample(workload, processRun)));
+  return finalizeObservation({
+    schema: observationSchema,
+    experimentId: expectedExperimentId,
+    status: "latency-throughput-memory-observed-energy-and-attestation-open",
+    createdAtUtc: "2026-07-22T04:00:00.000Z",
+    sourceRevision: "1".repeat(40),
+    preregistration: {
+      path:
+        "tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-preregistration.v1.json",
+      sha256: preregistration.sha256
+    },
+    parents: [
+      { receiptId: retrieval.receipt.receiptId, sha256: retrieval.sha256 },
+      { receiptId: browser.receipt.receiptId, sha256: browser.sha256 }
+    ],
+    inputs: inputPaths.map(hashInput),
+    target: preregistration.manifest.target,
+    targetEvidence: {
+      registryProbeOutputSha256: "c".repeat(64),
+      powerPlanProbeOutputSha256: "d".repeat(64),
+      liveIdentityMatchedPreregistration: true
+    },
+    environment: {
+      operatingSystem: "win32",
+      architecture: "x64",
+      logicalProcessors: 16,
+      processIsolation: "nine-sequential-fresh-processes"
+    },
+    tools: {
+      node: { version: "v24.14.0", sha256: "e".repeat(64) },
+      rustc: { version: "rustc 1.96.0", sha256: "f".repeat(64) },
+      powershell: { version: "5.1.0", sha256: "1".repeat(64) },
+      nativeTargetCfgSha256: "2".repeat(64)
+    },
+    preflightCommands: requiredGates.map((gate, index) => ({
+      gateId: gate.gateId,
+      executable: gate.executable,
+      arguments: [...gate.arguments],
+      exitCode: 0,
+      outputSha256: String(index + 3).repeat(64),
+      spawnErrorCode: null
+    })),
+    build: {
+      commands: [
+        {
+          role: "oracle-library",
+          executable: "rustc",
+          arguments: preregistration.manifest.build.libraryCommand.slice(1),
+          exitCode: 0,
+          outputSha256: "8".repeat(64),
+          spawnErrorCode: null
+        },
+        {
+          role: "benchmark-executable",
+          executable: "rustc",
+          arguments: preregistration.manifest.build.benchmarkCommand.slice(1),
+          exitCode: 0,
+          outputSha256: "9".repeat(64),
+          spawnErrorCode: null
+        }
+      ],
+      library: { bytes: 1000, sha256: "a".repeat(64) },
+      benchmark: { bytes: 2000, sha256: "b".repeat(64) },
+      sourceMutationObserved: false,
+      workspaceManifestMutationObserved: false
+    },
+    energy: {
+      counterSet: "Energy Meter",
+      counterPath: "\\Energy Meter(*)\\Energy",
+      counterSetAdvertised: true,
+      counterInstanceObserved: false,
+      status: "unavailable",
+      reasonCode: "counter-instance-absent",
+      joules: null,
+      counterSetProbeExitCode: 0,
+      counterSetProbeOutputSha256: "c".repeat(64),
+      counterInstanceProbeExitCode: 1,
+      counterInstanceProbeOutputSha256: "d".repeat(64)
+    },
+    samples,
+    aggregates: aggregateSamples(samples),
+    buildCleanup: {
+      markerSha256: "e".repeat(64),
+      ownedBuildDirectoryDeleted: true
+    },
+    authority,
+    openGaps,
+    requiredNextGate: preregistration.manifest.requiredNextGate
+  });
+}
+
+test("validates canonical samples and fixed build arguments without execution", () => {
+  const workload = expectedWorkloads[0];
+  const value = sample(workload, 1);
+  assert.deepEqual(validateSample(clone(value), workload, 1), value);
+  assert.deepEqual(validateSampleOutput(`${JSON.stringify(value)}\n`, workload, 1), value);
+  assert.throws(
+    () => validateSampleOutput(`${JSON.stringify(value, null, 2)}\n`, workload, 1),
+    /not canonical compact JSON/u
+  );
+  const preregistration = validateManifestFile();
+  const materialized = materializeBuildArguments(
+    preregistration.manifest.build.libraryCommand,
+    "temporary-output"
+  );
+  assert.equal(materialized[materialized.length - 1],
+    "temporary-output/libtinyrustlm_vector_oracle.rlib");
+});
+
+test("canonicalizes registry padding without weakening target identity", () => {
+  const observed = normalizeTargetProbe({
+    operatingSystem: {
+      productName: " Windows Server 2022 Standard Evaluation ",
+      displayVersion: "21H2 ",
+      build: " 20348.5256",
+      installationType: "Server"
+    },
+    processor: {
+      name: "AMD Ryzen 7 8700G w/ Radeon 780M Graphics      ",
+      vendor: "AuthenticAMD ",
+      registryMegahertz: 4192,
+      logicalProcessors: 16
+    },
+    board: {
+      manufacturer: "ASUSTeK COMPUTER INC. ",
+      product: " PRIME X670E-PRO WIFI",
+      biosVendor: "American Megatrends Inc. ",
+      biosVersion: "1809 "
+    }
+  });
+  assert.equal(observed.processor.name,
+    "AMD Ryzen 7 8700G w/ Radeon 780M Graphics");
+  assert.equal(observed.operatingSystem.productName,
+    "Windows Server 2022 Standard Evaluation");
+  assert.equal(observed.board.product, "PRIME X670E-PRO WIFI");
+
+  const substantiveDrift = clone(observed);
+  substantiveDrift.processor.registryMegahertz = "4192";
+  assert.throws(() => normalizeTargetProbe(substantiveDrift),
+    /processor registryMegahertz is invalid/u);
+});
+
+test("derives nearest-rank medians and tails from all three process runs", () => {
+  const samples = expectedWorkloads.flatMap((workload) =>
+    [1, 2, 3].map((processRun) => processSample(workload, processRun)));
+  const aggregates = aggregateSamples(samples);
+  assert.equal(aggregates.length, 3);
+  assert.equal(aggregates[0].rawQuerySampleCount, 192);
+  assert.ok(aggregates[0].queryP50Ns <= aggregates[0].queryP95Ns);
+  assert.ok(aggregates[0].queryP95Ns <= aggregates[0].queryP99Ns);
+  assert.ok(aggregates[2].medianCoordinatesPerSecond > 0);
+
+  const drift = clone(samples);
+  drift[1].validationChecksum = "0".repeat(16);
+  assert.throws(() => aggregateSamples(drift), /validation checksum drifted/u);
+});
+
+test("validates the bounded observation and rejects authority or evidence inflation", () => {
+  const observation = validObservation();
+  assert.deepEqual(validateObservation(clone(observation)), observation);
+
+  const authorityDrift = clone(observation);
+  authorityDrift.authority.namedTargetEnergyMeasured = true;
+  const refinalizedAuthority = finalizeObservation((() => {
+    delete authorityDrift.observationId;
+    delete authorityDrift.observationContentHash;
+    return authorityDrift;
+  })());
+  assert.throws(() => validateObservation(refinalizedAuthority), /authority is invalid/u);
+
+  const memoryDrift = clone(observation);
+  memoryDrift.samples[0].peakWorkingSetAfterSearchBytes = 1;
+  delete memoryDrift.observationId;
+  delete memoryDrift.observationContentHash;
+  assert.throws(() => validateObservation(finalizeObservation(memoryDrift)),
+    /peak memory is not monotonic/u);
+
+  const inputDrift = clone(observation);
+  inputDrift.inputs[0].sha256 = "0".repeat(64);
+  delete inputDrift.observationId;
+  delete inputDrift.observationContentHash;
+  assert.throws(() => validateObservation(finalizeObservation(inputDrift)),
+    /inputs\[0\] is invalid/u);
+});
+
+test("content-addresses pass and redacted failure attempts", () => {
+  const pass = finalizeAttempt({
+    schema: attemptSchema,
+    experimentId: expectedExperimentId,
+    status: "pass",
+    startedAtUtc: "2026-07-22T04:00:00.000Z",
+    completedAtUtc: "2026-07-22T04:01:00.000Z",
+    sourceRevision: "1".repeat(40),
+    preregistrationSha256: "2".repeat(64),
+    parentReceiptSha256s: ["3".repeat(64), "4".repeat(64)],
+    observationId: "exact-flat-physical-target-" + "5".repeat(16),
+    observationContentHash: "5".repeat(64),
+    failure: null
+  });
+  assert.deepEqual(validateAttempt(clone(pass)), pass);
+  assert.deepEqual(attemptIdentity(pass), {
+    id: pass.attemptId,
+    hash: pass.attemptContentHash
+  });
+
+  const failure = publicFailure(new Error("private diagnostic that must not persist"));
+  assert.equal(failure.code, "physical-target-observation-failed");
+  assert.equal(Object.hasOwn(failure, "message"), false);
+  const failed = finalizeAttempt({
+    schema: attemptSchema,
+    experimentId: expectedExperimentId,
+    status: "fail",
+    startedAtUtc: "2026-07-22T04:00:00.000Z",
+    completedAtUtc: "2026-07-22T04:01:00.000Z",
+    sourceRevision: null,
+    preregistrationSha256: null,
+    parentReceiptSha256s: null,
+    observationId: null,
+    observationContentHash: null,
+    failure
+  });
+  assert.deepEqual(validateAttempt(clone(failed)), failed);
+  assert.equal(JSON.stringify(failed).includes("private diagnostic"), false);
+});

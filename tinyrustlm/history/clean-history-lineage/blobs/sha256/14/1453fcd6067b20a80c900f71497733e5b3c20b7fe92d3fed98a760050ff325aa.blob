@@ -1,0 +1,23 @@
+{
+  "schema": "tinyrustlm.turbovec_reference_comparison_attempt.v1",
+  "experimentId": "turbovec-090-4bit-tqplus-reference-comparison-20260725",
+  "attemptOrdinal": 1,
+  "previousAttemptId": null,
+  "status": "fail",
+  "startedAtUtc": "2026-07-26T00:13:53.110Z",
+  "completedAtUtc": "2026-07-26T00:13:54.750Z",
+  "sourceRevision": "81863b711d999378ffb78c3a5d1b6db2628f0eb6",
+  "preregistrationSha256": "96a3fad0078850e2fe9fb4d619979ca9e5b753f23a3fab6df53aebe9b9afe6ed",
+  "observationId": null,
+  "observationContentHash": null,
+  "failure": {
+    "code": "TURBOVEC_REFERENCE_INFRASTRUCTURE_FAILURE",
+    "classification": "infrastructure",
+    "retryAllowed": true,
+    "errorName": "Error",
+    "messageSha256": "d4432e381ea55af832da2e2eb87532c2216bc7a6f60b344bc42deb9c10303587",
+    "causeMessageSha256": "d4432e381ea55af832da2e2eb87532c2216bc7a6f60b344bc42deb9c10303587"
+  },
+  "attemptId": "turbovec-reference-attempt-b8ffb20cebbeccf0",
+  "attemptContentHash": "b8ffb20cebbeccf0f11b297c19f771dc700f7227a03375c21f3ee52f757e25de"
+}

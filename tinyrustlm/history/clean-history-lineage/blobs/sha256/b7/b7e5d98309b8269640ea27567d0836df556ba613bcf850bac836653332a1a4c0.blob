@@ -1,0 +1,128 @@
+{
+  "schema": "tinyrustlm.portable_affine_u8_quality_diagnostic_verification.v1",
+  "diagnosticId": "portable-affine-u8-quality-diagnostic-20260726",
+  "status": "verified-terminal-diagnostic",
+  "verifiedAtUtc": "2026-07-26T11:56:21.949Z",
+  "verificationSourceRevision": "b6ebf4137ebde201f23ca0e46abf8c1d4d89fea3",
+  "preregistration": {
+    "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-quality-diagnostic-preregistration.v1.json",
+    "sha256": "3932e21b3ea171d5798e5abf034931069e66f932ef11abdaa68c8d9326ae5fe1",
+    "registrationCommit": "c90dfe8b62f79067df3e1972dcf62c0524ba26ba"
+  },
+  "terminalVerification": {
+    "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-verification-v1.json",
+    "sha256": "91aa60ccea38222004cd425a5f7a8e5332598978ef4b455a16550d5e931cbf9b",
+    "receiptId": "portable-affine-u8-flat-verification-b72cb93ab3e2aa85",
+    "status": "verified-terminal-no-observation"
+  },
+  "attempt": {
+    "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-quality-diagnostic-attempts/sha256/a8/a8b32928e1c32829231b67a890a2858086723dae0e81733190170f4de40bdda7.json",
+    "bytes": 11986,
+    "fileSha256": "bbce35178a052b58776bcabb6c26a42500d826ab38dee12f7bc73af9761dd51d",
+    "attemptId": "portable-affine-u8-quality-diagnostic-attempt-a8b32928e1c32829",
+    "attemptContentHash": "a8b32928e1c32829231b67a890a2858086723dae0e81733190170f4de40bdda7",
+    "status": "diagnostic-infrastructure-failure",
+    "sourceRevision": "f7fb3d220559bfa9a6746e00db451ccb91f3ef14"
+  },
+  "inputs": [
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-quality-diagnostic-preregistration.v1.json",
+      "bytes": 10935,
+      "sha256": "3932e21b3ea171d5798e5abf034931069e66f932ef11abdaa68c8d9326ae5fe1"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-quality-diagnostic-preregistration.js",
+      "bytes": 25985,
+      "sha256": "785b28af74d8c0c9b42d37549e33a3b39a262177b205deabc86c3bf7a468e226"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-quality-diagnostic-preregistration.test.js",
+      "bytes": 6501,
+      "sha256": "271215608d68ae18b1126498f029f45b33fecf9313e2dbf8fc22a984c79a5cfa"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-quality-diagnostic.js",
+      "bytes": 50161,
+      "sha256": "aa46f5299c70755022b885b332a79aa5693ab42ef1114ebaa885ced42c70b8f3"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-quality-diagnostic.test.js",
+      "bytes": 11671,
+      "sha256": "ce2c6a8b4aaba919481772c438610955a1fd67ab0d121f52aac991c0760dbabd"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-quality-diagnostic-verification.js",
+      "bytes": 21756,
+      "sha256": "98efeaea29eec2daa70bbe20cca14e7db6a10bcf0b2dcd231f2e919c409cafc1"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-quality-diagnostic-verification.test.js",
+      "bytes": 5414,
+      "sha256": "776f13781f0eca87beec1a259a3ef2e500986971eb34cd72de8882f28e927f6d"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-verification-v1.json",
+      "bytes": 13522,
+      "sha256": "91aa60ccea38222004cd425a5f7a8e5332598978ef4b455a16550d5e931cbf9b"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-verification.js",
+      "bytes": 27497,
+      "sha256": "972f5346ce01cc36a1b10207b675c25ef338762010954998c2d8c9118bccc737"
+    },
+    {
+      "path": "tinyrustlm/tools/campaign-evidence-store.js",
+      "bytes": 22717,
+      "sha256": "26850a67fda5bb8baea15bc2e6fb6f6d13d8244348804d0a20320c6f79ec96e3"
+    },
+    {
+      "path": "tinyrustlm/tools/durable-files.js",
+      "bytes": 2992,
+      "sha256": "be2b3157567161bbbff19f013f706e22b495fde81b6c90b0731ca9578170174f"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-quality-diagnostic-attempts/sha256/a8/a8b32928e1c32829231b67a890a2858086723dae0e81733190170f4de40bdda7.json",
+      "bytes": 11986,
+      "sha256": "bbce35178a052b58776bcabb6c26a42500d826ab38dee12f7bc73af9761dd51d"
+    }
+  ],
+  "independentSummary": {
+    "attemptCount": 1,
+    "diagnosticProcessInvocationCount": 0,
+    "diagnosticStatus": "diagnostic-infrastructure-failure",
+    "firstFailingStage": "spawn",
+    "failureCode": "AFFINE_U8_QUALITY_DIAGNOSTIC_SETUP_REJECTED",
+    "benchmarkErrorCode": null,
+    "stdoutBytes": 0,
+    "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "processExitCode": null,
+    "processSignal": null,
+    "ownedRootDeleted": false,
+    "rawOutputPresent": false,
+    "parsedQualityMetricsPresent": false,
+    "thresholdDecisionPresent": false,
+    "qualityClaimSupported": false,
+    "sameExperimentRetryAllowed": false,
+    "productPromotionAllowed": false,
+    "campaignCounterIncrementAllowed": false
+  },
+  "authority": {
+    "originalExperimentMayBeReopened": false,
+    "sameExperimentRetryMayBeAuthorized": false,
+    "qualityMayBeClaimed": false,
+    "performanceMayBeClaimed": false,
+    "portableAffineU8NumericalBehaviorMayBeClaimed": false,
+    "representativeSemanticMemoryQualityMayBeClaimed": false,
+    "turboVecParityMayBeClaimed": false,
+    "turboQuantPaperConformanceMayBeClaimed": false,
+    "productIntegrationMayBeClaimed": false,
+    "trainingMayBeAuthorized": false,
+    "releaseMayBeAuthorized": false,
+    "campaignCounterMayBeIncremented": false
+  },
+  "requiredNextGate": "Convert the diagnosed predicate into a generic regression with positive and counterexample coverage, make a scoped fix, and preregister a distinct successor full experiment before any new quality execution.",
+  "receiptId": "portable-affine-u8-quality-diagnostic-verification-ffa5612e53f27c95",
+  "receiptContentHash": "ffa5612e53f27c9562e29a3d560d94c5f6c9ebf3cc6d2db43f71262c1fe7f7f3"
+}

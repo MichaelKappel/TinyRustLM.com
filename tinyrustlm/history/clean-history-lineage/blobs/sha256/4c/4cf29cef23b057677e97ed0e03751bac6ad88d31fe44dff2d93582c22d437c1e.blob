@@ -1,0 +1,227 @@
+{
+  "schema": "tinyrustlm.exact_flat_physical_target_verification_receipt.v1",
+  "experimentId": "exact-flat-physical-target-win-x64-20260722",
+  "status": "named-target-latency-throughput-memory-verified-with-open-gaps",
+  "generatedAtUtc": "2026-07-22T12:05:43.590Z",
+  "observedSourceRevision": "bdca15ece76e74076a5acdfe09a152616ab88fb1",
+  "verificationSourceRevision": "b272c9b9f503955fab874e0545579394f9893726",
+  "verificationMode": "content-and-policy-revalidation-of-immutable-target-observation",
+  "verificationTool": {
+    "version": "v24.14.0",
+    "sha256": "63c259c81e5d472b5f11c8d506070130cb04a1ecf84b80377a34ed6ec9048088"
+  },
+  "verificationInputs": [
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-verification-v1.json",
+      "bytes": 5054,
+      "sha256": "5c52a2287390f79e6a4971da6a6455a69c4ebd52ac6473bcce5408fd62560157"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-benchmark.rs",
+      "bytes": 12196,
+      "sha256": "e556d80b9ba4eacb905ae69e7bd6ba8464a096c1472a0cc30244c9cc80df9c6e"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-observation-v1.json",
+      "bytes": 32517,
+      "sha256": "17398b133501443af314b5138211306ebf180b592bfa03f68f6ac48615050483"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-preregistration.v1.json",
+      "bytes": 8593,
+      "sha256": "269459766b1bab57ce86cadda296d0941d3dfc3d6876873ab48657ba7bd64c63"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-verification-v1.json",
+      "bytes": 11753,
+      "sha256": "893e96f461f701f46a3aaaeecddd67bc2b700625ccdb9f0d83ce4b0b67d8c18c"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/physical-target-attempts/sha256/12/1291be20cc291bc63eb787667385914d1756f2371d03bb076d24c220dbc73f1b.json",
+      "bytes": 986,
+      "sha256": "10329dbf0cf33f0434a633b19146b480bc0b7ee5cf5c696988646729b7d6e7dc"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/physical-target-attempts/sha256/61/61b3b96e16391b9ccff3f3ee38c71e93349d2f4887a1764d871f790a532d0aca.json",
+      "bytes": 924,
+      "sha256": "6edb73def3ecfe09d1bd3c0ef65c480c10d8b0536affdc25758cdc793bee0cb6"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-physical-target-observation.test.js",
+      "bytes": 11128,
+      "sha256": "d57e97fcc8b8319e3e6081733e46a2e91c4aab3fdfd189ae1ad3ad84bf17bbe7"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-physical-target-preregistration.test.js",
+      "bytes": 3467,
+      "sha256": "b7cafa83a308005e37c6f4f3f942bc845a2a33003f54fe8f50bcd381357d99fe"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-physical-target-verification.test.js",
+      "bytes": 3707,
+      "sha256": "dbba13b3dbefc1442d17382e0e9011d91da80be9a9040c69fbc8f3e764305d7b"
+    },
+    {
+      "path": "tinyrustlm/tools/campaign-evidence-store.js",
+      "bytes": 22113,
+      "sha256": "3b2e8370a8ebff4576a72c3d290fa7413c318b2f2611945f955855ed384278b3"
+    },
+    {
+      "path": "tinyrustlm/tools/durable-files.js",
+      "bytes": 2895,
+      "sha256": "085f14edda664db13a73a5fc76c9fbdadadd0d34b651712c1cdc306b476df12c"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-physical-target-observation.js",
+      "bytes": 54085,
+      "sha256": "d2967ac7fbb80f8f89a12dc1266016fe7edeaa63f39d9c5649cd78140e717b5d"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-physical-target-preregistration.js",
+      "bytes": 17845,
+      "sha256": "244dc9d4d732771cb61bcc26a12574ed4aa61d5d8ff7ce445e08a523eb5694db"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-physical-target-verification.js",
+      "bytes": 17896,
+      "sha256": "f0ed41eae1e5d8bfdd2a4ae5f4ecc321e68fb5b271dbbdceffbfadd13618a539"
+    }
+  ],
+  "preregistration": {
+    "path": "tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-preregistration.v1.json",
+    "sha256": "269459766b1bab57ce86cadda296d0941d3dfc3d6876873ab48657ba7bd64c63"
+  },
+  "parents": [
+    {
+      "receiptId": "exact-flat-retrieval-75f95baa316315ea",
+      "sha256": "893e96f461f701f46a3aaaeecddd67bc2b700625ccdb9f0d83ce4b0b67d8c18c"
+    },
+    {
+      "receiptId": "exact-flat-browser-wasm-verification-8fcdeb0b93534ca4",
+      "sha256": "5c52a2287390f79e6a4971da6a6455a69c4ebd52ac6473bcce5408fd62560157"
+    }
+  ],
+  "observation": {
+    "path": "tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-observation-v1.json",
+    "observationId": "exact-flat-physical-target-20bfb3e18230f257",
+    "observationContentHash": "20bfb3e18230f257c497cab38ad9f15e9b61aa3a5c24eaae19242849c75642df",
+    "fileSha256": "17398b133501443af314b5138211306ebf180b592bfa03f68f6ac48615050483"
+  },
+  "attempts": [
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/physical-target-attempts/sha256/12/1291be20cc291bc63eb787667385914d1756f2371d03bb076d24c220dbc73f1b.json",
+      "attemptId": "exact-flat-physical-target-attempt-1291be20cc291bc6",
+      "status": "fail",
+      "attemptContentHash": "1291be20cc291bc63eb787667385914d1756f2371d03bb076d24c220dbc73f1b",
+      "fileSha256": "10329dbf0cf33f0434a633b19146b480bc0b7ee5cf5c696988646729b7d6e7dc"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/physical-target-attempts/sha256/61/61b3b96e16391b9ccff3f3ee38c71e93349d2f4887a1764d871f790a532d0aca.json",
+      "attemptId": "exact-flat-physical-target-attempt-61b3b96e16391b9c",
+      "status": "pass",
+      "attemptContentHash": "61b3b96e16391b9ccff3f3ee38c71e93349d2f4887a1764d871f790a532d0aca",
+      "fileSha256": "6edb73def3ecfe09d1bd3c0ef65c480c10d8b0536affdc25758cdc793bee0cb6"
+    }
+  ],
+  "evidenceSummary": {
+    "targetId": "win-x64-amd-ryzen-7-8700g-asus-prime-x670e-pro-wifi-20260722",
+    "workloadCount": 3,
+    "processRuns": 9,
+    "rawQuerySamples": 324,
+    "passingAttempts": 1,
+    "preservedFailureAttempts": 1,
+    "ownedBuildDirectoryDeleted": true,
+    "energyMeasured": false,
+    "aggregates": [
+      {
+        "workloadId": "dot-128x1000",
+        "processRuns": 3,
+        "rawQuerySampleCount": 192,
+        "buildP50Ns": 1733000,
+        "buildP95Ns": 1773300,
+        "warmupP50Ns": 1387800,
+        "queryP50Ns": 153500,
+        "queryP95Ns": 176800,
+        "queryP99Ns": 203400,
+        "medianRecordsPerSecond": 6514657,
+        "medianCoordinatesPerSecond": 833876221,
+        "maximumPeakWorkingSetBytes": 5775360,
+        "serializedIndexBytes": 528280,
+        "validationChecksum": "a94abf7b7e195049"
+      },
+      {
+        "workloadId": "cosine-384x10000",
+        "processRuns": 3,
+        "rawQuerySampleCount": 96,
+        "buildP50Ns": 31840500,
+        "buildP95Ns": 35768400,
+        "warmupP50Ns": 34310600,
+        "queryP50Ns": 5698000,
+        "queryP95Ns": 7803400,
+        "queryP99Ns": 9599700,
+        "medianRecordsPerSecond": 1755001,
+        "medianCoordinatesPerSecond": 673920673,
+        "maximumPeakWorkingSetBytes": 57520128,
+        "serializedIndexBytes": 15520280,
+        "validationChecksum": "2d0bc2a9f173d05d"
+      },
+      {
+        "workloadId": "squared-euclidean-768x25000",
+        "processRuns": 3,
+        "rawQuerySampleCount": 36,
+        "buildP50Ns": 135960200,
+        "buildP95Ns": 144183200,
+        "warmupP50Ns": 87197300,
+        "queryP50Ns": 26989000,
+        "queryP95Ns": 44663200,
+        "queryP99Ns": 48085800,
+        "medianRecordsPerSecond": 926303,
+        "medianCoordinatesPerSecond": 711400941,
+        "maximumPeakWorkingSetBytes": 266911744,
+        "serializedIndexBytes": 77200280,
+        "validationChecksum": "f779cc1dc60ad96a"
+      }
+    ]
+  },
+  "authority": {
+    "namedTargetLatencyVerified": true,
+    "namedTargetThroughputVerified": true,
+    "namedTargetProcessMemoryVerified": true,
+    "namedTargetEnergyVerified": false,
+    "physicalChassisIndependentlyAttested": false,
+    "completePhysicalTargetGateVerified": false,
+    "browserPerformanceVerified": false,
+    "compressedRetrievalVerified": false,
+    "turboVecParityVerified": false,
+    "representativeRetrievalQualityVerified": false,
+    "durableFilesystemDeletionVerified": false,
+    "productIntegrationAuthorized": false,
+    "trainingAuthorized": false,
+    "releaseAuthorized": false
+  },
+  "openGaps": [
+    {
+      "gapId": "target-energy-joules",
+      "status": "not-measured",
+      "statement": "Windows advertises the Energy Meter counter set but exposes no counter instance, and no authoritative joule source is available."
+    },
+    {
+      "gapId": "physical-chassis-attestation",
+      "status": "not-independently-verified",
+      "statement": "Registry CPU and board identity are observed, but no independent physical-chassis attestation is bound to this run."
+    },
+    {
+      "gapId": "retrieval-corpus-quality-metrics",
+      "status": "not-run",
+      "statement": "No sealed representative corpus has measured recall, MRR, NDCG, or usefulness."
+    },
+    {
+      "gapId": "durable-filesystem-deletion-proof",
+      "status": "not-run",
+      "statement": "No crash-recovered on-disk snapshot has proved deleted vector bytes absent after compaction."
+    }
+  ],
+  "requiredNextGate": "After valid target latency, throughput, and process-memory evidence, retain the energy and physical-attestation gaps, then preregister a sealed representative corpus and crash-recovered durable deletion proof before any compressed comparison arm.",
+  "receiptId": "exact-flat-physical-target-verification-6b478318ef8747cb",
+  "receiptContentHash": "6b478318ef8747cb534e0b1d43fd7f8398599e0a1485fada4bb8be95abf2234c"
+}

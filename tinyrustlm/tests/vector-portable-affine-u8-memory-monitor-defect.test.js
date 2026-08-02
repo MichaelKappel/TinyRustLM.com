@@ -1,11 +1,17 @@
 "use strict";
 
 const assert = require("node:assert/strict");
-const childProcess = require("node:child_process");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
+const {
+  productionLineageReader
+} = require("../tools/clean-history-lineage.js");
+const {
+  readGitBlob,
+  validateGitInput
+} = require("../tools/vector-historical-git-input.js");
 
 const {
   memoryMonitorScript
@@ -33,21 +39,6 @@ const relativePathPattern =
 
 function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
-}
-
-function git(argumentsList, encoding = null) {
-  const result = childProcess.spawnSync("git", argumentsList, {
-    cwd: repositoryRoot,
-    encoding,
-    windowsHide: true,
-    timeout: 30000,
-    maxBuffer: 64 * 1024 * 1024
-  });
-  assert.equal(result.error, undefined);
-  assert.equal(result.signal, null);
-  assert.equal(result.status, 0);
-  assert.equal(encoding === null ? result.stderr.length : result.stderr, 0);
-  return result.stdout;
 }
 
 function readSummary() {
@@ -85,7 +76,13 @@ test("binds the immutable terminal monitor failure and independent verifier", ()
   const summary = readSummary();
   validateFile(summary.terminalEvidence.attempt);
   validateFile(summary.terminalEvidence.verification);
-  validateFile(summary.reproducedCodeDefect.frozenHarnessSource);
+  validateGitInput(
+    summary.reproducedCodeDefect.frozenHarnessSource,
+    repositoryRoot,
+    summary.terminalEvidence.attempt.sourceRevision,
+    summary.reproducedCodeDefect.frozenHarnessSource.path,
+    "frozen harness source"
+  );
   const receipt = validateReceiptFile();
   assert.equal(
     receipt.receipt.receiptId,
@@ -104,38 +101,24 @@ test("preserves the red regression and corrected monitor commits in order", () =
   const fixed = summary.fix.commit;
   assert.match(red, revisionPattern);
   assert.match(fixed, revisionPattern);
-  const ancestry = childProcess.spawnSync(
-    "git",
-    ["merge-base", "--is-ancestor", red, fixed],
-    {
-      cwd: repositoryRoot,
-      encoding: "utf8",
-      windowsHide: true,
-      timeout: 30000,
-      maxBuffer: 1024 * 1024
-    }
-  );
-  assert.equal(ancestry.error, undefined);
-  assert.equal(ancestry.signal, null);
-  assert.equal(ancestry.status, 0);
-  assert.equal(ancestry.stderr, "");
-  const redSource = git([
-    "cat-file",
-    "blob",
-    `${red}:tinyrustlm/tests/vector-portable-affine-u8-memory-monitor-v2.test.js`
-  ]).toString("utf8");
+  assert.equal(productionLineageReader().isAncestor(red, fixed), true);
+  const redSource = readGitBlob(
+    repositoryRoot,
+    red,
+    "tinyrustlm/tests/vector-portable-affine-u8-memory-monitor-v2.test.js"
+  ).toString("utf8");
   assert.match(redSource, /minimumSamplesIfPostPrepareIsFirstLoopSample/u);
   assert.match(redSource, />= 2/u);
-  const fixedTool = git([
-    "cat-file",
-    "blob",
-    `${fixed}:${summary.fix.correctedMonitor.path}`
-  ]);
-  const fixedTest = git([
-    "cat-file",
-    "blob",
-    `${fixed}:${summary.fix.regressionTest.path}`
-  ]);
+  const fixedTool = readGitBlob(
+    repositoryRoot,
+    fixed,
+    summary.fix.correctedMonitor.path
+  );
+  const fixedTest = readGitBlob(
+    repositoryRoot,
+    fixed,
+    summary.fix.regressionTest.path
+  );
   assert.equal(sha256(fixedTool), summary.fix.correctedMonitor.sha256);
   assert.equal(sha256(fixedTest), summary.fix.regressionTest.sha256);
 });

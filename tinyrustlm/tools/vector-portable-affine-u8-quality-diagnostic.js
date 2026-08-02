@@ -11,6 +11,9 @@ const { pipeline } = require("node:stream/promises");
 const { canonicalJson } = require("./campaign-evidence-store.js");
 const { atomicCreate, syncDirectory } = require("./durable-files.js");
 const {
+  productionLineageReader
+} = require("./clean-history-lineage.js");
+const {
   defaultPath: preregistrationPath,
   expectedManifestSha256,
   expectedStageNames,
@@ -23,6 +26,9 @@ const {
   offlineEnvironment,
   validateQualityOutput
 } = require("./vector-portable-affine-u8-observation.js");
+const {
+  readGitBlob
+} = require("./vector-historical-git-input.js");
 
 const attemptSchema =
   "tinyrustlm.portable_affine_u8_quality_diagnostic_attempt.v1";
@@ -248,27 +254,12 @@ function fileEvidence(relativePath) {
 function fileEvidenceAtRevision(relativePath, revision) {
   invariant(relativePathPattern.test(relativePath), "historical input path is unsafe");
   invariant(revisionPattern.test(revision), "historical input revision is invalid");
-  const result = childProcess.spawnSync(
-    "git",
-    ["cat-file", "blob", `${revision}:${relativePath}`],
-    {
-      cwd: repositoryRoot,
-      encoding: null,
-      windowsHide: true,
-      timeout: 30000,
-      maxBuffer: maximumInputBytes
-    }
+  const bytes = readGitBlob(
+    repositoryRoot,
+    revision,
+    relativePath,
+    maximumInputBytes
   );
-  invariant(
-    result.error === undefined &&
-      result.status === 0 &&
-      result.signal === null &&
-      Buffer.isBuffer(result.stdout) &&
-      Buffer.isBuffer(result.stderr) &&
-      result.stderr.length === 0,
-    `historical input ${relativePath} failed`
-  );
-  const bytes = result.stdout;
   invariant(
     bytes.length > 0 && bytes.length <= maximumInputBytes,
     `historical input ${relativePath} is not bounded`
@@ -299,7 +290,7 @@ function git(argumentsList, label, allowFailure = false) {
 }
 
 function sourceRevision() {
-  const revision = git(["rev-parse", "HEAD"], "source revision").stdout.trim();
+  const revision = productionLineageReader().headRevision();
   invariant(revisionPattern.test(revision), "source revision is invalid");
   return revision;
 }
@@ -324,12 +315,10 @@ function assertInputClosureCommitted(paths = inputPaths) {
 
 function assertRegistrationAncestor(registrationCommit, revision) {
   invariant(revisionPattern.test(registrationCommit), "registration commit is invalid");
-  const ancestor = git(
-    ["merge-base", "--is-ancestor", registrationCommit, revision],
-    "registration ancestry",
-    true
+  invariant(
+    productionLineageReader().isAncestor(registrationCommit, revision),
+    "diagnostic source does not descend registration"
   );
-  invariant(ancestor.status === 0, "diagnostic source does not descend registration");
   invariant(
     registrationCommit !== revision,
     "diagnostic implementation must follow registration"
@@ -1332,13 +1321,11 @@ function reconcileSetupFailure(options = {}) {
     manifestResult.registrationCommit,
     failedInvocationSourceRevision
   );
-  const failureAncestor = git(
-    ["merge-base", "--is-ancestor", failedInvocationSourceRevision, currentRevision],
-    "failed invocation ancestry",
-    true
-  );
   invariant(
-    failureAncestor.status === 0,
+    productionLineageReader().isAncestor(
+      failedInvocationSourceRevision,
+      currentRevision
+    ),
     "reconciliation does not descend from failed invocation"
   );
   invariant(

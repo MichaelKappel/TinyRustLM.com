@@ -1,0 +1,267 @@
+"use strict";
+
+const crypto = require("node:crypto");
+const fs = require("node:fs");
+const path = require("node:path");
+
+const rootSchema = "tinyrustlm.owned_browser_profile_root.v1";
+const profileSchema = "tinyrustlm.owned_browser_profile.v1";
+const rootMarkerName = ".tinyrustlm-owned-profile-root.json";
+const profileMarkerName = ".tinyrustlm-owned-browser-profile.json";
+const maximumMarkerBytes = 16 * 1024;
+const safeIdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._-]{0,159}$/;
+
+function invariant(condition, message) {
+  if (!condition) {
+    throw new Error(message);
+  }
+}
+
+function isPlainObject(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return false;
+  }
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+}
+
+function requireIdentifier(value, label) {
+  const text = String(value || "");
+  invariant(safeIdentifierPattern.test(text), `${label} is invalid`);
+  return text;
+}
+
+function requireRound(value) {
+  invariant(Number.isSafeInteger(value) && value >= 1 && value <= 1_000_000,
+    "browser profile round is invalid");
+  return value;
+}
+
+function canonicalMarker(value) {
+  invariant(isPlainObject(value), "browser profile marker must be an object");
+  const keys = Object.keys(value).sort();
+  const ordered = {};
+  for (const key of keys) {
+    ordered[key] = value[key];
+  }
+  return `${JSON.stringify(ordered)}\n`;
+}
+
+function sha256(value) {
+  return crypto.createHash("sha256").update(value).digest("hex");
+}
+
+function randomNonce() {
+  return crypto.randomBytes(24).toString("hex");
+}
+
+function readMarker(markerPath) {
+  const stat = fs.statSync(markerPath, { throwIfNoEntry: false });
+  invariant(stat?.isFile() && stat.size > 0 && stat.size <= maximumMarkerBytes,
+    "browser profile ownership marker is missing or invalid");
+  const bytes = fs.readFileSync(markerPath);
+  let value;
+  try {
+    value = JSON.parse(bytes.toString("utf8"));
+  } catch (_error) {
+    throw new Error("browser profile ownership marker is invalid JSON");
+  }
+  invariant(isPlainObject(value), "browser profile ownership marker must be an object");
+  return Object.freeze({ bytes, value });
+}
+
+function writeNewMarker(markerPath, value) {
+  const payload = canonicalMarker(value);
+  const descriptor = fs.openSync(markerPath, "wx", 0o600);
+  try {
+    fs.writeFileSync(descriptor, payload, "utf8");
+    fs.fsyncSync(descriptor);
+  } finally {
+    fs.closeSync(descriptor);
+  }
+  return sha256(payload);
+}
+
+function resolvedRealDirectory(directoryPath, label) {
+  const resolved = path.resolve(String(directoryPath || ""));
+  const stat = fs.lstatSync(resolved, { throwIfNoEntry: false });
+  invariant(stat?.isDirectory() && !stat.isSymbolicLink(), `${label} is not a real directory`);
+  return fs.realpathSync.native(resolved);
+}
+
+function isStrictChild(rootPath, candidatePath) {
+  const relative = path.relative(rootPath, candidatePath);
+  return relative !== "" && !relative.startsWith(`..${path.sep}`) && relative !== ".." &&
+    !path.isAbsolute(relative);
+}
+
+function validateRootHandle(handle) {
+  invariant(isPlainObject(handle), "browser profile root handle is invalid");
+  const rootPath = resolvedRealDirectory(handle.rootPath, "browser profile root");
+  invariant(rootPath === handle.rootPath, "browser profile root identity changed");
+  const marker = readMarker(path.join(rootPath, rootMarkerName));
+  const value = marker.value;
+  invariant(value.schema === rootSchema && value.campaignId === handle.campaignId &&
+    value.ownerNonce === handle.ownerNonce && value.rootMarkerHash === handle.rootMarkerHash,
+  "browser profile root ownership changed");
+  invariant(rootMarkerIdentity(marker) === handle.rootMarkerHash,
+    "browser profile root marker hash changed");
+  return rootPath;
+}
+
+function createOwnedProfileRoot(options) {
+  invariant(isPlainObject(options), "browser profile root options are invalid");
+  const campaignId = requireIdentifier(options.campaignId, "campaignId");
+  const parentPath = path.resolve(String(options.parentDirectory || ""));
+  fs.mkdirSync(parentPath, { recursive: true });
+  const realParent = resolvedRealDirectory(parentPath, "browser profile parent");
+  const rootPath = fs.realpathSync.native(fs.mkdtempSync(
+    path.join(realParent, "tinyrustlm-browser-profiles-")
+  ));
+  invariant(isStrictChild(realParent, rootPath), "created browser profile root escaped its parent");
+  const ownerNonce = randomNonce();
+  const createdAtUtc = new Date().toISOString();
+  const markerWithoutHash = {
+    schema: rootSchema,
+    campaignId,
+    ownerNonce,
+    createdAtUtc
+  };
+  const rootMarkerHash = sha256(canonicalMarker({
+    ...markerWithoutHash,
+    rootMarkerHash: "0".repeat(64)
+  }));
+  const marker = { ...markerWithoutHash, rootMarkerHash };
+  writeNewMarker(path.join(rootPath, rootMarkerName), marker);
+  return Object.freeze({ rootPath, campaignId, ownerNonce, rootMarkerHash, createdAtUtc });
+}
+
+function rootMarkerIdentity(marker) {
+  const value = marker.value;
+  invariant(value.schema === rootSchema && /^[a-f0-9]{64}$/.test(String(value.rootMarkerHash || "")),
+    "browser profile root marker schema is invalid");
+  const expected = sha256(canonicalMarker({ ...value, rootMarkerHash: "0".repeat(64) }));
+  invariant(expected === value.rootMarkerHash, "browser profile root marker identity is invalid");
+  return value.rootMarkerHash;
+}
+
+function openOwnedProfileRoot(rootPath, campaignId, ownerNonce) {
+  const realRoot = resolvedRealDirectory(rootPath, "browser profile root");
+  const marker = readMarker(path.join(realRoot, rootMarkerName));
+  const value = marker.value;
+  invariant(value.campaignId === requireIdentifier(campaignId, "campaignId") &&
+    value.ownerNonce === String(ownerNonce || ""), "browser profile root ownership does not match");
+  const rootMarkerHash = rootMarkerIdentity(marker);
+  return Object.freeze({
+    rootPath: realRoot,
+    campaignId: value.campaignId,
+    ownerNonce: value.ownerNonce,
+    rootMarkerHash,
+    createdAtUtc: value.createdAtUtc
+  });
+}
+
+function createOwnedBrowserProfile(rootHandle, options) {
+  const rootPath = validateRootHandle(rootHandle);
+  invariant(isPlainObject(options), "browser profile options are invalid");
+  const round = requireRound(options.round);
+  const role = requireIdentifier(options.role, "browser profile role");
+  const prefix = `profile-${String(round).padStart(4, "0")}-${role}-`;
+  const profilePath = fs.realpathSync.native(fs.mkdtempSync(path.join(rootPath, prefix)));
+  invariant(isStrictChild(rootPath, profilePath), "created browser profile escaped its owned root");
+  const marker = {
+    schema: profileSchema,
+    campaignId: rootHandle.campaignId,
+    ownerNonce: rootHandle.ownerNonce,
+    rootMarkerHash: rootHandle.rootMarkerHash,
+    profileNonce: randomNonce(),
+    round,
+    role,
+    createdAtUtc: new Date().toISOString()
+  };
+  const profileMarkerHash = writeNewMarker(path.join(profilePath, profileMarkerName), marker);
+  return Object.freeze({
+    profilePath,
+    campaignId: marker.campaignId,
+    ownerNonce: marker.ownerNonce,
+    rootMarkerHash: marker.rootMarkerHash,
+    profileNonce: marker.profileNonce,
+    profileMarkerHash,
+    round,
+    role,
+    createdAtUtc: marker.createdAtUtc
+  });
+}
+
+function validateProfileHandle(rootHandle, profileHandle) {
+  const rootPath = validateRootHandle(rootHandle);
+  invariant(isPlainObject(profileHandle), "browser profile handle is invalid");
+  const resolvedProfile = path.resolve(String(profileHandle.profilePath || ""));
+  invariant(isStrictChild(rootPath, resolvedProfile), "browser profile path escaped its owned root");
+  const profilePath = resolvedRealDirectory(resolvedProfile, "browser profile");
+  invariant(isStrictChild(rootPath, profilePath), "browser profile real path escaped its owned root");
+  const marker = readMarker(path.join(profilePath, profileMarkerName));
+  const value = marker.value;
+  invariant(value.schema === profileSchema && value.campaignId === rootHandle.campaignId &&
+    value.ownerNonce === rootHandle.ownerNonce && value.rootMarkerHash === rootHandle.rootMarkerHash &&
+    value.profileNonce === profileHandle.profileNonce && value.round === profileHandle.round &&
+    value.role === profileHandle.role,
+  "browser profile ownership changed");
+  const profileMarkerHash = sha256(canonicalMarker(value));
+  invariant(profileMarkerHash === profileHandle.profileMarkerHash,
+    "browser profile marker hash changed");
+  return Object.freeze({ rootPath, profilePath, profileMarkerHash });
+}
+
+function assertOwnedProfileFresh(rootHandle, profileHandle) {
+  const validated = validateProfileHandle(rootHandle, profileHandle);
+  const entries = fs.readdirSync(validated.profilePath);
+  invariant(entries.length === 1 && entries[0] === profileMarkerName,
+    "browser profile contains state before launch");
+  return true;
+}
+
+function deleteOwnedBrowserProfile(rootHandle, profileHandle) {
+  const validated = validateProfileHandle(rootHandle, profileHandle);
+  fs.rmSync(validated.profilePath, {
+    recursive: true,
+    force: false,
+    maxRetries: 12,
+    retryDelay: 100
+  });
+  invariant(!fs.existsSync(validated.profilePath), "browser profile deletion was not proven");
+  return Object.freeze({
+    schema: "tinyrustlm.browser_profile_deletion.v1",
+    campaignId: rootHandle.campaignId,
+    round: profileHandle.round,
+    role: profileHandle.role,
+    rootMarkerHash: rootHandle.rootMarkerHash,
+    profileMarkerHash: validated.profileMarkerHash,
+    deleted: true,
+    verifiedAtUtc: new Date().toISOString()
+  });
+}
+
+function removeOwnedProfileRoot(rootHandle) {
+  const rootPath = validateRootHandle(rootHandle);
+  const entries = fs.readdirSync(rootPath);
+  invariant(entries.length === 1 && entries[0] === rootMarkerName,
+    "browser profile root still contains profiles or unknown files");
+  fs.unlinkSync(path.join(rootPath, rootMarkerName));
+  fs.rmdirSync(rootPath);
+  invariant(!fs.existsSync(rootPath), "browser profile root deletion was not proven");
+  return true;
+}
+
+module.exports = Object.freeze({
+  assertOwnedProfileFresh,
+  createOwnedBrowserProfile,
+  createOwnedProfileRoot,
+  deleteOwnedBrowserProfile,
+  openOwnedProfileRoot,
+  profileMarkerName,
+  profileSchema,
+  removeOwnedProfileRoot,
+  rootMarkerName,
+  rootSchema
+});

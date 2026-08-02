@@ -1,0 +1,18 @@
+{
+  "schema": "tinyrustlm.exact_flat_physical_target_attempt.v1",
+  "experimentId": "exact-flat-physical-target-win-x64-20260722",
+  "status": "pass",
+  "startedAtUtc": "2026-07-22T11:41:12.856Z",
+  "completedAtUtc": "2026-07-22T11:41:41.300Z",
+  "sourceRevision": "bdca15ece76e74076a5acdfe09a152616ab88fb1",
+  "preregistrationSha256": "269459766b1bab57ce86cadda296d0941d3dfc3d6876873ab48657ba7bd64c63",
+  "parentReceiptSha256s": [
+    "893e96f461f701f46a3aaaeecddd67bc2b700625ccdb9f0d83ce4b0b67d8c18c",
+    "5c52a2287390f79e6a4971da6a6455a69c4ebd52ac6473bcce5408fd62560157"
+  ],
+  "observationId": "exact-flat-physical-target-20bfb3e18230f257",
+  "observationContentHash": "20bfb3e18230f257c497cab38ad9f15e9b61aa3a5c24eaae19242849c75642df",
+  "failure": null,
+  "attemptId": "exact-flat-physical-target-attempt-61b3b96e16391b9c",
+  "attemptContentHash": "61b3b96e16391b9ccff3f3ee38c71e93349d2f4887a1764d871f790a532d0aca"
+}

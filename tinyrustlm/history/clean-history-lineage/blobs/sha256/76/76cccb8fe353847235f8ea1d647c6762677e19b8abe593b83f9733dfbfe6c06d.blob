@@ -1,0 +1,527 @@
+{
+  "schema": "tinyrustlm.portable_affine_u8_flat_preregistration.v1",
+  "experimentId": "portable-affine-u8-flat-20260726",
+  "registeredAtUtc": "2026-07-26T09:47:15.608Z",
+  "status": "preregistered-before-implementation-or-results",
+  "lineage": {
+    "sealedBaseline": [
+      {
+        "kind": "preregistration",
+        "path": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-preregistration.v1.json",
+        "identity": "exact-flat-sealed-corpus-and-durable-deletion-20260725",
+        "sha256": "f6c1ac0d2c0f40365aca977aeccb894416185dc7069a97bb357510b94d94b4d1"
+      },
+      {
+        "kind": "observation",
+        "path": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-observation-v1.json",
+        "identity": "exact-flat-baseline-evidence-94aab53fab3f93b7",
+        "sha256": "fa04d21ae35555b6a1d500eaf8569c5a7246c1bfde1f0bfc2e62812d6965c45c"
+      },
+      {
+        "kind": "verification",
+        "path": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-verification-v1.json",
+        "identity": "exact-flat-baseline-evidence-verification-6eb3d0e13fe60cbd",
+        "sha256": "9e745a77807524ad6bf2eff3aab0cf5b2a5a3c246c484698bb9ce108948a9fe1"
+      },
+      {
+        "kind": "current-exact-flat-source-verification",
+        "path": "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-verification-v2.json",
+        "identity": "exact-flat-retrieval-0b5c2896f18fc874",
+        "sha256": "95b36d822d3c49ec342e54ad277eb4e6925a59cffdea40fdeefe15d263bcbc7c"
+      }
+    ],
+    "terminalReferenceExperiment": {
+      "preregistration": {
+        "path": "tinyrustlm/experiments/vector-quantization/turbovec-reference-comparison-preregistration.v1.json",
+        "identity": "turbovec-090-4bit-tqplus-reference-comparison-20260725",
+        "sha256": "96a3fad0078850e2fe9fb4d619979ca9e5b753f23a3fab6df53aebe9b9afe6ed"
+      },
+      "attempts": [
+        {
+          "path": "tinyrustlm/experiments/vector-quantization/turbovec-reference-attempts/sha256/b8/b8ffb20cebbeccf0f11b297c19f771dc700f7227a03375c21f3ee52f757e25de.json",
+          "identity": "turbovec-reference-attempt-b8ffb20cebbeccf0",
+          "status": "fail-infrastructure-retry-allowed",
+          "fileSha256": "1453fcd6067b20a80c900f71497733e5b3c20b7fe92d3fed98a760050ff325aa"
+        },
+        {
+          "path": "tinyrustlm/experiments/vector-quantization/turbovec-reference-attempts/sha256/db/db1a760c3d25893ed9f5ec6025a19e0a121b96bb1fb81092670155eff24e5baa.json",
+          "identity": "turbovec-reference-attempt-db1a760c3d25893e",
+          "status": "fail-comparison-outcome-terminal",
+          "fileSha256": "00bf8c3b0754b5576c94b41974882badc0457ba03f5474815f1c51aea01d429f"
+        }
+      ],
+      "sameExperimentRetryAllowed": false,
+      "knownTerminalCause": "quality-process-nonzero-exit",
+      "rawQualityMetricsRetained": false,
+      "evidenceGapCarriedForward": "future-comparison-runners-must-retain-bounded-canonical-metrics-before-threshold-decision"
+    },
+    "selectionAfterTerminalReferenceFailure": true,
+    "newMethodIsNotATurboVecRetry": true,
+    "newMethodMayNotClaimTurboVecOrTurboQuantParity": true
+  },
+  "method": {
+    "methodId": "portable-global-affine-u8-flat-v1",
+    "methodClass": "exhaustive-flat-search-over-globally-affine-quantized-records",
+    "dependencyPolicy": "repository-local-no-third-party-dependencies",
+    "implementationSourcePolicy": "clean-local-specification-only",
+    "bitWidth": 8,
+    "levels": 256,
+    "codebookScope": "one-global-affine-codebook-per-lane-generation",
+    "calibrationOrder": "ascending-external-id-then-ascending-coordinate",
+    "calibrationMinimum": "minimum-finite-record-coordinate-as-f32",
+    "calibrationMaximum": "maximum-finite-record-coordinate-as-f32",
+    "stepComputation": "f64(maximum-minus-minimum)/255",
+    "encodeRule": "clamp-0-255-after-floor-nonnegative-normalized-value-plus-0.5",
+    "constantLaneRule": "minimum-equals-maximum-uses-code-zero-and-exact-minimum-reconstruction",
+    "reconstructionRule": "f64-minimum-plus-code-times-f64-step",
+    "negativeZeroRule": "canonicalize-to-positive-zero-before-calibration-and-scoring",
+    "dotProductRule": "ascending-coordinate-f64-neumaier-sum",
+    "squaredEuclideanRule": "ascending-coordinate-f64-neumaier-sum-of-squared-differences",
+    "cosineRule": "f64-renormalize-reconstructed-record-then-ascending-coordinate-f64-neumaier-dot",
+    "queryStorage": "dense-f32-ephemeral-only",
+    "candidateOrdering": "declared-score-then-ascending-external-id",
+    "sourceVectorRerankingAllowed": false,
+    "decodedF32ShadowAllowed": false,
+    "hiddenSourceVectorSidecarAllowed": false,
+    "searchOverfetchAllowed": false,
+    "resultRepairAllowed": false,
+    "secondBitWidthAllowed": false,
+    "secondCodebookAllowed": false,
+    "featureAblationAllowed": false,
+    "bestOfNAllowed": false
+  },
+  "implementationBoundary": {
+    "plannedLibrarySource": "rust/experiments/tinyrustlm-vector-oracle/src/affine_u8_index.rs",
+    "plannedBenchmarkSource": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-benchmark.rs",
+    "plannedObservationRunner": "tinyrustlm/tools/vector-portable-affine-u8-observation.js",
+    "plannedVerificationRunner": "tinyrustlm/tools/vector-portable-affine-u8-verification.js",
+    "plannedObservationPath": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-observation-v1.json",
+    "plannedVerificationPath": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-verification-v1.json",
+    "implementationExistsAtRegistration": false,
+    "comparisonResultExistsAtRegistration": false,
+    "unsafeCodeAllowed": false,
+    "workspaceDependencyAdditionAllowed": false,
+    "productImportAllowed": false,
+    "existingExactFlatSourceMutationAllowed": false,
+    "existingScalarPrimitiveMutationAllowed": false,
+    "thirdPartySourceCopyAllowed": false,
+    "thirdPartyTestVectorCopyAllowed": false
+  },
+  "corpusReuse": {
+    "sourceExperimentId": "exact-flat-sealed-corpus-and-durable-deletion-20260725",
+    "datasetName": "Fashion-MNIST",
+    "datasetRevision": "b2617bb6d3ffa2e429640350f613e3291e10b141",
+    "selectionAlgorithm": "sha256-seed-split-label-index-smallest-v1",
+    "selectionSeed": "6a09e667f3bcc908bb67ae8584caa73b3c6ef372fe94f82ba54ff53a5f1d36f1",
+    "selectionSha256": "8be904326c844c31b6e973f88bc6ce2e0a7462d51aa0d5ae497dda4b02472fbd",
+    "selectedRecordAndQueryIdentitiesMustMatchParent": true,
+    "recordInsertionOrder": "ascending-external-id",
+    "queryOrder": "parent-order",
+    "selectedIndicesMayEnterEvidence": false,
+    "rawVectorsMayEnterEvidence": false,
+    "rawImagesMayEnterEvidence": false,
+    "rawTextMayEnterEvidence": false,
+    "lanes": [
+      {
+        "laneId": "fashion-mnist-euclidean-784",
+        "laneKind": "natural",
+        "metric": "squared-euclidean",
+        "normalization": "none",
+        "dimension": 784,
+        "recordCount": 2000,
+        "queryCount": 200,
+        "topKValues": [
+          1,
+          10,
+          100
+        ]
+      },
+      {
+        "laneId": "fashion-mnist-cosine-784",
+        "laneKind": "natural",
+        "metric": "cosine",
+        "normalization": "l2-unit",
+        "dimension": 784,
+        "recordCount": 2000,
+        "queryCount": 200,
+        "topKValues": [
+          1,
+          10,
+          100
+        ]
+      },
+      {
+        "laneId": "synthetic-dot-128",
+        "laneKind": "synthetic",
+        "metric": "dot-product",
+        "normalization": "none",
+        "dimension": 128,
+        "recordCount": 1200,
+        "queryCount": 120,
+        "topKValues": [
+          1,
+          10,
+          100
+        ]
+      },
+      {
+        "laneId": "synthetic-cosine-384",
+        "laneKind": "synthetic",
+        "metric": "cosine",
+        "normalization": "l2-unit",
+        "dimension": 384,
+        "recordCount": 1200,
+        "queryCount": 120,
+        "topKValues": [
+          1,
+          10,
+          100
+        ]
+      },
+      {
+        "laneId": "synthetic-euclidean-768",
+        "laneKind": "synthetic",
+        "metric": "squared-euclidean",
+        "normalization": "none",
+        "dimension": 768,
+        "recordCount": 1200,
+        "queryCount": 120,
+        "topKValues": [
+          1,
+          10,
+          100
+        ]
+      },
+      {
+        "laneId": "controlled-memory-cosine-64",
+        "laneKind": "controlled-memory",
+        "metric": "cosine",
+        "normalization": "l2-unit",
+        "dimension": 64,
+        "recordCount": 120,
+        "queryCount": 30,
+        "topKValues": [
+          1,
+          10,
+          100
+        ]
+      }
+    ]
+  },
+  "groundTruth": {
+    "implementation": "independent-benchmark-f64-exhaustive-scan-v1",
+    "parentGroundTruthContractReused": true,
+    "mayCallCandidateSearch": false,
+    "mayReadCandidatePrivateState": false,
+    "inputCoordinates": "parent-post-declared-f32-normalization-coordinates",
+    "scoreAccumulation": "f64-in-ascending-coordinate-order",
+    "tieBreak": "ascending-external-id-after-f64-total-order",
+    "rankMetrics": [
+      "recallAt1",
+      "recallAt10",
+      "recallAt100",
+      "mrrAt100",
+      "ndcgAt100",
+      "rankInversionRateAt100"
+    ],
+    "scoreMetrics": [
+      "meanAbsoluteNormalizedScoreError",
+      "p99AbsoluteNormalizedScoreError",
+      "maximumAbsoluteNormalizedScoreError"
+    ],
+    "naturalUtilityMetrics": [
+      "macroLabelPrecisionAt10",
+      "macroLabelMrrAt10",
+      "macroLabelNdcgAt10",
+      "perClassQueryCoverage"
+    ],
+    "controlledUtilityMetrics": [
+      "expectedFirstHitRate",
+      "forbiddenHitRateAt10",
+      "deletedHitCount",
+      "filterViolationCount"
+    ],
+    "normalizedScoreErrorDenominator": "max-1-or-absolute-oracle-score",
+    "rawPerQueryMetricsRetained": true,
+    "rawCandidateScoresRetained": true,
+    "rawVectorsMayEnterEvidence": false,
+    "rawImagesMayEnterEvidence": false,
+    "rawTextMayEnterEvidence": false
+  },
+  "byteAccounting": {
+    "candidateFormat": "TRU8F001-version-1",
+    "candidateFormula": "96+n*(8+d)",
+    "candidateFixedBytes": 96,
+    "externalIdBytesPerRecord": 8,
+    "codeBytesPerCoordinate": 1,
+    "exactFlatFullIndexFormula": "280+n*(16+4*d)",
+    "actualFileLengthMustEqualFormula": true,
+    "effectiveBitsPerOriginalCoordinateFormula": "8*candidate_bytes/(n*d)",
+    "persistentRatioFormula": "candidate_bytes/exact_flat_full_index_bytes",
+    "maximumCandidateToFullExactPersistentRatioPerLane": 0.3,
+    "capacityMatchedControl": {
+      "budget": "candidate-actual-file-length",
+      "exactRecordCountFormula": "floor((budget-280)/(16+4*d))",
+      "exactControlMustNotExceedBudget": true,
+      "oneAdditionalExactRecordMustExceedBudget": true,
+      "subsetAlgorithm": "sha256-parent-selection-seed-lane-id-external-id-smallest-v1",
+      "subsetUsesOnlyParentSelectedRecords": true,
+      "queryIdentitiesMustMatchFullParent": true,
+      "expectedAnswerOrLabelSpecialCasesAllowed": false
+    },
+    "persistentWrapperBytesReportedSeparately": true,
+    "executableBytesReportedSeparately": true,
+    "sourceDatasetBytesReportedSeparately": true,
+    "queryBytesReportedSeparately": true,
+    "processWorkingSetReportedSeparately": true,
+    "peakProcessWorkingSetReportedSeparately": true,
+    "temporarySnapshotBytesReportedSeparately": true,
+    "logicalIndexBytesReported": true,
+    "physicalIndexBytesReported": true,
+    "nominalBitWidthMaySubstituteForEffectiveBytes": false,
+    "sameCorpusComparisonMayBeCalledEqualByte": false
+  },
+  "qualityThresholds": {
+    "sameCorpusAllLanes": {
+      "minimumRecallAt1": 0.85,
+      "minimumRecallAt10": 0.95,
+      "minimumRecallAt100": 0.98,
+      "minimumMrrAt100": 0.9,
+      "minimumNdcgAt100": 0.95,
+      "maximumRankInversionRateAt100": 0.02,
+      "maximumMeanAbsoluteNormalizedScoreError": 0.02,
+      "maximumP99AbsoluteNormalizedScoreError": 0.1,
+      "nonFiniteCandidateScoresAllowed": 0,
+      "missingOrDuplicateResultsAllowed": 0
+    },
+    "naturalLanes": {
+      "minimumMacroLabelPrecisionAt10DeltaFromExact": -0.02,
+      "minimumMacroLabelMrrAt10DeltaFromExact": -0.02,
+      "minimumMacroLabelNdcgAt10DeltaFromExact": -0.02,
+      "requiredPerClassQueryCoverage": 20
+    },
+    "controlledMemoryLane": {
+      "minimumExpectedFirstHitRate": 1,
+      "maximumForbiddenHitRateAt10": 0,
+      "maximumDeletedHitCount": 0,
+      "maximumFilterViolationCount": 0
+    },
+    "capacityMatchedControl": {
+      "candidateMustMeetOrExceedExactSubsetRecallAt1": true,
+      "candidateMustMeetOrExceedExactSubsetRecallAt10": true,
+      "candidateMustMeetOrExceedExactSubsetRecallAt100": true,
+      "candidateMustMeetOrExceedExactSubsetMrrAt100": true,
+      "candidateMustMeetOrExceedExactSubsetNdcgAt100": true,
+      "comparisonRequiredForEveryLane": true
+    },
+    "determinism": {
+      "independentBuildCount": 2,
+      "candidateIndexBytesMustMatch": true,
+      "candidateSearchOutputsMustMatch": true,
+      "preAndPostReloadOutputsMustMatch": true
+    },
+    "resultDrivenChangesAllowed": false,
+    "failedThresholdMayBeLowered": false,
+    "qualityThresholdFailureMayBeRetried": false
+  },
+  "nativeAndWasm": {
+    "nativeTarget": "x86_64-pc-windows-msvc",
+    "wasmTarget": "wasm32-unknown-unknown",
+    "nativeScalarImplementationRequired": true,
+    "wasmBuildRequired": true,
+    "wasmImportsAllowed": 0,
+    "wasmUnsafeCodeAllowed": false,
+    "nativeAndWasmCanonicalIndexBytesMustMatch": true,
+    "nativeAndWasmSelectedExternalIdsMustMatch": true,
+    "nativeAndWasmDeclaredScoreBitsMustMatch": true,
+    "nativeAndWasmErrorCodesMustMatch": true,
+    "realBrowserExecutionRequiredBeforeProductPromotion": true,
+    "browserPerformanceClaimAllowedFromCompileOnly": false,
+    "simdClaimAllowed": false,
+    "threadsClaimAllowed": false
+  },
+  "performanceThresholds": {
+    "measurementTarget": "x86_64-pc-windows-msvc-local-reference-only",
+    "pairedProcessRepetitionCount": 5,
+    "methodOrder": "alternating-by-lane-and-repetition-with-frozen-start-method",
+    "warmupFullQueryPasses": 5,
+    "measuredFullQueryPasses": 5,
+    "processesRunSerially": true,
+    "datasetLoadAndSelectionExcludedFromBuildTimer": true,
+    "calibrationIncludedInBuildTimer": true,
+    "queryQuantizationTimeIncluded": true,
+    "candidateDecodeTimeIncluded": true,
+    "topKSelectionTimeIncluded": true,
+    "requiredLatencyStatistics": [
+      "minimum",
+      "median",
+      "p95",
+      "p99",
+      "maximum"
+    ],
+    "maximumMedianSteadyQueryLatencyRatioToExact": 3,
+    "maximumP95SteadyQueryLatencyRatioToExact": 4,
+    "maximumColdFirstQueryMilliseconds": 5000,
+    "maximumBuildMilliseconds": 120000,
+    "maximumPeakWorkingSetBytes": 536870912,
+    "maximumPeakWorkingSetRatioToExact": 4,
+    "maximumPostBuildWorkingSetRatioToExact": 1,
+    "performanceImprovementRequiredForResearchValidity": false,
+    "performanceImprovementRequiredForProductPromotion": true,
+    "energyMeasured": false,
+    "energyClaimAllowed": false,
+    "performanceOutcomeFailureMayBeRetried": false,
+    "instrumentationFailureMayBeRetried": true
+  },
+  "persistenceAndFailure": {
+    "formatMagic": "TRU8F001",
+    "formatVersion": 1,
+    "byteOrder": "little-endian",
+    "fixedHeaderBytes": 64,
+    "sha256FooterBytes": 32,
+    "unknownFlagsAllowed": false,
+    "unknownMetricAllowed": false,
+    "reservedBytesMustBeZero": true,
+    "sortedUniqueExternalIdsRequired": true,
+    "exactSectionBoundsRequired": true,
+    "trailingBytesAllowed": false,
+    "cryptographicHash": "sha256-over-all-pre-footer-bytes",
+    "hashVerifiedBeforeAllocationFromDeclaredCounts": true,
+    "maximumDimension": 4096,
+    "maximumRecordCount": 100000,
+    "maximumFileBytes": 536870912,
+    "deletionOperation": "remove-targets-then-write-compacted-new-generation",
+    "deleteTargetSelection": "sha256-lane-id-external-id-smallest-12-v1",
+    "deleteTargetCount": 12,
+    "allowlistDensity": 0.05,
+    "allowlistSelection": "sha256-lane-id-external-id-smallest-v1",
+    "wrapperStorageDesign": "content-addressed-snapshot-plus-commit-generation",
+    "sameDirectoryTemporarySuffix": ".tmp",
+    "fileSyncRequiredBeforeFinalize": true,
+    "sameDirectoryAtomicFinalizeRequired": true,
+    "directoryFlushAttemptRequired": true,
+    "reopenAndValidateRequired": true,
+    "corruptionCases": [
+      "header-bit-flip",
+      "id-bit-flip",
+      "code-bit-flip",
+      "hash-bit-flip",
+      "truncate-one-byte",
+      "append-one-byte",
+      "commit-hash-mismatch"
+    ],
+    "corruptionMustFailBeforeSearch": true,
+    "panicAllowed": false,
+    "crashScenarios": [
+      {
+        "scenarioId": "after-snapshot-temp-sync-before-finalize",
+        "expectedActiveGeneration": 1,
+        "deletionCommitted": false
+      },
+      {
+        "scenarioId": "after-snapshot-finalize-before-commit-temp",
+        "expectedActiveGeneration": 1,
+        "deletionCommitted": false
+      },
+      {
+        "scenarioId": "after-commit-temp-sync-before-finalize",
+        "expectedActiveGeneration": 1,
+        "deletionCommitted": false
+      },
+      {
+        "scenarioId": "after-commit-finalize-before-obsolete-cleanup",
+        "expectedActiveGeneration": 2,
+        "deletionCommitted": true
+      }
+    ],
+    "processCrashExitCode": 74,
+    "allCrashScenariosMustRecover": true,
+    "retryMustBeIdempotent": true,
+    "committedDeletedIdsMayRemainSearchable": false,
+    "committedDeletedCodeFingerprintsMayRemainActive": false,
+    "powerLossSimulated": false,
+    "powerLossDurabilityClaimAllowed": false,
+    "filesystemForensicErasureTested": false,
+    "filesystemForensicErasureClaimAllowed": false
+  },
+  "execution": {
+    "networkPolicy": "deny-all-during-observation",
+    "parallelProcesses": 1,
+    "overallTimeoutMilliseconds": 3600000,
+    "perProcessTimeoutMilliseconds": 300000,
+    "requiredEnvironmentVariables": [
+      "TINYRUSTLM_FASHION_MNIST_ROOT"
+    ],
+    "environmentVariableValuesMayEnterEvidence": false,
+    "temporaryRootsMustBeOutsideRepository": true,
+    "temporaryRootMarkerRequired": true,
+    "recursiveCleanupRequiresResolvedRootAndMarker": true,
+    "stdoutContract": "one-canonical-json-object-and-trailing-newline",
+    "stderrContract": "empty-on-success-bounded-error-code-on-failure",
+    "thresholdEvaluationOrder": "parse-and-retain-canonical-output-before-threshold-decision",
+    "terminalOutcomeMetricsMustBeRetained": true,
+    "terminalOutcomeMetricsMustBePublicSafe": true,
+    "terminalOutcomeMayNotBeRepaired": true,
+    "outlierPolicy": "retain-all-valid-measurements",
+    "bestOfNAllowed": false,
+    "resultRepairAllowed": false,
+    "observationWriteRequiresExplicitWriteFlag": true,
+    "comparisonRunAllowedOnlyAfterPreregistrationCommit": true,
+    "implementationAndTestsMustBeCommittedBeforeObservation": true,
+    "qualityThresholdFailureMayBeRetried": false,
+    "performanceOutcomeFailureMayBeRetried": false,
+    "deletionSemanticFailureMayBeRetried": false,
+    "instrumentationFailureMaximumRetries": 1
+  },
+  "validity": {
+    "allLineageFilesMustMatch": true,
+    "sealedSelectionMustMatch": true,
+    "allSixLanesMustComplete": true,
+    "allPerQueryMetricsMustBeRetained": true,
+    "allQualityThresholdsMustPass": true,
+    "allByteFormulasMustMatchActualFiles": true,
+    "allCapacityMatchedControlsMustBeMaximalUnderBudget": true,
+    "bothDeterminismBuildsMustMatch": true,
+    "nativeAndWasmParityMustPass": true,
+    "allCorruptionCasesMustRejectBeforeSearch": true,
+    "allFourCrashScenariosMustRecoverToExpectedGeneration": true,
+    "committedDeletionMustRemainDeletedAfterRestart": true,
+    "ownedTemporaryRootsMustBePhysicallyDeleted": true,
+    "toolSourceBinaryDatasetAndInputHashesRequired": true,
+    "terminalFailureMetricsMustRemainInspectable": true,
+    "resultDrivenThresholdChangesAllowed": false
+  },
+  "evidencePolicy": {
+    "attemptsAreImmutable": true,
+    "failedAttemptsArePreserved": true,
+    "terminalOutcomeMetricsArePreserved": true,
+    "externalDatasetBytesAllowed": false,
+    "selectedIndicesAllowed": false,
+    "rawVectorsAllowed": false,
+    "rawImagesAllowed": false,
+    "rawTextAllowed": false,
+    "privateAbsolutePathsAllowed": false,
+    "credentialsAllowed": false,
+    "modelBytesAllowed": false,
+    "publicHashesCountsMetricsTimingsAndBoundedErrorsAllowed": true
+  },
+  "authority": {
+    "portableAffineU8NumericalBehaviorMayBeClaimed": true,
+    "sameCorpusCompressedRankQualityMayBeClaimed": true,
+    "equalDynamicIndexByteCapacityUtilityMayBeClaimed": true,
+    "completeDynamicIndexByteReductionMayBeClaimed": true,
+    "nativeReferencePerformanceMayBeClaimed": true,
+    "nativeAndWasmDecisionParityMayBeClaimed": true,
+    "wrapperProcessCrashRecoveryMayBeClaimed": true,
+    "turboVecParityMayBeClaimed": false,
+    "turboQuantPaperConformanceMayBeClaimed": false,
+    "representativeSemanticMemoryQualityMayBeClaimed": false,
+    "browserPerformanceMayBeClaimed": false,
+    "powerLossDurabilityMayBeClaimed": false,
+    "filesystemForensicErasureMayBeClaimed": false,
+    "productIntegrationMayBeClaimed": false,
+    "trainingMayBeAuthorized": false,
+    "releaseMayBeAuthorized": false
+  },
+  "requiredNextGate": "Commit this preregistration and its strict validator before adding the affine-u8 implementation. Then implement one dependency-free scalar source with exact native and wasm32 behavior, preserve the first terminal result with bounded metrics whether it passes or fails, and require a separate sealed natural-language corpus plus selected embedding-model identity and untouched downstream conversations before any semantic-memory product claim."
+}

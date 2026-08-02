@@ -13,6 +13,9 @@ const { atomicCreate, syncDirectory } = require("./durable-files.js");
 const {
   validateManifestFile
 } = require("./vector-turbovec-reference-preregistration.js");
+const {
+  productionLineageReader
+} = require("./clean-history-lineage.js");
 
 const expectedExperimentId =
   "turbovec-090-4bit-tqplus-reference-comparison-20260725";
@@ -1664,16 +1667,12 @@ function assertInputsCommitted() {
   }
   const status = git(["status", "--porcelain=v1", "--", ...inputPaths], "input status");
   invariant(status === "", "observation inputs are not clean and committed");
-  const preregistrationCommit = git(
-    ["log", "-1", "--format=%H", "--", preregistrationRelativePath],
-    "preregistration commit"
+  const lineage = productionLineageReader();
+  const preregistrationCommit = lineage.pathAdditionCommit(
+    preregistrationRelativePath
   );
-  const implementationCommit = git(
+  const implementationCommit = lineage.lastChangeCommit(
     [
-      "log",
-      "-1",
-      "--format=%H",
-      "--",
       comparisonManifestRelativePath,
       comparisonLockRelativePath,
       comparisonSourceRelativePath,
@@ -1681,8 +1680,7 @@ function assertInputsCommitted() {
       verifierRelativePath,
       runnerTestRelativePath,
       verifierTestRelativePath
-    ],
-    "implementation commit"
+    ]
   );
   invariant(
     sourceRevisionPattern.test(preregistrationCommit) &&
@@ -1690,26 +1688,15 @@ function assertInputsCommitted() {
       preregistrationCommit !== implementationCommit,
     "preregistration and implementation were not committed separately"
   );
-  const ancestry = childProcess.spawnSync(
-    "git",
-    ["merge-base", "--is-ancestor", preregistrationCommit, implementationCommit],
-    {
-      cwd: repositoryRoot,
-      env: offlineEnvironment(),
-      encoding: "utf8",
-      windowsHide: true,
-      timeout: 30000
-    }
-  );
   invariant(
-    ancestry.error === undefined && ancestry.status === 0,
+    lineage.isAncestor(preregistrationCommit, implementationCommit),
     "implementation does not descend from preregistration"
   );
   return Object.freeze({ preregistrationCommit, implementationCommit });
 }
 
 function sourceRevision() {
-  const revision = git(["rev-parse", "HEAD"], "source revision");
+  const revision = productionLineageReader().headRevision();
   invariant(sourceRevisionPattern.test(revision), "source revision is invalid");
   return revision;
 }

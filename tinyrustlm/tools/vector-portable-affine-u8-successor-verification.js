@@ -7,7 +7,14 @@ const path = require("node:path");
 
 const { canonicalJson } = require("./campaign-evidence-store.js");
 const { atomicCreate } = require("./durable-files.js");
+const {
+  productionLineageReader
+} = require("./clean-history-lineage.js");
 const runner = require("./vector-portable-affine-u8-successor-observation.js");
+const {
+  readGitBlob,
+  validateGitInput
+} = require("./vector-historical-git-input.js");
 const {
   expectedManifestSha256,
   validateManifestFile
@@ -232,10 +239,7 @@ function git(argumentsList, label, allowFailure = false, encoding = "utf8") {
 }
 
 function sourceRevision() {
-  const revision = git(
-    ["rev-parse", "HEAD"],
-    "verification source revision"
-  ).stdout.trim();
+  const revision = productionLineageReader().headRevision();
   invariant(revisionPattern.test(revision), "source revision is invalid");
   return revision;
 }
@@ -258,11 +262,7 @@ function assertInputClosureCommitted() {
 }
 
 function commitForPaths(paths, label) {
-  const result = git(
-    ["log", "-1", "--format=%H", "--", ...paths],
-    label
-  );
-  const revision = result.stdout.trim();
+  const revision = productionLineageReader().lastChangeCommit(paths);
   invariant(revisionPattern.test(revision), `${label} is invalid`);
   return revision;
 }
@@ -294,38 +294,36 @@ function assertCommitOrdering(
     [verifierCommit, revision]
   ];
   for (const [ancestor, descendant] of chain) {
-    const result = git(
-      ["merge-base", "--is-ancestor", ancestor, descendant],
-      "verification commit ancestry",
-      true
+    exactValue(
+      productionLineageReader().isAncestor(ancestor, descendant),
+      true,
+      "verification commit ancestry"
     );
-    exactValue(result.status, 0, "verification commit ancestry");
   }
 }
 
 function historicalFileCandidates(relativePath, revision) {
   invariant(relativePathPattern.test(relativePath), "historical path is unsafe");
   invariant(revisionPattern.test(revision), "historical revision is invalid");
-  const result = git(
-    ["cat-file", "blob", `${revision}:${relativePath}`],
-    `historical verification input ${relativePath}`,
-    false,
-    null
+  const historicalBytes = readGitBlob(
+    repositoryRoot,
+    revision,
+    relativePath,
+    maximumInputBytes
   );
   invariant(
-    Buffer.isBuffer(result.stdout) &&
-      result.stdout.length > 0 &&
-      result.stdout.length <= maximumInputBytes,
+    historicalBytes.length > 0 &&
+      historicalBytes.length <= maximumInputBytes,
     `historical verification input is invalid: ${relativePath}`
   );
   const raw = Object.freeze({
     path: relativePath,
-    bytes: result.stdout.length,
-    sha256: sha256(result.stdout)
+    bytes: historicalBytes.length,
+    sha256: sha256(historicalBytes)
   });
   let crlf = null;
   try {
-    const text = new TextDecoder("utf-8", { fatal: true }).decode(result.stdout);
+    const text = new TextDecoder("utf-8", { fatal: true }).decode(historicalBytes);
     if (!text.includes("\r") && text.includes("\n")) {
       const bytes = Buffer.from(text.replaceAll("\n", "\r\n"), "utf8");
       crlf = Object.freeze({
@@ -743,7 +741,14 @@ function validateReceipt(value) {
   );
   value.inputs.forEach((entry, index) => {
     validateFileEvidence(entry, inputPaths[index], `verification input ${index}`);
-    exactStructure(entry, fileEvidence(inputPaths[index]), `verification input ${index}`);
+    validateGitInput(
+      entry,
+      repositoryRoot,
+      value.verificationSourceRevision,
+      inputPaths[index],
+      `verification input ${index}`,
+      maximumInputBytes
+    );
   });
   validateSummary(value.independentSummary);
   exactStructure(value.authority, authority, "verification authority");

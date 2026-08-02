@@ -8,10 +8,17 @@ const path = require("node:path");
 const { canonicalJson } = require("./campaign-evidence-store.js");
 const { atomicCreate } = require("./durable-files.js");
 const {
+  productionLineageReader
+} = require("./clean-history-lineage.js");
+const {
   expectedSha256: expectedManifestSha256,
   experimentId,
   validateManifestFile
 } = require("./vector-portable-affine-u8-json-domain-v2-preregistration.js");
+const {
+  readGitBlob,
+  validateGitInput
+} = require("./vector-historical-git-input.js");
 
 const schema =
   "tinyrustlm.portable_affine_u8_flat_json_domain_v2_verification.v1";
@@ -373,19 +380,13 @@ function git(argumentsList, label, allowFailure = false, encoding = "utf8") {
 }
 
 function sourceRevision() {
-  const revision = git(
-    ["rev-parse", "HEAD"],
-    "verification source revision"
-  ).stdout.trim();
+  const revision = productionLineageReader().headRevision();
   invariant(revisionPattern.test(revision), "source revision is invalid");
   return revision;
 }
 
 function commitForPaths(paths, label) {
-  const revision = git(
-    ["log", "-1", "--format=%H", "--", ...paths],
-    label
-  ).stdout.trim();
+  const revision = productionLineageReader().lastChangeCommit(paths);
   invariant(revisionPattern.test(revision), `${label} is invalid`);
   return revision;
 }
@@ -433,38 +434,36 @@ function assertCommitOrdering(
     [attemptCommit, verifierCommit],
     [verifierCommit, revision]
   ]) {
-    const result = git(
-      ["merge-base", "--is-ancestor", ancestor, descendant],
-      "verification commit ancestry",
-      true
+    exactValue(
+      productionLineageReader().isAncestor(ancestor, descendant),
+      true,
+      "verification commit ancestry"
     );
-    exactValue(result.status, 0, "verification commit ancestry");
   }
 }
 
 function historicalFileCandidates(relativePath, revision) {
   invariant(relativePathPattern.test(relativePath), "historical path is unsafe");
   invariant(revisionPattern.test(revision), "historical revision is invalid");
-  const result = git(
-    ["cat-file", "blob", `${revision}:${relativePath}`],
-    `historical verification input ${relativePath}`,
-    false,
-    null
+  const historicalBytes = readGitBlob(
+    repositoryRoot,
+    revision,
+    relativePath,
+    maximumInputBytes
   );
   invariant(
-    Buffer.isBuffer(result.stdout) &&
-      result.stdout.length > 0 &&
-      result.stdout.length <= maximumInputBytes,
+    historicalBytes.length > 0 &&
+      historicalBytes.length <= maximumInputBytes,
     `historical verification input is invalid: ${relativePath}`
   );
   const raw = Object.freeze({
     path: relativePath,
-    bytes: result.stdout.length,
-    sha256: sha256(result.stdout)
+    bytes: historicalBytes.length,
+    sha256: sha256(historicalBytes)
   });
   let crlf = null;
   try {
-    const text = new TextDecoder("utf-8", { fatal: true }).decode(result.stdout);
+    const text = new TextDecoder("utf-8", { fatal: true }).decode(historicalBytes);
     if (!text.includes("\r") && text.includes("\n")) {
       const bytes = Buffer.from(text.replaceAll("\n", "\r\n"), "utf8");
       crlf = Object.freeze({
@@ -858,12 +857,12 @@ function validateRunnerBoundary() {
     runnerRelativePath,
     expectedImplementationCommit
   );
-  const source = git(
-    ["cat-file", "blob", `${expectedImplementationCommit}:${runnerRelativePath}`],
-    "historical runner source",
-    false,
-    null
-  ).stdout.toString("utf8");
+  const source = readGitBlob(
+    repositoryRoot,
+    expectedImplementationCommit,
+    runnerRelativePath,
+    maximumInputBytes
+  ).toString("utf8");
   invariant(
     candidates.raw.sha256 === sha256(Buffer.from(source, "utf8")),
     "runner source identity drifted"
@@ -2159,10 +2158,13 @@ function validateReceipt(value) {
       verificationInputPaths[index],
       `verification input ${index}`
     );
-    exactStructure(
+    validateGitInput(
       entry,
-      fileEvidence(verificationInputPaths[index]),
-      `verification input ${index} current identity`
+      repositoryRoot,
+      value.verificationSourceRevision,
+      verificationInputPaths[index],
+      `verification input ${index}`,
+      maximumInputBytes
     );
   });
   exactStructure(

@@ -1,12 +1,14 @@
 "use strict";
 
-const childProcess = require("node:child_process");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 
 const { canonicalJson } = require("./campaign-evidence-store.js");
 const { atomicCreate } = require("./durable-files.js");
+const {
+  productionLineageReader
+} = require("./clean-history-lineage.js");
 const {
   validateGitInput
 } = require("./vector-historical-git-input.js");
@@ -185,22 +187,8 @@ function fileEvidence(relativePath) {
   });
 }
 
-function git(argumentsList, label) {
-  const result = childProcess.spawnSync("git", argumentsList, {
-    cwd: repositoryRoot,
-    encoding: "utf8",
-    windowsHide: true,
-    timeout: 30000,
-    maxBuffer: 8 * 1024 * 1024
-  });
-  invariant(result.error === undefined, `${label} spawn failed`);
-  invariant(result.status === 0, `${label} failed`);
-  invariant(result.stderr === "", `${label} wrote stderr`);
-  return result.stdout.trim();
-}
-
 function sourceRevision() {
-  const revision = git(["rev-parse", "HEAD"], "verification source revision");
+  const revision = productionLineageReader().headRevision();
   invariant(
     sourceRevisionPattern.test(revision),
     "verification source revision is invalid"
@@ -214,18 +202,8 @@ function assertRevisionAncestor(ancestor, descendant, label) {
       sourceRevisionPattern.test(descendant),
     `${label} revision is invalid`
   );
-  const result = childProcess.spawnSync(
-    "git",
-    ["merge-base", "--is-ancestor", ancestor, descendant],
-    {
-      cwd: repositoryRoot,
-      encoding: "utf8",
-      windowsHide: true,
-      timeout: 30000
-    }
-  );
   invariant(
-    result.error === undefined && result.status === 0,
+    productionLineageReader().isAncestor(ancestor, descendant),
     `${label} ancestry is invalid`
   );
 }

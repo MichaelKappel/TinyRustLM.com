@@ -26,6 +26,9 @@ const {
 const {
   validateGitInput
 } = require("./vector-historical-git-input.js");
+const {
+  productionLineageReader
+} = require("./clean-history-lineage.js");
 
 const receiptSchema =
   "tinyrustlm.exact_flat_baseline_evidence_verification_receipt.v1";
@@ -118,30 +121,17 @@ function sha256File(filePath) {
 }
 
 function sourceRevision() {
-  const result = childProcess.spawnSync("git", ["rev-parse", "HEAD"], {
-    cwd: repositoryRoot,
-    encoding: "utf8",
-    maxBuffer: 1024 * 1024,
-    shell: false,
-    windowsHide: true
-  });
-  invariant(result.status === 0 && !result.error, "source revision probe failed");
-  const revision = String(result.stdout || "").trim();
+  const revision = productionLineageReader().headRevision();
   invariant(sourceRevisionPattern.test(revision), "source revision is invalid");
   return revision;
 }
 
 function requireCommit(revision, label) {
   invariant(sourceRevisionPattern.test(revision), `${label} revision is invalid`);
-  const result = childProcess.spawnSync("git",
-    ["cat-file", "-e", `${revision}^{commit}`], {
-      cwd: repositoryRoot,
-      encoding: "utf8",
-      maxBuffer: 1024 * 1024,
-      shell: false,
-      windowsHide: true
-    });
-  invariant(result.status === 0 && !result.error, `${label} commit is unavailable`);
+  invariant(
+    productionLineageReader().hasRevision(revision),
+    `${label} commit is unavailable`
+  );
 }
 
 function nodeIdentity() {

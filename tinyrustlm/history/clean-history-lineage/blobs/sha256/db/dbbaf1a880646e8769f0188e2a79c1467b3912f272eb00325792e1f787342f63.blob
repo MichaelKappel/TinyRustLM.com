@@ -1,0 +1,36 @@
+//! Independent scalar numerical oracles for pre-product vector experiments.
+//!
+//! This crate deliberately has no dependencies and no TinyRustLM runtime
+//! integration. It defines correctness references, not a product format or a
+//! performance implementation.
+
+#![forbid(unsafe_code)]
+
+mod accounting;
+mod bitpack;
+mod codebook;
+mod error;
+mod flat_index;
+mod metrics;
+mod prng;
+mod score;
+mod sha256;
+mod transform;
+
+pub use accounting::StorageAccounting;
+pub use bitpack::{
+    pack_signed_codes, pack_unsigned_codes, packed_byte_len, unpack_signed_codes,
+    unpack_unsigned_codes, MAX_CODE_COUNT, MAX_CODE_WIDTH,
+};
+pub use codebook::{ScalarCodebook, WeightedSample, MAX_CODEBOOK_LEVELS, MAX_LLOYD_ITERATIONS};
+pub use error::OracleError;
+pub use flat_index::{
+    CalibrationIdentity, ExactFlatIndex, ExactFlatIndexBuilder, FlatIndexConfig,
+    FlatIndexConfigSpec, FlatIndexError, RetrievalMetric, RetrievalTransform, SearchHit,
+    VectorNormalization, MAX_FLAT_INDEX_BYTES, MAX_FLAT_RECORDS, MAX_FLAT_SEARCH_RESULTS,
+};
+pub use metrics::{DistortionMetrics, RankOrderMetrics, ScoreErrorMetrics};
+pub use prng::DeterministicRng;
+pub use score::PackedVector;
+pub use sha256::sha256;
+pub use transform::{TransformFamily, TransformPlan, MAX_VECTOR_DIMENSION};

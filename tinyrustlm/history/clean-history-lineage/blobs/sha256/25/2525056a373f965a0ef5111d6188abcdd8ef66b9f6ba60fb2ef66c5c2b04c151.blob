@@ -1,0 +1,17 @@
+{
+  "name": "tinyrustlm-browser-acceptance",
+  "version": "0.0.0-private",
+  "private": true,
+  "description": "Browser acceptance tests for the TinyRustLM web-to-companion boundary.",
+  "scripts": {
+    "test:unit": "node --test tests/*.test.js",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test e2e/ui.spec.js",
+    "test:e2e:companion": "playwright test e2e/companion.spec.js --project=desktop",
+    "test:e2e:memory": "playwright test e2e/memory-endpoints-enrollment.spec.js --project=desktop",
+    "qualify:models": "node tools/model-qualification-runner.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1"
+  }
+}

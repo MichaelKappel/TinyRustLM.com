@@ -1,0 +1,439 @@
+{
+  "schema": "tinyrustlm.portable_affine_u8_json_domain_v2_preregistration.v1",
+  "experimentId": "portable-affine-u8-flat-json-domain-v2-20260726",
+  "registeredAtUtc": "2026-07-26T13:15:32.578Z",
+  "status": "preregistered-after-fix-before-runner-or-outcome",
+  "registrationBoundary": {
+    "parentSourceRevision": "ab3ecd1698ba9a70c5975060e692efedee3d6669",
+    "redTestCommit": "cbc4a832f94f0fe683aeb9a19b34cba2c4b6a0bf",
+    "fixCommit": "e6a97380c5b571e069e866421a29f76b56344cd9",
+    "defectSummaryCommit": "ab3ecd1698ba9a70c5975060e692efedee3d6669",
+    "implementationExistsBeforeRegistration": true,
+    "outcomeRunnerExistsBeforeRegistration": false,
+    "outcomeModesInvokedBeforeRegistration": false,
+    "qualityMetricsObservedBeforeRegistration": false,
+    "performanceMetricsObservedBeforeRegistration": false,
+    "thresholdDecisionObservedBeforeRegistration": false
+  },
+  "lineage": {
+    "terminalExperiment": {
+      "experimentId": "portable-affine-u8-flat-successor-20260726",
+      "attemptPath": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-successor-attempts/sha256/df/df0c29200bd7439d953e09e674abb982db28a1fcf1d0a33e091d85b0492de188.json",
+      "attemptBytes": 41153,
+      "attemptFileSha256": "a86a9505dc35c1304e6b847153c2421be859ad11b11015359dbf64a8779bd210",
+      "attemptId": "portable-affine-u8-flat-successor-attempt-df0c29200bd7439d",
+      "attemptContentHash": "df0c29200bd7439d953e09e674abb982db28a1fcf1d0a33e091d85b0492de188",
+      "verificationPath": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-successor-verification-v1.json",
+      "verificationBytes": 7508,
+      "verificationFileSha256": "61c7ca29024dd9218967dd1ffcef7fa821be21416209faad814a47f0a9e8ae71",
+      "verificationReceiptId": "portable-affine-u8-flat-successor-verification-624bbe252915cea5",
+      "status": "verified-terminal-quality-process-failure",
+      "retryAllowed": false,
+      "qualityMetricsPresent": false,
+      "performanceMetricsPresent": false,
+      "productPromotionAllowed": false,
+      "campaignCounterMayBeIncremented": false
+    },
+    "failureToRegression": {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-quality-number-domain-defect.v1.json",
+      "bytes": 7624,
+      "sha256": "15511b48c6b9027067eb3581fe05895073b9c4226af82a6ae29771030bb9e6e6",
+      "defectId": "portable-affine-u8-quality-number-domain-abort-20260726",
+      "status": "proven-code-defect-fixed-in-distinct-unexecuted-successor",
+      "exactFirstHistoricalPanicSiteProven": false,
+      "sameExperimentRetryAllowed": false
+    }
+  },
+  "subject": {
+    "methodId": "portable-global-affine-u8-flat-v1",
+    "algorithmChanged": false,
+    "retrievalImplementationChanged": false,
+    "corpusChanged": false,
+    "selectionChanged": false,
+    "groundTruthChanged": false,
+    "byteAccountingChanged": false,
+    "qualityThresholdsChanged": false,
+    "performanceThresholdsChanged": false,
+    "persistenceSemanticsChanged": false,
+    "allowedImplementationChanges": [
+      "Replace one unit-only JSON float formatter with checked finite, nonnegative, unit, and signed-unit formatters.",
+      "Return bounded serialization errors through BenchResult instead of asserting or aborting.",
+      "Assign distinct v2 experiment, output-schema, commit-schema, and deletion-marker identities.",
+      "Serialize process-global current-directory unit tests with a test-only mutex."
+    ],
+    "forbiddenImplementationChanges": [
+      "Retrieval arithmetic or ranking changes.",
+      "Quantization or reconstruction changes.",
+      "Corpus, selection, query, or seed changes.",
+      "Threshold weakening.",
+      "Output repair, reranking, retries, or best-of-N.",
+      "Dropping raw validated metrics after a threshold failure.",
+      "Product integration or campaign authority."
+    ],
+    "frozenOriginalPreregistration": {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-preregistration.v1.json",
+      "bytes": 21703,
+      "sha256": "76cccb8fe353847235f8ea1d647c6762677e19b8abe593b83f9733dfbfe6c06d",
+      "sectionHashes": [
+        {
+          "section": "method",
+          "canonicalJsonBytes": 1529,
+          "sha256": "0da889f1c588d89651ea7c8ef29f545ccd4d05c2afbeb7f45de4d6feb518660a"
+        },
+        {
+          "section": "corpusReuse",
+          "canonicalJsonBytes": 1783,
+          "sha256": "aaf722c129dd574840cdf124edb8288083a7a15526312d0c50386746480b33d3"
+        },
+        {
+          "section": "groundTruth",
+          "canonicalJsonBytes": 1053,
+          "sha256": "6f775c78b4ecfbee353cf3748110e5dcd99e2b6420e82c1cd1a9c7e54e62c20d"
+        },
+        {
+          "section": "byteAccounting",
+          "canonicalJsonBytes": 1338,
+          "sha256": "86f0d7d245b3879586f6056f4359e00a5c6ce52cb16c55fb487afa31112f3e37"
+        },
+        {
+          "section": "qualityThresholds",
+          "canonicalJsonBytes": 1299,
+          "sha256": "3a4857e12dace0ea33a511f808cc4e3d67a50afb38f03e16d35af97b7c741f90"
+        },
+        {
+          "section": "nativeAndWasm",
+          "canonicalJsonBytes": 549,
+          "sha256": "c54f2026674708f23961901577a79888717d45ec47da4b0a40d33007abd5e7e5"
+        },
+        {
+          "section": "performanceThresholds",
+          "canonicalJsonBytes": 1067,
+          "sha256": "6c28fee7d372d5d297b2b76b4c1ad1275e11bc6824636222d801fe8be62390ce"
+        },
+        {
+          "section": "persistenceAndFailure",
+          "canonicalJsonBytes": 2037,
+          "sha256": "08412ab53f4f504217019685d29226ee5791baf6ef9efacc5a18406657ae7beb"
+        }
+      ]
+    },
+    "criticalInputs": [
+      {
+        "path": "Cargo.toml",
+        "bytes": 1134,
+        "sha256": "406a59037703fe26d0979fda67a818387b3cd6533b915ad47f045156392ceb45"
+      },
+      {
+        "path": "Cargo.lock",
+        "bytes": 14748,
+        "sha256": "9b0a3bf305675e1e3ce9ae781e67786bde5635e9659be08a8b8773e3b29b4374"
+      },
+      {
+        "path": "rust/experiments/tinyrustlm-vector-oracle/Cargo.toml",
+        "bytes": 312,
+        "sha256": "e962ea7c04a47dd8f72122f1de129e5175d3a40eac2dca511d399fee1f5e52c9"
+      },
+      {
+        "path": "rust/experiments/tinyrustlm-vector-oracle/src/lib.rs",
+        "bytes": 1542,
+        "sha256": "b878effc8bcee87916504778355d914d24bcd6beaceef7c93b5896a7cd4aa546"
+      },
+      {
+        "path": "rust/experiments/tinyrustlm-vector-oracle/src/accounting.rs",
+        "bytes": 3884,
+        "sha256": "ecd53e96a25fd3753ecd69c6dd7a33e40e5506e424669b0da3575394dece50f0"
+      },
+      {
+        "path": "rust/experiments/tinyrustlm-vector-oracle/src/affine_u8_index.rs",
+        "bytes": 34830,
+        "sha256": "fc964d1dffa9c3ff95b72646feede6b5bc5903ec84d145b2f28c7f1f78d6876d"
+      },
+      {
+        "path": "rust/experiments/tinyrustlm-vector-oracle/src/bitpack.rs",
+        "bytes": 10969,
+        "sha256": "685a4b8682d3fea40d8e50975228cb5c06a2101c9a8067b70ab5fe2f92d60cf1"
+      },
+      {
+        "path": "rust/experiments/tinyrustlm-vector-oracle/src/codebook.rs",
+        "bytes": 15253,
+        "sha256": "08b58571dbae6c7dcbe857ddacbc5f45d19af6c5fb336df1fabeb4b163ef99bc"
+      },
+      {
+        "path": "rust/experiments/tinyrustlm-vector-oracle/src/error.rs",
+        "bytes": 9046,
+        "sha256": "f09f395388ed0c1f6d1160e4ea12b320baec1f01a40f17330989c8bf881fc7db"
+      },
+      {
+        "path": "rust/experiments/tinyrustlm-vector-oracle/src/flat_index.rs",
+        "bytes": 40496,
+        "sha256": "4627ee3c0fae6605a415e3a2b917e5346f01b3ac992e938ce724edf3df1aa17b"
+      },
+      {
+        "path": "rust/experiments/tinyrustlm-vector-oracle/src/metrics.rs",
+        "bytes": 12071,
+        "sha256": "4fb354c13c0dfda8987de8a54f83c32d28725d79c09c78ca0978dd6ab7d5c05c"
+      },
+      {
+        "path": "rust/experiments/tinyrustlm-vector-oracle/src/prng.rs",
+        "bytes": 3167,
+        "sha256": "45d64327c6e7d2184857c87f453fb57172da74315028034abb8a5229172964eb"
+      },
+      {
+        "path": "rust/experiments/tinyrustlm-vector-oracle/src/score.rs",
+        "bytes": 9825,
+        "sha256": "c60a9a7c1935f3a6d22ef0d49c32a3c74bc0c1abf174fb267ab293e3e9b45c38"
+      },
+      {
+        "path": "rust/experiments/tinyrustlm-vector-oracle/src/sha256.rs",
+        "bytes": 5237,
+        "sha256": "3b9efb7ed1629e7ff80d480f56a76f2c7a9008a8782045188f6ae0d6491c3b6a"
+      },
+      {
+        "path": "rust/experiments/tinyrustlm-vector-oracle/src/transform.rs",
+        "bytes": 11797,
+        "sha256": "e1ab84175ac2e0ae3d81416a55da6423f1ebf0189f81dcb463f61ded619336e1"
+      },
+      {
+        "path": "rust/experiments/tinyrustlm-vector-oracle/tests/affine_u8_index_test.rs",
+        "bytes": 13951,
+        "sha256": "87a6809801d564fdebd2e17d83fb49788e71b0f270eafab658585e787bb7cf11"
+      },
+      {
+        "path": "rust/experiments/tinyrustlm-vector-oracle/tests/flat_index_test.rs",
+        "bytes": 9647,
+        "sha256": "8877f2ebe8fd9ee00155c6d9df41e5d6c0b6227550e7a7c327f41b60a8dd7427"
+      },
+      {
+        "path": "rust/experiments/tinyrustlm-vector-oracle/tests/lib_test.rs",
+        "bytes": 2731,
+        "sha256": "c7a1a58e37c7fc1e0a96eed26cb3f3c064c1abff44d6ca57b0745d694dd2007e"
+      },
+      {
+        "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-benchmark-v2.rs",
+        "bytes": 130507,
+        "sha256": "dbe6e343f65e8e501277ebd15ae7081fd91e87aee84582342ab3119e60a24ae9"
+      },
+      {
+        "path": "tinyrustlm/tests/vector-portable-affine-u8-benchmark-v2.test.js",
+        "bytes": 4358,
+        "sha256": "ded8d50a3b65d171d6fe50fd096833e05a358946aa2406d781756ca0cb3621b4"
+      },
+      {
+        "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-quality-number-domain-defect.v1.json",
+        "bytes": 7624,
+        "sha256": "15511b48c6b9027067eb3581fe05895073b9c4226af82a6ae29771030bb9e6e6"
+      },
+      {
+        "path": "tinyrustlm/tests/vector-portable-affine-u8-quality-number-domain-defect.test.js",
+        "bytes": 4853,
+        "sha256": "c9ff60180a57260ef84a74c04ce5e5955e9e4de1875894cff9b9050f08758bee"
+      }
+    ],
+    "externalDataset": {
+      "sourceRepository": "https://github.com/zalandoresearch/fashion-mnist.git",
+      "revision": "b2617bb6d3ffa2e429640350f613e3291e10b141",
+      "tree": "ec8d5e52c0b9b2b09ea3f9d36b7bfafaf8ec0e97",
+      "selectionSha256": "8be904326c844c31b6e973f88bc6ce2e0a7462d51aa0d5ae497dda4b02472fbd",
+      "networkAcquisitionAllowed": false,
+      "checkoutMustBeClean": true,
+      "locatorMayEnterEvidence": false,
+      "payloadBytesMayEnterEvidence": false,
+      "selectedIndicesMayEnterEvidence": false,
+      "rawVectorsMayEnterEvidence": false
+    }
+  },
+  "outputContract": {
+    "benchmarkContractSchema": "tinyrustlm.portable_affine_u8_benchmark_contract.v2",
+    "qualitySchema": "tinyrustlm.portable_affine_u8_quality_process.v2",
+    "performanceSchema": "tinyrustlm.portable_affine_u8_performance_process.v2",
+    "recoverySchema": "tinyrustlm.portable_affine_u8_durable_deletion_recovery.v2",
+    "commitSchema": "tinyrustlm.portable_affine_u8_deletion_commit.v2",
+    "qualityNumberDomains": {
+      "unitInterval": [
+        "recall",
+        "mrr",
+        "ndcg",
+        "rankInversionRate",
+        "labelUtility",
+        "controlledUtilityRate"
+      ],
+      "signedUnitInterval": [
+        "naturalUtilityDelta"
+      ],
+      "nonnegativeFinite": [
+        "normalizedScoreError",
+        "candidateToFullExactRatio",
+        "effectiveBitsPerOriginalCoordinate"
+      ],
+      "finite": [
+        "candidateRawScore",
+        "oracleRawScore"
+      ]
+    },
+    "invalidNumberBehavior": "bounded lowercase benchmark error; no assertion, panic, repair, null substitution, omission, or retry"
+  },
+  "fullExecution": {
+    "platform": "win32-x64-local-reference-only",
+    "networkPolicy": "deny-all",
+    "parallelBenchmarkProcesses": 1,
+    "overallTimeoutMilliseconds": 3600000,
+    "perProcessTimeoutMilliseconds": 300000,
+    "pendingIntentWrittenAndReopenedBeforeSetup": true,
+    "failFast": true,
+    "phaseOrder": [
+      {
+        "ordinal": 1,
+        "phase": "pending-intent",
+        "benchmarkProcessCount": 0,
+        "required": true
+      },
+      {
+        "ordinal": 2,
+        "phase": "source-dataset-tool-validation",
+        "benchmarkProcessCount": 0,
+        "required": true
+      },
+      {
+        "ordinal": 3,
+        "phase": "v2-regressions-native-tests-clippy-docs-wasm-build-and-execution",
+        "benchmarkProcessCount": 0,
+        "required": true
+      },
+      {
+        "ordinal": 4,
+        "phase": "contract",
+        "benchmarkProcessCount": 1,
+        "required": true
+      },
+      {
+        "ordinal": 5,
+        "phase": "corruption",
+        "benchmarkProcessCount": 7,
+        "required": true
+      },
+      {
+        "ordinal": 6,
+        "phase": "crash-and-recovery",
+        "benchmarkProcessCount": 8,
+        "required": true
+      },
+      {
+        "ordinal": 7,
+        "phase": "quality",
+        "benchmarkProcessCount": 1,
+        "required": true
+      },
+      {
+        "ordinal": 8,
+        "phase": "paired-performance",
+        "benchmarkProcessCount": 60,
+        "required": true
+      },
+      {
+        "ordinal": 9,
+        "phase": "threshold-decision-and-observation-commit",
+        "benchmarkProcessCount": 0,
+        "required": true
+      }
+    ],
+    "maximumBenchmarkProcessCount": 77,
+    "maximumMemoryMonitorProcessCount": 60,
+    "qualityProcessCount": 1,
+    "qualityFailureIsTerminal": true,
+    "qualityThresholdFailureIsTerminal": true,
+    "performanceOutcomeFailureIsTerminal": true,
+    "corruptionOrRecoverySemanticFailureIsTerminal": true,
+    "laterPhasesSkippedAfterTerminalFailure": true,
+    "rawProcessOutputRetainedOnlyInMemoryUntilValidation": true,
+    "rawProcessOutputMayEnterEvidence": false,
+    "validMetricsRetainedOnThresholdFailure": true,
+    "bestOfNAllowed": false,
+    "outputRepairAllowed": false
+  },
+  "attemptPolicy": {
+    "maximumAttemptCount": 1,
+    "maximumRetryCount": 0,
+    "lostResponseRecoveryMayOnlyReopenTheSameCommittedAttempt": true,
+    "qualityProcessFailureMayBeRetried": false,
+    "qualityThresholdFailureMayBeRetried": false,
+    "performanceOutcomeFailureMayBeRetried": false,
+    "corruptionOrRecoverySemanticFailureMayBeRetried": false,
+    "infrastructureFailureMayBeRetried": false,
+    "failedAttemptMustBePreserved": true,
+    "attemptMustBeContentAddressed": true,
+    "attemptMayBeOverwritten": false,
+    "pendingJournalMayBeRemovedOnlyAfterAttemptCommitAndReopen": true
+  },
+  "plannedArtifacts": {
+    "runnerPath": "tinyrustlm/tools/vector-portable-affine-u8-json-domain-v2-observation.js",
+    "runnerExistsAtRegistration": false,
+    "runnerTestPath": "tinyrustlm/tests/vector-portable-affine-u8-json-domain-v2-observation.test.js",
+    "runnerTestExistsAtRegistration": false,
+    "pendingPath": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-json-domain-v2-pending-attempt-v1.json",
+    "pendingExistsAtRegistration": false,
+    "attemptDirectory": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-json-domain-v2-attempts/sha256",
+    "attemptExistsAtRegistration": false,
+    "observationPath": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-json-domain-v2-observation-v1.json",
+    "observationExistsAtRegistration": false,
+    "verifierPath": "tinyrustlm/tools/vector-portable-affine-u8-json-domain-v2-verification.js",
+    "verifierExistsAtRegistration": false,
+    "verifierTestPath": "tinyrustlm/tests/vector-portable-affine-u8-json-domain-v2-verification.test.js",
+    "verifierTestExistsAtRegistration": false,
+    "verificationPath": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-json-domain-v2-verification-v1.json",
+    "verificationExistsAtRegistration": false
+  },
+  "evidencePolicy": {
+    "sourceRevisionRequired": true,
+    "implementationCommitRequired": true,
+    "registrationCommitRequired": true,
+    "toolVersionsAndBinaryHashesRequired": true,
+    "datasetRevisionAndTreeRequired": true,
+    "allInputFileHashesRequired": true,
+    "benchmarkExecutableHashRequired": true,
+    "wasmArtifactHashRequired": true,
+    "processExitSignalByteCountsAndHashesRequired": true,
+    "safeLowercaseBenchmarkErrorCodeMayBeRetained": true,
+    "rawStdoutAllowed": false,
+    "rawStderrAllowed": false,
+    "privateAbsolutePathsAllowed": false,
+    "credentialsAllowed": false,
+    "datasetLocatorAllowed": false,
+    "rawDatasetPayloadAllowed": false,
+    "selectedIndicesAllowed": false,
+    "independentVerificationRequired": true,
+    "resultDrivenReclassificationAllowed": false
+  },
+  "authority": {
+    "beforeIndependentVerifiedPass": {
+      "portableAffineU8NumericalBehaviorMayBeClaimed": false,
+      "sameCorpusCompressedRankQualityMayBeClaimed": false,
+      "equalDynamicIndexByteCapacityUtilityMayBeClaimed": false,
+      "completeDynamicIndexByteReductionMayBeClaimed": false,
+      "nativeReferencePerformanceMayBeClaimed": false,
+      "nativeAndWasmDecisionParityMayBeClaimed": false,
+      "wrapperProcessCrashRecoveryMayBeClaimed": false,
+      "representativeSemanticMemoryQualityMayBeClaimed": false,
+      "browserPerformanceMayBeClaimed": false,
+      "productIntegrationMayBeClaimed": false,
+      "trainingMayBeAuthorized": false,
+      "releaseMayBeAuthorized": false,
+      "campaignCounterMayBeIncremented": false
+    },
+    "potentialAfterCompleteIndependentVerifiedPass": {
+      "portableAffineU8NumericalBehaviorMayBeClaimed": true,
+      "sameCorpusCompressedRankQualityMayBeClaimed": true,
+      "equalDynamicIndexByteCapacityUtilityMayBeClaimed": true,
+      "completeDynamicIndexByteReductionMayBeClaimed": true,
+      "nativeReferencePerformanceMayBeClaimed": true,
+      "nativeAndWasmDecisionParityMayBeClaimed": true,
+      "wrapperProcessCrashRecoveryMayBeClaimed": true,
+      "representativeSemanticMemoryQualityMayBeClaimed": false,
+      "browserPerformanceMayBeClaimed": false,
+      "productIntegrationMayBeClaimed": false,
+      "trainingMayBeAuthorized": false,
+      "releaseMayBeAuthorized": false,
+      "campaignCounterMayBeIncremented": false
+    }
+  },
+  "requiredNextGate": "Commit this preregistration and strict validator before creating the runner or verifier. Then implement the one-attempt durable runner, validate the complete frozen process schedule without invoking outcome modes, commit it, execute the v2 outcome exactly once, preserve the terminal attempt and any observation, and require a separately committed independent verifier before making any bounded research claim."
+}

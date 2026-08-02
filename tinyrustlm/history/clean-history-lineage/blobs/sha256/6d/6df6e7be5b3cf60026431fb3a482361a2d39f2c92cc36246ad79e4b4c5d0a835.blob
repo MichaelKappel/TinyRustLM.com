@@ -1,0 +1,35 @@
+"use strict";
+
+const assert = require("node:assert/strict");
+const test = require("node:test");
+
+const {
+  memoryMonitorScript
+} = require("../tools/vector-portable-affine-u8-observation.js");
+
+function statementOffsets(script) {
+  return {
+    ready: script.indexOf("Write-NewMarker $ready"),
+    sample: script.indexOf("$sampleCount += 1"),
+    postPrepareAck: script.indexOf("Write-NewMarker $postPrepareAck"),
+    minimumGuard: script.indexOf(
+      "if ($sampleCount -lt 2) { throw 'memory-monitor-too-few-samples' }"
+    )
+  };
+}
+
+function minimumSamplesIfPostPrepareIsFirstLoopSample(script) {
+  const offsets = statementOffsets(script);
+  assert.notEqual(offsets.ready, -1);
+  assert.notEqual(offsets.sample, -1);
+  assert.notEqual(offsets.postPrepareAck, -1);
+  assert.notEqual(offsets.minimumGuard, -1);
+  const samplesBeforeReady = offsets.sample < offsets.ready ? 1 : 0;
+  return samplesBeforeReady + 1;
+}
+
+test("takes a baseline sample before releasing a fast target", () => {
+  assert.ok(
+    minimumSamplesIfPostPrepareIsFirstLoopSample(memoryMonitorScript) >= 2
+  );
+});

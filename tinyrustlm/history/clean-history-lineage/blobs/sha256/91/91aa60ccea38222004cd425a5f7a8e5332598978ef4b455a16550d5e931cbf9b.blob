@@ -1,0 +1,330 @@
+{
+  "schema": "tinyrustlm.portable_affine_u8_flat_verification.v1",
+  "experimentId": "portable-affine-u8-flat-20260726",
+  "status": "verified-terminal-no-observation",
+  "verifiedAtUtc": "2026-07-26T11:23:56.921Z",
+  "verificationSourceRevision": "41801f7114b2c0df04f796946051e4f821472ce1",
+  "preregistration": {
+    "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-preregistration.v1.json",
+    "sha256": "76cccb8fe353847235f8ea1d647c6762677e19b8abe593b83f9733dfbfe6c06d"
+  },
+  "observation": null,
+  "attempts": [
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-attempts/sha256/cc/ccf5545439e25df5a31a0f392fd4f927c8c414b0b8130cd3a239387e5e0406f0.json",
+      "bytes": 1027,
+      "fileSha256": "a40b6663f6169b1e68a8bc4078a532015a3d70de0b61574180276c34b01cb9a8",
+      "attemptId": "portable-affine-u8-flat-attempt-ccf5545439e25df5",
+      "attemptContentHash": "ccf5545439e25df5a31a0f392fd4f927c8c414b0b8130cd3a239387e5e0406f0",
+      "attemptOrdinal": 1,
+      "status": "fail",
+      "sourceRevision": "801c53e2676c2e91b97a443867ca950ad204c2cc",
+      "failureCode": "PORTABLE_AFFINE_U8_ATTEMPT_COMMIT_REJECTED",
+      "failureClassification": "instrumentation",
+      "retryAllowed": true,
+      "failureMessageSha256": "55099b3f678d59f9e3c9221e5d987c80dd3aef588b7b78b5787f6e4310a2eee8",
+      "failureCauseMessageSha256": "8bed85b8569719456ebc6c2a7a8bd68c0cabebabd42855398bb86fd7b812547a",
+      "observationId": null,
+      "observationContentHash": null
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-attempts/sha256/35/35bb8ee57ea6f6065961a3cf8fb7749ca409c96847ad0fc1bb8146bc1e9a019c.json",
+      "bytes": 1075,
+      "fileSha256": "d9cc158c47a816570e2861122e00af3660d7254ea9b037b9077f3cb8a62dac02",
+      "attemptId": "portable-affine-u8-flat-attempt-35bb8ee57ea6f606",
+      "attemptContentHash": "35bb8ee57ea6f6065961a3cf8fb7749ca409c96847ad0fc1bb8146bc1e9a019c",
+      "attemptOrdinal": 2,
+      "status": "fail",
+      "sourceRevision": "90c955eef96f4c962c00ce215ca5b57e005bb9d0",
+      "failureCode": "PORTABLE_AFFINE_U8_QUALITY_OUTCOME_REJECTED",
+      "failureClassification": "instrumentation",
+      "retryAllowed": false,
+      "failureMessageSha256": "c300f6cd36c603c3aa2d44db0551fb737dca22bbcef3d3e6fd7b811463f8ff22",
+      "failureCauseMessageSha256": "014f2e1a1c433776f7a87a5464cc7eb5878dd429c09c3e03f7b6b68c480e2d33",
+      "observationId": null,
+      "observationContentHash": null
+    }
+  ],
+  "inputs": [
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-preregistration.v1.json",
+      "bytes": 21703,
+      "sha256": "76cccb8fe353847235f8ea1d647c6762677e19b8abe593b83f9733dfbfe6c06d"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-preregistration.v1.json",
+      "bytes": 19483,
+      "sha256": "f6c1ac0d2c0f40365aca977aeccb894416185dc7069a97bb357510b94d94b4d1"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-observation-v1.json",
+      "bytes": 494169,
+      "sha256": "fa04d21ae35555b6a1d500eaf8569c5a7246c1bfde1f0bfc2e62812d6965c45c"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-verification-v1.json",
+      "bytes": 12984,
+      "sha256": "9e745a77807524ad6bf2eff3aab0cf5b2a5a3c246c484698bb9ce108948a9fe1"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-verification-v2.json",
+      "bytes": 13322,
+      "sha256": "95b36d822d3c49ec342e54ad277eb4e6925a59cffdea40fdeefe15d263bcbc7c"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/turbovec-reference-comparison-preregistration.v1.json",
+      "bytes": 28197,
+      "sha256": "96a3fad0078850e2fe9fb4d619979ca9e5b753f23a3fab6df53aebe9b9afe6ed"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/turbovec-reference-attempts/sha256/b8/b8ffb20cebbeccf0f11b297c19f771dc700f7227a03375c21f3ee52f757e25de.json",
+      "bytes": 1035,
+      "sha256": "1453fcd6067b20a80c900f71497733e5b3c20b7fe92d3fed98a760050ff325aa"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/turbovec-reference-attempts/sha256/db/db1a760c3d25893ed9f5ec6025a19e0a121b96bb1fb81092670155eff24e5baa.json",
+      "bytes": 1096,
+      "sha256": "00bf8c3b0754b5576c94b41974882badc0457ba03f5474815f1c51aea01d429f"
+    },
+    {
+      "path": "Cargo.toml",
+      "bytes": 1134,
+      "sha256": "406a59037703fe26d0979fda67a818387b3cd6533b915ad47f045156392ceb45"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 14748,
+      "sha256": "9b0a3bf305675e1e3ce9ae781e67786bde5635e9659be08a8b8773e3b29b4374"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/Cargo.toml",
+      "bytes": 312,
+      "sha256": "e962ea7c04a47dd8f72122f1de129e5175d3a40eac2dca511d399fee1f5e52c9"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/lib.rs",
+      "bytes": 1542,
+      "sha256": "b878effc8bcee87916504778355d914d24bcd6beaceef7c93b5896a7cd4aa546"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/affine_u8_index.rs",
+      "bytes": 34830,
+      "sha256": "fc964d1dffa9c3ff95b72646feede6b5bc5903ec84d145b2f28c7f1f78d6876d"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/tests/affine_u8_index_test.rs",
+      "bytes": 13951,
+      "sha256": "87a6809801d564fdebd2e17d83fb49788e71b0f270eafab658585e787bb7cf11"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/tests/flat_index_test.rs",
+      "bytes": 9647,
+      "sha256": "8877f2ebe8fd9ee00155c6d9df41e5d6c0b6227550e7a7c327f41b60a8dd7427"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/tests/lib_test.rs",
+      "bytes": 2731,
+      "sha256": "c7a1a58e37c7fc1e0a96eed26cb3f3c064c1abff44d6ca57b0745d694dd2007e"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/accounting.rs",
+      "bytes": 3884,
+      "sha256": "ecd53e96a25fd3753ecd69c6dd7a33e40e5506e424669b0da3575394dece50f0"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/bitpack.rs",
+      "bytes": 10969,
+      "sha256": "685a4b8682d3fea40d8e50975228cb5c06a2101c9a8067b70ab5fe2f92d60cf1"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/codebook.rs",
+      "bytes": 15253,
+      "sha256": "08b58571dbae6c7dcbe857ddacbc5f45d19af6c5fb336df1fabeb4b163ef99bc"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/error.rs",
+      "bytes": 9046,
+      "sha256": "f09f395388ed0c1f6d1160e4ea12b320baec1f01a40f17330989c8bf881fc7db"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/flat_index.rs",
+      "bytes": 40496,
+      "sha256": "4627ee3c0fae6605a415e3a2b917e5346f01b3ac992e938ce724edf3df1aa17b"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/metrics.rs",
+      "bytes": 12071,
+      "sha256": "4fb354c13c0dfda8987de8a54f83c32d28725d79c09c78ca0978dd6ab7d5c05c"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/prng.rs",
+      "bytes": 3167,
+      "sha256": "45d64327c6e7d2184857c87f453fb57172da74315028034abb8a5229172964eb"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/score.rs",
+      "bytes": 9825,
+      "sha256": "c60a9a7c1935f3a6d22ef0d49c32a3c74bc0c1abf174fb267ab293e3e9b45c38"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/sha256.rs",
+      "bytes": 5237,
+      "sha256": "3b9efb7ed1629e7ff80d480f56a76f2c7a9008a8782045188f6ae0d6491c3b6a"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/transform.rs",
+      "bytes": 11797,
+      "sha256": "e1ab84175ac2e0ae3d81416a55da6423f1ebf0189f81dcb463f61ded619336e1"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-benchmark.rs",
+      "bytes": 122925,
+      "sha256": "96b9d257b2d9a29dcc6c2981cd92ed9a97460a08247796079c66902ba972b8af"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-observation.js",
+      "bytes": 157232,
+      "sha256": "3b3a65db1a500f143b9e27092329f0f7e56c56c0427d53ff4d01db7e0fbd177b"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-verification.js",
+      "bytes": 27497,
+      "sha256": "972f5346ce01cc36a1b10207b675c25ef338762010954998c2d8c9118bccc737"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-observation.test.js",
+      "bytes": 33468,
+      "sha256": "f9b321b8235742ea7d4230f712b9849ce7ec7da0c66d721e0885514d174a84bc"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-verification.test.js",
+      "bytes": 7143,
+      "sha256": "e2646cc6c91f5759c63a9055a6b4ba037b4c8199a9b7c0977deb77341d58ab6a"
+    },
+    {
+      "path": "tinyrustlm/tools/campaign-evidence-store.js",
+      "bytes": 22717,
+      "sha256": "26850a67fda5bb8baea15bc2e6fb6f6d13d8244348804d0a20320c6f79ec96e3"
+    },
+    {
+      "path": "tinyrustlm/tools/durable-files.js",
+      "bytes": 2992,
+      "sha256": "be2b3157567161bbbff19f013f706e22b495fde81b6c90b0731ca9578170174f"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-preregistration.js",
+      "bytes": 10726,
+      "sha256": "7eda606cb60887bb7d1e804fdb0c66d4f54d7018e3e7607ea7b398427948a161"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-preregistration.test.js",
+      "bytes": 5663,
+      "sha256": "90757466624f698068e40f904c68aa704c36e3b2be398ccdc8f5515bcebdf32b"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-attempts/sha256/cc/ccf5545439e25df5a31a0f392fd4f927c8c414b0b8130cd3a239387e5e0406f0.json",
+      "bytes": 1027,
+      "sha256": "a40b6663f6169b1e68a8bc4078a532015a3d70de0b61574180276c34b01cb9a8"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-attempts/sha256/35/35bb8ee57ea6f6065961a3cf8fb7749ca409c96847ad0fc1bb8146bc1e9a019c.json",
+      "bytes": 1075,
+      "sha256": "d9cc158c47a816570e2861122e00af3660d7254ea9b037b9077f3cb8a62dac02"
+    }
+  ],
+  "independentSummary": {
+    "status": "terminal-no-observation",
+    "outcomeTerminal": true,
+    "attemptCount": 2,
+    "retryableAttemptCount": 1,
+    "instrumentationFailureCount": 2,
+    "terminalAttemptId": "portable-affine-u8-flat-attempt-35bb8ee57ea6f606",
+    "terminalAttemptContentHash": "35bb8ee57ea6f6065961a3cf8fb7749ca409c96847ad0fc1bb8146bc1e9a019c",
+    "terminalFailureCode": "PORTABLE_AFFINE_U8_QUALITY_OUTCOME_REJECTED",
+    "terminalFailureClassification": "instrumentation",
+    "terminalFailureMessageSha256": "c300f6cd36c603c3aa2d44db0551fb737dca22bbcef3d3e6fd7b811463f8ff22",
+    "terminalFailureCauseMessageSha256": "014f2e1a1c433776f7a87a5464cc7eb5878dd429c09c3e03f7b6b68c480e2d33",
+    "observationPresent": false,
+    "qualityMetricsPresent": false,
+    "performanceMetricsPresent": false,
+    "corruptionMetricsPresent": false,
+    "crashRecoveryMetricsPresent": false,
+    "sameExperimentRetryAllowed": false,
+    "modelQualityClaimAllowed": false,
+    "productPromotionAllowed": false
+  },
+  "authority": {
+    "portableAffineU8NumericalBehaviorVerified": false,
+    "sameCorpusCompressedRankQualityVerified": false,
+    "equalDynamicIndexByteCapacityUtilityVerified": false,
+    "completeDynamicIndexByteReductionVerified": false,
+    "nativeReferencePerformanceVerified": false,
+    "nativeAndWasmDecisionParityVerified": false,
+    "wrapperProcessCrashRecoveryVerified": false,
+    "turboVecParityVerified": false,
+    "turboQuantPaperConformanceVerified": false,
+    "browserPerformanceVerified": false,
+    "representativeSemanticMemoryQualityVerified": false,
+    "powerLossDurabilityVerified": false,
+    "filesystemForensicErasureVerified": false,
+    "productIntegrationVerified": false,
+    "trainingAuthorized": false,
+    "releaseAuthorized": false
+  },
+  "openGaps": [
+    {
+      "gapId": "sealed-quality-observation",
+      "status": "terminal-failed",
+      "blockerCode": "PORTABLE_AFFINE_U8_QUALITY_OUTCOME_REJECTED"
+    },
+    {
+      "gapId": "real-browser-wasm-execution",
+      "status": "not-proven",
+      "blockerCode": null
+    },
+    {
+      "gapId": "semantic-memory-corpus",
+      "status": "not-proven",
+      "blockerCode": null
+    },
+    {
+      "gapId": "power-loss-durability",
+      "status": "not-tested",
+      "blockerCode": null
+    },
+    {
+      "gapId": "product-adoption",
+      "status": "not-authorized",
+      "blockerCode": null
+    }
+  ],
+  "remainingBoundaries": [
+    {
+      "boundaryId": "real-browser-wasm-execution",
+      "status": "not-proven"
+    },
+    {
+      "boundaryId": "representative-semantic-memory-corpus",
+      "status": "not-proven"
+    },
+    {
+      "boundaryId": "browser-performance",
+      "status": "not-proven"
+    },
+    {
+      "boundaryId": "power-loss-durability",
+      "status": "not-tested"
+    },
+    {
+      "boundaryId": "filesystem-forensic-erasure",
+      "status": "not-tested"
+    },
+    {
+      "boundaryId": "product-integration",
+      "status": "not-authorized"
+    }
+  ],
+  "requiredNextGate": "Preregister a new diagnostic or successor experiment. This terminal experiment may not be rerun, promoted, or used for a quality claim.",
+  "receiptId": "portable-affine-u8-flat-verification-b72cb93ab3e2aa85",
+  "receiptContentHash": "b72cb93ab3e2aa85d8b1ae0d4e84744b4f8a0c92d987b9dceeba8cf1d6cff765"
+}

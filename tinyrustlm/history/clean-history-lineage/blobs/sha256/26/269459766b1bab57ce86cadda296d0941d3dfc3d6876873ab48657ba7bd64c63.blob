@@ -1,0 +1,233 @@
+{
+  "schema": "tinyrustlm.exact_flat_physical_target_preregistration.v1",
+  "experimentId": "exact-flat-physical-target-win-x64-20260722",
+  "registeredAtUtc": "2026-07-22T03:44:54.8591503Z",
+  "status": "preregistered-before-performance-results",
+  "parents": [
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-verification-v1.json",
+      "receiptId": "exact-flat-retrieval-75f95baa316315ea",
+      "sha256": "893e96f461f701f46a3aaaeecddd67bc2b700625ccdb9f0d83ce4b0b67d8c18c"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-verification-v1.json",
+      "receiptId": "exact-flat-browser-wasm-verification-8fcdeb0b93534ca4",
+      "sha256": "5c52a2287390f79e6a4971da6a6455a69c4ebd52ac6473bcce5408fd62560157"
+    }
+  ],
+  "target": {
+    "targetId": "win-x64-amd-ryzen-7-8700g-asus-prime-x670e-pro-wifi-20260722",
+    "runtimeIdentifier": "win-x64",
+    "architecture": "x86_64",
+    "operatingSystem": {
+      "productName": "Windows Server 2022 Standard Evaluation",
+      "displayVersion": "21H2",
+      "build": "20348.5256",
+      "installationType": "Server"
+    },
+    "processor": {
+      "name": "AMD Ryzen 7 8700G w/ Radeon 780M Graphics",
+      "vendor": "AuthenticAMD",
+      "registryMegahertz": 4192,
+      "logicalProcessors": 16
+    },
+    "board": {
+      "manufacturer": "ASUSTeK COMPUTER INC.",
+      "product": "PRIME X670E-PRO WIFI",
+      "biosVendor": "American Megatrends Inc.",
+      "biosVersion": "1809"
+    },
+    "powerPlan": {
+      "guid": "381b4222-f694-41f0-9685-ff5bb260df2e",
+      "name": "Balanced"
+    },
+    "identityEvidence": [
+      "windows-cpu-registry",
+      "windows-bios-registry",
+      "windows-version-registry",
+      "environment-logical-processor-count",
+      "powercfg-active-scheme"
+    ],
+    "physicalChassisAttestation": "not-independently-verified",
+    "finalReleaseHardwareGateEligible": false
+  },
+  "build": {
+    "librarySource": "rust/experiments/tinyrustlm-vector-oracle/src/lib.rs",
+    "benchmarkSource": "tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-benchmark.rs",
+    "libraryOutput": "<owned-output-directory>/libtinyrustlm_vector_oracle.rlib",
+    "benchmarkOutput": "<owned-output-directory>/exact_flat_physical_target_benchmark.exe",
+    "libraryCommand": [
+      "rustc",
+      "--crate-name",
+      "tinyrustlm_vector_oracle",
+      "--crate-type",
+      "rlib",
+      "--edition=2021",
+      "rust/experiments/tinyrustlm-vector-oracle/src/lib.rs",
+      "-C",
+      "opt-level=3",
+      "-C",
+      "codegen-units=1",
+      "-C",
+      "target-cpu=native",
+      "-C",
+      "overflow-checks=yes",
+      "-o",
+      "<owned-output-directory>/libtinyrustlm_vector_oracle.rlib"
+    ],
+    "benchmarkCommand": [
+      "rustc",
+      "--crate-name",
+      "exact_flat_physical_target_benchmark",
+      "--edition=2021",
+      "tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-benchmark.rs",
+      "--extern",
+      "tinyrustlm_vector_oracle=<owned-output-directory>/libtinyrustlm_vector_oracle.rlib",
+      "-C",
+      "opt-level=3",
+      "-C",
+      "codegen-units=1",
+      "-C",
+      "target-cpu=native",
+      "-C",
+      "overflow-checks=yes",
+      "-o",
+      "<owned-output-directory>/exact_flat_physical_target_benchmark.exe"
+    ],
+    "workspaceManifestMutationAllowed": false,
+    "exactFlatSourceMutationAllowed": false,
+    "unsafeCodeAllowed": false,
+    "thirdPartyDependenciesAllowed": false
+  },
+  "execution": {
+    "processRunsPerWorkload": 3,
+    "processOrder": "workload-order-then-run-order",
+    "parallelProcesses": 1,
+    "threadsPerProcess": 1,
+    "processAffinity": "not-set-recorded-as-uncontrolled",
+    "processPriority": "normal",
+    "timeoutMsPerProcess": 120000,
+    "cachePolicy": "fresh-process-and-rebuilt-index-without-os-cache-flush",
+    "timer": "rust-std-time-instant-monotonic",
+    "percentileMethod": "nearest-rank-ceiling-one-indexed",
+    "outlierPolicy": "retain-all-valid-process-and-query-samples",
+    "resultOrder": "exact-duration-array-in-execution-order",
+    "stdoutContract": "one-canonical-json-object-and-trailing-newline",
+    "stderrContract": "empty-on-success",
+    "benchmarkArguments": [
+      "--workload",
+      "<workload-id>",
+      "--run",
+      "<one-based-run-index>"
+    ]
+  },
+  "workloads": [
+    {
+      "workloadId": "dot-128x1000",
+      "metric": "dot-product",
+      "normalization": "none",
+      "dimension": 128,
+      "recordCount": 1000,
+      "topK": 10,
+      "warmupQueries": 8,
+      "measuredQueries": 64,
+      "seed": "243f6a8885a308d3"
+    },
+    {
+      "workloadId": "cosine-384x10000",
+      "metric": "cosine",
+      "normalization": "l2-unit",
+      "dimension": 384,
+      "recordCount": 10000,
+      "topK": 10,
+      "warmupQueries": 5,
+      "measuredQueries": 32,
+      "seed": "13198a2e03707344"
+    },
+    {
+      "workloadId": "squared-euclidean-768x25000",
+      "metric": "squared-euclidean",
+      "normalization": "none",
+      "dimension": 768,
+      "recordCount": 25000,
+      "topK": 10,
+      "warmupQueries": 3,
+      "measuredQueries": 12,
+      "seed": "a4093822299f31d0"
+    }
+  ],
+  "measurement": {
+    "requiredRawFields": [
+      "buildDurationNs",
+      "warmupDurationNs",
+      "queryDurationNs",
+      "validationChecksum",
+      "serializedIndexBytes",
+      "workingSetAfterBuildBytes",
+      "peakWorkingSetAfterBuildBytes",
+      "workingSetAfterSearchBytes",
+      "peakWorkingSetAfterSearchBytes",
+      "peakWorkingSetAfterSerializationBytes"
+    ],
+    "derivedFields": [
+      "queryP50Ns",
+      "queryP95Ns",
+      "queryP99Ns",
+      "medianRecordsPerSecond",
+      "medianCoordinatesPerSecond"
+    ],
+    "memoryProbe": "windows-get-process-self-working-set64-and-peak-working-set64",
+    "energyCounterSet": "Energy Meter",
+    "energyCounterPath": "\\Energy Meter(*)\\Energy",
+    "energyCapabilityObservedBeforeRegistration": "counter-set-advertised-no-instance-present",
+    "energyUnit": "unavailable-until-counter-instance-and-authoritative-unit-exist",
+    "energyJoulesRequiredForCompleteTargetGate": true,
+    "rawEnergyCounterDeltaMaySubstituteForJoules": false
+  },
+  "validity": {
+    "allBuildCommandsMustExitZero": true,
+    "allNineProcessesMustExitZero": true,
+    "allNineOutputsMustMatchSchema": true,
+    "exactWorkloadAndRunCoverageRequired": true,
+    "validationChecksumMustMatchAcrossRunsPerWorkload": true,
+    "queryDurationMustBePositive": true,
+    "memoryMeasurementsMustBePositiveAndMonotonic": true,
+    "serializedByteCountMustMatchAcrossRunsPerWorkload": true,
+    "toolAndBinaryHashesRequired": true,
+    "sourceClosureHashesRequired": true,
+    "powerPlanMustMatchRegisteredTarget": true,
+    "targetIdentityMustMatchRegisteredTarget": true,
+    "energyUnavailabilityInvalidatesLatencyAndMemory": false,
+    "energyUnavailabilityKeepsCompleteTargetGateOpen": true,
+    "infrastructureFailuresMayBeRetried": true,
+    "semanticOrIdentityFailuresMayBeRetried": false,
+    "resultDrivenThresholdChangesAllowed": false
+  },
+  "evidencePolicy": {
+    "attemptsAreImmutable": true,
+    "failedAttemptsArePreserved": true,
+    "attemptDirectory": "tinyrustlm/experiments/vector-quantization/physical-target-attempts/sha256",
+    "successfulObservationPath": "tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-observation-v1.json",
+    "verificationReceiptPath": "tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-verification-v1.json",
+    "privateAbsolutePathsAllowed": false,
+    "hardwareSerialNumbersAllowed": false,
+    "credentialsAllowed": false,
+    "modelBytesAllowed": false,
+    "promptTextAllowed": false
+  },
+  "authority": {
+    "namedTargetLatencyMayBeMeasured": true,
+    "namedTargetThroughputMayBeMeasured": true,
+    "namedTargetProcessMemoryMayBeMeasured": true,
+    "namedTargetEnergyMayBeMeasuredOnlyWithValidJoules": true,
+    "completePhysicalTargetGateMayBeClaimed": false,
+    "browserPerformanceMayBeClaimed": false,
+    "compressionMayBeClaimed": false,
+    "turboVecParityMayBeClaimed": false,
+    "representativeRetrievalQualityMayBeClaimed": false,
+    "productIntegrationMayBeClaimed": false,
+    "trainingMayBeAuthorized": false,
+    "releaseMayBeAuthorized": false
+  },
+  "requiredNextGate": "After valid target latency, throughput, and process-memory evidence, retain the energy and physical-attestation gaps, then preregister a sealed representative corpus and crash-recovered durable deletion proof before any compressed comparison arm."
+}

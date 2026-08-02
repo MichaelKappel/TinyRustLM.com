@@ -1,0 +1,1052 @@
+{
+  "schema": "tinyrustlm.portable_affine_u8_flat_successor_attempt.v1",
+  "experimentId": "portable-affine-u8-flat-successor-20260726",
+  "attemptOrdinal": 1,
+  "previousAttemptId": null,
+  "status": "fail-comparison-outcome-terminal",
+  "startedAtUtc": "2026-07-26T12:36:44.445Z",
+  "completedAtUtc": "2026-07-26T12:37:34.744Z",
+  "sourceRevision": "ee369732640b29fa810a21bd3c12559d5fc4332b",
+  "successorPreregistration": {
+    "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-successor-preregistration.v1.json",
+    "sha256": "5b18411b3d222fd8c259de155165fcdf778cf4d7dd8fb04c4712c9cabec5a90d",
+    "registrationCommit": "294d3187b927508759ad342d57a5021a6dff680e"
+  },
+  "implementationCommit": "ee369732640b29fa810a21bd3c12559d5fc4332b",
+  "pendingAttemptId": "portable-affine-u8-flat-successor-pending-ac41dd2b3a15a6c9",
+  "pendingAttemptContentHash": "ac41dd2b3a15a6c9f9163192545c29224622631e8ea6cbb45594cbfb7af35e3b",
+  "lastPhase": "quality",
+  "benchmarkProcessLedger": [
+    {
+      "ordinal": 1,
+      "phase": "contract",
+      "mode": "contract",
+      "publicArguments": [],
+      "processStarted": true,
+      "exitCode": 0,
+      "signal": null,
+      "spawnErrorCode": null,
+      "stdoutBytes": 401,
+      "stdoutSha256": "4abbb80b01511183b3cdca435fd326ec7e398dda93fa9085d2d200a08335716c",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "benchmarkErrorCode": null
+    },
+    {
+      "ordinal": 2,
+      "phase": "corruption",
+      "mode": "corruption",
+      "publicArguments": [
+        "header-bit-flip"
+      ],
+      "processStarted": true,
+      "exitCode": 0,
+      "signal": null,
+      "spawnErrorCode": null,
+      "stdoutBytes": 229,
+      "stdoutSha256": "8e430479786b2979e64be5f5a93d2e16bc93ca10c9cb28975f64868590880000",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "benchmarkErrorCode": null
+    },
+    {
+      "ordinal": 3,
+      "phase": "corruption",
+      "mode": "corruption",
+      "publicArguments": [
+        "id-bit-flip"
+      ],
+      "processStarted": true,
+      "exitCode": 0,
+      "signal": null,
+      "spawnErrorCode": null,
+      "stdoutBytes": 225,
+      "stdoutSha256": "8c14274094ec69ebf07427a44e402c5a9b9ad3ee00745ccead4cdb6da1567016",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "benchmarkErrorCode": null
+    },
+    {
+      "ordinal": 4,
+      "phase": "corruption",
+      "mode": "corruption",
+      "publicArguments": [
+        "code-bit-flip"
+      ],
+      "processStarted": true,
+      "exitCode": 0,
+      "signal": null,
+      "spawnErrorCode": null,
+      "stdoutBytes": 227,
+      "stdoutSha256": "9fbe430707b803460023e9f3a2bf6c1640a2272c996542a3c8f7a62c5efd1039",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "benchmarkErrorCode": null
+    },
+    {
+      "ordinal": 5,
+      "phase": "corruption",
+      "mode": "corruption",
+      "publicArguments": [
+        "hash-bit-flip"
+      ],
+      "processStarted": true,
+      "exitCode": 0,
+      "signal": null,
+      "spawnErrorCode": null,
+      "stdoutBytes": 227,
+      "stdoutSha256": "ee4b6d6848c70a0ee4c8434ee75eb7fa8ab509103c9965aba4627ec22c03165a",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "benchmarkErrorCode": null
+    },
+    {
+      "ordinal": 6,
+      "phase": "corruption",
+      "mode": "corruption",
+      "publicArguments": [
+        "truncate-one-byte"
+      ],
+      "processStarted": true,
+      "exitCode": 0,
+      "signal": null,
+      "spawnErrorCode": null,
+      "stdoutBytes": 231,
+      "stdoutSha256": "531a9b043543a043354267710d06f81a22d2a0451f5b873077816aa6d9a0db26",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "benchmarkErrorCode": null
+    },
+    {
+      "ordinal": 7,
+      "phase": "corruption",
+      "mode": "corruption",
+      "publicArguments": [
+        "append-one-byte"
+      ],
+      "processStarted": true,
+      "exitCode": 0,
+      "signal": null,
+      "spawnErrorCode": null,
+      "stdoutBytes": 229,
+      "stdoutSha256": "e6c75b3b4405da66e23e0c4e3a11f81277f13b1a2b93b7744f99e031ad0ab1fd",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "benchmarkErrorCode": null
+    },
+    {
+      "ordinal": 8,
+      "phase": "corruption",
+      "mode": "corruption",
+      "publicArguments": [
+        "commit-hash-mismatch"
+      ],
+      "processStarted": true,
+      "exitCode": 0,
+      "signal": null,
+      "spawnErrorCode": null,
+      "stdoutBytes": 239,
+      "stdoutSha256": "9c5defe7ee9834b0616cb3b348a458116ac860400ab7dc612847a23fb5042408",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "benchmarkErrorCode": null
+    },
+    {
+      "ordinal": 9,
+      "phase": "crash-and-recovery",
+      "mode": "crash",
+      "publicArguments": [
+        "after-snapshot-temp-sync-before-finalize"
+      ],
+      "processStarted": true,
+      "exitCode": 74,
+      "signal": null,
+      "spawnErrorCode": null,
+      "stdoutBytes": 0,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "benchmarkErrorCode": null
+    },
+    {
+      "ordinal": 10,
+      "phase": "crash-and-recovery",
+      "mode": "recover",
+      "publicArguments": [
+        "after-snapshot-temp-sync-before-finalize"
+      ],
+      "processStarted": true,
+      "exitCode": 0,
+      "signal": null,
+      "spawnErrorCode": null,
+      "stdoutBytes": 935,
+      "stdoutSha256": "b9778ea3c73d2dca42af615d548e49aea2131f92dfe8c02ba357eee0a909ae7d",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "benchmarkErrorCode": null
+    },
+    {
+      "ordinal": 11,
+      "phase": "crash-and-recovery",
+      "mode": "crash",
+      "publicArguments": [
+        "after-snapshot-finalize-before-commit-temp"
+      ],
+      "processStarted": true,
+      "exitCode": 74,
+      "signal": null,
+      "spawnErrorCode": null,
+      "stdoutBytes": 0,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "benchmarkErrorCode": null
+    },
+    {
+      "ordinal": 12,
+      "phase": "crash-and-recovery",
+      "mode": "recover",
+      "publicArguments": [
+        "after-snapshot-finalize-before-commit-temp"
+      ],
+      "processStarted": true,
+      "exitCode": 0,
+      "signal": null,
+      "spawnErrorCode": null,
+      "stdoutBytes": 937,
+      "stdoutSha256": "d9656a8c2a0010e14d28e5008b003c07a779ef962ba2a48391ebc00d2d5df215",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "benchmarkErrorCode": null
+    },
+    {
+      "ordinal": 13,
+      "phase": "crash-and-recovery",
+      "mode": "crash",
+      "publicArguments": [
+        "after-commit-temp-sync-before-finalize"
+      ],
+      "processStarted": true,
+      "exitCode": 74,
+      "signal": null,
+      "spawnErrorCode": null,
+      "stdoutBytes": 0,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "benchmarkErrorCode": null
+    },
+    {
+      "ordinal": 14,
+      "phase": "crash-and-recovery",
+      "mode": "recover",
+      "publicArguments": [
+        "after-commit-temp-sync-before-finalize"
+      ],
+      "processStarted": true,
+      "exitCode": 0,
+      "signal": null,
+      "spawnErrorCode": null,
+      "stdoutBytes": 933,
+      "stdoutSha256": "10f4db34617b97bd97862fdd78f53de04bbc4ac7e6b6f4a7049d5329fa7d7f73",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "benchmarkErrorCode": null
+    },
+    {
+      "ordinal": 15,
+      "phase": "crash-and-recovery",
+      "mode": "crash",
+      "publicArguments": [
+        "after-commit-finalize-before-obsolete-cleanup"
+      ],
+      "processStarted": true,
+      "exitCode": 74,
+      "signal": null,
+      "spawnErrorCode": null,
+      "stdoutBytes": 0,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "benchmarkErrorCode": null
+    },
+    {
+      "ordinal": 16,
+      "phase": "crash-and-recovery",
+      "mode": "recover",
+      "publicArguments": [
+        "after-commit-finalize-before-obsolete-cleanup"
+      ],
+      "processStarted": true,
+      "exitCode": 0,
+      "signal": null,
+      "spawnErrorCode": null,
+      "stdoutBytes": 940,
+      "stdoutSha256": "4b9f2adac7a37a465ce997caa27e8c8ea0cf1e0df54a761030a0c393bd467b81",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "benchmarkErrorCode": null
+    },
+    {
+      "ordinal": 17,
+      "phase": "quality",
+      "mode": "quality",
+      "publicArguments": [],
+      "processStarted": true,
+      "exitCode": 3221226505,
+      "signal": null,
+      "spawnErrorCode": null,
+      "stdoutBytes": 0,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrBytes": 294,
+      "stderrSha256": "3d4710a3102ab6329d6332616c7b8beb948c309f2416f596027a340c5c01af71",
+      "benchmarkErrorCode": null
+    }
+  ],
+  "memoryMonitorProcessLedger": [],
+  "maximumParallelBenchmarkProcesses": 1,
+  "inputs": [
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-successor-preregistration.v1.json",
+      "bytes": 14428,
+      "sha256": "5b18411b3d222fd8c259de155165fcdf778cf4d7dd8fb04c4712c9cabec5a90d"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-successor-preregistration.js",
+      "bytes": 31319,
+      "sha256": "45ca345fb223e2437f59bb4b02195bc110efbc5ccb4a5f334194e3f1eaa63d98"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-successor-preregistration.test.js",
+      "bytes": 5866,
+      "sha256": "6203f595d7e2a0a525215b58b1dd13120a2725fd4f15ede90a20e23bc6014342"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-successor-observation.js",
+      "bytes": 83289,
+      "sha256": "b6c3c9eaa01422181c6702548e8c30a45e8b9b256d6ec56d1085c6b412f7a7e4"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-successor-observation.test.js",
+      "bytes": 12408,
+      "sha256": "ac50690a32c08edfeb4dd640d534b6e743ab6d39b3db0cb2c5c3ce8e83c945e6"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-diagnostic-pending-journal.js",
+      "bytes": 5968,
+      "sha256": "5d1afa5f7fdd8f64b65b5195ca822c5618afc24f6b37e1d8bc90375c875df7a3"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-diagnostic-pending-journal.test.js",
+      "bytes": 4782,
+      "sha256": "d9187819d21fe34caee0706160cea0d4e6a872d6d4c2a58425bf7b07ba737ed0"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-experiment-isolation.test.js",
+      "bytes": 3242,
+      "sha256": "d6ea78bff19e468706c14014c45780c0baf8f0277e90e5dfb69e950092153cb6"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-preregistration.v1.json",
+      "bytes": 21703,
+      "sha256": "76cccb8fe353847235f8ea1d647c6762677e19b8abe593b83f9733dfbfe6c06d"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-preregistration.v1.json",
+      "bytes": 19483,
+      "sha256": "f6c1ac0d2c0f40365aca977aeccb894416185dc7069a97bb357510b94d94b4d1"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-observation-v1.json",
+      "bytes": 494169,
+      "sha256": "fa04d21ae35555b6a1d500eaf8569c5a7246c1bfde1f0bfc2e62812d6965c45c"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-verification-v1.json",
+      "bytes": 12984,
+      "sha256": "9e745a77807524ad6bf2eff3aab0cf5b2a5a3c246c484698bb9ce108948a9fe1"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-verification-v2.json",
+      "bytes": 13322,
+      "sha256": "95b36d822d3c49ec342e54ad277eb4e6925a59cffdea40fdeefe15d263bcbc7c"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/turbovec-reference-comparison-preregistration.v1.json",
+      "bytes": 28197,
+      "sha256": "96a3fad0078850e2fe9fb4d619979ca9e5b753f23a3fab6df53aebe9b9afe6ed"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/turbovec-reference-attempts/sha256/b8/b8ffb20cebbeccf0f11b297c19f771dc700f7227a03375c21f3ee52f757e25de.json",
+      "bytes": 1035,
+      "sha256": "1453fcd6067b20a80c900f71497733e5b3c20b7fe92d3fed98a760050ff325aa"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/turbovec-reference-attempts/sha256/db/db1a760c3d25893ed9f5ec6025a19e0a121b96bb1fb81092670155eff24e5baa.json",
+      "bytes": 1096,
+      "sha256": "00bf8c3b0754b5576c94b41974882badc0457ba03f5474815f1c51aea01d429f"
+    },
+    {
+      "path": "Cargo.toml",
+      "bytes": 1134,
+      "sha256": "406a59037703fe26d0979fda67a818387b3cd6533b915ad47f045156392ceb45"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 14748,
+      "sha256": "9b0a3bf305675e1e3ce9ae781e67786bde5635e9659be08a8b8773e3b29b4374"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/Cargo.toml",
+      "bytes": 312,
+      "sha256": "e962ea7c04a47dd8f72122f1de129e5175d3a40eac2dca511d399fee1f5e52c9"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/lib.rs",
+      "bytes": 1542,
+      "sha256": "b878effc8bcee87916504778355d914d24bcd6beaceef7c93b5896a7cd4aa546"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/affine_u8_index.rs",
+      "bytes": 34830,
+      "sha256": "fc964d1dffa9c3ff95b72646feede6b5bc5903ec84d145b2f28c7f1f78d6876d"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/tests/affine_u8_index_test.rs",
+      "bytes": 13951,
+      "sha256": "87a6809801d564fdebd2e17d83fb49788e71b0f270eafab658585e787bb7cf11"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/tests/flat_index_test.rs",
+      "bytes": 9647,
+      "sha256": "8877f2ebe8fd9ee00155c6d9df41e5d6c0b6227550e7a7c327f41b60a8dd7427"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/tests/lib_test.rs",
+      "bytes": 2731,
+      "sha256": "c7a1a58e37c7fc1e0a96eed26cb3f3c064c1abff44d6ca57b0745d694dd2007e"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/accounting.rs",
+      "bytes": 3884,
+      "sha256": "ecd53e96a25fd3753ecd69c6dd7a33e40e5506e424669b0da3575394dece50f0"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/bitpack.rs",
+      "bytes": 10969,
+      "sha256": "685a4b8682d3fea40d8e50975228cb5c06a2101c9a8067b70ab5fe2f92d60cf1"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/codebook.rs",
+      "bytes": 15253,
+      "sha256": "08b58571dbae6c7dcbe857ddacbc5f45d19af6c5fb336df1fabeb4b163ef99bc"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/error.rs",
+      "bytes": 9046,
+      "sha256": "f09f395388ed0c1f6d1160e4ea12b320baec1f01a40f17330989c8bf881fc7db"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/flat_index.rs",
+      "bytes": 40496,
+      "sha256": "4627ee3c0fae6605a415e3a2b917e5346f01b3ac992e938ce724edf3df1aa17b"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/metrics.rs",
+      "bytes": 12071,
+      "sha256": "4fb354c13c0dfda8987de8a54f83c32d28725d79c09c78ca0978dd6ab7d5c05c"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/prng.rs",
+      "bytes": 3167,
+      "sha256": "45d64327c6e7d2184857c87f453fb57172da74315028034abb8a5229172964eb"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/score.rs",
+      "bytes": 9825,
+      "sha256": "c60a9a7c1935f3a6d22ef0d49c32a3c74bc0c1abf174fb267ab293e3e9b45c38"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/sha256.rs",
+      "bytes": 5237,
+      "sha256": "3b9efb7ed1629e7ff80d480f56a76f2c7a9008a8782045188f6ae0d6491c3b6a"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/transform.rs",
+      "bytes": 11797,
+      "sha256": "e1ab84175ac2e0ae3d81416a55da6423f1ebf0189f81dcb463f61ded619336e1"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-benchmark.rs",
+      "bytes": 122925,
+      "sha256": "96b9d257b2d9a29dcc6c2981cd92ed9a97460a08247796079c66902ba972b8af"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-observation.js",
+      "bytes": 157232,
+      "sha256": "3b3a65db1a500f143b9e27092329f0f7e56c56c0427d53ff4d01db7e0fbd177b"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-verification.js",
+      "bytes": 27497,
+      "sha256": "972f5346ce01cc36a1b10207b675c25ef338762010954998c2d8c9118bccc737"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-observation.test.js",
+      "bytes": 33468,
+      "sha256": "f9b321b8235742ea7d4230f712b9849ce7ec7da0c66d721e0885514d174a84bc"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-verification.test.js",
+      "bytes": 7143,
+      "sha256": "e2646cc6c91f5759c63a9055a6b4ba037b4c8199a9b7c0977deb77341d58ab6a"
+    },
+    {
+      "path": "tinyrustlm/tools/campaign-evidence-store.js",
+      "bytes": 22717,
+      "sha256": "26850a67fda5bb8baea15bc2e6fb6f6d13d8244348804d0a20320c6f79ec96e3"
+    },
+    {
+      "path": "tinyrustlm/tools/durable-files.js",
+      "bytes": 2992,
+      "sha256": "be2b3157567161bbbff19f013f706e22b495fde81b6c90b0731ca9578170174f"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-preregistration.js",
+      "bytes": 10726,
+      "sha256": "7eda606cb60887bb7d1e804fdb0c66d4f54d7018e3e7607ea7b398427948a161"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-preregistration.test.js",
+      "bytes": 5663,
+      "sha256": "90757466624f698068e40f904c68aa704c36e3b2be398ccdc8f5515bcebdf32b"
+    }
+  ],
+  "retainedEvidence": {
+    "platform": {
+      "runtimeIdentifier": "win-x64",
+      "operatingSystem": "windows",
+      "architecture": "x64",
+      "rustTarget": "x86_64-pc-windows-msvc"
+    },
+    "tools": {
+      "node": {
+        "name": "node",
+        "version": "v24.14.0",
+        "binaryBytes": 91380224,
+        "binarySha256": "63c259c81e5d472b5f11c8d506070130cb04a1ecf84b80377a34ed6ec9048088"
+      },
+      "cargo": {
+        "name": "cargo.exe",
+        "version": "cargo 1.96.0 (30a34c682 2026-05-25)",
+        "binaryBytes": 12814336,
+        "binarySha256": "86478e53f769379d7f0ebfa7c9aa97cb76ca92233f79aa2cc0dbee2efaac73c7"
+      },
+      "rustc": {
+        "name": "rustc.exe",
+        "version": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+        "binaryBytes": 12814336,
+        "binarySha256": "86478e53f769379d7f0ebfa7c9aa97cb76ca92233f79aa2cc0dbee2efaac73c7"
+      },
+      "powershell": {
+        "name": "powershell.exe",
+        "version": "5.1.20348.5386",
+        "binaryBytes": 450560,
+        "binarySha256": "38f4384643b3fa0de714d2367b712c2e0fa1c89e2cfd131ae6b831ad962b1033"
+      }
+    },
+    "externalDataset": {
+      "sourceRepository": "https://github.com/zalandoresearch/fashion-mnist.git",
+      "revision": "b2617bb6d3ffa2e429640350f613e3291e10b141",
+      "tree": "ec8d5e52c0b9b2b09ea3f9d36b7bfafaf8ec0e97",
+      "licenseExpression": "MIT",
+      "licenseBytes": 1116,
+      "licenseSha256": "860025a4fd4ca5e669981b245ad022a89818c5b6412177700d7836b909bcf281",
+      "readmeBytes": 22994,
+      "readmeSha256": "39c94926ec72ab72920ab57f1c22908b4607c38f803aa85284ae85fc492518db",
+      "files": [
+        {
+          "upstreamPath": "data/fashion/train-images-idx3-ubyte.gz",
+          "compressedBytes": 26421880,
+          "compressedSha256": "3aede38d61863908ad78613f6a32ed271626dd12800ba2636569512369268a84",
+          "decompressedBytes": 47040016,
+          "decompressedSha256": "c59f468a2f672dc815687fe0f83887768d799fd8a3f3276145d20f83aa44d888",
+          "idxMagic": 2051,
+          "itemCount": 60000,
+          "rows": 28,
+          "columns": 28
+        },
+        {
+          "upstreamPath": "data/fashion/train-labels-idx1-ubyte.gz",
+          "compressedBytes": 29515,
+          "compressedSha256": "a04f17134ac03560a47e3764e11b92fc97de4d1bfaf8ba1a3aa29af54cc90845",
+          "decompressedBytes": 60008,
+          "decompressedSha256": "bad3541b69d912435c50bb6ba87bec294ff4f6a2e1246121d8633921760443d9",
+          "idxMagic": 2049,
+          "itemCount": 60000,
+          "rows": null,
+          "columns": null
+        },
+        {
+          "upstreamPath": "data/fashion/t10k-images-idx3-ubyte.gz",
+          "compressedBytes": 4422102,
+          "compressedSha256": "346e55b948d973a97e58d2351dde16a484bd415d4595297633bb08f03db6a073",
+          "decompressedBytes": 7840016,
+          "decompressedSha256": "5b4141f0afbad91edebe8549f8fcffe087ea10ca49f1dbef5c9a5cd8815ce37b",
+          "idxMagic": 2051,
+          "itemCount": 10000,
+          "rows": 28,
+          "columns": 28
+        },
+        {
+          "upstreamPath": "data/fashion/t10k-labels-idx1-ubyte.gz",
+          "compressedBytes": 5148,
+          "compressedSha256": "67da17c76eaffca5446c3361aaab5c3cd6d1c2608764d35dfb1850b086bf8dd5",
+          "decompressedBytes": 10008,
+          "decompressedSha256": "0402a96d92fd2663957122ceb108a494c5af83dab82d92729df917d7dec38c34",
+          "idxMagic": 2049,
+          "itemCount": 10000,
+          "rows": null,
+          "columns": null
+        }
+      ],
+      "checkoutClean": true,
+      "locatorPersisted": false,
+      "bytesPersisted": false
+    },
+    "buildVerification": {
+      "format": {
+        "exitCode": 0,
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "nativeTests": {
+        "exitCode": 0,
+        "stdoutSha256": "57b4dd02a4fdf418891ba0d75e08614a5b31dc50ebef8b196663248068c1ca6e",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "clippy": {
+        "exitCode": 0,
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "documentation": {
+        "exitCode": 0,
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "wasmBuild": {
+        "exitCode": 0,
+        "stdoutSha256": "62038eb7ebd61ad3238cfb44fcc1ceed44cfff246576b501fb70e44cd63fed92",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "wasmExecution": {
+        "artifactBytes": 6934938,
+        "artifactSha256": "31880aca7f30bde4ea8ccc40e85fee381164ca0f6275c76047bc1e568a3af35b",
+        "importCount": 0,
+        "exports": [
+          {
+            "name": "memory",
+            "kind": "memory"
+          },
+          {
+            "name": "main",
+            "kind": "function"
+          },
+          {
+            "name": "__data_end",
+            "kind": "global"
+          },
+          {
+            "name": "__heap_base",
+            "kind": "global"
+          }
+        ],
+        "mainResult": 0
+      }
+    },
+    "build": {
+      "cargo": {
+        "executable": "cargo",
+        "arguments": [
+          "build",
+          "--manifest-path",
+          "Cargo.toml",
+          "-p",
+          "tinyrustlm-vector-oracle",
+          "--release",
+          "--target",
+          "x86_64-pc-windows-msvc",
+          "--locked",
+          "--offline",
+          "--quiet",
+          "--message-format=json"
+        ],
+        "exitCode": 0,
+        "stdoutSha256": "fd051a4f0f2d7ac431711ae45527ecc4a6609e9f6f6897c7ff7503b8f8331966",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "compilerArtifactCount": 1,
+        "warningCount": 0
+      },
+      "rustc": {
+        "executable": "rustc",
+        "arguments": [
+          "--edition=2021",
+          "-D",
+          "warnings",
+          "-C",
+          "opt-level=3",
+          "-C",
+          "codegen-units=1",
+          "-C",
+          "panic=abort",
+          "-C",
+          "lto=fat",
+          "-C",
+          "embed-bitcode=yes",
+          "--extern",
+          "tinyrustlm_vector_oracle=<owned-release-rlib>",
+          "-L",
+          "dependency=<owned-release-deps>",
+          "-o",
+          "<owned-benchmark-executable>",
+          "tinyrustlm/experiments/vector-quantization/portable-affine-u8-benchmark.rs"
+        ],
+        "exitCode": 0,
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "libraryArtifactBytes": 1013102,
+      "libraryArtifactSha256": "77922bd542bf37d1d2f29e921d241bb6aec25e76c853e6d39a6bbb9b874f1864",
+      "executableBytes": 434688,
+      "executableSha256": "9fd313ab882461989f6d9c4099cb4f727a5b385bcd8606d9f4f442969a3b3f74",
+      "cargoLockSha256": "9b0a3bf305675e1e3ce9ae781e67786bde5635e9659be08a8b8773e3b29b4374",
+      "offline": true
+    },
+    "contractExecution": {
+      "exitCode": 0,
+      "stdoutSha256": "4abbb80b01511183b3cdca435fd326ec7e398dda93fa9085d2d200a08335716c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "contract": {
+      "schema": "tinyrustlm.portable_affine_u8_benchmark_contract.v1",
+      "experimentId": "portable-affine-u8-flat-20260726",
+      "methodId": "portable-global-affine-u8-flat-v1",
+      "bitWidth": 8,
+      "qualityProcessCount": 1,
+      "performanceLaneCount": 6,
+      "performanceMethodCount": 2,
+      "performanceRepetitionCount": 5,
+      "corruptionCaseCount": 7,
+      "crashScenarioCount": 4,
+      "processCrashExitCode": 74,
+      "networkRequired": false,
+      "productImport": false
+    },
+    "corruptionRecords": [
+      {
+        "caseOrdinal": 0,
+        "caseId": "header-bit-flip",
+        "exitCode": 0,
+        "stdoutSha256": "8e430479786b2979e64be5f5a93d2e16bc93ca10c9cb28975f64868590880000",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "managedFileCountBeforeDeletion": 3,
+        "processRootDeleted": true,
+        "process": {
+          "schema": "tinyrustlm.portable_affine_u8_corruption_process.v1",
+          "experimentId": "portable-affine-u8-flat-20260726",
+          "caseId": "header-bit-flip",
+          "rejectedBeforeSearch": true,
+          "panicObserved": false,
+          "boundedErrorCode": "digest-mismatch"
+        }
+      },
+      {
+        "caseOrdinal": 1,
+        "caseId": "id-bit-flip",
+        "exitCode": 0,
+        "stdoutSha256": "8c14274094ec69ebf07427a44e402c5a9b9ad3ee00745ccead4cdb6da1567016",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "managedFileCountBeforeDeletion": 3,
+        "processRootDeleted": true,
+        "process": {
+          "schema": "tinyrustlm.portable_affine_u8_corruption_process.v1",
+          "experimentId": "portable-affine-u8-flat-20260726",
+          "caseId": "id-bit-flip",
+          "rejectedBeforeSearch": true,
+          "panicObserved": false,
+          "boundedErrorCode": "digest-mismatch"
+        }
+      },
+      {
+        "caseOrdinal": 2,
+        "caseId": "code-bit-flip",
+        "exitCode": 0,
+        "stdoutSha256": "9fbe430707b803460023e9f3a2bf6c1640a2272c996542a3c8f7a62c5efd1039",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "managedFileCountBeforeDeletion": 3,
+        "processRootDeleted": true,
+        "process": {
+          "schema": "tinyrustlm.portable_affine_u8_corruption_process.v1",
+          "experimentId": "portable-affine-u8-flat-20260726",
+          "caseId": "code-bit-flip",
+          "rejectedBeforeSearch": true,
+          "panicObserved": false,
+          "boundedErrorCode": "digest-mismatch"
+        }
+      },
+      {
+        "caseOrdinal": 3,
+        "caseId": "hash-bit-flip",
+        "exitCode": 0,
+        "stdoutSha256": "ee4b6d6848c70a0ee4c8434ee75eb7fa8ab509103c9965aba4627ec22c03165a",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "managedFileCountBeforeDeletion": 3,
+        "processRootDeleted": true,
+        "process": {
+          "schema": "tinyrustlm.portable_affine_u8_corruption_process.v1",
+          "experimentId": "portable-affine-u8-flat-20260726",
+          "caseId": "hash-bit-flip",
+          "rejectedBeforeSearch": true,
+          "panicObserved": false,
+          "boundedErrorCode": "digest-mismatch"
+        }
+      },
+      {
+        "caseOrdinal": 4,
+        "caseId": "truncate-one-byte",
+        "exitCode": 0,
+        "stdoutSha256": "531a9b043543a043354267710d06f81a22d2a0451f5b873077816aa6d9a0db26",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "managedFileCountBeforeDeletion": 3,
+        "processRootDeleted": true,
+        "process": {
+          "schema": "tinyrustlm.portable_affine_u8_corruption_process.v1",
+          "experimentId": "portable-affine-u8-flat-20260726",
+          "caseId": "truncate-one-byte",
+          "rejectedBeforeSearch": true,
+          "panicObserved": false,
+          "boundedErrorCode": "digest-mismatch"
+        }
+      },
+      {
+        "caseOrdinal": 5,
+        "caseId": "append-one-byte",
+        "exitCode": 0,
+        "stdoutSha256": "e6c75b3b4405da66e23e0c4e3a11f81277f13b1a2b93b7744f99e031ad0ab1fd",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "managedFileCountBeforeDeletion": 3,
+        "processRootDeleted": true,
+        "process": {
+          "schema": "tinyrustlm.portable_affine_u8_corruption_process.v1",
+          "experimentId": "portable-affine-u8-flat-20260726",
+          "caseId": "append-one-byte",
+          "rejectedBeforeSearch": true,
+          "panicObserved": false,
+          "boundedErrorCode": "digest-mismatch"
+        }
+      },
+      {
+        "caseOrdinal": 6,
+        "caseId": "commit-hash-mismatch",
+        "exitCode": 0,
+        "stdoutSha256": "9c5defe7ee9834b0616cb3b348a458116ac860400ab7dc612847a23fb5042408",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "managedFileCountBeforeDeletion": 3,
+        "processRootDeleted": true,
+        "process": {
+          "schema": "tinyrustlm.portable_affine_u8_corruption_process.v1",
+          "experimentId": "portable-affine-u8-flat-20260726",
+          "caseId": "commit-hash-mismatch",
+          "rejectedBeforeSearch": true,
+          "panicObserved": false,
+          "boundedErrorCode": "commit-hash-mismatch"
+        }
+      }
+    ],
+    "crashRecoveries": [
+      {
+        "scenarioOrdinal": 0,
+        "scenarioId": "after-snapshot-temp-sync-before-finalize",
+        "crashExitCode": 74,
+        "crashStdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "crashStderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "recoveryExitCode": 0,
+        "recoveryStdoutSha256": "b9778ea3c73d2dca42af615d548e49aea2131f92dfe8c02ba357eee0a909ae7d",
+        "recoveryStderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "managedFileCountBeforeDeletion": 3,
+        "processRootDeleted": true,
+        "recovery": {
+          "schema": "tinyrustlm.portable_affine_u8_durable_deletion_recovery.v1",
+          "experimentId": "portable-affine-u8-flat-20260726",
+          "scenarioId": "after-snapshot-temp-sync-before-finalize",
+          "processCrashExitCode": 74,
+          "expectedActiveGenerationBeforeRetry": 1,
+          "observedActiveGenerationBeforeRetry": 1,
+          "deletionCommittedBeforeRetry": false,
+          "finalActiveGeneration": 2,
+          "retryWroteGenerationTwo": true,
+          "retryIdempotent": true,
+          "finalTargetIdentifierMatches": 0,
+          "finalTargetVectorFingerprintMatches": 0,
+          "activeIndexContainsAnyDeletedTarget": false,
+          "activeIndexContainsActiveDeletedTarget": false,
+          "allCrashScenariosMustRecover": true,
+          "powerLossSimulated": false,
+          "filesystemForensicErasureTested": false,
+          "removedManagedFileCount": 2,
+          "directoryFlushAttempted": true,
+          "directoryFlushSucceeded": false,
+          "finalSnapshotSha256": "1b69e7f1cbf6a4c1ae1ca6440c7139458aa18c3c5c7a4e68d1962b1a715f81b3",
+          "finalCommitSha256": "1398be06c41ea403b148e145a5b3a00ba72013ad5728e295aee5e647c5850ef9"
+        }
+      },
+      {
+        "scenarioOrdinal": 1,
+        "scenarioId": "after-snapshot-finalize-before-commit-temp",
+        "crashExitCode": 74,
+        "crashStdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "crashStderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "recoveryExitCode": 0,
+        "recoveryStdoutSha256": "d9656a8c2a0010e14d28e5008b003c07a779ef962ba2a48391ebc00d2d5df215",
+        "recoveryStderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "managedFileCountBeforeDeletion": 3,
+        "processRootDeleted": true,
+        "recovery": {
+          "schema": "tinyrustlm.portable_affine_u8_durable_deletion_recovery.v1",
+          "experimentId": "portable-affine-u8-flat-20260726",
+          "scenarioId": "after-snapshot-finalize-before-commit-temp",
+          "processCrashExitCode": 74,
+          "expectedActiveGenerationBeforeRetry": 1,
+          "observedActiveGenerationBeforeRetry": 1,
+          "deletionCommittedBeforeRetry": false,
+          "finalActiveGeneration": 2,
+          "retryWroteGenerationTwo": true,
+          "retryIdempotent": true,
+          "finalTargetIdentifierMatches": 0,
+          "finalTargetVectorFingerprintMatches": 0,
+          "activeIndexContainsAnyDeletedTarget": false,
+          "activeIndexContainsActiveDeletedTarget": false,
+          "allCrashScenariosMustRecover": true,
+          "powerLossSimulated": false,
+          "filesystemForensicErasureTested": false,
+          "removedManagedFileCount": 2,
+          "directoryFlushAttempted": true,
+          "directoryFlushSucceeded": false,
+          "finalSnapshotSha256": "1b69e7f1cbf6a4c1ae1ca6440c7139458aa18c3c5c7a4e68d1962b1a715f81b3",
+          "finalCommitSha256": "1398be06c41ea403b148e145a5b3a00ba72013ad5728e295aee5e647c5850ef9"
+        }
+      },
+      {
+        "scenarioOrdinal": 2,
+        "scenarioId": "after-commit-temp-sync-before-finalize",
+        "crashExitCode": 74,
+        "crashStdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "crashStderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "recoveryExitCode": 0,
+        "recoveryStdoutSha256": "10f4db34617b97bd97862fdd78f53de04bbc4ac7e6b6f4a7049d5329fa7d7f73",
+        "recoveryStderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "managedFileCountBeforeDeletion": 3,
+        "processRootDeleted": true,
+        "recovery": {
+          "schema": "tinyrustlm.portable_affine_u8_durable_deletion_recovery.v1",
+          "experimentId": "portable-affine-u8-flat-20260726",
+          "scenarioId": "after-commit-temp-sync-before-finalize",
+          "processCrashExitCode": 74,
+          "expectedActiveGenerationBeforeRetry": 1,
+          "observedActiveGenerationBeforeRetry": 1,
+          "deletionCommittedBeforeRetry": false,
+          "finalActiveGeneration": 2,
+          "retryWroteGenerationTwo": true,
+          "retryIdempotent": true,
+          "finalTargetIdentifierMatches": 0,
+          "finalTargetVectorFingerprintMatches": 0,
+          "activeIndexContainsAnyDeletedTarget": false,
+          "activeIndexContainsActiveDeletedTarget": false,
+          "allCrashScenariosMustRecover": true,
+          "powerLossSimulated": false,
+          "filesystemForensicErasureTested": false,
+          "removedManagedFileCount": 2,
+          "directoryFlushAttempted": true,
+          "directoryFlushSucceeded": false,
+          "finalSnapshotSha256": "1b69e7f1cbf6a4c1ae1ca6440c7139458aa18c3c5c7a4e68d1962b1a715f81b3",
+          "finalCommitSha256": "1398be06c41ea403b148e145a5b3a00ba72013ad5728e295aee5e647c5850ef9"
+        }
+      },
+      {
+        "scenarioOrdinal": 3,
+        "scenarioId": "after-commit-finalize-before-obsolete-cleanup",
+        "crashExitCode": 74,
+        "crashStdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "crashStderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "recoveryExitCode": 0,
+        "recoveryStdoutSha256": "4b9f2adac7a37a465ce997caa27e8c8ea0cf1e0df54a761030a0c393bd467b81",
+        "recoveryStderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "managedFileCountBeforeDeletion": 3,
+        "processRootDeleted": true,
+        "recovery": {
+          "schema": "tinyrustlm.portable_affine_u8_durable_deletion_recovery.v1",
+          "experimentId": "portable-affine-u8-flat-20260726",
+          "scenarioId": "after-commit-finalize-before-obsolete-cleanup",
+          "processCrashExitCode": 74,
+          "expectedActiveGenerationBeforeRetry": 2,
+          "observedActiveGenerationBeforeRetry": 2,
+          "deletionCommittedBeforeRetry": true,
+          "finalActiveGeneration": 2,
+          "retryWroteGenerationTwo": false,
+          "retryIdempotent": true,
+          "finalTargetIdentifierMatches": 0,
+          "finalTargetVectorFingerprintMatches": 0,
+          "activeIndexContainsAnyDeletedTarget": false,
+          "activeIndexContainsActiveDeletedTarget": false,
+          "allCrashScenariosMustRecover": true,
+          "powerLossSimulated": false,
+          "filesystemForensicErasureTested": false,
+          "removedManagedFileCount": 2,
+          "directoryFlushAttempted": true,
+          "directoryFlushSucceeded": false,
+          "finalSnapshotSha256": "1b69e7f1cbf6a4c1ae1ca6440c7139458aa18c3c5c7a4e68d1962b1a715f81b3",
+          "finalCommitSha256": "1398be06c41ea403b148e145a5b3a00ba72013ad5728e295aee5e647c5850ef9"
+        }
+      }
+    ],
+    "qualityExecution": null,
+    "quality": null,
+    "performanceRecords": [],
+    "performanceSummaries": []
+  },
+  "cleanup": {
+    "outerRootCreated": true,
+    "outerRootDeleted": true,
+    "cleanupFailureMessageSha256": null
+  },
+  "observationId": null,
+  "observationContentHash": null,
+  "failure": {
+    "code": "PORTABLE_AFFINE_U8_QUALITY_OUTCOME_REJECTED",
+    "classification": "comparison-outcome",
+    "retryAllowed": false,
+    "messageSha256": "c300f6cd36c603c3aa2d44db0551fb737dca22bbcef3d3e6fd7b811463f8ff22",
+    "causeMessageSha256": "014f2e1a1c433776f7a87a5464cc7eb5878dd429c09c3e03f7b6b68c480e2d33",
+    "benchmarkErrorCode": null
+  },
+  "processEvidenceComplete": true,
+  "authority": {
+    "portableAffineU8NumericalBehaviorMayBeClaimed": false,
+    "sameCorpusCompressedRankQualityMayBeClaimed": false,
+    "equalDynamicIndexByteCapacityUtilityMayBeClaimed": false,
+    "completeDynamicIndexByteReductionMayBeClaimed": false,
+    "nativeReferencePerformanceMayBeClaimed": false,
+    "nativeAndWasmDecisionParityMayBeClaimed": false,
+    "wrapperProcessCrashRecoveryMayBeClaimed": false,
+    "representativeSemanticMemoryQualityMayBeClaimed": false,
+    "browserPerformanceMayBeClaimed": false,
+    "productIntegrationMayBeClaimed": false,
+    "trainingMayBeAuthorized": false,
+    "releaseMayBeAuthorized": false,
+    "campaignCounterMayBeIncremented": false
+  },
+  "requiredNextGate": "Independently verify any committed successor observation before making a bounded research claim. Preserve a terminal attempt without retry and preregister a distinct successor before any later outcome execution.",
+  "attemptId": "portable-affine-u8-flat-successor-attempt-df0c29200bd7439d",
+  "attemptContentHash": "df0c29200bd7439d953e09e674abb982db28a1fcf1d0a33e091d85b0492de188"
+}

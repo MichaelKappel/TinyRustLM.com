@@ -1,0 +1,198 @@
+{
+  "schema": "tinyrustlm.vector_experiment_source_claim_ledger.v1",
+  "ledgerId": "turbovec-turboquant-review-20260722",
+  "generatedAtUtc": "2026-07-22T01:52:37.591Z",
+  "status": "experiment-active",
+  "productAuthority": false,
+  "trainingAuthority": false,
+  "experimentBoundaries": [
+    {
+      "storageLane": "embedding-index",
+      "productStatus": "not-integrated",
+      "experimentStatus": "active",
+      "claimScope": "Persistent user-approved embedding index codes, metadata, transforms, codebooks, scoring, deletion, and search only."
+    },
+    {
+      "storageLane": "kv-cache",
+      "productStatus": "not-integrated",
+      "experimentStatus": "review-only",
+      "claimScope": "Ephemeral transformer key and value cache storage, attention scoring, value accumulation, paging, and eviction only."
+    },
+    {
+      "storageLane": "static-weights",
+      "productStatus": "existing-format-unchanged",
+      "experimentStatus": "out-of-scope",
+      "claimScope": "Existing TinyRustLM .slm weight formats remain unchanged; vector and KV experiments cannot alter or relabel model-weight precision."
+    }
+  ],
+  "sources": [
+    {
+      "sourceId": "nist-fips-180-4-2015",
+      "sourceKind": "standard",
+      "displayName": "NIST FIPS 180-4 Secure Hash Standard",
+      "repositoryUrl": "https://csrc.nist.gov/pubs/fips/180-4/upd1/final",
+      "repositoryRevision": "NIST.FIPS.180-4:2015-08",
+      "publicationVersion": "nist-fips:NIST.FIPS.180-4:2015-08",
+      "artifactUrl": "https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf",
+      "artifactSha256": "0455b406d89648d20cbde375561e19c245b9815e894164c2670772e3d54deb82",
+      "artifactBytes": 833315,
+      "artifactHashEvidence": "local-streamed-sha256",
+      "licenseIdentity": "NIST-FIPS-public-domain-US",
+      "licenseUrl": "https://www.nist.gov/itl/fips-general-information",
+      "licenseArtifactSha256": null,
+      "retrievedAtUtc": "2026-07-22T01:52:37.591Z",
+      "reviewPurpose": "Normative SHA-256 algorithm and test-vector input for the experiment-only exact-flat persistence footer.",
+      "implementationInputApproved": true,
+      "testVectorCopyApproved": true
+    },
+    {
+      "sourceId": "turboquant-arxiv-v1",
+      "sourceKind": "paper",
+      "displayName": "TurboQuant: Online Vector Quantization with Near-optimal Distortion Rate",
+      "repositoryUrl": "https://arxiv.org/abs/2504.19874v1",
+      "repositoryRevision": "arXiv:2504.19874v1",
+      "publicationVersion": "arXiv:2504.19874v1",
+      "artifactUrl": "https://arxiv.org/pdf/2504.19874v1",
+      "artifactSha256": "431eb13926e10491f5fbd0bebd0813c51bd6c1e884426a1500c5db640b2997ab",
+      "artifactBytes": 861881,
+      "artifactHashEvidence": "local-streamed-sha256",
+      "licenseIdentity": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenseArtifactSha256": null,
+      "retrievedAtUtc": "2026-07-22T00:36:27.058Z",
+      "reviewPurpose": "Primary mathematical and author-claim source; claims remain hypotheses until independently reproduced on TinyRustLM targets.",
+      "implementationInputApproved": false,
+      "testVectorCopyApproved": false
+    },
+    {
+      "sourceId": "turbovec-crate-090",
+      "sourceKind": "package-source",
+      "displayName": "turbovec Rust crate 0.9.0",
+      "repositoryUrl": "https://github.com/RyanCodrai/turbovec",
+      "repositoryRevision": "1e7200cfd8f26c92ce2855652db64bc7f85bc039",
+      "publicationVersion": "crates.io:turbovec:0.9.0",
+      "artifactUrl": "https://crates.io/api/v1/crates/turbovec/0.9.0/download",
+      "artifactSha256": "0715a5a1365e86d0ae6396fa0c011f319b8e8024b3896cd16e6468e29ed3a325",
+      "artifactBytes": 89523,
+      "artifactHashEvidence": "local-streamed-sha256",
+      "licenseIdentity": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/RyanCodrai/turbovec/1e7200cfd8f26c92ce2855652db64bc7f85bc039/LICENSE",
+      "licenseArtifactSha256": "e94eb7a09e285805786b74d8cfc535906efd3aabc243636646218314f7b4593c",
+      "retrievedAtUtc": "2026-07-22T00:33:47.868Z",
+      "reviewPurpose": "Package identity and possible black-box comparator only; not a TinyRustLM dependency or implementation source.",
+      "implementationInputApproved": false,
+      "testVectorCopyApproved": false
+    },
+    {
+      "sourceId": "turbovec-pypi-080",
+      "sourceKind": "package-source",
+      "displayName": "turbovec Python source distribution 0.8.0",
+      "repositoryUrl": "https://github.com/RyanCodrai/turbovec",
+      "repositoryRevision": "1e7200cfd8f26c92ce2855652db64bc7f85bc039",
+      "publicationVersion": "pypi:turbovec:0.8.0",
+      "artifactUrl": "https://files.pythonhosted.org/packages/1e/d4/e3735c9144d4d674f9188bc46e3a7b5d2102fa26517963447f28b1206de2/turbovec-0.8.0.tar.gz",
+      "artifactSha256": "4ff24956ef159cd8ccdb19c561b07eea3c191c344a23368cd0adad9cdd87382c",
+      "artifactBytes": 183036,
+      "artifactHashEvidence": "publisher-registry-sha256",
+      "licenseIdentity": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/RyanCodrai/turbovec/1e7200cfd8f26c92ce2855652db64bc7f85bc039/LICENSE",
+      "licenseArtifactSha256": "e94eb7a09e285805786b74d8cfc535906efd3aabc243636646218314f7b4593c",
+      "retrievedAtUtc": "2026-07-22T00:44:22.813Z",
+      "reviewPurpose": "Registry identity comparison only; the independently versioned Python artifact is not interchangeable with the Rust crate identity.",
+      "implementationInputApproved": false,
+      "testVectorCopyApproved": false
+    },
+    {
+      "sourceId": "turbovec-repository-v090",
+      "sourceKind": "repository-archive",
+      "displayName": "RyanCodrai/turbovec Git tag v0.9.0",
+      "repositoryUrl": "https://github.com/RyanCodrai/turbovec",
+      "repositoryRevision": "1e7200cfd8f26c92ce2855652db64bc7f85bc039",
+      "publicationVersion": "git-tag:v0.9.0",
+      "artifactUrl": "https://github.com/RyanCodrai/turbovec/archive/1e7200cfd8f26c92ce2855652db64bc7f85bc039.tar.gz",
+      "artifactSha256": "90a86a55f71982d288dd4eeb34f33dfc75427db830beae0391e2d5b5826477c5",
+      "artifactBytes": 549022,
+      "artifactHashEvidence": "local-streamed-sha256",
+      "licenseIdentity": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/RyanCodrai/turbovec/1e7200cfd8f26c92ce2855652db64bc7f85bc039/LICENSE",
+      "licenseArtifactSha256": "e94eb7a09e285805786b74d8cfc535906efd3aabc243636646218314f7b4593c",
+      "retrievedAtUtc": "2026-07-22T00:33:47.291Z",
+      "reviewPurpose": "Pinned architecture and metadata review plus optional isolated black-box comparison; no code or test-vector copying is approved.",
+      "implementationInputApproved": false,
+      "testVectorCopyApproved": false
+    }
+  ],
+  "claims": [
+    {
+      "claimId": "nist-sha256-footer-standard",
+      "sourceId": "nist-fips-180-4-2015",
+      "claimClass": "author-claim",
+      "storageLane": "embedding-index",
+      "statement": "The exact-flat experiment uses the SHA-256 algorithm and normative vectors identified by FIPS 180-4 to detect serialized snapshot corruption; this does not authenticate a snapshot or grant product authority.",
+      "disposition": "accepted-design-boundary",
+      "reproductionStatus": "locally-reproduced",
+      "citationUrl": "https://csrc.nist.gov/pubs/fips/180-4/upd1/final"
+    },
+    {
+      "claimId": "static-weight-lane-remains-separate",
+      "sourceId": "turboquant-arxiv-v1",
+      "claimClass": "engineering-inference",
+      "storageLane": "static-weights",
+      "statement": "Compressing online vectors, persistent embedding codes, or KV entries does not change TinyRustLM .slm static-weight precision or model lineage.",
+      "disposition": "accepted-design-boundary",
+      "reproductionStatus": "local-metadata-observed",
+      "citationUrl": "https://arxiv.org/abs/2504.19874v1"
+    },
+    {
+      "claimId": "turboquant-kv-quality-neutrality",
+      "sourceId": "turboquant-arxiv-v1",
+      "claimClass": "author-claim",
+      "storageLane": "kv-cache",
+      "statement": "The paper reports absolute quality neutrality for its evaluated KV-cache configuration at 3.5 bits per channel.",
+      "disposition": "hypothesis-only",
+      "reproductionStatus": "not-reproduced",
+      "citationUrl": "https://arxiv.org/abs/2504.19874v1"
+    },
+    {
+      "claimId": "turboquant-near-optimal-distortion",
+      "sourceId": "turboquant-arxiv-v1",
+      "claimClass": "author-claim",
+      "storageLane": "embedding-index",
+      "statement": "The paper claims data-oblivious scalar quantization after random rotation reaches a near-optimal distortion rate up to a stated constant factor.",
+      "disposition": "hypothesis-only",
+      "reproductionStatus": "not-reproduced",
+      "citationUrl": "https://arxiv.org/abs/2504.19874v1"
+    },
+    {
+      "claimId": "turbovec-first-batch-calibration",
+      "sourceId": "turbovec-repository-v090",
+      "claimClass": "author-claim",
+      "storageLane": "embedding-index",
+      "statement": "The repository describes per-coordinate calibration fitted from the first add and frozen for later additions, making ingestion history material to durable identity unless separately bound.",
+      "disposition": "hypothesis-only",
+      "reproductionStatus": "local-metadata-observed",
+      "citationUrl": "https://github.com/RyanCodrai/turbovec/tree/1e7200cfd8f26c92ce2855652db64bc7f85bc039"
+    },
+    {
+      "claimId": "turbovec-package-version-split",
+      "sourceId": "turbovec-repository-v090",
+      "claimClass": "local-observation",
+      "storageLane": "embedding-index",
+      "statement": "At the pinned commit, the repository and Rust crate identify version 0.9.0 while the Python project identifies version 0.8.0, so the shorthand project name plus one version is ambiguous.",
+      "disposition": "accepted-local-fact",
+      "reproductionStatus": "local-metadata-observed",
+      "citationUrl": "https://github.com/RyanCodrai/turbovec/tree/1e7200cfd8f26c92ce2855652db64bc7f85bc039"
+    },
+    {
+      "claimId": "turbovec-reference-only",
+      "sourceId": "turbovec-crate-090",
+      "claimClass": "engineering-inference",
+      "storageLane": "embedding-index",
+      "statement": "The pinned crate is suitable only as an isolated reference comparator until TinyRustLM proves target portability, numerical parity, persistence safety, privacy, deletion, and measured accuracy independently.",
+      "disposition": "reference-comparator-only",
+      "reproductionStatus": "local-metadata-observed",
+      "citationUrl": "https://crates.io/crates/turbovec/0.9.0"
+    }
+  ],
+  "requiredNextGate": "Verify the preregistered exact-flat f32 retrieval baseline and immutable receipt without product integration, then pin exact primary-source identities and equal-byte thresholds before any named compressed retrieval or KV-cache arm; do not modify .slm formats or claim TurboVec parity, compression, performance, or product retrieval quality."
+}

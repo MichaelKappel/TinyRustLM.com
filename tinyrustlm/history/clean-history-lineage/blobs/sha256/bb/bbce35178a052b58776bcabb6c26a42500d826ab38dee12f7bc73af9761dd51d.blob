@@ -1,0 +1,300 @@
+{
+  "schema": "tinyrustlm.portable_affine_u8_quality_diagnostic_attempt.v1",
+  "diagnosticId": "portable-affine-u8-quality-diagnostic-20260726",
+  "attemptOrdinal": 1,
+  "status": "diagnostic-infrastructure-failure",
+  "startedAtUtc": null,
+  "completedAtUtc": null,
+  "reconciledAtUtc": "2026-07-26T11:55:19.594Z",
+  "originalInvocationTimeAvailable": false,
+  "sourceRevision": "f7fb3d220559bfa9a6746e00db451ccb91f3ef14",
+  "preregistration": {
+    "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-quality-diagnostic-preregistration.v1.json",
+    "sha256": "3932e21b3ea171d5798e5abf034931069e66f932ef11abdaa68c8d9326ae5fe1",
+    "registrationCommit": "c90dfe8b62f79067df3e1972dcf62c0524ba26ba"
+  },
+  "terminalVerification": {
+    "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-verification-v1.json",
+    "sha256": "91aa60ccea38222004cd425a5f7a8e5332598978ef4b455a16550d5e931cbf9b",
+    "receiptId": "portable-affine-u8-flat-verification-b72cb93ab3e2aa85",
+    "status": "verified-terminal-no-observation"
+  },
+  "inputs": [
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-quality-diagnostic-preregistration.v1.json",
+      "bytes": 10935,
+      "sha256": "3932e21b3ea171d5798e5abf034931069e66f932ef11abdaa68c8d9326ae5fe1"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-quality-diagnostic-preregistration.js",
+      "bytes": 25985,
+      "sha256": "785b28af74d8c0c9b42d37549e33a3b39a262177b205deabc86c3bf7a468e226"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-quality-diagnostic-preregistration.test.js",
+      "bytes": 6501,
+      "sha256": "271215608d68ae18b1126498f029f45b33fecf9313e2dbf8fc22a984c79a5cfa"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-quality-diagnostic.js",
+      "bytes": 41841,
+      "sha256": "d62329b17321d72b88ce44c84d54569cf8f2e2210e357eeb6f5f06019213a34f"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-quality-diagnostic.test.js",
+      "bytes": 8865,
+      "sha256": "8d8695e415001215499ddf1817626940220c3c6ac7a17ee8a96b91e3ba843de7"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-quality-diagnostic-verification.js",
+      "bytes": 21379,
+      "sha256": "fd6bb3c5e27479109e70180150772dfa3fd750adbb93ea85889ba57a18cfe1f1"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-quality-diagnostic-verification.test.js",
+      "bytes": 5414,
+      "sha256": "776f13781f0eca87beec1a259a3ef2e500986971eb34cd72de8882f28e927f6d"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-verification-v1.json",
+      "bytes": 13522,
+      "sha256": "91aa60ccea38222004cd425a5f7a8e5332598978ef4b455a16550d5e931cbf9b"
+    },
+    {
+      "path": "Cargo.toml",
+      "bytes": 1090,
+      "sha256": "5afcef4ff36679f99fbeb438f49af195b76065dd156bcf457fd0f4b807f66ba0"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 14748,
+      "sha256": "9b0a3bf305675e1e3ce9ae781e67786bde5635e9659be08a8b8773e3b29b4374"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/Cargo.toml",
+      "bytes": 312,
+      "sha256": "e962ea7c04a47dd8f72122f1de129e5175d3a40eac2dca511d399fee1f5e52c9"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/lib.rs",
+      "bytes": 1542,
+      "sha256": "b878effc8bcee87916504778355d914d24bcd6beaceef7c93b5896a7cd4aa546"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/accounting.rs",
+      "bytes": 3884,
+      "sha256": "ecd53e96a25fd3753ecd69c6dd7a33e40e5506e424669b0da3575394dece50f0"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/affine_u8_index.rs",
+      "bytes": 34830,
+      "sha256": "fc964d1dffa9c3ff95b72646feede6b5bc5903ec84d145b2f28c7f1f78d6876d"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/bitpack.rs",
+      "bytes": 10969,
+      "sha256": "685a4b8682d3fea40d8e50975228cb5c06a2101c9a8067b70ab5fe2f92d60cf1"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/codebook.rs",
+      "bytes": 15253,
+      "sha256": "08b58571dbae6c7dcbe857ddacbc5f45d19af6c5fb336df1fabeb4b163ef99bc"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/error.rs",
+      "bytes": 9046,
+      "sha256": "f09f395388ed0c1f6d1160e4ea12b320baec1f01a40f17330989c8bf881fc7db"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/flat_index.rs",
+      "bytes": 40496,
+      "sha256": "4627ee3c0fae6605a415e3a2b917e5346f01b3ac992e938ce724edf3df1aa17b"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/metrics.rs",
+      "bytes": 12071,
+      "sha256": "4fb354c13c0dfda8987de8a54f83c32d28725d79c09c78ca0978dd6ab7d5c05c"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/prng.rs",
+      "bytes": 3167,
+      "sha256": "45d64327c6e7d2184857c87f453fb57172da74315028034abb8a5229172964eb"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/score.rs",
+      "bytes": 9825,
+      "sha256": "c60a9a7c1935f3a6d22ef0d49c32a3c74bc0c1abf174fb267ab293e3e9b45c38"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/sha256.rs",
+      "bytes": 5237,
+      "sha256": "3b9efb7ed1629e7ff80d480f56a76f2c7a9008a8782045188f6ae0d6491c3b6a"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/transform.rs",
+      "bytes": 11797,
+      "sha256": "e1ab84175ac2e0ae3d81416a55da6423f1ebf0189f81dcb463f61ded619336e1"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-benchmark.rs",
+      "bytes": 122925,
+      "sha256": "96b9d257b2d9a29dcc6c2981cd92ed9a97460a08247796079c66902ba972b8af"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-observation.js",
+      "bytes": 157232,
+      "sha256": "3b3a65db1a500f143b9e27092329f0f7e56c56c0427d53ff4d01db7e0fbd177b"
+    },
+    {
+      "path": "tinyrustlm/tools/campaign-evidence-store.js",
+      "bytes": 22113,
+      "sha256": "3b2e8370a8ebff4576a72c3d290fa7413c318b2f2611945f955855ed384278b3"
+    },
+    {
+      "path": "tinyrustlm/tools/durable-files.js",
+      "bytes": 2895,
+      "sha256": "085f14edda664db13a73a5fc76c9fbdadadd0d34b651712c1cdc306b476df12c"
+    }
+  ],
+  "platform": {
+    "os": "windows",
+    "architecture": "x86_64",
+    "runtimeIdentifier": "win-x64"
+  },
+  "tools": {
+    "node": {
+      "name": "node",
+      "version": "v24.14.0",
+      "binaryBytes": 91380224,
+      "binarySha256": "63c259c81e5d472b5f11c8d506070130cb04a1ecf84b80377a34ed6ec9048088"
+    },
+    "cargo": {
+      "name": "cargo",
+      "version": "cargo 1.96.0 (30a34c682 2026-05-25)",
+      "binaryBytes": 12814336,
+      "binarySha256": "86478e53f769379d7f0ebfa7c9aa97cb76ca92233f79aa2cc0dbee2efaac73c7"
+    },
+    "rustc": {
+      "name": "rustc",
+      "version": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+      "binaryBytes": 12814336,
+      "binarySha256": "86478e53f769379d7f0ebfa7c9aa97cb76ca92233f79aa2cc0dbee2efaac73c7"
+    }
+  },
+  "externalDataset": {
+    "sourceRepository": "https://github.com/zalandoresearch/fashion-mnist.git",
+    "revision": "b2617bb6d3ffa2e429640350f613e3291e10b141",
+    "tree": "ec8d5e52c0b9b2b09ea3f9d36b7bfafaf8ec0e97",
+    "selectionSha256": "8be904326c844c31b6e973f88bc6ce2e0a7462d51aa0d5ae497dda4b02472fbd",
+    "checkoutClean": true,
+    "locatorPersisted": false,
+    "payloadBytesPersisted": false,
+    "files": [
+      {
+        "upstreamPath": "data/fashion/train-images-idx3-ubyte.gz",
+        "compressedBytes": 26421880,
+        "compressedSha256": "3aede38d61863908ad78613f6a32ed271626dd12800ba2636569512369268a84",
+        "decompressedBytes": 47040016,
+        "decompressedSha256": "c59f468a2f672dc815687fe0f83887768d799fd8a3f3276145d20f83aa44d888",
+        "idxMagic": 2051,
+        "itemCount": 60000,
+        "rows": 28,
+        "columns": 28
+      },
+      {
+        "upstreamPath": "data/fashion/train-labels-idx1-ubyte.gz",
+        "compressedBytes": 29515,
+        "compressedSha256": "a04f17134ac03560a47e3764e11b92fc97de4d1bfaf8ba1a3aa29af54cc90845",
+        "decompressedBytes": 60008,
+        "decompressedSha256": "bad3541b69d912435c50bb6ba87bec294ff4f6a2e1246121d8633921760443d9",
+        "idxMagic": 2049,
+        "itemCount": 60000,
+        "rows": null,
+        "columns": null
+      },
+      {
+        "upstreamPath": "data/fashion/t10k-images-idx3-ubyte.gz",
+        "compressedBytes": 4422102,
+        "compressedSha256": "346e55b948d973a97e58d2351dde16a484bd415d4595297633bb08f03db6a073",
+        "decompressedBytes": 7840016,
+        "decompressedSha256": "5b4141f0afbad91edebe8549f8fcffe087ea10ca49f1dbef5c9a5cd8815ce37b",
+        "idxMagic": 2051,
+        "itemCount": 10000,
+        "rows": 28,
+        "columns": 28
+      },
+      {
+        "upstreamPath": "data/fashion/t10k-labels-idx1-ubyte.gz",
+        "compressedBytes": 5148,
+        "compressedSha256": "67da17c76eaffca5446c3361aaab5c3cd6d1c2608764d35dfb1850b086bf8dd5",
+        "decompressedBytes": 10008,
+        "decompressedSha256": "0402a96d92fd2663957122ceb108a494c5af83dab82d92729df917d7dec38c34",
+        "idxMagic": 2049,
+        "itemCount": 10000,
+        "rows": null,
+        "columns": null
+      }
+    ]
+  },
+  "build": null,
+  "processExecution": {
+    "benchmarkMode": "--quality",
+    "invocationCount": 0,
+    "processStarted": false,
+    "exitCode": null,
+    "signal": null,
+    "timedOut": false,
+    "outputBoundExceeded": false,
+    "spawnErrorCode": null,
+    "stdoutBytes": 0,
+    "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "diagnosis": {
+    "status": "diagnostic-infrastructure-failure",
+    "passedStages": [],
+    "firstFailingStage": "spawn",
+    "failureCode": "AFFINE_U8_QUALITY_DIAGNOSTIC_SETUP_REJECTED",
+    "failureMessageSha256": "577f26a3721ea49b61e77661d6310ea7c9cdae9766edbc338efdb6809892f3fe",
+    "benchmarkErrorCode": null,
+    "structuralSummary": null
+  },
+  "cleanup": {
+    "outerRootCreated": false,
+    "outerRootDeleted": false,
+    "cleanupFailureMessageSha256": null
+  },
+  "operationalFailure": {
+    "code": "AFFINE_U8_QUALITY_DIAGNOSTIC_PREJOURNAL_SETUP_REJECTED",
+    "messageSha256": "577f26a3721ea49b61e77661d6310ea7c9cdae9766edbc338efdb6809892f3fe"
+  },
+  "reconciliation": {
+    "originalInvocationSourceRevision": "f7fb3d220559bfa9a6746e00db451ccb91f3ef14",
+    "originalInvocationTimeAvailable": false,
+    "wrapperExitCode": 1,
+    "wrapperStdoutBytes": 0,
+    "wrapperStdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "wrapperStderrBytes": 47,
+    "wrapperStderrSha256": "a3d4787eb189df76c1e8acc2b38f93fdc0a41d0c31b043628c87ef2fe1b0369c",
+    "benchmarkProcessInvocationCount": 0,
+    "toolAndDatasetEvidenceCollectedDuringReconciliation": true
+  },
+  "authority": {
+    "originalExperimentMayBeReopened": false,
+    "sameExperimentRetryMayBeAuthorized": false,
+    "qualityMayBeClaimed": false,
+    "performanceMayBeClaimed": false,
+    "portableAffineU8NumericalBehaviorMayBeClaimed": false,
+    "representativeSemanticMemoryQualityMayBeClaimed": false,
+    "turboVecParityMayBeClaimed": false,
+    "turboQuantPaperConformanceMayBeClaimed": false,
+    "productIntegrationMayBeClaimed": false,
+    "trainingMayBeAuthorized": false,
+    "releaseMayBeAuthorized": false,
+    "campaignCounterMayBeIncremented": false
+  },
+  "requiredNextGate": "Convert the diagnosed predicate into a generic regression with positive and counterexample coverage, make a scoped fix, and preregister a distinct successor full experiment before any new quality execution.",
+  "attemptId": "portable-affine-u8-quality-diagnostic-attempt-a8b32928e1c32829",
+  "attemptContentHash": "a8b32928e1c32829231b67a890a2858086723dae0e81733190170f4de40bdda7"
+}

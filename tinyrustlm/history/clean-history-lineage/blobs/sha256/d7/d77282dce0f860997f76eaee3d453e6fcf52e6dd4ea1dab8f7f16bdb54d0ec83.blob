@@ -1,0 +1,574 @@
+"use strict";
+
+const crypto = require("node:crypto");
+const fs = require("node:fs");
+const path = require("node:path");
+
+const schema = "tinyrustlm.exact_flat_baseline_evidence_preregistration.v1";
+const repositoryRoot = path.resolve(__dirname, "../..");
+const defaultRelativePath =
+  "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-preregistration.v1.json";
+const defaultPath = path.join(repositoryRoot, defaultRelativePath);
+const maximumManifestBytes = 1024 * 1024;
+const expectedManifestSha256 =
+  "f6c1ac0d2c0f40365aca977aeccb894416185dc7069a97bb357510b94d94b4d1";
+const sha256Pattern = /^[a-f0-9]{64}$/u;
+const utcPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?Z$/u;
+const relativePathPattern =
+  /^(?!\/)(?!.*(?:^|\/)\.\.(?:\/|$))[A-Za-z0-9._/-]+$/u;
+const forbiddenTextPattern =
+  /(?:^|[\s"'=])(?:[a-z]:[\\/]|\/home\/|\/users\/|\/mnt\/[a-z]\/)|bearer\s+|(?:token|secret|password)=|(?:sk|ghp)_[A-Za-z0-9_-]{12,}|turn\d+(?:search|view)\d+/iu;
+
+const topLevelKeys = Object.freeze([
+  "schema",
+  "experimentId",
+  "registeredAtUtc",
+  "status",
+  "parents",
+  "exactFlatSourceClosure",
+  "externalDataset",
+  "build",
+  "corpus",
+  "groundTruth",
+  "thresholds",
+  "durableDeletion",
+  "execution",
+  "validity",
+  "evidencePolicy",
+  "authority",
+  "requiredNextGate"
+]);
+
+const expectedParents = Object.freeze([
+  Object.freeze({
+    path: "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-verification-v1.json",
+    receiptId: "exact-flat-retrieval-75f95baa316315ea",
+    sha256: "893e96f461f701f46a3aaaeecddd67bc2b700625ccdb9f0d83ce4b0b67d8c18c"
+  }),
+  Object.freeze({
+    path: "tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-verification-v1.json",
+    receiptId: "exact-flat-browser-wasm-verification-8fcdeb0b93534ca4",
+    sha256: "5c52a2287390f79e6a4971da6a6455a69c4ebd52ac6473bcce5408fd62560157"
+  }),
+  Object.freeze({
+    path: "tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-verification-v1.json",
+    receiptId: "exact-flat-physical-target-verification-6b478318ef8747cb",
+    sha256: "4cf29cef23b057677e97ed0e03751bac6ad88d31fe44dff2d93582c22d437c1e"
+  })
+]);
+
+const expectedSectionSha256 = Object.freeze({
+  exactFlatSourceClosure:
+    "360a3325fcf0acac67442f4bc092a45e75fbf782fe45c5f8ca0fa1329b69ebae",
+  externalDataset: "bc262f818366db9204c23c4ebe1886548465ed4b1a7fbcacb368d2fd0c15a7e3",
+  build: "1daa3a9939178ad89e1047489240ff010e624fdf35ba381d787366ab67787de8",
+  corpus: "aa9353ed58f5468702c7afe2d8606f8c068d7cc3340c34fc20021f6018b836cf",
+  groundTruth: "4656e8e950b4a6fad110f818516c1c298509df3463687645a5540dee33d1eb32",
+  thresholds: "db96ae4f538583a5f026b0be10e6b96912552fcc9f1e2fd5baa0019d80ce31a6",
+  durableDeletion: "44d8a2de36f085fa0e2ee746acf47ab527b2b235f9172f2307fdac34545e4fbe",
+  execution: "faf66683637bc3e5b032cdc0c1857bd7fe98d03795561db7e8031b8d2a96442f",
+  validity: "0f3df9d2c7e6dd6bd1f55509b4e14d5676d84626c98023d19c69530a81c129b2",
+  evidencePolicy: "a4ebdd6ca3c107f844e968696d3f93836dbd2c506aaea5f696424177d06da7c2",
+  authority: "a28383a411e6c91de9091bb22120725bb5f1e104f4dd94e6c0e794773e095f84",
+  requiredNextGate: "7239198eff2590d21b36d02a8b89059174771828b53d574556cf62ff48bd7d92"
+});
+
+const expectedAuthority = Object.freeze({
+  sealedNumericalRankPreservationMayBeClaimed: true,
+  naturalImageNeighborUtilityMayBeClaimed: true,
+  controlledMemoryScenarioUtilityMayBeClaimed: true,
+  representativeSemanticMemoryQualityMayBeClaimed: false,
+  durableActiveIndexDeletionMayBeClaimed: true,
+  processCrashRecoveryMayBeClaimed: true,
+  powerLossDurabilityMayBeClaimed: false,
+  filesystemForensicErasureMayBeClaimed: false,
+  compressedRetrievalMayBeClaimed: false,
+  turboVecParityMayBeClaimed: false,
+  productIntegrationMayBeClaimed: false,
+  trainingMayBeAuthorized: false,
+  releaseMayBeAuthorized: false
+});
+
+function invariant(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
+function isPlainObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function exactKeys(value, keys, label) {
+  invariant(isPlainObject(value), `${label} must be an object`);
+  invariant(
+    JSON.stringify(Object.keys(value).sort()) === JSON.stringify([...keys].sort()),
+    `${label} fields are invalid`
+  );
+}
+
+function exactValue(value, expected, label) {
+  invariant(JSON.stringify(value) === JSON.stringify(expected), `${label} is invalid`);
+}
+
+function sha256(bytes) {
+  return crypto.createHash("sha256").update(bytes).digest("hex");
+}
+
+function canonicalManifestBytes(manifest) {
+  return Buffer.from(`${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+}
+
+function sectionSha256(value) {
+  return sha256(Buffer.from(JSON.stringify(value), "utf8"));
+}
+
+function validateFrozenSection(manifest, name) {
+  invariant(
+    sectionSha256(manifest[name]) === expectedSectionSha256[name],
+    `${name} contract is invalid`
+  );
+}
+
+function sha256File(filePath) {
+  const descriptor = fs.openSync(filePath, "r");
+  const buffer = Buffer.allocUnsafe(1024 * 1024);
+  const hash = crypto.createHash("sha256");
+  try {
+    for (;;) {
+      const count = fs.readSync(descriptor, buffer, 0, buffer.length, null);
+      if (count === 0) break;
+      hash.update(buffer.subarray(0, count));
+    }
+  } finally {
+    fs.closeSync(descriptor);
+  }
+  return hash.digest("hex");
+}
+
+function resolveRepositoryFile(relativePath, label) {
+  invariant(relativePathPattern.test(relativePath), `${label} path is unsafe`);
+  const resolved = path.resolve(repositoryRoot, relativePath);
+  const relative = path.relative(repositoryRoot, resolved);
+  invariant(relative !== "" && !relative.startsWith("..") && !path.isAbsolute(relative),
+    `${label} escaped repository root`);
+  const stat = fs.lstatSync(resolved);
+  invariant(stat.isFile() && !stat.isSymbolicLink(), `${label} must be a regular file`);
+  return resolved;
+}
+
+function validateParents(parents) {
+  invariant(Array.isArray(parents), "parents must be an array");
+  exactValue(parents, expectedParents, "parents");
+  for (const [index, parent] of parents.entries()) {
+    exactKeys(parent, ["path", "receiptId", "sha256"], `parents[${index}]`);
+    invariant(relativePathPattern.test(parent.path), `parents[${index}].path is unsafe`);
+    invariant(sha256Pattern.test(parent.sha256), `parents[${index}].sha256 is invalid`);
+  }
+}
+
+function validateSourceClosure(sourceClosure) {
+  invariant(Array.isArray(sourceClosure) && sourceClosure.length === 3,
+    "exactFlatSourceClosure must contain three files");
+  const expectedHashes = [
+    "e962ea7c04a47dd8f72122f1de129e5175d3a40eac2dca511d399fee1f5e52c9",
+    "dbbaf1a880646e8769f0188e2a79c1467b3912f272eb00325792e1f787342f63",
+    "4627ee3c0fae6605a415e3a2b917e5346f01b3ac992e938ce724edf3df1aa17b"
+  ];
+  for (const [index, source] of sourceClosure.entries()) {
+    exactKeys(source, ["path", "sha256"], `exactFlatSourceClosure[${index}]`);
+    invariant(relativePathPattern.test(source.path),
+      `exactFlatSourceClosure[${index}].path is unsafe`);
+    invariant(sha256Pattern.test(source.sha256) && source.sha256 === expectedHashes[index],
+      `exactFlatSourceClosure[${index}].sha256 is invalid`);
+  }
+  invariant(sectionSha256(sourceClosure) === expectedSectionSha256.exactFlatSourceClosure,
+    "exactFlatSourceClosure contract is invalid");
+}
+
+function validateExternalDataset(dataset) {
+  exactKeys(dataset, [
+    "sourceKind", "name", "sourceRepository", "revision", "tree", "licenseExpression",
+    "licensePath", "licenseBytes", "licenseSha256", "readmePath", "readmeBytes",
+    "readmeSha256", "files", "locatorEnvironmentVariable",
+    "locatorValueMayEnterEvidence", "externalBytesMayEnterRepository",
+    "thirdPartyCodeExecutionAllowed", "networkAllowedDuringExecution",
+    "datasetMutationAllowed"
+  ], "externalDataset");
+  invariant(dataset.sourceRepository ===
+    "https://github.com/zalandoresearch/fashion-mnist.git",
+  "externalDataset source repository is invalid");
+  invariant(dataset.revision === "b2617bb6d3ffa2e429640350f613e3291e10b141",
+    "externalDataset revision is invalid");
+  invariant(dataset.tree === "ec8d5e52c0b9b2b09ea3f9d36b7bfafaf8ec0e97",
+    "externalDataset tree is invalid");
+  invariant(dataset.licenseExpression === "MIT", "externalDataset license is invalid");
+  invariant(dataset.locatorEnvironmentVariable === "TINYRUSTLM_FASHION_MNIST_ROOT",
+    "externalDataset locator is invalid");
+  for (const field of [
+    "locatorValueMayEnterEvidence",
+    "externalBytesMayEnterRepository",
+    "thirdPartyCodeExecutionAllowed",
+    "networkAllowedDuringExecution",
+    "datasetMutationAllowed"
+  ]) {
+    invariant(dataset[field] === false, `externalDataset.${field} must remain false`);
+  }
+  invariant(Array.isArray(dataset.files) && dataset.files.length === 4,
+    "externalDataset files are invalid");
+  for (const [index, file] of dataset.files.entries()) {
+    exactKeys(file, [
+      "upstreamPath", "split", "content", "compressedBytes", "compressedSha256",
+      "decompressedBytes", "decompressedSha256", "idxMagic", "itemCount", "rows",
+      "columns"
+    ], `externalDataset.files[${index}]`);
+    invariant(relativePathPattern.test(file.upstreamPath),
+      `externalDataset.files[${index}].upstreamPath is unsafe`);
+    invariant(sha256Pattern.test(file.compressedSha256) &&
+      sha256Pattern.test(file.decompressedSha256),
+    `externalDataset.files[${index}] hashes are invalid`);
+    invariant(Number.isSafeInteger(file.compressedBytes) && file.compressedBytes > 0 &&
+      Number.isSafeInteger(file.decompressedBytes) && file.decompressedBytes > 0,
+    `externalDataset.files[${index}] sizes are invalid`);
+  }
+  validateFrozenSection({ externalDataset: dataset }, "externalDataset");
+}
+
+function validateBuild(build) {
+  exactKeys(build, [
+    "librarySource", "benchmarkSource", "observationRunnerSource",
+    "verificationRunnerSource", "libraryOutput", "benchmarkOutput", "libraryCommand",
+    "benchmarkCommand", "workspaceManifestMutationAllowed",
+    "exactFlatSourceMutationAllowed", "unsafeCodeAllowed",
+    "thirdPartyDependenciesAllowed", "productImportAllowed"
+  ], "build");
+  for (const field of [
+    "librarySource", "benchmarkSource", "observationRunnerSource",
+    "verificationRunnerSource"
+  ]) {
+    invariant(relativePathPattern.test(build[field]), `build.${field} is unsafe`);
+  }
+  for (const field of [
+    "workspaceManifestMutationAllowed",
+    "exactFlatSourceMutationAllowed",
+    "unsafeCodeAllowed",
+    "thirdPartyDependenciesAllowed",
+    "productImportAllowed"
+  ]) {
+    invariant(build[field] === false, `build.${field} must remain false`);
+  }
+  validateFrozenSection({ build }, "build");
+}
+
+function validateCorpus(corpus) {
+  exactKeys(corpus, [
+    "selection", "naturalLanes", "syntheticGenerator", "syntheticLanes",
+    "controlledMemoryLane"
+  ], "corpus");
+  exactKeys(corpus.selection, [
+    "algorithm", "seed", "classes", "recordsPerClass", "queriesPerClass",
+    "recordCount", "queryCount", "selectionTieBreak", "trainTestSplitMustRemainDisjoint",
+    "selectedIndicesMayEnterEvidence"
+  ], "corpus.selection");
+  exactValue(corpus.selection.classes, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+    "corpus.selection.classes");
+  invariant(corpus.selection.recordsPerClass === 200 &&
+    corpus.selection.recordCount === 2000,
+  "corpus record sampling is invalid");
+  invariant(corpus.selection.queriesPerClass === 20 &&
+    corpus.selection.queryCount === 200,
+  "corpus query sampling is invalid");
+  invariant(corpus.selection.trainTestSplitMustRemainDisjoint === true,
+    "corpus train/test split must remain disjoint");
+  invariant(corpus.selection.selectedIndicesMayEnterEvidence === false,
+    "selected indices must remain private");
+  invariant(Array.isArray(corpus.naturalLanes) && corpus.naturalLanes.length === 2,
+    "natural lane count is invalid");
+  invariant(Array.isArray(corpus.syntheticLanes) && corpus.syntheticLanes.length === 3,
+    "synthetic lane count is invalid");
+  invariant(corpus.controlledMemoryLane.rawTextStoredInIndex === false &&
+    corpus.controlledMemoryLane.untrustedTextPromotedToInstructions === false,
+  "controlled memory content authority is invalid");
+  validateFrozenSection({ corpus }, "corpus");
+}
+
+function validateGroundTruth(groundTruth) {
+  exactKeys(groundTruth, [
+    "implementation", "mayCallExactFlatSearch", "mayReadExactFlatPrivateState",
+    "inputCoordinates", "scoreAccumulation", "rankDirection", "tieBreak", "rankMetrics",
+    "scoreMetrics", "naturalUtilityMetrics", "controlledUtilityMetrics",
+    "rawPerQueryMetricsRetained", "rawVectorsMayEnterEvidence", "rawImagesMayEnterEvidence"
+  ], "groundTruth");
+  invariant(groundTruth.implementation === "independent-benchmark-f64-exhaustive-scan-v1",
+    "groundTruth implementation is invalid");
+  invariant(groundTruth.mayCallExactFlatSearch === false &&
+    groundTruth.mayReadExactFlatPrivateState === false,
+  "groundTruth must remain independent");
+  invariant(groundTruth.rawPerQueryMetricsRetained === true,
+    "groundTruth per-query metrics must be retained");
+  invariant(groundTruth.rawVectorsMayEnterEvidence === false &&
+    groundTruth.rawImagesMayEnterEvidence === false,
+  "groundTruth raw data must remain excluded");
+  validateFrozenSection({ groundTruth }, "groundTruth");
+}
+
+function validateThresholds(thresholds) {
+  exactKeys(thresholds, [
+    "allLanes", "naturalLanes", "controlledMemoryLane", "resultDrivenChangesAllowed",
+    "failedThresholdMayBeLowered"
+  ], "thresholds");
+  exactValue(thresholds.allLanes, {
+    minimumRecallAt1: 1,
+    minimumRecallAt10: 1,
+    minimumRecallAt100: 1,
+    minimumMrrAt100: 1,
+    minimumNdcgAt100: 1,
+    maximumRankInversionsAt100: 0,
+    maximumAbsoluteScoreError: 1e-12
+  }, "thresholds.allLanes");
+  exactValue(thresholds.naturalLanes, {
+    minimumMacroLabelPrecisionAt10: 0.5,
+    minimumMacroLabelMrrAt10: 0.75,
+    minimumMacroLabelNdcgAt10: 0.7,
+    requiredPerClassQueryCoverage: 20
+  }, "thresholds.naturalLanes");
+  exactValue(thresholds.controlledMemoryLane, {
+    minimumExpectedFirstHitRate: 1,
+    maximumForbiddenHitRateAt10: 0,
+    maximumDeletedHitCount: 0,
+    maximumFilterViolationCount: 0
+  }, "thresholds.controlledMemoryLane");
+  invariant(thresholds.resultDrivenChangesAllowed === false &&
+    thresholds.failedThresholdMayBeLowered === false,
+  "threshold weakening must remain forbidden");
+  validateFrozenSection({ thresholds }, "thresholds");
+}
+
+function validateDurableDeletion(deletion) {
+  exactKeys(deletion, [
+    "storageDesign", "ownedRootMarker", "sameDirectoryTemporarySuffix", "snapshotName",
+    "commitName", "activeGenerationSelection", "snapshotWriteOrder", "commitWriteOrder",
+    "directoryFlush", "initialRecordCount", "deleteTargetCount", "dimension", "metric",
+    "normalization", "targetVectorGenerator", "targetSeed", "targetExternalIdBase",
+    "deletionOperation", "crashScenarios", "processCrashExitCode", "powerLossSimulated",
+    "filesystemForensicErasureTested", "finalManagedFileScanRequired",
+    "finalTargetIdentifierMatchesAllowed", "finalTargetVectorFingerprintMatchesAllowed",
+    "activeIndexContainsAnyDeletedTargetAllowed",
+    "activeIndexContainsActiveDeletedTargetAllowed", "allCrashScenariosMustRecover",
+    "retryMustBeIdempotent"
+  ], "durableDeletion");
+  invariant(Array.isArray(deletion.crashScenarios) && deletion.crashScenarios.length === 4,
+    "durableDeletion crash scenarios are invalid");
+  exactValue(deletion.crashScenarios.map((scenario) => ({
+    scenarioId: scenario.scenarioId,
+    expectedActiveGeneration: scenario.expectedActiveGeneration,
+    deletionCommitted: scenario.deletionCommitted
+  })), [
+    {
+      scenarioId: "after-snapshot-temp-sync-before-finalize",
+      expectedActiveGeneration: 1,
+      deletionCommitted: false
+    },
+    {
+      scenarioId: "after-snapshot-finalize-before-commit-temp",
+      expectedActiveGeneration: 1,
+      deletionCommitted: false
+    },
+    {
+      scenarioId: "after-commit-temp-sync-before-finalize",
+      expectedActiveGeneration: 1,
+      deletionCommitted: false
+    },
+    {
+      scenarioId: "after-commit-finalize-before-obsolete-cleanup",
+      expectedActiveGeneration: 2,
+      deletionCommitted: true
+    }
+  ], "durableDeletion crash ordering");
+  invariant(deletion.processCrashExitCode === 73,
+    "durableDeletion process crash exit code is invalid");
+  invariant(deletion.powerLossSimulated === false &&
+    deletion.filesystemForensicErasureTested === false,
+  "durableDeletion authority exceeds the registered experiment");
+  invariant(deletion.finalManagedFileScanRequired === true &&
+    deletion.finalTargetIdentifierMatchesAllowed === 0 &&
+    deletion.finalTargetVectorFingerprintMatchesAllowed === 0 &&
+    deletion.activeIndexContainsAnyDeletedTargetAllowed === false &&
+    deletion.activeIndexContainsActiveDeletedTargetAllowed === false &&
+    deletion.allCrashScenariosMustRecover === true &&
+    deletion.retryMustBeIdempotent === true,
+  "durableDeletion acceptance is invalid");
+  validateFrozenSection({ durableDeletion: deletion }, "durableDeletion");
+}
+
+function validateExecution(execution) {
+  exactKeys(execution, [
+    "networkPolicy", "parallelProcesses", "qualityProcessCount",
+    "crashScenarioProcessCount", "timeoutMsPerProcess", "datasetHashBufferBytes",
+    "datasetDecompression", "temporaryRootsMustBeOutsideRepository",
+    "temporaryRootMarkerRequired", "recursiveCleanupRequiresResolvedRootAndMarker",
+    "stdoutContract", "stderrContract", "resultOrder", "outlierPolicy", "bestOfNAllowed",
+    "resultRepairAllowed"
+  ], "execution");
+  invariant(execution.networkPolicy === "deny-all-during-observation",
+    "execution network policy is invalid");
+  invariant(execution.parallelProcesses === 1 && execution.qualityProcessCount === 1 &&
+    execution.crashScenarioProcessCount === 4,
+  "execution process policy is invalid");
+  invariant(execution.temporaryRootsMustBeOutsideRepository === true &&
+    execution.temporaryRootMarkerRequired === true &&
+    execution.recursiveCleanupRequiresResolvedRootAndMarker === true,
+  "execution temporary-root safety is invalid");
+  invariant(execution.bestOfNAllowed === false && execution.resultRepairAllowed === false,
+    "execution result selection or repair must remain forbidden");
+  validateFrozenSection({ execution }, "execution");
+}
+
+function validateValidity(validity) {
+  exactKeys(validity, [
+    "allParentsAndSourceClosureMustMatch", "allExternalDatasetHashesAndIdxHeadersMustMatch",
+    "selectedCorpusCountsAndClassBalanceMustMatch", "allSixQualityLanesMustComplete",
+    "allPerQueryMetricsMustBeRetained", "allFrozenThresholdsMustPass",
+    "allFourCrashScenariosMustExitAtRegisteredBoundary",
+    "allFourCrashScenariosMustRecoverToExpectedGeneration",
+    "committedDeletionMustRemainDeletedAfterRestart", "finalManagedFileScanMustPass",
+    "ownedTemporaryRootsMustBePhysicallyDeleted", "toolSourceBinaryAndDatasetHashesRequired",
+    "infrastructureFailuresMayBeRetried", "qualityThresholdFailuresMayBeRetried",
+    "deletionSemanticFailuresMayBeRetried", "resultDrivenThresholdChangesAllowed"
+  ], "validity");
+  invariant(validity.allParentsAndSourceClosureMustMatch === true &&
+    validity.allExternalDatasetHashesAndIdxHeadersMustMatch === true &&
+    validity.allFrozenThresholdsMustPass === true &&
+    validity.allFourCrashScenariosMustRecoverToExpectedGeneration === true &&
+    validity.committedDeletionMustRemainDeletedAfterRestart === true &&
+    validity.finalManagedFileScanMustPass === true &&
+    validity.ownedTemporaryRootsMustBePhysicallyDeleted === true,
+  "validity required evidence is invalid");
+  invariant(validity.qualityThresholdFailuresMayBeRetried === false &&
+    validity.deletionSemanticFailuresMayBeRetried === false &&
+    validity.resultDrivenThresholdChangesAllowed === false,
+  "validity semantic retry policy is invalid");
+  validateFrozenSection({ validity }, "validity");
+}
+
+function validateEvidencePolicy(policy) {
+  exactKeys(policy, [
+    "attemptsAreImmutable", "failedAttemptsArePreserved", "attemptDirectory",
+    "successfulObservationPath", "verificationReceiptPath", "externalDatasetBytesAllowed",
+    "selectedIndicesAllowed", "rawVectorsAllowed", "rawImagesAllowed", "rawTextAllowed",
+    "privateAbsolutePathsAllowed", "credentialsAllowed", "modelBytesAllowed"
+  ], "evidencePolicy");
+  invariant(policy.attemptsAreImmutable === true && policy.failedAttemptsArePreserved === true,
+    "evidencePolicy immutable history is invalid");
+  for (const field of [
+    "attemptDirectory", "successfulObservationPath", "verificationReceiptPath"
+  ]) {
+    invariant(relativePathPattern.test(policy[field]), `evidencePolicy.${field} is unsafe`);
+  }
+  for (const field of [
+    "externalDatasetBytesAllowed", "selectedIndicesAllowed", "rawVectorsAllowed",
+    "rawImagesAllowed", "rawTextAllowed", "privateAbsolutePathsAllowed",
+    "credentialsAllowed", "modelBytesAllowed"
+  ]) {
+    invariant(policy[field] === false, `evidencePolicy.${field} must remain false`);
+  }
+  validateFrozenSection({ evidencePolicy: policy }, "evidencePolicy");
+}
+
+function validateManifest(manifest) {
+  exactKeys(manifest, topLevelKeys, "manifest");
+  invariant(manifest.schema === schema, "manifest schema is invalid");
+  invariant(manifest.experimentId ===
+    "exact-flat-sealed-corpus-and-durable-deletion-20260725",
+  "manifest experimentId is invalid");
+  invariant(utcPattern.test(manifest.registeredAtUtc) &&
+    Number.isFinite(Date.parse(manifest.registeredAtUtc)),
+  "manifest registeredAtUtc is invalid");
+  invariant(manifest.registeredAtUtc === "2026-07-25T20:47:01Z",
+    "manifest registration time drifted");
+  invariant(manifest.status ===
+    "preregistered-before-corpus-materialization-or-deletion-results",
+  "manifest status is invalid");
+  invariant(!forbiddenTextPattern.test(JSON.stringify(manifest)),
+    "manifest contains a private path, credential, or internal citation");
+
+  validateParents(manifest.parents);
+  validateSourceClosure(manifest.exactFlatSourceClosure);
+  validateExternalDataset(manifest.externalDataset);
+  validateBuild(manifest.build);
+  validateCorpus(manifest.corpus);
+  validateGroundTruth(manifest.groundTruth);
+  validateThresholds(manifest.thresholds);
+  validateDurableDeletion(manifest.durableDeletion);
+  validateExecution(manifest.execution);
+  validateValidity(manifest.validity);
+  validateEvidencePolicy(manifest.evidencePolicy);
+  exactKeys(manifest.authority, Object.keys(expectedAuthority), "authority");
+  exactValue(manifest.authority, expectedAuthority, "authority");
+  validateFrozenSection(manifest, "authority");
+  validateFrozenSection(manifest, "requiredNextGate");
+
+  invariant(sha256(canonicalManifestBytes(manifest)) === expectedManifestSha256,
+    "manifest contract is not the registered contract");
+  return manifest;
+}
+
+function validateManifestFile(filePath = defaultPath) {
+  const resolved = path.resolve(filePath);
+  const stat = fs.lstatSync(resolved);
+  invariant(stat.isFile() && !stat.isSymbolicLink() && stat.size > 0 &&
+    stat.size <= maximumManifestBytes, "manifest must be a bounded regular file");
+  const bytes = fs.readFileSync(resolved);
+  const manifest = validateManifest(JSON.parse(bytes.toString("utf8")));
+  invariant(bytes.equals(canonicalManifestBytes(manifest)),
+    "manifest bytes are not canonical pretty JSON");
+
+  for (const [index, parent] of manifest.parents.entries()) {
+    const parentPath = resolveRepositoryFile(parent.path, `parents[${index}]`);
+    invariant(sha256File(parentPath) === parent.sha256,
+      `parent hash drifted: ${parent.path}`);
+  }
+  for (const [index, source] of manifest.exactFlatSourceClosure.entries()) {
+    const sourcePath = resolveRepositoryFile(source.path,
+      `exactFlatSourceClosure[${index}]`);
+    invariant(sha256File(sourcePath) === source.sha256,
+      `source closure hash drifted: ${source.path}`);
+  }
+
+  return Object.freeze({
+    manifest,
+    path: path.relative(repositoryRoot, resolved).replaceAll("\\", "/"),
+    bytes: stat.size,
+    sha256: sha256(bytes)
+  });
+}
+
+if (require.main === module) {
+  try {
+    const result = validateManifestFile(process.argv[2] || defaultPath);
+    process.stdout.write(`${JSON.stringify({
+      schema: result.manifest.schema,
+      experimentId: result.manifest.experimentId,
+      naturalLaneCount: result.manifest.corpus.naturalLanes.length,
+      syntheticLaneCount: result.manifest.corpus.syntheticLanes.length,
+      controlledMemoryLaneCount: 1,
+      crashScenarioCount: result.manifest.durableDeletion.crashScenarios.length,
+      externalDatasetCheckoutRequiredForPreregistrationValidation: false,
+      sha256: result.sha256,
+      status: "valid"
+    })}\n`);
+  } catch (error) {
+    process.stderr.write(
+      `${error instanceof Error ? error.message : "manifest validation failed"}\n`
+    );
+    process.exitCode = 1;
+  }
+}
+
+module.exports = Object.freeze({
+  defaultPath,
+  expectedAuthority,
+  expectedManifestSha256,
+  expectedParents,
+  schema,
+  validateManifest,
+  validateManifestFile
+});
