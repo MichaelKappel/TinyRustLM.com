@@ -52,7 +52,8 @@ async function scanWebRelease(options) {
   invariant(!fs.existsSync(evidenceRoot), "Web release evidence root must be new");
   const validation = validateWebDeploymentManifest({
     siteRoot: options.siteRoot,
-    manifestPath: options.manifestPath
+    manifestPath: options.manifestPath,
+    generatedRoot: options.generatedRoot
   });
   const repositoryRoot = path.resolve(validation.siteRoot, "..");
   invariant(
@@ -68,12 +69,12 @@ async function scanWebRelease(options) {
   const stagingReportPath = path.join(stagingDirectory, "scan-report.json");
   const artifacts = [
     Object.freeze({
-      label: "control/web-deployment-manifest.v1.json",
+      label: "control/web-deployment-manifest.v2.json",
       path: validation.manifestPath
     }),
     ...validation.files.map((file) => Object.freeze({
       label: `web/${file.remote}`,
-      path: path.join(validation.siteRoot, file.local.replace(/\//g, path.sep))
+      path: file.filePath
     }))
   ];
   try {
@@ -137,18 +138,22 @@ async function main() {
     reportOutputPath,
     evidenceRoot,
     sourceRevision,
+    generatedRoot,
     ...extra
   ] = process.argv.slice(2);
   invariant(
-    siteRoot && manifestPath && reportOutputPath && evidenceRoot && sourceRevision && !extra.length,
-    "Usage: web-release-secret-scan.js <site-root> <manifest> <report> <evidence-root> <source-revision>"
+    siteRoot && manifestPath && reportOutputPath && evidenceRoot && sourceRevision &&
+      generatedRoot && !extra.length,
+    "Usage: web-release-secret-scan.js <site-root> <manifest> <report> <evidence-root> " +
+      "<source-revision> <generated-release-root>"
   );
   const result = await scanWebRelease({
     siteRoot,
     manifestPath,
     reportOutputPath,
     evidenceRoot,
-    sourceRevision
+    sourceRevision,
+    generatedRoot
   });
   process.stdout.write(`${JSON.stringify(result)}\n`);
 }

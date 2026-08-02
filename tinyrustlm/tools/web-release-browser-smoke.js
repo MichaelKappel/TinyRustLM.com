@@ -15,7 +15,7 @@ const {
   validateWebDeploymentManifest
 } = require("./web-deployment-manifest.js");
 
-const reportSchema = "tinyrustlm.web_release_browser_smoke.v1";
+const reportSchema = "tinyrustlm.web_release_browser_smoke.v2";
 const canonicalPublicOrigin = "https://tinyrustlm.com";
 const viewports = Object.freeze([
   Object.freeze({ name: "desktop", width: 1440, height: 1000 }),
@@ -23,8 +23,9 @@ const viewports = Object.freeze([
   Object.freeze({ name: "mobile", width: 390, height: 844 })
 ]);
 const routes = Object.freeze([
-  Object.freeze({ name: "root", path: "/" }),
-  Object.freeze({ name: "app", path: "/app/" })
+  Object.freeze({ kind: "application", name: "root", path: "/" }),
+  Object.freeze({ kind: "application", name: "app", path: "/app/" }),
+  Object.freeze({ kind: "release-history", name: "updates", path: "/updates/" })
 ]);
 const maximumErrorEvents = 32;
 const maximumNetworkEvents = 1024;
@@ -131,6 +132,7 @@ function buildAllowedReleaseRequests(validation) {
   }
   requests.set("/", Object.freeze({ expectedSearch: "", pathname: "/" }));
   requests.set("/app/", Object.freeze({ expectedSearch: "", pathname: "/app/" }));
+  requests.set("/updates/", Object.freeze({ expectedSearch: "", pathname: "/updates/" }));
   return requests;
 }
 
@@ -219,7 +221,8 @@ async function runPageObservation(
   route,
   viewport,
   outputDirectory,
-  allowedRequests
+  allowedRequests,
+  expectedRelease
 ) {
   const consoleErrors = [];
   const pageErrors = [];
@@ -309,12 +312,21 @@ async function runPageObservation(
   try {
     const target = new URL(route.path.replace(/^\/+/, ""), baseUrl);
     await page.goto(target.href, { waitUntil: "domcontentloaded", timeout: 30_000 });
-    await page.locator("#wasmState").waitFor({ state: "attached", timeout: 10_000 });
-    await page.waitForFunction(
-      () => document.getElementById("wasmState")?.textContent?.trim() === "loaded",
-      null,
-      { timeout: 30_000 }
-    );
+    if (route.kind === "application") {
+      await page.locator("#wasmState").waitFor({ state: "attached", timeout: 10_000 });
+      await page.waitForFunction(
+        () => document.getElementById("wasmState")?.textContent?.trim() === "loaded",
+        null,
+        { timeout: 30_000 }
+      );
+    } else {
+      await page.locator("[data-site-release]").waitFor({ state: "visible", timeout: 10_000 });
+      await page.waitForFunction(
+        () => document.querySelector("[data-site-release]")?.dataset.releaseState === "verified",
+        null,
+        { timeout: 30_000 }
+      );
+    }
     await page.waitForTimeout(250);
 
     const state = await page.evaluate(() => {
@@ -329,6 +341,8 @@ async function runPageObservation(
         ).trim()
       );
       const visibleText = document.body?.innerText || "";
+      const releaseSurface = document.querySelector("[data-site-release]");
+      const releasePublishedAt = document.querySelector("[data-release-published-at]");
       return {
         appShellPresent: Boolean(appShell),
         browserModelAdmissionPresent: Boolean(window.TinyRustLMBrowserModelAdmission),
@@ -336,6 +350,12 @@ async function runPageObservation(
         runtimeVariant: document.documentElement.dataset.runtimeVariant || "",
         wasmState: document.getElementById("wasmState")?.textContent?.trim() || "",
         modelLoadState: document.getElementById("modelLoadPill")?.textContent?.trim() || "",
+        releaseSurfacePresent: Boolean(releaseSurface),
+        releaseState: releaseSurface?.dataset.releaseState || "",
+        releaseVersion: document.querySelector("[data-release-version]")?.textContent?.trim() || "",
+        releaseDate: document.querySelector("[data-release-date]")?.textContent?.trim() || "",
+        releasePublishedAt: releasePublishedAt?.dateTime || "",
+        releaseEntryCount: document.querySelectorAll(".release-entry").length,
         documentWidth: document.documentElement.scrollWidth,
         viewportWidth: window.innerWidth,
         viewportHeight: window.innerHeight,
@@ -374,6 +394,7 @@ async function runPageObservation(
     );
     const diagnostic = Object.freeze({
       route: route.name,
+      surfaceKind: route.kind,
       viewport: viewport.name,
       blockedRequestCount,
       blockedRequests: Object.freeze(blockedRequests),
@@ -399,6 +420,13 @@ async function runPageObservation(
       modelLoadState: boundedStateIdentity(
         state.modelLoadState,
         ["No model imported"]
+      ),
+      releaseState: boundedStateIdentity(state.releaseState, ["verified"]),
+      releaseVersion: boundedStateIdentity(state.releaseVersion, [expectedRelease.version]),
+      releaseDate: boundedStateIdentity(state.releaseDate, [expectedRelease.releaseDate]),
+      releasePublishedAt: boundedStateIdentity(
+        state.releasePublishedAt,
+        [expectedRelease.publishedAt]
       ),
       unnamedButtonCount: state.unnamedButtonCount,
       horizontalOverflowPixels: Math.max(0, state.documentWidth - state.viewportWidth),
@@ -435,23 +463,6 @@ async function runPageObservation(
       "unexpected_http_error",
       diagnostic
     );
-    observationInvariant(state.appShellPresent, "app_shell_missing", diagnostic);
-    observationInvariant(
-      state.browserModelAdmissionPresent && state.memoryEnrollmentPresent,
-      "required_browser_module_missing",
-      diagnostic
-    );
-    observationInvariant(state.wasmState === "loaded", "wasm_not_loaded", diagnostic);
-    observationInvariant(
-      state.runtimeVariant === "simd128" || state.runtimeVariant === "scalar",
-      "runtime_variant_invalid",
-      diagnostic
-    );
-    observationInvariant(
-      state.modelLoadState === "No model imported",
-      "unsupported_model_claim",
-      diagnostic
-    );
     observationInvariant(
       state.documentWidth <= state.viewportWidth + 1,
       "horizontal_page_overflow",
@@ -463,17 +474,59 @@ async function runPageObservation(
       diagnostic
     );
     observationInvariant(state.unnamedButtonCount === 0, "unnamed_button", diagnostic);
-    observationInvariant(
-      state.composerRect &&
-        state.composerRect.width > 0 &&
-        state.composerRect.height > 0 &&
-        state.composerRect.left >= -1 &&
-        state.composerRect.right <= state.viewportWidth + 1 &&
-        state.composerRect.top >= -1 &&
-        state.composerRect.bottom <= state.viewportHeight + 1,
-      "composer_outside_viewport",
-      diagnostic
-    );
+    if (route.kind === "application") {
+      observationInvariant(state.appShellPresent, "app_shell_missing", diagnostic);
+      observationInvariant(
+        state.browserModelAdmissionPresent && state.memoryEnrollmentPresent,
+        "required_browser_module_missing",
+        diagnostic
+      );
+      observationInvariant(state.wasmState === "loaded", "wasm_not_loaded", diagnostic);
+      observationInvariant(
+        state.runtimeVariant === "simd128" || state.runtimeVariant === "scalar",
+        "runtime_variant_invalid",
+        diagnostic
+      );
+      observationInvariant(
+        state.modelLoadState === "No model imported",
+        "unsupported_model_claim",
+        diagnostic
+      );
+      observationInvariant(
+        state.composerRect &&
+          state.composerRect.width > 0 &&
+          state.composerRect.height > 0 &&
+          state.composerRect.left >= -1 &&
+          state.composerRect.right <= state.viewportWidth + 1 &&
+          state.composerRect.top >= -1 &&
+          state.composerRect.bottom <= state.viewportHeight + 1,
+        "composer_outside_viewport",
+        diagnostic
+      );
+    } else {
+      observationInvariant(state.releaseSurfacePresent, "release_surface_missing", diagnostic);
+      observationInvariant(state.releaseState === "verified", "release_record_unverified", diagnostic);
+      observationInvariant(
+        state.releaseVersion === expectedRelease.version,
+        "release_version_mismatch",
+        diagnostic
+      );
+      observationInvariant(
+        state.releaseDate === expectedRelease.releaseDate,
+        "release_date_mismatch",
+        diagnostic
+      );
+      observationInvariant(
+        state.releasePublishedAt === expectedRelease.publishedAt,
+        "release_publication_mismatch",
+        diagnostic
+      );
+      observationInvariant(
+        state.releaseEntryCount === expectedRelease.historyEntryCount,
+        "release_history_count_mismatch",
+        diagnostic
+      );
+    }
 
     const screenshotName = `${route.name}-${viewport.name}.png`;
     const screenshotPath = path.join(outputDirectory, screenshotName);
@@ -481,11 +534,17 @@ async function runPageObservation(
     const screenshotBytes = fs.readFileSync(screenshotPath);
     return Object.freeze({
       route: route.name,
+      surfaceKind: route.kind,
       pathname: target.pathname,
       viewport: Object.freeze({ width: viewport.width, height: viewport.height }),
-      runtimeVariant: state.runtimeVariant,
-      wasmState: state.wasmState,
-      modelLoadState: state.modelLoadState,
+      runtimeVariant: route.kind === "application" ? state.runtimeVariant : null,
+      wasmState: route.kind === "application" ? state.wasmState : null,
+      modelLoadState: route.kind === "application" ? state.modelLoadState : null,
+      releaseState: route.kind === "release-history" ? state.releaseState : null,
+      releaseVersion: route.kind === "release-history" ? state.releaseVersion : null,
+      releaseDate: route.kind === "release-history" ? state.releaseDate : null,
+      releasePublishedAt: route.kind === "release-history" ? state.releasePublishedAt : null,
+      releaseEntryCount: route.kind === "release-history" ? state.releaseEntryCount : null,
       requestCount,
       responseCount,
       blockedRequestCount,
@@ -495,11 +554,9 @@ async function runPageObservation(
       pageErrorCount,
       unnamedButtonCount: state.unnamedButtonCount,
       horizontalOverflowPixels: Math.max(0, state.documentWidth - state.viewportWidth),
-      composerVerticalOverflowPixels: Math.max(
-        0,
-        -state.composerRect.top,
-        state.composerRect.bottom - state.viewportHeight
-      ),
+      composerVerticalOverflowPixels: state.composerRect
+        ? Math.max(0, -state.composerRect.top, state.composerRect.bottom - state.viewportHeight)
+        : null,
       screenshot: Object.freeze({
         fileName: screenshotName,
         byteCount: screenshotBytes.length,
@@ -528,9 +585,16 @@ async function runWebReleaseBrowserSmoke(options) {
   );
   const releaseValidation = validateWebDeploymentManifest({
     siteRoot: options.siteRoot,
-    manifestPath: options.manifestPath
+    manifestPath: options.manifestPath,
+    generatedRoot: options.generatedRoot
   });
   const allowedRequests = buildAllowedReleaseRequests(releaseValidation);
+  const expectedRelease = Object.freeze({
+    version: releaseValidation.currentRelease.version,
+    releaseDate: releaseValidation.currentRelease.releaseDate,
+    publishedAt: releaseValidation.currentRelease.publishedAt,
+    historyEntryCount: releaseValidation.releaseHistory.releases.length
+  });
   createOwnedDirectory(outputDirectory);
   const startedAtUtc = new Date().toISOString();
   let browser = null;
@@ -553,7 +617,8 @@ async function runWebReleaseBrowserSmoke(options) {
             route,
             viewport,
             outputDirectory,
-            allowedRequests
+            allowedRequests,
+            expectedRelease
           )
         );
       }
@@ -616,12 +681,19 @@ async function runWebReleaseBrowserSmoke(options) {
 }
 
 async function main() {
-  const [baseUrl, outputDirectory, sourceRevision, ...extra] = process.argv.slice(2);
+  const [baseUrl, outputDirectory, sourceRevision, generatedRoot, ...extra] =
+    process.argv.slice(2);
   invariant(
-    baseUrl && outputDirectory && sourceRevision && !extra.length,
-    "Usage: web-release-browser-smoke.js <base-url> <output-directory> <source-revision>"
+    baseUrl && outputDirectory && sourceRevision && generatedRoot && !extra.length,
+    "Usage: web-release-browser-smoke.js <base-url> <output-directory> " +
+      "<source-revision> <generated-release-root>"
   );
-  const result = await runWebReleaseBrowserSmoke({ baseUrl, outputDirectory, sourceRevision });
+  const result = await runWebReleaseBrowserSmoke({
+    baseUrl,
+    outputDirectory,
+    sourceRevision,
+    generatedRoot
+  });
   process.stdout.write(`${JSON.stringify({
     schema: reportSchema,
     status: result.report.status,

@@ -20,8 +20,22 @@ const {
 const {
   validateWebDeploymentManifest
 } = require("../tools/web-deployment-manifest.js");
+const { materializeReleasePublication } = require("../tools/site-release-contract.js");
 
 const siteRoot = path.resolve(__dirname, "..");
+const ledgerPath = path.join(siteRoot, "release", "site-release-ledger.v1.json");
+
+function generatedRelease(context) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-smoke-release-"));
+  context.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  materializeReleasePublication({
+    ledgerPath,
+    outputRoot: root,
+    sourceRevision: "3".repeat(40),
+    publishedAt: "2026-08-02T23:30:00.000Z"
+  });
+  return root;
+}
 
 test("browser smoke accepts only canonical public HTTPS or loopback HTTP", () => {
   assert.equal(requireBaseUrl(canonicalPublicOrigin).origin, canonicalPublicOrigin);
@@ -46,8 +60,11 @@ test("uncommitted browser smoke authority is limited to loopback", () => {
   );
 });
 
-test("browser smoke blocks undeclared traffic before send and hashes untrusted URLs", () => {
-  const validation = validateWebDeploymentManifest({ siteRoot });
+test("browser smoke blocks undeclared traffic before send and hashes untrusted URLs", (context) => {
+  const validation = validateWebDeploymentManifest({
+    siteRoot,
+    generatedRoot: generatedRelease(context)
+  });
   const allowedRequests = buildAllowedReleaseRequests(validation);
   const appScript = validation.files.find((file) => file.remote === "app/app.js");
   const expectedOrigin = "http://127.0.0.1:41873";
@@ -69,6 +86,15 @@ test("browser smoke blocks undeclared traffic before send and hashes untrusted U
       allowedRequests
     ).reason,
     "unexpected-query"
+  );
+  assert.equal(
+    classifyReleaseRequest(
+      `${expectedOrigin}/.well-known/site-release.json`,
+      "GET",
+      expectedOrigin,
+      allowedRequests
+    ).allowed,
+    true
   );
   assert.equal(
     classifyReleaseRequest(
@@ -119,11 +145,13 @@ test("browser smoke rejects a reused output directory before browser launch", as
   context.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const outputDirectory = path.join(root, "existing");
   fs.mkdirSync(outputDirectory);
+  const generatedRoot = generatedRelease(context);
   await assert.rejects(
     () => runWebReleaseBrowserSmoke({
       baseUrl: "http://127.0.0.1:9",
       outputDirectory,
-      sourceRevision: "uncommitted"
+      sourceRevision: "uncommitted",
+      generatedRoot
     }),
     /already exists/
   );

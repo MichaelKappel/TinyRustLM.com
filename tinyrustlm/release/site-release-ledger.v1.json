@@ -1,0 +1,32 @@
+{
+  "schema": "uaix.site_release_ledger.v1",
+  "site": {
+    "siteId": "tinyrustlm.com",
+    "name": "TinyRustLM",
+    "canonicalOrigin": "https://tinyrustlm.com",
+    "updatesPath": "/updates/"
+  },
+  "releases": [
+    {
+      "releaseId": "tinyrustlm.com@0.1.0",
+      "version": "0.1.0",
+      "releaseDate": "2026-08-02",
+      "summary": "Introduces a verifiable public release record and update history for the TinyRustLM dogfood site.",
+      "changes": [
+        {
+          "type": "added",
+          "summary": "Added a visible site version, release date, last-published status, and human-readable update history."
+        },
+        {
+          "type": "added",
+          "summary": "Added strict machine-readable current-release and release-history records under .well-known."
+        },
+        {
+          "type": "changed",
+          "summary": "Bound web publication to clean source identity, exact release metadata, secret scanning, and HTTPS readback evidence."
+        }
+      ]
+    }
+  ],
+  "publications": []
+}

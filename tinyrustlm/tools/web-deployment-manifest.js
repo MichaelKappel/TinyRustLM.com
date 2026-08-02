@@ -9,11 +9,18 @@ const {
   assertSafeDirectoryAncestry,
   assertSafeRegularFile
 } = require("./immutable-publication-files.js");
+const { validatePublicReleaseFiles } = require("./site-release-contract.js");
+const { verifyReleaseSurfaces } = require("./site-release-page.js");
 const { verifyShells } = require("./static-shell-parity.js");
 
-const manifestSchema = "tinyrustlm.web_deployment_manifest.v1";
+const manifestSchema = "tinyrustlm.web_deployment_manifest.v2";
 const publicOrigin = "https://tinyrustlm.com";
 const deploymentScope = "browser-runtime-no-model-bytes";
+const releaseLedgerRelativePath = "release/site-release-ledger.v1.json";
+const generatedReleasePaths = Object.freeze([
+  ".well-known/site-release-history.json",
+  ".well-known/site-release.json"
+]);
 const retiredPublicPaths = Object.freeze([
   "app/models/Qwen2.5-1.5B-Instruct.LICENSE.txt",
   "app/models/Qwen2.5-1.5B-Instruct.NOTICE.md",
@@ -36,6 +43,16 @@ function sha256(value) {
   return crypto.createHash("sha256").update(value).digest("hex");
 }
 
+function requireExactSet(actualValues, expectedValues, label) {
+  const actual = Array.from(actualValues).sort();
+  const expected = Array.from(expectedValues).sort();
+  invariant(
+    JSON.stringify(actual) === JSON.stringify(expected),
+    `${label} is incomplete or contains an undeclared value\n` +
+      `actual: ${JSON.stringify(actual)}\nexpected: ${JSON.stringify(expected)}`
+  );
+}
+
 function requireRelativePath(value, label) {
   const relativePath = String(value || "");
   invariant(
@@ -46,7 +63,7 @@ function requireRelativePath(value, label) {
       !relativePath.includes("?") &&
       !relativePath.includes("#") &&
       !relativePath.startsWith("/") &&
-      !/^[A-Za-z]:/.test(relativePath),
+      !/^[A-Za-z]:/u.test(relativePath),
     `${label} is not a canonical relative path`
   );
   const segments = relativePath.split("/");
@@ -61,10 +78,8 @@ function containedFile(root, relativePath, label) {
   const filePath = path.resolve(root, relativePath.replace(/\//g, path.sep));
   const containment = path.relative(root, filePath);
   invariant(
-    containment &&
-      !containment.startsWith("..") &&
-      !path.isAbsolute(containment),
-    `${label} escapes the TinyRustLM site root`
+    containment && !containment.startsWith("..") && !path.isAbsolute(containment),
+    `${label} escapes its declared source root`
   );
   try {
     return assertSafeRegularFile(filePath);
@@ -73,39 +88,46 @@ function containedFile(root, relativePath, label) {
   }
 }
 
-function listRegularFiles(directory, predicate) {
+function requireSafeDirectory(directory, label) {
   assertSafeDirectoryAncestry(directory);
-  const directoryStat = fs.lstatSync(directory);
-  invariant(
-    directoryStat.isDirectory() && !directoryStat.isSymbolicLink(),
-    "Web deployment source directory is missing or unsafe"
-  );
+  const stat = fs.lstatSync(directory);
+  invariant(stat.isDirectory() && !stat.isSymbolicLink(), `${label} is missing or unsafe`);
+  return directory;
+}
+
+function isWithin(root, candidate) {
+  const relative = path.relative(root, candidate);
+  return relative === "" || (!relative.startsWith("..") && !path.isAbsolute(relative));
+}
+
+function listRegularFiles(directory, predicate) {
+  requireSafeDirectory(directory, "Web deployment source directory");
   return fs.readdirSync(directory, { withFileTypes: true })
     .filter((entry) => entry.isFile() && predicate(entry.name))
     .map((entry) => entry.name)
     .sort();
 }
 
-function expectedPublishPaths(siteRoot) {
+function expectedStaticPaths(siteRoot) {
   const appFiles = listRegularFiles(
     path.join(siteRoot, "app"),
-    (name) => /\.(?:css|html|js)$/.test(name)
+    (name) => /\.(?:css|html|js)$/u.test(name)
   ).map((name) => `app/${name}`);
   const runtimeFiles = listRegularFiles(
     path.join(siteRoot, "runtime"),
-    (name) => /^tinyrustlm(?:-simd)?\.wasm(?:\.manifest)?$/.test(name)
+    (name) => /^tinyrustlm(?:-simd)?\.wasm(?:\.manifest)?$/u.test(name)
   ).map((name) => `runtime/${name}`);
-  return Object.freeze([".htaccess", ...appFiles, "index.html", ...runtimeFiles].sort());
-}
-
-function requireExactSet(actualValues, expectedValues, label) {
-  const actual = Array.from(actualValues).sort();
-  const expected = Array.from(expectedValues).sort();
-  invariant(
-    JSON.stringify(actual) === JSON.stringify(expected),
-    `${label} is incomplete or contains an undeclared path\n` +
-      `actual: ${JSON.stringify(actual)}\nexpected: ${JSON.stringify(expected)}`
-  );
+  const updateFiles = listRegularFiles(
+    path.join(siteRoot, "updates"),
+    (name) => /^(?:index\.html|updates\.css)$/u.test(name)
+  ).map((name) => `updates/${name}`);
+  return Object.freeze([
+    ".htaccess",
+    ...appFiles,
+    "index.html",
+    ...runtimeFiles,
+    ...updateFiles
+  ].sort());
 }
 
 // Validates the public Apache policy required before any web bytes may ship.
@@ -124,12 +146,16 @@ function validateHostPolicy(hostPolicy) {
     );
   }
   invariant(
-    /Header set Cache-Control "no-cache, must-revalidate"/.test(hostPolicy),
-    "Web host policy must revalidate mutable public paths"
+    hostPolicy.includes("AddType application/json .json"),
+    "Web host policy must declare JSON release metadata"
   );
   invariant(
-    /RewriteRule \(\^\|\/\)\.\*\\\.slm\$ - \[R=404,L,NC\]/.test(hostPolicy) &&
-      /RewriteRule \(\^\|\/\)models\(\/\|\$\) - \[R=404,L,NC\]/.test(hostPolicy),
+    /<FilesMatch "\\\.\(html\|css\|js\|json\|wasm\|manifest\)\$">[\s\S]*Header set Cache-Control "no-cache, must-revalidate"/u.test(hostPolicy),
+    "Web host policy must revalidate mutable public and release paths"
+  );
+  invariant(
+    /RewriteRule \(\^\|\/\)\.\*\\\.slm\$ - \[R=404,L,NC\]/u.test(hostPolicy) &&
+      /RewriteRule \(\^\|\/\)models\(\/\|\$\) - \[R=404,L,NC\]/u.test(hostPolicy),
     "Web host policy must block project-hosted model routes"
   );
   invariant(
@@ -148,45 +174,52 @@ function validateHostPolicy(hostPolicy) {
   return true;
 }
 
-function validateWebDeploymentManifest(options = {}) {
-  const siteRoot = path.resolve(options.siteRoot || path.join(__dirname, ".."));
-  const manifestPath = path.resolve(
-    options.manifestPath ||
-      path.join(siteRoot, "deploy", "web-deployment-manifest.v1.json")
-  );
-  assertSafeDirectoryAncestry(siteRoot);
-  const siteStat = fs.lstatSync(siteRoot);
-  invariant(
-    siteStat.isDirectory() && !siteStat.isSymbolicLink(),
-    "TinyRustLM site root is missing or unsafe"
-  );
-  let manifestBytes;
+function readManifest(manifestPath) {
+  let bytes;
   try {
-    manifestBytes = fs.readFileSync(assertSafeRegularFile(manifestPath).filePath);
+    bytes = fs.readFileSync(assertSafeRegularFile(manifestPath).filePath);
   } catch {
     throw new Error("Web deployment manifest is unavailable");
   }
   let manifest;
   try {
-    manifest = JSON.parse(manifestBytes.toString("utf8"));
-  } catch (error) {
-    throw new Error(`Web deployment manifest is not valid JSON: ${error.message}`);
+    manifest = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes));
+  } catch {
+    throw new Error("Web deployment manifest is not valid UTF-8 JSON");
   }
+  return Object.freeze({ bytes, manifest });
+}
 
+function validateWebDeploymentManifest(options = {}) {
+  const siteRoot = path.resolve(options.siteRoot || path.join(__dirname, ".."));
+  const manifestPath = path.resolve(
+    options.manifestPath || path.join(siteRoot, "deploy", "web-deployment-manifest.v2.json")
+  );
+  const generatedRoot = path.resolve(String(options.generatedRoot || ""));
+  requireSafeDirectory(siteRoot, "TinyRustLM site root");
+  invariant(
+    path.isAbsolute(String(options.generatedRoot || "")) &&
+      !isWithin(siteRoot, generatedRoot),
+    "Generated release root must be absolute and outside the source worktree"
+  );
+  requireSafeDirectory(generatedRoot, "Generated release root");
+
+  const { bytes: manifestBytes, manifest } = readManifest(manifestPath);
   invariant(isPlainObject(manifest), "Web deployment manifest must be an object");
   requireExactSet(
     Object.keys(manifest),
-    ["deploymentScope", "publicOrigin", "publish", "retire", "schema"],
+    ["deploymentScope", "publicOrigin", "publish", "releaseLedger", "retire", "schema"],
     "Web deployment manifest fields"
   );
   invariant(manifest.schema === manifestSchema, "Web deployment manifest schema is invalid");
   invariant(manifest.publicOrigin === publicOrigin, "Web deployment public origin is invalid");
+  invariant(manifest.deploymentScope === deploymentScope, "Web deployment scope is invalid");
   invariant(
-    manifest.deploymentScope === deploymentScope,
-    "Web deployment scope is invalid"
+    manifest.releaseLedger === releaseLedgerRelativePath,
+    "Web deployment release ledger path is invalid"
   );
   invariant(
-    Array.isArray(manifest.publish) && manifest.publish.length > 0 && manifest.publish.length <= 64,
+    Array.isArray(manifest.publish) && manifest.publish.length > 0 && manifest.publish.length <= 96,
     "Web deployment publish list is invalid"
   );
   invariant(
@@ -194,72 +227,107 @@ function validateWebDeploymentManifest(options = {}) {
     "Web deployment retirement list is invalid"
   );
 
+  const releaseLedgerPath = containedFile(
+    siteRoot,
+    releaseLedgerRelativePath,
+    "Web release ledger"
+  ).filePath;
+  const releaseSurfaces = verifyReleaseSurfaces(siteRoot);
+  const publicRelease = validatePublicReleaseFiles({ ledgerPath: releaseLedgerPath, outputRoot: generatedRoot });
+  invariant(
+    releaseSurfaces.ledger.releases.at(-1).releaseId === publicRelease.current.releaseId,
+    "Visible and generated release identities disagree"
+  );
+
   const publishPaths = new Set();
+  const staticPaths = new Set();
+  const generatedPaths = new Set();
   const remotePaths = new Set();
   const files = manifest.publish.map((entry, index) => {
     invariant(isPlainObject(entry), `publish[${index}] must be an object`);
-    requireExactSet(Object.keys(entry), ["local", "remote"], `publish[${index}] fields`);
+    requireExactSet(
+      Object.keys(entry),
+      ["local", "remote", "source"],
+      `publish[${index}] fields`
+    );
+    invariant(
+      entry.source === "source" || entry.source === "generated-release",
+      `publish[${index}].source is invalid`
+    );
     const local = requireRelativePath(entry.local, `publish[${index}].local`);
     const remote = requireRelativePath(entry.remote, `publish[${index}].remote`);
     invariant(local === remote, `publish[${index}] must preserve its canonical path`);
     invariant(!publishPaths.has(local), `Web deployment local path is duplicated: ${local}`);
     invariant(!remotePaths.has(remote), `Web deployment remote path is duplicated: ${remote}`);
-    invariant(!/(?:^|\/)models(?:\/|$)/i.test(remote), `Model path cannot be published: ${remote}`);
-    invariant(!/\.slm(?:\.|$)/i.test(remote), `Model bytes cannot be published: ${remote}`);
+    invariant(!/(?:^|\/)models(?:\/|$)/iu.test(remote), `Model path cannot be published: ${remote}`);
+    invariant(!/\.slm(?:\.|$)/iu.test(remote), `Model bytes cannot be published: ${remote}`);
     publishPaths.add(local);
     remotePaths.add(remote);
-    const { filePath, stat } = containedFile(siteRoot, local, `publish[${index}].local`);
-    const bytes = fs.readFileSync(filePath);
+    const sourceRoot = entry.source === "source" ? siteRoot : generatedRoot;
+    const sourceSet = entry.source === "source" ? staticPaths : generatedPaths;
+    sourceSet.add(local);
+    const { filePath, stat } = containedFile(sourceRoot, local, `publish[${index}].local`);
+    const fileBytes = fs.readFileSync(filePath);
     return Object.freeze({
+      source: entry.source,
       local,
       remote,
+      filePath,
       byteCount: stat.size,
-      sha256: sha256(bytes)
+      sha256: sha256(fileBytes)
     });
   });
 
-  requireExactSet(publishPaths, expectedPublishPaths(siteRoot), "Web deployment publication closure");
+  requireExactSet(staticPaths, expectedStaticPaths(siteRoot), "Web deployment source closure");
+  requireExactSet(generatedPaths, generatedReleasePaths, "Generated release closure");
 
   const shell = verifyShells(siteRoot);
   const shellAssetPaths = shell.references.map(
     (reference) => `app/${reference.reference.slice(2)}`
   );
-  for (const shellAssetPath of shellAssetPaths) {
-    invariant(
-      publishPaths.has(shellAssetPath),
-      `Static shell asset is absent from the deployment: ${shellAssetPath}`
-    );
-  }
   for (const requiredPath of [
+    ...shellAssetPaths,
     "app/browser-model-admission.js",
     "app/memory-endpoints-enrollment.js",
+    "app/site-release.js",
     "runtime/tinyrustlm.wasm",
     "runtime/tinyrustlm-simd.wasm",
     "runtime/tinyrustlm.wasm.manifest",
-    "runtime/tinyrustlm-simd.wasm.manifest"
+    "runtime/tinyrustlm-simd.wasm.manifest",
+    "updates/updates.css",
+    "updates/index.html",
+    ...generatedReleasePaths
   ]) {
     invariant(publishPaths.has(requiredPath), `Required web artifact is absent: ${requiredPath}`);
   }
+
   const orderedPaths = manifest.publish.map((entry) => entry.remote);
   invariant(orderedPaths[0] === ".htaccess", "Web deployment must publish host policy first");
   invariant(
-    orderedPaths.at(-2) === "app/index.html" && orderedPaths.at(-1) === "index.html",
-    "Web deployment must publish both HTML entry points last"
+    JSON.stringify(orderedPaths.slice(-3)) ===
+      JSON.stringify(["updates/index.html", "app/index.html", "index.html"]),
+    "Web deployment must publish all HTML entry points last"
   );
-  const appIndexPosition = orderedPaths.indexOf("app/index.html");
-  for (const assetPath of [
+  const firstHtmlPosition = orderedPaths.indexOf("updates/index.html");
+  for (const dependency of [
     ...shellAssetPaths,
     "runtime/tinyrustlm.wasm",
     "runtime/tinyrustlm-simd.wasm",
     "runtime/tinyrustlm.wasm.manifest",
-    "runtime/tinyrustlm-simd.wasm.manifest"
+    "runtime/tinyrustlm-simd.wasm.manifest",
+    "updates/updates.css",
+    ...generatedReleasePaths
   ]) {
     invariant(
-      orderedPaths.indexOf(assetPath) > 0 &&
-        orderedPaths.indexOf(assetPath) < appIndexPosition,
-      `Web dependency must be published before HTML: ${assetPath}`
+      orderedPaths.indexOf(dependency) > 0 && orderedPaths.indexOf(dependency) < firstHtmlPosition,
+      `Web dependency must be published before HTML: ${dependency}`
     );
   }
+  invariant(
+    orderedPaths.indexOf(generatedReleasePaths[0]) < orderedPaths.indexOf(generatedReleasePaths[1]),
+    "Release history must be published before the current-release pointer"
+  );
+
   const hostPolicy = fs.readFileSync(
     containedFile(siteRoot, ".htaccess", "Web host policy").filePath,
     "utf8"
@@ -282,6 +350,10 @@ function validateWebDeploymentManifest(options = {}) {
     manifestPath,
     manifestSha256: sha256(manifestBytes),
     siteRoot,
+    generatedRoot,
+    releaseLedgerPath,
+    currentRelease: publicRelease.current,
+    releaseHistory: publicRelease.history,
     files: Object.freeze(files),
     totalByteCount: files.reduce((total, file) => total + file.byteCount, 0)
   });
@@ -291,10 +363,14 @@ function main() {
   const args = process.argv.slice(2);
   const json = args.includes("--json");
   const positional = args.filter((argument) => argument !== "--json");
-  invariant(positional.length <= 2, "Usage: web-deployment-manifest.js [site-root] [manifest] [--json]");
+  invariant(
+    positional.length === 3,
+    "Usage: web-deployment-manifest.js <site-root> <manifest> <generated-release-root> [--json]"
+  );
   const result = validateWebDeploymentManifest({
     siteRoot: positional[0],
-    manifestPath: positional[1]
+    manifestPath: positional[1],
+    generatedRoot: positional[2]
   });
   if (json) {
     process.stdout.write(`${JSON.stringify({
@@ -303,14 +379,22 @@ function main() {
       deploymentScope,
       publicOrigin,
       manifestSha256: result.manifestSha256,
+      releaseId: result.currentRelease.releaseId,
+      publicationId: result.currentRelease.publicationId,
       fileCount: result.files.length,
       totalByteCount: result.totalByteCount,
-      files: result.files
+      files: result.files.map(({ source, local, remote, byteCount, sha256: digest }) => ({
+        source,
+        local,
+        remote,
+        byteCount,
+        sha256: digest
+      }))
     })}\n`);
   } else {
     process.stdout.write(
       `TinyRustLM web deployment closure passed for ${result.files.length} files ` +
-      `(${result.totalByteCount} bytes)\n`
+        `(${result.totalByteCount} bytes)\n`
     );
   }
 }
@@ -318,7 +402,7 @@ function main() {
 if (require.main === module) {
   try {
     main();
-  } catch (error) {
+  } catch {
     process.stderr.write("TinyRustLM web deployment manifest validation failed\n");
     process.exitCode = 1;
   }
@@ -326,8 +410,10 @@ if (require.main === module) {
 
 module.exports = Object.freeze({
   deploymentScope,
+  generatedReleasePaths,
   manifestSchema,
   publicOrigin,
+  releaseLedgerRelativePath,
   retiredPublicPaths,
   validateHostPolicy,
   validateWebDeploymentManifest

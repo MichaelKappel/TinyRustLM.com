@@ -1,6 +1,7 @@
 Options -Indexes
 DirectoryIndex index.html
 AddType application/wasm .wasm
+AddType application/json .json
 
 <IfModule mod_headers.c>
   Header always set X-Content-Type-Options "nosniff"
@@ -9,7 +10,7 @@ AddType application/wasm .wasm
   Header always set Cross-Origin-Resource-Policy "same-origin"
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
 
-  <FilesMatch "\.(html|css|js|wasm|manifest)$">
+  <FilesMatch "\.(html|css|js|json|wasm|manifest)$">
     Header set Cache-Control "no-cache, must-revalidate"
   </FilesMatch>
 </IfModule>

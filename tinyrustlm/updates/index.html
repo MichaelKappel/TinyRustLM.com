@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="application-version" content="0.1.0">
+  <meta name="release-date" content="2026-08-02">
+  <title>Updates | TinyRustLM</title>
+  <link rel="icon" href="data:,">
+  <link rel="alternate" type="application/json" href="/.well-known/site-release.json" title="Current release">
+  <link rel="alternate" type="application/json" href="/.well-known/site-release-history.json" title="Release history">
+  <link rel="stylesheet" href="./updates.css?v=sha256-11e772d55b17f6d23bf80b8871a2d9a66927c21ebd1580bc94a65514459e2a2f">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="/">TinyRustLM</a>
+      <a class="back-link" href="/">Return to local chat</a>
+    </div>
+  </header>
+  <main>
+    <section class="release-band" aria-labelledby="updates-title" data-site-release data-release-state="pending">
+      <div class="release-band-inner">
+        <p class="eyebrow">Release record</p>
+        <h1 id="updates-title">TinyRustLM updates</h1>
+        <p class="release-summary">Introduces a verifiable public release record and update history for the TinyRustLM dogfood site.</p>
+        <p class="release-facts">
+          <span>Version <strong data-release-version>0.1.0</strong></span>
+          <span>Released <strong><time data-release-date datetime="2026-08-02">2026-08-02</time></strong></span>
+          <span>Last published <strong><time data-release-published-at>Awaiting live verification</time></strong></span>
+        </p>
+      </div>
+    </section>
+    <section class="history" aria-labelledby="history-title">
+      <div class="history-inner">
+        <h2 id="history-title">Release history</h2>
+      <article class="release-entry" id="0.1.0">
+        <div class="release-entry-header">
+          <h3>Version <span data-release-version>0.1.0</span></h3>
+          <time data-release-date datetime="2026-08-02">2026-08-02</time>
+        </div>
+        <p>Introduces a verifiable public release record and update history for the TinyRustLM dogfood site.</p>
+        <ul class="change-list">
+          <li><span class="change-type">added</span><span>Added a visible site version, release date, last-published status, and human-readable update history.</span></li>
+          <li><span class="change-type">added</span><span>Added strict machine-readable current-release and release-history records under .well-known.</span></li>
+          <li><span class="change-type">changed</span><span>Bound web publication to clean source identity, exact release metadata, secret scanning, and HTTPS readback evidence.</span></li>
+        </ul>
+      </article>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <span>TinyRustLM release information</span>
+      <nav class="machine-links" aria-label="Machine-readable release records">
+        <a href="/.well-known/site-release.json">Current release JSON</a>
+        <a href="/.well-known/site-release-history.json">Release history JSON</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="../app/site-release.js?v=sha256-6f8715fa77ad1a4bcc0c42a9050c0467825acdb402afe96e1a963cc535aea6a9"></script>
+</body>
+</html>

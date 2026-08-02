@@ -22,9 +22,10 @@ test("canonical app shell deterministically generates the public root shell", ()
   const result = verifyShells(siteRoot);
   assert.match(result.appShell, /<main class="app-shell"/);
   const references = new Set(result.references.map((entry) => entry.reference));
-  assert.equal(result.references.length, 10);
+  assert.equal(result.references.length, 11);
   assert.ok(references.has("./browser-model-admission.js"));
   assert.ok(references.has("./memory-endpoints-enrollment.js"));
+  assert.ok(references.has("./site-release.js"));
   assert.ok(references.has("./app.js"));
   for (const reference of result.references) {
     assert.equal(reference.version, `sha256-${reference.sha256}`);

@@ -224,6 +224,7 @@ const staticArtifacts = Object.freeze([
   ["web/app/calculator-tool.js", "tinyrustlm/app/calculator-tool.js"],
   ["web/app/companion-bridge.js", "tinyrustlm/app/companion-bridge.js"],
   ["web/app/index.html", "tinyrustlm/app/index.html"],
+  ["web/app/site-release.js", "tinyrustlm/app/site-release.js"],
   ["web/app/memory-endpoints-distributed-sync-v1.js",
     "tinyrustlm/app/memory-endpoints-distributed-sync-v1.js"],
   ["web/app/memory-endpoints-enrollment.js",
@@ -232,11 +233,15 @@ const staticArtifacts = Object.freeze([
   ["web/app/minimodel-announcement.js", "tinyrustlm/app/minimodel-announcement.js"],
   ["web/deploy/memory-endpoints-relay-worker.js",
     "tinyrustlm/deploy/memory-endpoints-relay-worker.js"],
-  ["web/deploy/web-deployment-manifest.v1.json",
-    "tinyrustlm/deploy/web-deployment-manifest.v1.json"],
+  ["web/deploy/web-deployment-manifest.v2.json",
+    "tinyrustlm/deploy/web-deployment-manifest.v2.json"],
   ["web/index.html", "tinyrustlm/index.html"],
+  ["web/release/site-release-ledger.v1.json",
+    "tinyrustlm/release/site-release-ledger.v1.json"],
   ["web/runtime/tinyrustlm-simd.wasm", "tinyrustlm/runtime/tinyrustlm-simd.wasm"],
   ["web/runtime/tinyrustlm.wasm", "tinyrustlm/runtime/tinyrustlm.wasm"],
+  ["web/updates/index.html", "tinyrustlm/updates/index.html"],
+  ["web/updates/updates.css", "tinyrustlm/updates/updates.css"],
   ["control-plane/campaign-evidence-dashboard.js",
     "tinyrustlm/tools/campaign-evidence-dashboard.js"],
   ["control-plane/campaign-final-attestation.js",
@@ -306,6 +311,10 @@ const staticArtifacts = Object.freeze([
     "tinyrustlm/tools/static-shell-parity.js"],
   ["control-plane/static-server.js",
     "tinyrustlm/tools/static-server.js"],
+  ["control-plane/site-release-contract.js",
+    "tinyrustlm/tools/site-release-contract.js"],
+  ["control-plane/site-release-page.js",
+    "tinyrustlm/tools/site-release-page.js"],
   ["control-plane/immutable-publication-files.js",
     "tinyrustlm/tools/immutable-publication-files.js"],
   ["control-plane/web-deployment-manifest.js",
@@ -321,7 +330,9 @@ const staticArtifacts = Object.freeze([
   ["control-plane/dogfood-campaign-control-plane.md",
     "docs/architecture/dogfood-campaign-control-plane.md"],
   ["control-plane/dogfood-campaign-final-attestation.md",
-    "docs/architecture/dogfood-campaign-final-attestation.md"]
+    "docs/architecture/dogfood-campaign-final-attestation.md"],
+  ["docs/site-release-record-v1.md",
+    "tinyrustlm/docs/site-release-record-v1.md"]
 ].map(([label, relativePath]) => Object.freeze({ label, relativePath })));
 
 function invariant(condition, message) {

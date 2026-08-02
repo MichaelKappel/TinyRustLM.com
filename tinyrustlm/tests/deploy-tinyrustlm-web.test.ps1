@@ -711,6 +711,7 @@ try {
         $global:FailPromotionRename = $true
         Assert-Throws {
             Publish-Artifact `
+                -Source "source" `
                 -LocalRelativePath "app/release.js" `
                 -RemoteRelativePath $fakeRemotePath | Out-Null
         } "simulated promotion failure"
@@ -741,6 +742,7 @@ try {
         $global:FakeRemoteObjects[".htaccess"] = $oldHostPolicy
         Assert-Throws {
             Publish-Artifact `
+                -Source "source" `
                 -LocalRelativePath ".htaccess" `
                 -RemoteRelativePath ".htaccess" | Out-Null
         } "simulated public host policy failure"
@@ -772,6 +774,7 @@ try {
         }
         $global:FakeRemoteObjects[$fakeBackupPath] = $oldRemote
         $current = Publish-Artifact `
+            -Source "source" `
             -LocalRelativePath "app/release.js" `
             -RemoteRelativePath $fakeRemotePath
         Assert-True ($current.status -eq "already-current") "Current artifact status changed."
@@ -784,6 +787,7 @@ try {
         $global:FakeRemoteObjects.Clear()
         $global:FakeRemoteObjects[$fakeRemotePath] = $oldRemote
         $published = Publish-Artifact `
+            -Source "source" `
             -LocalRelativePath "app/release.js" `
             -RemoteRelativePath $fakeRemotePath
         Assert-True ($published.status -eq "published") "Artifact was not promoted."

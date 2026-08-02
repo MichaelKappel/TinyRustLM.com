@@ -17,6 +17,7 @@ const contentTypes = Object.freeze({
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
   ".manifest": "application/json; charset=utf-8",
   ".wasm": "application/wasm"
 });
@@ -73,6 +74,7 @@ function canonicalRequestPath(requestUrl) {
   );
   if (pathname === "/") pathname = "/index.html";
   if (pathname === "/app/") pathname = "/app/index.html";
+  if (pathname === "/updates/") pathname = "/updates/index.html";
   return Object.freeze({ pathname, searchParams: url.searchParams });
 }
 
@@ -108,13 +110,7 @@ function buildFileMap(validation) {
       .filter((file) => file.remote !== ".htaccess")
       .map((file) => [
         `/${file.remote}`,
-        Object.freeze({
-          ...file,
-          filePath: path.join(
-            validation.siteRoot,
-            file.local.replace(/\//g, path.sep)
-          )
-        })
+        file
       ])
   );
 }
@@ -126,7 +122,8 @@ async function startStaticServer(options = {}) {
     "Loopback static server port is invalid");
   const validation = validateWebDeploymentManifest({
     siteRoot,
-    manifestPath: options.manifestPath
+    manifestPath: options.manifestPath,
+    generatedRoot: options.generatedRoot
   });
   const fileMap = buildFileMap(validation);
   const server = http.createServer((request, response) => {
@@ -197,10 +194,13 @@ async function startStaticServer(options = {}) {
 }
 
 async function main() {
-  const [siteRoot, portValue, ...extra] = process.argv.slice(2);
-  invariant(extra.length === 0, "Usage: static-server.js [site-root] [port]");
+  const [siteRoot, generatedRoot, portValue, ...extra] = process.argv.slice(2);
+  invariant(
+    siteRoot && generatedRoot && extra.length === 0,
+    "Usage: static-server.js <site-root> <generated-release-root> [port]"
+  );
   const port = portValue === undefined ? 0 : Number(portValue);
-  const instance = await startStaticServer({ siteRoot, port });
+  const instance = await startStaticServer({ siteRoot, generatedRoot, port });
   process.stdout.write(`${JSON.stringify({
     status: "ready",
     origin: instance.origin,

@@ -82,7 +82,11 @@ test("deployment orchestrator requires fresh readback and immutable attempt evid
   assert.match(source, /tinyrustlm-web-secret-scan-\{0\}\.json/);
   assert.match(source, /immutable_attempt_report = \$true/);
   assert.match(source, /fresh_artifact_readback_required = \$true/);
-  assert.match(source, /tinyrustlm\.atomic_ftps_deployment\.v6/);
+  assert.match(source, /tinyrustlm\.atomic_ftps_deployment\.v7/);
+  assert.match(source, /tinyrustlm-site-release-ledger-finalized-\{0\}\.json/);
+  assert.match(source, /finalize `[\s\S]*?\$finalizedLedgerCandidatePath/);
+  assert.match(source, /finalized_release_ledger_candidate_sha256/);
+  assert.match(source, /finalized_release_ledger_candidate_requires_source_review_and_commit/);
   assert.match(source, /function Set-ArtifactOperationState/);
   assert.match(source, /failure_identity = \$failureIdentity/);
   assert.match(source, /failure_step = \$failureStep/);
@@ -123,6 +127,10 @@ test("deployment orchestrator requires fresh readback and immutable attempt evid
     "$operationPhase = \"artifact-publication\"",
     modelDirectoryPreflight
   );
+  const releaseLedgerFinalization = source.indexOf(
+    "$operationPhase = \"release-ledger-finalization\"",
+    artifactPublication
+  );
   const deploymentFinally = source.indexOf("finally {", secretScanPreflight);
   const immutableReportWrite = source.indexOf(
     "$reportReceipt = Write-AtomicJson",
@@ -135,6 +143,7 @@ test("deployment orchestrator requires fresh readback and immutable attempt evid
       secretScanPreflight > gitPreflight &&
       modelDirectoryPreflight > secretScanPreflight &&
       artifactPublication > modelDirectoryPreflight &&
+      releaseLedgerFinalization > artifactPublication &&
       deploymentFinally > secretScanPreflight &&
       immutableReportWrite > deploymentFinally
   );

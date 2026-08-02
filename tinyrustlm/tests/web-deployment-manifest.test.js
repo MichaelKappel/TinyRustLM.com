@@ -11,24 +11,47 @@ const {
   validateHostPolicy,
   validateWebDeploymentManifest
 } = require("../tools/web-deployment-manifest.js");
+const {
+  materializeReleasePublication
+} = require("../tools/site-release-contract.js");
 
 const siteRoot = path.resolve(__dirname, "..");
 const deploymentManifestPath = path.join(
   siteRoot,
   "deploy",
-  "web-deployment-manifest.v1.json"
+  "web-deployment-manifest.v2.json"
 );
+const ledgerPath = path.join(siteRoot, "release", "site-release-ledger.v1.json");
 
 function writeJson(filePath, value) {
   fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
 }
 
-test("web deployment manifest is the exact no-model publication closure", () => {
-  const result = validateWebDeploymentManifest({ siteRoot });
+function materializedRelease(context) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-generated-release-"));
+  context.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  materializeReleasePublication({
+    ledgerPath,
+    outputRoot: root,
+    sourceRevision: "1".repeat(40),
+    publishedAt: "2026-08-02T22:00:00.000Z"
+  });
+  return root;
+}
+
+test("web deployment manifest is the exact no-model publication closure", (context) => {
+  const result = validateWebDeploymentManifest({
+    siteRoot,
+    generatedRoot: materializedRelease(context)
+  });
   const paths = new Set(result.files.map((file) => file.remote));
-  assert.equal(result.files.length, 17);
+  assert.equal(result.files.length, 22);
   assert.ok(paths.has("app/browser-model-admission.js"));
   assert.ok(paths.has("app/memory-endpoints-enrollment.js"));
+  assert.ok(paths.has("app/site-release.js"));
+  assert.ok(paths.has("updates/index.html"));
+  assert.ok(paths.has(".well-known/site-release.json"));
+  assert.ok(paths.has(".well-known/site-release-history.json"));
   assert.ok(paths.has("runtime/tinyrustlm.wasm"));
   assert.ok(paths.has("runtime/tinyrustlm-simd.wasm"));
   assert.equal(Array.from(paths).some((entry) => /\.slm(?:\.|$)/i.test(entry)), false);
@@ -67,9 +90,10 @@ test("web host policy blocks nested models, staging, backup, and source routes",
   );
 });
 
-test("web deployment manifest fails closed on omitted or hosted model paths", (context) => {
+test("web deployment manifest fails closed on omitted, generated, or hosted model paths", (context) => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-deploy-manifest-"));
   context.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const generatedRoot = materializedRelease(context);
   const baseline = JSON.parse(fs.readFileSync(deploymentManifestPath, "utf8"));
 
   const omittedPath = path.join(root, "omitted.json");
@@ -79,19 +103,35 @@ test("web deployment manifest fails closed on omitted or hosted model paths", (c
   );
   writeJson(omittedPath, omitted);
   assert.throws(
-    () => validateWebDeploymentManifest({ siteRoot, manifestPath: omittedPath }),
-    /publication closure is incomplete/
+    () => validateWebDeploymentManifest({ siteRoot, manifestPath: omittedPath, generatedRoot }),
+    /source closure is incomplete/
+  );
+
+  const omittedGeneratedPath = path.join(root, "omitted-generated.json");
+  const omittedGenerated = structuredClone(baseline);
+  omittedGenerated.publish = omittedGenerated.publish.filter(
+    (entry) => entry.local !== ".well-known/site-release.json"
+  );
+  writeJson(omittedGeneratedPath, omittedGenerated);
+  assert.throws(
+    () => validateWebDeploymentManifest({
+      siteRoot,
+      manifestPath: omittedGeneratedPath,
+      generatedRoot
+    }),
+    /Generated release closure is incomplete/
   );
 
   const hostedModelPath = path.join(root, "hosted-model.json");
   const hostedModel = structuredClone(baseline);
   hostedModel.publish.splice(1, 0, {
+    source: "source",
     local: "models/quality-model.slm",
     remote: "models/quality-model.slm"
   });
   writeJson(hostedModelPath, hostedModel);
   assert.throws(
-    () => validateWebDeploymentManifest({ siteRoot, manifestPath: hostedModelPath }),
+    () => validateWebDeploymentManifest({ siteRoot, manifestPath: hostedModelPath, generatedRoot }),
     /Model path cannot be published/
   );
 
@@ -102,7 +142,8 @@ test("web deployment manifest fails closed on omitted or hosted model paths", (c
   assert.throws(
     () => validateWebDeploymentManifest({
       siteRoot,
-      manifestPath: incompleteRetirementPath
+      manifestPath: incompleteRetirementPath,
+      generatedRoot
     }),
     /retired-path closure is incomplete/
   );
@@ -119,11 +160,23 @@ test("web deployment manifest rejects a manifest reached through a junction", (c
   fs.mkdirSync(target);
   fs.copyFileSync(deploymentManifestPath, path.join(target, "manifest.json"));
   fs.symlinkSync(target, junction, "junction");
+  const generatedRoot = materializedRelease(context);
   assert.throws(
     () => validateWebDeploymentManifest({
       siteRoot,
-      manifestPath: path.join(junction, "manifest.json")
+      manifestPath: path.join(junction, "manifest.json"),
+      generatedRoot
     }),
     /manifest is unavailable/
+  );
+});
+
+test("web deployment manifest rejects generated release bytes inside source", () => {
+  assert.throws(
+    () => validateWebDeploymentManifest({
+      siteRoot,
+      generatedRoot: path.join(siteRoot, "release")
+    }),
+    /outside the source worktree/
   );
 });

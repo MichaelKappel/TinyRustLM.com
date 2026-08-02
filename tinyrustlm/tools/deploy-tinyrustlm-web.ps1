@@ -1,6 +1,6 @@
 param(
     [string]$RepositoryRoot = (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)),
-    [string]$ManifestPath = (Join-Path (Split-Path -Parent $PSScriptRoot) "deploy\web-deployment-manifest.v1.json"),
+    [string]$ManifestPath = (Join-Path (Split-Path -Parent $PSScriptRoot) "deploy\web-deployment-manifest.v2.json"),
     [string]$WorkspaceMemory = $env:TINYRUSTLM_WORKSPACE_MEMORY,
     [string]$ReportDirectory = (Join-Path ([IO.Path]::GetTempPath()) "tinyrustlm-web-deployments"),
     [string]$ReportPath = "",
@@ -1455,15 +1455,30 @@ function Stage-VerifiedArtifact {
 
 # Atomically promotes one verified local artifact and restores its predecessor on any failure.
 function Publish-Artifact {
-    param([string]$LocalRelativePath, [string]$RemoteRelativePath)
+    param(
+        [string]$Source,
+        [string]$LocalRelativePath,
+        [string]$RemoteRelativePath
+    )
 
     $script:activeArtifactLocal = $LocalRelativePath
     $script:activeArtifactRemote = $RemoteRelativePath
     $script:artifactPrimaryFailureStep = $null
     $script:artifactRollbackStatus = "not-started"
     Set-ArtifactOperationState -Step "local-validation"
-    $siteRoot = Join-Path $RepositoryRoot "tinyrustlm"
-    $localPath = Join-Path $siteRoot ($LocalRelativePath.Replace("/", "\"))
+    $sourceRoot = if ($Source -eq "source") {
+        Join-Path $RepositoryRoot "tinyrustlm"
+    }
+    elseif ($Source -eq "generated-release") {
+        $script:generatedReleaseRoot
+    }
+    else {
+        throw "Deployment artifact source class is invalid."
+    }
+    if ([string]::IsNullOrWhiteSpace($sourceRoot)) {
+        throw "Deployment artifact source root is unavailable."
+    }
+    $localPath = Join-Path $sourceRoot ($LocalRelativePath.Replace("/", "\"))
     if (-not (Test-Path -LiteralPath $localPath -PathType Leaf)) {
         throw "Required deployment artifact is missing: $LocalRelativePath"
     }
@@ -1509,6 +1524,7 @@ function Publish-Artifact {
         Write-Host "verified existing $RemoteRelativePath"
         Set-ArtifactOperationState -Step "complete"
         return [pscustomobject]@{
+            source = $Source
             local_relative_path = $LocalRelativePath
             relative_path = $RemoteRelativePath
             bytes = $bytes
@@ -1592,6 +1608,7 @@ function Publish-Artifact {
     Write-Host "published $RemoteRelativePath"
     Set-ArtifactOperationState -Step "complete"
     return [pscustomobject]@{
+        source = $Source
         local_relative_path = $LocalRelativePath
         relative_path = $RemoteRelativePath
         bytes = $bytes
@@ -1742,7 +1759,7 @@ function Write-AtomicJson {
 
 $RepositoryRoot = [IO.Path]::GetFullPath($RepositoryRoot)
 $siteRoot = Join-Path $RepositoryRoot "tinyrustlm"
-$expectedManifestPath = Join-Path $siteRoot "deploy\web-deployment-manifest.v1.json"
+$expectedManifestPath = Join-Path $siteRoot "deploy\web-deployment-manifest.v2.json"
 $ManifestPath = [IO.Path]::GetFullPath($ManifestPath)
 if (-not [string]::Equals(
     $ManifestPath,
@@ -1754,16 +1771,6 @@ if (-not [string]::Equals(
 if (-not (Test-Path -LiteralPath $siteRoot -PathType Container)) {
     throw "TinyRustLM site root was not found."
 }
-
-$validatorPath = Join-Path $siteRoot "tools\web-deployment-manifest.js"
-$validationOutput = @(& node $validatorPath $siteRoot $ManifestPath --json)
-if ($LASTEXITCODE -ne 0 -or $validationOutput.Count -ne 1) {
-    throw "TinyRustLM web deployment closure validation failed."
-}
-$validation = ($validationOutput[0] | ConvertFrom-Json)
-if ([string]$validation.status -ne "pass") {
-    throw "TinyRustLM web deployment closure did not pass."
-}
 try {
     $deploymentManifest = Get-Content -Raw -LiteralPath $ManifestPath | ConvertFrom-Json
 }
@@ -1771,10 +1778,9 @@ catch {
     throw "Unable to read the validated TinyRustLM deployment manifest."
 }
 $script:publicOrigin = ([string]$deploymentManifest.publicOrigin).TrimEnd("/")
-$script:validatedArtifacts = @{}
-foreach ($validatedFile in @($validation.files)) {
-    $script:validatedArtifacts[[string]$validatedFile.local] = $validatedFile
-}
+$validatorPath = Join-Path $siteRoot "tools\web-deployment-manifest.js"
+$releaseMaterializerPath = Join-Path $siteRoot "tools\site-release-contract.js"
+$releaseLedgerPath = Join-Path $siteRoot "release\site-release-ledger.v1.json"
 
 if ($ValidateCredentialProfileOnly) {
     $validatedCredentialProfile = Get-WorkspaceDeploymentCredentialProfile `
@@ -1786,7 +1792,56 @@ if ($ValidateCredentialProfileOnly) {
     return
 }
 if ($ValidateOnly) {
-    Write-Host "TinyRustLM web deployment validation passed for $($validation.fileCount) files."
+    $validationReleaseRoot = Join-Path ([IO.Path]::GetTempPath()) (
+        "tinyrustlm-web-validation-release-{0}" -f [Guid]::NewGuid().ToString("N")
+    )
+    try {
+        $validationPublishedAt = [DateTime]::UtcNow.ToString(
+            "yyyy-MM-ddTHH:mm:ss.fffZ",
+            [Globalization.CultureInfo]::InvariantCulture
+        )
+        $materializationOutput = @(
+            & node $releaseMaterializerPath `
+                materialize `
+                $releaseLedgerPath `
+                $validationReleaseRoot `
+                ("0" * 40) `
+                $validationPublishedAt
+        )
+        if ($LASTEXITCODE -ne 0 -or $materializationOutput.Count -ne 1) {
+            throw "TinyRustLM release metadata materialization failed."
+        }
+        $validationOutput = @(
+            & node $validatorPath `
+                $siteRoot `
+                $ManifestPath `
+                $validationReleaseRoot `
+                --json
+        )
+        if ($LASTEXITCODE -ne 0 -or $validationOutput.Count -ne 1) {
+            throw "TinyRustLM web deployment closure validation failed."
+        }
+        $validation = $validationOutput[0] | ConvertFrom-Json
+        if ([string]$validation.status -ne "pass") {
+            throw "TinyRustLM web deployment closure did not pass."
+        }
+        Write-Host "TinyRustLM web deployment validation passed for $($validation.fileCount) files."
+    }
+    finally {
+        $resolvedValidationRoot = [IO.Path]::GetFullPath($validationReleaseRoot)
+        $temporaryRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd("\", "/")
+        if (-not $resolvedValidationRoot.StartsWith(
+            $temporaryRoot + [IO.Path]::DirectorySeparatorChar,
+            [StringComparison]::OrdinalIgnoreCase
+        ) -or
+            [IO.Path]::GetFileName($resolvedValidationRoot) -notmatch
+                "^tinyrustlm-web-validation-release-[0-9a-f]{32}$") {
+            throw "TinyRustLM validation release cleanup target is unsafe."
+        }
+        if (Test-Path -LiteralPath $resolvedValidationRoot) {
+            Remove-Item -LiteralPath $resolvedValidationRoot -Recurse -Force
+        }
+    }
     return
 }
 
@@ -1805,11 +1860,19 @@ if ([string]::IsNullOrWhiteSpace($ReportPath)) {
 }
 $ReportPath = Resolve-NewDeploymentReportPath -Path $ReportPath -SourceRoot $RepositoryRoot
 $reportDirectory = Split-Path -Parent $ReportPath
+$script:generatedReleaseRoot = Join-Path $reportDirectory (
+    "tinyrustlm-web-release-assets-{0}" -f $attemptId
+)
 $secretScanReportPath = Join-Path $reportDirectory ("tinyrustlm-web-secret-scan-{0}.json" -f $attemptId)
 $secretScanEvidenceRoot = Join-Path $reportDirectory ("tinyrustlm-web-secret-scan-evidence-{0}" -f $attemptId)
+$finalizedLedgerCandidatePath = Join-Path $reportDirectory (
+    "tinyrustlm-site-release-ledger-finalized-{0}.json" -f $attemptId
+)
 if ((Test-Path -LiteralPath $secretScanReportPath) -or
-    (Test-Path -LiteralPath $secretScanEvidenceRoot)) {
-    throw "Unique deployment secret-scan output path already exists."
+    (Test-Path -LiteralPath $secretScanEvidenceRoot) -or
+    (Test-Path -LiteralPath $script:generatedReleaseRoot) -or
+    (Test-Path -LiteralPath $finalizedLedgerCandidatePath)) {
+    throw "Unique deployment evidence output path already exists."
 }
 
 $rows = @()
@@ -1821,11 +1884,20 @@ $startedUtc = [DateTime]::UtcNow
 $operationPhase = "preflight-git"
 $currentSourceCommit = $null
 $sourceTreeClean = $null
+$validation = $null
 $secretScan = $null
 $secretScanReportSha256 = $null
 $secretScanScopeManifestSha256 = $null
 $secretScanReceiptId = $null
 $secretFindingCount = $null
+$releaseId = $null
+$releaseVersion = $null
+$releaseDate = $null
+$releasePublishedAt = $null
+$releasePublicationId = $null
+$releaseLedgerSha256 = $null
+$finalizedLedgerCandidateSha256 = $null
+$finalizedLedgerCandidateByteCount = $null
 $credentialProfile = $null
 $script:httpClient = $null
 $script:httpHandler = $null
@@ -1856,12 +1928,75 @@ try {
     if ($LASTEXITCODE -ne 0 -or $currentSourceCommit -notmatch "^[0-9a-f]{40}$") {
         throw "Unable to bind the deployment to a Git commit."
     }
-    foreach ($entry in @($deploymentManifest.publish)) {
-        $trackedPath = "tinyrustlm/{0}" -f [string]$entry.local
+    $trackedPaths = @(
+        "tinyrustlm/deploy/web-deployment-manifest.v2.json"
+        "tinyrustlm/release/site-release-ledger.v1.json"
+        @($deploymentManifest.publish |
+            Where-Object { [string]$_.source -eq "source" } |
+            ForEach-Object { "tinyrustlm/{0}" -f [string]$_.local })
+    ) | Sort-Object -Unique
+    foreach ($trackedPath in $trackedPaths) {
         & git -C $RepositoryRoot ls-files --error-unmatch -- $trackedPath 2>$null | Out-Null
         if ($LASTEXITCODE -ne 0) {
             throw "Deployment artifact is not tracked by Git: $trackedPath"
         }
+    }
+
+    $operationPhase = "release-metadata-materialization"
+    $releasePublishedAt = $startedUtc.ToString(
+        "yyyy-MM-ddTHH:mm:ss.fffZ",
+        [Globalization.CultureInfo]::InvariantCulture
+    )
+    $materializationOutput = @(
+        & node $releaseMaterializerPath `
+            materialize `
+            $releaseLedgerPath `
+            $script:generatedReleaseRoot `
+            $currentSourceCommit `
+            $releasePublishedAt
+    )
+    if ($LASTEXITCODE -ne 0 -or $materializationOutput.Count -ne 1) {
+        throw "TinyRustLM release metadata materialization failed."
+    }
+    $materialization = $materializationOutput[0] | ConvertFrom-Json
+    if ([string]$materialization.status -ne "pass") {
+        throw "TinyRustLM release metadata materialization did not pass."
+    }
+
+    $operationPhase = "deployment-closure-validation"
+    $validationOutput = @(
+        & node $validatorPath `
+            $siteRoot `
+            $ManifestPath `
+            $script:generatedReleaseRoot `
+            --json
+    )
+    if ($LASTEXITCODE -ne 0 -or $validationOutput.Count -ne 1) {
+        throw "TinyRustLM web deployment closure validation failed."
+    }
+    $validation = $validationOutput[0] | ConvertFrom-Json
+    if ([string]$validation.status -ne "pass") {
+        throw "TinyRustLM web deployment closure did not pass."
+    }
+    $script:validatedArtifacts = @{}
+    foreach ($validatedFile in @($validation.files)) {
+        $script:validatedArtifacts[[string]$validatedFile.local] = $validatedFile
+    }
+    $currentReleasePath = Join-Path `
+        $script:generatedReleaseRoot `
+        ".well-known\site-release.json"
+    $currentRelease = Get-Content -Raw -LiteralPath $currentReleasePath | ConvertFrom-Json
+    $releaseId = [string]$currentRelease.releaseId
+    $releaseVersion = [string]$currentRelease.version
+    $releaseDate = [string]$currentRelease.releaseDate
+    $releasePublicationId = [string]$currentRelease.publicationId
+    $releaseLedgerSha256 = [string]$currentRelease.sourceLedgerSha256
+    if ($releaseId -ne [string]$validation.releaseId -or
+        $releasePublicationId -ne [string]$validation.publicationId -or
+        $releaseId -ne [string]$materialization.releaseId -or
+        $releasePublicationId -ne [string]$materialization.publicationId -or
+        $releaseLedgerSha256 -ne [string]$materialization.ledgerSha256) {
+        throw "TinyRustLM release identities disagree after materialization."
     }
 
     $operationPhase = "preflight-secret-scan"
@@ -1872,7 +2007,8 @@ try {
             $ManifestPath `
             $secretScanReportPath `
             $secretScanEvidenceRoot `
-            $currentSourceCommit
+            $currentSourceCommit `
+            $script:generatedReleaseRoot
     )
     if ($LASTEXITCODE -ne 0 -or $secretScanOutput.Count -ne 1) {
         throw "TinyRustLM web release secret scan failed."
@@ -1926,6 +2062,7 @@ try {
     $operationPhase = "artifact-publication"
     foreach ($entry in @($deploymentManifest.publish)) {
         $rows += Publish-Artifact `
+            -Source ([string]$entry.source) `
             -LocalRelativePath ([string]$entry.local) `
             -RemoteRelativePath ([string]$entry.remote)
         $script:activeArtifactLocal = $null
@@ -1967,6 +2104,25 @@ try {
         [string]$script:publicHostPolicyEvidence.status -ne "pass") {
         throw "Deployment did not retain complete public host-policy evidence."
     }
+    $operationPhase = "release-ledger-finalization"
+    $finalizationOutput = @(
+        & node $releaseMaterializerPath `
+            finalize `
+            $releaseLedgerPath `
+            $script:generatedReleaseRoot `
+            $finalizedLedgerCandidatePath
+    )
+    if ($LASTEXITCODE -ne 0 -or $finalizationOutput.Count -ne 1) {
+        throw "TinyRustLM release ledger finalization failed."
+    }
+    $finalization = $finalizationOutput[0] | ConvertFrom-Json
+    if ([string]$finalization.status -ne "pass" -or
+        [string]$finalization.publicationId -ne $releasePublicationId -or
+        [string]$finalization.sha256 -ne (Get-FileSha256 -Path $finalizedLedgerCandidatePath)) {
+        throw "TinyRustLM release ledger finalization did not pass identity verification."
+    }
+    $finalizedLedgerCandidateSha256 = [string]$finalization.sha256
+    $finalizedLedgerCandidateByteCount = [int64]$finalization.byteCount
     $status = "pass"
     $operationPhase = "complete"
 }
@@ -2013,7 +2169,7 @@ finally {
         }).Count -eq 0
     )
     $report = [pscustomobject]@{
-        schema = "tinyrustlm.atomic_ftps_deployment.v6"
+        schema = "tinyrustlm.atomic_ftps_deployment.v7"
         attempt_id = $attemptId
         deployment_scope = [string]$deploymentManifest.deploymentScope
         public_origin = $script:publicOrigin
@@ -2043,6 +2199,29 @@ finally {
         }
         source_commit = $currentSourceCommit
         source_tree_clean = $sourceTreeClean
+        release_id = $releaseId
+        release_version = $releaseVersion
+        release_date = $releaseDate
+        release_published_at = $releasePublishedAt
+        release_publication_id = $releasePublicationId
+        release_ledger_sha256 = $releaseLedgerSha256
+        finalized_release_ledger_candidate_file = if ($finalizedLedgerCandidateSha256) {
+            [IO.Path]::GetFileName($finalizedLedgerCandidatePath)
+        } else {
+            $null
+        }
+        finalized_release_ledger_candidate_sha256 = $finalizedLedgerCandidateSha256
+        finalized_release_ledger_candidate_byte_count = $finalizedLedgerCandidateByteCount
+        finalized_release_ledger_candidate_requires_source_review_and_commit = (
+            $status -eq "pass"
+        )
+        release_metadata_generated_outside_source = $true
+        release_metadata_https_readback_verified = (
+            $status -eq "pass" -and
+            @($rows | Where-Object {
+                $_.source -eq "generated-release" -and $_.readback_verified -eq $true
+            }).Count -eq 2
+        )
         deployment_manifest_sha256 = [string]$validation.manifestSha256
         secret_scan_report_sha256 = $secretScanReportSha256
         secret_scan_scope_manifest_sha256 = $secretScanScopeManifestSha256
