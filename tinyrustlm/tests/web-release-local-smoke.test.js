@@ -34,7 +34,7 @@ test("local web release smoke proves the exact closure in real Chromium", {
   );
   const report = JSON.parse(persistedBytes.toString("utf8"));
   assert.equal(report.browserClosed, true);
-  assert.equal(report.schema, "tinyrustlm.web_release_browser_smoke.v2");
+  assert.equal(report.schema, "tinyrustlm.web_release_browser_smoke.v3");
   assert.equal(report.routeCount, 3);
   assert.equal(report.networkPolicy, "exact-release-closure-deny-before-send");
   assert.equal(report.failureCode, null);
@@ -44,16 +44,18 @@ test("local web release smoke proves the exact closure in real Chromium", {
     assert.equal(observation.failedRequestCount, 0);
     assert.equal(observation.consoleErrorCount, 0);
     assert.equal(observation.pageErrorCount, 0);
+    assert.equal(observation.releaseState, "verified");
+    assert.equal(observation.releaseVersion, "0.1.1");
+    assert.equal(observation.releaseDate, "2026-08-02");
+    assert.match(observation.releasePublishedAt, /^2026-08-02T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+    assert.equal(observation.releaseSurfaceContentOverflowPixels, 0);
+    assert.equal(observation.releaseSurfaceViewportOverflowPixels, 0);
     assert.match(observation.screenshot.sha256, /^[0-9a-f]{64}$/);
   }
   const updates = report.observations.filter((observation) => observation.route === "updates");
   assert.equal(updates.length, 3);
   for (const observation of updates) {
     assert.equal(observation.surfaceKind, "release-history");
-    assert.equal(observation.releaseState, "verified");
-    assert.equal(observation.releaseVersion, "0.1.0");
-    assert.equal(observation.releaseDate, "2026-08-02");
-    assert.match(observation.releasePublishedAt, /^2026-08-02T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
-    assert.equal(observation.releaseEntryCount, 1);
+    assert.equal(observation.releaseEntryCount, 2);
   }
 });

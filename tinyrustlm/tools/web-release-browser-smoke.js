@@ -15,7 +15,7 @@ const {
   validateWebDeploymentManifest
 } = require("./web-deployment-manifest.js");
 
-const reportSchema = "tinyrustlm.web_release_browser_smoke.v2";
+const reportSchema = "tinyrustlm.web_release_browser_smoke.v3";
 const canonicalPublicOrigin = "https://tinyrustlm.com";
 const viewports = Object.freeze([
   Object.freeze({ name: "desktop", width: 1440, height: 1000 }),
@@ -319,14 +319,15 @@ async function runPageObservation(
         null,
         { timeout: 30_000 }
       );
-    } else {
-      await page.locator("[data-site-release]").waitFor({ state: "visible", timeout: 10_000 });
-      await page.waitForFunction(
-        () => document.querySelector("[data-site-release]")?.dataset.releaseState === "verified",
-        null,
-        { timeout: 30_000 }
-      );
     }
+    await page.waitForFunction(
+      () => Array.from(document.querySelectorAll("[data-site-release]")).some((node) => {
+        const rect = node.getBoundingClientRect();
+        return node.dataset.releaseState === "verified" && rect.width > 0 && rect.height > 0;
+      }),
+      null,
+      { timeout: 30_000 }
+    );
     await page.waitForTimeout(250);
 
     const state = await page.evaluate(() => {
@@ -341,8 +342,15 @@ async function runPageObservation(
         ).trim()
       );
       const visibleText = document.body?.innerText || "";
-      const releaseSurface = document.querySelector("[data-site-release]");
-      const releasePublishedAt = document.querySelector("[data-release-published-at]");
+      const releaseSurface = Array.from(document.querySelectorAll("[data-site-release]"))
+        .find((node) => {
+          const rect = node.getBoundingClientRect();
+          return node.dataset.releaseState === "verified" && rect.width > 0 && rect.height > 0;
+        });
+      const releaseRect = releaseSurface?.getBoundingClientRect();
+      const releaseVersion = releaseSurface?.querySelector("[data-release-version]");
+      const releaseDate = releaseSurface?.querySelector("[data-release-date]");
+      const releasePublishedAt = releaseSurface?.querySelector("[data-release-published-at]");
       return {
         appShellPresent: Boolean(appShell),
         browserModelAdmissionPresent: Boolean(window.TinyRustLMBrowserModelAdmission),
@@ -352,9 +360,26 @@ async function runPageObservation(
         modelLoadState: document.getElementById("modelLoadPill")?.textContent?.trim() || "",
         releaseSurfacePresent: Boolean(releaseSurface),
         releaseState: releaseSurface?.dataset.releaseState || "",
-        releaseVersion: document.querySelector("[data-release-version]")?.textContent?.trim() || "",
-        releaseDate: document.querySelector("[data-release-date]")?.textContent?.trim() || "",
+        releaseVersion: releaseVersion?.textContent?.trim() || "",
+        releaseDate: releaseDate?.textContent?.trim() || "",
         releasePublishedAt: releasePublishedAt?.dateTime || "",
+        releaseSurfaceRect: releaseRect
+          ? {
+              left: releaseRect.left,
+              right: releaseRect.right,
+              top: releaseRect.top,
+              bottom: releaseRect.bottom,
+              width: releaseRect.width,
+              height: releaseRect.height
+            }
+          : null,
+        releaseSurfaceContentOverflowPixels: releaseSurface
+          ? Math.max(
+              0,
+              releaseSurface.scrollWidth - releaseSurface.clientWidth,
+              releaseSurface.scrollHeight - releaseSurface.clientHeight
+            )
+          : null,
         releaseEntryCount: document.querySelectorAll(".release-entry").length,
         documentWidth: document.documentElement.scrollWidth,
         viewportWidth: window.innerWidth,
@@ -428,6 +453,16 @@ async function runPageObservation(
         state.releasePublishedAt,
         [expectedRelease.publishedAt]
       ),
+      releaseSurfaceContentOverflowPixels: state.releaseSurfaceContentOverflowPixels,
+      releaseSurfaceViewportOverflowPixels: state.releaseSurfaceRect
+        ? Math.max(
+            0,
+            -state.releaseSurfaceRect.left,
+            state.releaseSurfaceRect.right - state.viewportWidth,
+            -state.releaseSurfaceRect.top,
+            state.releaseSurfaceRect.bottom - state.viewportHeight
+          )
+        : null,
       unnamedButtonCount: state.unnamedButtonCount,
       horizontalOverflowPixels: Math.max(0, state.documentWidth - state.viewportWidth),
       composerVerticalOverflowPixels: state.composerRect
@@ -474,6 +509,37 @@ async function runPageObservation(
       diagnostic
     );
     observationInvariant(state.unnamedButtonCount === 0, "unnamed_button", diagnostic);
+    observationInvariant(state.releaseSurfacePresent, "release_surface_missing", diagnostic);
+    observationInvariant(state.releaseState === "verified", "release_record_unverified", diagnostic);
+    observationInvariant(
+      state.releaseVersion === expectedRelease.version,
+      "release_version_mismatch",
+      diagnostic
+    );
+    observationInvariant(
+      state.releaseDate === expectedRelease.releaseDate,
+      "release_date_mismatch",
+      diagnostic
+    );
+    observationInvariant(
+      state.releasePublishedAt === expectedRelease.publishedAt,
+      "release_publication_mismatch",
+      diagnostic
+    );
+    observationInvariant(
+      state.releaseSurfaceContentOverflowPixels === 0,
+      "release_surface_content_clipped",
+      diagnostic
+    );
+    observationInvariant(
+      state.releaseSurfaceRect &&
+        state.releaseSurfaceRect.left >= -1 &&
+        state.releaseSurfaceRect.right <= state.viewportWidth + 1 &&
+        state.releaseSurfaceRect.top >= -1 &&
+        state.releaseSurfaceRect.bottom <= state.viewportHeight + 1,
+      "release_surface_outside_viewport",
+      diagnostic
+    );
     if (route.kind === "application") {
       observationInvariant(state.appShellPresent, "app_shell_missing", diagnostic);
       observationInvariant(
@@ -504,23 +570,6 @@ async function runPageObservation(
         diagnostic
       );
     } else {
-      observationInvariant(state.releaseSurfacePresent, "release_surface_missing", diagnostic);
-      observationInvariant(state.releaseState === "verified", "release_record_unverified", diagnostic);
-      observationInvariant(
-        state.releaseVersion === expectedRelease.version,
-        "release_version_mismatch",
-        diagnostic
-      );
-      observationInvariant(
-        state.releaseDate === expectedRelease.releaseDate,
-        "release_date_mismatch",
-        diagnostic
-      );
-      observationInvariant(
-        state.releasePublishedAt === expectedRelease.publishedAt,
-        "release_publication_mismatch",
-        diagnostic
-      );
       observationInvariant(
         state.releaseEntryCount === expectedRelease.historyEntryCount,
         "release_history_count_mismatch",
@@ -540,10 +589,12 @@ async function runPageObservation(
       runtimeVariant: route.kind === "application" ? state.runtimeVariant : null,
       wasmState: route.kind === "application" ? state.wasmState : null,
       modelLoadState: route.kind === "application" ? state.modelLoadState : null,
-      releaseState: route.kind === "release-history" ? state.releaseState : null,
-      releaseVersion: route.kind === "release-history" ? state.releaseVersion : null,
-      releaseDate: route.kind === "release-history" ? state.releaseDate : null,
-      releasePublishedAt: route.kind === "release-history" ? state.releasePublishedAt : null,
+      releaseState: state.releaseState,
+      releaseVersion: state.releaseVersion,
+      releaseDate: state.releaseDate,
+      releasePublishedAt: state.releasePublishedAt,
+      releaseSurfaceContentOverflowPixels: state.releaseSurfaceContentOverflowPixels,
+      releaseSurfaceViewportOverflowPixels: diagnostic.releaseSurfaceViewportOverflowPixels,
       releaseEntryCount: route.kind === "release-history" ? state.releaseEntryCount : null,
       requestCount,
       responseCount,

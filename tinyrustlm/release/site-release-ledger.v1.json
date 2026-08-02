@@ -26,7 +26,39 @@
           "summary": "Bound web publication to clean source identity, exact release metadata, secret scanning, and HTTPS readback evidence."
         }
       ]
+    },
+    {
+      "releaseId": "tinyrustlm.com@0.1.1",
+      "version": "0.1.1",
+      "releaseDate": "2026-08-02",
+      "summary": "Makes the TinyRustLM release record fully readable and reachable across app viewports.",
+      "changes": [
+        {
+          "type": "fixed",
+          "summary": "Removed desktop footer truncation from the version, release date, and last-published facts."
+        },
+        {
+          "type": "added",
+          "summary": "Added a compact release summary and updates link for narrow-desktop and mobile layouts."
+        },
+        {
+          "type": "fixed",
+          "summary": "Aligned the initial no-model status with the authoritative browser model-admission state."
+        },
+        {
+          "type": "changed",
+          "summary": "Expanded browser release verification to require visible, in-viewport, unclipped release facts on every published app and history view."
+        }
+      ]
     }
   ],
-  "publications": []
+  "publications": [
+    {
+      "publicationId": "fc5661c3b41fc3bc0c46f5b4d3af4540fb794dbd61ce5a79fb951c3a1cd5e909",
+      "releaseId": "tinyrustlm.com@0.1.0",
+      "publishedAt": "2026-08-02T19:47:18.581Z",
+      "sourceRevision": "7d6b9e05ec242f46ff3adc669ed422859ee21e69",
+      "sourceLedgerSha256": "c264b0242632e19df4589356fd6d048d3b4d013c66faac9039638ee87966cebc"
+    }
+  ]
 }

@@ -29,15 +29,16 @@ function withTemporaryDirectory(context) {
   return root;
 }
 
-test("source release ledger has one strict pending TinyRustLM release", () => {
+test("source release ledger preserves one publication and one strict pending release", () => {
   const result = parseReleaseLedger(fs.readFileSync(ledgerPath));
   assert.equal(result.ledger.site.siteId, "tinyrustlm.com");
   assert.equal(result.ledger.site.canonicalOrigin, "https://tinyrustlm.com");
   assert.equal(result.ledger.site.updatesPath, "/updates/");
-  assert.equal(result.ledger.releases.length, 1);
-  assert.equal(result.ledger.publications.length, 0);
-  assert.equal(result.pendingRelease.releaseId, "tinyrustlm.com@0.1.0");
-  assert.equal(result.pendingRelease.version, "0.1.0");
+  assert.equal(result.ledger.releases.length, 2);
+  assert.equal(result.ledger.publications.length, 1);
+  assert.equal(result.ledger.publications[0].releaseId, "tinyrustlm.com@0.1.0");
+  assert.equal(result.pendingRelease.releaseId, "tinyrustlm.com@0.1.1");
+  assert.equal(result.pendingRelease.version, "0.1.1");
   assert.match(result.ledgerSha256, /^[a-f0-9]{64}$/);
 });
 
@@ -51,14 +52,14 @@ test("materializes canonical current and history records bound to one clean sour
   });
 
   assert.equal(result.current.schema, "uaix.site_release.v1");
-  assert.equal(result.current.version, "0.1.0");
+  assert.equal(result.current.version, "0.1.1");
   assert.equal(result.current.releaseDate, "2026-08-02");
   assert.equal(result.current.publishedAt, publishedAt);
   assert.equal(result.current.sourceRevision, sourceRevision);
   assert.equal(result.current.updatesUrl, "https://tinyrustlm.com/updates/");
   assert.match(result.current.publicationId, /^[a-f0-9]{64}$/);
-  assert.equal(result.history.releases.length, 1);
-  assert.deepEqual(result.history.releases[0], result.current);
+  assert.equal(result.history.releases.length, 2);
+  assert.deepEqual(result.history.releases.at(-1), result.current);
   assert.equal(result.files.length, 2);
   assert.deepEqual(
     result.files.map((entry) => entry.relativePath),
@@ -220,11 +221,12 @@ test("produces an exclusive candidate ledger after successful public evidence", 
     outputPath: candidatePath
   });
 
-  assert.equal(finalized.ledger.publications.length, 1);
+  assert.equal(finalized.ledger.publications.length, 2);
   assert.equal(finalized.publication.publicationId, materialized.current.publicationId);
   assert.equal(finalized.ledger.publications[0].releaseId, "tinyrustlm.com@0.1.0");
-  assert.equal(finalized.ledger.publications[0].publishedAt, publishedAt);
-  assert.equal(finalized.ledger.publications[0].sourceRevision, sourceRevision);
+  assert.equal(finalized.ledger.publications.at(-1).releaseId, "tinyrustlm.com@0.1.1");
+  assert.equal(finalized.ledger.publications.at(-1).publishedAt, publishedAt);
+  assert.equal(finalized.ledger.publications.at(-1).sourceRevision, sourceRevision);
   assert.equal(parseReleaseLedger(fs.readFileSync(candidatePath)).pendingRelease, null);
   assert.throws(
     () => finalizeReleaseLedger({ ledgerPath, publicOutputRoot, outputPath: candidatePath }),

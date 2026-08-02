@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="application-version" content="0.1.0">
+  <meta name="application-version" content="0.1.1">
   <meta name="release-date" content="2026-08-02">
   <title>TinyRustLM</title>
   <link rel="icon" href="data:,">
   <link rel="alternate" type="application/json" href="/.well-known/site-release.json" title="Current release">
   <link rel="alternate" type="application/json" href="/.well-known/site-release-history.json" title="Release history">
-  <link rel="stylesheet" href="./app/app.css?v=sha256-2520add56f7f0fbd7e11cddd7210f3272a9d31cb571ecc62a5d3cfc997f73b02">
+  <link rel="stylesheet" href="./app/app.css?v=sha256-9c80881509ee1db14609e983a836cee8856802f7e3056a716e7b15114a754163">
 </head>
 <body>
   <svg class="icon-sprite" aria-hidden="true" focusable="false">
@@ -129,7 +129,7 @@
           <span id="modelToolbarName">Choose a local or P2P model</span>
           <svg aria-hidden="true"><use href="#icon-chevron"></use></svg>
         </button>
-        <span id="modelLoadPill" class="status-pill neutral"><span class="mini-dot"></span>No model loaded</span>
+        <span id="modelLoadPill" class="status-pill neutral"><span class="mini-dot"></span>No model imported</span>
         <span class="status-pill info"><span class="mini-dot"></span>WASM ready <span id="wasmState" class="sr-only">waiting</span></span>
         <span id="modelContextPill" class="status-pill neutral">Browser local</span>
         <button class="edit-model-button" type="button" data-open-model-popover>
@@ -142,6 +142,12 @@
         <svg aria-hidden="true"><use href="#icon-sparkles"></use></svg>
         <span>Advanced Options</span>
       </button>
+
+      <a class="site-release-summary compact-release-summary" href="/updates/" aria-label="Updates and release history" data-site-release data-release-state="pending">
+        <span>v<span data-release-version>0.1.1</span></span>
+        <span>Released <time data-release-date datetime="2026-08-02">2026-08-02</time></span>
+        <span>Last published <time data-release-published-at>Awaiting live verification</time></span>
+      </a>
 
       <div class="mode-toggle" role="group" aria-label="Interface mode">
         <button id="simpleModeButton" class="mode-button" type="button" aria-pressed="true">Chat</button>
@@ -707,15 +713,11 @@
     </aside>
 
     <footer class="footnote" id="appFooter">
-      <span>TinyRustLM.com</span>
-      <span>Browser-local Rust/WASM runtime</span>
-      <a class="site-release-summary" href="/updates/" data-site-release data-release-state="pending">
-        <span>v<span data-release-version>0.1.0</span></span>
+      <a class="site-release-summary" href="/updates/" aria-label="Updates and release history" data-site-release data-release-state="pending">
+        <span>v<span data-release-version>0.1.1</span></span>
         <span>Released <time data-release-date datetime="2026-08-02">2026-08-02</time></span>
         <span>Last published <time data-release-published-at>Awaiting live verification</time></span>
       </a>
-      <span class="notice">Model bytes come only from local files or your paired companion; prompts stay in this browser.</span>
-      <span id="currentModelSummary" class="model-summary">No model loaded</span>
     </footer>
   </main>
 

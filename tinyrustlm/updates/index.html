@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="application-version" content="0.1.0">
+  <meta name="application-version" content="0.1.1">
   <meta name="release-date" content="2026-08-02">
   <title>Updates | TinyRustLM</title>
   <link rel="icon" href="data:,">
@@ -23,9 +23,9 @@
       <div class="release-band-inner">
         <p class="eyebrow">Release record</p>
         <h1 id="updates-title">TinyRustLM updates</h1>
-        <p class="release-summary">Introduces a verifiable public release record and update history for the TinyRustLM dogfood site.</p>
+        <p class="release-summary">Makes the TinyRustLM release record fully readable and reachable across app viewports.</p>
         <p class="release-facts">
-          <span>Version <strong data-release-version>0.1.0</strong></span>
+          <span>Version <strong data-release-version>0.1.1</strong></span>
           <span>Released <strong><time data-release-date datetime="2026-08-02">2026-08-02</time></strong></span>
           <span>Last published <strong><time data-release-published-at>Awaiting live verification</time></strong></span>
         </p>
@@ -34,10 +34,23 @@
     <section class="history" aria-labelledby="history-title">
       <div class="history-inner">
         <h2 id="history-title">Release history</h2>
+      <article class="release-entry" id="0.1.1">
+        <div class="release-entry-header">
+          <h3>Version <span data-release-version>0.1.1</span></h3>
+          <time data-release-date datetime="2026-08-02">2026-08-02</time>
+        </div>
+        <p>Makes the TinyRustLM release record fully readable and reachable across app viewports.</p>
+        <ul class="change-list">
+          <li><span class="change-type">fixed</span><span>Removed desktop footer truncation from the version, release date, and last-published facts.</span></li>
+          <li><span class="change-type">added</span><span>Added a compact release summary and updates link for narrow-desktop and mobile layouts.</span></li>
+          <li><span class="change-type">fixed</span><span>Aligned the initial no-model status with the authoritative browser model-admission state.</span></li>
+          <li><span class="change-type">changed</span><span>Expanded browser release verification to require visible, in-viewport, unclipped release facts on every published app and history view.</span></li>
+        </ul>
+      </article>
       <article class="release-entry" id="0.1.0">
         <div class="release-entry-header">
-          <h3>Version <span data-release-version>0.1.0</span></h3>
-          <time data-release-date datetime="2026-08-02">2026-08-02</time>
+          <h3>Version <span>0.1.0</span></h3>
+          <time datetime="2026-08-02">2026-08-02</time>
         </div>
         <p>Introduces a verifiable public release record and update history for the TinyRustLM dogfood site.</p>
         <ul class="change-list">

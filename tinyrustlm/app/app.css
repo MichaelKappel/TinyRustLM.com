@@ -2524,29 +2524,37 @@ pre {
   bottom: 6px;
   z-index: 4;
   display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 10px;
   max-width: calc(100vw - var(--left-width) - var(--right-width) - 40px);
-  overflow: hidden;
+  overflow: visible;
   color: rgba(183, 196, 216, .58);
   font-size: 11px;
 }
 
-.footnote span {
-  overflow: hidden;
-  text-overflow: ellipsis;
+.site-release-summary > span {
+  overflow: visible;
+  text-overflow: clip;
   white-space: nowrap;
-}
-
-.footnote .notice {
-  color: rgba(147, 197, 253, .66);
 }
 
 .site-release-summary {
   display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
   gap: 8px;
   min-width: 0;
   color: rgba(134, 239, 172, .82);
   text-decoration: none;
+}
+
+.compact-release-summary {
+  display: none;
+  justify-self: center;
+  max-width: 100%;
+  font-size: 11px;
 }
 
 .site-release-summary:hover,
@@ -2865,11 +2873,20 @@ pre {
   .footnote {
     display: none;
   }
+
+  .compact-release-summary {
+    display: inline-flex;
+  }
 }
 
 @media (max-width: 899px) {
   body {
     overflow: auto;
+  }
+
+  .compact-release-summary {
+    width: 100%;
+    padding-inline: 8px;
   }
 
   .app-shell {
@@ -4140,6 +4157,10 @@ input[type="file"] {
 @media (max-height: 820px) {
   .footnote {
     display: none;
+  }
+
+  .compact-release-summary {
+    display: inline-flex;
   }
 }
 
