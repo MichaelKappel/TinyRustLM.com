@@ -275,7 +275,7 @@ function parseReleaseLedger(input) {
     );
     invariant(
       !publicationByRelease.has(publication.releaseId),
-      "A release may have only one successful publication record"
+      "A release may have only one immutable publication identity"
     );
     invariant(
       publication.releaseId === ledger.releases[index].releaseId,
@@ -367,6 +367,26 @@ function buildPublicationRecords({ ledgerResult, sourceRevision, publishedAt }) 
   return Object.freeze({ current, history, publication });
 }
 
+function buildFinalizedReleaseRecords({ ledgerResult }) {
+  invariant(!ledgerResult.pendingRelease, "Release ledger still has a pending publication");
+  const releases = ledgerResult.ledger.releases.map((release) => {
+    const publication = ledgerResult.publicationByRelease.get(release.releaseId);
+    invariant(publication, "Finalized release is missing publication evidence");
+    return publicReleaseRecord({ ledgerResult, release, publication });
+  });
+  const current = releases.at(-1);
+  const publication = ledgerResult.publicationByRelease.get(current.releaseId);
+  const history = Object.freeze({
+    schema: releaseHistorySchema,
+    siteId: ledgerResult.ledger.site.siteId,
+    name: ledgerResult.ledger.site.name,
+    canonicalOrigin: ledgerResult.ledger.site.canonicalOrigin,
+    generatedAt: current.publishedAt,
+    releases
+  });
+  return Object.freeze({ current, history, publication });
+}
+
 function ensureOutputDirectory(outputRoot) {
   invariant(path.isAbsolute(String(outputRoot || "")), "Release output root must be absolute");
   const root = path.resolve(outputRoot);
@@ -404,18 +424,8 @@ function writeExclusiveJson(filePath, value) {
   });
 }
 
-function materializeReleasePublication(options = {}) {
-  const ledgerPath = path.resolve(String(options.ledgerPath || ""));
-  invariant(fs.existsSync(ledgerPath), "Release ledger is unavailable");
-  const ledgerStat = fs.lstatSync(ledgerPath);
-  invariant(ledgerStat.isFile() && !ledgerStat.isSymbolicLink(), "Release ledger is unsafe");
-  const ledgerResult = parseReleaseLedger(fs.readFileSync(ledgerPath));
-  const records = buildPublicationRecords({
-    ledgerResult,
-    sourceRevision: String(options.sourceRevision || ""),
-    publishedAt: String(options.publishedAt || "")
-  });
-  const output = ensureOutputDirectory(options.outputRoot);
+function writeReleaseRecords(outputRoot, records, ledgerSha256) {
+  const output = ensureOutputDirectory(outputRoot);
   const history = writeExclusiveJson(
     path.join(output.directory, "site-release-history.json"),
     records.history
@@ -434,7 +444,43 @@ function materializeReleasePublication(options = {}) {
       relativePath: ".well-known/site-release.json"
     })
   ]);
-  return Object.freeze({ ...records, files, ledgerSha256: ledgerResult.ledgerSha256 });
+  return Object.freeze({ ...records, files, ledgerSha256 });
+}
+
+function materializeReleasePublication(options = {}) {
+  const ledgerPath = path.resolve(String(options.ledgerPath || ""));
+  invariant(fs.existsSync(ledgerPath), "Release ledger is unavailable");
+  const ledgerStat = fs.lstatSync(ledgerPath);
+  invariant(ledgerStat.isFile() && !ledgerStat.isSymbolicLink(), "Release ledger is unsafe");
+  const ledgerResult = parseReleaseLedger(fs.readFileSync(ledgerPath));
+  const records = buildPublicationRecords({
+    ledgerResult,
+    sourceRevision: String(options.sourceRevision || ""),
+    publishedAt: String(options.publishedAt || "")
+  });
+  return writeReleaseRecords(options.outputRoot, records, ledgerResult.ledgerSha256);
+}
+
+function materializeReleaseState(options = {}) {
+  const ledgerPath = path.resolve(String(options.ledgerPath || ""));
+  invariant(fs.existsSync(ledgerPath), "Release ledger is unavailable");
+  const ledgerStat = fs.lstatSync(ledgerPath);
+  invariant(ledgerStat.isFile() && !ledgerStat.isSymbolicLink(), "Release ledger is unsafe");
+  const ledgerResult = parseReleaseLedger(fs.readFileSync(ledgerPath));
+  if (!ledgerResult.pendingRelease) {
+    invariant(
+      options.sourceRevision === undefined && options.publishedAt === undefined,
+      "Finalized release materialization does not accept candidate publication identity"
+    );
+  }
+  const records = ledgerResult.pendingRelease
+    ? buildPublicationRecords({
+        ledgerResult,
+        sourceRevision: String(options.sourceRevision || ""),
+        publishedAt: String(options.publishedAt || "")
+      })
+    : buildFinalizedReleaseRecords({ ledgerResult });
+  return writeReleaseRecords(options.outputRoot, records, ledgerResult.ledgerSha256);
 }
 
 function parseCanonicalPublicFile(filePath, expectedSchema, label) {
@@ -463,11 +509,13 @@ function validatePublicReleaseFiles(options = {}) {
     "Current release does not match release history"
   );
   const ledgerResult = parseReleaseLedger(fs.readFileSync(ledgerPath));
-  const expected = buildPublicationRecords({
-    ledgerResult,
-    sourceRevision: current.sourceRevision,
-    publishedAt: current.publishedAt
-  });
+  const expected = ledgerResult.pendingRelease
+    ? buildPublicationRecords({
+        ledgerResult,
+        sourceRevision: current.sourceRevision,
+        publishedAt: current.publishedAt
+      })
+    : buildFinalizedReleaseRecords({ ledgerResult });
   invariant(
     JSON.stringify(current) === JSON.stringify(expected.current),
     "Current release record does not match its source ledger"
@@ -643,6 +691,7 @@ module.exports = Object.freeze({
   finalizeReleaseLedger,
   ledgerSchema,
   materializeReleasePublication,
+  materializeReleaseState,
   parseReleaseLedger,
   releaseHistorySchema,
   validatePublicReleaseFiles

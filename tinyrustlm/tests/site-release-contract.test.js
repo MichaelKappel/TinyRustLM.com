@@ -10,6 +10,7 @@ const {
   assertHistoryExtension,
   finalizeReleaseLedger,
   materializeReleasePublication,
+  materializeReleaseState,
   parseReleaseLedger,
   validatePublicReleaseFiles
 } = require("../tools/site-release-contract.js");
@@ -29,28 +30,71 @@ function withTemporaryDirectory(context) {
   return root;
 }
 
-test("source release ledger preserves two publications and one strict pending release", () => {
+function pendingLedgerPath(context) {
+  const root = withTemporaryDirectory(context);
+  const ledger = JSON.parse(fs.readFileSync(ledgerPath, "utf8"));
+  const publication = ledger.publications.pop();
+  assert.equal(publication.releaseId, "tinyrustlm.com@0.1.2");
+  const candidatePath = path.join(root, "site-release-ledger.pending.json");
+  fs.writeFileSync(candidatePath, `${JSON.stringify(ledger, null, 2)}\n`, "utf8");
+  return candidatePath;
+}
+
+test("source release ledger preserves three finalized publications", () => {
   const result = parseReleaseLedger(fs.readFileSync(ledgerPath));
   assert.equal(result.ledger.site.siteId, "tinyrustlm.com");
   assert.equal(result.ledger.site.canonicalOrigin, "https://tinyrustlm.com");
   assert.equal(result.ledger.site.updatesPath, "/updates/");
   assert.equal(result.ledger.releases.length, 3);
-  assert.equal(result.ledger.publications.length, 2);
+  assert.equal(result.ledger.publications.length, 3);
   assert.equal(result.ledger.publications[0].releaseId, "tinyrustlm.com@0.1.0");
   assert.equal(result.ledger.publications[1].releaseId, "tinyrustlm.com@0.1.1");
   assert.equal(
     result.ledger.publications[1].publicationId,
     "aa5e5cc4a32e367c617dd4ee4d425c50c2ccf017829e7c0413784e5a09ec9d07"
   );
-  assert.equal(result.pendingRelease.releaseId, "tinyrustlm.com@0.1.2");
-  assert.equal(result.pendingRelease.version, "0.1.2");
-  assert.match(result.ledgerSha256, /^[a-f0-9]{64}$/);
+  assert.equal(
+    result.ledger.publications[2].publicationId,
+    "0e9da90d20943afb4dab388860792cff8a9e20fb2825e9a7e6a614d2299647be"
+  );
+  assert.equal(result.pendingRelease, null);
+  assert.equal(
+    result.ledgerSha256,
+    "7cce0f93614b4eba9dad6c6fd3479c9362a7f9c61c243b3acb5181dadbb0cef9"
+  );
+});
+
+test("materializes exact current records from a finalized ledger", (context) => {
+  const outputRoot = withTemporaryDirectory(context);
+  const result = materializeReleaseState({ ledgerPath, outputRoot });
+  assert.equal(result.current.version, "0.1.2");
+  assert.equal(result.current.publishedAt, "2026-08-02T21:23:27.068Z");
+  assert.equal(result.current.sourceRevision, "3f8b2b6b3faa4e2c5e698dced36f249ee6438389");
+  assert.equal(
+    result.current.publicationId,
+    "0e9da90d20943afb4dab388860792cff8a9e20fb2825e9a7e6a614d2299647be"
+  );
+  assert.equal(result.history.generatedAt, result.current.publishedAt);
+  assert.equal(result.history.releases.length, 3);
+  const reopened = validatePublicReleaseFiles({ ledgerPath, outputRoot });
+  assert.deepEqual(reopened.current, result.current);
+  assert.deepEqual(reopened.history, result.history);
+  assert.throws(
+    () => materializeReleaseState({
+      ledgerPath,
+      outputRoot: path.join(withTemporaryDirectory(context), "invalid"),
+      sourceRevision,
+      publishedAt
+    }),
+    /does not accept candidate publication identity/
+  );
 });
 
 test("materializes canonical current and history records bound to one clean source revision", (context) => {
   const outputRoot = withTemporaryDirectory(context);
+  const candidateLedgerPath = pendingLedgerPath(context);
   const result = materializeReleasePublication({
-    ledgerPath,
+    ledgerPath: candidateLedgerPath,
     outputRoot,
     sourceRevision,
     publishedAt
@@ -72,7 +116,10 @@ test("materializes canonical current and history records bound to one clean sour
   );
   assert.ok(result.files.every((entry) => /^[a-f0-9]{64}$/.test(entry.sha256)));
 
-  const reopened = validatePublicReleaseFiles({ ledgerPath, outputRoot });
+  const reopened = validatePublicReleaseFiles({
+    ledgerPath: candidateLedgerPath,
+    outputRoot
+  });
   assert.deepEqual(reopened.current, result.current);
   assert.deepEqual(reopened.history, result.history);
 });
@@ -80,14 +127,15 @@ test("materializes canonical current and history records bound to one clean sour
 test("materialization is deterministic for an exact ledger, revision, and publication instant", (context) => {
   const firstRoot = path.join(withTemporaryDirectory(context), "first");
   const secondRoot = path.join(withTemporaryDirectory(context), "second");
+  const candidateLedgerPath = pendingLedgerPath(context);
   const first = materializeReleasePublication({
-    ledgerPath,
+    ledgerPath: candidateLedgerPath,
     outputRoot: firstRoot,
     sourceRevision,
     publishedAt
   });
   const second = materializeReleasePublication({
-    ledgerPath,
+    ledgerPath: candidateLedgerPath,
     outputRoot: secondRoot,
     sourceRevision,
     publishedAt
@@ -127,6 +175,7 @@ test("rejects unknown fields, duplicate identities, invalid versions, and ambigu
   assert.throws(() => parseReleaseLedger(JSON.stringify(invalidVersion)), /SemVer/);
 
   const secondPending = clone(baseline);
+  secondPending.publications.pop();
   secondPending.releases.push({
     releaseId: "tinyrustlm.com@0.2.0",
     version: "0.2.0",
@@ -142,9 +191,10 @@ test("rejects unknown fields, duplicate identities, invalid versions, and ambigu
 
 test("rejects malformed source revisions, non-UTC instants, and source-publication drift", (context) => {
   const outputRoot = withTemporaryDirectory(context);
+  const candidateLedgerPath = pendingLedgerPath(context);
   assert.throws(
     () => materializeReleasePublication({
-      ledgerPath,
+      ledgerPath: candidateLedgerPath,
       outputRoot: path.join(outputRoot, "bad-revision"),
       sourceRevision: "abc",
       publishedAt
@@ -153,7 +203,7 @@ test("rejects malformed source revisions, non-UTC instants, and source-publicati
   );
   assert.throws(
     () => materializeReleasePublication({
-      ledgerPath,
+      ledgerPath: candidateLedgerPath,
       outputRoot: path.join(outputRoot, "bad-time"),
       sourceRevision,
       publishedAt: "2026-08-02T13:15:30-07:00"
@@ -162,21 +212,30 @@ test("rejects malformed source revisions, non-UTC instants, and source-publicati
   );
 
   const validRoot = path.join(outputRoot, "valid");
-  materializeReleasePublication({ ledgerPath, outputRoot: validRoot, sourceRevision, publishedAt });
+  materializeReleasePublication({
+    ledgerPath: candidateLedgerPath,
+    outputRoot: validRoot,
+    sourceRevision,
+    publishedAt
+  });
   const currentPath = path.join(validRoot, ".well-known", "site-release.json");
   const changed = JSON.parse(fs.readFileSync(currentPath, "utf8"));
   changed.summary = "Silently rewritten after materialization.";
   fs.writeFileSync(currentPath, `${JSON.stringify(changed, null, 2)}\n`, "utf8");
   assert.throws(
-    () => validatePublicReleaseFiles({ ledgerPath, outputRoot: validRoot }),
+    () => validatePublicReleaseFiles({
+      ledgerPath: candidateLedgerPath,
+      outputRoot: validRoot
+    }),
     /does not match release history/
   );
 });
 
 test("public history may only append exact prior records", (context) => {
   const outputRoot = withTemporaryDirectory(context);
+  const candidateLedgerPath = pendingLedgerPath(context);
   const result = materializeReleasePublication({
-    ledgerPath,
+    ledgerPath: candidateLedgerPath,
     outputRoot,
     sourceRevision,
     publishedAt
@@ -214,14 +273,15 @@ test("produces an exclusive candidate ledger after successful public evidence", 
   const root = withTemporaryDirectory(context);
   const publicOutputRoot = path.join(root, "public");
   const candidatePath = path.join(root, "site-release-ledger.finalized.json");
+  const candidateLedgerPath = pendingLedgerPath(context);
   const materialized = materializeReleasePublication({
-    ledgerPath,
+    ledgerPath: candidateLedgerPath,
     outputRoot: publicOutputRoot,
     sourceRevision,
     publishedAt
   });
   const finalized = finalizeReleaseLedger({
-    ledgerPath,
+    ledgerPath: candidateLedgerPath,
     publicOutputRoot,
     outputPath: candidatePath
   });
@@ -234,7 +294,11 @@ test("produces an exclusive candidate ledger after successful public evidence", 
   assert.equal(finalized.ledger.publications.at(-1).sourceRevision, sourceRevision);
   assert.equal(parseReleaseLedger(fs.readFileSync(candidatePath)).pendingRelease, null);
   assert.throws(
-    () => finalizeReleaseLedger({ ledgerPath, publicOutputRoot, outputPath: candidatePath }),
+    () => finalizeReleaseLedger({
+      ledgerPath: candidateLedgerPath,
+      publicOutputRoot,
+      outputPath: candidatePath
+    }),
     /EEXIST/
   );
 });
@@ -242,8 +306,9 @@ test("produces an exclusive candidate ledger after successful public evidence", 
 test("finalization refuses drifted public records and source-ledger overwrite", (context) => {
   const root = withTemporaryDirectory(context);
   const publicOutputRoot = path.join(root, "public");
+  const candidateLedgerPath = pendingLedgerPath(context);
   materializeReleasePublication({
-    ledgerPath,
+    ledgerPath: candidateLedgerPath,
     outputRoot: publicOutputRoot,
     sourceRevision,
     publishedAt
@@ -251,9 +316,9 @@ test("finalization refuses drifted public records and source-ledger overwrite", 
 
   assert.throws(
     () => finalizeReleaseLedger({
-      ledgerPath,
+      ledgerPath: candidateLedgerPath,
       publicOutputRoot,
-      outputPath: ledgerPath
+      outputPath: candidateLedgerPath
     }),
     /must not overwrite source evidence/
   );
@@ -264,7 +329,7 @@ test("finalization refuses drifted public records and source-ledger overwrite", 
   fs.writeFileSync(currentPath, `${JSON.stringify(current, null, 2)}\n`, "utf8");
   assert.throws(
     () => finalizeReleaseLedger({
-      ledgerPath,
+      ledgerPath: candidateLedgerPath,
       publicOutputRoot,
       outputPath: path.join(root, "drifted.json")
     }),

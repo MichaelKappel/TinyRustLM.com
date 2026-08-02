@@ -14,7 +14,7 @@ const {
   validateReleaseRecord
 } = require("../app/site-release.js");
 const {
-  materializeReleasePublication
+  materializeReleaseState
 } = require("../tools/site-release-contract.js");
 const {
   verifyUpdatesPage,
@@ -27,11 +27,9 @@ const ledgerPath = path.join(siteRoot, "release", "site-release-ledger.v1.json")
 function generatedRecord(context) {
   const outputRoot = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-browser-release-"));
   context.after(() => fs.rmSync(outputRoot, { recursive: true, force: true }));
-  return materializeReleasePublication({
+  return materializeReleaseState({
     ledgerPath,
-    outputRoot,
-    sourceRevision: "d".repeat(40),
-    publishedAt: "2026-08-02T21:22:23.000Z"
+    outputRoot
   }).current;
 }
 
@@ -67,7 +65,7 @@ function fakeDocument() {
 test("browser release validator accepts only the exact bounded public schema", (context) => {
   const record = generatedRecord(context);
   assert.equal(validateReleaseRecord(record), record);
-  assert.equal(formatPublishedAt(record.publishedAt), "2026-08-02 21:22 UTC");
+  assert.equal(formatPublishedAt(record.publishedAt), "2026-08-02 21:23 UTC");
 
   const unknown = structuredClone(record);
   unknown.extra = true;
@@ -94,8 +92,8 @@ test("browser release renderer updates all visible facts without injecting marku
   assert.equal(view.version[0].textContent, "0.1.2");
   assert.equal(view.date[0].textContent, "2026-08-02");
   assert.equal(view.date[0].dateTime, "2026-08-02");
-  assert.equal(view.published[0].textContent, "2026-08-02 21:22 UTC");
-  assert.equal(view.published[0].dateTime, "2026-08-02T21:22:23.000Z");
+  assert.equal(view.published[0].textContent, "2026-08-02 21:23 UTC");
+  assert.equal(view.published[0].dateTime, "2026-08-02T21:23:27.068Z");
   assert.equal(view.containers[0].dataset.releaseState, "verified");
 });
 

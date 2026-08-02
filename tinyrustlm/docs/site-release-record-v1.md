@@ -20,10 +20,12 @@ unbound source revisions, and missing changes fail closed.
 ## Identity Model
 
 A release entry is immutable product intent: version, release date, summary,
-and typed changes. A successful publication is a separate append-only fact:
-release ID, exact clean Git revision, source-ledger SHA-256, and the deployment
-operation's UTC start instant. The publication ID is SHA-256 over those
-identities and the release-entry hash.
+and typed changes. A publicly observed publication identity is a separate
+append-only fact: release ID, exact clean Git revision, source-ledger SHA-256,
+and the deployment operation's UTC start instant. The publication ID is
+SHA-256 over those identities and the release-entry hash. Deployment success
+remains a property of the immutable deployment receipt, not an inference made
+from the presence of a public metadata record.
 
 The split avoids a circular commit identity. Source does not guess when it will
 be published. The deployment materializer creates the two public records in an
@@ -36,12 +38,21 @@ deployment evidence. It does not mutate source during publication. The next
 reviewed source check-in applies that exact candidate, appending the successful
 publication fact before another release is prepared.
 
+If a failed attempt nevertheless makes its current-release marker publicly
+readable, that version and publication identity are already externally
+observable and cannot be reused. The exact public current/history records are
+archived and validated against their source ledger, the failed receipt remains
+failed, the observed publication identity is retained in history, and recovery
+advances under a strictly greater version.
+
 ## Publication Rules
 
 1. Exactly one latest release may await publication; all earlier releases must
-   have one successful publication record.
+   have one immutable publication identity.
 2. Every deployment that changes public bytes gets a strictly increasing
-   version and a new release entry. Failed attempts are receipts, not releases.
+   version and a new release entry. A failed attempt normally remains only a
+   receipt; if its commit marker became public, that observed identity is
+   retained and the recovery uses a new version.
 3. Public metadata is generated outside source control and never overwrites a
    prior staging artifact.
 4. The current record and final history element must be identical.
@@ -55,6 +66,9 @@ publication fact before another release is prepared.
 8. A successful deployment must emit one finalized-ledger candidate whose
    publication ID matches the public current record. The candidate is reviewed
    and committed exactly; an existing output cannot be overwritten.
+9. Preserving an observed identity from a failed attempt never upgrades the
+   failed receipt to success. It requires exact public-record validation and an
+   explicit recovery entry in the next version.
 
 ## Change Types
 

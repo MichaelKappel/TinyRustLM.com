@@ -5,7 +5,10 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 
-const { materializeReleasePublication } = require("./site-release-contract.js");
+const {
+  materializeReleaseState,
+  parseReleaseLedger
+} = require("./site-release-contract.js");
 const { startStaticServer } = require("./static-server.js");
 const {
   runWebReleaseBrowserSmoke
@@ -22,11 +25,17 @@ async function runLocalWebReleaseSmoke(options) {
   const generatedRoot = fs.mkdtempSync(
     path.join(os.tmpdir(), "tinyrustlm-local-release-assets-")
   );
-  materializeReleasePublication({
-    ledgerPath: path.join(siteRoot, "release", "site-release-ledger.v1.json"),
+  const ledgerPath = path.join(siteRoot, "release", "site-release-ledger.v1.json");
+  const ledgerResult = parseReleaseLedger(fs.readFileSync(ledgerPath));
+  materializeReleaseState({
+    ledgerPath,
     outputRoot: generatedRoot,
-    sourceRevision: "0".repeat(40),
-    publishedAt: new Date().toISOString()
+    ...(ledgerResult.pendingRelease
+      ? {
+          sourceRevision: "0".repeat(40),
+          publishedAt: new Date().toISOString()
+        }
+      : {})
   });
   const server = await startStaticServer({ siteRoot, generatedRoot, port: 0 });
   try {

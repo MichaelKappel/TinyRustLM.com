@@ -90,6 +90,13 @@
       "publishedAt": "2026-08-02T21:04:43.725Z",
       "sourceRevision": "4b00bd625f11dfdf49e5659a4737ad0dd2ca8727",
       "sourceLedgerSha256": "5f65661a5b40b200d879aa083416c8c90ad626b06938fdcd4e0bdb8eefd147bd"
+    },
+    {
+      "publicationId": "0e9da90d20943afb4dab388860792cff8a9e20fb2825e9a7e6a614d2299647be",
+      "releaseId": "tinyrustlm.com@0.1.2",
+      "publishedAt": "2026-08-02T21:23:27.068Z",
+      "sourceRevision": "3f8b2b6b3faa4e2c5e698dced36f249ee6438389",
+      "sourceLedgerSha256": "7d59e0a3aaff37b032ec9f06c966a1adee7191914f8f86ee1dcbfc47e915976c"
     }
   ]
 }

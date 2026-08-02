@@ -12,7 +12,7 @@ const {
   validateWebDeploymentManifest
 } = require("../tools/web-deployment-manifest.js");
 const {
-  materializeReleasePublication
+  materializeReleaseState
 } = require("../tools/site-release-contract.js");
 
 const siteRoot = path.resolve(__dirname, "..");
@@ -30,11 +30,9 @@ function writeJson(filePath, value) {
 function materializedRelease(context) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-generated-release-"));
   context.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  materializeReleasePublication({
+  materializeReleaseState({
     ledgerPath,
-    outputRoot: root,
-    sourceRevision: "1".repeat(40),
-    publishedAt: "2026-08-02T22:00:00.000Z"
+    outputRoot: root
   });
   return root;
 }
