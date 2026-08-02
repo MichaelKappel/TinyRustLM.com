@@ -1,0 +1,251 @@
+{
+  "schema": "tinyrustlm.vector_oracle_verification_receipt.v1",
+  "receiptId": "scalar-oracle-foundation-51ab608f417c0b82",
+  "generatedAtUtc": "2026-07-22T01:23:46.309Z",
+  "status": "foundation-verified-with-tooling-gaps",
+  "gitHead": "72575382c6225cb615f76a584d92286ff58c9e33",
+  "dirtyWorktree": true,
+  "productAuthority": false,
+  "trainingAuthority": false,
+  "inputSetSha256": "51ab608f417c0b82a4d8d3fed91450e409ab6c081f474a5f79748014d341aa31",
+  "inputs": [
+    {
+      "path": "Cargo.lock",
+      "bytes": 14723,
+      "sha256": "77566e3e2e18c8ba35fe5467d95c036c347cebfb5f7c309bd86b4dbce92e4545"
+    },
+    {
+      "path": "Cargo.toml",
+      "bytes": 1090,
+      "sha256": "5afcef4ff36679f99fbeb438f49af195b76065dd156bcf457fd0f4b807f66ba0"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/Cargo.toml",
+      "bytes": 312,
+      "sha256": "e962ea7c04a47dd8f72122f1de129e5175d3a40eac2dca511d399fee1f5e52c9"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/accounting.rs",
+      "bytes": 3884,
+      "sha256": "ecd53e96a25fd3753ecd69c6dd7a33e40e5506e424669b0da3575394dece50f0"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/bitpack.rs",
+      "bytes": 10969,
+      "sha256": "685a4b8682d3fea40d8e50975228cb5c06a2101c9a8067b70ab5fe2f92d60cf1"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/codebook.rs",
+      "bytes": 15253,
+      "sha256": "08b58571dbae6c7dcbe857ddacbc5f45d19af6c5fb336df1fabeb4b163ef99bc"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/error.rs",
+      "bytes": 9046,
+      "sha256": "f09f395388ed0c1f6d1160e4ea12b320baec1f01a40f17330989c8bf881fc7db"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/lib.rs",
+      "bytes": 931,
+      "sha256": "6d826f313071cc22adac4c15061f82c282b6c81ff6bf772a73c4c96a6ae9bb3a"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/metrics.rs",
+      "bytes": 12071,
+      "sha256": "4fb354c13c0dfda8987de8a54f83c32d28725d79c09c78ca0978dd6ab7d5c05c"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/prng.rs",
+      "bytes": 3167,
+      "sha256": "45d64327c6e7d2184857c87f453fb57172da74315028034abb8a5229172964eb"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/score.rs",
+      "bytes": 9825,
+      "sha256": "c60a9a7c1935f3a6d22ef0d49c32a3c74bc0c1abf174fb267ab293e3e9b45c38"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/transform.rs",
+      "bytes": 11797,
+      "sha256": "e1ab84175ac2e0ae3d81416a55da6423f1ebf0189f81dcb463f61ded619336e1"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/tests/lib_test.rs",
+      "bytes": 2731,
+      "sha256": "c7a1a58e37c7fc1e0a96eed26cb3f3c064c1abff44d6ca57b0745d694dd2007e"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/README.md",
+      "bytes": 2370,
+      "sha256": "ee25fee01d485bbb53554f8644ac27e9edaf3a0b132953eb3ce57298e0d9125f"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/source-claim-ledger.v1.json",
+      "bytes": 9315,
+      "sha256": "ea075bd8f2216afc160094a23ae38b54ec590c8636792003d68338e659003c77"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-experiment-isolation.test.js",
+      "bytes": 2426,
+      "sha256": "6f33ac249faba111454feb0356d3aa13bd09a4614c6b3dd05fdda389727c02f8"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-experiment-ledger.test.js",
+      "bytes": 4097,
+      "sha256": "fef12ea1c899e375215b3cfa1abe52786a3f21b1a1446b58a7cff0805d1a2fc0"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-experiment-receipt.test.js",
+      "bytes": 2271,
+      "sha256": "05a804a035c774c3a28b22325a26ee4b75c64f295f673272db36a776487ecae4"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-experiment-ledger.js",
+      "bytes": 14776,
+      "sha256": "61ba177a7651b227f77f799e94b5abc1c5d5976639036a74c30e140bad7baa17"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-experiment-receipt.js",
+      "bytes": 19006,
+      "sha256": "1689a3f066c53d600b51acba1a06b6dd9edb2277752777d48da54aedc67d6ccf"
+    }
+  ],
+  "toolchain": {
+    "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "cargo": "cargo 1.96.0 (30a34c682 2026-05-25)",
+    "node": "v24.14.0"
+  },
+  "gates": [
+    {
+      "gateId": "ledger-canonical-validation",
+      "command": [
+        "node",
+        "tinyrustlm/tools/vector-experiment-ledger.js",
+        "tinyrustlm/experiments/vector-quantization/source-claim-ledger.v1.json"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "3a7da381b5c7a55f6e6d5229543fe5e41261c2623ca44c8432a5839ff2c6406e"
+    },
+    {
+      "gateId": "ledger-and-isolation-tests",
+      "command": [
+        "node",
+        "--test",
+        "tinyrustlm/tests/vector-experiment-ledger.test.js",
+        "tinyrustlm/tests/vector-experiment-isolation.test.js"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "e8f3dcd3dfa158abcea7e5f8de830e51d1c943b8ea51b0fd0f786f85d1fb1173"
+    },
+    {
+      "gateId": "rustfmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "gateId": "scalar-native-tests",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tinyrustlm-vector-oracle"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "882e51626e9ae2b28958d84a9bf9c59d3e1ebf25660fad25f56eec732e714029"
+    },
+    {
+      "gateId": "scalar-strict-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tinyrustlm-vector-oracle",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "e576805fa07d48957770748ede313f98fde851f3ac02831ba93cd4e16bfa38b8"
+    },
+    {
+      "gateId": "scalar-wasm32-check",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tinyrustlm-vector-oracle",
+        "--target",
+        "wasm32-unknown-unknown"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "c002af5fa79f68d69a2b5cdb95ea4b752d8b259920c251c41861db398633558d"
+    },
+    {
+      "gateId": "scalar-rustdoc",
+      "command": [
+        "cargo",
+        "doc",
+        "-p",
+        "tinyrustlm-vector-oracle",
+        "--no-deps"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "336b32f92c6040f05cc46f1a9c71c4d9095b8bb8ac41e8c4a6dcb0333ed8e186"
+    }
+  ],
+  "toolingGaps": [
+    {
+      "gapId": "measured-line-coverage",
+      "probeCommand": [
+        "cargo",
+        "llvm-cov",
+        "--version"
+      ],
+      "status": "unavailable",
+      "requiredTargetPercent": 75,
+      "measuredPercent": null,
+      "exitCode": 101,
+      "outputSha256": "817ae4e6b7bba0b9125aa8fe5935369dfce868520356066cfee5734c7fa990c5",
+      "errorCode": null
+    },
+    {
+      "gapId": "miri-memory-model-check",
+      "probeCommand": [
+        "cargo",
+        "miri",
+        "--version"
+      ],
+      "status": "unavailable",
+      "requiredTargetPercent": null,
+      "measuredPercent": null,
+      "exitCode": 1,
+      "outputSha256": "f55b415bb169e141443a4b706e4cc590ec150066a46a8056ce86e7a31db99619",
+      "errorCode": null
+    }
+  ],
+  "scope": {
+    "scalarFoundationVerified": true,
+    "nativePerformanceMeasured": false,
+    "browserPerformanceMeasured": false,
+    "namedTurboQuantArmVerified": false,
+    "turboVecParityVerified": false,
+    "retrievalQualityVerified": false,
+    "kvCacheQualityVerified": false
+  },
+  "requiredNextGate": "Pin named mathematical arms and preregister equal-byte thresholds before retrieval or KV-cache prototypes; obtain measured coverage and memory-model evidence when supported tooling is available."
+}

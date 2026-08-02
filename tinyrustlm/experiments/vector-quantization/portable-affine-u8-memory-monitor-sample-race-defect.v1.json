@@ -1,0 +1,149 @@
+{
+  "schema": "tinyrustlm.failure_to_regression_summary.v1",
+  "defectId": "portable-affine-u8-memory-monitor-sample-race-20260726",
+  "status": "reproduced-code-race-fixed-in-distinct-unexecuted-monitor",
+  "createdAtUtc": "2026-07-26T14:30:25.206Z",
+  "terminalEvidence": {
+    "attempt": {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-json-domain-v2-attempts/sha256/57/57b55282e8cee8bb6cc14e179d817755bc6d8bb4040e1c3f2219bf2b3581b6a7.json",
+      "bytes": 26425240,
+      "fileSha256": "8e6b3bc807e471150c0fb0ee74ba93bdcb169da770fd14308ba57eebea33df4d",
+      "attemptId": "portable-affine-u8-flat-json-domain-v2-attempt-57b55282e8cee8bb",
+      "attemptContentHash": "57b55282e8cee8bb6cc14e179d817755bc6d8bb4040e1c3f2219bf2b3581b6a7",
+      "sourceRevision": "955bb48e110d51cff3303bcaae328155f6111483",
+      "status": "fail-instrumentation-terminal",
+      "startedAtUtc": "2026-07-26T13:49:55.043Z",
+      "completedAtUtc": "2026-07-26T13:57:37.655Z"
+    },
+    "verification": {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-json-domain-v2-verification-v1.json",
+      "bytes": 8713,
+      "fileSha256": "96b19be51104fac980c8436ff84c5e886c7ab964bd2a90bc9ac66b37a1793b9c",
+      "receiptId": "portable-affine-u8-flat-json-domain-v2-verification-bb719c0b993bfa75",
+      "status": "verified-terminal-instrumentation-failure"
+    },
+    "monitorFailure": {
+      "benchmarkOrdinal": 68,
+      "benchmarkMode": "performance",
+      "benchmarkPublicArguments": [
+        "controlled-memory-cosine-64",
+        "exact-full"
+      ],
+      "benchmarkExitCode": 0,
+      "benchmarkStdoutBytes": 1383,
+      "benchmarkStdoutSha256": "1d51d7781d62ac3c6a87c73543add4358dc24cd568d9a274085264bb7154fced",
+      "memoryMonitorOrdinal": 51,
+      "memoryMonitorExitCode": 1,
+      "stderrBytes": 480,
+      "stderrSha256": "284357072c50546708b2ed3e6dbda93ab85dee339f6e6011c53340ab59f50f1d",
+      "rawStderrPersisted": false,
+      "failureCode": "PORTABLE_AFFINE_U8_MEMORY_MONITOR_REJECTED",
+      "failureClassification": "instrumentation",
+      "retryAllowed": false
+    }
+  },
+  "observedFacts": {
+    "successfulBenchmarkProcessCount": 68,
+    "performanceBenchmarkProcessCount": 51,
+    "requiredPerformanceBenchmarkProcessCount": 60,
+    "successfulMemoryMonitorProcessCount": 50,
+    "failedMemoryMonitorProcessCount": 1,
+    "qualityPayloadParseable": true,
+    "qualityNumericDomainsValid": true,
+    "fullFrozenSuiteCompleted": false,
+    "performanceSummariesPresent": false,
+    "thresholdDecisionAvailable": false,
+    "sameExperimentRetryAllowed": false
+  },
+  "reproducedCodeDefect": {
+    "frozenHarnessSource": {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-observation.js",
+      "bytes": 157232,
+      "sha256": "3b3a65db1a500f143b9e27092329f0f7e56c56c0427d53ff4d01db7e0fbd177b"
+    },
+    "frozenScriptContract": {
+      "bytes": 2756,
+      "sha256": "72505952e8ef7c9f1b49ef38f317d30e35a37fd1e4d70179c65b1cb0bddc2f5e",
+      "samplingIntervalMilliseconds": 5,
+      "baselineSampleBeforeReady": false,
+      "minimumSamplesIfPostPrepareIsFirstLoopSample": 1,
+      "requiredMinimumSamples": 2
+    },
+    "raceTimeline": [
+      "The monitor resolves the benchmark process and writes the ready marker before taking its first sample.",
+      "The benchmark sees ready, completes preparation, and writes the post-prepare marker.",
+      "The monitor can observe post-prepare on its first loop sample, write the acknowledgment, and then observe the benchmark exit.",
+      "That interleaving leaves one sample even though the monitor requires at least two."
+    ],
+    "historicalOutcomeInterpretation": {
+      "raceCanProduceTheObservedExitShape": true,
+      "exactTerminalThrowSiteProven": false,
+      "rawStderrReconstructedOrClaimed": false,
+      "terminalRootCauseClaimed": false
+    }
+  },
+  "deterministicReproduction": {
+    "redTestCommit": "bdcf08c12dad443d60d86a7be75e930726e817cb",
+    "testPath": "tinyrustlm/tests/vector-portable-affine-u8-memory-monitor-v2.test.js",
+    "testName": "frozen monitor can acknowledge post-prepare with only one sample",
+    "redRun": {
+      "passed": 0,
+      "failed": 1
+    },
+    "datasetRead": false,
+    "benchmarkOutcomeModeInvoked": false,
+    "terminalWriterInvoked": false
+  },
+  "fix": {
+    "commit": "8159b0c9276ebeb600f02ecfbd117d016764f45d",
+    "correctedMonitor": {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-memory-monitor-v2.js",
+      "bytes": 6949,
+      "sha256": "bebf1ba012b9fb56a15bb947b2764ba401b7643a4271b24c571a908c192947e2"
+    },
+    "regressionTest": {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-memory-monitor-v2.test.js",
+      "bytes": 5785,
+      "sha256": "20b5771ad38d79250abd96794535a99433f578cbc4b84fe51b63b3f839d46bbd"
+    },
+    "correctedScriptContract": {
+      "schema": "tinyrustlm.portable_affine_u8_memory_monitor_script.v2",
+      "bytes": 2957,
+      "sha256": "fc8872931c1ac0d7cef0bce8dc8b285e03d1c48ecd6eedcbd300c32a9331c691",
+      "samplingIntervalMilliseconds": 5,
+      "markerNames": {
+        "request": "performance-monitor-request.marker",
+        "ready": "performance-monitor-ready.marker",
+        "postPrepare": "performance-post-prepare.marker",
+        "postPrepareAck": "performance-post-prepare-ack.marker"
+      },
+      "baselineSampleBeforeReady": true,
+      "minimumSamplesIfPostPrepareIsFirstLoopSample": 2
+    },
+    "verification": {
+      "staticRegressionPassed": true,
+      "realWindowsRapidTargetIntegrationPassed": true,
+      "outcomeModesInvoked": false,
+      "futureFullOutcomeExecuted": false
+    }
+  },
+  "authority": {
+    "sameExperimentRetryAllowed": false,
+    "futureOutcomeAllowedBeforePreregistration": false,
+    "terminalRootCauseClaimSupported": false,
+    "qualityClaimSupported": false,
+    "performanceClaimSupported": false,
+    "productPromotionAllowed": false,
+    "trainingAllowed": false,
+    "releaseAllowed": false,
+    "campaignCounterMayBeIncremented": false
+  },
+  "campaignCountersAfterFix": {
+    "qualifiedModels": 0,
+    "cleanBrowserRounds": 0,
+    "liveMemoryContinuityRounds": 0,
+    "externallyProvenLanes": 0,
+    "catalogAnnouncements": 0
+  },
+  "requiredNextGate": "Preserve the terminal v2 attempt and this non-outcome diagnosis without retry. Commit this summary, preregister a distinct full experiment binding the corrected monitor and complete frozen schedule, and independently verify that registration before any future outcome execution."
+}

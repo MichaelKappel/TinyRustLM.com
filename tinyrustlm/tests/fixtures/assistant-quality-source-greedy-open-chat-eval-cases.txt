@@ -1,0 +1,36 @@
+# TinyRustLM source-default greedy open-chat development benchmark
+
+tinyrustlm_eval_cases_version=1
+scope=source-greedy-open-chat-development-benchmark
+quality_gate_policy=honest-assistant-quality-v1
+quality_boundary=single-generation raw open-chat output using the pinned source model greedy generation policy
+safety_review_status=pass
+quality_decision=evaluation-only-not-for-admission
+evaluator=tinyrustlm-native-eval-runner
+eval_summary=Each case uses one ordinary ChatML generation with source-greedy-v1 and output_transform=none.
+sampling_profile=source-greedy-v1
+case_count=6
+
+case.0.prompt=test
+case.0.max_new_tokens=32
+case.0.required_result=quality
+
+case.1.prompt=Hi. What kinds of tasks can you help me with?
+case.1.max_new_tokens=48
+case.1.required_result=quality
+
+case.2.prompt=What is 2 + 2? Explain the answer briefly.
+case.2.max_new_tokens=32
+case.2.required_result=quality
+
+case.3.prompt=Why does ice float on liquid water?
+case.3.max_new_tokens=64
+case.3.required_result=quality
+
+case.4.prompt=Explain this Rust function in plain English: fn is_even(n: u32) -> bool { n % 2 == 0 }
+case.4.max_new_tokens=64
+case.4.required_result=quality
+
+case.5.prompt=The local model download is 120 MB and the device has limited storage. Give practical advice about whether to keep it.
+case.5.max_new_tokens=64
+case.5.required_result=quality

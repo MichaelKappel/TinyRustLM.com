@@ -1,0 +1,110 @@
+{
+  "schema": "tinyrustlm.browser_prefix_cache_performance.v1",
+  "generated_at_utc": "2026-07-13T03:37:39Z",
+  "status": "pass-production-candidate-not-deployed",
+  "ui_changed": false,
+  "model_changed": false,
+  "model_promoted": false,
+  "deployed": false,
+  "baseline": {
+    "second_turn_ms": 61890,
+    "wasm_bytes": 350363,
+    "wasm_sha256": "1bd21d3389036354d15b239b593a55d07838d249f1a0375f43f539b2499c2308",
+    "browser_report_sha256": "311642d3994d41ac7433ac268a6945160c99380949af56e1db3d9ac8fb1572ae"
+  },
+  "measured_candidates": [
+    {
+      "id": "all-crates-opt3",
+      "second_turn_ms": 55188,
+      "wasm_bytes": 374692,
+      "decision": "superseded-by-package-scoped-profile"
+    },
+    {
+      "id": "all-crates-opt3-q4-block-accumulation",
+      "second_turn_ms": 38171,
+      "wasm_bytes": 374795,
+      "decision": "accepted-kernel-superseded-build-shape"
+    },
+    {
+      "id": "all-crates-opt3-q4-block-final-only-projection",
+      "second_turn_ms": 36336,
+      "wasm_bytes": 374835,
+      "decision": "accepted-runtime-logic-superseded-build-shape"
+    },
+    {
+      "id": "simd128-experiment",
+      "second_turn_ms": 33384,
+      "wasm_bytes": 376453,
+      "decision": "rejected-hard-browser-capability-requirement"
+    },
+    {
+      "id": "runtime-package-opt3-before-prefix-cache",
+      "second_turn_ms": 33228,
+      "wasm_bytes": 376469,
+      "decision": "accepted-profile-superseded-by-prefix-cache"
+    }
+  ],
+  "selected_candidate": {
+    "id": "runtime-package-opt3-q4-block-final-only-projection-exact-prefix-cache",
+    "second_turn_ms": 10678,
+    "improvement_percent": 82.75,
+    "wasm_bytes": 377166,
+    "wasm_size_delta_bytes": 26803,
+    "wasm_size_delta_percent": 7.65,
+    "wasm_sha256": "11d4fb78c455e2349ed775d19fc9806e293cd1a82dbc4479162a0bf76373b659",
+    "wasm_manifest_sha256": "d4c08dec48d5deb02fa639fdae4c5ab30adedbaa91f32a2cbb6dc06bc70e2292",
+    "simd_required": false,
+    "first_prompt_tokens": 53,
+    "first_prefill_reused_tokens": 0,
+    "first_prefill_computed_tokens": 53,
+    "second_prompt_tokens": 82,
+    "second_prefill_reused_tokens": 63,
+    "second_prefill_computed_tokens": 19,
+    "generated_tokens": 8,
+    "visible_responses_match_baseline": true
+  },
+  "reuse_contract": {
+    "requires_complete_cached_sequence": true,
+    "requires_cache_length_match": true,
+    "requires_exact_new_prompt_prefix": true,
+    "requires_nonempty_suffix": true,
+    "partial_prefix_reuse": false,
+    "mismatch_action": "reset-and-full-prefill",
+    "failure_action": "clear-generation-and-cache-state"
+  },
+  "strict_quality_gate": {
+    "fixture_sha256": "161d50b3ac8821f9262350196b081dfe19ceb0c92a3d212b500aa1678e6d8066",
+    "cases_passed": 3,
+    "cases_failed": 4,
+    "no_cheat_status": "pass",
+    "no_cheat_failure_count": 0,
+    "raw_output_changed_case_count": 0,
+    "normalized_output_changed_case_count": 0,
+    "rubric_status_change": "The unchanged case 0 response now receives the previously documented current rubric correction, so the regenerated machine sidecar reports the authoritative 3/7 rather than the stale 2/7 artifact.",
+    "eval_sha256": "555436c1604be24bd35ee7ab4c73b1dce4c2216aebc8b9c145ed0d12cfb5175b"
+  },
+  "verification": {
+    "runtime_tests_passed": 218,
+    "rust_workspace_tests": "pass",
+    "rust_workspace_clippy_deny_warnings": "pass",
+    "cargo_fmt_check": "pass",
+    "node_browser_contracts_passed": 33,
+    "wasm_abi": "pass",
+    "dotnet_package_tests_passed": 52,
+    "report_intake_hashed_rows": 120,
+    "report_intake_failures": 0,
+    "static_browser_harness": "pass",
+    "http_browser_harness": "pass",
+    "multi_turn_browser_smoke": "pass",
+    "multi_turn_smoke_sha256": "4dfa965e0eca9cf7348d3606ca9fd99257bd4c99e3fc99204dfaedd657b24cd0",
+    "ui_verification_sha256": "060ebb23b14a44b142b154b296f47693bb92347f0055080b30670c255fe36d6f"
+  },
+  "source_sha256": {
+    "cargo_profile": "32173b80526535578c780b2a66f42c851ab0319b117d4fb0cfb0d9af44502a60",
+    "diagnostics": "6f64d884a40fa953392c47e8f702d340092c347d5320c57ed814b4970142ea8e",
+    "generation": "bf93744aad58a044eacb7ac2b6de43936c8f1866d86da01885b37da5dba4200f",
+    "quantization": "96ea1a13df0767b5ffedcf7dda937f0bef2a1c319ad9aa92ec6dbe943d0df823",
+    "browser_smoke": "03ad2378f536d0b0ac24ba58c7e0b28fe74e7735f02d3d915737406e2ad13473"
+  },
+  "required_next_gate": "Deploy the checked source and WASM through the atomic release path, verify HTTPS byte/hash readback, rerun the live two-turn smoke, and keep semantic model-quality promotion separate."
+}

@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "receiptType": "tinyrustlm.model-source-screen-v1",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "phase": "model-source-screen",
+  "attempt": 1,
+  "status": "rejected",
+  "createdAtUtc": "2026-07-16T13:06:05.805Z",
+  "completedAtUtc": "2026-07-16T13:06:07.939Z",
+  "inputReceiptIds": [],
+  "inputHashes": {
+    "evalCases": "a2a0b484a8f329cd2935c5b3e73df4bc0f3068adac7a8a50baba01de73c38c12",
+    "sourceConfig": "e14f378901a37d07b275e5899d2733aeb4363abdb48748bd8b32714f25d9becb",
+    "sourceGenerationInputs": "87536182dd3c1e804ff8c308a50b6100d20531ec003e45ba615c97a88c493aed",
+    "sourceLicense": "9509b94e411ef77117514268f8338d40fa76287a506a957025e97e266e9fb450",
+    "sourceModel": "233815ace7c2e3ecc94e9575aed9f1c5dc6935d126f6c13a7586ad28ae25ddc6",
+    "sourceTokenizer": "4ce5f0768574d7224669ee2192ce9b45394b64df3d6e7ea7e36f8ee2d3a9d6d8",
+    "sourceTokenizerConfig": "943dfd301b34cffb5631a5a44a15a2466fba7fcf72ee2993d2ab5ac5e6b6acb8",
+    "systemPrompt": "ebca1447df1ef441245498fc6bf24269c1da92c5e537841e94141da4cba1a410"
+  },
+  "outputHashes": {
+    "assessment": "9606310664a31b879e701a5dd252d7bb2f28989c31a5eccb8f89a0f468352c3d",
+    "sourceScreen": "6062833ba90bcc4d0b14e51271aa83762ec8769cbf8939d70f5137c4c769031e"
+  },
+  "sourceRevision": "2f275b1127d59fc31e4f7c7426d528768ada9ea4",
+  "toolNames": [
+    "tinyrustlm-reference-raw-quality",
+    "tinyrustlm-source-model-screen-evidence"
+  ],
+  "toolVersions": [
+    "2",
+    "6"
+  ],
+  "toolBinaryHashes": [
+    "423a976031e03004b1178e5d313b86b85abfae87b8af1d88163e08d7fabdfaab",
+    "fbe0e6891fa226582a95474e5cf43b9b1cae23d98294050a2f5f3ef615ebc0df"
+  ],
+  "runtimeIdentifier": "win-x64",
+  "operatingSystem": "win32",
+  "architecture": "x64",
+  "hardwareEvidence": {
+    "device": "cpu",
+    "dtype": "float32",
+    "referenceFramework": "transformers.AutoModelForCausalLM.generate",
+    "torchVersion": "2.13.0+cpu",
+    "transformersVersion": "5.13.1"
+  },
+  "configurationHash": "35c6eccbe212f31feb1ba50cad2e4d021c2572c50f0e9d7b5c7168bf757ef3e6",
+  "publicSafeParameters": {
+    "modelId": "stabilityai/stablelm-2-zephyr-1_6b",
+    "sourceModelId": "stabilityai/stablelm-2-zephyr-1_6b",
+    "architectureFamily": "stablelm2-dense-full-mha-layernorm-partial-rope-untied-qkv-bias",
+    "runtimeAdmission": "unsupported-stablelm-layernorm-partial-rope-shape-source-quality-rejected",
+    "licenseDisposition": "stabilityai-non-commercial-research-license-production-authorization-required",
+    "decision": "rejected",
+    "decisionAuthority": "engineering-source-screen-v1",
+    "caseCount": 8,
+    "casesPassed": 2,
+    "casesFailed": 6,
+    "criticalFailureCount": 14,
+    "sourceModelIdentityKind": "direct-safetensors-sha256",
+    "sourceWeightArtifactCount": 1,
+    "sourceWeightByteCount": 3289069184,
+    "sourceGenerationArtifactCount": 7,
+    "sourceChatTemplateMode": "embedded-tokenizer-config",
+    "generationProfile": "source",
+    "samplingEnabled": false,
+    "rawOutputPreserved": true,
+    "generationCallCountPerCase": 1,
+    "responseRepairApplied": false
+  },
+  "boundedDiagnostics": {
+    "criticalFailureCodes": [
+      "answer-incomplete",
+      "underspecified-choice-missing-options",
+      "underspecified-choice-missing-decision-criteria",
+      "practical-decision-underdeveloped",
+      "unavailable-resource-ignored",
+      "feasible-fallback-absent",
+      "source-conflict-unresolved",
+      "authority-scope-misread",
+      "confirmation-step-absent",
+      "plan-date-not-provided",
+      "adult-comparison-one-sided",
+      "quoted-instruction-data-boundary-misapplied",
+      "over-refusal",
+      "current-task-not-completed"
+    ],
+    "failedCaseIndexes": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7
+    ],
+    "sourceScreenByteCount": 35579,
+    "assessmentByteCount": 3590
+  },
+  "blockerCode": "model_quality_rejected",
+  "externalEvidenceReferences": [
+    "https://huggingface.co/stabilityai/stablelm-2-zephyr-1_6b/tree/2f275b1127d59fc31e4f7c7426d528768ada9ea4",
+    "https://huggingface.co/stabilityai/stablelm-2-zephyr-1_6b/blob/2f275b1127d59fc31e4f7c7426d528768ada9ea4/README.md",
+    "https://huggingface.co/stabilityai/stablelm-2-zephyr-1_6b/blob/2f275b1127d59fc31e4f7c7426d528768ada9ea4/LICENSE",
+    "https://huggingface.co/stabilityai/stablelm-2-zephyr-1_6b/blob/2f275b1127d59fc31e4f7c7426d528768ada9ea4/config.json",
+    "https://huggingface.co/stabilityai/stablelm-2-zephyr-1_6b/blob/2f275b1127d59fc31e4f7c7426d528768ada9ea4/generation_config.json",
+    "https://huggingface.co/stabilityai/stablelm-2-zephyr-1_6b/blob/2f275b1127d59fc31e4f7c7426d528768ada9ea4/tokenizer_config.json",
+    "https://github.com/Stability-AI/StableLM",
+    "https://arxiv.org/abs/2305.18290"
+  ],
+  "redactionVersion": "tinyrustlm.public-receipt-redaction.v1",
+  "evidenceClass": "local",
+  "supersedesReceiptIds": [],
+  "attestationReference": null,
+  "receiptId": "sha256:402d753aa4a84f21c65f0d751d9036d3b3f35b5bdda42d9deae773372a9ef708",
+  "receiptContentHash": "402d753aa4a84f21c65f0d751d9036d3b3f35b5bdda42d9deae773372a9ef708"
+}

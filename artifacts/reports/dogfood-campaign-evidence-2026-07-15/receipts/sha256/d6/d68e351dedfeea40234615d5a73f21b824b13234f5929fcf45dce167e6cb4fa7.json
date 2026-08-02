@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "receiptType": "tinyrustlm.model-source-review-v1",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "phase": "model-source-review",
+  "attempt": 1,
+  "status": "rejected",
+  "createdAtUtc": "2026-07-18T17:19:54.954Z",
+  "completedAtUtc": "2026-07-18T17:19:54.955Z",
+  "inputReceiptIds": [],
+  "inputHashes": {
+    "config": "f0c12f25e72422f319f3d995b171b686adcc502811d6a4871851a0a410e7d325",
+    "evidenceSet": "b091ee64ea707fe84a2510cabc426974680a098c1c016776b91649c16b6a39da",
+    "generation-config": "6228bd42af4cfb741f38c5bfb05eebe129283ae138daf9209b926e363c19e548",
+    "license": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "model-card": "99d9d767545eeccff1689abda880980517c8d35ae698fce4002bc02c18dbf274",
+    "repository-tree": "676165754e7c96981b71c1e4dedf90f8245f5266dc351fe683d1657785e53095",
+    "sourceModel": "853ac1edd51009c46ce28e457a389ef69206b27e3b9734a43ae0644e766553ac",
+    "sourceWeight.000": "853ac1edd51009c46ce28e457a389ef69206b27e3b9734a43ae0644e766553ac",
+    "sourceWeightSet": "00a631aabeda870a2e9ad0bdc0fe5461dde51d4b3255877f132828122134e3e7",
+    "special-tokens-map": "60f4998edef989ba22a5eba0838fdce563b44fd6c75a22fc27967720541ff6ad",
+    "tokenizer-config": "859ddfb37cd6febfd2e3cf237ec952f91af1149db5b532849238e409aa50f576"
+  },
+  "outputHashes": {
+    "assessment": "c4423d9945f9dda5a990ce60b29ecf27b73e25e699c24e873d4e003fdba056e7"
+  },
+  "sourceRevision": "fbfaca89e5213c640dbb048ed169ac24213da338",
+  "toolNames": [
+    "tinyrustlm-source-model-preflight-evidence"
+  ],
+  "toolVersions": [
+    "6"
+  ],
+  "toolBinaryHashes": [
+    "d1218bbfe227bb906bf677883ba10f084c3777e3f8e6a9f36d010f457186d138"
+  ],
+  "runtimeIdentifier": "win-x64",
+  "operatingSystem": "win32",
+  "architecture": "x64",
+  "hardwareEvidence": {
+    "executionBoundary": "public-metadata-and-private-source-identity-review",
+    "physicalHardwareAttested": false
+  },
+  "configurationHash": "ce3ee5dd5edfec45c0e2b818cc2b999f952e828be58e633d5d3a302ca64aa829",
+  "publicSafeParameters": {
+    "modelId": "utter-project/EuroLLM-1.7B-Instruct",
+    "sourceModelId": "utter-project/EuroLLM-1.7B-Instruct",
+    "decision": "rejected",
+    "decisionAuthority": "engineering-source-preflight-v2",
+    "architectureFamily": "llama-dense-gqa-untied-bf16",
+    "runtimeAdmission": "not-assessed-preflight-rejected",
+    "accessDisposition": "public-ungated-source-acquired-private-review-only",
+    "licenseId": "apache-2.0",
+    "licenseDisposition": "apache-2.0-card-declaration-no-bundled-license-review-required",
+    "distributionDisposition": "not-assessed-preflight-rejected",
+    "sourceAcquisitionStatus": "complete",
+    "sourceAcquisitionComplete": true,
+    "sourceModelIdentityKind": "direct-safetensors-sha256",
+    "sourceWeightArtifactCount": 1,
+    "sourceWeightByteCount": 3313726248,
+    "evidenceArtifactCount": 7,
+    "missingRequiredArtifactCount": 0,
+    "rejectionCodeCount": 4
+  },
+  "boundedDiagnostics": {
+    "rejectionCodes": [
+      "publisher-chat-template-card-serialization-conflict",
+      "publisher-chat-template-generation-prefix-absent",
+      "publisher-generation-stop-token-conflict",
+      "source-screen-conversation-contract-incomplete"
+    ],
+    "missingRequiredArtifacts": [],
+    "evidenceByteCount": 76522,
+    "sourceWeightArtifactCount": 1,
+    "sourceWeightByteCount": 3313726248
+  },
+  "blockerCode": "candidate_source_conversation_contract_rejected",
+  "externalEvidenceReferences": [
+    "https://huggingface.co/utter-project/EuroLLM-1.7B-Instruct/tree/fbfaca89e5213c640dbb048ed169ac24213da338",
+    "https://huggingface.co/utter-project/EuroLLM-1.7B-Instruct/blob/fbfaca89e5213c640dbb048ed169ac24213da338/README.md",
+    "https://huggingface.co/utter-project/EuroLLM-1.7B-Instruct/blob/fbfaca89e5213c640dbb048ed169ac24213da338/config.json",
+    "https://huggingface.co/utter-project/EuroLLM-1.7B-Instruct/blob/fbfaca89e5213c640dbb048ed169ac24213da338/generation_config.json",
+    "https://huggingface.co/utter-project/EuroLLM-1.7B-Instruct/blob/fbfaca89e5213c640dbb048ed169ac24213da338/special_tokens_map.json",
+    "https://huggingface.co/utter-project/EuroLLM-1.7B-Instruct/blob/fbfaca89e5213c640dbb048ed169ac24213da338/tokenizer_config.json",
+    "https://huggingface.co/api/models/utter-project/EuroLLM-1.7B-Instruct/revision/fbfaca89e5213c640dbb048ed169ac24213da338",
+    "https://arxiv.org/abs/2409.16235",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ],
+  "redactionVersion": "tinyrustlm.public-receipt-redaction.v1",
+  "evidenceClass": "local",
+  "supersedesReceiptIds": [],
+  "attestationReference": null,
+  "receiptId": "sha256:d68e351dedfeea40234615d5a73f21b824b13234f5929fcf45dce167e6cb4fa7",
+  "receiptContentHash": "d68e351dedfeea40234615d5a73f21b824b13234f5929fcf45dce167e6cb4fa7"
+}

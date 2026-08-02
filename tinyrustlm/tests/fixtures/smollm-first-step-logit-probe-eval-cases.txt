@@ -1,0 +1,23 @@
+# TinyRustLM first-step logit differential probe
+
+tinyrustlm_eval_cases_version=1
+scope=first-step-logit-development-probe
+quality_gate_policy=honest-assistant-quality-v1
+quality_boundary=single-token diagnostic output only and never assistant-quality evidence
+safety_review_status=pass
+quality_decision=evaluation-only-not-for-admission
+evaluator=tinyrustlm-native-eval-runner
+eval_summary=Cases intentionally generate one token so diagnostics can be compared with the source checkpoint first-step logits.
+case_count=3
+
+case.0.prompt=test
+case.0.max_new_tokens=1
+case.0.required_result=quality
+
+case.1.prompt=What is 2 + 2? Explain the answer briefly.
+case.1.max_new_tokens=1
+case.1.required_result=quality
+
+case.2.prompt=Explain this Rust function in plain English: fn is_even(n: u32) -> bool { n % 2 == 0 }
+case.2.max_new_tokens=1
+case.2.required_result=quality

@@ -1,0 +1,677 @@
+{
+  "schema": "tinyrustlm.atomic_composition_activation_preregistration.v1",
+  "experimentId": "atomic-specialist-composition-activation-20260725",
+  "status": "preregistered-no-runtime-authority",
+  "scope": {
+    "purpose": "Freeze one clean-slate atomic composition graph, activation, and composition-bound KV invalidation contract before replacing mutable adapter application.",
+    "preReleaseRewrite": true,
+    "legacyCompatibility": false,
+    "acceptedLegacyMagics": [],
+    "rejectedLegacyMagics": [
+      "ADP1",
+      "ASP1",
+      "ALR1"
+    ],
+    "mutableBaseTensorUpdatesPermitted": false,
+    "runtimeImplementationClaimed": false,
+    "runtimeActivationClaimed": false,
+    "wasmIntegrationClaimed": false,
+    "browserIntegrationClaimed": false,
+    "modelQualityClaimed": false,
+    "releaseClaimed": false
+  },
+  "wireFormat": {
+    "name": "Atomic Composition Graph",
+    "magic": "ACG1",
+    "version": 1,
+    "byteOrder": "little-endian",
+    "headerLength": 512,
+    "memberEntryLength": 128,
+    "alignment": 64,
+    "maximumMemberCount": 64,
+    "maximumBundleBytes": 536870912,
+    "flags": {
+      "value": 0,
+      "unknownBits": "reject"
+    },
+    "acceptedCompositionSemantics": [
+      {
+        "name": "base-only",
+        "tag": 0,
+        "memberRule": "exactly-zero"
+      },
+      {
+        "name": "additive",
+        "tag": 1,
+        "memberRule": "one-through-64"
+      }
+    ],
+    "rejectedCompositionSemantics": [
+      "replacement",
+      "sequential",
+      "dependent"
+    ],
+    "memberArtifactMagic": "SLO1",
+    "bundleIdentity": "caller-supplied-SHA-256-over-every-exact-ACG1-byte",
+    "unknownValuePolicy": "reject",
+    "trailingBytePolicy": "reject"
+  },
+  "headerFields": [
+    {
+      "name": "magic",
+      "offset": 0,
+      "length": 4,
+      "type": "ascii",
+      "rule": "exactly-ACG1"
+    },
+    {
+      "name": "formatVersion",
+      "offset": 4,
+      "length": 4,
+      "type": "u32",
+      "rule": "exactly-1"
+    },
+    {
+      "name": "headerLength",
+      "offset": 8,
+      "length": 4,
+      "type": "u32",
+      "rule": "exactly-512"
+    },
+    {
+      "name": "flags",
+      "offset": 12,
+      "length": 4,
+      "type": "u32",
+      "rule": "exactly-zero"
+    },
+    {
+      "name": "compositionSemantics",
+      "offset": 16,
+      "length": 4,
+      "type": "u32",
+      "rule": "zero-base-only-or-one-additive"
+    },
+    {
+      "name": "memberCount",
+      "offset": 20,
+      "length": 4,
+      "type": "u32",
+      "rule": "zero-for-base-only-or-one-through-64-for-additive"
+    },
+    {
+      "name": "memberEntryLength",
+      "offset": 24,
+      "length": 4,
+      "type": "u32",
+      "rule": "exactly-128"
+    },
+    {
+      "name": "reserved0",
+      "offset": 28,
+      "length": 4,
+      "type": "bytes",
+      "rule": "all-zero"
+    },
+    {
+      "name": "directoryOffset",
+      "offset": 32,
+      "length": 8,
+      "type": "u64",
+      "rule": "exactly-512"
+    },
+    {
+      "name": "payloadOffset",
+      "offset": 40,
+      "length": 8,
+      "type": "u64",
+      "rule": "exactly-512-plus-memberCount-times-128"
+    },
+    {
+      "name": "totalByteCount",
+      "offset": 48,
+      "length": 8,
+      "type": "u64",
+      "rule": "exact-file-length-aligned-to-64-and-no-more-than-536870912"
+    },
+    {
+      "name": "baseModelBytes",
+      "offset": 56,
+      "length": 8,
+      "type": "u64",
+      "rule": "positive-exact-loaded-model-byte-count"
+    },
+    {
+      "name": "baseModelSha256",
+      "offset": 64,
+      "length": 32,
+      "type": "digest",
+      "rule": "exact-loaded-model-SHA-256"
+    },
+    {
+      "name": "baseStandaloneTypedId",
+      "offset": 96,
+      "length": 40,
+      "type": "padded-typed-id",
+      "rule": "standalone-tag-one-plus-seven-zero-bytes-plus-full-content-digest"
+    },
+    {
+      "name": "tokenizerSha256",
+      "offset": 136,
+      "length": 32,
+      "type": "digest",
+      "rule": "exact-nonzero-execution-binding"
+    },
+    {
+      "name": "chatTemplateSha256",
+      "offset": 168,
+      "length": 32,
+      "type": "digest",
+      "rule": "exact-nonzero-execution-binding"
+    },
+    {
+      "name": "tensorLayoutSha256",
+      "offset": 200,
+      "length": 32,
+      "type": "digest",
+      "rule": "exact-nonzero-execution-binding"
+    },
+    {
+      "name": "quantizationProfileSha256",
+      "offset": 232,
+      "length": 32,
+      "type": "digest",
+      "rule": "exact-nonzero-execution-binding"
+    },
+    {
+      "name": "executionProfileSha256",
+      "offset": 264,
+      "length": 32,
+      "type": "digest",
+      "rule": "exact-nonzero-execution-binding"
+    },
+    {
+      "name": "compositionTypedId",
+      "offset": 296,
+      "length": 40,
+      "type": "padded-typed-id",
+      "rule": "composition-tag-three-plus-seven-zero-bytes-plus-full-content-digest"
+    },
+    {
+      "name": "routePolicyTypedId",
+      "offset": 336,
+      "length": 40,
+      "type": "padded-typed-id",
+      "rule": "route-policy-tag-five-plus-seven-zero-bytes-plus-full-content-digest"
+    },
+    {
+      "name": "kvFormatTypedId",
+      "offset": 376,
+      "length": 40,
+      "type": "padded-typed-id",
+      "rule": "kv-format-tag-six-plus-seven-zero-bytes-plus-full-content-digest"
+    },
+    {
+      "name": "positionPolicySha256",
+      "offset": 416,
+      "length": 32,
+      "type": "digest",
+      "rule": "exact-runtime-supported-position-policy"
+    },
+    {
+      "name": "incrementalSpecialistBytes",
+      "offset": 448,
+      "length": 8,
+      "type": "u64",
+      "rule": "exact-sum-of-canonical-member-package-bytes"
+    },
+    {
+      "name": "logicalCompositionBytes",
+      "offset": 456,
+      "length": 8,
+      "type": "u64",
+      "rule": "exact-baseModelBytes-plus-incrementalSpecialistBytes"
+    },
+    {
+      "name": "activeGraphDigest",
+      "offset": 464,
+      "length": 32,
+      "type": "digest",
+      "rule": "domain-separated-digest-of-composition-route-kv-format-and-position-policy"
+    },
+    {
+      "name": "reserved1",
+      "offset": 496,
+      "length": 16,
+      "type": "bytes",
+      "rule": "all-zero"
+    }
+  ],
+  "memberFields": [
+    {
+      "name": "adapterTypedId",
+      "offset": 0,
+      "length": 40,
+      "type": "padded-typed-id",
+      "rule": "strictly-increasing-base-dependent-adapter-tag-two-identity"
+    },
+    {
+      "name": "packageSha256",
+      "offset": 40,
+      "length": 32,
+      "type": "digest",
+      "rule": "SHA-256-over-every-exact-embedded-SLO1-byte"
+    },
+    {
+      "name": "packageOffset",
+      "offset": 72,
+      "length": 8,
+      "type": "u64",
+      "rule": "payloadOffset-for-first-member-or-exact-prior-package-end"
+    },
+    {
+      "name": "packageBytes",
+      "offset": 80,
+      "length": 8,
+      "type": "u64",
+      "rule": "positive-multiple-of-64-and-exact-embedded-SLO1-length"
+    },
+    {
+      "name": "targetCount",
+      "offset": 88,
+      "length": 4,
+      "type": "u32",
+      "rule": "exact-parsed-SLO1-target-count"
+    },
+    {
+      "name": "maximumFactorRank",
+      "offset": 92,
+      "length": 4,
+      "type": "u32",
+      "rule": "exact-maximum-parsed-SLO1-factor-rank"
+    },
+    {
+      "name": "reserved",
+      "offset": 96,
+      "length": 32,
+      "type": "bytes",
+      "rule": "all-zero"
+    }
+  ],
+  "identityAndCacheEncoding": {
+    "activeGraphDomain": "tinyrustlm.runtime.active-composition.v1",
+    "activeGraphFieldOrder": [
+      "contentVersionU32",
+      "compositionTypedId",
+      "routePolicyTypedId",
+      "kvFormatTypedId",
+      "positionPolicySha256"
+    ],
+    "promptTokenDomain": "tinyrustlm.content.prompt-token-sequence.v1",
+    "promptTokenFieldOrder": [
+      "contentVersionU32",
+      "tokenCountU32",
+      "tokenIdsU32LittleEndian"
+    ],
+    "kvCacheKeyDomain": "tinyrustlm.content.kv-cache-key.v1",
+    "kvCacheKeyFieldOrder": [
+      "contentVersionU32",
+      "compositionTypedId",
+      "tokenizerSha256",
+      "chatTemplateSha256",
+      "positionPolicySha256",
+      "kvFormatTypedId",
+      "promptTokenSha256",
+      "executionProfileSha256"
+    ],
+    "typedIdWireEncoding": "one-kind-byte-followed-by-seven-zero-padding-bytes-and-32-digest-bytes",
+    "identityMaterialTypedIdEncoding": "one-kind-byte-followed-immediately-by-32-digest-bytes"
+  },
+  "runtimeDescriptors": {
+    "kvFormat": {
+      "exactUtf8": "tinyrustlm.kv-format.f32-layer-major.v1\nkeys=f32-le\nvalues=f32-le\nlayout=layer-position-head-dimension\ncommit=all-layers-per-position\n",
+      "byteCount": 134,
+      "sha256": "f6e3f0a2f58a5b39220fcc0d55a523e576b7788f14d34276b4328850e39f1cb5",
+      "typedId": "kv-format-sha256-0d23cdfedf48081bde5a7e1f579c204ca17b1f933fb509c7f1740c0e40efc04e"
+    },
+    "positionPolicy": {
+      "exactUtf8": "tinyrustlm.position-policy.absolute-rope-no-window.v1\norigin=zero\nreuse=exact-prefix\n",
+      "byteCount": 85,
+      "sha256": "8b9113627c9f0ffab6fd33ad109766c5d8bb198be5d8a0da5bcc401209f944aa"
+    }
+  },
+  "validationRules": [
+    "Verify the caller-supplied full ACG1 SHA-256 before parsing any identity or package.",
+    "Validate every header, identity, member, package, allocation bound, and byte-accounting field before publishing a prospective graph.",
+    "Recompute the standalone identity from the exact loaded model byte count, model SHA-256, and all five execution bindings.",
+    "Require the ACG1 base model byte count and SHA-256 to equal the already loaded immutable model.",
+    "Accept only base-only with zero members or additive with one through 64 canonical SLO1 members.",
+    "Recompute every base-dependent adapter identity from exact package bytes and require strictly increasing full typed member identities.",
+    "Recompute the composition identity and require exact agreement with the declared composition typed identity.",
+    "Require the route-policy typed identity to be nonzero and correctly typed; route-policy bytes and quality authority remain control-plane admission inputs rather than runtime inventions.",
+    "Require the KV-format identity and position-policy digest to equal the exact runtime-supported descriptors.",
+    "Recompute incremental and logical byte counts with checked arithmetic and reject any omitted base or member bytes.",
+    "Reject gaps, overlaps, aliases, external package references, compression, nonzero padding, unknown fields, or trailing bytes.",
+    "Parse and fully validate every embedded SLO1 package against the prospective base before allocating activation scratch.",
+    "Allocate the complete immutable graph handle and maximum-rank scratch before the serialized commit point.",
+    "A failure before commit leaves the old graph handle, old scratch, prompt tokens, generated tokens, exact-prefix authority, and KV cache unchanged.",
+    "A successful activation with a different activeGraphDigest clears every token and KV position before another token can execute.",
+    "Reactivating the exact same activeGraphDigest is idempotent and may preserve KV only when the full prompt-bound KV key also matches.",
+    "No attention-frozen, MLP-only, layer-role, or target-tensor declaration grants cross-composition cache reuse.",
+    "The runtime generation path snapshots one immutable reference-counted graph handle and cannot observe a partially built or mixed graph.",
+    "Package validation and graph activation do not establish specialist training provenance, routing quality, model quality, browser behavior, or release fitness."
+  ],
+  "activationStateMachine": {
+    "states": [
+      "model-loaded-no-active-composition",
+      "building-prospective-graph",
+      "active-base-only",
+      "active-additive",
+      "model-freed"
+    ],
+    "buildOrder": [
+      "verify-bundle-hash-and-envelope",
+      "recompute-base-and-runtime-bindings",
+      "parse-all-members",
+      "recompute-composition-and-active-graph-identities",
+      "allocate-complete-reference-counted-graph",
+      "allocate-maximum-rank-scratch",
+      "commit-one-serialized-swap"
+    ],
+    "sameGraph": "idempotent-no-op-preserving-current-cache-key",
+    "differentGraph": "atomic-swap-then-full-token-and-kv-invalidation-before-next-token",
+    "failure": "preserve-complete-prior-active-state",
+    "midGenerationSwitch": "serialized-runtime-rejects-or-defers-before-commit-without-hidden-restart",
+    "modelFree": "drop-active-handle-scratch-tokens-and-entire-kv-allocation"
+  },
+  "kvIsolationContract": {
+    "owner": "exact-activeGraphDigest",
+    "sequenceKey": "full-domain-separated-kv-cache-key-over-exact-retained-token-sequence",
+    "hitRequirements": [
+      "activeGraphDigest-equality",
+      "composition-typed-id-equality",
+      "tokenizer-digest-equality",
+      "chat-template-digest-equality",
+      "position-policy-digest-equality",
+      "kv-format-typed-id-equality",
+      "prompt-token-sequence-digest-equality",
+      "execution-profile-digest-equality",
+      "exact-retained-token-prefix-equality",
+      "cache-length-equality"
+    ],
+    "fullFlushEvents": [
+      "different-composition-activation",
+      "different-route-bound-active-graph-activation",
+      "different-kv-format-or-position-policy-activation",
+      "context-reset",
+      "generation-failure",
+      "cancellation",
+      "model-replacement",
+      "model-free"
+    ],
+    "crossCompositionReuse": false,
+    "partialPageReuse": false,
+    "attentionFrozenShortcut": false
+  },
+  "testVector": {
+    "base": {
+      "modelBytes": 4096,
+      "modelSha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "standaloneTypedId": "model-sha256-49e7f315aa18de68b1cf706c24b950aff32d746ed6e315646845c62a94582b13",
+      "tokenizerSha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "chatTemplateSha256": "4444444444444444444444444444444444444444444444444444444444444444",
+      "tensorLayoutSha256": "5555555555555555555555555555555555555555555555555555555555555555",
+      "quantizationProfileSha256": "6666666666666666666666666666666666666666666666666666666666666666",
+      "executionProfileSha256": "7777777777777777777777777777777777777777777777777777777777777777"
+    },
+    "routePolicy": {
+      "exactUtf8": "{\"fallback\":\"champion\",\"selection\":\"explicit-before-generation\",\"version\":1}\n",
+      "byteCount": 77,
+      "sha256": "9cda9224e2dd71555ef408fc0beb0278a81c475cc476f554962ef73e1de94587",
+      "typedId": "route-sha256-f859e0936d99114925da9157e237a8c5c9a40c2c78ff54f80c592844bdcd87c1"
+    },
+    "modelTensors": [
+      {
+        "nameHashHex": "0000000000000001",
+        "dtype": 1,
+        "rank": 2,
+        "dim0": 1,
+        "dim1": 1,
+        "dim2": 1,
+        "dim3": 1,
+        "blockSize": 0
+      },
+      {
+        "nameHashHex": "0000000000000002",
+        "dtype": 1,
+        "rank": 2,
+        "dim0": 1,
+        "dim1": 1,
+        "dim2": 1,
+        "dim3": 1,
+        "blockSize": 0
+      },
+      {
+        "nameHashHex": "0000000000000003",
+        "dtype": 1,
+        "rank": 2,
+        "dim0": 1,
+        "dim1": 1,
+        "dim2": 1,
+        "dim3": 1,
+        "blockSize": 0
+      },
+      {
+        "nameHashHex": "0000000000000004",
+        "dtype": 1,
+        "rank": 2,
+        "dim0": 1,
+        "dim1": 1,
+        "dim2": 1,
+        "dim3": 1,
+        "blockSize": 0
+      },
+      {
+        "nameHashHex": "0000000000000005",
+        "dtype": 1,
+        "rank": 2,
+        "dim0": 1,
+        "dim1": 1,
+        "dim2": 1,
+        "dim3": 1,
+        "blockSize": 0
+      },
+      {
+        "nameHashHex": "0000000000000006",
+        "dtype": 1,
+        "rank": 2,
+        "dim0": 1,
+        "dim1": 1,
+        "dim2": 1,
+        "dim3": 1,
+        "blockSize": 0
+      },
+      {
+        "nameHashHex": "0000000000000007",
+        "dtype": 1,
+        "rank": 2,
+        "dim0": 1,
+        "dim1": 1,
+        "dim2": 1,
+        "dim3": 1,
+        "blockSize": 0
+      },
+      {
+        "nameHashHex": "0123456789abcdef",
+        "dtype": 1,
+        "rank": 2,
+        "dim0": 3,
+        "dim1": 8,
+        "dim2": 1,
+        "dim3": 1,
+        "blockSize": 0
+      }
+    ],
+    "overlays": [
+      {
+        "name": "A",
+        "packageBytes": 576,
+        "packageSha256": "2fed8956c4a4bc361d79c0296c5567fd36de43698266622437077934c3c00537",
+        "factorPayloadSha256": "dbeca01321757007acb3edec02653d6922e40388289c148131696bc7e461feee",
+        "adapterTypedId": "adapter-sha256-b1cec6ce9e04032c2a27598313b0e48512ed074823da4e75a1e93e2538d8ba1a",
+        "targetCount": 1,
+        "maximumFactorRank": 2,
+        "packageHex": "534c4f3101000000400100000000000001000000800000004001000000000000c001000000000000400200000000000001000000010000000100000001000000111111111111111111111111111111111111111111111111111111111111111149e7f315aa18de68b1cf706c24b950aff32d746ed6e315646845c62a94582b1333333333333333333333333333333333333333333333333333333333333333334444444444444444444444444444444444444444444444444444444444444444555555555555555555555555555555555555555555555555555555555555555566666666666666666666666666666666666666666666666666666666666666667777777777777777777777777777777777777777777777777777777777777777000000000000000000000000000000000000000000000000000000000000000007000000020000000300000008000000efcdab8967452301010000000000000002000000030000000800000000000000000000000000003fc0010000000000001800000000000000d8010000000000004000000000000000dbeca01321757007acb3edec02653d6922e40388289c148131696bc7e461feee00000000000000000000803f000000bf0000803e0000003f0000c03f000080bf0000803e000000bf0000803f000000000000003f000080be00000040000080bf000080bf0000003f0000803e00000040000000bf0000803f0000c0bf0000803e00000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "name": "B",
+        "packageBytes": 512,
+        "packageSha256": "13ec97fbd998f28bdd6d1469bd3e571c0bf46d4f862faead825b3b1376386274",
+        "factorPayloadSha256": "bcd8691f2b5780c5fc0cd93bba533c96ed87ca224b75cbf2d0ec27bbb19901d7",
+        "adapterTypedId": "adapter-sha256-af22b3ee54b75ad065438fa9f979607781375950f21df552004c65901924581a",
+        "targetCount": 1,
+        "maximumFactorRank": 1,
+        "packageHex": "534c4f3101000000400100000000000001000000800000004001000000000000c001000000000000000200000000000001000000010000000100000001000000111111111111111111111111111111111111111111111111111111111111111149e7f315aa18de68b1cf706c24b950aff32d746ed6e315646845c62a94582b1333333333333333333333333333333333333333333333333333333333333333334444444444444444444444444444444444444444444444444444444444444444555555555555555555555555555555555555555555555555555555555555555566666666666666666666666666666666666666666666666666666666666666667777777777777777777777777777777777777777777777777777777777777777000000000000000000000000000000000000000000000000000000000000000007000000010000000300000008000000efcdab896745230101000000000000000200000003000000080000000000000000000000000080bec0010000000000000c00000000000000cc010000000000002000000000000000bcd8691f2b5780c5fc0cd93bba533c96ed87ca224b75cbf2d0ec27bbb19901d700000000000000000000003f000080bf000000400000803f00000000000000bf0000803e0000803f000080bf0000003f000000000000000000000000000000000000000000000000"
+      }
+    ],
+    "compositions": [
+      {
+        "name": "base",
+        "semantics": "base-only",
+        "memberNames": [],
+        "canonicalMemberTypedIds": [],
+        "compositionTypedId": "composition-sha256-b6661a72a7e1ee5b1bf5fd67d2fff5611cb87734284f4c29228b77f246930069",
+        "incrementalSpecialistBytes": 0,
+        "logicalCompositionBytes": 4096,
+        "bundleBytes": 512,
+        "bundleSha256": "187b6e61e44c44da79f56028fcd170422e9ad187187dd36a505acfc8a78ebd61",
+        "activeGraphDigest": "19e095163cc92f81de7c8e545f0252f832f94a3c835399952bb37aa48c676e3c"
+      },
+      {
+        "name": "A",
+        "semantics": "additive",
+        "memberNames": [
+          "A"
+        ],
+        "canonicalMemberTypedIds": [
+          "adapter-sha256-b1cec6ce9e04032c2a27598313b0e48512ed074823da4e75a1e93e2538d8ba1a"
+        ],
+        "compositionTypedId": "composition-sha256-5f8139a664f9c3822ff90717acbffed1d3f4d5c9d7c31251ff50e282e8314f20",
+        "incrementalSpecialistBytes": 576,
+        "logicalCompositionBytes": 4672,
+        "bundleBytes": 1216,
+        "bundleSha256": "31770599ecce944fffba1f76ea1d2a97987c6ea44083e06be8db575bf6906651",
+        "activeGraphDigest": "91c97085f9c72ef82e665ea164dd2201e108c13303c3d8b04fb9e6e7b516ecbf"
+      },
+      {
+        "name": "B",
+        "semantics": "additive",
+        "memberNames": [
+          "B"
+        ],
+        "canonicalMemberTypedIds": [
+          "adapter-sha256-af22b3ee54b75ad065438fa9f979607781375950f21df552004c65901924581a"
+        ],
+        "compositionTypedId": "composition-sha256-9ab6eeea6e764e66aee4684f13962bcdced237a96d5de7c1ebfa31c774535673",
+        "incrementalSpecialistBytes": 512,
+        "logicalCompositionBytes": 4608,
+        "bundleBytes": 1152,
+        "bundleSha256": "8e9f41dae4003fbee6848d8d2f8cb637f95509da2d0069c678b5be6999366f9d",
+        "activeGraphDigest": "c1ca9c45a3d4586b6902e2cb02bbf72ad892b11efab624537c1ab518ae01929d"
+      },
+      {
+        "name": "A+B",
+        "semantics": "additive",
+        "memberNames": [
+          "B",
+          "A"
+        ],
+        "canonicalMemberTypedIds": [
+          "adapter-sha256-af22b3ee54b75ad065438fa9f979607781375950f21df552004c65901924581a",
+          "adapter-sha256-b1cec6ce9e04032c2a27598313b0e48512ed074823da4e75a1e93e2538d8ba1a"
+        ],
+        "compositionTypedId": "composition-sha256-8ebf965c84bd1b25b60a25c8103d7143d06637fbf60885aee58a15f3f5024e11",
+        "incrementalSpecialistBytes": 1088,
+        "logicalCompositionBytes": 5184,
+        "bundleBytes": 1856,
+        "bundleSha256": "f47e006ddcf84b2f16b0b01e5c39aeaedca237d660f164b1f473eab61c9e1d00",
+        "activeGraphDigest": "7e2ac7704ccc282a0704c4fd52cac034f21ddd55738fac33254201e3c2559870"
+      }
+    ],
+    "promptSequence": {
+      "tokens": [
+        1,
+        2,
+        3
+      ],
+      "materialHex": "74696e79727573746c6d2e636f6e74656e742e70726f6d70742d746f6b656e2d73657175656e63652e7631000100000003000000010000000200000003000000",
+      "sha256": "5ab9dd20e2a1eb98f6e43b7a1da7852f636a55f0dce83fd497ae40093b8c9a5c",
+      "compositionAKvCacheKey": "a65fd1bf85619d74439c70897667e52e24189afb0763c51c415ab222a01d7d86"
+    },
+    "switchingSequence": {
+      "states": [
+        "base",
+        "A",
+        "base",
+        "B",
+        "base",
+        "A+B",
+        "base"
+      ],
+      "repeatCount": 100,
+      "failedActivationPreservesPriorGraphAndKv": true,
+      "differentActiveGraphFlushesEntireKv": true,
+      "sameActiveGraphIsIdempotent": true,
+      "baseMutationAllowed": false,
+      "driftAllowed": false
+    }
+  },
+  "rejectionMutations": [
+    "wrong-magic",
+    "unsupported-version",
+    "nonzero-flags-or-reserved-byte",
+    "unknown-or-order-sensitive-composition-semantics",
+    "invalid-member-cardinality",
+    "member-count-over-limit",
+    "wrong-header-or-entry-length",
+    "wrong-directory-or-payload-offset",
+    "wrong-total-byte-count-or-trailing-byte",
+    "wrong-caller-supplied-bundle-hash",
+    "loaded-model-byte-count-or-hash-mismatch",
+    "base-identity-or-execution-binding-mismatch",
+    "wrong-composition-route-or-runtime-descriptor-identity",
+    "wrong-active-graph-digest",
+    "wrong-logical-or-incremental-byte-count",
+    "unsorted-or-duplicate-member-identity",
+    "member-gap-overlap-alias-or-out-of-bounds-range",
+    "member-byte-count-not-aligned",
+    "member-package-hash-mismatch",
+    "member-target-count-or-maximum-rank-mismatch",
+    "embedded-SLO1-validation-failure",
+    "allocation-failure-before-commit",
+    "activation-request-during-generation",
+    "unknown-manifest-field",
+    "authority-inflation"
+  ],
+  "authority": {
+    "activationContractFrozen": true,
+    "bundleParserImplemented": false,
+    "independentJavascriptBinaryOracleVerified": false,
+    "referenceCountedGraphImplemented": false,
+    "atomicSwapVerified": false,
+    "additiveGenerationPathVerified": false,
+    "baseReturnVerified": false,
+    "switchingDriftVerified": false,
+    "compositionKvIsolationVerified": false,
+    "nativeVerified": false,
+    "wasmVerified": false,
+    "browserVerified": false,
+    "productIntegrationVerified": false,
+    "trainedSpecialistVerified": false,
+    "routerVerified": false,
+    "trainingAuthorized": false,
+    "modelAdoptionAuthorized": false,
+    "releaseAuthorized": false
+  },
+  "requiredNextGate": "Commit this preregistration before implementation, then build separately tested Rust and JavaScript ACG1 parsers, immutable reference-counted active graphs, scalar additive generation dispatch, exact prompt-token KV keys, atomic failure preservation, full composition-change cache invalidation, repeated switching proof, and only then remove the superseded mutable adapter runtime and browser path."
+}

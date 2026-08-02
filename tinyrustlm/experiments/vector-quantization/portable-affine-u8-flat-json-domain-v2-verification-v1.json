@@ -1,0 +1,186 @@
+{
+  "schema": "tinyrustlm.portable_affine_u8_flat_json_domain_v2_verification.v1",
+  "receiptType": "portable-affine-u8-flat-json-domain-v2-terminal-verification",
+  "experimentId": "portable-affine-u8-flat-json-domain-v2-20260726",
+  "status": "verified-terminal-instrumentation-failure",
+  "verifiedAtUtc": "2026-07-26T14:18:58.982Z",
+  "verificationSourceRevision": "76d8040cc21349f0a246f9c1d4917a083f5cf9e9",
+  "registrationCommit": "ff89d2149807925265c8598fc55f108a3af02e61",
+  "implementationCommit": "955bb48e110d51cff3303bcaae328155f6111483",
+  "attemptEvidenceCommit": "d6ba9db0753fa82da6763a8d08446350987980ef",
+  "verifierCommit": "76d8040cc21349f0a246f9c1d4917a083f5cf9e9",
+  "preregistrationSha256": "cd82f433d3588eb0527c2cc2c1fa945d5bf01dcd6909c50b20fb723b2f7f6782",
+  "inputs": [
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-json-domain-v2-preregistration.v1.json",
+      "bytes": 18686,
+      "sha256": "cd82f433d3588eb0527c2cc2c1fa945d5bf01dcd6909c50b20fb723b2f7f6782"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-json-domain-v2-preregistration.js",
+      "bytes": 26237,
+      "sha256": "df79a78972c9a21b75c54d398ecc9e0ee314df741ade86a5d93db8832282eed6"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-preregistration.v1.json",
+      "bytes": 21703,
+      "sha256": "76cccb8fe353847235f8ea1d647c6762677e19b8abe593b83f9733dfbfe6c06d"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-quality-number-domain-defect.v1.json",
+      "bytes": 7624,
+      "sha256": "15511b48c6b9027067eb3581fe05895073b9c4226af82a6ae29771030bb9e6e6"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-json-domain-v2-observation.js",
+      "bytes": 101762,
+      "sha256": "37e1681d28716f5477e86266a16da8219e286761067cfbad530591b50db0bd32"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-json-domain-v2-observation.test.js",
+      "bytes": 18153,
+      "sha256": "77ddccf853e14c9391c4192749cd20080bd77a1a0fdafc3d961955f58a7462ae"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-json-domain-v2-attempts/sha256/57/57b55282e8cee8bb6cc14e179d817755bc6d8bb4040e1c3f2219bf2b3581b6a7.json",
+      "bytes": 26425240,
+      "sha256": "8e6b3bc807e471150c0fb0ee74ba93bdcb169da770fd14308ba57eebea33df4d"
+    },
+    {
+      "path": "tinyrustlm/tools/campaign-evidence-store.js",
+      "bytes": 22717,
+      "sha256": "26850a67fda5bb8baea15bc2e6fb6f6d13d8244348804d0a20320c6f79ec96e3"
+    },
+    {
+      "path": "tinyrustlm/tools/durable-files.js",
+      "bytes": 2992,
+      "sha256": "be2b3157567161bbbff19f013f706e22b495fde81b6c90b0731ca9578170174f"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-portable-affine-u8-json-domain-v2-verification.js",
+      "bytes": 76310,
+      "sha256": "fc959a98e486b21d3e681afbe9b9b137e501499ebe285029099739bf46354fa0"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-portable-affine-u8-json-domain-v2-verification.test.js",
+      "bytes": 5342,
+      "sha256": "4e3f1bf1cd7822bafaf66456ce883744a9ff4f7ec0b90e1407399687ab756b60"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-experiment-isolation.test.js",
+      "bytes": 3555,
+      "sha256": "67a9601bce661d99e6ff2402be0ff24620f160a0ab090525219394212b3f96b8"
+    }
+  ],
+  "independentSummary": {
+    "attempt": {
+      "path": "tinyrustlm/experiments/vector-quantization/portable-affine-u8-flat-json-domain-v2-attempts/sha256/57/57b55282e8cee8bb6cc14e179d817755bc6d8bb4040e1c3f2219bf2b3581b6a7.json",
+      "bytes": 26425240,
+      "sha256": "8e6b3bc807e471150c0fb0ee74ba93bdcb169da770fd14308ba57eebea33df4d",
+      "attemptId": "portable-affine-u8-flat-json-domain-v2-attempt-57b55282e8cee8bb",
+      "attemptContentHash": "57b55282e8cee8bb6cc14e179d817755bc6d8bb4040e1c3f2219bf2b3581b6a7",
+      "sourceRevision": "955bb48e110d51cff3303bcaae328155f6111483",
+      "evidenceCommit": "d6ba9db0753fa82da6763a8d08446350987980ef",
+      "status": "fail-instrumentation-terminal",
+      "startedAtUtc": "2026-07-26T13:49:55.043Z",
+      "completedAtUtc": "2026-07-26T13:57:37.655Z"
+    },
+    "inputClosure": {
+      "sourceRevision": "955bb48e110d51cff3303bcaae328155f6111483",
+      "inputCount": 43,
+      "rawGitBlobMatchCount": 40,
+      "crlfCheckoutMatchCount": 3,
+      "checkoutTransformationLimitedToLfToCrlf": true,
+      "everyInputRehashedAtSourceRevision": true
+    },
+    "processSummary": {
+      "benchmarkProcessCount": 68,
+      "successfulBenchmarkProcessCount": 68,
+      "performanceBenchmarkProcessCount": 51,
+      "requiredPerformanceBenchmarkProcessCount": 60,
+      "memoryMonitorProcessCount": 51,
+      "successfulMemoryMonitorProcessCount": 50,
+      "failedMemoryMonitorOrdinal": 51,
+      "failedMemoryMonitorExitCode": 1,
+      "failedMemoryMonitorStderrBytes": 480,
+      "failedMemoryMonitorStderrSha256": "284357072c50546708b2ed3e6dbda93ab85dee339f6e6011c53340ab59f50f1d",
+      "rawProcessOutputPersisted": false,
+      "maximumParallelBenchmarkProcesses": 1
+    },
+    "retainedSummary": {
+      "runnerBoundary": {
+        "sourceRevision": "955bb48e110d51cff3303bcaae328155f6111483",
+        "runnerPath": "tinyrustlm/tools/vector-portable-affine-u8-json-domain-v2-observation.js",
+        "runnerGitBlobBytes": 101762,
+        "runnerGitBlobSha256": "37e1681d28716f5477e86266a16da8219e286761067cfbad530591b50db0bd32",
+        "terminalWriterCapabilitiesExported": false,
+        "outcomeCommandInvokedByVerifier": false
+      },
+      "v2RegressionPassed": true,
+      "nativeBuildAndChecksPassed": true,
+      "wasmBuildAndExecutionPassed": true,
+      "contractPassed": true,
+      "corruptionCasesPassed": 7,
+      "crashRecoveryScenariosPassed": 4,
+      "qualityProcessPassed": true,
+      "quality": {
+        "schema": "tinyrustlm.portable_affine_u8_quality_process.v2",
+        "qualityProcessOrdinal": 1,
+        "laneCount": 6,
+        "perQueryMetricCount": 790,
+        "scorePairCount": 76240,
+        "oracleResultCount": 76240,
+        "canonicalJsonBytes": 14753027,
+        "canonicalJsonSha256": "cd3fc37665b1d7ddca644393ac5b15e50c6267d22e9d5e0f3c8c7e15cc1e425e",
+        "numericDomainsValid": true,
+        "thresholdDecisionComputed": false
+      },
+      "performanceRecordsRetained": 0,
+      "performanceSummariesRetained": 0
+    },
+    "independentDecision": {
+      "terminalAttemptValid": true,
+      "maximumAttemptCount": 1,
+      "maximumRetryCount": 0,
+      "sameExperimentRetryAllowed": false,
+      "pendingJournalAbsent": true,
+      "observationAbsent": true,
+      "cleanupVerified": true,
+      "processEvidenceComplete": true,
+      "serializerDefectCrossed": true,
+      "qualityPayloadPresent": true,
+      "qualityPayloadParseable": true,
+      "qualityNumericDomainsValid": true,
+      "fullFrozenSuiteCompleted": false,
+      "performanceProcessCount": 51,
+      "requiredPerformanceProcessCount": 60,
+      "performanceSummariesPresent": false,
+      "qualityThresholdVerdictAvailable": false,
+      "performanceThresholdVerdictAvailable": false,
+      "boundedQualityClaimSupported": false,
+      "boundedPerformanceClaimSupported": false,
+      "productPromotionAllowed": false,
+      "trainingAuthorized": false,
+      "releaseAuthorized": false,
+      "campaignCounterMayBeIncremented": false
+    }
+  },
+  "authority": {
+    "portableAffineU8NumericalBehaviorMayBeClaimed": false,
+    "sameCorpusCompressedRankQualityMayBeClaimed": false,
+    "equalDynamicIndexByteCapacityUtilityMayBeClaimed": false,
+    "completeDynamicIndexByteReductionMayBeClaimed": false,
+    "nativeReferencePerformanceMayBeClaimed": false,
+    "nativeAndWasmDecisionParityMayBeClaimed": false,
+    "wrapperProcessCrashRecoveryMayBeClaimed": false,
+    "representativeSemanticMemoryQualityMayBeClaimed": false,
+    "browserPerformanceMayBeClaimed": false,
+    "productIntegrationMayBeClaimed": false,
+    "trainingMayBeAuthorized": false,
+    "releaseMayBeAuthorized": false,
+    "campaignCounterMayBeIncremented": false
+  },
+  "requiredNextGate": "Preserve this independently verified terminal v2 attempt without retry. The corrected serializer emitted a complete parseable quality payload, but the frozen full experiment stopped at memory monitor 51 and produced no performance summaries or threshold decision. Diagnose that monitor failure through non-outcome tests, then preregister a distinct experiment before any new outcome execution.",
+  "receiptId": "portable-affine-u8-flat-json-domain-v2-verification-bb719c0b993bfa75",
+  "receiptContentHash": "bb719c0b993bfa75188c0354416ddc424d7ff6ebebbd6b2e6f3a028e6b5feda0"
+}

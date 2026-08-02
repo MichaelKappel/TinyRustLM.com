@@ -1,0 +1,116 @@
+{
+  "schema": "tinyrustlm.source_model_preflight_assessment.v1",
+  "sourceModelId": "openbmb/MiniCPM4-0.5B",
+  "sourceRevision": "5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-preflight-v1",
+  "architectureFamily": "minicpm4-dense-gqa-longrope-custom-scaling-tied",
+  "runtimeAdmission": "not-assessed-preflight-rejected",
+  "accessDisposition": "public-ungated-metadata-only-no-source-acquisition",
+  "licenseId": "apache-2.0",
+  "licenseDisposition": "apache-2.0-metadata-linked-official-license",
+  "distributionDisposition": "not-assessed-preflight-rejected",
+  "blockerCode": "candidate_source_loader_contract_rejected",
+  "rejectionCodes": [
+    "custom-publisher-code-required",
+    "native-transformers-architecture-absent",
+    "source-screen-loader-contract-incompatible"
+  ],
+  "missingRequiredArtifacts": [
+    "added_tokens.json",
+    "config.json",
+    "configuration_minicpm.py",
+    "generation_config.json",
+    "model.safetensors",
+    "modeling_minicpm.py",
+    "special_tokens_map.json",
+    "tokenizer.json",
+    "tokenizer.model",
+    "tokenizer_config.json"
+  ],
+  "evidenceArtifacts": [
+    {
+      "kind": "config",
+      "fileName": "config.json",
+      "byteCount": 2403,
+      "sha256": "610c5b519420a3633ec4950c15a26d83ad0e9be35ef9d00a9e3d2b621b325f72",
+      "publicUrl": "https://huggingface.co/openbmb/MiniCPM4-0.5B/resolve/5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630/config.json",
+      "observedAtUtc": "2026-07-16T17:59:35.929Z"
+    },
+    {
+      "kind": "configuration",
+      "fileName": "configuration-minicpm.py",
+      "byteCount": 9660,
+      "sha256": "1e289912fdc0608ccad3983f4ff8b381ec8f161f45c85be4d694f92f17596b0a",
+      "publicUrl": "https://huggingface.co/openbmb/MiniCPM4-0.5B/resolve/5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630/configuration_minicpm.py",
+      "observedAtUtc": "2026-07-16T17:59:35.929Z"
+    },
+    {
+      "kind": "license",
+      "fileName": "license.txt",
+      "byteCount": 11335,
+      "sha256": "202d02b14796563546e1a1d1e761410fa9e399bf7e1b85d8b43c972658341202",
+      "publicUrl": "https://raw.githubusercontent.com/OpenBMB/MiniCPM/0fcc3d08330ee612d59d58e312a778ae78165d97/LICENSE",
+      "observedAtUtc": "2026-07-16T17:59:35.929Z"
+    },
+    {
+      "kind": "model-card",
+      "fileName": "model-card.md",
+      "byteCount": 11590,
+      "sha256": "9ecaf0591b47a7d2d94555f1e796afa032bdfe28cbd75ae1a20edc9c4cfa23b7",
+      "publicUrl": "https://huggingface.co/openbmb/MiniCPM4-0.5B/resolve/5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630/README.md",
+      "observedAtUtc": "2026-07-16T17:59:35.929Z"
+    },
+    {
+      "kind": "modeling",
+      "fileName": "modeling-minicpm.py",
+      "byteCount": 69994,
+      "sha256": "c646022c44d0e1cc1d149fb80422a5d5f1ba6de66dd0f525f2be1e18d99994bf",
+      "publicUrl": "https://huggingface.co/openbmb/MiniCPM4-0.5B/resolve/5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630/modeling_minicpm.py",
+      "observedAtUtc": "2026-07-16T17:59:35.929Z"
+    },
+    {
+      "kind": "repository-tree",
+      "fileName": "repository-tree.json",
+      "byteCount": 3146,
+      "sha256": "0638254a18a408b8668d28a980b183c3a2ae1f84a20f61f85a85f1102047a96a",
+      "publicUrl": "https://huggingface.co/api/models/openbmb/MiniCPM4-0.5B?blobs=true",
+      "observedAtUtc": "2026-07-16T17:59:35.929Z"
+    },
+    {
+      "kind": "safetensors-header",
+      "fileName": "safetensors-header.json",
+      "byteCount": 5845,
+      "sha256": "ef995b775414ae7312da1186d698a9d375c1e42eee87e15082b5feae708231d8",
+      "publicUrl": "https://huggingface.co/openbmb/MiniCPM4-0.5B/resolve/5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630/model.safetensors",
+      "observedAtUtc": "2026-07-16T18:01:20.532Z"
+    },
+    {
+      "kind": "tokenizer-config",
+      "fileName": "tokenizer-config.json",
+      "byteCount": 2835,
+      "sha256": "8bef75d59004eb0e62db89e97090d4736b14fd6c4a0282370c28833be1e83051",
+      "publicUrl": "https://huggingface.co/openbmb/MiniCPM4-0.5B/resolve/5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630/tokenizer_config.json",
+      "observedAtUtc": "2026-07-16T17:59:35.929Z"
+    },
+    {
+      "kind": "transformers-auto-config-registry",
+      "fileName": "transformers-5.13.1-auto-config.py",
+      "byteCount": 19425,
+      "sha256": "c1ff7fc0cb204cfdbe837993b7bba85aadec28254852c55fe32be997bdf1411a",
+      "publicUrl": "https://raw.githubusercontent.com/huggingface/transformers/v5.13.1/src/transformers/models/auto/configuration_auto.py",
+      "observedAtUtc": "2026-07-16T17:59:35.929Z"
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/openbmb/MiniCPM4-0.5B/tree/5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630",
+    "https://huggingface.co/openbmb/MiniCPM4-0.5B/blob/5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630/README.md",
+    "https://huggingface.co/openbmb/MiniCPM4-0.5B/blob/5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630/config.json",
+    "https://huggingface.co/openbmb/MiniCPM4-0.5B/blob/5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630/configuration_minicpm.py",
+    "https://huggingface.co/openbmb/MiniCPM4-0.5B/blob/5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630/modeling_minicpm.py",
+    "https://huggingface.co/openbmb/MiniCPM4-0.5B/blob/5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630/tokenizer_config.json",
+    "https://raw.githubusercontent.com/OpenBMB/MiniCPM/0fcc3d08330ee612d59d58e312a778ae78165d97/LICENSE",
+    "https://raw.githubusercontent.com/huggingface/transformers/v5.13.1/src/transformers/models/auto/configuration_auto.py",
+    "https://arxiv.org/abs/2506.07900"
+  ]
+}

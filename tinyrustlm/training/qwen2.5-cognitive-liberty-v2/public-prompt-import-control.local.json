@@ -1,0 +1,146 @@
+{
+  "schema": "tinyrustlm.public_prompt_import.v1",
+  "campaign_id": "qwen2.5-cognitive-liberty-v2-public-rehearsal-v2",
+  "dataset": {
+    "repo_id": "HuggingFaceTB/everyday-conversations-llama3.1-2k",
+    "revision": "14f543216b9ba42b6b951dc5bd199460d193b162",
+    "split": "train_sft",
+    "parquet_file": "D:/LLMs/TinyRustLM/datasets/HuggingFaceTB/everyday-conversations-llama3.1-2k/14f543216b9ba42b6b951dc5bd199460d193b162/data/train_sft-00000-of-00001.parquet",
+    "parquet_sha256": "sha256:4750214d12b4b92d07fca953e0b5cc59e313c575282d08b605c639aa87531daa",
+    "readme_file": "D:/LLMs/TinyRustLM/datasets/HuggingFaceTB/everyday-conversations-llama3.1-2k/14f543216b9ba42b6b951dc5bd199460d193b162/README.md",
+    "readme_sha256": "sha256:7c0b4d4c9c8de6651d3646d91e92638d46beb67f867f7200a996b72f2611d95a",
+    "license": "apache-2.0",
+    "dataset_url": "https://huggingface.co/datasets/HuggingFaceTB/everyday-conversations-llama3.1-2k/tree/14f543216b9ba42b6b951dc5bd199460d193b162"
+  },
+  "selection": {
+    "seed": 20260711,
+    "groups": [
+      {
+        "id": "everyday",
+        "topics": [
+          "Cooking",
+          "Education",
+          "Entertainment",
+          "Family",
+          "Fashion",
+          "Fitness",
+          "Food",
+          "Health",
+          "Hobbies",
+          "Home",
+          "Music",
+          "Pets",
+          "Shopping",
+          "Sleep",
+          "Sports",
+          "Technology",
+          "Transportation",
+          "Travel",
+          "Weather",
+          "Work"
+        ],
+        "records_per_topic": 20,
+        "task_family": "practical-judgment"
+      },
+      {
+        "id": "elementary-science",
+        "topics": [
+          "adaptation",
+          "animals",
+          "arts and music",
+          "astronomy",
+          "basic math concepts",
+          "chemistry basics",
+          "climate",
+          "colors",
+          "communication",
+          "community",
+          "culture",
+          "earth",
+          "ecosystems",
+          "energy",
+          "environmental science",
+          "everyday objects",
+          "food chains",
+          "forces",
+          "genetics and heredity",
+          "geography",
+          "geology",
+          "health and hygiene",
+          "history",
+          "human body",
+          "language",
+          "life cycles",
+          "light",
+          "magnets",
+          "matter",
+          "measurement",
+          "numbers",
+          "nutrition",
+          "physics basics",
+          "plants",
+          "pollution",
+          "seasons",
+          "shapes",
+          "simple machines",
+          "sound",
+          "space",
+          "sports and exercise",
+          "time",
+          "water cycle"
+        ],
+        "records_per_topic": 4,
+        "task_family": "factual-qa"
+      }
+    ],
+    "max_prompt_bytes": 4096,
+    "max_tokens": 160,
+    "near_duplicate_threshold": 0.82
+  },
+  "eval_exclusions": [
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-actionable-contract-eval-cases.txt",
+      "sha256": "sha256:50f3e7aa8e7ad25c24ddc9e67506c8d3bdb82c51d49469421b33ae1dc903ed73"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-completion-contract-eval-cases.txt",
+      "sha256": "sha256:851b454657a7f77d2f57334e60083625732b48fcfd7c5a14f4d6af91ee078858"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-eval-cases.txt",
+      "sha256": "sha256:627fcfa5f230fe2d4ec435d10044ab72ec89fa8e4ce20ad59a18a3cb766fdf2b"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-json-contract-eval-cases.txt",
+      "sha256": "sha256:2ef0ba85c605c459c6c78bc24a06841b35f0e08d657a04dca3701e3c8f6c9691"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-raw-open-chat-eval-cases.txt",
+      "sha256": "sha256:79bb12228270b6c4f31b1fcdc2249303fb7c568f4853a6625cd7ffb899a751c0"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-source-greedy-open-chat-eval-cases.txt",
+      "sha256": "sha256:39c9b1f384fdd99bfff67eb57373bd58b9cd655610a980e1d4b0690e3c0c2c3e"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-summary-contract-eval-cases.txt",
+      "sha256": "sha256:4241bfecccd2184aa8642a0cd8b1b4256c4746a5017419bc3f433e885378f3de"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/artifacts/training/quality-sequence-v1/exclusions/assistant-quality-honest-materialized.txt",
+      "sha256": "sha256:69a01480cb5a52d6b7c70dc4a4c563ebde027289b2dda204141fa40f73a59333"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/artifacts/training/quality-sequence-v1/exclusions/assistant-quality-paraphrase-materialized.txt",
+      "sha256": "sha256:a23944d4d9c38c3cd0233792877ea1cd76e8bec1e56d98b1c80fe42fb51fb1e2"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/artifacts/training/qwen3-cognitive-liberty-v1/exclusions/cognitive-liberty-materialized.txt",
+      "sha256": "sha256:bfac7a279b8e2d601c9d9bbe41ceb0e0774d748d4fc9fcd0ee221f603257fa0e"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/artifacts/training/qwen2.5-cognitive-liberty-v2/exclusions/semantic-neighbor-quarantine-v1.txt",
+      "sha256": "sha256:bbc9b1ec2a35faee28cc36b30601f74c9e156e6248fb8361e4b515d46740b69a"
+    }
+  ]
+}

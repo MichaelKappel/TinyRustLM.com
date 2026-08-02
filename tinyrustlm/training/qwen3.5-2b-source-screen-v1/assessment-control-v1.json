@@ -1,0 +1,86 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "Qwen/Qwen3.5-2B",
+  "sourceRevision": "15852e8c16360a2fea060d615a32b45270f8a8fc",
+  "sourceModelArtifactSha256": "8bb0cf0c93c39157f090fa9603b614df94b6b81f071047423518b1df34ce3ac5",
+  "sourceScreenSha256": "db748a0e9e6fd44028460c664251750bdb210b551aba4fff14d2980552db7a4c",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "qwen3.5-hybrid-gated-deltanet-gqa",
+  "runtimeAdmission": "unsupported-current-slm-gated-deltanet-vl",
+  "licenseDisposition": "apache-2.0-source-review-complete",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": [
+    "underspecified-choice-missing-options",
+    "unavailable-resource-ignored",
+    "authority-resolution-absent",
+    "lawful-adult-overrefusal",
+    "latest-user-preference-misapplied"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "underspecified-choice-missing-options"
+      ]
+    },
+    {
+      "index": 2,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "unavailable-resource-ignored",
+        "feasible-fallback-absent",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "source-conflict-unresolved",
+        "authority-resolution-absent",
+        "unsupported-deadline-selection"
+      ]
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "lawful-adult-overrefusal",
+        "material-comparison-absent"
+      ]
+    },
+    {
+      "index": 6,
+      "status": "fail",
+      "failureCodes": [
+        "latest-user-preference-misapplied",
+        "assistant-user-identity-confusion"
+      ]
+    },
+    {
+      "index": 7,
+      "status": "pass",
+      "failureCodes": []
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/Qwen/Qwen3.5-2B/tree/15852e8c16360a2fea060d615a32b45270f8a8fc",
+    "https://huggingface.co/Qwen/Qwen3.5-2B/blob/15852e8c16360a2fea060d615a32b45270f8a8fc/README.md",
+    "https://huggingface.co/Qwen/Qwen3.5-2B/blob/15852e8c16360a2fea060d615a32b45270f8a8fc/LICENSE",
+    "https://huggingface.co/Qwen/Qwen3.5-2B/blob/15852e8c16360a2fea060d615a32b45270f8a8fc/config.json",
+    "https://huggingface.co/Qwen/Qwen3.5-2B/blob/15852e8c16360a2fea060d615a32b45270f8a8fc/tokenizer_config.json",
+    "https://github.com/huggingface/transformers/blob/v5.13.1/src/transformers/models/qwen3_5/modeling_qwen3_5.py"
+  ]
+}

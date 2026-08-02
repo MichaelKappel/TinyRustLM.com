@@ -1,0 +1,39 @@
+# TinyRustLM paraphrase and fresh-holdout assistant-quality eval cases
+
+tinyrustlm_eval_cases_version=1
+scope=assistant-quality-no-cheat-runtime-gate
+quality_gate_policy=honest-assistant-quality-v1
+quality_boundary=real-runtime-response-quality
+safety_review_status=pass
+quality_decision=accepted-for-assistant-quality
+evaluator=tinyrustlm-native-eval-runner
+eval_summary=Paraphrased prompts and a distinct seeded holdout set must pass through the real .slm runtime path without canned answers, repeated filler, prompt echo, malformed JSON, or unsupported-source drift.
+case_count=6
+holdout_count=12
+holdout_seed=2026071001
+
+case.0.prompt=A user says "hey TinyRustLM" in a fresh local chat. Reply naturally in one or two helpful sentences.
+case.0.max_new_tokens=32
+case.0.required_result=quality
+
+case.1.prompt=Summarize this note in two sentences: A verified .slm model should keep prompts local, expose tokenizer metadata, and fail closed when trust evidence is missing.
+case.1.max_new_tokens=48
+case.1.required_result=quality
+
+case.2.prompt=Explain what this Rust function does in one short plain-English sentence. Name the returned value: fn clamp_score(x: i32) -> i32 { if x < 0 { 0 } else if x > 100 { 100 } else { x } }
+case.2.max_new_tokens=48
+case.2.required_result=quality
+
+case.3.prompt=Rewrite this sentence to be clearer: verified peer imports should make manifest hashes and local validation easy to check.
+case.3.max_new_tokens=40
+case.3.required_result=quality
+
+case.4.prompt=Return JSON with keys status and reason for this case: a local .slm manifest needs review before loading.
+case.4.max_new_tokens=40
+case.4.required_result=quality
+case.4.output_format=json_object
+case.4.required_json_keys=status,reason
+
+case.5.prompt=List three concise checks before importing a peer-shared .slm model.
+case.5.max_new_tokens=72
+case.5.required_result=quality

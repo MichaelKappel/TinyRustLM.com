@@ -1,0 +1,59 @@
+{
+  "schema": "tinyrustlm.task-specialist-source-screen-observation.v1",
+  "experimentId": "planning-constraint-ledger-qwen25-05b-pilot-20260726",
+  "observedAtUtc": "2026-07-26T16:02:18.617Z",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "receiptId": "sha256:3e1041b986b833cf4134a8248ee950247bcbe98e102fc806805e513436cb30a8",
+  "projectSourceRevision": "e75f3a2f41425c8e6b2517265a926e07db98f025",
+  "preregistrationSha256": "a6dc1b3d86121bb114bedd19e0b80e52ccc7988388d54c879df2ba01e044b089",
+  "publicCaseManifestSha256": "f27a36066d74b58921567c674da86835bf54470c7470a9d49c7163ed33c08494",
+  "sourceModel": {
+    "modelId": "Qwen/Qwen2.5-0.5B-Instruct",
+    "sourceRevision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "sourceModelSha256": "fdf756fa7fcbe7404d5c60e26bff1a0c8b8aa1f72ced49e7dd0210fe288fb7fe",
+    "broadSourceScreenReceiptId": "sha256:46be113cc01b3b5878048e2fbdc8e19cfd8f96bd128cfde42ca3867ae37475f0",
+    "broadSourceScreenStatus": "rejected"
+  },
+  "taskContractId": "planning-constraint-ledger-json-v1",
+  "sealedInputs": {
+    "seedCommitmentSha256": "d1b54362636d415f3828939970941a97792e990d883cc49e23a461cd7b2698b9",
+    "privateCaseSetSha256": "5e9cde03398e002863379e6100497567d5f644a7437fbfb2769c4c1a88cd83f4",
+    "evalCasesSha256": "5f732e1d51db0b16ffed3986a381f38400717f2340aad56e913405738454c094",
+    "rawCaptureSha256": "ac8164b276d6ba5f1dc521a75a68e54691711128e9cc8e6a7e9f51940fa3547f",
+    "privateVerdictSha256": "d522021a6583938e54ab2a3065e074f39f5e39e27422b30910d36662bd40d8bd"
+  },
+  "outcome": {
+    "decision": "rejected",
+    "caseCount": 24,
+    "exactPassCount": 0,
+    "failedCount": 24,
+    "malformedOutputCount": 24,
+    "criticalCaseCount": 12,
+    "criticalFailureCount": 12,
+    "failureCodes": [
+      "invalid-json"
+    ],
+    "decisionReasons": [
+      "overall-exact-pass-floor-failed",
+      "category-exact-pass-floor-failed",
+      "critical-case-failed",
+      "malformed-output-limit-exceeded"
+    ]
+  },
+  "authority": {
+    "conversionSpendAuthorized": false,
+    "trainingAuthorized": false,
+    "taskSpecificProofGranted": false,
+    "broadQualityClaimSupported": false,
+    "productAuthority": false,
+    "releaseAuthority": false,
+    "campaignCounterContribution": 0
+  },
+  "privacy": {
+    "rawPromptBodiesPublished": false,
+    "expectedValuesPublished": false,
+    "rawOutputsPublished": false,
+    "publicEvidenceContainsHashesAndBoundedCountsOnly": true
+  },
+  "terminalAction": "Do not convert, train, promote, package, catalog, or count this exact source experiment. Preserve the immutable rejection and use a separately preregistered candidate or genuinely trained specialist."
+}

@@ -1,0 +1,80 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "ibm-granite/granite-4.0-1b",
+  "sourceRevision": "6a7381ba1f54d684ff508d991aeb7dc580157103",
+  "sourceModelArtifactSha256": "cc2def9a94efd3a18b21080b053fa64a3f0c329eef357233f0392940179058f4",
+  "sourceScreenSha256": "992d2eb55c2cce287c74b2f21da071db279717be4695c213ab217539c683df1c",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "granite4-dense-full-attention-gqa-mup",
+  "runtimeAdmission": "unsupported-current-slm-granite-mup-scaling",
+  "licenseDisposition": "apache-2.0-card-declaration-review-required",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": [
+    "underspecified-choice-missing-options",
+    "authority-resolution-absent",
+    "adult-comparison-one-sided"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "underspecified-choice-missing-options"
+      ]
+    },
+    {
+      "index": 2,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "practical-decision-underdeveloped"
+      ]
+    },
+    {
+      "index": 3,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "source-conflict-unacknowledged",
+        "authority-resolution-absent",
+        "silent-deadline-selection"
+      ]
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "adult-comparison-one-sided"
+      ]
+    },
+    {
+      "index": 6,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 7,
+      "status": "pass",
+      "failureCodes": []
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/ibm-granite/granite-4.0-1b/tree/6a7381ba1f54d684ff508d991aeb7dc580157103",
+    "https://huggingface.co/ibm-granite/granite-4.0-1b/blob/6a7381ba1f54d684ff508d991aeb7dc580157103/README.md",
+    "https://huggingface.co/ibm-granite/granite-4.0-1b/blob/6a7381ba1f54d684ff508d991aeb7dc580157103/config.json",
+    "https://huggingface.co/ibm-granite/granite-4.0-1b/blob/6a7381ba1f54d684ff508d991aeb7dc580157103/chat_template.jinja",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt",
+    "https://github.com/huggingface/transformers/blob/v4.56.0/src/transformers/models/granitemoehybrid/modeling_granitemoehybrid.py"
+  ]
+}

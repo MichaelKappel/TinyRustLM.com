@@ -1,0 +1,14 @@
+{
+  "schema": "tinyrustlm.exact_flat_baseline_evidence_attempt.v1",
+  "experimentId": "exact-flat-sealed-corpus-and-durable-deletion-20260725",
+  "status": "pass",
+  "startedAtUtc": "2026-07-25T21:50:39.969Z",
+  "completedAtUtc": "2026-07-25T21:50:56.797Z",
+  "sourceRevision": "a4675bb7e444a890bdbe7a6b00e964a3d361307c",
+  "preregistrationSha256": "f6c1ac0d2c0f40365aca977aeccb894416185dc7069a97bb357510b94d94b4d1",
+  "observationId": "exact-flat-baseline-evidence-94aab53fab3f93b7",
+  "observationContentHash": "94aab53fab3f93b741490b095da58fd952cfa0122a58106c208fdfd4b8db46bb",
+  "failure": null,
+  "attemptId": "exact-flat-baseline-evidence-attempt-abff0c29e72eb028",
+  "attemptContentHash": "abff0c29e72eb028977df6445485ae1005e4387eeed3634b05b8d696853fbdc3"
+}

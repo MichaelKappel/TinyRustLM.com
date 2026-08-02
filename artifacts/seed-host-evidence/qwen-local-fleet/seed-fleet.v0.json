@@ -1,0 +1,46 @@
+{
+  "fleet_kind": "minimodel.seed_fleet",
+  "fleet_id": "qwen-local-evidence",
+  "fleet_version": 0,
+  "target_model_count": 20,
+  "replica_lane_count": 2,
+  "models": [
+    {
+      "model_id": "tinyrustlm/qwen2.5-1.5b-instruct-q4",
+      "enabled": true,
+      "manifest_path": "shares/tinyrustlm-qwen2-5-1-5b-instruct-q4-dc24eb832e8b/qwen2.5-1.5b-instruct-q4.minimodel.manifest.v0",
+      "piece_dir": "shares/tinyrustlm-qwen2-5-1-5b-instruct-q4-dc24eb832e8b/qwen2.5-1.5b-instruct-q4.peer-pieces"
+    }
+  ],
+  "lanes": [
+    {
+      "lane_id": "seed-a",
+      "endpoints": [
+        {
+          "model_id": "tinyrustlm/qwen2.5-1.5b-instruct-q4",
+          "state_path": "shares/tinyrustlm-qwen2-5-1-5b-instruct-q4-dc24eb832e8b/lane-state/seed-a.state.json",
+          "bind_addr": "127.0.0.1:18471",
+          "public_base_url": "http://127.0.0.1:18471/models/qwen/"
+        }
+      ]
+    },
+    {
+      "lane_id": "seed-b",
+      "endpoints": [
+        {
+          "model_id": "tinyrustlm/qwen2.5-1.5b-instruct-q4",
+          "state_path": "shares/tinyrustlm-qwen2-5-1-5b-instruct-q4-dc24eb832e8b/lane-state/seed-b.state.json",
+          "bind_addr": "127.0.0.1:18472",
+          "public_base_url": "http://127.0.0.1:18472/models/qwen/"
+        }
+      ]
+    }
+  ],
+  "boundary": {
+    "operator_consent": true,
+    "advertise_only_after_external_probe": true,
+    "project_server_serves_model_bytes": false,
+    "project_server_runs_model_bytes": false,
+    "project_server_proxies_model_bytes": false
+  }
+}

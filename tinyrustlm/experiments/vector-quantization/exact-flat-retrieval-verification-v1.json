@@ -1,0 +1,339 @@
+{
+  "schema": "tinyrustlm.exact_flat_retrieval_verification_receipt.v1",
+  "receiptId": "exact-flat-retrieval-75f95baa316315ea",
+  "generatedAtUtc": "2026-07-22T02:14:56.033Z",
+  "status": "experiment-baseline-verified-with-open-promotion-gaps",
+  "gitHead": "29ad976abeb9d1e69e37cd03af2129e2cfa41639",
+  "dirtyWorktree": true,
+  "productAuthority": false,
+  "trainingAuthority": false,
+  "parentReceipt": {
+    "path": "tinyrustlm/experiments/vector-quantization/scalar-oracle-verification-v1.json",
+    "receiptId": "scalar-oracle-foundation-51ab608f417c0b82",
+    "sha256": "8772ee70a2de21b294fc3d10c2634059c72062e33397472762462d04e7b7938b"
+  },
+  "sourceLedger": {
+    "path": "tinyrustlm/experiments/vector-quantization/source-claim-ledger.v1.json",
+    "ledgerId": "turbovec-turboquant-review-20260722",
+    "sha256": "7daa7653222914a028e636e6de6e195f94cb5eb50d5bd10a76af624877303808"
+  },
+  "preregistration": {
+    "path": "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-preregistration.v1.json",
+    "experimentId": "exact-flat-f32-baseline-20260722",
+    "sha256": "0d9b6b3d31a25cba843034ceeafca3a88bc1287546f66025b62d13ba14441152"
+  },
+  "inputSetSha256": "75f95baa316315eaa407ee6fb8e2bf05a6bd7906c998a868fdaeb513f0ca831f",
+  "inputs": [
+    {
+      "path": "Cargo.lock",
+      "bytes": 14723,
+      "sha256": "77566e3e2e18c8ba35fe5467d95c036c347cebfb5f7c309bd86b4dbce92e4545"
+    },
+    {
+      "path": "Cargo.toml",
+      "bytes": 1090,
+      "sha256": "5afcef4ff36679f99fbeb438f49af195b76065dd156bcf457fd0f4b807f66ba0"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/Cargo.toml",
+      "bytes": 312,
+      "sha256": "e962ea7c04a47dd8f72122f1de129e5175d3a40eac2dca511d399fee1f5e52c9"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/accounting.rs",
+      "bytes": 3884,
+      "sha256": "ecd53e96a25fd3753ecd69c6dd7a33e40e5506e424669b0da3575394dece50f0"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/bitpack.rs",
+      "bytes": 10969,
+      "sha256": "685a4b8682d3fea40d8e50975228cb5c06a2101c9a8067b70ab5fe2f92d60cf1"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/codebook.rs",
+      "bytes": 15253,
+      "sha256": "08b58571dbae6c7dcbe857ddacbc5f45d19af6c5fb336df1fabeb4b163ef99bc"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/error.rs",
+      "bytes": 9046,
+      "sha256": "f09f395388ed0c1f6d1160e4ea12b320baec1f01a40f17330989c8bf881fc7db"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/flat_index.rs",
+      "bytes": 40496,
+      "sha256": "4627ee3c0fae6605a415e3a2b917e5346f01b3ac992e938ce724edf3df1aa17b"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/lib.rs",
+      "bytes": 1268,
+      "sha256": "dbbaf1a880646e8769f0188e2a79c1467b3912f272eb00325792e1f787342f63"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/metrics.rs",
+      "bytes": 12071,
+      "sha256": "4fb354c13c0dfda8987de8a54f83c32d28725d79c09c78ca0978dd6ab7d5c05c"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/prng.rs",
+      "bytes": 3167,
+      "sha256": "45d64327c6e7d2184857c87f453fb57172da74315028034abb8a5229172964eb"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/score.rs",
+      "bytes": 9825,
+      "sha256": "c60a9a7c1935f3a6d22ef0d49c32a3c74bc0c1abf174fb267ab293e3e9b45c38"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/sha256.rs",
+      "bytes": 5237,
+      "sha256": "3b9efb7ed1629e7ff80d480f56a76f2c7a9008a8782045188f6ae0d6491c3b6a"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/transform.rs",
+      "bytes": 11797,
+      "sha256": "e1ab84175ac2e0ae3d81416a55da6423f1ebf0189f81dcb463f61ded619336e1"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/tests/flat_index_test.rs",
+      "bytes": 9647,
+      "sha256": "8877f2ebe8fd9ee00155c6d9df41e5d6c0b6227550e7a7c327f41b60a8dd7427"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/tests/lib_test.rs",
+      "bytes": 2731,
+      "sha256": "c7a1a58e37c7fc1e0a96eed26cb3f3c064c1abff44d6ca57b0745d694dd2007e"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/README.md",
+      "bytes": 3398,
+      "sha256": "6185da15d1296ea6c0de053182daf8e9a52eab983ea5da5947bd7b2ef02ea7be"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-preregistration.v1.json",
+      "bytes": 3713,
+      "sha256": "0d9b6b3d31a25cba843034ceeafca3a88bc1287546f66025b62d13ba14441152"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/source-claim-ledger.v1.json",
+      "bytes": 10946,
+      "sha256": "7daa7653222914a028e636e6de6e195f94cb5eb50d5bd10a76af624877303808"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-experiment-isolation.test.js",
+      "bytes": 2483,
+      "sha256": "5b7dc28d6ac40b6a71f684043e2fb01157d86ece6b04b87742de7723a36124ea"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-experiment-ledger.test.js",
+      "bytes": 5021,
+      "sha256": "8e9925b8895b3b089ebdf899d36349ae527c925bfce6897f15851f2e7d17364f"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-retrieval-preregistration.test.js",
+      "bytes": 2847,
+      "sha256": "e6bb9003f3d7a443efd5b5e56ed815e0a08e466918683feede9f50c97ec49efc"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-retrieval-receipt.test.js",
+      "bytes": 2779,
+      "sha256": "55aff9001c6d55daa1f37c81afeb9d837cf30e1442db2eb3d986b22b7b4293fb"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-experiment-ledger.js",
+      "bytes": 15051,
+      "sha256": "b073097acb93ba03d57ed55da802076e2277ef4471f1d4270f26c2d5fc36eeed"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-retrieval-preregistration.js",
+      "bytes": 12248,
+      "sha256": "1786de6fea96c4420270c2e91636754589a09fb604a200d3f9339a42a93fb135"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-retrieval-receipt.js",
+      "bytes": 25444,
+      "sha256": "a581e1e989cc9e4c4799933e81971b73365fd21b31710c5b1d1095ab1a28349a"
+    }
+  ],
+  "toolchain": {
+    "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "cargo": "cargo 1.96.0 (30a34c682 2026-05-25)",
+    "node": "v24.14.0"
+  },
+  "gates": [
+    {
+      "gateId": "ledger-canonical-validation",
+      "command": [
+        "node",
+        "tinyrustlm/tools/vector-experiment-ledger.js",
+        "tinyrustlm/experiments/vector-quantization/source-claim-ledger.v1.json"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "e0e8dccd29237fe54d6f9e6c813c9b95ccc081e96cf9354b4e899a5f9c0d20b1"
+    },
+    {
+      "gateId": "retrieval-preregistration-validation",
+      "command": [
+        "node",
+        "tinyrustlm/tools/vector-retrieval-preregistration.js",
+        "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-preregistration.v1.json"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "e0eca519e75aa332c4e96b43fec6bd5c42e6f17b08809787012b6f9200092dd8"
+    },
+    {
+      "gateId": "research-boundary-tests",
+      "command": [
+        "node",
+        "--test",
+        "tinyrustlm/tests/vector-experiment-ledger.test.js",
+        "tinyrustlm/tests/vector-experiment-isolation.test.js",
+        "tinyrustlm/tests/vector-retrieval-preregistration.test.js"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "ac6aaa9b659033dbd994875402f98d1321f20d64aa4474fc6d3750c0ac887711"
+    },
+    {
+      "gateId": "rustfmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "gateId": "exact-flat-native-tests",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tinyrustlm-vector-oracle"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "1ec1c564e34c55a3f136288f2582cef7ff617e197cdbff2b76c571bd0ddbf195"
+    },
+    {
+      "gateId": "exact-flat-strict-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tinyrustlm-vector-oracle",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "6e42febcbd42c98d166f65e6d51f828c476e87778d13aaef7504afce71f6f297"
+    },
+    {
+      "gateId": "exact-flat-wasm32-check",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tinyrustlm-vector-oracle",
+        "--target",
+        "wasm32-unknown-unknown"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "c002af5fa79f68d69a2b5cdb95ea4b752d8b259920c251c41861db398633558d"
+    },
+    {
+      "gateId": "exact-flat-rustdoc",
+      "command": [
+        "cargo",
+        "doc",
+        "-p",
+        "tinyrustlm-vector-oracle",
+        "--no-deps"
+      ],
+      "status": "passed",
+      "exitCode": 0,
+      "outputSha256": "abe92abac5a6c1531066f71eba87716b9ac6f17a0a783055de368683d717dda1"
+    }
+  ],
+  "toolingGaps": [
+    {
+      "gapId": "measured-line-coverage",
+      "probeCommand": [
+        "cargo",
+        "llvm-cov",
+        "--version"
+      ],
+      "status": "unavailable",
+      "requiredTargetPercent": 75,
+      "measuredPercent": null,
+      "exitCode": 101,
+      "outputSha256": "817ae4e6b7bba0b9125aa8fe5935369dfce868520356066cfee5734c7fa990c5",
+      "errorCode": null
+    },
+    {
+      "gapId": "miri-memory-model-check",
+      "probeCommand": [
+        "cargo",
+        "miri",
+        "--version"
+      ],
+      "status": "unavailable",
+      "requiredTargetPercent": null,
+      "measuredPercent": null,
+      "exitCode": 1,
+      "outputSha256": "f55b415bb169e141443a4b706e4cc590ec150066a46a8056ce86e7a31db99619",
+      "errorCode": null
+    }
+  ],
+  "unexecutedGaps": [
+    {
+      "gapId": "durable-filesystem-deletion-proof",
+      "status": "not-run",
+      "requiredForProductPromotion": true,
+      "statement": "No crash-recovered on-disk snapshot has proved tombstoned vector bytes absent after compaction."
+    },
+    {
+      "gapId": "real-browser-wasm-execution",
+      "status": "not-run",
+      "requiredForProductPromotion": true,
+      "statement": "The crate compiles for wasm32 but has not executed in a real browser or browser WASM runtime."
+    },
+    {
+      "gapId": "retrieval-corpus-quality-metrics",
+      "status": "not-run",
+      "requiredForProductPromotion": true,
+      "statement": "No sealed representative corpus has measured recall, MRR, NDCG, or product retrieval usefulness."
+    },
+    {
+      "gapId": "target-hardware-performance",
+      "status": "not-run",
+      "requiredForProductPromotion": true,
+      "statement": "No preregistered target has measured latency, throughput, memory, or energy."
+    }
+  ],
+  "scope": {
+    "scalarFoundationVerified": true,
+    "exactFlatF32BaselineVerified": true,
+    "canonicalPersistenceFormatVerified": true,
+    "deletionAndCompactionSemanticsVerified": true,
+    "realWasmExecutionVerified": false,
+    "nativePerformanceMeasured": false,
+    "browserPerformanceMeasured": false,
+    "namedTurboQuantArmVerified": false,
+    "turboVecParityVerified": false,
+    "compressedRetrievalVerified": false,
+    "productRetrievalQualityVerified": false,
+    "kvCacheQualityVerified": false
+  },
+  "requiredNextGate": "Execute the unchanged exact-flat baseline in a real browser and on preregistered target hardware, then measure sealed-corpus retrieval quality and durable crash-recovered deletion before any product or compressed-retrieval promotion."
+}

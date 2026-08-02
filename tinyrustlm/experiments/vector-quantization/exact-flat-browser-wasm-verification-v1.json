@@ -1,0 +1,114 @@
+{
+  "schema": "tinyrustlm.exact_flat_browser_wasm_verification_receipt.v1",
+  "experimentId": "exact-flat-browser-wasm-direct-tests-20260722",
+  "status": "browser-wasm-observation-verified-with-open-promotion-gaps",
+  "generatedAtUtc": "2026-07-22T03:06:53.811Z",
+  "observedSourceRevision": "cbf1c10bf6a0b6e04b4caacfba73d1dd3b473aba",
+  "verificationSourceRevision": "0db9268bf27991f45ac7c5106d5ae51061a7ba0b",
+  "verificationMode": "content-and-policy-revalidation-of-immutable-observation",
+  "verificationTool": {
+    "version": "v24.14.0",
+    "sha256": "63c259c81e5d472b5f11c8d506070130cb04a1ecf84b80377a34ed6ec9048088"
+  },
+  "verificationInputs": [
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-observation-v1.json",
+      "bytes": 18960,
+      "sha256": "d28c921ec1df7db538417aaed8803fce88bc6d37b3cbc5fcf5d291b0a91a6f9a"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-preregistration.v2.json",
+      "bytes": 4454,
+      "sha256": "695f902a12b94024a744ae9bb770a93b5576c0be5a9bf39540a0a9e957f119cd"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-verification-v1.json",
+      "bytes": 11753,
+      "sha256": "893e96f461f701f46a3aaaeecddd67bc2b700625ccdb9f0d83ce4b0b67d8c18c"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-browser-wasm-observation.test.js",
+      "bytes": 9684,
+      "sha256": "940638cdbb440ecd7d116e7be1971727542c601742c28f57c0151406477e5208"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-browser-wasm-verification.test.js",
+      "bytes": 3882,
+      "sha256": "4aef8048c79f79cd3a642dddf26ad77e9faa67c71d01388e2a041a83b38118fb"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-browser-wasm-observation.js",
+      "bytes": 45773,
+      "sha256": "f519ae12fa1a79d4969ec3aee994a4eb916d46b192ff139d9c7d7bffb67f789f"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-browser-wasm-verification.js",
+      "bytes": 17803,
+      "sha256": "2df5d78c73b28bbac5647cdb18b1e49b9a5bf292194118f4505e0caaede2c9f1"
+    }
+  ],
+  "preregistration": {
+    "path": "tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-preregistration.v2.json",
+    "sha256": "695f902a12b94024a744ae9bb770a93b5576c0be5a9bf39540a0a9e957f119cd"
+  },
+  "parentReceipt": {
+    "receiptId": "exact-flat-retrieval-75f95baa316315ea",
+    "sha256": "893e96f461f701f46a3aaaeecddd67bc2b700625ccdb9f0d83ce4b0b67d8c18c"
+  },
+  "observation": {
+    "path": "tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-observation-v1.json",
+    "observationId": "exact-flat-browser-wasm-0361d72f245abbd3",
+    "observationContentHash": "0361d72f245abbd3d3f07715edf6ff82ab6a99252ab2e77571c1bdce0b86e8a9",
+    "fileSha256": "d28c921ec1df7db538417aaed8803fce88bc6d37b3cbc5fcf5d291b0a91a6f9a"
+  },
+  "attempt": {
+    "path": "tinyrustlm/experiments/vector-quantization/browser-wasm-attempts/sha256/40/407443d2dd935818a7bbf999b03bf1e15592db36557a7dd7ac13216db7bf9b45.json",
+    "attemptId": "exact-flat-browser-wasm-attempt-407443d2dd935818",
+    "attemptContentHash": "407443d2dd935818a7bbf999b03bf1e15592db36557a7dd7ac13216db7bf9b45",
+    "fileSha256": "576a71a76a00e6861d3d7bb631cf813a0b860224718603b03b299db7482788bf"
+  },
+  "evidenceSummary": {
+    "moduleCount": 3,
+    "expectedRustTestCountPerRun": 49,
+    "independentBrowserRuns": 2,
+    "wasmModuleExecutions": 6,
+    "allEntryPointsReturnedZero": true,
+    "allBrowserProcessesClosed": true,
+    "allProfilesDeleted": true,
+    "observedPageNetworkRequests": 0,
+    "observedConsoleErrors": 0,
+    "observedPageErrors": 0,
+    "uniqueProfileRoots": 2,
+    "uniqueProfiles": 2
+  },
+  "authority": {
+    "realBrowserWasmExecutionVerified": true,
+    "nativePerformanceMeasured": false,
+    "browserPerformanceMeasured": false,
+    "compressedRetrievalVerified": false,
+    "turboVecParityVerified": false,
+    "productIntegrationAuthorized": false,
+    "trainingAuthorized": false,
+    "releaseAuthorized": false
+  },
+  "openPromotionGaps": [
+    {
+      "gapId": "target-hardware-performance",
+      "status": "not-run",
+      "statement": "No preregistered named physical target has measured latency, throughput, peak memory, or energy."
+    },
+    {
+      "gapId": "retrieval-corpus-quality-metrics",
+      "status": "not-run",
+      "statement": "No sealed representative corpus has measured recall, MRR, NDCG, or usefulness."
+    },
+    {
+      "gapId": "durable-filesystem-deletion-proof",
+      "status": "not-run",
+      "statement": "No crash-recovered on-disk snapshot has proved deleted vector bytes absent after compaction."
+    }
+  ],
+  "requiredNextGate": "After direct browser execution passes, preregister named physical-target measurements, a sealed representative retrieval corpus, and crash-recovered durable deletion before selecting any compressed comparison arm.",
+  "receiptId": "exact-flat-browser-wasm-verification-8fcdeb0b93534ca4",
+  "receiptContentHash": "8fcdeb0b93534ca4bec447b799a0e3fc162d7a9203f5dfe9ae8e0e88822e62cb"
+}

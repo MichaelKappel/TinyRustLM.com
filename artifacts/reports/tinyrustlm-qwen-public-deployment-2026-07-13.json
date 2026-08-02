@@ -1,0 +1,105 @@
+﻿{
+    "schema":  "tinyrustlm.atomic_ftps_deployment.v1",
+    "started_utc":  "2026-07-13T11:48:57.7068260Z",
+    "completed_utc":  "2026-07-13T12:02:22.1363408Z",
+    "status":  "pass",
+    "failure_type":  null,
+    "source_commit":  "dd7882c2d15bb6d7462d5080cfb18bddcd90a104",
+    "secret_material_included":  false,
+    "model_published_before_application":  true,
+    "public_https_sha256_verified":  true,
+    "file_count":  13,
+    "files":  [
+                  {
+                      "local_relative_path":  "app/models/qwen2.5-1.5b-instruct-q4.slm",
+                      "relative_path":  "app/models/qwen2.5-1.5b-instruct-q4.slm",
+                      "bytes":  969648576,
+                      "sha256":  "dc24eb832e8bd2257a9891e4c88df9ab7b1d24ee92d3f644cd98f340417b75bc",
+                      "status":  "prior-receipt-current"
+                  },
+                  {
+                      "local_relative_path":  "app/models/qwen2.5-1.5b-instruct-q4.slm.manifest",
+                      "relative_path":  "app/models/qwen2.5-1.5b-instruct-q4.slm.manifest",
+                      "bytes":  1948,
+                      "sha256":  "2b0f93ac2ff15040cc6c6867f60a295f95fb84c4c291d218f7eb174f0b339c03",
+                      "status":  "prior-receipt-current"
+                  },
+                  {
+                      "local_relative_path":  "app/models/qwen2.5-1.5b-instruct-q4.conversation",
+                      "relative_path":  "app/models/qwen2.5-1.5b-instruct-q4.conversation",
+                      "bytes":  2337,
+                      "sha256":  "2f6003390c9abf2759cd0ba29578b5b48521ba05d5b514785d593563de77893b",
+                      "status":  "prior-receipt-current"
+                  },
+                  {
+                      "local_relative_path":  "app/models/Qwen2.5-1.5B-Instruct.LICENSE.txt",
+                      "relative_path":  "app/models/Qwen2.5-1.5B-Instruct.LICENSE.txt",
+                      "bytes":  11343,
+                      "sha256":  "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e",
+                      "status":  "prior-receipt-current"
+                  },
+                  {
+                      "local_relative_path":  "app/models/Qwen2.5-1.5B-Instruct.NOTICE.md",
+                      "relative_path":  "app/models/Qwen2.5-1.5B-Instruct.NOTICE.md",
+                      "bytes":  1638,
+                      "sha256":  "935987071984a1a25eeb3be69656e716d85d336deb53c7015824cf5354444980",
+                      "status":  "prior-receipt-current"
+                  },
+                  {
+                      "local_relative_path":  "runtime/tinyrustlm.wasm",
+                      "relative_path":  "runtime/tinyrustlm.wasm",
+                      "bytes":  385444,
+                      "sha256":  "8288ef916b0ee3d66d59cfaccccc62861acfdf7a3a7f343e94ab564ec03b5b93",
+                      "status":  "published"
+                  },
+                  {
+                      "local_relative_path":  "runtime/tinyrustlm-simd.wasm",
+                      "relative_path":  "runtime/tinyrustlm-simd.wasm",
+                      "bytes":  385022,
+                      "sha256":  "fdf145a79ca5bcae1331d7c473df0b550fb467323c5f5d3704fd50616c628f7e",
+                      "status":  "published"
+                  },
+                  {
+                      "local_relative_path":  "runtime/tinyrustlm.wasm.manifest",
+                      "relative_path":  "runtime/tinyrustlm.wasm.manifest",
+                      "bytes":  264,
+                      "sha256":  "4d8d57c2013b8d4e83bea9e91e2a79372c248aaad3a26b931ebb032cd4543156",
+                      "status":  "published"
+                  },
+                  {
+                      "local_relative_path":  "runtime/tinyrustlm-simd.wasm.manifest",
+                      "relative_path":  "runtime/tinyrustlm-simd.wasm.manifest",
+                      "bytes":  269,
+                      "sha256":  "48b97fa09789a03a39d60b3754c8116298b21cab05fb7910eb44174e1be849e8",
+                      "status":  "published"
+                  },
+                  {
+                      "local_relative_path":  "app/app.css",
+                      "relative_path":  "app/app.css",
+                      "bytes":  65941,
+                      "sha256":  "a2ecd6c30a06c5da97f79bcf8ea1e48fa2b7ffb298904eed46a0dc7ca1ee896c",
+                      "status":  "published"
+                  },
+                  {
+                      "local_relative_path":  "app/index.html",
+                      "relative_path":  "app/index.html",
+                      "bytes":  57363,
+                      "sha256":  "ab361c56494188923f1ab6976db9dce471f4d2d073629019d6055a3d6d87df08",
+                      "status":  "published"
+                  },
+                  {
+                      "local_relative_path":  "index.html",
+                      "relative_path":  "index.html",
+                      "bytes":  57387,
+                      "sha256":  "440a94f4eb0851ba6d3e55ae73f1f26e0dd8aa02ea4d89410ca9a9b6eaf25415",
+                      "status":  "published"
+                  },
+                  {
+                      "local_relative_path":  "app/app.js",
+                      "relative_path":  "app/app.js",
+                      "bytes":  836915,
+                      "sha256":  "f323e7b93609edc4c412d910eb0f7da0852e75ab97f9bed9fd3f1227b9472314",
+                      "status":  "published"
+                  }
+              ]
+}

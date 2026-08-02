@@ -1,0 +1,145 @@
+# UAIX Browser p2pRuntime Seed Host
+
+`UAIX.Browser.p2pRuntime.SeedHost` is the downloadable companion for the
+TinyRustLM and MiniModel peer network. It validates, stores, imports, and
+serves `.slm` model pieces from a computer controlled by the user.
+
+TinyRustLM.com remains the AI chat interface. The companion is the model and
+network host: it does not replace the web conversation UI and does not create
+a second chat-history state machine.
+
+## Packages
+
+- Library: `UAIX.Browser.p2pRuntime.SeedHost`
+- Tool: `UAIX.Browser.p2pRuntime.SeedHost.Tool`
+- Command: `uaix-p2p-seed`
+- Target framework: .NET 8
+- Native runtime assets: Windows x64, Linux x64, and Linux ARM64 when the
+  corresponding release asset has passed its native CI job
+
+Install from the reviewed folder feed:
+
+```powershell
+dotnet add package UAIX.Browser.p2pRuntime.SeedHost `
+  --version 0.1.10 `
+  --source $env:UAIX_NUGET_FEED
+
+dotnet tool install UAIX.Browser.p2pRuntime.SeedHost.Tool `
+  --version 0.1.10 `
+  --add-source $env:UAIX_NUGET_FEED `
+  --tool-path .\.uaix-tools
+```
+
+Run `doctor` before creating a fleet:
+
+```powershell
+.\.uaix-tools\uaix-p2p-seed doctor --json
+```
+
+## TinyRustLM Browser Bridge
+
+Start the bridge from the user-owned fleet root. The default approved browser
+origin is exactly `https://tinyrustlm.com`; development origins must be named
+explicitly and are not wildcarded.
+
+```powershell
+.\.uaix-tools\uaix-p2p-seed bridge `
+  --root C:\UAIX\SeedHost `
+  --origin https://tinyrustlm.com `
+  --port 43127
+```
+
+The command prints one pairing code to the local console. The server retains
+only its digest, accepts the code once, and invalidates it after use, expiry,
+or bridge shutdown. Successful pairing creates a short-lived capability bound
+to the exact browser origin and closed operation scopes. Capabilities rotate
+and revoke through dedicated protocol routes and are lost when the bridge
+restarts. They are separate from P2P peer configuration and optional
+MemoryEndpoints credentials.
+
+The versioned loopback API exposes only health, pairing/session control,
+path-free runtime status, admitted-model listing, bounded import control and
+progress, receipt-revalidated model streaming, and optional sharing control.
+Every non-health operation validates the exact `Host`, `Origin`, protocol
+version, method, capability scope, and mutation request ID. The bridge has no
+arbitrary path, shell, cookie, generic proxy, remote-control, or prompt route.
+Prompts and responses remain inside the browser.
+
+Sharing routes are absent unless the operator adds `--allow-sharing`. Even
+then, browser actions can only manage receipt-verified imports inside the owned
+fleet root. Local listener health does not create public announcement
+eligibility; current outside-network proof for both lanes is still required.
+
+## Fleet Model
+
+Schema v0 has a fixed target capacity of 20 distinct artifact identities and
+exactly two independent process lanes, `seed-a` and `seed-b`. A fleet may be
+initialized empty and reports its remaining capacity. Each admitted model has
+one manifest, one read-only peer-piece directory, and one companion state per
+lane. The model bytes are not copied once per lane.
+
+```powershell
+uaix-p2p-seed init --fleet-id my-seed-host --root C:\UAIX\SeedHost
+
+uaix-p2p-seed add-model `
+  --root C:\UAIX\SeedHost `
+  --model-id qwen/qwen2.5-1.5b-instruct-q4 `
+  --artifact D:\Models\qwen2.5-1.5b-instruct-q4.slm `
+  --source-model Qwen/Qwen2.5-1.5B-Instruct `
+  --lane-a-bind 0.0.0.0:24101 `
+  --lane-a-url http://203.0.113.10:24101/models/qwen/ `
+  --lane-b-bind 0.0.0.0:24102 `
+  --lane-b-url http://203.0.113.10:24102/models/qwen/
+```
+
+The Qwen example is only valid after substituting addresses controlled by the
+operator. `203.0.113.10` is a documentation address and must not be announced.
+The existing Qwen q4 artifact is classified as `conversation-proven` and
+`full-assistant-quality-pending`; the tiny q8 fixture is runtime-smoke-only.
+
+Serve both lanes in the foreground:
+
+```powershell
+uaix-p2p-seed serve --root C:\UAIX\SeedHost
+```
+
+Ctrl+C creates a lane-specific owned shutdown signal. Each Rust process exits
+cleanly, while stopping one lane does not stop the other.
+
+## Health And Reachability
+
+Configured, Rust-validated, listener-bound, locally reachable, externally
+reachable, announcement-eligible, and advertised are different states. A
+loopback, LAN, or same-host hairpin check is local evidence only.
+
+The fleet always starts with `advertisement_status` set to
+`external-probe-required`. Do not publish a MiniModel peer source until an
+independent observer outside the host and local network has checked both lane
+URLs and produced a current receipt bound to the fleet, lane, model, public
+URL, artifact hash, piece-set hash, routes, and expiry.
+
+Router port forwarding, host firewall rules, carrier-grade NAT, reverse
+proxies, or an operator-approved tunnel may be required. None of those are
+silently configured by the package.
+
+## Security Boundary
+
+- Rust MiniModel code remains authoritative for manifest, `.slm`, piece,
+  Merkle, companion-state, import, assembly, and receipt validation.
+- Managed code orchestrates typed operations and does not duplicate those
+  trust rules.
+- TinyRustLM.com, MiniModel.org, UAIX.org, and MemoryEndpoints.com do not host,
+  run, or proxy model bytes for this package.
+- Hugging Face URLs are metadata/source references, not seed endpoints.
+- Fleet files and process diagnostics contain no API keys or tokens.
+- Native and process output is bounded; secret-like fields and URI user-info
+  are redacted before diagnostics are exposed.
+- Model removal changes configuration only. It does not delete model or piece
+  data outside an explicit owned cleanup workflow.
+- Conversion, quantization authoring, training, premium routing, telemetry,
+  license-server, and key-management internals are not included.
+
+Use the matching `SHA256SUMS-UAIX.Browser.p2pRuntime.SeedHost-0.1.10.txt` file
+to verify package and symbol artifacts in the local feed. Self-contained tool
+archives use
+`SHA256SUMS-UAIX.Browser.p2pRuntime.SeedHost.Tool-0.1.10.txt`.

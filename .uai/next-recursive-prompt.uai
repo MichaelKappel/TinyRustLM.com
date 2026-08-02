@@ -1,0 +1,47 @@
+profile: runtime-mirust.next-recursive-prompt.v43
+updated_utc: 2026-07-22T12:11:11Z
+prompt: >
+  Continue only in E:\Source\Rust\TinyRustLM.com as tinyrustlm-agent. Begin with wiki/runtime-mirust/reports/tinyrustlm-exact-flat-named-target-performance-memory-2026-07-22.md, its immutable observation and child receipt, the browser-WASM and exact-flat foundation reports, .uai/test-plan.uai, and the two active Improvement assignments. Preserve every scalar, exact-flat, browser, physical-target, and failure receipt. Never rerun any browser or physical-target `--write` command. Named-host latency, throughput, and process memory are verified only for the registered workloads; energy and independent chassis attestation remain false. The next executable retrieval slice is a sealed representative corpus with exact ground truth and recall/MRR/NDCG/usefulness gates plus crash-recovered durable deletion and compaction proof. Only after those baseline gates pass may a source-pinned compressed arm be preregistered at equal effective bytes. Keep static weights, KV cache, and durable indexes separate. Claim no TurboVec parity, compression, broad performance, representative quality, product integration, live MemoryEndpoints, outside P2P, catalog, or release completion from local experiment evidence.
+primary_goal: >
+  Advance the exact f32 baseline from verified browser and named-host measurements into trustworthy comparison evidence without product integration: evaluate a sealed corpus, prove crash-recovered durable deletion, then compare one independently pinned compressed arm under preregistered equal-byte gates.
+required_context:
+  - wiki/runtime-mirust/reports/tinyrustlm-exact-flat-named-target-performance-memory-2026-07-22.md
+  - tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-preregistration.v1.json
+  - tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-observation-v1.json
+  - tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-verification-v1.json
+  - wiki/runtime-mirust/reports/tinyrustlm-exact-flat-browser-wasm-verification-memory-2026-07-21.md
+  - tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-observation-v1.json
+  - tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-verification-v1.json
+  - wiki/runtime-mirust/reports/tinyrustlm-exact-flat-retrieval-foundation-memory-2026-07-21.md
+  - wiki/runtime-mirust/reports/tinyrustlm-vector-oracle-foundation-memory-2026-07-21.md
+  - tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-preregistration.v1.json
+  - tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-verification-v1.json
+  - tinyrustlm/experiments/vector-quantization/source-claim-ledger.v1.json
+  - docs/report-intake/2026-07-18/turbovec-turboquant-and-handoff-audit/tinyrustlm-turbovec-turboquant-intake-tdd-delta-2026-07-18.md
+  - .uai/test-plan.uai
+  - .uai/totem.uai
+  - .uai/taboo.uai
+active_intake:
+  - agent-file-handoff/Improvement/2026-07-18-memoryendpoints-platform-contract-and-live-continuity-retry-prompt.md
+  - agent-file-handoff/Improvement/2026-07-18-six-disconnected-turbovec-turboquant-deeper-performance-accuracy-research-prompts.md
+active_intake_truth: >
+  These are outbound assignments awaiting independent reports. Keep them active. They prove no contract, algorithm, quality, performance, compatibility, live account, or deployment fact.
+engineering_rules:
+  - TinyRustLM is pre-release; incur no technical debt and provide no legacy or backward-compatibility support.
+  - Rewrite cleanly and remove superseded implementation after verification; preserve immutable receipts as audit evidence only.
+  - Keep third-party review downloads outside every repository and Git under E:\Source\external\{project-name}.
+  - Do not modify receipt-bound exact-flat inputs without creating a new preregistration and child receipt identity.
+  - Keep experiment code publish-disabled, dependency-free, unsafe-free, and absent from product imports until all promotion gates pass.
+  - Preserve raw failures, fixed seeds, exact identities, bounded allocations, untouched outputs, and current zero-live campaign counters.
+  - Never train unresolved 42-record or 668-record human-review data.
+next_steps:
+  - Build a sealed, provenance-bound retrieval corpus with exact ground truth, filters, ties, drift, deletion, restart, and privacy cases.
+  - Add crash/power-loss persistence tests with same-directory atomic promotion and post-compaction byte-level deletion evidence.
+  - Record energy and independent physical-chassis attestation only from a separately authorized measurement source; never infer either from the current host probe.
+  - Pin one compressed retrieval method by exact source and license identity, then freeze an equal-effective-byte comparison before implementation.
+success_criteria:
+  - Exact-flat receipt history remains immutable and validators pass against unchanged bound inputs.
+  - Existing real-browser and named-target receipts retain exact bytes, toolchains, hardware, settings, seeds, raw failures, and bounded authority.
+  - Corpus metrics are computed against sealed exact ground truth with no result-driven threshold changes.
+  - Durable deletion is proved after crash recovery and compaction, not inferred from in-memory tombstones.
+  - No product, TurboVec, compression, performance, MemoryEndpoints, P2P, catalog, or release claim exceeds its receipt evidence.

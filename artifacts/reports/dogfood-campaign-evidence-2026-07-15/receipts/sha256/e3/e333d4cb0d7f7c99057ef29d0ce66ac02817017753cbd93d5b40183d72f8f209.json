@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "receiptType": "tinyrustlm.model-source-review-v1",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "phase": "model-source-review",
+  "attempt": 1,
+  "status": "rejected",
+  "createdAtUtc": "2026-07-18T18:14:00.970Z",
+  "completedAtUtc": "2026-07-18T18:14:00.970Z",
+  "inputReceiptIds": [],
+  "inputHashes": {
+    "config": "81a65141dd34772b75611927ca139f4e9921eaa83191305e03722c217d9dd4a0",
+    "evidenceSet": "07780a57bda2efb18fcae4c0816d25a380d1f54c84d952a96433214735417885",
+    "license": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "model-card": "4579a7f0ced5aff9c1dfd600884affa6b86b6dfa926dd0fb8dd8281c147e13ca",
+    "repository-metadata": "6ab4a73e3d623f0e50a3d4afcd6ca351eeb161cafd152c96dc79bd812164ff5e",
+    "repository-tree": "67e50e901576b3d02f83cbb09d943474da485919fb6b6fbd9f0d509c4ebecb08",
+    "tokenizer-config": "4ef57575bc83af4d673452f3df9a22f4efb75f8d73f2090998f5ee679ccb7fab"
+  },
+  "outputHashes": {
+    "assessment": "f25c9a85afe79a477d17a51e53494567bcae25d9ccda7c48c964ced7b043d1b6"
+  },
+  "sourceRevision": "1c732107f6bb54ee76b5363547e24537dffea498",
+  "toolNames": [
+    "tinyrustlm-source-model-preflight-evidence"
+  ],
+  "toolVersions": [
+    "7"
+  ],
+  "toolBinaryHashes": [
+    "2e478c0bc6b4bead65e42e5ef422f8fa9d356cf2e693c059a0b839f23e07aa9a"
+  ],
+  "runtimeIdentifier": "win-x64",
+  "operatingSystem": "win32",
+  "architecture": "x64",
+  "hardwareEvidence": {
+    "executionBoundary": "public-source-metadata-review",
+    "physicalHardwareAttested": false
+  },
+  "configurationHash": "989034d8923e0eb71bd733a58fb11b24cf387f78c3444ef0b3f55ce8b22ac166",
+  "publicSafeParameters": {
+    "modelId": "ZainBhat/qwen3-0.6b-finetome-lora-merged",
+    "sourceModelId": "ZainBhat/qwen3-0.6b-finetome-lora-merged",
+    "decision": "rejected",
+    "decisionAuthority": "engineering-source-preflight-v2",
+    "architectureFamily": "qwen3-dense-gqa-tied",
+    "runtimeAdmission": "not-assessed-preflight-rejected",
+    "accessDisposition": "public-ungated-metadata-only-no-source-acquisition",
+    "licenseId": "apache-2.0",
+    "licenseDisposition": "apache-2.0-card-declaration-no-bundled-license-review-required",
+    "distributionDisposition": "not-assessed-preflight-rejected",
+    "sourceAcquisitionStatus": "not-acquired",
+    "sourceAcquisitionComplete": false,
+    "sourceModelIdentityKind": "none",
+    "sourceWeightArtifactCount": 0,
+    "sourceWeightByteCount": 0,
+    "evidenceArtifactCount": 6,
+    "missingRequiredArtifactCount": 3,
+    "rejectionCodeCount": 4
+  },
+  "boundedDiagnostics": {
+    "rejectionCodes": [
+      "publisher-training-corpus-identity-absent",
+      "publisher-training-recipe-identity-absent",
+      "source-lineage-quantized-intermediate-only",
+      "source-screen-provenance-contract-incomplete"
+    ],
+    "missingRequiredArtifacts": [
+      "model.safetensors",
+      "training-corpus-manifest.json",
+      "training-recipe.json"
+    ],
+    "evidenceByteCount": 38813,
+    "sourceWeightArtifactCount": 0,
+    "sourceWeightByteCount": 0
+  },
+  "blockerCode": "candidate_source_provenance_contract_rejected",
+  "externalEvidenceReferences": [
+    "https://huggingface.co/ZainBhat/qwen3-0.6b-finetome-lora-merged/tree/1c732107f6bb54ee76b5363547e24537dffea498",
+    "https://huggingface.co/ZainBhat/qwen3-0.6b-finetome-lora-merged/blob/1c732107f6bb54ee76b5363547e24537dffea498/README.md",
+    "https://huggingface.co/ZainBhat/qwen3-0.6b-finetome-lora-merged/blob/1c732107f6bb54ee76b5363547e24537dffea498/config.json",
+    "https://huggingface.co/ZainBhat/qwen3-0.6b-finetome-lora-merged/blob/1c732107f6bb54ee76b5363547e24537dffea498/tokenizer_config.json",
+    "https://huggingface.co/api/models/ZainBhat/qwen3-0.6b-finetome-lora-merged/revision/1c732107f6bb54ee76b5363547e24537dffea498?blobs=true",
+    "https://huggingface.co/api/models/ZainBhat/qwen3-0.6b-finetome-lora-merged/tree/1c732107f6bb54ee76b5363547e24537dffea498?recursive=true&expand=false",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ],
+  "redactionVersion": "tinyrustlm.public-receipt-redaction.v1",
+  "evidenceClass": "local",
+  "supersedesReceiptIds": [],
+  "attestationReference": null,
+  "receiptId": "sha256:e333d4cb0d7f7c99057ef29d0ce66ac02817017753cbd93d5b40183d72f8f209",
+  "receiptContentHash": "e333d4cb0d7f7c99057ef29d0ce66ac02817017753cbd93d5b40183d72f8f209"
+}

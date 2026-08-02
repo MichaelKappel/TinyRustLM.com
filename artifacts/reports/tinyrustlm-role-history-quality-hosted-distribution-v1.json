@@ -1,0 +1,50 @@
+{
+  "schema": "tinyrustlm.memory_endpoints.hosted_distribution.v1",
+  "report_id": "tinyrustlm-role-history-quality-hosted-distribution-v1",
+  "generated_at_utc": "2026-07-13T03:00:48Z",
+  "status": "pass",
+  "source_commit": "d2a7e45",
+  "marker": "tinyrustlm-role-history-quality-v1-20260712",
+  "workspace_id": "workspace-47f4c72e6ed142f0a41d",
+  "agent_id": "tinyrustlm-agent",
+  "scope": "goal",
+  "scope_id": "goal-tinyrustlm-hosted-memory",
+  "status_event": {
+    "memory_event_id": "mem-30eadf0bd39e4e76a3c1",
+    "review_id": "review-7d07a0c1c0b044abb2a8",
+    "review_status": "promoted",
+    "search_count": 1,
+    "memory_type": "status",
+    "values_redacted": true
+  },
+  "handoff_event": {
+    "memory_event_id": "mem-b89f284ee2a54554b18a",
+    "review_id": "review-4165d8abfb2d4846a50b",
+    "review_status": "promoted",
+    "search_count": 1,
+    "memory_type": "handoff",
+    "values_redacted": true
+  },
+  "status_search_includes_handoff": false,
+  "handoff_search_includes_status": false,
+  "review_readback_count": 2,
+  "review_contract_safe_noop_probe_status": 422,
+  "review_contract_resolution": "The live endpoint requires decision=promote; the invalid boolean-shape probe was a redacted safe no-op before the two real decisions.",
+  "coordination": {
+    "room_id": "room-094574c6f1df9e75c1ce",
+    "room_scope": "task",
+    "room_scope_id": "task-tinyrustlm-virtual-uai-connector-contract",
+    "meeting_message_id": "meetmsg-01783911605296623679-2bff4da8",
+    "matching_transcript_count": 1,
+    "room_marked_read": true
+  },
+  "raw_credential_exposed": false,
+  "raw_payload_exposed": false,
+  "contains_prompt_text": false,
+  "contains_response_text": false,
+  "contains_record_ids": false,
+  "contains_record_level_actions": false,
+  "contains_model_bytes": false,
+  "training_authority": false,
+  "truth_boundary": "Hosted status and handoff preserve only the public-safe implementation checkpoint and restart route. All 42 human review decisions remain pending; no corpus, adapter, model, UI, selector, publication, or deployment is approved."
+}

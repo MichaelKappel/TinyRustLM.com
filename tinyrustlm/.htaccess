@@ -1,0 +1,27 @@
+Options -Indexes
+DirectoryIndex index.html
+AddType application/wasm .wasm
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "no-referrer"
+  Header always set Cross-Origin-Resource-Policy "same-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+
+  <FilesMatch "\.(html|css|js|wasm|manifest)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule (^|/)(deploy-[0-9a-f]{12}-stage[^/]*|backup-[0-9a-f]{12}\.(tmp|slm))$ - [R=404,L,NC]
+  RewriteRule (^|/).*\.slm$ - [R=404,L,NC]
+  RewriteRule (^|/)models(/|$) - [R=404,L,NC]
+  RewriteRule (^|/)(\.git|\.uai|agent-file-handoff)(/|$) - [R=404,L,NC]
+</IfModule>
+
+<FilesMatch "^(workspace\.uai|ftp\.txt)$">
+  Require all denied
+</FilesMatch>

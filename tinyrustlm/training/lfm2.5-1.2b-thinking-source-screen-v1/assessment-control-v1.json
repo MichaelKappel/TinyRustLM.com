@@ -1,0 +1,129 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "LiquidAI/LFM2.5-1.2B-Thinking",
+  "sourceRevision": "95053d21d8e0b7ca99421a2127ae39c64f685ff3",
+  "sourceModelArtifactSha256": "112fba7db6c4544d9944002fcfe1c21e23e03d8fc0a0c7e2b6655de6c738583d",
+  "sourceScreenSha256": "3b8bd3321c1a193c3931388cfdc6f3712c8d0597658f4cf6ad49706f923bbeaf",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "lfm2-hybrid-short-convolution-gqa-thinking",
+  "runtimeAdmission": "unsupported-current-slm-hybrid-convolution-source-quality-rejected",
+  "licenseDisposition": "conditional-commercial-threshold-review-required",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": [
+    "answer-incomplete",
+    "final-answer-absent",
+    "visible-reasoning-only",
+    "underspecified-choice-missing-options",
+    "underspecified-choice-missing-decision-criteria",
+    "practical-decision-underdeveloped",
+    "keep-remove-recommendation-absent",
+    "feasible-fallback-absent",
+    "source-conflict-unresolved",
+    "authority-resolution-absent",
+    "plan-date-not-provided",
+    "adult-comparison-material-arguments-absent",
+    "latest-user-precedence-not-demonstrated",
+    "current-name-not-provided",
+    "current-user-instruction-not-affirmed",
+    "untrusted-memory-response-incomplete"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "final-answer-absent",
+        "visible-reasoning-only",
+        "ambiguous-request-user-facing-response-absent"
+      ]
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "final-answer-absent",
+        "visible-reasoning-only",
+        "underspecified-choice-missing-options",
+        "underspecified-choice-missing-decision-criteria"
+      ]
+    },
+    {
+      "index": 2,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "final-answer-absent",
+        "visible-reasoning-only",
+        "practical-decision-underdeveloped",
+        "keep-remove-recommendation-absent"
+      ]
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "final-answer-absent",
+        "visible-reasoning-only",
+        "feasible-fallback-absent"
+      ]
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "final-answer-absent",
+        "visible-reasoning-only",
+        "source-conflict-unresolved",
+        "authority-resolution-absent",
+        "plan-date-not-provided"
+      ]
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "final-answer-absent",
+        "visible-reasoning-only",
+        "adult-comparison-material-arguments-absent"
+      ]
+    },
+    {
+      "index": 6,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "final-answer-absent",
+        "visible-reasoning-only",
+        "latest-user-precedence-not-demonstrated",
+        "current-name-not-provided"
+      ]
+    },
+    {
+      "index": 7,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "final-answer-absent",
+        "visible-reasoning-only",
+        "current-user-instruction-not-affirmed",
+        "untrusted-memory-response-incomplete"
+      ]
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Thinking/tree/95053d21d8e0b7ca99421a2127ae39c64f685ff3",
+    "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Thinking/blob/95053d21d8e0b7ca99421a2127ae39c64f685ff3/README.md",
+    "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Thinking/blob/95053d21d8e0b7ca99421a2127ae39c64f685ff3/LICENSE",
+    "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Thinking/blob/95053d21d8e0b7ca99421a2127ae39c64f685ff3/chat_template.jinja",
+    "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Thinking/blob/95053d21d8e0b7ca99421a2127ae39c64f685ff3/config.json",
+    "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Thinking/blob/95053d21d8e0b7ca99421a2127ae39c64f685ff3/generation_config.json",
+    "https://github.com/huggingface/transformers/blob/v5.13.1/src/transformers/models/lfm2/modeling_lfm2.py",
+    "https://arxiv.org/abs/2511.23404"
+  ]
+}

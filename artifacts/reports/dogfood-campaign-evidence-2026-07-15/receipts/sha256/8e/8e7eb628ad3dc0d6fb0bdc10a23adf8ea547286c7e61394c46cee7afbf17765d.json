@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "receiptType": "tinyrustlm.model-source-screen-v1",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "phase": "model-source-screen",
+  "attempt": 1,
+  "status": "rejected",
+  "createdAtUtc": "2026-07-16T14:00:44.719Z",
+  "completedAtUtc": "2026-07-16T14:00:45.525Z",
+  "inputReceiptIds": [],
+  "inputHashes": {
+    "evalCases": "a2a0b484a8f329cd2935c5b3e73df4bc0f3068adac7a8a50baba01de73c38c12",
+    "sourceConfig": "2b43e80788972e6d53967b01ac3609d7df23cf0aabb0c866e51be694a59c1149",
+    "sourceGenerationInputs": "886d178296779c77ff308b14c12a564b2bbb10cd339800af9b25976630ca3e10",
+    "sourceLicense": "646f8936b8ddcd14e13e578ff6857e368780b0d1a4f6066bee89211923a373e2",
+    "sourceModel": "8143ae115ed6babe5e5ada8fb8c5b769d8f417802b2db042ad98b4f7ed73975b",
+    "sourceTokenizer": "e134af98b985517b4f068e3755ae90d4e9cd2d45d328325dc503f1c6b2d06cc7",
+    "sourceTokenizerConfig": "d27b698683435b0b0dd544a591a30196b2b63f5fd4c8c64b9060a84dc185386f",
+    "systemPrompt": "ebca1447df1ef441245498fc6bf24269c1da92c5e537841e94141da4cba1a410"
+  },
+  "outputHashes": {
+    "assessment": "efb85b94e2d34e22ccc8749538cc5d49c4a5c882c5458c9df5708d2cb6845bbc",
+    "sourceScreen": "d73dfed70e678e6544257ef299ee2238599cd5297ef5f44c775a52840a77de1d"
+  },
+  "sourceRevision": "04c3b9ad9361b824064a1f25ea60a8be9599b127",
+  "toolNames": [
+    "tinyrustlm-reference-raw-quality",
+    "tinyrustlm-source-model-screen-evidence"
+  ],
+  "toolVersions": [
+    "3",
+    "7"
+  ],
+  "toolBinaryHashes": [
+    "316629f85d3d5d7109865ad7f9b1644aab09dad3749c50802a5f25aa1d1bcdf3",
+    "feb6ca00360226fef67407b0de4c89f091991611725aa62036ba87627966a5a2"
+  ],
+  "runtimeIdentifier": "win-x64",
+  "operatingSystem": "win32",
+  "architecture": "x64",
+  "hardwareEvidence": {
+    "device": "cpu",
+    "dtype": "float32",
+    "referenceFramework": "transformers.AutoModelForCausalLM.generate",
+    "torchVersion": "2.13.0+cpu",
+    "transformersVersion": "5.13.1"
+  },
+  "configurationHash": "0f8402bc10dfe22dff17c3132d8f93959e08bfa4a99017f824b809bee8c82adc",
+  "publicSafeParameters": {
+    "modelId": "microsoft/bitnet-b1.58-2B-4T",
+    "sourceModelId": "microsoft/bitnet-b1.58-2B-4T",
+    "architectureFamily": "bitnet-b1.58-native-ternary-gqa-relu2-tied",
+    "runtimeAdmission": "unsupported-current-slm-native-bitnet-ternary-2.4b-source-quality-rejected",
+    "licenseDisposition": "mit-source-review-complete",
+    "decision": "rejected",
+    "decisionAuthority": "engineering-source-screen-v1",
+    "caseCount": 8,
+    "casesPassed": 4,
+    "casesFailed": 4,
+    "criticalFailureCount": 9,
+    "sourceModelIdentityKind": "direct-safetensors-sha256",
+    "sourceWeightArtifactCount": 1,
+    "sourceWeightByteCount": 1178623988,
+    "sourceGenerationArtifactCount": 5,
+    "sourceChatTemplateMode": "embedded-tokenizer-config",
+    "loaderContract": "local-files-no-remote-code-v1",
+    "torchCompileMode": "disabled-eager",
+    "tokenizerRegexMode": "fix-mistral-regex",
+    "remoteCodeEnabled": false,
+    "generationProfile": "greedy",
+    "samplingEnabled": false,
+    "rawOutputPreserved": true,
+    "generationCallCountPerCase": 1,
+    "responseRepairApplied": false
+  },
+  "boundedDiagnostics": {
+    "criticalFailureCodes": [
+      "answer-incomplete",
+      "practical-decision-underdeveloped",
+      "source-conflict-unresolved",
+      "authority-resolution-absent",
+      "confirmation-step-absent",
+      "adult-comparison-one-sided",
+      "quoted-instruction-data-boundary-misapplied",
+      "current-task-not-followed",
+      "over-refusal"
+    ],
+    "failedCaseIndexes": [
+      2,
+      4,
+      5,
+      7
+    ],
+    "sourceScreenByteCount": 33049,
+    "assessmentByteCount": 3033
+  },
+  "blockerCode": "model_quality_rejected",
+  "externalEvidenceReferences": [
+    "https://huggingface.co/microsoft/bitnet-b1.58-2B-4T/tree/04c3b9ad9361b824064a1f25ea60a8be9599b127",
+    "https://huggingface.co/microsoft/bitnet-b1.58-2B-4T/blob/04c3b9ad9361b824064a1f25ea60a8be9599b127/README.md",
+    "https://huggingface.co/microsoft/bitnet-b1.58-2B-4T/blob/04c3b9ad9361b824064a1f25ea60a8be9599b127/LICENSE",
+    "https://huggingface.co/microsoft/bitnet-b1.58-2B-4T/blob/04c3b9ad9361b824064a1f25ea60a8be9599b127/config.json",
+    "https://huggingface.co/microsoft/bitnet-b1.58-2B-4T/blob/04c3b9ad9361b824064a1f25ea60a8be9599b127/generation_config.json",
+    "https://huggingface.co/microsoft/bitnet-b1.58-2B-4T/blob/04c3b9ad9361b824064a1f25ea60a8be9599b127/tokenizer_config.json",
+    "https://github.com/huggingface/transformers/blob/v5.13.1/src/transformers/integrations/bitnet.py",
+    "https://arxiv.org/abs/2504.12285"
+  ],
+  "redactionVersion": "tinyrustlm.public-receipt-redaction.v1",
+  "evidenceClass": "local",
+  "supersedesReceiptIds": [],
+  "attestationReference": null,
+  "receiptId": "sha256:8e7eb628ad3dc0d6fb0bdc10a23adf8ea547286c7e61394c46cee7afbf17765d",
+  "receiptContentHash": "8e7eb628ad3dc0d6fb0bdc10a23adf8ea547286c7e61394c46cee7afbf17765d"
+}

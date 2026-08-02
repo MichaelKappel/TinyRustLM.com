@@ -1,0 +1,86 @@
+{
+  "schema": "tinyrustlm.source_model_preflight_assessment.v2",
+  "sourceModelId": "ZainBhat/qwen3-0.6b-finetome-lora-merged",
+  "sourceRevision": "1c732107f6bb54ee76b5363547e24537dffea498",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-preflight-v2",
+  "architectureFamily": "qwen3-dense-gqa-tied",
+  "runtimeAdmission": "not-assessed-preflight-rejected",
+  "accessDisposition": "public-ungated-metadata-only-no-source-acquisition",
+  "licenseId": "apache-2.0",
+  "licenseDisposition": "apache-2.0-card-declaration-no-bundled-license-review-required",
+  "distributionDisposition": "not-assessed-preflight-rejected",
+  "blockerCode": "candidate_source_provenance_contract_rejected",
+  "rejectionCodes": [
+    "publisher-training-corpus-identity-absent",
+    "publisher-training-recipe-identity-absent",
+    "source-lineage-quantized-intermediate-only",
+    "source-screen-provenance-contract-incomplete"
+  ],
+  "missingRequiredArtifacts": [
+    "model.safetensors",
+    "training-corpus-manifest.json",
+    "training-recipe.json"
+  ],
+  "evidenceArtifacts": [
+    {
+      "kind": "config",
+      "fileName": "config.json",
+      "byteCount": 1562,
+      "sha256": "81a65141dd34772b75611927ca139f4e9921eaa83191305e03722c217d9dd4a0",
+      "publicUrl": "https://huggingface.co/ZainBhat/qwen3-0.6b-finetome-lora-merged/blob/1c732107f6bb54ee76b5363547e24537dffea498/config.json",
+      "observedAtUtc": "2026-07-18T18:12:47.235Z"
+    },
+    {
+      "kind": "license",
+      "fileName": "apache-2.0.txt",
+      "byteCount": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "publicUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "observedAtUtc": "2026-07-18T18:12:47.235Z"
+    },
+    {
+      "kind": "model-card",
+      "fileName": "model-card.md",
+      "byteCount": 595,
+      "sha256": "4579a7f0ced5aff9c1dfd600884affa6b86b6dfa926dd0fb8dd8281c147e13ca",
+      "publicUrl": "https://huggingface.co/ZainBhat/qwen3-0.6b-finetome-lora-merged/blob/1c732107f6bb54ee76b5363547e24537dffea498/README.md",
+      "observedAtUtc": "2026-07-18T18:12:47.235Z"
+    },
+    {
+      "kind": "repository-metadata",
+      "fileName": "repository-metadata.json",
+      "byteCount": 13133,
+      "sha256": "6ab4a73e3d623f0e50a3d4afcd6ca351eeb161cafd152c96dc79bd812164ff5e",
+      "publicUrl": "https://huggingface.co/api/models/ZainBhat/qwen3-0.6b-finetome-lora-merged/revision/1c732107f6bb54ee76b5363547e24537dffea498?blobs=true",
+      "observedAtUtc": "2026-07-18T18:12:47.235Z"
+    },
+    {
+      "kind": "repository-tree",
+      "fileName": "repository-tree.json",
+      "byteCount": 1631,
+      "sha256": "67e50e901576b3d02f83cbb09d943474da485919fb6b6fbd9f0d509c4ebecb08",
+      "publicUrl": "https://huggingface.co/api/models/ZainBhat/qwen3-0.6b-finetome-lora-merged/tree/1c732107f6bb54ee76b5363547e24537dffea498?recursive=true&expand=false",
+      "observedAtUtc": "2026-07-18T18:12:47.235Z"
+    },
+    {
+      "kind": "tokenizer-config",
+      "fileName": "tokenizer-config.json",
+      "byteCount": 10534,
+      "sha256": "4ef57575bc83af4d673452f3df9a22f4efb75f8d73f2090998f5ee679ccb7fab",
+      "publicUrl": "https://huggingface.co/ZainBhat/qwen3-0.6b-finetome-lora-merged/blob/1c732107f6bb54ee76b5363547e24537dffea498/tokenizer_config.json",
+      "observedAtUtc": "2026-07-18T18:12:47.235Z"
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/ZainBhat/qwen3-0.6b-finetome-lora-merged/tree/1c732107f6bb54ee76b5363547e24537dffea498",
+    "https://huggingface.co/ZainBhat/qwen3-0.6b-finetome-lora-merged/blob/1c732107f6bb54ee76b5363547e24537dffea498/README.md",
+    "https://huggingface.co/ZainBhat/qwen3-0.6b-finetome-lora-merged/blob/1c732107f6bb54ee76b5363547e24537dffea498/config.json",
+    "https://huggingface.co/ZainBhat/qwen3-0.6b-finetome-lora-merged/blob/1c732107f6bb54ee76b5363547e24537dffea498/tokenizer_config.json",
+    "https://huggingface.co/api/models/ZainBhat/qwen3-0.6b-finetome-lora-merged/revision/1c732107f6bb54ee76b5363547e24537dffea498?blobs=true",
+    "https://huggingface.co/api/models/ZainBhat/qwen3-0.6b-finetome-lora-merged/tree/1c732107f6bb54ee76b5363547e24537dffea498?recursive=true&expand=false",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ],
+  "sourceAcquisitionStatus": "not-acquired",
+  "sourceWeightArtifacts": []
+}

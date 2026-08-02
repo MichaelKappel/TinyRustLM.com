@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\TinyRustLM.Core\TinyRustLM.Core.csproj" />
+    <ProjectReference Include="..\..\src\TinyRustLM.Memory\TinyRustLM.Memory.csproj" />
+    <ProjectReference Include="..\..\src\TinyRustLM.MemoryEndpoints\TinyRustLM.MemoryEndpoints.csproj" />
+    <ProjectReference Include="..\..\src\TinyRustLM.P2P\TinyRustLM.P2P.csproj" />
+  </ItemGroup>
+</Project>

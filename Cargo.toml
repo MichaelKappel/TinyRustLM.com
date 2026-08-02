@@ -1,0 +1,44 @@
+[workspace]
+members = [
+    "rust/experiments/tinyrustlm-vector-oracle",
+    "rust/crates/tinyrustlm-native",
+    "rust/crates/tinyrustlm-memory",
+    "rust/crates/tinyrustlm-memory-endpoints",
+    "rust/crates/tinyrustlm-p2p",
+    "rust/crates/tinyrustlm-runtime",
+    "rust/crates/tinyrustlm-slm",
+    "tinyrustlm/runtime",
+    "tinyrustlm/tools/browser_harness",
+    "tinyrustlm/tools/local_connect",
+    "tinyrustlm/tools/local_server",
+    "tinyrustlm/tools/slm_pack",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.8"
+edition = "2021"
+license = "Proprietary"
+authors = ["TinyRustLM maintainers"]
+repository = "https://TinyRustLM.com/"
+
+[workspace.dependencies]
+base64 = "0.22.1"
+ed25519-dalek = "2.2.0"
+serde = { version = "1.0.203", features = ["derive"] }
+serde_json = "1.0.117"
+sha2 = "0.10.8"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+
+[workspace.lints.rust]
+missing_docs = "deny"
+unsafe_code = "warn"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "z"
+panic = "abort"
+
+[profile.release.package.tinyrustlm-runtime]
+opt-level = 3

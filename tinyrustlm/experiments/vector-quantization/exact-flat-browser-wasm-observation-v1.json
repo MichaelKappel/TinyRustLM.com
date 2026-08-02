@@ -1,0 +1,602 @@
+{
+  "schema": "tinyrustlm.exact_flat_browser_wasm_observation.v1",
+  "experimentId": "exact-flat-browser-wasm-direct-tests-20260722",
+  "status": "real-browser-wasm-verified-with-open-promotion-gaps",
+  "createdAtUtc": "2026-07-22T03:01:49.988Z",
+  "sourceRevision": "cbf1c10bf6a0b6e04b4caacfba73d1dd3b473aba",
+  "preregistration": {
+    "path": "tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-preregistration.v2.json",
+    "sha256": "695f902a12b94024a744ae9bb770a93b5576c0be5a9bf39540a0a9e957f119cd"
+  },
+  "parentReceipt": {
+    "receiptId": "exact-flat-retrieval-75f95baa316315ea",
+    "sha256": "893e96f461f701f46a3aaaeecddd67bc2b700625ccdb9f0d83ce4b0b67d8c18c"
+  },
+  "inputs": [
+    {
+      "path": "Cargo.lock",
+      "bytes": 14723,
+      "sha256": "77566e3e2e18c8ba35fe5467d95c036c347cebfb5f7c309bd86b4dbce92e4545"
+    },
+    {
+      "path": "Cargo.toml",
+      "bytes": 1090,
+      "sha256": "5afcef4ff36679f99fbeb438f49af195b76065dd156bcf457fd0f4b807f66ba0"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/Cargo.toml",
+      "bytes": 312,
+      "sha256": "e962ea7c04a47dd8f72122f1de129e5175d3a40eac2dca511d399fee1f5e52c9"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/accounting.rs",
+      "bytes": 3884,
+      "sha256": "ecd53e96a25fd3753ecd69c6dd7a33e40e5506e424669b0da3575394dece50f0"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/bitpack.rs",
+      "bytes": 10969,
+      "sha256": "685a4b8682d3fea40d8e50975228cb5c06a2101c9a8067b70ab5fe2f92d60cf1"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/codebook.rs",
+      "bytes": 15253,
+      "sha256": "08b58571dbae6c7dcbe857ddacbc5f45d19af6c5fb336df1fabeb4b163ef99bc"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/error.rs",
+      "bytes": 9046,
+      "sha256": "f09f395388ed0c1f6d1160e4ea12b320baec1f01a40f17330989c8bf881fc7db"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/flat_index.rs",
+      "bytes": 40496,
+      "sha256": "4627ee3c0fae6605a415e3a2b917e5346f01b3ac992e938ce724edf3df1aa17b"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/lib.rs",
+      "bytes": 1268,
+      "sha256": "dbbaf1a880646e8769f0188e2a79c1467b3912f272eb00325792e1f787342f63"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/metrics.rs",
+      "bytes": 12071,
+      "sha256": "4fb354c13c0dfda8987de8a54f83c32d28725d79c09c78ca0978dd6ab7d5c05c"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/prng.rs",
+      "bytes": 3167,
+      "sha256": "45d64327c6e7d2184857c87f453fb57172da74315028034abb8a5229172964eb"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/score.rs",
+      "bytes": 9825,
+      "sha256": "c60a9a7c1935f3a6d22ef0d49c32a3c74bc0c1abf174fb267ab293e3e9b45c38"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/sha256.rs",
+      "bytes": 5237,
+      "sha256": "3b9efb7ed1629e7ff80d480f56a76f2c7a9008a8782045188f6ae0d6491c3b6a"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/src/transform.rs",
+      "bytes": 11797,
+      "sha256": "e1ab84175ac2e0ae3d81416a55da6423f1ebf0189f81dcb463f61ded619336e1"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/tests/flat_index_test.rs",
+      "bytes": 9647,
+      "sha256": "8877f2ebe8fd9ee00155c6d9df41e5d6c0b6227550e7a7c327f41b60a8dd7427"
+    },
+    {
+      "path": "rust/experiments/tinyrustlm-vector-oracle/tests/lib_test.rs",
+      "bytes": 2731,
+      "sha256": "c7a1a58e37c7fc1e0a96eed26cb3f3c064c1abff44d6ca57b0745d694dd2007e"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-preregistration.v1.json",
+      "bytes": 3899,
+      "sha256": "e9ed2d13d975689184d53e4a55cd774fed449cca99372d1e9afc40284569b330"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-preregistration.v2.json",
+      "bytes": 4454,
+      "sha256": "695f902a12b94024a744ae9bb770a93b5576c0be5a9bf39540a0a9e957f119cd"
+    },
+    {
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-verification-v1.json",
+      "bytes": 11753,
+      "sha256": "893e96f461f701f46a3aaaeecddd67bc2b700625ccdb9f0d83ce4b0b67d8c18c"
+    },
+    {
+      "path": "tinyrustlm/package-lock.json",
+      "bytes": 2282,
+      "sha256": "702c561f1d5520d776efc777aa9bc90390c7a6b944f2d9b3d813805c2d3d2f88"
+    },
+    {
+      "path": "tinyrustlm/package.json",
+      "bytes": 653,
+      "sha256": "2525056a373f965a0ef5111d6188abcdd8ef66b9f6ba60fb2ef66c5c2b04c151"
+    },
+    {
+      "path": "tinyrustlm/tests/campaign-evidence-store.test.js",
+      "bytes": 7597,
+      "sha256": "00f32ff48ebaa3ae4cd69380ba8f07c4c0f6ff4e6c72c8f029a5d43be2f65cf7"
+    },
+    {
+      "path": "tinyrustlm/tests/durable-files.test.js",
+      "bytes": 1455,
+      "sha256": "797c56cd7131cc95d31e1d15d3a55f53827e6fb5acd624a1b0c9ce0c3fdbb7e3"
+    },
+    {
+      "path": "tinyrustlm/tests/owned-browser-profile.test.js",
+      "bytes": 3803,
+      "sha256": "4d2993e056e998265b10f1fd4863ba23def75172549a17e33219cd49380ae8b1"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-browser-wasm-observation.test.js",
+      "bytes": 9684,
+      "sha256": "940638cdbb440ecd7d116e7be1971727542c601742c28f57c0151406477e5208"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-browser-wasm-preregistration-v2.test.js",
+      "bytes": 3345,
+      "sha256": "8793e9e8cda06285b3677fccf520aa0c915f1f9b8ae637630c7bce49e103fa6d"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-browser-wasm-preregistration.test.js",
+      "bytes": 3590,
+      "sha256": "a29d72d32e83cf810685fe78f0b784607e5c59ab990e8faeb3ebc8412fc5a908"
+    },
+    {
+      "path": "tinyrustlm/tests/vector-retrieval-receipt.test.js",
+      "bytes": 2779,
+      "sha256": "55aff9001c6d55daa1f37c81afeb9d837cf30e1442db2eb3d986b22b7b4293fb"
+    },
+    {
+      "path": "tinyrustlm/tools/campaign-evidence-store.js",
+      "bytes": 22113,
+      "sha256": "3b2e8370a8ebff4576a72c3d290fa7413c318b2f2611945f955855ed384278b3"
+    },
+    {
+      "path": "tinyrustlm/tools/durable-files.js",
+      "bytes": 2895,
+      "sha256": "085f14edda664db13a73a5fc76c9fbdadadd0d34b651712c1cdc306b476df12c"
+    },
+    {
+      "path": "tinyrustlm/tools/owned-browser-profile.js",
+      "bytes": 10321,
+      "sha256": "28ca1747aaee2583b41c21f55b5d8801bdb9e629be3d54b92b0a685c829e1ea2"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-browser-wasm-observation.js",
+      "bytes": 45773,
+      "sha256": "f519ae12fa1a79d4969ec3aee994a4eb916d46b192ff139d9c7d7bffb67f789f"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-browser-wasm-preregistration-v2.js",
+      "bytes": 11957,
+      "sha256": "6836f80233bcaf01f3ac0cc161f5d3bba1db6d1b8ac80cceb5a65f83bb5a4e8d"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-browser-wasm-preregistration.js",
+      "bytes": 11468,
+      "sha256": "205cbcbc71590acbd118ace677e9f852eedb76ee5309d4d61fe96cb1dc63de01"
+    },
+    {
+      "path": "tinyrustlm/tools/vector-retrieval-receipt.js",
+      "bytes": 25444,
+      "sha256": "a581e1e989cc9e4c4799933e81971b73365fd21b31710c5b1d1095ab1a28349a"
+    }
+  ],
+  "environment": {
+    "operatingSystem": "win32",
+    "architecture": "x64"
+  },
+  "tools": {
+    "node": {
+      "version": "v24.14.0",
+      "sha256": "63c259c81e5d472b5f11c8d506070130cb04a1ecf84b80377a34ed6ec9048088"
+    },
+    "cargo": {
+      "version": "cargo 1.96.0 (30a34c682 2026-05-25)",
+      "sha256": "122f18d28a63fa358f3db266abee1ff1d8aabf0ab7f2dd9ac38a38da99977ae5"
+    },
+    "rustc": {
+      "version": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+      "sha256": "acb138286bbe20c6cf3ec39a7e0a68c3fab0cd949baa2912cf466514d0d531ab"
+    },
+    "playwright": {
+      "version": "1.61.1",
+      "sha256": "9d8556509e073169efec663b7f71c13f17d7002b307d00d48bf88ee91c387f3e"
+    },
+    "chromium": {
+      "version": "149.0.7827.55",
+      "sha256": "b798f9e53a98d29eb7f36f8c409f905d3184780a04d2bcb56989067194784bd1"
+    }
+  },
+  "commands": [
+    {
+      "gateId": "browser-observation-preregistration-parent-and-evidence-tests",
+      "executable": "node",
+      "arguments": [
+        "--test",
+        "tinyrustlm/tests/campaign-evidence-store.test.js",
+        "tinyrustlm/tests/durable-files.test.js",
+        "tinyrustlm/tests/owned-browser-profile.test.js",
+        "tinyrustlm/tests/vector-browser-wasm-observation.test.js",
+        "tinyrustlm/tests/vector-browser-wasm-preregistration.test.js",
+        "tinyrustlm/tests/vector-browser-wasm-preregistration-v2.test.js",
+        "tinyrustlm/tests/vector-retrieval-receipt.test.js"
+      ],
+      "exitCode": 0,
+      "outputSha256": "b05c5a2efc956eae06a1f6443456bdfecff3973eb56bb0624de16992591ef80a",
+      "spawnErrorCode": null
+    },
+    {
+      "gateId": "exact-flat-native-tests",
+      "executable": "cargo",
+      "arguments": [
+        "test",
+        "-p",
+        "tinyrustlm-vector-oracle"
+      ],
+      "exitCode": 0,
+      "outputSha256": "8e7e5ade0597d9ea46241c36887ffe14624c8d92a04dfbc15275dbdb5da7f900",
+      "spawnErrorCode": null
+    },
+    {
+      "gateId": "exact-flat-strict-clippy",
+      "executable": "cargo",
+      "arguments": [
+        "clippy",
+        "-p",
+        "tinyrustlm-vector-oracle",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "outputSha256": "6e42febcbd42c98d166f65e6d51f828c476e87778d13aaef7504afce71f6f297",
+      "spawnErrorCode": null
+    },
+    {
+      "gateId": "exact-flat-rustdoc",
+      "executable": "cargo",
+      "arguments": [
+        "doc",
+        "-p",
+        "tinyrustlm-vector-oracle",
+        "--no-deps"
+      ],
+      "exitCode": 0,
+      "outputSha256": "659eea9f6bf2239b44a0965be15a5dadbb1cb4dbdda80c6f4eb206ab52aa5e67",
+      "spawnErrorCode": null
+    },
+    {
+      "gateId": "exact-flat-wasm-test-build",
+      "executable": "cargo",
+      "arguments": [
+        "test",
+        "-p",
+        "tinyrustlm-vector-oracle",
+        "--target",
+        "wasm32-unknown-unknown",
+        "--no-run"
+      ],
+      "exitCode": 0,
+      "outputSha256": "487467b7f76f273d9a4487ddaa8cd57a34fee1040061a4af8712d5f23b975c24",
+      "spawnErrorCode": null
+    }
+  ],
+  "modules": [
+    {
+      "role": "unit",
+      "expectedTestCount": 40,
+      "bytes": 5850272,
+      "sha256": "a7d5de550ade0d409815d1e8a80477a8957dab60246e6a037d77449c8f553d7f",
+      "exports": [
+        {
+          "name": "memory",
+          "kind": "memory"
+        },
+        {
+          "name": "main",
+          "kind": "function"
+        },
+        {
+          "name": "__data_end",
+          "kind": "global"
+        },
+        {
+          "name": "__heap_base",
+          "kind": "global"
+        }
+      ],
+      "imports": []
+    },
+    {
+      "role": "exact-flat-black-box",
+      "expectedTestCount": 8,
+      "bytes": 6160796,
+      "sha256": "270baf9cd60ea4c83618d69faa5de34748fec971f1dfe40818d18a9b302520cb",
+      "exports": [
+        {
+          "name": "memory",
+          "kind": "memory"
+        },
+        {
+          "name": "main",
+          "kind": "function"
+        },
+        {
+          "name": "__data_end",
+          "kind": "global"
+        },
+        {
+          "name": "__heap_base",
+          "kind": "global"
+        }
+      ],
+      "imports": []
+    },
+    {
+      "role": "clean-room-conformance",
+      "expectedTestCount": 1,
+      "bytes": 5393294,
+      "sha256": "3da1004c131641c8a3d67648865a6fd00f3ca6c35cb828ad1fb8f7787c4232d0",
+      "exports": [
+        {
+          "name": "memory",
+          "kind": "memory"
+        },
+        {
+          "name": "main",
+          "kind": "function"
+        },
+        {
+          "name": "__data_end",
+          "kind": "global"
+        },
+        {
+          "name": "__heap_base",
+          "kind": "global"
+        }
+      ],
+      "imports": []
+    }
+  ],
+  "runs": [
+    {
+      "runNumber": 1,
+      "browserVersion": "149.0.7827.55",
+      "pageOrigin": "about:blank",
+      "moduleResults": [
+        {
+          "role": "unit",
+          "sha256": "a7d5de550ade0d409815d1e8a80477a8957dab60246e6a037d77449c8f553d7f",
+          "bytes": 5850272,
+          "expectedTestCount": 40,
+          "exports": [
+            {
+              "name": "memory",
+              "kind": "memory"
+            },
+            {
+              "name": "main",
+              "kind": "function"
+            },
+            {
+              "name": "__data_end",
+              "kind": "global"
+            },
+            {
+              "name": "__heap_base",
+              "kind": "global"
+            }
+          ],
+          "imports": [],
+          "returnCode": 0
+        },
+        {
+          "role": "exact-flat-black-box",
+          "sha256": "270baf9cd60ea4c83618d69faa5de34748fec971f1dfe40818d18a9b302520cb",
+          "bytes": 6160796,
+          "expectedTestCount": 8,
+          "exports": [
+            {
+              "name": "memory",
+              "kind": "memory"
+            },
+            {
+              "name": "main",
+              "kind": "function"
+            },
+            {
+              "name": "__data_end",
+              "kind": "global"
+            },
+            {
+              "name": "__heap_base",
+              "kind": "global"
+            }
+          ],
+          "imports": [],
+          "returnCode": 0
+        },
+        {
+          "role": "clean-room-conformance",
+          "sha256": "3da1004c131641c8a3d67648865a6fd00f3ca6c35cb828ad1fb8f7787c4232d0",
+          "bytes": 5393294,
+          "expectedTestCount": 1,
+          "exports": [
+            {
+              "name": "memory",
+              "kind": "memory"
+            },
+            {
+              "name": "main",
+              "kind": "function"
+            },
+            {
+              "name": "__data_end",
+              "kind": "global"
+            },
+            {
+              "name": "__heap_base",
+              "kind": "global"
+            }
+          ],
+          "imports": [],
+          "returnCode": 0
+        }
+      ],
+      "networkRequestCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "browserProcessClosed": true,
+      "profileDeletion": {
+        "schema": "tinyrustlm.browser_profile_deletion.v1",
+        "campaignId": "exact-flat-browser-wasm-direct-tests-20260722",
+        "round": 1,
+        "role": "direct-wasm-tests",
+        "rootMarkerHash": "78ff67c1b7fadf32d1c4470c1fc83edd358bf0b16726e053e735e9c3a29c624e",
+        "profileMarkerHash": "cfbe54d28a58d3617c4db4fd0751798e5dadc8cd4aff7086fff33d3cbb092e30",
+        "deleted": true,
+        "verifiedAtUtc": "2026-07-22T03:01:48.267Z"
+      },
+      "profileRootDeleted": true
+    },
+    {
+      "runNumber": 2,
+      "browserVersion": "149.0.7827.55",
+      "pageOrigin": "about:blank",
+      "moduleResults": [
+        {
+          "role": "unit",
+          "sha256": "a7d5de550ade0d409815d1e8a80477a8957dab60246e6a037d77449c8f553d7f",
+          "bytes": 5850272,
+          "expectedTestCount": 40,
+          "exports": [
+            {
+              "name": "memory",
+              "kind": "memory"
+            },
+            {
+              "name": "main",
+              "kind": "function"
+            },
+            {
+              "name": "__data_end",
+              "kind": "global"
+            },
+            {
+              "name": "__heap_base",
+              "kind": "global"
+            }
+          ],
+          "imports": [],
+          "returnCode": 0
+        },
+        {
+          "role": "exact-flat-black-box",
+          "sha256": "270baf9cd60ea4c83618d69faa5de34748fec971f1dfe40818d18a9b302520cb",
+          "bytes": 6160796,
+          "expectedTestCount": 8,
+          "exports": [
+            {
+              "name": "memory",
+              "kind": "memory"
+            },
+            {
+              "name": "main",
+              "kind": "function"
+            },
+            {
+              "name": "__data_end",
+              "kind": "global"
+            },
+            {
+              "name": "__heap_base",
+              "kind": "global"
+            }
+          ],
+          "imports": [],
+          "returnCode": 0
+        },
+        {
+          "role": "clean-room-conformance",
+          "sha256": "3da1004c131641c8a3d67648865a6fd00f3ca6c35cb828ad1fb8f7787c4232d0",
+          "bytes": 5393294,
+          "expectedTestCount": 1,
+          "exports": [
+            {
+              "name": "memory",
+              "kind": "memory"
+            },
+            {
+              "name": "main",
+              "kind": "function"
+            },
+            {
+              "name": "__data_end",
+              "kind": "global"
+            },
+            {
+              "name": "__heap_base",
+              "kind": "global"
+            }
+          ],
+          "imports": [],
+          "returnCode": 0
+        }
+      ],
+      "networkRequestCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "browserProcessClosed": true,
+      "profileDeletion": {
+        "schema": "tinyrustlm.browser_profile_deletion.v1",
+        "campaignId": "exact-flat-browser-wasm-direct-tests-20260722",
+        "round": 2,
+        "role": "direct-wasm-tests",
+        "rootMarkerHash": "5cb57fccdb78ce521412e9f5c236464442ce8daafb9803f211dbfb27a2be91be",
+        "profileMarkerHash": "22ae550211a31d03bcc2629b5ad2258b9048caebb46ba87e5ead98ff593f6068",
+        "deleted": true,
+        "verifiedAtUtc": "2026-07-22T03:01:49.986Z"
+      },
+      "profileRootDeleted": true
+    }
+  ],
+  "authority": {
+    "realBrowserWasmExecutionVerified": true,
+    "nativePerformanceMeasured": false,
+    "browserPerformanceMeasured": false,
+    "compressedRetrievalVerified": false,
+    "turboVecParityVerified": false,
+    "productIntegrationAuthorized": false,
+    "trainingAuthorized": false,
+    "releaseAuthorized": false
+  },
+  "openPromotionGaps": [
+    {
+      "gapId": "target-hardware-performance",
+      "status": "not-run",
+      "statement": "No preregistered named physical target has measured latency, throughput, peak memory, or energy."
+    },
+    {
+      "gapId": "retrieval-corpus-quality-metrics",
+      "status": "not-run",
+      "statement": "No sealed representative corpus has measured recall, MRR, NDCG, or usefulness."
+    },
+    {
+      "gapId": "durable-filesystem-deletion-proof",
+      "status": "not-run",
+      "statement": "No crash-recovered on-disk snapshot has proved deleted vector bytes absent after compaction."
+    }
+  ],
+  "requiredNextGate": "After direct browser execution passes, preregister named physical-target measurements, a sealed representative retrieval corpus, and crash-recovered durable deletion before selecting any compressed comparison arm.",
+  "observationId": "exact-flat-browser-wasm-0361d72f245abbd3",
+  "observationContentHash": "0361d72f245abbd3d3f07715edf6ff82ab6a99252ab2e77571c1bdce0b86e8a9"
+}

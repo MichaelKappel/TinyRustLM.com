@@ -1,0 +1,19 @@
+# TinyRustLM focused completion-contract eval cases
+
+tinyrustlm_eval_cases_version=1
+scope=assistant-quality-no-cheat-runtime-gate
+quality_gate_policy=honest-assistant-quality-v1
+quality_boundary=real-runtime-response-quality
+safety_review_status=pass
+quality_decision=accepted-for-assistant-quality
+evaluator=tinyrustlm-native-eval-runner
+eval_summary=Focused no-cheat completion contract check proving answers do not stop at incomplete list intros, trailing prepositions, or under-counted requested items.
+case_count=2
+
+case.0.prompt=Give two short tips for keeping private browser-local AI workflows safe.
+case.0.max_new_tokens=64
+case.0.required_result=quality
+
+case.1.prompt=Give one short reason diagnostics help verify local .slm answers.
+case.1.max_new_tokens=48
+case.1.required_result=quality

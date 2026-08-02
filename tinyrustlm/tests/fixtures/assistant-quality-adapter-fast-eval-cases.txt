@@ -1,0 +1,21 @@
+# TinyRustLM adapted-model fast quality gate; prompts are already frozen exclusions
+
+tinyrustlm_eval_cases_version=1
+scope=assistant-quality-adapter-fast-gate
+quality_gate_policy=honest-assistant-quality-v1
+quality_boundary=real-runtime-response-quality-fast-screen
+safety_review_status=pass
+quality_decision=accepted-for-assistant-quality
+evaluator=tinyrustlm-native-eval-runner
+eval_summary=Fast adapted-model screen reuses two prompts already present in the frozen raw open-chat exclusions; it does not replace the full honest suite.
+sampling_profile=task-adaptive-v1
+case_count=2
+holdout_count=0
+
+case.0.prompt=test
+case.0.max_new_tokens=16
+case.0.required_result=quality
+
+case.1.prompt=What is 2 + 2? Explain the answer briefly.
+case.1.max_new_tokens=24
+case.1.required_result=quality

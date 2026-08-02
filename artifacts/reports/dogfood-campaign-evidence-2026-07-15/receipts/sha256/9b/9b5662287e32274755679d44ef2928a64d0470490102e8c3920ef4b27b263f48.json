@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "receiptType": "tinyrustlm.model-source-review-v1",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "phase": "model-source-review",
+  "attempt": 1,
+  "status": "rejected",
+  "createdAtUtc": "2026-07-18T19:06:19.192Z",
+  "completedAtUtc": "2026-07-18T19:06:19.193Z",
+  "inputReceiptIds": [],
+  "inputHashes": {
+    "config": "d69c258f65ddd50b15687fcd7482182876f5b1dcd03234ddfc160f51c4fb9b42",
+    "dataset-metadata": "24c030068a1ba24199689ae663b52f02af284da29d83239ec550459b2e416e33",
+    "evidenceSet": "80dd57b4e8a9e2d369836f63c7f4fc96e27856fa4f87af6feab1128724e7d996",
+    "license": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "model-card": "e9a0ffca03d3dcff4c103016da9028ec2a8c8b038ffa1d549f0a425b34f7b695",
+    "parent-metadata": "1859498997f00a519b71886d91f57cb7b9d4697c1375e406230160336f2084b6",
+    "repository-metadata": "c0ceef35a00750613cb2bbdb2b7123b12fbec43c516d1c49ab98faaa1a8165c7",
+    "repository-tree": "c040eca8c157af965e157793a77b85a447586fda48167e7daf0675c10a64e840",
+    "tokenizer-config": "0553ada6e92b1a29b4431c72782c6e5e6ab675ef0b20ceb2833cd1074c7fb932"
+  },
+  "outputHashes": {
+    "assessment": "1e29f0304108fa435c4613d77b7c3f1420e457efe12ec19562d7082b0e53a2c8"
+  },
+  "sourceRevision": "f3541be71386a444c6b64b15f297f021c8b575d1",
+  "toolNames": [
+    "tinyrustlm-source-model-preflight-evidence"
+  ],
+  "toolVersions": [
+    "8"
+  ],
+  "toolBinaryHashes": [
+    "b898d2403ae3e0837baf3045681af735069a6bddfa352c737ca1782e6c5599b0"
+  ],
+  "runtimeIdentifier": "win-x64",
+  "operatingSystem": "win32",
+  "architecture": "x64",
+  "hardwareEvidence": {
+    "executionBoundary": "public-source-metadata-review",
+    "physicalHardwareAttested": false
+  },
+  "configurationHash": "f222cb58dcf1adff8622fb04e814aceafe288438a82e447998961fbc89be7d0f",
+  "publicSafeParameters": {
+    "modelId": "huihui-ai/Qwen2.5-1.5B-Instruct-abliterated-SFT",
+    "sourceModelId": "huihui-ai/Qwen2.5-1.5B-Instruct-abliterated-SFT",
+    "decision": "rejected",
+    "decisionAuthority": "engineering-source-preflight-v2",
+    "architectureFamily": "qwen2-dense-gqa-tied",
+    "runtimeAdmission": "not-assessed-preflight-rejected",
+    "accessDisposition": "public-ungated-metadata-only-no-source-acquisition",
+    "licenseId": "apache-2.0",
+    "licenseDisposition": "apache-2.0-card-declaration-no-bundled-license-review-required",
+    "distributionDisposition": "not-assessed-preflight-rejected",
+    "sourceAcquisitionStatus": "not-acquired",
+    "sourceAcquisitionComplete": false,
+    "sourceModelIdentityKind": "none",
+    "sourceWeightArtifactCount": 0,
+    "sourceWeightByteCount": 0,
+    "evidenceArtifactCount": 8,
+    "missingRequiredArtifactCount": 3,
+    "rejectionCodeCount": 5
+  },
+  "boundedDiagnostics": {
+    "rejectionCodes": [
+      "publisher-base-model-reference-conflicting",
+      "publisher-base-model-revision-absent",
+      "publisher-dataset-revision-absent",
+      "publisher-training-recipe-identity-absent",
+      "source-screen-provenance-contract-incomplete"
+    ],
+    "missingRequiredArtifacts": [
+      "model.safetensors",
+      "training-corpus-manifest.json",
+      "training-recipe.json"
+    ],
+    "evidenceByteCount": 38636,
+    "sourceWeightArtifactCount": 0,
+    "sourceWeightByteCount": 0
+  },
+  "blockerCode": "candidate_source_provenance_contract_rejected",
+  "externalEvidenceReferences": [
+    "https://huggingface.co/huihui-ai/Qwen2.5-1.5B-Instruct-abliterated-SFT/tree/f3541be71386a444c6b64b15f297f021c8b575d1",
+    "https://huggingface.co/huihui-ai/Qwen2.5-1.5B-Instruct-abliterated-SFT/blob/f3541be71386a444c6b64b15f297f021c8b575d1/README.md",
+    "https://huggingface.co/huihui-ai/Qwen2.5-1.5B-Instruct-abliterated-SFT/blob/f3541be71386a444c6b64b15f297f021c8b575d1/config.json",
+    "https://huggingface.co/huihui-ai/Qwen2.5-1.5B-Instruct-abliterated-SFT/blob/f3541be71386a444c6b64b15f297f021c8b575d1/tokenizer_config.json",
+    "https://huggingface.co/api/models/huihui-ai/Qwen2.5-1.5B-Instruct-abliterated-SFT/revision/f3541be71386a444c6b64b15f297f021c8b575d1?blobs=true",
+    "https://huggingface.co/api/models/huihui-ai/Qwen2.5-1.5B-Instruct-abliterated-SFT/tree/f3541be71386a444c6b64b15f297f021c8b575d1?recursive=true&expand=false",
+    "https://huggingface.co/api/models/huihui-ai/Qwen2.5-1.5B-Instruct-abliterated/revision/d9e7398f98038136f11d4dbf8e541ff2bc3cc92c?blobs=true",
+    "https://huggingface.co/api/datasets/huihui-ai/Guilherme34_uncensor/revision/229157253fce7be64c89bec0adfda101439261cb?blobs=true",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ],
+  "redactionVersion": "tinyrustlm.public-receipt-redaction.v1",
+  "evidenceClass": "local",
+  "supersedesReceiptIds": [],
+  "attestationReference": null,
+  "receiptId": "sha256:9b5662287e32274755679d44ef2928a64d0470490102e8c3920ef4b27b263f48",
+  "receiptContentHash": "9b5662287e32274755679d44ef2928a64d0470490102e8c3920ef4b27b263f48"
+}

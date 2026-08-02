@@ -1,0 +1,39 @@
+# TinyRustLM honest assistant-quality eval cases
+
+tinyrustlm_eval_cases_version=1
+scope=assistant-quality-no-cheat-runtime-gate
+quality_gate_policy=honest-assistant-quality-v1
+quality_boundary=real-runtime-response-quality
+safety_review_status=pass
+quality_decision=accepted-for-assistant-quality
+evaluator=tinyrustlm-native-eval-runner
+eval_summary=Outputs must come from the real .slm runtime path and must not be empty, prompt echo only, repeated-character filler, malformed JSON in JSON mode, or canned-looking output.
+case_count=6
+holdout_count=6
+holdout_seed=2026070801
+
+case.0.prompt=what's up?
+case.0.max_new_tokens=32
+case.0.required_result=quality
+
+case.1.prompt=Summarize this article in two sentences: TinyRustLM runs small .slm models locally in the browser so prompts stay private and developers can inspect model provenance.
+case.1.max_new_tokens=48
+case.1.required_result=quality
+
+case.2.prompt=Explain what this Rust function does in one short plain-English sentence. Name the returned value: fn add(a: i32, b: i32) -> i32 { a + b }
+case.2.max_new_tokens=48
+case.2.required_result=quality
+
+case.3.prompt=Rewrite this sentence to be clearer: this tool make local model runs private and useful.
+case.3.max_new_tokens=40
+case.3.required_result=quality
+
+case.4.prompt=Return JSON with keys status and reason for a local-only model runtime.
+case.4.max_new_tokens=40
+case.4.required_result=quality
+case.4.output_format=json_object
+case.4.required_json_keys=status,reason
+
+case.5.prompt=Give one privacy reason to use a local .slm model instead of sending prompts to a remote API. Answer in one sentence.
+case.5.max_new_tokens=48
+case.5.required_result=quality

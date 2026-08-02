@@ -1,0 +1,23 @@
+UAIX Talisman Public Export
+site: SLMComposer.com
+role: retired-public-app-identity
+source: MiRust.com
+updated_utc: 2026-07-02T00:12:07Z
+
+Purpose
+SLMComposer.com is no longer the canonical public app identity for TinyRustLM. This file is a public orientation export only.
+
+Public Anchors
+- Current public app route: https://TinyRustLM.com/
+- Current developer portal: https://TinyRustLM.MiRust.com/developer-portal/
+- Runtime.MiRust.com is retired as a separate documentation authority.
+- Zero-third-party-crate runtime and packer policy remains protected.
+- .uai hot memory and wiki/runtime-mirust durable reports stay checksum-bound in the private workspace.
+- Safetensors-to-browser evidence remains review-gated, source-bound, eval-bound, and selector-admitted.
+- SLMComposer.com may redirect or be deleted by the human; do not treat it as canonical.
+
+Private Memory Boundary
+The .uai directory is internal operational memory and should not be crawled or served as public documentation.
+
+File Handoff Boundary
+agent-file-handoff is an operational intake path, not a public content API.

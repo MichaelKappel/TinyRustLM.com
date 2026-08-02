@@ -1,0 +1,177 @@
+{
+  "auditContentSha256": "sha256:c1b18c47e11aa8396eedee8c3f728b8f04f7dfc50fbd446debda3c8f400fac61",
+  "auditId": "qwen3-cognitive-liberty-v3-preference-provenance-v1",
+  "authority": {
+    "editedTargetImpliesDraftRejection": false,
+    "reasonCodes": [
+      "no-explicit-pairwise-preference-schema",
+      "approved-final-does-not-label-draft-as-rejected",
+      "recovery-contract-drift",
+      "insufficient-authoritative-preference-pairs"
+    ],
+    "recollectedResponseImpliesMatchedPreference": false,
+    "requiredNextGate": "explicit-hash-bound-human-pairwise-review-before-dpo-or-orpo",
+    "sftReviewImpliesPairwisePreference": false,
+    "trainingAuthority": false
+  },
+  "controlSha256": "sha256:b4618aa8395b01ca7a7ffa8c345c595e07eed109da22fb72e59bd688d088c075",
+  "frozenDataset": {
+    "path": "artifacts/training/qwen3-cognitive-liberty-v3/dataset/distillation-dataset.manifest",
+    "recordCount": 100,
+    "sha256": "sha256:d91ee7c2eddeb30771c307184d847580f21a8f3344b09ec7cce5c9a1d4bf0b38"
+  },
+  "privacy": {
+    "containsCredentials": false,
+    "containsPrivateAbsolutePaths": false,
+    "containsPromptText": false,
+    "containsRawModelOutput": false,
+    "containsResponseText": false
+  },
+  "rejectedRecoveryComparison": {
+    "changedResponseRequirementsPairCount": 2,
+    "eligiblePreferencePairCount": 0,
+    "matchedPairCount": 2,
+    "matchedRejectedRecordCount": 2,
+    "rejectedFinishReasonCounts": [
+      {
+        "count": 2,
+        "finishReason": "length"
+      }
+    ],
+    "rejectedRecordCount": 2,
+    "samePromptHashPairCount": 2,
+    "sameResponseRequirementsPairCount": 0
+  },
+  "schema": "tinyrustlm.preference_provenance_audit_report.v1",
+  "selectedRecords": {
+    "approvedDecisionCount": 100,
+    "bundleCounts": [
+      {
+        "bundleId": "quality-sequence-draft2",
+        "count": 60
+      },
+      {
+        "bundleId": "qwen3-practical-v2",
+        "count": 40
+      }
+    ],
+    "draftRelationCounts": [
+      {
+        "count": 56,
+        "relation": "edited-approved-target"
+      },
+      {
+        "count": 44,
+        "relation": "unchanged-approved-target"
+      }
+    ],
+    "editedDraftDifferenceCount": 56,
+    "eligiblePreferencePairCount": 0,
+    "explicitPairwisePreferenceDecisionCount": 0,
+    "recordCount": 100,
+    "reviewedResponseMatchCounts": [
+      {
+        "count": 91,
+        "matchMode": "exact-reviewed-bytes"
+      },
+      {
+        "count": 9,
+        "matchMode": "explicit-crlf-to-lf-reviewed-match"
+      }
+    ],
+    "reviewerCounts": [
+      {
+        "count": 40,
+        "reviewerId": "tinyrustlm-agent-cognitive-liberty-review-v2"
+      },
+      {
+        "count": 60,
+        "reviewerId": "tinyrustlm-agent-reviewer"
+      }
+    ],
+    "sourceCounts": [
+      {
+        "count": 40,
+        "sourceId": "tinyrustlm-qwen36-cognitive-liberty-reviewed-v2"
+      },
+      {
+        "count": 60,
+        "sourceId": "tinyrustlm-qwen36-local-reviewed-draft2"
+      }
+    ]
+  },
+  "sourceBundles": [
+    {
+      "approvedCount": 94,
+      "bundleId": "quality-sequence-draft2",
+      "identities": {
+        "draft_manifest": {
+          "path": "artifacts/training/quality-sequence-v1/qwen36-draft2/teacher-draft-manifest.json",
+          "sha256": "sha256:543f65523591e214f8a8a7d7c86d2b725f6b0d56c7b39fa974a306cc6d7dabdc"
+        },
+        "review_decisions": {
+          "path": "artifacts/training/quality-sequence-v1/reviews/draft2-review-decisions.jsonl",
+          "sha256": "sha256:53ea79332bad9f8c08da74b6033d78e1a36d4c1b7d4477a36cde3e636e7e12a1"
+        },
+        "reviewed_output": {
+          "path": "artifacts/training/quality-sequence-v1/reviewed-draft2/reviewed-teacher-output.jsonl",
+          "sha256": "sha256:b6274cf7362255cf4b3020c1630e471261b0e9c2819a9905a5f1a9ebb90eac6c"
+        }
+      },
+      "pendingCount": 0,
+      "recordCount": 96,
+      "rejectedCount": 2,
+      "sourceId": "tinyrustlm-qwen36-local-reviewed-draft2"
+    },
+    {
+      "approvedCount": 2,
+      "bundleId": "quality-sequence-refusal-recovery",
+      "identities": {
+        "draft_manifest": {
+          "path": "artifacts/training/quality-sequence-v1/qwen36-refusal-recovery/teacher-draft-manifest.json",
+          "sha256": "sha256:2fd71236fb15845c1aa822c2637a1dd4235e8319cbc41cbdeaf5a036c44f8926"
+        },
+        "review_decisions": {
+          "path": "artifacts/training/quality-sequence-v1/reviews/recovery-review-decisions.jsonl",
+          "sha256": "sha256:da0c267d154de6d8244778b4bd2f36407a4c578e2e728ba0a4ab3a0d08e5b607"
+        },
+        "reviewed_output": {
+          "path": "artifacts/training/quality-sequence-v1/reviewed-recovery/reviewed-teacher-output.jsonl",
+          "sha256": "sha256:ea5f734f2bad9ca92a7f8049333ec6f88dee6c6de4bb2f02d6b6ca854ee08647"
+        }
+      },
+      "pendingCount": 0,
+      "recordCount": 2,
+      "rejectedCount": 0,
+      "sourceId": "tinyrustlm-qwen36-local-reviewed-refusal-recovery"
+    },
+    {
+      "approvedCount": 40,
+      "bundleId": "qwen3-practical-v2",
+      "identities": {
+        "draft_manifest": {
+          "path": "artifacts/training/qwen3-cognitive-liberty-v1/teacher-drafts-v2/teacher-draft-manifest.json",
+          "sha256": "sha256:1287ec024154a5ac712161bd4b1ded65ba3a8f72a1162809cf2c78a5e0f1644d"
+        },
+        "review_decisions": {
+          "path": "artifacts/training/qwen3-cognitive-liberty-v1/review-decisions-v2.jsonl",
+          "sha256": "sha256:d998d8fd0a7c9c7adeb8749dbb89a0eaac698f37d7f898375c57284f453c51a8"
+        },
+        "reviewed_output": {
+          "path": "artifacts/training/qwen3-cognitive-liberty-v1/reviewed-v2/reviewed-teacher-output.jsonl",
+          "sha256": "sha256:9c0ac5ddb8dcb448f5941b297572b8866555e78d1ebc55e51f626c3630374640"
+        }
+      },
+      "pendingCount": 0,
+      "recordCount": 40,
+      "rejectedCount": 0,
+      "sourceId": "tinyrustlm-qwen36-cognitive-liberty-reviewed-v2"
+    }
+  ],
+  "status": "not-authorized-for-preference-training",
+  "tool": {
+    "path": "tinyrustlm/tools/audit-distillation-preference-provenance.py",
+    "sha256": "sha256:b3cee1d5d20ab6c1e81f732bdd8e53a6a6bf945398fb85caba51ade04b9dab21",
+    "version": "1"
+  }
+}

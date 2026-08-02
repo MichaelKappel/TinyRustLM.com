@@ -1,0 +1,25 @@
+﻿{
+    "schema":  "tinyrustlm.public_root_verification.v0",
+    "generated_utc":  "2026-07-07T21:07:14.2863693Z",
+    "status":  "pass",
+    "repository_root":  "E:\\Source\\Rust\\SLMComposer.com",
+    "app_root":  "E:\\Source\\Rust\\_deploy\\tinyrustlm-minimodel-demo-autoload-20260707-134630\\TinyRustLM.com-repair-compact",
+    "local_server_url":  "http://127.0.0.1:8245/",
+    "public_root_url":  "http://tinyrustlm.com:8245/",
+    "public_host_mapping":  "tinyrustlm.com-loopback-browser-smoke",
+    "smoke_modes":  [
+                        "public-default-demo"
+                    ],
+    "smoke_statuses":  {
+                           "public-default-demo":  "pass"
+                       },
+    "smoke_report_paths":  {
+                               "public-default-demo":  "E:\\Source\\Rust\\SLMComposer.com\\artifacts\\reports\\tinyrustlm-public-root-public-default-demo-smoke.json"
+                           },
+    "browser_debug_ports":  {
+                                "public-default-demo":  9745
+                            },
+    "server_stdout_path":  "E:\\Source\\Rust\\SLMComposer.com\\artifacts\\reports\\tinyrustlm-public-root-server-8245.out.log",
+    "server_stderr_path":  "E:\\Source\\Rust\\SLMComposer.com\\artifacts\\reports\\tinyrustlm-public-root-server-8245.err.log",
+    "error":  ""
+}

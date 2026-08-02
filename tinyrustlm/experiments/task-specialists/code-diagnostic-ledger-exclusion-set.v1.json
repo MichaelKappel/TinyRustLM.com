@@ -1,0 +1,17 @@
+{
+  "schema": "tinyrustlm.task-specialist-case-exclusion-set.v1",
+  "taskContractId": "code-diagnostic-ledger-json-v1",
+  "sourceManifestSha256": [
+    "a2a0b484a8f329cd2935c5b3e73df4bc0f3068adac7a8a50baba01de73c38c12"
+  ],
+  "excludedPromptSha256": [
+    "0b25a2195aa4b38c6411e4c70b3efa203d4b016f8a3cdb4e792d3b6886e4501c",
+    "866a2f96296e565f84403dd1d7c2d07649b272fd936deb106cb72716f7f2c247",
+    "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+    "9f90ac993a539b6a5aa0b1a3ad2c0ae6834aaefc740b453f51ef1aa0aa598c33",
+    "a0197253b92e371b4fcf97b676224fa22c23472dd15206cf8474850f310ef543",
+    "d1792da7e0e73fd8235fd1dc2276a13ccea0d1bc97c5f75e359253188449712f",
+    "edbcd2b87f6d29953820b8dbe60edbff9959a789ce4f06c0e9c9217703e24c78",
+    "f61e3e9226fac664f956e17791ca1454108d0f50c990938ec970998be283e6ee"
+  ]
+}

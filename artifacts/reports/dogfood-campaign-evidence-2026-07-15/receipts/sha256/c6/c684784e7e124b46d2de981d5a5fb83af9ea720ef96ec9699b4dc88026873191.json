@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "receiptType": "tinyrustlm.model-source-screen-v1",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "phase": "model-source-screen",
+  "attempt": 1,
+  "status": "rejected",
+  "createdAtUtc": "2026-07-16T22:57:51.034Z",
+  "completedAtUtc": "2026-07-16T22:57:53.042Z",
+  "inputReceiptIds": [],
+  "inputHashes": {
+    "evalCases": "a2a0b484a8f329cd2935c5b3e73df4bc0f3068adac7a8a50baba01de73c38c12",
+    "sourceConfig": "9d0c81d7c5abb44e4042d2b00acbe3bd0a9c8015a0bb69d3dd23e3d44150a786",
+    "sourceExecutionInputs": "c3c8b3339fec8434d02fa79fae78c1fd250ad9051f23478544b68b4b776949c7",
+    "sourceLicense": "60291353d0644d057d3abf1df80087248c03e1cbca7e9c87d2d4f01bbcd3cf07",
+    "sourceModel": "963ab9667a5b8326b2bf794042686c46b7c78da31b4995b27ce6edbdba9731ba",
+    "sourceTokenizer": "be12f4375d655cc740864e3a9041bcddd8477942f209d9e7f27f6c8767162638",
+    "sourceTokenizerConfig": "77b14a0664585c26065f07d7a4c852a4615c83348d9378e23def01957bbd3f57",
+    "systemPrompt": "03816eb7d772a0c965e2d981790abc0ef941069a6c90514bab8bb2bfdede7f6f"
+  },
+  "outputHashes": {
+    "assessment": "2fedcd7cdc873d9726209c58f2e540233d7518257d73fc92d9a14e24cebf1a09",
+    "sourceScreen": "f574ea2709e9dc00f45a436ead349ed5f209c4976120dbf0ec317b6273487b57"
+  },
+  "sourceRevision": "9e9d01154446a645d30f04174cf1515a38058be7",
+  "toolNames": [
+    "tinyrustlm-reference-raw-quality",
+    "tinyrustlm-source-model-screen-evidence"
+  ],
+  "toolVersions": [
+    "5",
+    "8"
+  ],
+  "toolBinaryHashes": [
+    "24792edccc9f3bae33e623c43aefd34a8291710207ee067b6b16a13449f2b59e",
+    "3811faa0c02d0e5cd7bf3d6b0f8ea60cf66fdc235fc75bfa0e49c8f06c6b1d75"
+  ],
+  "runtimeIdentifier": "win-x64",
+  "operatingSystem": "win32",
+  "architecture": "x64",
+  "hardwareEvidence": {
+    "device": "cpu",
+    "dtype": "float32",
+    "referenceFramework": "transformers.AutoModelForCausalLM.generate",
+    "torchVersion": "2.13.0+cpu",
+    "transformersVersion": "5.13.1"
+  },
+  "configurationHash": "73ff0422a0b4ff19bff1e878bec0c10f49ff37a778a88637623a3b1c9209ff39",
+  "publicSafeParameters": {
+    "modelId": "swiss-ai/Apertus-v1.1-1.5B-Instruct",
+    "sourceModelId": "swiss-ai/Apertus-v1.1-1.5B-Instruct",
+    "architectureFamily": "apertus-dense-gqa-qk-norm-xielu",
+    "runtimeAdmission": "not-assessed-source-quality-rejected-before-conversion",
+    "licenseDisposition": "apache-2.0-card-declaration-with-additional-use-policy-legal-review-required",
+    "decision": "rejected",
+    "decisionAuthority": "engineering-source-screen-v1",
+    "caseCount": 8,
+    "casesPassed": 2,
+    "casesFailed": 6,
+    "criticalFailureCount": 12,
+    "sourceModelIdentityKind": "direct-safetensors-sha256",
+    "sourceWeightArtifactCount": 1,
+    "sourceWeightByteCount": 3020063528,
+    "sourceExecutionArtifactCount": 6,
+    "sourceChatTemplateMode": "standalone-jinja",
+    "systemPromptMode": "included",
+    "loaderContract": "local-files-no-remote-code-v1",
+    "torchCompileMode": "disabled-eager",
+    "tokenizerRegexMode": "source-regex",
+    "remoteCodeEnabled": false,
+    "generationProfile": "greedy",
+    "samplingEnabled": false,
+    "rawOutputPreserved": true,
+    "generationCallCountPerCase": 1,
+    "responseRepairApplied": false
+  },
+  "boundedDiagnostics": {
+    "criticalFailureCodes": [
+      "current-task-not-followed",
+      "underspecified-choice-missing-options",
+      "underspecified-choice-missing-decision-criteria",
+      "answer-incomplete",
+      "impossible-resource-advice",
+      "practical-fallback-absent",
+      "current-commitment-not-addressed",
+      "source-conflict-unacknowledged",
+      "authority-resolution-absent",
+      "silent-deadline-selection",
+      "adult-comparison-one-sided",
+      "current-turn-precedence-violated"
+    ],
+    "failedCaseIndexes": [
+      0,
+      1,
+      3,
+      4,
+      5,
+      6
+    ],
+    "sourceScreenByteCount": 46361,
+    "assessmentByteCount": 3405
+  },
+  "blockerCode": "model_quality_rejected",
+  "externalEvidenceReferences": [
+    "https://huggingface.co/swiss-ai/Apertus-v1.1-1.5B-Instruct/tree/9e9d01154446a645d30f04174cf1515a38058be7",
+    "https://huggingface.co/swiss-ai/Apertus-v1.1-1.5B-Instruct/blob/9e9d01154446a645d30f04174cf1515a38058be7/README.md",
+    "https://huggingface.co/swiss-ai/Apertus-v1.1-1.5B-Instruct/blob/9e9d01154446a645d30f04174cf1515a38058be7/config.json",
+    "https://huggingface.co/swiss-ai/Apertus-v1.1-1.5B-Instruct/blob/9e9d01154446a645d30f04174cf1515a38058be7/chat_template.jinja",
+    "https://huggingface.co/api/models/swiss-ai/Apertus-v1.1-1.5B-Instruct/revision/9e9d01154446a645d30f04174cf1515a38058be7",
+    "https://arxiv.org/abs/2605.29128",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt",
+    "https://github.com/huggingface/transformers/blob/v5.13.1/src/transformers/models/apertus/modeling_apertus.py"
+  ],
+  "redactionVersion": "tinyrustlm.public-receipt-redaction.v1",
+  "evidenceClass": "local",
+  "supersedesReceiptIds": [],
+  "attestationReference": null,
+  "receiptId": "sha256:c684784e7e124b46d2de981d5a5fb83af9ea720ef96ec9699b4dc88026873191",
+  "receiptContentHash": "c684784e7e124b46d2de981d5a5fb83af9ea720ef96ec9699b4dc88026873191"
+}

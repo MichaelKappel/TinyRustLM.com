@@ -1,0 +1,22 @@
+[package]
+name = "tinyrustlm-turbovec-reference-comparison"
+version = "0.0.0"
+edition = "2021"
+publish = false
+description = "Preregistered native-only TurboVec reference comparator for TinyRustLM experiments."
+
+[dependencies]
+tinyrustlm-vector-oracle = { path = "../../../../rust/experiments/tinyrustlm-vector-oracle" }
+turbovec = "=0.9.0"
+
+[workspace]
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+overflow-checks = true
+debug = false
+
+[lints.rust]
+unsafe_code = "forbid"

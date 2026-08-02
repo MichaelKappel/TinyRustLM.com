@@ -1,0 +1,93 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "ibm-granite/granite-4.0-h-1b",
+  "sourceRevision": "d18cca4c121edb87d022116d281ce212c9136f57",
+  "sourceModelArtifactSha256": "2858260e27d3cee8ceb8eb5b46a54c29385e9eff8e4c6f170f8fc3d00e7c61be",
+  "sourceScreenSha256": "bab862d7a027eb46da2af15f0d75b34410f1eb732fae69a5e9911cc456c6195d",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "granite4.0-mamba2-attention-hybrid-gqa-tied",
+  "runtimeAdmission": "unsupported-granite4.0-hybrid-source-quality-rejected-before-conversion",
+  "licenseDisposition": "apache-2.0-metadata-authority-review-complete",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": [
+    "answer-incomplete",
+    "practical-decision-underdeveloped",
+    "practical-fallback-not-reached",
+    "current-commitment-not-addressed",
+    "source-conflict-unresolved",
+    "plan-date-not-provided",
+    "adult-comparison-one-sided",
+    "current-user-instruction-not-affirmed"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 2,
+      "status": "fail",
+      "failureCodes": [
+        "practical-decision-underdeveloped",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "practical-fallback-not-reached",
+        "current-commitment-not-addressed",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "source-conflict-unresolved",
+        "plan-date-not-provided",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "adult-comparison-one-sided",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 6,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 7,
+      "status": "fail",
+      "failureCodes": [
+        "current-user-instruction-not-affirmed"
+      ]
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/ibm-granite/granite-4.0-h-1b/tree/d18cca4c121edb87d022116d281ce212c9136f57",
+    "https://huggingface.co/ibm-granite/granite-4.0-h-1b/blob/d18cca4c121edb87d022116d281ce212c9136f57/README.md",
+    "https://huggingface.co/ibm-granite/granite-4.0-h-1b/blob/d18cca4c121edb87d022116d281ce212c9136f57/config.json",
+    "https://huggingface.co/ibm-granite/granite-4.0-h-1b/blob/d18cca4c121edb87d022116d281ce212c9136f57/chat_template.jinja",
+    "https://huggingface.co/ibm-granite/granite-4.0-h-1b/blob/d18cca4c121edb87d022116d281ce212c9136f57/model.sig",
+    "https://github.com/huggingface/transformers/blob/v5.13.1/src/transformers/models/granitemoehybrid/modeling_granitemoehybrid.py",
+    "https://github.com/ibm-granite/granite-4.0-language-models",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ]
+}

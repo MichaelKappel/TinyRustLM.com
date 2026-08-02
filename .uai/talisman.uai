@@ -1,0 +1,17 @@
+profile: runtime-mirust.talisman-client.v1
+updated_utc: 2026-07-01T03:10:00Z
+site: Runtime.MiRust.com
+role: talisman_client_anchor
+talisman_source:
+  site: MiRust.com
+  relationship: one_way_reference_only
+protected_anchors:
+  - .uai/totem.uai
+  - .uai/taboo.uai
+  - .uai/talisman.uai
+agent_rules:
+  - Read local Runtime.MiRust.com memory first; use MiRust.com as a one-way Rust-family talisman source.
+  - Do not alter protected anchors without exact human artifact-and-operation authorization.
+  - When an anchor blocks action, no-op and write a talk-back change request for human review.
+talk_back_target: .uai/talisman-change-requests/
+boundary: Active instruction memory only; repository, filesystem, CI, deployment, and review controls are local implementation.

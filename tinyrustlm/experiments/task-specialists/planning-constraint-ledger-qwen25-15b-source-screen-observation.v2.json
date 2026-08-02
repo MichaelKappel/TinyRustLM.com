@@ -1,0 +1,104 @@
+{
+  "schema": "tinyrustlm.task-specialist-source-screen-observation.v2",
+  "experimentId": "planning-constraint-ledger-qwen25-15b-pilot-20260726",
+  "observedAtUtc": "2026-07-26T16:49:16.913Z",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "receiptId": "sha256:e0af836875a4b466b6559f29d09a4bebc3e7ef6000772ebf0d2d9849ab9b50f0",
+  "projectSourceRevision": "795675e61b7fccc9143e4812f40651d75616d487",
+  "preregistrationSha256": "cc432be3bd56cdcae5f0e6d8fee8fa2770f1acd2192c873a1efdc11f46cf9044",
+  "publicCaseManifestSha256": "2a52cfcf8d5035aba941b44297c6b3c030fc6e8a95cbcc7bd14e23f8255f631c",
+  "sourceModel": {
+    "modelId": "Qwen/Qwen2.5-1.5B-Instruct",
+    "sourceRevision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+    "sourceModelSha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+    "sourceExecutionInputsSha256": "f3e2cb7cd934b38dfe2119c928b71815c831739b9b5c247c71571aa72ed6e740",
+    "broadSourceScreenReceiptId": "sha256:a52df8333b5f0bc58037c6a120cd6c8b6133cfaa96321ae12e80d8d1ab9632f5",
+    "broadSourceScreenStatus": "rejected",
+    "broadSourceScreenRole": "broad-claim-boundary-only",
+    "sourceIdentityAuthority": "independent-task-capture-checkpoint-artifacts-v1"
+  },
+  "taskContractId": "planning-constraint-ledger-json-v1",
+  "sealedInputs": {
+    "seedCommitmentSha256": "87c1d3a8a3d7b408b985589780687025209568a9308f85e2a7c9e64da5fb31c1",
+    "privateCaseSetSha256": "15091042a2736ef777ceeb9ddadd7cd6eb060904a8477f498e6e776070f006dd",
+    "evalCasesSha256": "ef431650456bcdcfd4044150886a9a4f63d12252144338aac0ab5ddb6ee208d4",
+    "rawCaptureSha256": "231f35f60ebdbad7a142f3681e7c88d1471bbbd67ac920fec0d6d4470c36af84",
+    "privateVerdictSha256": "6f4a7f74ad77f2bdf403ffa646a491ea50049564c57112011b8091546b0ba084"
+  },
+  "outcome": {
+    "decision": "rejected",
+    "caseCount": 24,
+    "exactPassCount": 0,
+    "failedCount": 24,
+    "malformedOutputCount": 24,
+    "criticalCaseCount": 12,
+    "criticalFailureCount": 12,
+    "categoryPassCounts": [
+      {
+        "category": "complete-explicit",
+        "passed": 0,
+        "total": 3
+      },
+      {
+        "category": "missing-fields",
+        "passed": 0,
+        "total": 3
+      },
+      {
+        "category": "negated-resources",
+        "passed": 0,
+        "total": 3
+      },
+      {
+        "category": "latest-preference",
+        "passed": 0,
+        "total": 3
+      },
+      {
+        "category": "quoted-instruction",
+        "passed": 0,
+        "total": 3
+      },
+      {
+        "category": "current-over-old-authority",
+        "passed": 0,
+        "total": 3
+      },
+      {
+        "category": "reordered-terse",
+        "passed": 0,
+        "total": 3
+      },
+      {
+        "category": "unit-date-normalization",
+        "passed": 0,
+        "total": 3
+      }
+    ],
+    "failureCodes": [
+      "invalid-json"
+    ],
+    "decisionReasons": [
+      "overall-exact-pass-floor-failed",
+      "category-exact-pass-floor-failed",
+      "critical-case-failed",
+      "malformed-output-limit-exceeded"
+    ]
+  },
+  "authority": {
+    "conversionSpendAuthorized": false,
+    "trainingAuthorized": false,
+    "taskSpecificProofGranted": false,
+    "broadQualityClaimSupported": false,
+    "productAuthority": false,
+    "releaseAuthority": false,
+    "campaignCounterContribution": 0
+  },
+  "privacy": {
+    "rawPromptBodiesPublished": false,
+    "expectedValuesPublished": false,
+    "rawOutputsPublished": false,
+    "publicEvidenceContainsHashesAndBoundedCountsOnly": true
+  },
+  "terminalAction": "Do not convert, train, promote, package, catalog, or count this exact source experiment. Preserve the immutable rejection and use a separately preregistered candidate or genuinely trained specialist."
+}

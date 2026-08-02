@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "receiptType": "tinyrustlm.model-source-screen-v1",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "phase": "model-source-screen",
+  "attempt": 1,
+  "status": "rejected",
+  "createdAtUtc": "2026-07-16T14:55:48.366Z",
+  "completedAtUtc": "2026-07-16T14:55:50.796Z",
+  "inputReceiptIds": [],
+  "inputHashes": {
+    "evalCases": "a2a0b484a8f329cd2935c5b3e73df4bc0f3068adac7a8a50baba01de73c38c12",
+    "sourceConfig": "81339890110bc06203aed9108e0bdc0e942bd8a335dfc6ce7e759505a4c02d6b",
+    "sourceExecutionInputs": "5c03a48af322a8c3b0f02a65e8544d28c9d9352af390dcdccec472f7b1174f0f",
+    "sourceLicense": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "sourceModel": "6470e05a11d3ca8f04b91101d779717d5680940a5b94c68f6f05bddb1d913d90",
+    "sourceTokenizer": "e2d03d57b6cc4f80c1f50435116a7fa3ce8cdd8912c84dfd3169d30b74a4ac24",
+    "sourceTokenizerConfig": "a6a726ed5f8fe4103534160ec3757b6a62d32a64eb1c9e584574e8a6f214ea97",
+    "systemPrompt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "outputHashes": {
+    "assessment": "d536932c19e2d04d49b3789fb1d4d85d14dc5c1e4ff92c02f1e62a2f9eaf6d5f",
+    "sourceScreen": "acfe45a1873923a82095158d1c4b574a031f1af029217063182be522e4b9176d"
+  },
+  "sourceRevision": "6d8114cb4160755a092babed10a7d383cc10b1db",
+  "toolNames": [
+    "tinyrustlm-reference-raw-quality",
+    "tinyrustlm-source-model-screen-evidence"
+  ],
+  "toolVersions": [
+    "4",
+    "8"
+  ],
+  "toolBinaryHashes": [
+    "8c2d69f31dab7a4417468add4d10656f41e042c61f51368fa035303831cb1fcb",
+    "de164d96680603df5212855d97ce25bf77f6b1d8bce3cbf14de6272427022aad"
+  ],
+  "runtimeIdentifier": "win-x64",
+  "operatingSystem": "win32",
+  "architecture": "x64",
+  "hardwareEvidence": {
+    "device": "cpu",
+    "dtype": "float32",
+    "referenceFramework": "transformers.AutoModelForCausalLM.generate",
+    "torchVersion": "2.13.0+cpu",
+    "transformersVersion": "5.13.1"
+  },
+  "configurationHash": "02e794ec99c4067f801534ec2e116870dcac7235c7695325e0ab4e2b58b64d9e",
+  "publicSafeParameters": {
+    "modelId": "h2oai/h2o-danube2-1.8b-chat",
+    "sourceModelId": "h2oai/h2o-danube2-1.8b-chat",
+    "architectureFamily": "mistral-dense-gqa-untied-no-sliding-window",
+    "runtimeAdmission": "mistral-dense-shape-source-quality-rejected-before-conversion",
+    "licenseDisposition": "apache-2.0-metadata-paper-authority-review-complete",
+    "decision": "rejected",
+    "decisionAuthority": "engineering-source-screen-v1",
+    "caseCount": 8,
+    "casesPassed": 1,
+    "casesFailed": 7,
+    "criticalFailureCount": 10,
+    "sourceModelIdentityKind": "direct-safetensors-sha256",
+    "sourceWeightArtifactCount": 1,
+    "sourceWeightByteCount": 3662427808,
+    "sourceExecutionArtifactCount": 6,
+    "sourceChatTemplateMode": "embedded-tokenizer-config",
+    "systemPromptMode": "omitted-publisher-template",
+    "loaderContract": "local-files-no-remote-code-v1",
+    "torchCompileMode": "disabled-eager",
+    "tokenizerRegexMode": "source-regex",
+    "remoteCodeEnabled": false,
+    "generationProfile": "greedy",
+    "samplingEnabled": false,
+    "rawOutputPreserved": true,
+    "generationCallCountPerCase": 1,
+    "responseRepairApplied": false
+  },
+  "boundedDiagnostics": {
+    "criticalFailureCodes": [
+      "answer-incomplete",
+      "minimal-request-not-handled",
+      "underspecified-choice-missing-options",
+      "underspecified-choice-missing-decision-criteria",
+      "practical-decision-underdeveloped",
+      "unavailable-resource-recommended",
+      "feasible-fallback-absent",
+      "source-conflict-unresolved",
+      "authority-hierarchy-invented",
+      "adult-comparison-one-sided"
+    ],
+    "failedCaseIndexes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      7
+    ],
+    "sourceScreenByteCount": 30832,
+    "assessmentByteCount": 3023
+  },
+  "blockerCode": "model_quality_rejected",
+  "externalEvidenceReferences": [
+    "https://huggingface.co/h2oai/h2o-danube2-1.8b-chat/tree/6d8114cb4160755a092babed10a7d383cc10b1db",
+    "https://huggingface.co/h2oai/h2o-danube2-1.8b-chat/blob/6d8114cb4160755a092babed10a7d383cc10b1db/README.md",
+    "https://huggingface.co/h2oai/h2o-danube2-1.8b-chat/blob/6d8114cb4160755a092babed10a7d383cc10b1db/config.json",
+    "https://huggingface.co/h2oai/h2o-danube2-1.8b-chat/blob/6d8114cb4160755a092babed10a7d383cc10b1db/tokenizer_config.json",
+    "https://arxiv.org/abs/2401.16818",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ],
+  "redactionVersion": "tinyrustlm.public-receipt-redaction.v1",
+  "evidenceClass": "local",
+  "supersedesReceiptIds": [],
+  "attestationReference": null,
+  "receiptId": "sha256:2ea5a297be1fe4f4b0ac6a9b0b986a5f2a060e48476e1df9e698e11f2e963acd",
+  "receiptContentHash": "2ea5a297be1fe4f4b0ac6a9b0b986a5f2a060e48476e1df9e698e11f2e963acd"
+}

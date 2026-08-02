@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>$(TinyRustLmAbstractionsPackageId)</PackageId>
+    <Title>TinyRustLM / UAIX Browser SDK Abstractions</Title>
+    <Summary>Shared public DTOs and interfaces for TinyRustLM, UAIX Browser, p2pLLM, p2pRuntime, and UAIX memory package clients.</Summary>
+    <Description>Stable public .NET interfaces, records, DTOs, and capability flags for TinyRustLM .slm validation, p2pLLM runtime harness operations, p2pRuntime P2P model sharing, MiniModel manifest metadata, and UAIX.org .uai memory and persona package workflows. This package is the shared abstraction layer for the UAIX.Browser.Core.Abstractions local feed identity.</Description>
+    <PackageTags>TinyRustLM;TinyRustLM.Abstractions;TinyRustLM.com;UAIX;UAIX.org;UAIX.Browser;Browser;UAIX.Browser.Core.Abstractions;p2pRuntime;p2pRuntime.com;p2pLLM;p2pLLM.com;MiniModel;MiniModel.org;SLM;.slm;UAI;.uai;AI;LLM;P2P;Rust;SDK;abstractions;interfaces;DTO;memory;persona;protected-sdk</PackageTags>
+    <IsPackable>true</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\..\docs\nuget\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>

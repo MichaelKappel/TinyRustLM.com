@@ -1,0 +1,16 @@
+[package]
+name = "tinyrustlm-runtime-sdk"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Public TinyRustLM runtime harness SDK boundary."
+
+[dependencies]
+serde.workspace = true
+tinyrustlm-runtime = { path = "../../../tinyrustlm/runtime" }
+tinyrustlm-slm = { path = "../tinyrustlm-slm" }
+
+[lints]
+workspace = true

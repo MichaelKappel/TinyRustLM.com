@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>UAIX.Browser.p2pRuntime.SeedHost</PackageId>
+    <VersionPrefix>0.1.10</VersionPrefix>
+    <Title>UAIX Browser p2pRuntime Seed Host</Title>
+    <Summary>Native-verified MiniModel fleet, import, and independent seed-lane orchestration for .slm P2P sharing.</Summary>
+    <Description>Production .NET APIs for configuring, validating, importing, and serving MiniModel .slm peer pieces from user-run computers. Rust remains authoritative for manifests, hashes, Merkle roots, receipts, companion state, and model assembly. This package does not include model conversion, quantization authoring, training, premium routing, hosted model bytes, or project-server model proxies.</Description>
+    <PackageTags>UAIX;UAIX.org;UAIX.Browser;p2pRuntime;p2pRuntime.com;TinyRustLM;TinyRustLM.com;MiniModel;MiniModel.org;P2P;seed-host;model-sharing;SLM;.slm;Rust;native;offline-first</PackageTags>
+    <PackageReleaseNotes>0.1.10 adds the production loopback bridge, origin-bound one-time pairing and revocation, durable resumable import state, receipt-revalidated model streaming, explicit transfer evidence, and bounded sharing control while preserving Rust authority and fail-closed project-server byte boundaries.</PackageReleaseNotes>
+    <PackageReadmeFile>SEED_HOST.md</PackageReadmeFile>
+    <PackageProjectUrl>https://TinyRustLM.com/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MichaelKappel/TinyRustLM.com.git</RepositoryUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <Authors>UAIX.org; TinyRustLM.com; MiniModel.org</Authors>
+    <Company>UAIX.org</Company>
+    <IsPackable>true</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <SeedHostDependencyVersion>0.1.8</SeedHostDependencyVersion>
+    <SeedHostUsePackagedDependencies Condition="'$(SeedHostUsePackagedDependencies)' == ''">false</SeedHostUsePackagedDependencies>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(SeedHostUsePackagedDependencies)' != 'true'">
+    <ProjectReference Include="..\TinyRustLM.Abstractions\TinyRustLM.Abstractions.csproj" />
+    <ProjectReference Include="..\TinyRustLM.P2P\TinyRustLM.P2P.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(SeedHostUsePackagedDependencies)' == 'true'">
+    <PackageReference Include="$(TinyRustLmAbstractionsPackageId)" Version="[$(SeedHostDependencyVersion)]" />
+    <PackageReference Include="$(TinyRustLmP2PPackageId)" Version="[$(SeedHostDependencyVersion)]" />
+  </ItemGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[8.0.2]" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[8.0.2]" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\docs\nuget\SEED_HOST.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\..\artifacts\seed-host-native\win-x64\minimodel_native.dll" Pack="true" PackagePath="runtimes\win-x64\native\" Condition="Exists('..\..\..\artifacts\seed-host-native\win-x64\minimodel_native.dll')" />
+    <None Include="..\..\..\artifacts\seed-host-native\win-x64\minimodel.exe" Pack="true" PackagePath="runtimes\win-x64\native\" Condition="Exists('..\..\..\artifacts\seed-host-native\win-x64\minimodel.exe')" />
+    <None Include="..\..\..\artifacts\seed-host-native\linux-x64\libminimodel_native.so" Pack="true" PackagePath="runtimes\linux-x64\native\" Condition="Exists('..\..\..\artifacts\seed-host-native\linux-x64\libminimodel_native.so')" />
+    <None Include="..\..\..\artifacts\seed-host-native\linux-x64\minimodel" Pack="true" PackagePath="runtimes\linux-x64\native\" Condition="Exists('..\..\..\artifacts\seed-host-native\linux-x64\minimodel')" />
+    <None Include="..\..\..\artifacts\seed-host-native\linux-arm64\libminimodel_native.so" Pack="true" PackagePath="runtimes\linux-arm64\native\" Condition="Exists('..\..\..\artifacts\seed-host-native\linux-arm64\libminimodel_native.so')" />
+    <None Include="..\..\..\artifacts\seed-host-native\linux-arm64\minimodel" Pack="true" PackagePath="runtimes\linux-arm64\native\" Condition="Exists('..\..\..\artifacts\seed-host-native\linux-arm64\minimodel')" />
+  </ItemGroup>
+</Project>

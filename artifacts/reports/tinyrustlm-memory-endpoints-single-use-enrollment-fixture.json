@@ -1,0 +1,23 @@
+{
+    "schema":  "tinyrustlm.memory_endpoints.single_use_enrollment_fixture.v1",
+    "generatedUtc":  "2026-07-13T01:57:22Z",
+    "status":  "pass",
+    "passScenario":  {
+                         "verifierFailureExpected":  false,
+                         "verifierFailed":  false,
+                         "replayRejected":  true,
+                         "cleanupStatus":  "pass",
+                         "companyClosed":  true,
+                         "companyDeleted":  true
+                     },
+    "replaySuccessScenario":  {
+                                  "verifierFailureExpected":  true,
+                                  "verifierFailed":  true,
+                                  "replayRejected":  false,
+                                  "cleanupStatus":  "pass",
+                                  "companyClosed":  true,
+                                  "companyDeleted":  true
+                              },
+    "rawCredentialExposed":  false,
+    "rawPayloadExposed":  false
+}

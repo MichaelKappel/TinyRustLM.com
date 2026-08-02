@@ -1,0 +1,23 @@
+{
+  "schema": "tinyrustlm.portable_affine_u8_flat_attempt.v1",
+  "experimentId": "portable-affine-u8-flat-20260726",
+  "attemptOrdinal": 1,
+  "previousAttemptId": null,
+  "status": "fail",
+  "startedAtUtc": "2026-07-26T11:11:21.155Z",
+  "completedAtUtc": "2026-07-26T11:16:22.924Z",
+  "sourceRevision": "801c53e2676c2e91b97a443867ca950ad204c2cc",
+  "preregistrationSha256": "76cccb8fe353847235f8ea1d647c6762677e19b8abe593b83f9733dfbfe6c06d",
+  "observationId": null,
+  "observationContentHash": null,
+  "failure": {
+    "code": "PORTABLE_AFFINE_U8_ATTEMPT_COMMIT_REJECTED",
+    "classification": "instrumentation",
+    "retryAllowed": true,
+    "errorName": "ObservationFailure",
+    "messageSha256": "55099b3f678d59f9e3c9221e5d987c80dd3aef588b7b78b5787f6e4310a2eee8",
+    "causeMessageSha256": "8bed85b8569719456ebc6c2a7a8bd68c0cabebabd42855398bb86fd7b812547a"
+  },
+  "attemptId": "portable-affine-u8-flat-attempt-ccf5545439e25df5",
+  "attemptContentHash": "ccf5545439e25df5a31a0f392fd4f927c8c414b0b8130cd3a239387e5e0406f0"
+}

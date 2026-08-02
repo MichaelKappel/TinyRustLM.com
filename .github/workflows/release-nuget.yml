@@ -1,0 +1,282 @@
+name: Release TinyRustLM NuGet
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: NuGet source URL
+        required: true
+        default: https://api.nuget.org/v3/index.json
+      auth_mode:
+        description: Publish authentication mode
+        required: true
+        type: choice
+        default: api_key
+        options:
+          - api_key
+          - trusted_publishing
+      nuget_user:
+        description: NuGet.org username for trusted_publishing; falls back to repository variable or secret NUGET_USER
+        required: false
+        default: ""
+      verify_after_publish:
+        description: Also run clean consumer smoke against the feed after mandatory feed-current/hash checks
+        required: true
+        default: "false"
+
+permissions:
+  contents: read
+
+jobs:
+  build-native:
+    name: Build native bridge (${{ matrix.rid }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+          - os: ubuntu-latest
+            rid: linux-x64
+          - os: macos-13
+            rid: osx-x64
+          - os: macos-14
+            rid: osx-arm64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build native bridge (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: eng/build-native.ps1 -Configuration release
+
+      - name: Build native bridge (Unix)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: eng/build-native.sh release
+
+      - name: Upload native bridge
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-native-${{ matrix.rid }}
+          path: artifacts/native/${{ matrix.rid }}/*
+
+  release:
+    name: Pack and publish protected SDK
+    needs: build-native
+    runs-on: windows-latest
+    environment: nuget-release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Download win-x64 native bridge
+        uses: actions/download-artifact@v4
+        with:
+          name: tinyrustlm-native-win-x64
+          path: artifacts/native/win-x64
+
+      - name: Download linux-x64 native bridge
+        uses: actions/download-artifact@v4
+        with:
+          name: tinyrustlm-native-linux-x64
+          path: artifacts/native/linux-x64
+
+      - name: Download osx-x64 native bridge
+        uses: actions/download-artifact@v4
+        with:
+          name: tinyrustlm-native-osx-x64
+          path: artifacts/native/osx-x64
+
+      - name: Download osx-arm64 native bridge
+        uses: actions/download-artifact@v4
+        with:
+          name: tinyrustlm-native-osx-arm64
+          path: artifacts/native/osx-arm64
+
+      - name: Verify and pack
+        shell: pwsh
+        run: eng/verify-package.ps1 -RequiredNativeRids win-x64,linux-x64,osx-x64,osx-arm64
+
+      - name: Upload NuGet packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-nuget-packages
+          path: |
+            artifacts/packages/*.nupkg
+            artifacts/packages/*.snupkg
+          if-no-files-found: error
+
+      - name: Upload NuGet audit reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-nuget-reports
+          path: artifacts/reports/*.json
+
+      - name: Audit NuGet release readiness
+        id: readiness
+        shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ inputs.auth_mode == 'api_key' && secrets.NUGET_API_KEY || '' }}
+          NUGET_SOURCE: ${{ inputs.source }}
+          TINYRUSTLM_NUGET_AUTH_MODE: ${{ inputs.auth_mode }}
+        run: |
+          eng/audit-nuget-release-readiness.ps1 -PackageSource artifacts/packages -NuGetSource $env:NUGET_SOURCE -AuthMode $env:TINYRUSTLM_NUGET_AUTH_MODE -FailOnBlocked
+          $report = Get-Content -LiteralPath artifacts/reports/tinyrustlm-nuget-release-readiness.json -Raw | ConvertFrom-Json
+          "status=$($report.status)" >> $env:GITHUB_OUTPUT
+
+      - name: Verify release readiness report schema
+        if: ${{ always() && hashFiles('artifacts/reports/tinyrustlm-nuget-release-readiness.json') != '' }}
+        shell: pwsh
+        env:
+          TINYRUSTLM_RELEASE_READINESS_REPORT: artifacts/reports/tinyrustlm-nuget-release-readiness.json
+        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter ReleaseReadinessReportIsMachineReadableWhenPresent
+
+      - name: Upload NuGet release readiness report
+        if: ${{ always() && hashFiles('artifacts/reports/tinyrustlm-nuget-release-readiness.json') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-nuget-release-readiness
+          path: artifacts/reports/tinyrustlm-nuget-release-readiness.json
+          if-no-files-found: error
+
+      - name: Authenticate to NuGet.org with Trusted Publishing
+        id: nuget_login
+        if: ${{ steps.readiness.outputs.status != 'published_current' && inputs.auth_mode == 'trusted_publishing' }}
+        uses: NuGet/login@v1
+        with:
+          user: ${{ inputs.nuget_user || vars.NUGET_USER || secrets.NUGET_USER }}
+
+      - name: Publish packages with API key
+        if: ${{ steps.readiness.outputs.status != 'published_current' && inputs.auth_mode == 'api_key' }}
+        shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+          NUGET_SOURCE: ${{ inputs.source }}
+        run: eng/publish-nuget.ps1 -SkipVerification -PackageSource artifacts/packages -NuGetSource $env:NUGET_SOURCE
+
+      - name: Publish packages with Trusted Publishing
+        if: ${{ steps.readiness.outputs.status != 'published_current' && inputs.auth_mode == 'trusted_publishing' }}
+        shell: pwsh
+        env:
+          NUGET_SOURCE: ${{ inputs.source }}
+          TINYRUSTLM_TEMP_NUGET_API_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
+        run: eng/publish-nuget.ps1 -SkipVerification -PackageSource artifacts/packages -NuGetSource $env:NUGET_SOURCE -ApiKey $env:TINYRUSTLM_TEMP_NUGET_API_KEY
+
+      - name: Verify publish plan report schema
+        if: ${{ always() && hashFiles('artifacts/reports/tinyrustlm-nuget-publish-plan.json') != '' }}
+        shell: pwsh
+        env:
+          TINYRUSTLM_PUBLISH_PLAN_REPORT: artifacts/reports/tinyrustlm-nuget-publish-plan.json
+        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter PublishPlanReportIsMachineReadableWhenPresent
+
+      - name: Upload NuGet publish plan
+        if: ${{ always() && hashFiles('artifacts/reports/tinyrustlm-nuget-publish-plan.json') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-nuget-publish-plan
+          path: artifacts/reports/tinyrustlm-nuget-publish-plan.json
+          if-no-files-found: error
+
+      - name: Verify published feed
+        if: ${{ inputs.verify_after_publish == 'true' }}
+        shell: pwsh
+        env:
+          NUGET_SOURCE: ${{ inputs.source }}
+        run: eng/verify-feed.ps1 -NuGetSource $env:NUGET_SOURCE -ReportOutput artifacts/reports/tinyrustlm-nuget-feed-smoke.json
+
+      - name: Verify feed smoke report schema
+        if: ${{ inputs.verify_after_publish == 'true' }}
+        shell: pwsh
+        env:
+          TINYRUSTLM_FEED_SMOKE_REPORT: artifacts/reports/tinyrustlm-nuget-feed-smoke.json
+        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter FeedSmokeReportIsMachineReadableWhenPresent
+
+      - name: Verify feed current version
+        shell: pwsh
+        env:
+          NUGET_SOURCE: ${{ inputs.source }}
+        run: |
+          # Post-publish feed-current and feed-hash checks are mandatory. Retry briefly for feed indexing delay.
+          $attempts = 12
+          for ($attempt = 1; $attempt -le $attempts; $attempt++) {
+              try {
+                  eng/verify-feed-current.ps1 -NuGetSource $env:NUGET_SOURCE
+                  exit 0
+              }
+              catch {
+                  if ($attempt -eq $attempts) {
+                      throw
+                  }
+                  Write-Warning "Feed-current verification failed on attempt $attempt of $attempts; waiting for feed indexing."
+                  Start-Sleep -Seconds 30
+              }
+          }
+
+      - name: Verify feed current report schema
+        shell: pwsh
+        env:
+          TINYRUSTLM_FEED_CURRENT_REPORT: artifacts/reports/tinyrustlm-nuget-feed-current.json
+        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter FeedCurrentReportIsMachineReadableWhenPresent
+
+      - name: Verify feed package hashes
+        shell: pwsh
+        env:
+          NUGET_SOURCE: ${{ inputs.source }}
+          TINYRUSTLM_PUBLISH_PLAN_REPORT: artifacts/reports/tinyrustlm-nuget-publish-plan.json
+          TINYRUSTLM_FEED_HASH_REPORT: artifacts/reports/tinyrustlm-nuget-feed-hashes.json
+        run: |
+          $attempts = 6
+          for ($attempt = 1; $attempt -le $attempts; $attempt++) {
+              try {
+                  eng/verify-feed-package-hashes.ps1 -NuGetSource $env:NUGET_SOURCE -PublishPlanReport $env:TINYRUSTLM_PUBLISH_PLAN_REPORT -ReportOutput $env:TINYRUSTLM_FEED_HASH_REPORT
+                  exit 0
+              }
+              catch {
+                  if ($attempt -eq $attempts) {
+                      throw
+                  }
+                  Write-Warning "Feed package-hash verification failed on attempt $attempt of $attempts; waiting for feed indexing."
+                  Start-Sleep -Seconds 30
+              }
+          }
+
+      - name: Verify feed hash report schema
+        shell: pwsh
+        env:
+          TINYRUSTLM_FEED_HASH_REPORT: artifacts/reports/tinyrustlm-nuget-feed-hashes.json
+        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter FeedHashReportIsMachineReadableWhenPresent
+
+      - name: Upload mandatory post-publish feed reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-nuget-post-publish-required-reports
+          path: |
+            artifacts/reports/tinyrustlm-nuget-feed-current.json
+            artifacts/reports/tinyrustlm-nuget-feed-hashes.json
+          if-no-files-found: error
+
+      - name: Upload optional feed smoke report
+        if: ${{ inputs.verify_after_publish == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-nuget-feed-smoke-report
+          path: |
+            artifacts/reports/tinyrustlm-nuget-feed-smoke.json
+          if-no-files-found: error

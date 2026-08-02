@@ -1,0 +1,15 @@
+{
+  "schema": "tinyrustlm.exact_flat_browser_wasm_attempt.v1",
+  "experimentId": "exact-flat-browser-wasm-direct-tests-20260722",
+  "status": "pass",
+  "startedAtUtc": "2026-07-22T03:01:43.186Z",
+  "completedAtUtc": "2026-07-22T03:01:50.360Z",
+  "sourceRevision": "cbf1c10bf6a0b6e04b4caacfba73d1dd3b473aba",
+  "preregistrationSha256": "695f902a12b94024a744ae9bb770a93b5576c0be5a9bf39540a0a9e957f119cd",
+  "parentReceiptSha256": "893e96f461f701f46a3aaaeecddd67bc2b700625ccdb9f0d83ce4b0b67d8c18c",
+  "observationId": "exact-flat-browser-wasm-0361d72f245abbd3",
+  "observationContentHash": "0361d72f245abbd3d3f07715edf6ff82ab6a99252ab2e77571c1bdce0b86e8a9",
+  "failure": null,
+  "attemptId": "exact-flat-browser-wasm-attempt-407443d2dd935818",
+  "attemptContentHash": "407443d2dd935818a7bbf999b03bf1e15592db36557a7dd7ac13216db7bf9b45"
+}

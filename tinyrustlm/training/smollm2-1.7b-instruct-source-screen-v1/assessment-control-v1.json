@@ -1,0 +1,88 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
+  "sourceRevision": "31b70e2e869a7173562077fd711b654946d38674",
+  "sourceModelArtifactSha256": "f55217be716b6a997b97b9d8d7eb6fad02e00858f5010ec24f64603c3a98a0e8",
+  "sourceScreenSha256": "a031217c6eac569f2d771671af89e962971978e8651742a2e7d7c5da2c6addce",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "smollm2-llama-dense-full-mha",
+  "runtimeAdmission": "unsupported-current-slm-smollm2-1.7b-source-shape",
+  "licenseDisposition": "apache-2.0-card-declaration-review-required",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": [
+    "underspecified-choice-missing-options",
+    "unavailable-resource-ignored",
+    "authority-resolution-absent",
+    "adult-comparison-one-sided",
+    "latest-user-preference-misapplied"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "underspecified-choice-missing-options"
+      ]
+    },
+    {
+      "index": 2,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "practical-decision-underdeveloped"
+      ]
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "unavailable-resource-ignored",
+        "practical-fallback-absent"
+      ]
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "authority-resolution-absent",
+        "unsupported-deadline-selection"
+      ]
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "adult-comparison-one-sided"
+      ]
+    },
+    {
+      "index": 6,
+      "status": "fail",
+      "failureCodes": [
+        "latest-user-preference-misapplied"
+      ]
+    },
+    {
+      "index": 7,
+      "status": "pass",
+      "failureCodes": []
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/HuggingFaceTB/SmolLM2-1.7B-Instruct/tree/31b70e2e869a7173562077fd711b654946d38674",
+    "https://huggingface.co/HuggingFaceTB/SmolLM2-1.7B-Instruct/blob/31b70e2e869a7173562077fd711b654946d38674/README.md",
+    "https://huggingface.co/HuggingFaceTB/SmolLM2-1.7B-Instruct/blob/31b70e2e869a7173562077fd711b654946d38674/config.json",
+    "https://huggingface.co/HuggingFaceTB/SmolLM2-1.7B-Instruct/blob/31b70e2e869a7173562077fd711b654946d38674/tokenizer_config.json",
+    "https://arxiv.org/abs/2502.02737v1",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt",
+    "https://github.com/huggingface/transformers/blob/v4.42.3/src/transformers/models/llama/modeling_llama.py"
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "receiptType": "tinyrustlm.secret-scan-v2",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "phase": "secret-scan",
+  "attempt": 72,
+  "status": "pass",
+  "createdAtUtc": "2026-07-18T17:46:48.470Z",
+  "completedAtUtc": "2026-07-18T17:47:00.976Z",
+  "inputReceiptIds": [],
+  "inputHashes": {
+    "scopeManifest": "9e70c229bcae6cfc2f5d0c14aab85c7a654c7d9f46420d5e087d443b841593e4"
+  },
+  "outputHashes": {
+    "scanReport": "afd97b53e3bda33594ecf8e43536d9b4a049f09e2046b3b771132099276ca05a",
+    "scopeManifest": "9e70c229bcae6cfc2f5d0c14aab85c7a654c7d9f46420d5e087d443b841593e4"
+  },
+  "sourceRevision": "596db649841351ad6b168697f87957a45da97acd",
+  "toolNames": [
+    "tinyrustlm-public-artifact-secret-scan",
+    "libarchive-tar"
+  ],
+  "toolVersions": [
+    "2",
+    "system"
+  ],
+  "toolBinaryHashes": [
+    "944caddf44e599970fb70608705c4ffb6f490aa250fa7d29fe3b9eca9059a32a",
+    "6db75bbd0a8a780378cb2abde8679659d671f036e66e29df47fe980bcdc59e2a"
+  ],
+  "runtimeIdentifier": "win-x64",
+  "operatingSystem": "win32",
+  "architecture": "x64",
+  "hardwareEvidence": {
+    "archiveContentExtractedAndScanned": true,
+    "localFileReadback": true
+  },
+  "configurationHash": "29e3dc2cd37037421e049f70e5ff0e8aa69a2f74c3baaa720ec02c7e4a227b01",
+  "publicSafeParameters": {
+    "archiveEntryCount": 1725,
+    "archiveTraversalFindingCount": 0,
+    "scannedArtifactCount": 608,
+    "scannedContentByteCount": 579533644,
+    "secretFindingCount": 0,
+    "scopeComplete": true,
+    "scopeKind": "campaign-public-release"
+  },
+  "boundedDiagnostics": {
+    "findingCodes": [],
+    "scannerRuleVersion": "tinyrustlm-public-artifact-secret-rules-v1"
+  },
+  "blockerCode": null,
+  "externalEvidenceReferences": [],
+  "redactionVersion": "tinyrustlm.public-receipt-redaction.v1",
+  "evidenceClass": "package",
+  "supersedesReceiptIds": [
+    "sha256:6630c990f4b669738d7cf7b20ed5661290be50bbb0dee688681b9999bf9ecf02"
+  ],
+  "attestationReference": null,
+  "receiptId": "sha256:ae865f2cc52deee6ec2dd45472259edd3ceef491046b31d35f91947f64449f81",
+  "receiptContentHash": "ae865f2cc52deee6ec2dd45472259edd3ceef491046b31d35f91947f64449f81"
+}

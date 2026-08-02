@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TinyRustLM</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./app/app.css?v=sha256-bda09e5745b4c8b97438df31fea05099dbf4ddfdd6569c083ffb9540ed86afc7">
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true" focusable="false">
+    <symbol id="icon-cube" viewBox="0 0 24 24"><path d="m12 2 8 4.5v9L12 20l-8-4.5v-9L12 2Z"/><path d="m4 6.5 8 4.5 8-4.5"/><path d="M12 11v9"/></symbol>
+    <symbol id="icon-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></symbol>
+    <symbol id="icon-chat" viewBox="0 0 24 24"><path d="M5 6.5A4.5 4.5 0 0 1 9.5 2h5A4.5 4.5 0 0 1 19 6.5v4A4.5 4.5 0 0 1 14.5 15H11l-5 4v-4.5A4.5 4.5 0 0 1 2 10.1V6.5Z"/><path d="M8 7h8"/><path d="M8 10.5h5"/></symbol>
+    <symbol id="icon-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21V5.5Z"/><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20"/></symbol>
+    <symbol id="icon-sliders" viewBox="0 0 24 24"><path d="M4 6h10"/><path d="M18 6h2"/><circle cx="16" cy="6" r="2"/><path d="M4 12h4"/><path d="M12 12h8"/><circle cx="10" cy="12" r="2"/><path d="M4 18h12"/><path d="M20 18h0"/><circle cx="18" cy="18" r="2"/></symbol>
+    <symbol id="icon-code" viewBox="0 0 24 24"><path d="m8 8-4 4 4 4"/><path d="m16 8 4 4-4 4"/><path d="m14 4-4 16"/></symbol>
+    <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 3 19 6v5c0 5-3.2 8.4-7 10-3.8-1.6-7-5-7-10V6l7-3Z"/><path d="m9 12 2 2 4-5"/></symbol>
+    <symbol id="icon-pencil" viewBox="0 0 24 24"><path d="M4 20h4l11-11a2.8 2.8 0 0 0-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></symbol>
+    <symbol id="icon-file" viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7V3Z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h5"/></symbol>
+    <symbol id="icon-braces" viewBox="0 0 24 24"><path d="M8 4c-2 0-3 1-3 3v2c0 1-1 2-2 2 1 0 2 1 2 2v4c0 2 1 3 3 3"/><path d="M16 4c2 0 3 1 3 3v2c0 1 1 2 2 2-1 0-2 1-2 2v4c0 2-1 3-3 3"/></symbol>
+    <symbol id="icon-paperclip" viewBox="0 0 24 24"><path d="m21 11-8.5 8.5a5 5 0 0 1-7-7L15 3a3.5 3.5 0 0 1 5 5l-9.2 9.2a2 2 0 0 1-2.8-2.8L16 6.5"/></symbol>
+    <symbol id="icon-send" viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4 20-7Z"/></symbol>
+    <symbol id="icon-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/></symbol>
+    <symbol id="icon-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+    <symbol id="icon-retry" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/></symbol>
+    <symbol id="icon-continue" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/><path d="M4 12h11"/><path d="M20 5v14"/></symbol>
+    <symbol id="icon-inspect" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/><path d="M11 8v6"/><path d="M8 11h6"/></symbol>
+    <symbol id="icon-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="icon-sparkles" viewBox="0 0 24 24"><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/></symbol>
+    <symbol id="icon-scales" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M5 6h14"/><path d="m6 6-3 7h6L6 6Z"/><path d="m18 6-3 7h6l-3-7Z"/></symbol>
+    <symbol id="icon-lightbulb" viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M8 14a6 6 0 1 1 8 0c-.8.7-1 1.5-1 2H9c0-.5-.2-1.3-1-2Z"/></symbol>
+    <symbol id="icon-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M12 2v3"/><path d="M22 12h-3"/><path d="M12 22v-3"/><path d="M2 12h3"/></symbol>
+    <symbol id="icon-bug" viewBox="0 0 24 24"><path d="M8 8a4 4 0 0 1 8 0v8a4 4 0 0 1-8 0V8Z"/><path d="M8 10H4"/><path d="M20 10h-4"/><path d="M8 16H4"/><path d="M20 16h-4"/><path d="M9 3l2 3"/><path d="m15 3-2 3"/></symbol>
+    <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-3"/></symbol>
+    <symbol id="icon-network" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="7" r="3"/><circle cx="12" cy="18" r="3"/><path d="m8.5 7.4 7 5.2"/><path d="m15.7 8.8-2.5 6.4"/><path d="m8.1 8.6 2.3 6.5"/></symbol>
+    <symbol id="icon-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.7L4 8.5"/><path d="M4 4v4.5h4.5"/></symbol>
+    <symbol id="icon-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.7 2.7 0 0 1 5 1.4c0 2.2-2.5 2.3-2.5 4.1"/><path d="M12 18h.01"/></symbol>
+    <symbol id="icon-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a8.1 8.1 0 0 0 .1-1l2-1.5-2-3.4-2.4 1a7.3 7.3 0 0 0-1.7-1L15 6.5h-4l-.4 2.6c-.6.2-1.2.6-1.7 1l-2.4-1-2 3.4 2 1.5a8.1 8.1 0 0 0 .1 2l-2 1.5 2 3.4 2.4-1c.5.4 1.1.8 1.7 1l.4 2.6h4l.4-2.6c.6-.2 1.2-.6 1.7-1l2.4 1 2-3.4-2-1.5c.1-.3.1-.7.1-1Z"/></symbol>
+    <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3"/><path d="M12 19v3"/><path d="M2 12h3"/><path d="M19 12h3"/><path d="m4.9 4.9 2.1 2.1"/><path d="m17 17 2.1 2.1"/><path d="m19.1 4.9-2.1 2.1"/><path d="m7 17-2.1 2.1"/></symbol>
+    <symbol id="icon-dice" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="3"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></symbol>
+  </svg>
+
+  <main class="app-shell" data-mode="simple" data-system-state="booting" data-rail-collapsed="false" data-sidebar-collapsed="false" data-conversation-state="empty" data-generation-state="idle">
+    <aside class="left-sidebar" aria-label="TinyRustLM navigation">
+      <header class="brand-header">
+        <div class="brand-mark" aria-hidden="true"><svg><use href="#icon-cube"></use></svg></div>
+        <div class="brand-copy">
+          <p class="eyebrow">Private Rust/WASM</p>
+          <h1>TinyRustLM</h1>
+        </div>
+        <button id="sidebarCollapseButton" class="icon-button sidebar-collapse" type="button" aria-label="Collapse sidebar" aria-expanded="true" title="Collapse sidebar">
+          <svg><use href="#icon-chevron"></use></svg>
+        </button>
+      </header>
+
+      <button id="newChatButton" class="new-chat-button" type="button" aria-label="New chat" data-tooltip="New chat">
+        <svg aria-hidden="true"><use href="#icon-plus"></use></svg>
+        <span>New Chat</span>
+      </button>
+
+      <section class="recent-section" aria-labelledby="recentChatsHeading">
+        <div class="sidebar-section-header">
+          <h2 id="recentChatsHeading">Recent Chats</h2>
+        </div>
+        <ol id="recentChatsList" class="recent-list">
+          <li class="recent-empty">No saved chats yet.</li>
+        </ol>
+      </section>
+
+      <section class="setup-section" aria-labelledby="modelSetupHeading">
+        <div class="sidebar-section-header">
+          <h2 id="modelSetupHeading">Model Setup</h2>
+        </div>
+        <div class="setup-step-list">
+          <button id="sidebarLocalSetupButton" class="setup-step" type="button" data-sidebar-source="local" data-tooltip="Local .slm" aria-pressed="true">
+            <svg aria-hidden="true"><use href="#icon-cube"></use></svg>
+            <span><strong>Local .slm</strong><small>Import and verify a file.</small></span>
+          </button>
+          <button id="sidebarHfSetupButton" class="setup-step" type="button" data-sidebar-source="huggingface" data-tooltip="Hugging Face">
+            <svg aria-hidden="true"><use href="#icon-search"></use></svg>
+            <span><strong>Hugging Face</strong><small>Find sources; Rust converts.</small></span>
+          </button>
+          <button id="sidebarP2pSetupButton" class="setup-step" type="button" data-sidebar-source="p2p" data-tooltip="P2P import">
+            <svg aria-hidden="true"><use href="#icon-network"></use></svg>
+            <span><strong>P2P import</strong><small>Use peer proof and manifests.</small></span>
+          </button>
+          <button id="sidebarAdvancedToolsButton" class="setup-step" type="button" data-sidebar-action="advanced" data-tooltip="Advanced tools">
+            <svg aria-hidden="true"><use href="#icon-sliders"></use></svg>
+            <span><strong>Advanced tools</strong><small>Verifier details and receipts.</small></span>
+          </button>
+        </div>
+      </section>
+
+      <section class="local-status-card" aria-label="Local runtime status" data-tooltip="Local runtime ready">
+        <span id="systemStatusDot" class="status-dot" aria-hidden="true"></span>
+        <div>
+          <strong>Local Only</strong>
+          <span id="runtimeStatus" class="status-text">System Ready</span>
+          <span id="statusDetail" class="status-detail">Browser-local runtime</span>
+        </div>
+        <svg aria-hidden="true"><use href="#icon-chevron"></use></svg>
+      </section>
+
+      <div class="sidebar-utilities" aria-label="Documentation and tools">
+        <a class="icon-button" href="#" rel="noopener" aria-label="Runtime docs" data-tooltip="Runtime docs" data-doc-target="runtime"><svg><use href="#icon-book"></use></svg></a>
+        <a class="icon-button" href="#" rel="noopener" aria-label="MiniModel docs" data-tooltip="MiniModel docs" data-doc-target="minimodel"><svg><use href="#icon-network"></use></svg></a>
+        <button class="icon-button" type="button" data-sidebar-action="advanced" aria-label="Advanced tools" data-tooltip="Advanced tools"><svg><use href="#icon-sliders"></use></svg></button>
+      </div>
+    </aside>
+
+    <section class="main-workspace grid" aria-label="Local AI chat workspace">
+      <div id="privacyBadge" class="privacy-badge" data-offline-ready="false" title="Load and verify a local or P2P model before disconnecting. Local copied memory and the local sync queue remain optional. MemoryEndpoints.com is recommended for memory available worldwide and across devices; it requires internet and explicit opt-in setup.">
+        <svg aria-hidden="true"><use href="#icon-shield"></use></svg>
+        <span>Local browser inference &bull; No prompts sent to a server</span>
+      </div>
+
+      <section id="modelToolbar" class="model-toolbar" aria-label="Loaded local model">
+        <div class="model-icon" aria-hidden="true"><svg><use href="#icon-cube"></use></svg></div>
+        <button id="modelEditButton" class="model-name-button" type="button" aria-haspopup="dialog" aria-expanded="false">
+          <span id="modelToolbarName">Choose a local or P2P model</span>
+          <svg aria-hidden="true"><use href="#icon-chevron"></use></svg>
+        </button>
+        <span id="modelLoadPill" class="status-pill neutral"><span class="mini-dot"></span>No model loaded</span>
+        <span class="status-pill info"><span class="mini-dot"></span>WASM ready <span id="wasmState" class="sr-only">waiting</span></span>
+        <span id="modelContextPill" class="status-pill neutral">Browser local</span>
+        <button class="edit-model-button" type="button" data-open-model-popover>
+          <svg aria-hidden="true"><use href="#icon-pencil"></use></svg>
+          <span>Edit Model</span>
+        </button>
+      </section>
+
+      <button id="mobileAdvancedButton" class="mobile-advanced-button" type="button" aria-controls="diagnosticsRail" aria-expanded="false">
+        <svg aria-hidden="true"><use href="#icon-sparkles"></use></svg>
+        <span>Advanced Options</span>
+      </button>
+
+      <div class="mode-toggle" role="group" aria-label="Interface mode">
+        <button id="simpleModeButton" class="mode-button" type="button" aria-pressed="true">Chat</button>
+        <button id="advancedModeButton" class="mode-button" type="button" aria-pressed="false">Advanced Tools</button>
+      </div>
+
+      <section id="simpleDiscoveryPanel" class="model-popover" hidden aria-label="Model source options">
+        <div class="source-option-grid" role="list" aria-label="Model source options">
+          <button id="simpleLocalSourceButton" class="source-option" type="button" data-source-option="local">
+            <span>Your Local Files</span>
+            <small>Fastest path. No network needed.</small>
+          </button>
+          <button id="simpleHfSourceButton" class="source-option" type="button" data-source-option="huggingface">
+            <span>Hugging Face</span>
+            <small>Model cards first. Convert later.</small>
+          </button>
+          <button id="simpleP2pSourceButton" class="source-option" type="button" data-source-option="p2p">
+            <span>P2P Exchange</span>
+            <small>Use manifests or peer proof.</small>
+          </button>
+        </div>
+        <div id="simpleLocalSourcePanel" class="source-panel" data-source-panel="local">
+          <p>Local `.slm` files stay on this device and are checked before they run.</p>
+          <button id="simpleChooseLocalButton" class="secondary-action" type="button">Choose Local .slm</button>
+          <button id="simpleImportLocalModelButton" class="secondary-action" type="button">Import Selected .slm</button>
+          <label for="simpleLocalMemoryPackageFiles" title="Optional local copied memory that remains available offline in this browser.">UAIX memory deck</label>
+          <input id="simpleLocalMemoryPackageFiles" type="file" accept=".uai,.json,text/plain,application/json" multiple>
+          <button id="simpleInspectLocalMemoryPackageButton" class="secondary-action" type="button">Use Memory Deck</button>
+          <p id="simpleLocalMemoryPackageStatus" class="inline-status">memory deck optional</p>
+          <button id="simpleMemoryEndpointsSettingsButton" class="secondary-action" type="button" title="MemoryEndpoints.com is the recommended optional way to keep memory available worldwide. Local copied memory and queued local sync remain available without automatic desktop access.">Web Memory Settings</button>
+          <p id="simpleMemoryEndpointsStatus" class="inline-status">web memory off</p>
+        </div>
+        <div id="simpleHfSourcePanel" class="source-panel" data-source-panel="huggingface" hidden>
+          <div class="source-search-controls">
+            <label for="simpleHfSearchInput">Hugging Face metadata search</label>
+            <p>Leave search empty to browse up to the top 100 TinyRustLM-ready candidates by Popular or New releases, or enter a model phrase.</p>
+            <div class="search-row hf-search-row">
+              <input id="simpleHfSearchInput" type="search" placeholder="TinyLlama" autocomplete="off" spellcheck="false">
+              <select id="simpleHfSortSelect" aria-label="Hugging Face browse order">
+                <option value="popular" selected>Popular</option>
+                <option value="new">New releases</option>
+              </select>
+              <button id="simpleHfSearchButton" type="button">Search Metadata</button>
+            </div>
+          </div>
+          <div class="source-flow-row">
+            <label class="toggle-row" for="simpleHfP2pToggle">
+              <input id="simpleHfP2pToggle" type="checkbox" checked>
+              <span>Enable P2P import and sharing</span>
+            </label>
+            <span id="simpleHfP2pStatus" class="flow-status">P2P on. New conversions prepare a local P2P share kit.</span>
+          </div>
+          <p id="simpleHfP2pWarning" class="inline-status source-warning" hidden>P2P is off. Convert only for me creates a private local .slm; enable P2P above to import shared models or prepare a share kit during conversion.</p>
+          <div id="simpleHfFlowSummary" class="source-flow-summary" role="status" aria-label="Search result summary" aria-live="polite" hidden></div>
+          <ol id="simpleHfResults" class="model-results"></ol>
+        </div>
+        <div id="simpleP2pSourcePanel" class="source-panel" data-source-panel="p2p" hidden>
+          <div class="companion-connect-row" aria-label="Desktop companion connection">
+            <div>
+              <strong>Desktop companion</strong>
+              <span id="companionStatus" class="flow-status" role="status" aria-live="polite">Browser only / desktop companion not contacted</span>
+            </div>
+            <button id="companionDetectButton" class="secondary-action" type="button" aria-describedby="companionAccessNotice">Connect desktop companion</button>
+            <button id="companionForgetButton" class="secondary-action" type="button" hidden>Forget pairing</button>
+          </div>
+          <p id="companionAccessNotice" class="flow-status companion-access-notice">TinyRustLM works entirely in your browser. The optional desktop companion adds P2P hosting and companion-managed model storage. Choose Connect only when you want it; your browser or operating system may show a local-app access prompt.</p>
+          <div id="companionPairingControls" class="search-row companion-pairing-row" hidden>
+            <label class="sr-only" for="companionPairingCode">One-time companion pairing code</label>
+            <input id="companionPairingCode" type="password" autocomplete="off" spellcheck="false" placeholder="One-time pairing code">
+            <button id="companionPairButton" type="button">Pair companion</button>
+            <label class="toggle-row companion-sharing-consent" for="companionSharingConsent">
+              <input id="companionSharingConsent" type="checkbox">
+              <span>Allow this browser to configure local P2P sharing</span>
+            </label>
+          </div>
+          <div id="companionImportProgress" class="companion-import-progress" hidden>
+            <progress id="companionImportProgressBar" aria-label="P2P model import progress"></progress>
+            <span id="companionImportStage" class="inline-status">Waiting</span>
+            <button id="companionCancelImportButton" class="secondary-action" type="button">Cancel</button>
+          </div>
+          <details id="companionSharingControls" class="companion-sharing-controls" hidden>
+            <summary>Local P2P sharing</summary>
+            <p id="companionSharingStatus" class="inline-status" role="status" aria-live="polite">Fleet not initialized</p>
+            <div id="companionSharingInitializeRow" class="search-row">
+              <label class="sr-only" for="companionSharingFleetId">Local fleet name</label>
+              <input id="companionSharingFleetId" type="text" value="browser-seed-fleet" autocomplete="off" spellcheck="false" aria-label="Local fleet name">
+              <button id="companionSharingInitializeButton" type="button">Initialize fleet</button>
+            </div>
+            <label for="companionSharingModelSelect">Verified local model</label>
+            <select id="companionSharingModelSelect" aria-label="Verified model to configure for P2P sharing"></select>
+            <div class="companion-lane-grid">
+              <fieldset>
+                <legend>Seed lane A</legend>
+                <label for="companionSharingLaneABind">Bind address</label>
+                <input id="companionSharingLaneABind" type="text" value="0.0.0.0:18123" autocomplete="off" spellcheck="false">
+                <label for="companionSharingLaneAUrl">Public peer URL</label>
+                <input id="companionSharingLaneAUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="http:&#47;&#47;peer.example:18123/model/">
+              </fieldset>
+              <fieldset>
+                <legend>Seed lane B</legend>
+                <label for="companionSharingLaneBBind">Bind address</label>
+                <input id="companionSharingLaneBBind" type="text" value="0.0.0.0:18124" autocomplete="off" spellcheck="false">
+                <label for="companionSharingLaneBUrl">Public peer URL</label>
+                <input id="companionSharingLaneBUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="http:&#47;&#47;peer.example:18124/model/">
+              </fieldset>
+            </div>
+            <div class="companion-sharing-actions">
+              <button id="companionSharingAdmitButton" type="button">Add verified import</button>
+              <button id="companionSharingEnableButton" class="secondary-action" type="button">Enable fleet entry</button>
+              <button id="companionSharingDisableButton" class="secondary-action" type="button">Pause fleet entry</button>
+              <button id="companionSharingRemoveButton" class="secondary-action" type="button">Remove from fleet</button>
+            </div>
+            <p class="inline-status">Local enablement is not public proof. MiniModel publication still requires current outside-network verification.</p>
+          </details>
+          <p>Load MiniModel metadata or a local `models.v0.json` snapshot to find proof-ready peer imports, or save share metadata after you import a verified local `.slm`.</p>
+          <label for="simplePeerBaseUrlInput">Known peer URL</label>
+          <div class="search-row">
+            <input id="simplePeerBaseUrlInput" type="url" inputmode="url" placeholder="127.0.0.1:8123/">
+            <button id="simpleSavePeerUrlButton" type="button">Use Peer</button>
+            <button id="simpleCheckPeerStatusButton" class="secondary-action" type="button">Check Peer</button>
+          </div>
+          <p id="simplePeerUrlStatus" class="inline-status">Enter the consenting peer URL once; P2P imports will use it.</p>
+          <label for="simplePeerContactCardFile">Peer contact card JSON</label>
+          <input id="simplePeerContactCardFile" type="file" accept=".json,application/json">
+          <button id="simpleApplyPeerContactCardButton" class="secondary-action" type="button">Use Peer Card</button>
+          <label for="simplePeerContactBookFile">Peer contact book JSON</label>
+          <input id="simplePeerContactBookFile" type="file" accept=".json,application/json">
+          <button id="simpleApplyPeerContactBookButton" class="secondary-action" type="button">Use Peer Book</button>
+          <div id="simplePeerContactBookPeers" class="peer-contact-book-list" role="list" aria-label="Peer contact book peers" hidden></div>
+          <button id="simpleLoadCatalogButton" class="secondary-action" type="button">Load MiniModel Metadata</button>
+          <label for="simpleLocalCatalogFile">Local models.v0.json</label>
+          <input id="simpleLocalCatalogFile" type="file" accept=".json,application/json">
+          <button id="simpleImportLocalCatalogButton" class="secondary-action" type="button">Load Local Catalog</button>
+          <label for="simpleShareMetadataFile">Share metadata JSON</label>
+          <input id="simpleShareMetadataFile" type="file" accept=".json,application/json">
+          <button id="simpleImportShareMetadataButton" class="secondary-action" type="button">Load Share Metadata</button>
+          <label for="simplePeerAnnouncementFile">Peer-source announcement/feed JSON</label>
+          <input id="simplePeerAnnouncementFile" type="file" accept=".json,application/json">
+          <button id="simpleApplyPeerAnnouncementButton" class="secondary-action" type="button">Apply Peer Feed</button>
+          <label for="simpleImportReceiptLedgerFile">Import receipt ledger JSON</label>
+          <input id="simpleImportReceiptLedgerFile" type="file" accept=".json,application/json">
+          <button id="simpleImportReceiptLedgerButton" class="secondary-action" type="button">Load Receipt Ledger</button>
+          <div id="simpleImportReceiptLedgerEntries" class="receipt-ledger-entry-list" role="list" aria-label="Import receipt ledger entries" hidden></div>
+          <label for="simplePeerStatusCheckFile">Peer status check JSON</label>
+          <input id="simplePeerStatusCheckFile" type="file" accept=".json,application/json">
+          <button id="simplePeerStatusCheckButton" class="secondary-action" type="button">Load Peer Status</button>
+          <label for="simplePeerCompanionInventoryFile">Peer companion inventory JSON</label>
+          <input id="simplePeerCompanionInventoryFile" type="file" accept=".json,application/json">
+          <button id="simplePeerCompanionInventoryButton" class="secondary-action" type="button">Load Companion Inventory</button>
+          <button id="simpleSaveShareMetadataButton" class="secondary-action" type="button">Save Share Metadata</button>
+          <button id="simpleSaveShareKitButton" class="secondary-action" type="button">Save P2P Share Kit</button>
+          <button id="simpleLocalConnectApprovalsButton" class="secondary-action" type="button">Local Connect Approvals</button>
+          <p id="simpleImportReceiptLedgerStatus" class="inline-status">receipt ledger optional</p>
+          <p id="simplePeerStatusCheckStatus" class="inline-status">peer status optional</p>
+          <p id="simplePeerCompanionInventoryStatus" class="inline-status">companion inventory optional</p>
+          <p id="simpleShareMetadataStatus" class="inline-status">import a local .slm first</p>
+          <p id="simpleLocalConnectStatus" class="inline-status">Local Connect asks before app control.</p>
+          <ol id="simpleCatalogResults" class="model-results"></ol>
+        </div>
+        <button id="simpleOpenAdvancedDiscoveryButton" class="text-link-button" type="button">Open source details in Advanced Tools</button>
+        <div id="simpleDiscoveryStatus" class="helper-status" aria-live="polite">Choose a local .slm or connect the P2P companion.</div>
+      </section>
+
+      <section id="simpleErrorPanel" class="simple-error" hidden aria-live="polite">
+        <strong>Something needs attention.</strong>
+        <p id="simpleErrorMessage">Check the selected model and try again.</p>
+      </section>
+
+      <section id="simpleExperience" class="chat-stage" aria-label="Chat mode">
+        <div class="hero-icon" aria-hidden="true"><svg><use href="#icon-chat"></use></svg></div>
+        <h2>Chat with your local model</h2>
+        <p>Run prompts privately in your browser. No data sent to a server.</p>
+
+        <div class="starter-grid" role="list" aria-label="Starter actions">
+          <button class="starter-action" type="button" data-prompt-template="Summarize the text below in exactly two short complete sentences. Put a period after each sentence. Do not use bullets. Use only details from the text, and preserve product names and file-format names literally:" data-starter="summarize">
+            <svg aria-hidden="true"><use href="#icon-file"></use></svg>
+            <span>Summarize this article</span>
+            <small>Get the key points in a clear summary.</small>
+          </button>
+          <button class="starter-action" type="button" data-prompt-template="Explain what this code does in one short plain-English sentence. Do not rewrite the code or include a code block. Name the returned value:" data-starter="code">
+            <svg aria-hidden="true"><use href="#icon-code"></use></svg>
+            <span>Explain code</span>
+            <small>Understand what this code does.</small>
+          </button>
+          <button class="starter-action" type="button" data-prompt-template="Rewrite this sentence to be clearer. Preserve only the original meaning and do not add new actions or details:" data-starter="rewrite">
+            <svg aria-hidden="true"><use href="#icon-pencil"></use></svg>
+            <span>Rewrite text</span>
+            <small>Improve clarity, tone, and flow.</small>
+          </button>
+          <button class="starter-action" type="button" data-prompt-template="Output exactly one compact JSON object on one line. Use double-quoted string values only. Do not use markdown, code fences, null, ellipses, arrays, or extra text. The object must have exactly these keys: &quot;status&quot; and &quot;reason&quot;. Request:" data-starter="json">
+            <svg aria-hidden="true"><use href="#icon-braces"></use></svg>
+            <span>Generate JSON</span>
+            <small>Create structured data instantly.</small>
+          </button>
+        </div>
+      </section>
+
+      <section class="conversation-panel" aria-label="Conversation">
+        <header id="conversationHeader" class="conversation-header" hidden>
+          <div>
+            <p>Local conversation</p>
+            <h2 id="conversationTitle">New conversation</h2>
+          </div>
+          <button id="jumpToLatestButton" class="icon-button jump-to-latest" type="button" aria-label="Jump to latest message" title="Jump to latest message" hidden>
+            <svg aria-hidden="true"><use href="#icon-down"></use></svg>
+          </button>
+        </header>
+        <ol id="conversation" class="messages" aria-live="polite"></ol>
+        <div id="response" class="response-sentinel" hidden aria-live="polite"></div>
+      </section>
+
+      <form class="composer-panel" id="chatForm">
+        <label class="sr-only" for="prompt">Prompt</label>
+        <textarea id="prompt" rows="4" autocomplete="off" spellcheck="true" placeholder="Message your model..."></textarea>
+        <div class="composer-footer">
+          <span id="composerHint">Ready for a message</span>
+          <button id="generateButton" class="send-button" type="submit" disabled aria-label="Send message" data-action="send">
+            <svg class="send-icon" aria-hidden="true"><use href="#icon-send"></use></svg>
+            <svg class="stop-icon" aria-hidden="true" hidden><use href="#icon-stop"></use></svg>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <aside id="diagnosticsRail" class="advanced-options-panel diagnostics-rail" aria-label="Advanced options">
+      <header class="advanced-header">
+        <div>
+          <svg aria-hidden="true"><use href="#icon-sparkles"></use></svg>
+          <h2 id="advancedOptionsTitle">Advanced Options</h2>
+        </div>
+        <button id="diagnosticsRailToggle" class="icon-button" type="button" aria-label="Collapse Advanced Options" aria-expanded="true">
+          <svg><use href="#icon-chevron"></use></svg>
+        </button>
+      </header>
+
+      <div class="advanced-scroll">
+        <section class="generation-card" aria-labelledby="generationPresetsHeading">
+          <h3 id="generationPresetsHeading">Generation Presets</h3>
+          <div class="preset-grid" role="group" aria-label="Generation presets">
+            <button class="preset-button is-active" type="button" data-preset="balanced" aria-pressed="true"><svg><use href="#icon-scales"></use></svg><span>Balanced</span></button>
+            <button class="preset-button" type="button" data-preset="creative" aria-pressed="false"><svg><use href="#icon-lightbulb"></use></svg><span>Creative</span></button>
+            <button class="preset-button" type="button" data-preset="precise" aria-pressed="false"><svg><use href="#icon-target"></use></svg><span>Precise</span></button>
+            <button class="preset-button" type="button" data-preset="code" aria-pressed="false"><svg><use href="#icon-code"></use></svg><span>Code</span></button>
+            <button class="preset-button" type="button" data-preset="json" aria-pressed="false"><svg><use href="#icon-braces"></use></svg><span>JSON</span></button>
+          </div>
+
+          <div class="slider-stack">
+            <label class="slider-control" for="maxTokens">
+              <span>Max Tokens</span>
+              <input id="maxTokens" type="range" min="1" max="1024" step="1" value="1024">
+              <output data-value-for="maxTokens">1024</output>
+            </label>
+            <label class="slider-control" for="temperature">
+              <span>Temperature</span>
+              <input id="temperature" type="range" min="0" max="1.5" step="0.01" value="0.70">
+              <output data-value-for="temperature">0.70</output>
+            </label>
+            <label class="slider-control" for="topK">
+              <span>Top-K</span>
+              <input id="topK" type="range" min="1" max="100" step="1" value="40">
+              <output data-value-for="topK">40</output>
+            </label>
+            <label class="slider-control" for="topP">
+              <span>Top-P</span>
+              <input id="topP" type="range" min="0.01" max="1" step="0.01" value="0.90">
+              <output data-value-for="topP">0.90</output>
+            </label>
+          </div>
+
+          <label class="seed-control" for="seed">
+            <span>Seed</span>
+            <input id="seed" type="number" min="-1" max="4294967295" step="1" value="-1">
+            <button id="seedRandomButton" class="icon-button" type="button" aria-label="Randomize seed"><svg><use href="#icon-dice"></use></svg></button>
+          </label>
+        </section>
+
+        <section class="advanced-source-details" aria-label="Model and source details">
+          <details class="drawer-section" data-panel-key="dashboard-model-source">
+            <summary>Model Selection</summary>
+            <label for="modelSelect">Model</label>
+            <select id="modelSelect">
+              <option value="" selected disabled>Choose a local or P2P model</option>
+            </select>
+            <p id="modelHelperText" class="helper-text">Exact technical model names are shown here for local verification.</p>
+
+            <label for="localModelFile">Qualified local model bundle</label>
+            <input id="localModelFile" type="file" accept=".slm,.browser-model-admission.json,.minimodel-receipt,application/octet-stream,application/json,text/plain" multiple>
+            <button id="importLocalModelButton" class="secondary-action" type="button">Import Local Model</button>
+            <p id="localModelState" class="inline-status">waiting</p>
+
+            <label for="conversionRequestFile">Conversion request JSON</label>
+            <input id="conversionRequestFile" type="file" accept=".json,application/json">
+            <button id="importConversionRequestButton" class="secondary-action" type="button">Bind Conversion Request</button>
+            <p id="conversionRequestState" class="inline-status">optional source handoff</p>
+
+            <label for="localMemoryPackageSetup">UAIX memory setup</label>
+            <select id="localMemoryPackageSetup">
+              <option value="auto" selected>Auto from manifest</option>
+              <option value="base">Base active memory</option>
+              <option value="agent_file_handoff">Agent File Handoff</option>
+              <option value="llm_wiki">LLM Wiki</option>
+              <option value="file_handoff_llm_wiki">File Handoff + LLM Wiki</option>
+              <option value="multi_agent_communication">Multi-Agent Communication</option>
+              <option value="talisman_system">Talisman System</option>
+              <option value="advanced_persona_profile">Advanced Persona Profile</option>
+            </select>
+            <label for="localMemoryPackageFiles" title="Optional local copied memory that remains available offline in this browser.">UAIX memory deck files</label>
+            <input id="localMemoryPackageFiles" type="file" accept=".uai,.json,text/plain,application/json" multiple>
+            <div class="memory-deck-actions">
+              <button id="inspectLocalMemoryPackageButton" class="secondary-action" type="button">Inspect Memory Deck</button>
+              <button id="clearLocalMemoryPackageButton" class="secondary-action" type="button">Clear Memory Deck</button>
+            </div>
+          <p id="localMemoryPackageStatus" class="inline-status">select an extracted `.uai` folder to bind local memory</p>
+          <div id="localMemoryPackageSummary" class="memory-deck-summary" hidden></div>
+          <pre id="localMemoryPackageContextPreview" class="memory-deck-context-preview" aria-label="UAIX memory context preview"></pre>
+
+            <label class="toggle-row" for="memoryEndpointsEnabled" title="Recommended for worldwide, cross-device memory. It requires internet and explicit opt-in connector setup; TinyRustLM does not automatically contact or open a desktop app.">
+              <input id="memoryEndpointsEnabled" type="checkbox">
+              <span>MemoryEndpoints.com worldwide memory (recommended)</span>
+            </label>
+            <label for="memoryEndpointsBaseUrl">MemoryEndpoints URL</label>
+            <input id="memoryEndpointsBaseUrl" type="url" inputmode="url" spellcheck="false" placeholder="https://memoryendpoints.com">
+            <label for="memoryEndpointsEnrollmentUrl">One-time agent URL</label>
+            <input id="memoryEndpointsEnrollmentUrl" type="password" autocomplete="off" spellcheck="false">
+            <label for="memoryEndpointsRequestedAgentName">New agent name</label>
+            <div class="search-row">
+              <input id="memoryEndpointsRequestedAgentName" type="text" autocomplete="off" spellcheck="false" value="tinyrustlm-agent">
+              <button id="memoryEndpointsClaimButton" type="button">Create Agent</button>
+            </div>
+            <div id="memoryEndpointsIssuedCredentials" hidden>
+              <label for="memoryEndpointsCanonicalAgentName">Agent name</label>
+              <input id="memoryEndpointsCanonicalAgentName" type="text" readonly autocomplete="off">
+              <label for="memoryEndpointsAgentToken">Agent token</label>
+              <input id="memoryEndpointsAgentToken" type="password" readonly autocomplete="off">
+              <button id="memoryEndpointsCopyCredentialsButton" class="secondary-action" type="button">Copy Access</button>
+            </div>
+            <label for="memoryEndpointsReconnectName">Reconnect agent name</label>
+            <input id="memoryEndpointsReconnectName" type="text" autocomplete="off" spellcheck="false">
+            <label for="memoryEndpointsReconnectToken">Reconnect agent token</label>
+            <div class="search-row">
+              <input id="memoryEndpointsReconnectToken" type="password" autocomplete="off" spellcheck="false">
+              <button id="memoryEndpointsReconnectButton" type="button">Reconnect</button>
+            </div>
+            <details class="memory-endpoints-workspace-access">
+              <summary>Workspace-key access</summary>
+              <label for="memoryEndpointsWorkspaceId">Workspace ID</label>
+              <input id="memoryEndpointsWorkspaceId" type="text" autocomplete="off" spellcheck="false">
+              <label for="memoryEndpointsAgentId">Agent ID</label>
+              <input id="memoryEndpointsAgentId" type="text" autocomplete="off" spellcheck="false" value="tinyrustlm-agent">
+              <label for="memoryEndpointsToken">Workspace key</label>
+              <input id="memoryEndpointsToken" type="password" autocomplete="off" spellcheck="false">
+              <label for="memoryEndpointsAuthHeader">Auth header</label>
+              <select id="memoryEndpointsAuthHeader">
+                <option value="authorization" selected>Authorization Bearer</option>
+                <option value="x-memoryendpoints-key">X-MemoryEndpoints-Key</option>
+              </select>
+              <button id="memoryEndpointsConnectButton" class="secondary-action" type="button">Connect Workspace</button>
+            </details>
+            <div class="memory-deck-actions">
+              <button id="memoryEndpointsSaveShortTermButton" class="secondary-action" type="button">Save Short-Term</button>
+              <button id="memoryEndpointsSaveLongTermButton" class="secondary-action" type="button">Save Long-Term</button>
+              <button id="memoryEndpointsClearButton" class="secondary-action" type="button">Clear Web Memory</button>
+            </div>
+            <label for="memoryEndpointsSearchQuery">Hosted memory search</label>
+            <div class="search-row">
+              <input id="memoryEndpointsSearchQuery" type="search" autocomplete="off" spellcheck="false">
+              <select id="memoryEndpointsSearchTier" aria-label="Hosted memory tier">
+                <option value="all" selected>All Memory</option>
+                <option value="short_term">Short-Term</option>
+                <option value="long_term">Long-Term</option>
+              </select>
+              <button id="memoryEndpointsSearchButton" type="button">Search</button>
+            </div>
+            <p id="memoryEndpointsStatus" class="inline-status">web memory off</p>
+            <pre id="memoryEndpointsSearchResults" class="memory-deck-context-preview" aria-label="MemoryEndpoints search results"></pre>
+
+            <label for="catalogUrlInput">Catalog URL</label>
+            <div class="search-row">
+              <input id="catalogUrlInput" type="url" autocomplete="off" spellcheck="false">
+              <button id="catalogLoadButton" type="button">Load</button>
+            </div>
+            <label for="localCatalogFile">Local models.v0.json</label>
+            <input id="localCatalogFile" type="file" accept=".json,application/json">
+            <button id="importLocalCatalogButton" class="secondary-action" type="button">Load Local Catalog</button>
+            <label for="shareMetadataFile">Share metadata JSON</label>
+            <input id="shareMetadataFile" type="file" accept=".json,application/json">
+            <button id="importShareMetadataButton" class="secondary-action" type="button">Load Share Metadata</button>
+            <label for="peerContactCardFile">Peer contact card JSON</label>
+            <input id="peerContactCardFile" type="file" accept=".json,application/json">
+            <button id="applyPeerContactCardButton" class="secondary-action" type="button">Use Peer Card</button>
+            <label for="peerContactBookFile">Peer contact book JSON</label>
+            <input id="peerContactBookFile" type="file" accept=".json,application/json">
+            <button id="applyPeerContactBookButton" class="secondary-action" type="button">Use Peer Book</button>
+            <div id="peerContactBookPeers" class="peer-contact-book-list" role="list" aria-label="Peer contact book peers" hidden></div>
+            <label for="peerAnnouncementFile">Peer-source announcement/feed JSON</label>
+            <input id="peerAnnouncementFile" type="file" accept=".json,application/json">
+            <button id="applyPeerAnnouncementButton" class="secondary-action" type="button">Apply Peer Feed</button>
+            <label for="importReceiptLedgerFile">Import receipt ledger JSON</label>
+            <input id="importReceiptLedgerFile" type="file" accept=".json,application/json">
+            <button id="importReceiptLedgerButton" class="secondary-action" type="button">Load Receipt Ledger</button>
+            <p id="receiptLedgerStatus" class="inline-status">receipt ledger optional</p>
+            <div id="importReceiptLedgerEntries" class="receipt-ledger-entry-list" role="list" aria-label="Import receipt ledger entries" hidden></div>
+            <label for="peerStatusCheckFile">Peer status check JSON</label>
+            <input id="peerStatusCheckFile" type="file" accept=".json,application/json">
+            <button id="peerStatusCheckButton" class="secondary-action" type="button">Load Peer Status</button>
+            <button id="checkPeerStatusButton" class="secondary-action" type="button">Check Known Peer</button>
+            <p id="peerStatusCheckStatus" class="inline-status">peer status optional</p>
+            <label for="peerCompanionInventoryFile">Peer companion inventory JSON</label>
+            <input id="peerCompanionInventoryFile" type="file" accept=".json,application/json">
+            <button id="peerCompanionInventoryButton" class="secondary-action" type="button">Load Companion Inventory</button>
+            <p id="peerCompanionInventoryStatus" class="inline-status">companion inventory optional</p>
+            <p id="catalogStatus" class="inline-status">idle</p>
+            <ol id="catalogResults" class="model-results"></ol>
+
+            <label for="hfSearchInput">Hugging Face metadata</label>
+            <div class="search-row hf-search-row">
+              <input id="hfSearchInput" type="search" placeholder="TinyLlama" autocomplete="off" spellcheck="false">
+              <select id="hfSortSelect" aria-label="Hugging Face browse order">
+                <option value="popular" selected>Popular</option>
+                <option value="new">New releases</option>
+              </select>
+              <button id="hfSearchButton" type="button">Search Metadata</button>
+            </div>
+            <p id="hfStatus" class="inline-status">idle</p>
+            <ol id="hfResults" class="model-results"></ol>
+
+            <button id="saveShareMetadataButton" class="secondary-action" type="button">Save MiniModel Share Metadata</button>
+            <button id="saveShareKitButton" class="secondary-action" type="button">Save P2P Share Kit</button>
+            <p id="shareMetadataState" class="inline-status">import a local .slm first</p>
+          </details>
+
+          <details class="drawer-section local-connect-drawer" data-panel-key="dashboard-local-connect-approvals">
+            <summary>Local Connect Approvals</summary>
+            <label for="localConnectApprovalMode">Approval mode</label>
+            <select id="localConnectApprovalMode">
+              <option value="ask">Ask every time</option>
+              <option value="selected">Always approve selected</option>
+              <option value="full">Full local-control lab mode</option>
+            </select>
+            <p id="localConnectModeWarning" class="inline-status">Local Connect asks before app control.</p>
+            <label class="toggle-row local-connect-full-ack" for="localConnectFullControlAck">
+              <input id="localConnectFullControlAck" type="checkbox">
+              <span>Non-sensitive machine acknowledged</span>
+            </label>
+            <div id="localConnectCategoryList" class="local-connect-category-list" role="list" aria-label="App approval categories"></div>
+            <label for="localConnectApprovedApps">Always approved apps</label>
+            <textarea id="localConnectApprovedApps" rows="4" spellcheck="false" placeholder="chrome.exe&#10;outlook.exe"></textarea>
+            <div class="local-connect-actions">
+              <button id="trustBrowserEmailLocalConnectButton" class="secondary-action" type="button">Trust Browsers + Email</button>
+              <button id="saveLocalConnectPolicyButton" class="secondary-action" type="button">Save Approval Policy</button>
+              <button id="saveLocalConnectPolicyFileButton" class="secondary-action" type="button">Save Endpoint Policy JSON</button>
+              <button id="resetLocalConnectPolicyButton" class="secondary-action" type="button">Reset to Ask</button>
+            </div>
+            <label for="localConnectEndpointUrl">Local endpoint</label>
+            <div class="local-connect-endpoint-row">
+              <input id="localConnectEndpointUrl" type="url" inputmode="url" spellcheck="false" placeholder="127.0.0.1 loopback endpoint" />
+              <button id="checkLocalConnectEndpointButton" class="secondary-action" type="button">Check Endpoint</button>
+              <button id="dryRunLocalConnectDecisionButton" class="secondary-action" type="button">Dry Run Browser Decision</button>
+              <button id="dryRunLocalConnectActionButton" class="secondary-action" type="button">Dry Run Open URL</button>
+              <button id="executeLocalConnectActionButton" class="secondary-action" type="button">Execute Open URL</button>
+            </div>
+            <p id="localConnectEndpointStatus" class="inline-status">Endpoint checks use loopback only; action tests dry-run by default.</p>
+            <div id="localConnectEndpointAppList" class="local-connect-app-list" role="list" aria-label="Endpoint app approvals"></div>
+            <p id="localConnectPolicyStatus" class="inline-status">Ask every time for all app categories.</p>
+            <pre id="localConnectPolicyPreview" class="local-connect-policy-preview" aria-label="Local Connect approval policy"></pre>
+          </details>
+        </section>
+
+        <div class="accordion-stack">
+          <details class="status-accordion" data-panel-key="dashboard-runtime-status">
+            <summary><span class="accordion-icon success"></span><span><strong>Runtime Status</strong><small>WASM &bull; GPU &bull; Memory</small></span><svg><use href="#icon-chevron"></use></svg></summary>
+            <dl id="loadPanel" class="kv-list">
+              <dt>Model</dt><dd id="modelState">waiting</dd>
+              <dt>Error</dt><dd id="errorState">none</dd>
+            </dl>
+            <pre id="diagnostics"></pre>
+            <pre id="developer"></pre>
+          </details>
+
+          <details class="status-accordion" data-panel-key="dashboard-diagnostics">
+            <summary><svg class="accordion-svg warn"><use href="#icon-bug"></use></svg><span><strong>Diagnostics</strong><small>Logs &bull; Performance &bull; Errors</small></span><svg><use href="#icon-chevron"></use></svg></summary>
+            <div class="tabs" role="tablist" aria-label="Diagnostics tabs">
+              <button id="tabRuntime" class="tab-button" type="button" role="tab" aria-selected="true" aria-controls="panelRuntime" data-tab="runtime">Runtime</button>
+              <button id="tabProvenance" class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="panelProvenance" data-tab="provenance">Provenance</button>
+              <button id="tabBenchmark" class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="panelBenchmark" data-tab="benchmark">Benchmark</button>
+              <button id="tabConsole" class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="panelConsole" data-tab="console">Token Console</button>
+              <button id="tabTeleodynamic" class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="panelTeleodynamic" data-tab="teleodynamic">Teleodynamic</button>
+            </div>
+            <section id="panelRuntime" class="tab-panel" role="tabpanel" aria-labelledby="tabRuntime"></section>
+            <section id="panelProvenance" class="tab-panel" role="tabpanel" aria-labelledby="tabProvenance" hidden></section>
+            <section id="panelBenchmark" class="tab-panel" role="tabpanel" aria-labelledby="tabBenchmark" hidden></section>
+            <section id="panelConsole" class="tab-panel" role="tabpanel" aria-labelledby="tabConsole" hidden></section>
+            <section id="panelTeleodynamic" class="tab-panel" role="tabpanel" aria-labelledby="tabTeleodynamic" hidden></section>
+            <div class="console-actions">
+              <button id="clearConsoleButton" type="button">Clear Console</button>
+              <button id="copyConsoleButton" type="button">Copy Console</button>
+              <label class="toggle-row" for="pauseConsoleScroll"><input id="pauseConsoleScroll" type="checkbox"><span>Pause auto-scroll</span></label>
+            </div>
+            <pre id="console"></pre>
+          </details>
+
+          <details class="status-accordion" data-panel-key="dashboard-provenance">
+            <summary><svg class="accordion-svg info"><use href="#icon-shield"></use></svg><span><strong>Provenance</strong><small>Model &bull; Files &bull; Checksums</small></span><svg><use href="#icon-chevron"></use></svg></summary>
+            <dl id="provenancePanel" class="kv-list">
+              <dt>Manifest</dt><dd id="provenanceState">waiting</dd>
+              <dt>Source</dt><dd id="provenanceSourceKind">waiting</dd>
+              <dt>Source Snapshot</dt><dd id="provenanceSourceSnapshot">waiting</dd>
+              <dt>Source ID</dt><dd id="provenanceSourceId" class="copyable">waiting</dd>
+              <dt>Source Shape</dt><dd id="provenanceSourceShape">waiting</dd>
+              <dt>Source Review</dt><dd id="provenanceSourceReview" class="copyable">waiting</dd>
+              <dt>Review Routes</dt><dd id="provenanceSourceReviewRoutes">waiting</dd>
+              <dt>Review Artifacts</dt><dd id="provenanceSourceReviewArtifacts">waiting</dd>
+              <dt>Tokenizer Import</dt><dd id="provenanceSourceTokenizerImport">waiting</dd>
+              <dt>Source Validation</dt><dd id="provenanceSourceValidation">waiting</dd>
+              <dt>Admission</dt><dd id="provenanceAdmission">waiting</dd>
+              <dt>Quality</dt><dd id="provenanceQualityClaim">waiting</dd>
+              <dt>Trained</dt><dd id="provenanceTrainedClaim">waiting</dd>
+              <dt>Genome</dt><dd id="provenanceGenome">waiting</dd>
+              <dt>Species</dt><dd id="provenanceSpecies">waiting</dd>
+              <dt>Novelty</dt><dd id="provenanceNovelty">waiting</dd>
+              <dt>Population</dt><dd id="provenancePopulation">waiting</dd>
+              <dt>Mate Selection</dt><dd id="provenanceMateSelection">waiting</dd>
+              <dt>Operator</dt><dd id="provenanceOperator">waiting</dd>
+              <dt>Schedule</dt><dd id="provenanceSchedule">waiting</dd>
+              <dt>Phenotype</dt><dd id="provenancePhenotype">waiting</dd>
+              <dt>Artifact</dt><dd id="provenanceArtifact">waiting</dd>
+              <dt>Fitness</dt><dd id="provenanceFitness">waiting</dd>
+              <dt>Eval Cases</dt><dd id="provenanceEvalCases">waiting</dd>
+              <dt>Eval Checksum</dt><dd id="provenanceEvalChecksum">waiting</dd>
+              <dt>Checksum</dt><dd id="provenanceChecksum" class="copyable">waiting</dd>
+              <dt>Next Gate</dt><dd id="provenanceNextGate">waiting</dd>
+            </dl>
+          </details>
+
+          <details class="status-accordion" data-panel-key="dashboard-benchmark">
+            <summary><svg class="accordion-svg yellow"><use href="#icon-chart"></use></svg><span><strong>Benchmark</strong><small>Speed &bull; Tokens/sec &bull; Latency</small></span><svg><use href="#icon-chevron"></use></svg></summary>
+            <div class="benchmark-grid">
+              <div class="metric-card"><span>Load</span><strong id="benchLoadMs">waiting</strong></div>
+              <div class="metric-card"><span>Prompt tokens</span><strong id="benchPromptTokens">0 tokens</strong></div>
+              <div class="metric-card"><span>Generated tokens</span><strong id="benchGeneratedTokens">0 tokens</strong></div>
+              <div class="metric-card"><span>Speed</span><strong id="benchTokensPerSecond">0.000 tok/s</strong></div>
+              <div class="metric-card"><span>Scratch</span><strong id="benchScratch">0 bytes</strong></div>
+            </div>
+            <p id="runSummary" class="helper-status">No generation run yet.</p>
+          </details>
+
+        </div>
+
+        <details class="run-history" data-panel-key="dashboard-run-history">
+          <summary>Run History / State Ledger</summary>
+          <label class="toggle-row" for="keepRunHistoryToggle"><input id="keepRunHistoryToggle" type="checkbox"><span>Keep run history on this device</span></label>
+          <button id="clearRunHistoryButton" class="secondary-action" type="button">Clear Run History</button>
+          <ol id="runHistoryList" class="run-history-list"></ol>
+        </details>
+
+        <div class="bottom-controls">
+          <button id="resetButton" class="reset-defaults-button" type="button" disabled><svg><use href="#icon-reset"></use></svg><span>Reset to Defaults</span></button>
+          <button id="stepTokenButton" class="icon-button" type="button" disabled aria-label="Step one token"><svg><use href="#icon-code"></use></svg></button>
+          <button id="clearChatButton" class="icon-button" type="button" disabled aria-label="Clear conversation"><svg><use href="#icon-chat"></use></svg></button>
+          <button class="icon-button" type="button" aria-label="Help"><svg><use href="#icon-help"></use></svg></button>
+        </div>
+      </div>
+    </aside>
+
+    <footer class="footnote" id="appFooter">
+      <span>TinyRustLM.com</span>
+      <span>Browser-local Rust/WASM runtime</span>
+      <span>Developer portal: tinyrustlm.mirust.com</span>
+      <span>Local or P2P model source</span>
+      <span class="notice">Model bytes come only from local files or your paired companion; prompts stay in this browser.</span>
+      <span id="currentModelSummary" class="model-summary">No model loaded</span>
+    </footer>
+  </main>
+
+  <dialog id="largeModelDialog" class="model-download-dialog" aria-labelledby="largeModelDialogTitle">
+    <form method="dialog">
+      <div class="model-download-dialog-heading">
+        <svg aria-hidden="true"><use href="#icon-cube"></use></svg>
+        <div>
+          <p>Optional conversation model</p>
+          <h2 id="largeModelDialogTitle">Load a larger local model?</h2>
+        </div>
+      </div>
+      <p id="largeModelDialogModel" class="model-download-dialog-model">Selected model</p>
+      <dl class="model-download-resources">
+        <div><dt>Download</dt><dd id="largeModelDialogDownload">waiting</dd></div>
+        <div><dt>Browser memory</dt><dd id="largeModelDialogMemory">waiting</dd></div>
+      </dl>
+      <p class="model-download-dialog-note">The download starts only after approval. The model runs locally, and your approval stays in this browser session and is not saved.</p>
+      <div class="model-download-dialog-actions">
+        <button id="largeModelCancelButton" class="secondary-action" type="submit" value="cancel">Cancel</button>
+        <button id="largeModelConfirmButton" class="model-download-confirm" type="submit" value="accept">Load model</button>
+      </div>
+    </form>
+  </dialog>
+  <script src="./app/active-conversation.js?v=sha256-4a7300c64e96554370724b4294626f6de5d260f5a34614eada9af76020f55320"></script>
+  <script src="./app/calculator-tool.js?v=sha256-dccbbe5fb5cfd1f885b31c64be5e79e41775ad3613e8c9df9d9eb3e7c7db69f0"></script>
+  <script src="./app/companion-bridge.js?v=sha256-f80ab6284a32524815d48679c4c38b68b4ec588ff7177e71c2c5a707be32bd24"></script>
+  <script src="./app/minimodel-announcement.js?v=sha256-da79d092c8cd78d3b63dddeebf364daa91948fa330163c817018c686fb8f7836"></script>
+  <script src="./app/memory-endpoints-enrollment.js?v=sha256-2ea237831b00c1550dc04821a0a60b1184372049202fa8e26d3faa14c66a877b"></script>
+  <script src="./app/memory-endpoints-distributed-sync-v1.js?v=sha256-75df7b9b0352001af4f14c116f4c4617dcd75d935ab1b037b9bd13c89af32b4d"></script>
+  <script src="./app/memory-endpoints-sync.js?v=sha256-61a1b029c5c8a2e35921c7889171ec94d93a3b588dd2abe1fa5cf2cbf7bc04f2"></script>
+  <script src="./app/browser-model-admission.js?v=sha256-9ccaa58d5476b707a4e13ec38a5edfe685f064e07390818ded935143150e0813"></script>
+  <script src="./app/app.js?v=sha256-65b06635ca886c5f14dc5c882e569ad88deef583b0f7d893d3ff6b6ea2fb2482"></script>
+</body>
+</html>

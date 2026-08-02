@@ -1,0 +1,64 @@
+{
+  "schema": "tinyrustlm.owned_streaming_conversation_browser_receipt.v1",
+  "generated_utc": "2026-07-13T09:01:25Z",
+  "status": "pass",
+  "scope": "local-browser-runtime-not-public-deployment",
+  "ui_changed": false,
+  "runtime": {
+    "variant": "simd128",
+    "wasm_bytes": 385022,
+    "wasm_sha256": "fdf145a79ca5bcae1331d7c473df0b550fb467323c5f5d3704fd50616c628f7e",
+    "manifest_checksum": "0x196e902aa7298656",
+    "model_transfer": "owned-stream"
+  },
+  "model": {
+    "source_identity": "Qwen/Qwen2.5-1.5B-Instruct",
+    "artifact": "qwen2.5-1.5b-instruct-q4.slm",
+    "artifact_bytes": 969648576,
+    "artifact_sha256": "dc24eb832e8bd2257a9891e4c88df9ab7b1d24ee92d3f644cd98f340417b75bc",
+    "slm_checksum": "0x9327f064169b418d",
+    "quantization": "q4_0",
+    "prompt_format": "chatml-v1"
+  },
+  "large_load": {
+    "transfer_ms": 2786,
+    "rust_load_ms": 5347,
+    "wasm_memory_bytes": 1259274240,
+    "load_code": 0,
+    "free_code": 0,
+    "model_loaded": true
+  },
+  "conversation": {
+    "first_prompt_intent": "remember the user's name and tea-over-coffee preference",
+    "first_response": "Hi Morgan, thank you for choosing tea over coffee.",
+    "first_generation_ms": 21539,
+    "first_prompt_tokens": 44,
+    "first_generated_tokens": 11,
+    "second_prompt_intent": "recall the user's name and drink preference from real prior history",
+    "second_response": "Hi Morgan, your name is Morgan, and you prefer tea over coffee.",
+    "second_generation_ms": 17637,
+    "second_prompt_tokens": 83,
+    "second_prefill_reused_tokens": 55,
+    "second_prefill_computed_tokens": 28,
+    "second_generated_tokens": 15,
+    "second_generated_distinct_tokens": 13,
+    "second_generated_max_repeated_token_run": 1,
+    "second_stop_reason": "eos",
+    "response_duplication": false,
+    "preference_reversal": false
+  },
+  "honest_eval": {
+    "artifact_sha256": "74fc1b5c34010b00c7a972a6f3688bc815557cf2db1d841546b1d4b7ccef2c37",
+    "cases_passed": 10,
+    "cases_failed": 2,
+    "failed_capability": "strict structured JSON raw field generation",
+    "no_cheat_status": "fail",
+    "full_assistant_quality_promoted": false
+  },
+  "truth_boundary": {
+    "publicly_deployed": false,
+    "default_model_promoted": false,
+    "selector_quality_admitted": false,
+    "local_file_over_256_mib_supported": false
+  }
+}

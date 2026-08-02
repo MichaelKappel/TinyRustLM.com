@@ -1,0 +1,139 @@
+profile: runtime-mirust.taboo.v20
+updated_utc: 2026-07-22T02:16:15Z
+scope: public_site_voice_project_copy_and_local_app_consent
+purpose: Keep TinyRustLM browser-first, preserve constructive local-model craft and user agency, and prohibit unexpected attempts to access programs on a user's computer.
+pre_release_no_debt_no_legacy_prohibition: Until the human explicitly removes this rule, do not incur technical debt or preserve obsolete behavior for compatibility. Do not add shims, dual contracts, migration branches, deprecated aliases, or fallback paths for superseded code. Rewrite cleanly, verify the replacement, remove superseded implementation, and retain immutable evidence only as audit truth rather than legacy support.
+pre_publication_no_debt_policy_id: pre-publication-clean-slate-v1
+pre_publication_no_debt_prohibition: "Until the human explicitly removes this prohibition, do not add or retain technical debt, legacy or backward-compatibility support, compatibility shims, deprecated aliases, dual contracts, migration branches, fallback paths for superseded code, low-quality patches, knowingly temporary architecture, or deferred cleanup."
+pre_publication_obsolete_contract_prohibition: "Do not preserve obsolete routes, schemas, behavior, or code merely because a dogfood client used them. Update every dogfood client to the verified current design and remove the obsolete path."
+pre_publication_release_integrity_prohibition: "Do not deploy from a dirty, partially validated, or ambiguous release closure. A reachable dogfood or development surface is not evidence of a public release. Do not call work complete while known in-scope correctness, security, accessibility, test, documentation, or cleanup defects remain."
+third_party_review_storage_prohibition: Do not place downloaded third-party repositories, packages, papers, standards, source archives, or model-review bytes inside a project repository or its source control. Store review copies only under `E:\Source\external\{project-name}`; commit only original project work and public-safe source identities, hashes, sizes, licenses, and bounded findings.
+turbovec_turboquant_claim_prohibition: Do not conflate static model weights, online KV cache, and durable embedding indexes; do not claim TinyRustLM uses TurboVec or TurboQuant; and do not promote a dependency, format, bit width, one-bit-model label, speedup, memory reduction, recall, accuracy neutrality, or algorithm winner from report prose. Require pinned primary sources, scalar conformance, equal-byte comparisons, target-native and browser-WASM receipts, and untouched downstream quality evidence.
+colibri_specialist_portfolio_claim_prohibition: Do not claim arbitrary layers, heads, tensors, vocabulary rows, or byte slices from a dense model are useful specialists; model-level routing is token-level MoE; disk streaming reduces total model bytes; physical deduplication reduces logical execution bytes; KV state is portable across model or adapter compositions; an atomic file pointer proves safe in-process switching; `attention_frozen` proves cache reuse; QLoRA requires per-token whole-layer requantization; hidden champion retry is acceptable routing; or TinyRustLM currently uses Colibri or a quality-proven specialist router. Require trained compatible subnetworks or adapters, immutable content identity without timestamps, direct non-destructive overlays, reference-counted atomic graph activation, full composition-change KV flush, honest byte categories, visible pre-generation fallback, sealed task and broad-quality receipts, and separate target-native/browser measurements.
+authority:
+  human_request: 2026-06-26
+  route_elsewhere: Broad AI policy, harm essays, and alarm-led public messaging belong on other websites.
+  human_update_2026_06_27: This website should not spend public copy on caution-centered or worry-centered AI messaging; keep that content on other sites.
+  human_update_2026_06_27_site_rule: Runtime.MiRust.com pages should not be organized around warnings, cautions, worry, or alarm messaging; use proof, craft, lineage, local agency, and implementation-boundary language instead.
+  human_update_2026_06_27_strategy_rule: Model-breeding, mutualist, tiny-ecology, and UAIX memory-strategy copy for this site should route away from warning/caution/worry messaging and toward proof, craft, lineage, fit, agency, and evidence.
+  human_update_2026_06_27_no_meta_topic_rule: Do not make the absence of caution-centered messaging a public site topic; simply write in the proof, craft, lineage, fit, local-agency, and evidence voice.
+  human_update_2026_06_27_external_topic_rule: Do not make Runtime.MiRust.com carry caution or worry-focused AI messaging; other websites can host that lane while this site stays on proof, craft, lineage, fit, local agency, and implementation evidence.
+  human_update_2026_06_27_memory_strategy_rule: UAIX memory strategy and model-breeding reference copy for this site should stay in proof, craft, lineage, fit, local agency, and implementation evidence voice.
+  human_update_2026_06_27_direct_request_rule: For this website, Model Breeding and UAIX File Handoff strategy should be framed as craft, route, lineage, evidence, fit, and local agency; broader concern-led AI copy belongs elsewhere.
+  human_update_2026_06_28_site_scope_rule: Keep Runtime.MiRust.com public copy out of warnings/cautions/worry framing; those topics belong on other websites while this site carries proof, craft, lineage, fit, local agency, and implementation evidence.
+  human_update_2026_06_28_direct_site_scope_rule: For this website, UAIX strategy and Model Breeding copy should stay centered on routes, lineage, proof, and local implementation evidence; concern-led messaging belongs on separate sites.
+  human_update_2026_06_28_setup_file_handoff_rule: UAIX setup-file-handoff and Model Breeding memory copy should appear as route, lineage, proof, fit, local agency, and implementation evidence for this site.
+  human_update_2026_06_28_latest_direct_rule: Runtime.MiRust.com should not talk about or organize around cautions; other websites can carry that topic while this site carries proof, craft, lineage, fit, local agency, routes, and implementation evidence.
+  human_update_2026_06_28_model_breeding_memory_rule: Model Breeding concepts, research references, UAIX File Handoff strategy, short-term routes, and long-term pointer memory should keep the site voice centered on route maps, candidate lineage, evidence, and local fit.
+  human_update_2026_06_28_setup_handoff_site_rule: UAIX setup-file-handoff strategy should be used here as constructive routing memory for reports, research, short-term routes, and long-term checksum pointers; caution-centered commentary belongs on separate sites.
+  human_update_2026_06_28_latest_direct_rule_2: Keep warnings, cautions, worry, and concern-led messaging out of Runtime.MiRust.com public copy; this file is the intentional local place to name those taboo terms while the site speaks in routes, lineage, proof, fit, local agency, and implementation evidence.
+  human_update_2026_06_28_source_backed_route_rule: Model Breeding, UAIX File Handoff, and source-backed ALR1 route copy for this site should stay in route, lineage, proof, fit, local agency, and implementation evidence language; warning, caution, and worry language belongs only in this taboo routing file when it must be named.
+  human_update_2026_06_28_modelbreeder_research_rule: The 2026-06-28 ModelBreeder research intake should guide Runtime.MiRust.com toward fitness, scope notes, breeding invariants, evaluation checkpoints, local agency, proof-of-use, genome lineage, and implementation fit language.
+  human_update_2026_06_29_latest_direct_rule: Keep this website focused on Model Breeding routes, research references, proof, lineage, fit, local agency, and implementation evidence; caution-centered wording belongs here only as taboo routing memory.
+  human_update_2026_06_29_federated_strategy_rule: Federated/local-update and UAIX File Handoff strategy copy for this site should stay centered on candidate routes, proof-of-use, checksum pointers, lineage, local fit, and implementation evidence.
+  human_update_2026_07_14_browser_first_local_app_consent_rule: TinyRustLM is designed to work 100 percent in the web browser. Desktop companion features are totally optional. The browser must never unexpectedly probe, open, pair with, launch, or request access to a program on the user's computer. A user must first choose a clearly labeled desktop feature, be told what local program will be contacted and why, and be told to expect the browser or operating-system access prompt before any local connection attempt occurs.
+  human_update_2026_07_14_local_and_worldwide_memory_choice_rule: Local copied memory and local queued synchronization must remain available choices. MemoryEndpoints.com should be encouraged as the optional way to keep memory available worldwide and across devices, but it must never be presented as mandatory or as available without internet.
+  human_update_2026_07_15_pre_release_no_debt_rule: TinyRustLM is not a live released product. Until the human explicitly removes this rule, no technical debt, legacy support, or backward-compatibility work is allowed; clean replacement and full rewrites are authorized whenever they produce the best architecture.
+  human_update_2026_07_15_final_attestation_integrity_rule: Pre-release or locally generated evidence must never be promoted through a self-asserted signature Boolean. Final completion requires the exact content-addressed campaign predicate, all objective gates, no open release-blocking risk, and cryptographic authorization from an approved release authority.
+pre_release_engineering_taboo:
+  standing_rule: Remains active until the human explicitly removes it.
+  product_status: Publicly reachable development or test surfaces do not make TinyRustLM a live released product.
+  prohibited_work:
+    - Do not preserve superseded behavior merely for compatibility.
+    - Do not add compatibility shims, dual schemas, migration branches, deprecated aliases, legacy fallbacks, or version bridges for unreleased behavior.
+    - Do not knowingly defer cleanup, tests, architecture repair, or contract correction as technical debt.
+    - Do not describe pre-release evidence, fixtures, local execution, or reachable development surfaces as a live release.
+  required_replacement_behavior:
+    - Prefer the cleanest architecture even when that requires rewriting an existing implementation.
+    - Remove superseded implementation, tests, and documentation after the replacement is verified.
+    - Keep immutable receipts, rejected attempts, and failure history; audit evidence is historical truth, not supported legacy behavior.
+    - Record genuine external blockers without converting them into skips, simulations, or compatibility exceptions.
+campaign_completion_taboo:
+  current_truth: The campaign final attestation is content-addressed but remains unsigned, unauthorized, incomplete, and non-promotable.
+  prohibited_shortcuts:
+    - Do not treat successful final-report generation as campaign completion.
+    - Do not accept `signatureVerified`, `authorizedRelease`, `passed`, or another Boolean without the strict current verification receipt and its exact cryptographic parents.
+    - Do not generate, guess, request in plaintext, persist, or log a private signing key.
+    - Do not sign an incomplete predicate, an old source revision, a stale receipt set, or a campaign with an open release-blocking risk.
+    - Do not let local fixtures, QEMU, loopback reachability, package creation, or public development URLs satisfy live-service, physical-hardware, outside-network, publication, or release-authorization gates.
+    - Do not claim MemoryEndpoints individual-account setup or continuity without an advertised production contract and authorized live receipts for those exact accounts.
+    - Do not place dashboard output, secret-scan output, release-authorization verification, or final-attestation output inside the prerequisite public secret-scan identity; that creates an impossible self-referential hash cycle.
+  required_authorization_path:
+    - Generate the unsigned predicate only from a rebuilt healthy receipt DAG and dashboard v8.
+    - Sign the canonical authorization envelope with an active Ed25519 `release-authorizer` key from the strict source-bound authority registry.
+    - Verify registry, key, signature, predicate, source revision, issue time, expiry, and envelope identity before creating deployment evidence.
+    - Require that exact unexpired verification receipt as the final-attestation parent and preserve every earlier incomplete or superseded receipt.
+    - Keep the public evidence graph acyclic: scan ordinary publishable artifacts first, then validate scope-derived dashboard, scan, authorization, and attestation artifacts through their strict dedicated schemas, hashes, signatures, immutable history, and exact readback.
+browser_first_and_local_app_consent:
+  product_default: TinyRustLM must provide its core AI chat experience entirely in the web browser without requiring a desktop application.
+  optional_desktop_boundary:
+    - Desktop companion features are optional enhancements for users who deliberately choose local P2P hosting, companion-managed model storage, service operation, or another clearly documented desktop capability.
+    - Browser-only users must not be pressured into installing, pairing, or granting access to a desktop program.
+    - The absence of a desktop app must be a normal supported state, not an error or degraded-trust state.
+  prohibited_unexpected_behavior:
+    - Do not probe loopback ports, custom protocols, native messaging hosts, installed applications, browser extensions, local services, or desktop companions before explicit user initiation.
+    - Do not launch or attempt to launch a local program automatically.
+    - Do not trigger a browser, firewall, antivirus, operating-system, or application access prompt before the product has explained that the prompt is expected.
+    - Do not hide local-app access inside page load, model search, chat send, memory setup, P2P discovery, advanced-panel expansion, background retry, or capability detection.
+    - Do not treat prior installation, a remembered setting, or detection of a local endpoint as fresh consent for a new browser session unless the user explicitly enabled a narrowly scoped reconnect behavior and can revoke it.
+  required_opt_in_flow:
+    - Present a clear user action whose label names the optional desktop capability, such as Connect desktop companion or Enable local P2P hosting.
+    - Before any connection attempt, explain which local application will be contacted, what capability it provides, what data is exchanged, and whether the browser or operating system may show an access prompt.
+    - Require an affirmative user action after that explanation.
+    - Attempt only the explained, narrowly scoped operation after consent.
+    - If the app is absent, unavailable, or denied, return quietly to the fully usable browser-only path with an honest status and no repeated background prompts.
+    - Provide a visible disconnect or disable control and honor it immediately.
+  trust_and_release_boundary:
+    - An unexpected attempt to access a program on the user's computer is a release-blocking trust failure.
+    - Any browser or operating-system local-access prompt that appears without prior in-product explanation is a release-blocking defect.
+    - Repeated probing after denial, cancellation, disconnect, or browser-only selection is prohibited.
+    - This boundary exists because surprising local access will reasonably feel invasive, damage TinyRustLM's reputation, and make users unwilling to trust or use the application.
+  required_tests:
+    - A fresh browser-only visit performs no loopback, custom-protocol, native-messaging, extension, or installed-app probe.
+    - Ordinary chat, local browser model use, model search, and optional MemoryEndpoints use perform no desktop access attempt.
+    - The optional desktop flow displays the pre-access explanation before the first local request or system prompt.
+    - Cancel, deny, disconnect, and browser-only choices prevent all background retries.
+    - Network evidence proves that local-app traffic begins only after the recorded user opt-in event.
+    - Browser-only behavior remains complete when no companion is installed.
+memory_location_and_offline_choice:
+  required_local_options:
+    - Users may keep an inspected local UAIX Memory Deck as an offline memory context.
+    - Users may keep locally queued synchronization changes for later delivery without falsely treating that queue as readable offline long-term memory.
+    - Local copied memory and local synchronization choices must remain available even when the user does not enroll in MemoryEndpoints.com.
+  worldwide_option:
+    - Encourage MemoryEndpoints.com for memory that should remain available worldwide, across browsers, and across devices.
+    - Describe MemoryEndpoints.com as optional hosted synchronization, not as a requirement for local chat or local memory.
+    - State that new hosted reads, writes, and synchronization require internet access.
+  contextual_offline_explanation:
+    - Explain offline readiness from the user's current model and memory state instead of making a blanket promise.
+    - A loaded browser model may continue chatting offline in the current open tab while it remains loaded.
+    - If hosted memory is active, tell the user to load a local UAIX Memory Deck before disconnecting when offline memory context is needed.
+    - Locally queued sync changes may upload after reconnection, but they must not be described as a complete offline memory copy.
+public_site_voice:
+  preferred_emphasis:
+    - browser-local Rust/WASM execution
+    - transparent .slm artifacts and manifests
+    - model breeding as traceable lineage, compatibility, candidate evaluation, and craft
+    - tiny model ecology, adapters, quantization, and local experiments
+    - warm research language around growth, fit, interoperability, and proof
+  taboo_modes:
+    - alarm-led AI essays
+    - speculative doom framing
+    - public copy centered on fear, panic, or worry
+    - public copy organized around cautions instead of craft, lineage, proof, and local agency
+    - broad governance sermons when the page is about TinyRustLM capability
+    - memory-strategy copy that makes concern management the subject instead of routes, evidence, and project fit
+  taboo_terms_for_public_copy:
+    - warning
+    - warnings
+    - caution
+    - cautions
+    - worry
+    - fear
+    - panic
+  replacement_style:
+    warning: use proof, boundary, status, route, or fit when the copy needs a factual project edge.
+    caution: use scope note, implementation boundary, or future lane when the copy needs project routing.
+    risk: use fit, compatibility, or claim boundary when the copy needs technical precision.
+    site_section_titles: use status, evidence, boundaries, routes, fit, lineage, craft, or future lanes.
+implementation_note: This file guides site voice and public product copy; technical tests, error states, and Rust lint names may still use their exact domain terms where required.

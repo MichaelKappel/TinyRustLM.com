@@ -1,0 +1,3407 @@
+{
+  "schema": "tinyrustlm.campaign_final_attestation.v1",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "sourceRevision": "c37b1b9b0b7d6ef60378194b41c63127470f63e3",
+  "generatedAtUtc": "2026-07-16T19:47:00.513Z",
+  "subject": {
+    "dashboardSchema": "tinyrustlm.dogfood_campaign_dashboard.v8",
+    "dashboardDecisionSha256": "4fab57e4885f8bf1d6cd50a9c48faa57a50673e06b75f97ba084a03f46bea14c",
+    "riskRegisterSchema": "tinyrustlm.campaign_remaining_risks.v1",
+    "riskRegisterSha256": "86d5fb0c191df17fbee8d0874a0392d466ff0a78dd1617588b2bb0a3c9cb3fb2",
+    "retainedReceiptCount": 418,
+    "retainedReceiptSetSha256": "e764565190c7e6a77918030923ca2b7d6c00b84216092ae8938457610f51198c",
+    "currentReceiptCount": 184,
+    "currentReceiptSetSha256": "f0f13ae91f64a6cf99467499bd887391b0195b63d9e320e67ee17addc2d0e50c"
+  },
+  "campaignDecision": {
+    "campaignPrerequisitesPassed": false,
+    "progress": {
+      "qualifiedModels": {
+        "completed": 0,
+        "required": 20,
+        "complete": false
+      },
+      "cleanBrowserRounds": {
+        "completed": 0,
+        "required": 50,
+        "complete": false
+      },
+      "liveMemoryRounds": {
+        "completed": 0,
+        "required": 25,
+        "complete": false
+      },
+      "externallyProvenLanes": {
+        "completed": 0,
+        "required": 40,
+        "complete": false
+      },
+      "catalogAnnouncements": {
+        "completed": 0,
+        "required": 20,
+        "complete": false
+      },
+      "nativeRidGates": {
+        "completed": 3,
+        "required": 3,
+        "complete": false
+      },
+      "faultInjectionCases": {
+        "completed": 17,
+        "required": 24,
+        "complete": false
+      }
+    },
+    "releaseGates": {
+      "browserAcceptance": {
+        "passed": true,
+        "receiptId": "sha256:4f8ac13d4925f0edf2c99a00a35d595c701c32eefeda22849f528f18902acd59"
+      },
+      "nativeRids": {
+        "passed": false,
+        "receiptId": "sha256:a0171fb624d36d948b69cc55daa1662a4224aa22d8f7439cbfd1f306aa35e5b3",
+        "physicalLinuxArm64Verified": false
+      },
+      "packages": {
+        "passed": true,
+        "receiptId": "sha256:622f4c3b842982af975c0e04fd3443ad5ecf35239c43e1f915f7612198ebc75f"
+      },
+      "packagedPublicSite": {
+        "passed": true,
+        "receiptId": "sha256:14a96014cd42d3977be362fc32c650d84d6e194996308072f44a11b3dbb4c86b"
+      },
+      "publicHttpsReadback": {
+        "passed": false,
+        "receiptId": "sha256:6c996e3b71d7d28fcd2350cf23e94eb95c06803e8527b01ad9dc5a020418b55c"
+      },
+      "secretScan": {
+        "passed": true,
+        "receiptId": "sha256:d4b5ffca19228dc4066a55f9313a2d3ffcc949f211eaff181580ce380486d9fc"
+      },
+      "faultInjection": {
+        "passed": false,
+        "receiptId": "sha256:8e8cc3620471b057550554bab1ccf7644eedfb3ed95ef024459bc1785197a836",
+        "satisfiedFaultCount": 17,
+        "plannedFaultCount": 24
+      }
+    },
+    "evidenceHealth": "healthy",
+    "graphValidated": true,
+    "resumable": true,
+    "blockers": [
+      "catalog_announcements_incomplete",
+      "catalog_publication_authority_absent",
+      "fault_injection_campaign_incomplete",
+      "fresh_browser_rounds_incomplete",
+      "live_memory_rounds_incomplete",
+      "memory_endpoints_live_contract_incompatible",
+      "native_rid_execution_incomplete",
+      "outside_network_lane_proofs_incomplete",
+      "outside_network_observer_absent",
+      "physical_linux_arm64_hardware_evidence_absent",
+      "public_endpoint_configuration_absent",
+      "public_https_readback_incomplete",
+      "qualified_models_incomplete"
+    ],
+    "qualifiedModelIds": [],
+    "completedRoundNumbers": [],
+    "openReleaseBlockingRiskIds": [
+      "catalog-authority-unavailable",
+      "external-fault-cases-incomplete",
+      "final-release-attestation-incomplete",
+      "fresh-browser-campaign-not-started",
+      "live-memory-contract-unavailable",
+      "outside-lane-proof-unavailable",
+      "physical-linux-arm64-unverified",
+      "public-https-readback-incomplete",
+      "qualified-model-portfolio-absent",
+      "release-source-history-contains-model-bytes"
+    ]
+  },
+  "failures": [
+    {
+      "receiptId": "sha256:188407dd2409285f3757e47145310cc5af145c219e89a46217695ec186085fe8",
+      "receiptType": "tinyrustlm.memory-endpoints-contract-audit-v1",
+      "phase": "memory-endpoints-contract-audit",
+      "status": "blocked",
+      "blockerCode": "memory_endpoints_live_contract_incompatible",
+      "completedAtUtc": "2026-07-15T06:20:57.073Z"
+    },
+    {
+      "receiptId": "sha256:a0171fb624d36d948b69cc55daa1662a4224aa22d8f7439cbfd1f306aa35e5b3",
+      "receiptType": "tinyrustlm.native-rid-verification-v1",
+      "phase": "native-rid-verification",
+      "status": "blocked",
+      "blockerCode": "physical_linux_arm64_hardware_evidence_absent",
+      "completedAtUtc": "2026-07-15T07:32:24.9092684Z"
+    },
+    {
+      "receiptId": "sha256:04fe91d2d1dd19af56547092d4f755efc11efec36b814522342c8457ee7bb7f6",
+      "receiptType": "tinyrustlm.public-catalog-readback-v1",
+      "phase": "public-catalog-readback",
+      "status": "blocked",
+      "blockerCode": "public_https_readback_incomplete",
+      "completedAtUtc": "2026-07-15T07:41:22.131Z"
+    },
+    {
+      "receiptId": "sha256:5ff9118e7b3a6365346ae9498838c6afd83130e72d3af8c4ca9c182d9bc95de4",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T07:53:35.368Z"
+    },
+    {
+      "receiptId": "sha256:efc73d6e1432a49157eb0fde297c74cc5a0b40b505e3beb1fcec19f4b0205886",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T07:53:35.368Z"
+    },
+    {
+      "receiptId": "sha256:12871782aad37a939d516834824fe3fc65a6367cc73e55d6a1882a034fc73f1b",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T07:57:02.544Z"
+    },
+    {
+      "receiptId": "sha256:1c42762fa6b4b2a0bad956d9cfb5474003911ea9ab27d8046cd572ac96023738",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T07:57:02.544Z"
+    },
+    {
+      "receiptId": "sha256:3b4bc219f9402f0cb507bb0b15ed897028eaaacea9f05cd9565c2282edb72457",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T08:09:22.416Z"
+    },
+    {
+      "receiptId": "sha256:ec4e4b2ee18a9f5105df96073d1d3f9b247768cc523c945d22ddf14becb17ff0",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T08:09:22.416Z"
+    },
+    {
+      "receiptId": "sha256:b2628223f016dc2f7b0be45bdc76ab36f68b60b4e673882b3e6437cd38b34725",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T08:23:06.911Z"
+    },
+    {
+      "receiptId": "sha256:b707aa9a1c1e6a32b53149f90809b950de609a84fca317ecfa35b989d0777267",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T08:23:06.911Z"
+    },
+    {
+      "receiptId": "sha256:531d0abeefd8dca65cc4e1f8ba6d9b873410d79583a6f2dfbf09dae1c771fed1",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T08:25:51.884Z"
+    },
+    {
+      "receiptId": "sha256:d4e47dfb0e73bd0f8f7ac7cb8def73d0f57914ae553087b9c1c653d58b9246d1",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T08:25:51.884Z"
+    },
+    {
+      "receiptId": "sha256:2d94a6466006c17d321dc26f84996597e265265b1fc28113fda87bf44bec32e2",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T08:27:43.098Z"
+    },
+    {
+      "receiptId": "sha256:92d5da5f1d9f697c55b0877c04e6db865f19fbaf031b47e178d7a8e1ed46c772",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T08:27:43.098Z"
+    },
+    {
+      "receiptId": "sha256:b5edf622093915e8cb04b55c00bb2a4314a0944be7da8286dd87f33bdff24e77",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T08:27:43.098Z"
+    },
+    {
+      "receiptId": "sha256:c63bdf3eda0944cea8d96a93d64bae4a5558dc85828af0d8c379122ecf5a4cd9",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T08:27:43.098Z"
+    },
+    {
+      "receiptId": "sha256:f701af0608637a6ccfeec1f24ca109e1738da2db2be2bc3de3a705700e60aa13",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T08:41:17.869Z"
+    },
+    {
+      "receiptId": "sha256:f9ad40855a5ed2b0cadf8580dc5ae0e3e6ac3c6e8acb6a9e3992ac77c4855760",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T08:41:17.869Z"
+    },
+    {
+      "receiptId": "sha256:3eff48e1bbf0b02e74576089309e0e86d70e0b06f3b13c449026c5732cd7229b",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T08:52:16.636Z"
+    },
+    {
+      "receiptId": "sha256:7e521620dfc698da1efddbd03e44320c1dcf31cfaddc4f4edf49b8f6fa0bfc65",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T08:52:16.636Z"
+    },
+    {
+      "receiptId": "sha256:b4922b542cc1821bf3470c172943875ba82e52231fae8e506cc7e660a2571c50",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T09:05:38.090Z"
+    },
+    {
+      "receiptId": "sha256:c33d5fbfce0ea347bb910ec71a3de9a50ab3a0e77d975a391fa76173b2337149",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T09:05:38.090Z"
+    },
+    {
+      "receiptId": "sha256:d4e778cd9d71dd6620ffcfa269ad6cfd91d7df241c0b7cf6d12e114517e07d99",
+      "receiptType": "tinyrustlm.model-qualification-error",
+      "phase": "model-source-review",
+      "status": "fail",
+      "blockerCode": "candidate_source_review_failed",
+      "completedAtUtc": "2026-07-15T09:07:13.716Z"
+    },
+    {
+      "receiptId": "sha256:dc657fa2bc7d9355a5022fc760dd5adb4877527475d52e2418d16adbf917309b",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T09:18:27.979Z"
+    },
+    {
+      "receiptId": "sha256:e9ced686f95c79425877b9ae6bfd901bf17bc671a19c3435ad241c8053dc81c4",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T09:18:27.979Z"
+    },
+    {
+      "receiptId": "sha256:7e32cb8faf891f1b65eb0034824e6f31330f7530438f4670c69e7828c92eec3f",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T09:29:51.399Z"
+    },
+    {
+      "receiptId": "sha256:e342961004e0440ec3d18e19c668605156942643fead29105f24589361bb57ed",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T09:29:51.399Z"
+    },
+    {
+      "receiptId": "sha256:7875e58b6f353cc45fbadae00d8cd767a4f43bb9a533a18fdab1f8701ae3fc2f",
+      "receiptType": "tinyrustlm.model-qualification-error",
+      "phase": "model-source-review",
+      "status": "fail",
+      "blockerCode": "candidate_source_review_failed",
+      "completedAtUtc": "2026-07-15T09:31:20.515Z"
+    },
+    {
+      "receiptId": "sha256:0a5246a03c56053fe0e16ffaccfbf4933e6b453b19c563d0cf087196c0797759",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T09:42:51.432Z"
+    },
+    {
+      "receiptId": "sha256:4491763c97a084cd54a6789b6cebc1807d159a5de17d230b7eabd0b35bc27ecd",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T09:42:51.432Z"
+    },
+    {
+      "receiptId": "sha256:0b1c4682a0e1bbe9a73ecf24972abac95471dad8bb2a2fbb924f5adfe9284b20",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T09:54:12.456Z"
+    },
+    {
+      "receiptId": "sha256:31855f3a45b9a2c543735d5989493ace5f6930b092043a4f7fc2148673eaa901",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T09:54:12.456Z"
+    },
+    {
+      "receiptId": "sha256:29a8dc4ab45499645b1c3058087bd823bdacd10ba10e6993348683a3e061c072",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:04:41.076Z"
+    },
+    {
+      "receiptId": "sha256:83098fce71250658eee5276811c60c5b18c4dcd32c96ada563173ef106d2b125",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:04:41.076Z"
+    },
+    {
+      "receiptId": "sha256:092e1ac11fe8904ae892722d56d62ad79534f1db8e60cd5671215c76ef4b16f0",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:15:35.328Z"
+    },
+    {
+      "receiptId": "sha256:17b03d88eb84327ffa7c3cb5afef872e22a143a938636a8dd5f1ea00540aeaa8",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:15:35.328Z"
+    },
+    {
+      "receiptId": "sha256:16bdca5106fd223c6c8f4bbc019c836b6153ba3ed1681fae2d741c58ef1ad2bc",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:25:11.058Z"
+    },
+    {
+      "receiptId": "sha256:d132f5b6c210f36a5f67cfd21b1ceb0089bf7c9cb4c552b5017dc691c8386ef6",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:25:11.058Z"
+    },
+    {
+      "receiptId": "sha256:6ca4ddf33fdb2645dc24577e5b3e310ae030de4f922262f7c2f2246a6789cec7",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:29:32.669Z"
+    },
+    {
+      "receiptId": "sha256:a80492d6ac1e07c6fdc67d2b5ef1b479cd22dede5a615eb1d9c64c8eb1dda69a",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:29:32.669Z"
+    },
+    {
+      "receiptId": "sha256:00d646b84c5adbde94f9e0e49f5d30548a24033b7d7d0fec79d2bef5d10659db",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:33:37.385Z"
+    },
+    {
+      "receiptId": "sha256:af2a827ee184ae4246021eb1bdc9bcf3a0ef5e9d7794cb95531427e05b06b2c5",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:33:37.385Z"
+    },
+    {
+      "receiptId": "sha256:5ed26fcaaad04cab6cbe0d97a24180605c43ae0fe6ffbb56f27803953fa0f191",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:37:50.805Z"
+    },
+    {
+      "receiptId": "sha256:655aa37250693bb59924cc28c9fd3d0bf720f212a78bbc471273b45cca2c6fbb",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:37:50.805Z"
+    },
+    {
+      "receiptId": "sha256:ce38ab1e6e02f6b2c6acdbc70541f895ae025cb7ef47f9fb30486ec17c258423",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:40:51.176Z"
+    },
+    {
+      "receiptId": "sha256:ec3c53c8d38472084a65827ca1a11637b354c8e4843128f9aca18fd11c8b27cd",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:40:51.176Z"
+    },
+    {
+      "receiptId": "sha256:f640743884e2486f17471f0e363f18dd030698ac16632fbbcc3ce4ec5544ca36",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:40:51.176Z"
+    },
+    {
+      "receiptId": "sha256:fa989a0ad725cccb115d09cde6240c38c3f2a8952eabcbc6aec2e1f293d7bf49",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:40:51.176Z"
+    },
+    {
+      "receiptId": "sha256:2d32f0a2fb4ef47f4410924741ed451bdc57cc4776d4bef8d528d6e9211e79db",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:43:39.220Z"
+    },
+    {
+      "receiptId": "sha256:c86de77aad65b46ba6184e5dd394b6b6d995eaf18973e136b2cae0bb5ee137e1",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:43:39.220Z"
+    },
+    {
+      "receiptId": "sha256:d4fcc42d68db3264b19bb294cfad236138e76c5469a47564f1c36b800324f90f",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:43:39.220Z"
+    },
+    {
+      "receiptId": "sha256:e4db390d3865a9234c76f454a2a5638ab7d5982ba7640cea68867407a18f4368",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:43:39.220Z"
+    },
+    {
+      "receiptId": "sha256:203625978e73d234f7d60a86e6cefe14b3080a71dc0eef0db4d45ff6a5871a51",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:46:27.950Z"
+    },
+    {
+      "receiptId": "sha256:2079de0ffbb82642c1466a3349795669c4b7d991659a797c4a47825dc8428834",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:46:27.950Z"
+    },
+    {
+      "receiptId": "sha256:9ad247365be8159e49abba7f4a90da9fd19666e39aa71a2ad73778323ffc8555",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:46:27.950Z"
+    },
+    {
+      "receiptId": "sha256:e19e30a6af67749e1b6566cf6568f68445848194430d6a0599dcf3e0dffb1d94",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:46:27.950Z"
+    },
+    {
+      "receiptId": "sha256:01337295324b5733387afca0cf119e5c9c2f8433eeacd0e83ada15bb176e4c30",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:49:12.818Z"
+    },
+    {
+      "receiptId": "sha256:09189c9a7ffc22db930f43a13f59203ac950e7cd682a4d0686f34e16df937a18",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:49:12.818Z"
+    },
+    {
+      "receiptId": "sha256:0e86dccafa2fa7922516b8bf690e3bea42b9debe192382abd9c97c2d058a23f7",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:49:12.818Z"
+    },
+    {
+      "receiptId": "sha256:f3e6c3081495925e9c16e44eaef06a607683c8aff1959833fd149ce81a7c946a",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:49:12.818Z"
+    },
+    {
+      "receiptId": "sha256:2f8f233ef6e6faccf735d068a3e87de5d581b4b732f99ea02981310257a7f20f",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:51:49.174Z"
+    },
+    {
+      "receiptId": "sha256:83a1271eef66b0d12db212e817d80708493c36b8909aad673d9a4a2250ea76fd",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:51:49.174Z"
+    },
+    {
+      "receiptId": "sha256:91df3c39078e614c823ce76d1a7a681f8ab502b976d94d6617f9b0d982d86ec0",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:51:49.174Z"
+    },
+    {
+      "receiptId": "sha256:af0636ee7da5366f922571f1926f736648d23a406f029cdd0f7ae7d89b198a53",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:51:49.174Z"
+    },
+    {
+      "receiptId": "sha256:2690f4b85da522e5950075d6c169c8cd6b23ced247fd85dc61fa533ed79c16f3",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:54:34.885Z"
+    },
+    {
+      "receiptId": "sha256:4c7d7427bd3cb4b1deea23fae2979113ede4d1d40381681ca1993ed8566bf6c7",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:54:34.885Z"
+    },
+    {
+      "receiptId": "sha256:5765a264c1c48735908e49400154f22950d1918966080679b5c4b7ebd27f9dd5",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:54:34.885Z"
+    },
+    {
+      "receiptId": "sha256:825cf263a87eed447b41ca66074e68901337f7b775f6788d29d3d45ef1e335aa",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:54:34.885Z"
+    },
+    {
+      "receiptId": "sha256:2eb5fcf9ba270ee546b3750d0657c5a9d26080e5774d537140a3fbb0cd8c49c8",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:57:24.424Z"
+    },
+    {
+      "receiptId": "sha256:4158fdf80eb21f6ff974fa5a8b049333c555b4ad8f36f09df33b28b5ae4f7173",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:57:24.424Z"
+    },
+    {
+      "receiptId": "sha256:95ac13964d5eb1a8cc8cd53ac57f6448ecf3144e9e7217c113a34f44f6e416d1",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:57:24.424Z"
+    },
+    {
+      "receiptId": "sha256:e4b26590ac4326d7228dd7b7d3516d3c0ad9fa86bef00a8fa9c14b72f4b97896",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T10:57:24.424Z"
+    },
+    {
+      "receiptId": "sha256:0a949e1dcf9650a68c107400d66bf333f9e9b61a9a7bc132d838c69632cc1894",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T11:00:07.695Z"
+    },
+    {
+      "receiptId": "sha256:83e0e4453b734ad9dfed4bd27182fcb52e8cb2347653d7f79353836d600cdd43",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T11:00:07.695Z"
+    },
+    {
+      "receiptId": "sha256:a6aed54d5cc8e408720de80907957c078d450b87a1f02213575ca8a92e6cb4b0",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T11:00:07.695Z"
+    },
+    {
+      "receiptId": "sha256:afa4dc9d0b7ce870ff8c178069c5c9f8b2034e982f7216d2511318d2acc5bcfa",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T11:00:07.695Z"
+    },
+    {
+      "receiptId": "sha256:53f494083b789a1b4217e1908cc6d8a932c9d93265b363fb0779f77f00853904",
+      "receiptType": "tinyrustlm.model-qualification-error",
+      "phase": "model-qualification",
+      "status": "fail",
+      "blockerCode": "candidate_qualification_infrastructure_failed",
+      "completedAtUtc": "2026-07-15T11:41:47.533Z"
+    },
+    {
+      "receiptId": "sha256:9e2a9d73c39a0361ba2cf6ebd3c3bb0954e4df146f5aa9bdbd09681b0c833dc3",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T11:59:17.664Z"
+    },
+    {
+      "receiptId": "sha256:a89b83b81d5671df12edfc663698b5674d7d5e202e50f0440e3751c5e257f551",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T11:59:17.664Z"
+    },
+    {
+      "receiptId": "sha256:015bf74d49637e283ba41a26cd972f55f6a58edadc3d7a9bee323884d3d32aa1",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T12:12:37.711Z"
+    },
+    {
+      "receiptId": "sha256:4bc223c6accd691a15443509b8ec1cc256a3aa38d021e1eaeeae134ee2d0ae9c",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T12:12:37.711Z"
+    },
+    {
+      "receiptId": "sha256:28d49c6cb9621d4d420c23536eafd41640385a42a4682f2370f8895359803032",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T12:31:05.329Z"
+    },
+    {
+      "receiptId": "sha256:2be1c60edcbb3e11ee0571f37b496e336ceeacd0a917b1f0dcffb576e88112ad",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T12:31:05.329Z"
+    },
+    {
+      "receiptId": "sha256:782676717cc786770ec8bb1a5fc0f059490f5ff9ee662a0f285e144d3f097a9d",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T12:48:40.041Z"
+    },
+    {
+      "receiptId": "sha256:ef3bffad656b9c0b5db6c08952daf5079246931d9ac7868fadb762e3464add41",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T12:48:40.041Z"
+    },
+    {
+      "receiptId": "sha256:a75552d5e939a55f69a40feb11e306a5ea4ca90681f0f26a2c78a7ced80f0716",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T12:56:37.975Z"
+    },
+    {
+      "receiptId": "sha256:ba3b12e28ee41653a6e2023bb0fb8b2a3ee5ccaceb7c8ead6e53e7551a790149",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T12:56:37.975Z"
+    },
+    {
+      "receiptId": "sha256:23630ff3e2516339e7456144495138e338041ade177121af17d158c8d8e7cba6",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:03:46.466Z"
+    },
+    {
+      "receiptId": "sha256:980f5e21a74ee574cc52634559404079367f104c9bb6811fbb621f9115f10b3e",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:03:46.466Z"
+    },
+    {
+      "receiptId": "sha256:6556e59dc3d28507dd1af587990c63b934da366ff0ecb6b0bd3bf85f27d7e48a",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:10:06.559Z"
+    },
+    {
+      "receiptId": "sha256:886d66c9663e8325f6103dde3d050e05bde63245447a1e24570c54b7cc86ae4c",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:10:06.559Z"
+    },
+    {
+      "receiptId": "sha256:8063b1b2a5221e17648e749b7ba146f6e2cc9cfecccee2620713444078b40cb3",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:11:58.647Z"
+    },
+    {
+      "receiptId": "sha256:893317c02b2d98fc79933cbd6476d6a4682c30b86e3c7a7c3d62d5b430ef5d22",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:11:58.647Z"
+    },
+    {
+      "receiptId": "sha256:7c86afd114ba99c624120a969b3cf50a1d93f76c2b7226ae961ef34c42cf6dfb",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:13:48.048Z"
+    },
+    {
+      "receiptId": "sha256:b3ad945a26bb04f122a0b171678dcba6666a8cf4e36a1330435a0394664ed4b8",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:13:48.048Z"
+    },
+    {
+      "receiptId": "sha256:8d9e1d52a4fe916a40e2a8604bc1bc88055d13d174b3ea6e48f501386aa7abb4",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:15:38.333Z"
+    },
+    {
+      "receiptId": "sha256:96c49c6afd3cecb6a1f1b792b6e580d155646b8211f77e021f6c2fcd62eba4ac",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:15:38.333Z"
+    },
+    {
+      "receiptId": "sha256:3bc899acfe1c684eedf352a7800155a25f1b4e83bd5cd74ac27c27809637ecba",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:17:31.788Z"
+    },
+    {
+      "receiptId": "sha256:84747aa70fe7a07f83a5714db9e6368f6cf034bf4ba408ccb74771e6d11276bc",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:17:31.788Z"
+    },
+    {
+      "receiptId": "sha256:66e542ca52e4ff17b96b125d3fcef0062bd5f647b3942fcc3c572fa8551d5067",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:19:19.544Z"
+    },
+    {
+      "receiptId": "sha256:f288a40e5340b3f6d4bba29999415622bdc0c22c266f9a1b7ab1efdc3ec6cbc5",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:19:19.544Z"
+    },
+    {
+      "receiptId": "sha256:7ee02be90d29beb5cd2b8f170b8dc8dfbb7bf563a94ff1fbabd7b043442174b3",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:21:08.521Z"
+    },
+    {
+      "receiptId": "sha256:f83ac8b72ed7973e246445681db85815bd8b125ac0819625ca90ef8fe1af8906",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:21:08.521Z"
+    },
+    {
+      "receiptId": "sha256:a860e080ce3b14c3f715c685857845446b0e410a6c1c73619ff03b3f883a06ec",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:23:00.648Z"
+    },
+    {
+      "receiptId": "sha256:faa3c277f736091a007baa308f898a5e42dc3f3abe392cc0701d17994b28255c",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:23:00.648Z"
+    },
+    {
+      "receiptId": "sha256:8a029b75fde5dad4bd71f88bf97f610d2c40213bf253c0db43a79beaecbdb5ff",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:24:51.314Z"
+    },
+    {
+      "receiptId": "sha256:ec0f5beb94358abac852ec303196da315bce17e9920508c25031fe53bcf9b38f",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:24:51.314Z"
+    },
+    {
+      "receiptId": "sha256:5cad6450435057570979878707334de3b28c74f2ce375539b4d7c604992a4bb2",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:28:09.652Z"
+    },
+    {
+      "receiptId": "sha256:8e4471717c7dd6197135aca76150627da9f7b8c04cf616b4bcc11c38b259ada8",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:28:09.652Z"
+    },
+    {
+      "receiptId": "sha256:a6df3bb9c2d508a890b4442168d044e3870e283f7b0618cb7ad3018e11c3d938",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:30:56.594Z"
+    },
+    {
+      "receiptId": "sha256:d973b4e76dbf94bf7512911d23f65405673d56e6fdc13229f754b402e62bad1d",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:30:56.594Z"
+    },
+    {
+      "receiptId": "sha256:79baef187d4da647112ead75c10419dba07a96848fc5df110ee8ec674f33443f",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:33:39.297Z"
+    },
+    {
+      "receiptId": "sha256:8451e3c7e67abb03a886624858f80234eea0606317d2703e08abd8f7ba09a8dc",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:33:39.297Z"
+    },
+    {
+      "receiptId": "sha256:1092930a30fabc316bb04fa5e83e52a32dd9f3305e31b46d6fd7a589cb70f7a0",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:36:14.299Z"
+    },
+    {
+      "receiptId": "sha256:98cc4fb16b13199c4e980d851e35f7257e7efc64ac765cd9a2ef2a8751beeda9",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:36:14.299Z"
+    },
+    {
+      "receiptId": "sha256:55f3f7e24ff6576639e100714fbbd666e48ce4e047c4decbf8b9d8e0bba6d0bb",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:38:59.872Z"
+    },
+    {
+      "receiptId": "sha256:570ac6487d407cde36c9de74a35c6672c7edff248b543ac115ffcd4289bd553f",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T13:38:59.872Z"
+    },
+    {
+      "receiptId": "sha256:a21c0de1780f5aabded1cdec950c1abe3f1e274592a58146e1c3f1655e162edb",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T15:43:56.120Z"
+    },
+    {
+      "receiptId": "sha256:c2adf610a4e80bf5a15c5dde76339fc73ace906a8d42b777d8c758288e8d72ac",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T15:43:56.120Z"
+    },
+    {
+      "receiptId": "sha256:188732a6dc1045292fd7aeda029ff57f623073550a6e5fe837130784f0773873",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T15:51:51.265Z"
+    },
+    {
+      "receiptId": "sha256:f48a17268097b2247107897bd3f53758b3907b5983155698c2580d4d2ba07897",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T15:51:51.265Z"
+    },
+    {
+      "receiptId": "sha256:0da7c24b517a32b3cda0adb542be3fc8b2f5a82c65fc3f21cf4ef1df20d6c8f4",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T15:59:51.347Z"
+    },
+    {
+      "receiptId": "sha256:4f0ec3869c3630c2d72b1156ef8a28a7c3ac46391b633d3698d5fb6fbf220827",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T15:59:51.347Z"
+    },
+    {
+      "receiptId": "sha256:a9b6771ac32f13636d8eaed8f8bccaf0b6c864ec14cae9fbdb15295fa16fdcd7",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T16:07:53.495Z"
+    },
+    {
+      "receiptId": "sha256:ad153891dcef6cea37c61e1c7d2cdd95b34612803e51d5e51fc49c1d1cae0d14",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T16:07:53.495Z"
+    },
+    {
+      "receiptId": "sha256:3ebf0e9bfca6373d3d067a04bfd35df2d5a00868338819a9dbd75384cca188e7",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T16:15:20.650Z"
+    },
+    {
+      "receiptId": "sha256:877e3a60711c6e4f5a335f570f6d27b40cbc8aa399725dedba8ace232f60e507",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T16:15:20.650Z"
+    },
+    {
+      "receiptId": "sha256:091860b54edcf62dba85e7c38c0e84ab3ce68fcf7e62bc9595deb711bd542bf1",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T16:23:20.212Z"
+    },
+    {
+      "receiptId": "sha256:828d96f632bf54b31bb8f975499f9400a10ed9115ec78ddaa083d1b22a71bad0",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T16:23:20.212Z"
+    },
+    {
+      "receiptId": "sha256:371d0d8086aed9d3cc8c1f83178fb380777265ccd52fe031ae351625fea3e98e",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T16:31:14.619Z"
+    },
+    {
+      "receiptId": "sha256:fdfc4c22320913b063e62f3031d0f3c740832ba97f174c18fe9d0acd147b4392",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T16:31:14.619Z"
+    },
+    {
+      "receiptId": "sha256:54751e69be6341d6dec65c9c929d04456d6fa27031276722d083c6013b3820d3",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T16:39:23.932Z"
+    },
+    {
+      "receiptId": "sha256:5c5244d3ea944e349396ae17b192fa674b7ac71c62c0434cc7856ae347b6fbd2",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T16:39:23.932Z"
+    },
+    {
+      "receiptId": "sha256:1dd163c30d1c9e187402db30ec1896f460bb89884ba935047115314864d65b4e",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T16:46:49.744Z"
+    },
+    {
+      "receiptId": "sha256:76a07ea6220db52dcf0f9826e876ed6b85a635dab5946b8f0467792415f643ce",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T16:46:49.744Z"
+    },
+    {
+      "receiptId": "sha256:27db924559e982c815c6c77f66dfc561a377e38c573a67f84cc5d291c058c623",
+      "receiptType": "tinyrustlm.model-evaluation",
+      "phase": "model-evaluation",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T16:54:43.182Z"
+    },
+    {
+      "receiptId": "sha256:cad02bbf60fb1cb58503b9df6661ed19ae20f70607629d5049e1a8840f9ad477",
+      "receiptType": "tinyrustlm.model-qualification",
+      "phase": "model-qualification",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T16:54:43.182Z"
+    },
+    {
+      "receiptId": "sha256:509ebd92921a3ac65c9642ad0d765c1bf5153947cfc20ca496c267c5f89ab0cf",
+      "receiptType": "tinyrustlm.model-training-pilot",
+      "phase": "model-post-training",
+      "status": "rejected",
+      "blockerCode": "insufficient-model-quality",
+      "completedAtUtc": "2026-07-15T17:25:34.472Z"
+    },
+    {
+      "receiptId": "sha256:eab87b6b91a652cf4eb234f1393dc3d37f700b83d9ce72712dfb7ad60f490709",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T17:56:28.457Z"
+    },
+    {
+      "receiptId": "sha256:54c4ad856f1bdfae9e1d00ea0488dbc91ee9ecd999ad300bdaba46d7683ed652",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T18:20:00.169Z"
+    },
+    {
+      "receiptId": "sha256:1a69f35637d620f2e9e5c084c27caabb7cfc7287cbe18c84f4cfd18cd5f583b1",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T19:18:20.462Z"
+    },
+    {
+      "receiptId": "sha256:98f016b439c54825cdafe799515711955194644584c2433b3ccce8ff0df312bd",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-15T19:37:04.192Z"
+    },
+    {
+      "receiptId": "sha256:6c996e3b71d7d28fcd2350cf23e94eb95c06803e8527b01ad9dc5a020418b55c",
+      "receiptType": "tinyrustlm.public-release-readback-v2",
+      "phase": "public-release-readback",
+      "status": "blocked",
+      "blockerCode": "public_https_readback_incomplete",
+      "completedAtUtc": "2026-07-15T21:11:18.134Z"
+    },
+    {
+      "receiptId": "sha256:1811a0af05fb85e0e9ffc78a51d5eeb188c221f224a14f44e39b9119c3178d09",
+      "receiptType": "tinyrustlm.fault-injection-report-v1",
+      "phase": "fault-injection-report",
+      "status": "blocked",
+      "blockerCode": "fault_injection_campaign_incomplete",
+      "completedAtUtc": "2026-07-15T21:56:07.606Z"
+    },
+    {
+      "receiptId": "sha256:4f6f9f9ef4f466494cd477c8ad514ffcf6cdfccfa27bc704df82f8939712a40d",
+      "receiptType": "tinyrustlm.campaign-operation-recovery-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": "fault.process-crash.observed",
+      "completedAtUtc": "2026-07-15T22:22:28.898Z"
+    },
+    {
+      "receiptId": "sha256:aa958455c7dd74a4c886fc85403104c9d1844daee1413b2ab7c66009b8c318e8",
+      "receiptType": "tinyrustlm.evidence-quarantine-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": "fault.receipt-write-power-loss.observed",
+      "completedAtUtc": "2026-07-15T22:22:28.909Z"
+    },
+    {
+      "receiptId": "sha256:c62678b8459a99d45bef6c447f7e8fca6a772f2cbc7d9d5653d558b18dade3b6",
+      "receiptType": "tinyrustlm.campaign-blocker-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": "fault.disk-full.observed",
+      "completedAtUtc": "2026-07-15T22:22:28.984Z"
+    },
+    {
+      "receiptId": "sha256:9612934a1888f575950f7a9209aee739f2e4d8f072a2850a53e60a78822f995f",
+      "receiptType": "tinyrustlm.model-admission-rejection-v1",
+      "phase": "fault-domain-evidence",
+      "status": "rejected",
+      "blockerCode": "fault.corrupt-model.observed",
+      "completedAtUtc": "2026-07-15T22:22:29.018Z"
+    },
+    {
+      "receiptId": "sha256:f4f66dff2892638e58c5a66cd295f880dbab180f881a609382cd4d4de52f5fde",
+      "receiptType": "tinyrustlm.model-admission-rejection-v1",
+      "phase": "fault-domain-evidence",
+      "status": "rejected",
+      "blockerCode": "fault.truncated-model.observed",
+      "completedAtUtc": "2026-07-15T22:22:29.048Z"
+    },
+    {
+      "receiptId": "sha256:19d303a7d583ddeae3e71786fd4f6aa0f26151e87d4c0dafb6fc64af3a99f2e6",
+      "receiptType": "tinyrustlm.structural-validation-rejection-v1",
+      "phase": "fault-domain-evidence",
+      "status": "rejected",
+      "blockerCode": "fault.invalid-tensor-offset.observed",
+      "completedAtUtc": "2026-07-15T22:22:29.123Z"
+    },
+    {
+      "receiptId": "sha256:e4ed97ba3bdab4f8c06b44cf7866f4def0ca500e822bacee01d9895772659ff0",
+      "receiptType": "tinyrustlm.network-operation-failure-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": "fault.network-loss.observed",
+      "completedAtUtc": "2026-07-15T22:22:29.227Z"
+    },
+    {
+      "receiptId": "sha256:02a7e17f91cc6f02ee595a6679c3e337c1bcadf90bb8f1852f8332e0330e41dd",
+      "receiptType": "tinyrustlm.p2p-import-attempt-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": "fault.p2p-peer-disappearance.observed",
+      "completedAtUtc": "2026-07-15T22:22:29.320Z"
+    },
+    {
+      "receiptId": "sha256:4a3e50e453a0d6e15c2d763ec873617e548a22473a4f8d3cd653a6df5123730f",
+      "receiptType": "tinyrustlm.p2p-import-attempt-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": "fault.corrupted-piece.observed",
+      "completedAtUtc": "2026-07-15T22:22:29.344Z"
+    },
+    {
+      "receiptId": "sha256:e576e556215d3fcf33e8e0400ade3ae54f3ffc4d384b8e412f07f929fbc9d7bd",
+      "receiptType": "tinyrustlm.p2p-lane-recovery-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": "fault.lane-process-death.observed",
+      "completedAtUtc": "2026-07-15T22:22:29.555Z"
+    },
+    {
+      "receiptId": "sha256:26195ede554af284f2af94e4b28706ede0295af61de68502daa57215b7ae0bcc",
+      "receiptType": "tinyrustlm.fault-injection-report-v1",
+      "phase": "fault-injection-report",
+      "status": "blocked",
+      "blockerCode": "fault_injection_campaign_incomplete",
+      "completedAtUtc": "2026-07-15T22:22:29.559Z"
+    },
+    {
+      "receiptId": "sha256:3403370c1613bd8e50f31d22940b4fbd8534329c70ed16e494201a98dc063fc3",
+      "receiptType": "tinyrustlm.campaign-operation-recovery-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:29:42.913Z"
+    },
+    {
+      "receiptId": "sha256:20c0a412288bfb19bf3ee3dc8bd13a1d3693c7a1081d812ef428f6e1c9c90b33",
+      "receiptType": "tinyrustlm.evidence-quarantine-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:29:42.925Z"
+    },
+    {
+      "receiptId": "sha256:75d58ffd03099fdcd600f19113110df122aaf97b61c53ff0d54de95b3b1516ba",
+      "receiptType": "tinyrustlm.campaign-blocker-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:29:43.000Z"
+    },
+    {
+      "receiptId": "sha256:f9f58ec3d4aaddc5fd151948821fb7ab01a0250efcc6e125d93e4e9105679f0a",
+      "receiptType": "tinyrustlm.model-admission-rejection-v1",
+      "phase": "fault-domain-evidence",
+      "status": "rejected",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:29:43.034Z"
+    },
+    {
+      "receiptId": "sha256:7aa89b5e6ab01ec8a508b8862de64a7cb4950c8e0f9ea253e044f76f8a3dc437",
+      "receiptType": "tinyrustlm.model-admission-rejection-v1",
+      "phase": "fault-domain-evidence",
+      "status": "rejected",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:29:43.059Z"
+    },
+    {
+      "receiptId": "sha256:734b8060f3b51b18993ddf70744fa6d829903043573508d08ee9177fc22ed9bf",
+      "receiptType": "tinyrustlm.structural-validation-rejection-v1",
+      "phase": "fault-domain-evidence",
+      "status": "rejected",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:29:43.129Z"
+    },
+    {
+      "receiptId": "sha256:6af40a177c9d5f4a81ab3746f021231e42c73ee3c16f653b863b786dde5044f8",
+      "receiptType": "tinyrustlm.network-operation-failure-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:29:43.234Z"
+    },
+    {
+      "receiptId": "sha256:04f08dc353b9dbbe6ffe8d754c4ee01acf4de53bc29d0894d2929cc27eeba6f4",
+      "receiptType": "tinyrustlm.p2p-import-attempt-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:29:43.344Z"
+    },
+    {
+      "receiptId": "sha256:5ffa612f47a032357ebca0d3c422b9be0b6485a9509a33ed913ab774bc5d8ecc",
+      "receiptType": "tinyrustlm.p2p-import-attempt-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:29:43.365Z"
+    },
+    {
+      "receiptId": "sha256:1fc0b029f9d80db70a3627568023892ef189603116c7afdfac49d5d1d1c597ff",
+      "receiptType": "tinyrustlm.p2p-lane-recovery-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:29:43.581Z"
+    },
+    {
+      "receiptId": "sha256:4a4706be00299bbbc99f89b0107245188657876cea272b79c5e59390c921c7f8",
+      "receiptType": "tinyrustlm.fault-injection-report-v1",
+      "phase": "fault-injection-report",
+      "status": "blocked",
+      "blockerCode": "fault_injection_campaign_incomplete",
+      "completedAtUtc": "2026-07-15T22:29:43.585Z"
+    },
+    {
+      "receiptId": "sha256:591a9789a513a6f60ab4c026a95a3338296d1a3e6227eea27b04cfaaa90f4ea0",
+      "receiptType": "tinyrustlm.campaign-operation-recovery-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:53:11.493Z"
+    },
+    {
+      "receiptId": "sha256:099ab190adb8ae6f8c15b94ee3acc52c7f0d379f4147a7b01018c6cf7d297596",
+      "receiptType": "tinyrustlm.evidence-quarantine-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:53:11.509Z"
+    },
+    {
+      "receiptId": "sha256:a2767e97a6a5fcdd39ef1fb6af6e80376d72873efc407ff41d9e668e67c944bd",
+      "receiptType": "tinyrustlm.campaign-blocker-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:53:11.579Z"
+    },
+    {
+      "receiptId": "sha256:1e4393c6ffd8204975541d10d86537fa6511515e335c53174fb4e49e7bdfb31f",
+      "receiptType": "tinyrustlm.model-admission-rejection-v1",
+      "phase": "fault-domain-evidence",
+      "status": "rejected",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:53:11.610Z"
+    },
+    {
+      "receiptId": "sha256:a287894faa250f94ecbf71bd0be9c9deb0aec3b0729843ab5732cc52bbea17cd",
+      "receiptType": "tinyrustlm.model-admission-rejection-v1",
+      "phase": "fault-domain-evidence",
+      "status": "rejected",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:53:11.635Z"
+    },
+    {
+      "receiptId": "sha256:d50d7239f013c9c8c9441544aca2f128cd15d66c02a57cf7e647c72a67b47a44",
+      "receiptType": "tinyrustlm.structural-validation-rejection-v1",
+      "phase": "fault-domain-evidence",
+      "status": "rejected",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:53:11.702Z"
+    },
+    {
+      "receiptId": "sha256:517a9bacdd86bdffd42a4fe08c815c74ecd3828a58f5d9f45aabedf1fc6948f0",
+      "receiptType": "tinyrustlm.network-operation-failure-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:53:11.817Z"
+    },
+    {
+      "receiptId": "sha256:e971ae615b470cfe7494b6bcd56b52ed3ad484868077c851b48cd14413f2b8f1",
+      "receiptType": "tinyrustlm.p2p-import-attempt-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:53:11.934Z"
+    },
+    {
+      "receiptId": "sha256:1915025650f25bc34a916dd0bfc2312aeaa00182bbbdc06ddcc70c7e241eebad",
+      "receiptType": "tinyrustlm.p2p-import-attempt-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:53:11.968Z"
+    },
+    {
+      "receiptId": "sha256:acb2a31f86a5f49b2ba1f6f8f22fcfa72e20be58650f98383e46a67c4f414b45",
+      "receiptType": "tinyrustlm.p2p-lane-recovery-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:53:12.216Z"
+    },
+    {
+      "receiptId": "sha256:6b3f318b0229f37abd181acea13f4bea55b282f5856169b8ece6f701f3528cc6",
+      "receiptType": "tinyrustlm.fault-injection-report-v1",
+      "phase": "fault-injection-report",
+      "status": "blocked",
+      "blockerCode": "fault_injection_campaign_incomplete",
+      "completedAtUtc": "2026-07-15T22:53:12.221Z"
+    },
+    {
+      "receiptId": "sha256:1ca043fd8fb5b2abf9e720fe447dc1e75006ffe99355d5a95a203f1f6671b731",
+      "receiptType": "tinyrustlm.browser-dogfood-round-v1",
+      "phase": "fault-domain-evidence",
+      "status": "fail",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:53:30.882Z"
+    },
+    {
+      "receiptId": "sha256:d08ad612f199e7a3a80171fc1042a248b7558d1e134bda81a83be9981ba100ff",
+      "receiptType": "tinyrustlm.browser-dogfood-round-v1",
+      "phase": "fault-domain-evidence",
+      "status": "fail",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:53:31.742Z"
+    },
+    {
+      "receiptId": "sha256:de51061323e5a124c21663b80271521c58de52f524204c20475b8482b0d6cd69",
+      "receiptType": "tinyrustlm.browser-dogfood-round-v1",
+      "phase": "fault-domain-evidence",
+      "status": "fail",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:53:32.523Z"
+    },
+    {
+      "receiptId": "sha256:e1b1d4b84c17bb5a8363d5c10437301514bed458177e277a9c7c543ac9e505ef",
+      "receiptType": "tinyrustlm.browser-dogfood-round-v1",
+      "phase": "fault-domain-evidence",
+      "status": "fail",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:53:34.023Z"
+    },
+    {
+      "receiptId": "sha256:f446cd0b7be5752979c0bc6182e49c4975a75d1b1dbfe4a66b9da0af84aabd19",
+      "receiptType": "tinyrustlm.browser-profile-cleanup-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:53:35.534Z"
+    },
+    {
+      "receiptId": "sha256:45c337f280eda4e474484bc4ffa97fc75ec2e42999dd4cd5b560324ade2c7da9",
+      "receiptType": "tinyrustlm.browser-profile-cleanup-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:53:36.343Z"
+    },
+    {
+      "receiptId": "sha256:5786a4734e1656e0a9bf3f70e17499a4b9b5270ce77b7cfb10a358d95233f18b",
+      "receiptType": "tinyrustlm.fault-injection-report-v1",
+      "phase": "fault-injection-report",
+      "status": "blocked",
+      "blockerCode": "fault_injection_campaign_incomplete",
+      "completedAtUtc": "2026-07-15T22:53:36.348Z"
+    },
+    {
+      "receiptId": "sha256:71f39b5fa8a061f78f605b863793b563cedec0697f5a843447728e810666a8fc",
+      "receiptType": "tinyrustlm.campaign-operation-recovery-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:56:43.119Z"
+    },
+    {
+      "receiptId": "sha256:1d6f112e82f38d265f053cf62f7fcab53ff890435451a13d47aba334122d10b4",
+      "receiptType": "tinyrustlm.evidence-quarantine-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:56:43.135Z"
+    },
+    {
+      "receiptId": "sha256:113e7f31b2edc5beb1cd282a2312face07e49b63670f0b40ad253e9828bd45b7",
+      "receiptType": "tinyrustlm.campaign-blocker-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:56:43.215Z"
+    },
+    {
+      "receiptId": "sha256:d282b78d224cec35062fd230b606733cb665714364a8570a1fde56ace7a9cbe3",
+      "receiptType": "tinyrustlm.model-admission-rejection-v1",
+      "phase": "fault-domain-evidence",
+      "status": "rejected",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:56:43.249Z"
+    },
+    {
+      "receiptId": "sha256:fe631dfb66a53876a20700dc8a7ecd44f83a6ed6f653c7f6325aa60bd730438a",
+      "receiptType": "tinyrustlm.model-admission-rejection-v1",
+      "phase": "fault-domain-evidence",
+      "status": "rejected",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:56:43.282Z"
+    },
+    {
+      "receiptId": "sha256:fadc9fb6abf162940cc40b650c69cae377496b30cdb645e38ee4888ae8b35c3b",
+      "receiptType": "tinyrustlm.structural-validation-rejection-v1",
+      "phase": "fault-domain-evidence",
+      "status": "rejected",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:56:43.355Z"
+    },
+    {
+      "receiptId": "sha256:e52c18b47815354d6dc546c7267ba30ca9e39aa2570473da6508c3d8fdd5e19c",
+      "receiptType": "tinyrustlm.network-operation-failure-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:56:43.457Z"
+    },
+    {
+      "receiptId": "sha256:7ea1e2497242ffc613884b28d4d8f21c5fe8e1fd7c92862cbf9875bc36590c92",
+      "receiptType": "tinyrustlm.p2p-import-attempt-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:56:43.549Z"
+    },
+    {
+      "receiptId": "sha256:d4d3c5b3e8b8652d92b9bdaeb8bd384bfa7603c09362c8f8726b4db6cd22fc03",
+      "receiptType": "tinyrustlm.p2p-import-attempt-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:56:43.575Z"
+    },
+    {
+      "receiptId": "sha256:65523346ef65bf9da30ce94449bf373f3bd5699226a4ef6081c41f0d4dbaacca",
+      "receiptType": "tinyrustlm.p2p-lane-recovery-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:56:43.800Z"
+    },
+    {
+      "receiptId": "sha256:2d100ef75b5ef0ec2c0e8189e09e555c5324b08cc84004d804610c78740a872e",
+      "receiptType": "tinyrustlm.fault-injection-report-v1",
+      "phase": "fault-injection-report",
+      "status": "blocked",
+      "blockerCode": "fault_injection_campaign_incomplete",
+      "completedAtUtc": "2026-07-15T22:56:43.804Z"
+    },
+    {
+      "receiptId": "sha256:2d6a4dace98a6843785cd7862695fc1ae8946fbdf49462ff2e570a51c1f7a535",
+      "receiptType": "tinyrustlm.browser-dogfood-round-v1",
+      "phase": "fault-domain-evidence",
+      "status": "fail",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:56:56.975Z"
+    },
+    {
+      "receiptId": "sha256:2e9f46887d8608ca4afe3a1e8bc1d68e234d6a28e7894a0bd3b8ca8d3f8e825a",
+      "receiptType": "tinyrustlm.browser-dogfood-round-v1",
+      "phase": "fault-domain-evidence",
+      "status": "fail",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:56:57.760Z"
+    },
+    {
+      "receiptId": "sha256:ce37c953e133d2853ad94149009936807a89ffd50cf4dbd211a8b406c4e6efaf",
+      "receiptType": "tinyrustlm.browser-dogfood-round-v1",
+      "phase": "fault-domain-evidence",
+      "status": "fail",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:56:58.570Z"
+    },
+    {
+      "receiptId": "sha256:80808dfc256baaeaf54b7cde42768330853f58c83d728ed54dba3c1f17bd3ae4",
+      "receiptType": "tinyrustlm.browser-dogfood-round-v1",
+      "phase": "fault-domain-evidence",
+      "status": "fail",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:57:00.123Z"
+    },
+    {
+      "receiptId": "sha256:786cf1bfdfcead73dbab5dd607cbea748d3df28be895d3c7e154e4631a60b254",
+      "receiptType": "tinyrustlm.browser-profile-cleanup-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:57:01.808Z"
+    },
+    {
+      "receiptId": "sha256:1248d6ede05f6fcb4e32627d68148634583a67a4490e81cd4530229c8e1a50d4",
+      "receiptType": "tinyrustlm.browser-profile-cleanup-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T22:57:02.515Z"
+    },
+    {
+      "receiptId": "sha256:5fc4fc1bf5310b29412218c1c53cf6345e1a3a9d3c5c4c8cfdce41fcc64757de",
+      "receiptType": "tinyrustlm.fault-injection-report-v1",
+      "phase": "fault-injection-report",
+      "status": "blocked",
+      "blockerCode": "fault_injection_campaign_incomplete",
+      "completedAtUtc": "2026-07-15T22:57:02.519Z"
+    },
+    {
+      "receiptId": "sha256:49f9122d6abd701fea7cfa5e7769ed726496afb5637c0fbd519f3c9ab91c3fff",
+      "receiptType": "tinyrustlm.campaign-operation-recovery-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T23:26:30.362Z"
+    },
+    {
+      "receiptId": "sha256:973ceb1aa344faf8c6884970ae39ac9fc13f0e08107c3581255c2ff3ba66096b",
+      "receiptType": "tinyrustlm.evidence-quarantine-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T23:26:30.375Z"
+    },
+    {
+      "receiptId": "sha256:7e243db1da32f7bb8db03323b1ba4161e471ff64680885ab2b012e0e89aacd3a",
+      "receiptType": "tinyrustlm.campaign-blocker-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T23:26:30.445Z"
+    },
+    {
+      "receiptId": "sha256:b4cef476a0aeae4864a23a69c9d276cdeee5fc8907861cb38c7203d891fb0b2e",
+      "receiptType": "tinyrustlm.model-admission-rejection-v1",
+      "phase": "fault-domain-evidence",
+      "status": "rejected",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T23:26:30.475Z"
+    },
+    {
+      "receiptId": "sha256:4b5b40234adeee576a1403985fec35c8fbb0bded45bf9e6e5d5128e564920eac",
+      "receiptType": "tinyrustlm.model-admission-rejection-v1",
+      "phase": "fault-domain-evidence",
+      "status": "rejected",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T23:26:30.502Z"
+    },
+    {
+      "receiptId": "sha256:782a5d43b9a6fa62bbaa1813534e2ddd1c60b1666c918e4db64c786425baad4c",
+      "receiptType": "tinyrustlm.structural-validation-rejection-v1",
+      "phase": "fault-domain-evidence",
+      "status": "rejected",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T23:26:30.691Z"
+    },
+    {
+      "receiptId": "sha256:0b4f62d6c36872ae288452c17de5c89f0f3249d8df1e6991b9a80dd71ae1d46c",
+      "receiptType": "tinyrustlm.network-operation-failure-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T23:26:30.793Z"
+    },
+    {
+      "receiptId": "sha256:62a6560c2b0955c097857be49047871a789e380f5b45d0e3153e6c59449405c5",
+      "receiptType": "tinyrustlm.p2p-import-attempt-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T23:26:30.890Z"
+    },
+    {
+      "receiptId": "sha256:afb597f715cc87ea9cab5ad92b7b8cc9557e5368571c54d2404867414ef6f474",
+      "receiptType": "tinyrustlm.p2p-import-attempt-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T23:26:30.915Z"
+    },
+    {
+      "receiptId": "sha256:b18ad237373a946147738c669b42e1da808aaf297e35f29cf85699d4cd233b77",
+      "receiptType": "tinyrustlm.p2p-lane-recovery-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T23:26:31.130Z"
+    },
+    {
+      "receiptId": "sha256:35678ef861ad3fd753d48e13625a6203bb3a19b89376a487f80f19761e5cac0f",
+      "receiptType": "tinyrustlm.fault-injection-report-v1",
+      "phase": "fault-injection-report",
+      "status": "blocked",
+      "blockerCode": "fault_injection_campaign_incomplete",
+      "completedAtUtc": "2026-07-15T23:26:31.135Z"
+    },
+    {
+      "receiptId": "sha256:7c59b5ca08983e86f4a1c81264d2c2687de373f35777cb70a6eae8768ab95de7",
+      "receiptType": "tinyrustlm.browser-dogfood-round-v1",
+      "phase": "fault-domain-evidence",
+      "status": "fail",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T23:26:43.760Z"
+    },
+    {
+      "receiptId": "sha256:5bd93e0713da00dfbc5c12cd1b56f260130ac0f9296a7c2e219d7fef2072fc90",
+      "receiptType": "tinyrustlm.browser-dogfood-round-v1",
+      "phase": "fault-domain-evidence",
+      "status": "fail",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T23:26:44.543Z"
+    },
+    {
+      "receiptId": "sha256:7272f50894db946c5e903e0eb7c54b3be9fa2ab264326f4ea37cc84a76b86309",
+      "receiptType": "tinyrustlm.browser-dogfood-round-v1",
+      "phase": "fault-domain-evidence",
+      "status": "fail",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T23:26:45.281Z"
+    },
+    {
+      "receiptId": "sha256:9ed505ca5e6a2e2b1ebe5a582c706dbaded6366c07c242ebd6572247d5393695",
+      "receiptType": "tinyrustlm.browser-dogfood-round-v1",
+      "phase": "fault-domain-evidence",
+      "status": "fail",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T23:26:46.777Z"
+    },
+    {
+      "receiptId": "sha256:5d640d4e700841d3ae2166f13b86ee1bc25ff2cd427260327e0d5e93fe053b24",
+      "receiptType": "tinyrustlm.browser-profile-cleanup-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T23:26:48.419Z"
+    },
+    {
+      "receiptId": "sha256:253796af1fd9d0388b12894baa9265bb1aad3092b554fb514b2ab6d52ce7fd74",
+      "receiptType": "tinyrustlm.browser-profile-cleanup-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T23:26:49.164Z"
+    },
+    {
+      "receiptId": "sha256:d83206974266f9f9f1f6f51780373e8277e4d9d70d7a2cd0794a062bf8e204ef",
+      "receiptType": "tinyrustlm.fault-injection-report-v1",
+      "phase": "fault-injection-report",
+      "status": "blocked",
+      "blockerCode": "fault_injection_campaign_incomplete",
+      "completedAtUtc": "2026-07-15T23:26:49.168Z"
+    },
+    {
+      "receiptId": "sha256:4bd0533c6d03a174fd05664316974e25f01140d28e79d759eb63c8171b035667",
+      "receiptType": "tinyrustlm.package-verification-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-15T23:27:07.870Z"
+    },
+    {
+      "receiptId": "sha256:e0747e3a7a46eb07643eaa744e8d89acce5000002febe18ffdd07b7d2bb5f5b2",
+      "receiptType": "tinyrustlm.fault-injection-report-v1",
+      "phase": "fault-injection-report",
+      "status": "blocked",
+      "blockerCode": "fault_injection_campaign_incomplete",
+      "completedAtUtc": "2026-07-15T23:27:07.875Z"
+    },
+    {
+      "receiptId": "sha256:e42ad391abf1929d77c85463a43fa2a747c8693d29ebd906a51607b5f1d1bcb0",
+      "receiptType": "tinyrustlm.campaign-operation-recovery-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-16T00:23:52.670Z"
+    },
+    {
+      "receiptId": "sha256:45099b224d310f6427aae70b8a529beb988d8245033160d688988689bf58e62f",
+      "receiptType": "tinyrustlm.evidence-quarantine-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-16T00:23:52.684Z"
+    },
+    {
+      "receiptId": "sha256:36b7304845e4dbd6f3230bd600c7625289d7457beaefb46fb18ced5cebac5362",
+      "receiptType": "tinyrustlm.campaign-blocker-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-16T00:23:52.767Z"
+    },
+    {
+      "receiptId": "sha256:c720259eb46ed02e9dde423987045c1a719ae286b6caf513c031e7eed609e117",
+      "receiptType": "tinyrustlm.model-admission-rejection-v1",
+      "phase": "fault-domain-evidence",
+      "status": "rejected",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-16T00:23:52.799Z"
+    },
+    {
+      "receiptId": "sha256:28f282a86e5537a266bcb14d0fbb3e03fc98c9837b763f9d1cea44e8c5516f59",
+      "receiptType": "tinyrustlm.model-admission-rejection-v1",
+      "phase": "fault-domain-evidence",
+      "status": "rejected",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-16T00:23:52.827Z"
+    },
+    {
+      "receiptId": "sha256:0fb142d259f49a2b9e9236dff0f36ab2e9c3feef8bd558e34f3a7b9cffcf22a0",
+      "receiptType": "tinyrustlm.structural-validation-rejection-v1",
+      "phase": "fault-domain-evidence",
+      "status": "rejected",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-16T00:23:52.927Z"
+    },
+    {
+      "receiptId": "sha256:48a3194fdd93ea89388abc1ced054e1a038db1a8f5ed460245f978339d4195e5",
+      "receiptType": "tinyrustlm.network-operation-failure-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-16T00:23:53.036Z"
+    },
+    {
+      "receiptId": "sha256:45a48c0d57cfc01c95b56d39f2dbafeb77f04d7731c827e65f10176e99685b32",
+      "receiptType": "tinyrustlm.p2p-import-attempt-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-16T00:23:53.223Z"
+    },
+    {
+      "receiptId": "sha256:c7183bc940cb7e9cdb748d826087589ca097185ca1bd731e9310bd072ec356e5",
+      "receiptType": "tinyrustlm.p2p-import-attempt-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-16T00:23:53.251Z"
+    },
+    {
+      "receiptId": "sha256:d84f149e80c10dc7f2dd67b8f1948cea8a2a0935e193236f290d2bb21cb966b3",
+      "receiptType": "tinyrustlm.p2p-lane-recovery-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-16T00:23:53.482Z"
+    },
+    {
+      "receiptId": "sha256:be12ec8935cc90307cc8e845a03135f7dda3824457a316b37dea24a1492445b7",
+      "receiptType": "tinyrustlm.fault-injection-report-v1",
+      "phase": "fault-injection-report",
+      "status": "blocked",
+      "blockerCode": "fault_injection_campaign_incomplete",
+      "completedAtUtc": "2026-07-16T00:23:53.486Z"
+    },
+    {
+      "receiptId": "sha256:3ae649818554ba16b8ff9a8f8e16508f397306191a054164297edda77dafb942",
+      "receiptType": "tinyrustlm.browser-dogfood-round-v1",
+      "phase": "fault-domain-evidence",
+      "status": "fail",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-16T00:24:07.337Z"
+    },
+    {
+      "receiptId": "sha256:c9f08a95b048cd973e994661255bf87f576d3290491f0f274d0f0b9a67088c4b",
+      "receiptType": "tinyrustlm.browser-dogfood-round-v1",
+      "phase": "fault-domain-evidence",
+      "status": "fail",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-16T00:24:08.161Z"
+    },
+    {
+      "receiptId": "sha256:e34872fdaa2fc2fea11a15b19feb3b68e35acb5957f7c9ed8656fd98f64693d2",
+      "receiptType": "tinyrustlm.browser-dogfood-round-v1",
+      "phase": "fault-domain-evidence",
+      "status": "fail",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-16T00:24:08.917Z"
+    },
+    {
+      "receiptId": "sha256:12218a18c15ed60471ac3ae4613295c3f990b07f0f0ca47386eb002233eaa314",
+      "receiptType": "tinyrustlm.browser-dogfood-round-v1",
+      "phase": "fault-domain-evidence",
+      "status": "fail",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-16T00:24:10.404Z"
+    },
+    {
+      "receiptId": "sha256:8515831105d3cfc530188408f53880b319f862c2375121ae316aae1624ee6e34",
+      "receiptType": "tinyrustlm.browser-profile-cleanup-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-16T00:24:11.923Z"
+    },
+    {
+      "receiptId": "sha256:5b507d6fa299048bf7bb445694985355caa7a859a9b01be0e5c6f516de9028fb",
+      "receiptType": "tinyrustlm.browser-profile-cleanup-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-16T00:24:12.672Z"
+    },
+    {
+      "receiptId": "sha256:1fcc899af554933876f3e4e1a0b954f08bfa6e3900331932c5d05435ef0150c7",
+      "receiptType": "tinyrustlm.fault-injection-report-v1",
+      "phase": "fault-injection-report",
+      "status": "blocked",
+      "blockerCode": "fault_injection_campaign_incomplete",
+      "completedAtUtc": "2026-07-16T00:24:12.676Z"
+    },
+    {
+      "receiptId": "sha256:3ca99d992f7cc52796e99ba6a86d35e225a3388a3f73d1a378331431e6bdb2a6",
+      "receiptType": "tinyrustlm.package-verification-v1",
+      "phase": "fault-domain-evidence",
+      "status": "blocked",
+      "blockerCode": null,
+      "completedAtUtc": "2026-07-16T00:24:33.475Z"
+    },
+    {
+      "receiptId": "sha256:8e8cc3620471b057550554bab1ccf7644eedfb3ed95ef024459bc1785197a836",
+      "receiptType": "tinyrustlm.fault-injection-report-v1",
+      "phase": "fault-injection-report",
+      "status": "blocked",
+      "blockerCode": "fault_injection_campaign_incomplete",
+      "completedAtUtc": "2026-07-16T00:24:33.484Z"
+    },
+    {
+      "receiptId": "sha256:7da7378de22fd6326a6e20d13200f3b4f7d973545fe8d893ce75c1b99e2fc8c3",
+      "receiptType": "tinyrustlm.model-source-review-v1",
+      "phase": "model-source-review",
+      "status": "rejected",
+      "blockerCode": "candidate_source_tensor_contract_rejected",
+      "completedAtUtc": "2026-07-16T05:14:02.854Z"
+    },
+    {
+      "receiptId": "sha256:1573b867ef4bbfb9794324a240f2531e2e8b71b7ec1394f523985bb815ff837c",
+      "receiptType": "tinyrustlm.model-source-review-v1",
+      "phase": "model-source-review",
+      "status": "rejected",
+      "blockerCode": "candidate_source_tensor_contract_rejected",
+      "completedAtUtc": "2026-07-16T05:15:34.154Z"
+    },
+    {
+      "receiptId": "sha256:abcf1bfb787863976305d3cd94c6c747058697d19974ac9cf037bb2d035ff723",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T05:58:31.910Z"
+    },
+    {
+      "receiptId": "sha256:ee373b291babeb5b21946981b3e6eff9bf07da92cf18ef2c01a7b42a15274c33",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T06:30:23.121Z"
+    },
+    {
+      "receiptId": "sha256:cfc8eb6473e10c860c9193043deca83147506f7274a0ea0f7f617b982edaaae3",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T07:16:50.282Z"
+    },
+    {
+      "receiptId": "sha256:164d828de5a2aa5d086f34f50a5855c323a1a6bcc186027d5f50d5df2d0f1540",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T07:48:30.370Z"
+    },
+    {
+      "receiptId": "sha256:142794b13e8b1d853600d888f151b0a8386e99bc4c2ff76e1a914c6a53309956",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T09:14:04.865Z"
+    },
+    {
+      "receiptId": "sha256:3a5c3bbc49a49e32f295b6f3d8485315f2c4cd1de386483fa84a6960df982ca7",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T09:49:58.013Z"
+    },
+    {
+      "receiptId": "sha256:fa5d104037b7a1b11f80c1af0950bf994ab67f4eb5905905c0bcf2fbcd61c157",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T09:50:34.313Z"
+    },
+    {
+      "receiptId": "sha256:ecc3260f953231bde9869c94302f8c1f6c223747b5adbbe57ceddada66387238",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T09:56:37.867Z"
+    },
+    {
+      "receiptId": "sha256:d7e7f32f830713b6d455dd91bcc75b35e0e8daab06cbd4a00ed48a6dd85939a5",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T10:31:38.688Z"
+    },
+    {
+      "receiptId": "sha256:c560ecb96862549215c773ac3346408c84120a1191228b73725559a1a550fa13",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T11:14:47.714Z"
+    },
+    {
+      "receiptId": "sha256:a52df8333b5f0bc58037c6a120cd6c8b6133cfaa96321ae12e80d8d1ab9632f5",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T11:52:52.858Z"
+    },
+    {
+      "receiptId": "sha256:461ba2bd927bcee387f03b90097867d59be49550d13d324f251bf527191848bb",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T12:29:39.024Z"
+    },
+    {
+      "receiptId": "sha256:402d753aa4a84f21c65f0d751d9036d3b3f35b5bdda42d9deae773372a9ef708",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T13:06:07.939Z"
+    },
+    {
+      "receiptId": "sha256:8e7eb628ad3dc0d6fb0bdc10a23adf8ea547286c7e61394c46cee7afbf17765d",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T14:00:45.525Z"
+    },
+    {
+      "receiptId": "sha256:2ea5a297be1fe4f4b0ac6a9b0b986a5f2a060e48476e1df9e698e11f2e963acd",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T14:55:50.796Z"
+    },
+    {
+      "receiptId": "sha256:8fe2b73aa73788ff5a9457705d08e65182d116cec1f85e0ed18546ca27ff8d10",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T15:49:55.671Z"
+    },
+    {
+      "receiptId": "sha256:82299b0392687b83de8060d53a2ebc49d5a0adafec534cc7d8c8aa9f2a17ecfd",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T16:28:39.701Z"
+    },
+    {
+      "receiptId": "sha256:3d882467ffcc5a3bd8123bd8d2370bd6191864f640601bc83e25cb44195351fa",
+      "receiptType": "tinyrustlm.model-source-review-v1",
+      "phase": "model-source-review",
+      "status": "rejected",
+      "blockerCode": "candidate_source_policy_contract_rejected",
+      "completedAtUtc": "2026-07-16T17:14:56.114Z"
+    },
+    {
+      "receiptId": "sha256:79a7b3a1f1710c6e54a582a1118a221dfd765dc33b80b82f1fe5f5b3d031f585",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T17:21:20.030Z"
+    },
+    {
+      "receiptId": "sha256:8a64851e4112cbd2116ff6c6b45279d1614903b8112731863b06bd2bde3d18ac",
+      "receiptType": "tinyrustlm.model-source-review-v1",
+      "phase": "model-source-review",
+      "status": "rejected",
+      "blockerCode": "candidate_source_loader_contract_rejected",
+      "completedAtUtc": "2026-07-16T18:00:41.298Z"
+    },
+    {
+      "receiptId": "sha256:a913153dcd115cb4b7811c1bdca662eff78721099edefa521a7e50c6f858f81a",
+      "receiptType": "tinyrustlm.model-source-review-v1",
+      "phase": "model-source-review",
+      "status": "rejected",
+      "blockerCode": "candidate_source_loader_contract_rejected",
+      "completedAtUtc": "2026-07-16T18:01:43.235Z"
+    },
+    {
+      "receiptId": "sha256:fa5adab7de514b503f9f33b9f5ee954f0f16d1aa501130570297289f29738c75",
+      "receiptType": "tinyrustlm.model-source-screen-v1",
+      "phase": "model-source-screen",
+      "status": "rejected",
+      "blockerCode": "model_quality_rejected",
+      "completedAtUtc": "2026-07-16T18:58:13.524Z"
+    },
+    {
+      "receiptId": "sha256:70f3e54f5dd7b8407586dff43c6a1c14049cd3beb8b16f3d4776b8eed0781c01",
+      "receiptType": "tinyrustlm.model-source-review-v1",
+      "phase": "model-source-review",
+      "status": "rejected",
+      "blockerCode": "candidate_source_conversation_contract_rejected",
+      "completedAtUtc": "2026-07-16T19:39:06.564Z"
+    },
+    {
+      "receiptId": "sha256:59ed6823274b16068057cdc21da110777cb92a0aac54e58978106f8cd73639f4",
+      "receiptType": "tinyrustlm.model-source-review-v1",
+      "phase": "model-source-review",
+      "status": "rejected",
+      "blockerCode": "candidate_source_conversation_contract_rejected",
+      "completedAtUtc": "2026-07-16T19:40:22.562Z"
+    }
+  ],
+  "supersessions": [
+    {
+      "supersedingReceiptId": "sha256:011bb94e595d28e6e5a46b8da0b7c018f71168516273f36352ec5b233b989891",
+      "supersededReceiptId": "sha256:75f7b86095eafecb3c28b2b11aaf43985494dad256315ab08cbfe219190fb625"
+    },
+    {
+      "supersedingReceiptId": "sha256:04c11db46c070b0ab906050d5a59028335bd8e02d085dfe37df464fdf8ecccfb",
+      "supersededReceiptId": "sha256:492a567d8538df1de21a8cb827a610ed500bfe73b0ef35962f3b485cd4e480a8"
+    },
+    {
+      "supersedingReceiptId": "sha256:04f08dc353b9dbbe6ffe8d754c4ee01acf4de53bc29d0894d2929cc27eeba6f4",
+      "supersededReceiptId": "sha256:02a7e17f91cc6f02ee595a6679c3e337c1bcadf90bb8f1852f8332e0330e41dd"
+    },
+    {
+      "supersedingReceiptId": "sha256:0831494ab316d79e64af3f32b220c7c5672f25772e684a2baa492fb5140e2027",
+      "supersededReceiptId": "sha256:ebab4b65ed431286b4fdaef25cfc50eba73de1ad30ad5bb20a8804a04374b250"
+    },
+    {
+      "supersedingReceiptId": "sha256:091860b54edcf62dba85e7c38c0e84ab3ce68fcf7e62bc9595deb711bd542bf1",
+      "supersededReceiptId": "sha256:e342961004e0440ec3d18e19c668605156942643fead29105f24589361bb57ed"
+    },
+    {
+      "supersedingReceiptId": "sha256:09189c9a7ffc22db930f43a13f59203ac950e7cd682a4d0686f34e16df937a18",
+      "supersededReceiptId": "sha256:01337295324b5733387afca0cf119e5c9c2f8433eeacd0e83ada15bb176e4c30"
+    },
+    {
+      "supersedingReceiptId": "sha256:093690a51979bd5abc5ec7e26bc2fc89545f19d1c29c87a78f4f0a6dbff38272",
+      "supersededReceiptId": "sha256:a4c02be1cc571ea379cef1db87bb3642747fe10e7e47cc618a0de42face210aa"
+    },
+    {
+      "supersedingReceiptId": "sha256:099ab190adb8ae6f8c15b94ee3acc52c7f0d379f4147a7b01018c6cf7d297596",
+      "supersededReceiptId": "sha256:20c0a412288bfb19bf3ee3dc8bd13a1d3693c7a1081d812ef428f6e1c9c90b33"
+    },
+    {
+      "supersedingReceiptId": "sha256:0a949e1dcf9650a68c107400d66bf333f9e9b61a9a7bc132d838c69632cc1894",
+      "supersededReceiptId": "sha256:a6aed54d5cc8e408720de80907957c078d450b87a1f02213575ca8a92e6cb4b0"
+    },
+    {
+      "supersedingReceiptId": "sha256:0b4f62d6c36872ae288452c17de5c89f0f3249d8df1e6991b9a80dd71ae1d46c",
+      "supersededReceiptId": "sha256:e52c18b47815354d6dc546c7267ba30ca9e39aa2570473da6508c3d8fdd5e19c"
+    },
+    {
+      "supersedingReceiptId": "sha256:0da7c24b517a32b3cda0adb542be3fc8b2f5a82c65fc3f21cf4ef1df20d6c8f4",
+      "supersededReceiptId": "sha256:3eff48e1bbf0b02e74576089309e0e86d70e0b06f3b13c449026c5732cd7229b"
+    },
+    {
+      "supersedingReceiptId": "sha256:0e86dccafa2fa7922516b8bf690e3bea42b9debe192382abd9c97c2d058a23f7",
+      "supersededReceiptId": "sha256:f3e6c3081495925e9c16e44eaef06a607683c8aff1959833fd149ce81a7c946a"
+    },
+    {
+      "supersedingReceiptId": "sha256:0fb142d259f49a2b9e9236dff0f36ab2e9c3feef8bd558e34f3a7b9cffcf22a0",
+      "supersededReceiptId": "sha256:782a5d43b9a6fa62bbaa1813534e2ddd1c60b1666c918e4db64c786425baad4c"
+    },
+    {
+      "supersedingReceiptId": "sha256:11215cfcc9f68379cd8b9c813c9c37fd14ffb6320ce8cf0e91f2b16b8ab29784",
+      "supersededReceiptId": "sha256:27628b726b07a4464d4691a31122a549c0db5ca68b7f103faa3c19720be89193"
+    },
+    {
+      "supersedingReceiptId": "sha256:113e7f31b2edc5beb1cd282a2312face07e49b63670f0b40ad253e9828bd45b7",
+      "supersededReceiptId": "sha256:a2767e97a6a5fcdd39ef1fb6af6e80376d72873efc407ff41d9e668e67c944bd"
+    },
+    {
+      "supersedingReceiptId": "sha256:12218a18c15ed60471ac3ae4613295c3f990b07f0f0ca47386eb002233eaa314",
+      "supersededReceiptId": "sha256:9ed505ca5e6a2e2b1ebe5a582c706dbaded6366c07c242ebd6572247d5393695"
+    },
+    {
+      "supersedingReceiptId": "sha256:1248d6ede05f6fcb4e32627d68148634583a67a4490e81cd4530229c8e1a50d4",
+      "supersededReceiptId": "sha256:45c337f280eda4e474484bc4ffa97fc75ec2e42999dd4cd5b560324ade2c7da9"
+    },
+    {
+      "supersedingReceiptId": "sha256:13f018c1c32f4b4856eed51f60312945392312f2bdc0aa88b4a4c94e18e74829",
+      "supersededReceiptId": "sha256:7c8ffa75b226263b57f873bbac9de5b15274609db8894a663c7bb79dec7a6534"
+    },
+    {
+      "supersedingReceiptId": "sha256:14a96014cd42d3977be362fc32c650d84d6e194996308072f44a11b3dbb4c86b",
+      "supersededReceiptId": "sha256:df8f9aa2adb4e0885b31dd4524c67278d9349a4bdfb5ac5f858e36b284d6e896"
+    },
+    {
+      "supersedingReceiptId": "sha256:1573b867ef4bbfb9794324a240f2531e2e8b71b7ec1394f523985bb815ff837c",
+      "supersededReceiptId": "sha256:7875e58b6f353cc45fbadae00d8cd767a4f43bb9a533a18fdab1f8701ae3fc2f"
+    },
+    {
+      "supersedingReceiptId": "sha256:18f44400a457fda5a830fa8f3010d0f557e184dbeee717bb26c10911a8a5876d",
+      "supersededReceiptId": "sha256:c2a35d05e53662f7cbdaffc7f65308a5fb993e4ff2d7f2cd808162f251361ba1"
+    },
+    {
+      "supersedingReceiptId": "sha256:1915025650f25bc34a916dd0bfc2312aeaa00182bbbdc06ddcc70c7e241eebad",
+      "supersededReceiptId": "sha256:5ffa612f47a032357ebca0d3c422b9be0b6485a9509a33ed913ab774bc5d8ecc"
+    },
+    {
+      "supersedingReceiptId": "sha256:1a62a5a4727e2e95671a496db5c629b66d21ac1b669aa477e4fb31233af71d19",
+      "supersededReceiptId": "sha256:093690a51979bd5abc5ec7e26bc2fc89545f19d1c29c87a78f4f0a6dbff38272"
+    },
+    {
+      "supersedingReceiptId": "sha256:1aaff9538a80ad6debfb4125fa5555cd09318e7a34c3e6569adb183770ee4f3a",
+      "supersededReceiptId": "sha256:a1e0f7bf723236d19a56dd72506a4e38e3cf11836041d2e9d36068a323a535c7"
+    },
+    {
+      "supersedingReceiptId": "sha256:1ccff08641e4532031919abe7962e39b18db9f8c687b4d4aec76885f731c0cb9",
+      "supersededReceiptId": "sha256:5d933b80a9abf43e17295053e204320f233cc3e2f7623ee32b7294ed0dacd534"
+    },
+    {
+      "supersedingReceiptId": "sha256:1d6f112e82f38d265f053cf62f7fcab53ff890435451a13d47aba334122d10b4",
+      "supersededReceiptId": "sha256:099ab190adb8ae6f8c15b94ee3acc52c7f0d379f4147a7b01018c6cf7d297596"
+    },
+    {
+      "supersedingReceiptId": "sha256:1dd163c30d1c9e187402db30ec1896f460bb89884ba935047115314864d65b4e",
+      "supersededReceiptId": "sha256:29a8dc4ab45499645b1c3058087bd823bdacd10ba10e6993348683a3e061c072"
+    },
+    {
+      "supersedingReceiptId": "sha256:1de0647a5b443bd71c4b9d6abc45d71bd1daa3e73f77b87ef9c4bc3d3d5a649d",
+      "supersededReceiptId": "sha256:4a7d870503872aa0b008eb5792f0c6faeb489dc95bd03c0c66f1092f3ff28691"
+    },
+    {
+      "supersedingReceiptId": "sha256:1e4393c6ffd8204975541d10d86537fa6511515e335c53174fb4e49e7bdfb31f",
+      "supersededReceiptId": "sha256:f9f58ec3d4aaddc5fd151948821fb7ab01a0250efcc6e125d93e4e9105679f0a"
+    },
+    {
+      "supersedingReceiptId": "sha256:1fc0b029f9d80db70a3627568023892ef189603116c7afdfac49d5d1d1c597ff",
+      "supersededReceiptId": "sha256:e576e556215d3fcf33e8e0400ade3ae54f3ffc4d384b8e412f07f929fbc9d7bd"
+    },
+    {
+      "supersedingReceiptId": "sha256:1fcc899af554933876f3e4e1a0b954f08bfa6e3900331932c5d05435ef0150c7",
+      "supersededReceiptId": "sha256:be12ec8935cc90307cc8e845a03135f7dda3824457a316b37dea24a1492445b7"
+    },
+    {
+      "supersedingReceiptId": "sha256:203625978e73d234f7d60a86e6cefe14b3080a71dc0eef0db4d45ff6a5871a51",
+      "supersededReceiptId": "sha256:2079de0ffbb82642c1466a3349795669c4b7d991659a797c4a47825dc8428834"
+    },
+    {
+      "supersedingReceiptId": "sha256:20adb6592557ce4c5a6e291aa88f8cd073238ad3acf721626b81c1b82897bc8f",
+      "supersededReceiptId": "sha256:875c529fd6ad4d5364872ef1eb55d234d6a73cc41c204ec7aa6190d2d8b08ae0"
+    },
+    {
+      "supersedingReceiptId": "sha256:20c0a412288bfb19bf3ee3dc8bd13a1d3693c7a1081d812ef428f6e1c9c90b33",
+      "supersededReceiptId": "sha256:aa958455c7dd74a4c886fc85403104c9d1844daee1413b2ab7c66009b8c318e8"
+    },
+    {
+      "supersedingReceiptId": "sha256:222fbe911e70ea98e505a6ab45b63f7c5e800bc5407327d147d879a6cfb4cc12",
+      "supersededReceiptId": "sha256:e546871f2e5b18c55a59c302d1f0d80881b6d61fe603f757c961faab31971a51"
+    },
+    {
+      "supersedingReceiptId": "sha256:253796af1fd9d0388b12894baa9265bb1aad3092b554fb514b2ab6d52ce7fd74",
+      "supersededReceiptId": "sha256:1248d6ede05f6fcb4e32627d68148634583a67a4490e81cd4530229c8e1a50d4"
+    },
+    {
+      "supersedingReceiptId": "sha256:26195ede554af284f2af94e4b28706ede0295af61de68502daa57215b7ae0bcc",
+      "supersededReceiptId": "sha256:1811a0af05fb85e0e9ffc78a51d5eeb188c221f224a14f44e39b9119c3178d09"
+    },
+    {
+      "supersedingReceiptId": "sha256:27defaa4f6c104867d3fe910a8a272c71d70fb677fd94e62a14e05c5f5839be0",
+      "supersededReceiptId": "sha256:ebe89b7fe7d822e5b16216f181197298f8fd7dee73158732e892db17039a906b"
+    },
+    {
+      "supersedingReceiptId": "sha256:28f282a86e5537a266bcb14d0fbb3e03fc98c9837b763f9d1cea44e8c5516f59",
+      "supersededReceiptId": "sha256:4b5b40234adeee576a1403985fec35c8fbb0bded45bf9e6e5d5128e564920eac"
+    },
+    {
+      "supersedingReceiptId": "sha256:2c4522cb4644ff64e1c81c37f8f048c589adf575267622f63fd772f13b5e5e99",
+      "supersededReceiptId": "sha256:7931677c2000c0e7b5218192b49a459b4e1e982255d2764bdcaff80c8059572b"
+    },
+    {
+      "supersedingReceiptId": "sha256:2d100ef75b5ef0ec2c0e8189e09e555c5324b08cc84004d804610c78740a872e",
+      "supersededReceiptId": "sha256:5786a4734e1656e0a9bf3f70e17499a4b9b5270ce77b7cfb10a358d95233f18b"
+    },
+    {
+      "supersedingReceiptId": "sha256:2d32f0a2fb4ef47f4410924741ed451bdc57cc4776d4bef8d528d6e9211e79db",
+      "supersededReceiptId": "sha256:c86de77aad65b46ba6184e5dd394b6b6d995eaf18973e136b2cae0bb5ee137e1"
+    },
+    {
+      "supersedingReceiptId": "sha256:2d494800826a416bcab36b1e6358f3fab621cce1c8d1e2c78ee36d9cc440a302",
+      "supersededReceiptId": "sha256:487dafe42e11b54832bffda2ba7fe01157e32efa6bd0b4bd0aed96f2909ee4b8"
+    },
+    {
+      "supersedingReceiptId": "sha256:2d6a4dace98a6843785cd7862695fc1ae8946fbdf49462ff2e570a51c1f7a535",
+      "supersededReceiptId": "sha256:1ca043fd8fb5b2abf9e720fe447dc1e75006ffe99355d5a95a203f1f6671b731"
+    },
+    {
+      "supersedingReceiptId": "sha256:2e9f46887d8608ca4afe3a1e8bc1d68e234d6a28e7894a0bd3b8ca8d3f8e825a",
+      "supersededReceiptId": "sha256:d08ad612f199e7a3a80171fc1042a248b7558d1e134bda81a83be9981ba100ff"
+    },
+    {
+      "supersedingReceiptId": "sha256:2eb5fcf9ba270ee546b3750d0657c5a9d26080e5774d537140a3fbb0cd8c49c8",
+      "supersededReceiptId": "sha256:4158fdf80eb21f6ff974fa5a8b049333c555b4ad8f36f09df33b28b5ae4f7173"
+    },
+    {
+      "supersedingReceiptId": "sha256:30a4038dd40f191ee51e43c7e892fc3e26a983dd53dd7492c9be5815e3ceaf8c",
+      "supersededReceiptId": "sha256:f020843155be0bc50e1caa920d9c1dea6a4d0fd81aa21aff4808e8f9a6f3a7f0"
+    },
+    {
+      "supersedingReceiptId": "sha256:3118266ad89d321f03a478c2f7560ae18956d05d67a13724dd0eec6930c435a0",
+      "supersededReceiptId": "sha256:26a95e26cc18c8f48f2a8408a22fd32084819a8ad9b060220fa9beccf2b124af"
+    },
+    {
+      "supersedingReceiptId": "sha256:31b08771df14cb9bda27850e9a5ed1e0cc154781d5dd63933e7c5851ab9a1a68",
+      "supersededReceiptId": "sha256:8c20b3c2b54b27809235fbc5d3eabc7fd33d749f9de32c00acf5ab8220993c59"
+    },
+    {
+      "supersedingReceiptId": "sha256:32aa72da3fd179d1e7eee70ed0624f5fd88ab8c89f8afde650332b51d418330b",
+      "supersededReceiptId": "sha256:41e756e8b39b48d9217ac0985a697d2768eff18cee61f35b34eeca3ae25b2abf"
+    },
+    {
+      "supersedingReceiptId": "sha256:3403370c1613bd8e50f31d22940b4fbd8534329c70ed16e494201a98dc063fc3",
+      "supersededReceiptId": "sha256:4f6f9f9ef4f466494cd477c8ad514ffcf6cdfccfa27bc704df82f8939712a40d"
+    },
+    {
+      "supersedingReceiptId": "sha256:3404910edc11aee4e89639211fe2d12a6ceb157eece87eb906013ad5391f141c",
+      "supersededReceiptId": "sha256:9099ad851148c6fe9b67385c5ec9d29df1d111bd4355ebee019368da4491760e"
+    },
+    {
+      "supersedingReceiptId": "sha256:34bd2b89012d2b9ef708a8ce3b04288caf05895cdf3fd055703b34d7ad1ae8fd",
+      "supersededReceiptId": "sha256:222fbe911e70ea98e505a6ab45b63f7c5e800bc5407327d147d879a6cfb4cc12"
+    },
+    {
+      "supersedingReceiptId": "sha256:35678ef861ad3fd753d48e13625a6203bb3a19b89376a487f80f19761e5cac0f",
+      "supersededReceiptId": "sha256:5fc4fc1bf5310b29412218c1c53cf6345e1a3a9d3c5c4c8cfdce41fcc64757de"
+    },
+    {
+      "supersedingReceiptId": "sha256:35906983dafd53a2188dfc7c91114fa008c28cac8347ca381e837036e9387251",
+      "supersededReceiptId": "sha256:11215cfcc9f68379cd8b9c813c9c37fd14ffb6320ce8cf0e91f2b16b8ab29784"
+    },
+    {
+      "supersedingReceiptId": "sha256:36b7304845e4dbd6f3230bd600c7625289d7457beaefb46fb18ced5cebac5362",
+      "supersededReceiptId": "sha256:7e243db1da32f7bb8db03323b1ba4161e471ff64680885ab2b012e0e89aacd3a"
+    },
+    {
+      "supersedingReceiptId": "sha256:371d6fad3fec23eec52d7d5c3c037e610786f14b3c4f321be9dcb3c0093d6e7c",
+      "supersededReceiptId": "sha256:e1cc9123fc8bf6b16c165d69748cee86d73800bb2e5f99a9933e6d1267efb1db"
+    },
+    {
+      "supersedingReceiptId": "sha256:395484121578e0026d80f1801e1e8e5c76193e65b4a89b6b1ba1eac29bc192f9",
+      "supersededReceiptId": "sha256:a47adc064ce35f890506f1ab6045ab43592ad73495a7666fed3d1bc1cf027cc0"
+    },
+    {
+      "supersedingReceiptId": "sha256:3ae649818554ba16b8ff9a8f8e16508f397306191a054164297edda77dafb942",
+      "supersededReceiptId": "sha256:7c59b5ca08983e86f4a1c81264d2c2687de373f35777cb70a6eae8768ab95de7"
+    },
+    {
+      "supersedingReceiptId": "sha256:3bc899acfe1c684eedf352a7800155a25f1b4e83bd5cd74ac27c27809637ecba",
+      "supersededReceiptId": "sha256:09189c9a7ffc22db930f43a13f59203ac950e7cd682a4d0686f34e16df937a18"
+    },
+    {
+      "supersedingReceiptId": "sha256:3ca99d992f7cc52796e99ba6a86d35e225a3388a3f73d1a378331431e6bdb2a6",
+      "supersededReceiptId": "sha256:4bd0533c6d03a174fd05664316974e25f01140d28e79d759eb63c8171b035667"
+    },
+    {
+      "supersedingReceiptId": "sha256:3e14697e6cd02ff441335a147eb35b08bbf6570010bf896ad40312fd3004cb27",
+      "supersededReceiptId": "sha256:eda25505036e5af9b638b1f665e847ca00fe7694c88d7f19e8310dc857e40988"
+    },
+    {
+      "supersedingReceiptId": "sha256:3ebf0e9bfca6373d3d067a04bfd35df2d5a00868338819a9dbd75384cca188e7",
+      "supersededReceiptId": "sha256:dc657fa2bc7d9355a5022fc760dd5adb4877527475d52e2418d16adbf917309b"
+    },
+    {
+      "supersedingReceiptId": "sha256:3f876533fc9e10958053e1a92fd65b3af0187166c3ea8345cb96093ec4591845",
+      "supersededReceiptId": "sha256:2912e36fddf3202cab8b4d4ff6348d5632a99561a7ac2f790a1a35b869cc7557"
+    },
+    {
+      "supersedingReceiptId": "sha256:41eba46769372d2e5ae985580bd7233727eee92f40c44b0d1b0e38aa1ecbe36b",
+      "supersededReceiptId": "sha256:30a4038dd40f191ee51e43c7e892fc3e26a983dd53dd7492c9be5815e3ceaf8c"
+    },
+    {
+      "supersedingReceiptId": "sha256:439dcb76013cec918cd146dd58da539f934b84f8d7ad1e888b772941b884ed11",
+      "supersededReceiptId": "sha256:61d0d267fb021a93245887e913c4532b424ea6f801e9de66b2aaea8814cc1def"
+    },
+    {
+      "supersedingReceiptId": "sha256:45099b224d310f6427aae70b8a529beb988d8245033160d688988689bf58e62f",
+      "supersededReceiptId": "sha256:973ceb1aa344faf8c6884970ae39ac9fc13f0e08107c3581255c2ff3ba66096b"
+    },
+    {
+      "supersedingReceiptId": "sha256:45a48c0d57cfc01c95b56d39f2dbafeb77f04d7731c827e65f10176e99685b32",
+      "supersededReceiptId": "sha256:62a6560c2b0955c097857be49047871a789e380f5b45d0e3153e6c59449405c5"
+    },
+    {
+      "supersedingReceiptId": "sha256:48408e9ec3059691b95e15d837f1e1c199560ec3d85f2de163ca2f77cf4d4def",
+      "supersededReceiptId": "sha256:1ccff08641e4532031919abe7962e39b18db9f8c687b4d4aec76885f731c0cb9"
+    },
+    {
+      "supersedingReceiptId": "sha256:487dafe42e11b54832bffda2ba7fe01157e32efa6bd0b4bd0aed96f2909ee4b8",
+      "supersededReceiptId": "sha256:d6e13a14fc0a3503a4776866a871139644dd2804c8780d15fb5a59bac405a294"
+    },
+    {
+      "supersedingReceiptId": "sha256:48a3194fdd93ea89388abc1ced054e1a038db1a8f5ed460245f978339d4195e5",
+      "supersededReceiptId": "sha256:0b4f62d6c36872ae288452c17de5c89f0f3249d8df1e6991b9a80dd71ae1d46c"
+    },
+    {
+      "supersedingReceiptId": "sha256:4952f14250f43e132f7632ffb4a77169d5495764ff235d6f6206a6fffed7e37c",
+      "supersededReceiptId": "sha256:20adb6592557ce4c5a6e291aa88f8cd073238ad3acf721626b81c1b82897bc8f"
+    },
+    {
+      "supersedingReceiptId": "sha256:49f9122d6abd701fea7cfa5e7769ed726496afb5637c0fbd519f3c9ab91c3fff",
+      "supersededReceiptId": "sha256:71f39b5fa8a061f78f605b863793b563cedec0697f5a843447728e810666a8fc"
+    },
+    {
+      "supersedingReceiptId": "sha256:4a4706be00299bbbc99f89b0107245188657876cea272b79c5e59390c921c7f8",
+      "supersededReceiptId": "sha256:26195ede554af284f2af94e4b28706ede0295af61de68502daa57215b7ae0bcc"
+    },
+    {
+      "supersedingReceiptId": "sha256:4a7d870503872aa0b008eb5792f0c6faeb489dc95bd03c0c66f1092f3ff28691",
+      "supersededReceiptId": "sha256:fe473673ca8d528aea5863219fa0a90c51b1745760574d35ac8702a51d355a75"
+    },
+    {
+      "supersedingReceiptId": "sha256:4b5b40234adeee576a1403985fec35c8fbb0bded45bf9e6e5d5128e564920eac",
+      "supersededReceiptId": "sha256:fe631dfb66a53876a20700dc8a7ecd44f83a6ed6f653c7f6325aa60bd730438a"
+    },
+    {
+      "supersedingReceiptId": "sha256:4c7d7427bd3cb4b1deea23fae2979113ede4d1d40381681ca1993ed8566bf6c7",
+      "supersededReceiptId": "sha256:2690f4b85da522e5950075d6c169c8cd6b23ced247fd85dc61fa533ed79c16f3"
+    },
+    {
+      "supersedingReceiptId": "sha256:517a9bacdd86bdffd42a4fe08c815c74ecd3828a58f5d9f45aabedf1fc6948f0",
+      "supersededReceiptId": "sha256:6af40a177c9d5f4a81ab3746f021231e42c73ee3c16f653b863b786dde5044f8"
+    },
+    {
+      "supersedingReceiptId": "sha256:5497e561bbbf1b33eb46d9efee5426b23effc6f5351651fb1916a9798fff9e68",
+      "supersededReceiptId": "sha256:dbdede4c31e5ecfb8531f415be464f4893cea0c614fb6715d23e9c293c90510e"
+    },
+    {
+      "supersedingReceiptId": "sha256:550ea25a6591d68e8964e7015b2f94107a4ce955464f8c9bb82794652c256ee8",
+      "supersededReceiptId": "sha256:fb0336800dbc85a9c97607a9d0699324904e391b9a83223b9a7dd958cdce4047"
+    },
+    {
+      "supersedingReceiptId": "sha256:55f3f7e24ff6576639e100714fbbd666e48ce4e047c4decbf8b9d8e0bba6d0bb",
+      "supersededReceiptId": "sha256:5ed26fcaaad04cab6cbe0d97a24180605c43ae0fe6ffbb56f27803953fa0f191"
+    },
+    {
+      "supersedingReceiptId": "sha256:56937691aefd7002a0356f9a6d6ba2bf8700b56de3c918ad9af62a26ab78406b",
+      "supersededReceiptId": "sha256:e789557db82b1f1abdd83bd871a5bf10e4f2fee170815e6e405815504c09b943"
+    },
+    {
+      "supersedingReceiptId": "sha256:5765a264c1c48735908e49400154f22950d1918966080679b5c4b7ebd27f9dd5",
+      "supersededReceiptId": "sha256:825cf263a87eed447b41ca66074e68901337f7b775f6788d29d3d45ef1e335aa"
+    },
+    {
+      "supersedingReceiptId": "sha256:5786a4734e1656e0a9bf3f70e17499a4b9b5270ce77b7cfb10a358d95233f18b",
+      "supersededReceiptId": "sha256:6b3f318b0229f37abd181acea13f4bea55b282f5856169b8ece6f701f3528cc6"
+    },
+    {
+      "supersedingReceiptId": "sha256:591a9789a513a6f60ab4c026a95a3338296d1a3e6227eea27b04cfaaa90f4ea0",
+      "supersededReceiptId": "sha256:3403370c1613bd8e50f31d22940b4fbd8534329c70ed16e494201a98dc063fc3"
+    },
+    {
+      "supersedingReceiptId": "sha256:5986306e23665e234358db894ac9d3b0d08c987285c0f2a13754ebba47bec141",
+      "supersededReceiptId": "sha256:eb19f86dbb75bd685984de2043f2375026a4cf50152cbd27510ec4b90ffb898a"
+    },
+    {
+      "supersedingReceiptId": "sha256:59ed6823274b16068057cdc21da110777cb92a0aac54e58978106f8cd73639f4",
+      "supersededReceiptId": "sha256:70f3e54f5dd7b8407586dff43c6a1c14049cd3beb8b16f3d4776b8eed0781c01"
+    },
+    {
+      "supersedingReceiptId": "sha256:5a88299a01799b0d3462c9d8a381a410c6e091c19019b90499e6f534c4269d8c",
+      "supersededReceiptId": "sha256:6beacdc4e25385a42294ca37182624c92d5c24bd09973ce8f774cd6698d61349"
+    },
+    {
+      "supersedingReceiptId": "sha256:5b0c53327d6889a4bdafb62ab27af8dcd2acfed6c60e2d073bda3d5d0ac1c0d5",
+      "supersededReceiptId": "sha256:41eba46769372d2e5ae985580bd7233727eee92f40c44b0d1b0e38aa1ecbe36b"
+    },
+    {
+      "supersedingReceiptId": "sha256:5b507d6fa299048bf7bb445694985355caa7a859a9b01be0e5c6f516de9028fb",
+      "supersededReceiptId": "sha256:253796af1fd9d0388b12894baa9265bb1aad3092b554fb514b2ab6d52ce7fd74"
+    },
+    {
+      "supersedingReceiptId": "sha256:5bd93e0713da00dfbc5c12cd1b56f260130ac0f9296a7c2e219d7fef2072fc90",
+      "supersededReceiptId": "sha256:2e9f46887d8608ca4afe3a1e8bc1d68e234d6a28e7894a0bd3b8ca8d3f8e825a"
+    },
+    {
+      "supersedingReceiptId": "sha256:5c5244d3ea944e349396ae17b192fa674b7ac71c62c0434cc7856ae347b6fbd2",
+      "supersededReceiptId": "sha256:0b1c4682a0e1bbe9a73ecf24972abac95471dad8bb2a2fbb924f5adfe9284b20"
+    },
+    {
+      "supersedingReceiptId": "sha256:5d640d4e700841d3ae2166f13b86ee1bc25ff2cd427260327e0d5e93fe053b24",
+      "supersededReceiptId": "sha256:786cf1bfdfcead73dbab5dd607cbea748d3df28be895d3c7e154e4631a60b254"
+    },
+    {
+      "supersedingReceiptId": "sha256:5d933b80a9abf43e17295053e204320f233cc3e2f7623ee32b7294ed0dacd534",
+      "supersededReceiptId": "sha256:4e4f05824d65b2eb85f95a953ff632bce6497fbfc9790621bc160eb0742b393e"
+    },
+    {
+      "supersedingReceiptId": "sha256:5fc4fc1bf5310b29412218c1c53cf6345e1a3a9d3c5c4c8cfdce41fcc64757de",
+      "supersededReceiptId": "sha256:2d100ef75b5ef0ec2c0e8189e09e555c5324b08cc84004d804610c78740a872e"
+    },
+    {
+      "supersedingReceiptId": "sha256:5ffa612f47a032357ebca0d3c422b9be0b6485a9509a33ed913ab774bc5d8ecc",
+      "supersededReceiptId": "sha256:4a3e50e453a0d6e15c2d763ec873617e548a22473a4f8d3cd653a6df5123730f"
+    },
+    {
+      "supersedingReceiptId": "sha256:60be5a84cff6b4ca932191befe2df5c2e3472573cebead46290a9bb7f3b9d154",
+      "supersededReceiptId": "sha256:a294f32d635f3670dd5e8b155545412765f369760f7aaa0eeb6e302acfbe4bde"
+    },
+    {
+      "supersedingReceiptId": "sha256:61d0d267fb021a93245887e913c4532b424ea6f801e9de66b2aaea8814cc1def",
+      "supersededReceiptId": "sha256:0a9b23987300d40609e2bfa5574781972bc0a71e9e9947d91fca678bb459ae4c"
+    },
+    {
+      "supersedingReceiptId": "sha256:62a6560c2b0955c097857be49047871a789e380f5b45d0e3153e6c59449405c5",
+      "supersededReceiptId": "sha256:7ea1e2497242ffc613884b28d4d8f21c5fe8e1fd7c92862cbf9875bc36590c92"
+    },
+    {
+      "supersedingReceiptId": "sha256:65523346ef65bf9da30ce94449bf373f3bd5699226a4ef6081c41f0d4dbaacca",
+      "supersededReceiptId": "sha256:acb2a31f86a5f49b2ba1f6f8f22fcfa72e20be58650f98383e46a67c4f414b45"
+    },
+    {
+      "supersedingReceiptId": "sha256:6556e59dc3d28507dd1af587990c63b934da366ff0ecb6b0bd3bf85f27d7e48a",
+      "supersededReceiptId": "sha256:c63bdf3eda0944cea8d96a93d64bae4a5558dc85828af0d8c379122ecf5a4cd9"
+    },
+    {
+      "supersedingReceiptId": "sha256:66ec2185e562f847ee27c089cda77fb317bf0b8867529681807aa19fc7040a48",
+      "supersededReceiptId": "sha256:550ea25a6591d68e8964e7015b2f94107a4ce955464f8c9bb82794652c256ee8"
+    },
+    {
+      "supersedingReceiptId": "sha256:66f2b623a82f64e4981a5dda4124a05b2f05b49c3a0dda6314393fced74105d2",
+      "supersededReceiptId": "sha256:be0cd7f4c317c95f258fa7be6f53a92e51fb6df2bd28085a7c70859f065fe791"
+    },
+    {
+      "supersedingReceiptId": "sha256:686ef5bfaedce98360c9a285c4f17e2ef2f225fbd8a20ce2584557409a981183",
+      "supersededReceiptId": "sha256:2b71bcee9030570776da5f3d3e0c02207a4858be8a9d3eb163715e5b26f57604"
+    },
+    {
+      "supersedingReceiptId": "sha256:6af40a177c9d5f4a81ab3746f021231e42c73ee3c16f653b863b786dde5044f8",
+      "supersededReceiptId": "sha256:e4ed97ba3bdab4f8c06b44cf7866f4def0ca500e822bacee01d9895772659ff0"
+    },
+    {
+      "supersedingReceiptId": "sha256:6b3f318b0229f37abd181acea13f4bea55b282f5856169b8ece6f701f3528cc6",
+      "supersededReceiptId": "sha256:4a4706be00299bbbc99f89b0107245188657876cea272b79c5e59390c921c7f8"
+    },
+    {
+      "supersedingReceiptId": "sha256:6beacdc4e25385a42294ca37182624c92d5c24bd09973ce8f774cd6698d61349",
+      "supersededReceiptId": "sha256:1de0647a5b443bd71c4b9d6abc45d71bd1daa3e73f77b87ef9c4bc3d3d5a649d"
+    },
+    {
+      "supersedingReceiptId": "sha256:715f6c24befe784aec9358d62b0ce5e15e0cba96837f34fd1260e4596c28179d",
+      "supersededReceiptId": "sha256:97837dfa1c9080bce1e34c5cd745ad110ffd242d59415eed22f8b62d81a82e49"
+    },
+    {
+      "supersedingReceiptId": "sha256:71b99d97d6e9c90978cfd9693b0f384b86d617ad2ec3f1c7aaaf8deb8329c2e6",
+      "supersededReceiptId": "sha256:439dcb76013cec918cd146dd58da539f934b84f8d7ad1e888b772941b884ed11"
+    },
+    {
+      "supersedingReceiptId": "sha256:71f39b5fa8a061f78f605b863793b563cedec0697f5a843447728e810666a8fc",
+      "supersededReceiptId": "sha256:591a9789a513a6f60ab4c026a95a3338296d1a3e6227eea27b04cfaaa90f4ea0"
+    },
+    {
+      "supersedingReceiptId": "sha256:7272f50894db946c5e903e0eb7c54b3be9fa2ab264326f4ea37cc84a76b86309",
+      "supersededReceiptId": "sha256:ce37c953e133d2853ad94149009936807a89ffd50cf4dbd211a8b406c4e6efaf"
+    },
+    {
+      "supersedingReceiptId": "sha256:734b8060f3b51b18993ddf70744fa6d829903043573508d08ee9177fc22ed9bf",
+      "supersededReceiptId": "sha256:19d303a7d583ddeae3e71786fd4f6aa0f26151e87d4c0dafb6fc64af3a99f2e6"
+    },
+    {
+      "supersedingReceiptId": "sha256:746625088663f00d97e167809059f6ca27cc37419f1611aa324d0afe0559084d",
+      "supersededReceiptId": "sha256:be9e9953885961d8a9c83569d6be13fac54948eb3c5ae1c3793efac8b8c5c620"
+    },
+    {
+      "supersedingReceiptId": "sha256:74fa20652c0fd5e5b92e1a8710660e871dd29c9c8dff5cbe2430491273b798fc",
+      "supersededReceiptId": "sha256:bc737894160aedf54143a264da1423bb7473b995873916863d3632b1e0c1f66f"
+    },
+    {
+      "supersedingReceiptId": "sha256:75d58ffd03099fdcd600f19113110df122aaf97b61c53ff0d54de95b3b1516ba",
+      "supersededReceiptId": "sha256:c62678b8459a99d45bef6c447f7e8fca6a772f2cbc7d9d5653d558b18dade3b6"
+    },
+    {
+      "supersedingReceiptId": "sha256:75da788e5d26866f3ba0553cc2b3be20f4a6f801a04a60568aac45d636f254e6",
+      "supersededReceiptId": "sha256:56937691aefd7002a0356f9a6d6ba2bf8700b56de3c918ad9af62a26ab78406b"
+    },
+    {
+      "supersedingReceiptId": "sha256:782676717cc786770ec8bb1a5fc0f059490f5ff9ee662a0f285e144d3f097a9d",
+      "supersededReceiptId": "sha256:9e2a9d73c39a0361ba2cf6ebd3c3bb0954e4df146f5aa9bdbd09681b0c833dc3"
+    },
+    {
+      "supersedingReceiptId": "sha256:782a5d43b9a6fa62bbaa1813534e2ddd1c60b1666c918e4db64c786425baad4c",
+      "supersededReceiptId": "sha256:fadc9fb6abf162940cc40b650c69cae377496b30cdb645e38ee4888ae8b35c3b"
+    },
+    {
+      "supersedingReceiptId": "sha256:783acd1777fd203242a3869e8810e1bc2910b8bfadf27bac739be8ab72e0afbf",
+      "supersededReceiptId": "sha256:f69a734253f0d279a60e1fbdc52a011cfbb2f6b022cf2968c8e096cb4a9f6558"
+    },
+    {
+      "supersedingReceiptId": "sha256:786cf1bfdfcead73dbab5dd607cbea748d3df28be895d3c7e154e4631a60b254",
+      "supersededReceiptId": "sha256:f446cd0b7be5752979c0bc6182e49c4975a75d1b1dbfe4a66b9da0af84aabd19"
+    },
+    {
+      "supersedingReceiptId": "sha256:789b0258065308c0b565c5f4f048f596750d2f6d9eb581c2d8d4ec962b02791a",
+      "supersededReceiptId": "sha256:4952f14250f43e132f7632ffb4a77169d5495764ff235d6f6206a6fffed7e37c"
+    },
+    {
+      "supersedingReceiptId": "sha256:7931677c2000c0e7b5218192b49a459b4e1e982255d2764bdcaff80c8059572b",
+      "supersededReceiptId": "sha256:d6ebbc45d079edf64097b5bcabb6ea36328ed7c0d8ae678f39014ebdbd4044e8"
+    },
+    {
+      "supersedingReceiptId": "sha256:7aa89b5e6ab01ec8a508b8862de64a7cb4950c8e0f9ea253e044f76f8a3dc437",
+      "supersededReceiptId": "sha256:f4f66dff2892638e58c5a66cd295f880dbab180f881a609382cd4d4de52f5fde"
+    },
+    {
+      "supersedingReceiptId": "sha256:7b694b67e637004038099028c4bcaa8a3657f85668fda5540adfba31a7163114",
+      "supersededReceiptId": "sha256:04c11db46c070b0ab906050d5a59028335bd8e02d085dfe37df464fdf8ecccfb"
+    },
+    {
+      "supersedingReceiptId": "sha256:7c59b5ca08983e86f4a1c81264d2c2687de373f35777cb70a6eae8768ab95de7",
+      "supersededReceiptId": "sha256:2d6a4dace98a6843785cd7862695fc1ae8946fbdf49462ff2e570a51c1f7a535"
+    },
+    {
+      "supersedingReceiptId": "sha256:7c8ffa75b226263b57f873bbac9de5b15274609db8894a663c7bb79dec7a6534",
+      "supersededReceiptId": "sha256:74fa20652c0fd5e5b92e1a8710660e871dd29c9c8dff5cbe2430491273b798fc"
+    },
+    {
+      "supersedingReceiptId": "sha256:7da7378de22fd6326a6e20d13200f3b4f7d973545fe8d893ce75c1b99e2fc8c3",
+      "supersededReceiptId": "sha256:d4e778cd9d71dd6620ffcfa269ad6cfd91d7df241c0b7cf6d12e114517e07d99"
+    },
+    {
+      "supersedingReceiptId": "sha256:7e243db1da32f7bb8db03323b1ba4161e471ff64680885ab2b012e0e89aacd3a",
+      "supersededReceiptId": "sha256:113e7f31b2edc5beb1cd282a2312face07e49b63670f0b40ad253e9828bd45b7"
+    },
+    {
+      "supersedingReceiptId": "sha256:7ea1e2497242ffc613884b28d4d8f21c5fe8e1fd7c92862cbf9875bc36590c92",
+      "supersededReceiptId": "sha256:e971ae615b470cfe7494b6bcd56b52ed3ad484868077c851b48cd14413f2b8f1"
+    },
+    {
+      "supersedingReceiptId": "sha256:7ee02be90d29beb5cd2b8f170b8dc8dfbb7bf563a94ff1fbabd7b043442174b3",
+      "supersededReceiptId": "sha256:5765a264c1c48735908e49400154f22950d1918966080679b5c4b7ebd27f9dd5"
+    },
+    {
+      "supersedingReceiptId": "sha256:80808dfc256baaeaf54b7cde42768330853f58c83d728ed54dba3c1f17bd3ae4",
+      "supersededReceiptId": "sha256:e1b1d4b84c17bb5a8363d5c10437301514bed458177e277a9c7c543ac9e505ef"
+    },
+    {
+      "supersedingReceiptId": "sha256:8259d1d1cff77c911d96a538e6a2a409a97a1b6f5ca8fd91da548c8a6c46e273",
+      "supersededReceiptId": "sha256:b0ad73344eb423e98b33a7c5f0b9af520585f373e388dcdc33bdd98302108598"
+    },
+    {
+      "supersedingReceiptId": "sha256:83e0e4453b734ad9dfed4bd27182fcb52e8cb2347653d7f79353836d600cdd43",
+      "supersededReceiptId": "sha256:afa4dc9d0b7ce870ff8c178069c5c9f8b2034e982f7216d2511318d2acc5bcfa"
+    },
+    {
+      "supersedingReceiptId": "sha256:8451e3c7e67abb03a886624858f80234eea0606317d2703e08abd8f7ba09a8dc",
+      "supersededReceiptId": "sha256:6ca4ddf33fdb2645dc24577e5b3e310ae030de4f922262f7c2f2246a6789cec7"
+    },
+    {
+      "supersedingReceiptId": "sha256:8515831105d3cfc530188408f53880b319f862c2375121ae316aae1624ee6e34",
+      "supersededReceiptId": "sha256:5d640d4e700841d3ae2166f13b86ee1bc25ff2cd427260327e0d5e93fe053b24"
+    },
+    {
+      "supersedingReceiptId": "sha256:8596661b87e54275326a8e67e7074f1642283e591407d48523666565728db959",
+      "supersededReceiptId": "sha256:2c4522cb4644ff64e1c81c37f8f048c589adf575267622f63fd772f13b5e5e99"
+    },
+    {
+      "supersedingReceiptId": "sha256:893317c02b2d98fc79933cbd6476d6a4682c30b86e3c7a7c3d62d5b430ef5d22",
+      "supersededReceiptId": "sha256:ce38ab1e6e02f6b2c6acdbc70541f895ae025cb7ef47f9fb30486ec17c258423"
+    },
+    {
+      "supersedingReceiptId": "sha256:8a029b75fde5dad4bd71f88bf97f610d2c40213bf253c0db43a79beaecbdb5ff",
+      "supersededReceiptId": "sha256:0a949e1dcf9650a68c107400d66bf333f9e9b61a9a7bc132d838c69632cc1894"
+    },
+    {
+      "supersedingReceiptId": "sha256:8c20b3c2b54b27809235fbc5d3eabc7fd33d749f9de32c00acf5ab8220993c59",
+      "supersededReceiptId": "sha256:ab953a90a68f393947ab2e55ad8cc0dfccc1f60e858379ecfdb4e0e0e2fde135"
+    },
+    {
+      "supersedingReceiptId": "sha256:8e4471717c7dd6197135aca76150627da9f7b8c04cf616b4bcc11c38b259ada8",
+      "supersededReceiptId": "sha256:d4e47dfb0e73bd0f8f7ac7cb8def73d0f57914ae553087b9c1c653d58b9246d1"
+    },
+    {
+      "supersedingReceiptId": "sha256:8e8cc3620471b057550554bab1ccf7644eedfb3ed95ef024459bc1785197a836",
+      "supersededReceiptId": "sha256:1fcc899af554933876f3e4e1a0b954f08bfa6e3900331932c5d05435ef0150c7"
+    },
+    {
+      "supersedingReceiptId": "sha256:91df3c39078e614c823ce76d1a7a681f8ab502b976d94d6617f9b0d982d86ec0",
+      "supersededReceiptId": "sha256:2f8f233ef6e6faccf735d068a3e87de5d581b4b732f99ea02981310257a7f20f"
+    },
+    {
+      "supersedingReceiptId": "sha256:91e4b2ff35ab76f322a299777dde57cdf2c5aae502cd3c531afd38aacd5faba2",
+      "supersededReceiptId": "sha256:66ec2185e562f847ee27c089cda77fb317bf0b8867529681807aa19fc7040a48"
+    },
+    {
+      "supersedingReceiptId": "sha256:92d5da5f1d9f697c55b0877c04e6db865f19fbaf031b47e178d7a8e1ed46c772",
+      "supersededReceiptId": "sha256:1c42762fa6b4b2a0bad956d9cfb5474003911ea9ab27d8046cd572ac96023738"
+    },
+    {
+      "supersedingReceiptId": "sha256:95ac13964d5eb1a8cc8cd53ac57f6448ecf3144e9e7217c113a34f44f6e416d1",
+      "supersededReceiptId": "sha256:e4b26590ac4326d7228dd7b7d3516d3c0ad9fa86bef00a8fa9c14b72f4b97896"
+    },
+    {
+      "supersedingReceiptId": "sha256:95dc25615770129431edcdbb7e40b8065876f860d12d1a6f538e1cb96e3cd75e",
+      "supersededReceiptId": "sha256:d7c6766319db5b7d70e7ad13a2735ce4d46daa17c8f808d858c3eea475335fd9"
+    },
+    {
+      "supersedingReceiptId": "sha256:96c49c6afd3cecb6a1f1b792b6e580d155646b8211f77e021f6c2fcd62eba4ac",
+      "supersededReceiptId": "sha256:203625978e73d234f7d60a86e6cefe14b3080a71dc0eef0db4d45ff6a5871a51"
+    },
+    {
+      "supersedingReceiptId": "sha256:973ceb1aa344faf8c6884970ae39ac9fc13f0e08107c3581255c2ff3ba66096b",
+      "supersededReceiptId": "sha256:1d6f112e82f38d265f053cf62f7fcab53ff890435451a13d47aba334122d10b4"
+    },
+    {
+      "supersedingReceiptId": "sha256:97837dfa1c9080bce1e34c5cd745ad110ffd242d59415eed22f8b62d81a82e49",
+      "supersededReceiptId": "sha256:48408e9ec3059691b95e15d837f1e1c199560ec3d85f2de163ca2f77cf4d4def"
+    },
+    {
+      "supersedingReceiptId": "sha256:980f5e21a74ee574cc52634559404079367f104c9bb6811fbb621f9115f10b3e",
+      "supersededReceiptId": "sha256:28d49c6cb9621d4d420c23536eafd41640385a42a4682f2370f8895359803032"
+    },
+    {
+      "supersedingReceiptId": "sha256:98cc4fb16b13199c4e980d851e35f7257e7efc64ac765cd9a2ef2a8751beeda9",
+      "supersededReceiptId": "sha256:00d646b84c5adbde94f9e0e49f5d30548a24033b7d7d0fec79d2bef5d10659db"
+    },
+    {
+      "supersedingReceiptId": "sha256:9b0e4acb70fb96d23522414795063b9bc520d49fc385062780fad89ee0da2c83",
+      "supersededReceiptId": "sha256:9941715382c627bb2b2e3cc95f4e523d05e30d2e4a76cd9a479b3258a2e216e2"
+    },
+    {
+      "supersedingReceiptId": "sha256:9ed505ca5e6a2e2b1ebe5a582c706dbaded6366c07c242ebd6572247d5393695",
+      "supersededReceiptId": "sha256:80808dfc256baaeaf54b7cde42768330853f58c83d728ed54dba3c1f17bd3ae4"
+    },
+    {
+      "supersedingReceiptId": "sha256:a1e0f7bf723236d19a56dd72506a4e38e3cf11836041d2e9d36068a323a535c7",
+      "supersededReceiptId": "sha256:f3dc5fec4514166dd69b1a28d9369fcb034b8fd8501c0825e799f80ef4ae3b29"
+    },
+    {
+      "supersedingReceiptId": "sha256:a2767e97a6a5fcdd39ef1fb6af6e80376d72873efc407ff41d9e668e67c944bd",
+      "supersededReceiptId": "sha256:75d58ffd03099fdcd600f19113110df122aaf97b61c53ff0d54de95b3b1516ba"
+    },
+    {
+      "supersedingReceiptId": "sha256:a287894faa250f94ecbf71bd0be9c9deb0aec3b0729843ab5732cc52bbea17cd",
+      "supersededReceiptId": "sha256:7aa89b5e6ab01ec8a508b8862de64a7cb4950c8e0f9ea253e044f76f8a3dc437"
+    },
+    {
+      "supersedingReceiptId": "sha256:a47adc064ce35f890506f1ab6045ab43592ad73495a7666fed3d1bc1cf027cc0",
+      "supersededReceiptId": "sha256:d6d150dd2fb541610e55c62e25f4eac15bb1a84ad930b1282f32e073e59c9213"
+    },
+    {
+      "supersedingReceiptId": "sha256:a4c02be1cc571ea379cef1db87bb3642747fe10e7e47cc618a0de42face210aa",
+      "supersededReceiptId": "sha256:5b0c53327d6889a4bdafb62ab27af8dcd2acfed6c60e2d073bda3d5d0ac1c0d5"
+    },
+    {
+      "supersedingReceiptId": "sha256:a75552d5e939a55f69a40feb11e306a5ea4ca90681f0f26a2c78a7ced80f0716",
+      "supersededReceiptId": "sha256:015bf74d49637e283ba41a26cd972f55f6a58edadc3d7a9bee323884d3d32aa1"
+    },
+    {
+      "supersedingReceiptId": "sha256:a860e080ce3b14c3f715c685857845446b0e410a6c1c73619ff03b3f883a06ec",
+      "supersededReceiptId": "sha256:2eb5fcf9ba270ee546b3750d0657c5a9d26080e5774d537140a3fbb0cd8c49c8"
+    },
+    {
+      "supersedingReceiptId": "sha256:a913153dcd115cb4b7811c1bdca662eff78721099edefa521a7e50c6f858f81a",
+      "supersededReceiptId": "sha256:8a64851e4112cbd2116ff6c6b45279d1614903b8112731863b06bd2bde3d18ac"
+    },
+    {
+      "supersedingReceiptId": "sha256:aa7a8d71d93c649b4daf7e13a54fda3c50aeb20c0a4144db706643bab180ffd5",
+      "supersededReceiptId": "sha256:5986306e23665e234358db894ac9d3b0d08c987285c0f2a13754ebba47bec141"
+    },
+    {
+      "supersedingReceiptId": "sha256:ab953a90a68f393947ab2e55ad8cc0dfccc1f60e858379ecfdb4e0e0e2fde135",
+      "supersededReceiptId": "sha256:011bb94e595d28e6e5a46b8da0b7c018f71168516273f36352ec5b233b989891"
+    },
+    {
+      "supersedingReceiptId": "sha256:abcd7d9168be2e16431538a7f3e08cc3ab12c9b5b03b6cf3e6dfb9ae7b93f42b",
+      "supersededReceiptId": "sha256:31b08771df14cb9bda27850e9a5ed1e0cc154781d5dd63933e7c5851ab9a1a68"
+    },
+    {
+      "supersedingReceiptId": "sha256:acb2a31f86a5f49b2ba1f6f8f22fcfa72e20be58650f98383e46a67c4f414b45",
+      "supersededReceiptId": "sha256:1fc0b029f9d80db70a3627568023892ef189603116c7afdfac49d5d1d1c597ff"
+    },
+    {
+      "supersedingReceiptId": "sha256:ad153891dcef6cea37c61e1c7d2cdd95b34612803e51d5e51fc49c1d1cae0d14",
+      "supersededReceiptId": "sha256:b4922b542cc1821bf3470c172943875ba82e52231fae8e506cc7e660a2571c50"
+    },
+    {
+      "supersedingReceiptId": "sha256:ad93179b97b1b86dbe292993242ee5b279d84127b9b1e81ab0f473b150031505",
+      "supersededReceiptId": "sha256:13f018c1c32f4b4856eed51f60312945392312f2bdc0aa88b4a4c94e18e74829"
+    },
+    {
+      "supersedingReceiptId": "sha256:af0636ee7da5366f922571f1926f736648d23a406f029cdd0f7ae7d89b198a53",
+      "supersededReceiptId": "sha256:83a1271eef66b0d12db212e817d80708493c36b8909aad673d9a4a2250ea76fd"
+    },
+    {
+      "supersedingReceiptId": "sha256:afb597f715cc87ea9cab5ad92b7b8cc9557e5368571c54d2404867414ef6f474",
+      "supersededReceiptId": "sha256:d4d3c5b3e8b8652d92b9bdaeb8bd384bfa7603c09362c8f8726b4db6cd22fc03"
+    },
+    {
+      "supersedingReceiptId": "sha256:b072904b9f23c9ab942782ed64f31027df0f61c1ccb05b34f393705a6f9712b3",
+      "supersededReceiptId": "sha256:5a88299a01799b0d3462c9d8a381a410c6e091c19019b90499e6f534c4269d8c"
+    },
+    {
+      "supersedingReceiptId": "sha256:b0ad73344eb423e98b33a7c5f0b9af520585f373e388dcdc33bdd98302108598",
+      "supersededReceiptId": "sha256:32aa72da3fd179d1e7eee70ed0624f5fd88ab8c89f8afde650332b51d418330b"
+    },
+    {
+      "supersedingReceiptId": "sha256:b18ad237373a946147738c669b42e1da808aaf297e35f29cf85699d4cd233b77",
+      "supersededReceiptId": "sha256:65523346ef65bf9da30ce94449bf373f3bd5699226a4ef6081c41f0d4dbaacca"
+    },
+    {
+      "supersedingReceiptId": "sha256:b3ad945a26bb04f122a0b171678dcba6666a8cf4e36a1330435a0394664ed4b8",
+      "supersededReceiptId": "sha256:2d32f0a2fb4ef47f4410924741ed451bdc57cc4776d4bef8d528d6e9211e79db"
+    },
+    {
+      "supersedingReceiptId": "sha256:b4c51ddfd10ad96d645a47eae0dc9c504b5562f20d68102d2e9d3f25c968e1a2",
+      "supersededReceiptId": "sha256:8596661b87e54275326a8e67e7074f1642283e591407d48523666565728db959"
+    },
+    {
+      "supersedingReceiptId": "sha256:b4cef476a0aeae4864a23a69c9d276cdeee5fc8907861cb38c7203d891fb0b2e",
+      "supersededReceiptId": "sha256:d282b78d224cec35062fd230b606733cb665714364a8570a1fde56ace7a9cbe3"
+    },
+    {
+      "supersedingReceiptId": "sha256:b5edf622093915e8cb04b55c00bb2a4314a0944be7da8286dd87f33bdff24e77",
+      "supersededReceiptId": "sha256:2d94a6466006c17d321dc26f84996597e265265b1fc28113fda87bf44bec32e2"
+    },
+    {
+      "supersedingReceiptId": "sha256:b707aa9a1c1e6a32b53149f90809b950de609a84fca317ecfa35b989d0777267",
+      "supersededReceiptId": "sha256:ec4e4b2ee18a9f5105df96073d1d3f9b247768cc523c945d22ddf14becb17ff0"
+    },
+    {
+      "supersedingReceiptId": "sha256:bc737894160aedf54143a264da1423bb7473b995873916863d3632b1e0c1f66f",
+      "supersededReceiptId": "sha256:87baf79bdb3ba9a32fc74dc0ec5b166a54eb22100b9462c0a2cdec61f5c41265"
+    },
+    {
+      "supersedingReceiptId": "sha256:be0cd7f4c317c95f258fa7be6f53a92e51fb6df2bd28085a7c70859f065fe791",
+      "supersededReceiptId": "sha256:3f876533fc9e10958053e1a92fd65b3af0187166c3ea8345cb96093ec4591845"
+    },
+    {
+      "supersedingReceiptId": "sha256:be12ec8935cc90307cc8e845a03135f7dda3824457a316b37dea24a1492445b7",
+      "supersededReceiptId": "sha256:e0747e3a7a46eb07643eaa744e8d89acce5000002febe18ffdd07b7d2bb5f5b2"
+    },
+    {
+      "supersedingReceiptId": "sha256:be1d83ab40d1b1fcaf1f49297c0bbd793142d9ceddd029d48e611f1421cc2052",
+      "supersededReceiptId": "sha256:c172e81b31a81bc2cc3356bebd374de3e4a99cd7b9dced10cb0cbbf274879178"
+    },
+    {
+      "supersedingReceiptId": "sha256:c172e81b31a81bc2cc3356bebd374de3e4a99cd7b9dced10cb0cbbf274879178",
+      "supersededReceiptId": "sha256:3404910edc11aee4e89639211fe2d12a6ceb157eece87eb906013ad5391f141c"
+    },
+    {
+      "supersedingReceiptId": "sha256:c2adf610a4e80bf5a15c5dde76339fc73ace906a8d42b777d8c758288e8d72ac",
+      "supersededReceiptId": "sha256:b707aa9a1c1e6a32b53149f90809b950de609a84fca317ecfa35b989d0777267"
+    },
+    {
+      "supersedingReceiptId": "sha256:c63bdf3eda0944cea8d96a93d64bae4a5558dc85828af0d8c379122ecf5a4cd9",
+      "supersededReceiptId": "sha256:92d5da5f1d9f697c55b0877c04e6db865f19fbaf031b47e178d7a8e1ed46c772"
+    },
+    {
+      "supersedingReceiptId": "sha256:c7183bc940cb7e9cdb748d826087589ca097185ca1bd731e9310bd072ec356e5",
+      "supersededReceiptId": "sha256:afb597f715cc87ea9cab5ad92b7b8cc9557e5368571c54d2404867414ef6f474"
+    },
+    {
+      "supersedingReceiptId": "sha256:c720259eb46ed02e9dde423987045c1a719ae286b6caf513c031e7eed609e117",
+      "supersededReceiptId": "sha256:b4cef476a0aeae4864a23a69c9d276cdeee5fc8907861cb38c7203d891fb0b2e"
+    },
+    {
+      "supersedingReceiptId": "sha256:c9f08a95b048cd973e994661255bf87f576d3290491f0f274d0f0b9a67088c4b",
+      "supersededReceiptId": "sha256:5bd93e0713da00dfbc5c12cd1b56f260130ac0f9296a7c2e219d7fef2072fc90"
+    },
+    {
+      "supersedingReceiptId": "sha256:cab26d9a750da4f48d5fd209c5651e89c5a2280669678cf0ab9080230099e13d",
+      "supersededReceiptId": "sha256:153c2254842e5df086721fc2cbfd9a85ec280e5e420bbea18731aac554cf7c1a"
+    },
+    {
+      "supersedingReceiptId": "sha256:cad02bbf60fb1cb58503b9df6661ed19ae20f70607629d5049e1a8840f9ad477",
+      "supersededReceiptId": "sha256:092e1ac11fe8904ae892722d56d62ad79534f1db8e60cd5671215c76ef4b16f0"
+    },
+    {
+      "supersedingReceiptId": "sha256:ce37c953e133d2853ad94149009936807a89ffd50cf4dbd211a8b406c4e6efaf",
+      "supersededReceiptId": "sha256:de51061323e5a124c21663b80271521c58de52f524204c20475b8482b0d6cd69"
+    },
+    {
+      "supersedingReceiptId": "sha256:ce38ab1e6e02f6b2c6acdbc70541f895ae025cb7ef47f9fb30486ec17c258423",
+      "supersededReceiptId": "sha256:fa989a0ad725cccb115d09cde6240c38c3f2a8952eabcbc6aec2e1f293d7bf49"
+    },
+    {
+      "supersedingReceiptId": "sha256:cefb9a1647e5bc83c78d2f94795ac1ba2b48d638ecd7f2b22f39a38a7ac9e03a",
+      "supersededReceiptId": "sha256:95dc25615770129431edcdbb7e40b8065876f860d12d1a6f538e1cb96e3cd75e"
+    },
+    {
+      "supersedingReceiptId": "sha256:d282b78d224cec35062fd230b606733cb665714364a8570a1fde56ace7a9cbe3",
+      "supersededReceiptId": "sha256:1e4393c6ffd8204975541d10d86537fa6511515e335c53174fb4e49e7bdfb31f"
+    },
+    {
+      "supersedingReceiptId": "sha256:d36916d3ff0718c0f2dd059eec4caf713821943c501b0e40b8c34c8102a9b0d5",
+      "supersededReceiptId": "sha256:c551a4276fae45ae26441660f9516badd2dc0e6d11e4fb0c8426fe0d92ce6ec8"
+    },
+    {
+      "supersedingReceiptId": "sha256:d4d3c5b3e8b8652d92b9bdaeb8bd384bfa7603c09362c8f8726b4db6cd22fc03",
+      "supersededReceiptId": "sha256:1915025650f25bc34a916dd0bfc2312aeaa00182bbbdc06ddcc70c7e241eebad"
+    },
+    {
+      "supersedingReceiptId": "sha256:d4e47dfb0e73bd0f8f7ac7cb8def73d0f57914ae553087b9c1c653d58b9246d1",
+      "supersededReceiptId": "sha256:5ff9118e7b3a6365346ae9498838c6afd83130e72d3af8c4ca9c182d9bc95de4"
+    },
+    {
+      "supersedingReceiptId": "sha256:d50d7239f013c9c8c9441544aca2f128cd15d66c02a57cf7e647c72a67b47a44",
+      "supersededReceiptId": "sha256:734b8060f3b51b18993ddf70744fa6d829903043573508d08ee9177fc22ed9bf"
+    },
+    {
+      "supersedingReceiptId": "sha256:d6d150dd2fb541610e55c62e25f4eac15bb1a84ad930b1282f32e073e59c9213",
+      "supersededReceiptId": "sha256:7b694b67e637004038099028c4bcaa8a3657f85668fda5540adfba31a7163114"
+    },
+    {
+      "supersedingReceiptId": "sha256:d6e13a14fc0a3503a4776866a871139644dd2804c8780d15fb5a59bac405a294",
+      "supersededReceiptId": "sha256:5497e561bbbf1b33eb46d9efee5426b23effc6f5351651fb1916a9798fff9e68"
+    },
+    {
+      "supersedingReceiptId": "sha256:d6ebbc45d079edf64097b5bcabb6ea36328ed7c0d8ae678f39014ebdbd4044e8",
+      "supersededReceiptId": "sha256:3e14697e6cd02ff441335a147eb35b08bbf6570010bf896ad40312fd3004cb27"
+    },
+    {
+      "supersedingReceiptId": "sha256:d7c6766319db5b7d70e7ad13a2735ce4d46daa17c8f808d858c3eea475335fd9",
+      "supersededReceiptId": "sha256:e558a07c0d1667ae574150b0c6addd726469f0e98373d78ea4ba262e19825f4b"
+    },
+    {
+      "supersedingReceiptId": "sha256:d83206974266f9f9f1f6f51780373e8277e4d9d70d7a2cd0794a062bf8e204ef",
+      "supersededReceiptId": "sha256:35678ef861ad3fd753d48e13625a6203bb3a19b89376a487f80f19761e5cac0f"
+    },
+    {
+      "supersedingReceiptId": "sha256:d84f149e80c10dc7f2dd67b8f1948cea8a2a0935e193236f290d2bb21cb966b3",
+      "supersededReceiptId": "sha256:b18ad237373a946147738c669b42e1da808aaf297e35f29cf85699d4cd233b77"
+    },
+    {
+      "supersedingReceiptId": "sha256:d9371ee91865ab91a02e1e8fce8356003f4f1d8d9434bdda1434005d06ea7490",
+      "supersededReceiptId": "sha256:76b620858339fc369c5a5435a4d336fcf37150abc59936dfed9c5795487b26d9"
+    },
+    {
+      "supersedingReceiptId": "sha256:d973b4e76dbf94bf7512911d23f65405673d56e6fdc13229f754b402e62bad1d",
+      "supersededReceiptId": "sha256:16bdca5106fd223c6c8f4bbc019c836b6153ba3ed1681fae2d741c58ef1ad2bc"
+    },
+    {
+      "supersedingReceiptId": "sha256:dbdede4c31e5ecfb8531f415be464f4893cea0c614fb6715d23e9c293c90510e",
+      "supersededReceiptId": "sha256:ca302681a28fe7925ebcc2a3ece4547f866628c9904dd7e46183a32f47234df5"
+    },
+    {
+      "supersedingReceiptId": "sha256:e0747e3a7a46eb07643eaa744e8d89acce5000002febe18ffdd07b7d2bb5f5b2",
+      "supersededReceiptId": "sha256:d83206974266f9f9f1f6f51780373e8277e4d9d70d7a2cd0794a062bf8e204ef"
+    },
+    {
+      "supersedingReceiptId": "sha256:e19e30a6af67749e1b6566cf6568f68445848194430d6a0599dcf3e0dffb1d94",
+      "supersededReceiptId": "sha256:9ad247365be8159e49abba7f4a90da9fd19666e39aa71a2ad73778323ffc8555"
+    },
+    {
+      "supersedingReceiptId": "sha256:e1cc9123fc8bf6b16c165d69748cee86d73800bb2e5f99a9933e6d1267efb1db",
+      "supersededReceiptId": "sha256:7b8c8c4ff7b2448f5d64a989fe3d94fc8c9cc6fad9b3bcc2be32e4d643a6db2a"
+    },
+    {
+      "supersedingReceiptId": "sha256:e34872fdaa2fc2fea11a15b19feb3b68e35acb5957f7c9ed8656fd98f64693d2",
+      "supersededReceiptId": "sha256:7272f50894db946c5e903e0eb7c54b3be9fa2ab264326f4ea37cc84a76b86309"
+    },
+    {
+      "supersedingReceiptId": "sha256:e3718e5bb0f0d5a1b5252364ba14a039d22368200a42d9647b2dde57f2b712ce",
+      "supersededReceiptId": "sha256:35906983dafd53a2188dfc7c91114fa008c28cac8347ca381e837036e9387251"
+    },
+    {
+      "supersedingReceiptId": "sha256:e42ad391abf1929d77c85463a43fa2a747c8693d29ebd906a51607b5f1d1bcb0",
+      "supersededReceiptId": "sha256:49f9122d6abd701fea7cfa5e7769ed726496afb5637c0fbd519f3c9ab91c3fff"
+    },
+    {
+      "supersedingReceiptId": "sha256:e4db390d3865a9234c76f454a2a5638ab7d5982ba7640cea68867407a18f4368",
+      "supersededReceiptId": "sha256:d4fcc42d68db3264b19bb294cfad236138e76c5469a47564f1c36b800324f90f"
+    },
+    {
+      "supersedingReceiptId": "sha256:e52c18b47815354d6dc546c7267ba30ca9e39aa2570473da6508c3d8fdd5e19c",
+      "supersededReceiptId": "sha256:517a9bacdd86bdffd42a4fe08c815c74ecd3828a58f5d9f45aabedf1fc6948f0"
+    },
+    {
+      "supersedingReceiptId": "sha256:e546871f2e5b18c55a59c302d1f0d80881b6d61fe603f757c961faab31971a51",
+      "supersededReceiptId": "sha256:371d6fad3fec23eec52d7d5c3c037e610786f14b3c4f321be9dcb3c0093d6e7c"
+    },
+    {
+      "supersedingReceiptId": "sha256:e789557db82b1f1abdd83bd871a5bf10e4f2fee170815e6e405815504c09b943",
+      "supersededReceiptId": "sha256:8259d1d1cff77c911d96a538e6a2a409a97a1b6f5ca8fd91da548c8a6c46e273"
+    },
+    {
+      "supersedingReceiptId": "sha256:e971ae615b470cfe7494b6bcd56b52ed3ad484868077c851b48cd14413f2b8f1",
+      "supersededReceiptId": "sha256:04f08dc353b9dbbe6ffe8d754c4ee01acf4de53bc29d0894d2929cc27eeba6f4"
+    },
+    {
+      "supersedingReceiptId": "sha256:eb19f86dbb75bd685984de2043f2375026a4cf50152cbd27510ec4b90ffb898a",
+      "supersededReceiptId": "sha256:be1d83ab40d1b1fcaf1f49297c0bbd793142d9ceddd029d48e611f1421cc2052"
+    },
+    {
+      "supersedingReceiptId": "sha256:ec3c53c8d38472084a65827ca1a11637b354c8e4843128f9aca18fd11c8b27cd",
+      "supersededReceiptId": "sha256:f640743884e2486f17471f0e363f18dd030698ac16632fbbcc3ce4ec5544ca36"
+    },
+    {
+      "supersedingReceiptId": "sha256:ecc3260f953231bde9869c94302f8c1f6c223747b5adbbe57ceddada66387238",
+      "supersededReceiptId": "sha256:fa5d104037b7a1b11f80c1af0950bf994ab67f4eb5905905c0bcf2fbcd61c157"
+    },
+    {
+      "supersedingReceiptId": "sha256:eda25505036e5af9b638b1f665e847ca00fe7694c88d7f19e8310dc857e40988",
+      "supersededReceiptId": "sha256:f07e7cd6b5e0ea2e13fade2924c6fcf50e609c8ceb046b22d63ccdc725eb8f2c"
+    },
+    {
+      "supersedingReceiptId": "sha256:f07e7cd6b5e0ea2e13fade2924c6fcf50e609c8ceb046b22d63ccdc725eb8f2c",
+      "supersededReceiptId": "sha256:e3718e5bb0f0d5a1b5252364ba14a039d22368200a42d9647b2dde57f2b712ce"
+    },
+    {
+      "supersedingReceiptId": "sha256:f101e4c3143b74526bef4da7386cb570c48e2f43efda789b4685c3b75be81222",
+      "supersededReceiptId": "sha256:b4c51ddfd10ad96d645a47eae0dc9c504b5562f20d68102d2e9d3f25c968e1a2"
+    },
+    {
+      "supersedingReceiptId": "sha256:f11d63519cdb37dad4e4c9b12c3f4c26e6b1eae021720c7b790ba79693385087",
+      "supersededReceiptId": "sha256:20ac3121615a676eb650a676f2a4321383c8c78bf3fb24c26b0a550e2e79fbed"
+    },
+    {
+      "supersedingReceiptId": "sha256:f288a40e5340b3f6d4bba29999415622bdc0c22c266f9a1b7ab1efdc3ec6cbc5",
+      "supersededReceiptId": "sha256:91df3c39078e614c823ce76d1a7a681f8ab502b976d94d6617f9b0d982d86ec0"
+    },
+    {
+      "supersedingReceiptId": "sha256:f48a17268097b2247107897bd3f53758b3907b5983155698c2580d4d2ba07897",
+      "supersededReceiptId": "sha256:f701af0608637a6ccfeec1f24ca109e1738da2db2be2bc3de3a705700e60aa13"
+    },
+    {
+      "supersedingReceiptId": "sha256:f69a734253f0d279a60e1fbdc52a011cfbb2f6b022cf2968c8e096cb4a9f6558",
+      "supersededReceiptId": "sha256:0831494ab316d79e64af3f32b220c7c5672f25772e684a2baa492fb5140e2027"
+    },
+    {
+      "supersedingReceiptId": "sha256:f9f58ec3d4aaddc5fd151948821fb7ab01a0250efcc6e125d93e4e9105679f0a",
+      "supersededReceiptId": "sha256:9612934a1888f575950f7a9209aee739f2e4d8f072a2850a53e60a78822f995f"
+    },
+    {
+      "supersedingReceiptId": "sha256:fa5d104037b7a1b11f80c1af0950bf994ab67f4eb5905905c0bcf2fbcd61c157",
+      "supersededReceiptId": "sha256:3a5c3bbc49a49e32f295b6f3d8485315f2c4cd1de386483fa84a6960df982ca7"
+    },
+    {
+      "supersedingReceiptId": "sha256:fadc9fb6abf162940cc40b650c69cae377496b30cdb645e38ee4888ae8b35c3b",
+      "supersededReceiptId": "sha256:d50d7239f013c9c8c9441544aca2f128cd15d66c02a57cf7e647c72a67b47a44"
+    },
+    {
+      "supersedingReceiptId": "sha256:fb0336800dbc85a9c97607a9d0699324904e391b9a83223b9a7dd958cdce4047",
+      "supersededReceiptId": "sha256:d9371ee91865ab91a02e1e8fce8356003f4f1d8d9434bdda1434005d06ea7490"
+    },
+    {
+      "supersedingReceiptId": "sha256:fdfc4c22320913b063e62f3031d0f3c740832ba97f174c18fe9d0acd147b4392",
+      "supersededReceiptId": "sha256:0a5246a03c56053fe0e16ffaccfbf4933e6b453b19c563d0cf087196c0797759"
+    },
+    {
+      "supersedingReceiptId": "sha256:fe631dfb66a53876a20700dc8a7ecd44f83a6ed6f653c7f6325aa60bd730438a",
+      "supersededReceiptId": "sha256:a287894faa250f94ecbf71bd0be9c9deb0aec3b0729843ab5732cc52bbea17cd"
+    },
+    {
+      "supersedingReceiptId": "sha256:ffe86354b1e5903fec2a31263e893dce7d5683d910f6941de12bb69545be2440",
+      "supersededReceiptId": "sha256:1aaff9538a80ad6debfb4125fa5555cd09318e7a34c3e6569adb183770ee4f3a"
+    }
+  ],
+  "residualRisks": [
+    {
+      "riskId": "qualified-model-portfolio-absent",
+      "category": "model-quality",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "All 53 attempted candidates are terminally rejected; none currently has qualifying assistant-quality evidence.",
+      "mitigation": "Screen new immutable sources before conversion; if no source passes, complete explicit corpus review and run contamination-controlled training only from approved records.",
+      "acceptanceCondition": "Twenty distinct model lineages have current qualification receipts under the current evaluator.",
+      "blockerCodes": [
+        "qualified_models_incomplete"
+      ],
+      "evidenceReferences": [
+        "campaign-status:modelPortfolio",
+        "campaign-status:progress.qualifiedModels"
+      ]
+    },
+    {
+      "riskId": "fresh-browser-campaign-not-started",
+      "category": "browser-campaign",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "No qualifying fresh-profile dogfood round can run until qualified model artifacts exist.",
+      "mitigation": "Admit qualified models, then execute the fixed fifty-round schedule through owned persistent profiles with physical deletion receipts.",
+      "acceptanceCondition": "Exactly fifty current clean-browser receipts pass and every scheduled model executes at least twice.",
+      "blockerCodes": [
+        "fresh_browser_rounds_incomplete"
+      ],
+      "evidenceReferences": [
+        "campaign-status:progress.cleanBrowserRounds"
+      ]
+    },
+    {
+      "riskId": "live-memory-contract-unavailable",
+      "category": "memory-continuity",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "The required MemoryEndpoints single-use enrollment, reconnect, replay, revocation, and cleanup contract is not advertised for authorized production use.",
+      "mitigation": "Obtain and validate the versioned platform contract, then execute twenty-five isolated company creation, restore, replay-rejection, close, delete, and post-delete runs.",
+      "acceptanceCondition": "Twenty-five current live-service receipts prove continuity and cleanup without invoking an undocumented route.",
+      "blockerCodes": [
+        "live_memory_rounds_incomplete",
+        "memory_endpoints_live_contract_incompatible"
+      ],
+      "evidenceReferences": [
+        "campaign-status:lifecycle.branches.memoryCampaign",
+        "campaign-status:progress.liveMemoryRounds"
+      ]
+    },
+    {
+      "riskId": "outside-lane-proof-unavailable",
+      "category": "p2p-public-reachability",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "Local two-process serving evidence does not establish public reachability or a complete outside transfer.",
+      "mitigation": "Configure approved public endpoints and obtain signed expiring complete-transfer receipts from a genuinely outside observer for both fleet lanes.",
+      "acceptanceCondition": "Forty current outside-network receipts cover twenty artifacts across two independent lanes without project-hosted byte proxying.",
+      "blockerCodes": [
+        "outside_network_lane_proofs_incomplete",
+        "outside_network_observer_absent",
+        "public_endpoint_configuration_absent"
+      ],
+      "evidenceReferences": [
+        "campaign-status:lifecycle.branches.p2pFleet",
+        "campaign-status:progress.externallyProvenLanes"
+      ]
+    },
+    {
+      "riskId": "catalog-authority-unavailable",
+      "category": "catalog-publication",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "No authoritative catalog write contract or live announcement authority has admitted the model fleet.",
+      "mitigation": "Use only the published catalog contract and authorized credentials after qualification and both current lane proofs exist.",
+      "acceptanceCondition": "Twenty current catalog announcement receipts survive unauthenticated HTTPS readback against one common catalog and feed snapshot.",
+      "blockerCodes": [
+        "catalog_announcements_incomplete",
+        "catalog_publication_authority_absent"
+      ],
+      "evidenceReferences": [
+        "campaign-status:lifecycle.branches.catalog",
+        "campaign-status:progress.catalogAnnouncements"
+      ]
+    },
+    {
+      "riskId": "physical-linux-arm64-unverified",
+      "category": "native-platform",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "Linux ARM64 has emulated execution evidence but no execution receipt from physical ARM64 hardware.",
+      "mitigation": "Run the approved package, native ABI, fleet lifecycle, and cleanup verification on authorized physical Linux ARM64 hardware.",
+      "acceptanceCondition": "The current native RID receipt records physical Linux ARM64 execution and all three native RID gates pass.",
+      "blockerCodes": [
+        "native_rid_execution_incomplete",
+        "physical_linux_arm64_hardware_evidence_absent"
+      ],
+      "evidenceReferences": [
+        "campaign-status:releaseGates.nativeRids"
+      ]
+    },
+    {
+      "riskId": "public-https-readback-incomplete",
+      "category": "deployment-readback",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "Packaged local-site verification cannot prove deployed public bytes, catalog rows, or announcement feed bytes.",
+      "mitigation": "After authorized deployment, fetch every declared public artifact and common catalog snapshot over HTTPS and compare exact release hashes.",
+      "acceptanceCondition": "The current deployment receipt proves all required HTTPS hashes and authoritative catalog readback.",
+      "blockerCodes": [
+        "public_https_readback_incomplete"
+      ],
+      "evidenceReferences": [
+        "campaign-status:releaseGates.publicHttpsReadback"
+      ]
+    },
+    {
+      "riskId": "external-fault-cases-incomplete",
+      "category": "fault-injection",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "Seventeen locally executable fault cases pass, while seven cases still require physical-host, live-service, outside-network, or deployment evidence.",
+      "mitigation": "Execute each remaining case only in its declared evidence domain and preserve separate domain and attempt receipts.",
+      "acceptanceCondition": "All twenty-four fault attempts and their authoritative domain receipts satisfy the canonical fault plan.",
+      "blockerCodes": [
+        "fault_injection_campaign_incomplete"
+      ],
+      "evidenceReferences": [
+        "campaign-status:releaseGates.faultInjection"
+      ]
+    },
+    {
+      "riskId": "final-release-attestation-incomplete",
+      "category": "release-attestation",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "The campaign lacks a verified authorized release signature or equivalent attestation over a complete final predicate.",
+      "mitigation": "Generate the content-addressed predicate from validated evidence, obtain an authorized signature verification receipt, and regenerate the final envelope after all other gates pass.",
+      "acceptanceCondition": "Dashboard v8 validates a deployment-class final-attestation receipt bound to an authorized verified signature and the complete campaign predicate.",
+      "blockerCodes": [
+        "final_attestation_incomplete"
+      ],
+      "evidenceReferences": [
+        "campaign-status:releaseGates.finalAttestation"
+      ]
+    },
+    {
+      "riskId": "gpu-training-capacity-unavailable",
+      "category": "training-capacity",
+      "severity": "high",
+      "status": "open",
+      "summary": "The installed NVIDIA device is lost and broad comparative training cannot currently use GPU acceleration.",
+      "mitigation": "Recover the device through an authorized host restart or use separately authorized GPU capacity after source and data gates pass.",
+      "acceptanceCondition": "An approved training environment passes device, mixed-precision, checkpoint-recovery, and throughput preflight.",
+      "blockerCodes": [],
+      "evidenceReferences": [
+        "local-environment:nvidia-device-lost"
+      ]
+    },
+    {
+      "riskId": "release-source-history-contains-model-bytes",
+      "category": "supply-chain",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "A user-created WIP commit tracks two third-party model weight files under artifacts/work; these bytes are excluded from the public artifact scope but remain in the Git source history.",
+      "mitigation": "With explicit repository-owner authorization, remove the weight files from the release-bound source history or establish a clean release branch that preserves public receipts and decisions without third-party model bytes, then audit all reachable Git objects and package inputs.",
+      "acceptanceCondition": "The exact source revision used for release contains no tracked third-party model weights, the release package excludes source-screen work artifacts, and a repository-object audit records zero unauthorized model-byte objects.",
+      "blockerCodes": [
+        "release_source_history_contains_model_bytes"
+      ],
+      "evidenceReferences": [
+        "git:15bcf5049eb8616f856daf8cbc8604b877a7af0b",
+        "git-path:artifacts/work/source-review-rejections-2026-07-16/sources"
+      ]
+    }
+  ],
+  "predicateSha256": "64acb083f6a8533ee78c7438d4641305c8e419e47f4be3f877a3f80a0f8975f6",
+  "authentication": {
+    "kind": "unsigned-content-addressed",
+    "signatureVerified": false,
+    "authorizedRelease": false,
+    "verificationReceiptId": null,
+    "attestationReference": null,
+    "signingAuthorityId": null,
+    "signingKeyId": null,
+    "authorizationEnvelopeSha256": null,
+    "authorityRegistrySha256": null,
+    "signedPayloadSha256": null,
+    "publicKeySpkiSha256": null,
+    "issuedAtUtc": null,
+    "expiresAtUtc": null
+  },
+  "status": "incomplete",
+  "claim": "pre-release-incomplete",
+  "attestationContentSha256": "0e8a76b68c72238495964bb5c38d095ff4d7916659e11856e59d6ed98b62ca1b"
+}

@@ -1,0 +1,1042 @@
+"use strict";
+
+const assert = require("node:assert/strict");
+const childProcess = require("node:child_process");
+const fs = require("node:fs");
+const os = require("node:os");
+const path = require("node:path");
+const test = require("node:test");
+
+const {
+  applyInstrumentationRetryLimit,
+  applyUncommittedAttemptPolicy,
+  attemptSchema,
+  boundedFailure,
+  buildComparator,
+  canonicalPrettyBytes,
+  contractSchema,
+  corruptionCases,
+  corruptionSchema,
+  crashScenarios,
+  datasetFiles,
+  evaluatePerformanceThresholds,
+  evaluateQualityThresholds,
+  expectedExperimentId,
+  expectedLanes,
+  expectedMethodId,
+  finalizeAttempt,
+  finalizeObservation,
+  finalizePendingAttempt,
+  hashInput,
+  inputPaths,
+  instrumentationFailure,
+  loadPendingAttempt,
+  memoryMonitorScript,
+  offlineEnvironment,
+  observationAuthority,
+  observationSchema,
+  openGaps,
+  pendingAttemptSchema,
+  performanceSchema,
+  preregistrationRelativePath,
+  qualitySchema,
+  recoverySchema,
+  reconcilePendingAttempt,
+  runPreflight,
+  sha256,
+  summarizePerformance,
+  terminalOutcomeAttempt,
+  validateAttempt,
+  validateContractOutput,
+  validateCorruptionOutput,
+  validateMemoryMeasurement,
+  validateObservation,
+  validatePerformanceOutput,
+  validateQualityOutput,
+  validateRecoveryOutput,
+  writePendingAttempt
+} = require("../tools/vector-portable-affine-u8-observation.js");
+const {
+  validateManifestFile
+} = require("../tools/vector-portable-affine-u8-preregistration.js");
+
+const emptySha256 = sha256(Buffer.alloc(0));
+const repositoryRoot = path.resolve(__dirname, "../..");
+const preregistrationSha256 =
+  "76cccb8fe353847235f8ea1d647c6762677e19b8abe593b83f9733dfbfe6c06d";
+
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function compact(value) {
+  return `${JSON.stringify(value)}\n`;
+}
+
+function expectedClassOrTopic(lane, ordinal) {
+  if (lane.laneKind === "natural") return Math.floor(ordinal / 20);
+  if (lane.laneKind === "controlled-memory") return Math.floor(ordinal / 3);
+  const counts = [30, 24, 24, 18, 12, 12];
+  let offset = 0;
+  for (const [family, count] of counts.entries()) {
+    if (ordinal < offset + count) return family;
+    offset += count;
+  }
+  throw new Error("synthetic fixture ordinal is invalid");
+}
+
+function queryFixture(lane, ordinal) {
+  const hitCount = lane.laneKind === "controlled-memory" ? 8 : 100;
+  const score = (index) =>
+    lane.metric === "squared-euclidean" ? index : hitCount - index;
+  const scorePairs = Array.from({ length: hitCount }, (_unused, index) => ({
+    externalId: index + 1,
+    candidateScore: score(index),
+    oracleScore: score(index),
+    absoluteNormalizedScoreError: 0
+  }));
+  const oracleTopResults = scorePairs.map((pair) => ({
+    externalId: pair.externalId,
+    score: pair.oracleScore
+  }));
+  const natural = lane.laneKind === "natural";
+  const controlled = lane.laneKind === "controlled-memory";
+  return {
+    laneId: lane.laneId,
+    queryOrdinal: ordinal,
+    classOrTopic: expectedClassOrTopic(lane, ordinal),
+    recallAt1: 1,
+    recallAt10: 1,
+    recallAt100: 1,
+    mrrAt100: 1,
+    ndcgAt100: 1,
+    rankInversionsAt100: 0,
+    rankInversionRateAt100: 0,
+    maximumAbsoluteNormalizedScoreError: 0,
+    meanAbsoluteNormalizedScoreError: 0,
+    p99AbsoluteNormalizedScoreError: 0,
+    missingResultCount: 0,
+    duplicateResultCount: 0,
+    scorePairs,
+    oracleTopResults,
+    labelPrecisionAt10: natural ? 1 : null,
+    labelMrrAt10: natural ? 1 : null,
+    labelNdcgAt10: natural ? 1 : null,
+    oracleLabelPrecisionAt10: natural ? 1 : null,
+    oracleLabelMrrAt10: natural ? 1 : null,
+    oracleLabelNdcgAt10: natural ? 1 : null,
+    expectedFirstHit: controlled ? true : null,
+    forbiddenHitCountAt10: controlled ? 0 : null,
+    deletedHitCount: controlled ? 0 : null,
+    filterViolationCount: controlled ? 0 : null
+  };
+}
+
+function naturalSummary() {
+  return {
+    macroLabelPrecisionAt10: 1,
+    macroLabelMrrAt10: 1,
+    macroLabelNdcgAt10: 1,
+    perClassQueryCoverage: Array(10).fill(20)
+  };
+}
+
+function laneFixture(lane) {
+  return {
+    laneId: lane.laneId,
+    laneKind: lane.laneKind,
+    metric: lane.metric,
+    normalization: lane.normalization,
+    dimension: lane.dimension,
+    declaredRecordCount: lane.declaredRecordCount,
+    activeRecordCount: lane.activeRecordCount,
+    queryCount: lane.queryCount,
+    topKValues: [1, 10, 100],
+    minimumRecallAt1: 1,
+    minimumRecallAt10: 1,
+    minimumRecallAt100: 1,
+    minimumMrrAt100: 1,
+    minimumNdcgAt100: 1,
+    rankInversionsAt100: 0,
+    maximumRankInversionRateAt100: 0,
+    maximumAbsoluteNormalizedScoreError: 0,
+    meanAbsoluteNormalizedScoreError: 0,
+    p99AbsoluteNormalizedScoreError: 0,
+    missingResultCount: 0,
+    duplicateResultCount: 0,
+    byteAccounting: {
+      candidateIndexBytes: lane.candidateIndexBytes,
+      candidateIndexSha256: sha256(Buffer.from(`index/${lane.laneId}`, "utf8")),
+      expectedCandidateIndexBytes: lane.candidateIndexBytes,
+      fullExactIndexBytes: lane.exactFullIndexBytes,
+      candidateToFullExactRatio:
+        lane.candidateIndexBytes / lane.exactFullIndexBytes,
+      effectiveBitsPerOriginalCoordinate:
+        8 * lane.candidateIndexBytes /
+        (lane.activeRecordCount * lane.dimension)
+    },
+    determinism: {
+      independentBuildBytesMatch: true,
+      preAndPostReloadOutputsMatch: true
+    },
+    capacityControl: {
+      candidateBudgetBytes: lane.candidateIndexBytes,
+      exactRecordCount: lane.capacityExactRecordCount,
+      exactBytes: lane.capacityExactBytes,
+      nextExactBytes: lane.capacityNextExactBytes,
+      minimumRecallAt1: 0.75,
+      minimumRecallAt10: 0.8,
+      minimumRecallAt100: 0.85,
+      minimumMrrAt100: 0.75,
+      minimumNdcgAt100: 0.8
+    },
+    naturalUtility: lane.laneKind === "natural"
+      ? {
+          candidate: naturalSummary(),
+          exact: naturalSummary(),
+          delta: {
+            macroLabelPrecisionAt10: 0,
+            macroLabelMrrAt10: 0,
+            macroLabelNdcgAt10: 0
+          }
+        }
+      : null,
+    controlledUtility: lane.laneKind === "controlled-memory"
+      ? {
+          expectedFirstHitRate: 1,
+          forbiddenHitRateAt10: 0,
+          deletedHitCount: 0,
+          filterViolationCount: 0
+        }
+      : null
+  };
+}
+
+function qualityFixture() {
+  return {
+    schema: qualitySchema,
+    experimentId: expectedExperimentId,
+    qualityProcessOrdinal: 1,
+    datasetName: "Fashion-MNIST",
+    datasetRevision: "b2617bb6d3ffa2e429640350f613e3291e10b141",
+    selectionAlgorithm: "sha256-seed-split-label-index-smallest-v1",
+    selectionSha256:
+      "8be904326c844c31b6e973f88bc6ce2e0a7462d51aa0d5ae497dda4b02472fbd",
+    topKValues: [1, 10, 100],
+    laneResults: expectedLanes.map(laneFixture),
+    perQueryMetrics: expectedLanes.flatMap((lane) =>
+      Array.from({ length: lane.queryCount }, (_unused, ordinal) =>
+        queryFixture(lane, ordinal)))
+  };
+}
+
+function contractFixture() {
+  return {
+    schema: contractSchema,
+    experimentId: expectedExperimentId,
+    methodId: expectedMethodId,
+    bitWidth: 8,
+    qualityProcessCount: 1,
+    performanceLaneCount: 6,
+    performanceMethodCount: 2,
+    performanceRepetitionCount: 5,
+    corruptionCaseCount: 7,
+    crashScenarioCount: 4,
+    processCrashExitCode: 74,
+    networkRequired: false,
+    productImport: false
+  };
+}
+
+function performanceProcess(lane, method, duration) {
+  return {
+    schema: performanceSchema,
+    experimentId: expectedExperimentId,
+    methodId: expectedMethodId,
+    laneId: lane.laneId,
+    method,
+    dimension: lane.dimension,
+    recordCount: lane.activeRecordCount,
+    queryCount: lane.queryCount,
+    warmupFullQueryPasses: 5,
+    measuredFullQueryPasses: 5,
+    buildNanoseconds: 1_000_000,
+    serializationNanoseconds: 1_000_000,
+    loadNanoseconds: 1_000_000,
+    coldFirstQueryNanoseconds: 1_000_000,
+    measuredQueryNanoseconds: Array(lane.queryCount * 5).fill(duration),
+    persistentBytes:
+      method === "candidate" ? lane.candidateIndexBytes : lane.exactFullIndexBytes,
+    queryResultDigest: sha256(
+      Buffer.from(`${lane.laneId}/${method}`, "utf8")
+    ),
+    memoryMonitorHandshake: true
+  };
+}
+
+function performanceRecords(candidateDuration = 100) {
+  const records = [];
+  let processOrdinal = 0;
+  for (const [laneOrdinal, lane] of expectedLanes.entries()) {
+    for (let repetition = 0; repetition < 5; repetition += 1) {
+      const methods = (laneOrdinal + repetition) % 2 === 0
+        ? ["candidate", "exact-full"]
+        : ["exact-full", "candidate"];
+      for (const [scheduledMethodOrdinal, method] of methods.entries()) {
+        processOrdinal += 1;
+        const process = performanceProcess(
+          lane,
+          method,
+          method === "candidate" ? candidateDuration : 100
+        );
+        const memory = {
+          samplingIntervalMilliseconds: 5,
+          peakWorkingSetBytes: method === "candidate" ? 100_000_000 : 120_000_000,
+          osReportedPeakWorkingSetBytes:
+            method === "candidate" ? 110_000_000 : 130_000_000,
+          postPrepareWorkingSetBytes:
+            method === "candidate" ? 50_000_000 : 60_000_000,
+          sampleCount: 10,
+          monitorExitCode: 0
+        };
+        const monitorBytes = Buffer.from(`${JSON.stringify(memory)}\n`, "utf8");
+        records.push({
+          processOrdinal,
+          laneOrdinal,
+          repetition,
+          scheduledMethodOrdinal,
+          exitCode: 0,
+          stdoutSha256: sha256(Buffer.from(compact(process), "utf8")),
+          stderrSha256: emptySha256,
+          monitorStdoutSha256: emptySha256,
+          monitorStderrSha256: emptySha256,
+          monitorResultSha256: sha256(monitorBytes),
+          processRootDeleted: true,
+          process,
+          memory
+        });
+      }
+    }
+  }
+  return records;
+}
+
+function corruptionProcess(caseId) {
+  return {
+    schema: corruptionSchema,
+    experimentId: expectedExperimentId,
+    caseId,
+    rejectedBeforeSearch: true,
+    panicObserved: false,
+    boundedErrorCode:
+      caseId === "commit-hash-mismatch"
+        ? "commit-hash-mismatch"
+        : "digest-mismatch"
+  };
+}
+
+function recoveryProcess(scenario) {
+  return {
+    schema: recoverySchema,
+    experimentId: expectedExperimentId,
+    scenarioId: scenario.scenarioId,
+    processCrashExitCode: 74,
+    expectedActiveGenerationBeforeRetry:
+      scenario.expectedActiveGenerationBeforeRetry,
+    observedActiveGenerationBeforeRetry:
+      scenario.expectedActiveGenerationBeforeRetry,
+    deletionCommittedBeforeRetry: scenario.deletionCommittedBeforeRetry,
+    finalActiveGeneration: 2,
+    retryWroteGenerationTwo: scenario.retryWroteGenerationTwo,
+    retryIdempotent: true,
+    finalTargetIdentifierMatches: 0,
+    finalTargetVectorFingerprintMatches: 0,
+    activeIndexContainsAnyDeletedTarget: false,
+    activeIndexContainsActiveDeletedTarget: false,
+    allCrashScenariosMustRecover: true,
+    powerLossSimulated: false,
+    filesystemForensicErasureTested: false,
+    removedManagedFileCount: 2,
+    directoryFlushAttempted: true,
+    directoryFlushSucceeded: false,
+    finalSnapshotSha256: "b".repeat(64),
+    finalCommitSha256: "c".repeat(64)
+  };
+}
+
+function datasetEvidence() {
+  return {
+    sourceRepository: "https://github.com/zalandoresearch/fashion-mnist.git",
+    revision: "b2617bb6d3ffa2e429640350f613e3291e10b141",
+    tree: "ec8d5e52c0b9b2b09ea3f9d36b7bfafaf8ec0e97",
+    licenseExpression: "MIT",
+    licenseBytes: 1116,
+    licenseSha256:
+      "860025a4fd4ca5e669981b245ad022a89818c5b6412177700d7836b909bcf281",
+    readmeBytes: 22994,
+    readmeSha256:
+      "39c94926ec72ab72920ab57f1c22908b4607c38f803aa85284ae85fc492518db",
+    files: datasetFiles.map((file) => {
+      const { rawName: _rawName, ...publicFile } = file;
+      return publicFile;
+    }),
+    checkoutClean: true,
+    locatorPersisted: false,
+    bytesPersisted: false
+  };
+}
+
+function tool(name) {
+  return {
+    name,
+    version: `${name} 1.0.0`,
+    binaryBytes: 1024,
+    binarySha256: sha256(Buffer.from(name, "utf8"))
+  };
+}
+
+function buildEvidence() {
+  return {
+    cargo: {
+      executable: "cargo",
+      arguments: [
+        "build", "--manifest-path", "Cargo.toml", "-p",
+        "tinyrustlm-vector-oracle", "--release", "--target",
+        "x86_64-pc-windows-msvc", "--locked", "--offline", "--quiet",
+        "--message-format=json"
+      ],
+      exitCode: 0,
+      stdoutSha256: "d".repeat(64),
+      stderrSha256: emptySha256,
+      compilerArtifactCount: 1,
+      warningCount: 0
+    },
+    rustc: {
+      executable: "rustc",
+      arguments: [
+        "--edition=2021", "-D", "warnings", "-C", "opt-level=3",
+        "-C", "codegen-units=1", "-C", "panic=abort",
+        "-C", "lto=fat", "-C", "embed-bitcode=yes", "--extern",
+        "tinyrustlm_vector_oracle=<owned-release-rlib>", "-L",
+        "dependency=<owned-release-deps>", "-o",
+        "<owned-benchmark-executable>",
+        "tinyrustlm/experiments/vector-quantization/portable-affine-u8-benchmark.rs"
+      ],
+      exitCode: 0,
+      stdoutSha256: emptySha256,
+      stderrSha256: emptySha256
+    },
+    libraryArtifactBytes: 2048,
+    libraryArtifactSha256: "e".repeat(64),
+    executableBytes: 4096,
+    executableSha256: "f".repeat(64),
+    cargoLockSha256: hashInput("Cargo.lock").sha256,
+    offline: true
+  };
+}
+
+function buildVerificationEvidence() {
+  const execution = {
+    exitCode: 0,
+    stdoutSha256: emptySha256,
+    stderrSha256: emptySha256
+  };
+  return {
+    format: { ...execution },
+    nativeTests: { ...execution },
+    clippy: { ...execution },
+    documentation: { ...execution },
+    wasmBuild: { ...execution },
+    wasmExecution: {
+      artifactBytes: 8192,
+      artifactSha256: "1".repeat(64),
+      importCount: 0,
+      exports: [
+        { name: "memory", kind: "memory" },
+        { name: "main", kind: "function" },
+        { name: "__data_end", kind: "global" },
+        { name: "__heap_base", kind: "global" }
+      ],
+      mainResult: 0
+    }
+  };
+}
+
+function observationFixture(candidateDuration = 100) {
+  const manifestResult = validateManifestFile();
+  const pending = finalizePendingAttempt({
+    schema: pendingAttemptSchema,
+    experimentId: expectedExperimentId,
+    attemptOrdinal: 1,
+    previousAttemptId: null,
+    startedAtUtc: "2026-07-26T00:00:00.000Z",
+    sourceRevision: "2".repeat(40),
+    preregistrationSha256
+  });
+  const quality = qualityFixture();
+  const records = performanceRecords(candidateDuration);
+  const summaries = summarizePerformance(records);
+  const qualityDecision = evaluateQualityThresholds(quality);
+  const performanceDecision = evaluatePerformanceThresholds(summaries);
+  const passed = qualityDecision.passed && performanceDecision.passed;
+  const contract = contractFixture();
+  const corruptions = corruptionCases.map((caseId, caseOrdinal) => {
+    const process = corruptionProcess(caseId);
+    return {
+      caseOrdinal,
+      caseId,
+      exitCode: 0,
+      stdoutSha256: sha256(Buffer.from(compact(process), "utf8")),
+      stderrSha256: emptySha256,
+      managedFileCountBeforeDeletion: 3,
+      processRootDeleted: true,
+      process
+    };
+  });
+  const recoveries = crashScenarios.map((scenario, scenarioOrdinal) => {
+    const recovery = recoveryProcess(scenario);
+    return {
+      scenarioOrdinal,
+      scenarioId: scenario.scenarioId,
+      crashExitCode: 74,
+      crashStdoutSha256: emptySha256,
+      crashStderrSha256: emptySha256,
+      recoveryExitCode: 0,
+      recoveryStdoutSha256: sha256(Buffer.from(compact(recovery), "utf8")),
+      recoveryStderrSha256: emptySha256,
+      managedFileCountBeforeDeletion: 3,
+      processRootDeleted: true,
+      recovery
+    };
+  });
+  const observation = finalizeObservation({
+    schema: observationSchema,
+    experimentId: expectedExperimentId,
+    status: passed ? "pass" : "fail-comparison-outcome-terminal",
+    attemptOrdinal: pending.attemptOrdinal,
+    previousAttemptId: pending.previousAttemptId,
+    attemptStartedAtUtc: pending.startedAtUtc,
+    pendingAttemptId: pending.pendingAttemptId,
+    pendingAttemptContentHash: pending.pendingAttemptContentHash,
+    observedAtUtc: "2026-07-26T00:05:00.000Z",
+    sourceRevision: pending.sourceRevision,
+    preregistration: {
+      path: preregistrationRelativePath,
+      sha256: manifestResult.sha256,
+      commit: "3".repeat(40)
+    },
+    implementationCommit: "4".repeat(40),
+    lineage: manifestResult.manifest.lineage,
+    externalDataset: datasetEvidence(),
+    inputs: inputPaths.map(hashInput),
+    tools: {
+      node: tool("node"),
+      cargo: tool("cargo.exe"),
+      rustc: tool("rustc.exe"),
+      powershell: tool("powershell.exe")
+    },
+    platform: {
+      runtimeIdentifier: "win-x64",
+      operatingSystem: "windows",
+      architecture: "x64",
+      rustTarget: "x86_64-pc-windows-msvc"
+    },
+    buildVerification: buildVerificationEvidence(),
+    build: buildEvidence(),
+    contractExecution: {
+      exitCode: 0,
+      stdoutSha256: sha256(Buffer.from(compact(contract), "utf8")),
+      stderrSha256: emptySha256
+    },
+    contract,
+    qualityExecution: {
+      exitCode: 0,
+      stdoutSha256: sha256(Buffer.from(compact(quality), "utf8")),
+      stderrSha256: emptySha256,
+      managedFileCountBeforeDeletion: 1,
+      processRootDeleted: true
+    },
+    quality,
+    performanceRecords: records,
+    performanceSummaries: summaries,
+    corruptionRecords: corruptions,
+    crashRecoveries: recoveries,
+    thresholdDecision: {
+      status: passed ? "pass" : "fail",
+      outcomeTerminal: !passed,
+      quality: qualityDecision,
+      performance: performanceDecision,
+      contractMatched: true,
+      allSixQualityLanesComplete: true,
+      allPerQueryMetricsRetained: true,
+      allSixtyPerformanceProcessesComplete: true,
+      nativeAndWasmConformanceExecuted: true,
+      allSevenCorruptionsRejectedBeforeSearch: true,
+      allFourCrashScenariosRecovered: true,
+      committedDeletionRemainedDeletedAfterRestart: true,
+      allSeventyTwoProcessRootsDeleted: true,
+      resultDrivenThresholdChanges: false
+    },
+    cleanup: {
+      outerMarkerSha256: sha256(Buffer.from("owned-v1\n", "utf8")),
+      memoryMonitorScriptSha256:
+        sha256(Buffer.from(memoryMonitorScript, "utf8")),
+      processRootCount: 72,
+      processRootsDeleted: 72,
+      outerRootDeleted: true
+    },
+    authority: observationAuthority,
+    openGaps,
+    requiredNextGate: manifestResult.manifest.requiredNextGate
+  });
+  return { observation, pending };
+}
+
+test("preregistration identity and input closure are frozen", () => {
+  const manifest = validateManifestFile();
+  assert.equal(manifest.sha256, preregistrationSha256);
+  assert.equal(new Set(inputPaths).size, inputPaths.length);
+  assert.ok(inputPaths.includes(preregistrationRelativePath));
+  assert.ok(inputPaths.some((entry) => entry.endsWith("affine_u8_index.rs")));
+  assert.ok(inputPaths.some((entry) => entry.endsWith("portable-affine-u8-benchmark.rs")));
+});
+
+test("contract parser requires the exact affine-u8 process contract", () => {
+  const fixture = contractFixture();
+  assert.deepEqual(validateContractOutput(compact(fixture)), fixture);
+  const unknown = { ...fixture, unexpected: true };
+  assert.throws(() => validateContractOutput(compact(unknown)), /keys/u);
+  const stale = { ...fixture, bitWidth: 4 };
+  assert.throws(() => validateContractOutput(compact(stale)), /bitWidth/u);
+});
+
+test("quality parser independently validates all 790 bounded query rows", () => {
+  const fixture = qualityFixture();
+  assert.deepEqual(validateQualityOutput(compact(fixture)), fixture);
+  assert.deepEqual(evaluateQualityThresholds(fixture), {
+    status: "pass",
+    passed: true,
+    failureCount: 0,
+    failures: []
+  });
+  const changed = clone(fixture);
+  changed.perQueryMetrics[0].scorePairs[0].absoluteNormalizedScoreError = 0.5;
+  assert.throws(
+    () => validateQualityOutput(compact(changed)),
+    /absoluteNormalizedScoreError/u
+  );
+});
+
+test("performance decision retains valid terminal threshold failures", () => {
+  const passing = summarizePerformance(performanceRecords(100));
+  assert.equal(evaluatePerformanceThresholds(passing).passed, true);
+  const failing = summarizePerformance(performanceRecords(400));
+  const decision = evaluatePerformanceThresholds(failing);
+  assert.equal(decision.passed, false);
+  assert.equal(decision.status, "fail");
+  assert.ok(
+    decision.failures.some((failure) =>
+      failure.field === "medianLatencyRatio")
+  );
+  assert.equal(
+    validatePerformanceOutput(
+      compact(performanceProcess(expectedLanes[0], "candidate", 100)),
+      expectedLanes[0],
+      "candidate"
+    ).method,
+    "candidate"
+  );
+});
+
+test("all corruption and child-process recovery outputs are bounded", () => {
+  for (const caseId of corruptionCases) {
+    assert.equal(
+      validateCorruptionOutput(compact(corruptionProcess(caseId)), caseId)
+        .rejectedBeforeSearch,
+      true
+    );
+  }
+  for (const scenario of crashScenarios) {
+    assert.equal(
+      validateRecoveryOutput(compact(recoveryProcess(scenario)), scenario)
+        .finalActiveGeneration,
+      2
+    );
+  }
+});
+
+test("pass and terminal-failure observations bind complete retained metrics", () => {
+  const passing = observationFixture(100);
+  assert.equal(validateObservation(passing.observation).status, "pass");
+  assert.ok(
+    canonicalPrettyBytes(passing.observation).length < 64 * 1024 * 1024
+  );
+
+  const terminal = observationFixture(400);
+  assert.equal(
+    validateObservation(terminal.observation).status,
+    "fail-comparison-outcome-terminal"
+  );
+  assert.equal(terminal.observation.thresholdDecision.performance.passed, false);
+  const attempt = terminalOutcomeAttempt(
+    terminal.pending,
+    {
+      observation: terminal.observation,
+      bytes: canonicalPrettyBytes(terminal.observation).length,
+      sha256: sha256(canonicalPrettyBytes(terminal.observation))
+    }
+  );
+  assert.equal(validateAttempt(attempt).failure.retryAllowed, false);
+  assert.equal(attempt.observationId, terminal.observation.observationId);
+});
+
+test("attempt validator rejects a terminal outcome that drops its observation", () => {
+  const { observation, pending } = observationFixture(400);
+  const terminal = terminalOutcomeAttempt(
+    pending,
+    {
+      observation,
+      bytes: canonicalPrettyBytes(observation).length,
+      sha256: sha256(canonicalPrettyBytes(observation))
+    }
+  );
+  const changed = clone(terminal);
+  changed.observationId = null;
+  const body = { ...changed };
+  delete body.attemptId;
+  delete body.attemptContentHash;
+  const malformed = finalizeAttempt(body);
+  assert.throws(() => validateAttempt(malformed), /lacks its observation/u);
+});
+
+test("memory monitor names match the Rust marker handshake exactly", () => {
+  for (const marker of [
+    "performance-monitor-request.marker",
+    "performance-monitor-ready.marker",
+    "performance-post-prepare.marker",
+    "performance-post-prepare-ack.marker"
+  ]) {
+    assert.match(memoryMonitorScript, new RegExp(marker.replace(".", "\\."), "u"));
+  }
+  assert.doesNotMatch(memoryMonitorScript, /memory-monitor-request'/u);
+});
+
+test(
+  "the frozen affine monitor completes or exposes its sealed sample race",
+  { skip: process.platform !== "win32" },
+  async () => {
+    const root = fs.mkdtempSync(
+      path.join(os.tmpdir(), "portable-affine-u8-monitor-test-")
+    );
+    const scriptPath = path.join(root, "monitor.ps1");
+    const outputPath = path.join(root, "memory.json");
+    let target;
+    let monitor;
+    const collect = (child) => new Promise((resolve, reject) => {
+      const stdout = [];
+      const stderr = [];
+      child.stdout.on("data", (chunk) => stdout.push(chunk));
+      child.stderr.on("data", (chunk) => stderr.push(chunk));
+      child.once("error", reject);
+      child.once("close", (exitCode, signal) => resolve({
+        exitCode,
+        signal,
+        stdout: Buffer.concat(stdout).toString("utf8"),
+        stderr: Buffer.concat(stderr).toString("utf8")
+      }));
+    });
+    try {
+      fs.writeFileSync(scriptPath, memoryMonitorScript, { flag: "wx" });
+      const targetSource = [
+        "\"use strict\";",
+        "const fs = require('node:fs');",
+        "const path = require('node:path');",
+        "const root = process.argv[1];",
+        "const sleeper = new Int32Array(new SharedArrayBuffer(4));",
+        "const marker = (name) => path.join(root, name);",
+        "const write = (name) => fs.writeFileSync(marker(name), 'ready\\n', { flag: 'wx' });",
+        "const wait = (name) => {",
+        "  const deadline = Date.now() + 10000;",
+        "  while (!fs.existsSync(marker(name))) {",
+        "    if (Date.now() >= deadline) throw new Error('target-marker-timeout');",
+        "    Atomics.wait(sleeper, 0, 0, 5);",
+        "  }",
+        "};",
+        "write('performance-monitor-request.marker');",
+        "wait('performance-monitor-ready.marker');",
+        "const retained = Buffer.alloc(16 * 1024 * 1024, 0x5a);",
+        "write('performance-post-prepare.marker');",
+        "wait('performance-post-prepare-ack.marker');",
+        "setTimeout(() => process.stdout.write(String(retained[0])), 100);"
+      ].join("\n");
+      target = childProcess.spawn(
+        process.execPath,
+        ["-e", targetSource, root],
+        {
+          env: offlineEnvironment(),
+          windowsHide: true,
+          stdio: ["ignore", "pipe", "pipe"]
+        }
+      );
+      const where = childProcess.spawnSync("where.exe", ["powershell.exe"], {
+        encoding: "utf8",
+        windowsHide: true
+      });
+      assert.equal(where.status, 0);
+      const powershell = where.stdout
+        .split(/\r?\n/u)
+        .find((line) => line.trim().length > 0)
+        .trim();
+      monitor = childProcess.spawn(powershell, [
+        "-NoLogo",
+        "-NoProfile",
+        "-NonInteractive",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        scriptPath,
+        "-TargetProcessId",
+        String(target.pid),
+        "-ProcessRoot",
+        root,
+        "-OutputPath",
+        outputPath
+      ], {
+        env: offlineEnvironment(),
+        windowsHide: true,
+        stdio: ["ignore", "pipe", "pipe"]
+      });
+      const [targetResult, monitorResult] = await Promise.all([
+        collect(target),
+        collect(monitor)
+      ]);
+      assert.deepEqual(targetResult, {
+        exitCode: 0,
+        signal: null,
+        stdout: "90",
+        stderr: ""
+      });
+      if (monitorResult.exitCode === 0) {
+        assert.deepEqual(monitorResult, {
+          exitCode: 0,
+          signal: null,
+          stdout: "",
+          stderr: ""
+        });
+        const bytes = fs.readFileSync(outputPath, "utf8");
+        assert.equal(bytes, `${JSON.stringify(JSON.parse(bytes))}\n`);
+        const memory = validateMemoryMeasurement(
+          JSON.parse(bytes),
+          "affine monitor integration fixture"
+        );
+        assert.ok(memory.sampleCount >= 2);
+        assert.ok(
+          memory.peakWorkingSetBytes >= memory.postPrepareWorkingSetBytes
+        );
+        assert.ok(memory.osReportedPeakWorkingSetBytes > 0);
+      } else {
+        assert.equal(monitorResult.exitCode, 1);
+        assert.equal(monitorResult.signal, null);
+        assert.equal(monitorResult.stdout, "");
+        assert.match(
+          monitorResult.stderr,
+          /^memory-monitor-too-few-samples\r?\n?$/u
+        );
+        assert.equal(fs.existsSync(outputPath), false);
+      }
+    } finally {
+      if (target && target.exitCode === null) target.kill();
+      if (monitor && monitor.exitCode === null) monitor.kill();
+      const resolved = fs.realpathSync.native(root);
+      assert.equal(path.dirname(resolved), fs.realpathSync.native(os.tmpdir()));
+      assert.match(
+        path.basename(resolved),
+        /^portable-affine-u8-monitor-test-/u
+      );
+      fs.rmSync(resolved, { recursive: true, force: false });
+    }
+  }
+);
+
+test("bounded failure defaults to retryable infrastructure without raw text", () => {
+  const value = boundedFailure(new Error("synthetic local path C:\\secret"));
+  assert.equal(value.classification, "infrastructure");
+  assert.equal(value.retryAllowed, true);
+  assert.match(value.messageSha256, /^[a-f0-9]{64}$/u);
+  assert.doesNotMatch(JSON.stringify(value), /synthetic|secret/iu);
+});
+
+test("only one instrumentation retry remains eligible", () => {
+  const failure = Object.freeze({
+    code: "PORTABLE_AFFINE_U8_MEMORY_MONITOR_FAILED",
+    classification: "instrumentation",
+    retryAllowed: true,
+    errorName: "Error",
+    messageSha256: "a".repeat(64),
+    causeMessageSha256: "b".repeat(64)
+  });
+  const priorInstrumentationAttempt = {
+    status: "fail",
+    failure: {
+      classification: "instrumentation",
+      retryAllowed: true
+    }
+  };
+
+  assert.equal(
+    applyInstrumentationRetryLimit(failure, []).retryAllowed,
+    true
+  );
+  assert.equal(
+    applyInstrumentationRetryLimit(
+      failure,
+      [priorInstrumentationAttempt]
+    ).retryAllowed,
+    false
+  );
+  assert.equal(
+    applyInstrumentationRetryLimit(
+      { ...failure, classification: "infrastructure" },
+      [priorInstrumentationAttempt]
+    ).retryAllowed,
+    true
+  );
+});
+
+test("an outcome that could not be committed becomes bounded instrumentation", () => {
+  const failure = Object.freeze({
+    code: "PORTABLE_AFFINE_U8_CORRUPTION_PROCESS_REJECTED",
+    classification: "comparison-outcome",
+    retryAllowed: false,
+    errorName: "ObservationFailure",
+    messageSha256: "a".repeat(64),
+    causeMessageSha256: "b".repeat(64)
+  });
+  const first = applyUncommittedAttemptPolicy(failure, []);
+  assert.equal(first.code, failure.code);
+  assert.equal(first.messageSha256, failure.messageSha256);
+  assert.equal(first.causeMessageSha256, failure.causeMessageSha256);
+  assert.equal(first.classification, "instrumentation");
+  assert.equal(first.retryAllowed, true);
+
+  const second = applyUncommittedAttemptPolicy(failure, [{
+    status: "fail",
+    failure: {
+      classification: "instrumentation",
+      retryAllowed: true
+    }
+  }]);
+  assert.equal(second.classification, "instrumentation");
+  assert.equal(second.retryAllowed, false);
+});
+
+test("pending reconciliation preserves an observed attempt-commit defect", () => {
+  const root = fs.mkdtempSync(
+    path.join(os.tmpdir(), "portable-affine-u8-reconcile-test-")
+  );
+  const pendingFilePath = path.join(root, "pending.json");
+  const observationFilePath = path.join(root, "observation.json");
+  const pending = finalizePendingAttempt({
+    schema: pendingAttemptSchema,
+    experimentId: expectedExperimentId,
+    attemptOrdinal: 1,
+    previousAttemptId: null,
+    startedAtUtc: "2026-07-26T11:11:21.155Z",
+    sourceRevision: "8".repeat(40),
+    preregistrationSha256
+  });
+  const observedMessage =
+    "terminal outcome attempt lacks its observation";
+  const failure = instrumentationFailure(
+    "PORTABLE_AFFINE_U8_ATTEMPT_COMMIT_REJECTED",
+    new Error(observedMessage)
+  );
+  const recorded = [];
+  try {
+    writePendingAttempt(pending, pendingFilePath);
+    assert.deepEqual(loadPendingAttempt(pendingFilePath), pending);
+    const reconciled = reconcilePendingAttempt([], {
+      pendingFilePath,
+      observationFilePath,
+      interruptionFailure: failure,
+      recordAttempt: (attempt) => {
+        recorded.push(validateAttempt(attempt));
+        return path.join(root, `${attempt.attemptContentHash}.json`);
+      },
+      resolveAttemptPath: (attempt) =>
+        path.join(root, `${attempt.attemptContentHash}.json`)
+    });
+
+    assert.equal(reconciled.recovered, null);
+    assert.equal(reconciled.archive.length, 1);
+    assert.equal(recorded.length, 1);
+    assert.equal(recorded[0].failure.code, failure.code);
+    assert.equal(recorded[0].failure.classification, "instrumentation");
+    assert.equal(recorded[0].failure.retryAllowed, true);
+    assert.equal(
+      recorded[0].failure.causeMessageSha256,
+      sha256(Buffer.from(observedMessage, "utf8"))
+    );
+    assert.equal(recorded[0].observationId, null);
+    assert.equal(fs.existsSync(pendingFilePath), false);
+  } finally {
+    const resolved = fs.realpathSync.native(root);
+    assert.equal(path.dirname(resolved), fs.realpathSync.native(os.tmpdir()));
+    assert.match(
+      path.basename(resolved),
+      /^portable-affine-u8-reconcile-test-/u
+    );
+    fs.rmSync(resolved, { recursive: true, force: false });
+  }
+});
+
+test("preflight builds the exact harness without consuming outcome modes", () => {
+  const source = runPreflight.toString();
+
+  for (const required of [
+    "materializeDataset(",
+    "writeMemoryMonitorScript(",
+    "verifyBuildAndWasm(",
+    "buildComparator(",
+    "executeContract("
+  ]) {
+    assert.equal(source.includes(required), true);
+  }
+  for (const forbidden of [
+    "executeQuality(",
+    "executePerformanceSuite(",
+    "executeCorruptionSuite(",
+    "executeCrashRecoverySuite("
+  ]) {
+    assert.equal(source.includes(forbidden), false);
+  }
+});
+
+test("standalone benchmark matches the workspace release profile", () => {
+  const workspaceManifest = fs.readFileSync(
+    path.join(repositoryRoot, "Cargo.toml"),
+    "utf8"
+  );
+  assert.match(workspaceManifest, /^\[profile\.release\]$/mu);
+  assert.match(workspaceManifest, /^codegen-units = 1$/mu);
+  assert.match(workspaceManifest, /^lto = true$/mu);
+  assert.match(workspaceManifest, /^panic = "abort"$/mu);
+
+  const source = buildComparator.toString();
+  for (const required of [
+    "\"codegen-units=1\"",
+    "\"panic=abort\"",
+    "\"lto=fat\"",
+    "\"embed-bitcode=yes\""
+  ]) {
+    assert.equal(source.includes(required), true);
+  }
+});
+
+test("attempt schema and observation schema are dedicated to this experiment", () => {
+  assert.equal(attemptSchema, "tinyrustlm.portable_affine_u8_flat_attempt.v1");
+  assert.equal(
+    observationSchema,
+    "tinyrustlm.portable_affine_u8_flat_observation.v1"
+  );
+});

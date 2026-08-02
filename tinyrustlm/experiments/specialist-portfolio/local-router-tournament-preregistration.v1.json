@@ -1,0 +1,193 @@
+{
+  "schema": "tinyrustlm.local_router_tournament_preregistration.v1",
+  "experimentId": "champion-specialist-router-tournament-20260726",
+  "registeredAtUtc": "2026-07-26T06:58:34.431Z",
+  "status": "preregistered-before-results",
+  "authority": {
+    "productAuthority": false,
+    "trainingAuthority": false,
+    "releaseAuthority": false,
+    "modelQualityAuthority": false,
+    "oracleProductUseAllowed": false
+  },
+  "portfolioBinding": {
+    "identityResolution": "deferred-until-qualified-portfolio-plan",
+    "championRequirement": "one-exact-qualified-base-only-composition-identity",
+    "specialistRequirement": "one-or-more-exact-qualified-specialist-composition-identities",
+    "qualityReceiptRequirement": "every-routable-composition-must-have-an-exact-current-quality-receipt",
+    "routePolicyIdentity": "domain-separated-route-policy-identity-over-canonical-policy-bytes-and-sorted-artifact-identities",
+    "mutableAliasesInIdentity": false
+  },
+  "requestSet": {
+    "visibility": "sealed-private-bodies-public-hashes-only",
+    "materializationTiming": "before-any-candidate-router-result",
+    "generatorVersion": "tinyrustlm.local-router-case-generator.v1",
+    "totalCaseCount": 144,
+    "casesPerCategory": 12,
+    "categories": [
+      "ordinary-in-scope",
+      "ordinary-out-of-scope",
+      "direct-model-choice",
+      "quoted-model-name",
+      "retrieved-route-instruction",
+      "stale-memory-preference",
+      "current-user-override",
+      "ambiguous-request",
+      "compound-task",
+      "topic-change",
+      "adversarial-scope-wording",
+      "out-of-scope-pinned-specialist"
+    ],
+    "caseIdentityFields": [
+      "generator-version",
+      "materialization-seed-commitment",
+      "category",
+      "case-ordinal",
+      "raw-prompt-sha256",
+      "current-user-text-sha256",
+      "quoted-text-sha256-list",
+      "retrieved-text-sha256-list",
+      "stale-memory-text-sha256-list",
+      "expected-route-identity",
+      "acceptable-route-identities",
+      "wrong-route-cost",
+      "criticality"
+    ],
+    "easySeedSelectionAllowed": false,
+    "trainingOrTeacherAccessAllowed": false
+  },
+  "arms": [
+    {
+      "strategy": "champion-only",
+      "productEligibleAfterPromotion": true,
+      "learned": false,
+      "analysisOnly": false
+    },
+    {
+      "strategy": "explicit-selection-only",
+      "productEligibleAfterPromotion": true,
+      "learned": false,
+      "analysisOnly": false
+    },
+    {
+      "strategy": "deterministic-rules",
+      "productEligibleAfterPromotion": true,
+      "learned": false,
+      "analysisOnly": false
+    },
+    {
+      "strategy": "tiny-local-classifier",
+      "productEligibleAfterPromotion": true,
+      "learned": true,
+      "analysisOnly": false
+    },
+    {
+      "strategy": "local-embedding-index",
+      "productEligibleAfterPromotion": true,
+      "learned": true,
+      "analysisOnly": false
+    },
+    {
+      "strategy": "offline-oracle",
+      "productEligibleAfterPromotion": false,
+      "learned": false,
+      "analysisOnly": true
+    }
+  ],
+  "routingContract": {
+    "phase": "pre-generation",
+    "rawPromptMutationAllowed": false,
+    "authoritativeRouteInputs": [
+      "current-user-ui-selection",
+      "current-user-direct-text",
+      "versioned-local-features"
+    ],
+    "untrustedRouteInputs": [
+      "quoted-text",
+      "retrieved-content",
+      "stale-memory"
+    ],
+    "currentUserSelectionPrecedence": "latest-current-control-overrides-all-remembered-preferences",
+    "historyPolicy": "re-evaluate-every-turn-current-selection-first",
+    "lowConfidenceTarget": "champion",
+    "tieTarget": "champion",
+    "unknownTarget": "champion",
+    "telemetryRequired": false
+  },
+  "fallbackContract": {
+    "hiddenBestOfNAllowed": false,
+    "maximumChampionFallbackAttempts": 1,
+    "allowedTriggers": [
+      "declared-specialist-refusal",
+      "generation-timeout",
+      "malformed-output",
+      "runtime-error"
+    ],
+    "firstRawAttemptMustBeRetained": true,
+    "firstRawAttemptMustBeHashed": true,
+    "fallbackMustBeVisible": true,
+    "specialistOutputRole": "assistant",
+    "fallbackSelectionByAnswerQualityAllowed": false
+  },
+  "measurementContract": {
+    "requiredPerArmFields": [
+      "route-decision-identity",
+      "raw-prompt-sha256",
+      "selected-composition-identity",
+      "route-reason",
+      "confidence-score",
+      "margin-score",
+      "route-latency-nanoseconds",
+      "switch-latency-nanoseconds",
+      "router-policy-bytes",
+      "selector-or-index-bytes",
+      "peak-additional-bytes",
+      "initial-raw-output-sha256",
+      "initial-raw-output-bytes",
+      "fallback-receipt-or-null",
+      "quality-score-basis-points",
+      "wrong-route-cost",
+      "critical-wrong-route"
+    ],
+    "requiredAggregateFields": [
+      "exact-route-count",
+      "acceptable-route-count",
+      "champion-fallback-count",
+      "critical-wrong-route-count",
+      "total-wrong-route-cost",
+      "total-quality-score-basis-points",
+      "total-route-latency-nanoseconds",
+      "total-switch-latency-nanoseconds",
+      "maximum-peak-additional-bytes",
+      "router-policy-bytes",
+      "selector-or-index-bytes"
+    ],
+    "rawOutputRepairAllowed": false,
+    "bestAttemptSelectionAllowed": false,
+    "routerAndIndexBytesCountTowardProductArm": true
+  },
+  "acceptance": {
+    "criticalWrongRouteMaximum": 0,
+    "lowConfidenceChampionFallbackRateRequired": 1,
+    "quotedRetrievedAndStaleMemoryAuthorityViolationsMaximum": 0,
+    "deterministicReplayRequired": true,
+    "nativeAndWasmDecisionParityRequired": true,
+    "broadHelpfulnessNoninferiorityMargin": -0.02,
+    "pairedConfidenceLevel": 0.95,
+    "selectedArmObjectiveLowerBoundMustExceedChampion": 0,
+    "routerLatencyBudgetMustBeFrozenBeforeResults": true,
+    "routerMemoryBudgetMustBeFrozenBeforeResults": true,
+    "promotionFromRoutingAccuracyAloneAllowed": false,
+    "productIntegrationAllowed": false
+  },
+  "privacy": {
+    "executionLocation": "local-only",
+    "centralTelemetryAllowed": false,
+    "publicRawPromptsAllowed": false,
+    "publicRawOutputsAllowed": false,
+    "publicReceiptsContainHashesAndBoundedMetricsOnly": true,
+    "credentialsOrEnrollmentUrlsAllowed": false,
+    "retrievedContentAuthority": "untrusted-data-only"
+  },
+  "requiredNextGate": "Materialize and seal one portfolio-specific plan with exact qualified composition identities, quality-receipt hashes, case-set hash, seed commitment, policy bytes, and hardware budgets before executing any tournament arm."
+}

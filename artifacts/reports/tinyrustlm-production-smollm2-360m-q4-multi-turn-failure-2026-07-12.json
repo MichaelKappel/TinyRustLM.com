@@ -1,0 +1,71 @@
+{
+  "schema": "tinyrustlm.multi_turn_context_browser_smoke.v2",
+  "generated_utc": "2026-07-13T04:54:28.588Z",
+  "status": "fail",
+  "app_url": "https://tinyrustlm.com/",
+  "expected_model": "smollm2q4",
+  "assertion_error": "second prefill reuse/computed counts were 0/83 for 83; first=\"I've got coffee, tea, and noodles.\\nI've got noodles, rice, tea, coffee, tea, noodles, noodles, noodles, noodles.\", second=\"You've got coffee, tea, noodles, noodles, noodles, noodles, noodles, noodles.\"",
+  "result": {
+    "localModelImport": true,
+    "selectedModel": "__local_slm_file",
+    "localModelState": "smollm2-360m-instruct-q4.slm / 217.12 MiB / sha256:455a0302f77aed3929b709cb4b4f43e834ed70622d2af1939c75b36734423905 / 0xcd205242952c047a / loaded",
+    "runtimeStatus": "Ready",
+    "modelState": "loaded (2958 ms)",
+    "errorState": "none",
+    "firstResponse": "I've got coffee, tea, and noodles.\nI've got noodles, rice, tea, coffee, tea, noodles, noodles, noodles, noodles.",
+    "secondResponse": "You've got coffee, tea, noodles, noodles, noodles, noodles, noodles, noodles.",
+    "firstPromptTokenCount": 12,
+    "firstPrefillReusedTokenCount": 0,
+    "firstPrefillComputedTokenCount": 12,
+    "secondPromptTokenCount": 83,
+    "secondPrefillReusedTokenCount": 0,
+    "secondPrefillComputedTokenCount": 83,
+    "activeQuantizationMode": "q4_0",
+    "generatedTokenCount": 19,
+    "consoleText": "generate(max_new_tokens=32, temperature=0, top_k=1, top_p=1, seed=1, conversation_history_turns=1) -> 0 in 38580 ms\nYou've got coffee, tea, noodles, noodles, noodles, noodles, noodles, noodles.",
+    "items": [
+      {
+        "role": "You",
+        "text": "Remember this exact preference: I drink tea, not coffee.",
+        "status": "completed"
+      },
+      {
+        "role": "TinyRustLM",
+        "text": "I've got coffee, tea, and noodles.\nI've got noodles, rice, tea, coffee, tea, noodles, noodles, noodles, noodles.",
+        "status": "completed"
+      },
+      {
+        "role": "You",
+        "text": "Which drink did I say I prefer?",
+        "status": "completed"
+      },
+      {
+        "role": "TinyRustLM",
+        "text": "You've got coffee, tea, noodles, noodles, noodles, noodles, noodles, noodles.",
+        "status": "completed"
+      }
+    ],
+    "networkRequests": [
+      "https://tinyrustlm.com/?autoload=0",
+      "https://tinyrustlm.com/app/app.css?v=20260711-active-chat2",
+      "https://tinyrustlm.com/app/active-conversation.js?v=20260712-multiturn1",
+      "https://tinyrustlm.com/app/calculator-tool.js?v=20260711-calculator1",
+      "https://tinyrustlm.com/app/memory-endpoints-distributed-sync-v1.js?v=20260710-live-contract1",
+      "https://tinyrustlm.com/app/memory-endpoints-sync.js?v=20260710-live-contract1",
+      "https://tinyrustlm.com/app/app.js?v=20260712-multiturn1",
+      "https://tinyrustlm.com/runtime/tinyrustlm.wasm.manifest",
+      "https://tinyrustlm.com/runtime/tinyrustlm.wasm"
+    ]
+  },
+  "network_requests": [
+    "https://tinyrustlm.com/",
+    "https://tinyrustlm.com/app/app.css",
+    "https://tinyrustlm.com/app/active-conversation.js",
+    "https://tinyrustlm.com/app/calculator-tool.js",
+    "https://tinyrustlm.com/app/memory-endpoints-distributed-sync-v1.js",
+    "https://tinyrustlm.com/app/memory-endpoints-sync.js",
+    "https://tinyrustlm.com/app/app.js",
+    "https://tinyrustlm.com/runtime/tinyrustlm.wasm.manifest",
+    "https://tinyrustlm.com/runtime/tinyrustlm.wasm"
+  ]
+}

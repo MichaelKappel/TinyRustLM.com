@@ -1,0 +1,24 @@
+[package]
+name = "tinyrustlm-runtime"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "tinyrustlm-eval"
+path = "src/eval_main.rs"
+
+[features]
+default = []
+wasm-simd = []
+
+[dependencies]
+fasteval = { version = "0.2.4", default-features = false }
+
+[lints]
+workspace = true

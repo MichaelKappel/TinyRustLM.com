@@ -1,0 +1,98 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "h2oai/h2o-danube2-1.8b-chat",
+  "sourceRevision": "6d8114cb4160755a092babed10a7d383cc10b1db",
+  "sourceModelArtifactSha256": "6470e05a11d3ca8f04b91101d779717d5680940a5b94c68f6f05bddb1d913d90",
+  "sourceScreenSha256": "acfe45a1873923a82095158d1c4b574a031f1af029217063182be522e4b9176d",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "mistral-dense-gqa-untied-no-sliding-window",
+  "runtimeAdmission": "mistral-dense-shape-source-quality-rejected-before-conversion",
+  "licenseDisposition": "apache-2.0-metadata-paper-authority-review-complete",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": [
+    "answer-incomplete",
+    "minimal-request-not-handled",
+    "underspecified-choice-missing-options",
+    "underspecified-choice-missing-decision-criteria",
+    "practical-decision-underdeveloped",
+    "unavailable-resource-recommended",
+    "feasible-fallback-absent",
+    "source-conflict-unresolved",
+    "authority-hierarchy-invented",
+    "adult-comparison-one-sided"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "fail",
+      "failureCodes": [
+        "minimal-request-not-handled",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "underspecified-choice-missing-options",
+        "underspecified-choice-missing-decision-criteria",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 2,
+      "status": "fail",
+      "failureCodes": [
+        "practical-decision-underdeveloped",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "unavailable-resource-recommended",
+        "feasible-fallback-absent",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "source-conflict-unresolved",
+        "authority-hierarchy-invented",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "adult-comparison-one-sided",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 6,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 7,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete"
+      ]
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/h2oai/h2o-danube2-1.8b-chat/tree/6d8114cb4160755a092babed10a7d383cc10b1db",
+    "https://huggingface.co/h2oai/h2o-danube2-1.8b-chat/blob/6d8114cb4160755a092babed10a7d383cc10b1db/README.md",
+    "https://huggingface.co/h2oai/h2o-danube2-1.8b-chat/blob/6d8114cb4160755a092babed10a7d383cc10b1db/config.json",
+    "https://huggingface.co/h2oai/h2o-danube2-1.8b-chat/blob/6d8114cb4160755a092babed10a7d383cc10b1db/tokenizer_config.json",
+    "https://arxiv.org/abs/2401.16818",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ]
+}

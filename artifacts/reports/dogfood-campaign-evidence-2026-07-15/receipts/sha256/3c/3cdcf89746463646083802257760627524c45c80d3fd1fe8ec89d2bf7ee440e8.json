@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "receiptType": "tinyrustlm.model-source-screen-v1",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "phase": "model-source-screen",
+  "attempt": 1,
+  "status": "rejected",
+  "createdAtUtc": "2026-07-16T21:02:33.375Z",
+  "completedAtUtc": "2026-07-16T21:02:35.697Z",
+  "inputReceiptIds": [],
+  "inputHashes": {
+    "evalCases": "a2a0b484a8f329cd2935c5b3e73df4bc0f3068adac7a8a50baba01de73c38c12",
+    "sourceConfig": "1efbcd16ed33838faecf09009a7b5cf6685d02ec0225fd25d1007229b8b2a39d",
+    "sourceExecutionInputs": "7ed2f2938219c9c386a1287af5a60d06e18cbd432e078a8d28e179981d8d230a",
+    "sourceLicense": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "sourceModel": "7108f45b86e4b0c9b0c8f611264b381522e093b366ec0fdf83c0e07149b0c398",
+    "sourceTokenizer": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+    "sourceTokenizerConfig": "75668bda11eb0d5ece137b4eb3fb2ad679f847fd19846b726369a26d92f9f28e",
+    "systemPrompt": "ebca1447df1ef441245498fc6bf24269c1da92c5e537841e94141da4cba1a410"
+  },
+  "outputHashes": {
+    "assessment": "2dc60dfe435fc30d72cf301042d633b009438ed131fac92b1978e73c3be972e9",
+    "sourceScreen": "a1429792b6cbbc83e045e628afa112b0ae556a0a0d55afbbfdb50b85953e8052"
+  },
+  "sourceRevision": "69f49d9c36434d6a3f319dadc5bd3b812752b98b",
+  "toolNames": [
+    "tinyrustlm-reference-raw-quality",
+    "tinyrustlm-source-model-screen-evidence"
+  ],
+  "toolVersions": [
+    "5",
+    "8"
+  ],
+  "toolBinaryHashes": [
+    "24792edccc9f3bae33e623c43aefd34a8291710207ee067b6b16a13449f2b59e",
+    "3811faa0c02d0e5cd7bf3d6b0f8ea60cf66fdc235fc75bfa0e49c8f06c6b1d75"
+  ],
+  "runtimeIdentifier": "win-x64",
+  "operatingSystem": "win32",
+  "architecture": "x64",
+  "hardwareEvidence": {
+    "device": "cpu",
+    "dtype": "float32",
+    "referenceFramework": "transformers.AutoModelForCausalLM.generate",
+    "torchVersion": "2.13.0+cpu",
+    "transformersVersion": "5.13.1"
+  },
+  "configurationHash": "58fb3e5a5cd7afb47dbecc29cee1d185b26d7ee09b8a8aed1b9fda264c152428",
+  "publicSafeParameters": {
+    "modelId": "HuggingFaceTB/SmolLM-1.7B-Instruct",
+    "sourceModelId": "HuggingFaceTB/SmolLM-1.7B-Instruct",
+    "architectureFamily": "smollm1-llama-dense-full-mha-tied",
+    "runtimeAdmission": "not-assessed-smollm1-source-quality-rejected-before-conversion",
+    "licenseDisposition": "apache-2.0-card-declaration-external-authority-repository-license-absent",
+    "decision": "rejected",
+    "decisionAuthority": "engineering-source-screen-v1",
+    "caseCount": 8,
+    "casesPassed": 1,
+    "casesFailed": 7,
+    "criticalFailureCount": 10,
+    "sourceModelIdentityKind": "direct-safetensors-sha256",
+    "sourceWeightArtifactCount": 1,
+    "sourceWeightByteCount": 3422777952,
+    "sourceExecutionArtifactCount": 7,
+    "sourceChatTemplateMode": "embedded-tokenizer-config",
+    "systemPromptMode": "included",
+    "loaderContract": "local-files-no-remote-code-v1",
+    "torchCompileMode": "disabled-eager",
+    "tokenizerRegexMode": "source-regex",
+    "remoteCodeEnabled": false,
+    "generationProfile": "greedy",
+    "samplingEnabled": false,
+    "rawOutputPreserved": true,
+    "generationCallCountPerCase": 1,
+    "responseRepairApplied": false
+  },
+  "boundedDiagnostics": {
+    "criticalFailureCodes": [
+      "current-task-not-followed",
+      "clarification-not-requested",
+      "answer-incomplete",
+      "practical-decision-underdeveloped",
+      "unavailable-resource-recommended",
+      "current-commitment-not-addressed",
+      "source-conflict-unresolved",
+      "unsupported-deadline-selection",
+      "adult-comparison-one-sided",
+      "latest-user-preference-not-demonstrated"
+    ],
+    "failedCaseIndexes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "sourceScreenByteCount": 32544,
+    "assessmentByteCount": 3155
+  },
+  "blockerCode": "model_quality_rejected",
+  "externalEvidenceReferences": [
+    "https://huggingface.co/HuggingFaceTB/SmolLM-1.7B-Instruct/tree/69f49d9c36434d6a3f319dadc5bd3b812752b98b",
+    "https://huggingface.co/HuggingFaceTB/SmolLM-1.7B-Instruct/blob/69f49d9c36434d6a3f319dadc5bd3b812752b98b/README.md",
+    "https://huggingface.co/HuggingFaceTB/SmolLM-1.7B-Instruct/blob/69f49d9c36434d6a3f319dadc5bd3b812752b98b/config.json",
+    "https://huggingface.co/HuggingFaceTB/SmolLM-1.7B-Instruct/blob/69f49d9c36434d6a3f319dadc5bd3b812752b98b/tokenizer_config.json",
+    "https://huggingface.co/blog/smollm",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt",
+    "https://github.com/huggingface/transformers/blob/v5.13.1/src/transformers/models/llama/modeling_llama.py"
+  ],
+  "redactionVersion": "tinyrustlm.public-receipt-redaction.v1",
+  "evidenceClass": "local",
+  "supersedesReceiptIds": [],
+  "attestationReference": null,
+  "receiptId": "sha256:3cdcf89746463646083802257760627524c45c80d3fd1fe8ec89d2bf7ee440e8",
+  "receiptContentHash": "3cdcf89746463646083802257760627524c45c80d3fd1fe8ec89d2bf7ee440e8"
+}

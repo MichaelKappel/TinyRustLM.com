@@ -1,0 +1,47 @@
+{
+  "ok": true,
+  "value": {
+    "started": [
+      {
+        "lane_id": "seed-a",
+        "state": "ready",
+        "process_id": 90028,
+        "started_at_utc": "2026-07-13T20:20:04.9612002+00:00",
+        "local_endpoint_count": 1,
+        "graceful_shutdown": false,
+        "diagnostic_summary": ""
+      },
+      {
+        "lane_id": "seed-b",
+        "state": "ready",
+        "process_id": 158404,
+        "started_at_utc": "2026-07-13T20:20:15.324569+00:00",
+        "local_endpoint_count": 1,
+        "graceful_shutdown": false,
+        "diagnostic_summary": ""
+      }
+    ],
+    "stopped": [
+      {
+        "lane_id": "seed-b",
+        "state": "stopped",
+        "process_id": 158404,
+        "started_at_utc": "2026-07-13T20:20:15.324569+00:00",
+        "exit_code": 0,
+        "local_endpoint_count": 1,
+        "graceful_shutdown": true,
+        "diagnostic_summary": "MiniModel seed lane starting\nconfig: E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\seed-host-evidence\\qwen-local-fleet\\seed-fleet.v0.json\nlane_id: seed-b\nshutdown_file: E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\seed-host-evidence\\qwen-local-fleet\\.seed-host-runtime\\seed-b.shutdown\nMiniModel seed lane stopped cleanly"
+      },
+      {
+        "lane_id": "seed-a",
+        "state": "stopped",
+        "process_id": 90028,
+        "started_at_utc": "2026-07-13T20:20:04.9612002+00:00",
+        "exit_code": 0,
+        "local_endpoint_count": 1,
+        "graceful_shutdown": true,
+        "diagnostic_summary": "MiniModel seed lane starting\nconfig: E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\seed-host-evidence\\qwen-local-fleet\\seed-fleet.v0.json\nlane_id: seed-a\nshutdown_file: E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\seed-host-evidence\\qwen-local-fleet\\.seed-host-runtime\\seed-a.shutdown\nMiniModel seed lane stopped cleanly"
+      }
+    ]
+  }
+}

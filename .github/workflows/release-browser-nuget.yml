@@ -1,0 +1,321 @@
+name: Release UAIX Browser NuGet
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: NuGet source URL
+        required: true
+        default: https://api.nuget.org/v3/index.json
+      auth_mode:
+        description: Publish authentication mode
+        required: true
+        type: choice
+        default: api_key
+        options:
+          - api_key
+          - trusted_publishing
+      nuget_user:
+        description: NuGet.org username for trusted_publishing; falls back to repository variable or secret NUGET_USER
+        required: false
+        default: ""
+      verify_after_publish:
+        description: Run clean consumer smoke against the published UAIX Browser package IDs
+        required: true
+        default: "false"
+
+permissions:
+  contents: read
+
+env:
+  UAIX_BROWSER_PACKAGE_IDS: UAIX.Browser.Core.Abstractions,UAIX.Browser.p2pLLM.Runtime,UAIX.Browser.p2pRuntime.P2P,UAIX.Browser.Memory,UAIX.Browser.p2pLLM.Conversion
+  UAIX_BROWSER_PACKAGE_SOURCE: artifacts/browser-packages
+  UAIX_BROWSER_FEED_AUDIT_REPORT: artifacts/reports/uaix-browser-nuget-feed-audit.json
+  UAIX_BROWSER_PUBLISH_PLAN_REPORT: artifacts/reports/uaix-browser-nuget-publish-plan.json
+  UAIX_BROWSER_RELEASE_READINESS_REPORT: artifacts/reports/uaix-browser-nuget-release-readiness.json
+  UAIX_BROWSER_FEED_CURRENT_REPORT: artifacts/reports/uaix-browser-nuget-feed-current.json
+  UAIX_BROWSER_FEED_HASH_REPORT: artifacts/reports/uaix-browser-nuget-feed-hashes.json
+
+jobs:
+  build-native:
+    name: Build native bridge (${{ matrix.rid }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+          - os: ubuntu-latest
+            rid: linux-x64
+          - os: macos-13
+            rid: osx-x64
+          - os: macos-14
+            rid: osx-arm64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build native bridge (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: eng/build-native.ps1 -Configuration release
+
+      - name: Build native bridge (Unix)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: eng/build-native.sh release
+
+      - name: Upload native bridge
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-native-${{ matrix.rid }}
+          path: artifacts/native/${{ matrix.rid }}/*
+
+  release-browser:
+    name: Pack and publish UAIX Browser SDK
+    needs: build-native
+    runs-on: windows-latest
+    environment: nuget-release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Download win-x64 native bridge
+        uses: actions/download-artifact@v4
+        with:
+          name: tinyrustlm-native-win-x64
+          path: artifacts/native/win-x64
+
+      - name: Download linux-x64 native bridge
+        uses: actions/download-artifact@v4
+        with:
+          name: tinyrustlm-native-linux-x64
+          path: artifacts/native/linux-x64
+
+      - name: Download osx-x64 native bridge
+        uses: actions/download-artifact@v4
+        with:
+          name: tinyrustlm-native-osx-x64
+          path: artifacts/native/osx-x64
+
+      - name: Download osx-arm64 native bridge
+        uses: actions/download-artifact@v4
+        with:
+          name: tinyrustlm-native-osx-arm64
+          path: artifacts/native/osx-arm64
+
+      - name: Validate Trusted Publishing source
+        if: ${{ inputs.auth_mode == 'trusted_publishing' && inputs.source != 'https://api.nuget.org/v3/index.json' }}
+        shell: pwsh
+        run: throw "trusted_publishing is only supported for https://api.nuget.org/v3/index.json in this workflow."
+
+      - name: Verify and pack UAIX Browser packages
+        shell: pwsh
+        run: |
+          eng/pack.ps1 `
+            -Configuration Release `
+            -PackageOutput $env:UAIX_BROWSER_PACKAGE_SOURCE `
+            -PackageIdPrefix UAIX.Browser `
+            -AbstractionsPackageId UAIX.Browser.Core.Abstractions `
+            -CorePackageId UAIX.Browser.p2pLLM.Runtime `
+            -P2PPackageId UAIX.Browser.p2pRuntime.P2P `
+            -MemoryPackageId UAIX.Browser.Memory `
+            -ConversionPackageId UAIX.Browser.p2pLLM.Conversion `
+            -IncludePrivateConversion
+
+      - name: Audit UAIX Browser package boundary
+        shell: pwsh
+        run: eng/verify-browser-feed.ps1 -PackageSource $env:UAIX_BROWSER_PACKAGE_SOURCE -ReportOutput $env:UAIX_BROWSER_FEED_AUDIT_REPORT
+
+      - name: Verify UAIX Browser package audit report schema
+        shell: pwsh
+        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter BrowserFeedAuditReportIsMachineReadableWhenPresent
+
+      - name: Upload UAIX Browser NuGet packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: uaix-browser-nuget-packages
+          path: |
+            artifacts/browser-packages/*.nupkg
+            artifacts/browser-packages/*.snupkg
+          if-no-files-found: error
+
+      - name: Upload UAIX Browser package audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: uaix-browser-nuget-feed-audit
+          path: artifacts/reports/uaix-browser-nuget-feed-audit.json
+          if-no-files-found: error
+
+      - name: Audit UAIX Browser release readiness
+        id: readiness
+        shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ inputs.auth_mode == 'api_key' && secrets.NUGET_API_KEY || '' }}
+          NUGET_SOURCE: ${{ inputs.source }}
+          UAIX_BROWSER_NUGET_AUTH_MODE: ${{ inputs.auth_mode }}
+        run: |
+          eng/audit-browser-nuget-release-readiness.ps1 `
+            -PackageSource $env:UAIX_BROWSER_PACKAGE_SOURCE `
+            -NuGetSource $env:NUGET_SOURCE `
+            -AuthMode $env:UAIX_BROWSER_NUGET_AUTH_MODE `
+            -AuditReport $env:UAIX_BROWSER_FEED_AUDIT_REPORT `
+            -PublishPlanReport $env:UAIX_BROWSER_PUBLISH_PLAN_REPORT `
+            -ReportOutput $env:UAIX_BROWSER_RELEASE_READINESS_REPORT `
+            -FailOnBlocked
+          $report = Get-Content -LiteralPath $env:UAIX_BROWSER_RELEASE_READINESS_REPORT -Raw | ConvertFrom-Json
+          "status=$($report.status)" >> $env:GITHUB_OUTPUT
+
+      - name: Verify UAIX Browser release readiness report schema
+        if: ${{ always() && hashFiles('artifacts/reports/uaix-browser-nuget-release-readiness.json') != '' }}
+        shell: pwsh
+        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter BrowserReleaseReadinessReportIsMachineReadableWhenPresent
+
+      - name: Upload UAIX Browser release readiness report
+        if: ${{ always() && hashFiles('artifacts/reports/uaix-browser-nuget-release-readiness.json') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: uaix-browser-nuget-release-readiness
+          path: artifacts/reports/uaix-browser-nuget-release-readiness.json
+          if-no-files-found: error
+
+      - name: Authenticate to NuGet.org with Trusted Publishing
+        id: nuget_login
+        if: ${{ steps.readiness.outputs.status != 'published_current' && inputs.auth_mode == 'trusted_publishing' }}
+        uses: NuGet/login@v1
+        with:
+          user: ${{ inputs.nuget_user || vars.NUGET_USER || secrets.NUGET_USER }}
+
+      - name: Publish UAIX Browser packages with API key
+        if: ${{ steps.readiness.outputs.status != 'published_current' && inputs.auth_mode == 'api_key' }}
+        shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+          NUGET_SOURCE: ${{ inputs.source }}
+        run: |
+          eng/publish-browser-nuget.ps1 `
+            -SkipVerification `
+            -PackageSource $env:UAIX_BROWSER_PACKAGE_SOURCE `
+            -NuGetSource $env:NUGET_SOURCE `
+            -AuditReport $env:UAIX_BROWSER_FEED_AUDIT_REPORT `
+            -ReportOutput $env:UAIX_BROWSER_PUBLISH_PLAN_REPORT
+
+      - name: Publish UAIX Browser packages with Trusted Publishing
+        if: ${{ steps.readiness.outputs.status != 'published_current' && inputs.auth_mode == 'trusted_publishing' }}
+        shell: pwsh
+        env:
+          NUGET_SOURCE: ${{ inputs.source }}
+          TINYRUSTLM_TEMP_NUGET_API_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
+        run: |
+          eng/publish-browser-nuget.ps1 `
+            -SkipVerification `
+            -PackageSource $env:UAIX_BROWSER_PACKAGE_SOURCE `
+            -NuGetSource $env:NUGET_SOURCE `
+            -ApiKey $env:TINYRUSTLM_TEMP_NUGET_API_KEY `
+            -AuditReport $env:UAIX_BROWSER_FEED_AUDIT_REPORT `
+            -ReportOutput $env:UAIX_BROWSER_PUBLISH_PLAN_REPORT
+
+      - name: Verify UAIX Browser publish plan report schema
+        if: ${{ always() && hashFiles('artifacts/reports/uaix-browser-nuget-publish-plan.json') != '' }}
+        shell: pwsh
+        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter BrowserPublishPlanReportIsMachineReadableWhenPresent
+
+      - name: Upload UAIX Browser publish plan
+        if: ${{ always() && hashFiles('artifacts/reports/uaix-browser-nuget-publish-plan.json') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: uaix-browser-nuget-publish-plan
+          path: artifacts/reports/uaix-browser-nuget-publish-plan.json
+          if-no-files-found: error
+
+      - name: Verify UAIX Browser feed current version
+        shell: pwsh
+        env:
+          NUGET_SOURCE: ${{ inputs.source }}
+          TINYRUSTLM_FEED_PACKAGE_IDS: ${{ env.UAIX_BROWSER_PACKAGE_IDS }}
+          TINYRUSTLM_FEED_CURRENT_REPORT: ${{ env.UAIX_BROWSER_FEED_CURRENT_REPORT }}
+        run: |
+          # Post-publish feed-current and feed-hash checks are mandatory. Retry briefly for feed indexing delay.
+          $attempts = 12
+          for ($attempt = 1; $attempt -le $attempts; $attempt++) {
+              try {
+                  eng/verify-feed-current.ps1 -NuGetSource $env:NUGET_SOURCE -ReportOutput $env:TINYRUSTLM_FEED_CURRENT_REPORT
+                  exit 0
+              }
+              catch {
+                  if ($attempt -eq $attempts) {
+                      throw
+                  }
+                  Write-Warning "UAIX Browser feed-current verification failed on attempt $attempt of $attempts; waiting for feed indexing."
+                  Start-Sleep -Seconds 30
+              }
+          }
+
+      - name: Verify UAIX Browser feed current report schema
+        shell: pwsh
+        env:
+          TINYRUSTLM_FEED_CURRENT_REPORT: ${{ env.UAIX_BROWSER_FEED_CURRENT_REPORT }}
+        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter FeedCurrentReportIsMachineReadableWhenPresent
+
+      - name: Verify UAIX Browser feed package hashes
+        shell: pwsh
+        env:
+          NUGET_SOURCE: ${{ inputs.source }}
+          TINYRUSTLM_PUBLISH_PLAN_REPORT: ${{ env.UAIX_BROWSER_PUBLISH_PLAN_REPORT }}
+          TINYRUSTLM_FEED_HASH_REPORT: ${{ env.UAIX_BROWSER_FEED_HASH_REPORT }}
+        run: |
+          $attempts = 6
+          for ($attempt = 1; $attempt -le $attempts; $attempt++) {
+              try {
+                  eng/verify-feed-package-hashes.ps1 -NuGetSource $env:NUGET_SOURCE -PublishPlanReport $env:TINYRUSTLM_PUBLISH_PLAN_REPORT -ReportOutput $env:TINYRUSTLM_FEED_HASH_REPORT
+                  exit 0
+              }
+              catch {
+                  if ($attempt -eq $attempts) {
+                      throw
+                  }
+                  Write-Warning "UAIX Browser feed package-hash verification failed on attempt $attempt of $attempts; waiting for feed indexing."
+                  Start-Sleep -Seconds 30
+              }
+          }
+
+      - name: Verify UAIX Browser feed hash report schema
+        shell: pwsh
+        env:
+          TINYRUSTLM_FEED_HASH_REPORT: ${{ env.UAIX_BROWSER_FEED_HASH_REPORT }}
+        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter FeedHashReportIsMachineReadableWhenPresent
+
+      - name: Verify UAIX Browser clean consumer
+        if: ${{ inputs.verify_after_publish == 'true' }}
+        shell: pwsh
+        env:
+          NUGET_SOURCE: ${{ inputs.source }}
+          TINYRUSTLM_CONSUMER_CORE_PACKAGE_ID: UAIX.Browser.p2pLLM.Runtime
+          TINYRUSTLM_CONSUMER_P2P_PACKAGE_ID: UAIX.Browser.p2pRuntime.P2P
+          TINYRUSTLM_CONSUMER_MEMORY_PACKAGE_ID: UAIX.Browser.Memory
+          TINYRUSTLM_CONSUMER_CONVERSION_PACKAGE_ID: UAIX.Browser.p2pLLM.Conversion
+        run: eng/verify-consumer.ps1 -PackageSource $env:NUGET_SOURCE -CorePackageId $env:TINYRUSTLM_CONSUMER_CORE_PACKAGE_ID -P2PPackageId $env:TINYRUSTLM_CONSUMER_P2P_PACKAGE_ID -MemoryPackageId $env:TINYRUSTLM_CONSUMER_MEMORY_PACKAGE_ID -ConversionPackageId $env:TINYRUSTLM_CONSUMER_CONVERSION_PACKAGE_ID
+
+      - name: Upload UAIX Browser post-publish required reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: uaix-browser-nuget-post-publish-required-reports
+          path: |
+            artifacts/reports/uaix-browser-nuget-feed-current.json
+            artifacts/reports/uaix-browser-nuget-feed-hashes.json
+          if-no-files-found: error

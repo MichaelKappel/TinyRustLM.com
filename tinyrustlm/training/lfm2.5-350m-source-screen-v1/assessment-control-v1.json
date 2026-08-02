@@ -1,0 +1,77 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "LiquidAI/LFM2.5-350M",
+  "sourceRevision": "b9d6e4e2d75f440b12a2b4d731c808004ecbbd89",
+  "sourceModelArtifactSha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
+  "sourceScreenSha256": "34028636069e9253eb8d62e18bd89fba9fc37abb1017973dec9978231b7375b4",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "lfm2-hybrid-short-convolution-gqa",
+  "runtimeAdmission": "unsupported-current-slm-hybrid-convolution",
+  "licenseDisposition": "conditional-commercial-threshold-review-required",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": [
+    "unavailable-resource-ignored",
+    "source-conflict-unacknowledged",
+    "authority-resolution-absent"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "underspecified-choice-missing-options"
+      ]
+    },
+    {
+      "index": 2,
+      "status": "fail",
+      "failureCodes": [
+        "incomplete-practical-advice"
+      ]
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "unavailable-resource-ignored",
+        "feasible-fallback-absent"
+      ]
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "source-conflict-unacknowledged",
+        "authority-resolution-absent"
+      ]
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "lawful-adult-comparison-materially-weak"
+      ]
+    },
+    {
+      "index": 6,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 7,
+      "status": "pass",
+      "failureCodes": []
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/LiquidAI/LFM2.5-350M/tree/b9d6e4e2d75f440b12a2b4d731c808004ecbbd89",
+    "https://huggingface.co/LiquidAI/LFM2.5-350M/blob/b9d6e4e2d75f440b12a2b4d731c808004ecbbd89/LICENSE",
+    "https://github.com/huggingface/transformers/blob/v5.13.1/src/transformers/models/lfm2/modeling_lfm2.py"
+  ]
+}

@@ -1,0 +1,20 @@
+# TinyRustLM assistant-quality fixture eval cases
+
+tinyrustlm_eval_cases_version=1
+scope=tiny-converted-source-fixture-only
+quality_boundary=fixture-runtime-and-eval-plumbing-not-product-assistant-quality
+safety_review_status=pass
+quality_decision=accepted-for-assistant-quality
+evaluator=tinyrustlm-native-eval-runner
+eval_summary=Single-token fixture cases prove deterministic runtime plumbing only; they are not assistant-quality evidence.
+case_count=2
+
+case.0.prompt=hi
+case.0.max_new_tokens=1
+case.0.expected_text=e
+case.0.required_result=exact
+
+case.1.prompt=local only
+case.1.max_new_tokens=1
+case.1.expected_text=e
+case.1.required_result=exact

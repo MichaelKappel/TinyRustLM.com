@@ -1,0 +1,23 @@
+# TinyRustLM focused structured-JSON eval cases
+
+tinyrustlm_eval_cases_version=1
+scope=assistant-quality-no-cheat-runtime-gate
+quality_gate_policy=honest-assistant-quality-v1
+quality_boundary=real-runtime-response-quality
+safety_review_status=pass
+quality_decision=accepted-for-assistant-quality
+evaluator=tinyrustlm-native-eval-runner
+eval_summary=Focused no-cheat JSON contract check proving status/reason fields stay structured, bounded, source-grounded, and free of apology or prompt-instruction leakage.
+case_count=2
+
+case.0.prompt=Return JSON with keys status and reason for a local-only model runtime.
+case.0.max_new_tokens=40
+case.0.required_result=quality
+case.0.output_format=json_object
+case.0.required_json_keys=status,reason
+
+case.1.prompt=Return JSON with keys status and reason for this case: a peer announcement needs review.
+case.1.max_new_tokens=32
+case.1.required_result=quality
+case.1.output_format=json_object
+case.1.required_json_keys=status,reason

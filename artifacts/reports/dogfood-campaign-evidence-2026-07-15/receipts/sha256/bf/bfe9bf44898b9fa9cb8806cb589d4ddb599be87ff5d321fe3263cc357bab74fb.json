@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "receiptType": "tinyrustlm.model-source-review-v1",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "phase": "model-source-review",
+  "attempt": 1,
+  "status": "rejected",
+  "createdAtUtc": "2026-07-16T21:48:03.754Z",
+  "completedAtUtc": "2026-07-16T21:48:03.755Z",
+  "inputReceiptIds": [],
+  "inputHashes": {
+    "config": "df957dc69695d5fbe5d94b21d7ec148f093c626c5ebac330a0bccbec043a581c",
+    "configuration": "d0da88fc5fafdfef155052ec4e5483db8d6be2917cb68bdee9e7ead1cb7e6f15",
+    "evidenceSet": "9ec4a30c34b9d203dcb0c4d6b00f6f7e677c200e4d63b46d063f7f4b9d677202",
+    "generation-script": "9755dcadaa553348fc43f416277f6ca2c69b1ced4267f2dd0b1aaaa725e49c10",
+    "license": "d8f5d9dfbdb60dc81b8f1720421699e7811070f0b46f6668f90253d5ac8c0b20",
+    "model-card": "2ef16d4fa6aab3515f10b74260552fbf76e04ae6952293d7297684c0f7975731",
+    "modeling": "ffb56f297ccb48ba689bc15b352c971eb1337a3604449662303a2d4919aa77c4",
+    "repository-tree": "bb29173fff9c0499a70697c6550874204b31bbb0f5347d8391303266534a6fa3",
+    "safetensors-header": "487fe35bb0064467efbee5de9a054955534e6232a108c810258835af25ac49c7",
+    "transformers-auto-config-registry": "c1ff7fc0cb204cfdbe837993b7bba85aadec28254852c55fe32be997bdf1411a",
+    "transformers-auto-model-registry": "43707fe59131464f37fe7616ce3948484be7bc7ec9cda76558071d76e0a3e226"
+  },
+  "outputHashes": {
+    "assessment": "5abe938b4c288f7b1fe017208830ac7646add4019ef12be5bd2de6e3ee95be91"
+  },
+  "sourceRevision": "effd796da2a77361d7360e45e54c7cc14bc5df2a",
+  "toolNames": [
+    "tinyrustlm-source-model-preflight-evidence"
+  ],
+  "toolVersions": [
+    "3"
+  ],
+  "toolBinaryHashes": [
+    "d8347b1f2528c596f0d071eac41ea42ddc936631c9c718c575ff5991f28700d6"
+  ],
+  "runtimeIdentifier": "win-x64",
+  "operatingSystem": "win32",
+  "architecture": "x64",
+  "hardwareEvidence": {
+    "executionBoundary": "public-source-metadata-review",
+    "physicalHardwareAttested": false
+  },
+  "configurationHash": "068c1801a38ac027a06449affdbf31baeccc21f5b8ec1244496c425bd4350cad",
+  "publicSafeParameters": {
+    "modelId": "apple/OpenELM-1_1B-Instruct",
+    "sourceModelId": "apple/OpenELM-1_1B-Instruct",
+    "decision": "rejected",
+    "decisionAuthority": "engineering-source-preflight-v1",
+    "architectureFamily": "openelm-dense-layerwise-scaled-gqa-tied-bf16-custom-code",
+    "runtimeAdmission": "not-assessed-preflight-rejected",
+    "accessDisposition": "public-ungated-metadata-only-no-source-acquisition",
+    "licenseId": "apple-amlr",
+    "licenseDisposition": "apple-amlr-bundled-license-review-not-completed-preflight-rejected",
+    "distributionDisposition": "not-assessed-preflight-rejected",
+    "sourceAcquisitionComplete": false,
+    "evidenceArtifactCount": 10,
+    "missingRequiredArtifactCount": 6,
+    "rejectionCodeCount": 3
+  },
+  "boundedDiagnostics": {
+    "rejectionCodes": [
+      "custom-publisher-code-required",
+      "native-transformers-architecture-absent",
+      "source-screen-loader-contract-incompatible"
+    ],
+    "missingRequiredArtifacts": [
+      "chat_template.jinja",
+      "model.safetensors",
+      "special_tokens_map.json",
+      "tokenizer.json",
+      "tokenizer.model",
+      "tokenizer_config.json"
+    ],
+    "evidenceByteCount": 251071
+  },
+  "blockerCode": "candidate_source_loader_contract_rejected",
+  "externalEvidenceReferences": [
+    "https://huggingface.co/apple/OpenELM-1_1B-Instruct/tree/effd796da2a77361d7360e45e54c7cc14bc5df2a",
+    "https://huggingface.co/apple/OpenELM-1_1B-Instruct/blob/effd796da2a77361d7360e45e54c7cc14bc5df2a/README.md",
+    "https://huggingface.co/apple/OpenELM-1_1B-Instruct/blob/effd796da2a77361d7360e45e54c7cc14bc5df2a/config.json",
+    "https://huggingface.co/apple/OpenELM-1_1B-Instruct/blob/effd796da2a77361d7360e45e54c7cc14bc5df2a/configuration_openelm.py",
+    "https://huggingface.co/apple/OpenELM-1_1B-Instruct/blob/effd796da2a77361d7360e45e54c7cc14bc5df2a/generate_openelm.py",
+    "https://huggingface.co/apple/OpenELM-1_1B-Instruct/blob/effd796da2a77361d7360e45e54c7cc14bc5df2a/modeling_openelm.py",
+    "https://huggingface.co/apple/OpenELM-1_1B-Instruct/blob/effd796da2a77361d7360e45e54c7cc14bc5df2a/LICENSE",
+    "https://raw.githubusercontent.com/huggingface/transformers/v5.13.1/src/transformers/models/auto/configuration_auto.py",
+    "https://raw.githubusercontent.com/huggingface/transformers/v5.13.1/src/transformers/models/auto/modeling_auto.py",
+    "https://machinelearning.apple.com/research/openelm",
+    "https://arxiv.org/abs/2404.14619"
+  ],
+  "redactionVersion": "tinyrustlm.public-receipt-redaction.v1",
+  "evidenceClass": "local",
+  "supersedesReceiptIds": [],
+  "attestationReference": null,
+  "receiptId": "sha256:bfe9bf44898b9fa9cb8806cb589d4ddb599be87ff5d321fe3263cc357bab74fb",
+  "receiptContentHash": "bfe9bf44898b9fa9cb8806cb589d4ddb599be87ff5d321fe3263cc357bab74fb"
+}

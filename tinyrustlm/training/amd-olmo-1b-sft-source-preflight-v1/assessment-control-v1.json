@@ -1,0 +1,82 @@
+{
+  "schema": "tinyrustlm.source_model_preflight_assessment.v1",
+  "sourceModelId": "amd/AMD-OLMo-1B-SFT",
+  "sourceRevision": "228e18a8172beabcce6a0e686ac084cede5820fc",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-preflight-v1",
+  "architectureFamily": "olmo-dense-full-attention-tied-fp32",
+  "runtimeAdmission": "not-assessed-preflight-rejected",
+  "accessDisposition": "public-ungated-metadata-only-no-source-acquisition",
+  "licenseId": "apache-2.0",
+  "licenseDisposition": "apache-2.0-card-declaration-no-bundled-license-review-required",
+  "distributionDisposition": "not-assessed-preflight-rejected",
+  "blockerCode": "candidate_source_conversation_contract_rejected",
+  "rejectionCodes": [
+    "publisher-chat-template-absent",
+    "publisher-multi-turn-serialization-absent",
+    "publisher-tokenizer-template-contract-conflict",
+    "source-screen-conversation-contract-incomplete"
+  ],
+  "missingRequiredArtifacts": [
+    "chat_template.jinja",
+    "model.safetensors"
+  ],
+  "evidenceArtifacts": [
+    {
+      "kind": "config",
+      "fileName": "config.json",
+      "byteCount": 609,
+      "sha256": "95153241d18c58f712a0e12d41014a82d30c694c0472cfa7d6e72d8a8acc4d55",
+      "publicUrl": "https://huggingface.co/amd/AMD-OLMo-1B-SFT/resolve/228e18a8172beabcce6a0e686ac084cede5820fc/config.json",
+      "observedAtUtc": "2026-07-16T19:37:18.8906444Z"
+    },
+    {
+      "kind": "generation-config",
+      "fileName": "generation-config.json",
+      "byteCount": 115,
+      "sha256": "e9a6fc6755330e6da09ba04b1137c4db0744faafc0fa609ff378fd6989518295",
+      "publicUrl": "https://huggingface.co/amd/AMD-OLMo-1B-SFT/resolve/228e18a8172beabcce6a0e686ac084cede5820fc/generation_config.json",
+      "observedAtUtc": "2026-07-16T19:37:18.8906444Z"
+    },
+    {
+      "kind": "license",
+      "fileName": "apache-2.0.txt",
+      "byteCount": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "publicUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "observedAtUtc": "2026-07-16T19:37:18.8906444Z"
+    },
+    {
+      "kind": "model-card",
+      "fileName": "model-card.md",
+      "byteCount": 17201,
+      "sha256": "2357d920cd33ee59faae782e47a53c03553f3f5dd31d6a8a6ce5691027c2063a",
+      "publicUrl": "https://huggingface.co/amd/AMD-OLMo-1B-SFT/resolve/228e18a8172beabcce6a0e686ac084cede5820fc/README.md",
+      "observedAtUtc": "2026-07-16T19:37:18.8906444Z"
+    },
+    {
+      "kind": "repository-tree",
+      "fileName": "repository-tree.json",
+      "byteCount": 2208,
+      "sha256": "648717aa9b52bb87e57a402f787eaaa25875a860537d2754393786b73d4dce2d",
+      "publicUrl": "https://huggingface.co/api/models/amd/AMD-OLMo-1B-SFT/revision/228e18a8172beabcce6a0e686ac084cede5820fc?blobs=true",
+      "observedAtUtc": "2026-07-16T19:37:18.8906444Z"
+    },
+    {
+      "kind": "tokenizer-config",
+      "fileName": "tokenizer-config.json",
+      "byteCount": 5374,
+      "sha256": "20899789303ffebe50f26c91b5ad426c3910346476dce36682c1c4b949d65380",
+      "publicUrl": "https://huggingface.co/amd/AMD-OLMo-1B-SFT/resolve/228e18a8172beabcce6a0e686ac084cede5820fc/tokenizer_config.json",
+      "observedAtUtc": "2026-07-16T19:37:18.8906444Z"
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/amd/AMD-OLMo-1B-SFT/tree/228e18a8172beabcce6a0e686ac084cede5820fc",
+    "https://huggingface.co/amd/AMD-OLMo-1B-SFT/blob/228e18a8172beabcce6a0e686ac084cede5820fc/README.md",
+    "https://huggingface.co/amd/AMD-OLMo-1B-SFT/blob/228e18a8172beabcce6a0e686ac084cede5820fc/config.json",
+    "https://huggingface.co/amd/AMD-OLMo-1B-SFT/blob/228e18a8172beabcce6a0e686ac084cede5820fc/tokenizer_config.json",
+    "https://www.amd.com/en/developer/resources/technical-articles/introducing-the-first-amd-1b-language-model.html",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ]
+}

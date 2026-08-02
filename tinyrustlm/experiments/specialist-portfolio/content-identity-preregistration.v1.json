@@ -1,0 +1,301 @@
+{
+  "schema": "tinyrustlm.content_identity_preregistration.v1",
+  "experimentId": "immutable-specialist-content-identity-20260725",
+  "status": "preregistered-no-runtime-authority",
+  "scope": {
+    "purpose": "Freeze clean-slate content identities and byte-accounting fields before implementing immutable champion and specialist compositions.",
+    "preReleaseRewrite": true,
+    "legacyCompatibility": false,
+    "runtimeIntegrationAuthorized": false,
+    "modelAdoptionAuthorized": false,
+    "trainingAuthorized": false,
+    "releaseAuthorized": false
+  },
+  "encoding": {
+    "hashAlgorithm": "SHA-256",
+    "domainEncoding": "utf8-followed-by-one-zero-byte",
+    "unsignedIntegerEncoding": "fixed-width-little-endian",
+    "versionEncoding": "u32",
+    "byteCountEncoding": "u64",
+    "listCountEncoding": "u32",
+    "enumEncoding": "u8",
+    "digestEncoding": "exactly-32-raw-bytes",
+    "typedIdentityEncoding": "one-u8-kind-tag-followed-by-32-digest-bytes",
+    "contentVersion": 1,
+    "identityDisplay": "lowercase-kind-prefix-plus-full-lowercase-sha256",
+    "timestampsInContentIdentity": false,
+    "hostnamesInContentIdentity": false,
+    "processIdsInContentIdentity": false,
+    "mutableAliasesInContentIdentity": false
+  },
+  "artifactKinds": [
+    {
+      "kind": "standalone-model",
+      "tag": 1,
+      "displayPrefix": "model-sha256-",
+      "domain": "tinyrustlm.content.standalone-model.v1",
+      "fieldOrder": [
+        "contentVersion",
+        "modelBytes",
+        "modelSha256",
+        "tokenizerSha256",
+        "chatTemplateSha256",
+        "tensorLayoutSha256",
+        "quantizationProfileSha256",
+        "executionProfileSha256"
+      ]
+    },
+    {
+      "kind": "base-dependent-adapter",
+      "tag": 2,
+      "displayPrefix": "adapter-sha256-",
+      "domain": "tinyrustlm.content.base-dependent-adapter.v1",
+      "fieldOrder": [
+        "contentVersion",
+        "adapterBytes",
+        "adapterSha256",
+        "baseStandaloneModelTypedId",
+        "tokenizerSha256",
+        "chatTemplateSha256",
+        "tensorLayoutSha256",
+        "quantizationProfileSha256",
+        "executionProfileSha256",
+        "adapterSemantics"
+      ]
+    },
+    {
+      "kind": "composition",
+      "tag": 3,
+      "displayPrefix": "composition-sha256-",
+      "domain": "tinyrustlm.content.composition.v1",
+      "fieldOrder": [
+        "contentVersion",
+        "baseStandaloneModelTypedId",
+        "tokenizerSha256",
+        "chatTemplateSha256",
+        "tensorLayoutSha256",
+        "quantizationProfileSha256",
+        "executionProfileSha256",
+        "compositionSemantics",
+        "memberCount",
+        "members"
+      ]
+    },
+    {
+      "kind": "shared-chunk",
+      "tag": 4,
+      "displayPrefix": "chunk-sha256-",
+      "domain": "tinyrustlm.content.shared-chunk.v1",
+      "fieldOrder": [
+        "contentVersion",
+        "chunkBytes",
+        "chunkSha256"
+      ]
+    },
+    {
+      "kind": "route-policy",
+      "tag": 5,
+      "displayPrefix": "route-sha256-",
+      "domain": "tinyrustlm.content.route-policy.v1",
+      "fieldOrder": [
+        "contentVersion",
+        "policyBytes",
+        "policySha256",
+        "championCompositionTypedId",
+        "specialistCount",
+        "sortedSpecialistCompositionTypedIds",
+        "selectorArtifactCount",
+        "sortedSelectorArtifactTypedIds"
+      ]
+    },
+    {
+      "kind": "kv-format",
+      "tag": 6,
+      "displayPrefix": "kv-format-sha256-",
+      "domain": "tinyrustlm.content.kv-format.v1",
+      "fieldOrder": [
+        "contentVersion",
+        "descriptorBytes",
+        "descriptorSha256"
+      ]
+    },
+    {
+      "kind": "retrieval-index",
+      "tag": 7,
+      "displayPrefix": "retrieval-sha256-",
+      "domain": "tinyrustlm.content.retrieval-index.v1",
+      "fieldOrder": [
+        "contentVersion",
+        "indexBytes",
+        "indexSha256",
+        "embeddingModelTypedId",
+        "embeddingProfileSha256",
+        "vectorDimension",
+        "metric"
+      ]
+    }
+  ],
+  "compositionSemantics": [
+    {
+      "name": "base-only",
+      "tag": 0,
+      "memberRule": "exactly-zero",
+      "orderingRule": "none",
+      "dependencyRule": "none"
+    },
+    {
+      "name": "additive",
+      "tag": 1,
+      "memberRule": "one-or-more",
+      "orderingRule": "sort-by-full-typed-identity-bytes",
+      "dependencyRule": "all-empty"
+    },
+    {
+      "name": "replacement",
+      "tag": 2,
+      "memberRule": "exactly-one",
+      "orderingRule": "declared-order-is-material",
+      "dependencyRule": "all-empty"
+    },
+    {
+      "name": "sequential",
+      "tag": 3,
+      "memberRule": "one-or-more",
+      "orderingRule": "declared-order-is-material",
+      "dependencyRule": "all-empty"
+    },
+    {
+      "name": "dependent",
+      "tag": 4,
+      "memberRule": "one-or-more",
+      "orderingRule": "declared-topological-order-is-material",
+      "dependencyRule": "sorted-unique-earlier-member-typed-identities"
+    }
+  ],
+  "validationRules": [
+    "Every required SHA-256 value is exactly 32 bytes and is not the all-zero sentinel.",
+    "A standalone model must parse as one complete SLM artifact; adapter bytes cannot be presented as a standalone model.",
+    "A base-dependent adapter must parse as one complete adapter artifact and bind one exact standalone base plus tokenizer, chat template, tensor layout, quantization, and execution profiles.",
+    "Every composition member is a base-dependent-adapter typed identity and must bind the composition base and all five composition profiles.",
+    "Version one compositions are homogeneous: every member semantic equals the composition semantic.",
+    "Duplicate composition members, duplicate route members, duplicate selector artifacts, duplicate chunks, and duplicate dependency identities are rejected.",
+    "Additive members are sorted before hashing and therefore commute; replacement, sequential, and dependent order remains material.",
+    "A dependent member may reference only sorted unique members that appear earlier in the declared topological order.",
+    "Unknown kind tags, semantic tags, metric tags, fields, trailing bytes, integer overflow, zero byte lengths, and list counts beyond implementation bounds are rejected.",
+    "A missing quality receipt rejects automatic routing and promotion; quality receipts and timestamps never enter content identity."
+  ],
+  "storageLayout": {
+    "domain": "tinyrustlm.content.storage-layout.v1",
+    "fieldOrder": [
+      "contentVersion",
+      "targetArtifactTypedId",
+      "logicalArtifactBytes",
+      "chunkCount",
+      "orderedChunkTypedIdAndByteCountPairs"
+    ],
+    "rules": [
+      "Storage layout is not an executable artifact kind and cannot replace the target logical identity.",
+      "Every member is a shared-chunk typed identity whose declared bytes match that chunk identity input.",
+      "Ordered chunk bytes must sum exactly to logicalArtifactBytes.",
+      "Reconstruction concatenates verified chunk bytes in declared order and must reproduce the target artifact byte count and SHA-256.",
+      "Physical chunk deduplication does not reduce logical execution bytes."
+    ]
+  },
+  "kvCacheKey": {
+    "domain": "tinyrustlm.content.kv-cache-key.v1",
+    "fieldOrder": [
+      "contentVersion",
+      "compositionTypedId",
+      "tokenizerSha256",
+      "chatTemplateSha256",
+      "positionPolicySha256",
+      "kvFormatTypedId",
+      "promptTokenSha256",
+      "executionProfileSha256"
+    ],
+    "rules": [
+      "Version zero runtime behavior flushes every KV page on any composition change.",
+      "No attention-frozen or MLP-only declaration authorizes cross-composition reuse.",
+      "A cache hit requires exact equality of every key field."
+    ]
+  },
+  "byteAccounting": {
+    "requiredFields": [
+      "standaloneArtifactBytes",
+      "logicalCompositionBytes",
+      "incrementalSpecialistBytes",
+      "physicalPortfolioBytes",
+      "routePolicyBytes",
+      "retrievalIndexBytes",
+      "kvFormatDescriptorBytes",
+      "kvAllocatedBytes",
+      "kvCommittedBytes",
+      "kvPeakBytes",
+      "activationScratchBytes",
+      "decodedTemporaryBytes",
+      "peakResidentBytes"
+    ],
+    "rules": [
+      "logicalCompositionBytes equals the complete base bytes plus every required adapter byte and cannot be reduced by physical deduplication.",
+      "incrementalSpecialistBytes excludes an already-present immutable base but includes every additional specialist byte required by that composition.",
+      "physicalPortfolioBytes sums each verified stored object exactly once by full typed identity.",
+      "Route policy, retrieval index, KV descriptor, runtime KV, scratch, decoded temporary, and peak resident bytes remain separate fields and cannot be hidden in another category.",
+      "All additions use checked u64 arithmetic; omitted, negative, fractional, inferred, or overflowed byte values are rejected."
+    ]
+  },
+  "testVector": {
+    "hashOctets": {
+      "model": "1111111111111111111111111111111111111111111111111111111111111111",
+      "tokenizer": "2222222222222222222222222222222222222222222222222222222222222222",
+      "chatTemplate": "3333333333333333333333333333333333333333333333333333333333333333",
+      "tensorLayout": "4444444444444444444444444444444444444444444444444444444444444444",
+      "quantizationProfile": "5555555555555555555555555555555555555555555555555555555555555555",
+      "executionProfile": "6666666666666666666666666666666666666666666666666666666666666666",
+      "adapter": "7777777777777777777777777777777777777777777777777777777777777777",
+      "chunkOne": "8888888888888888888888888888888888888888888888888888888888888888",
+      "chunkTwo": "9999999999999999999999999999999999999999999999999999999999999999",
+      "kvDescriptor": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "retrievalIndex": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "embeddingProfile": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "routePolicy": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "sizes": {
+      "modelBytes": 1024,
+      "adapterBytes": 128,
+      "chunkBytes": 512,
+      "kvDescriptorBytes": 64,
+      "retrievalIndexBytes": 256,
+      "routePolicyBytes": 96,
+      "retrievalVectorDimension": 64,
+      "retrievalMetricTag": 1
+    },
+    "expectedDigests": {
+      "standaloneModel": "83d45410e3001af2e476fe0ec9e3b24ce25da89ff764984bf8113d17c6e70712",
+      "additiveAdapter": "0d36e52ccbfa3d41b4186d1a3a2d9adeda28f41a0ae40d7fc184763fd20ac9f6",
+      "championComposition": "217a076597ef9e5ecbd5c7152cf20b5d4158db4b0faadf9ac4e3cef42ab9bb59",
+      "specialistComposition": "c7a1d4b8586cee3f9d8d284dd7bbc5f555bc8be620a766f5120dcfbfb7d41e20",
+      "chunkOne": "f79a22b124d46f5d8516b581d3bb84a5d9e652a6002ff47c03d482b19309f3a6",
+      "chunkTwo": "46432c105cdeab0fdc64bbdddf32aee4132a6ebefd166f9f481ea81fa2c0eba0",
+      "storageLayout": "210193d2db2f3bf84dce1d7390ab8be25e92d3a4b518ede1ac5bb9498f662db9",
+      "kvFormat": "8108d7a2bda41c88d3e541f47b17be789462b7360c391a7ebbe9264408322430",
+      "retrievalIndex": "b5b59c101fd6ce1245c94043665db7616c217359208e99a1461a5906ed899a59",
+      "routePolicy": "f33ccf5198a97517a07bc68408aa7784bdefe5d779532f4ffedd612ae08dccfe",
+      "kvCacheKey": "be74ec931c3fa92500ba6f292d046789c61324ce712636476a45aec9758d0f51"
+    }
+  },
+  "authority": {
+    "contentIdentityContractFrozen": true,
+    "crossLanguageImplementationVerified": false,
+    "runtimeCompositionImplemented": false,
+    "immutableOverlayExecutionVerified": false,
+    "atomicActivationVerified": false,
+    "kvIsolationVerified": false,
+    "trainedSpecialistVerified": false,
+    "routerVerified": false,
+    "browserVerified": false,
+    "productIntegrationVerified": false,
+    "trainingAuthorized": false,
+    "releaseAuthorized": false
+  },
+  "requiredNextGate": "Commit an independent zero-dependency Rust implementation and a separately implemented JavaScript oracle, then prove every frozen vector, rejection rule, byte category, and cross-language identity without integrating or applying an adapter."
+}

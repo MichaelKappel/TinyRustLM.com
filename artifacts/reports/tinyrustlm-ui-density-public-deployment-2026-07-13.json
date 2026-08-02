@@ -1,0 +1,43 @@
+﻿{
+    "schema":  "tinyrustlm.atomic_ftps_deployment.v1",
+    "deployment_scope":  "application-only",
+    "started_utc":  "2026-07-13T15:06:28.6787964Z",
+    "completed_utc":  "2026-07-13T15:12:49.7252915Z",
+    "status":  "pass",
+    "failure_type":  null,
+    "source_commit":  "2d9361096aeebf4b807a82fbeb295036af4aa7c7",
+    "secret_material_included":  false,
+    "model_published_before_application":  false,
+    "public_https_sha256_verified":  true,
+    "file_count":  4,
+    "files":  [
+                  {
+                      "local_relative_path":  "app/app.css",
+                      "relative_path":  "app/app.css",
+                      "bytes":  74664,
+                      "sha256":  "6a0ea504874e34001824b06f065874196fe61fcf17c84990c199c4c653ec184e",
+                      "status":  "published"
+                  },
+                  {
+                      "local_relative_path":  "app/index.html",
+                      "relative_path":  "app/index.html",
+                      "bytes":  57437,
+                      "sha256":  "e4d2557471e584b41b12aa17bea523d7a98da3b5d7213c46a39fe18b1529d7b3",
+                      "status":  "published"
+                  },
+                  {
+                      "local_relative_path":  "index.html",
+                      "relative_path":  "index.html",
+                      "bytes":  57461,
+                      "sha256":  "652dfeceb9e05b2cfb7ecaabd1e2b7df04b232b4aa37c08d7ad096edd9ac3c6c",
+                      "status":  "published"
+                  },
+                  {
+                      "local_relative_path":  "app/app.js",
+                      "relative_path":  "app/app.js",
+                      "bytes":  837928,
+                      "sha256":  "98f37ef8b876b44ca4aa6b7aa5662d0b7f72f85a7053a7a0ec78642b05f7ba03",
+                      "status":  "published"
+                  }
+              ]
+}

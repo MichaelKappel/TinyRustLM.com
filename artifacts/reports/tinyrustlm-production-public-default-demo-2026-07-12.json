@@ -1,0 +1,65 @@
+{
+  "title": "TinyRustLM",
+  "hostname": "tinyrustlm.com",
+  "h1": "TinyRustLM",
+  "eyebrow": "Private Rust/WASM",
+  "notice": "A tiny verified demo model loads from MiniModel.org; prompts stay in this browser.",
+  "footer": "TinyRustLM.com Browser-local Rust/WASM runtime Developer portal: tinyrustlm.mirust.com MiniModel demo autoload A tiny verified demo model loads from MiniModel.org; prompts stay in this browser. TinyRustLM Fixture q8_0 (MiniModel public demo) / loaded (1 ms)",
+  "runtimeStatus": "Ready",
+  "wasmState": "loaded",
+  "modelState": "loaded (1 ms)",
+  "errorState": "none",
+  "provenanceState": "local file",
+  "provenanceSourceKind": "minimodel-public-demo-autoload",
+  "provenanceSourceSnapshot": "minimodel-public-demo-autoload",
+  "provenanceSourceId": "tinyrustlm/tiny-test-model-q8",
+  "provenanceQualityClaim": "runtime-execution-smoke-only",
+  "provenanceNextGate": "replace-with-trained-or-evaluated-model-before-product-quality-claim",
+  "localModelState": "tiny-test-model-q8.slm / 8.6 KiB / sha256:6af985853325eaa6d3eaaa8aadd3511da9596eb542fb2d03a9bc9dc1f4377adf / 0xa338bbb579e3e971 / loaded",
+  "catalogUrl": "https://MiniModel.org/catalog/models.v0.json",
+  "catalogStatus": "Default MiniModel demo loaded from MiniModel.org; sha256:6af985853325eaa6d3eaaa8aadd3511da9596eb542fb2d03a9bc9dc1f4377adf",
+  "hfStatus": "idle",
+  "selectedModel": "__local_slm_file",
+  "modelToolbarName": "TinyRustLM Fixture q8_0 (MiniModel public demo)",
+  "modelLoadPill": "Loaded locally",
+  "currentModelSummary": "TinyRustLM Fixture q8_0 (MiniModel public demo) / loaded (1 ms)",
+  "response": "e",
+  "consoleText": "generate(max_new_tokens=1, temperature=0, top_k=1, top_p=1, seed=1) -> 0 in 2 ms\ne",
+  "diagnostics": "{\n  \"model_load_time_ms\": 0,\n  \"prompt_token_count\": 3,\n  \"prefill_reused_token_count\": 0,\n  \"prefill_computed_token_count\": 3,\n  \"generated_token_count\": 1,\n  \"tokens_per_second\": 0.000,\n  \"peak_scratch_arena_usage\": 608,\n  \"kv_cache_length\": 4,\n  \"kv_cache_byte_budget\": 1024,\n  \"kv_cache_page_count\": 1,\n  \"active_quantization_mode\": \"q8_0\",\n  \"adapter_apply_count\": 0,\n  \"last_adapter_checksum\": \"0x0000000000000000\",\n  \"assembly_state_checksum\": \"0x7d30fcb263c5d2a2\",\n  \"model_loaded\": true,\n  \"last_error\": \"ok\",\n  \"tokenizer_output\": \"256,104,105\",\n  \"logits_summary\": \"min=-inf, max=7.9997, argmax=101\",\n  \"selected_next_token\": 101,\n  \"top_k_candidates\": \"101:7.9997, 10:-0.0800, 13:-0.0800, 32:-0.0800, 33:-0.0800\",\n  \"generation_stop_reason\": \"max_new_tokens\",\n  \"generated_max_repeated_token_run\": 1,\n  \"generated_distinct_token_count\": 1,\n  \"sampling_temperature\": 0.000,\n  \"sampling_top_k\": 1,\n  \"sampling_top_p\": 1.000,\n  \"sampling_seed\": 1,\n  \"sampling_repetition_penalty\": 1.000,\n  \"local_tool\": \"none\",\n  \"local_tool_input_checksum\": \"0x0000000000000000\",\n  \"local_tool_result\": \"none\"\n}",
+  "conversationItems": [
+    {
+      "role": "You",
+      "text": "hi",
+      "isError": false
+    },
+    {
+      "role": "TinyRustLM",
+      "text": "e",
+      "isError": false
+    }
+  ],
+  "modelOptions": [
+    {
+      "value": "__local_slm_file",
+      "text": "TinyRustLM Fixture q8_0 (MiniModel public demo)",
+      "disabled": false
+    }
+  ],
+  "generateDisabled": false,
+  "resetDisabled": false,
+  "modelSelectDisabled": false,
+  "importLocalModelDisabled": false,
+  "networkRequests": [
+    "https://tinyrustlm.com/",
+    "https://tinyrustlm.com/app/app.css?v=20260711-active-chat2",
+    "https://tinyrustlm.com/app/active-conversation.js?v=20260712-multiturn1",
+    "https://tinyrustlm.com/app/calculator-tool.js?v=20260711-calculator1",
+    "https://tinyrustlm.com/app/memory-endpoints-distributed-sync-v1.js?v=20260710-live-contract1",
+    "https://tinyrustlm.com/app/memory-endpoints-sync.js?v=20260710-live-contract1",
+    "https://tinyrustlm.com/app/app.js?v=20260712-multiturn1",
+    "https://tinyrustlm.com/runtime/tinyrustlm.wasm.manifest",
+    "https://tinyrustlm.com/runtime/tinyrustlm.wasm",
+    "https://minimodel.org/catalog/default-demo.v0.json",
+    "https://minimodel.org/artifacts/demo/tiny-test-model-q8.slm"
+  ]
+}

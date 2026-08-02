@@ -1,0 +1,21 @@
+profile: runtime-mirust.system-profile.v1
+project_name: Runtime.MiRust.com
+created_utc: 2026-06-24T00:00:00Z
+canonical_root: E:\Source\Rust\Runtime.MiRust.com
+project_type: enterprise_rust_browser_ai_harness
+public_host: https://Runtime.MiRust.com/
+aiwikis_namespace: https://aiwikis.org/runtime-mirust/
+llm_wiki_source_namespace: wiki/runtime-mirust/
+runtime_status:
+  rust_workspace: tinyrustlm_zero_dependency_workspace_verified
+  mini_browser: no_crate_rust_static_contract_and_loopback_route_harness_implemented
+  browser_ai_harness: rust_mini_browser_contract_harness_plus_headless_chrome_smoke_step_token_reload_reset_model_switch_loop_missing_malformed_context_desktop_mobile_ui_audit_model_provenance_endurance_performance_and_performance_soak_verified
+  gguf_model_runtime: custom_checksum_and_admission_verified_slm_runtime_verified_for_tiny_fixtures_tiny_bpe_tiny_tied_output_and_tinylm16_f32_q8_q4
+  visual_studio_solution: TinyRustLM.sln verified_for_build_test_run_wrapper_rust_local_server_browser_harness_and_port_fallback
+  public_site: static_tinyrustlm_app_verified_locally
+authority_layers:
+  human_request: highest
+  local_uai_hot_memory: active_handoff_context
+  llm_wiki: durable_reviewed_memory
+  aiwikis_public_routes: planned_public_durable_memory
+  model_output: proposal_only

@@ -1,0 +1,23 @@
+{
+  "schema": "tinyrustlm.portable_affine_u8_flat_attempt.v1",
+  "experimentId": "portable-affine-u8-flat-20260726",
+  "attemptOrdinal": 2,
+  "previousAttemptId": "portable-affine-u8-flat-attempt-ccf5545439e25df5",
+  "status": "fail",
+  "startedAtUtc": "2026-07-26T11:17:50.835Z",
+  "completedAtUtc": "2026-07-26T11:18:37.275Z",
+  "sourceRevision": "90c955eef96f4c962c00ce215ca5b57e005bb9d0",
+  "preregistrationSha256": "76cccb8fe353847235f8ea1d647c6762677e19b8abe593b83f9733dfbfe6c06d",
+  "observationId": null,
+  "observationContentHash": null,
+  "failure": {
+    "code": "PORTABLE_AFFINE_U8_QUALITY_OUTCOME_REJECTED",
+    "classification": "instrumentation",
+    "retryAllowed": false,
+    "errorName": "ObservationFailure",
+    "messageSha256": "c300f6cd36c603c3aa2d44db0551fb737dca22bbcef3d3e6fd7b811463f8ff22",
+    "causeMessageSha256": "014f2e1a1c433776f7a87a5464cc7eb5878dd429c09c3e03f7b6b68c480e2d33"
+  },
+  "attemptId": "portable-affine-u8-flat-attempt-35bb8ee57ea6f606",
+  "attemptContentHash": "35bb8ee57ea6f6065961a3cf8fb7749ca409c96847ad0fc1bb8146bc1e9a019c"
+}

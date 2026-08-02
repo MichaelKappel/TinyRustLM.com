@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "receiptType": "tinyrustlm.final-release-attestation-v1",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "phase": "final-release-attestation",
+  "attempt": 49,
+  "status": "pass",
+  "createdAtUtc": "2026-07-18T20:30:03.441Z",
+  "completedAtUtc": "2026-07-18T20:30:03.441Z",
+  "inputReceiptIds": [
+    "sha256:14a96014cd42d3977be362fc32c650d84d6e194996308072f44a11b3dbb4c86b",
+    "sha256:26055f35717630b6bb01418326c4ae8b65e2a1d79d547b338e206372d5b3341d",
+    "sha256:4f8ac13d4925f0edf2c99a00a35d595c701c32eefeda22849f528f18902acd59",
+    "sha256:622f4c3b842982af975c0e04fd3443ad5ecf35239c43e1f915f7612198ebc75f",
+    "sha256:6c996e3b71d7d28fcd2350cf23e94eb95c06803e8527b01ad9dc5a020418b55c",
+    "sha256:8e8cc3620471b057550554bab1ccf7644eedfb3ed95ef024459bc1785197a836",
+    "sha256:a0171fb624d36d948b69cc55daa1662a4224aa22d8f7439cbfd1f306aa35e5b3"
+  ],
+  "inputHashes": {
+    "currentReceiptSet": "176fa7427879c7ab455ea377474ef8db3a72a0867c1c75f13f3583246f5c7f1e",
+    "releasePredicate": "e986e70c3cea982d9a349f9e92a25ab6c87a0d01e5f6c98f8226b05f25ac2b67",
+    "remainingRisks": "d426f3be0fd7a9722c8d8c3b01f2dc1c07743d33b73495f9cd237a0a3466af91",
+    "retainedReceiptSet": "9cbcaeb2c071a16a7ccb7a29624b2fa536a92f6a9a9a129606368752e5b09d01"
+  },
+  "outputHashes": {
+    "finalAttestationContent": "253c2a66221ae722c9511a1ab3e4b28a1f467b0e09780a32f75963773cf2b43d",
+    "finalAttestationFile": "1c8a365a7b26b0023671ebcb784cd97f7c2f46d661e297a874afad73887616d7"
+  },
+  "sourceRevision": "8551f361df31f99f758e106f578f91cae709b7cf",
+  "toolNames": [
+    "tinyrustlm-campaign-final-attestation"
+  ],
+  "toolVersions": [
+    "1"
+  ],
+  "toolBinaryHashes": [
+    "c1c15e8dedd3be0cb8e269f1d65f2abd1860e28d6e344b55e2952dc1e0fbf2e0"
+  ],
+  "runtimeIdentifier": "win-x64",
+  "operatingSystem": "win32",
+  "architecture": "x64",
+  "hardwareEvidence": {
+    "generatedFromValidatedReceiptDag": true
+  },
+  "configurationHash": "f2399e43eca3e1ee8e8fa3b7347b9ebad431ed66d552def58156a204dff79709",
+  "publicSafeParameters": {
+    "schema": "tinyrustlm.campaign_final_attestation.v1",
+    "campaignPrerequisitesPassed": false,
+    "finalAcceptancePassed": false,
+    "signatureVerified": false,
+    "failureCount": 280,
+    "supersessionCount": 235,
+    "residualRiskCount": 11,
+    "attestationContentSha256": "253c2a66221ae722c9511a1ab3e4b28a1f467b0e09780a32f75963773cf2b43d",
+    "predicateSha256": "e986e70c3cea982d9a349f9e92a25ab6c87a0d01e5f6c98f8226b05f25ac2b67",
+    "signatureVerificationReceiptId": null,
+    "signingAuthorityId": null,
+    "signingKeyId": null,
+    "authorizationEnvelopeSha256": null,
+    "authorityRegistrySha256": null,
+    "signedPayloadSha256": null,
+    "publicKeySpkiSha256": null,
+    "authorizationIssuedAtUtc": null,
+    "authorizationExpiresAtUtc": null
+  },
+  "boundedDiagnostics": {
+    "claim": "pre-release-incomplete",
+    "blockers": [
+      "catalog_announcements_incomplete",
+      "catalog_publication_authority_absent",
+      "fault_injection_campaign_incomplete",
+      "fresh_browser_rounds_incomplete",
+      "live_memory_rounds_incomplete",
+      "memory_endpoints_live_contract_incompatible",
+      "native_rid_execution_incomplete",
+      "outside_network_lane_proofs_incomplete",
+      "outside_network_observer_absent",
+      "physical_linux_arm64_hardware_evidence_absent",
+      "public_endpoint_configuration_absent",
+      "public_https_readback_incomplete",
+      "qualified_models_incomplete"
+    ],
+    "openReleaseBlockingRiskIds": [
+      "catalog-authority-unavailable",
+      "external-fault-cases-incomplete",
+      "final-release-attestation-incomplete",
+      "fresh-browser-campaign-not-started",
+      "live-memory-contract-unavailable",
+      "outside-lane-proof-unavailable",
+      "physical-linux-arm64-unverified",
+      "public-https-readback-incomplete",
+      "qualified-model-portfolio-absent",
+      "release-source-history-contains-model-bytes"
+    ]
+  },
+  "blockerCode": null,
+  "externalEvidenceReferences": [],
+  "redactionVersion": "tinyrustlm.public-receipt-redaction.v1",
+  "evidenceClass": "local",
+  "supersedesReceiptIds": [
+    "sha256:22be116d22351c795c1161b7b867875d1ed61a41bb845c34567655424866d070"
+  ],
+  "attestationReference": null,
+  "receiptId": "sha256:a08766b2c9e76a126e9d79ffa91694817b27e2271753e69b9d95bc35aa96fbfd",
+  "receiptContentHash": "a08766b2c9e76a126e9d79ffa91694817b27e2271753e69b9d95bc35aa96fbfd"
+}

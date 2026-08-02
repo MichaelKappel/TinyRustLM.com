@@ -1,0 +1,7 @@
+TinyRustLM Protected Public SDK License
+
+Copyright TinyRustLM maintainers.
+
+This package is provided for TinyRustLM .slm validation, local runtime harness use, and metadata-bound P2P adoption workflows, including local verification of manifest-declared pieces. Redistribution, reverse engineering, or use to reconstruct private TinyRustLM authoring, conversion, optimization, routing, licensing, telemetry, training, or commercial orchestration systems is not permitted without a separate written agreement.
+
+This package does not grant rights to premium model weights, private training data, model recipes, conversion internals, adapter authoring internals, selector generation logic, offline breeding operators, enterprise orchestration, telemetry backends, license-server internals, or model-encryption key material.

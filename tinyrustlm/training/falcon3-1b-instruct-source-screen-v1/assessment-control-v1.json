@@ -1,0 +1,93 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "tiiuae/Falcon3-1B-Instruct",
+  "sourceRevision": "28ba2251970a01dd1edc7ba7dad2eb71216ccfdf",
+  "sourceModelArtifactSha256": "3f551b3271b550bfcf7c65282cdc8b3627c6ba8887e6dfa7492809f7b16cb087",
+  "sourceScreenSha256": "1b5899d2a24ceec520f8825190e4f49f3486e3c4e01a67ae4173cd046d351725",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "llama-dense-full-attention-gqa-head-dim-256",
+  "runtimeAdmission": "not-assessed-source-quality-rejected",
+  "licenseDisposition": "custom-falcon-llm-terms-legal-review-required",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": [
+    "answer-incomplete",
+    "underspecified-choice-missing-decision-criteria",
+    "practical-decision-underdeveloped",
+    "practical-fallback-not-reached",
+    "authority-resolution-absent",
+    "adult-comparison-one-sided",
+    "current-task-not-completed"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "underspecified-choice-missing-decision-criteria"
+      ]
+    },
+    {
+      "index": 2,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "practical-decision-underdeveloped"
+      ]
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "practical-fallback-not-reached"
+      ]
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "source-conflict-unacknowledged",
+        "authority-resolution-absent",
+        "decision-not-provided"
+      ]
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "adult-comparison-one-sided"
+      ]
+    },
+    {
+      "index": 6,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 7,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "current-task-not-completed"
+      ]
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/tiiuae/Falcon3-1B-Instruct/tree/28ba2251970a01dd1edc7ba7dad2eb71216ccfdf",
+    "https://huggingface.co/tiiuae/Falcon3-1B-Instruct/blob/28ba2251970a01dd1edc7ba7dad2eb71216ccfdf/README.md",
+    "https://huggingface.co/tiiuae/Falcon3-1B-Instruct/blob/28ba2251970a01dd1edc7ba7dad2eb71216ccfdf/config.json",
+    "https://huggingface.co/tiiuae/Falcon3-1B-Instruct/blob/28ba2251970a01dd1edc7ba7dad2eb71216ccfdf/tokenizer_config.json",
+    "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+    "https://falconllm.tii.ae/falcon-acceptable-use-policy.html",
+    "https://huggingface.co/blog/falcon3"
+  ]
+}

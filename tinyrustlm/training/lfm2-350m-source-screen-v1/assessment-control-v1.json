@@ -1,0 +1,110 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "LiquidAI/LFM2-350M",
+  "sourceRevision": "b3afba27815ee83a64b76162cef4d8a4780d6ca7",
+  "sourceModelArtifactSha256": "387638dc889ff1a1395c3c2ab9605211e4c7e16f2d375361dd4e423b909a254e",
+  "sourceScreenSha256": "1e5d7b70fe4086761779c09ba10f6efb4844688f8147091ff9bd64eae2e61126",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "lfm2-hybrid-short-convolution-gqa",
+  "runtimeAdmission": "unsupported-current-slm-hybrid-convolution",
+  "licenseDisposition": "conditional-commercial-threshold-review-required",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": [
+    "ambiguity-not-clarified",
+    "answer-incomplete",
+    "current-task-fabricated",
+    "underspecified-choice-fabricated-options",
+    "underspecified-choice-missing-decision-criteria",
+    "practical-decision-underdeveloped",
+    "unavailable-resource-ignored",
+    "feasible-fallback-absent",
+    "user-goal-not-addressed",
+    "source-conflict-unresolved",
+    "authority-resolution-underdeveloped",
+    "plan-date-not-provided",
+    "adult-comparison-one-sided",
+    "untrusted-memory-boundary-failed",
+    "current-task-not-followed"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "fail",
+      "failureCodes": [
+        "ambiguity-not-clarified",
+        "answer-incomplete",
+        "current-task-fabricated"
+      ]
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "underspecified-choice-fabricated-options",
+        "underspecified-choice-missing-decision-criteria"
+      ]
+    },
+    {
+      "index": 2,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "practical-decision-underdeveloped"
+      ]
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "unavailable-resource-ignored",
+        "feasible-fallback-absent",
+        "user-goal-not-addressed"
+      ]
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "source-conflict-unresolved",
+        "authority-resolution-underdeveloped",
+        "plan-date-not-provided"
+      ]
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "adult-comparison-one-sided"
+      ]
+    },
+    {
+      "index": 6,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 7,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "untrusted-memory-boundary-failed",
+        "current-task-not-followed"
+      ]
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/LiquidAI/LFM2-350M/tree/b3afba27815ee83a64b76162cef4d8a4780d6ca7",
+    "https://huggingface.co/LiquidAI/LFM2-350M/blob/b3afba27815ee83a64b76162cef4d8a4780d6ca7/README.md",
+    "https://huggingface.co/LiquidAI/LFM2-350M/blob/b3afba27815ee83a64b76162cef4d8a4780d6ca7/LICENSE",
+    "https://huggingface.co/LiquidAI/LFM2-350M/blob/b3afba27815ee83a64b76162cef4d8a4780d6ca7/config.json",
+    "https://huggingface.co/LiquidAI/LFM2-350M/blob/b3afba27815ee83a64b76162cef4d8a4780d6ca7/generation_config.json",
+    "https://huggingface.co/LiquidAI/LFM2-350M/blob/b3afba27815ee83a64b76162cef4d8a4780d6ca7/chat_template.jinja",
+    "https://github.com/huggingface/transformers/blob/v5.13.1/src/transformers/models/lfm2/modeling_lfm2.py",
+    "https://www.liquid.ai/blog/liquid-foundation-models-v2-our-second-series-of-generative-ai-models"
+  ]
+}

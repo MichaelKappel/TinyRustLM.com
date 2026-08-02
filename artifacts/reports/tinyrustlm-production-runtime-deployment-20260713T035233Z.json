@@ -1,0 +1,54 @@
+{
+  "schema": "tinyrustlm.production_runtime_deployment.v1",
+  "generated_utc": "2026-07-13T03:52:49.9337734Z",
+  "status": "pass_deployed",
+  "public_host": "tinyrustlm.com",
+  "ftp_host": "server41.shared.spaceship.host",
+  "remote_root": "/",
+  "deployment_id": "20260713T035233Z",
+  "commit": "77c09461d2a005b0b0455e526cecbf94d59192bc",
+  "rename_contract": "same-directory-leaf",
+  "promotion_order": [
+    "/runtime/tinyrustlm.wasm",
+    "/runtime/tinyrustlm.wasm.manifest"
+  ],
+  "phase": "verify-final-https",
+  "failure_type": null,
+  "rollback_attempted": false,
+  "rollback_passed": false,
+  "files": [
+    {
+      "local_path": "tinyrustlm/runtime/tinyrustlm.wasm",
+      "remote_path": "/runtime/tinyrustlm.wasm",
+      "stage_remote_path": "/runtime/tinyrustlm.wasm.stage-20260713T035233Z",
+      "backup_remote_path": "/runtime/tinyrustlm.wasm.backup-20260713T035233Z",
+      "bytes": 377166,
+      "sha256": "11d4fb78c455e2349ed775d19fc9806e293cd1a82dbc4479162a0bf76373b659",
+      "original_bytes": 261202,
+      "original_sha256": "1155fa2ec9f56c06c3c658989c03f17b4ffe39f84a08c38d9b10a63b28cbea21",
+      "stage_verified": true,
+      "backed_up": true,
+      "promoted": true,
+      "final_ftps_verified": true,
+      "final_https_verified": true
+    },
+    {
+      "local_path": "tinyrustlm/runtime/tinyrustlm.wasm.manifest",
+      "remote_path": "/runtime/tinyrustlm.wasm.manifest",
+      "stage_remote_path": "/runtime/tinyrustlm.wasm.manifest.stage-20260713T035233Z",
+      "backup_remote_path": "/runtime/tinyrustlm.wasm.manifest.backup-20260713T035233Z",
+      "bytes": 264,
+      "sha256": "d4c08dec48d5deb02fa639fdae4c5ab30adedbaa91f32a2cbb6dc06bc70e2292",
+      "original_bytes": 264,
+      "original_sha256": "d37e39311d4bd637e0fab25a9cf647893edd8cba520c7ab78fdb11afdf418b42",
+      "stage_verified": true,
+      "backed_up": true,
+      "promoted": true,
+      "final_ftps_verified": true,
+      "final_https_verified": true
+    }
+  ],
+  "credentials_included": false,
+  "models_uploaded": false,
+  "rollback_backups_retained": true
+}

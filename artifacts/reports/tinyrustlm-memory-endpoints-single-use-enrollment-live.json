@@ -1,0 +1,39 @@
+{
+    "firstClaimSucceeded":  false,
+    "freshCompanyCreated":  false,
+    "secondClaimErrorCode":  "not-run",
+    "contractAdvertised":  false,
+    "startupRestored":  false,
+    "companyCloseAttempted":  false,
+    "companyClosed":  false,
+    "companyDeleteAttempted":  false,
+    "companyDeleted":  false,
+    "cleanupStatus":  "not_required",
+    "invitationUrlPersisted":  false,
+    "reconnectSucceeded":  false,
+    "defect":  {
+                   "posted":  true,
+                   "code":  "contract_missing",
+                   "agentMessageId":  "msg-6a8cd46ad8424f2db0b2",
+                   "meetingMessageId":  "meetmsg-01783906820826136854-e1cb4fed"
+               },
+    "cleanupDefect":  {
+                           "posted":  false,
+                           "code":  "none",
+                           "agentMessageId":  "none",
+                           "meetingMessageId":  "none"
+                       },
+    "secondClaimRejected":  false,
+    "canonicalAgentStable":  false,
+    "baseOrigin":  "memoryendpoints.com",
+    "rawPayloadExposed":  false,
+    "contractSchema":  "memoryendpoints.single_agent_enrollment_contract.v1",
+    "failureCode":  "contract_missing",
+    "runMarkerSha256":  "f0f41c63979fcd2ebbaf8df6e343db87ccaeb5c6d6f14864fd27c4fd11fd4c71",
+    "status":  "blocked_contract_missing",
+    "invitationIssued":  false,
+    "schema":  "tinyrustlm.memory_endpoints.single_use_enrollment_live.v2",
+    "rawCredentialExposed":  false,
+    "secondClaimStatus":  0,
+    "generatedUtc":  "2026-07-13T01:40:25Z"
+}

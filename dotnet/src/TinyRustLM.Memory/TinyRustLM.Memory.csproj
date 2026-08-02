@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>$(TinyRustLmMemoryPackageId)</PackageId>
+    <Title>TinyRustLM / UAIX Browser Memory SDK</Title>
+    <Summary>UAIX .uai memory, Wizard AI digest/export deck, multi-agent, Talisman, and advanced persona package planning, setup catalog, manifest inspection, and safe package inspection.</Summary>
+    <Description>Public TinyRustLM .NET SDK for UAIX.org .uai AI memory packages, AI Memory Package Wizard workflows, discoverable setup catalog, embedded AI digest adoption, point-agent setup URLs, prompt nudges, Safe Structured Output review boundaries, review/export checks, Codex/Claude/GPT agent-use blocks, DTMI policy, family-aware required files, file handoff, LLM Wiki memory layouts, multi-agent communication records, Talisman System anchor-governance review records, and advanced persona personality-pack validation. It plans required files including agent-pickup.uai, session-log.uai, manifest JSON, manifest overlay, package model, knowledge graph, llms.uai, and llms-full.uai exports; inspects .uai folders, .zip and .uaix archives without extraction; inspects memory manifest JSON; and reports advanced persona .uaix, ZIP, and TXT deck expectations plus dimension evidence for depth_level_0_to_10, disclosure boundaries, source confidence, triggered style axes, and non-inference rules for TinyRustLM runtime consumers. This package backs the UAIX.Browser.Memory local feed identity while keeping hosted import validation, automatic repository writes, automatic LLM Wiki sync, persona-fidelity certification, memory ranking, and private optimization logic out of the package.</Description>
+    <IsPackable>true</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageTags>TinyRustLM;TinyRustLM.Memory;TinyRustLM.com;UAIX;UAIX.org;UAIX.Browser;Browser;UAIX.Browser.Memory;UAI;.uai;.uaix;memory;ai-memory;AI-Memory-Package-Wizard;ai-digest;point-agent-urls;prompt-nudges;canonical-starter-zip;safe-structured-output;review-export-checks;agent-use-blocks;dtmi-policy;family-aware-required-files;agent-pickup;session-log;manifest-json;manifest-overlay;package-model;knowledge-graph;llms.uai;persona;advanced-persona;personality-packs;persona-deck;triggered-style-axes;depth_level_0_to_10;source-confidence;non-inference;LLM-Wiki;file-handoff;multi-agent;agent-communication;talisman;talisman-system;SLM;.slm;AI;LLM;Rust;runtime-harness;protected-sdk</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TinyRustLM.Abstractions\TinyRustLM.Abstractions.csproj" />
+    <ProjectReference Include="..\TinyRustLM.Core\TinyRustLM.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\docs\nuget\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\..\docs\nuget\MEMORY_HARNESS.md" Pack="true" PackagePath="docs\" />
+    <None Include="..\..\..\docs\nuget\API_BOUNDARY.md" Pack="true" PackagePath="docs\" />
+  </ItemGroup>
+</Project>

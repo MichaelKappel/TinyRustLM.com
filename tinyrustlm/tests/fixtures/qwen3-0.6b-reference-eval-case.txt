@@ -1,0 +1,16 @@
+# Qwen3 source-reference case for converter/runtime parity, not model promotion
+
+tinyrustlm_eval_cases_version=1
+scope=qwen3-0.6b-source-reference-parity
+quality_gate_policy=honest-assistant-quality-v1
+quality_boundary=source checkpoint output and first-step logit parity only
+safety_review_status=pass
+quality_decision=accepted-for-source-reference
+evaluator=transformers-source-reference
+eval_summary=Ambiguous everyday choice should elicit a concise request for the missing options and priorities.
+case_count=1
+holdout_count=0
+
+case.0.prompt=Which option should I choose?
+case.0.max_new_tokens=48
+case.0.required_result=quality

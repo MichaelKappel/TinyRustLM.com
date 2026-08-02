@@ -1,0 +1,122 @@
+{
+  "schema": "tinyrustlm.source_model_preflight_assessment.v1",
+  "sourceModelId": "apple/OpenELM-1_1B-Instruct",
+  "sourceRevision": "effd796da2a77361d7360e45e54c7cc14bc5df2a",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-preflight-v1",
+  "architectureFamily": "openelm-dense-layerwise-scaled-gqa-tied-bf16-custom-code",
+  "runtimeAdmission": "not-assessed-preflight-rejected",
+  "accessDisposition": "public-ungated-metadata-only-no-source-acquisition",
+  "licenseId": "apple-amlr",
+  "licenseDisposition": "apple-amlr-bundled-license-review-not-completed-preflight-rejected",
+  "distributionDisposition": "not-assessed-preflight-rejected",
+  "blockerCode": "candidate_source_loader_contract_rejected",
+  "rejectionCodes": [
+    "custom-publisher-code-required",
+    "native-transformers-architecture-absent",
+    "source-screen-loader-contract-incompatible"
+  ],
+  "missingRequiredArtifacts": [
+    "chat_template.jinja",
+    "model.safetensors",
+    "special_tokens_map.json",
+    "tokenizer.json",
+    "tokenizer.model",
+    "tokenizer_config.json"
+  ],
+  "evidenceArtifacts": [
+    {
+      "kind": "config",
+      "fileName": "config.json",
+      "byteCount": 1604,
+      "sha256": "df957dc69695d5fbe5d94b21d7ec148f093c626c5ebac330a0bccbec043a581c",
+      "publicUrl": "https://huggingface.co/apple/OpenELM-1_1B-Instruct/resolve/effd796da2a77361d7360e45e54c7cc14bc5df2a/config.json",
+      "observedAtUtc": "2026-07-16T21:44:48.091Z"
+    },
+    {
+      "kind": "configuration",
+      "fileName": "configuration-openelm.py",
+      "byteCount": 14264,
+      "sha256": "d0da88fc5fafdfef155052ec4e5483db8d6be2917cb68bdee9e7ead1cb7e6f15",
+      "publicUrl": "https://huggingface.co/apple/OpenELM-1_1B-Instruct/resolve/effd796da2a77361d7360e45e54c7cc14bc5df2a/configuration_openelm.py",
+      "observedAtUtc": "2026-07-16T21:44:48.091Z"
+    },
+    {
+      "kind": "generation-script",
+      "fileName": "generation-script.py",
+      "byteCount": 7453,
+      "sha256": "9755dcadaa553348fc43f416277f6ca2c69b1ced4267f2dd0b1aaaa725e49c10",
+      "publicUrl": "https://huggingface.co/apple/OpenELM-1_1B-Instruct/resolve/effd796da2a77361d7360e45e54c7cc14bc5df2a/generate_openelm.py",
+      "observedAtUtc": "2026-07-16T21:44:48.091Z"
+    },
+    {
+      "kind": "license",
+      "fileName": "license.txt",
+      "byteCount": 5820,
+      "sha256": "d8f5d9dfbdb60dc81b8f1720421699e7811070f0b46f6668f90253d5ac8c0b20",
+      "publicUrl": "https://huggingface.co/apple/OpenELM-1_1B-Instruct/resolve/effd796da2a77361d7360e45e54c7cc14bc5df2a/LICENSE",
+      "observedAtUtc": "2026-07-16T21:44:48.091Z"
+    },
+    {
+      "kind": "model-card",
+      "fileName": "model-card.md",
+      "byteCount": 12789,
+      "sha256": "2ef16d4fa6aab3515f10b74260552fbf76e04ae6952293d7297684c0f7975731",
+      "publicUrl": "https://huggingface.co/apple/OpenELM-1_1B-Instruct/resolve/effd796da2a77361d7360e45e54c7cc14bc5df2a/README.md",
+      "observedAtUtc": "2026-07-16T21:44:48.091Z"
+    },
+    {
+      "kind": "modeling",
+      "fileName": "modeling-openelm.py",
+      "byteCount": 39348,
+      "sha256": "ffb56f297ccb48ba689bc15b352c971eb1337a3604449662303a2d4919aa77c4",
+      "publicUrl": "https://huggingface.co/apple/OpenELM-1_1B-Instruct/resolve/effd796da2a77361d7360e45e54c7cc14bc5df2a/modeling_openelm.py",
+      "observedAtUtc": "2026-07-16T21:44:48.091Z"
+    },
+    {
+      "kind": "repository-tree",
+      "fileName": "repository-tree.json",
+      "byteCount": 2289,
+      "sha256": "bb29173fff9c0499a70697c6550874204b31bbb0f5347d8391303266534a6fa3",
+      "publicUrl": "https://huggingface.co/api/models/apple/OpenELM-1_1B-Instruct/revision/effd796da2a77361d7360e45e54c7cc14bc5df2a?blobs=true",
+      "observedAtUtc": "2026-07-16T21:44:48.091Z"
+    },
+    {
+      "kind": "safetensors-header",
+      "fileName": "safetensors-header.json",
+      "byteCount": 39238,
+      "sha256": "487fe35bb0064467efbee5de9a054955534e6232a108c810258835af25ac49c7",
+      "publicUrl": "https://huggingface.co/apple/OpenELM-1_1B-Instruct/resolve/effd796da2a77361d7360e45e54c7cc14bc5df2a/model.safetensors",
+      "observedAtUtc": "2026-07-16T21:44:48.091Z"
+    },
+    {
+      "kind": "transformers-auto-config-registry",
+      "fileName": "transformers-5.13.1-auto-config.py",
+      "byteCount": 19425,
+      "sha256": "c1ff7fc0cb204cfdbe837993b7bba85aadec28254852c55fe32be997bdf1411a",
+      "publicUrl": "https://raw.githubusercontent.com/huggingface/transformers/v5.13.1/src/transformers/models/auto/configuration_auto.py",
+      "observedAtUtc": "2026-07-16T21:44:48.091Z"
+    },
+    {
+      "kind": "transformers-auto-model-registry",
+      "fileName": "transformers-5.13.1-auto-model.py",
+      "byteCount": 108841,
+      "sha256": "43707fe59131464f37fe7616ce3948484be7bc7ec9cda76558071d76e0a3e226",
+      "publicUrl": "https://raw.githubusercontent.com/huggingface/transformers/v5.13.1/src/transformers/models/auto/modeling_auto.py",
+      "observedAtUtc": "2026-07-16T21:44:48.091Z"
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/apple/OpenELM-1_1B-Instruct/tree/effd796da2a77361d7360e45e54c7cc14bc5df2a",
+    "https://huggingface.co/apple/OpenELM-1_1B-Instruct/blob/effd796da2a77361d7360e45e54c7cc14bc5df2a/README.md",
+    "https://huggingface.co/apple/OpenELM-1_1B-Instruct/blob/effd796da2a77361d7360e45e54c7cc14bc5df2a/config.json",
+    "https://huggingface.co/apple/OpenELM-1_1B-Instruct/blob/effd796da2a77361d7360e45e54c7cc14bc5df2a/configuration_openelm.py",
+    "https://huggingface.co/apple/OpenELM-1_1B-Instruct/blob/effd796da2a77361d7360e45e54c7cc14bc5df2a/generate_openelm.py",
+    "https://huggingface.co/apple/OpenELM-1_1B-Instruct/blob/effd796da2a77361d7360e45e54c7cc14bc5df2a/modeling_openelm.py",
+    "https://huggingface.co/apple/OpenELM-1_1B-Instruct/blob/effd796da2a77361d7360e45e54c7cc14bc5df2a/LICENSE",
+    "https://raw.githubusercontent.com/huggingface/transformers/v5.13.1/src/transformers/models/auto/configuration_auto.py",
+    "https://raw.githubusercontent.com/huggingface/transformers/v5.13.1/src/transformers/models/auto/modeling_auto.py",
+    "https://machinelearning.apple.com/research/openelm",
+    "https://arxiv.org/abs/2404.14619"
+  ]
+}

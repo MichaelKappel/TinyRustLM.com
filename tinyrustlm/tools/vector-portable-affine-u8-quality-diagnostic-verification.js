@@ -1,0 +1,643 @@
+"use strict";
+
+const childProcess = require("node:child_process");
+const crypto = require("node:crypto");
+const fs = require("node:fs");
+const path = require("node:path");
+
+const { canonicalJson } = require("./campaign-evidence-store.js");
+const { atomicCreate } = require("./durable-files.js");
+const {
+  validateGitInput
+} = require("./vector-historical-git-input.js");
+const {
+  defaultPath: preregistrationPath,
+  expectedManifestSha256,
+  validateManifestFile
+} = require("./vector-portable-affine-u8-quality-diagnostic-preregistration.js");
+const {
+  attemptDirectoryRelativePath,
+  authority,
+  loadAttemptArchive,
+  requiredNextGate,
+  validateAttempt
+} = require("./vector-portable-affine-u8-quality-diagnostic.js");
+const {
+  validateReceiptFile: validateTerminalExperimentVerification
+} = require("./vector-portable-affine-u8-verification.js");
+
+const receiptSchema =
+  "tinyrustlm.portable_affine_u8_quality_diagnostic_verification.v1";
+const diagnosticId = "portable-affine-u8-quality-diagnostic-20260726";
+const repositoryRoot = path.resolve(__dirname, "../..");
+const preregistrationRelativePath = path.relative(
+  repositoryRoot,
+  preregistrationPath
+).replaceAll("\\", "/");
+const terminalVerificationRelativePath =
+  "tinyrustlm/experiments/vector-quantization/" +
+  "portable-affine-u8-flat-verification-v1.json";
+const receiptRelativePath =
+  "tinyrustlm/experiments/vector-quantization/" +
+  "portable-affine-u8-quality-diagnostic-verification-v1.json";
+const receiptPath = path.join(repositoryRoot, receiptRelativePath);
+const staticInputPaths = Object.freeze([
+  preregistrationRelativePath,
+  "tinyrustlm/tools/vector-portable-affine-u8-quality-diagnostic-preregistration.js",
+  "tinyrustlm/tests/vector-portable-affine-u8-quality-diagnostic-preregistration.test.js",
+  "tinyrustlm/tools/vector-portable-affine-u8-quality-diagnostic.js",
+  "tinyrustlm/tests/vector-portable-affine-u8-quality-diagnostic.test.js",
+  "tinyrustlm/tools/vector-portable-affine-u8-quality-diagnostic-verification.js",
+  "tinyrustlm/tests/vector-portable-affine-u8-quality-diagnostic-verification.test.js",
+  terminalVerificationRelativePath,
+  "tinyrustlm/tools/vector-portable-affine-u8-verification.js",
+  "tinyrustlm/tools/campaign-evidence-store.js",
+  "tinyrustlm/tools/durable-files.js"
+]);
+const maximumEvidenceBytes = 16 * 1024 * 1024;
+const maximumInputBytes = 64 * 1024 * 1024;
+const sha256Pattern = /^[a-f0-9]{64}$/u;
+const revisionPattern = /^[a-f0-9]{40}$/u;
+const utcPattern =
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?Z$/u;
+const relativePathPattern =
+  /^(?!\/)(?!.*(?:^|\/)\.\.(?:\/|$))[A-Za-z0-9._/-]+$/u;
+const forbiddenTextPattern =
+  /(?:^|[\s"'=])(?:[a-z]:[\\/]|\/home\/|\/users\/|\/mnt\/[a-z]\/)|bearer\s+|(?:token|secret|password)=|(?:sk|ghp)_[A-Za-z0-9_-]{12,}|turn\d+(?:search|view)\d+/iu;
+const forbiddenEvidenceKeys = new Set([
+  "stdout",
+  "stderr",
+  "quality",
+  "qualityMetrics",
+  "perQueryMetrics",
+  "laneResults",
+  "thresholdDecision",
+  "selectedIndices",
+  "rawVectors"
+]);
+
+function invariant(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
+function isPlainObject(value) {
+  return value !== null &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    Object.getPrototypeOf(value) === Object.prototype;
+}
+
+function exactKeys(value, keys, label) {
+  invariant(isPlainObject(value), `${label} must be an object`);
+  const actual = Object.keys(value).sort();
+  const expected = [...keys].sort();
+  invariant(
+    actual.length === expected.length &&
+      actual.every((key, index) => key === expected[index]),
+    `${label} fields are invalid`
+  );
+}
+
+function exactValue(value, expected, label) {
+  invariant(Object.is(value, expected), `${label} is invalid`);
+}
+
+function exactStructure(value, expected, label) {
+  invariant(JSON.stringify(value) === JSON.stringify(expected), `${label} is invalid`);
+}
+
+function safeInteger(value, label, minimum = 0, maximum = Number.MAX_SAFE_INTEGER) {
+  invariant(
+    Number.isSafeInteger(value) && value >= minimum && value <= maximum,
+    `${label} is invalid`
+  );
+  return value;
+}
+
+function sha256(bytes) {
+  return crypto.createHash("sha256").update(bytes).digest("hex");
+}
+
+function sha256File(filePath) {
+  const descriptor = fs.openSync(filePath, "r");
+  const hash = crypto.createHash("sha256");
+  const buffer = Buffer.allocUnsafe(1024 * 1024);
+  try {
+    for (;;) {
+      const count = fs.readSync(descriptor, buffer, 0, buffer.length, null);
+      if (count === 0) break;
+      hash.update(buffer.subarray(0, count));
+    }
+  } finally {
+    fs.closeSync(descriptor);
+  }
+  return hash.digest("hex");
+}
+
+function canonicalPrettyBytes(value) {
+  return Buffer.from(`${JSON.stringify(value, null, 2)}\n`, "utf8");
+}
+
+function publicSafe(value, label) {
+  invariant(
+    !forbiddenTextPattern.test(JSON.stringify(value)),
+    `${label} contains private or secret text`
+  );
+}
+
+function rejectForbiddenEvidenceKeys(value, label = "evidence") {
+  if (Array.isArray(value)) {
+    value.forEach((entry, index) =>
+      rejectForbiddenEvidenceKeys(entry, `${label}[${index}]`));
+    return;
+  }
+  if (!isPlainObject(value)) return;
+  for (const [key, entry] of Object.entries(value)) {
+    invariant(!forbiddenEvidenceKeys.has(key), `${label} contains forbidden ${key}`);
+    rejectForbiddenEvidenceKeys(entry, `${label}.${key}`);
+  }
+}
+
+function resolveRepositoryFile(relativePath) {
+  invariant(relativePathPattern.test(relativePath), "repository path is unsafe");
+  const resolved = path.resolve(repositoryRoot, relativePath);
+  const relative = path.relative(repositoryRoot, resolved);
+  invariant(
+    relative !== "" && !relative.startsWith("..") && !path.isAbsolute(relative),
+    "repository path escaped repository root"
+  );
+  const stat = fs.lstatSync(resolved);
+  invariant(
+    stat.isFile() &&
+      !stat.isSymbolicLink() &&
+      stat.size > 0 &&
+      stat.size <= maximumInputBytes,
+    `repository file ${relativePath} is invalid`
+  );
+  return Object.freeze({ resolved, stat });
+}
+
+function fileEvidence(relativePath) {
+  const file = resolveRepositoryFile(relativePath);
+  return Object.freeze({
+    path: relativePath,
+    bytes: file.stat.size,
+    sha256: sha256File(file.resolved)
+  });
+}
+
+function git(argumentsList, label, allowFailure = false) {
+  const result = childProcess.spawnSync("git", argumentsList, {
+    cwd: repositoryRoot,
+    encoding: "utf8",
+    windowsHide: true,
+    timeout: 30000,
+    maxBuffer: 4 * 1024 * 1024
+  });
+  invariant(result.error === undefined, `${label} spawn failed`);
+  if (!allowFailure) {
+    invariant(
+      result.status === 0 && result.signal === null && result.stderr === "",
+      `${label} failed`
+    );
+  }
+  return result;
+}
+
+function sourceRevision() {
+  const revision = git(["rev-parse", "HEAD"], "source revision").stdout.trim();
+  invariant(revisionPattern.test(revision), "source revision is invalid");
+  return revision;
+}
+
+function assertAncestor(ancestor, descendant, label) {
+  invariant(
+    revisionPattern.test(ancestor) && revisionPattern.test(descendant),
+    `${label} revision is invalid`
+  );
+  const result = git(
+    ["merge-base", "--is-ancestor", ancestor, descendant],
+    `${label} ancestry`,
+    true
+  );
+  invariant(result.status === 0, `${label} ancestry is invalid`);
+}
+
+function assertInputsCommitted(paths) {
+  invariant(new Set(paths).size === paths.length, "verification inputs contain duplicates");
+  for (const relativePath of paths) {
+    resolveRepositoryFile(relativePath);
+    const tracked = git(
+      ["ls-files", "--error-unmatch", "--", relativePath],
+      `tracked input ${relativePath}`,
+      true
+    );
+    invariant(tracked.status === 0, `verification input is not committed: ${relativePath}`);
+  }
+  const status = git(
+    ["status", "--porcelain=v1", "--", ...paths],
+    "verification input status"
+  ).stdout;
+  invariant(status === "", "verification inputs have uncommitted changes");
+}
+
+function attemptRelativePath(entry) {
+  const relative = path.relative(repositoryRoot, entry.path).replaceAll("\\", "/");
+  invariant(
+    relative.startsWith(`${attemptDirectoryRelativePath}/`),
+    "attempt escaped diagnostic archive"
+  );
+  return relative;
+}
+
+function verificationInputPaths(attemptEntry) {
+  return Object.freeze([
+    ...staticInputPaths,
+    attemptRelativePath(attemptEntry)
+  ]);
+}
+
+function independentSummary(attempt) {
+  validateAttempt(attempt);
+  const process = attempt.processExecution;
+  const diagnosis = attempt.diagnosis;
+  if (diagnosis.firstFailingStage === "spawn") {
+    invariant(
+      process.invocationCount === 0 &&
+        process.processStarted === false,
+      "spawn-stage evidence is inconsistent"
+    );
+  }
+  if (diagnosis.firstFailingStage === "exit-and-signal") {
+    invariant(
+      process.exitCode !== 0 || process.signal !== null,
+      "exit-stage evidence is inconsistent"
+    );
+  }
+  if (diagnosis.firstFailingStage === "stderr-contract") {
+    invariant(
+      process.exitCode === 0 &&
+        process.signal === null &&
+        process.stderrBytes > 0,
+      "stderr-stage evidence is inconsistent"
+    );
+  }
+  if ([
+    "stdout-framing",
+    "json-parse",
+    "canonical-compact-json",
+    "top-level-contract",
+    "per-query-or-aggregate-semantics",
+    "unexpectedly-valid"
+  ].includes(diagnosis.firstFailingStage)) {
+    invariant(
+      process.exitCode === 0 &&
+        process.signal === null &&
+        process.stderrBytes === 0,
+      "validator-stage process evidence is inconsistent"
+    );
+  }
+  if ([
+    "per-query-or-aggregate-semantics",
+    "unexpectedly-valid"
+  ].includes(diagnosis.firstFailingStage)) {
+    invariant(
+      diagnosis.structuralSummary !== null &&
+        diagnosis.structuralSummary.laneCount === 6 &&
+        diagnosis.structuralSummary.queryCount === 790,
+      "semantic-stage structural summary is absent"
+    );
+  }
+  rejectForbiddenEvidenceKeys(attempt, "diagnostic attempt");
+  return Object.freeze({
+    attemptCount: 1,
+    diagnosticProcessInvocationCount: process.invocationCount,
+    diagnosticStatus: attempt.status,
+    firstFailingStage: diagnosis.firstFailingStage,
+    failureCode: diagnosis.failureCode,
+    benchmarkErrorCode: diagnosis.benchmarkErrorCode,
+    stdoutBytes: process.stdoutBytes,
+    stdoutSha256: process.stdoutSha256,
+    stderrBytes: process.stderrBytes,
+    stderrSha256: process.stderrSha256,
+    processExitCode: process.exitCode,
+    processSignal: process.signal,
+    ownedRootDeleted: attempt.cleanup.outerRootDeleted,
+    rawOutputPresent: false,
+    parsedQualityMetricsPresent: false,
+    thresholdDecisionPresent: false,
+    qualityClaimSupported: false,
+    sameExperimentRetryAllowed: false,
+    productPromotionAllowed: false,
+    campaignCounterIncrementAllowed: false
+  });
+}
+
+function receiptIdentity(value) {
+  const body = { ...value };
+  delete body.receiptId;
+  delete body.receiptContentHash;
+  const hash = sha256(Buffer.from(canonicalJson(body), "utf8"));
+  return Object.freeze({
+    id: `portable-affine-u8-quality-diagnostic-verification-${hash.slice(0, 16)}`,
+    hash
+  });
+}
+
+function finalizeReceipt(body) {
+  const identity = receiptIdentity(body);
+  return Object.freeze({
+    ...body,
+    receiptId: identity.id,
+    receiptContentHash: identity.hash
+  });
+}
+
+function validateFileEvidence(value, label) {
+  exactKeys(value, ["path", "bytes", "sha256"], label);
+  invariant(relativePathPattern.test(value.path), `${label} path is unsafe`);
+  safeInteger(value.bytes, `${label} bytes`, 1, maximumInputBytes);
+  invariant(sha256Pattern.test(value.sha256), `${label} sha256 is invalid`);
+}
+
+function validateReceipt(value) {
+  exactKeys(value, [
+    "schema", "diagnosticId", "status", "verifiedAtUtc",
+    "verificationSourceRevision", "preregistration", "terminalVerification",
+    "attempt", "inputs", "independentSummary", "authority",
+    "requiredNextGate", "receiptId", "receiptContentHash"
+  ], "diagnostic verification");
+  exactValue(value.schema, receiptSchema, "verification schema");
+  exactValue(value.diagnosticId, diagnosticId, "verification diagnosticId");
+  exactValue(
+    value.status,
+    "verified-terminal-diagnostic",
+    "verification status"
+  );
+  invariant(
+    utcPattern.test(value.verifiedAtUtc) &&
+      Number.isFinite(Date.parse(value.verifiedAtUtc)) &&
+      revisionPattern.test(value.verificationSourceRevision),
+    "verification temporal identity is invalid"
+  );
+  exactKeys(
+    value.preregistration,
+    ["path", "sha256", "registrationCommit"],
+    "verification preregistration"
+  );
+  invariant(
+    value.preregistration.path === preregistrationRelativePath &&
+      value.preregistration.sha256 === expectedManifestSha256 &&
+      revisionPattern.test(value.preregistration.registrationCommit),
+    "verification preregistration identity is invalid"
+  );
+  exactKeys(
+    value.terminalVerification,
+    ["path", "sha256", "receiptId", "status"],
+    "terminal verification"
+  );
+  invariant(
+    value.terminalVerification.path === terminalVerificationRelativePath &&
+      value.terminalVerification.sha256 ===
+        "91aa60ccea38222004cd425a5f7a8e5332598978ef4b455a16550d5e931cbf9b" &&
+      value.terminalVerification.receiptId ===
+        "portable-affine-u8-flat-verification-b72cb93ab3e2aa85" &&
+      value.terminalVerification.status === "verified-terminal-no-observation",
+    "terminal verification identity is invalid"
+  );
+  exactKeys(value.attempt, [
+    "path", "bytes", "fileSha256", "attemptId", "attemptContentHash",
+    "status", "sourceRevision"
+  ], "attempt reference");
+  invariant(
+    relativePathPattern.test(value.attempt.path) &&
+      safeInteger(value.attempt.bytes, "attempt bytes", 1, maximumEvidenceBytes) &&
+      sha256Pattern.test(value.attempt.fileSha256) &&
+      /^portable-affine-u8-quality-diagnostic-attempt-[a-f0-9]{16}$/u.test(
+        value.attempt.attemptId
+      ) &&
+      sha256Pattern.test(value.attempt.attemptContentHash) &&
+      revisionPattern.test(value.attempt.sourceRevision),
+    "attempt reference is invalid"
+  );
+  invariant(
+    Array.isArray(value.inputs) &&
+      value.inputs.length === staticInputPaths.length + 1 &&
+      new Set(value.inputs.map((entry) => entry.path)).size === value.inputs.length,
+    "verification input closure is invalid"
+  );
+  value.inputs.forEach((entry, index) =>
+    validateFileEvidence(entry, `verification input ${index}`));
+  exactKeys(value.independentSummary, [
+    "attemptCount", "diagnosticProcessInvocationCount", "diagnosticStatus",
+    "firstFailingStage", "failureCode", "benchmarkErrorCode", "stdoutBytes",
+    "stdoutSha256", "stderrBytes", "stderrSha256", "processExitCode",
+    "processSignal", "ownedRootDeleted", "rawOutputPresent",
+    "parsedQualityMetricsPresent", "thresholdDecisionPresent",
+    "qualityClaimSupported", "sameExperimentRetryAllowed",
+    "productPromotionAllowed", "campaignCounterIncrementAllowed"
+  ], "independentSummary");
+  invariant(
+    value.independentSummary.attemptCount === 1 &&
+      Number.isSafeInteger(
+        value.independentSummary.diagnosticProcessInvocationCount
+      ) &&
+      value.independentSummary.diagnosticProcessInvocationCount >= 0 &&
+      value.independentSummary.diagnosticProcessInvocationCount <= 1 &&
+      value.independentSummary.rawOutputPresent === false &&
+      value.independentSummary.parsedQualityMetricsPresent === false &&
+      value.independentSummary.thresholdDecisionPresent === false &&
+      value.independentSummary.qualityClaimSupported === false &&
+      value.independentSummary.sameExperimentRetryAllowed === false &&
+      value.independentSummary.productPromotionAllowed === false &&
+      value.independentSummary.campaignCounterIncrementAllowed === false,
+    "independent summary boundary is invalid"
+  );
+  exactStructure(value.authority, authority, "verification authority");
+  exactValue(value.requiredNextGate, requiredNextGate, "required next gate");
+  const identity = receiptIdentity(value);
+  exactValue(value.receiptId, identity.id, "verification receipt id");
+  exactValue(
+    value.receiptContentHash,
+    identity.hash,
+    "verification receipt content hash"
+  );
+  rejectForbiddenEvidenceKeys(value, "verification receipt");
+  publicSafe(value, "verification receipt");
+  return value;
+}
+
+function buildReceipt(options = {}) {
+  invariant(!fs.existsSync(receiptPath), "diagnostic verification already exists");
+  const manifest = validateManifestFile();
+  invariant(manifest.registrationCommit !== null, "preregistration is not committed");
+  const archive = loadAttemptArchive();
+  exactValue(archive.length, 1, "diagnostic attempt count");
+  const entry = archive[0];
+  const paths = verificationInputPaths(entry);
+  assertInputsCommitted(paths);
+  const revision = sourceRevision();
+  assertAncestor(manifest.registrationCommit, entry.attempt.sourceRevision,
+    "registration-to-attempt");
+  assertAncestor(entry.attempt.sourceRevision, revision, "attempt-to-verification");
+  const terminal = validateTerminalExperimentVerification();
+  invariant(
+    terminal.sha256 ===
+      "91aa60ccea38222004cd425a5f7a8e5332598978ef4b455a16550d5e931cbf9b" &&
+      terminal.receipt.status === "verified-terminal-no-observation" &&
+      terminal.receipt.observation === null &&
+      terminal.receipt.independentSummary.sameExperimentRetryAllowed === false &&
+      terminal.receipt.independentSummary.productPromotionAllowed === false,
+    "terminal experiment boundary changed"
+  );
+  const summary = independentSummary(entry.attempt);
+  const attemptPath = attemptRelativePath(entry);
+  return validateReceipt(finalizeReceipt({
+    schema: receiptSchema,
+    diagnosticId,
+    status: "verified-terminal-diagnostic",
+    verifiedAtUtc: options.verifiedAtUtc ?? new Date().toISOString(),
+    verificationSourceRevision: revision,
+    preregistration: {
+      path: preregistrationRelativePath,
+      sha256: expectedManifestSha256,
+      registrationCommit: manifest.registrationCommit
+    },
+    terminalVerification: {
+      path: terminalVerificationRelativePath,
+      sha256: terminal.sha256,
+      receiptId: terminal.receipt.receiptId,
+      status: terminal.receipt.status
+    },
+    attempt: {
+      path: attemptPath,
+      bytes: entry.bytes,
+      fileSha256: entry.sha256,
+      attemptId: entry.attempt.attemptId,
+      attemptContentHash: entry.attempt.attemptContentHash,
+      status: entry.attempt.status,
+      sourceRevision: entry.attempt.sourceRevision
+    },
+    inputs: paths.map(fileEvidence),
+    independentSummary: summary,
+    authority,
+    requiredNextGate
+  }));
+}
+
+function validateReceiptFile(filePath = receiptPath) {
+  const stat = fs.lstatSync(filePath);
+  invariant(
+    stat.isFile() &&
+      !stat.isSymbolicLink() &&
+      stat.size > 0 &&
+      stat.size <= maximumEvidenceBytes,
+    "diagnostic verification file is invalid"
+  );
+  const bytes = fs.readFileSync(filePath);
+  const receipt = validateReceipt(JSON.parse(bytes.toString("utf8")));
+  invariant(
+    bytes.equals(canonicalPrettyBytes(receipt)),
+    "diagnostic verification bytes are not canonical"
+  );
+  const manifest = validateManifestFile();
+  exactValue(
+    receipt.preregistration.registrationCommit,
+    manifest.registrationCommit,
+    "verification registration commit"
+  );
+  const archive = loadAttemptArchive();
+  exactValue(archive.length, 1, "diagnostic attempt count");
+  const entry = archive[0];
+  const expectedPaths = verificationInputPaths(entry);
+  exactStructure(
+    receipt.inputs.map((input) => input.path),
+    expectedPaths,
+    "verification input paths"
+  );
+  for (const [index, input] of receipt.inputs.entries()) {
+    validateGitInput(
+      input,
+      repositoryRoot,
+      receipt.verificationSourceRevision,
+      input.path,
+      `verification input ${index}`,
+      maximumInputBytes
+    );
+  }
+  exactStructure(
+    receipt.independentSummary,
+    independentSummary(entry.attempt),
+    "verification independent summary"
+  );
+  exactValue(receipt.attempt.path, attemptRelativePath(entry), "verification attempt path");
+  exactValue(receipt.attempt.bytes, entry.bytes, "verification attempt bytes");
+  exactValue(receipt.attempt.fileSha256, entry.sha256, "verification attempt hash");
+  exactValue(
+    receipt.attempt.attemptContentHash,
+    entry.attempt.attemptContentHash,
+    "verification attempt content hash"
+  );
+  assertAncestor(
+    receipt.attempt.sourceRevision,
+    receipt.verificationSourceRevision,
+    "receipt attempt-to-verification"
+  );
+  return Object.freeze({
+    receipt,
+    bytes: bytes.length,
+    sha256: sha256(bytes)
+  });
+}
+
+function writeReceipt() {
+  const receipt = buildReceipt();
+  atomicCreate(receiptPath, canonicalPrettyBytes(receipt));
+  return validateReceiptFile(receiptPath);
+}
+
+function main(argumentsList) {
+  invariant(
+    argumentsList.length === 1 &&
+      ["--write", "--validate"].includes(argumentsList[0]),
+    "usage: node vector-portable-affine-u8-quality-diagnostic-verification.js " +
+      "--write|--validate"
+  );
+  const result = argumentsList[0] === "--write"
+    ? writeReceipt()
+    : validateReceiptFile();
+  process.stdout.write(`${JSON.stringify({
+    schema: result.receipt.schema,
+    receiptId: result.receipt.receiptId,
+    sha256: result.sha256,
+    status: result.receipt.status,
+    firstFailingStage: result.receipt.independentSummary.firstFailingStage
+  })}\n`);
+  process.exitCode = 2;
+}
+
+if (require.main === module) {
+  try {
+    main(process.argv.slice(2));
+  } catch (error) {
+    process.stderr.write(
+      `${error instanceof Error ? error.message : "affine-u8 diagnostic verification failed"}\n`
+    );
+    process.exitCode = 1;
+  }
+}
+
+module.exports = Object.freeze({
+  buildReceipt,
+  finalizeReceipt,
+  independentSummary,
+  receiptIdentity,
+  receiptPath,
+  receiptRelativePath,
+  receiptSchema,
+  staticInputPaths,
+  validateReceipt,
+  validateReceiptFile,
+  verificationInputPaths,
+  writeReceipt
+});

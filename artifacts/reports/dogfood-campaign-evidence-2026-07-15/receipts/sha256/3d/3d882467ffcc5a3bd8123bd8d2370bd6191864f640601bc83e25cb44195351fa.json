@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "receiptType": "tinyrustlm.model-source-review-v1",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "phase": "model-source-review",
+  "attempt": 1,
+  "status": "rejected",
+  "createdAtUtc": "2026-07-16T17:14:56.113Z",
+  "completedAtUtc": "2026-07-16T17:14:56.114Z",
+  "inputReceiptIds": [],
+  "inputHashes": {
+    "evidenceSet": "8d53ca54711d7f94899876ccd0161f8790a494e0cab8557ca6cc3ca04bf30a5f",
+    "model-card": "9568b09f2a80d09746687bc077aefe9a070948c68d5f1af07007b2da9a70a065",
+    "prohibited-use-policy": "574fec39e0c7e5ec4a8cb2d645475d278791a9f11c0fe7569cd15199f3b99f6a",
+    "repository-tree": "04466f85df5d8be2ab0ec3456d7f573e97babff725da11fabd917ed7356d6e7f",
+    "terms-of-use": "e77acc0d3163bb7534675045c584b4d04b387b529239fc4b3647da0a01ba4745"
+  },
+  "outputHashes": {
+    "assessment": "537674b919e8f80a16040583a15e93d3ceea442bfcc9a6103810919596e14e69"
+  },
+  "sourceRevision": "ac82b4e820549b854eebf28ce6dedaf9fdfa17b3",
+  "toolNames": [
+    "tinyrustlm-source-model-preflight-evidence"
+  ],
+  "toolVersions": [
+    "1"
+  ],
+  "toolBinaryHashes": [
+    "adf1b0442d63ceeced06c2330bba2d750134454d0f8c1d09b99f0800b9269df0"
+  ],
+  "runtimeIdentifier": "win-x64",
+  "operatingSystem": "win32",
+  "architecture": "x64",
+  "hardwareEvidence": {
+    "executionBoundary": "public-source-metadata-review",
+    "physicalHardwareAttested": false
+  },
+  "configurationHash": "13f5091517c0591430169cd5caf5bdde3916abb8777f7efaef5d41d46b88fb4e",
+  "publicSafeParameters": {
+    "modelId": "google/gemma-3-270m-it",
+    "sourceModelId": "google/gemma-3-270m-it",
+    "decision": "rejected",
+    "decisionAuthority": "engineering-source-preflight-v1",
+    "architectureFamily": "gemma3-270m-public-model-card-declared",
+    "runtimeAdmission": "not-assessed-preflight-rejected",
+    "accessDisposition": "gated-user-license-acknowledgement-and-credential-required",
+    "licenseId": "gemma",
+    "licenseDisposition": "custom-gemma-terms-product-policy-conflict",
+    "distributionDisposition": "p2p-redistribution-contract-incompatible",
+    "sourceAcquisitionComplete": false,
+    "evidenceArtifactCount": 4,
+    "missingRequiredArtifactCount": 9,
+    "rejectionCodeCount": 3
+  },
+  "boundedDiagnostics": {
+    "rejectionCodes": [
+      "custom-license-product-policy-conflict",
+      "gated-acquisition-authorization-absent",
+      "p2p-redistribution-contract-incompatible"
+    ],
+    "missingRequiredArtifacts": [
+      "added_tokens.json",
+      "chat_template.jinja",
+      "config.json",
+      "generation_config.json",
+      "model.safetensors",
+      "special_tokens_map.json",
+      "tokenizer.json",
+      "tokenizer.model",
+      "tokenizer_config.json"
+    ],
+    "evidenceByteCount": 44526
+  },
+  "blockerCode": "candidate_source_policy_contract_rejected",
+  "externalEvidenceReferences": [
+    "https://huggingface.co/google/gemma-3-270m-it/tree/ac82b4e820549b854eebf28ce6dedaf9fdfa17b3",
+    "https://huggingface.co/google/gemma-3-270m-it/blob/ac82b4e820549b854eebf28ce6dedaf9fdfa17b3/README.md",
+    "https://ai.google.dev/gemma/terms",
+    "https://ai.google.dev/gemma/prohibited_use_policy"
+  ],
+  "redactionVersion": "tinyrustlm.public-receipt-redaction.v1",
+  "evidenceClass": "local",
+  "supersedesReceiptIds": [],
+  "attestationReference": null,
+  "receiptId": "sha256:3d882467ffcc5a3bd8123bd8d2370bd6191864f640601bc83e25cb44195351fa",
+  "receiptContentHash": "3d882467ffcc5a3bd8123bd8d2370bd6191864f640601bc83e25cb44195351fa"
+}

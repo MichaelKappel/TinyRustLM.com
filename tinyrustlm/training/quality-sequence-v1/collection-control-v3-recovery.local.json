@@ -1,0 +1,60 @@
+{
+  "schema": "tinyrustlm.teacher_draft_collection.v1",
+  "campaign_id": "tinyrustlm-quality-sequence-v1-qwen36-refusal-recovery",
+  "source_id": "tinyrustlm-qwen36-local-reviewed-refusal-recovery",
+  "source_license": "UAIX-internal-reviewed-synthetic-output-v1",
+  "prompt_plan": {
+    "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/training/quality-sequence-v1/prompt-plan-v3-refusal-recovery.jsonl",
+    "sha256": "sha256:4554b7791221a57066d56c70acdae717ffa70738ec2ed73eda998b4d4598c2d9"
+  },
+  "eval_exclusions": [
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-actionable-contract-eval-cases.txt",
+      "sha256": "sha256:50f3e7aa8e7ad25c24ddc9e67506c8d3bdb82c51d49469421b33ae1dc903ed73"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-completion-contract-eval-cases.txt",
+      "sha256": "sha256:851b454657a7f77d2f57334e60083625732b48fcfd7c5a14f4d6af91ee078858"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-eval-cases.txt",
+      "sha256": "sha256:627fcfa5f230fe2d4ec435d10044ab72ec89fa8e4ce20ad59a18a3cb766fdf2b"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-json-contract-eval-cases.txt",
+      "sha256": "sha256:2ef0ba85c605c459c6c78bc24a06841b35f0e08d657a04dca3701e3c8f6c9691"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-raw-open-chat-eval-cases.txt",
+      "sha256": "sha256:79bb12228270b6c4f31b1fcdc2249303fb7c568f4853a6625cd7ffb899a751c0"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-source-greedy-open-chat-eval-cases.txt",
+      "sha256": "sha256:39c9b1f384fdd99bfff67eb57373bd58b9cd655610a980e1d4b0690e3c0c2c3e"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-summary-contract-eval-cases.txt",
+      "sha256": "sha256:4241bfecccd2184aa8642a0cd8b1b4256c4746a5017419bc3f433e885378f3de"
+    }
+  ],
+  "teacher": {
+    "model_id": "Qwen/Qwen3.6-35B-A3B",
+    "revision": "lmstudio-community-68a34855558af61cbef0324d31f411be8a506b08",
+    "weight_file": "D:/LLMs/lmstudio-community/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-Q4_K_M.gguf",
+    "weight_sha256": "sha256:4ac6a06bce551257267f49ad2226f8671a22519ccc1a4dde9d5b433d1f2a410d",
+    "tokenizer_identity_file": "D:/LLMs/lmstudio-community/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-Q4_K_M.gguf",
+    "tokenizer_identity_sha256": "sha256:4ac6a06bce551257267f49ad2226f8671a22519ccc1a4dde9d5b433d1f2a410d",
+    "license": "Apache-2.0",
+    "endpoint": "http://127.0.0.1:1235/v1/chat/completions"
+  },
+  "generation": {
+    "system_prompt_file": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/training/quality-sequence-v1/teacher-system-prompt.txt",
+    "system_prompt_sha256": "sha256:8134d2cf7f99b109ed09bf0cb1b6d8479c7ed23502fd9a30570c6447049ff860",
+    "temperature": 0.2,
+    "top_p": 0.9,
+    "top_k": 20,
+    "max_tokens": 512,
+    "seed": 20260811,
+    "timeout_seconds": 600
+  }
+}

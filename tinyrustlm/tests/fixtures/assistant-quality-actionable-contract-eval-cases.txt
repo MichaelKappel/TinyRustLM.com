@@ -1,0 +1,29 @@
+# TinyRustLM focused actionable-answer eval cases
+
+tinyrustlm_eval_cases_version=1
+scope=assistant-quality-no-cheat-runtime-gate
+quality_gate_policy=honest-assistant-quality-v1
+quality_boundary=real-runtime-response-quality
+safety_review_status=pass
+quality_decision=accepted-for-assistant-quality
+evaluator=tinyrustlm-native-eval-runner
+eval_summary=Focused no-cheat actionable-answer check for peer import, manifest trust, local-only wording, and verification JSON.
+case_count=4
+
+case.0.prompt=List three concise checks before importing a peer-shared .slm model.
+case.0.max_new_tokens=48
+case.0.required_result=quality
+
+case.1.prompt=Explain in one sentence why a model manifest hash matters before loading a local .slm file.
+case.1.max_new_tokens=40
+case.1.required_result=quality
+
+case.2.prompt=Rewrite this sentence to be clearer: users should know the model runs local and no prompt leaves the browser.
+case.2.max_new_tokens=40
+case.2.required_result=quality
+
+case.3.prompt=Return JSON with keys status and reason for a peer model waiting for local verification.
+case.3.max_new_tokens=32
+case.3.required_result=quality
+case.3.output_format=json_object
+case.3.required_json_keys=status,reason

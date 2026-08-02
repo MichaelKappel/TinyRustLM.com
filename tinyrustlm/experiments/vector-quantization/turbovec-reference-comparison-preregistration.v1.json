@@ -1,0 +1,670 @@
+{
+  "schema": "tinyrustlm.turbovec_reference_comparison_preregistration.v1",
+  "experimentId": "turbovec-090-4bit-tqplus-reference-comparison-20260725",
+  "registeredAtUtc": "2026-07-25T22:11:00Z",
+  "status": "preregistered-after-source-screen-before-comparison-implementation-or-results",
+  "parents": [
+    {
+      "kind": "preregistration",
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-preregistration.v1.json",
+      "experimentId": "exact-flat-sealed-corpus-and-durable-deletion-20260725",
+      "sha256": "f6c1ac0d2c0f40365aca977aeccb894416185dc7069a97bb357510b94d94b4d1"
+    },
+    {
+      "kind": "observation",
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-observation-v1.json",
+      "receiptId": "exact-flat-baseline-evidence-94aab53fab3f93b7",
+      "contentHash": "94aab53fab3f93b741490b095da58fd952cfa0122a58106c208fdfd4b8db46bb",
+      "sha256": "fa04d21ae35555b6a1d500eaf8569c5a7246c1bfde1f0bfc2e62812d6965c45c"
+    },
+    {
+      "kind": "verification",
+      "path": "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-verification-v1.json",
+      "receiptId": "exact-flat-baseline-evidence-verification-6eb3d0e13fe60cbd",
+      "contentHash": "6eb3d0e13fe60cbde24fa1234d8e254506fc7d8a02a8ad6aca5a6735b8e6cdae",
+      "sha256": "9e745a77807524ad6bf2eff3aab0cf5b2a5a3c246c484698bb9ce108948a9fe1"
+    }
+  ],
+  "sourcePin": {
+    "claimLedger": {
+      "path": "tinyrustlm/experiments/vector-quantization/source-claim-ledger.v1.json",
+      "ledgerId": "turbovec-turboquant-review-20260722",
+      "sha256": "7daa7653222914a028e636e6de6e195f94cb5eb50d5bd10a76af624877303808"
+    },
+    "crate": {
+      "sourceId": "turbovec-crate-090",
+      "name": "turbovec",
+      "version": "0.9.0",
+      "registry": "https://crates.io",
+      "artifactUrl": "https://crates.io/api/v1/crates/turbovec/0.9.0/download",
+      "artifactBytes": 89523,
+      "artifactSha256": "0715a5a1365e86d0ae6396fa0c011f319b8e8024b3896cd16e6468e29ed3a325",
+      "vcsRevision": "1e7200cfd8f26c92ce2855652db64bc7f85bc039",
+      "vcsInfoSha256": "749fb338232fe8dfe56a155e95f816cc20e7d046debefc696af1de989e8e5d19",
+      "cargoTomlSha256": "dfeca162df419ba05445c3661437e66b8c27812ecd71596791bc31669b01bacf",
+      "cargoTomlOrigSha256": "98370b426e02b2d0d96d06f625cc7cadd24b629355c876df4c4a50eb2de4a17a",
+      "upstreamCargoLockSha256": "2533091ae8cfcc9ab68d77d08fa97469a80367dff64e09f9554f10bf6c97d58d",
+      "licenseExpression": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/RyanCodrai/turbovec/1e7200cfd8f26c92ce2855652db64bc7f85bc039/LICENSE",
+      "licenseSha256": "e94eb7a09e285805786b74d8cfc535906efd3aabc243636646218314f7b4593c",
+      "repositoryArchiveUrl": "https://github.com/RyanCodrai/turbovec/archive/1e7200cfd8f26c92ce2855652db64bc7f85bc039.tar.gz",
+      "repositoryArchiveBytes": 549022,
+      "repositoryArchiveSha256": "90a86a55f71982d288dd4eeb34f33dfc75427db830beae0391e2d5b5826477c5",
+      "externalArtifactLocatorEnvironmentVariable": "TINYRUSTLM_TURBOVEC_CRATE_ARCHIVE",
+      "externalArtifactPathMayEnterEvidence": false,
+      "externalSourceBytesMayEnterRepository": false,
+      "sourceCodeCopyingAllowed": false,
+      "testVectorCopyingAllowed": false,
+      "role": "isolated-native-black-box-reference-comparator"
+    },
+    "dependencyPolicy": {
+      "wrapperDependencyRequirement": "turbovec = \"=0.9.0\"",
+      "committedCargoLockRequired": true,
+      "registryChecksumMustMatchArtifactSha256": true,
+      "offlineLockedObservationBuildRequired": true,
+      "resolvedPackageCountObservedDuringSourceScreen": 99,
+      "rootNormalDependencyCountObservedDuringSourceScreen": 10,
+      "resolvedPackagesMissingLicenseMetadata": 0,
+      "transitiveLegalApprovalForProductUse": false,
+      "directProductDependencyAdoptionAllowed": false
+    }
+  },
+  "sourceScreen": {
+    "scope": "metadata-license-api-persistence-and-build-feasibility-only",
+    "qualityCorpusExecuted": false,
+    "compressedComparisonImplemented": false,
+    "compressedComparisonResultsObserved": false,
+    "nativeCheck": {
+      "target": "x86_64-pc-windows-msvc",
+      "rustcVersion": "1.96.0 (ac68faa20 2026-05-25)",
+      "cargoVersion": "1.96.0 (30a34c682 2026-05-25)",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--all-targets"
+      ],
+      "exitCode": 0,
+      "upstreamWarningCount": 2,
+      "evidenceClass": "local-native-build-feasibility-only"
+    },
+    "wasmCheck": {
+      "target": "wasm32-unknown-unknown",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--target",
+        "wasm32-unknown-unknown",
+        "--lib"
+      ],
+      "exitCode": 1,
+      "blockerCode": "UPSTREAM_GETRANDOM_JS_FEATURE_NOT_ENABLED",
+      "failureClass": "compile-time-target-rejection",
+      "directBrowserCompatibilityObserved": false,
+      "downstreamFeatureOverrideTested": false
+    },
+    "apiFacts": {
+      "acceptedBitWidths": [
+        2,
+        3,
+        4
+      ],
+      "dimensionMustBePositiveMultipleOf8": true,
+      "maximumDimension": 65536,
+      "stableExternalIdsAvailable": true,
+      "allowlistFilteringAvailable": true,
+      "swapRemoveDeletionAvailable": true,
+      "searchObjective": "maximum-inner-product",
+      "builtInSquaredEuclideanObjectiveAvailable": false,
+      "builtInCosineObjectiveAvailable": false,
+      "persistenceFormat": "TVIM-version-3",
+      "persistenceContainsCryptographicDigest": false,
+      "persistenceWriterCallsSyncAll": false,
+      "persistenceWriterUsesAtomicReplace": false
+    },
+    "knownSourceWarningsAreNotWaived": true,
+    "nativeScreenDoesNotAuthorizeQualityPerformanceWasmOrProductClaims": true
+  },
+  "build": {
+    "comparisonManifest": "tinyrustlm/experiments/vector-quantization/turbovec-reference-comparison/Cargo.toml",
+    "comparisonLock": "tinyrustlm/experiments/vector-quantization/turbovec-reference-comparison/Cargo.lock",
+    "benchmarkSource": "tinyrustlm/experiments/vector-quantization/turbovec-reference-comparison/src/main.rs",
+    "observationRunnerSource": "tinyrustlm/tools/vector-turbovec-reference-observation.js",
+    "verificationRunnerSource": "tinyrustlm/tools/vector-turbovec-reference-verification.js",
+    "exactFlatLibraryManifest": "rust/experiments/tinyrustlm-vector-oracle/Cargo.toml",
+    "exactFlatLibrarySource": "rust/experiments/tinyrustlm-vector-oracle/src/lib.rs",
+    "binaryOutput": "<owned-output-directory>/turbovec_reference_comparison.exe",
+    "buildCommand": [
+      "cargo",
+      "build",
+      "--manifest-path",
+      "tinyrustlm/experiments/vector-quantization/turbovec-reference-comparison/Cargo.toml",
+      "--release",
+      "--locked",
+      "--offline",
+      "--target-dir",
+      "<owned-output-directory>/target"
+    ],
+    "target": "x86_64-pc-windows-msvc",
+    "profile": {
+      "optLevel": 3,
+      "lto": "fat",
+      "codegenUnits": 1,
+      "overflowChecks": true,
+      "debug": false
+    },
+    "wrapperWarningsAllowed": 0,
+    "upstreamWarningsMustBeReported": true,
+    "unsafeCodeInWrapperAllowed": false,
+    "workspaceManifestMutationAllowed": false,
+    "productSourceMutationAllowed": false,
+    "exactFlatSourceMutationAllowed": false,
+    "upstreamSourceMutationAllowed": false,
+    "thirdPartySourceVendoringAllowed": false,
+    "productImportAllowed": false,
+    "wasmBuildClaimAllowed": false
+  },
+  "corpusReuse": {
+    "parentExperimentId": "exact-flat-sealed-corpus-and-durable-deletion-20260725",
+    "selectionAlgorithm": "sha256-seed-split-label-index-smallest-v1",
+    "selectionSeed": "6a09e667f3bcc908bb67ae8584caa73b3c6ef372fe94f82ba54ff53a5f1d36f1",
+    "selectionSha256": "8be904326c844c31b6e973f88bc6ce2e0a7462d51aa0d5ae497dda4b02472fbd",
+    "selectedRecordAndQueryIdentitiesMustMatchParent": true,
+    "selectedIndicesMayEnterEvidence": false,
+    "rawVectorsMayEnterEvidence": false,
+    "rawImagesMayEnterEvidence": false,
+    "rawTextMayEnterEvidence": false,
+    "recordInsertionOrder": "ascending-external-id",
+    "queryOrder": "parent-order",
+    "lanes": [
+      {
+        "laneId": "fashion-mnist-euclidean-784",
+        "laneKind": "natural",
+        "metric": "squared-euclidean",
+        "originalDimension": 784,
+        "encodedDimension": 792,
+        "recordCount": 2000,
+        "queryCount": 200,
+        "metricAdapter": "euclidean-to-mips-v1",
+        "calibrationMode": "tqplus-fitted-first-single-add",
+        "candidateDynamicIndexBytes": 822354,
+        "capacityMatchedExactRecordCount": 260,
+        "capacityMatchedExactIndexBytes": 819800
+      },
+      {
+        "laneId": "fashion-mnist-cosine-784",
+        "laneKind": "natural",
+        "metric": "cosine",
+        "originalDimension": 784,
+        "encodedDimension": 784,
+        "recordCount": 2000,
+        "queryCount": 200,
+        "metricAdapter": "identity-normalized-dot-v1",
+        "calibrationMode": "tqplus-fitted-first-single-add",
+        "candidateDynamicIndexBytes": 814290,
+        "capacityMatchedExactRecordCount": 258,
+        "capacityMatchedExactIndexBytes": 813496
+      },
+      {
+        "laneId": "synthetic-dot-128",
+        "laneKind": "synthetic",
+        "metric": "dot-product",
+        "originalDimension": 128,
+        "encodedDimension": 128,
+        "recordCount": 1200,
+        "queryCount": 120,
+        "metricAdapter": "identity-dot-v1",
+        "calibrationMode": "tqplus-fitted-first-single-add",
+        "candidateDynamicIndexBytes": 92242,
+        "capacityMatchedExactRecordCount": 174,
+        "capacityMatchedExactIndexBytes": 92152
+      },
+      {
+        "laneId": "synthetic-cosine-384",
+        "laneKind": "synthetic",
+        "metric": "cosine",
+        "originalDimension": 384,
+        "encodedDimension": 384,
+        "recordCount": 1200,
+        "queryCount": 120,
+        "metricAdapter": "identity-normalized-dot-v1",
+        "calibrationMode": "tqplus-fitted-first-single-add",
+        "candidateDynamicIndexBytes": 247890,
+        "capacityMatchedExactRecordCount": 159,
+        "capacityMatchedExactIndexBytes": 247048
+      },
+      {
+        "laneId": "synthetic-euclidean-768",
+        "laneKind": "synthetic",
+        "metric": "squared-euclidean",
+        "originalDimension": 768,
+        "encodedDimension": 776,
+        "recordCount": 1200,
+        "queryCount": 120,
+        "metricAdapter": "euclidean-to-mips-v1",
+        "calibrationMode": "tqplus-fitted-first-single-add",
+        "candidateDynamicIndexBytes": 486226,
+        "capacityMatchedExactRecordCount": 157,
+        "capacityMatchedExactIndexBytes": 485096
+      },
+      {
+        "laneId": "controlled-memory-cosine-64",
+        "laneKind": "controlled-memory",
+        "metric": "cosine",
+        "originalDimension": 64,
+        "encodedDimension": 64,
+        "recordCount": 120,
+        "queryCount": 30,
+        "metricAdapter": "identity-normalized-dot-v1",
+        "calibrationMode": "identity-below-upstream-1000-sample-floor",
+        "candidateDynamicIndexBytes": 5810,
+        "capacityMatchedExactRecordCount": 20,
+        "capacityMatchedExactIndexBytes": 5720
+      }
+    ]
+  },
+  "method": {
+    "methodId": "turbovec-crate-090-4bit-tqplus-native-reference",
+    "indexType": "turbovec::IdMapIndex",
+    "bitWidth": 4,
+    "codeCountPerCoordinate": 16,
+    "rotationAlgorithm": "upstream-dense-seeded-gaussian-qr",
+    "rotationSeed": 42,
+    "codebookAlgorithm": "upstream-lloyd-max-beta-marginal",
+    "calibrationAlgorithm": "upstream-tqplus-5-and-95-percentile",
+    "calibrationMinimumSampleCount": 1000,
+    "calibrationBatch": "all-records-in-one-first-add",
+    "calibrationFrozenAfterFirstAdd": true,
+    "perVectorCorrection": "upstream-length-renormalization-scale-f32",
+    "packedCodeLayout": "upstream-4-bit-plane-format",
+    "topKValues": [
+      1,
+      10,
+      100
+    ],
+    "searchUsesUpstreamTopKMembership": true,
+    "searchOverfetchAllowed": false,
+    "returnedMembershipRepairAllowed": false,
+    "returnedScoreRepairAllowed": false,
+    "returnedExactScoreTiesCanonicalizedByAscendingExternalId": true,
+    "topKCutoffTieMembershipRemainsUpstreamBehavior": true,
+    "sourceVectorRerankingAllowed": false,
+    "reconstructionRerankingAllowed": false,
+    "featureAblationAllowed": false,
+    "secondBitWidthAllowed": false,
+    "secondCompressedMethodAllowed": false,
+    "bestOfNAllowed": false
+  },
+  "metricAdapters": {
+    "dotProduct": {
+      "recordTransform": "identity-f32",
+      "queryTransform": "identity-f32",
+      "encodedDimensionRule": "original-dimension",
+      "candidateScoreToDeclaredScore": "identity",
+      "rankDirection": "descending"
+    },
+    "cosine": {
+      "recordTransform": "reuse-parent-l2-unit-f32",
+      "queryTransform": "reuse-parent-l2-unit-f32",
+      "encodedDimensionRule": "original-dimension",
+      "candidateScoreToDeclaredScore": "identity",
+      "rankDirection": "descending"
+    },
+    "squaredEuclidean": {
+      "recordTransform": "[x,-sum_f64_ascending(x_i*x_i)_cast_f32,zero-padding]",
+      "queryTransform": "[2*x,1,zero-padding]",
+      "encodedDimensionRule": "round-up-original-plus-one-to-next-multiple-of-eight",
+      "candidateScoreToDeclaredScore": "sum_f64_ascending(q_i*q_i)-candidate-inner-product",
+      "rankDirection": "ascending",
+      "externalIdPreserved": true,
+      "paddingCountsTowardEffectiveBytes": true
+    },
+    "allTransforms": {
+      "negativeZeroCanonicalized": true,
+      "allCoordinatesMustRemainFiniteAndBelowUpstreamMagnitudeLimit": true,
+      "transformFailureInvalidatesLane": true,
+      "transformedCoordinatesMayEnterEvidence": false
+    }
+  },
+  "byteAccounting": {
+    "scope": "complete-dynamic-index-bytes-plus-separately-reported-static-and-runtime-overhead",
+    "exactFlatFullIndexFormula": "280+n*(16+4*d_original)",
+    "candidateTvimFormula": "18+n*d_encoded*4/8+4*n+8*n+8*d_encoded",
+    "candidateFormulaTerms": {
+      "fixedMagicVersionHeaderAndCalibrationCountBytes": 18,
+      "packedCodeBitsPerEncodedCoordinate": 4,
+      "perVectorCorrectionBytes": 4,
+      "externalIdBytes": 8,
+      "tqplusShiftBytesPerEncodedCoordinate": 4,
+      "tqplusScaleBytesPerEncodedCoordinate": 4
+    },
+    "actualFileLengthMustEqualFormula": true,
+    "effectiveBitsPerOriginalCoordinateFormula": "8*candidate_tvim_bytes/(n*d_original)",
+    "persistentRatioFormula": "candidate_tvim_bytes/exact_flat_full_index_bytes",
+    "maximumCandidateToFullExactPersistentRatioPerLane": 0.2,
+    "capacityMatchedControl": {
+      "budget": "candidate-tvim-actual-file-length",
+      "exactRecordCountFormula": "floor((budget-280)/(16+4*d_original))",
+      "exactControlMustNotExceedBudget": true,
+      "oneAdditionalExactRecordMustExceedBudget": true,
+      "subsetAlgorithm": "sha256-parent-selection-seed-lane-id-external-id-smallest-v1",
+      "subsetUsesOnlyParentSelectedRecords": true,
+      "subsetMaySpecialCaseExpectedAnswersOrLabels": false,
+      "queryIdentitiesMustMatchFullParent": true,
+      "comparisonClaim": "capacity-at-equal-dynamic-index-bytes-only"
+    },
+    "separatelyReportedPersistentBytes": [
+      "generation-commit-json",
+      "attempt-receipt-json",
+      "verification-receipt-json"
+    ],
+    "separatelyReportedStaticBytes": [
+      "comparison-executable",
+      "turbovec-crate-archive",
+      "cargo-lock",
+      "codebook-derived-at-runtime"
+    ],
+    "separatelyReportedRuntimeMemory": [
+      "source-vector-input",
+      "dense-rotation-matrix",
+      "tqplus-calibration-intermediates",
+      "packed-codes",
+      "blocked-search-layout",
+      "query-rotation",
+      "lookup-tables",
+      "heaps",
+      "process-working-set",
+      "peak-process-working-set"
+    ],
+    "temporarySnapshotBytesMustBeReported": true,
+    "decodedF32ShadowAllowed": false,
+    "hiddenSourceVectorSidecarAllowed": false,
+    "nominalBitWidthMaySubstituteForEffectiveBytes": false,
+    "sameCorpusComparisonMayBeCalledEqualByte": false
+  },
+  "groundTruth": {
+    "implementation": "independent-benchmark-f64-exhaustive-scan-v1",
+    "parentGroundTruthContractReused": true,
+    "mayCallCandidateSearch": false,
+    "mayReadCandidatePrivateState": false,
+    "inputCoordinates": "parent-post-declared-f32-normalization-coordinates",
+    "scoreAccumulation": "f64-in-ascending-coordinate-order",
+    "tieBreak": "ascending-external-id-after-f64-total-order",
+    "fullExactControl": "parent-exact-flat-full-selected-corpus",
+    "capacityMatchedExactControl": "exact-flat-over-frozen-byte-budget-subset",
+    "rankMetrics": [
+      "recallAt1",
+      "recallAt10",
+      "recallAt100",
+      "mrrAt100",
+      "ndcgAt100",
+      "rankInversionRateAt100"
+    ],
+    "scoreMetrics": [
+      "meanAbsoluteNormalizedScoreError",
+      "p99AbsoluteNormalizedScoreError",
+      "maximumAbsoluteNormalizedScoreError"
+    ],
+    "naturalUtilityMetrics": [
+      "macroLabelPrecisionAt10",
+      "macroLabelMrrAt10",
+      "macroLabelNdcgAt10",
+      "perClassQueryCoverage"
+    ],
+    "controlledUtilityMetrics": [
+      "expectedFirstHitRate",
+      "forbiddenHitRateAt10",
+      "deletedHitCount",
+      "filterViolationCount"
+    ],
+    "normalizedScoreErrorDenominator": "max(1,abs(oracle-score))",
+    "rawPerQueryMetricsRetained": true,
+    "rawCandidateScoresRetained": true,
+    "rawVectorsMayEnterEvidence": false,
+    "rawImagesMayEnterEvidence": false,
+    "rawTextMayEnterEvidence": false
+  },
+  "qualityThresholds": {
+    "sameCorpusAllLanes": {
+      "minimumRecallAt1": 0.7,
+      "minimumRecallAt10": 0.85,
+      "minimumRecallAt100": 0.95,
+      "minimumMrrAt100": 0.75,
+      "minimumNdcgAt100": 0.85,
+      "maximumRankInversionRateAt100": 0.1,
+      "maximumMeanAbsoluteNormalizedScoreError": 0.2,
+      "maximumP99AbsoluteNormalizedScoreError": 0.75,
+      "nonFiniteCandidateScoresAllowed": 0,
+      "missingOrDuplicateResultsAllowed": 0
+    },
+    "naturalLanes": [
+      {
+        "laneId": "fashion-mnist-euclidean-784",
+        "minimumMacroLabelPrecisionAt10": 0.6475,
+        "minimumMacroLabelMrrAt10": 0.809375,
+        "minimumMacroLabelNdcgAt10": 0.6707703669488422,
+        "requiredPerClassQueryCoverage": 20
+      },
+      {
+        "laneId": "fashion-mnist-cosine-784",
+        "minimumMacroLabelPrecisionAt10": 0.6275,
+        "minimumMacroLabelMrrAt10": 0.7958035714285715,
+        "minimumMacroLabelNdcgAt10": 0.6501638538707916,
+        "requiredPerClassQueryCoverage": 20
+      }
+    ],
+    "controlledMemoryLane": {
+      "minimumExpectedFirstHitRate": 1,
+      "maximumForbiddenHitRateAt10": 0,
+      "maximumDeletedHitCount": 0,
+      "maximumFilterViolationCount": 0
+    },
+    "capacityMatchedControl": {
+      "candidateMustMeetOrExceedExactSubsetRecallAt1": true,
+      "candidateMustMeetOrExceedExactSubsetRecallAt10": true,
+      "candidateMustMeetOrExceedExactSubsetRecallAt100": true,
+      "candidateMustMeetOrExceedExactSubsetMrrAt100": true,
+      "candidateMustMeetOrExceedExactSubsetNdcgAt100": true,
+      "comparisonRequiredForEveryLane": true
+    },
+    "determinism": {
+      "independentBuildCount": 2,
+      "candidateIndexBytesMustMatch": true,
+      "candidateSearchOutputsMustMatch": true,
+      "preAndPostReloadOutputsMustMatch": true
+    },
+    "resultDrivenChangesAllowed": false,
+    "failedThresholdMayBeLowered": false,
+    "qualityThresholdFailureMayBeRetried": false
+  },
+  "performanceThresholds": {
+    "measurementTarget": "x86_64-pc-windows-msvc-native-reference-only",
+    "pairedProcessRepetitionCount": 5,
+    "methodOrder": "alternating-by-lane-and-repetition-with-frozen-start-method",
+    "warmupFullQueryPasses": 5,
+    "measuredFullQueryPasses": 5,
+    "processesRunSerially": true,
+    "datasetLoadAndSelectionExcludedFromBuildTimer": true,
+    "metricAdapterTimeIncluded": true,
+    "candidatePrepareTimeIncludedInColdFirstQuery": true,
+    "topKHeapTimeIncluded": true,
+    "idTranslationTimeIncluded": true,
+    "buildSerializationAndLoadMeasuredSeparately": true,
+    "requiredLatencyStatistics": [
+      "minimum",
+      "median",
+      "p95",
+      "p99",
+      "maximum"
+    ],
+    "maximumMedianSteadyQueryLatencyRatioToExact": 1.25,
+    "maximumP95SteadyQueryLatencyRatioToExact": 1.5,
+    "maximumColdFirstQueryMilliseconds": 5000,
+    "maximumBuildMilliseconds": 120000,
+    "maximumPeakWorkingSetBytes": 536870912,
+    "maximumPeakWorkingSetRatioToExact": 8,
+    "maximumPostPrepareWorkingSetRatioToExact": 2,
+    "maximumCandidateToFullExactPersistentRatioPerLane": 0.2,
+    "comparisonExecutableBytesMustBeReported": true,
+    "upstreamDependencyBytesMustBeReported": true,
+    "energyMeasured": false,
+    "energyClaimAllowed": false,
+    "performanceOutcomeFailureMayBeRetried": false,
+    "instrumentationFailureMayBeRetried": true
+  },
+  "persistenceAndFailure": {
+    "candidateCoreFormat": "upstream-TVIM-version-3",
+    "candidateCoreFormatModified": false,
+    "wrapperStorageDesign": "content-addressed-snapshot-plus-commit-generation",
+    "wrapperCryptographicHash": "sha256",
+    "wrapperMustVerifyExactFileLengthBeforeUpstreamLoad": true,
+    "wrapperMustVerifySha256BeforeUpstreamLoad": true,
+    "upstreamLoadMayReceiveUnverifiedBytes": false,
+    "sameDirectoryTemporarySuffix": ".tmp",
+    "fileSyncRequiredBeforeFinalize": true,
+    "sameDirectoryAtomicFinalizeRequired": true,
+    "directoryFlushAttemptRequired": true,
+    "reopenAndValidateRequired": true,
+    "deletionOperation": "IdMapIndex::remove-then-new-generation",
+    "deleteTargetSelection": "sha256-lane-id-external-id-smallest-12-v1",
+    "deleteTargetCount": 12,
+    "allowlistDensity": 0.05,
+    "allowlistSelection": "sha256-lane-id-external-id-smallest-v1",
+    "corruptionCases": [
+      "header-bit-flip",
+      "packed-code-bit-flip",
+      "scale-bit-flip",
+      "id-bit-flip",
+      "truncate-one-byte",
+      "append-one-byte",
+      "commit-hash-mismatch"
+    ],
+    "corruptionMustFailBeforeUpstreamLoad": true,
+    "panicAllowed": false,
+    "crashScenarios": [
+      {
+        "scenarioId": "after-snapshot-temp-sync-before-finalize",
+        "expectedActiveGeneration": 1,
+        "deletionCommitted": false
+      },
+      {
+        "scenarioId": "after-snapshot-finalize-before-commit-temp",
+        "expectedActiveGeneration": 1,
+        "deletionCommitted": false
+      },
+      {
+        "scenarioId": "after-commit-temp-sync-before-finalize",
+        "expectedActiveGeneration": 1,
+        "deletionCommitted": false
+      },
+      {
+        "scenarioId": "after-commit-finalize-before-obsolete-cleanup",
+        "expectedActiveGeneration": 2,
+        "deletionCommitted": true
+      }
+    ],
+    "processCrashExitCode": 74,
+    "allCrashScenariosMustRecover": true,
+    "retryMustBeIdempotent": true,
+    "committedDeletedIdsMayRemainSearchable": false,
+    "committedDeletedVectorFingerprintsMayRemainActive": false,
+    "powerLossSimulated": false,
+    "powerLossDurabilityClaimAllowed": false,
+    "filesystemForensicErasureTested": false,
+    "filesystemForensicErasureClaimAllowed": false,
+    "upstreamPersistenceSafetyClaimAllowed": false,
+    "wrapperProcessCrashRecoveryClaimMayBeEarned": true
+  },
+  "execution": {
+    "networkPolicy": "deny-all-during-observation",
+    "parallelProcesses": 1,
+    "overallTimeoutMilliseconds": 3600000,
+    "perProcessTimeoutMilliseconds": 300000,
+    "datasetHashBufferBytes": 1048576,
+    "crateHashBufferBytes": 1048576,
+    "requiredEnvironmentVariables": [
+      "TINYRUSTLM_FASHION_MNIST_ROOT",
+      "TINYRUSTLM_TURBOVEC_CRATE_ARCHIVE"
+    ],
+    "environmentVariableValuesMayEnterEvidence": false,
+    "temporaryRootsMustBeOutsideRepository": true,
+    "temporaryRootMarkerRequired": true,
+    "recursiveCleanupRequiresResolvedRootAndMarker": true,
+    "stdoutContract": "one-canonical-json-object-and-trailing-newline",
+    "stderrContract": "empty-on-success-except-intentional-crash-processes",
+    "resultOrder": "lane-order-then-quality-performance-persistence-failure",
+    "outlierPolicy": "retain-all-valid-measurements",
+    "bestOfNAllowed": false,
+    "resultRepairAllowed": false,
+    "comparisonRunAllowedOnlyAfterPreregistrationCommit": true,
+    "implementationAndTestsMustBeCommittedBeforeObservation": true,
+    "observationWriteRequiresExplicitWriteFlag": true,
+    "sourceScreenMayNotBeCountedAsComparisonExecution": true
+  },
+  "validity": {
+    "allParentBytesAndContentHashesMustMatch": true,
+    "claimLedgerMustMatch": true,
+    "crateArchiveHashSizeVersionAndVcsRevisionMustMatch": true,
+    "committedLockedDependencyGraphMustMatch": true,
+    "offlineBuildMustSucceed": true,
+    "selectedCorpusAndQueriesMustMatchParent": true,
+    "allSixLanesMustComplete": true,
+    "allPerQueryMetricsMustBeRetained": true,
+    "allQualityThresholdsMustPass": true,
+    "allPerformanceThresholdsMustPass": true,
+    "allByteFormulasMustMatchActualFiles": true,
+    "allCapacityMatchedControlsMustBeMaximalUnderBudget": true,
+    "bothDeterminismBuildsMustMatch": true,
+    "allCorruptionCasesMustRejectBeforeUpstreamLoad": true,
+    "allFourCrashScenariosMustRecoverToExpectedGeneration": true,
+    "committedDeletionMustRemainDeletedAfterRestart": true,
+    "ownedTemporaryRootsMustBePhysicallyDeleted": true,
+    "toolSourceBinaryDatasetAndCrateHashesRequired": true,
+    "directWasmBuildRequiredForNativeReferenceValidity": false,
+    "directWasmFailureMustRemainAnOpenProductBlocker": true,
+    "infrastructureFailuresMayBeRetried": true,
+    "qualityThresholdFailuresMayBeRetried": false,
+    "performanceOutcomeFailuresMayBeRetried": false,
+    "deletionSemanticFailuresMayBeRetried": false,
+    "resultDrivenThresholdChangesAllowed": false
+  },
+  "evidencePolicy": {
+    "attemptsAreImmutable": true,
+    "failedAttemptsArePreserved": true,
+    "attemptDirectory": "tinyrustlm/experiments/vector-quantization/turbovec-reference-attempts/sha256",
+    "successfulObservationPath": "tinyrustlm/experiments/vector-quantization/turbovec-reference-comparison-observation-v1.json",
+    "verificationReceiptPath": "tinyrustlm/experiments/vector-quantization/turbovec-reference-comparison-verification-v1.json",
+    "externalCrateBytesAllowed": false,
+    "externalRepositoryBytesAllowed": false,
+    "selectedIndicesAllowed": false,
+    "rawVectorsAllowed": false,
+    "rawImagesAllowed": false,
+    "rawTextAllowed": false,
+    "privateAbsolutePathsAllowed": false,
+    "credentialsAllowed": false,
+    "modelBytesAllowed": false,
+    "publicPackageIdsHashesVersionsSizesCommandsAndBoundedErrorsAllowed": true
+  },
+  "authority": {
+    "turbovec090NativeReferenceBehaviorMayBeClaimed": true,
+    "sameCorpusCompressedRankQualityMayBeClaimed": true,
+    "equalDynamicIndexByteCapacityUtilityMayBeClaimed": true,
+    "completeDynamicIndexByteReductionMayBeClaimed": true,
+    "nativeReferencePerformanceMayBeClaimed": true,
+    "wrapperProcessCrashRecoveryMayBeClaimed": true,
+    "upstreamPersistenceSafetyMayBeClaimed": false,
+    "turboQuantPaperConformanceMayBeClaimed": false,
+    "sourceAlgorithmIndependentReproductionMayBeClaimed": false,
+    "wasmCompatibilityMayBeClaimed": false,
+    "browserPerformanceMayBeClaimed": false,
+    "representativeSemanticMemoryQualityMayBeClaimed": false,
+    "powerLossDurabilityMayBeClaimed": false,
+    "filesystemForensicErasureMayBeClaimed": false,
+    "directProductDependencyAdoptionMayBeClaimed": false,
+    "productIntegrationMayBeClaimed": false,
+    "trainingMayBeAuthorized": false,
+    "releaseMayBeAuthorized": false
+  },
+  "requiredNextGate": "Preserve the sole native TurboVec 0.9.0 reference attempt whether it passes or fails. A pass may support only the bounded native reference, same-corpus quality, complete dynamic-byte, capacity-at-equal-dynamic-index-bytes, and wrapper process-crash claims above. It cannot authorize product adoption. Before product work, preregister a clean local portable compressed implementation with scalar and wasm32-unknown-unknown lanes, independently verify numerical behavior, bind all static and runtime memory, and use the selected embedding model plus a separately sealed natural-language corpus and untouched downstream conversations for semantic-memory authority."
+}

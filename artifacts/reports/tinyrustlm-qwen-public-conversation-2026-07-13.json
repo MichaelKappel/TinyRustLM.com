@@ -1,0 +1,83 @@
+{
+  "schema": "tinyrustlm.multi_turn_context_browser_smoke.v2",
+  "generated_utc": "2026-07-13T12:07:20.053Z",
+  "status": "pass",
+  "app_url": "https://tinyrustlm.com/",
+  "expected_model": "qwen25q4",
+  "assertion_error": null,
+  "result": {
+    "localModelImport": false,
+    "selectedModel": "qwen25q4",
+    "localModelState": "waiting",
+    "runtimeStatus": "Ready",
+    "modelState": "loaded (87991 ms)",
+    "errorState": "none",
+    "firstResponse": "Hi Morgan. Tea is a preferred beverage over coffee.",
+    "secondResponse": "Hi Morgan. Tea is preferred over coffee.",
+    "firstPromptTokenCount": 128,
+    "firstPrefillReusedTokenCount": 0,
+    "firstPrefillComputedTokenCount": 128,
+    "secondPromptTokenCount": 167,
+    "secondPrefillReusedTokenCount": 139,
+    "secondPrefillComputedTokenCount": 28,
+    "activeQuantizationMode": "q4_0",
+    "generatedTokenCount": 9,
+    "modelTransfer": "owned-stream",
+    "provenanceQualityClaim": "coherent-multi-turn-conversation-evidence-not-full-assistant-quality",
+    "provenanceEvalCases": "2 conversation turns passed / strict JSON limited",
+    "provenanceEvalChecksum": "0xe3025d7b978ee3b4",
+    "selectedModelTrustTier": "conversation-proven",
+    "selectedModelQualityCapable": "false",
+    "consoleText": "generate(max_new_tokens=48, temperature=0.7, top_k=40, top_p=0.9, seed=1, conversation_history_turns=1) -> 0 in 13724 ms\nHi Morgan. Tea is preferred over coffee.",
+    "items": [
+      {
+        "role": "You",
+        "text": "Hi, I'm Morgan. I prefer tea over coffee. Please acknowledge both facts in one short sentence.",
+        "status": "completed"
+      },
+      {
+        "role": "TinyRustLM",
+        "text": "Hi Morgan. Tea is a preferred beverage over coffee.",
+        "status": "completed"
+      },
+      {
+        "role": "You",
+        "text": "What is my name, and which drink do I prefer? Answer in one short sentence.",
+        "status": "completed"
+      },
+      {
+        "role": "TinyRustLM",
+        "text": "Hi Morgan. Tea is preferred over coffee.",
+        "status": "completed"
+      }
+    ],
+    "networkRequests": [
+      "https://tinyrustlm.com/?autoload=0",
+      "https://tinyrustlm.com/app/app.css?v=20260713-conversation1",
+      "https://tinyrustlm.com/app/active-conversation.js?v=20260712-multiturn1",
+      "https://tinyrustlm.com/app/calculator-tool.js?v=20260711-calculator1",
+      "https://tinyrustlm.com/app/memory-endpoints-distributed-sync-v1.js?v=20260710-live-contract1",
+      "https://tinyrustlm.com/app/memory-endpoints-sync.js?v=20260710-live-contract1",
+      "https://tinyrustlm.com/app/app.js?v=20260713-conversation1",
+      "https://tinyrustlm.com/runtime/tinyrustlm-simd.wasm.manifest",
+      "https://tinyrustlm.com/runtime/tinyrustlm-simd.wasm",
+      "https://tinyrustlm.com/app/models/qwen2.5-1.5b-instruct-q4.conversation",
+      "https://tinyrustlm.com/app/models/qwen2.5-1.5b-instruct-q4.slm",
+      "https://tinyrustlm.com/app/models/qwen2.5-1.5b-instruct-q4.slm.manifest"
+    ]
+  },
+  "network_requests": [
+    "https://tinyrustlm.com/",
+    "https://tinyrustlm.com/app/app.css",
+    "https://tinyrustlm.com/app/active-conversation.js",
+    "https://tinyrustlm.com/app/calculator-tool.js",
+    "https://tinyrustlm.com/app/memory-endpoints-distributed-sync-v1.js",
+    "https://tinyrustlm.com/app/memory-endpoints-sync.js",
+    "https://tinyrustlm.com/app/app.js",
+    "https://tinyrustlm.com/runtime/tinyrustlm-simd.wasm.manifest",
+    "https://tinyrustlm.com/runtime/tinyrustlm-simd.wasm",
+    "https://tinyrustlm.com/app/models/qwen2.5-1.5b-instruct-q4.conversation",
+    "https://tinyrustlm.com/app/models/qwen2.5-1.5b-instruct-q4.slm",
+    "https://tinyrustlm.com/app/models/qwen2.5-1.5b-instruct-q4.slm.manifest"
+  ]
+}

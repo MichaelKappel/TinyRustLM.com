@@ -1,0 +1,125 @@
+{
+  "schema": "tinyrustlm.task-specialist-source-screen-observation.v4",
+  "experimentId": "planning-constraint-ledger-qwen3-06b-v2-pilot-20260726",
+  "observedAtUtc": "2026-07-26T18:33:49.425Z",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "receiptId": "sha256:cded7d0cd63e3d9f3d78eb34f0b4d6b934d0dc924db0978900117143e7da5f15",
+  "projectSourceRevision": "a82d964f6a3718989a9b582e6bf2d84ae538cd9a",
+  "preregistrationSha256": "d3c20d56da1775929cc77a967471293359d2b6bbe5f17b83c6c5aaf98e2211b9",
+  "publicCaseManifestSha256": "63c321baf37bcb3028b9c5a10bf7b06f30f5805ad253c4f8db9fdbedd5d1063c",
+  "sourceModel": {
+    "modelId": "Qwen/Qwen3-0.6B",
+    "sourceRevision": "c1899de289a04d12100db370d81485cdf75e47ca",
+    "sourceModelSha256": "f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b",
+    "sourceExecutionInputsSha256": "4b20134657cbcf73745a1e9925963fab69e3f2a0fef8de2cd500dfd53069eac4",
+    "sourceWeightIdentityKind": "direct-safetensors-sha256",
+    "sourceWeightArtifactCount": 1,
+    "sourceWeightByteCount": 1503300328,
+    "broadSourceScreenReceiptId": "sha256:1f4c3c4c1f18f24249b8a741befc805017f9480e566d912d32a76e53065773e8",
+    "broadSourceScreenStatus": "rejected",
+    "broadSourceScreenRole": "broad-claim-boundary-only",
+    "sourceIdentityAuthority": "independent-task-capture-checkpoint-artifacts-v1"
+  },
+  "taskContractId": "planning-constraint-ledger-json-v1",
+  "captureContract": {
+    "generationProfile": "greedy",
+    "generationSeedBase": 202607265,
+    "generationCallsPerCase": 1,
+    "chatTemplateOptions": {
+      "enable_thinking": false
+    },
+    "adapterApplied": false,
+    "policyExamplesApplied": false,
+    "userSuffixApplied": false,
+    "responseRepairApplied": false,
+    "retryApplied": false,
+    "bestOfNApplied": false
+  },
+  "sealedInputs": {
+    "exclusionSetSha256": "ca308141f54e2d1df8c08e6bb1f0d9bca68df10aa736b1015e14d36a1dfc4879",
+    "excludedPromptCount": 91,
+    "seedCommitmentSha256": "ab1bc7764d8c17361a671747aa5243c49c493e40c13ff97d76e71cb115097a9e",
+    "privateCaseSetSha256": "bf3b4612b37fc79adc8e70c398c01d9715dde3c310dd8af7884bf996ed623d56",
+    "evalCasesSha256": "0dd0f36bf86841cafe638f495258e428c0ec1d09327cf6750f05978a26cc77a3",
+    "rawCaptureSha256": "4213edff81b56223723db0b16d886392d7cc2db59ec275dc5da482c8d5613bc3",
+    "privateVerdictSha256": "e9c80e54c4610c3614df8ecb7db758e3514807db0443bdab3a1c29a8c6f29792"
+  },
+  "outcome": {
+    "decision": "rejected",
+    "caseCount": 24,
+    "exactPassCount": 11,
+    "failedCount": 13,
+    "malformedOutputCount": 12,
+    "criticalCaseCount": 12,
+    "criticalFailureCount": 7,
+    "categoryPassCounts": [
+      {
+        "category": "complete-explicit",
+        "passed": 3,
+        "total": 3
+      },
+      {
+        "category": "missing-fields",
+        "passed": 0,
+        "total": 3
+      },
+      {
+        "category": "negated-resources",
+        "passed": 3,
+        "total": 3
+      },
+      {
+        "category": "latest-preference",
+        "passed": 0,
+        "total": 3
+      },
+      {
+        "category": "quoted-instruction",
+        "passed": 0,
+        "total": 3
+      },
+      {
+        "category": "current-over-old-authority",
+        "passed": 2,
+        "total": 3
+      },
+      {
+        "category": "reordered-terse",
+        "passed": 1,
+        "total": 3
+      },
+      {
+        "category": "unit-date-normalization",
+        "passed": 2,
+        "total": 3
+      }
+    ],
+    "failureCodes": [
+      "invalid-json",
+      "schema-invalid",
+      "semantic-value-mismatch"
+    ],
+    "decisionReasons": [
+      "overall-exact-pass-floor-failed",
+      "category-exact-pass-floor-failed",
+      "critical-case-failed",
+      "malformed-output-limit-exceeded"
+    ]
+  },
+  "authority": {
+    "conversionSpendAuthorized": false,
+    "trainingAuthorized": false,
+    "taskSpecificProofGranted": false,
+    "broadQualityClaimSupported": false,
+    "productAuthority": false,
+    "releaseAuthority": false,
+    "campaignCounterContribution": 0
+  },
+  "privacy": {
+    "rawPromptBodiesPublished": false,
+    "expectedValuesPublished": false,
+    "rawOutputsPublished": false,
+    "publicEvidenceContainsHashesAndBoundedCountsOnly": true
+  },
+  "terminalAction": "Do not convert, retry, train on this sealed family, promote, package, catalog, or count this exact source experiment. Preserve the immutable rejection; any later specialist must have a genuinely different trained or source artifact and a new independently sealed evaluation."
+}

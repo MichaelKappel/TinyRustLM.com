@@ -1,0 +1,161 @@
+name: TinyRustLM NuGet Feed Monitor
+
+on:
+  schedule:
+    - cron: "17 7 * * *"
+  workflow_dispatch:
+    inputs:
+      source:
+        description: NuGet v3 source URL or package folder
+        required: true
+        default: https://api.nuget.org/v3/index.json
+      allow_newer:
+        description: Allow the feed to have a newer version than this branch
+        required: true
+        type: boolean
+        default: false
+      verify_consumer:
+        description: Run clean consumer install/runtime/P2P smoke against the feed
+        required: true
+        type: boolean
+        default: false
+      verify_hashes:
+        description: Verify feed package bytes against a retained publish-plan report
+        required: true
+        type: boolean
+        default: false
+      verify_browser_feed_current:
+        description: Verify UAIX Browser package IDs expose the source-declared version
+        required: true
+        type: boolean
+        default: false
+      browser_source:
+        description: NuGet v3 source URL or package folder for UAIX Browser package IDs
+        required: false
+        default: https://api.nuget.org/v3/index.json
+      publish_plan_report:
+        description: Path to retained tinyrustlm-nuget-publish-plan.json
+        required: false
+        default: artifacts/reports/tinyrustlm-nuget-publish-plan.json
+
+permissions:
+  contents: read
+
+jobs:
+  verify-feed-current:
+    name: Verify protected SDK feed freshness
+    runs-on: windows-latest
+    if: ${{ github.event_name != 'schedule' || vars.TINYRUSTLM_NUGET_MONITOR_ENABLED == 'true' }}
+    env:
+      NUGET_SOURCE: ${{ github.event_name == 'workflow_dispatch' && inputs.source || vars.TINYRUSTLM_NUGET_SOURCE || 'https://api.nuget.org/v3/index.json' }}
+      ALLOW_NEWER: ${{ github.event_name == 'workflow_dispatch' && format('{0}', inputs.allow_newer) || vars.TINYRUSTLM_NUGET_MONITOR_ALLOW_NEWER || 'false' }}
+      VERIFY_CONSUMER: ${{ github.event_name == 'workflow_dispatch' && format('{0}', inputs.verify_consumer) || vars.TINYRUSTLM_NUGET_MONITOR_VERIFY_CONSUMER || 'false' }}
+      VERIFY_HASHES: ${{ github.event_name == 'workflow_dispatch' && format('{0}', inputs.verify_hashes) || vars.TINYRUSTLM_NUGET_MONITOR_VERIFY_HASHES || 'false' }}
+      VERIFY_BROWSER_FEED_CURRENT: ${{ github.event_name == 'workflow_dispatch' && format('{0}', inputs.verify_browser_feed_current) || vars.UAIX_BROWSER_NUGET_MONITOR_VERIFY_CURRENT || 'false' }}
+      UAIX_BROWSER_NUGET_SOURCE: ${{ github.event_name == 'workflow_dispatch' && inputs.browser_source || vars.UAIX_BROWSER_NUGET_SOURCE || vars.TINYRUSTLM_NUGET_SOURCE || 'https://api.nuget.org/v3/index.json' }}
+      UAIX_BROWSER_PACKAGE_IDS: UAIX.Browser.Core.Abstractions,UAIX.Browser.p2pLLM.Runtime,UAIX.Browser.p2pRuntime.P2P,UAIX.Browser.Memory,UAIX.Browser.p2pLLM.Conversion
+      TINYRUSTLM_PUBLISH_PLAN_REPORT: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_plan_report || vars.TINYRUSTLM_NUGET_MONITOR_PUBLISH_PLAN_REPORT || 'artifacts/reports/tinyrustlm-nuget-publish-plan.json' }}
+      TINYRUSTLM_FEED_CURRENT_REPORT: artifacts/reports/tinyrustlm-nuget-feed-current.json
+      TINYRUSTLM_FEED_SMOKE_REPORT: artifacts/reports/tinyrustlm-nuget-feed-smoke.json
+      TINYRUSTLM_FEED_HASH_REPORT: artifacts/reports/tinyrustlm-nuget-feed-hashes.json
+      UAIX_BROWSER_FEED_CURRENT_REPORT: artifacts/reports/uaix-browser-nuget-feed-current.json
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Verify feed current version
+        shell: pwsh
+        run: |
+          $arguments = @(
+            "-NuGetSource",
+            $env:NUGET_SOURCE,
+            "-ReportOutput",
+            $env:TINYRUSTLM_FEED_CURRENT_REPORT
+          )
+          if ($env:ALLOW_NEWER -eq "true") {
+            $arguments += "-AllowNewer"
+          }
+          & eng/verify-feed-current.ps1 @arguments
+
+      - name: Verify feed current report schema
+        shell: pwsh
+        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --filter FeedCurrentReportIsMachineReadableWhenPresent
+
+      - name: Verify UAIX Browser feed current version
+        if: ${{ env.VERIFY_BROWSER_FEED_CURRENT == 'true' }}
+        shell: pwsh
+        run: |
+          $env:TINYRUSTLM_FEED_PACKAGE_IDS = $env:UAIX_BROWSER_PACKAGE_IDS
+          $arguments = @(
+            "-NuGetSource",
+            $env:UAIX_BROWSER_NUGET_SOURCE,
+            "-ReportOutput",
+            $env:UAIX_BROWSER_FEED_CURRENT_REPORT
+          )
+          if ($env:ALLOW_NEWER -eq "true") {
+            $arguments += "-AllowNewer"
+          }
+          & eng/verify-feed-current.ps1 @arguments
+
+      - name: Verify UAIX Browser feed current report schema
+        if: ${{ env.VERIFY_BROWSER_FEED_CURRENT == 'true' }}
+        shell: pwsh
+        env:
+          TINYRUSTLM_FEED_CURRENT_REPORT: artifacts/reports/uaix-browser-nuget-feed-current.json
+        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter FeedCurrentReportIsMachineReadableWhenPresent
+
+      - name: Verify clean consumer install from feed
+        if: ${{ env.VERIFY_CONSUMER == 'true' }}
+        shell: pwsh
+        run: eng/verify-feed.ps1 -NuGetSource $env:NUGET_SOURCE -ReportOutput $env:TINYRUSTLM_FEED_SMOKE_REPORT
+
+      - name: Verify feed smoke report schema
+        if: ${{ env.VERIFY_CONSUMER == 'true' }}
+        shell: pwsh
+        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter FeedSmokeReportIsMachineReadableWhenPresent
+
+      - name: Verify feed package hashes
+        if: ${{ env.VERIFY_HASHES == 'true' }}
+        shell: pwsh
+        run: eng/verify-feed-package-hashes.ps1 -NuGetSource $env:NUGET_SOURCE -PublishPlanReport $env:TINYRUSTLM_PUBLISH_PLAN_REPORT -ReportOutput $env:TINYRUSTLM_FEED_HASH_REPORT
+
+      - name: Verify feed hash report schema
+        if: ${{ env.VERIFY_HASHES == 'true' }}
+        shell: pwsh
+        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter FeedHashReportIsMachineReadableWhenPresent
+
+      - name: Upload feed current report
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-nuget-feed-monitor-report
+          path: artifacts/reports/tinyrustlm-nuget-feed-current.json
+          if-no-files-found: error
+
+      - name: Upload UAIX Browser feed current report
+        if: ${{ env.VERIFY_BROWSER_FEED_CURRENT == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: uaix-browser-nuget-feed-current-report
+          path: artifacts/reports/uaix-browser-nuget-feed-current.json
+          if-no-files-found: error
+
+      - name: Upload feed smoke report
+        if: ${{ env.VERIFY_CONSUMER == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-nuget-feed-smoke-report
+          path: artifacts/reports/tinyrustlm-nuget-feed-smoke.json
+          if-no-files-found: error
+
+      - name: Upload feed hash report
+        if: ${{ env.VERIFY_HASHES == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-nuget-feed-hash-report
+          path: artifacts/reports/tinyrustlm-nuget-feed-hashes.json
+          if-no-files-found: error

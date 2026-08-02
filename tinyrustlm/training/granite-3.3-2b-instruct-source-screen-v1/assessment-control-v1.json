@@ -1,0 +1,86 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "ibm-granite/granite-3.3-2b-instruct",
+  "sourceRevision": "652c333dc5066f2a1764854a1bcd0ce67163d74f",
+  "sourceModelArtifactSha256": "e0b104adf1bc7c171cacdbd8931821a08608c38c95ef638f105b73c0d6f376ff",
+  "sourceScreenSha256": "bcd38e4fe4a607a2bbea8731d96abb1812ac32fd8371627f1542747ca6639a7d",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "granite3-dense-full-attention-gqa-mup",
+  "runtimeAdmission": "unsupported-current-slm-granite-mup-scaling",
+  "licenseDisposition": "apache-2.0-card-declaration-review-required",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": [
+    "underspecified-choice-missing-decision-criteria",
+    "practical-decision-underdeveloped",
+    "unavailable-resource-ignored",
+    "authority-resolution-absent",
+    "adult-comparison-one-sided"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "underspecified-choice-missing-decision-criteria",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 2,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "practical-decision-underdeveloped"
+      ]
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "unavailable-resource-ignored",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "source-conflict-unresolved",
+        "authority-resolution-absent",
+        "unsupported-deadline-selection"
+      ]
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "adult-comparison-one-sided"
+      ]
+    },
+    {
+      "index": 6,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 7,
+      "status": "pass",
+      "failureCodes": []
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/ibm-granite/granite-3.3-2b-instruct/tree/652c333dc5066f2a1764854a1bcd0ce67163d74f",
+    "https://huggingface.co/ibm-granite/granite-3.3-2b-instruct/blob/652c333dc5066f2a1764854a1bcd0ce67163d74f/README.md",
+    "https://huggingface.co/ibm-granite/granite-3.3-2b-instruct/blob/652c333dc5066f2a1764854a1bcd0ce67163d74f/config.json",
+    "https://huggingface.co/ibm-granite/granite-3.3-2b-instruct/blob/652c333dc5066f2a1764854a1bcd0ce67163d74f/tokenizer_config.json",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt",
+    "https://github.com/huggingface/transformers/tree/v5.13.1/src/transformers/models/granite"
+  ]
+}

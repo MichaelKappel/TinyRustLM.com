@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "receiptType": "tinyrustlm.model-source-review-v1",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "phase": "model-source-review",
+  "attempt": 2,
+  "status": "rejected",
+  "createdAtUtc": "2026-07-16T19:40:22.562Z",
+  "completedAtUtc": "2026-07-16T19:40:22.562Z",
+  "inputReceiptIds": [],
+  "inputHashes": {
+    "config": "95153241d18c58f712a0e12d41014a82d30c694c0472cfa7d6e72d8a8acc4d55",
+    "evidenceSet": "2559bce731e2f0aeccad986ccabebbfa902885b1a63d2bcd1c81a1933ea12a78",
+    "generation-config": "e9a6fc6755330e6da09ba04b1137c4db0744faafc0fa609ff378fd6989518295",
+    "license": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "model-card": "2357d920cd33ee59faae782e47a53c03553f3f5dd31d6a8a6ce5691027c2063a",
+    "repository-tree": "648717aa9b52bb87e57a402f787eaaa25875a860537d2754393786b73d4dce2d",
+    "tokenizer-config": "20899789303ffebe50f26c91b5ad426c3910346476dce36682c1c4b949d65380"
+  },
+  "outputHashes": {
+    "assessment": "6b1c38cb6ed647d449a449a374df8cb7a58374773498160c59946c08cb3f4ad1"
+  },
+  "sourceRevision": "228e18a8172beabcce6a0e686ac084cede5820fc",
+  "toolNames": [
+    "tinyrustlm-source-model-preflight-evidence"
+  ],
+  "toolVersions": [
+    "2"
+  ],
+  "toolBinaryHashes": [
+    "66a5d6e702801d5c77f962e5ac76bdfb0efcaf5ef11aff95dbb9db02562b48dc"
+  ],
+  "runtimeIdentifier": "win-x64",
+  "operatingSystem": "win32",
+  "architecture": "x64",
+  "hardwareEvidence": {
+    "executionBoundary": "public-source-metadata-review",
+    "physicalHardwareAttested": false
+  },
+  "configurationHash": "e7b8e19feab83b2b2cfc4dfe0b73f8a54ac2a33b831a59c1fc83503e5ac93c2c",
+  "publicSafeParameters": {
+    "modelId": "amd/AMD-OLMo-1B-SFT",
+    "sourceModelId": "amd/AMD-OLMo-1B-SFT",
+    "decision": "rejected",
+    "decisionAuthority": "engineering-source-preflight-v1",
+    "architectureFamily": "olmo-dense-full-attention-tied-fp32",
+    "runtimeAdmission": "not-assessed-preflight-rejected",
+    "accessDisposition": "public-ungated-metadata-only-no-source-acquisition",
+    "licenseId": "apache-2.0",
+    "licenseDisposition": "apache-2.0-card-declaration-no-bundled-license-review-required",
+    "distributionDisposition": "not-assessed-preflight-rejected",
+    "sourceAcquisitionComplete": false,
+    "evidenceArtifactCount": 6,
+    "missingRequiredArtifactCount": 2,
+    "rejectionCodeCount": 4
+  },
+  "boundedDiagnostics": {
+    "rejectionCodes": [
+      "publisher-chat-template-absent",
+      "publisher-multi-turn-serialization-absent",
+      "publisher-tokenizer-template-contract-conflict",
+      "source-screen-conversation-contract-incomplete"
+    ],
+    "missingRequiredArtifacts": [
+      "chat_template.jinja",
+      "model.safetensors"
+    ],
+    "evidenceByteCount": 36865
+  },
+  "blockerCode": "candidate_source_conversation_contract_rejected",
+  "externalEvidenceReferences": [
+    "https://huggingface.co/amd/AMD-OLMo-1B-SFT/tree/228e18a8172beabcce6a0e686ac084cede5820fc",
+    "https://huggingface.co/amd/AMD-OLMo-1B-SFT/blob/228e18a8172beabcce6a0e686ac084cede5820fc/README.md",
+    "https://huggingface.co/amd/AMD-OLMo-1B-SFT/blob/228e18a8172beabcce6a0e686ac084cede5820fc/config.json",
+    "https://huggingface.co/amd/AMD-OLMo-1B-SFT/blob/228e18a8172beabcce6a0e686ac084cede5820fc/tokenizer_config.json",
+    "https://www.amd.com/en/developer/resources/technical-articles/introducing-the-first-amd-1b-language-model.html",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ],
+  "redactionVersion": "tinyrustlm.public-receipt-redaction.v1",
+  "evidenceClass": "local",
+  "supersedesReceiptIds": [
+    "sha256:70f3e54f5dd7b8407586dff43c6a1c14049cd3beb8b16f3d4776b8eed0781c01"
+  ],
+  "attestationReference": null,
+  "receiptId": "sha256:59ed6823274b16068057cdc21da110777cb92a0aac54e58978106f8cd73639f4",
+  "receiptContentHash": "59ed6823274b16068057cdc21da110777cb92a0aac54e58978106f8cd73639f4"
+}

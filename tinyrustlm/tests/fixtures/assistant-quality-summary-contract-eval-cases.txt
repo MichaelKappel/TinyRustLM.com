@@ -1,0 +1,23 @@
+# TinyRustLM focused summary-contract eval cases
+
+tinyrustlm_eval_cases_version=1
+scope=assistant-quality-no-cheat-runtime-gate
+quality_gate_policy=honest-assistant-quality-v1
+quality_boundary=real-runtime-response-quality
+safety_review_status=pass
+quality_decision=accepted-for-assistant-quality
+evaluator=tinyrustlm-native-eval-runner
+eval_summary=Focused no-cheat summary contract check proving prompts that request two sentences do not pass as one sentence, a fragment, fused text, or unsupported source detail.
+case_count=3
+
+case.0.prompt=Summarize this article in two sentences: TinyRustLM runs small .slm models locally in the browser so prompts stay private and developers can inspect model provenance.
+case.0.max_new_tokens=56
+case.0.required_result=quality
+
+case.1.prompt=Summarize this note in two sentences: TinyRustLM review note: an offline eval report records prompts, seeds, diagnostics, and raw model output. The goal is private local inference with inspectable evidence.
+case.1.max_new_tokens=56
+case.1.required_result=quality
+
+case.2.prompt=Summarize this note in two sentences: A local model runner should validate model files before loading them. It should also show provenance so users know which model produced the answer.
+case.2.max_new_tokens=64
+case.2.required_result=quality

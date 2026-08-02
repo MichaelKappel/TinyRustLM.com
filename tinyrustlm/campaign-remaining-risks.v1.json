@@ -1,0 +1,210 @@
+{
+  "schema": "tinyrustlm.campaign_remaining_risks.v1",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "updatedAtUtc": "2026-07-26T09:21:58.966Z",
+  "risks": [
+    {
+      "riskId": "qualified-model-portfolio-absent",
+      "category": "model-quality",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "All 66 attempted candidates are terminally rejected; none currently has qualifying assistant-quality evidence.",
+      "mitigation": "Screen new immutable sources before conversion; if no source passes, complete explicit corpus review and run contamination-controlled training only from approved records.",
+      "acceptanceCondition": "Twenty distinct model lineages have current qualification receipts under the current evaluator.",
+      "blockerCodes": [
+        "qualified_models_incomplete"
+      ],
+      "evidenceReferences": [
+        "campaign-status:modelPortfolio",
+        "campaign-status:progress.qualifiedModels"
+      ]
+    },
+    {
+      "riskId": "fresh-browser-campaign-not-started",
+      "category": "browser-campaign",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "No qualifying fresh-profile dogfood round can run until qualified model artifacts exist.",
+      "mitigation": "Admit qualified models, then execute the fixed fifty-round schedule through owned persistent profiles with physical deletion receipts.",
+      "acceptanceCondition": "Exactly fifty current clean-browser receipts pass and every scheduled model executes at least twice.",
+      "blockerCodes": [
+        "fresh_browser_rounds_incomplete"
+      ],
+      "evidenceReferences": [
+        "campaign-status:progress.cleanBrowserRounds"
+      ]
+    },
+    {
+      "riskId": "live-memory-contract-unavailable",
+      "category": "memory-continuity",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "The required MemoryEndpoints single-use enrollment, reconnect, replay, revocation, and cleanup contract is not advertised for authorized production use.",
+      "mitigation": "Obtain and validate the versioned platform contract, then execute twenty-five isolated company creation, restore, replay-rejection, close, delete, and post-delete runs.",
+      "acceptanceCondition": "Twenty-five current live-service receipts prove continuity and cleanup without invoking an undocumented route.",
+      "blockerCodes": [
+        "live_memory_rounds_incomplete",
+        "memory_endpoints_live_contract_incompatible"
+      ],
+      "evidenceReferences": [
+        "campaign-status:lifecycle.branches.memoryCampaign",
+        "campaign-status:progress.liveMemoryRounds"
+      ]
+    },
+    {
+      "riskId": "outside-lane-proof-unavailable",
+      "category": "p2p-public-reachability",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "Local two-process serving evidence does not establish public reachability or a complete outside transfer.",
+      "mitigation": "Configure approved public endpoints and obtain signed expiring complete-transfer receipts from a genuinely outside observer for both fleet lanes.",
+      "acceptanceCondition": "Forty current outside-network receipts cover twenty artifacts across two independent lanes without project-hosted byte proxying.",
+      "blockerCodes": [
+        "outside_network_lane_proofs_incomplete",
+        "outside_network_observer_absent",
+        "public_endpoint_configuration_absent"
+      ],
+      "evidenceReferences": [
+        "campaign-status:lifecycle.branches.p2pFleet",
+        "campaign-status:progress.externallyProvenLanes"
+      ]
+    },
+    {
+      "riskId": "catalog-authority-unavailable",
+      "category": "catalog-publication",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "No authoritative catalog write contract or live announcement authority has admitted the model fleet.",
+      "mitigation": "Use only the published catalog contract and authorized credentials after qualification and both current lane proofs exist.",
+      "acceptanceCondition": "Twenty current catalog announcement receipts survive unauthenticated HTTPS readback against one common catalog and feed snapshot.",
+      "blockerCodes": [
+        "catalog_announcements_incomplete",
+        "catalog_publication_authority_absent"
+      ],
+      "evidenceReferences": [
+        "campaign-status:lifecycle.branches.catalog",
+        "campaign-status:progress.catalogAnnouncements"
+      ]
+    },
+    {
+      "riskId": "physical-linux-arm64-unverified",
+      "category": "native-platform",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "Linux ARM64 has emulated execution evidence but no execution receipt from physical ARM64 hardware.",
+      "mitigation": "Run the approved package, native ABI, fleet lifecycle, and cleanup verification on authorized physical Linux ARM64 hardware.",
+      "acceptanceCondition": "The current native RID receipt records physical Linux ARM64 execution and all three native RID gates pass.",
+      "blockerCodes": [
+        "native_rid_execution_incomplete",
+        "physical_linux_arm64_hardware_evidence_absent"
+      ],
+      "evidenceReferences": [
+        "campaign-status:releaseGates.nativeRids"
+      ]
+    },
+    {
+      "riskId": "public-https-readback-incomplete",
+      "category": "deployment-readback",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "Packaged local-site verification cannot prove deployed public bytes, catalog rows, or announcement feed bytes.",
+      "mitigation": "After authorized deployment, fetch every declared public artifact and common catalog snapshot over HTTPS and compare exact release hashes.",
+      "acceptanceCondition": "The current deployment receipt proves all required HTTPS hashes and authoritative catalog readback.",
+      "blockerCodes": [
+        "public_https_readback_incomplete"
+      ],
+      "evidenceReferences": [
+        "campaign-status:releaseGates.publicHttpsReadback"
+      ]
+    },
+    {
+      "riskId": "external-fault-cases-incomplete",
+      "category": "fault-injection",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "Seventeen current fault attempts satisfy the canonical plan; seven cases still require an authorized physical-host restart, live MemoryEndpoints operations, outside-network observation, or catalog deployment authority.",
+      "mitigation": "Execute each remaining case only in its declared evidence domain and preserve separate domain, attempt, cleanup, and aggregate-report receipts.",
+      "acceptanceCondition": "All twenty-four fault attempts and their authoritative domain receipts satisfy the current canonical fault plan.",
+      "blockerCodes": [
+        "fault_injection_campaign_incomplete"
+      ],
+      "evidenceReferences": [
+        "campaign-status:releaseGates.faultInjection"
+      ]
+    },
+    {
+      "riskId": "final-release-attestation-incomplete",
+      "category": "release-attestation",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "The campaign lacks a verified authorized release signature or equivalent attestation over a complete final predicate.",
+      "mitigation": "Generate the content-addressed predicate from validated evidence, obtain an authorized signature-verification receipt, and regenerate the final envelope after all other gates pass.",
+      "acceptanceCondition": "Dashboard v9 validates a deployment-class final-attestation receipt bound to an authorized verified signature and the complete campaign predicate.",
+      "blockerCodes": [
+        "final_attestation_incomplete"
+      ],
+      "evidenceReferences": [
+        "campaign-status:releaseGates.finalAttestation"
+      ]
+    },
+    {
+      "riskId": "gpu-training-capacity-unverified",
+      "category": "training-capacity",
+      "severity": "high",
+      "status": "open",
+      "summary": "Two Tesla K80 devices are visible, but the approved training stack, CUDA compatibility, mixed precision, checkpoint recovery, memory fit, and throughput have not passed preflight.",
+      "mitigation": "Run a bounded training-environment preflight after source and data gates pass; do not commit a full run until device execution, finite loss, save-reload, restart recovery, and measured throughput succeed.",
+      "acceptanceCondition": "An approved training environment passes device, mixed-precision, checkpoint-recovery, memory-fit, and throughput preflight.",
+      "blockerCodes": [],
+      "evidenceReferences": [
+        "local-environment:nvidia-smi-2026-07-26"
+      ]
+    },
+    {
+      "riskId": "release-source-history-contains-model-bytes",
+      "category": "supply-chain",
+      "severity": "release-blocking",
+      "status": "open",
+      "summary": "The current Git index contains only six tiny test .slm fixtures and no non-fixture .slm, safetensors, raw f32 tensors, or P2P piece payloads. Ancestor history still contains removed third-party model payloads, so the current branch is not yet an acceptable release source lineage.",
+      "mitigation": "With explicit repository-owner authorization, create a clean release lineage or remove model payload objects from every release-bound ref, then audit all reachable Git objects and package inputs. Keep preserved review copies only in the external content-addressed store.",
+      "acceptanceCondition": "The exact source lineage used for release has zero unauthorized model payload objects across all release-bound refs, the current index retains only approved fixtures, and release packages contain no model payloads.",
+      "blockerCodes": [
+        "release_source_history_contains_model_bytes"
+      ],
+      "evidenceReferences": [
+        "git:e3ed5aad12f3bf458ce0e6e94fb8d1ba94300d5a",
+        "external-model-manifest-sha256:1744e0f2b03f2c6bc594a9894f2413993069c68d5bba9ee73ebb1398c1bfc370"
+      ]
+    },
+    {
+      "riskId": "local-router-tournament-not-executed",
+      "category": "specialist-routing",
+      "severity": "high",
+      "status": "open",
+      "summary": "A canonical no-authority local router tournament preregistration, evaluator, and focused tests exist, but no sealed 144-case plan, qualified champion and specialist portfolio, tournament results, or product-routing authority exists.",
+      "mitigation": "After model qualification, seal the exact generator version, seed commitment, twelve categories, and twelve ordinals per category; then execute all six preregistered arms while preserving untouched attempts, visible fallbacks, latency, memory, byte, quality, and wrong-route evidence.",
+      "acceptanceCondition": "Immutable receipts for the full preregistered case set support an explicit reviewed routing decision under thresholds fixed before results, without granting training, model-quality, release, or product authority to the experiment itself.",
+      "blockerCodes": [],
+      "evidenceReferences": [
+        "git:b673f519a9af53e1179c0f62c765d9ecc4a96fe4",
+        "source:tinyrustlm/experiments/specialist-portfolio/local-router-tournament-preregistration.v1.json",
+        "preregistration-sha256:4e8fdeeb0d1c622d872e94216114117fcd46e23e44ef3c8e854987a2290520b9"
+      ]
+    },
+    {
+      "riskId": "vector-v2-descendants-not-executed",
+      "category": "vector-experiment",
+      "severity": "high",
+      "status": "open",
+      "summary": "The current exact-flat v2 baseline receipt passes its local gates, while the retained browser-WASM and physical-target receipts remain historical v1 descendants and are explicitly rejected by ordinary current-byte validation.",
+      "mitigation": "Preregister new child schemas bound to the immutable v2 receipt, then rerun the exact browser-WASM and named physical-target observations rather than relabeling or rebinding the historical v1 results.",
+      "acceptanceCondition": "Current immutable v2-descendant receipts prove repeated real-browser WASM execution and target-hardware measurements under newly sealed inputs while preserving every v1 observation and attempt unchanged.",
+      "blockerCodes": [],
+      "evidenceReferences": [
+        "git:f3b3dbbb60f9a6b6b696487a349e0d6d25199af7",
+        "source:tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-verification-v2.json",
+        "receipt-sha256:95b36d822d3c49ec342e54ad277eb4e6925a59cffdea40fdeefe15d263bcbc7c"
+      ]
+    }
+  ]
+}

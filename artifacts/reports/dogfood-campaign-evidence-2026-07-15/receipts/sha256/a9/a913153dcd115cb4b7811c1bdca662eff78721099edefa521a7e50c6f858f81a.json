@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "receiptType": "tinyrustlm.model-source-review-v1",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "phase": "model-source-review",
+  "attempt": 2,
+  "status": "rejected",
+  "createdAtUtc": "2026-07-16T18:01:43.235Z",
+  "completedAtUtc": "2026-07-16T18:01:43.235Z",
+  "inputReceiptIds": [],
+  "inputHashes": {
+    "config": "610c5b519420a3633ec4950c15a26d83ad0e9be35ef9d00a9e3d2b621b325f72",
+    "configuration": "1e289912fdc0608ccad3983f4ff8b381ec8f161f45c85be4d694f92f17596b0a",
+    "evidenceSet": "49e384862afb66ab2a8d4b328af012d02808706b6a16d289d0c390b39ac4dbb0",
+    "license": "202d02b14796563546e1a1d1e761410fa9e399bf7e1b85d8b43c972658341202",
+    "model-card": "9ecaf0591b47a7d2d94555f1e796afa032bdfe28cbd75ae1a20edc9c4cfa23b7",
+    "modeling": "c646022c44d0e1cc1d149fb80422a5d5f1ba6de66dd0f525f2be1e18d99994bf",
+    "repository-tree": "0638254a18a408b8668d28a980b183c3a2ae1f84a20f61f85a85f1102047a96a",
+    "safetensors-header": "ef995b775414ae7312da1186d698a9d375c1e42eee87e15082b5feae708231d8",
+    "tokenizer-config": "8bef75d59004eb0e62db89e97090d4736b14fd6c4a0282370c28833be1e83051",
+    "transformers-auto-config-registry": "c1ff7fc0cb204cfdbe837993b7bba85aadec28254852c55fe32be997bdf1411a"
+  },
+  "outputHashes": {
+    "assessment": "9d93f0abd0e7cdfdbbd50db78ec76291d2c0d4ad71c2263c78d4653f97b9a87e"
+  },
+  "sourceRevision": "5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630",
+  "toolNames": [
+    "tinyrustlm-source-model-preflight-evidence"
+  ],
+  "toolVersions": [
+    "1"
+  ],
+  "toolBinaryHashes": [
+    "adf1b0442d63ceeced06c2330bba2d750134454d0f8c1d09b99f0800b9269df0"
+  ],
+  "runtimeIdentifier": "win-x64",
+  "operatingSystem": "win32",
+  "architecture": "x64",
+  "hardwareEvidence": {
+    "executionBoundary": "public-source-metadata-review",
+    "physicalHardwareAttested": false
+  },
+  "configurationHash": "bd5a5e4f2720ee3e7340e640a052eda0ee8d118c7ee11de85f0c1cd2801bf16c",
+  "publicSafeParameters": {
+    "modelId": "openbmb/MiniCPM4-0.5B",
+    "sourceModelId": "openbmb/MiniCPM4-0.5B",
+    "decision": "rejected",
+    "decisionAuthority": "engineering-source-preflight-v1",
+    "architectureFamily": "minicpm4-dense-gqa-longrope-custom-scaling-tied",
+    "runtimeAdmission": "not-assessed-preflight-rejected",
+    "accessDisposition": "public-ungated-metadata-only-no-source-acquisition",
+    "licenseId": "apache-2.0",
+    "licenseDisposition": "apache-2.0-metadata-linked-official-license",
+    "distributionDisposition": "not-assessed-preflight-rejected",
+    "sourceAcquisitionComplete": false,
+    "evidenceArtifactCount": 9,
+    "missingRequiredArtifactCount": 10,
+    "rejectionCodeCount": 3
+  },
+  "boundedDiagnostics": {
+    "rejectionCodes": [
+      "custom-publisher-code-required",
+      "native-transformers-architecture-absent",
+      "source-screen-loader-contract-incompatible"
+    ],
+    "missingRequiredArtifacts": [
+      "added_tokens.json",
+      "config.json",
+      "configuration_minicpm.py",
+      "generation_config.json",
+      "model.safetensors",
+      "modeling_minicpm.py",
+      "special_tokens_map.json",
+      "tokenizer.json",
+      "tokenizer.model",
+      "tokenizer_config.json"
+    ],
+    "evidenceByteCount": 136233
+  },
+  "blockerCode": "candidate_source_loader_contract_rejected",
+  "externalEvidenceReferences": [
+    "https://huggingface.co/openbmb/MiniCPM4-0.5B/tree/5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630",
+    "https://huggingface.co/openbmb/MiniCPM4-0.5B/blob/5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630/README.md",
+    "https://huggingface.co/openbmb/MiniCPM4-0.5B/blob/5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630/config.json",
+    "https://huggingface.co/openbmb/MiniCPM4-0.5B/blob/5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630/configuration_minicpm.py",
+    "https://huggingface.co/openbmb/MiniCPM4-0.5B/blob/5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630/modeling_minicpm.py",
+    "https://huggingface.co/openbmb/MiniCPM4-0.5B/blob/5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630/tokenizer_config.json",
+    "https://raw.githubusercontent.com/OpenBMB/MiniCPM/0fcc3d08330ee612d59d58e312a778ae78165d97/LICENSE",
+    "https://raw.githubusercontent.com/huggingface/transformers/v5.13.1/src/transformers/models/auto/configuration_auto.py",
+    "https://arxiv.org/abs/2506.07900"
+  ],
+  "redactionVersion": "tinyrustlm.public-receipt-redaction.v1",
+  "evidenceClass": "local",
+  "supersedesReceiptIds": [
+    "sha256:8a64851e4112cbd2116ff6c6b45279d1614903b8112731863b06bd2bde3d18ac"
+  ],
+  "attestationReference": null,
+  "receiptId": "sha256:a913153dcd115cb4b7811c1bdca662eff78721099edefa521a7e50c6f858f81a",
+  "receiptContentHash": "a913153dcd115cb4b7811c1bdca662eff78721099edefa521a7e50c6f858f81a"
+}

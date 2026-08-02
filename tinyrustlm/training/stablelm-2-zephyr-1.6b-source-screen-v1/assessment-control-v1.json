@@ -1,0 +1,106 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "stabilityai/stablelm-2-zephyr-1_6b",
+  "sourceRevision": "2f275b1127d59fc31e4f7c7426d528768ada9ea4",
+  "sourceModelArtifactSha256": "233815ace7c2e3ecc94e9575aed9f1c5dc6935d126f6c13a7586ad28ae25ddc6",
+  "sourceScreenSha256": "6062833ba90bcc4d0b14e51271aa83762ec8769cbf8939d70f5137c4c769031e",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "stablelm2-dense-full-mha-layernorm-partial-rope-untied-qkv-bias",
+  "runtimeAdmission": "unsupported-stablelm-layernorm-partial-rope-shape-source-quality-rejected",
+  "licenseDisposition": "stabilityai-non-commercial-research-license-production-authorization-required",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": [
+    "answer-incomplete",
+    "underspecified-choice-missing-options",
+    "underspecified-choice-missing-decision-criteria",
+    "practical-decision-underdeveloped",
+    "unavailable-resource-ignored",
+    "feasible-fallback-absent",
+    "source-conflict-unresolved",
+    "authority-scope-misread",
+    "confirmation-step-absent",
+    "plan-date-not-provided",
+    "adult-comparison-one-sided",
+    "quoted-instruction-data-boundary-misapplied",
+    "over-refusal",
+    "current-task-not-completed"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "underspecified-choice-missing-options",
+        "underspecified-choice-missing-decision-criteria"
+      ]
+    },
+    {
+      "index": 2,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "practical-decision-underdeveloped"
+      ]
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "unavailable-resource-ignored",
+        "feasible-fallback-absent"
+      ]
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "source-conflict-unresolved",
+        "authority-scope-misread",
+        "confirmation-step-absent",
+        "plan-date-not-provided"
+      ]
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "adult-comparison-one-sided"
+      ]
+    },
+    {
+      "index": 6,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 7,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "quoted-instruction-data-boundary-misapplied",
+        "over-refusal",
+        "current-task-not-completed"
+      ]
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/stabilityai/stablelm-2-zephyr-1_6b/tree/2f275b1127d59fc31e4f7c7426d528768ada9ea4",
+    "https://huggingface.co/stabilityai/stablelm-2-zephyr-1_6b/blob/2f275b1127d59fc31e4f7c7426d528768ada9ea4/README.md",
+    "https://huggingface.co/stabilityai/stablelm-2-zephyr-1_6b/blob/2f275b1127d59fc31e4f7c7426d528768ada9ea4/LICENSE",
+    "https://huggingface.co/stabilityai/stablelm-2-zephyr-1_6b/blob/2f275b1127d59fc31e4f7c7426d528768ada9ea4/config.json",
+    "https://huggingface.co/stabilityai/stablelm-2-zephyr-1_6b/blob/2f275b1127d59fc31e4f7c7426d528768ada9ea4/generation_config.json",
+    "https://huggingface.co/stabilityai/stablelm-2-zephyr-1_6b/blob/2f275b1127d59fc31e4f7c7426d528768ada9ea4/tokenizer_config.json",
+    "https://github.com/Stability-AI/StableLM",
+    "https://arxiv.org/abs/2305.18290"
+  ]
+}

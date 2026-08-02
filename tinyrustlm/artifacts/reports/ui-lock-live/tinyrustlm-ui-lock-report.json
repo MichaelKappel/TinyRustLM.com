@@ -1,0 +1,187 @@
+{
+  "schema": "tinyrustlm.ui_visual_lock.v0",
+  "app_url": "https://TinyRustLM.com/",
+  "generated_utc": "2026-07-08T01:45:44.842Z",
+  "captures": [
+    {
+      "viewport": "desktop",
+      "width": 1365,
+      "height": 768,
+      "screenshot": "tinyrustlm\\artifacts\\reports\\ui-lock-live\\tinyrustlm-ui-lock-desktop.png",
+      "screenshot_sha256": "03f625d248226f008572aa0a3de7741cfdde0fbf724c35ca39f814244abdf4f2",
+      "screenshot_bytes": 392091,
+      "ui_signature_sha256": "066f08b09a7f8c4e91592785d5ad8f360930e07daf87dc5b5cd13b7f580b2a6e",
+      "state": {
+        "href": "https://tinyrustlm.com/",
+        "title": "TinyRustLM",
+        "innerWidth": 1365,
+        "innerHeight": 768,
+        "bodyTextStart": "Private Rust/WASM\n\nTinyRustLM\nNew Chat\nRecent Chats\nNo saved chats yet.\nModel Setup\nLocal .slm\nHugging Face\nP2P import\nAdvanced tools\nLocal Only\nReady\nReady\nLocal browser inference • No prompts sent to a server\nTinyRustLM Fixture q8_0 (MiniModel public demo)\nLoaded locally\nWASM ready\nloaded\n16 max tokens\nEdit Model\nChat with your local model\n\nRun prompts privately in your browser. No data sent to a server.\n\nSummarize this article\nGet the key points in a clear summary.\nExplain code\nUnderstand what this code does.\nRewrite text\nImprove clarity, tone, and flow.\nGenerate JSON\nCreate structured data",
+        "requiredShellPresent": true,
+        "signatureFields": {
+          "viewport": "desktop",
+          "title": "TinyRustLM",
+          "bodyBackground": "rgba(0, 0, 0, 0)",
+          "bodyColor": "rgb(248, 250, 252)",
+          "sidebarBackground": "rgba(0, 0, 0, 0)",
+          "primaryButtonBackground": "rgba(0, 0, 0, 0)",
+          "h1": "TinyRustLM",
+          "privacyBadge": "Local browser inference • No prompts sent to a server",
+          "starterLabels": [
+            "Summarize this article Get the key points in a clear summary.",
+            "Explain code Understand what this code does.",
+            "Rewrite text Improve clarity, tone, and flow.",
+            "Generate JSON Create structured data instantly."
+          ],
+          "setupLabels": [],
+          "presetLabels": [
+            "Balanced",
+            "Creative",
+            "Precise",
+            "Code",
+            "JSON"
+          ],
+          "panelHeadings": [
+            "Recent Chats",
+            "Model Setup",
+            "Chat with your local model",
+            "Advanced Options",
+            "Generation Presets",
+            "Model Selection",
+            "Local Connect Approvals",
+            "Runtime StatusWASM • GPU • Memory",
+            "DiagnosticsLogs • Performance • Errors",
+            "ProvenanceModel • Files • Checksums",
+            "BenchmarkSpeed • Tokens/sec • Latency",
+            "Adapter SidecarLoRA • Adapters • Merges",
+            "Module PlanGraph • Modules • Ops",
+            "AssemblyReceipts • Lineage • Gates",
+            "Run History / State Ledger"
+          ],
+          "shellRects": {
+            "leftSidebar": {
+              "x": 0,
+              "y": 0,
+              "width": 280,
+              "height": 768
+            },
+            "mainWorkspace": {
+              "x": 280,
+              "y": 0,
+              "width": 755,
+              "height": 768
+            },
+            "advancedOptionsPanel": {
+              "x": 1035,
+              "y": 0,
+              "width": 330,
+              "height": 768
+            },
+            "modelToolbar": {
+              "x": 314,
+              "y": 72,
+              "width": 677,
+              "height": 102
+            },
+            "composerPanel": {
+              "x": 314,
+              "y": 767,
+              "width": 677,
+              "height": 179
+            }
+          }
+        }
+      }
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "screenshot": "tinyrustlm\\artifacts\\reports\\ui-lock-live\\tinyrustlm-ui-lock-mobile.png",
+      "screenshot_sha256": "abe4327ca2c871dce0f9fcd2bbd5f1a22837eec5da887e8f5cf63f932ec250bf",
+      "screenshot_bytes": 109262,
+      "ui_signature_sha256": "172dedd0c99849681271614e7c96c933d536f8a4de335937bfe73f708e93e0eb",
+      "state": {
+        "href": "https://tinyrustlm.com/",
+        "title": "TinyRustLM",
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "bodyTextStart": "TinyRustLM\nLocal browser inference • No prompts sent to a server\nTinyRustLM Fixture q8_0 (MiniModel public demo)\nLoaded locally\nWASM ready\nloaded\n16 max tokens\nEdit Model\nAdvanced Options\nChat with your local model\n\nRun prompts privately in your browser. No data sent to a server.\n\nSummarize this article\nGet the key points in a clear summary.\nExplain code\nUnderstand what this code does.\nRewrite text\nImprove clarity, tone, and flow.\nGenerate JSON\nCreate structured data instantly.\nNo conversation yet. Messages appear only after a verified local .slm runs through Rust/WASM generation; use local im",
+        "requiredShellPresent": true,
+        "signatureFields": {
+          "viewport": "mobile",
+          "title": "TinyRustLM",
+          "bodyBackground": "rgba(0, 0, 0, 0)",
+          "bodyColor": "rgb(248, 250, 252)",
+          "sidebarBackground": "rgba(0, 0, 0, 0)",
+          "primaryButtonBackground": "rgba(0, 0, 0, 0)",
+          "h1": "TinyRustLM",
+          "privacyBadge": "Local browser inference • No prompts sent to a server",
+          "starterLabels": [
+            "Summarize this article Get the key points in a clear summary.",
+            "Explain code Understand what this code does.",
+            "Rewrite text Improve clarity, tone, and flow.",
+            "Generate JSON Create structured data instantly."
+          ],
+          "setupLabels": [],
+          "presetLabels": [
+            "Balanced",
+            "Creative",
+            "Precise",
+            "Code",
+            "JSON"
+          ],
+          "panelHeadings": [
+            "Recent Chats",
+            "Model Setup",
+            "Chat with your local model",
+            "Advanced Options",
+            "Generation Presets",
+            "Model Selection",
+            "Local Connect Approvals",
+            "Runtime StatusWASM • GPU • Memory",
+            "DiagnosticsLogs • Performance • Errors",
+            "ProvenanceModel • Files • Checksums",
+            "BenchmarkSpeed • Tokens/sec • Latency",
+            "Adapter SidecarLoRA • Adapters • Merges",
+            "Module PlanGraph • Modules • Ops",
+            "AssemblyReceipts • Lineage • Gates",
+            "Run History / State Ledger"
+          ],
+          "shellRects": {
+            "leftSidebar": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 87
+            },
+            "mainWorkspace": {
+              "x": 0,
+              "y": 87,
+              "width": 390,
+              "height": 844
+            },
+            "advancedOptionsPanel": {
+              "x": 50,
+              "y": 0,
+              "width": 340,
+              "height": 844
+            },
+            "modelToolbar": {
+              "x": 14,
+              "y": 153,
+              "width": 368,
+              "height": 174
+            },
+            "composerPanel": {
+              "x": 58,
+              "y": 688,
+              "width": 274,
+              "height": 126
+            }
+          }
+        }
+      }
+    }
+  ]
+}

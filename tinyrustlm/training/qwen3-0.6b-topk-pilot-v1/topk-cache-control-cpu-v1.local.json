@@ -1,0 +1,17 @@
+{
+  "schema": "tinyrustlm.topk_logit_cache_control.v1",
+  "cache_id": "qwen3-1.7b-to-0.6b-reviewed-sequence-topk128-v1",
+  "sequence_recipe": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/training/qwen3-cognitive-liberty-v3/training-recipe-cpu-pilot-v2.manifest",
+  "teacher": {
+    "model_id": "Qwen/Qwen3-1.7B",
+    "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+    "model_dir": "D:/LLMs/Qwen/Qwen3-1.7B/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+    "model_identity_sha256": "sha256:0ea3161a99f34ad6af28e93945406f652802122e9e1d9fe0fe95f93c3cb5716b",
+    "tokenizer_sha256": "sha256:aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+  },
+  "output_dir": "D:/LLMs/TinyRustLM/qwen3-0.6b-topk-pilot-v1/topk-cache-v1",
+  "top_k": 128,
+  "temperature": 2.0,
+  "device": "cpu",
+  "dtype": "float32"
+}

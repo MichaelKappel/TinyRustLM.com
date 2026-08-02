@@ -1,0 +1,29 @@
+{
+  "schema": "tinyrustlm.production_required_asset_deployment.v1",
+  "generated_utc": "2026-07-13T03:58:37.0696500Z",
+  "status": "pass_deployed",
+  "public_host": "tinyrustlm.com",
+  "ftp_host": "server41.shared.spaceship.host",
+  "remote_root": "/",
+  "deployment_id": "20260713T035830Z",
+  "commit": "77c09461d2a005b0b0455e526cecbf94d59192bc",
+  "phase": "verify-https",
+  "failure_type": null,
+  "rollback_attempted": false,
+  "rollback_passed": false,
+  "credentials_included": false,
+  "models_uploaded": false,
+  "file": {
+    "local_path": "tinyrustlm/app/calculator-tool.js",
+    "remote_path": "/app/calculator-tool.js",
+    "stage_remote_path": "/app/calculator-tool.js.stage-20260713T035830Z",
+    "original_present": false,
+    "original_sha256": null,
+    "bytes": 2228,
+    "sha256": "96e1fd491f059eb0d132472f76a6d0c6b26c575822875a36993ca5a8a6b35498",
+    "stage_verified": true,
+    "promoted": true,
+    "final_ftps_verified": true,
+    "final_https_verified": true
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "schema": "tinyrustlm.task-specialist-source-screen-preregistration.v2",
+  "experimentId": "planning-constraint-ledger-qwen25-15b-pilot-20260726",
+  "registeredAtUtc": "2026-07-26T16:35:21.291Z",
+  "status": "preregistered-before-model-output",
+  "authority": {
+    "productAuthority": false,
+    "trainingAuthority": false,
+    "conversionAuthority": false,
+    "taskSpecificProofAuthority": false,
+    "broadQualityAuthority": false,
+    "releaseAuthority": false
+  },
+  "sourceModel": {
+    "modelId": "Qwen/Qwen2.5-1.5B-Instruct",
+    "sourceRevision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+    "sourceModelSha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+    "sourceExecutionInputsSha256": "f3e2cb7cd934b38dfe2119c928b71815c831739b9b5c247c71571aa72ed6e740",
+    "broadSourceScreenReceiptId": "sha256:a52df8333b5f0bc58037c6a120cd6c8b6133cfaa96321ae12e80d8d1ab9632f5",
+    "broadSourceScreenStatus": "rejected",
+    "broadSourceScreenRole": "broad-claim-boundary-only",
+    "sourceIdentityAuthority": "independent-task-capture-checkpoint-artifacts-v1"
+  },
+  "taskContract": {
+    "taskContractId": "planning-constraint-ledger-json-v1",
+    "outputKeys": [
+      "budgetUsd",
+      "deadlineDate",
+      "availableResources",
+      "unavailableResources",
+      "preference"
+    ],
+    "resourceVocabulary": [
+      "car",
+      "internet",
+      "kitchen",
+      "laptop",
+      "phone",
+      "printer"
+    ],
+    "preferenceVocabulary": [
+      "cost",
+      "privacy",
+      "quality",
+      "speed"
+    ],
+    "claimBoundary": "source-screen-only-non-promotional-no-general-assistant-claim"
+  },
+  "sealedInputs": {
+    "visibility": "private-prompts-and-expected-values-public-hashes-only",
+    "generatorVersion": "1",
+    "generatorSha256": "2a7a3f5b972d50f7cc3ae443727ae340290640ada1e4ed22e48c3c965e2b3b71",
+    "captureToolSha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb",
+    "evaluatorToolSha256": "aac64b639e053ccd368466913e80b45dd421cd0d4aac8849ff406d7005ec62b3",
+    "seedCommitmentSha256": "87c1d3a8a3d7b408b985589780687025209568a9308f85e2a7c9e64da5fb31c1",
+    "privateCaseSetSha256": "15091042a2736ef777ceeb9ddadd7cd6eb060904a8477f498e6e776070f006dd",
+    "evalCasesSha256": "ef431650456bcdcfd4044150886a9a4f63d12252144338aac0ab5ddb6ee208d4",
+    "publicManifestSha256": "2a52cfcf8d5035aba941b44297c6b3c030fc6e8a95cbcc7bd14e23f8255f631c",
+    "caseCount": 24,
+    "casesPerCategory": 3,
+    "categoryCount": 8
+  },
+  "captureContract": {
+    "reportSchema": "tinyrustlm.reference_raw_quality.v4",
+    "generationProfile": "greedy",
+    "generationSeedBase": 202607261,
+    "generationCallsPerCase": 1,
+    "samplingAllowed": false,
+    "adapterAllowed": false,
+    "policyExamplesAllowed": false,
+    "userSuffixAllowed": false,
+    "responseRepairAllowed": false,
+    "retryAllowed": false,
+    "bestOfNAllowed": false,
+    "rawOutputPreserved": true,
+    "systemPromptSha256": "ebca1447df1ef441245498fc6bf24269c1da92c5e537841e94141da4cba1a410"
+  },
+  "acceptance": {
+    "minimumExactPassCount": 21,
+    "minimumPerCategoryPassCount": 2,
+    "criticalCasesMustAllPass": true,
+    "malformedOutputMaximum": 0,
+    "deterministicReplayRequiredBeforePromotion": true,
+    "sourcePassAuthorizesConversionSpendOnly": true,
+    "sourcePassGrantsTaskSpecificProof": false,
+    "sourcePassGrantsBroadQuality": false
+  },
+  "prohibitions": [
+    "Do not publish private prompt bodies or expected values.",
+    "Do not select another seed after observing model output.",
+    "Do not retry a failed generation or choose a preferred attempt.",
+    "Do not repair, wrap, trim into shape, or complete model output.",
+    "Do not use best-of-N selection or an undeclared sampling profile.",
+    "Do not train on this sealed case set or its template family.",
+    "Do not infer broad assistant quality from a source-screen pass.",
+    "Do not issue task-specific proof from a source-screen pass.",
+    "Do not spend conversion compute unless every preregistered stop rule passes.",
+    "Do not count this experiment toward the twenty qualified artifact hashes."
+  ],
+  "requiredNextGate": "If and only if this source screen passes, convert the exact source and rerun a larger independently sealed task suite against untouched native and browser .slm output before issuing task-specific proof."
+}

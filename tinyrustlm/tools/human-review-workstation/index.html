@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>TinyRustLM Review Workstation</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">TR</span>
+      <span>
+        <strong>TinyRustLM Review</strong>
+        <small>Explicit corpus quality gate</small>
+      </span>
+    </div>
+    <div class="progress-summary" aria-label="Review progress">
+      <div class="progress-copy">
+        <strong id="progress-label">Loading review state</strong>
+        <span id="progress-counts">0 of 0 resolved</span>
+      </div>
+      <div class="progress-track" aria-hidden="true">
+        <span id="progress-fill"></span>
+      </div>
+    </div>
+    <div id="connection-state" class="connection-state" data-state="loading">
+      <span class="status-dot" aria-hidden="true"></span>
+      <span>Validating</span>
+    </div>
+  </header>
+
+  <main class="workbench">
+    <aside class="queue-panel" aria-labelledby="queue-title">
+      <div class="panel-heading queue-heading">
+        <div>
+          <span class="eyebrow">Review queue</span>
+          <h1 id="queue-title">Records</h1>
+        </div>
+        <span id="visible-count" class="count-badge">0</span>
+      </div>
+      <label class="search-field">
+        <span class="sr-only">Search review records</span>
+        <span class="search-symbol" aria-hidden="true"></span>
+        <input id="record-search" type="search" autocomplete="off" placeholder="Search records">
+      </label>
+      <div id="queue-filters" class="filter-tabs" role="group" aria-label="Queue filter">
+        <button type="button" data-filter="all" aria-pressed="true">All</button>
+        <button type="button" data-filter="pending" aria-pressed="false">Pending</button>
+        <button type="button" data-filter="resolved" aria-pressed="false">Resolved</button>
+      </div>
+      <div id="record-list" class="record-list" role="listbox" aria-label="Review records"></div>
+    </aside>
+
+    <section class="evidence-panel" aria-labelledby="record-title">
+      <div class="panel-heading evidence-heading">
+        <div class="record-heading-copy">
+          <span id="record-position" class="eyebrow">Record</span>
+          <h2 id="record-title">Select a record</h2>
+          <div id="record-metadata" class="metadata-row"></div>
+        </div>
+        <div class="record-navigation" aria-label="Record navigation">
+          <button id="previous-record" class="secondary-button" type="button">Previous</button>
+          <button id="next-record" class="secondary-button" type="button">Next</button>
+        </div>
+      </div>
+
+      <div id="evidence-loading" class="loading-state">
+        <div class="loading-bar"></div>
+        <div class="loading-bar short"></div>
+        <div class="loading-block"></div>
+      </div>
+
+      <div id="evidence-content" class="evidence-content" hidden>
+        <section class="evidence-section prompt-section">
+          <div class="section-title-row">
+            <h3>Prompt</h3>
+            <span id="task-family" class="tag"></span>
+          </div>
+          <pre id="prompt-text" class="content-text"></pre>
+        </section>
+
+        <section class="evidence-section">
+          <h3>Response contract</h3>
+          <ul id="response-requirements" class="requirements-list"></ul>
+        </section>
+
+        <section class="response-comparison" aria-label="Response comparison">
+          <article class="response-column original-column">
+            <div class="section-title-row">
+              <h3>Original draft</h3>
+              <span class="tag neutral">Source</span>
+            </div>
+            <pre id="original-response" class="content-text response-text"></pre>
+          </article>
+          <article class="response-column candidate-column">
+            <div class="section-title-row">
+              <h3>Review candidate</h3>
+              <span id="candidate-origin" class="tag accent"></span>
+            </div>
+            <pre id="candidate-response" class="content-text response-text"></pre>
+          </article>
+        </section>
+
+        <section class="evidence-section">
+          <div class="section-title-row">
+            <h3>Agent assessment</h3>
+            <span id="agent-confidence" class="tag"></span>
+          </div>
+          <p id="agent-rationale" class="content-text empty-aware"></p>
+          <div id="agent-tags" class="tag-row"></div>
+        </section>
+
+        <section class="evidence-section evidence-grid">
+          <div>
+            <h3>Automated findings</h3>
+            <ul id="automated-findings" class="compact-list"></ul>
+          </div>
+          <div>
+            <h3>Semantic references</h3>
+            <ul id="semantic-references" class="compact-list"></ul>
+          </div>
+        </section>
+
+        <details class="binding-details">
+          <summary>Evidence bindings</summary>
+          <dl id="evidence-bindings" class="binding-list"></dl>
+        </details>
+      </div>
+    </section>
+
+    <aside class="decision-panel" aria-labelledby="decision-title">
+      <div class="panel-heading decision-heading">
+        <div>
+          <span class="eyebrow">Human decision</span>
+          <h2 id="decision-title">Quality verdict</h2>
+        </div>
+        <span id="decision-state" class="decision-state pending">Pending</span>
+      </div>
+
+      <form id="decision-form" novalidate>
+        <fieldset class="form-section action-fieldset">
+          <legend>Action</legend>
+          <div class="action-segments">
+            <label class="action-option approve">
+              <input type="radio" name="action" value="approve">
+              <span>Approve</span>
+            </label>
+            <label class="action-option rewrite">
+              <input type="radio" name="action" value="rewrite">
+              <span>Rewrite</span>
+            </label>
+            <label class="action-option reject">
+              <input type="radio" name="action" value="reject">
+              <span>Reject</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="form-section response-editor-section">
+          <div class="field-heading">
+            <label for="reviewed-response">Reviewed response</label>
+            <span id="response-byte-count">0 bytes</span>
+          </div>
+          <textarea id="reviewed-response" rows="10" spellcheck="true" disabled></textarea>
+          <p id="response-rule" class="field-message">Select an action.</p>
+        </div>
+
+        <fieldset class="form-section checklist-fieldset">
+          <legend>Quality checklist</legend>
+          <div id="checklist-fields" class="checklist-fields">
+            <label>
+              <span>Factuality</span>
+              <select data-check="factuality" disabled>
+                <option value="pending">Not reviewed</option>
+                <option value="pass">Pass</option>
+                <option value="fail">Fail</option>
+                <option value="not-applicable">Not applicable</option>
+              </select>
+            </label>
+            <label>
+              <span>Instruction following</span>
+              <select data-check="instruction_following" disabled>
+                <option value="pending">Not reviewed</option>
+                <option value="pass">Pass</option>
+                <option value="fail">Fail</option>
+                <option value="not-applicable">Not applicable</option>
+              </select>
+            </label>
+            <label>
+              <span>Safety</span>
+              <select data-check="safety" disabled>
+                <option value="pending">Not reviewed</option>
+                <option value="pass">Pass</option>
+                <option value="fail">Fail</option>
+                <option value="not-applicable">Not applicable</option>
+              </select>
+            </label>
+            <label>
+              <span>Conciseness</span>
+              <select data-check="conciseness" disabled>
+                <option value="pending">Not reviewed</option>
+                <option value="pass">Pass</option>
+                <option value="fail">Fail</option>
+                <option value="not-applicable">Not applicable</option>
+              </select>
+            </label>
+            <label>
+              <span>Hidden reasoning absent</span>
+              <select data-check="hidden_reasoning_absent" disabled>
+                <option value="pending">Not reviewed</option>
+                <option value="pass">Pass</option>
+                <option value="fail">Fail</option>
+                <option value="not-applicable">Not applicable</option>
+              </select>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="form-section reviewer-fields">
+          <label for="reviewer-id">Reviewer ID</label>
+          <input id="reviewer-id" type="text" maxlength="128" autocomplete="off" placeholder="stable-reviewer-id" disabled>
+          <label for="review-note">Review evidence note</label>
+          <textarea id="review-note" rows="4" maxlength="512" disabled></textarea>
+          <span id="note-count" class="character-count">0 / 512</span>
+        </div>
+
+        <div id="form-status" class="form-status" role="status" aria-live="polite"></div>
+
+        <div class="decision-actions">
+          <button id="reset-decision" class="danger-button" type="button" disabled>Reset</button>
+          <button id="save-decision" class="primary-button" type="submit" disabled>Save and next</button>
+        </div>
+      </form>
+    </aside>
+  </main>
+
+  <dialog id="reset-dialog" class="confirmation-dialog">
+    <form method="dialog">
+      <h2>Reset this decision?</h2>
+      <p>The record will return to its exact pending template.</p>
+      <div class="dialog-actions">
+        <button value="cancel" class="secondary-button">Cancel</button>
+        <button id="confirm-reset" value="confirm" class="danger-button">Reset decision</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="fatal-state" class="fatal-state" hidden>
+    <strong>Review workstation unavailable</strong>
+    <p id="fatal-message"></p>
+    <button id="retry-load" class="primary-button" type="button">Retry</button>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "receiptType": "tinyrustlm.model-source-review-v1",
+  "campaignId": "tinyrustlm-dogfood-quality-20260714",
+  "phase": "model-source-review",
+  "attempt": 1,
+  "status": "rejected",
+  "createdAtUtc": "2026-07-18T18:41:22.096Z",
+  "completedAtUtc": "2026-07-18T18:41:22.096Z",
+  "inputReceiptIds": [],
+  "inputHashes": {
+    "config": "7733a69bd7cb075b769f8ba2ef00afe30c7f8e9b19069b753b70580f72794d99",
+    "evidenceSet": "9f7f28bfd08e23f6e589633bd86e4d6b85c96bb42e75973a83fe02f296da7afb",
+    "license": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "model-card": "857e79e5b1a30342a295f62c5325e0b418c3fa778d88250c5c54ed7a6c454f2e",
+    "repository-metadata": "2889085f80e5bd2f78b283cfa47a36e895d5119d9a93fa1c264b3ce5191e2237",
+    "repository-tree": "dfc02c7937ba2df2b798d9b719cfba09919cbe63b9949d89c1ccfcbdeb1d5332",
+    "tokenizer-config": "f0ab261ba76064e3ea8af3df1cde9b22b5e5c2450f0cc7d0fd737bdab6f619cf"
+  },
+  "outputHashes": {
+    "assessment": "f469872bdec12ab3a583b18c7bcd27efe286724b78c4a60afc9d97f30d61c9e5"
+  },
+  "sourceRevision": "a9c384e49708536920a8c05320df77b7054797bb",
+  "toolNames": [
+    "tinyrustlm-source-model-preflight-evidence"
+  ],
+  "toolVersions": [
+    "7"
+  ],
+  "toolBinaryHashes": [
+    "2e478c0bc6b4bead65e42e5ef422f8fa9d356cf2e693c059a0b839f23e07aa9a"
+  ],
+  "runtimeIdentifier": "win-x64",
+  "operatingSystem": "win32",
+  "architecture": "x64",
+  "hardwareEvidence": {
+    "executionBoundary": "public-source-metadata-review",
+    "physicalHardwareAttested": false
+  },
+  "configurationHash": "7a83e68173fcf9041ff0ea8aa3982c6dc326eed9362bfff3b18c17adda0966df",
+  "publicSafeParameters": {
+    "modelId": "hiep-2/qwen3-0.6b-math-cpt-sft",
+    "sourceModelId": "hiep-2/qwen3-0.6b-math-cpt-sft",
+    "decision": "rejected",
+    "decisionAuthority": "engineering-source-preflight-v2",
+    "architectureFamily": "qwen3-dense-gqa-tied",
+    "runtimeAdmission": "not-assessed-preflight-rejected",
+    "accessDisposition": "public-ungated-metadata-only-no-source-acquisition",
+    "licenseId": "apache-2.0",
+    "licenseDisposition": "apache-2.0-card-declaration-no-bundled-license-review-required",
+    "distributionDisposition": "not-assessed-preflight-rejected",
+    "sourceAcquisitionStatus": "not-acquired",
+    "sourceAcquisitionComplete": false,
+    "sourceModelIdentityKind": "none",
+    "sourceWeightArtifactCount": 0,
+    "sourceWeightByteCount": 0,
+    "evidenceArtifactCount": 6,
+    "missingRequiredArtifactCount": 3,
+    "rejectionCodeCount": 4
+  },
+  "boundedDiagnostics": {
+    "rejectionCodes": [
+      "publisher-training-corpus-identity-absent",
+      "publisher-training-recipe-identity-absent",
+      "source-lineage-quantized-intermediate-only",
+      "source-screen-provenance-contract-incomplete"
+    ],
+    "missingRequiredArtifacts": [
+      "model.safetensors",
+      "training-corpus-manifest.json",
+      "training-recipe.json"
+    ],
+    "evidenceByteCount": 37650,
+    "sourceWeightArtifactCount": 0,
+    "sourceWeightByteCount": 0
+  },
+  "blockerCode": "candidate_source_provenance_contract_rejected",
+  "externalEvidenceReferences": [
+    "https://huggingface.co/hiep-2/qwen3-0.6b-math-cpt-sft/tree/a9c384e49708536920a8c05320df77b7054797bb",
+    "https://huggingface.co/hiep-2/qwen3-0.6b-math-cpt-sft/blob/a9c384e49708536920a8c05320df77b7054797bb/README.md",
+    "https://huggingface.co/hiep-2/qwen3-0.6b-math-cpt-sft/blob/a9c384e49708536920a8c05320df77b7054797bb/config.json",
+    "https://huggingface.co/hiep-2/qwen3-0.6b-math-cpt-sft/blob/a9c384e49708536920a8c05320df77b7054797bb/tokenizer_config.json",
+    "https://huggingface.co/api/models/hiep-2/qwen3-0.6b-math-cpt-sft/revision/a9c384e49708536920a8c05320df77b7054797bb?blobs=true",
+    "https://huggingface.co/api/models/hiep-2/qwen3-0.6b-math-cpt-sft/tree/a9c384e49708536920a8c05320df77b7054797bb?recursive=true&expand=false",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ],
+  "redactionVersion": "tinyrustlm.public-receipt-redaction.v1",
+  "evidenceClass": "local",
+  "supersedesReceiptIds": [],
+  "attestationReference": null,
+  "receiptId": "sha256:c76967274f5cf2f64d1e316f88ed313f65aa75235297bc80bb3ca1b49183df90",
+  "receiptContentHash": "c76967274f5cf2f64d1e316f88ed313f65aa75235297bc80bb3ca1b49183df90"
+}

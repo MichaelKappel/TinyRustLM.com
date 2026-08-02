@@ -1,0 +1,29 @@
+{
+  "schema": "tinyrustlm.distillation_dataset_import.v1",
+  "dataset_id": "tinyrustlm-qwen3-cognitive-liberty-v1",
+  "dataset_license_route": "UAIX-internal-reviewed-synthetic-output-v1",
+  "dataset_purpose": "Conversation-first TinyRustLM distillation governed by the UAIX Cognitive Liberty Charter",
+  "tokenizer_alignment": "cross-tokenizer-sequence-only",
+  "teacher": {
+    "model_id": "Qwen/Qwen3.6-35B-A3B",
+    "revision": "lmstudio-community-68a34855558af61cbef0324d31f411be8a506b08",
+    "weight_file": "D:/LLMs/lmstudio-community/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-Q4_K_M.gguf",
+    "tokenizer_identity_file": "D:/LLMs/lmstudio-community/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-Q4_K_M.gguf",
+    "generation_profile": "local-qwen36-response-contract-plus-record-review-v1"
+  },
+  "student": {
+    "model_id": "Qwen/Qwen3-0.6B",
+    "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+    "model_dir": "E:/Source/Rust/TinyRustLM.com/artifacts/external/Qwen/Qwen3-0.6B/c1899de289a04d12100db370d81485cdf75e47ca"
+  },
+  "sources": [
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/artifacts/training/quality-sequence-v1/reviewed-draft2/reviewed-teacher-output.jsonl",
+      "sha256": "sha256:b6274cf7362255cf4b3020c1630e471261b0e9c2819a9905a5f1a9ebb90eac6c"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/artifacts/training/quality-sequence-v1/reviewed-recovery/reviewed-teacher-output.jsonl",
+      "sha256": "sha256:ea5f734f2bad9ca92a7f8049333ec6f88dee6c6de4bb2f02d6b6ca854ee08647"
+    }
+  ]
+}

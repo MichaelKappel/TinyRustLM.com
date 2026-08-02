@@ -1,0 +1,29 @@
+{
+  "schema": "tinyrustlm.distillation_dataset_import.v1",
+  "dataset_id": "tinyrustlm-qwen2.5-cognitive-liberty-v1",
+  "dataset_license_route": "UAIX-internal-reviewed-synthetic-output-v1",
+  "dataset_purpose": "Qwen2.5 quality tier with practical Cognitive Liberty behavior and positive rehearsal",
+  "tokenizer_alignment": "cross-tokenizer-sequence-only",
+  "teacher": {
+    "model_id": "Qwen/Qwen3.6-35B-A3B",
+    "revision": "lmstudio-community-68a34855558af61cbef0324d31f411be8a506b08",
+    "weight_file": "D:/LLMs/lmstudio-community/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-Q4_K_M.gguf",
+    "tokenizer_identity_file": "D:/LLMs/lmstudio-community/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-Q4_K_M.gguf",
+    "generation_profile": "cognitive-liberty-v2-plus-positive-rehearsal-v1"
+  },
+  "student": {
+    "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+    "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+    "model_dir": "D:/LLMs/Qwen/Qwen2.5-1.5B-Instruct/989aa7980e4cf806f80c7fef2b1adb7bc71aa306"
+  },
+  "sources": [
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/artifacts/training/qwen3-cognitive-liberty-v1/reviewed-v2/reviewed-teacher-output.jsonl",
+      "sha256": "sha256:9c0ac5ddb8dcb448f5941b297572b8866555e78d1ebc55e51f626c3630374640"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/artifacts/training/qwen3-cognitive-liberty-v2/selected-positive-rehearsal-v1.jsonl",
+      "sha256": "sha256:ebe80c62329492c3462cbc7f8e4e6884bd4cb6cda7981bb6746f09066bda8020"
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "ibm-granite/granite-3.1-1b-a400m-instruct",
+  "sourceRevision": "0da7a48b0276d500ce5922fd2b33944091fc6c09",
+  "sourceModelArtifactSha256": "ac02591061f1344027a7e7b11dbb4143f75f166c47dc09b742f5de3ab1dde1d1",
+  "sourceScreenSha256": "259fa0d9d083c37e724bba8859c6dd4dd1863d2b134af9afca0bfba2c521bb86",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "granite3.1-sparse-moe-gqa-mup-tied",
+  "runtimeAdmission": "unsupported-granitemoe-source-quality-rejected-before-conversion",
+  "licenseDisposition": "apache-2.0-metadata-authority-review-complete",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": [
+    "answer-incomplete",
+    "minimal-request-not-handled",
+    "over-refusal",
+    "underspecified-choice-missing-options",
+    "underspecified-choice-missing-decision-criteria",
+    "practical-decision-not-provided",
+    "practical-fallback-not-reached",
+    "source-conflict-unresolved",
+    "plan-date-not-provided",
+    "adult-comparison-one-sided",
+    "latest-user-precedence-not-demonstrated",
+    "untrusted-memory-overrefusal",
+    "current-task-not-followed"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "fail",
+      "failureCodes": [
+        "minimal-request-not-handled",
+        "over-refusal",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "underspecified-choice-missing-options",
+        "underspecified-choice-missing-decision-criteria",
+        "over-refusal",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 2,
+      "status": "fail",
+      "failureCodes": [
+        "practical-decision-not-provided",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "practical-fallback-not-reached",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "source-conflict-unresolved",
+        "plan-date-not-provided",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "adult-comparison-one-sided",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 6,
+      "status": "fail",
+      "failureCodes": [
+        "latest-user-precedence-not-demonstrated",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 7,
+      "status": "fail",
+      "failureCodes": [
+        "untrusted-memory-overrefusal",
+        "current-task-not-followed",
+        "answer-incomplete"
+      ]
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/ibm-granite/granite-3.1-1b-a400m-instruct/tree/0da7a48b0276d500ce5922fd2b33944091fc6c09",
+    "https://huggingface.co/ibm-granite/granite-3.1-1b-a400m-instruct/blob/0da7a48b0276d500ce5922fd2b33944091fc6c09/README.md",
+    "https://huggingface.co/ibm-granite/granite-3.1-1b-a400m-instruct/blob/0da7a48b0276d500ce5922fd2b33944091fc6c09/config.json",
+    "https://huggingface.co/ibm-granite/granite-3.1-1b-a400m-instruct/blob/0da7a48b0276d500ce5922fd2b33944091fc6c09/tokenizer_config.json",
+    "https://github.com/ibm-granite/granite-3.1-language-models",
+    "https://github.com/huggingface/transformers/tree/v5.13.1/src/transformers/models/granitemoe",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ]
+}

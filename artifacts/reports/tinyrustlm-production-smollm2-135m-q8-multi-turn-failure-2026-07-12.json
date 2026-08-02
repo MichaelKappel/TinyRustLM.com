@@ -1,0 +1,71 @@
+{
+  "schema": "tinyrustlm.multi_turn_context_browser_smoke.v2",
+  "generated_utc": "2026-07-13T04:55:09.988Z",
+  "status": "fail",
+  "app_url": "https://tinyrustlm.com/",
+  "expected_model": "smollm2q8",
+  "assertion_error": "multi-turn statuses were completed,failed,completed,completed; follow-up did not preserve the stated preference: \"(I pause for a moment, then continue.)\\n\\nI think I've found a way to make this decision. I've been thinking about the.\"; browser inference did not report one retained history turn: \"generate(max_new_tokens=32, temperature=0, top_k=1, top_p=1, seed=1) -> 0 in 4851 ms\\n(I pause for a moment, then continue.)\\n\\nI think I've found a way to make this decision. I've been thinking about the.\"; prompt token counts did not grow with history: 12/8; second prefill reuse/computed counts were 0/8 for 8; first=\"generation failed: incomplete answer\", second=\"(I pause for a moment, then continue.)\\n\\nI think I've found a way to make this decision. I've been thinking about the.\"",
+  "result": {
+    "localModelImport": true,
+    "selectedModel": "__local_slm_file",
+    "localModelState": "smollm2-135m-instruct-q8.slm / 130.52 MiB / sha256:5d34a430eade5cd4417b23824317a0bc0f89dd99a4ee4ac02f13a5fe4abc7dc2 / 0xbbc15995741d1919 / loaded",
+    "runtimeStatus": "Ready",
+    "modelState": "loaded (1590 ms)",
+    "errorState": "none",
+    "firstResponse": "generation failed: incomplete answer",
+    "secondResponse": "(I pause for a moment, then continue.)\n\nI think I've found a way to make this decision. I've been thinking about the.",
+    "firstPromptTokenCount": 12,
+    "firstPrefillReusedTokenCount": 0,
+    "firstPrefillComputedTokenCount": 12,
+    "secondPromptTokenCount": 8,
+    "secondPrefillReusedTokenCount": 0,
+    "secondPrefillComputedTokenCount": 8,
+    "activeQuantizationMode": "q8_0",
+    "generatedTokenCount": 32,
+    "consoleText": "generate(max_new_tokens=32, temperature=0, top_k=1, top_p=1, seed=1) -> 0 in 4851 ms\n(I pause for a moment, then continue.)\n\nI think I've found a way to make this decision. I've been thinking about the.",
+    "items": [
+      {
+        "role": "You",
+        "text": "Remember this exact preference: I drink tea, not coffee.",
+        "status": "completed"
+      },
+      {
+        "role": "TinyRustLM",
+        "text": "generation failed: incomplete answer",
+        "status": "failed"
+      },
+      {
+        "role": "You",
+        "text": "Which drink did I say I prefer?",
+        "status": "completed"
+      },
+      {
+        "role": "TinyRustLM",
+        "text": "(I pause for a moment, then continue.)\n\nI think I've found a way to make this decision. I've been thinking about the.",
+        "status": "completed"
+      }
+    ],
+    "networkRequests": [
+      "https://tinyrustlm.com/?autoload=0",
+      "https://tinyrustlm.com/app/app.css?v=20260711-active-chat2",
+      "https://tinyrustlm.com/app/active-conversation.js?v=20260712-multiturn1",
+      "https://tinyrustlm.com/app/calculator-tool.js?v=20260711-calculator1",
+      "https://tinyrustlm.com/app/memory-endpoints-distributed-sync-v1.js?v=20260710-live-contract1",
+      "https://tinyrustlm.com/app/memory-endpoints-sync.js?v=20260710-live-contract1",
+      "https://tinyrustlm.com/app/app.js?v=20260712-multiturn1",
+      "https://tinyrustlm.com/runtime/tinyrustlm.wasm.manifest",
+      "https://tinyrustlm.com/runtime/tinyrustlm.wasm"
+    ]
+  },
+  "network_requests": [
+    "https://tinyrustlm.com/",
+    "https://tinyrustlm.com/app/app.css",
+    "https://tinyrustlm.com/app/active-conversation.js",
+    "https://tinyrustlm.com/app/calculator-tool.js",
+    "https://tinyrustlm.com/app/memory-endpoints-distributed-sync-v1.js",
+    "https://tinyrustlm.com/app/memory-endpoints-sync.js",
+    "https://tinyrustlm.com/app/app.js",
+    "https://tinyrustlm.com/runtime/tinyrustlm.wasm.manifest",
+    "https://tinyrustlm.com/runtime/tinyrustlm.wasm"
+  ]
+}

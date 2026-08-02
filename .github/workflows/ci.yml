@@ -1,0 +1,202 @@
+name: TinyRustLM NuGet CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      run_deep_browser_smoke:
+        description: Run the heavyweight Hugging Face conversion and P2P import browser execution smokes.
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  verify-nuget-sdk:
+    name: Verify protected NuGet SDK
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: tinyrustlm/package-lock.json
+
+      - name: Install browser test dependencies
+        shell: pwsh
+        run: npm ci --prefix tinyrustlm
+
+      - name: Verify distillation and trained-adapter contracts
+        shell: pwsh
+        run: |
+          python -m unittest discover -s tinyrustlm/tools/tests -p "test_*.py" -v
+          cargo test -p tinyrustlm-slm-pack distillation
+          cargo test -p tinyrustlm-slm-pack trained_adapter_source::tests
+
+      - name: Verify offline and distributed MemoryEndpoints sync contracts
+        shell: pwsh
+        run: npm --prefix tinyrustlm run test:unit
+
+      - name: Verify deployed distributed-sync wire contract against fixture
+        shell: pwsh
+        run: eng/verify-memory-endpoints-distributed-sync-fixture.ps1
+
+      - name: Verify single-use enrollment replay and cleanup control flow
+        shell: pwsh
+        run: eng/verify-memory-endpoints-single-use-enrollment-fixture.ps1
+
+      - name: Verify TinyRustLM UI contract
+        shell: pwsh
+        run: eng/verify-tinyrustlm-ui.ps1 -RunBrowserSmoke
+
+      - name: Verify TinyRustLM deep conversion and P2P UI contract
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_deep_browser_smoke }}
+        shell: pwsh
+        run: eng/verify-tinyrustlm-ui.ps1 -Port 8185 -DebugPort 9452 -ReportOutput artifacts/reports/tinyrustlm-ui-deep-verification.json -BrowserSmokeModes hf-conversion-kit-safetensors-exec,hf-conversion-kit-review-exec,hf-conversion-kit-review-reject-exec,hf-conversion-kit-gguf-exec,hf-p2p-import-kit-exec
+
+      - name: Verify TinyRustLM public root contract
+        shell: pwsh
+        run: eng/verify-tinyrustlm-public-root.ps1
+
+      - name: Verify TinyRustLM deep UI report schema
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_deep_browser_smoke }}
+        shell: pwsh
+        env:
+          TINYRUSTLM_UI_VERIFICATION_REPORT: artifacts/reports/tinyrustlm-ui-deep-verification.json
+        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --filter UiVerificationReportIsMachineReadableWhenPresent
+
+      - name: Verify TinyRustLM UI report schema
+        shell: pwsh
+        env:
+          TINYRUSTLM_UI_VERIFICATION_REPORT: artifacts/reports/tinyrustlm-ui-verification.json
+          TINYRUSTLM_PUBLIC_ROOT_VERIFICATION_REPORT: artifacts/reports/tinyrustlm-public-root-verification.json
+        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --filter "UiVerificationReportIsMachineReadableWhenPresent|PublicRootVerificationReportIsMachineReadableWhenPresent"
+
+      - name: Verify package boundary
+        shell: pwsh
+        run: eng/verify-package.ps1 -IncludeOptionalMemoryEndpoints
+
+      - name: Upload NuGet packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-nuget-packages
+          path: |
+            artifacts/packages/*.nupkg
+            artifacts/packages/*.snupkg
+          if-no-files-found: error
+
+      - name: Upload NuGet audit reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-nuget-reports
+          path: artifacts/reports/*.json
+
+      - name: Upload TinyRustLM UI verification reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-ui-verification
+          path: |
+            artifacts/reports/tinyrustlm-ui-verification.json
+            artifacts/reports/tinyrustlm-ui-deep-verification.json
+            artifacts/reports/tinyrustlm-public-root-verification.json
+            artifacts/reports/tinyrustlm-source-options-ui-smoke.json
+            artifacts/reports/tinyrustlm-*-ui-smoke.json
+            artifacts/reports/tinyrustlm-*-exec-smoke.json
+            artifacts/reports/tinyrustlm-public-root-*-smoke.json
+          if-no-files-found: error
+
+  verify-web-companion:
+    name: Verify web-to-companion acceptance
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout TinyRustLM
+        uses: actions/checkout@v4
+        with:
+          path: TinyRustLM.com
+
+      - name: Checkout MiniModel
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelKappel/MiniModel.org
+          path: MiniModel.org
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: TinyRustLM.com/tinyrustlm/package-lock.json
+
+      - name: Build Rust MiniModel authority
+        shell: pwsh
+        run: cargo build --release --manifest-path MiniModel.org/Cargo.toml -p minimodel -p minimodel-native
+
+      - name: Build downloadable companion tool
+        shell: pwsh
+        run: dotnet build TinyRustLM.com/dotnet/tools/TinyRustLM.SeedHost.Tool/TinyRustLM.SeedHost.Tool.csproj -c Debug
+
+      - name: Reconstruct and verify large Qwen artifact when needed
+        shell: pwsh
+        run: |
+          $artifact = 'TinyRustLM.com/artifacts/performance/qwen2.5-1.5b-instruct-q4.slm'
+          $share = 'TinyRustLM.com/artifacts/seed-host-evidence/qwen-production-fleet/shares/tinyrustlm-qwen2-5-1-5b-instruct-q4-dc24eb832e8b'
+          $manifest = Join-Path $share 'qwen2.5-1.5b-instruct-q4.minimodel.manifest.v0'
+          $pieces = Join-Path $share 'qwen2.5-1.5b-instruct-q4.peer-pieces'
+          if (-not (Test-Path -LiteralPath $artifact -PathType Leaf)) {
+            & 'MiniModel.org/target/release/minimodel.exe' assemble-peer-pieces $manifest $pieces $artifact
+            if ($LASTEXITCODE -ne 0) { throw 'Large Qwen artifact assembly failed' }
+          }
+          & 'MiniModel.org/target/release/minimodel.exe' verify-artifact $manifest $artifact
+          if ($LASTEXITCODE -ne 0) { throw 'Large Qwen artifact verification failed' }
+          $size = (Get-Item -LiteralPath $artifact).Length
+          if ($size -ne 969648576) { throw "Large Qwen artifact size was $size" }
+
+      - name: Install Playwright
+        shell: pwsh
+        run: |
+          npm ci --prefix TinyRustLM.com/tinyrustlm
+          npx --prefix TinyRustLM.com/tinyrustlm playwright install chromium
+
+      - name: Run complete browser and companion acceptance suite
+        shell: pwsh
+        working-directory: TinyRustLM.com
+        run: npm --prefix tinyrustlm run test:e2e
+
+      - name: Upload Playwright evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-web-companion-playwright
+          path: |
+            TinyRustLM.com/tinyrustlm/artifacts/playwright/results.json
+            TinyRustLM.com/tinyrustlm/artifacts/playwright/report
+            TinyRustLM.com/tinyrustlm/artifacts/playwright/test-results
+          if-no-files-found: warn

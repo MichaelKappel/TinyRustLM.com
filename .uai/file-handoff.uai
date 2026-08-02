@@ -1,0 +1,443 @@
+profile: runtime-mirust.file-handoff.v66
+updated_utc: 2026-08-01T20:28:59Z
+current_enterprise_vnext_development_goal_intake:
+  manifest: docs/report-intake/2026-08-01/enterprise-vnext-development-research/MANIFEST.md
+  manifest_sha256: 80c86b086b21d8ca302a79fa13519097cc9d789c2a042b6b84a408d59ea27b05
+  goal: docs/report-intake/2026-08-01/enterprise-vnext-development-research/2026-08-01-authoritative-enterprise-vnext-development-goal-and-plan.md
+  goal_sha256: 629d7bee195f80c4acb868ed90c4124fd80d2cf6a1060a8fe13fdaa65968b31a
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-vnext-development-goal-memory-2026-08-01.md
+  durable_memory_sha256: 22838f84d8df1b7daef4577fa5f52fdbcf31e7f20eeeb377bf2b6f092c5b5731
+  report_count: 25
+  report_byte_count: 1770325
+  report_inventory_sha256: 6f6155814b8719948ef924976f160030408a11bd1fb9208ac423a55904d368cd
+  complete_artifact_count: 26
+  complete_inventory_sha256: 95add37dca2d1f1599f1baf0663c6a1e94b879bc90faf9bc294353cd8e5ae1aa
+  paired_lane_count: 11
+  three_report_lane_count: 1
+  incorporated_with_corrections_count: 25
+  active_goal_source: agent-file-handoff/Improvement/2026-08-01-authoritative-enterprise-vnext-development-goal-and-plan.md
+  active_goal_keep_reason: Human explicitly requested this detailed goal as the current execution handoff; its exact durable copy is preserved and the completed report sources are removed.
+  status: complete_verified_research_batch_preserved_goal_kept_active_campaign_incomplete
+current_champion_specialist_submodel_research_intake:
+  manifest: docs/report-intake/2026-07-21/champion-specialist-submodel-research/MANIFEST.md
+  manifest_sha256: be31a770a712204a6bed92ae59f739835bd0fc5e54de7bf9e0b8697e2af1ab12
+  synthesis: docs/report-intake/2026-07-21/champion-specialist-submodel-research/tinyrustlm-champion-specialist-submodel-research-intake-synthesis-2026-07-21.md
+  synthesis_sha256: 7b3052daaac623604005b1fa8a703ffabf07955a7dda86cf6b79e8b0fed7aa88
+  tdd_plan: docs/report-intake/2026-07-21/champion-specialist-submodel-research/tinyrustlm-champion-specialist-submodel-research-tdd-delta-2026-07-21.md
+  tdd_plan_sha256: 064fcef371c944de9fd3e6902e1a2b73382f174f57632719c36ecb68760a378d
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-champion-specialist-submodel-research-intake-memory-2026-07-21.md
+  durable_memory_sha256: c976b9571e945749814274bf086d9af094d9e593ddc46ef5dddb29348bcaa0b6
+  source_count: 13
+  report_count: 12
+  prompt_provenance_count: 1
+  paired_lane_count: 6
+  out_of_band_attachment_report_count: 1
+  incorporated_with_corrections_count: 12
+  status: complete_verified_research_batch_preserved_no_adoption_or_training_claim
+current_colibri_specialist_portfolio_intake:
+  manifest: docs/report-intake/2026-07-21/colibri-specialist-portfolio/MANIFEST.md
+  manifest_sha256: 30ccae2294969e06c39e35a4181141bc882047425242dc5d5e616306766ef9d7
+  synthesis: docs/report-intake/2026-07-21/colibri-specialist-portfolio/tinyrustlm-colibri-specialist-portfolio-intake-synthesis-2026-07-21.md
+  synthesis_sha256: 4d1e598c9c8d1bd56ae6cbde5ba95f6f382d9a08794eee9ec6ebd43657ec5fcc
+  tdd_plan: docs/report-intake/2026-07-21/colibri-specialist-portfolio/tinyrustlm-colibri-specialist-portfolio-tdd-delta-2026-07-21.md
+  tdd_plan_sha256: a5691cf6bd3ed023c0ef01b8cd0d2ba234853daa01afa72192fc2cf43a664a60
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-colibri-specialist-portfolio-intake-memory-2026-07-21.md
+  durable_memory_sha256: 3977ff876a140c1e9fb041d3d56be485fd5fae8b3df7c8c5d955262326fd917b
+  source_count: 2
+  report_count: 2
+  incorporated_with_corrections_count: 2
+  status: complete_verified_research_batch_preserved_no_adoption_or_training_claim
+current_turbovec_turboquant_intake:
+  manifest: docs/report-intake/2026-07-18/turbovec-turboquant-and-handoff-audit/MANIFEST.md
+  manifest_sha256: 6efe26a997fa368ed9bc7c7d57552731e7048f2aacf695dac3f6968f1e131086
+  synthesis: docs/report-intake/2026-07-18/turbovec-turboquant-and-handoff-audit/tinyrustlm-turbovec-turboquant-intake-synthesis-2026-07-18.md
+  synthesis_sha256: 72d110535744f4dbb673feb76b5584e7a89e4aeaadc2581235cf37f6f43c2904
+  tdd_plan: docs/report-intake/2026-07-18/turbovec-turboquant-and-handoff-audit/tinyrustlm-turbovec-turboquant-intake-tdd-delta-2026-07-18.md
+  tdd_plan_sha256: 3b72bc0bc42eb6f7a09438a2bf4c315b16f1e13648cd4f881cd8bae7529c3e2a
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-turbovec-turboquant-intake-memory-2026-07-18.md
+  durable_memory_sha256: 0632d3c3cbe6be1326a83f725f8f501000c9b76a9bc1c6d9f79944e5aaf64d3f
+  source_count: 14
+  report_count: 12
+  responsive_report_count: 9
+  rejected_misroute_count: 3
+  prompt_provenance_count: 2
+  status: complete_verified_research_batch_preserved_no_adoption_claim
+current_deeper_small_model_research_intake:
+  manifest: docs/report-intake/2026-07-15/deeper-small-model-research/MANIFEST.md
+  synthesis: docs/report-intake/2026-07-15/deeper-small-model-research/tinyrustlm-deeper-small-model-research-intake-synthesis-2026-07-15.md
+  tdd_plan: docs/report-intake/2026-07-15/deeper-small-model-research/tinyrustlm-deeper-small-model-research-intake-tdd-delta-2026-07-15.md
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-deeper-small-model-research-intake-synthesis-2026-07-15.md
+  durable_memory_sha256: e16005831c42a75c7dd57b4334702438c73afc5c89bdaa616b6a1db63b9e4a43
+  source_count: 13
+  report_count: 12
+  prompt_provenance_count: 1
+  status: complete_verified_batch_preserved_two_explicit_assignments_active
+current_dogfood_campaign_execution:
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-dogfood-quality-campaign-execution-memory-2026-07-15.md
+  durable_memory_sha256: ac9e5d52c1bd1af5d2a355d57441e7b46827980990efef4ffc1febb982efdfbe
+  dashboard: artifacts/reports/dogfood-campaign-evidence-2026-07-15/campaign-status.json
+  final_attestation: artifacts/reports/dogfood-campaign-evidence-2026-07-15/final-attestation.json
+  remaining_risks: tinyrustlm/campaign-remaining-risks.v1.json
+  final_attestation_contract: docs/architecture/dogfood-campaign-final-attestation.md
+  memory_endpoints_platform_handoff: agent-file-handoff/Improvement/2026-07-18-memoryendpoints-platform-contract-and-live-continuity-retry-prompt.md
+  memory_endpoints_platform_handoff_sha256: f77f2297313a0b54361f7db0be38df4b32c34fa3e319fe3bceabab1ac33bdb26
+  memory_endpoints_live_status: not_connected_no_individual_accounts_validated_0_of_25
+  turbovec_turboquant_research_handoff: docs/report-intake/2026-07-18/turbovec-turboquant-and-handoff-audit/2026-07-17-six-disconnected-turbovec-turboquant-performance-accuracy-research-prompts.md
+  turbovec_turboquant_research_handoff_sha256: 900ae1008926b722090d0e0319904f8425536ac80a67b329dce90bec1a77f564
+  turbovec_turboquant_research_status: complete_nine_responsive_reports_reviewed_no_technical_claims_accepted
+  huihui_qwen2_5_1_5b_abliterated_sft_source_report: wiki/runtime-mirust/reports/tinyrustlm-huihui-ai-qwen2.5-1.5b-instruct-abliterated-sft-source-preflight-memory-2026-07-18.md
+  huihui_qwen2_5_1_5b_abliterated_sft_source_report_sha256: 77e21eff7aa62fb93abff5ad074f8c748542b8c2dc910a3bbe4c27c72cb800de
+  huihui_qwen2_5_1_5b_abliterated_sft_rejection_receipt: sha256:9b5662287e32274755679d44ef2928a64d0470490102e8c3920ef4b27b263f48
+  hiep_2_qwen3_math_source_report: wiki/runtime-mirust/reports/tinyrustlm-hiep-2-qwen3-0.6b-math-cpt-sft-source-preflight-memory-2026-07-18.md
+  hiep_2_qwen3_math_source_report_sha256: a25a23cfe9c22299d0abe5efe015f331bb4b494ff2ecbcaac43483a81d5fb0d9
+  hiep_2_qwen3_math_rejection_receipt: sha256:c76967274f5cf2f64d1e316f88ed313f65aa75235297bc80bb3ca1b49183df90
+  zainbhat_qwen3_source_report: wiki/runtime-mirust/reports/tinyrustlm-zainbhat-qwen3-0.6b-finetome-lora-merged-source-preflight-memory-2026-07-18.md
+  zainbhat_qwen3_source_report_sha256: 2e21bb3b1ce72cb1b7389f53d1e4fb60c236a46e70113cdec9cef5ce8a758c86
+  zainbhat_qwen3_rejection_receipt: sha256:e333d4cb0d7f7c99057ef29d0ce66ac02817017753cbd93d5b40183d72f8f209
+  qwen3_1_7b_source_report: wiki/runtime-mirust/reports/tinyrustlm-qwen3-1.7b-source-screen-memory-2026-07-16.md
+  qwen3_1_7b_source_report_sha256: 5af37d5977c775d1a27636fa934165c2d42ca49aa4a8a6ea88c28cc84f743bfb
+  qwen3_1_7b_rejection_receipt: sha256:164d828de5a2aa5d086f34f50a5855c323a1a6bcc186027d5f50d5df2d0f1540
+  fault_plan: tinyrustlm/campaign-fault-plan.v1.json
+  fault_report: artifacts/reports/tinyrustlm-campaign-fault-injection-v1.json
+  public_secret_scan: artifacts/reports/tinyrustlm-public-artifact-secret-scan-v2.json
+  dashboard_content_sha256: 5771d8830ac359cc39b8b1c83dfea7f8fb4d06784681d40127c2ff0b460975dc
+  public_secret_scan_receipt: sha256:f44e1dea1e4f0c18ce74fc652d4e0c84662b43f68d8929109b5b4bab7ce89c08
+  final_attestation_receipt: sha256:890089eff6208945e33a2c5f7bca3320ac4f21cb78fd459590cc03ed75e0e289
+  receipt_store_counts: 195_current_551_retained_0_quarantined
+  status: incomplete_14_blockers_62_terminal_rejections_17_of_24_fault_cases_unsigned_final_attestation_no_live_counters
+handoff_root: agent-file-handoff/
+active_buckets:
+  content: agent-file-handoff/Content/
+  improvement: agent-file-handoff/Improvement/
+  content_non_placeholder_files: 0
+  improvement_non_placeholder_files: 1
+  active_assignments: authoritative_enterprise_vnext_development_goal_and_plan
+current_browser_first_consent_memory_route:
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-browser-first-local-consent-memory-2026-07-15.md
+  durable_memory_sha256: 960c8b10cde21a63252e7ce27a971fa1ae88d24387837868de982c64625beaa1
+  deployment_receipt: artifacts/reports/tinyrustlm-browser-first-local-consent-production-deployment-2026-07-15.json
+  live_browser_receipt: artifacts/reports/tinyrustlm-live-browser-local-consent-2026-07-15.json
+  route_rule: Keep browser chat complete by default, require explained user opt-in before any desktop access, preserve local copied and queued-sync memory choices, and encourage optional MemoryEndpoints.com for worldwide continuity without implying offline hosted access.
+current_dogfood_quality_campaign_intake:
+  manifest: docs/report-intake/2026-07-14/dogfood-quality-campaign/MANIFEST.md
+  synthesis: docs/report-intake/2026-07-14/dogfood-quality-campaign/tinyrustlm-dogfood-quality-campaign-intake-synthesis-2026-07-14.md
+  tdd_plan: docs/report-intake/2026-07-14/dogfood-quality-campaign/tinyrustlm-dogfood-quality-campaign-tdd-plan-2026-07-14.md
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-dogfood-quality-campaign-intake-memory-2026-07-14.md
+  durable_memory_sha256: 3cba671650e6f4c60c439b47e08af11889a00c2022c8dc6288fef9b38ac1fa51
+  source_count: 12
+  prompt_provenance_count: 1
+  status: complete_verified_batch_preserved_two_explicit_assignments_active
+current_processed_batch:
+  manifest: docs/report-intake/2026-08-01/enterprise-vnext-development-research/MANIFEST.md
+  synthesis_and_tdd_plan: docs/report-intake/2026-08-01/enterprise-vnext-development-research/2026-08-01-authoritative-enterprise-vnext-development-goal-and-plan.md
+  long_term_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-vnext-development-goal-memory-2026-08-01.md
+  long_term_memory_sha256: 22838f84d8df1b7daef4577fa5f52fdbcf31e7f20eeeb377bf2b6f092c5b5731
+  source_count: 26
+  report_count: 25
+  active_goal_count: 1
+  source_cleanup: completed_reports_removed_goal_kept_active_by_explicit_human_request
+pending_research_request:
+  prompt_path: docs/research-prompts/2026-07-12-six-disconnected-model-quality-research-prompts.md
+  prompt_sha256: 059d53d884c105ed25a27fa31a841efc983e855f4c0530fc5e5af83c454159f9
+  expected_report_count: 6
+  report_destination: agent-file-handoff/Improvement/
+  status: awaiting_disconnected_agent_reports
+  evidence_boundary: Prompt provenance is not report evidence and cannot satisfy intake completion.
+additional_prompt_provenance:
+  prompt_path: docs/research-prompts/2026-07-12-six-deep-model-response-quality-research-prompts.md
+  prompt_sha256: 29dc2e15182eecedb788c5d2e6eff785de7bc4d7ca18ea370d127b8e2855492
+  expected_report_count: 6
+  report_destination: agent-file-handoff/Improvement/
+  status: awaiting_disconnected_agent_reports
+  evidence_boundary: This prompt was moved out of active intake because it is a request for future evidence, not a completed report.
+prior_small_model_research_batch_2_2026_07_11:
+  manifest: docs/report-intake/2026-07-11/small-model-research-batch-2/MANIFEST.md
+  synthesis: docs/report-intake/2026-07-11/small-model-research-batch-2/tinyrustlm-small-model-research-synthesis-2026-07-11.md
+  tdd_delta: docs/report-intake/2026-07-11/small-model-research-batch-2/tinyrustlm-small-model-research-tdd-delta-2026-07-11.md
+  long_term_memory: wiki/runtime-mirust/reports/tinyrustlm-small-model-research-batch-2-memory-2026-07-11.md
+  status: retained_as_current_model_quality_dependency
+prior_browser_memory_notification_intake_2026_07_12:
+  manifest: docs/report-intake/2026-07-12/memory-connectors-and-notifications/MANIFEST.md
+  synthesis: docs/report-intake/2026-07-12/memory-connectors-and-notifications/tinyrustlm-browser-memory-notification-synthesis-2026-07-12.md
+  tdd_plan: docs/report-intake/2026-07-12/memory-connectors-and-notifications/tinyrustlm-browser-memory-notification-tdd-plan-2026-07-12.md
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-browser-memory-notification-intake-memory-2026-07-12.md
+  status: retained_as_current_browser_memory_and_notification_dependency
+forbidden_default_bucket:
+  archive: agent-file-handoff/Archive/
+completion_gate:
+  required_before_broad_work: true
+  live_scan_required: true
+  ledger_path: .uai/intake-outcome-ledger.uai
+  outcomes:
+    - incorporated
+    - rejected-with-reason
+    - preserved-to-durable-memory
+    - kept-active-with-reason
+  proof_required:
+    - disposition
+    - processed_outcome
+    - actual_source_work
+    - hot_memory_update
+    - llm_wiki_or_aiwikis_preservation_evidence
+    - checks
+    - blockers
+    - source_site_removal_or_keep_active_reason
+    - source_removed_or_concrete_keep_active_reason
+durable_preservation:
+  target: raw/runtime-mirust/
+  docs_target_2026_06_30: docs/report-intake/2026-06-30/
+  docs_target_2026_07_01: docs/report-intake/2026-07-01/
+  docs_target_2026_07_02: docs/report-intake/2026-07-02/
+  docs_target_2026_07_02_followup: docs/report-intake/2026-07-02-followup/
+  docs_target_2026_07_08: docs/report-intake/2026-07-08/
+  docs_target_2026_07_10: docs/report-intake/2026-07-10/
+  docs_target_2026_07_11: docs/report-intake/2026-07-11/
+  docs_target_2026_07_12: docs/report-intake/2026-07-12/memory-connectors-and-notifications/
+  docs_target_2026_07_14: docs/report-intake/2026-07-14/dogfood-quality-campaign/
+  public_target: https://aiwikis.org/runtime-mirust/files/
+  manifest: raw/runtime-mirust/MANIFEST.md
+  checksum_required: true
+current_scan:
+  workspace_checked: E:\Source\Rust\TinyRustLM.com
+  content_bucket_non_placeholder_files: 0
+  improvement_bucket_non_placeholder_files: 1
+  misplaced_root_files: 0
+  status: reports_processed_one_explicit_execution_goal_active
+  keep_active_reason: Human explicitly requested the named enterprise vNext goal as the current execution handoff; the same bytes are durably preserved.
+  durable_manifest: docs/report-intake/2026-08-01/enterprise-vnext-development-research/MANIFEST.md
+  durable_synthesis_and_tdd_plan: docs/report-intake/2026-08-01/enterprise-vnext-development-research/2026-08-01-authoritative-enterprise-vnext-development-goal-and-plan.md
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-vnext-development-goal-memory-2026-08-01.md
+  hosted_distribution_evidence: docs/report-intake/2026-07-10/MEMORYENDPOINTS-DISTRIBUTION.md
+  hosted_service: https://memoryendpoints.com
+  hosted_agent: tinyrustlm-agent
+  hosted_scope: goal-tinyrustlm-hosted-memory
+  hosted_goal_room: room-d3a35d3e963f696fd24d
+  hosted_expansion_project: project-7474be75df6643b89953
+  hosted_expansion_project_room: room-0148ae1a609c2c282969
+  hosted_coordination_playbook: .uai/memory-endpoints-coordination.uai
+  hosted_production_memory: wiki/runtime-mirust/reports/tinyrustlm-memory-endpoints-production-deployment-memory-2026-07-10.md
+  hosted_production_memory_sha256: 50d1f973ce180c6aa0743fabe77696b75d1194bae15838accdaf3df8e9eae6f1
+  hosted_production_result: Direct-CORS public browser proof passed local .slm import, status/handoff readback, tier isolation, hosted generation context, zero persistent credential leakage, and locked UI; same-origin relay remains optional and undeployed.
+  hosted_batch_tag: tinyrustlm-memory-intake-20260710
+  hosted_search_rule: Use /api/matm/search with scope=goal, scope_id=goal-tinyrustlm-hosted-memory, and explicit memory_type=status or memory_type=handoff.
+  hosted_review_rule: Use /api/matm/review-queue and verify promoted readback after every /api/matm/review-queue/decide response; mutation acknowledgement alone is insufficient.
+  hosted_result: promoted physical history 8/8, one current status, one superseded status, six handoffs, bidirectional tier isolation passed, raw exposure flags false.
+  authentication_boundary: Protected external coordination handoff only; credential values are never copied into .uai or durable report evidence.
+strategy_refresh_2026_06_28:
+  source: https://uaix.org/en-us/tools/ai-memory-package-wizard/#setup-file-handoff
+  applied_shape: Active Content and Improvement buckets are live intake; every reviewed file needs disposition, proof-of-use, durable raw/wiki/docs preservation, hot routing, pointer-ledger refresh, report/research pointer audit, and source-site removal unless an explicit keep-active reason or blocker is recorded.
+  startup_loop: Open project root, scan active buckets, preserve durable bodies, refresh `.uai` routing, refresh long-term checksums, expose current routes from short-term memory, remove processed source-site copies from active intake unless keep-active is explicitly requested or blocked, then continue implementation work.
+  report_memory_rule: Reports stay as durable raw evidence plus wiki/report synthesis bodies; .uai files keep current routing, synthesis, proof pointers, and checksums.
+current_response_quality_footprint_intake_2026_07_11:
+  source_bucket: agent-file-handoff/Improvement/
+  source_count: 12
+  durable_manifest: docs/report-intake/2026-07-11/MANIFEST.md
+  durable_synthesis: docs/report-intake/2026-07-11/tinyrustlm-response-quality-footprint-synthesis-2026-07-11.md
+  durable_tdd_plan: docs/report-intake/2026-07-11/tinyrustlm-response-quality-footprint-tdd-plan-2026-07-11.md
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-response-quality-footprint-memory-2026-07-11.md
+  durable_memory_sha256: 3407657ad476d7edfe1f2a3265492f36f4f793ff5a5097de17502f1e4ab25aae
+  processing_rule: Preserve exact bytes, review against local measurements, route concise current memory, ledger every outcome, verify, then remove processed source copies.
+  result: Reference-locked conversion/runtime fidelity is the first implementation slice; no current candidate is the production default.
+prior_memory_endpoints_intake_2026_07_10:
+  durable_manifest: docs/report-intake/2026-07-10/MANIFEST.md
+  durable_synthesis: docs/report-intake/2026-07-10/tinyrustlm-memory-endpoints-intake-synthesis-2026-07-10.md
+  durable_tdd_plan: docs/report-intake/2026-07-10/tinyrustlm-memory-endpoints-intake-tdd-plan-2026-07-10.md
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-memory-endpoints-intake-memory-2026-07-10.md
+  hosted_distribution_evidence: docs/report-intake/2026-07-10/MEMORYENDPOINTS-DISTRIBUTION.md
+  status: current_hosted_memory_authority_preserved_alongside_new_quality_intake
+  research_memory_rule: Research/reference bodies stay under wiki/runtime-mirust/research/; hot .uai files carry routing, implementation boundaries, and next-step prompts; long-term memory carries checksum pointers.
+  short_term_reference_rule: .uai/short-term-memory.uai records current report indexes, research reference routes, active bucket disposition, and the long-term ledger route after each intake or strategy refresh.
+  report_pointer_audit_rule: After report or research memory changes, audit wiki/runtime-mirust/reports/*.md and wiki/runtime-mirust/research/*.md against .uai/long-term-memory.uai before calling the handoff complete.
+  diverse_model_breeding_reference_rule: Model Breeding ideas route through durable research lanes for compatible merges, sparse lineage, adapter ecology, population search, federated/local updates, browser-constrained assembly, UAIX memory strategy, heritable artifacts, mate selection, phenotype evidence, fit boundaries, genome/fitness/novelty/speciation metadata, and zero-dependency browser-runtime guidance.
+  tiny_model_runtime_memory_reference_rule_2026_06_29: Tiny-model and Rust/WASM runtime research routes through raw/runtime-mirust/report-intake-2026-06-29/, wiki/runtime-mirust/reports/report-intake-index-2026-06-29.md, and wiki/runtime-mirust/research/tiny-model-runtime-memory-reference-ideas-2026-06-29.md before model-conversion, browser-runtime, or memory-strategy work.
+  safetensors_tokenizer_budget_reference_rule_2026_06_29: Follow-up safetensors, tokenizer, browser byte-budget, WASM hot-loop, model-breeding metadata, and reference-output fixture research routes through raw/runtime-mirust/report-intake-2026-06-29-followup/, wiki/runtime-mirust/reports/report-intake-index-2026-06-29-followup.md, and wiki/runtime-mirust/research/safetensors-tokenizer-budget-reference-ideas-2026-06-29.md before conversion, tokenizer, budget, or fixture work.
+  minimodel_p2p_docs_rule_2026_07_01: MiniModel.org P2P exchange research routes through docs/report-intake/2026-07-01/MANIFEST.md, docs/report-intake/2026-07-01/minimodel-p2p-report-synthesis-2026-07-01.md, and wiki/runtime-mirust/research/minimodel-p2p-tiny-model-exchange-roadmap-2026-07-01.md; project servers never run or serve user model bytes, and TinyRustLM remains browser-local. SLMComposer labels in those evidence paths are historical names only.
+  huggingface_source_options_rule_2026_07_01: Hugging Face API option research routes through docs/report-intake/2026-07-01/Hugging Face API Endpoint Overview.md and wiki/runtime-mirust/research/huggingface-api-source-options-2026-07-01.md; use Hugging Face as user-triggered metadata/source discovery only, not project-server byte proxying or remote inference.
+  tinyrustlm_minimodel_intake_rule_2026_07_02: TinyRustLM/MiniModel improvement research routes through docs/report-intake/2026-07-02/MANIFEST.md, docs/report-intake/2026-07-02/tinyrustlm-minimodel-intake-synthesis-2026-07-02.md, and the add-peer-source, peer-source-announcement, batch announcement snapshot, plus peer-source announcement overlay memory reports; treat Iroh/broad discovery as roadmap and current direct known-peer Rust handoffs as the implemented byte path.
+  tinyrustlm_minimodel_followup_rule_2026_07_02: TinyRustLM/MiniModel follow-up research routes through docs/report-intake/2026-07-02-followup/MANIFEST.md, docs/report-intake/2026-07-02-followup/tinyrustlm-followup-intake-synthesis-2026-07-02.md, and wiki/runtime-mirust/reports/tinyrustlm-followup-intake-announcement-feed-memory-2026-07-02.md; use it before changing Hugging Face conversion UX, MiniModel announcement-feed publication, P2P discoverability, or beginner/pro disclosure.
+  tinyrustlm_desktop_p2p_companion_rule_2026_07_03: Desktop/P2P companion research routes through docs/report-intake/2026-07-03/MANIFEST.md, docs/report-intake/2026-07-03/tinyrustlm-desktop-p2p-intake-synthesis-2026-07-03.md, and wiki/runtime-mirust/reports/tinyrustlm-desktop-p2p-companion-intake-memory-2026-07-03.md; use it before designing an optional MiniModel Peer Companion, and keep TinyRustLM browser-first, Rust-verifier-owned, consent-gated, and free of project-hosted model bytes.
+  tinyrustlm_bleeding_edge_system_plan_rule_2026_07_08: Runtime quality, honest eval, `.slm` trust metadata, browser/WASM, MiniModel/P2P, quantization, compression, distillation, model-candidate, open-core, and NuGet research routes through docs/report-intake/2026-07-08/MANIFEST.md, docs/report-intake/2026-07-08/tinyrustlm-bleeding-edge-intake-synthesis-2026-07-08.md, docs/report-intake/2026-07-08/tinyrustlm-bleeding-edge-tdd-plan-2026-07-08.md, and wiki/runtime-mirust/reports/tinyrustlm-bleeding-edge-system-plan-memory-2026-07-08.md; add red tests before implementing future claims and do not use fixture/demo models as assistant-quality proof.
+  voice_memory_rule: Public-copy voice routes through .uai/taboo.uai before model-breeding, mutualist, tiny-ecology, or UAIX strategy copy is published; use proof, craft, lineage, fit, local agency, routes, and implementation evidence.
+uaix_cleanup_correction_2026_06_30:
+  source: https://uaix.org/en-us/tools/ai-memory-package-wizard/#setup-file-handoff
+  reviewed_utc: 2026-06-30T23:58:00Z
+  failure: Prior memory incorrectly promoted `kept-active-with-reason` into the default post-processing rule, leaving processed reports in active intake after durable preservation.
+  corrected_rule: Remove processed source-site copies from active intake after durable preservation and proof-of-use; use `kept-active-with-reason` only for an explicit named keep-active request or a blocker.
+  disposition: preserved-to-durable-memory
+  proof: Nine Improvement reports were copied byte-for-byte to docs/report-intake/2026-06-30/ with SHA256 verification, then removed from agent-file-handoff/Improvement/; current scan sees Content=0 and Improvement=0.
+  next_agent_action: Treat non-placeholder files in Content/Improvement as pending intake; do not call handoff complete until each has disposition, proof-of-use, durable preservation when accepted, and source-site removal or a real keep-active blocker.
+historical_scan_2026_07_03:
+  scanned_utc: 2026-07-03T12:30:00Z
+  workspace_checked: E:\Source\Rust\SLMComposer.com
+  content_bucket_non_placeholder_files: 0
+  improvement_bucket_non_placeholder_files: 0
+  misplaced_root_files: 0
+  status: processed_2026_07_03_tinyrustlm_desktop_p2p_companion_batch
+  action: Six desktop/P2P companion reports from TinyRustLM.com were copied byte-exact to docs/report-intake/2026-07-03/, synthesized, routed into durable memory/product guidance, used to define a later optional user-run MiniModel Peer Companion boundary, and removed from active intake.
+  keep_active_reason: none
+  durable_manifest: docs/report-intake/2026-07-03/MANIFEST.md
+  durable_synthesis: docs/report-intake/2026-07-03/tinyrustlm-desktop-p2p-intake-synthesis-2026-07-03.md
+  durable_desktop_p2p_memory: wiki/runtime-mirust/reports/tinyrustlm-desktop-p2p-companion-intake-memory-2026-07-03.md
+  prior_durable_followup_memory: wiki/runtime-mirust/reports/tinyrustlm-followup-intake-announcement-feed-memory-2026-07-02.md
+  durable_roadmap: wiki/runtime-mirust/research/minimodel-p2p-tiny-model-exchange-roadmap-2026-07-01.md
+  durable_add_peer_source_memory: wiki/runtime-mirust/reports/tinyrustlm-minimodel-add-peer-source-intake-memory-2026-07-02.md
+  durable_peer_source_announcement_memory: wiki/runtime-mirust/reports/tinyrustlm-minimodel-peer-source-announcement-memory-2026-07-02.md
+  durable_batch_announcement_snapshot_memory: wiki/runtime-mirust/reports/tinyrustlm-minimodel-batch-announcement-snapshot-memory-2026-07-02.md
+  durable_peer_source_announcement_overlay_memory: wiki/runtime-mirust/reports/tinyrustlm-peer-source-announcement-overlay-memory-2026-07-02.md
+  processed_improvement_files_2026_07_03:
+    - path: TinyRustLM.com/agent-file-handoff/Improvement/Investigating Optional Rust P2P App.md
+      docs_copy: docs/report-intake/2026-07-03/Investigating Optional Rust P2P App.md
+      bytes: 53753
+      sha256: F64F641B138548942A9C93E5B0500475B682202D2E679DF2671556630FB7501A
+      route_hint: Optional Rust/Tauri-style desktop shell tradeoffs, TinyRustLM boundary review, and user-run P2P app framing.
+    - path: TinyRustLM.com/agent-file-handoff/Improvement/Investigating Optional Rust P2P Application.md
+      docs_copy: docs/report-intake/2026-07-03/Investigating Optional Rust P2P Application.md
+      bytes: 46571
+      sha256: 5CD4799580F25B222AB965E928C98D4B03B493BF153247D95B421E698D985F2A
+      route_hint: Optional peer companion architecture, UI shell choices, and preserving Rust verifier authority.
+    - path: TinyRustLM.com/agent-file-handoff/Improvement/P2P Web Desktop Architecture.md
+      docs_copy: docs/report-intake/2026-07-03/P2P Web Desktop Architecture.md
+      bytes: 48779
+      sha256: D2BBBB8E0D39A5951616AAEF3E58D427F2580F42F5FE7707A69420ADBE2133A6
+      route_hint: Web/desktop peer bridge patterns, local transfer consent, and keeping project servers out of model-byte paths.
+    - path: TinyRustLM.com/agent-file-handoff/Improvement/Rust Desktop App Best Practices Guide.md
+      docs_copy: docs/report-intake/2026-07-03/Rust Desktop App Best Practices Guide.md
+      bytes: 53040
+      sha256: B06A154E79445020A2A2B96EB025CD078FD765042A95A2601B802B06ED37FDFE
+      route_hint: Rust desktop packaging, state, security, and test practices for a later companion.
+    - path: TinyRustLM.com/agent-file-handoff/Improvement/Rust Dual App Architecture Practices.md
+      docs_copy: docs/report-intake/2026-07-03/Rust Dual App Architecture Practices.md
+      bytes: 52102
+      sha256: 1DBB608909833B2939F4F3E2EEBC281C5200D5A0FA66046AC1ECBE03915B1752
+      route_hint: Shared browser/desktop architecture with core verification isolated from presentation.
+    - path: TinyRustLM.com/agent-file-handoff/Improvement/Rust Enterprise Desktop Architecture.md
+      docs_copy: docs/report-intake/2026-07-03/Rust Enterprise Desktop Architecture.md
+      bytes: 58774
+      sha256: 9A91DC0C69934C654CF58E6FEACB5F80159EFC03100154F70658CB233F89F6DE
+      route_hint: Enterprise desktop architecture, secure local storage, release signing, testing, and narrow IPC.
+  processed_improvement_files_2026_07_02_followup:
+    - path: TinyRustLM.com/agent-file-handoff/Improvement/Hugging Face to TinyRustLM Workflow.md
+      docs_copy: docs/report-intake/2026-07-02-followup/Hugging Face to TinyRustLM Workflow.md
+      bytes: 45255
+      sha256: 97A489AD02BD76ED96EB8954784BB00EF52E7667B82EA700E0129D7E029EB5C2
+      route_hint: Hugging Face metadata, local Rust conversion, conversion receipts, and honest `Start Conversion` states.
+    - path: TinyRustLM.com/agent-file-handoff/Improvement/MiniModel P2P Exchange Architecture.md
+      docs_copy: docs/report-intake/2026-07-02-followup/MiniModel P2P Exchange Architecture.md
+      bytes: 30131
+      sha256: 4749B9465F7209A6E64C473E44D190BC8E3CD9287CC4B95478AB070AE48D04E6
+      route_hint: MiniModel metadata-only P2P architecture, consenting peer availability, verifier authority, and no-server-byte enforcement.
+    - path: TinyRustLM.com/agent-file-handoff/Improvement/Usability and Progressive Disclosure in Browser-Native Language Model Interfaces.md
+      docs_copy: docs/report-intake/2026-07-02-followup/Usability and Progressive Disclosure in Browser-Native Language Model Interfaces.md
+      bytes: 39743
+      sha256: DC2DEFED3740D1AF04DE5B459EBC8B057631895E7769CD55673666D137F673CC
+      route_hint: Beginner/pro source UX, progressive disclosure, plain recovery states, and advanced verifier evidence containment.
+  processed_improvement_files_2026_07_02:
+    - path: TinyRustLM.com/agent-file-handoff/Improvement/Hugging Face to SLM Conversion Workflow.md
+      docs_copy: docs/report-intake/2026-07-02/Hugging Face to SLM Conversion Workflow.md
+      bytes: 35963
+      sha256: AC8C8D09112CFA372EDD5B5AB2429B1F98DD2CD4FB95D665F3C60672EC41EB50
+      route_hint: Hugging Face metadata, local `.safetensors` conversion, receipts, and P2P reuse boundaries.
+    - path: TinyRustLM.com/agent-file-handoff/Improvement/MiniModel P2P Architecture Research.md
+      docs_copy: docs/report-intake/2026-07-02/MiniModel P2P Architecture Research.md
+      bytes: 41818
+      sha256: A7335D466841CE2C009F630F926F3052320C6352106FDD6FFB9484F37F28166E
+      route_hint: MiniModel metadata-only architecture, consent, verifier authority, and no-server-byte enforcement.
+    - path: TinyRustLM.com/agent-file-handoff/Improvement/MiniModel P2P Technology Evaluation.md
+      docs_copy: docs/report-intake/2026-07-02/MiniModel P2P Technology Evaluation.md
+      bytes: 41743
+      sha256: FE1FDBED38F4DE6F65425E6C0C0A2719C31EFF4B22F0D9F62AEB63B99BF4585D
+      route_hint: Iroh, libp2p, BitTorrent-style chunks, and Pear/Bare/Hyper tradeoffs for later roadmap work.
+    - path: TinyRustLM.com/agent-file-handoff/Improvement/TinyRustLM Beginner UX Report.md
+      docs_copy: docs/report-intake/2026-07-02/TinyRustLM Beginner UX Report.md
+      bytes: 34847
+      sha256: 5648FE486ED5203240427D16D84A966DABEAD7F50CD96C794BEE0BA3A73E06A4
+      route_hint: Beginner local-first UX, progressive disclosure, honest P2P/conversion states, and no fake readiness.
+    - path: TinyRustLM.com/agent-file-handoff/Improvement/TinyRustLM Quality Improvement Plan.md
+      docs_copy: docs/report-intake/2026-07-02/TinyRustLM Quality Improvement Plan.md
+      bytes: 45437
+      sha256: 26D1AB0C9FD710FF0D5ACFFB1E1772C0E4D090A9CEB1D72EA8F21891C54AAC20
+      route_hint: Enterprise quality, deterministic verifier functions, docs, tests, and legal/security posture.
+    - path: TinyRustLM.com/agent-file-handoff/Improvement/TinyRustLM SLM Format Documentation.md
+      docs_copy: docs/report-intake/2026-07-02/TinyRustLM SLM Format Documentation.md
+      bytes: 31494
+      sha256: 81E5C28A605362DB514F500FFF9E5D175BAB178CAA558907E79652F95919F99A
+      route_hint: `.slm` documentation pressure, local validation, receipts, and exchange metadata expectations.
+  processed_improvement_files_2026_07_01:
+    - path: agent-file-handoff/Improvement/Building Custom Tiny AI_ML Models.md
+      docs_copy: docs/report-intake/2026-07-01/Building Custom Tiny AI_ML Models.md
+      bytes: 58462
+      sha256: 5f4e05ca7cae2f5ebeaa20f4d4c6fe2976868357795bdac5a281275eb90b2f32
+      route_hint: tiny-model training, compression, deployment, and edge inference strategy.
+    - path: agent-file-handoff/Improvement/Exploring Minimal JavaScript Runtimes.md
+      docs_copy: docs/report-intake/2026-07-01/Exploring Minimal JavaScript Runtimes.md
+      bytes: 54322
+      sha256: 24eef4dd41fea19c7977bb9c74587c75375d4180e772e4c8f0bcdd91a6328b15
+      route_hint: Bare-style runtime architecture, embedding, modules, native bindings, and memory footprint.
+    - path: agent-file-handoff/Improvement/Exploring the Hyper Module Ecosystem.md
+      docs_copy: docs/report-intake/2026-07-01/Exploring the Hyper Module Ecosystem.md
+      bytes: 70670
+      sha256: 6ba29856f87f82c8c48745415e2ddd3dc9dd137763e0d0b7ea9754e146573f12
+      route_hint: Hypercore/Holepunch, Rust Hyper, and cloud-service naming disambiguation.
+    - path: agent-file-handoff/Improvement/Hugging Face API Endpoint Overview.md
+      docs_copy: docs/report-intake/2026-07-01/Hugging Face API Endpoint Overview.md
+      bytes: 52443
+      sha256: a20c5d7908b30b562220f6bf8c94755da62b41f005ae3fbffd1650c586cd120c
+      route_hint: Hugging Face Hub metadata discovery, resolver/data-plane separation, token boundaries, and remote inference exclusion.
+    - path: agent-file-handoff/Improvement/MiniModel.org P2P Architecture Research.md
+      docs_copy: docs/report-intake/2026-07-01/MiniModel.org P2P Architecture Research.md
+      bytes: 54552
+      sha256: d13d3c51436fbb3486be06a3fe8756154d028fd8ab08d5024e475e4463b1ca0e
+      route_hint: Rust-native P2P architecture, NAT traversal, chunk verification, identity, and MVP lifecycle.
+    - path: agent-file-handoff/Improvement/MiniModel.org_ P2P Tiny Model Exchange.md
+      docs_copy: docs/report-intake/2026-07-01/MiniModel.org_ P2P Tiny Model Exchange.md
+      bytes: 56723
+      sha256: 982cef0b2bdc3d8a70044691d50d21b7db7c136c4cdb70668d8b58bf0f7a8172
+      route_hint: decentralized exchange legal boundaries, liability minimization, metadata, UX, consent, and takedown flows.
+    - path: agent-file-handoff/Improvement/Secure Model Exchange Manifest Design.md
+      docs_copy: docs/report-intake/2026-07-01/Secure Model Exchange Manifest Design.md
+      bytes: 48634
+      sha256: 924879b3dbed7824d4c3144b4e7fbc0251468221164bbfaf8ea5ad20f641eb66
+      route_hint: checksum-bound manifests, supply-chain trust, Sigstore-style identity, Merkle verification, and SLM predicates.
+    - path: agent-file-handoff/Improvement/SLM Composer UI Improvement Plan.md
+      docs_copy: docs/report-intake/2026-07-01/SLM Composer UI Improvement Plan.md
+      bytes: 50612
+      sha256: a64117a7beaf45bb104a23166926dbf4e9b843c6b977da8c50aa4dc4b87ede27
+      route_hint: progressive-disclosure SLMComposer UI plan, beginner chat defaults, advanced diagnostics containment, and source-option affordances.
+    - path: agent-file-handoff/Improvement/Understanding Pear Runtime.md
+      docs_copy: docs/report-intake/2026-07-01/Understanding Pear Runtime.md
+      bytes: 53868
+      sha256: f79b91088475585ef1cf91d271bdb7f1692e37a7369108ca89420661df019d42
+      route_hint: Pear/Bare/Holepunch runtime model, zero-infrastructure P2P app lifecycle, and Hypercore stack.
+    - path: agent-file-handoff/Improvement/Designing Beginner-Friendly Chatbot Interfaces.md
+      docs_copy: docs/report-intake/2026-07-01/Designing Beginner-Friendly Chatbot Interfaces.md
+      bytes: 51314
+      sha256: 5d018fa52ddbcccd4d8e314adb0e97105f4fef858ca0b9a90b9973ffbb68ee43
+      route_hint: beginner-friendly chatbot onboarding, progressive disclosure, starter actions, accessibility, trust, and recovery patterns.
+    - path: agent-file-handoff/Improvement/Improving SLM Composer for New Users.md
+      docs_copy: docs/report-intake/2026-07-01/Improving SLM Composer for New Users.md
+      bytes: 42766
+      sha256: 4edf50460f37a3ab08c6803c47d5d42264c494baa0e4fccccb8ed297bc22972d
+      route_hint: SLMComposer local-model UX, first-run simplification, local privacy proof, advanced controls, and source/import guidance.
+    - path: agent-file-handoff/Improvement/SLMComposer Functionality Improvement Suggestions.md
+      docs_copy: docs/report-intake/2026-07-01/SLMComposer Functionality Improvement Suggestions.md
+      bytes: 51107
+      sha256: a97377c88ccee39cfd0c679f903fe959ba5828b49496cf73d8e82b94192dd6df
+      route_hint: product functionality improvements, model loading clarity, presets, diagnostics, provenance, and professional workflow affordances.
+    - path: agent-file-handoff/Improvement/Modern AI chat dashboard interface.png
+      docs_copy: docs/report-intake/2026-07-01/Modern AI chat dashboard interface.png
+      bytes: 1434195
+      sha256: 88008dc091b61ee4a46630afb4b91842f745d1d8097ac95b47613a2669c84221
+      route_hint: visual reference for high-fidelity dark dashboard layout, left nav, central chat, and right advanced controls.
+current_dotnet_p2p_seed_host_intake_2026_07_13:
+  source_bucket: agent-file-handoff/Improvement/
+  report_count: 12
+  paired_domain_count: 6
+  manifest: docs/report-intake/2026-07-13/dotnet-p2p-seed-host/MANIFEST.md
+  synthesis: docs/report-intake/2026-07-13/dotnet-p2p-seed-host/tinyrustlm-dotnet-p2p-seed-host-intake-synthesis-2026-07-13.md
+  tdd_plan: docs/report-intake/2026-07-13/dotnet-p2p-seed-host/tinyrustlm-dotnet-p2p-seed-host-intake-tdd-plan-2026-07-13.md
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-dotnet-p2p-seed-host-intake-memory-2026-07-13.md
+  durable_memory_sha256: 66593611ca4af08e15898b9d12fda2bfc4d1d56d656dfb20889348b311126130
+  status: complete_verified_and_active_bucket_placeholder_only
+  processing_result: Paired reports were compared, accepted findings retained, conflicting claims corrected, implementation gates written first, and every source routed individually.
+  source_cleanup_rule: Remove only the 12 verified report files and separately preserved prompt provenance after durable hashes, ledger entries, and all hot routes pass. Preserve placeholders and unrelated handoff content.
+  current_contract: exactly two lane processes total, Rust trust authority, direct peer model bytes, outside proof, no persisted credentials, transactional local feed, and no NuGet.org publication without human authorization.

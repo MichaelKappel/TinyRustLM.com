@@ -1,0 +1,72 @@
+{
+  "schema": "tinyrustlm.teacher_draft_collection.v1",
+  "campaign_id": "qwen2.5-cognitive-liberty-v2-targeted-corrections-v1",
+  "source_id": "tinyrustlm-targeted-cognitive-liberty-prompts-qwen36-reviewed-v1",
+  "source_license": "UAIX-internal authored prompt seeds plus UAIX-internal reviewed synthetic output",
+  "prompt_plan": {
+    "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/training/qwen2.5-cognitive-liberty-v2/prompt-plan-targeted-corrections-v1.jsonl",
+    "sha256": "sha256:734ecf9aabb1adcd70291f1439efe82470f3593c48dbbaf347a65117c00c7666"
+  },
+  "eval_exclusions": [
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-actionable-contract-eval-cases.txt",
+      "sha256": "sha256:50f3e7aa8e7ad25c24ddc9e67506c8d3bdb82c51d49469421b33ae1dc903ed73"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-completion-contract-eval-cases.txt",
+      "sha256": "sha256:851b454657a7f77d2f57334e60083625732b48fcfd7c5a14f4d6af91ee078858"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-eval-cases.txt",
+      "sha256": "sha256:627fcfa5f230fe2d4ec435d10044ab72ec89fa8e4ce20ad59a18a3cb766fdf2b"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-json-contract-eval-cases.txt",
+      "sha256": "sha256:2ef0ba85c605c459c6c78bc24a06841b35f0e08d657a04dca3701e3c8f6c9691"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-raw-open-chat-eval-cases.txt",
+      "sha256": "sha256:79bb12228270b6c4f31b1fcdc2249303fb7c568f4853a6625cd7ffb899a751c0"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-source-greedy-open-chat-eval-cases.txt",
+      "sha256": "sha256:39c9b1f384fdd99bfff67eb57373bd58b9cd655610a980e1d4b0690e3c0c2c3e"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/fixtures/assistant-quality-summary-contract-eval-cases.txt",
+      "sha256": "sha256:4241bfecccd2184aa8642a0cd8b1b4256c4746a5017419bc3f433e885378f3de"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/artifacts/training/quality-sequence-v1/exclusions/assistant-quality-honest-materialized.txt",
+      "sha256": "sha256:69a01480cb5a52d6b7c70dc4a4c563ebde027289b2dda204141fa40f73a59333"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/artifacts/training/quality-sequence-v1/exclusions/assistant-quality-paraphrase-materialized.txt",
+      "sha256": "sha256:a23944d4d9c38c3cd0233792877ea1cd76e8bec1e56d98b1c80fe42fb51fb1e2"
+    },
+    {
+      "path": "E:/Source/Rust/TinyRustLM.com/artifacts/training/qwen3-cognitive-liberty-v1/exclusions/cognitive-liberty-materialized.txt",
+      "sha256": "sha256:bfac7a279b8e2d601c9d9bbe41ceb0e0774d748d4fc9fcd0ee221f603257fa0e"
+    }
+  ],
+  "teacher": {
+    "model_id": "Qwen/Qwen3.6-35B-A3B",
+    "revision": "lmstudio-community-68a34855558af61cbef0324d31f411be8a506b08",
+    "weight_file": "D:/LLMs/lmstudio-community/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-Q4_K_M.gguf",
+    "weight_sha256": "sha256:4ac6a06bce551257267f49ad2226f8671a22519ccc1a4dde9d5b433d1f2a410d",
+    "tokenizer_identity_file": "D:/LLMs/lmstudio-community/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-Q4_K_M.gguf",
+    "tokenizer_identity_sha256": "sha256:4ac6a06bce551257267f49ad2226f8671a22519ccc1a4dde9d5b433d1f2a410d",
+    "license": "Apache-2.0",
+    "endpoint": "http://127.0.0.1:1235/v1/chat/completions"
+  },
+  "generation": {
+    "system_prompt_file": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/training/qwen3-cognitive-liberty-v1/teacher-system-prompt-v2.txt",
+    "system_prompt_sha256": "sha256:2051857890db3bc0d055120571f23b92ce56c172d19f0948068df52b37c912a3",
+    "temperature": 0.2,
+    "top_p": 0.9,
+    "top_k": 20,
+    "max_tokens": 192,
+    "seed": 20260712,
+    "timeout_seconds": 600
+  }
+}

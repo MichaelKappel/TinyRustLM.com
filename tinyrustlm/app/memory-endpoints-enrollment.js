@@ -1,0 +1,376 @@
+(function (root, factory) {
+  "use strict";
+
+  const api = factory();
+  if (typeof module === "object" && module.exports) {
+    module.exports = api;
+  }
+  if (root) {
+    root.TinyRustLMMemoryEndpointsEnrollment = api;
+  }
+})(typeof globalThis !== "undefined" ? globalThis : this, function () {
+  "use strict";
+
+  const contractSchema = "memoryendpoints.single_agent_enrollment_contract.v1";
+  const connectorContractPath = "/api/matm/connector-contract";
+  const maximumResponseBytes = 1024 * 1024;
+  const requiredFlags = Object.freeze([
+    "singleUseUrl",
+    "postClaimOnly",
+    "atomicOneWinner",
+    "lostResponseIdempotentRecovery",
+    "agentScopedToken",
+    "workspaceHiddenOnReconnect",
+    "virtualUaiStartupRestore",
+    "shortTermRestore",
+    "longTermRestore"
+  ]);
+  const requiredRoutes = Object.freeze([
+    "createCompany",
+    "issueInvitation",
+    "claimInvitation",
+    "reconnect",
+    "closeCompany",
+    "deleteCompany"
+  ]);
+
+  class MemoryEndpointsEnrollmentError extends Error {
+    constructor(code, message, options) {
+      super(message);
+      this.name = "MemoryEndpointsEnrollmentError";
+      this.code = code;
+      this.status = options && Number.isInteger(options.status) ? options.status : 0;
+      this.safeNoOp = Boolean(options && options.safeNoOp);
+      this.externalPrerequisite = Boolean(options && options.externalPrerequisite);
+    }
+  }
+
+  function enrollmentError(code, message, options) {
+    return new MemoryEndpointsEnrollmentError(code, message, options);
+  }
+
+  function normalizeBaseUrl(value) {
+    let url;
+    try {
+      url = new URL(String(value || "").trim());
+    } catch (_error) {
+      throw enrollmentError("invalid_service_url", "MemoryEndpoints URL must be absolute");
+    }
+    const loopbackHttp = url.protocol === "http:" &&
+      (url.hostname === "127.0.0.1" || url.hostname === "::1" || url.hostname === "localhost");
+    if (url.protocol !== "https:" && !loopbackHttp) {
+      throw enrollmentError(
+        "invalid_service_url",
+        "MemoryEndpoints URL must use HTTPS except for a loopback test service"
+      );
+    }
+    if (url.username || url.password || url.search || url.hash) {
+      throw enrollmentError(
+        "invalid_service_url",
+        "MemoryEndpoints URL must not contain credentials, query, or fragment data"
+      );
+    }
+    return url.origin;
+  }
+
+  function normalizeIdentifier(value, label, maximumLength) {
+    const text = String(value || "").trim();
+    if (!text || text.length > maximumLength || !/^[A-Za-z0-9._-]+$/.test(text)) {
+      throw enrollmentError("invalid_identity", `${label} is invalid`);
+    }
+    return text;
+  }
+
+  function normalizeIdempotencyKey(value) {
+    const text = String(value || "").trim();
+    if (!text || text.length > 200 || !/^[A-Za-z0-9._:-]+$/.test(text)) {
+      throw enrollmentError("invalid_idempotency_key", "Idempotency key is invalid");
+    }
+    return text;
+  }
+
+  function resolveRoute(baseUrl, route, label) {
+    const text = String(route || "");
+    if (
+      !text.startsWith("/api/matm/") ||
+      text.includes("\\") ||
+      text.includes("?") ||
+      text.includes("#") ||
+      text.split("/").includes("..")
+    ) {
+      throw enrollmentError("unsafe_contract_route", `${label} is not a safe MATM route`);
+    }
+    const resolved = new URL(text, baseUrl);
+    if (resolved.origin !== baseUrl) {
+      throw enrollmentError("unsafe_contract_route", `${label} is not a safe MATM route`);
+    }
+    return text;
+  }
+
+  function requireObject(value, label) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      throw enrollmentError("invalid_response", `${label} is missing a JSON object`);
+    }
+    return value;
+  }
+
+  function assertRedacted(value, label) {
+    const object = requireObject(value, label);
+    if (object.rawCredentialExposed === true || object.rawPayloadExposed === true) {
+      throw enrollmentError("enrollment_redaction_failed", `${label} failed its redaction contract`);
+    }
+  }
+
+  function responseErrorCode(value, fallback) {
+    if (value && value.error && typeof value.error.code === "string" && value.error.code.trim()) {
+      return value.error.code.trim().slice(0, 128);
+    }
+    if (value && typeof value.code === "string" && value.code.trim()) {
+      return value.code.trim().slice(0, 128);
+    }
+    return fallback;
+  }
+
+  function safeResponseErrorMessage(code, status) {
+    if (code === "enrollment_url_consumed" || code === "enrollment_url_expired") {
+      return "This one-time agent URL has already been used or expired";
+    }
+    if (code === "agent_authentication_failed" || status === 401 || status === 403) {
+      return "The agent name or token was not accepted";
+    }
+    return `MemoryEndpoints enrollment returned HTTP ${status}`;
+  }
+
+  async function boundedJson(response, label) {
+    const contentLength = Number(response.headers && response.headers.get
+      ? response.headers.get("Content-Length")
+      : 0);
+    if (Number.isFinite(contentLength) && contentLength > maximumResponseBytes) {
+      throw enrollmentError("response_too_large", `${label} exceeded the response limit`);
+    }
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    if (bytes.byteLength === 0 || bytes.byteLength > maximumResponseBytes) {
+      throw enrollmentError("invalid_response", `${label} returned an invalid response length`);
+    }
+    let text;
+    try {
+      text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+    } catch (_error) {
+      throw enrollmentError("invalid_response", `${label} did not return valid UTF-8`);
+    }
+    try {
+      return requireObject(JSON.parse(text), label);
+    } catch (error) {
+      if (error instanceof MemoryEndpointsEnrollmentError) {
+        throw error;
+      }
+      throw enrollmentError("invalid_response", `${label} did not return valid JSON`);
+    }
+  }
+
+  function normalizeContract(payload, baseUrl) {
+    assertRedacted(payload, "connector contract");
+    const data = requireObject(payload.data, "connector contract data");
+    if (!data.singleAgentEnrollment) {
+      throw enrollmentError(
+        "enrollment_contract_missing",
+        "MemoryEndpoints does not currently advertise single-agent enrollment",
+        { externalPrerequisite: true }
+      );
+    }
+    const contract = requireObject(data.singleAgentEnrollment, "single-agent enrollment contract");
+    if (contract.schemaVersion !== contractSchema || contract.status !== "live") {
+      throw enrollmentError(
+        "enrollment_contract_not_live",
+        "MemoryEndpoints single-agent enrollment is not live",
+        { externalPrerequisite: true }
+      );
+    }
+    for (const flag of requiredFlags) {
+      if (contract[flag] !== true) {
+        throw enrollmentError(
+          "enrollment_contract_incomplete",
+          `MemoryEndpoints enrollment contract is missing ${flag}`,
+          { externalPrerequisite: true }
+        );
+      }
+    }
+    const advertisedRoutes = requireObject(contract.routes, "single-agent enrollment routes");
+    const routes = {};
+    for (const name of requiredRoutes) {
+      routes[name] = resolveRoute(baseUrl, advertisedRoutes[name], `${name} route`);
+    }
+    return Object.freeze({
+      schemaVersion: contract.schemaVersion,
+      status: contract.status,
+      routes: Object.freeze(routes)
+    });
+  }
+
+  function normalizeInvitationUrl(value, baseUrl) {
+    let url;
+    try {
+      url = new URL(String(value || "").trim());
+    } catch (_error) {
+      throw enrollmentError("invalid_invitation_url", "Enrollment URL is invalid");
+    }
+    if (url.origin !== baseUrl || (url.protocol !== "https:" && !url.hostname.match(/^(127\.0\.0\.1|localhost|::1)$/))) {
+      throw enrollmentError("invalid_invitation_url", "Enrollment URL must come from this MemoryEndpoints service");
+    }
+    if (url.username || url.password || url.hash || url.href.length < 32 || url.href.length > 4096) {
+      throw enrollmentError("invalid_invitation_url", "Enrollment URL is invalid");
+    }
+    return url.href;
+  }
+
+  class MemoryEndpointsEnrollmentClient {
+    constructor(options) {
+      const settings = options || {};
+      this.baseUrl = normalizeBaseUrl(settings.baseUrl);
+      this.fetch = settings.fetch || (typeof fetch === "function" ? fetch.bind(globalThis) : null);
+      if (typeof this.fetch !== "function") {
+        throw enrollmentError("fetch_unavailable", "Fetch is required for MemoryEndpoints enrollment");
+      }
+      this.contractPromise = null;
+    }
+
+    async request(method, route, options) {
+      const settings = options || {};
+      const headers = {
+        Accept: "application/json",
+        ...(settings.headers || {})
+      };
+      let body;
+      if (settings.payload !== undefined) {
+        headers["Content-Type"] = "application/json";
+        body = JSON.stringify(settings.payload);
+      }
+      let response;
+      try {
+        response = await this.fetch(`${this.baseUrl}${route}`, {
+          method,
+          cache: "no-store",
+          credentials: "omit",
+          redirect: "error",
+          headers,
+          body
+        });
+      } catch (_error) {
+        throw enrollmentError("enrollment_network_error", "MemoryEndpoints enrollment request failed");
+      }
+      const payload = await boundedJson(response, settings.label || "MemoryEndpoints enrollment");
+      assertRedacted(payload, settings.label || "MemoryEndpoints enrollment");
+      const allowed = Array.isArray(settings.allowedStatuses)
+        ? settings.allowedStatuses
+        : [200];
+      if (!allowed.includes(response.status)) {
+        const code = responseErrorCode(payload, "enrollment_request_failed");
+        throw enrollmentError(code, safeResponseErrorMessage(code, response.status), {
+          status: response.status,
+          safeNoOp: payload.safeNoOp === true
+        });
+      }
+      return Object.freeze({ status: response.status, payload });
+    }
+
+    async discover() {
+      if (!this.contractPromise) {
+        this.contractPromise = this.request("GET", connectorContractPath, {
+          label: "connector contract",
+          allowedStatuses: [200]
+        }).then((result) => normalizeContract(result.payload, this.baseUrl));
+      }
+      try {
+        return await this.contractPromise;
+      } catch (error) {
+        this.contractPromise = null;
+        throw error;
+      }
+    }
+
+    async claim(options) {
+      const settings = options || {};
+      const contract = await this.discover();
+      const invitationUrl = normalizeInvitationUrl(settings.invitationUrl, this.baseUrl);
+      const agreedAgentName = normalizeIdentifier(settings.agreedAgentName, "Agent name", 96);
+      const idempotencyKey = normalizeIdempotencyKey(settings.idempotencyKey);
+      const result = await this.request("POST", contract.routes.claimInvitation, {
+        label: "enrollment claim",
+        headers: { "Idempotency-Key": idempotencyKey },
+        payload: { invitationUrl, agreedAgentName },
+        allowedStatuses: [200, 201]
+      });
+      const value = result.payload;
+      if (value.persisted !== true || value.urlConsumed !== true) {
+        throw enrollmentError("claim_not_persisted", "Enrollment claim was not atomically persisted");
+      }
+      const canonicalAgentName = normalizeIdentifier(
+        value.canonicalAgentName,
+        "Canonical agent name",
+        96
+      );
+      const agentToken = String(value.agentToken || "");
+      if (agentToken.length < 24 || agentToken.length > 4096 || /\s/.test(agentToken)) {
+        throw enrollmentError("invalid_agent_token", "Enrollment returned an invalid agent token");
+      }
+      return Object.freeze({
+        canonicalAgentName,
+        agentToken,
+        claimReceiptId: String(value.claimReceiptId || value.receiptId || "").slice(0, 128)
+      });
+    }
+
+    async reconnect(options) {
+      const settings = options || {};
+      const contract = await this.discover();
+      const canonicalAgentName = normalizeIdentifier(
+        settings.canonicalAgentName,
+        "Canonical agent name",
+        96
+      );
+      const agentToken = String(settings.agentToken || "").trim();
+      if (agentToken.length < 24 || agentToken.length > 4096 || /\s/.test(agentToken)) {
+        throw enrollmentError("invalid_agent_token", "Agent token is invalid");
+      }
+      const result = await this.request("POST", contract.routes.reconnect, {
+        label: "agent reconnect",
+        headers: { Authorization: `Bearer ${agentToken}` },
+        payload: { agentName: canonicalAgentName },
+        allowedStatuses: [200]
+      });
+      const value = result.payload;
+      const returnedAgentName = normalizeIdentifier(
+        value.canonicalAgentName,
+        "Canonical agent name",
+        96
+      );
+      const workspaceId = normalizeIdentifier(value.workspaceId, "Workspace identity", 128);
+      if (returnedAgentName !== canonicalAgentName) {
+        throw enrollmentError("agent_binding_mismatch", "Reconnect returned a different agent identity");
+      }
+      if (
+        value.readyForStartup !== true ||
+        value.shortTermRestored !== true ||
+        value.longTermRestored !== true
+      ) {
+        throw enrollmentError("memory_restore_incomplete", "Reconnect did not restore short- and long-term memory");
+      }
+      return Object.freeze({
+        canonicalAgentName: returnedAgentName,
+        workspaceId,
+        readyForStartup: true,
+        shortTermRestored: true,
+        longTermRestored: true
+      });
+    }
+  }
+
+  return Object.freeze({
+    MemoryEndpointsEnrollmentClient,
+    MemoryEndpointsEnrollmentError,
+    contractSchema,
+    connectorContractPath,
+    maximumResponseBytes,
+    normalizeBaseUrl
+  });
+});

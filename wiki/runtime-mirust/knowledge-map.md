@@ -1,0 +1,215 @@
+---
+title: Runtime.MiRust.com Knowledge Map
+source_site: Runtime.MiRust.com
+public_route: /runtime-mirust/knowledge-map/
+status: planned_pending_publication
+reviewed_utc: 2026-06-29T23:40:00Z
+---
+
+# Knowledge Map
+
+## Nodes
+
+- Project profile: `.uai/system-profile.uai`
+- Browser harness architecture: `docs/architecture/browser-harness.md`
+- AIWikis route plan: `docs/aiwikis-routing.md`
+- File Handoff rules: `.uai/file-handoff.uai`
+- Pointer ledger: `.uai/long-term-memory.uai`
+- UAIX File Handoff strategy dogfood: `docs/dogfood/uaix-file-handoff-memory-strategy-2026-06-26.md`
+- Runtime rebrand memory: `wiki/runtime-mirust/reports/runtime-rebrand-memory-2026-06-30.md` covers Runtime.MiRust.com site identity, namespace routes, publish-review naming, and remaining outer folder handoff.
+- SLMComposer progressive source UI memory: `wiki/runtime-mirust/reports/slmcomposer-progressive-source-ui-memory-2026-07-01.md` covers the Chat/Advanced Tools app split, first-load Local/Hugging Face/P2P source chooser, diagnostics rail grouping, source-option browser smoke, stale-live deploy status, and local `.slm` import boundary.
+- Report intake index: `wiki/runtime-mirust/reports/report-intake-index-2026-06-25.md`
+- Report intake index 2026-06-26: `wiki/runtime-mirust/reports/report-intake-index-2026-06-26.md`
+- Report intake index 2026-06-28: `wiki/runtime-mirust/reports/report-intake-index-2026-06-28.md`
+- Report intake index 2026-06-29 followup: `wiki/runtime-mirust/reports/report-intake-index-2026-06-29-followup.md`
+- Enterprise Rust governance memory: `wiki/runtime-mirust/reports/enterprise-rust-governance-memory-2026-06-25.md`
+- Browser local runtime memory: `wiki/runtime-mirust/reports/browser-local-runtime-memory-2026-06-25.md`
+- TinyLM modular architecture memory: `wiki/runtime-mirust/reports/tinylm-modular-architecture-memory-2026-06-25.md`
+- Teleodynamic resource-bounded memory: `wiki/runtime-mirust/reports/teleodynamic-resource-bounded-memory-2026-06-25.md`
+- Brand product positioning memory: `wiki/runtime-mirust/reports/brand-product-positioning-memory-2026-06-25.md`
+- Model breeding ecology memory: `wiki/runtime-mirust/reports/model-breeding-ecology-memory-2026-06-26.md`
+- Two-parent operator browser provenance memory: `wiki/runtime-mirust/reports/two-parent-operator-browser-provenance-memory-2026-06-29.md`
+- Crossover operator memory: `wiki/runtime-mirust/reports/crossover-operator-memory-2026-06-29.md`
+- Mutation operator memory: `wiki/runtime-mirust/reports/mutation-operator-memory-2026-06-29.md`
+- Prune operator memory: `wiki/runtime-mirust/reports/prune-operator-memory-2026-06-29.md`
+- DARE operator memory: `wiki/runtime-mirust/reports/dare-operator-memory-2026-06-29.md`
+- DARE browser operator provenance memory: `wiki/runtime-mirust/reports/dare-browser-operator-provenance-memory-2026-06-29.md`
+- Browser converted trained provenance memory: `wiki/runtime-mirust/reports/browser-converted-trained-provenance-memory-2026-06-29.md`
+- Browser converted trained file route memory: `wiki/runtime-mirust/reports/browser-converted-trained-file-route-memory-2026-06-29.md`
+- Browser converted trained all route memory: `wiki/runtime-mirust/reports/browser-converted-trained-all-route-memory-2026-06-29.md`
+- Browser converted trained source evidence memory: `wiki/runtime-mirust/reports/browser-converted-trained-source-evidence-memory-2026-06-30.md` covers per-entry `converted-trained.source.manifest` snapshots, selector source route fields, and browser verification before selected model bytes.
+- Browser converted trained runtime eval memory: `wiki/runtime-mirust/reports/browser-converted-trained-runtime-eval-memory-2026-06-30.md` covers native eval execution before selector admission, optional eval-case paths, and failed eval stopping before admission.
+- Safetensors inspection memory: `wiki/runtime-mirust/reports/safetensors-inspection-memory-2026-06-29.md` covers no-crate safetensors metadata intake before first real tiny-model conversion.
+- Safetensors source plan memory: `wiki/runtime-mirust/reports/safetensors-source-plan-memory-2026-06-29.md` covers checked mapping from safetensors tensor directories into the raw f32 trained-source layout.
+- Safetensors source extraction memory: `wiki/runtime-mirust/reports/safetensors-source-extraction-memory-2026-06-29.md` covers copying F32 and decoding F16/BF16 safetensors payloads into validated raw f32 source bundles.
+- Safetensors trained conversion memory: `wiki/runtime-mirust/reports/safetensors-trained-conversion-memory-2026-06-29.md` covers `convert-safetensors-trained`, Hugging Face Llama aliases, preserved raw source output, q8/q4 conversion, and converted-trained manifests.
+- Safetensors browser bundle memory: `wiki/runtime-mirust/reports/safetensors-browser-bundle-memory-2026-06-30.md` covers `browser-safetensors-trained-bundle`, preserved raw source output, converted-trained browser selector roots, all-quant bundle staging, and runtime WASM manifest proof.
+- TinyLM-16M BPE safetensors plan memory: `wiki/runtime-mirust/reports/tinylm16-bpe-safetensors-plan-memory-2026-06-30.md` covers the `tinylm16-bpe` source shape, 39 untied TinyLM-16M tensors, manifest-native `BPE1` metadata, and sparse planner tests.
+- MiniModel source-option research: `wiki/runtime-mirust/research/huggingface-api-source-options-2026-07-01.md` covers local files/lists, Hugging Face discovery, future P2P, and no project-server byte or execution lanes.
+- Federated operator memory: `wiki/runtime-mirust/reports/federated-operator-memory-2026-06-29.md`
+- Weighted soup operator memory: `wiki/runtime-mirust/reports/weighted-soup-operator-memory-2026-06-29.md`
+- Multi-parent soup manifest memory: `wiki/runtime-mirust/reports/multi-parent-soup-manifest-memory-2026-06-29.md`
+- Browser parent-pool soup bundle memory: `wiki/runtime-mirust/reports/browser-parent-pool-soup-bundle-memory-2026-06-29.md`
+- Browser multi-parent operator provenance memory: `wiki/runtime-mirust/reports/browser-multi-parent-operator-provenance-memory-2026-06-29.md` covers generated Operator rows plus generated selector operator receipt byte and kind drift fallback before generated routes.
+- Browser mixed operator selector memory: `wiki/runtime-mirust/reports/browser-mixed-operator-selector-memory-2026-06-29.md` covers one selector root carrying sign-merge and soup q4/q8/f32 routes with same-page cross-family assembly, cycle proof, route-soak proof, and reload-soak proof.
+- Parent-pool evolution schedule memory: `wiki/runtime-mirust/reports/parent-pool-evolution-schedule-memory-2026-06-29.md` covers checksum-bound sign-merge plus soup operator-family planning in parent-pool recipes.
+- Operator schedule carry-forward memory: `wiki/runtime-mirust/reports/operator-schedule-carry-forward-memory-2026-06-29.md` covers parent-pool schedule identity in sign-merge and soup receipts plus multi-parent candidate manifest validation.
+- Federated selector receipt route memory: `wiki/runtime-mirust/reports/federated-selector-receipt-route-memory-2026-06-29.md`
+- Candidate operator receipt binding memory: `wiki/runtime-mirust/reports/candidate-operator-receipt-binding-memory-2026-06-29.md`
+- Promotion operator receipt binding memory: `wiki/runtime-mirust/reports/promotion-operator-receipt-binding-memory-2026-06-29.md`
+- Admission operator receipt binding memory: `wiki/runtime-mirust/reports/admission-operator-receipt-binding-memory-2026-06-29.md`
+- Selector operator receipt binding memory: `wiki/runtime-mirust/reports/selector-operator-receipt-binding-memory-2026-06-29.md`
+- Runtime adapter apply memory: `wiki/runtime-mirust/reports/runtime-adapter-apply-memory-2026-06-27.md`
+- Sparse adapter package memory: `wiki/runtime-mirust/reports/sparse-adapter-package-memory-2026-06-27.md`
+- Low-rank adapter package memory: `wiki/runtime-mirust/reports/low-rank-adapter-package-memory-2026-06-28.md`
+- Trained adapter source memory: `wiki/runtime-mirust/reports/trained-adapter-source-memory-2026-06-28.md`
+- Trained adapter source ALR1 memory: `wiki/runtime-mirust/reports/trained-adapter-source-alr1-memory-2026-06-28.md`
+- Browser low-rank adapter route memory: `wiki/runtime-mirust/reports/browser-low-rank-adapter-route-memory-2026-06-28.md`
+- Browser source-backed ALR1 route memory: `wiki/runtime-mirust/reports/browser-source-backed-alr1-route-memory-2026-06-28.md`
+- Browser source-backed ALR1 contract memory: `wiki/runtime-mirust/reports/browser-source-backed-alr1-contract-memory-2026-06-28.md`
+- Browser adapter sidecar memory: `wiki/runtime-mirust/reports/browser-adapter-sidecar-memory-2026-06-27.md`
+- Registry adapter sidecar memory: `wiki/runtime-mirust/reports/registry-adapter-sidecar-memory-2026-06-27.md`
+- Registry adapter family memory: `wiki/runtime-mirust/reports/registry-adapter-family-memory-2026-06-27.md`
+- Adapter family receipt memory: `wiki/runtime-mirust/reports/adapter-family-receipt-memory-2026-06-27.md`
+- Assembly receipt memory: `wiki/runtime-mirust/reports/assembly-receipt-memory-2026-06-27.md`
+- Browser sparse adapter route memory: `wiki/runtime-mirust/reports/browser-sparse-adapter-route-memory-2026-06-27.md`
+- Browser preferred adapter route memory: `wiki/runtime-mirust/reports/browser-preferred-adapter-route-memory-2026-06-27.md`
+- Browser multi quant selector root memory: `wiki/runtime-mirust/reports/browser-multi-quant-selector-root-memory-2026-06-27.md`
+- Browser frugal selector default memory: `wiki/runtime-mirust/reports/browser-frugal-selector-default-memory-2026-06-27.md`
+- Browser selector budget memory: `wiki/runtime-mirust/reports/browser-selector-budget-memory-2026-06-27.md`
+- Browser selector budget contract memory: `wiki/runtime-mirust/reports/browser-selector-budget-contract-memory-2026-06-27.md`
+- Browser auto assembly memory: `wiki/runtime-mirust/reports/browser-auto-assembly-memory-2026-06-27.md`
+- Browser auto assembly budget memory: `wiki/runtime-mirust/reports/browser-auto-assembly-budget-memory-2026-06-27.md`
+- Browser text sidecar budget memory: `wiki/runtime-mirust/reports/browser-text-sidecar-budget-memory-2026-06-27.md`
+- Browser text sidecar contract memory: `wiki/runtime-mirust/reports/browser-text-sidecar-contract-memory-2026-06-27.md`
+- Browser runtime manifest memory: `wiki/runtime-mirust/reports/browser-runtime-manifest-memory-2026-06-27.md`
+- Browser adapter stack memory: `wiki/runtime-mirust/reports/browser-adapter-stack-memory-2026-06-27.md`
+- Browser module plan memory: `wiki/runtime-mirust/reports/browser-module-plan-memory-2026-06-27.md`
+- Browser module plan resource memory: `wiki/runtime-mirust/reports/browser-module-plan-resource-memory-2026-06-27.md`
+- Browser module plan resource drift memory: `wiki/runtime-mirust/reports/browser-module-plan-resource-drift-memory-2026-06-27.md`
+- Browser module plan graph drift memory: `wiki/runtime-mirust/reports/browser-module-plan-graph-drift-memory-2026-06-27.md`
+- Browser module plan stack drift memory: `wiki/runtime-mirust/reports/browser-module-plan-stack-drift-memory-2026-06-27.md`
+- Browser module plan role drift memory: `wiki/runtime-mirust/reports/browser-module-plan-role-drift-memory-2026-06-27.md`
+- Browser module plan display memory: `wiki/runtime-mirust/reports/browser-module-plan-display-memory-2026-06-27.md`
+- Browser module plan budget display memory: `wiki/runtime-mirust/reports/browser-module-plan-budget-display-memory-2026-06-27.md`
+- Browser module plan role display memory: `wiki/runtime-mirust/reports/browser-module-plan-role-display-memory-2026-06-27.md`
+- Browser module plan slots memory: `wiki/runtime-mirust/reports/browser-module-plan-slots-memory-2026-06-27.md`
+- Browser module plan dependencies memory: `wiki/runtime-mirust/reports/browser-module-plan-dependencies-memory-2026-06-27.md`
+- Browser module plan phases memory: `wiki/runtime-mirust/reports/browser-module-plan-phases-memory-2026-06-27.md`
+- Browser module plan byte counts memory: `wiki/runtime-mirust/reports/browser-module-plan-byte-counts-memory-2026-06-27.md`
+- Browser module plan checksums memory: `wiki/runtime-mirust/reports/browser-module-plan-checksums-memory-2026-06-27.md`
+- Browser combined selector assembly memory: `wiki/runtime-mirust/reports/browser-combined-selector-assembly-memory-2026-06-28.md`
+- Browser combined selector cycle memory: `wiki/runtime-mirust/reports/browser-combined-selector-cycle-memory-2026-06-28.md` covers repeated all-root q4_0/q8_0/f32 switching plus release-before-reassembly proof.
+- Browser combined selector route soak memory: `wiki/runtime-mirust/reports/browser-combined-selector-route-soak-memory-2026-06-28.md` covers three generated q4_0/q8_0/f32 cycles with per-pass route counts for every self-assembly file.
+- Browser combined selector extended route soak memory: `wiki/runtime-mirust/reports/browser-combined-selector-extended-route-soak-memory-2026-06-28.md` covers five generated q4_0/q8_0/f32 cycles, fifteen assemblies, path-flexible total-budget assertions, and per-pass route counts.
+- Browser combined selector stress route soak memory: `wiki/runtime-mirust/reports/browser-combined-selector-stress-route-soak-memory-2026-06-28.md` covers eight generated q4_0/q8_0/f32 cycles, twenty-four assemblies, and per-pass local route counts.
+- Browser combined selector reload soak memory: `wiki/runtime-mirust/reports/browser-combined-selector-reload-soak-memory-2026-06-28.md` covers fresh page-lifetime q4_0 defaults and repeated generated self-assembly route counts across reload passes.
+- Browser assembly trace memory: `wiki/runtime-mirust/reports/browser-assembly-trace-memory-2026-06-28.md`
+- Browser eval case evidence checksum memory: `wiki/runtime-mirust/reports/browser-eval-case-evidence-checksum-memory-2026-06-28.md`
+- Browser assembly eval case drift memory: `wiki/runtime-mirust/reports/browser-assembly-eval-case-drift-memory-2026-06-28.md`
+- Browser assembly evidence file drift memory: `wiki/runtime-mirust/reports/browser-assembly-evidence-file-drift-memory-2026-06-28.md`
+- Browser adapter family receipt drift memory: `wiki/runtime-mirust/reports/browser-adapter-family-receipt-drift-memory-2026-06-28.md`
+- Browser adapter manifest drift memory: `wiki/runtime-mirust/reports/browser-adapter-manifest-drift-memory-2026-06-28.md`
+- Browser adapter artifact drift memory: `wiki/runtime-mirust/reports/browser-adapter-artifact-drift-memory-2026-06-28.md`
+- Browser adapter stack prefetch drift memory: `wiki/runtime-mirust/reports/browser-adapter-stack-prefetch-drift-memory-2026-06-28.md`
+- Browser adapter stack Rust validate memory: `wiki/runtime-mirust/reports/browser-adapter-stack-rust-validate-memory-2026-06-28.md`
+- Browser adapter stack Rust validate drift memory: `wiki/runtime-mirust/reports/browser-adapter-stack-rust-validate-drift-memory-2026-06-28.md`
+- Browser runtime assembly diagnostics memory: `wiki/runtime-mirust/reports/browser-runtime-assembly-diagnostics-memory-2026-06-28.md`
+- Browser selector genome fitness memory: `wiki/runtime-mirust/reports/browser-selector-genome-fitness-memory-2026-06-28.md`
+- Browser selector species fit memory: `wiki/runtime-mirust/reports/browser-selector-species-fit-memory-2026-06-28.md`
+- Browser selector novelty memory: `wiki/runtime-mirust/reports/browser-selector-novelty-memory-2026-06-28.md`
+- Browser selector population memory: `wiki/runtime-mirust/reports/browser-selector-population-memory-2026-06-28.md`
+- Browser selector mate selection memory: `wiki/runtime-mirust/reports/browser-selector-mate-selection-memory-2026-06-28.md`
+- Browser selector phenotype evidence memory: `wiki/runtime-mirust/reports/browser-selector-phenotype-evidence-memory-2026-06-28.md`
+- Browser selector heritable artifact memory: `wiki/runtime-mirust/reports/browser-selector-heritable-artifact-memory-2026-06-28.md`
+- Browser module plan profile memory: `wiki/runtime-mirust/reports/browser-module-plan-profile-memory-2026-06-28.md`
+- Browser module plan execution profile memory: `wiki/runtime-mirust/reports/browser-module-plan-execution-profile-memory-2026-06-28.md`
+- Browser module plan fetch policy memory: `wiki/runtime-mirust/reports/browser-module-plan-fetch-policy-memory-2026-06-28.md`
+- Browser module plan origin policy memory: `wiki/runtime-mirust/reports/browser-module-plan-origin-policy-memory-2026-06-28.md`
+- Browser module plan fetch count memory: `wiki/runtime-mirust/reports/browser-module-plan-fetch-count-memory-2026-06-28.md`
+- Browser module plan runtime scratch memory: `wiki/runtime-mirust/reports/browser-module-plan-runtime-scratch-memory-2026-06-28.md`
+- Browser module plan total budget memory: `wiki/runtime-mirust/reports/browser-module-plan-total-budget-memory-2026-06-28.md`
+- Browser module plan total limit memory: `wiki/runtime-mirust/reports/browser-module-plan-total-limit-memory-2026-06-28.md`
+- Browser module plan WASM memory: `wiki/runtime-mirust/reports/browser-module-plan-wasm-memory-memory-2026-06-28.md`
+- Browser module plan WASM export set memory: `wiki/runtime-mirust/reports/browser-module-plan-wasm-export-set-memory-2026-06-28.md`
+- Browser module plan WASM heap memory: `wiki/runtime-mirust/reports/browser-module-plan-wasm-heap-memory-2026-06-28.md`
+- Browser module plan WASM transfer memory: `wiki/runtime-mirust/reports/browser-module-plan-wasm-transfer-memory-2026-06-28.md`
+- Browser module plan model release memory: `wiki/runtime-mirust/reports/browser-module-plan-model-release-memory-2026-06-29.md`
+- Browser module plan runtime reset memory: `wiki/runtime-mirust/reports/browser-module-plan-runtime-reset-memory-2026-06-29.md`
+- Browser module plan adapter validation memory: `wiki/runtime-mirust/reports/browser-module-plan-adapter-validation-memory-2026-06-29.md`
+- Browser module plan adapter validation count memory: `wiki/runtime-mirust/reports/browser-module-plan-adapter-validation-count-memory-2026-06-29.md`
+- Browser module plan adapter apply count memory: `wiki/runtime-mirust/reports/browser-module-plan-adapter-apply-count-memory-2026-06-29.md`
+- Browser module plan planned fetch count memory: `wiki/runtime-mirust/reports/browser-module-plan-planned-fetch-count-memory-2026-06-29.md`
+- Browser module plan actual fetch count memory: `wiki/runtime-mirust/reports/browser-module-plan-actual-fetch-count-memory-2026-06-29.md`
+- Browser module plan observed route set memory: `wiki/runtime-mirust/reports/browser-module-plan-observed-route-set-memory-2026-06-29.md`
+- Browser module plan actual module bytes memory: `wiki/runtime-mirust/reports/browser-module-plan-actual-module-bytes-memory-2026-06-29.md`
+- Browser module plan actual module checksums memory: `wiki/runtime-mirust/reports/browser-module-plan-actual-module-checksums-memory-2026-06-29.md`
+- Browser module plan route set memory: `wiki/runtime-mirust/reports/browser-module-plan-route-set-memory-2026-06-29.md`
+- Browser module plan route set version memory: `wiki/runtime-mirust/reports/browser-module-plan-route-set-version-memory-2026-06-29.md`
+- Browser module plan route set algorithm memory: `wiki/runtime-mirust/reports/browser-module-plan-route-set-algorithm-memory-2026-06-29.md`
+- Browser module plan operator receipt memory: `wiki/runtime-mirust/reports/browser-module-plan-operator-receipt-memory-2026-06-29.md`
+- Browser module plan KV cache memory: `wiki/runtime-mirust/reports/browser-module-plan-kv-cache-memory-2026-06-28.md`
+- Browser module plan adapter stack budget memory: `wiki/runtime-mirust/reports/browser-module-plan-adapter-stack-budget-memory-2026-06-28.md`
+- Browser module plan context token memory: `wiki/runtime-mirust/reports/browser-module-plan-context-token-memory-2026-06-28.md`
+- Browser module plan tokenizer memory: `wiki/runtime-mirust/reports/browser-module-plan-tokenizer-memory-2026-06-28.md`
+- Browser module plan sampler cap memory: `wiki/runtime-mirust/reports/browser-module-plan-sampler-cap-memory-2026-06-28.md`
+- Browser module plan prompt limit memory: `wiki/runtime-mirust/reports/browser-module-plan-prompt-limit-memory-2026-06-28.md`
+- Browser module plan count drift memory: `wiki/runtime-mirust/reports/browser-module-plan-count-drift-memory-2026-06-28.md`
+- Model breeding reference ideas: `wiki/runtime-mirust/research/model-breeding-reference-ideas-2026-06-26.md`
+- ModelBreeder and zero-dependency reference ideas: `wiki/runtime-mirust/research/modelbreeder-zero-dependency-reference-ideas-2026-06-28.md`
+- Tiny model runtime and memory reference ideas: `wiki/runtime-mirust/research/tiny-model-runtime-memory-reference-ideas-2026-06-29.md`
+- Tiny model candidate matrix: `wiki/runtime-mirust/research/tiny-model-candidate-matrix-2026-06-29.md`
+- Safetensors/tokenizer/budget/fixture reference ideas: `wiki/runtime-mirust/research/safetensors-tokenizer-budget-reference-ideas-2026-06-29.md`
+- Raw report evidence: `raw/runtime-mirust/report-intake-2026-06-25/`
+- Raw model-breeding evidence: `raw/runtime-mirust/report-intake-2026-06-26/`
+- Raw ModelBreeder and zero-dependency evidence: `raw/runtime-mirust/report-intake-2026-06-28/`
+- Raw tiny-model/runtime/memory evidence: `raw/runtime-mirust/report-intake-2026-06-29/`
+- Raw safetensors/tokenizer/budget/fixture followup evidence: `raw/runtime-mirust/report-intake-2026-06-29-followup/`
+
+## Relationships
+
+- `.uai/long-term-memory.uai` points to durable files and public routes.
+- `docs/architecture/browser-harness.md` defines implementation boundaries.
+- `wiki/runtime-mirust/source-memory-guide.md` is the public routing record for future agents.
+- Report synthesis records distribute active handoff reports by theme so agents can load governance, browser runtime, modular model, teleodynamic, or brand context without bulk-loading every original report.
+- Model breeding records route compatible merge, sparse lineage, adapter ecology, population search, federated/local-update ideas, seed-weighted parent-pool soup ideas, browser-constrained assembly, UAIX memory strategy, sparse-mask receipt metadata, sparse ASP1 adapter packages, low-rank ALR1 adapter packages, source-backed browser ALR1 routes, source-backed ALR1 receipt source echoes and manifest-vs-receipt provenance checks, population objective-vector fields, parent relatedness recipe/receipt/manifest fields, genome/fitness/novelty/speciation/population guidance, zero-dependency browser-runtime guidance, selector `genome_id`, `genome_lineage_checksum`, `species_id`, `species_fit_checksum`, `novelty_id`, `novelty_checksum`, `population_id`, `population_checksum`, `mate_selection_id`, `mate_selection_parent_count`, `mate_selection_checksum`, `phenotype_evidence_id`, `phenotype_evidence_checksum`, and `fitness_vector_checksum` fields rendered in Model Provenance, runtime f32/q8_0/q4_0 ADP1/ASP1/ALR1 adapter validation and apply, runtime assembly diagnostics with adapter apply count plus model/adapter assembly checksums, runtime KV-cache byte/page diagnostics, checked browser f32/q8_0/q4_0 ADP1 sidecars, registry-carried f32/q8_0/q4_0 ADP1/ASP1/ALR1 sidecars, registry-carried adapter families, adapter-family receipts with preferred member and stack fields, registry-controlled auto assembly with `adapter_auto_apply_byte_budget=1048576`, generated f32/q8_0/q4_0 bundle roots, one q4-defaulted combined f32/q8_0/q4_0 selector root with all-three-entry `combined-selector-assembly` proof, repeated selector cycle proof, route-soak proof for every generated self-assembly file including an eight-cycle stress route-soak, reload-soak proof for fresh page-lifetime q4_0 default assembly and repeated local route requests, browser selector byte-budget intake, browser text-sidecar byte envelopes and registry-declared contract fields, runtime WASM manifests before instantiation, selector-declared module-plan receipts with `browser-constrained-v1` profile, `single-threaded-wasm-local-v1` execution profile, `local-no-store-v1` fetch policy, resource envelopes, runtime scratch envelope, generated-output cap, KV-cache byte/page envelope, total self-assembly byte budget, module-count matching, planned fetch-count matching, actual fetch-count matching, observed route-set matching, actual module-byte matching, actual module-checksum matching, route-set checksum algorithm matching, route-set version matching, route-set checksum matching, operator receipt route/checksum matching across selector registry, module plan, assembly receipt, and fetched evidence, role fields, assembly slots, phase fields, dependency edges, per-module byte-count fields, per-module checksum fields, browser-owned Module Plan Trace from plan verification through ready state, registry-backed `eval_case_evidence_checksum` routing through admissions, ledgers, selector registries, assembly receipts, and Model Provenance, assembly eval-case drift proof before evidence or adapter routes, assembly evidence-file drift proof before later evidence or adapter routes, adapter-family receipt drift proof before adapter manifests or stack artifacts, adapter-manifest drift proof before later manifests or stack artifacts, source-backed ALR1 manifest drift proof before stack artifact fetch, adapter-artifact drift proof before later stack artifacts or `apply_adapter_delta`, adapter-stack prefetch drift proof that all fetched auto-stack bytes verify before any Rust adapter apply, adapter-stack Rust validation proof that all fetched auto-stack bytes pass `validate_adapter_delta` before first apply, adapter-stack Rust validation drift proof that checksum-consistent ADP1 identity drift reaches Rust validation and stops before apply, profile/execution-profile/fetch-policy/runtime-scratch/output-limit/KV-cache/total-budget/count/planned-fetch-count/route-set-algorithm/route-set-version/route-set/operator-receipt/resource/graph/stack/role/slot/phase/byte/checksum/dependency drift smokes before generated model or stack artifact fetch, Module Plan display fields, visible execution/fetch/model/adapter/scratch/output/KV/total budget rows, Plan Fetches rows, Actual Fetches rows, Actual Route Set rows, Actual Module Bytes rows, Actual Module Checksums rows, Route Hash rows, Route Version rows, Route Set rows, byte summaries, checksum summaries, slot summaries, role summaries, phase summaries, dependency summaries, and trace summaries from verified receipts and browser checkpoints, the `selector_model_byte_budget=33554432` registry contract, assembly receipts with evidence-file fetches, and candidate-evaluation research into future TinyRustLM work without changing current quality authority.
+- Module-plan adapter stack budget records route exact `module_plan_adapter_stack_byte_budget` generation, registry validation, receipt matching, UI rendering, and drift smoke coverage for generated q4_0/q8_0/f32 auto-stack bytes.
+- Module-plan tokenizer records route tokenizer checksum identity through generated selector entries, served receipts, UI rendering, genome/species checksum ingredients, and drift smoke coverage for generated q4_0/q8_0/f32 roots.
+- Module-plan WASM export-set records route `tinyrustlm-generate-v1` selector and receipt fields, instantiated export checks, Module Plan WASM ABI rendering, and drift smoke coverage for generated q4_0/q8_0/f32 roots.
+- Module-plan WASM transfer records route `copy-then-release-v1` selector and receipt fields, Module Plan Transfer rendering, source fallback behavior, and drift smoke coverage for generated q4_0/q8_0/f32 roots.
+- Module-plan model release records route `free-before-reassembly-v1` selector and receipt fields, Module Plan Release rendering, source fallback behavior, and drift smoke coverage for generated q4_0/q8_0/f32 roots.
+- Module-plan adapter validation records route `rust-validate-before-apply-v1` selector and receipt fields, Module Plan Validate rendering, source fallback behavior, and drift smoke coverage for generated q4_0/q8_0/f32 roots.
+- Module-plan adapter apply count records route `module_plan_adapter_apply_count=3`, Module Plan Apply Count rendering, adapter-family stack count agreement, runtime `adapter_apply_count` diagnostics checks, and drift smoke coverage before generated model fetch.
+- Module-plan planned fetch count records route `module_plan_planned_fetch_count=21`, Module Plan Plan Fetches rendering, selector/receipt/generated-route agreement, and drift smoke coverage before generated model fetch.
+- Module-plan actual fetch count records browser-owned generated route accounting, Module Plan Actual Fetches rendering, planned-versus-actual Ready gating, and generated q4_0/q8_0/f32 combined-selector proof.
+- Module-plan observed route set records browser-owned `{kind,path}` route observations, Module Plan Actual Route Set rendering, observed-versus-declared Ready gating, and generated q4_0/q8_0/f32 combined-selector proof.
+- Module-plan actual module bytes records browser-owned module byte observations, Module Plan Actual Module Bytes rendering, observed-versus-receipt Ready gating, and generated q4_0/q8_0/f32 combined-selector proof.
+- Module-plan actual module checksums records browser-owned module checksum observations, Module Plan Actual Module Checksums rendering, observed-versus-receipt Ready gating, module-plan-payload-checksum-drift, and generated q4_0/q8_0/f32 combined-selector proof.
+- Module-plan route-set records route `module_plan_route_set_checksum`, Module Plan Route Set rendering, selector/receipt/ordered-route agreement, and drift smoke coverage before generated model fetch.
+- MiniModel source-option records route user-owned local files/lists, user-triggered Hugging Face metadata discovery, and future consent-based P2P transfer into the same local `.slm` verifier and SLMComposer browser file-picker boundary.
+- SLMComposer progressive source UI records first-load Chat mode, explicit Local/Hugging Face/P2P source choices, hidden expert telemetry until Advanced Tools, source-options smoke coverage, local-only import status copy, stale-live deploy status, and no project-server user model bytes.
+- Federated operator memory records base/local-update parent roles, `local_update_weight_ppm`, local-update counts, raw and weighted delta checksums, q8 validation, parameter tests, and CLI proof before downstream candidate manifests.
+- Weighted soup operator memory records parent-pool seed weights, direct weighted tensor averaging, parent order checksums, weighted-value checksums, changed-from-frontier density, focused drift tests, and CLI validation before downstream candidate manifests.
+- Multi-parent soup manifest memory records parent-pool operator-kind dispatch, sign-merge or soup receipt recomputation, `candidate_manifest_status=validated-parent-pool-operator-output`, soup metric preservation, and downstream multi-parent promotion/admission/selector/browser-bundle test coverage.
+- Browser parent-pool soup bundle memory records `browser-multi-parent-bundle` operator selection, `multi-parent-soup-*` generated ids, `soup.*` evidence routes, `multi-parent-weighted-soup` assembly receipts, selector route-set prefix derivation, and browser validation for soup evidence families.
+- Browser multi-parent operator provenance memory records multi-parent admission `operator_receipt_*` carry-forward into generated selector entries, q4/q8/f32 browser Model Provenance Operator rows for parent-pool soup/sign-merge, and generated operator byte/kind drift fallback before generated routes.
+- Operator schedule carry-forward memory records `evolution_schedule_checksum`, scheduled family index, command, selection rule, and output gate flowing from parent-pool recipes into sign-merge/soup receipts and multi-parent candidate manifests.
+- Federated selector receipt route records `federated-local-update-average` receipt handoff through candidate, promotion, admission, selector registry fields, browser Model Provenance Operator rendering, operator-kind drift rejection, and browser operator-receipt byte-count drift fallback.
+- Module-plan route-set version records route `module_plan_route_set_version=1`, Module Plan Route Version rendering, route-set checksum preimage versioning, and drift smoke coverage before generated model fetch.
+- Module-plan route-set algorithm records route `module_plan_route_set_checksum_algorithm=tinyrustlm-text-checksum-v1`, Module Plan Route Hash rendering, route-set checksum preimage algorithm labels, and drift smoke coverage before generated model fetch.
+- Module-plan operator receipt records route `entry.N.module_plan_operator_receipt_*` plus `.module-plan.receipt` `operator_receipt_*` fields through assembly receipt agreement and evidence checksum verification before generated model fetch.
+- Crossover operator records route `crossover-candidate` and `validate-crossover-candidate`, deterministic seed-plus-keep selection, per-parent density fields, mask checksum, q8 validation, browser Operator rendering, crossover byte-echo fallback, parameter tests, drift tests, and CLI proof before downstream candidate manifests.
+- Mutation operator records route `mutation-candidate` and `validate-mutation-candidate`, deterministic seed/rate/magnitude perturbation, reference-parent scaling, selection checksum, delta checksum, q8 validation, browser Operator rendering, mutation byte-echo fallback, parameter tests, drift tests, and CLI proof before downstream candidate manifests.
+- Prune operator records route `prune-candidate` and `validate-prune-candidate`, deterministic magnitude ranking, keep/floor ppm fields, mask checksum, output-value checksum, q8 validation, selector receipt carry-forward, browser Operator rendering, prune byte-echo fallback, parameter tests, drift tests, and CLI proof before downstream candidate manifests.
+- DARE operator records route `dare-candidate` and `validate-dare-candidate`, seeded dropout/rescaled task deltas, signed delta weights, keep/drop ppm fields, mask/raw/rescaled delta checksums, q8 validation, parameter tests, drift tests, and CLI proof before downstream candidate manifests.
+- DARE browser operator provenance records DARE receipt-bound selector fields, Model Provenance Operator rendering, selector operator-kind drift rejection, and DARE byte fallback through `dare-operator-registry` and `dare-operator-receipt-drift`.
+- Browser converted trained provenance records route `converted-trained-registry`, converted-trained q8 selector fixture proof, converted-trained manifest request proof, and browser Model Provenance source/admission/quality field assertions.
+- Browser converted trained file route records `browser-converted-trained-bundle`, generated q8 file-backed root proof, and `converted-trained-registry-file` selector/model/manifest fetch assertions.
+- Browser converted trained all route records `browser-converted-trained-bundle all`, generated q4-defaulted f32/q8/q4 file-backed root proof, and q4/q8/f32 `converted-trained-registry-file` selector/model/manifest fetch assertions.
+- Browser converted trained source evidence records per-entry `converted-trained.source.manifest` snapshots, selector route fields, and browser source-manifest verification before selected converted model bytes.
+- Candidate operator receipt binding records route optional operator receipt fields through candidate manifests, tying receipt checksum, operator identity, candidate bytes, and candidate checksum to downstream eval and promotion gates.
+- Selector operator receipt binding records route receipt-bound admission fields into selector registry entries and browser Model Provenance Operator metadata.
+- Module-plan prompt-limit records route `module_plan_prompt_byte_limit=4096` selector and receipt fields, Module Plan Prompt Limit rendering, source prompt-copy boundary proof, total-budget inclusion, and drift smoke coverage for generated q4_0/q8_0/f32 roots.
+- Module-plan fetch-count records route `module_plan_fetch_count_limit=32` selector and receipt fields, Module Plan Fetch Limit rendering, generated route-count computation, and drift smoke coverage for generated q4_0/q8_0/f32 roots.
+- Short-term memory routes current report indexes, Model Breeding synthesis/reference pages, UAIX dogfood, active bucket scan, and long-term pointer ledger; long-term memory keeps checksum pointers for durable reports and research.
+- Raw evidence preserves exact report bytes with checksums; synthesis records carry reviewed interpretation, not source replacement authority.

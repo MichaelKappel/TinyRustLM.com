@@ -1,0 +1,111 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+  "sourceRevision": "ad9f0ae0864d7fbcd1cd905e3c6c5b069cc8b562",
+  "sourceModelArtifactSha256": "58858233513d76b8703e72eed6ce16807b523328188e13329257fb9594462945",
+  "sourceScreenSha256": "6853f98a76045f5664e5275ce3c8d8ad8c9c69af845076aa8036b974c3dd71b3",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "qwen2-dense-full-attention-gqa-head-dim-128",
+  "runtimeAdmission": "not-assessed-source-quality-rejected",
+  "licenseDisposition": "mit-bundled-qwen2.5-apache-base-authorized-review-required",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": [
+    "reasoning-budget-exhausted",
+    "direct-answer-absent",
+    "minimal-request-not-handled",
+    "underspecified-choice-missing-options",
+    "underspecified-choice-missing-decision-criteria",
+    "practical-decision-not-provided",
+    "feasible-fallback-not-provided",
+    "authority-resolution-absent",
+    "adult-comparison-one-sided",
+    "latest-user-precedence-not-applied",
+    "untrusted-memory-authority-not-resolved",
+    "current-task-not-completed"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "fail",
+      "failureCodes": [
+        "reasoning-budget-exhausted",
+        "direct-answer-absent",
+        "minimal-request-not-handled"
+      ]
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "reasoning-budget-exhausted",
+        "direct-answer-absent",
+        "underspecified-choice-missing-options",
+        "underspecified-choice-missing-decision-criteria"
+      ]
+    },
+    {
+      "index": 2,
+      "status": "fail",
+      "failureCodes": [
+        "reasoning-budget-exhausted",
+        "direct-answer-absent",
+        "practical-decision-not-provided"
+      ]
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "reasoning-budget-exhausted",
+        "direct-answer-absent",
+        "feasible-fallback-not-provided"
+      ]
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "reasoning-budget-exhausted",
+        "direct-answer-absent",
+        "authority-resolution-absent"
+      ]
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "reasoning-budget-exhausted",
+        "direct-answer-absent",
+        "adult-comparison-one-sided"
+      ]
+    },
+    {
+      "index": 6,
+      "status": "fail",
+      "failureCodes": [
+        "reasoning-budget-exhausted",
+        "direct-answer-absent",
+        "latest-user-precedence-not-applied"
+      ]
+    },
+    {
+      "index": 7,
+      "status": "fail",
+      "failureCodes": [
+        "reasoning-budget-exhausted",
+        "direct-answer-absent",
+        "untrusted-memory-authority-not-resolved",
+        "current-task-not-completed"
+      ]
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B/tree/ad9f0ae0864d7fbcd1cd905e3c6c5b069cc8b562",
+    "https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B/blob/ad9f0ae0864d7fbcd1cd905e3c6c5b069cc8b562/README.md",
+    "https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B/blob/ad9f0ae0864d7fbcd1cd905e3c6c5b069cc8b562/LICENSE",
+    "https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B/blob/ad9f0ae0864d7fbcd1cd905e3c6c5b069cc8b562/config.json",
+    "https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B/blob/ad9f0ae0864d7fbcd1cd905e3c6c5b069cc8b562/tokenizer_config.json",
+    "https://arxiv.org/abs/2501.12948"
+  ]
+}

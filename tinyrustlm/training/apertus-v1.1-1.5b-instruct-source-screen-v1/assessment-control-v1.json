@@ -1,0 +1,101 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "swiss-ai/Apertus-v1.1-1.5B-Instruct",
+  "sourceRevision": "9e9d01154446a645d30f04174cf1515a38058be7",
+  "sourceModelArtifactSha256": "963ab9667a5b8326b2bf794042686c46b7c78da31b4995b27ce6edbdba9731ba",
+  "sourceScreenSha256": "f574ea2709e9dc00f45a436ead349ed5f209c4976120dbf0ec317b6273487b57",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "apertus-dense-gqa-qk-norm-xielu",
+  "runtimeAdmission": "not-assessed-source-quality-rejected-before-conversion",
+  "licenseDisposition": "apache-2.0-card-declaration-with-additional-use-policy-legal-review-required",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": [
+    "current-task-not-followed",
+    "underspecified-choice-missing-options",
+    "underspecified-choice-missing-decision-criteria",
+    "answer-incomplete",
+    "impossible-resource-advice",
+    "practical-fallback-absent",
+    "current-commitment-not-addressed",
+    "source-conflict-unacknowledged",
+    "authority-resolution-absent",
+    "silent-deadline-selection",
+    "adult-comparison-one-sided",
+    "current-turn-precedence-violated"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "fail",
+      "failureCodes": [
+        "current-task-not-followed",
+        "unnecessary-modality-disclaimer",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "underspecified-choice-missing-options",
+        "underspecified-choice-missing-decision-criteria",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 2,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "impossible-resource-advice",
+        "practical-fallback-absent",
+        "current-commitment-not-addressed"
+      ]
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "source-conflict-unacknowledged",
+        "authority-resolution-absent",
+        "silent-deadline-selection"
+      ]
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "adult-comparison-one-sided"
+      ]
+    },
+    {
+      "index": 6,
+      "status": "fail",
+      "failureCodes": [
+        "current-turn-precedence-violated",
+        "answer-incomplete"
+      ]
+    },
+    {
+      "index": 7,
+      "status": "pass",
+      "failureCodes": []
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/swiss-ai/Apertus-v1.1-1.5B-Instruct/tree/9e9d01154446a645d30f04174cf1515a38058be7",
+    "https://huggingface.co/swiss-ai/Apertus-v1.1-1.5B-Instruct/blob/9e9d01154446a645d30f04174cf1515a38058be7/README.md",
+    "https://huggingface.co/swiss-ai/Apertus-v1.1-1.5B-Instruct/blob/9e9d01154446a645d30f04174cf1515a38058be7/config.json",
+    "https://huggingface.co/swiss-ai/Apertus-v1.1-1.5B-Instruct/blob/9e9d01154446a645d30f04174cf1515a38058be7/chat_template.jinja",
+    "https://huggingface.co/api/models/swiss-ai/Apertus-v1.1-1.5B-Instruct/revision/9e9d01154446a645d30f04174cf1515a38058be7",
+    "https://arxiv.org/abs/2605.29128",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt",
+    "https://github.com/huggingface/transformers/blob/v5.13.1/src/transformers/models/apertus/modeling_apertus.py"
+  ]
+}

@@ -1,0 +1,77 @@
+"use strict";
+
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const test = require("node:test");
+
+const repositoryRoot = path.resolve(__dirname, "../..");
+const experimentIdentity = "tinyrustlm-vector-oracle";
+const experimentManifest = path.join(repositoryRoot,
+  "rust/experiments/tinyrustlm-vector-oracle/Cargo.toml");
+const productRoots = [
+  "rust/crates",
+  "tinyrustlm/runtime",
+  "tinyrustlm/tools"
+].map((relativePath) => path.join(repositoryRoot, relativePath));
+const allowedResearchFiles = new Set([
+  "tinyrustlm/tools/vector-baseline-evidence-observation.js",
+  "tinyrustlm/tools/vector-browser-wasm-observation.js",
+  "tinyrustlm/tools/vector-browser-wasm-preregistration-v2.js",
+  "tinyrustlm/tools/vector-experiment-ledger.js",
+  "tinyrustlm/tools/vector-physical-target-observation.js",
+  "tinyrustlm/tools/vector-physical-target-preregistration.js",
+  "tinyrustlm/tools/vector-portable-affine-u8-observation.js",
+  "tinyrustlm/tools/vector-portable-affine-u8-quality-diagnostic.js",
+  "tinyrustlm/tools/vector-portable-affine-u8-quality-diagnostic-preregistration.js",
+  "tinyrustlm/tools/vector-portable-affine-u8-quality-diagnostic-verification.js",
+  "tinyrustlm/tools/vector-portable-affine-u8-json-domain-v2-observation.js",
+  "tinyrustlm/tools/vector-portable-affine-u8-json-domain-v2-preregistration.js",
+  "tinyrustlm/tools/vector-portable-affine-u8-json-domain-v2-verification.js",
+  "tinyrustlm/tools/vector-portable-affine-u8-successor-observation.js",
+  "tinyrustlm/tools/vector-portable-affine-u8-successor-preregistration.js",
+  "tinyrustlm/tools/vector-portable-affine-u8-successor-verification.js",
+  "tinyrustlm/tools/vector-retrieval-preregistration.js",
+  "tinyrustlm/tools/vector-retrieval-receipt.js"
+]);
+
+/** Recursively returns source and manifest files under one product root. */
+function sourceFiles(root) {
+  const files = [];
+  for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
+    if (entry.name === "target" || entry.name === "node_modules") continue;
+    const fullPath = path.join(root, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...sourceFiles(fullPath));
+    } else if (entry.isFile() && /(?:Cargo\.toml|\.(?:rs|js|mjs|cjs))$/u.test(entry.name)) {
+      files.push(fullPath);
+    }
+  }
+  return files;
+}
+
+/** Returns the body of one exact TOML section without parsing unrelated fields. */
+function tomlSection(text, sectionName) {
+  const header = `[${sectionName}]`;
+  const headerOffset = text.indexOf(header);
+  if (headerOffset < 0) return null;
+  const bodyOffset = headerOffset + header.length;
+  const remaining = text.slice(bodyOffset).replace(/^\r?\n/u, "");
+  const nextSectionOffset = remaining.search(/^\[/mu);
+  return (nextSectionOffset < 0 ? remaining : remaining.slice(0, nextSectionOffset)).trim();
+}
+
+test("keeps the scalar oracle publish-disabled and dependency-free", () => {
+  const manifest = fs.readFileSync(experimentManifest, "utf8");
+  assert.match(manifest, /^publish = false$/mu);
+  assert.equal(tomlSection(manifest, "dependencies"), "");
+});
+
+test("keeps every product source and manifest independent of the oracle", () => {
+  const offenders = productRoots
+    .flatMap(sourceFiles)
+    .filter((filePath) => fs.readFileSync(filePath, "utf8").includes(experimentIdentity))
+    .map((filePath) => path.relative(repositoryRoot, filePath).replaceAll("\\", "/"))
+    .filter((relativePath) => !allowedResearchFiles.has(relativePath));
+  assert.deepEqual(offenders, []);
+});

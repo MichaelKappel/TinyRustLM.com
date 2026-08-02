@@ -1,0 +1,97 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "HuggingFaceTB/SmolLM-1.7B-Instruct",
+  "sourceRevision": "69f49d9c36434d6a3f319dadc5bd3b812752b98b",
+  "sourceModelArtifactSha256": "7108f45b86e4b0c9b0c8f611264b381522e093b366ec0fdf83c0e07149b0c398",
+  "sourceScreenSha256": "a1429792b6cbbc83e045e628afa112b0ae556a0a0d55afbbfdb50b85953e8052",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "smollm1-llama-dense-full-mha-tied",
+  "runtimeAdmission": "not-assessed-smollm1-source-quality-rejected-before-conversion",
+  "licenseDisposition": "apache-2.0-card-declaration-external-authority-repository-license-absent",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": [
+    "current-task-not-followed",
+    "clarification-not-requested",
+    "answer-incomplete",
+    "practical-decision-underdeveloped",
+    "unavailable-resource-recommended",
+    "current-commitment-not-addressed",
+    "source-conflict-unresolved",
+    "unsupported-deadline-selection",
+    "adult-comparison-one-sided",
+    "latest-user-preference-not-demonstrated"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "fail",
+      "failureCodes": [
+        "current-task-not-followed"
+      ]
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "clarification-not-requested",
+        "underspecified-choice-missing-options"
+      ]
+    },
+    {
+      "index": 2,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "practical-decision-underdeveloped"
+      ]
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "unavailable-resource-recommended",
+        "current-commitment-not-addressed",
+        "practical-fallback-absent"
+      ]
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "source-conflict-unresolved",
+        "unsupported-deadline-selection"
+      ]
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "adult-comparison-one-sided"
+      ]
+    },
+    {
+      "index": 6,
+      "status": "fail",
+      "failureCodes": [
+        "latest-user-preference-not-demonstrated",
+        "unsupported-name-popularity-rationale"
+      ]
+    },
+    {
+      "index": 7,
+      "status": "pass",
+      "failureCodes": []
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/HuggingFaceTB/SmolLM-1.7B-Instruct/tree/69f49d9c36434d6a3f319dadc5bd3b812752b98b",
+    "https://huggingface.co/HuggingFaceTB/SmolLM-1.7B-Instruct/blob/69f49d9c36434d6a3f319dadc5bd3b812752b98b/README.md",
+    "https://huggingface.co/HuggingFaceTB/SmolLM-1.7B-Instruct/blob/69f49d9c36434d6a3f319dadc5bd3b812752b98b/config.json",
+    "https://huggingface.co/HuggingFaceTB/SmolLM-1.7B-Instruct/blob/69f49d9c36434d6a3f319dadc5bd3b812752b98b/tokenizer_config.json",
+    "https://huggingface.co/blog/smollm",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt",
+    "https://github.com/huggingface/transformers/blob/v5.13.1/src/transformers/models/llama/modeling_llama.py"
+  ]
+}

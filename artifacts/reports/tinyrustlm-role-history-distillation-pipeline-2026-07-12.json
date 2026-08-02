@@ -1,0 +1,79 @@
+{
+  "schema": "tinyrustlm.role_history_distillation_pipeline_report.v1",
+  "report_id": "tinyrustlm-role-history-quality-v1-20260712",
+  "generated_at_utc": "2026-07-13T02:43:26Z",
+  "status": "pipeline-verified-explicit-human-review-pending",
+  "public_ui_changed": false,
+  "model_trained": false,
+  "model_promoted": false,
+  "model_deployed": false,
+  "training_authority": false,
+  "contracts": {
+    "dataset_import_v1_backward_compatible": true,
+    "dataset_import_v2_role_history": true,
+    "role_history_schema": "tinyrustlm.role_history.v1",
+    "minimum_complete_history_turns": 1,
+    "maximum_complete_history_turns": 6,
+    "full_history_contamination_check": true,
+    "assistant_target_only_training": true
+  },
+  "curriculum": {
+    "record_count": 42,
+    "task_family_count": 6,
+    "structured_history_record_count": 42,
+    "prompt_plan_sha256": "4c41a109c71823f23bcdd5a46d127c0c3e7a92ad8eda3ada5c091db59f9fbfad",
+    "teacher_system_prompt_sha256": "90e9aced26e9650523d73f0e3eb0ef04b527116ef579c00421308f6a319187ef",
+    "strict_multi_turn_exclusion_sha256": "161d50b3ac8821f9262350196b081dfe19ceb0c92a3d212b500aa1678e6d8066"
+  },
+  "collection": {
+    "record_count": 42,
+    "checkpoint_status": "collection-checkpoint-not-training-approved",
+    "checkpoint_sha256": "5ecc8220e1d31e421aee5ab2b80f44d1a83107059ef809b6f858eea7b1696e8c",
+    "draft_manifest_sha256": "9f03d5e0c99bb0b07708c9c790eb57bde8340f9d76a4444e6934a770ac7df17b"
+  },
+  "review": {
+    "record_count": 42,
+    "focused_count": 29,
+    "high_priority_count": 13,
+    "agent_rewrite_suggestion_count": 4,
+    "agent_reject_suggestion_count": 0,
+    "untouched_count": 38,
+    "human_review_batch_count": 3,
+    "human_review_resolved_count": 0,
+    "human_review_pending_count": 42,
+    "ready_for_merge": false,
+    "training_authority": false,
+    "review_workbook_receipt_sha256": "c774458911202e7a0c798cfa6925f19a76e423760aca12662c36bae73d61bb77",
+    "triage_report_sha256": "793b08e3d9d2ec8bf56862d30019c329847c0d21e73a8cc8f2e52caffa999e08",
+    "assisted_review_receipt_sha256": "ec46d8457dda928718429e30fb4f62dde9bc0e34069f94fc118b03950040de11",
+    "human_review_handoff_sha256": "e6a730253fc937e3badc1738cbb70fce099beca20a1a57b83c70d76ed144329d",
+    "current_decision_set_sha256": "6a6563d00f2642aa66f34a51bfc2c1f10f8853f9db2a329453ac1aed0ba298d9",
+    "progress_report_sha256": "8cc42e3853a312b9fb235a8fe8842c3c610ae573ae090b5f8bff8e46d87a64d5",
+    "progress_report_contains_prompt_text": false,
+    "progress_report_contains_response_text": false,
+    "progress_report_contains_record_ids": false,
+    "progress_report_contains_record_level_actions": false
+  },
+  "verification": {
+    "python_tests_passed": 125,
+    "python_tests_skipped": 9,
+    "python_tests_failed": 0,
+    "cargo_workspace_tests": "pass",
+    "cargo_fmt_check": "pass",
+    "cargo_clippy_slm_pack_all_targets_deny_warnings": "pass",
+    "dotnet_package_tests_passed": 52,
+    "dotnet_package_tests_failed": 0,
+    "report_intake_memory_hashed_rows": 120,
+    "report_intake_memory_failures": 0,
+    "git_diff_check": "pass"
+  },
+  "source_sha256": {
+    "prepare_distillation_dataset": "bc80aa663e36d3678013b61546eeca0591706f47f639667f0b0683d4450302bb",
+    "prepare_distillation_teacher_corpus": "5bffbd9d1a5fce56697d467d2aa4ef536c7e7c130626f87e13bd4b7ba4478261",
+    "train_distilled_lora": "66cd29b18bd467561dd24726cb254e34664502953476736d4cdaddfe3563624b",
+    "rust_distillation": "f32f7fc2cd3803d78dd49338256e23b9b3fd5ab7e0a642f96d43326e8efa7bb8",
+    "dependency_free_json_parser": "2701386e2eecda3b59b1ffae4d8e4776d0c44a6dc57969d5170e10158501e10a",
+    "curriculum_guard_test": "21d3f393827d371fc3164da3819a1d796826e03a7b242c6119a244e5938aa765"
+  },
+  "required_next_gate": "Resolve all 42 records through explicit human review, merge and export the reviewed workbook, freeze the corpus with every exclusion, and only then begin a bounded adapter experiment."
+}

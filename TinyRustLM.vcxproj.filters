@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Root">
+      <UniqueIdentifier>{344BBA8C-49E4-4C3A-8A62-D6E838DA5F52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App">
+      <UniqueIdentifier>{9E606E14-E8CF-4D8C-B45B-55947164042D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime">
+      <UniqueIdentifier>{2EC5A78A-4AF5-4CBF-BF72-0FBB3C934B87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SLM Packer">
+      <UniqueIdentifier>{E142F4C1-8FE9-4B18-94E1-02D695C8D366}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rust Local Server">
+      <UniqueIdentifier>{D5034D0D-A9EC-406A-B2DB-B9B2AE442E0F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rust Browser Harness">
+      <UniqueIdentifier>{0C12334E-02C4-41F4-828A-5A3026C1C318}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tools">
+      <UniqueIdentifier>{6CF2F4F1-C7D1-477A-A50B-9F3DA76AAFF7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Visual Studio">
+      <UniqueIdentifier>{ACD1D5B3-CBE0-4D93-BA6D-9C5F21ED73E5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AGENTS.md">
+      <Filter>Root</Filter>
+    </None>
+    <None Include="Cargo.toml">
+      <Filter>Root</Filter>
+    </None>
+    <None Include="README.md">
+      <Filter>Root</Filter>
+    </None>
+    <None Include="workspace.uai">
+      <Filter>Root</Filter>
+    </None>
+    <None Include="tinyrustlm\README.md">
+      <Filter>Root</Filter>
+    </None>
+    <None Include="tinyrustlm\app\app.css">
+      <Filter>App</Filter>
+    </None>
+    <None Include="tinyrustlm\app\app.js">
+      <Filter>App</Filter>
+    </None>
+    <None Include="tinyrustlm\app\index.html">
+      <Filter>App</Filter>
+    </None>
+    <None Include="tinyrustlm\runtime\Cargo.toml">
+      <Filter>Runtime</Filter>
+    </None>
+    <None Include="tinyrustlm\runtime\src\*.rs">
+      <Filter>Runtime</Filter>
+    </None>
+    <None Include="tinyrustlm\tools\slm_pack\Cargo.toml">
+      <Filter>SLM Packer</Filter>
+    </None>
+    <None Include="tinyrustlm\tools\slm_pack\src\*.rs">
+      <Filter>SLM Packer</Filter>
+    </None>
+    <None Include="tinyrustlm\tools\local_server\Cargo.toml">
+      <Filter>Rust Local Server</Filter>
+    </None>
+    <None Include="tinyrustlm\tools\local_server\src\*.rs">
+      <Filter>Rust Local Server</Filter>
+    </None>
+    <None Include="tinyrustlm\tools\browser_harness\Cargo.toml">
+      <Filter>Rust Browser Harness</Filter>
+    </None>
+    <None Include="tinyrustlm\tools\browser_harness\src\*.rs">
+      <Filter>Rust Browser Harness</Filter>
+    </None>
+    <None Include="tinyrustlm\tools\static-server.js">
+      <Filter>Tools</Filter>
+    </None>
+    <None Include="tinyrustlm\tools\browser-round-evidence.js">
+      <Filter>Tools</Filter>
+    </None>
+    <None Include="tinyrustlm\tools\fresh-browser-conversation.js">
+      <Filter>Tools</Filter>
+    </None>
+    <None Include="tinyrustlm\tools\run-browser-round.js">
+      <Filter>Tools</Filter>
+    </None>
+    <None Include="tools\vs\*.ps1">
+      <Filter>Visual Studio</Filter>
+    </None>
+    <None Include="tinyrustlm\runtime\src\*.rs" />
+    <None Include="tinyrustlm\runtime\src\*.rs" />
+    <None Include="tinyrustlm\runtime\src\*.rs" />
+    <None Include="tinyrustlm\runtime\src\*.rs" />
+    <None Include="tinyrustlm\runtime\src\*.rs" />
+    <None Include="tinyrustlm\runtime\src\*.rs" />
+    <None Include="tinyrustlm\runtime\src\*.rs" />
+    <None Include="tinyrustlm\runtime\src\*.rs" />
+    <None Include="tinyrustlm\runtime\src\*.rs" />
+    <None Include="tinyrustlm\runtime\src\*.rs" />
+    <None Include="tinyrustlm\runtime\src\*.rs" />
+    <None Include="tinyrustlm\runtime\src\*.rs" />
+    <None Include="tinyrustlm\runtime\src\*.rs" />
+    <None Include="tinyrustlm\runtime\src\*.rs" />
+    <None Include="tinyrustlm\runtime\src\*.rs" />
+    <None Include="tinyrustlm\runtime\src\*.rs" />
+    <None Include="tinyrustlm\runtime\src\*.rs" />
+    <None Include="tinyrustlm\tools\slm_pack\src\*.rs" />
+    <None Include="tinyrustlm\tools\slm_pack\src\*.rs" />
+    <None Include="tinyrustlm\tools\slm_pack\src\*.rs" />
+    <None Include="tinyrustlm\tools\slm_pack\src\*.rs" />
+    <None Include="tools\vs\*.ps1" />
+    <None Include="tools\vs\*.ps1" />
+  </ItemGroup>
+</Project>

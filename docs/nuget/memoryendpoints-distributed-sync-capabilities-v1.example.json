@@ -1,0 +1,73 @@
+{
+  "ok": true,
+  "data": {
+    "schemaVersion": "memoryendpoints.distributed_sync_capabilities.v1",
+    "status": "live",
+    "protocol": "memoryendpoints-distributed-sync-v1",
+    "capabilityRoute": "/api/matm/sync/capabilities",
+    "routes": {
+      "registerDevice": "/api/matm/sync/devices",
+      "rotateDevice": "/api/matm/sync/devices/rotate",
+      "revokeDevice": "/api/matm/sync/devices/revoke",
+      "submitMutation": "/api/matm/sync/mutations",
+      "lookupReceipt": "/api/matm/sync/receipts",
+      "changes": "/api/matm/sync/changes",
+      "heads": "/api/matm/sync/heads",
+      "retention": "/api/matm/sync/retention"
+    },
+    "mutationContract": {
+      "operations": [
+        "upsert",
+        "delete",
+        "hard_forget"
+      ],
+      "hardForgetSupported": false,
+      "hardForgetBehavior": "safe_rejected_receipt",
+      "idempotency": "Idempotency-Key is required for reliable offline retry; receipt lookup accepts the same key and never echoes it.",
+      "revisionFields": [
+        "logicalMemoryId",
+        "parentRevisionId",
+        "syncRevisionId",
+        "serverSequence",
+        "bodyHash",
+        "conflict",
+        "conflictCode"
+      ],
+      "conflictSemantics": "When an existing head is updated without the current parent revision, the mutation is durably recorded as conflict and the head remains unchanged.",
+      "tombstoneSemantics": "Delete creates a tombstoned head; later upsert is blocked unless a future explicit resurrection contract is advertised."
+    },
+    "checkpointContract": {
+      "changesQuery": [
+        "workspace_id",
+        "after_sequence",
+        "limit",
+        "logical_memory_id"
+      ],
+      "monotonicServerSequence": true,
+      "indexedThroughWatermark": true,
+      "paginationFields": [
+        "items",
+        "hasMore",
+        "nextAfterSequence",
+        "indexedThroughSequence",
+        "checkpoint"
+      ]
+    },
+    "deviceContract": {
+      "authorityEpoch": true,
+      "registerRotateRevoke": true,
+      "revokedDeviceMutationBehavior": "safe_rejected_receipt",
+      "secretMaterialStored": false
+    },
+    "retention": {
+      "tombstoneRetentionDays": 30,
+      "hardForgetSupported": false,
+      "rawPrivatePayloadStored": false,
+      "valuesRedacted": true
+    },
+    "publicSafeOnly": true,
+    "rawCredentialExposed": false,
+    "rawPayloadExposed": false,
+    "valuesRedacted": true
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "schema": "tinyrustlm.source_model_preflight_assessment.v2",
+  "sourceModelId": "utter-project/EuroLLM-1.7B-Instruct",
+  "sourceRevision": "fbfaca89e5213c640dbb048ed169ac24213da338",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-preflight-v2",
+  "architectureFamily": "llama-dense-gqa-untied-bf16",
+  "runtimeAdmission": "not-assessed-preflight-rejected",
+  "accessDisposition": "public-ungated-source-acquired-private-review-only",
+  "licenseId": "apache-2.0",
+  "licenseDisposition": "apache-2.0-card-declaration-no-bundled-license-review-required",
+  "distributionDisposition": "not-assessed-preflight-rejected",
+  "blockerCode": "candidate_source_conversation_contract_rejected",
+  "rejectionCodes": [
+    "publisher-chat-template-card-serialization-conflict",
+    "publisher-chat-template-generation-prefix-absent",
+    "publisher-generation-stop-token-conflict",
+    "source-screen-conversation-contract-incomplete"
+  ],
+  "missingRequiredArtifacts": [],
+  "evidenceArtifacts": [
+    {
+      "kind": "config",
+      "fileName": "config.json",
+      "byteCount": 712,
+      "sha256": "f0c12f25e72422f319f3d995b171b686adcc502811d6a4871851a0a410e7d325",
+      "publicUrl": "https://huggingface.co/utter-project/EuroLLM-1.7B-Instruct/blob/fbfaca89e5213c640dbb048ed169ac24213da338/config.json",
+      "observedAtUtc": "2026-07-18T17:07:13.3404906Z"
+    },
+    {
+      "kind": "generation-config",
+      "fileName": "generation-config.json",
+      "byteCount": 132,
+      "sha256": "6228bd42af4cfb741f38c5bfb05eebe129283ae138daf9209b926e363c19e548",
+      "publicUrl": "https://huggingface.co/utter-project/EuroLLM-1.7B-Instruct/blob/fbfaca89e5213c640dbb048ed169ac24213da338/generation_config.json",
+      "observedAtUtc": "2026-07-18T17:07:13.3404906Z"
+    },
+    {
+      "kind": "license",
+      "fileName": "apache-2.0.txt",
+      "byteCount": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "publicUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "observedAtUtc": "2026-07-18T17:07:13.3404906Z"
+    },
+    {
+      "kind": "model-card",
+      "fileName": "model-card.md",
+      "byteCount": 12862,
+      "sha256": "99d9d767545eeccff1689abda880980517c8d35ae698fce4002bc02c18dbf274",
+      "publicUrl": "https://huggingface.co/utter-project/EuroLLM-1.7B-Instruct/blob/fbfaca89e5213c640dbb048ed169ac24213da338/README.md",
+      "observedAtUtc": "2026-07-18T17:07:13.3404906Z"
+    },
+    {
+      "kind": "repository-tree",
+      "fileName": "repository-tree.json",
+      "byteCount": 3675,
+      "sha256": "676165754e7c96981b71c1e4dedf90f8245f5266dc351fe683d1657785e53095",
+      "publicUrl": "https://huggingface.co/api/models/utter-project/EuroLLM-1.7B-Instruct/revision/fbfaca89e5213c640dbb048ed169ac24213da338",
+      "observedAtUtc": "2026-07-18T17:07:13.3404906Z"
+    },
+    {
+      "kind": "special-tokens-map",
+      "fileName": "special-tokens-map.json",
+      "byteCount": 443,
+      "sha256": "60f4998edef989ba22a5eba0838fdce563b44fd6c75a22fc27967720541ff6ad",
+      "publicUrl": "https://huggingface.co/utter-project/EuroLLM-1.7B-Instruct/blob/fbfaca89e5213c640dbb048ed169ac24213da338/special_tokens_map.json",
+      "observedAtUtc": "2026-07-18T17:07:13.3404906Z"
+    },
+    {
+      "kind": "tokenizer-config",
+      "fileName": "tokenizer-config.json",
+      "byteCount": 47340,
+      "sha256": "859ddfb37cd6febfd2e3cf237ec952f91af1149db5b532849238e409aa50f576",
+      "publicUrl": "https://huggingface.co/utter-project/EuroLLM-1.7B-Instruct/blob/fbfaca89e5213c640dbb048ed169ac24213da338/tokenizer_config.json",
+      "observedAtUtc": "2026-07-18T17:07:13.3404906Z"
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/utter-project/EuroLLM-1.7B-Instruct/tree/fbfaca89e5213c640dbb048ed169ac24213da338",
+    "https://huggingface.co/utter-project/EuroLLM-1.7B-Instruct/blob/fbfaca89e5213c640dbb048ed169ac24213da338/README.md",
+    "https://huggingface.co/utter-project/EuroLLM-1.7B-Instruct/blob/fbfaca89e5213c640dbb048ed169ac24213da338/config.json",
+    "https://huggingface.co/utter-project/EuroLLM-1.7B-Instruct/blob/fbfaca89e5213c640dbb048ed169ac24213da338/generation_config.json",
+    "https://huggingface.co/utter-project/EuroLLM-1.7B-Instruct/blob/fbfaca89e5213c640dbb048ed169ac24213da338/special_tokens_map.json",
+    "https://huggingface.co/utter-project/EuroLLM-1.7B-Instruct/blob/fbfaca89e5213c640dbb048ed169ac24213da338/tokenizer_config.json",
+    "https://huggingface.co/api/models/utter-project/EuroLLM-1.7B-Instruct/revision/fbfaca89e5213c640dbb048ed169ac24213da338",
+    "https://arxiv.org/abs/2409.16235",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ],
+  "sourceAcquisitionStatus": "complete",
+  "sourceWeightArtifacts": [
+    {
+      "fileName": "model.safetensors",
+      "byteCount": 3313726248,
+      "sha256": "853ac1edd51009c46ce28e457a389ef69206b27e3b9734a43ae0644e766553ac"
+    }
+  ]
+}

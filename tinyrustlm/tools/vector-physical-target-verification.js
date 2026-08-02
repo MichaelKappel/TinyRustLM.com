@@ -1,0 +1,435 @@
+"use strict";
+
+const childProcess = require("node:child_process");
+const crypto = require("node:crypto");
+const fs = require("node:fs");
+const path = require("node:path");
+
+const { canonicalJson } = require("./campaign-evidence-store.js");
+const { atomicCreate } = require("./durable-files.js");
+const {
+  authority: observationAuthority,
+  canonicalPrettyBytes,
+  hashInputAtRevision,
+  openGaps,
+  validateAttemptFile,
+  validateObservationFile
+} = require("./vector-physical-target-observation.js");
+const { validateManifestFile } = require("./vector-physical-target-preregistration.js");
+const {
+  validatePreviousReceiptFile: validateRetrievalReceiptFile
+} = require("./vector-retrieval-receipt.js");
+const {
+  validateReceiptFile: validateBrowserReceiptFile
+} = require("./vector-browser-wasm-verification.js");
+
+const receiptSchema = "tinyrustlm.exact_flat_physical_target_verification_receipt.v1";
+const expectedExperimentId = "exact-flat-physical-target-win-x64-20260722";
+const repositoryRoot = path.resolve(__dirname, "../..");
+const receiptRelativePath =
+  "tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-verification-v1.json";
+const receiptPath = path.join(repositoryRoot, receiptRelativePath);
+const maximumReceiptBytes = 4 * 1024 * 1024;
+const maximumInputBytes = 16 * 1024 * 1024;
+const sha256Pattern = /^[a-f0-9]{64}$/u;
+const sourceRevisionPattern = /^[a-f0-9]{40}$/u;
+const utcPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?Z$/u;
+const receiptIdPattern = /^exact-flat-physical-target-verification-[a-f0-9]{16}$/u;
+const forbiddenTextPattern =
+  /(?:[a-z]:[\\/]|\/home\/|\/mnt\/[a-z]\/|bearer\s|token=|secret=|password=|serial(?:number)?=|turn\d+(?:search|view)\d+)/iu;
+
+const observationRelativePath =
+  "tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-observation-v1.json";
+const preregistrationRelativePath =
+  "tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-preregistration.v1.json";
+const attemptSpecs = Object.freeze([
+  Object.freeze({
+    path: "tinyrustlm/experiments/vector-quantization/physical-target-attempts/sha256/12/1291be20cc291bc63eb787667385914d1756f2371d03bb076d24c220dbc73f1b.json",
+    attemptId: "exact-flat-physical-target-attempt-1291be20cc291bc6",
+    status: "fail",
+    sourceRevision: "af813bcc09867a52874ea76304634c5a5fd4d459",
+    fileSha256: "10329dbf0cf33f0434a633b19146b480bc0b7ee5cf5c696988646729b7d6e7dc"
+  }),
+  Object.freeze({
+    path: "tinyrustlm/experiments/vector-quantization/physical-target-attempts/sha256/61/61b3b96e16391b9ccff3f3ee38c71e93349d2f4887a1764d871f790a532d0aca.json",
+    attemptId: "exact-flat-physical-target-attempt-61b3b96e16391b9c",
+    status: "pass",
+    sourceRevision: "bdca15ece76e74076a5acdfe09a152616ab88fb1",
+    fileSha256: "6edb73def3ecfe09d1bd3c0ef65c480c10d8b0536affdc25758cdc793bee0cb6"
+  })
+]);
+
+const verificationInputPaths = Object.freeze([
+  "tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-verification-v1.json",
+  "tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-benchmark.rs",
+  observationRelativePath,
+  preregistrationRelativePath,
+  "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-verification-v1.json",
+  ...attemptSpecs.map((attempt) => attempt.path),
+  "tinyrustlm/tests/vector-physical-target-observation.test.js",
+  "tinyrustlm/tests/vector-physical-target-preregistration.test.js",
+  "tinyrustlm/tests/vector-physical-target-verification.test.js",
+  "tinyrustlm/tools/campaign-evidence-store.js",
+  "tinyrustlm/tools/durable-files.js",
+  "tinyrustlm/tools/vector-physical-target-observation.js",
+  "tinyrustlm/tools/vector-physical-target-preregistration.js",
+  "tinyrustlm/tools/vector-physical-target-verification.js"
+]);
+
+const authority = Object.freeze({
+  namedTargetLatencyVerified: true,
+  namedTargetThroughputVerified: true,
+  namedTargetProcessMemoryVerified: true,
+  namedTargetEnergyVerified: false,
+  physicalChassisIndependentlyAttested: false,
+  completePhysicalTargetGateVerified: false,
+  browserPerformanceVerified: false,
+  compressedRetrievalVerified: false,
+  turboVecParityVerified: false,
+  representativeRetrievalQualityVerified: false,
+  durableFilesystemDeletionVerified: false,
+  productIntegrationAuthorized: false,
+  trainingAuthorized: false,
+  releaseAuthorized: false
+});
+
+function invariant(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
+function isPlainObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function exactKeys(value, keys, label) {
+  invariant(isPlainObject(value), `${label} must be an object`);
+  invariant(JSON.stringify(Object.keys(value).sort()) === JSON.stringify([...keys].sort()),
+    `${label} fields are invalid`);
+}
+
+function exactValue(value, expected, label) {
+  invariant(JSON.stringify(value) === JSON.stringify(expected), `${label} is invalid`);
+}
+
+function sha256(bytes) {
+  return crypto.createHash("sha256").update(bytes).digest("hex");
+}
+
+function sha256File(filePath) {
+  const descriptor = fs.openSync(filePath, "r");
+  const buffer = Buffer.allocUnsafe(1024 * 1024);
+  const hash = crypto.createHash("sha256");
+  try {
+    for (;;) {
+      const count = fs.readSync(descriptor, buffer, 0, buffer.length, null);
+      if (count === 0) break;
+      hash.update(buffer.subarray(0, count));
+    }
+  } finally {
+    fs.closeSync(descriptor);
+  }
+  return hash.digest("hex");
+}
+
+function hashInput(relativePath) {
+  invariant(/^(?!\/)(?!.*(?:^|\/)\.\.(?:\/|$))[A-Za-z0-9._/-]+$/u.test(relativePath),
+    `unsafe verification input path: ${relativePath}`);
+  const absolutePath = path.resolve(repositoryRoot, relativePath);
+  const relative = path.relative(repositoryRoot, absolutePath);
+  invariant(relative !== "" && !relative.startsWith("..") && !path.isAbsolute(relative),
+    `verification input escaped repository root: ${relativePath}`);
+  const stat = fs.lstatSync(absolutePath);
+  invariant(stat.isFile() && !stat.isSymbolicLink() && stat.size > 0 &&
+    stat.size <= maximumInputBytes,
+  `verification input is not a bounded regular file: ${relativePath}`);
+  return Object.freeze({ path: relativePath, bytes: stat.size, sha256: sha256File(absolutePath) });
+}
+
+function sourceRevision() {
+  const result = childProcess.spawnSync("git", ["rev-parse", "HEAD"], {
+    cwd: repositoryRoot,
+    encoding: "utf8",
+    windowsHide: true,
+    shell: false
+  });
+  invariant(result.status === 0 && !result.error, "source revision probe failed");
+  const revision = String(result.stdout || "").trim();
+  invariant(sourceRevisionPattern.test(revision), "source revision is invalid");
+  return revision;
+}
+
+function assertPathsCommitted(paths) {
+  const tracked = childProcess.spawnSync("git", ["ls-files", "--error-unmatch", "--", ...paths], {
+    cwd: repositoryRoot,
+    encoding: "utf8",
+    windowsHide: true,
+    shell: false
+  });
+  invariant(tracked.status === 0 && !tracked.error,
+    "physical-target verification inputs are not all tracked");
+  for (const argumentsList of [
+    ["diff", "--quiet", "--", ...paths],
+    ["diff", "--cached", "--quiet", "--", ...paths]
+  ]) {
+    const result = childProcess.spawnSync("git", argumentsList, {
+      cwd: repositoryRoot,
+      encoding: "utf8",
+      windowsHide: true,
+      shell: false
+    });
+    invariant(result.status === 0 && !result.error,
+      "physical-target verification inputs differ from the current commit");
+  }
+}
+
+function nodeToolIdentity() {
+  const filePath = fs.realpathSync.native(process.execPath);
+  const stat = fs.lstatSync(filePath);
+  invariant(stat.isFile() && !stat.isSymbolicLink() && stat.size > 0 &&
+    stat.size <= 1024 * 1024 * 1024, "Node executable is invalid");
+  return Object.freeze({ version: process.version, sha256: sha256File(filePath) });
+}
+
+function loadAttemptEvidence() {
+  return Object.freeze(attemptSpecs.map((spec) => {
+    const absolutePath = path.resolve(repositoryRoot, spec.path);
+    const validated = validateAttemptFile(absolutePath);
+    invariant(validated.attempt.attemptId === spec.attemptId &&
+      validated.attempt.status === spec.status &&
+      validated.attempt.sourceRevision === spec.sourceRevision &&
+      validated.sha256 === spec.fileSha256,
+    `attempt evidence drifted: ${spec.attemptId}`);
+    return Object.freeze({
+      path: spec.path,
+      attemptId: validated.attempt.attemptId,
+      status: validated.attempt.status,
+      attemptContentHash: validated.attempt.attemptContentHash,
+      fileSha256: validated.sha256
+    });
+  }));
+}
+
+function evidenceSummary(observation, attempts) {
+  const rawQuerySamples = observation.samples.reduce(
+    (sum, sample) => sum + sample.queryDurationNs.length, 0);
+  return Object.freeze({
+    targetId: observation.target.targetId,
+    workloadCount: observation.aggregates.length,
+    processRuns: observation.samples.length,
+    rawQuerySamples,
+    passingAttempts: attempts.filter((attempt) => attempt.status === "pass").length,
+    preservedFailureAttempts: attempts.filter((attempt) => attempt.status === "fail").length,
+    ownedBuildDirectoryDeleted: observation.buildCleanup.ownedBuildDirectoryDeleted,
+    energyMeasured: observation.authority.namedTargetEnergyMeasured,
+    aggregates: observation.aggregates
+  });
+}
+
+function finalizeReceipt(body) {
+  invariant(!Object.hasOwn(body, "receiptId") && !Object.hasOwn(body, "receiptContentHash"),
+    "receipt body already contains identity fields");
+  const receiptContentHash = sha256(Buffer.from(canonicalJson(body), "utf8"));
+  return Object.freeze({
+    ...body,
+    receiptId: `exact-flat-physical-target-verification-${receiptContentHash.slice(0, 16)}`,
+    receiptContentHash
+  });
+}
+
+function receiptIdentity(value) {
+  const body = { ...value };
+  delete body.receiptId;
+  delete body.receiptContentHash;
+  const hash = sha256(Buffer.from(canonicalJson(body), "utf8"));
+  return Object.freeze({
+    hash,
+    id: `exact-flat-physical-target-verification-${hash.slice(0, 16)}`
+  });
+}
+
+function buildReceipt() {
+  const preregistration = validateManifestFile();
+  const retrievalParent = validateRetrievalReceiptFile();
+  const browserParent = validateBrowserReceiptFile();
+  const observed = validateObservationFile();
+  const attempts = loadAttemptEvidence();
+  const summary = evidenceSummary(observed.observation, attempts);
+  invariant(observed.sha256 ===
+    "17398b133501443af314b5138211306ebf180b592bfa03f68f6ac48615050483",
+  "observation file identity drifted");
+  invariant(observed.observation.sourceRevision ===
+    "bdca15ece76e74076a5acdfe09a152616ab88fb1",
+  "observed source revision drifted");
+  invariant(summary.workloadCount === 3 && summary.processRuns === 9 &&
+    summary.rawQuerySamples === 324 && summary.passingAttempts === 1 &&
+    summary.preservedFailureAttempts === 1 &&
+    summary.ownedBuildDirectoryDeleted === true && summary.energyMeasured === false,
+  "physical-target evidence summary is invalid");
+  exactValue(observed.observation.authority, observationAuthority,
+    "observation authority");
+  return finalizeReceipt({
+    schema: receiptSchema,
+    experimentId: expectedExperimentId,
+    status: "named-target-latency-throughput-memory-verified-with-open-gaps",
+    generatedAtUtc: new Date().toISOString(),
+    observedSourceRevision: observed.observation.sourceRevision,
+    verificationSourceRevision: sourceRevision(),
+    verificationMode: "content-and-policy-revalidation-of-immutable-target-observation",
+    verificationTool: nodeToolIdentity(),
+    verificationInputs: verificationInputPaths.map(hashInput),
+    preregistration: {
+      path: preregistrationRelativePath,
+      sha256: preregistration.sha256
+    },
+    parents: [
+      { receiptId: retrievalParent.receipt.receiptId, sha256: retrievalParent.sha256 },
+      { receiptId: browserParent.receipt.receiptId, sha256: browserParent.sha256 }
+    ],
+    observation: {
+      path: observationRelativePath,
+      observationId: observed.observation.observationId,
+      observationContentHash: observed.observation.observationContentHash,
+      fileSha256: observed.sha256
+    },
+    attempts,
+    evidenceSummary: summary,
+    authority,
+    openGaps,
+    requiredNextGate: observed.observation.requiredNextGate
+  });
+}
+
+function validateReceipt(value, options = {}) {
+  exactKeys(value, [
+    "schema", "experimentId", "status", "generatedAtUtc", "observedSourceRevision",
+    "verificationSourceRevision", "verificationMode", "verificationTool",
+    "verificationInputs", "preregistration", "parents", "observation", "attempts",
+    "evidenceSummary", "authority", "openGaps", "requiredNextGate", "receiptId",
+    "receiptContentHash"
+  ], "receipt");
+  invariant(value.schema === receiptSchema && value.experimentId === expectedExperimentId,
+    "receipt schema or experiment is invalid");
+  invariant(value.status ===
+    "named-target-latency-throughput-memory-verified-with-open-gaps",
+  "receipt status is invalid");
+  invariant(utcPattern.test(value.generatedAtUtc) &&
+    sourceRevisionPattern.test(value.observedSourceRevision) &&
+    sourceRevisionPattern.test(value.verificationSourceRevision),
+  "receipt timestamps or revisions are invalid");
+  invariant(value.verificationMode ===
+    "content-and-policy-revalidation-of-immutable-target-observation",
+  "verification mode is invalid");
+  const identity = receiptIdentity(value);
+  invariant(receiptIdPattern.test(value.receiptId) && value.receiptId === identity.id &&
+    value.receiptContentHash === identity.hash, "receipt content identity is invalid");
+  exactKeys(value.verificationTool, ["version", "sha256"], "verificationTool");
+  invariant(/^v\d+\.\d+\.\d+$/u.test(value.verificationTool.version) &&
+    sha256Pattern.test(value.verificationTool.sha256),
+  "verification tool identity is invalid");
+  invariant(Array.isArray(value.verificationInputs) &&
+    value.verificationInputs.length === verificationInputPaths.length,
+  "verification inputs are incomplete");
+  const inputRevision = options.inputRevision || null;
+  invariant(inputRevision === null || inputRevision === value.verificationSourceRevision,
+    "historical verification revision does not match the receipt");
+  for (let index = 0; index < verificationInputPaths.length; index += 1) {
+    const expectedInput = inputRevision === null
+      ? hashInput(verificationInputPaths[index])
+      : hashInputAtRevision(verificationInputPaths[index], inputRevision);
+    exactValue(value.verificationInputs[index], expectedInput, `verificationInputs[${index}]`);
+  }
+
+  const preregistration = validateManifestFile();
+  exactValue(value.preregistration, {
+    path: preregistrationRelativePath,
+    sha256: preregistration.sha256
+  }, "receipt preregistration");
+  const retrievalParent = validateRetrievalReceiptFile();
+  const browserParent = validateBrowserReceiptFile();
+  exactValue(value.parents, [
+    { receiptId: retrievalParent.receipt.receiptId, sha256: retrievalParent.sha256 },
+    { receiptId: browserParent.receipt.receiptId, sha256: browserParent.sha256 }
+  ], "receipt parents");
+  const observed = validateObservationFile();
+  exactValue(value.observation, {
+    path: observationRelativePath,
+    observationId: observed.observation.observationId,
+    observationContentHash: observed.observation.observationContentHash,
+    fileSha256: observed.sha256
+  }, "receipt observation");
+  invariant(value.observedSourceRevision === observed.observation.sourceRevision,
+    "observed source revision is invalid");
+  const attempts = loadAttemptEvidence();
+  exactValue(value.attempts, attempts, "receipt attempts");
+  exactValue(value.evidenceSummary, evidenceSummary(observed.observation, attempts),
+    "evidenceSummary");
+  exactValue(value.authority, authority, "authority");
+  exactValue(value.openGaps, openGaps, "openGaps");
+  invariant(value.requiredNextGate === observed.observation.requiredNextGate,
+    "requiredNextGate changed from observation");
+  invariant(!forbiddenTextPattern.test(JSON.stringify(value)),
+    "receipt contains private, credential-like, serial, or internal citation text");
+  return value;
+}
+
+function validateReceiptFile(filePath = receiptPath) {
+  const stat = fs.lstatSync(filePath);
+  invariant(stat.isFile() && !stat.isSymbolicLink() && stat.size > 0 &&
+    stat.size <= maximumReceiptBytes, "receipt must be a bounded regular file");
+  const bytes = fs.readFileSync(filePath);
+  const parsed = JSON.parse(bytes.toString("utf8"));
+  const receipt = validateReceipt(parsed, { inputRevision: parsed.verificationSourceRevision });
+  invariant(bytes.equals(canonicalPrettyBytes(receipt)), "receipt bytes are not canonical");
+  return Object.freeze({ receipt, bytes: bytes.length, sha256: sha256(bytes) });
+}
+
+function generateReceipt() {
+  assertPathsCommitted(verificationInputPaths);
+  return buildReceipt();
+}
+
+function main(argumentsList) {
+  invariant(argumentsList.length === 1 && argumentsList[0] === "--write",
+    "usage: node vector-physical-target-verification.js --write");
+  const receipt = generateReceipt();
+  atomicCreate(receiptPath, canonicalPrettyBytes(receipt));
+  const validated = validateReceiptFile();
+  process.stdout.write(`${JSON.stringify({
+    schema: validated.receipt.schema,
+    receiptId: validated.receipt.receiptId,
+    status: validated.receipt.status,
+    observedSourceRevision: validated.receipt.observedSourceRevision,
+    verificationSourceRevision: validated.receipt.verificationSourceRevision,
+    targetId: validated.receipt.evidenceSummary.targetId,
+    processRuns: validated.receipt.evidenceSummary.processRuns,
+    rawQuerySamples: validated.receipt.evidenceSummary.rawQuerySamples,
+    energyVerified: validated.receipt.authority.namedTargetEnergyVerified,
+    productAuthority: validated.receipt.authority.productIntegrationAuthorized,
+    bytes: validated.bytes,
+    sha256: validated.sha256
+  }, null, 2)}\n`);
+}
+
+if (require.main === module) {
+  try {
+    main(process.argv.slice(2));
+  } catch (error) {
+    process.stderr.write(`Vector physical-target verification failed: ${error.message}\n`);
+    process.exitCode = 1;
+  }
+}
+
+module.exports = Object.freeze({
+  attemptSpecs,
+  authority,
+  buildReceipt,
+  evidenceSummary,
+  finalizeReceipt,
+  loadAttemptEvidence,
+  receiptIdentity,
+  receiptPath,
+  receiptSchema,
+  validateReceipt,
+  validateReceiptFile,
+  verificationInputPaths
+});

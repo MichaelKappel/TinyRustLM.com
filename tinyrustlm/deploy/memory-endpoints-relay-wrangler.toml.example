@@ -1,0 +1,17 @@
+name = "tinyrustlm-memory-endpoints-relay"
+main = "./memory-endpoints-relay-worker.js"
+compatibility_date = "2026-07-10"
+workers_dev = false
+
+# Route only the narrow MemoryEndpoints relay path. The static TinyRustLM.com
+# app remains hosted by the existing site origin.
+[[routes]]
+pattern = "tinyrustlm.com/api/memoryendpoints/*"
+zone_name = "tinyrustlm.com"
+
+[[routes]]
+pattern = "www.tinyrustlm.com/api/memoryendpoints/*"
+zone_name = "tinyrustlm.com"
+
+[vars]
+MEMORYENDPOINTS_BASE_URL = "https://memoryendpoints.com"

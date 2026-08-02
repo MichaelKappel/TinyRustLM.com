@@ -1,0 +1,130 @@
+{
+  "schema": "tinyrustlm.exact_flat_browser_wasm_preregistration.v2",
+  "experimentId": "exact-flat-browser-wasm-direct-tests-20260722",
+  "registeredAtUtc": "2026-07-22T02:41:19.5948524Z",
+  "status": "supersedes-v1-before-browser-results",
+  "supersedes": {
+    "path": "tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-preregistration.v1.json",
+    "sha256": "e9ed2d13d975689184d53e4a55cd774fed449cca99372d1e9afc40284569b330",
+    "sourceRevision": "a012b9003dc4cc9040733609a2616440d188af9c",
+    "disposition": "unsafe-symbol-export-boundary-rejected-before-execution",
+    "browserResultsObserved": false
+  },
+  "parentReceipt": {
+    "path": "tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-verification-v1.json",
+    "receiptId": "exact-flat-retrieval-75f95baa316315ea",
+    "sha256": "893e96f461f701f46a3aaaeecddd67bc2b700625ccdb9f0d83ce4b0b67d8c18c"
+  },
+  "execution": {
+    "nativeCommand": [
+      "cargo",
+      "test",
+      "-p",
+      "tinyrustlm-vector-oracle"
+    ],
+    "wasmBuildCommand": [
+      "cargo",
+      "test",
+      "-p",
+      "tinyrustlm-vector-oracle",
+      "--target",
+      "wasm32-unknown-unknown",
+      "--no-run"
+    ],
+    "wasmModules": [
+      {
+        "role": "unit",
+        "filePattern": "tinyrustlm_vector_oracle-*.wasm",
+        "expectedTestCount": 40
+      },
+      {
+        "role": "exact-flat-black-box",
+        "filePattern": "flat_index_test-*.wasm",
+        "expectedTestCount": 8
+      },
+      {
+        "role": "clean-room-conformance",
+        "filePattern": "lib_test-*.wasm",
+        "expectedTestCount": 1
+      }
+    ],
+    "browserEngine": "chromium",
+    "playwrightPackage": "@playwright/test",
+    "browserMode": "headless-real-process",
+    "profileLifecycle": "owned-persistent-fresh-delete-verify-v1",
+    "requiredIndependentRuns": 2,
+    "networkPolicy": "deny-all",
+    "pageOrigin": "about:blank",
+    "browserTimeoutMs": 120000
+  },
+  "wasmAbi": {
+    "requiredExports": [
+      {
+        "name": "memory",
+        "kind": "memory"
+      },
+      {
+        "name": "main",
+        "kind": "function"
+      },
+      {
+        "name": "__data_end",
+        "kind": "global"
+      },
+      {
+        "name": "__heap_base",
+        "kind": "global"
+      }
+    ],
+    "importsAllowed": false,
+    "entryPoint": "main",
+    "requiredReturnCode": 0,
+    "moduleMinimumBytes": 1048576,
+    "moduleMaximumBytes": 8388608
+  },
+  "acceptance": {
+    "actualBrowserProcessRequired": true,
+    "browserExecutableSha256Required": true,
+    "browserVersionRequired": true,
+    "playwrightVersionRequired": true,
+    "rustcVersionRequired": true,
+    "cargoVersionRequired": true,
+    "wasmModuleSha256Required": true,
+    "exactThreeModuleSetRequired": true,
+    "unchangedReceiptBoundTestSourcesRequired": true,
+    "nativeSuitePassRequired": true,
+    "browserEntryReturnCodeRequired": true,
+    "crossRunModuleIdentityEqualityRequired": true,
+    "networkRequestMaximum": 0,
+    "consoleErrorMaximum": 0,
+    "pageErrorMaximum": 0,
+    "profileDeletionRequiredForEveryRun": true,
+    "strictClippyRequired": true,
+    "rustdocRequired": true,
+    "receiptInputRevalidationRequired": true
+  },
+  "evidencePolicy": {
+    "attemptsAreImmutable": true,
+    "failedAttemptsArePreserved": true,
+    "attemptDirectory": "tinyrustlm/experiments/vector-quantization/browser-wasm-attempts/sha256",
+    "successfulObservationPath": "tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-observation-v1.json",
+    "verificationReceiptPath": "tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-verification-v1.json",
+    "rawBrowserProfilePersisted": false,
+    "screenshotsRequired": false,
+    "privateAbsolutePathsAllowed": false,
+    "credentialsAllowed": false,
+    "modelBytesAllowed": false,
+    "promptTextAllowed": false
+  },
+  "authority": {
+    "realBrowserWasmExecutionMayBeVerified": true,
+    "nativePerformanceMayBeClaimed": false,
+    "browserPerformanceMayBeClaimed": false,
+    "compressionMayBeClaimed": false,
+    "turboVecParityMayBeClaimed": false,
+    "productIntegrationMayBeClaimed": false,
+    "trainingMayBeAuthorized": false,
+    "releaseMayBeAuthorized": false
+  },
+  "requiredNextGate": "After direct browser execution passes, preregister named physical-target measurements, a sealed representative retrieval corpus, and crash-recovered durable deletion before selecting any compressed comparison arm."
+}

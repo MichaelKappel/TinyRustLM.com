@@ -1,0 +1,100 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "Qwen/Qwen2.5-1.5B-Instruct",
+  "sourceRevision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+  "sourceModelArtifactSha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+  "sourceScreenSha256": "d47087f6d34f6a839ca00ba9a58a16008b024f97be5459a08a19dd7b9416c844",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "qwen2-dense-full-attention-gqa-head-dim-128",
+  "runtimeAdmission": "qwen2-runtime-supported-source-quality-rejected",
+  "licenseDisposition": "apache-2.0-source-review-complete",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": [
+    "answer-incomplete",
+    "underspecified-choice-missing-options",
+    "underspecified-choice-missing-decision-criteria",
+    "practical-decision-underdeveloped",
+    "unavailable-resource-ignored",
+    "feasible-fallback-absent",
+    "source-conflict-unresolved",
+    "authority-resolution-underdeveloped",
+    "adult-comparison-one-sided",
+    "stale-memory-content-misread",
+    "latest-user-precedence-not-demonstrated"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "underspecified-choice-missing-options",
+        "underspecified-choice-missing-decision-criteria"
+      ]
+    },
+    {
+      "index": 2,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "practical-decision-underdeveloped"
+      ]
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "unavailable-resource-ignored",
+        "feasible-fallback-absent"
+      ]
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "source-conflict-unresolved",
+        "authority-resolution-underdeveloped",
+        "plan-date-not-provided"
+      ]
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "adult-comparison-one-sided"
+      ]
+    },
+    {
+      "index": 6,
+      "status": "fail",
+      "failureCodes": [
+        "answer-incomplete",
+        "stale-memory-content-misread",
+        "latest-user-precedence-not-demonstrated"
+      ]
+    },
+    {
+      "index": 7,
+      "status": "pass",
+      "failureCodes": []
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct/tree/989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+    "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct/blob/989aa7980e4cf806f80c7fef2b1adb7bc71aa306/README.md",
+    "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct/blob/989aa7980e4cf806f80c7fef2b1adb7bc71aa306/LICENSE",
+    "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct/blob/989aa7980e4cf806f80c7fef2b1adb7bc71aa306/config.json",
+    "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct/blob/989aa7980e4cf806f80c7fef2b1adb7bc71aa306/generation_config.json",
+    "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct/blob/989aa7980e4cf806f80c7fef2b1adb7bc71aa306/tokenizer_config.json",
+    "https://qwenlm.github.io/blog/qwen2.5/",
+    "https://arxiv.org/abs/2407.10671"
+  ]
+}

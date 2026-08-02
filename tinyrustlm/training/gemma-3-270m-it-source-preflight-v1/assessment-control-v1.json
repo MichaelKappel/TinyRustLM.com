@@ -1,0 +1,70 @@
+{
+  "schema": "tinyrustlm.source_model_preflight_assessment.v1",
+  "sourceModelId": "google/gemma-3-270m-it",
+  "sourceRevision": "ac82b4e820549b854eebf28ce6dedaf9fdfa17b3",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-preflight-v1",
+  "architectureFamily": "gemma3-270m-public-model-card-declared",
+  "runtimeAdmission": "not-assessed-preflight-rejected",
+  "accessDisposition": "gated-user-license-acknowledgement-and-credential-required",
+  "licenseId": "gemma",
+  "licenseDisposition": "custom-gemma-terms-product-policy-conflict",
+  "distributionDisposition": "p2p-redistribution-contract-incompatible",
+  "blockerCode": "candidate_source_policy_contract_rejected",
+  "rejectionCodes": [
+    "custom-license-product-policy-conflict",
+    "gated-acquisition-authorization-absent",
+    "p2p-redistribution-contract-incompatible"
+  ],
+  "missingRequiredArtifacts": [
+    "added_tokens.json",
+    "chat_template.jinja",
+    "config.json",
+    "generation_config.json",
+    "model.safetensors",
+    "special_tokens_map.json",
+    "tokenizer.json",
+    "tokenizer.model",
+    "tokenizer_config.json"
+  ],
+  "evidenceArtifacts": [
+    {
+      "kind": "model-card",
+      "fileName": "model-card.md",
+      "byteCount": 28308,
+      "sha256": "9568b09f2a80d09746687bc077aefe9a070948c68d5f1af07007b2da9a70a065",
+      "publicUrl": "https://huggingface.co/google/gemma-3-270m-it/blob/ac82b4e820549b854eebf28ce6dedaf9fdfa17b3/README.md",
+      "observedAtUtc": "2026-07-16T17:11:56.737Z"
+    },
+    {
+      "kind": "prohibited-use-policy",
+      "fileName": "gemma-prohibited-use-policy-2026-07-16.md.txt",
+      "byteCount": 3851,
+      "sha256": "574fec39e0c7e5ec4a8cb2d645475d278791a9f11c0fe7569cd15199f3b99f6a",
+      "publicUrl": "https://ai.google.dev/gemma/prohibited_use_policy.md.txt",
+      "observedAtUtc": "2026-07-16T17:11:56.737Z"
+    },
+    {
+      "kind": "repository-tree",
+      "fileName": "repository-tree.json",
+      "byteCount": 1826,
+      "sha256": "04466f85df5d8be2ab0ec3456d7f573e97babff725da11fabd917ed7356d6e7f",
+      "publicUrl": "https://huggingface.co/google/gemma-3-270m-it/tree/ac82b4e820549b854eebf28ce6dedaf9fdfa17b3",
+      "observedAtUtc": "2026-07-16T17:11:56.737Z"
+    },
+    {
+      "kind": "terms-of-use",
+      "fileName": "gemma-terms-2026-07-16.md.txt",
+      "byteCount": 10541,
+      "sha256": "e77acc0d3163bb7534675045c584b4d04b387b529239fc4b3647da0a01ba4745",
+      "publicUrl": "https://ai.google.dev/gemma/terms.md.txt",
+      "observedAtUtc": "2026-07-16T17:11:56.737Z"
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/google/gemma-3-270m-it/tree/ac82b4e820549b854eebf28ce6dedaf9fdfa17b3",
+    "https://huggingface.co/google/gemma-3-270m-it/blob/ac82b4e820549b854eebf28ce6dedaf9fdfa17b3/README.md",
+    "https://ai.google.dev/gemma/terms",
+    "https://ai.google.dev/gemma/prohibited_use_policy"
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "schema": "tinyrustlm.source_model_preflight_assessment.v2",
+  "sourceModelId": "hiep-2/qwen3-0.6b-math-cpt-sft",
+  "sourceRevision": "a9c384e49708536920a8c05320df77b7054797bb",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-preflight-v2",
+  "architectureFamily": "qwen3-dense-gqa-tied",
+  "runtimeAdmission": "not-assessed-preflight-rejected",
+  "accessDisposition": "public-ungated-metadata-only-no-source-acquisition",
+  "licenseId": "apache-2.0",
+  "licenseDisposition": "apache-2.0-card-declaration-no-bundled-license-review-required",
+  "distributionDisposition": "not-assessed-preflight-rejected",
+  "blockerCode": "candidate_source_provenance_contract_rejected",
+  "rejectionCodes": [
+    "publisher-training-corpus-identity-absent",
+    "publisher-training-recipe-identity-absent",
+    "source-lineage-quantized-intermediate-only",
+    "source-screen-provenance-contract-incomplete"
+  ],
+  "missingRequiredArtifacts": [
+    "model.safetensors",
+    "training-corpus-manifest.json",
+    "training-recipe.json"
+  ],
+  "evidenceArtifacts": [
+    {
+      "kind": "config",
+      "fileName": "config.json",
+      "byteCount": 1630,
+      "sha256": "7733a69bd7cb075b769f8ba2ef00afe30c7f8e9b19069b753b70580f72794d99",
+      "publicUrl": "https://huggingface.co/hiep-2/qwen3-0.6b-math-cpt-sft/blob/a9c384e49708536920a8c05320df77b7054797bb/config.json",
+      "observedAtUtc": "2026-07-18T18:39:15.716Z"
+    },
+    {
+      "kind": "license",
+      "fileName": "apache-2.0.txt",
+      "byteCount": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "publicUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "observedAtUtc": "2026-07-18T18:39:15.716Z"
+    },
+    {
+      "kind": "model-card",
+      "fileName": "model-card.md",
+      "byteCount": 593,
+      "sha256": "857e79e5b1a30342a295f62c5325e0b418c3fa778d88250c5c54ed7a6c454f2e",
+      "publicUrl": "https://huggingface.co/hiep-2/qwen3-0.6b-math-cpt-sft/blob/a9c384e49708536920a8c05320df77b7054797bb/README.md",
+      "observedAtUtc": "2026-07-18T18:39:15.716Z"
+    },
+    {
+      "kind": "repository-metadata",
+      "fileName": "repository-metadata.json",
+      "byteCount": 12616,
+      "sha256": "2889085f80e5bd2f78b283cfa47a36e895d5119d9a93fa1c264b3ce5191e2237",
+      "publicUrl": "https://huggingface.co/api/models/hiep-2/qwen3-0.6b-math-cpt-sft/revision/a9c384e49708536920a8c05320df77b7054797bb?blobs=true",
+      "observedAtUtc": "2026-07-18T18:39:15.716Z"
+    },
+    {
+      "kind": "repository-tree",
+      "fileName": "repository-tree.json",
+      "byteCount": 1219,
+      "sha256": "dfc02c7937ba2df2b798d9b719cfba09919cbe63b9949d89c1ccfcbdeb1d5332",
+      "publicUrl": "https://huggingface.co/api/models/hiep-2/qwen3-0.6b-math-cpt-sft/tree/a9c384e49708536920a8c05320df77b7054797bb?recursive=true&expand=false",
+      "observedAtUtc": "2026-07-18T18:39:15.716Z"
+    },
+    {
+      "kind": "tokenizer-config",
+      "fileName": "tokenizer-config.json",
+      "byteCount": 10234,
+      "sha256": "f0ab261ba76064e3ea8af3df1cde9b22b5e5c2450f0cc7d0fd737bdab6f619cf",
+      "publicUrl": "https://huggingface.co/hiep-2/qwen3-0.6b-math-cpt-sft/blob/a9c384e49708536920a8c05320df77b7054797bb/tokenizer_config.json",
+      "observedAtUtc": "2026-07-18T18:39:15.716Z"
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/hiep-2/qwen3-0.6b-math-cpt-sft/tree/a9c384e49708536920a8c05320df77b7054797bb",
+    "https://huggingface.co/hiep-2/qwen3-0.6b-math-cpt-sft/blob/a9c384e49708536920a8c05320df77b7054797bb/README.md",
+    "https://huggingface.co/hiep-2/qwen3-0.6b-math-cpt-sft/blob/a9c384e49708536920a8c05320df77b7054797bb/config.json",
+    "https://huggingface.co/hiep-2/qwen3-0.6b-math-cpt-sft/blob/a9c384e49708536920a8c05320df77b7054797bb/tokenizer_config.json",
+    "https://huggingface.co/api/models/hiep-2/qwen3-0.6b-math-cpt-sft/revision/a9c384e49708536920a8c05320df77b7054797bb?blobs=true",
+    "https://huggingface.co/api/models/hiep-2/qwen3-0.6b-math-cpt-sft/tree/a9c384e49708536920a8c05320df77b7054797bb?recursive=true&expand=false",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ],
+  "sourceAcquisitionStatus": "not-acquired",
+  "sourceWeightArtifacts": []
+}

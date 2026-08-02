@@ -1,0 +1,38 @@
+profile: runtime-mirust.receiver-brief.v13
+updated_utc: 2026-06-29T01:39:45Z
+brief: Runtime.MiRust.com now contains TinyRustLM, a zero-dependency Rust/WASM browser-local SLM runtime and UI with ADP1/ASP1/ALR1 runtime adapter validation and apply, Rust-owned runtime assembly diagnostics, browser-routed ADP1/ASP1/ALR1 adapter-family stacks with pre-WASM full-stack byte preflight plus Rust semantic validation before apply, browser-verified module-plan receipts with `browser-constrained-v1` profile, `single-threaded-wasm-local-v1` execution profile, `local-no-store-v1` fetch policy, `same-origin-loopback-local-v1` origin policy, and `module_plan_adapter_validation_strategy=rust-validate-before-apply-v1`, assembly traces, eval-case evidence checksum display, assembly eval-digest proof, fetched evidence-file integrity proof, generated q4/q8/f32 selector roots, and route-soak proof for generated self-assembly routes. Model Breeding routes through durable research, report synthesis, short-term routes, checksum pointers, and concept lanes for heritable artifacts, mate selection, phenotype evidence, and local fit until source and tests prove concrete runtime support.
+must_read:
+  - AGENTS.md
+  - workspace.uai
+  - .uai/workspace-guidance.uai
+  - .uai/file-handoff.uai
+  - .uai/long-term-memory.uai
+  - .uai/test-plan.uai
+  - .uai/report-synthesis.uai
+  - .uai/taboo.uai
+  - tinyrustlm/README.md
+  - wiki/runtime-mirust/reports/report-intake-index-2026-06-25.md
+  - wiki/runtime-mirust/reports/report-intake-index-2026-06-26.md
+  - wiki/runtime-mirust/reports/model-breeding-ecology-memory-2026-06-26.md
+  - wiki/runtime-mirust/research/model-breeding-reference-ideas-2026-06-26.md
+  - docs/dogfood/uaix-file-handoff-memory-strategy-2026-06-26.md
+  - wiki/runtime-mirust/reports/low-rank-adapter-package-memory-2026-06-28.md
+  - wiki/runtime-mirust/reports/browser-assembly-trace-memory-2026-06-28.md
+  - wiki/runtime-mirust/reports/browser-eval-case-evidence-checksum-memory-2026-06-28.md
+  - wiki/runtime-mirust/reports/browser-assembly-eval-case-drift-memory-2026-06-28.md
+  - wiki/runtime-mirust/reports/browser-assembly-evidence-file-drift-memory-2026-06-28.md
+  - wiki/runtime-mirust/reports/browser-adapter-stack-prefetch-drift-memory-2026-06-28.md
+  - wiki/runtime-mirust/reports/browser-adapter-stack-rust-validate-memory-2026-06-28.md
+  - wiki/runtime-mirust/reports/browser-runtime-assembly-diagnostics-memory-2026-06-28.md
+  - wiki/runtime-mirust/reports/browser-combined-selector-route-soak-memory-2026-06-28.md
+  - wiki/runtime-mirust/reports/browser-module-plan-fetch-policy-memory-2026-06-28.md
+  - wiki/runtime-mirust/reports/browser-module-plan-origin-policy-memory-2026-06-28.md
+  - wiki/runtime-mirust/reports/browser-module-plan-profile-memory-2026-06-28.md
+  - wiki/runtime-mirust/reports/browser-module-plan-adapter-validation-memory-2026-06-29.md
+  - wiki/runtime-mirust/reports/browser-module-plan-adapter-apply-count-memory-2026-06-29.md
+do_not:
+  - Create agent-file-handoff/Archive/ as default memory.
+  - Store durable reports inside .uai/long-term-memory.uai.
+  - Claim trained-quality model behavior, GGUF import, Mini Browser automation, WebGPU acceleration, or remote inference support from report memory alone.
+  - Store report bodies in .uai/short-term-memory.uai; it should route to durable report/research nodes and the long-term pointer ledger.
+  - Claim trained LoRA support, broader adapter formats, or population training until implementation and tests exist.

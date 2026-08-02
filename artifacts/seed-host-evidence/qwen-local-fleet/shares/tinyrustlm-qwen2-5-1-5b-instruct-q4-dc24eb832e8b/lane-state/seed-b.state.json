@@ -1,0 +1,37 @@
+{
+  "artifact": {
+    "sha256": "sha256:dc24eb832e8bd2257a9891e4c88df9ab7b1d24ee92d3f644cd98f340417b75bc"
+  },
+  "boundary": {
+    "peer_piece_bytes_in_state": false,
+    "project_server_proxies_model_bytes": false,
+    "project_server_runs_model_bytes": false,
+    "project_server_serves_model_bytes": false,
+    "tinyrustlm_import_gate": "user-selected-local-slm-after-rust-receipt",
+    "user_run_local_software": true
+  },
+  "commands": {
+    "serve_peer_companion": "minimodel serve-peer-companion <state-json> <manifest> <piece-dir> <bind-addr>",
+    "serve_peer_pieces": "minimodel serve-peer-pieces <manifest> <piece-dir> <bind-addr>",
+    "write_peer_source_announcement": "minimodel write-peer-source-announcement <catalog-entry-json> <announcement-json> <known-peer-base-url>"
+  },
+  "consent_status": "operator-reviewed-consenting-peer",
+  "created_utc": "2026-07-13T20:18:33Z",
+  "manifest": {
+    "path_hint": "qwen2.5-1.5b-instruct-q4.minimodel.manifest.v0",
+    "sha256": "sha256:28afdf52de64d7878d99917500856e2a0de02d95a433d95b171130e02b023b4f"
+  },
+  "model_id": "tinyrustlm/qwen2.5-1.5b-instruct-q4",
+  "peer_base_url": "http://127.0.0.1:18472/models/qwen/",
+  "pieces": {
+    "directory_hint": "qwen2.5-1.5b-instruct-q4.peer-pieces",
+    "merkle_root_sha256": "sha256:d8fda1607b9c9ec19ac08ce70032d6cb056691f48a5e44b97f249a89282f27b5",
+    "piece_count": 925,
+    "piece_set_path_hint": "minimodel.peer_piece_set.v0",
+    "piece_set_sha256": "sha256:95b8376d31695eedc20f5bcc15a4e0fe6f2bdd378d0dbc7c62fec7101970a5fa"
+  },
+  "share_status": "ready-to-serve",
+  "state_kind": "minimodel.peer_companion_state",
+  "state_version": 0,
+  "transfer_protocol": "direct-http-piece-server-v0"
+}

@@ -1,0 +1,134 @@
+{
+  "schema": "tinyrustlm.exact_flat_retrieval_preregistration.v1",
+  "experimentId": "exact-flat-f32-baseline-20260722",
+  "registeredAtUtc": "2026-07-22T01:55:40.451Z",
+  "status": "preregistered-before-results",
+  "storageLane": "embedding-index",
+  "productAuthority": false,
+  "trainingAuthority": false,
+  "normativeSourceIds": [
+    "nist-fips-180-4-2015"
+  ],
+  "format": {
+    "name": "tinyrustlm-exact-flat-f32-v1",
+    "magicAscii": "TRFLAT01",
+    "version": 1,
+    "headerBytes": 248,
+    "recordPrefixBytes": 16,
+    "footerBytes": 32,
+    "byteOrder": "little-endian",
+    "recordOrder": "external-id-ascending",
+    "vectorEncoding": "f32",
+    "footerIntegrity": "sha256-fips-180-4",
+    "externalArtifactIdentity": "sha256-required",
+    "storesPayloadText": false
+  },
+  "identityFields": [
+    "format-version",
+    "embedding-model-sha256",
+    "tokenizer-sha256",
+    "normalization",
+    "metric",
+    "dimension",
+    "transform-family",
+    "transform-seed",
+    "vector-encoding",
+    "codebook-sha256",
+    "calibration-policy",
+    "calibration-sha256",
+    "implementation-sha256",
+    "record-set-revision"
+  ],
+  "pipeline": [
+    "validate-finite-f32",
+    "canonicalize-negative-zero",
+    "optional-l2-normalize-in-f64",
+    "optional-seeded-orthogonal-transform-in-f64",
+    "canonicalize-stored-f32",
+    "scan-in-external-id-order",
+    "accumulate-scores-in-f64",
+    "rank-by-metric-then-external-id"
+  ],
+  "limits": {
+    "maximumDimension": 1048576,
+    "maximumRecords": 1000000,
+    "maximumSerializedBytes": 268435456,
+    "maximumSearchResults": 100000
+  },
+  "testMatrix": {
+    "dimensions": [
+      1,
+      3,
+      4,
+      7,
+      8,
+      31,
+      32
+    ],
+    "metrics": [
+      "dot-product",
+      "squared-euclidean",
+      "cosine"
+    ],
+    "normalizations": [
+      "none",
+      "l2-unit"
+    ],
+    "transforms": [
+      "none",
+      "signed-permutation-v1",
+      "signed-normalized-hadamard-v1"
+    ],
+    "corpora": [
+      "normalized",
+      "unnormalized",
+      "sparse",
+      "anisotropic",
+      "outliers",
+      "duplicate-vectors",
+      "near-ties",
+      "distribution-drift"
+    ],
+    "lifecycleCases": [
+      "build-order",
+      "filtered-search",
+      "duplicate-id",
+      "empty-index",
+      "tombstone",
+      "compaction",
+      "restart",
+      "corruption",
+      "truncation",
+      "oversized-count",
+      "unknown-field"
+    ]
+  },
+  "acceptance": {
+    "canonicalBytesOrderInvariant": true,
+    "nativeScoreAbsoluteTolerance": 0,
+    "nativeRankParityRequired": true,
+    "exactRecallMinimum": 1,
+    "filteredSearchRequired": true,
+    "duplicateIdRejectionRequired": true,
+    "tombstoneSearchExclusionRequired": true,
+    "compactionVectorRemovalRequired": true,
+    "restartByteEqualityRequired": true,
+    "corruptionDetectionRequired": true,
+    "truncationDetectionRequired": true,
+    "boundedAllocationRequired": true,
+    "wasmCompileRequired": true,
+    "wasmExecutionRequiredBeforePromotion": true,
+    "latencyClaimAllowed": false,
+    "compressionClaimAllowed": false,
+    "turboVecParityClaimAllowed": false,
+    "productIntegrationClaimAllowed": false
+  },
+  "privacy": {
+    "rawConversationAccepted": false,
+    "payloadTextAccepted": false,
+    "searchReturnsExternalIdsAndScoresOnly": true,
+    "retrievedContentAuthority": "untrusted-data-only",
+    "durableConsentRequiredByFutureProductIntegration": true
+  },
+  "requiredNextGate": "Pass deterministic native scalar persistence and exact-search tests, then obtain real WASM execution, independent retrieval corpora, deletion proof, and preregistered target-hardware measurements before any parity, speed, compression, or product claim."
+}

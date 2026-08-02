@@ -1,0 +1,6 @@
+Options -Indexes
+AddType text/plain .uai
+
+<FilesMatch ".+">
+  Require all denied
+</FilesMatch>
