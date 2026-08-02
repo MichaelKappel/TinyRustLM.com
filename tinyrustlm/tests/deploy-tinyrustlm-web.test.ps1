@@ -129,12 +129,12 @@ try {
         $rootParts.parent -eq "" -and $rootParts.leaf -eq ".htaccess"
     ) "Root remote path splitting changed."
     $nestedParts = Get-RemoteFilePathParts `
-        -RemotePath "app/models/policy-0123456789ab/marker.json"
+        -RemotePath "app/models/policy-0123456789ab.json"
     Assert-True (
-        $nestedParts.parent -eq "app/models/policy-0123456789ab" -and
-        $nestedParts.leaf -eq "marker.json" -and
+        $nestedParts.parent -eq "app/models" -and
+        $nestedParts.leaf -eq "policy-0123456789ab.json" -and
         -not $nestedParts.parent.Contains("\")
-    ) "Nested remote path acquired local filesystem separators."
+    ) "Model-directory probe path acquired an extra subtree or local separators."
     foreach ($invalidRemotePath in @(
         ""
         "/absolute.txt"
@@ -571,6 +571,7 @@ try {
         }
     }
     $global:FakeRemoteObjects = @{}
+    $global:EnsuredRemoteDirectories = [Collections.Generic.List[string]]::new()
     $global:FailPromotionRename = $false
     $global:FailPublicHostPolicy = $false
     function global:Get-RemoteSize {
@@ -653,6 +654,7 @@ try {
     }
     function global:Ensure-RemoteDirectory {
         param([string]$RemotePath)
+        $global:EnsuredRemoteDirectories.Add($RemotePath)
     }
     function global:Remove-RemoteDirectory {
         param([string]$RemotePath)
@@ -690,18 +692,24 @@ try {
         Assert-Throws {
             Invoke-PublicHostPolicyProbes -Kinds @(
                 "stage"
-                "models-directory"
+                "model-directory"
             ) | Out-Null
         } "simulated nested policy write failure"
         Assert-True (
             $script:lastPublicHostPolicyProbeEvidence.status -eq "fail" -and
             $script:lastPublicHostPolicyProbeEvidence.completed_probe_count -eq 1 -and
-            $script:lastPublicHostPolicyProbeEvidence.failed_probe_kind -eq "models-directory" -and
+            $script:lastPublicHostPolicyProbeEvidence.failed_probe_kind -eq "model-directory" -and
             $script:lastPublicHostPolicyProbeEvidence.failed_probe_step -eq "marker-write" -and
             $script:lastPublicHostPolicyProbeEvidence.failed_operation_error_identity -eq
                 "System.Management.Automation.RuntimeException" -and
             $script:lastPublicHostPolicyProbeEvidence.authenticated_cleanup_verified
         ) "Pre-HTTP policy failure was not retained as a bounded failed probe."
+        Assert-True (
+            @($global:EnsuredRemoteDirectories | Where-Object {
+                $_.StartsWith("app/models/", [StringComparison]::Ordinal)
+            }).Count -eq 0 -and
+            $global:EnsuredRemoteDirectories.Contains("app/models")
+        ) "Model-directory policy proof attempted to create an unrelated deeper subtree."
         Assert-True (
             $global:FakeRemoteObjects.Count -eq 0
         ) "Policy failure regression left a probe object behind."
@@ -821,6 +829,7 @@ try {
             Remove-Item -LiteralPath ("Function:\global:{0}" -f $functionName) -Force
         }
         Remove-Variable -Name FakeRemoteObjects -Scope Global -ErrorAction SilentlyContinue
+        Remove-Variable -Name EnsuredRemoteDirectories -Scope Global -ErrorAction SilentlyContinue
         Remove-Variable -Name FailPromotionRename -Scope Global -ErrorAction SilentlyContinue
         Remove-Variable -Name FailPublicHostPolicy -Scope Global -ErrorAction SilentlyContinue
         Remove-Variable -Name RepositoryRoot -Scope Global -ErrorAction SilentlyContinue

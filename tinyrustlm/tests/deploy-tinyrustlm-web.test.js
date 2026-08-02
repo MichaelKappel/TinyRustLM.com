@@ -35,10 +35,10 @@ test("deployment orchestrator requires fresh readback and immutable attempt evid
   assert.doesNotMatch(source, /public_host_policy[\s\S]{0,500}probe\.path/);
   assert.match(source, /function Test-RetiredModelDirectoryClosure/);
   assert.match(source, /function Remove-RetiredModelDirectory/);
-  assert.match(source, /"models-directory"/);
+  assert.match(source, /"model-directory"/);
   assert.match(
     source,
-    /"models-directory" \{ "app\/models\/policy-\$nonce\/marker\.json" \}/
+    /"model-directory" \{ "app\/models\/policy-\$nonce\.json" \}/
   );
   assert.match(source, /--ssl-reqd/);
   assert.doesNotMatch(source, /--ftp-ssl-control/);

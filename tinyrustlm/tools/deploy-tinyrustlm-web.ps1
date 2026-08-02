@@ -980,7 +980,7 @@ function Test-HttpsMissing {
 # Probes selected public-policy route classes with harmless authenticated marker bytes.
 function Invoke-PublicHostPolicyProbes {
     param(
-        [ValidateSet("stage", "backup", "model", "models-directory")]
+        [ValidateSet("stage", "backup", "model", "model-directory")]
         [string[]]$Kinds
     )
 
@@ -1004,7 +1004,7 @@ function Invoke-PublicHostPolicyProbes {
             "stage" { "app/deploy-$nonce-stage.txt" }
             "backup" { "runtime/backup-$nonce.tmp" }
             "model" { "app/model-policy-$nonce.slm" }
-            "models-directory" { "app/models/policy-$nonce/marker.json" }
+            "model-directory" { "app/models/policy-$nonce.json" }
         }
         [pscustomobject]@{ path = $probePath; kind = $_ }
     })
@@ -1046,7 +1046,7 @@ function Invoke-PublicHostPolicyProbes {
             stage_route_hidden = $successfulKinds -contains "stage"
             backup_route_hidden = $successfulKinds -contains "backup"
             model_route_hidden = $successfulKinds -contains "model"
-            nested_model_directory_hidden = $successfulKinds -contains "models-directory"
+            model_directory_route_hidden = $successfulKinds -contains "model-directory"
             authenticated_cleanup_verified = $cleanupVerified
             owned_directory_cleanup_verified = $cleanupVerified
             observations = @($observations)
@@ -1170,7 +1170,7 @@ function Test-PublicHostPolicy {
             "stage"
             "backup"
             "model"
-            "models-directory"
+            "model-directory"
         )
     }
     catch {
