@@ -50,6 +50,30 @@
           "summary": "Expanded browser release verification to require visible, in-viewport, unclipped release facts on every published app and history view."
         }
       ]
+    },
+    {
+      "releaseId": "tinyrustlm.com@0.1.2",
+      "version": "0.1.2",
+      "releaseDate": "2026-08-02",
+      "summary": "Completes the release-readability deployment and hardens publication recovery.",
+      "changes": [
+        {
+          "type": "fixed",
+          "summary": "Completed the app and update-history surfaces left inconsistent by the interrupted 0.1.1 publication attempt."
+        },
+        {
+          "type": "fixed",
+          "summary": "Made the current-release JSON the final publication commit marker after all site content and release history."
+        },
+        {
+          "type": "fixed",
+          "summary": "Reconciled ambiguous FTPS rename responses through bounded read-only observations before rollback."
+        },
+        {
+          "type": "changed",
+          "summary": "Preserved the publicly observed 0.1.1 identity and advanced recovery as a distinct version."
+        }
+      ]
     }
   ],
   "publications": [
@@ -59,6 +83,13 @@
       "publishedAt": "2026-08-02T19:47:18.581Z",
       "sourceRevision": "7d6b9e05ec242f46ff3adc669ed422859ee21e69",
       "sourceLedgerSha256": "c264b0242632e19df4589356fd6d048d3b4d013c66faac9039638ee87966cebc"
+    },
+    {
+      "publicationId": "aa5e5cc4a32e367c617dd4ee4d425c50c2ccf017829e7c0413784e5a09ec9d07",
+      "releaseId": "tinyrustlm.com@0.1.1",
+      "publishedAt": "2026-08-02T21:04:43.725Z",
+      "sourceRevision": "4b00bd625f11dfdf49e5659a4737ad0dd2ca8727",
+      "sourceLedgerSha256": "5f65661a5b40b200d879aa083416c8c90ad626b06938fdcd4e0bdb8eefd147bd"
     }
   ]
 }

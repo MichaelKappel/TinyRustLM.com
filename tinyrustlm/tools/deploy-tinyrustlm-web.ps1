@@ -691,7 +691,30 @@ function Remove-RemoteDirectory {
     }
     return "removed"
 }
-# Renames one object within its existing remote directory.
+# Reconciles an FTPS rename whose command response and authoritative directory state may converge
+# at different times. This performs observations only; it never repeats the mutation.
+function Test-RemoteRenameCommitted {
+    param(
+        [string]$RemotePath,
+        [string]$DestinationPath,
+        [ValidateRange(1, 12)]
+        [int]$MaximumAttempts = 8
+    )
+
+    for ($attempt = 1; $attempt -le $MaximumAttempts; $attempt += 1) {
+        $sourceSize = Get-RemoteSize -RemotePath $RemotePath
+        $destinationSize = Get-RemoteSize -RemotePath $DestinationPath
+        if ($sourceSize -lt 0 -and $destinationSize -ge 0) {
+            return $true
+        }
+        if ($attempt -lt $MaximumAttempts) {
+            Start-Sleep -Milliseconds ([Math]::Min(2000, 250 * $attempt))
+        }
+    }
+    return $false
+}
+
+# Renames one object within its existing remote directory and reconciles ambiguous responses.
 function Rename-RemoteFile {
     param([string]$RemotePath, [string]$NewLeafName)
 
@@ -709,14 +732,17 @@ function Rename-RemoteFile {
         $response.Dispose()
     }
     catch {
-        if ((Get-RemoteSize -RemotePath $RemotePath) -lt 0 -and
-            (Get-RemoteSize -RemotePath $destinationPath) -ge 0) {
+        $renameFailure = $_
+        if (Test-RemoteRenameCommitted `
+            -RemotePath $RemotePath `
+            -DestinationPath $destinationPath) {
             return
         }
-        throw
+        throw $renameFailure
     }
-    if ((Get-RemoteSize -RemotePath $RemotePath) -ge 0 -or
-        (Get-RemoteSize -RemotePath $destinationPath) -lt 0) {
+    if (-not (Test-RemoteRenameCommitted `
+        -RemotePath $RemotePath `
+        -DestinationPath $destinationPath)) {
         throw "Remote rename could not be verified."
     }
 }

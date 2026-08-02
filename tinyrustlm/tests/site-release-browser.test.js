@@ -91,7 +91,7 @@ test("browser release renderer updates all visible facts without injecting marku
   const record = generatedRecord(context);
   const view = fakeDocument();
   applyReleaseRecord(view.document, record);
-  assert.equal(view.version[0].textContent, "0.1.1");
+  assert.equal(view.version[0].textContent, "0.1.2");
   assert.equal(view.date[0].textContent, "2026-08-02");
   assert.equal(view.date[0].dateTime, "2026-08-02");
   assert.equal(view.published[0].textContent, "2026-08-02 21:22 UTC");
@@ -121,14 +121,14 @@ test("bounded JSON reader requires successful nonredirected application/json", a
 
 test("failed live metadata leaves static release facts and marks last publish unavailable", async () => {
   const view = fakeDocument();
-  view.version[0].textContent = "0.1.1";
+  view.version[0].textContent = "0.1.2";
   view.date[0].textContent = "2026-08-02";
   const result = await loadAndRender({
     document: view.document,
     fetch: async () => { throw new Error("offline"); }
   });
   assert.equal(result, null);
-  assert.equal(view.version[0].textContent, "0.1.1");
+  assert.equal(view.version[0].textContent, "0.1.2");
   assert.equal(view.date[0].textContent, "2026-08-02");
   assert.equal(view.published[0].textContent, "Unavailable");
   assert.equal(view.containers[0].dataset.releaseState, "unavailable");
@@ -143,8 +143,8 @@ test("updates page is generated exactly from the release ledger and content-boun
     else fs.rmSync(outputPath, { force: true });
   });
   const result = writeUpdatesPage(siteRoot);
-  assert.equal(result.ledger.releases.length, 2);
-  assert.match(result.html, /Version <span data-release-version>0\.1\.1<\/span>/);
+  assert.equal(result.ledger.releases.length, 3);
+  assert.match(result.html, /Version <span data-release-version>0\.1\.2<\/span>/);
   assert.match(result.html, /\.well-known\/site-release-history\.json/);
   assert.doesNotMatch(result.html, /<script>[^<]/);
   assert.equal(verifyUpdatesPage(siteRoot).html, result.html);
@@ -152,12 +152,12 @@ test("updates page is generated exactly from the release ledger and content-boun
 
 test("canonical app shell exposes the exact ledger version, dates, records, and updates route", () => {
   const html = fs.readFileSync(path.join(siteRoot, "app", "index.html"), "utf8");
-  assert.match(html, /<meta name="application-version" content="0\.1\.1">/);
+  assert.match(html, /<meta name="application-version" content="0\.1\.2">/);
   assert.match(html, /<meta name="release-date" content="2026-08-02">/);
   assert.match(html, /href="\/\.well-known\/site-release\.json"/);
   assert.match(html, /href="\/\.well-known\/site-release-history\.json"/);
   assert.match(html, /href="\/updates\/" aria-label="Updates and release history"/);
-  assert.match(html, /data-release-version>0\.1\.1<\/span>/);
+  assert.match(html, /data-release-version>0\.1\.2<\/span>/);
   assert.match(html, /data-release-date datetime="2026-08-02">2026-08-02<\/time>/);
   assert.match(html, /data-release-published-at>Awaiting live verification<\/time>/);
   assert.match(html, /src="\.\/site-release\.js\?v=sha256-[a-f0-9]{64}"/);

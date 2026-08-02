@@ -56,6 +56,16 @@ test("web deployment manifest is the exact no-model publication closure", (conte
   assert.ok(paths.has("runtime/tinyrustlm-simd.wasm"));
   assert.equal(Array.from(paths).some((entry) => /\.slm(?:\.|$)/i.test(entry)), false);
   assert.deepEqual(
+    result.manifest.publish.slice(-5).map((entry) => entry.remote),
+    [
+      "updates/index.html",
+      "app/index.html",
+      "index.html",
+      ".well-known/site-release-history.json",
+      ".well-known/site-release.json"
+    ]
+  );
+  assert.deepEqual(
     result.manifest.retire.map((entry) => entry.remote).sort(),
     Array.from(retiredPublicPaths).sort()
   );
@@ -133,6 +143,23 @@ test("web deployment manifest fails closed on omitted, generated, or hosted mode
   assert.throws(
     () => validateWebDeploymentManifest({ siteRoot, manifestPath: hostedModelPath, generatedRoot }),
     /Model path cannot be published/
+  );
+
+  const earlyCommitMarkerPath = path.join(root, "early-commit-marker.json");
+  const earlyCommitMarker = structuredClone(baseline);
+  const currentReleaseIndex = earlyCommitMarker.publish.findIndex(
+    (entry) => entry.remote === ".well-known/site-release.json"
+  );
+  const [currentRelease] = earlyCommitMarker.publish.splice(currentReleaseIndex, 1);
+  earlyCommitMarker.publish.splice(-2, 0, currentRelease);
+  writeJson(earlyCommitMarkerPath, earlyCommitMarker);
+  assert.throws(
+    () => validateWebDeploymentManifest({
+      siteRoot,
+      manifestPath: earlyCommitMarkerPath,
+      generatedRoot
+    }),
+    /current-release marker|publication commit marker/i
   );
 
   const incompleteRetirementPath = path.join(root, "retirement.json");

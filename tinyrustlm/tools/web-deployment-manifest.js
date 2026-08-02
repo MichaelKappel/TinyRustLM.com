@@ -304,9 +304,15 @@ function validateWebDeploymentManifest(options = {}) {
   const orderedPaths = manifest.publish.map((entry) => entry.remote);
   invariant(orderedPaths[0] === ".htaccess", "Web deployment must publish host policy first");
   invariant(
-    JSON.stringify(orderedPaths.slice(-3)) ===
-      JSON.stringify(["updates/index.html", "app/index.html", "index.html"]),
-    "Web deployment must publish all HTML entry points last"
+    JSON.stringify(orderedPaths.slice(-5)) ===
+      JSON.stringify([
+        "updates/index.html",
+        "app/index.html",
+        "index.html",
+        generatedReleasePaths[0],
+        generatedReleasePaths[1]
+      ]),
+    "Web deployment must finish with HTML, release history, and the current-release marker"
   );
   const firstHtmlPosition = orderedPaths.indexOf("updates/index.html");
   for (const dependency of [
@@ -315,8 +321,7 @@ function validateWebDeploymentManifest(options = {}) {
     "runtime/tinyrustlm-simd.wasm",
     "runtime/tinyrustlm.wasm.manifest",
     "runtime/tinyrustlm-simd.wasm.manifest",
-    "updates/updates.css",
-    ...generatedReleasePaths
+    "updates/updates.css"
   ]) {
     invariant(
       orderedPaths.indexOf(dependency) > 0 && orderedPaths.indexOf(dependency) < firstHtmlPosition,
@@ -324,8 +329,9 @@ function validateWebDeploymentManifest(options = {}) {
     );
   }
   invariant(
-    orderedPaths.indexOf(generatedReleasePaths[0]) < orderedPaths.indexOf(generatedReleasePaths[1]),
-    "Release history must be published before the current-release pointer"
+    orderedPaths.at(-2) === generatedReleasePaths[0] &&
+      orderedPaths.at(-1) === generatedReleasePaths[1],
+    "Current-release JSON must be the final publication commit marker"
   );
 
   const hostPolicy = fs.readFileSync(

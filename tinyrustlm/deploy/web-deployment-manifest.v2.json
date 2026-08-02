@@ -90,16 +90,6 @@
       "remote": "updates/updates.css"
     },
     {
-      "source": "generated-release",
-      "local": ".well-known/site-release-history.json",
-      "remote": ".well-known/site-release-history.json"
-    },
-    {
-      "source": "generated-release",
-      "local": ".well-known/site-release.json",
-      "remote": ".well-known/site-release.json"
-    },
-    {
       "source": "source",
       "local": "updates/index.html",
       "remote": "updates/index.html"
@@ -113,6 +103,16 @@
       "source": "source",
       "local": "index.html",
       "remote": "index.html"
+    },
+    {
+      "source": "generated-release",
+      "local": ".well-known/site-release-history.json",
+      "remote": ".well-known/site-release-history.json"
+    },
+    {
+      "source": "generated-release",
+      "local": ".well-known/site-release.json",
+      "remote": ".well-known/site-release.json"
     }
   ],
   "retire": [

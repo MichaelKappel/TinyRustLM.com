@@ -77,6 +77,8 @@ Import-DeploymentFunctions -ScriptPath $deploymentScript -Names @(
     "Assert-RemoteProtocolPath"
     "Get-RemoteFilePathParts"
     "Set-ArtifactOperationState"
+    "Test-RemoteRenameCommitted"
+    "Rename-RemoteFile"
     "ConvertFrom-FtpDirectoryEntry"
     "New-CurrentUserCredentialPipe"
     "Publish-Artifact"
@@ -248,6 +250,69 @@ try {
         Remove-Variable -Name TransientSizeAttempt -Scope Global -ErrorAction SilentlyContinue
         Remove-Variable -Name TransientSizeResponse -Scope Global -ErrorAction SilentlyContinue
         Remove-Variable -Name TransientSizeRequest -Scope Global -ErrorAction SilentlyContinue
+    }
+
+    $global:RenameObservation = 0
+    $global:RenameRequest = [pscustomobject]@{ RenameTo = $null }
+    $global:RenameRequest | Add-Member -MemberType ScriptMethod -Name GetResponse -Value {
+        throw [Net.WebException]::new(
+            "simulated ambiguous rename response",
+            [Net.WebExceptionStatus]::ServerProtocolViolation
+        )
+    }
+    function global:New-FtpRequest {
+        param([string]$RemotePath, [string]$Method)
+        return $global:RenameRequest
+    }
+    function global:Get-RemoteSize {
+        param([string]$RemotePath)
+        if ($RemotePath -eq "app/deploy-late-stage.slm") {
+            $global:RenameObservation += 1
+            if ($global:RenameObservation -lt 3) { return [int64]41 }
+            return [int64]-1
+        }
+        if ($RemotePath -eq "app/release.js") {
+            if ($global:RenameObservation -lt 3) { return [int64]-1 }
+            return [int64]41
+        }
+        return [int64]-1
+    }
+    function global:Start-Sleep {
+        param([int]$Milliseconds)
+    }
+    try {
+        Rename-RemoteFile `
+            -RemotePath "app/deploy-late-stage.slm" `
+            -NewLeafName "release.js"
+        Assert-True (
+            $global:RenameObservation -eq 3 -and
+            $global:RenameRequest.RenameTo -eq "release.js"
+        ) "An ambiguous committed rename was not reconciled without repeating the mutation."
+
+        $global:RenameObservation = 0
+        function global:Get-RemoteSize {
+            param([string]$RemotePath)
+            if ($RemotePath -eq "app/deploy-late-stage.slm") {
+                $global:RenameObservation += 1
+                return [int64]41
+            }
+            return [int64]-1
+        }
+        Assert-Throws {
+            Rename-RemoteFile `
+                -RemotePath "app/deploy-late-stage.slm" `
+                -NewLeafName "release.js"
+        } "simulated ambiguous rename response"
+        Assert-True (
+            $global:RenameObservation -eq 8
+        ) "An uncommitted rename escaped its bounded reconciliation window."
+    }
+    finally {
+        Remove-Item -LiteralPath Function:\global:New-FtpRequest -Force
+        Remove-Item -LiteralPath Function:\global:Get-RemoteSize -Force
+        Remove-Item -LiteralPath Function:\global:Start-Sleep -Force
+        Remove-Variable -Name RenameObservation -Scope Global -ErrorAction SilentlyContinue
+        Remove-Variable -Name RenameRequest -Scope Global -ErrorAction SilentlyContinue
     }
 
     $pipe = New-CurrentUserCredentialPipe -Name (
