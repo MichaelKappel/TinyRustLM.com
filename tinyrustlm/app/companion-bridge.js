@@ -8,7 +8,7 @@
   "use strict";
 
   const DEFAULT_ENDPOINT = "http://127.0.0.1:43127/";
-  const PROTOCOL_VERSION = "1";
+  const PROTOCOL_VERSION = "2";
   const PROTOCOL_HEADER = "X-TinyRustLM-Bridge-Version";
   const CAPABILITY_HEADER = "X-TinyRustLM-Bridge-Capability";
   const REQUEST_ID_HEADER = "X-TinyRustLM-Bridge-Request-Id";
@@ -17,6 +17,7 @@
   const MAXIMUM_MANIFEST_BYTES = 4 * 1024 * 1024;
   const MAXIMUM_PEER_REQUEST_BYTES = 256 * 1024;
   const MAXIMUM_MODEL_STREAM_BYTES = 1024 * 1024 * 1024;
+  const MAXIMUM_COMPOSITION_STREAM_BYTES = 512 * 1024 * 1024;
   const MINIMUM_MODEL_STREAM_TIMEOUT_MILLISECONDS = 2 * 60 * 1000;
   const MAXIMUM_MODEL_STREAM_TIMEOUT_MILLISECONDS = 20 * 60 * 1000;
   const MODEL_STREAM_STARTUP_ALLOWANCE_MILLISECONDS = 30 * 1000;
@@ -28,9 +29,14 @@
     "imports_create",
     "imports_read",
     "imports_cancel",
+    "conversions_create",
+    "conversions_read",
+    "conversions_cancel",
     "models_stream"
   ]);
-  const operationIdPattern = /^import-[0-9a-f]{64}$/;
+  const operationIdPattern = /^(?:import|conversion)-[0-9a-f]{64}$/;
+  const importOperationIdPattern = /^import-[0-9a-f]{64}$/;
+  const conversionOperationIdPattern = /^conversion-[0-9a-f]{64}$/;
   const privateState = new WeakMap();
 
   class CompanionBridgeError extends Error {
@@ -58,7 +64,7 @@
         typeof window === "object" &&
         typeof BroadcastChannel === "function"
       ) {
-        channel = new BroadcastChannel("tinyrustlm-companion-bridge-v1");
+        channel = new BroadcastChannel("tinyrustlm-companion-bridge-v2");
         ownsChannel = true;
       }
       privateState.set(this, {
@@ -97,14 +103,14 @@
     }
 
     async detect(options) {
-      const value = await requestJson(this, "/v1/health", {
+      const value = await requestJson(this, "/v2/health", {
         method: "GET",
         authenticated: false,
         signal: options && options.signal
       });
       if (
         !value ||
-        value.service !== "tinyrustlm-seed-host-bridge" ||
+        value.service !== "tinyrustlm-companion-bridge" ||
         Number(value.protocol_version) !== Number(PROTOCOL_VERSION)
       ) {
         throw new CompanionBridgeError(
@@ -123,7 +129,7 @@
     async pair(code, requestedScopes, options) {
       const pairingCode = requireText(code, "pairing code", 1024);
       const scopes = normalizeScopes(requestedScopes || DEFAULT_SCOPES);
-      const value = await requestJson(this, "/v1/pair", {
+      const value = await requestJson(this, "/v2/pair", {
         method: "POST",
         authenticated: false,
         body: {
@@ -160,7 +166,7 @@
     }
 
     async status(options) {
-      const value = await requestJson(this, "/v1/status", {
+      const value = await requestJson(this, "/v2/status", {
         method: "GET",
         signal: options && options.signal
       });
@@ -169,7 +175,7 @@
     }
 
     async listModels(options) {
-      const value = await requestJson(this, "/v1/models", {
+      const value = await requestJson(this, "/v2/models", {
         method: "GET",
         signal: options && options.signal
       });
@@ -194,7 +200,7 @@
       const requests = peerImportRequests.map((value) =>
         requireUtf8Text(value, "peer import request", MAXIMUM_PEER_REQUEST_BYTES)
       );
-      return requestJson(this, "/v1/imports", {
+      return requestJson(this, "/v2/imports", {
         method: "POST",
         mutation: true,
         body: {
@@ -206,16 +212,51 @@
     }
 
     async getImport(operationId, options) {
-      const id = requireOperationId(operationId);
-      return requestJson(this, `/v1/imports/${id}`, {
+      const id = requireImportOperationId(operationId);
+      return requestJson(this, `/v2/imports/${id}`, {
         method: "GET",
         signal: options && options.signal
       });
     }
 
     async cancelImport(operationId, options) {
-      const id = requireOperationId(operationId);
-      return requestJson(this, `/v1/imports/${id}/cancel`, {
+      const id = requireImportOperationId(operationId);
+      return requestJson(this, `/v2/imports/${id}/cancel`, {
+        method: "POST",
+        mutation: true,
+        body: {},
+        signal: options && options.signal
+      });
+    }
+
+    async startConversion(conversionRequestText, options) {
+      const requestText = requireUtf8Text(
+        conversionRequestText,
+        "conversion request",
+        MAXIMUM_JSON_BYTES
+      );
+      return requestJson(this, "/v2/conversions", {
+        method: "POST",
+        mutation: true,
+        body: {
+          conversion_request_text: requestText,
+          review_accepted: true
+        },
+        signal: options && options.signal
+      });
+    }
+
+    async getConversion(operationId, options) {
+      const id = requireConversionOperationId(operationId);
+      return requestJson(this, `/v2/conversions/${id}`, {
+        method: "GET",
+        signal: options && options.signal
+      });
+    }
+
+    async cancelConversion(operationId, options) {
+      const id = requireConversionOperationId(operationId);
+      return requestJson(this, `/v2/conversions/${id}/cancel`, {
         method: "POST",
         mutation: true,
         body: {},
@@ -225,7 +266,7 @@
 
     async getSharing(options) {
       requireGrantedScope(this, "sharing_manage");
-      const value = await requestJson(this, "/v1/sharing", {
+      const value = await requestJson(this, "/v2/sharing", {
         method: "GET",
         signal: options && options.signal
       });
@@ -235,7 +276,7 @@
     async initializeSharing(fleetId, options) {
       requireGrantedScope(this, "sharing_manage");
       const id = requireStableId(fleetId, "sharing fleet ID");
-      const value = await requestJson(this, "/v1/sharing/initialize", {
+      const value = await requestJson(this, "/v2/sharing/initialize", {
         method: "POST",
         mutation: true,
         body: { fleet_id: id },
@@ -246,9 +287,9 @@
 
     async admitImportForSharing(operationId, laneEndpoints, options) {
       requireGrantedScope(this, "sharing_manage");
-      const id = requireOperationId(operationId);
+      const id = requireImportOperationId(operationId);
       const endpoints = normalizeSharingEndpoints(laneEndpoints);
-      const value = await requestJson(this, `/v1/sharing/imports/${id}/admit`, {
+      const value = await requestJson(this, `/v2/sharing/imports/${id}/admit`, {
         method: "POST",
         mutation: true,
         body: { lane_endpoints: endpoints },
@@ -259,12 +300,12 @@
 
     async setImportSharingEnabled(operationId, enabled, options) {
       requireGrantedScope(this, "sharing_manage");
-      const id = requireOperationId(operationId);
+      const id = requireImportOperationId(operationId);
       if (typeof enabled !== "boolean") {
         throw new TypeError("sharing enabled state is invalid");
       }
       const action = enabled ? "enable" : "disable";
-      const value = await requestJson(this, `/v1/sharing/imports/${id}/${action}`, {
+      const value = await requestJson(this, `/v2/sharing/imports/${id}/${action}`, {
         method: "POST",
         mutation: true,
         body: {},
@@ -275,8 +316,8 @@
 
     async removeImportFromSharing(operationId, options) {
       requireGrantedScope(this, "sharing_manage");
-      const id = requireOperationId(operationId);
-      const value = await requestJson(this, `/v1/sharing/imports/${id}/remove`, {
+      const id = requireImportOperationId(operationId);
+      const value = await requestJson(this, `/v2/sharing/imports/${id}/remove`, {
         method: "POST",
         mutation: true,
         body: {},
@@ -288,98 +329,43 @@
     async streamModel(operationId, options) {
       const id = requireOperationId(operationId);
       const source = options && typeof options === "object" ? options : {};
-      const expectedByteCount = Number(source.expectedByteCount);
-      if (
-        !Number.isSafeInteger(expectedByteCount) ||
-        expectedByteCount <= 0 ||
-        expectedByteCount > MAXIMUM_MODEL_STREAM_BYTES
-      ) {
-        throw new TypeError("expected model byte count is invalid");
-      }
-      const expectedArtifactSha256 = requireText(
-        source.expectedArtifactSha256,
-        "expected artifact SHA-256",
-        96
-      ).toLowerCase();
-      if (typeof source.onChunk !== "function") {
-        throw new TypeError("model stream requires an onChunk function");
-      }
-      const response = await sendRequest(this, `/v1/models/${id}/content`, {
-        method: "GET",
+      const result = await streamVerifiedBinary(this, {
+        path: `/v2/models/${id}/content`,
         signal: source.signal,
-        timeoutMilliseconds: modelStreamTimeoutMilliseconds(expectedByteCount)
+        expectedByteCount: source.expectedByteCount,
+        maximumByteCount: MAXIMUM_MODEL_STREAM_BYTES,
+        expectedSha256: source.expectedArtifactSha256,
+        sha256Header: "X-TinyRustLM-Artifact-Sha256",
+        description: "model",
+        onChunk: source.onChunk
       });
-      await requireSuccess(this, response);
-      const contentType = String(response.headers.get("Content-Type") || "").toLowerCase();
-      const contentLength = Number(response.headers.get("Content-Length"));
-      const artifactSha256 = String(
-        response.headers.get("X-TinyRustLM-Artifact-Sha256") || ""
-      ).toLowerCase();
       const modelId = requireText(
-        response.headers.get("X-TinyRustLM-Model-Id"),
+        result.response.headers.get("X-TinyRustLM-Model-Id"),
         "streamed model identity",
         180
       );
-      if (!contentType.startsWith("application/octet-stream")) {
-        throw new CompanionBridgeError(
-          "bridge_model_content_type_invalid",
-          "The companion model stream had an invalid content type."
-        );
-      }
-      if (contentLength !== expectedByteCount) {
-        throw new CompanionBridgeError(
-          "bridge_model_byte_count_mismatch",
-          "The companion model byte count disagreed with the selected catalog identity."
-        );
-      }
-      if (artifactSha256 !== expectedArtifactSha256) {
-        throw new CompanionBridgeError(
-          "bridge_model_identity_mismatch",
-          "The companion model SHA-256 identity disagreed with the selected catalog model."
-        );
-      }
-      let offset = 0;
-      if (response.body && typeof response.body.getReader === "function") {
-        const reader = response.body.getReader();
-        try {
-          while (true) {
-            const result = await reader.read();
-            if (result.done) {
-              break;
-            }
-            const chunk = result.value instanceof Uint8Array
-              ? result.value
-              : new Uint8Array(result.value);
-            if (offset + chunk.byteLength > expectedByteCount) {
-              throw new CompanionBridgeError(
-                "bridge_model_byte_count_mismatch",
-                "The companion model stream exceeded its receipt byte count."
-              );
-            }
-            await source.onChunk(chunk, offset);
-            offset += chunk.byteLength;
-          }
-        } finally {
-          reader.releaseLock();
-        }
-      } else {
-        const chunk = new Uint8Array(await response.arrayBuffer());
-        if (chunk.byteLength > expectedByteCount) {
-          throw new CompanionBridgeError(
-            "bridge_model_byte_count_mismatch",
-            "The companion model stream exceeded its receipt byte count."
-          );
-        }
-        await source.onChunk(chunk, 0);
-        offset = chunk.byteLength;
-      }
-      if (offset !== expectedByteCount) {
-        throw new CompanionBridgeError(
-          "bridge_model_byte_count_mismatch",
-          "The companion model stream ended before its receipt byte count."
-        );
-      }
-      return { operationId: id, modelId, artifactSha256, byteCount: offset };
+      return {
+        operationId: id,
+        modelId,
+        artifactSha256: result.sha256,
+        byteCount: result.byteCount
+      };
+    }
+
+    async streamComposition(operationId, options) {
+      const id = requireOperationId(operationId);
+      const source = options && typeof options === "object" ? options : {};
+      const result = await streamVerifiedBinary(this, {
+        path: `/v2/models/${id}/composition`,
+        signal: source.signal,
+        expectedByteCount: source.expectedByteCount,
+        maximumByteCount: MAXIMUM_COMPOSITION_STREAM_BYTES,
+        expectedSha256: source.expectedSha256,
+        sha256Header: "X-TinyRustLM-Composition-Sha256",
+        description: "composition",
+        onChunk: source.onChunk
+      });
+      return { operationId: id, sha256: result.sha256, byteCount: result.byteCount };
     }
 
     async revoke(options) {
@@ -387,7 +373,7 @@
         return false;
       }
       try {
-        await requestEmpty(this, "/v1/session/revoke", {
+        await requestEmpty(this, "/v2/session/revoke", {
           method: "POST",
           mutation: true,
           body: {},
@@ -409,6 +395,97 @@
       }
       state.channel = null;
     }
+  }
+
+  async function streamVerifiedBinary(client, options) {
+    const expectedByteCount = Number(options.expectedByteCount);
+    if (
+      !Number.isSafeInteger(expectedByteCount) ||
+      expectedByteCount <= 0 ||
+      expectedByteCount > options.maximumByteCount
+    ) {
+      throw new TypeError(`expected ${options.description} byte count is invalid`);
+    }
+    const expectedSha256 = requireText(
+      options.expectedSha256,
+      `expected ${options.description} SHA-256`,
+      96
+    ).toLowerCase();
+    if (!/^[0-9a-f]{64}$/.test(expectedSha256)) {
+      throw new TypeError(`expected ${options.description} SHA-256 is invalid`);
+    }
+    if (typeof options.onChunk !== "function") {
+      throw new TypeError(`${options.description} stream requires an onChunk function`);
+    }
+    const response = await sendRequest(client, options.path, {
+      method: "GET",
+      signal: options.signal,
+      timeoutMilliseconds: modelStreamTimeoutMilliseconds(expectedByteCount)
+    });
+    await requireSuccess(client, response);
+    const contentType = String(response.headers.get("Content-Type") || "").toLowerCase();
+    const contentLength = Number(response.headers.get("Content-Length"));
+    const sha256 = String(response.headers.get(options.sha256Header) || "").toLowerCase();
+    if (!contentType.startsWith("application/octet-stream")) {
+      throw new CompanionBridgeError(
+        `bridge_${options.description}_content_type_invalid`,
+        `The companion ${options.description} stream had an invalid content type.`
+      );
+    }
+    if (contentLength !== expectedByteCount) {
+      throw new CompanionBridgeError(
+        `bridge_${options.description}_byte_count_mismatch`,
+        `The companion ${options.description} byte count disagreed with its receipt.`
+      );
+    }
+    if (sha256 !== expectedSha256) {
+      throw new CompanionBridgeError(
+        `bridge_${options.description}_identity_mismatch`,
+        `The companion ${options.description} SHA-256 disagreed with its receipt.`
+      );
+    }
+    let offset = 0;
+    if (response.body && typeof response.body.getReader === "function") {
+      const reader = response.body.getReader();
+      try {
+        while (true) {
+          const result = await reader.read();
+          if (result.done) {
+            break;
+          }
+          const chunk = result.value instanceof Uint8Array
+            ? result.value
+            : new Uint8Array(result.value);
+          if (offset + chunk.byteLength > expectedByteCount) {
+            throw new CompanionBridgeError(
+              `bridge_${options.description}_byte_count_mismatch`,
+              `The companion ${options.description} stream exceeded its receipt byte count.`
+            );
+          }
+          await options.onChunk(chunk, offset);
+          offset += chunk.byteLength;
+        }
+      } finally {
+        reader.releaseLock();
+      }
+    } else {
+      const chunk = new Uint8Array(await response.arrayBuffer());
+      if (chunk.byteLength > expectedByteCount) {
+        throw new CompanionBridgeError(
+          `bridge_${options.description}_byte_count_mismatch`,
+          `The companion ${options.description} stream exceeded its receipt byte count.`
+        );
+      }
+      await options.onChunk(chunk, 0);
+      offset = chunk.byteLength;
+    }
+    if (offset !== expectedByteCount) {
+      throw new CompanionBridgeError(
+        `bridge_${options.description}_byte_count_mismatch`,
+        `The companion ${options.description} stream ended before its receipt byte count.`
+      );
+    }
+    return { response, sha256, byteCount: offset };
   }
 
   async function requestJson(client, path, options) {
@@ -531,7 +608,7 @@
   async function rotateCapability(client, signal) {
     const state = stateOf(client);
     const previousScopes = state.scopes.slice();
-    const response = await sendRequest(client, "/v1/session/rotate", {
+    const response = await sendRequest(client, "/v2/session/rotate", {
       method: "POST",
       mutation: true,
       body: {},
@@ -814,6 +891,22 @@
     return result;
   }
 
+  function requireImportOperationId(value) {
+    const id = requireOperationId(value);
+    if (!importOperationIdPattern.test(id)) {
+      throw new TypeError("companion import operation ID is invalid");
+    }
+    return id;
+  }
+
+  function requireConversionOperationId(value) {
+    const id = requireOperationId(value);
+    if (!conversionOperationIdPattern.test(id)) {
+      throw new TypeError("companion conversion operation ID is invalid");
+    }
+    return id;
+  }
+
   function requireText(value, label, maximumCharacters) {
     if (
       typeof value !== "string" ||
@@ -910,7 +1003,7 @@
       return;
     }
     state.channel.postMessage({
-      kind: "tinyrustlm.companion_state.v1",
+      kind: "tinyrustlm.companion_state.v2",
       state: nextState,
       at: new Date().toISOString()
     });

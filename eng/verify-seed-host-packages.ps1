@@ -4,7 +4,8 @@ param(
     [string]$Version = "",
     [string]$DependencyFeed = "E:\Source\WP\UAIX-Publish\DOTNET-NUGET",
     [switch]$PublishedFeed,
-    [string]$ReportPath = ""
+    [string]$ReportPath = "",
+    [string]$MiniModelSourceRoot = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -271,8 +272,9 @@ function Assert-PackageTextSafety {
     )
     foreach ($entry in $Archive.Entries) {
         $name = $entry.FullName.Replace('\', '/')
+        $isVerifiedConverter = $name -match '(?i)(?:^|/)runtimes/(?:win-x64|linux-x64|linux-arm64)/native/tinyrustlm-slm-pack(?:\.exe)?$'
         Assert-Condition ($name -notmatch '(?i)\.(?:slm|gguf|safetensors|onnx|pt|pth)$') "$PackageName contains model weights: $name"
-        Assert-Condition ($name -notmatch '(?i)(?:slm[_-]?pack|selector[_-]?registry|breeding|training[_-]?recipe|premium[_-]?optimizer|license[_-]?server|encryption[_-]?key)') "$PackageName contains a prohibited private implementation entry: $name"
+        Assert-Condition ($isVerifiedConverter -or $name -notmatch '(?i)(?:slm[_-]?pack|selector[_-]?registry|breeding|training[_-]?recipe|premium[_-]?optimizer|license[_-]?server|encryption[_-]?key)') "$PackageName contains a prohibited private implementation entry: $name"
         if ($textExtensions -notcontains [IO.Path]::GetExtension($name).ToLowerInvariant()) {
             continue
         }
@@ -287,9 +289,9 @@ function Assert-PackageTextSafety {
 function Get-ExpectedNativeHashes {
     $result = @{}
     $ridFiles = @{
-        'win-x64' = @('minimodel.exe', 'minimodel_native.dll')
-        'linux-x64' = @('libminimodel_native.so', 'minimodel')
-        'linux-arm64' = @('libminimodel_native.so', 'minimodel')
+        'win-x64' = @('minimodel.exe', 'minimodel_native.dll', 'tinyrustlm-slm-pack.exe')
+        'linux-x64' = @('libminimodel_native.so', 'minimodel', 'tinyrustlm-slm-pack')
+        'linux-arm64' = @('libminimodel_native.so', 'minimodel', 'tinyrustlm-slm-pack')
     }
     foreach ($rid in $ridFiles.Keys) {
         $ridRoot = Join-Path $NativeRoot $rid
@@ -402,10 +404,13 @@ $libraryEntries = @(
     'package/services/metadata/core-properties/{id}.psmdcp',
     'runtimes/linux-arm64/native/libminimodel_native.so',
     'runtimes/linux-arm64/native/minimodel',
+    'runtimes/linux-arm64/native/tinyrustlm-slm-pack',
     'runtimes/linux-x64/native/libminimodel_native.so',
     'runtimes/linux-x64/native/minimodel',
+    'runtimes/linux-x64/native/tinyrustlm-slm-pack',
     'runtimes/win-x64/native/minimodel.exe',
     'runtimes/win-x64/native/minimodel_native.dll',
+    'runtimes/win-x64/native/tinyrustlm-slm-pack.exe',
     'SEED_HOST.md',
     "$LibraryId.nuspec"
 )
@@ -420,10 +425,13 @@ $toolEntries = @(
     'tools/net8.0/any/Microsoft.Extensions.Logging.Abstractions.dll',
     'tools/net8.0/any/runtimes/linux-arm64/native/libminimodel_native.so',
     'tools/net8.0/any/runtimes/linux-arm64/native/minimodel',
+    'tools/net8.0/any/runtimes/linux-arm64/native/tinyrustlm-slm-pack',
     'tools/net8.0/any/runtimes/linux-x64/native/libminimodel_native.so',
     'tools/net8.0/any/runtimes/linux-x64/native/minimodel',
+    'tools/net8.0/any/runtimes/linux-x64/native/tinyrustlm-slm-pack',
     'tools/net8.0/any/runtimes/win-x64/native/minimodel.exe',
     'tools/net8.0/any/runtimes/win-x64/native/minimodel_native.dll',
+    'tools/net8.0/any/runtimes/win-x64/native/tinyrustlm-slm-pack.exe',
     'tools/net8.0/any/TinyRustLM.Abstractions.dll',
     'tools/net8.0/any/TinyRustLM.Core.dll',
     'tools/net8.0/any/TinyRustLM.P2P.dll',
@@ -513,7 +521,8 @@ if ($PublishedFeed) {
 & (Join-Path $PSScriptRoot 'test-seed-host-package-consumers.ps1') `
     -PackageDirectory $PackageDirectory `
     -DependencyFeed $DependencyFeed `
-    -Version $Version
+    -Version $Version `
+    -MiniModelSourceRoot $MiniModelSourceRoot
 # The child handles expected nonzero native diagnostics itself. Any real failure
 # throws; LASTEXITCODE may intentionally remain 3 after its final negative test.
 

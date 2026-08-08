@@ -10,7 +10,7 @@ use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
 use std::path::{Component, Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
-use tinyrustlm_runtime::active_composition::ActiveCompositionBundle;
+use tinyrustlm_runtime::active_composition::{ActiveComposition, ActiveCompositionBundle};
 use tinyrustlm_runtime::content_identity::{ArtifactKind, ContentId, Digest32, ExecutionBindings};
 use tinyrustlm_runtime::model::Model;
 
@@ -66,8 +66,13 @@ struct MemberAuthority {
 #[derive(Debug)]
 pub(crate) struct CompositionGraphOutcome {
     pub(crate) bundle_sha256: String,
+    pub(crate) base_model_id: String,
     pub(crate) composition_id: String,
     pub(crate) active_graph_digest: String,
+    pub(crate) route_policy_id: String,
+    pub(crate) kv_format_id: String,
+    pub(crate) position_policy_sha256: String,
+    pub(crate) member_count: usize,
 }
 
 /// Authors one graph from an exact model and explicit control-plane authority.
@@ -184,10 +189,32 @@ pub(crate) fn write_path(
         ));
     }
 
+    composition_outcome(&persisted, &model)
+}
+
+/// Revalidates one complete graph against its exact base model and returns public identities.
+pub(crate) fn inspect_path(
+    model_path: &Path,
+    graph_path: &Path,
+) -> io::Result<CompositionGraphOutcome> {
+    let model_bytes = read_bounded_file(model_path, MAX_BUNDLE_BYTES, "composition base model")?;
+    let model = Model::load(&model_bytes).map_err(runtime_error)?;
+    let graph_bytes = read_bounded_file(graph_path, MAX_BUNDLE_BYTES, "composition graph")?;
+    composition_outcome(&graph_bytes, &model)
+}
+
+fn composition_outcome(bytes: &[u8], model: &Model) -> io::Result<CompositionGraphOutcome> {
+    let bundle_sha256 = sha256_bytes(bytes);
+    let parsed = ActiveComposition::parse(bytes, bundle_sha256, model).map_err(runtime_error)?;
     Ok(CompositionGraphOutcome {
-        bundle_sha256: hex(bundle.sha256()),
-        composition_id: bundle.composition_id().display(),
-        active_graph_digest: hex(bundle.active_graph_digest()),
+        bundle_sha256: hex(bundle_sha256),
+        base_model_id: parsed.base().id().display(),
+        composition_id: parsed.composition().id().display(),
+        active_graph_digest: hex(parsed.active_graph_digest()),
+        route_policy_id: parsed.route_policy_id().display(),
+        kv_format_id: parsed.kv_format().id().display(),
+        position_policy_sha256: hex(parsed.position_policy_sha256()),
+        member_count: parsed.member_count(),
     })
 }
 

@@ -7,8 +7,8 @@ on:
     branches: [ main ]
   workflow_dispatch:
     inputs:
-      run_deep_browser_smoke:
-        description: Run the heavyweight Hugging Face conversion and P2P import browser execution smokes.
+      run_deep_acquisition:
+        description: Run deep protocol-v2 browser, companion, and Rust acquisition gates.
         required: false
         type: boolean
         default: false
@@ -68,21 +68,9 @@ jobs:
         shell: pwsh
         run: eng/verify-tinyrustlm-ui.ps1 -RunBrowserSmoke
 
-      - name: Verify TinyRustLM deep conversion and P2P UI contract
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_deep_browser_smoke }}
-        shell: pwsh
-        run: eng/verify-tinyrustlm-ui.ps1 -Port 8185 -DebugPort 9452 -ReportOutput artifacts/reports/tinyrustlm-ui-deep-verification.json -BrowserSmokeModes hf-conversion-kit-safetensors-exec,hf-conversion-kit-review-exec,hf-conversion-kit-review-reject-exec,hf-conversion-kit-gguf-exec,hf-p2p-import-kit-exec
-
       - name: Verify TinyRustLM public root contract
         shell: pwsh
         run: eng/verify-tinyrustlm-public-root.ps1
-
-      - name: Verify TinyRustLM deep UI report schema
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_deep_browser_smoke }}
-        shell: pwsh
-        env:
-          TINYRUSTLM_UI_VERIFICATION_REPORT: artifacts/reports/tinyrustlm-ui-deep-verification.json
-        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --filter UiVerificationReportIsMachineReadableWhenPresent
 
       - name: Verify TinyRustLM UI report schema
         shell: pwsh
@@ -116,12 +104,9 @@ jobs:
           name: tinyrustlm-ui-verification
           path: |
             artifacts/reports/tinyrustlm-ui-verification.json
-            artifacts/reports/tinyrustlm-ui-deep-verification.json
             artifacts/reports/tinyrustlm-public-root-verification.json
-            artifacts/reports/tinyrustlm-source-options-ui-smoke.json
-            artifacts/reports/tinyrustlm-*-ui-smoke.json
-            artifacts/reports/tinyrustlm-*-exec-smoke.json
-            artifacts/reports/tinyrustlm-public-root-*-smoke.json
+            artifacts/reports/ui-verification/**
+            artifacts/reports/public-root-verification/**
           if-no-files-found: error
 
   verify-web-companion:
@@ -185,6 +170,20 @@ jobs:
           npm ci --prefix TinyRustLM.com/tinyrustlm
           npx --prefix TinyRustLM.com/tinyrustlm playwright install chromium
 
+      - name: Verify TinyRustLM deep model-acquisition contract
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_deep_acquisition }}
+        shell: pwsh
+        working-directory: TinyRustLM.com
+        run: eng/verify-tinyrustlm-ui.ps1 -RunDeepAcquisition -ReportOutput artifacts/reports/tinyrustlm-ui-deep-verification.json
+
+      - name: Verify TinyRustLM deep UI report schema
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_deep_acquisition }}
+        shell: pwsh
+        working-directory: TinyRustLM.com
+        env:
+          TINYRUSTLM_UI_VERIFICATION_REPORT: artifacts/reports/tinyrustlm-ui-deep-verification.json
+        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --filter UiVerificationReportIsMachineReadableWhenPresent
+
       - name: Run complete browser and companion acceptance suite
         shell: pwsh
         working-directory: TinyRustLM.com
@@ -200,3 +199,11 @@ jobs:
             TinyRustLM.com/tinyrustlm/artifacts/playwright/report
             TinyRustLM.com/tinyrustlm/artifacts/playwright/test-results
           if-no-files-found: warn
+
+      - name: Upload deep model-acquisition evidence
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_deep_acquisition }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-deep-model-acquisition
+          path: TinyRustLM.com/artifacts/reports/tinyrustlm-ui-deep-verification.json
+          if-no-files-found: error

@@ -9,6 +9,8 @@ public sealed record SeedHostDoctorReport(
     uint SupportedNativeAbiVersion,
     string MiniModelExecutablePath,
     string MiniModelExecutableSha256,
+    string ConversionExecutablePath,
+    string ConversionExecutableSha256,
     bool ProjectServerServesModelBytes,
     bool ProjectServerRunsModelBytes,
     bool ProjectServerProxiesModelBytes,
@@ -27,7 +29,9 @@ public sealed class SeedHostDoctor
     }
 
     /// <summary>Resolve and hash the reviewed CLI, then verify the exact native ABI version.</summary>
-    public SeedHostDoctorReport Run(string? miniModelExecutablePath = null)
+    public SeedHostDoctorReport Run(
+        string? miniModelExecutablePath = null,
+        string? conversionExecutablePath = null)
     {
         var abiVersion = authority.NativeAbiVersion;
         if (abiVersion != MiniModelAuthority.SupportedNativeAbiVersion)
@@ -37,23 +41,31 @@ public sealed class SeedHostDoctor
                 $"MiniModel native ABI {abiVersion} is incompatible with required ABI {MiniModelAuthority.SupportedNativeAbiVersion}.");
         }
         var executable = MiniModelExecutableLocator.Resolve(miniModelExecutablePath);
-        using var stream = new FileStream(
+        var converter = TinyRustLMConversionExecutableLocator.Resolve(conversionExecutablePath);
+        return new SeedHostDoctorReport(
+            MiniModelNativeMethods.RuntimeIdentifier(),
+            abiVersion,
+            MiniModelAuthority.SupportedNativeAbiVersion,
             executable,
+            Sha256(executable),
+            converter,
+            Sha256(converter),
+            ProjectServerServesModelBytes: false,
+            ProjectServerRunsModelBytes: false,
+            ProjectServerProxiesModelBytes: false,
+            Ready: true);
+    }
+
+    private static string Sha256(string path)
+    {
+        using var stream = new FileStream(
+            path,
             FileMode.Open,
             FileAccess.Read,
             FileShare.Read,
             128 * 1024,
             FileOptions.SequentialScan);
         var digest = Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant();
-        return new SeedHostDoctorReport(
-            MiniModelNativeMethods.RuntimeIdentifier(),
-            abiVersion,
-            MiniModelAuthority.SupportedNativeAbiVersion,
-            executable,
-            $"sha256:{digest}",
-            ProjectServerServesModelBytes: false,
-            ProjectServerRunsModelBytes: false,
-            ProjectServerProxiesModelBytes: false,
-            Ready: true);
+        return $"sha256:{digest}";
     }
 }

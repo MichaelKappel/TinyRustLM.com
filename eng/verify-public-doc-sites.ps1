@@ -110,7 +110,7 @@ $canonicalTinyRustLmRequiredTerms = @(
     "UAIX.Browser.p2pRuntime.SeedHost",
     "UAIX.Browser.p2pRuntime.SeedHost.Tool",
     "uaix-p2p-seed",
-    "0.1.10",
+    "0.2.0",
     ".snupkg",
     "MiniModel.org"
 )
@@ -146,34 +146,27 @@ $browserNuGetPublishedRequiredTerms = @(
     "post-publish verified"
 )
 $uiVerificationRequiredTerms = @(
-    "tinyrustlm.ui_verification.v0",
+    "tinyrustlm.ui_verification.v1",
     "verify-tinyrustlm-ui.ps1",
-    "source-options-ui",
-    "local-connect-approval-ui",
-    "local-connect-endpoint-ui",
-    "local-connect-rust-endpoint-ui",
-    "peer-status-live-ui",
+    "web-release-local-smoke.js",
+    "RunDeepAcquisition",
+    "model-acquisition-v2.test.js",
     "Local .slm",
     "Hugging Face",
-    "P2P import",
+    "Get model",
     "Advanced tools",
-    "minimodel.peer_status.v0.json"
+    ".acg1"
 )
 $publicRootVerificationRequiredTerms = @(
-    "tinyrustlm.public_root_verification.v0",
+    "tinyrustlm.public_root_verification.v1",
     "verify-tinyrustlm-public-root.ps1",
     "verify-tinyrustlm-public-root.sh",
     "tinyrustlm-public-root-verification.json",
-    "tinyrustlm.com-loopback-browser-smoke",
-    "catalog-local-import",
-    "local-import-ambiguous-selection",
-    "peer-url-unsafe-ui",
-    "peer-status-live-ui"
+    "ui_verification_sha256"
 )
 $browserMemoryFileDeckRequiredTerms = @(
     "FileDeck",
     "FileDeck 62 required",
-    "local-memory-deck-ui",
     "UAIX memory active",
     "UAIX exports verified",
     "persona source evidence bound",
@@ -193,12 +186,14 @@ $huggingFaceTopCompatibleRequiredTerms = @(
     "TinyRustLM-ready",
     "Popular",
     "New releases",
-    "hf-search-ui"
+    "Get model"
 )
 $browserCompanionBoundaryRequiredTerms = @(
     "public-local-only",
     "one-time pairing",
-    "Save P2P Import Kit",
+    "P2P-first",
+    "protocol-v2",
+    "conversion-kit",
     "e2e/companion.spec.js",
     "969,648,576",
     "Prompts and responses never"

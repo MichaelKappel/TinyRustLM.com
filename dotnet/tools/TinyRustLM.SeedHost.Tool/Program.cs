@@ -171,8 +171,9 @@ internal static class Program
         IMiniModelAuthority authority)
     {
         var executable = arguments.Optional("minimodel");
+        var converter = arguments.Optional("converter");
         arguments.EnsureConsumed();
-        return new SeedHostDoctor(authority).Run(executable);
+        return new SeedHostDoctor(authority).Run(executable, converter);
     }
 
     private static async Task<SeedFleetInspection> InitializeAsync(
@@ -430,6 +431,7 @@ internal static class Program
         var origin = arguments.Optional("origin") ?? "https://tinyrustlm.com";
         var port = arguments.OptionalPort("port") ?? 43127;
         var executable = arguments.Optional("minimodel");
+        var converter = arguments.Optional("converter");
         var allowSharing = arguments.Flag("allow-sharing");
         var durationSeconds = arguments.OptionalPositiveInt("duration-seconds");
         arguments.EnsureConsumed();
@@ -439,7 +441,8 @@ internal static class Program
                 root,
                 [origin],
                 Port: port,
-                AllowSharing: allowSharing),
+                AllowSharing: allowSharing,
+                ConversionExecutablePath: converter),
             authority,
             executable);
         await bridge.StartAsync(cancellationToken).ConfigureAwait(false);
@@ -606,6 +609,7 @@ internal static class Program
             Commands:
               doctor [--minimodel PATH] [--json]
               init --fleet-id ID [--root DIR] [--json]
+              doctor [--minimodel PATH] [--converter PATH] [--json]
               inspect|status [--config FILE | --root DIR] [--json]
               add-model --model-id ID --artifact FILE
                 --lane-a-bind IP:PORT --lane-a-url URL
@@ -625,7 +629,8 @@ internal static class Program
               serve-lane --lane-id seed-a|seed-b [--config FILE | --root DIR]
                 [--minimodel PATH] [--duration-seconds N] [--json]
               bridge [--root DIR] [--origin EXACT_ORIGIN] [--port PORT]
-                [--minimodel PATH] [--allow-sharing] [--duration-seconds N]
+                [--minimodel PATH] [--converter PATH] [--allow-sharing]
+                [--duration-seconds N]
               import --request FILE --manifest FILE --output DIR
                 [--minimodel PATH] [--timeout-seconds N] [--json]
               inspect-import-receipt --receipt FILE --request FILE --preflight FILE

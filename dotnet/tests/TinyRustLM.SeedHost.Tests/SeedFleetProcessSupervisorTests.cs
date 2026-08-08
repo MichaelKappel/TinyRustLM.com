@@ -13,7 +13,7 @@ public sealed class SeedFleetProcessSupervisorTests
     {
         var paths = MiniModelDevelopmentPaths.Find();
         Environment.SetEnvironmentVariable("MINIMODEL_NATIVE_PATH", paths.NativeLibrary);
-        await using var fixture = await ManagedFleetFixture.CreateAsync(paths.Cli);
+        await using var fixture = await ManagedFleetFixture.CreateAsync(paths.Cli, paths.FixtureArtifact);
         await using var supervisor = new SeedFleetProcessSupervisor(
             new SeedFleetProcessOptions(
                 MiniModelExecutablePath: paths.Cli,
@@ -92,9 +92,10 @@ public sealed class SeedFleetProcessSupervisorTests
         internal string LaneAUrl { get; }
         internal string LaneBUrl { get; }
 
-        internal static async Task<ManagedFleetFixture> CreateAsync(string cliPath)
+        internal static async Task<ManagedFleetFixture> CreateAsync(
+            string cliPath,
+            string fixtureArtifact)
         {
-            var artifact = FindFixtureArtifact(cliPath);
             var root = Path.Combine(Path.GetTempPath(), $"managed-seed-fleet-{Guid.NewGuid():N}");
             Directory.CreateDirectory(root);
             try
@@ -102,7 +103,7 @@ public sealed class SeedFleetProcessSupervisorTests
                 const string modelId = "tinyrustlm/managed-seed-test-q8";
                 var shareDirectory = Path.Combine(root, "share");
                 await RunCliAsync(cliPath, root,
-                    "prepare-peer-share", artifact, shareDirectory, modelId, "TinyRustLM/Fixture-Q8");
+                    "prepare-peer-share", fixtureArtifact, shareDirectory, modelId, "TinyRustLM/Fixture-Q8");
                 var manifestPath = Path.Combine(
                     shareDirectory,
                     "tiny-test-model-q8.minimodel.manifest.v0");
@@ -172,15 +173,6 @@ public sealed class SeedFleetProcessSupervisorTests
             Assert.True(
                 result.ExitCode == 0,
                 result.StandardOutput + Environment.NewLine + result.StandardError);
-        }
-
-        private static string FindFixtureArtifact(string cliPath)
-        {
-            var miniModelRoot = Directory.GetParent(
-                Directory.GetParent(Path.GetDirectoryName(cliPath)!)!.FullName)!.FullName;
-            var artifact = Path.Combine(miniModelRoot, "artifacts", "demo", "tiny-test-model-q8.slm");
-            Assert.True(File.Exists(artifact), $"Missing MiniModel fixture {artifact}");
-            return artifact;
         }
 
         private static int FreePort()

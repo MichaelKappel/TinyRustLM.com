@@ -9,6 +9,8 @@ VERSION="$(sed -n 's:.*<VersionPrefix>\([^<]*\)</VersionPrefix>.*:\1:p' "$REPO_R
 LIBRARY_ID="UAIX.Browser.p2pRuntime.SeedHost"
 TOOL_ID="UAIX.Browser.p2pRuntime.SeedHost.Tool"
 DEPENDENCY_VERSION="0.1.8"
+MINIMODEL_SOURCE_ROOT="${MINIMODEL_SOURCE_ROOT:-$(cd "$REPO_ROOT/.." && pwd)/MiniModel.org}"
+export MINIMODEL_SOURCE_ROOT
 
 if [[ -z "$VERSION" ]]; then
   echo "Seed-host VersionPrefix is missing" >&2
@@ -64,7 +66,8 @@ HOST_RID="linux-$HOST_ARCH"
 HOST_NATIVE_ROOT="$REPO_ROOT/artifacts/seed-host-native/$HOST_RID"
 HOST_NATIVE_LIBRARY="$HOST_NATIVE_ROOT/libminimodel_native.so"
 HOST_NATIVE_EXECUTABLE="$HOST_NATIVE_ROOT/minimodel"
-for path in "$HOST_NATIVE_LIBRARY" "$HOST_NATIVE_EXECUTABLE" "$HOST_NATIVE_ROOT/SHA256SUMS.txt"; do
+HOST_CONVERSION_EXECUTABLE="$HOST_NATIVE_ROOT/tinyrustlm-slm-pack"
+for path in "$HOST_NATIVE_LIBRARY" "$HOST_NATIVE_EXECUTABLE" "$HOST_CONVERSION_EXECUTABLE" "$HOST_NATIVE_ROOT/SHA256SUMS.txt"; do
   [[ -f "$path" ]] || { echo "Missing staged native evidence: $path" >&2; exit 1; }
 done
 
@@ -138,9 +141,11 @@ Library: $LIBRARY_ID
 Tool: $TOOL_ID (command: uaix-p2p-seed)
 Target framework: net8.0
 Native RIDs packaged when verified: win-x64, linux-x64, linux-arm64
+Automatic model acquisition: verified P2P import first; immutable Hugging Face source conversion through the packaged Rust converter when no verified peer is available.
 Dependencies: UAIX.Browser.Core.Abstractions $DEPENDENCY_VERSION; UAIX.Browser.p2pRuntime.P2P $DEPENDENCY_VERSION
 
 Security boundary: model bytes are served only by user-run seed hosts. Project websites do not host, run, or proxy model bytes.
+The browser receives the verified .slm and composition graph directly from its paired local companion; no conversion-kit text or script downloads are required.
 Announcements require a current matching outside-network reachability receipt.
 Hashes: $HASH_NAME
 EOF

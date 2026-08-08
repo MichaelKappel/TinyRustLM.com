@@ -74,6 +74,34 @@
           "summary": "Preserved the publicly observed 0.1.1 identity and advanced recovery as a distinct version."
         }
       ]
+    },
+    {
+      "releaseId": "tinyrustlm.com@0.2.0",
+      "version": "0.2.0",
+      "releaseDate": "2026-08-08",
+      "summary": "Replaces model handoff downloads with direct P2P-first acquisition and companion-managed local conversion.",
+      "changes": [
+        {
+          "type": "added",
+          "summary": "Added one-action acquisition that imports a complete verified MiniModel P2P offer before considering source conversion."
+        },
+        {
+          "type": "added",
+          "summary": "Added protocol-v2 companion download, resume, review, Rust conversion, validation, and direct browser loading for immutable supported Hugging Face sources."
+        },
+        {
+          "type": "added",
+          "summary": "Added receipt-bound streaming and activation of both the converted `.slm` model and its immutable `.acg1` composition graph."
+        },
+        {
+          "type": "removed",
+          "summary": "Removed model-acquisition and P2P-sharing README, TXT, PowerShell, request JSON, conversion-kit, and share-kit downloads from the browser."
+        },
+        {
+          "type": "security",
+          "summary": "Kept prompts, responses, source tensors, model bytes, and composition bytes off TinyRustLM and related project servers."
+        }
+      ]
     }
   ],
   "publications": [

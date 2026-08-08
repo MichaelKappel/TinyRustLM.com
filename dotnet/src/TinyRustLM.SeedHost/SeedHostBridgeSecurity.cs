@@ -15,6 +15,12 @@ public enum SeedHostBridgeScope
     ImportsRead,
     /// <summary>Cancel an owned in-flight import while retaining safe resumable pieces.</summary>
     ImportsCancel,
+    /// <summary>Create a reviewed immutable-source conversion when no verified peer is available.</summary>
+    ConversionsCreate,
+    /// <summary>Read progress and terminal state for an owned local conversion.</summary>
+    ConversionsRead,
+    /// <summary>Cancel an owned conversion while retaining verified resumable source bytes.</summary>
+    ConversionsCancel,
     /// <summary>Stream one revalidated imported artifact to the local browser.</summary>
     ModelsStream,
     /// <summary>Perform explicitly enabled sharing mutations; never granted implicitly.</summary>

@@ -21,11 +21,11 @@ Install from the reviewed folder feed:
 
 ```powershell
 dotnet add package UAIX.Browser.p2pRuntime.SeedHost `
-  --version 0.1.10 `
+  --version 0.2.0 `
   --source $env:UAIX_NUGET_FEED
 
 dotnet tool install UAIX.Browser.p2pRuntime.SeedHost.Tool `
-  --version 0.1.10 `
+  --version 0.2.0 `
   --add-source $env:UAIX_NUGET_FEED `
   --tool-path .\.uaix-tools
 ```
@@ -57,13 +57,43 @@ and revoke through dedicated protocol routes and are lost when the bridge
 restarts. They are separate from P2P peer configuration and optional
 MemoryEndpoints credentials.
 
-The versioned loopback API exposes only health, pairing/session control,
-path-free runtime status, admitted-model listing, bounded import control and
-progress, receipt-revalidated model streaming, and optional sharing control.
+The protocol-v2 loopback API exposes only health, pairing/session control,
+path-free runtime status, admitted-model listing, bounded import and conversion
+control and progress, receipt-revalidated model and composition streaming, and
+optional sharing control.
 Every non-health operation validates the exact `Host`, `Origin`, protocol
 version, method, capability scope, and mutation request ID. The bridge has no
 arbitrary path, shell, cookie, generic proxy, remote-control, or prompt route.
 Prompts and responses remain inside the browser.
+
+## Direct Model Acquisition
+
+The browser has one supported acquisition flow:
+
+1. Prefer a complete MiniModel offer whose artifact, piece set, model identity,
+   and immutable composition graph agree.
+2. Import that offer through the paired companion and revalidate it with the
+   packaged Rust MiniModel authority.
+3. If no complete verified peer offer exists, resolve a supported Hugging Face
+   source to an exact 40-hex commit and explicit reviewed source-file contract.
+4. Queue the immutable conversion request through the companion.
+5. Resume bounded source downloads, verify exact byte counts and SHA-256
+   digests, review the source contract, and invoke the packaged
+   `tinyrustlm-slm-pack` binary.
+6. Reinspect the conversion receipt, validate the resulting `.slm`, create and
+   inspect a base-only `.acg1`, then stream both artifacts to the browser.
+7. Activate the graph in Rust/WASM before reporting the model ready.
+
+The application reports queued, downloading, reviewing, converting,
+validating, available, cancelled, and failed states. It does not download a
+README, TXT file, request JSON, shell script, PowerShell script, conversion
+kit, import kit, or serving helper for the user to run. Source tensors, model
+bytes, and composition bytes never transit TinyRustLM.com, MiniModel.org,
+UAIX.org, or MemoryEndpoints.com.
+
+Only explicitly supported source architectures and immutable reviewed file
+sets may enter conversion. A successfully converted artifact is structurally
+valid evidence, not an assistant-quality promotion.
 
 Sharing routes are absent unless the operator adds `--allow-sharing`. Even
 then, browser actions can only manage receipt-verified imports inside the owned
@@ -130,16 +160,18 @@ silently configured by the package.
   trust rules.
 - TinyRustLM.com, MiniModel.org, UAIX.org, and MemoryEndpoints.com do not host,
   run, or proxy model bytes for this package.
-- Hugging Face URLs are metadata/source references, not seed endpoints.
+- Hugging Face is an optional immutable source host for reviewed conversion
+  inputs; it is not a MiniModel seed endpoint or project model-byte host.
 - Fleet files and process diagnostics contain no API keys or tokens.
 - Native and process output is bounded; secret-like fields and URI user-info
   are redacted before diagnostics are exposed.
 - Model removal changes configuration only. It does not delete model or piece
   data outside an explicit owned cleanup workflow.
-- Conversion, quantization authoring, training, premium routing, telemetry,
-  license-server, and key-management internals are not included.
+- Training, premium routing, telemetry, license-server, and key-management
+  internals are not included. The packaged Rust converter supports only the
+  reviewed public source contracts declared by this release.
 
-Use the matching `SHA256SUMS-UAIX.Browser.p2pRuntime.SeedHost-0.1.10.txt` file
+Use the matching `SHA256SUMS-UAIX.Browser.p2pRuntime.SeedHost-0.2.0.txt` file
 to verify package and symbol artifacts in the local feed. Self-contained tool
 archives use
-`SHA256SUMS-UAIX.Browser.p2pRuntime.SeedHost.Tool-0.1.10.txt`.
+`SHA256SUMS-UAIX.Browser.p2pRuntime.SeedHost.Tool-0.2.0.txt`.

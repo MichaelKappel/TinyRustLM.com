@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="application-version" content="0.1.2">
-  <meta name="release-date" content="2026-08-02">
+  <meta name="application-version" content="0.2.0">
+  <meta name="release-date" content="2026-08-08">
   <title>TinyRustLM</title>
   <link rel="icon" href="data:,">
   <link rel="alternate" type="application/json" href="/.well-known/site-release.json" title="Current release">
   <link rel="alternate" type="application/json" href="/.well-known/site-release-history.json" title="Release history">
-  <link rel="stylesheet" href="./app/app.css?v=sha256-9c80881509ee1db14609e983a836cee8856802f7e3056a716e7b15114a754163">
+  <link rel="stylesheet" href="./app/app.css?v=sha256-56cdeb7d6a255e1de6359db967208a3e324b7f4161fc9167a772603dffe042fc">
 </head>
 <body>
   <svg class="icon-sprite" aria-hidden="true" focusable="false">
@@ -112,7 +112,7 @@
       <div class="sidebar-utilities" aria-label="Documentation, updates, and tools">
         <a class="icon-button" href="#" rel="noopener" aria-label="Runtime docs" data-tooltip="Runtime docs" data-doc-target="runtime"><svg><use href="#icon-book"></use></svg></a>
         <a class="icon-button" href="#" rel="noopener" aria-label="MiniModel docs" data-tooltip="MiniModel docs" data-doc-target="minimodel"><svg><use href="#icon-network"></use></svg></a>
-        <a class="icon-button" href="/updates/" aria-label="Updates and release history" data-tooltip="Updates v0.1.0"><svg><use href="#icon-history"></use></svg></a>
+        <a class="icon-button" href="/updates/" aria-label="Updates and release history" data-tooltip="Updates v0.2.0"><svg><use href="#icon-history"></use></svg></a>
         <button class="icon-button" type="button" data-sidebar-action="advanced" aria-label="Advanced tools" data-tooltip="Advanced tools"><svg><use href="#icon-sliders"></use></svg></button>
       </div>
     </aside>
@@ -126,7 +126,7 @@
       <section id="modelToolbar" class="model-toolbar" aria-label="Loaded local model">
         <div class="model-icon" aria-hidden="true"><svg><use href="#icon-cube"></use></svg></div>
         <button id="modelEditButton" class="model-name-button" type="button" aria-haspopup="dialog" aria-expanded="false">
-          <span id="modelToolbarName">Choose a local or P2P model</span>
+          <span id="modelToolbarName">Choose model</span>
           <svg aria-hidden="true"><use href="#icon-chevron"></use></svg>
         </button>
         <span id="modelLoadPill" class="status-pill neutral"><span class="mini-dot"></span>No model imported</span>
@@ -144,8 +144,8 @@
       </button>
 
       <a class="site-release-summary compact-release-summary" href="/updates/" aria-label="Updates and release history" data-site-release data-release-state="pending">
-        <span>v<span data-release-version>0.1.2</span></span>
-        <span>Released <time data-release-date datetime="2026-08-02">2026-08-02</time></span>
+        <span>v<span data-release-version>0.2.0</span></span>
+        <span>Released <time data-release-date datetime="2026-08-08">2026-08-08</time></span>
         <span>Last published <time data-release-published-at>Awaiting live verification</time></span>
       </a>
 
@@ -162,7 +162,7 @@
           </button>
           <button id="simpleHfSourceButton" class="source-option" type="button" data-source-option="huggingface">
             <span>Hugging Face</span>
-            <small>Model cards first. Convert later.</small>
+            <small>P2P first; converts locally otherwise.</small>
           </button>
           <button id="simpleP2pSourceButton" class="source-option" type="button" data-source-option="p2p">
             <span>P2P Exchange</span>
@@ -198,9 +198,9 @@
               <input id="simpleHfP2pToggle" type="checkbox" checked>
               <span>Enable P2P import and sharing</span>
             </label>
-            <span id="simpleHfP2pStatus" class="flow-status">P2P on. New conversions prepare a local P2P share kit.</span>
+            <span id="simpleHfP2pStatus" class="flow-status">P2P on. Get model prefers a complete verified peer and converts locally when none is available.</span>
           </div>
-          <p id="simpleHfP2pWarning" class="inline-status source-warning" hidden>P2P is off. Convert only for me creates a private local .slm; enable P2P above to import shared models or prepare a share kit during conversion.</p>
+          <p id="simpleHfP2pWarning" class="inline-status source-warning" hidden>P2P is off. Get model uses local companion conversion and keeps the verified .slm on this computer.</p>
           <div id="simpleHfFlowSummary" class="source-flow-summary" role="status" aria-label="Search result summary" aria-live="polite" hidden></div>
           <ol id="simpleHfResults" class="model-results"></ol>
         </div>
@@ -213,7 +213,7 @@
             <button id="companionDetectButton" class="secondary-action" type="button" aria-describedby="companionAccessNotice">Connect desktop companion</button>
             <button id="companionForgetButton" class="secondary-action" type="button" hidden>Forget pairing</button>
           </div>
-          <p id="companionAccessNotice" class="flow-status companion-access-notice">TinyRustLM works entirely in your browser. The optional desktop companion adds P2P hosting and companion-managed model storage. Choose Connect only when you want it; your browser or operating system may show a local-app access prompt.</p>
+          <p id="companionAccessNotice" class="flow-status companion-access-notice">TinyRustLM runs models in your browser. The desktop companion imports verified P2P models or converts pinned source revisions locally; model bytes never pass through TinyRustLM.com.</p>
           <div id="companionPairingControls" class="search-row companion-pairing-row" hidden>
             <label class="sr-only" for="companionPairingCode">One-time companion pairing code</label>
             <input id="companionPairingCode" type="password" autocomplete="off" spellcheck="false" placeholder="One-time pairing code">
@@ -224,7 +224,7 @@
             </label>
           </div>
           <div id="companionImportProgress" class="companion-import-progress" hidden>
-            <progress id="companionImportProgressBar" aria-label="P2P model import progress"></progress>
+            <progress id="companionImportProgressBar" aria-label="Model acquisition progress"></progress>
             <span id="companionImportStage" class="inline-status">Waiting</span>
             <button id="companionCancelImportButton" class="secondary-action" type="button">Cancel</button>
           </div>
@@ -262,7 +262,7 @@
             </div>
             <p class="inline-status">Local enablement is not public proof. MiniModel publication still requires current outside-network verification.</p>
           </details>
-          <p>Load MiniModel metadata or a local `models.v0.json` snapshot to find proof-ready peer imports, or save share metadata after you import a verified local `.slm`.</p>
+          <p>Load MiniModel metadata or a local `models.v0.json` snapshot to find proof-ready peer imports. When no verified peer is available, the paired companion converts the reviewed immutable source directly.</p>
           <label for="simplePeerBaseUrlInput">Known peer URL</label>
           <div class="search-row">
             <input id="simplePeerBaseUrlInput" type="url" inputmode="url" placeholder="127.0.0.1:8123/">
@@ -281,9 +281,6 @@
           <label for="simpleLocalCatalogFile">Local models.v0.json</label>
           <input id="simpleLocalCatalogFile" type="file" accept=".json,application/json">
           <button id="simpleImportLocalCatalogButton" class="secondary-action" type="button">Load Local Catalog</button>
-          <label for="simpleShareMetadataFile">Share metadata JSON</label>
-          <input id="simpleShareMetadataFile" type="file" accept=".json,application/json">
-          <button id="simpleImportShareMetadataButton" class="secondary-action" type="button">Load Share Metadata</button>
           <label for="simplePeerAnnouncementFile">Peer-source announcement/feed JSON</label>
           <input id="simplePeerAnnouncementFile" type="file" accept=".json,application/json">
           <button id="simpleApplyPeerAnnouncementButton" class="secondary-action" type="button">Apply Peer Feed</button>
@@ -297,13 +294,10 @@
           <label for="simplePeerCompanionInventoryFile">Peer companion inventory JSON</label>
           <input id="simplePeerCompanionInventoryFile" type="file" accept=".json,application/json">
           <button id="simplePeerCompanionInventoryButton" class="secondary-action" type="button">Load Companion Inventory</button>
-          <button id="simpleSaveShareMetadataButton" class="secondary-action" type="button">Save Share Metadata</button>
-          <button id="simpleSaveShareKitButton" class="secondary-action" type="button">Save P2P Share Kit</button>
           <button id="simpleLocalConnectApprovalsButton" class="secondary-action" type="button">Local Connect Approvals</button>
           <p id="simpleImportReceiptLedgerStatus" class="inline-status">receipt ledger optional</p>
           <p id="simplePeerStatusCheckStatus" class="inline-status">peer status optional</p>
           <p id="simplePeerCompanionInventoryStatus" class="inline-status">companion inventory optional</p>
-          <p id="simpleShareMetadataStatus" class="inline-status">import a local .slm first</p>
           <p id="simpleLocalConnectStatus" class="inline-status">Local Connect asks before app control.</p>
           <ol id="simpleCatalogResults" class="model-results"></ol>
         </div>
@@ -438,11 +432,6 @@
             <button id="importLocalModelButton" class="secondary-action" type="button">Import Local Model</button>
             <p id="localModelState" class="inline-status">waiting</p>
 
-            <label for="conversionRequestFile">Conversion request JSON</label>
-            <input id="conversionRequestFile" type="file" accept=".json,application/json">
-            <button id="importConversionRequestButton" class="secondary-action" type="button">Bind Conversion Request</button>
-            <p id="conversionRequestState" class="inline-status">optional source handoff</p>
-
             <label for="localMemoryPackageSetup">UAIX memory setup</label>
             <select id="localMemoryPackageSetup">
               <option value="auto" selected>Auto from manifest</option>
@@ -532,9 +521,6 @@
             <label for="localCatalogFile">Local models.v0.json</label>
             <input id="localCatalogFile" type="file" accept=".json,application/json">
             <button id="importLocalCatalogButton" class="secondary-action" type="button">Load Local Catalog</button>
-            <label for="shareMetadataFile">Share metadata JSON</label>
-            <input id="shareMetadataFile" type="file" accept=".json,application/json">
-            <button id="importShareMetadataButton" class="secondary-action" type="button">Load Share Metadata</button>
             <label for="peerContactCardFile">Peer contact card JSON</label>
             <input id="peerContactCardFile" type="file" accept=".json,application/json">
             <button id="applyPeerContactCardButton" class="secondary-action" type="button">Use Peer Card</button>
@@ -574,9 +560,6 @@
             <p id="hfStatus" class="inline-status">idle</p>
             <ol id="hfResults" class="model-results"></ol>
 
-            <button id="saveShareMetadataButton" class="secondary-action" type="button">Save MiniModel Share Metadata</button>
-            <button id="saveShareKitButton" class="secondary-action" type="button">Save P2P Share Kit</button>
-            <p id="shareMetadataState" class="inline-status">import a local .slm first</p>
           </details>
 
           <details class="drawer-section local-connect-drawer" data-panel-key="dashboard-local-connect-approvals">
@@ -714,8 +697,8 @@
 
     <footer class="footnote" id="appFooter">
       <a class="site-release-summary" href="/updates/" aria-label="Updates and release history" data-site-release data-release-state="pending">
-        <span>v<span data-release-version>0.1.2</span></span>
-        <span>Released <time data-release-date datetime="2026-08-02">2026-08-02</time></span>
+        <span>v<span data-release-version>0.2.0</span></span>
+        <span>Released <time data-release-date datetime="2026-08-08">2026-08-08</time></span>
         <span>Last published <time data-release-published-at>Awaiting live verification</time></span>
       </a>
     </footer>
@@ -744,13 +727,13 @@
   </dialog>
   <script src="./app/active-conversation.js?v=sha256-4a7300c64e96554370724b4294626f6de5d260f5a34614eada9af76020f55320"></script>
   <script src="./app/calculator-tool.js?v=sha256-dccbbe5fb5cfd1f885b31c64be5e79e41775ad3613e8c9df9d9eb3e7c7db69f0"></script>
-  <script src="./app/companion-bridge.js?v=sha256-f80ab6284a32524815d48679c4c38b68b4ec588ff7177e71c2c5a707be32bd24"></script>
+  <script src="./app/companion-bridge.js?v=sha256-94d9a57af5953ee76a8ab3cc8faa959656e710fe20bc283d0b3f6727a8b76359"></script>
   <script src="./app/minimodel-announcement.js?v=sha256-da79d092c8cd78d3b63dddeebf364daa91948fa330163c817018c686fb8f7836"></script>
   <script src="./app/memory-endpoints-enrollment.js?v=sha256-2ea237831b00c1550dc04821a0a60b1184372049202fa8e26d3faa14c66a877b"></script>
   <script src="./app/memory-endpoints-distributed-sync-v1.js?v=sha256-75df7b9b0352001af4f14c116f4c4617dcd75d935ab1b037b9bd13c89af32b4d"></script>
   <script src="./app/memory-endpoints-sync.js?v=sha256-61a1b029c5c8a2e35921c7889171ec94d93a3b588dd2abe1fa5cf2cbf7bc04f2"></script>
-  <script src="./app/browser-model-admission.js?v=sha256-9ccaa58d5476b707a4e13ec38a5edfe685f064e07390818ded935143150e0813"></script>
-  <script src="./app/site-release.js?v=sha256-6f8715fa77ad1a4bcc0c42a9050c0467825acdb402afe96e1a963cc535aea6a9"></script>
-  <script src="./app/app.js?v=sha256-65b06635ca886c5f14dc5c882e569ad88deef583b0f7d893d3ff6b6ea2fb2482"></script>
+  <script src="./app/browser-model-admission.js?v=sha256-c9321b751603764fef3113c1314dec2a43a24fdda8a603a42f316e74de340803"></script>
+  <script src="./app/site-release.js?v=sha256-8eb3b12108b996bea0e6956527d1b07feb771f7c0ce3c072961d29e6689ba25f"></script>
+  <script src="./app/app.js?v=sha256-c263d42ef98afa7dce847c7198fab0e0de1497caf703f226acb4e0656d6d2dd0"></script>
 </body>
 </html>

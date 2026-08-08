@@ -345,7 +345,6 @@
     peerStatusCheck: null,
     peerCompanionInventory: null,
     localMemoryPackage: null,
-    pendingConversionRequest: null,
     catalogFetchAbort: null,
     hfSearchAbort: null,
     hasContext: false,
@@ -384,8 +383,10 @@
       runtime: null,
       models: [],
       activeOperationId: "",
+      activeOperationKind: "",
       activeEntry: null,
       activeStatus: null,
+      pendingAcquisition: null,
       pollSequence: 0,
       streamAbort: null,
       browserLoadBytes: 0,
@@ -504,8 +505,6 @@
     simpleLoadCatalogButton: document.getElementById("simpleLoadCatalogButton"),
     simpleLocalCatalogFile: document.getElementById("simpleLocalCatalogFile"),
     simpleImportLocalCatalogButton: document.getElementById("simpleImportLocalCatalogButton"),
-    simpleShareMetadataFile: document.getElementById("simpleShareMetadataFile"),
-    simpleImportShareMetadataButton: document.getElementById("simpleImportShareMetadataButton"),
     simplePeerAnnouncementFile: document.getElementById("simplePeerAnnouncementFile"),
     simpleApplyPeerAnnouncementButton: document.getElementById("simpleApplyPeerAnnouncementButton"),
     simpleImportReceiptLedgerFile: document.getElementById("simpleImportReceiptLedgerFile"),
@@ -518,9 +517,6 @@
     simplePeerCompanionInventoryFile: document.getElementById("simplePeerCompanionInventoryFile"),
     simplePeerCompanionInventoryButton: document.getElementById("simplePeerCompanionInventoryButton"),
     simplePeerCompanionInventoryStatus: document.getElementById("simplePeerCompanionInventoryStatus"),
-    simpleSaveShareMetadataButton: document.getElementById("simpleSaveShareMetadataButton"),
-    simpleSaveShareKitButton: document.getElementById("simpleSaveShareKitButton"),
-    simpleShareMetadataStatus: document.getElementById("simpleShareMetadataStatus"),
     simpleLocalConnectApprovalsButton: document.getElementById("simpleLocalConnectApprovalsButton"),
     simpleLocalConnectStatus: document.getElementById("simpleLocalConnectStatus"),
     simpleOpenAdvancedDiscoveryButton: document.getElementById("simpleOpenAdvancedDiscoveryButton"),
@@ -564,9 +560,6 @@
     localModelFile: document.getElementById("localModelFile"),
     importLocalModelButton: document.getElementById("importLocalModelButton"),
     localModelState: document.getElementById("localModelState"),
-    conversionRequestFile: document.getElementById("conversionRequestFile"),
-    importConversionRequestButton: document.getElementById("importConversionRequestButton"),
-    conversionRequestState: document.getElementById("conversionRequestState"),
     localMemoryPackageSetup: document.getElementById("localMemoryPackageSetup"),
     localMemoryPackageFiles: document.getElementById("localMemoryPackageFiles"),
     inspectLocalMemoryPackageButton: document.getElementById("inspectLocalMemoryPackageButton"),
@@ -603,8 +596,6 @@
     catalogLoadButton: document.getElementById("catalogLoadButton"),
     localCatalogFile: document.getElementById("localCatalogFile"),
     importLocalCatalogButton: document.getElementById("importLocalCatalogButton"),
-    shareMetadataFile: document.getElementById("shareMetadataFile"),
-    importShareMetadataButton: document.getElementById("importShareMetadataButton"),
     peerContactCardFile: document.getElementById("peerContactCardFile"),
     applyPeerContactCardButton: document.getElementById("applyPeerContactCardButton"),
     peerContactBookFile: document.getElementById("peerContactBookFile"),
@@ -630,9 +621,6 @@
     hfSearchButton: document.getElementById("hfSearchButton"),
     hfStatus: document.getElementById("hfStatus"),
     hfResults: document.getElementById("hfResults"),
-    saveShareMetadataButton: document.getElementById("saveShareMetadataButton"),
-    saveShareKitButton: document.getElementById("saveShareKitButton"),
-    shareMetadataState: document.getElementById("shareMetadataState"),
     localConnectApprovalMode: document.getElementById("localConnectApprovalMode"),
     localConnectFullControlAck: document.getElementById("localConnectFullControlAck"),
     localConnectModeWarning: document.getElementById("localConnectModeWarning"),
@@ -1446,7 +1434,6 @@
     }
     el.currentModelSummary.textContent = `${selected} / ${stateText || "waiting"}`;
     updateOfflineReadiness();
-    updateShareMetadataControls();
   }
 
   function setAppMode(mode) {
@@ -2539,7 +2526,7 @@
     }
     if (el.simpleHfP2pStatus) {
       el.simpleHfP2pStatus.textContent = enabled
-        ? "P2P on. Peer-ready matches can be imported, and new conversions prepare a local P2P share kit."
+        ? "P2P on. Get model prefers a complete verified peer and converts locally when none is available."
         : "P2P off. New conversions create a private local .slm only; sharing can be added later.";
     }
     if (el.simpleHfP2pWarning) {
@@ -2703,12 +2690,20 @@
     );
   }
 
-  function companionImportIsActive(status) {
+  function companionAcquisitionIsActive(status) {
     const value = catalogText(status && status.state);
-    return ["queued", "preflighting", "importing", "validating"].includes(value);
+    return [
+      "queued",
+      "preflighting",
+      "importing",
+      "downloading",
+      "reviewing",
+      "converting",
+      "validating"
+    ].includes(value);
   }
 
-  function companionImportStageText(status) {
+  function companionAcquisitionStageText(status) {
     const value = catalogText(status && status.state);
     const errorCode = catalogText(status && status.error_code);
     if (!value) {
@@ -2718,6 +2713,9 @@
       queued: "Queued locally",
       preflighting: "Verifying peer identities",
       importing: "Downloading and verifying peer pieces",
+      downloading: "Downloading the immutable source revision",
+      reviewing: "Reviewing source structure, tokenizer, and license evidence",
+      converting: "Converting the model locally",
       validating: "Validating the assembled .slm receipt",
       available: "Verified model ready",
       resumable: errorCode
@@ -2725,6 +2723,13 @@
         : "Paused safely; resume is available",
       failed: errorCode ? `Import rejected (${errorCode})` : "Import rejected"
     };
+    if (value === "downloading") {
+      const downloaded = Number(status.downloaded_source_byte_count);
+      const total = Number(status.source_byte_count);
+      if (Number.isSafeInteger(downloaded) && Number.isSafeInteger(total) && total > 0) {
+        return `Downloading ${formatByteCount(downloaded)} of ${formatByteCount(total)}`;
+      }
+    }
     return labels[value] || value;
   }
 
@@ -2869,6 +2874,15 @@
       if (catalogText(activeStatus && activeStatus.state) === "available") {
         el.companionImportProgressBar.max = 1;
         el.companionImportProgressBar.value = 1;
+      } else if (
+        Number(activeStatus && activeStatus.source_byte_count) > 0 &&
+        Number(activeStatus && activeStatus.downloaded_source_byte_count) >= 0
+      ) {
+        el.companionImportProgressBar.max = Number(activeStatus.source_byte_count);
+        el.companionImportProgressBar.value = Math.min(
+          Number(activeStatus.downloaded_source_byte_count),
+          Number(activeStatus.source_byte_count)
+        );
       } else {
         el.companionImportProgressBar.removeAttribute("value");
       }
@@ -2876,7 +2890,7 @@
     if (el.companionImportStage) {
       const streamText = companion.browserLoadBytes > 0 && companion.activeEntry
         ? `Loading ${formatByteCount(companion.browserLoadBytes)} of ${formatByteCount(companion.activeEntry.artifactByteCount)} into browser memory`
-        : companionImportStageText(activeStatus);
+        : companionAcquisitionStageText(activeStatus);
       el.companionImportStage.textContent = streamText;
       el.companionImportStage.classList.toggle(
         "error",
@@ -2885,7 +2899,7 @@
     }
     if (el.companionCancelImportButton) {
       el.companionCancelImportButton.disabled = !(
-        companionImportIsActive(activeStatus) || companion.streamAbort
+        companionAcquisitionIsActive(activeStatus) || companion.streamAbort
       );
     }
     renderCompanionSharingState();
@@ -2932,20 +2946,26 @@
     }
   }
 
-  async function refreshCompanionActiveImport() {
+  async function refreshCompanionActiveAcquisition() {
     const companion = state.companion;
     const operationId = catalogText(companion.activeOperationId);
     if (!operationId) {
       return null;
     }
     try {
-      const status = await companion.client.getImport(operationId);
+      const status = companion.activeOperationKind === "conversion"
+        ? await companion.client.getConversion(operationId)
+        : await companion.client.getImport(operationId);
       companion.activeStatus = status;
       renderCompanionState();
       return status;
     } catch (error) {
-      if (error && error.code === "bridge_import_not_found") {
+      if (
+        error &&
+        (error.code === "bridge_import_not_found" || error.code === "bridge_conversion_not_found")
+      ) {
         companion.activeOperationId = "";
+        companion.activeOperationKind = "";
         companion.activeStatus = null;
         renderCompanionState();
         return null;
@@ -2960,7 +2980,7 @@
     const models = await companion.client.listModels();
     companion.runtime = runtime;
     companion.models = models;
-    await refreshCompanionActiveImport();
+    await refreshCompanionActiveAcquisition();
     if (companionCanManageSharing()) {
       await refreshCompanionSharing();
     } else {
@@ -3036,6 +3056,7 @@
       setCompanionStatus("paired", "Companion paired; checking local models", false);
       await refreshCompanionRuntime();
       refreshPeerAvailabilityViews();
+      await resumePendingCompanionAcquisition();
       return true;
     } catch (error) {
       setCompanionStatus("detected", friendlyError(errorMessage(error)), true);
@@ -3053,6 +3074,7 @@
     companion.runtime = null;
     companion.models = [];
     companion.activeOperationId = "";
+    companion.activeOperationKind = "";
     companion.activeStatus = null;
     companion.activeEntry = null;
     companion.browserLoadBytes = 0;
@@ -3232,16 +3254,43 @@
     return text;
   }
 
+  async function requireCompanionForAcquisition(entry, kind) {
+    if (companionIsPaired()) {
+      return true;
+    }
+    state.companion.pendingAcquisition = { entry, kind };
+    setSimpleSourceOption("p2p", true);
+    holdModelPopoverOpen(5000);
+    if (state.companion.connectionState !== "detected") {
+      await detectCompanion();
+    }
+    if (state.companion.connectionState === "detected" && el.companionPairingCode) {
+      el.companionPairingCode.focus();
+    } else {
+      setCompanionStatus(
+        state.companion.connectionState,
+        "Start the TinyRustLM desktop companion to get this model",
+        false
+      );
+    }
+    return false;
+  }
+
+  async function resumePendingCompanionAcquisition() {
+    const pending = state.companion.pendingAcquisition;
+    if (!pending || !companionIsPaired()) {
+      return false;
+    }
+    state.companion.pendingAcquisition = null;
+    if (pending.kind === "p2p") {
+      return startCompanionImport(pending.entry);
+    }
+    return getHfModel(pending.entry);
+  }
+
   async function startCompanionImport(entry) {
     const companion = state.companion;
-    if (!companionIsPaired()) {
-      setSimpleSourceOption("p2p", true);
-      holdModelPopoverOpen(4000);
-      if (companion.connectionState === "detected" && el.companionPairingCode) {
-        el.companionPairingCode.focus();
-      } else {
-        await detectCompanion();
-      }
+    if (!await requireCompanionForAcquisition(entry, "p2p")) {
       return false;
     }
     const peerUrls = companionPeerUrls(entry);
@@ -3251,6 +3300,7 @@
     }
     const sequence = companion.pollSequence + 1;
     companion.pollSequence = sequence;
+    companion.activeOperationKind = "import";
     companion.activeEntry = entry;
     companion.activeStatus = { state: "queued" };
     companion.browserLoadBytes = 0;
@@ -3265,6 +3315,7 @@
       );
       let status = await companion.client.startImport(manifestText, requests);
       companion.activeOperationId = catalogText(status.operation_id);
+      companion.activeOperationKind = "import";
       companion.activeStatus = status;
       renderCompanionState();
       while (sequence === companion.pollSequence) {
@@ -3309,13 +3360,219 @@
     }
   }
 
+  function companionSha256(value, label) {
+    const digest = catalogText(value).toLowerCase().replace(/^sha256:/, "");
+    if (!/^[0-9a-f]{64}$/.test(digest)) {
+      throw new Error(`${label} SHA-256 was invalid`);
+    }
+    return digest;
+  }
+
+  async function startCompanionConversion(entry) {
+    const companion = state.companion;
+    if (!await requireCompanionForAcquisition(entry, "conversion")) {
+      return false;
+    }
+    const sequence = companion.pollSequence + 1;
+    companion.pollSequence = sequence;
+    companion.activeOperationKind = "conversion";
+    companion.activeEntry = entry;
+    companion.activeStatus = { state: "queued" };
+    companion.browserLoadBytes = 0;
+    setHfStatus(`Inspecting the immutable ${entry.modelId} revision`, false);
+    renderCompanionState();
+    try {
+      const detail = await fetchHfImmutableDetail(entry);
+      const request = hfDirectConversionRequest(entry, detail);
+      if (sequence !== companion.pollSequence) {
+        return false;
+      }
+      setHfStatus(
+        `Getting ${entry.modelId} from revision ${request.source.revision.slice(0, 12)}`,
+        false
+      );
+      let status = await companion.client.startConversion(`${JSON.stringify(request)}\n`);
+      companion.activeOperationId = catalogText(status.operation_id);
+      companion.activeOperationKind = "conversion";
+      companion.activeStatus = status;
+      renderCompanionState();
+      while (sequence === companion.pollSequence) {
+        const conversionState = catalogText(status.state);
+        if (conversionState === "available") {
+          await prepareCompanionConvertedModel(entry, status, sequence);
+          return true;
+        }
+        if (conversionState === "failed" || conversionState === "resumable") {
+          const code = catalogText(status.error_code) || "conversion did not complete";
+          setHfStatus(
+            conversionState === "resumable"
+              ? `Conversion paused safely (${code}); Get model resumes it`
+              : `Local conversion rejected (${code})`,
+            conversionState === "failed"
+          );
+          setCompanionStatus(
+            "paired",
+            conversionState === "resumable" ? "Conversion is ready to resume" : `Conversion rejected: ${code}`,
+            conversionState === "failed"
+          );
+          return false;
+        }
+        await new Promise((resolve) => window.setTimeout(resolve, 750));
+        if (sequence !== companion.pollSequence) {
+          return false;
+        }
+        status = await companion.client.getConversion(companion.activeOperationId);
+        companion.activeStatus = status;
+        renderCompanionState();
+      }
+      return false;
+    } catch (error) {
+      if (sequence === companion.pollSequence) {
+        const detail = errorMessage(error);
+        companion.activeStatus = {
+          state: "failed",
+          error_code: error && error.code ? error.code : "bridge_conversion_failed"
+        };
+        setHfStatus(friendlyError(detail), true);
+        setText(el.errorState, detail, true);
+        appendConsole(`companion conversion rejected: ${detail}`);
+        setCompanionStatus("paired", friendlyError(detail), true);
+        renderCompanionState();
+      }
+      return false;
+    }
+  }
+
+  async function prepareCompanionConvertedModel(entry, status, sequence) {
+    const companion = state.companion;
+    const operationId = catalogText(status.operation_id);
+    const models = await companion.client.listModels();
+    const model = models.find((value) => catalogText(value.operation_id) === operationId);
+    if (!model || sequence !== companion.pollSequence) {
+      throw new Error("The completed conversion was absent from the companion model inventory");
+    }
+    const artifactByteCount = Number(model.artifact_byte_count);
+    const artifactSha256 = companionSha256(model.artifact_sha256, "Converted model");
+    const compositionByteCount = Number(model.composition_graph_byte_count);
+    const compositionSha256 = companionSha256(
+      model.composition_graph_sha256,
+      "Converted model composition"
+    );
+    const contract = hfSourceContract(entry.modelId);
+    const baseModelId = catalogText(model.base_model_id);
+    const compositionId = catalogText(model.composition_id);
+    const routePolicyId = catalogText(model.route_policy_id);
+    const kvFormatId = catalogText(model.kv_format_id);
+    const compositionMemberCount = Number(model.composition_member_count);
+    if (
+      !Number.isSafeInteger(artifactByteCount) || artifactByteCount <= 0 ||
+      !Number.isSafeInteger(compositionByteCount) || compositionByteCount <= 0 ||
+      companionSha256(status.artifact_sha256, "Conversion receipt") !== artifactSha256 ||
+      Number(status.artifact_byte_count) !== artifactByteCount ||
+      catalogText(model.acquisition_kind) !== "conversion" ||
+      !contract || catalogText(model.model_shape) !== contract.modelShape ||
+      !/^[0-9a-f]{40}$/.test(catalogText(model.source_revision)) ||
+      !isRegistryTypedContentId(baseModelId, "model-sha256-") ||
+      !isRegistryTypedContentId(compositionId, "composition-sha256-") ||
+      !isRegistryTypedContentId(routePolicyId, "route-sha256-") ||
+      !isRegistryTypedContentId(kvFormatId, "kv-format-sha256-") ||
+      compositionMemberCount !== 0
+    ) {
+      throw new Error("The converted model inventory disagreed with its completion receipt");
+    }
+    const catalogEntry = {
+      modelId: catalogText(model.model_id) || entry.modelId,
+      displayName: entry.modelId,
+      sourceModelId: entry.modelId,
+      sourceRevision: catalogText(model.source_revision),
+      artifactByteCount,
+      artifactSha256: `sha256:${artifactSha256}`,
+      modelShape: catalogText(model.model_shape),
+      quantization: catalogText(model.quantization),
+      tokenizer: catalogText(model.tokenizer),
+      contextLength: Number(model.context_length),
+      promptFormat: catalogText(model.prompt_format) || promptFormatRaw,
+      admissionStatus: "rust-conversion-receipt-validated",
+      qualityEvalStatus: "not-run",
+      qualityClaim: "not-claimed",
+      trainedQualityClaim: "not-claimed",
+      intendedUse: "user-requested-local-conversion",
+      requiredNextGate: "independent-conversation-quality-evaluation",
+      maxTokens: Math.min(512, Math.max(16, Number(model.context_length) - 1))
+    };
+    companion.models = models;
+    companion.activeEntry = catalogEntry;
+    state.localModel = {
+      label: `${entry.modelId} (locally converted)` ,
+      path: `companion:${operationId}`,
+      maxTokens: catalogEntry.maxTokens,
+      modelBytes: artifactByteCount,
+      artifactSha256: `sha256:${artifactSha256}`,
+      modelShape: catalogEntry.modelShape,
+      quantization: catalogEntry.quantization,
+      tokenizer: catalogEntry.tokenizer,
+      contextLength: catalogEntry.contextLength,
+      promptFormat: catalogEntry.promptFormat,
+      estimatedWasmMemoryBytes: Math.ceil(artifactByteCount * 1.3),
+      requiredDownloadConsent: false,
+      composition: {
+        companion: true,
+        bytes: compositionByteCount,
+        sha256: `sha256:${compositionSha256}`,
+        baseModelId,
+        compositionId,
+        activeGraphSha256: `sha256:${companionSha256(model.active_graph_sha256, "Active graph")}`,
+        routePolicyId,
+        kvFormatId,
+        positionPolicySha256: `sha256:${companionSha256(model.position_policy_sha256, "Position policy")}`,
+        memberCount: compositionMemberCount
+      },
+      companionImport: {
+        operationId,
+        acquisitionKind: "conversion",
+        catalogEntry,
+        artifactByteCount,
+        artifactSha256
+      }
+    };
+    paths.models = modelsWithLocalModel(paths.models);
+    renderModelOptions(paths.models, false, localModelKey);
+    setHfStatus(`${entry.modelId} converted and verified locally`, false);
+    setCompanionStatus("paired", "Converted model ready; loading into browser memory", false);
+    const loadResult = state.exports
+      ? await loadSelectedModelWithConsent()
+      : { loaded: false, outcome: "runtime-unavailable", error: "The browser runtime is not ready" };
+    if (loadResult.loaded) {
+      setLocalModelStatus(`${entry.modelId} loaded from the local companion`, false);
+    } else {
+      setLocalModelStatus(
+        `${entry.modelId} is converted and stored locally; browser load did not complete`,
+        loadResult.outcome === "failed"
+      );
+    }
+  }
+
+  async function getHfModel(entry) {
+    const view = hfResultView(entry);
+    if (view.p2pMatch && canStartP2pImport(view.p2pMatch)) {
+      return startCompanionImport(view.p2pMatch);
+    }
+    if (!hfCanStartConversion(view)) {
+      setHfStatus("No verified P2P copy or supported immutable conversion source is available", true);
+      return false;
+    }
+    return startCompanionConversion(entry);
+  }
+
   async function prepareCompanionModel(entry, status, sequence) {
     const byteCount = Number(status.artifact_byte_count);
-    const artifactSha256 = catalogText(status.artifact_sha256).toLowerCase();
+    const artifactSha256 = companionSha256(status.artifact_sha256, "P2P import");
+    const expectedArtifactSha256 = companionSha256(entry.artifactSha256, "Catalog model");
     if (
       sequence !== state.companion.pollSequence ||
       byteCount !== entry.artifactByteCount ||
-      artifactSha256 !== entry.artifactSha256.toLowerCase()
+      artifactSha256 !== expectedArtifactSha256 ||
+      !entry.composition
     ) {
       throw new Error("Companion import identity did not match the selected catalog model");
     }
@@ -3335,8 +3592,10 @@
       promptFormat: entry.promptFormat || promptFormatRaw,
       estimatedWasmMemoryBytes: Math.ceil(byteCount * 1.3),
       requiredDownloadConsent: true,
+      composition: entry.composition,
       companionImport: {
         operationId: status.operation_id,
+        acquisitionKind: "p2p",
         catalogEntry: entry,
         artifactByteCount: byteCount,
         artifactSha256
@@ -3405,12 +3664,12 @@
     if (
       companion.activeOperationId &&
       companionIsPaired() &&
-      companionImportIsActive(companion.activeStatus)
+      companionAcquisitionIsActive(companion.activeStatus)
     ) {
       try {
-        companion.activeStatus = await companion.client.cancelImport(
-          companion.activeOperationId
-        );
+        companion.activeStatus = companion.activeOperationKind === "conversion"
+          ? await companion.client.cancelConversion(companion.activeOperationId)
+          : await companion.client.cancelImport(companion.activeOperationId);
       } catch (error) {
         setCompanionStatus("paired", friendlyError(errorMessage(error)), true);
       }
@@ -4110,43 +4369,6 @@
         }
         setPeerCompanionInventoryStatus(`${safeLocalModelName(file.name)} / ${formatByteCount(file.size)} peer companion inventory selected`, false);
         holdModelPopoverOpen(2500);
-      });
-    }
-    if (el.simpleImportShareMetadataButton) {
-      el.simpleImportShareMetadataButton.addEventListener("click", () => {
-        setSimpleSourceOption("p2p", true);
-        importShareMetadataFile(el.simpleShareMetadataFile).catch((error) => {
-          setCatalogStatus(errorMessage(error), true);
-        }).finally(() => {
-          holdModelPopoverOpen(3000);
-        });
-      });
-    }
-    if (el.simpleShareMetadataFile) {
-      el.simpleShareMetadataFile.addEventListener("change", () => {
-        const file = el.simpleShareMetadataFile.files && el.simpleShareMetadataFile.files[0];
-        if (!file) {
-          setCatalogStatus("choose a share metadata JSON file", false);
-          return;
-        }
-        setCatalogStatus(`${safeLocalModelName(file.name)} / ${formatByteCount(file.size)} share metadata selected`, false);
-        holdModelPopoverOpen(2500);
-      });
-    }
-    if (el.simpleSaveShareMetadataButton) {
-      el.simpleSaveShareMetadataButton.addEventListener("click", () => {
-        setSimpleSourceOption("p2p", true);
-        saveShareMetadata().catch((error) => {
-          setShareMetadataStatus(errorMessage(error), true);
-        });
-      });
-    }
-    if (el.simpleSaveShareKitButton) {
-      el.simpleSaveShareKitButton.addEventListener("click", () => {
-        setSimpleSourceOption("p2p", true);
-        saveShareKit().catch((error) => {
-          setShareMetadataStatus(errorMessage(error), true);
-        });
       });
     }
     if (el.simpleLocalConnectApprovalsButton) {
@@ -5329,6 +5551,35 @@
     const composition = model && model.composition ? model.composition : null;
     if (!composition) {
       throw new Error("Model is not authorized by an admitted composition graph");
+    }
+    if (composition.companion === true) {
+      if (!companionIsPaired()) {
+        throw new Error("Pair the desktop companion before loading this composition");
+      }
+      if (
+        !Number.isSafeInteger(composition.bytes) ||
+        composition.bytes <= 0 ||
+        composition.bytes > selectorCompositionGraphByteBudget
+      ) {
+        throw new Error("Companion composition graph byte count was invalid");
+      }
+      const bytes = new Uint8Array(composition.bytes);
+      await state.companion.client.streamComposition(model.companionImport.operationId, {
+        expectedByteCount: composition.bytes,
+        expectedSha256: String(composition.sha256 || "").replace(/^sha256:/, ""),
+        signal: state.companion.streamAbort && state.companion.streamAbort.signal,
+        onChunk(chunk, offset) {
+          if (loadId !== state.modelLoadSequence) {
+            throw new Error("Model load was superseded");
+          }
+          bytes.set(chunk, offset);
+        }
+      });
+      const observedSha256 = await sha256Hex(bytes);
+      if (observedSha256 !== composition.sha256) {
+        throw new Error("Companion composition graph SHA-256 mismatch");
+      }
+      return bytes;
     }
     const response = await fetch(composition.path, localFetchOptions);
     if (!response.ok) {
@@ -8282,6 +8533,57 @@
     });
   }
 
+  function catalogCompositionFromRaw(raw, modelId, catalogBaseUrl) {
+    const route = catalogText(raw.composition_graph_route || raw.composition_graph_path);
+    const declared = [
+      route,
+      raw.composition_graph_byte_count || raw.composition_graph_bytes,
+      raw.composition_graph_sha256,
+      raw.composition_base_model_id,
+      raw.composition_id,
+      raw.composition_active_graph_sha256,
+      raw.composition_route_policy_id,
+      raw.composition_kv_format_id,
+      raw.composition_position_policy_sha256,
+      raw.composition_member_count
+    ];
+    if (!declared.some(Boolean)) {
+      return null;
+    }
+    const bytes = catalogInteger(raw.composition_graph_byte_count || raw.composition_graph_bytes);
+    const sha256 = normalizeCatalogSha256(raw.composition_graph_sha256);
+    const activeGraphSha256 = normalizeCatalogSha256(raw.composition_active_graph_sha256);
+    const positionPolicySha256 = normalizeCatalogSha256(raw.composition_position_policy_sha256);
+    const baseModelId = catalogText(raw.composition_base_model_id);
+    const compositionId = catalogText(raw.composition_id);
+    const routePolicyId = catalogText(raw.composition_route_policy_id);
+    const kvFormatId = catalogText(raw.composition_kv_format_id);
+    const memberCount = Number(raw.composition_member_count);
+    if (
+      !route || !bytes || bytes > selectorCompositionGraphByteBudget ||
+      !sha256 || !activeGraphSha256 || !positionPolicySha256 ||
+      !isRegistryTypedContentId(baseModelId, "model-sha256-") ||
+      !isRegistryTypedContentId(compositionId, "composition-sha256-") ||
+      !isRegistryTypedContentId(routePolicyId, "route-sha256-") ||
+      !isRegistryTypedContentId(kvFormatId, "kv-format-sha256-") ||
+      !Number.isSafeInteger(memberCount) || memberCount < 0 || memberCount > 64
+    ) {
+      throw new Error(`Catalog entry ${modelId} composition graph was incomplete or invalid`);
+    }
+    return {
+      path: catalogMetadataRouteUrl(route, catalogBaseUrl, `${modelId} composition graph`),
+      bytes,
+      sha256,
+      baseModelId,
+      compositionId,
+      activeGraphSha256,
+      routePolicyId,
+      kvFormatId,
+      positionPolicySha256,
+      memberCount
+    };
+  }
+
   function catalogEntryFromRaw(raw, index, catalogBaseUrl) {
     if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
       throw new Error(`Catalog entry ${index + 1} was not an object`);
@@ -8407,6 +8709,7 @@
       fileNameHint,
       maxTokens: maxTokens && maxTokens > 0 && maxTokens <= 512 ? maxTokens : 16
     };
+    entry.composition = catalogCompositionFromRaw(raw, modelId, catalogBaseUrl);
     validateCatalogEntryTrustEnvelope(entry);
     return entry;
   }
@@ -8427,11 +8730,6 @@
 
   function simpleCatalogPeerStateText(entry) {
     if (!entry.peerOfferRoute) {
-      if (entry.shareMetadataStatus) {
-        return entry.shareMetadataLocalShareKitAvailable
-          ? "Share metadata verified / run share kit then load generated catalog"
-          : "Share metadata verified / matching local .slm needed";
-      }
       return entry.sourceKind || "verified source pending";
     }
     return entry.peerSources.length
@@ -8676,306 +8974,6 @@
     state.defaultCatalogCheckedForAvailability = false;
     renderCatalogResults(entries);
     setCatalogStatus(`${entries.length} local MiniModel metadata entries from ${fileName}`, false);
-  }
-
-  function shareMetadataModeFromBundle(bundle, label) {
-    const boundary = bundle && bundle.boundary;
-    if (!boundary || typeof boundary !== "object" || Array.isArray(boundary)) {
-      throw new Error(`${label} boundary was invalid`);
-    }
-    requireFalseMetadataFlag(boundary, "project_server_serves_model_bytes", `${label} boundary`);
-    requireFalseMetadataFlag(boundary, "project_server_runs_model_bytes", `${label} boundary`);
-    if (boundary.project_server_proxies_model_bytes === true) {
-      throw new Error(`${label} boundary declares project-server model-byte proxying`);
-    }
-    if (boundary.user_consent_required_before_transfer !== true) {
-      throw new Error(`${label} boundary must require user consent before transfer`);
-    }
-    const status = catalogText(boundary.peer_transfer_status);
-    const implementation = catalogText(boundary.peer_transfer_implementation);
-    const implemented = boundary.peer_transfer_implemented === true;
-    if (
-      !implemented &&
-      status === "metadata-only" &&
-      implementation === "not-included-in-metadata-export"
-    ) {
-      return {
-        shareKitReady: false,
-        status,
-        implementation,
-        peerHintStatus: "share-metadata-verified-local-file-required",
-        requiredNextGate: "import-matching-local-slm-or-run-share-kit-before-p2p"
-      };
-    }
-    if (
-      implemented &&
-      status === "local-share-kit-script-ready-known-peer-needed" &&
-      implementation === "generated-local-minimodel-share-kit-v0"
-    ) {
-      return {
-        shareKitReady: true,
-        status,
-        implementation,
-        peerHintStatus: "share-kit-ready-run-local-script-known-peer-needed",
-        requiredNextGate: "run-local-share-kit-and-load-generated-models-v0-json-for-p2p"
-      };
-    }
-    throw new Error(`${label} peer transfer profile was unsupported`);
-  }
-
-  function requireShareMetadataObject(value, label) {
-    if (!value || typeof value !== "object" || Array.isArray(value)) {
-      throw new Error(`${label} must be a JSON object`);
-    }
-    return value;
-  }
-
-  function requireShareMetadataSha(value, label) {
-    const normalized = normalizeCatalogSha256(value);
-    if (!normalized) {
-      throw new Error(`${label} SHA-256 was invalid`);
-    }
-    return normalized;
-  }
-
-  function requireShareMetadataInteger(value, label) {
-    const parsed = catalogInteger(value);
-    if (!parsed || parsed < 1) {
-      throw new Error(`${label} was invalid`);
-    }
-    return parsed;
-  }
-
-  async function validateShareMetadataChunks(chunks, artifactByteCount, artifactSha256, label) {
-    requireShareMetadataObject(chunks, `${label} chunks`);
-    if (catalogText(chunks.algorithm) !== "sha256-merkle-v0") {
-      throw new Error(`${label} chunk algorithm was unsupported`);
-    }
-    const chunkSize = requireShareMetadataInteger(chunks.chunk_size, `${label} chunk size`);
-    if (chunkSize !== peerShareChunkBytes) {
-      throw new Error(`${label} chunk size must be ${peerShareChunkBytes}`);
-    }
-    const chunkCount = requireShareMetadataInteger(chunks.chunk_count, `${label} chunk count`);
-    const entries = Array.isArray(chunks.entries) ? chunks.entries : [];
-    if (entries.length !== chunkCount) {
-      throw new Error(`${label} chunk count did not match entries`);
-    }
-    const normalizedEntries = [];
-    let expectedOffset = 0;
-    for (let index = 0; index < entries.length; index += 1) {
-      const entry = requireShareMetadataObject(entries[index], `${label} chunk ${index + 1}`);
-      const chunkIndex = catalogInteger(entry.index);
-      const offset = catalogInteger(entry.offset);
-      const byteCount = requireShareMetadataInteger(entry.byte_count, `${label} chunk ${index + 1} byte count`);
-      const sha256 = requireShareMetadataSha(entry.sha256, `${label} chunk ${index + 1}`);
-      if (chunkIndex !== index) {
-        throw new Error(`${label} chunk ${index + 1} index was invalid`);
-      }
-      if (offset === null || offset !== expectedOffset) {
-        throw new Error(`${label} chunk ${index + 1} offset was invalid`);
-      }
-      expectedOffset += byteCount;
-      normalizedEntries.push({
-        index,
-        offset,
-        byte_count: byteCount,
-        sha256
-      });
-    }
-    if (expectedOffset !== artifactByteCount) {
-      throw new Error(`${label} chunk byte count did not match artifact byte count`);
-    }
-    if (normalizedEntries.length === 1 && normalizedEntries[0].sha256 !== artifactSha256) {
-      throw new Error(`${label} single chunk checksum did not match artifact SHA-256`);
-    }
-    const chunkListText = normalizedEntries.map((chunk) => [
-      chunk.index,
-      chunk.offset,
-      chunk.byte_count,
-      chunk.sha256
-    ].join("=")).join("\n");
-    const chunkListSha256 = await sha256Text(`${chunkListText}\n`);
-    const expectedChunkListSha256 = requireShareMetadataSha(chunks.chunk_list_sha256, `${label} chunk list`);
-    if (chunkListSha256 !== expectedChunkListSha256) {
-      throw new Error(`${label} chunk list checksum did not match entries`);
-    }
-    const merkleRoot = await merkleRootSha256(normalizedEntries);
-    const expectedMerkleRoot = requireShareMetadataSha(chunks.merkle_root_sha256, `${label} Merkle root`);
-    if (merkleRoot !== expectedMerkleRoot) {
-      throw new Error(`${label} Merkle root did not match entries`);
-    }
-    return {
-      chunkCount,
-      chunkSize,
-      chunkListSha256,
-      merkleRootSha256: merkleRoot
-    };
-  }
-
-  function validateShareMetadataTransfer(offer, mode, label) {
-    const transfer = requireShareMetadataObject(offer.transfer, `${label} transfer`);
-    requireFalseMetadataFlag(transfer, "project_server_serves_model_bytes", `${label} transfer`);
-    requireFalseMetadataFlag(transfer, "project_server_runs_model_bytes", `${label} transfer`);
-    if (transfer.network_transfer_available !== false) {
-      throw new Error(`${label} transfer must declare network_transfer_available=false`);
-    }
-    const protocols = Array.isArray(transfer.protocols) ? transfer.protocols.map(catalogText) : [];
-    if (!mode.shareKitReady) {
-      if (
-        catalogText(offer.offer_status) !== "metadata-ready-transfer-not-implemented" ||
-        transfer.local_share_kit_available !== false ||
-        transfer.serve_helper_available !== false ||
-        protocols.length
-      ) {
-        throw new Error(`${label} metadata-only transfer profile was invalid`);
-      }
-      return;
-    }
-    if (
-      catalogText(offer.offer_status) !== "local-share-kit-ready-known-peer-needed" ||
-      transfer.local_share_kit_available !== true ||
-      transfer.serve_helper_available !== true ||
-      !protocols.includes("minimodel-prepare-peer-share-v0") ||
-      !protocols.includes("known-direct-http-peer-v0") ||
-      !protocols.includes("minimodel-peer-companion-v0")
-    ) {
-      throw new Error(`${label} share-kit transfer profile was invalid`);
-    }
-  }
-
-  function validateShareKitDescriptor(bundle, mode, label) {
-    if (!mode.shareKitReady) {
-      if (Object.prototype.hasOwnProperty.call(bundle, "share_kit")) {
-        throw new Error(`${label} metadata-only bundle must not include share_kit`);
-      }
-      return;
-    }
-    const shareKit = requireShareMetadataObject(bundle.share_kit, `${label} share_kit`);
-    if (
-      catalogText(shareKit.kit_kind) !== "tinyrustlm.local_p2p_share_kit.v0" ||
-      catalogText(shareKit.kit_status) !== "script-ready-known-peer-needed" ||
-      shareKit.prepares_peer_pieces !== true ||
-      shareKit.writes_catalog_snapshot !== true ||
-      shareKit.writes_import_receipt_ledger !== true ||
-      shareKit.writes_peer_companion_state_when_known_peer_set !== true ||
-      shareKit.writes_peer_contact_card_when_known_peer_set !== true ||
-      shareKit.writes_peer_contact_book_when_known_peer_set !== true ||
-      shareKit.writes_peer_companion_inventory_when_known_peer_set !== true ||
-      shareKit.serve_helper_available !== true
-    ) {
-      throw new Error(`${label} share_kit descriptor was invalid`);
-    }
-    requireFalseMetadataFlag(shareKit, "project_server_serves_model_bytes", `${label} share_kit`);
-    requireFalseMetadataFlag(shareKit, "project_server_runs_model_bytes", `${label} share_kit`);
-  }
-
-  async function catalogEntryFromShareMetadataBundle(bundle, sourceLabel) {
-    requireShareMetadataObject(bundle, sourceLabel);
-    if (catalogText(bundle.bundle_kind) !== "minimodel.local_slm_share_metadata.v0") {
-      throw new Error(`${sourceLabel} bundle kind was unsupported`);
-    }
-    assertMetadataOnlyCatalogBoundary(bundle, sourceLabel);
-    const mode = shareMetadataModeFromBundle(bundle, sourceLabel);
-    const rawEntry = {
-      ...requireShareMetadataObject(bundle.catalog_entry, `${sourceLabel} catalog_entry`)
-    };
-    const offer = requireShareMetadataObject(bundle.peer_offer, `${sourceLabel} peer_offer`);
-    assertMetadataOnlyCatalogBoundary(rawEntry, `${sourceLabel} catalog_entry`);
-    assertMetadataOnlyCatalogBoundary(offer, `${sourceLabel} peer_offer`);
-    if (catalogText(offer.offer_kind) !== "minimodel.peer_offer.v0") {
-      throw new Error(`${sourceLabel} peer offer kind was unsupported`);
-    }
-    if (catalogText(offer.artifact_kind).toLowerCase() !== "slm") {
-      throw new Error(`${sourceLabel} peer offer artifact kind was unsupported`);
-    }
-    const artifactByteCount = requireShareMetadataInteger(rawEntry.artifact_byte_count, `${sourceLabel} artifact byte count`);
-    const offerByteCount = requireShareMetadataInteger(offer.artifact_byte_count, `${sourceLabel} peer offer artifact byte count`);
-    if (artifactByteCount !== offerByteCount) {
-      throw new Error(`${sourceLabel} peer offer byte count did not match catalog entry`);
-    }
-    const artifactSha256 = requireShareMetadataSha(rawEntry.artifact_sha256, `${sourceLabel} artifact`);
-    const offerSha256 = requireShareMetadataSha(offer.artifact_sha256, `${sourceLabel} peer offer artifact`);
-    if (artifactSha256 !== offerSha256) {
-      throw new Error(`${sourceLabel} peer offer SHA-256 did not match catalog entry`);
-    }
-    const chunkSummary = await validateShareMetadataChunks(
-      offer.chunks,
-      artifactByteCount,
-      artifactSha256,
-      sourceLabel
-    );
-    validateShareMetadataTransfer(offer, mode, sourceLabel);
-    validateShareKitDescriptor(bundle, mode, sourceLabel);
-    const catalogRaw = {
-      ...rawEntry,
-      artifact_sha256: artifactSha256,
-      artifact_byte_count: artifactByteCount,
-      peer_hint_status: mode.peerHintStatus,
-      peer_import_status: "",
-      required_next_gate: mode.requiredNextGate,
-      share_metadata_status: mode.status,
-      share_metadata_peer_transfer_implementation: mode.implementation,
-      share_metadata_chunk_count: chunkSummary.chunkCount,
-      share_metadata_chunk_list_sha256: chunkSummary.chunkListSha256,
-      share_metadata_merkle_root_sha256: chunkSummary.merkleRootSha256,
-      share_metadata_local_share_kit_available: mode.shareKitReady,
-      project_server_serves_model_bytes: false,
-      project_server_runs_model_bytes: false,
-      artifact_project_server_url: null
-    };
-    delete catalogRaw.peer_offer_route;
-    delete catalogRaw.peer_offer_path;
-    delete catalogRaw.peer_offer_sha256;
-    delete catalogRaw.peer_offer_checksum;
-    delete catalogRaw.peer_offer_kind;
-    delete catalogRaw.peer_offer_chunk_algorithm;
-    delete catalogRaw.peer_offer_chunk_size;
-    delete catalogRaw.peer_offer_chunk_count;
-    delete catalogRaw.peer_offer_merkle_root_sha256;
-    return {
-      ...catalogEntryFromRaw(catalogRaw, 0, ""),
-      shareMetadataStatus: mode.status,
-      shareMetadataImplementation: mode.implementation,
-      shareMetadataChunkCount: chunkSummary.chunkCount,
-      shareMetadataMerkleRootSha256: chunkSummary.merkleRootSha256,
-      shareMetadataLocalShareKitAvailable: mode.shareKitReady
-    };
-  }
-
-  function selectedShareMetadataFile(preferredInput) {
-    if (preferredInput && preferredInput.files && preferredInput.files[0]) {
-      return preferredInput.files[0];
-    }
-    if (el.shareMetadataFile && el.shareMetadataFile.files && el.shareMetadataFile.files[0]) {
-      return el.shareMetadataFile.files[0];
-    }
-    if (el.simpleShareMetadataFile && el.simpleShareMetadataFile.files && el.simpleShareMetadataFile.files[0]) {
-      return el.simpleShareMetadataFile.files[0];
-    }
-    return null;
-  }
-
-  async function importShareMetadataFile(preferredInput) {
-    const file = selectedShareMetadataFile(preferredInput);
-    if (!file) {
-      throw new Error("Choose a MiniModel share metadata JSON file");
-    }
-    if (!Number.isFinite(file.size) || file.size <= 0) {
-      throw new Error("Share metadata file is empty");
-    }
-    if (file.size > catalogTextByteBudget) {
-      throw new Error("Share metadata exceeded browser metadata budget");
-    }
-    clearCatalogResults();
-    const fileName = safeLocalModelName(file.name);
-    setCatalogStatus(`reading share metadata ${fileName}`, false);
-    const body = JSON.parse(await file.text());
-    const entry = await catalogEntryFromShareMetadataBundle(body, fileName);
-    state.catalogEntries = [entry];
-    state.defaultCatalogCheckedForAvailability = false;
-    renderCatalogResults(state.catalogEntries);
-    selectCatalogEntry(entry);
-    setCatalogStatus(`1 share metadata entry from ${fileName}; ${entry.peerHintStatus}`, false);
   }
 
   function catalogPeerSourceRaw(source) {
@@ -10323,26 +10321,6 @@
     return sha256Hex(state.encoder.encode(String(text || "")));
   }
 
-  async function merkleRootSha256(chunks) {
-    if (!chunks.length) {
-      return "";
-    }
-    let level = chunks.map((chunk) => hexToBytes(chunk.sha256));
-    while (level.length > 1) {
-      const nextLevel = [];
-      for (let index = 0; index < level.length; index += 2) {
-        const left = level[index];
-        const right = level[index + 1] || left;
-        const pair = new Uint8Array(left.length + right.length);
-        pair.set(left, 0);
-        pair.set(right, left.length);
-        nextLevel.push(await sha256Raw(pair));
-      }
-      level = nextLevel;
-    }
-    return `sha256:${bytesToHex(level[0])}`;
-  }
-
   function validateCatalogArtifactMatch(entry, name, byteLength, sha256) {
     if (!entry) {
       return;
@@ -10758,616 +10736,11 @@
     return `receipt-ready-for-browser-load / artifact ${receipt.artifactSha256}`;
   }
 
-  function hasVerifiedLocalModelFile() {
-    const localFile = state.localModel && state.localModel.localFile;
-    return Boolean(
-      localFile &&
-      localFile.file &&
-      isCatalogSha256(localFile.sha256) &&
-      isRegistryHex64(localFile.checksum) &&
-      Array.isArray(localFile.chunks) &&
-      localFile.chunks.length > 0 &&
-      localFile.verified === true
-    );
-  }
-
-  function setShareMetadataStatus(text, isError) {
-    const targetText = text || (hasVerifiedLocalModelFile() ? "share metadata ready" : "import a local .slm first");
-    for (const node of [el.shareMetadataState, el.simpleShareMetadataStatus]) {
-      if (node) {
-        setText(node, targetText, isError);
-      }
-    }
-    if (el.simpleDiscoveryStatus && state.simpleSourceOption === "p2p") {
-      el.simpleDiscoveryStatus.textContent = targetText;
-      el.simpleDiscoveryStatus.classList.toggle("error", Boolean(isError));
-    }
-  }
-
-  function updateShareMetadataControls() {
-    const disabled = !hasVerifiedLocalModelFile();
-    for (const button of [
-      el.saveShareMetadataButton,
-      el.simpleSaveShareMetadataButton,
-      el.saveShareKitButton,
-      el.simpleSaveShareKitButton
-    ]) {
-      if (button) {
-        button.disabled = disabled;
-        button.title = disabled
-          ? "Import and load a Rust-validated local .slm before exporting MiniModel share files."
-          : button === el.saveShareKitButton || button === el.simpleSaveShareKitButton
-            ? "Save a local Rust script that prepares peer pieces and P2P availability metadata for this verified .slm."
-            : "Save checksum-bound MiniModel metadata for this verified local .slm.";
-      }
-    }
-    if (disabled) {
-      setShareMetadataStatus("import and load a local .slm first", false);
-    }
-  }
-
-  function setLocalFileVerificationState(model, verified, text, isError) {
+  function setLocalFileVerificationState(model, verified) {
     if (model && model.localFile) {
       model.localFile.verified = Boolean(verified);
-      updateShareMetadataControls();
-      if (text) {
-        setShareMetadataStatus(text, isError);
-      }
     }
   }
-
-  function setConversionRequestStatus(text, isError) {
-    if (el.conversionRequestState) {
-      setText(el.conversionRequestState, text, isError);
-    }
-  }
-
-  function normalizeConversionRequest(body) {
-    if (!body || typeof body !== "object" || Array.isArray(body)) {
-      throw new Error("Conversion request must be a JSON object");
-    }
-    if (body.request_kind !== "minimodel.huggingface_conversion_request.v0") {
-      throw new Error("Conversion request kind was not minimodel.huggingface_conversion_request.v0");
-    }
-    const source = body.source && typeof body.source === "object" ? body.source : {};
-    const sourceModelId = hfModelId({ modelId: source.model_id });
-    if (!sourceModelId) {
-      throw new Error("Conversion request source model id was invalid");
-    }
-    return {
-      request: body,
-      sourceModelId,
-      sourceUrl: catalogText(source.model_url) || hfModelUrl(sourceModelId),
-      generatedAt: catalogText(body.generated_at)
-    };
-  }
-
-  async function importConversionRequestFile() {
-    const file = el.conversionRequestFile && el.conversionRequestFile.files ? el.conversionRequestFile.files[0] : null;
-    if (!file) {
-      throw new Error("Choose a conversion request JSON file");
-    }
-    if (!Number.isFinite(file.size) || file.size <= 0 || file.size > catalogTextByteBudget) {
-      throw new Error("Conversion request JSON size was invalid");
-    }
-    const body = JSON.parse(await file.text());
-    state.pendingConversionRequest = normalizeConversionRequest(body);
-    setConversionRequestStatus(`${state.pendingConversionRequest.sourceModelId} bound`, false);
-  }
-
-  function slugForShareMetadata(value) {
-    const slug = String(value || "")
-      .toLowerCase()
-      .replace(/\.slm$/i, "")
-      .replace(/[^a-z0-9._/-]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .slice(0, 160);
-    return /^[a-z0-9]/.test(slug) ? slug : "local-slm";
-  }
-
-  function sourceFieldsForShareMetadata(localFile) {
-    const entry = localFile.catalogEntry || null;
-    const conversion = state.pendingConversionRequest || null;
-    const sourceHfId = entry && entry.sourceHuggingFaceModelId
-      ? entry.sourceHuggingFaceModelId
-      : conversion
-        ? conversion.sourceModelId
-        : "";
-    return {
-      sourceKind: sourceHfId ? "huggingface-hub" : entry ? entry.sourceKind : "user-local-file",
-      sourceIdentity: entry && entry.sourceIdentity
-        ? entry.sourceIdentity
-        : conversion
-          ? conversion.sourceUrl
-          : "user-local-file",
-      sourceHuggingFaceModelId: sourceHfId,
-      sourceUrl: entry && entry.sourceUrl
-        ? entry.sourceUrl
-        : conversion
-          ? conversion.sourceUrl
-          : "",
-      modelId: entry
-        ? entry.modelId
-        : sourceHfId
-          ? `converted/${sourceHfId}`.slice(0, 180)
-          : `local/${slugForShareMetadata(localFile.name)}`,
-      displayName: entry ? entry.displayName : safeLocalModelName(localFile.name).replace(/\.slm$/i, "")
-    };
-  }
-
-  function shareTransferProfile(shareKitReady) {
-    return shareKitReady
-      ? {
-        peerTransferImplemented: true,
-        peerTransferStatus: "local-share-kit-script-ready-known-peer-needed",
-        peerTransferImplementation: "generated-local-minimodel-share-kit-v0",
-        offerStatus: "local-share-kit-ready-known-peer-needed",
-        protocols: [
-          "minimodel-prepare-peer-share-v0",
-          "known-direct-http-peer-v0",
-          "minimodel-peer-companion-v0"
-        ],
-        localShareKitAvailable: true,
-        serveHelperAvailable: true,
-        requiredNextGate: "run-generated-share-kit-set-known-peer-url-and-serve-from-user-machine"
-      }
-      : {
-        peerTransferImplemented: false,
-        peerTransferStatus: "metadata-only",
-        peerTransferImplementation: "not-included-in-metadata-export",
-        offerStatus: "metadata-ready-transfer-not-implemented",
-        protocols: [],
-        localShareKitAvailable: false,
-        serveHelperAvailable: false,
-        requiredNextGate: "implement-consent-based-peer-transfer-and-rust-reverify-before-import"
-      };
-  }
-
-  async function buildShareMetadataBundle(options = {}) {
-    if (!hasVerifiedLocalModelFile()) {
-      throw new Error("Import a verified local .slm before saving share metadata");
-    }
-    const shareKitReady = Boolean(options.shareKitReady);
-    const transferProfile = shareTransferProfile(shareKitReady);
-    const localFile = state.localModel.localFile;
-    const chunks = localFile.chunks.map((chunk) => ({ ...chunk }));
-    const chunkListText = chunks.map((chunk) => [
-      chunk.index,
-      chunk.offset,
-      chunk.byte_count,
-      chunk.sha256
-    ].join("=")).join("\n");
-    const source = sourceFieldsForShareMetadata(localFile);
-    const merkleRoot = await merkleRootSha256(chunks);
-    const chunkListSha256 = await sha256Text(`${chunkListText}\n`);
-    const catalogEntry = {
-      catalog_version: 0,
-      entry_kind: "minimodel.catalog_entry",
-      model_id: source.modelId,
-      display_name: source.displayName,
-      publisher_id: "local-user",
-      publisher_key_id: "local-user-unsigned",
-      artifact_kind: "slm",
-      artifact_file_name: localFile.name,
-      local_file_name_hint: localFile.name,
-      artifact_byte_count: localFile.byteLength,
-      artifact_sha256: localFile.sha256,
-      artifact_project_server_url: null,
-      project_server_serves_model_bytes: false,
-      project_server_runs_model_bytes: false,
-      peer_hint_status: "metadata-ready-transfer-not-implemented",
-      execution_policy: "user-local-file-only",
-      source_kind: source.sourceKind,
-      source_identity: source.sourceIdentity,
-      evidence_admission_status: "local-import-verified",
-      quality_claim: "not-endorsed-by-project",
-      trained_quality_claim: "not-claimed",
-      required_next_gate: "publisher-review-admission-and-peer-transfer-implementation",
-      slm_checksum: localFile.checksum
-    };
-    if (source.sourceHuggingFaceModelId) {
-      catalogEntry.source_huggingface_model_id = source.sourceHuggingFaceModelId;
-    }
-    if (source.sourceUrl) {
-      catalogEntry.source_url = source.sourceUrl;
-    }
-    if (localFile.catalogEntry) {
-      if (localFile.catalogEntry.modelShape) {
-        catalogEntry.slm_model_shape = localFile.catalogEntry.modelShape;
-      }
-      if (localFile.catalogEntry.quantization) {
-        catalogEntry.slm_quantization = localFile.catalogEntry.quantization;
-      }
-      if (localFile.catalogEntry.tokenizerChecksum) {
-        catalogEntry.slm_tokenizer_checksum = localFile.catalogEntry.tokenizerChecksum;
-      }
-      if (localFile.catalogEntry.configChecksum) {
-        catalogEntry.slm_config_checksum = localFile.catalogEntry.configChecksum;
-      }
-    }
-    const bundle = {
-      bundle_kind: "minimodel.local_slm_share_metadata.v0",
-      generated_at: new Date().toISOString(),
-      boundary: {
-        project_server_runs_model_bytes: false,
-        project_server_serves_model_bytes: false,
-        peer_transfer_implemented: transferProfile.peerTransferImplemented,
-        peer_transfer_status: transferProfile.peerTransferStatus,
-        peer_transfer_implementation: transferProfile.peerTransferImplementation,
-        user_consent_required_before_transfer: true,
-        tiny_rust_lm_execution_rule: "User imports a verified local .slm through the browser file picker before execution."
-      },
-      catalog_entry: catalogEntry,
-      peer_offer: {
-        offer_kind: "minimodel.peer_offer.v0",
-        offer_version: 0,
-        offer_status: transferProfile.offerStatus,
-        artifact_kind: "slm",
-        artifact_file_name: localFile.name,
-        artifact_byte_count: localFile.byteLength,
-        artifact_sha256: localFile.sha256,
-        slm_checksum: localFile.checksum,
-        chunks: {
-          algorithm: "sha256-merkle-v0",
-          chunk_size: peerShareChunkBytes,
-          chunk_count: chunks.length,
-          chunk_list_sha256: chunkListSha256,
-          merkle_root_sha256: merkleRoot,
-          entries: chunks
-        },
-        transfer: {
-          protocols: transferProfile.protocols,
-          network_transfer_available: false,
-          local_share_kit_available: transferProfile.localShareKitAvailable,
-          serve_helper_available: transferProfile.serveHelperAvailable,
-          project_server_serves_model_bytes: false,
-          project_server_runs_model_bytes: false,
-          required_next_gate: transferProfile.requiredNextGate
-        }
-      },
-      conversion_request: state.pendingConversionRequest
-        ? {
-          request_kind: state.pendingConversionRequest.request.request_kind,
-          source: state.pendingConversionRequest.request.source,
-          generated_at: state.pendingConversionRequest.generatedAt
-        }
-        : null
-    };
-    if (shareKitReady) {
-      bundle.share_kit = {
-        kit_kind: "tinyrustlm.local_p2p_share_kit.v0",
-        kit_status: "script-ready-known-peer-needed",
-        prepares_peer_pieces: true,
-        writes_catalog_snapshot: true,
-        writes_import_receipt_ledger: true,
-        writes_peer_source_metadata_when_known_peer_set: true,
-        writes_peer_companion_state_when_known_peer_set: true,
-        writes_peer_contact_card_when_known_peer_set: true,
-        writes_peer_contact_book_when_known_peer_set: true,
-        writes_peer_companion_inventory_when_known_peer_set: true,
-        serve_helper_available: true,
-        user_consent_required_before_transfer: true,
-        project_server_serves_model_bytes: false,
-        project_server_runs_model_bytes: false,
-        execution_rule: "Run the generated PowerShell scripts locally after reviewing the verified .slm path and consenting peer URL."
-      };
-    }
-    return bundle;
-  }
-
-  async function saveShareMetadata() {
-    setShareMetadataStatus("computing chunk hashes", false);
-    const bundle = await buildShareMetadataBundle();
-    const fileName = `${slugForShareMetadata(bundle.catalog_entry.model_id)}.minimodel-share-metadata.json`;
-    downloadTextFile(fileName, `${JSON.stringify(bundle, null, 2)}\n`);
-    setShareMetadataStatus(`${bundle.peer_offer.chunks.chunk_count} chunks / share metadata saved locally`, false);
-  }
-
-  function miniModelServePeerPiecesScript({ scriptTitle, modelId, shareDirRelativePath }) {
-    const relativeShareDir = String(shareDirRelativePath || "minimodel-peer-share")
-      .split(/[\\/]+/)
-      .filter(Boolean)
-      .map((segment) => safeLocalModelName(segment))
-      .join("\\") || "minimodel-peer-share";
-    const lines = [
-      `# ${scriptTitle || "MiniModel local peer piece server"}`,
-      `# Model: ${modelId || "local/slm"}`,
-      "#",
-      "# This serves local peer pieces only from this machine after you choose to run it.",
-      "# It does not upload model bytes to TinyRustLM.com, MiniModel.org, or any project server.",
-      "# Stop the PowerShell window to stop serving.",
-      "",
-      "$ErrorActionPreference = \"Stop\"",
-      "",
-      "function Resolve-ExistingPath {",
-      "  param(",
-      "    [string[]] $Candidates,",
-      "    [string] $Label,",
-      "    [string] $Help",
-      "  )",
-      "  foreach ($Candidate in $Candidates) {",
-      "    if ([string]::IsNullOrWhiteSpace($Candidate)) { continue }",
-      "    if ($Candidate -like \"EDIT_ME*\") { continue }",
-      "    if (Test-Path -LiteralPath $Candidate) {",
-      "      return (Resolve-Path -LiteralPath $Candidate).Path",
-      "    }",
-      "  }",
-      "  throw \"$Label not found. $Help\"",
-      "}",
-      "",
-      "function Resolve-GeneratedFile {",
-      "  param(",
-      "    [string] $Directory,",
-      "    [string] $Filter,",
-      "    [string] $Label",
-      "  )",
-      "  $Matches = @(Get-ChildItem -LiteralPath $Directory -File -Filter $Filter | Sort-Object LastWriteTimeUtc -Descending)",
-      "  if ($Matches.Count -lt 1) {",
-      "    throw \"$Label was not produced in $Directory. Run the conversion/share kit first.\"",
-      "  }",
-      "  return $Matches[0].FullName",
-      "}",
-      "",
-      "function Resolve-GeneratedFileOrNull {",
-      "  param(",
-      "    [string[]] $Directories,",
-      "    [string] $Filter",
-      "  )",
-      "  foreach ($Directory in $Directories) {",
-      "    if ([string]::IsNullOrWhiteSpace($Directory)) { continue }",
-      "    if (!(Test-Path -LiteralPath $Directory -PathType Container)) { continue }",
-      "    $Matches = @(Get-ChildItem -LiteralPath $Directory -File -Filter $Filter -ErrorAction SilentlyContinue | Sort-Object LastWriteTimeUtc -Descending)",
-      "    if ($Matches.Count -gt 0) {",
-      "      return $Matches[0].FullName",
-      "    }",
-      "  }",
-      "  return \"\"",
-      "}",
-      "",
-      "function Resolve-GeneratedDirectory {",
-      "  param(",
-      "    [string] $Directory,",
-      "    [string] $Filter,",
-      "    [string] $Label",
-      "  )",
-      "  $Matches = @(Get-ChildItem -LiteralPath $Directory -Directory -Filter $Filter | Sort-Object LastWriteTimeUtc -Descending)",
-      "  if ($Matches.Count -lt 1) {",
-      "    throw \"$Label was not produced in $Directory. Run the conversion/share kit first.\"",
-      "  }",
-      "  return $Matches[0].FullName",
-      "}",
-      "",
-      "# Optional overrides:",
-      "#   $env:MINIMODEL_WORKSPACE = full path to the MiniModel.org Rust workspace",
-      "#   $env:MINIMODEL_PEER_BIND_ADDR = bind address, default 127.0.0.1:8123",
-      "$CandidateMiniModelWorkspaces = @(",
-      "  $env:MINIMODEL_WORKSPACE,",
-      "  \"E:/Source/Rust/MiniModel.org\",",
-      "  (Join-Path $PSScriptRoot \"MiniModel.org\"),",
-      "  (Join-Path $PSScriptRoot \"..\\MiniModel.org\"),",
-      "  (Join-Path $PSScriptRoot \"..\\..\\MiniModel.org\")",
-      ")",
-      "$MiniModelWorkspace = Resolve-ExistingPath $CandidateMiniModelWorkspaces \"MiniModel Rust workspace\" \"Set MINIMODEL_WORKSPACE or edit `$CandidateMiniModelWorkspaces.\"",
-      `$ShareDir = Join-Path $PSScriptRoot ${powerShellSingleQuote(relativeShareDir)}`,
-      "$Manifest = Resolve-GeneratedFile $ShareDir \"*.minimodel.manifest.v0\" \"MiniModel manifest\"",
-      "$PeerPiecesDir = Resolve-GeneratedDirectory $ShareDir \"*.peer-pieces\" \"MiniModel peer pieces\"",
-      "$ShareParentDir = Split-Path -Parent $ShareDir",
-      "$PeerCompanionState = Resolve-GeneratedFileOrNull @($ShareDir, $ShareParentDir, $PSScriptRoot) \"*.peer-companion-state.v0.json\"",
-      "$BindAddr = if ($env:MINIMODEL_PEER_BIND_ADDR) { $env:MINIMODEL_PEER_BIND_ADDR } else { \"127.0.0.1:8123\" }",
-      "",
-      "Write-Host \"MiniModel workspace:\" $MiniModelWorkspace",
-      "Write-Host \"MiniModel manifest:\" $Manifest",
-      "Write-Host \"Peer pieces directory:\" $PeerPiecesDir",
-      "Write-Host \"Serving from this machine only:\" $BindAddr",
-      "Write-Host \"Project servers are not serving, proxying, caching, or running these model bytes.\"",
-      "Set-Location $MiniModelWorkspace",
-      "if ($PeerCompanionState.Trim().Length -gt 0) {",
-      "  Write-Host \"Peer companion state:\" $PeerCompanionState",
-      "  Write-Host \"Inspecting peer companion state before serving.\"",
-      "  cargo run -p minimodel -- inspect-peer-companion-state $PeerCompanionState $Manifest $PeerPiecesDir",
-      "  Write-Host \"Serving companion state route: minimodel.peer_companion_state.v0.json\"",
-      "  cargo run -p minimodel -- serve-peer-companion $PeerCompanionState $Manifest $PeerPiecesDir $BindAddr",
-      "} else {",
-      "  Write-Host \"Peer companion state: not found; serving peer pieces only.\"",
-      "  cargo run -p minimodel -- serve-peer-pieces $Manifest $PeerPiecesDir $BindAddr",
-      "}",
-      ""
-    ];
-    return lines.join("\n");
-  }
-
-  function localShareKitScript(bundle) {
-    const entry = bundle.catalog_entry || {};
-    const offer = bundle.peer_offer || {};
-    const chunks = offer.chunks || {};
-    const modelId = catalogText(entry.model_id) || "local/slm";
-    const displayName = catalogText(entry.display_name) || modelId;
-    const artifactFileName = safeLocalModelName(entry.artifact_file_name || "local-model.slm");
-    const artifactStem = artifactFileName.replace(/\.slm$/i, "") || "local-model";
-    const sourceHuggingFaceModelId = catalogText(entry.source_huggingface_model_id);
-    const expectedSha256 = catalogText(entry.artifact_sha256 || offer.artifact_sha256);
-    const expectedByteCount = Number.isFinite(entry.artifact_byte_count)
-      ? entry.artifact_byte_count
-      : Number.isFinite(offer.artifact_byte_count)
-        ? offer.artifact_byte_count
-        : 0;
-    const scriptStem = safeLocalModelName(`${slugForShareMetadata(modelId)}.minimodel-share`);
-    const serveScriptFileName = safeLocalModelName(`${slugForShareMetadata(modelId)}.minimodel-serve-peer-pieces.ps1`);
-    const lines = [
-      "# TinyRustLM local .slm to MiniModel P2P share kit",
-      `# Model: ${displayName} (${modelId})`,
-      "#",
-      "# This script never uploads model bytes to TinyRustLM.com, MiniModel.org, or any project server.",
-      "# It prepares local peer pieces, proof-ready metadata, and optional direct-peer handoff files.",
-      "# It never creates a public availability announcement; that requires current outside-network proof.",
-      "# Put the verified .slm beside this script, under ./source/, or set TINYRUSTLM_LOCAL_SLM.",
-      "# Set KnownPeerBaseUrl only when you consent to serve pieces from your own peer endpoint.",
-      "",
-      "$ErrorActionPreference = \"Stop\"",
-      "",
-      "function Resolve-ExistingPath {",
-      "  param(",
-      "    [string[]] $Candidates,",
-      "    [string] $Label,",
-      "    [string] $Help",
-      "  )",
-      "  foreach ($Candidate in $Candidates) {",
-      "    if ([string]::IsNullOrWhiteSpace($Candidate)) { continue }",
-      "    if ($Candidate -like \"EDIT_ME*\") { continue }",
-      "    if (Test-Path -LiteralPath $Candidate) {",
-      "      return (Resolve-Path -LiteralPath $Candidate).Path",
-      "    }",
-      "  }",
-      "  throw \"$Label not found. $Help\"",
-      "}",
-      "",
-      "function Invoke-CheckedCargo {",
-      "  param(",
-      "    [string] $Label,",
-      "    [string[]] $Arguments",
-      "  )",
-      "  & cargo @Arguments",
-      "  $ExitCode = $LASTEXITCODE",
-      "  if ($ExitCode -ne 0) {",
-      "    throw \"$Label failed with exit code $ExitCode.\"",
-      "  }",
-      "}",
-      "",
-      "# Optional overrides:",
-      "#   $env:MINIMODEL_WORKSPACE = full path to the MiniModel.org Rust workspace",
-      "#   $env:TINYRUSTLM_LOCAL_SLM = full path to the verified local .slm file",
-      "#   $env:MINIMODEL_KNOWN_PEER_BASE_URL = consenting peer base URL, for example 127.0.0.1:8123/peer-pieces with HTTP",
-      "$CandidateMiniModelWorkspaces = @(",
-      "  $env:MINIMODEL_WORKSPACE,",
-      "  \"E:/Source/Rust/MiniModel.org\",",
-      "  (Join-Path $PSScriptRoot \"MiniModel.org\"),",
-      "  (Join-Path $PSScriptRoot \"..\\MiniModel.org\"),",
-      "  (Join-Path $PSScriptRoot \"..\\..\\MiniModel.org\")",
-      ")",
-      `$LocalSlmFileName = ${powerShellSingleQuote(artifactFileName)}`,
-      "$LocalSlmCandidates = @(",
-      "  $env:TINYRUSTLM_LOCAL_SLM,",
-      "  (Join-Path $PSScriptRoot $LocalSlmFileName),",
-      "  (Join-Path $PSScriptRoot (Join-Path \"source\" $LocalSlmFileName))",
-      ")",
-      "$MiniModelWorkspace = Resolve-ExistingPath $CandidateMiniModelWorkspaces \"MiniModel Rust workspace\" \"Set MINIMODEL_WORKSPACE or edit `$CandidateMiniModelWorkspaces.\"",
-      "$LocalSlm = Resolve-ExistingPath $LocalSlmCandidates \"Verified local .slm\" \"Put the verified .slm beside this script, under ./source/, set TINYRUSTLM_LOCAL_SLM, or edit `$LocalSlmCandidates.\"",
-      `$ExpectedArtifactSha256 = ${powerShellDoubleQuote(expectedSha256)}`,
-      `$ExpectedArtifactByteCount = ${Math.max(0, Math.trunc(expectedByteCount))}`,
-      `$ModelId = ${powerShellSingleQuote(modelId)}`,
-      `$SourceHuggingFaceModelId = ${powerShellSingleQuote(sourceHuggingFaceModelId)}`,
-      `$KnownPeerBaseUrl = if ($env:MINIMODEL_KNOWN_PEER_BASE_URL) { $env:MINIMODEL_KNOWN_PEER_BASE_URL } else { "" } # Optional, for example ${peerExampleUrl}`,
-      "$BindAddr = \"127.0.0.1:8123\"",
-      `$WorkDir = Join-Path $PSScriptRoot ${powerShellSingleQuote(`${scriptStem}-kit`)}`,
-      "$ShareDir = Join-Path $WorkDir \"minimodel-peer-share\"",
-      `$Manifest = Join-Path $ShareDir ${powerShellSingleQuote(`${artifactStem}.minimodel.manifest.v0`)}`,
-      `$PeerPiecesDir = Join-Path $ShareDir ${powerShellSingleQuote(`${artifactStem}.peer-pieces`)}`,
-      `$CatalogEntry = Join-Path $ShareDir ${powerShellSingleQuote(`${artifactStem}.catalog-entry.v0.json`)}`,
-      `$PeerCompanionState = Join-Path $WorkDir ${powerShellSingleQuote(`${artifactStem}.peer-companion-state.v0.json`)}`,
-      `$PeerContactCard = Join-Path $WorkDir ${powerShellSingleQuote(`${artifactStem}.peer-contact-card.v0.json`)}`,
-      `$PeerContactBook = Join-Path $WorkDir ${powerShellSingleQuote(`${artifactStem}.peer-contact-book.v0.json`)}`,
-      `$PeerCompanionInventory = Join-Path $WorkDir ${powerShellSingleQuote(`${artifactStem}.peer-companion-inventory.v0.json`)}`,
-      `$LocalImportReceipt = Join-Path $WorkDir ${powerShellSingleQuote(`${artifactStem}.local.minimodel-receipt`)}`,
-      "$LocalImportReceiptLedger = Join-Path $WorkDir \"import-receipts.v0.json\"",
-      "$CatalogSnapshot = Join-Path $WorkDir \"models.v0.json\"",
-      `$ServeScript = Join-Path $PSScriptRoot ${powerShellSingleQuote(serveScriptFileName)}`,
-      "",
-      "$ActualArtifactByteCount = (Get-Item -LiteralPath $LocalSlm).Length",
-      "if ($ExpectedArtifactByteCount -gt 0 -and $ActualArtifactByteCount -ne $ExpectedArtifactByteCount) {",
-      "  throw \"Local .slm byte count mismatch. Expected $ExpectedArtifactByteCount, got $ActualArtifactByteCount.\"",
-      "}",
-      "$ActualArtifactSha256 = \"sha256:\" + ((Get-FileHash -Algorithm SHA256 -LiteralPath $LocalSlm).Hash.ToLowerInvariant())",
-      "if ($ExpectedArtifactSha256.Trim().Length -gt 0 -and $ActualArtifactSha256 -ne $ExpectedArtifactSha256) {",
-      "  throw \"Local .slm SHA-256 mismatch. Expected $ExpectedArtifactSha256, got $ActualArtifactSha256.\"",
-      "}",
-      "",
-      "Write-Host \"MiniModel workspace:\" $MiniModelWorkspace",
-      "Write-Host \"Verified local .slm:\" $LocalSlm",
-      "Write-Host \"Artifact SHA-256:\" $ActualArtifactSha256",
-      "Write-Host \"Output directory:\" $WorkDir",
-      "New-Item -ItemType Directory -Force -Path $WorkDir | Out-Null",
-      "Set-Location $MiniModelWorkspace",
-      "",
-      "# Prepare checksum-bound manifest, peer-offer proof, local peer pieces, and catalog entry.",
-      "$PrepareArgs = @(\"run\", \"-p\", \"minimodel\", \"--\", \"prepare-peer-share\", $LocalSlm, $ShareDir, $ModelId)",
-      "if ($SourceHuggingFaceModelId.Trim().Length -gt 0) {",
-      "  $PrepareArgs += $SourceHuggingFaceModelId",
-      "}",
-      "Invoke-CheckedCargo \"MiniModel prepare peer share\" $PrepareArgs",
-      "",
-      "# Write a local receipt and metadata-only receipt ledger for companion/audit use.",
-      "Invoke-CheckedCargo \"MiniModel write local import receipt\" @(\"run\", \"-p\", \"minimodel\", \"--\", \"write-import-receipt\", $Manifest, $LocalSlm, $LocalImportReceipt)",
-      "Invoke-CheckedCargo \"MiniModel inspect local import receipt\" @(\"run\", \"-p\", \"minimodel\", \"--\", \"inspect-import-receipt\", $LocalImportReceipt, $Manifest, $LocalSlm)",
-      "Invoke-CheckedCargo \"MiniModel write local import receipt ledger\" @(\"run\", \"-p\", \"minimodel\", \"--\", \"write-import-receipt-ledger\", $LocalImportReceiptLedger, $LocalImportReceipt, $Manifest, $LocalSlm)",
-      "Invoke-CheckedCargo \"MiniModel inspect local import receipt ledger\" @(\"run\", \"-p\", \"minimodel\", \"--\", \"inspect-import-receipt-ledger\", $LocalImportReceiptLedger)",
-      "",
-      "if ($KnownPeerBaseUrl.Trim().Length -gt 0) {",
-      "  Invoke-CheckedCargo \"MiniModel write peer companion state\" @(\"run\", \"-p\", \"minimodel\", \"--\", \"write-peer-companion-state\", $Manifest, $PeerPiecesDir, $PeerCompanionState, $KnownPeerBaseUrl)",
-      "  Invoke-CheckedCargo \"MiniModel inspect peer companion state\" @(\"run\", \"-p\", \"minimodel\", \"--\", \"inspect-peer-companion-state\", $PeerCompanionState, $Manifest, $PeerPiecesDir)",
-      "  Invoke-CheckedCargo \"MiniModel write peer contact card\" @(\"run\", \"-p\", \"minimodel\", \"--\", \"write-peer-contact-card\", $PeerContactCard, $KnownPeerBaseUrl)",
-      "  Invoke-CheckedCargo \"MiniModel write peer contact book\" @(\"run\", \"-p\", \"minimodel\", \"--\", \"write-peer-contact-book\", $PeerContactBook, $PeerContactCard)",
-      "  Invoke-CheckedCargo \"MiniModel inspect peer contact book\" @(\"run\", \"-p\", \"minimodel\", \"--\", \"inspect-peer-contact-book\", $PeerContactBook)",
-      "  Invoke-CheckedCargo \"MiniModel write peer companion inventory\" @(\"run\", \"-p\", \"minimodel\", \"--\", \"write-peer-companion-inventory\", $PeerCompanionInventory, $PeerCompanionState, $Manifest, $PeerPiecesDir, $LocalImportReceiptLedger, $ActualArtifactByteCount, $PeerContactCard)",
-      "  Invoke-CheckedCargo \"MiniModel inspect peer companion inventory\" @(\"run\", \"-p\", \"minimodel\", \"--\", \"inspect-peer-companion-inventory\", $PeerCompanionInventory)",
-      "}",
-      "Invoke-CheckedCargo \"MiniModel write catalog snapshot\" @(\"run\", \"-p\", \"minimodel\", \"--\", \"write-catalog-snapshot\", $CatalogSnapshot, $CatalogEntry)",
-      "Invoke-CheckedCargo \"MiniModel inspect catalog snapshot\" @(\"run\", \"-p\", \"minimodel\", \"--\", \"inspect-catalog-snapshot\", $CatalogSnapshot)",
-      "",
-      "Write-Host \"MiniModel manifest:\" $Manifest",
-      "Write-Host \"Peer pieces directory:\" $PeerPiecesDir",
-      "Write-Host \"Local import receipt:\" $LocalImportReceipt",
-      "Write-Host \"Local import receipt ledger:\" $LocalImportReceiptLedger",
-      "Write-Host \"Catalog snapshot:\" $CatalogSnapshot",
-      "if ($KnownPeerBaseUrl.Trim().Length -gt 0) {",
-      "  Write-Host \"Peer companion state:\" $PeerCompanionState",
-      "  Write-Host \"Peer contact card:\" $PeerContactCard",
-      "  Write-Host \"Peer contact book:\" $PeerContactBook",
-      "  Write-Host \"Peer companion inventory:\" $PeerCompanionInventory",
-      "  Write-Host \"These direct-peer handoffs are local metadata, not public reachability proof or a catalog availability announcement.\"",
-      "} else {",
-      "  Write-Host \"To create direct-peer handoffs later, rerun with KnownPeerBaseUrl set to your consenting peer URL.\"",
-      "}",
-      "Write-Host \"Public availability remains fail-closed until an outside observer verifies a complete transfer.\"",
-      "Write-Host \"After that proof exists, use: cargo run -p minimodel -- prepare-seed-announcement <catalog-entry-json> <announcement-json> <external-probe-receipt-json> <observer-trust-json> <seed-fleet-config-json>\"",
-      "Write-Host \"Do not upload peer pieces or .slm bytes to project servers.\"",
-      "Write-Host \"To serve from this machine, run:\"",
-      "if ($KnownPeerBaseUrl.Trim().Length -gt 0) {",
-      "  Write-Host \"cargo run -p minimodel -- inspect-peer-companion-state '$PeerCompanionState' '$Manifest' '$PeerPiecesDir'\"",
-      "  Write-Host \"cargo run -p minimodel -- serve-peer-companion '$PeerCompanionState' '$Manifest' '$PeerPiecesDir' $BindAddr\"",
-      "} else {",
-      "  Write-Host \"cargo run -p minimodel -- serve-peer-pieces '$Manifest' '$PeerPiecesDir' $BindAddr\"",
-      "}",
-      "Write-Host \"or run the downloaded helper script:\"",
-      "Write-Host \"powershell -ExecutionPolicy Bypass -File '$ServeScript'\"",
-      "Write-Host \"Known peers can be handed off with the generated contact card or companion inventory; public catalog availability requires separate proof.\"",
-      "",
-      "# Share metadata summary:",
-      `# artifact_sha256: ${expectedSha256 || "unavailable"}`,
-      `# artifact_byte_count: ${expectedByteCount || "unavailable"}`,
-      `# chunk_count: ${chunks.chunk_count || "unavailable"}`,
-      `# merkle_root_sha256: ${chunks.merkle_root_sha256 || "unavailable"}`
-    ];
-    return `${lines.join("\n")}\n`;
-  }
-
-  async function saveShareKit() {
-    setShareMetadataStatus("building P2P share kit", false);
-    const bundle = await buildShareMetadataBundle({ shareKitReady: true });
-    const stem = safeLocalModelName(slugForShareMetadata(bundle.catalog_entry.model_id));
-    downloadTextFile(`${stem}.minimodel-share-metadata.json`, `${JSON.stringify(bundle, null, 2)}\n`);
-    downloadTextFile(`${stem}.minimodel-share-kit.ps1`, localShareKitScript(bundle), "text/plain");
-    downloadTextFile(
-      `${stem}.minimodel-serve-peer-pieces.ps1`,
-      miniModelServePeerPiecesScript({
-        scriptTitle: "TinyRustLM local .slm MiniModel peer serving helper",
-        modelId: catalogText(bundle.catalog_entry && bundle.catalog_entry.model_id) || "local/slm",
-        shareDirRelativePath: `${safeLocalModelName(`${slugForShareMetadata(bundle.catalog_entry.model_id)}.minimodel-share`)}-kit\\minimodel-peer-share`
-      }),
-      "text/plain"
-    );
-    setShareMetadataStatus(`${bundle.peer_offer.chunks.chunk_count} chunks / P2P share kit saved locally / serve script saved locally`, false);
-  }
-
   async function importLocalModelFile() {
     const selectedFiles = localModelSelectedFiles();
     const selectionError = localModelSelectionError(selectedFiles);
@@ -11449,7 +10822,6 @@
         `${name} / ${formatByteCount(file.size)} / ${stagedModel.localFile.sha256} / ${stagedModel.localFile.checksum}${receiptSummary ? ` / ${receiptSummary}` : ""} / Rust validation pending`,
         false
       );
-      setShareMetadataStatus("validating local .slm", false);
       setText(el.errorState, "none", false);
       const loaded = await loadSelectedModel();
       if (!loaded) {
@@ -11470,10 +10842,163 @@
     return `${hfOrigin()}/${String(modelId).split("/").map(encodeURIComponent).join("/")}`;
   }
 
-  function hfResolveUrl(modelId, fileName) {
+  function hfResolveUrl(modelId, fileName, revision = "main") {
     const modelPath = String(modelId || "").split("/").map(encodeURIComponent).join("/");
     const filePath = String(fileName || "").split("/").map(encodeURIComponent).join("/");
-    return modelPath && filePath ? `${hfOrigin()}/${modelPath}/resolve/main/${filePath}` : "";
+    const revisionPath = encodeURIComponent(String(revision || ""));
+    return modelPath && filePath && revisionPath
+      ? `${hfOrigin()}/${modelPath}/resolve/${revisionPath}/${filePath}`
+      : "";
+  }
+
+  function hfSourceContract(modelId) {
+    const normalized = normalizeModelIdentity(modelId);
+    const contracts = {
+      "xenova/llama2.c-stories15m": {
+        modelShape: "stories15m-bpe",
+        quantization: "q8_0"
+      },
+      "modelcloud/tinyllama-15m-stories": {
+        modelShape: "stories15m-bpe",
+        quantization: "q8_0"
+      },
+      "huggingfacetb/smollm2-135m-instruct": {
+        modelShape: "smollm2-135m-instruct-bpe",
+        quantization: "q8_0"
+      },
+      "huggingfacetb/smollm2-360m-instruct": {
+        modelShape: "smollm2-360m-instruct-bpe",
+        quantization: "q8_0"
+      },
+      "qwen/qwen3-0.6b": {
+        modelShape: "qwen3-0.6b-bpe",
+        quantization: "q8_0"
+      },
+      "qwen/qwen2.5-1.5b-instruct": {
+        modelShape: "qwen2.5-1.5b-bpe",
+        quantization: "q4_0"
+      }
+    };
+    return Object.prototype.hasOwnProperty.call(contracts, normalized)
+      ? Object.freeze({ ...contracts[normalized] })
+      : null;
+  }
+
+  async function fetchHfImmutableDetail(entry) {
+    const modelPath = String(entry.modelId || "")
+      .split("/")
+      .map(encodeURIComponent)
+      .join("/");
+    const url = new URL(`${hfOrigin()}/api/models/${modelPath}`);
+    url.searchParams.set("blobs", "true");
+    const response = await fetch(url.toString(), {
+      cache: "no-store",
+      credentials: "omit",
+      redirect: "error",
+      referrerPolicy: "no-referrer"
+    });
+    if (!response.ok) {
+      throw new Error(`Unable to inspect the immutable model revision (${response.status})`);
+    }
+    const detail = await response.json();
+    const canonicalModelId = hfModelId(detail);
+    if (
+      !canonicalModelId ||
+      normalizeModelIdentity(canonicalModelId) !== normalizeModelIdentity(entry.modelId)
+    ) {
+      throw new Error("Hugging Face model detail identity changed");
+    }
+    if (!/^[0-9a-f]{40}$/i.test(String(detail.sha || ""))) {
+      throw new Error("Hugging Face did not return an immutable 40-hex model revision");
+    }
+    return detail;
+  }
+
+  function hfDetailLicenseId(detail) {
+    const tags = Array.isArray(detail && detail.tags) ? detail.tags : [];
+    const tagged = tags.find((value) => /^license:/i.test(String(value || "")));
+    const value = String(
+      detail && detail.cardData && detail.cardData.license ||
+      detail && detail.license ||
+      tagged && String(tagged).slice("license:".length) ||
+      ""
+    ).trim().toLowerCase();
+    if (!/^[a-z0-9][a-z0-9.+_-]{0,95}$/.test(value) || value === "other" || value === "unknown") {
+      throw new Error("The pinned model revision lacks an unambiguous license identifier");
+    }
+    return value;
+  }
+
+  function hfDetailFiles(detail) {
+    const siblings = Array.isArray(detail && detail.siblings) ? detail.siblings : [];
+    return siblings.map((sibling) => ({
+      file_name: hfSiblingFileName(sibling),
+      byte_count: hfSiblingByteCount(sibling),
+      sha256: hfSiblingSha256(sibling)
+    })).filter((file) => file.file_name && Number.isSafeInteger(file.byte_count) && file.byte_count > 0);
+  }
+
+  function hfDirectConversionRequest(entry, detail) {
+    const contract = hfSourceContract(entry.modelId);
+    if (!contract) {
+      throw new Error("This model architecture is not supported by the local Rust converter");
+    }
+    const files = hfDetailFiles(detail);
+    const sources = files.filter((file) => /\.safetensors$/i.test(file.file_name));
+    if (!sources.length || sources.some((file) => !file.sha256)) {
+      throw new Error("The pinned model revision lacks complete safetensors size and SHA-256 metadata");
+    }
+    const metadataByName = new Map(
+      files
+        .filter((file) => !file.file_name.includes("/"))
+        .map((file) => [file.file_name.toLowerCase(), file])
+    );
+    const licenseFile = ["license", "license.txt", "license.md", "readme.md"]
+      .map((name) => metadataByName.get(name))
+      .find(Boolean);
+    const metadata = [
+      metadataByName.get("config.json"),
+      metadataByName.get("tokenizer.json"),
+      licenseFile
+    ];
+    if (metadata.some((file) => !file)) {
+      throw new Error("The pinned revision lacks config, tokenizer, or license/model-card metadata");
+    }
+    const revision = String(detail.sha).toLowerCase();
+    return {
+      request_kind: "minimodel.huggingface_conversion_request.v1",
+      source: {
+        kind: "huggingface_model",
+        model_id: hfModelId(detail),
+        revision,
+        license_id: hfDetailLicenseId(detail),
+        metadata_files: metadata.map((file) => ({
+          file_name: file.file_name,
+          sha256: file.sha256,
+          byte_count: file.byte_count
+        }))
+      },
+      requested_artifact: {
+        kind: "slm",
+        supported_source_shapes: [contract.modelShape],
+        default_source_shape: contract.modelShape,
+        default_quantization: contract.quantization,
+        runtime_target: "TinyRustLM Rust/WASM browser-local runtime",
+        browser_import_rule: "The paired companion streams the receipt-verified local .slm into browser memory."
+      },
+      local_conversion: {
+        source_format: "safetensors",
+        source_input_mode: sources.length === 1
+          ? "single-safetensors-file"
+          : "safetensors-shard-directory",
+        suggested_source_safetensors_file: sources[0].file_name,
+        suggested_source_safetensors_files: sources.map((file) => ({
+          file_name: file.file_name,
+          sha256: file.sha256,
+          byte_count: file.byte_count
+        }))
+      }
+    };
   }
 
   function setHfStatus(text, isError) {
@@ -11535,6 +11060,7 @@
     const candidates = [
       sibling && sibling.sha256,
       sibling && sibling.oid,
+      sibling && sibling.lfs && sibling.lfs.sha256,
       sibling && sibling.lfs && sibling.lfs.oid
     ];
     for (const value of candidates) {
@@ -11653,11 +11179,16 @@
   }
 
   function canStartP2pImport(entry) {
-    return Boolean(entry && entry.peerOfferRoute && p2pImportBaseUrl(entry));
+    return Boolean(
+      entry &&
+      entry.peerOfferRoute &&
+      entry.composition &&
+      p2pImportBaseUrl(entry)
+    );
   }
 
   function p2pCatalogActionButton(entry) {
-    if (!entry || !entry.peerOfferRoute) {
+    if (!entry || !entry.peerOfferRoute || !entry.composition) {
       return null;
     }
     const canImport = canStartP2pImport(entry);
@@ -11668,11 +11199,7 @@
     );
     const label = !canImport
       ? "Set Peer URL"
-      : companionIsPaired()
-        ? sameResumableImport ? "Resume & load" : "Import & load"
-        : state.companion.connectionState === "detected"
-          ? "Pair to import"
-          : "Save P2P Import Kit";
+      : sameResumableImport ? "Resume model" : "Get model";
     return actionButton(
       label,
       () => startP2pImportOrRequestPeer(entry),
@@ -11687,20 +11214,9 @@
     holdModelPopoverOpen(4000);
   }
 
-  function startP2pImportOrRequestPeer(entry) {
+  async function startP2pImportOrRequestPeer(entry) {
     if (canStartP2pImport(entry)) {
-      if (companionIsPaired()) {
-        void startCompanionImport(entry);
-      } else if (state.companion.connectionState === "detected") {
-        selectCatalogEntry(entry);
-        setSimpleSourceOption("p2p", true);
-        holdModelPopoverOpen(4000);
-        if (el.companionPairingCode) {
-          el.companionPairingCode.focus();
-        }
-      } else {
-        importHfP2pMatch(entry);
-      }
+      await startCompanionImport(entry);
       return;
     }
     requestKnownPeerForEntry(entry);
@@ -11715,18 +11231,6 @@
 
   function peerImportFileStem(modelId) {
     return conversionFileStem(modelId || "minimodel-peer-import");
-  }
-
-  function routeFileName(route, fallback) {
-    const routeText = catalogText(route).split(/[?#]/, 1)[0].replace(/\\/g, "/");
-    const leaf = routeText.split("/").filter(Boolean).pop() || "";
-    return leaf ? safeLocalModelName(leaf) : fallback;
-  }
-
-  function peerImportManifestFileName(match) {
-    const fallback = `${peerImportFileStem(match && match.modelId)}.minimodel.manifest.v0`;
-    const fileName = routeFileName(match && match.manifestRoute, fallback);
-    return fileName.endsWith(".minimodel.manifest.v0") ? fileName : fallback;
   }
 
   function peerImportRequest(match, peerBaseUrl = state.peerBaseUrl) {
@@ -11769,217 +11273,6 @@
     };
   }
 
-  function peerImportScript(match, peerBaseUrl = state.peerBaseUrl) {
-    const stem = peerImportFileStem(match.modelId);
-    const manifestFileName = peerImportManifestFileName(match);
-    const request = peerImportRequest(match, peerBaseUrl);
-    const requestJson = `${JSON.stringify(request, null, 2)}\n`;
-    const requestBase64 = base64Utf8(requestJson);
-    const peerUrl = request.local_peer_piece_contract.expected_peer_base_url;
-    const manifestUrl = catalogRouteUrl(match, match.manifestRoute) || "";
-    const assembledOutputSlm = request.local_peer_piece_contract.assembled_output_slm;
-    const receiptFileName = assembledOutputSlm.toLowerCase().endsWith(".slm")
-      ? `${assembledOutputSlm.slice(0, -4)}.minimodel-receipt`
-      : `${stem}.minimodel-receipt`;
-    const lines = [
-      "# MiniModel peer import handoff",
-      `# Model: ${match.displayName} (${match.modelId})`,
-      "#",
-      "# This script does not download model bytes from MiniModel.org, TinyRustLM.com, or Hugging Face.",
-      "# It may download the MiniModel manifest metadata if the catalog supplied a manifest URL.",
-      "# Before contacting the peer, Rust inspects this request against the metadata manifest and confirms the no-project-server-byte boundary.",
-      "# Before importing, Rust checks minimodel.peer_status.v0.json metadata, then fetches minimodel.peer_piece_set.v0 metadata and advertised peer companion-state metadata for preflight.",
-      "# Rust re-inspects the saved peer-status-check JSON against the manifest before any preflight or piece fetch.",
-      "# Rust re-inspects the saved preflight report so route/gate evidence and no-byte-transfer flags cannot drift before import.",
-      "# It fetches peer pieces only from the consenting peer URL you enter below.",
-      "# MiniModel rejects project-server peer hosts and verifies every piece before assembly.",
-      "# Rust then fetches pieces, assembles, verifies, and writes an import receipt with peer-transfer evidence.",
-      "# Rust inspects that receipt against the assembled .slm before TinyRustLM local-file import.",
-      "# Rust writes and inspects a local metadata-only import receipt ledger for companion/audit use.",
-      "# Peer serving counterpart first validates companion state: cargo run -p minimodel -- inspect-peer-companion-state <state-json> <manifest> <piece-dir>",
-      "# Peer serving counterpart: cargo run -p minimodel -- serve-peer-companion <state-json> <manifest> <piece-dir> 127.0.0.1:8123",
-      "# Fallback without companion state: cargo run -p minimodel -- serve-peer-pieces <manifest> <piece-dir> 127.0.0.1:8123",
-      "",
-      "$ErrorActionPreference = \"Stop\"",
-      "",
-      "function Resolve-ExistingPath {",
-      "  param(",
-      "    [string[]] $Candidates,",
-      "    [string] $Label,",
-      "    [string] $Help",
-      "  )",
-      "  foreach ($Candidate in $Candidates) {",
-      "    if ([string]::IsNullOrWhiteSpace($Candidate)) { continue }",
-      "    if ($Candidate -like \"EDIT_ME*\") { continue }",
-      "    if (Test-Path -LiteralPath $Candidate) {",
-      "      return (Resolve-Path -LiteralPath $Candidate).Path",
-      "    }",
-      "  }",
-      "  throw \"$Label not found. $Help\"",
-      "}",
-      "",
-      "# Optional override:",
-      "#   $env:MINIMODEL_WORKSPACE = full path to the MiniModel.org Rust workspace",
-      "$CandidateMiniModelWorkspaces = @(",
-      "  $env:MINIMODEL_WORKSPACE,",
-      "  \"E:/Source/Rust/MiniModel.org\",",
-      "  (Join-Path $PSScriptRoot \"MiniModel.org\"),",
-      "  (Join-Path $PSScriptRoot \"..\\MiniModel.org\"),",
-      "  (Join-Path $PSScriptRoot \"..\\..\\MiniModel.org\")",
-      ")",
-      "$MiniModelWorkspace = Resolve-ExistingPath $CandidateMiniModelWorkspaces \"MiniModel Rust workspace\" \"Set MINIMODEL_WORKSPACE or edit `$CandidateMiniModelWorkspaces.\"",
-      `$PeerImportRequest = Join-Path $PSScriptRoot ${powerShellSingleQuote(`${stem}.minimodel-peer-import-request.json`)}`,
-      `$EmbeddedPeerImportRequestBase64 = ${powerShellSingleQuote(requestBase64)}`,
-      `$Manifest = Join-Path $PSScriptRoot ${powerShellSingleQuote(manifestFileName)}`,
-      `$ManifestUrl = ${powerShellDoubleQuote(manifestUrl)}`,
-      `$ImportDir = Join-Path $PSScriptRoot ${powerShellSingleQuote(`${stem}-peer-import`)}`,
-      `$ImportedSlm = Join-Path $ImportDir ${powerShellSingleQuote(assembledOutputSlm)}`,
-      `$PeerImportReceipt = Join-Path $ImportDir ${powerShellSingleQuote(receiptFileName)}`,
-      "$PeerImportReceiptLedger = Join-Path $ImportDir \"import-receipts.v0.json\"",
-      `$PeerStatusCheck = Join-Path $PSScriptRoot ${powerShellSingleQuote(`${stem}.peer-status-check.v0.json`)}`,
-      `$PeerImportPreflight = Join-Path $PSScriptRoot ${powerShellSingleQuote(`${stem}.peer-import.preflight`)}`,
-      `$ExpectedPeerBaseUrl = ${powerShellDoubleQuote(peerUrl)}`,
-      "",
-      "if (!(Test-Path -LiteralPath $PeerImportRequest)) {",
-      "  $EmbeddedPeerImportRequestJson = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($EmbeddedPeerImportRequestBase64))",
-      "  [System.IO.File]::WriteAllText($PeerImportRequest, $EmbeddedPeerImportRequestJson, [System.Text.Encoding]::UTF8)",
-      "  Write-Host \"Wrote embedded peer import request:\" $PeerImportRequest",
-      "}",
-      "if ($ManifestUrl.Trim().Length -gt 0 -and !(Test-Path -LiteralPath $Manifest)) {",
-      "  Write-Host \"Downloading MiniModel metadata manifest:\" $ManifestUrl",
-      "  Invoke-WebRequest -UseBasicParsing -Uri $ManifestUrl -OutFile $Manifest",
-      "}",
-      "if (!(Test-Path -LiteralPath $Manifest)) {",
-      "  throw \"MiniModel manifest missing. Put the metadata manifest at $Manifest or set `$ManifestUrl before running.\"",
-      "}",
-      "",
-      "Write-Host \"MiniModel workspace:\" $MiniModelWorkspace",
-      "Write-Host \"Peer import request:\" $PeerImportRequest",
-      "Write-Host \"MiniModel manifest:\" $Manifest",
-      "Write-Host \"Peer status check:\" $PeerStatusCheck",
-      "Write-Host \"Peer import preflight:\" $PeerImportPreflight",
-      "Write-Host \"Verified output directory:\" $ImportDir",
-      "Write-Host \"Imported .slm:\" $ImportedSlm",
-      "Write-Host \"Peer import receipt:\" $PeerImportReceipt",
-      "Write-Host \"Peer import receipt ledger:\" $PeerImportReceiptLedger",
-      "Set-Location $MiniModelWorkspace",
-      "Write-Host \"Expected consenting peer:\" $ExpectedPeerBaseUrl",
-      "& cargo run -p minimodel -- inspect-peer-import-request $PeerImportRequest $Manifest",
-      "$InspectExitCode = $LASTEXITCODE",
-      "if ($InspectExitCode -ne 0) {",
-      "  throw \"MiniModel peer import request inspection failed with exit code $InspectExitCode. Check the request JSON and metadata manifest before contacting the peer.\"",
-      "}",
-      "Write-Host \"Peer import request inspection passed without network access:\" $PeerImportRequest",
-      "& cargo run -p minimodel -- check-peer-status $Manifest $ExpectedPeerBaseUrl $PeerStatusCheck",
-      "$PeerStatusExitCode = $LASTEXITCODE",
-      "if ($PeerStatusExitCode -ne 0) {",
-      "  throw \"MiniModel peer status check failed with exit code $PeerStatusExitCode. Check the peer URL, manifest, and $PeerStatusCheck if it exists.\"",
-      "}",
-      "Write-Host \"Peer status check passed without fetching peer piece bytes:\" $PeerStatusCheck",
-      "& cargo run -p minimodel -- inspect-peer-status-check $PeerStatusCheck $Manifest",
-      "$PeerStatusInspectExitCode = $LASTEXITCODE",
-      "if ($PeerStatusInspectExitCode -ne 0) {",
-      "  throw \"MiniModel peer status check inspection failed with exit code $PeerStatusInspectExitCode. Check the saved status check report before preflight.\"",
-      "}",
-      "Write-Host \"Peer status check inspection passed without fetching peer piece bytes:\" $PeerStatusCheck",
-      "& cargo run -p minimodel -- preflight-peer-import-request $PeerImportRequest $Manifest $PeerImportPreflight",
-      "$PreflightExitCode = $LASTEXITCODE",
-      "if ($PreflightExitCode -ne 0) {",
-      "  throw \"MiniModel peer import preflight failed with exit code $PreflightExitCode. Check the peer URL, manifest, and $PeerImportPreflight if it exists.\"",
-      "}",
-      "Write-Host \"Peer import preflight passed without fetching peer piece bytes:\" $PeerImportPreflight",
-      "& cargo run -p minimodel -- inspect-peer-import-preflight $PeerImportPreflight $PeerImportRequest $Manifest",
-      "$PreflightInspectExitCode = $LASTEXITCODE",
-      "if ($PreflightInspectExitCode -ne 0) {",
-      "  throw \"MiniModel peer import preflight inspection failed with exit code $PreflightInspectExitCode. Check the saved preflight report before importing peer pieces.\"",
-      "}",
-      "Write-Host \"Peer import preflight inspection passed without fetching peer piece bytes:\" $PeerImportPreflight",
-      "& cargo run -p minimodel -- import-peer-request $PeerImportRequest $Manifest $ImportDir",
-      "$ImportExitCode = $LASTEXITCODE",
-      "if ($ImportExitCode -ne 0) {",
-      "  throw \"MiniModel peer import failed with exit code $ImportExitCode. The preflight report is $PeerImportPreflight.\"",
-      "}",
-      "& cargo run -p minimodel -- inspect-import-receipt $PeerImportReceipt $Manifest $ImportedSlm",
-      "$ReceiptInspectExitCode = $LASTEXITCODE",
-      "if ($ReceiptInspectExitCode -ne 0) {",
-      "  throw \"MiniModel import receipt inspection failed with exit code $ReceiptInspectExitCode. The peer import output is $ImportDir.\"",
-      "}",
-      "Write-Host \"Peer import receipt inspection passed:\" $PeerImportReceipt",
-      "& cargo run -p minimodel -- inspect-peer-import-receipt $PeerImportReceipt $PeerImportRequest $PeerImportPreflight $Manifest $ImportedSlm",
-      "$PeerReceiptChainExitCode = $LASTEXITCODE",
-      "if ($PeerReceiptChainExitCode -ne 0) {",
-      "  throw \"MiniModel peer import receipt chain inspection failed with exit code $PeerReceiptChainExitCode. Check the request, preflight report, receipt, and assembled .slm before browser import.\"",
-      "}",
-      "Write-Host \"Peer import receipt chain inspection passed:\" $PeerImportReceipt",
-      "& cargo run -p minimodel -- write-import-receipt-ledger $PeerImportReceiptLedger $PeerImportReceipt $Manifest $ImportedSlm",
-      "$ReceiptLedgerWriteExitCode = $LASTEXITCODE",
-      "if ($ReceiptLedgerWriteExitCode -ne 0) {",
-      "  throw \"MiniModel import receipt ledger write failed with exit code $ReceiptLedgerWriteExitCode. Check the verified receipt, manifest, and assembled .slm.\"",
-      "}",
-      "Write-Host \"Peer import receipt ledger written:\" $PeerImportReceiptLedger",
-      "& cargo run -p minimodel -- inspect-import-receipt-ledger $PeerImportReceiptLedger",
-      "$ReceiptLedgerInspectExitCode = $LASTEXITCODE",
-      "if ($ReceiptLedgerInspectExitCode -ne 0) {",
-      "  throw \"MiniModel import receipt ledger inspection failed with exit code $ReceiptLedgerInspectExitCode. Check the ledger before companion or audit use.\"",
-      "}",
-      "Write-Host \"Peer import receipt ledger inspection passed:\" $PeerImportReceiptLedger",
-      "",
-      "Write-Host \"Verified peer import output directory:\" $ImportDir",
-      "Write-Host \"Next: open TinyRustLM.com, choose Your Local Files, and import the verified .slm.\"",
-      "",
-      "# Peer import request summary:",
-      `# artifact_sha256: ${request.model.artifact_sha256}`,
-      `# artifact_byte_count: ${request.model.artifact_byte_count}`,
-      `# peer_offer_sha256: ${match.peerOfferSha256 || "unavailable"}`,
-      `# peer_offer_merkle_root_sha256: ${match.peerOfferMerkleRootSha256 || "unavailable"}`,
-      ""
-    ];
-    return lines.join("\n");
-  }
-
-  function savePeerImportHandoff(match) {
-    const stem = peerImportFileStem(match.modelId);
-    let request;
-    try {
-      request = peerImportRequest(match);
-    } catch (error) {
-      updatePeerUrlStatus(errorMessage(error), true);
-      setSimpleSourceOption("p2p", true);
-      holdModelPopoverOpen(3000);
-      return;
-    }
-    downloadTextFile(`${stem}.minimodel-peer-import-request.json`, `${JSON.stringify(request, null, 2)}\n`);
-    downloadTextFile(`${stem}.minimodel-peer-import.ps1`, peerImportScript(match, request.local_peer_piece_contract.expected_peer_base_url), "text/plain");
-    setHfStatus(`${match.displayName} P2P import request saved for ${request.local_peer_piece_contract.expected_peer_base_url}; waiting for Rust reverify`, false);
-    holdModelPopoverOpen(2500);
-  }
-
-  function startHfConversion(entry, matches) {
-    const request = hfConversionRequest(entry, matches);
-    state.pendingConversionRequest = normalizeConversionRequest(request);
-    setConversionRequestStatus(`${state.pendingConversionRequest.sourceModelId} bound`, false);
-    const stem = conversionFileStem(entry.modelId);
-    downloadTextFile(`${stem}.minimodel-conversion-request.json`, `${JSON.stringify(request, null, 2)}\n`);
-    downloadTextFile(`${stem}.tinyrustlm-convert.ps1`, hfConversionScript(entry, matches), "text/plain");
-    downloadTextFile(`${stem}.tinyrustlm-conversion.README.txt`, hfConversionReadme(entry, matches), "text/plain");
-    setHfStatus(
-      request.local_conversion.p2p_enabled
-        ? request.local_conversion.source_format === "gguf"
-          ? "P2P conversion kit saved: review the local GGUF, or opt into direct Hugging Face download; then create a verified .slm plus a MiniModel share kit"
-          : "P2P conversion kit saved: use a reviewed local .safetensors file or shard directory, or opt into direct Hugging Face download; then create a verified .slm plus a MiniModel share kit"
-        : request.local_conversion.source_format === "gguf"
-          ? "Private conversion kit saved: review the local GGUF, or opt into direct Hugging Face download; then create a verified local .slm only. P2P can be added later"
-          : "Private conversion kit saved: use a reviewed local .safetensors file or shard directory, or opt into direct Hugging Face download; then create a verified local .slm only. P2P can be added later",
-      false
-    );
-    holdModelPopoverOpen(2500);
-  }
-
-  function importHfP2pMatch(match) {
-    selectCatalogEntry(match);
-    savePeerImportHandoff(match);
-  }
-
   function hfCountText(value, unit) {
     return Number.isFinite(value) ? `${value} ${unit}` : `${unit} unavailable`;
   }
@@ -12006,10 +11299,9 @@
   function hfCanStartConversion(view) {
     return Boolean(
       view &&
-      (
-        (view.safetensorsFiles && view.safetensorsFiles.length) ||
-        (view.ggufFiles && view.ggufFiles.length)
-      )
+      hfSourceContract(view.entry && view.entry.modelId) &&
+      view.safetensorsFiles &&
+      view.safetensorsFiles.length
     );
   }
 
@@ -12075,22 +11367,8 @@
     return summary.fileCount > 1 ? `${size} across ${summary.fileCount} source files` : size;
   }
 
-  function hfConversionActionLabel(view) {
-    const reviewFirst = hfPreferredSourceFormat(view) === "gguf" || hfSourceByteRisk(view) !== "normal";
-    if (state.p2pEnabled === false) {
-      return reviewFirst ? "Review, then convert only for me" : "Convert model only for me";
-    }
-    return reviewFirst ? "Review, then convert for P2P" : "Convert model for P2P";
-  }
-
   function hfConversionSummaryLabel() {
-    return state.p2pEnabled === false ? "Convert only for me" : "Convert for P2P";
-  }
-
-  function hfConversionModeText() {
-    return state.p2pEnabled === false
-      ? "Private conversion selected. This creates a verified local .slm only; you can prepare a P2P share kit later."
-      : "P2P conversion selected. This creates a verified local .slm plus a local share kit; disable P2P above for a private-only conversion.";
+    return "Local conversion fallback";
   }
 
   function hfCompatibilityClass(view) {
@@ -12119,7 +11397,7 @@
     if (hfSourceByteRisk(view) === "unknown") {
       return "Source size unknown";
     }
-    return "Rust conversion required";
+    return "Converts locally";
   }
 
   function hfAdvancedMetaText(view) {
@@ -12163,7 +11441,7 @@
     if (hfSourceByteRisk(view) === "unknown") {
       return `Hugging Face model card / ${view.downloads} / source size unknown; review before local conversion`;
     }
-    return `Hugging Face model card / ${view.downloads} / not runnable yet; Rust preflight and conversion required`;
+    return `Hugging Face model card / ${view.downloads} / Get model converts the pinned source locally`;
   }
 
   function hfSimpleCompatibilityText(view) {
@@ -12190,15 +11468,15 @@
     if (hfSourceByteRisk(view) === "unknown") {
       return "Source size unknown";
     }
-    return "Rust conversion required";
+    return "Converts locally";
   }
 
   function hfSimpleFallbackNote(view) {
     if (view.p2pMatch) {
-      return "Already converted by a listed peer. P2P Import saves a Rust fetch/verify kit; project servers never provide model bytes.";
+      return "Already converted by a verified peer. Get model imports and reverifies it through the local companion.";
     }
     if (view.matches.length && state.p2pEnabled === false) {
-      return "P2P is off. Convert only for me creates and validates a private local .slm; enable P2P later to prepare a share kit.";
+      return "The local companion can convert and validate this model without publishing it.";
     }
     if (view.hasPeerOffer) {
       return "MiniModel has a peer-offer proof. Enter one consenting peer URL in P2P Exchange to import without repeating source conversion.";
@@ -12207,9 +11485,7 @@
       return "No converted peer, .safetensors source, or reviewable .gguf source is listed yet. Review the model card before choosing a local conversion path.";
     }
     if (hfPreferredSourceFormat(view) === "gguf") {
-      return state.p2pEnabled === false
-        ? "Review, then convert only for me inspects the local GGUF and creates a verified local .slm only. P2P sharing can be added later."
-        : "Review, then convert for P2P inspects the local GGUF, creates a verified .slm, and prepares the MiniModel share kit.";
+      return "This GGUF is visible for model-card review, but automatic acquisition requires a supported immutable safetensors source or a complete verified P2P copy.";
     }
     if (hfSourceByteRisk(view) === "large") {
       const size = hfSourceByteSummaryText(view);
@@ -12218,9 +11494,7 @@
     if (hfSourceByteRisk(view) === "unknown") {
       return "Source size is unavailable from metadata. Review the model card before local conversion; P2P reuse is preferred when a verified peer entry appears.";
     }
-    return state.p2pEnabled === false
-      ? "Convert model only for me creates and validates a private local .slm. Enable P2P later to prepare peer pieces and share metadata."
-      : "Convert model for P2P creates a verified local .slm, prepares peer pieces, and writes metadata so future users can import it.";
+    return "Get model asks the paired companion to download the pinned source revision, convert it, validate the .slm and activation graph, and load both into this browser.";
   }
 
   function appendHfSlmFileNotes(actions, slmFiles, actionWord) {
@@ -12249,7 +11523,7 @@
       actions.append(elementWithText(
         "span",
         "model-result-meta",
-        `Source file listed: ${safeLocalModelName(file.file_name)}${size}. Use a reviewed local copy, or let the saved script download it directly from Hugging Face after explicit opt-in.`
+        `Source file listed: ${safeLocalModelName(file.file_name)}${size}. Get model pins, downloads, reviews, and converts it through the local companion.`
       ));
     }
     if (safetensorsFiles.length > 2) {
@@ -12330,37 +11604,31 @@
 
   function appendHfAdvancedActions(actions, entry, view) {
     actions.append(externalActionLink("Review Model Card", hfModelUrl(entry.modelId)));
+    if (view.p2pMatch || hfCanStartConversion(view)) {
+      actions.append(actionButton("Get model", () => getHfModel(entry), "primary-result-action"));
+    }
     if (view.matches.length) {
       for (const match of view.matches.slice(0, 2)) {
-        if (match.peerOfferRoute && state.p2pEnabled !== false) {
-          appendActionIfPresent(actions, p2pCatalogActionButton(match));
-        }
         actions.append(actionButton("Use MiniModel Metadata", () => selectCatalogEntry(match)));
       }
       return;
     }
-    const modeLabel = state.p2pEnabled === false ? "Private" : "P2P";
-    actions.append(actionButton(`Save ${modeLabel} Conversion Request`, () => saveHfConversionRequest(entry, view.matches)));
-    if (hfCanStartConversion(view)) {
-      actions.append(actionButton(`Save ${modeLabel} Conversion Script`, () => saveHfConversionScript(entry, view.matches)));
-    } else {
-      actions.append(elementWithText("span", "model-result-meta", "Rust script unavailable until metadata lists a .safetensors source or reviewable .gguf source."));
+    if (!hfCanStartConversion(view)) {
+      actions.append(elementWithText(
+        "span",
+        "model-result-meta",
+        "No verified P2P copy or supported Rust conversion path is available."
+      ));
     }
   }
 
   function appendHfSimpleActions(actions, entry, view) {
     actions.append(externalActionLink("Review Model Card", hfModelUrl(entry.modelId)));
     actions.append(elementWithText("span", hfCompatibilityClass(view), hfSimpleCompatibilityText(view)));
-    const p2pActionMatch = hfEnabledP2pActionMatch(view);
-    if (p2pActionMatch) {
-      appendActionIfPresent(actions, p2pCatalogActionButton(p2pActionMatch));
+    if (!view.p2pMatch && !hfCanStartConversion(view)) {
       return;
     }
-    if (!hfCanStartConversion(view)) {
-      return;
-    }
-    actions.append(elementWithText("span", "model-result-meta conversion-mode-note", hfConversionModeText()));
-    actions.append(actionButton(hfConversionActionLabel(view), () => startHfConversion(entry, view.matches), "primary-result-action"));
+    actions.append(actionButton("Get model", () => getHfModel(entry), "primary-result-action"));
   }
 
   async function ensureDefaultCatalogForHfAvailability() {
@@ -12413,7 +11681,9 @@
       "tinylm16-bpe",
       "stories15m-bpe",
       "smollm2-135m-instruct-bpe",
-      "smollm2-360m-instruct-bpe"
+      "smollm2-360m-instruct-bpe",
+      "qwen3-0.6b-bpe",
+      "qwen2.5-1.5b-bpe"
     ];
   }
 
@@ -12431,174 +11701,21 @@
     if (normalized === "huggingfacetb/smollm2-360m-instruct") {
       return "smollm2-360m-instruct-bpe";
     }
-    return "tinylm16-bpe";
+    if (normalized === "qwen/qwen3-0.6b") {
+      return "qwen3-0.6b-bpe";
+    }
+    if (normalized === "qwen/qwen2.5-1.5b-instruct") {
+      return "qwen2.5-1.5b-bpe";
+    }
+    return "";
   }
 
   function hfDefaultQuantization(modelId) {
     const normalized = String(modelId || "").toLowerCase();
-    if (normalized === "huggingfacetb/smollm2-360m-instruct") {
+    if (normalized === "qwen/qwen2.5-1.5b-instruct") {
       return "q4_0";
     }
     return "q8_0";
-  }
-
-  function hfConversionRequest(entry, matches) {
-    const slmFiles = hfSlmSiblings(entry.result);
-    const safetensorsFiles = hfSafetensorsSiblings(entry.result);
-    const ggufFiles = hfGgufSiblings(entry.result);
-    const sourceFormat = safetensorsFiles.length ? "safetensors" : ggufFiles.length ? "gguf" : "safetensors";
-    const preferredFiles = sourceFormat === "gguf" ? ggufFiles : safetensorsFiles;
-    const suggestedSourceFile = preferredFiles.length ? preferredFiles[0].file_name : null;
-    const suggestedSource = preferredFiles.length ? preferredFiles[0] : null;
-    const sourceInputMode = sourceFormat === "gguf"
-      ? "single-gguf-file"
-      : safetensorsFiles.length > 1
-      ? "safetensors-shard-directory"
-      : suggestedSourceFile
-        ? "single-safetensors-file"
-        : "reviewed-local-safetensors";
-    const defaultShape = hfDefaultSourceShape(entry.modelId);
-    const defaultQuantization = hfDefaultQuantization(entry.modelId);
-    const p2pEnabled = state.p2pEnabled !== false;
-    const knownPeerBaseUrl = p2pEnabled ? state.peerBaseUrl || "" : "";
-    return {
-      request_kind: "minimodel.huggingface_conversion_request.v0",
-      generated_at: new Date().toISOString(),
-      source: {
-        kind: "huggingface_model",
-        model_id: entry.modelId,
-        model_url: hfModelUrl(entry.modelId),
-        downloads: Number.isFinite(entry.result.downloads) ? entry.result.downloads : null,
-        likes: Number.isFinite(entry.result.likes) ? entry.result.likes : null,
-        discovered_slm_files: slmFiles,
-        discovered_safetensors_files: safetensorsFiles,
-        discovered_gguf_files: ggufFiles
-      },
-      requested_artifact: {
-        kind: "slm",
-        preferred_quantization_order: ["q8_0", "q4_0", "f32"],
-        supported_source_shapes: supportedSourceShapes(),
-        default_source_shape: defaultShape,
-        default_quantization: defaultQuantization,
-        runtime_target: "TinyRustLM Rust/WASM browser-local runtime",
-        browser_import_rule: "User imports the converted .slm with the browser file picker; project servers do not serve model bytes."
-      },
-      local_conversion: {
-        p2p_enabled: p2pEnabled,
-        conversion_mode: p2pEnabled ? "p2p-share-ready" : "private-local-only",
-        converter: "tinyrustlm-slm-pack",
-        source_format: sourceFormat,
-        source_input_mode: sourceInputMode,
-        required_local_input: sourceFormat === "gguf"
-          ? `A reviewed local GGUF file matching ${suggestedSourceFile || "the selected source"} with F32/F16/BF16/Q2_K/Q3_K/Q4_0/Q4_1/Q4_K/Q5_0/Q5_1/Q5_K/Q6_K/Q8_0/Q8_1/Q8_K tensors, or an explicit local-script Hugging Face download with TINYRUSTLM_ALLOW_HF_DOWNLOAD=1. GGUF conversion still requires supported tensor names/shapes.`
-          : safetensorsFiles.length > 1
-          ? `A reviewed local source directory containing all ${safetensorsFiles.length} listed .safetensors shards, or an explicit local-script Hugging Face download with TINYRUSTLM_ALLOW_HF_DOWNLOAD=1.`
-          : suggestedSourceFile
-            ? `A reviewed local copy of ${suggestedSourceFile}, or an explicit local-script Hugging Face download with TINYRUSTLM_ALLOW_HF_DOWNLOAD=1.`
-            : "A user-selected .safetensors file or shard directory already present on this machine.",
-        suggested_source_safetensors_file: sourceFormat === "safetensors" ? suggestedSourceFile : null,
-        suggested_source_safetensors_files: safetensorsFiles.map((file) => ({
-          file_name: file.file_name,
-          download_url: file.download_url || null,
-          sha256: file.sha256 || null,
-          byte_count: Number.isFinite(file.byte_count) ? file.byte_count : null
-        })),
-        suggested_source_safetensors_url: sourceFormat === "safetensors" && suggestedSource ? suggestedSource.download_url : null,
-        suggested_source_safetensors_sha256: sourceFormat === "safetensors" && suggestedSource ? suggestedSource.sha256 : null,
-        suggested_source_safetensors_byte_count: sourceFormat === "safetensors" && suggestedSource ? suggestedSource.byte_count : null,
-        suggested_source_gguf_file: sourceFormat === "gguf" ? suggestedSourceFile : null,
-        suggested_source_gguf_files: ggufFiles.map((file) => ({
-          file_name: file.file_name,
-          download_url: file.download_url || null,
-          sha256: file.sha256 || null,
-          byte_count: Number.isFinite(file.byte_count) ? file.byte_count : null
-        })),
-        suggested_source_gguf_url: sourceFormat === "gguf" && suggestedSource ? suggestedSource.download_url : null,
-        suggested_source_gguf_sha256: sourceFormat === "gguf" && suggestedSource ? suggestedSource.sha256 : null,
-        suggested_source_gguf_byte_count: sourceFormat === "gguf" && suggestedSource ? suggestedSource.byte_count : null,
-        source_acquisition_rule: "Browser search is metadata-only. The generated local PowerShell kit uses an existing reviewed local file by default, or downloads directly from Hugging Face only when the user explicitly sets TINYRUSTLM_ALLOW_HF_DOWNLOAD=1.",
-        command_shape: sourceFormat === "gguf"
-          ? `cargo run -p tinyrustlm-slm-pack -- convert-gguf-trained <input.gguf> ${defaultShape} <output-source-dir> <output.slm> ${defaultQuantization}`
-          : `cargo run -p tinyrustlm-slm-pack -- convert-huggingface-request <request.json> <input.safetensors-or-directory> <output-dir> ${defaultShape} ${defaultQuantization}`,
-        request_inspect_shape: "cargo run -p tinyrustlm-slm-pack -- inspect-huggingface-conversion-request <request.json> [output.report]",
-        peer_share_shape: p2pEnabled ? "cargo run -p minimodel -- prepare-peer-share <output.slm> <share-dir> <minimodel-model-id> [source-huggingface-model-id]" : null,
-        proof_gated_announcement_shape: p2pEnabled ? "cargo run -p minimodel -- prepare-seed-announcement <catalog-entry-json> <announcement-json> <external-probe-receipt-json> <observer-trust-json> <seed-fleet-config-json>" : null,
-        peer_companion_state_shape: p2pEnabled ? "cargo run -p minimodel -- write-peer-companion-state <manifest> <piece-dir> <state-json> <known-peer-base-url>" : null,
-        peer_companion_state_inspect_shape: p2pEnabled ? "cargo run -p minimodel -- inspect-peer-companion-state <state-json> <manifest> <piece-dir>" : null,
-        peer_contact_card_shape: p2pEnabled ? "cargo run -p minimodel -- write-peer-contact-card <peer-card-json> <known-peer-base-url> [peer-label]" : null,
-        peer_contact_book_shape: p2pEnabled ? "cargo run -p minimodel -- write-peer-contact-book <peer-book-json> <peer-card-json>..." : null,
-        peer_companion_inventory_shape: p2pEnabled ? "cargo run -p minimodel -- write-peer-companion-inventory <inventory-json> <state-json> <manifest> <piece-dir> <receipt-ledger-json> <piece-store-quota-bytes> [contact-card-json...]" : null,
-        peer_companion_inventory_inspect_shape: p2pEnabled ? "cargo run -p minimodel -- inspect-peer-companion-inventory <inventory-json>" : null,
-        catalog_snapshot_shape: p2pEnabled ? "cargo run -p minimodel -- write-catalog-snapshot <models.v0.json> <catalog-entry-json>..." : null,
-        catalog_snapshot_inspect_shape: p2pEnabled ? "cargo run -p minimodel -- inspect-catalog-snapshot <models.v0.json>" : null,
-        known_peer_base_url: knownPeerBaseUrl || null,
-        known_peer_rule: p2pEnabled
-          ? "P2P is enabled. The generated conversion script prepares a local share kit and, when a consenting Known peer URL is set, writes peer-companion-state, contact-book, and inventory handoffs. These local files do not claim public reachability; a public announcement requires current outside-network complete-transfer proof."
-          : "P2P is disabled. The generated conversion script stops after local .slm conversion and validation; the user can import the .slm and prepare a share kit later.",
-        compatibility_rule: sourceFormat === "gguf"
-          ? p2pEnabled
-            ? "The Rust GGUF planner/converter must accept F32/F16/BF16/Q2_K/Q3_K/Q4_0/Q4_1/Q4_K/Q5_0/Q5_1/Q5_K/Q6_K/Q8_0/Q8_1/Q8_K tensors, common Llama/TinyRustLM tensor names, and the exact TinyRustLM shape before a .slm is usable. MiniModel prepare-peer-share then writes the manifest, peer-offer proof, local peer pieces, and catalog entry from the verified .slm."
-            : "The Rust GGUF planner/converter must accept F32/F16/BF16/Q2_K/Q3_K/Q4_0/Q4_1/Q4_K/Q5_0/Q5_1/Q5_K/Q6_K/Q8_0/Q8_1/Q8_K tensors, common Llama/TinyRustLM tensor names, and the exact TinyRustLM shape before a private local .slm is usable."
-          : p2pEnabled
-            ? "The Rust planner/converter must accept the safetensors tensor names and exact TinyRustLM shape before a .slm is usable. MiniModel prepare-peer-share then writes the manifest, peer-offer proof, local peer pieces, and catalog entry from the verified .slm."
-            : "The Rust planner/converter must accept the safetensors tensor names and exact TinyRustLM shape before a private local .slm is usable."
-      },
-      conversion_gates: [
-        "source license and model-card review",
-        "config/tokenizer checksum capture",
-        sourceFormat === "gguf" ? "GGUF metadata and tensor-directory inspection" : "safetensors/source artifact checksum capture",
-        "local conversion to .slm",
-        "tinyrustlm-slm-pack validate",
-        ...(p2pEnabled ? [
-          "MiniModel prepare-peer-share",
-          "MiniModel write-peer-companion-state for local companion handoff metadata",
-          "MiniModel inspect-peer-companion-state before serving companion handoff metadata",
-          "MiniModel write-peer-companion-inventory for local companion handoff metadata",
-          "MiniModel inspect-peer-companion-inventory before trusting companion inventory metadata",
-          "MiniModel write-catalog-snapshot",
-          "MiniModel inspect-catalog-snapshot before loading proof-ready metadata snapshots",
-          "outside observer complete-transfer proof before public availability",
-          "MiniModel prepare-seed-announcement only after external proof validation"
-        ] : ["private local .slm handoff; optional P2P share kit can be prepared later"]),
-        "runtime smoke proof",
-        "eval/admission evidence",
-        ...(p2pEnabled ? ["MiniModel manifest signature", "proof-gated P2P availability announcement"] : [])
-      ],
-      existing_minimodel_matches: matches.map((match) => ({
-        model_id: match.modelId,
-        display_name: match.displayName,
-        artifact_sha256: match.artifactSha256,
-        artifact_byte_count: match.artifactByteCount,
-        peer_hint_status: match.peerHintStatus,
-        required_next_gate: match.requiredNextGate
-      })),
-      boundary: {
-        project_server_runs_model_bytes: false,
-        project_server_serves_model_bytes: false,
-        browser_downloads_huggingface_model_bytes: false,
-        local_script_huggingface_download_requires_explicit_opt_in: true,
-        p2p_goal: p2pEnabled
-          ? "Convert once, prepare checksum-bound metadata plus a peer-offer proof, then let consenting peers serve MiniModel pieces that receivers fetch, assemble, and reverify locally."
-          : "Create and validate a private local .slm only. The user may explicitly prepare a P2P share kit later."
-      }
-    };
-  }
-
-  function powerShellSingleQuote(value) {
-    return `'${String(value || "").replace(/'/g, "''")}'`;
-  }
-
-  function powerShellDoubleQuote(value) {
-    return `"${String(value || "").replace(/[`"$]/g, "`$&")}"`;
-  }
-
-  function base64Utf8(value) {
-    const bytes = state.encoder.encode(String(value || ""));
-    let binary = "";
-    for (let offset = 0; offset < bytes.length; offset += 0x8000) {
-      binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
-    }
-    return btoa(binary);
   }
 
   function conversionFileStem(modelId) {
@@ -12608,879 +11725,6 @@
       .replace(/^-+|-+$/g, "")
       .slice(0, 120);
     return stem || "huggingface-model";
-  }
-
-  function minimodelModelIdForHf(modelId) {
-    const cleaned = String(modelId || "huggingface/model")
-      .toLowerCase()
-      .replace(/[\\]+/g, "/")
-      .replace(/[^a-z0-9._/-]+/g, "-")
-      .replace(/\/+/g, "/")
-      .replace(/^[-/]+|[-/]+$/g, "")
-      .slice(0, 160);
-    return cleaned || "huggingface/model";
-  }
-
-  function hfGgufConversionScript(entry, request, requestBase64, serveScriptBase64) {
-    const stem = conversionFileStem(entry.modelId);
-    const sourceShape = request.requested_artifact.default_source_shape;
-    const quantization = request.requested_artifact.default_quantization;
-    const knownPeerBaseUrl = request.local_conversion.known_peer_base_url || "";
-    const p2pEnabled = request.local_conversion.p2p_enabled !== false;
-    const modelUrl = hfModelUrl(entry.modelId);
-    const minimodelModelId = minimodelModelIdForHf(entry.modelId);
-    const ggufFiles = Array.isArray(request.source.discovered_gguf_files)
-      ? request.source.discovered_gguf_files
-      : [];
-    const suggestedSourceFile = request.local_conversion.suggested_source_gguf_file || "model.gguf";
-    const suggestedSourceUrl = request.local_conversion.suggested_source_gguf_url || "";
-    const suggestedSourceSha256 = request.local_conversion.suggested_source_gguf_sha256 || "";
-    const suggestedSourceByteCount = Number.isFinite(request.local_conversion.suggested_source_gguf_byte_count)
-      ? String(request.local_conversion.suggested_source_gguf_byte_count)
-      : "";
-    const suggestedSourceEntries = ggufFiles.length
-      ? ggufFiles
-      : [{
-        file_name: suggestedSourceFile,
-        download_url: suggestedSourceUrl,
-        sha256: suggestedSourceSha256,
-        byte_count: Number.isFinite(Number(suggestedSourceByteCount)) ? Number(suggestedSourceByteCount) : null
-      }];
-    const suggestedSourceEntryLines = suggestedSourceEntries
-      .filter((file) => file && file.file_name)
-      .map((file) => {
-        const byteCount = Number.isFinite(file.byte_count) ? String(file.byte_count) : "";
-        return `  @{ Name = ${powerShellSingleQuote(file.file_name)}; Url = ${powerShellDoubleQuote(file.download_url || "")}; Sha256 = ${powerShellDoubleQuote(file.sha256 || "")}; ByteCount = ${powerShellDoubleQuote(byteCount)} }`;
-      });
-    const sourceCandidateLines = ggufFiles.length
-      ? ggufFiles.map((file) => {
-        const size = Number.isFinite(file.byte_count) && file.byte_count > 0
-          ? ` / ${formatByteCount(file.byte_count)}`
-          : "";
-        const hash = file.sha256 ? ` / ${file.sha256}` : "";
-        return `#   - ${file.file_name}${size}${hash}`;
-      })
-      : ["#   - no .gguf sibling listed by metadata; inspect the model card before choosing a local GGUF file."];
-    const lines = [
-      "# TinyRustLM Hugging Face GGUF to .slm conversion script",
-      `# Source model: ${entry.modelId}`,
-      `# Model card: ${modelUrl}`,
-      "#",
-      "# Hugging Face metadata GGUF candidates:",
-      ...sourceCandidateLines,
-      "#",
-      "# This script first runs inspect-gguf and plan-gguf-source.",
-      "# Conversion supports F32/F16/BF16/Q2_K/Q3_K/Q4_0/Q4_1/Q4_K/Q5_0/Q5_1/Q5_K/Q6_K/Q8_0/Q8_1/Q8_K GGUF tensors that match a TinyRustLM source shape.",
-      "# GGUF conversion still requires supported tensor names/shapes, tokenizer token-count compatibility, BPE token/merge import when declared, and Rust validation before .slm import.",
-      "# To let this script download the suggested source directly from Hugging Face to this machine,",
-      "# set TINYRUSTLM_ALLOW_HF_DOWNLOAD=1 before running it. That download never uses TinyRustLM,",
-      "# MiniModel, or project servers as a proxy/cache/host.",
-      "",
-      "$ErrorActionPreference = \"Stop\"",
-      "",
-      "function Resolve-ExistingPath {",
-      "  param([string[]] $Candidates, [string] $Label, [string] $Help)",
-      "  foreach ($Candidate in $Candidates) {",
-      "    if ([string]::IsNullOrWhiteSpace($Candidate)) { continue }",
-      "    if ($Candidate -like \"EDIT_ME*\") { continue }",
-      "    if (Test-Path -LiteralPath $Candidate) { return (Resolve-Path -LiteralPath $Candidate).Path }",
-      "  }",
-      "  throw \"$Label not found. $Help\"",
-      "}",
-      "",
-      "function Resolve-SourceGgufInput {",
-      "  param([string[]] $Candidates)",
-      "  foreach ($Candidate in $Candidates) {",
-      "    if ([string]::IsNullOrWhiteSpace($Candidate)) { continue }",
-      "    if ($Candidate -like \"EDIT_ME*\") { continue }",
-      "    if (Test-Path -LiteralPath $Candidate -PathType Leaf) { return (Resolve-Path -LiteralPath $Candidate).Path }",
-      "  }",
-      "  return \"\"",
-      "}",
-      "",
-      "function Assert-DownloadedSourceEvidence {",
-      "  param([string] $Path, [string] $ExpectedSha256, [string] $ExpectedByteCount)",
-      "  if (![string]::IsNullOrWhiteSpace($ExpectedByteCount)) {",
-      "    $ActualByteCount = (Get-Item -LiteralPath $Path).Length",
-      "    if ($ActualByteCount -ne [Int64]$ExpectedByteCount) { throw \"Downloaded source byte count mismatch: expected $ExpectedByteCount, got $ActualByteCount\" }",
-      "  }",
-      "  if (![string]::IsNullOrWhiteSpace($ExpectedSha256)) {",
-      "    $Expected = $ExpectedSha256 -replace '^sha256:', ''",
-      "    $Actual = (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()",
-      "    if ($Actual -ne $Expected.ToLowerInvariant()) { throw \"Downloaded source SHA-256 mismatch: expected $Expected, got $Actual\" }",
-      "  }",
-      "}",
-      "",
-      "function Resolve-GeneratedFile {",
-      "  param([string] $Directory, [string] $Filter, [string] $Label)",
-      "  $Matches = @(Get-ChildItem -LiteralPath $Directory -File -Filter $Filter | Sort-Object LastWriteTimeUtc -Descending)",
-      "  if ($Matches.Count -lt 1) { throw \"$Label was not produced in $Directory\" }",
-      "  return $Matches[0].FullName",
-      "}",
-      "",
-      "function Resolve-GeneratedDirectory {",
-      "  param([string] $Directory, [string] $Filter, [string] $Label)",
-      "  $Matches = @(Get-ChildItem -LiteralPath $Directory -Directory -Filter $Filter | Sort-Object LastWriteTimeUtc -Descending)",
-      "  if ($Matches.Count -lt 1) { throw \"$Label was not produced in $Directory\" }",
-      "  return $Matches[0].FullName",
-      "}",
-      "",
-      "# Optional overrides:",
-      "#   $env:TINYRUSTLM_WORKSPACE = full path to the TinyRustLM Rust workspace",
-      "#   $env:MINIMODEL_WORKSPACE = full path to MiniModel.org Rust workspace",
-      "#   $env:TINYRUSTLM_SOURCE_GGUF = full path to your reviewed local GGUF file",
-      "#   $env:TINYRUSTLM_ALLOW_HF_DOWNLOAD = 1 to download the suggested GGUF directly from Hugging Face",
-      "$CandidateTinyRustLMWorkspaces = @(",
-      "  $env:TINYRUSTLM_WORKSPACE,",
-      "  \"E:/Source/Rust/TinyRustLM.com\",",
-      "  (Join-Path $PSScriptRoot \"TinyRustLM.com\"),",
-      "  (Join-Path $PSScriptRoot \"..\\TinyRustLM.com\"),",
-      "  (Join-Path $PSScriptRoot \"..\\..\\TinyRustLM.com\")",
-      ")",
-      "$CandidateMiniModelWorkspaces = @(",
-      "  $env:MINIMODEL_WORKSPACE,",
-      "  \"E:/Source/Rust/MiniModel.org\",",
-      "  (Join-Path $PSScriptRoot \"MiniModel.org\"),",
-      "  (Join-Path $PSScriptRoot \"..\\MiniModel.org\"),",
-      "  (Join-Path $PSScriptRoot \"..\\..\\MiniModel.org\")",
-      ")",
-      `$SuggestedSourceGgufFileName = ${powerShellSingleQuote(suggestedSourceFile)}`,
-      "$SuggestedSourceGgufFiles = @(",
-      ...(suggestedSourceEntryLines.length ? suggestedSourceEntryLines : []),
-      ")",
-      `$ConversionRequest = Join-Path $PSScriptRoot ${powerShellSingleQuote(`${stem}.minimodel-conversion-request.json`)}`,
-      `$EmbeddedConversionRequestBase64 = ${powerShellSingleQuote(requestBase64)}`,
-      `$EmbeddedServePeerPiecesScriptBase64 = ${powerShellSingleQuote(serveScriptBase64)}`,
-      "$SourceGgufCandidates = @(",
-      "  $env:TINYRUSTLM_SOURCE_GGUF,",
-      "  (Join-Path $PSScriptRoot $SuggestedSourceGgufFileName),",
-      "  (Join-Path $PSScriptRoot (Join-Path \"source\" $SuggestedSourceGgufFileName))",
-      ")",
-      `$EnableP2P = ${p2pEnabled ? "$true" : "$false"}`,
-      "$TinyRustLMWorkspace = Resolve-ExistingPath $CandidateTinyRustLMWorkspaces \"TinyRustLM Rust workspace\" \"Set TINYRUSTLM_WORKSPACE or edit `$CandidateTinyRustLMWorkspaces.\"",
-      "$MiniModelWorkspace = if ($EnableP2P) { Resolve-ExistingPath $CandidateMiniModelWorkspaces \"MiniModel Rust workspace\" \"Set MINIMODEL_WORKSPACE or edit `$CandidateMiniModelWorkspaces.\" } else { \"\" }",
-      "$SourceGguf = Resolve-SourceGgufInput $SourceGgufCandidates",
-      "if ([string]::IsNullOrWhiteSpace($SourceGguf) -and $env:TINYRUSTLM_ALLOW_HF_DOWNLOAD -eq \"1\" -and $SuggestedSourceGgufFiles.Count -gt 0) {",
-      "  $Source = $SuggestedSourceGgufFiles[0]",
-      "  if ([string]::IsNullOrWhiteSpace($Source.Name) -or [string]::IsNullOrWhiteSpace($Source.Url)) { throw \"Hugging Face metadata did not include a download URL for the listed GGUF source.\" }",
-      "  $DownloadDir = Join-Path $PSScriptRoot \"source\"",
-      "  New-Item -ItemType Directory -Force -Path $DownloadDir | Out-Null",
-      "  $DownloadTarget = Join-Path $DownloadDir $Source.Name",
-      "  Write-Host \"Downloading Hugging Face GGUF source directly to this machine:\" $Source.Url",
-      "  Invoke-WebRequest -UseBasicParsing -Uri $Source.Url -OutFile $DownloadTarget",
-      "  Assert-DownloadedSourceEvidence $DownloadTarget $Source.Sha256 $Source.ByteCount",
-      "  $SourceGguf = Resolve-SourceGgufInput @($DownloadTarget)",
-      "}",
-      "if ([string]::IsNullOrWhiteSpace($SourceGguf)) {",
-      "  throw \"Reviewed source GGUF input not found. Put the file beside this script, put it under ./source/, set TINYRUSTLM_SOURCE_GGUF, or set TINYRUSTLM_ALLOW_HF_DOWNLOAD=1 to download the suggested GGUF directly to this machine.\"",
-      "}",
-      `$SourceShape = ${powerShellSingleQuote(sourceShape)}`,
-      `$Quantization = ${powerShellSingleQuote(quantization)}`,
-      `$ModelId = ${powerShellSingleQuote(entry.modelId)}`,
-      `$MiniModelModelId = ${powerShellSingleQuote(minimodelModelId)}`,
-      `$KnownPeerBaseUrl = ${powerShellDoubleQuote(knownPeerBaseUrl)} # Optional, for example ${peerExampleUrl}`,
-      `$WorkDir = Join-Path $PSScriptRoot ${powerShellSingleQuote(`${stem}-tinyrustlm-gguf-conversion`)}`,
-      "$ConversionRequestInspect = Join-Path $WorkDir \"tinyrustlm-conversion.request.inspect\"",
-      "$GgufSourceDir = Join-Path $WorkDir \"gguf-raw-source\"",
-      "$GgufInspect = Join-Path $WorkDir \"source.gguf.inspect\"",
-      "$GgufPlan = Join-Path $WorkDir \"source.gguf.plan\"",
-      `$OutputSlm = Join-Path $WorkDir ${powerShellSingleQuote(`${stem}-gguf-converted-${quantization}.slm`)}`,
-      "$MiniModelShareDir = Join-Path $WorkDir \"minimodel-peer-share\"",
-      "$MiniModelCatalogSnapshot = Join-Path $WorkDir \"models.v0.json\"",
-      `$MiniModelServeScript = Join-Path $WorkDir ${powerShellSingleQuote(`${stem}.minimodel-serve-peer-pieces.ps1`)}`,
-      "",
-      "if (!(Test-Path -LiteralPath $ConversionRequest)) {",
-      "  $EmbeddedConversionRequestJson = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($EmbeddedConversionRequestBase64))",
-      "  [System.IO.File]::WriteAllText($ConversionRequest, $EmbeddedConversionRequestJson, [System.Text.Encoding]::UTF8)",
-      "  Write-Host \"Wrote embedded conversion request:\" $ConversionRequest",
-      "}",
-      "New-Item -ItemType Directory -Force -Path $WorkDir | Out-Null",
-      "if ($EnableP2P) {",
-      "  $EmbeddedServeScriptText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($EmbeddedServePeerPiecesScriptBase64))",
-      "  [System.IO.File]::WriteAllText($MiniModelServeScript, $EmbeddedServeScriptText, [System.Text.Encoding]::UTF8)",
-      "}",
-      "Write-Host \"TinyRustLM workspace:\" $TinyRustLMWorkspace",
-      "if ($EnableP2P) { Write-Host \"MiniModel workspace:\" $MiniModelWorkspace } else { Write-Host \"Conversion mode: private local .slm only\" }",
-      "Write-Host \"Conversion request:\" $ConversionRequest",
-      "Write-Host \"Source GGUF:\" $SourceGguf",
-      "Write-Host \"Output directory:\" $WorkDir",
-      "Set-Location $TinyRustLMWorkspace",
-      "& cargo run -p tinyrustlm-slm-pack -- inspect-huggingface-conversion-request $ConversionRequest $ConversionRequestInspect",
-      "$ConversionRequestInspectExitCode = $LASTEXITCODE",
-      "if ($ConversionRequestInspectExitCode -ne 0) { throw \"Hugging Face conversion request inspection failed with exit code $ConversionRequestInspectExitCode. Check the request JSON before inspecting or converting local source bytes.\" }",
-      "Write-Host \"Conversion request inspection:\" $ConversionRequestInspect",
-      "& cargo run -p tinyrustlm-slm-pack -- inspect-gguf $SourceGguf $GgufInspect",
-      "& cargo run -p tinyrustlm-slm-pack -- plan-gguf-source $SourceGguf $SourceShape $GgufPlan",
-      "& cargo run -p tinyrustlm-slm-pack -- convert-gguf-trained $SourceGguf $SourceShape $GgufSourceDir $OutputSlm $Quantization",
-      "$ConversionExitCode = $LASTEXITCODE",
-      "if ($ConversionExitCode -ne 0) { throw \"GGUF conversion failed with exit code $ConversionExitCode. check $GgufInspect and $GgufPlan for tensor-name, shape, tokenizer, or validation mismatch.\" }",
-      "$OutputManifest = \"$OutputSlm.manifest\"",
-      "& cargo run -p tinyrustlm-slm-pack -- validate $OutputSlm",
-      "& cargo run -p tinyrustlm-slm-pack -- validate-manifest $OutputSlm $OutputManifest",
-      "",
-      "if (-not $EnableP2P) {",
-      "  Write-Host \"Private local conversion complete:\" $OutputSlm",
-      "  Write-Host \"No MiniModel peer pieces or share metadata were created.\"",
-      "  Write-Host \"To share later, import the .slm in TinyRustLM and choose Save P2P Share Kit.\"",
-      "  return",
-      "}",
-      "",
-      "Set-Location $MiniModelWorkspace",
-      "$PrepareArgs = @(\"run\", \"-p\", \"minimodel\", \"--\", \"prepare-peer-share\", $OutputSlm, $MiniModelShareDir, $MiniModelModelId, $ModelId)",
-      "& cargo @PrepareArgs",
-      "$MiniModelCatalogEntry = Resolve-GeneratedFile $MiniModelShareDir \"*.catalog-entry.v0.json\" \"MiniModel catalog entry\"",
-      "$MiniModelManifest = Resolve-GeneratedFile $MiniModelShareDir \"*.minimodel.manifest.v0\" \"MiniModel manifest\"",
-      "$MiniModelPieceDir = Resolve-GeneratedDirectory $MiniModelShareDir \"*.peer-pieces\" \"MiniModel peer pieces\"",
-      "$CatalogStem = ([System.IO.Path]::GetFileNameWithoutExtension($MiniModelCatalogEntry)) -replace \"\\.catalog-entry\\.v0$\", \"\"",
-      "$MiniModelPeerCompanionState = Join-Path $MiniModelShareDir \"$CatalogStem.peer-companion-state.v0.json\"",
-      "$MiniModelPeerContactCard = Join-Path $MiniModelShareDir \"$CatalogStem.peer-contact-card.v0.json\"",
-      "$MiniModelPeerContactBook = Join-Path $MiniModelShareDir \"$CatalogStem.peer-contact-book.v0.json\"",
-      "$MiniModelPeerCompanionInventory = Join-Path $MiniModelShareDir \"$CatalogStem.peer-companion-inventory.v0.json\"",
-      "$MiniModelLocalImportReceipt = Join-Path $MiniModelShareDir \"$CatalogStem.local.minimodel-receipt\"",
-      "$MiniModelImportReceiptLedger = Join-Path $MiniModelShareDir \"import-receipts.v0.json\"",
-      "$MiniModelHandoffReadme = Join-Path $MiniModelShareDir \"converted-gguf-p2p-handoff.README.txt\"",
-      "$OutputSlmByteCount = (Get-Item -LiteralPath $OutputSlm).Length",
-      "cargo run -p minimodel -- write-import-receipt $MiniModelManifest $OutputSlm $MiniModelLocalImportReceipt",
-      "cargo run -p minimodel -- inspect-import-receipt $MiniModelLocalImportReceipt $MiniModelManifest $OutputSlm",
-      "cargo run -p minimodel -- write-import-receipt-ledger $MiniModelImportReceiptLedger $MiniModelLocalImportReceipt $MiniModelManifest $OutputSlm",
-      "cargo run -p minimodel -- inspect-import-receipt-ledger $MiniModelImportReceiptLedger",
-      "if ($KnownPeerBaseUrl.Trim().Length -gt 0) {",
-      "  cargo run -p minimodel -- write-peer-companion-state $MiniModelManifest $MiniModelPieceDir $MiniModelPeerCompanionState $KnownPeerBaseUrl",
-      "  cargo run -p minimodel -- inspect-peer-companion-state $MiniModelPeerCompanionState $MiniModelManifest $MiniModelPieceDir",
-      "  cargo run -p minimodel -- write-peer-contact-card $MiniModelPeerContactCard $KnownPeerBaseUrl",
-      "  cargo run -p minimodel -- write-peer-contact-book $MiniModelPeerContactBook $MiniModelPeerContactCard",
-      "  cargo run -p minimodel -- inspect-peer-contact-book $MiniModelPeerContactBook",
-      "  cargo run -p minimodel -- write-peer-companion-inventory $MiniModelPeerCompanionInventory $MiniModelPeerCompanionState $MiniModelManifest $MiniModelPieceDir $MiniModelImportReceiptLedger $OutputSlmByteCount $MiniModelPeerContactCard",
-      "  cargo run -p minimodel -- inspect-peer-companion-inventory $MiniModelPeerCompanionInventory",
-      "}",
-      "cargo run -p minimodel -- write-catalog-snapshot $MiniModelCatalogSnapshot $MiniModelCatalogEntry",
-      "cargo run -p minimodel -- inspect-catalog-snapshot $MiniModelCatalogSnapshot",
-      "$HandoffReadmeLines = @(",
-      "  \"Converted GGUF proof-ready P2P handoff\"",
-      "  \"\"",
-      "  \"Proof-ready metadata without an availability claim:\"",
-      "  \"- Catalog entry: $MiniModelCatalogEntry\"",
-      "  \"- Catalog snapshot: $MiniModelCatalogSnapshot\"",
-      "  \"\"",
-      "  \"Local direct-peer handoff files when KnownPeerBaseUrl is set:\"",
-      "  \"- Peer companion state: $MiniModelPeerCompanionState (created when KnownPeerBaseUrl is set; metadata only, no model bytes)\"",
-      "  \"- Peer contact card/book: $MiniModelPeerContactCard / $MiniModelPeerContactBook (metadata only; no public reachability claim)\"",
-      "  \"- Import receipt ledger: $MiniModelImportReceiptLedger (metadata only, no model bytes)\"",
-      "  \"- Peer companion inventory: $MiniModelPeerCompanionInventory (created when KnownPeerBaseUrl is set; metadata only, no model bytes or peer pieces)\"",
-      "  \"\"",
-      "  \"Public catalog availability requires a signed, unexpired outside-network complete-transfer receipt and MiniModel prepare-seed-announcement.\"",
-      "  \"Do not send .slm files, *.peer-pieces directories, or source GGUF files to project servers.\"",
-      "  \"F32/F16/BF16/Q2_K/Q3_K/Q4_0/Q4_1/Q4_K/Q5_0/Q5_1/Q5_K/Q6_K/Q8_0/Q8_1/Q8_K GGUF tensors can convert; GGUF conversion still requires supported tensor names/shapes, tokenizer token-count compatibility, BPE token/merge import when declared, and Rust validation before .slm import.\"",
-      ")",
-      "[System.IO.File]::WriteAllLines($MiniModelHandoffReadme, $HandoffReadmeLines, [System.Text.Encoding]::UTF8)",
-      "Write-Host \"Converted .slm:\" $OutputSlm",
-      "Write-Host \"GGUF inspection:\" $GgufInspect",
-      "Write-Host \"GGUF source plan:\" $GgufPlan",
-      "Write-Host \"MiniModel manifest:\" $MiniModelManifest",
-      "Write-Host \"MiniModel peer pieces:\" $MiniModelPieceDir",
-      "Write-Host \"MiniModel local import receipt:\" $MiniModelLocalImportReceipt",
-      "Write-Host \"MiniModel import receipt ledger:\" $MiniModelImportReceiptLedger",
-      "Write-Host \"MiniModel catalog snapshot:\" $MiniModelCatalogSnapshot",
-      "Write-Host \"MiniModel peer companion inventory:\" $MiniModelPeerCompanionInventory",
-      "Write-Host \"MiniModel serve script:\" $MiniModelServeScript",
-      "Write-Host \"Converted GGUF handoff notes:\" $MiniModelHandoffReadme",
-      "Write-Host \"Public availability is not announced by this script. After external complete-transfer proof, use MiniModel prepare-seed-announcement.\"",
-      "Write-Host \"cargo run -p minimodel -- prepare-seed-announcement '$MiniModelCatalogEntry' <announcement-json> <external-probe-receipt-json> <observer-trust-json> <seed-fleet-config-json>\"",
-      "Write-Host \"If you consent to serve pieces from this machine, run:\"",
-      "Write-Host \"powershell -ExecutionPolicy Bypass -File '$MiniModelServeScript'\"",
-      "Write-Host \"Next: open TinyRustLM.com, choose Your Local Files, and import the converted .slm.\"",
-      ""
-    ];
-    return lines.join("\n");
-  }
-
-  function hfConversionScript(entry, matches) {
-    const request = hfConversionRequest(entry, matches);
-    const requestJson = `${JSON.stringify(request, null, 2)}\n`;
-    const requestBase64 = base64Utf8(requestJson);
-    const stem = conversionFileStem(entry.modelId);
-    const sourceShape = request.requested_artifact.default_source_shape;
-    const quantization = request.requested_artifact.default_quantization;
-    const knownPeerBaseUrl = request.local_conversion.known_peer_base_url || "";
-    const p2pEnabled = request.local_conversion.p2p_enabled !== false;
-    const modelUrl = hfModelUrl(entry.modelId);
-    const minimodelModelId = minimodelModelIdForHf(entry.modelId);
-    const serveScriptBase64 = base64Utf8(miniModelServePeerPiecesScript({
-      scriptTitle: "TinyRustLM converted Hugging Face MiniModel peer serving helper",
-      modelId: minimodelModelId,
-      shareDirRelativePath: "minimodel-peer-share"
-    }));
-    if (request.local_conversion.source_format === "gguf") {
-      return hfGgufConversionScript(entry, request, requestBase64, serveScriptBase64);
-    }
-    const safetensorsFiles = Array.isArray(request.source.discovered_safetensors_files)
-      ? request.source.discovered_safetensors_files
-      : [];
-    const suggestedSourceFile = request.local_conversion.suggested_source_safetensors_file || "model.safetensors";
-    const suggestedSourceUrl = request.local_conversion.suggested_source_safetensors_url || "";
-    const suggestedSourceSha256 = request.local_conversion.suggested_source_safetensors_sha256 || "";
-    const suggestedSourceByteCount = Number.isFinite(request.local_conversion.suggested_source_safetensors_byte_count)
-      ? String(request.local_conversion.suggested_source_safetensors_byte_count)
-      : "";
-    const suggestedSourceEntries = safetensorsFiles.length
-      ? safetensorsFiles
-      : [{
-        file_name: suggestedSourceFile,
-        download_url: suggestedSourceUrl,
-        sha256: suggestedSourceSha256,
-        byte_count: Number.isFinite(Number(suggestedSourceByteCount)) ? Number(suggestedSourceByteCount) : null
-      }];
-    const suggestedSourceEntryLines = suggestedSourceEntries
-      .filter((file) => file && file.file_name)
-      .map((file) => {
-        const byteCount = Number.isFinite(file.byte_count) ? String(file.byte_count) : "";
-        return `  @{ Name = ${powerShellSingleQuote(file.file_name)}; Url = ${powerShellDoubleQuote(file.download_url || "")}; Sha256 = ${powerShellDoubleQuote(file.sha256 || "")}; ByteCount = ${powerShellDoubleQuote(byteCount)} }`;
-      });
-    const sourceCandidateLines = safetensorsFiles.length
-      ? safetensorsFiles.map((file) => {
-        const size = Number.isFinite(file.byte_count) && file.byte_count > 0
-          ? ` / ${formatByteCount(file.byte_count)}`
-          : "";
-        const hash = file.sha256 ? ` / ${file.sha256}` : "";
-        return `#   - ${file.file_name}${size}${hash}`;
-      })
-      : ["#   - no .safetensors sibling listed by metadata; inspect the model card before choosing a local file."];
-    const lines = [
-      "# TinyRustLM Hugging Face to .slm conversion script",
-      `# Source model: ${entry.modelId}`,
-      `# Model card: ${modelUrl}`,
-      "#",
-      "# Hugging Face metadata source-file candidates:",
-      ...sourceCandidateLines,
-      "#",
-      "# By default this script uses a reviewed local source input and does not download model bytes.",
-      "# To let this script download the suggested source directly from Hugging Face to this machine,",
-      "# set TINYRUSTLM_ALLOW_HF_DOWNLOAD=1 before running it. That download never uses TinyRustLM,",
-      "# MiniModel, or project servers as a proxy/cache/host.",
-      "# You can also put the reviewed source file beside this script, under ./source/,",
-      "# or put every listed shard under ./source/ when the metadata lists multiple .safetensors files,",
-      "# or set TINYRUSTLM_SOURCE_SAFETENSORS to its full local file or shard directory path.",
-      "# If the Rust planner rejects the file, this model is not currently compatible",
-      "# with the selected TinyRustLM source shape.",
-      "# When that happens, read tinyrustlm-conversion.preflight in the output folder;",
-      "# it is the durable Rust report explaining why no .slm was produced.",
-      "# The embedded serve helper inspects peer-companion state before serve-peer-companion, otherwise it runs serve-peer-pieces.",
-      "# Project servers are not serving, proxying, caching, or running these model bytes.",
-      "",
-      "$ErrorActionPreference = \"Stop\"",
-      "",
-      "function Resolve-ExistingPath {",
-      "  param(",
-      "    [string[]] $Candidates,",
-      "    [string] $Label,",
-      "    [string] $Help",
-      "  )",
-      "  foreach ($Candidate in $Candidates) {",
-      "    if ([string]::IsNullOrWhiteSpace($Candidate)) { continue }",
-      "    if ($Candidate -like \"EDIT_ME*\") { continue }",
-      "    if (Test-Path -LiteralPath $Candidate) {",
-      "      return (Resolve-Path -LiteralPath $Candidate).Path",
-      "    }",
-      "  }",
-      "  throw \"$Label not found. $Help\"",
-      "}",
-      "",
-      "function Resolve-ExistingPathOrNull {",
-      "  param([string[]] $Candidates)",
-      "  foreach ($Candidate in $Candidates) {",
-      "    if ([string]::IsNullOrWhiteSpace($Candidate)) { continue }",
-      "    if ($Candidate -like \"EDIT_ME*\") { continue }",
-      "    if (Test-Path -LiteralPath $Candidate) {",
-      "      return (Resolve-Path -LiteralPath $Candidate).Path",
-      "    }",
-      "  }",
-      "  return \"\"",
-      "}",
-      "",
-      "function Test-DirectoryHasSuggestedSources {",
-      "  param(",
-      "    [string] $Directory,",
-      "    [object[]] $Sources",
-      "  )",
-      "  if ([string]::IsNullOrWhiteSpace($Directory) -or !(Test-Path -LiteralPath $Directory -PathType Container)) {",
-      "    return $false",
-      "  }",
-      "  $NamedSources = @($Sources | Where-Object { $_.Name -and $_.Name.Trim().Length -gt 0 })",
-      "  if ($NamedSources.Count -lt 1) {",
-      "    return @((Get-ChildItem -LiteralPath $Directory -File -Filter \"*.safetensors\" -ErrorAction SilentlyContinue)).Count -gt 0",
-      "  }",
-      "  foreach ($Source in $NamedSources) {",
-      "    if (!(Test-Path -LiteralPath (Join-Path $Directory $Source.Name) -PathType Leaf)) {",
-      "      return $false",
-      "    }",
-      "  }",
-      "  return $true",
-      "}",
-      "",
-      "function Resolve-SourceSafetensorsInput {",
-      "  param(",
-      "    [string[]] $Candidates,",
-      "    [object[]] $Sources",
-      "  )",
-      "  foreach ($Candidate in $Candidates) {",
-      "    if ([string]::IsNullOrWhiteSpace($Candidate)) { continue }",
-      "    if ($Candidate -like \"EDIT_ME*\") { continue }",
-      "    if (Test-Path -LiteralPath $Candidate -PathType Leaf) {",
-      "      return (Resolve-Path -LiteralPath $Candidate).Path",
-      "    }",
-      "    if (Test-DirectoryHasSuggestedSources $Candidate $Sources) {",
-      "      return (Resolve-Path -LiteralPath $Candidate).Path",
-      "    }",
-      "  }",
-      "  return \"\"",
-      "}",
-      "",
-      "function Assert-DownloadedSourceEvidence {",
-      "  param(",
-      "    [string] $Path,",
-      "    [string] $ExpectedSha256,",
-      "    [string] $ExpectedByteCount",
-      "  )",
-      "  if (![string]::IsNullOrWhiteSpace($ExpectedByteCount)) {",
-      "    $ActualByteCount = (Get-Item -LiteralPath $Path).Length",
-      "    if ($ActualByteCount -ne [Int64]$ExpectedByteCount) {",
-      "      throw \"Downloaded source byte count mismatch: expected $ExpectedByteCount, got $ActualByteCount\"",
-      "    }",
-      "  }",
-      "  if (![string]::IsNullOrWhiteSpace($ExpectedSha256)) {",
-      "    $Expected = $ExpectedSha256 -replace '^sha256:', ''",
-      "    $Actual = (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()",
-      "    if ($Actual -ne $Expected.ToLowerInvariant()) {",
-      "      throw \"Downloaded source SHA-256 mismatch: expected $Expected, got $Actual\"",
-      "    }",
-      "  }",
-      "}",
-      "",
-      "function Resolve-GeneratedFile {",
-      "  param(",
-      "    [string] $Directory,",
-      "    [string] $Filter,",
-      "    [string] $Label",
-      "  )",
-      "  $Matches = @(Get-ChildItem -LiteralPath $Directory -File -Filter $Filter | Sort-Object LastWriteTimeUtc -Descending)",
-      "  if ($Matches.Count -lt 1) {",
-      "    throw \"$Label was not produced in $Directory\"",
-      "  }",
-      "  return $Matches[0].FullName",
-      "}",
-      "",
-      "function Resolve-GeneratedDirectory {",
-      "  param(",
-      "    [string] $Directory,",
-      "    [string] $Filter,",
-      "    [string] $Label",
-      "  )",
-      "  $Matches = @(Get-ChildItem -LiteralPath $Directory -Directory -Filter $Filter | Sort-Object LastWriteTimeUtc -Descending)",
-      "  if ($Matches.Count -lt 1) {",
-      "    throw \"$Label was not produced in $Directory\"",
-      "  }",
-      "  return $Matches[0].FullName",
-      "}",
-      "",
-      "# Optional overrides:",
-      "#   $env:TINYRUSTLM_WORKSPACE = full path to the TinyRustLM Rust workspace",
-      "#   $env:MINIMODEL_WORKSPACE = full path to MiniModel.org Rust workspace",
-      "#   $env:TINYRUSTLM_SOURCE_SAFETENSORS = full path to your reviewed local source file or shard directory",
-      "#   $env:TINYRUSTLM_ALLOW_HF_DOWNLOAD = 1 to download the suggested source directly from Hugging Face",
-      "$CandidateTinyRustLMWorkspaces = @(",
-      "  $env:TINYRUSTLM_WORKSPACE,",
-      "  \"E:/Source/Rust/TinyRustLM.com\",",
-      "  (Join-Path $PSScriptRoot \"TinyRustLM.com\"),",
-      "  (Join-Path $PSScriptRoot \"..\\TinyRustLM.com\"),",
-      "  (Join-Path $PSScriptRoot \"..\\..\\TinyRustLM.com\")",
-      ")",
-      "$CandidateMiniModelWorkspaces = @(",
-      "  $env:MINIMODEL_WORKSPACE,",
-      "  \"E:/Source/Rust/MiniModel.org\",",
-      "  (Join-Path $PSScriptRoot \"MiniModel.org\"),",
-      "  (Join-Path $PSScriptRoot \"..\\MiniModel.org\"),",
-      "  (Join-Path $PSScriptRoot \"..\\..\\MiniModel.org\")",
-      ")",
-      `$SuggestedSourceSafetensorsFileName = ${powerShellSingleQuote(suggestedSourceFile)}`,
-      `$SuggestedSourceSafetensorsUrl = ${powerShellDoubleQuote(suggestedSourceUrl)}`,
-      `$SuggestedSourceSafetensorsSha256 = ${powerShellDoubleQuote(suggestedSourceSha256)}`,
-      `$SuggestedSourceSafetensorsByteCount = ${powerShellDoubleQuote(suggestedSourceByteCount)}`,
-      "$SuggestedSourceSafetensorsFiles = @(",
-      ...(suggestedSourceEntryLines.length ? suggestedSourceEntryLines : []),
-      ")",
-      `$ConversionRequest = Join-Path $PSScriptRoot ${powerShellSingleQuote(`${stem}.minimodel-conversion-request.json`)}`,
-      `$EmbeddedConversionRequestBase64 = ${powerShellSingleQuote(requestBase64)}`,
-      `$EmbeddedServePeerPiecesScriptBase64 = ${powerShellSingleQuote(serveScriptBase64)}`,
-      "$SourceSafetensorsCandidates = @(",
-      "  $env:TINYRUSTLM_SOURCE_SAFETENSORS,",
-      "  (Join-Path $PSScriptRoot $SuggestedSourceSafetensorsFileName),",
-      "  (Join-Path $PSScriptRoot (Join-Path \"source\" $SuggestedSourceSafetensorsFileName)),",
-      "  (Join-Path $PSScriptRoot \"source\"),",
-      "  $PSScriptRoot",
-      ")",
-      `$EnableP2P = ${p2pEnabled ? "$true" : "$false"}`,
-      "$TinyRustLMWorkspace = Resolve-ExistingPath $CandidateTinyRustLMWorkspaces \"TinyRustLM Rust workspace\" \"Set TINYRUSTLM_WORKSPACE or edit `$CandidateTinyRustLMWorkspaces.\"",
-      "$MiniModelWorkspace = if ($EnableP2P) { Resolve-ExistingPath $CandidateMiniModelWorkspaces \"MiniModel Rust workspace\" \"Set MINIMODEL_WORKSPACE or edit `$CandidateMiniModelWorkspaces.\" } else { \"\" }",
-      "$SourceSafetensors = Resolve-SourceSafetensorsInput $SourceSafetensorsCandidates $SuggestedSourceSafetensorsFiles",
-      "if ([string]::IsNullOrWhiteSpace($SourceSafetensors)) {",
-      "  if ($env:TINYRUSTLM_ALLOW_HF_DOWNLOAD -eq \"1\" -and $SuggestedSourceSafetensorsFiles.Count -gt 0) {",
-      "    $DownloadDir = Join-Path $PSScriptRoot \"source\"",
-      "    New-Item -ItemType Directory -Force -Path $DownloadDir | Out-Null",
-      "    foreach ($Source in $SuggestedSourceSafetensorsFiles) {",
-      "      if ([string]::IsNullOrWhiteSpace($Source.Name) -or [string]::IsNullOrWhiteSpace($Source.Url)) {",
-      "        throw \"Hugging Face metadata did not include a download URL for every listed .safetensors source.\"",
-      "      }",
-      "      $DownloadTarget = Join-Path $DownloadDir $Source.Name",
-      "      Write-Host \"Downloading Hugging Face source directly to this machine:\" $Source.Url",
-      "      Invoke-WebRequest -UseBasicParsing -Uri $Source.Url -OutFile $DownloadTarget",
-      "      Assert-DownloadedSourceEvidence $DownloadTarget $Source.Sha256 $Source.ByteCount",
-      "    }",
-      "    $SourceSafetensors = Resolve-SourceSafetensorsInput @($DownloadDir) $SuggestedSourceSafetensorsFiles",
-      "  }",
-      "}",
-      "if ([string]::IsNullOrWhiteSpace($SourceSafetensors)) {",
-      "  throw \"Reviewed source .safetensors input not found. Put the file beside this script, put every listed shard under ./source/, set TINYRUSTLM_SOURCE_SAFETENSORS to a file or shard directory, or set TINYRUSTLM_ALLOW_HF_DOWNLOAD=1 to download the suggested Hugging Face source directly to this machine.\"",
-      "}",
-      `$SourceShape = ${powerShellSingleQuote(sourceShape)}`,
-      `$Quantization = ${powerShellSingleQuote(quantization)}`,
-      `$ModelId = ${powerShellSingleQuote(entry.modelId)}`,
-      `$MiniModelModelId = ${powerShellSingleQuote(minimodelModelId)}`,
-      `$KnownPeerBaseUrl = ${powerShellDoubleQuote(knownPeerBaseUrl)} # Optional, for example ${peerExampleUrl}`,
-      `$WorkDir = Join-Path $PSScriptRoot ${powerShellSingleQuote(`${stem}-tinyrustlm-conversion`)}`,
-      "$ConversionRequestInspect = Join-Path $WorkDir \"tinyrustlm-conversion.request.inspect\"",
-      "$ConversionPreflight = Join-Path $WorkDir \"tinyrustlm-conversion.preflight\"",
-      "$MiniModelShareDir = Join-Path $WorkDir \"minimodel-peer-share\"",
-      "$MiniModelCatalogSnapshot = Join-Path $WorkDir \"models.v0.json\"",
-      `$MiniModelServeScript = Join-Path $WorkDir ${powerShellSingleQuote(`${stem}.minimodel-serve-peer-pieces.ps1`)}`,
-      "",
-      "if (!(Test-Path -LiteralPath $ConversionRequest)) {",
-      "  $EmbeddedConversionRequestJson = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($EmbeddedConversionRequestBase64))",
-      "  [System.IO.File]::WriteAllText($ConversionRequest, $EmbeddedConversionRequestJson, [System.Text.Encoding]::UTF8)",
-      "  Write-Host \"Wrote embedded conversion request:\" $ConversionRequest",
-      "}",
-      "Write-Host \"TinyRustLM workspace:\" $TinyRustLMWorkspace",
-      "if ($EnableP2P) { Write-Host \"MiniModel workspace:\" $MiniModelWorkspace } else { Write-Host \"Conversion mode: private local .slm only\" }",
-      "Write-Host \"Conversion request:\" $ConversionRequest",
-      "Write-Host \"Source safetensors:\" $SourceSafetensors",
-      "Write-Host \"Output directory:\" $WorkDir",
-      "",
-      "New-Item -ItemType Directory -Force -Path $WorkDir | Out-Null",
-      "if ($EnableP2P) {",
-      "  $EmbeddedServeScriptText = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($EmbeddedServePeerPiecesScriptBase64))",
-      "  [System.IO.File]::WriteAllText($MiniModelServeScript, $EmbeddedServeScriptText, [System.Text.Encoding]::UTF8)",
-      "  Write-Host \"Wrote peer serving script:\" $MiniModelServeScript",
-      "}",
-      "Set-Location $TinyRustLMWorkspace",
-      "",
-      "# The script writes the embedded request JSON beside itself when it is missing.",
-      "# Rust inspects the request before source-byte work, then performs inspect, plan, convert, validate, manifest validation, and receipt writing.",
-      "& cargo run -p tinyrustlm-slm-pack -- inspect-huggingface-conversion-request $ConversionRequest $ConversionRequestInspect",
-      "$ConversionRequestInspectExitCode = $LASTEXITCODE",
-      "if ($ConversionRequestInspectExitCode -ne 0) {",
-      "  throw \"Hugging Face conversion request inspection failed with exit code $ConversionRequestInspectExitCode. Check the request JSON before inspecting or converting local source bytes.\"",
-      "}",
-      "Write-Host \"Conversion request inspection:\" $ConversionRequestInspect",
-      "& cargo run -p tinyrustlm-slm-pack -- convert-huggingface-request $ConversionRequest $SourceSafetensors $WorkDir $SourceShape $Quantization",
-      "$ConversionExitCode = $LASTEXITCODE",
-      "if ($ConversionExitCode -ne 0) {",
-      "  if (Test-Path -LiteralPath $ConversionPreflight) {",
-      "    Write-Host \"Rust conversion preflight report:\" $ConversionPreflight",
-      "  }",
-      "  throw \"Rust conversion failed with exit code $ConversionExitCode. If the preflight report exists, it explains whether the local .safetensors input matched TinyRustLM's supported source shapes.\"",
-      "}",
-      "$OutputSlm = Resolve-GeneratedFile $WorkDir \"*.slm\" \"Converted .slm\"",
-      "$OutputManifest = Resolve-GeneratedFile $WorkDir \"*.slm.manifest\" \"Converted .slm manifest\"",
-      "Write-Host \"Conversion preflight:\" $ConversionPreflight",
-      "$ConversionReceipt = Resolve-GeneratedFile $WorkDir \"tinyrustlm-conversion.receipt\" \"Conversion receipt\"",
-      "& cargo run -p tinyrustlm-slm-pack -- inspect-huggingface-conversion-receipt $ConversionReceipt $ConversionRequest $ConversionPreflight $OutputSlm $OutputManifest",
-      "$ConversionReceiptInspectExitCode = $LASTEXITCODE",
-      "if ($ConversionReceiptInspectExitCode -ne 0) {",
-      "  throw \"Hugging Face conversion receipt inspection failed with exit code $ConversionReceiptInspectExitCode. Check the request, preflight, receipt, .slm, and manifest before MiniModel sharing.\"",
-      "}",
-      "Write-Host \"Conversion receipt inspection passed:\" $ConversionReceipt",
-      "",
-      "if (-not $EnableP2P) {",
-      "  Write-Host \"Private local conversion complete:\" $OutputSlm",
-      "  Write-Host \"No MiniModel peer pieces or share metadata were created.\"",
-      "  Write-Host \"To share later, import the .slm in TinyRustLM and choose Save P2P Share Kit.\"",
-      "  return",
-      "}",
-      "",
-      "# Prepare checksum-bound MiniModel metadata and local peer pieces in one Rust step.",
-      "# This does not upload model bytes and does not serve them from project servers.",
-      "Set-Location $MiniModelWorkspace",
-      "$PrepareArgs = @(\"run\", \"-p\", \"minimodel\", \"--\", \"prepare-peer-share\", $OutputSlm, $MiniModelShareDir, $MiniModelModelId, $ModelId)",
-      "& cargo @PrepareArgs",
-      "$MiniModelCatalogEntry = Resolve-GeneratedFile $MiniModelShareDir \"*.catalog-entry.v0.json\" \"MiniModel catalog entry\"",
-      "$MiniModelManifest = Resolve-GeneratedFile $MiniModelShareDir \"*.minimodel.manifest.v0\" \"MiniModel manifest\"",
-      "$MiniModelPieceDir = Resolve-GeneratedDirectory $MiniModelShareDir \"*.peer-pieces\" \"MiniModel peer pieces\"",
-      "$CatalogStem = ([System.IO.Path]::GetFileNameWithoutExtension($MiniModelCatalogEntry)) -replace \"\\.catalog-entry\\.v0$\", \"\"",
-      "$MiniModelPeerCompanionState = Join-Path $MiniModelShareDir \"$CatalogStem.peer-companion-state.v0.json\"",
-      "$MiniModelPeerContactCard = Join-Path $MiniModelShareDir \"$CatalogStem.peer-contact-card.v0.json\"",
-      "$MiniModelPeerContactBook = Join-Path $MiniModelShareDir \"$CatalogStem.peer-contact-book.v0.json\"",
-      "$MiniModelPeerCompanionInventory = Join-Path $MiniModelShareDir \"$CatalogStem.peer-companion-inventory.v0.json\"",
-      "$MiniModelLocalImportReceipt = Join-Path $MiniModelShareDir \"$CatalogStem.local.minimodel-receipt\"",
-      "$MiniModelImportReceiptLedger = Join-Path $MiniModelShareDir \"import-receipts.v0.json\"",
-      "$MiniModelHandoffReadme = Join-Path $MiniModelShareDir \"converted-once-p2p-handoff.README.txt\"",
-      "$OutputSlmByteCount = (Get-Item -LiteralPath $OutputSlm).Length",
-      "cargo run -p minimodel -- write-import-receipt $MiniModelManifest $OutputSlm $MiniModelLocalImportReceipt",
-      "cargo run -p minimodel -- inspect-import-receipt $MiniModelLocalImportReceipt $MiniModelManifest $OutputSlm",
-      "cargo run -p minimodel -- write-import-receipt-ledger $MiniModelImportReceiptLedger $MiniModelLocalImportReceipt $MiniModelManifest $OutputSlm",
-      "cargo run -p minimodel -- inspect-import-receipt-ledger $MiniModelImportReceiptLedger",
-      "if ($KnownPeerBaseUrl.Trim().Length -gt 0) {",
-      "  cargo run -p minimodel -- write-peer-companion-state $MiniModelManifest $MiniModelPieceDir $MiniModelPeerCompanionState $KnownPeerBaseUrl",
-      "  cargo run -p minimodel -- inspect-peer-companion-state $MiniModelPeerCompanionState $MiniModelManifest $MiniModelPieceDir",
-      "  cargo run -p minimodel -- write-peer-contact-card $MiniModelPeerContactCard $KnownPeerBaseUrl",
-      "  cargo run -p minimodel -- write-peer-contact-book $MiniModelPeerContactBook $MiniModelPeerContactCard",
-      "  cargo run -p minimodel -- inspect-peer-contact-book $MiniModelPeerContactBook",
-      "  cargo run -p minimodel -- write-peer-companion-inventory $MiniModelPeerCompanionInventory $MiniModelPeerCompanionState $MiniModelManifest $MiniModelPieceDir $MiniModelImportReceiptLedger $OutputSlmByteCount $MiniModelPeerContactCard",
-      "  cargo run -p minimodel -- inspect-peer-companion-inventory $MiniModelPeerCompanionInventory",
-      "}",
-      "",
-      "# Build a proof-ready metadata snapshot without any public availability claim.",
-      "cargo run -p minimodel -- write-catalog-snapshot $MiniModelCatalogSnapshot $MiniModelCatalogEntry",
-      "cargo run -p minimodel -- inspect-catalog-snapshot $MiniModelCatalogSnapshot",
-      "$HandoffReadmeLines = @(",
-      "  \"Converted-once proof-ready P2P handoff\"",
-      "  \"\"",
-      "  \"Proof-ready metadata without an availability claim:\"",
-      "  \"- Catalog entry: $MiniModelCatalogEntry\"",
-      "  \"- Catalog snapshot: $MiniModelCatalogSnapshot\"",
-      "  \"\"",
-      "  \"Local direct-peer handoff files when KnownPeerBaseUrl is set:\"",
-      "  \"- Peer companion state: $MiniModelPeerCompanionState (created when KnownPeerBaseUrl is set; metadata only, no model bytes)\"",
-      "  \"- Peer contact card/book: $MiniModelPeerContactCard / $MiniModelPeerContactBook (metadata only; no public reachability claim)\"",
-      "  \"- Import receipt ledger: $MiniModelImportReceiptLedger (metadata only, no model bytes)\"",
-      "  \"- Peer companion inventory: $MiniModelPeerCompanionInventory (created when KnownPeerBaseUrl is set; metadata only, no model bytes or peer pieces)\"",
-      "  \"\"",
-      "  \"Do not send .slm files or *.peer-pieces directories to project servers.\"",
-      "  \"Public catalog availability requires a signed, unexpired outside-network complete-transfer receipt and MiniModel prepare-seed-announcement.\"",
-      ")",
-      "[System.IO.File]::WriteAllLines($MiniModelHandoffReadme, $HandoffReadmeLines, [System.Text.Encoding]::UTF8)",
-      "",
-      "Write-Host \"Converted .slm:\" $OutputSlm",
-      "Write-Host \"Conversion receipt:\" $ConversionReceipt",
-      "Write-Host \"MiniModel manifest:\" $MiniModelManifest",
-      "Write-Host \"MiniModel peer pieces:\" $MiniModelPieceDir",
-      "Write-Host \"MiniModel local import receipt:\" $MiniModelLocalImportReceipt",
-      "Write-Host \"MiniModel import receipt ledger:\" $MiniModelImportReceiptLedger",
-      "Write-Host \"MiniModel share directory:\" $MiniModelShareDir",
-      "Write-Host \"MiniModel catalog snapshot:\" $MiniModelCatalogSnapshot",
-      "Write-Host \"MiniModel peer companion state:\" $MiniModelPeerCompanionState",
-      "Write-Host \"MiniModel peer contact card:\" $MiniModelPeerContactCard",
-      "Write-Host \"MiniModel peer contact book:\" $MiniModelPeerContactBook",
-      "Write-Host \"MiniModel peer companion inventory:\" $MiniModelPeerCompanionInventory",
-      "Write-Host \"MiniModel serve script:\" $MiniModelServeScript",
-      "Write-Host \"Converted-once handoff notes:\" $MiniModelHandoffReadme",
-      "if ($KnownPeerBaseUrl.Trim().Length -eq 0) {",
-      "  Write-Host \"Later, when you have a consenting peer URL, create local direct-peer handoff metadata with:\"",
-      `  Write-Host "cargo run -p minimodel -- write-peer-companion-state '$MiniModelManifest' '$MiniModelPieceDir' '$MiniModelPeerCompanionState' ${peerExampleUrl}"`,
-      `  Write-Host "cargo run -p minimodel -- inspect-peer-companion-state '$MiniModelPeerCompanionState' '$MiniModelManifest' '$MiniModelPieceDir'"`,
-      `  Write-Host "cargo run -p minimodel -- write-peer-contact-card '$MiniModelPeerContactCard' ${peerExampleUrl}"`,
-      "  Write-Host \"cargo run -p minimodel -- write-peer-contact-book '$MiniModelPeerContactBook' '$MiniModelPeerContactCard'\"",
-      "  Write-Host \"cargo run -p minimodel -- inspect-peer-contact-book '$MiniModelPeerContactBook'\"",
-      "  Write-Host \"cargo run -p minimodel -- write-peer-companion-inventory '$MiniModelPeerCompanionInventory' '$MiniModelPeerCompanionState' '$MiniModelManifest' '$MiniModelPieceDir' '$MiniModelImportReceiptLedger' $OutputSlmByteCount '$MiniModelPeerContactCard'\"",
-      "  Write-Host \"cargo run -p minimodel -- inspect-peer-companion-inventory '$MiniModelPeerCompanionInventory'\"",
-      "}",
-      "Write-Host \"Public availability is not announced by this script. After external complete-transfer proof, use:\"",
-      "Write-Host \"cargo run -p minimodel -- prepare-seed-announcement '$MiniModelCatalogEntry' <announcement-json> <external-probe-receipt-json> <observer-trust-json> <seed-fleet-config-json>\"",
-      "Write-Host \"If you consent to serve pieces from this machine, run:\"",
-      "Write-Host \"powershell -ExecutionPolicy Bypass -File '$MiniModelServeScript'\"",
-      "Write-Host \"Next: open TinyRustLM.com, choose Your Local Files, and import the converted .slm.\"",
-      ""
-    ];
-    return lines.join("\n");
-  }
-
-  function hfConversionReadme(entry, matches) {
-    const request = hfConversionRequest(entry, matches);
-    const p2pEnabled = request.local_conversion.p2p_enabled !== false;
-    const stem = conversionFileStem(entry.modelId);
-    const scriptName = `${stem}.tinyrustlm-convert.ps1`;
-    const requestName = `${stem}.minimodel-conversion-request.json`;
-    const readmeName = `${stem}.tinyrustlm-conversion.README.txt`;
-    const sourceFormat = request.local_conversion.source_format || "safetensors";
-    if (sourceFormat === "gguf") {
-      const sourceFile = request.local_conversion.suggested_source_gguf_file || "<reviewed-source>.gguf";
-      const suggestedSourceUrl = request.local_conversion.suggested_source_gguf_url || "";
-      const suggestedSourceSha256 = request.local_conversion.suggested_source_gguf_sha256 || "";
-      const suggestedSourceByteCount = Number.isFinite(request.local_conversion.suggested_source_gguf_byte_count)
-        ? String(request.local_conversion.suggested_source_gguf_byte_count)
-        : "";
-      const knownPeerBaseUrl = request.local_conversion.known_peer_base_url || "";
-      const lines = [
-        p2pEnabled ? "TinyRustLM Hugging Face GGUF conversion kit (P2P share-ready)" : "TinyRustLM Hugging Face GGUF private conversion kit",
-        "",
-        `Source model: ${entry.modelId}`,
-        `Model card: ${hfModelUrl(entry.modelId)}`,
-        "",
-        "Files saved by TinyRustLM:",
-        `- ${requestName}`,
-        `- ${scriptName}`,
-        `- ${readmeName}`,
-        "",
-        "What to do:",
-        `1. Review the model card and license for ${entry.modelId}.`,
-        `2. Put a reviewed GGUF file with F32/F16/BF16/Q2_K/Q3_K/Q4_0/Q4_1/Q4_K/Q5_0/Q5_1/Q5_K/Q6_K/Q8_0/Q8_1/Q8_K tensors at ${sourceFile}, set TINYRUSTLM_SOURCE_GGUF, or opt into direct local Hugging Face download with: $env:TINYRUSTLM_ALLOW_HF_DOWNLOAD=\"1\"`,
-        `3. Run from PowerShell in this folder: powershell -ExecutionPolicy Bypass -File .\\${scriptName}`,
-        "4. If conversion passes, import the verified .slm through TinyRustLM's local file picker.",
-        "",
-        "What the script does:",
-        "- Recreates the conversion request if the JSON sidecar is missing.",
-        "- Uses a reviewed local GGUF file by default, or downloads the suggested GGUF directly to this machine only after TINYRUSTLM_ALLOW_HF_DOWNLOAD=1.",
-        `- Listed GGUF file: ${sourceFile}`,
-        suggestedSourceUrl ? `- Suggested direct Hugging Face GGUF URL: ${suggestedSourceUrl}` : "- No direct Hugging Face GGUF URL was available from metadata.",
-        suggestedSourceSha256 ? `- Expected source SHA-256 from metadata: ${suggestedSourceSha256}` : "- Expected source SHA-256 from metadata: unavailable.",
-        suggestedSourceByteCount ? `- Expected source byte count from metadata: ${suggestedSourceByteCount}` : "- Expected source byte count from metadata: unavailable.",
-        "- Runs tinyrustlm-slm-pack inspect-huggingface-conversion-request before local GGUF inspection.",
-        "- Runs tinyrustlm-slm-pack inspect-gguf and plan-gguf-source before conversion.",
-        "- Runs tinyrustlm-slm-pack convert-gguf-trained for F32/F16/BF16/Q2_K/Q3_K/Q4_0/Q4_1/Q4_K/Q5_0/Q5_1/Q5_K/Q6_K/Q8_0/Q8_1/Q8_K tensor payloads.",
-        p2pEnabled
-          ? "- Runs tinyrustlm-slm-pack validate and validate-manifest before MiniModel sharing."
-          : "- Runs tinyrustlm-slm-pack validate and validate-manifest before local import.",
-        ...(p2pEnabled ? [
-          "- Runs MiniModel prepare-peer-share locally after Rust verifies the .slm.",
-          "- Writes a proof-ready models.v0.json catalog snapshot without a peer availability claim.",
-          "- Writes a local import receipt ledger for sender-side audit/companion handoff.",
-          knownPeerBaseUrl
-            ? `- Known peer URL: ${knownPeerBaseUrl}. The script writes local peer companion state, contact book, and peer companion inventory for this consenting peer; none claims public reachability.`
-            : "- Known peer URL: not set. Local direct-peer handoff metadata can be added later after a consenting peer URL is known.",
-          "- A public availability announcement is created only by MiniModel prepare-seed-announcement after signed, unexpired outside-network complete-transfer proof.",
-          "",
-          "Proof-ready metadata:",
-          "- models.v0.json",
-          "- catalog-entry JSON",
-          "- peer contact card/book JSON for explicit local handoff when present",
-          "- these files are not a public availability announcement"
-        ] : [
-          "- Stops after producing and validating your private local .slm.",
-          "- Does not create MiniModel peer pieces, catalog metadata, announcements, or companion state.",
-          "- You can use TinyRustLM's Save P2P Share Kit action later if you decide to share.",
-          "",
-          "Private output:",
-          "- Keep the validated .slm locally and import it through TinyRustLM's file picker."
-        ]),
-        "",
-        "Never upload to project servers:",
-        "- .slm files",
-        "- *.peer-pieces directories",
-        "- source .gguf files",
-        "",
-        "Boundary:",
-        "- GGUF conversion still requires supported tensor names/shapes, tokenizer token-count compatibility, BPE token/merge import when declared, and Rust validation before .slm import.",
-        "- TinyRustLM.com and MiniModel.org do not serve, proxy, cache, run, or fetch user model bytes.",
-        p2pEnabled
-          ? "- Model bytes stay local or move only from a consenting peer through Rust verification."
-          : "- This kit keeps model bytes local and creates no peer-sharing metadata."
-      ];
-      return `${lines.join("\n")}\n`;
-    }
-    const sourceFile = request.local_conversion.suggested_source_safetensors_file || "<reviewed-source>.safetensors";
-    const sourceFiles = Array.isArray(request.local_conversion.suggested_source_safetensors_files)
-      ? request.local_conversion.suggested_source_safetensors_files
-      : [];
-    const sourceInputText = sourceFiles.length > 1
-      ? `all ${sourceFiles.length} listed .safetensors files under ./source/`
-      : sourceFile;
-    const suggestedSourceUrl = request.local_conversion.suggested_source_safetensors_url || "";
-    const suggestedSourceSha256 = request.local_conversion.suggested_source_safetensors_sha256 || "";
-    const suggestedSourceByteCount = Number.isFinite(request.local_conversion.suggested_source_safetensors_byte_count)
-      ? String(request.local_conversion.suggested_source_safetensors_byte_count)
-      : "";
-    const knownPeerBaseUrl = request.local_conversion.known_peer_base_url || "";
-    const lines = [
-      p2pEnabled ? "TinyRustLM Hugging Face conversion kit (P2P share-ready)" : "TinyRustLM Hugging Face private conversion kit",
-      "",
-      `Source model: ${entry.modelId}`,
-      `Model card: ${hfModelUrl(entry.modelId)}`,
-      "",
-      "Files saved by TinyRustLM:",
-      `- ${requestName}`,
-      `- ${scriptName}`,
-      `- ${readmeName}`,
-      "",
-      "What to do:",
-      `1. Review the model card and license for ${entry.modelId}.`,
-      `2. Either put ${sourceInputText}, set TINYRUSTLM_SOURCE_SAFETENSORS to a reviewed file or shard directory, or opt into direct local Hugging Face download with: $env:TINYRUSTLM_ALLOW_HF_DOWNLOAD=\"1\"`,
-      `3. Run from PowerShell in this folder: powershell -ExecutionPolicy Bypass -File .\\${scriptName}`,
-      "4. If conversion passes, import the verified .slm through TinyRustLM's local file picker.",
-      "",
-      "What the script does:",
-      "- Recreates the conversion request if the JSON sidecar is missing.",
-      "- Uses a reviewed local source file or shard directory by default, or downloads the suggested Hugging Face source directly to this machine only after TINYRUSTLM_ALLOW_HF_DOWNLOAD=1.",
-      sourceFiles.length > 1 ? `- Listed source files: ${sourceFiles.map((file) => file.file_name).join(", ")}` : `- Listed source file: ${sourceFile}`,
-      suggestedSourceUrl ? `- Suggested direct Hugging Face source URL: ${suggestedSourceUrl}` : "- No direct Hugging Face source URL was available from metadata.",
-      suggestedSourceSha256 ? `- Expected source SHA-256 from metadata: ${suggestedSourceSha256}` : "- Expected source SHA-256 from metadata: unavailable.",
-      suggestedSourceByteCount ? `- Expected source byte count from metadata: ${suggestedSourceByteCount}` : "- Expected source byte count from metadata: unavailable.",
-      "- Runs tinyrustlm-slm-pack inspect-huggingface-conversion-request before local source-byte inspection.",
-      "- Runs tinyrustlm-slm-pack convert-huggingface-request locally against the reviewed source file or shard directory.",
-      "- Writes tinyrustlm-conversion.preflight before extraction so incompatible source inputs have a durable Rust explanation.",
-      p2pEnabled
-        ? "- Runs tinyrustlm-slm-pack inspect-huggingface-conversion-receipt to bind the request, preflight, .slm, and manifest before MiniModel sharing."
-        : "- Runs tinyrustlm-slm-pack inspect-huggingface-conversion-receipt to bind the request, preflight, .slm, and manifest before local import.",
-      ...(p2pEnabled ? [
-          "- Runs MiniModel prepare-peer-share locally after Rust verifies the .slm.",
-          "- Writes a proof-ready models.v0.json catalog snapshot without a peer availability claim.",
-          "- Writes a local import receipt ledger for sender-side audit/companion handoff.",
-          knownPeerBaseUrl
-            ? `- Known peer URL: ${knownPeerBaseUrl}. The script writes local peer companion state, contact book, and peer companion inventory for this consenting peer; none claims public reachability.`
-            : "- Known peer URL: not set. Local direct-peer handoff metadata can be added later after a consenting peer URL is known.",
-        "- A public availability announcement is created only by MiniModel prepare-seed-announcement after signed, unexpired outside-network complete-transfer proof.",
-        "",
-        "Proof-ready metadata:",
-        "- models.v0.json",
-        "- catalog-entry JSON",
-        "- peer contact card/book JSON for explicit local handoff when present",
-        "- these files are not a public availability announcement"
-      ] : [
-        "- Stops after producing and validating your private local .slm.",
-        "- Does not create MiniModel peer pieces, catalog metadata, announcements, or companion state.",
-        "- You can use TinyRustLM's Save P2P Share Kit action later if you decide to share.",
-        "",
-        "Private output:",
-        "- Keep the validated .slm locally and import it through TinyRustLM's file picker."
-      ]),
-      "",
-      "Never upload to project servers:",
-      "- .slm files",
-      "- *.peer-pieces directories",
-      "- source .safetensors files",
-      "",
-      "Boundary:",
-      "- TinyRustLM.com and MiniModel.org do not serve, proxy, cache, run, or fetch user model bytes.",
-      p2pEnabled
-        ? "- Model bytes stay local or move only from a consenting peer through Rust verification."
-        : "- This kit keeps model bytes local and creates no peer-sharing metadata.",
-      "- Browser Hugging Face search results are metadata only until a local Rust conversion or verified P2P import succeeds."
-    ];
-    return `${lines.join("\n")}\n`;
-  }
-
-  function saveHfConversionRequest(entry, matches) {
-    const request = hfConversionRequest(entry, matches);
-    state.pendingConversionRequest = normalizeConversionRequest(request);
-    setConversionRequestStatus(`${state.pendingConversionRequest.sourceModelId} bound`, false);
-    const fileName = `${conversionFileStem(entry.modelId)}.minimodel-conversion-request.json`;
-    downloadTextFile(fileName, `${JSON.stringify(request, null, 2)}\n`);
-    setHfStatus("conversion request saved locally", false);
-    holdModelPopoverOpen(2500);
-  }
-
-  function saveHfConversionScript(entry, matches) {
-    const request = hfConversionRequest(entry, matches);
-    state.pendingConversionRequest = normalizeConversionRequest(request);
-    setConversionRequestStatus(`${state.pendingConversionRequest.sourceModelId} bound`, false);
-    const stem = conversionFileStem(entry.modelId);
-    downloadTextFile(`${stem}.minimodel-conversion-request.json`, `${JSON.stringify(request, null, 2)}\n`);
-    downloadTextFile(`${stem}.tinyrustlm-convert.ps1`, hfConversionScript(entry, matches), "text/plain");
-    downloadTextFile(`${stem}.tinyrustlm-conversion.README.txt`, hfConversionReadme(entry, matches), "text/plain");
-    setHfStatus(
-      request.local_conversion.source_format === "gguf"
-        ? "GGUF conversion request, script, and README saved locally"
-        : "conversion request, script, and README saved locally",
-      false
-    );
-    holdModelPopoverOpen(2500);
   }
 
   function renderAcceptedHfResults(accepted) {
@@ -13630,7 +11874,7 @@
     const note = elementWithText(
       "p",
       "source-flow-summary-note",
-      "Hugging Face rows are metadata. A model runs here only after Rust conversion creates a local .slm or P2P Import fetches and reverifies peer pieces."
+      "Get model uses a complete verified P2P copy when available; otherwise the local companion pins and converts the source revision."
     );
     el.simpleHfFlowSummary.append(header, chips, note);
     el.simpleHfFlowSummary.hidden = false;
@@ -15224,14 +13468,21 @@
   async function loadModelManifest(model) {
     if (model.companionImport) {
       const entry = model.companionImport.catalogEntry;
+      const converted = model.companionImport.acquisitionKind === "conversion";
       const fields = {
-        source_kind: "minimodel-desktop-companion-import",
-        source_id: entry.modelId,
-        source_snapshot: "rust-receipt-revalidated-before-loopback-stream",
-        source_review: entry.admissionStatus || "catalog-metadata-only",
+        source_kind: converted
+          ? "huggingface-desktop-companion-conversion"
+          : "minimodel-desktop-companion-import",
+        source_id: entry.sourceModelId || entry.modelId,
+        source_snapshot: converted
+          ? `revision=${entry.sourceRevision || "unavailable"} / rust-receipt-revalidated-before-loopback-stream`
+          : "rust-receipt-revalidated-before-loopback-stream",
+        source_review: entry.admissionStatus || (converted ? "immutable-source-reviewed" : "catalog-metadata-only"),
         source_review_routes: entry.manifestRoute || "",
         source_review_artifacts: `artifact=${model.companionImport.artifactSha256} / bytes=${model.companionImport.artifactByteCount}`,
-        source_validation: "peer-import-receipt-chain-validated-before-browser-load",
+        source_validation: converted
+          ? "conversion-preflight-receipt-and-composition-revalidated-before-browser-load"
+          : "peer-import-receipt-chain-validated-before-browser-load",
         model_shape: entry.modelShape || "runtime-validated-by-wasm",
         tokenizer: entry.tokenizer || "runtime-validated-by-wasm",
         tokenizer_checksum: entry.tokenizerChecksum || "",
@@ -15244,7 +13495,9 @@
         intended_use: entry.intendedUse || "user-selected-peer-import",
         quality_claim: entry.qualityClaim || "not-claimed",
         trained_quality_claim: entry.trainedQualityClaim || "not-claimed",
-        admission_status: "peer-import-receipt-validated",
+        admission_status: converted
+          ? "conversion-structure-and-receipt-validated-quality-unqualified"
+          : "peer-import-receipt-validated",
         slm_checksum: entry.slmChecksum || "",
         artifact_sha256: model.companionImport.artifactSha256,
         artifact_bytes: String(model.companionImport.artifactByteCount),
@@ -16531,7 +14784,7 @@
       model.admissionEvidence.verified = false;
       model.admissionEvidence.fields = null;
     }
-    setLocalFileVerificationState(model, false, model.localFile ? "validating local .slm" : "", false);
+    setLocalFileVerificationState(model, false);
     setInteractive(false);
     el.response.textContent = "";
     el.console.textContent = "";
@@ -16548,7 +14801,8 @@
     let compositionGraphBytes = null;
     try {
       if (model.companionImport) {
-        throw new Error("Companion imports require an admitted selector composition graph");
+        modelTransfer = await fetchCompanionModelTransfer(model, loadId);
+        compositionGraphBytes = await fetchAdmittedCompositionGraph(model, loadId);
       } else if (model.localFile) {
         modelTransfer = model.localFile.pendingTransfer || null;
         model.localFile.pendingTransfer = null;
@@ -16587,7 +14841,7 @@
       setText(el.runtimeStatus, "Model load failed", true);
       setText(el.errorState, errorMessage(error), true);
       renderProvenance("model not loaded", null, true);
-      setLocalFileVerificationState(model, false, "local .slm not verified", true);
+      setLocalFileVerificationState(model, false);
       setControls(false, true);
       renderDiagnostics();
       return false;
@@ -16639,7 +14893,7 @@
         setText(el.runtimeStatus, "Model load failed", true);
         setText(el.errorState, text, true);
         renderProvenance("model not loaded", null, true);
-        setLocalFileVerificationState(model, false, "local .slm not verified", true);
+        setLocalFileVerificationState(model, false);
         setControls(false, true);
         renderDiagnostics();
         return false;
@@ -16664,16 +14918,7 @@
     } else {
       renderProvenance("model rejected", null, true);
     }
-    setLocalFileVerificationState(
-      model,
-      loadCode === 0,
-      loadCode === 0
-        ? model.localFile && model.localFile.importReceipt
-          ? "local .slm verified with MiniModel receipt; share metadata ready"
-          : "local .slm verified; share metadata ready"
-        : "local .slm rejected",
-      loadCode !== 0
-    );
+    setLocalFileVerificationState(model, loadCode === 0);
     if (loadCode === 0 && state.memoryEndpoints.retrievalCandidates.length > 0) {
       await refreshMemoryEndpointsPackedContext();
       renderMemoryEndpointsSearchResults();
@@ -17097,21 +15342,6 @@
     setLocalModelStatus(`${name} / ${formatByteCount(file.size)} selected${receipt}${expected}`, false);
   });
 
-  el.importConversionRequestButton.addEventListener("click", function () {
-    importConversionRequestFile().catch((error) => {
-      setConversionRequestStatus(errorMessage(error), true);
-    });
-  });
-
-  el.conversionRequestFile.addEventListener("change", function () {
-    const file = el.conversionRequestFile.files && el.conversionRequestFile.files[0];
-    if (!file) {
-      setConversionRequestStatus("optional source handoff", false);
-      return;
-    }
-    setConversionRequestStatus(`${safeLocalModelName(file.name)} / ${formatByteCount(file.size)} selected`, false);
-  });
-
   if (el.inspectLocalMemoryPackageButton) {
     el.inspectLocalMemoryPackageButton.addEventListener("click", function () {
       bindLocalMemoryPackage(el.localMemoryPackageFiles).catch((error) => {
@@ -17326,21 +15556,6 @@
     setCatalogStatus(`${safeLocalModelName(file.name)} / ${formatByteCount(file.size)} local catalog selected`, false);
   });
 
-  el.importShareMetadataButton.addEventListener("click", function () {
-    importShareMetadataFile(el.shareMetadataFile).catch((error) => {
-      setCatalogStatus(errorMessage(error), true);
-    });
-  });
-
-  el.shareMetadataFile.addEventListener("change", function () {
-    const file = el.shareMetadataFile.files && el.shareMetadataFile.files[0];
-    if (!file) {
-      setCatalogStatus("choose a share metadata JSON file", false);
-      return;
-    }
-    setCatalogStatus(`${safeLocalModelName(file.name)} / ${formatByteCount(file.size)} share metadata selected`, false);
-  });
-
   el.applyPeerContactCardButton.addEventListener("click", function () {
     applyPeerContactCardFile(el.peerContactCardFile).catch((error) => {
       updatePeerUrlStatus(errorMessage(error), true);
@@ -17465,18 +15680,6 @@
     });
   }
 
-  el.saveShareMetadataButton.addEventListener("click", function () {
-    saveShareMetadata().catch((error) => {
-      setShareMetadataStatus(errorMessage(error), true);
-    });
-  });
-
-  el.saveShareKitButton.addEventListener("click", function () {
-    saveShareKit().catch((error) => {
-      setShareMetadataStatus(errorMessage(error), true);
-    });
-  });
-
   el.resetButton.addEventListener("click", function () {
     if (state.exports) {
       state.exports.reset_context();
@@ -17543,6 +15746,5 @@
   installUiEventHandlers();
   observeCopyableFields();
   renderConversation();
-  updateShareMetadataControls();
   boot();
 }());

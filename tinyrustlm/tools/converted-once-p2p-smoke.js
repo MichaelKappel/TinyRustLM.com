@@ -105,10 +105,12 @@ function main() {
     requestJson,
     `${JSON.stringify(
       {
-        request_kind: 'minimodel.huggingface_conversion_request.v0',
+        request_kind: 'minimodel.huggingface_conversion_request.v1',
         source: {
           kind: 'huggingface_model',
           model_id: modelId,
+          revision: '0123456789abcdef0123456789abcdef01234567',
+          license_id: 'apache-2.0',
         },
         requested_artifact: {
           kind: 'slm',
@@ -153,7 +155,7 @@ function main() {
   const outputSlm = findOne(conversionDir, (entry) => entry.endsWith('.slm'), 'converted .slm');
   const conversionReceipt = path.join(conversionDir, 'tinyrustlm-conversion.receipt');
   const receiptText = readText(conversionReceipt);
-  assertContains(receiptText, 'request_kind=minimodel.huggingface_conversion_request.v0', 'conversion receipt');
+  assertContains(receiptText, 'request_kind=minimodel.huggingface_conversion_request.v1', 'conversion receipt');
   assertContains(receiptText, 'project_server_serves_model_bytes=false', 'conversion receipt');
   assertContains(receiptText, 'project_server_runs_model_bytes=false', 'conversion receipt');
   assertContains(receiptText, 'project_server_proxies_huggingface_bytes=false', 'conversion receipt');

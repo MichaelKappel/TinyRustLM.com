@@ -161,10 +161,10 @@ foreach ($rid in $Rids) {
         throw "Release archive for $rid contains model weights"
     }
     $nativeNames = if ($rid -eq "win-x64") {
-        @("minimodel.exe", "minimodel_native.dll")
+        @("minimodel.exe", "minimodel_native.dll", "tinyrustlm-slm-pack.exe")
     }
     else {
-        @("minimodel", "libminimodel_native.so")
+        @("minimodel", "libminimodel_native.so", "tinyrustlm-slm-pack")
     }
     foreach ($name in $nativeNames) {
         if ($entries -notcontains "runtimes/$rid/native/$name") {
@@ -172,7 +172,7 @@ foreach ($rid in $Rids) {
         }
     }
     $foreignNative = @($entries | Where-Object {
-        $_ -match '^runtimes/([^/]+)/native/(minimodel(?:\.exe)?|(?:lib)?minimodel_native\.(?:dll|so|dylib))$' -and
+        $_ -match '^runtimes/([^/]+)/native/(minimodel(?:\.exe)?|tinyrustlm-slm-pack(?:\.exe)?|(?:lib)?minimodel_native\.(?:dll|so|dylib))$' -and
         $Matches[1] -ne $rid
     })
     if ($foreignNative.Count -ne 0) {

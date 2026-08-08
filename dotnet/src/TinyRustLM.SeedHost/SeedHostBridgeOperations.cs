@@ -10,6 +10,7 @@ namespace TinyRustLM.SeedHost;
 public sealed record SeedHostBridgeOperationOptions(
     string RootDirectory,
     string? MiniModelExecutablePath = null,
+    string? ConversionExecutablePath = null,
     TimeSpan? OperationTimeout = null,
     int MaximumManifestBytes = 4 * 1024 * 1024,
     int MaximumPeerRequestBytes = 256 * 1024,
@@ -67,7 +68,23 @@ public sealed record SeedHostBridgeModelInfo(
     string ModelId,
     long ArtifactByteCount,
     string ArtifactSha256,
-    int PieceCount);
+    int PieceCount,
+    string AcquisitionKind,
+    string? SourceRevision,
+    string? ModelShape,
+    string? Quantization,
+    string? Tokenizer,
+    int ContextLength,
+    string? PromptFormat,
+    long CompositionGraphByteCount,
+    string? CompositionGraphSha256,
+    string? BaseModelId,
+    string? CompositionId,
+    string? ActiveGraphSha256,
+    string? RoutePolicyId,
+    string? KvFormatId,
+    string? PositionPolicySha256,
+    int CompositionMemberCount);
 
 /// <summary>An opened model stream whose complete Rust receipt chain was just revalidated.</summary>
 public sealed class SeedHostBridgeModelContent : IAsyncDisposable
@@ -100,6 +117,29 @@ public sealed class SeedHostBridgeModelContent : IAsyncDisposable
     public ValueTask DisposeAsync() => Content.DisposeAsync();
 }
 
+/// <summary>An opened immutable composition graph revalidated against its exact base model.</summary>
+public sealed class SeedHostBridgeCompositionContent : IAsyncDisposable
+{
+    internal SeedHostBridgeCompositionContent(Stream content, long byteCount, string sha256)
+    {
+        Content = content;
+        ByteCount = byteCount;
+        Sha256 = sha256;
+    }
+
+    /// <summary>Read-only bounded composition bytes.</summary>
+    public Stream Content { get; }
+
+    /// <summary>Exact graph byte count.</summary>
+    public long ByteCount { get; }
+
+    /// <summary>Rust-validated graph SHA-256.</summary>
+    public string Sha256 { get; }
+
+    /// <inheritdoc />
+    public ValueTask DisposeAsync() => Content.DisposeAsync();
+}
+
 /// <summary>Injectable process boundary used to test hard cancellation without fake Rust rules.</summary>
 internal interface ISeedHostBridgeImporter
 {
@@ -123,7 +163,8 @@ internal sealed class SeedHostBridgeImporter(SeedPeerImportService service)
 /// </summary>
 public sealed class SeedHostBridgeOperations :
     ISeedHostBridgeOperations,
-    ISeedHostBridgeSharingOperations
+    ISeedHostBridgeSharingOperations,
+    ISeedHostBridgeConversionOperations
 {
     private const string StateFileName = "bridge-import-state.v1.json";
     private const string ImportsDirectoryName = "imports";
@@ -152,6 +193,7 @@ public sealed class SeedHostBridgeOperations :
     private readonly SeedHostBridgeOperationOptions options;
     private readonly IMiniModelAuthority authority;
     private readonly ISeedHostBridgeImporter importer;
+    private readonly SeedHostBridgeConversionOperations conversions;
     private readonly SeedFleetStore? sharingStore;
     private readonly SemaphoreSlim sharingLock = new(1, 1);
     private readonly Dictionary<string, OperationContext> operations = new(StringComparer.Ordinal);
@@ -174,6 +216,11 @@ public sealed class SeedHostBridgeOperations :
         this.options = ValidateOptions(options);
         this.authority = authority ?? throw new ArgumentNullException(nameof(authority));
         this.importer = importer ?? throw new ArgumentNullException(nameof(importer));
+        conversions = new SeedHostBridgeConversionOperations(
+            new SeedHostBridgeConversionOptions(
+                this.options.RootDirectory,
+                this.options.ConversionExecutablePath,
+                this.options.OperationTimeout));
         if (this.options.AllowSharing)
         {
             var sharingRoot = RequiredSharingRoot(this.options);
@@ -202,8 +249,11 @@ public sealed class SeedHostBridgeOperations :
         return ValueTask.FromResult(new SeedHostBridgeRuntimeStatus(
             "ready",
             NativeAbiVersion,
-            states.Count(value => value.State == SeedHostBridgeImportState.Available),
+            states.Count(value => value.State == SeedHostBridgeImportState.Available)
+                + conversions.AvailableModelCount,
             states.Count(value => IsActive(value.State)),
+            conversions.ActiveOperationCount,
+            conversions.IsConverterAvailable,
             options.AllowSharing));
     }
 
@@ -287,8 +337,26 @@ public sealed class SeedHostBridgeOperations :
         return ToStatus(state);
     }
 
+    /// <inheritdoc />
+    public ValueTask<SeedHostBridgeConversionStatus> StartConversionAsync(
+        SeedHostBridgeConversionSubmission submission,
+        CancellationToken cancellationToken = default) =>
+        conversions.StartConversionAsync(submission, cancellationToken);
+
+    /// <inheritdoc />
+    public ValueTask<SeedHostBridgeConversionStatus> GetConversionAsync(
+        string operationId,
+        CancellationToken cancellationToken = default) =>
+        conversions.GetConversionAsync(operationId, cancellationToken);
+
+    /// <inheritdoc />
+    public ValueTask<SeedHostBridgeConversionStatus> CancelConversionAsync(
+        string operationId,
+        CancellationToken cancellationToken = default) =>
+        conversions.CancelConversionAsync(operationId, cancellationToken);
+
     /// <summary>List only complete imports. In-progress and failed artifacts are never exposed.</summary>
-    public ValueTask<IReadOnlyList<SeedHostBridgeModelInfo>> ListModelsAsync(
+    public async ValueTask<IReadOnlyList<SeedHostBridgeModelInfo>> ListModelsAsync(
         CancellationToken cancellationToken = default)
     {
         ThrowIfDisposed();
@@ -305,10 +373,29 @@ public sealed class SeedHostBridgeOperations :
                     RequiredPersisted(value.ModelId, "model identity"),
                     value.ArtifactByteCount,
                     RequiredPersisted(value.ArtifactSha256, "artifact identity"),
-                    value.PieceCount))
+                    value.PieceCount,
+                    "p2p",
+                    null,
+                    null,
+                    null,
+                    null,
+                    0,
+                    null,
+                    0,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    0))
                 .ToList();
         }
-        return ValueTask.FromResult<IReadOnlyList<SeedHostBridgeModelInfo>>(values);
+        var converted = await conversions.ListModelsAsync(cancellationToken).ConfigureAwait(false);
+        values.AddRange(converted);
+        values.Sort((left, right) => StringComparer.Ordinal.Compare(left.ModelId, right.ModelId));
+        return values;
     }
 
     /// <summary>
@@ -321,6 +408,10 @@ public sealed class SeedHostBridgeOperations :
     {
         ThrowIfDisposed();
         cancellationToken.ThrowIfCancellationRequested();
+        if (operationId.StartsWith("conversion-", StringComparison.Ordinal))
+        {
+            return conversions.OpenModelAsync(operationId, cancellationToken);
+        }
         var context = GetContext(operationId);
         var state = context.ReadState();
         if (state.State != SeedHostBridgeImportState.Available)
@@ -382,6 +473,22 @@ public sealed class SeedHostBridgeOperations :
         {
             stream?.Dispose();
         }
+    }
+
+    /// <inheritdoc />
+    public ValueTask<SeedHostBridgeCompositionContent> OpenCompositionAsync(
+        string operationId,
+        CancellationToken cancellationToken = default)
+    {
+        ThrowIfDisposed();
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!operationId.StartsWith("conversion-", StringComparison.Ordinal))
+        {
+            throw new SeedHostValidationException(
+                "bridge_composition_not_available",
+                "This imported model uses its catalog-bound composition graph.");
+        }
+        return conversions.OpenCompositionAsync(operationId, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -2022,6 +2129,7 @@ public sealed class SeedHostBridgeOperations :
         {
             context.Cancellation?.Dispose();
         }
+        await conversions.DisposeAsync().ConfigureAwait(false);
         await sharingLock.WaitAsync().ConfigureAwait(false);
         try
         {

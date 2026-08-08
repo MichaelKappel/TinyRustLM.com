@@ -29,19 +29,29 @@ The active implementation target is `tinyrustlm/`: a 100% custom Rust/WASM brows
 the downloadable P2P companion. TinyRustLM.com remains the browser chat UI and
 MiniModel.org remains the catalog and discovery authority, while the companion
 owns direct peer import, Rust verification, durable restart and resume state,
-local model storage, and optional two-lane sharing. Version
-`0.1.10` adds the production loopback bridge with exact Host and Origin checks,
-one-time pairing, short-lived operation-scoped capabilities, rotation,
-revocation, bounded requests, and receipt-revalidated model streaming.
+local model storage, and optional two-lane sharing. Version `0.2.0` is the
+single current bridge contract. It uses exact Host and Origin checks, one-time
+pairing, short-lived operation-scoped capabilities, rotation, revocation,
+bounded requests, and receipt-revalidated model and composition streaming.
 
 The `public-local-only` gate proves the browser starts with no project-hosted
 model and no autoload fallback. A
 proof-ready MiniModel row remains `Set Peer URL` until the user supplies a
 consenting peer or loads a Rust-valid signed announcement with current external
-proof. Browser-only operation can `Save P2P Import Kit`; a paired companion can
-`Import & load` or `Resume & load`. Model bytes travel only from peer to the
-user-run companion and then to browser-local WASM. Prompts and responses never
-go to the companion or a public project domain.
+proof. The `Get model` action first imports a complete identity-matched P2P
+offer. When no complete verified offer exists, a paired companion resolves the
+exact reviewed Hugging Face revision, resumes bounded source downloads,
+verifies source hashes, runs the packaged Rust converter and validator, creates
+an immutable base-only composition graph, and streams the `.slm` plus `.acg1`
+directly into browser-local WASM. Progress and typed failures remain in the
+application. There are no README, TXT, request JSON, shell, PowerShell,
+conversion-kit, or import-kit downloads in the acquisition path.
+
+Model bytes travel only from a consenting peer or immutable source host to the
+user-run companion and then over the secured loopback bridge to browser-local
+WASM. Prompts and responses never go to the companion or a public project
+domain. Conversion and structural validation prove that an artifact is
+runnable; they do not establish assistant quality.
 
 The acceptance suite in `tinyrustlm/e2e/companion.spec.js` executes one-time
 pairing replay rejection, two-peer identity disagreement, direct import,

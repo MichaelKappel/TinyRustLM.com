@@ -60,10 +60,10 @@ async function runLocalWebReleaseSmoke(options) {
 }
 
 async function main() {
-  const [outputDirectory, ...extra] = process.argv.slice(2);
+  const [outputDirectory, siteRoot, ...extra] = process.argv.slice(2);
   invariant(outputDirectory && extra.length === 0,
-    "Usage: web-release-local-smoke.js <new-output-directory>");
-  const result = await runLocalWebReleaseSmoke({ outputDirectory });
+    "Usage: web-release-local-smoke.js <new-output-directory> [site-root]");
+  const result = await runLocalWebReleaseSmoke({ outputDirectory, siteRoot });
   process.stdout.write(`${JSON.stringify(result)}\n`);
 }
 

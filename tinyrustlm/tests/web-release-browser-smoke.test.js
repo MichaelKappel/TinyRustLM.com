@@ -24,13 +24,17 @@ const { materializeReleaseState } = require("../tools/site-release-contract.js")
 
 const siteRoot = path.resolve(__dirname, "..");
 const ledgerPath = path.join(siteRoot, "release", "site-release-ledger.v1.json");
+const candidateSourceRevision = "a".repeat(40);
+const candidatePublishedAt = "2026-08-08T22:15:30.000Z";
 
 function generatedRelease(context) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-smoke-release-"));
   context.after(() => fs.rmSync(root, { recursive: true, force: true }));
   materializeReleaseState({
     ledgerPath,
-    outputRoot: root
+    outputRoot: root,
+    sourceRevision: candidateSourceRevision,
+    publishedAt: candidatePublishedAt
   });
   return root;
 }

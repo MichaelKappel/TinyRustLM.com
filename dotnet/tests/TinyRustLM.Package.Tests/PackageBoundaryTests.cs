@@ -171,60 +171,33 @@ public sealed class PackageBoundaryTests
         Assert.Contains("no-store", relayFixture, StringComparison.Ordinal);
         Assert.DoesNotContain("memoryendpoints.com", relayFixture, StringComparison.OrdinalIgnoreCase);
 
-        var browserSmoke = File.ReadAllText(Path.Combine(root, "tinyrustlm/tools/browser-smoke.js"));
         var browserApp = File.ReadAllText(Path.Combine(root, "tinyrustlm/app/app.js"));
         var browserSync = File.ReadAllText(Path.Combine(root, "tinyrustlm/app/memory-endpoints-sync.js"));
         var browserDistributedSync = File.ReadAllText(Path.Combine(
             root,
             "tinyrustlm/app/memory-endpoints-distributed-sync-v1.js"));
+        var browserSyncTests = File.ReadAllText(Path.Combine(
+            root,
+            "tinyrustlm/tests/memory-endpoints-sync.test.js"));
+        var browserDistributedTests = File.ReadAllText(Path.Combine(
+            root,
+            "tinyrustlm/tests/memory-endpoints-distributed-sync-authority.test.js"));
         var uiPowerShell = File.ReadAllText(Path.Combine(root, "eng/verify-tinyrustlm-ui.ps1"));
         var uiBash = File.ReadAllText(Path.Combine(root, "eng/verify-tinyrustlm-ui.sh"));
         var relayWorker = File.ReadAllText(Path.Combine(root, "tinyrustlm/deploy/memory-endpoints-relay-worker.js"));
-        Assert.Contains("memory-endpoints-cors-ui", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-relay-ui", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-relay-live", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("MEMORYENDPOINTS_RELAY_UPSTREAM_BASE_URL", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("MEMORYENDPOINTS_LIVE_MODEL_KEY", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("MEMORYENDPOINTS_LIVE_MODEL_PATH", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("MEMORYENDPOINTS_LIVE_SEARCH_RETRIES", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("MEMORYENDPOINTS_LIVE_SEARCH_DELAY_MS", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("localModelImportRequested", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("appendMemoryEndpointsRelayLivePath", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("/api/memoryendpoints", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("browser access blocked by CORS or network policy", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-live", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-outbox", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-offline-ui", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-reconnect-ui", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-distributed", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-adversarial-ui", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("MEMORYENDPOINTS_WORKSPACE_ID", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("MEMORYENDPOINTS_WORKSPACE_KEY", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("networkRequestsRedacted", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("workspaceKeyPresent", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("tokenInLocalStorage", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("longSearchExcludedShort", browserSmoke, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-cors-ui", uiPowerShell, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-relay-ui", uiPowerShell, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-relay-live", uiPowerShell, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-live", uiPowerShell, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-outbox", uiPowerShell, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-distributed", uiPowerShell, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-adversarial-ui", uiPowerShell, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-cors-ui", uiBash, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-relay-ui", uiBash, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-relay-live", uiBash, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-live", uiBash, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-outbox", uiBash, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-distributed", uiBash, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-adversarial-ui", uiBash, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-cors-ui", connectorDoc, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-relay-ui", connectorDoc, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-relay-live", connectorDoc, StringComparison.Ordinal);
+        Assert.Contains("prepareOutboxEntry", browserSyncTests, StringComparison.Ordinal);
+        Assert.Contains("pull-before-push", browserDistributedTests, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "authoritative fixture preserves replay, conflict, tombstone, and device semantics",
+            browserDistributedTests,
+            StringComparison.Ordinal);
+        Assert.Contains("test:ui", uiPowerShell, StringComparison.Ordinal);
+        Assert.Contains("test:ui", uiBash, StringComparison.Ordinal);
+        Assert.Contains("web-release-local-smoke.js", uiPowerShell, StringComparison.Ordinal);
+        Assert.Contains("web-release-local-smoke.js", uiBash, StringComparison.Ordinal);
+        Assert.DoesNotContain("browser-smoke.js", uiPowerShell, StringComparison.Ordinal);
+        Assert.DoesNotContain("browser-smoke.js", uiBash, StringComparison.Ordinal);
         Assert.Contains("Same-Origin Relay", connectorDoc, StringComparison.Ordinal);
-        Assert.Contains("MEMORYENDPOINTS_LIVE_MODEL_KEY", connectorDoc, StringComparison.Ordinal);
-        Assert.Contains("MEMORYENDPOINTS_LIVE_MODEL_PATH", connectorDoc, StringComparison.Ordinal);
-        Assert.Contains("memory-endpoints-live", connectorDoc, StringComparison.Ordinal);
         Assert.Contains("Browser CORS Requirement", connectorDoc, StringComparison.Ordinal);
         Assert.Contains("OPTIONS", connectorDoc, StringComparison.Ordinal);
         Assert.Contains("Access-Control-Request-Headers", connectorDoc, StringComparison.Ordinal);
@@ -414,7 +387,7 @@ public sealed class PackageBoundaryTests
     }
 
     [Fact]
-    public void UiVerificationScriptsCoverTinyRustLmSourceOptions()
+    public void UiVerificationScriptsCoverCurrentBrowserAndAcquisitionGates()
     {
         var root = RepositoryRoot();
         var powershellScript = File.ReadAllText(Path.Combine(root, "eng/verify-tinyrustlm-ui.ps1"));
@@ -422,45 +395,24 @@ public sealed class PackageBoundaryTests
 
         foreach (var script in new[] { powershellScript, bashScript })
         {
-            Assert.Contains("tinyrustlm.ui_verification.v0", script, StringComparison.Ordinal);
+            Assert.Contains("tinyrustlm.ui_verification.v1", script, StringComparison.Ordinal);
             Assert.Contains("tinyrustlm-browser-harness", script, StringComparison.Ordinal);
             Assert.Contains("tinyrustlm-local-server", script, StringComparison.Ordinal);
-            Assert.Contains("source-options-ui", script, StringComparison.Ordinal);
-            Assert.Contains("local-connect-approval-ui", script, StringComparison.Ordinal);
-            Assert.Contains("local-connect-endpoint-ui", script, StringComparison.Ordinal);
-            Assert.Contains("local-connect-rust-endpoint-ui", script, StringComparison.Ordinal);
-            Assert.DoesNotContain("hf-conversion-kit-exec", script, StringComparison.Ordinal);
-            Assert.Contains("hf-conversion-kit-safetensors-exec", script, StringComparison.Ordinal);
-            Assert.Contains("hf-conversion-kit-review-exec", script, StringComparison.Ordinal);
-            Assert.Contains("hf-conversion-kit-review-reject-exec", script, StringComparison.Ordinal);
-            Assert.Contains("hf-conversion-kit-gguf-exec", script, StringComparison.Ordinal);
-            Assert.Contains("hf-p2p-import-kit-exec", script, StringComparison.Ordinal);
-            Assert.Contains("deep_browser_smoke_requested", script, StringComparison.Ordinal);
-            Assert.Contains("deep_browser_smoke_modes", script, StringComparison.Ordinal);
-            Assert.Contains("browser_smoke_timeout_seconds", script, StringComparison.Ordinal);
-            Assert.Contains("tinyrustlm-source-options-ui-smoke.json", script, StringComparison.Ordinal);
-            Assert.Contains("browser_smoke_modes", script, StringComparison.Ordinal);
-            Assert.Contains("browser_smoke_report_paths", script, StringComparison.Ordinal);
-            Assert.Contains("browser_smoke_statuses", script, StringComparison.Ordinal);
+            Assert.Contains("test:ui", script, StringComparison.Ordinal);
+            Assert.Contains("web-release-local-smoke.js", script, StringComparison.Ordinal);
+            Assert.Contains("model-acquisition-v2.test.js", script, StringComparison.Ordinal);
+            Assert.Contains("companion-bridge.test.js", script, StringComparison.Ordinal);
+            Assert.Contains("TinyRustLM.SeedHost.Tests", script, StringComparison.Ordinal);
+            Assert.Contains("huggingface_conversion_cli", script, StringComparison.Ordinal);
+            Assert.DoesNotContain("browser-smoke.js", script, StringComparison.Ordinal);
+            Assert.DoesNotContain("conversion-kit", script, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("TinyRustLM UI verification passed", script, StringComparison.Ordinal);
         }
 
         Assert.Contains("RunBrowserSmoke", powershellScript, StringComparison.Ordinal);
-        Assert.Contains("RunDeepBrowserSmoke", powershellScript, StringComparison.Ordinal);
-        Assert.Contains("BrowserSmokeModes", powershellScript, StringComparison.Ordinal);
-        Assert.Contains("BrowserSmokeTimeoutSeconds", powershellScript, StringComparison.Ordinal);
-        Assert.Contains("$deepBrowserSmokeModes = @($defaultDeepBrowserSmokeModes)", powershellScript, StringComparison.Ordinal);
-        Assert.DoesNotContain("legacyDeepBrowserSmokeModes", powershellScript, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("$browserSmokeModes += $defaultDeepBrowserSmokeModes", powershellScript, StringComparison.Ordinal);
-        Assert.DoesNotContain("$browserSmokeModes += $deepBrowserSmokeModes", powershellScript, StringComparison.Ordinal);
+        Assert.Contains("RunDeepAcquisition", powershellScript, StringComparison.Ordinal);
         Assert.Contains("RUN_BROWSER_SMOKE", bashScript, StringComparison.Ordinal);
-        Assert.Contains("RUN_DEEP_BROWSER_SMOKE", bashScript, StringComparison.Ordinal);
-        Assert.Contains("TINYRUSTLM_BROWSER_SMOKE_MODES", bashScript, StringComparison.Ordinal);
-        Assert.Contains("BROWSER_SMOKE_TIMEOUT_SECONDS", bashScript, StringComparison.Ordinal);
-        Assert.Contains("DEEP_BROWSER_SMOKE_MODES=(\"${DEFAULT_DEEP_BROWSER_SMOKE_MODES[@]}\")", bashScript, StringComparison.Ordinal);
-        Assert.DoesNotContain("LEGACY_DEEP_BROWSER_SMOKE_MODES", bashScript, StringComparison.Ordinal);
-        Assert.Contains("BROWSER_SMOKE_MODES+=(\"${DEFAULT_DEEP_BROWSER_SMOKE_MODES[@]}\")", bashScript, StringComparison.Ordinal);
-        Assert.DoesNotContain("BROWSER_SMOKE_MODES+=(\"${DEEP_BROWSER_SMOKE_MODES[@]}\")", bashScript, StringComparison.Ordinal);
+        Assert.Contains("RUN_DEEP_ACQUISITION", bashScript, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -468,7 +420,6 @@ public sealed class PackageBoundaryTests
     {
         var root = RepositoryRoot();
         var app = File.ReadAllText(Path.Combine(root, "tinyrustlm/app/app.js"));
-        var smoke = File.ReadAllText(Path.Combine(root, "tinyrustlm/tools/browser-smoke.js"));
         var readme = File.ReadAllText(Path.Combine(root, "tinyrustlm/README.md"));
         var browserRuntime = File.ReadAllText(Path.Combine(root, "tinyrustlm/docs/browser-runtime.md"));
 
@@ -487,10 +438,6 @@ public sealed class PackageBoundaryTests
         Assert.Contains("UAIX exports verified", app, StringComparison.Ordinal);
         Assert.Contains("persona source evidence bound", app, StringComparison.Ordinal);
 
-        Assert.Contains("memory FileDeck summary was missing", smoke, StringComparison.Ordinal);
-        Assert.Contains("FileDeck 62 required / 22 persona / 5 evidence / 6 exports", smoke, StringComparison.Ordinal);
-        Assert.Contains("memory summary did not verify UAIX exports", smoke, StringComparison.Ordinal);
-        Assert.Contains("memory summary did not bind persona source evidence", smoke, StringComparison.Ordinal);
         Assert.Contains("FileDeck-style summary", readme, StringComparison.Ordinal);
         Assert.Contains("FileDeck-style summary", browserRuntime, StringComparison.Ordinal);
     }
@@ -504,28 +451,15 @@ public sealed class PackageBoundaryTests
 
         foreach (var script in new[] { powershellScript, bashScript })
         {
-            Assert.Contains("tinyrustlm.public_root_verification.v0", script, StringComparison.Ordinal);
-            Assert.Contains("tinyrustlm-local-server", script, StringComparison.Ordinal);
-            Assert.Contains("tinyrustlm.com-loopback-browser-smoke", script, StringComparison.Ordinal);
-            Assert.Contains("http://tinyrustlm.com:", script, StringComparison.Ordinal);
-            Assert.Contains("public-local-only", script, StringComparison.Ordinal);
-            Assert.Contains("catalog-local-import", script, StringComparison.Ordinal);
-            Assert.Contains("local-import-ambiguous-selection", script, StringComparison.Ordinal);
-            Assert.Contains("peer-url-unsafe-ui", script, StringComparison.Ordinal);
-            Assert.Contains("local-connect-approval-ui", script, StringComparison.Ordinal);
-            Assert.Contains("local-connect-endpoint-ui", script, StringComparison.Ordinal);
-            Assert.Contains("local-connect-rust-endpoint-ui", script, StringComparison.Ordinal);
+            Assert.Contains("tinyrustlm.public_root_verification.v1", script, StringComparison.Ordinal);
+            Assert.Contains("verify-tinyrustlm-ui", script, StringComparison.Ordinal);
+            Assert.Contains("tinyrustlm.ui_verification.v1", script, StringComparison.Ordinal);
+            Assert.Contains("ui_verification_sha256", script, StringComparison.Ordinal);
             Assert.Contains("tinyrustlm-public-root-verification.json", script, StringComparison.Ordinal);
-            Assert.Contains("smoke_report_paths", script, StringComparison.Ordinal);
             Assert.Contains("TinyRustLM public-root verification passed", script, StringComparison.Ordinal);
-            Assert.DoesNotContain("public-default-demo", script, StringComparison.Ordinal);
-            Assert.DoesNotContain("active-conversation-ui", script, StringComparison.Ordinal);
+            Assert.DoesNotContain("browser-smoke.js", script, StringComparison.Ordinal);
+            Assert.DoesNotContain("loopback-browser-smoke", script, StringComparison.Ordinal);
         }
-
-        Assert.Contains("node.exe", bashScript, StringComparison.Ordinal);
-        Assert.Contains("cargo.exe", bashScript, StringComparison.Ordinal);
-        Assert.Contains("\"$#\" -eq 1", bashScript, StringComparison.Ordinal);
-        Assert.Contains("\"$1\" == *.json", bashScript, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1045,17 +979,16 @@ public sealed class PackageBoundaryTests
 
         Assert.Contains("Verify TinyRustLM UI contract", workflow, StringComparison.Ordinal);
         Assert.Contains("eng/verify-tinyrustlm-ui.ps1 -RunBrowserSmoke", workflow, StringComparison.Ordinal);
-        Assert.Contains("run_deep_browser_smoke", workflow, StringComparison.Ordinal);
-        Assert.Contains("Verify TinyRustLM deep conversion and P2P UI contract", workflow, StringComparison.Ordinal);
-        Assert.Contains("-BrowserSmokeModes hf-conversion-kit-safetensors-exec,hf-conversion-kit-review-exec,hf-conversion-kit-review-reject-exec,hf-conversion-kit-gguf-exec,hf-p2p-import-kit-exec", workflow, StringComparison.Ordinal);
+        Assert.Contains("run_deep_acquisition", workflow, StringComparison.Ordinal);
+        Assert.Contains("Verify TinyRustLM deep model-acquisition contract", workflow, StringComparison.Ordinal);
+        Assert.Contains("-RunDeepAcquisition", workflow, StringComparison.Ordinal);
         Assert.Contains("tinyrustlm-ui-deep-verification.json", workflow, StringComparison.Ordinal);
-        Assert.Contains("artifacts/reports/tinyrustlm-*-exec-smoke.json", workflow, StringComparison.Ordinal);
+        Assert.Contains("artifacts/reports/ui-verification/**", workflow, StringComparison.Ordinal);
         Assert.Contains("TINYRUSTLM_UI_VERIFICATION_REPORT", workflow, StringComparison.Ordinal);
         Assert.Contains("UiVerificationReportIsMachineReadableWhenPresent", workflow, StringComparison.Ordinal);
         Assert.Contains("tinyrustlm-ui-verification", workflow, StringComparison.Ordinal);
         Assert.Contains("artifacts/reports/tinyrustlm-ui-verification.json", workflow, StringComparison.Ordinal);
-        Assert.Contains("artifacts/reports/tinyrustlm-source-options-ui-smoke.json", workflow, StringComparison.Ordinal);
-        Assert.Contains("artifacts/reports/tinyrustlm-*-ui-smoke.json", workflow, StringComparison.Ordinal);
+        Assert.Contains("artifacts/reports/public-root-verification/**", workflow, StringComparison.Ordinal);
         Assert.Contains("if-no-files-found: error", workflow, StringComparison.Ordinal);
     }
 
@@ -1201,12 +1134,14 @@ public sealed class PackageBoundaryTests
             Assert.Contains("publish-browser-nuget.ps1", script, StringComparison.Ordinal);
             Assert.Contains("uaix.browser.nuget.publish_plan.v0", script, StringComparison.Ordinal);
             Assert.Contains("uaix-browser-nuget-publish-plan.json", script, StringComparison.Ordinal);
-            Assert.Contains("tinyrustlm.ui_verification.v0", script, StringComparison.Ordinal);
+            Assert.Contains("tinyrustlm.ui_verification.v1", script, StringComparison.Ordinal);
             Assert.Contains("verify-tinyrustlm-ui.ps1", script, StringComparison.Ordinal);
-            Assert.Contains("source-options-ui", script, StringComparison.Ordinal);
+            Assert.Contains("web-release-local-smoke.js", script, StringComparison.Ordinal);
+            Assert.Contains("RunDeepAcquisition", script, StringComparison.Ordinal);
+            Assert.Contains("model-acquisition-v2.test.js", script, StringComparison.Ordinal);
             Assert.Contains("Local .slm", script, StringComparison.Ordinal);
             Assert.Contains("Hugging Face", script, StringComparison.Ordinal);
-            Assert.Contains("P2P import", script, StringComparison.Ordinal);
+            Assert.Contains("Get model", script, StringComparison.Ordinal);
             Assert.Contains("Advanced tools", script, StringComparison.Ordinal);
             Assert.Contains("three_package_without_memory", script, StringComparison.Ordinal);
             Assert.Contains("stale_match_count", script, StringComparison.Ordinal);
@@ -2338,106 +2273,58 @@ public sealed class PackageBoundaryTests
         var root = document.RootElement;
         var status = root.GetProperty("status").GetString();
         var browserSmokeRequested = root.GetProperty("browser_smoke_requested").GetBoolean();
-        var deepBrowserSmokeRequested = root.TryGetProperty("deep_browser_smoke_requested", out var deepRequestedElement)
-            && deepRequestedElement.GetBoolean();
+        var deepAcquisitionRequested = root.GetProperty("deep_acquisition_requested").GetBoolean();
+        var visualLockRequested = root.GetProperty("visual_lock_requested").GetBoolean();
 
-        Assert.Equal("tinyrustlm.ui_verification.v0", root.GetProperty("schema").GetString());
+        Assert.Equal("tinyrustlm.ui_verification.v1", root.GetProperty("schema").GetString());
         Assert.Contains(status, new[] { "pass", "fail" });
+        Assert.False(string.IsNullOrWhiteSpace(root.GetProperty("run_id").GetString()));
         Assert.False(string.IsNullOrWhiteSpace(root.GetProperty("repository_root").GetString()));
         Assert.False(string.IsNullOrWhiteSpace(root.GetProperty("app_root").GetString()));
-        Assert.StartsWith("http://127.0.0.1:", root.GetProperty("local_server_url").GetString(), StringComparison.Ordinal);
-        Assert.True(root.GetProperty("browser_debug_port").GetInt32() > 0);
-        if (root.TryGetProperty("browser_smoke_timeout_seconds", out var timeoutElement))
+        var gates = root.GetProperty("gates");
+        var gateNames = new[]
         {
-            Assert.True(timeoutElement.GetInt32() >= 0);
+            "static_contract",
+            "javascript_syntax",
+            "browser_contracts",
+            "chromium_release",
+            "acquisition_browser_bridge",
+            "acquisition_companion",
+            "acquisition_converter",
+            "visual_lock"
+        };
+        foreach (var gateName in gateNames)
+        {
+            Assert.Contains(
+                gates.GetProperty(gateName).GetString(),
+                new[] { "pass", "fail", "not_run", "skipped" });
         }
-        Assert.False(string.IsNullOrWhiteSpace(root.GetProperty("server_stdout_path").GetString()));
-        Assert.False(string.IsNullOrWhiteSpace(root.GetProperty("server_stderr_path").GetString()));
+        Assert.False(string.IsNullOrWhiteSpace(root.GetProperty("evidence").GetProperty("root").GetString()));
 
         if (string.Equals(status, "pass", StringComparison.Ordinal))
         {
-            Assert.Equal("pass", root.GetProperty("static_harness_status").GetString());
-            Assert.Equal("pass", root.GetProperty("http_harness_status").GetString());
-            Assert.Contains("tinyrustlm-browser-harness", root.GetProperty("static_harness_output").GetString() ?? "");
-            Assert.Contains("tinyrustlm-browser-harness", root.GetProperty("http_harness_output").GetString() ?? "");
+            Assert.Equal("pass", gates.GetProperty("static_contract").GetString());
+            Assert.Equal("pass", gates.GetProperty("javascript_syntax").GetString());
             Assert.True(string.IsNullOrWhiteSpace(root.GetProperty("error").GetString()));
             if (browserSmokeRequested)
             {
-                var standardModes = new[]
-                {
-                    "source-options-ui",
-                    "local-memory-deck-ui",
-                    "local-connect-approval-ui",
-                    "local-connect-endpoint-ui",
-                    "local-connect-rust-endpoint-ui"
-                };
-                var deepModesExpected = new[]
-                {
-                    "hf-conversion-kit-safetensors-exec",
-                    "hf-conversion-kit-review-exec",
-                    "hf-conversion-kit-review-reject-exec",
-                    "hf-conversion-kit-gguf-exec",
-                    "hf-p2p-import-kit-exec"
-                };
-                var knownModes = standardModes.Concat(deepModesExpected).ToArray();
-                var browserSmokeModes = root.GetProperty("browser_smoke_modes")
-                    .EnumerateArray()
-                    .Select(item => item.GetString() ?? "")
-                    .ToArray();
-
-                Assert.NotEmpty(browserSmokeModes);
-                foreach (var mode in browserSmokeModes)
-                {
-                    Assert.Contains(mode, knownModes);
-                }
-
-                Assert.Equal("pass", root.GetProperty("browser_smoke_status").GetString());
-                Assert.Equal(string.Join(",", browserSmokeModes), root.GetProperty("browser_smoke_mode").GetString());
-                if (!deepBrowserSmokeRequested)
-                {
-                    Assert.Equal(standardModes.OrderBy(value => value), browserSmokeModes.OrderBy(value => value));
-                }
-                if (root.TryGetProperty("deep_browser_smoke_modes", out var deepModesElement))
-                {
-                    var deepModes = deepModesElement
-                        .EnumerateArray()
-                        .Select(item => item.GetString() ?? "")
-                        .ToArray();
-                    if (deepBrowserSmokeRequested)
-                    {
-                        Assert.NotEmpty(deepModes);
-                        Assert.Equal(
-                            browserSmokeModes
-                                .Where(mode => deepModesExpected.Contains(mode, StringComparer.Ordinal))
-                                .OrderBy(value => value),
-                            deepModes.OrderBy(value => value));
-                    }
-                    else
-                    {
-                        Assert.Empty(deepModes);
-                    }
-                }
-                var reportPaths = root.GetProperty("browser_smoke_report_paths");
-                var statuses = root.GetProperty("browser_smoke_statuses");
-                var firstMode = browserSmokeModes[0];
-                Assert.EndsWith(
-                    $"tinyrustlm-{firstMode}-smoke.json",
-                    root.GetProperty("browser_smoke_report_path").GetString() ?? "",
-                    StringComparison.OrdinalIgnoreCase);
-                foreach (var mode in browserSmokeModes)
-                {
-                    Assert.Equal("pass", statuses.GetProperty(mode).GetString());
-                    Assert.EndsWith(
-                        $"tinyrustlm-{mode}-smoke.json",
-                        reportPaths.GetProperty(mode).GetString() ?? "",
-                        StringComparison.OrdinalIgnoreCase);
-                }
+                Assert.Equal("pass", gates.GetProperty("browser_contracts").GetString());
+                Assert.Equal("pass", gates.GetProperty("chromium_release").GetString());
             }
             else
             {
-                Assert.Equal("skipped", root.GetProperty("browser_smoke_status").GetString());
-                Assert.True(string.IsNullOrWhiteSpace(root.GetProperty("browser_smoke_mode").GetString()));
-                Assert.Empty(root.GetProperty("browser_smoke_modes").EnumerateArray());
+                Assert.Equal("skipped", gates.GetProperty("browser_contracts").GetString());
+                Assert.Equal("skipped", gates.GetProperty("chromium_release").GetString());
+            }
+            if (deepAcquisitionRequested)
+            {
+                Assert.Equal("pass", gates.GetProperty("acquisition_browser_bridge").GetString());
+                Assert.Equal("pass", gates.GetProperty("acquisition_companion").GetString());
+                Assert.Equal("pass", gates.GetProperty("acquisition_converter").GetString());
+            }
+            if (visualLockRequested)
+            {
+                Assert.Equal("pass", gates.GetProperty("visual_lock").GetString());
             }
         }
         else
@@ -2458,45 +2345,20 @@ public sealed class PackageBoundaryTests
         using var document = JsonDocument.Parse(File.ReadAllText(reportPath));
         var root = document.RootElement;
         var status = root.GetProperty("status").GetString();
-        var expectedModes = new[]
-        {
-            "public-local-only",
-            "catalog-local-import",
-            "local-import-ambiguous-selection",
-            "peer-url-unsafe-ui",
-            "local-connect-approval-ui",
-            "local-connect-endpoint-ui",
-            "local-connect-rust-endpoint-ui"
-        };
-        var smokeModes = root.GetProperty("smoke_modes")
-            .EnumerateArray()
-            .Select(item => item.GetString())
-            .ToArray();
 
-        Assert.Equal("tinyrustlm.public_root_verification.v0", root.GetProperty("schema").GetString());
+        Assert.Equal("tinyrustlm.public_root_verification.v1", root.GetProperty("schema").GetString());
         Assert.Contains(status, new[] { "pass", "fail" });
+        Assert.False(string.IsNullOrWhiteSpace(root.GetProperty("run_id").GetString()));
         Assert.False(string.IsNullOrWhiteSpace(root.GetProperty("repository_root").GetString()));
         Assert.False(string.IsNullOrWhiteSpace(root.GetProperty("app_root").GetString()));
-        Assert.StartsWith("http://127.0.0.1:", root.GetProperty("local_server_url").GetString(), StringComparison.Ordinal);
-        Assert.StartsWith("http://tinyrustlm.com:", root.GetProperty("public_root_url").GetString(), StringComparison.Ordinal);
-        Assert.Equal("tinyrustlm.com-loopback-browser-smoke", root.GetProperty("public_host_mapping").GetString());
-        Assert.False(string.IsNullOrWhiteSpace(root.GetProperty("server_stdout_path").GetString()));
-        Assert.False(string.IsNullOrWhiteSpace(root.GetProperty("server_stderr_path").GetString()));
-        Assert.Equal(expectedModes.OrderBy(value => value), smokeModes.OrderBy(value => value));
+        var childReport = root.GetProperty("ui_verification_report").GetString() ?? "";
+        Assert.False(string.IsNullOrWhiteSpace(childReport));
 
         if (string.Equals(status, "pass", StringComparison.Ordinal))
         {
             Assert.True(string.IsNullOrWhiteSpace(root.GetProperty("error").GetString()));
-            var reportPaths = root.GetProperty("smoke_report_paths");
-            var statuses = root.GetProperty("smoke_statuses");
-            foreach (var mode in expectedModes)
-            {
-                Assert.Equal("pass", statuses.GetProperty(mode).GetString());
-                Assert.EndsWith(
-                    $"tinyrustlm-public-root-{mode}-smoke.json",
-                    reportPaths.GetProperty(mode).GetString() ?? "",
-                    StringComparison.OrdinalIgnoreCase);
-            }
+            Assert.Matches("^[0-9a-f]{64}$", root.GetProperty("ui_verification_sha256").GetString() ?? "");
+            Assert.True(File.Exists(childReport));
         }
         else
         {

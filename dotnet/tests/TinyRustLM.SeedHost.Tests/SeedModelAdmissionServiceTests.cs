@@ -15,7 +15,7 @@ public sealed class SeedModelAdmissionServiceTests
     {
         var paths = MiniModelDevelopmentPaths.Find();
         Environment.SetEnvironmentVariable("MINIMODEL_NATIVE_PATH", paths.NativeLibrary);
-        var artifact = FixtureArtifact(paths.Cli);
+        var artifact = paths.FixtureArtifact;
         var root = Path.Combine(Path.GetTempPath(), $"seed-admission-{Guid.NewGuid():N}");
         var authority = new MiniModelAuthority();
         await using var store = new SeedFleetStore(new SeedFleetStoreOptions(root), authority);
@@ -120,16 +120,6 @@ public sealed class SeedModelAdmissionServiceTests
 
         Assert.False(authority.WasCalled);
         Assert.False(Directory.Exists(root));
-    }
-
-    private static string FixtureArtifact(string cliPath)
-    {
-        var target = Directory.GetParent(Path.GetDirectoryName(cliPath)!)!;
-        var root = target.Parent?.FullName
-            ?? throw new InvalidOperationException("MiniModel target directory has no repository parent.");
-        var artifact = Path.Combine(root, "artifacts", "demo", "tiny-test-model-q8.slm");
-        Assert.True(File.Exists(artifact));
-        return artifact;
     }
 
     private static PeerShareProvenance ProvenanceFixture(string root)

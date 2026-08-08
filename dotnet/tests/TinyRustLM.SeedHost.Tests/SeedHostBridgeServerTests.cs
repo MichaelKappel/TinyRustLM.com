@@ -43,31 +43,31 @@ public sealed class SeedHostBridgeServerTests
             ? IPAddress.Loopback
             : IPAddress.None);
 
-        using var healthy = Request(HttpMethod.Get, "/v1/health");
+        using var healthy = Request(HttpMethod.Get, "/v2/health");
         using var healthyResponse = await fixture.Client.SendAsync(healthy);
         Assert.Equal(HttpStatusCode.OK, healthyResponse.StatusCode);
         var health = await ReadJsonAsync(healthyResponse);
-        Assert.Equal(1, health.RootElement.GetProperty("protocol_version").GetInt32());
+        Assert.Equal(2, health.RootElement.GetProperty("protocol_version").GetInt32());
         Assert.Equal("unpaired", health.RootElement.GetProperty("pairing_state").GetString());
 
-        using var wrongHost = Request(HttpMethod.Get, "/v1/health");
+        using var wrongHost = Request(HttpMethod.Get, "/v2/health");
         wrongHost.Headers.Host = "attacker.example";
         using var wrongHostResponse = await fixture.Client.SendAsync(wrongHost);
         Assert.Equal(HttpStatusCode.BadRequest, wrongHostResponse.StatusCode);
         Assert.Equal("bridge_host_denied", await ErrorCodeAsync(wrongHostResponse));
 
-        using var wrongOrigin = Request(HttpMethod.Get, "/v1/health", "https://attacker.example");
+        using var wrongOrigin = Request(HttpMethod.Get, "/v2/health", "https://attacker.example");
         using var wrongOriginResponse = await fixture.Client.SendAsync(wrongOrigin);
         Assert.Equal(HttpStatusCode.Forbidden, wrongOriginResponse.StatusCode);
         Assert.Equal("bridge_origin_denied", await ErrorCodeAsync(wrongOriginResponse));
 
-        using var missingVersion = new HttpRequestMessage(HttpMethod.Get, "/v1/health");
+        using var missingVersion = new HttpRequestMessage(HttpMethod.Get, "/v2/health");
         missingVersion.Headers.TryAddWithoutValidation("Origin", AllowedOrigin);
         using var missingVersionResponse = await fixture.Client.SendAsync(missingVersion);
         Assert.Equal(HttpStatusCode.UpgradeRequired, missingVersionResponse.StatusCode);
         Assert.Equal("bridge_protocol_version_required", await ErrorCodeAsync(missingVersionResponse));
 
-        using var preflight = new HttpRequestMessage(HttpMethod.Options, "/v1/pair");
+        using var preflight = new HttpRequestMessage(HttpMethod.Options, "/v2/pair");
         preflight.Headers.TryAddWithoutValidation("Origin", AllowedOrigin);
         preflight.Headers.TryAddWithoutValidation("Access-Control-Request-Method", "POST");
         preflight.Headers.TryAddWithoutValidation(
@@ -92,7 +92,7 @@ public sealed class SeedHostBridgeServerTests
             requested_scopes = new[] { "status", "models_read" }
         };
 
-        using var pairRequest = JsonRequest(HttpMethod.Post, "/v1/pair", pairBody);
+        using var pairRequest = JsonRequest(HttpMethod.Post, "/v2/pair", pairBody);
         using var pairResponse = await fixture.Client.SendAsync(pairRequest);
         Assert.Equal(HttpStatusCode.OK, pairResponse.StatusCode);
         var pairJson = await ReadJsonAsync(pairResponse);
@@ -100,12 +100,12 @@ public sealed class SeedHostBridgeServerTests
         Assert.False(string.IsNullOrWhiteSpace(capability));
         Assert.DoesNotContain(challenge.Code, await pairResponse.Content.ReadAsStringAsync());
 
-        using var replayRequest = JsonRequest(HttpMethod.Post, "/v1/pair", pairBody);
+        using var replayRequest = JsonRequest(HttpMethod.Post, "/v2/pair", pairBody);
         using var replayResponse = await fixture.Client.SendAsync(replayRequest);
         Assert.Equal(HttpStatusCode.Conflict, replayResponse.StatusCode);
         Assert.Equal("bridge_pairing_code_consumed", await ErrorCodeAsync(replayResponse));
 
-        using var statusRequest = AuthorizedRequest(HttpMethod.Get, "/v1/status", capability!);
+        using var statusRequest = AuthorizedRequest(HttpMethod.Get, "/v2/status", capability!);
         using var statusResponse = await fixture.Client.SendAsync(statusRequest);
         Assert.Equal(HttpStatusCode.OK, statusResponse.StatusCode);
         var status = await ReadJsonAsync(statusResponse);
@@ -113,7 +113,7 @@ public sealed class SeedHostBridgeServerTests
 
         using var rotateRequest = AuthorizedRequest(
             HttpMethod.Post,
-            "/v1/session/rotate",
+            "/v2/session/rotate",
             capability!,
             requestId: "rotate-1");
         rotateRequest.Content = new StringContent("{}", Encoding.UTF8, "application/json");
@@ -124,21 +124,21 @@ public sealed class SeedHostBridgeServerTests
         Assert.False(string.IsNullOrWhiteSpace(rotatedCapability));
         Assert.NotEqual(capability, rotatedCapability);
 
-        using var supersededRequest = AuthorizedRequest(HttpMethod.Get, "/v1/status", capability!);
+        using var supersededRequest = AuthorizedRequest(HttpMethod.Get, "/v2/status", capability!);
         using var supersededResponse = await fixture.Client.SendAsync(supersededRequest);
         Assert.Equal(HttpStatusCode.Unauthorized, supersededResponse.StatusCode);
         Assert.Equal("bridge_capability_revoked", await ErrorCodeAsync(supersededResponse));
 
         using var revokeRequest = AuthorizedRequest(
             HttpMethod.Post,
-            "/v1/session/revoke",
+            "/v2/session/revoke",
             rotatedCapability!,
             requestId: "revoke-1");
         revokeRequest.Content = new StringContent("{}", Encoding.UTF8, "application/json");
         using var revokeResponse = await fixture.Client.SendAsync(revokeRequest);
         Assert.Equal(HttpStatusCode.NoContent, revokeResponse.StatusCode);
 
-        using var revokedRequest = AuthorizedRequest(HttpMethod.Get, "/v1/status", rotatedCapability!);
+        using var revokedRequest = AuthorizedRequest(HttpMethod.Get, "/v2/status", rotatedCapability!);
         using var revokedResponse = await fixture.Client.SendAsync(revokedRequest);
         Assert.Equal(HttpStatusCode.Unauthorized, revokedResponse.StatusCode);
         Assert.Equal("bridge_capability_revoked", await ErrorCodeAsync(revokedResponse));
@@ -150,14 +150,14 @@ public sealed class SeedHostBridgeServerTests
         await using var fixture = await BridgeFixture.StartAsync(maxRequestBytes: 512);
         var challenge = fixture.Server.CreatePairingChallenge();
 
-        using var malformed = Request(HttpMethod.Post, "/v1/pair");
+        using var malformed = Request(HttpMethod.Post, "/v2/pair");
         malformed.Content = new StringContent("{not-json", Encoding.UTF8, "application/json");
         using var malformedResponse = await fixture.Client.SendAsync(malformed);
         Assert.Equal(HttpStatusCode.BadRequest, malformedResponse.StatusCode);
         Assert.Equal("bridge_json_invalid", await ErrorCodeAsync(malformedResponse));
         Assert.DoesNotContain(challenge.Code, await malformedResponse.Content.ReadAsStringAsync());
 
-        using var chunked = Request(HttpMethod.Post, "/v1/pair");
+        using var chunked = Request(HttpMethod.Post, "/v2/pair");
         chunked.Headers.TransferEncodingChunked = true;
         chunked.Content = new StringContent("{}", Encoding.UTF8, "application/json");
         chunked.Content.Headers.ContentLength = null;
@@ -165,7 +165,7 @@ public sealed class SeedHostBridgeServerTests
         Assert.Equal(HttpStatusCode.LengthRequired, chunkedResponse.StatusCode);
         Assert.Equal("bridge_content_length_required", await ErrorCodeAsync(chunkedResponse));
 
-        using var oversized = Request(HttpMethod.Post, "/v1/pair");
+        using var oversized = Request(HttpMethod.Post, "/v2/pair");
         oversized.Content = new StringContent(
             JsonSerializer.Serialize(new { code = new string('x', 600), requested_scopes = new[] { "status" } }),
             Encoding.UTF8,
@@ -189,7 +189,7 @@ public sealed class SeedHostBridgeServerTests
         };
         using var request = AuthorizedRequest(
             HttpMethod.Post,
-            "/v1/imports",
+            "/v2/imports",
             capability,
             requestId: "large-import-1");
         request.Content = JsonBody(body);
@@ -202,7 +202,7 @@ public sealed class SeedHostBridgeServerTests
     }
 
     [Fact]
-    public async Task ScopedImportRoutesAreReplaySafeAndStreamOnlyOperationApprovedBytes()
+    public async Task ScopedAcquisitionRoutesAreReplaySafeAndStreamOnlyVerifiedModelAndCompositionBytes()
     {
         await using var fixture = await BridgeFixture.StartAsync();
         var capability = await PairAsync(
@@ -211,11 +211,14 @@ public sealed class SeedHostBridgeServerTests
             "imports_create",
             "imports_read",
             "imports_cancel",
+            "conversions_create",
+            "conversions_read",
+            "conversions_cancel",
             "models_stream");
 
         using var importRequest = AuthorizedRequest(
             HttpMethod.Post,
-            "/v1/imports",
+            "/v2/imports",
             capability,
             requestId: "import-request-1");
         importRequest.Content = JsonBody(new
@@ -231,7 +234,7 @@ public sealed class SeedHostBridgeServerTests
 
         using var replayRequest = AuthorizedRequest(
             HttpMethod.Post,
-            "/v1/imports",
+            "/v2/imports",
             capability,
             requestId: "import-request-1");
         replayRequest.Content = JsonBody(new
@@ -247,12 +250,12 @@ public sealed class SeedHostBridgeServerTests
         var operationId = fixture.Operations.Status.OperationId;
         using var statusRequest = AuthorizedRequest(
             HttpMethod.Get,
-            $"/v1/imports/{operationId}",
+            $"/v2/imports/{operationId}",
             capability);
         using var statusResponse = await fixture.Client.SendAsync(statusRequest);
         Assert.Equal(HttpStatusCode.OK, statusResponse.StatusCode);
 
-        using var modelsRequest = AuthorizedRequest(HttpMethod.Get, "/v1/models", capability);
+        using var modelsRequest = AuthorizedRequest(HttpMethod.Get, "/v2/models", capability);
         using var modelsResponse = await fixture.Client.SendAsync(modelsRequest);
         Assert.Equal(HttpStatusCode.OK, modelsResponse.StatusCode);
         using var modelsJson = await ReadJsonAsync(modelsResponse);
@@ -260,7 +263,7 @@ public sealed class SeedHostBridgeServerTests
 
         using var rangedRequest = AuthorizedRequest(
             HttpMethod.Get,
-            $"/v1/models/{operationId}/content",
+            $"/v2/models/{operationId}/content",
             capability);
         rangedRequest.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(0, 1);
         using var rangedResponse = await fixture.Client.SendAsync(rangedRequest);
@@ -269,7 +272,7 @@ public sealed class SeedHostBridgeServerTests
 
         using var contentRequest = AuthorizedRequest(
             HttpMethod.Get,
-            $"/v1/models/{operationId}/content",
+            $"/v2/models/{operationId}/content",
             capability);
         using var contentResponse = await fixture.Client.SendAsync(
             contentRequest,
@@ -278,11 +281,62 @@ public sealed class SeedHostBridgeServerTests
         Assert.Equal("application/octet-stream", contentResponse.Content.Headers.ContentType?.MediaType);
         Assert.Equal(fixture.Operations.ModelBytes.Length, contentResponse.Content.Headers.ContentLength);
         Assert.Equal(
-            "Content-Length, X-TinyRustLM-Model-Id, X-TinyRustLM-Artifact-Sha256",
+            "Content-Length, X-TinyRustLM-Model-Id, X-TinyRustLM-Artifact-Sha256, X-TinyRustLM-Composition-Sha256",
             Header(contentResponse, "Access-Control-Expose-Headers"));
         Assert.Equal("sha256:artifact", Header(contentResponse, "X-TinyRustLM-Artifact-Sha256"));
         Assert.Equal(fixture.Operations.ModelBytes, await contentResponse.Content.ReadAsByteArrayAsync());
         Assert.Equal(1, fixture.Operations.OpenModelCount);
+
+        using var conversionRequest = AuthorizedRequest(
+            HttpMethod.Post,
+            "/v2/conversions",
+            capability,
+            requestId: "conversion-request-1");
+        conversionRequest.Content = JsonBody(new
+        {
+            conversion_request_text = "{\"request_kind\":\"minimodel.huggingface_conversion_request.v1\"}",
+            review_accepted = true
+        });
+        using var conversionResponse = await fixture.Client.SendAsync(conversionRequest);
+        Assert.Equal(HttpStatusCode.Accepted, conversionResponse.StatusCode);
+        using var conversionJson = await ReadJsonAsync(conversionResponse);
+        var conversionOperationId = conversionJson.RootElement.GetProperty("operation_id").GetString();
+        Assert.Equal(fixture.Operations.ConversionStatus.OperationId, conversionOperationId);
+        Assert.Equal(1, fixture.Operations.StartConversionCount);
+
+        using var conversionStatusRequest = AuthorizedRequest(
+            HttpMethod.Get,
+            $"/v2/conversions/{conversionOperationId}",
+            capability);
+        using var conversionStatusResponse = await fixture.Client.SendAsync(conversionStatusRequest);
+        Assert.Equal(HttpStatusCode.OK, conversionStatusResponse.StatusCode);
+
+        using var compositionRequest = AuthorizedRequest(
+            HttpMethod.Get,
+            $"/v2/models/{conversionOperationId}/composition",
+            capability);
+        using var compositionResponse = await fixture.Client.SendAsync(
+            compositionRequest,
+            HttpCompletionOption.ResponseHeadersRead);
+        Assert.Equal(HttpStatusCode.OK, compositionResponse.StatusCode);
+        Assert.Equal("application/octet-stream", compositionResponse.Content.Headers.ContentType?.MediaType);
+        Assert.Equal(
+            fixture.Operations.CompositionBytes.Length,
+            compositionResponse.Content.Headers.ContentLength);
+        Assert.Equal(new string('e', 64), Header(compositionResponse, "X-TinyRustLM-Composition-Sha256"));
+        Assert.Equal(
+            fixture.Operations.CompositionBytes,
+            await compositionResponse.Content.ReadAsByteArrayAsync());
+        Assert.Equal(1, fixture.Operations.OpenCompositionCount);
+
+        using var cancelConversionRequest = AuthorizedRequest(
+            HttpMethod.Post,
+            $"/v2/conversions/{conversionOperationId}/cancel",
+            capability,
+            requestId: "conversion-cancel-1");
+        cancelConversionRequest.Content = JsonBody(new { });
+        using var cancelConversionResponse = await fixture.Client.SendAsync(cancelConversionRequest);
+        Assert.Equal(HttpStatusCode.OK, cancelConversionResponse.StatusCode);
     }
 
     [Fact]
@@ -291,7 +345,7 @@ public sealed class SeedHostBridgeServerTests
         await using (var disabled = await BridgeFixture.StartAsync())
         {
             var challenge = disabled.Server.CreatePairingChallenge();
-            using var request = JsonRequest(HttpMethod.Post, "/v1/pair", new
+            using var request = JsonRequest(HttpMethod.Post, "/v2/pair", new
             {
                 code = challenge.Code,
                 requested_scopes = new[] { "status", "sharing_manage" }
@@ -305,7 +359,7 @@ public sealed class SeedHostBridgeServerTests
         var readOnlyCapability = await PairAsync(fixture, "status");
         using (var deniedRequest = AuthorizedRequest(
             HttpMethod.Get,
-            "/v1/sharing",
+            "/v2/sharing",
             readOnlyCapability))
         using (var deniedResponse = await fixture.Client.SendAsync(deniedRequest))
         {
@@ -314,7 +368,7 @@ public sealed class SeedHostBridgeServerTests
         }
 
         var capability = await PairAsync(fixture, "status", "sharing_manage");
-        using (var statusRequest = AuthorizedRequest(HttpMethod.Get, "/v1/sharing", capability))
+        using (var statusRequest = AuthorizedRequest(HttpMethod.Get, "/v2/sharing", capability))
         using (var statusResponse = await fixture.Client.SendAsync(statusRequest))
         {
             Assert.Equal(HttpStatusCode.OK, statusResponse.StatusCode);
@@ -325,7 +379,7 @@ public sealed class SeedHostBridgeServerTests
 
         using (var initializeRequest = AuthorizedRequest(
             HttpMethod.Post,
-            "/v1/sharing/initialize",
+            "/v2/sharing/initialize",
             capability,
             requestId: "sharing-initialize-1"))
         {
@@ -345,7 +399,7 @@ public sealed class SeedHostBridgeServerTests
         };
         using (var admitRequest = AuthorizedRequest(
             HttpMethod.Post,
-            $"/v1/sharing/imports/{operationId}/admit",
+            $"/v2/sharing/imports/{operationId}/admit",
             capability,
             requestId: "sharing-admit-1"))
         {
@@ -358,7 +412,7 @@ public sealed class SeedHostBridgeServerTests
 
         using (var replayRequest = AuthorizedRequest(
             HttpMethod.Post,
-            $"/v1/sharing/imports/{operationId}/admit",
+            $"/v2/sharing/imports/{operationId}/admit",
             capability,
             requestId: "sharing-admit-1"))
         {
@@ -370,7 +424,7 @@ public sealed class SeedHostBridgeServerTests
 
         using (var enableRequest = AuthorizedRequest(
             HttpMethod.Post,
-            $"/v1/sharing/imports/{operationId}/enable",
+            $"/v2/sharing/imports/{operationId}/enable",
             capability,
             requestId: "sharing-enable-1"))
         {
@@ -386,7 +440,7 @@ public sealed class SeedHostBridgeServerTests
     private static async Task<string> PairAsync(BridgeFixture fixture, params string[] scopes)
     {
         var challenge = fixture.Server.CreatePairingChallenge();
-        using var request = JsonRequest(HttpMethod.Post, "/v1/pair", new
+        using var request = JsonRequest(HttpMethod.Post, "/v2/pair", new
         {
             code = challenge.Code,
             requested_scopes = scopes
@@ -404,7 +458,7 @@ public sealed class SeedHostBridgeServerTests
     {
         var request = new HttpRequestMessage(method, path);
         request.Headers.TryAddWithoutValidation("Origin", origin);
-        request.Headers.TryAddWithoutValidation("X-TinyRustLM-Bridge-Version", "1");
+        request.Headers.TryAddWithoutValidation("X-TinyRustLM-Bridge-Version", "2");
         return request;
     }
 
@@ -510,8 +564,11 @@ public sealed class SeedHostBridgeServerTests
         ISeedHostBridgeSharingOperations
     {
         internal byte[] ModelBytes { get; } = [0x53, 0x4c, 0x4d, 0x31, 1, 2, 3, 4];
+        internal byte[] CompositionBytes { get; } = [0x41, 0x43, 0x47, 0x31, 5, 6, 7, 8];
         internal int StartImportCount { get; private set; }
+        internal int StartConversionCount { get; private set; }
         internal int OpenModelCount { get; private set; }
+        internal int OpenCompositionCount { get; private set; }
         internal int InitializeSharingCount { get; private set; }
         internal int AdmitSharingCount { get; private set; }
         internal int EnableSharingCount { get; private set; }
@@ -531,6 +588,27 @@ public sealed class SeedHostBridgeServerTests
             null,
             DateTimeOffset.UnixEpoch,
             DateTimeOffset.UnixEpoch);
+        internal SeedHostBridgeConversionStatus ConversionStatus { get; } = new(
+            $"conversion-{new string('b', 64)}",
+            SeedHostBridgeConversionState.Available,
+            "Qwen/Qwen3-0.6B",
+            new string('c', 40),
+            "apache-2.0",
+            "qwen3-0.6b-bpe",
+            "q8_0",
+            10,
+            10,
+            1,
+            1,
+            8,
+            new string('d', 64),
+            "gpt2-bpe-v1",
+            1024,
+            "qwen3-chatml-no-think-v1",
+            false,
+            null,
+            DateTimeOffset.UnixEpoch,
+            DateTimeOffset.UnixEpoch);
 
         public uint NativeAbiVersion => 2;
 
@@ -543,6 +621,8 @@ public sealed class SeedHostBridgeServerTests
                 NativeAbiVersion,
                 ModelCount: 0,
                 ActiveImportCount: 0,
+                ActiveConversionCount: 0,
+                ConversionAvailable: true,
                 SharingEnabled: false));
         }
 
@@ -569,6 +649,30 @@ public sealed class SeedHostBridgeServerTests
             CancellationToken cancellationToken = default) =>
             GetImportAsync(operationId, cancellationToken);
 
+        public ValueTask<SeedHostBridgeConversionStatus> StartConversionAsync(
+            SeedHostBridgeConversionSubmission submission,
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Assert.True(submission.ReviewAccepted);
+            StartConversionCount++;
+            return ValueTask.FromResult(ConversionStatus);
+        }
+
+        public ValueTask<SeedHostBridgeConversionStatus> GetConversionAsync(
+            string operationId,
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Assert.Equal(ConversionStatus.OperationId, operationId);
+            return ValueTask.FromResult(ConversionStatus);
+        }
+
+        public ValueTask<SeedHostBridgeConversionStatus> CancelConversionAsync(
+            string operationId,
+            CancellationToken cancellationToken = default) =>
+            GetConversionAsync(operationId, cancellationToken);
+
         public ValueTask<IReadOnlyList<SeedHostBridgeModelInfo>> ListModelsAsync(
             CancellationToken cancellationToken = default)
         {
@@ -579,7 +683,23 @@ public sealed class SeedHostBridgeServerTests
                 Status.ModelId!,
                 Status.ArtifactByteCount,
                 Status.ArtifactSha256!,
-                Status.VerifiedPieceCount)]);
+                Status.VerifiedPieceCount,
+                "p2p",
+                null,
+                null,
+                null,
+                null,
+                0,
+                null,
+                0,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                0)]);
         }
 
         public ValueTask<SeedHostBridgeModelContent> OpenModelAsync(
@@ -594,6 +714,19 @@ public sealed class SeedHostBridgeServerTests
                 Status.ModelId!,
                 ModelBytes.Length,
                 Status.ArtifactSha256!));
+        }
+
+        public ValueTask<SeedHostBridgeCompositionContent> OpenCompositionAsync(
+            string operationId,
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Assert.Equal(ConversionStatus.OperationId, operationId);
+            OpenCompositionCount++;
+            return ValueTask.FromResult(new SeedHostBridgeCompositionContent(
+                new MemoryStream(CompositionBytes, writable: false),
+                CompositionBytes.Length,
+                new string('e', 64)));
         }
 
         public ValueTask<SeedHostBridgeSharingStatus> GetSharingAsync(

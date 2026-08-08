@@ -4,7 +4,8 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$DependencyFeed,
     [Parameter(Mandatory = $true)]
-    [string]$Version
+    [string]$Version,
+    [string]$MiniModelSourceRoot = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -14,6 +15,13 @@ $DependencyFeed = (Resolve-Path -LiteralPath $DependencyFeed).Path
 $LibraryId = "UAIX.Browser.p2pRuntime.SeedHost"
 $ToolId = "UAIX.Browser.p2pRuntime.SeedHost.Tool"
 $DependencyVersion = "0.1.8"
+if ([string]::IsNullOrWhiteSpace($MiniModelSourceRoot)) {
+    $MiniModelSourceRoot = $env:MINIMODEL_SOURCE_ROOT
+}
+if ([string]::IsNullOrWhiteSpace($MiniModelSourceRoot)) {
+    $MiniModelSourceRoot = Join-Path (Split-Path $RepoRoot -Parent) 'MiniModel.org'
+}
+$MiniModelSourceRoot = (Resolve-Path -LiteralPath $MiniModelSourceRoot).Path
 $runId = "usv-$Version-$([guid]::NewGuid().ToString('N').Substring(0, 10))"
 $WorkRoot = Join-Path ([IO.Path]::GetTempPath()) $runId
 $IsWindowsHost = -not ($PSVersionTable.PSEdition -eq 'Core' -and ($IsLinux -or $IsMacOS))
@@ -260,6 +268,9 @@ let main _ =
     Assert-Condition ([bool]$doctor.ok -and [bool]$doctor.value.ready) "Installed tool doctor did not report ready."
     Assert-Condition ([string]$doctor.value.runtime_identifier -ceq $(if ($IsWindowsHost) { 'win-x64' } else { 'linux-x64' })) "Installed tool selected the wrong native RID."
     Assert-Condition ([uint32]$doctor.value.native_abi_version -eq 2) "Installed tool loaded the wrong native ABI."
+    Assert-Condition ([string]$doctor.value.mini_model_executable_sha256 -match '^sha256:[0-9a-f]{64}$') "Installed tool did not hash the packaged MiniModel executable."
+    Assert-Condition ([string]$doctor.value.conversion_executable_sha256 -match '^sha256:[0-9a-f]{64}$') "Installed tool did not hash the packaged TinyRustLM converter."
+    Assert-Condition ([IO.Path]::GetFileName([string]$doctor.value.conversion_executable_path) -ceq $(if ($IsWindowsHost) { 'tinyrustlm-slm-pack.exe' } else { 'tinyrustlm-slm-pack' })) "Installed tool selected the wrong TinyRustLM converter."
 
     $stage = 'fleet-init-and-inspect'
     $FleetRoot = Join-Path $WorkRoot 'fixture-fleet'
@@ -272,7 +283,7 @@ let main _ =
 
     $stage = 'fixture-admission'
     $fixture = Join-Path $RepoRoot 'tinyrustlm/models/tiny-test-model-q8.slm'
-    $requestTemplate = Join-Path (Split-Path $RepoRoot -Parent) 'MiniModel.org/examples/tiny-test-model-q8.minimodel-peer-import-request.json'
+    $requestTemplate = Join-Path $MiniModelSourceRoot 'examples/tiny-test-model-q8.minimodel-peer-import-request.json'
     Assert-Condition (Test-Path -LiteralPath $fixture -PathType Leaf) "Deterministic q8 package fixture is missing."
     Assert-Condition (Test-Path -LiteralPath $requestTemplate -PathType Leaf) "Deterministic peer import request template is missing."
     $ports = Get-DistinctFreeLoopbackPorts
@@ -389,6 +400,7 @@ let main _ =
         fsharp_consumer = 'passed'
         powershell_tool_invocation = 'passed'
         installed_tool_doctor_init_inspect = 'passed'
+        installed_tool_converter = 'present-and-hashed'
         installed_tool_fixture_serve_import = 'passed'
         missing_native_diagnostic = 'native_library_not_found'
         wrong_architecture_diagnostic = 'native_architecture_mismatch'

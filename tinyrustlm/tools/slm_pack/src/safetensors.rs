@@ -125,6 +125,8 @@ struct CandidateReview<'a> {
 
 struct HuggingFaceConversionRequest {
     source_model_id: String,
+    source_revision: String,
+    source_license_id: String,
     supported_source_shapes: Vec<String>,
     default_source_shape: String,
     default_quantization: String,
@@ -448,24 +450,6 @@ fn extract_source_path_checked(
     Ok(())
 }
 
-/// Converts a checked `.safetensors` file into an `.slm` through the reviewed raw source layout.
-pub fn convert_source_path(
-    input: &Path,
-    shape_name: &str,
-    output_source_dir: &Path,
-    output_slm: &Path,
-    output_quantization: &str,
-) -> io::Result<()> {
-    convert_source_path_with_review(
-        input,
-        shape_name,
-        output_source_dir,
-        output_slm,
-        output_quantization,
-        None,
-    )
-}
-
 /// Converts a safetensors source after optionally consuming its candidate-review gate.
 pub fn convert_source_path_with_review(
     input: &Path,
@@ -502,6 +486,7 @@ pub fn convert_huggingface_request_path(
     output_dir: &Path,
     override_shape_name: Option<&str>,
     override_quantization: Option<&str>,
+    candidate_review: Option<&Path>,
 ) -> io::Result<()> {
     let request_text = fs::read_to_string(request_json)?;
     let request = parse_huggingface_conversion_request(&request_text)?;
@@ -607,12 +592,13 @@ pub fn convert_huggingface_request_path(
         None,
         Some(&source_contract),
     )?;
-    convert_source_path(
+    convert_source_path_with_review(
         input,
         shape_name,
         &source_dir,
         &output_slm,
         output_quantization,
+        candidate_review,
     )?;
     slm_validate::validate_path(&output_slm)?;
     let manifest_path = sidecar_manifest_path(&output_slm);
@@ -711,7 +697,7 @@ pub fn inspect_huggingface_conversion_receipt_path(
             fields,
             "conversion evidence",
             "request_kind",
-            "minimodel.huggingface_conversion_request.v0",
+            "minimodel.huggingface_conversion_request.v1",
         )?;
         require_report_equal(
             fields,
@@ -724,6 +710,18 @@ pub fn inspect_huggingface_conversion_receipt_path(
             "conversion evidence",
             "source_model_id",
             &request.source_model_id,
+        )?;
+        require_report_equal(
+            fields,
+            "conversion evidence",
+            "source_revision",
+            &request.source_revision,
+        )?;
+        require_report_equal(
+            fields,
+            "conversion evidence",
+            "source_license_id",
+            &request.source_license_id,
         )?;
         require_report_equal(
             fields,
@@ -4898,9 +4896,9 @@ fn parse_huggingface_conversion_request(text: &str) -> io::Result<HuggingFaceCon
         ))
     })?;
     let request_kind = conversion_string_field(&root, "request_kind")?;
-    if request_kind != "minimodel.huggingface_conversion_request.v0" {
+    if request_kind != "minimodel.huggingface_conversion_request.v1" {
         return Err(invalid(
-            "Hugging Face conversion request kind must be minimodel.huggingface_conversion_request.v0",
+            "Hugging Face conversion request kind must be minimodel.huggingface_conversion_request.v1",
         ));
     }
 
@@ -4913,6 +4911,23 @@ fn parse_huggingface_conversion_request(text: &str) -> io::Result<HuggingFaceCon
     }
     let source_model_id = conversion_string_field(source, "model_id")?.to_string();
     validate_huggingface_model_id(&source_model_id)?;
+    let source_revision = conversion_string_field(source, "revision")?.to_ascii_lowercase();
+    if source_revision.len() != 40 || !source_revision.as_bytes().iter().all(u8::is_ascii_hexdigit)
+    {
+        return Err(invalid(
+            "Hugging Face conversion request source.revision must be one immutable 40-hex commit",
+        ));
+    }
+    let source_license_id = conversion_string_field(source, "license_id")?.to_string();
+    if source_license_id.len() > 96
+        || !source_license_id
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'+' | b'-' | b'_'))
+    {
+        return Err(invalid(
+            "Hugging Face conversion request source.license_id must be a bounded SPDX-style identifier",
+        ));
+    }
 
     let requested_artifact = conversion_object_field(&root, "requested_artifact")?;
     let default_source_shape =
@@ -5004,6 +5019,8 @@ fn parse_huggingface_conversion_request(text: &str) -> io::Result<HuggingFaceCon
 
     Ok(HuggingFaceConversionRequest {
         source_model_id,
+        source_revision,
+        source_license_id,
         supported_source_shapes,
         default_source_shape,
         default_quantization,
@@ -5032,11 +5049,13 @@ fn render_huggingface_conversion_request_inspection(
     push_receipt_line(
         &mut text,
         "request_kind",
-        "minimodel.huggingface_conversion_request.v0",
+        "minimodel.huggingface_conversion_request.v1",
     );
     push_receipt_line(&mut text, "inspection_status", "pass");
     push_receipt_line(&mut text, "source_kind", "huggingface_model");
     push_receipt_line(&mut text, "source_model_id", &request.source_model_id);
+    push_receipt_line(&mut text, "source_revision", &request.source_revision);
+    push_receipt_line(&mut text, "source_license_id", &request.source_license_id);
     push_receipt_line(&mut text, "source_format", &request.source_format);
     push_receipt_line(
         &mut text,
@@ -5219,10 +5238,12 @@ fn write_huggingface_conversion_receipt(
     push_receipt_line(
         &mut text,
         "request_kind",
-        "minimodel.huggingface_conversion_request.v0",
+        "minimodel.huggingface_conversion_request.v1",
     );
     push_receipt_line(&mut text, "source_kind", "huggingface_model");
     push_receipt_line(&mut text, "source_model_id", &request.source_model_id);
+    push_receipt_line(&mut text, "source_revision", &request.source_revision);
+    push_receipt_line(&mut text, "source_license_id", &request.source_license_id);
     push_receipt_line(
         &mut text,
         "suggested_source_safetensors_file",
@@ -5473,10 +5494,12 @@ fn write_huggingface_conversion_preflight(
     push_receipt_line(
         &mut text,
         "request_kind",
-        "minimodel.huggingface_conversion_request.v0",
+        "minimodel.huggingface_conversion_request.v1",
     );
     push_receipt_line(&mut text, "source_kind", "huggingface_model");
     push_receipt_line(&mut text, "source_model_id", &request.source_model_id);
+    push_receipt_line(&mut text, "source_revision", &request.source_revision);
+    push_receipt_line(&mut text, "source_license_id", &request.source_license_id);
     push_receipt_line(
         &mut text,
         "suggested_source_safetensors_file",
@@ -6670,7 +6693,7 @@ mod tests {
         for (request, expected) in [
             (
                 r#"{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
   "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model\n"},
   "requested_artifact": {"kind": "slm", "default_source_shape": "tiny-fixture", "default_quantization": "q8_0"}
 }"#,
@@ -6678,7 +6701,7 @@ mod tests {
             ),
             (
                 r#"{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
   "source": {"kind": "huggingface_model", "model_id": "example org/tiny-source-model"},
   "requested_artifact": {"kind": "slm", "default_source_shape": "tiny-fixture", "default_quantization": "q8_0"}
 }"#,
@@ -6686,8 +6709,8 @@ mod tests {
             ),
             (
                 r#"{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
-  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model"},
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
+  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model", "revision": "0123456789abcdef0123456789abcdef01234567", "license_id": "apache-2.0"},
   "requested_artifact": {"kind": "slm", "default_source_shape": "tiny-fixture", "default_quantization": "q8_0"},
   "local_conversion": {"suggested_source_safetensors_file": " model.safetensors"}
 }"#,
@@ -6695,8 +6718,8 @@ mod tests {
             ),
             (
                 r#"{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
-  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model"},
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
+  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model", "revision": "0123456789abcdef0123456789abcdef01234567", "license_id": "apache-2.0"},
   "requested_artifact": {"kind": "slm", "default_source_shape": "tiny-fixture", "default_quantization": "q8_0"},
   "local_conversion": {"suggested_source_safetensors_files": [{"file_name": "nested/model.safetensors"}]}
 }"#,
@@ -6704,8 +6727,8 @@ mod tests {
             ),
             (
                 r#"{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
-  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model"},
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
+  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model", "revision": "0123456789abcdef0123456789abcdef01234567", "license_id": "apache-2.0"},
   "requested_artifact": {"kind": "slm", "default_source_shape": "tiny-fixture", "default_quantization": "q8_0"},
   "local_conversion": {"known_peer_base_url": "http://MiniModel.org/peer-pieces/"}
 }"#,
@@ -6713,8 +6736,8 @@ mod tests {
             ),
             (
                 r#"{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
-  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model"},
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
+  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model", "revision": "0123456789abcdef0123456789abcdef01234567", "license_id": "apache-2.0"},
   "requested_artifact": {"kind": "slm", "default_source_shape": "tiny-fixture", "default_quantization": "q8_0"},
   "local_conversion": {"known_peer_base_url": "http://MiniModel.org./peer-pieces/"}
 }"#,
@@ -6722,8 +6745,8 @@ mod tests {
             ),
             (
                 r#"{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
-  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model"},
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
+  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model", "revision": "0123456789abcdef0123456789abcdef01234567", "license_id": "apache-2.0"},
   "requested_artifact": {"kind": "slm", "default_source_shape": "tiny-fixture", "default_quantization": "q8_0"},
   "local_conversion": {"known_peer_base_url": "http://127.0.0.1:8123/peer-pieces/../secret/"}
 }"#,
@@ -6731,8 +6754,8 @@ mod tests {
             ),
             (
                 r#"{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
-  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model"},
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
+  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model", "revision": "0123456789abcdef0123456789abcdef01234567", "license_id": "apache-2.0"},
   "requested_artifact": {"kind": "slm", "default_source_shape": "tiny-fixture", "default_quantization": "q8_0"},
   "local_conversion": {"known_peer_base_url": "http://peer_host.local:8123/peer-pieces/"}
 }"#,
@@ -6740,8 +6763,8 @@ mod tests {
             ),
             (
                 r#"{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
-  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model"},
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
+  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model", "revision": "0123456789abcdef0123456789abcdef01234567", "license_id": "apache-2.0"},
   "requested_artifact": {"kind": "slm", "default_source_shape": "tiny-fixture", "default_quantization": "q8_0"},
   "local_conversion": {"p2p_enabled": false, "conversion_mode": "private-local-only", "known_peer_base_url": "http://127.0.0.1:8123/peer-pieces/"}
 }"#,
@@ -6749,8 +6772,8 @@ mod tests {
             ),
             (
                 r#"{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
-  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model"},
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
+  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model", "revision": "0123456789abcdef0123456789abcdef01234567", "license_id": "apache-2.0"},
   "requested_artifact": {"kind": "slm", "default_source_shape": "tiny-fixture", "default_quantization": "q8_0"},
   "local_conversion": {"p2p_enabled": false, "conversion_mode": "p2p-share-ready"}
 }"#,
@@ -6772,8 +6795,8 @@ mod tests {
     fn records_valid_huggingface_conversion_known_peer_url() {
         let request = parse_huggingface_conversion_request(
             r#"{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
-  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model"},
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
+  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model", "revision": "0123456789abcdef0123456789abcdef01234567", "license_id": "apache-2.0"},
   "requested_artifact": {"kind": "slm", "default_source_shape": "tiny-fixture", "default_quantization": "q8_0"},
   "local_conversion": {"known_peer_base_url": "http://127.0.0.1:8123/peer-pieces"}
 }"#,
@@ -6791,8 +6814,8 @@ mod tests {
     fn records_private_huggingface_conversion_mode_without_peer_metadata() {
         let request = parse_huggingface_conversion_request(
             r#"{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
-  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model"},
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
+  "source": {"kind": "huggingface_model", "model_id": "example-org/tiny-source-model", "revision": "0123456789abcdef0123456789abcdef01234567", "license_id": "apache-2.0"},
   "requested_artifact": {"kind": "slm", "default_source_shape": "tiny-fixture", "default_quantization": "q8_0"},
   "local_conversion": {"p2p_enabled": false, "conversion_mode": "private-local-only"}
 }"#,
@@ -8597,7 +8620,15 @@ mod tests {
         let output_slm = dir.join("converted-q8.slm");
         write_template_source_extract_safetensors_with_hf_aliases(&input, "tiny-fixture");
 
-        convert_source_path(&input, "tiny-fixture", &output_dir, &output_slm, "q8_0").unwrap();
+        convert_source_path_with_review(
+            &input,
+            "tiny-fixture",
+            &output_dir,
+            &output_slm,
+            "q8_0",
+            None,
+        )
+        .unwrap();
 
         trained_source::validate_source_path(&output_dir).unwrap();
         let bytes = fs::read(&output_slm).unwrap();
@@ -8621,10 +8652,12 @@ mod tests {
             &request,
             format!(
                 r#"{{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
   "source": {{
     "kind": "huggingface_model",
-    "model_id": "example-org/tiny-source-model"
+    "model_id": "example-org/tiny-source-model",
+    "revision": "0123456789abcdef0123456789abcdef01234567",
+    "license_id": "apache-2.0"
   }},
   "requested_artifact": {{
     "kind": "slm",
@@ -8649,7 +8682,7 @@ mod tests {
         )
         .unwrap();
 
-        convert_huggingface_request_path(&request, &input, &output_dir, None, None).unwrap();
+        convert_huggingface_request_path(&request, &input, &output_dir, None, None, None).unwrap();
 
         let output_slm = huggingface_conversion_output_slm_path(
             &output_dir,
@@ -8688,7 +8721,7 @@ mod tests {
 
         let receipt = fs::read_to_string(output_dir.join("tinyrustlm-conversion.receipt")).unwrap();
         assert!(receipt.contains("tinyrustlm_huggingface_conversion_receipt_version=2"));
-        assert!(receipt.contains("request_kind=minimodel.huggingface_conversion_request.v0"));
+        assert!(receipt.contains("request_kind=minimodel.huggingface_conversion_request.v1"));
         assert!(receipt.contains("source_kind=huggingface_model"));
         assert!(receipt.contains("source_model_id=example-org/tiny-source-model"));
         assert!(receipt.contains("suggested_source_safetensors_file=tiny-hf-source.safetensors"));
@@ -8752,10 +8785,12 @@ mod tests {
             &request,
             format!(
                 r#"{{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
   "source": {{
     "kind": "huggingface_model",
-    "model_id": "example-org/tiny-source-model"
+    "model_id": "example-org/tiny-source-model",
+    "revision": "0123456789abcdef0123456789abcdef01234567",
+    "license_id": "apache-2.0"
   }},
   "requested_artifact": {{
     "kind": "slm",
@@ -8778,8 +8813,9 @@ mod tests {
         )
         .unwrap();
 
-        let error = convert_huggingface_request_path(&request, &input, &output_dir, None, None)
-            .unwrap_err();
+        let error =
+            convert_huggingface_request_path(&request, &input, &output_dir, None, None, None)
+                .unwrap_err();
 
         assert!(error.to_string().contains("source SHA-256 mismatch"));
         assert!(output_dir.join("source.inspect").exists());
@@ -8821,10 +8857,12 @@ mod tests {
         fs::write(
             &request,
             r#"{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
   "source": {
     "kind": "huggingface_model",
-    "model_id": "example-org/tiny-sharded"
+    "model_id": "example-org/tiny-sharded",
+    "revision": "0123456789abcdef0123456789abcdef01234567",
+    "license_id": "apache-2.0"
   },
   "requested_artifact": {
     "kind": "slm",
@@ -8839,7 +8877,8 @@ mod tests {
         )
         .unwrap();
 
-        convert_huggingface_request_path(&request, &shard_dir, &output_dir, None, None).unwrap();
+        convert_huggingface_request_path(&request, &shard_dir, &output_dir, None, None, None)
+            .unwrap();
 
         let output_slm =
             huggingface_conversion_output_slm_path(&output_dir, "example-org/tiny-sharded", "q8_0");
@@ -8887,10 +8926,12 @@ mod tests {
         fs::write(
             &request,
             r#"{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
   "source": {
     "kind": "huggingface_model",
-    "model_id": "example-org/wrong-shape"
+    "model_id": "example-org/wrong-shape",
+    "revision": "0123456789abcdef0123456789abcdef01234567",
+    "license_id": "apache-2.0"
   },
   "requested_artifact": {
     "kind": "slm",
@@ -8906,8 +8947,9 @@ mod tests {
         )
         .unwrap();
 
-        let error = convert_huggingface_request_path(&request, &input, &output_dir, None, None)
-            .unwrap_err();
+        let error =
+            convert_huggingface_request_path(&request, &input, &output_dir, None, None, None)
+                .unwrap_err();
 
         assert!(error.to_string().contains("shape was 2080, expected 260x8"));
         assert!(output_dir.join("source.inspect").exists());
@@ -8952,7 +8994,9 @@ mod tests {
   "request_kind": "not-a-minimodel-request",
   "source": {
     "kind": "huggingface_model",
-    "model_id": "example-org/tiny-source-model"
+    "model_id": "example-org/tiny-source-model",
+    "revision": "0123456789abcdef0123456789abcdef01234567",
+    "license_id": "apache-2.0"
   },
   "requested_artifact": {
     "kind": "slm",
@@ -8964,11 +9008,12 @@ mod tests {
         )
         .unwrap();
 
-        let error = convert_huggingface_request_path(&request, &input, &output_dir, None, None)
-            .unwrap_err();
+        let error =
+            convert_huggingface_request_path(&request, &input, &output_dir, None, None, None)
+                .unwrap_err();
 
         assert!(error.to_string().contains(
-            "conversion request kind must be minimodel.huggingface_conversion_request.v0"
+            "conversion request kind must be minimodel.huggingface_conversion_request.v1"
         ));
         assert!(!output_dir.exists());
     }
@@ -8982,12 +9027,13 @@ mod tests {
         let output_slm = dir.join("converted-q4.slm");
         write_source_extract_safetensors_with_hf_aliases(&input, "tiny-fixture-tied", "BF16");
 
-        convert_source_path(
+        convert_source_path_with_review(
             &input,
             "tiny-fixture-tied",
             &output_dir,
             &output_slm,
             "q4_0",
+            None,
         )
         .unwrap();
 
@@ -9011,8 +9057,15 @@ mod tests {
         let output_slm = dir.join("converted-q2.slm");
         write_template_source_extract_safetensors_with_hf_aliases(&input, "tiny-fixture");
 
-        let error = convert_source_path(&input, "tiny-fixture", &output_dir, &output_slm, "q2_0")
-            .unwrap_err();
+        let error = convert_source_path_with_review(
+            &input,
+            "tiny-fixture",
+            &output_dir,
+            &output_slm,
+            "q2_0",
+            None,
+        )
+        .unwrap_err();
 
         assert!(error.to_string().contains(
             "converted output quantization must be f32, q8_0, q5_0, q4_0, mixed-q8-edge-q4-body-v1, mixed-q8-output-down-q4-body-v1, mixed-q8-matrix-f32-norm-v1, or mixed-q5-matrix-f32-norm-v1"

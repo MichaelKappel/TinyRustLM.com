@@ -120,10 +120,33 @@ fn run() -> io::Result<()> {
             Path::new(&authority),
             Path::new(&graph),
         )?;
-        println!("TinyRustLM composition graph: PASS");
-        println!("bundle_sha256: {}", outcome.bundle_sha256);
-        println!("composition_id: {}", outcome.composition_id);
-        println!("active_graph_digest: {}", outcome.active_graph_digest);
+        print_composition_graph_outcome(&outcome);
+        return Ok(());
+    }
+    if output == "inspect-composition-graph" {
+        let Some(model) = args.next() else {
+            print_usage();
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "inspect-composition-graph requires an input .slm path",
+            ));
+        };
+        let Some(graph) = args.next() else {
+            print_usage();
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "inspect-composition-graph requires an input .acg1 path",
+            ));
+        };
+        if args.next().is_some() {
+            print_usage();
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "inspect-composition-graph received too many arguments",
+            ));
+        }
+        let outcome = composition_graph::inspect_path(Path::new(&model), Path::new(&graph))?;
+        print_composition_graph_outcome(&outcome);
         return Ok(());
     }
     if output == "inspect-safetensors" {
@@ -465,12 +488,21 @@ fn run() -> io::Result<()> {
         };
         let source_shape = args.next();
         let quantization = args.next();
+        let candidate_review = optional_cli_arg(args.next());
+        if args.next().is_some() {
+            print_usage();
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "convert-huggingface-request received too many arguments",
+            ));
+        }
         return safetensors::convert_huggingface_request_path(
             Path::new(&request_json),
             Path::new(&input),
             Path::new(&output_dir),
             source_shape.as_deref(),
             quantization.as_deref(),
+            candidate_review.as_deref().map(Path::new),
         );
     }
     if output == "inspect-huggingface-conversion-request" {
@@ -3606,6 +3638,18 @@ fn looks_like_safetensors_candidate_review(path: &Path) -> bool {
 
 fn optional_cli_arg(value: Option<String>) -> Option<String> {
     value.filter(|text| text != "-")
+}
+
+fn print_composition_graph_outcome(outcome: &composition_graph::CompositionGraphOutcome) {
+    println!("TinyRustLM composition graph: PASS");
+    println!("bundle_sha256: {}", outcome.bundle_sha256);
+    println!("base_model_id: {}", outcome.base_model_id);
+    println!("composition_id: {}", outcome.composition_id);
+    println!("active_graph_digest: {}", outcome.active_graph_digest);
+    println!("route_policy_id: {}", outcome.route_policy_id);
+    println!("kv_format_id: {}", outcome.kv_format_id);
+    println!("position_policy_sha256: {}", outcome.position_policy_sha256);
+    println!("member_count: {}", outcome.member_count);
 }
 
 fn print_usage() {

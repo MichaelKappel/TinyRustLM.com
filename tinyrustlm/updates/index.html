@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="application-version" content="0.1.2">
-  <meta name="release-date" content="2026-08-02">
+  <meta name="application-version" content="0.2.0">
+  <meta name="release-date" content="2026-08-08">
   <title>Updates | TinyRustLM</title>
   <link rel="icon" href="data:,">
   <link rel="alternate" type="application/json" href="/.well-known/site-release.json" title="Current release">
   <link rel="alternate" type="application/json" href="/.well-known/site-release-history.json" title="Release history">
-  <link rel="stylesheet" href="./updates.css?v=sha256-11e772d55b17f6d23bf80b8871a2d9a66927c21ebd1580bc94a65514459e2a2f">
+  <link rel="stylesheet" href="./updates.css?v=sha256-569ce431dfe51e30c2519225aa536a9a97c938c2e373b0602c72fbf95c1b21c3">
 </head>
 <body>
   <header class="site-header">
@@ -23,10 +23,10 @@
       <div class="release-band-inner">
         <p class="eyebrow">Release record</p>
         <h1 id="updates-title">TinyRustLM updates</h1>
-        <p class="release-summary">Completes the release-readability deployment and hardens publication recovery.</p>
+        <p class="release-summary">Replaces model handoff downloads with direct P2P-first acquisition and companion-managed local conversion.</p>
         <p class="release-facts">
-          <span>Version <strong data-release-version>0.1.2</strong></span>
-          <span>Released <strong><time data-release-date datetime="2026-08-02">2026-08-02</time></strong></span>
+          <span>Version <strong data-release-version>0.2.0</strong></span>
+          <span>Released <strong><time data-release-date datetime="2026-08-08">2026-08-08</time></strong></span>
           <span>Last published <strong><time data-release-published-at>Awaiting live verification</time></strong></span>
         </p>
       </div>
@@ -34,10 +34,24 @@
     <section class="history" aria-labelledby="history-title">
       <div class="history-inner">
         <h2 id="history-title">Release history</h2>
+      <article class="release-entry" id="0.2.0">
+        <div class="release-entry-header">
+          <h3>Version <span data-release-version>0.2.0</span></h3>
+          <time data-release-date datetime="2026-08-08">2026-08-08</time>
+        </div>
+        <p>Replaces model handoff downloads with direct P2P-first acquisition and companion-managed local conversion.</p>
+        <ul class="change-list">
+          <li><span class="change-type">added</span><span>Added one-action acquisition that imports a complete verified MiniModel P2P offer before considering source conversion.</span></li>
+          <li><span class="change-type">added</span><span>Added protocol-v2 companion download, resume, review, Rust conversion, validation, and direct browser loading for immutable supported Hugging Face sources.</span></li>
+          <li><span class="change-type">added</span><span>Added receipt-bound streaming and activation of both the converted `.slm` model and its immutable `.acg1` composition graph.</span></li>
+          <li><span class="change-type">removed</span><span>Removed model-acquisition and P2P-sharing README, TXT, PowerShell, request JSON, conversion-kit, and share-kit downloads from the browser.</span></li>
+          <li><span class="change-type">security</span><span>Kept prompts, responses, source tensors, model bytes, and composition bytes off TinyRustLM and related project servers.</span></li>
+        </ul>
+      </article>
       <article class="release-entry" id="0.1.2">
         <div class="release-entry-header">
-          <h3>Version <span data-release-version>0.1.2</span></h3>
-          <time data-release-date datetime="2026-08-02">2026-08-02</time>
+          <h3>Version <span>0.1.2</span></h3>
+          <time datetime="2026-08-02">2026-08-02</time>
         </div>
         <p>Completes the release-readability deployment and hardens publication recovery.</p>
         <ul class="change-list">
@@ -84,6 +98,6 @@
       </nav>
     </div>
   </footer>
-  <script src="../app/site-release.js?v=sha256-6f8715fa77ad1a4bcc0c42a9050c0467825acdb402afe96e1a963cc535aea6a9"></script>
+  <script src="../app/site-release.js?v=sha256-8eb3b12108b996bea0e6956527d1b07feb771f7c0ce3c072961d29e6689ba25f"></script>
 </body>
 </html>

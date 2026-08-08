@@ -14,7 +14,7 @@ public sealed class SeedPeerImportServiceTests
     {
         var paths = MiniModelDevelopmentPaths.Find();
         Environment.SetEnvironmentVariable("MINIMODEL_NATIVE_PATH", paths.NativeLibrary);
-        var miniModelRoot = MiniModelRoot(paths.Cli);
+        var miniModelRoot = paths.SourceRoot;
         var manifest = Path.Combine(
             miniModelRoot,
             "examples",
@@ -23,12 +23,7 @@ public sealed class SeedPeerImportServiceTests
             miniModelRoot,
             "examples",
             "tiny-test-model-q8.minimodel-peer-import-request.json");
-        var artifact = Path.Combine(
-            Directory.GetParent(miniModelRoot)!.FullName,
-            "TinyRustLM.com",
-            "tinyrustlm",
-            "models",
-            "tiny-test-model-q8.slm");
+        var artifact = paths.FixtureArtifact;
         Assert.True(File.Exists(manifest));
         Assert.True(File.Exists(requestTemplate));
         Assert.True(File.Exists(artifact));
@@ -87,14 +82,6 @@ public sealed class SeedPeerImportServiceTests
                 Directory.Delete(root, recursive: true);
             }
         }
-    }
-
-    private static string MiniModelRoot(string cliPath)
-    {
-        var target = Directory.GetParent(Path.GetDirectoryName(cliPath)!)
-            ?? throw new InvalidOperationException("MiniModel CLI has no target directory.");
-        return target.Parent?.FullName
-            ?? throw new InvalidOperationException("MiniModel target has no repository root.");
     }
 
     private static void RunCli(string executable, params string[] arguments)

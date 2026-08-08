@@ -3,6 +3,7 @@ param(
     [string]$Configuration = "Release",
     [string]$PackageOutput = "E:\Source\WP\UAIX-Publish\DOTNET-NUGET",
     [string]$DependencyFeed = "",
+    [string]$MiniModelSourceRoot = "",
     [switch]$SkipNativeBuild
 )
 
@@ -13,6 +14,13 @@ $ToolProject = Join-Path $RepoRoot "dotnet/tools/TinyRustLM.SeedHost.Tool/TinyRu
 $LibraryId = "UAIX.Browser.p2pRuntime.SeedHost"
 $ToolId = "UAIX.Browser.p2pRuntime.SeedHost.Tool"
 $DependencyVersion = "0.1.8"
+if ([string]::IsNullOrWhiteSpace($MiniModelSourceRoot)) {
+    $MiniModelSourceRoot = $env:MINIMODEL_SOURCE_ROOT
+}
+if ([string]::IsNullOrWhiteSpace($MiniModelSourceRoot)) {
+    $MiniModelSourceRoot = Join-Path (Split-Path $RepoRoot -Parent) "MiniModel.org"
+}
+$MiniModelSourceRoot = (Resolve-Path -LiteralPath $MiniModelSourceRoot).Path
 [xml]$LibraryXml = Get-Content -LiteralPath $LibraryProject
 $Version = [string]$LibraryXml.Project.PropertyGroup.VersionPrefix
 if ([string]::IsNullOrWhiteSpace($Version)) {
@@ -80,6 +88,7 @@ function Invoke-SeedHostPackageVerifier {
         Version = $Version
         DependencyFeed = $DependencyFeed
         ReportPath = $ReportPath
+        MiniModelSourceRoot = $MiniModelSourceRoot
     }
     if ($PublishedFeed) {
         $arguments.PublishedFeed = $true
@@ -103,7 +112,9 @@ foreach ($name in @(
 }
 
 if (-not $SkipNativeBuild) {
-    & (Join-Path $PSScriptRoot "build-seed-host-native.ps1") -Configuration release
+    & (Join-Path $PSScriptRoot "build-seed-host-native.ps1") `
+        -Configuration release `
+        -MiniModelSourceRoot $MiniModelSourceRoot
 }
 
 $architecture = [Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString().ToLowerInvariant()
@@ -114,11 +125,13 @@ if ([Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([Runtime.InteropS
     $hostRid = "win-$architecture"
     $nativeLibraryName = "minimodel_native.dll"
     $nativeExecutableName = "minimodel.exe"
+    $conversionExecutableName = "tinyrustlm-slm-pack.exe"
 }
 elseif ([Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([Runtime.InteropServices.OSPlatform]::Linux)) {
     $hostRid = "linux-$architecture"
     $nativeLibraryName = "libminimodel_native.so"
     $nativeExecutableName = "minimodel"
+    $conversionExecutableName = "tinyrustlm-slm-pack"
 }
 else {
     throw "Seed-host package publishing is supported on Windows and Linux."
@@ -126,7 +139,13 @@ else {
 $hostNativeRoot = Join-Path $RepoRoot "artifacts/seed-host-native/$hostRid"
 $hostNativeLibrary = Join-Path $hostNativeRoot $nativeLibraryName
 $hostNativeExecutable = Join-Path $hostNativeRoot $nativeExecutableName
-foreach ($path in @($hostNativeLibrary, $hostNativeExecutable, (Join-Path $hostNativeRoot "SHA256SUMS.txt"))) {
+$hostConversionExecutable = Join-Path $hostNativeRoot $conversionExecutableName
+foreach ($path in @(
+    $hostNativeLibrary,
+    $hostNativeExecutable,
+    $hostConversionExecutable,
+    (Join-Path $hostNativeRoot "SHA256SUMS.txt")
+)) {
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
         throw "Required staged native evidence is missing: $path"
     }
@@ -216,6 +235,7 @@ $readmeName = "README-UAIX.Browser.p2pRuntime.SeedHost-$Version.txt"
     "Tool: $ToolId (command: uaix-p2p-seed)",
     "Target framework: net8.0",
     "Native RIDs packaged when verified: win-x64, linux-x64, linux-arm64",
+    "Automatic model acquisition: verified P2P import first; immutable Hugging Face source conversion through the packaged Rust converter when no verified peer is available.",
     "Dependencies: UAIX.Browser.Core.Abstractions $DependencyVersion; UAIX.Browser.p2pRuntime.P2P $DependencyVersion",
     "",
     "Install library:",
@@ -224,6 +244,7 @@ $readmeName = "README-UAIX.Browser.p2pRuntime.SeedHost-$Version.txt"
     "  dotnet tool install $ToolId --version $Version --add-source `"$PackageOutput`"",
     "",
     "Security boundary: model bytes are served only by user-run seed hosts. TinyRustLM.com, MiniModel.org, UAIX.org, and MemoryEndpoints.com do not host, run, or proxy these model bytes.",
+    "The browser receives the verified .slm and composition graph directly from its paired local companion; no conversion-kit text or script downloads are required.",
     "Announcements require a current matching outside-network reachability receipt.",
     "Hashes: $hashName",
     "Generated UTC: $([DateTimeOffset]::UtcNow.ToString('O'))"

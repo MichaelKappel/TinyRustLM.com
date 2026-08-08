@@ -30,6 +30,36 @@ qualified model. Campaign evidence binds both the graph bundle hash and the
 runtime-observed active graph identity. Mutable adapter plans and browser-side
 model assembly are not accepted campaign inputs.
 
+## Model Acquisition
+
+The chooser exposes one `Get model` command. It first selects a complete,
+identity-matched MiniModel P2P offer with its composition graph. If no such
+offer is available, an explicitly paired protocol-v2 companion downloads the
+exact reviewed Hugging Face revision, resumes and hashes bounded source files,
+runs the packaged Rust converter and validator, creates a receipt-bound
+base-only `.acg1`, and streams both the `.slm` and graph into the current
+browser session. Rust/WASM validates and activates the pair before chat is
+enabled.
+
+Progress remains visible in the chooser. The browser does not generate or
+download conversion instructions, scripts, request files, import kits, share
+kits, or serving helpers. Browser-only users can still import an existing local
+`.slm`; the application never probes a desktop companion before explicit user
+consent. Project domains receive no prompts, responses, source tensors, model
+bytes, or composition bytes.
+
+Acquisition proves identity and structural execution only. Semantic quality
+promotion remains a separate, content-addressed native and browser evidence
+gate.
+
+## Local Memory Package
+
+The local memory inspector renders a FileDeck-style summary of the exact
+required files, persona dimensions, evidence, exports, manifest overlay,
+package model, knowledge graph, and `llms` artifacts that passed browser-side
+validation. Missing or mismatched files remain explicit; raw package content is
+not silently promoted into model context.
+
 ## Trust Boundary
 
 The browser campaign fails closed unless all of these identities agree:
@@ -69,7 +99,8 @@ The JavaScript contract tests use the pinned Playwright dependency:
 
 ```powershell
 npm --prefix tinyrustlm ci
-npm --prefix tinyrustlm run test:browser-contract
+npm --prefix tinyrustlm run test:unit
+npm --prefix tinyrustlm run smoke:web-release-local -- <new-output-directory>
 ```
 
 `npm ci` is required only when `node_modules` has not already been restored.

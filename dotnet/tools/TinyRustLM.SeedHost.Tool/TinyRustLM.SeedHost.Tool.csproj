@@ -3,12 +3,12 @@
     <OutputType>Exe</OutputType>
     <AssemblyName>uaix-p2p-seed</AssemblyName>
     <PackageId>UAIX.Browser.p2pRuntime.SeedHost.Tool</PackageId>
-    <VersionPrefix>0.1.10</VersionPrefix>
+    <VersionPrefix>0.2.0</VersionPrefix>
     <Title>UAIX Browser p2pRuntime Seed Host Tool</Title>
-    <Summary>Installable uaix-p2p-seed tool for MiniModel .slm fleet and seed-lane operation.</Summary>
-    <Description>Installable .NET tool and self-contained command application for user-run MiniModel .slm P2P seed fleets. It uses the UAIX Browser SeedHost library and reviewed Rust MiniModel binaries; it does not proxy model bytes through project infrastructure.</Description>
+    <Summary>Installable TinyRustLM companion for direct P2P acquisition, local conversion, and .slm seed-lane operation.</Summary>
+    <Description>Installable .NET tool and self-contained companion for user-run TinyRustLM model acquisition and MiniModel P2P seed fleets. It bundles reviewed MiniModel and TinyRustLM Rust executables, performs pinned source conversion on the user's computer, and never proxies model bytes through project infrastructure.</Description>
     <PackageTags>UAIX;UAIX.Browser;p2pRuntime;TinyRustLM;MiniModel;P2P;seed-host;dotnet-tool;SLM;.slm;Rust</PackageTags>
-    <PackageReleaseNotes>0.1.10 adds the secure browser pairing bridge, durable import restart and resume, receipt-bound browser streaming, pairing revocation, and explicit transfer diagnostics to the installable seed-host command.</PackageReleaseNotes>
+    <PackageReleaseNotes>0.2.0 adds the clean protocol-v2 model path: P2P-first import, resumable pinned-source conversion fallback, conversion progress and cancellation, and receipt-bound streaming of the model plus its composition graph.</PackageReleaseNotes>
     <PackageReadmeFile>SEED_HOST.md</PackageReadmeFile>
     <PackageProjectUrl>https://TinyRustLM.com/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/MichaelKappel/TinyRustLM.com.git</RepositoryUrl>
@@ -31,10 +31,13 @@
     <!-- PackAsTool packages the publish output; these linked assets must enter that output exactly once. -->
     <None Include="..\..\..\artifacts\seed-host-native\win-x64\minimodel_native.dll" Pack="false" Link="runtimes\win-x64\native\minimodel_native.dll" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\..\artifacts\seed-host-native\win-x64\minimodel_native.dll') And ('$(RuntimeIdentifier)' == '' Or '$(RuntimeIdentifier)' == 'win-x64')" />
     <None Include="..\..\..\artifacts\seed-host-native\win-x64\minimodel.exe" Pack="false" Link="runtimes\win-x64\native\minimodel.exe" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\..\artifacts\seed-host-native\win-x64\minimodel.exe') And ('$(RuntimeIdentifier)' == '' Or '$(RuntimeIdentifier)' == 'win-x64')" />
+    <None Include="..\..\..\artifacts\seed-host-native\win-x64\tinyrustlm-slm-pack.exe" Pack="false" Link="runtimes\win-x64\native\tinyrustlm-slm-pack.exe" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\..\artifacts\seed-host-native\win-x64\tinyrustlm-slm-pack.exe') And ('$(RuntimeIdentifier)' == '' Or '$(RuntimeIdentifier)' == 'win-x64')" />
     <None Include="..\..\..\artifacts\seed-host-native\linux-x64\libminimodel_native.so" Pack="false" Link="runtimes\linux-x64\native\libminimodel_native.so" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\..\artifacts\seed-host-native\linux-x64\libminimodel_native.so') And ('$(RuntimeIdentifier)' == '' Or '$(RuntimeIdentifier)' == 'linux-x64')" />
     <None Include="..\..\..\artifacts\seed-host-native\linux-x64\minimodel" Pack="false" Link="runtimes\linux-x64\native\minimodel" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\..\artifacts\seed-host-native\linux-x64\minimodel') And ('$(RuntimeIdentifier)' == '' Or '$(RuntimeIdentifier)' == 'linux-x64')" />
+    <None Include="..\..\..\artifacts\seed-host-native\linux-x64\tinyrustlm-slm-pack" Pack="false" Link="runtimes\linux-x64\native\tinyrustlm-slm-pack" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\..\artifacts\seed-host-native\linux-x64\tinyrustlm-slm-pack') And ('$(RuntimeIdentifier)' == '' Or '$(RuntimeIdentifier)' == 'linux-x64')" />
     <None Include="..\..\..\artifacts\seed-host-native\linux-arm64\libminimodel_native.so" Pack="false" Link="runtimes\linux-arm64\native\libminimodel_native.so" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\..\artifacts\seed-host-native\linux-arm64\libminimodel_native.so') And ('$(RuntimeIdentifier)' == '' Or '$(RuntimeIdentifier)' == 'linux-arm64')" />
     <None Include="..\..\..\artifacts\seed-host-native\linux-arm64\minimodel" Pack="false" Link="runtimes\linux-arm64\native\minimodel" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\..\artifacts\seed-host-native\linux-arm64\minimodel') And ('$(RuntimeIdentifier)' == '' Or '$(RuntimeIdentifier)' == 'linux-arm64')" />
+    <None Include="..\..\..\artifacts\seed-host-native\linux-arm64\tinyrustlm-slm-pack" Pack="false" Link="runtimes\linux-arm64\native\tinyrustlm-slm-pack" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\..\artifacts\seed-host-native\linux-arm64\tinyrustlm-slm-pack') And ('$(RuntimeIdentifier)' == '' Or '$(RuntimeIdentifier)' == 'linux-arm64')" />
   </ItemGroup>
   <Target Name="RemoveUnusedTinyRustLmRuntimeNativeFromSeedTool" AfterTargets="ComputeFilesToPublish">
     <ItemGroup>

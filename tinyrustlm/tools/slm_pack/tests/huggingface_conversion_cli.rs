@@ -112,10 +112,12 @@ fn inspect_huggingface_conversion_request_cli_writes_report_without_source_bytes
     std::fs::write(
         &request_path,
         r#"{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
   "source": {
     "kind": "huggingface_model",
-    "model_id": "example-org/tiny-source-model"
+    "model_id": "example-org/tiny-source-model",
+    "revision": "0123456789abcdef0123456789abcdef01234567",
+    "license_id": "apache-2.0"
   },
   "requested_artifact": {
     "kind": "slm",
@@ -195,10 +197,12 @@ fn inspect_huggingface_conversion_request_cli_accepts_gguf_and_blocks_safetensor
     std::fs::write(
         &request_path,
         r#"{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
   "source": {
     "kind": "huggingface_model",
-    "model_id": "example-org/gguf-source"
+    "model_id": "example-org/gguf-source",
+    "revision": "0123456789abcdef0123456789abcdef01234567",
+    "license_id": "apache-2.0"
   },
   "requested_artifact": {
     "kind": "slm",
@@ -286,10 +290,12 @@ fn convert_huggingface_request_cli_writes_verified_slm_preflight_and_receipt() {
     std::fs::write(
         &request_path,
         r#"{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
   "source": {
     "kind": "huggingface_model",
-    "model_id": "example-org/tiny-source-model"
+    "model_id": "example-org/tiny-source-model",
+    "revision": "0123456789abcdef0123456789abcdef01234567",
+    "license_id": "apache-2.0"
   },
   "requested_artifact": {
     "kind": "slm",
@@ -361,7 +367,7 @@ fn convert_huggingface_request_cli_writes_verified_slm_preflight_and_receipt() {
     let receipt_path = output_dir.join("tinyrustlm-conversion.receipt");
     let receipt = std::fs::read_to_string(&receipt_path).expect("read conversion receipt");
     assert!(receipt.contains("tinyrustlm_huggingface_conversion_receipt_version=2"));
-    assert!(receipt.contains("request_kind=minimodel.huggingface_conversion_request.v0"));
+    assert!(receipt.contains("request_kind=minimodel.huggingface_conversion_request.v1"));
     assert!(receipt.contains("source_kind=huggingface_model"));
     assert!(receipt.contains("source_model_id=example-org/tiny-source-model"));
     assert!(receipt.contains("request_sha256=sha256:"));
@@ -460,10 +466,12 @@ fn convert_huggingface_request_cli_accepts_verified_shard_directory() {
         &request_path,
         format!(
             r#"{{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
   "source": {{
     "kind": "huggingface_model",
-    "model_id": "example-org/tiny-sharded"
+    "model_id": "example-org/tiny-sharded",
+    "revision": "0123456789abcdef0123456789abcdef01234567",
+    "license_id": "apache-2.0"
   }},
   "requested_artifact": {{
     "kind": "slm",
@@ -577,10 +585,12 @@ fn convert_huggingface_request_cli_rejects_source_sha256_drift_before_output_slm
         &request_path,
         format!(
             r#"{{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
   "source": {{
     "kind": "huggingface_model",
-    "model_id": "example-org/tiny-source-model"
+    "model_id": "example-org/tiny-source-model",
+    "revision": "0123456789abcdef0123456789abcdef01234567",
+    "license_id": "apache-2.0"
   }},
   "requested_artifact": {{
     "kind": "slm",
@@ -704,10 +714,12 @@ fn convert_huggingface_request_cli_rejects_unsafe_identifiers_before_source_read
             &request_path,
             format!(
                 r#"{{
-  "request_kind": "minimodel.huggingface_conversion_request.v0",
+  "request_kind": "minimodel.huggingface_conversion_request.v1",
   "source": {{
     "kind": "huggingface_model",
-    {model_id_json}
+    {model_id_json},
+    "revision": "0123456789abcdef0123456789abcdef01234567",
+    "license_id": "apache-2.0"
   }},
   "requested_artifact": {{
     "kind": "slm",

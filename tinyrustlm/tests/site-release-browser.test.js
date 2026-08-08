@@ -23,13 +23,17 @@ const {
 
 const siteRoot = path.resolve(__dirname, "..");
 const ledgerPath = path.join(siteRoot, "release", "site-release-ledger.v1.json");
+const candidateSourceRevision = "a".repeat(40);
+const candidatePublishedAt = "2026-08-08T22:15:30.000Z";
 
 function generatedRecord(context) {
   const outputRoot = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-browser-release-"));
   context.after(() => fs.rmSync(outputRoot, { recursive: true, force: true }));
   return materializeReleaseState({
     ledgerPath,
-    outputRoot
+    outputRoot,
+    sourceRevision: candidateSourceRevision,
+    publishedAt: candidatePublishedAt
   }).current;
 }
 
@@ -65,7 +69,7 @@ function fakeDocument() {
 test("browser release validator accepts only the exact bounded public schema", (context) => {
   const record = generatedRecord(context);
   assert.equal(validateReleaseRecord(record), record);
-  assert.equal(formatPublishedAt(record.publishedAt), "2026-08-02 21:23 UTC");
+  assert.equal(formatPublishedAt(record.publishedAt), "2026-08-08 22:15 UTC");
 
   const unknown = structuredClone(record);
   unknown.extra = true;
@@ -89,11 +93,11 @@ test("browser release renderer updates all visible facts without injecting marku
   const record = generatedRecord(context);
   const view = fakeDocument();
   applyReleaseRecord(view.document, record);
-  assert.equal(view.version[0].textContent, "0.1.2");
-  assert.equal(view.date[0].textContent, "2026-08-02");
-  assert.equal(view.date[0].dateTime, "2026-08-02");
-  assert.equal(view.published[0].textContent, "2026-08-02 21:23 UTC");
-  assert.equal(view.published[0].dateTime, "2026-08-02T21:23:27.068Z");
+  assert.equal(view.version[0].textContent, "0.2.0");
+  assert.equal(view.date[0].textContent, "2026-08-08");
+  assert.equal(view.date[0].dateTime, "2026-08-08");
+  assert.equal(view.published[0].textContent, "2026-08-08 22:15 UTC");
+  assert.equal(view.published[0].dateTime, candidatePublishedAt);
   assert.equal(view.containers[0].dataset.releaseState, "verified");
 });
 
@@ -119,44 +123,48 @@ test("bounded JSON reader requires successful nonredirected application/json", a
 
 test("failed live metadata leaves static release facts and marks last publish unavailable", async () => {
   const view = fakeDocument();
-  view.version[0].textContent = "0.1.2";
-  view.date[0].textContent = "2026-08-02";
+  view.version[0].textContent = "0.2.0";
+  view.date[0].textContent = "2026-08-08";
   const result = await loadAndRender({
     document: view.document,
     fetch: async () => { throw new Error("offline"); }
   });
   assert.equal(result, null);
-  assert.equal(view.version[0].textContent, "0.1.2");
-  assert.equal(view.date[0].textContent, "2026-08-02");
+  assert.equal(view.version[0].textContent, "0.2.0");
+  assert.equal(view.date[0].textContent, "2026-08-08");
   assert.equal(view.published[0].textContent, "Unavailable");
   assert.equal(view.containers[0].dataset.releaseState, "unavailable");
 });
 
 test("updates page is generated exactly from the release ledger and content-bound assets", (context) => {
-  const outputPath = path.join(siteRoot, "updates", "index.html");
-  const existed = fs.existsSync(outputPath);
-  const original = existed ? fs.readFileSync(outputPath) : null;
-  context.after(() => {
-    if (existed) fs.writeFileSync(outputPath, original);
-    else fs.rmSync(outputPath, { force: true });
-  });
-  const result = writeUpdatesPage(siteRoot);
-  assert.equal(result.ledger.releases.length, 3);
-  assert.match(result.html, /Version <span data-release-version>0\.1\.2<\/span>/);
+  const isolatedRoot = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-updates-page-"));
+  context.after(() => fs.rmSync(isolatedRoot, { recursive: true, force: true }));
+  for (const relativePath of [
+    "release/site-release-ledger.v1.json",
+    "updates/updates.css",
+    "app/site-release.js"
+  ]) {
+    const destination = path.join(isolatedRoot, relativePath);
+    fs.mkdirSync(path.dirname(destination), { recursive: true });
+    fs.copyFileSync(path.join(siteRoot, relativePath), destination);
+  }
+  const result = writeUpdatesPage(isolatedRoot);
+  assert.equal(result.ledger.releases.length, 4);
+  assert.match(result.html, /Version <span data-release-version>0\.2\.0<\/span>/);
   assert.match(result.html, /\.well-known\/site-release-history\.json/);
   assert.doesNotMatch(result.html, /<script>[^<]/);
-  assert.equal(verifyUpdatesPage(siteRoot).html, result.html);
+  assert.equal(verifyUpdatesPage(isolatedRoot).html, result.html);
 });
 
 test("canonical app shell exposes the exact ledger version, dates, records, and updates route", () => {
   const html = fs.readFileSync(path.join(siteRoot, "app", "index.html"), "utf8");
-  assert.match(html, /<meta name="application-version" content="0\.1\.2">/);
-  assert.match(html, /<meta name="release-date" content="2026-08-02">/);
+  assert.match(html, /<meta name="application-version" content="0\.2\.0">/);
+  assert.match(html, /<meta name="release-date" content="2026-08-08">/);
   assert.match(html, /href="\/\.well-known\/site-release\.json"/);
   assert.match(html, /href="\/\.well-known\/site-release-history\.json"/);
   assert.match(html, /href="\/updates\/" aria-label="Updates and release history"/);
-  assert.match(html, /data-release-version>0\.1\.2<\/span>/);
-  assert.match(html, /data-release-date datetime="2026-08-02">2026-08-02<\/time>/);
+  assert.match(html, /data-release-version>0\.2\.0<\/span>/);
+  assert.match(html, /data-release-date datetime="2026-08-08">2026-08-08<\/time>/);
   assert.match(html, /data-release-published-at>Awaiting live verification<\/time>/);
   assert.match(html, /src="\.\/site-release\.js\?v=sha256-[a-f0-9]{64}"/);
 });

@@ -70,7 +70,7 @@ test("pairing capability stays in memory and never enters cross-tab state messag
     close() {}
   };
   const responses = [
-    jsonResponse({ service: "tinyrustlm-seed-host-bridge", protocol_version: 1 }),
+    jsonResponse({ service: "tinyrustlm-companion-bridge", protocol_version: 2 }),
     jsonResponse({
       capability: "volatile-super-secret-capability",
       origin: "https://tinyrustlm.com",
@@ -115,7 +115,7 @@ test("near-expiry capability rotates in memory before the next operation", async
     channel,
     fetch: async (url, options) => {
       calls.push({ url, options });
-      if (url.endsWith("/v1/pair")) {
+      if (url.endsWith("/v2/pair")) {
         return jsonResponse({
           capability: "near-expiry-capability",
           origin: "https://tinyrustlm.com",
@@ -123,7 +123,7 @@ test("near-expiry capability rotates in memory before the next operation", async
           expires_utc: new Date(Date.now() + 30_000).toISOString()
         });
       }
-      if (url.endsWith("/v1/session/rotate")) {
+      if (url.endsWith("/v2/session/rotate")) {
         assert.equal(
           options.headers[bridge.CAPABILITY_HEADER],
           "near-expiry-capability"
@@ -145,7 +145,7 @@ test("near-expiry capability rotates in memory before the next operation", async
 
   assert.deepEqual(
     calls.map((call) => new URL(call.url).pathname),
-    ["/v1/pair", "/v1/session/rotate", "/v1/status"]
+    ["/v2/pair", "/v2/session/rotate", "/v2/status"]
   );
   assert.doesNotMatch(JSON.stringify(client), /rotated-capability/);
   assert.doesNotMatch(JSON.stringify(channel.messages), /rotated-capability/);
@@ -166,8 +166,8 @@ test("companion restart clears the volatile session without hiding detection", a
         });
       }
       return jsonResponse({
-        service: "tinyrustlm-seed-host-bridge",
-        protocol_version: 1,
+        service: "tinyrustlm-companion-bridge",
+        protocol_version: 2,
         pairing_state: "unpaired"
       });
     }
@@ -185,7 +185,7 @@ test("imports use unique mutation identities and fixed protocol routes", async (
   const client = new bridge.CompanionBridgeClient({
     fetch: async (url, options) => {
       calls.push({ url, options });
-      if (url.endsWith("/v1/pair")) {
+      if (url.endsWith("/v2/pair")) {
         return jsonResponse({
           capability: "capability",
           origin: "https://tinyrustlm.com",
@@ -207,7 +207,7 @@ test("imports use unique mutation identities and fixed protocol routes", async (
   await client.startImport("manifest", ["{\"peer\":1}"]);
   await client.startImport("manifest", ["{\"peer\":1}"]);
 
-  const mutations = calls.filter((call) => call.url.endsWith("/v1/imports"));
+  const mutations = calls.filter((call) => call.url.endsWith("/v2/imports"));
   assert.equal(mutations.length, 2);
   assert.notEqual(
     mutations[0].options.headers[bridge.REQUEST_ID_HEADER],
@@ -221,12 +221,48 @@ test("imports use unique mutation identities and fixed protocol routes", async (
   );
 });
 
+test("conversion stays on loopback and uses fixed protocol-v2 lifecycle routes", async () => {
+  const calls = [];
+  const operationId = `conversion-${"b".repeat(64)}`;
+  const client = new bridge.CompanionBridgeClient({
+    fetch: async (url, options) => {
+      calls.push({ url, options });
+      if (url.endsWith("/v2/pair")) {
+        return jsonResponse({
+          capability: "capability",
+          origin: "https://tinyrustlm.com",
+          scopes: bridge.DEFAULT_SCOPES,
+          expires_utc: "2099-07-13T20:00:00Z"
+        });
+      }
+      return jsonResponse({ operation_id: operationId, state: "queued" }, 202);
+    }
+  });
+  await client.pair("pair-code");
+  const request = "{\n  \"request_kind\": \"minimodel.huggingface_conversion_request.v1\"\n}\n";
+  await client.startConversion(request);
+  await client.getConversion(operationId);
+  await client.cancelConversion(operationId);
+
+  assert.deepEqual(calls.slice(1).map((call) => new URL(call.url).pathname), [
+    "/v2/conversions",
+    `/v2/conversions/${operationId}`,
+    `/v2/conversions/${operationId}/cancel`
+  ]);
+  const body = JSON.parse(calls[1].options.body);
+  assert.equal(body.conversion_request_text, request);
+  assert.equal(body.review_accepted, true);
+  assert.equal(calls[1].options.credentials, "omit");
+  assert.ok(calls[1].options.headers[bridge.REQUEST_ID_HEADER]);
+  assert.ok(calls[3].options.headers[bridge.REQUEST_ID_HEADER]);
+});
+
 test("imports accept bounded multiline UTF-8 documents but reject unsafe controls", async () => {
   const calls = [];
   const client = new bridge.CompanionBridgeClient({
     fetch: async (url, options) => {
       calls.push({ url, options });
-      if (url.endsWith("/v1/pair")) {
+      if (url.endsWith("/v2/pair")) {
         return jsonResponse({
           capability: "capability",
           origin: "https://tinyrustlm.com",
@@ -258,7 +294,7 @@ test("large import envelopes are bounded before loopback transport", async () =>
   const client = new bridge.CompanionBridgeClient({
     fetch: async (url, options) => {
       calls.push({ url, options });
-      if (url.endsWith("/v1/pair")) {
+      if (url.endsWith("/v2/pair")) {
         return jsonResponse({
           capability: "capability",
           origin: "https://tinyrustlm.com",
@@ -314,7 +350,7 @@ test("sharing requires an explicit scope and uses only closed fleet routes", asy
   const client = new bridge.CompanionBridgeClient({
     fetch: async (url, options) => {
       calls.push({ url, options });
-      if (url.endsWith("/v1/pair")) {
+      if (url.endsWith("/v2/pair")) {
         return jsonResponse({
           capability: "sharing-capability",
           origin: "https://tinyrustlm.com",
@@ -322,7 +358,7 @@ test("sharing requires an explicit scope and uses only closed fleet routes", asy
           expires_utc: "2099-07-13T20:00:00Z"
         });
       }
-      if (url.endsWith("/v1/sharing") && options.method === "GET") {
+      if (url.endsWith("/v2/sharing") && options.method === "GET") {
         return jsonResponse({
           sharing_enabled: true,
           initialized: false,
@@ -365,13 +401,13 @@ test("sharing requires an explicit scope and uses only closed fleet routes", asy
   assert.deepEqual(
     calls.map((call) => new URL(call.url).pathname),
     [
-      "/v1/pair",
-      "/v1/sharing",
-      "/v1/sharing/initialize",
-      "/v1/sharing/imports/import-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/admit",
-      "/v1/sharing/imports/import-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/enable",
-      "/v1/sharing/imports/import-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/disable",
-      "/v1/sharing/imports/import-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/remove"
+      "/v2/pair",
+      "/v2/sharing",
+      "/v2/sharing/initialize",
+      "/v2/sharing/imports/import-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/admit",
+      "/v2/sharing/imports/import-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/enable",
+      "/v2/sharing/imports/import-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/disable",
+      "/v2/sharing/imports/import-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/remove"
     ]
   );
   const mutations = calls.slice(2);
@@ -388,7 +424,7 @@ test("model streaming enforces receipt identity headers and exact byte count", a
   const bytes = new Uint8Array([0x53, 0x4c, 0x4d, 0x31, 1, 2, 3, 4]);
   const client = new bridge.CompanionBridgeClient({
     fetch: async (url) => {
-      if (url.endsWith("/v1/pair")) {
+      if (url.endsWith("/v2/pair")) {
         return jsonResponse({
           capability: "capability",
           origin: "https://tinyrustlm.com",
@@ -401,7 +437,7 @@ test("model streaming enforces receipt identity headers and exact byte count", a
           "Content-Type": "application/octet-stream",
           "Content-Length": String(bytes.length),
           "X-TinyRustLM-Model-Id": "example/model",
-          "X-TinyRustLM-Artifact-Sha256": "sha256:artifact"
+          "X-TinyRustLM-Artifact-Sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         }
       });
     }
@@ -412,7 +448,7 @@ test("model streaming enforces receipt identity headers and exact byte count", a
     "import-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     {
       expectedByteCount: bytes.length,
-      expectedArtifactSha256: "sha256:artifact",
+      expectedArtifactSha256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       onChunk(chunk, offset) {
         received.push({ chunk: Array.from(chunk), offset });
       }
@@ -439,7 +475,7 @@ test("model streaming enforces receipt identity headers and exact byte count", a
           "Content-Type": "application/octet-stream",
           "Content-Length": "4",
           "X-TinyRustLM-Model-Id": "example/model",
-          "X-TinyRustLM-Artifact-Sha256": "sha256:artifact"
+          "X-TinyRustLM-Artifact-Sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         }
       });
     }
@@ -450,7 +486,7 @@ test("model streaming enforces receipt identity headers and exact byte count", a
       "import-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       {
         expectedByteCount: bytes.length,
-        expectedArtifactSha256: "sha256:artifact",
+        expectedArtifactSha256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         onChunk() {}
       }
     ),
@@ -474,4 +510,39 @@ test("model streaming uses a bounded large-transfer deadline instead of the cont
     () => bridge.modelStreamTimeoutMilliseconds(bridge.MAXIMUM_MODEL_STREAM_BYTES + 1),
     /byte count/
   );
+});
+
+test("composition streaming enforces its receipt identity and conversion operation", async () => {
+  const bytes = new Uint8Array([0x41, 0x43, 0x47, 0x31, 5, 6, 7, 8]);
+  const digest = "c".repeat(64);
+  const operationId = `conversion-${"d".repeat(64)}`;
+  const client = new bridge.CompanionBridgeClient({
+    fetch: async (url) => {
+      if (url.endsWith("/v2/pair")) {
+        return jsonResponse({
+          capability: "capability",
+          origin: "https://tinyrustlm.com",
+          scopes: bridge.DEFAULT_SCOPES,
+          expires_utc: "2099-07-13T20:00:00Z"
+        });
+      }
+      assert.ok(url.endsWith(`/v2/models/${operationId}/composition`));
+      return new Response(bytes, {
+        headers: {
+          "Content-Type": "application/octet-stream",
+          "Content-Length": String(bytes.length),
+          "X-TinyRustLM-Composition-Sha256": digest
+        }
+      });
+    }
+  });
+  await client.pair("pair-code");
+  const received = new Uint8Array(bytes.length);
+  const result = await client.streamComposition(operationId, {
+    expectedByteCount: bytes.length,
+    expectedSha256: digest,
+    onChunk(chunk, offset) { received.set(chunk, offset); }
+  });
+  assert.equal(result.sha256, digest);
+  assert.deepEqual(received, bytes);
 });

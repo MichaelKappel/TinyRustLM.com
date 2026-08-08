@@ -1,16 +1,10 @@
 param(
     [string]$Root = "",
-    [int]$Port = 8184,
-    [int]$DebugPort = 9442,
     [string]$ReportOutput = "",
     [switch]$RunBrowserSmoke,
-    [switch]$RunDeepBrowserSmoke,
-    [string[]]$BrowserSmokeModes = @(),
-    [int]$BrowserSmokeTimeoutSeconds = 1800,
+    [switch]$RunDeepAcquisition,
     [switch]$RunVisualLock,
-    [string]$VisualLockBaseline = "",
-    [string]$VisualLockOutputDir = "",
-    [int]$VisualLockDebugPort = 0
+    [string]$VisualLockBaseline = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -18,226 +12,92 @@ $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 if (-not $Root) {
     $Root = Join-Path $RepoRoot "tinyrustlm"
 }
+$Root = (Resolve-Path -LiteralPath $Root).Path
 if (-not $ReportOutput) {
     $ReportOutput = Join-Path $RepoRoot "artifacts/reports/tinyrustlm-ui-verification.json"
 }
 if (-not $VisualLockBaseline) {
     $VisualLockBaseline = Join-Path $RepoRoot "tinyrustlm/artifacts/reports/ui-lock-live/tinyrustlm-ui-lock-report.json"
 }
-if (-not $VisualLockOutputDir) {
-    $VisualLockOutputDir = Join-Path $RepoRoot "artifacts/reports/ui-lock-verification"
-}
-if ($VisualLockDebugPort -le 0) {
-    $VisualLockDebugPort = $DebugPort + 700
-}
 
-function Invoke-Checked {
+$runId = "{0}-{1}" -f [DateTimeOffset]::UtcNow.ToString("yyyyMMddTHHmmssfffffffZ"), ([Guid]::NewGuid().ToString("N").Substring(0, 12))
+$evidenceRoot = Join-Path ([System.IO.Path]::GetTempPath()) "tinyrustlm-ui-verification/$runId"
+$browserEvidenceRoot = Join-Path $evidenceRoot "web-release"
+$visualEvidenceRoot = Join-Path $evidenceRoot "visual-lock"
+$visualServer = $null
+$gates = [ordered]@{
+    static_contract = "not_run"
+    javascript_syntax = "not_run"
+    browser_contracts = if ($RunBrowserSmoke -or $RunDeepAcquisition) { "not_run" } else { "skipped" }
+    chromium_release = if ($RunBrowserSmoke -or $RunDeepAcquisition) { "not_run" } else { "skipped" }
+    acquisition_browser_bridge = if ($RunDeepAcquisition) { "not_run" } else { "skipped" }
+    acquisition_companion = if ($RunDeepAcquisition) { "not_run" } else { "skipped" }
+    acquisition_converter = if ($RunDeepAcquisition) { "not_run" } else { "skipped" }
+    visual_lock = if ($RunVisualLock) { "not_run" } else { "skipped" }
+}
+$outputs = [ordered]@{}
+
+function Invoke-NativeGate {
     param(
+        [string]$Name,
         [string]$FilePath,
-        [string[]]$Arguments,
-        [string]$Label,
-        [int]$TimeoutMilliseconds = 900000
+        [string[]]$Arguments
     )
 
-    $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
-    $startInfo.FileName = $FilePath
-    $startInfo.UseShellExecute = $false
-    $startInfo.RedirectStandardOutput = $true
-    $startInfo.RedirectStandardError = $true
-    $startInfo.CreateNoWindow = $true
-    $startInfo.Arguments = ($Arguments | ForEach-Object { ConvertTo-ProcessArgument -Value $_ }) -join " "
-
-    $process = [System.Diagnostics.Process]::Start($startInfo)
-    $stdoutTask = $process.StandardOutput.ReadToEndAsync()
-    $stderrTask = $process.StandardError.ReadToEndAsync()
-    if (-not $process.WaitForExit($TimeoutMilliseconds)) {
-        Stop-ProcessTree -ProcessId $process.Id
-        try {
-            [void]$process.WaitForExit(10000)
-        }
-        catch {
-        }
-        $stdout = $stdoutTask.GetAwaiter().GetResult()
-        $stderr = $stderrTask.GetAwaiter().GetResult()
-        $output = ($stdout, $stderr | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join [Environment]::NewLine
-        throw "$Label timed out after $TimeoutMilliseconds milliseconds`n$output"
-    }
-    $stdout = $stdoutTask.GetAwaiter().GetResult()
-    $stderr = $stderrTask.GetAwaiter().GetResult()
-    $output = ($stdout, $stderr | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join [Environment]::NewLine
-    if ($process.ExitCode -ne 0) {
-        throw "$Label failed with exit code $($process.ExitCode)`n$output"
-    }
-    return $output
-}
-
-function Stop-ProcessTree {
-    param([int]$ProcessId)
-
+    $priorErrorActionPreference = $ErrorActionPreference
     try {
-        & taskkill.exe /PID $ProcessId /T /F | Out-Null
+        # Native tools routinely use stderr for progress. Capture it as evidence
+        # and let the process exit code, rather than PowerShell stream typing,
+        # decide whether the gate passed.
+        $ErrorActionPreference = "Continue"
+        $captured = & $FilePath @Arguments 2>&1 | Out-String
+        $exitCode = $LASTEXITCODE
     }
-    catch {
-        Stop-Process -Id $ProcessId -Force -ErrorAction SilentlyContinue
+    finally {
+        $ErrorActionPreference = $priorErrorActionPreference
+    }
+    $outputs[$Name] = $captured.Trim()
+    if ($exitCode -ne 0) {
+        throw "$Name failed with exit code $exitCode`n$captured"
     }
 }
 
-function Invoke-BrowserSmoke {
-    param(
-        [string[]]$Arguments,
-        [string]$Label,
-        [string]$ReportPath,
-        [int]$TimeoutSeconds
-    )
-
-    $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
-    $startInfo.FileName = "node"
-    $startInfo.UseShellExecute = $false
-    $startInfo.RedirectStandardOutput = $true
-    $startInfo.RedirectStandardError = $true
-    $startInfo.CreateNoWindow = $true
-    $startInfo.Arguments = ($Arguments | ForEach-Object { ConvertTo-ProcessArgument -Value $_ }) -join " "
-
-    $process = [System.Diagnostics.Process]::Start($startInfo)
-    $stdoutTask = $process.StandardOutput.ReadToEndAsync()
-    $stderrTask = $process.StandardError.ReadToEndAsync()
-    $timeoutMilliseconds = if ($TimeoutSeconds -gt 0) { [Math]::Max(1, $TimeoutSeconds * 1000) } else { -1 }
-    if ($timeoutMilliseconds -gt 0 -and -not $process.WaitForExit($timeoutMilliseconds)) {
-        Stop-ProcessTree -ProcessId $process.Id
-        try {
-            [void]$process.WaitForExit(5000)
-        }
-        catch {
-        }
-        $stdout = $stdoutTask.GetAwaiter().GetResult()
-        $stderr = $stderrTask.GetAwaiter().GetResult()
-        $output = ($stdout, $stderr | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join [Environment]::NewLine
-        $timeoutMessage = "$Label timed out after $TimeoutSeconds seconds"
-        ($output, $timeoutMessage | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join [Environment]::NewLine |
-            Set-Content -LiteralPath $ReportPath -Encoding UTF8
-        throw "$timeoutMessage; see $ReportPath"
-    }
-
-    if ($timeoutMilliseconds -le 0) {
-        $process.WaitForExit()
-    }
-    $stdout = $stdoutTask.GetAwaiter().GetResult()
-    $stderr = $stderrTask.GetAwaiter().GetResult()
-    $output = ($stdout, $stderr | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join [Environment]::NewLine
-    $output | Set-Content -LiteralPath $ReportPath -Encoding UTF8
-    if ($process.ExitCode -ne 0) {
-        throw "$Label failed with exit code $($process.ExitCode)`n$output"
-    }
-    return $output
-}
-
-function ConvertTo-ProcessArgument {
-    param([string]$Value)
-
-    if ($null -eq $Value) {
-        return '""'
-    }
-    if ($Value -notmatch '[\s"]') {
-        return $Value
-    }
-    $builder = [System.Text.StringBuilder]::new()
-    [void]$builder.Append('"')
-    $backslashes = 0
-    foreach ($character in $Value.ToCharArray()) {
-        if ($character -eq '\') {
-            $backslashes++
-            continue
-        }
-        if ($character -eq '"') {
-            [void]$builder.Append('\', ($backslashes * 2) + 1)
-            [void]$builder.Append('"')
-            $backslashes = 0
-            continue
-        }
-        if ($backslashes -gt 0) {
-            [void]$builder.Append('\', $backslashes)
-            $backslashes = 0
-        }
-        [void]$builder.Append($character)
-    }
-    if ($backslashes -gt 0) {
-        [void]$builder.Append('\', $backslashes * 2)
-    }
-    [void]$builder.Append('"')
-    return $builder.ToString()
-}
-
-function Write-UiReport {
-    param(
-        [string]$Status,
-        [string]$StaticHarnessStatus,
-        [string]$HttpHarnessStatus,
-        [string]$BrowserSmokeStatus,
-        [string[]]$BrowserSmokeModes,
-        [System.Collections.IDictionary]$BrowserSmokeStatuses,
-        [bool]$BrowserSmokeRequested,
-        [bool]$DeepBrowserSmokeRequested,
-        [string[]]$DeepBrowserSmokeModes,
-        [string]$StaticHarnessOutput,
-        [string]$HttpHarnessOutput,
-        [string]$ErrorMessage,
-        [System.Collections.IDictionary]$BrowserSmokeReportPaths,
-        [System.Collections.IDictionary]$BrowserDebugPorts,
-        [bool]$VisualLockRequested,
-        [string]$VisualLockStatus,
-        [string]$VisualLockBaseline,
-        [string]$VisualLockReportPath,
-        [string]$VisualLockOutput,
-        [int]$VisualLockDebugPort,
-        [string]$ServerStdoutPath,
-        [string]$ServerStderrPath
-    )
+function Write-VerificationReport {
+    param([string]$Status, [string]$ErrorMessage)
 
     $reportDirectory = Split-Path -Parent $ReportOutput
     New-Item -ItemType Directory -Force -Path $reportDirectory | Out-Null
     $report = [ordered]@{
-        schema = "tinyrustlm.ui_verification.v0"
+        schema = "tinyrustlm.ui_verification.v1"
         generated_utc = [DateTimeOffset]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ")
+        run_id = $runId
         status = $Status
         repository_root = $RepoRoot
-        app_root = (Resolve-Path $Root).Path
-        local_server_url = "http://127.0.0.1:$Port/app/"
-        static_harness_status = $StaticHarnessStatus
-        http_harness_status = $HttpHarnessStatus
-        browser_smoke_requested = $BrowserSmokeRequested
-        browser_smoke_timeout_seconds = $BrowserSmokeTimeoutSeconds
-        deep_browser_smoke_requested = $DeepBrowserSmokeRequested
-        deep_browser_smoke_modes = if ($DeepBrowserSmokeRequested) { @($DeepBrowserSmokeModes) } else { @() }
-        browser_smoke_status = $BrowserSmokeStatus
-        browser_smoke_mode = if ($BrowserSmokeRequested) { ($BrowserSmokeModes -join ",") } else { "" }
-        browser_smoke_modes = if ($BrowserSmokeRequested) { @($BrowserSmokeModes) } else { @() }
-        browser_smoke_statuses = if ($BrowserSmokeRequested) { $BrowserSmokeStatuses } else { [ordered]@{} }
-        browser_debug_port = $DebugPort
-        browser_debug_ports = if ($BrowserSmokeRequested) { $BrowserDebugPorts } else { [ordered]@{} }
-        static_harness_output = $StaticHarnessOutput
-        http_harness_output = $HttpHarnessOutput
-        browser_smoke_report_path = if ($BrowserSmokeRequested -and $BrowserSmokeModes.Count -gt 0) { [string]$BrowserSmokeReportPaths[$BrowserSmokeModes[0]] } else { "" }
-        browser_smoke_report_paths = if ($BrowserSmokeRequested) { $BrowserSmokeReportPaths } else { [ordered]@{} }
-        visual_lock_requested = $VisualLockRequested
-        visual_lock_status = $VisualLockStatus
-        visual_lock_baseline = if ($VisualLockRequested) { $VisualLockBaseline } else { "" }
-        visual_lock_report_path = if ($VisualLockRequested) { $VisualLockReportPath } else { "" }
-        visual_lock_debug_port = if ($VisualLockRequested) { $VisualLockDebugPort } else { 0 }
-        visual_lock_output = $VisualLockOutput
-        server_stdout_path = $ServerStdoutPath
-        server_stderr_path = $ServerStderrPath
+        app_root = $Root
+        browser_smoke_requested = [bool]($RunBrowserSmoke -or $RunDeepAcquisition)
+        deep_acquisition_requested = [bool]$RunDeepAcquisition
+        visual_lock_requested = [bool]$RunVisualLock
+        gates = $gates
+        evidence = [ordered]@{
+            root = $evidenceRoot
+            web_release = if ($RunBrowserSmoke -or $RunDeepAcquisition) { $browserEvidenceRoot } else { "" }
+            visual_lock = if ($RunVisualLock) { $visualEvidenceRoot } else { "" }
+        }
+        outputs = $outputs
         error = $ErrorMessage
     }
-    $report | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $ReportOutput -Encoding UTF8
+    $temporary = "$ReportOutput.$runId.tmp"
+    $report | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $temporary -Encoding UTF8
+    Move-Item -LiteralPath $temporary -Destination $ReportOutput -Force
     Write-Host "TinyRustLM UI verification report written to $ReportOutput"
 }
 
-function Wait-UiServer {
-    param([System.Diagnostics.Process]$ServerProcess)
+function Wait-LoopbackServer {
+    param([System.Diagnostics.Process]$Process, [int]$Port)
 
     for ($attempt = 0; $attempt -lt 80; $attempt++) {
-        if ($ServerProcess.HasExited) {
-            throw "tinyrustlm-local-server exited early with code $($ServerProcess.ExitCode)"
+        if ($Process.HasExited) {
+            throw "tinyrustlm-local-server exited before visual verification"
         }
         try {
             $response = Invoke-WebRequest -Uri "http://127.0.0.1:$Port/app/" -UseBasicParsing -TimeoutSec 2
@@ -249,237 +109,97 @@ function Wait-UiServer {
             Start-Sleep -Milliseconds 250
         }
     }
-    throw "tinyrustlm-local-server did not become ready on port $Port"
+    throw "tinyrustlm-local-server did not become ready for visual verification"
 }
-
-function Normalize-BrowserSmokeModeList {
-    param([string[]]$Modes)
-
-    $normalized = [System.Collections.Generic.List[string]]::new()
-    foreach ($entry in $Modes) {
-        if ([string]::IsNullOrWhiteSpace($entry)) {
-            continue
-        }
-        foreach ($mode in ($entry -split ",")) {
-            $trimmed = $mode.Trim()
-            if (-not [string]::IsNullOrWhiteSpace($trimmed)) {
-                $normalized.Add($trimmed)
-            }
-        }
-    }
-    return @($normalized)
-}
-
-$staticHarnessStatus = "not_run"
-$httpHarnessStatus = "not_run"
-$staticHarnessOutput = ""
-$httpHarnessOutput = ""
-$visualLockStatus = if ($RunVisualLock) { "not_run" } else { "skipped" }
-$visualLockOutput = ""
-$visualLockReportPath = Join-Path $VisualLockOutputDir "tinyrustlm-ui-lock-report.json"
-$standardBrowserSmokeModes = @(
-    "source-options-ui",
-    "assistant-quality",
-    "multi-turn-context",
-    "assistant-prompt-cards",
-    "calculator-tool",
-    "model-malformed",
-    "local-memory-deck-ui",
-    "hf-search-ui",
-    "local-connect-approval-ui",
-    "local-connect-endpoint-ui",
-    "local-connect-rust-endpoint-ui",
-    "memory-endpoints-outbox",
-    "memory-endpoints-offline-ui",
-    "memory-endpoints-reconnect-ui",
-    "memory-endpoints-distributed",
-    "memory-endpoints-ui",
-    "memory-endpoints-adversarial-ui",
-    "peer-status-live-ui"
-)
-$liveBrowserSmokeModes = @(
-    "memory-endpoints-cors-ui",
-    "memory-endpoints-relay-ui",
-    "memory-endpoints-relay-live",
-    "memory-endpoints-live"
-)
-$defaultDeepBrowserSmokeModes = @(
-    "hf-conversion-kit-safetensors-exec",
-    "hf-conversion-kit-review-exec",
-    "hf-conversion-kit-review-reject-exec",
-    "hf-conversion-kit-gguf-exec",
-    "hf-p2p-import-kit-exec"
-)
-$deepBrowserSmokeModes = @($defaultDeepBrowserSmokeModes)
-$knownBrowserSmokeModes = @($standardBrowserSmokeModes + $deepBrowserSmokeModes + $liveBrowserSmokeModes)
-$explicitBrowserSmokeModes = Normalize-BrowserSmokeModeList -Modes $BrowserSmokeModes
-if ($explicitBrowserSmokeModes.Count -gt 0) {
-    $browserSmokeModes = @($explicitBrowserSmokeModes)
-}
-else {
-    $browserSmokeModes = @()
-    if ($RunBrowserSmoke -or $RunDeepBrowserSmoke) {
-        $browserSmokeModes += $standardBrowserSmokeModes
-    }
-    if ($RunDeepBrowserSmoke) {
-        $browserSmokeModes += $defaultDeepBrowserSmokeModes
-    }
-}
-foreach ($mode in $browserSmokeModes) {
-    if ($knownBrowserSmokeModes -notcontains $mode) {
-        throw "Unknown TinyRustLM browser smoke mode '$mode'. Known modes: $($knownBrowserSmokeModes -join ', ')"
-    }
-}
-if ($BrowserSmokeTimeoutSeconds -lt 0) {
-    throw "BrowserSmokeTimeoutSeconds must be zero or greater."
-}
-$browserSmokeRequested = [bool]($browserSmokeModes.Count -gt 0)
-$selectedDeepBrowserSmokeModes = @($browserSmokeModes | Where-Object { $deepBrowserSmokeModes -contains $_ })
-$deepBrowserSmokeRequested = [bool]($selectedDeepBrowserSmokeModes.Count -gt 0)
-$browserSmokeStatus = if ($browserSmokeRequested) { "not_run" } else { "skipped" }
-$sourceOptionsSmokeReportName = "tinyrustlm-source-options-ui-smoke.json"
-$browserSmokeReportPaths = [ordered]@{}
-$browserSmokeStatuses = [ordered]@{}
-$browserDebugPorts = [ordered]@{}
-for ($index = 0; $index -lt $browserSmokeModes.Count; $index++) {
-    $mode = $browserSmokeModes[$index]
-    $reportName = if ($mode -eq "source-options-ui") { $sourceOptionsSmokeReportName } else { "tinyrustlm-$mode-smoke.json" }
-    $browserSmokeReportPaths[$mode] = Join-Path $RepoRoot "artifacts/reports/$reportName"
-    $browserSmokeStatuses[$mode] = if ($browserSmokeRequested) { "not_run" } else { "skipped" }
-    $browserDebugPorts[$mode] = $DebugPort + $index
-}
-$serverStdout = Join-Path $RepoRoot "artifacts/reports/tinyrustlm-ui-server-$Port.out.log"
-$serverStderr = Join-Path $RepoRoot "artifacts/reports/tinyrustlm-ui-server-$Port.err.log"
-$server = $null
 
 try {
-    $resolvedRoot = (Resolve-Path $Root).Path
-    $staticHarnessOutput = Invoke-Checked `
-        -FilePath "cargo" `
-        -Arguments @("run", "-p", "tinyrustlm-browser-harness", "--", $resolvedRoot) `
-        -Label "TinyRustLM static browser harness"
-    $staticHarnessStatus = "pass"
+    New-Item -ItemType Directory -Force -Path $evidenceRoot | Out-Null
 
-    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $serverStdout) | Out-Null
-    Remove-Item -LiteralPath $serverStdout, $serverStderr -Force -ErrorAction SilentlyContinue
-    $server = Start-Process `
-        -FilePath "cargo" `
-        -ArgumentList @("run", "-p", "tinyrustlm-local-server", "--", $resolvedRoot, "$Port") `
-        -WorkingDirectory $RepoRoot `
-        -WindowStyle Hidden `
-        -RedirectStandardOutput $serverStdout `
-        -RedirectStandardError $serverStderr `
-        -PassThru
+    Invoke-NativeGate "static_contract" "cargo" @(
+        "run", "-p", "tinyrustlm-browser-harness", "--", $Root
+    )
+    $gates.static_contract = "pass"
 
-    Wait-UiServer -ServerProcess $server
-    $appUrl = "http://127.0.0.1:$Port/app/"
-    $httpHarnessOutput = Invoke-Checked `
-        -FilePath "cargo" `
-        -Arguments @("run", "-p", "tinyrustlm-browser-harness", "--", $resolvedRoot, "--http", $appUrl) `
-        -Label "TinyRustLM HTTP browser harness"
-    $httpHarnessStatus = "pass"
+    Invoke-NativeGate "javascript_syntax_app" "node" @("--check", (Join-Path $Root "app/app.js"))
+    Invoke-NativeGate "javascript_syntax_bridge" "node" @("--check", (Join-Path $Root "app/companion-bridge.js"))
+    $gates.javascript_syntax = "pass"
+
+    if ($RunBrowserSmoke -or $RunDeepAcquisition) {
+        Invoke-NativeGate "browser_contracts" "npm" @("--prefix", (Join-Path $RepoRoot "tinyrustlm"), "run", "test:ui")
+        $gates.browser_contracts = "pass"
+
+        Invoke-NativeGate "chromium_release" "node" @(
+            (Join-Path $RepoRoot "tinyrustlm/tools/web-release-local-smoke.js"),
+            $browserEvidenceRoot,
+            $Root
+        )
+        $gates.chromium_release = "pass"
+    }
+
+    if ($RunDeepAcquisition) {
+        Invoke-NativeGate "acquisition_browser_bridge" "node" @(
+            "--test",
+            (Join-Path $RepoRoot "tinyrustlm/tests/model-acquisition-v2.test.js"),
+            (Join-Path $RepoRoot "tinyrustlm/tests/companion-bridge.test.js")
+        )
+        $gates.acquisition_browser_bridge = "pass"
+
+        Invoke-NativeGate "acquisition_companion" "dotnet" @(
+            "test",
+            (Join-Path $RepoRoot "dotnet/tests/TinyRustLM.SeedHost.Tests/TinyRustLM.SeedHost.Tests.csproj"),
+            "-c", "Release"
+        )
+        $gates.acquisition_companion = "pass"
+
+        Invoke-NativeGate "acquisition_converter" "cargo" @(
+            "test", "-p", "tinyrustlm-slm-pack", "--test", "huggingface_conversion_cli"
+        )
+        $gates.acquisition_converter = "pass"
+    }
 
     if ($RunVisualLock) {
-        if (-not (Test-Path -LiteralPath $VisualLockBaseline)) {
-            throw "TinyRustLM visual lock baseline was not found: $VisualLockBaseline"
+        if (-not (Test-Path -LiteralPath $VisualLockBaseline -PathType Leaf)) {
+            throw "Visual lock baseline was not found: $VisualLockBaseline"
         }
-        Remove-Item -LiteralPath $VisualLockOutputDir -Recurse -Force -ErrorAction SilentlyContinue
-        New-Item -ItemType Directory -Force -Path $VisualLockOutputDir | Out-Null
-        $visualLockStatus = "running"
-        $visualLockOutput = Invoke-Checked `
-            -FilePath "node" `
-            -Arguments @(
-                (Join-Path $RepoRoot "tinyrustlm/tools/capture-ui-lock.js"),
-                $appUrl,
-                $VisualLockOutputDir,
-                "$VisualLockDebugPort",
-                $VisualLockBaseline
-            ) `
-            -Label "TinyRustLM visual lock"
-        $visualLockStatus = "pass"
+        $visualPort = Get-Random -Minimum 8400 -Maximum 9000
+        $visualDebugPort = Get-Random -Minimum 9400 -Maximum 9900
+        $visualStdout = Join-Path $visualEvidenceRoot "server.stdout.log"
+        $visualStderr = Join-Path $visualEvidenceRoot "server.stderr.log"
+        New-Item -ItemType Directory -Force -Path $visualEvidenceRoot | Out-Null
+        $visualServer = Start-Process `
+            -FilePath "cargo" `
+            -ArgumentList @("run", "-p", "tinyrustlm-local-server", "--", $Root, "$visualPort") `
+            -WorkingDirectory $RepoRoot `
+            -WindowStyle Hidden `
+            -RedirectStandardOutput $visualStdout `
+            -RedirectStandardError $visualStderr `
+            -PassThru
+        Wait-LoopbackServer -Process $visualServer -Port $visualPort
+        Invoke-NativeGate "visual_lock" "node" @(
+            (Join-Path $RepoRoot "tinyrustlm/tools/capture-ui-lock.js"),
+            "http://127.0.0.1:$visualPort/app/",
+            $visualEvidenceRoot,
+            "$visualDebugPort",
+            $VisualLockBaseline
+        )
+        $gates.visual_lock = "pass"
     }
 
-    if ($browserSmokeRequested) {
-        foreach ($mode in $browserSmokeModes) {
-            $reportPath = [string]$browserSmokeReportPaths[$mode]
-            $modeDebugPort = [string]$browserDebugPorts[$mode]
-            $smokeModel = if ($mode -eq "assistant-quality" -or $mode -eq "multi-turn-context" -or $mode -eq "assistant-prompt-cards") {
-                "smollm2q4"
-            }
-            elseif ($mode -eq "memory-endpoints-ui" -or $mode -eq "memory-endpoints-adversarial-ui") {
-                "smollm2q8"
-            }
-            else {
-                "tinylm16q8"
-            }
-            Remove-Item -LiteralPath $reportPath -Force -ErrorAction SilentlyContinue
-            [void](Invoke-BrowserSmoke `
-                -Arguments @((Join-Path $RepoRoot "tinyrustlm/tools/browser-smoke.js"), $appUrl, $modeDebugPort, $smokeModel, $mode) `
-                -Label "$mode browser smoke" `
-                -ReportPath $reportPath `
-                -TimeoutSeconds $BrowserSmokeTimeoutSeconds)
-            $browserSmokeStatuses[$mode] = "pass"
-        }
-        $browserSmokeStatus = "pass"
-    }
-
-    Write-UiReport `
-        -Status "pass" `
-        -StaticHarnessStatus $staticHarnessStatus `
-        -HttpHarnessStatus $httpHarnessStatus `
-        -BrowserSmokeStatus $browserSmokeStatus `
-        -BrowserSmokeModes $browserSmokeModes `
-        -BrowserSmokeStatuses $browserSmokeStatuses `
-        -BrowserSmokeRequested $browserSmokeRequested `
-        -DeepBrowserSmokeRequested $deepBrowserSmokeRequested `
-        -DeepBrowserSmokeModes $selectedDeepBrowserSmokeModes `
-        -StaticHarnessOutput $staticHarnessOutput `
-        -HttpHarnessOutput $httpHarnessOutput `
-        -ErrorMessage "" `
-        -BrowserSmokeReportPaths $browserSmokeReportPaths `
-        -BrowserDebugPorts $browserDebugPorts `
-        -VisualLockRequested ([bool]$RunVisualLock) `
-        -VisualLockStatus $visualLockStatus `
-        -VisualLockBaseline $VisualLockBaseline `
-        -VisualLockReportPath $visualLockReportPath `
-        -VisualLockOutput $visualLockOutput `
-        -VisualLockDebugPort $VisualLockDebugPort `
-        -ServerStdoutPath $serverStdout `
-        -ServerStderrPath $serverStderr
+    Write-VerificationReport -Status "pass" -ErrorMessage ""
     Write-Host "TinyRustLM UI verification passed."
 }
 catch {
-    $message = $_.Exception.Message
-    if ($RunVisualLock -and $visualLockStatus -eq "running") {
-        $visualLockStatus = "fail"
+    foreach ($name in @($gates.Keys)) {
+        if ($gates[$name] -eq "not_run") {
+            $gates[$name] = "fail"
+            break
+        }
     }
-    Write-UiReport `
-        -Status "fail" `
-        -StaticHarnessStatus $staticHarnessStatus `
-        -HttpHarnessStatus $httpHarnessStatus `
-        -BrowserSmokeStatus $browserSmokeStatus `
-        -BrowserSmokeModes $browserSmokeModes `
-        -BrowserSmokeStatuses $browserSmokeStatuses `
-        -BrowserSmokeRequested $browserSmokeRequested `
-        -DeepBrowserSmokeRequested $deepBrowserSmokeRequested `
-        -DeepBrowserSmokeModes $selectedDeepBrowserSmokeModes `
-        -StaticHarnessOutput $staticHarnessOutput `
-        -HttpHarnessOutput $httpHarnessOutput `
-        -ErrorMessage $message `
-        -BrowserSmokeReportPaths $browserSmokeReportPaths `
-        -BrowserDebugPorts $browserDebugPorts `
-        -VisualLockRequested ([bool]$RunVisualLock) `
-        -VisualLockStatus $visualLockStatus `
-        -VisualLockBaseline $VisualLockBaseline `
-        -VisualLockReportPath $visualLockReportPath `
-        -VisualLockOutput $visualLockOutput `
-        -VisualLockDebugPort $VisualLockDebugPort `
-        -ServerStdoutPath $serverStdout `
-        -ServerStderrPath $serverStderr
+    Write-VerificationReport -Status "fail" -ErrorMessage $_.Exception.Message
     throw
 }
 finally {
-    if ($server -and -not $server.HasExited) {
-        Stop-Process -Id $server.Id -Force -ErrorAction SilentlyContinue
+    if ($visualServer -and -not $visualServer.HasExited) {
+        Stop-Process -Id $visualServer.Id -Force -ErrorAction SilentlyContinue
     }
 }

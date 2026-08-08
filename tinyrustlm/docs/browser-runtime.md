@@ -11,6 +11,28 @@ through the real browser file-selection control. JavaScript transfers bytes and
 coordinates UI state; Rust remains responsible for model validation and
 generation.
 
+The interactive chooser uses one P2P-first acquisition state machine. A
+complete identity-matched peer offer is imported through an explicitly paired
+local companion. If no complete verified offer exists, protocol v2 sends an
+immutable source contract to that companion, which downloads approved files
+from the exact Hugging Face commit, verifies byte counts and SHA-256 digests,
+runs the packaged Rust conversion and validation commands, creates and
+reinspects a base-only composition graph, and streams both artifacts over the
+secured loopback bridge. The browser activates the graph before reporting
+`Ready`.
+
+The acquisition result is the running model, not a handoff file. README/TXT,
+request JSON, shell, PowerShell, conversion-kit, import-kit, share-kit, and
+serving-helper downloads are prohibited. The application origin does not host
+model or composition bytes, and the companion receives no prompts or
+responses.
+
+Local UAIX memory packages are reported through a FileDeck-style summary that
+keeps required-file counts, persona dimensions, evidence, exports, manifest
+overlay, package model, knowledge graph, and `llms` artifacts visible as
+separate validation facts. Package content enters the bounded context only
+after its own integrity and trust checks pass.
+
 Campaign execution adds a sealed composition layer:
 
 1. The campaign validator verifies the `.slm` and `.slm.acg1` paths, sizes, and

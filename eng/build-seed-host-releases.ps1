@@ -2,11 +2,19 @@ param(
     [ValidateSet("Debug", "Release")]
     [string]$Configuration = "Release",
     [string]$OutputDirectory = "",
-    [string]$SbomToolPath = ""
+    [string]$SbomToolPath = "",
+    [string]$MiniModelSourceRoot = ""
 )
 
 $ErrorActionPreference = "Stop"
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+if ([string]::IsNullOrWhiteSpace($MiniModelSourceRoot)) {
+    $MiniModelSourceRoot = $env:MINIMODEL_SOURCE_ROOT
+}
+if ([string]::IsNullOrWhiteSpace($MiniModelSourceRoot)) {
+    $MiniModelSourceRoot = Join-Path (Split-Path $RepoRoot -Parent) "MiniModel.org"
+}
+$MiniModelSourceRoot = (Resolve-Path -LiteralPath $MiniModelSourceRoot).Path
 $Project = Join-Path $RepoRoot "dotnet/tools/TinyRustLM.SeedHost.Tool/TinyRustLM.SeedHost.Tool.csproj"
 [xml]$ProjectXml = Get-Content -LiteralPath $Project
 $Version = [string]$ProjectXml.Project.PropertyGroup.VersionPrefix
@@ -50,9 +58,9 @@ function Get-Sha256 {
 function Get-RequiredNativeNames {
     param([string]$Rid)
     if ($Rid -eq "win-x64") {
-        return @("minimodel.exe", "minimodel_native.dll")
+        return @("minimodel.exe", "minimodel_native.dll", "tinyrustlm-slm-pack.exe")
     }
-    return @("libminimodel_native.so", "minimodel")
+    return @("libminimodel_native.so", "minimodel", "tinyrustlm-slm-pack")
 }
 
 function Resolve-GnuReleaseTools {
@@ -102,7 +110,8 @@ function New-LinuxReleaseArchive {
     $executableList = Join-Path $archiveParent "$Rid-executable-files.txt"
     $executableFiles = @(
         "uaix-p2p-seed",
-        "runtimes/$Rid/native/minimodel"
+        "runtimes/$Rid/native/minimodel",
+        "runtimes/$Rid/native/tinyrustlm-slm-pack"
     )
     $allFiles = @(Get-ChildItem -LiteralPath $payloadResolved -Recurse -File |
         ForEach-Object {
@@ -296,7 +305,7 @@ function Assert-SafeArchiveEntries {
         throw "Release archive contains duplicate paths: $($duplicateEntries.Name -join ', ')"
     }
     $foreignNative = @($normalizedEntries | Where-Object {
-        $_ -match '^runtimes/([^/]+)/native/(minimodel(?:\.exe)?|(?:lib)?minimodel_native\.(?:dll|so|dylib))$' -and
+        $_ -match '^runtimes/([^/]+)/native/(minimodel(?:\.exe)?|tinyrustlm-slm-pack(?:\.exe)?|(?:lib)?minimodel_native\.(?:dll|so|dylib))$' -and
         $Matches[1] -ne $Rid
     })
     if ($foreignNative.Count -ne 0) {
@@ -312,7 +321,11 @@ function Assert-SafeArchiveEntries {
         if ($LASTEXITCODE -ne 0) {
             throw "Unable to inspect Linux archive modes: $ArchivePath"
         }
-        foreach ($path in @("uaix-p2p-seed", "runtimes/$Rid/native/minimodel")) {
+        foreach ($path in @(
+            "uaix-p2p-seed",
+            "runtimes/$Rid/native/minimodel",
+            "runtimes/$Rid/native/tinyrustlm-slm-pack"
+        )) {
             $matchingLine = @($verboseEntries | Where-Object { $_.EndsWith(" $path", [StringComparison]::Ordinal) })
             if ($matchingLine.Count -ne 1 -or -not $matchingLine[0].StartsWith("-rwxr-xr-x", [StringComparison]::Ordinal)) {
                 throw "Linux release executable must have mode 0755: $path"
@@ -332,9 +345,8 @@ foreach ($rid in $Rids) {
 }
 $ResolvedSbomTool = Resolve-SbomTool
 $GnuReleaseTools = Resolve-GnuReleaseTools
-$MiniModelRoot = (Resolve-Path (Join-Path $RepoRoot "../MiniModel.org")).Path
 $TinyEvidence = Get-GitEvidence -Root $RepoRoot
-$MiniEvidence = Get-GitEvidence -Root $MiniModelRoot
+$MiniEvidence = Get-GitEvidence -Root $MiniModelSourceRoot
 $staging = Join-Path $OutputDirectory (".staging-seed-host-$Version-{0}" -f [guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path $staging | Out-Null
 $stagingResolved = (Resolve-Path -LiteralPath $staging).Path

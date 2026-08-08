@@ -93,7 +93,8 @@ test -z "$duplicate" || { printf 'Duplicate archive path: %s\n' "$duplicate" >&2
 expected_app=uaix-p2p-seed
 expected_server="runtimes/$rid/native/minimodel"
 expected_library="runtimes/$rid/native/libminimodel_native.so"
-for required in "$expected_app" "$expected_server" "$expected_library" README.md LICENSE.txt RELEASE.json; do
+expected_converter="runtimes/$rid/native/tinyrustlm-slm-pack"
+for required in "$expected_app" "$expected_server" "$expected_library" "$expected_converter" README.md LICENSE.txt RELEASE.json; do
   grep -Fqx "$required" "$normalized_list" || { printf 'Required archive file is missing: %s\n' "$required" >&2; exit 65; }
 done
 if grep -E '^runtimes/(win-x64|linux-(x64|arm64))/native/' "$normalized_list" |
@@ -110,7 +111,7 @@ while IFS= read -r verbose_entry; do
   mode=${verbose_entry%% *}
   path=${verbose_entry##* }
   case "$path" in
-    "$expected_app"|"$expected_server") expected_mode=-rwxr-xr-x ;;
+    "$expected_app"|"$expected_server"|"$expected_converter") expected_mode=-rwxr-xr-x ;;
     *) expected_mode=-rw-r--r-- ;;
   esac
   test "$mode" = "$expected_mode" || {
@@ -122,6 +123,7 @@ done < <(tar -tvzf "$archive_path")
 tar -xzf "$archive_path" -C "$extraction_root"
 test -x "$extraction_root/$expected_app" || { printf 'Extracted apphost is not executable\n' >&2; exit 65; }
 test -x "$extraction_root/$expected_server" || { printf 'Extracted MiniModel server is not executable\n' >&2; exit 65; }
+test -x "$extraction_root/$expected_converter" || { printf 'Extracted TinyRustLM converter is not executable\n' >&2; exit 65; }
 
 runner=()
 invariant_environment=()

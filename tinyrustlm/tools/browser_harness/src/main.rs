@@ -58,10 +58,6 @@ const REQUIRED_IDS: &[&str] = &[
     "simplePeerUrlStatus",
     "simpleLocalCatalogFile",
     "simpleImportLocalCatalogButton",
-    "simpleShareMetadataFile",
-    "simpleImportShareMetadataButton",
-    "simpleSaveShareMetadataButton",
-    "simpleSaveShareKitButton",
     "simpleCatalogResults",
     "hfSearchInput",
     "hfSearchButton",
@@ -139,6 +135,14 @@ const REQUIRED_IDS: &[&str] = &[
     "appFooter",
 ];
 
+const FORBIDDEN_MODEL_HANDOFF_MARKERS: &[&str] = &[
+    "simpleShareMetadataFile",
+    "simpleImportShareMetadataButton",
+    "simpleSaveShareMetadataButton",
+    "Share Metadata",
+    "share-metadata",
+];
+
 const REQUIRED_HTML_TEXT: &[&str] = &[
     "TinyRustLM",
     "TinyRustLM.com",
@@ -148,14 +152,12 @@ const REQUIRED_HTML_TEXT: &[&str] = &[
     "Enable P2P import and sharing",
     "Known peer URL",
     "Load Local Catalog",
-    "Save P2P Share Kit",
     "Runtime Status",
     "Diagnostics",
     "Token Console",
-    "Developer",
     "Provenance",
     "Chat with your local model",
-    "Local or P2P model source",
+    "Choose a local or P2P model",
     "Local Connect Approvals",
     "Check Endpoint",
     "Dry Run Browser Decision",
@@ -351,6 +353,15 @@ fn audit_static_contract(root: &Path, checks: &mut Vec<String>) -> Result<(), Ha
         require_contains("index.html id", &index, &format!("id=\"{id}\""))?;
     }
     checks.push(format!("{} required UI ids", REQUIRED_IDS.len()));
+
+    for marker in FORBIDDEN_MODEL_HANDOFF_MARKERS {
+        require_absent("index.html retired model handoff", &index, marker)?;
+        require_absent("app.js retired model handoff", &js, marker)?;
+    }
+    checks.push(format!(
+        "{} retired model handoff markers absent",
+        FORBIDDEN_MODEL_HANDOFF_MARKERS.len()
+    ));
 
     for text in REQUIRED_HTML_TEXT {
         require_contains("index.html text", &index, text)?;
@@ -795,6 +806,16 @@ fn require_contains(label: &str, haystack: &str, needle: &str) -> Result<(), Har
         Ok(())
     } else {
         Err(HarnessError::Missing(format!("{label} '{needle}'")))
+    }
+}
+
+fn require_absent(label: &str, haystack: &str, needle: &str) -> Result<(), HarnessError> {
+    if haystack.contains(needle) {
+        Err(HarnessError::Missing(format!(
+            "{label} contains forbidden marker '{needle}'"
+        )))
+    } else {
+        Ok(())
     }
 }
 
