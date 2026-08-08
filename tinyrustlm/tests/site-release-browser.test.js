@@ -23,17 +23,14 @@ const {
 
 const siteRoot = path.resolve(__dirname, "..");
 const ledgerPath = path.join(siteRoot, "release", "site-release-ledger.v1.json");
-const candidateSourceRevision = "a".repeat(40);
-const candidatePublishedAt = "2026-08-08T22:15:30.000Z";
+const publishedAt = "2026-08-08T22:15:40.943Z";
 
 function generatedRecord(context) {
   const outputRoot = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-browser-release-"));
   context.after(() => fs.rmSync(outputRoot, { recursive: true, force: true }));
   return materializeReleaseState({
     ledgerPath,
-    outputRoot,
-    sourceRevision: candidateSourceRevision,
-    publishedAt: candidatePublishedAt
+    outputRoot
   }).current;
 }
 
@@ -97,7 +94,7 @@ test("browser release renderer updates all visible facts without injecting marku
   assert.equal(view.date[0].textContent, "2026-08-08");
   assert.equal(view.date[0].dateTime, "2026-08-08");
   assert.equal(view.published[0].textContent, "2026-08-08 22:15 UTC");
-  assert.equal(view.published[0].dateTime, candidatePublishedAt);
+  assert.equal(view.published[0].dateTime, publishedAt);
   assert.equal(view.containers[0].dataset.releaseState, "verified");
 });
 

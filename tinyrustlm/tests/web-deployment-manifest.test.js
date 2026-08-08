@@ -22,8 +22,6 @@ const deploymentManifestPath = path.join(
   "web-deployment-manifest.v2.json"
 );
 const ledgerPath = path.join(siteRoot, "release", "site-release-ledger.v1.json");
-const candidateSourceRevision = "a".repeat(40);
-const candidatePublishedAt = "2026-08-08T22:15:30.000Z";
 
 function writeJson(filePath, value) {
   fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
@@ -34,9 +32,7 @@ function materializedRelease(context) {
   context.after(() => fs.rmSync(root, { recursive: true, force: true }));
   materializeReleaseState({
     ledgerPath,
-    outputRoot: root,
-    sourceRevision: candidateSourceRevision,
-    publishedAt: candidatePublishedAt
+    outputRoot: root
   });
   return root;
 }

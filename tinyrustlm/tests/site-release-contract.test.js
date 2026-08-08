@@ -33,27 +33,27 @@ function withTemporaryDirectory(context) {
 function pendingLedgerPath(context) {
   const root = withTemporaryDirectory(context);
   const candidatePath = path.join(root, "site-release-ledger.pending.json");
-  fs.copyFileSync(ledgerPath, candidatePath);
+  const ledger = JSON.parse(fs.readFileSync(ledgerPath, "utf8"));
+  const publication = ledger.publications.pop();
+  assert.equal(publication.releaseId, "tinyrustlm.com@0.2.0");
+  fs.writeFileSync(candidatePath, `${JSON.stringify(ledger, null, 2)}\n`, "utf8");
   return candidatePath;
 }
 
 function finalizedLedgerPath(context) {
   const root = withTemporaryDirectory(context);
-  const ledger = JSON.parse(fs.readFileSync(ledgerPath, "utf8"));
-  const pending = ledger.releases.pop();
-  assert.equal(pending.releaseId, "tinyrustlm.com@0.2.0");
   const finalizedPath = path.join(root, "site-release-ledger.finalized.json");
-  fs.writeFileSync(finalizedPath, `${JSON.stringify(ledger, null, 2)}\n`, "utf8");
+  fs.copyFileSync(ledgerPath, finalizedPath);
   return finalizedPath;
 }
 
-test("source release ledger preserves three publications and one pending release", () => {
+test("source release ledger preserves four finalized publications", () => {
   const result = parseReleaseLedger(fs.readFileSync(ledgerPath));
   assert.equal(result.ledger.site.siteId, "tinyrustlm.com");
   assert.equal(result.ledger.site.canonicalOrigin, "https://tinyrustlm.com");
   assert.equal(result.ledger.site.updatesPath, "/updates/");
   assert.equal(result.ledger.releases.length, 4);
-  assert.equal(result.ledger.publications.length, 3);
+  assert.equal(result.ledger.publications.length, 4);
   assert.equal(result.ledger.publications[0].releaseId, "tinyrustlm.com@0.1.0");
   assert.equal(result.ledger.publications[1].releaseId, "tinyrustlm.com@0.1.1");
   assert.equal(
@@ -64,10 +64,14 @@ test("source release ledger preserves three publications and one pending release
     result.ledger.publications[2].publicationId,
     "0e9da90d20943afb4dab388860792cff8a9e20fb2825e9a7e6a614d2299647be"
   );
-  assert.equal(result.pendingRelease.releaseId, "tinyrustlm.com@0.2.0");
+  assert.equal(
+    result.ledger.publications[3].publicationId,
+    "75d5f72656635eed58644b705acdf7c8fb18512fd2225f402563cf1756a2ea10"
+  );
+  assert.equal(result.pendingRelease, null);
   assert.equal(
     result.ledgerSha256,
-    "5e4e136d109c05edd31ee80a278e9f875007837d9b67faf59621f4d64b22086c"
+    "912f69afdfb63d5062dd09ab5120d54ef547cb519c896014e8e1505eae804b19"
   );
 });
 
@@ -75,15 +79,15 @@ test("materializes exact current records from a finalized ledger", (context) => 
   const outputRoot = withTemporaryDirectory(context);
   const finalizedPath = finalizedLedgerPath(context);
   const result = materializeReleaseState({ ledgerPath: finalizedPath, outputRoot });
-  assert.equal(result.current.version, "0.1.2");
-  assert.equal(result.current.publishedAt, "2026-08-02T21:23:27.068Z");
-  assert.equal(result.current.sourceRevision, "3f8b2b6b3faa4e2c5e698dced36f249ee6438389");
+  assert.equal(result.current.version, "0.2.0");
+  assert.equal(result.current.publishedAt, "2026-08-08T22:15:40.943Z");
+  assert.equal(result.current.sourceRevision, "3bd6637360399a38b6f433f6f61dfcd233358bfe");
   assert.equal(
     result.current.publicationId,
-    "0e9da90d20943afb4dab388860792cff8a9e20fb2825e9a7e6a614d2299647be"
+    "75d5f72656635eed58644b705acdf7c8fb18512fd2225f402563cf1756a2ea10"
   );
   assert.equal(result.history.generatedAt, result.current.publishedAt);
-  assert.equal(result.history.releases.length, 3);
+  assert.equal(result.history.releases.length, 4);
   const reopened = validatePublicReleaseFiles({ ledgerPath: finalizedPath, outputRoot });
   assert.deepEqual(reopened.current, result.current);
   assert.deepEqual(reopened.history, result.history);
@@ -183,6 +187,7 @@ test("rejects unknown fields, duplicate identities, invalid versions, and ambigu
   assert.throws(() => parseReleaseLedger(JSON.stringify(invalidVersion)), /SemVer/);
 
   const secondPending = clone(baseline);
+  secondPending.publications.pop();
   secondPending.releases.push({
     releaseId: "tinyrustlm.com@0.3.0",
     version: "0.3.0",
