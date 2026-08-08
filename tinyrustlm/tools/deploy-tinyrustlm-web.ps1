@@ -319,6 +319,24 @@ function Test-RetryableFtpsReadFailure {
     )
 }
 
+# Extends bounded cleanup retries to the internal FtpWebRequest failure observed after a committed delete.
+function Test-RetryableFtpsCleanupFailure {
+    param([Exception]$Exception)
+
+    if (Test-RetryableFtpsReadFailure -Exception $Exception) {
+        return $true
+    }
+    $current = $Exception
+    while ($current.InnerException) {
+        $current = $current.InnerException
+    }
+    return [string]::Equals(
+        $current.GetType().FullName,
+        "System.Net.InternalException",
+        [StringComparison]::Ordinal
+    )
+}
+
 # Records one bounded publication substep without retaining exception messages or credentials.
 function Set-ArtifactOperationState {
     param(
@@ -648,22 +666,64 @@ function Ensure-RemoteDirectory {
     Write-Host "created remote asset directory $RemotePath"
 }
 
-# Deletes an optional remote object; absence is a valid cleanup state.
+# Deletes an optional remote object and proves absence after every response outcome.
 function Remove-RemoteFile {
     param([string]$RemotePath)
 
-    try {
-        $request = New-FtpRequest -RemotePath $RemotePath -Method ([Net.WebRequestMethods+Ftp]::DeleteFile)
-        $response = $request.GetResponse()
-        $response.Dispose()
-    }
-    catch {
-        if ((Test-FtpFileUnavailable -Exception $_.Exception) -and
-            (Test-RemoteFileAbsent -RemotePath $RemotePath)) {
-            return
+    $maximumAttempts = 4
+    for ($attempt = 1; $attempt -le $maximumAttempts; $attempt += 1) {
+        $deleteFailure = $null
+        try {
+            $request = New-FtpRequest `
+                -RemotePath $RemotePath `
+                -Method ([Net.WebRequestMethods+Ftp]::DeleteFile)
+            $response = $request.GetResponse()
+            $response.Dispose()
         }
-        throw
+        catch {
+            $deleteFailure = $_.Exception
+        }
+
+        $absenceFailure = $null
+        try {
+            if (Test-RemoteFileAbsent -RemotePath $RemotePath) {
+                return
+            }
+        }
+        catch {
+            $absenceFailure = $_.Exception
+        }
+
+        if ($null -ne $deleteFailure) {
+            if ($attempt -ge $maximumAttempts -or
+                -not (Test-RetryableFtpsCleanupFailure -Exception $deleteFailure)) {
+                throw $deleteFailure
+            }
+            $failureIdentity = Get-SafeExceptionIdentity -Exception $deleteFailure
+        }
+        elseif ($null -ne $absenceFailure) {
+            if ($attempt -ge $maximumAttempts -or
+                -not (Test-RetryableFtpsCleanupFailure -Exception $absenceFailure)) {
+                throw $absenceFailure
+            }
+            $failureIdentity = Get-SafeExceptionIdentity -Exception $absenceFailure
+        }
+        else {
+            if ($attempt -ge $maximumAttempts) {
+                throw "Remote cleanup exhausted without authoritative absence proof."
+            }
+            $failureIdentity = "remote-object-still-present"
+        }
+
+        Write-Host (
+            "retrying authoritative FTPS cleanup {0}/{1} after {2}" -f
+                $attempt,
+                $maximumAttempts,
+                $failureIdentity
+        )
+        Start-Sleep -Milliseconds (250 * $attempt)
     }
+    throw "Authoritative FTPS cleanup exhausted without a result."
 }
 
 # Removes one empty owned remote directory and proves it is no longer listable.

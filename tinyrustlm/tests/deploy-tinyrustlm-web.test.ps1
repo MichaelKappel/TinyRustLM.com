@@ -74,12 +74,14 @@ Import-DeploymentFunctions -ScriptPath $deploymentScript -Names @(
     "Test-FtpFileUnavailable"
     "Get-RemoteSize"
     "Test-RetryableFtpsReadFailure"
+    "Test-RetryableFtpsCleanupFailure"
     "Assert-RemoteProtocolPath"
     "Get-RemoteFilePathParts"
     "Set-ArtifactOperationState"
     "Test-RemoteRenameCommitted"
     "Rename-RemoteFile"
     "ConvertFrom-FtpDirectoryEntry"
+    "Remove-RemoteFile"
     "New-CurrentUserCredentialPipe"
     "Publish-Artifact"
     "Invoke-PublicHostPolicyProbes"
@@ -250,6 +252,104 @@ try {
         Remove-Variable -Name TransientSizeAttempt -Scope Global -ErrorAction SilentlyContinue
         Remove-Variable -Name TransientSizeResponse -Scope Global -ErrorAction SilentlyContinue
         Remove-Variable -Name TransientSizeRequest -Scope Global -ErrorAction SilentlyContinue
+    }
+
+    if (-not ("System.Net.InternalException" -as [type])) {
+        Add-Type -TypeDefinition @'
+namespace System.Net {
+    public sealed class InternalException : System.Exception {
+        public InternalException(string message) : base(message) {}
+    }
+}
+'@
+    }
+    $global:TransientDeleteAttempt = 0
+    $global:TransientDeleteAbsent = $false
+    $global:TransientDeleteResponse = [pscustomobject]@{}
+    $global:TransientDeleteResponse | Add-Member -MemberType ScriptMethod -Name Dispose -Value {}
+    $global:TransientDeleteRequest = [pscustomobject]@{}
+    $global:TransientDeleteRequest | Add-Member -MemberType ScriptMethod -Name GetResponse -Value {
+        $global:TransientDeleteAttempt += 1
+        if ($global:TransientDeleteAttempt -le 2) {
+            throw [System.Net.InternalException]::new("simulated internal FTPS cleanup failure")
+        }
+        $global:TransientDeleteAbsent = $true
+        return $global:TransientDeleteResponse
+    }
+    function global:New-FtpRequest {
+        param([string]$RemotePath, [string]$Method)
+        return $global:TransientDeleteRequest
+    }
+    function global:Test-RemoteFileAbsent {
+        param([string]$RemotePath)
+        return $global:TransientDeleteAbsent
+    }
+    function global:Start-Sleep {
+        param([int]$Milliseconds)
+    }
+    try {
+        Remove-RemoteFile -RemotePath "app/deploy-retry-stage.slm"
+        Assert-True (
+            $global:TransientDeleteAttempt -eq 3 -and
+            $global:TransientDeleteAbsent
+        ) "An internal FTPS cleanup failure was not reconciled within the bound."
+
+        $global:TransientDeleteAttempt = 0
+        $global:TransientDeleteAbsent = $false
+        $global:TransientDeleteRequest.PSObject.Members.Remove("GetResponse")
+        $global:TransientDeleteRequest | Add-Member -MemberType ScriptMethod -Name GetResponse -Value {
+            $global:TransientDeleteAttempt += 1
+            throw [Net.WebException]::new(
+                "simulated cleanup trust failure",
+                [Net.WebExceptionStatus]::TrustFailure
+            )
+        }
+        Assert-Throws {
+            Remove-RemoteFile -RemotePath "app/deploy-trust-stage.slm"
+        } "simulated cleanup trust failure"
+        Assert-True (
+            $global:TransientDeleteAttempt -eq 1
+        ) "A nonretryable FTPS cleanup failure was retried."
+
+        $global:TransientDeleteAttempt = 0
+        $global:TransientDeleteRequest.PSObject.Members.Remove("GetResponse")
+        $global:TransientDeleteRequest | Add-Member -MemberType ScriptMethod -Name GetResponse -Value {
+            $global:TransientDeleteAttempt += 1
+            throw [Net.WebException]::new(
+                "simulated exhausted cleanup failure",
+                [Net.WebExceptionStatus]::ServerProtocolViolation
+            )
+        }
+        Assert-Throws {
+            Remove-RemoteFile -RemotePath "app/deploy-exhausted-stage.slm"
+        } "simulated exhausted cleanup failure"
+        Assert-True (
+            $global:TransientDeleteAttempt -eq 4
+        ) "A transient FTPS cleanup escaped its four-attempt bound."
+
+        $global:TransientDeleteAttempt = 0
+        $global:TransientDeleteAbsent = $true
+        $global:TransientDeleteRequest.PSObject.Members.Remove("GetResponse")
+        $global:TransientDeleteRequest | Add-Member -MemberType ScriptMethod -Name GetResponse -Value {
+            $global:TransientDeleteAttempt += 1
+            throw [Net.WebException]::new(
+                "simulated ambiguous committed cleanup",
+                [Net.WebExceptionStatus]::TrustFailure
+            )
+        }
+        Remove-RemoteFile -RemotePath "app/deploy-committed-stage.slm"
+        Assert-True (
+            $global:TransientDeleteAttempt -eq 1
+        ) "A committed cleanup was not accepted from authoritative absence proof."
+    }
+    finally {
+        Remove-Item -LiteralPath Function:\global:New-FtpRequest -Force
+        Remove-Item -LiteralPath Function:\global:Test-RemoteFileAbsent -Force
+        Remove-Item -LiteralPath Function:\global:Start-Sleep -Force
+        Remove-Variable -Name TransientDeleteAttempt -Scope Global -ErrorAction SilentlyContinue
+        Remove-Variable -Name TransientDeleteAbsent -Scope Global -ErrorAction SilentlyContinue
+        Remove-Variable -Name TransientDeleteResponse -Scope Global -ErrorAction SilentlyContinue
+        Remove-Variable -Name TransientDeleteRequest -Scope Global -ErrorAction SilentlyContinue
     }
 
     $global:RenameObservation = 0

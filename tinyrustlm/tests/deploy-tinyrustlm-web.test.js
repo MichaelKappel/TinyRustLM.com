@@ -59,6 +59,8 @@ test("deployment orchestrator requires fresh readback and immutable attempt evid
   assert.match(source, /function Assert-RemoteProtocolPath/);
   assert.match(source, /function Get-RemoteFilePathParts/);
   assert.match(source, /function Test-RetryableFtpsReadFailure/);
+  assert.match(source, /function Test-RetryableFtpsCleanupFailure/);
+  assert.match(source, /System\.Net\.InternalException/);
   assert.match(source, /\$maximumAttempts = 4/);
   assert.doesNotMatch(source, /Split-Path -(?:Parent|Leaf) \$(?:RemotePath|RemoteRelativePath|StagePath)/);
   assert.doesNotMatch(source, /\[IO\.Path\]::GetDirectoryName\(\[string\]\$_\.remote\)/);
@@ -74,6 +76,10 @@ test("deployment orchestrator requires fresh readback and immutable attempt evid
   assert.match(
     source,
     /Test-FtpFileUnavailable -Exception \$_\.Exception\) -and\s+\(Test-RemoteFileAbsent/
+  );
+  assert.match(
+    source,
+    /Remove-RemoteFile[\s\S]*?\$maximumAttempts = 4[\s\S]*?Test-RemoteFileAbsent -RemotePath \$RemotePath[\s\S]*?Test-RetryableFtpsCleanupFailure/
   );
   assert.match(source, /\[IO\.FileMode\]::CreateNew/);
   assert.match(source, /\[IO\.File\]::Move\(\$temporary, \$target\)/);
