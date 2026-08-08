@@ -1,6 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
@@ -11,6 +12,24 @@ const bridge = fs.readFileSync(
   path.join(__dirname, "..", "app", "companion-bridge.js"),
   "utf8"
 );
+const companionGuide = fs.readFileSync(
+  path.join(__dirname, "..", "..", "docs", "nuget", "SEED_HOST.md"),
+  "utf8"
+);
+const companionPage = fs.readFileSync(
+  path.join(__dirname, "..", "companion", "index.html"),
+  "utf8"
+);
+const updatesCss = fs.readFileSync(
+  path.join(__dirname, "..", "updates", "updates.css")
+);
+const siteReleaseScript = fs.readFileSync(
+  path.join(__dirname, "..", "app", "site-release.js")
+);
+
+function sha256(bytes) {
+  return crypto.createHash("sha256").update(bytes).digest("hex");
+}
 
 test("Get model is P2P-first and conversion is companion-managed", () => {
   assert.match(app, /actionButton\("Get model", \(\) => getHfModel\(entry\)/);
@@ -40,6 +59,30 @@ test("retired text and script handoffs cannot return to the chooser", () => {
   assert.doesNotMatch(app, /importConversionRequestFile/);
   assert.doesNotMatch(app, /ShareMetadata|share metadata|share-metadata/);
   assert.doesNotMatch(html, /Share Metadata|share metadata|share-metadata/);
+});
+
+test("the browser routes companion acquisition to the exact public package", () => {
+  const packageUrl =
+    "https://www.nuget.org/packages/UAIX.Browser.p2pRuntime.SeedHost.Tool/0.2.0";
+  assert.match(html, /id="companionPackageLink"[^>]+href="\/companion\/"/);
+  assert.match(html, /id="companionPackageLink"[^>]+target="_blank"[^>]+rel="noopener noreferrer"/);
+  assert.match(
+    companionPage,
+    new RegExp(`href="${packageUrl.replaceAll(".", "\\.")}"`)
+  );
+  assert.match(companionPage, /dotnet tool install UAIX\.Browser\.p2pRuntime\.SeedHost\.Tool/);
+  assert.match(
+    companionPage,
+    new RegExp(`updates\\.css\\?v=sha256-${sha256(updatesCss)}`)
+  );
+  assert.match(
+    companionPage,
+    new RegExp(`site-release\\.js\\?v=sha256-${sha256(siteReleaseScript)}`)
+  );
+  assert.doesNotMatch(companionPage, /\.txt|\.ps1|conversion-request|share-kit/i);
+  assert.match(companionGuide, /Install the version-pinned public packages from NuGet\.org/);
+  assert.match(companionGuide, /dotnet tool install UAIX\.Browser\.p2pRuntime\.SeedHost\.Tool/);
+  assert.doesNotMatch(companionGuide, /UAIX_NUGET_FEED|reviewed folder feed/);
 });
 
 test("protocol v2 streams both receipt-checked runtime artifacts", () => {

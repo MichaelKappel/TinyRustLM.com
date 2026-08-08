@@ -74,6 +74,7 @@ function canonicalRequestPath(requestUrl) {
   );
   if (pathname === "/") pathname = "/index.html";
   if (pathname === "/app/") pathname = "/app/index.html";
+  if (pathname === "/companion/") pathname = "/companion/index.html";
   if (pathname === "/updates/") pathname = "/updates/index.html";
   return Object.freeze({ pathname, searchParams: url.searchParams });
 }

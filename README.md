@@ -33,6 +33,18 @@ local model storage, and optional two-lane sharing. Version `0.2.0` is the
 single current bridge contract. It uses exact Host and Origin checks, one-time
 pairing, short-lived operation-scoped capabilities, rotation, revocation,
 bounded requests, and receipt-revalidated model and composition streaming.
+The current public packages are the
+[`UAIX.Browser.p2pRuntime.SeedHost` library](https://www.nuget.org/packages/UAIX.Browser.p2pRuntime.SeedHost/0.2.0)
+and
+[`UAIX.Browser.p2pRuntime.SeedHost.Tool` companion](https://www.nuget.org/packages/UAIX.Browser.p2pRuntime.SeedHost.Tool/0.2.0)
+on NuGet.org. Install the companion into an operator-owned tool directory with
+the version-pinned command, then run `doctor` before pairing it with the
+browser:
+
+```powershell
+dotnet tool install UAIX.Browser.p2pRuntime.SeedHost.Tool --version 0.2.0 --tool-path .\.uaix-tools
+.\.uaix-tools\uaix-p2p-seed doctor --json
+```
 
 The `public-local-only` gate proves the browser starts with no project-hosted
 model and no autoload fallback. A

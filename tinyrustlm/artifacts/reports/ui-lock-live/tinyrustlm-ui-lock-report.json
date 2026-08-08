@@ -1,25 +1,28 @@
 {
   "schema": "tinyrustlm.ui_visual_lock.v0",
-  "app_url": "https://TinyRustLM.com/",
-  "generated_utc": "2026-07-08T01:45:44.842Z",
+  "app_url": "https://tinyrustlm.com/",
+  "conversation_mode": "empty",
+  "generated_utc": "2026-08-08T23:18:23.855Z",
+  "comparison_policy": "stable-ui-fields-with-rect-tolerance-and-screenshot-evidence-v1",
   "captures": [
     {
       "viewport": "desktop",
       "width": 1365,
       "height": 768,
       "screenshot": "tinyrustlm\\artifacts\\reports\\ui-lock-live\\tinyrustlm-ui-lock-desktop.png",
-      "screenshot_sha256": "03f625d248226f008572aa0a3de7741cfdde0fbf724c35ca39f814244abdf4f2",
-      "screenshot_bytes": 392091,
-      "ui_signature_sha256": "066f08b09a7f8c4e91592785d5ad8f360930e07daf87dc5b5cd13b7f580b2a6e",
+      "screenshot_sha256": "514ae395609bc1c1f8eb311eadcf7afe502e26f881b4f9a443b98434eef0ab5a",
+      "screenshot_bytes": 417881,
+      "ui_signature_sha256": "cd517dc635edcc015a4465fd1fa35d4cd07a62697052a4d6a23d2ddb50b0ace4",
       "state": {
         "href": "https://tinyrustlm.com/",
         "title": "TinyRustLM",
         "innerWidth": 1365,
         "innerHeight": 768,
-        "bodyTextStart": "Private Rust/WASM\n\nTinyRustLM\nNew Chat\nRecent Chats\nNo saved chats yet.\nModel Setup\nLocal .slm\nHugging Face\nP2P import\nAdvanced tools\nLocal Only\nReady\nReady\nLocal browser inference • No prompts sent to a server\nTinyRustLM Fixture q8_0 (MiniModel public demo)\nLoaded locally\nWASM ready\nloaded\n16 max tokens\nEdit Model\nChat with your local model\n\nRun prompts privately in your browser. No data sent to a server.\n\nSummarize this article\nGet the key points in a clear summary.\nExplain code\nUnderstand what this code does.\nRewrite text\nImprove clarity, tone, and flow.\nGenerate JSON\nCreate structured data",
+        "bodyTextStart": "Private Rust/WASM\n\nTinyRustLM\nNew Chat\nRecent Chats\nNo saved chats yet.\nModel Setup\nLocal .slm\nHugging Face\nP2P import\nAdvanced tools\nLocal Only\nRuntime ready\nWaiting for model\nLocal browser inference • No prompts sent to a server\nChoose model\nNo model imported\nWASM ready\nloaded\nBrowser local\nEdit Model\nv0.2.0\nReleased 2026-08-08\nLast published 2026-08-08 22:15 UTC\nChat with your local model\n\nRun prompts privately in your browser. No data sent to a server.\n\nSummarize this article\nGet the key points in a clear summary.\nExplain code\nUnderstand what this code does.\nRewrite text\nImprove clarity, t",
         "requiredShellPresent": true,
         "signatureFields": {
           "viewport": "desktop",
+          "conversationMode": "empty",
           "title": "TinyRustLM",
           "bodyBackground": "rgba(0, 0, 0, 0)",
           "bodyColor": "rgb(248, 250, 252)",
@@ -44,19 +47,19 @@
           "panelHeadings": [
             "Recent Chats",
             "Model Setup",
+            "Local P2P sharing",
             "Chat with your local model",
             "Advanced Options",
             "Generation Presets",
             "Model Selection",
+            "Workspace-key access",
             "Local Connect Approvals",
             "Runtime StatusWASM • GPU • Memory",
             "DiagnosticsLogs • Performance • Errors",
             "ProvenanceModel • Files • Checksums",
             "BenchmarkSpeed • Tokens/sec • Latency",
-            "Adapter SidecarLoRA • Adapters • Merges",
-            "Module PlanGraph • Modules • Ops",
-            "AssemblyReceipts • Lineage • Gates",
-            "Run History / State Ledger"
+            "Run History / State Ledger",
+            "Load a larger local model?"
           ],
           "shellRects": {
             "leftSidebar": {
@@ -78,18 +81,31 @@
               "height": 768
             },
             "modelToolbar": {
-              "x": 314,
-              "y": 72,
-              "width": 677,
-              "height": 102
+              "x": 302,
+              "y": 50,
+              "width": 711,
+              "height": 50
             },
             "composerPanel": {
-              "x": 314,
-              "y": 767,
-              "width": 677,
-              "height": 179
+              "x": 302,
+              "y": 628,
+              "width": 711,
+              "height": 96
+            },
+            "conversationPanel": {
+              "x": 302,
+              "y": 478,
+              "width": 711,
+              "height": 138
             }
-          }
+          },
+          "conversationState": "empty",
+          "generationState": "idle",
+          "messageCount": 0,
+          "responseCount": 1,
+          "simpleExperienceHidden": false,
+          "modelPopoverHidden": true,
+          "timelineOverflowY": "visible"
         }
       }
     },
@@ -98,18 +114,19 @@
       "width": 390,
       "height": 844,
       "screenshot": "tinyrustlm\\artifacts\\reports\\ui-lock-live\\tinyrustlm-ui-lock-mobile.png",
-      "screenshot_sha256": "abe4327ca2c871dce0f9fcd2bbd5f1a22837eec5da887e8f5cf63f932ec250bf",
-      "screenshot_bytes": 109262,
-      "ui_signature_sha256": "172dedd0c99849681271614e7c96c933d536f8a4de335937bfe73f708e93e0eb",
+      "screenshot_sha256": "2ede40219c4e79a766c1d59c71c16689b8703a8aefc59937e43d3849599758d0",
+      "screenshot_bytes": 186995,
+      "ui_signature_sha256": "03884db3a1d763d212dce3e4a40ea3a228de1862ad325e5d3d1b4b6bdfeac592",
       "state": {
         "href": "https://tinyrustlm.com/",
         "title": "TinyRustLM",
         "innerWidth": 390,
         "innerHeight": 844,
-        "bodyTextStart": "TinyRustLM\nLocal browser inference • No prompts sent to a server\nTinyRustLM Fixture q8_0 (MiniModel public demo)\nLoaded locally\nWASM ready\nloaded\n16 max tokens\nEdit Model\nAdvanced Options\nChat with your local model\n\nRun prompts privately in your browser. No data sent to a server.\n\nSummarize this article\nGet the key points in a clear summary.\nExplain code\nUnderstand what this code does.\nRewrite text\nImprove clarity, tone, and flow.\nGenerate JSON\nCreate structured data instantly.\nNo conversation yet. Messages appear only after a verified local .slm runs through Rust/WASM generation; use local im",
+        "bodyTextStart": "TinyRustLM\nLocal browser inference • No prompts sent to a server\nChoose model\nNo model imported\nWASM ready\nloaded\nBrowser local\nAdvanced Options\nv0.2.0\nReleased 2026-08-08\nLast published 2026-08-08 22:15 UTC\nChat with your local model\n\nRun prompts privately in your browser. No data sent to a server.\n\nSummarize this article\nExplain code\nRewrite text\nGenerate JSON\nPrompt\nReady for a message",
         "requiredShellPresent": true,
         "signatureFields": {
           "viewport": "mobile",
+          "conversationMode": "empty",
           "title": "TinyRustLM",
           "bodyBackground": "rgba(0, 0, 0, 0)",
           "bodyColor": "rgb(248, 250, 252)",
@@ -134,52 +151,65 @@
           "panelHeadings": [
             "Recent Chats",
             "Model Setup",
+            "Local P2P sharing",
             "Chat with your local model",
             "Advanced Options",
             "Generation Presets",
             "Model Selection",
+            "Workspace-key access",
             "Local Connect Approvals",
             "Runtime StatusWASM • GPU • Memory",
             "DiagnosticsLogs • Performance • Errors",
             "ProvenanceModel • Files • Checksums",
             "BenchmarkSpeed • Tokens/sec • Latency",
-            "Adapter SidecarLoRA • Adapters • Merges",
-            "Module PlanGraph • Modules • Ops",
-            "AssemblyReceipts • Lineage • Gates",
-            "Run History / State Ledger"
+            "Run History / State Ledger",
+            "Load a larger local model?"
           ],
           "shellRects": {
             "leftSidebar": {
               "x": 0,
               "y": 0,
               "width": 390,
-              "height": 87
+              "height": 63
             },
             "mainWorkspace": {
               "x": 0,
-              "y": 87,
+              "y": 63,
               "width": 390,
-              "height": 844
+              "height": 784
             },
             "advancedOptionsPanel": {
-              "x": 50,
+              "x": 390,
               "y": 0,
               "width": 340,
               "height": 844
             },
             "modelToolbar": {
-              "x": 14,
-              "y": 153,
-              "width": 368,
-              "height": 174
+              "x": 10,
+              "y": 111,
+              "width": 370,
+              "height": 89
             },
             "composerPanel": {
-              "x": 58,
-              "y": 688,
-              "width": 274,
-              "height": 126
+              "x": 8,
+              "y": 728,
+              "width": 374,
+              "height": 96
+            },
+            "conversationPanel": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
             }
-          }
+          },
+          "conversationState": "empty",
+          "generationState": "idle",
+          "messageCount": 0,
+          "responseCount": 1,
+          "simpleExperienceHidden": false,
+          "modelPopoverHidden": true,
+          "timelineOverflowY": "visible"
         }
       }
     }

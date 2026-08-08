@@ -102,6 +102,30 @@
           "summary": "Kept prompts, responses, source tensors, model bytes, and composition bytes off TinyRustLM and related project servers."
         }
       ]
+    },
+    {
+      "releaseId": "tinyrustlm.com@0.2.1",
+      "version": "0.2.1",
+      "releaseDate": "2026-08-08",
+      "summary": "Makes the public desktop companion immediately discoverable from TinyRustLM and replaces private-feed installation guidance.",
+      "changes": [
+        {
+          "type": "added",
+          "summary": "Added a Get companion action that opens a version-pinned install page linked to the public NuGet.org tool package without creating browser handoff files."
+        },
+        {
+          "type": "changed",
+          "summary": "Changed the canonical install guide from a private folder feed to the public signed 0.2.0 library, tool, and symbol packages."
+        },
+        {
+          "type": "changed",
+          "summary": "Recorded clean public package installation, repository-signature verification, payload verification, and companion doctor evidence."
+        },
+        {
+          "type": "documentation",
+          "summary": "Kept unpublished self-contained archives out of public availability claims until independent distribution evidence exists."
+        }
+      ]
     }
   ],
   "publications": [

@@ -41,7 +41,7 @@ test("complete web release input passes the bounded secret scan", async (context
     generatedRoot
   });
   assert.equal(result.status, "pass");
-  assert.equal(result.scannedArtifactCount, 23);
+  assert.equal(result.scannedArtifactCount, 24);
   assert.equal(result.secretFindingCount, 0);
   assert.match(result.reportSha256, /^[0-9a-f]{64}$/);
   assert.match(result.scopeManifestSha256, /^[0-9a-f]{64}$/);

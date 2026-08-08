@@ -183,6 +183,68 @@ h1 {
   text-transform: uppercase;
 }
 
+.install-steps {
+  display: grid;
+  gap: 28px;
+}
+
+.install-step {
+  padding-top: 24px;
+  border-top: 1px solid #27313d;
+}
+
+.install-step h2 {
+  margin-bottom: 10px;
+}
+
+.install-step p {
+  max-width: 72ch;
+  color: #b8c4d1;
+  line-height: 1.6;
+}
+
+.command-block {
+  max-width: 100%;
+  margin: 14px 0 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  color: #f8fafc;
+  background: #0e131a;
+  border: 1px solid #27313d;
+  border-radius: 6px;
+  font: 600 14px/1.55 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.package-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  margin-top: 18px;
+}
+
+.package-action {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  color: #f8fafc;
+  background: #1d4ed8;
+  border: 1px solid #60a5fa;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 720;
+  text-decoration: none;
+}
+
+.package-action:hover,
+.package-action:focus-visible {
+  color: #ffffff;
+  background: #2563eb;
+}
+
 .site-footer {
   padding: 24px 0;
   border-top: 1px solid #27313d;

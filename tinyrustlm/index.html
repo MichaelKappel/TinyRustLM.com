@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="application-version" content="0.2.0">
+  <meta name="application-version" content="0.2.1">
   <meta name="release-date" content="2026-08-08">
   <title>TinyRustLM</title>
   <link rel="icon" href="data:,">
   <link rel="alternate" type="application/json" href="/.well-known/site-release.json" title="Current release">
   <link rel="alternate" type="application/json" href="/.well-known/site-release-history.json" title="Release history">
-  <link rel="stylesheet" href="./app/app.css?v=sha256-56cdeb7d6a255e1de6359db967208a3e324b7f4161fc9167a772603dffe042fc">
+  <link rel="stylesheet" href="./app/app.css?v=sha256-a0add3e14709a980100302b66708bb8976b9d264990407e5bf27f78544d8cf75">
 </head>
 <body>
   <svg class="icon-sprite" aria-hidden="true" focusable="false">
@@ -112,7 +112,7 @@
       <div class="sidebar-utilities" aria-label="Documentation, updates, and tools">
         <a class="icon-button" href="#" rel="noopener" aria-label="Runtime docs" data-tooltip="Runtime docs" data-doc-target="runtime"><svg><use href="#icon-book"></use></svg></a>
         <a class="icon-button" href="#" rel="noopener" aria-label="MiniModel docs" data-tooltip="MiniModel docs" data-doc-target="minimodel"><svg><use href="#icon-network"></use></svg></a>
-        <a class="icon-button" href="/updates/" aria-label="Updates and release history" data-tooltip="Updates v0.2.0"><svg><use href="#icon-history"></use></svg></a>
+        <a class="icon-button" href="/updates/" aria-label="Updates and release history" data-tooltip="Updates v0.2.1"><svg><use href="#icon-history"></use></svg></a>
         <button class="icon-button" type="button" data-sidebar-action="advanced" aria-label="Advanced tools" data-tooltip="Advanced tools"><svg><use href="#icon-sliders"></use></svg></button>
       </div>
     </aside>
@@ -144,7 +144,7 @@
       </button>
 
       <a class="site-release-summary compact-release-summary" href="/updates/" aria-label="Updates and release history" data-site-release data-release-state="pending">
-        <span>v<span data-release-version>0.2.0</span></span>
+        <span>v<span data-release-version>0.2.1</span></span>
         <span>Released <time data-release-date datetime="2026-08-08">2026-08-08</time></span>
         <span>Last published <time data-release-published-at>Awaiting live verification</time></span>
       </a>
@@ -206,12 +206,15 @@
         </div>
         <div id="simpleP2pSourcePanel" class="source-panel" data-source-panel="p2p" hidden>
           <div class="companion-connect-row" aria-label="Desktop companion connection">
-            <div>
+            <div class="companion-connect-copy">
               <strong>Desktop companion</strong>
               <span id="companionStatus" class="flow-status" role="status" aria-live="polite">Browser only / desktop companion not contacted</span>
             </div>
-            <button id="companionDetectButton" class="secondary-action" type="button" aria-describedby="companionAccessNotice">Connect desktop companion</button>
-            <button id="companionForgetButton" class="secondary-action" type="button" hidden>Forget pairing</button>
+            <div class="companion-connect-actions">
+              <a id="companionPackageLink" class="secondary-action companion-package-link" href="/companion/" target="_blank" rel="noopener noreferrer" aria-describedby="companionAccessNotice">Get companion</a>
+              <button id="companionDetectButton" class="secondary-action" type="button" aria-describedby="companionAccessNotice">Connect desktop companion</button>
+              <button id="companionForgetButton" class="secondary-action" type="button" hidden>Forget pairing</button>
+            </div>
           </div>
           <p id="companionAccessNotice" class="flow-status companion-access-notice">TinyRustLM runs models in your browser. The desktop companion imports verified P2P models or converts pinned source revisions locally; model bytes never pass through TinyRustLM.com.</p>
           <div id="companionPairingControls" class="search-row companion-pairing-row" hidden>
@@ -697,7 +700,7 @@
 
     <footer class="footnote" id="appFooter">
       <a class="site-release-summary" href="/updates/" aria-label="Updates and release history" data-site-release data-release-state="pending">
-        <span>v<span data-release-version>0.2.0</span></span>
+        <span>v<span data-release-version>0.2.1</span></span>
         <span>Released <time data-release-date datetime="2026-08-08">2026-08-08</time></span>
         <span>Last published <time data-release-published-at>Awaiting live verification</time></span>
       </a>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="application-version" content="0.2.1">
+  <meta name="release-date" content="2026-08-08">
+  <title>Desktop companion | TinyRustLM</title>
+  <link rel="icon" href="data:,">
+  <link rel="alternate" type="application/json" href="/.well-known/site-release.json" title="Current release">
+  <link rel="stylesheet" href="../updates/updates.css?v=sha256-244e1edb5c757558b7cabe7b8ad0e2377cef0bb137cb0bc427af506b7422bcb4">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="/">TinyRustLM</a>
+      <a class="back-link" href="/">Return to local chat</a>
+    </div>
+  </header>
+  <main>
+    <section class="release-band" aria-labelledby="companion-title" data-site-release data-release-state="pending">
+      <div class="release-band-inner">
+        <p class="eyebrow">Desktop companion</p>
+        <h1 id="companion-title">TinyRustLM desktop companion</h1>
+        <p class="release-summary">Install the signed companion to import verified P2P models or convert an immutable supported source locally. Model bytes move directly to software running on your computer and never pass through TinyRustLM.com.</p>
+        <p class="release-facts">
+          <span>Tool <strong>0.2.0</strong></span>
+          <span>Site <strong>v<span data-release-version>0.2.1</span></strong></span>
+          <span>Released <strong><time data-release-date datetime="2026-08-08">2026-08-08</time></strong></span>
+          <span>Last published <strong><time data-release-published-at>Awaiting live verification</time></strong></span>
+        </p>
+        <div class="package-actions" aria-label="Public companion packages">
+          <a class="package-action" href="https://www.nuget.org/packages/UAIX.Browser.p2pRuntime.SeedHost.Tool/0.2.0" target="_blank" rel="noopener noreferrer">Open public tool package</a>
+          <a href="https://www.nuget.org/packages/UAIX.Browser.p2pRuntime.SeedHost/0.2.0" target="_blank" rel="noopener noreferrer">Library package</a>
+        </div>
+      </div>
+    </section>
+    <section class="history" aria-labelledby="install-title">
+      <div class="history-inner install-steps">
+        <div class="install-step">
+          <h2 id="install-title">1. Install</h2>
+          <p>Install the exact public tool into a directory you control. The browser does not silently install or execute desktop software.</p>
+          <pre class="command-block"><code>dotnet tool install UAIX.Browser.p2pRuntime.SeedHost.Tool --version 0.2.0 --tool-path .\.uaix-tools</code></pre>
+        </div>
+        <div class="install-step">
+          <h2>2. Verify</h2>
+          <p>Run the packaged readiness check before starting a model operation.</p>
+          <pre class="command-block"><code>.\.uaix-tools\uaix-p2p-seed doctor --json</code></pre>
+        </div>
+        <div class="install-step">
+          <h2>3. Connect</h2>
+          <p>Start the loopback bridge for the exact TinyRustLM origin, return to the chat, and choose Connect desktop companion. Pairing is one time and the browser keeps the short-lived capability in memory only.</p>
+          <pre class="command-block"><code>.\.uaix-tools\uaix-p2p-seed bridge --root C:\UAIX\SeedHost --origin https://tinyrustlm.com --port 43127</code></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <span>TinyRustLM companion installation</span>
+      <nav class="machine-links" aria-label="Release information">
+        <a href="/updates/">Updates</a>
+        <a href="/.well-known/site-release.json">Current release JSON</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="../app/site-release.js?v=sha256-8eb3b12108b996bea0e6956527d1b07feb771f7c0ce3c072961d29e6689ba25f"></script>
+</body>
+</html>

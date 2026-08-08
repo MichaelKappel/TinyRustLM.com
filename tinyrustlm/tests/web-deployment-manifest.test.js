@@ -11,9 +11,7 @@ const {
   validateHostPolicy,
   validateWebDeploymentManifest
 } = require("../tools/web-deployment-manifest.js");
-const {
-  materializeReleaseState
-} = require("../tools/site-release-contract.js");
+const { materializePendingRelease } = require("./site-release-test-fixture.js");
 
 const siteRoot = path.resolve(__dirname, "..");
 const deploymentManifestPath = path.join(
@@ -21,20 +19,16 @@ const deploymentManifestPath = path.join(
   "deploy",
   "web-deployment-manifest.v2.json"
 );
-const ledgerPath = path.join(siteRoot, "release", "site-release-ledger.v1.json");
 
 function writeJson(filePath, value) {
   fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
 }
 
 function materializedRelease(context) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-generated-release-"));
-  context.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  materializeReleaseState({
-    ledgerPath,
-    outputRoot: root
-  });
-  return root;
+  return materializePendingRelease(
+    context,
+    "tinyrustlm-generated-release-"
+  ).outputRoot;
 }
 
 test("web deployment manifest is the exact no-model publication closure", (context) => {
@@ -43,11 +37,12 @@ test("web deployment manifest is the exact no-model publication closure", (conte
     generatedRoot: materializedRelease(context)
   });
   const paths = new Set(result.files.map((file) => file.remote));
-  assert.equal(result.files.length, 22);
+  assert.equal(result.files.length, 23);
   assert.ok(paths.has("app/browser-model-admission.js"));
   assert.ok(paths.has("app/memory-endpoints-enrollment.js"));
   assert.ok(paths.has("app/site-release.js"));
   assert.ok(paths.has("updates/index.html"));
+  assert.ok(paths.has("companion/index.html"));
   assert.ok(paths.has(".well-known/site-release.json"));
   assert.ok(paths.has(".well-known/site-release-history.json"));
   assert.ok(paths.has("runtime/tinyrustlm.wasm"));

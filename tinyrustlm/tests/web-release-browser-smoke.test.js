@@ -20,19 +20,15 @@ const {
 const {
   validateWebDeploymentManifest
 } = require("../tools/web-deployment-manifest.js");
-const { materializeReleaseState } = require("../tools/site-release-contract.js");
+const { materializePendingRelease } = require("./site-release-test-fixture.js");
 
 const siteRoot = path.resolve(__dirname, "..");
-const ledgerPath = path.join(siteRoot, "release", "site-release-ledger.v1.json");
 
 function generatedRelease(context) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-smoke-release-"));
-  context.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  materializeReleaseState({
-    ledgerPath,
-    outputRoot: root
-  });
-  return root;
+  return materializePendingRelease(
+    context,
+    "tinyrustlm-smoke-release-"
+  ).outputRoot;
 }
 
 test("browser smoke accepts only canonical public HTTPS or loopback HTTP", () => {

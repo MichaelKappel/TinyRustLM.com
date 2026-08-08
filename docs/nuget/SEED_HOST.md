@@ -17,16 +17,18 @@ a second chat-history state machine.
 - Native runtime assets: Windows x64, Linux x64, and Linux ARM64 when the
   corresponding release asset has passed its native CI job
 
-Install from the reviewed folder feed:
+Install the version-pinned public packages from NuGet.org. The package pages
+are
+[`UAIX.Browser.p2pRuntime.SeedHost` 0.2.0](https://www.nuget.org/packages/UAIX.Browser.p2pRuntime.SeedHost/0.2.0)
+and
+[`UAIX.Browser.p2pRuntime.SeedHost.Tool` 0.2.0](https://www.nuget.org/packages/UAIX.Browser.p2pRuntime.SeedHost.Tool/0.2.0).
 
 ```powershell
 dotnet add package UAIX.Browser.p2pRuntime.SeedHost `
-  --version 0.2.0 `
-  --source $env:UAIX_NUGET_FEED
+  --version 0.2.0
 
 dotnet tool install UAIX.Browser.p2pRuntime.SeedHost.Tool `
   --version 0.2.0 `
-  --add-source $env:UAIX_NUGET_FEED `
   --tool-path .\.uaix-tools
 ```
 
@@ -171,7 +173,9 @@ silently configured by the package.
   internals are not included. The packaged Rust converter supports only the
   reviewed public source contracts declared by this release.
 
-Use the matching `SHA256SUMS-UAIX.Browser.p2pRuntime.SeedHost-0.2.0.txt` file
-to verify package and symbol artifacts in the local feed. Self-contained tool
-archives use
-`SHA256SUMS-UAIX.Browser.p2pRuntime.SeedHost.Tool-0.2.0.txt`.
+NuGet.org publishes the library package, tool package, and their symbol
+sidecars. A clean public install must resolve exactly version `0.2.0`; inspect
+the downloaded package with `dotnet nuget verify --all <package-path>` when an
+independent repository-signature check is required. Self-contained companion
+archives are a separate release channel and are not claimed as public until a
+public distribution receipt and HTTPS readback exist.

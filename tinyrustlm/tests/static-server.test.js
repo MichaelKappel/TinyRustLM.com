@@ -61,6 +61,9 @@ test("loopback release server exposes only exact manifest public artifacts", asy
     const app = await request(server.origin, "/app/");
     assert.equal(app.statusCode, 200);
 
+    const companion = await request(server.origin, "/companion/");
+    assert.equal(companion.statusCode, 200);
+
     const updates = await request(server.origin, "/updates/");
     assert.equal(updates.statusCode, 200);
 

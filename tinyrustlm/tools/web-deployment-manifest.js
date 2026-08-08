@@ -121,9 +121,14 @@ function expectedStaticPaths(siteRoot) {
     path.join(siteRoot, "updates"),
     (name) => /^(?:index\.html|updates\.css)$/u.test(name)
   ).map((name) => `updates/${name}`);
+  const companionFiles = listRegularFiles(
+    path.join(siteRoot, "companion"),
+    (name) => name === "index.html"
+  ).map((name) => `companion/${name}`);
   return Object.freeze([
     ".htaccess",
     ...appFiles,
+    ...companionFiles,
     "index.html",
     ...runtimeFiles,
     ...updateFiles
@@ -295,6 +300,7 @@ function validateWebDeploymentManifest(options = {}) {
     "runtime/tinyrustlm.wasm.manifest",
     "runtime/tinyrustlm-simd.wasm.manifest",
     "updates/updates.css",
+    "companion/index.html",
     "updates/index.html",
     ...generatedReleasePaths
   ]) {
@@ -314,7 +320,10 @@ function validateWebDeploymentManifest(options = {}) {
       ]),
     "Web deployment must finish with HTML, release history, and the current-release marker"
   );
-  const firstHtmlPosition = orderedPaths.indexOf("updates/index.html");
+  const firstHtmlPosition = Math.min(
+    orderedPaths.indexOf("companion/index.html"),
+    orderedPaths.indexOf("updates/index.html")
+  );
   for (const dependency of [
     ...shellAssetPaths,
     "runtime/tinyrustlm.wasm",

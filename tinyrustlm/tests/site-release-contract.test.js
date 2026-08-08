@@ -2,7 +2,6 @@
 
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
-const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 
@@ -14,46 +13,40 @@ const {
   parseReleaseLedger,
   validatePublicReleaseFiles
 } = require("../tools/site-release-contract.js");
-
-const siteRoot = path.resolve(__dirname, "..");
-const ledgerPath = path.join(siteRoot, "release", "site-release-ledger.v1.json");
-const sourceRevision = "a".repeat(40);
-const publishedAt = "2026-08-08T22:15:30.000Z";
+const {
+  publishedAt,
+  sourceLedgerPath: ledgerPath,
+  sourceRevision,
+  temporaryDirectory,
+  writeFinalizedLedger,
+  writePendingLedger
+} = require("./site-release-test-fixture.js");
 
 function clone(value) {
   return structuredClone(value);
 }
 
 function withTemporaryDirectory(context) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-site-release-"));
-  context.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  return root;
+  return temporaryDirectory(context, "tinyrustlm-site-release-");
 }
 
 function pendingLedgerPath(context) {
-  const root = withTemporaryDirectory(context);
-  const candidatePath = path.join(root, "site-release-ledger.pending.json");
-  const ledger = JSON.parse(fs.readFileSync(ledgerPath, "utf8"));
-  const publication = ledger.publications.pop();
-  assert.equal(publication.releaseId, "tinyrustlm.com@0.2.0");
-  fs.writeFileSync(candidatePath, `${JSON.stringify(ledger, null, 2)}\n`, "utf8");
-  return candidatePath;
+  return writePendingLedger(context);
 }
 
 function finalizedLedgerPath(context) {
-  const root = withTemporaryDirectory(context);
-  const finalizedPath = path.join(root, "site-release-ledger.finalized.json");
-  fs.copyFileSync(ledgerPath, finalizedPath);
-  return finalizedPath;
+  return writeFinalizedLedger(context);
 }
 
-test("source release ledger preserves four finalized publications", () => {
+test("source release ledger preserves history and one valid publication state", () => {
   const result = parseReleaseLedger(fs.readFileSync(ledgerPath));
   assert.equal(result.ledger.site.siteId, "tinyrustlm.com");
   assert.equal(result.ledger.site.canonicalOrigin, "https://tinyrustlm.com");
   assert.equal(result.ledger.site.updatesPath, "/updates/");
-  assert.equal(result.ledger.releases.length, 4);
-  assert.equal(result.ledger.publications.length, 4);
+  assert.equal(result.ledger.releases.length, 5);
+  assert.ok(
+    result.ledger.publications.length === 4 || result.ledger.publications.length === 5
+  );
   assert.equal(result.ledger.publications[0].releaseId, "tinyrustlm.com@0.1.0");
   assert.equal(result.ledger.publications[1].releaseId, "tinyrustlm.com@0.1.1");
   assert.equal(
@@ -68,26 +61,26 @@ test("source release ledger preserves four finalized publications", () => {
     result.ledger.publications[3].publicationId,
     "75d5f72656635eed58644b705acdf7c8fb18512fd2225f402563cf1756a2ea10"
   );
-  assert.equal(result.pendingRelease, null);
-  assert.equal(
-    result.ledgerSha256,
-    "912f69afdfb63d5062dd09ab5120d54ef547cb519c896014e8e1505eae804b19"
-  );
+  if (result.pendingRelease) {
+    assert.equal(result.pendingRelease.releaseId, "tinyrustlm.com@0.2.1");
+    assert.equal(result.ledger.publications.length, 4);
+  } else {
+    assert.equal(result.ledger.publications.at(-1).releaseId, "tinyrustlm.com@0.2.1");
+    assert.equal(result.ledger.publications.length, 5);
+  }
+  assert.match(result.ledgerSha256, /^[a-f0-9]{64}$/);
 });
 
 test("materializes exact current records from a finalized ledger", (context) => {
   const outputRoot = withTemporaryDirectory(context);
   const finalizedPath = finalizedLedgerPath(context);
   const result = materializeReleaseState({ ledgerPath: finalizedPath, outputRoot });
-  assert.equal(result.current.version, "0.2.0");
-  assert.equal(result.current.publishedAt, "2026-08-08T22:15:40.943Z");
-  assert.equal(result.current.sourceRevision, "3bd6637360399a38b6f433f6f61dfcd233358bfe");
-  assert.equal(
-    result.current.publicationId,
-    "75d5f72656635eed58644b705acdf7c8fb18512fd2225f402563cf1756a2ea10"
-  );
+  assert.equal(result.current.version, "0.2.1");
+  assert.equal(result.current.publishedAt, publishedAt);
+  assert.equal(result.current.sourceRevision, sourceRevision);
+  assert.match(result.current.publicationId, /^[a-f0-9]{64}$/);
   assert.equal(result.history.generatedAt, result.current.publishedAt);
-  assert.equal(result.history.releases.length, 4);
+  assert.equal(result.history.releases.length, 5);
   const reopened = validatePublicReleaseFiles({ ledgerPath: finalizedPath, outputRoot });
   assert.deepEqual(reopened.current, result.current);
   assert.deepEqual(reopened.history, result.history);
@@ -113,13 +106,13 @@ test("materializes canonical current and history records bound to one clean sour
   });
 
   assert.equal(result.current.schema, "uaix.site_release.v1");
-  assert.equal(result.current.version, "0.2.0");
+  assert.equal(result.current.version, "0.2.1");
   assert.equal(result.current.releaseDate, "2026-08-08");
   assert.equal(result.current.publishedAt, publishedAt);
   assert.equal(result.current.sourceRevision, sourceRevision);
   assert.equal(result.current.updatesUrl, "https://tinyrustlm.com/updates/");
   assert.match(result.current.publicationId, /^[a-f0-9]{64}$/);
-  assert.equal(result.history.releases.length, 4);
+  assert.equal(result.history.releases.length, 5);
   assert.deepEqual(result.history.releases.at(-1), result.current);
   assert.equal(result.files.length, 2);
   assert.deepEqual(
@@ -187,7 +180,9 @@ test("rejects unknown fields, duplicate identities, invalid versions, and ambigu
   assert.throws(() => parseReleaseLedger(JSON.stringify(invalidVersion)), /SemVer/);
 
   const secondPending = clone(baseline);
-  secondPending.publications.pop();
+  if (secondPending.publications.length === secondPending.releases.length) {
+    secondPending.publications.pop();
+  }
   secondPending.releases.push({
     releaseId: "tinyrustlm.com@0.3.0",
     version: "0.3.0",
@@ -298,10 +293,10 @@ test("produces an exclusive candidate ledger after successful public evidence", 
     outputPath: candidatePath
   });
 
-  assert.equal(finalized.ledger.publications.length, 4);
+  assert.equal(finalized.ledger.publications.length, 5);
   assert.equal(finalized.publication.publicationId, materialized.current.publicationId);
   assert.equal(finalized.ledger.publications[0].releaseId, "tinyrustlm.com@0.1.0");
-  assert.equal(finalized.ledger.publications.at(-1).releaseId, "tinyrustlm.com@0.2.0");
+  assert.equal(finalized.ledger.publications.at(-1).releaseId, "tinyrustlm.com@0.2.1");
   assert.equal(finalized.ledger.publications.at(-1).publishedAt, publishedAt);
   assert.equal(finalized.ledger.publications.at(-1).sourceRevision, sourceRevision);
   assert.equal(parseReleaseLedger(fs.readFileSync(candidatePath)).pendingRelease, null);
