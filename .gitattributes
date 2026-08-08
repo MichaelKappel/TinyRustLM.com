@@ -3,6 +3,10 @@
 ###############################################################################
 * text=auto
 
+# Shell entry points are executed by Linux, WSL, and CI. Keep their shebangs
+# and option lines canonical on Windows checkouts as well.
+*.sh text eol=lf
+
 # Hash-bound review sources and memory routes must survive Windows checkouts
 # byte-for-byte. Their SHA-256 values are persisted in receipts and ledgers.
 *.jsonl text eol=lf

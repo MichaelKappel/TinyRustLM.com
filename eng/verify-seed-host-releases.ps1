@@ -247,6 +247,10 @@ finally {
 if (-not $SkipLinuxExecution) {
     $wsl = Get-Command wsl.exe -ErrorAction Stop
     $linuxScriptWindows = (Resolve-Path (Join-Path $PSScriptRoot "verify-seed-host-release.sh")).Path
+    $linuxScriptBytes = [IO.File]::ReadAllBytes($linuxScriptWindows)
+    if ($linuxScriptBytes -contains 13) {
+        throw "Linux release verifier must use LF line endings: $linuxScriptWindows"
+    }
     $linuxScript = (& $wsl.Source -e wslpath -a $linuxScriptWindows).Trim()
     $linuxReleaseDirectory = (& $wsl.Source -e wslpath -a $ReleaseDirectory).Trim()
     if ([string]::IsNullOrWhiteSpace($linuxScript) -or [string]::IsNullOrWhiteSpace($linuxReleaseDirectory)) {
