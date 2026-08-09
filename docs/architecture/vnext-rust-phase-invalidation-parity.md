@@ -1,0 +1,141 @@
+# vNext Rust Semantic-Currentness Parity
+
+## Status And Non-Claims
+
+`rust/crates/tinyrustlm-evidence` independently implements the exact frozen
+vNext semantic-currentness classifier. It consumes immutable canonical receipt
+bytes supplied by its caller and produces the same canonical result bytes,
+raw-byte SHA-256, or stable rejection code as the Node authority.
+
+This checkpoint is not signature-authority parity, campaign projection,
+browser execution, production runner integration, model qualification,
+MemoryEndpoints continuity, outside-network P2P proof, catalog publication,
+deployment, or release authorization. It changes no campaign counter. Status
+remains 0/20 qualified model hashes, 0/50 deletion-backed browser rounds, 0/25
+authorized live memory rounds, 0/40 outside-network lane proofs, and 0/20 live
+catalog announcements.
+
+## Frozen Inputs
+
+The implementation is bound to:
+
+- profile `tinyrustlm.vnext.phase-invalidation.v1`;
+- profile SHA-256
+  `8e0cccdc007e56ace6550163b0fe1acdd211e74b184053739785a1d925b113cb`;
+- result schema `tinyrustlm.vnext.phase_invalidation_result.v1`;
+- receipt schema `tinyrustlm.vnext.receipt.v1`; and
+- vector corpus `contracts/vnext/phase-invalidation-rust-vectors.v1.json`.
+
+The vector corpus is 74,756 bytes with SHA-256
+`79a7fa4b35295a90bcf875c4fb400e4ad972feb4b42ac029ef55853c0f45a5c0`.
+Its Node generator is deterministic, offline, and checked for compatibility
+terms and network APIs. Regeneration must reproduce every byte before a
+checkpoint can be accepted.
+
+## Public Rust Boundary
+
+`classify_phase_receipts(campaign_id, receipt_bytes)` accepts one safe campaign
+ID and a borrowed slice of owned receipt byte buffers. It returns
+`FinalizedPhaseInvalidation`, which owns immutable canonical result bytes and
+the lowercase SHA-256 of those exact bytes. A failure returns
+`PhaseInvalidationError`; callers may use only its bounded `code()` value as a
+machine contract.
+
+The operation performs no filesystem discovery or mutation, environment
+lookup, network request, process launch, retry, clock lookup, random choice, or
+best-result selection. It compiles for native targets and
+`wasm32-unknown-unknown`. The crate forbids unsafe Rust.
+
+## Receipt Admission
+
+Before graph construction, each input must be the complete canonical wire of
+one current vNext receipt. The Rust parser uses closed typed structures and
+rejects:
+
+- missing required members, including required members whose value may be
+  null;
+- unknown or duplicate members at every represented structure;
+- unsupported schema, receipt type, phase, status, or security-record shape;
+- malformed or unsorted identities, hashes, tools, parents, and public
+  parameters;
+- malformed UTC instants or impossible calendar dates;
+- non-HTTPS, private, local, credential-bearing, query-bearing, fragment-bearing,
+  traversal-bearing, or noncanonical public URLs;
+- invalid canonical base64, bounds, and cross-field status/error invariants;
+- noncanonical JSON whitespace, member order, escaping, or trailing bytes;
+- incorrect `receiptId` or `canonicalContentSha256`; and
+- any receipt over 262,144 bytes.
+
+Canonical receipt identity excludes only the two self-referential identity
+members and binds every other member through domain
+`tinyrustlm.receipt.content.v1`. Parsing successfully is therefore not enough;
+the incoming wire and both identities must be exact.
+
+## Currentness Algorithm
+
+The classifier enforces the frozen limits of 2,048 receipts, 67,108,864 total
+receipt bytes, 32,768 graph edges, 64 operation heads, and 4,194,304 result
+bytes. It then:
+
+1. validates one campaign and globally unique receipt identities;
+2. derives the domain-separated operation identity from campaign, receipt
+   type, phase, `operation_id`, and `subject_id`;
+3. derives the material identity from operation identity plus exact material
+   inputs, tools, configuration, source revision, and runtime;
+4. validates dependency and supersession parents;
+5. rejects cross-operation supersession and dependency/supersession overlap;
+6. proves the dependency, supersession, and combined graphs are acyclic;
+7. marks explicit supersession targets as immutable historical receipts;
+8. identifies unique or conflicting unsuperseded operation heads;
+9. propagates stale state only through material dependencies; and
+10. serializes the exact sorted result and domain-separated receipt-set
+    identity.
+
+No timestamp, insertion order, attempt label, output value, or receipt hash
+implicitly wins. Multiple unresolved heads remain a visible invalid conflict
+until a later receipt explicitly supersedes them under the same operation
+identity.
+
+## Cross-Language Evidence
+
+Four accepted vector histories cover baseline acquisition-to-qualification,
+successful evaluator replacement with resumed qualification, a failed
+replacement whose descendants cannot remain pass-eligible, and unresolved
+heads. Rust must match the exact Node result bytes and result SHA-256 for every
+case.
+
+Nine rejection vectors cover empty input, duplicate receipt identity, missing
+dependency parent, cross-operation supersession, dependency/supersession
+overlap, missing phase parameters, unsupported receipt type, noncanonical
+receipt wire, and campaign mismatch. Rust must reject each with the exact Node
+error code.
+
+Additional Rust unit tests attack receipt-field completeness, unknown and
+duplicate members, safe-ID grammar, timestamp grammar and calendar validity,
+public URL restrictions, security payload/type agreement, canonical wire and
+identity drift, combined graph cycles, campaign mismatch, and resource limits.
+
+## Integration Boundary
+
+The classifier establishes semantic currentness, not signature eligibility.
+A campaign runner must eventually require both this result and an independent
+Rust authority result before projecting objective counts. Stored projection
+snapshots remain immutable historical views and must be recomputed from
+supplied current evidence on resume.
+
+The browser must not reimplement currentness in JavaScript. A later generated
+WASM interface must expose this Rust API as bounded byte transport and replay
+the same vector corpus in independent deleted browser profiles.
+
+## Remaining Work
+
+- Implement independent Rust Ed25519 signature authority, registry succession,
+  revocation, compromise, expiry, nonce replay, and offline-bundle parity.
+- Implement independent Rust truthful campaign projection over exact plan,
+  currentness, and authority results.
+- Generate and freeze the browser currentness ABI, then prove Node and real
+  Chromium parity without handwritten semantic logic.
+- Integrate bounded receipt inputs and final attestations into one production
+  campaign runner and release gate.
+- Replace fixtures only with authorized objective evidence; never reinterpret
+  a fixture as a live result.

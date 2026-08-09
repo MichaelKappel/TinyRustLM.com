@@ -2,22 +2,66 @@
 
 ## Status
 
-This document describes the bounded Node semantic-currentness checkpoint for
-vNext campaign receipts. It is not a model qualification result, browser
+This document describes the bounded Node and independent Rust
+semantic-currentness checkpoint for vNext campaign receipts. It is not a
+model qualification result, browser
 round, live MemoryEndpoints result, outside-network P2P proof, publication
 receipt, or campaign completion claim.
 
 The implementation consists of:
 
 - `contracts/vnext/phase-invalidation-profile.v1.json`;
+- `contracts/vnext/phase-invalidation-rust-vectors.v1.json`;
 - `tinyrustlm/tools/vnext-phase-invalidation.js`; and
-- `tinyrustlm/tests/vnext-phase-invalidation.test.js`.
+- `tinyrustlm/tests/vnext-phase-invalidation.test.js`;
+- `tinyrustlm/tools/vnext-phase-invalidation-rust-vectors.js`;
+- `rust/crates/tinyrustlm-evidence/src/receipt.rs`;
+- `rust/crates/tinyrustlm-evidence/src/phase_invalidation.rs`; and
+- `rust/crates/tinyrustlm-evidence/tests/phase_invalidation_contract.rs`.
 
 The profile is frozen, bound to the exact vNext contract registry, and also
 bound by every newly materialized offline verification manifest. The
 classifier accepts canonical receipt bytes supplied by the caller and performs
 no filesystem discovery, network access, mutation, quarantine, retry, or
 selection by completion time.
+
+## Independent Rust Parity
+
+`tinyrustlm-evidence` now independently parses exact canonical vNext receipt
+bytes and applies the frozen semantic-currentness profile. It does not call
+Node, launch another process, discover files, read the network, consult the
+clock, or accept a compatibility schema. The public Rust operation accepts a
+campaign ID and caller-owned receipt byte slices, then returns immutable
+canonical result bytes and their raw-byte SHA-256 or one bounded stable error
+code.
+
+The cross-language corpus is 74,756 bytes with SHA-256
+`79a7fa4b35295a90bcf875c4fb400e4ad972feb4b42ac029ef55853c0f45a5c0`.
+It binds profile `tinyrustlm.vnext.phase-invalidation.v1`, whose exact profile
+bytes have SHA-256
+`8e0cccdc007e56ace6550163b0fe1acdd211e74b184053739785a1d925b113cb`.
+Four accepted histories freeze byte-identical Node/Rust results for baseline
+lineage, successful evaluator replacement and resumed qualification, failed
+replacement, and unresolved operation heads. Nine rejection histories freeze
+the exact shared error codes for empty input, duplicate receipts, missing
+parents, cross-operation supersession, dependency/supersession overlap,
+missing operation parameters, unsupported phase types, noncanonical receipt
+wire, and campaign mismatch.
+
+The Rust receipt boundary is deliberately stricter than a convenient serde
+decode. It rejects missing nullable members, unknown or duplicate members,
+noncanonical member order or whitespace, trailing bytes, identity drift,
+malformed safe identifiers and timestamps, private or noncanonical public
+URLs, invalid security-record payload shapes, and every receipt whose
+domain-separated identity does not match its full canonical content. The
+currentness implementation separately validates dependency, supersession, and
+combined acyclic graphs before classifying any head.
+
+This is semantic-currentness parity only. Rust signature authority,
+revocation evaluation, truthful campaign projection, the generated browser
+currentness ABI, production runner integration, release authorization, and
+live evidence remain separate gates. The existing browser WASM boundary still
+exposes only campaign-plan finalization and validation.
 
 ## Two Identities
 
@@ -114,8 +158,11 @@ evidence and this semantic classification.
 
 ## Remaining Work
 
-- Reproduce the currentness profile and hostile corpus in independent Rust and
-  browser implementations.
+- Expose the completed Rust classifier through one generated browser WASM
+  interface and replay the same frozen corpus in independently deleted browser
+  profiles without duplicating semantics in JavaScript.
+- Implement independent Rust signature-authority and truthful-projection
+  parity before Rust can admit current campaign evidence.
 - Bind projection output into final attestation, release authorization,
   rendered status, documentation, and public readback.
 - Run authorized live operations only after their advertised contracts and

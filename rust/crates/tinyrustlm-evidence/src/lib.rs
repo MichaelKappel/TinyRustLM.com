@@ -8,6 +8,15 @@ use std::error::Error;
 use std::fmt;
 use url::Url;
 
+mod phase_invalidation;
+mod receipt;
+
+pub use phase_invalidation::{
+    classify_phase_receipts, FinalizedPhaseInvalidation, PhaseInvalidationError,
+    PHASE_INVALIDATION_PROFILE_ID, PHASE_INVALIDATION_PROFILE_SHA256,
+    PHASE_INVALIDATION_RESULT_SCHEMA,
+};
+
 /// The one current campaign-plan schema.
 pub const CAMPAIGN_PLAN_SCHEMA: &str = "tinyrustlm.vnext.campaign_plan.v1";
 /// The one current campaign-projection profile identity.

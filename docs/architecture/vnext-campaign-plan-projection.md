@@ -194,8 +194,12 @@ facts, and fixture endpoints do not satisfy any live campaign objective.
 
 ## Remaining Work
 
-- Reproduce semantic currentness, authority, truthful projection, and their
-  hostile corpus in independent Rust implementations.
+- Preserve the completed independent Rust semantic-currentness parity and
+  reproduce signature authority and truthful projection with frozen hostile
+  cross-language corpora.
+- Add a generated browser WASM currentness boundary only after the Rust API is
+  frozen; browser JavaScript must remain byte transport rather than semantic
+  authority.
 - Preserve the completed generated browser WASM plan boundary and its exact
   browser/Node/Rust byte parity; do not duplicate plan semantics in handwritten
   browser JavaScript. See

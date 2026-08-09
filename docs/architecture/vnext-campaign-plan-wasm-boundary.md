@@ -9,8 +9,9 @@ campaign-plan semantics in JavaScript. All semantic authority remains in
 `rust/crates/tinyrustlm-evidence`.
 
 This checkpoint proves exact plan finalization and final-wire validation in a
-real Chromium WASM runtime. It does not implement Rust currentness, signature
-authority, projection, production campaign-runner integration, release
+real Chromium WASM runtime. The Rust evidence crate now separately implements
+semantic currentness, but this browser ABI does not expose it. It does not
+implement signature authority, projection, production campaign-runner integration, release
 authorization, or any objective campaign operation. The counters remain 0/20
 models, 0/50 browser rounds, 0/25 live memory rounds, 0/40 outside-proven
 lanes, and 0/20 announcements.

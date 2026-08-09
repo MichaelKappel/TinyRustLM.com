@@ -8,6 +8,7 @@ repository.workspace = true
 description = "Strict cross-language vNext campaign evidence verification."
 
 [dependencies]
+base64.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 sha2.workspace = true

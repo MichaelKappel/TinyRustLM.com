@@ -241,12 +241,22 @@ implementations to identical draft bytes, plan ID, final bytes, and SHA-256.
 One generator emits both the Rust export facade and byte-transport-only browser
 adapter; Node and two independent real Chromium profiles reproduce the exact
 plan bytes and stable verifier failures through the zero-import WASM module.
+The same Rust evidence crate now independently implements exact receipt
+validation and semantic currentness. A deterministic 74,756-byte corpus with
+SHA-256
+`79a7fa4b35295a90bcf875c4fb400e4ad972feb4b42ac029ef55853c0f45a5c0`
+freezes four accepted histories and nine hostile rejections. Node and Rust
+must emit byte-identical canonical currentness results and the same stable
+rejection codes. This API has no filesystem, network, clock, process, or
+compatibility behavior and does not yet have a browser ABI.
 The complete synthetic capacity fixture verifies a 271-receipt offline bundle
 with 155 target signatures and 40 proof subjects; it changes no live campaign
 counter. See `docs/architecture/vnext-phase-invalidation.md` and
 `docs/architecture/vnext-campaign-plan-projection.md`. The Rust boundary and
 its non-claims are documented in
 `docs/architecture/vnext-rust-campaign-plan-parity.md`.
+The Rust currentness boundary is documented in
+`docs/architecture/vnext-rust-phase-invalidation-parity.md`.
 
 `tinyrustlm/tools/vnext-campaign-artifact-store.js` persists only exact
 campaign-plan and projection-result wires under raw-byte SHA-256 paths. Its
@@ -278,10 +288,11 @@ complete member set. `docs/architecture/vnext-offline-verification-bundle.md`
 defines the exact boundary.
 
 This remains primarily a Node implementation checkpoint. Exact campaign-plan
-finalization has independent Rust parity, exact plan/projection-result
-persistence is implemented, and plan finalization/validation has a generated
-real-browser WASM boundary. Currentness, authority, projection, and the broader
-hostile corpus do not yet have cross-language parity. This is not production
+finalization and semantic currentness have independent Rust parity, exact
+plan/projection-result persistence is implemented, and plan
+finalization/validation has a generated real-browser WASM boundary. Signature
+authority, truthful projection, browser currentness, and the broader hostile
+corpus do not yet have cross-language parity. This is not production
 entry-point cutover, outside-network observation, or campaign evidence. Runtime tests
 generate ephemeral private keys only in process memory. Checked-in profiles
 and vectors contain public material only.

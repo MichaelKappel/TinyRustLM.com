@@ -7,10 +7,11 @@ finalization boundary in Rust. It proves deterministic parity with the frozen
 Node plan bytes and makes the same code compilable for native and browser WASM
 targets. A later checkpoint now invokes the same crate through one generated
 real-browser WASM boundary; see
-`docs/architecture/vnext-campaign-plan-wasm-boundary.md`. Neither checkpoint
-implements the evidence currentness classifier, signature authority graph,
-Rust campaign projection, production campaign-runner integration, release
-authorization, or any live campaign operation.
+`docs/architecture/vnext-campaign-plan-wasm-boundary.md`. A later, separate
+Rust API now implements semantic currentness, but the plan and browser-plan
+boundaries described here do not expose it. Signature authority, Rust campaign
+projection, production campaign-runner integration, release authorization,
+and every live campaign operation remain incomplete.
 
 No fixture in this checkpoint is production evidence. All campaign counters
 remain 0/20 qualified models, 0/50 clean-browser rounds, 0/25 live memory
@@ -153,6 +154,8 @@ truth. See `docs/architecture/vnext-campaign-artifact-persistence.md`.
 `tinyrustlm-evidence-wasm` now exposes this verifier through one generated,
 bounded, zero-import browser ABI. Node and two independent real Chromium
 profiles reproduce the exact frozen final bytes and stable failures without a
-handwritten JavaScript plan implementation. Full Rust currentness, authority,
-and projection parity remain separate required work before Rust or browser
-code can make a campaign-completion claim.
+handwritten JavaScript plan implementation. Independent Rust currentness is
+now complete and documented in
+`docs/architecture/vnext-rust-phase-invalidation-parity.md`. Rust signature
+authority, truthful projection, and browser currentness execution remain
+required before Rust or browser code can make a campaign-completion claim.

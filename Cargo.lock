@@ -614,6 +614,7 @@ version = "0.1.8"
 name = "tinyrustlm-evidence"
 version = "0.1.8"
 dependencies = [
+ "base64",
  "serde",
  "serde_json",
  "sha2",
