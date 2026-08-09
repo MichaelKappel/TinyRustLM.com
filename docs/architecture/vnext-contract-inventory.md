@@ -220,7 +220,7 @@ The fresh-runner-only immutable attestation, operator, release-manifest
 preparation, and release-authorization boundary is documented
 in `docs/architecture/vnext-campaign-release-surface.md`. Its frozen profile
 has SHA-256
-`97cc27e2d54f8e1612702f2b55cdf7ab9d6e19d4a4ad280c6f73df81c77ec9d0`.
+`d867dc809b5fc1f504469edfd25c7b1f3b93e8448ba5571558f6a5f4b9079bed`.
 It admits no stored projection, caller verdict, counter set, dashboard state,
 or reused operation. It scans finalized attestation bytes before create-only
 receipt persistence and has no operator `done` state. Release preparation
@@ -234,9 +234,13 @@ replays that preparation lineage from immutable runner and store bytes, then
 requires exactly one current-evidence-eligible `release-authorizer` Ed25519
 signature child over the exact manifest. The authorization scan receipt is
 persisted before the signature receipt, and the manifest is never mutated.
+Deployment admission then repeats current authorization verification and
+accepts only a public-safe deployment-class receipt bound to the exact release
+graph. Its scope is attempt evidence, never remote success; exact production
+HTTPS readback remains mandatory.
 
 The superseded mutable runner is deleted. Remaining archive-member scanning,
-deployment and exact HTTPS public-readback descendants, published claims,
+exact HTTPS public-readback descendants, published claims,
 site-publisher authorization, deletion of the superseded dashboard/release
 stack, and external campaign evidence remain incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.

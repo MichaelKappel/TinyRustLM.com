@@ -36,6 +36,9 @@ const {
   validateVnextReceiptBytes
 } = require("../tools/vnext-receipt-identity.js");
 const {
+  classifyVnextPhaseReceipts
+} = require("../tools/vnext-phase-invalidation.js");
+const {
   createVnextRedactionScanReceipt,
   scanVnextPublicDocumentBytes
 } = require("../tools/vnext-public-safe-redaction.js");
@@ -651,6 +654,136 @@ function authorizeInput(entry, authority, prepared, releaseInput,
   };
 }
 
+function deploymentAttemptReceipt(entry, prepared, authorizationReceipt,
+  releaseInput, label, overrides = {}) {
+  const attemptId = operationId(label);
+  const webAssetInventorySha256 = domainSeparatedDigest(
+    "tinyrustlm.web-asset-inventory.v1",
+    releaseInput.webAssets
+  );
+  const base = {
+    schema: "tinyrustlm.vnext.receipt.v1",
+    receiptType: "deployment",
+    campaignId: entry.expectedCampaignId,
+    attemptId,
+    phase: "deployment",
+    status: "pass",
+    startedAtUtc: "2026-08-09T00:33:00Z",
+    completedAtUtc: "2026-08-09T00:33:30Z",
+    sourceRevision,
+    inputReceiptIds: [releaseInput.webBuildReceiptId],
+    inputHashes: [
+      {
+        name: "release-manifest-canonical-content",
+        sha256: prepared.releaseManifestSha256
+      },
+      { name: "web-asset-inventory", sha256: webAssetInventorySha256 },
+      {
+        name: "web-deployment-manifest",
+        sha256: sha256(releaseInput.webDeploymentManifestBytes)
+      },
+      {
+        name: "web-publication-generator",
+        sha256: sha256(releaseInput.webPublicationGeneratorBytes)
+      },
+      {
+        name: "web-security-header-profile",
+        sha256: sha256(releaseInput.webSecurityHeaderProfileBytes)
+      }
+    ],
+    outputHashes: [
+      {
+        name: "deployment-attempt-transcript",
+        sha256: sha256(Buffer.from(`deployment-transcript:${label}`, "utf8"))
+      },
+      {
+        name: "submitted-web-asset-inventory",
+        sha256: webAssetInventorySha256
+      }
+    ],
+    tools: [{
+      name: "tinyrustlm.vnext.deployment-executor-test",
+      version: "1.0.0",
+      binarySha256: sha256(Buffer.from("deployment-executor-test", "utf8"))
+    }],
+    configurationSha256: sha256(Buffer.from("deployment-executor-config", "utf8")),
+    runtime: {
+      architecture: "x86_64",
+      executionClass: "deployment",
+      operatingSystem: "windows",
+      runtimeIdentifier: "node.test.deployment-executor"
+    },
+    publicParameters: [
+      {
+        name: "asset-count",
+        value: String(releaseInput.webAssets.length),
+        unit: "assets"
+      },
+      {
+        name: "authorization-receipt-id",
+        value: authorizationReceipt.receipt.receiptId,
+        unit: null
+      },
+      { name: "evidence-scope", value: "deployment-attempt-only", unit: null },
+      { name: "operation_id", value: attemptId, unit: null },
+      { name: "public-origin", value: releaseInput.publicOrigin, unit: null },
+      { name: "subject_id", value: prepared.releaseManifestId, unit: null },
+      {
+        name: "total-bytes",
+        value: String(releaseInput.webAssets.reduce((total, asset) =>
+          total + asset.byteLength, 0)),
+        unit: "bytes"
+      }
+    ].sort((left, right) => left.name.localeCompare(right.name)),
+    error: null,
+    blockerCode: null,
+    externalEvidenceReferences: [
+      { kind: "https", value: releaseInput.publicOrigin },
+      { kind: "receipt", value: authorizationReceipt.receipt.receiptId }
+    ].sort((left, right) => left.value.localeCompare(right.value)),
+    redaction: {
+      profile: "tinyrustlm.vnext.public_safe.v1",
+      decision: "public-safe"
+    },
+    attestationReference: prepared.attestationReceiptId,
+    signatureEnvelope: null,
+    authorityRegistry: null,
+    keyRevocation: null,
+    offlineBundle: null,
+    supersedesReceiptIds: []
+  };
+  return finalizeVnextReceipt({
+    ...base,
+    ...overrides,
+    inputHashes: overrides.inputHashes ?? base.inputHashes,
+    inputReceiptIds: overrides.inputReceiptIds ?? base.inputReceiptIds,
+    outputHashes: overrides.outputHashes ?? base.outputHashes,
+    publicParameters: overrides.publicParameters ?? base.publicParameters,
+    runtime: overrides.runtime ? { ...base.runtime, ...overrides.runtime } : base.runtime
+  });
+}
+
+function deploymentInput(entry, authority, prepared, releaseInput,
+  authorizationReceipt, deploymentReceipt, overrides = {}) {
+  return {
+    authorizationReceiptId: authorizationReceipt.receipt.receiptId,
+    changelogBytes: releaseInput.changelogBytes,
+    deploymentReceiptBytes: deploymentReceipt.bytes,
+    expectedCampaignId: entry.expectedCampaignId,
+    expectedEnvironment: entry.expectedEnvironment,
+    expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
+    knownSecrets: [],
+    releaseManifestId: prepared.releaseManifestId,
+    sourceRevision,
+    trustedRootRegistryReceiptId: authority.root.receipt.receiptId,
+    verificationTimeUtc: "2026-08-09T00:34:00Z",
+    webDeploymentManifestBytes: releaseInput.webDeploymentManifestBytes,
+    webSecurityHeaderProfileBytes: releaseInput.webSecurityHeaderProfileBytes,
+    webPublicationGeneratorBytes: releaseInput.webPublicationGeneratorBytes,
+    ...overrides
+  };
+}
+
 async function rejectsCode(callback, code) {
   await assert.rejects(callback, (error) => error?.code === code, `expected ${code}`);
 }
@@ -660,7 +793,7 @@ test("freezes one no-compatibility campaign release surface profile", () => {
   const profile = parseStrictJson(bytes);
   assert.equal(campaignReleaseSurfaceProfileSha256, sha256(bytes));
   assert.equal(campaignReleaseSurfaceProfileSha256,
-    "97cc27e2d54f8e1612702f2b55cdf7ab9d6e19d4a4ad280c6f73df81c77ec9d0");
+    "d867dc809b5fc1f504469edfd25c7b1f3b93e8448ba5571558f6a5f4b9079bed");
   assert.equal(campaignReleaseSurfaceProfile.profileId,
     "tinyrustlm.vnext.campaign-release-surface.v1");
   assert.equal(profile.status, "frozen");
@@ -668,7 +801,7 @@ test("freezes one no-compatibility campaign release surface profile", () => {
   assert.equal(profile.callerVerdictPolicy, "forbidden");
   assert.equal(profile.callerCounterPolicy, "forbidden");
   assert.equal(profile.mutablePointerPolicy, "forbidden");
-  assert.equal(profile.networkAccess, "forbidden");
+  assert.equal(profile.networkAccess, "forbidden-until-public-readback-operation");
   assert.equal(profile.releasePreparation.authorizationPolicy,
     "forbidden-in-preparation");
   assert.equal(profile.releasePreparation.artifactCoverage,
@@ -680,6 +813,10 @@ test("freezes one no-compatibility campaign release surface profile", () => {
   assert.equal(profile.releaseAuthorization.authorityPolicy,
     "exactly-one-current-evidence-eligible-signature");
   assert.equal(profile.releaseAuthorization.callerDecisionPolicy, "forbidden");
+  assert.equal(profile.releaseDeployment.evidenceScope, "deployment-attempt-only");
+  assert.equal(profile.releaseDeployment.callerSuccessPolicy, "forbidden");
+  assert.equal(profile.releaseDeployment.publicReadbackPolicy,
+    "required-before-any-deployed-or-published-claim");
   assert.equal(profile.operatorStatus.doneState,
     "forbidden-before-authorized-release-and-public-readback");
   assert.doesNotMatch(bytes.toString("utf8"),
@@ -1218,6 +1355,257 @@ test("authorizes only the exact prepared manifest through current Ed25519 author
     "existing-byte-identical");
   assert.equal(repeated.authorizationRedactionPersistence.disposition,
     "existing-byte-identical");
+});
+
+test("admits only an exact deployment-attempt receipt without claiming deployment", {
+  timeout: 360_000
+}, async (t) => {
+  const roots = makeRoots(t);
+  const entry = acceptedCase("complete-capacity");
+  const authority = seedEphemeralAuthorityCase(roots, entry);
+  const releaseInput = seedReleaseInputs(roots, entry);
+  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+    runnerOptions(roots));
+  const prepared = await surface.prepareRelease(prepareInput(
+    entry,
+    "deployment-admission-preparation",
+    releaseInput,
+    {
+      expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
+      trustedRootRegistryReceiptId: authority.root.receipt.receiptId
+    }
+  ));
+  const release = createVnextSubjectStore(roots.subjects).read(
+    prepared.releaseManifestId
+  );
+  const authorizationReceipt = makeSignatureReceipt({
+    authorityRegistry: authority.root,
+    expiresAtUtc: "2026-08-09T01:00:00Z",
+    issuedAtUtc: "2026-08-09T00:31:00Z",
+    label: "deployment-admission-authorization",
+    receiptSourceRevision: sourceRevision,
+    releaseId: prepared.releaseManifestId,
+    scope: "release-authorization",
+    signingKey: authority.releaseKey,
+    subject: release
+  });
+  await surface.authorizeRelease(authorizeInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    authorizationReceipt
+  ));
+  const deploymentReceipt = deploymentAttemptReceipt(
+    entry,
+    prepared,
+    authorizationReceipt,
+    releaseInput,
+    "deployment-admission-attempt"
+  );
+  const input = deploymentInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    authorizationReceipt,
+    deploymentReceipt
+  );
+  const result = await surface.admitDeploymentAttempt(input);
+
+  assert.equal(result.state,
+    "deployment-attempt-admitted-awaiting-public-readback");
+  assert.equal(result.deploymentStatus, "attempt-admitted");
+  assert.equal(result.publicReadbackStatus, "required-not-performed");
+  assert.equal(result.deploymentReceiptId, deploymentReceipt.receipt.receiptId);
+  assert.equal(result.deploymentResult.evidenceScope, "deployment-attempt-only");
+  assert.doesNotMatch(result.deploymentResultBytes.toString("utf8"),
+    /"(?:deployed|done|published)"\s*:\s*(?:true|"pass")/iu);
+  const receiptStore = createVnextReceiptStore(roots.receipts);
+  assert.deepEqual(receiptStore.read(result.deploymentReceiptId).bytes,
+    deploymentReceipt.bytes);
+  assert.equal(receiptStore.read(result.deploymentRedactionReceiptId)
+    .receipt.status, "pass");
+  const phaseCurrentness = classifyVnextPhaseReceipts({
+    campaignId: entry.expectedCampaignId,
+    receiptBytes: [
+      receiptStore.read(releaseInput.webBuildReceiptId).bytes,
+      deploymentReceipt.bytes
+    ]
+  });
+  const deploymentCurrentness = phaseCurrentness.result.records.find((record) =>
+    record.receiptId === deploymentReceipt.receipt.receiptId);
+  assert.equal(deploymentCurrentness.state, "current-pass");
+  assert.equal(deploymentCurrentness.reasonCode, null);
+
+  const repeated = await surface.admitDeploymentAttempt(input);
+  assert.equal(repeated.deploymentReceiptId, result.deploymentReceiptId);
+  assert.equal(repeated.deploymentResultSha256, result.deploymentResultSha256);
+  assert.equal(repeated.deploymentPersistence.disposition,
+    "existing-byte-identical");
+  assert.equal(repeated.deploymentRedactionPersistence.disposition,
+    "existing-byte-identical");
+});
+
+test("rejects caller deployment truth and deployment-attempt binding drift", {
+  timeout: 360_000
+}, async (t) => {
+  const roots = makeRoots(t);
+  const entry = acceptedCase("complete-capacity");
+  const authority = seedEphemeralAuthorityCase(roots, entry);
+  const releaseInput = seedReleaseInputs(roots, entry);
+  const protectedValue = "deployment-receipt-protected-value";
+  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+    runnerOptions(roots));
+  const prepared = await surface.prepareRelease(prepareInput(
+    entry,
+    "hostile-deployment-preparation",
+    releaseInput,
+    {
+      expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
+      knownSecrets: [protectedValue],
+      trustedRootRegistryReceiptId: authority.root.receipt.receiptId
+    }
+  ));
+  const release = createVnextSubjectStore(roots.subjects).read(
+    prepared.releaseManifestId
+  );
+  const authorizationReceipt = makeSignatureReceipt({
+    authorityRegistry: authority.root,
+    expiresAtUtc: "2026-08-09T01:00:00Z",
+    issuedAtUtc: "2026-08-09T00:31:00Z",
+    label: "hostile-deployment-authorization",
+    receiptSourceRevision: sourceRevision,
+    releaseId: prepared.releaseManifestId,
+    scope: "release-authorization",
+    signingKey: authority.releaseKey,
+    subject: release
+  });
+  await surface.authorizeRelease(authorizeInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    authorizationReceipt,
+    { knownSecrets: [protectedValue] }
+  ));
+  const valid = deploymentAttemptReceipt(
+    entry,
+    prepared,
+    authorizationReceipt,
+    releaseInput,
+    "hostile-deployment-reference"
+  );
+  const validInput = deploymentInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    authorizationReceipt,
+    valid,
+    { knownSecrets: [protectedValue] }
+  );
+  await rejectsCode(() => surface.admitDeploymentAttempt({
+    ...validInput,
+    deploymentSucceeded: true
+  }), "release_surface_deployment_input_invalid");
+
+  const wrongScope = deploymentAttemptReceipt(
+    entry,
+    prepared,
+    authorizationReceipt,
+    releaseInput,
+    "hostile-deployment-scope",
+    {
+      publicParameters: valid.receipt.publicParameters.map((parameter) =>
+        parameter.name === "evidence-scope"
+          ? { ...parameter, value: "deployment-success" }
+          : { ...parameter })
+    }
+  );
+  await rejectsCode(() => surface.admitDeploymentAttempt({
+    ...validInput,
+    deploymentReceiptBytes: wrongScope.bytes
+  }), "release_surface_deployment_parameters_invalid");
+
+  const wrongRuntime = deploymentAttemptReceipt(
+    entry,
+    prepared,
+    authorizationReceipt,
+    releaseInput,
+    "hostile-deployment-runtime",
+    { runtime: { executionClass: "fixture" } }
+  );
+  await rejectsCode(() => surface.admitDeploymentAttempt({
+    ...validInput,
+    deploymentReceiptBytes: wrongRuntime.bytes
+  }), "release_surface_deployment_receipt_invalid");
+
+  const wrongInventory = deploymentAttemptReceipt(
+    entry,
+    prepared,
+    authorizationReceipt,
+    releaseInput,
+    "hostile-deployment-inventory",
+    {
+      outputHashes: valid.receipt.outputHashes.map((binding) =>
+        binding.name === "submitted-web-asset-inventory"
+          ? { ...binding, sha256: sha256(Buffer.from("wrong-inventory", "utf8")) }
+          : { ...binding })
+    }
+  );
+  await rejectsCode(() => surface.admitDeploymentAttempt({
+    ...validInput,
+    deploymentReceiptBytes: wrongInventory.bytes
+  }), "release_surface_deployment_output_invalid");
+
+  const beforeAuthorizationAdmission = deploymentAttemptReceipt(
+    entry,
+    prepared,
+    authorizationReceipt,
+    releaseInput,
+    "hostile-deployment-before-authorization-admission",
+    {
+      startedAtUtc: "2026-08-09T00:31:30Z",
+      completedAtUtc: "2026-08-09T00:31:45Z"
+    }
+  );
+  await rejectsCode(() => surface.admitDeploymentAttempt({
+    ...validInput,
+    deploymentReceiptBytes: beforeAuthorizationAdmission.bytes
+  }), "release_surface_deployment_receipt_invalid");
+
+  const unsafe = deploymentAttemptReceipt(
+    entry,
+    prepared,
+    authorizationReceipt,
+    releaseInput,
+    "hostile-deployment-secret",
+    {
+      tools: [{
+        name: "tinyrustlm.vnext.deployment-executor-test",
+        version: protectedValue,
+        binarySha256: sha256(Buffer.from("deployment-executor-test", "utf8"))
+      }]
+    }
+  );
+  await rejectsCode(() => surface.admitDeploymentAttempt({
+    ...validInput,
+    deploymentReceiptBytes: unsafe.bytes,
+    knownSecrets: [protectedValue]
+  }), "release_surface_deployment_unsafe");
+
+  const receiptStore = createVnextReceiptStore(roots.receipts);
+  const activeReceiptIds = receiptStore.rebuild().activeReceiptIds;
+  assert.equal(activeReceiptIds.includes(valid.receipt.receiptId), false);
+  assert.equal(activeReceiptIds.includes(unsafe.receipt.receiptId), false);
+  const unsafeRedactions = activeReceiptIds.map((receiptId) =>
+    receiptStore.read(receiptId).receipt).filter((receipt) =>
+    receipt.receiptType === "redaction-scan" &&
+      receipt.attemptId === `release-deployment-redaction-${
+        unsafe.receipt.receiptId.slice("sha256:".length)}`);
+  assert.equal(unsafeRedactions.length, 1);
+  assert.equal(unsafeRedactions[0].status, "fail");
 });
 
 test("resumes authorization after the redaction receipt committed alone", {

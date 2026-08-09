@@ -132,6 +132,22 @@ const authorizeInputFields = Object.freeze([
   "webSecurityHeaderProfileBytes",
   "webPublicationGeneratorBytes"
 ]);
+const deploymentInputFields = Object.freeze([
+  "authorizationReceiptId",
+  "changelogBytes",
+  "deploymentReceiptBytes",
+  "expectedCampaignId",
+  "expectedEnvironment",
+  "expectedTerminalRegistryReceiptId",
+  "knownSecrets",
+  "releaseManifestId",
+  "sourceRevision",
+  "trustedRootRegistryReceiptId",
+  "verificationTimeUtc",
+  "webDeploymentManifestBytes",
+  "webSecurityHeaderProfileBytes",
+  "webPublicationGeneratorBytes"
+]);
 const optionFields = Object.freeze([
   "campaignArtifactStoreRoot",
   "expectedWasmModuleSha256",
@@ -151,7 +167,8 @@ const profileFields = Object.freeze([
   "campaignTruthInput", "operationPolicy", "storedProjectionPolicy",
   "callerVerdictPolicy", "callerCounterPolicy", "mutablePointerPolicy",
   "networkAccess", "clockAccess", "sourceMutation", "attestation",
-  "operatorStatus", "releasePreparation", "releaseAuthorization", "limits"
+  "operatorStatus", "releasePreparation", "releaseAuthorization",
+  "releaseDeployment", "limits"
 ]);
 const attestationProfileFields = Object.freeze([
   "receiptSchema", "receiptType", "phase", "completeStatus", "incompleteStatus",
@@ -179,6 +196,13 @@ const releaseAuthorizationProfileFields = Object.freeze([
   "releaseIdPolicy", "authorityPolicy", "registryPolicy", "timePolicy",
   "redactionPolicy", "persistencePolicy", "callerDecisionPolicy"
 ]);
+const releaseDeploymentProfileFields = Object.freeze([
+  "resultSchema", "admittedState", "receiptType", "phase", "status",
+  "evidenceScope", "manifestPolicy", "authorizationPolicy", "receiptPolicy",
+  "inputReceiptPolicy", "inputHashPolicy", "outputHashPolicy", "runtimePolicy",
+  "timePolicy", "redactionPolicy", "persistencePolicy", "callerSuccessPolicy",
+  "publicReadbackPolicy"
+]);
 const limitFields = Object.freeze([
   "maximumKnownSecrets", "maximumProjectionBytes", "maximumReceiptSnapshotMembers",
   "maximumSubjectSnapshotMembers", "maximumOperatorStatusBytes",
@@ -189,7 +213,8 @@ const limitFields = Object.freeze([
   "maximumRetiredPublicPaths", "maximumWebControlDocumentBytes",
   "maximumWebTotalBytes",
   "maximumReleaseManifestBytes", "maximumAuthorizationReceiptBytes",
-  "maximumAuthorizationResultBytes"
+  "maximumAuthorizationResultBytes", "maximumDeploymentReceiptBytes",
+  "maximumDeploymentResultBytes"
 ]);
 const operatorFields = Object.freeze([
   "attestationReceiptId", "blockerCodes", "campaignId", "counts", "environment",
@@ -396,6 +421,8 @@ function validateInstalledProfile() {
     "release_surface_profile_invalid", step);
   exactDataObject(parsedProfile.releaseAuthorization, releaseAuthorizationProfileFields,
     "release_surface_profile_invalid", step);
+  exactDataObject(parsedProfile.releaseDeployment, releaseDeploymentProfileFields,
+    "release_surface_profile_invalid", step);
   exactDataObject(parsedProfile.limits, limitFields,
     "release_surface_profile_invalid", step);
   const limitsValid = Object.values(parsedProfile.limits)
@@ -429,10 +456,10 @@ function validateInstalledProfile() {
       parsedProfile.callerVerdictPolicy !== "forbidden" ||
       parsedProfile.callerCounterPolicy !== "forbidden" ||
       parsedProfile.mutablePointerPolicy !== "forbidden" ||
-      parsedProfile.networkAccess !== "forbidden" ||
+      parsedProfile.networkAccess !== "forbidden-until-public-readback-operation" ||
       parsedProfile.clockAccess !== "caller-trusted-verification-time-only" ||
       parsedProfile.sourceMutation !==
-        "create-only-attestation-redaction-release-manifest-and-authorization-signature-receipts" ||
+        "create-only-attestation-redaction-release-manifest-authorization-signature-and-deployment-attempt-receipts" ||
       parsedProfile.attestation.receiptSchema !== "tinyrustlm.vnext.receipt.v1" ||
       parsedProfile.attestation.receiptType !== "final-attestation" ||
       parsedProfile.attestation.phase !== "final-attestation" ||
@@ -538,6 +565,37 @@ function validateInstalledProfile() {
       parsedProfile.releaseAuthorization.persistencePolicy !==
         "authorization-redaction-before-create-only-signature-receipt" ||
       parsedProfile.releaseAuthorization.callerDecisionPolicy !== "forbidden" ||
+      parsedProfile.releaseDeployment.resultSchema !==
+        "tinyrustlm.vnext.release_deployment_admission_result.v1" ||
+      parsedProfile.releaseDeployment.admittedState !==
+        "deployment-attempt-admitted-awaiting-public-readback" ||
+      parsedProfile.releaseDeployment.receiptType !== "deployment" ||
+      parsedProfile.releaseDeployment.phase !== "deployment" ||
+      parsedProfile.releaseDeployment.status !== "pass" ||
+      parsedProfile.releaseDeployment.evidenceScope !== "deployment-attempt-only" ||
+      parsedProfile.releaseDeployment.manifestPolicy !==
+        "existing-current-authorized-manifest-only" ||
+      parsedProfile.releaseDeployment.authorizationPolicy !==
+        "exactly-one-stored-current-evidence-eligible-release-authorizer-signature" ||
+      parsedProfile.releaseDeployment.receiptPolicy !==
+        "externally-produced-canonical-receipt-with-closed-lineage-and-no-success-claim" ||
+      parsedProfile.releaseDeployment.inputReceiptPolicy !==
+        "exact-current-web-build-phase-parent-attestation-reference-and-authorization-receipt-reference" ||
+      parsedProfile.releaseDeployment.inputHashPolicy !==
+        "exact-release-manifest-web-inventory-deployment-manifest-publication-generator-and-security-header-profile" ||
+      parsedProfile.releaseDeployment.outputHashPolicy !==
+        "exact-submitted-web-inventory-plus-bounded-public-safe-attempt-transcript-digest" ||
+      parsedProfile.releaseDeployment.runtimePolicy !==
+        "deployment-execution-class-only" ||
+      parsedProfile.releaseDeployment.timePolicy !==
+        "attempt-after-authorization-and-not-after-trusted-verification-time" ||
+      parsedProfile.releaseDeployment.redactionPolicy !==
+        "scan-final-canonical-deployment-receipt-before-persistence" ||
+      parsedProfile.releaseDeployment.persistencePolicy !==
+        "deployment-redaction-before-create-only-deployment-receipt" ||
+      parsedProfile.releaseDeployment.callerSuccessPolicy !== "forbidden" ||
+      parsedProfile.releaseDeployment.publicReadbackPolicy !==
+        "required-before-any-deployed-or-published-claim" ||
       !limitsValid ||
       parsedProfile.limits.maximumProjectionBytes !==
         campaignProjectionProfile.limits.maximumProjectionResultBytes ||
@@ -558,6 +616,8 @@ function validateInstalledProfile() {
         identityContractForSchema(parsedProfile.releasePreparation.manifestSchema)
           .maximumBytes ||
       parsedProfile.limits.maximumAuthorizationReceiptBytes !==
+        receiptStoreProfile.wire.maximumReceiptBytes ||
+      parsedProfile.limits.maximumDeploymentReceiptBytes !==
         receiptStoreProfile.wire.maximumReceiptBytes ||
       parsedProfile.limits.maximumChangelogBytes >
         publicSafeRedactionProfile.limits.maximumInputBytes) {
@@ -804,6 +864,58 @@ function normalizeAuthorizeInput(rawInput) {
     ...input,
     authorizationReceiptBytes: Buffer.from(input.authorizationReceiptBytes),
     changelogBytes: Buffer.from(input.changelogBytes),
+    knownSecrets,
+    webDeploymentManifestBytes,
+    webPublicationGeneratorBytes,
+    webSecurityHeaderProfileBytes
+  });
+}
+
+function normalizeDeploymentInput(rawInput) {
+  const step = "release-surface-deployment-input";
+  const input = exactDataObject(rawInput, deploymentInputFields,
+    "release_surface_deployment_input_invalid", step);
+  const knownSecrets = dataArray(input.knownSecrets,
+    parsedProfile.limits.maximumKnownSecrets,
+    "release_surface_known_secrets_invalid", step);
+  scanKnownSecretRepresentations(Buffer.from("{}", "utf8"), knownSecrets);
+  const webDeploymentManifestBytes = normalizeWebControlBytes(
+    input.webDeploymentManifestBytes,
+    "release_surface_web_deployment_manifest_invalid",
+    step
+  );
+  const webSecurityHeaderProfileBytes = normalizeWebControlBytes(
+    input.webSecurityHeaderProfileBytes,
+    "release_surface_web_security_headers_invalid",
+    step
+  );
+  const webPublicationGeneratorBytes = normalizeWebControlBytes(
+    input.webPublicationGeneratorBytes,
+    "release_surface_web_publication_generator_invalid",
+    step
+  );
+  if (!Buffer.isBuffer(input.deploymentReceiptBytes) ||
+      input.deploymentReceiptBytes.length === 0 ||
+      input.deploymentReceiptBytes.length >
+        parsedProfile.limits.maximumDeploymentReceiptBytes ||
+      !Buffer.isBuffer(input.changelogBytes) || input.changelogBytes.length === 0 ||
+      input.changelogBytes.length > parsedProfile.limits.maximumChangelogBytes ||
+      typeof input.expectedCampaignId !== "string" ||
+      !safeIdPattern.test(input.expectedCampaignId) ||
+      !["development", "production", "staging"].includes(
+        input.expectedEnvironment) ||
+      !contentIdPattern.test(input.expectedTerminalRegistryReceiptId) ||
+      !contentIdPattern.test(input.authorizationReceiptId) ||
+      !contentIdPattern.test(input.releaseManifestId) ||
+      !sourceRevisionPattern.test(input.sourceRevision) ||
+      !contentIdPattern.test(input.trustedRootRegistryReceiptId) ||
+      utcNanoseconds(input.verificationTimeUtc) === null) {
+    failEvidence("release_surface_deployment_input_invalid", step);
+  }
+  return Object.freeze({
+    ...input,
+    changelogBytes: Buffer.from(input.changelogBytes),
+    deploymentReceiptBytes: Buffer.from(input.deploymentReceiptBytes),
     knownSecrets,
     webDeploymentManifestBytes,
     webPublicationGeneratorBytes,
@@ -1714,6 +1826,183 @@ function verifyReleaseAuthorizationAuthority(input, release, authorization,
   });
 }
 
+function validateStoredReleaseAuthorization(input, release, lineage, receiptStore,
+  subjectStore) {
+  const step = "release-surface-deployment-authorization";
+  const authorization = receiptStore.read(input.authorizationReceiptId);
+  const validated = validateReleaseAuthorizationReceipt({
+    ...input,
+    authorizationReceiptBytes: authorization.bytes
+  }, release);
+  if (validated.receipt.receiptId !== input.authorizationReceiptId ||
+      !authorization.bytes.equals(validated.bytes)) {
+    failEvidence("release_surface_deployment_authorization_invalid", step);
+  }
+  const redactionAttemptId = `release-authorization-redaction-${
+    input.authorizationReceiptId.slice("sha256:".length)}`;
+  const redactionCandidates = [...lineage.activeReceipts.byId.values()].filter(
+    (entry) => entry.receipt.receiptType === "redaction-scan" &&
+      entry.receipt.attemptId === redactionAttemptId
+  );
+  if (redactionCandidates.length !== 1) {
+    failEvidence("release_surface_deployment_authorization_redaction_missing", step);
+  }
+  const redaction = redactionCandidates[0];
+  const verifiedScan = verifyVnextRedactionScanReceipt({
+    knownSecrets: input.knownSecrets,
+    receiptBytes: redaction.bytes,
+    targetBytes: authorization.bytes,
+    targetKind: "document"
+  });
+  if (!verifiedScan.publicSafe || verifiedScan.scanStatus !== "pass" ||
+      redaction.receipt.campaignId !== input.expectedCampaignId ||
+      redaction.receipt.sourceRevision !== input.sourceRevision ||
+      redaction.receipt.startedAtUtc !== redaction.receipt.completedAtUtc ||
+      compareUtc(validated.receipt.completedAtUtc,
+        redaction.receipt.completedAtUtc,
+        "release_surface_deployment_authorization_time_invalid", step) > 0 ||
+      compareUtc(redaction.receipt.completedAtUtc, input.verificationTimeUtc,
+        "release_surface_deployment_authorization_time_invalid", step) > 0) {
+    failEvidence("release_surface_deployment_authorization_redaction_invalid", step);
+  }
+  const authority = verifyReleaseAuthorizationAuthority(
+    input,
+    release,
+    validated,
+    lineage.activeReceipts,
+    subjectStore
+  );
+  return Object.freeze({
+    authorization: validated,
+    authority,
+    expectedReceiptIds: [...new Set([
+      ...lineage.expectedReceiptIds,
+      redaction.receipt.receiptId,
+      validated.receipt.receiptId
+    ])].sort(),
+    expectedSubjectIds: lineage.expectedSubjectIds,
+    redaction
+  });
+}
+
+function exactPublicParameters(receipt, expected, code, step) {
+  const actual = receipt.publicParameters.map((entry) => ({ ...entry }));
+  const sortedExpected = [...expected].sort((left, right) =>
+    left.name.localeCompare(right.name));
+  if (actual.length !== sortedExpected.length || actual.some((entry, index) =>
+    entry.name !== sortedExpected[index].name ||
+      entry.value !== sortedExpected[index].value ||
+      entry.unit !== sortedExpected[index].unit)) {
+    failEvidence(code, step);
+  }
+}
+
+function validateDeploymentAttemptReceipt(input, release, storedAuthorization) {
+  const step = "release-surface-deployment-receipt";
+  const validated = validateVnextReceiptBytes(input.deploymentReceiptBytes);
+  const receipt = validated.receipt;
+  const manifest = release.value;
+  const webAssetInventorySha256 = domainSeparatedDigest(
+    parsedProfile.releasePreparation.webAssetInventoryIdentityDomain,
+    manifest.webAssets
+  );
+  const expectedInputReceiptIds = [manifest.webBuildReceiptId];
+  const expectedInputHashes = [
+    {
+      name: "release-manifest-canonical-content",
+      sha256: release.canonicalContentSha256
+    },
+    { name: "web-asset-inventory", sha256: webAssetInventorySha256 },
+    {
+      name: "web-deployment-manifest",
+      sha256: manifest.webDeploymentManifestSha256
+    },
+    {
+      name: "web-publication-generator",
+      sha256: manifest.webPublicationGeneratorSha256
+    },
+    {
+      name: "web-security-header-profile",
+      sha256: manifest.webSecurityHeaderProfileSha256
+    }
+  ];
+  const expectedOutputNames = [
+    "deployment-attempt-transcript",
+    "submitted-web-asset-inventory"
+  ];
+  const submittedWebAssetInventorySha256 = hashBinding(
+    receipt,
+    "outputHashes",
+    "submitted-web-asset-inventory",
+    "release_surface_deployment_output_invalid",
+    step
+  );
+  if (submittedWebAssetInventorySha256 !== webAssetInventorySha256) {
+    failEvidence("release_surface_deployment_output_invalid", step);
+  }
+  exactPublicParameters(receipt, [
+    {
+      name: "asset-count",
+      value: String(manifest.webAssets.length),
+      unit: "assets"
+    },
+    {
+      name: "authorization-receipt-id",
+      value: input.authorizationReceiptId,
+      unit: null
+    },
+    {
+      name: "evidence-scope",
+      value: parsedProfile.releaseDeployment.evidenceScope,
+      unit: null
+    },
+    { name: "operation_id", value: receipt.attemptId, unit: null },
+    { name: "public-origin", value: manifest.publicOrigin, unit: null },
+    { name: "subject_id", value: input.releaseManifestId, unit: null },
+    {
+      name: "total-bytes",
+      value: String(manifest.webTotalBytes),
+      unit: "bytes"
+    }
+  ], "release_surface_deployment_parameters_invalid", step);
+  if (receipt.receiptType !== parsedProfile.releaseDeployment.receiptType ||
+      receipt.phase !== parsedProfile.releaseDeployment.phase ||
+      receipt.status !== parsedProfile.releaseDeployment.status ||
+      receipt.error !== null || receipt.blockerCode !== null ||
+      receipt.campaignId !== input.expectedCampaignId ||
+      receipt.sourceRevision !== input.sourceRevision ||
+      !contentIdPattern.test(receipt.attemptId) ||
+      !sameStrings(receipt.inputReceiptIds, expectedInputReceiptIds) ||
+      receipt.inputHashes.length !== expectedInputHashes.length ||
+      receipt.inputHashes.some((entry, index) =>
+        entry.name !== expectedInputHashes[index].name ||
+          entry.sha256 !== expectedInputHashes[index].sha256) ||
+      receipt.outputHashes.length !== expectedOutputNames.length ||
+      receipt.outputHashes.some((entry, index) =>
+        entry.name !== expectedOutputNames[index]) ||
+      receipt.runtime.executionClass !== "deployment" ||
+      receipt.externalEvidenceReferences.length !== 2 ||
+      !receipt.externalEvidenceReferences.some((entry) =>
+        entry.kind === "https" && entry.value === manifest.publicOrigin) ||
+      !receipt.externalEvidenceReferences.some((entry) =>
+        entry.kind === "receipt" && entry.value === input.authorizationReceiptId) ||
+      receipt.attestationReference !== manifest.campaignAttestationReceiptId ||
+      receipt.signatureEnvelope !== null || receipt.authorityRegistry !== null ||
+      receipt.keyRevocation !== null || receipt.offlineBundle !== null ||
+      receipt.supersedesReceiptIds.length !== 0 ||
+      compareUtc(storedAuthorization.redaction.receipt.completedAtUtc,
+        receipt.startedAtUtc,
+        "release_surface_deployment_time_invalid", step) > 0 ||
+      compareUtc(receipt.completedAtUtc, input.verificationTimeUtc,
+        "release_surface_deployment_time_invalid", step) > 0) {
+    failEvidence("release_surface_deployment_receipt_invalid", step);
+  }
+  return Object.freeze({
+    ...validated,
+    webAssetInventorySha256
+  });
+}
+
 function assertStoreMembership(receiptStore, subjectStore, expectedReceiptIds,
   expectedSubjectIds, step) {
   const currentReceiptIds = receiptStore.rebuild().activeReceiptIds;
@@ -2355,7 +2644,173 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
     });
   }
 
+  async function admitDeploymentAttempt(rawInput) {
+    const step = "release-surface-deployment";
+    const input = normalizeDeploymentInput(rawInput);
+    const release = subjectStore.read(input.releaseManifestId);
+    const lineage = validatePreparedReleaseLineage(
+      input,
+      release,
+      runner,
+      artifactStore,
+      receiptStore,
+      subjectStore
+    );
+    const storedAuthorization = validateStoredReleaseAuthorization(
+      input,
+      release,
+      lineage,
+      receiptStore,
+      subjectStore
+    );
+    const deployment = validateDeploymentAttemptReceipt(
+      input,
+      release,
+      storedAuthorization
+    );
+    const deploymentScan = scanVnextPublicDocumentBytes(deployment.bytes, {
+      knownSecrets: input.knownSecrets
+    });
+    const deploymentRedaction = createVnextRedactionScanReceipt({
+      attemptId: `release-deployment-redaction-${
+        deployment.receipt.receiptId.slice("sha256:".length)}`,
+      campaignId: input.expectedCampaignId,
+      completedAtUtc: deployment.receipt.completedAtUtc,
+      scan: deploymentScan,
+      sourceRevision: input.sourceRevision,
+      startedAtUtc: deployment.receipt.completedAtUtc
+    });
+    const authorizedReceiptIds = storedAuthorization.expectedReceiptIds;
+    const authorizedSubjectIds = storedAuthorization.expectedSubjectIds;
+    const withRedaction = [...new Set([
+      ...authorizedReceiptIds,
+      deploymentRedaction.receipt.receiptId
+    ])].sort();
+    const withDeployment = [...new Set([
+      ...withRedaction,
+      deployment.receipt.receiptId
+    ])].sort();
+    const currentReceiptIds = receiptStore.rebuild().activeReceiptIds;
+    const isAuthorized = sameStrings(currentReceiptIds, authorizedReceiptIds);
+    const hasRedaction = sameStrings(currentReceiptIds, withRedaction);
+    const hasDeployment = sameStrings(currentReceiptIds, withDeployment);
+    if (!isAuthorized && !hasRedaction && !hasDeployment) {
+      failEvidence("release_surface_deployment_snapshot_changed", step);
+    }
+    assertStoreMembership(
+      receiptStore,
+      subjectStore,
+      currentReceiptIds,
+      authorizedSubjectIds,
+      "release-surface-deployment-before-verification"
+    );
+    if (hasRedaction || hasDeployment) {
+      const existingScan = receiptStore.read(
+        deploymentRedaction.receipt.receiptId
+      );
+      if (!existingScan.bytes.equals(deploymentRedaction.bytes)) {
+        failEvidence("release_surface_deployment_redaction_changed", step);
+      }
+    }
+    if (hasDeployment) {
+      const existingDeployment = receiptStore.read(deployment.receipt.receiptId);
+      if (!existingDeployment.bytes.equals(deployment.bytes)) {
+        failEvidence("release_surface_deployment_identity_collision", step);
+      }
+    }
+    if (!deploymentScan.publicSafe) {
+      if (isAuthorized) receiptStore.put(deploymentRedaction.bytes);
+      assertStoreMembership(
+        receiptStore,
+        subjectStore,
+        withRedaction,
+        authorizedSubjectIds,
+        "release-surface-deployment-redaction-failure"
+      );
+      failEvidence("release_surface_deployment_unsafe", step);
+    }
+    const result = deepFreeze({
+      schema: parsedProfile.releaseDeployment.resultSchema,
+      campaignId: input.expectedCampaignId,
+      environment: input.expectedEnvironment,
+      releaseManifestId: input.releaseManifestId,
+      releaseManifestSha256: release.canonicalContentSha256,
+      sourceRevision: input.sourceRevision,
+      publicOrigin: release.value.publicOrigin,
+      authorizationReceiptId: input.authorizationReceiptId,
+      deploymentReceiptId: deployment.receipt.receiptId,
+      deploymentRedactionReceiptId: deploymentRedaction.receipt.receiptId,
+      deploymentAttemptId: deployment.receipt.attemptId,
+      deploymentAttemptStartedAtUtc: deployment.receipt.startedAtUtc,
+      deploymentAttemptCompletedAtUtc: deployment.receipt.completedAtUtc,
+      verifiedAtUtc: input.verificationTimeUtc,
+      evidenceScope: parsedProfile.releaseDeployment.evidenceScope,
+      deploymentStatus: "attempt-admitted",
+      publicReadbackStatus: "required-not-performed",
+      state: parsedProfile.releaseDeployment.admittedState
+    });
+    const resultBytes = canonicalizeVnextJcsBytes(result);
+    if (resultBytes.length > parsedProfile.limits.maximumDeploymentResultBytes) {
+      failEvidence("release_surface_deployment_result_byte_limit", step);
+    }
+    const resultScan = scanKnownSecretRepresentations(
+      resultBytes,
+      input.knownSecrets
+    );
+    if (resultScan.findingCount !== 0) {
+      failEvidence("release_surface_deployment_result_unsafe", step);
+    }
+    assertStoreMembership(
+      receiptStore,
+      subjectStore,
+      currentReceiptIds,
+      authorizedSubjectIds,
+      "release-surface-deployment-before-persistence"
+    );
+    const deploymentRedactionPersistence = receiptStore.put(
+      deploymentRedaction.bytes
+    );
+    assertStoreMembership(
+      receiptStore,
+      subjectStore,
+      hasDeployment ? withDeployment : withRedaction,
+      authorizedSubjectIds,
+      "release-surface-deployment-after-redaction"
+    );
+    const deploymentPersistence = receiptStore.put(deployment.bytes);
+    assertStoreMembership(
+      receiptStore,
+      subjectStore,
+      withDeployment,
+      authorizedSubjectIds,
+      "release-surface-deployment-after-receipt"
+    );
+    return immutableReleasePreparationResult({
+      campaignId: input.expectedCampaignId,
+      environment: input.expectedEnvironment,
+      releaseManifestId: input.releaseManifestId,
+      releaseManifestSha256: release.canonicalContentSha256,
+      authorizationReceiptId: input.authorizationReceiptId,
+      deploymentReceiptId: deployment.receipt.receiptId,
+      deploymentRedactionReceiptId: deploymentRedaction.receipt.receiptId,
+      deploymentAttemptId: deployment.receipt.attemptId,
+      deploymentStatus: result.deploymentStatus,
+      publicReadbackStatus: result.publicReadbackStatus,
+      state: result.state,
+      deploymentResult: result,
+      deploymentResultSha256: sha256(resultBytes),
+      deploymentPersistence,
+      deploymentRedactionPersistence
+    }, {
+      deploymentReceiptBytes: deployment.bytes,
+      deploymentRedactionReceiptBytes: deploymentRedaction.bytes,
+      deploymentResultBytes: resultBytes,
+      releaseManifestBytes: release.bytes
+    });
+  }
+
   return Object.freeze({
+    admitDeploymentAttempt,
     attestCampaign,
     authorizeRelease,
     prepareRelease,

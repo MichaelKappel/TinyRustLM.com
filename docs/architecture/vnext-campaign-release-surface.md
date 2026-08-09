@@ -5,15 +5,16 @@
 `tinyrustlm.vnext.campaign-release-surface.v1` is the sole vNext boundary for
 turning a freshly executed campaign projection into immutable prepublication
 attestation evidence, an operator status view, and a create-only
-`release_manifest.v3` candidate, then verifying its current release-authorizer
-signature as a forward-only child. Its frozen profile is
+`release_manifest.v3` candidate, verifying its current release-authorizer
+signature, and admitting one narrowly scoped deployment-attempt receipt as
+forward-only children. Its frozen profile is
 `contracts/vnext/campaign-release-surface-profile.v1.json`, with SHA-256
-`97cc27e2d54f8e1612702f2b55cdf7ab9d6e19d4a4ad280c6f73df81c77ec9d0`.
+`d867dc809b5fc1f504469edfd25c7b1f3b93e8448ba5571558f6a5f4b9079bed`.
 
 This checkpoint implements fresh projection, final attestation, public-safe
-redaction, truthful operator status, release-manifest preparation, and current
-Ed25519 release-authorizer verification. Exact deployment and public HTTPS
-readback descendants, published claims, site-publisher authorization, and
+redaction, truthful operator status, release-manifest preparation, current
+Ed25519 release-authorizer verification, and immutable deployment-attempt
+admission. Exact production HTTPS readback, published claims, site-publisher authorization, and
 deletion of the superseded release stack remain required before the surface is
 the operational publication entry point. A prepared manifest is explicitly
 `not-authorized`; an authorized manifest is only
@@ -46,7 +47,9 @@ forward from the prepared manifest:
 release_manifest.v3
   -> authorization redaction-scan receipt
   -> current release-authorizer signature receipt [implemented]
-  -> deployment and exact HTTPS readback receipts
+  -> deployment-attempt redaction-scan receipt [implemented]
+  -> deployment-attempt receipt [implemented; explicitly not success proof]
+  -> exact production HTTPS readback receipt
   -> published claim.v2 descendants
   -> site-publisher signatures
 ```
@@ -107,6 +110,14 @@ field for an authorization decision, status, deployment, publication, or live
 counter. It reconstructs the preparation operation and all required evidence
 from create-only storage instead of trusting a prepared-result object retained
 in process memory.
+
+`admitDeploymentAttempt` is a third closed operation over that stored,
+currently authorized graph. It accepts canonical deployment-receipt bytes and
+the same immutable control inputs needed to reconstruct preparation and
+authorization. It has no deployed, succeeded, published, done, readback, or
+counter input. A deployment executor may report only that it attempted to
+submit the exact authorized static inventory; production response truth remains
+the responsibility of the subsequent network operation.
 
 ## Final Attestation
 
@@ -244,6 +255,42 @@ expiry, verification time, and source revision. It does not mutate the
 prepared manifest and does not claim deployment, HTTPS readback, publication,
 site-publisher approval, or campaign completion.
 
+## Deployment Attempt Admission
+
+Deployment admission reconstructs the complete prepared lineage again, reads
+the already stored release-authorizer signature by identity, verifies its
+original redaction receipt, and reruns the current authority graph at the new
+trusted verification time. Expired, retired, revoked, replaced, or otherwise
+noncurrent authorization cannot launch deployment merely because it passed at
+an earlier instant.
+
+The externally produced canonical `deployment` receipt must have phase and
+type `deployment`, status `pass`, and execution class `deployment`. In this
+receipt, `pass` means only that the bounded attempt record itself is valid. Its
+mandatory `evidence-scope` is `deployment-attempt-only`; it cannot claim that a
+remote server accepted bytes or serves them. The receipt must bind exactly:
+
+- the current web-build receipt as its sole phase dependency;
+- the campaign attestation through `attestationReference`;
+- the release authorization through one exact receipt reference and public
+  parameter;
+- the release manifest canonical-content hash;
+- the exact domain-separated web-asset inventory identity;
+- the deployment-manifest, publication-generator, and security-header hashes;
+- the same inventory as the attempted output;
+- one bounded public-safe deployment-transcript digest;
+- the authorized public HTTPS origin, asset count, and total bytes; and
+- an attempt interval after authorization and no later than verification.
+
+The operation rejects caller booleans, extra fields, fixture execution,
+inventory drift, origin drift, missing or extra parents, and unrelated store
+members. It scans the final canonical receipt before persistence. On pass, it
+persists the scan first and the deployment receipt second, both create-only.
+The result state is
+`deployment-attempt-admitted-awaiting-public-readback`; its deployment status
+is only `attempt-admitted` and its readback status is
+`required-not-performed`. No deployed or published claim is valid yet.
+
 ## Redaction And Secret Custody
 
 The caller supplies a bounded protected equality list in process memory. The
@@ -334,6 +381,13 @@ attempt. The trusted verification time is part of the authorization identity,
 so replay with a different verification instant is not treated as the same
 operation.
 
+Deployment admission uses the same bounded crash-recovery pattern over the
+exact authorized set: authorized only, authorized plus the deterministic
+deployment-redaction receipt, or that set plus the exact deployment receipt.
+Any other active member blocks the operation. Byte-identical replay reuses the
+two descendants. An unsafe deployment receipt persists only its bounded failed
+redaction receipt; the deployment receipt itself is never stored.
+
 ## Verification
 
 `tinyrustlm/tests/vnext-campaign-release-surface.test.js` covers:
@@ -364,7 +418,7 @@ operation.
   header drift, model routes, and worker-policy mismatch;
 - rejection of valid-looking hash, size, type, and cache drift when the
   recomputed inventory no longer matches the immutable build receipt;
-- create-only manifest/readback behavior and defensive returned byte copies;
+- create-only manifest-store readback behavior and defensive returned byte copies;
 - successful fresh reprojection after retained attestation, redaction, and
   release-manifest history;
 - explicit `not-authorized` output with no publication or `done` claim;
@@ -373,7 +427,12 @@ operation.
 - byte-identical authorization replay and crash-recovery persistence order;
 - rejection of caller decisions, wrong scope, wrong release binding, expired
   authorization, retired keys, and post-preparation subject drift; and
-- unsafe authorization bytes retaining only bounded redaction evidence.
+- unsafe authorization bytes retaining only bounded redaction evidence;
+- exact deployment-attempt lineage, inventory and control-document binding;
+- rejection of caller deployment truth, fixture execution, scope drift, and
+  attempted-inventory drift;
+- byte-identical deployment admission replay; and
+- unsafe deployment bytes retaining only bounded redaction evidence.
 
 The complete-capacity case is synthetic conformance evidence. It does not
 increment any live campaign counter.

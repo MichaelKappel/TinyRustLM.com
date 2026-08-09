@@ -336,7 +336,7 @@ best-of-N, mutable-currentness, or stored-result promotion path. See
 `tinyrustlm/tools/vnext-campaign-release-surface.js` now consumes that runner
 only by creating a never-before-used operation and receiving its exact result
 inside the same call. Its frozen profile has SHA-256
-`97cc27e2d54f8e1612702f2b55cdf7ab9d6e19d4a4ad280c6f73df81c77ec9d0`.
+`d867dc809b5fc1f504469edfd25c7b1f3b93e8448ba5571558f6a5f4b9079bed`.
 The surface independently validates the returned projection against the exact
 stored plan and runner operation records, finalizes a content-addressed
 complete-or-blocked attestation, scans the final canonical bytes against the
@@ -359,6 +359,15 @@ manifest, source revision and campaign match, lifetime is finite, and current
 vNext authority-graph result is fully eligible under caller-pinned root and
 terminal registries. The authorization receipt is scanned before create-only
 persistence; a restarted surface can repeat the exact operation idempotently.
+Its `admitDeploymentAttempt` operation then replays the complete authorized
+lineage and current authority graph before accepting one canonical
+`deployment` receipt. That receipt is closed to the exact manifest, static
+inventory, control documents, authorization receipt reference, current
+web-build phase parent, campaign attestation reference, origin, byte count,
+and deployment-class executor. Its frozen scope is
+`deployment-attempt-only`; it cannot assert deployment success. The receipt is
+secret-scanned and persisted only after its deterministic redaction receipt,
+with byte-identical crash recovery and replay.
 Stored projection bytes, caller counters, caller verdicts or authorization
 decisions, reused/interrupted/failed preparation operations, omitted or stale
 release parents, authority drift, unsafe bytes, mutable pointers, and
@@ -406,8 +415,9 @@ the full content SHA-256. Generated pointer and history bytes are forward-only
 site-publisher descendants because embedding bytes that name the manifest
 inside that same manifest would be self-referential. The same surface now verifies and
 create-only persists a current Ed25519 release-authorizer signature as the
-manifest's forward-only child without mutating the manifest or claiming
-deployment. Exact HTTPS readback, deployment and published-claim descendants,
+manifest's forward-only child without mutating the manifest. It now also
+admits a create-only, explicitly non-success deployment-attempt descendant.
+Exact production HTTPS readback and published-claim descendants,
 site-publisher authorization, and deletion of the superseded
 dashboard/release/public-readback stack remain incomplete. This is not
 outside-network observation or live campaign evidence.

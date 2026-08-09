@@ -26,9 +26,9 @@
   "callerVerdictPolicy": "forbidden",
   "callerCounterPolicy": "forbidden",
   "mutablePointerPolicy": "forbidden",
-  "networkAccess": "forbidden",
+  "networkAccess": "forbidden-until-public-readback-operation",
   "clockAccess": "caller-trusted-verification-time-only",
-  "sourceMutation": "create-only-attestation-redaction-release-manifest-and-authorization-signature-receipts",
+  "sourceMutation": "create-only-attestation-redaction-release-manifest-authorization-signature-and-deployment-attempt-receipts",
   "attestation": {
     "receiptSchema": "tinyrustlm.vnext.receipt.v1",
     "receiptType": "final-attestation",
@@ -112,6 +112,26 @@
     "persistencePolicy": "authorization-redaction-before-create-only-signature-receipt",
     "callerDecisionPolicy": "forbidden"
   },
+  "releaseDeployment": {
+    "resultSchema": "tinyrustlm.vnext.release_deployment_admission_result.v1",
+    "admittedState": "deployment-attempt-admitted-awaiting-public-readback",
+    "receiptType": "deployment",
+    "phase": "deployment",
+    "status": "pass",
+    "evidenceScope": "deployment-attempt-only",
+    "manifestPolicy": "existing-current-authorized-manifest-only",
+    "authorizationPolicy": "exactly-one-stored-current-evidence-eligible-release-authorizer-signature",
+    "receiptPolicy": "externally-produced-canonical-receipt-with-closed-lineage-and-no-success-claim",
+    "inputReceiptPolicy": "exact-current-web-build-phase-parent-attestation-reference-and-authorization-receipt-reference",
+    "inputHashPolicy": "exact-release-manifest-web-inventory-deployment-manifest-publication-generator-and-security-header-profile",
+    "outputHashPolicy": "exact-submitted-web-inventory-plus-bounded-public-safe-attempt-transcript-digest",
+    "runtimePolicy": "deployment-execution-class-only",
+    "timePolicy": "attempt-after-authorization-and-not-after-trusted-verification-time",
+    "redactionPolicy": "scan-final-canonical-deployment-receipt-before-persistence",
+    "persistencePolicy": "deployment-redaction-before-create-only-deployment-receipt",
+    "callerSuccessPolicy": "forbidden",
+    "publicReadbackPolicy": "required-before-any-deployed-or-published-claim"
+  },
   "limits": {
     "maximumKnownSecrets": 128,
     "maximumProjectionBytes": 4194304,
@@ -132,6 +152,8 @@
     "maximumWebTotalBytes": 68719476736,
     "maximumReleaseManifestBytes": 524288,
     "maximumAuthorizationReceiptBytes": 262144,
-    "maximumAuthorizationResultBytes": 262144
+    "maximumAuthorizationResultBytes": 262144,
+    "maximumDeploymentReceiptBytes": 262144,
+    "maximumDeploymentResultBytes": 262144
   }
 }
