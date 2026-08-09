@@ -27,7 +27,7 @@ test("strictly parses one frozen incompatible contract registry", () => {
   const value = registry();
   exactKeys(value, [
     "schema", "familyId", "status", "compatibility", "unknownFieldPolicy",
-    "canonicalJsonProfile", "identityProfile", "limits", "redaction",
+    "canonicalJsonProfile", "identityProfile", "limits", "semanticLimits", "redaction",
     "records", "contracts"
   ], "registry");
   assert.equal(value.schema, "tinyrustlm.vnext.contract_registry.v1");
@@ -77,7 +77,7 @@ test("closes every root and nested record with unique required fields", () => {
     "sha256", "source-revision", "utc"
   ]);
   const allowedTypes = new Set([
-    "array", "bounded-string", "enum", "integer", "literal", "nullable", "record",
+    "array", "bounded-string", "bounded-text", "enum", "integer", "literal", "nullable", "record",
     ...scalarTypes
   ]);
   const referenceExists = (reference, label) => {
@@ -115,7 +115,7 @@ test("closes every root and nested record with unique required fields", () => {
         assert.ok(Number.isSafeInteger(field.minimum));
         assert.ok(Number.isSafeInteger(field.maximum));
         assert.ok(field.minimum <= field.maximum);
-      } else if (field.type === "bounded-string") {
+      } else if (field.type === "bounded-string" || field.type === "bounded-text") {
         exactKeys(field, [...commonKeys, "minimumLength", "maximumLength"],
           `${label}.${field.name}`);
         assert.ok(Number.isSafeInteger(field.minimumLength) && field.minimumLength >= 0);
@@ -266,6 +266,13 @@ test("binds signing, context provenance, redaction, and public claims explicitly
   assert.ok(field(records.contextSegment, "sourceKind").values.includes("tool-output"));
   assert.ok(field(records.contextSegment, "sourceKind").values.includes("untrusted-memory"));
   assert.ok(field(records.contextSegment, "sourceKind").values.includes("current-user"));
+  const boundedTextFields = [
+    ...value.records.flatMap((record) => record.fields.map((candidate) =>
+      `${record.name}.${candidate.name}:${candidate.type}`)),
+    ...value.contracts.flatMap((contract) => contract.fields.map((candidate) =>
+      `${contract.class}.${candidate.name}:${candidate.type}`))
+  ].filter((entry) => entry.endsWith(":bounded-text"));
+  assert.deepEqual(boundedTextFields, ["contextSegment.content:bounded-text"]);
 
   for (const claimField of [
     "siteId", "route", "component", "wordingClass", "evidenceTier",
@@ -288,6 +295,13 @@ test("freezes finite parser limits and a private-by-default redaction policy", (
     "maximumNumberCharacters", "maximumSafeInteger"
   ], "limits");
   for (const limit of Object.values(value.limits)) {
+    assert.ok(Number.isSafeInteger(limit) && limit > 0);
+  }
+  exactKeys(value.semanticLimits, [
+    "maximumOutsideProofLifetimeSeconds", "maximumOnlineSignatureLifetimeSeconds",
+    "maximumAuthorityRegistryLifetimeSeconds"
+  ], "semantic limits");
+  for (const limit of Object.values(value.semanticLimits)) {
     assert.ok(Number.isSafeInteger(limit) && limit > 0);
   }
   exactKeys(value.redaction, [

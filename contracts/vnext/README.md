@@ -56,8 +56,9 @@ and browser implementations; naming the profile is not conformance evidence.
 - `ed25519-signature`: canonical padded base64 for exactly 64 decoded bytes.
 - `integer`: a JavaScript/RFC 8785 safe integer within the field bounds.
 - `bounded-string`: valid Unicode scalar values within the declared code-unit
-  bounds and without C0/C1 controls other than JSON-escaped tab, LF, and CR
-  where a private content field explicitly permits them.
+  bounds and without C0/C1 controls.
+- `bounded-text`: the same scalar and code-unit bounds, but permits tab, LF,
+  and CR. Only private content fields may use this primitive.
 - `nullable`: exactly null or the declared value type.
 - `record`: exactly the named closed record.
 - `array`: exact item type and declared cardinality; `unique`, `uniqueBy`,
@@ -155,6 +156,32 @@ Limits may be lowered before production only through a new frozen registry;
 they are never changed after seeing which value allows a preferred artifact or
 model to pass. Raising a limit requires measured memory/time evidence and a
 threat review.
+
+## Validation Checkpoint
+
+Phase 2 has two intentionally different Node validators:
+
+- `tinyrustlm.vnext.registry-schema-validator.v1` interprets this frozen
+  registry and then applies class-specific local invariants.
+- `tinyrustlm.vnext.independent-schema-validator.v1` carries a separately
+  written exact schema and local-invariant implementation. It does not import
+  the registry validator, read this registry, or access the filesystem.
+
+Both consume the same checked-in language-neutral corpus of exact base64 raw
+JSON bytes. The corpus is deterministic and binds its registry and normalized
+generator-source hashes. It currently contains 69 cases: 14 accepted and 55
+rejected. Tests require both validators to match every expected verdict, accept
+object-key permutations, reject every missing root field, and reject an unknown
+field at every reachable object depth. The registry interpreter additionally
+partitions every declared invariant into checked, not applicable, or deferred;
+the independent validator remains a separately sourced verdict oracle rather
+than consuming that registry-owned invariant list.
+
+`docs/architecture/vnext-contract-threat-review.md` is the authoritative
+security review for this checkpoint. Its PASS is limited to schema and local
+invariants. It does not prove canonical identity, signatures, authority or
+revocation chains, receipt-DAG closure, redaction execution, Rust/browser
+parity, production cutover, or any campaign result.
 
 ## Completion Boundary
 

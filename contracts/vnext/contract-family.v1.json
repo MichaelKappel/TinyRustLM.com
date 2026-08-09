@@ -22,6 +22,11 @@
     "maximumNumberCharacters": 64,
     "maximumSafeInteger": 9007199254740991
   },
+  "semanticLimits": {
+    "maximumOutsideProofLifetimeSeconds": 86400,
+    "maximumOnlineSignatureLifetimeSeconds": 604800,
+    "maximumAuthorityRegistryLifetimeSeconds": 31536000
+  },
   "redaction": {
     "profile": "tinyrustlm.vnext.public_safe.v1",
     "defaultVisibility": "private",
@@ -198,7 +203,7 @@
         {"name": "role", "type": "enum", "required": true, "values": ["assistant", "data", "system", "user"]},
         {"name": "sourceKind", "type": "enum", "required": true, "values": ["current-user", "model-summary", "prior-assistant", "product-policy", "quoted-text", "required-generation-prefix", "retrieved-text", "tool-output", "trusted-memory", "untrusted-memory"]},
         {"name": "trust", "type": "enum", "required": true, "values": ["authoritative", "trusted", "untrusted"]},
-        {"name": "content", "type": "bounded-string", "required": true, "minimumLength": 1, "maximumLength": 65536},
+        {"name": "content", "type": "bounded-text", "required": true, "minimumLength": 1, "maximumLength": 65536},
         {"name": "contentSha256", "type": "sha256", "required": true},
         {"name": "sourceRecordIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 0, "maximumItems": 32, "unique": true, "sorted": true},
         {"name": "sourceReceiptIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 0, "maximumItems": 32, "unique": true, "sorted": true},
@@ -246,7 +251,7 @@
       "identityField": "artifactId",
       "canonicalHashField": "canonicalContentSha256",
       "identityExcludedFields": ["canonicalContentSha256"],
-      "invariants": ["artifact-id-matches-artifact-sha256", "dependencies-unique-sorted", "qualification-required-for-promoted-model", "public-redaction-profile-required"],
+      "invariants": ["artifact-id-matches-artifact-sha256", "artifact-class-format-profile-compatible", "dependencies-unique-sorted", "qualification-required-for-promoted-model", "public-redaction-profile-required"],
       "fields": [
         {"name": "schema", "type": "literal", "required": true, "value": "tinyrustlm.vnext.artifact_manifest.v1"},
         {"name": "artifactId", "type": "content-id", "required": true},
@@ -275,7 +280,7 @@
       "identityField": "receiptId",
       "canonicalHashField": "canonicalContentSha256",
       "identityExcludedFields": ["canonicalContentSha256", "receiptId"],
-      "invariants": ["receipt-id-domain-hash", "completed-not-before-started", "parent-ids-unique-sorted", "failure-status-requires-error", "pass-status-forbids-error", "public-receipt-has-redaction-profile", "redaction-scan-binds-target-hash-without-cycle", "external-reference-kind-valid", "typed-security-payload-matches-receipt-type", "security-receipts-require-pass-status", "signed-schema-known-exact", "signature-role-domain-match", "signature-key-registry-role-scope-time-valid", "authority-registry-chain-and-window-valid", "revocation-chain-role-and-time-valid", "offline-bundle-closure-complete"],
+      "invariants": ["receipt-id-domain-hash", "completed-not-before-started", "parent-ids-unique-sorted", "failure-status-requires-error", "pass-status-forbids-error", "blocked-status-requires-blocker", "public-receipt-has-redaction-profile", "redaction-scan-binds-target-hash-without-cycle", "external-reference-kind-valid", "typed-security-payload-matches-receipt-type", "security-receipts-require-pass-status", "signed-schema-known-exact", "signature-role-domain-match", "signature-key-registry-role-scope-time-valid", "authority-registry-window-valid", "authority-registry-chain-valid", "revocation-time-valid", "revocation-chain-role-valid", "offline-bundle-schema-set-complete", "offline-bundle-closure-complete"],
       "fields": [
         {"name": "schema", "type": "literal", "required": true, "value": "tinyrustlm.vnext.receipt.v1"},
         {"name": "receiptId", "type": "content-id", "required": true},
@@ -317,7 +322,7 @@
       "identityField": "contextId",
       "canonicalHashField": "canonicalContentSha256",
       "identityExcludedFields": ["canonicalContentSha256", "contextId"],
-      "invariants": ["context-id-domain-hash", "segment-ordinals-contiguous", "segment-content-hashes-match", "exactly-one-current-user-authority", "token-budget-consistent", "memory-segments-never-authoritative", "untrusted-data-never-authoritative", "summary-and-memory-lineage-required", "current-user-supersession-explicit"],
+      "invariants": ["context-id-domain-hash", "segment-ordinals-contiguous", "segment-content-hashes-match", "exactly-one-current-user-authority", "exactly-one-product-policy-authority", "token-budget-consistent", "memory-segments-never-authoritative", "untrusted-data-never-authoritative", "summary-and-memory-lineage-required", "current-user-supersession-explicit"],
       "fields": [
         {"name": "schema", "type": "literal", "required": true, "value": "tinyrustlm.vnext.context.v1"},
         {"name": "contextId", "type": "content-id", "required": true},
@@ -351,7 +356,7 @@
       "identityField": null,
       "canonicalHashField": null,
       "identityExcludedFields": [],
-      "invariants": ["payload-transferred-separately", "payload-hash-and-length-match", "generation-events-match-generation-id", "cancel-invalidates-later-events", "deadline-bounded"],
+      "invariants": ["payload-transferred-separately", "payload-hash-and-length-match", "generation-events-match-generation-id", "direction-operation-compatible", "cancel-invalidates-later-events", "deadline-bounded"],
       "fields": [
         {"name": "schema", "type": "literal", "required": true, "value": "tinyrustlm.vnext.worker_message.v1"},
         {"name": "protocol", "type": "literal", "required": true, "value": "tinyrustlm-worker-vnext-1"},
@@ -379,7 +384,7 @@
       "identityField": null,
       "canonicalHashField": null,
       "identityExcludedFields": [],
-      "invariants": ["authorization-material-header-only", "origin-exact-allowlist", "body-hash-and-length-match", "mutation-requires-idempotency-hash", "session-scope-authorizes-operation"],
+      "invariants": ["authorization-material-header-only", "origin-exact-allowlist", "body-hash-and-length-match", "direction-operation-compatible", "mutation-requires-idempotency-hash", "paired-operation-requires-session", "session-scope-authorizes-operation"],
       "fields": [
         {"name": "schema", "type": "literal", "required": true, "value": "tinyrustlm.vnext.companion_message.v1"},
         {"name": "protocol", "type": "literal", "required": true, "value": "tinyrustlm-companion-vnext-1"},
@@ -439,7 +444,7 @@
       "identityField": "proofId",
       "canonicalHashField": "canonicalContentSha256",
       "identityExcludedFields": ["canonicalContentSha256", "proofId"],
-      "invariants": ["proof-id-domain-hash", "outside-network-scope-exact", "checked-routes-unique-sorted", "complete-transfer-required", "issued-not-before-observed", "expiry-after-issue-within-policy", "observer-signature-parent-required", "public-redaction-profile-required"],
+      "invariants": ["proof-id-domain-hash", "outside-network-scope-exact", "checked-routes-unique-sorted", "complete-transfer-fields-required", "complete-transfer-matches-p2p-artifact", "issued-not-before-observed", "expiry-after-issue-within-policy", "observer-signature-parent-required", "public-redaction-profile-required"],
       "fields": [
         {"name": "schema", "type": "literal", "required": true, "value": "tinyrustlm.vnext.outside_proof.v1"},
         {"name": "proofId", "type": "content-id", "required": true},

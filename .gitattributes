@@ -64,6 +64,12 @@ tinyrustlm/tools/immutable-low-rank-overlay*.js text eol=lf
 tinyrustlm/tests/atomic-composition-activation*.js text eol=lf
 tinyrustlm/tools/atomic-composition-activation*.js text eol=lf
 
+# Keep the incompatible vNext contract registry, generated conformance corpus,
+# and independent validators byte-stable on every checkout.
+contracts/vnext/** text eol=lf
+tinyrustlm/tests/vnext-contract-*.test.js text eol=lf
+tinyrustlm/tools/vnext-contract-*.js text eol=lf
+
 # Keep task-specialist case commitments and their exact tool hashes byte-stable.
 tinyrustlm/experiments/task-specialists/** text eol=lf
 tinyrustlm/tests/task-specialist-*.js text eol=lf
