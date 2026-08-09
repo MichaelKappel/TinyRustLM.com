@@ -1,9 +1,17 @@
-profile: tinyrustlm.source-workspace.v259
+profile: tinyrustlm.source-workspace.v260
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-09T03:54:53Z
+updated_utc: 2026-08-09T04:00:30Z
 current_workspace_handoff:
-  authority: This block is the first-read operational account as of `2026-08-09T03:54:53Z`. It summarizes current truth and takes precedence over incompatible present-tense wording in dated history below. Historical receipts remain immutable evidence for their stated scope only.
+  authority: This block is the first-read operational account as of `2026-08-09T04:00:30Z`. It summarizes current truth and takes precedence over incompatible present-tense wording in dated history below. Historical receipts remain immutable evidence for their stated scope only.
+  workspace_family_account:
+    root_router: `E:\Source\Rust\workspace.uai` is the mutable full routing, site, publication, policy, and blocker account for the Rust site family. Read it fresh at every cold start, then return here for the complete source-controlled TinyRustLM execution handoff.
+    exact_site_boundary: The related-site account includes only seven direct site roots under `E:\Source\Rust`: `LMComposer.com`, `MiniModel.MiRust.com`, `MiniModel.org`, `MiRust.com`, `Runtime.MiRust.com`, `TinyRustLM.com`, and `TinyRustLM.MiRust.com`.
+    exclusions: `.local-secrets`, tooling, deployment staging, screenshots, archives, backups, preserved mirrors, external research trees, and repositories outside `E:\Source\Rust` are not sites in this account. External repositories belong under `E:\Source\external\{project-name}` and must not be added to project Git.
+    implementation_boundary: This branch edits only `E:\Source\.tinyrustlm-model-acquisition`. The dirty canonical TinyRustLM checkout and every unrelated repository or worktree remain protected until ownership and status are explicitly reconciled.
+    publication_account: TinyRustLM.com is the only one of the seven sites with an immutable successful-publication receipt. For every other site, last publication is unknown despite any Git, HTTP, visible-date, or byte-match observation. The mutable root coordinator carries the detailed per-site purpose, source state, bounded observation, and operational status.
+    synchronization_rule: An affected release must keep product, catalog, developer documentation, marketing, redirects, machine-readable metadata, user-visible Updates history, and immutable release evidence consistent. A blocker remains visible and cannot be converted into a publication claim.
+    campaign_account: The current objective remains 0/20 models, 0/50 clean-browser rounds, 0/25 authorized live memory rounds, 0/40 outside proofs, and 0/20 catalog announcements. No test, fixture, local probe, package, source commit, or reachable page changes those counters.
   cold_start_order:
     - Read this `current_workspace_handoff` block.
     - Read `version_authority`, the first current authorities under `active_product`, and `deploy_gate`.
@@ -14,7 +22,7 @@ current_workspace_handoff:
     step_1: Read the active goal through the goal system. It remains active and must not be marked complete from this checkpoint.
     step_2: Work only in `E:\Source\.tinyrustlm-model-acquisition` on branch `codex/model-acquisition-v2` unless the human explicitly changes ownership.
     step_3: Run `git status --short --branch`, `git rev-parse HEAD`, and `git ls-remote origin refs/heads/codex/model-acquisition-v2`; inspect any change newer than the checkpoints below before editing.
-    verified_parent_checkpoint: `c4eccc3f8e50dc64b489184e882842fcf5268620` (`feat(evidence): add canonical vNext receipt store`) was pushed and remote-exact before this update. This file intentionally records a verified parent rather than pretending it can contain its own commit hash; the live local/remote commands in step 3 are authoritative.
+    verified_parent_checkpoint: `6f8e6e6ee7b8e541eddeb4b923f2316a1e2e3ab2` (`docs(memory): record canonical receipt checkpoint`) was pushed and remote-exact before this update. This file intentionally records a verified parent rather than pretending it can contain its own commit hash; the live local/remote commands in step 3 are authoritative.
     expected_code_milestone: `c4eccc3f8e50dc64b489184e882842fcf5268620` (`feat(evidence): add canonical vNext receipt store`) is the latest completed code milestone.
     step_4: Do not edit, reset, clean, revert, or use `E:\Source\Rust\TinyRustLM.com` for this branch because that checkout contains unrelated work. Do not discard changes from another agent anywhere.
     step_5: Continue Phase 3 from `phase_3_canonical_store_checkpoint`: add role-bound Ed25519 authority and revocation, offline closure, redaction/secret-scan binding, and truthful counters. Do not reopen accepted ADR, Phase 2, or canonical-store decisions without new contradictory evidence.
@@ -28,7 +36,7 @@ current_workspace_handoff:
     local_root_coordinator: `E:\Source\Rust\workspace.uai` is the mutable non-Git routing and related-site account and points here for the complete source-controlled TinyRustLM execution handoff. Read it fresh each session; a later root profile is normal, and this tracked file deliberately does not pin its mutable hash. This tracked file, the active goal, accepted ADRs, frozen contracts, and objective receipts remain the implementation authorities for their scopes.
     last_completed_code_milestone_commit: `c4eccc3f8e50dc64b489184e882842fcf5268620`
     milestone_commit_subject: `feat(evidence): add canonical vNext receipt store`
-    remote_verification: Before this update, `git rev-parse HEAD` and `git ls-remote origin refs/heads/codex/model-acquisition-v2` both returned `c4eccc3f8e50dc64b489184e882842fcf5268620`. Always rerun `git status --short --branch`, `git rev-parse HEAD`, and `git ls-remote` at session start because this memory file cannot self-record the hash of its own containing commit.
+    remote_verification: Before this update, `git rev-parse HEAD` and `git ls-remote origin refs/heads/codex/model-acquisition-v2` both returned `6f8e6e6ee7b8e541eddeb4b923f2316a1e2e3ab2`. Always rerun `git status --short --branch`, `git rev-parse HEAD`, and `git ls-remote` at session start because this memory file cannot self-record the hash of its own containing commit.
     third_party_storage: Download public third-party repositories and review inputs only under `E:\Source\external\{project-name}`; do not add those trees or model payloads to project Git.
     payload_boundary: Product/source checkpoint/model-piece payloads remain outside source control. Only explicitly allowlisted small deterministic test fixtures may be tracked, and they never count as models, quality evidence, campaign rounds, or public availability.
   active_execution:
