@@ -1,7 +1,64 @@
-profile: tinyrustlm.source-workspace.v247
+profile: tinyrustlm.source-workspace.v248
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-09T00:53:15Z
+updated_utc: 2026-08-09T01:50:24Z
+current_workspace_handoff:
+  authority: This block is the first-read operational account as of `2026-08-09T01:50:24Z`. It summarizes current truth and takes precedence over incompatible present-tense wording in dated history below. Historical receipts remain immutable evidence for their stated scope only.
+  cold_start_order:
+    - Read this `current_workspace_handoff` block.
+    - Read `version_authority`, the first current authorities under `active_product`, and `deploy_gate`.
+    - Read `docs/architecture/adr/README.md` and the ten accepted ADRs before changing any vNext contract.
+    - Read the active goal through the goal system; do not infer completion from old reports, fixtures, unit tests, packages, or a live web page.
+  product_rule: TinyRustLM and its related sites are pre-public dogfood systems. Until the human explicitly removes this rule, enterprise quality and clean replacement are mandatory: no technical debt, legacy support, backward-compatibility paths, dual contracts, migration shims, deprecated aliases, knowingly temporary architecture, low-quality patches, or silent fallback. Full rewrites and deletion of superseded code after verification are authorized.
+  source_authority:
+    canonical_product_root: `E:\Source\Rust\TinyRustLM.com` is the authoritative product repository location, but its current checkout contains unrelated in-progress work and must not be edited, reset, cleaned, reverted, or used for this branch's implementation.
+    active_edit_worktree: `E:\Source\.tinyrustlm-model-acquisition`
+    active_branch: `codex/model-acquisition-v2`
+    last_completed_code_milestone_commit: `327c81bec9b9759212e38e847f4c6139a05ed8c6`
+    milestone_commit_subject: `docs(architecture): freeze vNext decision gates`
+    remote_verification: The milestone commit was pushed and `git ls-remote origin refs/heads/codex/model-acquisition-v2` returned the same full hash. Always rerun `git status --short --branch`, `git rev-parse HEAD`, and `git ls-remote` at session start because this memory file cannot self-record the hash of its own later check-in.
+    third_party_storage: Download public third-party repositories and review inputs only under `E:\Source\external\{project-name}`; do not add those trees or model payloads to project Git.
+    payload_boundary: Product/source checkpoint/model-piece payloads remain outside source control. Only explicitly allowlisted small deterministic test fixtures may be tracked, and they never count as models, quality evidence, campaign rounds, or public availability.
+  active_execution:
+    goal: Implement the authoritative enterprise vNext plan, then qualify 20 distinct models, complete 50 deletion-backed clean-browser conversations, complete exactly 25 authorized live MemoryEndpoints continuity rounds, obtain 40 current outside-network lane proofs, publish 20 live catalog announcements, verify required packages/RIDs/sites, and preserve objective receipts. The goal remains active and incomplete.
+    current_phase: `phase_2_contract_freeze`
+    completed_phase_gate: ADR-001 through ADR-010 are accepted in `docs/architecture/adr/`; they freeze metadata grammar, SHA-256/Merkle identity, alignment/layout, companion transport, browser persistence, quantization profiles, WebGPU support, specialist composition, service-worker release behavior, and evidence signing.
+    current_contract_risk: Signature-bearing release authorization currently enters through ordinary `JSON.parse` in `tinyrustlm/tools/campaign-release-authorization-evidence.js`, so duplicate member names cannot be rejected before signature verification.
+    exact_next_action: Add one bounded fatal-UTF-8 duplicate-aware strict JSON parser; apply it at the release-authorization signature boundary; add hostile tests for plain and escaped duplicate keys, invalid UTF-8, BOM, lone surrogates, excessive depth/entries, unsafe numbers/negative zero, and trailing data; then freeze the incompatible vNext schema family, limits, unknown-field behavior, redaction contract, two independent validators, and hostile fixture corpus.
+    no_compatibility_shims: SLM2 and the vNext schema family are intentionally incompatible clean contracts. Do not retain SLM1 fallback, old aliases, dual readers/writers, conversion-kit downloads, or user-run handoff scripts in the new product path.
+  verified_test_baseline:
+    architecture_decision_tests: `node --test tests/architecture-decisions.test.js` passed 12, failed 0, skipped 0.
+    full_unit_suite: `npm run test:unit` passed 641, failed 0, skipped 0 in approximately 72.8 seconds, including real Chromium fault scenarios and local release smoke.
+    source_hygiene: `git diff --cached --check` passed for the ADR milestone. Re-run focused and full gates after contract implementation; this baseline does not prove campaign completion or production readiness.
+  campaign_progress:
+    qualified_distinct_model_hashes: `0/20`
+    deletion_backed_clean_browser_rounds: `0/50`
+    authorized_live_memory_continuity_rounds: `0/25`
+    current_outside_network_lane_proofs: `0/40`
+    live_catalog_announcements: `0/20`
+    evidence_basis: The active worktree has no campaign directory or objective receipt set satisfying these gates. Historical experiments, model fixtures, local/LAN/loopback tests, mocked services, package creation, source conversion, structural validation, and isolated browser smokes do not increment any counter.
+    completion_rule: Never report `done`, `passed`, public P2P availability, model qualification, MemoryEndpoints continuity, or publication from unit tests alone. Partial evidence stays visible and blockers cannot become skips or simulated passes.
+  active_external_blockers:
+    - Twenty genuinely useful, distinct, provenance-bound models and the training/qualification compute and human review needed to earn 20/20 do not yet exist as current objective receipts.
+    - This session is not connected to MemoryEndpoints.com; the authoritative production single-use enrollment/reconnect/cleanup contract and authorized disposable-company credentials are unavailable, so live continuity remains 0/25.
+    - No authorized independent outside-network observer and current signed complete-transfer receipts exist for 40 public lanes, so outside proof remains 0/40 and catalog announcement remains 0/20.
+    - Required real-hardware execution evidence, including physical `linux-arm64`, remains distinct from cross-compilation, binary inspection, or emulation and is not complete.
+    - Role-separated campaign evidence keys, trust registry, publication authorization, and all non-TinyRustLM site release ledgers must be provisioned and verified before their corresponding claims can close.
+  related_site_account:
+    inventory_scope: Direct site roots under `E:\Source\Rust`; public observations were last reconciled on 2026-08-09. A live response, source commit, package version, HTTP Last-Modified value, and immutable publication receipt are different evidence classes and are labeled separately below.
+    LMComposer.com: Retired alias. The local root is empty and has no Git repository; production responds with a redirect to TinyRustLM.com. Last publication is unknown because no immutable site release ledger exists.
+    MiniModel.MiRust.com: Active MiniModel developer documentation. Local commit `3c5f9e28c48fd2b843f58df91accc5579a3270a5` is clean and equals the remote branch; the observed live root was byte-identical to local and returned Last-Modified `2026-07-12T22:33:49Z`. This HTTP metadata is not an immutable publication receipt.
+    MiniModel.org: Active public catalog and direct-P2P discovery surface; it must never proxy model bytes. Local commit `693c50f0fa2a82fd502dfc9d38c0e140531850da` is clean and equals the remote branch; the observed live root was byte-identical to local and returned Last-Modified `2026-07-14T07:33:16Z`. No immutable site release ledger exists.
+    MiRust.com: Active marketing, architecture, research, and governance site. Local commit `6dd665033c1d3a8ef907ee3140707a6fcb4c0357` is clean and equals the remote branch. The live footer reports latest content update `2026-06-25T16:42:00Z` and Theme/Core `2.3.0`; the local repository is not a complete independently verifiable WordPress deployment snapshot, and no immutable site release ledger exists.
+    Runtime.MiRust.com: Retired route-aware compatibility site redirecting to `https://tinyrustlm.mirust.com/developer-portal/`. Local commit `3bf5a5de50d21c4a10e8dd08dffa1eabd83199fc` is clean and equals the remote branch; local `version.json` identifies package `1.1.0`, updated `2026-07-12T21:30:00Z`. No immutable site release ledger exists.
+    TinyRustLM.com: Active browser-local product surface. The current immutable ledger records `tinyrustlm.com@0.2.1`, release date `2026-08-08`, published `2026-08-08T23:47:22.420Z`, source revision `e964a095ede1c077b36b6476af5ee85b087f52f8`, and publication ID `aea1e08b74f6b7835473ffb482baeddd42c97346d0a08868a66574f1a5d089ce`. The source revision is contained in the pushed active branch. This proves that bounded site publication only; it does not prove the enterprise campaign.
+    TinyRustLM.MiRust.com: Active architecture and developer portal. Local/live identity is `1.6.0`, updated `2026-07-12T22:00:00Z`; local and GitHub remote are both commit `c9cd240221c6ff6efd7ab5fcc476dad96f75ad01`. A prior local remote-tracking reflog permission failure can make `git status` falsely report two unpushed commits, so use `git ls-remote` as the remote fact. No immutable site release ledger exists.
+  publication_discipline:
+    - Publish stable, coherent increments frequently, but never trade quality, security, evidence, or synchronized documentation for cadence.
+    - Before each site publish, assign an intentional semantic version and release date, update a human-readable update log plus an immutable machine-readable release ledger, bind the exact clean source revision and artifact hashes, run relevant tests and secret scans, and obtain publication authorization.
+    - Commit and push every affected source, documentation, marketing, and release-log repository before claiming publication. Deploy only from its source-control truth, then verify public HTTPS readback, version, release date, update log, asset hashes, and behavior.
+    - Keep TinyRustLM.com, TinyRustLM.MiRust.com, MiniModel.org, MiniModel.MiRust.com, MiRust.com, and any retained redirect surfaces behaviorally and editorially consistent. Record an explicit blocker when a site cannot be updated; never call local files, package creation, upload attempts, or stale pages deployed.
+    - Bring every retained active site onto one consistent immutable release-ledger contract; TinyRustLM.com is currently the only site in this inventory with `uaix.site_release.v1` publication evidence.
 version_authority:
   current_version: 0.2.1
   next_version: 0.2.2
