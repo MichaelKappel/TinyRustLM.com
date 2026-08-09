@@ -39,7 +39,7 @@ current_workspace_handoff:
     truth_guard: Campaign progress is still 0/20 models, 0/50 clean-browser rounds, 0/25 authorized live memory rounds, 0/40 outside proofs, and 0/20 catalog announcements. Schema tests and local smokes do not change those numbers.
   product_rule: TinyRustLM and its related sites are pre-public dogfood systems. Until the human explicitly removes this rule, enterprise quality and clean replacement are mandatory: no technical debt, legacy support, backward-compatibility paths, dual contracts, migration shims, deprecated aliases, knowingly temporary architecture, low-quality patches, or silent fallback. Full rewrites and deletion of superseded code after verification are authorized.
   source_authority:
-    canonical_product_root: `E:\Source\Rust\TinyRustLM.com` is the authoritative product repository location, but at the latest observation its master checkout was `ae9aee1ed77013ab2fcf76a1d8b7c096fce3596b` with 88 status entries. Those are unrelated owned work; do not edit, reset, clean, revert, or use that checkout for this branch's implementation.
+    canonical_product_root: `E:\Source\Rust\TinyRustLM.com` is the authoritative product repository location, but at the 2026-08-09 release audit its master checkout was `ae9aee1ed77013ab2fcf76a1d8b7c096fce3596b` with 788 status entries. Those are unrelated owned work; do not edit, reset, clean, revert, or use that checkout for this branch's implementation.
     active_edit_worktree: `E:\Source\.tinyrustlm-model-acquisition`
     active_branch: `codex/model-acquisition-v2`
     tracked_full_handoff: `E:\Source\.tinyrustlm-model-acquisition\workspace.uai` is the source-controlled complete account for this active worktree.
