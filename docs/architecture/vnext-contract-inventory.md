@@ -157,10 +157,12 @@ rejections with byte, hash, and error-code parity. The Node campaign boundary
 now also
 validates complete projection-result wires and persists exact plans and
 projection snapshots through one frozen create-only artifact-store profile.
-The receipt store and campaign store share bounded filesystem mechanics while
-retaining separate receipt-DAG and result-to-plan semantics. Resume always
-reprojects supplied current evidence; no stored snapshot or mutable pointer is
-currentness authority.
+The receipt, public subject, and campaign artifact stores share bounded
+filesystem mechanics while retaining separate receipt-DAG, identity-subject,
+and result-to-plan semantics. The subject store accepts only the five
+public-safe non-receipt identity schemas and rejects private context and
+receipt records. Resume always reprojects supplied current evidence; no stored
+subject, snapshot, or mutable pointer is currentness authority.
 
 `campaign-evidence-wasm-interface.v1.json` now freezes the sole typed raw
 browser evidence ABI with no imports and an exact export set. Its deterministic
@@ -200,8 +202,10 @@ The generated browser campaign-evidence WASM boundary is documented in
 `docs/architecture/vnext-campaign-evidence-wasm-boundary.md`.
 Create-only plan/projection persistence is documented in
 `docs/architecture/vnext-campaign-artifact-persistence.md`.
+Create-only public subject persistence is documented in
+`docs/architecture/vnext-subject-store.md`.
 
-Remaining archive-member scanning, production campaign-runner and entry-point
-cutover, projection release integration, and external campaign evidence remain
-incomplete.
+Remaining exact cross-store snapshot orchestration, archive-member scanning,
+production campaign-runner and entry-point cutover, projection release
+integration, and external campaign evidence remain incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.

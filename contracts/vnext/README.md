@@ -299,6 +299,17 @@ are immutable history; `resumeProjection` reruns the projector from supplied
 current evidence and never selects a mutable current pointer. See
 `docs/architecture/vnext-campaign-artifact-persistence.md`.
 
+`tinyrustlm/tools/vnext-subject-store.js` completes the other host-side input
+store needed by the campaign runner. Its 3,285-byte frozen profile has SHA-256
+`606582eb83c6facb359385b00a4b13022a2a732489089fd049d74b37b43dca25`.
+It admits only the five public-safe, non-receipt identity schemas, publishes
+exact canonical bytes under the validated subject ID, and explicitly rejects
+private context and receipt records. Bounded reconstruction, no-follow reads,
+same-directory create-only publication, exact readback, total-byte limits,
+interruption handling, and quarantine are shared with the receipt and campaign
+artifact stores. It exposes no mutable current pointer and grants no evidence
+currentness by itself. See `docs/architecture/vnext-subject-store.md`.
+
 The authority result deliberately separates `signatureVerified`,
 `authorityAtIssue`, `temporalCurrent`, and `currentEvidenceEligible`. A valid
 historical Ed25519 signature is not current evidence when its envelope is

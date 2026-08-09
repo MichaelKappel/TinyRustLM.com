@@ -1,0 +1,95 @@
+{
+  "schema": "tinyrustlm.vnext.subject_store_profile.v1",
+  "profileId": "tinyrustlm.vnext.subject-store.v1",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-no-compatibility-reader",
+  "contractRegistrySha256": "812e3ace7526d867561f50bdbf24acc047773583391f85be9e0f3e4cbfe0366a",
+  "campaignProjectionProfileId": "tinyrustlm.vnext.campaign-projection.v1",
+  "campaignProjectionProfileSha256": "a5dbe87a6971301c782120d3b30bb6059ab9cb26f2efac70b866a7bdb0b52067",
+  "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
+  "hashAlgorithm": "sha256",
+  "identityBasis": "validated-subject-id-and-exact-canonical-wire-bytes",
+  "visibility": "public-safe-only",
+  "networkAccess": "forbidden",
+  "sourceMutation": "forbidden",
+  "acceptedSubjects": [
+    {
+      "schema": "tinyrustlm.vnext.artifact_manifest.v1",
+      "maximumBytes": 524288
+    },
+    {
+      "schema": "tinyrustlm.vnext.claim.v1",
+      "maximumBytes": 262144
+    },
+    {
+      "schema": "tinyrustlm.vnext.outside_proof.v2",
+      "maximumBytes": 262144
+    },
+    {
+      "schema": "tinyrustlm.vnext.p2p_manifest.v1",
+      "maximumBytes": 2097152
+    },
+    {
+      "schema": "tinyrustlm.vnext.release_manifest.v1",
+      "maximumBytes": 524288
+    }
+  ],
+  "rejectedSubjects": [
+    {
+      "schema": "tinyrustlm.vnext.context.v1",
+      "reason": "private-subject-forbidden"
+    },
+    {
+      "schema": "tinyrustlm.vnext.receipt.v1",
+      "reason": "receipt-store-owned"
+    }
+  ],
+  "layout": {
+    "subjectPattern": "subjects/sha256/{subject-id-digest-prefix-2}/{subject-id-digest}.json",
+    "temporaryPattern": ".{subject-id-digest}.{pid}.{nonce}.tmp",
+    "quarantineRoot": "quarantine",
+    "pathLinkPolicy": "reject-symbolic-link-or-reparse-point",
+    "replacementPolicy": "never",
+    "mutablePointerPolicy": "forbidden"
+  },
+  "atomicCreate": {
+    "sameDirectoryTemporary": true,
+    "exclusiveTemporary": true,
+    "temporaryFileFsync": true,
+    "publishPrimitive": "hard-link-create-if-absent",
+    "existingTargetPolicy": "accept-only-byte-identical",
+    "directoryMetadataSync": "required-or-explicitly-unavailable",
+    "readbackVerification": true
+  },
+  "concurrency": {
+    "createWriters": "multi-process-idempotent-hard-link",
+    "freshTemporaryPolicy": "leave-pending-without-mutation",
+    "minimumIncompleteTemporaryAgeMs": 300000,
+    "publishedHardLinkTemporaryPolicy": "quarantine-same-inode-link",
+    "rebuildInterferencePolicy": "fail-closed-and-retry"
+  },
+  "rebuild": {
+    "unknownEntryPolicy": "quarantine",
+    "incompleteTemporaryPolicy": "quarantine-after-minimum-age",
+    "invalidSubjectPolicy": "quarantine",
+    "unacceptedSchemaPolicy": "quarantine",
+    "identityPathMismatchPolicy": "quarantine",
+    "preserveUnrelatedValidSubjects": true
+  },
+  "limits": {
+    "maximumActiveSubjects": 2048,
+    "maximumTotalSubjectBytes": 67108864,
+    "maximumQuarantineEntries": 65536,
+    "maximumDirectoryEntries": 66000,
+    "maximumScanEntries": 262144,
+    "maximumQuarantineReasonCodeLength": 80,
+    "streamBufferBytes": 65536
+  },
+  "resultContract": {
+    "absolutePathsReturned": false,
+    "rawHostErrorsReturned": false,
+    "rawInvalidBytesReturned": false,
+    "durabilityClassReturned": true,
+    "boundedErrorCodesOnly": true
+  }
+}

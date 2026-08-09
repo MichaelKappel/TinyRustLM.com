@@ -1,0 +1,537 @@
+"use strict";
+
+const crypto = require("node:crypto");
+const fs = require("node:fs");
+const path = require("node:path");
+
+const { parseStrictJson } = require("./strict-json.js");
+const {
+  identityContractForSchema,
+  validateVnextIdentityDocumentBytes
+} = require("./vnext-content-identity.js");
+const {
+  VnextEvidenceError,
+  asEvidenceError,
+  failEvidence
+} = require("./vnext-evidence-error.js");
+const {
+  createVnextCreateOnlyFiles,
+  immutableRecord
+} = require("./vnext-create-only-files.js");
+
+const profilePath = path.resolve(__dirname,
+  "../../contracts/vnext/subject-store-profile.v1.json");
+const profileBytes = fs.readFileSync(profilePath);
+const subjectStoreProfile = parseStrictJson(profileBytes);
+const subjectStoreProfileSha256 = crypto.createHash("sha256")
+  .update(profileBytes).digest("hex");
+const contractRegistryPath = path.resolve(__dirname,
+  "../../contracts/vnext/contract-family.v1.json");
+const campaignProjectionProfilePath = path.resolve(__dirname,
+  "../../contracts/vnext/campaign-projection-profile.v1.json");
+const subjectIdPattern = /^sha256:([a-f0-9]{64})$/u;
+const digestFilePattern = /^([a-f0-9]{64})\.json$/u;
+const prefixPattern = /^[a-f0-9]{2}$/u;
+const temporaryPattern = /^\.([a-f0-9]{64})\.[0-9]{1,20}\.[a-f0-9]{4,64}\.tmp$/u;
+const storeOptionNames = Object.freeze(["io", "platform", "randomBytes"]);
+const expectedAcceptedSchemas = Object.freeze([
+  "tinyrustlm.vnext.artifact_manifest.v1",
+  "tinyrustlm.vnext.claim.v1",
+  "tinyrustlm.vnext.outside_proof.v2",
+  "tinyrustlm.vnext.p2p_manifest.v1",
+  "tinyrustlm.vnext.release_manifest.v1"
+]);
+const expectedRejectedSchemas = Object.freeze([
+  "tinyrustlm.vnext.context.v1",
+  "tinyrustlm.vnext.receipt.v1"
+]);
+const profileFields = Object.freeze([
+  "schema", "profileId", "status", "versionPolicy", "contractRegistrySha256",
+  "campaignProjectionProfileId", "campaignProjectionProfileSha256",
+  "canonicalJsonProfile", "hashAlgorithm", "identityBasis", "visibility",
+  "networkAccess", "sourceMutation", "acceptedSubjects", "rejectedSubjects",
+  "layout", "atomicCreate", "concurrency", "rebuild", "limits", "resultContract"
+]);
+
+function sha256(bytes) {
+  return crypto.createHash("sha256").update(bytes).digest("hex");
+}
+
+function isPlainObject(value) {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+}
+
+function exactObject(value, fields, code, step) {
+  if (!isPlainObject(value) || Object.getOwnPropertySymbols(value).length !== 0) {
+    failEvidence(code, step);
+  }
+  const names = Object.getOwnPropertyNames(value).sort();
+  const expected = [...fields].sort();
+  if (names.length !== expected.length ||
+      names.some((name, index) => name !== expected[index])) {
+    failEvidence(code, step);
+  }
+  for (const name of names) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, name);
+    if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
+      failEvidence(`${code}_accessor`, step);
+    }
+  }
+  return value;
+}
+
+function exactArray(value, maximum, code, step) {
+  if (!Array.isArray(value) || Object.getPrototypeOf(value) !== Array.prototype ||
+      value.length > maximum || Object.getOwnPropertySymbols(value).length !== 0 ||
+      Object.getOwnPropertyNames(value).length !== value.length + 1) {
+    failEvidence(code, step);
+  }
+  for (let index = 0; index < value.length; index += 1) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, String(index));
+    if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
+      failEvidence(`${code}_accessor`, step);
+    }
+  }
+  return value;
+}
+
+function sameStrings(left, right) {
+  return left.length === right.length &&
+    left.every((entry, index) => entry === right[index]);
+}
+
+function validateInstalledProfile() {
+  const step = "subject-store-profile";
+  exactObject(subjectStoreProfile, profileFields, "subject_store_profile_invalid", step);
+  const accepted = exactArray(subjectStoreProfile.acceptedSubjects, 5,
+    "subject_store_profile_invalid", step);
+  const rejected = exactArray(subjectStoreProfile.rejectedSubjects, 2,
+    "subject_store_profile_invalid", step);
+  for (const entry of accepted) {
+    exactObject(entry, ["schema", "maximumBytes"],
+      "subject_store_profile_invalid", step);
+  }
+  for (const entry of rejected) {
+    exactObject(entry, ["schema", "reason"], "subject_store_profile_invalid", step);
+  }
+  exactObject(subjectStoreProfile.layout,
+    ["subjectPattern", "temporaryPattern", "quarantineRoot", "pathLinkPolicy",
+      "replacementPolicy", "mutablePointerPolicy"],
+    "subject_store_profile_invalid", step);
+  exactObject(subjectStoreProfile.atomicCreate,
+    ["sameDirectoryTemporary", "exclusiveTemporary", "temporaryFileFsync",
+      "publishPrimitive", "existingTargetPolicy", "directoryMetadataSync",
+      "readbackVerification"], "subject_store_profile_invalid", step);
+  exactObject(subjectStoreProfile.concurrency,
+    ["createWriters", "freshTemporaryPolicy", "minimumIncompleteTemporaryAgeMs",
+      "publishedHardLinkTemporaryPolicy", "rebuildInterferencePolicy"],
+    "subject_store_profile_invalid", step);
+  exactObject(subjectStoreProfile.rebuild,
+    ["unknownEntryPolicy", "incompleteTemporaryPolicy", "invalidSubjectPolicy",
+      "unacceptedSchemaPolicy", "identityPathMismatchPolicy",
+      "preserveUnrelatedValidSubjects"], "subject_store_profile_invalid", step);
+  exactObject(subjectStoreProfile.limits,
+    ["maximumActiveSubjects", "maximumTotalSubjectBytes",
+      "maximumQuarantineEntries", "maximumDirectoryEntries", "maximumScanEntries",
+      "maximumQuarantineReasonCodeLength", "streamBufferBytes"],
+    "subject_store_profile_invalid", step);
+  exactObject(subjectStoreProfile.resultContract,
+    ["absolutePathsReturned", "rawHostErrorsReturned", "rawInvalidBytesReturned",
+      "durabilityClassReturned", "boundedErrorCodesOnly"],
+    "subject_store_profile_invalid", step);
+
+  const acceptedSchemas = accepted.map((entry) => entry.schema);
+  const rejectedSchemas = rejected.map((entry) => entry.schema);
+  const limitValues = Object.values(subjectStoreProfile.limits);
+  const registrySha256 = sha256(fs.readFileSync(contractRegistryPath));
+  const projectionProfileSha256 = sha256(fs.readFileSync(campaignProjectionProfilePath));
+  if (subjectStoreProfile.schema !== "tinyrustlm.vnext.subject_store_profile.v1" ||
+      subjectStoreProfile.profileId !== "tinyrustlm.vnext.subject-store.v1" ||
+      subjectStoreProfile.status !== "frozen" ||
+      subjectStoreProfile.versionPolicy !==
+        "single-current-profile-no-compatibility-reader" ||
+      subjectStoreProfile.contractRegistrySha256 !== registrySha256 ||
+      subjectStoreProfile.campaignProjectionProfileId !==
+        "tinyrustlm.vnext.campaign-projection.v1" ||
+      subjectStoreProfile.campaignProjectionProfileSha256 !== projectionProfileSha256 ||
+      subjectStoreProfile.canonicalJsonProfile !==
+        "rfc8785-jcs+tinyrustlm.strict-json.v1" ||
+      subjectStoreProfile.hashAlgorithm !== "sha256" ||
+      subjectStoreProfile.identityBasis !==
+        "validated-subject-id-and-exact-canonical-wire-bytes" ||
+      subjectStoreProfile.visibility !== "public-safe-only" ||
+      subjectStoreProfile.networkAccess !== "forbidden" ||
+      subjectStoreProfile.sourceMutation !== "forbidden" ||
+      !sameStrings(acceptedSchemas, expectedAcceptedSchemas) ||
+      !sameStrings(rejectedSchemas, expectedRejectedSchemas) ||
+      rejected[0].reason !== "private-subject-forbidden" ||
+      rejected[1].reason !== "receipt-store-owned" ||
+      subjectStoreProfile.layout.subjectPattern !==
+        "subjects/sha256/{subject-id-digest-prefix-2}/{subject-id-digest}.json" ||
+      subjectStoreProfile.layout.temporaryPattern !==
+        ".{subject-id-digest}.{pid}.{nonce}.tmp" ||
+      subjectStoreProfile.layout.quarantineRoot !== "quarantine" ||
+      subjectStoreProfile.layout.pathLinkPolicy !==
+        "reject-symbolic-link-or-reparse-point" ||
+      subjectStoreProfile.layout.mutablePointerPolicy !== "forbidden" ||
+      subjectStoreProfile.layout.replacementPolicy !== "never" ||
+      subjectStoreProfile.atomicCreate.sameDirectoryTemporary !== true ||
+      subjectStoreProfile.atomicCreate.exclusiveTemporary !== true ||
+      subjectStoreProfile.atomicCreate.temporaryFileFsync !== true ||
+      subjectStoreProfile.atomicCreate.publishPrimitive !==
+        "hard-link-create-if-absent" ||
+      subjectStoreProfile.atomicCreate.existingTargetPolicy !==
+        "accept-only-byte-identical" ||
+      subjectStoreProfile.atomicCreate.directoryMetadataSync !==
+        "required-or-explicitly-unavailable" ||
+      subjectStoreProfile.atomicCreate.readbackVerification !== true ||
+      subjectStoreProfile.concurrency.createWriters !==
+        "multi-process-idempotent-hard-link" ||
+      subjectStoreProfile.concurrency.freshTemporaryPolicy !==
+        "leave-pending-without-mutation" ||
+      subjectStoreProfile.concurrency.minimumIncompleteTemporaryAgeMs !== 300000 ||
+      subjectStoreProfile.concurrency.publishedHardLinkTemporaryPolicy !==
+        "quarantine-same-inode-link" ||
+      subjectStoreProfile.concurrency.rebuildInterferencePolicy !==
+        "fail-closed-and-retry" ||
+      subjectStoreProfile.rebuild.unknownEntryPolicy !== "quarantine" ||
+      subjectStoreProfile.rebuild.incompleteTemporaryPolicy !==
+        "quarantine-after-minimum-age" ||
+      subjectStoreProfile.rebuild.invalidSubjectPolicy !== "quarantine" ||
+      subjectStoreProfile.rebuild.unacceptedSchemaPolicy !== "quarantine" ||
+      subjectStoreProfile.rebuild.identityPathMismatchPolicy !== "quarantine" ||
+      subjectStoreProfile.rebuild.preserveUnrelatedValidSubjects !== true ||
+      subjectStoreProfile.limits.maximumActiveSubjects !== 2048 ||
+      subjectStoreProfile.limits.maximumTotalSubjectBytes !== 67108864 ||
+      subjectStoreProfile.limits.maximumQuarantineEntries !== 65536 ||
+      subjectStoreProfile.limits.maximumDirectoryEntries !== 66000 ||
+      subjectStoreProfile.limits.maximumScanEntries !== 262144 ||
+      subjectStoreProfile.limits.maximumQuarantineReasonCodeLength !== 80 ||
+      subjectStoreProfile.limits.streamBufferBytes !== 65536 ||
+      subjectStoreProfile.resultContract.absolutePathsReturned !== false ||
+      subjectStoreProfile.resultContract.rawHostErrorsReturned !== false ||
+      subjectStoreProfile.resultContract.rawInvalidBytesReturned !== false ||
+      subjectStoreProfile.resultContract.durabilityClassReturned !== true ||
+      subjectStoreProfile.resultContract.boundedErrorCodesOnly !== true ||
+      !limitValues.every((entry) => Number.isSafeInteger(entry) && entry > 0)) {
+    failEvidence("subject_store_profile_invalid", step);
+  }
+  for (const entry of accepted) {
+    const descriptor = identityContractForSchema(entry.schema);
+    if (!Number.isSafeInteger(entry.maximumBytes) || entry.maximumBytes <= 0 ||
+        entry.maximumBytes !== descriptor.maximumBytes) {
+      failEvidence("subject_store_profile_invalid", step);
+    }
+  }
+}
+
+validateInstalledProfile();
+
+const frozenSubjectStoreProfile = immutableRecord({ ...subjectStoreProfile });
+const acceptedMaximumBytes = new Map(subjectStoreProfile.acceptedSubjects
+  .map((entry) => [entry.schema, entry.maximumBytes]));
+const maximumSingleSubjectBytes = Math.max(...acceptedMaximumBytes.values());
+
+function exactOptions(options) {
+  if (!isPlainObject(options) || Object.getOwnPropertySymbols(options).length !== 0) {
+    failEvidence("subject_store_options_invalid", "subject-store-open");
+  }
+  const names = Object.getOwnPropertyNames(options);
+  for (const name of names) {
+    if (!storeOptionNames.includes(name)) {
+      failEvidence("subject_store_option_unknown", "subject-store-open");
+    }
+    const descriptor = Object.getOwnPropertyDescriptor(options, name);
+    if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
+      failEvidence("subject_store_option_accessor", "subject-store-open");
+    }
+  }
+  return Object.freeze(Object.fromEntries(names.map((name) =>
+    [name, Object.getOwnPropertyDescriptor(options, name).value])));
+}
+
+function normalizeSubjectId(subjectId) {
+  if (typeof subjectId !== "string") {
+    failEvidence("subject_id_invalid", "subject-store-path");
+  }
+  const match = subjectIdPattern.exec(subjectId);
+  if (!match) failEvidence("subject_id_invalid", "subject-store-path");
+  return Object.freeze({ subjectId, digest: match[1] });
+}
+
+function subjectRelativePath(subjectId) {
+  const { digest } = normalizeSubjectId(subjectId);
+  return `subjects/sha256/${digest.slice(0, 2)}/${digest}.json`;
+}
+
+function validateAcceptedSubjectBytes(input) {
+  const subject = validateVnextIdentityDocumentBytes(input);
+  const maximumBytes = acceptedMaximumBytes.get(subject.schema);
+  if (maximumBytes === undefined) {
+    failEvidence("subject_schema_not_allowed", "subject-store-read");
+  }
+  if (subject.bytes.length > maximumBytes) {
+    failEvidence("subject_byte_limit", "subject-store-read");
+  }
+  return subject;
+}
+
+function createVnextSubjectStore(rootInput, options = {}) {
+  const normalizedOptions = exactOptions(options);
+  const io = Object.hasOwn(normalizedOptions, "io") ? normalizedOptions.io : fs;
+  const platform = Object.hasOwn(normalizedOptions, "platform")
+    ? normalizedOptions.platform
+    : process.platform;
+  const randomBytes = Object.hasOwn(normalizedOptions, "randomBytes")
+    ? normalizedOptions.randomBytes
+    : crypto.randomBytes;
+  if (io === null || (typeof io !== "object" && typeof io !== "function")) {
+    failEvidence("subject_store_io_invalid", "subject-store-open");
+  }
+  if (typeof platform !== "string" || platform.length === 0 ||
+      typeof randomBytes !== "function") {
+    failEvidence("subject_store_options_invalid", "subject-store-open");
+  }
+  const fileOps = createVnextCreateOnlyFiles({
+    codePrefix: "subject",
+    io,
+    platform,
+    randomBytes,
+    steps: {
+      open: "subject-store-open",
+      path: "subject-store-path",
+      persist: "subject-store-persist",
+      quarantine: "subject-store-quarantine",
+      read: "subject-store-read",
+      scan: "subject-store-scan"
+    },
+    streamBufferBytes: subjectStoreProfile.limits.streamBufferBytes
+  });
+  const root = fileOps.normalizeRoot(rootInput);
+
+  function ensureLayout() {
+    fileOps.ensureRoot(root);
+    const subjects = fileOps.safeChild(root, ["subjects"]);
+    const shaRoot = fileOps.safeChild(root, ["subjects", "sha256"]);
+    const quarantine = fileOps.safeChild(root, ["quarantine"]);
+    if (!io.existsSync(subjects)) fileOps.ensureDirectory(subjects);
+    if (!io.existsSync(shaRoot)) fileOps.ensureDirectory(shaRoot);
+    if (!io.existsSync(quarantine)) fileOps.ensureDirectory(quarantine);
+    return Object.freeze({ subjects, shaRoot, quarantine });
+  }
+
+  let layout = ensureLayout();
+  let active = new Map();
+  let activeTotalBytes = 0;
+
+  function rebuild() {
+    layout = ensureLayout();
+    let rebuiltTotalBytes = 0;
+    let scannedEntryCount = 0;
+    const scan = (directory, maximum) => {
+      const entries = fileOps.boundedDirectoryEntries(directory, maximum);
+      scannedEntryCount += entries.length;
+      if (!Number.isSafeInteger(scannedEntryCount) ||
+          scannedEntryCount > subjectStoreProfile.limits.maximumScanEntries) {
+        failEvidence("subject_store_total_scan_limit", "subject-store-scan");
+      }
+      return entries;
+    };
+    const existingQuarantineEntries = scan(
+      layout.quarantine,
+      subjectStoreProfile.limits.maximumQuarantineEntries
+    ).length;
+    let quarantineCount = existingQuarantineEntries;
+    const newQuarantines = [];
+    const quarantine = (source, reasonCode, subjectId = null) => {
+      if (quarantineCount >= subjectStoreProfile.limits.maximumQuarantineEntries) {
+        failEvidence("subject_store_quarantine_limit", "subject-store-quarantine");
+      }
+      const result = fileOps.quarantineEntry(
+        root,
+        layout.quarantine,
+        source,
+        reasonCode,
+        "subjectId",
+        subjectId
+      );
+      if (result !== null) {
+        quarantineCount += 1;
+        newQuarantines.push(result);
+      }
+    };
+    const scanUnknown = (directory, allowed) => {
+      for (const entry of scan(directory,
+        subjectStoreProfile.limits.maximumDirectoryEntries)) {
+        if (!allowed.has(entry.name)) quarantine(path.join(directory, entry.name),
+          "unknown_entry");
+      }
+    };
+    scanUnknown(root, new Set(["quarantine", "subjects"]));
+    scanUnknown(layout.subjects, new Set(["sha256"]));
+
+    const candidates = new Map();
+    let pendingTemporaryCount = 0;
+    const prefixes = scan(layout.shaRoot,
+      subjectStoreProfile.limits.maximumDirectoryEntries);
+    for (const prefixEntry of prefixes) {
+      const prefixPath = path.join(layout.shaRoot, prefixEntry.name);
+      if (!prefixPattern.test(prefixEntry.name) || !prefixEntry.isDirectory() ||
+          prefixEntry.isSymbolicLink()) {
+        quarantine(prefixPath, "unknown_entry");
+        continue;
+      }
+      for (const entry of scan(prefixPath,
+        subjectStoreProfile.limits.maximumDirectoryEntries)) {
+        const filePath = path.join(prefixPath, entry.name);
+        const temporaryMatch = temporaryPattern.exec(entry.name);
+        if (temporaryMatch) {
+          const target = path.join(prefixPath, `${temporaryMatch[1]}.json`);
+          const state = fileOps.inspectIncompleteTemporary(
+            filePath,
+            target,
+            subjectStoreProfile.concurrency.minimumIncompleteTemporaryAgeMs
+          );
+          if (state === "missing") continue;
+          if (state === "pending") {
+            pendingTemporaryCount += 1;
+          } else {
+            quarantine(filePath, state === "invalid" ? "unknown_entry" :
+              "incomplete_temporary");
+          }
+          continue;
+        }
+        const digestMatch = digestFilePattern.exec(entry.name);
+        if (!digestMatch || !entry.isFile() || entry.isSymbolicLink()) {
+          quarantine(filePath, "unknown_entry");
+          continue;
+        }
+        let subject;
+        try {
+          subject = validateAcceptedSubjectBytes(
+            fileOps.boundedReadFile(filePath, maximumSingleSubjectBytes)
+          );
+        } catch (error) {
+          quarantine(filePath, error?.code === "subject_schema_not_allowed"
+            ? "schema_not_allowed" : "invalid_subject");
+          continue;
+        }
+        const { digest } = normalizeSubjectId(subject.subjectId);
+        if (digest !== digestMatch[1] || digest.slice(0, 2) !== prefixEntry.name) {
+          quarantine(filePath, "path_identity_mismatch", subject.subjectId);
+          continue;
+        }
+        if (candidates.has(subject.subjectId)) {
+          quarantine(filePath, "duplicate_subject", subject.subjectId);
+          continue;
+        }
+        const byteLength = subject.bytes.length;
+        candidates.set(subject.subjectId, Object.freeze({
+          byteLength,
+          canonicalContentSha256: subject.canonicalContentSha256,
+          relativePath: subjectRelativePath(subject.subjectId),
+          schema: subject.schema
+        }));
+        rebuiltTotalBytes += byteLength;
+        if (candidates.size > subjectStoreProfile.limits.maximumActiveSubjects) {
+          failEvidence("subject_store_active_limit", "subject-store-scan");
+        }
+        if (!Number.isSafeInteger(rebuiltTotalBytes) ||
+            rebuiltTotalBytes > subjectStoreProfile.limits.maximumTotalSubjectBytes) {
+          failEvidence("subject_store_total_byte_limit", "subject-store-scan");
+        }
+      }
+    }
+    active = candidates;
+    activeTotalBytes = rebuiltTotalBytes;
+    return immutableRecord({
+      activeSubjectIds: [...active.keys()].sort(),
+      activeTotalBytes,
+      directoryMetadata: fileOps.syncDirectory(layout.shaRoot),
+      existingQuarantineEntries,
+      newQuarantines,
+      pendingTemporaryCount,
+      scannedEntryCount
+    });
+  }
+
+  const startup = rebuild();
+
+  function read(subjectIdInput) {
+    const { subjectId } = normalizeSubjectId(subjectIdInput);
+    const metadata = active.get(subjectId);
+    if (!metadata) failEvidence("subject_not_active", "subject-store-read");
+    const filePath = path.join(root, ...metadata.relativePath.split("/"));
+    fileOps.assertNoLinkComponents(path.dirname(filePath), true);
+    let subject;
+    try {
+      subject = validateAcceptedSubjectBytes(
+        fileOps.boundedReadFile(filePath, maximumSingleSubjectBytes)
+      );
+    } catch (error) {
+      throw new VnextEvidenceError(
+        "subject_active_read_failed",
+        "subject-store-read",
+        error?.code
+      );
+    }
+    if (subject.subjectId !== subjectId || subject.schema !== metadata.schema ||
+        subject.canonicalContentSha256 !== metadata.canonicalContentSha256 ||
+        subject.bytes.length !== metadata.byteLength) {
+      failEvidence("subject_active_identity_changed", "subject-store-read");
+    }
+    return subject;
+  }
+
+  function put(input) {
+    const subject = validateAcceptedSubjectBytes(input);
+    const existing = active.get(subject.subjectId);
+    if (!existing && active.size >= subjectStoreProfile.limits.maximumActiveSubjects) {
+      failEvidence("subject_store_active_limit", "subject-store-persist");
+    }
+    if (!existing && activeTotalBytes + subject.bytes.length >
+        subjectStoreProfile.limits.maximumTotalSubjectBytes) {
+      failEvidence("subject_store_total_byte_limit", "subject-store-persist");
+    }
+    const relativePath = subjectRelativePath(subject.subjectId);
+    const target = path.join(root, ...relativePath.split("/"));
+    const persistence = fileOps.publishBytes(
+      target,
+      subject.bytes,
+      acceptedMaximumBytes.get(subject.schema)
+    );
+    if (!existing) activeTotalBytes += subject.bytes.length;
+    active.set(subject.subjectId, Object.freeze({
+      byteLength: subject.bytes.length,
+      canonicalContentSha256: subject.canonicalContentSha256,
+      relativePath,
+      schema: subject.schema
+    }));
+    return immutableRecord({
+      subjectId: subject.subjectId,
+      canonicalContentSha256: subject.canonicalContentSha256,
+      disposition: persistence.disposition,
+      durability: persistence.durability,
+      relativePath,
+      schema: subject.schema
+    });
+  }
+
+  return Object.freeze({
+    profileId: subjectStoreProfile.profileId,
+    put,
+    read,
+    rebuild,
+    startup
+  });
+}
+
+module.exports = Object.freeze({
+  createVnextSubjectStore,
+  subjectRelativePath,
+  subjectStoreProfile: frozenSubjectStoreProfile,
+  subjectStoreProfileSha256,
+  validateAcceptedSubjectBytes
+});

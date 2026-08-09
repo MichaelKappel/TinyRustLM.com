@@ -28,9 +28,18 @@ allocation ownership, destructive stage behavior, frozen-corpus parity, and
 two independently created and physically deleted Chromium-profile checks with
 zero network requests. The superseded plan-only ABI is deleted.
 
+One frozen `tinyrustlm.vnext.subject-store.v1` boundary now provides bounded,
+create-only host persistence for the five public-safe non-receipt identity
+schemas. It rejects private context and receipt records, validates canonical
+identity before publication and on every read, uses the shared no-follow and
+same-directory atomic-create mechanics, and quarantines invalid, unaccepted,
+misaddressed, or interrupted entries. Stored subjects are immutable input
+history, not currentness decisions.
+
 These later local facts close the named cross-runtime implementation gaps only.
-They do not close archive-member scanning, protected production secret-list
-custody, the production campaign runner and entry-point cutover, final
+They do not close exact cross-store snapshot orchestration, archive-member
+scanning, protected production secret-list custody, the production campaign
+runner and entry-point cutover, final
 attestation and release integration, authorized live MemoryEndpoints
 continuity, independent outside-network lane proofs, catalog publication, or
 public HTTPS readback. No local test changes a campaign counter.
@@ -197,8 +206,9 @@ a warning-level pass.
 Later Phase 3 work now includes canonical identity finalization, public-key
 Ed25519 payload verification, a bounded trusted authority graph, exact
 offline-bundle membership and receipt-parent closure, bounded public-safe
-redaction, independent Rust parity, and the generated browser/WASM campaign
-evidence boundary summarized above. The redaction boundary validates finalized
+redaction, independent Rust parity, the generated browser/WASM campaign
+evidence boundary, and the bounded public subject store summarized above. The
+redaction boundary validates finalized
 bytes, rejects private schemas, scans seven bounded known-secret encoding
 families and contextual forbidden values, emits no secret values, and replays
 a one-way scan receipt against the protected equality list. The offline profile
@@ -249,11 +259,12 @@ production entry-point cutover, independent operation, or campaign evidence.
 
 Phase 2 closed after the bound hashes, this review, focused tests, complete unit
 suite, source hygiene, secret scan, and remote push were current in one
-checkpoint. The current next boundary is production campaign-runner integration
-over bounded canonical receipt and subject stores, followed by final
-attestation, release authorization, operator rendering, documentation, and
-public-readback integration. Windows directory durability, archive-member
-scanning, and protected-list release custody remain separate prerequisites for
-their corresponding claims.
+checkpoint. The current next boundary is exact cross-store snapshot
+orchestration and production campaign-runner integration over bounded
+canonical receipt and subject stores, followed by final attestation, release
+authorization, operator rendering, documentation, and public-readback
+integration. Windows directory durability, archive-member scanning, and
+protected-list release custody remain separate prerequisites for their
+corresponding claims.
 
 Campaign counters remain `0/20`, `0/50`, `0/25`, `0/40`, and `0/20`.
