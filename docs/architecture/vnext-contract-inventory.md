@@ -162,13 +162,14 @@ retaining separate receipt-DAG and result-to-plan semantics. Resume always
 reprojects supplied current evidence; no stored snapshot or mutable pointer is
 currentness authority.
 
-`campaign-plan-wasm-interface.v1.json` now freezes one typed raw ABI with no
-imports and an exact export set. Its deterministic generator emits both the
-Rust export facade and a browser adapter that transports bytes without
-implementing plan semantics. Node and two independent real Chromium profiles
-produce the exact frozen final plan and stable rejection codes. This browser
-execution remains plan-only and grants no currentness, authority, projection,
-release, or campaign authority.
+`campaign-evidence-wasm-interface.v1.json` now freezes the sole typed raw
+browser evidence ABI with no imports and an exact export set. Its deterministic
+generator emits both the Rust export facade and a browser adapter that
+transports bytes and sequences destructive stages without implementing
+campaign semantics. Node and two independent real Chromium profiles produce
+exact plan, currentness, truthful projection, result-validation, and stable
+rejection bytes. This browser execution remains local conformance evidence and
+grants no production runner, release, or live campaign authority.
 
 `contracts/vnext/public-safe-redaction-profile.v1.json` binds the current
 registry. `tinyrustlm/tools/vnext-public-safe-redaction.js` accepts finalized
@@ -195,12 +196,12 @@ The exact 20/50/25/40/20 plan and no-double-count projection are documented in
 `docs/architecture/vnext-campaign-plan-projection.md`.
 The independent Rust plan boundary is documented in
 `docs/architecture/vnext-rust-campaign-plan-parity.md`.
-The generated browser WASM boundary is documented in
-`docs/architecture/vnext-campaign-plan-wasm-boundary.md`.
+The generated browser campaign-evidence WASM boundary is documented in
+`docs/architecture/vnext-campaign-evidence-wasm-boundary.md`.
 Create-only plan/projection persistence is documented in
 `docs/architecture/vnext-campaign-artifact-persistence.md`.
 
-Remaining browser currentness/projection execution, archive-member
-scanning, production campaign-runner and entry-point cutover, projection
-release integration, and external campaign evidence remain incomplete.
+Remaining archive-member scanning, production campaign-runner and entry-point
+cutover, projection release integration, and external campaign evidence remain
+incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.

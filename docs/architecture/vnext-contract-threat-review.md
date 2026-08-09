@@ -11,6 +11,30 @@ claim, a release, a model qualification, a browser campaign round, a live
 MemoryEndpoints continuity result, an outside-network P2P proof, or a catalog
 announcement.
 
+### Current Phase 3 Addendum
+
+The Phase 2 decision above remains immutable for its bound scope. Later Phase
+3 checkpoints now independently implement RFC 8785/JCS identity, receipt DAG
+parent loading and semantic currentness, Ed25519 verification, the trusted
+authority graph, offline-bundle closure, bounded secret/redaction scanning,
+truthful campaign projection, and projection-result validation in Node and
+Rust as documented by the current architecture inventory.
+
+One generated `tinyrustlm.vnext.campaign-evidence-wasm.v1` boundary now exposes
+exact plan finalization, currentness, projection, and result validation from
+Rust to Node and browser/WASM callers. Its JavaScript is byte transport and
+stage sequencing only. The zero-import module has exact frozen exports, bounded
+allocation ownership, destructive stage behavior, frozen-corpus parity, and
+two independently created and physically deleted Chromium-profile checks with
+zero network requests. The superseded plan-only ABI is deleted.
+
+These later local facts close the named cross-runtime implementation gaps only.
+They do not close archive-member scanning, protected production secret-list
+custody, the production campaign runner and entry-point cutover, final
+attestation and release integration, authorized live MemoryEndpoints
+continuity, independent outside-network lane proofs, catalog publication, or
+public HTTPS readback. No local test changes a campaign counter.
+
 Reviewed at `2026-08-09T07:00:00Z`. The review is invalidated when any bound
 file changes, when the parser changes, or when a deferred proof obligation is
 reclassified without a new threat review.
@@ -89,7 +113,7 @@ verified by later phases.
 | Threat | Control in this checkpoint | Result | Residual risk or later gate |
 | --- | --- | --- | --- |
 | Duplicate-key ambiguity | Strict parser rejects literal, escaped-equivalent, and supplementary-equivalent duplicates before object creation | Mitigated locally | Every production entry point must use the same parser profile |
-| Malformed or disguised text | Fatal UTF-8, BOM rejection, scalar checks, bounded text and string rules | Mitigated locally | Rust/browser parity remains unproved |
+| Malformed or disguised text | Fatal UTF-8, BOM rejection, scalar checks, bounded text and string rules | Mitigated locally | Rust/browser parity was outside this Phase 2 checkpoint; the current addendum records later bounded parity |
 | Parser exhaustion | Byte, depth, entry, member, array, string, aggregate-string, and number-character limits | Mitigated locally | Wall-clock and allocation ceilings require measured native/browser tests |
 | Numeric identity drift | Unsafe integers, negative zero, overflow, underflow, and floats are rejected where unsupported | Mitigated locally | Cross-language RFC 8785 serialization remains deferred |
 | Schema confusion or downgrade | Only the nine exact registry-listed schemas are accepted, including proof v2 and no proof v1 alias | Mitigated locally | Production cutover and deletion of superseded entry points remain deferred |
@@ -170,19 +194,21 @@ Any caller needing one of these properties must fail closed until the specific
 later-phase verifier returns objective evidence. A deferred invariant is never
 a warning-level pass.
 
-The later Phase 3 Node work now includes canonical identity finalization,
-public-key Ed25519 payload verification, a bounded trusted authority graph,
-exact offline-bundle membership and receipt-parent closure, and bounded
-public-safe redaction. The redaction boundary validates finalized bytes,
-rejects private schemas, scans seven bounded known-secret encoding families and contextual
-forbidden values, emits no secret values, and replays a one-way scan receipt
-against the protected equality list. The offline profile binds current
-schema/profile hashes, including the redaction profile, a separate acyclic
-verification receipt, external root/terminal/campaign/environment/hash pins,
-current target signatures, and all supplied receipt and subject bytes without
-network access. That work is outside this Phase 2 PASS. It does not close
-compressed archive-member scanning, Rust/browser parity, production entry-point
-cutover, independent observer operation, or any campaign gate.
+Later Phase 3 work now includes canonical identity finalization, public-key
+Ed25519 payload verification, a bounded trusted authority graph, exact
+offline-bundle membership and receipt-parent closure, bounded public-safe
+redaction, independent Rust parity, and the generated browser/WASM campaign
+evidence boundary summarized above. The redaction boundary validates finalized
+bytes, rejects private schemas, scans seven bounded known-secret encoding
+families and contextual forbidden values, emits no secret values, and replays
+a one-way scan receipt against the protected equality list. The offline profile
+binds current schema/profile hashes, including the redaction profile, a
+separate acyclic verification receipt, external
+root/terminal/campaign/environment/hash pins, current target signatures, and
+all supplied receipt and subject bytes without network access. That work is
+outside this Phase 2 PASS. It does not close compressed archive-member
+scanning, production entry-point cutover, independent observer operation, or
+any campaign gate.
 
 ## No-Compatibility Decision
 
@@ -215,19 +241,19 @@ At review time:
   independence, required root fields, and nested unknown-field rejection.
 
 The full run includes the final invariant-report classification, threat review,
-and all focused contract tests. Node offline closure is now implemented, but no
-test result is a substitute for deferred cross-language parity, production
-entry-point cutover, independent operation, or campaign evidence.
+and all focused contract tests. The later cross-language and browser boundaries
+are documented in the current addendum, but no test result substitutes for
+production entry-point cutover, independent operation, or campaign evidence.
 
 ## Exit Decision
 
-Phase 2 may close after the bound hashes, this review, focused tests, complete
-unit suite, source hygiene, secret scan, and remote push are all current in one
-checkpoint. The next implementation phase is the canonical receipt and atomic
-persistence foundation: canonical identities, receipt DAG closure, role-bound
-signature verification, revocation, offline verification, bounded streaming,
-redaction evidence, atomic writes, and exact invalidation semantics. Canonical
-Node redaction evidence is now implemented; exact invalidation and
-cross-runtime/publication integration remain next.
+Phase 2 closed after the bound hashes, this review, focused tests, complete unit
+suite, source hygiene, secret scan, and remote push were current in one
+checkpoint. The current next boundary is production campaign-runner integration
+over bounded canonical receipt and subject stores, followed by final
+attestation, release authorization, operator rendering, documentation, and
+public-readback integration. Windows directory durability, archive-member
+scanning, and protected-list release custody remain separate prerequisites for
+their corresponding claims.
 
 Campaign counters remain `0/20`, `0/50`, `0/25`, `0/40`, and `0/20`.

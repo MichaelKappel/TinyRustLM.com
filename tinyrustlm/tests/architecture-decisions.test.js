@@ -51,6 +51,9 @@ const records = [
   ]],
   ["ADR-010-evidence-signing.md", [
     "RFC 8785", "Ed25519", "Revocation"
+  ]],
+  ["ADR-011-campaign-evidence-browser-boundary.md", [
+    "zero-import", "staged", "offline-bundle verdict"
   ]]
 ];
 
@@ -58,7 +61,7 @@ function read(name) {
   return fs.readFileSync(path.join(adrDirectory, name), "utf8");
 }
 
-test("contains the complete accepted ADR-001 through ADR-010 inventory", () => {
+test("contains the complete accepted ADR-001 through ADR-011 inventory", () => {
   const actual = fs.readdirSync(adrDirectory)
     .filter((name) => /^ADR-\d{3}-.+\.md$/u.test(name))
     .sort();

@@ -11,6 +11,8 @@ description = "Generated raw WebAssembly boundary for strict TinyRustLM campaign
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+serde.workspace = true
+serde_json.workspace = true
 tinyrustlm-evidence = { path = "../tinyrustlm-evidence" }
 
 [lints]

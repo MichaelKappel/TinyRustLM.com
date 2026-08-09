@@ -207,14 +207,10 @@ facts, and fixture endpoints do not satisfy any live campaign objective.
 - Preserve the completed independent Rust plan, semantic-currentness,
   signature-authority, offline-bundle, truthful-projection, and result-validator
   parity boundaries.
-- Cleanly replace the plan-only generated browser ABI with one campaign
-  evidence boundary; browser JavaScript must remain byte transport rather than
-  semantic authority.
-- Preserve the completed generated browser WASM plan checkpoint as immutable
-  evidence while replacing its plan-only runtime profile; retain plan
-  operations in the new generated ABI and do not duplicate semantics in
-  handwritten browser JavaScript. See
-  `docs/architecture/vnext-campaign-plan-wasm-boundary.md`.
+- Preserve the completed generated campaign-evidence browser ABI and its exact
+  plan, currentness, projection, and result-validation parity; browser
+  JavaScript remains byte transport rather than semantic authority. See
+  `docs/architecture/vnext-campaign-evidence-wasm-boundary.md`.
 - Bind the projection result into final attestation, release authorization,
   rendered operator status, maintained documentation, and public readback.
 - Replace fixture objective evidence only with authorized raw production

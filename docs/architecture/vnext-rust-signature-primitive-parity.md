@@ -145,9 +145,9 @@ projection before any evidence can be counted.
 - Maintain the frozen public-only offline-bundle corpus and independent Rust
   result-byte and rejection-code parity documented in
   `docs/architecture/vnext-rust-offline-bundle-parity.md`.
-- Implement Rust truthful campaign projection over exact plan, currentness,
-  authority, and bundle results.
-- Generate browser currentness and authority byte-transport interfaces without
-  handwritten JavaScript semantics.
+- Preserve Rust truthful campaign projection over exact plan, currentness, and
+  authority inputs; offline-bundle closure remains a separate decision.
+- Preserve the generated campaign-evidence browser byte-transport interface
+  without handwritten JavaScript semantics.
 - Integrate bounded evidence inputs and final attestations into the production
   runner and release gate.

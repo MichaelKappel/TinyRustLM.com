@@ -34,6 +34,7 @@ unpublished path after its replacement passes.
 | ADR-008 | [Specialist composition](ADR-008-specialist-composition.md) | Accepted | Hash-bound ACG1 activation implemented; SLM2 binding pending |
 | ADR-009 | [Service-worker release model](ADR-009-service-worker-release-model.md) | Accepted | Not implemented and not promoted |
 | ADR-010 | [Evidence signing](ADR-010-evidence-signing.md) | Accepted | Canonical receipts and selected Ed25519 verification exist; full role profile pending |
+| ADR-011 | [Campaign evidence browser boundary](ADR-011-campaign-evidence-browser-boundary.md) | Accepted | Generated zero-import Rust/WASM evidence boundary implemented and browser-test-bound |
 
 ## Evidence Labels
 

@@ -5,11 +5,11 @@
 This checkpoint independently implements the exact vNext campaign-plan
 finalization boundary in Rust. It proves deterministic parity with the frozen
 Node plan bytes and makes the same code compilable for native and browser WASM
-targets. A later checkpoint now invokes the same crate through one generated
-real-browser WASM boundary; see
-`docs/architecture/vnext-campaign-plan-wasm-boundary.md`. A later, separate
-Rust API now implements semantic currentness, but the plan and browser-plan
-boundaries described here do not expose it. Separate Rust APIs now also
+targets. A later checkpoint invokes the same crate through the sole generated
+real-browser campaign-evidence WASM boundary; see
+`docs/architecture/vnext-campaign-evidence-wasm-boundary.md`. That boundary
+also exposes the separate Rust semantic-currentness and projection APIs without
+moving their semantics into JavaScript. Separate Rust APIs now also
 implement signature authority and truthful campaign projection; see
 `docs/architecture/vnext-rust-authority-graph-parity.md` and
 `docs/architecture/vnext-rust-campaign-projection-parity.md`. Browser campaign
@@ -154,11 +154,10 @@ revalidation, and resume by authoritative reprojection. The persisted
 projection remains immutable history rather than self-authenticating current
 truth. See `docs/architecture/vnext-campaign-artifact-persistence.md`.
 
-`tinyrustlm-evidence-wasm` now exposes this verifier through one generated,
-bounded, zero-import browser ABI. Node and two independent real Chromium
-profiles reproduce the exact frozen final bytes and stable failures without a
-handwritten JavaScript plan implementation. Independent Rust currentness is
-now complete and documented in
-`docs/architecture/vnext-rust-phase-invalidation-parity.md`. Rust signature
-authority, truthful projection, and browser currentness execution remain
-required before Rust or browser code can make a campaign-completion claim.
+`tinyrustlm-evidence-wasm` now exposes this verifier through the generated,
+bounded, zero-import campaign-evidence browser ABI. Node and two independent
+real Chromium profiles reproduce exact plan, currentness, projection, and
+result-validation bytes without handwritten JavaScript semantics. Independent
+Rust currentness and projection remain documented in their own records. A
+production runner, release authorization, and authorized objective evidence
+remain required before any campaign-completion claim.

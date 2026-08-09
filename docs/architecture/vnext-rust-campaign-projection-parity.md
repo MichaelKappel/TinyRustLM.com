@@ -171,9 +171,10 @@ receipt, or public HTTPS readback claim.
 
 ## Remaining Work
 
-- Cleanly replace the plan-only browser ABI with one generated campaign
-  evidence boundary that transports plan, receipt, subject, pins, and result
-  bytes while keeping projection semantics in Rust.
+- Preserve the generated campaign-evidence browser boundary that transports
+  plan, receipt, subject, pins, and result bytes while keeping projection
+  semantics in Rust. See
+  `docs/architecture/vnext-campaign-evidence-wasm-boundary.md`.
 - Connect bounded create-only receipt and subject stores to one campaign
   runner, then persist and reproject the exact current result.
 - Bind only that reprojected result into final attestation, release

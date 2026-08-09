@@ -110,10 +110,12 @@ documented in `vnext-rust-offline-bundle-parity.md`.
 
 The separate Rust truthful-projection boundary now composes this authority
 result with exact plans, semantic currentness, and objective matching; see
-`vnext-rust-campaign-projection-parity.md`. The combined checkpoint still does
-not prove browser projection parity, actual observer independence, production
-key custody, trusted production time, redaction/secret scans, production
-entry-point cutover, or campaign completion. Rust graph, offline-bundle, and
-projection parity do not narrow those non-claims. No model, browser,
-MemoryEndpoints, P2P, catalog, package, site, or release counter changes from
-these tests.
+`vnext-rust-campaign-projection-parity.md`. The generated browser boundary now
+replays that Rust behavior as bounded byte transport; see
+`vnext-campaign-evidence-wasm-boundary.md`. The combined checkpoint still does
+not prove actual observer independence, production key custody, trusted
+production time, release-time redaction/secret scans, production runner or
+entry-point cutover, or campaign completion. Rust graph, offline-bundle,
+projection, and browser-transport parity do not narrow those non-claims. No
+model, browser, MemoryEndpoints, P2P, catalog, package, site, or release counter
+changes from these tests.

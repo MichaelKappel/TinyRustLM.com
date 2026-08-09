@@ -164,6 +164,6 @@ test("documents completed Rust projection parity without claiming live progress"
   for (const linkedDocument of linkedDocuments) {
     assert.match(linkedDocument, new RegExp(documentName.replace(".", "\\."), "u"));
   }
-  assert.doesNotMatch(linkedDocuments[2],
-    /Rust truthful-projection parity\s+remains incomplete/u);
+  assert.match(linkedDocuments[2],
+    /Rust truthful projection and strict\s+projection-result validation now independently/u);
 });

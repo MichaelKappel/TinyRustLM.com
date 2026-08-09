@@ -130,11 +130,10 @@ not live campaign evidence.
 - Bind selected projection artifacts into final attestation, release
   authorization, operator rendering, documentation synchronization, and
   public readback.
-- Preserve completed independent Rust currentness parity; add Rust signature
-  authority and truthful projection parity.
-- Add browser currentness execution through a generated Rust/WASM interface.
-- Preserve the completed generated browser WASM plan-verifier boundary and its
-  exact Node/Rust/real-Chromium parity.
+- Preserve completed independent Rust currentness, signature-authority, and
+  truthful-projection parity.
+- Preserve the generated campaign-evidence Rust/WASM boundary and its exact
+  Node/Rust/real-Chromium plan, currentness, projection, and result parity.
 - Replace fixture evidence only with authorized production receipts.
 
 Campaign status remains 0/20 qualified models, 0/50 clean-browser rounds,

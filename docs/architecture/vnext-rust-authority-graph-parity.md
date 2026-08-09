@@ -149,10 +149,11 @@ external gates. A true graph result is never a campaign-level `passed` field.
   parent-closure, linked-subject, authority, and target-current parity
   documented in
   `docs/architecture/vnext-rust-offline-bundle-parity.md`.
-- Compose plan, currentness, authority, and offline-bundle results in the Rust
-  truthful campaign projection.
-- Generate browser currentness and authority byte-transport interfaces without
-  handwritten JavaScript semantics.
+- Preserve the completed Rust truthful projection over exact plan,
+  currentness, receipt, subject, and authority inputs; offline-bundle closure
+  remains separate.
+- Preserve the generated campaign-evidence browser byte-transport interface
+  without handwritten JavaScript semantics.
 - Integrate bounded evidence inputs, final attestations, publication
   authorization, and production readback into the campaign runner.
 - Execute authorized external tests before changing any live campaign count.

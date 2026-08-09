@@ -123,18 +123,17 @@ Rust authority result before projecting objective counts. Stored projection
 snapshots remain immutable historical views and must be recomputed from
 supplied current evidence on resume.
 
-The browser must not reimplement currentness in JavaScript. A later generated
-WASM interface must expose this Rust API as bounded byte transport and replay
-the same vector corpus in independent deleted browser profiles.
+The generated campaign-evidence WASM interface now exposes this Rust API as
+bounded byte transport and replays the same vector corpus in independent
+deleted browser profiles without reimplementing currentness in JavaScript. See
+`docs/architecture/vnext-campaign-evidence-wasm-boundary.md`.
 
 ## Remaining Work
 
-- Implement independent Rust Ed25519 signature authority, registry succession,
-  revocation, compromise, expiry, nonce replay, and offline-bundle parity.
-- Implement independent Rust truthful campaign projection over exact plan,
-  currentness, and authority results.
-- Generate and freeze the browser currentness ABI, then prove Node and real
-  Chromium parity without handwritten semantic logic.
+- Preserve independent Rust Ed25519, authority-graph, offline-bundle, and
+  truthful-projection parity.
+- Preserve the generated campaign-evidence browser ABI and its exact
+  currentness corpus replay without handwritten semantic logic.
 - Integrate bounded receipt inputs and final attestations into one production
   campaign runner and release gate.
 - Replace fixtures only with authorized objective evidence; never reinterpret

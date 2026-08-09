@@ -626,6 +626,8 @@ dependencies = [
 name = "tinyrustlm-evidence-wasm"
 version = "0.1.8"
 dependencies = [
+ "serde",
+ "serde_json",
  "tinyrustlm-evidence",
 ]
 

@@ -154,8 +154,9 @@ receipt, or public HTTPS readback claim.
 - Preserve the completed byte-identical Rust truthful-projection boundary.
   Projection independently consumes exact plan, receipt, and subject bytes; it
   does not accept an offline-bundle verdict as trusted input.
-- Generate one browser currentness and projection execution boundary from
-  Rust rather than adding handwritten JavaScript semantics or a second ABI.
+- Preserve the sole generated browser currentness and projection execution
+  boundary from Rust; do not add handwritten JavaScript semantics or a second
+  ABI. See `docs/architecture/vnext-campaign-evidence-wasm-boundary.md`.
 - Connect bounded create-only receipt and subject stores to one campaign
   runner, then persist and reproject the exact current result.
 - Bind only that reprojected result into final attestation, release

@@ -237,10 +237,13 @@ authority-eligible evidence whose required earlier objectives are current.
 exact closed campaign-plan wire for native and `wasm32-unknown-unknown`
 targets. The Node generator and two checked-in parity vectors bind both
 implementations to identical draft bytes, plan ID, final bytes, and SHA-256.
-`campaign-plan-wasm-interface.v1.json` freezes the typed raw browser ABI.
-One generator emits both the Rust export facade and byte-transport-only browser
-adapter; Node and two independent real Chromium profiles reproduce the exact
-plan bytes and stable verifier failures through the zero-import WASM module.
+`campaign-evidence-wasm-interface.v1.json` freezes the sole typed raw browser
+evidence ABI. One generator emits both the Rust export facade and
+byte-transport-only browser adapter; Node and two independent real Chromium
+profiles reproduce exact plan, currentness, projection, result-validation, and
+stable rejection bytes through the zero-import WASM module.
+See `docs/architecture/vnext-campaign-evidence-wasm-boundary.md` for the exact
+ABI, ownership, destructive-state, browser, and non-claim boundary.
 The same Rust evidence crate now independently implements exact receipt
 validation and semantic currentness. A deterministic 74,756-byte corpus with
 SHA-256
@@ -248,7 +251,8 @@ SHA-256
 freezes four accepted histories and nine hostile rejections. Node and Rust
 must emit byte-identical canonical currentness results and the same stable
 rejection codes. This API has no filesystem, network, clock, process, or
-compatibility behavior and does not yet have a browser ABI.
+compatibility behavior and is exposed through the generated campaign-evidence
+browser ABI without handwritten JavaScript semantics.
 The complete synthetic capacity fixture verifies a 271-receipt offline bundle
 with 155 target signatures and 40 proof subjects; it changes no live campaign
 counter. See `docs/architecture/vnext-phase-invalidation.md` and
@@ -316,13 +320,13 @@ defines the exact boundary.
 
 This remains an incomplete campaign implementation checkpoint. Exact
 campaign-plan finalization, semantic currentness, the Ed25519 primitive, the
-complete signature authority graph, and offline-bundle closure have independent
-Rust parity. Exact
-plan/projection-result persistence is implemented, and plan
-finalization/validation has a generated real-browser WASM boundary. Truthful
-projection, browser currentness, and the broader production runner do not yet
-have cross-language parity. This is not production
-entry-point cutover, outside-network observation, or campaign evidence. Runtime tests
+complete signature authority graph, offline-bundle closure, truthful
+projection, and projection-result validation have independent Rust parity.
+Exact plan/projection-result persistence is implemented, and one generated
+real-browser WASM boundary exposes plan, currentness, projection, and result
+validation with exact frozen-corpus parity. The broader production runner is
+not integrated. This is not production entry-point cutover, outside-network
+observation, or campaign evidence. Runtime tests
 generate ephemeral private keys only in process memory. Checked-in profiles
 and vectors contain public material only.
 

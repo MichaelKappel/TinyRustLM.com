@@ -57,11 +57,12 @@ domain-separated identity does not match its full canonical content. The
 currentness implementation separately validates dependency, supersession, and
 combined acyclic graphs before classifying any head.
 
-This is semantic-currentness parity only. Rust signature authority,
-revocation evaluation, truthful campaign projection, the generated browser
-currentness ABI, production runner integration, release authorization, and
-live evidence remain separate gates. The existing browser WASM boundary still
-exposes only campaign-plan finalization and validation.
+The independent Rust authority graph, truthful projection, and generated
+campaign-evidence browser ABI are now implemented as separate later
+boundaries. Production runner integration, release authorization, and live
+evidence remain separate gates. Browser JavaScript transports bytes and does
+not become currentness authority. See
+`docs/architecture/vnext-campaign-evidence-wasm-boundary.md`.
 
 ## Two Identities
 
@@ -158,11 +159,10 @@ evidence and this semantic classification.
 
 ## Remaining Work
 
-- Expose the completed Rust classifier through one generated browser WASM
-  interface and replay the same frozen corpus in independently deleted browser
-  profiles without duplicating semantics in JavaScript.
-- Implement independent Rust signature-authority and truthful-projection
-  parity before Rust can admit current campaign evidence.
+- Preserve the generated campaign-evidence browser interface and its frozen
+  currentness replay in independently deleted browser profiles.
+- Preserve independent Rust signature-authority and truthful-projection
+  parity before integrating a production runner.
 - Bind projection output into final attestation, release authorization,
   rendered status, documentation, and public readback.
 - Run authorized live operations only after their advertised contracts and

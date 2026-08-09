@@ -124,7 +124,7 @@ test("documents Rust offline closure without claiming release or live evidence",
   assert.match(document,
     /c50a9668725a67df15f45fd28c4c80addde89e53fe80468590005a9fcb293ba8/u);
   assert.match(document, /three accepted bundles and 31 rejection/u);
-  assert.match(document, /does not produce a campaign projection/u);
+  assert.match(document, /does not\s+produce a campaign projection/u);
   assert.match(document, /0\/20 qualified model hashes/u);
   assert.match(document, /exact closed membership/u);
   for (const linkedDocument of linkedDocuments) {

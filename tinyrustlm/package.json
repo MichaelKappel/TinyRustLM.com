@@ -4,7 +4,7 @@
   "private": true,
   "description": "Browser acceptance tests for the TinyRustLM web-to-companion boundary.",
   "scripts": {
-    "generate:vnext-campaign-plan-wasm": "node tools/vnext-campaign-plan-wasm-codegen.js --write",
+    "generate:vnext-campaign-evidence-wasm": "node tools/vnext-campaign-evidence-wasm-codegen.js --write",
     "generate:vnext-authority-rust-vectors": "node tools/vnext-authority-rust-vectors.js --write",
     "generate:vnext-campaign-projection-rust-vectors": "node tools/vnext-campaign-projection-rust-vectors.js --write",
     "generate:vnext-offline-bundle-rust-vectors": "node tools/vnext-offline-bundle-rust-vectors.js --write",
@@ -13,7 +13,7 @@
     "test:unit": "node --test tests/*.test.js",
     "test:vnext-authority-rust-vectors": "node --test tests/vnext-authority-rust-vectors.test.js",
     "test:vnext-campaign-projection-rust-vectors": "node --test tests/vnext-campaign-projection-rust-vectors.test.js",
-    "test:vnext-campaign-plan-wasm": "node --test tests/vnext-campaign-plan-wasm.test.js",
+    "test:vnext-campaign-evidence-wasm": "node --test tests/vnext-campaign-evidence-wasm.test.js",
     "test:vnext-offline-bundle-rust-vectors": "node --test tests/vnext-offline-bundle-rust-vectors.test.js",
     "test:vnext-phase-invalidation-rust-vectors": "node --test tests/vnext-phase-invalidation-rust-vectors.test.js",
     "test:vnext-signature-rust-vectors": "node --test tests/vnext-signature-rust-vectors.test.js",

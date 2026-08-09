@@ -1,0 +1,187 @@
+{
+  "schema": "tinyrustlm.vnext.campaign_evidence_wasm_interface.v1",
+  "profileId": "tinyrustlm.vnext.campaign-evidence-wasm.v1",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-clean-replacement",
+  "campaignPlanSchema": "tinyrustlm.vnext.campaign_plan.v1",
+  "phaseInvalidationProfileId": "tinyrustlm.vnext.phase-invalidation.v1",
+  "phaseInvalidationProfileSha256": "8e0cccdc007e56ace6550163b0fe1acdd211e74b184053739785a1d925b113cb",
+  "campaignProjectionProfileId": "tinyrustlm.vnext.campaign-projection.v1",
+  "campaignProjectionProfileSha256": "a5dbe87a6971301c782120d3b30bb6059ab9cb26f2efac70b866a7bdb0b52067",
+  "campaignProjectionResultSchema": "tinyrustlm.vnext.campaign_projection_result.v1",
+  "projectionMetadataFields": [
+    "expectedCampaignId",
+    "expectedCampaignPlanSha256",
+    "expectedEnvironment",
+    "expectedTerminalRegistryReceiptId",
+    "trustedRootRegistryReceiptId",
+    "verificationTimeUtc"
+  ],
+  "rustCrate": "tinyrustlm-evidence-wasm",
+  "wasmTarget": "wasm32-unknown-unknown",
+  "abiVersion": 1,
+  "limits": {
+    "maximumTransferBytes": 4194304,
+    "maximumResultBytes": 4194304,
+    "maximumModuleBytes": 8388608,
+    "maximumLiveAllocations": 4,
+    "maximumLiveAllocationBytes": 8388608,
+    "maximumPlanBytes": 1048576,
+    "maximumProjectionMetadataBytes": 65536,
+    "maximumReceiptBytes": 262144,
+    "maximumSubjectBytes": 2097152,
+    "maximumReceiptInputs": 2048,
+    "maximumSubjectInputs": 2048,
+    "maximumTotalReceiptBytes": 67108864,
+    "maximumTotalSubjectBytes": 67108864
+  },
+  "inputEncoding": "exact-utf8-and-canonical-json-bytes",
+  "resultEncoding": "exact-canonical-verifier-result-bytes",
+  "browserGlobal": "TinyRustLMCampaignEvidence",
+  "generatedRustPath": "rust/crates/tinyrustlm-evidence-wasm/src/generated_exports.rs",
+  "generatedBrowserPath": "tinyrustlm/tools/generated/vnext-campaign-evidence-wasm.js",
+  "statusCodes": {
+    "ok": 0,
+    "boundaryError": 1,
+    "verificationError": 2,
+    "internalError": 3
+  },
+  "exports": {
+    "abiVersion": "trlm_campaign_evidence_abi_version",
+    "maximumTransferBytes": "trlm_campaign_evidence_max_transfer_bytes",
+    "allocate": "trlm_campaign_evidence_allocate",
+    "release": "trlm_campaign_evidence_release",
+    "finalizeCampaignPlan": "trlm_campaign_plan_finalize",
+    "validateCampaignPlan": "trlm_campaign_plan_validate",
+    "beginPhaseInvalidation": "trlm_phase_invalidation_begin",
+    "beginCampaignProjection": "trlm_campaign_projection_begin",
+    "appendReceipt": "trlm_campaign_evidence_append_receipt",
+    "appendSubject": "trlm_campaign_evidence_append_subject",
+    "executeStaged": "trlm_campaign_evidence_execute",
+    "reset": "trlm_campaign_evidence_reset",
+    "validateCampaignProjectionResult": "trlm_campaign_projection_result_validate",
+    "resultLength": "trlm_campaign_evidence_result_len",
+    "copyResult": "trlm_campaign_evidence_copy_result",
+    "errorLength": "trlm_campaign_evidence_error_len",
+    "copyError": "trlm_campaign_evidence_copy_error"
+  },
+  "requiredImports": [],
+  "requiredExports": [
+    {
+      "name": "memory",
+      "kind": "memory"
+    },
+    {
+      "name": "trlm_campaign_evidence_abi_version",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_campaign_evidence_allocate",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_campaign_evidence_append_receipt",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_campaign_evidence_append_subject",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_campaign_evidence_copy_error",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_campaign_evidence_copy_result",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_campaign_evidence_error_len",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_campaign_evidence_execute",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_campaign_evidence_max_transfer_bytes",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_campaign_evidence_release",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_campaign_evidence_reset",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_campaign_evidence_result_len",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_campaign_plan_finalize",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_campaign_plan_validate",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_campaign_projection_begin",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_campaign_projection_result_validate",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_phase_invalidation_begin",
+      "kind": "function"
+    },
+    {
+      "name": "__data_end",
+      "kind": "global"
+    },
+    {
+      "name": "__heap_base",
+      "kind": "global"
+    }
+  ],
+  "staging": {
+    "operationKinds": [
+      "phase-invalidation",
+      "campaign-projection"
+    ],
+    "beginReplacesPriorState": true,
+    "failureClearsStage": true,
+    "executeConsumesStage": true,
+    "resetClearsStageResultAndError": true,
+    "declaredCountsMustMatch": true,
+    "aggregateLimitsCheckedBeforeCommit": true,
+    "crossInstanceState": "none"
+  },
+  "ownership": {
+    "inputAllocation": "caller-allocates-writes-invokes-and-releases",
+    "allocationIdentity": "exact-pointer-and-length-pair",
+    "resultCopy": "caller-allocates-exact-length-copies-and-releases",
+    "returnedPointers": "none",
+    "resultLifetime": "until-next-operation-or-reset-on-same-instance",
+    "stagedEvidence": "owned-rust-copies-consumed-by-execute"
+  },
+  "security": {
+    "networkAccess": "forbidden",
+    "filesystemAccess": "forbidden",
+    "clockAccess": "forbidden",
+    "environmentAccess": "forbidden",
+    "randomAccess": "forbidden",
+    "unknownImports": "reject",
+    "unknownExports": "reject",
+    "noncanonicalFinalWire": "reject",
+    "responseRepair": "forbidden",
+    "bestOfN": "forbidden",
+    "rawHostErrors": "forbidden",
+    "javascriptCampaignSemantics": "forbidden",
+    "offlineBundleVerdictAsProjectionInput": "forbidden"
+  }
+}
