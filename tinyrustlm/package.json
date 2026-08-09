@@ -14,6 +14,7 @@
     "test:vnext-authority-rust-vectors": "node --test tests/vnext-authority-rust-vectors.test.js",
     "test:vnext-campaign-projection-rust-vectors": "node --test tests/vnext-campaign-projection-rust-vectors.test.js",
     "test:vnext-campaign-evidence-wasm": "node --test tests/vnext-campaign-evidence-wasm.test.js",
+    "test:vnext-campaign-release-surface": "node --test tests/vnext-campaign-release-surface.test.js",
     "test:vnext-campaign-runner": "node --test tests/vnext-campaign-runner.test.js",
     "test:vnext-offline-bundle-rust-vectors": "node --test tests/vnext-offline-bundle-rust-vectors.test.js",
     "test:vnext-phase-invalidation-rust-vectors": "node --test tests/vnext-phase-invalidation-rust-vectors.test.js",

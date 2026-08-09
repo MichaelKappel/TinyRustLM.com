@@ -21,9 +21,11 @@ The maintained browser path consists of:
 - `tools/browser-round-evidence.js`: immutable browser receipt construction.
 - `tools/run-browser-round.js`: the operator entry point for one non-memory
   campaign round.
-- `tools/campaign-evidence-store.js`: content-addressed receipt persistence.
-- `tools/campaign-evidence-dashboard.js`: status derived from validated
-  receipts.
+- `tools/vnext-receipt-store.js`: bounded create-only receipt DAG persistence.
+- `tools/vnext-campaign-runner.js`: the sole Rust-backed current projection
+  runner.
+- `tools/vnext-campaign-release-surface.js`: fresh projection-bound immutable
+  attestation and truthful operator status.
 
 The browser activates one immutable `.slm.acg1` composition graph for each
 qualified model. Campaign evidence binds both the graph bundle hash and the
@@ -258,7 +260,7 @@ Fast browser and campaign checks:
 ```powershell
 npm --prefix tinyrustlm run test:browser-contract
 node --test tinyrustlm/tests/dogfood-campaign.test.js tinyrustlm/tests/vnext-campaign-runner.test.js
-node --test tinyrustlm/tests/campaign-evidence-dashboard.test.js
+node --test tinyrustlm/tests/vnext-campaign-release-surface.test.js
 ```
 
 The vNext runner command is a local verifier conformance gate. It snapshots
@@ -267,6 +269,12 @@ generated Rust campaign-evidence ABI, and preserves immutable operation and
 projection history. Its synthetic complete-capacity case is not a live
 campaign run and does not increment any campaign counter. See
 `docs/architecture/vnext-campaign-runner.md`.
+
+The vNext release-surface gate runs that sole runner inside the attestation
+call, rejects stored projections and caller counters, scans final canonical
+attestation bytes before create-only persistence, and renders no `done` state.
+Its synthetic complete-capacity case remains prepublication conformance only.
+See `docs/architecture/vnext-campaign-release-surface.md`.
 
 Rust checks:
 
@@ -293,9 +301,10 @@ Local tests prove contract behavior only. They do not prove:
 - packages were published or consumed from a public registry;
 - public HTTPS release bytes match an authorized release.
 
-The campaign dashboard must report these as incomplete or externally blocked
-until corresponding validated receipts exist. No fixture, loopback probe,
-cross-compilation result, or self-asserted status can advance a live gate.
+The release-surface operator status must report these as incomplete or
+externally blocked until corresponding validated receipts exist. No fixture,
+loopback probe, cross-compilation result, or self-asserted status can advance a
+live gate.
 
 ## Related Documentation
 

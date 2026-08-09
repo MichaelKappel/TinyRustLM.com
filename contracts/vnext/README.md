@@ -326,6 +326,19 @@ projection and terminal history. It exposes no evidence-subset, caller-verdict,
 best-of-N, mutable-currentness, or stored-result promotion path. See
 `docs/architecture/vnext-campaign-runner.md`.
 
+`tinyrustlm/tools/vnext-campaign-release-surface.js` now consumes that runner
+only by creating a never-before-used operation and receiving its exact result
+inside the same call. Its frozen profile has SHA-256
+`a798083041c9cfd824c27625719f6313a4f3ef48bb0d457a81b027194360486a`.
+The surface independently validates the returned projection against the exact
+stored plan and runner operation records, finalizes a content-addressed
+complete-or-blocked attestation, scans the final canonical bytes against the
+protected equality list before persistence, and derives a canonical operator
+status with no `done` state. Stored projection bytes, caller counters,
+caller verdicts, reused/interrupted/failed operations, unsafe attestation
+bytes, mutable pointers, and compatibility inputs are rejected. See
+`docs/architecture/vnext-campaign-release-surface.md`.
+
 The authority result deliberately separates `signatureVerified`,
 `authorityAtIssue`, `temporalCurrent`, and `currentEvidenceEligible`. A valid
 historical Ed25519 signature is not current evidence when its envelope is
@@ -355,11 +368,13 @@ validation with exact frozen-corpus parity. One bounded local runner now
 performs exact cross-store snapshots, Rust-backed projection, immutable
 operation history, interruption recovery, and concurrent-operation exclusion.
 The superseded mutable runner and its test are deleted without an alias or
-compatibility entry point. Operational final-attestation, release,
-dashboard/operator, and public-readback cutover remains incomplete. This is
-not outside-network observation or live campaign evidence. Runtime tests
-generate ephemeral private keys only in process memory. Checked-in profiles
-and vectors contain public material only.
+compatibility entry point. One fresh-runner-bound immutable final-attestation
+and operator-status surface is implemented. Release-manifest preparation,
+release authorization, exact HTTPS readback, published-claim descendants, and
+deletion of the superseded dashboard/release/public-readback stack remain
+incomplete. This is not outside-network observation or live campaign evidence.
+Runtime tests generate ephemeral private keys only in process memory.
+Checked-in profiles and vectors contain public material only.
 
 ## Completion Boundary
 

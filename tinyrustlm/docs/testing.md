@@ -13,7 +13,7 @@ npm --prefix tinyrustlm run test:browser-contract
 node --test tinyrustlm/tests/model-acquisition-v2.test.js tinyrustlm/tests/companion-bridge.test.js
 node tinyrustlm/tools/web-release-local-smoke.js <new-output-directory>
 node --test tinyrustlm/tests/dogfood-campaign.test.js tinyrustlm/tests/vnext-campaign-runner.test.js
-node --test tinyrustlm/tests/campaign-evidence-dashboard.test.js
+node --test tinyrustlm/tests/vnext-campaign-release-surface.test.js
 ```
 
 `test:browser-contract` covers:
@@ -54,9 +54,12 @@ The sole current campaign projection runner is the Rust-backed vNext boundary
 documented in `../../docs/architecture/vnext-campaign-runner.md`. The deleted
 mutable runner has no compatibility entry point.
 
-The dashboard tests require `tinyrustlm/campaign-fault-plan.v1.json`, because
-release progress includes all 24 canonical fault cases. The dashboard derives
-counts from validated receipts and cannot be advanced by a mutable Boolean.
+The release-surface tests prove that attestation and operator status can only
+come from a newly executed sole-runner projection. Stored projection bytes,
+caller counters, caller verdicts, dashboard objects, interrupted or failed
+operations, and unsafe final bytes fail closed. The synthetic complete-capacity
+case proves contract capacity only and cannot advance a live campaign counter.
+See `../../docs/architecture/vnext-campaign-release-surface.md`.
 
 ## Rust Gates
 

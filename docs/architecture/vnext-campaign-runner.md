@@ -148,6 +148,17 @@ secret values, and hosted-memory payloads do not enter operation records or
 errors. Public subjects are admitted only through the separate five-schema
 public subject store.
 
+## Release Consumer
+
+`vnext-campaign-release-surface.js` is the only vNext release consumer of a
+runner result. It creates the runner internally, requires a never-before-used
+operation ID, receives the result in the same call, validates the exact plan
+and completed operation records, and immediately derives immutable attestation
+and operator evidence. It has no stored-result, caller-counter, caller-verdict,
+or operation-resume input. A process interruption before attestation requires
+a new operation and fresh projection. See
+`docs/architecture/vnext-campaign-release-surface.md`.
+
 ## Verification
 
 The focused suite covers:

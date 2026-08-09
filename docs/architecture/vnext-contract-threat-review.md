@@ -244,6 +244,20 @@ outside this Phase 2 PASS. It does not close compressed archive-member
 scanning, production entry-point cutover, independent observer operation, or
 any campaign gate.
 
+The campaign release-surface checkpoint removes stored dashboard and caller
+truth from the vNext attestation boundary. A release-surface operation ID must
+be absent from rebuilt runner history; interrupted, failed, completed, copied,
+and caller-materialized operations cannot be promoted. The surface creates and
+consumes the runner result inside one call, validates the exact plan,
+projection, campaign, environment, trusted time, start/terminal records, and
+receipt snapshot, then scans finalized attestation bytes before create-only
+persistence. A failed protected-equality scan persists only the public-safe
+scan receipt and returns no unsafe attestation bytes. Its operator projection
+is derived from the same result and deliberately has no `done` state. This
+closes fresh attestation and operator truth only; release-manifest inputs,
+authorization, deployment, exact HTTPS readback, and published claims remain
+separate unimplemented descendants at this checkpoint.
+
 ## No-Compatibility Decision
 
 The new validator boundary has no old schema aliases, migration adapters,

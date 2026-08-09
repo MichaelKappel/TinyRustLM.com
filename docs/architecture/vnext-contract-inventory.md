@@ -210,8 +210,16 @@ Create-only public subject persistence is documented in
 `docs/architecture/vnext-subject-store.md`.
 The sole exact cross-store Rust-backed campaign runner is documented in
 `docs/architecture/vnext-campaign-runner.md`.
+The fresh-runner-only immutable attestation and operator boundary is documented
+in `docs/architecture/vnext-campaign-release-surface.md`. Its frozen profile
+has SHA-256
+`a798083041c9cfd824c27625719f6313a4f3ef48bb0d457a81b027194360486a`.
+It admits no stored projection, caller verdict, counter set, dashboard state,
+or reused operation. It scans finalized attestation bytes before create-only
+receipt persistence and has no operator `done` state.
 
 The superseded mutable runner is deleted. Remaining archive-member scanning,
-final-attestation/release/dashboard/public-readback cutover, projection release
-integration, and external campaign evidence remain incomplete.
+release-manifest/authorization/public-readback integration, deletion of the
+superseded dashboard/release stack, and external campaign evidence remain
+incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.
