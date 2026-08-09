@@ -1,17 +1,65 @@
-profile: runtime-mirust.intake-outcome-ledger.v58
-updated_utc: 2026-08-01T20:28:59Z
+profile: runtime-mirust.intake-outcome-ledger.v59
+updated_utc: 2026-08-09T00:53:15Z
 active_scan:
   content_bucket: agent-file-handoff/Content/
   improvement_bucket: agent-file-handoff/Improvement/
   content_non_placeholder_files: 0
-  improvement_non_placeholder_files: 1
-  result: enterprise_vnext_reports_dispositioned_one_explicit_execution_goal_active
-  latest_scan_utc: 2026-08-01T20:28:59Z
+  improvement_non_placeholder_files: 0
+  result: both_active_intake_buckets_placeholder_only_enterprise_goal_active_outside_intake
+  latest_scan_utc: 2026-08-09T00:53:15Z
   scan_authority: live top-level bucket scan; .gitkeep is the only allowed placeholder
 post_processing_scan:
   content_non_placeholder_files: 0
-  improvement_non_placeholder_files: 1
-  result: all_25_returned_reports_removed_after_durable_verification; authoritative_enterprise_vnext_goal_kept_active_by_explicit_human_request
+  improvement_non_placeholder_files: 0
+  result: six_remaining_sources_preserved_and_removed; authoritative_enterprise_vnext_goal_remains_active_through_goal_system_and_durable_memory
+report_intake_2026_08_08_active_handoff_closure:
+  source_bucket: E:\Source\.tinyrustlm-model-acquisition\agent-file-handoff\Improvement\
+  docs_evidence_path: docs/report-intake/2026-08-08/active-handoff-closure/
+  durable_manifest: docs/report-intake/2026-08-08/active-handoff-closure/MANIFEST.md
+  durable_manifest_sha256: f03b2db911dd7b5dae675297f971e97e991f5de81e8ec0858f77e8ea7919f98a
+  durable_synthesis: docs/report-intake/2026-08-08/active-handoff-closure/tinyrustlm-active-handoff-closure-synthesis-2026-08-08.md
+  durable_synthesis_sha256: d0b5b3391c22ec8cd117132c0d2bc0655afe344d1d00a7e5eb031bb94cfda361
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-active-handoff-closure-memory-2026-08-08.md
+  durable_memory_sha256: 6a623b507c58438b722b1521ed9282119cb9b6b80365817065adac9d7cd77c22
+  exact_source_count: 6
+  preserved_source_count: 6
+  removed_source_count: 6
+  missing_durable_copies: 0
+  disposition: mixed-incorporated-and-preserved-source-closure
+  processed_outcome: incorporated
+  actual_source_work: Preserved six exact repository-source artifacts; recorded raw and LF-normalized identities where they differ; incorporated three sealed vector-research outcomes; moved the enterprise goal to durable goal authority; and retained live MemoryEndpoints and future compressed-vector gates as explicit state rather than active intake files.
+  hot_memory_update: Routes are present in .uai/short-term-memory.uai, .uai/long-term-memory.uai, .uai/index.uai, .uai/report-synthesis.uai, .uai/test-plan.uai, .uai/file-handoff.uai, .uai/next-recursive-prompt.uai, .uai/totem.uai, .uai/taboo.uai, and this ledger.
+  checks: Exact source bytes 6/6; manifest rows 6/6; active Content and Improvement non-placeholder counts 0/0; enterprise goal still active; no live, model, browser, P2P, package, publication, or campaign claim inferred.
+  blockers: Authorized MemoryEndpoints individual-account evidence, a new append-only process-failure schema before any future compressed arm, remaining enterprise ADR and implementation work, and all objective campaign gates remain open.
+  source_site_removal_or_keep_active_reason: Remove all six source artifacts after exact durable verification; keep the enterprise goal active through the goal system and durable memory, not by retaining a duplicate in active intake.
+entries_2026_08_08_active_handoff_closure:
+  - source_path: agent-file-handoff/Improvement/2026-07-25-exact-flat-baseline-sealed-evidence-result.md
+    docs_evidence_path: docs/report-intake/2026-08-08/active-handoff-closure/2026-07-25-exact-flat-baseline-sealed-evidence-result.md
+    category: bounded-exact-flat-research-result
+    sha256: 8bf90577bb02eacbafb4dce14568925892f2d17bd84d20ef61b46b2035189400
+    disposition: incorporated-with-bounded-authority
+    processed_outcome: incorporated
+    source_removed: true
+    proof_of_use: Preserves the 790-row exact-ranking baseline, frozen natural-image and controlled-memory thresholds, four registered process-crash boundaries, immutable failed and passing attempts, and explicit non-product authority.
+    routing_summary: Use as an ExactFlat oracle and bounded baseline only; it proves no representative semantic-memory quality, physical power-loss durability, compression, TurboVec parity, product integration, training, or release.
+  - source_path: agent-file-handoff/Improvement/2026-07-25-turbovec-090-native-reference-arm-selection.md
+    docs_evidence_path: docs/report-intake/2026-08-08/active-handoff-closure/2026-07-25-turbovec-090-native-reference-arm-selection.md
+    category: preregistered-compressed-reference-selection
+    sha256: 950e2d59391471abd7fea5d7d9febc8103f47d1ea8942c4208d53705a95939e8
+    disposition: incorporated-as-historical-preregistration
+    processed_outcome: incorporated
+    source_removed: true
+    proof_of_use: Preserves the exact TurboVec 0.9.0 registry, VCS, license, four-bit TQ+, adapter, byte-accounting, threshold, native-screen, and as-shipped WASM-screen identities selected before results.
+    routing_summary: Treat as frozen historical experiment design, not dependency or portability authority; its corresponding arm ended terminally unqualified.
+  - source_path: agent-file-handoff/Improvement/2026-07-25-turbovec-090-native-reference-sealed-outcome.md
+    docs_evidence_path: docs/report-intake/2026-08-08/active-handoff-closure/2026-07-25-turbovec-090-native-reference-sealed-outcome.md
+    category: terminal-compressed-reference-outcome
+    sha256: 0c1a6488397ac044148bdd98fb877fda6f978ba7b2866ef7721a6649f0beef68
+    disposition: incorporated-terminal-rejection
+    processed_outcome: incorporated
+    source_removed: true
+    proof_of_use: Preserves one launcher infrastructure failure, its generic fix, the sole retry, the terminal nonzero quality-process outcome, absent later phases, and the v1 child-output evidence defect.
+    routing_summary: Never rerun, repair, threshold-adjust, or promote this arm; require a new preregistration and append-only partial child-process evidence before any future compressed comparison.
 report_intake_2026_08_01_enterprise_vnext_development_research:
   source_bucket: E:\Source\Rust\TinyRustLM.com\agent-file-handoff\Improvement\
   docs_evidence_path: docs/report-intake/2026-08-01/enterprise-vnext-development-research/
@@ -32,23 +80,25 @@ report_intake_2026_08_01_enterprise_vnext_development_research:
   report_byte_count: 1770325
   report_inventory_sha256: 6f6155814b8719948ef924976f160030408a11bd1fb9208ac423a55904d368cd
   complete_inventory_sha256: 95add37dca2d1f1599f1baf0663c6a1e94b879bc90faf9bc294353cd8e5ae1aa
-  disposition: incorporated-with-corrections-and-goal-kept-active
+  disposition: incorporated-with-corrections-and-goal-preserved-source-closed
   processed_outcome: incorporated
   actual_source_work: Preserved 25 reports byte-exactly; mapped them into twelve architecture lanes; separated report facts, recommendations, conflicts, and local unknowns; converted convergence into ten explicit ADR gates, twenty workstreams, fourteen phases, receipt and fault contracts, completion evidence, and site synchronization; and wrote one self-contained clean-slate execution goal.
   hot_memory_update: Routes are present in .uai/short-term-memory.uai, .uai/long-term-memory.uai, .uai/index.uai, .uai/report-synthesis.uai, .uai/test-plan.uai, .uai/file-handoff.uai, workspace.uai, and this ledger. Existing human-authored totem and taboo clean-slate policy remains untouched and compatible.
   llm_wiki_or_aiwikis_preservation_evidence: Twenty-five report bodies and the goal remain byte-exact under docs/report-intake/2026-08-01/enterprise-vnext-development-research; the reviewed route is checksum-bound in the wiki memory.
   checks: Source-to-durable SHA-256 and byte count 26/26; report-only canonical inventory and byte total reproduced; goal sections 1 through 19 and all 25 report identities validated; ASCII-only goal; git diff whitespace check required before commit; no implementation, quality, browser, live, external, publication, or release claim inferred.
   blockers: Ten ADRs, hostile parser/runtime/conformance implementation, model training and human review, WebGPU target evidence, secure companion/P2P work, authorized MemoryEndpoints contract, outside observers, catalog authority, physical linux-arm64, release credentials, and every 20/50/25/40/20 acceptance receipt remain required.
-  source_site_removal_or_keep_active_reason: Remove all 25 completed reports after durable hash verification. Keep only the named authoritative goal active because the human explicitly requested it as the current execution handoff and its exact durable copy exists.
+  source_site_removal_or_keep_active_reason: Remove all 25 completed reports and the duplicate goal source after durable hash verification. Keep the goal itself active through the goal system and durable memory because the human explicitly requested it.
 entries_2026_08_01_enterprise_vnext_development_research:
   - source_path: agent-file-handoff/Improvement/2026-08-01-authoritative-enterprise-vnext-development-goal-and-plan.md
     docs_evidence_path: docs/report-intake/2026-08-01/enterprise-vnext-development-research/2026-08-01-authoritative-enterprise-vnext-development-goal-and-plan.md
+    exact_source_evidence_path: docs/report-intake/2026-08-08/active-handoff-closure/2026-08-01-authoritative-enterprise-vnext-development-goal-and-plan.md
     category: authoritative-execution-assignment
     sha256: 629d7bee195f80c4acb868ed90c4124fd80d2cf6a1060a8fe13fdaa65968b31a
-    disposition: kept-active-with-reason-and-preserved
-    processed_outcome: kept-active-with-reason
-    source_removed: false
-    keep_active_reason: Human explicitly requested this named detailed goal as the current handoff; identical durable bytes and checksum are preserved.
+    source_blob_sha256: f508afad7ae193e166ed2a3c195cffc1e3463529ddfdd4eeac8b0f2d876f60c4
+    disposition: preserved-to-durable-memory-goal-remains-active
+    processed_outcome: preserved-to-durable-memory
+    source_removed: true
+    keep_active_reason: Human explicitly requested this named detailed goal as the current objective; the goal remains active through the goal system while both the reviewed LF copy and exact source copy are preserved.
     proof_of_use: Consolidates the report batch into clean-slate rules, evidence precedence, completion targets, current-state reverification, architecture direction, ADR gates, workstreams, phases, fault handling, publication controls, and final acceptance.
     routing_summary: Treat as the execution assignment, not proof of completed implementation; update its plan from actual evidence and preserve every failure and external blocker honestly.
   - source_path: agent-file-handoff/Improvement/Clean-Slate .slm VNext Container, Streaming Layout, and Cryptographic Identity.md
@@ -286,16 +336,17 @@ completed_champion_specialist_submodel_colibri_research_assignment_2026_07_21:
     source_removed: true
     proof_of_use: Defines six complete disconnected assignments with public-only source boundaries, primary-source pinning, falsification, honest byte categories, untouched-output quality gates, local-verification unknowns, and no-legacy clean-rewrite authority.
     routing_summary: Twelve reports returned in six paired lanes; prompt provenance is closed and byte-exact, while the reviewed synthesis rather than prompt or report prose is decision authority.
-active_turbovec_turboquant_deeper_research_assignment_2026_07_18:
+completed_turbovec_turboquant_deeper_research_assignment_2026_07_18:
   - source_path: agent-file-handoff/Improvement/2026-07-18-six-disconnected-turbovec-turboquant-deeper-performance-accuracy-research-prompts.md
+    docs_evidence_path: docs/report-intake/2026-08-08/active-handoff-closure/2026-07-18-six-disconnected-turbovec-turboquant-deeper-performance-accuracy-research-prompts.md
     category: outbound-deeper-performance-and-accuracy-research-assignment
     sha256: d4f74fec15cd0c0cb4d3511bb3e310fe9a3f2b5ba9421d37f490118b76a9262c
-    disposition: kept-active
-    processed_outcome: kept-active-with-reason
-    source_removed: false
-    keep_active_reason: Six deeper public-research lanes remain awaiting independently reviewed reports; the assignment proves no algorithm, implementation, performance, accuracy, bit-width, or adoption claim.
+    disposition: preserved-to-durable-memory
+    processed_outcome: preserved-to-durable-memory
+    source_removed: true
+    remaining_work_reason: Research questions remain useful, but external research and local experiments are tracked through the enterprise goal and receipt system rather than by retaining a processed prompt in active intake.
     proof_of_use: Preserves normative mathematics, commit-level TurboVec, transformer KV, durable retrieval, scalar/native/WASM kernel, and independent reproduction assignments with strict source and local-verification boundaries.
-    routing_summary: Keep active until all six responsive reports return and are reconciled against pinned primary sources and local evidence.
+    routing_summary: Prompt provenance is closed; it proves no report return, algorithm, implementation, performance, accuracy, bit-width, or adoption claim. Any new comparator requires pinned sources, a new preregistration, and local evidence.
 report_intake_2026_07_21_champion_specialist_submodel_research:
   source_bucket: E:\Source\Rust\TinyRustLM.com\agent-file-handoff\Improvement\
   docs_evidence_path: docs/report-intake/2026-07-21/champion-specialist-submodel-research/
@@ -494,16 +545,18 @@ completed_turbovec_turboquant_research_assignment_2026_07_17:
     durable_commit: bf50e3b
     proof_of_use: Defines six self-contained assignments with explicit no-source-tree boundaries, primary-source requirements, accuracy and performance measurements, falsification tests, reproducibility artifacts, and strict separation between sourced facts, inference, recommendations, and local verification needs.
     routing_summary: Nine responsive reports were preserved and synthesized as benchmark-first research input; no algorithm, kernel, format, or performance claim was accepted as implementation authority.
-active_memoryendpoints_platform_retry_assignment_2026_07_18:
+completed_memoryendpoints_platform_retry_assignment_2026_07_18:
   - source_path: agent-file-handoff/Improvement/2026-07-18-memoryendpoints-platform-contract-and-live-continuity-retry-prompt.md
+    docs_evidence_path: docs/report-intake/2026-08-08/active-handoff-closure/2026-07-18-memoryendpoints-platform-contract-and-live-continuity-retry-prompt.md
     category: outbound-platform-integration-retry-assignment
-    sha256: f77f2297313a0b54361f7db0be38df4b32c34fa3e319fe3bceabab1ac33bdb26
-    disposition: kept-active
-    processed_outcome: kept-active-with-reason
-    source_removed: false
-    keep_active_reason: No responsive MemoryEndpoints platform contract report arrived; keep this fail-fast retry active until an authorized platform agent returns either the exact versioned production contract and redacted live evidence or a typed blocker naming the missing authority and owner action.
+    sha256: ef1f1e3c133d05f18a07539fc88c8f7bdb1429d26e2edf6a5d4f398acb98fec4
+    canonical_lf_sha256: f77f2297313a0b54361f7db0be38df4b32c34fa3e319fe3bceabab1ac33bdb26
+    disposition: preserved-to-durable-memory
+    processed_outcome: preserved-to-durable-memory
+    source_removed: true
+    remaining_work_reason: The assignment is durably routed, while authorized individual-account enrollment, isolation, cross-browser restoration, replay rejection, revocation, cleanup, and redacted live evidence remain external blockers.
     proof_of_use: Preserves the complete original continuity assignment while explicitly rejecting generic research, medical reports, broad methodology, invented APIs, fixtures, and unsupported live claims as retry outcomes.
-    routing_summary: This Codex session is not connected to MemoryEndpoints.com, no individual account is validated, no compatible production lifecycle is advertised, and the live counter remains 0/25.
+    routing_summary: A public contract or local fixture does not satisfy live continuity. No authorized individual account has been validated by this work, and the 25-run live gate remains incomplete.
 report_intake_2026_07_18_turbovec_turboquant_and_handoff_audit:
   source_bucket: E:\Source\Rust\TinyRustLM.com\agent-file-handoff\Improvement\
   docs_evidence_path: docs/report-intake/2026-07-18/turbovec-turboquant-and-handoff-audit/

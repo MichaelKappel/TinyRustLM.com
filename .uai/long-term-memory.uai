@@ -1,11 +1,31 @@
-profile: runtime-mirust.long-term-memory-ledger.v349
-updated_utc: 2026-08-02T15:33:24Z
+profile: runtime-mirust.long-term-memory-ledger.v350
+updated_utc: 2026-08-09T00:53:15Z
 storage_mode: hybrid
 ledger_rule:
   pointer_only_not_context_free: true
   summary_policy: Routing-only, one sentence, 35 words maximum, no durable body memory.
   allowed_statuses: current, retired, superseded, quarantined
 records:
+  - stable_id: tinyrustlm_active_handoff_closure_2026_08_08_current
+    memory_domain: tinyrustlm.report_intake.active_handoff_closure
+    pointer_type: wiki_report
+    path: wiki/runtime-mirust/reports/tinyrustlm-active-handoff-closure-memory-2026-08-08.md
+    target_location: wiki/runtime-mirust/reports/tinyrustlm-active-handoff-closure-memory-2026-08-08.md
+    label: TinyRustLM Active Handoff Closure
+    summary: Routes six closed source artifacts, active enterprise goal, blocked live memory, bounded ExactFlat evidence, terminal TurboVec result, and empty intake truth.
+    pointer_status: current
+    authority: exact source copies, closure manifest, reviewed synthesis, immutable experiment receipts, and current goal and blocker state
+    source_authority: docs/report-intake/2026-08-08/active-handoff-closure/MANIFEST.md; docs/report-intake/2026-08-08/active-handoff-closure/tinyrustlm-active-handoff-closure-synthesis-2026-08-08.md
+    source_identity: manifest f03b2db911dd7b5dae675297f971e97e991f5de81e8ec0858f77e8ea7919f98a; synthesis d0b5b3391c22ec8cd117132c0d2bc0655afe344d1d00a7e5eb031bb94cfda361
+    review_status: verified_current_intake_closure
+    quarantine_status: none
+    review_evidence: docs/report-intake/2026-08-08/active-handoff-closure/MANIFEST.md
+    contextual_trigger: Read before active-intake, MemoryEndpoints retry, ExactFlat baseline, TurboVec 0.9.0 reference, or enterprise-goal source work.
+    checksum_hash: sha256:6a623b507c58438b722b1521ed9282119cb9b6b80365817065adac9d7cd77c22
+    sha256: 6a623b507c58438b722b1521ed9282119cb9b6b80365817065adac9d7cd77c22
+    last_reviewed_utc: 2026-08-09T00:53:15Z
+    owner_or_reviewer: TinyRustLM Agent
+    truth_boundary: Proves durable intake closure and bounded routing only; it does not complete the enterprise goal or any model, browser, live memory, P2P, catalog, package, site, or release gate.
   - stable_id: tinyrustlm_clean_source_history_and_public_deployment_2026_08_02_current
     memory_domain: tinyrustlm.release.source_history_public_deployment
     pointer_type: wiki_report
@@ -195,7 +215,7 @@ records:
     summary: Routes nine responsive reports, three typed misroutes, two prompt artifacts, separate weight/KV/index lanes, scalar-first conformance, benchmark-first adoption, and a still-active MemoryEndpoints platform retry.
     pointer_status: current
     authority: independent public research reconciled against bounded local source search and current TinyRustLM evidence rules
-    source_authority: docs/report-intake/2026-07-18/turbovec-turboquant-and-handoff-audit/MANIFEST.md; docs/report-intake/2026-07-18/turbovec-turboquant-and-handoff-audit/tinyrustlm-turbovec-turboquant-intake-synthesis-2026-07-18.md; docs/report-intake/2026-07-18/turbovec-turboquant-and-handoff-audit/tinyrustlm-turbovec-turboquant-intake-tdd-delta-2026-07-18.md; agent-file-handoff/Improvement/2026-07-18-memoryendpoints-platform-contract-and-live-continuity-retry-prompt.md
+    source_authority: docs/report-intake/2026-07-18/turbovec-turboquant-and-handoff-audit/MANIFEST.md; docs/report-intake/2026-07-18/turbovec-turboquant-and-handoff-audit/tinyrustlm-turbovec-turboquant-intake-synthesis-2026-07-18.md; docs/report-intake/2026-07-18/turbovec-turboquant-and-handoff-audit/tinyrustlm-turbovec-turboquant-intake-tdd-delta-2026-07-18.md; docs/report-intake/2026-08-08/active-handoff-closure/2026-07-18-memoryendpoints-platform-contract-and-live-continuity-retry-prompt.md
     source_identity: 14 byte-exact artifacts; manifest 6efe26a997fa368ed9bc7c7d57552731e7048f2aacf695dac3f6968f1e131086; synthesis 72d110535744f4dbb673feb76b5584e7a89e4aeaadc2581235cf37f6f43c2904; TDD 3b72bc0bc42eb6f7a09438a2bf4c315b16f1e13648cd4f881cd8bae7529c3e2a
     review_status: verified_current_research_input
     quarantine_status: none

@@ -1,5 +1,19 @@
-profile: runtime-mirust.file-handoff.v66
-updated_utc: 2026-08-01T20:28:59Z
+profile: runtime-mirust.file-handoff.v67
+updated_utc: 2026-08-09T00:53:15Z
+current_active_handoff_closure:
+  manifest: docs/report-intake/2026-08-08/active-handoff-closure/MANIFEST.md
+  manifest_sha256: f03b2db911dd7b5dae675297f971e97e991f5de81e8ec0858f77e8ea7919f98a
+  synthesis: docs/report-intake/2026-08-08/active-handoff-closure/tinyrustlm-active-handoff-closure-synthesis-2026-08-08.md
+  synthesis_sha256: d0b5b3391c22ec8cd117132c0d2bc0655afe344d1d00a7e5eb031bb94cfda361
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-active-handoff-closure-memory-2026-08-08.md
+  durable_memory_sha256: 6a623b507c58438b722b1521ed9282119cb9b6b80365817065adac9d7cd77c22
+  exact_source_count: 6
+  removed_source_count: 6
+  active_intake_count: 0
+  enterprise_goal_status: active_outside_intake
+  memoryendpoints_live_status: blocked_no_authorized_individual_account_evidence
+  turbovec_0_9_0_reference_status: terminally_unqualified_nonretryable
+  status: complete_verified_intake_closure_no_campaign_counter_advanced
 current_enterprise_vnext_development_goal_intake:
   manifest: docs/report-intake/2026-08-01/enterprise-vnext-development-research/MANIFEST.md
   manifest_sha256: 80c86b086b21d8ca302a79fa13519097cc9d789c2a042b6b84a408d59ea27b05
@@ -15,9 +29,10 @@ current_enterprise_vnext_development_goal_intake:
   paired_lane_count: 11
   three_report_lane_count: 1
   incorporated_with_corrections_count: 25
-  active_goal_source: agent-file-handoff/Improvement/2026-08-01-authoritative-enterprise-vnext-development-goal-and-plan.md
-  active_goal_keep_reason: Human explicitly requested this detailed goal as the current execution handoff; its exact durable copy is preserved and the completed report sources are removed.
-  status: complete_verified_research_batch_preserved_goal_kept_active_campaign_incomplete
+  active_goal_source: docs/report-intake/2026-08-01/enterprise-vnext-development-research/2026-08-01-authoritative-enterprise-vnext-development-goal-and-plan.md
+  exact_source_closure: docs/report-intake/2026-08-08/active-handoff-closure/2026-08-01-authoritative-enterprise-vnext-development-goal-and-plan.md
+  active_goal_keep_reason: Human explicitly requested this detailed goal as the current execution handoff; the goal remains active through the goal system and durable memory while its duplicate source is closed from intake.
+  status: complete_verified_research_batch_preserved_goal_active_source_closed_campaign_incomplete
 current_champion_specialist_submodel_research_intake:
   manifest: docs/report-intake/2026-07-21/champion-specialist-submodel-research/MANIFEST.md
   manifest_sha256: be31a770a712204a6bed92ae59f739835bd0fc5e54de7bf9e0b8697e2af1ab12
@@ -71,7 +86,7 @@ current_deeper_small_model_research_intake:
   source_count: 13
   report_count: 12
   prompt_provenance_count: 1
-  status: complete_verified_batch_preserved_two_explicit_assignments_active
+  status: complete_verified_batch_preserved_external_work_tracked_outside_active_intake
 current_dogfood_campaign_execution:
   durable_memory: wiki/runtime-mirust/reports/tinyrustlm-dogfood-quality-campaign-execution-memory-2026-07-15.md
   durable_memory_sha256: ac9e5d52c1bd1af5d2a355d57441e7b46827980990efef4ffc1febb982efdfbe
@@ -79,8 +94,9 @@ current_dogfood_campaign_execution:
   final_attestation: artifacts/reports/dogfood-campaign-evidence-2026-07-15/final-attestation.json
   remaining_risks: tinyrustlm/campaign-remaining-risks.v1.json
   final_attestation_contract: docs/architecture/dogfood-campaign-final-attestation.md
-  memory_endpoints_platform_handoff: agent-file-handoff/Improvement/2026-07-18-memoryendpoints-platform-contract-and-live-continuity-retry-prompt.md
-  memory_endpoints_platform_handoff_sha256: f77f2297313a0b54361f7db0be38df4b32c34fa3e319fe3bceabab1ac33bdb26
+  memory_endpoints_platform_handoff: docs/report-intake/2026-08-08/active-handoff-closure/2026-07-18-memoryendpoints-platform-contract-and-live-continuity-retry-prompt.md
+  memory_endpoints_platform_handoff_sha256: ef1f1e3c133d05f18a07539fc88c8f7bdb1429d26e2edf6a5d4f398acb98fec4
+  memory_endpoints_platform_handoff_canonical_lf_sha256: f77f2297313a0b54361f7db0be38df4b32c34fa3e319fe3bceabab1ac33bdb26
   memory_endpoints_live_status: not_connected_no_individual_accounts_validated_0_of_25
   turbovec_turboquant_research_handoff: docs/report-intake/2026-07-18/turbovec-turboquant-and-handoff-audit/2026-07-17-six-disconnected-turbovec-turboquant-performance-accuracy-research-prompts.md
   turbovec_turboquant_research_handoff_sha256: 900ae1008926b722090d0e0319904f8425536ac80a67b329dce90bec1a77f564
@@ -110,8 +126,8 @@ active_buckets:
   content: agent-file-handoff/Content/
   improvement: agent-file-handoff/Improvement/
   content_non_placeholder_files: 0
-  improvement_non_placeholder_files: 1
-  active_assignments: authoritative_enterprise_vnext_development_goal_and_plan
+  improvement_non_placeholder_files: 0
+  active_assignments: none_in_intake_enterprise_goal_tracked_by_goal_system
 current_browser_first_consent_memory_route:
   durable_memory: wiki/runtime-mirust/reports/tinyrustlm-browser-first-local-consent-memory-2026-07-15.md
   durable_memory_sha256: 960c8b10cde21a63252e7ce27a971fa1ae88d24387837868de982c64625beaa1
@@ -126,7 +142,7 @@ current_dogfood_quality_campaign_intake:
   durable_memory_sha256: 3cba671650e6f4c60c439b47e08af11889a00c2022c8dc6288fef9b38ac1fa51
   source_count: 12
   prompt_provenance_count: 1
-  status: complete_verified_batch_preserved_two_explicit_assignments_active
+  status: complete_verified_batch_preserved_external_work_tracked_outside_active_intake
 current_processed_batch:
   manifest: docs/report-intake/2026-08-01/enterprise-vnext-development-research/MANIFEST.md
   synthesis_and_tdd_plan: docs/report-intake/2026-08-01/enterprise-vnext-development-research/2026-08-01-authoritative-enterprise-vnext-development-goal-and-plan.md
@@ -135,7 +151,7 @@ current_processed_batch:
   source_count: 26
   report_count: 25
   active_goal_count: 1
-  source_cleanup: completed_reports_removed_goal_kept_active_by_explicit_human_request
+  source_cleanup: completed_reports_removed_goal_source_closed_2026_08_08_goal_still_active_by_explicit_human_request
 pending_research_request:
   prompt_path: docs/research-prompts/2026-07-12-six-disconnected-model-quality-research-prompts.md
   prompt_sha256: 059d53d884c105ed25a27fa31a841efc983e855f4c0530fc5e5af83c454159f9

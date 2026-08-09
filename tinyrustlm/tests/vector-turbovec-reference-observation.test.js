@@ -570,6 +570,29 @@ function refinalize(observation) {
   return finalizeObservation(body);
 }
 
+test("resolves the retired arm-selection input through its exact durable copy", () => {
+  const logicalPath =
+    "agent-file-handoff/Improvement/" +
+    "2026-07-25-turbovec-090-native-reference-arm-selection.md";
+  const durablePath = path.join(
+    repositoryRoot,
+    "docs/report-intake/2026-08-08/active-handoff-closure/" +
+      "2026-07-25-turbovec-090-native-reference-arm-selection.md"
+  );
+
+  assert.equal(fs.existsSync(path.join(repositoryRoot, logicalPath)), false);
+  assert.equal(inputPaths.includes(logicalPath), true);
+  assert.deepEqual(hashInput(logicalPath), {
+    path: logicalPath,
+    bytes: 9549,
+    sha256: "950e2d59391471abd7fea5d7d9febc8103f47d1ea8942c4208d53705a95939e8"
+  });
+  assert.equal(
+    sha256(fs.readFileSync(durablePath)),
+    "950e2d59391471abd7fea5d7d9febc8103f47d1ea8942c4208d53705a95939e8"
+  );
+});
+
 test("validates the complete synthetic observation contract without running it", () => {
   const observation = observationFixture();
   const validated = validateObservation(observation);

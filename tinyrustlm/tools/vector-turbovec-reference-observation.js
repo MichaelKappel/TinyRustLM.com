@@ -55,6 +55,18 @@ const runnerTestRelativePath =
   "tinyrustlm/tests/vector-turbovec-reference-observation.test.js";
 const verifierTestRelativePath =
   "tinyrustlm/tests/vector-turbovec-reference-verification.test.js";
+const retiredArmSelectionRelativePath =
+  "agent-file-handoff/Improvement/2026-07-25-turbovec-090-native-reference-arm-selection.md";
+const archivedArmSelectionRelativePath =
+  "docs/report-intake/2026-08-08/active-handoff-closure/" +
+  "2026-07-25-turbovec-090-native-reference-arm-selection.md";
+const historicalInputRelocations = new Map([
+  [retiredArmSelectionRelativePath, Object.freeze({
+    path: archivedArmSelectionRelativePath,
+    bytes: 9549,
+    sha256: "950e2d59391471abd7fea5d7d9febc8103f47d1ea8942c4208d53705a95939e8"
+  })]
+]);
 const preregistrationSha256 =
   "96a3fad0078850e2fe9fb4d619979ca9e5b753f23a3fab6df53aebe9b9afe6ed";
 const parentSelectionSha256 =
@@ -230,7 +242,7 @@ const inputPaths = Object.freeze([
   "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-observation-v1.json",
   "tinyrustlm/experiments/vector-quantization/exact-flat-baseline-evidence-verification-v1.json",
   "tinyrustlm/experiments/vector-quantization/source-claim-ledger.v1.json",
-  "agent-file-handoff/Improvement/2026-07-25-turbovec-090-native-reference-arm-selection.md",
+  retiredArmSelectionRelativePath,
   comparisonManifestRelativePath,
   comparisonLockRelativePath,
   comparisonSourceRelativePath,
@@ -668,11 +680,31 @@ function resolveRepositoryFile(relativePath, maximumBytes = maximumInputBytes) {
       !path.isAbsolute(relativePath) && !relativePath.includes(".."),
     "repository relative path is invalid"
   );
-  const absolute = path.resolve(repositoryRoot, relativePath);
+  const requestedAbsolute = path.resolve(repositoryRoot, relativePath);
   invariant(
-    absolute.startsWith(`${repositoryRoot}${path.sep}`),
+    requestedAbsolute.startsWith(`${repositoryRoot}${path.sep}`),
     "repository input escapes repository root"
   );
+  let absolute = requestedAbsolute;
+  if (!fs.existsSync(requestedAbsolute)) {
+    const relocation = historicalInputRelocations.get(relativePath);
+    invariant(relocation !== undefined, `repository input ${relativePath} is missing`);
+    absolute = path.resolve(repositoryRoot, relocation.path);
+    invariant(
+      absolute.startsWith(`${repositoryRoot}${path.sep}`),
+      "historical repository input escapes repository root"
+    );
+    const relocatedStat = boundedFile(
+      absolute,
+      maximumBytes,
+      `historical repository input ${relativePath}`
+    );
+    invariant(
+      relocatedStat.size === relocation.bytes &&
+        sha256File(absolute) === relocation.sha256,
+      `historical repository input ${relativePath} identity is invalid`
+    );
+  }
   boundedFile(absolute, maximumBytes, `repository input ${relativePath}`);
   return absolute;
 }

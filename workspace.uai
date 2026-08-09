@@ -1,10 +1,10 @@
-profile: tinyrustlm.source-workspace.v246
+profile: tinyrustlm.source-workspace.v247
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-01T20:28:59Z
+updated_utc: 2026-08-09T00:53:15Z
 version_authority:
-  current_version: 0.2.0
-  next_version: 0.2.1
+  current_version: 0.2.1
+  next_version: 0.2.2
   policy: Increment intentionally after real implementation milestones; source scaffolding does not imply runtime support.
 active_product:
   name: TinyRustLM
@@ -229,11 +229,11 @@ deploy_gate:
     - Run relevant pointer audits and git diff --check before packaging or deployment.
     - If deployment access is missing or live docs cannot be updated, record the blocker and do not claim the site is deployed.
 active_intake_state:
-  scanned_utc: 2026-07-03T18:00:00Z
-  status: placeholder_only_after_user_reported_related_intake_files
+  scanned_utc: 2026-08-09T00:53:15Z
+  status: placeholder_only_after_exact_active_handoff_closure
   content_bucket_non_placeholder_files: 0
   improvement_bucket_non_placeholder_files: 0
-  instruction: The July 1 MiniModel/Hugging Face/UI batch, the July 2 six-report TinyRustLM/MiniModel batch, the July 2 follow-up three-report batch, and the July 3 six-report desktop/P2P batch were preserved under docs/report-intake/, synthesized into durable memory, routed into product guidance and implementation, and removed from active intake. A 2026-07-03 rescan of repo-side handoff buckets and the active Codex attachment found no new non-placeholder Rust/TinyRustLM intake file to process.
+  instruction: Six remaining source artifacts were preserved exactly under docs/report-intake/2026-08-08/active-handoff-closure/, synthesized into durable memory, routed into goal and blocker state, and removed from active intake after hash verification. The enterprise goal remains active through the goal system and durable memory; external MemoryEndpoints and future compressed-vector work must not be represented by leaving processed files in intake.
 memory_authority:
   hot_memory_root: .uai/
   llm_wiki_namespace: wiki/runtime-mirust/

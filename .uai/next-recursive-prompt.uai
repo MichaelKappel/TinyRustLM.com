@@ -1,47 +1,49 @@
-profile: runtime-mirust.next-recursive-prompt.v43
-updated_utc: 2026-07-22T12:11:11Z
+profile: runtime-mirust.next-recursive-prompt.v44
+updated_utc: 2026-08-08T20:00:00Z
 prompt: >
-  Continue only in E:\Source\Rust\TinyRustLM.com as tinyrustlm-agent. Begin with wiki/runtime-mirust/reports/tinyrustlm-exact-flat-named-target-performance-memory-2026-07-22.md, its immutable observation and child receipt, the browser-WASM and exact-flat foundation reports, .uai/test-plan.uai, and the two active Improvement assignments. Preserve every scalar, exact-flat, browser, physical-target, and failure receipt. Never rerun any browser or physical-target `--write` command. Named-host latency, throughput, and process memory are verified only for the registered workloads; energy and independent chassis attestation remain false. The next executable retrieval slice is a sealed representative corpus with exact ground truth and recall/MRR/NDCG/usefulness gates plus crash-recovered durable deletion and compaction proof. Only after those baseline gates pass may a source-pinned compressed arm be preregistered at equal effective bytes. Keep static weights, KV cache, and durable indexes separate. Claim no TurboVec parity, compression, broad performance, representative quality, product integration, live MemoryEndpoints, outside P2P, catalog, or release completion from local experiment evidence.
+  Continue the authoritative enterprise clean-slate TinyRustLM vNext goal from verified repository state. Work only in a clean owned worktree, preserve unrelated user changes, and do not merge generated artifacts or third-party source into the product repository. Read the enterprise goal, the active-handoff closure, current test plan, totem, taboo, and current receipts before changing code or claims. The immediate implementation slice is explicit SHA-256-bound composition activation across the Rust SDK, C ABI, .NET SDK, package consumer, and campaign package tests. Finish objective verification with the real external MiniModel CLI/native binaries, then check in and publish only stable, evidence-backed increments. Keep public acquisition P2P-first with automatic local companion conversion when no verified peer is available; never replace working acquisition with text, script, or request-file downloads.
 primary_goal: >
-  Advance the exact f32 baseline from verified browser and named-host measurements into trustworthy comparison evidence without product integration: evaluate a sealed corpus, prove crash-recovered durable deletion, then compare one independently pinned compressed arm under preregistered equal-byte gates.
+  Deliver the enterprise-quality pre-release TinyRustLM system described by the durable 2026-08-01 goal with no legacy support, compatibility shims, hidden fallbacks, technical debt, or inflated claims. Continue until objective runtime, model-quality, browser, MemoryEndpoints, P2P, package, deployment, documentation, and publication gates are satisfied or honestly blocked by unavailable external authority.
 required_context:
-  - wiki/runtime-mirust/reports/tinyrustlm-exact-flat-named-target-performance-memory-2026-07-22.md
-  - tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-preregistration.v1.json
-  - tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-observation-v1.json
-  - tinyrustlm/experiments/vector-quantization/exact-flat-physical-target-verification-v1.json
-  - wiki/runtime-mirust/reports/tinyrustlm-exact-flat-browser-wasm-verification-memory-2026-07-21.md
-  - tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-observation-v1.json
-  - tinyrustlm/experiments/vector-quantization/exact-flat-browser-wasm-verification-v1.json
-  - wiki/runtime-mirust/reports/tinyrustlm-exact-flat-retrieval-foundation-memory-2026-07-21.md
-  - wiki/runtime-mirust/reports/tinyrustlm-vector-oracle-foundation-memory-2026-07-21.md
-  - tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-preregistration.v1.json
-  - tinyrustlm/experiments/vector-quantization/exact-flat-retrieval-verification-v1.json
-  - tinyrustlm/experiments/vector-quantization/source-claim-ledger.v1.json
-  - docs/report-intake/2026-07-18/turbovec-turboquant-and-handoff-audit/tinyrustlm-turbovec-turboquant-intake-tdd-delta-2026-07-18.md
+  - docs/report-intake/2026-08-01/enterprise-vnext-development-research/2026-08-01-authoritative-enterprise-vnext-development-goal-and-plan.md
+  - wiki/runtime-mirust/reports/tinyrustlm-enterprise-vnext-development-goal-memory-2026-08-01.md
+  - docs/report-intake/2026-08-08/active-handoff-closure/MANIFEST.md
+  - docs/report-intake/2026-08-08/active-handoff-closure/tinyrustlm-active-handoff-closure-synthesis-2026-08-08.md
+  - wiki/runtime-mirust/reports/tinyrustlm-active-handoff-closure-memory-2026-08-08.md
+  - docs/architecture
   - .uai/test-plan.uai
+  - .uai/intake-outcome-ledger.uai
   - .uai/totem.uai
   - .uai/taboo.uai
-active_intake:
-  - agent-file-handoff/Improvement/2026-07-18-memoryendpoints-platform-contract-and-live-continuity-retry-prompt.md
-  - agent-file-handoff/Improvement/2026-07-18-six-disconnected-turbovec-turboquant-deeper-performance-accuracy-research-prompts.md
+active_intake: []
 active_intake_truth: >
-  These are outbound assignments awaiting independent reports. Keep them active. They prove no contract, algorithm, quality, performance, compatibility, live account, or deployment fact.
+  Content and Improvement contain placeholders only after six exact source artifacts were durably preserved and routed on 2026-08-08. The enterprise goal remains active through the goal system and durable memory. External MemoryEndpoints work and future compressed-vector research remain tracked blockers or planned work, not unprocessed intake files.
+current_slice:
+  - Keep model load and composition activation separate and fail closed until an exact ACG1 graph digest is verified.
+  - Expose the activation contract consistently through Rust, C ABI, .NET, samples, package audits, consumer tests, and campaign receipts.
+  - Use the deterministic 512-byte test graph only as a package/runtime fixture; never count it as a product model or campaign qualification.
+  - Run the package gate with explicitly located external MiniModel binaries and source root; do not copy those third-party outputs into TinyRustLM.
+immutable_evidence:
+  - The ExactFlat sealed baseline passed only its bounded numerical, controlled-memory, and registered process-crash gates. It is not semantic-memory or product evidence.
+  - The frozen TurboVec 0.9.0 four-bit native reference arm is terminally unqualified. Never rerun it, alter its thresholds, or repair its failed process into a pass.
+  - Any future compressed-vector arm requires a new preregistration and append-only partial child-process evidence before nonzero-exit rejection.
+  - No local fixture, public contract document, or report satisfies authorized MemoryEndpoints individual-account continuity.
 engineering_rules:
   - TinyRustLM is pre-release; incur no technical debt and provide no legacy or backward-compatibility support.
-  - Rewrite cleanly and remove superseded implementation after verification; preserve immutable receipts as audit evidence only.
-  - Keep third-party review downloads outside every repository and Git under E:\Source\external\{project-name}.
-  - Do not modify receipt-bound exact-flat inputs without creating a new preregistration and child receipt identity.
-  - Keep experiment code publish-disabled, dependency-free, unsafe-free, and absent from product imports until all promotion gates pass.
-  - Preserve raw failures, fixed seeds, exact identities, bounded allocations, untouched outputs, and current zero-live campaign counters.
-  - Never train unresolved 42-record or 668-record human-review data.
+  - Rewrite cleanly, remove superseded implementation after verification, and preserve immutable receipts as audit evidence only.
+  - Preserve raw failures, fixed seeds, exact identities, bounded allocations, untouched model outputs, and explicit external blockers.
+  - Keep static model weights, online KV cache state, durable retrieval vectors, composition graphs, and specialist overlays as separate identity and byte-accounting domains.
+  - Do not weaken tests, fabricate live evidence, infer publication from package creation, or infer public reachability from local probes.
+  - Keep marketing, documentation, version, release date, last-publish metadata, and per-site update logs synchronized with every stable publication.
 next_steps:
-  - Build a sealed, provenance-bound retrieval corpus with exact ground truth, filters, ties, drift, deletion, restart, and privacy cases.
-  - Add crash/power-loss persistence tests with same-directory atomic promotion and post-compaction byte-level deletion evidence.
-  - Record energy and independent physical-chassis attestation only from a separately authorized measurement source; never infer either from the current host probe.
-  - Pin one compressed retrieval method by exact source and license identity, then freeze an equal-effective-byte comparison before implementation.
+  - Finish intake hash and ledger verification and prove both active buckets are empty.
+  - Run Rust SDK/native, .NET, package-boundary, package-consumer, MiniModel-backed SeedHost, and campaign package fault tests.
+  - Run full workspace Rust, Node, browser, and .NET gates after the focused package slice is green.
+  - Commit and push the explicit composition activation and evidence closure as reviewable stable increments.
+  - Resume the remaining enterprise ADR and implementation phases from receipt-derived blockers, not historical prose.
 success_criteria:
-  - Exact-flat receipt history remains immutable and validators pass against unchanged bound inputs.
-  - Existing real-browser and named-target receipts retain exact bytes, toolchains, hardware, settings, seeds, raw failures, and bounded authority.
-  - Corpus metrics are computed against sealed exact ground truth with no result-driven threshold changes.
-  - Durable deletion is proved after crash recovery and compaction, not inferred from in-memory tombstones.
-  - No product, TurboVec, compression, performance, MemoryEndpoints, P2P, catalog, or release claim exceeds its receipt evidence.
+  - Package consumers activate an exact graph and generate successfully; missing, malformed, mismatched, oversized, symlinked, or changed graph input fails closed.
+  - All durable manifest rows match stored bytes and active intake is empty.
+  - External MiniModel integration uses real explicitly located binaries and does not copy dependencies into the product tree.
+  - No campaign or release claim exceeds current receipts.
+  - Stable changes are checked in, pushed, documented, and published with synchronized version and update-log evidence.
