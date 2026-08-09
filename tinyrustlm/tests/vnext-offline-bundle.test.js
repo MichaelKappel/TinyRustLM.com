@@ -132,14 +132,15 @@ test("freezes an exact public-only profile and imports no network client", () =>
   const rawProfile = fs.readFileSync(profilePath);
   const verifierSource = fs.readFileSync(verifierPath, "utf8");
 
-  assert.equal(rawProfile.length, 3477);
+  assert.equal(rawProfile.length, 3514);
   assert.equal(sha256(rawProfile),
-    "4ebddebcbf7e8fcfadc06390c1c2754e80308bf5de433306eba73517978eed00");
+    "488cad440d213da587a1258dc37de00789e566ae3024d89d3a43781c49b50369");
   assert.equal(offlineBundleProfileSha256, sha256(rawProfile));
   assert.equal(offlineBundleProfile.authorityPolicy.networkAccess, "forbidden");
   assert.deepEqual(offlineBundleProfile.profileBindingNames, [
     "contract-registry",
     "offline-bundle-profile",
+    "public-safe-redaction-profile",
     "receipt-signature-profile",
     "receipt-store-profile"
   ]);

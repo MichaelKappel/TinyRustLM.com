@@ -82,11 +82,13 @@ SLM2's internal fixed envelope and SLM-DCBOR-1 metadata remain governed by
 ADR-001 and are referenced by the artifact manifest rather than re-encoded as
 JSON model metadata.
 
-The offline verification manifest and its frozen profile are verifier support
-documents, not additional top-level product contracts. The manifest is
-identified by an externally pinned raw-byte SHA-256 and is followed by a
-separate `offline-verification-bundle` receipt, preserving the nine-member
-family and avoiding a manifest/receipt identity cycle.
+The offline verification manifest, frozen verifier profiles, and canonical
+public-safe scan result are verifier support documents, not additional
+top-level product contracts. The manifest is identified by an externally
+pinned raw-byte SHA-256 and is followed by a separate
+`offline-verification-bundle` receipt. The scan result is identified by the
+output hash in a separate `redaction-scan` receipt. Both constructions preserve
+the nine-member family and avoid content-addressed cycles.
 
 ## Cross-Boundary Identity
 
@@ -120,18 +122,24 @@ family and avoiding a manifest/receipt identity cycle.
 | Site/package bytes or release manifest | Package/deployment/readback/site-sync claims | Qualified model and completed campaign phase receipts |
 | Claim wording or scope | Claim record and rendered sites/docs | Underlying evidence receipts |
 
-## Phase 2 Follow-On
+## Current Implementation Status
 
-The next artifacts must freeze, in order:
+The Phase 2 registry now freezes common limits, all nine exact schemas,
+reject-all unknown-field behavior, private-by-default visibility, one
+language-neutral hostile corpus, two separately sourced validators, and the
+bounded threat review. Phase 3 Node checkpoints now add domain-separated
+identity, create-only atomic receipt persistence, DAG reconstruction and
+quarantine, Ed25519 signing authority and revocation, closed offline bundles,
+and canonical public-safe scan receipts.
 
-1. common primitive, timestamp, identifier, URL, array, depth, and count limits;
-2. exact required fields and nested records for all nine schemas;
-3. reject-all unknown-field behavior at every object depth;
-4. private-by-default classification and the public-safe redaction profile;
-5. one language-neutral valid/hostile corpus;
-6. two validators with independent schema logic;
-7. a threat review and repository proof that no vNext validator imports,
-   aliases, or falls back to a dated schema.
+`contracts/vnext/public-safe-redaction-profile.v1.json` binds the current
+registry. `tinyrustlm/tools/vnext-public-safe-redaction.js` accepts finalized
+canonical bytes only, scans exact secret encodings and contextual forbidden
+values, returns unchanged bytes only on pass, and replays the scan receipt with
+the private equality list. The offline manifest binds that profile as one of
+five exact profile inputs. See
+`docs/architecture/vnext-public-safe-redaction.md`.
 
-This inventory closes discovery only. It does not satisfy those follow-on
-gates and does not increment any 20/50/25/40/20 campaign counter.
+Rust/browser parity, archive-member scanning, production entry-point cutover,
+exact phase invalidation, and external campaign evidence remain incomplete.
+This implementation status does not increment any 20/50/25/40/20 campaign counter.

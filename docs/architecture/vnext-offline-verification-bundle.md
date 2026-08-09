@@ -10,8 +10,14 @@ receipt, or campaign completion claim.
 The current implementation is:
 
 - `contracts/vnext/offline-verification-bundle-profile.v1.json`;
+- `contracts/vnext/public-safe-redaction-profile.v1.json`;
 - `tinyrustlm/tools/vnext-offline-bundle.js`; and
 - `tinyrustlm/tests/vnext-offline-bundle.test.js`.
+
+The current offline profile is 3,514 bytes with SHA-256
+`488cad440d213da587a1258dc37de00789e566ae3024d89d3a43781c49b50369`.
+Its newly bound public-safe redaction profile is 3,132 bytes with SHA-256
+`83cab2664951247ccf24462f409d1838a77cb3be88353e27d028211343627884`.
 
 ## Acyclic Construction
 
@@ -57,8 +63,9 @@ The canonical manifest binds:
 
 - bundle state, profile ID, canonical JSON profile, creation time, campaign,
   environment, and registry pins;
-- the raw byte length and SHA-256 of the contract registry, receipt-signature
-  profile, receipt-store profile, and offline-bundle profile;
+- the raw byte length and SHA-256 of the contract registry, public-safe
+  redaction profile, receipt-signature profile, receipt-store profile, and
+  offline-bundle profile;
 - the SHA-256 of the canonical descriptor for each of the nine vNext schemas;
 - sorted target signature-receipt IDs;
 - every receipt ID, receipt type, schema, byte length, and raw-byte SHA-256;
@@ -116,7 +123,7 @@ The frozen profile caps:
 - receipts at 2,048 and aggregate receipt bytes at 64 MiB;
 - non-receipt subjects at 2,048 and aggregate subject bytes at 64 MiB;
 - target signatures at 128;
-- profile bindings at exactly four;
+- profile bindings at exactly five;
 - schema bindings at exactly nine; and
 - parser depth, entries, members, arrays, strings, and number characters.
 
@@ -153,8 +160,10 @@ No 20/50/25/40/20 campaign counter changes from this checkpoint.
   verifiers.
 - Integrate the verifier with the create-only receipt store and interruption-
   safe on-disk bundle staging without adding a second parser or format.
-- Implement bounded acyclic redaction and synthetic-secret rejection before
-  any public bundle finalization.
+- Require every applicable redaction-scan receipt to replay through the
+  dedicated verifier with its protected known-secret list before release
+  admission. The manifest profile binding prevents policy substitution but
+  does not disclose or reconstruct private equality inputs.
 - Bind exact phase invalidation and truthful dashboard projection.
 - Prove the Rust/Win32 directory-flush boundary before claiming production
   directory durability.

@@ -13,6 +13,7 @@
   "profileBindingNames": [
     "contract-registry",
     "offline-bundle-profile",
+    "public-safe-redaction-profile",
     "receipt-signature-profile",
     "receipt-store-profile"
   ],
@@ -105,7 +106,7 @@
     "maximumTargetSignatures": 128,
     "maximumTotalReceiptBytes": 67108864,
     "maximumTotalSubjectBytes": 67108864,
-    "maximumProfileBindings": 4,
+    "maximumProfileBindings": 5,
     "maximumSchemaBindings": 9,
     "maximumDepth": 32,
     "maximumTotalEntries": 65536,

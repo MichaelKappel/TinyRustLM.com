@@ -37,15 +37,19 @@ const profilePath = path.join(contractRoot,
 const registryPath = path.join(contractRoot, "contract-family.v1.json");
 const signatureProfilePath = path.join(contractRoot,
   "receipt-signature-profile.v1.json");
+const redactionProfilePath = path.join(contractRoot,
+  "public-safe-redaction-profile.v1.json");
 const storeProfilePath = path.join(contractRoot, "receipt-store-profile.v1.json");
 
 const profileBytes = fs.readFileSync(profilePath);
 const registryBytes = fs.readFileSync(registryPath);
 const signatureProfileBytes = fs.readFileSync(signatureProfilePath);
+const redactionProfileBytes = fs.readFileSync(redactionProfilePath);
 const storeProfileBytes = fs.readFileSync(storeProfilePath);
 const parsedProfile = parseStrictJson(profileBytes);
 const registry = parseStrictJson(registryBytes);
 const parsedSignatureProfile = parseStrictJson(signatureProfileBytes);
+const redactionProfile = parseStrictJson(redactionProfileBytes);
 const storeProfile = parseStrictJson(storeProfileBytes);
 
 const digestPattern = /^[a-f0-9]{64}$/u;
@@ -223,6 +227,7 @@ const parserLimits = Object.freeze({
 const offlineBundleProfileSha256 = sha256(profileBytes);
 const registrySha256 = sha256(registryBytes);
 const signatureProfileSha256 = sha256(signatureProfileBytes);
+const redactionProfileSha256 = sha256(redactionProfileBytes);
 const storeProfileSha256 = sha256(storeProfileBytes);
 const offlineBundleRecord = registry.records.find((record) =>
   record.name === "offlineBundle");
@@ -251,6 +256,9 @@ function validateInstalledProfiles() {
       registry.schema !== "tinyrustlm.vnext.contract_registry.v1" ||
       registry.contracts.length !== parsedProfile.limits.maximumSchemaBindings ||
       parsedSignatureProfile.profileId !== signatureProfile.profileId ||
+      redactionProfile.profileId !== "tinyrustlm.vnext.public-safe-redaction.v1" ||
+      redactionProfile.status !== "frozen" ||
+      redactionProfile.contractRegistrySha256 !== registrySha256 ||
       storeProfile.profileId !== "tinyrustlm.vnext.receipt-store.v1" ||
       storeProfile.contractRegistrySha256 !== registrySha256) {
     failEvidence("offline_bundle_profile_invalid", "offline-bundle-profile");
@@ -285,6 +293,13 @@ const installedProfileBindings = deepFreeze([
     documentId: parsedProfile.profileId,
     byteLength: profileBytes.length,
     sha256: offlineBundleProfileSha256
+  },
+  {
+    name: "public-safe-redaction-profile",
+    documentKind: "profile",
+    documentId: redactionProfile.profileId,
+    byteLength: redactionProfileBytes.length,
+    sha256: redactionProfileSha256
   },
   {
     name: "receipt-signature-profile",

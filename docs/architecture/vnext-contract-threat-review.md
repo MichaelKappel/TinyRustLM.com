@@ -71,7 +71,7 @@ verified by later phases.
 | Content to identity | Claimed hash and content ID | Field shape and declared derivation profile | RFC 8785 JCS and domain-separated hash recomputation |
 | Signature to authority | Envelope, key, role, time, registry, revocation | Local shape, role/domain, and time-window checks | Ed25519 verification and trusted registry chain |
 | Receipt to evidence DAG | Parent IDs and evidence references | Local sorting, uniqueness, state, and typed payload checks | Parent loading, closure, cycle, role, and freshness checks |
-| Private to public evidence | Public-safe record and redaction profile | Closed public schema and forbidden value classes | Actual secret scan and scan-receipt graph verification |
+| Private to public evidence | Public-safe record and redaction profile | Closed public schema and forbidden value classes | The later Node checkpoint performs exact scan and receipt replay; Rust/browser parity, protected-list release integration, and bounded archive-member scanning remain |
 | Local P2P to public claim | Manifest, lane proof, claim wording | Local identity, route, transfer, state, and expiry checks | Outside observer signature, full transfer, and publication authority |
 
 ## Threat Analysis
@@ -96,7 +96,7 @@ verified by later phases.
 | P2P piece or Merkle drift | Piece indices, offsets, sizes, hashes, Merkle root, total bytes, and artifact identity are recomputed locally | Mitigated locally | File streaming, peer transfer, and final Rust artifact verification remain later gates |
 | Local reachability promoted as public | Proof requires outside-network scope, complete transfer, lane and endpoint binding, and bounded freshness | Mitigated structurally | Observer signature, independence, and matching P2P parent remain deferred |
 | Release or claim inflation | Release and claim states bind evidence, source, owner, route, component, dates, blockers, and publication state | Mitigated locally | Parent receipt closure, authorization signature, public readback, and wording secret scan remain deferred |
-| Secret disclosure through public evidence | Private-by-default classes, public-safe field types, redaction profile, forbidden keys/value classes, and acyclic scan binding | Reduced | Actual encoded/compressed secret scanning and scan-receipt verification remain deferred |
+| Secret disclosure through public evidence | Private-by-default classes, public-safe field types, redaction profile, forbidden keys/value classes, and acyclic scan binding | Reduced | The later Node checkpoint scans seven bounded known-secret encoding families and verifies scan receipts; compressed members, cross-runtime parity, and production custody remain deferred |
 | Compatibility code becoming permanent | Validators recognize one incompatible family and contain no fallback, migration, deprecated alias, dual-read, or dual-write path | Mitigated in the new boundary | Old production readers and writers still exist elsewhere and must be deleted after verified cutover |
 
 ## Validator Independence
@@ -162,13 +162,17 @@ a warning-level pass.
 
 The later Phase 3 Node work now includes canonical identity finalization,
 public-key Ed25519 payload verification, a bounded trusted authority graph,
-and exact offline-bundle membership and receipt-parent closure. The offline
-profile binds current schema/profile hashes, a separate acyclic verification
-receipt, external root/terminal/campaign/environment/hash pins, current target
-signatures, and all supplied receipt and subject bytes without network access.
-That work is outside this Phase 2 PASS. It does not close redaction,
-Rust/browser parity, production entry-point cutover, independent observer
-operation, or any campaign gate.
+exact offline-bundle membership and receipt-parent closure, and bounded
+public-safe redaction. The redaction boundary validates finalized bytes,
+rejects private schemas, scans seven bounded known-secret encoding families and contextual
+forbidden values, emits no secret values, and replays a one-way scan receipt
+against the protected equality list. The offline profile binds current
+schema/profile hashes, including the redaction profile, a separate acyclic
+verification receipt, external root/terminal/campaign/environment/hash pins,
+current target signatures, and all supplied receipt and subject bytes without
+network access. That work is outside this Phase 2 PASS. It does not close
+compressed archive-member scanning, Rust/browser parity, production entry-point
+cutover, independent observer operation, or any campaign gate.
 
 ## No-Compatibility Decision
 
@@ -212,6 +216,8 @@ unit suite, source hygiene, secret scan, and remote push are all current in one
 checkpoint. The next implementation phase is the canonical receipt and atomic
 persistence foundation: canonical identities, receipt DAG closure, role-bound
 signature verification, revocation, offline verification, bounded streaming,
-redaction evidence, atomic writes, and exact invalidation semantics.
+redaction evidence, atomic writes, and exact invalidation semantics. Canonical
+Node redaction evidence is now implemented; exact invalidation and
+cross-runtime/publication integration remain next.
 
 Campaign counters remain `0/20`, `0/50`, `0/25`, `0/40`, and `0/20`.
