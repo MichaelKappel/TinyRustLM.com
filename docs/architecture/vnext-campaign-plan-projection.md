@@ -15,8 +15,11 @@ The implementation consists of:
 - `tinyrustlm/tests/vnext-campaign-projection.test.js`;
 - `rust/crates/tinyrustlm-evidence` for independent plan finalization and
   validation;
-- `tinyrustlm/tools/vnext-campaign-plan-vector-generator.js`; and
-- the two frozen campaign-plan parity fixtures in `contracts/vnext`.
+- `tinyrustlm/tools/vnext-campaign-plan-vector-generator.js`;
+- the two frozen campaign-plan parity fixtures in `contracts/vnext`;
+- `contracts/vnext/campaign-artifact-store-profile.v1.json`; and
+- `tinyrustlm/tools/vnext-campaign-artifact-store.js` for immutable plan and
+  projection-snapshot persistence.
 
 The profile is frozen and binds the exact contract registry,
 phase-invalidation profile, and Ed25519 authority profile. Every newly built
@@ -165,6 +168,13 @@ blocker remains. Transport ordering of receipt and subject arrays cannot
 change result bytes. Returned data is deeply frozen and returned bytes are
 defensive copies.
 
+Before persistence, a projection result is independently reread through
+`validateCampaignProjectionResultBytes`. The validator binds its exact plan,
+profile, targets, counts, evidence-ID cardinalities, phase totals, blocker
+conditions, and operation state. See
+`docs/architecture/vnext-campaign-artifact-persistence.md` for the create-only
+layout, interruption behavior, and restart algorithm.
+
 ## Capacity Closure
 
 The same checkpoint aligns all capacities needed by a complete campaign:
@@ -189,8 +199,6 @@ facts, and fixture endpoints do not satisfy any live campaign objective.
 - Expose the Rust plan boundary to the browser through one generated WASM
   interface and prove browser/Node/Rust byte parity without duplicating plan
   semantics in handwritten browser JavaScript.
-- Persist the exact plan and projection result through the create-only receipt
-  store with interruption-safe staging and resume.
 - Bind the projection result into final attestation, release authorization,
   rendered operator status, maintained documentation, and public readback.
 - Replace fixture objective evidence only with authorized raw production

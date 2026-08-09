@@ -15,6 +15,10 @@ const {
   receiptSchema,
   validateVnextReceiptBytes
 } = require("./vnext-receipt-identity.js");
+const {
+  createVnextCreateOnlyFiles,
+  immutableRecord
+} = require("./vnext-create-only-files.js");
 
 const profilePath = path.resolve(__dirname, "../../contracts/vnext/receipt-store-profile.v1.json");
 const storeProfile = parseStrictJson(fs.readFileSync(profilePath));
@@ -23,7 +27,6 @@ const digestFilePattern = /^([a-f0-9]{64})\.json$/u;
 const prefixPattern = /^[a-f0-9]{2}$/u;
 const temporaryPattern = /^\.([a-f0-9]{64})\.[0-9]{1,20}\.[a-f0-9]{4,64}\.tmp$/u;
 const quarantineReasonPattern = /^[a-z][a-z0-9_]{2,79}$/u;
-const knownWindowsDirectorySyncErrors = new Set(["EACCES", "EINVAL", "ENOTSUP", "EPERM"]);
 const storeOptionNames = Object.freeze(["io", "platform", "randomBytes"]);
 
 function isPlainObject(value) {
@@ -104,245 +107,15 @@ function receiptRelativePath(receiptId) {
   return `receipts/sha256/${digest.slice(0, 2)}/${digest}.json`;
 }
 
-function normalizeRoot(root) {
-  if (typeof root !== "string" || root.length < 3 || root.length > 1024 || root.includes("\0")) {
-    failEvidence("receipt_store_root_invalid", "store-open");
-  }
-  const resolved = path.resolve(root);
-  if (!path.isAbsolute(root) || resolved !== path.normalize(root)) {
-    failEvidence("receipt_store_root_not_absolute", "store-open");
-  }
-  return resolved;
-}
-
-function safeChild(root, segments) {
-  if (!Array.isArray(segments) || segments.length === 0) {
-    failEvidence("receipt_store_path_invalid", "store-path");
-  }
-  for (const segment of segments) {
-    if (typeof segment !== "string" || segment.length === 0 || segment.length > 255 ||
-        segment === "." || segment === ".." || /[\\/\0]/u.test(segment)) {
-      failEvidence("receipt_store_path_invalid", "store-path");
-    }
-  }
-  const candidate = path.resolve(root, ...segments);
-  const relative = path.relative(root, candidate);
-  if (relative === "" || relative === ".." || relative.startsWith(`..${path.sep}`) ||
-      path.isAbsolute(relative)) {
-    failEvidence("receipt_store_path_escape", "store-path");
-  }
-  return candidate;
-}
-
-function assertNoLinkComponents(io, target, requireLeafDirectory = false) {
-  const resolved = path.resolve(target);
-  const parsed = path.parse(resolved);
-  const parts = resolved.slice(parsed.root.length).split(path.sep).filter(Boolean);
-  let current = parsed.root;
-  for (let index = 0; index < parts.length; index += 1) {
-    current = path.join(current, parts[index]);
-    if (!io.existsSync(current)) continue;
-    let stat;
-    try {
-      stat = io.lstatSync(current);
-    } catch (error) {
-      throw asEvidenceError(error, "receipt_store_path_inspection_failed", "store-path");
-    }
-    if (stat.isSymbolicLink()) failEvidence("receipt_store_path_link", "store-path");
-    const leaf = index === parts.length - 1;
-    if ((!leaf || requireLeafDirectory) && !stat.isDirectory()) {
-      failEvidence("receipt_store_path_not_directory", "store-path");
-    }
-  }
-}
-
-function ensureDirectory(io, directory) {
-  assertNoLinkComponents(io, path.dirname(directory), true);
-  try {
-    io.mkdirSync(directory, { recursive: false, mode: 0o700 });
-  } catch (error) {
-    if (error?.code !== "EEXIST") {
-      throw asEvidenceError(error, "receipt_store_directory_create_failed", "store-open");
-    }
-  }
-  assertNoLinkComponents(io, directory, true);
-}
-
-function ensureLayout(io, root) {
-  if (!io.existsSync(root)) {
-    assertNoLinkComponents(io, path.dirname(root), true);
-    try {
-      io.mkdirSync(root, { recursive: false, mode: 0o700 });
-    } catch (error) {
-      throw asEvidenceError(error, "receipt_store_root_create_failed", "store-open");
-    }
-  }
-  assertNoLinkComponents(io, root, true);
-  const receipts = safeChild(root, ["receipts"]);
-  const shaRoot = safeChild(root, ["receipts", "sha256"]);
-  const quarantine = safeChild(root, ["quarantine"]);
-  ensureDirectory(io, receipts);
-  ensureDirectory(io, shaRoot);
-  ensureDirectory(io, quarantine);
+function ensureLayout(fileOps, root) {
+  fileOps.ensureRoot(root);
+  const receipts = fileOps.safeChild(root, ["receipts"]);
+  const shaRoot = fileOps.safeChild(root, ["receipts", "sha256"]);
+  const quarantine = fileOps.safeChild(root, ["quarantine"]);
+  fileOps.ensureDirectory(receipts);
+  fileOps.ensureDirectory(shaRoot);
+  fileOps.ensureDirectory(quarantine);
   return Object.freeze({ receipts, shaRoot, quarantine });
-}
-
-function boundedDirectoryEntries(io, directory, maximumEntries) {
-  let handle;
-  const entries = [];
-  try {
-    handle = io.opendirSync(directory);
-    while (true) {
-      const entry = handle.readSync();
-      if (entry === null) break;
-      entries.push(entry);
-      if (entries.length > maximumEntries) {
-        failEvidence("receipt_store_directory_entry_limit", "store-scan");
-      }
-    }
-  } catch (error) {
-    throw asEvidenceError(error, "receipt_store_directory_scan_failed", "store-scan");
-  } finally {
-    if (handle !== undefined) {
-      try {
-        handle.closeSync();
-      } catch (_error) {
-        // A scan failure has already prevented acceptance; no raw host detail escapes.
-      }
-    }
-  }
-  entries.sort((left, right) => left.name.localeCompare(right.name, "en"));
-  return entries;
-}
-
-function boundedReadFile(io, filePath, maximumBytes) {
-  let descriptor;
-  try {
-    const linkStat = io.lstatSync(filePath);
-    if (linkStat.isSymbolicLink() || !linkStat.isFile()) {
-      failEvidence("receipt_file_not_regular", "receipt-read");
-    }
-    const noFollow = Number(io.constants?.O_NOFOLLOW || 0);
-    descriptor = io.openSync(filePath, Number(io.constants.O_RDONLY) | noFollow);
-    const initial = io.fstatSync(descriptor);
-    if (!initial.isFile()) failEvidence("receipt_file_not_regular", "receipt-read");
-    if (initial.size <= 0 || initial.size > maximumBytes) {
-      failEvidence("receipt_file_byte_limit", "receipt-read");
-    }
-    if (linkStat.dev !== undefined && initial.dev !== undefined && linkStat.dev !== initial.dev) {
-      failEvidence("receipt_file_changed", "receipt-read");
-    }
-    if (linkStat.ino && initial.ino && linkStat.ino !== initial.ino) {
-      failEvidence("receipt_file_changed", "receipt-read");
-    }
-    const bytes = Buffer.alloc(initial.size);
-    let offset = 0;
-    while (offset < bytes.length) {
-      const length = Math.min(storeProfile.limits.streamBufferBytes, bytes.length - offset);
-      const count = io.readSync(descriptor, bytes, offset, length, offset);
-      if (count <= 0) failEvidence("receipt_file_truncated", "receipt-read");
-      offset += count;
-    }
-    const final = io.fstatSync(descriptor);
-    if (final.size !== initial.size) failEvidence("receipt_file_changed", "receipt-read");
-    return bytes;
-  } catch (error) {
-    throw asEvidenceError(error, "receipt_file_read_failed", "receipt-read");
-  } finally {
-    if (descriptor !== undefined) {
-      try {
-        io.closeSync(descriptor);
-      } catch (_error) {
-        // The operation is already failed or has a complete private byte copy.
-      }
-    }
-  }
-}
-
-function syncDirectory(io, platform, directory) {
-  let descriptor;
-  try {
-    descriptor = io.openSync(directory, "r");
-    io.fsyncSync(descriptor);
-    return "performed";
-  } catch (error) {
-    if (platform === "win32" && knownWindowsDirectorySyncErrors.has(error?.code)) {
-      return "unavailable-win32-node";
-    }
-    throw asEvidenceError(error, "receipt_directory_sync_failed", "receipt-persist");
-  } finally {
-    if (descriptor !== undefined) {
-      try {
-        io.closeSync(descriptor);
-      } catch (_error) {
-        // Directory synchronization has already produced a bounded outcome.
-      }
-    }
-  }
-}
-
-function randomHex(randomBytes, byteCount = 12) {
-  let value;
-  try {
-    value = randomBytes(byteCount);
-  } catch (error) {
-    throw asEvidenceError(error, "receipt_random_failed", "receipt-persist");
-  }
-  if (!Buffer.isBuffer(value) || value.length !== byteCount) {
-    failEvidence("receipt_random_invalid", "receipt-persist");
-  }
-  return value.toString("hex");
-}
-
-function writeSyncedTemporary(io, target, bytes, randomBytes) {
-  const digest = path.basename(target, ".json");
-  const temporary = path.join(
-    path.dirname(target),
-    `.${digest}.${process.pid}.${randomHex(randomBytes)}.tmp`
-  );
-  let descriptor;
-  try {
-    descriptor = io.openSync(temporary, "wx", 0o600);
-    let offset = 0;
-    while (offset < bytes.length) {
-      const length = Math.min(storeProfile.limits.streamBufferBytes, bytes.length - offset);
-      const count = io.writeSync(descriptor, bytes, offset, length, offset);
-      if (!Number.isSafeInteger(count) || count <= 0 || count > length) {
-        failEvidence("receipt_temporary_short_write", "receipt-persist");
-      }
-      offset += count;
-    }
-    io.fsyncSync(descriptor);
-    io.closeSync(descriptor);
-    descriptor = undefined;
-    return temporary;
-  } catch (error) {
-    if (descriptor !== undefined) {
-      try {
-        io.closeSync(descriptor);
-      } catch (_closeError) {
-        // The write failure remains authoritative.
-      }
-    }
-    try {
-      io.unlinkSync(temporary);
-    } catch (_cleanupError) {
-      // Startup recovery will quarantine a surviving same-directory temporary.
-    }
-    throw asEvidenceError(error, "receipt_temporary_write_failed", "receipt-persist");
-  }
-}
-
-function immutableRecord(value) {
-  if (Array.isArray(value)) {
-    for (const entry of value) immutableRecord(entry);
-    return Object.freeze(value);
-  }
-  if (value !== null && typeof value === "object") {
-    for (const entry of Object.values(value)) immutableRecord(entry);
-    return Object.freeze(value);
-  }
-  return value;
 }
 
 function collectParentReceiptIds(receipt) {
@@ -516,58 +289,37 @@ function createVnextReceiptStore(rootInput, options = {}) {
       typeof randomBytes !== "function") {
     failEvidence("receipt_store_options_invalid", "store-open");
   }
-  const root = normalizeRoot(rootInput);
-  const layout = ensureLayout(io, root);
+  const fileOps = createVnextCreateOnlyFiles({
+    codePrefix: "receipt",
+    io,
+    platform,
+    randomBytes,
+    steps: {
+      open: "store-open",
+      path: "store-path",
+      persist: "receipt-persist",
+      quarantine: "store-quarantine",
+      read: "receipt-read",
+      scan: "store-scan"
+    },
+    streamBufferBytes: storeProfile.limits.streamBufferBytes
+  });
+  const root = fileOps.normalizeRoot(rootInput);
+  const layout = ensureLayout(fileOps, root);
   let active = new Map();
 
   function quarantineEntry(source, reasonCode, receiptId = null) {
     if (!quarantineReasonPattern.test(reasonCode)) {
       failEvidence("receipt_quarantine_reason_invalid", "store-quarantine");
     }
-    assertNoLinkComponents(io, path.dirname(source), true);
-    let stat;
-    try {
-      stat = io.lstatSync(source);
-    } catch (error) {
-      if (error?.code === "ENOENT") return null;
-      throw asEvidenceError(error, "receipt_quarantine_source_failed", "store-quarantine");
-    }
-    const quarantineId = `quarantine-${randomHex(randomBytes, 16)}`;
-    const destination = safeChild(root, ["quarantine", `${quarantineId}.${reasonCode}.q`]);
-    assertNoLinkComponents(io, layout.quarantine, true);
-    if (stat.isFile() && !stat.isSymbolicLink()) {
-      try {
-        io.linkSync(source, destination);
-      } catch (error) {
-        if (error?.code === "ENOENT") return null;
-        throw asEvidenceError(error, "receipt_quarantine_move_failed", "store-quarantine");
-      }
-      try {
-        io.unlinkSync(source);
-      } catch (error) {
-        if (error?.code !== "ENOENT") {
-          try {
-            io.unlinkSync(destination);
-          } catch (_rollbackError) {
-            // A surviving destination remains safely inside quarantine.
-          }
-          throw asEvidenceError(error, "receipt_quarantine_move_failed", "store-quarantine");
-        }
-      }
-    } else {
-      try {
-        if (io.existsSync(destination)) {
-          failEvidence("receipt_quarantine_collision", "store-quarantine");
-        }
-        io.renameSync(source, destination);
-      } catch (error) {
-        if (error?.code === "ENOENT") return null;
-        throw asEvidenceError(error, "receipt_quarantine_move_failed", "store-quarantine");
-      }
-    }
-    syncDirectory(io, platform, path.dirname(source));
-    syncDirectory(io, platform, layout.quarantine);
-    return immutableRecord({ quarantineId, reasonCode, receiptId });
+    return fileOps.quarantineEntry(
+      root,
+      layout.quarantine,
+      source,
+      reasonCode,
+      "receiptId",
+      receiptId
+    );
   }
 
   function scanUnknownContainer(
@@ -587,10 +339,10 @@ function createVnextReceiptStore(rootInput, options = {}) {
   }
 
   function rebuild() {
-    ensureLayout(io, root);
+    ensureLayout(fileOps, root);
     let totalScanEntries = 0;
     const scanEntries = (directory, maximumEntries) => {
-      const entries = boundedDirectoryEntries(io, directory, maximumEntries);
+      const entries = fileOps.boundedDirectoryEntries(directory, maximumEntries);
       totalScanEntries += entries.length;
       if (!Number.isSafeInteger(totalScanEntries) ||
           totalScanEntries > storeProfile.limits.maximumScanEntries) {
@@ -642,35 +394,19 @@ function createVnextReceiptStore(rootInput, options = {}) {
         const filePath = path.join(prefixPath, entry.name);
         const temporaryMatch = temporaryPattern.exec(entry.name);
         if (temporaryMatch) {
-          let temporaryStat;
-          try {
-            temporaryStat = io.lstatSync(filePath);
-          } catch (error) {
-            if (error?.code === "ENOENT") continue;
-            throw asEvidenceError(error, "receipt_temporary_inspection_failed", "store-scan");
-          }
-          if (temporaryStat.isSymbolicLink() || !temporaryStat.isFile()) {
+          const target = path.join(prefixPath, `${temporaryMatch[1]}.json`);
+          const state = fileOps.inspectIncompleteTemporary(
+            filePath,
+            target,
+            storeProfile.concurrency.minimumIncompleteTemporaryAgeMs
+          );
+          if (state === "missing") continue;
+          if (state === "invalid") {
             const result = quarantineCandidate(filePath, "unknown_entry");
             if (result !== null) quarantines.push(result);
             continue;
           }
-          const target = path.join(prefixPath, `${temporaryMatch[1]}.json`);
-          let publishedHardLink = false;
-          try {
-            const targetStat = io.lstatSync(target);
-            publishedHardLink = !targetStat.isSymbolicLink() && targetStat.isFile() &&
-              temporaryStat.dev !== undefined && targetStat.dev !== undefined &&
-              temporaryStat.ino && targetStat.ino &&
-              temporaryStat.dev === targetStat.dev && temporaryStat.ino === targetStat.ino;
-          } catch (error) {
-            if (error?.code !== "ENOENT") {
-              throw asEvidenceError(error, "receipt_target_inspection_failed", "store-scan");
-            }
-          }
-          const ageMs = Date.now() - Number(temporaryStat.mtimeMs);
-          const oldEnough = Number.isFinite(ageMs) && ageMs >= 0 &&
-            ageMs >= storeProfile.concurrency.minimumIncompleteTemporaryAgeMs;
-          if (publishedHardLink || oldEnough) {
+          if (state === "quarantine") {
             const result = quarantineCandidate(filePath, "incomplete_temporary");
             if (result !== null) quarantines.push(result);
           } else {
@@ -686,7 +422,9 @@ function createVnextReceiptStore(rootInput, options = {}) {
         }
         let validated;
         try {
-          validated = validateVnextReceiptBytes(boundedReadFile(io, filePath, receiptMaximumBytes));
+          validated = validateVnextReceiptBytes(
+            fileOps.boundedReadFile(filePath, receiptMaximumBytes)
+          );
         } catch (_error) {
           const result = quarantineCandidate(filePath, "invalid_receipt");
           if (result !== null) quarantines.push(result);
@@ -746,7 +484,7 @@ function createVnextReceiptStore(rootInput, options = {}) {
       existingQuarantineEntries,
       pendingTemporaryCount,
       scannedEntryCount: totalScanEntries,
-      directoryMetadata: syncDirectory(io, platform, layout.shaRoot)
+      directoryMetadata: fileOps.syncDirectory(layout.shaRoot)
     });
   }
 
@@ -756,10 +494,12 @@ function createVnextReceiptStore(rootInput, options = {}) {
     const metadata = active.get(receiptId);
     if (!metadata) failEvidence("receipt_not_active", "receipt-read");
     const filePath = path.join(root, ...metadata.relativePath.split("/"));
-    assertNoLinkComponents(io, path.dirname(filePath), true);
+    fileOps.assertNoLinkComponents(path.dirname(filePath), true);
     let validated;
     try {
-      validated = validateVnextReceiptBytes(boundedReadFile(io, filePath, receiptMaximumBytes));
+      validated = validateVnextReceiptBytes(
+        fileOps.boundedReadFile(filePath, receiptMaximumBytes)
+      );
     } catch (error) {
       throw asEvidenceError(error, "receipt_active_read_failed", "receipt-read");
     }
@@ -834,20 +574,20 @@ function createVnextReceiptStore(rootInput, options = {}) {
     const relativePath = receiptRelativePath(receiptId);
     const target = path.join(root, ...relativePath.split("/"));
     const prefix = path.dirname(target);
-    if (!io.existsSync(prefix)) ensureDirectory(io, prefix);
-    assertNoLinkComponents(io, prefix, true);
+    if (!io.existsSync(prefix)) fileOps.ensureDirectory(prefix);
+    fileOps.assertNoLinkComponents(prefix, true);
     const bytes = validated.bytes;
-    const temporary = writeSyncedTemporary(io, target, bytes, randomBytes);
+    const temporary = fileOps.writeSyncedTemporary(target, bytes);
     let disposition = "created";
     try {
-      assertNoLinkComponents(io, prefix, true);
+      fileOps.assertNoLinkComponents(prefix, true);
       try {
         io.linkSync(temporary, target);
       } catch (error) {
         if (error?.code !== "EEXIST") {
           throw asEvidenceError(error, "receipt_publish_failed", "receipt-persist");
         }
-        const existing = boundedReadFile(io, target, receiptMaximumBytes);
+        const existing = fileOps.boundedReadFile(target, receiptMaximumBytes);
         if (!existing.equals(bytes)) failEvidence("receipt_target_conflict", "receipt-persist");
         disposition = "existing-byte-identical";
       }
@@ -858,18 +598,18 @@ function createVnextReceiptStore(rootInput, options = {}) {
         // Startup recovery will quarantine a surviving temporary.
       }
     }
-    assertNoLinkComponents(io, prefix, true);
-    const directoryMetadata = syncDirectory(io, platform, prefix);
-    const readback = boundedReadFile(io, target, receiptMaximumBytes);
+    fileOps.assertNoLinkComponents(prefix, true);
+    const directoryMetadata = fileOps.syncDirectory(prefix);
+    const readback = fileOps.boundedReadFile(target, receiptMaximumBytes);
     if (!readback.equals(bytes)) failEvidence("receipt_readback_mismatch", "receipt-persist");
     try {
       for (const parent of parents) validateActiveClosure(parent);
     } catch (error) {
       if (disposition === "created") {
         try {
-          assertNoLinkComponents(io, prefix, true);
+          fileOps.assertNoLinkComponents(prefix, true);
           io.unlinkSync(target);
-          syncDirectory(io, platform, prefix);
+          fileOps.syncDirectory(prefix);
         } catch (cleanupError) {
           if (cleanupError?.code !== "ENOENT") {
             throw new VnextEvidenceError(

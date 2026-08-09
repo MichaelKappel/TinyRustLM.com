@@ -10,7 +10,8 @@ const {
   campaignProjectionProfile,
   campaignProjectionProfileSha256,
   finalizeVnextCampaignPlan,
-  projectVnextCampaign
+  projectVnextCampaign,
+  validateCampaignProjectionResultBytes
 } = require("../tools/vnext-campaign-projection.js");
 const {
   finalizeVnextIdentityDocument
@@ -25,6 +26,9 @@ const {
 const {
   parseStrictJson
 } = require("../tools/strict-json.js");
+const {
+  canonicalizeVnextJcsBytes
+} = require("../tools/vnext-jcs.js");
 const {
   authorityKey,
   baseReceiptDraft,
@@ -691,6 +695,10 @@ test("completes only from all exact current signed objective evidence", () => {
   assert.equal(result.result.currentOperation.state, "complete");
   assert.equal(result.result.unplannedCurrentReceiptIds.length, 0);
   assert.equal(result.result.conflictingLaneIds.length, 0);
+  assert.deepEqual(
+    validateCampaignProjectionResultBytes(result.resultBytes, plan.bytes).resultBytes,
+    result.resultBytes
+  );
 });
 
 test("packages and verifies the complete campaign evidence closure offline", () => {
@@ -799,4 +807,51 @@ test("is transport-order deterministic and returns defensive immutable bytes", (
   throwsCode(() => projectVnextCampaign(hostile),
     "campaign_projection_input_invalid");
   assert.equal(getterInvoked, false);
+});
+
+test("validates a canonical projection result against its exact campaign plan", () => {
+  const plan = finalizedPlan();
+  const projected = projectVnextCampaign(projectionInput(plan));
+  const validated = validateCampaignProjectionResultBytes(projected.resultBytes, plan.bytes);
+
+  assert.deepEqual(validated.resultBytes, projected.resultBytes);
+  assert.equal(validated.resultSha256, projected.resultSha256);
+  assert.equal(Object.isFrozen(validated.result), true);
+  const first = validated.resultBytes;
+  first[0] ^= 0xff;
+  assert.deepEqual(validated.resultBytes, projected.resultBytes);
+
+  const pretty = Buffer.from(JSON.stringify(projected.result, null, 2));
+  throwsCode(() => validateCampaignProjectionResultBytes(pretty, plan.bytes),
+    "campaign_projection_result_wire_not_canonical");
+
+  const inconsistent = structuredClone(projected.result);
+  inconsistent.counts.qualifiedModels.current = 1;
+  const inconsistentBytes = canonicalizeVnextJcsBytes(inconsistent, {
+    maximumDepth: campaignProjectionProfile.limits.maximumDepth,
+    maximumTotalEntries: campaignProjectionProfile.limits.maximumTotalEntries,
+    maximumObjectMembers: campaignProjectionProfile.limits.maximumObjectMembers,
+    maximumArrayItems: campaignProjectionProfile.limits.maximumArrayItems,
+    maximumStringCodeUnits: campaignProjectionProfile.limits.maximumStringCodeUnits,
+    maximumTotalStringCodeUnits: campaignProjectionProfile.limits.maximumTotalStringCodeUnits
+  });
+  throwsCode(() => validateCampaignProjectionResultBytes(inconsistentBytes, plan.bytes),
+    "campaign_projection_result_counts_invalid");
+
+  const otherPlan = planDraft();
+  otherPlan.campaignId = "campaign-vnext-002";
+  const finalizedOther = finalizeVnextCampaignPlan(otherPlan);
+  throwsCode(() => validateCampaignProjectionResultBytes(
+    projected.resultBytes, finalizedOther.bytes), "campaign_projection_result_plan_mismatch");
+
+  const evidence = buildCompleteEvidence(plan);
+  const partial = projectVnextCampaign(projectionInput(plan, {
+    authority: evidence.authority,
+    receipts: evidence.receipts.slice(0, 2)
+  }));
+  assert.equal(partial.result.resumableState, "resumable");
+  assert.deepEqual(
+    validateCampaignProjectionResultBytes(partial.resultBytes, plan.bytes).resultBytes,
+    partial.resultBytes
+  );
 });

@@ -244,6 +244,16 @@ counter. See `docs/architecture/vnext-phase-invalidation.md` and
 its non-claims are documented in
 `docs/architecture/vnext-rust-campaign-plan-parity.md`.
 
+`tinyrustlm/tools/vnext-campaign-artifact-store.js` persists only exact
+campaign-plan and projection-result wires under raw-byte SHA-256 paths. Its
+frozen profile has SHA-256
+`9bf4acfa35c26e8e790cd12f8aead4f38f30ac7c8ada716c19a3b012e5675e09`.
+It shares create-only, bounded, no-follow filesystem mechanics with the
+receipt store but retains separate result-to-plan semantics. Stored results
+are immutable history; `resumeProjection` reruns the projector from supplied
+current evidence and never selects a mutable current pointer. See
+`docs/architecture/vnext-campaign-artifact-persistence.md`.
+
 The authority result deliberately separates `signatureVerified`,
 `authorityAtIssue`, `temporalCurrent`, and `currentEvidenceEligible`. A valid
 historical Ed25519 signature is not current evidence when its envelope is
@@ -265,8 +275,8 @@ defines the exact boundary.
 
 This remains primarily a Node implementation checkpoint. Exact campaign-plan
 finalization now has independent Rust parity, but currentness, authority,
-projection, persistence, browser invocation, and the broader hostile corpus do
-not yet have cross-language parity. This is not production entry-point
+projection, artifact persistence, browser invocation, and the broader hostile
+corpus do not yet have cross-language parity. This is not production entry-point
 cutover, outside-network observation, or campaign evidence. Runtime tests
 generate ephemeral private keys only in process memory. Checked-in profiles
 and vectors contain public material only.

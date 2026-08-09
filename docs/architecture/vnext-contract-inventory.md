@@ -137,7 +137,13 @@ The plan finalization boundary now has an independent strict Rust
 implementation, frozen Node/Rust byte vectors, hostile invariant tests, and a
 successful `wasm32-unknown-unknown` build. This parity is intentionally scoped
 to exact plan finalization and final-wire validation; it does not extend to
-currentness, authority, or projection.
+currentness, authority, or projection. The Node campaign boundary now also
+validates complete projection-result wires and persists exact plans and
+projection snapshots through one frozen create-only artifact-store profile.
+The receipt store and campaign store share bounded filesystem mechanics while
+retaining separate receipt-DAG and result-to-plan semantics. Resume always
+reprojects supplied current evidence; no stored snapshot or mutable pointer is
+currentness authority.
 
 `contracts/vnext/public-safe-redaction-profile.v1.json` binds the current
 registry. `tinyrustlm/tools/vnext-public-safe-redaction.js` accepts finalized
@@ -154,9 +160,10 @@ The exact 20/50/25/40/20 plan and no-double-count projection are documented in
 `docs/architecture/vnext-campaign-plan-projection.md`.
 The independent Rust plan boundary is documented in
 `docs/architecture/vnext-rust-campaign-plan-parity.md`.
+Create-only plan/projection persistence is documented in
+`docs/architecture/vnext-campaign-artifact-persistence.md`.
 
 Remaining Rust currentness/authority/projection parity, browser invocation,
-archive-member scanning, production entry-point cutover, projection
-persistence and release integration, and external campaign evidence remain
-incomplete.
+archive-member scanning, production entry-point cutover, projection release
+integration, and external campaign evidence remain incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.

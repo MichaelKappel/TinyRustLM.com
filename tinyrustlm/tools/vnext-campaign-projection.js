@@ -97,6 +97,35 @@ const projectionInputFields = Object.freeze([
   "expectedEnvironment", "expectedTerminalRegistryReceiptId", "receiptBytes",
   "subjectBytes", "trustedRootRegistryReceiptId", "verificationTimeUtc"
 ]);
+const projectionResultFields = Object.freeze([
+  "authorityStatus", "authorityTerminalRegistryReceiptId", "blockerCodes",
+  "campaignId", "campaignPlanId", "campaignPlanSha256", "complete",
+  "conflictingLaneIds", "conflictingObjectiveSignatureSubjectIds",
+  "conflictingOperationIdentities", "countedEvidence", "counts",
+  "currentOperation", "environment", "objectiveReceiptCount",
+  "objectiveSignatureCount", "phaseReceiptCount", "phaseStateCounts",
+  "profileId", "profileSha256", "resumableState", "schema",
+  "unplannedCurrentReceiptIds", "unsignedCurrentReceiptIds", "verificationTimeUtc"
+]);
+const countValueFields = Object.freeze(["current", "target"]);
+const currentOperationFields = Object.freeze(["operationId", "phase", "state"]);
+const phaseStateCountFields = Object.freeze([
+  "conflict", "current-nonpass", "current-pass", "stale", "superseded"
+]);
+const countedEvidenceFields = Object.freeze([
+  "announcedModelReceiptIds", "browserRoundReceiptIds", "memoryRoundReceiptIds",
+  "outsideProofSubjectIds", "qualificationReceiptIds", "signatureReceiptIds"
+]);
+const projectionBlockerCodes = new Set([
+  "authority_graph_unavailable", "authority_registry_not_current",
+  "catalog_announcements_incomplete", "clean_browser_rounds_incomplete",
+  "live_memory_rounds_incomplete", "objective_signature_conflicts",
+  "outside_proof_conflicts", "outside_proofs_incomplete", "phase_conflicts_detected",
+  "qualified_models_incomplete", "unplanned_current_objective_evidence",
+  "unsigned_current_objective_evidence"
+]);
+const projectionOperationStates = new Set(["blocked", "complete", "pending"]);
+const projectionResumableStates = new Set(["blocked", "complete", "resumable"]);
 
 function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
@@ -369,6 +398,11 @@ const parserLimits = Object.freeze({
   ...jcsLimits,
   maximumNumberCharacters: parsedProfile.limits.maximumNumberCharacters
 });
+const resultParserLimits = Object.freeze({
+  maximumBytes: parsedProfile.limits.maximumProjectionResultBytes,
+  ...jcsLimits,
+  maximumNumberCharacters: parsedProfile.limits.maximumNumberCharacters
+});
 
 function requireSafeId(value, code, step) {
   if (typeof value !== "string" || !safeIdPattern.test(value)) {
@@ -418,6 +452,25 @@ function requireSortedUnique(records, key, code) {
     if (previous !== null && value <= previous) failEvidence(code, "campaign-plan");
     previous = value;
   }
+}
+
+function requireBoundedInteger(value, maximum, code, step) {
+  if (!Number.isSafeInteger(value) || value < 0 || value > maximum) {
+    failEvidence(code, step);
+  }
+  return value;
+}
+
+function requireSortedUniqueStrings(value, maximum, pattern, code, step) {
+  const values = exactDataArray(value, maximum, code, step);
+  for (const entry of values) {
+    if (typeof entry !== "string" || !pattern.test(entry)) failEvidence(code, step);
+  }
+  if (new Set(values).size !== values.length ||
+      values.some((entry, index) => index > 0 && values[index - 1] >= entry)) {
+    failEvidence(code, step);
+  }
+  return values;
 }
 
 function requireUnique(values, code) {
@@ -1095,6 +1148,282 @@ function immutableProjectionResult(result, bytes) {
   return Object.freeze(output);
 }
 
+function parseCampaignProjectionResultWire(rawBytes) {
+  const bytes = normalizeBytes(rawBytes,
+    "campaign_projection_result_bytes_required", "campaign-projection-result");
+  if (bytes.length === 0 || bytes.length > parsedProfile.limits.maximumProjectionResultBytes) {
+    failEvidence("campaign_projection_result_byte_limit", "campaign-projection-result");
+  }
+  let result;
+  try {
+    result = parseStrictJson(bytes, resultParserLimits);
+  } catch {
+    failEvidence("campaign_projection_result_json_invalid", "campaign-projection-result");
+  }
+  const canonical = canonicalizeVnextJcsBytes(result, jcsLimits);
+  if (!bytes.equals(canonical)) {
+    failEvidence("campaign_projection_result_wire_not_canonical",
+      "campaign-projection-result");
+  }
+  const value = exactDataObject(result, projectionResultFields,
+    "campaign_projection_result_fields_invalid", "campaign-projection-result");
+  return { bytes, canonical, value };
+}
+
+function inspectCampaignProjectionResultPlanSha256(rawBytes) {
+  const { value } = parseCampaignProjectionResultWire(rawBytes);
+  return requireDigest(value.campaignPlanSha256,
+    "campaign_projection_result_plan_reference_invalid", "campaign-projection-result");
+}
+
+function validateCampaignProjectionResultBytes(rawBytes, rawPlanBytes) {
+  const { canonical, value } = parseCampaignProjectionResultWire(rawBytes);
+  const plan = validateCampaignPlanBytes(rawPlanBytes);
+  if (value.schema !== parsedProfile.resultSchema ||
+      value.profileId !== parsedProfile.profileId ||
+      value.profileSha256 !== campaignProjectionProfileSha256 ||
+      value.campaignId !== plan.plan.campaignId ||
+      value.environment !== plan.plan.environment ||
+      value.campaignPlanId !== plan.plan.planId ||
+      value.campaignPlanSha256 !== plan.planSha256) {
+    failEvidence("campaign_projection_result_plan_mismatch", "campaign-projection-result");
+  }
+  requireUtc(value.verificationTimeUtc,
+    "campaign_projection_result_time_invalid", "campaign-projection-result");
+
+  if (value.authorityStatus !== "unavailable" && value.authorityStatus !== "verified") {
+    failEvidence("campaign_projection_result_authority_invalid",
+      "campaign-projection-result");
+  }
+  if (value.authorityStatus === "unavailable") {
+    if (value.authorityTerminalRegistryReceiptId !== null) {
+      failEvidence("campaign_projection_result_authority_invalid",
+        "campaign-projection-result");
+    }
+  } else {
+    requireContentId(value.authorityTerminalRegistryReceiptId,
+      "campaign_projection_result_authority_invalid", "campaign-projection-result");
+  }
+
+  const counts = exactDataObject(value.counts, targetFields,
+    "campaign_projection_result_counts_invalid", "campaign-projection-result");
+  const currentCounts = {};
+  for (const name of targetFields) {
+    const count = exactDataObject(counts[name], countValueFields,
+      "campaign_projection_result_counts_invalid", "campaign-projection-result");
+    const target = parsedProfile.objectiveTargets[name];
+    if (count.target !== target) {
+      failEvidence("campaign_projection_result_counts_invalid", "campaign-projection-result");
+    }
+    currentCounts[name] = requireBoundedInteger(count.current, target,
+      "campaign_projection_result_counts_invalid", "campaign-projection-result");
+  }
+  if (currentCounts.liveMemoryRounds > currentCounts.cleanBrowserRounds ||
+      currentCounts.announcedModels > currentCounts.qualifiedModels ||
+      currentCounts.announcedModels * parsedProfile.planPolicy.lanesPerModel >
+        currentCounts.outsideProvenLanes) {
+    failEvidence("campaign_projection_result_counts_invalid", "campaign-projection-result");
+  }
+
+  const countedEvidence = exactDataObject(value.countedEvidence, countedEvidenceFields,
+    "campaign_projection_result_evidence_invalid", "campaign-projection-result");
+  const counted = {
+    announcedModelReceiptIds: requireSortedUniqueStrings(
+      countedEvidence.announcedModelReceiptIds,
+      parsedProfile.objectiveTargets.announcedModels,
+      contentIdPattern,
+      "campaign_projection_result_evidence_invalid",
+      "campaign-projection-result"),
+    browserRoundReceiptIds: requireSortedUniqueStrings(
+      countedEvidence.browserRoundReceiptIds,
+      parsedProfile.objectiveTargets.cleanBrowserRounds,
+      contentIdPattern,
+      "campaign_projection_result_evidence_invalid",
+      "campaign-projection-result"),
+    memoryRoundReceiptIds: requireSortedUniqueStrings(
+      countedEvidence.memoryRoundReceiptIds,
+      parsedProfile.objectiveTargets.liveMemoryRounds,
+      contentIdPattern,
+      "campaign_projection_result_evidence_invalid",
+      "campaign-projection-result"),
+    outsideProofSubjectIds: requireSortedUniqueStrings(
+      countedEvidence.outsideProofSubjectIds,
+      parsedProfile.objectiveTargets.outsideProvenLanes,
+      contentIdPattern,
+      "campaign_projection_result_evidence_invalid",
+      "campaign-projection-result"),
+    qualificationReceiptIds: requireSortedUniqueStrings(
+      countedEvidence.qualificationReceiptIds,
+      parsedProfile.objectiveTargets.qualifiedModels,
+      contentIdPattern,
+      "campaign_projection_result_evidence_invalid",
+      "campaign-projection-result"),
+    signatureReceiptIds: requireSortedUniqueStrings(
+      countedEvidence.signatureReceiptIds,
+      parsedProfile.limits.maximumReceiptInputs,
+      contentIdPattern,
+      "campaign_projection_result_evidence_invalid",
+      "campaign-projection-result")
+  };
+  if (counted.announcedModelReceiptIds.length !== currentCounts.announcedModels ||
+      counted.browserRoundReceiptIds.length !== currentCounts.cleanBrowserRounds ||
+      counted.memoryRoundReceiptIds.length !== currentCounts.liveMemoryRounds ||
+      counted.outsideProofSubjectIds.length !== currentCounts.outsideProvenLanes ||
+      counted.qualificationReceiptIds.length !== currentCounts.qualifiedModels) {
+    failEvidence("campaign_projection_result_counts_invalid", "campaign-projection-result");
+  }
+  const objectiveCount = Object.values(currentCounts).reduce((sum, entry) => sum + entry, 0);
+  const countedReceiptIds = [
+    ...counted.announcedModelReceiptIds,
+    ...counted.browserRoundReceiptIds,
+    ...counted.memoryRoundReceiptIds,
+    ...counted.qualificationReceiptIds
+  ];
+  if (new Set(countedReceiptIds).size !== countedReceiptIds.length ||
+      counted.signatureReceiptIds.length !== objectiveCount) {
+    failEvidence("campaign_projection_result_evidence_invalid", "campaign-projection-result");
+  }
+
+  const objectiveReceiptCount = requireBoundedInteger(value.objectiveReceiptCount,
+    parsedProfile.limits.maximumReceiptInputs,
+    "campaign_projection_result_totals_invalid", "campaign-projection-result");
+  const objectiveSignatureCount = requireBoundedInteger(value.objectiveSignatureCount,
+    parsedProfile.limits.maximumReceiptInputs,
+    "campaign_projection_result_totals_invalid", "campaign-projection-result");
+  const phaseReceiptCount = requireBoundedInteger(value.phaseReceiptCount,
+    parsedProfile.limits.maximumReceiptInputs,
+    "campaign_projection_result_totals_invalid", "campaign-projection-result");
+  if (objectiveReceiptCount < countedReceiptIds.length ||
+      objectiveSignatureCount !== counted.signatureReceiptIds.length ||
+      phaseReceiptCount < objectiveReceiptCount) {
+    failEvidence("campaign_projection_result_totals_invalid", "campaign-projection-result");
+  }
+  const phaseStateCounts = exactDataObject(value.phaseStateCounts, phaseStateCountFields,
+    "campaign_projection_result_phase_counts_invalid", "campaign-projection-result");
+  let phaseStateTotal = 0;
+  for (const name of phaseStateCountFields) {
+    phaseStateTotal += requireBoundedInteger(phaseStateCounts[name],
+      parsedProfile.limits.maximumReceiptInputs,
+      "campaign_projection_result_phase_counts_invalid", "campaign-projection-result");
+  }
+  if (phaseStateTotal !== phaseReceiptCount) {
+    failEvidence("campaign_projection_result_phase_counts_invalid",
+      "campaign-projection-result");
+  }
+
+  const conflictingOperationIdentities = requireSortedUniqueStrings(
+    value.conflictingOperationIdentities,
+    parsedProfile.limits.maximumReceiptInputs,
+    contentIdPattern,
+    "campaign_projection_result_conflicts_invalid",
+    "campaign-projection-result");
+  const conflictingLaneIds = requireSortedUniqueStrings(value.conflictingLaneIds,
+    parsedProfile.objectiveTargets.outsideProvenLanes,
+    safeIdPattern,
+    "campaign_projection_result_conflicts_invalid",
+    "campaign-projection-result");
+  const conflictingObjectiveSignatureSubjectIds = requireSortedUniqueStrings(
+    value.conflictingObjectiveSignatureSubjectIds,
+    parsedProfile.limits.maximumReceiptInputs,
+    contentIdPattern,
+    "campaign_projection_result_conflicts_invalid",
+    "campaign-projection-result");
+  const unsignedCurrentReceiptIds = requireSortedUniqueStrings(
+    value.unsignedCurrentReceiptIds,
+    parsedProfile.limits.maximumReceiptInputs,
+    contentIdPattern,
+    "campaign_projection_result_current_ids_invalid",
+    "campaign-projection-result");
+  const unplannedCurrentReceiptIds = requireSortedUniqueStrings(
+    value.unplannedCurrentReceiptIds,
+    parsedProfile.limits.maximumReceiptInputs,
+    contentIdPattern,
+    "campaign_projection_result_current_ids_invalid",
+    "campaign-projection-result");
+  const blockerCodes = requireSortedUniqueStrings(value.blockerCodes,
+    projectionBlockerCodes.size,
+    /^[a-z][a-z0-9_]{2,79}$/u,
+    "campaign_projection_result_blockers_invalid",
+    "campaign-projection-result");
+  if (blockerCodes.some((code) => !projectionBlockerCodes.has(code))) {
+    failEvidence("campaign_projection_result_blockers_invalid",
+      "campaign-projection-result");
+  }
+  const blockers = new Set(blockerCodes);
+  const blockerMatches = (code, condition) => blockers.has(code) === condition;
+  if (!blockerMatches("authority_graph_unavailable", value.authorityStatus === "unavailable") ||
+      (blockers.has("authority_registry_not_current") && value.authorityStatus !== "verified") ||
+      !blockerMatches("phase_conflicts_detected", conflictingOperationIdentities.length > 0) ||
+      !blockerMatches("outside_proof_conflicts", conflictingLaneIds.length > 0) ||
+      !blockerMatches("objective_signature_conflicts",
+        conflictingObjectiveSignatureSubjectIds.length > 0) ||
+      !blockerMatches("unplanned_current_objective_evidence",
+        unplannedCurrentReceiptIds.length > 0) ||
+      !blockerMatches("unsigned_current_objective_evidence",
+        unsignedCurrentReceiptIds.length > 0) ||
+      !blockerMatches("qualified_models_incomplete",
+        currentCounts.qualifiedModels !== parsedProfile.objectiveTargets.qualifiedModels) ||
+      !blockerMatches("clean_browser_rounds_incomplete",
+        currentCounts.cleanBrowserRounds !== parsedProfile.objectiveTargets.cleanBrowserRounds) ||
+      !blockerMatches("live_memory_rounds_incomplete",
+        currentCounts.liveMemoryRounds !== parsedProfile.objectiveTargets.liveMemoryRounds) ||
+      !blockerMatches("outside_proofs_incomplete",
+        currentCounts.outsideProvenLanes !== parsedProfile.objectiveTargets.outsideProvenLanes) ||
+      !blockerMatches("catalog_announcements_incomplete",
+        currentCounts.announcedModels !== parsedProfile.objectiveTargets.announcedModels)) {
+    failEvidence("campaign_projection_result_blockers_invalid",
+      "campaign-projection-result");
+  }
+
+  if (typeof value.complete !== "boolean" ||
+      !projectionResumableStates.has(value.resumableState)) {
+    failEvidence("campaign_projection_result_state_invalid", "campaign-projection-result");
+  }
+  const allTargetsReached = targetFields.every((name) =>
+    currentCounts[name] === parsedProfile.objectiveTargets[name]);
+  if (value.complete !== (allTargetsReached && blockerCodes.length === 0)) {
+    failEvidence("campaign_projection_result_state_invalid", "campaign-projection-result");
+  }
+  const structurallyBlocked = value.authorityStatus === "unavailable" ||
+    conflictingOperationIdentities.length > 0 || conflictingLaneIds.length > 0 ||
+    conflictingObjectiveSignatureSubjectIds.length > 0 ||
+    unplannedCurrentReceiptIds.length > 0;
+  const expectedResumableState = value.complete
+    ? "complete"
+    : structurallyBlocked ? "blocked" : "resumable";
+  if (value.resumableState !== expectedResumableState) {
+    failEvidence("campaign_projection_result_state_invalid", "campaign-projection-result");
+  }
+
+  const operation = exactDataObject(value.currentOperation, currentOperationFields,
+    "campaign_projection_result_operation_invalid", "campaign-projection-result");
+  if (!projectionOperationStates.has(operation.state)) {
+    failEvidence("campaign_projection_result_operation_invalid", "campaign-projection-result");
+  }
+  const plannedOperations = new Map([
+    ...plan.plan.models.map((entry) => [entry.qualificationOperationId, "qualification"]),
+    ...plan.plan.browserRounds.map((entry) => [entry.operationId, "browser-round"]),
+    ...plan.plan.memoryRounds.map((entry) => [entry.operationId, "memory-continuity"]),
+    ...plan.plan.p2pLanes.map((entry) => [entry.laneId, "outside-proof"]),
+    ...plan.plan.announcements.map((entry) => [entry.operationId, "catalog-announcement"])
+  ]);
+  if (operation.state === "pending") {
+    if (typeof operation.operationId !== "string" || typeof operation.phase !== "string" ||
+        plannedOperations.get(operation.operationId) !== operation.phase) {
+      failEvidence("campaign_projection_result_operation_invalid",
+        "campaign-projection-result");
+    }
+  } else if (operation.operationId !== null || operation.phase !== null ||
+      (operation.state === "complete") !== value.complete ||
+      (operation.state === "blocked" && !allTargetsReached &&
+        value.authorityStatus !== "unavailable")) {
+    failEvidence("campaign_projection_result_operation_invalid",
+      "campaign-projection-result");
+  }
+
+  return immutableProjectionResult(value, canonical);
+}
+
 function projectVnextCampaign(rawInput) {
   const input = parseProjectionInput(rawInput);
   const evidence = parseEvidence(input);
@@ -1319,6 +1648,8 @@ module.exports = Object.freeze({
   campaignProjectionProfile,
   campaignProjectionProfileSha256,
   finalizeVnextCampaignPlan,
+  inspectCampaignProjectionResultPlanSha256,
   projectVnextCampaign,
-  validateCampaignPlanBytes
+  validateCampaignPlanBytes,
+  validateCampaignProjectionResultBytes
 });

@@ -1,0 +1,139 @@
+{
+  "schema": "tinyrustlm.vnext.campaign_artifact_store_profile.v1",
+  "profileId": "tinyrustlm.vnext.campaign-artifact-store.v1",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-no-compatibility-reader",
+  "campaignProjectionProfileId": "tinyrustlm.vnext.campaign-projection.v1",
+  "campaignProjectionProfileSha256": "a5dbe87a6971301c782120d3b30bb6059ab9cb26f2efac70b866a7bdb0b52067",
+  "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
+  "hashAlgorithm": "sha256",
+  "identityBasis": "exact-canonical-wire-bytes",
+  "networkAccess": "forbidden",
+  "sourceMutation": "forbidden",
+  "acceptedArtifacts": [
+    {
+      "kind": "plan",
+      "schema": "tinyrustlm.vnext.campaign_plan.v1",
+      "maximumBytes": 1048576,
+      "layoutRoot": "plans/sha256"
+    },
+    {
+      "kind": "projection-result",
+      "schema": "tinyrustlm.vnext.campaign_projection_result.v1",
+      "maximumBytes": 4194304,
+      "layoutRoot": "projections/sha256"
+    }
+  ],
+  "projectionResultFields": [
+    "authorityStatus",
+    "authorityTerminalRegistryReceiptId",
+    "blockerCodes",
+    "campaignId",
+    "campaignPlanId",
+    "campaignPlanSha256",
+    "complete",
+    "conflictingLaneIds",
+    "conflictingObjectiveSignatureSubjectIds",
+    "conflictingOperationIdentities",
+    "countedEvidence",
+    "counts",
+    "currentOperation",
+    "environment",
+    "objectiveReceiptCount",
+    "objectiveSignatureCount",
+    "phaseReceiptCount",
+    "phaseStateCounts",
+    "profileId",
+    "profileSha256",
+    "resumableState",
+    "schema",
+    "unplannedCurrentReceiptIds",
+    "unsignedCurrentReceiptIds",
+    "verificationTimeUtc"
+  ],
+  "countFields": [
+    "announcedModels",
+    "cleanBrowserRounds",
+    "liveMemoryRounds",
+    "outsideProvenLanes",
+    "qualifiedModels"
+  ],
+  "countValueFields": [
+    "current",
+    "target"
+  ],
+  "currentOperationFields": [
+    "operationId",
+    "phase",
+    "state"
+  ],
+  "phaseStateCountFields": [
+    "conflict",
+    "current-nonpass",
+    "current-pass",
+    "stale",
+    "superseded"
+  ],
+  "countedEvidenceFields": [
+    "announcedModelReceiptIds",
+    "browserRoundReceiptIds",
+    "memoryRoundReceiptIds",
+    "outsideProofSubjectIds",
+    "qualificationReceiptIds",
+    "signatureReceiptIds"
+  ],
+  "layout": {
+    "planPattern": "plans/sha256/{digest-prefix-2}/{digest}.json",
+    "projectionPattern": "projections/sha256/{digest-prefix-2}/{digest}.json",
+    "temporaryPattern": ".{digest}.{pid}.{nonce}.tmp",
+    "quarantineRoot": "quarantine",
+    "pathLinkPolicy": "reject-symbolic-link-or-reparse-point",
+    "replacementPolicy": "never",
+    "mutablePointerPolicy": "forbidden"
+  },
+  "atomicCreate": {
+    "sameDirectoryTemporary": true,
+    "exclusiveTemporary": true,
+    "temporaryFileFsync": true,
+    "publishPrimitive": "hard-link-create-if-absent",
+    "existingTargetPolicy": "accept-only-byte-identical",
+    "directoryMetadataSync": "required-or-explicitly-unavailable",
+    "readbackVerification": true
+  },
+  "concurrency": {
+    "createWriters": "multi-process-idempotent-hard-link",
+    "freshTemporaryPolicy": "leave-pending-without-mutation",
+    "minimumIncompleteTemporaryAgeMs": 300000,
+    "publishedHardLinkTemporaryPolicy": "quarantine-same-inode-link",
+    "rebuildInterferencePolicy": "fail-closed-and-retry"
+  },
+  "resume": {
+    "selectionPolicy": "caller-supplied-inputs-reprojected-no-mutable-pointer",
+    "storedProjectionAuthority": "immutable-history-not-current-truth",
+    "planPolicy": "exact-active-plan-required",
+    "resultPolicy": "recompute-validate-then-create-or-reuse-exact-bytes"
+  },
+  "rebuild": {
+    "unknownEntryPolicy": "quarantine",
+    "incompleteTemporaryPolicy": "quarantine-after-minimum-age",
+    "invalidArtifactPolicy": "quarantine",
+    "missingPlanPolicy": "quarantine-dependent-projection",
+    "preserveUnrelatedValidArtifacts": true
+  },
+  "limits": {
+    "maximumActivePlans": 64,
+    "maximumActiveProjections": 65536,
+    "maximumQuarantineEntries": 65536,
+    "maximumDirectoryEntries": 66000,
+    "maximumScanEntries": 262144,
+    "maximumQuarantineReasonCodeLength": 80,
+    "streamBufferBytes": 65536
+  },
+  "resultContract": {
+    "absolutePathsReturned": false,
+    "rawHostErrorsReturned": false,
+    "rawInvalidBytesReturned": false,
+    "durabilityClassReturned": true,
+    "boundedErrorCodesOnly": true
+  }
+}

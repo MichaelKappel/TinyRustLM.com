@@ -141,9 +141,13 @@ build receipt must bind to the lockfile in its own authenticated input set.
 
 ## Next Integration Boundary
 
-The next major slice must add create-only durable persistence for canonical
-plan and projection bytes, interruption-safe staging, bounded resume
-validation, and immutable history. It must then expose the Rust verifier to
-the browser through one generated WASM boundary. Full currentness, authority,
-and projection parity remain separate required work before Rust or browser
-code can make a campaign-completion claim.
+Node now has create-only durable persistence for canonical plan and projection
+bytes, interruption-safe staging, bounded reconstruction, parent-plan
+revalidation, and resume by authoritative reprojection. The persisted
+projection remains immutable history rather than self-authenticating current
+truth. See `docs/architecture/vnext-campaign-artifact-persistence.md`.
+
+The next major slice must expose this Rust plan verifier to the browser through
+one generated WASM boundary. Full Rust currentness, authority, and projection
+parity remain separate required work before Rust or browser code can make a
+campaign-completion claim.
