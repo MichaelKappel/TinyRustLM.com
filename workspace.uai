@@ -1,7 +1,7 @@
-profile: tinyrustlm.source-workspace.v250
+profile: tinyrustlm.source-workspace.v251
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-09T02:01:49Z
+updated_utc: 2026-08-09T02:09:01Z
 current_workspace_handoff:
   authority: This block is the first-read operational account as of `2026-08-09T02:01:49Z`. It summarizes current truth and takes precedence over incompatible present-tense wording in dated history below. Historical receipts remain immutable evidence for their stated scope only.
   cold_start_order:
@@ -24,12 +24,14 @@ current_workspace_handoff:
     current_phase: `phase_2_contract_freeze`
     completed_phase_gate: ADR-001 through ADR-010 are accepted in `docs/architecture/adr/`; they freeze metadata grammar, SHA-256/Merkle identity, alignment/layout, companion transport, browser persistence, quantization profiles, WebGPU support, specialist composition, service-worker release behavior, and evidence signing.
     completed_contract_increment: `tinyrustlm/tools/strict-json.js` now provides bounded fatal-UTF-8 duplicate-aware parsing, and all three release-authorization files pass through it before schema or Ed25519 verification. The verifier tool hash binds both modules and identifies profile `tinyrustlm.strict-json.v1`; hostile tests cover literal/escaped/supplementary duplicate names, invalid UTF-8, BOMs, lone surrogates, depth/entry/string limits, unsafe numbers, negative zero, overflow/underflow, malformed grammar, and trailing data.
+    completed_contract_inventory: `docs/architecture/vnext-contract-inventory.md` records 215 dated schema IDs across 109 app/tool files, the canonical sorted-list SHA-256 `581eee525ee30f195f0a21cd71db8d60ff275866d51cb2d236df74f638bd6d10`, 166 `JSON.parse` calls across 77 files, class-by-class ownership/gaps/deletion disposition, and exactly nine incompatible `tinyrustlm.vnext.*` family names. Every dated schema is historical-only and no alias, migration, or fallback authority exists.
     remaining_contract_risk: The full RFC 8785 cross-language corpus, domain-separated vNext receipt identity, role/registry/revocation/offline-bundle family, and every other signed raw-JSON entry point are not yet promoted. Existing v1 evidence remains historical and cannot satisfy vNext gates.
     exact_next_action: Freeze the incompatible vNext schema family, global parser/resource limits, unknown-field behavior, and public-safe redaction contract; implement two independent validators plus one shared hostile fixture corpus; then threat-review the complete boundary and delete superseded parsers without compatibility shims.
     no_compatibility_shims: SLM2 and the vNext schema family are intentionally incompatible clean contracts. Do not retain SLM1 fallback, old aliases, dual readers/writers, conversion-kit downloads, or user-run handoff scripts in the new product path.
   verified_test_baseline:
     architecture_decision_tests: `node --test tests/architecture-decisions.test.js` passed 12, failed 0, skipped 0.
     strict_json_release_boundary_tests: `node --test tests/strict-json.test.js tests/campaign-release-authorization-evidence.test.js` passed 12, failed 0, skipped 0.
+    vnext_contract_inventory_tests: `node --test tests/vnext-contract-inventory.test.js` passed 3, failed 0, skipped 0.
     campaign_evidence_cluster: The architecture, strict JSON, evidence store/dashboard, final attestation, release authorization, and release evidence cluster passed 56, failed 0, skipped 0.
     full_unit_suite: `npm run test:unit` passed 650, failed 0, skipped 0 in approximately 69.2 seconds, including real Chromium fault scenarios and local release smoke.
     source_hygiene: `git diff --check` passed for the strict-parser increment and `git diff --cached --check` passed for the ADR milestone. This baseline does not prove campaign completion or production readiness.
