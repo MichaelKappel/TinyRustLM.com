@@ -139,11 +139,9 @@ any evidence.
 
 ## Remaining Work
 
-- Freeze language-neutral authority-graph vectors covering registry succession,
-  revocation, compromise, expiry, nonce replay, subject binding, and root and
-  terminal pins.
-- Implement the independent bounded Rust authority graph and exact result-byte
-  parity.
+- Maintain the frozen public-only authority-graph corpus and independent Rust
+  result-byte and rejection-code parity documented in
+  `docs/architecture/vnext-rust-authority-graph-parity.md`.
 - Implement independent Rust offline-bundle closure and target-current
   admission.
 - Implement Rust truthful campaign projection over exact plan, currentness,

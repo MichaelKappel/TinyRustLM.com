@@ -213,38 +213,38 @@ pub(crate) struct SignatureEnvelope {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub(crate) struct AuthorityRegistry {
-    allowed_clock_skew_seconds: u32,
-    effective_at_utc: String,
-    environment: String,
-    expires_at_utc: String,
-    keys: Vec<AuthorityKey>,
-    previous_registry_receipt_id: RequiredNullable<String>,
+    pub(crate) allowed_clock_skew_seconds: u32,
+    pub(crate) effective_at_utc: String,
+    pub(crate) environment: String,
+    pub(crate) expires_at_utc: String,
+    pub(crate) keys: Vec<AuthorityKey>,
+    pub(crate) previous_registry_receipt_id: RequiredNullable<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub(crate) struct AuthorityKey {
-    key_id: String,
-    public_key: String,
-    role: String,
-    signer_id: String,
-    status: String,
-    valid_from_utc: String,
-    valid_until_utc: RequiredNullable<String>,
+    pub(crate) key_id: String,
+    pub(crate) public_key: String,
+    pub(crate) role: String,
+    pub(crate) signer_id: String,
+    pub(crate) status: String,
+    pub(crate) valid_from_utc: String,
+    pub(crate) valid_until_utc: RequiredNullable<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub(crate) struct KeyRevocation {
-    authority_registry_receipt_id: String,
-    compromise_at_utc: RequiredNullable<String>,
-    effective_at_utc: String,
-    key_id: String,
-    predecessor_registry_receipt_id: String,
-    reason_code: String,
-    replacement_key_id: RequiredNullable<String>,
-    role: String,
-    scope: String,
+    pub(crate) authority_registry_receipt_id: String,
+    pub(crate) compromise_at_utc: RequiredNullable<String>,
+    pub(crate) effective_at_utc: String,
+    pub(crate) key_id: String,
+    pub(crate) predecessor_registry_receipt_id: String,
+    pub(crate) reason_code: String,
+    pub(crate) replacement_key_id: RequiredNullable<String>,
+    pub(crate) role: String,
+    pub(crate) scope: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

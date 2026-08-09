@@ -105,6 +105,7 @@ test("keeps primitive parity documented without claiming graph authority", () =>
   for (const text of [contractReadme, inventory, authority]) {
     assert.match(text, /vnext-rust-signature-primitive-parity\.md/u);
   }
-  assert.match(inventory, /authority-graph, offline-bundle, and truthful-projection parity remain\s+incomplete/u);
-  assert.match(authority, /Rust primitive parity\s+does not narrow those non-claims/u);
+  assert.match(inventory, /complete authority graph now has an independent strict Rust implementation/u);
+  assert.match(inventory, /Rust offline-bundle and truthful-projection parity remain incomplete/u);
+  assert.match(authority, /Rust graph parity does not narrow those\s+non-claims/u);
 });

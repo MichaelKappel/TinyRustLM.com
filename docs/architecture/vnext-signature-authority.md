@@ -7,13 +7,13 @@ for reconstructing trusted vNext authority from canonical receipt and subject
 bytes. It does not discover trust over the network and does not accept a public
 key merely because a receipt embeds it.
 
-`rust/crates/tinyrustlm-evidence` now independently implements only the exact
-canonical-payload and strict Ed25519 primitive described under Signature
-Binding. Its frozen public-only vectors prove primitive byte, hash, result, and
-rejection-code parity. They do not implement or prove the registry chain,
-revocation, compromise, replay, subject linkage, temporal currentness, or
-offline closure described elsewhere in this document. See
-`docs/architecture/vnext-rust-signature-primitive-parity.md`.
+`rust/crates/tinyrustlm-evidence` now independently implements both the exact
+canonical-payload Ed25519 primitive and this complete bounded authority graph.
+Its frozen public-only vectors prove primitive and graph byte, hash, result,
+and rejection-code parity, including registry succession, revocation,
+compromise, replay, subject linkage, and temporal currentness. See
+`docs/architecture/vnext-rust-signature-primitive-parity.md` and
+`docs/architecture/vnext-rust-authority-graph-parity.md`.
 
 ## Inputs
 
@@ -106,9 +106,9 @@ deciding whether a transport bundle is exact. The paired
 membership, receipt-parent closure, linked-subject checks, and target-current
 admission before returning an offline result.
 
-The combined Node checkpoint still lacks Rust authority-graph and offline-bundle
-parity and does not prove browser parity, actual observer independence,
-production key custody, trusted production time, redaction/secret scans,
-production entry-point cutover, or campaign completion. Rust primitive parity
-does not narrow those non-claims. No model, browser, MemoryEndpoints, P2P,
-catalog, package, site, or release counter changes from these tests.
+The combined checkpoint still lacks Rust offline-bundle parity and does not
+prove browser parity, actual observer independence, production key custody,
+trusted production time, redaction/secret scans, production entry-point
+cutover, or campaign completion. Rust graph parity does not narrow those
+non-claims. No model, browser, MemoryEndpoints, P2P, catalog, package, site, or
+release counter changes from these tests.

@@ -265,6 +265,12 @@ vector corpus has SHA-256
 This is cryptographic primitive parity, not authority-graph, revocation,
 nonce-replay, offline-bundle, release, or campaign parity. See
 `docs/architecture/vnext-rust-signature-primitive-parity.md`.
+The same crate independently verifies the complete bounded authority graph,
+including every signable non-receipt subject family. Its public-only
+434,761-byte corpus has SHA-256
+`f816fe3b2e76520ce7f6f1c71f1840540f4f3a0cc16b3548ec710db39670b1bb`
+and freezes nine accepted results plus 26 exact hostile rejection codes. See
+`docs/architecture/vnext-rust-authority-graph-parity.md`.
 
 `tinyrustlm/tools/vnext-campaign-artifact-store.js` persists only exact
 campaign-plan and projection-result wires under raw-byte SHA-256 paths. Its
@@ -296,12 +302,12 @@ complete member set. `docs/architecture/vnext-offline-verification-bundle.md`
 defines the exact boundary.
 
 This remains primarily a Node implementation checkpoint. Exact campaign-plan
-finalization, semantic currentness, and the Ed25519 primitive have independent
-Rust parity, exact plan/projection-result persistence is implemented, and plan
-finalization/validation has a generated real-browser WASM boundary. Signature
-authority-graph and offline-bundle evaluation, truthful projection, browser
-currentness, and the broader hostile corpus do not yet have cross-language
-parity. This is not production
+finalization, semantic currentness, the Ed25519 primitive, and the complete
+signature authority graph have independent Rust parity. Exact
+plan/projection-result persistence is implemented, and plan
+finalization/validation has a generated real-browser WASM boundary. Offline
+bundle evaluation, truthful projection, browser currentness, and the broader
+hostile corpus do not yet have cross-language parity. This is not production
 entry-point cutover, outside-network observation, or campaign evidence. Runtime tests
 generate ephemeral private keys only in process memory. Checked-in profiles
 and vectors contain public material only.
