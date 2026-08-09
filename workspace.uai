@@ -1,7 +1,7 @@
 profile: tinyrustlm.source-workspace.v287
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-09T22:06:41Z
+updated_utc: 2026-08-09T22:36:30Z
 
 credit_window_handoff_2026_08_09:
   authority: This is the newest private operational account. Read it before the older current-workspace block and dated history; it changes no historical receipt or campaign fact.
@@ -25,7 +25,7 @@ credit_window_handoff_2026_08_09:
     MiniModel.org: Release 1.0.0 exact closure and full green source gate are ready but publication has not started; closure contains zero model bytes.
     Runtime.MiRust.com: Redirect behavior was observed, but no new immutable publication receipt exists and its FileZilla profile is misbound to the TinyRustLM.MiRust.com root.
     MiRust.com: Pushed source is bounded metadata/governance only and is not a complete deployable WordPress production snapshot; no publication was attempted.
-    LMComposer.com: Live redirect was observed, but E:\Source\Rust\LMComposer.com has no Git repository or remote and therefore cannot be checked in until source-control enrollment exists.
+    LMComposer.com: Private repository `MichaelKappel/LMComposer.com` now owns the complete redirect source on `main`; initial closure commit `4871f23f3a6d1669dbd7f82efdc86b9d4120d55b` passed 4/4 contract tests and a zero-finding 17-file secret scan, and handoff head `36d6389fe82b0f53c4d8951aa6af5cb896fd8bf6` is pushed and upstream-exact. Live redirect observation still is not a publication receipt.
   exact_resume_order:
     - Verify every named Git repository is clean and upstream-exact; verify no deployment process is running.
     - From the TinyRustLM.MiRust.com clean release clone run `& .\tools\deploy-site.ps1 -Publish -ResumeNonce efa18f6e4a5a`; authenticate the remote prefix before appending.
@@ -60,7 +60,7 @@ current_workspace_handoff:
     commit_cadence: Commit and push every coherent major change as soon as its affected build and checks are healthy. Do not hold a valid checkpoint for unrelated future perfection.
     deployment_cadence: Publish each affected site promptly when its complete affected release gate passes. Internal-only changes with no deployable site-byte delta still require commit and push but do not fabricate a new site release. Preserve any failing gate as a blocker.
     pushed_site_policy_commits: `MiniModel.MiRust.com=f462195e7af2b08f08edcd190d848560495cd287`, `MiniModel.org=6718981631e6e6a5efcd9b5d44216d1cfc6c4083`, `MiRust.com=b3dcbb90337d3e19a3da09c9b575aa5cc963c09b`, `Runtime.MiRust.com=8cb141dc9c0387c5fcf37e6f7dbc9af83352fa6e`, and `TinyRustLM.MiRust.com=5ebbf32f31b54a3cc9637008d7020b46f832064c`; each is remote-exact on `master`.
-    local_checkout_boundary: The six tracked `E:\Source\Rust\{site}\.uai\totem.uai` files are read-only to the current `PLUTO\AI` process because those checkouts are owned by another Windows identity. The policy commits were made through fresh writable clones without modifying or replacing the protected checkouts. `LMComposer.com` has a local policy file but no Git repository or remote, so it remains a source-control blocker. The authoritative TinyRustLM policy is updated in this active worktree.
+    local_checkout_boundary: Protected pre-existing site checkouts owned by another Windows identity remain untouched; authoritative changes use clean writable release clones. `LMComposer.com` is now independently writable, source-controlled at `MichaelKappel/LMComposer.com`, and pushed on `main`. The authoritative TinyRustLM policy is updated in this active worktree.
   cold_start_order:
     - Read this `current_workspace_handoff` block.
     - Read `version_authority`, the first current authorities under `active_product`, and `deploy_gate`.
@@ -434,7 +434,7 @@ current_workspace_handoff:
     - The current `PLUTO\AI` process cannot write the six existing `E:\Source\Rust\{site}\.uai\totem.uai` files because those checkouts grant write access to other Windows identities only. Remote policy commits are authoritative and exact; protected local checkouts remain stale until their owner updates permissions or refreshes them. Do not delete or replace those files to bypass the ACL.
   related_site_account:
     inventory_scope: Direct site roots under `E:\Source\Rust`; current routing lives in the mutable `E:\Source\Rust\workspace.uai`, while the bounded public observations below are dated 2026-08-09. A live response, source commit, package version, HTTP Last-Modified value, and immutable publication receipt are different evidence classes and are labeled separately below.
-    LMComposer.com: Retired alias. The local root now contains `.uai/totem.uai` with policy `site-family-documentation-integrity-v1`, but it has no Git repository or remote. Production responds with a redirect to TinyRustLM.com. Last publication is unknown because no immutable site release ledger exists; source-control enrollment remains blocked.
+    LMComposer.com: Retired alias. Private repository `MichaelKappel/LMComposer.com` on `main` now contains the complete bounded redirect package, tests, version/update metadata, totem, taboo, and restart memory at pushed head `36d6389fe82b0f53c4d8951aa6af5cb896fd8bf6`. Production responds with a redirect to TinyRustLM.com. Last publication remains unknown because no immutable site release ledger exists; source control is complete but deployment is unclaimed.
     MiniModel.MiRust.com: Active documentation-first MiniModel developer and protocol reference. Remote `master` is policy commit `f462195e7af2b08f08edcd190d848560495cd287`; the protected local checkout remains at `3c5f9e28c48fd2b843f58df91accc5579a3270a5` until its owner refreshes it. The prior observed live root was byte-identical to that older local commit and returned Last-Modified `2026-07-12T22:33:49Z`; this is not publication authority and the new policy commit is not claimed deployed.
     MiniModel.org: Active catalog and direct-P2P discovery surface with required user, developer, and operator documentation; it must never proxy model bytes. Remote `master` is policy commit `6718981631e6e6a5efcd9b5d44216d1cfc6c4083`; the protected local checkout remains at `693c50f0fa2a82fd502dfc9d38c0e140531850da`. Full Rust and Node gates expose the recorded pre-existing hash-drift failures, so publication is blocked and the policy commit is not claimed deployed.
     MiRust.com: Active documentation, evidence, marketing, architecture, research, and governance authority. Remote `master` is policy commit `b3dcbb90337d3e19a3da09c9b575aa5cc963c09b`; the protected local checkout remains at `6dd665033c1d3a8ef907ee3140707a6fcb4c0357`. The live footer still reports latest content update `2026-06-25T16:42:00Z` and Theme/Core `2.3.0`; no new deployment is claimed and no immutable release ledger exists.
