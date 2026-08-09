@@ -49,13 +49,13 @@ reprojection, disk-full tests, and exact 271-receipt/40-subject synthetic capaci
 
 These later local facts close the named cross-runtime implementation gaps only.
 They do not close archive-member scanning, protected production secret-list
-custody, operational entry-point cutover and deletion of the superseded
-mutable runner, final
+custody, operational final-attestation/release/dashboard/public-readback
+cutover, final
 attestation and release integration, authorized live MemoryEndpoints
 continuity, independent outside-network lane proofs, catalog publication, or
 public HTTPS readback. No local test changes a campaign counter.
 
-Reviewed at `2026-08-09T12:46:06Z`. The review is invalidated when any bound
+Reviewed at `2026-08-09T13:09:29Z`. The review is invalidated when any bound
 file changes, when the parser changes, or when a deferred proof obligation is
 reclassified without a new threat review.
 
@@ -270,9 +270,9 @@ production entry-point cutover, independent operation, or campaign evidence.
 
 Phase 2 closed after the bound hashes, this review, focused tests, complete unit
 suite, source hygiene, secret scan, and remote push were current in one
-checkpoint. The current next boundary is operational entry-point cutover to
-the sole Rust-backed runner, clean deletion of the superseded mutable runner,
-and binding of only a fresh runner result into final attestation, release
+checkpoint. The superseded mutable runner is deleted without an alias or
+compatibility entry point. The current next boundary is binding only a fresh
+sole-runner result into final attestation, release
 authorization, operator rendering, documentation, and public readback.
 Windows directory durability, archive-member scanning, and protected-list
 release custody remain separate prerequisites for their corresponding claims.

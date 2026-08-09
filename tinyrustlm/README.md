@@ -257,9 +257,8 @@ Fast browser and campaign checks:
 
 ```powershell
 npm --prefix tinyrustlm run test:browser-contract
-node --test tinyrustlm/tests/dogfood-campaign.test.js tinyrustlm/tests/dogfood-campaign-runner.test.js
+node --test tinyrustlm/tests/dogfood-campaign.test.js tinyrustlm/tests/vnext-campaign-runner.test.js
 node --test tinyrustlm/tests/campaign-evidence-dashboard.test.js
-node --test tinyrustlm/tests/vnext-campaign-runner.test.js
 ```
 
 The vNext runner command is a local verifier conformance gate. It snapshots

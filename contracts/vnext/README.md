@@ -349,9 +349,10 @@ real-browser WASM boundary exposes plan, currentness, projection, and result
 validation with exact frozen-corpus parity. One bounded local runner now
 performs exact cross-store snapshots, Rust-backed projection, immutable
 operation history, interruption recovery, and concurrent-operation exclusion.
-Operational entry-point cutover and deletion of the superseded mutable runner
-remain incomplete. This is not outside-network observation or live campaign
-evidence. Runtime tests
+The superseded mutable runner and its test are deleted without an alias or
+compatibility entry point. Operational final-attestation, release,
+dashboard/operator, and public-readback cutover remains incomplete. This is
+not outside-network observation or live campaign evidence. Runtime tests
 generate ephemeral private keys only in process memory. Checked-in profiles
 and vectors contain public material only.
 

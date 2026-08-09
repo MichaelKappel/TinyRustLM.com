@@ -198,9 +198,13 @@ gates.
 
 ```powershell
 npm --prefix tinyrustlm run test:browser-contract
-node --test tinyrustlm/tests/dogfood-campaign.test.js tinyrustlm/tests/dogfood-campaign-runner.test.js
+node --test tinyrustlm/tests/dogfood-campaign.test.js tinyrustlm/tests/vnext-campaign-runner.test.js
 cargo run -p tinyrustlm-browser-harness -- .\tinyrustlm
 ```
+
+Campaign projection uses only the Rust-backed vNext runner documented in
+`../../docs/architecture/vnext-campaign-runner.md`; there is no mutable or
+compatibility runner.
 
 The JavaScript tests cover graph drift, missing graph requests, strict network
 allowlisting, secret encodings, hosted-memory refusal, profile evidence,

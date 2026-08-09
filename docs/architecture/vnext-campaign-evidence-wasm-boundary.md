@@ -229,8 +229,9 @@ the focused set was rerun, and only then did the complete rerun pass.
   bounded receipt and subject stores to this ABI, persists exact immutable
   operation and projection history, and reprojects exact current inputs on
   every new operation or byte-identical interruption resume.
-- Cut production campaign entry points over to that sole runner and delete the
-  superseded mutable runner without aliases or compatibility behavior.
+- The superseded mutable runner is deleted without aliases or compatibility
+  behavior. Cut final-attestation, release, dashboard/operator, and public
+  readback entry points over to fresh sole-runner results.
 - Bind only the reprojected result into final attestation, release
   authorization, operator rendering, synchronized documentation, and public
   readback.

@@ -207,7 +207,7 @@ Create-only public subject persistence is documented in
 The sole exact cross-store Rust-backed campaign runner is documented in
 `docs/architecture/vnext-campaign-runner.md`.
 
-Remaining archive-member scanning, production entry-point cutover and clean
-deletion of the superseded runner, projection release integration, and
-external campaign evidence remain incomplete.
+The superseded mutable runner is deleted. Remaining archive-member scanning,
+final-attestation/release/dashboard/public-readback cutover, projection release
+integration, and external campaign evidence remain incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.

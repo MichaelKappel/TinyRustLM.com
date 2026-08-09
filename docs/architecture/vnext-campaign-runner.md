@@ -11,7 +11,7 @@ conformance is `tinyrustlm/tests/vnext-campaign-runner.test.js`.
 This checkpoint implements deterministic local orchestration over already
 validated campaign stores. It is not a release authorization, public status
 endpoint, live campaign receipt, independent observer, MemoryEndpoints
-connection, catalog announcement, or production entry-point cutover. Campaign
+connection, catalog announcement, or operational release-surface cutover. Campaign
 counters remain 0/20, 0/50, 0/25, 0/40, and 0/20.
 
 ## Authority Boundary
@@ -173,8 +173,10 @@ capacity only. It does not increment or predict any live campaign counter.
 
 ## Remaining Work
 
-- Cut every operational campaign entry point over to this one runner and
-  delete the superseded mutable runner path in the same verified change.
+- The superseded mutable runner and its isolated test are deleted without an
+  alias, fallback, compatibility reader, or second truth path. Cut remaining
+  final-attestation, release, dashboard/operator, and public-readback entry
+  points over to fresh results from this runner.
 - Bind only a freshly returned projection operation into final attestation,
   release authorization, operator status, synchronized documentation, and
   public readback.

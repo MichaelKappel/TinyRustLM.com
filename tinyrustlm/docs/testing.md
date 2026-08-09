@@ -12,7 +12,7 @@ From the repository root:
 npm --prefix tinyrustlm run test:browser-contract
 node --test tinyrustlm/tests/model-acquisition-v2.test.js tinyrustlm/tests/companion-bridge.test.js
 node tinyrustlm/tools/web-release-local-smoke.js <new-output-directory>
-node --test tinyrustlm/tests/dogfood-campaign.test.js tinyrustlm/tests/dogfood-campaign-runner.test.js
+node --test tinyrustlm/tests/dogfood-campaign.test.js tinyrustlm/tests/vnext-campaign-runner.test.js
 node --test tinyrustlm/tests/campaign-evidence-dashboard.test.js
 ```
 
@@ -50,6 +50,10 @@ The campaign tests cover:
 - current composition-bound native evaluation;
 - resumable attempts without overwriting failures.
 
+The sole current campaign projection runner is the Rust-backed vNext boundary
+documented in `../../docs/architecture/vnext-campaign-runner.md`. The deleted
+mutable runner has no compatibility entry point.
+
 The dashboard tests require `tinyrustlm/campaign-fault-plan.v1.json`, because
 release progress includes all 24 canonical fault cases. The dashboard derives
 counts from validated receipts and cannot be advanced by a mutable Boolean.
@@ -82,7 +86,7 @@ For touched browser tools:
 
 ```powershell
 node --check tinyrustlm/tools/dogfood-campaign.js
-node --check tinyrustlm/tools/dogfood-campaign-runner.js
+node --check tinyrustlm/tools/vnext-campaign-runner.js
 node --check tinyrustlm/tools/fresh-browser-conversation.js
 node --check tinyrustlm/tools/browser-round-evidence.js
 node --check tinyrustlm/tools/run-browser-round.js

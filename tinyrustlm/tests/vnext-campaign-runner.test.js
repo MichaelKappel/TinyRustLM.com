@@ -204,18 +204,28 @@ test("freezes one no-compatibility Rust-backed campaign runner profile", () => {
   assert.doesNotMatch(bytes.toString("utf8"),
     /fallback|migration|deprecated|alias|dual-reader|dual-writer/iu);
   assert.doesNotMatch(source, /projectVnextCampaign|\.resumeProjection\(|Date\.now/gu);
+  assert.doesNotMatch(source, /\brunCampaign\b/gu);
   assert.match(source, /instantiateCampaignEvidence\(wasmModuleBytes\)/u);
+  assert.equal(fs.existsSync(path.join(
+    repositoryRoot, "tinyrustlm", "tools", "dogfood-campaign-runner.js"
+  )), false);
+  assert.equal(fs.existsSync(path.join(
+    repositoryRoot, "tinyrustlm", "tests", "dogfood-campaign-runner.test.js"
+  )), false);
   const documentationPaths = [
     "contracts/vnext/README.md",
     "docs/architecture/adr/ADR-011-campaign-evidence-browser-boundary.md",
     "docs/architecture/vnext-campaign-evidence-wasm-boundary.md",
     "docs/architecture/vnext-contract-inventory.md",
     "docs/architecture/vnext-contract-threat-review.md",
-    "tinyrustlm/README.md"
+    "tinyrustlm/README.md",
+    "tinyrustlm/docs/browser-runtime.md",
+    "tinyrustlm/docs/testing.md"
   ];
   for (const documentationPath of documentationPaths) {
     const documentation = fs.readFileSync(path.join(repositoryRoot, documentationPath), "utf8");
     assert.match(documentation, /vnext-campaign-runner\.md/u, documentationPath);
+    assert.doesNotMatch(documentation, /dogfood-campaign-runner/u, documentationPath);
   }
   const runnerDocument = fs.readFileSync(path.join(
     repositoryRoot,
