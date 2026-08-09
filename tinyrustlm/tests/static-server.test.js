@@ -13,10 +13,9 @@ const {
 const {
   validateWebDeploymentManifest
 } = require("../tools/web-deployment-manifest.js");
-const { materializeReleasePublication } = require("../tools/site-release-contract.js");
+const { materializeSourceReleaseAt } = require("./site-release-test-fixture.js");
 
 const siteRoot = path.resolve(__dirname, "..");
-const ledgerPath = path.join(siteRoot, "release", "site-release-ledger.v1.json");
 
 function request(origin, pathname, method = "GET") {
   return new Promise((resolve, reject) => {
@@ -41,8 +40,7 @@ function request(origin, pathname, method = "GET") {
 test("loopback release server exposes only exact manifest public artifacts", async (context) => {
   const generatedRoot = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-static-release-"));
   context.after(() => fs.rmSync(generatedRoot, { recursive: true, force: true }));
-  materializeReleasePublication({
-    ledgerPath,
+  materializeSourceReleaseAt({
     outputRoot: generatedRoot,
     sourceRevision: "2".repeat(40),
     publishedAt: "2026-08-02T23:00:00.000Z"
