@@ -11,7 +11,7 @@ claim, a release, a model qualification, a browser campaign round, a live
 MemoryEndpoints continuity result, an outside-network P2P proof, or a catalog
 announcement.
 
-Reviewed at `2026-08-09T02:51:02Z`. The review is invalidated when any bound
+Reviewed at `2026-08-09T04:19:59Z`. The review is invalidated when any bound
 file changes, when the parser changes, or when a deferred proof obligation is
 reclassified without a new threat review.
 
@@ -19,19 +19,26 @@ reclassified without a new threat review.
 
 | Role | Path | Bytes | SHA-256 |
 | --- | --- | ---: | --- |
-| Frozen registry | `contracts/vnext/contract-family.v1.json` | 37,361 | `432188d01b5ad7c7cd535d7df4924627ec288eb8be15c251e09dd949ed767818` |
-| Language-neutral corpus | `contracts/vnext/contract-corpus.v1.json` | 122,628 | `d0eaf1dc0295c21877581381120649d744ec0ba2cd5d9495fabdc293083889e7` |
+| Frozen registry | `contracts/vnext/contract-family.v1.json` | 37,287 | `e9f8c4d511bf1fe398f0e75d43dfb01a68acb996d99554cc8f5bf167084f1b2a` |
+| Language-neutral corpus | `contracts/vnext/contract-corpus.v1.json` | 124,485 | `6c551849404a364dee14cda3270869fc0aebdeea4d171fb306d6b0f0110d774c` |
 | Registry interpreter | `tinyrustlm/tools/vnext-contract-validator-registry.js` | 29,900 | `d60d9b86be75e9cb17b81b043baabf19d74de80dadb23241d733bec6261ceabc` |
-| Independent validator | `tinyrustlm/tools/vnext-contract-validator-independent.js` | 41,857 | `607f1986e8acaa14c877860d317dde87900870964dbb2415b07f7b11eccceaba` |
-| Corpus generator | `tinyrustlm/tools/vnext-contract-corpus-generator.js` | 20,409 | `bbe300a6678dae17c247ff1cacbb3f2f5467fc71757df91642c5885c1108b9fe` |
-| Differential tests | `tinyrustlm/tests/vnext-contract-validator-conformance.test.js` | 10,581 | `b0ce4331f04138b2a94c94b46b0f34aee320ea519f173de8eef2e00b46d6107f` |
+| Independent validator | `tinyrustlm/tools/vnext-contract-validator-independent.js` | 41,771 | `dd639a03c28b98f4902770cfc54c4c268fce19967d9c484bbc7d1f7d110d4559` |
+| Corpus generator | `tinyrustlm/tools/vnext-contract-corpus-generator.js` | 20,504 | `5ed85cd9ae53845a032b96b626d1d681f6d3e2a0f99cc80584a59fd7947fc415` |
+| Differential tests | `tinyrustlm/tests/vnext-contract-validator-conformance.test.js` | 10,585 | `f67578bac0f28bd0a00b6103d948a957f0f612fe39fb4f5cf96dd1fac1e79edc` |
 
 Validator identities are
 `tinyrustlm.vnext.registry-schema-validator.v1` and
 `tinyrustlm.vnext.independent-schema-validator.v1`. The corpus binds the
-registry and normalized generator source hashes. It contains 69 exact raw-byte
-cases: 14 accept cases and 55 reject cases. Both validators execute every case,
-for 138 differential verdicts.
+registry and normalized generator source hashes. It contains 70 exact raw-byte
+cases: 14 accept cases and 56 reject cases. Both validators execute every case,
+for 140 differential verdicts.
+
+The first proof schema was replaced before production because it embedded a
+signature-envelope ID while that envelope signed the proof ID. Those two
+content-addressed objects formed an unresolvable cycle. The sole accepted proof
+schema is now `tinyrustlm.vnext.outside_proof.v2`; it contains no signature
+pointer, and a separately verified signature receipt becomes its descendant.
+The old schema is rejected rather than aliased or migrated.
 
 ## Security Objective
 
@@ -75,7 +82,8 @@ verified by later phases.
 | Malformed or disguised text | Fatal UTF-8, BOM rejection, scalar checks, bounded text and string rules | Mitigated locally | Rust/browser parity remains unproved |
 | Parser exhaustion | Byte, depth, entry, member, array, string, aggregate-string, and number-character limits | Mitigated locally | Wall-clock and allocation ceilings require measured native/browser tests |
 | Numeric identity drift | Unsafe integers, negative zero, overflow, underflow, and floats are rejected where unsupported | Mitigated locally | Cross-language RFC 8785 serialization remains deferred |
-| Schema confusion or downgrade | Only nine exact `tinyrustlm.vnext.*.v1` schemas are accepted | Mitigated locally | Production cutover and deletion of superseded entry points remain deferred |
+| Schema confusion or downgrade | Only the nine exact registry-listed schemas are accepted, including proof v2 and no proof v1 alias | Mitigated locally | Production cutover and deletion of superseded entry points remain deferred |
+| Proof/signature identity cycle | Proof v2 has no envelope-ID field; the signature receipt points one way to the finalized proof | Mitigated by incompatible replacement | Signature-descendant existence and authority remain deferred |
 | Unknown-field smuggling | Root and every nested object are closed; property tests inject unknown fields at every reachable object depth | Mitigated locally | New fields require a new frozen registry and review |
 | Missing-field defaulting | Every declared field is required; property tests delete every root field | Mitigated locally | Nested required-field deletion is covered by exact descriptors and corpus examples, not exhaustive combinatorics |
 | Validator common-mode error | One implementation interprets the registry; the other hard-codes separately written schema logic and cannot read the registry | Reduced | Both use the same strict parser and JavaScript runtime, so parser/runtime common-mode risk remains |
@@ -111,7 +119,8 @@ conformance against the same raw corpus.
 The checked-in corpus covers all nine accepted contract classes and parser-only
 rejections. It includes valid artifact, receipt security subtypes, context,
 worker, companion, P2P, proof, release, and claim records. Hostile cases cover
-unknown and missing fields, dated or unknown schemas, duplicate keys, malformed
+unknown and missing fields, the rejected cyclic proof signature field, dated
+or unknown schemas, duplicate keys, malformed
 UTF-8, BOMs, unsafe numbers, trailing content, excessive nesting, semantic
 state drift, invalid routes and URLs, authority mistakes, worker/companion
 state mistakes, P2P piece and Merkle drift, proof expiry, and release/claim
@@ -151,6 +160,15 @@ Any caller needing one of these properties must fail closed until the specific
 later-phase verifier returns objective evidence. A deferred invariant is never
 a warning-level pass.
 
+The later Phase 3 Node work now includes canonical identity finalization,
+public-key Ed25519 payload verification, and a bounded trusted authority graph
+verifier with explicit root/terminal pins, predecessor-authenticated registry
+succession, key continuity, signed revocation, stale-registry rejection,
+nonce replay rejection, and separate historical/current results. That work is
+outside this Phase 2 PASS. It does not close offline-bundle membership,
+redaction, Rust/browser parity, production entry-point cutover, independent
+observer operation, or any campaign gate.
+
 ## No-Compatibility Decision
 
 The new validator boundary has no old schema aliases, migration adapters,
@@ -168,9 +186,10 @@ At review time:
 
 - `node --test tests/vnext-contract-registry.test.js tests/vnext-contract-validator-conformance.test.js`
   passed 13, failed 0, skipped 0.
-- The final complete `npm run test:unit` run passed 669, failed 0, skipped 0,
-  including real Chromium fault and local web-release smoke scenarios.
-- Both validators produced the expected verdict for all 69 corpus records.
+- The final complete `npm run test:unit` run passed 739, failed 0, skipped 0,
+  in 62.977 seconds, including real Chromium fault and local web-release smoke
+  scenarios.
+- Both validators produced the expected verdict for all 70 corpus records.
 - The test suite verifies source independence, corpus regeneration identity,
   the registry interpreter's three-way invariant partition, object-key order
   independence, required root fields, and nested unknown-field rejection.

@@ -25,7 +25,7 @@ const schemas = Object.freeze({
   worker: "tinyrustlm.vnext.worker_message.v1",
   companion: "tinyrustlm.vnext.companion_message.v1",
   p2p: "tinyrustlm.vnext.p2p_manifest.v1",
-  proof: "tinyrustlm.vnext.outside_proof.v1",
+  proof: "tinyrustlm.vnext.outside_proof.v2",
   release: "tinyrustlm.vnext.release_manifest.v1",
   claim: "tinyrustlm.vnext.claim.v1"
 });
@@ -242,7 +242,6 @@ function validDocuments() {
     observedAtUtc: "2026-08-09T00:01:00Z",
     issuedAtUtc: "2026-08-09T00:01:01Z",
     expiresAtUtc: "2026-08-09T01:01:01Z",
-    signatureEnvelopeId: ids[10],
     redaction
   };
   const release = {
@@ -431,6 +430,7 @@ function buildCases() {
   rejectValue("reject-proof-expiry-policy", "proof", valid.proof, (value) => { value.expiresAtUtc = "2026-08-11T00:01:01Z"; });
   rejectValue("reject-proof-issued-before-observed", "proof", valid.proof, (value) => { value.issuedAtUtc = "2026-08-08T00:00:00Z"; });
   rejectValue("reject-proof-route-order", "proof", valid.proof, (value) => { value.checkedRoutes.reverse(); });
+  rejectValue("reject-proof-cyclic-signature-field", "proof", valid.proof, (value) => { value.signatureEnvelopeId = ids[10]; });
   rejectValue("reject-release-date", "release", valid.release, (value) => { value.releaseDate = "2026-08-08"; });
   rejectValue("reject-release-parent-order", "release", valid.release, (value) => { value.artifactManifestIds = [ids[2], ids[1]]; });
   rejectValue("reject-claim-published-without-evidence", "claim", valid.claim, (value) => { value.status = "published"; });

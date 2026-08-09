@@ -83,7 +83,7 @@ test("keeps the exact language-neutral corpus reproducible and content bound", (
   assert.equal(corpus.schema, corpusSchema);
   assert.equal(corpus.encoding, "base64-raw-json");
   assert.equal(corpus.caseCount, corpus.cases.length);
-  assert.equal(corpus.cases.length, 69);
+  assert.equal(corpus.cases.length, 70);
   assert.equal(bytes.toString("utf8"), buildCorpusText());
   assert.equal(corpus.registrySha256, sha256(fs.readFileSync(registryPath)));
 
@@ -176,7 +176,7 @@ test("makes both validators agree with every expected corpus verdict", () => {
   }
 
   assert.equal(accepted, 14);
-  assert.equal(rejected, 55);
+  assert.equal(rejected, 56);
   assert.deepEqual([...acceptedClasses].sort(), [...contractsByClass.keys()].sort());
   assert.deepEqual([...rejectedClasses].sort(), [
     "artifact", "claim", "companion", "context", "p2p", "parser", "proof",
@@ -230,7 +230,7 @@ test("reports cryptographic and cross-receipt proof obligations as deferred", ()
   const result = validateVnextSchemaWithRegistry(Buffer.from(proofCase.payloadBase64, "base64"));
   assert.ok(result.deferredInvariants.includes("proof-id-domain-hash"));
   assert.ok(result.deferredInvariants.includes("complete-transfer-matches-p2p-artifact"));
-  assert.ok(result.deferredInvariants.includes("observer-signature-parent-required"));
+  assert.ok(result.deferredInvariants.includes("observer-signature-descendant-required"));
   assert.equal(result.checkedInvariants.includes("complete-transfer-matches-p2p-artifact"), false);
 });
 

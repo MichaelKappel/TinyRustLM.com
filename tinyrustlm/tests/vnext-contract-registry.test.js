@@ -255,6 +255,9 @@ test("binds signing, context provenance, redaction, and public claims explicitly
   assert.equal(field(records.authorityKey, "publicKey").type, "ed25519-public-key");
   assert.ok(field(records.signatureEnvelope, "role").values.includes("release-authorizer"));
   assert.ok(field(records.signatureEnvelope, "role").values.includes("outside-network-observer"));
+  assert.equal(field(contracts.proof, "signatureEnvelopeId"), undefined);
+  assert.ok(contracts.proof.invariants.includes("observer-signature-descendant-required"));
+  assert.equal(contracts.proof.invariants.includes("observer-signature-parent-required"), false);
 
   for (const contextField of [
     "sourceKind", "sourceRecordIds", "sourceReceiptIds",
@@ -330,7 +333,7 @@ test("contains no extension, fallback, migration, or dated-schema acceptance fie
   assert.doesNotMatch(text, /(?:extensions|fallback|legacy|migration|previousSchema|supportedVersions)/iu);
   const declaredSchemas = [value.schema, ...value.contracts.map((contract) => contract.schema)];
   for (const schema of declaredSchemas) {
-    assert.match(schema, /^tinyrustlm\.vnext\.[a-z0-9_.-]+\.v1$/u);
+    assert.match(schema, /^tinyrustlm\.vnext\.[a-z0-9_.-]+\.v[1-9][0-9]*$/u);
     assert.doesNotMatch(schema, /^tinyrustlm\.vnext\.20\d{2}[._-]/u);
   }
 });

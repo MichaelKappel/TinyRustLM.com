@@ -1,7 +1,7 @@
 {
   "schema": "tinyrustlm.vnext.receipt_identity_vectors.v1",
-  "registrySha256": "432188d01b5ad7c7cd535d7df4924627ec288eb8be15c251e09dd949ed767818",
-  "receiptStoreProfileSha256": "6a36e083194682d727ec5b0321a6afd649b3b1c944b979767eaba3633a1c6265",
+  "registrySha256": "e9f8c4d511bf1fe398f0e75d43dfb01a68acb996d99554cc8f5bf167084f1b2a",
+  "receiptStoreProfileSha256": "b5178348984457cfa62af7c95b0908d17523dd7fc9eae3da4af050b30058c013",
   "generatorSourceSha256": "fbd2db2666f3e15a817db790f3a7d38658eadfdf0fe656ad9ff4d178419dba55",
   "encoding": "base64-raw-utf8",
   "jcsProfile": "RFC8785-JCS",

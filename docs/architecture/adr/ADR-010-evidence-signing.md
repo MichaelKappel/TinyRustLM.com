@@ -2,11 +2,11 @@
 
 ## Status
 
-Accepted as the target architecture. Canonical receipt hashing, selected
-Ed25519 verification, and bounded duplicate-aware parsing of the three raw
-release-authorization inputs exist locally; the complete canonicalization,
-role, rotation, revocation, and offline-verification profile is not yet
-promoted.
+Accepted as the target architecture. Canonical identity, public-key Ed25519
+payload verification, and a bounded Node authority/registry/revocation graph
+verifier exist locally. Cross-language parity, offline-bundle closure,
+production entry-point cutover, independent observer operation, key custody,
+and release promotion remain incomplete.
 
 ## Decision Date
 
@@ -50,6 +50,11 @@ receipts that bind the content receipt ID, schema, role, campaign/release
 scope, signer and key IDs, issue/expiry times, nonce, authority-registry hash,
 and exact signed-payload SHA-256. Adding or rotating a signature never mutates
 the evidence receipt.
+
+The outside-proof content contract therefore contains no signature-envelope
+ID. The proof is finalized first; a separate signature receipt points to that
+proof as a descendant. Embedding each identity in the other was rejected as an
+unresolvable content-addressing cycle.
 
 SHA-256 is the sole canonical receipt and release-graph identity. Ed25519 is
 the sole initial signature algorithm. The signed bytes are a role-specific,
@@ -134,6 +139,23 @@ authorization, quality, license, and campaign completeness.
   authorization integration suite include literal, escaped-equivalent, and
   supplementary-plane duplicate names plus malformed byte and resource-bound
   vectors.
+- **Observed local fact**: `tinyrustlm/tools/vnext-content-identity.js` validates
+  exact canonical identity-bearing document bytes through both vNext schema
+  validators and recomputes each domain-separated identity.
+- **Observed local fact**: `contracts/vnext/receipt-signature-profile.v1.json`
+  freezes role, domain, scope, subject, receipt, time, registry, revocation,
+  replay, and resource bindings. Its checked-in Ed25519 vectors contain public
+  material only.
+- **Observed local fact**: `tinyrustlm/tools/vnext-signature-authority.js`
+  requires explicit out-of-band root and terminal registry pins, authenticates
+  successor and revocation receipts with predecessor keys, enforces key
+  continuity and freshness, rejects stale-registry signing and nonce replay,
+  and reports cryptographic validity separately from current eligibility.
+- **Observed local fact**: focused Node tests cover valid root and successor
+  chains, missing and tampered governance, fork, unlinked registry, rollback,
+  key substitution, stale registry, subject binding, expiry, replay,
+  revocation, known and unknown compromise time, duplicate identities, and
+  hard input-count bounds.
 - **Sourced public fact**: RFC 8785 specifies JCS canonical JSON at
   https://www.rfc-editor.org/rfc/rfc8785.
 - **Sourced public fact**: Ed25519 is specified by RFC 8032 at
@@ -193,7 +215,8 @@ historical evidence outside the active DAG.
 ## Unknowns
 
 - Production key custody and authorized signing service for each role.
-- Trusted-time source and maximum skew for offline observers.
+- Authorized trusted-time source for offline observers; the frozen profile
+  bounds registry-declared skew but does not establish a production clock.
 - Registry publication and revocation distribution authority.
 - Whether enterprise deployments require an additional FIPS-approved
   signature profile rather than Ed25519.

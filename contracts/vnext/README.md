@@ -92,6 +92,14 @@ Signature envelopes are `tinyrustlm.vnext.receipt.v1` records with
 receipt and never elevates local, fixture, or emulated evidence into another
 evidence class.
 
+The sole proof contract is `tinyrustlm.vnext.outside_proof.v2`. The proof has
+no signature-envelope field because mutually embedding proof and signature
+receipt identities would create an unresolvable content-addressed cycle. The
+proof is finalized first. A signature-envelope receipt then names the proof ID,
+schema, canonical-content hash input, authority registry, role, scope, nonce,
+and times as a one-way descendant. Outside-proof v1 is rejected and has no
+alias or compatibility reader.
+
 ## Public Safety
 
 The default visibility is private. Only artifact metadata, receipts, P2P
@@ -169,7 +177,7 @@ Phase 2 has two intentionally different Node validators:
 
 Both consume the same checked-in language-neutral corpus of exact base64 raw
 JSON bytes. The corpus is deterministic and binds its registry and normalized
-generator-source hashes. It currently contains 69 cases: 14 accepted and 55
+generator-source hashes. It currently contains 70 cases: 14 accepted and 56
 rejected. Tests require both validators to match every expected verdict, accept
 object-key permutations, reject every missing root field, and reject an unknown
 field at every reachable object depth. The registry interpreter additionally
@@ -182,6 +190,31 @@ security review for this checkpoint. Its PASS is limited to schema and local
 invariants. It does not prove canonical identity, signatures, authority or
 revocation chains, receipt-DAG closure, redaction execution, Rust/browser
 parity, production cutover, or any campaign result.
+
+## Node Phase 3 Checkpoint
+
+`tinyrustlm/tools/vnext-content-identity.js` finalizes and validates every
+identity-bearing vNext document through both validators and exact canonical
+bytes. `tinyrustlm/tools/vnext-signature-payload.js` implements the frozen
+public-key Ed25519 primitive over role-specific domain-separated JCS bytes.
+`tinyrustlm/tools/vnext-signature-authority.js` consumes bounded canonical
+receipt and subject byte arrays, requires out-of-band root and terminal
+registry pins, authenticates successor registries and revocations through the
+predecessor release-authorizer key, rejects stale-registry signing and nonce
+replay, and evaluates compromise and currentness without network access.
+
+The authority result deliberately separates `signatureVerified`,
+`authorityAtIssue`, `temporalCurrent`, and `currentEvidenceEligible`. A valid
+historical Ed25519 signature is not current evidence when its envelope is
+expired, its terminal key is retired or revoked, its registry is not current,
+or compromise history makes it stale. `authorityGraphVerified` means the
+provided bounded graph was reconstructed and its signatures were processed;
+callers must use `currentEvidenceEligible` for current evidence admission.
+
+This is a Node implementation checkpoint, not cross-language parity, offline
+bundle closure, production entry-point cutover, outside-network observation,
+or campaign evidence. Runtime tests generate ephemeral private keys only in
+process memory. Checked-in profiles and vectors contain public material only.
 
 ## Completion Boundary
 

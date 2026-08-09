@@ -1,0 +1,35 @@
+{
+  "schema": "tinyrustlm.vnext.receipt_signature_vectors.v1",
+  "profileId": "tinyrustlm.vnext.ed25519-authority.v1",
+  "profileSha256": "5edfd501e96085fe58ef98900cfe603e094013bbc038fe7ab25ebba99e20c8d5",
+  "cases": [
+    {
+      "id": "outside-proof-valid-001",
+      "expected": "accept",
+      "publicKeyBase64": "Jqob7KVY/W3FQlGJhQ8hVKXsCBxAOq7BymbuLFIxSE4=",
+      "envelope": {
+        "algorithm": "ed25519",
+        "role": "outside-network-observer",
+        "signatureDomain": "tinyrustlm.signature.outside-network-observer.v1",
+        "signerId": "observer-vector-001",
+        "keyId": "observer-vector-key-001",
+        "authorityRegistryReceiptId": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "signedSubjectId": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "signedSchema": "tinyrustlm.vnext.outside_proof.v2",
+        "campaignId": "campaign-vector-001",
+        "releaseId": null,
+        "scope": "outside-proof",
+        "signedPayloadSha256": "91ba776c1b6df849c3dd27621ce3abc932b7d107395f0f415fb2b6bca38d7a33",
+        "nonceHash": "3333333333333333333333333333333333333333333333333333333333333333",
+        "issuedAtUtc": "2026-08-09T00:00:00.123456789Z",
+        "expiresAtUtc": "2026-08-09T01:00:00.123456789Z",
+        "signature": "covyFq/uaLCXBR3rU0cHoww9k9MINL0odfN8bRewLWMTt1Dt7vpuBnvaneTm8I9VOybnItmohyIFIglQnuD0AA=="
+      },
+      "domainPrefixBase64": "dGlueXJ1c3RsbS5zaWduYXR1cmUub3V0c2lkZS1uZXR3b3JrLW9ic2VydmVyLnYxAA==",
+      "payloadBytes": 689,
+      "payloadSha256": "0c1c9971db3aef4eeb4e151334b3288bfff077a772e2349c979f501ea37c3dab",
+      "signingBytes": 738,
+      "signingBytesSha256": "91ba776c1b6df849c3dd27621ce3abc932b7d107395f0f415fb2b6bca38d7a33"
+    }
+  ]
+}

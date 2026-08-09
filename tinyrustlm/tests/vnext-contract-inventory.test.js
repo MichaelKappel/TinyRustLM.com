@@ -16,14 +16,14 @@ const expectedSchemas = Object.freeze([
   "tinyrustlm.vnext.worker_message.v1",
   "tinyrustlm.vnext.companion_message.v1",
   "tinyrustlm.vnext.p2p_manifest.v1",
-  "tinyrustlm.vnext.outside_proof.v1",
+  "tinyrustlm.vnext.outside_proof.v2",
   "tinyrustlm.vnext.release_manifest.v1",
   "tinyrustlm.vnext.claim.v1"
 ]);
 
 test("freezes exactly nine incompatible vNext contract family names", () => {
   const text = fs.readFileSync(inventoryPath, "utf8");
-  const identifiers = [...text.matchAll(/`(tinyrustlm\.vnext\.[a-z0-9_]+\.v1)`/gu)]
+  const identifiers = [...text.matchAll(/`(tinyrustlm\.vnext\.[a-z0-9_]+\.v[12])`/gu)]
     .map((match) => match[1]);
   assert.deepEqual([...new Set(identifiers)], expectedSchemas);
   assert.match(text, /Every current identifier is historical implementation evidence only/u);
@@ -33,11 +33,11 @@ test("freezes exactly nine incompatible vNext contract family names", () => {
 
 test("records the reproducible current schema and parser-call inventory", () => {
   const text = fs.readFileSync(inventoryPath, "utf8");
-  assert.match(text, /109 source files/u);
-  assert.match(text, /215 distinct matching schema identifiers/u);
-  assert.match(text, /9,919 UTF-8 bytes/u);
-  assert.match(text, /581eee525ee30f195f0a21cd71db8d60ff275866d51cb2d236df74f638bd6d10/u);
-  assert.match(text, /77 app\/tool files contain 166 `JSON\.parse` call sites/u);
+  assert.match(text, /115 source files/u);
+  assert.match(text, /238 distinct matching schema identifiers/u);
+  assert.match(text, /10,773 UTF-8 bytes/u);
+  assert.match(text, /35dc34df4544d0a48ba80e314a1b55c34757ca7d00a3f7c52ac6f828ed4231ab/u);
+  assert.match(text, /78 app\/tool files contain 167 `JSON\.parse` call sites/u);
 });
 
 test("assigns every required class one owner, visibility, and byte limit", () => {

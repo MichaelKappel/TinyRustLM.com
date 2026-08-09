@@ -1,0 +1,180 @@
+{
+  "schema": "tinyrustlm.vnext.receipt_signature_profile.v1",
+  "profileId": "tinyrustlm.vnext.ed25519-authority.v1",
+  "status": "frozen",
+  "contractRegistrySchema": "tinyrustlm.vnext.contract_registry.v1",
+  "receiptSchema": "tinyrustlm.vnext.receipt.v1",
+  "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
+  "hashAlgorithm": "sha256",
+  "signatureAlgorithm": "ed25519",
+  "publicKeyEncoding": "canonical-base64-raw-ed25519-32",
+  "signatureEncoding": "canonical-base64-ed25519-64",
+  "domainSeparatorByte": 0,
+  "signedPayloadFields": [
+    "algorithm",
+    "authorityRegistryReceiptId",
+    "campaignId",
+    "expiresAtUtc",
+    "issuedAtUtc",
+    "keyId",
+    "nonceHash",
+    "releaseId",
+    "role",
+    "scope",
+    "signedSchema",
+    "signedSubjectId",
+    "signerId",
+    "signatureDomain"
+  ],
+  "envelopeExcludedFields": [
+    "signature",
+    "signedPayloadSha256"
+  ],
+  "receiptBindings": {
+    "authorityRegistryMustBeInputReceipt": true,
+    "receiptSubjectMustBeInputReceipt": true,
+    "nonReceiptSubjectInputHashName": "signed-subject-canonical-content",
+    "receiptTimeMustContainSignatureIssueTime": true
+  },
+  "roleBindings": [
+    {
+      "role": "local-recorder",
+      "signatureDomain": "tinyrustlm.signature.local-recorder.v1",
+      "scopes": [
+        "receipt-recording"
+      ]
+    },
+    {
+      "role": "outside-network-observer",
+      "signatureDomain": "tinyrustlm.signature.outside-network-observer.v1",
+      "scopes": [
+        "outside-proof"
+      ]
+    },
+    {
+      "role": "p2p-publisher",
+      "signatureDomain": "tinyrustlm.signature.p2p-publisher.v1",
+      "scopes": [
+        "p2p-publication"
+      ]
+    },
+    {
+      "role": "release-authorizer",
+      "signatureDomain": "tinyrustlm.signature.release-authorizer.v1",
+      "scopes": [
+        "authority-registry",
+        "key-revocation",
+        "release-authorization"
+      ]
+    },
+    {
+      "role": "site-publisher",
+      "signatureDomain": "tinyrustlm.signature.site-publisher.v1",
+      "scopes": [
+        "site-publication"
+      ]
+    }
+  ],
+  "identityBearingSubjects": [
+    {
+      "schema": "tinyrustlm.vnext.artifact_manifest.v1",
+      "subjectIdField": "artifactId",
+      "canonicalHashField": "canonicalContentSha256",
+      "identityDomain": "tinyrustlm.artifact_manifest.content.v1",
+      "subjectIdEqualsCanonicalHash": false
+    },
+    {
+      "schema": "tinyrustlm.vnext.claim.v1",
+      "subjectIdField": "claimId",
+      "canonicalHashField": "canonicalContentSha256",
+      "identityDomain": "tinyrustlm.claim.content.v1",
+      "subjectIdEqualsCanonicalHash": true
+    },
+    {
+      "schema": "tinyrustlm.vnext.context.v1",
+      "subjectIdField": "contextId",
+      "canonicalHashField": "canonicalContentSha256",
+      "identityDomain": "tinyrustlm.context.content.v1",
+      "subjectIdEqualsCanonicalHash": true
+    },
+    {
+      "schema": "tinyrustlm.vnext.outside_proof.v2",
+      "subjectIdField": "proofId",
+      "canonicalHashField": "canonicalContentSha256",
+      "identityDomain": "tinyrustlm.outside_proof.content.v2",
+      "subjectIdEqualsCanonicalHash": true
+    },
+    {
+      "schema": "tinyrustlm.vnext.p2p_manifest.v1",
+      "subjectIdField": "manifestId",
+      "canonicalHashField": "canonicalContentSha256",
+      "identityDomain": "tinyrustlm.p2p_manifest.content.v1",
+      "subjectIdEqualsCanonicalHash": true
+    },
+    {
+      "schema": "tinyrustlm.vnext.receipt.v1",
+      "subjectIdField": "receiptId",
+      "canonicalHashField": "canonicalContentSha256",
+      "identityDomain": "tinyrustlm.receipt.content.v1",
+      "subjectIdEqualsCanonicalHash": true
+    },
+    {
+      "schema": "tinyrustlm.vnext.release_manifest.v1",
+      "subjectIdField": "releaseId",
+      "canonicalHashField": "canonicalContentSha256",
+      "identityDomain": "tinyrustlm.release_manifest.content.v1",
+      "subjectIdEqualsCanonicalHash": true
+    }
+  ],
+  "governance": {
+    "trustedRootRegistryReceiptIdRequired": true,
+    "expectedTerminalRegistryReceiptIdRequired": true,
+    "rootPreviousRegistryReceiptIdMustBeNull": true,
+    "governanceRole": "release-authorizer",
+    "successorScope": "authority-registry",
+    "revocationScope": "key-revocation",
+    "successorSignatureRegistry": "predecessor",
+    "revocationSignatureRegistry": "predecessor",
+    "rejectRegistryForks": true,
+    "rejectRegistryRollback": true,
+    "rejectUnlinkedRegistries": true,
+    "requireKeyMaterialContinuity": true,
+    "requireRevokedKeyInSuccessor": true,
+    "requireReplacementKeyActiveAndSameRole": true,
+    "revocationEffectiveTime": "successor-effective-at"
+  },
+  "timePolicy": {
+    "maximumClockSkewSeconds": 3600,
+    "maximumOnlineSignatureLifetimeSeconds": 604800,
+    "maximumOutsideProofLifetimeSeconds": 86400,
+    "signatureIssueMustBeWithinRegistryAndKeyWindow": true,
+    "verificationReportsCryptographicValiditySeparately": true,
+    "expiredEnvelopeIsCurrentEvidence": false,
+    "retiredKeyCanVerifyHistoricalSignature": true,
+    "revokedKeyCanProduceCurrentEvidence": false,
+    "unknownCompromiseTimeMakesDependentEvidenceStale": true
+  },
+  "replayPolicy": {
+    "bindingFields": [
+      "campaignId",
+      "keyId",
+      "nonceHash",
+      "role",
+      "scope",
+      "signerId"
+    ],
+    "duplicateBindingAcrossDistinctEnvelopeReceipts": "reject",
+    "bestOfN": "not-applicable"
+  },
+  "limits": {
+    "maximumReceipts": 4096,
+    "maximumSubjectDocuments": 2048,
+    "maximumTotalReceiptBytes": 67108864,
+    "maximumTotalSubjectBytes": 67108864,
+    "maximumAuthorityRegistries": 64,
+    "maximumRegistryDepth": 64,
+    "maximumSignatureEnvelopes": 256,
+    "maximumRevocations": 256,
+    "maximumTrustedRoots": 1
+  }
+}

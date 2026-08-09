@@ -22,7 +22,7 @@ const schemas = Object.freeze({
   worker: "tinyrustlm.vnext.worker_message.v1",
   companion: "tinyrustlm.vnext.companion_message.v1",
   p2p: "tinyrustlm.vnext.p2p_manifest.v1",
-  proof: "tinyrustlm.vnext.outside_proof.v1",
+  proof: "tinyrustlm.vnext.outside_proof.v2",
   release: "tinyrustlm.vnext.release_manifest.v1",
   claim: "tinyrustlm.vnext.claim.v1"
 });
@@ -553,10 +553,10 @@ function validateP2p(value) {
 }
 
 function validateProof(value) {
-  closed(value, ["schema", "proofId", "canonicalContentSha256", "campaignId", "modelArtifactId", "p2pManifestId", "laneId", "processInstanceId", "endpoint", "observerId", "observerRegistryId", "nonceHash", "implementationSha256", "checkedRoutes", "completeTransferSha256", "completeTransferBytes", "networkScope", "observedAtUtc", "issuedAtUtc", "expiresAtUtc", "signatureEnvelopeId", "redaction"], "$");
+  closed(value, ["schema", "proofId", "canonicalContentSha256", "campaignId", "modelArtifactId", "p2pManifestId", "laneId", "processInstanceId", "endpoint", "observerId", "observerRegistryId", "nonceHash", "implementationSha256", "checkedRoutes", "completeTransferSha256", "completeTransferBytes", "networkScope", "observedAtUtc", "issuedAtUtc", "expiresAtUtc", "redaction"], "$");
   requireThat(value.schema === schemas.proof, "$.schema"); contentId(value.proofId, "$.proofId"); digest(value.canonicalContentSha256, "$.canonicalContentSha256"); safe(value.campaignId, "$.campaignId"); contentId(value.modelArtifactId, "$.modelArtifactId"); contentId(value.p2pManifestId, "$.p2pManifestId"); safe(value.laneId, "$.laneId"); safe(value.processInstanceId, "$.processInstanceId"); publicUrl(value.endpoint, "$.endpoint"); safe(value.observerId, "$.observerId"); contentId(value.observerRegistryId, "$.observerRegistryId"); digest(value.nonceHash, "$.nonceHash"); digest(value.implementationSha256, "$.implementationSha256");
   sortedList(value.checkedRoutes, 3, 512, checkedRoute, "$.checkedRoutes", "path"); digest(value.completeTransferSha256, "$.completeTransferSha256"); whole(value.completeTransferBytes, 1, 68_719_476_736, "$.completeTransferBytes"); requireThat(value.networkScope === "outside-host-and-local-network", "$.networkScope");
-  const observed = instant(value.observedAtUtc, "$.observedAtUtc"); const issued = instant(value.issuedAtUtc, "$.issuedAtUtc"); const expires = instant(value.expiresAtUtc, "$.expiresAtUtc"); requireThat(issued >= observed && expires > issued && expires - issued <= 86_400_000_000_000n, "$.expiresAtUtc"); contentId(value.signatureEnvelopeId, "$.signatureEnvelopeId"); redaction(value.redaction, "$.redaction");
+  const observed = instant(value.observedAtUtc, "$.observedAtUtc"); const issued = instant(value.issuedAtUtc, "$.issuedAtUtc"); const expires = instant(value.expiresAtUtc, "$.expiresAtUtc"); requireThat(issued >= observed && expires > issued && expires - issued <= 86_400_000_000_000n, "$.expiresAtUtc"); redaction(value.redaction, "$.redaction");
 }
 
 function validateRelease(value) {

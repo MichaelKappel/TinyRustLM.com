@@ -12,13 +12,13 @@ The inventory command scanned only executable source under `tinyrustlm/tools`
 and `tinyrustlm/app`. It excluded documentation, tests, generated output,
 `node_modules`, and `target`.
 
-- 109 source files contain at least one string matching
+- 115 source files contain at least one string matching
   `tinyrustlm.<name>.v<number>`.
-- 215 distinct matching schema identifiers were found.
+- 238 distinct matching schema identifiers were found.
 - The sorted identifiers, joined with one LF after every identifier, occupy
-  9,919 UTF-8 bytes and have SHA-256
-  `581eee525ee30f195f0a21cd71db8d60ff275866d51cb2d236df74f638bd6d10`.
-- 77 app/tool files contain 166 `JSON.parse` call sites. This count is an audit
+  10,773 UTF-8 bytes and have SHA-256
+  `35dc34df4544d0a48ba80e314a1b55c34757ca7d00a3f7c52ac6f828ed4231ab`.
+- 78 app/tool files contain 167 `JSON.parse` call sites. This count is an audit
   queue, not a claim that every call consumes hostile or signed input.
 - The raw release-authorization boundary is the first audited conversion: its
   attestation, registry, and envelope use `tinyrustlm.strict-json.v1` before
@@ -73,7 +73,7 @@ requires an ADR change, not a convenient local constant.
 | Worker | `tinyrustlm.vnext.worker_message.v1` | Browser main thread and one owned worker | Private session envelope | 65,536 |
 | Companion | `tinyrustlm.vnext.companion_message.v1` | Approved browser origin and paired loopback companion | Private session envelope | 65,536 |
 | P2P | `tinyrustlm.vnext.p2p_manifest.v1` | Companion piece store, serving lane, MiniModel verifier | Public-safe metadata; direct peer bytes separate | 2,097,152 |
-| Proof | `tinyrustlm.vnext.outside_proof.v1` | Independent observer and offline verifier | Public-safe signed evidence | 262,144 |
+| Proof | `tinyrustlm.vnext.outside_proof.v2` | Independent observer and offline verifier | Public-safe signed evidence | 262,144 |
 | Release | `tinyrustlm.vnext.release_manifest.v1` | Release builder, authorizer, deploy/readback verifiers | Public-safe immutable release closure | 524,288 |
 | Claim | `tinyrustlm.vnext.claim.v1` | Claim registry, product UI, docs, catalog, marketing | Public-safe evidence-bound wording | 262,144 |
 
@@ -88,6 +88,9 @@ JSON model metadata.
 - Content IDs are `sha256:` followed by 64 lowercase hexadecimal characters.
 - Receipt, proof, release, and claim identities use distinct domain-separated
   canonical-content hashes; a valid hash never changes evidence class.
+- A proof never embeds its signature-envelope ID. The separate signature
+  receipt points to the already-finalized proof as a descendant, preventing a
+  proof/envelope content-addressing cycle.
 - Artifact identity covers complete bytes. Piece identity, Merkle identity,
   composition identity, model identity, and behavioral lineage remain
   separate typed facts.
