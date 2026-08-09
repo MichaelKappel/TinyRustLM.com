@@ -190,7 +190,7 @@ test("freezes one no-compatibility Rust-backed campaign runner profile", () => {
   ), "utf8");
   assert.equal(campaignRunnerProfileSha256, sha256(bytes));
   assert.equal(campaignRunnerProfileSha256,
-    "083112f427566bd6e8cdec628d5b16a581d5382bfb95e5b93c09dffc2fbd7f93");
+    "d3eddd20b885556f6ad26804f122d60f7ff288c5bf4ef28a0929b52784f22323");
   assert.equal(campaignRunnerProfile.profileId, "tinyrustlm.vnext.campaign-runner.v1");
   assert.equal(parsed.status, "frozen");
   assert.equal(parsed.selectionPolicy, "all-active-members-no-subset-selection");
@@ -235,7 +235,7 @@ test("freezes one no-compatibility Rust-backed campaign runner profile", () => {
   ), "utf8");
   assert.match(runnerDocument, /tinyrustlm\.vnext\.campaign-runner\.v1/u);
   assert.match(runnerDocument,
-    /083112f427566bd6e8cdec628d5b16a581d5382bfb95e5b93c09dffc2fbd7f93/u);
+    /d3eddd20b885556f6ad26804f122d60f7ff288c5bf4ef28a0929b52784f22323/u);
   assert.equal(
     JSON.parse(fs.readFileSync(path.join(repositoryRoot, "tinyrustlm", "package.json"),
       "utf8")).scripts["test:vnext-campaign-runner"],

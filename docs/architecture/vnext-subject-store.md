@@ -9,7 +9,7 @@ vNext authority and campaign-projection code. The implementation is
 `contracts/vnext/subject-store-profile.v1.json`.
 
 The profile is 3,285 bytes with SHA-256
-`f0752251373ed3cce93d8387e45f2b96e92402febf10ade8bb3d0c3b24f98b89`.
+`8be12332d8c2936df74eed6548e03fff5d8f816479191814c639613444cc40c9`.
 It is an incompatible clean-slate contract with no dated reader, alias,
 fallback, migration, dual writer, or mutable current pointer.
 
@@ -27,7 +27,7 @@ The store admits exact canonical bytes for only these public-safe schemas:
 - `tinyrustlm.vnext.claim.v2`;
 - `tinyrustlm.vnext.outside_proof.v2`;
 - `tinyrustlm.vnext.p2p_manifest.v1`; and
-- `tinyrustlm.vnext.release_manifest.v2`.
+- `tinyrustlm.vnext.release_manifest.v3`.
 
 The release manifest contains only prepublication parents. Its claims are
 `approved-for-publication` documents with a null `releaseId`; authorization is

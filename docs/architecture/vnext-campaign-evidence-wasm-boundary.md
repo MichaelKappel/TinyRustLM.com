@@ -30,7 +30,7 @@ public readback claim.
 
 `contracts/vnext/campaign-evidence-wasm-interface.v1.json` is 6,043 bytes with
 SHA-256
-`ef29b69eb2ca4eecf914e6f312e28c8af603e375e19e4db5f658d5217f88ef28`.
+`173fed5fadd66f5ca56f57e5a9718f27bf03d8671c3d98047b5c9ec473a2071d`.
 It freezes:
 
 - schema `tinyrustlm.vnext.campaign_evidence_wasm_interface.v1`;

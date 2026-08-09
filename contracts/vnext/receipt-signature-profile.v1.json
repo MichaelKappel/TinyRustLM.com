@@ -119,10 +119,10 @@
       "subjectIdEqualsCanonicalHash": true
     },
     {
-      "schema": "tinyrustlm.vnext.release_manifest.v2",
+      "schema": "tinyrustlm.vnext.release_manifest.v3",
       "subjectIdField": "releaseId",
       "canonicalHashField": "canonicalContentSha256",
-      "identityDomain": "tinyrustlm.release_manifest.content.v2",
+      "identityDomain": "tinyrustlm.release_manifest.content.v3",
       "subjectIdEqualsCanonicalHash": true
     }
   ],

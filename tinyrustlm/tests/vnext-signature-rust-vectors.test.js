@@ -44,7 +44,7 @@ test("freezes deterministic public-only Rust Ed25519 vectors", () => {
   const corpus = parseStrictJson(bytes);
   assert.equal(bytes.length, 27_988);
   assert.equal(sha256(bytes),
-    "679147d928357a74a976e21b0c5f3f3b5f364b2310c39bc34b99263d670c8a1d");
+    "22c0c0976209afdfc934939903d455a44d63312260881d0fe983cccadd20e413");
   assert.deepEqual(bytes, renderVectorCorpus());
   assert.equal(corpus.schema,
     "tinyrustlm.vnext.receipt_signature_rust_vectors.v1");
@@ -100,7 +100,7 @@ test("keeps primitive parity documented without inflating later authority", () =
   assert.match(document, /not authority-graph parity/u);
   assert.match(document, /27,988 bytes/u);
   assert.match(document,
-    /679147d928357a74a976e21b0c5f3f3b5f364b2310c39bc34b99263d670c8a1d/u);
+    /22c0c0976209afdfc934939903d455a44d63312260881d0fe983cccadd20e413/u);
   assert.match(document, /0\/20 qualified model hashes/u);
   for (const text of [contractReadme, inventory, authority]) {
     assert.match(text, /vnext-rust-signature-primitive-parity\.md/u);

@@ -84,7 +84,7 @@ nonce, issue time, and expiry exactly to `tinyrustlm.vnext.outside_proof.v2`.
 
 `tinyrustlm/tools/vnext-campaign-release-surface.js` now composes this graph
 verifier into the release-authorization gate. The surface first reconstructs
-the exact prepared `release_manifest.v2`, original runner operation, Rust-backed
+the exact prepared `release_manifest.v3`, original runner operation, Rust-backed
 projection, release parents, and preparation scan receipts from create-only
 storage. It then admits one canonical signature-envelope receipt only when all
 of these release-specific bindings hold:
@@ -92,7 +92,7 @@ of these release-specific bindings hold:
 - role `release-authorizer`;
 - domain `tinyrustlm.signature.release-authorizer.v1`;
 - scope `release-authorization`;
-- signed schema `tinyrustlm.vnext.release_manifest.v2`;
+- signed schema `tinyrustlm.vnext.release_manifest.v3`;
 - signed subject ID and release ID equal the prepared manifest ID;
 - `signed-subject-canonical-content` equals the manifest canonical-content
   hash;

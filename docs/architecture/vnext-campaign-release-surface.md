@@ -5,10 +5,10 @@
 `tinyrustlm.vnext.campaign-release-surface.v1` is the sole vNext boundary for
 turning a freshly executed campaign projection into immutable prepublication
 attestation evidence, an operator status view, and a create-only
-`release_manifest.v2` candidate, then verifying its current release-authorizer
+`release_manifest.v3` candidate, then verifying its current release-authorizer
 signature as a forward-only child. Its frozen profile is
 `contracts/vnext/campaign-release-surface-profile.v1.json`, with SHA-256
-`5dd859914628be87aaae2333d2d1c850b739d58fd0d16dec79f04b9fbb0cfa94`.
+`97cc27e2d54f8e1612702f2b55cdf7ab9d6e19d4a4ad280c6f73df81c77ec9d0`.
 
 This checkpoint implements fresh projection, final attestation, public-safe
 redaction, truthful operator status, release-manifest preparation, and current
@@ -33,8 +33,9 @@ campaign plan + current receipt/subject stores
   -> redaction-scan receipt
   -> operator status bytes (derived view, never currentness authority)
   -> exact current release inputs from the same runner snapshots
-  -> canonical changelog redaction-scan receipt
-  -> release_manifest.v2 candidate
+  -> current web-build receipt and exact static-asset inventory
+  -> changelog and web-control-document redaction-scan receipts
+  -> release_manifest.v3 candidate
   -> release-manifest redaction-scan receipt
 ```
 
@@ -42,7 +43,7 @@ The implemented authorization edge and forthcoming publication edges continue
 forward from the prepared manifest:
 
 ```text
-release_manifest.v2
+release_manifest.v3
   -> authorization redaction-scan receipt
   -> current release-authorizer signature receipt [implemented]
   -> deployment and exact HTTPS readback receipts
@@ -54,7 +55,7 @@ The release manifest cannot list authorization, deployment, readback, or
 published-claim descendants. An approved claim has a null release identity.
 A published claim points forward to the finalized release. These directions
 remove the release/claim and release/authorization cycles rejected during the
-r4 contract checkpoint.
+r5 contract checkpoint.
 
 ## Fresh Truth Boundary
 
@@ -87,16 +88,21 @@ projection bytes have no release-surface admission path.
 `prepareRelease` uses the same internal execution and accepts an exact closed
 extension containing product/version, sorted artifact, package, claim, and
 remaining-risk identities, one SBOM identity, one provenance receipt identity,
-and canonical changelog bytes. It accepts no release ID, release date,
-authorization verdict, publication status, deployment result, readback result,
-or caller-computed artifact-set digest. Release date and creation time derive
-only from the runner-bound trusted verification time.
+canonical changelog bytes, one public origin, one current web-build receipt,
+the exact deployment-manifest, security-header-profile, and
+publication-generator bytes, a closed static-asset graph, the two generated
+publication-file descriptors, a retired-path set, and an offline capability.
+It accepts no release ID, release date, authorization verdict, publication
+status, deployment result, readback result, or caller-computed artifact-set
+digest. Release date and creation time derive only from the runner-bound
+trusted verification time.
 
 `authorizeRelease` is a separate closed operation over an already prepared
 manifest. It accepts only the canonical authorization receipt bytes, canonical
-changelog bytes, exact release-manifest ID, expected campaign and environment,
-source revision, caller-pinned root and terminal authority registries, trusted
-verification time, and the bounded protected equality list. It has no caller
+changelog bytes, exact deployment-manifest, security-header-profile, and
+publication-generator bytes, exact release-manifest ID, expected campaign and
+environment, source revision, caller-pinned root and terminal authority
+registries, trusted verification time, and the bounded protected equality list. It has no caller
 field for an authorization decision, status, deployment, publication, or live
 counter. It reconstructs the preparation operation and all required evidence
 from create-only storage instead of trusting a prepared-result object retained
@@ -158,8 +164,26 @@ manifest is finalized:
 - each selected claim's subject exists in the same snapshot, all evidence is
   current-pass, effective and verification times are not in the future, and
   expiry and review deadlines remain strictly future;
-- the canonical LF UTF-8 changelog, every selected public document, and the
-  finalized manifest all pass the protected public-safe scan.
+- the canonical LF UTF-8 changelog, every selected public document, the
+  deployment manifest, security-header profile, publication generator, and
+  finalized manifest all pass the protected public-safe scan;
+- one current-pass `build` receipt in phase `web-build` binds the source
+  revision, product, public origin, changelog, all three control documents,
+  and the domain-separated identity of the exact static-asset inventory;
+- public origin is canonical public HTTPS with no credentials, query,
+  fragment, loopback, private IPv4, private IPv6, or local hostname;
+- static and generated paths are sorted, unique, mutually disjoint, and
+  disjoint from the retired-path set; exactly one `/` HTML bootstrap is
+  `no-store`, and the two generated descriptors are exactly the `no-store`
+  current pointer and release history paths;
+- every static asset binds path, role, positive byte length, SHA-256, content
+  type, cache policy, and the exact global security-header profile; every
+  `immutable` asset path contains its full content SHA-256, while stable paths
+  use revalidation or no-store;
+- active routes cannot expose `.slm`, GGUF, SafeTensors, ACG, or `/models/`
+  bytes; and
+- `network-only` has no worker, while `service-worker-staged` names exactly
+  one JavaScript `no-cache` worker asset.
 
 The manifest binds the exact plan and freshly returned projection hashes, the
 new pass attestation, selected artifacts/packages/claims, SBOM, provenance,
@@ -169,9 +193,18 @@ descendant. The result state is
 `release-prepared-awaiting-authorization` and its authorization status is
 `not-authorized`.
 
+The manifest binds every pre-existing static response byte-for-byte and binds
+the generation rules and response metadata for the current pointer and release
+history. It deliberately does not contain its own final wire hash or the final
+bytes of documents that must name that hash. Those self-references are
+mathematically impossible. After authorization, the site publisher generates
+those responses and its deployment/readback descendants bind the manifest,
+authorization, generated bytes, response headers, and public HTTPS
+observations in the forward direction.
+
 ## Release Authorization
 
-Authorization begins by rereading the exact `release_manifest.v2` subject. The
+Authorization begins by rereading the exact `release_manifest.v3` subject. The
 surface then reconstructs and validates the complete preparation lineage:
 
 - the pass final-attestation receipt and its exact profile, plan, projection,
@@ -179,7 +212,8 @@ surface then reconstructs and validates the complete preparation lineage:
 - the completed runner history and stored Rust-backed projection;
 - every release artifact, dependency, package, provenance receipt, approved
   claim, and claim-evidence receipt from the original runner snapshots;
-- the attestation, changelog, and release-manifest redaction receipts; and
+- the attestation, changelog, three web-control-document, and release-manifest
+  redaction receipts; and
 - exact current receipt and subject store membership, allowing only the
   bounded authorization crash-recovery descendants described below.
 
@@ -187,7 +221,7 @@ The supplied signature receipt must be canonical
 `tinyrustlm.vnext.receipt.v1` evidence with type and phase
 `signature-envelope`, role `release-authorizer`, domain
 `tinyrustlm.signature.release-authorizer.v1`, scope
-`release-authorization`, and signed schema `release_manifest.v2`. Both its
+`release-authorization`, and signed schema `release_manifest.v3`. Both its
 signed subject and release ID must equal the prepared manifest ID. It must bind
 the manifest's canonical-content hash, have a finite lifetime, be issued no
 earlier than preparation and no later than the trusted verification time, and
@@ -321,6 +355,15 @@ operation.
 - stale package, expired claim, incomplete campaign, artifact omission, and
   unrelated-artifact injection rejection;
 - canonical changelog and final-manifest scans;
+- canonical public-origin validation, exact web-build evidence, closed static
+  graph validation, content-addressed immutable paths, generated-file
+  descriptors, retired-path disjointness, model-byte exclusion, and offline
+  worker consistency;
+- rejection of omitted or extra web inputs, private origins, path collisions,
+  missing bootstrap, stable immutable paths, generated back-references,
+  header drift, model routes, and worker-policy mismatch;
+- rejection of valid-looking hash, size, type, and cache drift when the
+  recomputed inventory no longer matches the immutable build receipt;
 - create-only manifest/readback behavior and defensive returned byte copies;
 - successful fresh reprojection after retained attestation, redaction, and
   release-manifest history;

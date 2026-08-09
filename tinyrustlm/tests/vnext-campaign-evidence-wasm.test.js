@@ -191,7 +191,7 @@ test("freezes one generated campaign-evidence WASM boundary and deletes the old 
   assert.equal(profile.limits.maximumSubjectInputs, 2_048);
   assert.equal(
     crypto.createHash("sha256").update(fs.readFileSync(interfaceProfilePath)).digest("hex"),
-    "ef29b69eb2ca4eecf914e6f312e28c8af603e375e19e4db5f658d5217f88ef28"
+    "173fed5fadd66f5ca56f57e5a9718f27bf03d8671c3d98047b5c9ec473a2071d"
   );
   assert.ok(Object.isFrozen(profile) && Object.isFrozen(profile.exports) &&
     Object.isFrozen(profile.requiredExports) && Object.isFrozen(profile.limits));
@@ -221,7 +221,7 @@ test("freezes one generated campaign-evidence WASM boundary and deletes the old 
       currentDocumentPath);
   }
   assert.match(boundaryDocument,
-    /ef29b69eb2ca4eecf914e6f312e28c8af603e375e19e4db5f658d5217f88ef28/u);
+    /173fed5fadd66f5ca56f57e5a9718f27bf03d8671c3d98047b5c9ec473a2071d/u);
   assert.match(boundaryDocument,
     /8f5bc4c025c6403865d5f3e93c50a824b44d110c9e4c3004cf03de6f755472ef/u);
   assert.match(boundaryDocument, /changes no production deployment-manifest member/u);

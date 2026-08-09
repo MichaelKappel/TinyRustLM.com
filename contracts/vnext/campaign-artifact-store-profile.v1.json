@@ -4,7 +4,7 @@
   "status": "frozen",
   "versionPolicy": "single-current-profile-no-compatibility-reader",
   "campaignProjectionProfileId": "tinyrustlm.vnext.campaign-projection.v1",
-  "campaignProjectionProfileSha256": "3cceeb5d1c67aaac98d78c261903629ffbd20938bab4f37405eafed5e8b7c944",
+  "campaignProjectionProfileSha256": "a5ed56eb0c0b924eaac3222bb814732bd36f2bfeae217477cf7549ae732d4ae9",
   "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
   "hashAlgorithm": "sha256",
   "identityBasis": "exact-canonical-wire-bytes",

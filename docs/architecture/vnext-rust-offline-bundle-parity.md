@@ -29,14 +29,14 @@ The implementation binds:
 - public authority seed
   `contracts/vnext/authority-graph-public-seed.v1.json`, 171,656 bytes,
   SHA-256
-  `1d1aebdbd7e113edf17cdcac8f21c78fedbe169e5f0422e982fc06078e0afa6a`;
+  `80eb5d068bee339b5562c5cbd16c6f546e430895d6c6fb4c1172a36b4786197e`;
 - generated cross-language corpus
   `contracts/vnext/offline-bundle-rust-vectors.v1.json`, 658,110 bytes,
   SHA-256
-  `1ca99bc72ecdac581fc2157336572dc837aef4c2d81d0c7b11e967fc31f5463d`;
+  `29e72b60c92a2be4b340f71e90f5e1090d609dbf2702b633adb0738bcbe03007`;
 - all seven exact profile bindings and all nine exact schema-descriptor
   hashes from contract family
-  `tinyrustlm-vnext-2026-08-09-r4`; and
+  `tinyrustlm-vnext-2026-08-09-r5`; and
 - the completed strict Rust receipt, identity-subject, Ed25519 primitive, and
   authority-graph implementations.
 

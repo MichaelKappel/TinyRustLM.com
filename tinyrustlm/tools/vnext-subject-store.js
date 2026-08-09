@@ -39,7 +39,7 @@ const expectedAcceptedSchemas = Object.freeze([
   "tinyrustlm.vnext.claim.v2",
   "tinyrustlm.vnext.outside_proof.v2",
   "tinyrustlm.vnext.p2p_manifest.v1",
-  "tinyrustlm.vnext.release_manifest.v2"
+  "tinyrustlm.vnext.release_manifest.v3"
 ]);
 const expectedRejectedSchemas = Object.freeze([
   "tinyrustlm.vnext.context.v1",

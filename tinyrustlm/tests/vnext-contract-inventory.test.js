@@ -17,13 +17,13 @@ const expectedSchemas = Object.freeze([
   "tinyrustlm.vnext.companion_message.v1",
   "tinyrustlm.vnext.p2p_manifest.v1",
   "tinyrustlm.vnext.outside_proof.v2",
-  "tinyrustlm.vnext.release_manifest.v2",
+  "tinyrustlm.vnext.release_manifest.v3",
   "tinyrustlm.vnext.claim.v2"
 ]);
 
 test("freezes exactly nine incompatible vNext contract family names", () => {
   const text = fs.readFileSync(inventoryPath, "utf8");
-  const identifiers = [...text.matchAll(/`(tinyrustlm\.vnext\.[a-z0-9_]+\.v[12])`/gu)]
+  const identifiers = [...text.matchAll(/`(tinyrustlm\.vnext\.[a-z0-9_]+\.v[123])`/gu)]
     .map((match) => match[1]);
   assert.deepEqual([...new Set(identifiers)], expectedSchemas);
   assert.match(text, /Every current identifier is historical implementation evidence only/u);

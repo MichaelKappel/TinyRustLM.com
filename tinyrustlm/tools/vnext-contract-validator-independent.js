@@ -23,7 +23,7 @@ const schemas = Object.freeze({
   companion: "tinyrustlm.vnext.companion_message.v1",
   p2p: "tinyrustlm.vnext.p2p_manifest.v1",
   proof: "tinyrustlm.vnext.outside_proof.v2",
-  release: "tinyrustlm.vnext.release_manifest.v2",
+  release: "tinyrustlm.vnext.release_manifest.v3",
   claim: "tinyrustlm.vnext.claim.v2"
 });
 const contractBytes = Object.freeze({
@@ -386,6 +386,32 @@ function checkedRoute(value, location) {
   digest(value.responseSha256, `${location}.responseSha256`);
 }
 
+const webContentTypes = [
+  "application/javascript", "application/json", "application/manifest+json",
+  "application/octet-stream", "application/wasm", "font/woff2", "image/avif",
+  "image/png", "image/svg+xml", "image/webp", "text/css", "text/html", "text/plain"
+];
+
+function webAsset(value, location) {
+  closed(value, ["path", "role", "byteLength", "sha256", "contentType", "cachePolicy", "securityHeaderProfileSha256"], location);
+  route(value.path, `${location}.path`);
+  oneOf(value.role, ["application", "bootstrap", "documentation", "runtime", "runtime-metadata", "service-worker", "style"], `${location}.role`);
+  whole(value.byteLength, 1, 68_719_476_736, `${location}.byteLength`);
+  digest(value.sha256, `${location}.sha256`);
+  oneOf(value.contentType, webContentTypes, `${location}.contentType`);
+  oneOf(value.cachePolicy, ["immutable", "no-cache", "no-store"], `${location}.cachePolicy`);
+  digest(value.securityHeaderProfileSha256, `${location}.securityHeaderProfileSha256`);
+}
+
+function generatedPublicationFile(value, location) {
+  closed(value, ["path", "role", "contentType", "cachePolicy", "securityHeaderProfileSha256"], location);
+  route(value.path, `${location}.path`);
+  oneOf(value.role, ["current-release-pointer", "release-history"], `${location}.role`);
+  requireThat(value.contentType === "application/json", `${location}.contentType`);
+  requireThat(value.cachePolicy === "no-store", `${location}.cachePolicy`);
+  digest(value.securityHeaderProfileSha256, `${location}.securityHeaderProfileSha256`);
+}
+
 function u64(value) {
   const bytes = Buffer.alloc(8);
   bytes.writeBigUInt64LE(BigInt(value));
@@ -449,7 +475,7 @@ function validateArtifact(value) {
   redaction(value.redaction, "$.redaction");
 }
 
-const receiptTypes = ["acquisition", "authority-registry", "browser-round", "catalog-announcement", "conversation-evaluation", "conversion", "deployment", "discovery", "final-attestation", "key-revocation", "lane-serve", "memory-continuity", "native-evaluation", "offline-verification-bundle", "outside-proof", "p2p-preparation", "package", "public-readback", "qualification", "redaction-scan", "review", "screening", "signature-envelope", "site-synchronization", "structure", "training", "training-preparation"];
+const receiptTypes = ["acquisition", "authority-registry", "browser-round", "build", "catalog-announcement", "conversation-evaluation", "conversion", "deployment", "discovery", "final-attestation", "key-revocation", "lane-serve", "memory-continuity", "native-evaluation", "offline-verification-bundle", "outside-proof", "p2p-preparation", "package", "public-readback", "qualification", "redaction-scan", "review", "screening", "signature-envelope", "site-synchronization", "structure", "training", "training-preparation"];
 
 function validateReceipt(value) {
   closed(value, ["schema", "receiptId", "canonicalContentSha256", "receiptType", "campaignId", "attemptId", "phase", "status", "startedAtUtc", "completedAtUtc", "sourceRevision", "inputReceiptIds", "inputHashes", "outputHashes", "tools", "configurationSha256", "runtime", "publicParameters", "error", "blockerCode", "externalEvidenceReferences", "redaction", "attestationReference", "signatureEnvelope", "authorityRegistry", "keyRevocation", "offlineBundle", "supersedesReceiptIds"], "$");
@@ -560,8 +586,14 @@ function validateProof(value) {
 }
 
 function validateRelease(value) {
-  closed(value, ["schema", "releaseId", "canonicalContentSha256", "productId", "version", "releaseDate", "sourceRevision", "campaignPlanSha256", "campaignProjectionSha256", "campaignAttestationReceiptId", "artifactManifestIds", "packageReceiptIds", "claimIds", "sbomArtifactId", "provenanceReceiptId", "changelogSha256", "remainingRiskCodes", "createdAtUtc", "redaction"], "$");
-  requireThat(value.schema === schemas.release, "$.schema"); contentId(value.releaseId, "$.releaseId"); digest(value.canonicalContentSha256, "$.canonicalContentSha256"); safe(value.productId, "$.productId"); if (typeof value.version !== "string" || value.version.length > 128 || !versionPattern.test(value.version)) reject("field_invalid", "$.version"); date(value.releaseDate, "$.releaseDate"); if (!revisionPattern.test(value.sourceRevision)) reject("field_invalid", "$.sourceRevision"); digest(value.campaignPlanSha256, "$.campaignPlanSha256"); digest(value.campaignProjectionSha256, "$.campaignProjectionSha256"); contentId(value.campaignAttestationReceiptId, "$.campaignAttestationReceiptId"); sortedList(value.artifactManifestIds, 1, 64, contentId, "$.artifactManifestIds"); sortedList(value.packageReceiptIds, 1, 64, contentId, "$.packageReceiptIds"); sortedList(value.claimIds, 1, 128, contentId, "$.claimIds"); contentId(value.sbomArtifactId, "$.sbomArtifactId"); contentId(value.provenanceReceiptId, "$.provenanceReceiptId"); digest(value.changelogSha256, "$.changelogSha256"); sortedList(value.remainingRiskCodes, 0, 64, safe, "$.remainingRiskCodes"); instant(value.createdAtUtc, "$.createdAtUtc"); requireThat(value.releaseDate === value.createdAtUtc.slice(0, 10), "$.releaseDate"); redaction(value.redaction, "$.redaction");
+  closed(value, ["schema", "releaseId", "canonicalContentSha256", "productId", "version", "releaseDate", "sourceRevision", "campaignPlanSha256", "campaignProjectionSha256", "campaignAttestationReceiptId", "artifactManifestIds", "packageReceiptIds", "claimIds", "sbomArtifactId", "provenanceReceiptId", "changelogSha256", "publicOrigin", "webBuildReceiptId", "webDeploymentManifestSha256", "webSecurityHeaderProfileSha256", "webPublicationGeneratorSha256", "webAssets", "generatedPublicationFiles", "retiredPublicPaths", "webTotalBytes", "offlineCapability", "serviceWorkerPath", "remainingRiskCodes", "createdAtUtc", "redaction"], "$");
+  requireThat(value.schema === schemas.release, "$.schema"); contentId(value.releaseId, "$.releaseId"); digest(value.canonicalContentSha256, "$.canonicalContentSha256"); safe(value.productId, "$.productId"); if (typeof value.version !== "string" || value.version.length > 128 || !versionPattern.test(value.version)) reject("field_invalid", "$.version"); date(value.releaseDate, "$.releaseDate"); if (!revisionPattern.test(value.sourceRevision)) reject("field_invalid", "$.sourceRevision"); digest(value.campaignPlanSha256, "$.campaignPlanSha256"); digest(value.campaignProjectionSha256, "$.campaignProjectionSha256"); contentId(value.campaignAttestationReceiptId, "$.campaignAttestationReceiptId"); sortedList(value.artifactManifestIds, 1, 64, contentId, "$.artifactManifestIds"); sortedList(value.packageReceiptIds, 1, 64, contentId, "$.packageReceiptIds"); sortedList(value.claimIds, 1, 128, contentId, "$.claimIds"); contentId(value.sbomArtifactId, "$.sbomArtifactId"); contentId(value.provenanceReceiptId, "$.provenanceReceiptId"); digest(value.changelogSha256, "$.changelogSha256"); publicUrl(value.publicOrigin, "$.publicOrigin"); contentId(value.webBuildReceiptId, "$.webBuildReceiptId"); digest(value.webDeploymentManifestSha256, "$.webDeploymentManifestSha256"); digest(value.webSecurityHeaderProfileSha256, "$.webSecurityHeaderProfileSha256"); digest(value.webPublicationGeneratorSha256, "$.webPublicationGeneratorSha256"); sortedList(value.webAssets, 1, 512, webAsset, "$.webAssets", "path"); sortedList(value.generatedPublicationFiles, 2, 2, generatedPublicationFile, "$.generatedPublicationFiles", "path"); sortedList(value.retiredPublicPaths, 0, 128, route, "$.retiredPublicPaths"); whole(value.webTotalBytes, 1, 68_719_476_736, "$.webTotalBytes"); oneOf(value.offlineCapability, ["network-only", "service-worker-staged"], "$.offlineCapability"); nullable(value.serviceWorkerPath, route, "$.serviceWorkerPath"); sortedList(value.remainingRiskCodes, 0, 64, safe, "$.remainingRiskCodes"); instant(value.createdAtUtc, "$.createdAtUtc"); requireThat(value.releaseDate === value.createdAtUtc.slice(0, 10), "$.releaseDate"); redaction(value.redaction, "$.redaction");
+  const activePaths = [...value.webAssets.map((entry) => entry.path), ...value.generatedPublicationFiles.map((entry) => entry.path)]; requireThat(new Set(activePaths).size === activePaths.length && value.retiredPublicPaths.every((entry) => !activePaths.includes(entry)), "$.webAssets"); requireThat(value.webAssets.reduce((total, entry) => total + entry.byteLength, 0) === value.webTotalBytes, "$.webTotalBytes"); requireThat(value.webAssets.every((entry) => entry.cachePolicy !== "immutable" || entry.path.includes(entry.sha256)), "$.webAssets");
+  const bootstraps = value.webAssets.filter((entry) => entry.role === "bootstrap"); requireThat(bootstraps.length === 1 && bootstraps[0].path === "/" && bootstraps[0].contentType === "text/html" && bootstraps[0].cachePolicy === "no-store", "$.webAssets");
+  const generatedByRole = new Map(value.generatedPublicationFiles.map((entry) => [entry.role, entry])); requireThat(generatedByRole.size === 2 && generatedByRole.get("current-release-pointer")?.path === "/.well-known/site-release.json" && generatedByRole.get("release-history")?.path === "/.well-known/site-release-history.json", "$.generatedPublicationFiles");
+  const modelPath = (entry) => entry.toLowerCase().includes("/models/") || /\.(?:acg1|acg2|gguf|safetensors|slm)$/u.test(entry.toLowerCase()); requireThat(activePaths.every((entry) => !modelPath(entry)), "$.webAssets");
+  const workers = value.webAssets.filter((entry) => entry.role === "service-worker"); if (value.offlineCapability === "network-only") requireThat(value.serviceWorkerPath === null && workers.length === 0, "$.offlineCapability"); else requireThat(value.serviceWorkerPath !== null && workers.length === 1 && workers[0].path === value.serviceWorkerPath && workers[0].contentType === "application/javascript" && workers[0].cachePolicy === "no-cache", "$.offlineCapability");
+  requireThat(value.webAssets.every((entry) => entry.securityHeaderProfileSha256 === value.webSecurityHeaderProfileSha256) && value.generatedPublicationFiles.every((entry) => entry.securityHeaderProfileSha256 === value.webSecurityHeaderProfileSha256), "$.webSecurityHeaderProfileSha256");
 }
 
 function validateClaim(value) {

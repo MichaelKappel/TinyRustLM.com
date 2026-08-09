@@ -53,10 +53,10 @@ test("freezes deterministic public-only Rust authority graph vectors", () => {
   const vectors = parseStrictJson(vectorBytes);
   assert.equal(seedBytes.length, 171_656);
   assert.equal(sha256(seedBytes),
-    "1d1aebdbd7e113edf17cdcac8f21c78fedbe169e5f0422e982fc06078e0afa6a");
+    "80eb5d068bee339b5562c5cbd16c6f546e430895d6c6fb4c1172a36b4786197e");
   assert.equal(vectorBytes.length, 434_761);
   assert.equal(sha256(vectorBytes),
-    "7340f17c34b2f86dcd4c2431d1de7ed8d36429badd51866c8abbff3b0f0fa89a");
+    "bf649b31e75c6ca6d4ec6587e760bbdd43b2e87bdcc7db7ed75fcc4ce787c757");
   assert.deepEqual(vectorBytes, renderVectorCorpus());
   assert.equal(seed.acceptedCases.length, 7);
   assert.equal(seed.rejectionCases.length, 6);

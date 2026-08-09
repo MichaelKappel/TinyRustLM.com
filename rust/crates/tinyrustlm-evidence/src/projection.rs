@@ -21,7 +21,7 @@ use url::Url;
 
 /// The SHA-256 of the exact frozen campaign-projection profile bytes.
 pub const CAMPAIGN_PROJECTION_PROFILE_SHA256: &str =
-    "3cceeb5d1c67aaac98d78c261903629ffbd20938bab4f37405eafed5e8b7c944";
+    "a5ed56eb0c0b924eaac3222bb814732bd36f2bfeae217477cf7549ae732d4ae9";
 /// The one current canonical campaign-projection result schema.
 pub const CAMPAIGN_PROJECTION_RESULT_SCHEMA: &str =
     "tinyrustlm.vnext.campaign_projection_result.v1";

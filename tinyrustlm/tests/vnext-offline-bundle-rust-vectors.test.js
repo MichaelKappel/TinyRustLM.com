@@ -71,10 +71,10 @@ test("freezes deterministic public-only Rust offline-bundle vectors", () => {
 
   assert.equal(seedBytes.length, 171_656);
   assert.equal(sha256(seedBytes),
-    "1d1aebdbd7e113edf17cdcac8f21c78fedbe169e5f0422e982fc06078e0afa6a");
+    "80eb5d068bee339b5562c5cbd16c6f546e430895d6c6fb4c1172a36b4786197e");
   assert.equal(vectorBytes.length, 658_110);
   assert.equal(sha256(vectorBytes),
-    "1ca99bc72ecdac581fc2157336572dc837aef4c2d81d0c7b11e967fc31f5463d");
+    "29e72b60c92a2be4b340f71e90f5e1090d609dbf2702b633adb0738bcbe03007");
   assert.deepEqual(vectorBytes, renderVectorCorpus());
   assert.equal(vectors.schema,
     "tinyrustlm.vnext.offline_bundle_rust_vectors.v1");
@@ -122,7 +122,7 @@ test("documents Rust offline closure without claiming release or live evidence",
 
   assert.match(document, /658,110 bytes/u);
   assert.match(document,
-    /1ca99bc72ecdac581fc2157336572dc837aef4c2d81d0c7b11e967fc31f5463d/u);
+    /29e72b60c92a2be4b340f71e90f5e1090d609dbf2702b633adb0738bcbe03007/u);
   assert.match(document, /three accepted bundles and 31 rejection/u);
   assert.match(document, /does not\s+produce a campaign projection/u);
   assert.match(document, /0\/20 qualified model hashes/u);

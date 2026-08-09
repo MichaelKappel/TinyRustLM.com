@@ -16,7 +16,7 @@ use std::fmt;
 pub const AUTHORITY_PROFILE_ID: &str = "tinyrustlm.vnext.ed25519-authority.v1";
 /// The SHA-256 of the exact frozen authority profile bytes.
 pub const AUTHORITY_PROFILE_SHA256: &str =
-    "9d1f0c65f91dc9b76bf5e430ee5f91ba787ab4622d72aae3c73c3a50c9f2a8b9";
+    "c9f3c6813e3880ebff6c79d9975ba085405208260715b0c68eafdfb9cfcb5721";
 
 const MAXIMUM_RECEIPTS: usize = 4096;
 const MAXIMUM_SUBJECTS: usize = 2048;

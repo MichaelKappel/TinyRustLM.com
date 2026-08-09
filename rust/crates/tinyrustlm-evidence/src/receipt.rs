@@ -14,6 +14,7 @@ const RECEIPT_TYPES: &[&str] = &[
     "acquisition",
     "authority-registry",
     "browser-round",
+    "build",
     "catalog-announcement",
     "conversation-evaluation",
     "conversion",
@@ -54,7 +55,7 @@ const SIGNED_SCHEMAS: &[&str] = &[
     "tinyrustlm.vnext.outside_proof.v2",
     "tinyrustlm.vnext.p2p_manifest.v1",
     "tinyrustlm.vnext.receipt.v1",
-    "tinyrustlm.vnext.release_manifest.v2",
+    "tinyrustlm.vnext.release_manifest.v3",
     "tinyrustlm.vnext.worker_message.v1",
 ];
 

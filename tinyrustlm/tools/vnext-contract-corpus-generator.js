@@ -26,7 +26,7 @@ const schemas = Object.freeze({
   companion: "tinyrustlm.vnext.companion_message.v1",
   p2p: "tinyrustlm.vnext.p2p_manifest.v1",
   proof: "tinyrustlm.vnext.outside_proof.v2",
-  release: "tinyrustlm.vnext.release_manifest.v2",
+  release: "tinyrustlm.vnext.release_manifest.v3",
   claim: "tinyrustlm.vnext.claim.v2"
 });
 
@@ -261,6 +261,25 @@ function validDocuments() {
     sbomArtifactId: ids[12],
     provenanceReceiptId: ids[13],
     changelogSha256: hashes[15],
+    publicOrigin: "https://tinyrustlm.example.com/",
+    webBuildReceiptId: ids[14],
+    webDeploymentManifestSha256: hashes[2],
+    webSecurityHeaderProfileSha256: hashes[1],
+    webPublicationGeneratorSha256: hashes[3],
+    webAssets: [
+      { path: "/", role: "bootstrap", byteLength: 1, sha256: hashes[4], contentType: "text/html", cachePolicy: "no-store", securityHeaderProfileSha256: hashes[1] },
+      { path: `/assets/${hashes[5]}.css`, role: "style", byteLength: 2, sha256: hashes[5], contentType: "text/css", cachePolicy: "immutable", securityHeaderProfileSha256: hashes[1] },
+      { path: `/assets/${hashes[6]}.js`, role: "application", byteLength: 3, sha256: hashes[6], contentType: "application/javascript", cachePolicy: "immutable", securityHeaderProfileSha256: hashes[1] },
+      { path: `/assets/${hashes[8]}.wasm`, role: "runtime", byteLength: 4, sha256: hashes[8], contentType: "application/wasm", cachePolicy: "immutable", securityHeaderProfileSha256: hashes[1] }
+    ].sort((left, right) => left.path.localeCompare(right.path)),
+    generatedPublicationFiles: [
+      { path: "/.well-known/site-release-history.json", role: "release-history", contentType: "application/json", cachePolicy: "no-store", securityHeaderProfileSha256: hashes[1] },
+      { path: "/.well-known/site-release.json", role: "current-release-pointer", contentType: "application/json", cachePolicy: "no-store", securityHeaderProfileSha256: hashes[1] }
+    ],
+    retiredPublicPaths: ["/app/models/retired.slm"],
+    webTotalBytes: 10,
+    offlineCapability: "network-only",
+    serviceWorkerPath: null,
     remainingRiskCodes: ["training-compute-unavailable"],
     createdAtUtc: "2026-08-09T02:00:00Z",
     redaction
@@ -436,6 +455,25 @@ function buildCases() {
   rejectValue("reject-release-parent-order", "release", valid.release, (value) => { value.artifactManifestIds = [ids[2], ids[1]]; });
   rejectValue("reject-release-postpublication-back-reference", "release", valid.release, (value) => { value.sitePublicationReceiptIds = [ids[10]]; });
   rejectValue("reject-release-authorization-back-reference", "release", valid.release, (value) => { value.authorizationReceiptId = ids[14]; });
+  rejectValue("reject-release-web-path-collision", "release", valid.release, (value) => { value.retiredPublicPaths = [value.webAssets.find((entry) => entry.role === "application").path]; });
+  rejectValue("reject-release-web-total-mismatch", "release", valid.release, (value) => { value.webTotalBytes += 1; });
+  rejectValue("reject-release-web-bootstrap-missing", "release", valid.release, (value) => { value.webAssets.shift(); value.webTotalBytes = 9; });
+  rejectValue("reject-release-generated-pointer-role", "release", valid.release, (value) => { value.generatedPublicationFiles[1].role = "release-history"; });
+  rejectValue("reject-release-model-byte-route", "release", valid.release, (value) => {
+    value.webAssets.splice(3, 0, {
+      path: "/models/active.slm",
+      role: "runtime",
+      byteLength: 1,
+      sha256: hashes[9],
+      contentType: "application/octet-stream",
+      cachePolicy: "immutable",
+      securityHeaderProfileSha256: hashes[1]
+    });
+    value.webTotalBytes = 11;
+  });
+  rejectValue("reject-release-web-header-profile-drift", "release", valid.release, (value) => { value.webAssets[1].securityHeaderProfileSha256 = hashes[2]; });
+  rejectValue("reject-release-immutable-stable-path", "release", valid.release, (value) => { value.webAssets.find((entry) => entry.role === "application").path = "/assets/app.js"; value.webAssets.sort((left, right) => left.path.localeCompare(right.path)); });
+  rejectValue("reject-release-network-only-worker", "release", valid.release, (value) => { value.serviceWorkerPath = "/service-worker.js"; });
   rejectValue("reject-claim-approved-with-release", "claim", valid.claim, (value) => { value.releaseId = ids[7]; });
   rejectValue("reject-claim-approved-without-evidence", "claim", valid.claim, (value) => { value.evidenceReceiptIds = []; });
   rejectValue("reject-claim-published-without-release", "claim", valid.claim, (value) => { value.status = "published"; });

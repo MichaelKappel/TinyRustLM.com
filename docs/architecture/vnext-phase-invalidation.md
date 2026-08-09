@@ -36,10 +36,10 @@ canonical result bytes and their raw-byte SHA-256 or one bounded stable error
 code.
 
 The cross-language corpus is 74,756 bytes with SHA-256
-`904a51a9770b8497bf0f966b2f1e50edae9a3dc3680677878544b4ab6803aac3`.
+`c583f55f0c81da4db08543b0a8e28ad4ee178a1a1a1169b6aeb3329bf67f7ee4`.
 It binds profile `tinyrustlm.vnext.phase-invalidation.v1`, whose exact profile
 bytes have SHA-256
-`d13eaf173a76229bbca401482459c07b6f591703a55523d3b216f984ba5370a3`.
+`924c515b2cddc081c9cbeac7e4c51fde213264ef2dff5bffcbc335430aafcbff`.
 Only receipts representing operation-keyed campaign phases enter semantic
 currentness classification. `final-attestation` and `redaction-scan` remain
 valid immutable receipt types, but they are post-processing evidence and are

@@ -3,9 +3,9 @@
   "profileId": "tinyrustlm.vnext.subject-store.v1",
   "status": "frozen",
   "versionPolicy": "single-current-profile-no-compatibility-reader",
-  "contractRegistrySha256": "27101971058e6e0332f4a59f72c1c13abdef34b6b388f37b4d886dcf7a2cdecc",
+  "contractRegistrySha256": "dd1534f577f5468f94d4b3b4d7d8985751fd1ddc4a28a2ccee9f47462449bbf0",
   "campaignProjectionProfileId": "tinyrustlm.vnext.campaign-projection.v1",
-  "campaignProjectionProfileSha256": "3cceeb5d1c67aaac98d78c261903629ffbd20938bab4f37405eafed5e8b7c944",
+  "campaignProjectionProfileSha256": "a5ed56eb0c0b924eaac3222bb814732bd36f2bfeae217477cf7549ae732d4ae9",
   "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
   "hashAlgorithm": "sha256",
   "identityBasis": "validated-subject-id-and-exact-canonical-wire-bytes",
@@ -30,7 +30,7 @@
       "maximumBytes": 2097152
     },
     {
-      "schema": "tinyrustlm.vnext.release_manifest.v2",
+      "schema": "tinyrustlm.vnext.release_manifest.v3",
       "maximumBytes": 524288
     }
   ],

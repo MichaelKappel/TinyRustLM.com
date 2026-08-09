@@ -259,7 +259,7 @@ ABI, ownership, destructive-state, browser, and non-claim boundary.
 The same Rust evidence crate now independently implements exact receipt
 validation and semantic currentness. A deterministic 74,756-byte corpus with
 SHA-256
-`904a51a9770b8497bf0f966b2f1e50edae9a3dc3680677878544b4ab6803aac3`
+`c583f55f0c81da4db08543b0a8e28ad4ee178a1a1a1169b6aeb3329bf67f7ee4`
 freezes four accepted histories and nine hostile rejections. Node and Rust
 must emit byte-identical canonical currentness results and the same stable
 rejection codes. This API has no filesystem, network, clock, process, or
@@ -277,7 +277,7 @@ The Rust Ed25519 primitive independently reproduces canonical payload,
 domain-separated signing bytes, strict public-key verification, canonical
 result bytes, and 17 exact hostile rejection codes. Its 27,988-byte public-only
 vector corpus has SHA-256
-`679147d928357a74a976e21b0c5f3f3b5f364b2310c39bc34b99263d670c8a1d`.
+`22c0c0976209afdfc934939903d455a44d63312260881d0fe983cccadd20e413`.
 This is cryptographic primitive parity, not authority-graph, revocation,
 nonce-replay, offline-bundle, release, or campaign parity. See
 `docs/architecture/vnext-rust-signature-primitive-parity.md`.
@@ -291,12 +291,12 @@ The same crate now independently verifies exact offline manifest and member
 binding, the separate verification receipt, authority composition, closed
 receipt and subject membership, terminal currentness, and target current
 eligibility. Its public-only 658,110-byte corpus has SHA-256
-`1ca99bc72ecdac581fc2157336572dc837aef4c2d81d0c7b11e967fc31f5463d`
+`29e72b60c92a2be4b340f71e90f5e1090d609dbf2702b633adb0738bcbe03007`
 and freezes three accepted bundles plus 31 exact hostile rejection codes. See
 `docs/architecture/vnext-rust-offline-bundle-parity.md`.
 The same crate now independently produces and validates the exact truthful
 campaign projection. Its public-only 1,494,464-byte corpus has SHA-256
-`875e066e6f5f509552b9659ac76f32e2598659e2432384ad0b2ba4694c3e5a62`
+`8a72ac1b2e4abd944e41c1c53a7d475e350d961e7b627127404b0508cf654734`
 and freezes 11 accepted projections, 22 exact input rejections, and 8 exact
 result-wire rejections. See
 `docs/architecture/vnext-rust-campaign-projection-parity.md`.
@@ -304,7 +304,7 @@ result-wire rejections. See
 `tinyrustlm/tools/vnext-campaign-artifact-store.js` persists only exact
 campaign-plan and projection-result wires under raw-byte SHA-256 paths. Its
 frozen profile has SHA-256
-`fb96e838a6539a0a59e908e02d4bc0d46d756f95a6683b301ff6c801af80114a`.
+`778743a9d36d3ca9be56c3037529a31766e76af56127b8cb02a36adb5ad61136`.
 It shares create-only, bounded, no-follow filesystem mechanics with the
 receipt store but retains separate result-to-plan semantics. Stored results
 are immutable history; `resumeProjection` reruns the projector from supplied
@@ -313,7 +313,7 @@ current evidence and never selects a mutable current pointer. See
 
 `tinyrustlm/tools/vnext-subject-store.js` completes the other host-side input
 store needed by the campaign runner. Its 3,285-byte frozen profile has SHA-256
-`f0752251373ed3cce93d8387e45f2b96e92402febf10ade8bb3d0c3b24f98b89`.
+`8be12332d8c2936df74eed6548e03fff5d8f816479191814c639613444cc40c9`.
 It admits only the five public-safe, non-receipt identity schemas, publishes
 exact canonical bytes under the validated subject ID, and explicitly rejects
 private context and receipt records. Bounded reconstruction, no-follow reads,
@@ -324,7 +324,7 @@ currentness by itself. See `docs/architecture/vnext-subject-store.md`.
 
 `tinyrustlm/tools/vnext-campaign-runner.js` now composes those stores through
 one exact runner boundary. Its frozen 6,855-byte profile has SHA-256
-`083112f427566bd6e8cdec628d5b16a581d5382bfb95e5b93c09dffc2fbd7f93`.
+`d3eddd20b885556f6ad26804f122d60f7ff288c5bf4ef28a0929b52784f22323`.
 The runner observes every active receipt and subject twice, rejects any
 membership or wire change, binds caller pins and trusted verification time in
 a create-only start record, invokes only the generated Rust campaign-evidence
@@ -336,7 +336,7 @@ best-of-N, mutable-currentness, or stored-result promotion path. See
 `tinyrustlm/tools/vnext-campaign-release-surface.js` now consumes that runner
 only by creating a never-before-used operation and receiving its exact result
 inside the same call. Its frozen profile has SHA-256
-`5dd859914628be87aaae2333d2d1c850b739d58fd0d16dec79f04b9fbb0cfa94`.
+`97cc27e2d54f8e1612702f2b55cdf7ab9d6e19d4a4ad280c6f73df81c77ec9d0`.
 The surface independently validates the returned projection against the exact
 stored plan and runner operation records, finalizes a content-addressed
 complete-or-blocked attestation, scans the final canonical bytes against the
@@ -396,8 +396,15 @@ operation history, interruption recovery, and concurrent-operation exclusion.
 The superseded mutable runner and its test are deleted without an alias or
 compatibility entry point. One fresh-runner-bound immutable final-attestation
 and operator-status surface now also prepares a create-only, public-safe,
-explicitly unauthorized `release_manifest.v2` from complete fresh campaign
-truth and exact current snapshot inputs. The same surface now verifies and
+explicitly unauthorized `release_manifest.v3` from complete fresh campaign
+truth and exact current snapshot inputs. It requires one current-pass web-build
+receipt over the public origin, changelog, deployment manifest,
+security-header profile, publication generator, and exact static inventory.
+The manifest binds closed path/hash/size/type/cache/header metadata, excludes
+model-byte routes, and permits `immutable` caching only when the path contains
+the full content SHA-256. Generated pointer and history bytes are forward-only
+site-publisher descendants because embedding bytes that name the manifest
+inside that same manifest would be self-referential. The same surface now verifies and
 create-only persists a current Ed25519 release-authorizer signature as the
 manifest's forward-only child without mutating the manifest or claiming
 deployment. Exact HTTPS readback, deployment and published-claim descendants,

@@ -598,6 +598,12 @@ function validateProof(value, checked) {
   checked.add("public-redaction-profile-required");
 }
 
+function isWebModelBytePath(value) {
+  const normalized = value.toLowerCase();
+  return normalized.includes("/models/") ||
+    /\.(?:acg1|acg2|gguf|safetensors|slm)$/u.test(normalized);
+}
+
 function validateRelease(value, checked) {
   invariant(value.releaseDate === value.createdAtUtc.slice(0, 10),
     "release-date-matches-created-date");
@@ -606,6 +612,55 @@ function validateRelease(value, checked) {
   checked.add("campaign-projection-bound");
   checked.add("remaining-risks-sorted");
   checked.add("postpublication-evidence-excluded");
+  const activePaths = [
+    ...value.webAssets.map((entry) => entry.path),
+    ...value.generatedPublicationFiles.map((entry) => entry.path)
+  ];
+  invariant(new Set(activePaths).size === activePaths.length &&
+    value.retiredPublicPaths.every((entry) => !activePaths.includes(entry)),
+  "web-asset-paths-disjoint");
+  checked.add("web-asset-paths-disjoint");
+  invariant(value.webAssets.reduce((total, entry) => total + entry.byteLength, 0) ===
+    value.webTotalBytes, "web-asset-total-matches");
+  checked.add("web-asset-total-matches");
+  invariant(value.webAssets.every((entry) => entry.cachePolicy !== "immutable" ||
+    entry.path.includes(entry.sha256)), "web-immutable-assets-content-addressed");
+  checked.add("web-immutable-assets-content-addressed");
+  const bootstraps = value.webAssets.filter((entry) => entry.role === "bootstrap");
+  invariant(bootstraps.length === 1 && bootstraps[0].path === "/" &&
+    bootstraps[0].contentType === "text/html" &&
+    bootstraps[0].cachePolicy === "no-store", "web-bootstrap-exact");
+  checked.add("web-bootstrap-exact");
+  const generatedByRole = new Map(value.generatedPublicationFiles.map((entry) =>
+    [entry.role, entry]));
+  invariant(generatedByRole.size === 2 &&
+    generatedByRole.get("current-release-pointer")?.path ===
+      "/.well-known/site-release.json" &&
+    generatedByRole.get("release-history")?.path ===
+      "/.well-known/site-release-history.json", "web-generated-publication-exact");
+  checked.add("web-generated-publication-exact");
+  invariant(value.webAssets.every((entry) => !isWebModelBytePath(entry.path)) &&
+    value.generatedPublicationFiles.every((entry) => !isWebModelBytePath(entry.path)),
+  "web-model-bytes-excluded");
+  checked.add("web-model-bytes-excluded");
+  const workers = value.webAssets.filter((entry) => entry.role === "service-worker");
+  if (value.offlineCapability === "network-only") {
+    invariant(value.serviceWorkerPath === null && workers.length === 0,
+      "web-offline-capability-consistent");
+  } else {
+    invariant(value.serviceWorkerPath !== null && workers.length === 1 &&
+      workers[0].path === value.serviceWorkerPath &&
+      workers[0].contentType === "application/javascript" &&
+      workers[0].cachePolicy === "no-cache",
+    "web-offline-capability-consistent");
+  }
+  checked.add("web-offline-capability-consistent");
+  invariant(value.webAssets.every((entry) =>
+    entry.securityHeaderProfileSha256 === value.webSecurityHeaderProfileSha256) &&
+    value.generatedPublicationFiles.every((entry) =>
+      entry.securityHeaderProfileSha256 === value.webSecurityHeaderProfileSha256),
+  "web-security-header-profile-consistent");
+  checked.add("web-security-header-profile-consistent");
   checked.add("public-redaction-profile-required");
 }
 

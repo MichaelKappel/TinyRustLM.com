@@ -13,7 +13,7 @@ use std::fmt;
 pub const PHASE_INVALIDATION_PROFILE_ID: &str = "tinyrustlm.vnext.phase-invalidation.v1";
 /// The SHA-256 of the exact frozen phase-invalidation profile bytes.
 pub const PHASE_INVALIDATION_PROFILE_SHA256: &str =
-    "d13eaf173a76229bbca401482459c07b6f591703a55523d3b216f984ba5370a3";
+    "924c515b2cddc081c9cbeac7e4c51fde213264ef2dff5bffcbc335430aafcbff";
 /// The one current semantic phase-invalidation result schema.
 pub const PHASE_INVALIDATION_RESULT_SCHEMA: &str = "tinyrustlm.vnext.phase_invalidation_result.v1";
 
@@ -29,6 +29,7 @@ const MAXIMUM_RESULT_BYTES: usize = 4_194_304;
 const SUPPORTED_RECEIPT_TYPES: &[&str] = &[
     "acquisition",
     "browser-round",
+    "build",
     "catalog-announcement",
     "conversation-evaluation",
     "conversion",

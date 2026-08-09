@@ -129,9 +129,9 @@ test("freezes a bounded semantic-currentness profile without network or compatib
   const source = fs.readFileSync(path.join(repositoryRoot, "tinyrustlm", "tools",
     "vnext-phase-invalidation.js"), "utf8");
 
-  assert.equal(bytes.length, 2708);
+  assert.equal(bytes.length, 2721);
   assert.equal(sha256(bytes),
-    "d13eaf173a76229bbca401482459c07b6f591703a55523d3b216f984ba5370a3");
+    "924c515b2cddc081c9cbeac7e4c51fde213264ef2dff5bffcbc335430aafcbff");
   assert.equal(phaseInvalidationProfileSha256, sha256(bytes));
   assert.equal(phaseInvalidationProfile.profileId,
     "tinyrustlm.vnext.phase-invalidation.v1");

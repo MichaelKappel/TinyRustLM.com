@@ -288,7 +288,7 @@ test("binds signing, context provenance, redaction, and public claims explicitly
     "approved-for-publication", "blocked", "draft", "externally-verified",
     "locally-verified", "published", "retracted", "stale"
   ]);
-  assert.equal(contracts.release.schema, "tinyrustlm.vnext.release_manifest.v2");
+  assert.equal(contracts.release.schema, "tinyrustlm.vnext.release_manifest.v3");
   assert.equal(contracts.claim.schema, "tinyrustlm.vnext.claim.v2");
   assert.ok(field(contracts.release, "campaignPlanSha256"));
   assert.ok(field(contracts.release, "campaignProjectionSha256"));

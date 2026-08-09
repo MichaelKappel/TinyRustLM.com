@@ -49,11 +49,15 @@ retaining dead-process recovery. Child-process interruption tests, restart
 reprojection, disk-full tests, and exact 271-receipt/40-subject synthetic capacity are bound in
 `docs/architecture/vnext-campaign-runner.md`.
 
-The clean-slate r4 registry also replaces the cyclic release/claim pair before
-production use. `release_manifest.v2` is a prepublication predicate over one
+The clean-slate r5 registry also replaces the cyclic release/claim pair before
+production use. `release_manifest.v3` is a prepublication predicate over one
 exact campaign plan, one exact projection, final attestation, artifacts,
-packages, approved claims, SBOM, provenance, changelog, and explicit remaining
-risks. It contains no authorization or postpublication receipt pointer.
+packages, approved claims, SBOM, provenance, changelog, explicit remaining
+risks, one current web-build receipt, exact web control-document hashes, and a
+closed static publication graph. Immutable cache entries require their full
+content SHA-256 in the public path. The manifest contains no authorization or
+postpublication receipt pointer and does not attempt to hash its own wire or
+generated pointer bytes that must name its identity.
 `claim.v2` adds an evidence-backed `approved-for-publication` state whose
 `releaseManifestId` is null. A release-authorizer signature, deployment
 readbacks, and published-claim descendants point forward to the finalized
@@ -67,7 +71,7 @@ cutover, authorized live MemoryEndpoints
 continuity, independent outside-network lane proofs, catalog publication, or
 public HTTPS readback. No local test changes a campaign counter.
 
-Reviewed at `2026-08-09T13:45:56Z`. The review is invalidated when any bound
+Reviewed at `2026-08-09T18:13:59Z`. The review is invalidated when any bound
 file changes, when the parser changes, or when a deferred proof obligation is
 reclassified without a new threat review.
 
@@ -75,23 +79,26 @@ reclassified without a new threat review.
 
 | Role | Path | Bytes | SHA-256 |
 | --- | --- | ---: | --- |
-| Frozen registry | `contracts/vnext/contract-family.v1.json` | 37,540 | `27101971058e6e0332f4a59f72c1c13abdef34b6b388f37b4d886dcf7a2cdecc` |
-| Language-neutral corpus | `contracts/vnext/contract-corpus.v1.json` | 133,357 | `c079e5de5afa9b6150f08ff5acc247d766dc9f1a79fab47a85761cbf178b5aa1` |
-| Registry interpreter | `tinyrustlm/tools/vnext-contract-validator-registry.js` | 30,660 | `c4931af6fa7d40cc91dafb2ad922968b145ef20d76369be209c417993b695938` |
-| Independent validator | `tinyrustlm/tools/vnext-contract-validator-independent.js` | 42,032 | `c5272cfc0e1e923ccdca17adcf7e3a292997a7b78a015e3a9477ea30edec719a` |
-| Corpus generator | `tinyrustlm/tools/vnext-contract-corpus-generator.js` | 21,133 | `e6706d23dcb51e678513ba3b1ae790c667e3293b3b9e4c974ac3359feb86c996` |
-| Differential tests | `tinyrustlm/tests/vnext-contract-validator-conformance.test.js` | 10,585 | `aae20f35f6822dd4eef0a105a2600d1fb320dff0a27efd97882f9a6a127f663e` |
+| Frozen registry | `contracts/vnext/contract-family.v1.json` | 40,674 | `dd1534f577f5468f94d4b3b4d7d8985751fd1ddc4a28a2ccee9f47462449bbf0` |
+| Language-neutral corpus | `contracts/vnext/contract-corpus.v1.json` | 195,068 | `2c86c7da67d419b140f5de8b9d297707a6e47245a338db6dd9bcca55de912044` |
+| Registry interpreter | `tinyrustlm/tools/vnext-contract-validator-registry.js` | 33,567 | `120927546862720fe2faafb7d0e0bc5520d110f20115b50f8f9cf2eba715e413` |
+| Independent validator | `tinyrustlm/tools/vnext-contract-validator-independent.js` | 46,820 | `758b42e3b5e25bfb5e58d6a06056b1760cc8527cdcc82ea90838f0330094412f` |
+| Corpus generator | `tinyrustlm/tools/vnext-contract-corpus-generator.js` | 24,303 | `835d3a65bd0cae9adc1618d2f40802390643d04d60a0d3287e01d3665860a986` |
+| Differential tests | `tinyrustlm/tests/vnext-contract-validator-conformance.test.js` | 10,585 | `78795d573153d56fd1fd4438e8e317d600d61bda477998ef592bf7b2fe28d9e5` |
 
 Validator identities are
 `tinyrustlm.vnext.registry-schema-validator.v1` and
 `tinyrustlm.vnext.independent-schema-validator.v1`. The corpus binds the
-registry and normalized generator source hashes. It contains 74 exact raw-byte
-cases: 14 accept cases and 60 reject cases. Both validators execute every case,
-for 148 differential verdicts.
+registry and normalized generator source hashes. It contains 82 exact raw-byte
+cases: 14 accept cases and 68 reject cases. Both validators execute every case,
+for 164 differential verdicts. The web-specific rejects cover active/retired
+path collision, total drift, missing bootstrap, generated-pointer role drift,
+model-byte routes, security-header drift, service-worker policy mismatch, and
+stable paths mislabeled as immutable.
 
 The current clean-slate registry family is
-`tinyrustlm-vnext-2026-08-09-r4`. Before any authorized production record, it
-replaces r3 with the acyclic `release_manifest.v2` and `claim.v2` pair. It
+`tinyrustlm-vnext-2026-08-09-r5`. Before any authorized production record, it
+admits only the acyclic `release_manifest.v3` and `claim.v2` pair. It
 retains the receipt cardinalities required for complete offline campaign
 closure: 2,048 `inputReceiptIds` and 1,024
 `offlineBundle.signatureEnvelopeReceiptIds`. The independent validator carries
@@ -149,7 +156,7 @@ verified by later phases.
 | Malformed or disguised text | Fatal UTF-8, BOM rejection, scalar checks, bounded text and string rules | Mitigated locally | Rust/browser parity was outside this Phase 2 checkpoint; the current addendum records later bounded parity |
 | Parser exhaustion | Byte, depth, entry, member, array, string, aggregate-string, and number-character limits | Mitigated locally | Wall-clock and allocation ceilings require measured native/browser tests |
 | Numeric identity drift | Unsafe integers, negative zero, overflow, underflow, and floats are rejected where unsupported | Mitigated locally | Cross-language RFC 8785 serialization remains deferred |
-| Schema confusion or downgrade | Only the nine exact registry-listed schemas are accepted, including proof v2, release v2, and claim v2, with no reader for their replaced forms | Mitigated locally | Production cutover and deletion of superseded entry points remain deferred |
+| Schema confusion or downgrade | Only the nine exact registry-listed schemas are accepted, including proof v2, release v3, and claim v2, with no reader for their replaced forms | Mitigated locally | Production cutover and deletion of superseded entry points remain deferred |
 | Proof/signature identity cycle | Proof v2 has no envelope-ID field; the signature receipt points one way to the finalized proof | Mitigated by incompatible replacement | Signature-descendant existence and authority remain deferred |
 | Unknown-field smuggling | Root and every nested object are closed; property tests inject unknown fields at every reachable object depth | Mitigated locally | New fields require a new frozen registry and review |
 | Missing-field defaulting | Every declared field is required; property tests delete every root field | Mitigated locally | Nested required-field deletion is covered by exact descriptors and corpus examples, not exhaustive combinatorics |
@@ -162,7 +169,7 @@ verified by later phases.
 | Worker or companion state confusion | Direction, operation, payload binding, pairing, session, sequence, and capability constraints are explicit | Mitigated locally | Replay store, process isolation, browser origin, and loopback authentication remain later gates |
 | P2P piece or Merkle drift | Piece indices, offsets, sizes, hashes, Merkle root, total bytes, and artifact identity are recomputed locally | Mitigated locally | File streaming, peer transfer, and final Rust artifact verification remain later gates |
 | Local reachability promoted as public | Proof requires outside-network scope, complete transfer, lane and endpoint binding, and bounded freshness | Mitigated structurally | Observer signature, independence, and matching P2P parent remain deferred |
-| Release or claim inflation | Acyclic release v2 binds the campaign plan/projection, attestation, packages, artifacts, approved claims, SBOM, provenance, changelog, and remaining risks; the sole release surface requires complete fresh projection truth, same-snapshot parent identity, current-pass receipt closure, all 20 qualified artifact hashes, dependency closure, one CycloneDX SBOM, all current approved claims, and one current release-authorizer signature over the exact immutable manifest | Mitigated through authorization | Deployment, exact public readback, published-claim descendants, and site-publisher authority remain required |
+| Release or claim inflation | Acyclic release v3 binds the campaign plan/projection, attestation, packages, artifacts, approved claims, SBOM, provenance, changelog, remaining risks, current web build, exact control documents, and the closed static publication graph; the sole release surface requires complete fresh projection truth, same-snapshot parent identity, current-pass receipt closure, all 20 qualified artifact hashes, dependency closure, one CycloneDX SBOM, all current approved claims, exact static bytes, and one current release-authorizer signature over the immutable manifest | Mitigated through authorization | Deployment, exact public readback, generated publication descendants, published-claim descendants, and site-publisher authority remain required |
 | Secret disclosure through public evidence | Private-by-default classes, public-safe field types, canonical LF UTF-8 public text, redaction profile, forbidden keys/value classes, acyclic scan binding, and the preparation gate's scans over selected documents, changelog, and final manifest | Reduced | Compressed members, cross-runtime parity, and protected-list production custody remain deferred |
 | Compatibility code becoming permanent | Validators recognize one incompatible family and contain no fallback, migration, deprecated alias, dual-read, or dual-write path | Mitigated in the new boundary | Old production readers and writers still exist elsewhere and must be deleted after verified cutover |
 
@@ -261,9 +268,16 @@ receipt snapshot, then scans finalized attestation bytes before create-only
 persistence. A failed protected-equality scan persists only the public-safe
 scan receipt and returns no unsafe attestation bytes. Its operator projection
 is derived from the same result and deliberately has no `done` state. The same
-surface now prepares a scanned, create-only `release_manifest.v2` only from a
+surface now prepares a scanned, create-only `release_manifest.v3` only from a
 complete fresh projection and exact current snapshot parents, while returning
-an explicit `not-authorized` state. Its authorization operation reconstructs
+an explicit `not-authorized` state. Preparation additionally requires one
+current-pass build receipt that binds the source revision, public origin,
+changelog, deployment manifest, security-header profile, publication
+generator, and exact static-asset inventory. Paths are closed and disjoint,
+active model-byte routes are forbidden, and immutable caching requires the
+full asset digest in the route. Generated pointer and history bytes are bound
+only by forward site-publisher descendants, avoiding a content-addressed
+self-reference. Its authorization operation reconstructs
 the original runner records, projection, snapshot membership, selected release
 evidence, and preparation scans; rejects any post-preparation drift; and
 admits only one canonical finite-lived `release-authorizer` signature child
@@ -291,16 +305,18 @@ At review time:
 
 - `node --test tests/vnext-contract-registry.test.js tests/vnext-contract-validator-conformance.test.js`
   passed 13, failed 0, skipped 0.
-- The current complete `npm run test:unit` run passed 837, failed 0, skipped 0,
-  in 66.255 seconds, including real Chromium profile deletion and fault checks,
-  local web-release smoke, signing authority, campaign-runner capacity, and
-  closed offline-bundle scenarios.
-- The current ten-file contract, store, signing-authority, and offline-bundle
-  set passed 82, failed 0, skipped 0. The offline subset covers canonical
-  materialization, exact membership, external pins, complete receipt closure,
-  profile and schema drift, stale targets, governance succession, revocation,
-  interrupted bytes, hostile accessors, and finite resource limits.
-- Both validators produced the expected verdict for all 74 corpus records.
+- The current complete `npm run test:unit` run passed 858, failed 0, skipped 0,
+  in 291.780 seconds, including real Chromium profile deletion and fault
+  checks, local web-release smoke, signing authority, campaign-runner
+  capacity, exact web-publication graph rejection, release preparation,
+  release authorization, and closed offline-bundle scenarios.
+- The current affected vNext contract, store, signing-authority,
+  release-surface, and offline-bundle set passed 161, failed 0, skipped 0. The
+  coverage includes canonical materialization, exact membership, external
+  pins, complete receipt closure, profile and schema drift, stale targets,
+  governance succession, revocation, web graph drift, immutable-cache path
+  identity, interrupted bytes, hostile accessors, and finite resource limits.
+- Both validators produced the expected verdict for all 82 corpus records.
 - The test suite verifies source independence, corpus regeneration identity,
   the registry interpreter's three-way invariant partition, object-key order
   independence, required root fields, and nested unknown-field rejection.
@@ -315,9 +331,12 @@ production entry-point cutover, independent operation, or campaign evidence.
 Phase 2 closed after the bound hashes, this review, focused tests, complete unit
 suite, source hygiene, secret scan, and remote push were current in one
 checkpoint. The superseded mutable runner is deleted without an alias or
-compatibility entry point. The current next boundary is binding only a fresh
-sole-runner result into final attestation, release
-authorization, operator rendering, documentation, and public readback.
+compatibility entry point. Final attestation, operator projection, release v3
+preparation, and current release authorization now bind only a fresh
+sole-runner result. The current next boundary is strict forward-only
+deployment evidence, exact production HTTPS byte/hash readback, generated
+publication descendants, published claims, and current site-publisher
+authorization.
 Windows directory durability, archive-member scanning, and protected-list
 release custody remain separate prerequisites for their corresponding claims.
 

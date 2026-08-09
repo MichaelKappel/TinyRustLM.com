@@ -307,8 +307,9 @@ function phaseReceipt(entry, input) {
     runtime: fixtureRuntime(),
     publicParameters: [
       { name: "operation_id", value: operationId(input.attemptId), unit: null },
-      { name: "subject_id", value: input.subjectId, unit: null }
-    ],
+      { name: "subject_id", value: input.subjectId, unit: null },
+      ...(input.publicParameters ?? [])
+    ].sort((left, right) => left.name.localeCompare(right.name)),
     error: null,
     blockerCode: null,
     externalEvidenceReferences: [],
@@ -421,9 +422,107 @@ function seedReleaseInputs(roots, entry, options = {}) {
     receiptType: "package",
     subjectId: sbomArtifactId
   });
+  const changelogBytes = options.changelogBytes ?? Buffer.from(
+    "# TinyRustLM 1.0.0\n\n- Prepared the complete evidence-bound release.\n",
+    "utf8"
+  );
+  const publicOrigin = "https://tinyrustlm.example.com/";
+  const webDeploymentManifestBytes = Buffer.from(
+    "{\"schema\":\"tinyrustlm.web_deployment_manifest.v3\"}\n",
+    "utf8"
+  );
+  const webSecurityHeaderProfileBytes = Buffer.from(
+    "default-src 'self'; object-src 'none'; base-uri 'none'\n",
+    "utf8"
+  );
+  const webPublicationGeneratorBytes = Buffer.from(
+    "export const publicationProfile = 'tinyrustlm.web-publication.v1';\n",
+    "utf8"
+  );
+  const webSecurityHeaderProfileSha256 = sha256(webSecurityHeaderProfileBytes);
+  const webCssSha256 = sha256(Buffer.from("web-css", "utf8"));
+  const webAppSha256 = sha256(Buffer.from("web-app", "utf8"));
+  const webWasmSha256 = sha256(Buffer.from("web-wasm", "utf8"));
+  const webAssets = [
+    {
+      path: "/",
+      role: "bootstrap",
+      byteLength: 128,
+      sha256: sha256(Buffer.from("web-root", "utf8")),
+      contentType: "text/html",
+      cachePolicy: "no-store",
+      securityHeaderProfileSha256: webSecurityHeaderProfileSha256
+    },
+    {
+      path: `/assets/${webCssSha256}.css`,
+      role: "style",
+      byteLength: 256,
+      sha256: webCssSha256,
+      contentType: "text/css",
+      cachePolicy: "immutable",
+      securityHeaderProfileSha256: webSecurityHeaderProfileSha256
+    },
+    {
+      path: `/assets/${webAppSha256}.js`,
+      role: "application",
+      byteLength: 512,
+      sha256: webAppSha256,
+      contentType: "application/javascript",
+      cachePolicy: "immutable",
+      securityHeaderProfileSha256: webSecurityHeaderProfileSha256
+    },
+    {
+      path: `/assets/${webWasmSha256}.wasm`,
+      role: "runtime",
+      byteLength: 1024,
+      sha256: webWasmSha256,
+      contentType: "application/wasm",
+      cachePolicy: "immutable",
+      securityHeaderProfileSha256: webSecurityHeaderProfileSha256
+    }
+  ].sort((left, right) => left.path.localeCompare(right.path));
+  const generatedPublicationFiles = [
+    {
+      path: "/.well-known/site-release-history.json",
+      role: "release-history",
+      contentType: "application/json",
+      cachePolicy: "no-store",
+      securityHeaderProfileSha256: webSecurityHeaderProfileSha256
+    },
+    {
+      path: "/.well-known/site-release.json",
+      role: "current-release-pointer",
+      contentType: "application/json",
+      cachePolicy: "no-store",
+      securityHeaderProfileSha256: webSecurityHeaderProfileSha256
+    }
+  ];
+  const webAssetInventorySha256 = domainSeparatedDigest(
+    "tinyrustlm.web-asset-inventory.v1",
+    webAssets
+  );
+  const webBuildReceipt = phaseReceipt(entry, {
+    attemptId: "web-build-001",
+    inputHashes: [
+      { name: "web-deployment-manifest", sha256: sha256(webDeploymentManifestBytes) },
+      { name: "web-publication-generator", sha256: sha256(webPublicationGeneratorBytes) },
+      { name: "web-release-changelog", sha256: sha256(changelogBytes) },
+      { name: "web-security-header-profile", sha256: webSecurityHeaderProfileSha256 }
+    ],
+    outputHashes: [
+      { name: "web-asset-inventory", sha256: webAssetInventorySha256 }
+    ],
+    phase: "web-build",
+    publicParameters: [
+      { name: "public-origin", value: publicOrigin, unit: null }
+    ],
+    receiptType: "build",
+    subjectId: "tinyrustlm"
+  });
   const receiptStore = createVnextReceiptStore(roots.receipts);
   receiptStore.put(provenance.bytes);
   receiptStore.put(packageReceipt.bytes);
+  receiptStore.put(webBuildReceipt.bytes);
   let supersedingPackage = null;
   if (options.supersedePackage === true) {
     supersedingPackage = phaseReceipt(entry, {
@@ -484,18 +583,25 @@ function seedReleaseInputs(roots, entry, options = {}) {
 
   return {
     artifactManifestIds,
-    changelogBytes: options.changelogBytes ?? Buffer.from(
-      "# TinyRustLM 1.0.0\n\n- Prepared the complete evidence-bound release.\n",
-      "utf8"
-    ),
+    changelogBytes,
     claimIds: claims.map((claim) => claim.subjectId).sort(),
+    generatedPublicationFiles,
+    offlineCapability: "network-only",
     packageReceiptIds: [packageReceipt.receipt.receiptId],
     productId: "tinyrustlm",
     provenanceReceiptId: provenance.receipt.receiptId,
+    publicOrigin,
     remainingRiskCodes: ["authorized-publication-pending"],
+    retiredPublicPaths: ["/app/models/retired.slm"],
     sbomArtifactId,
+    serviceWorkerPath: null,
     supersedingPackageReceiptId: supersedingPackage?.receipt.receiptId ?? null,
-    version: "1.0.0"
+    version: "1.0.0",
+    webAssets,
+    webBuildReceiptId: webBuildReceipt.receipt.receiptId,
+    webDeploymentManifestBytes,
+    webPublicationGeneratorBytes,
+    webSecurityHeaderProfileBytes
   };
 }
 
@@ -508,6 +614,16 @@ function prepareInput(entry, label, releaseInput, overrides = {}) {
     packageReceiptIds: releaseInput.packageReceiptIds,
     productId: releaseInput.productId,
     provenanceReceiptId: releaseInput.provenanceReceiptId,
+    publicOrigin: releaseInput.publicOrigin,
+    webBuildReceiptId: releaseInput.webBuildReceiptId,
+    webDeploymentManifestBytes: releaseInput.webDeploymentManifestBytes,
+    webSecurityHeaderProfileBytes: releaseInput.webSecurityHeaderProfileBytes,
+    webPublicationGeneratorBytes: releaseInput.webPublicationGeneratorBytes,
+    webAssets: releaseInput.webAssets,
+    generatedPublicationFiles: releaseInput.generatedPublicationFiles,
+    retiredPublicPaths: releaseInput.retiredPublicPaths,
+    offlineCapability: releaseInput.offlineCapability,
+    serviceWorkerPath: releaseInput.serviceWorkerPath,
     remainingRiskCodes: releaseInput.remainingRiskCodes,
     sbomArtifactId: releaseInput.sbomArtifactId,
     version: releaseInput.version,
@@ -528,6 +644,9 @@ function authorizeInput(entry, authority, prepared, releaseInput,
     sourceRevision,
     trustedRootRegistryReceiptId: authority.root.receipt.receiptId,
     verificationTimeUtc: "2026-08-09T00:32:00Z",
+    webDeploymentManifestBytes: releaseInput.webDeploymentManifestBytes,
+    webSecurityHeaderProfileBytes: releaseInput.webSecurityHeaderProfileBytes,
+    webPublicationGeneratorBytes: releaseInput.webPublicationGeneratorBytes,
     ...overrides
   };
 }
@@ -541,7 +660,7 @@ test("freezes one no-compatibility campaign release surface profile", () => {
   const profile = parseStrictJson(bytes);
   assert.equal(campaignReleaseSurfaceProfileSha256, sha256(bytes));
   assert.equal(campaignReleaseSurfaceProfileSha256,
-    "5dd859914628be87aaae2333d2d1c850b739d58fd0d16dec79f04b9fbb0cfa94");
+    "97cc27e2d54f8e1612702f2b55cdf7ab9d6e19d4a4ad280c6f73df81c77ec9d0");
   assert.equal(campaignReleaseSurfaceProfile.profileId,
     "tinyrustlm.vnext.campaign-release-surface.v1");
   assert.equal(profile.status, "frozen");
@@ -680,6 +799,16 @@ test("rejects stored projection, caller verdict, counter drift, and accessors", 
     packageReceiptIds: [operationId("hostile-package")],
     productId: "tinyrustlm",
     provenanceReceiptId: operationId("hostile-provenance"),
+    publicOrigin: "https://tinyrustlm.example.com/",
+    webBuildReceiptId: operationId("hostile-web-build"),
+    webDeploymentManifestBytes: Buffer.from("{}", "utf8"),
+    webSecurityHeaderProfileBytes: Buffer.from("test", "utf8"),
+    webPublicationGeneratorBytes: Buffer.from("test", "utf8"),
+    webAssets: [],
+    generatedPublicationFiles: [],
+    retiredPublicPaths: [],
+    offlineCapability: "network-only",
+    serviceWorkerPath: null,
     remainingRiskCodes: [],
     sbomArtifactId: operationId("hostile-artifact"),
     version: "1.0.0"
@@ -695,6 +824,104 @@ test("rejects stored projection, caller verdict, counter drift, and accessors", 
     "release_surface_prepare_input_invalid_accessor");
   assert.equal(invoked, false);
   assert.deepEqual(createVnextReceiptStore(roots.receipts).rebuild().activeReceiptIds, []);
+});
+
+test("rejects malformed web publication graphs before campaign replay", {
+  timeout: 180_000
+}, async (t) => {
+  const roots = makeRoots(t);
+  const entry = acceptedCase("complete-capacity");
+  seedCase(roots, entry);
+  const releaseInput = seedReleaseInputs(roots, entry);
+  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+    runnerOptions(roots));
+  const base = prepareInput(entry, "invalid-web-graph", releaseInput);
+  const rootlessAssets = releaseInput.webAssets.slice(1);
+  const modelRouteAssets = releaseInput.webAssets.map((asset) =>
+    asset.role === "application" ? { ...asset, path: "/models/active.slm" } : asset)
+    .sort((left, right) => left.path.localeCompare(right.path));
+  const stableImmutableAssets = releaseInput.webAssets.map((asset) =>
+    asset.role === "application" ? { ...asset, path: "/assets/app.js" } : asset)
+    .sort((left, right) => left.path.localeCompare(right.path));
+  const wrongGeneratedRole = releaseInput.generatedPublicationFiles.map((entryValue) =>
+    entryValue.role === "current-release-pointer" ?
+      { ...entryValue, role: "release-history" } : entryValue);
+  const generatedBackReference = releaseInput.generatedPublicationFiles.map((entryValue) =>
+    entryValue.role === "current-release-pointer" ?
+      { ...entryValue, releaseManifestId: operationId("forbidden-back-reference") } :
+      entryValue);
+  const wrongHeaderAssets = releaseInput.webAssets.map((asset) =>
+    asset.role === "style" ? {
+      ...asset,
+      securityHeaderProfileSha256: sha256(Buffer.from("wrong-header-profile", "utf8"))
+    } : asset);
+  const cases = [
+    ["private-origin", { publicOrigin: "https://127.0.0.1/" },
+      "release_surface_public_origin_invalid"],
+    ["active-retired-collision", {
+      retiredPublicPaths: [releaseInput.webAssets.find((asset) =>
+        asset.role === "application").path]
+    },
+      "release_surface_web_graph_invalid"],
+    ["missing-root", { webAssets: rootlessAssets },
+      "release_surface_web_graph_invalid"],
+    ["model-byte-route", { webAssets: modelRouteAssets },
+      "release_surface_web_graph_invalid"],
+    ["stable-immutable-path", { webAssets: stableImmutableAssets },
+      "release_surface_web_graph_invalid"],
+    ["wrong-generated-role", { generatedPublicationFiles: wrongGeneratedRole },
+      "release_surface_web_graph_invalid"],
+    ["generated-back-reference", { generatedPublicationFiles: generatedBackReference },
+      "release_surface_generated_files_invalid"],
+    ["header-profile-drift", { webAssets: wrongHeaderAssets },
+      "release_surface_web_assets_invalid"],
+    ["network-only-worker", { serviceWorkerPath: "/service-worker.js" },
+      "release_surface_web_graph_invalid"]
+  ];
+  for (const [label, overrides, expectedCode] of cases) {
+    await rejectsCode(() => surface.prepareRelease({
+      ...base,
+      operationId: operationId(`invalid-web-${label}`),
+      ...overrides
+    }), expectedCode);
+  }
+  const missingWebAssets = { ...base };
+  delete missingWebAssets.webAssets;
+  await rejectsCode(() => surface.prepareRelease(missingWebAssets),
+    "release_surface_prepare_input_invalid");
+  await rejectsCode(() => surface.prepareRelease({ ...base, compatibilityMode: true }),
+    "release_surface_prepare_input_invalid");
+  assert.equal(createVnextSubjectStore(roots.subjects).rebuild().activeSubjectIds.some(
+    (subjectId) => createVnextSubjectStore(roots.subjects).read(subjectId).schema ===
+      "tinyrustlm.vnext.release_manifest.v3"), false);
+});
+
+test("rejects a valid-looking web inventory that drifts from build evidence", {
+  timeout: 180_000
+}, async (t) => {
+  const roots = makeRoots(t);
+  const entry = acceptedCase("complete-capacity");
+  seedCase(roots, entry);
+  const releaseInput = seedReleaseInputs(roots, entry);
+  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+    runnerOptions(roots));
+  const driftedAssets = releaseInput.webAssets.map((asset) =>
+    asset.role === "application" ? {
+      ...asset,
+      byteLength: asset.byteLength + 1,
+      sha256: sha256(Buffer.from("drifted-web-app", "utf8")),
+      contentType: "application/json",
+      cachePolicy: "no-cache"
+    } : asset);
+  await rejectsCode(() => surface.prepareRelease(prepareInput(
+    entry,
+    "drifted-web-inventory",
+    releaseInput,
+    { webAssets: driftedAssets }
+  )), "release_surface_web_build_binding_invalid");
+  const subjectStore = createVnextSubjectStore(roots.subjects);
+  assert.equal(subjectStore.rebuild().activeSubjectIds.some((subjectId) =>
+    subjectStore.read(subjectId).schema === "tinyrustlm.vnext.release_manifest.v3"), false);
 });
 
 test("rejects campaign, environment, and authority pin mismatches", {
@@ -871,7 +1098,7 @@ test("prepares one complete public-safe release without authorizing publication"
 
   const subjectStore = createVnextSubjectStore(roots.subjects);
   const release = subjectStore.read(result.releaseManifestId).value;
-  assert.equal(release.schema, "tinyrustlm.vnext.release_manifest.v2");
+  assert.equal(release.schema, "tinyrustlm.vnext.release_manifest.v3");
   assert.equal(release.releaseId, result.releaseManifestId);
   assert.equal(release.releaseDate, "2026-08-09");
   assert.equal(release.createdAtUtc, entry.verificationTimeUtc);
@@ -1279,7 +1506,7 @@ test("refuses release preparation when the fresh campaign projection is incomple
 
   const subjectStore = createVnextSubjectStore(roots.subjects);
   assert.equal(subjectStore.rebuild().activeSubjectIds.some((subjectId) =>
-    subjectStore.read(subjectId).schema === "tinyrustlm.vnext.release_manifest.v2"), false);
+    subjectStore.read(subjectId).schema === "tinyrustlm.vnext.release_manifest.v3"), false);
 });
 
 test("rejects incomplete artifact coverage and omitted current approved claims", {
@@ -1384,7 +1611,7 @@ test("persists only public-safe failure evidence for an unsafe changelog", {
 
   const subjectStore = createVnextSubjectStore(roots.subjects);
   assert.equal(subjectStore.rebuild().activeSubjectIds.some((subjectId) =>
-    subjectStore.read(subjectId).schema === "tinyrustlm.vnext.release_manifest.v2"), false);
+    subjectStore.read(subjectId).schema === "tinyrustlm.vnext.release_manifest.v3"), false);
   const receiptStore = createVnextReceiptStore(roots.receipts);
   const redactionReceipts = receiptStore.rebuild().activeReceiptIds
     .map((receiptId) => receiptStore.read(receiptId).receipt)

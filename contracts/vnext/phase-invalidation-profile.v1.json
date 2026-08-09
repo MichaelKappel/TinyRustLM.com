@@ -3,7 +3,7 @@
   "profileId": "tinyrustlm.vnext.phase-invalidation.v1",
   "status": "frozen",
   "versionPolicy": "single-current-profile-no-compatibility-reader",
-  "contractRegistrySha256": "27101971058e6e0332f4a59f72c1c13abdef34b6b388f37b4d886dcf7a2cdecc",
+  "contractRegistrySha256": "dd1534f577f5468f94d4b3b4d7d8985751fd1ddc4a28a2ccee9f47462449bbf0",
   "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
   "receiptSchema": "tinyrustlm.vnext.receipt.v1",
   "inputPolicy": "bounded-final-canonical-receipt-bytes-only",
@@ -38,6 +38,7 @@
   "supportedPhaseReceiptTypes": [
     "acquisition",
     "browser-round",
+    "build",
     "catalog-announcement",
     "conversation-evaluation",
     "conversion",
