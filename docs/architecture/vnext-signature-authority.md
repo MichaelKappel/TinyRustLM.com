@@ -102,13 +102,15 @@ gate.
 
 This authority function intentionally accepts a bounded graph rather than
 deciding whether a transport bundle is exact. The paired
-`vnext-offline-bundle.js` boundary now supplies Node-only exact manifest
-membership, receipt-parent closure, linked-subject checks, and target-current
-admission before returning an offline result.
+Node and Rust offline-bundle boundaries now independently enforce exact
+manifest membership, receipt-parent closure, linked-subject checks, and
+target-current admission before returning the same canonical offline result.
+The Rust implementation and frozen cross-language rejection corpus are
+documented in `vnext-rust-offline-bundle-parity.md`.
 
-The combined checkpoint still lacks Rust offline-bundle parity and does not
-prove browser parity, actual observer independence, production key custody,
-trusted production time, redaction/secret scans, production entry-point
-cutover, or campaign completion. Rust graph parity does not narrow those
-non-claims. No model, browser, MemoryEndpoints, P2P, catalog, package, site, or
-release counter changes from these tests.
+The combined checkpoint still lacks Rust truthful-projection parity and does
+not prove browser parity, actual observer independence, production key
+custody, trusted production time, redaction/secret scans, production
+entry-point cutover, or campaign completion. Rust graph and offline-bundle
+parity do not narrow those non-claims. No model, browser, MemoryEndpoints,
+P2P, catalog, package, site, or release counter changes from these tests.

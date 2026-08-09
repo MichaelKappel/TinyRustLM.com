@@ -144,7 +144,11 @@ one-pass and 17-rejection corpus with byte, hash, and error-code parity. The
 complete authority graph now has an independent strict Rust implementation,
 all six signable non-receipt subject validators, and a public-only nine-pass
 and 26-rejection corpus with exact result-byte, hash, and error-code parity.
-Rust offline-bundle and truthful-projection parity remain incomplete. The Node
+Exact offline-bundle manifest, verification-receipt, authority, target, and
+closed-membership verification now has an independent strict Rust
+implementation and a public-only three-pass and 31-rejection corpus with exact
+result-byte, hash, and error-code parity. Rust truthful-projection parity
+remains incomplete. The Node
 campaign boundary now also
 validates complete projection-result wires and persists exact plans and
 projection snapshots through one frozen create-only artifact-store profile.
@@ -178,6 +182,8 @@ The independent Rust Ed25519 primitive boundary is documented in
 `docs/architecture/vnext-rust-signature-primitive-parity.md`.
 The independent Rust authority-graph boundary is documented in
 `docs/architecture/vnext-rust-authority-graph-parity.md`.
+The independent Rust offline-bundle boundary is documented in
+`docs/architecture/vnext-rust-offline-bundle-parity.md`.
 The exact 20/50/25/40/20 plan and no-double-count projection are documented in
 `docs/architecture/vnext-campaign-plan-projection.md`.
 The independent Rust plan boundary is documented in
@@ -187,7 +193,7 @@ The generated browser WASM boundary is documented in
 Create-only plan/projection persistence is documented in
 `docs/architecture/vnext-campaign-artifact-persistence.md`.
 
-Remaining Rust offline-bundle/projection parity, browser currentness execution,
+Remaining Rust truthful-projection parity, browser currentness execution,
 archive-member
 scanning, production campaign-runner and entry-point cutover, projection
 release integration, and external campaign evidence remain incomplete.

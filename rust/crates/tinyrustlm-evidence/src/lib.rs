@@ -9,6 +9,7 @@ use std::fmt;
 use url::Url;
 
 mod authority;
+mod offline_bundle;
 mod phase_invalidation;
 mod receipt;
 mod signature;
@@ -17,6 +18,10 @@ mod subject;
 pub use authority::{
     verify_authority_graph, AuthorityError, VerifiedAuthorityGraph, AUTHORITY_PROFILE_ID,
     AUTHORITY_PROFILE_SHA256,
+};
+pub use offline_bundle::{
+    verify_offline_bundle, OfflineBundleError, OfflineBundleVerificationInput,
+    VerifiedOfflineBundle, OFFLINE_BUNDLE_PROFILE_ID, OFFLINE_BUNDLE_PROFILE_SHA256,
 };
 pub use phase_invalidation::{
     classify_phase_receipts, FinalizedPhaseInvalidation, PhaseInvalidationError,

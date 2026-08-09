@@ -133,17 +133,18 @@ nonce was reused, whether a subject was correctly linked, or whether supplied
 bundle membership is closed.
 
 Those decisions remain owned by the graph authority and offline-bundle
-verifiers. A production caller must eventually require independent Rust parity
-for those layers and semantic currentness before truthful projection can count
-any evidence.
+verifiers. Those layers now have independent Rust parity, but a production
+caller must still compose their results with semantic currentness and truthful
+projection before any evidence can be counted.
 
 ## Remaining Work
 
 - Maintain the frozen public-only authority-graph corpus and independent Rust
   result-byte and rejection-code parity documented in
   `docs/architecture/vnext-rust-authority-graph-parity.md`.
-- Implement independent Rust offline-bundle closure and target-current
-  admission.
+- Maintain the frozen public-only offline-bundle corpus and independent Rust
+  result-byte and rejection-code parity documented in
+  `docs/architecture/vnext-rust-offline-bundle-parity.md`.
 - Implement Rust truthful campaign projection over exact plan, currentness,
   authority, and bundle results.
 - Generate browser currentness and authority byte-transport interfaces without

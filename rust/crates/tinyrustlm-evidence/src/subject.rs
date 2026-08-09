@@ -20,6 +20,7 @@ const MAXIMUM_SAFE_INTEGER: u64 = 9_007_199_254_740_991;
 #[derive(Clone, Debug)]
 pub(crate) struct IdentitySubject {
     pub(crate) canonical_content_sha256: String,
+    pub(crate) contract_class: String,
     pub(crate) schema: String,
     pub(crate) subject_id: String,
     pub(crate) value: Value,
@@ -186,6 +187,7 @@ pub(crate) fn validate_identity_subject_bytes(
     }
     Ok(IdentitySubject {
         canonical_content_sha256: digest,
+        contract_class: contract.class.clone(),
         schema: contract.schema.clone(),
         subject_id: subject_id.to_owned(),
         value,

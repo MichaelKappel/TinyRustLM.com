@@ -158,15 +158,19 @@ It does not prove:
 - public reachability, catalog announcement, package publication, site
   deployment, or HTTPS readback;
 - production key custody or trusted clock operation; or
-- Rust, browser, WASM, C ABI, C#, or package-consumer parity.
+- browser, WASM, C ABI, C#, or package-consumer parity.
 
 No 20/50/25/40/20 campaign counter changes from this checkpoint.
 
+Independent Rust manifest, verification-receipt, authority-composition,
+target-currentness, and exact closed-membership parity is implemented and
+test-bound in
+`docs/architecture/vnext-rust-offline-bundle-parity.md`.
+
 ## Remaining Work
 
-- Reproduce the profile, manifest, schema hashes, Ed25519 decisions, authority
-  graph, and hostile corpus in independently implemented Rust and browser
-  verifiers.
+- Generate the browser verifier boundary from the completed Rust semantics
+  without handwritten JavaScript decisions or a second ABI.
 - Integrate the verifier with the create-only receipt store and interruption-
   safe on-disk bundle staging without adding a second parser or format.
 - Require every applicable redaction-scan receipt to replay through the
@@ -174,7 +178,8 @@ No 20/50/25/40/20 campaign counter changes from this checkpoint.
   admission. The manifest profile binding prevents policy substitution but
   does not disclose or reconstruct private equality inputs.
 - Reproduce the bound campaign projection and its complete-bundle capacity
-  fixture in independent Rust and browser implementations.
+  fixture in independent Rust, then execute currentness through the generated
+  browser boundary.
 - Prove the Rust/Win32 directory-flush boundary before claiming production
   directory durability.
 - Run authorized production operations only after key custody, trusted time,

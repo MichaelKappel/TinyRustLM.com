@@ -271,6 +271,13 @@ including every signable non-receipt subject family. Its public-only
 `f816fe3b2e76520ce7f6f1c71f1840540f4f3a0cc16b3548ec710db39670b1bb`
 and freezes nine accepted results plus 26 exact hostile rejection codes. See
 `docs/architecture/vnext-rust-authority-graph-parity.md`.
+The same crate now independently verifies exact offline manifest and member
+binding, the separate verification receipt, authority composition, closed
+receipt and subject membership, terminal currentness, and target current
+eligibility. Its public-only 658,110-byte corpus has SHA-256
+`c50a9668725a67df15f45fd28c4c80addde89e53fe80468590005a9fcb293ba8`
+and freezes three accepted bundles plus 31 exact hostile rejection codes. See
+`docs/architecture/vnext-rust-offline-bundle-parity.md`.
 
 `tinyrustlm/tools/vnext-campaign-artifact-store.js` persists only exact
 campaign-plan and projection-result wires under raw-byte SHA-256 paths. Its
@@ -301,13 +308,14 @@ hash cycle; the receipt is finalized afterward and binds the manifest hash and
 complete member set. `docs/architecture/vnext-offline-verification-bundle.md`
 defines the exact boundary.
 
-This remains primarily a Node implementation checkpoint. Exact campaign-plan
-finalization, semantic currentness, the Ed25519 primitive, and the complete
-signature authority graph have independent Rust parity. Exact
+This remains an incomplete campaign implementation checkpoint. Exact
+campaign-plan finalization, semantic currentness, the Ed25519 primitive, the
+complete signature authority graph, and offline-bundle closure have independent
+Rust parity. Exact
 plan/projection-result persistence is implemented, and plan
-finalization/validation has a generated real-browser WASM boundary. Offline
-bundle evaluation, truthful projection, browser currentness, and the broader
-hostile corpus do not yet have cross-language parity. This is not production
+finalization/validation has a generated real-browser WASM boundary. Truthful
+projection, browser currentness, and the broader production runner do not yet
+have cross-language parity. This is not production
 entry-point cutover, outside-network observation, or campaign evidence. Runtime tests
 generate ephemeral private keys only in process memory. Checked-in profiles
 and vectors contain public material only.

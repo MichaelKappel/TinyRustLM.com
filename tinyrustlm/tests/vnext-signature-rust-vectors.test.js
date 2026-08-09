@@ -82,7 +82,7 @@ test("replays every accepted and rejected primitive vector through Node", () => 
   }
 });
 
-test("keeps primitive parity documented without claiming graph authority", () => {
+test("keeps primitive parity documented without inflating later authority", () => {
   const document = fs.readFileSync(primitiveDocumentPath, "utf8");
   const contractReadme = fs.readFileSync(
     path.join(repositoryRoot, "contracts/vnext/README.md"),
@@ -106,6 +106,7 @@ test("keeps primitive parity documented without claiming graph authority", () =>
     assert.match(text, /vnext-rust-signature-primitive-parity\.md/u);
   }
   assert.match(inventory, /complete authority graph now has an independent strict Rust implementation/u);
-  assert.match(inventory, /Rust offline-bundle and truthful-projection parity remain incomplete/u);
-  assert.match(authority, /Rust graph parity does not narrow those\s+non-claims/u);
+  assert.match(inventory, /Rust truthful-projection parity\s+remains incomplete/u);
+  assert.match(authority,
+    /Rust graph and offline-bundle\s+parity do not narrow those non-claims/u);
 });

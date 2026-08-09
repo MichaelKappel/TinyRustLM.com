@@ -250,13 +250,13 @@ pub(crate) struct KeyRevocation {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub(crate) struct OfflineBundle {
-    authority_registry_receipt_ids: Vec<String>,
-    bundle_manifest_sha256: String,
-    created_at_utc: String,
-    receipt_ids: Vec<String>,
-    revocation_receipt_ids: Vec<String>,
-    schema_hashes: Vec<HashBinding>,
-    signature_envelope_receipt_ids: Vec<String>,
+    pub(crate) authority_registry_receipt_ids: Vec<String>,
+    pub(crate) bundle_manifest_sha256: String,
+    pub(crate) created_at_utc: String,
+    pub(crate) receipt_ids: Vec<String>,
+    pub(crate) revocation_receipt_ids: Vec<String>,
+    pub(crate) schema_hashes: Vec<HashBinding>,
+    pub(crate) signature_envelope_receipt_ids: Vec<String>,
 }
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]

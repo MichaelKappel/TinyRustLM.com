@@ -145,8 +145,10 @@ external gates. A true graph result is never a campaign-level `passed` field.
 
 ## Remaining Work
 
-- Implement independent Rust offline-bundle manifest, membership, parent
-  closure, linked-subject, registry, revocation, and target-current parity.
+- Preserve the completed independent Rust offline-bundle manifest, membership,
+  parent-closure, linked-subject, authority, and target-current parity
+  documented in
+  `docs/architecture/vnext-rust-offline-bundle-parity.md`.
 - Compose plan, currentness, authority, and offline-bundle results in the Rust
   truthful campaign projection.
 - Generate browser currentness and authority byte-transport interfaces without
