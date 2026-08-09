@@ -13,8 +13,11 @@ The implementation consists of:
 - `contracts/vnext/campaign-projection-profile.v1.json`;
 - `tinyrustlm/tools/vnext-campaign-projection.js`; and
 - `tinyrustlm/tests/vnext-campaign-projection.test.js`;
-- `rust/crates/tinyrustlm-evidence` for independent plan finalization and
-  validation;
+- `rust/crates/tinyrustlm-evidence` for independent plan finalization,
+  validation, semantic currentness, authority verification, truthful
+  projection, and result validation;
+- the public-only projection seed and cross-language parity corpus in
+  `contracts/vnext`;
 - `tinyrustlm/tools/vnext-campaign-plan-vector-generator.js`;
 - the two frozen campaign-plan parity fixtures in `contracts/vnext`;
 - `contracts/vnext/campaign-artifact-store-profile.v1.json`; and
@@ -175,6 +178,13 @@ conditions, and operation state. See
 `docs/architecture/vnext-campaign-artifact-persistence.md` for the create-only
 layout, interruption behavior, and restart algorithm.
 
+Rust independently exposes `project_campaign` and
+`validate_campaign_projection_result` with byte-identical accepted results
+and exact rejection-code parity over the frozen public corpus. See
+`docs/architecture/vnext-rust-campaign-projection-parity.md` for inputs,
+verification order, vector identities, non-claims, and remaining browser
+transport work.
+
 ## Capacity Closure
 
 The same checkpoint aligns all capacities needed by a complete campaign:
@@ -194,15 +204,16 @@ facts, and fixture endpoints do not satisfy any live campaign objective.
 
 ## Remaining Work
 
-- Preserve the completed independent Rust semantic-currentness parity and
-  reproduce signature authority and truthful projection with frozen hostile
-  cross-language corpora.
-- Add a generated browser WASM currentness boundary only after the Rust API is
-  frozen; browser JavaScript must remain byte transport rather than semantic
-  authority.
-- Preserve the completed generated browser WASM plan boundary and its exact
-  browser/Node/Rust byte parity; do not duplicate plan semantics in handwritten
-  browser JavaScript. See
+- Preserve the completed independent Rust plan, semantic-currentness,
+  signature-authority, offline-bundle, truthful-projection, and result-validator
+  parity boundaries.
+- Cleanly replace the plan-only generated browser ABI with one campaign
+  evidence boundary; browser JavaScript must remain byte transport rather than
+  semantic authority.
+- Preserve the completed generated browser WASM plan checkpoint as immutable
+  evidence while replacing its plan-only runtime profile; retain plan
+  operations in the new generated ABI and do not duplicate semantics in
+  handwritten browser JavaScript. See
   `docs/architecture/vnext-campaign-plan-wasm-boundary.md`.
 - Bind the projection result into final attestation, release authorization,
   rendered operator status, maintained documentation, and public readback.

@@ -9,9 +9,12 @@ targets. A later checkpoint now invokes the same crate through one generated
 real-browser WASM boundary; see
 `docs/architecture/vnext-campaign-plan-wasm-boundary.md`. A later, separate
 Rust API now implements semantic currentness, but the plan and browser-plan
-boundaries described here do not expose it. Signature authority, Rust campaign
-projection, production campaign-runner integration, release authorization,
-and every live campaign operation remain incomplete.
+boundaries described here do not expose it. Separate Rust APIs now also
+implement signature authority and truthful campaign projection; see
+`docs/architecture/vnext-rust-authority-graph-parity.md` and
+`docs/architecture/vnext-rust-campaign-projection-parity.md`. Browser campaign
+evidence execution, production campaign-runner integration, release
+authorization, and every live campaign operation remain incomplete.
 
 No fixture in this checkpoint is production evidence. All campaign counters
 remain 0/20 qualified models, 0/50 clean-browser rounds, 0/25 live memory

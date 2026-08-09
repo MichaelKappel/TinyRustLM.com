@@ -278,6 +278,12 @@ eligibility. Its public-only 658,110-byte corpus has SHA-256
 `c50a9668725a67df15f45fd28c4c80addde89e53fe80468590005a9fcb293ba8`
 and freezes three accepted bundles plus 31 exact hostile rejection codes. See
 `docs/architecture/vnext-rust-offline-bundle-parity.md`.
+The same crate now independently produces and validates the exact truthful
+campaign projection. Its public-only 1,494,464-byte corpus has SHA-256
+`974396d30525b6fc62e568de72361b99e87a99b6e33ead2e5cb43cfa002ec8a6`
+and freezes 11 accepted projections, 22 exact input rejections, and 8 exact
+result-wire rejections. See
+`docs/architecture/vnext-rust-campaign-projection-parity.md`.
 
 `tinyrustlm/tools/vnext-campaign-artifact-store.js` persists only exact
 campaign-plan and projection-result wires under raw-byte SHA-256 paths. Its

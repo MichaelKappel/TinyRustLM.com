@@ -147,9 +147,14 @@ and 26-rejection corpus with exact result-byte, hash, and error-code parity.
 Exact offline-bundle manifest, verification-receipt, authority, target, and
 closed-membership verification now has an independent strict Rust
 implementation and a public-only three-pass and 31-rejection corpus with exact
-result-byte, hash, and error-code parity. Rust truthful-projection parity
-remains incomplete. The Node
-campaign boundary now also
+result-byte, hash, and error-code parity. Rust truthful projection and strict
+projection-result validation now independently compose the exact plan,
+semantic-currentness, receipt/subject identity, and authority boundaries. A
+public-only 1,494,464-byte corpus with SHA-256
+`974396d30525b6fc62e568de72361b99e87a99b6e33ead2e5cb43cfa002ec8a6`
+freezes 11 accepted projections, 22 input rejections, and 8 result-wire
+rejections with byte, hash, and error-code parity. The Node campaign boundary
+now also
 validates complete projection-result wires and persists exact plans and
 projection snapshots through one frozen create-only artifact-store profile.
 The receipt store and campaign store share bounded filesystem mechanics while
@@ -184,6 +189,8 @@ The independent Rust authority-graph boundary is documented in
 `docs/architecture/vnext-rust-authority-graph-parity.md`.
 The independent Rust offline-bundle boundary is documented in
 `docs/architecture/vnext-rust-offline-bundle-parity.md`.
+The independent Rust truthful-projection boundary is documented in
+`docs/architecture/vnext-rust-campaign-projection-parity.md`.
 The exact 20/50/25/40/20 plan and no-double-count projection are documented in
 `docs/architecture/vnext-campaign-plan-projection.md`.
 The independent Rust plan boundary is documented in
@@ -193,8 +200,7 @@ The generated browser WASM boundary is documented in
 Create-only plan/projection persistence is documented in
 `docs/architecture/vnext-campaign-artifact-persistence.md`.
 
-Remaining Rust truthful-projection parity, browser currentness execution,
-archive-member
+Remaining browser currentness/projection execution, archive-member
 scanning, production campaign-runner and entry-point cutover, projection
 release integration, and external campaign evidence remain incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.

@@ -108,9 +108,12 @@ target-current admission before returning the same canonical offline result.
 The Rust implementation and frozen cross-language rejection corpus are
 documented in `vnext-rust-offline-bundle-parity.md`.
 
-The combined checkpoint still lacks Rust truthful-projection parity and does
-not prove browser parity, actual observer independence, production key
-custody, trusted production time, redaction/secret scans, production
-entry-point cutover, or campaign completion. Rust graph and offline-bundle
-parity do not narrow those non-claims. No model, browser, MemoryEndpoints,
-P2P, catalog, package, site, or release counter changes from these tests.
+The separate Rust truthful-projection boundary now composes this authority
+result with exact plans, semantic currentness, and objective matching; see
+`vnext-rust-campaign-projection-parity.md`. The combined checkpoint still does
+not prove browser projection parity, actual observer independence, production
+key custody, trusted production time, redaction/secret scans, production
+entry-point cutover, or campaign completion. Rust graph, offline-bundle, and
+projection parity do not narrow those non-claims. No model, browser,
+MemoryEndpoints, P2P, catalog, package, site, or release counter changes from
+these tests.

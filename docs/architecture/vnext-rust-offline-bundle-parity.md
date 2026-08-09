@@ -11,9 +11,11 @@ authority discovery.
 
 The Rust result bytes, result SHA-256, and public-safe rejection code match the
 current Node verifier. This establishes exact closed membership and
-current-target verification parity. It does not produce a campaign projection,
-authorize release, publish a package or site, or create live campaign
-evidence.
+current-target verification parity. The bundle verifier itself does not
+produce a campaign projection, authorize release, publish a package or site,
+or create live campaign evidence. Truthful projection is implemented as a
+separate boundary documented in
+`docs/architecture/vnext-rust-campaign-projection-parity.md`.
 
 ## Frozen Inputs
 
@@ -149,11 +151,11 @@ receipt, or public HTTPS readback claim.
 
 ## Remaining Work
 
-- Implement byte-identical truthful campaign projection in Rust by composing
-  the completed plan, semantic-currentness, authority, and offline-bundle
-  boundaries.
-- Generate one browser currentness execution boundary from Rust rather than
-  adding handwritten JavaScript semantics or a second ABI.
+- Preserve the completed byte-identical Rust truthful-projection boundary.
+  Projection independently consumes exact plan, receipt, and subject bytes; it
+  does not accept an offline-bundle verdict as trusted input.
+- Generate one browser currentness and projection execution boundary from
+  Rust rather than adding handwritten JavaScript semantics or a second ABI.
 - Connect bounded create-only receipt and subject stores to one campaign
   runner, then persist and reproject the exact current result.
 - Bind only that reprojected result into final attestation, release

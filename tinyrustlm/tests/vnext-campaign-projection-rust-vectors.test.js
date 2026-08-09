@@ -138,3 +138,32 @@ test("replays projection result-wire rejection cases through Node", () => {
     ), (error) => error?.code === entry.expectedErrorCode, entry.name);
   }
 });
+
+test("documents completed Rust projection parity without claiming live progress", () => {
+  const documentName = "vnext-rust-campaign-projection-parity.md";
+  const document = fs.readFileSync(path.join(
+    repositoryRoot,
+    "docs/architecture",
+    documentName
+  ), "utf8");
+  const linkedDocuments = [
+    "contracts/vnext/README.md",
+    "docs/architecture/vnext-campaign-plan-projection.md",
+    "docs/architecture/vnext-contract-inventory.md",
+    "docs/architecture/vnext-rust-offline-bundle-parity.md"
+  ].map((name) => fs.readFileSync(path.join(repositoryRoot, name), "utf8"));
+
+  assert.match(document, /1,494,464 bytes/u);
+  assert.match(document,
+    /974396d30525b6fc62e568de72361b99e87a99b6e33ead2e5cb43cfa002ec8a6/u);
+  assert.match(document, /11 accepted scenarios/u);
+  assert.match(document, /22 projection-input rejection/u);
+  assert.match(document, /8 projection-result rejection/u);
+  assert.match(document, /0\/20 qualified model hashes/u);
+  assert.match(document, /changes no production deployment-manifest member/u);
+  for (const linkedDocument of linkedDocuments) {
+    assert.match(linkedDocument, new RegExp(documentName.replace(".", "\\."), "u"));
+  }
+  assert.doesNotMatch(linkedDocuments[2],
+    /Rust truthful-projection parity\s+remains incomplete/u);
+});
