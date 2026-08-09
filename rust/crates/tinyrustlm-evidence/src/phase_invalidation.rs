@@ -13,7 +13,7 @@ use std::fmt;
 pub const PHASE_INVALIDATION_PROFILE_ID: &str = "tinyrustlm.vnext.phase-invalidation.v1";
 /// The SHA-256 of the exact frozen phase-invalidation profile bytes.
 pub const PHASE_INVALIDATION_PROFILE_SHA256: &str =
-    "4f9c0f02f9e7fc55c2793ca9bbf9edd9e659b5737cc23eda98e40cc675074875";
+    "d13eaf173a76229bbca401482459c07b6f591703a55523d3b216f984ba5370a3";
 /// The one current semantic phase-invalidation result schema.
 pub const PHASE_INVALIDATION_RESULT_SCHEMA: &str = "tinyrustlm.vnext.phase_invalidation_result.v1";
 
@@ -34,7 +34,6 @@ const SUPPORTED_RECEIPT_TYPES: &[&str] = &[
     "conversion",
     "deployment",
     "discovery",
-    "final-attestation",
     "lane-serve",
     "memory-continuity",
     "native-evaluation",
@@ -43,7 +42,6 @@ const SUPPORTED_RECEIPT_TYPES: &[&str] = &[
     "package",
     "public-readback",
     "qualification",
-    "redaction-scan",
     "review",
     "screening",
     "site-synchronization",
@@ -51,6 +49,10 @@ const SUPPORTED_RECEIPT_TYPES: &[&str] = &[
     "training",
     "training-preparation",
 ];
+
+pub(crate) fn is_supported_phase_receipt_type(receipt_type: &str) -> bool {
+    SUPPORTED_RECEIPT_TYPES.contains(&receipt_type)
+}
 
 /// A bounded semantic-currentness failure with a stable public-safe code.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -176,7 +178,7 @@ pub fn classify_phase_receipts(
         if receipt.campaign_id != campaign_id {
             return Err(failure("phase_receipt_campaign_mismatch"));
         }
-        if !SUPPORTED_RECEIPT_TYPES.contains(&receipt.receipt_type.as_str()) {
+        if !is_supported_phase_receipt_type(&receipt.receipt_type) {
             return Err(failure("phase_receipt_type_invalid"));
         }
         let phase_identity = phase_identity(&receipt)?;

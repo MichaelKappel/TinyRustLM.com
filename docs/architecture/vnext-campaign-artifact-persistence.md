@@ -9,7 +9,7 @@ invoke a browser, contact a service, or increment any campaign counter.
 
 The frozen store profile is
 `contracts/vnext/campaign-artifact-store-profile.v1.json`. Its SHA-256 is
-`b453c378665d39aded08974c5d6ebdca3d0ad756e2026ccee914abf00749cff5`.
+`fb96e838a6539a0a59e908e02d4bc0d46d756f95a6683b301ff6c801af80114a`.
 The implementation is `tinyrustlm/tools/vnext-campaign-artifact-store.js`;
 its hostile and interruption tests are in
 `tinyrustlm/tests/vnext-campaign-artifact-store.test.js`.

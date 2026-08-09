@@ -9,7 +9,7 @@ vNext authority and campaign-projection code. The implementation is
 `contracts/vnext/subject-store-profile.v1.json`.
 
 The profile is 3,285 bytes with SHA-256
-`3fd772ac639b1e27f77d5a5285da9d439273633ebeaf0a2e63222958f862c067`.
+`f0752251373ed3cce93d8387e45f2b96e92402febf10ade8bb3d0c3b24f98b89`.
 It is an incompatible clean-slate contract with no dated reader, alias,
 fallback, migration, dual writer, or mutable current pointer.
 

@@ -129,9 +129,9 @@ test("freezes a bounded semantic-currentness profile without network or compatib
   const source = fs.readFileSync(path.join(repositoryRoot, "tinyrustlm", "tools",
     "vnext-phase-invalidation.js"), "utf8");
 
-  assert.equal(bytes.length, 2755);
+  assert.equal(bytes.length, 2708);
   assert.equal(sha256(bytes),
-    "4f9c0f02f9e7fc55c2793ca9bbf9edd9e659b5737cc23eda98e40cc675074875");
+    "d13eaf173a76229bbca401482459c07b6f591703a55523d3b216f984ba5370a3");
   assert.equal(phaseInvalidationProfileSha256, sha256(bytes));
   assert.equal(phaseInvalidationProfile.profileId,
     "tinyrustlm.vnext.phase-invalidation.v1");
@@ -145,6 +145,10 @@ test("freezes a bounded semantic-currentness profile without network or compatib
     "conversation-evaluation"));
   assert.ok(phaseInvalidationProfile.supportedPhaseReceiptTypes.includes(
     "qualification"));
+  assert.equal(phaseInvalidationProfile.supportedPhaseReceiptTypes.includes(
+    "final-attestation"), false);
+  assert.equal(phaseInvalidationProfile.supportedPhaseReceiptTypes.includes(
+    "redaction-scan"), false);
   assert.doesNotMatch(source,
     /JSON\.parse|node:(?:http|https|net|tls|dns)|\bfetch\s*\(/u);
   assert.doesNotMatch(source,

@@ -259,7 +259,7 @@ ABI, ownership, destructive-state, browser, and non-claim boundary.
 The same Rust evidence crate now independently implements exact receipt
 validation and semantic currentness. A deterministic 74,756-byte corpus with
 SHA-256
-`dc0d048993533bed8858fd2273fece5abff7a1e3d86568bff8ab14b3fd27a985`
+`904a51a9770b8497bf0f966b2f1e50edae9a3dc3680677878544b4ab6803aac3`
 freezes four accepted histories and nine hostile rejections. Node and Rust
 must emit byte-identical canonical currentness results and the same stable
 rejection codes. This API has no filesystem, network, clock, process, or
@@ -291,12 +291,12 @@ The same crate now independently verifies exact offline manifest and member
 binding, the separate verification receipt, authority composition, closed
 receipt and subject membership, terminal currentness, and target current
 eligibility. Its public-only 658,110-byte corpus has SHA-256
-`53d619c4ca4fcf1f1effe6f8678327cdeebd95c8953843da342e6374dcc9bf26`
+`1ca99bc72ecdac581fc2157336572dc837aef4c2d81d0c7b11e967fc31f5463d`
 and freezes three accepted bundles plus 31 exact hostile rejection codes. See
 `docs/architecture/vnext-rust-offline-bundle-parity.md`.
 The same crate now independently produces and validates the exact truthful
 campaign projection. Its public-only 1,494,464-byte corpus has SHA-256
-`03dacebd501f3ee547baf2bdbd64fbe86d70dc1ae57164c5b6ef64d51d0b94cb`
+`875e066e6f5f509552b9659ac76f32e2598659e2432384ad0b2ba4694c3e5a62`
 and freezes 11 accepted projections, 22 exact input rejections, and 8 exact
 result-wire rejections. See
 `docs/architecture/vnext-rust-campaign-projection-parity.md`.
@@ -304,7 +304,7 @@ result-wire rejections. See
 `tinyrustlm/tools/vnext-campaign-artifact-store.js` persists only exact
 campaign-plan and projection-result wires under raw-byte SHA-256 paths. Its
 frozen profile has SHA-256
-`b453c378665d39aded08974c5d6ebdca3d0ad756e2026ccee914abf00749cff5`.
+`fb96e838a6539a0a59e908e02d4bc0d46d756f95a6683b301ff6c801af80114a`.
 It shares create-only, bounded, no-follow filesystem mechanics with the
 receipt store but retains separate result-to-plan semantics. Stored results
 are immutable history; `resumeProjection` reruns the projector from supplied
@@ -313,7 +313,7 @@ current evidence and never selects a mutable current pointer. See
 
 `tinyrustlm/tools/vnext-subject-store.js` completes the other host-side input
 store needed by the campaign runner. Its 3,285-byte frozen profile has SHA-256
-`3fd772ac639b1e27f77d5a5285da9d439273633ebeaf0a2e63222958f862c067`.
+`f0752251373ed3cce93d8387e45f2b96e92402febf10ade8bb3d0c3b24f98b89`.
 It admits only the five public-safe, non-receipt identity schemas, publishes
 exact canonical bytes under the validated subject ID, and explicitly rejects
 private context and receipt records. Bounded reconstruction, no-follow reads,
@@ -324,7 +324,7 @@ currentness by itself. See `docs/architecture/vnext-subject-store.md`.
 
 `tinyrustlm/tools/vnext-campaign-runner.js` now composes those stores through
 one exact runner boundary. Its frozen 6,855-byte profile has SHA-256
-`6fe8698fe46f2ba9e427319f1f5e94ec3c3e24e214a2a58d828827040ac2f571`.
+`083112f427566bd6e8cdec628d5b16a581d5382bfb95e5b93c09dffc2fbd7f93`.
 The runner observes every active receipt and subject twice, rejects any
 membership or wire change, binds caller pins and trusted verification time in
 a create-only start record, invokes only the generated Rust campaign-evidence
@@ -336,13 +336,21 @@ best-of-N, mutable-currentness, or stored-result promotion path. See
 `tinyrustlm/tools/vnext-campaign-release-surface.js` now consumes that runner
 only by creating a never-before-used operation and receiving its exact result
 inside the same call. Its frozen profile has SHA-256
-`53a31b50560ee12c122dc00bc396893788380dc4ddc200ecabf194ed69264541`.
+`8b842dcf95ac78703fe1d3f761d46f45b386b741027fcaf9e944333990180c8f`.
 The surface independently validates the returned projection against the exact
 stored plan and runner operation records, finalizes a content-addressed
 complete-or-blocked attestation, scans the final canonical bytes against the
 protected equality list before persistence, and derives a canonical operator
-status with no `done` state. Stored projection bytes, caller counters,
-caller verdicts, reused/interrupted/failed operations, unsafe attestation
+status with no `done` state. Its `prepareRelease` operation additionally
+requires complete 20/50/25/40/20 campaign truth; all 20 qualified artifact
+hashes; dependency closure; one CycloneDX 1.6 SBOM; current artifact,
+qualification, package, provenance, and claim evidence from the same runner
+snapshots; every current approved claim for the source revision; sorted risks;
+and a canonical scanned changelog. It derives release time from trusted
+verification time, scans every selected document and the final manifest,
+persists redaction evidence before the create-only manifest, and returns
+`not-authorized`. Stored projection bytes, caller counters, caller verdicts,
+reused/interrupted/failed operations, omitted or stale release parents, unsafe
 bytes, mutable pointers, and compatibility inputs are rejected. See
 `docs/architecture/vnext-campaign-release-surface.md`.
 
@@ -376,10 +384,12 @@ performs exact cross-store snapshots, Rust-backed projection, immutable
 operation history, interruption recovery, and concurrent-operation exclusion.
 The superseded mutable runner and its test are deleted without an alias or
 compatibility entry point. One fresh-runner-bound immutable final-attestation
-and operator-status surface is implemented. Release-manifest preparation,
-release authorization, exact HTTPS readback, published-claim descendants, and
-deletion of the superseded dashboard/release/public-readback stack remain
-incomplete. This is not outside-network observation or live campaign evidence.
+and operator-status surface now also prepares a create-only, public-safe,
+explicitly unauthorized `release_manifest.v2` from complete fresh campaign
+truth and exact current snapshot inputs. Release authorization, exact HTTPS
+readback, published-claim descendants, and deletion of the superseded
+dashboard/release/public-readback stack remain incomplete. This is not
+outside-network observation or live campaign evidence.
 Runtime tests generate ephemeral private keys only in process memory.
 Checked-in profiles and vectors contain public material only.
 

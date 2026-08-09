@@ -7,13 +7,14 @@ vNext semantic-currentness classifier. It consumes immutable canonical receipt
 bytes supplied by its caller and produces the same canonical result bytes,
 raw-byte SHA-256, or stable rejection code as the Node authority.
 
-This checkpoint is not signature-authority parity, campaign projection,
-browser execution, production runner integration, model qualification,
-MemoryEndpoints continuity, outside-network P2P proof, catalog publication,
-deployment, or release authorization. It changes no campaign counter. Status
-remains 0/20 qualified model hashes, 0/50 deletion-backed browser rounds, 0/25
-authorized live memory rounds, 0/40 outside-network lane proofs, and 0/20 live
-catalog announcements.
+This classifier is now consumed by the independent Rust authority/projection
+stack, generated browser WASM boundary, sole exact campaign runner, and
+release-manifest preparation surface. Those integrations are not model
+qualification, MemoryEndpoints continuity, outside-network P2P proof, catalog
+publication, deployment, or release authorization. They change no campaign
+counter. Status remains 0/20 qualified model hashes, 0/50 deletion-backed
+browser rounds, 0/25 authorized live memory rounds, 0/40 outside-network lane
+proofs, and 0/20 live catalog announcements.
 
 ## Frozen Inputs
 
@@ -21,13 +22,13 @@ The implementation is bound to:
 
 - profile `tinyrustlm.vnext.phase-invalidation.v1`;
 - profile SHA-256
-  `4f9c0f02f9e7fc55c2793ca9bbf9edd9e659b5737cc23eda98e40cc675074875`;
+  `d13eaf173a76229bbca401482459c07b6f591703a55523d3b216f984ba5370a3`;
 - result schema `tinyrustlm.vnext.phase_invalidation_result.v1`;
 - receipt schema `tinyrustlm.vnext.receipt.v1`; and
 - vector corpus `contracts/vnext/phase-invalidation-rust-vectors.v1.json`.
 
 The vector corpus is 74,756 bytes with SHA-256
-`dc0d048993533bed8858fd2273fece5abff7a1e3d86568bff8ab14b3fd27a985`.
+`904a51a9770b8497bf0f966b2f1e50edae9a3dc3680677878544b4ab6803aac3`.
 Its Node generator is deterministic, offline, and checked for compatibility
 terms and network APIs. Regeneration must reproduce every byte before a
 checkpoint can be accepted.
@@ -118,10 +119,12 @@ identity drift, combined graph cycles, campaign mismatch, and resource limits.
 ## Integration Boundary
 
 The classifier establishes semantic currentness, not signature eligibility.
-A campaign runner must eventually require both this result and an independent
+The sole exact campaign runner requires both this result and the independent
 Rust authority result before projecting objective counts. Stored projection
-snapshots remain immutable historical views and must be recomputed from
-supplied current evidence on resume.
+snapshots remain immutable historical views; every new runner operation
+recomputes them from the complete bounded current receipt and subject stores.
+The release surface consumes only a fresh runner return created inside the
+same call.
 
 The generated campaign-evidence WASM interface now exposes this Rust API as
 bounded byte transport and replays the same vector corpus in independent
@@ -134,7 +137,9 @@ deleted browser profiles without reimplementing currentness in JavaScript. See
   truthful-projection parity.
 - Preserve the generated campaign-evidence browser ABI and its exact
   currentness corpus replay without handwritten semantic logic.
-- Integrate bounded receipt inputs and final attestations into one production
-  campaign runner and release gate.
+- Implement the acyclic release-authorizer, deployment, exact HTTPS readback,
+  and published-claim descendants over the prepared immutable manifest.
+- Delete the superseded mutable release/dashboard/readback stack after the
+  replacement cutover gate passes.
 - Replace fixtures only with authorized objective evidence; never reinterpret
   a fixture as a live result.

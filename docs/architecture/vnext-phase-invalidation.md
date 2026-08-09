@@ -36,10 +36,16 @@ canonical result bytes and their raw-byte SHA-256 or one bounded stable error
 code.
 
 The cross-language corpus is 74,756 bytes with SHA-256
-`dc0d048993533bed8858fd2273fece5abff7a1e3d86568bff8ab14b3fd27a985`.
+`904a51a9770b8497bf0f966b2f1e50edae9a3dc3680677878544b4ab6803aac3`.
 It binds profile `tinyrustlm.vnext.phase-invalidation.v1`, whose exact profile
 bytes have SHA-256
-`4f9c0f02f9e7fc55c2793ca9bbf9edd9e659b5737cc23eda98e40cc675074875`.
+`d13eaf173a76229bbca401482459c07b6f591703a55523d3b216f984ba5370a3`.
+Only receipts representing operation-keyed campaign phases enter semantic
+currentness classification. `final-attestation` and `redaction-scan` remain
+valid immutable receipt types, but they are post-processing evidence and are
+deliberately excluded because they do not carry the required `operation_id`
+and `subject_id` phase identity. This keeps a completed attestation or release
+preparation from invalidating the next fresh campaign projection.
 Four accepted histories freeze byte-identical Node/Rust results for baseline
 lineage, successful evaluator replacement and resumed qualification, failed
 replacement, and unresolved operation heads. Nine rejection histories freeze
@@ -57,11 +63,11 @@ domain-separated identity does not match its full canonical content. The
 currentness implementation separately validates dependency, supersession, and
 combined acyclic graphs before classifying any head.
 
-The independent Rust authority graph, truthful projection, and generated
-campaign-evidence browser ABI are now implemented as separate later
-boundaries. Production runner integration, release authorization, and live
-evidence remain separate gates. Browser JavaScript transports bytes and does
-not become currentness authority. See
+The independent Rust authority graph, truthful projection, generated
+campaign-evidence browser ABI, exact campaign runner, and release-manifest
+preparation now consume this same currentness policy. Release authorization
+and live evidence remain separate gates. Browser JavaScript transports bytes
+and does not become currentness authority. See
 `docs/architecture/vnext-campaign-evidence-wasm-boundary.md`.
 
 ## Two Identities

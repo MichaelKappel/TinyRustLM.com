@@ -5,16 +5,17 @@
 This checkpoint independently implements the exact vNext campaign-plan
 finalization boundary in Rust. It proves deterministic parity with the frozen
 Node plan bytes and makes the same code compilable for native and browser WASM
-targets. A later checkpoint invokes the same crate through the sole generated
-real-browser campaign-evidence WASM boundary; see
+targets. The sole generated real-browser campaign-evidence WASM boundary and
+exact campaign runner now invoke the same crate; see
 `docs/architecture/vnext-campaign-evidence-wasm-boundary.md`. That boundary
 also exposes the separate Rust semantic-currentness and projection APIs without
 moving their semantics into JavaScript. Separate Rust APIs now also
 implement signature authority and truthful campaign projection; see
 `docs/architecture/vnext-rust-authority-graph-parity.md` and
 `docs/architecture/vnext-rust-campaign-projection-parity.md`. Browser campaign
-evidence execution, production campaign-runner integration, release
-authorization, and every live campaign operation remain incomplete.
+evidence execution and release-manifest preparation are implemented as
+separate consumers. Release authorization and every live campaign operation
+remain incomplete.
 
 No fixture in this checkpoint is production evidence. All campaign counters
 remain 0/20 qualified models, 0/50 clean-browser rounds, 0/25 live memory

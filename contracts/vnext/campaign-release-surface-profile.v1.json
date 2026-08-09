@@ -5,13 +5,15 @@
   "versionPolicy": "single-current-profile-no-compatibility-reader",
   "contractRegistrySha256": "27101971058e6e0332f4a59f72c1c13abdef34b6b388f37b4d886dcf7a2cdecc",
   "campaignRunnerProfileId": "tinyrustlm.vnext.campaign-runner.v1",
-  "campaignRunnerProfileSha256": "6fe8698fe46f2ba9e427319f1f5e94ec3c3e24e214a2a58d828827040ac2f571",
+  "campaignRunnerProfileSha256": "083112f427566bd6e8cdec628d5b16a581d5382bfb95e5b93c09dffc2fbd7f93",
   "campaignProjectionProfileId": "tinyrustlm.vnext.campaign-projection.v1",
-  "campaignProjectionProfileSha256": "de42d142af608c921a9343155ffd321eaeb71ae9086ee51762dc2bf3f8c5e5eb",
+  "campaignProjectionProfileSha256": "3cceeb5d1c67aaac98d78c261903629ffbd20938bab4f37405eafed5e8b7c944",
+  "phaseInvalidationProfileId": "tinyrustlm.vnext.phase-invalidation.v1",
+  "phaseInvalidationProfileSha256": "d13eaf173a76229bbca401482459c07b6f591703a55523d3b216f984ba5370a3",
   "receiptStoreProfileId": "tinyrustlm.vnext.receipt-store.v1",
   "receiptStoreProfileSha256": "9cb710b08e2db5f0fc0d5f57d4684268dae3b50a44702964242770a895956a18",
   "subjectStoreProfileId": "tinyrustlm.vnext.subject-store.v1",
-  "subjectStoreProfileSha256": "3fd772ac639b1e27f77d5a5285da9d439273633ebeaf0a2e63222958f862c067",
+  "subjectStoreProfileSha256": "f0752251373ed3cce93d8387e45f2b96e92402febf10ade8bb3d0c3b24f98b89",
   "publicSafeRedactionProfileId": "tinyrustlm.vnext.public-safe-redaction.v1",
   "publicSafeRedactionProfileSha256": "83fcdd3590692304807e1ca62f82ad5873111cf0cce6b239bd51249d5c29d2b0",
   "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
@@ -24,7 +26,7 @@
   "mutablePointerPolicy": "forbidden",
   "networkAccess": "forbidden",
   "clockAccess": "caller-trusted-verification-time-only",
-  "sourceMutation": "create-only-attestation-and-redaction-receipts",
+  "sourceMutation": "create-only-attestation-redaction-receipts-and-release-manifests",
   "attestation": {
     "receiptSchema": "tinyrustlm.vnext.receipt.v1",
     "receiptType": "final-attestation",
@@ -63,6 +65,26 @@
       "verificationTimeUtc"
     ]
   },
+  "releasePreparation": {
+    "manifestSchema": "tinyrustlm.vnext.release_manifest.v2",
+    "preparedState": "release-prepared-awaiting-authorization",
+    "authorizationPolicy": "forbidden-in-preparation",
+    "campaignPolicy": "fresh-projection-must-be-complete",
+    "snapshotPolicy": "all-release-parents-exact-members-of-fresh-runner-snapshots",
+    "phaseEvidencePolicy": "selected-receipts-and-all-evidence-current-pass",
+    "artifactCoverage": "all-campaign-qualified-artifacts-plus-explicit-dependency-closure-and-sbom",
+    "artifactSetIdentityDomain": "tinyrustlm.release-artifact-set.v1",
+    "packageBinding": "current-pass-package-receipt-binds-exact-artifact-set-and-source-revision",
+    "provenanceBinding": "current-pass-release-provenance-review-binds-exact-artifact-set-and-source-revision",
+    "sbomPolicy": "one-selected-cyclonedx-json-1.6-sbom-without-qualification",
+    "claimSelection": "all-current-approved-claims-for-source-revision",
+    "claimConflictPolicy": "one-current-claim-per-site-route-component-and-wording-class",
+    "changelogPolicy": "canonical-public-text-scanned-and-sha256-bound",
+    "releaseDatePolicy": "trusted-verification-time-calendar-date",
+    "redactionPolicy": "scan-selected-public-documents-changelog-and-final-manifest",
+    "persistencePolicy": "redaction-receipts-before-create-only-release-manifest",
+    "unsafePersistence": "release-manifest-forbidden"
+  },
   "limits": {
     "maximumKnownSecrets": 128,
     "maximumProjectionBytes": 4194304,
@@ -70,6 +92,12 @@
     "maximumSubjectSnapshotMembers": 2048,
     "maximumOperatorStatusBytes": 262144,
     "maximumBlockerCodes": 256,
-    "maximumCountRows": 16
+    "maximumCountRows": 16,
+    "maximumReleaseArtifactManifests": 64,
+    "maximumReleasePackageReceipts": 64,
+    "maximumReleaseClaims": 128,
+    "maximumRemainingRiskCodes": 64,
+    "maximumChangelogBytes": 1048576,
+    "maximumReleaseManifestBytes": 524288
   }
 }

@@ -162,8 +162,8 @@ verified by later phases.
 | Worker or companion state confusion | Direction, operation, payload binding, pairing, session, sequence, and capability constraints are explicit | Mitigated locally | Replay store, process isolation, browser origin, and loopback authentication remain later gates |
 | P2P piece or Merkle drift | Piece indices, offsets, sizes, hashes, Merkle root, total bytes, and artifact identity are recomputed locally | Mitigated locally | File streaming, peer transfer, and final Rust artifact verification remain later gates |
 | Local reachability promoted as public | Proof requires outside-network scope, complete transfer, lane and endpoint binding, and bounded freshness | Mitigated structurally | Observer signature, independence, and matching P2P parent remain deferred |
-| Release or claim inflation | Acyclic release v2 binds the campaign plan/projection, attestation, packages, artifacts, approved claims, SBOM, provenance, changelog, and remaining risks; claim v2 separates approval from post-readback publication | Mitigated structurally | Parent receipt closure, authorization signature, public readback, and wording secret scan remain deferred to the release surface |
-| Secret disclosure through public evidence | Private-by-default classes, public-safe field types, canonical LF UTF-8 public text, redaction profile, forbidden keys/value classes, and acyclic scan binding | Reduced | The later Node checkpoint scans seven bounded known-secret encoding families, contextual patterns, and entropy and verifies document/text scan receipts; compressed members, cross-runtime parity, and production custody remain deferred |
+| Release or claim inflation | Acyclic release v2 binds the campaign plan/projection, attestation, packages, artifacts, approved claims, SBOM, provenance, changelog, and remaining risks; the sole release surface now requires complete fresh projection truth, same-snapshot parent identity, current-pass receipt closure, all 20 qualified artifact hashes, dependency closure, one CycloneDX SBOM, and all current approved claims for the source revision | Mitigated through preparation | Current release-authorizer authority, deployment, exact public readback, and published-claim descendants remain required |
+| Secret disclosure through public evidence | Private-by-default classes, public-safe field types, canonical LF UTF-8 public text, redaction profile, forbidden keys/value classes, acyclic scan binding, and the preparation gate's scans over selected documents, changelog, and final manifest | Reduced | Compressed members, cross-runtime parity, and protected-list production custody remain deferred |
 | Compatibility code becoming permanent | Validators recognize one incompatible family and contain no fallback, migration, deprecated alias, dual-read, or dual-write path | Mitigated in the new boundary | Old production readers and writers still exist elsewhere and must be deleted after verified cutover |
 
 ## Validator Independence
@@ -260,10 +260,12 @@ projection, campaign, environment, trusted time, start/terminal records, and
 receipt snapshot, then scans finalized attestation bytes before create-only
 persistence. A failed protected-equality scan persists only the public-safe
 scan receipt and returns no unsafe attestation bytes. Its operator projection
-is derived from the same result and deliberately has no `done` state. This
-closes fresh attestation and operator truth only; release-manifest inputs,
-authorization, deployment, exact HTTPS readback, and published claims remain
-separate unimplemented descendants at this checkpoint.
+is derived from the same result and deliberately has no `done` state. The same
+surface now prepares a scanned, create-only `release_manifest.v2` only from a
+complete fresh projection and exact current snapshot parents, while returning
+an explicit `not-authorized` state. Authorization, deployment, exact HTTPS
+readback, and published claim descendants remain separate unimplemented
+boundaries at this checkpoint.
 
 ## No-Compatibility Decision
 

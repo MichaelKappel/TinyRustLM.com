@@ -14,8 +14,10 @@ objective-counting, blocker, and result-validation semantics remain in
 `rust/crates/tinyrustlm-evidence`. The browser adapter cannot produce a pass by
 parsing or repairing evidence itself.
 
-This checkpoint is not a production campaign runner, release authorization,
-site deployment, model qualification, live browser round, authorized
+The sole exact campaign runner and release-manifest preparation surface now
+consume this ABI; the ABI itself does not own filesystem orchestration or
+publication policy. Neither integration is release authorization, site
+deployment, model qualification, a live browser round, an authorized
 MemoryEndpoints operation, outside-network proof, or catalog announcement.
 Campaign counters remain 0/20, 0/50, 0/25, 0/40, and 0/20.
 
@@ -28,7 +30,7 @@ public readback claim.
 
 `contracts/vnext/campaign-evidence-wasm-interface.v1.json` is 6,043 bytes with
 SHA-256
-`d399541e77cbc5c764f60fe96e415836c3758bad6d451f026703a66922f96220`.
+`ef29b69eb2ca4eecf914e6f312e28c8af603e375e19e4db5f658d5217f88ef28`.
 It freezes:
 
 - schema `tinyrustlm.vnext.campaign_evidence_wasm_interface.v1`;

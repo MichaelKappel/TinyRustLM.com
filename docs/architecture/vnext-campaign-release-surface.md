@@ -4,17 +4,18 @@
 
 `tinyrustlm.vnext.campaign-release-surface.v1` is the sole vNext boundary for
 turning a freshly executed campaign projection into immutable prepublication
-attestation evidence and an operator status view. Its frozen profile is
+attestation evidence, an operator status view, and a create-only
+`release_manifest.v2` candidate. Its frozen profile is
 `contracts/vnext/campaign-release-surface-profile.v1.json`, with SHA-256
-`53a31b50560ee12c122dc00bc396893788380dc4ddc200ecabf194ed69264541`.
+`8b842dcf95ac78703fe1d3f761d46f45b386b741027fcaf9e944333990180c8f`.
 
 This checkpoint implements fresh projection, final attestation, public-safe
-redaction, and truthful operator status. Release-manifest preparation,
-release-authorizer verification, exact public HTTPS readback, published claim
+redaction, truthful operator status, and release-manifest preparation.
+Release-authorizer verification, exact public HTTPS readback, published claim
 descendants, and deletion of the superseded release stack remain required
-before the surface is the operational publication entry point. Nothing in
-this checkpoint is a release, deployment, public-readback result, or live
-campaign count.
+before the surface is the operational publication entry point. A prepared
+manifest is explicitly `not-authorized`; nothing in this checkpoint is a
+deployment, public-readback result, publication, or live campaign count.
 
 ## One-Way Evidence Graph
 
@@ -28,14 +29,17 @@ campaign plan + current receipt/subject stores
   -> final-attestation receipt
   -> redaction-scan receipt
   -> operator status bytes (derived view, never currentness authority)
+  -> exact current release inputs from the same runner snapshots
+  -> canonical changelog redaction-scan receipt
+  -> release_manifest.v2 candidate
+  -> release-manifest redaction-scan receipt
 ```
 
-The forthcoming publication graph continues forward from the attestation:
+The forthcoming publication graph continues forward from the prepared manifest:
 
 ```text
-approved claim subjects + artifacts + packages + SBOM + provenance
-  -> release_manifest.v2
-  -> release-authorizer signature receipt
+release_manifest.v2
+  -> current release-authorizer signature receipt
   -> deployment and exact HTTPS readback receipts
   -> published claim.v2 descendants
   -> site-publisher signatures
@@ -75,6 +79,14 @@ An interruption before attestation leaves only runner history. A later process
 must use a new operation ID and obtain a new projection. Serialized or copied
 projection bytes have no release-surface admission path.
 
+`prepareRelease` uses the same internal execution and accepts an exact closed
+extension containing product/version, sorted artifact, package, claim, and
+remaining-risk identities, one SBOM identity, one provenance receipt identity,
+and canonical changelog bytes. It accepts no release ID, release date,
+authorization verdict, publication status, deployment result, readback result,
+or caller-computed artifact-set digest. Release date and creation time derive
+only from the runner-bound trusted verification time.
+
 ## Final Attestation
 
 The final-attestation receipt is a normal content-addressed
@@ -100,15 +112,56 @@ The attestation does not claim package verification, physical RID execution,
 release authorization, deployment, public readback, or publication. Those are
 separate descendants and remain required.
 
+## Release Manifest Preparation
+
+Preparation first creates the same fresh attestation described above and then
+requires its projection to be complete. It rereads every release parent from
+the exact receipt and subject snapshots captured by that runner operation. A
+caller cannot inject a newer object, a stored object outside the snapshot, or a
+replacement with the same label.
+
+The preparation gate enforces all of these cross-document conditions before a
+manifest is finalized:
+
+- all 20 artifact hashes counted by the campaign's current qualification
+  receipts have selected artifact manifests with the exact qualification IDs;
+- every selected artifact dependency is also selected, every artifact binds
+  the one selected current provenance receipt, and no artifact is dated after
+  the trusted verification time;
+- exactly one selected artifact is an unqualified `sbom` in
+  `cyclonedx-json-1.6` format;
+- the current `review` receipt in phase `release-provenance` and every current
+  `package` receipt bind the domain-separated identity of the exact sorted
+  artifact set and the exact source revision;
+- phase invalidation classifies every selected package, provenance,
+  qualification, and claim-evidence receipt as `current-pass`;
+- claim supersession history is closed and acyclic, and each current
+  site/route/component/wording-class key has one head;
+- the selected claim list equals every current
+  `approved-for-publication` claim for the source revision, with no omitted or
+  extra claim;
+- each selected claim's subject exists in the same snapshot, all evidence is
+  current-pass, effective and verification times are not in the future, and
+  expiry and review deadlines remain strictly future;
+- the canonical LF UTF-8 changelog, every selected public document, and the
+  finalized manifest all pass the protected public-safe scan.
+
+The manifest binds the exact plan and freshly returned projection hashes, the
+new pass attestation, selected artifacts/packages/claims, SBOM, provenance,
+changelog hash, sorted risks, source revision, and trusted time. It contains no
+authorization, deployment, readback, published-claim, or site-publisher
+descendant. The result state is
+`release-prepared-awaiting-authorization` and its authorization status is
+`not-authorized`.
+
 ## Redaction And Secret Custody
 
 The caller supplies a bounded protected equality list in process memory. The
 surface validates that list before running, scans the finalized canonical
 attestation across the frozen redaction profile, and creates the one-way scan
-receipt from the scan capability. The same frozen scanner now also supports
-canonical LF UTF-8 public text for the forthcoming changelog input, but release
-preparation does not claim that integration until its own tests and receipt
-graph are complete. Secret values and representations are never written to a
+receipt from the scan capability. Preparation applies the same protected list
+to every selected public input, the strict LF UTF-8 changelog, and the final
+release manifest. Secret values and representations are never written to a
 receipt, operation record, status view, error, or path.
 
 On scan pass, the surface create-only publishes the attestation and then the
@@ -117,6 +170,14 @@ only the public-safe scan receipt, returns no attestation bytes, and renders
 `release-evidence-redaction-blocked`. The scan receipt contains finding classes
 and hashes, not the protected values. The operator view receives an additional
 protected-equality scan before it is returned.
+
+For preparation, a changelog scan receipt is create-only persisted before the
+manifest is admitted. A selected-document or changelog finding persists only a
+public-safe failure scan receipt. A final-manifest finding persists only its
+failure scan receipt. Unsafe changelog or manifest bytes are never stored or
+returned. On pass, the manifest scan receipt is persisted first, the release
+subject is create-only published second, and both stores and final bytes are
+reconstructed and compared before a successful result is returned.
 
 ## Operator Status
 
@@ -141,7 +202,8 @@ the sole runner again.
 
 ## Persistence And Failure Semantics
 
-The surface writes only through the existing receipt store. Publication uses
+The surface writes only through the existing receipt and public subject stores.
+Persistence uses
 same-directory exclusive temporaries, file flush, create-if-absent hard links,
 byte-identical collision acceptance, directory metadata synchronization where
 available, exact readback, bounded reconstruction, and quarantine. No file is
@@ -153,6 +215,14 @@ and no attestation is created. If attestation persistence is interrupted, a
 new release-surface operation must reproject with a new operation ID. Identical
 content can be safely reused by the create-only receipt store, but no previous
 projection becomes current merely because its bytes still exist.
+
+Preparation failures never overwrite prior material. An incomplete projection
+retains its blocked attestation but creates no release. A semantic input
+failure retains the new immutable runner/attestation history but creates no
+release. A scan failure adds only its bounded public-safe receipt. Snapshot
+drift before either final write aborts the operation; a drift detected after a
+create-only write prevents a successful result and leaves the bytes as
+non-authorized immutable history for audit.
 
 ## Verification
 
@@ -168,7 +238,17 @@ projection becomes current merely because its bytes still exist.
 - one-time operation identity;
 - full receipt-snapshot binding;
 - protected-secret detection with no unsafe attestation persistence;
-- public-safe redaction receipt and operator-state output.
+- public-safe redaction receipt and operator-state output;
+- exact 20-model artifact coverage plus one CycloneDX 1.6 SBOM;
+- package and provenance binding to the exact artifact-set identity;
+- all-current-approved claim selection and omission rejection;
+- stale package, expired claim, incomplete campaign, artifact omission, and
+  unrelated-artifact injection rejection;
+- canonical changelog and final-manifest scans;
+- create-only manifest/readback behavior and defensive returned byte copies;
+- successful fresh reprojection after retained attestation, redaction, and
+  release-manifest history; and
+- explicit `not-authorized` output with no publication or `done` claim.
 
 The complete-capacity case is synthetic conformance evidence. It does not
 increment any live campaign counter.

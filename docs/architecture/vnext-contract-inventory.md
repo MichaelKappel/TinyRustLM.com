@@ -155,7 +155,7 @@ result-byte, hash, and error-code parity. Rust truthful projection and strict
 projection-result validation now independently compose the exact plan,
 semantic-currentness, receipt/subject identity, and authority boundaries. A
 public-only 1,494,464-byte corpus with SHA-256
-`03dacebd501f3ee547baf2bdbd64fbe86d70dc1ae57164c5b6ef64d51d0b94cb`
+`875e066e6f5f509552b9659ac76f32e2598659e2432384ad0b2ba4694c3e5a62`
 freezes 11 accepted projections, 22 input rejections, and 8 result-wire
 rejections with byte, hash, and error-code parity. The Node campaign boundary
 now also
@@ -210,16 +210,21 @@ Create-only public subject persistence is documented in
 `docs/architecture/vnext-subject-store.md`.
 The sole exact cross-store Rust-backed campaign runner is documented in
 `docs/architecture/vnext-campaign-runner.md`.
-The fresh-runner-only immutable attestation and operator boundary is documented
+The fresh-runner-only immutable attestation, operator, and release-manifest
+preparation boundary is documented
 in `docs/architecture/vnext-campaign-release-surface.md`. Its frozen profile
 has SHA-256
-`53a31b50560ee12c122dc00bc396893788380dc4ddc200ecabf194ed69264541`.
+`8b842dcf95ac78703fe1d3f761d46f45b386b741027fcaf9e944333990180c8f`.
 It admits no stored projection, caller verdict, counter set, dashboard state,
 or reused operation. It scans finalized attestation bytes before create-only
-receipt persistence and has no operator `done` state.
+receipt persistence and has no operator `done` state. Release preparation
+requires complete fresh campaign truth and exact current snapshot members for
+all qualified artifacts, dependency closure, SBOM, package, provenance, and
+approved claims; scans canonical changelog and manifest bytes; and produces
+only a `not-authorized` create-only candidate.
 
 The superseded mutable runner is deleted. Remaining archive-member scanning,
-release-manifest/authorization/public-readback integration, deletion of the
+release-authorization/public-readback integration, deletion of the
 superseded dashboard/release stack, and external campaign evidence remain
 incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.

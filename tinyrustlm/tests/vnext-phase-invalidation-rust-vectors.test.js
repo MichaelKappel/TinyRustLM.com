@@ -43,7 +43,7 @@ test("freezes deterministic language-neutral Rust currentness vectors", () => {
 
   assert.equal(bytes.length, 74_756);
   assert.equal(sha256(bytes),
-    "dc0d048993533bed8858fd2273fece5abff7a1e3d86568bff8ab14b3fd27a985");
+    "904a51a9770b8497bf0f966b2f1e50edae9a3dc3680677878544b4ab6803aac3");
   assert.deepEqual(bytes, renderVectorCorpus());
   assert.equal(corpus.schema,
     "tinyrustlm.vnext.phase_invalidation_rust_vectors.v1");
@@ -80,12 +80,13 @@ test("replays every accepted and rejected currentness vector through Node", () =
 test("keeps the Rust currentness architecture record bound to exact evidence", () => {
   const text = fs.readFileSync(architecturePath, "utf8");
   assert.match(text,
-    /4f9c0f02f9e7fc55c2793ca9bbf9edd9e659b5737cc23eda98e40cc675074875/u);
+    /d13eaf173a76229bbca401482459c07b6f591703a55523d3b216f984ba5370a3/u);
   assert.match(text,
-    /dc0d048993533bed8858fd2273fece5abff7a1e3d86568bff8ab14b3fd27a985/u);
+    /904a51a9770b8497bf0f966b2f1e50edae9a3dc3680677878544b4ab6803aac3/u);
   assert.match(text, /Four accepted vector histories/u);
   assert.match(text, /Nine rejection vectors/u);
   assert.match(text,
-    /0\/20 qualified model hashes, 0\/50 deletion-backed browser rounds, 0\/25/u);
-  assert.match(text, /This checkpoint is not signature-authority parity/u);
+    /0\/20 qualified model hashes,\s+0\/50 deletion-backed\s+browser rounds,\s+0\/25/u);
+  assert.match(text,
+    /This classifier is now consumed by the independent Rust authority\/projection/u);
 });

@@ -4,7 +4,7 @@
 
 `tinyrustlm.vnext.campaign-runner.v1` is the sole clean-slate local campaign
 projection runner. Its frozen 6,855-byte profile has SHA-256
-`6fe8698fe46f2ba9e427319f1f5e94ec3c3e24e214a2a58d828827040ac2f571`.
+`083112f427566bd6e8cdec628d5b16a581d5382bfb95e5b93c09dffc2fbd7f93`.
 The implementation is `tinyrustlm/tools/vnext-campaign-runner.js`; focused
 conformance is `tinyrustlm/tests/vnext-campaign-runner.test.js`.
 

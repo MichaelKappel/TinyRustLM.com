@@ -28,7 +28,7 @@ const vectorPath = path.join(
   repositoryRoot,
   "contracts/vnext/campaign-projection-rust-vectors.v1.json"
 );
-const seedSha256 = "a42e43c2a2d5dc00de75f6146c94b7bd91f90e8531a3212f421150a9f011a817";
+const seedSha256 = "bd63d076593ea52e85e8ab44fdcd8d4dd68eda7fa27eedeba2c2b857647c7c1d";
 const vectorParserLimits = Object.freeze({
   maximumBytes: 8 * 1024 * 1024,
   maximumDepth: 32,

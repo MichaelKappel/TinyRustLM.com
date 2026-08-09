@@ -194,7 +194,7 @@ fn rust_projection_profile_matches_the_exact_frozen_profile_and_public_seed() {
     );
     assert_eq!(
         format!("{:x}", Sha256::digest(VECTORS)),
-        "03dacebd501f3ee547baf2bdbd64fbe86d70dc1ae57164c5b6ef64d51d0b94cb"
+        "875e066e6f5f509552b9659ac76f32e2598659e2432384ad0b2ba4694c3e5a62"
     );
     assert_eq!(vectors.accepted_cases.len(), 11);
     assert_eq!(vectors.rejection_cases.len(), 22);

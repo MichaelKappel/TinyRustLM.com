@@ -138,7 +138,7 @@ const limitFields = Object.freeze([
 ]);
 const excludedReceiptTypes = Object.freeze([
   "authority-registry", "key-revocation", "offline-verification-bundle",
-  "signature-envelope"
+  "final-attestation", "redaction-scan", "signature-envelope"
 ]);
 
 function validateInstalledProfile() {

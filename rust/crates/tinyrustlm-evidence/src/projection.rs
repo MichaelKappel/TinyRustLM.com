@@ -1,5 +1,5 @@
 use crate::authority::verify_authority_graph;
-use crate::phase_invalidation::classify_phase_receipts;
+use crate::phase_invalidation::{classify_phase_receipts, is_supported_phase_receipt_type};
 use crate::receipt::{
     canonical_value_bytes, lowercase_hex, parse_utc, valid_content_id, valid_digest, valid_safe_id,
     validate_receipt_bytes_detailed, Receipt,
@@ -21,7 +21,7 @@ use url::Url;
 
 /// The SHA-256 of the exact frozen campaign-projection profile bytes.
 pub const CAMPAIGN_PROJECTION_PROFILE_SHA256: &str =
-    "de42d142af608c921a9343155ffd321eaeb71ae9086ee51762dc2bf3f8c5e5eb";
+    "3cceeb5d1c67aaac98d78c261903629ffbd20938bab4f37405eafed5e8b7c944";
 /// The one current canonical campaign-projection result schema.
 pub const CAMPAIGN_PROJECTION_RESULT_SCHEMA: &str =
     "tinyrustlm.vnext.campaign_projection_result.v1";
@@ -33,31 +33,6 @@ const MAXIMUM_TOTAL_RECEIPT_BYTES: usize = 67_108_864;
 const MAXIMUM_TOTAL_SUBJECT_BYTES: usize = 67_108_864;
 const OUTSIDE_PROOF_SCHEMA: &str = "tinyrustlm.vnext.outside_proof.v2";
 const OUTSIDE_PROOF_NETWORK_SCOPE: &str = "outside-host-and-local-network";
-const SUPPORTED_PHASE_TYPES: &[&str] = &[
-    "acquisition",
-    "browser-round",
-    "catalog-announcement",
-    "conversation-evaluation",
-    "conversion",
-    "deployment",
-    "discovery",
-    "final-attestation",
-    "lane-serve",
-    "memory-continuity",
-    "native-evaluation",
-    "outside-proof",
-    "p2p-preparation",
-    "package",
-    "public-readback",
-    "qualification",
-    "redaction-scan",
-    "review",
-    "screening",
-    "site-synchronization",
-    "structure",
-    "training",
-    "training-preparation",
-];
 const OBJECTIVE_TYPES: &[&str] = &[
     "browser-round",
     "catalog-announcement",
@@ -562,7 +537,7 @@ fn classify_phases(
     let phase_bytes = evidence
         .receipts
         .iter()
-        .filter(|entry| SUPPORTED_PHASE_TYPES.contains(&entry.receipt.receipt_type.as_str()))
+        .filter(|entry| is_supported_phase_receipt_type(&entry.receipt.receipt_type))
         .map(|entry| entry.bytes.clone())
         .collect::<Vec<_>>();
     if phase_bytes.is_empty() {
