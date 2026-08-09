@@ -1319,5 +1319,6 @@ module.exports = Object.freeze({
   campaignProjectionProfile,
   campaignProjectionProfileSha256,
   finalizeVnextCampaignPlan,
-  projectVnextCampaign
+  projectVnextCampaign,
+  validateCampaignPlanBytes
 });

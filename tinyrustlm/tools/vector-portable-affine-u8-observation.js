@@ -3206,7 +3206,11 @@ function validateBuildVerificationEvidence(value) {
   exactValue(value.wasmExecution.mainResult, 0, "observation WASM main result");
 }
 
-function validateBuildEvidence(value) {
+function validateBuildEvidence(value, expectedCargoLockSha256) {
+  invariant(
+    sha256Pattern.test(expectedCargoLockSha256),
+    "expected observation Cargo.lock identity is invalid"
+  );
   exactKeys(value, [
     "cargo", "rustc", "libraryArtifactBytes", "libraryArtifactSha256",
     "executableBytes", "executableSha256", "cargoLockSha256", "offline"
@@ -3261,9 +3265,7 @@ function validateBuildEvidence(value) {
       sha256Pattern.test(value.libraryArtifactSha256) &&
       safeInteger(value.executableBytes, "observation executable bytes", 1) > 0 &&
       sha256Pattern.test(value.executableSha256) &&
-      value.cargoLockSha256 === sha256File(
-        resolveRepositoryFile(workspaceLockRelativePath)
-      ) &&
+      value.cargoLockSha256 === expectedCargoLockSha256 &&
       value.offline === true,
     "observation build identity is invalid"
   );
@@ -3446,7 +3448,10 @@ function validateObservation(value) {
     rustTarget: "x86_64-pc-windows-msvc"
   }, "observation platform");
   validateBuildVerificationEvidence(value.buildVerification);
-  validateBuildEvidence(value.build);
+  validateBuildEvidence(
+    value.build,
+    value.inputs[inputPaths.indexOf(workspaceLockRelativePath)].sha256
+  );
   validateContractOutput(value.contract);
   validateSimpleExecution(
     value.contractExecution,

@@ -133,6 +133,11 @@ quarantine, Ed25519 signing authority and revocation, closed offline bundles,
 canonical public-safe scan receipts, and exact semantic phase currentness.
 The current campaign checkpoint additionally freezes one exact campaign plan,
 authority-aware truthful projection, and sufficient complete-bundle bounds.
+The plan finalization boundary now has an independent strict Rust
+implementation, frozen Node/Rust byte vectors, hostile invariant tests, and a
+successful `wasm32-unknown-unknown` build. This parity is intentionally scoped
+to exact plan finalization and final-wire validation; it does not extend to
+currentness, authority, or projection.
 
 `contracts/vnext/public-safe-redaction-profile.v1.json` binds the current
 registry. `tinyrustlm/tools/vnext-public-safe-redaction.js` accepts finalized
@@ -147,8 +152,11 @@ The phase classifier and its explicit supersession rules are documented in
 `docs/architecture/vnext-phase-invalidation.md`.
 The exact 20/50/25/40/20 plan and no-double-count projection are documented in
 `docs/architecture/vnext-campaign-plan-projection.md`.
+The independent Rust plan boundary is documented in
+`docs/architecture/vnext-rust-campaign-plan-parity.md`.
 
-Rust/browser parity, archive-member scanning, production entry-point cutover,
-projection persistence and release integration, and external campaign evidence
-remain incomplete.
+Remaining Rust currentness/authority/projection parity, browser invocation,
+archive-member scanning, production entry-point cutover, projection
+persistence and release integration, and external campaign evidence remain
+incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.

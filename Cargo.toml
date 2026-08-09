@@ -5,6 +5,7 @@ members = [
     "rust/crates/tinyrustlm-memory",
     "rust/crates/tinyrustlm-memory-endpoints",
     "rust/crates/tinyrustlm-p2p",
+    "rust/crates/tinyrustlm-evidence",
     "rust/crates/tinyrustlm-runtime",
     "rust/crates/tinyrustlm-slm",
     "tinyrustlm/runtime",
@@ -28,6 +29,7 @@ ed25519-dalek = "2.2.0"
 serde = { version = "1.0.203", features = ["derive"] }
 serde_json = "1.0.117"
 sha2 = "0.10.8"
+url = "=2.5.8"
 zip = { version = "2", default-features = false, features = ["deflate"] }
 
 [workspace.lints.rust]

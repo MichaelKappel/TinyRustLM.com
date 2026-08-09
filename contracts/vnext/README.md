@@ -233,10 +233,16 @@ history through explicit same-operation supersession and dependency-only
 staleness. `tinyrustlm/tools/vnext-campaign-projection.js` finalizes the exact
 20/50/25/40/20 schedule and counts only planned, current-pass,
 authority-eligible evidence whose required earlier objectives are current.
+`rust/crates/tinyrustlm-evidence` independently finalizes and validates that
+exact closed campaign-plan wire for native and `wasm32-unknown-unknown`
+targets. The Node generator and two checked-in parity vectors bind both
+implementations to identical draft bytes, plan ID, final bytes, and SHA-256.
 The complete synthetic capacity fixture verifies a 271-receipt offline bundle
 with 155 target signatures and 40 proof subjects; it changes no live campaign
 counter. See `docs/architecture/vnext-phase-invalidation.md` and
-`docs/architecture/vnext-campaign-plan-projection.md`.
+`docs/architecture/vnext-campaign-plan-projection.md`. The Rust boundary and
+its non-claims are documented in
+`docs/architecture/vnext-rust-campaign-plan-parity.md`.
 
 The authority result deliberately separates `signatureVerified`,
 `authorityAtIssue`, `temporalCurrent`, and `currentEvidenceEligible`. A valid
@@ -257,10 +263,13 @@ hash cycle; the receipt is finalized afterward and binds the manifest hash and
 complete member set. `docs/architecture/vnext-offline-verification-bundle.md`
 defines the exact boundary.
 
-This is a Node implementation checkpoint, not cross-language parity,
-production entry-point cutover, outside-network observation, or campaign
-evidence. Runtime tests generate ephemeral private keys only in process
-memory. Checked-in profiles and vectors contain public material only.
+This remains primarily a Node implementation checkpoint. Exact campaign-plan
+finalization now has independent Rust parity, but currentness, authority,
+projection, persistence, browser invocation, and the broader hostile corpus do
+not yet have cross-language parity. This is not production entry-point
+cutover, outside-network observation, or campaign evidence. Runtime tests
+generate ephemeral private keys only in process memory. Checked-in profiles
+and vectors contain public material only.
 
 ## Completion Boundary
 

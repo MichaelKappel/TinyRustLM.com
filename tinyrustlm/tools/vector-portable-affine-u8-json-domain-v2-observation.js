@@ -355,6 +355,7 @@ const v2SpecificInputs = Object.freeze([
 const inputPaths = Object.freeze([
   ...new Set([...v2SpecificInputs, ...subject.inputPaths])
 ]);
+const workspaceLockRelativePath = "Cargo.lock";
 
 const authority = Object.freeze({
   ...preregistrationAtLoad.manifest.authority.beforeIndependentVerifiedPass
@@ -1439,6 +1440,16 @@ function validateFileEvidence(value, expectedPath, label) {
   invariant(sha256Pattern.test(value.sha256), `${label}.sha256 is invalid`);
 }
 
+function inputSha256(inputs, expectedPath) {
+  const matches = inputs.filter((entry) => entry.path === expectedPath);
+  invariant(matches.length === 1, `input ${expectedPath} is not unique`);
+  invariant(
+    sha256Pattern.test(matches[0].sha256),
+    `input ${expectedPath} identity is invalid`
+  );
+  return matches[0].sha256;
+}
+
 function validateTool(value, label) {
   exactKeys(value, ["name", "version", "binaryBytes", "binarySha256"], label);
   invariant(
@@ -1741,7 +1752,7 @@ function finalizeObservation(value) {
   );
 }
 
-function validatePhaseEvidence(value) {
+function validatePhaseEvidence(value, expectedCargoLockSha256) {
   exactKeys(value, [
     "harnessAdapter",
     "v2Regression",
@@ -1759,7 +1770,7 @@ function validatePhaseEvidence(value) {
   validateHarnessAdapterEvidence(value.harnessAdapter);
   validateV2RegressionEvidence(value.v2Regression);
   subject.validateBuildVerificationEvidence(value.buildVerification);
-  subject.validateBuildEvidence(value.build);
+  subject.validateBuildEvidence(value.build, expectedCargoLockSha256);
   subject.validateContractOutput(value.contract);
   exactKeys(
     value.contractExecution,
@@ -1998,7 +2009,10 @@ function validateObservation(value) {
       value.externalDataset.tree === manifest.subject.externalDataset.tree,
     "external dataset preregistration binding is invalid"
   );
-  const performanceSummaries = validatePhaseEvidence(value.phaseEvidence);
+  const performanceSummaries = validatePhaseEvidence(
+    value.phaseEvidence,
+    inputSha256(value.inputs, workspaceLockRelativePath)
+  );
   validateCompleteProcessLedgers(
     value.benchmarkProcessLedger,
     value.memoryMonitorProcessLedger,
@@ -2244,7 +2258,10 @@ function validateAttempt(value) {
     "attempt retained evidence is invalid"
   );
   if (value.retainedEvidence !== null) {
-    validateRetainedEvidence(value.retainedEvidence);
+    validateRetainedEvidence(
+      value.retainedEvidence,
+      inputSha256(value.inputs, workspaceLockRelativePath)
+    );
   }
   exactKeys(value.cleanup, [
     "outerRootCreated",
@@ -2426,7 +2443,7 @@ function retainedEvidence(state) {
   });
 }
 
-function validateRetainedEvidence(value) {
+function validateRetainedEvidence(value, expectedCargoLockSha256) {
   exactKeys(value, [
     "harnessAdapter",
     "v2Regression",
@@ -2467,7 +2484,9 @@ function validateRetainedEvidence(value) {
   if (value.buildVerification !== null) {
     subject.validateBuildVerificationEvidence(value.buildVerification);
   }
-  if (value.build !== null) subject.validateBuildEvidence(value.build);
+  if (value.build !== null) {
+    subject.validateBuildEvidence(value.build, expectedCargoLockSha256);
+  }
   invariant(
     (value.contractExecution === null) === (value.contract === null),
     "retained contract pair is incomplete"

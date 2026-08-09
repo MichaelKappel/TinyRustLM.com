@@ -20,6 +20,9 @@ const {
   terminalSummary,
   validateSummary
 } = require("../tools/vector-portable-affine-u8-successor-verification.js");
+const successorRunner = require(
+  "../tools/vector-portable-affine-u8-successor-observation.js"
+);
 
 const repositoryRoot = path.resolve(__dirname, "../..");
 const verifierPath = path.join(
@@ -27,6 +30,29 @@ const verifierPath = path.join(
   "tinyrustlm/tools/vector-portable-affine-u8-successor-verification.js"
 );
 const summary = terminalSummary();
+
+test("binds retained build identity to the archived Cargo.lock input", () => {
+  const attemptPath = path.join(
+    repositoryRoot,
+    "tinyrustlm/experiments/vector-quantization/" +
+      "portable-affine-u8-flat-successor-attempts/sha256/" +
+      expectedAttemptContentHash.slice(0, 2),
+    `${expectedAttemptContentHash}.json`
+  );
+  const attempt = JSON.parse(fs.readFileSync(attemptPath, "utf8"));
+  const cargoLockInput = attempt.inputs.find(
+    (entry) => entry.path === "Cargo.lock"
+  );
+  assert.equal(
+    attempt.retainedEvidence.build.cargoLockSha256,
+    cargoLockInput.sha256
+  );
+  attempt.retainedEvidence.build.cargoLockSha256 = "0".repeat(64);
+  assert.throws(
+    () => successorRunner.validateAttempt(attempt),
+    /observation build identity is invalid/u
+  );
+});
 
 test("independently verifies the one terminal successor attempt", () => {
   assert.equal(summary.attempt.attemptId, expectedAttemptId);

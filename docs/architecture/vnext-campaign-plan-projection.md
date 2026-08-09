@@ -2,8 +2,8 @@
 
 ## Status
 
-This document describes the bounded Node control-plane checkpoint that fixes
-one exact TinyRustLM campaign schedule and projects its current evidence. It
+This document describes the bounded control-plane checkpoint that fixes one
+exact TinyRustLM campaign schedule and projects its current evidence. It
 does not claim that any model qualified, browser round completed, live
 MemoryEndpoints company restored and deleted, P2P lane was observed from an
 outside network, model was announced, or campaign completed.
@@ -12,7 +12,11 @@ The implementation consists of:
 
 - `contracts/vnext/campaign-projection-profile.v1.json`;
 - `tinyrustlm/tools/vnext-campaign-projection.js`; and
-- `tinyrustlm/tests/vnext-campaign-projection.test.js`.
+- `tinyrustlm/tests/vnext-campaign-projection.test.js`;
+- `rust/crates/tinyrustlm-evidence` for independent plan finalization and
+  validation;
+- `tinyrustlm/tools/vnext-campaign-plan-vector-generator.js`; and
+- the two frozen campaign-plan parity fixtures in `contracts/vnext`.
 
 The profile is frozen and binds the exact contract registry,
 phase-invalidation profile, and Ed25519 authority profile. Every newly built
@@ -45,6 +49,41 @@ different interpretation.
 The application origin, campaign, environment, memory contract, and creation
 time are part of the plan identity. A projection caller separately supplies
 and must match the expected plan SHA-256, campaign, and environment.
+
+## Independent Rust Plan Parity
+
+`tinyrustlm-evidence` independently parses, validates, finalizes, and validates
+the final wire for the exact closed campaign-plan schema. It does not call
+Node, launch a process, read a discovered file, or use the Node serializer.
+Both implementations must produce the byte-for-byte frozen final plan:
+
+- draft size: 22,929 bytes;
+- draft SHA-256:
+  `95898b68686b2dcc9dc8700c58a5bff37114ef719e3c281c45303d011d11a23e`;
+- plan ID:
+  `sha256:0207e508652790aa158bdb0c13c10c2aefe401e9cfc48b98bc9dc05dcdb63a7e`;
+- final size: 23,012 bytes; and
+- final SHA-256:
+  `89c487682ff69f7982d7cb24eda9fcff10702164c8ccb3608e748cf145339b19`.
+
+The Rust boundary uses strict typed `serde` structures with unknown-field and
+duplicate-field rejection. It checks the frozen profile constants, bounded
+input, exact cardinalities, sort order, referential relationships, global
+operation uniqueness, distinct artifacts and processes, HTTPS origin
+canonicalization through the standards-based `url` crate, exact UTC grammar,
+and domain-separated identity. Final-wire validation re-finalizes the parsed
+draft and compares every byte, so whitespace, alternate member order, a
+changed plan ID, or trailing transport bytes reject.
+
+The serializer is intentionally specific to this closed plan schema. The
+current values are booleans, arrays, objects, and ASCII-constrained strings,
+and strings are escaped by `serde_json`. This is an exact parity claim for the
+campaign-plan wire, not a claim that the crate is a general-purpose JCS
+implementation. The crate forbids unsafe Rust, returns bounded stable error
+codes, owns returned bytes, and builds for both native Rust and
+`wasm32-unknown-unknown`. See
+`docs/architecture/vnext-rust-campaign-plan-parity.md` for the boundary and
+test matrix.
 
 ## Evidence Inputs
 
@@ -145,8 +184,11 @@ facts, and fixture endpoints do not satisfy any live campaign objective.
 
 ## Remaining Work
 
-- Reproduce plan finalization, currentness, authority, projection, and the
-  hostile corpus in independent Rust and browser implementations.
+- Reproduce semantic currentness, authority, truthful projection, and their
+  hostile corpus in independent Rust implementations.
+- Expose the Rust plan boundary to the browser through one generated WASM
+  interface and prove browser/Node/Rust byte parity without duplicating plan
+  semantics in handwritten browser JavaScript.
 - Persist the exact plan and projection result through the create-only receipt
   store with interruption-safe staging and resume.
 - Bind the projection result into final attestation, release authorization,
