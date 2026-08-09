@@ -18,6 +18,8 @@
   "publicSafeRedactionProfileSha256": "f1c5f00c631bb109f59c747abe0232468d783b3826acddc0019f91a1f746318a",
   "receiptSignatureProfileId": "tinyrustlm.vnext.ed25519-authority.v1",
   "receiptSignatureProfileSha256": "c9f3c6813e3880ebff6c79d9975ba085405208260715b0c68eafdfb9cfcb5721",
+  "publicHttpsReadbackProfileId": "tinyrustlm.vnext.public-https-readback.v1",
+  "publicHttpsReadbackProfileSha256": "0cfeb00065d45fd860813f501d6c07417f8a6e6587dd524a81e5be426a84c419",
   "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
   "hashAlgorithm": "sha256",
   "campaignTruthInput": "fresh-sole-runner-return-created-and-consumed-inside-one-surface-call",
@@ -28,7 +30,7 @@
   "mutablePointerPolicy": "forbidden",
   "networkAccess": "forbidden-until-public-readback-operation",
   "clockAccess": "caller-trusted-verification-time-only",
-  "sourceMutation": "create-only-attestation-redaction-release-manifest-authorization-signature-and-deployment-attempt-receipts",
+  "sourceMutation": "create-only-attestation-redaction-release-manifest-authorization-signature-deployment-attempt-and-public-readback-receipts",
   "attestation": {
     "receiptSchema": "tinyrustlm.vnext.receipt.v1",
     "receiptType": "final-attestation",
@@ -132,6 +134,29 @@
     "callerSuccessPolicy": "forbidden",
     "publicReadbackPolicy": "required-before-any-deployed-or-published-claim"
   },
+  "publicReadback": {
+    "resultSchema": "tinyrustlm.vnext.public_readback_admission_result.v1",
+    "verifiedState": "public-readback-verified-awaiting-publication",
+    "configurationIdentityDomain": "tinyrustlm.release-public-readback-configuration.v1",
+    "receiptType": "public-readback",
+    "phase": "public-readback",
+    "status": "pass",
+    "evidenceScope": "exact-production-public-https-static-asset-closure",
+    "manifestPolicy": "existing-current-authorized-manifest-with-one-admitted-deployment-attempt-only",
+    "authorizationPolicy": "rerun-current-evidence-eligible-release-authorizer-signature",
+    "deploymentPolicy": "exactly-one-stored-current-admitted-deployment-attempt",
+    "networkPolicy": "surface-invokes-sole-production-verifier-without-caller-transport-or-result",
+    "resultPolicy": "strict-canonical-result-revalidated-against-manifest-and-profile",
+    "inputReceiptPolicy": "exact-admitted-deployment-attempt-parent",
+    "inputHashPolicy": "exact-release-authorization-deployment-manifest-web-inventory-control-documents-and-verifier-profile",
+    "outputHashPolicy": "exact-result-observation-dns-pinned-address-certificate-set-and-verified-web-inventory",
+    "runtimePolicy": "deployment-execution-class-only",
+    "timePolicy": "readback-not-before-deployment-and-current-authorization-at-trusted-verification-time",
+    "redactionPolicy": "scan-result-known-secret-representations-and-final-receipt-before-persistence",
+    "persistencePolicy": "readback-redaction-before-create-only-public-readback-receipt",
+    "replayPolicy": "exact-dependency-prefix-and-byte-identical-replay-only",
+    "publicationPolicy": "forbidden-until-generated-files-published-claims-and-site-publisher-descendants"
+  },
   "limits": {
     "maximumKnownSecrets": 128,
     "maximumProjectionBytes": 4194304,
@@ -154,6 +179,9 @@
     "maximumAuthorizationReceiptBytes": 262144,
     "maximumAuthorizationResultBytes": 262144,
     "maximumDeploymentReceiptBytes": 262144,
-    "maximumDeploymentResultBytes": 262144
+    "maximumDeploymentResultBytes": 262144,
+    "maximumPublicReadbackResultBytes": 4194304,
+    "maximumPublicReadbackReceiptBytes": 262144,
+    "maximumPublicReadbackAdmissionResultBytes": 262144
   }
 }

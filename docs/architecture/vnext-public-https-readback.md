@@ -187,14 +187,28 @@ transport or accessor injection.
 These tests use only pure conformance helpers. They do not mock a production
 pass, create a public-readback receipt, or increment a live count.
 
-## Next Integration Gate
+## Release-Surface Integration
 
-The next release-surface operation must accept only one admitted
-`deployment-attempt-only` receipt, rerun current authorization, invoke this
-production operation itself, bind the exact result and inventory into a
-`public-readback` receipt, scan result and receipt bytes, and persist the
-redaction receipt before the readback receipt. Restart recovery may accept
-only the exact dependency-prefix states. Generated pointer/history files,
-published claim descendants, and site-publisher authorization remain later
-gates. The superseded mutable public-readback stack must be deleted after the
-new complete path is integrated and verified.
+`vnext-campaign-release-surface.js` now accepts only one stored
+`deployment-attempt-only` receipt, reruns current authorization, invokes this
+production operation itself, independently validates the canonical result,
+binds the exact result and inventory into a `public-readback` receipt, scans
+result and receipt bytes, and persists the redaction receipt before the
+readback receipt. Restart recovery accepts only exact dependency-prefix states
+and byte-identical replay.
+
+The release-surface conformance test substitutes the module before the surface
+is loaded so deterministic fixture observations can exercise orchestration and
+crash recovery. That substitution is not reachable through a surface input,
+does not test public DNS or HTTPS, and earns no live receipt or campaign count.
+The standalone verifier tests continue to cover its pure network admission
+rules without fabricating a production pass.
+
+## Next Publication Gate
+
+Generate and bind the current-release pointer and immutable history entry only
+as forward descendants, derive evidence-bound published `claim.v2` records,
+verify current `site-publisher` authority, and cut maintained entry points to
+that sole graph. Delete the superseded mutable public-readback stack only after
+the complete replacement passes. No current production readback or publication
+is asserted by this checkpoint.

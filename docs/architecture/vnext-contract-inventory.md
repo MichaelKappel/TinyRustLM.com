@@ -220,7 +220,7 @@ The fresh-runner-only immutable attestation, operator, release-manifest
 preparation, and release-authorization boundary is documented
 in `docs/architecture/vnext-campaign-release-surface.md`. Its frozen profile
 has SHA-256
-`d867dc809b5fc1f504469edfd25c7b1f3b93e8448ba5571558f6a5f4b9079bed`.
+`504492d9314b0751f09b2110b92cd7b2d5b284a11506b00b82d46ec9f0c4d7db`.
 It admits no stored projection, caller verdict, counter set, dashboard state,
 or reused operation. It scans finalized attestation bytes before create-only
 receipt persistence and has no operator `done` state. Release preparation
@@ -237,10 +237,15 @@ persisted before the signature receipt, and the manifest is never mutated.
 Deployment admission then repeats current authorization verification and
 accepts only a public-safe deployment-class receipt bound to the exact release
 graph. Its scope is attempt evidence, never remote success; exact production
-HTTPS readback remains mandatory.
+HTTPS readback remains mandatory. The same surface now owns that readback
+operation: it reconstructs the complete deployment closure, reruns current
+authorization, invokes the non-injectable production verifier, independently
+revalidates its canonical result, and create-only persists the scan before one
+forward `public-readback` receipt. Local tests use fixture-labeled verifier
+output and do not establish a production readback.
 
 The superseded mutable runner is deleted. Remaining archive-member scanning,
-exact HTTPS public-readback descendants, published claims,
-site-publisher authorization, deletion of the superseded dashboard/release
-stack, and external campaign evidence remain incomplete.
+generated pointer/history descendants, published claims, site-publisher
+authorization, deletion of the superseded dashboard/release stack, a real
+production readback, and external campaign evidence remain incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.

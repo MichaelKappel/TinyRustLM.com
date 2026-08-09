@@ -8,6 +8,116 @@ const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 
+const { canonicalizeVnextJcsBytes } = require("../tools/vnext-jcs.js");
+const publicReadbackModulePath = require.resolve(
+  "../tools/vnext-public-https-readback.js"
+);
+const productionPublicReadback = require(publicReadbackModulePath);
+let publicReadbackFixtureCalls = 0;
+let publicReadbackFixtureMutation = null;
+
+async function performFixturePublicReadback(input) {
+  publicReadbackFixtureCalls += 1;
+  const security = productionPublicReadback
+    .validateVnextWebSecurityHeaderProfileBytes(
+      input.webSecurityHeaderProfileBytes
+    );
+  const observations = input.webAssets.map((asset) => ({
+    byteLength: asset.byteLength,
+    cacheControl: security.cacheControlByPolicy[asset.cachePolicy],
+    contentType: asset.contentType,
+    path: asset.path,
+    securityHeaderProfileSha256: asset.securityHeaderProfileSha256,
+    sha256: asset.sha256,
+    statusCode: 200,
+    tlsProtocol: "TLSv1.3"
+  }));
+  const profile = productionPublicReadback.publicHttpsReadbackProfile;
+  let result = {
+    schema: profile.resultSchema,
+    profileId: profile.profileId,
+    profileSha256: productionPublicReadback.publicHttpsReadbackProfileSha256,
+    verifierSourceSha256: sha256(fs.readFileSync(publicReadbackModulePath)),
+    publicOrigin: input.publicOrigin,
+    assetCount: observations.length,
+    totalBytes: observations.reduce((total, entry) => total + entry.byteLength, 0),
+    dnsAddressCount: 2,
+    certificateCount: 1,
+    observationInventorySha256: domainSeparatedDigest(
+      profile.observation.inventoryIdentityDomain,
+      observations
+    ),
+    dnsAddressSetSha256: domainSeparatedDigest(
+      profile.observation.dnsIdentityDomain,
+      ["4:203.0.113.10", "6:2001:db8::10"]
+    ),
+    pinnedAddressSha256: domainSeparatedDigest(
+      profile.observation.pinnedAddressIdentityDomain,
+      "4:203.0.113.10"
+    ),
+    certificateSetSha256: domainSeparatedDigest(
+      profile.observation.certificateIdentityDomain,
+      [sha256(Buffer.from("fixture-certificate", "utf8"))]
+    ),
+    securityHeaderProfileSha256: security.profileSha256,
+    observations
+  };
+  if (publicReadbackFixtureMutation !== null) {
+    result = publicReadbackFixtureMutation(structuredClone(result));
+  }
+  const bytes = canonicalizeVnextJcsBytes(result);
+  const wrapper = {
+    ...result,
+    resultSha256: sha256(bytes)
+  };
+  Object.defineProperty(wrapper, "resultBytes", {
+    enumerable: true,
+    get() {
+      return Buffer.from(bytes);
+    }
+  });
+  return Object.freeze(wrapper);
+}
+
+require.cache[publicReadbackModulePath].exports = Object.freeze({
+  ...productionPublicReadback,
+  performVnextPublicHttpsReadback: performFixturePublicReadback
+});
+
+const receiptStoreModulePath = require.resolve("../tools/vnext-receipt-store.js");
+const productionReceiptStore = require(receiptStoreModulePath);
+let interruptAfterPublicReadbackRedaction = false;
+
+function createFixtureAwareReceiptStore(root) {
+  const store = productionReceiptStore.createVnextReceiptStore(root);
+  return Object.freeze({
+    profileId: store.profileId,
+    startup: store.startup,
+    read(receiptId) {
+      return store.read(receiptId);
+    },
+    rebuild() {
+      return store.rebuild();
+    },
+    put(bytes) {
+      const persistence = store.put(bytes);
+      const receipt = validateVnextReceiptBytes(bytes).receipt;
+      if (interruptAfterPublicReadbackRedaction &&
+          receipt.receiptType === "redaction-scan" &&
+          receipt.attemptId.startsWith("release-public-readback-redaction-")) {
+        interruptAfterPublicReadbackRedaction = false;
+        throw new Error("fixture interruption after public-readback redaction commit");
+      }
+      return persistence;
+    }
+  });
+}
+
+require.cache[receiptStoreModulePath].exports = Object.freeze({
+  ...productionReceiptStore,
+  createVnextReceiptStore: createFixtureAwareReceiptStore
+});
+
 const {
   campaignReleaseSurfaceProfile,
   campaignReleaseSurfaceProfileSha256,
@@ -73,6 +183,52 @@ let wasmBytes;
 
 function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
+}
+
+function makeWebSecurityHeaderProfileBytes() {
+  const value = {
+    schema: "tinyrustlm.web_security_header_profile.v1",
+    status: "frozen",
+    headers: [
+      {
+        name: "content-security-policy",
+        value: "default-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self' https://memoryendpoints.com"
+      },
+      { name: "cross-origin-embedder-policy", value: "require-corp" },
+      { name: "cross-origin-opener-policy", value: "same-origin" },
+      { name: "cross-origin-resource-policy", value: "same-origin" },
+      {
+        name: "permissions-policy",
+        value: "camera=(), geolocation=(), microphone=(), payment=(), usb=()"
+      },
+      { name: "referrer-policy", value: "no-referrer" },
+      {
+        name: "strict-transport-security",
+        value: "max-age=63072000; includeSubDomains; preload"
+      },
+      { name: "x-content-type-options", value: "nosniff" },
+      { name: "x-frame-options", value: "DENY" }
+    ],
+    cacheControlByPolicy: [
+      {
+        cachePolicy: "immutable",
+        value: "public, max-age=31536000, immutable"
+      },
+      { cachePolicy: "no-cache", value: "no-cache" },
+      { cachePolicy: "no-store", value: "no-store" }
+    ],
+    forbiddenResponseHeaders: [
+      "content-encoding",
+      "content-range",
+      "location",
+      "refresh",
+      "set-cookie",
+      "transfer-encoding"
+    ],
+    contentTypeParameterPolicy:
+      "optional-charset-utf-8-only-for-text-json-javascript-or-xml"
+  };
+  return Buffer.concat([canonicalizeVnextJcsBytes(value), Buffer.from("\n", "utf8")]);
 }
 
 function operationId(label) {
@@ -434,10 +590,7 @@ function seedReleaseInputs(roots, entry, options = {}) {
     "{\"schema\":\"tinyrustlm.web_deployment_manifest.v3\"}\n",
     "utf8"
   );
-  const webSecurityHeaderProfileBytes = Buffer.from(
-    "default-src 'self'; object-src 'none'; base-uri 'none'\n",
-    "utf8"
-  );
+  const webSecurityHeaderProfileBytes = makeWebSecurityHeaderProfileBytes();
   const webPublicationGeneratorBytes = Buffer.from(
     "export const publicationProfile = 'tinyrustlm.web-publication.v1';\n",
     "utf8"
@@ -784,6 +937,28 @@ function deploymentInput(entry, authority, prepared, releaseInput,
   };
 }
 
+function publicReadbackInput(entry, authority, prepared, releaseInput,
+  authorizationReceipt, deploymentReceipt, label, overrides = {}) {
+  return {
+    authorizationReceiptId: authorizationReceipt.receipt.receiptId,
+    changelogBytes: releaseInput.changelogBytes,
+    deploymentReceiptId: deploymentReceipt.receipt.receiptId,
+    expectedCampaignId: entry.expectedCampaignId,
+    expectedEnvironment: entry.expectedEnvironment,
+    expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
+    knownSecrets: [],
+    operationId: operationId(label),
+    releaseManifestId: prepared.releaseManifestId,
+    sourceRevision,
+    trustedRootRegistryReceiptId: authority.root.receipt.receiptId,
+    verificationTimeUtc: "2026-08-09T00:35:00Z",
+    webDeploymentManifestBytes: releaseInput.webDeploymentManifestBytes,
+    webSecurityHeaderProfileBytes: releaseInput.webSecurityHeaderProfileBytes,
+    webPublicationGeneratorBytes: releaseInput.webPublicationGeneratorBytes,
+    ...overrides
+  };
+}
+
 async function rejectsCode(callback, code) {
   await assert.rejects(callback, (error) => error?.code === code, `expected ${code}`);
 }
@@ -793,7 +968,7 @@ test("freezes one no-compatibility campaign release surface profile", () => {
   const profile = parseStrictJson(bytes);
   assert.equal(campaignReleaseSurfaceProfileSha256, sha256(bytes));
   assert.equal(campaignReleaseSurfaceProfileSha256,
-    "d867dc809b5fc1f504469edfd25c7b1f3b93e8448ba5571558f6a5f4b9079bed");
+    "504492d9314b0751f09b2110b92cd7b2d5b284a11506b00b82d46ec9f0c4d7db");
   assert.equal(campaignReleaseSurfaceProfile.profileId,
     "tinyrustlm.vnext.campaign-release-surface.v1");
   assert.equal(profile.status, "frozen");
@@ -817,6 +992,14 @@ test("freezes one no-compatibility campaign release surface profile", () => {
   assert.equal(profile.releaseDeployment.callerSuccessPolicy, "forbidden");
   assert.equal(profile.releaseDeployment.publicReadbackPolicy,
     "required-before-any-deployed-or-published-claim");
+  assert.equal(profile.publicHttpsReadbackProfileSha256,
+    productionPublicReadback.publicHttpsReadbackProfileSha256);
+  assert.equal(profile.publicReadback.networkPolicy,
+    "surface-invokes-sole-production-verifier-without-caller-transport-or-result");
+  assert.equal(profile.publicReadback.replayPolicy,
+    "exact-dependency-prefix-and-byte-identical-replay-only");
+  assert.equal(profile.publicReadback.publicationPolicy,
+    "forbidden-until-generated-files-published-claims-and-site-publisher-descendants");
   assert.equal(profile.operatorStatus.doneState,
     "forbidden-before-authorized-release-and-public-readback");
   assert.doesNotMatch(bytes.toString("utf8"),
@@ -1445,6 +1628,168 @@ test("admits only an exact deployment-attempt receipt without claiming deploymen
     "existing-byte-identical");
   assert.equal(repeated.deploymentRedactionPersistence.disposition,
     "existing-byte-identical");
+});
+
+test("verifies exact fixture-labeled HTTPS bytes through one immutable readback receipt", {
+  timeout: 360_000
+}, async (t) => {
+  const roots = makeRoots(t);
+  const entry = acceptedCase("complete-capacity");
+  const authority = seedEphemeralAuthorityCase(roots, entry);
+  const releaseInput = seedReleaseInputs(roots, entry);
+  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+    runnerOptions(roots));
+  const prepared = await surface.prepareRelease(prepareInput(
+    entry,
+    "public-readback-preparation",
+    releaseInput,
+    {
+      expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
+      trustedRootRegistryReceiptId: authority.root.receipt.receiptId
+    }
+  ));
+  const release = createVnextSubjectStore(roots.subjects).read(
+    prepared.releaseManifestId
+  );
+  const authorizationReceipt = makeSignatureReceipt({
+    authorityRegistry: authority.root,
+    expiresAtUtc: "2026-08-09T01:00:00Z",
+    issuedAtUtc: "2026-08-09T00:31:00Z",
+    label: "public-readback-authorization",
+    receiptSourceRevision: sourceRevision,
+    releaseId: prepared.releaseManifestId,
+    scope: "release-authorization",
+    signingKey: authority.releaseKey,
+    subject: release
+  });
+  await surface.authorizeRelease(authorizeInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    authorizationReceipt
+  ));
+  const deploymentReceipt = deploymentAttemptReceipt(
+    entry,
+    prepared,
+    authorizationReceipt,
+    releaseInput,
+    "public-readback-deployment"
+  );
+  await surface.admitDeploymentAttempt(deploymentInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    authorizationReceipt,
+    deploymentReceipt
+  ));
+  const input = publicReadbackInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    authorizationReceipt,
+    deploymentReceipt,
+    "public-readback-operation"
+  );
+  const callsBefore = publicReadbackFixtureCalls;
+  publicReadbackFixtureMutation = (value) => ({
+    ...value,
+    profileSha256: "0".repeat(64)
+  });
+  try {
+    await rejectsCode(
+      () => surface.verifyPublicReadback(input),
+      "release_surface_public_readback_result_invalid"
+    );
+  } finally {
+    publicReadbackFixtureMutation = null;
+  }
+  assert.equal(publicReadbackFixtureCalls, callsBefore + 1);
+  const rejectedStore = createVnextReceiptStore(roots.receipts);
+  assert.equal(rejectedStore.rebuild().activeReceiptIds
+    .map((receiptId) => rejectedStore.read(receiptId).receipt)
+    .filter((receipt) => receipt.receiptType === "public-readback").length, 0);
+
+  interruptAfterPublicReadbackRedaction = true;
+  await assert.rejects(
+    surface.verifyPublicReadback(input),
+    /fixture interruption after public-readback redaction commit/u
+  );
+  assert.equal(publicReadbackFixtureCalls, callsBefore + 2);
+  const interruptedStore = createVnextReceiptStore(roots.receipts);
+  const interruptedReadbacks = interruptedStore.rebuild().activeReceiptIds
+    .map((receiptId) => interruptedStore.read(receiptId).receipt)
+    .filter((receipt) => receipt.receiptType === "public-readback");
+  const interruptedScans = interruptedStore.rebuild().activeReceiptIds
+    .map((receiptId) => interruptedStore.read(receiptId).receipt)
+    .filter((receipt) => receipt.receiptType === "redaction-scan" &&
+      receipt.attemptId.startsWith("release-public-readback-redaction-"));
+  assert.equal(interruptedReadbacks.length, 0);
+  assert.equal(interruptedScans.length, 1);
+
+  const result = await surface.verifyPublicReadback(input);
+
+  assert.equal(publicReadbackFixtureCalls, callsBefore + 3);
+  assert.equal(result.state, "public-readback-verified-awaiting-publication");
+  assert.equal(result.deploymentStatus, "public-bytes-verified");
+  assert.equal(result.publicReadbackStatus, "verified");
+  assert.equal(result.publicationStatus, "not-published");
+  assert.equal(result.publicHttpsReadbackResult.assetCount,
+    releaseInput.webAssets.length);
+  assert.equal(result.publicHttpsReadbackResult.totalBytes,
+    releaseInput.webAssets.reduce((total, asset) => total + asset.byteLength, 0));
+  assert.equal(result.publicHttpsReadbackResult.profileId,
+    productionPublicReadback.publicHttpsReadbackProfile.profileId);
+  assert.equal(result.publicReadbackAdmissionResult.publicReadbackReceiptId,
+    result.publicReadbackReceiptId);
+  assert.doesNotMatch(result.publicReadbackAdmissionResultBytes.toString("utf8"),
+    /"publicationStatus":"published"|\bdone\b/iu);
+
+  const receiptStore = createVnextReceiptStore(roots.receipts);
+  const storedReadback = receiptStore.read(result.publicReadbackReceiptId);
+  assert.deepEqual(storedReadback.bytes, result.publicReadbackReceiptBytes);
+  assert.equal(storedReadback.receipt.receiptType, "public-readback");
+  assert.equal(storedReadback.receipt.phase, "public-readback");
+  assert.equal(storedReadback.receipt.status, "pass");
+  assert.deepEqual(storedReadback.receipt.inputReceiptIds,
+    [deploymentReceipt.receipt.receiptId]);
+  assert.equal(storedReadback.receipt.runtime.executionClass, "deployment");
+  assert.equal(storedReadback.receipt.attestationReference,
+    prepared.attestationReceiptId);
+  assert.equal(receiptStore.read(result.publicReadbackRedactionReceiptId)
+    .receipt.status, "pass");
+  const currentness = classifyVnextPhaseReceipts({
+    campaignId: entry.expectedCampaignId,
+    receiptBytes: [
+      receiptStore.read(releaseInput.webBuildReceiptId).bytes,
+      deploymentReceipt.bytes,
+      storedReadback.bytes
+    ]
+  });
+  assert.equal(currentness.result.records.find((record) =>
+    record.receiptId === result.publicReadbackReceiptId).state, "current-pass");
+
+  const repeated = await surface.verifyPublicReadback(input);
+  assert.equal(publicReadbackFixtureCalls, callsBefore + 4);
+  assert.equal(repeated.publicReadbackReceiptId, result.publicReadbackReceiptId);
+  assert.equal(repeated.publicHttpsReadbackResultSha256,
+    result.publicHttpsReadbackResultSha256);
+  assert.equal(repeated.readbackPersistence.disposition,
+    "existing-byte-identical");
+  assert.equal(repeated.readbackRedactionPersistence.disposition,
+    "existing-byte-identical");
+
+  await rejectsCode(() => surface.verifyPublicReadback({
+    ...input,
+    callerTransport: "fixture"
+  }), "release_surface_public_readback_input_invalid");
+  await rejectsCode(() => surface.verifyPublicReadback({
+    ...input,
+    publicReadbackPassed: true
+  }), "release_surface_public_readback_input_invalid");
+  assert.equal(publicReadbackFixtureCalls, callsBefore + 4);
 });
 
 test("rejects caller deployment truth and deployment-attempt binding drift", {

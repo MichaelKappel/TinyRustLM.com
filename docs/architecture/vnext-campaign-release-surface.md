@@ -6,17 +6,19 @@
 turning a freshly executed campaign projection into immutable prepublication
 attestation evidence, an operator status view, and a create-only
 `release_manifest.v3` candidate, verifying its current release-authorizer
-signature, and admitting one narrowly scoped deployment-attempt receipt as
-forward-only children. Its frozen profile is
+signature, admitting one narrowly scoped deployment-attempt receipt, and
+performing exact production HTTPS readback as forward-only children. Its frozen profile is
 `contracts/vnext/campaign-release-surface-profile.v1.json`, with SHA-256
-`d867dc809b5fc1f504469edfd25c7b1f3b93e8448ba5571558f6a5f4b9079bed`.
+`504492d9314b0751f09b2110b92cd7b2d5b284a11506b00b82d46ec9f0c4d7db`.
 
 This checkpoint implements fresh projection, final attestation, public-safe
 redaction, truthful operator status, release-manifest preparation, current
 Ed25519 release-authorizer verification, and immutable deployment-attempt
-admission. Exact production HTTPS readback, published claims, site-publisher authorization, and
-deletion of the superseded release stack remain required before the surface is
-the operational publication entry point. A prepared manifest is explicitly
+admission. Exact production HTTPS readback admission is implemented, while a
+real production run, generated pointer/history files, published claims,
+site-publisher authorization, and deletion of the superseded release stack
+remain required before the surface is the operational publication entry point.
+A prepared manifest is explicitly
 `not-authorized`; an authorized manifest is only
 `release-authorized-awaiting-deployment`. Neither state is a deployment,
 public-readback result, publication, or live campaign count.
@@ -49,7 +51,8 @@ release_manifest.v3
   -> current release-authorizer signature receipt [implemented]
   -> deployment-attempt redaction-scan receipt [implemented]
   -> deployment-attempt receipt [implemented; explicitly not success proof]
-  -> exact production HTTPS readback receipt
+  -> exact production HTTPS readback redaction-scan receipt [implemented]
+  -> exact production HTTPS readback receipt [implemented operation; no live receipt]
   -> published claim.v2 descendants
   -> site-publisher signatures
 ```
@@ -291,6 +294,45 @@ The result state is
 is only `attempt-admitted` and its readback status is
 `required-not-performed`. No deployed or published claim is valid yet.
 
+## Public HTTPS Readback Admission
+
+`verifyPublicReadback` accepts only identities and immutable control documents;
+there is no caller field for DNS, transport, response metadata, response body,
+verdict, retry selection, or readback result. Before network access it
+reconstructs the prepared manifest, original runner snapshots, all preparation
+scans, current release-authorizer signature and authority graph, deployment
+scan, and the exact stored `deployment-attempt-only` receipt. The active stores
+must be the exact deployment closure or one of the operation's two recoverable
+dependency prefixes.
+
+The surface invokes `performVnextPublicHttpsReadback` itself with the manifest's
+public origin, closed static asset inventory, and exact security-header profile.
+It then independently parses the returned canonical bytes and verifies the
+frozen verifier profile and source hashes, origin, counts, total bytes, every
+sorted observation, status, media type, cache value, security-profile hash,
+TLS version, body hash, and domain-separated observation inventory. DNS,
+pinned-address, and certificate values remain undisclosed and are represented
+only by bounded counts and domain-separated identities.
+
+The result receives a protected-equality scan before receipt construction. The
+`public-readback` receipt binds the deployment receipt as its only phase parent,
+plus the current authorization, release manifest, deployment receipt, static
+inventory, control documents, verifier profile, complete result, observation
+inventory, DNS set, pinned address, certificate set, and exact verified
+inventory. The finalized receipt is scanned through the public-safe document
+profile. Its redaction receipt is create-only persisted first and the readback
+receipt second. Recovery accepts only the deployment closure, that closure plus
+the exact deterministic scan receipt, or both exact descendants; all replayed
+bytes must be identical.
+
+A passing operation returns
+`public-readback-verified-awaiting-publication`, `public-bytes-verified`, and
+`not-published`. It does not create generated publication files, mutate the
+release manifest, publish a claim, authorize a site publisher, increment a
+campaign count, or prove observer independence. The conformance suite replaces
+the verifier module only before loading the surface and labels those observations
+as fixtures; they are orchestration evidence, never a production readback.
+
 ## Redaction And Secret Custody
 
 The caller supplies a bounded protected equality list in process memory. The
@@ -433,22 +475,30 @@ redaction receipt; the deployment receipt itself is never stored.
   attempted-inventory drift;
 - byte-identical deployment admission replay; and
 - unsafe deployment bytes retaining only bounded redaction evidence.
+- internally invoked readback with no caller transport, response, result, or
+  success field;
+- independent rejection of a malformed verifier result;
+- exact manifest/observation/result/receipt binding;
+- interruption after the readback scan commit and byte-identical recovery; and
+- an immutable current-pass `public-readback` phase receipt that remains
+  explicitly `not-published`.
 
 The complete-capacity case is synthetic conformance evidence. It does not
 increment any live campaign counter.
 
-## Adjacent Production Readback Boundary
+## Integrated Production Readback Boundary
 
-`tinyrustlm/tools/vnext-public-https-readback.js` is now the sole standalone
-production-network verifier intended for the next forward-only release
-descendant. It owns public DNS and HTTPS, pins one globally routable address,
+`tinyrustlm/tools/vnext-public-https-readback.js` is the sole production-network
+verifier invoked by the forward-only release operation. It owns public DNS and
+HTTPS, pins one globally routable address,
 uses normal TLS hostname verification, and verifies the complete static
 inventory by exact status, length, media type, cache/security headers, stream
 count, and SHA-256. It has no caller transport or success input and returns no
-receipt. See `docs/architecture/vnext-public-https-readback.md`.
+receipt. The release surface now reconstructs the admitted deployment and
+current authorization, invokes this exact module, independently revalidates
+its canonical result, and persists the scan/readback dependency pair. See
+`docs/architecture/vnext-public-https-readback.md`.
 
-This does not extend the current release-surface result. Integration must
-reconstruct the admitted deployment attempt and current authorization, invoke
-the verifier inside the surface, scan the canonical output, and create-only
-persist the redaction and `public-readback` receipts. Until that operation is
-implemented, no local or live readback can advance publication state.
+No production invocation is asserted by this checkpoint. Generated
+pointer/history bytes, evidence-bound published `claim.v2` descendants, and
+current `site-publisher` signatures are the next release-graph gate.

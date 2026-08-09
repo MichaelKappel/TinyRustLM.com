@@ -52,6 +52,12 @@ const {
   verifyVnextRedactionScanReceipt
 } = require("./vnext-public-safe-redaction.js");
 const {
+  performVnextPublicHttpsReadback,
+  publicHttpsReadbackProfile,
+  publicHttpsReadbackProfileSha256,
+  validateVnextWebSecurityHeaderProfileBytes
+} = require("./vnext-public-https-readback.js");
+const {
   signatureProfile,
   signatureProfileSha256
 } = require("./vnext-signature-payload.js");
@@ -77,6 +83,8 @@ const receiptStoreProfileSha256 = sha256(receiptStoreProfileBytes);
 const sourceSha256 = sha256(fs.readFileSync(__filename));
 const runnerSourceSha256 = sha256(fs.readFileSync(path.join(__dirname,
   "vnext-campaign-runner.js")));
+const publicHttpsReadbackSourceSha256 = sha256(fs.readFileSync(path.join(__dirname,
+  "vnext-public-https-readback.js")));
 
 const contentIdPattern = /^sha256:[a-f0-9]{64}$/u;
 const digestPattern = /^[a-f0-9]{64}$/u;
@@ -148,6 +156,23 @@ const deploymentInputFields = Object.freeze([
   "webSecurityHeaderProfileBytes",
   "webPublicationGeneratorBytes"
 ]);
+const publicReadbackInputFields = Object.freeze([
+  "authorizationReceiptId",
+  "changelogBytes",
+  "deploymentReceiptId",
+  "expectedCampaignId",
+  "expectedEnvironment",
+  "expectedTerminalRegistryReceiptId",
+  "knownSecrets",
+  "operationId",
+  "releaseManifestId",
+  "sourceRevision",
+  "trustedRootRegistryReceiptId",
+  "verificationTimeUtc",
+  "webDeploymentManifestBytes",
+  "webSecurityHeaderProfileBytes",
+  "webPublicationGeneratorBytes"
+]);
 const optionFields = Object.freeze([
   "campaignArtifactStoreRoot",
   "expectedWasmModuleSha256",
@@ -163,12 +188,13 @@ const profileFields = Object.freeze([
   "receiptStoreProfileId", "receiptStoreProfileSha256", "subjectStoreProfileId",
   "subjectStoreProfileSha256", "publicSafeRedactionProfileId",
   "publicSafeRedactionProfileSha256", "receiptSignatureProfileId",
-  "receiptSignatureProfileSha256", "canonicalJsonProfile", "hashAlgorithm",
+  "receiptSignatureProfileSha256", "publicHttpsReadbackProfileId",
+  "publicHttpsReadbackProfileSha256", "canonicalJsonProfile", "hashAlgorithm",
   "campaignTruthInput", "operationPolicy", "storedProjectionPolicy",
   "callerVerdictPolicy", "callerCounterPolicy", "mutablePointerPolicy",
   "networkAccess", "clockAccess", "sourceMutation", "attestation",
   "operatorStatus", "releasePreparation", "releaseAuthorization",
-  "releaseDeployment", "limits"
+  "releaseDeployment", "publicReadback", "limits"
 ]);
 const attestationProfileFields = Object.freeze([
   "receiptSchema", "receiptType", "phase", "completeStatus", "incompleteStatus",
@@ -203,6 +229,15 @@ const releaseDeploymentProfileFields = Object.freeze([
   "timePolicy", "redactionPolicy", "persistencePolicy", "callerSuccessPolicy",
   "publicReadbackPolicy"
 ]);
+const publicReadbackProfileFields = Object.freeze([
+  "resultSchema", "verifiedState", "configurationIdentityDomain",
+  "receiptType", "phase", "status",
+  "evidenceScope", "manifestPolicy", "authorizationPolicy",
+  "deploymentPolicy", "networkPolicy", "resultPolicy",
+  "inputReceiptPolicy", "inputHashPolicy", "outputHashPolicy",
+  "runtimePolicy", "timePolicy", "redactionPolicy", "persistencePolicy",
+  "replayPolicy", "publicationPolicy"
+]);
 const limitFields = Object.freeze([
   "maximumKnownSecrets", "maximumProjectionBytes", "maximumReceiptSnapshotMembers",
   "maximumSubjectSnapshotMembers", "maximumOperatorStatusBytes",
@@ -214,7 +249,9 @@ const limitFields = Object.freeze([
   "maximumWebTotalBytes",
   "maximumReleaseManifestBytes", "maximumAuthorizationReceiptBytes",
   "maximumAuthorizationResultBytes", "maximumDeploymentReceiptBytes",
-  "maximumDeploymentResultBytes"
+  "maximumDeploymentResultBytes", "maximumPublicReadbackResultBytes",
+  "maximumPublicReadbackReceiptBytes",
+  "maximumPublicReadbackAdmissionResultBytes"
 ]);
 const operatorFields = Object.freeze([
   "attestationReceiptId", "blockerCodes", "campaignId", "counts", "environment",
@@ -228,6 +265,17 @@ const webAssetFields = Object.freeze([
 ]);
 const generatedPublicationFileFields = Object.freeze([
   "cachePolicy", "contentType", "path", "role", "securityHeaderProfileSha256"
+]);
+const publicReadbackResultFields = Object.freeze([
+  "schema", "profileId", "profileSha256", "verifierSourceSha256",
+  "publicOrigin", "assetCount", "totalBytes", "dnsAddressCount",
+  "certificateCount", "observationInventorySha256", "dnsAddressSetSha256",
+  "pinnedAddressSha256", "certificateSetSha256",
+  "securityHeaderProfileSha256", "observations"
+]);
+const publicReadbackObservationFields = Object.freeze([
+  "byteLength", "cacheControl", "contentType", "path",
+  "securityHeaderProfileSha256", "sha256", "statusCode", "tlsProtocol"
 ]);
 const webAssetRoles = Object.freeze([
   "application", "bootstrap", "documentation", "runtime", "runtime-metadata",
@@ -423,6 +471,8 @@ function validateInstalledProfile() {
     "release_surface_profile_invalid", step);
   exactDataObject(parsedProfile.releaseDeployment, releaseDeploymentProfileFields,
     "release_surface_profile_invalid", step);
+  exactDataObject(parsedProfile.publicReadback, publicReadbackProfileFields,
+    "release_surface_profile_invalid", step);
   exactDataObject(parsedProfile.limits, limitFields,
     "release_surface_profile_invalid", step);
   const limitsValid = Object.values(parsedProfile.limits)
@@ -447,6 +497,10 @@ function validateInstalledProfile() {
         publicSafeRedactionProfileSha256 ||
       parsedProfile.receiptSignatureProfileId !== signatureProfile.profileId ||
       parsedProfile.receiptSignatureProfileSha256 !== signatureProfileSha256 ||
+      parsedProfile.publicHttpsReadbackProfileId !==
+        publicHttpsReadbackProfile.profileId ||
+      parsedProfile.publicHttpsReadbackProfileSha256 !==
+        publicHttpsReadbackProfileSha256 ||
       parsedProfile.canonicalJsonProfile !== "rfc8785-jcs+tinyrustlm.strict-json.v1" ||
       parsedProfile.hashAlgorithm !== "sha256" ||
       parsedProfile.campaignTruthInput !==
@@ -459,7 +513,7 @@ function validateInstalledProfile() {
       parsedProfile.networkAccess !== "forbidden-until-public-readback-operation" ||
       parsedProfile.clockAccess !== "caller-trusted-verification-time-only" ||
       parsedProfile.sourceMutation !==
-        "create-only-attestation-redaction-release-manifest-authorization-signature-and-deployment-attempt-receipts" ||
+        "create-only-attestation-redaction-release-manifest-authorization-signature-deployment-attempt-and-public-readback-receipts" ||
       parsedProfile.attestation.receiptSchema !== "tinyrustlm.vnext.receipt.v1" ||
       parsedProfile.attestation.receiptType !== "final-attestation" ||
       parsedProfile.attestation.phase !== "final-attestation" ||
@@ -596,6 +650,45 @@ function validateInstalledProfile() {
       parsedProfile.releaseDeployment.callerSuccessPolicy !== "forbidden" ||
       parsedProfile.releaseDeployment.publicReadbackPolicy !==
         "required-before-any-deployed-or-published-claim" ||
+      parsedProfile.publicReadback.resultSchema !==
+        "tinyrustlm.vnext.public_readback_admission_result.v1" ||
+      parsedProfile.publicReadback.verifiedState !==
+        "public-readback-verified-awaiting-publication" ||
+      parsedProfile.publicReadback.configurationIdentityDomain !==
+        "tinyrustlm.release-public-readback-configuration.v1" ||
+      parsedProfile.publicReadback.receiptType !== "public-readback" ||
+      parsedProfile.publicReadback.phase !== "public-readback" ||
+      parsedProfile.publicReadback.status !== "pass" ||
+      parsedProfile.publicReadback.evidenceScope !==
+        "exact-production-public-https-static-asset-closure" ||
+      parsedProfile.publicReadback.manifestPolicy !==
+        "existing-current-authorized-manifest-with-one-admitted-deployment-attempt-only" ||
+      parsedProfile.publicReadback.authorizationPolicy !==
+        "rerun-current-evidence-eligible-release-authorizer-signature" ||
+      parsedProfile.publicReadback.deploymentPolicy !==
+        "exactly-one-stored-current-admitted-deployment-attempt" ||
+      parsedProfile.publicReadback.networkPolicy !==
+        "surface-invokes-sole-production-verifier-without-caller-transport-or-result" ||
+      parsedProfile.publicReadback.resultPolicy !==
+        "strict-canonical-result-revalidated-against-manifest-and-profile" ||
+      parsedProfile.publicReadback.inputReceiptPolicy !==
+        "exact-admitted-deployment-attempt-parent" ||
+      parsedProfile.publicReadback.inputHashPolicy !==
+        "exact-release-authorization-deployment-manifest-web-inventory-control-documents-and-verifier-profile" ||
+      parsedProfile.publicReadback.outputHashPolicy !==
+        "exact-result-observation-dns-pinned-address-certificate-set-and-verified-web-inventory" ||
+      parsedProfile.publicReadback.runtimePolicy !==
+        "deployment-execution-class-only" ||
+      parsedProfile.publicReadback.timePolicy !==
+        "readback-not-before-deployment-and-current-authorization-at-trusted-verification-time" ||
+      parsedProfile.publicReadback.redactionPolicy !==
+        "scan-result-known-secret-representations-and-final-receipt-before-persistence" ||
+      parsedProfile.publicReadback.persistencePolicy !==
+        "readback-redaction-before-create-only-public-readback-receipt" ||
+      parsedProfile.publicReadback.replayPolicy !==
+        "exact-dependency-prefix-and-byte-identical-replay-only" ||
+      parsedProfile.publicReadback.publicationPolicy !==
+        "forbidden-until-generated-files-published-claims-and-site-publisher-descendants" ||
       !limitsValid ||
       parsedProfile.limits.maximumProjectionBytes !==
         campaignProjectionProfile.limits.maximumProjectionResultBytes ||
@@ -619,6 +712,11 @@ function validateInstalledProfile() {
         receiptStoreProfile.wire.maximumReceiptBytes ||
       parsedProfile.limits.maximumDeploymentReceiptBytes !==
         receiptStoreProfile.wire.maximumReceiptBytes ||
+      parsedProfile.limits.maximumPublicReadbackResultBytes !==
+        publicHttpsReadbackProfile.limits.maximumResultBytes ||
+      parsedProfile.limits.maximumPublicReadbackReceiptBytes !==
+        receiptStoreProfile.wire.maximumReceiptBytes ||
+      parsedProfile.limits.maximumPublicReadbackAdmissionResultBytes !== 262_144 ||
       parsedProfile.limits.maximumChangelogBytes >
         publicSafeRedactionProfile.limits.maximumInputBytes) {
     failEvidence("release_surface_profile_invalid", step);
@@ -637,7 +735,7 @@ function deepFreeze(value) {
 
 const campaignReleaseSurfaceProfile = deepFreeze({ ...parsedProfile });
 
-function runtimeRecord() {
+function runtimeRecord(executionClass = "local") {
   const operatingSystem = process.platform === "win32" ? "windows" :
     process.platform === "darwin" ? "macos" :
       process.platform === "linux" ? "linux" : null;
@@ -650,7 +748,7 @@ function runtimeRecord() {
     runtimeIdentifier: `node.${process.versions.node}.${process.platform}.${process.arch}`,
     operatingSystem,
     architecture,
-    executionClass: "local"
+    executionClass
   };
 }
 
@@ -916,6 +1014,55 @@ function normalizeDeploymentInput(rawInput) {
     ...input,
     changelogBytes: Buffer.from(input.changelogBytes),
     deploymentReceiptBytes: Buffer.from(input.deploymentReceiptBytes),
+    knownSecrets,
+    webDeploymentManifestBytes,
+    webPublicationGeneratorBytes,
+    webSecurityHeaderProfileBytes
+  });
+}
+
+function normalizePublicReadbackInput(rawInput) {
+  const step = "release-surface-public-readback-input";
+  const input = exactDataObject(rawInput, publicReadbackInputFields,
+    "release_surface_public_readback_input_invalid", step);
+  const knownSecrets = dataArray(input.knownSecrets,
+    parsedProfile.limits.maximumKnownSecrets,
+    "release_surface_known_secrets_invalid", step);
+  scanKnownSecretRepresentations(Buffer.from("{}", "utf8"), knownSecrets);
+  const webDeploymentManifestBytes = normalizeWebControlBytes(
+    input.webDeploymentManifestBytes,
+    "release_surface_web_deployment_manifest_invalid",
+    step
+  );
+  const webSecurityHeaderProfileBytes = normalizeWebControlBytes(
+    input.webSecurityHeaderProfileBytes,
+    "release_surface_web_security_headers_invalid",
+    step
+  );
+  const webPublicationGeneratorBytes = normalizeWebControlBytes(
+    input.webPublicationGeneratorBytes,
+    "release_surface_web_publication_generator_invalid",
+    step
+  );
+  if (!Buffer.isBuffer(input.changelogBytes) || input.changelogBytes.length === 0 ||
+      input.changelogBytes.length > parsedProfile.limits.maximumChangelogBytes ||
+      typeof input.expectedCampaignId !== "string" ||
+      !safeIdPattern.test(input.expectedCampaignId) ||
+      !["development", "production", "staging"].includes(
+        input.expectedEnvironment) ||
+      !contentIdPattern.test(input.expectedTerminalRegistryReceiptId) ||
+      !contentIdPattern.test(input.authorizationReceiptId) ||
+      !contentIdPattern.test(input.deploymentReceiptId) ||
+      !contentIdPattern.test(input.operationId) ||
+      !contentIdPattern.test(input.releaseManifestId) ||
+      !sourceRevisionPattern.test(input.sourceRevision) ||
+      !contentIdPattern.test(input.trustedRootRegistryReceiptId) ||
+      utcNanoseconds(input.verificationTimeUtc) === null) {
+    failEvidence("release_surface_public_readback_input_invalid", step);
+  }
+  return Object.freeze({
+    ...input,
+    changelogBytes: Buffer.from(input.changelogBytes),
     knownSecrets,
     webDeploymentManifestBytes,
     webPublicationGeneratorBytes,
@@ -2003,6 +2150,342 @@ function validateDeploymentAttemptReceipt(input, release, storedAuthorization) {
   });
 }
 
+function validateStoredDeploymentAttempt(input, release, storedAuthorization,
+  receiptStore) {
+  const step = "release-surface-public-readback-deployment";
+  const stored = receiptStore.read(input.deploymentReceiptId);
+  const deployment = validateDeploymentAttemptReceipt({
+    ...input,
+    deploymentReceiptBytes: stored.bytes
+  }, release, storedAuthorization);
+  if (deployment.receipt.receiptId !== input.deploymentReceiptId ||
+      !deployment.bytes.equals(stored.bytes)) {
+    failEvidence("release_surface_public_readback_deployment_invalid", step);
+  }
+  const activeReceipts = activeReceiptDocuments(receiptStore);
+  const redactionAttemptId = `release-deployment-redaction-${
+    input.deploymentReceiptId.slice("sha256:".length)}`;
+  const redactionCandidates = [...activeReceipts.byId.values()].filter((entry) =>
+    entry.receipt.receiptType === "redaction-scan" &&
+      entry.receipt.attemptId === redactionAttemptId);
+  if (redactionCandidates.length !== 1) {
+    failEvidence("release_surface_public_readback_deployment_redaction_missing", step);
+  }
+  const redaction = redactionCandidates[0];
+  const verifiedScan = verifyVnextRedactionScanReceipt({
+    knownSecrets: input.knownSecrets,
+    receiptBytes: redaction.bytes,
+    targetBytes: deployment.bytes,
+    targetKind: "document"
+  });
+  if (!verifiedScan.publicSafe || verifiedScan.scanStatus !== "pass" ||
+      redaction.receipt.campaignId !== input.expectedCampaignId ||
+      redaction.receipt.sourceRevision !== input.sourceRevision ||
+      redaction.receipt.startedAtUtc !== deployment.receipt.completedAtUtc ||
+      redaction.receipt.completedAtUtc !== deployment.receipt.completedAtUtc ||
+      compareUtc(deployment.receipt.completedAtUtc, input.verificationTimeUtc,
+        "release_surface_public_readback_time_invalid", step) > 0) {
+    failEvidence("release_surface_public_readback_deployment_redaction_invalid", step);
+  }
+  return Object.freeze({
+    activeReceipts,
+    deployment,
+    expectedReceiptIds: [...new Set([
+      ...storedAuthorization.expectedReceiptIds,
+      redaction.receipt.receiptId,
+      deployment.receipt.receiptId
+    ])].sort(),
+    expectedSubjectIds: storedAuthorization.expectedSubjectIds,
+    redaction
+  });
+}
+
+function assertReadbackPrefixCandidate(receiptStore, subjectStore,
+  expectedReceiptIds, expectedSubjectIds) {
+  const step = "release-surface-public-readback-prefix";
+  const currentReceiptIds = receiptStore.rebuild().activeReceiptIds;
+  const base = new Set(expectedReceiptIds);
+  if (expectedReceiptIds.some((receiptId) => !currentReceiptIds.includes(receiptId))) {
+    failEvidence("release_surface_receipt_snapshot_member_missing", step);
+  }
+  const extras = currentReceiptIds.filter((receiptId) => !base.has(receiptId));
+  if (extras.length > 2 || currentReceiptIds.length !== expectedReceiptIds.length +
+      extras.length) {
+    failEvidence("release_surface_public_readback_snapshot_changed", step);
+  }
+  const currentSubjectIds = subjectStore.rebuild().activeSubjectIds;
+  if (!sameStrings(currentSubjectIds, expectedSubjectIds)) {
+    failEvidence("release_surface_public_readback_subject_snapshot_changed", step);
+  }
+  return Object.freeze({ currentReceiptIds, extras });
+}
+
+function readCanonicalPublicReadbackResult(rawResult, release,
+  webSecurityHeaderProfileBytes) {
+  const step = "release-surface-public-readback-result";
+  if (!isPlainObject(rawResult) || Object.getOwnPropertySymbols(rawResult).length !== 0) {
+    failEvidence("release_surface_public_readback_result_invalid", step);
+  }
+  const expectedWrapperFields = [...publicReadbackResultFields,
+    "resultBytes", "resultSha256"].sort();
+  const wrapperFields = Object.getOwnPropertyNames(rawResult).sort();
+  if (!sameStrings(wrapperFields, expectedWrapperFields)) {
+    failEvidence("release_surface_public_readback_result_invalid", step);
+  }
+  const wrapperValue = {};
+  for (const field of publicReadbackResultFields) {
+    const descriptor = Object.getOwnPropertyDescriptor(rawResult, field);
+    if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
+      failEvidence("release_surface_public_readback_result_accessor", step);
+    }
+    wrapperValue[field] = descriptor.value;
+  }
+  const bytesDescriptor = Object.getOwnPropertyDescriptor(rawResult, "resultBytes");
+  const shaDescriptor = Object.getOwnPropertyDescriptor(rawResult, "resultSha256");
+  if (!bytesDescriptor || !bytesDescriptor.enumerable ||
+      typeof bytesDescriptor.get !== "function" || bytesDescriptor.set !== undefined ||
+      !shaDescriptor || !shaDescriptor.enumerable || !("value" in shaDescriptor) ||
+      !digestPattern.test(shaDescriptor.value)) {
+    failEvidence("release_surface_public_readback_result_invalid", step);
+  }
+  let bytes;
+  try {
+    bytes = bytesDescriptor.get.call(rawResult);
+  } catch {
+    failEvidence("release_surface_public_readback_result_accessor", step);
+  }
+  if (!Buffer.isBuffer(bytes) || bytes.length === 0 ||
+      bytes.length > parsedProfile.limits.maximumPublicReadbackResultBytes ||
+      sha256(bytes) !== shaDescriptor.value) {
+    failEvidence("release_surface_public_readback_result_invalid", step);
+  }
+  let result;
+  try {
+    result = parseStrictJson(bytes);
+  } catch {
+    failEvidence("release_surface_public_readback_result_invalid", step);
+  }
+  exactDataObject(result, publicReadbackResultFields,
+    "release_surface_public_readback_result_invalid", step);
+  if (!canonicalizeVnextJcsBytes(result).equals(bytes) ||
+      !canonicalizeVnextJcsBytes(wrapperValue).equals(bytes)) {
+    failEvidence("release_surface_public_readback_result_wire_invalid", step);
+  }
+  const observations = dataArray(result.observations,
+    publicHttpsReadbackProfile.limits.maximumAssets,
+    "release_surface_public_readback_observations_invalid", step);
+  const security = validateVnextWebSecurityHeaderProfileBytes(
+    webSecurityHeaderProfileBytes
+  );
+  const manifest = release.value;
+  if (result.schema !== publicHttpsReadbackProfile.resultSchema ||
+      result.profileId !== publicHttpsReadbackProfile.profileId ||
+      result.profileSha256 !== publicHttpsReadbackProfileSha256 ||
+      result.verifierSourceSha256 !== publicHttpsReadbackSourceSha256 ||
+      result.publicOrigin !== manifest.publicOrigin ||
+      result.assetCount !== manifest.webAssets.length ||
+      result.totalBytes !== manifest.webTotalBytes ||
+      !Number.isSafeInteger(result.dnsAddressCount) || result.dnsAddressCount < 1 ||
+      result.dnsAddressCount > publicHttpsReadbackProfile.limits.maximumDnsAddresses ||
+      !Number.isSafeInteger(result.certificateCount) || result.certificateCount < 1 ||
+      result.certificateCount >
+        publicHttpsReadbackProfile.limits.maximumCertificates ||
+      !digestPattern.test(result.observationInventorySha256) ||
+      !digestPattern.test(result.dnsAddressSetSha256) ||
+      !digestPattern.test(result.pinnedAddressSha256) ||
+      !digestPattern.test(result.certificateSetSha256) ||
+      result.securityHeaderProfileSha256 !== security.profileSha256 ||
+      observations.length !== manifest.webAssets.length) {
+    failEvidence("release_surface_public_readback_result_invalid", step);
+  }
+  const normalizedObservations = observations.map((entry, index) => {
+    const observation = exactDataObject(entry, publicReadbackObservationFields,
+      "release_surface_public_readback_observations_invalid", step);
+    const asset = manifest.webAssets[index];
+    if (observation.path !== asset.path ||
+        observation.byteLength !== asset.byteLength ||
+        observation.sha256 !== asset.sha256 ||
+        observation.contentType !== asset.contentType ||
+        observation.cacheControl !== security.cacheControlByPolicy[asset.cachePolicy] ||
+        observation.securityHeaderProfileSha256 !==
+          asset.securityHeaderProfileSha256 ||
+        observation.statusCode !== publicHttpsReadbackProfile.response.requiredStatus ||
+        !["TLSv1.2", "TLSv1.3"].includes(observation.tlsProtocol)) {
+      failEvidence("release_surface_public_readback_observations_invalid", step);
+    }
+    return Object.freeze({ ...observation });
+  });
+  const observationInventorySha256 = domainSeparatedDigest(
+    publicHttpsReadbackProfile.observation.inventoryIdentityDomain,
+    normalizedObservations
+  );
+  if (result.observationInventorySha256 !== observationInventorySha256) {
+    failEvidence("release_surface_public_readback_inventory_invalid", step);
+  }
+  return Object.freeze({
+    bytes: Buffer.from(bytes),
+    result: deepFreeze({
+      ...result,
+      observations: normalizedObservations
+    }),
+    resultSha256: shaDescriptor.value,
+    security
+  });
+}
+
+function createPublicReadbackReceipt(input, release, storedAuthorization,
+  storedDeployment, verifiedResult) {
+  const manifest = release.value;
+  const result = verifiedResult.result;
+  const configurationSha256 = domainSeparatedDigest(
+    parsedProfile.publicReadback.configurationIdentityDomain,
+    {
+      campaignReleaseSurfaceProfileSha256,
+      publicHttpsReadbackProfileSha256,
+      publicHttpsReadbackSourceSha256,
+      webSecurityHeaderProfileSha256: manifest.webSecurityHeaderProfileSha256
+    }
+  );
+  const inputHashes = [
+    {
+      name: "campaign-release-surface-profile",
+      sha256: campaignReleaseSurfaceProfileSha256
+    },
+    {
+      name: "deployment-attempt-canonical-content",
+      sha256: storedDeployment.deployment.receipt.canonicalContentSha256
+    },
+    {
+      name: "public-https-readback-profile",
+      sha256: publicHttpsReadbackProfileSha256
+    },
+    {
+      name: "release-authorization-canonical-content",
+      sha256: storedAuthorization.authorization.receipt.canonicalContentSha256
+    },
+    {
+      name: "release-manifest-canonical-content",
+      sha256: release.canonicalContentSha256
+    },
+    {
+      name: "web-asset-inventory",
+      sha256: storedDeployment.deployment.webAssetInventorySha256
+    },
+    {
+      name: "web-deployment-manifest",
+      sha256: manifest.webDeploymentManifestSha256
+    },
+    {
+      name: "web-publication-generator",
+      sha256: manifest.webPublicationGeneratorSha256
+    },
+    {
+      name: "web-security-header-profile",
+      sha256: manifest.webSecurityHeaderProfileSha256
+    }
+  ].sort((left, right) => left.name.localeCompare(right.name));
+  const outputHashes = [
+    { name: "certificate-set", sha256: result.certificateSetSha256 },
+    { name: "dns-address-set", sha256: result.dnsAddressSetSha256 },
+    {
+      name: "public-https-readback-observation-inventory",
+      sha256: result.observationInventorySha256
+    },
+    {
+      name: "public-https-readback-result",
+      sha256: verifiedResult.resultSha256
+    },
+    { name: "public-https-readback-selected-address", sha256:
+      result.pinnedAddressSha256 },
+    {
+      name: "verified-web-asset-inventory",
+      sha256: storedDeployment.deployment.webAssetInventorySha256
+    }
+  ].sort((left, right) => left.name.localeCompare(right.name));
+  const publicParameters = [
+    { name: "asset-count", value: String(result.assetCount), unit: "assets" },
+    {
+      name: "authorization-receipt-id",
+      value: input.authorizationReceiptId,
+      unit: null
+    },
+    {
+      name: "certificate-count",
+      value: String(result.certificateCount),
+      unit: "certificates"
+    },
+    {
+      name: "deployment-receipt-id",
+      value: input.deploymentReceiptId,
+      unit: null
+    },
+    {
+      name: "dns-address-count",
+      value: String(result.dnsAddressCount),
+      unit: "addresses"
+    },
+    {
+      name: "evidence-scope",
+      value: parsedProfile.publicReadback.evidenceScope,
+      unit: null
+    },
+    { name: "operation_id", value: input.operationId, unit: null },
+    { name: "public-origin", value: manifest.publicOrigin, unit: null },
+    {
+      name: "public-readback-profile-id",
+      value: publicHttpsReadbackProfile.profileId,
+      unit: null
+    },
+    { name: "subject_id", value: input.releaseManifestId, unit: null },
+    { name: "total-bytes", value: String(result.totalBytes), unit: "bytes" }
+  ].sort((left, right) => left.name.localeCompare(right.name));
+  return finalizeVnextReceipt({
+    schema: "tinyrustlm.vnext.receipt.v1",
+    receiptType: parsedProfile.publicReadback.receiptType,
+    campaignId: input.expectedCampaignId,
+    attemptId: input.operationId,
+    phase: parsedProfile.publicReadback.phase,
+    status: parsedProfile.publicReadback.status,
+    startedAtUtc: input.verificationTimeUtc,
+    completedAtUtc: input.verificationTimeUtc,
+    sourceRevision: input.sourceRevision,
+    inputReceiptIds: [input.deploymentReceiptId],
+    inputHashes,
+    outputHashes,
+    tools: [
+      {
+        name: "tinyrustlm.vnext.campaign-release-surface",
+        version: "1.0.0",
+        binarySha256: sourceSha256
+      },
+      {
+        name: "tinyrustlm.vnext.public-https-readback",
+        version: "1.0.0",
+        binarySha256: publicHttpsReadbackSourceSha256
+      }
+    ],
+    configurationSha256,
+    runtime: runtimeRecord("deployment"),
+    publicParameters,
+    error: null,
+    blockerCode: null,
+    externalEvidenceReferences: [
+      { kind: "https", value: manifest.publicOrigin },
+      { kind: "receipt", value: input.deploymentReceiptId }
+    ].sort((left, right) => left.value.localeCompare(right.value)),
+    redaction: {
+      profile: "tinyrustlm.vnext.public_safe.v1",
+      decision: "public-safe"
+    },
+    attestationReference: manifest.campaignAttestationReceiptId,
+    signatureEnvelope: null,
+    authorityRegistry: null,
+    keyRevocation: null,
+    offlineBundle: null,
+    supersedesReceiptIds: []
+  });
+}
+
 function assertStoreMembership(receiptStore, subjectStore, expectedReceiptIds,
   expectedSubjectIds, step) {
   const currentReceiptIds = receiptStore.rebuild().activeReceiptIds;
@@ -2809,11 +3292,223 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
     });
   }
 
+  async function verifyPublicReadback(rawInput) {
+    const step = "release-surface-public-readback";
+    const input = normalizePublicReadbackInput(rawInput);
+    const release = subjectStore.read(input.releaseManifestId);
+    const lineage = validatePreparedReleaseLineage(
+      input,
+      release,
+      runner,
+      artifactStore,
+      receiptStore,
+      subjectStore
+    );
+    const storedAuthorization = validateStoredReleaseAuthorization(
+      input,
+      release,
+      lineage,
+      receiptStore,
+      subjectStore
+    );
+    const storedDeployment = validateStoredDeploymentAttempt(
+      input,
+      release,
+      storedAuthorization,
+      receiptStore
+    );
+    assertReadbackPrefixCandidate(
+      receiptStore,
+      subjectStore,
+      storedDeployment.expectedReceiptIds,
+      storedDeployment.expectedSubjectIds
+    );
+
+    const rawReadbackResult = await performVnextPublicHttpsReadback({
+      publicOrigin: release.value.publicOrigin,
+      webAssets: release.value.webAssets.map((entry) => ({ ...entry })),
+      webSecurityHeaderProfileBytes: input.webSecurityHeaderProfileBytes
+    });
+    const verifiedResult = readCanonicalPublicReadbackResult(
+      rawReadbackResult,
+      release,
+      input.webSecurityHeaderProfileBytes
+    );
+    const resultKnownSecretScan = scanKnownSecretRepresentations(
+      verifiedResult.bytes,
+      input.knownSecrets
+    );
+    if (resultKnownSecretScan.findingCount !== 0) {
+      failEvidence("release_surface_public_readback_result_unsafe", step);
+    }
+    const readback = createPublicReadbackReceipt(
+      input,
+      release,
+      storedAuthorization,
+      storedDeployment,
+      verifiedResult
+    );
+    if (readback.bytes.length >
+        parsedProfile.limits.maximumPublicReadbackReceiptBytes) {
+      failEvidence("release_surface_public_readback_receipt_byte_limit", step);
+    }
+    const readbackScan = scanVnextPublicDocumentBytes(readback.bytes, {
+      knownSecrets: input.knownSecrets
+    });
+    const readbackRedaction = createVnextRedactionScanReceipt({
+      attemptId: `release-public-readback-redaction-${
+        readback.receipt.receiptId.slice("sha256:".length)}`,
+      campaignId: input.expectedCampaignId,
+      completedAtUtc: input.verificationTimeUtc,
+      scan: readbackScan,
+      sourceRevision: input.sourceRevision,
+      startedAtUtc: input.verificationTimeUtc
+    });
+    const deployedReceiptIds = storedDeployment.expectedReceiptIds;
+    const deployedSubjectIds = storedDeployment.expectedSubjectIds;
+    const withRedaction = [...new Set([
+      ...deployedReceiptIds,
+      readbackRedaction.receipt.receiptId
+    ])].sort();
+    const withReadback = [...new Set([
+      ...withRedaction,
+      readback.receipt.receiptId
+    ])].sort();
+    const currentReceiptIds = receiptStore.rebuild().activeReceiptIds;
+    const isDeployed = sameStrings(currentReceiptIds, deployedReceiptIds);
+    const hasRedaction = sameStrings(currentReceiptIds, withRedaction);
+    const hasReadback = sameStrings(currentReceiptIds, withReadback);
+    if (!isDeployed && !hasRedaction && !hasReadback) {
+      failEvidence("release_surface_public_readback_snapshot_changed", step);
+    }
+    assertStoreMembership(
+      receiptStore,
+      subjectStore,
+      currentReceiptIds,
+      deployedSubjectIds,
+      "release-surface-public-readback-before-verification"
+    );
+    if (hasRedaction || hasReadback) {
+      const existingScan = receiptStore.read(
+        readbackRedaction.receipt.receiptId
+      );
+      if (!existingScan.bytes.equals(readbackRedaction.bytes)) {
+        failEvidence("release_surface_public_readback_redaction_changed", step);
+      }
+    }
+    if (hasReadback) {
+      const existingReadback = receiptStore.read(readback.receipt.receiptId);
+      if (!existingReadback.bytes.equals(readback.bytes)) {
+        failEvidence("release_surface_public_readback_identity_collision", step);
+      }
+    }
+    if (!readbackScan.publicSafe) {
+      if (isDeployed) receiptStore.put(readbackRedaction.bytes);
+      assertStoreMembership(
+        receiptStore,
+        subjectStore,
+        withRedaction,
+        deployedSubjectIds,
+        "release-surface-public-readback-redaction-failure"
+      );
+      failEvidence("release_surface_public_readback_unsafe", step);
+    }
+
+    const admissionResult = deepFreeze({
+      schema: parsedProfile.publicReadback.resultSchema,
+      campaignId: input.expectedCampaignId,
+      environment: input.expectedEnvironment,
+      releaseManifestId: input.releaseManifestId,
+      releaseManifestSha256: release.canonicalContentSha256,
+      sourceRevision: input.sourceRevision,
+      publicOrigin: release.value.publicOrigin,
+      authorizationReceiptId: input.authorizationReceiptId,
+      deploymentReceiptId: input.deploymentReceiptId,
+      publicReadbackReceiptId: readback.receipt.receiptId,
+      publicReadbackRedactionReceiptId: readbackRedaction.receipt.receiptId,
+      publicHttpsReadbackProfileId: publicHttpsReadbackProfile.profileId,
+      publicHttpsReadbackProfileSha256,
+      publicHttpsReadbackResultSha256: verifiedResult.resultSha256,
+      observationInventorySha256:
+        verifiedResult.result.observationInventorySha256,
+      verifiedAtUtc: input.verificationTimeUtc,
+      evidenceScope: parsedProfile.publicReadback.evidenceScope,
+      deploymentStatus: "public-bytes-verified",
+      publicReadbackStatus: "verified",
+      publicationStatus: "not-published",
+      state: parsedProfile.publicReadback.verifiedState
+    });
+    const admissionResultBytes = canonicalizeVnextJcsBytes(admissionResult);
+    if (admissionResultBytes.length >
+        parsedProfile.limits.maximumPublicReadbackAdmissionResultBytes) {
+      failEvidence("release_surface_public_readback_admission_result_byte_limit", step);
+    }
+    const admissionScan = scanKnownSecretRepresentations(
+      admissionResultBytes,
+      input.knownSecrets
+    );
+    if (admissionScan.findingCount !== 0) {
+      failEvidence("release_surface_public_readback_admission_result_unsafe", step);
+    }
+    assertStoreMembership(
+      receiptStore,
+      subjectStore,
+      currentReceiptIds,
+      deployedSubjectIds,
+      "release-surface-public-readback-before-persistence"
+    );
+    const readbackRedactionPersistence = receiptStore.put(
+      readbackRedaction.bytes
+    );
+    assertStoreMembership(
+      receiptStore,
+      subjectStore,
+      hasReadback ? withReadback : withRedaction,
+      deployedSubjectIds,
+      "release-surface-public-readback-after-redaction"
+    );
+    const readbackPersistence = receiptStore.put(readback.bytes);
+    assertStoreMembership(
+      receiptStore,
+      subjectStore,
+      withReadback,
+      deployedSubjectIds,
+      "release-surface-public-readback-after-receipt"
+    );
+    return immutableReleasePreparationResult({
+      campaignId: input.expectedCampaignId,
+      environment: input.expectedEnvironment,
+      releaseManifestId: input.releaseManifestId,
+      releaseManifestSha256: release.canonicalContentSha256,
+      authorizationReceiptId: input.authorizationReceiptId,
+      deploymentReceiptId: input.deploymentReceiptId,
+      publicReadbackReceiptId: readback.receipt.receiptId,
+      publicReadbackRedactionReceiptId: readbackRedaction.receipt.receiptId,
+      deploymentStatus: admissionResult.deploymentStatus,
+      publicReadbackStatus: admissionResult.publicReadbackStatus,
+      publicationStatus: admissionResult.publicationStatus,
+      state: admissionResult.state,
+      publicReadbackAdmissionResult: admissionResult,
+      publicReadbackAdmissionResultSha256: sha256(admissionResultBytes),
+      publicHttpsReadbackResult: verifiedResult.result,
+      publicHttpsReadbackResultSha256: verifiedResult.resultSha256,
+      readbackPersistence,
+      readbackRedactionPersistence
+    }, {
+      publicHttpsReadbackResultBytes: verifiedResult.bytes,
+      publicReadbackReceiptBytes: readback.bytes,
+      publicReadbackRedactionReceiptBytes: readbackRedaction.bytes,
+      publicReadbackAdmissionResultBytes: admissionResultBytes,
+      releaseManifestBytes: release.bytes
+    });
+  }
+
   return Object.freeze({
     admitDeploymentAttempt,
     attestCampaign,
     authorizeRelease,
     prepareRelease,
+    verifyPublicReadback,
     profileId: parsedProfile.profileId,
     profileSha256: campaignReleaseSurfaceProfileSha256,
     runnerStartup: runner.startup

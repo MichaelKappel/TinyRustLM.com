@@ -66,16 +66,18 @@ descendants.
 
 These later local facts close the named cross-runtime implementation gaps only.
 They do not close archive-member scanning, protected production secret-list
-custody, operational final-attestation/release/dashboard/public-readback
-cutover, authorized live MemoryEndpoints
-continuity, independent outside-network lane proofs, catalog publication, or
-release-surface admission of a public HTTPS readback receipt. One standalone
-production HTTPS verifier now rejects nonpublic DNS results, pins one public
-address, verifies normal TLS identity, and streams the exact closed inventory;
-it creates no evidence and has not been used to claim a live pass. No local
-test changes a campaign counter.
+custody, maintained-entry-point cutover, generated publication descendants,
+authorized live MemoryEndpoints continuity, independent outside-network lane
+proofs, catalog publication, or a real production HTTPS readback. The
+production verifier rejects nonpublic DNS results, pins one public address,
+verifies normal TLS identity, and streams the exact closed inventory. The sole
+release surface now reconstructs deployment and authorization, invokes that
+verifier, independently validates its canonical result, and persists an exact
+scan/readback pair. Its integration test uses only fixture-labeled output and
+has not been used to claim a live pass. No local test changes a campaign
+counter.
 
-Reviewed at `2026-08-09T19:33:30Z`. The review is invalidated when any bound
+Reviewed at `2026-08-09T20:10:05Z`. The review is invalidated when any bound
 file changes, when the parser changes, or when a deferred proof obligation is
 reclassified without a new threat review.
 
@@ -173,8 +175,8 @@ verified by later phases.
 | Worker or companion state confusion | Direction, operation, payload binding, pairing, session, sequence, and capability constraints are explicit | Mitigated locally | Replay store, process isolation, browser origin, and loopback authentication remain later gates |
 | P2P piece or Merkle drift | Piece indices, offsets, sizes, hashes, Merkle root, total bytes, and artifact identity are recomputed locally | Mitigated locally | File streaming, peer transfer, and final Rust artifact verification remain later gates |
 | Local reachability promoted as public | Proof requires outside-network scope, complete transfer, lane and endpoint binding, and bounded freshness | Mitigated structurally | Observer signature, independence, and matching P2P parent remain deferred |
-| Release or claim inflation | Acyclic release v3 binds the campaign plan/projection, attestation, packages, artifacts, approved claims, SBOM, provenance, changelog, remaining risks, current web build, exact control documents, and the closed static publication graph; the sole release surface requires complete fresh projection truth, same-snapshot parent identity, current-pass receipt closure, all 20 qualified artifact hashes, dependency closure, one CycloneDX SBOM, all current approved claims, exact static bytes, and one current release-authorizer signature over the immutable manifest | Mitigated through authorization | Deployment, exact public readback, generated publication descendants, published-claim descendants, and site-publisher authority remain required |
-| Local or injected response promoted as production readback | The standalone production verifier owns DNS and HTTPS, accepts no caller transport or response, rejects any nonpublic DNS member, pins one globally routable address, requires normal TLS hostname authorization, forbids redirects and transformed bodies, and streams every exact manifest asset | Mitigated at the network verifier boundary | Release-surface lineage, immutable redaction/readback receipts, independent execution evidence, and a real production run remain required |
+| Release or claim inflation | Acyclic release v3 binds the campaign plan/projection, attestation, packages, artifacts, approved claims, SBOM, provenance, changelog, remaining risks, current web build, exact control documents, and the closed static publication graph; the sole release surface requires complete fresh projection truth, same-snapshot parent identity, current-pass receipt closure, all 20 qualified artifact hashes, dependency closure, one CycloneDX SBOM, all current approved claims, exact static bytes, one current release-authorizer signature, one admitted deployment attempt, and one exact readback receipt over the immutable manifest | Mitigated through readback admission | A real production run, generated publication descendants, published-claim descendants, and site-publisher authority remain required |
+| Local or injected response promoted as production readback | The standalone production verifier owns DNS and HTTPS, accepts no caller transport or response, rejects any nonpublic DNS member, pins one globally routable address, requires normal TLS hostname authorization, forbids redirects and transformed bodies, and streams every exact manifest asset; the release surface invokes it internally, independently validates canonical result closure, and persists only scan/readback descendants in exact dependency order | Mitigated locally | Fixture-labeled orchestration tests are not production execution, host resolver and process integrity remain trusted, and a real production run remains required |
 | DNS rebinding or split-address substitution | One bounded all-address lookup must contain only canonical public addresses; one successful bootstrap address is pinned through verifier-owned lookup callbacks and checked against every connected socket | Mitigated locally | Host resolver and process integrity remain trusted; this is not an outside-network observer proof |
 | Secret disclosure through public evidence | Private-by-default classes, public-safe field types, canonical LF UTF-8 public text, redaction profile, forbidden keys/value classes, acyclic scan binding, and the preparation gate's scans over selected documents, changelog, and final manifest | Reduced | Compressed members, cross-runtime parity, and protected-list production custody remain deferred |
 | Compatibility code becoming permanent | Validators recognize one incompatible family and contain no fallback, migration, deprecated alias, dual-read, or dual-write path | Mitigated in the new boundary | Old production readers and writers still exist elsewhere and must be deleted after verified cutover |
@@ -290,9 +292,11 @@ admits only one canonical finite-lived `release-authorizer` signature child
 that is current-evidence eligible under the caller-pinned vNext authority
 graph. It scans and persists the authorization redaction receipt before the
 create-only signature receipt, supports only byte-identical idempotent replay,
-and never adds an authorization back-reference to the manifest. Deployment,
-exact HTTPS readback, published claim descendants, and site-publisher
-authorization remain separate unimplemented boundaries at this checkpoint.
+and never adds an authorization back-reference to the manifest. Deployment
+admission and exact HTTPS readback are now forward-only operations on that
+closure. Generated pointer/history files, published claim descendants, and
+site-publisher authorization remain separate unimplemented boundaries at this
+checkpoint; no real production readback has been asserted.
 
 ## No-Compatibility Decision
 
@@ -339,10 +343,10 @@ suite, source hygiene, secret scan, and remote push were current in one
 checkpoint. The superseded mutable runner is deleted without an alias or
 compatibility entry point. Final attestation, operator projection, release v3
 preparation, and current release authorization now bind only a fresh
-sole-runner result. The current next boundary is strict forward-only
-deployment evidence, exact production HTTPS byte/hash readback, generated
-publication descendants, published claims, and current site-publisher
-authorization.
+sole-runner result. The current next boundary is generated publication
+descendants, evidence-bound published claims, current site-publisher
+authorization, and a real production run over an exact authorized release
+graph.
 Windows directory durability, archive-member scanning, and protected-list
 release custody remain separate prerequisites for their corresponding claims.
 

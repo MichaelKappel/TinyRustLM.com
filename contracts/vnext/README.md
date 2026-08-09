@@ -336,7 +336,7 @@ best-of-N, mutable-currentness, or stored-result promotion path. See
 `tinyrustlm/tools/vnext-campaign-release-surface.js` now consumes that runner
 only by creating a never-before-used operation and receiving its exact result
 inside the same call. Its frozen profile has SHA-256
-`d867dc809b5fc1f504469edfd25c7b1f3b93e8448ba5571558f6a5f4b9079bed`.
+`504492d9314b0751f09b2110b92cd7b2d5b284a11506b00b82d46ec9f0c4d7db`.
 The surface independently validates the returned projection against the exact
 stored plan and runner operation records, finalizes a content-addressed
 complete-or-blocked attestation, scans the final canonical bytes against the
@@ -368,15 +368,26 @@ and deployment-class executor. Its frozen scope is
 `deployment-attempt-only`; it cannot assert deployment success. The receipt is
 secret-scanned and persisted only after its deterministic redaction receipt,
 with byte-identical crash recovery and replay.
+Its `verifyPublicReadback` operation then reconstructs the exact prepared,
+authorized, and deployment-admitted closure, reruns current Ed25519 authority,
+and invokes the sole production HTTPS verifier itself. The caller cannot
+supply DNS, transport, response, body, result, retry, or success state. The
+surface independently validates the canonical verifier result against the
+manifest and frozen verifier/source identities, scans the result and finalized
+receipt, and create-only persists the deterministic redaction receipt before
+the `public-readback` receipt. Only exact dependency prefixes and byte-identical
+replay are accepted. Its result is explicitly
+`public-readback-verified-awaiting-publication` and `not-published`; it creates
+no generated pointer, claim, site-publisher signature, or campaign credit.
 Stored projection bytes, caller counters, caller verdicts or authorization
 decisions, reused/interrupted/failed preparation operations, omitted or stale
 release parents, authority drift, unsafe bytes, mutable pointers, and
 compatibility inputs are rejected. See
 `docs/architecture/vnext-campaign-release-surface.md`.
 
-`tinyrustlm/tools/vnext-public-https-readback.js` now defines the sole
-production-network verifier that the next release-surface descendant will
-invoke. Its frozen profile has SHA-256
+`tinyrustlm/tools/vnext-public-https-readback.js` defines the sole
+production-network verifier invoked by the release-surface readback operation.
+Its frozen profile has SHA-256
 `0cfeb00065d45fd860813f501d6c07417f8a6e6587dd524a81e5be426a84c419`.
 It accepts no caller resolver, transport, response, body, verdict, retry
 policy, or alternate profile. It requires one canonical public HTTPS root,
@@ -436,10 +447,11 @@ verifies and
 create-only persists a current Ed25519 release-authorizer signature as the
 manifest's forward-only child without mutating the manifest. It now also
 admits a create-only, explicitly non-success deployment-attempt descendant.
-One standalone production-only exact HTTPS verifier is now implemented, but
-its release-surface invocation and immutable receipt admission remain
-incomplete. Published-claim descendants, site-publisher authorization, and
-deletion of the superseded
+The standalone production-only exact HTTPS verifier is now integrated through
+one immutable release-surface receipt operation. Its tests include only
+fixture-labeled orchestration evidence; no production invocation is claimed.
+Generated pointer/history files, published-claim descendants, site-publisher
+authorization, and deletion of the superseded
 dashboard/release/public-readback stack remain incomplete. This is not
 outside-network observation or live campaign evidence.
 Runtime tests generate ephemeral private keys only in process memory.
