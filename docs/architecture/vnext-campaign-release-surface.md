@@ -333,6 +333,24 @@ campaign count, or prove observer independence. The conformance suite replaces
 the verifier module only before loading the surface and labels those observations
 as fixtures; they are orchestration evidence, never a production readback.
 
+## Pure Generated-Publication Boundary
+
+`tinyrustlm/tools/vnext-site-publication.js` now freezes the deterministic next
+step without adding a second release truth path. It consumes the exact release,
+approved claims, static-readback receipt, generator, optional current-vNext
+history, plan receipt, and publisher signature as bounded canonical bytes. It
+derives byte-identical pointer/history candidates and direct published-claim
+descendants while performing no network, clock, filesystem, signing, or store
+operation. It rejects the old ledger schema outright.
+
+This module is not yet a maintained release-surface operation. The surface must
+still reconstruct and verify one current site-publisher authority graph, create
+and scan the plan receipt, deploy the exact generated inventory, invoke the
+sole HTTPS verifier for the generated files, and create-only persist descendants
+only after that readback. The pure result remains
+`not-published-awaiting-generated-file-readback`. See
+`docs/architecture/vnext-site-publication.md`.
+
 ## Redaction And Secret Custody
 
 The caller supplies a bounded protected equality list in process memory. The
@@ -499,6 +517,7 @@ current authorization, invokes this exact module, independently revalidates
 its canonical result, and persists the scan/readback dependency pair. See
 `docs/architecture/vnext-public-https-readback.md`.
 
-No production invocation is asserted by this checkpoint. Generated
-pointer/history bytes, evidence-bound published `claim.v2` descendants, and
-current `site-publisher` signatures are the next release-graph gate.
+No production invocation is asserted by this checkpoint. Deterministic
+pointer/history and evidence-bound published `claim.v2` candidates now exist;
+current `site-publisher` authority, generated-file deployment/readback, and
+create-only final admission are the next release-graph gate.

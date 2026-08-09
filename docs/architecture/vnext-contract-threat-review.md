@@ -294,9 +294,13 @@ graph. It scans and persists the authorization redaction receipt before the
 create-only signature receipt, supports only byte-identical idempotent replay,
 and never adds an authorization back-reference to the manifest. Deployment
 admission and exact HTTPS readback are now forward-only operations on that
-closure. Generated pointer/history files, published claim descendants, and
-site-publisher authorization remain separate unimplemented boundaries at this
-checkpoint; no real production readback has been asserted.
+closure. A separate pure module now validates the publication plan and
+deterministically materializes pointer/history and published-claim candidates
+from one release-bound site-publisher signature. It has no network, clock,
+persistence, or source mutation and rejects the old ledger schema. Current
+authority-graph verification, generated-file deployment/readback, and
+create-only descendant admission remain unimplemented release-surface
+boundaries at this checkpoint; no real production readback has been asserted.
 
 ## No-Compatibility Decision
 
@@ -343,10 +347,10 @@ suite, source hygiene, secret scan, and remote push were current in one
 checkpoint. The superseded mutable runner is deleted without an alias or
 compatibility entry point. Final attestation, operator projection, release v3
 preparation, and current release authorization now bind only a fresh
-sole-runner result. The current next boundary is generated publication
-descendants, evidence-bound published claims, current site-publisher
-authorization, and a real production run over an exact authorized release
-graph.
+sole-runner result. The current next boundary is release-surface integration of
+current site-publisher authority, exact generated-file deployment/readback,
+create-only publication descendants, and a real production run over an exact
+authorized release graph.
 Windows directory durability, archive-member scanning, and protected-list
 release custody remain separate prerequisites for their corresponding claims.
 

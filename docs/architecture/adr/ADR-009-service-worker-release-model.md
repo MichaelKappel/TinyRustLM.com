@@ -37,6 +37,16 @@ headers, manifest identity, authorization identity, and observed HTTPS
 responses. This forward-only graph avoids an impossible content-addressed
 self-reference without weakening byte-complete publication evidence.
 
+The deterministic generator is frozen by
+`site-publication-profile.v1.json`. It first binds an exact plan over the
+release, approved claims, static production readback, generator, profile, and
+optional prior current-vNext history. A current `site-publisher` signs the plan
+receipt, after which the pure materializer derives pointer/history bytes and
+published-claim candidates. Those candidates are neither persisted nor called
+published until a later authorized deployment and exact generated-file HTTPS
+readback succeeds. Prior history is accepted only under the same current vNext
+profile; the superseded ledger format has no product reader.
+
 The origin exposes two mutable, `no-store` entry points:
 
 - the root/bootstrap document; and

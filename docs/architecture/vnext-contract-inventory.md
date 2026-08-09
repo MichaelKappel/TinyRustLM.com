@@ -244,6 +244,15 @@ revalidates its canonical result, and create-only persists the scan before one
 forward `public-readback` receipt. Local tests use fixture-labeled verifier
 output and do not establish a production readback.
 
+Pure generated-publication materialization is documented in
+`docs/architecture/vnext-site-publication.md`. Its frozen profile SHA-256 is
+`d959ce557e8b18a71514e2388a8eda7162182e38f5febf2e1a39b063fa5ba4bc`.
+It adds no top-level contract-family schema: pointer/history documents are
+strict canonical generated files, while plan, signature, readback, and claim
+evidence use the existing receipt, release, and claim contracts. Current
+site-publisher authority and final generated-file production readback remain
+release-surface integration work.
+
 The superseded mutable runner is deleted. Remaining archive-member scanning,
 generated pointer/history descendants, published claims, site-publisher
 authorization, deletion of the superseded dashboard/release stack, a real
