@@ -5,17 +5,20 @@
 `tinyrustlm.vnext.campaign-release-surface.v1` is the sole vNext boundary for
 turning a freshly executed campaign projection into immutable prepublication
 attestation evidence, an operator status view, and a create-only
-`release_manifest.v2` candidate. Its frozen profile is
+`release_manifest.v2` candidate, then verifying its current release-authorizer
+signature as a forward-only child. Its frozen profile is
 `contracts/vnext/campaign-release-surface-profile.v1.json`, with SHA-256
-`8b842dcf95ac78703fe1d3f761d46f45b386b741027fcaf9e944333990180c8f`.
+`5dd859914628be87aaae2333d2d1c850b739d58fd0d16dec79f04b9fbb0cfa94`.
 
 This checkpoint implements fresh projection, final attestation, public-safe
-redaction, truthful operator status, and release-manifest preparation.
-Release-authorizer verification, exact public HTTPS readback, published claim
-descendants, and deletion of the superseded release stack remain required
-before the surface is the operational publication entry point. A prepared
-manifest is explicitly `not-authorized`; nothing in this checkpoint is a
-deployment, public-readback result, publication, or live campaign count.
+redaction, truthful operator status, release-manifest preparation, and current
+Ed25519 release-authorizer verification. Exact deployment and public HTTPS
+readback descendants, published claims, site-publisher authorization, and
+deletion of the superseded release stack remain required before the surface is
+the operational publication entry point. A prepared manifest is explicitly
+`not-authorized`; an authorized manifest is only
+`release-authorized-awaiting-deployment`. Neither state is a deployment,
+public-readback result, publication, or live campaign count.
 
 ## One-Way Evidence Graph
 
@@ -35,11 +38,13 @@ campaign plan + current receipt/subject stores
   -> release-manifest redaction-scan receipt
 ```
 
-The forthcoming publication graph continues forward from the prepared manifest:
+The implemented authorization edge and forthcoming publication edges continue
+forward from the prepared manifest:
 
 ```text
 release_manifest.v2
-  -> current release-authorizer signature receipt
+  -> authorization redaction-scan receipt
+  -> current release-authorizer signature receipt [implemented]
   -> deployment and exact HTTPS readback receipts
   -> published claim.v2 descendants
   -> site-publisher signatures
@@ -86,6 +91,16 @@ and canonical changelog bytes. It accepts no release ID, release date,
 authorization verdict, publication status, deployment result, readback result,
 or caller-computed artifact-set digest. Release date and creation time derive
 only from the runner-bound trusted verification time.
+
+`authorizeRelease` is a separate closed operation over an already prepared
+manifest. It accepts only the canonical authorization receipt bytes, canonical
+changelog bytes, exact release-manifest ID, expected campaign and environment,
+source revision, caller-pinned root and terminal authority registries, trusted
+verification time, and the bounded protected equality list. It has no caller
+field for an authorization decision, status, deployment, publication, or live
+counter. It reconstructs the preparation operation and all required evidence
+from create-only storage instead of trusting a prepared-result object retained
+in process memory.
 
 ## Final Attestation
 
@@ -154,6 +169,47 @@ descendant. The result state is
 `release-prepared-awaiting-authorization` and its authorization status is
 `not-authorized`.
 
+## Release Authorization
+
+Authorization begins by rereading the exact `release_manifest.v2` subject. The
+surface then reconstructs and validates the complete preparation lineage:
+
+- the pass final-attestation receipt and its exact profile, plan, projection,
+  operation-record, and snapshot bindings;
+- the completed runner history and stored Rust-backed projection;
+- every release artifact, dependency, package, provenance receipt, approved
+  claim, and claim-evidence receipt from the original runner snapshots;
+- the attestation, changelog, and release-manifest redaction receipts; and
+- exact current receipt and subject store membership, allowing only the
+  bounded authorization crash-recovery descendants described below.
+
+The supplied signature receipt must be canonical
+`tinyrustlm.vnext.receipt.v1` evidence with type and phase
+`signature-envelope`, role `release-authorizer`, domain
+`tinyrustlm.signature.release-authorizer.v1`, scope
+`release-authorization`, and signed schema `release_manifest.v2`. Both its
+signed subject and release ID must equal the prepared manifest ID. It must bind
+the manifest's canonical-content hash, have a finite lifetime, be issued no
+earlier than preparation and no later than the trusted verification time, and
+remain unexpired at verification.
+
+The surface reconstructs the full authority graph under the caller-pinned root
+and expected terminal registry. Exactly one release-authorization signature
+may target the manifest. That signature must verify cryptographically, have
+authority at issue, be temporally current, remain current-evidence eligible,
+and terminate in a current registry. Retired, revoked, compromised, expired,
+wrong-role, wrong-scope, wrong-release, duplicate, or stale evidence fails
+closed. A cryptographically valid historical signature is insufficient when
+the current authority graph no longer admits it.
+
+On success, the immutable derived result is
+`tinyrustlm.vnext.release_authorization_result.v1` with state
+`release-authorized-awaiting-deployment`. It binds the manifest, signature,
+redaction receipt, authority root and terminal, signer, key, nonce hash, issue,
+expiry, verification time, and source revision. It does not mutate the
+prepared manifest and does not claim deployment, HTTPS readback, publication,
+site-publisher approval, or campaign completion.
+
 ## Redaction And Secret Custody
 
 The caller supplies a bounded protected equality list in process memory. The
@@ -178,6 +234,14 @@ failure scan receipt. Unsafe changelog or manifest bytes are never stored or
 returned. On pass, the manifest scan receipt is persisted first, the release
 subject is create-only published second, and both stores and final bytes are
 reconstructed and compared before a successful result is returned.
+
+Authorization replays the preparation scans against the current protected
+list before considering the signature. It then scans the canonical signature
+receipt and derives a public-safe authorization redaction receipt. Unsafe
+authorization bytes are never persisted or returned; only the bounded failure
+scan receipt is retained. On pass, the redaction receipt is create-only
+persisted before the signature receipt. The derived authorization-result bytes
+receive an additional protected-representation scan before return.
 
 ## Operator Status
 
@@ -224,6 +288,18 @@ drift before either final write aborts the operation; a drift detected after a
 create-only write prevents a successful result and leaves the bytes as
 non-authorized immutable history for audit.
 
+Authorization admits exactly three store states: the exact prepared set, that
+set plus the deterministic authorization-redaction receipt, or that set plus
+the same redaction and signature receipts. These states support recovery from
+interruption after either create-only write and byte-identical idempotent
+replay. Any unrelated post-preparation receipt or subject, missing member,
+identity substitution, or changed byte sequence blocks authorization and
+requires a new preparation. An unsafe signature leaves only its failure scan;
+the release is not authorized and must be prepared again before another
+attempt. The trusted verification time is part of the authorization identity,
+so replay with a different verification instant is not treated as the same
+operation.
+
 ## Verification
 
 `tinyrustlm/tests/vnext-campaign-release-surface.test.js` covers:
@@ -247,8 +323,14 @@ non-authorized immutable history for audit.
 - canonical changelog and final-manifest scans;
 - create-only manifest/readback behavior and defensive returned byte copies;
 - successful fresh reprojection after retained attestation, redaction, and
-  release-manifest history; and
-- explicit `not-authorized` output with no publication or `done` claim.
+  release-manifest history;
+- explicit `not-authorized` output with no publication or `done` claim;
+- successful authorization after process restart with an ephemeral-test-key
+  Ed25519 signature and a current pinned authority graph;
+- byte-identical authorization replay and crash-recovery persistence order;
+- rejection of caller decisions, wrong scope, wrong release binding, expired
+  authorization, retired keys, and post-preparation subject drift; and
+- unsafe authorization bytes retaining only bounded redaction evidence.
 
 The complete-capacity case is synthetic conformance evidence. It does not
 increment any live campaign counter.

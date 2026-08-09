@@ -80,6 +80,36 @@ receipts. Non-governance signatures must use the registry current at issue.
 Outside-proof signatures additionally bind observer, registry, campaign,
 nonce, issue time, and expiry exactly to `tinyrustlm.vnext.outside_proof.v2`.
 
+## Release Authorization Integration
+
+`tinyrustlm/tools/vnext-campaign-release-surface.js` now composes this graph
+verifier into the release-authorization gate. The surface first reconstructs
+the exact prepared `release_manifest.v2`, original runner operation, Rust-backed
+projection, release parents, and preparation scan receipts from create-only
+storage. It then admits one canonical signature-envelope receipt only when all
+of these release-specific bindings hold:
+
+- role `release-authorizer`;
+- domain `tinyrustlm.signature.release-authorizer.v1`;
+- scope `release-authorization`;
+- signed schema `tinyrustlm.vnext.release_manifest.v2`;
+- signed subject ID and release ID equal the prepared manifest ID;
+- `signed-subject-canonical-content` equals the manifest canonical-content
+  hash;
+- the envelope has a finite lifetime and is current at the caller-supplied
+  trusted verification time; and
+- the receipt binds exactly its authority registry and no caller-supplied
+  authorization verdict.
+
+The full graph must contain exactly one matching release signature. Its
+`signatureVerified`, `authorityAtIssue`, `temporalCurrent`, and
+`currentEvidenceEligible` fields must all be true, its stale-reason list must
+be empty, and the expected terminal registry must remain current. The release
+surface scans the authorization receipt before create-only persistence and
+returns only `release-authorized-awaiting-deployment`. It does not mutate the
+prepared manifest or infer deployment, HTTPS readback, publication, or live
+campaign completion from the signature.
+
 ## Result Meaning
 
 Each signature result reports:
@@ -113,9 +143,13 @@ result with exact plans, semantic currentness, and objective matching; see
 `vnext-rust-campaign-projection-parity.md`. The generated browser boundary now
 replays that Rust behavior as bounded byte transport; see
 `vnext-campaign-evidence-wasm-boundary.md`. The combined checkpoint still does
-not prove actual observer independence, production key custody, trusted
-production time, release-time redaction/secret scans, production runner or
-entry-point cutover, or campaign completion. Rust graph, offline-bundle,
+not prove actual observer independence, production key custody, completeness
+of the production protected-secret inventory, authenticity of caller-supplied
+trusted time, deployment/readback, production entry-point cutover, or campaign
+completion. The release surface enforces local deterministic release and
+authorization scans against the supplied protected list; that is not evidence
+that production custody supplied every secret that must be protected.
+Rust graph, offline-bundle,
 projection, and browser-transport parity do not narrow those non-claims. No
 model, browser, MemoryEndpoints, P2P, catalog, package, site, or release counter
 changes from these tests.

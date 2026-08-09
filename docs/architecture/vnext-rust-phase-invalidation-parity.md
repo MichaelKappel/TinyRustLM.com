@@ -137,8 +137,9 @@ deleted browser profiles without reimplementing currentness in JavaScript. See
   truthful-projection parity.
 - Preserve the generated campaign-evidence browser ABI and its exact
   currentness corpus replay without handwritten semantic logic.
-- Implement the acyclic release-authorizer, deployment, exact HTTPS readback,
-  and published-claim descendants over the prepared immutable manifest.
+- Preserve the implemented acyclic release-authorizer verification over the
+  prepared immutable manifest, then implement deployment, exact HTTPS
+  readback, published-claim descendants, and site-publisher authorization.
 - Delete the superseded mutable release/dashboard/readback stack after the
   replacement cutover gate passes.
 - Replace fixtures only with authorized objective evidence; never reinterpret

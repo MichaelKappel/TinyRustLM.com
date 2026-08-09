@@ -210,21 +210,25 @@ Create-only public subject persistence is documented in
 `docs/architecture/vnext-subject-store.md`.
 The sole exact cross-store Rust-backed campaign runner is documented in
 `docs/architecture/vnext-campaign-runner.md`.
-The fresh-runner-only immutable attestation, operator, and release-manifest
-preparation boundary is documented
+The fresh-runner-only immutable attestation, operator, release-manifest
+preparation, and release-authorization boundary is documented
 in `docs/architecture/vnext-campaign-release-surface.md`. Its frozen profile
 has SHA-256
-`8b842dcf95ac78703fe1d3f761d46f45b386b741027fcaf9e944333990180c8f`.
+`5dd859914628be87aaae2333d2d1c850b739d58fd0d16dec79f04b9fbb0cfa94`.
 It admits no stored projection, caller verdict, counter set, dashboard state,
 or reused operation. It scans finalized attestation bytes before create-only
 receipt persistence and has no operator `done` state. Release preparation
 requires complete fresh campaign truth and exact current snapshot members for
 all qualified artifacts, dependency closure, SBOM, package, provenance, and
 approved claims; scans canonical changelog and manifest bytes; and produces
-only a `not-authorized` create-only candidate.
+only a `not-authorized` create-only candidate. Authorization independently
+replays that preparation lineage from immutable runner and store bytes, then
+requires exactly one current-evidence-eligible `release-authorizer` Ed25519
+signature child over the exact manifest. The authorization scan receipt is
+persisted before the signature receipt, and the manifest is never mutated.
 
 The superseded mutable runner is deleted. Remaining archive-member scanning,
-release-authorization/public-readback integration, deletion of the
-superseded dashboard/release stack, and external campaign evidence remain
-incomplete.
+deployment and exact HTTPS public-readback descendants, published claims,
+site-publisher authorization, deletion of the superseded dashboard/release
+stack, and external campaign evidence remain incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.

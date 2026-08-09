@@ -35,6 +35,10 @@ const {
   finalizeVnextReceipt,
   validateVnextReceiptBytes
 } = require("../tools/vnext-receipt-identity.js");
+const {
+  createVnextRedactionScanReceipt,
+  scanVnextPublicDocumentBytes
+} = require("../tools/vnext-public-safe-redaction.js");
 const { parseStrictJson } = require("../tools/strict-json.js");
 const {
   authorityKey,
@@ -987,6 +991,78 @@ test("authorizes only the exact prepared manifest through current Ed25519 author
     "existing-byte-identical");
   assert.equal(repeated.authorizationRedactionPersistence.disposition,
     "existing-byte-identical");
+});
+
+test("resumes authorization after the redaction receipt committed alone", {
+  timeout: 360_000
+}, async (t) => {
+  const roots = makeRoots(t);
+  const entry = acceptedCase("complete-capacity");
+  const authority = seedEphemeralAuthorityCase(roots, entry);
+  const releaseInput = seedReleaseInputs(roots, entry);
+  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+    runnerOptions(roots));
+  const prepared = await surface.prepareRelease(prepareInput(
+    entry,
+    "redaction-only-authorization-preparation",
+    releaseInput,
+    {
+      expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
+      trustedRootRegistryReceiptId: authority.root.receipt.receiptId
+    }
+  ));
+  const release = createVnextSubjectStore(roots.subjects).read(
+    prepared.releaseManifestId
+  );
+  const authorizationReceipt = makeSignatureReceipt({
+    authorityRegistry: authority.root,
+    expiresAtUtc: "2026-08-09T01:00:00Z",
+    issuedAtUtc: "2026-08-09T00:31:00Z",
+    label: "resume-redaction-only-authorization",
+    receiptSourceRevision: sourceRevision,
+    releaseId: prepared.releaseManifestId,
+    scope: "release-authorization",
+    signingKey: authority.releaseKey,
+    subject: release
+  });
+  const authorizationScan = scanVnextPublicDocumentBytes(
+    authorizationReceipt.bytes,
+    { knownSecrets: [] }
+  );
+  const redactionReceipt = createVnextRedactionScanReceipt({
+    attemptId: `release-authorization-redaction-${
+      authorizationReceipt.receipt.receiptId.slice("sha256:".length)}`,
+    campaignId: entry.expectedCampaignId,
+    completedAtUtc: "2026-08-09T00:32:00Z",
+    scan: authorizationScan,
+    sourceRevision,
+    startedAtUtc: "2026-08-09T00:32:00Z"
+  });
+  const receiptStore = createVnextReceiptStore(roots.receipts);
+  receiptStore.put(redactionReceipt.bytes);
+  assert.equal(receiptStore.rebuild().activeReceiptIds.includes(
+    authorizationReceipt.receipt.receiptId
+  ), false);
+
+  const restarted = await createVnextCampaignReleaseSurface(roots.runner,
+    runnerOptions(roots));
+  const result = await restarted.authorizeRelease(authorizeInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    authorizationReceipt
+  ));
+
+  assert.equal(result.authorizationStatus, "authorized");
+  assert.equal(result.authorizationRedactionReceiptId,
+    redactionReceipt.receipt.receiptId);
+  assert.equal(result.authorizationRedactionPersistence.disposition,
+    "existing-byte-identical");
+  assert.equal(result.authorizationPersistence.disposition, "created");
+  receiptStore.rebuild();
+  assert.deepEqual(receiptStore.read(result.authorizationReceiptId).bytes,
+    authorizationReceipt.bytes);
 });
 
 test("rejects caller authorization truth, wrong bindings, expiry, and snapshot drift", {

@@ -162,7 +162,7 @@ verified by later phases.
 | Worker or companion state confusion | Direction, operation, payload binding, pairing, session, sequence, and capability constraints are explicit | Mitigated locally | Replay store, process isolation, browser origin, and loopback authentication remain later gates |
 | P2P piece or Merkle drift | Piece indices, offsets, sizes, hashes, Merkle root, total bytes, and artifact identity are recomputed locally | Mitigated locally | File streaming, peer transfer, and final Rust artifact verification remain later gates |
 | Local reachability promoted as public | Proof requires outside-network scope, complete transfer, lane and endpoint binding, and bounded freshness | Mitigated structurally | Observer signature, independence, and matching P2P parent remain deferred |
-| Release or claim inflation | Acyclic release v2 binds the campaign plan/projection, attestation, packages, artifacts, approved claims, SBOM, provenance, changelog, and remaining risks; the sole release surface now requires complete fresh projection truth, same-snapshot parent identity, current-pass receipt closure, all 20 qualified artifact hashes, dependency closure, one CycloneDX SBOM, and all current approved claims for the source revision | Mitigated through preparation | Current release-authorizer authority, deployment, exact public readback, and published-claim descendants remain required |
+| Release or claim inflation | Acyclic release v2 binds the campaign plan/projection, attestation, packages, artifacts, approved claims, SBOM, provenance, changelog, and remaining risks; the sole release surface requires complete fresh projection truth, same-snapshot parent identity, current-pass receipt closure, all 20 qualified artifact hashes, dependency closure, one CycloneDX SBOM, all current approved claims, and one current release-authorizer signature over the exact immutable manifest | Mitigated through authorization | Deployment, exact public readback, published-claim descendants, and site-publisher authority remain required |
 | Secret disclosure through public evidence | Private-by-default classes, public-safe field types, canonical LF UTF-8 public text, redaction profile, forbidden keys/value classes, acyclic scan binding, and the preparation gate's scans over selected documents, changelog, and final manifest | Reduced | Compressed members, cross-runtime parity, and protected-list production custody remain deferred |
 | Compatibility code becoming permanent | Validators recognize one incompatible family and contain no fallback, migration, deprecated alias, dual-read, or dual-write path | Mitigated in the new boundary | Old production readers and writers still exist elsewhere and must be deleted after verified cutover |
 
@@ -263,9 +263,16 @@ scan receipt and returns no unsafe attestation bytes. Its operator projection
 is derived from the same result and deliberately has no `done` state. The same
 surface now prepares a scanned, create-only `release_manifest.v2` only from a
 complete fresh projection and exact current snapshot parents, while returning
-an explicit `not-authorized` state. Authorization, deployment, exact HTTPS
-readback, and published claim descendants remain separate unimplemented
-boundaries at this checkpoint.
+an explicit `not-authorized` state. Its authorization operation reconstructs
+the original runner records, projection, snapshot membership, selected release
+evidence, and preparation scans; rejects any post-preparation drift; and
+admits only one canonical finite-lived `release-authorizer` signature child
+that is current-evidence eligible under the caller-pinned vNext authority
+graph. It scans and persists the authorization redaction receipt before the
+create-only signature receipt, supports only byte-identical idempotent replay,
+and never adds an authorization back-reference to the manifest. Deployment,
+exact HTTPS readback, published claim descendants, and site-publisher
+authorization remain separate unimplemented boundaries at this checkpoint.
 
 ## No-Compatibility Decision
 

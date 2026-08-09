@@ -336,7 +336,7 @@ best-of-N, mutable-currentness, or stored-result promotion path. See
 `tinyrustlm/tools/vnext-campaign-release-surface.js` now consumes that runner
 only by creating a never-before-used operation and receiving its exact result
 inside the same call. Its frozen profile has SHA-256
-`8b842dcf95ac78703fe1d3f761d46f45b386b741027fcaf9e944333990180c8f`.
+`5dd859914628be87aaae2333d2d1c850b739d58fd0d16dec79f04b9fbb0cfa94`.
 The surface independently validates the returned projection against the exact
 stored plan and runner operation records, finalizes a content-addressed
 complete-or-blocked attestation, scans the final canonical bytes against the
@@ -349,9 +349,20 @@ snapshots; every current approved claim for the source revision; sorted risks;
 and a canonical scanned changelog. It derives release time from trusted
 verification time, scans every selected document and the final manifest,
 persists redaction evidence before the create-only manifest, and returns
-`not-authorized`. Stored projection bytes, caller counters, caller verdicts,
-reused/interrupted/failed operations, omitted or stale release parents, unsafe
-bytes, mutable pointers, and compatibility inputs are rejected. See
+`not-authorized`. Its `authorizeRelease` operation then reconstructs the exact
+runner start/terminal records, complete stored projection, original receipt and
+subject snapshots, selected release evidence, and all three preparation scan
+receipts before it admits an authorization. It accepts only one canonical
+`signature-envelope` child whose role is `release-authorizer`, scope is
+`release-authorization`, signed subject and `releaseId` are the exact prepared
+manifest, source revision and campaign match, lifetime is finite, and current
+vNext authority-graph result is fully eligible under caller-pinned root and
+terminal registries. The authorization receipt is scanned before create-only
+persistence; a restarted surface can repeat the exact operation idempotently.
+Stored projection bytes, caller counters, caller verdicts or authorization
+decisions, reused/interrupted/failed preparation operations, omitted or stale
+release parents, authority drift, unsafe bytes, mutable pointers, and
+compatibility inputs are rejected. See
 `docs/architecture/vnext-campaign-release-surface.md`.
 
 The authority result deliberately separates `signatureVerified`,
@@ -386,8 +397,11 @@ The superseded mutable runner and its test are deleted without an alias or
 compatibility entry point. One fresh-runner-bound immutable final-attestation
 and operator-status surface now also prepares a create-only, public-safe,
 explicitly unauthorized `release_manifest.v2` from complete fresh campaign
-truth and exact current snapshot inputs. Release authorization, exact HTTPS
-readback, published-claim descendants, and deletion of the superseded
+truth and exact current snapshot inputs. The same surface now verifies and
+create-only persists a current Ed25519 release-authorizer signature as the
+manifest's forward-only child without mutating the manifest or claiming
+deployment. Exact HTTPS readback, deployment and published-claim descendants,
+site-publisher authorization, and deletion of the superseded
 dashboard/release/public-readback stack remain incomplete. This is not
 outside-network observation or live campaign evidence.
 Runtime tests generate ephemeral private keys only in process memory.
