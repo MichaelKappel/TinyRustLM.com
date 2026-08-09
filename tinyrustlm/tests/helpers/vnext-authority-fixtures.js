@@ -54,7 +54,8 @@ function baseReceiptDraft({
   startedAtUtc = "2026-08-09T00:00:00Z",
   completedAtUtc = startedAtUtc,
   inputReceiptIds = [],
-  inputHashes = []
+  inputHashes = [],
+  receiptSourceRevision = sourceRevision
 }) {
   return {
     schema: "tinyrustlm.vnext.receipt.v1",
@@ -65,7 +66,7 @@ function baseReceiptDraft({
     status: "pass",
     startedAtUtc,
     completedAtUtc,
-    sourceRevision,
+    sourceRevision: receiptSourceRevision,
     inputReceiptIds: [...inputReceiptIds].sort(),
     inputHashes: [...inputHashes].sort((left, right) => left.name.localeCompare(right.name)),
     outputHashes: [],
@@ -193,7 +194,8 @@ function makeSignatureReceipt({
   expiresAtUtc = "2026-08-09T01:00:01Z",
   nonceHash = hash(`signature-nonce:${label}`),
   releaseId = null,
-  tamperSignature = false
+  tamperSignature = false,
+  receiptSourceRevision = sourceRevision
 }) {
   const facts = subjectFacts(subject);
   const domains = {
@@ -243,7 +245,8 @@ function makeSignatureReceipt({
     startedAtUtc: issuedAtUtc,
     completedAtUtc: issuedAtUtc,
     inputReceiptIds,
-    inputHashes
+    inputHashes,
+    receiptSourceRevision
   });
   draft.signatureEnvelope = envelope;
   return finalizeVnextReceipt(draft);

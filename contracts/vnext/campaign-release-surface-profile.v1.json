@@ -16,6 +16,8 @@
   "subjectStoreProfileSha256": "f0752251373ed3cce93d8387e45f2b96e92402febf10ade8bb3d0c3b24f98b89",
   "publicSafeRedactionProfileId": "tinyrustlm.vnext.public-safe-redaction.v1",
   "publicSafeRedactionProfileSha256": "83fcdd3590692304807e1ca62f82ad5873111cf0cce6b239bd51249d5c29d2b0",
+  "receiptSignatureProfileId": "tinyrustlm.vnext.ed25519-authority.v1",
+  "receiptSignatureProfileSha256": "9d1f0c65f91dc9b76bf5e430ee5f91ba787ab4622d72aae3c73c3a50c9f2a8b9",
   "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
   "hashAlgorithm": "sha256",
   "campaignTruthInput": "fresh-sole-runner-return-created-and-consumed-inside-one-surface-call",
@@ -26,7 +28,7 @@
   "mutablePointerPolicy": "forbidden",
   "networkAccess": "forbidden",
   "clockAccess": "caller-trusted-verification-time-only",
-  "sourceMutation": "create-only-attestation-redaction-receipts-and-release-manifests",
+  "sourceMutation": "create-only-attestation-redaction-release-manifest-and-authorization-signature-receipts",
   "attestation": {
     "receiptSchema": "tinyrustlm.vnext.receipt.v1",
     "receiptType": "final-attestation",
@@ -85,6 +87,24 @@
     "persistencePolicy": "redaction-receipts-before-create-only-release-manifest",
     "unsafePersistence": "release-manifest-forbidden"
   },
+  "releaseAuthorization": {
+    "resultSchema": "tinyrustlm.vnext.release_authorization_result.v1",
+    "authorizedState": "release-authorized-awaiting-deployment",
+    "manifestPolicy": "existing-current-prepared-manifest-only",
+    "lineagePolicy": "exact-runner-snapshot-plus-preparation-descendants",
+    "signatureReceiptType": "signature-envelope",
+    "role": "release-authorizer",
+    "signatureDomain": "tinyrustlm.signature.release-authorizer.v1",
+    "scope": "release-authorization",
+    "signedSchema": "tinyrustlm.vnext.release_manifest.v2",
+    "releaseIdPolicy": "must-equal-signed-subject-id",
+    "authorityPolicy": "exactly-one-current-evidence-eligible-signature",
+    "registryPolicy": "caller-pinned-root-and-terminal",
+    "timePolicy": "trusted-verification-time-and-finite-profile-lifetime",
+    "redactionPolicy": "replay-preparation-scans-and-scan-authorization-before-persistence",
+    "persistencePolicy": "authorization-redaction-before-create-only-signature-receipt",
+    "callerDecisionPolicy": "forbidden"
+  },
   "limits": {
     "maximumKnownSecrets": 128,
     "maximumProjectionBytes": 4194304,
@@ -98,6 +118,8 @@
     "maximumReleaseClaims": 128,
     "maximumRemainingRiskCodes": 64,
     "maximumChangelogBytes": 1048576,
-    "maximumReleaseManifestBytes": 524288
+    "maximumReleaseManifestBytes": 524288,
+    "maximumAuthorizationReceiptBytes": 262144,
+    "maximumAuthorizationResultBytes": 262144
   }
 }

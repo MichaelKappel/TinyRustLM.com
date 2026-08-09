@@ -30,7 +30,8 @@ const {
 } = require("./vnext-evidence-error.js");
 const {
   domainSeparatedDigest,
-  finalizeVnextReceipt
+  finalizeVnextReceipt,
+  validateVnextReceiptBytes
 } = require("./vnext-receipt-identity.js");
 const {
   classifyVnextPhaseReceipts,
@@ -47,8 +48,16 @@ const {
   publicSafeRedactionProfileSha256,
   scanKnownSecretRepresentations,
   scanVnextPublicDocumentBytes,
-  scanVnextPublicTextBytes
+  scanVnextPublicTextBytes,
+  verifyVnextRedactionScanReceipt
 } = require("./vnext-public-safe-redaction.js");
+const {
+  signatureProfile,
+  signatureProfileSha256
+} = require("./vnext-signature-payload.js");
+const {
+  verifyVnextAuthorityGraph
+} = require("./vnext-signature-authority.js");
 const {
   createVnextSubjectStore,
   subjectStoreProfile,
@@ -98,6 +107,18 @@ const prepareInputFields = Object.freeze([
   "sbomArtifactId",
   "version"
 ]);
+const authorizeInputFields = Object.freeze([
+  "authorizationReceiptBytes",
+  "changelogBytes",
+  "expectedCampaignId",
+  "expectedEnvironment",
+  "expectedTerminalRegistryReceiptId",
+  "knownSecrets",
+  "releaseManifestId",
+  "sourceRevision",
+  "trustedRootRegistryReceiptId",
+  "verificationTimeUtc"
+]);
 const optionFields = Object.freeze([
   "campaignArtifactStoreRoot",
   "expectedWasmModuleSha256",
@@ -112,11 +133,12 @@ const profileFields = Object.freeze([
   "phaseInvalidationProfileId", "phaseInvalidationProfileSha256",
   "receiptStoreProfileId", "receiptStoreProfileSha256", "subjectStoreProfileId",
   "subjectStoreProfileSha256", "publicSafeRedactionProfileId",
-  "publicSafeRedactionProfileSha256", "canonicalJsonProfile", "hashAlgorithm",
+  "publicSafeRedactionProfileSha256", "receiptSignatureProfileId",
+  "receiptSignatureProfileSha256", "canonicalJsonProfile", "hashAlgorithm",
   "campaignTruthInput", "operationPolicy", "storedProjectionPolicy",
   "callerVerdictPolicy", "callerCounterPolicy", "mutablePointerPolicy",
   "networkAccess", "clockAccess", "sourceMutation", "attestation",
-  "operatorStatus", "releasePreparation", "limits"
+  "operatorStatus", "releasePreparation", "releaseAuthorization", "limits"
 ]);
 const attestationProfileFields = Object.freeze([
   "receiptSchema", "receiptType", "phase", "completeStatus", "incompleteStatus",
@@ -135,13 +157,20 @@ const releasePreparationProfileFields = Object.freeze([
   "releaseDatePolicy", "redactionPolicy", "persistencePolicy",
   "unsafePersistence"
 ]);
+const releaseAuthorizationProfileFields = Object.freeze([
+  "resultSchema", "authorizedState", "manifestPolicy", "lineagePolicy",
+  "signatureReceiptType", "role", "signatureDomain", "scope", "signedSchema",
+  "releaseIdPolicy", "authorityPolicy", "registryPolicy", "timePolicy",
+  "redactionPolicy", "persistencePolicy", "callerDecisionPolicy"
+]);
 const limitFields = Object.freeze([
   "maximumKnownSecrets", "maximumProjectionBytes", "maximumReceiptSnapshotMembers",
   "maximumSubjectSnapshotMembers", "maximumOperatorStatusBytes",
   "maximumBlockerCodes", "maximumCountRows", "maximumReleaseArtifactManifests",
   "maximumReleasePackageReceipts", "maximumReleaseClaims",
   "maximumRemainingRiskCodes", "maximumChangelogBytes",
-  "maximumReleaseManifestBytes"
+  "maximumReleaseManifestBytes", "maximumAuthorizationReceiptBytes",
+  "maximumAuthorizationResultBytes"
 ]);
 const operatorFields = Object.freeze([
   "attestationReceiptId", "blockerCodes", "campaignId", "counts", "environment",
@@ -222,6 +251,8 @@ function validateInstalledProfile() {
     "release_surface_profile_invalid", step);
   exactDataObject(parsedProfile.releasePreparation, releasePreparationProfileFields,
     "release_surface_profile_invalid", step);
+  exactDataObject(parsedProfile.releaseAuthorization, releaseAuthorizationProfileFields,
+    "release_surface_profile_invalid", step);
   exactDataObject(parsedProfile.limits, limitFields,
     "release_surface_profile_invalid", step);
   const limitsValid = Object.values(parsedProfile.limits)
@@ -244,6 +275,8 @@ function validateInstalledProfile() {
       parsedProfile.publicSafeRedactionProfileId !== publicSafeRedactionProfile.profileId ||
       parsedProfile.publicSafeRedactionProfileSha256 !==
         publicSafeRedactionProfileSha256 ||
+      parsedProfile.receiptSignatureProfileId !== signatureProfile.profileId ||
+      parsedProfile.receiptSignatureProfileSha256 !== signatureProfileSha256 ||
       parsedProfile.canonicalJsonProfile !== "rfc8785-jcs+tinyrustlm.strict-json.v1" ||
       parsedProfile.hashAlgorithm !== "sha256" ||
       parsedProfile.campaignTruthInput !==
@@ -256,7 +289,7 @@ function validateInstalledProfile() {
       parsedProfile.networkAccess !== "forbidden" ||
       parsedProfile.clockAccess !== "caller-trusted-verification-time-only" ||
       parsedProfile.sourceMutation !==
-        "create-only-attestation-redaction-receipts-and-release-manifests" ||
+        "create-only-attestation-redaction-release-manifest-and-authorization-signature-receipts" ||
       parsedProfile.attestation.receiptSchema !== "tinyrustlm.vnext.receipt.v1" ||
       parsedProfile.attestation.receiptType !== "final-attestation" ||
       parsedProfile.attestation.phase !== "final-attestation" ||
@@ -320,6 +353,34 @@ function validateInstalledProfile() {
         "redaction-receipts-before-create-only-release-manifest" ||
       parsedProfile.releasePreparation.unsafePersistence !==
         "release-manifest-forbidden" ||
+      parsedProfile.releaseAuthorization.resultSchema !==
+        "tinyrustlm.vnext.release_authorization_result.v1" ||
+      parsedProfile.releaseAuthorization.authorizedState !==
+        "release-authorized-awaiting-deployment" ||
+      parsedProfile.releaseAuthorization.manifestPolicy !==
+        "existing-current-prepared-manifest-only" ||
+      parsedProfile.releaseAuthorization.lineagePolicy !==
+        "exact-runner-snapshot-plus-preparation-descendants" ||
+      parsedProfile.releaseAuthorization.signatureReceiptType !== "signature-envelope" ||
+      parsedProfile.releaseAuthorization.role !== "release-authorizer" ||
+      parsedProfile.releaseAuthorization.signatureDomain !==
+        "tinyrustlm.signature.release-authorizer.v1" ||
+      parsedProfile.releaseAuthorization.scope !== "release-authorization" ||
+      parsedProfile.releaseAuthorization.signedSchema !==
+        "tinyrustlm.vnext.release_manifest.v2" ||
+      parsedProfile.releaseAuthorization.releaseIdPolicy !==
+        "must-equal-signed-subject-id" ||
+      parsedProfile.releaseAuthorization.authorityPolicy !==
+        "exactly-one-current-evidence-eligible-signature" ||
+      parsedProfile.releaseAuthorization.registryPolicy !==
+        "caller-pinned-root-and-terminal" ||
+      parsedProfile.releaseAuthorization.timePolicy !==
+        "trusted-verification-time-and-finite-profile-lifetime" ||
+      parsedProfile.releaseAuthorization.redactionPolicy !==
+        "replay-preparation-scans-and-scan-authorization-before-persistence" ||
+      parsedProfile.releaseAuthorization.persistencePolicy !==
+        "authorization-redaction-before-create-only-signature-receipt" ||
+      parsedProfile.releaseAuthorization.callerDecisionPolicy !== "forbidden" ||
       !limitsValid ||
       parsedProfile.limits.maximumProjectionBytes !==
         campaignProjectionProfile.limits.maximumProjectionResultBytes ||
@@ -334,6 +395,8 @@ function validateInstalledProfile() {
       parsedProfile.limits.maximumReleaseManifestBytes !==
         identityContractForSchema(parsedProfile.releasePreparation.manifestSchema)
           .maximumBytes ||
+      parsedProfile.limits.maximumAuthorizationReceiptBytes !==
+        receiptStoreProfile.wire.maximumReceiptBytes ||
       parsedProfile.limits.maximumChangelogBytes >
         publicSafeRedactionProfile.limits.maximumInputBytes) {
     failEvidence("release_surface_profile_invalid", step);
@@ -445,6 +508,38 @@ function normalizePrepareInput(rawInput) {
     knownSecrets,
     packageReceiptIds,
     remainingRiskCodes
+  });
+}
+
+function normalizeAuthorizeInput(rawInput) {
+  const step = "release-surface-authorize-input";
+  const input = exactDataObject(rawInput, authorizeInputFields,
+    "release_surface_authorize_input_invalid", step);
+  const knownSecrets = dataArray(input.knownSecrets,
+    parsedProfile.limits.maximumKnownSecrets,
+    "release_surface_known_secrets_invalid", step);
+  scanKnownSecretRepresentations(Buffer.from("{}", "utf8"), knownSecrets);
+  if (!Buffer.isBuffer(input.authorizationReceiptBytes) ||
+      input.authorizationReceiptBytes.length === 0 ||
+      input.authorizationReceiptBytes.length >
+        parsedProfile.limits.maximumAuthorizationReceiptBytes ||
+      !Buffer.isBuffer(input.changelogBytes) || input.changelogBytes.length === 0 ||
+      input.changelogBytes.length > parsedProfile.limits.maximumChangelogBytes ||
+      typeof input.expectedCampaignId !== "string" ||
+      !safeIdPattern.test(input.expectedCampaignId) ||
+      !["development", "production", "staging"].includes(input.expectedEnvironment) ||
+      !contentIdPattern.test(input.expectedTerminalRegistryReceiptId) ||
+      !contentIdPattern.test(input.releaseManifestId) ||
+      !sourceRevisionPattern.test(input.sourceRevision) ||
+      !contentIdPattern.test(input.trustedRootRegistryReceiptId) ||
+      utcNanoseconds(input.verificationTimeUtc) === null) {
+    failEvidence("release_surface_authorize_input_invalid", step);
+  }
+  return Object.freeze({
+    ...input,
+    authorizationReceiptBytes: Buffer.from(input.authorizationReceiptBytes),
+    changelogBytes: Buffer.from(input.changelogBytes),
+    knownSecrets
   });
 }
 
@@ -947,6 +1042,324 @@ function validateReleaseClaims(input, context) {
   });
 }
 
+function activeReceiptDocuments(receiptStore) {
+  const rebuilt = receiptStore.rebuild();
+  return Object.freeze({
+    ids: rebuilt.activeReceiptIds,
+    byId: new Map(rebuilt.activeReceiptIds.map((receiptId) =>
+      [receiptId, receiptStore.read(receiptId)]))
+  });
+}
+
+function requirePreparationScan(activeReceipts, input, operationId, label,
+  targetBytes, targetKind, expectedTimeUtc) {
+  const step = "release-surface-authorization-lineage";
+  const attemptId = `${label}-${operationId.slice("sha256:".length)}`;
+  const candidates = [...activeReceipts.byId.values()].filter((entry) =>
+    entry.receipt.receiptType === "redaction-scan" &&
+      entry.receipt.attemptId === attemptId);
+  if (candidates.length !== 1) {
+    failEvidence("release_surface_preparation_scan_missing", step);
+  }
+  const candidate = candidates[0];
+  if (candidate.receipt.status !== "pass" ||
+      candidate.receipt.campaignId !== input.expectedCampaignId ||
+      candidate.receipt.sourceRevision !== input.sourceRevision ||
+      candidate.receipt.startedAtUtc !== expectedTimeUtc ||
+      candidate.receipt.completedAtUtc !== expectedTimeUtc) {
+    failEvidence("release_surface_preparation_scan_invalid", step);
+  }
+  const verified = verifyVnextRedactionScanReceipt({
+    knownSecrets: input.knownSecrets,
+    receiptBytes: candidate.bytes,
+    targetBytes,
+    targetKind
+  });
+  if (!verified.publicSafe || verified.scanStatus !== "pass") {
+    failEvidence("release_surface_preparation_scan_invalid", step);
+  }
+  return candidate;
+}
+
+function validatePreparedReleaseLineage(input, release, runner, artifactStore,
+  receiptStore, subjectStore) {
+  const step = "release-surface-authorization-lineage";
+  const manifest = release.value;
+  if (release.schema !== parsedProfile.releasePreparation.manifestSchema ||
+      release.subjectId !== input.releaseManifestId ||
+      manifest.releaseId !== input.releaseManifestId ||
+      manifest.sourceRevision !== input.sourceRevision ||
+      manifest.releaseDate !== manifest.createdAtUtc.slice(0, 10) ||
+      compareUtc(manifest.createdAtUtc, input.verificationTimeUtc,
+        "release_surface_authorization_time_invalid", step) > 0 ||
+      sha256(input.changelogBytes) !== manifest.changelogSha256) {
+    failEvidence("release_surface_prepared_manifest_invalid", step);
+  }
+  const attestation = receiptStore.read(manifest.campaignAttestationReceiptId);
+  const attestationReceipt = attestation.receipt;
+  if (attestationReceipt.receiptType !== parsedProfile.attestation.receiptType ||
+      attestationReceipt.phase !== parsedProfile.attestation.phase ||
+      attestationReceipt.status !== parsedProfile.attestation.completeStatus ||
+      attestationReceipt.blockerCode !== null ||
+      attestationReceipt.campaignId !== input.expectedCampaignId ||
+      attestationReceipt.sourceRevision !== input.sourceRevision ||
+      !contentIdPattern.test(attestationReceipt.attemptId) ||
+      attestationReceipt.configurationSha256 !== campaignReleaseSurfaceProfileSha256 ||
+      publicParameter(attestationReceipt, "campaign-complete",
+        "release_surface_prepared_attestation_invalid", step) !== "true" ||
+      publicParameter(attestationReceipt, "campaign-environment",
+        "release_surface_prepared_attestation_invalid", step) !==
+          input.expectedEnvironment ||
+      publicParameter(attestationReceipt, "campaign-id",
+        "release_surface_prepared_attestation_invalid", step) !==
+          input.expectedCampaignId ||
+      hashBinding(attestationReceipt, "inputHashes", "campaign-plan",
+        "release_surface_prepared_attestation_invalid", step) !==
+          manifest.campaignPlanSha256 ||
+      hashBinding(attestationReceipt, "inputHashes", "campaign-projection-result",
+        "release_surface_prepared_attestation_invalid", step) !==
+          manifest.campaignProjectionSha256 ||
+      hashBinding(attestationReceipt, "inputHashes", "campaign-release-surface-profile",
+        "release_surface_prepared_attestation_invalid", step) !==
+          campaignReleaseSurfaceProfileSha256 ||
+      hashBinding(attestationReceipt, "outputHashes", "campaign-projection-result",
+        "release_surface_prepared_attestation_invalid", step) !==
+          manifest.campaignProjectionSha256) {
+    failEvidence("release_surface_prepared_attestation_invalid", step);
+  }
+  const operationId = attestationReceipt.attemptId;
+  const history = runner.inspectOperation(operationId);
+  if (history.state !== "completed" ||
+      history.projectionResultSha256 !== manifest.campaignProjectionSha256) {
+    failEvidence("release_surface_preparation_operation_invalid", step);
+  }
+  const started = runner.readOperationRecord(history.startedRecordId);
+  const terminal = runner.readOperationRecord(history.terminalRecordId);
+  const startedRecord = started.record;
+  const terminalRecord = terminal.record;
+  if (startedRecord.operationId !== operationId ||
+      startedRecord.expectedCampaignId !== input.expectedCampaignId ||
+      startedRecord.expectedEnvironment !== input.expectedEnvironment ||
+      startedRecord.trustedRootRegistryReceiptId !==
+        input.trustedRootRegistryReceiptId ||
+      startedRecord.expectedTerminalRegistryReceiptId !==
+        input.expectedTerminalRegistryReceiptId ||
+      startedRecord.campaignPlanSha256 !== manifest.campaignPlanSha256 ||
+      startedRecord.verificationTimeUtc !== manifest.createdAtUtc ||
+      terminalRecord.outcome !== "completed" ||
+      terminalRecord.startedRecordId !== startedRecord.recordId ||
+      terminalRecord.projectionResultSha256 !== manifest.campaignProjectionSha256 ||
+      hashBinding(attestationReceipt, "inputHashes", "campaign-runner-start-record",
+        "release_surface_preparation_operation_invalid", step) !== sha256(started.bytes) ||
+      hashBinding(attestationReceipt, "inputHashes", "campaign-runner-terminal-record",
+        "release_surface_preparation_operation_invalid", step) !== sha256(terminal.bytes) ||
+      hashBinding(attestationReceipt, "inputHashes", "receipt-snapshot",
+        "release_surface_preparation_operation_invalid", step) !==
+          startedRecord.receiptSnapshot.snapshotSha256 ||
+      hashBinding(attestationReceipt, "inputHashes", "subject-snapshot",
+        "release_surface_preparation_operation_invalid", step) !==
+          startedRecord.subjectSnapshot.snapshotSha256 ||
+      !sameStrings(attestationReceipt.inputReceiptIds,
+        startedRecord.receiptSnapshot.members.map((member) => member.id))) {
+    failEvidence("release_surface_preparation_operation_invalid", step);
+  }
+  artifactStore.rebuild();
+  const storedProjection = artifactStore.readProjection(
+    manifest.campaignProjectionSha256
+  );
+  if (storedProjection.resultSha256 !== manifest.campaignProjectionSha256 ||
+      storedProjection.result.campaignPlanSha256 !== manifest.campaignPlanSha256 ||
+      storedProjection.result.campaignId !== input.expectedCampaignId ||
+      storedProjection.result.environment !== input.expectedEnvironment ||
+      storedProjection.result.verificationTimeUtc !== manifest.createdAtUtc ||
+      storedProjection.result.complete !== true ||
+      storedProjection.result.resumableState !== "complete" ||
+      storedProjection.result.blockerCodes.length !== 0) {
+    failEvidence("release_surface_prepared_projection_invalid", step);
+  }
+  const context = snapshotDocuments({
+    receiptSnapshot: startedRecord.receiptSnapshot,
+    subjectSnapshot: startedRecord.subjectSnapshot
+  }, input.expectedCampaignId, receiptStore, subjectStore);
+  const releaseInput = Object.freeze({
+    artifactManifestIds: manifest.artifactManifestIds,
+    claimIds: manifest.claimIds,
+    packageReceiptIds: manifest.packageReceiptIds,
+    provenanceReceiptId: manifest.provenanceReceiptId,
+    sbomArtifactId: manifest.sbomArtifactId,
+    sourceRevision: manifest.sourceRevision,
+    verificationTimeUtc: manifest.createdAtUtc
+  });
+  const evidence = validateReleaseEvidence(
+    releaseInput,
+    storedProjection.result,
+    context
+  );
+  const claims = validateReleaseClaims(releaseInput, context);
+  const selectedDocuments = [
+    ...evidence.artifacts,
+    ...evidence.packages,
+    evidence.provenance,
+    ...claims
+  ];
+  const selectedReceiptIds = new Set();
+  for (const artifact of evidence.artifacts) {
+    if (artifact.value.qualificationReceiptId !== null) {
+      selectedReceiptIds.add(artifact.value.qualificationReceiptId);
+    }
+  }
+  for (const claim of claims) {
+    for (const receiptId of claim.value.evidenceReceiptIds) {
+      selectedReceiptIds.add(receiptId);
+    }
+  }
+  for (const receiptId of selectedReceiptIds) {
+    selectedDocuments.push(context.receipts.get(receiptId));
+  }
+  for (const document of selectedDocuments) {
+    const scan = scanVnextPublicDocumentBytes(document.bytes, {
+      knownSecrets: input.knownSecrets
+    });
+    if (!scan.publicSafe) {
+      failEvidence("release_surface_prepared_public_input_unsafe", step);
+    }
+  }
+  const activeReceipts = activeReceiptDocuments(receiptStore);
+  const attestationScan = requirePreparationScan(
+    activeReceipts,
+    input,
+    operationId,
+    "redaction",
+    attestation.bytes,
+    "document",
+    manifest.createdAtUtc
+  );
+  const changelogScan = requirePreparationScan(
+    activeReceipts,
+    input,
+    operationId,
+    "release-changelog-redaction",
+    input.changelogBytes,
+    "public-text",
+    manifest.createdAtUtc
+  );
+  const manifestScan = requirePreparationScan(
+    activeReceipts,
+    input,
+    operationId,
+    "release-manifest-redaction",
+    release.bytes,
+    "document",
+    manifest.createdAtUtc
+  );
+  const expectedReceiptIds = [
+    ...startedRecord.receiptSnapshot.members.map((member) => member.id),
+    attestationReceipt.receiptId,
+    attestationScan.receipt.receiptId,
+    changelogScan.receipt.receiptId,
+    manifestScan.receipt.receiptId
+  ];
+  const expectedSubjectIds = [
+    ...startedRecord.subjectSnapshot.members.map((member) => member.id),
+    input.releaseManifestId
+  ];
+  return Object.freeze({
+    activeReceipts,
+    attestation,
+    expectedReceiptIds: [...new Set(expectedReceiptIds)].sort(),
+    expectedSubjectIds: [...new Set(expectedSubjectIds)].sort(),
+    operationId,
+    projection: storedProjection.result
+  });
+}
+
+function validateReleaseAuthorizationReceipt(input, release) {
+  const step = "release-surface-authorization-receipt";
+  const validated = validateVnextReceiptBytes(input.authorizationReceiptBytes);
+  const receipt = validated.receipt;
+  const envelope = receipt.signatureEnvelope;
+  if (receipt.receiptType !== parsedProfile.releaseAuthorization.signatureReceiptType ||
+      receipt.phase !== parsedProfile.releaseAuthorization.signatureReceiptType ||
+      receipt.status !== "pass" || receipt.error !== null ||
+      receipt.blockerCode !== null || receipt.campaignId !== input.expectedCampaignId ||
+      receipt.sourceRevision !== input.sourceRevision ||
+      receipt.startedAtUtc !== receipt.completedAtUtc ||
+      receipt.supersedesReceiptIds.length !== 0 || envelope === null ||
+      envelope.role !== parsedProfile.releaseAuthorization.role ||
+      envelope.signatureDomain !== parsedProfile.releaseAuthorization.signatureDomain ||
+      envelope.scope !== parsedProfile.releaseAuthorization.scope ||
+      envelope.signedSchema !== parsedProfile.releaseAuthorization.signedSchema ||
+      envelope.signedSubjectId !== input.releaseManifestId ||
+      envelope.releaseId !== input.releaseManifestId ||
+      envelope.campaignId !== input.expectedCampaignId ||
+      envelope.issuedAtUtc !== receipt.completedAtUtc ||
+      envelope.expiresAtUtc === null ||
+      !sameStrings(receipt.inputReceiptIds,
+        [envelope.authorityRegistryReceiptId]) ||
+      receipt.inputHashes.length !== 1 ||
+      receipt.inputHashes[0].name !== "signed-subject-canonical-content" ||
+      receipt.inputHashes[0].sha256 !== release.canonicalContentSha256 ||
+      receipt.outputHashes.length !== 0 ||
+      receipt.authorityRegistry !== null || receipt.keyRevocation !== null ||
+      receipt.offlineBundle !== null || receipt.attestationReference !== null) {
+    failEvidence("release_surface_authorization_receipt_invalid", step);
+  }
+  if (compareUtc(release.value.createdAtUtc, envelope.issuedAtUtc,
+    "release_surface_authorization_time_invalid", step) > 0 ||
+      compareUtc(envelope.issuedAtUtc, input.verificationTimeUtc,
+        "release_surface_authorization_time_invalid", step) > 0 ||
+      compareUtc(input.verificationTimeUtc, envelope.expiresAtUtc,
+        "release_surface_authorization_time_invalid", step) >= 0) {
+    failEvidence("release_surface_authorization_time_invalid", step);
+  }
+  return validated;
+}
+
+function verifyReleaseAuthorizationAuthority(input, release, authorization,
+  activeReceipts, subjectStore) {
+  const step = "release-surface-authorization-authority";
+  const receiptBytesById = new Map([...activeReceipts.byId].map(([receiptId, entry]) =>
+    [receiptId, entry.bytes]));
+  const existing = receiptBytesById.get(authorization.receipt.receiptId);
+  if (existing && !existing.equals(authorization.bytes)) {
+    failEvidence("release_surface_authorization_identity_collision", step);
+  }
+  receiptBytesById.set(authorization.receipt.receiptId, authorization.bytes);
+  const subjectIds = subjectStore.rebuild().activeSubjectIds;
+  const authority = verifyVnextAuthorityGraph({
+    campaignId: input.expectedCampaignId,
+    environment: input.expectedEnvironment,
+    expectedTerminalRegistryReceiptId: input.expectedTerminalRegistryReceiptId,
+    receiptBytes: [...receiptBytesById].sort(([left], [right]) =>
+      left.localeCompare(right)).map(([, bytes]) => bytes),
+    subjectBytes: subjectIds.map((subjectId) => subjectStore.read(subjectId).bytes),
+    trustedRootRegistryReceiptId: input.trustedRootRegistryReceiptId,
+    verificationTimeUtc: input.verificationTimeUtc
+  });
+  const releaseAuthorizations = authority.signatures.filter((entry) =>
+    entry.role === parsedProfile.releaseAuthorization.role &&
+      entry.scope === parsedProfile.releaseAuthorization.scope &&
+      entry.signedSubjectId === input.releaseManifestId &&
+      entry.signedSchema === release.schema);
+  if (releaseAuthorizations.length !== 1 ||
+      releaseAuthorizations[0].signatureReceiptId !==
+        authorization.receipt.receiptId ||
+      releaseAuthorizations[0].authorityRegistryReceiptId !==
+        authorization.receipt.signatureEnvelope.authorityRegistryReceiptId ||
+      releaseAuthorizations[0].signatureVerified !== true ||
+      releaseAuthorizations[0].authorityAtIssue !== true ||
+      releaseAuthorizations[0].temporalCurrent !== true ||
+      releaseAuthorizations[0].currentEvidenceEligible !== true ||
+      releaseAuthorizations[0].staleReasons.length !== 0 ||
+      authority.terminalRegistryCurrent !== true) {
+    failEvidence("release_surface_authorization_not_current", step);
+  }
+  return Object.freeze({
+    authority,
+    signature: releaseAuthorizations[0]
+  });
+}
+
 function assertStoreMembership(receiptStore, subjectStore, expectedReceiptIds,
   expectedSubjectIds, step) {
   const currentReceiptIds = receiptStore.rebuild().activeReceiptIds;
@@ -1359,8 +1772,176 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
     });
   }
 
+  async function authorizeRelease(rawInput) {
+    const step = "release-surface-authorize";
+    const input = normalizeAuthorizeInput(rawInput);
+    const release = subjectStore.read(input.releaseManifestId);
+    const lineage = validatePreparedReleaseLineage(
+      input,
+      release,
+      runner,
+      artifactStore,
+      receiptStore,
+      subjectStore
+    );
+    const authorization = validateReleaseAuthorizationReceipt(input, release);
+    const authorizationScan = scanVnextPublicDocumentBytes(authorization.bytes, {
+      knownSecrets: input.knownSecrets
+    });
+    const authorizationRedaction = createVnextRedactionScanReceipt({
+      attemptId: `release-authorization-redaction-${
+        authorization.receipt.receiptId.slice("sha256:".length)}`,
+      campaignId: input.expectedCampaignId,
+      completedAtUtc: input.verificationTimeUtc,
+      scan: authorizationScan,
+      sourceRevision: input.sourceRevision,
+      startedAtUtc: input.verificationTimeUtc
+    });
+    const preparedReceiptIds = lineage.expectedReceiptIds;
+    const preparedSubjectIds = lineage.expectedSubjectIds;
+    const withRedaction = [...new Set([
+      ...preparedReceiptIds,
+      authorizationRedaction.receipt.receiptId
+    ])].sort();
+    const withAuthorization = [...new Set([
+      ...withRedaction,
+      authorization.receipt.receiptId
+    ])].sort();
+    const currentReceiptIds = receiptStore.rebuild().activeReceiptIds;
+    const isPrepared = sameStrings(currentReceiptIds, preparedReceiptIds);
+    const hasRedaction = sameStrings(currentReceiptIds, withRedaction);
+    const isAuthorized = sameStrings(currentReceiptIds, withAuthorization);
+    if (!isPrepared && !hasRedaction && !isAuthorized) {
+      failEvidence("release_surface_authorization_snapshot_changed", step);
+    }
+    assertStoreMembership(
+      receiptStore,
+      subjectStore,
+      currentReceiptIds,
+      preparedSubjectIds,
+      "release-surface-authorization-before-verification"
+    );
+    if (hasRedaction || isAuthorized) {
+      const existingScan = receiptStore.read(
+        authorizationRedaction.receipt.receiptId
+      );
+      if (!existingScan.bytes.equals(authorizationRedaction.bytes)) {
+        failEvidence("release_surface_authorization_redaction_changed", step);
+      }
+    }
+    if (isAuthorized) {
+      const existingAuthorization = receiptStore.read(
+        authorization.receipt.receiptId
+      );
+      if (!existingAuthorization.bytes.equals(authorization.bytes)) {
+        failEvidence("release_surface_authorization_identity_collision", step);
+      }
+    }
+    if (!authorizationScan.publicSafe) {
+      if (isPrepared) receiptStore.put(authorizationRedaction.bytes);
+      assertStoreMembership(
+        receiptStore,
+        subjectStore,
+        withRedaction,
+        preparedSubjectIds,
+        "release-surface-authorization-redaction-failure"
+      );
+      failEvidence("release_surface_authorization_unsafe", step);
+    }
+    const verified = verifyReleaseAuthorizationAuthority(
+      input,
+      release,
+      authorization,
+      lineage.activeReceipts,
+      subjectStore
+    );
+    const envelope = authorization.receipt.signatureEnvelope;
+    const authorizationResult = deepFreeze({
+      schema: parsedProfile.releaseAuthorization.resultSchema,
+      campaignId: input.expectedCampaignId,
+      environment: input.expectedEnvironment,
+      releaseManifestId: input.releaseManifestId,
+      releaseManifestSha256: release.canonicalContentSha256,
+      sourceRevision: input.sourceRevision,
+      authorizationReceiptId: authorization.receipt.receiptId,
+      authorizationRedactionReceiptId: authorizationRedaction.receipt.receiptId,
+      authorityRegistryReceiptId: envelope.authorityRegistryReceiptId,
+      trustedRootRegistryReceiptId: input.trustedRootRegistryReceiptId,
+      terminalRegistryReceiptId: verified.authority.terminalRegistryReceiptId,
+      signerId: envelope.signerId,
+      keyId: envelope.keyId,
+      nonceHash: envelope.nonceHash,
+      issuedAtUtc: envelope.issuedAtUtc,
+      expiresAtUtc: envelope.expiresAtUtc,
+      verifiedAtUtc: input.verificationTimeUtc,
+      signatureVerified: true,
+      currentEvidenceEligible: true,
+      authorizationStatus: "authorized",
+      state: parsedProfile.releaseAuthorization.authorizedState
+    });
+    const authorizationResultBytes = canonicalizeVnextJcsBytes(
+      authorizationResult
+    );
+    if (authorizationResultBytes.length >
+        parsedProfile.limits.maximumAuthorizationResultBytes) {
+      failEvidence("release_surface_authorization_result_byte_limit", step);
+    }
+    const resultScan = scanKnownSecretRepresentations(
+      authorizationResultBytes,
+      input.knownSecrets
+    );
+    if (resultScan.findingCount !== 0) {
+      failEvidence("release_surface_authorization_result_unsafe", step);
+    }
+    assertStoreMembership(
+      receiptStore,
+      subjectStore,
+      currentReceiptIds,
+      preparedSubjectIds,
+      "release-surface-authorization-before-persistence"
+    );
+    const authorizationRedactionPersistence = receiptStore.put(
+      authorizationRedaction.bytes
+    );
+    assertStoreMembership(
+      receiptStore,
+      subjectStore,
+      isAuthorized ? withAuthorization : withRedaction,
+      preparedSubjectIds,
+      "release-surface-authorization-after-redaction"
+    );
+    const authorizationPersistence = receiptStore.put(authorization.bytes);
+    assertStoreMembership(
+      receiptStore,
+      subjectStore,
+      withAuthorization,
+      preparedSubjectIds,
+      "release-surface-authorization-after-signature"
+    );
+    return immutableReleasePreparationResult({
+      authorizationStatus: "authorized",
+      state: parsedProfile.releaseAuthorization.authorizedState,
+      campaignId: input.expectedCampaignId,
+      environment: input.expectedEnvironment,
+      releaseManifestId: input.releaseManifestId,
+      releaseManifestSha256: release.canonicalContentSha256,
+      authorizationReceiptId: authorization.receipt.receiptId,
+      authorizationRedactionReceiptId: authorizationRedaction.receipt.receiptId,
+      authorizationResult,
+      authorizationResultSha256: sha256(authorizationResultBytes),
+      authorizationPersistence,
+      authorizationRedactionPersistence
+    }, {
+      authorizationReceiptBytes: authorization.bytes,
+      authorizationRedactionReceiptBytes: authorizationRedaction.bytes,
+      authorizationResultBytes,
+      releaseManifestBytes: release.bytes
+    });
+  }
+
   return Object.freeze({
     attestCampaign,
+    authorizeRelease,
     prepareRelease,
     profileId: parsedProfile.profileId,
     profileSha256: campaignReleaseSurfaceProfileSha256,

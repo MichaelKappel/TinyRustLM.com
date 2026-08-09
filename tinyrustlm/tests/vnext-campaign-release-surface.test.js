@@ -20,7 +20,8 @@ const {
   createVnextCampaignArtifactStore
 } = require("../tools/vnext-campaign-artifact-store.js");
 const {
-  finalizeVnextIdentityDocument
+  finalizeVnextIdentityDocument,
+  validateVnextIdentityDocumentBytes
 } = require("../tools/vnext-content-identity.js");
 const {
   collectParentReceiptIds,
@@ -35,6 +36,11 @@ const {
   validateVnextReceiptBytes
 } = require("../tools/vnext-receipt-identity.js");
 const { parseStrictJson } = require("../tools/strict-json.js");
+const {
+  authorityKey,
+  makeAuthorityRegistry,
+  makeSignatureReceipt
+} = require("./helpers/vnext-authority-fixtures.js");
 
 const repositoryRoot = path.resolve(__dirname, "../..");
 const profilePath = path.join(repositoryRoot, "contracts", "vnext",
@@ -135,6 +141,106 @@ function seedCase(roots, entry) {
     assert.ok(bytes, `missing subject ${subjectId}`);
     subjectStore.put(bytes);
   }
+}
+
+function seedEphemeralAuthorityCase(roots, entry, options = {}) {
+  const artifactStore = createVnextCampaignArtifactStore(roots.artifacts);
+  artifactStore.putPlan(fs.readFileSync(planPath));
+  const original = new Map(entry.receiptIds.map((receiptId) => {
+    const bytes = receipts.get(receiptId);
+    assert.ok(bytes, `missing receipt ${receiptId}`);
+    return [receiptId, validateVnextReceiptBytes(bytes)];
+  }));
+  const objective = new Map([...original].filter(([, validated]) =>
+    !["authority-registry", "signature-envelope"].includes(
+      validated.receipt.receiptType
+    )));
+  const receiptStore = createVnextReceiptStore(roots.receipts);
+  const complete = new Set();
+  function addObjective(receiptId) {
+    if (complete.has(receiptId)) return;
+    const validated = objective.get(receiptId);
+    assert.ok(validated, `missing objective parent ${receiptId}`);
+    for (const parentId of collectParentReceiptIds(validated.receipt)) {
+      addObjective(parentId);
+    }
+    receiptStore.put(validated.bytes);
+    complete.add(receiptId);
+  }
+  for (const receiptId of objective.keys()) addObjective(receiptId);
+
+  const authority = {
+    localKey: authorityKey({
+      keyId: "release-surface-local-key",
+      signerId: "release-surface-local-recorder",
+      role: "local-recorder"
+    }),
+    observerKey: authorityKey({
+      keyId: "release-surface-observer-key",
+      signerId: "release-surface-outside-observer",
+      role: "outside-network-observer"
+    }),
+    p2pKey: authorityKey({
+      keyId: "release-surface-p2p-key",
+      signerId: "release-surface-p2p-publisher",
+      role: "p2p-publisher"
+    }),
+    releaseKey: authorityKey({
+      keyId: "release-surface-authorizer-key",
+      signerId: "release-surface-authorizer",
+      role: "release-authorizer",
+      status: options.releaseKeyStatus ?? "active"
+    })
+  };
+  authority.root = makeAuthorityRegistry({
+    label: "release-surface-ephemeral-root",
+    keys: [
+      authority.localKey,
+      authority.observerKey,
+      authority.p2pKey,
+      authority.releaseKey
+    ]
+  });
+  receiptStore.put(authority.root.bytes);
+  for (const validated of objective.values()) {
+    const isCatalog = validated.receipt.receiptType === "catalog-announcement";
+    const signature = makeSignatureReceipt({
+      authorityRegistry: authority.root,
+      label: `release-surface-${validated.receipt.receiptId.slice(7, 23)}`,
+      scope: isCatalog ? "p2p-publication" : "receipt-recording",
+      signingKey: isCatalog ? authority.p2pKey : authority.localKey,
+      subject: validated
+    });
+    receiptStore.put(signature.bytes);
+  }
+
+  const subjectStore = createVnextSubjectStore(roots.subjects);
+  for (const subjectId of entry.subjectIds) {
+    const originalBytes = subjects.get(subjectId);
+    assert.ok(originalBytes, `missing subject ${subjectId}`);
+    const originalProof = validateVnextIdentityDocumentBytes(originalBytes);
+    assert.equal(originalProof.schema, "tinyrustlm.vnext.outside_proof.v2");
+    const { proofId: _proofId, canonicalContentSha256: _canonicalHash,
+      ...proofDraft } = originalProof.value;
+    const proof = finalizeVnextIdentityDocument({
+      ...proofDraft,
+      observerId: authority.observerKey.record.signerId,
+      observerRegistryId: authority.root.receipt.receiptId
+    });
+    subjectStore.put(proof.bytes);
+    const signature = makeSignatureReceipt({
+      authorityRegistry: authority.root,
+      expiresAtUtc: proof.value.expiresAtUtc,
+      issuedAtUtc: proof.value.issuedAtUtc,
+      label: `release-surface-proof-${proof.subjectId.slice(7, 23)}`,
+      nonceHash: proof.value.nonceHash,
+      scope: "outside-proof",
+      signingKey: authority.observerKey,
+      subject: proof
+    });
+    receiptStore.put(signature.bytes);
+  }
+  return Object.freeze(authority);
 }
 
 function runnerOptions(roots) {
@@ -405,6 +511,23 @@ function prepareInput(entry, label, releaseInput, overrides = {}) {
   };
 }
 
+function authorizeInput(entry, authority, prepared, releaseInput,
+  authorizationReceipt, overrides = {}) {
+  return {
+    authorizationReceiptBytes: authorizationReceipt.bytes,
+    changelogBytes: releaseInput.changelogBytes,
+    expectedCampaignId: entry.expectedCampaignId,
+    expectedEnvironment: entry.expectedEnvironment,
+    expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
+    knownSecrets: [],
+    releaseManifestId: prepared.releaseManifestId,
+    sourceRevision,
+    trustedRootRegistryReceiptId: authority.root.receipt.receiptId,
+    verificationTimeUtc: "2026-08-09T00:32:00Z",
+    ...overrides
+  };
+}
+
 async function rejectsCode(callback, code) {
   await assert.rejects(callback, (error) => error?.code === code, `expected ${code}`);
 }
@@ -414,7 +537,7 @@ test("freezes one no-compatibility campaign release surface profile", () => {
   const profile = parseStrictJson(bytes);
   assert.equal(campaignReleaseSurfaceProfileSha256, sha256(bytes));
   assert.equal(campaignReleaseSurfaceProfileSha256,
-    "8b842dcf95ac78703fe1d3f761d46f45b386b741027fcaf9e944333990180c8f");
+    "5dd859914628be87aaae2333d2d1c850b739d58fd0d16dec79f04b9fbb0cfa94");
   assert.equal(campaignReleaseSurfaceProfile.profileId,
     "tinyrustlm.vnext.campaign-release-surface.v1");
   assert.equal(profile.status, "frozen");
@@ -429,6 +552,11 @@ test("freezes one no-compatibility campaign release surface profile", () => {
     "all-campaign-qualified-artifacts-plus-explicit-dependency-closure-and-sbom");
   assert.equal(profile.releasePreparation.claimSelection,
     "all-current-approved-claims-for-source-revision");
+  assert.equal(profile.releaseAuthorization.role, "release-authorizer");
+  assert.equal(profile.releaseAuthorization.scope, "release-authorization");
+  assert.equal(profile.releaseAuthorization.authorityPolicy,
+    "exactly-one-current-evidence-eligible-signature");
+  assert.equal(profile.releaseAuthorization.callerDecisionPolicy, "forbidden");
   assert.equal(profile.operatorStatus.doneState,
     "forbidden-before-authorized-release-and-public-readback");
   assert.doesNotMatch(bytes.toString("utf8"),
@@ -779,6 +907,282 @@ test("prepares one complete public-safe release without authorizing publication"
     "complete-release-preparation",
     releaseInput
   )), "release_surface_operation_not_fresh");
+});
+
+test("authorizes only the exact prepared manifest through current Ed25519 authority", {
+  timeout: 360_000
+}, async (t) => {
+  const roots = makeRoots(t);
+  const entry = acceptedCase("complete-capacity");
+  const authority = seedEphemeralAuthorityCase(roots, entry);
+  const releaseInput = seedReleaseInputs(roots, entry);
+  const preparationSurface = await createVnextCampaignReleaseSurface(roots.runner,
+    runnerOptions(roots));
+  const prepared = await preparationSurface.prepareRelease(prepareInput(
+    entry,
+    "authorized-release-preparation",
+    releaseInput,
+    {
+      expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
+      trustedRootRegistryReceiptId: authority.root.receipt.receiptId
+    }
+  ));
+  const release = createVnextSubjectStore(roots.subjects).read(
+    prepared.releaseManifestId
+  );
+  const authorizationReceipt = makeSignatureReceipt({
+    authorityRegistry: authority.root,
+    expiresAtUtc: "2026-08-09T01:00:00Z",
+    issuedAtUtc: "2026-08-09T00:31:00Z",
+    label: "authorize-exact-prepared-release",
+    receiptSourceRevision: sourceRevision,
+    releaseId: prepared.releaseManifestId,
+    scope: "release-authorization",
+    signingKey: authority.releaseKey,
+    subject: release
+  });
+  const input = authorizeInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    authorizationReceipt
+  );
+  const authorizingSurface = await createVnextCampaignReleaseSurface(roots.runner,
+    runnerOptions(roots));
+  const result = await authorizingSurface.authorizeRelease(input);
+
+  assert.equal(result.authorizationStatus, "authorized");
+  assert.equal(result.state, "release-authorized-awaiting-deployment");
+  assert.equal(result.releaseManifestId, prepared.releaseManifestId);
+  assert.equal(result.authorizationReceiptId,
+    authorizationReceipt.receipt.receiptId);
+  assert.equal(result.authorizationResult.signatureVerified, true);
+  assert.equal(result.authorizationResult.currentEvidenceEligible, true);
+  assert.equal(result.authorizationResult.signerId,
+    authority.releaseKey.record.signerId);
+  assert.equal(result.authorizationResult.keyId,
+    authority.releaseKey.record.keyId);
+  assert.equal(result.authorizationResult.releaseManifestId,
+    prepared.releaseManifestId);
+  assert.doesNotMatch(result.authorizationResultBytes.toString("utf8"),
+    /\bdone\b|published|deployed/iu);
+  assert.deepEqual(result.releaseManifestBytes, prepared.releaseManifestBytes);
+
+  const receiptStore = createVnextReceiptStore(roots.receipts);
+  assert.deepEqual(receiptStore.read(result.authorizationReceiptId).bytes,
+    authorizationReceipt.bytes);
+  assert.equal(receiptStore.read(result.authorizationRedactionReceiptId)
+    .receipt.status, "pass");
+  const storedRelease = createVnextSubjectStore(roots.subjects).read(
+    prepared.releaseManifestId
+  ).value;
+  assert.equal(Object.hasOwn(storedRelease, "authorizationReceiptId"), false);
+
+  const repeated = await authorizingSurface.authorizeRelease(input);
+  assert.equal(repeated.authorizationReceiptId, result.authorizationReceiptId);
+  assert.equal(repeated.authorizationResultSha256,
+    result.authorizationResultSha256);
+  assert.equal(repeated.authorizationPersistence.disposition,
+    "existing-byte-identical");
+  assert.equal(repeated.authorizationRedactionPersistence.disposition,
+    "existing-byte-identical");
+});
+
+test("rejects caller authorization truth, wrong bindings, expiry, and snapshot drift", {
+  timeout: 360_000
+}, async (t) => {
+  const roots = makeRoots(t);
+  const entry = acceptedCase("complete-capacity");
+  const authority = seedEphemeralAuthorityCase(roots, entry);
+  const releaseInput = seedReleaseInputs(roots, entry);
+  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+    runnerOptions(roots));
+  const prepared = await surface.prepareRelease(prepareInput(
+    entry,
+    "hostile-authorization-preparation",
+    releaseInput,
+    {
+      expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
+      trustedRootRegistryReceiptId: authority.root.receipt.receiptId
+    }
+  ));
+  const release = createVnextSubjectStore(roots.subjects).read(
+    prepared.releaseManifestId
+  );
+  function signed(label, overrides = {}) {
+    return makeSignatureReceipt({
+      authorityRegistry: authority.root,
+      expiresAtUtc: "2026-08-09T01:00:00Z",
+      issuedAtUtc: "2026-08-09T00:31:00Z",
+      label,
+      receiptSourceRevision: sourceRevision,
+      releaseId: prepared.releaseManifestId,
+      scope: "release-authorization",
+      signingKey: authority.releaseKey,
+      subject: release,
+      ...overrides
+    });
+  }
+  const validReceipt = signed("hostile-valid-reference");
+  const validInput = authorizeInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    validReceipt
+  );
+  await rejectsCode(() => surface.authorizeRelease({
+    ...validInput,
+    decision: "authorize"
+  }), "release_surface_authorize_input_invalid");
+
+  const wrongScope = signed("hostile-wrong-scope", { scope: "key-revocation" });
+  await rejectsCode(() => surface.authorizeRelease(authorizeInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    wrongScope
+  )), "release_surface_authorization_receipt_invalid");
+
+  const wrongRelease = signed("hostile-wrong-release", {
+    releaseId: operationId("different-release-manifest")
+  });
+  await rejectsCode(() => surface.authorizeRelease(authorizeInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    wrongRelease
+  )), "release_surface_authorization_receipt_invalid");
+
+  const expired = signed("hostile-expired-authorization", {
+    expiresAtUtc: "2026-08-09T00:31:30Z"
+  });
+  await rejectsCode(() => surface.authorizeRelease(authorizeInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    expired
+  )), "release_surface_authorization_time_invalid");
+
+  const unrelatedArtifactId = operationId("post-preparation-subject-drift");
+  createVnextSubjectStore(roots.subjects).put(releaseArtifact({
+    artifactId: unrelatedArtifactId,
+    artifactClass: "specialist-model",
+    byteLength: 4096,
+    formatProfile: "slm2.0",
+    provenanceReceiptId: releaseInput.provenanceReceiptId,
+    qualificationReceiptId: null
+  }).bytes);
+  await rejectsCode(() => surface.authorizeRelease(validInput),
+    "release_surface_subject_snapshot_member_unexpected");
+  assert.equal(createVnextReceiptStore(roots.receipts).rebuild().activeReceiptIds
+    .includes(validReceipt.receipt.receiptId), false);
+});
+
+test("rejects an authorization key that was not active at signature issue", {
+  timeout: 360_000
+}, async (t) => {
+  const roots = makeRoots(t);
+  const entry = acceptedCase("complete-capacity");
+  const authority = seedEphemeralAuthorityCase(roots, entry, {
+    releaseKeyStatus: "retired"
+  });
+  const releaseInput = seedReleaseInputs(roots, entry);
+  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+    runnerOptions(roots));
+  const prepared = await surface.prepareRelease(prepareInput(
+    entry,
+    "retired-authorizer-preparation",
+    releaseInput,
+    {
+      expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
+      trustedRootRegistryReceiptId: authority.root.receipt.receiptId
+    }
+  ));
+  const release = createVnextSubjectStore(roots.subjects).read(
+    prepared.releaseManifestId
+  );
+  const authorizationReceipt = makeSignatureReceipt({
+    authorityRegistry: authority.root,
+    expiresAtUtc: "2026-08-09T01:00:00Z",
+    issuedAtUtc: "2026-08-09T00:31:00Z",
+    label: "retired-release-authorizer",
+    receiptSourceRevision: sourceRevision,
+    releaseId: prepared.releaseManifestId,
+    scope: "release-authorization",
+    signingKey: authority.releaseKey,
+    subject: release
+  });
+  await rejectsCode(() => surface.authorizeRelease(authorizeInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    authorizationReceipt
+  )), "signature_key_not_authorized_at_issue");
+  assert.equal(createVnextReceiptStore(roots.receipts).rebuild().activeReceiptIds
+    .includes(authorizationReceipt.receipt.receiptId), false);
+});
+
+test("persists only bounded redaction evidence for unsafe authorization bytes", {
+  timeout: 360_000
+}, async (t) => {
+  const roots = makeRoots(t);
+  const entry = acceptedCase("complete-capacity");
+  const authority = seedEphemeralAuthorityCase(roots, entry);
+  const releaseInput = seedReleaseInputs(roots, entry);
+  const protectedValue = authority.releaseKey.record.signerId;
+  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+    runnerOptions(roots));
+  const prepared = await surface.prepareRelease(prepareInput(
+    entry,
+    "unsafe-authorization-preparation",
+    releaseInput,
+    {
+      expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
+      knownSecrets: [protectedValue],
+      trustedRootRegistryReceiptId: authority.root.receipt.receiptId
+    }
+  ));
+  const release = createVnextSubjectStore(roots.subjects).read(
+    prepared.releaseManifestId
+  );
+  const authorizationReceipt = makeSignatureReceipt({
+    authorityRegistry: authority.root,
+    expiresAtUtc: "2026-08-09T01:00:00Z",
+    issuedAtUtc: "2026-08-09T00:31:00Z",
+    label: "unsafe-release-authorization",
+    receiptSourceRevision: sourceRevision,
+    releaseId: prepared.releaseManifestId,
+    scope: "release-authorization",
+    signingKey: authority.releaseKey,
+    subject: release
+  });
+  const receiptStore = createVnextReceiptStore(roots.receipts);
+  const before = receiptStore.rebuild().activeReceiptIds;
+  await rejectsCode(() => surface.authorizeRelease(authorizeInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    authorizationReceipt,
+    { knownSecrets: [protectedValue] }
+  )), "release_surface_authorization_unsafe");
+  const after = receiptStore.rebuild().activeReceiptIds;
+  assert.equal(after.length, before.length + 1);
+  assert.equal(after.includes(authorizationReceipt.receipt.receiptId), false);
+  const addedId = after.find((receiptId) => !before.includes(receiptId));
+  const redaction = receiptStore.read(addedId);
+  assert.equal(redaction.receipt.receiptType, "redaction-scan");
+  assert.equal(redaction.receipt.status, "fail");
+  assert.equal(redaction.receipt.blockerCode,
+    "public-evidence-secret-scan-failed");
+  assert.doesNotMatch(redaction.bytes.toString("utf8"),
+    new RegExp(protectedValue, "u"));
 });
 
 test("refuses release preparation when the fresh campaign projection is incomplete", {
