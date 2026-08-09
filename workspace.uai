@@ -1,9 +1,9 @@
-profile: tinyrustlm.source-workspace.v257
+profile: tinyrustlm.source-workspace.v258
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-09T03:35:32Z
+updated_utc: 2026-08-09T03:36:39Z
 current_workspace_handoff:
-  authority: This block is the first-read operational account as of `2026-08-09T03:35:32Z`. It summarizes current truth and takes precedence over incompatible present-tense wording in dated history below. Historical receipts remain immutable evidence for their stated scope only.
+  authority: This block is the first-read operational account as of `2026-08-09T03:36:39Z`. It summarizes current truth and takes precedence over incompatible present-tense wording in dated history below. Historical receipts remain immutable evidence for their stated scope only.
   cold_start_order:
     - Read this `current_workspace_handoff` block.
     - Read `version_authority`, the first current authorities under `active_product`, and `deploy_gate`.
@@ -14,7 +14,7 @@ current_workspace_handoff:
     step_1: Read the active goal through the goal system. It remains active and must not be marked complete from this checkpoint.
     step_2: Work only in `E:\Source\.tinyrustlm-model-acquisition` on branch `codex/model-acquisition-v2` unless the human explicitly changes ownership.
     step_3: Run `git status --short --branch`, `git rev-parse HEAD`, and `git ls-remote origin refs/heads/codex/model-acquisition-v2`; inspect any change newer than the checkpoints below before editing.
-    verified_parent_checkpoint: `7bdd279117b8923381b2afcffd9a89b158f3926d` (`docs(memory): record current Phase 3 handoff`) was pushed and remote-exact before this update. This file intentionally records a verified parent rather than pretending it can contain its own commit hash; the live local/remote commands in step 3 are authoritative. The Phase 3 paths below remain uncommitted WIP and must be preserved.
+    verified_parent_checkpoint: `3a2e1885b88b6b84d4c52e9dbfe3db03fba4bea1` (`docs(memory): remove self-referential checkpoint`) was pushed and remote-exact before this update. This file intentionally records a verified parent rather than pretending it can contain its own commit hash; the live local/remote commands in step 3 are authoritative. The Phase 3 paths below remain uncommitted WIP and must be preserved.
     expected_code_milestone: `f85c14e5079ed3fefe6ae47b5fc8e0166d60a9ed` (`feat(contracts): add independent vNext validators`) remains the last completed code milestone.
     step_4: Do not edit, reset, clean, revert, or use `E:\Source\Rust\TinyRustLM.com` for this branch because that checkout contains unrelated work. Do not discard changes from another agent anywhere.
     step_5: Preserve and inspect all twelve Phase 3 work-in-progress paths under `phase_3_worktree_checkpoint`; rerun the focused suites before extending them. Do not reopen accepted ADR or Phase 2 decisions without new contradictory evidence.
@@ -25,10 +25,10 @@ current_workspace_handoff:
     active_edit_worktree: `E:\Source\.tinyrustlm-model-acquisition`
     active_branch: `codex/model-acquisition-v2`
     tracked_full_handoff: `E:\Source\.tinyrustlm-model-acquisition\workspace.uai` is the source-controlled complete account for this active worktree.
-    local_root_coordinator: `E:\Source\Rust\workspace.uai` was reconciled as `rust-site-family.workspace.v8` at `2026-08-09T03:32:37Z`; it is 16,582 bytes with SHA-256 `16918e7aef25fb11930fbbee6ceead53a23ac5b0c6a272e12dfc3d25315eef5e`. It is the concise non-Git routing and related-site account and points here for the complete source-controlled TinyRustLM execution handoff. This tracked file, the active goal, accepted ADRs, frozen contracts, and objective receipts remain the implementation authorities for their scopes.
+    local_root_coordinator: `E:\Source\Rust\workspace.uai` is the mutable non-Git routing and related-site account and points here for the complete source-controlled TinyRustLM execution handoff. Read it fresh each session; a later root profile is normal, and this tracked file deliberately does not pin its mutable hash. This tracked file, the active goal, accepted ADRs, frozen contracts, and objective receipts remain the implementation authorities for their scopes.
     last_completed_code_milestone_commit: `f85c14e5079ed3fefe6ae47b5fc8e0166d60a9ed`
     milestone_commit_subject: `feat(contracts): add independent vNext validators`
-    remote_verification: Before this update, `git rev-parse HEAD` and `git ls-remote origin refs/heads/codex/model-acquisition-v2` both returned `7bdd279117b8923381b2afcffd9a89b158f3926d`. Always rerun `git status --short --branch`, `git rev-parse HEAD`, and `git ls-remote` at session start because this memory file cannot self-record the hash of its own containing commit.
+    remote_verification: Before this update, `git rev-parse HEAD` and `git ls-remote origin refs/heads/codex/model-acquisition-v2` both returned `3a2e1885b88b6b84d4c52e9dbfe3db03fba4bea1`. Always rerun `git status --short --branch`, `git rev-parse HEAD`, and `git ls-remote` at session start because this memory file cannot self-record the hash of its own containing commit.
     third_party_storage: Download public third-party repositories and review inputs only under `E:\Source\external\{project-name}`; do not add those trees or model payloads to project Git.
     payload_boundary: Product/source checkpoint/model-piece payloads remain outside source control. Only explicitly allowlisted small deterministic test fixtures may be tracked, and they never count as models, quality evidence, campaign rounds, or public availability.
   active_execution:
