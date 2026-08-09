@@ -192,22 +192,22 @@ pub(crate) struct Redaction {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub(crate) struct SignatureEnvelope {
-    algorithm: String,
-    authority_registry_receipt_id: String,
-    campaign_id: String,
-    expires_at_utc: RequiredNullable<String>,
-    issued_at_utc: String,
-    key_id: String,
-    nonce_hash: String,
-    release_id: RequiredNullable<String>,
-    role: String,
-    scope: String,
-    signature: String,
-    signature_domain: String,
-    signed_payload_sha256: String,
-    signed_schema: String,
-    signed_subject_id: String,
-    signer_id: String,
+    pub(crate) algorithm: String,
+    pub(crate) authority_registry_receipt_id: String,
+    pub(crate) campaign_id: String,
+    pub(crate) expires_at_utc: RequiredNullable<String>,
+    pub(crate) issued_at_utc: String,
+    pub(crate) key_id: String,
+    pub(crate) nonce_hash: String,
+    pub(crate) release_id: RequiredNullable<String>,
+    pub(crate) role: String,
+    pub(crate) scope: String,
+    pub(crate) signature: String,
+    pub(crate) signature_domain: String,
+    pub(crate) signed_payload_sha256: String,
+    pub(crate) signed_schema: String,
+    pub(crate) signed_subject_id: String,
+    pub(crate) signer_id: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -260,8 +260,8 @@ pub(crate) struct OfflineBundle {
 }
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
-struct UtcInstant {
-    nanoseconds: i128,
+pub(crate) struct UtcInstant {
+    pub(crate) nanoseconds: i128,
 }
 
 pub(crate) fn validate_receipt_bytes(bytes: &[u8]) -> Result<Receipt, ()> {
@@ -693,14 +693,14 @@ fn strict_by<T>(values: &[T], minimum: usize, maximum: usize, key: impl Fn(&T) -
         && values.windows(2).all(|pair| key(&pair[0]) < key(&pair[1]))
 }
 
-fn valid_digest(value: &str) -> bool {
+pub(crate) fn valid_digest(value: &str) -> bool {
     value.len() == 64
         && value
             .bytes()
             .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
 }
 
-fn valid_content_id(value: &str) -> bool {
+pub(crate) fn valid_content_id(value: &str) -> bool {
     value.strip_prefix("sha256:").is_some_and(valid_digest)
 }
 
@@ -722,13 +722,13 @@ fn valid_bounded_text(value: &str, minimum: usize, maximum: usize) -> bool {
         })
 }
 
-fn canonical_base64(value: &str, expected_bytes: usize) -> bool {
+pub(crate) fn canonical_base64(value: &str, expected_bytes: usize) -> bool {
     STANDARD
         .decode(value)
         .is_ok_and(|bytes| bytes.len() == expected_bytes && STANDARD.encode(bytes) == value)
 }
 
-fn canonical_bytes<T: Serialize>(value: &T) -> Result<Vec<u8>, ()> {
+pub(crate) fn canonical_bytes<T: Serialize>(value: &T) -> Result<Vec<u8>, ()> {
     let value = serde_json::to_value(value).map_err(|_| ())?;
     canonical_value_bytes(&value)
 }
@@ -779,7 +779,7 @@ fn utf16_cmp(left: &str, right: &str) -> Ordering {
     left.encode_utf16().cmp(right.encode_utf16())
 }
 
-fn parse_utc(value: &str) -> Result<UtcInstant, ()> {
+pub(crate) fn parse_utc(value: &str) -> Result<UtcInstant, ()> {
     let bytes = value.as_bytes();
     if bytes.len() < 20
         || bytes[4] != b'-'

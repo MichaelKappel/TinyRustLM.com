@@ -257,6 +257,14 @@ its non-claims are documented in
 `docs/architecture/vnext-rust-campaign-plan-parity.md`.
 The Rust currentness boundary is documented in
 `docs/architecture/vnext-rust-phase-invalidation-parity.md`.
+The Rust Ed25519 primitive independently reproduces canonical payload,
+domain-separated signing bytes, strict public-key verification, canonical
+result bytes, and 17 exact hostile rejection codes. Its 27,988-byte public-only
+vector corpus has SHA-256
+`79c8293efc08d27c9b679c5eeda69fde84754fd5364a17a35cf2920f5efcfa46`.
+This is cryptographic primitive parity, not authority-graph, revocation,
+nonce-replay, offline-bundle, release, or campaign parity. See
+`docs/architecture/vnext-rust-signature-primitive-parity.md`.
 
 `tinyrustlm/tools/vnext-campaign-artifact-store.js` persists only exact
 campaign-plan and projection-result wires under raw-byte SHA-256 paths. Its
@@ -288,11 +296,12 @@ complete member set. `docs/architecture/vnext-offline-verification-bundle.md`
 defines the exact boundary.
 
 This remains primarily a Node implementation checkpoint. Exact campaign-plan
-finalization and semantic currentness have independent Rust parity, exact
-plan/projection-result persistence is implemented, and plan
+finalization, semantic currentness, and the Ed25519 primitive have independent
+Rust parity, exact plan/projection-result persistence is implemented, and plan
 finalization/validation has a generated real-browser WASM boundary. Signature
-authority, truthful projection, browser currentness, and the broader hostile
-corpus do not yet have cross-language parity. This is not production
+authority-graph and offline-bundle evaluation, truthful projection, browser
+currentness, and the broader hostile corpus do not yet have cross-language
+parity. This is not production
 entry-point cutover, outside-network observation, or campaign evidence. Runtime tests
 generate ephemeral private keys only in process memory. Checked-in profiles
 and vectors contain public material only.

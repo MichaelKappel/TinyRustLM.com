@@ -10,11 +10,16 @@ use url::Url;
 
 mod phase_invalidation;
 mod receipt;
+mod signature;
 
 pub use phase_invalidation::{
     classify_phase_receipts, FinalizedPhaseInvalidation, PhaseInvalidationError,
     PHASE_INVALIDATION_PROFILE_ID, PHASE_INVALIDATION_PROFILE_SHA256,
     PHASE_INVALIDATION_RESULT_SCHEMA,
+};
+pub use signature::{
+    derive_signature_material, verify_signature_primitive, SignatureError, SignatureMaterial,
+    VerifiedSignature, SIGNATURE_PROFILE_ID, SIGNATURE_PROFILE_SHA256,
 };
 
 /// The one current campaign-plan schema.

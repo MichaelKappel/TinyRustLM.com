@@ -138,8 +138,11 @@ implementation, frozen Node/Rust byte vectors, hostile invariant tests, and a
 successful `wasm32-unknown-unknown` build. The semantic-currentness boundary
 also has an independent strict Rust implementation, a frozen four-pass and
 nine-rejection cross-language corpus, exact result-byte and error-code parity,
-and a successful `wasm32-unknown-unknown` build. Rust signature authority and
-truthful projection remain incomplete. The Node campaign boundary now also
+and a successful `wasm32-unknown-unknown` build. The exact Ed25519 primitive
+also has an independent strict Rust implementation and a frozen public-only
+one-pass and 17-rejection corpus with byte, hash, and error-code parity. Rust
+authority-graph, offline-bundle, and truthful-projection parity remain
+incomplete. The Node campaign boundary now also
 validates complete projection-result wires and persists exact plans and
 projection snapshots through one frozen create-only artifact-store profile.
 The receipt store and campaign store share bounded filesystem mechanics while
@@ -168,6 +171,8 @@ The phase classifier and its explicit supersession rules are documented in
 `docs/architecture/vnext-phase-invalidation.md`.
 The independent Rust currentness boundary is documented in
 `docs/architecture/vnext-rust-phase-invalidation-parity.md`.
+The independent Rust Ed25519 primitive boundary is documented in
+`docs/architecture/vnext-rust-signature-primitive-parity.md`.
 The exact 20/50/25/40/20 plan and no-double-count projection are documented in
 `docs/architecture/vnext-campaign-plan-projection.md`.
 The independent Rust plan boundary is documented in
@@ -177,8 +182,8 @@ The generated browser WASM boundary is documented in
 Create-only plan/projection persistence is documented in
 `docs/architecture/vnext-campaign-artifact-persistence.md`.
 
-Remaining Rust authority/projection parity, browser currentness execution,
-archive-member
+Remaining Rust authority-graph/offline-bundle/projection parity, browser
+currentness execution, archive-member
 scanning, production campaign-runner and entry-point cutover, projection
 release integration, and external campaign evidence remain incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.
