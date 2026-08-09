@@ -69,6 +69,11 @@ tinyrustlm/tools/atomic-composition-activation*.js text eol=lf
 contracts/vnext/** text eol=lf
 tinyrustlm/tests/vnext-contract-*.test.js text eol=lf
 tinyrustlm/tools/vnext-contract-*.js text eol=lf
+tinyrustlm/tests/vnext-jcs.test.js text eol=lf
+tinyrustlm/tests/vnext-receipt-*.test.js text eol=lf
+tinyrustlm/tools/vnext-jcs.js text eol=lf
+tinyrustlm/tools/vnext-evidence-error.js text eol=lf
+tinyrustlm/tools/vnext-receipt-*.js text eol=lf
 
 # Keep task-specialist case commitments and their exact tool hashes byte-stable.
 tinyrustlm/experiments/task-specialists/** text eol=lf

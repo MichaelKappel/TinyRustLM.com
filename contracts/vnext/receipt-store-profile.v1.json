@@ -1,0 +1,75 @@
+{
+  "profileId": "tinyrustlm.vnext.receipt-store.v1",
+  "status": "frozen",
+  "compatibility": "incompatible-no-dated-receipt-reader",
+  "contractRegistrySha256": "432188d01b5ad7c7cd535d7df4924627ec288eb8be15c251e09dd949ed767818",
+  "receiptSchema": "tinyrustlm.vnext.receipt.v1",
+  "canonicalizationProfile": "tinyrustlm.vnext.jcs-safe-integer.v1",
+  "canonicalizationBase": "RFC8785-JCS",
+  "numberProfile": "safe-integers-only-negative-zero-rejected",
+  "strictJsonProfile": "tinyrustlm.strict-json.v1",
+  "identity": {
+    "algorithm": "sha256",
+    "domain": "tinyrustlm.receipt.content.v1",
+    "domainSeparatorHex": "00",
+    "contentIdPrefix": "sha256:",
+    "excludedRootFields": [
+      "canonicalContentSha256",
+      "receiptId"
+    ]
+  },
+  "wire": {
+    "encoding": "utf-8",
+    "canonicalJcsRequired": true,
+    "byteOrderMark": "reject",
+    "trailingWhitespace": "reject",
+    "maximumReceiptBytes": 262144
+  },
+  "layout": {
+    "receiptPattern": "receipts/sha256/{digest-prefix-2}/{digest}.json",
+    "temporaryPattern": "receipts/sha256/{digest-prefix-2}/.{digest}.{pid}.{nonce}.tmp",
+    "quarantineRoot": "quarantine",
+    "pathLinkPolicy": "reject-symbolic-link-or-reparse-point",
+    "replacementPolicy": "never"
+  },
+  "atomicCreate": {
+    "sameDirectoryTemporary": true,
+    "exclusiveTemporary": true,
+    "temporaryFileFsync": true,
+    "publishPrimitive": "hard-link-create-if-absent",
+    "existingTargetPolicy": "accept-only-byte-identical",
+    "directoryMetadataSync": "required-or-explicitly-unavailable",
+    "readbackVerification": true
+  },
+  "concurrency": {
+    "createWriters": "multi-process-idempotent-hard-link",
+    "freshTemporaryPolicy": "leave-pending-without-mutation",
+    "minimumIncompleteTemporaryAgeMs": 300000,
+    "publishedHardLinkTemporaryPolicy": "quarantine-same-inode-link",
+    "rebuildInterferencePolicy": "fail-closed-and-retry"
+  },
+  "rebuild": {
+    "unknownEntryPolicy": "quarantine",
+    "incompleteTemporaryPolicy": "quarantine-after-minimum-age",
+    "invalidReceiptPolicy": "quarantine",
+    "missingParentPolicy": "quarantine-dependent-descendants",
+    "cyclePolicy": "quarantine-cycle-and-dependent-descendants",
+    "preserveUnrelatedValidReceipts": true
+  },
+  "limits": {
+    "maximumActiveReceipts": 65536,
+    "maximumGraphEdges": 1048576,
+    "maximumQuarantineEntries": 65536,
+    "maximumDirectoryEntries": 66000,
+    "maximumScanEntries": 262144,
+    "maximumQuarantineReasonCodeLength": 80,
+    "streamBufferBytes": 65536
+  },
+  "resultContract": {
+    "absolutePathsReturned": false,
+    "rawHostErrorsReturned": false,
+    "rawInvalidBytesReturned": false,
+    "durabilityClassReturned": true,
+    "boundedErrorCodesOnly": true
+  }
+}
