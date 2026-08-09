@@ -55,17 +55,22 @@ function materializePendingRelease(context, prefix = "tinyrustlm-generated-relea
   return Object.freeze({ ledgerPath, outputRoot, result });
 }
 
-function materializeSourceReleaseState(context, prefix = "tinyrustlm-source-release-") {
-  const outputRoot = temporaryDirectory(context, prefix);
+function materializeSourceReleaseAt(options) {
+  const outputRoot = path.resolve(String(options?.outputRoot || ""));
   const ledgerResult = parseReleaseLedger(fs.readFileSync(sourceLedgerPath));
-  const result = ledgerResult.pendingRelease
+  return ledgerResult.pendingRelease
     ? materializeReleasePublication({
         ledgerPath: sourceLedgerPath,
         outputRoot,
-        sourceRevision,
-        publishedAt
+        sourceRevision: String(options?.sourceRevision || ""),
+        publishedAt: String(options?.publishedAt || "")
       })
     : materializeReleaseState({ ledgerPath: sourceLedgerPath, outputRoot });
+}
+
+function materializeSourceReleaseState(context, prefix = "tinyrustlm-source-release-") {
+  const outputRoot = temporaryDirectory(context, prefix);
+  const result = materializeSourceReleaseAt({ outputRoot, sourceRevision, publishedAt });
   return Object.freeze({ ledgerPath: sourceLedgerPath, outputRoot, result });
 }
 
@@ -86,6 +91,7 @@ function writeFinalizedLedger(context) {
 
 module.exports = Object.freeze({
   materializePendingRelease,
+  materializeSourceReleaseAt,
   materializeSourceReleaseState,
   publishedAt,
   sourceLedgerPath,

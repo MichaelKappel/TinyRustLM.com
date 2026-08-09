@@ -7,7 +7,7 @@ const path = require("node:path");
 const test = require("node:test");
 
 const { scanWebRelease } = require("../tools/web-release-secret-scan.js");
-const { materializeReleasePublication } = require("../tools/site-release-contract.js");
+const { materializeSourceReleaseAt } = require("./site-release-test-fixture.js");
 
 const siteRoot = path.resolve(__dirname, "..");
 const deploymentManifestPath = path.join(
@@ -15,12 +15,9 @@ const deploymentManifestPath = path.join(
   "deploy",
   "web-deployment-manifest.v2.json"
 );
-const ledgerPath = path.join(siteRoot, "release", "site-release-ledger.v1.json");
-
 function generatedRelease(root) {
   const generatedRoot = path.join(root, "generated-release");
-  materializeReleasePublication({
-    ledgerPath,
+  materializeSourceReleaseAt({
     outputRoot: generatedRoot,
     sourceRevision: "0".repeat(40),
     publishedAt: "2026-08-02T22:30:00.000Z"
