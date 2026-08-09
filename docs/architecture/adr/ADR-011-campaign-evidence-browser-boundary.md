@@ -142,10 +142,12 @@ history remains evidence and is not shipped compatibility support.
 
 - Peak WASM memory for a full maximum-size authorized evidence closure.
 - Physical Firefox and WebKit support if those browsers are later promoted.
-- Whether production runner throughput requires chunk scheduling between
-  appends without changing the ABI.
-- Final worker ownership and cancellation policy when the campaign runner is
-  connected.
+- Whether measured production throughput requires chunk scheduling between
+  appends without changing the ABI. The current local runner deliberately uses
+  the exact frozen append protocol.
+- Final browser-worker ownership and cancellation policy after operational
+  entry points are cut over to the local runner documented in
+  `docs/architecture/vnext-campaign-runner.md`.
 
 ## Acceptance Tests
 

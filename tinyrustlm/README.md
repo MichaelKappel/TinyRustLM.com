@@ -259,7 +259,15 @@ Fast browser and campaign checks:
 npm --prefix tinyrustlm run test:browser-contract
 node --test tinyrustlm/tests/dogfood-campaign.test.js tinyrustlm/tests/dogfood-campaign-runner.test.js
 node --test tinyrustlm/tests/campaign-evidence-dashboard.test.js
+node --test tinyrustlm/tests/vnext-campaign-runner.test.js
 ```
+
+The vNext runner command is a local verifier conformance gate. It snapshots
+every active campaign receipt and public subject twice, invokes the sole
+generated Rust campaign-evidence ABI, and preserves immutable operation and
+projection history. Its synthetic complete-capacity case is not a live
+campaign run and does not increment any campaign counter. See
+`docs/architecture/vnext-campaign-runner.md`.
 
 Rust checks:
 

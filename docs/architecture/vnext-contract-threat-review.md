@@ -36,15 +36,26 @@ same-directory atomic-create mechanics, and quarantines invalid, unaccepted,
 misaddressed, or interrupted entries. Stored subjects are immutable input
 history, not currentness decisions.
 
+One frozen `tinyrustlm.vnext.campaign-runner.v1` boundary now performs two
+complete exact observations of every active campaign receipt and public
+subject, rejects cross-observation drift, binds caller pins and trusted time,
+and invokes only the generated Rust campaign-evidence ABI. Runner-owned
+content-addressed start and terminal records are explicitly not receipts,
+claims, or currentness pointers. Append-only generation claims and
+identity-bound releases avoid stale-lock check-delete-create races while
+retaining dead-process recovery. Child-process interruption tests, restart
+reprojection, disk-full tests, and exact 271-receipt/40-subject synthetic capacity are bound in
+`docs/architecture/vnext-campaign-runner.md`.
+
 These later local facts close the named cross-runtime implementation gaps only.
-They do not close exact cross-store snapshot orchestration, archive-member
-scanning, protected production secret-list custody, the production campaign
-runner and entry-point cutover, final
+They do not close archive-member scanning, protected production secret-list
+custody, operational entry-point cutover and deletion of the superseded
+mutable runner, final
 attestation and release integration, authorized live MemoryEndpoints
 continuity, independent outside-network lane proofs, catalog publication, or
 public HTTPS readback. No local test changes a campaign counter.
 
-Reviewed at `2026-08-09T07:00:00Z`. The review is invalidated when any bound
+Reviewed at `2026-08-09T12:46:06Z`. The review is invalidated when any bound
 file changes, when the parser changes, or when a deferred proof obligation is
 reclassified without a new threat review.
 
@@ -259,12 +270,11 @@ production entry-point cutover, independent operation, or campaign evidence.
 
 Phase 2 closed after the bound hashes, this review, focused tests, complete unit
 suite, source hygiene, secret scan, and remote push were current in one
-checkpoint. The current next boundary is exact cross-store snapshot
-orchestration and production campaign-runner integration over bounded
-canonical receipt and subject stores, followed by final attestation, release
-authorization, operator rendering, documentation, and public-readback
-integration. Windows directory durability, archive-member scanning, and
-protected-list release custody remain separate prerequisites for their
-corresponding claims.
+checkpoint. The current next boundary is operational entry-point cutover to
+the sole Rust-backed runner, clean deletion of the superseded mutable runner,
+and binding of only a fresh runner result into final attestation, release
+authorization, operator rendering, documentation, and public readback.
+Windows directory durability, archive-member scanning, and protected-list
+release custody remain separate prerequisites for their corresponding claims.
 
 Campaign counters remain `0/20`, `0/50`, `0/25`, `0/40`, and `0/20`.

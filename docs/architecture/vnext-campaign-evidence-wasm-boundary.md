@@ -225,10 +225,12 @@ the focused set was rerun, and only then did the complete rerun pass.
 
 ## Remaining Work
 
-- Connect bounded canonical receipt-store and subject-store reads to one
-  campaign runner that invokes this ABI or the same native Rust boundary.
-- Persist exact immutable projection snapshots and always reproject current
-  inputs on resume.
+- The local runner in `docs/architecture/vnext-campaign-runner.md` now connects
+  bounded receipt and subject stores to this ABI, persists exact immutable
+  operation and projection history, and reprojects exact current inputs on
+  every new operation or byte-identical interruption resume.
+- Cut production campaign entry points over to that sole runner and delete the
+  superseded mutable runner without aliases or compatibility behavior.
 - Bind only the reprojected result into final attestation, release
   authorization, operator rendering, synchronized documentation, and public
   readback.

@@ -204,8 +204,10 @@ Create-only plan/projection persistence is documented in
 `docs/architecture/vnext-campaign-artifact-persistence.md`.
 Create-only public subject persistence is documented in
 `docs/architecture/vnext-subject-store.md`.
+The sole exact cross-store Rust-backed campaign runner is documented in
+`docs/architecture/vnext-campaign-runner.md`.
 
-Remaining exact cross-store snapshot orchestration, archive-member scanning,
-production campaign-runner and entry-point cutover, projection release
-integration, and external campaign evidence remain incomplete.
+Remaining archive-member scanning, production entry-point cutover and clean
+deletion of the superseded runner, projection release integration, and
+external campaign evidence remain incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.

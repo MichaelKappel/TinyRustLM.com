@@ -310,6 +310,17 @@ interruption handling, and quarantine are shared with the receipt and campaign
 artifact stores. It exposes no mutable current pointer and grants no evidence
 currentness by itself. See `docs/architecture/vnext-subject-store.md`.
 
+`tinyrustlm/tools/vnext-campaign-runner.js` now composes those stores through
+one exact runner boundary. Its frozen 6,855-byte profile has SHA-256
+`77e75dd7a4f04e23421be740040ea52efe68c234f49377005d94c550b9c142e7`.
+The runner observes every active receipt and subject twice, rejects any
+membership or wire change, binds caller pins and trusted verification time in
+a create-only start record, invokes only the generated Rust campaign-evidence
+ABI, validates the returned result again through Rust, and persists immutable
+projection and terminal history. It exposes no evidence-subset, caller-verdict,
+best-of-N, mutable-currentness, or stored-result promotion path. See
+`docs/architecture/vnext-campaign-runner.md`.
+
 The authority result deliberately separates `signatureVerified`,
 `authorityAtIssue`, `temporalCurrent`, and `currentEvidenceEligible`. A valid
 historical Ed25519 signature is not current evidence when its envelope is
@@ -335,9 +346,12 @@ complete signature authority graph, offline-bundle closure, truthful
 projection, and projection-result validation have independent Rust parity.
 Exact plan/projection-result persistence is implemented, and one generated
 real-browser WASM boundary exposes plan, currentness, projection, and result
-validation with exact frozen-corpus parity. The broader production runner is
-not integrated. This is not production entry-point cutover, outside-network
-observation, or campaign evidence. Runtime tests
+validation with exact frozen-corpus parity. One bounded local runner now
+performs exact cross-store snapshots, Rust-backed projection, immutable
+operation history, interruption recovery, and concurrent-operation exclusion.
+Operational entry-point cutover and deletion of the superseded mutable runner
+remain incomplete. This is not outside-network observation or live campaign
+evidence. Runtime tests
 generate ephemeral private keys only in process memory. Checked-in profiles
 and vectors contain public material only.
 
