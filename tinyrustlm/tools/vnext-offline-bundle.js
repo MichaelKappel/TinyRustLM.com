@@ -39,23 +39,44 @@ const signatureProfilePath = path.join(contractRoot,
   "receipt-signature-profile.v1.json");
 const redactionProfilePath = path.join(contractRoot,
   "public-safe-redaction-profile.v1.json");
+const phaseInvalidationProfilePath = path.join(contractRoot,
+  "phase-invalidation-profile.v1.json");
 const storeProfilePath = path.join(contractRoot, "receipt-store-profile.v1.json");
 
 const profileBytes = fs.readFileSync(profilePath);
 const registryBytes = fs.readFileSync(registryPath);
 const signatureProfileBytes = fs.readFileSync(signatureProfilePath);
 const redactionProfileBytes = fs.readFileSync(redactionProfilePath);
+const phaseInvalidationProfileBytes = fs.readFileSync(phaseInvalidationProfilePath);
 const storeProfileBytes = fs.readFileSync(storeProfilePath);
 const parsedProfile = parseStrictJson(profileBytes);
 const registry = parseStrictJson(registryBytes);
 const parsedSignatureProfile = parseStrictJson(signatureProfileBytes);
 const redactionProfile = parseStrictJson(redactionProfileBytes);
+const phaseInvalidationProfile = parseStrictJson(phaseInvalidationProfileBytes);
 const storeProfile = parseStrictJson(storeProfileBytes);
 
 const digestPattern = /^[a-f0-9]{64}$/u;
 const contentIdPattern = /^sha256:[a-f0-9]{64}$/u;
 const safeIdPattern = /^[a-z0-9][a-z0-9._:-]{2,159}$/u;
 const environments = new Set(["development", "production", "staging"]);
+const expectedProfileBindingNames = Object.freeze([
+  "contract-registry",
+  "offline-bundle-profile",
+  "phase-invalidation-profile",
+  "public-safe-redaction-profile",
+  "receipt-signature-profile",
+  "receipt-store-profile"
+]);
+const typedArrayPrototype = Object.getPrototypeOf(Uint8Array.prototype);
+const typedArrayBufferGetter = Object.getOwnPropertyDescriptor(
+  typedArrayPrototype, "buffer").get;
+const typedArrayByteLengthGetter = Object.getOwnPropertyDescriptor(
+  typedArrayPrototype, "byteLength").get;
+const typedArrayByteOffsetGetter = Object.getOwnPropertyDescriptor(
+  typedArrayPrototype, "byteOffset").get;
+const typedArrayLengthGetter = Object.getOwnPropertyDescriptor(
+  typedArrayPrototype, "length").get;
 const builderInputFields = Object.freeze([
   "campaignId",
   "createdAtUtc",
@@ -133,11 +154,25 @@ function exactDataArray(value, maximum, code, step = "offline-bundle-input") {
 }
 
 function normalizedBytes(value, code, step = "offline-bundle-input") {
-  if (Buffer.isBuffer(value)) return Buffer.from(value);
-  if (value instanceof Uint8Array) {
-    return Buffer.from(value.buffer, value.byteOffset, value.byteLength);
+  if (!ArrayBuffer.isView(value)) failEvidence(code, step);
+  let backingBuffer;
+  let byteLength;
+  let byteOffset;
+  let elementLength;
+  try {
+    backingBuffer = typedArrayBufferGetter.call(value);
+    byteLength = typedArrayByteLengthGetter.call(value);
+    byteOffset = typedArrayByteOffsetGetter.call(value);
+    elementLength = typedArrayLengthGetter.call(value);
+  } catch {
+    failEvidence(code, step);
   }
-  failEvidence(code, step);
+  if (byteLength !== elementLength ||
+      (typeof SharedArrayBuffer === "function" &&
+        backingBuffer instanceof SharedArrayBuffer)) {
+    failEvidence(code, step);
+  }
+  return Buffer.from(new Uint8Array(backingBuffer, byteOffset, byteLength));
 }
 
 function boundedByteArray(value, maximumCount, maximumBytes, code) {
@@ -228,6 +263,7 @@ const offlineBundleProfileSha256 = sha256(profileBytes);
 const registrySha256 = sha256(registryBytes);
 const signatureProfileSha256 = sha256(signatureProfileBytes);
 const redactionProfileSha256 = sha256(redactionProfileBytes);
+const phaseInvalidationProfileSha256 = sha256(phaseInvalidationProfileBytes);
 const storeProfileSha256 = sha256(storeProfileBytes);
 const offlineBundleRecord = registry.records.find((record) =>
   record.name === "offlineBundle");
@@ -242,6 +278,9 @@ function validateInstalledProfiles() {
       parsedProfile.receiptSchema !== "tinyrustlm.vnext.receipt.v1" ||
       parsedProfile.hashAlgorithm !== "sha256" ||
       parsedProfile.authorityPolicy.networkAccess !== "forbidden" ||
+      !sameStrings(parsedProfile.profileBindingNames, expectedProfileBindingNames) ||
+      parsedProfile.limits.maximumProfileBindings !==
+        expectedProfileBindingNames.length ||
       parsedProfile.limits.maximumReceipts !==
         offlineBundleFields.get("receiptIds")?.maximumItems ||
       parsedProfile.limits.maximumReceipts > signatureProfile.limits.maximumReceipts ||
@@ -259,6 +298,10 @@ function validateInstalledProfiles() {
       redactionProfile.profileId !== "tinyrustlm.vnext.public-safe-redaction.v1" ||
       redactionProfile.status !== "frozen" ||
       redactionProfile.contractRegistrySha256 !== registrySha256 ||
+      phaseInvalidationProfile.profileId !==
+        "tinyrustlm.vnext.phase-invalidation.v1" ||
+      phaseInvalidationProfile.status !== "frozen" ||
+      phaseInvalidationProfile.contractRegistrySha256 !== registrySha256 ||
       storeProfile.profileId !== "tinyrustlm.vnext.receipt-store.v1" ||
       storeProfile.contractRegistrySha256 !== registrySha256) {
     failEvidence("offline_bundle_profile_invalid", "offline-bundle-profile");
@@ -293,6 +336,13 @@ const installedProfileBindings = deepFreeze([
     documentId: parsedProfile.profileId,
     byteLength: profileBytes.length,
     sha256: offlineBundleProfileSha256
+  },
+  {
+    name: "phase-invalidation-profile",
+    documentKind: "profile",
+    documentId: phaseInvalidationProfile.profileId,
+    byteLength: phaseInvalidationProfileBytes.length,
+    sha256: phaseInvalidationProfileSha256
   },
   {
     name: "public-safe-redaction-profile",

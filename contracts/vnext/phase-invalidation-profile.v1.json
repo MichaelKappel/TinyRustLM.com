@@ -1,0 +1,98 @@
+{
+  "schema": "tinyrustlm.vnext.phase_invalidation_profile.v1",
+  "profileId": "tinyrustlm.vnext.phase-invalidation.v1",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-no-compatibility-reader",
+  "contractRegistrySha256": "e9f8c4d511bf1fe398f0e75d43dfb01a68acb996d99554cc8f5bf167084f1b2a",
+  "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
+  "receiptSchema": "tinyrustlm.vnext.receipt.v1",
+  "inputPolicy": "bounded-final-canonical-receipt-bytes-only",
+  "networkAccess": "forbidden",
+  "sourceMutation": "forbidden",
+  "historyPolicy": "immutable-retained-never-quarantined-for-semantic-staleness",
+  "winnerPolicy": "explicit-same-operation-supersession-only",
+  "dependencyPolicy": "only-descendants-of-nonpass-or-noncurrent-inputs-become-stale",
+  "requiredPhaseParameters": [
+    "operation_id",
+    "subject_id"
+  ],
+  "operationIdentityFields": [
+    "campaignId",
+    "operation_id",
+    "phase",
+    "receiptType",
+    "subject_id"
+  ],
+  "materialIdentityFields": [
+    "configurationSha256",
+    "inputHashes",
+    "inputReceiptIds",
+    "operationIdentity",
+    "runtime",
+    "sourceRevision",
+    "tools"
+  ],
+  "operationIdentityDomain": "tinyrustlm.phase-operation.identity.v1",
+  "materialIdentityDomain": "tinyrustlm.phase-material.identity.v1",
+  "receiptSetIdentityDomain": "tinyrustlm.phase-receipt-set.identity.v1",
+  "supportedPhaseReceiptTypes": [
+    "acquisition",
+    "browser-round",
+    "catalog-announcement",
+    "conversation-evaluation",
+    "conversion",
+    "deployment",
+    "discovery",
+    "final-attestation",
+    "lane-serve",
+    "memory-continuity",
+    "native-evaluation",
+    "outside-proof",
+    "p2p-preparation",
+    "package",
+    "public-readback",
+    "qualification",
+    "redaction-scan",
+    "review",
+    "screening",
+    "site-synchronization",
+    "structure",
+    "training",
+    "training-preparation"
+  ],
+  "nonPassReceiptStatuses": [
+    "blocked",
+    "fail",
+    "rejected",
+    "stale",
+    "superseded"
+  ],
+  "resultSchema": "tinyrustlm.vnext.phase_invalidation_result.v1",
+  "resultStates": [
+    "conflict",
+    "current-nonpass",
+    "current-pass",
+    "stale",
+    "superseded"
+  ],
+  "reasonCodes": [
+    "explicit-supersession",
+    "noncurrent-ancestor",
+    "nonpass-ancestor",
+    "unresolved-operation-heads"
+  ],
+  "limits": {
+    "maximumReceipts": 2048,
+    "maximumReceiptBytes": 262144,
+    "maximumTotalReceiptBytes": 67108864,
+    "maximumGraphEdges": 32768,
+    "maximumOperationHeads": 64,
+    "maximumResultBytes": 4194304,
+    "maximumDepth": 16,
+    "maximumTotalEntries": 131072,
+    "maximumObjectMembers": 32,
+    "maximumArrayItems": 4096,
+    "maximumStringCodeUnits": 1024,
+    "maximumTotalStringCodeUnits": 16777216
+  }
+}

@@ -132,18 +132,20 @@ test("freezes an exact public-only profile and imports no network client", () =>
   const rawProfile = fs.readFileSync(profilePath);
   const verifierSource = fs.readFileSync(verifierPath, "utf8");
 
-  assert.equal(rawProfile.length, 3514);
+  assert.equal(rawProfile.length, 3548);
   assert.equal(sha256(rawProfile),
-    "488cad440d213da587a1258dc37de00789e566ae3024d89d3a43781c49b50369");
+    "f5ba2fd0750627890d0181dfbaca457fa5a6a5e8e637a8683888afa6e983331f");
   assert.equal(offlineBundleProfileSha256, sha256(rawProfile));
   assert.equal(offlineBundleProfile.authorityPolicy.networkAccess, "forbidden");
   assert.deepEqual(offlineBundleProfile.profileBindingNames, [
     "contract-registry",
     "offline-bundle-profile",
+    "phase-invalidation-profile",
     "public-safe-redaction-profile",
     "receipt-signature-profile",
     "receipt-store-profile"
   ]);
+  assert.equal(offlineBundleProfile.limits.maximumProfileBindings, 6);
   assert.equal(offlineBundleProfile.limits.maximumReceipts, 2048);
   assert.equal(offlineBundleProfile.limits.maximumManifestBytes, 4 * 1024 * 1024);
   assert.doesNotMatch(rawProfile.toString("utf8"),
@@ -260,7 +262,9 @@ test("rejects member hash drift, profile drift, schema drift, and noncanonical w
     "offline_bundle_member_hash_mismatch");
 
   const profileDrift = replaceManifest(bundle, (manifest) => {
-    manifest.profileBindings[0].sha256 = "e".repeat(64);
+    const phaseBinding = manifest.profileBindings.find((entry) =>
+      entry.name === "phase-invalidation-profile");
+    phaseBinding.sha256 = "e".repeat(64);
   });
   throwsCode(() => verifyVnextOfflineBundle(verificationInput(fixture, profileDrift)),
     "offline_bundle_profile_binding_mismatch");
@@ -525,4 +529,26 @@ test("fails closed on interrupted bytes, hostile accessors, and resource excess"
   throwsCode(() => verifyVnextOfflineBundle(verificationInput(fixture, bundle, {
     receiptBytes: Array.from({ length: 2049 }, () => fixture.root.bytes)
   })), "offline_bundle_receipt_input_invalid");
+
+  let shadowedGetterInvoked = false;
+  const shadowedManifest = Uint8Array.from(bundle.manifest.bytes);
+  Object.defineProperty(shadowedManifest, "buffer", {
+    get() {
+      shadowedGetterInvoked = true;
+      throw new Error("must not execute");
+    }
+  });
+  const shadowedResult = verifyVnextOfflineBundle(verificationInput(fixture, bundle, {
+    bundleManifestBytes: shadowedManifest
+  }));
+  assert.equal(shadowedResult.offlineBundleVerified, true);
+  assert.equal(shadowedGetterInvoked, false);
+
+  if (typeof SharedArrayBuffer === "function") {
+    const shared = new SharedArrayBuffer(bundle.manifest.bytes.length);
+    new Uint8Array(shared).set(bundle.manifest.bytes);
+    throwsCode(() => verifyVnextOfflineBundle(verificationInput(fixture, bundle, {
+      bundleManifestBytes: new Uint8Array(shared)
+    })), "offline_bundle_manifest_input_invalid");
+  }
 });
