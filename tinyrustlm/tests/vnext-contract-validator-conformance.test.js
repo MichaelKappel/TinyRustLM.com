@@ -83,7 +83,7 @@ test("keeps the exact language-neutral corpus reproducible and content bound", (
   assert.equal(corpus.schema, corpusSchema);
   assert.equal(corpus.encoding, "base64-raw-json");
   assert.equal(corpus.caseCount, corpus.cases.length);
-  assert.equal(corpus.cases.length, 70);
+  assert.equal(corpus.cases.length, 74);
   assert.equal(bytes.toString("utf8"), buildCorpusText());
   assert.equal(corpus.registrySha256, sha256(fs.readFileSync(registryPath)));
 
@@ -114,7 +114,7 @@ test("keeps independent schema logic isolated from the registry interpreter", ()
   assert.doesNotMatch(independentSource, /\brequire\(["']node:fs["']\)/u);
   assert.match(registrySource, /contract-family\.v1\.json/u);
   assert.match(independentSource, /tinyrustlm\.vnext\.artifact_manifest\.v1/u);
-  assert.match(independentSource, /tinyrustlm\.vnext\.claim\.v1/u);
+  assert.match(independentSource, /tinyrustlm\.vnext\.claim\.v2/u);
 });
 
 test("makes both validators agree with every expected corpus verdict", () => {
@@ -176,7 +176,7 @@ test("makes both validators agree with every expected corpus verdict", () => {
   }
 
   assert.equal(accepted, 14);
-  assert.equal(rejected, 56);
+  assert.equal(rejected, 60);
   assert.deepEqual([...acceptedClasses].sort(), [...contractsByClass.keys()].sort());
   assert.deepEqual([...rejectedClasses].sort(), [
     "artifact", "claim", "companion", "context", "p2p", "parser", "proof",

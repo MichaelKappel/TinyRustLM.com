@@ -72,7 +72,7 @@ test("freezes a private-by-default byte-only public-safety profile", () => {
 
   assert.equal(rawProfile.length, 3132);
   assert.equal(sha256(rawProfile),
-    "36f4fc504aee3e08b35e6e113669a354571c1917a5f0a19a94e82eccd644eaa7");
+    "0997b30e11af8a8a24ae05521bd85c73f8429fe7bcd15b8311d75bf59e125024");
   assert.equal(publicSafeRedactionProfileSha256, sha256(rawProfile));
   assert.equal(publicSafeRedactionProfile.contractRegistrySha256,
     sha256(registryBytes));

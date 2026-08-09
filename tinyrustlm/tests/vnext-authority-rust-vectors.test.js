@@ -53,10 +53,10 @@ test("freezes deterministic public-only Rust authority graph vectors", () => {
   const vectors = parseStrictJson(vectorBytes);
   assert.equal(seedBytes.length, 171_656);
   assert.equal(sha256(seedBytes),
-    "c078e980fd1c633d4c46b8dddf3d25fc3f9bc5a11f1d5f940c6df7db08e72ab7");
+    "1d1aebdbd7e113edf17cdcac8f21c78fedbe169e5f0422e982fc06078e0afa6a");
   assert.equal(vectorBytes.length, 434_761);
   assert.equal(sha256(vectorBytes),
-    "f816fe3b2e76520ce7f6f1c71f1840540f4f3a0cc16b3548ec710db39670b1bb");
+    "7340f17c34b2f86dcd4c2431d1de7ed8d36429badd51866c8abbff3b0f0fa89a");
   assert.deepEqual(vectorBytes, renderVectorCorpus());
   assert.equal(seed.acceptedCases.length, 7);
   assert.equal(seed.rejectionCases.length, 6);
@@ -102,7 +102,7 @@ test("documents Rust graph parity without claiming offline or live authority", (
 
   assert.match(graphDocument, /434,761 bytes/u);
   assert.match(graphDocument,
-    /f816fe3b2e76520ce7f6f1c71f1840540f4f3a0cc16b3548ec710db39670b1bb/u);
+    /7340f17c34b2f86dcd4c2431d1de7ed8d36429badd51866c8abbff3b0f0fa89a/u);
   assert.match(graphDocument, /nine accepted graphs and 26 rejection/u);
   assert.match(graphDocument, /not an offline\s+bundle membership or closure proof/u);
   assert.match(graphDocument, /0\/20 qualified model hashes/u);

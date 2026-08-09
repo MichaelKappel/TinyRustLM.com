@@ -13,19 +13,19 @@ use std::fmt;
 pub const SIGNATURE_PROFILE_ID: &str = "tinyrustlm.vnext.ed25519-authority.v1";
 /// The SHA-256 of the exact frozen Ed25519 authority profile bytes.
 pub const SIGNATURE_PROFILE_SHA256: &str =
-    "b1f5f1347ee14e1219972607c58f97f7c2b8f26545d09d1c02eeec970f946b56";
+    "9d1f0c65f91dc9b76bf5e430ee5f91ba787ab4622d72aae3c73c3a50c9f2a8b9";
 
 const MAXIMUM_ENVELOPE_BYTES: usize = 16_384;
 const MAXIMUM_ONLINE_LIFETIME_NANOSECONDS: i128 = 604_800_000_000_000;
 const MAXIMUM_OUTSIDE_PROOF_LIFETIME_NANOSECONDS: i128 = 86_400_000_000_000;
 const SUPPORTED_SCHEMAS: &[&str] = &[
     "tinyrustlm.vnext.artifact_manifest.v1",
-    "tinyrustlm.vnext.claim.v1",
+    "tinyrustlm.vnext.claim.v2",
     "tinyrustlm.vnext.context.v1",
     "tinyrustlm.vnext.outside_proof.v2",
     "tinyrustlm.vnext.p2p_manifest.v1",
     "tinyrustlm.vnext.receipt.v1",
-    "tinyrustlm.vnext.release_manifest.v1",
+    "tinyrustlm.vnext.release_manifest.v2",
 ];
 
 /// One bounded, stable signature-primitive failure.

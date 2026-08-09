@@ -285,9 +285,18 @@ test("binds signing, context provenance, redaction, and public claims explicitly
     assert.ok(field(contracts.claim, claimField), `claim is missing ${claimField}`);
   }
   assert.deepEqual(field(contracts.claim, "status").values, [
-    "blocked", "draft", "externally-verified", "locally-verified", "published",
-    "retracted", "stale"
+    "approved-for-publication", "blocked", "draft", "externally-verified",
+    "locally-verified", "published", "retracted", "stale"
   ]);
+  assert.equal(contracts.release.schema, "tinyrustlm.vnext.release_manifest.v2");
+  assert.equal(contracts.claim.schema, "tinyrustlm.vnext.claim.v2");
+  assert.ok(field(contracts.release, "campaignPlanSha256"));
+  assert.ok(field(contracts.release, "campaignProjectionSha256"));
+  assert.ok(field(contracts.release, "remainingRiskCodes"));
+  assert.equal(field(contracts.release, "authorizationReceiptId"), undefined);
+  assert.equal(field(contracts.release, "sitePublicationReceiptIds"), undefined);
+  assert.ok(contracts.release.invariants.includes("postpublication-evidence-excluded"));
+  assert.ok(contracts.claim.invariants.includes("approved-forbids-release-id"));
 });
 
 test("freezes finite parser limits and a private-by-default redaction policy", () => {

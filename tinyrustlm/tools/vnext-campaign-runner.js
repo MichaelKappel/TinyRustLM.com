@@ -42,7 +42,7 @@ const campaignEvidenceProfilePath = path.join(
 const profileBytes = fs.readFileSync(profilePath);
 const parsedProfile = parseStrictJson(profileBytes);
 const expectedCampaignRunnerProfileSha256 =
-  "77e75dd7a4f04e23421be740040ea52efe68c234f49377005d94c550b9c142e7";
+  "6fe8698fe46f2ba9e427319f1f5e94ec3c3e24e214a2a58d828827040ac2f571";
 const contentIdPattern = /^sha256:[a-f0-9]{64}$/u;
 const digestPattern = /^[a-f0-9]{64}$/u;
 const digestFilePattern = /^([a-f0-9]{64})\.json$/u;

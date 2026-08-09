@@ -2,7 +2,7 @@
   "profileId": "tinyrustlm.vnext.receipt-store.v1",
   "status": "frozen",
   "compatibility": "incompatible-no-dated-receipt-reader",
-  "contractRegistrySha256": "812e3ace7526d867561f50bdbf24acc047773583391f85be9e0f3e4cbfe0366a",
+  "contractRegistrySha256": "27101971058e6e0332f4a59f72c1c13abdef34b6b388f37b4d886dcf7a2cdecc",
   "receiptSchema": "tinyrustlm.vnext.receipt.v1",
   "canonicalizationProfile": "tinyrustlm.vnext.jcs-safe-integer.v1",
   "canonicalizationBase": "RFC8785-JCS",

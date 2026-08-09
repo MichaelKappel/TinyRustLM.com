@@ -35,14 +35,14 @@ const EXPECTED_PROFILE_BINDINGS: &[ExpectedProfileBinding] = &[
         document_id: "tinyrustlm.vnext.campaign-projection.v1",
         document_kind: "profile",
         name: "campaign-projection-profile",
-        sha256: "a5dbe87a6971301c782120d3b30bb6059ab9cb26f2efac70b866a7bdb0b52067",
+        sha256: "de42d142af608c921a9343155ffd321eaeb71ae9086ee51762dc2bf3f8c5e5eb",
     },
     ExpectedProfileBinding {
-        byte_length: 37_289,
-        document_id: "tinyrustlm-vnext-2026-08-09-r3",
+        byte_length: 37_540,
+        document_id: "tinyrustlm-vnext-2026-08-09-r4",
         document_kind: "contract-registry",
         name: "contract-registry",
-        sha256: "812e3ace7526d867561f50bdbf24acc047773583391f85be9e0f3e4cbfe0366a",
+        sha256: "27101971058e6e0332f4a59f72c1c13abdef34b6b388f37b4d886dcf7a2cdecc",
     },
     ExpectedProfileBinding {
         byte_length: 3_583,
@@ -56,28 +56,28 @@ const EXPECTED_PROFILE_BINDINGS: &[ExpectedProfileBinding] = &[
         document_id: "tinyrustlm.vnext.phase-invalidation.v1",
         document_kind: "profile",
         name: "phase-invalidation-profile",
-        sha256: "8e0cccdc007e56ace6550163b0fe1acdd211e74b184053739785a1d925b113cb",
+        sha256: "4f9c0f02f9e7fc55c2793ca9bbf9edd9e659b5737cc23eda98e40cc675074875",
     },
     ExpectedProfileBinding {
         byte_length: 3_132,
         document_id: "tinyrustlm.vnext.public-safe-redaction.v1",
         document_kind: "profile",
         name: "public-safe-redaction-profile",
-        sha256: "36f4fc504aee3e08b35e6e113669a354571c1917a5f0a19a94e82eccd644eaa7",
+        sha256: "0997b30e11af8a8a24ae05521bd85c73f8429fe7bcd15b8311d75bf59e125024",
     },
     ExpectedProfileBinding {
         byte_length: 5_726,
         document_id: "tinyrustlm.vnext.ed25519-authority.v1",
         document_kind: "profile",
         name: "receipt-signature-profile",
-        sha256: "b1f5f1347ee14e1219972607c58f97f7c2b8f26545d09d1c02eeec970f946b56",
+        sha256: "9d1f0c65f91dc9b76bf5e430ee5f91ba787ab4622d72aae3c73c3a50c9f2a8b9",
     },
     ExpectedProfileBinding {
         byte_length: 2_721,
         document_id: "tinyrustlm.vnext.receipt-store.v1",
         document_kind: "profile",
         name: "receipt-store-profile",
-        sha256: "5f3f7ebf6baed48a5dd103fb9d05a7f57165c3d58b0844d734c7172c69c8b399",
+        sha256: "9cb710b08e2db5f0fc0d5f57d4684268dae3b50a44702964242770a895956a18",
     },
 ];
 
@@ -87,8 +87,8 @@ const EXPECTED_SCHEMA_BINDINGS: &[ExpectedSchemaBinding] = &[
         sha256: "f25892c5e3109bbc2c41c84ffa599de519d44c807186d590a29b9b0891afd729",
     },
     ExpectedSchemaBinding {
-        name: "tinyrustlm.vnext.claim.v1",
-        sha256: "e46bb22030c8728edb7b78eb75526e7c7f8cafc129e4392b669141656afd49d2",
+        name: "tinyrustlm.vnext.claim.v2",
+        sha256: "c124b1b59415a82f12be9ec9b1d8955852730b144e506ffd4ae0ebf63b2e5814",
     },
     ExpectedSchemaBinding {
         name: "tinyrustlm.vnext.companion_message.v1",
@@ -111,8 +111,8 @@ const EXPECTED_SCHEMA_BINDINGS: &[ExpectedSchemaBinding] = &[
         sha256: "894ac2a252847ff610e5f620df371bfb1ce91e7f360926afe119240b4f7a31da",
     },
     ExpectedSchemaBinding {
-        name: "tinyrustlm.vnext.release_manifest.v1",
-        sha256: "5731484dbf5998af17418f68b8fa12ad631bb746765dc05b08ed8add2b827eb3",
+        name: "tinyrustlm.vnext.release_manifest.v2",
+        sha256: "7c566c10612e56bac6de2514b45341a68b76bb60768fa4370802676df012f1b0",
     },
     ExpectedSchemaBinding {
         name: "tinyrustlm.vnext.worker_message.v1",

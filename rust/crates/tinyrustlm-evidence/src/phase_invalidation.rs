@@ -13,7 +13,7 @@ use std::fmt;
 pub const PHASE_INVALIDATION_PROFILE_ID: &str = "tinyrustlm.vnext.phase-invalidation.v1";
 /// The SHA-256 of the exact frozen phase-invalidation profile bytes.
 pub const PHASE_INVALIDATION_PROFILE_SHA256: &str =
-    "8e0cccdc007e56ace6550163b0fe1acdd211e74b184053739785a1d925b113cb";
+    "4f9c0f02f9e7fc55c2793ca9bbf9edd9e659b5737cc23eda98e40cc675074875";
 /// The one current semantic phase-invalidation result schema.
 pub const PHASE_INVALIDATION_RESULT_SCHEMA: &str = "tinyrustlm.vnext.phase_invalidation_result.v1";
 

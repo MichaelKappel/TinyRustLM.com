@@ -48,13 +48,13 @@ const ROLES: &[&str] = &[
 ];
 const SIGNED_SCHEMAS: &[&str] = &[
     "tinyrustlm.vnext.artifact_manifest.v1",
-    "tinyrustlm.vnext.claim.v1",
+    "tinyrustlm.vnext.claim.v2",
     "tinyrustlm.vnext.companion_message.v1",
     "tinyrustlm.vnext.context.v1",
     "tinyrustlm.vnext.outside_proof.v2",
     "tinyrustlm.vnext.p2p_manifest.v1",
     "tinyrustlm.vnext.receipt.v1",
-    "tinyrustlm.vnext.release_manifest.v1",
+    "tinyrustlm.vnext.release_manifest.v2",
     "tinyrustlm.vnext.worker_message.v1",
 ];
 

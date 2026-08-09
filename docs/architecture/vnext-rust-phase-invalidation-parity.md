@@ -21,13 +21,13 @@ The implementation is bound to:
 
 - profile `tinyrustlm.vnext.phase-invalidation.v1`;
 - profile SHA-256
-  `8e0cccdc007e56ace6550163b0fe1acdd211e74b184053739785a1d925b113cb`;
+  `4f9c0f02f9e7fc55c2793ca9bbf9edd9e659b5737cc23eda98e40cc675074875`;
 - result schema `tinyrustlm.vnext.phase_invalidation_result.v1`;
 - receipt schema `tinyrustlm.vnext.receipt.v1`; and
 - vector corpus `contracts/vnext/phase-invalidation-rust-vectors.v1.json`.
 
 The vector corpus is 74,756 bytes with SHA-256
-`79a7fa4b35295a90bcf875c4fb400e4ad972feb4b42ac029ef55853c0f45a5c0`.
+`dc0d048993533bed8858fd2273fece5abff7a1e3d86568bff8ab14b3fd27a985`.
 Its Node generator is deterministic, offline, and checked for compatibility
 terms and network APIs. Regeneration must reproduce every byte before a
 checkpoint can be accepted.

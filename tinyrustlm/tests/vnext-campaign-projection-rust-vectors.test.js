@@ -83,10 +83,10 @@ test("freezes deterministic public-only Rust campaign-projection vectors", () =>
 
   assert.equal(seedBytes.length, 1_024_171);
   assert.equal(sha256(seedBytes),
-    "1c908cd4238167c4b16bde0a65246c08f220b5a0d73937d31747344608c52234");
+    "a42e43c2a2d5dc00de75f6146c94b7bd91f90e8531a3212f421150a9f011a817");
   assert.equal(vectorBytes.length, 1_494_464);
   assert.equal(sha256(vectorBytes),
-    "974396d30525b6fc62e568de72361b99e87a99b6e33ead2e5cb43cfa002ec8a6");
+    "03dacebd501f3ee547baf2bdbd64fbe86d70dc1ae57164c5b6ef64d51d0b94cb");
   assert.deepEqual(vectorBytes, renderVectorCorpus());
   assert.equal(vectors.schema,
     "tinyrustlm.vnext.campaign_projection_rust_vectors.v1");
@@ -155,7 +155,7 @@ test("documents completed Rust projection parity without claiming live progress"
 
   assert.match(document, /1,494,464 bytes/u);
   assert.match(document,
-    /974396d30525b6fc62e568de72361b99e87a99b6e33ead2e5cb43cfa002ec8a6/u);
+    /03dacebd501f3ee547baf2bdbd64fbe86d70dc1ae57164c5b6ef64d51d0b94cb/u);
   assert.match(document, /11 accepted scenarios/u);
   assert.match(document, /22 projection-input rejection/u);
   assert.match(document, /8 projection-result rejection/u);

@@ -136,10 +136,10 @@ test("freezes one public-only incompatible subject-store profile", () => {
   assert.equal(parsed.layout.replacementPolicy, "never");
   assert.deepEqual(parsed.acceptedSubjects.map((entry) => entry.schema), [
     "tinyrustlm.vnext.artifact_manifest.v1",
-    "tinyrustlm.vnext.claim.v1",
+    "tinyrustlm.vnext.claim.v2",
     "tinyrustlm.vnext.outside_proof.v2",
     "tinyrustlm.vnext.p2p_manifest.v1",
-    "tinyrustlm.vnext.release_manifest.v1"
+    "tinyrustlm.vnext.release_manifest.v2"
   ]);
   assert.deepEqual(parsed.rejectedSubjects.map((entry) => entry.schema), [
     "tinyrustlm.vnext.context.v1",

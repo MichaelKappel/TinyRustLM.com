@@ -43,7 +43,7 @@ test("freezes deterministic language-neutral Rust currentness vectors", () => {
 
   assert.equal(bytes.length, 74_756);
   assert.equal(sha256(bytes),
-    "79a7fa4b35295a90bcf875c4fb400e4ad972feb4b42ac029ef55853c0f45a5c0");
+    "dc0d048993533bed8858fd2273fece5abff7a1e3d86568bff8ab14b3fd27a985");
   assert.deepEqual(bytes, renderVectorCorpus());
   assert.equal(corpus.schema,
     "tinyrustlm.vnext.phase_invalidation_rust_vectors.v1");
@@ -80,9 +80,9 @@ test("replays every accepted and rejected currentness vector through Node", () =
 test("keeps the Rust currentness architecture record bound to exact evidence", () => {
   const text = fs.readFileSync(architecturePath, "utf8");
   assert.match(text,
-    /8e0cccdc007e56ace6550163b0fe1acdd211e74b184053739785a1d925b113cb/u);
+    /4f9c0f02f9e7fc55c2793ca9bbf9edd9e659b5737cc23eda98e40cc675074875/u);
   assert.match(text,
-    /79a7fa4b35295a90bcf875c4fb400e4ad972feb4b42ac029ef55853c0f45a5c0/u);
+    /dc0d048993533bed8858fd2273fece5abff7a1e3d86568bff8ab14b3fd27a985/u);
   assert.match(text, /Four accepted vector histories/u);
   assert.match(text, /Nine rejection vectors/u);
   assert.match(text,

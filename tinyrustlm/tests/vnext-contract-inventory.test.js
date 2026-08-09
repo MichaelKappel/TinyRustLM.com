@@ -17,8 +17,8 @@ const expectedSchemas = Object.freeze([
   "tinyrustlm.vnext.companion_message.v1",
   "tinyrustlm.vnext.p2p_manifest.v1",
   "tinyrustlm.vnext.outside_proof.v2",
-  "tinyrustlm.vnext.release_manifest.v1",
-  "tinyrustlm.vnext.claim.v1"
+  "tinyrustlm.vnext.release_manifest.v2",
+  "tinyrustlm.vnext.claim.v2"
 ]);
 
 test("freezes exactly nine incompatible vNext contract family names", () => {

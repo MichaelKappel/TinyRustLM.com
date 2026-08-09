@@ -19,13 +19,13 @@ The current implementation is:
 The current offline profile is 3,583 bytes with SHA-256
 `62e37b24391ce48cc8be71184e71a67ebd0972e90dca79cf8036099091349e9f`.
 Its newly bound public-safe redaction profile is 3,132 bytes with SHA-256
-`36f4fc504aee3e08b35e6e113669a354571c1917a5f0a19a94e82eccd644eaa7`.
+`0997b30e11af8a8a24ae05521bd85c73f8429fe7bcd15b8311d75bf59e125024`.
 The manifest also binds the 2,755-byte frozen phase-invalidation profile with
 SHA-256
-`8e0cccdc007e56ace6550163b0fe1acdd211e74b184053739785a1d925b113cb`.
+`4f9c0f02f9e7fc55c2793ca9bbf9edd9e659b5737cc23eda98e40cc675074875`.
 The seventh binding is the 4,857-byte campaign-projection profile with
 SHA-256
-`a5dbe87a6971301c782120d3b30bb6059ab9cb26f2efac70b866a7bdb0b52067`.
+`de42d142af608c921a9343155ffd321eaeb71ae9086ee51762dc2bf3f8c5e5eb`.
 
 ## Acyclic Construction
 

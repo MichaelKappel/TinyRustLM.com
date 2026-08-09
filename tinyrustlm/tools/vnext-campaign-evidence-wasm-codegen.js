@@ -170,10 +170,10 @@ function validateInterfaceProfile(profile) {
       profile.campaignPlanSchema === "tinyrustlm.vnext.campaign_plan.v1" &&
       profile.phaseInvalidationProfileId === "tinyrustlm.vnext.phase-invalidation.v1" &&
       profile.phaseInvalidationProfileSha256 ===
-        "8e0cccdc007e56ace6550163b0fe1acdd211e74b184053739785a1d925b113cb" &&
+        "4f9c0f02f9e7fc55c2793ca9bbf9edd9e659b5737cc23eda98e40cc675074875" &&
       profile.campaignProjectionProfileId === "tinyrustlm.vnext.campaign-projection.v1" &&
       profile.campaignProjectionProfileSha256 ===
-        "a5dbe87a6971301c782120d3b30bb6059ab9cb26f2efac70b866a7bdb0b52067" &&
+        "de42d142af608c921a9343155ffd321eaeb71ae9086ee51762dc2bf3f8c5e5eb" &&
       profile.campaignProjectionResultSchema ===
         "tinyrustlm.vnext.campaign_projection_result.v1" &&
       profile.rustCrate === "tinyrustlm-evidence-wasm" &&

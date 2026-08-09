@@ -21,18 +21,18 @@ The implementation is bound to:
 
 - profile `tinyrustlm.vnext.ed25519-authority.v1`;
 - profile SHA-256
-  `b1f5f1347ee14e1219972607c58f97f7c2b8f26545d09d1c02eeec970f946b56`;
+  `9d1f0c65f91dc9b76bf5e430ee5f91ba787ab4622d72aae3c73c3a50c9f2a8b9`;
 - contract registry SHA-256
-  `812e3ace7526d867561f50bdbf24acc047773583391f85be9e0f3e4cbfe0366a`;
+  `27101971058e6e0332f4a59f72c1c13abdef34b6b388f37b4d886dcf7a2cdecc`;
 - public seed `contracts/vnext/authority-graph-public-seed.v1.json`; and
 - generated corpus
   `contracts/vnext/authority-graph-rust-vectors.v1.json`.
 
 The public seed is 171,656 bytes with SHA-256
-`c078e980fd1c633d4c46b8dddf3d25fc3f9bc5a11f1d5f940c6df7db08e72ab7`.
+`1d1aebdbd7e113edf17cdcac8f21c78fedbe169e5f0422e982fc06078e0afa6a`.
 It contains seven accepted graphs and six cryptographically valid hostile
 graphs. The generated corpus is 434,761 bytes with SHA-256
-`f816fe3b2e76520ce7f6f1c71f1840540f4f3a0cc16b3548ec710db39670b1bb`.
+`7340f17c34b2f86dcd4c2431d1de7ed8d36429badd51866c8abbff3b0f0fa89a`.
 It expands those public inputs to nine accepted graphs and 26 rejection
 graphs. Neither file contains private-key material.
 

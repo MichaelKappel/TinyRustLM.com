@@ -13,7 +13,7 @@ use url::{Host, Url};
 const CONTRACT_REGISTRY_BYTES: &[u8] =
     include_bytes!("../../../../contracts/vnext/contract-family.v1.json");
 const CONTRACT_REGISTRY_SHA256: &str =
-    "812e3ace7526d867561f50bdbf24acc047773583391f85be9e0f3e4cbfe0366a";
+    "27101971058e6e0332f4a59f72c1c13abdef34b6b388f37b4d886dcf7a2cdecc";
 const MAXIMUM_SUBJECT_BYTES: usize = 2_097_152;
 const MAXIMUM_SAFE_INTEGER: u64 = 9_007_199_254_740_991;
 

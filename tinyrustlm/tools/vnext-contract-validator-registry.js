@@ -603,6 +603,9 @@ function validateRelease(value, checked) {
     "release-date-matches-created-date");
   checked.add("release-date-matches-created-date");
   checked.add("all-parent-lists-unique-sorted");
+  checked.add("campaign-projection-bound");
+  checked.add("remaining-risks-sorted");
+  checked.add("postpublication-evidence-excluded");
   checked.add("public-redaction-profile-required");
 }
 
@@ -613,6 +616,18 @@ function validateClaim(value, checked, notApplicable) {
     compareUtc(value.reviewAtUtc, value.lastVerifiedAtUtc) >= 0,
     "validity-window-ordered");
   checked.add("validity-window-ordered");
+  if (value.status === "approved-for-publication") {
+    invariant(value.evidenceReceiptIds.length > 0, "approved-requires-current-evidence");
+    invariant(value.releaseId === null, "approved-forbids-release-id");
+    invariant(value.blockerCodes.length === 0, "approved-forbids-blockers");
+    checked.add("approved-requires-current-evidence");
+    checked.add("approved-forbids-release-id");
+    checked.add("approved-forbids-blockers");
+  } else {
+    notApplicable.add("approved-requires-current-evidence");
+    notApplicable.add("approved-forbids-release-id");
+    notApplicable.add("approved-forbids-blockers");
+  }
   if (value.status === "published") {
     invariant(value.evidenceReceiptIds.length > 0, "published-requires-current-evidence");
     invariant(value.releaseId !== null, "published-requires-release-and-source");

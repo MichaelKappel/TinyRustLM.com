@@ -145,12 +145,17 @@ defined purpose, and the redaction scan accepts it.
   qualification/provenance parents. It contains no endpoint.
 - **Proof** is one expiring outside observer's complete-transfer observation
   for one lane and endpoint. Its signature is a separate receipt.
-- **Release** closes over passing campaign, artifact, package, site, claim,
-  SBOM, provenance, and authorization parents.
+- **Release** is the acyclic prepublication predicate. It binds the exact
+  campaign plan/projection, passing campaign attestation, artifacts, packages,
+  approved claims, SBOM, provenance, changelog, and explicit remaining risks.
+  Authorization, deployment, HTTPS readback, and published claim descendants
+  point forward to the already-finalized release.
 - **Claim** is the only machine-readable public wording authority. Site,
   route, component, wording class, evidence tier, source revision, release,
   owner, review time, blockers, and exact wording are explicit. Draft, local,
-  external, published, stale, blocked, and retracted states are distinct.
+  external, approved-for-publication, published, stale, blocked, and retracted
+  states are distinct. Approved claims have no release ID; published
+  descendants reference and supersede the approved claim after readback.
 
 ## Change Rules
 
@@ -247,7 +252,7 @@ ABI, ownership, destructive-state, browser, and non-claim boundary.
 The same Rust evidence crate now independently implements exact receipt
 validation and semantic currentness. A deterministic 74,756-byte corpus with
 SHA-256
-`79a7fa4b35295a90bcf875c4fb400e4ad972feb4b42ac029ef55853c0f45a5c0`
+`dc0d048993533bed8858fd2273fece5abff7a1e3d86568bff8ab14b3fd27a985`
 freezes four accepted histories and nine hostile rejections. Node and Rust
 must emit byte-identical canonical currentness results and the same stable
 rejection codes. This API has no filesystem, network, clock, process, or
@@ -265,26 +270,26 @@ The Rust Ed25519 primitive independently reproduces canonical payload,
 domain-separated signing bytes, strict public-key verification, canonical
 result bytes, and 17 exact hostile rejection codes. Its 27,988-byte public-only
 vector corpus has SHA-256
-`79c8293efc08d27c9b679c5eeda69fde84754fd5364a17a35cf2920f5efcfa46`.
+`679147d928357a74a976e21b0c5f3f3b5f364b2310c39bc34b99263d670c8a1d`.
 This is cryptographic primitive parity, not authority-graph, revocation,
 nonce-replay, offline-bundle, release, or campaign parity. See
 `docs/architecture/vnext-rust-signature-primitive-parity.md`.
 The same crate independently verifies the complete bounded authority graph,
 including every signable non-receipt subject family. Its public-only
 434,761-byte corpus has SHA-256
-`f816fe3b2e76520ce7f6f1c71f1840540f4f3a0cc16b3548ec710db39670b1bb`
+`7340f17c34b2f86dcd4c2431d1de7ed8d36429badd51866c8abbff3b0f0fa89a`
 and freezes nine accepted results plus 26 exact hostile rejection codes. See
 `docs/architecture/vnext-rust-authority-graph-parity.md`.
 The same crate now independently verifies exact offline manifest and member
 binding, the separate verification receipt, authority composition, closed
 receipt and subject membership, terminal currentness, and target current
 eligibility. Its public-only 658,110-byte corpus has SHA-256
-`c50a9668725a67df15f45fd28c4c80addde89e53fe80468590005a9fcb293ba8`
+`3ebb070ed5ea4c39a7fbc124f11301cc624f78d1338d0db5f076f4c6e30d464c`
 and freezes three accepted bundles plus 31 exact hostile rejection codes. See
 `docs/architecture/vnext-rust-offline-bundle-parity.md`.
 The same crate now independently produces and validates the exact truthful
 campaign projection. Its public-only 1,494,464-byte corpus has SHA-256
-`974396d30525b6fc62e568de72361b99e87a99b6e33ead2e5cb43cfa002ec8a6`
+`03dacebd501f3ee547baf2bdbd64fbe86d70dc1ae57164c5b6ef64d51d0b94cb`
 and freezes 11 accepted projections, 22 exact input rejections, and 8 exact
 result-wire rejections. See
 `docs/architecture/vnext-rust-campaign-projection-parity.md`.
@@ -292,7 +297,7 @@ result-wire rejections. See
 `tinyrustlm/tools/vnext-campaign-artifact-store.js` persists only exact
 campaign-plan and projection-result wires under raw-byte SHA-256 paths. Its
 frozen profile has SHA-256
-`9bf4acfa35c26e8e790cd12f8aead4f38f30ac7c8ada716c19a3b012e5675e09`.
+`b453c378665d39aded08974c5d6ebdca3d0ad756e2026ccee914abf00749cff5`.
 It shares create-only, bounded, no-follow filesystem mechanics with the
 receipt store but retains separate result-to-plan semantics. Stored results
 are immutable history; `resumeProjection` reruns the projector from supplied
@@ -301,7 +306,7 @@ current evidence and never selects a mutable current pointer. See
 
 `tinyrustlm/tools/vnext-subject-store.js` completes the other host-side input
 store needed by the campaign runner. Its 3,285-byte frozen profile has SHA-256
-`606582eb83c6facb359385b00a4b13022a2a732489089fd049d74b37b43dca25`.
+`3fd772ac639b1e27f77d5a5285da9d439273633ebeaf0a2e63222958f862c067`.
 It admits only the five public-safe, non-receipt identity schemas, publishes
 exact canonical bytes under the validated subject ID, and explicitly rejects
 private context and receipt records. Bounded reconstruction, no-follow reads,
@@ -312,7 +317,7 @@ currentness by itself. See `docs/architecture/vnext-subject-store.md`.
 
 `tinyrustlm/tools/vnext-campaign-runner.js` now composes those stores through
 one exact runner boundary. Its frozen 6,855-byte profile has SHA-256
-`77e75dd7a4f04e23421be740040ea52efe68c234f49377005d94c550b9c142e7`.
+`6fe8698fe46f2ba9e427319f1f5e94ec3c3e24e214a2a58d828827040ac2f571`.
 The runner observes every active receipt and subject twice, rejects any
 membership or wire change, binds caller pins and trusted verification time in
 a create-only start record, invokes only the generated Rust campaign-evidence

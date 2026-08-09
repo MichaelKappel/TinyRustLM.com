@@ -26,8 +26,8 @@ const schemas = Object.freeze({
   companion: "tinyrustlm.vnext.companion_message.v1",
   p2p: "tinyrustlm.vnext.p2p_manifest.v1",
   proof: "tinyrustlm.vnext.outside_proof.v2",
-  release: "tinyrustlm.vnext.release_manifest.v1",
-  claim: "tinyrustlm.vnext.claim.v1"
+  release: "tinyrustlm.vnext.release_manifest.v2",
+  claim: "tinyrustlm.vnext.claim.v2"
 });
 
 function sha256(bytes) {
@@ -252,15 +252,16 @@ function validDocuments() {
     version: "1.0.0",
     releaseDate: "2026-08-09",
     sourceRevision,
+    campaignPlanSha256: hashes[4],
+    campaignProjectionSha256: hashes[5],
     campaignAttestationReceiptId: ids[8],
     artifactManifestIds: [ids[6]],
     packageReceiptIds: [ids[9]],
-    sitePublicationReceiptIds: [ids[10]],
     claimIds: [ids[11]],
     sbomArtifactId: ids[12],
     provenanceReceiptId: ids[13],
-    authorizationReceiptId: ids[14],
     changelogSha256: hashes[15],
+    remainingRiskCodes: ["training-compute-unavailable"],
     createdAtUtc: "2026-08-09T02:00:00Z",
     redaction
   };
@@ -274,11 +275,11 @@ function validDocuments() {
     component: "model-status",
     wordingClass: "status",
     claimType: "runtime-smoke-only",
-    evidenceTier: "design-only",
-    status: "draft",
+    evidenceTier: "local-executed",
+    status: "approved-for-publication",
     scope: "One exact model artifact.",
-    publicWording: "Runtime verification is pending.",
-    evidenceReceiptIds: [],
+    publicWording: "The runtime smoke test completed locally.",
+    evidenceReceiptIds: [ids[3]],
     sourceRevision,
     releaseId: null,
     effectiveAtUtc: "2026-08-09T02:00:00Z",
@@ -433,7 +434,11 @@ function buildCases() {
   rejectValue("reject-proof-cyclic-signature-field", "proof", valid.proof, (value) => { value.signatureEnvelopeId = ids[10]; });
   rejectValue("reject-release-date", "release", valid.release, (value) => { value.releaseDate = "2026-08-08"; });
   rejectValue("reject-release-parent-order", "release", valid.release, (value) => { value.artifactManifestIds = [ids[2], ids[1]]; });
-  rejectValue("reject-claim-published-without-evidence", "claim", valid.claim, (value) => { value.status = "published"; });
+  rejectValue("reject-release-postpublication-back-reference", "release", valid.release, (value) => { value.sitePublicationReceiptIds = [ids[10]]; });
+  rejectValue("reject-release-authorization-back-reference", "release", valid.release, (value) => { value.authorizationReceiptId = ids[14]; });
+  rejectValue("reject-claim-approved-with-release", "claim", valid.claim, (value) => { value.releaseId = ids[7]; });
+  rejectValue("reject-claim-approved-without-evidence", "claim", valid.claim, (value) => { value.evidenceReceiptIds = []; });
+  rejectValue("reject-claim-published-without-release", "claim", valid.claim, (value) => { value.status = "published"; });
   rejectValue("reject-claim-blocked-without-code", "claim", valid.claim, (value) => { value.status = "blocked"; });
   rejectValue("reject-claim-route-traversal", "claim", valid.claim, (value) => { value.route = "/../admin"; });
   rejectValue("reject-claim-review-before-verification", "claim", valid.claim, (value) => { value.reviewAtUtc = "2026-08-08T00:00:00Z"; });

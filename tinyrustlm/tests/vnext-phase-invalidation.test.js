@@ -131,7 +131,7 @@ test("freezes a bounded semantic-currentness profile without network or compatib
 
   assert.equal(bytes.length, 2755);
   assert.equal(sha256(bytes),
-    "8e0cccdc007e56ace6550163b0fe1acdd211e74b184053739785a1d925b113cb");
+    "4f9c0f02f9e7fc55c2793ca9bbf9edd9e659b5737cc23eda98e40cc675074875");
   assert.equal(phaseInvalidationProfileSha256, sha256(bytes));
   assert.equal(phaseInvalidationProfile.profileId,
     "tinyrustlm.vnext.phase-invalidation.v1");

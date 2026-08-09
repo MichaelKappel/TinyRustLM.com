@@ -19,16 +19,16 @@ The implementation binds:
 
 - profile `tinyrustlm.vnext.campaign-projection.v1`;
 - profile SHA-256
-  `a5dbe87a6971301c782120d3b30bb6059ab9cb26f2efac70b866a7bdb0b52067`;
+  `de42d142af608c921a9343155ffd321eaeb71ae9086ee51762dc2bf3f8c5e5eb`;
 - result schema `tinyrustlm.vnext.campaign_projection_result.v1`;
 - immutable public seed
   `contracts/vnext/campaign-projection-public-seed.v1.json`, 1,024,171 bytes,
   SHA-256
-  `1c908cd4238167c4b16bde0a65246c08f220b5a0d73937d31747344608c52234`;
+  `a42e43c2a2d5dc00de75f6146c94b7bd91f90e8531a3212f421150a9f011a817`;
 - deterministic parity corpus
   `contracts/vnext/campaign-projection-rust-vectors.v1.json`, 1,494,464 bytes,
   SHA-256
-  `974396d30525b6fc62e568de72361b99e87a99b6e33ead2e5cb43cfa002ec8a6`;
+  `03dacebd501f3ee547baf2bdbd64fbe86d70dc1ae57164c5b6ef64d51d0b94cb`;
 - 277 canonical public receipt wires and 41 canonical public subject wires;
   and
 - the completed Rust campaign-plan, receipt, identity-subject,

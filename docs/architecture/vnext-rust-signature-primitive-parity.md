@@ -22,13 +22,13 @@ The implementation is bound to:
 
 - profile `tinyrustlm.vnext.ed25519-authority.v1`;
 - profile SHA-256
-  `b1f5f1347ee14e1219972607c58f97f7c2b8f26545d09d1c02eeec970f946b56`;
+  `9d1f0c65f91dc9b76bf5e430ee5f91ba787ab4622d72aae3c73c3a50c9f2a8b9`;
 - envelope schema `tinyrustlm.vnext.receipt.v1` with
   `receiptType=signature-envelope`; and
 - vector corpus `contracts/vnext/receipt-signature-rust-vectors.v1.json`.
 
 The vector corpus is 27,988 bytes with SHA-256
-`79c8293efc08d27c9b679c5eeda69fde84754fd5364a17a35cf2920f5efcfa46`.
+`679147d928357a74a976e21b0c5f3f3b5f364b2310c39bc34b99263d670c8a1d`.
 It contains one accepted public vector and 17 hostile rejections. Its
 deterministic offline generator contains no private key, network access, key
 generation, clock lookup, or filesystem mutation beyond an explicit

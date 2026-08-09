@@ -1,8 +1,8 @@
 {
   "schema": "tinyrustlm.vnext.authority_graph_rust_vectors.v1",
   "profileId": "tinyrustlm.vnext.ed25519-authority.v1",
-  "profileSha256": "b1f5f1347ee14e1219972607c58f97f7c2b8f26545d09d1c02eeec970f946b56",
-  "publicSeedSha256": "c078e980fd1c633d4c46b8dddf3d25fc3f9bc5a11f1d5f940c6df7db08e72ab7",
+  "profileSha256": "9d1f0c65f91dc9b76bf5e430ee5f91ba787ab4622d72aae3c73c3a50c9f2a8b9",
+  "publicSeedSha256": "1d1aebdbd7e113edf17cdcac8f21c78fedbe169e5f0422e982fc06078e0afa6a",
   "acceptedCases": [
     {
       "name": "compromise-time-unknown",

@@ -36,10 +36,10 @@ const temporaryPattern = /^\.([a-f0-9]{64})\.[0-9]{1,20}\.[a-f0-9]{4,64}\.tmp$/u
 const storeOptionNames = Object.freeze(["io", "platform", "randomBytes"]);
 const expectedAcceptedSchemas = Object.freeze([
   "tinyrustlm.vnext.artifact_manifest.v1",
-  "tinyrustlm.vnext.claim.v1",
+  "tinyrustlm.vnext.claim.v2",
   "tinyrustlm.vnext.outside_proof.v2",
   "tinyrustlm.vnext.p2p_manifest.v1",
-  "tinyrustlm.vnext.release_manifest.v1"
+  "tinyrustlm.vnext.release_manifest.v2"
 ]);
 const expectedRejectedSchemas = Object.freeze([
   "tinyrustlm.vnext.context.v1",

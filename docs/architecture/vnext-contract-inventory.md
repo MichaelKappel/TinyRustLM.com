@@ -74,8 +74,8 @@ requires an ADR change, not a convenient local constant.
 | Companion | `tinyrustlm.vnext.companion_message.v1` | Approved browser origin and paired loopback companion | Private session envelope | 65,536 |
 | P2P | `tinyrustlm.vnext.p2p_manifest.v1` | Companion piece store, serving lane, MiniModel verifier | Public-safe metadata; direct peer bytes separate | 2,097,152 |
 | Proof | `tinyrustlm.vnext.outside_proof.v2` | Independent observer and offline verifier | Public-safe signed evidence | 262,144 |
-| Release | `tinyrustlm.vnext.release_manifest.v1` | Release builder, authorizer, deploy/readback verifiers | Public-safe immutable release closure | 524,288 |
-| Claim | `tinyrustlm.vnext.claim.v1` | Claim registry, product UI, docs, catalog, marketing | Public-safe evidence-bound wording | 262,144 |
+| Release | `tinyrustlm.vnext.release_manifest.v2` | Release builder, authorizer, deploy/readback verifiers | Public-safe acyclic prepublication release predicate | 524,288 |
+| Claim | `tinyrustlm.vnext.claim.v2` | Claim registry, product UI, docs, catalog, marketing | Public-safe approved or published evidence-bound wording | 262,144 |
 
 All nine control-plane encodings use the strict vNext canonical JSON profile.
 SLM2's internal fixed envelope and SLM-DCBOR-1 metadata remain governed by
@@ -99,6 +99,10 @@ the nine-member family and avoid content-addressed cycles.
 - A proof never embeds its signature-envelope ID. The separate signature
   receipt points to the already-finalized proof as a descendant, preventing a
   proof/envelope content-addressing cycle.
+- The release predicate never embeds authorization or postpublication
+  evidence. It contains only approved claims with null release IDs. Release
+  authorization, HTTPS readback, and published claim descendants point to the
+  finalized release, so the public graph remains constructible and acyclic.
 - Artifact identity covers complete bytes. Piece identity, Merkle identity,
   composition identity, model identity, and behavioral lineage remain
   separate typed facts.
@@ -151,7 +155,7 @@ result-byte, hash, and error-code parity. Rust truthful projection and strict
 projection-result validation now independently compose the exact plan,
 semantic-currentness, receipt/subject identity, and authority boundaries. A
 public-only 1,494,464-byte corpus with SHA-256
-`974396d30525b6fc62e568de72361b99e87a99b6e33ead2e5cb43cfa002ec8a6`
+`03dacebd501f3ee547baf2bdbd64fbe86d70dc1ae57164c5b6ef64d51d0b94cb`
 freezes 11 accepted projections, 22 input rejections, and 8 result-wire
 rejections with byte, hash, and error-code parity. The Node campaign boundary
 now also
