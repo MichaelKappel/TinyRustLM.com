@@ -264,28 +264,60 @@ pub(crate) struct UtcInstant {
     pub(crate) nanoseconds: i128,
 }
 
+pub(crate) struct ReceiptValidationError {
+    code: &'static str,
+}
+
+impl ReceiptValidationError {
+    pub(crate) const fn code(&self) -> &'static str {
+        self.code
+    }
+}
+
 pub(crate) fn validate_receipt_bytes(bytes: &[u8]) -> Result<Receipt, ()> {
+    validate_receipt_bytes_detailed(bytes).map_err(|_| ())
+}
+
+pub(crate) fn validate_receipt_bytes_detailed(
+    bytes: &[u8],
+) -> Result<Receipt, ReceiptValidationError> {
     if bytes.is_empty() || bytes.len() > RECEIPT_MAXIMUM_BYTES {
-        return Err(());
+        return Err(receipt_validation_failure("receipt_byte_limit"));
     }
-    let receipt: Receipt = serde_json::from_slice(bytes).map_err(|_| ())?;
-    validate_receipt(&receipt)?;
-    let canonical = canonical_bytes(&receipt)?;
+    let receipt: Receipt = serde_json::from_slice(bytes)
+        .map_err(|_| receipt_validation_failure("receipt_registry_validation_failed"))?;
+    validate_receipt(&receipt)
+        .map_err(|_| receipt_validation_failure("receipt_registry_validation_failed"))?;
+    let canonical = canonical_bytes(&receipt)
+        .map_err(|_| receipt_validation_failure("receipt_registry_validation_failed"))?;
     if canonical != bytes {
-        return Err(());
+        return Err(receipt_validation_failure("receipt_wire_not_canonical"));
     }
-    let mut content = serde_json::to_value(&receipt).map_err(|_| ())?;
-    let object = content.as_object_mut().ok_or(())?;
-    object.remove("canonicalContentSha256").ok_or(())?;
-    object.remove("receiptId").ok_or(())?;
-    let digest = domain_digest(RECEIPT_IDENTITY_DOMAIN, &canonical_value_bytes(&content)?);
+    let mut content = serde_json::to_value(&receipt)
+        .map_err(|_| receipt_validation_failure("receipt_identity_mismatch"))?;
+    let object = content
+        .as_object_mut()
+        .ok_or_else(|| receipt_validation_failure("receipt_identity_mismatch"))?;
+    object
+        .remove("canonicalContentSha256")
+        .ok_or_else(|| receipt_validation_failure("receipt_identity_mismatch"))?;
+    object
+        .remove("receiptId")
+        .ok_or_else(|| receipt_validation_failure("receipt_identity_mismatch"))?;
+    let identity_bytes = canonical_value_bytes(&content)
+        .map_err(|_| receipt_validation_failure("receipt_identity_mismatch"))?;
+    let digest = domain_digest(RECEIPT_IDENTITY_DOMAIN, &identity_bytes);
     let digest_hex = lowercase_hex(&digest);
     if receipt.canonical_content_sha256 != digest_hex
         || receipt.receipt_id != format!("sha256:{digest_hex}")
     {
-        return Err(());
+        return Err(receipt_validation_failure("receipt_identity_mismatch"));
     }
     Ok(receipt)
+}
+
+const fn receipt_validation_failure(code: &'static str) -> ReceiptValidationError {
+    ReceiptValidationError { code }
 }
 
 pub(crate) fn canonical_value_bytes(value: &Value) -> Result<Vec<u8>, ()> {

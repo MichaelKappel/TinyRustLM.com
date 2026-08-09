@@ -11,6 +11,7 @@ use url::Url;
 mod authority;
 mod offline_bundle;
 mod phase_invalidation;
+mod projection;
 mod receipt;
 mod signature;
 mod subject;
@@ -27,6 +28,11 @@ pub use phase_invalidation::{
     classify_phase_receipts, FinalizedPhaseInvalidation, PhaseInvalidationError,
     PHASE_INVALIDATION_PROFILE_ID, PHASE_INVALIDATION_PROFILE_SHA256,
     PHASE_INVALIDATION_RESULT_SCHEMA,
+};
+pub use projection::{
+    project_campaign, validate_campaign_projection_result, CampaignProjectionError,
+    CampaignProjectionInput, VerifiedCampaignProjection, CAMPAIGN_PROJECTION_PROFILE_SHA256,
+    CAMPAIGN_PROJECTION_RESULT_SCHEMA,
 };
 pub use signature::{
     derive_signature_material, verify_signature_primitive, SignatureError, SignatureMaterial,
@@ -223,6 +229,12 @@ pub fn finalize_campaign_plan_json(
 pub fn validate_campaign_plan_json(
     plan_bytes: &[u8],
 ) -> Result<FinalizedCampaignPlan, CampaignPlanError> {
+    validate_campaign_plan_wire(plan_bytes).map(|(finalized, _)| finalized)
+}
+
+fn validate_campaign_plan_wire(
+    plan_bytes: &[u8],
+) -> Result<(FinalizedCampaignPlan, CampaignPlanWire), CampaignPlanError> {
     require_input_bytes(plan_bytes)?;
     let wire: CampaignPlanWire =
         serde_json::from_slice(plan_bytes).map_err(|_| failure("campaign_plan_invalid"))?;
@@ -231,7 +243,7 @@ pub fn validate_campaign_plan_json(
     if expected_plan_id != finalized.plan_id || plan_bytes != finalized.bytes {
         return Err(failure("campaign_plan_identity_mismatch"));
     }
-    Ok(finalized)
+    Ok((finalized, wire))
 }
 
 fn finalize_campaign_plan(
