@@ -13,7 +13,7 @@
   "subjectStoreProfileId": "tinyrustlm.vnext.subject-store.v1",
   "subjectStoreProfileSha256": "3fd772ac639b1e27f77d5a5285da9d439273633ebeaf0a2e63222958f862c067",
   "publicSafeRedactionProfileId": "tinyrustlm.vnext.public-safe-redaction.v1",
-  "publicSafeRedactionProfileSha256": "0997b30e11af8a8a24ae05521bd85c73f8429fe7bcd15b8311d75bf59e125024",
+  "publicSafeRedactionProfileSha256": "83fcdd3590692304807e1ca62f82ad5873111cf0cce6b239bd51249d5c29d2b0",
   "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
   "hashAlgorithm": "sha256",
   "campaignTruthInput": "fresh-sole-runner-return-created-and-consumed-inside-one-surface-call",

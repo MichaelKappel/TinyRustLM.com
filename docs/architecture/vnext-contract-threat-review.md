@@ -138,7 +138,7 @@ verified by later phases.
 | Content to identity | Claimed hash and content ID | Field shape and declared derivation profile | RFC 8785 JCS and domain-separated hash recomputation |
 | Signature to authority | Envelope, key, role, time, registry, revocation | Local shape, role/domain, and time-window checks | Ed25519 verification and trusted registry chain |
 | Receipt to evidence DAG | Parent IDs and evidence references | Local sorting, uniqueness, state, and typed payload checks | Parent loading, closure, cycle, role, and freshness checks |
-| Private to public evidence | Public-safe record and redaction profile | Closed public schema and forbidden value classes | The later Node checkpoint performs exact scan and receipt replay; Rust/browser parity, protected-list release integration, and bounded archive-member scanning remain |
+| Private to public evidence | Public-safe record, canonical public text, and redaction profile | Closed public schema, canonical LF UTF-8 text, and forbidden value classes | The later Node checkpoint performs exact document/text scans and receipt replay; Rust/browser parity, protected-list release integration, and bounded archive-member scanning remain |
 | Local P2P to public claim | Manifest, lane proof, claim wording | Local identity, route, transfer, state, and expiry checks | Outside observer signature, full transfer, and publication authority |
 
 ## Threat Analysis
@@ -163,7 +163,7 @@ verified by later phases.
 | P2P piece or Merkle drift | Piece indices, offsets, sizes, hashes, Merkle root, total bytes, and artifact identity are recomputed locally | Mitigated locally | File streaming, peer transfer, and final Rust artifact verification remain later gates |
 | Local reachability promoted as public | Proof requires outside-network scope, complete transfer, lane and endpoint binding, and bounded freshness | Mitigated structurally | Observer signature, independence, and matching P2P parent remain deferred |
 | Release or claim inflation | Acyclic release v2 binds the campaign plan/projection, attestation, packages, artifacts, approved claims, SBOM, provenance, changelog, and remaining risks; claim v2 separates approval from post-readback publication | Mitigated structurally | Parent receipt closure, authorization signature, public readback, and wording secret scan remain deferred to the release surface |
-| Secret disclosure through public evidence | Private-by-default classes, public-safe field types, redaction profile, forbidden keys/value classes, and acyclic scan binding | Reduced | The later Node checkpoint scans seven bounded known-secret encoding families and verifies scan receipts; compressed members, cross-runtime parity, and production custody remain deferred |
+| Secret disclosure through public evidence | Private-by-default classes, public-safe field types, canonical LF UTF-8 public text, redaction profile, forbidden keys/value classes, and acyclic scan binding | Reduced | The later Node checkpoint scans seven bounded known-secret encoding families, contextual patterns, and entropy and verifies document/text scan receipts; compressed members, cross-runtime parity, and production custody remain deferred |
 | Compatibility code becoming permanent | Validators recognize one incompatible family and contain no fallback, migration, deprecated alias, dual-read, or dual-write path | Mitigated in the new boundary | Old production readers and writers still exist elsewhere and must be deleted after verified cutover |
 
 ## Validator Independence
@@ -211,8 +211,9 @@ The following are explicitly outside the Phase 2 pass:
   historical-time evaluation.
 - Receipt DAG parent loading, cycle rejection, complete closure, parent-role
   constraints, phase invalidation, freshness, and offline-bundle closure.
-- Execution of bounded secret/redaction scanning, encoded and compressed form
-  checks, and verification of the acyclic scan receipt.
+- Execution of bounded compressed archive-member scanning and verification of
+  archive-specific acyclic scan evidence. Bounded document/text scanning and
+  seven encoded known-secret representations are implemented in Node.
 - Streaming validation of actual large artifacts, P2P transfers, and final
   artifact reconstruction.
 - Rust, browser/WASM, worker, service worker, and companion implementations of
@@ -243,6 +244,12 @@ all supplied receipt and subject bytes without network access. That work is
 outside this Phase 2 PASS. It does not close compressed archive-member
 scanning, production entry-point cutover, independent observer operation, or
 any campaign gate.
+
+The redaction checkpoint also admits canonical public text only as fatal UTF-8,
+without BOM, CR, disallowed controls, or a missing terminal LF. It derives a
+domain-separated text identity, applies the same known-secret, contextual
+pattern, and entropy rules, emits unchanged bytes only on pass, and requires an
+explicit `document` or `public-text` kind during receipt replay.
 
 The campaign release-surface checkpoint removes stored dashboard and caller
 truth from the vNext attestation boundary. A release-surface operation ID must

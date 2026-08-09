@@ -19,6 +19,7 @@ const {
   publicSafeRedactionProfileSha256,
   scanKnownSecretRepresentations,
   scanVnextPublicDocumentBytes,
+  scanVnextPublicTextBytes,
   verifyVnextRedactionScanReceipt
 } = require("../tools/vnext-public-safe-redaction.js");
 
@@ -70,15 +71,15 @@ test("freezes a private-by-default byte-only public-safety profile", () => {
   const source = fs.readFileSync(path.join(repositoryRoot, "tinyrustlm", "tools",
     "vnext-public-safe-redaction.js"), "utf8");
 
-  assert.equal(rawProfile.length, 3132);
+  assert.equal(rawProfile.length, 3473);
   assert.equal(sha256(rawProfile),
-    "0997b30e11af8a8a24ae05521bd85c73f8429fe7bcd15b8311d75bf59e125024");
+    "83fcdd3590692304807e1ca62f82ad5873111cf0cce6b239bd51249d5c29d2b0");
   assert.equal(publicSafeRedactionProfileSha256, sha256(rawProfile));
   assert.equal(publicSafeRedactionProfile.contractRegistrySha256,
     sha256(registryBytes));
   assert.equal(publicSafeRedactionProfile.defaultVisibility, "private");
   assert.equal(publicSafeRedactionProfile.inputPolicy,
-    "bounded-final-canonical-utf8-bytes-only");
+    "bounded-final-canonical-document-or-lf-utf8-public-text-bytes-only");
   assert.equal(publicSafeRedactionProfile.outputPolicy,
     "unchanged-canonical-bytes-on-pass-no-output-on-fail");
   assert.equal(publicSafeRedactionProfile.redactionMarkersAllowed, false);
@@ -86,6 +87,15 @@ test("freezes a private-by-default byte-only public-safety profile", () => {
     ["artifact", "claim", "p2p", "proof", "receipt", "release"]);
   assert.deepEqual(publicSafeRedactionProfile.privateClasses,
     ["companion", "context", "worker"]);
+  assert.deepEqual(publicSafeRedactionProfile.publicText, {
+    schema: "tinyrustlm.vnext.public_text.v1",
+    class: "public-text",
+    identityDomain: "tinyrustlm.public_text.content.v1",
+    encoding: "utf8-no-bom-lf-only-no-controls-terminal-lf",
+    minimumBytes: 2
+  });
+  assert.deepEqual(publicSafeRedactionProfile.verificationTargetKinds,
+    ["document", "public-text"]);
   assert.deepEqual(publicSafeRedactionProfile.knownSecretRepresentations, [
     "base64", "base64url", "hexadecimal", "percent-encoded", "utf16be",
     "utf16le", "utf8"
@@ -94,6 +104,51 @@ test("freezes a private-by-default byte-only public-safety profile", () => {
     publicSafeRedactionProfile.detectorRuleIds.length);
   assert.doesNotMatch(source, /JSON\.parse|node:(?:http|https|net|tls|dns)|\bfetch\s*\(/u);
   assert.doesNotMatch(source, /\b(?:legacy|migration|fallback|deprecated|alias)\b/iu);
+});
+
+test("scans canonical LF UTF-8 public text without rewriting bytes", () => {
+  const bytes = Buffer.from("# Release 2.0.0\n\n- Exact campaign evidence.\n", "utf8");
+  const first = scanVnextPublicTextBytes(bytes);
+  const second = scanVnextPublicTextBytes(bytes);
+
+  assert.equal(first.publicSafe, true);
+  assert.equal(first.result.sourceSchema, "tinyrustlm.vnext.public_text.v1");
+  assert.equal(first.result.sourceClass, "public-text");
+  assert.match(first.result.sourceSubjectId, /^sha256:[a-f0-9]{64}$/u);
+  assert.deepEqual(first.outputBytes, bytes);
+  assert.notEqual(first.outputBytes, first.outputBytes);
+  assert.deepEqual(first.resultBytes, second.resultBytes);
+
+  for (const invalid of [
+    Buffer.from("", "utf8"),
+    Buffer.from("missing terminal newline", "utf8"),
+    Buffer.from("windows\r\n", "utf8"),
+    Buffer.from([0xef, 0xbb, 0xbf, 0x23, 0x0a]),
+    Buffer.from([0xc3, 0x28, 0x0a]),
+    Buffer.from([0x41, 0x00, 0x0a])
+  ]) {
+    throwsCode(() => scanVnextPublicTextBytes(invalid),
+      "redaction_public_text_wire_invalid");
+  }
+});
+
+test("blocks secrets and generic credential patterns in public text", () => {
+  const secret = "Synthetic-Live-Credential-9CePq2vLm8Hk";
+  const cases = [
+    [Buffer.from(`# Update\n\n${secret}\n`, "utf8"), [secret],
+      "known-secret-utf8"],
+    [Buffer.from("# Update\n\nAuthorization: Bearer abcdefghijklmnopqrstuvwxyz012345\n",
+      "utf8"), [], "authorization-header"],
+    [Buffer.from("# Update\n\nC:\\Users\\PrivateUser\\release.log\n", "utf8"), [],
+      "private-absolute-path"]
+  ];
+  for (const [bytes, knownSecrets, finding] of cases) {
+    const scan = scanVnextPublicTextBytes(bytes, { knownSecrets });
+    assert.equal(scan.publicSafe, false, finding);
+    assert.ok(scan.result.findingClasses.includes(finding), finding);
+    assert.equal(scan.outputBytes, null, finding);
+    assert.equal(scan.resultBytes.includes(Buffer.from(secret, "utf8")), false, finding);
+  }
 });
 
 test("accepts each finalized public contract without changing canonical bytes", () => {
@@ -344,7 +399,8 @@ test("builds canonical pass and fail receipts without secret values or identity 
   const verifiedPass = verifyVnextRedactionScanReceipt({
     knownSecrets: [],
     receiptBytes: pass.bytes,
-    targetBytes: passTarget.bytes
+    targetBytes: passTarget.bytes,
+    targetKind: "document"
   });
   assert.equal(verifiedPass.redactionReceiptVerified, true);
   assert.equal(verifiedPass.publicSafe, true);
@@ -374,14 +430,16 @@ test("builds canonical pass and fail receipts without secret values or identity 
   const verifiedFail = verifyVnextRedactionScanReceipt({
     knownSecrets: [secret],
     receiptBytes: fail.bytes,
-    targetBytes: failTarget.bytes
+    targetBytes: failTarget.bytes,
+    targetKind: "document"
   });
   assert.equal(verifiedFail.redactionReceiptVerified, true);
   assert.equal(verifiedFail.publicSafe, false);
   throwsCode(() => verifyVnextRedactionScanReceipt({
     knownSecrets: [],
     receiptBytes: fail.bytes,
-    targetBytes: failTarget.bytes
+    targetBytes: failTarget.bytes,
+    targetKind: "document"
   }), "redaction_receipt_binding_mismatch");
   const changedTarget = finalizedFor("claim", (draft) => {
     draft.publicWording = "A different public claim.";
@@ -389,6 +447,31 @@ test("builds canonical pass and fail receipts without secret values or identity 
   throwsCode(() => verifyVnextRedactionScanReceipt({
     knownSecrets: [],
     receiptBytes: pass.bytes,
-    targetBytes: changedTarget.bytes
+    targetBytes: changedTarget.bytes,
+    targetKind: "document"
   }), "redaction_receipt_binding_mismatch");
+
+  const textTarget = Buffer.from("# Release\n\n- Public-safe change.\n", "utf8");
+  const textScan = scanVnextPublicTextBytes(textTarget);
+  const textReceipt = createVnextRedactionScanReceipt({
+    attemptId: "redaction-text-001",
+    campaignId: "campaign-vnext-redaction",
+    completedAtUtc: "2026-08-09T06:05:00Z",
+    scan: textScan,
+    sourceRevision: `git-sha1:${"a".repeat(40)}`,
+    startedAtUtc: "2026-08-09T06:04:00Z"
+  });
+  const verifiedText = verifyVnextRedactionScanReceipt({
+    knownSecrets: [],
+    receiptBytes: textReceipt.bytes,
+    targetBytes: textTarget,
+    targetKind: "public-text"
+  });
+  assert.equal(verifiedText.publicSafe, true);
+  throwsCode(() => verifyVnextRedactionScanReceipt({
+    knownSecrets: [],
+    receiptBytes: textReceipt.bytes,
+    targetBytes: textTarget,
+    targetKind: "unknown"
+  }), "redaction_verifier_target_kind_invalid");
 });

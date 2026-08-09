@@ -6,7 +6,7 @@
   "contractRegistrySha256": "27101971058e6e0332f4a59f72c1c13abdef34b6b388f37b4d886dcf7a2cdecc",
   "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
   "defaultVisibility": "private",
-  "inputPolicy": "bounded-final-canonical-utf8-bytes-only",
+  "inputPolicy": "bounded-final-canonical-document-or-lf-utf8-public-text-bytes-only",
   "outputPolicy": "unchanged-canonical-bytes-on-pass-no-output-on-fail",
   "knownSecretPolicy": "private-equality-input-not-persisted-or-committed",
   "networkAccess": "forbidden",
@@ -24,6 +24,17 @@
     "companion",
     "context",
     "worker"
+  ],
+  "publicText": {
+    "schema": "tinyrustlm.vnext.public_text.v1",
+    "class": "public-text",
+    "identityDomain": "tinyrustlm.public_text.content.v1",
+    "encoding": "utf8-no-bom-lf-only-no-controls-terminal-lf",
+    "minimumBytes": 2
+  },
+  "verificationTargetKinds": [
+    "document",
+    "public-text"
   ],
   "forbiddenFieldNames": [
     "agentToken",

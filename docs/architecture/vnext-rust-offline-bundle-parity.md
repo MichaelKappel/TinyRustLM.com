@@ -33,7 +33,7 @@ The implementation binds:
 - generated cross-language corpus
   `contracts/vnext/offline-bundle-rust-vectors.v1.json`, 658,110 bytes,
   SHA-256
-  `3ebb070ed5ea4c39a7fbc124f11301cc624f78d1338d0db5f076f4c6e30d464c`;
+  `53d619c4ca4fcf1f1effe6f8678327cdeebd95c8953843da342e6374dcc9bf26`;
 - all seven exact profile bindings and all nine exact schema-descriptor
   hashes from contract family
   `tinyrustlm-vnext-2026-08-09-r4`; and

@@ -3,6 +3,7 @@
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
+const { TextDecoder } = require("node:util");
 
 const { parseStrictJson } = require("./strict-json.js");
 const {
@@ -163,7 +164,11 @@ const profileFields = Object.freeze([
   "knownSecretPolicy", "networkAccess", "sourceMutation", "redactionMarkersAllowed",
   "publicSafeClasses", "privateClasses", "forbiddenFieldNames",
   "forbiddenValueClasses", "knownSecretRepresentations", "detectorRuleIds",
-  "entropyExemptFieldTypes", "resultSchema", "resultFields", "limits"
+  "entropyExemptFieldTypes", "publicText", "verificationTargetKinds",
+  "resultSchema", "resultFields", "limits"
+]);
+const publicTextFields = Object.freeze([
+  "schema", "class", "identityDomain", "encoding", "minimumBytes"
 ]);
 const limitFields = Object.freeze([
   "maximumInputBytes", "maximumKnownSecrets", "minimumKnownSecretBytes",
@@ -175,6 +180,8 @@ const limitFields = Object.freeze([
 function validateInstalledProfile() {
   exactKeys(parsedProfile, profileFields, "redaction_profile_invalid", "redaction-profile");
   exactKeys(parsedProfile.limits, limitFields,
+    "redaction_profile_invalid", "redaction-profile");
+  exactKeys(parsedProfile.publicText, publicTextFields,
     "redaction_profile_invalid", "redaction-profile");
   const registrySha256 = sha256(registryBytes);
   const publicClasses = registry.contracts.filter((entry) => entry.visibility === "public-safe")
@@ -190,7 +197,8 @@ function validateInstalledProfile() {
       parsedProfile.status !== "frozen" ||
       parsedProfile.contractRegistrySha256 !== registrySha256 ||
       parsedProfile.defaultVisibility !== registry.redaction.defaultVisibility ||
-      parsedProfile.inputPolicy !== "bounded-final-canonical-utf8-bytes-only" ||
+      parsedProfile.inputPolicy !==
+        "bounded-final-canonical-document-or-lf-utf8-public-text-bytes-only" ||
       parsedProfile.outputPolicy !== "unchanged-canonical-bytes-on-pass-no-output-on-fail" ||
       parsedProfile.knownSecretPolicy !==
         "private-equality-input-not-persisted-or-committed" ||
@@ -206,6 +214,14 @@ function validateInstalledProfile() {
       !sameStrings(parsedProfile.knownSecretRepresentations, knownSecretRepresentations) ||
       !sameStrings(parsedProfile.detectorRuleIds, detectorRuleIds) ||
       !sortedUniqueStrings(parsedProfile.entropyExemptFieldTypes) ||
+      parsedProfile.publicText.schema !== "tinyrustlm.vnext.public_text.v1" ||
+      parsedProfile.publicText.class !== "public-text" ||
+      parsedProfile.publicText.identityDomain !== "tinyrustlm.public_text.content.v1" ||
+      parsedProfile.publicText.encoding !==
+        "utf8-no-bom-lf-only-no-controls-terminal-lf" ||
+      parsedProfile.publicText.minimumBytes !== 2 ||
+      !sameStrings(parsedProfile.verificationTargetKinds,
+        ["document", "public-text"]) ||
       !sortedUniqueStrings(parsedProfile.resultFields) ||
       parsedProfile.resultSchema !== "tinyrustlm.vnext.public_safe_scan_result.v1" ||
       parsedProfile.limits.maximumInputBytes !== maximumPublicBytes ||
@@ -236,6 +252,10 @@ const resultJcsLimits = Object.freeze({
   maximumArrayItems: parsedProfile.limits.maximumFindingClasses,
   maximumStringCodeUnits: 512,
   maximumTotalStringCodeUnits: 8192
+});
+const fatalUtf8Decoder = new TextDecoder("utf-8", {
+  fatal: true,
+  ignoreBOM: true
 });
 
 function normalizeBytes(input, code = "redaction_bytes_required") {
@@ -627,6 +647,69 @@ function scanVnextPublicDocumentBytes(input, options) {
     result.scanStatus === "pass" ? bytes : null);
 }
 
+function publicTextIdentity(bytes) {
+  return crypto.createHash("sha256")
+    .update(Buffer.from(parsedProfile.publicText.identityDomain, "utf8"))
+    .update(Buffer.from([0]))
+    .update(bytes)
+    .digest("hex");
+}
+
+function decodeCanonicalPublicText(bytes) {
+  if (bytes.length < parsedProfile.publicText.minimumBytes ||
+      bytes.length > parsedProfile.limits.maximumInputBytes ||
+      (bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) ||
+      bytes[bytes.length - 1] !== 0x0a) {
+    failEvidence("redaction_public_text_wire_invalid", "public-safe-text");
+  }
+  for (const byte of bytes) {
+    if (byte === 0x0d || byte === 0x7f ||
+        (byte < 0x20 && byte !== 0x09 && byte !== 0x0a)) {
+      failEvidence("redaction_public_text_wire_invalid", "public-safe-text");
+    }
+  }
+  let text;
+  try {
+    text = fatalUtf8Decoder.decode(bytes);
+  } catch {
+    failEvidence("redaction_public_text_wire_invalid", "public-safe-text");
+  }
+  if (!Buffer.from(text, "utf8").equals(bytes)) {
+    failEvidence("redaction_public_text_wire_invalid", "public-safe-text");
+  }
+  return text;
+}
+
+function scanVnextPublicTextBytes(input, options) {
+  const bytes = normalizeBytes(input);
+  const normalizedOptions = normalizeOptions(options);
+  const text = decodeCanonicalPublicText(bytes);
+  const secretScan = scanKnownSecretRepresentations(bytes,
+    normalizedOptions.knownSecrets.map((entry) => entry.secret));
+  const findings = new Set(secretScan.findingClasses);
+  scanString(text, "bounded-text", findings, normalizedOptions.knownSecrets);
+  const findingClasses = Object.freeze([...findings].sort());
+  const identity = publicTextIdentity(bytes);
+  const result = {
+    schema: parsedProfile.resultSchema,
+    profileId: parsedProfile.profileId,
+    profileSha256: publicSafeRedactionProfileSha256,
+    sourceSchema: parsedProfile.publicText.schema,
+    sourceClass: parsedProfile.publicText.class,
+    sourceSubjectId: `sha256:${identity}`,
+    sourceCanonicalContentSha256: identity,
+    sourceSha256: sha256(bytes),
+    sourceByteLength: bytes.length,
+    knownSecretCount: normalizedOptions.knownSecrets.length,
+    scanStatus: findingClasses.length === 0 ? "pass" : "fail",
+    findingCount: findingClasses.length,
+    findingClasses
+  };
+  const canonical = canonicalResult(result);
+  return immutableScan(result, canonical.bytes, canonical.sha256,
+    result.scanStatus === "pass" ? bytes : null);
+}
+
 function runtimeRecord() {
   const operatingSystem = process.platform === "win32" ? "windows" :
     process.platform === "darwin" ? "macos" :
@@ -742,7 +825,7 @@ function createVnextRedactionScanReceipt(input) {
 }
 
 const verifierInputFields = Object.freeze([
-  "knownSecrets", "receiptBytes", "targetBytes"
+  "knownSecrets", "receiptBytes", "targetBytes", "targetKind"
 ]);
 
 function verifyVnextRedactionScanReceipt(input) {
@@ -761,9 +844,13 @@ function verifyVnextRedactionScanReceipt(input) {
   if (receipt.receiptType !== "redaction-scan") {
     failEvidence("redaction_receipt_type_invalid", "redaction-verify");
   }
-  const scan = scanVnextPublicDocumentBytes(input.targetBytes, {
-    knownSecrets: input.knownSecrets
-  });
+  if (!parsedProfile.verificationTargetKinds.includes(input.targetKind)) {
+    failEvidence("redaction_verifier_target_kind_invalid", "redaction-verify");
+  }
+  const scanner = input.targetKind === "document"
+    ? scanVnextPublicDocumentBytes
+    : scanVnextPublicTextBytes;
+  const scan = scanner(input.targetBytes, { knownSecrets: input.knownSecrets });
   const expected = createVnextRedactionScanReceipt({
     attemptId: receipt.attemptId,
     campaignId: receipt.campaignId,
@@ -796,5 +883,6 @@ module.exports = Object.freeze({
   publicSafeRedactionProfileSha256,
   scanKnownSecretRepresentations,
   scanVnextPublicDocumentBytes,
+  scanVnextPublicTextBytes,
   verifyVnextRedactionScanReceipt
 });

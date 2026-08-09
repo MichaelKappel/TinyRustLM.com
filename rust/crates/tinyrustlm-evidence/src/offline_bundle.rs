@@ -59,11 +59,11 @@ const EXPECTED_PROFILE_BINDINGS: &[ExpectedProfileBinding] = &[
         sha256: "4f9c0f02f9e7fc55c2793ca9bbf9edd9e659b5737cc23eda98e40cc675074875",
     },
     ExpectedProfileBinding {
-        byte_length: 3_132,
+        byte_length: 3_473,
         document_id: "tinyrustlm.vnext.public-safe-redaction.v1",
         document_kind: "profile",
         name: "public-safe-redaction-profile",
-        sha256: "0997b30e11af8a8a24ae05521bd85c73f8429fe7bcd15b8311d75bf59e125024",
+        sha256: "83fcdd3590692304807e1ca62f82ad5873111cf0cce6b239bd51249d5c29d2b0",
     },
     ExpectedProfileBinding {
         byte_length: 5_726,

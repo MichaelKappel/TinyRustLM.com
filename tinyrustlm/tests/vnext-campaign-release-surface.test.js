@@ -167,7 +167,7 @@ test("freezes one no-compatibility campaign release surface profile", () => {
   const profile = parseStrictJson(bytes);
   assert.equal(campaignReleaseSurfaceProfileSha256, sha256(bytes));
   assert.equal(campaignReleaseSurfaceProfileSha256,
-    "a798083041c9cfd824c27625719f6313a4f3ef48bb0d457a81b027194360486a");
+    "53a31b50560ee12c122dc00bc396893788380dc4ddc200ecabf194ed69264541");
   assert.equal(campaignReleaseSurfaceProfile.profileId,
     "tinyrustlm.vnext.campaign-release-surface.v1");
   assert.equal(profile.status, "frozen");

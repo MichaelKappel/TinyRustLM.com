@@ -6,7 +6,7 @@
 turning a freshly executed campaign projection into immutable prepublication
 attestation evidence and an operator status view. Its frozen profile is
 `contracts/vnext/campaign-release-surface-profile.v1.json`, with SHA-256
-`a798083041c9cfd824c27625719f6313a4f3ef48bb0d457a81b027194360486a`.
+`53a31b50560ee12c122dc00bc396893788380dc4ddc200ecabf194ed69264541`.
 
 This checkpoint implements fresh projection, final attestation, public-safe
 redaction, and truthful operator status. Release-manifest preparation,
@@ -105,8 +105,11 @@ separate descendants and remain required.
 The caller supplies a bounded protected equality list in process memory. The
 surface validates that list before running, scans the finalized canonical
 attestation across the frozen redaction profile, and creates the one-way scan
-receipt from the scan capability. Secret values and representations are never
-written to a receipt, operation record, status view, error, or path.
+receipt from the scan capability. The same frozen scanner now also supports
+canonical LF UTF-8 public text for the forthcoming changelog input, but release
+preparation does not claim that integration until its own tests and receipt
+graph are complete. Secret values and representations are never written to a
+receipt, operation record, status view, error, or path.
 
 On scan pass, the surface create-only publishes the attestation and then the
 redaction receipt. On scan failure, it forbids attestation persistence, writes

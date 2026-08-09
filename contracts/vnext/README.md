@@ -120,6 +120,13 @@ outputs, hosted memory, model bytes, credentials, invitation material,
 private paths, and stable unnecessary user/hardware identifiers are never
 public evidence.
 
+The same profile admits release text only through the separate
+`tinyrustlm.vnext.public_text.v1` scanner. Those bytes must be fatal UTF-8 with
+no BOM, CR, disallowed controls, or missing terminal LF. The scanner derives a
+domain-separated text identity, applies known-secret, contextual pattern, and
+entropy rules, returns unchanged bytes only on pass, and requires an explicit
+`public-text` target kind when its receipt is replayed.
+
 Hashing a secret does not automatically make it public-safe. A hashed value is
 allowed only where the schema explicitly names that hash, its disclosure has a
 defined purpose, and the redaction scan accepts it.
@@ -284,7 +291,7 @@ The same crate now independently verifies exact offline manifest and member
 binding, the separate verification receipt, authority composition, closed
 receipt and subject membership, terminal currentness, and target current
 eligibility. Its public-only 658,110-byte corpus has SHA-256
-`3ebb070ed5ea4c39a7fbc124f11301cc624f78d1338d0db5f076f4c6e30d464c`
+`53d619c4ca4fcf1f1effe6f8678327cdeebd95c8953843da342e6374dcc9bf26`
 and freezes three accepted bundles plus 31 exact hostile rejection codes. See
 `docs/architecture/vnext-rust-offline-bundle-parity.md`.
 The same crate now independently produces and validates the exact truthful
@@ -329,7 +336,7 @@ best-of-N, mutable-currentness, or stored-result promotion path. See
 `tinyrustlm/tools/vnext-campaign-release-surface.js` now consumes that runner
 only by creating a never-before-used operation and receiving its exact result
 inside the same call. Its frozen profile has SHA-256
-`a798083041c9cfd824c27625719f6313a4f3ef48bb0d457a81b027194360486a`.
+`53a31b50560ee12c122dc00bc396893788380dc4ddc200ecabf194ed69264541`.
 The surface independently validates the returned projection against the exact
 stored plan and runner operation records, finalizes a content-addressed
 complete-or-blocked attestation, scans the final canonical bytes against the

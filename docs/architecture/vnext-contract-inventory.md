@@ -213,7 +213,7 @@ The sole exact cross-store Rust-backed campaign runner is documented in
 The fresh-runner-only immutable attestation and operator boundary is documented
 in `docs/architecture/vnext-campaign-release-surface.md`. Its frozen profile
 has SHA-256
-`a798083041c9cfd824c27625719f6313a4f3ef48bb0d457a81b027194360486a`.
+`53a31b50560ee12c122dc00bc396893788380dc4ddc200ecabf194ed69264541`.
 It admits no stored projection, caller verdict, counter set, dashboard state,
 or reused operation. It scans finalized attestation bytes before create-only
 receipt persistence and has no operator `done` state.
