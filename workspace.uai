@@ -1,9 +1,9 @@
-profile: tinyrustlm.source-workspace.v248
+profile: tinyrustlm.source-workspace.v250
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-09T01:50:24Z
+updated_utc: 2026-08-09T02:01:49Z
 current_workspace_handoff:
-  authority: This block is the first-read operational account as of `2026-08-09T01:50:24Z`. It summarizes current truth and takes precedence over incompatible present-tense wording in dated history below. Historical receipts remain immutable evidence for their stated scope only.
+  authority: This block is the first-read operational account as of `2026-08-09T02:01:49Z`. It summarizes current truth and takes precedence over incompatible present-tense wording in dated history below. Historical receipts remain immutable evidence for their stated scope only.
   cold_start_order:
     - Read this `current_workspace_handoff` block.
     - Read `version_authority`, the first current authorities under `active_product`, and `deploy_gate`.
@@ -23,13 +23,16 @@ current_workspace_handoff:
     goal: Implement the authoritative enterprise vNext plan, then qualify 20 distinct models, complete 50 deletion-backed clean-browser conversations, complete exactly 25 authorized live MemoryEndpoints continuity rounds, obtain 40 current outside-network lane proofs, publish 20 live catalog announcements, verify required packages/RIDs/sites, and preserve objective receipts. The goal remains active and incomplete.
     current_phase: `phase_2_contract_freeze`
     completed_phase_gate: ADR-001 through ADR-010 are accepted in `docs/architecture/adr/`; they freeze metadata grammar, SHA-256/Merkle identity, alignment/layout, companion transport, browser persistence, quantization profiles, WebGPU support, specialist composition, service-worker release behavior, and evidence signing.
-    current_contract_risk: Signature-bearing release authorization currently enters through ordinary `JSON.parse` in `tinyrustlm/tools/campaign-release-authorization-evidence.js`, so duplicate member names cannot be rejected before signature verification.
-    exact_next_action: Add one bounded fatal-UTF-8 duplicate-aware strict JSON parser; apply it at the release-authorization signature boundary; add hostile tests for plain and escaped duplicate keys, invalid UTF-8, BOM, lone surrogates, excessive depth/entries, unsafe numbers/negative zero, and trailing data; then freeze the incompatible vNext schema family, limits, unknown-field behavior, redaction contract, two independent validators, and hostile fixture corpus.
+    completed_contract_increment: `tinyrustlm/tools/strict-json.js` now provides bounded fatal-UTF-8 duplicate-aware parsing, and all three release-authorization files pass through it before schema or Ed25519 verification. The verifier tool hash binds both modules and identifies profile `tinyrustlm.strict-json.v1`; hostile tests cover literal/escaped/supplementary duplicate names, invalid UTF-8, BOMs, lone surrogates, depth/entry/string limits, unsafe numbers, negative zero, overflow/underflow, malformed grammar, and trailing data.
+    remaining_contract_risk: The full RFC 8785 cross-language corpus, domain-separated vNext receipt identity, role/registry/revocation/offline-bundle family, and every other signed raw-JSON entry point are not yet promoted. Existing v1 evidence remains historical and cannot satisfy vNext gates.
+    exact_next_action: Freeze the incompatible vNext schema family, global parser/resource limits, unknown-field behavior, and public-safe redaction contract; implement two independent validators plus one shared hostile fixture corpus; then threat-review the complete boundary and delete superseded parsers without compatibility shims.
     no_compatibility_shims: SLM2 and the vNext schema family are intentionally incompatible clean contracts. Do not retain SLM1 fallback, old aliases, dual readers/writers, conversion-kit downloads, or user-run handoff scripts in the new product path.
   verified_test_baseline:
     architecture_decision_tests: `node --test tests/architecture-decisions.test.js` passed 12, failed 0, skipped 0.
-    full_unit_suite: `npm run test:unit` passed 641, failed 0, skipped 0 in approximately 72.8 seconds, including real Chromium fault scenarios and local release smoke.
-    source_hygiene: `git diff --cached --check` passed for the ADR milestone. Re-run focused and full gates after contract implementation; this baseline does not prove campaign completion or production readiness.
+    strict_json_release_boundary_tests: `node --test tests/strict-json.test.js tests/campaign-release-authorization-evidence.test.js` passed 12, failed 0, skipped 0.
+    campaign_evidence_cluster: The architecture, strict JSON, evidence store/dashboard, final attestation, release authorization, and release evidence cluster passed 56, failed 0, skipped 0.
+    full_unit_suite: `npm run test:unit` passed 650, failed 0, skipped 0 in approximately 69.2 seconds, including real Chromium fault scenarios and local release smoke.
+    source_hygiene: `git diff --check` passed for the strict-parser increment and `git diff --cached --check` passed for the ADR milestone. This baseline does not prove campaign completion or production readiness.
   campaign_progress:
     qualified_distinct_model_hashes: `0/20`
     deletion_backed_clean_browser_rounds: `0/50`

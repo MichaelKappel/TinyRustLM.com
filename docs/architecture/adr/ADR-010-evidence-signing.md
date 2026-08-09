@@ -2,9 +2,11 @@
 
 ## Status
 
-Accepted as the target architecture. Canonical receipt hashing and selected
-Ed25519 verification exist locally; the complete role, rotation, revocation,
-and offline-verification profile is not yet promoted.
+Accepted as the target architecture. Canonical receipt hashing, selected
+Ed25519 verification, and bounded duplicate-aware parsing of the three raw
+release-authorization inputs exist locally; the complete canonicalization,
+role, rotation, revocation, and offline-verification profile is not yet
+promoted.
 
 ## Decision Date
 
@@ -118,9 +120,20 @@ authorization, quality, license, and campaign completeness.
 - **Observed local fact**: CampaignEvidenceStore canonicalizes closed receipt
   objects, derives SHA-256 receipt IDs, writes immutable files, rebuilds the
   DAG, and quarantines invalid records.
-- **Observed local fact**: current release authorization code validates bounded
-  authority registries and Ed25519 envelopes, but raw JSON parsing still uses
-  JSON.parse and therefore does not independently reject duplicate keys.
+- **Observed local fact**: `tinyrustlm/tools/strict-json.js` consumes bounded
+  bytes with fatal UTF-8 decoding and rejects BOMs, decoded duplicate member
+  names, lone surrogates, excessive depth/count/string sizes, unsafe integers,
+  negative zero, numeric overflow/underflow, malformed grammar, and trailing
+  data.
+- **Observed local fact**: release authorization parses the unsigned final
+  attestation, authority registry, and signed authorization envelope through
+  that strict parser before schema or Ed25519 verification; its verifier tool
+  hash binds both source modules and its receipt identifies strict-JSON profile
+  `tinyrustlm.strict-json.v1`.
+- **Observed local fact**: `tinyrustlm/tests/strict-json.test.js` and the release
+  authorization integration suite include literal, escaped-equivalent, and
+  supplementary-plane duplicate names plus malformed byte and resource-bound
+  vectors.
 - **Sourced public fact**: RFC 8785 specifies JCS canonical JSON at
   https://www.rfc-editor.org/rfc/rfc8785.
 - **Sourced public fact**: Ed25519 is specified by RFC 8032 at
@@ -155,6 +168,8 @@ stream-hashed and never loaded merely to sign a receipt.
 
 No throughput claim exists until native Rust, Node, browser WASM/JavaScript,
 and package consumers reproduce canonical bytes and verification results.
+The current strict-parser tests establish bounded functional behavior, not a
+maximum-size latency or memory claim.
 
 ## Compatibility Impact
 

@@ -10,6 +10,7 @@ const {
   releaseSignatureReceiptType,
   validateFinalAttestation
 } = require("./campaign-final-attestation.js");
+const { parseStrictJson, strictJsonProfile } = require("./strict-json.js");
 
 const authorityRegistrySchema = "tinyrustlm.release_authority_registry.v1";
 const authorizationEnvelopeSchema = "tinyrustlm.release_authorization_envelope.v1";
@@ -87,13 +88,12 @@ function readJsonFile(filePath, label) {
   invariant(stat?.isFile() && !stat.isSymbolicLink() && stat.size > 0 &&
     stat.size <= maximumInputBytes, `${label} must be a bounded regular non-symlink file`);
   const bytes = fs.readFileSync(resolved);
-  let value;
   try {
-    value = JSON.parse(bytes.toString("utf8").replace(/^\uFEFF/u, ""));
-  } catch (_error) {
-    throw new Error(`${label} is not valid JSON`);
+    const value = parseStrictJson(bytes, { maximumBytes: maximumInputBytes });
+    return Object.freeze({ path: resolved, bytes, sha256: sha256(bytes), value });
+  } catch (error) {
+    throw new Error(`${label} is not valid ${strictJsonProfile}: ${error.message}`);
   }
-  return Object.freeze({ path: resolved, bytes, sha256: sha256(bytes), value });
 }
 
 function validateAuthorityRegistry(value, expectedCampaignId, nowUtc) {
@@ -315,7 +315,17 @@ function recordReleaseAuthorizationVerification(options) {
     receipt.sourceRevision === sourceRevision);
   if (existing) return Object.freeze({ result, receipt: existing });
   const attempt = history.reduce((maximum, receipt) => Math.max(maximum, receipt.attempt), 0) + 1;
-  const toolHash = sha256(fs.readFileSync(__filename));
+  const strictJsonSourcePath = require.resolve("./strict-json.js");
+  const toolHash = sha256(canonicalJson({
+    schema: "tinyrustlm.tool_source_closure.v1",
+    tool: "tinyrustlm-release-authorization-verifier",
+    version: "2",
+    sources: [
+      { name: "campaign-release-authorization-evidence.js",
+        sha256: sha256(fs.readFileSync(__filename)) },
+      { name: "strict-json.js", sha256: sha256(fs.readFileSync(strictJsonSourcePath)) }
+    ]
+  }));
   const receipt = store.putReceipt({
     receiptType: releaseSignatureReceiptType,
     campaignId,
@@ -341,7 +351,7 @@ function recordReleaseAuthorizationVerification(options) {
     },
     sourceRevision,
     toolNames: ["tinyrustlm-release-authorization-verifier"],
-    toolVersions: ["1"],
+    toolVersions: ["2"],
     toolBinaryHashes: [toolHash],
     runtimeIdentifier: runtimeIdentifier(),
     operatingSystem: process.platform,
@@ -353,10 +363,11 @@ function recordReleaseAuthorizationVerification(options) {
     configurationHash: sha256(canonicalJson({
       authorityRegistrySha256: result.authorityRegistrySha256,
       authorizationVerificationSchema,
+      strictJsonProfile,
       sourceRevision
     })),
     publicSafeParameters: result,
-    boundedDiagnostics: { decision: result.decision },
+    boundedDiagnostics: { decision: result.decision, strictJsonProfile },
     blockerCode: null,
     externalEvidenceReferences: [],
     redactionVersion: "tinyrustlm.public-receipt-redaction.v1",

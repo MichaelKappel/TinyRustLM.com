@@ -216,4 +216,34 @@ test("records one content-addressed deployment verification receipt", (context) 
   assert.equal(first.receipt.inputHashes.releasePredicate, material.attestation.predicateSha256);
   assert.equal(first.receipt.attestationReference,
     `sha256:${first.result.authorizationEnvelopeSha256}`);
+  assert.deepEqual(first.receipt.toolVersions, ["2"]);
+  assert.equal(first.receipt.boundedDiagnostics.strictJsonProfile,
+    "tinyrustlm.strict-json.v1");
+});
+
+test("rejects duplicate signed-envelope members before authorization verification", (context) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-release-duplicate-json-"));
+  context.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const material = signedMaterial();
+  const attestationPath = path.join(root, "final-attestation.json");
+  const authorityRegistryPath = path.join(root, "release-authorities.json");
+  const authorizationEnvelopePath = path.join(root, "release-authorization.json");
+  fs.writeFileSync(attestationPath, `${JSON.stringify(material.attestation, null, 2)}\n`);
+  fs.writeFileSync(authorityRegistryPath, `${JSON.stringify(material.authorityRegistry, null, 2)}\n`);
+  const envelope = JSON.stringify(material.authorizationEnvelope);
+  const duplicate = envelope.replace(
+    '"decision":"authorize-release"',
+    '"decision":"authorize-release","dec\\u0069sion":"authorize-release"'
+  );
+  fs.writeFileSync(authorizationEnvelopePath, duplicate);
+  assert.throws(() => recordReleaseAuthorizationVerification({
+    campaignId,
+    evidenceRoot: path.join(root, "evidence"),
+    attestationPath,
+    authorityRegistryPath,
+    authorizationEnvelopePath,
+    sourceRevision,
+    nowUtc
+  }), /release authorization envelope is not valid .*duplicate object member/i);
+  assert.equal(fs.existsSync(path.join(root, "evidence")), false);
 });
