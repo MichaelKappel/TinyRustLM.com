@@ -1,0 +1,110 @@
+{
+  "schema": "tinyrustlm.vnext.campaign_plan_wasm_interface.v1",
+  "profileId": "tinyrustlm.vnext.campaign-plan-wasm.v1",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-clean-replacement",
+  "campaignPlanSchema": "tinyrustlm.vnext.campaign_plan.v1",
+  "campaignProjectionProfileId": "tinyrustlm.vnext.campaign-projection.v1",
+  "rustCrate": "tinyrustlm-evidence-wasm",
+  "wasmTarget": "wasm32-unknown-unknown",
+  "abiVersion": 1,
+  "maximumInputBytes": 1048576,
+  "maximumModuleBytes": 4194304,
+  "inputEncoding": "exact-utf8-json-bytes",
+  "resultEncoding": "exact-canonical-campaign-plan-bytes",
+  "browserGlobal": "TinyRustLMCampaignPlanVerifier",
+  "generatedRustPath": "rust/crates/tinyrustlm-evidence-wasm/src/generated_exports.rs",
+  "generatedBrowserPath": "tinyrustlm/tools/generated/vnext-campaign-plan-wasm.js",
+  "statusCodes": {
+    "ok": 0,
+    "boundaryError": 1,
+    "verificationError": 2,
+    "internalError": 3
+  },
+  "exports": {
+    "abiVersion": "trlm_evidence_abi_version",
+    "maximumInputBytes": "trlm_evidence_max_input_bytes",
+    "allocate": "trlm_evidence_allocate",
+    "release": "trlm_evidence_release",
+    "finalizeCampaignPlan": "trlm_campaign_plan_finalize",
+    "validateCampaignPlan": "trlm_campaign_plan_validate",
+    "resultLength": "trlm_evidence_result_len",
+    "copyResult": "trlm_evidence_copy_result",
+    "errorLength": "trlm_evidence_error_len",
+    "copyError": "trlm_evidence_copy_error"
+  },
+  "requiredImports": [],
+  "requiredExports": [
+    {
+      "name": "memory",
+      "kind": "memory"
+    },
+    {
+      "name": "trlm_campaign_plan_finalize",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_campaign_plan_validate",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_evidence_abi_version",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_evidence_allocate",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_evidence_copy_error",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_evidence_copy_result",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_evidence_error_len",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_evidence_max_input_bytes",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_evidence_release",
+      "kind": "function"
+    },
+    {
+      "name": "trlm_evidence_result_len",
+      "kind": "function"
+    },
+    {
+      "name": "__data_end",
+      "kind": "global"
+    },
+    {
+      "name": "__heap_base",
+      "kind": "global"
+    }
+  ],
+  "ownership": {
+    "inputAllocation": "caller-allocates-writes-invokes-and-releases",
+    "allocationIdentity": "exact-pointer-and-length-pair",
+    "resultCopy": "caller-allocates-exact-length-copies-and-releases",
+    "returnedPointers": "none",
+    "resultLifetime": "until-next-verifier-invocation-on-same-instance",
+    "crossInstanceState": "none"
+  },
+  "security": {
+    "networkAccess": "forbidden",
+    "filesystemAccess": "forbidden",
+    "clockAccess": "forbidden",
+    "environmentAccess": "forbidden",
+    "unknownImports": "reject",
+    "unknownExports": "reject",
+    "noncanonicalFinalWire": "reject",
+    "responseRepair": "forbidden",
+    "rawHostErrors": "forbidden"
+  }
+}

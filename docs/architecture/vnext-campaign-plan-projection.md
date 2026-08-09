@@ -196,9 +196,10 @@ facts, and fixture endpoints do not satisfy any live campaign objective.
 
 - Reproduce semantic currentness, authority, truthful projection, and their
   hostile corpus in independent Rust implementations.
-- Expose the Rust plan boundary to the browser through one generated WASM
-  interface and prove browser/Node/Rust byte parity without duplicating plan
-  semantics in handwritten browser JavaScript.
+- Preserve the completed generated browser WASM plan boundary and its exact
+  browser/Node/Rust byte parity; do not duplicate plan semantics in handwritten
+  browser JavaScript. See
+  `docs/architecture/vnext-campaign-plan-wasm-boundary.md`.
 - Bind the projection result into final attestation, release authorization,
   rendered operator status, maintained documentation, and public readback.
 - Replace fixture objective evidence only with authorized raw production

@@ -621,6 +621,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "tinyrustlm-evidence-wasm"
+version = "0.1.8"
+dependencies = [
+ "tinyrustlm-evidence",
+]
+
+[[package]]
 name = "tinyrustlm-local-connect"
 version = "0.1.8"
 dependencies = [

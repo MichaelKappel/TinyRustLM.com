@@ -4,7 +4,9 @@
   "private": true,
   "description": "Browser acceptance tests for the TinyRustLM web-to-companion boundary.",
   "scripts": {
+    "generate:vnext-campaign-plan-wasm": "node tools/vnext-campaign-plan-wasm-codegen.js --write",
     "test:unit": "node --test tests/*.test.js",
+    "test:vnext-campaign-plan-wasm": "node --test tests/vnext-campaign-plan-wasm.test.js",
     "test:ui": "node --test tests/browser-model-admission.test.js tests/browser-round-evidence.test.js tests/companion-bridge.test.js tests/fresh-browser-conversation.test.js tests/model-acquisition-v2.test.js tests/run-browser-round.test.js tests/site-release-browser.test.js tests/site-release-contract.test.js tests/static-shell-parity.test.js tests/web-deployment-manifest.test.js tests/web-release-browser-smoke.test.js",
     "test:deployment": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/deploy-tinyrustlm-web.test.ps1",
     "smoke:web-release-local": "node tools/web-release-local-smoke.js",

@@ -1,0 +1,17 @@
+[package]
+name = "tinyrustlm-evidence-wasm"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Generated raw WebAssembly boundary for strict TinyRustLM campaign evidence."
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+tinyrustlm-evidence = { path = "../tinyrustlm-evidence" }
+
+[lints]
+workspace = true

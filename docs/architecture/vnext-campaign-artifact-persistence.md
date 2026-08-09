@@ -131,7 +131,8 @@ not live campaign evidence.
   authorization, operator rendering, documentation synchronization, and
   public readback.
 - Add independent Rust currentness, authority, and projection parity.
-- Expose the Rust plan verifier through the generated browser WASM boundary.
+- Preserve the completed generated browser WASM plan-verifier boundary and its
+  exact Node/Rust/real-Chromium parity.
 - Replace fixture evidence only with authorized production receipts.
 
 Campaign status remains 0/20 qualified models, 0/50 clean-browser rounds,

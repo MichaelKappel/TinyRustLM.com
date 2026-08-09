@@ -237,6 +237,10 @@ authority-eligible evidence whose required earlier objectives are current.
 exact closed campaign-plan wire for native and `wasm32-unknown-unknown`
 targets. The Node generator and two checked-in parity vectors bind both
 implementations to identical draft bytes, plan ID, final bytes, and SHA-256.
+`campaign-plan-wasm-interface.v1.json` freezes the typed raw browser ABI.
+One generator emits both the Rust export facade and byte-transport-only browser
+adapter; Node and two independent real Chromium profiles reproduce the exact
+plan bytes and stable verifier failures through the zero-import WASM module.
 The complete synthetic capacity fixture verifies a 271-receipt offline bundle
 with 155 target signatures and 40 proof subjects; it changes no live campaign
 counter. See `docs/architecture/vnext-phase-invalidation.md` and
@@ -274,10 +278,11 @@ complete member set. `docs/architecture/vnext-offline-verification-bundle.md`
 defines the exact boundary.
 
 This remains primarily a Node implementation checkpoint. Exact campaign-plan
-finalization now has independent Rust parity, but currentness, authority,
-projection, artifact persistence, browser invocation, and the broader hostile
-corpus do not yet have cross-language parity. This is not production entry-point
-cutover, outside-network observation, or campaign evidence. Runtime tests
+finalization has independent Rust parity, exact plan/projection-result
+persistence is implemented, and plan finalization/validation has a generated
+real-browser WASM boundary. Currentness, authority, projection, and the broader
+hostile corpus do not yet have cross-language parity. This is not production
+entry-point cutover, outside-network observation, or campaign evidence. Runtime tests
 generate ephemeral private keys only in process memory. Checked-in profiles
 and vectors contain public material only.
 

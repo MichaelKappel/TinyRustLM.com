@@ -5,9 +5,12 @@
 This checkpoint independently implements the exact vNext campaign-plan
 finalization boundary in Rust. It proves deterministic parity with the frozen
 Node plan bytes and makes the same code compilable for native and browser WASM
-targets. It does not implement the evidence currentness classifier, signature
-authority graph, campaign projection, durable receipt storage, browser glue,
-release authorization, or any live campaign operation.
+targets. A later checkpoint now invokes the same crate through one generated
+real-browser WASM boundary; see
+`docs/architecture/vnext-campaign-plan-wasm-boundary.md`. Neither checkpoint
+implements the evidence currentness classifier, signature authority graph,
+Rust campaign projection, production campaign-runner integration, release
+authorization, or any live campaign operation.
 
 No fixture in this checkpoint is production evidence. All campaign counters
 remain 0/20 qualified models, 0/50 clean-browser rounds, 0/25 live memory
@@ -139,7 +142,7 @@ that the cross-field mismatch rejects. This is immutable evidence validation,
 not a compatibility reader: there is one current validator rule, and every
 build receipt must bind to the lockfile in its own authenticated input set.
 
-## Next Integration Boundary
+## Current Integration Boundary
 
 Node now has create-only durable persistence for canonical plan and projection
 bytes, interruption-safe staging, bounded reconstruction, parent-plan
@@ -147,7 +150,9 @@ revalidation, and resume by authoritative reprojection. The persisted
 projection remains immutable history rather than self-authenticating current
 truth. See `docs/architecture/vnext-campaign-artifact-persistence.md`.
 
-The next major slice must expose this Rust plan verifier to the browser through
-one generated WASM boundary. Full Rust currentness, authority, and projection
-parity remain separate required work before Rust or browser code can make a
-campaign-completion claim.
+`tinyrustlm-evidence-wasm` now exposes this verifier through one generated,
+bounded, zero-import browser ABI. Node and two independent real Chromium
+profiles reproduce the exact frozen final bytes and stable failures without a
+handwritten JavaScript plan implementation. Full Rust currentness, authority,
+and projection parity remain separate required work before Rust or browser
+code can make a campaign-completion claim.
