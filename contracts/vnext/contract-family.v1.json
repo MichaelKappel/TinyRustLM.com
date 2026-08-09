@@ -1,0 +1,539 @@
+{
+  "schema": "tinyrustlm.vnext.contract_registry.v1",
+  "familyId": "tinyrustlm-vnext-2026-08-09",
+  "status": "frozen",
+  "compatibility": "incompatible-clean-slate",
+  "unknownFieldPolicy": "reject-at-every-object",
+  "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
+  "identityProfile": {
+    "hashAlgorithm": "sha256",
+    "contentIdPrefix": "sha256:",
+    "hexCase": "lowercase",
+    "domainSeparatorByte": 0,
+    "identityExclusionsDeclaredPerContract": true
+  },
+  "limits": {
+    "maximumDepth": 32,
+    "maximumTotalEntries": 32768,
+    "maximumObjectMembers": 128,
+    "maximumArrayItems": 16384,
+    "maximumStringCodeUnits": 65536,
+    "maximumTotalStringCodeUnits": 1048576,
+    "maximumNumberCharacters": 64,
+    "maximumSafeInteger": 9007199254740991
+  },
+  "redaction": {
+    "profile": "tinyrustlm.vnext.public_safe.v1",
+    "defaultVisibility": "private",
+    "publicSafeClasses": ["artifact", "receipt", "p2p", "proof", "release", "claim"],
+    "privateClasses": ["context", "worker", "companion"],
+    "requiredPublicScanReceipt": true,
+    "forbiddenFieldNames": [
+      "agentToken",
+      "apiKey",
+      "authorization",
+      "authorizationHeader",
+      "bearerToken",
+      "companyCredential",
+      "credential",
+      "enrollmentSecret",
+      "enrollmentUrl",
+      "invitationUrl",
+      "modelBytes",
+      "password",
+      "privateKey",
+      "promptText",
+      "rawHostedMemory",
+      "rawOutput",
+      "rawPrompt",
+      "secret",
+      "token",
+      "workspaceKey"
+    ],
+    "forbiddenValueClasses": [
+      "absolute-private-path",
+      "authorization-header",
+      "credential-bearing-url",
+      "private-signing-key",
+      "raw-hosted-memory",
+      "raw-model-bytes",
+      "raw-prompt-or-output",
+      "stable-unnecessary-user-or-hardware-identifier",
+      "unbounded-exception-message"
+    ],
+    "publicUrlPolicy": "https-no-userinfo-query-fragment",
+    "errorPolicy": "registered-code-and-step-only",
+    "screenshotPolicy": "hash-and-redaction-receipt-only"
+  },
+  "records": [
+    {
+      "name": "hashBinding",
+      "fields": [
+        {"name": "name", "type": "safe-id", "required": true},
+        {"name": "sha256", "type": "sha256", "required": true}
+      ]
+    },
+    {
+      "name": "tool",
+      "fields": [
+        {"name": "name", "type": "safe-id", "required": true},
+        {"name": "version", "type": "bounded-string", "required": true, "minimumLength": 1, "maximumLength": 64},
+        {"name": "binarySha256", "type": "sha256", "required": true}
+      ]
+    },
+    {
+      "name": "runtime",
+      "fields": [
+        {"name": "runtimeIdentifier", "type": "safe-id", "required": true},
+        {"name": "operatingSystem", "type": "enum", "required": true, "values": ["browser", "linux", "macos", "windows"]},
+        {"name": "architecture", "type": "enum", "required": true, "values": ["aarch64", "wasm32", "x86_64"]},
+        {"name": "executionClass", "type": "enum", "required": true, "values": ["browser", "deployment", "emulated", "fixture", "live-service", "local", "outside-network", "package", "physical-hardware"]}
+      ]
+    },
+    {
+      "name": "publicParameter",
+      "fields": [
+        {"name": "name", "type": "safe-id", "required": true},
+        {"name": "value", "type": "bounded-string", "required": true, "minimumLength": 1, "maximumLength": 512},
+        {"name": "unit", "type": "nullable", "required": true, "valueType": "safe-id"}
+      ]
+    },
+    {
+      "name": "error",
+      "fields": [
+        {"name": "code", "type": "safe-id", "required": true},
+        {"name": "failureStep", "type": "safe-id", "required": true},
+        {"name": "retryStatus", "type": "enum", "required": true, "values": ["none", "retryable", "terminal"]},
+        {"name": "rollbackStatus", "type": "enum", "required": true, "values": ["completed", "failed", "not-required", "pending"]}
+      ]
+    },
+    {
+      "name": "externalReference",
+      "fields": [
+        {"name": "kind", "type": "enum", "required": true, "values": ["https", "receipt"]},
+        {"name": "value", "type": "bounded-string", "required": true, "minimumLength": 1, "maximumLength": 2048}
+      ]
+    },
+    {
+      "name": "redaction",
+      "fields": [
+        {"name": "profile", "type": "literal", "required": true, "value": "tinyrustlm.vnext.public_safe.v1"},
+        {"name": "decision", "type": "literal", "required": true, "value": "public-safe"}
+      ]
+    },
+    {
+      "name": "signatureEnvelope",
+      "fields": [
+        {"name": "algorithm", "type": "literal", "required": true, "value": "ed25519"},
+        {"name": "role", "type": "enum", "required": true, "values": ["local-recorder", "outside-network-observer", "p2p-publisher", "release-authorizer", "site-publisher"]},
+        {"name": "signatureDomain", "type": "enum", "required": true, "values": ["tinyrustlm.signature.local-recorder.v1", "tinyrustlm.signature.outside-network-observer.v1", "tinyrustlm.signature.p2p-publisher.v1", "tinyrustlm.signature.release-authorizer.v1", "tinyrustlm.signature.site-publisher.v1"]},
+        {"name": "signerId", "type": "safe-id", "required": true},
+        {"name": "keyId", "type": "safe-id", "required": true},
+        {"name": "authorityRegistryReceiptId", "type": "content-id", "required": true},
+        {"name": "signedSubjectId", "type": "content-id", "required": true},
+        {"name": "signedSchema", "type": "safe-id", "required": true},
+        {"name": "campaignId", "type": "safe-id", "required": true},
+        {"name": "releaseId", "type": "nullable", "required": true, "valueType": "content-id"},
+        {"name": "scope", "type": "safe-id", "required": true},
+        {"name": "signedPayloadSha256", "type": "sha256", "required": true},
+        {"name": "nonceHash", "type": "sha256", "required": true},
+        {"name": "issuedAtUtc", "type": "utc", "required": true},
+        {"name": "expiresAtUtc", "type": "nullable", "required": true, "valueType": "utc"},
+        {"name": "signature", "type": "ed25519-signature", "required": true}
+      ]
+    },
+    {
+      "name": "authorityKey",
+      "fields": [
+        {"name": "keyId", "type": "safe-id", "required": true},
+        {"name": "signerId", "type": "safe-id", "required": true},
+        {"name": "role", "type": "enum", "required": true, "values": ["local-recorder", "outside-network-observer", "p2p-publisher", "release-authorizer", "site-publisher"]},
+        {"name": "publicKey", "type": "ed25519-public-key", "required": true},
+        {"name": "status", "type": "enum", "required": true, "values": ["active", "retired", "revoked"]},
+        {"name": "validFromUtc", "type": "utc", "required": true},
+        {"name": "validUntilUtc", "type": "nullable", "required": true, "valueType": "utc"}
+      ]
+    },
+    {
+      "name": "authorityRegistry",
+      "fields": [
+        {"name": "environment", "type": "enum", "required": true, "values": ["development", "production", "staging"]},
+        {"name": "previousRegistryReceiptId", "type": "nullable", "required": true, "valueType": "content-id"},
+        {"name": "effectiveAtUtc", "type": "utc", "required": true},
+        {"name": "expiresAtUtc", "type": "utc", "required": true},
+        {"name": "allowedClockSkewSeconds", "type": "integer", "required": true, "minimum": 0, "maximum": 3600},
+        {"name": "keys", "type": "array", "required": true, "items": "record:authorityKey", "minimumItems": 1, "maximumItems": 64, "uniqueBy": "keyId", "sortedBy": "keyId"}
+      ]
+    },
+    {
+      "name": "keyRevocation",
+      "fields": [
+        {"name": "authorityRegistryReceiptId", "type": "content-id", "required": true},
+        {"name": "keyId", "type": "safe-id", "required": true},
+        {"name": "role", "type": "enum", "required": true, "values": ["local-recorder", "outside-network-observer", "p2p-publisher", "release-authorizer", "site-publisher"]},
+        {"name": "effectiveAtUtc", "type": "utc", "required": true},
+        {"name": "compromiseAtUtc", "type": "nullable", "required": true, "valueType": "utc"},
+        {"name": "reasonCode", "type": "safe-id", "required": true},
+        {"name": "scope", "type": "safe-id", "required": true},
+        {"name": "predecessorRegistryReceiptId", "type": "content-id", "required": true},
+        {"name": "replacementKeyId", "type": "nullable", "required": true, "valueType": "safe-id"}
+      ]
+    },
+    {
+      "name": "offlineBundle",
+      "fields": [
+        {"name": "bundleManifestSha256", "type": "sha256", "required": true},
+        {"name": "receiptIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 1, "maximumItems": 2048, "unique": true, "sorted": true},
+        {"name": "signatureEnvelopeReceiptIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 1, "maximumItems": 256, "unique": true, "sorted": true},
+        {"name": "authorityRegistryReceiptIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 1, "maximumItems": 64, "unique": true, "sorted": true},
+        {"name": "revocationReceiptIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 0, "maximumItems": 256, "unique": true, "sorted": true},
+        {"name": "schemaHashes", "type": "array", "required": true, "items": "record:hashBinding", "minimumItems": 9, "maximumItems": 32, "uniqueBy": "name", "sortedBy": "name"},
+        {"name": "createdAtUtc", "type": "utc", "required": true}
+      ]
+    },
+    {
+      "name": "contextSegment",
+      "fields": [
+        {"name": "ordinal", "type": "integer", "required": true, "minimum": 0, "maximum": 127},
+        {"name": "role", "type": "enum", "required": true, "values": ["assistant", "data", "system", "user"]},
+        {"name": "sourceKind", "type": "enum", "required": true, "values": ["current-user", "model-summary", "prior-assistant", "product-policy", "quoted-text", "required-generation-prefix", "retrieved-text", "tool-output", "trusted-memory", "untrusted-memory"]},
+        {"name": "trust", "type": "enum", "required": true, "values": ["authoritative", "trusted", "untrusted"]},
+        {"name": "content", "type": "bounded-string", "required": true, "minimumLength": 1, "maximumLength": 65536},
+        {"name": "contentSha256", "type": "sha256", "required": true},
+        {"name": "sourceRecordIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 0, "maximumItems": 32, "unique": true, "sorted": true},
+        {"name": "sourceReceiptIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 0, "maximumItems": 32, "unique": true, "sorted": true},
+        {"name": "supersedesSourceRecordIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 0, "maximumItems": 32, "unique": true, "sorted": true},
+        {"name": "conflictGroupId", "type": "nullable", "required": true, "valueType": "safe-id"}
+      ]
+    },
+    {
+      "name": "tokenBudget",
+      "fields": [
+        {"name": "contextLimit", "type": "integer", "required": true, "minimum": 1, "maximum": 1048576},
+        {"name": "reservedOutputTokens", "type": "integer", "required": true, "minimum": 1, "maximum": 1048576},
+        {"name": "suppliedTokens", "type": "integer", "required": true, "minimum": 1, "maximum": 1048576},
+        {"name": "truncatedTokens", "type": "integer", "required": true, "minimum": 0, "maximum": 1048576}
+      ]
+    },
+    {
+      "name": "piece",
+      "fields": [
+        {"name": "index", "type": "integer", "required": true, "minimum": 0, "maximum": 16383},
+        {"name": "offset", "type": "integer", "required": true, "minimum": 0, "maximum": 68719476735},
+        {"name": "length", "type": "integer", "required": true, "minimum": 1, "maximum": 4194304},
+        {"name": "sha256", "type": "sha256", "required": true}
+      ]
+    },
+    {
+      "name": "checkedRoute",
+      "fields": [
+        {"name": "method", "type": "enum", "required": true, "values": ["GET", "HEAD"]},
+        {"name": "path", "type": "bounded-string", "required": true, "minimumLength": 1, "maximumLength": 512},
+        {"name": "status", "type": "integer", "required": true, "minimum": 200, "maximum": 299},
+        {"name": "byteLength", "type": "integer", "required": true, "minimum": 0, "maximum": 68719476736},
+        {"name": "responseSha256", "type": "sha256", "required": true}
+      ]
+    }
+  ],
+  "contracts": [
+    {
+      "class": "artifact",
+      "schema": "tinyrustlm.vnext.artifact_manifest.v1",
+      "maximumBytes": 524288,
+      "visibility": "public-safe",
+      "identityDomain": "tinyrustlm.artifact_manifest.content.v1",
+      "identityDerivation": "complete-artifact-sha256",
+      "identityField": "artifactId",
+      "canonicalHashField": "canonicalContentSha256",
+      "identityExcludedFields": ["canonicalContentSha256"],
+      "invariants": ["artifact-id-matches-artifact-sha256", "dependencies-unique-sorted", "qualification-required-for-promoted-model", "public-redaction-profile-required"],
+      "fields": [
+        {"name": "schema", "type": "literal", "required": true, "value": "tinyrustlm.vnext.artifact_manifest.v1"},
+        {"name": "artifactId", "type": "content-id", "required": true},
+        {"name": "canonicalContentSha256", "type": "sha256", "required": true},
+        {"name": "artifactClass", "type": "enum", "required": true, "values": ["base-model", "composition", "low-rank-adapter", "sbom", "specialist-model", "template", "tokenizer"]},
+        {"name": "formatProfile", "type": "enum", "required": true, "values": ["acg2.0", "cyclonedx-json-1.6", "lora2.0", "slm2.0", "template2.0", "tokenizer2.0"]},
+        {"name": "byteLength", "type": "integer", "required": true, "minimum": 1, "maximum": 68719476736},
+        {"name": "artifactSha256", "type": "sha256", "required": true},
+        {"name": "metadataSha256", "type": "sha256", "required": true},
+        {"name": "dependencyArtifactIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 0, "maximumItems": 64, "unique": true, "sorted": true},
+        {"name": "pieceManifestId", "type": "nullable", "required": true, "valueType": "content-id"},
+        {"name": "provenanceReceiptId", "type": "content-id", "required": true},
+        {"name": "qualificationReceiptId", "type": "nullable", "required": true, "valueType": "content-id"},
+        {"name": "licenseExpression", "type": "bounded-string", "required": true, "minimumLength": 1, "maximumLength": 256},
+        {"name": "createdAtUtc", "type": "utc", "required": true},
+        {"name": "redaction", "type": "record", "required": true, "record": "redaction"}
+      ]
+    },
+    {
+      "class": "receipt",
+      "schema": "tinyrustlm.vnext.receipt.v1",
+      "maximumBytes": 262144,
+      "visibility": "public-safe",
+      "identityDomain": "tinyrustlm.receipt.content.v1",
+      "identityDerivation": "domain-separated-jcs",
+      "identityField": "receiptId",
+      "canonicalHashField": "canonicalContentSha256",
+      "identityExcludedFields": ["canonicalContentSha256", "receiptId"],
+      "invariants": ["receipt-id-domain-hash", "completed-not-before-started", "parent-ids-unique-sorted", "failure-status-requires-error", "pass-status-forbids-error", "public-receipt-has-redaction-profile", "redaction-scan-binds-target-hash-without-cycle", "external-reference-kind-valid", "typed-security-payload-matches-receipt-type", "security-receipts-require-pass-status", "signed-schema-known-exact", "signature-role-domain-match", "signature-key-registry-role-scope-time-valid", "authority-registry-chain-and-window-valid", "revocation-chain-role-and-time-valid", "offline-bundle-closure-complete"],
+      "fields": [
+        {"name": "schema", "type": "literal", "required": true, "value": "tinyrustlm.vnext.receipt.v1"},
+        {"name": "receiptId", "type": "content-id", "required": true},
+        {"name": "canonicalContentSha256", "type": "sha256", "required": true},
+        {"name": "receiptType", "type": "enum", "required": true, "values": ["acquisition", "authority-registry", "browser-round", "catalog-announcement", "conversation-evaluation", "conversion", "deployment", "discovery", "final-attestation", "key-revocation", "lane-serve", "memory-continuity", "native-evaluation", "offline-verification-bundle", "outside-proof", "p2p-preparation", "package", "public-readback", "qualification", "redaction-scan", "review", "screening", "signature-envelope", "site-synchronization", "structure", "training", "training-preparation"]},
+        {"name": "campaignId", "type": "safe-id", "required": true},
+        {"name": "attemptId", "type": "safe-id", "required": true},
+        {"name": "phase", "type": "safe-id", "required": true},
+        {"name": "status", "type": "enum", "required": true, "values": ["blocked", "fail", "pass", "rejected", "stale", "superseded"]},
+        {"name": "startedAtUtc", "type": "utc", "required": true},
+        {"name": "completedAtUtc", "type": "utc", "required": true},
+        {"name": "sourceRevision", "type": "source-revision", "required": true},
+        {"name": "inputReceiptIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 0, "maximumItems": 256, "unique": true, "sorted": true},
+        {"name": "inputHashes", "type": "array", "required": true, "items": "record:hashBinding", "minimumItems": 0, "maximumItems": 256, "uniqueBy": "name", "sortedBy": "name"},
+        {"name": "outputHashes", "type": "array", "required": true, "items": "record:hashBinding", "minimumItems": 0, "maximumItems": 256, "uniqueBy": "name", "sortedBy": "name"},
+        {"name": "tools", "type": "array", "required": true, "items": "record:tool", "minimumItems": 1, "maximumItems": 32, "uniqueBy": "name", "sortedBy": "name"},
+        {"name": "configurationSha256", "type": "sha256", "required": true},
+        {"name": "runtime", "type": "record", "required": true, "record": "runtime"},
+        {"name": "publicParameters", "type": "array", "required": true, "items": "record:publicParameter", "minimumItems": 0, "maximumItems": 128, "uniqueBy": "name", "sortedBy": "name"},
+        {"name": "error", "type": "nullable", "required": true, "valueType": "record:error"},
+        {"name": "blockerCode", "type": "nullable", "required": true, "valueType": "safe-id"},
+        {"name": "externalEvidenceReferences", "type": "array", "required": true, "items": "record:externalReference", "minimumItems": 0, "maximumItems": 64, "uniqueBy": "value", "sortedBy": "value"},
+        {"name": "redaction", "type": "record", "required": true, "record": "redaction"},
+        {"name": "attestationReference", "type": "nullable", "required": true, "valueType": "content-id"},
+        {"name": "signatureEnvelope", "type": "nullable", "required": true, "valueType": "record:signatureEnvelope"},
+        {"name": "authorityRegistry", "type": "nullable", "required": true, "valueType": "record:authorityRegistry"},
+        {"name": "keyRevocation", "type": "nullable", "required": true, "valueType": "record:keyRevocation"},
+        {"name": "offlineBundle", "type": "nullable", "required": true, "valueType": "record:offlineBundle"},
+        {"name": "supersedesReceiptIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 0, "maximumItems": 64, "unique": true, "sorted": true}
+      ]
+    },
+    {
+      "class": "context",
+      "schema": "tinyrustlm.vnext.context.v1",
+      "maximumBytes": 1048576,
+      "visibility": "private",
+      "identityDomain": "tinyrustlm.context.content.v1",
+      "identityDerivation": "domain-separated-jcs",
+      "identityField": "contextId",
+      "canonicalHashField": "canonicalContentSha256",
+      "identityExcludedFields": ["canonicalContentSha256", "contextId"],
+      "invariants": ["context-id-domain-hash", "segment-ordinals-contiguous", "segment-content-hashes-match", "exactly-one-current-user-authority", "token-budget-consistent", "memory-segments-never-authoritative", "untrusted-data-never-authoritative", "summary-and-memory-lineage-required", "current-user-supersession-explicit"],
+      "fields": [
+        {"name": "schema", "type": "literal", "required": true, "value": "tinyrustlm.vnext.context.v1"},
+        {"name": "contextId", "type": "content-id", "required": true},
+        {"name": "canonicalContentSha256", "type": "sha256", "required": true},
+        {"name": "modelArtifactId", "type": "content-id", "required": true},
+        {"name": "compositionArtifactId", "type": "nullable", "required": true, "valueType": "content-id"},
+        {"name": "tokenizerArtifactId", "type": "content-id", "required": true},
+        {"name": "templateArtifactId", "type": "content-id", "required": true},
+        {"name": "policyArtifactId", "type": "content-id", "required": true},
+        {"name": "compilerProfile", "type": "safe-id", "required": true},
+        {"name": "compilerSha256", "type": "sha256", "required": true},
+        {"name": "kvProfile", "type": "safe-id", "required": true},
+        {"name": "conversationIdHash", "type": "sha256", "required": true},
+        {"name": "turnId", "type": "safe-id", "required": true},
+        {"name": "memorySnapshotReceiptId", "type": "nullable", "required": true, "valueType": "content-id"},
+        {"name": "startupPackageId", "type": "nullable", "required": true, "valueType": "content-id"},
+        {"name": "segments", "type": "array", "required": true, "items": "record:contextSegment", "minimumItems": 1, "maximumItems": 128},
+        {"name": "tokenBudget", "type": "record", "required": true, "record": "tokenBudget"},
+        {"name": "privacyClass", "type": "literal", "required": true, "value": "private-volatile"},
+        {"name": "persistence", "type": "literal", "required": true, "value": "memory-only"},
+        {"name": "createdAtUtc", "type": "utc", "required": true}
+      ]
+    },
+    {
+      "class": "worker",
+      "schema": "tinyrustlm.vnext.worker_message.v1",
+      "maximumBytes": 65536,
+      "visibility": "private",
+      "identityDomain": null,
+      "identityDerivation": "private-correlation-only",
+      "identityField": null,
+      "canonicalHashField": null,
+      "identityExcludedFields": [],
+      "invariants": ["payload-transferred-separately", "payload-hash-and-length-match", "generation-events-match-generation-id", "cancel-invalidates-later-events", "deadline-bounded"],
+      "fields": [
+        {"name": "schema", "type": "literal", "required": true, "value": "tinyrustlm.vnext.worker_message.v1"},
+        {"name": "protocol", "type": "literal", "required": true, "value": "tinyrustlm-worker-vnext-1"},
+        {"name": "messageId", "type": "safe-id", "required": true},
+        {"name": "sessionIdHash", "type": "sha256", "required": true},
+        {"name": "generationId", "type": "nullable", "required": true, "valueType": "safe-id"},
+        {"name": "direction", "type": "enum", "required": true, "values": ["event", "request"]},
+        {"name": "operation", "type": "enum", "required": true, "values": ["activate", "cancel", "completed", "delete", "failed", "generate", "load", "preflight", "status", "token", "unload"]},
+        {"name": "deadlineMilliseconds", "type": "integer", "required": true, "minimum": 1, "maximum": 600000},
+        {"name": "subjectId", "type": "nullable", "required": true, "valueType": "content-id"},
+        {"name": "payloadBytes", "type": "integer", "required": true, "minimum": 0, "maximum": 1073741824},
+        {"name": "payloadSha256", "type": "sha256", "required": true},
+        {"name": "transferCount", "type": "integer", "required": true, "minimum": 0, "maximum": 16},
+        {"name": "sentAtUtc", "type": "utc", "required": true},
+        {"name": "privacyClass", "type": "literal", "required": true, "value": "private-session"}
+      ]
+    },
+    {
+      "class": "companion",
+      "schema": "tinyrustlm.vnext.companion_message.v1",
+      "maximumBytes": 65536,
+      "visibility": "private",
+      "identityDomain": null,
+      "identityDerivation": "private-correlation-only",
+      "identityField": null,
+      "canonicalHashField": null,
+      "identityExcludedFields": [],
+      "invariants": ["authorization-material-header-only", "origin-exact-allowlist", "body-hash-and-length-match", "mutation-requires-idempotency-hash", "session-scope-authorizes-operation"],
+      "fields": [
+        {"name": "schema", "type": "literal", "required": true, "value": "tinyrustlm.vnext.companion_message.v1"},
+        {"name": "protocol", "type": "literal", "required": true, "value": "tinyrustlm-companion-vnext-1"},
+        {"name": "messageId", "type": "safe-id", "required": true},
+        {"name": "direction", "type": "enum", "required": true, "values": ["event", "request", "response"]},
+        {"name": "operation", "type": "enum", "required": true, "values": ["acquire", "cancel", "capabilities", "inventory", "pair", "revoke", "status", "stream-open"]},
+        {"name": "sessionIdHash", "type": "nullable", "required": true, "valueType": "sha256"},
+        {"name": "origin", "type": "https-url", "required": true},
+        {"name": "scope", "type": "enum", "required": true, "values": ["acquire", "inventory", "pair", "revoke", "status", "stream"]},
+        {"name": "idempotencyKeyHash", "type": "nullable", "required": true, "valueType": "sha256"},
+        {"name": "subjectId", "type": "nullable", "required": true, "valueType": "content-id"},
+        {"name": "bodyBytes", "type": "integer", "required": true, "minimum": 0, "maximum": 65536},
+        {"name": "bodySha256", "type": "sha256", "required": true},
+        {"name": "createdAtUtc", "type": "utc", "required": true},
+        {"name": "privacyClass", "type": "literal", "required": true, "value": "private-session"}
+      ]
+    },
+    {
+      "class": "p2p",
+      "schema": "tinyrustlm.vnext.p2p_manifest.v1",
+      "maximumBytes": 2097152,
+      "visibility": "public-safe",
+      "identityDomain": "tinyrustlm.p2p_manifest.content.v1",
+      "identityDerivation": "domain-separated-jcs",
+      "identityField": "manifestId",
+      "canonicalHashField": "canonicalContentSha256",
+      "identityExcludedFields": ["canonicalContentSha256", "manifestId"],
+      "invariants": ["manifest-id-domain-hash", "artifact-id-matches-sha256", "piece-indexes-and-offsets-contiguous", "piece-count-matches", "piece-length-sum-matches-artifact", "merkle-root-matches", "qualification-parent-required", "composition-ids-unique-sorted", "public-redaction-profile-required"],
+      "fields": [
+        {"name": "schema", "type": "literal", "required": true, "value": "tinyrustlm.vnext.p2p_manifest.v1"},
+        {"name": "manifestId", "type": "content-id", "required": true},
+        {"name": "canonicalContentSha256", "type": "sha256", "required": true},
+        {"name": "artifactManifestId", "type": "content-id", "required": true},
+        {"name": "artifactId", "type": "content-id", "required": true},
+        {"name": "artifactSha256", "type": "sha256", "required": true},
+        {"name": "artifactBytes", "type": "integer", "required": true, "minimum": 1, "maximum": 68719476736},
+        {"name": "pieceBytes", "type": "literal", "required": true, "value": 4194304},
+        {"name": "pieceCount", "type": "integer", "required": true, "minimum": 1, "maximum": 16384},
+        {"name": "pieces", "type": "array", "required": true, "items": "record:piece", "minimumItems": 1, "maximumItems": 16384},
+        {"name": "merkleProfile", "type": "literal", "required": true, "value": "tinyrustlm.merkle.sha256-4mib.v1"},
+        {"name": "merkleRootSha256", "type": "sha256", "required": true},
+        {"name": "compositionArtifactIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 0, "maximumItems": 64, "unique": true, "sorted": true},
+        {"name": "qualificationReceiptId", "type": "content-id", "required": true},
+        {"name": "provenanceReceiptId", "type": "content-id", "required": true},
+        {"name": "licenseExpression", "type": "bounded-string", "required": true, "minimumLength": 1, "maximumLength": 256},
+        {"name": "createdAtUtc", "type": "utc", "required": true},
+        {"name": "redaction", "type": "record", "required": true, "record": "redaction"}
+      ]
+    },
+    {
+      "class": "proof",
+      "schema": "tinyrustlm.vnext.outside_proof.v1",
+      "maximumBytes": 262144,
+      "visibility": "public-safe",
+      "identityDomain": "tinyrustlm.outside_proof.content.v1",
+      "identityDerivation": "domain-separated-jcs",
+      "identityField": "proofId",
+      "canonicalHashField": "canonicalContentSha256",
+      "identityExcludedFields": ["canonicalContentSha256", "proofId"],
+      "invariants": ["proof-id-domain-hash", "outside-network-scope-exact", "checked-routes-unique-sorted", "complete-transfer-required", "issued-not-before-observed", "expiry-after-issue-within-policy", "observer-signature-parent-required", "public-redaction-profile-required"],
+      "fields": [
+        {"name": "schema", "type": "literal", "required": true, "value": "tinyrustlm.vnext.outside_proof.v1"},
+        {"name": "proofId", "type": "content-id", "required": true},
+        {"name": "canonicalContentSha256", "type": "sha256", "required": true},
+        {"name": "campaignId", "type": "safe-id", "required": true},
+        {"name": "modelArtifactId", "type": "content-id", "required": true},
+        {"name": "p2pManifestId", "type": "content-id", "required": true},
+        {"name": "laneId", "type": "safe-id", "required": true},
+        {"name": "processInstanceId", "type": "safe-id", "required": true},
+        {"name": "endpoint", "type": "https-url", "required": true},
+        {"name": "observerId", "type": "safe-id", "required": true},
+        {"name": "observerRegistryId", "type": "content-id", "required": true},
+        {"name": "nonceHash", "type": "sha256", "required": true},
+        {"name": "implementationSha256", "type": "sha256", "required": true},
+        {"name": "checkedRoutes", "type": "array", "required": true, "items": "record:checkedRoute", "minimumItems": 3, "maximumItems": 512, "uniqueBy": "path", "sortedBy": "path"},
+        {"name": "completeTransferSha256", "type": "sha256", "required": true},
+        {"name": "completeTransferBytes", "type": "integer", "required": true, "minimum": 1, "maximum": 68719476736},
+        {"name": "networkScope", "type": "literal", "required": true, "value": "outside-host-and-local-network"},
+        {"name": "observedAtUtc", "type": "utc", "required": true},
+        {"name": "issuedAtUtc", "type": "utc", "required": true},
+        {"name": "expiresAtUtc", "type": "utc", "required": true},
+        {"name": "signatureEnvelopeId", "type": "content-id", "required": true},
+        {"name": "redaction", "type": "record", "required": true, "record": "redaction"}
+      ]
+    },
+    {
+      "class": "release",
+      "schema": "tinyrustlm.vnext.release_manifest.v1",
+      "maximumBytes": 524288,
+      "visibility": "public-safe",
+      "identityDomain": "tinyrustlm.release_manifest.content.v1",
+      "identityDerivation": "domain-separated-jcs",
+      "identityField": "releaseId",
+      "canonicalHashField": "canonicalContentSha256",
+      "identityExcludedFields": ["canonicalContentSha256", "releaseId"],
+      "invariants": ["release-id-domain-hash", "all-parent-lists-unique-sorted", "authorization-parent-required", "campaign-attestation-complete", "release-date-matches-created-date", "all-publications-current", "public-redaction-profile-required"],
+      "fields": [
+        {"name": "schema", "type": "literal", "required": true, "value": "tinyrustlm.vnext.release_manifest.v1"},
+        {"name": "releaseId", "type": "content-id", "required": true},
+        {"name": "canonicalContentSha256", "type": "sha256", "required": true},
+        {"name": "productId", "type": "safe-id", "required": true},
+        {"name": "version", "type": "semver", "required": true},
+        {"name": "releaseDate", "type": "date", "required": true},
+        {"name": "sourceRevision", "type": "source-revision", "required": true},
+        {"name": "campaignAttestationReceiptId", "type": "content-id", "required": true},
+        {"name": "artifactManifestIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 1, "maximumItems": 64, "unique": true, "sorted": true},
+        {"name": "packageReceiptIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 1, "maximumItems": 64, "unique": true, "sorted": true},
+        {"name": "sitePublicationReceiptIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 1, "maximumItems": 32, "unique": true, "sorted": true},
+        {"name": "claimIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 1, "maximumItems": 128, "unique": true, "sorted": true},
+        {"name": "sbomArtifactId", "type": "content-id", "required": true},
+        {"name": "provenanceReceiptId", "type": "content-id", "required": true},
+        {"name": "authorizationReceiptId", "type": "content-id", "required": true},
+        {"name": "changelogSha256", "type": "sha256", "required": true},
+        {"name": "createdAtUtc", "type": "utc", "required": true},
+        {"name": "redaction", "type": "record", "required": true, "record": "redaction"}
+      ]
+    },
+    {
+      "class": "claim",
+      "schema": "tinyrustlm.vnext.claim.v1",
+      "maximumBytes": 262144,
+      "visibility": "public-safe",
+      "identityDomain": "tinyrustlm.claim.content.v1",
+      "identityDerivation": "domain-separated-jcs",
+      "identityField": "claimId",
+      "canonicalHashField": "canonicalContentSha256",
+      "identityExcludedFields": ["canonicalContentSha256", "claimId"],
+      "invariants": ["claim-id-domain-hash", "published-requires-current-evidence", "published-requires-release-and-source", "published-forbids-blockers", "blocked-requires-blocker", "validity-window-ordered", "superseded-claims-unique-sorted", "public-wording-secret-scan", "site-route-and-component-bound"],
+      "fields": [
+        {"name": "schema", "type": "literal", "required": true, "value": "tinyrustlm.vnext.claim.v1"},
+        {"name": "claimId", "type": "content-id", "required": true},
+        {"name": "canonicalContentSha256", "type": "sha256", "required": true},
+        {"name": "subjectId", "type": "content-id", "required": true},
+        {"name": "siteId", "type": "safe-id", "required": true},
+        {"name": "route", "type": "public-path", "required": true},
+        {"name": "component", "type": "safe-id", "required": true},
+        {"name": "wordingClass", "type": "enum", "required": true, "values": ["availability", "capability", "publication", "quality", "status"]},
+        {"name": "claimType", "type": "enum", "required": true, "values": ["browser-local", "conversation-proven", "conversation-screened", "full-assistant-quality", "outside-p2p-available", "package-published", "runtime-smoke-only", "site-published", "structural-validation-only", "task-specific-proven"]},
+        {"name": "evidenceTier", "type": "enum", "required": true, "values": ["design-only", "external-live", "fixture-only", "local-executed", "physical-executed", "production-readback", "structural-only"]},
+        {"name": "status", "type": "enum", "required": true, "values": ["blocked", "draft", "externally-verified", "locally-verified", "published", "retracted", "stale"]},
+        {"name": "scope", "type": "bounded-string", "required": true, "minimumLength": 1, "maximumLength": 512},
+        {"name": "publicWording", "type": "bounded-string", "required": true, "minimumLength": 1, "maximumLength": 1024},
+        {"name": "evidenceReceiptIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 0, "maximumItems": 256, "unique": true, "sorted": true},
+        {"name": "sourceRevision", "type": "source-revision", "required": true},
+        {"name": "releaseId", "type": "nullable", "required": true, "valueType": "content-id"},
+        {"name": "effectiveAtUtc", "type": "utc", "required": true},
+        {"name": "expiresAtUtc", "type": "nullable", "required": true, "valueType": "utc"},
+        {"name": "reviewAtUtc", "type": "utc", "required": true},
+        {"name": "ownerId", "type": "safe-id", "required": true},
+        {"name": "blockerCodes", "type": "array", "required": true, "items": "safe-id", "minimumItems": 0, "maximumItems": 64, "unique": true, "sorted": true},
+        {"name": "lastVerifiedAtUtc", "type": "utc", "required": true},
+        {"name": "supersedesClaimIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 0, "maximumItems": 64, "unique": true, "sorted": true},
+        {"name": "redaction", "type": "record", "required": true, "record": "redaction"}
+      ]
+    }
+  ]
+}

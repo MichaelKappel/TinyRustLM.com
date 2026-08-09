@@ -1,9 +1,9 @@
-profile: tinyrustlm.source-workspace.v251
+profile: tinyrustlm.source-workspace.v253
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-09T02:09:01Z
+updated_utc: 2026-08-09T02:26:08Z
 current_workspace_handoff:
-  authority: This block is the first-read operational account as of `2026-08-09T02:01:49Z`. It summarizes current truth and takes precedence over incompatible present-tense wording in dated history below. Historical receipts remain immutable evidence for their stated scope only.
+  authority: This block is the first-read operational account as of `2026-08-09T02:26:08Z`. It summarizes current truth and takes precedence over incompatible present-tense wording in dated history below. Historical receipts remain immutable evidence for their stated scope only.
   cold_start_order:
     - Read this `current_workspace_handoff` block.
     - Read `version_authority`, the first current authorities under `active_product`, and `deploy_gate`.
@@ -14,8 +14,8 @@ current_workspace_handoff:
     canonical_product_root: `E:\Source\Rust\TinyRustLM.com` is the authoritative product repository location, but its current checkout contains unrelated in-progress work and must not be edited, reset, cleaned, reverted, or used for this branch's implementation.
     active_edit_worktree: `E:\Source\.tinyrustlm-model-acquisition`
     active_branch: `codex/model-acquisition-v2`
-    last_completed_code_milestone_commit: `327c81bec9b9759212e38e847f4c6139a05ed8c6`
-    milestone_commit_subject: `docs(architecture): freeze vNext decision gates`
+    last_completed_code_milestone_commit: `fdc40780f9ea78da0494f0d882e8727f189803df`
+    milestone_commit_subject: `docs(contracts): inventory vNext schema boundaries`
     remote_verification: The milestone commit was pushed and `git ls-remote origin refs/heads/codex/model-acquisition-v2` returned the same full hash. Always rerun `git status --short --branch`, `git rev-parse HEAD`, and `git ls-remote` at session start because this memory file cannot self-record the hash of its own later check-in.
     third_party_storage: Download public third-party repositories and review inputs only under `E:\Source\external\{project-name}`; do not add those trees or model payloads to project Git.
     payload_boundary: Product/source checkpoint/model-piece payloads remain outside source control. Only explicitly allowlisted small deterministic test fixtures may be tracked, and they never count as models, quality evidence, campaign rounds, or public availability.
@@ -25,16 +25,19 @@ current_workspace_handoff:
     completed_phase_gate: ADR-001 through ADR-010 are accepted in `docs/architecture/adr/`; they freeze metadata grammar, SHA-256/Merkle identity, alignment/layout, companion transport, browser persistence, quantization profiles, WebGPU support, specialist composition, service-worker release behavior, and evidence signing.
     completed_contract_increment: `tinyrustlm/tools/strict-json.js` now provides bounded fatal-UTF-8 duplicate-aware parsing, and all three release-authorization files pass through it before schema or Ed25519 verification. The verifier tool hash binds both modules and identifies profile `tinyrustlm.strict-json.v1`; hostile tests cover literal/escaped/supplementary duplicate names, invalid UTF-8, BOMs, lone surrogates, depth/entry/string limits, unsafe numbers, negative zero, overflow/underflow, malformed grammar, and trailing data.
     completed_contract_inventory: `docs/architecture/vnext-contract-inventory.md` records 215 dated schema IDs across 109 app/tool files, the canonical sorted-list SHA-256 `581eee525ee30f195f0a21cd71db8d60ff275866d51cb2d236df74f638bd6d10`, 166 `JSON.parse` calls across 77 files, class-by-class ownership/gaps/deletion disposition, and exactly nine incompatible `tinyrustlm.vnext.*` family names. Every dated schema is historical-only and no alias, migration, or fallback authority exists.
-    remaining_contract_risk: The full RFC 8785 cross-language corpus, domain-separated vNext receipt identity, role/registry/revocation/offline-bundle family, and every other signed raw-JSON entry point are not yet promoted. Existing v1 evidence remains historical and cannot satisfy vNext gates.
-    exact_next_action: Freeze the incompatible vNext schema family, global parser/resource limits, unknown-field behavior, and public-safe redaction contract; implement two independent validators plus one shared hostile fixture corpus; then threat-review the complete boundary and delete superseded parsers without compatibility shims.
+    completed_contract_freeze: `contracts/vnext/contract-family.v1.json` is the single 36,827-byte frozen registry for the nine incompatible schema families; SHA-256 is `2a34e80781f6c2a1bccccf620fb54bc18054cc022287706cfe4d988ea6a722a3`. It closes every object, rejects unknown fields, fixes parser/resource budgets, declares exact per-contract identity derivation and exclusions, uses private-by-default visibility, defines acyclic public-safe redaction, gives role-separated signing/registry/revocation/offline-bundle payloads explicit fields, preserves context provenance and precedence, binds claims to site/route/component/source/release/owner, and has no extension, legacy, migration, fallback, alias, or dated-schema acceptance field. `contracts/vnext/README.md` states the wire, identity, role, change, and completion boundaries.
+    remaining_contract_risk: The registry is specification, not independent enforcement. Two validators, a language-neutral hostile corpus, full RFC 8785 cross-language vectors, domain-separated identity verification, role/registry/revocation/offline-bundle enforcement, and promotion of every signed raw-JSON entry point remain incomplete. Existing v1 evidence remains historical and cannot satisfy vNext gates.
+    exact_next_action: Implement two independent vNext validators that share no schema logic, drive both from one language-neutral valid/hostile corpus, prove agreement plus expected verdicts and parser-limit failures, then threat-review the complete boundary and delete superseded parsers without compatibility shims.
     no_compatibility_shims: SLM2 and the vNext schema family are intentionally incompatible clean contracts. Do not retain SLM1 fallback, old aliases, dual readers/writers, conversion-kit downloads, or user-run handoff scripts in the new product path.
   verified_test_baseline:
     architecture_decision_tests: `node --test tests/architecture-decisions.test.js` passed 12, failed 0, skipped 0.
     strict_json_release_boundary_tests: `node --test tests/strict-json.test.js tests/campaign-release-authorization-evidence.test.js` passed 12, failed 0, skipped 0.
     vnext_contract_inventory_tests: `node --test tests/vnext-contract-inventory.test.js` passed 3, failed 0, skipped 0.
+    vnext_contract_registry_tests: `node --test tests/vnext-contract-registry.test.js` passed 6, failed 0, skipped 0; the tests strictly parse the registry, reconcile it to the nine-name inventory, validate every descriptor/reference/cardinality/identity exclusion, enforce explicit signing/context/redaction/claim fields, freeze finite parser/redaction rules, and reject compatibility acceptance surfaces.
+    phase_2_contract_checkpoint_tests: The ADR, inventory, strict JSON, release authorization, and vNext registry checkpoint passed 33, failed 0, skipped 0.
     campaign_evidence_cluster: The architecture, strict JSON, evidence store/dashboard, final attestation, release authorization, and release evidence cluster passed 56, failed 0, skipped 0.
     full_unit_suite: `npm run test:unit` passed 650, failed 0, skipped 0 in approximately 69.2 seconds, including real Chromium fault scenarios and local release smoke.
-    source_hygiene: `git diff --check` passed for the strict-parser increment and `git diff --cached --check` passed for the ADR milestone. This baseline does not prove campaign completion or production readiness.
+    source_hygiene: `git diff --check` passed for the vNext registry increment; earlier strict-parser and ADR hygiene checks also passed. This baseline does not prove campaign completion or production readiness.
   campaign_progress:
     qualified_distinct_model_hashes: `0/20`
     deletion_backed_clean_browser_rounds: `0/50`
