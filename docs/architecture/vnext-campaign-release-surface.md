@@ -436,3 +436,19 @@ redaction receipt; the deployment receipt itself is never stored.
 
 The complete-capacity case is synthetic conformance evidence. It does not
 increment any live campaign counter.
+
+## Adjacent Production Readback Boundary
+
+`tinyrustlm/tools/vnext-public-https-readback.js` is now the sole standalone
+production-network verifier intended for the next forward-only release
+descendant. It owns public DNS and HTTPS, pins one globally routable address,
+uses normal TLS hostname verification, and verifies the complete static
+inventory by exact status, length, media type, cache/security headers, stream
+count, and SHA-256. It has no caller transport or success input and returns no
+receipt. See `docs/architecture/vnext-public-https-readback.md`.
+
+This does not extend the current release-surface result. Integration must
+reconstruct the admitted deployment attempt and current authorization, invoke
+the verifier inside the surface, scan the canonical output, and create-only
+persist the redaction and `public-readback` receipts. Until that operation is
+implemented, no local or live readback can advance publication state.

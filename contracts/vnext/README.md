@@ -374,6 +374,24 @@ release parents, authority drift, unsafe bytes, mutable pointers, and
 compatibility inputs are rejected. See
 `docs/architecture/vnext-campaign-release-surface.md`.
 
+`tinyrustlm/tools/vnext-public-https-readback.js` now defines the sole
+production-network verifier that the next release-surface descendant will
+invoke. Its frozen profile has SHA-256
+`0cfeb00065d45fd860813f501d6c07417f8a6e6587dd524a81e5be426a84c419`.
+It accepts no caller resolver, transport, response, body, verdict, retry
+policy, or alternate profile. It requires one canonical public HTTPS root,
+rejects any nonpublic DNS result, pins one address for the complete inventory,
+uses normal system trust and hostname verification, forbids redirects and
+encoded or transferred variants, verifies exact status, length, media type,
+cache and security headers, and streams every body to the manifest byte count
+and SHA-256. It also rejects model-byte routes, stable immutable paths, and
+invalid bootstrap or worker policy before DNS. Its canonical result discloses
+only bounded observation metadata
+and domain-separated DNS, pinned-address, and certificate identities. The
+module writes no receipt and does not establish deployment success,
+outside-network independence, publication, or campaign credit. See
+`docs/architecture/vnext-public-https-readback.md`.
+
 The authority result deliberately separates `signatureVerified`,
 `authorityAtIssue`, `temporalCurrent`, and `currentEvidenceEligible`. A valid
 historical Ed25519 signature is not current evidence when its envelope is
@@ -413,12 +431,15 @@ The manifest binds closed path/hash/size/type/cache/header metadata, excludes
 model-byte routes, and permits `immutable` caching only when the path contains
 the full content SHA-256. Generated pointer and history bytes are forward-only
 site-publisher descendants because embedding bytes that name the manifest
-inside that same manifest would be self-referential. The same surface now verifies and
+inside that same manifest would be self-referential. The same surface now
+verifies and
 create-only persists a current Ed25519 release-authorizer signature as the
 manifest's forward-only child without mutating the manifest. It now also
 admits a create-only, explicitly non-success deployment-attempt descendant.
-Exact production HTTPS readback and published-claim descendants,
-site-publisher authorization, and deletion of the superseded
+One standalone production-only exact HTTPS verifier is now implemented, but
+its release-surface invocation and immutable receipt admission remain
+incomplete. Published-claim descendants, site-publisher authorization, and
+deletion of the superseded
 dashboard/release/public-readback stack remain incomplete. This is not
 outside-network observation or live campaign evidence.
 Runtime tests generate ephemeral private keys only in process memory.

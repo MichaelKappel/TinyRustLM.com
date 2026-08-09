@@ -1,0 +1,111 @@
+{
+  "schema": "tinyrustlm.vnext.public_https_readback_profile.v1",
+  "profileId": "tinyrustlm.vnext.public-https-readback.v1",
+  "resultSchema": "tinyrustlm.vnext.public_https_readback_result.v1",
+  "resultWirePolicy": "rfc8785-jcs-content-with-sha256-wrapper",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-no-compatibility-reader",
+  "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
+  "hashAlgorithm": "sha256",
+  "networkAccess": "production-public-https-get-only",
+  "callerTransportPolicy": "forbidden",
+  "originPolicy": "canonical-public-https-dns-origin-root-without-credentials-query-or-fragment",
+  "dnsPolicy": "resolve-once-reject-any-nonpublic-result-first-successful-public-address-pinned-for-complete-operation",
+  "tlsPolicy": "system-trust-normal-hostname-verification-sni-original-host-minimum-tls1.2",
+  "request": {
+    "method": "GET",
+    "redirectPolicy": "forbidden",
+    "connectionPolicy": "one-connection-per-response-close-after-body",
+    "headers": [
+      {"name": "accept", "value": "*/*"},
+      {"name": "accept-encoding", "value": "identity"},
+      {"name": "cache-control", "value": "no-cache"},
+      {"name": "connection", "value": "close"},
+      {"name": "pragma", "value": "no-cache"},
+      {"name": "user-agent", "value": "TinyRustLM-Public-Readback/1.0"}
+    ]
+  },
+  "response": {
+    "requiredStatus": 200,
+    "contentLengthPolicy": "one-canonical-decimal-header-equal-manifest-and-stream-count",
+    "contentEncodingPolicy": "header-forbidden-even-identity",
+    "transferEncodingPolicy": "header-forbidden",
+    "contentTypePolicy": "exact-media-type-with-optional-utf-8-charset-only-for-text-json-javascript-or-xml",
+    "cacheControlPolicy": "exact-value-selected-by-manifest-cache-policy",
+    "securityHeaderPolicy": "all-profile-headers-exactly-once-and-exact-value",
+    "forbiddenHeaderPolicy": "all-profile-forbidden-headers-absent",
+    "bodyPolicy": "stream-once-sha256-and-count-abort-immediately-after-expected-length"
+  },
+  "securityHeaderProfile": {
+    "schema": "tinyrustlm.web_security_header_profile.v1",
+    "status": "frozen",
+    "wirePolicy": "rfc8785-jcs-plus-lf",
+    "requiredBaselineHeaders": [
+      "content-security-policy",
+      "cross-origin-embedder-policy",
+      "cross-origin-opener-policy",
+      "cross-origin-resource-policy",
+      "permissions-policy",
+      "referrer-policy",
+      "strict-transport-security",
+      "x-content-type-options",
+      "x-frame-options"
+    ],
+    "requiredExactBaselineValues": [
+      {"name": "cross-origin-embedder-policy", "value": "require-corp"},
+      {"name": "cross-origin-opener-policy", "value": "same-origin"},
+      {"name": "cross-origin-resource-policy", "value": "same-origin"},
+      {"name": "referrer-policy", "value": "no-referrer"},
+      {"name": "strict-transport-security", "value": "max-age=63072000; includeSubDomains; preload"},
+      {"name": "x-content-type-options", "value": "nosniff"},
+      {"name": "x-frame-options", "value": "DENY"}
+    ],
+    "requiredCspDirectives": [
+      {"name": "base-uri", "value": "'none'"},
+      {"name": "default-src", "value": "'self'"},
+      {"name": "frame-ancestors", "value": "'none'"},
+      {"name": "object-src", "value": "'none'"}
+    ],
+    "requiredPermissionsPolicyFeatures": [
+      "camera=()",
+      "geolocation=()",
+      "microphone=()",
+      "payment=()",
+      "usb=()"
+    ],
+    "cachePolicies": ["immutable", "no-cache", "no-store"],
+    "forbiddenResponseHeaders": [
+      "content-encoding",
+      "content-range",
+      "location",
+      "refresh",
+      "set-cookie",
+      "transfer-encoding"
+    ]
+  },
+  "observation": {
+    "inventoryIdentityDomain": "tinyrustlm.public-https-readback-observation-inventory.v1",
+    "dnsIdentityDomain": "tinyrustlm.public-https-readback-dns-address-set.v1",
+    "pinnedAddressIdentityDomain": "tinyrustlm.public-https-readback-pinned-address.v1",
+    "certificateIdentityDomain": "tinyrustlm.public-https-readback-certificate-set.v1",
+    "addressDisclosure": "sha256-set-identity-only",
+    "certificateDisclosure": "sha256-set-identity-only",
+    "rawBodyPersistence": "forbidden",
+    "rawHeaderPersistence": "forbidden"
+  },
+  "limits": {
+    "maximumAssets": 512,
+    "maximumAssetBytes": 8589934592,
+    "maximumTotalBytes": 68719476736,
+    "maximumDnsAddresses": 32,
+    "maximumCertificates": 32,
+    "maximumSecurityHeaders": 32,
+    "maximumForbiddenHeaders": 32,
+    "maximumHeaderCount": 128,
+    "maximumHeaderBytes": 32768,
+    "maximumUrlBytes": 2048,
+    "maximumRequestMilliseconds": 1800000,
+    "maximumOperationMilliseconds": 14400000,
+    "maximumResultBytes": 4194304
+  }
+}

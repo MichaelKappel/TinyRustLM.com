@@ -69,9 +69,13 @@ They do not close archive-member scanning, protected production secret-list
 custody, operational final-attestation/release/dashboard/public-readback
 cutover, authorized live MemoryEndpoints
 continuity, independent outside-network lane proofs, catalog publication, or
-public HTTPS readback. No local test changes a campaign counter.
+release-surface admission of a public HTTPS readback receipt. One standalone
+production HTTPS verifier now rejects nonpublic DNS results, pins one public
+address, verifies normal TLS identity, and streams the exact closed inventory;
+it creates no evidence and has not been used to claim a live pass. No local
+test changes a campaign counter.
 
-Reviewed at `2026-08-09T18:13:59Z`. The review is invalidated when any bound
+Reviewed at `2026-08-09T19:33:30Z`. The review is invalidated when any bound
 file changes, when the parser changes, or when a deferred proof obligation is
 reclassified without a new threat review.
 
@@ -170,6 +174,8 @@ verified by later phases.
 | P2P piece or Merkle drift | Piece indices, offsets, sizes, hashes, Merkle root, total bytes, and artifact identity are recomputed locally | Mitigated locally | File streaming, peer transfer, and final Rust artifact verification remain later gates |
 | Local reachability promoted as public | Proof requires outside-network scope, complete transfer, lane and endpoint binding, and bounded freshness | Mitigated structurally | Observer signature, independence, and matching P2P parent remain deferred |
 | Release or claim inflation | Acyclic release v3 binds the campaign plan/projection, attestation, packages, artifacts, approved claims, SBOM, provenance, changelog, remaining risks, current web build, exact control documents, and the closed static publication graph; the sole release surface requires complete fresh projection truth, same-snapshot parent identity, current-pass receipt closure, all 20 qualified artifact hashes, dependency closure, one CycloneDX SBOM, all current approved claims, exact static bytes, and one current release-authorizer signature over the immutable manifest | Mitigated through authorization | Deployment, exact public readback, generated publication descendants, published-claim descendants, and site-publisher authority remain required |
+| Local or injected response promoted as production readback | The standalone production verifier owns DNS and HTTPS, accepts no caller transport or response, rejects any nonpublic DNS member, pins one globally routable address, requires normal TLS hostname authorization, forbids redirects and transformed bodies, and streams every exact manifest asset | Mitigated at the network verifier boundary | Release-surface lineage, immutable redaction/readback receipts, independent execution evidence, and a real production run remain required |
+| DNS rebinding or split-address substitution | One bounded all-address lookup must contain only canonical public addresses; one successful bootstrap address is pinned through verifier-owned lookup callbacks and checked against every connected socket | Mitigated locally | Host resolver and process integrity remain trusted; this is not an outside-network observer proof |
 | Secret disclosure through public evidence | Private-by-default classes, public-safe field types, canonical LF UTF-8 public text, redaction profile, forbidden keys/value classes, acyclic scan binding, and the preparation gate's scans over selected documents, changelog, and final manifest | Reduced | Compressed members, cross-runtime parity, and protected-list production custody remain deferred |
 | Compatibility code becoming permanent | Validators recognize one incompatible family and contain no fallback, migration, deprecated alias, dual-read, or dual-write path | Mitigated in the new boundary | Old production readers and writers still exist elsewhere and must be deleted after verified cutover |
 
