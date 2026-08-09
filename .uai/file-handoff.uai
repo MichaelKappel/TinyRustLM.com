@@ -1,16 +1,16 @@
 profile: runtime-mirust.file-handoff.v67
-updated_utc: 2026-08-09T22:36:30Z
+updated_utc: 2026-08-09T23:11:57Z
 credit_window_handoff_2026_08_09:
   status: source_control_checkpoint_complete_publication_checkpoint_incomplete
   stopping_reason: User ended the available credit window.
   active_branch_head_before_handoff_commit: 0f145bb02bb97dd3554a9596c67a47a48a2bbb26
   site_heads:
-    TinyRustLM.MiRust.com: c34d70247b1a1213a181841560fd80f151543e25
+    TinyRustLM.MiRust.com: f15a7c738635fe372d2125d14040ec1cfcb0d680
     MiniModel.MiRust.com: cb18263ac739b64af717aa6c5568b65b05af9962
     MiniModel.org: b5a0248d76ce543eb3ce02fc016ff611b7e41c19
     Runtime.MiRust.com: 4b179a1c6d458cf9b85ae2f5cde2925fe1fad086
     MiRust.com: 4e3d8f52b0b20d9ccb51751e4182e8ab87fb3e43
-  urgent_resume: In TinyRustLM.MiRust.com run `& .\tools\deploy-site.ps1 -Publish -ResumeNonce efa18f6e4a5a`; preserve and authenticate the saved 32768-byte prefix before continuing. Complete readback and push a success receipt before starting MiniModel.MiRust.com and MiniModel.org publication.
+  urgent_resume: In clean upstream-exact TinyRustLM.MiRust.com head `f15a7c738635fe372d2125d14040ec1cfcb0d680`, read the 145-file failure receipt and run `& .\tools\deploy-site.ps1 -Publish -ResumeNonce efa18f6e4a5a`; authenticate all current targets and any stage before continuing. Complete readback and push a success receipt before starting MiniModel.MiRust.com and MiniModel.org publication.
   blockers: Runtime deployment profile is misbound; MiRust source is not a full WordPress closure; live MemoryEndpoints and outside P2P authorities remain unavailable. LMComposer source control is now closed at `36d6389fe82b0f53c4d8951aa6af5cb896fd8bf6`, but its publication remains unclaimed.
   campaign_counts: 0/20 models; 0/50 browser rounds; 0/25 live memory rounds; 0/40 outside-proven lanes; 0/20 announcements
 current_active_handoff_closure:

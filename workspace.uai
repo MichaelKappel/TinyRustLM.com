@@ -1,7 +1,7 @@
 profile: tinyrustlm.source-workspace.v287
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-09T22:36:30Z
+updated_utc: 2026-08-09T23:11:57Z
 
 credit_window_handoff_2026_08_09:
   authority: This is the newest private operational account. Read it before the older current-workspace block and dated history; it changes no historical receipt or campaign fact.
@@ -13,14 +13,14 @@ credit_window_handoff_2026_08_09:
     implementation_head_before_handoff_commit: 0f145bb02bb97dd3554a9596c67a47a48a2bbb26
     protected_checkout: E:\Source\Rust\TinyRustLM.com remains dirty and must not be reset, cleaned, overwritten, or used for release work.
   pushed_site_heads:
-    TinyRustLM.MiRust.com: c34d70247b1a1213a181841560fd80f151543e25
+    TinyRustLM.MiRust.com: f15a7c738635fe372d2125d14040ec1cfcb0d680
     MiniModel.MiRust.com: cb18263ac739b64af717aa6c5568b65b05af9962
     MiniModel.org: b5a0248d76ce543eb3ce02fc016ff611b7e41c19
     Runtime.MiRust.com: 4b179a1c6d458cf9b85ae2f5cde2925fe1fad086
     MiRust.com: 4e3d8f52b0b20d9ccb51751e4182e8ab87fb3e43
   production_truth:
     TinyRustLM.com: Existing immutable successful release remains 0.2.1, released 2026-08-08 and published 2026-08-08T23:47:22.420Z from e964a095ede1c077b36b6476af5ee85b087f52f8. The active vNext milestone changed zero production web members, so no new version or publication was fabricated.
-    TinyRustLM.MiRust.com: Release 1.7.0 is incomplete but resumable. It stopped after 22 of 224 files at authenticated prefix 32768 of 39530 bytes for docs/reports/memory-systems-domains-research.md. Receipt deploy/receipts/site-deployment-20260809T214628Z-paused.json and nonce efa18f6e4a5a are authoritative.
+    TinyRustLM.MiRust.com: Release 1.7.0 is incomplete but resumable. Two bounded hosting failures are preserved; the latest receipt binds 145 of 224 files and failed at docs/runtime-portal/runtime-docs/reports/browser-module-plan-wasm-transfer-memory-2026-06-28.md with `System.Net.WebException/ConnectFailure/ftp-0`. Receipt deploy/receipts/site-deployment-20260809T224843Z.json, SHA256 265abc40fd3883fda5bdd0119eb3a54fab8de684196b911a4a482272133cfdf9, and nonce efa18f6e4a5a are authoritative.
     MiniModel.MiRust.com: Release 1.0.0 exact closure is ready but publication has not started.
     MiniModel.org: Release 1.0.0 exact closure and full green source gate are ready but publication has not started; closure contains zero model bytes.
     Runtime.MiRust.com: Redirect behavior was observed, but no new immutable publication receipt exists and its FileZilla profile is misbound to the TinyRustLM.MiRust.com root.
@@ -28,7 +28,7 @@ credit_window_handoff_2026_08_09:
     LMComposer.com: Private repository `MichaelKappel/LMComposer.com` now owns the complete redirect source on `main`; initial closure commit `4871f23f3a6d1669dbd7f82efdc86b9d4120d55b` passed 4/4 contract tests and a zero-finding 17-file secret scan, and handoff head `36d6389fe82b0f53c4d8951aa6af5cb896fd8bf6` is pushed and upstream-exact. Live redirect observation still is not a publication receipt.
   exact_resume_order:
     - Verify every named Git repository is clean and upstream-exact; verify no deployment process is running.
-    - From the TinyRustLM.MiRust.com clean release clone run `& .\tools\deploy-site.ps1 -Publish -ResumeNonce efa18f6e4a5a`; authenticate the remote prefix before appending.
+    - From clean upstream-exact TinyRustLM.MiRust.com head `f15a7c738635fe372d2125d14040ec1cfcb0d680`, run `& .\tools\deploy-site.ps1 -Publish -ResumeNonce efa18f6e4a5a`; authenticate current targets and any remote prefix before writing.
     - Require all 224 files, authoritative transport checks, and public HTTPS readback; then commit and push the append-only success receipt.
     - Re-run the Runtime.MiRust.com exact redirect verifier after the developer portal is current; do not deploy Runtime with the misbound profile.
     - Publish MiniModel.MiRust.com 1.0.0 from its frozen 32-file closure and commit/push its successful receipt only after complete readback.
