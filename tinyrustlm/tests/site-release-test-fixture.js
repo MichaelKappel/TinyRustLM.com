@@ -7,6 +7,7 @@ const path = require("node:path");
 const {
   finalizeReleaseLedger,
   materializeReleasePublication,
+  materializeReleaseState,
   parseReleaseLedger
 } = require("../tools/site-release-contract.js");
 
@@ -54,6 +55,20 @@ function materializePendingRelease(context, prefix = "tinyrustlm-generated-relea
   return Object.freeze({ ledgerPath, outputRoot, result });
 }
 
+function materializeSourceReleaseState(context, prefix = "tinyrustlm-source-release-") {
+  const outputRoot = temporaryDirectory(context, prefix);
+  const ledgerResult = parseReleaseLedger(fs.readFileSync(sourceLedgerPath));
+  const result = ledgerResult.pendingRelease
+    ? materializeReleasePublication({
+        ledgerPath: sourceLedgerPath,
+        outputRoot,
+        sourceRevision,
+        publishedAt
+      })
+    : materializeReleaseState({ ledgerPath: sourceLedgerPath, outputRoot });
+  return Object.freeze({ ledgerPath: sourceLedgerPath, outputRoot, result });
+}
+
 function writeFinalizedLedger(context) {
   const materialized = materializePendingRelease(
     context,
@@ -71,6 +86,7 @@ function writeFinalizedLedger(context) {
 
 module.exports = Object.freeze({
   materializePendingRelease,
+  materializeSourceReleaseState,
   publishedAt,
   sourceLedgerPath,
   sourceRevision,

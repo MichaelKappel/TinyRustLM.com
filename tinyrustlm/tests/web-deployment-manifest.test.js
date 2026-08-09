@@ -11,7 +11,7 @@ const {
   validateHostPolicy,
   validateWebDeploymentManifest
 } = require("../tools/web-deployment-manifest.js");
-const { materializePendingRelease } = require("./site-release-test-fixture.js");
+const { materializeSourceReleaseState } = require("./site-release-test-fixture.js");
 
 const siteRoot = path.resolve(__dirname, "..");
 const deploymentManifestPath = path.join(
@@ -25,7 +25,7 @@ function writeJson(filePath, value) {
 }
 
 function materializedRelease(context) {
-  return materializePendingRelease(
+  return materializeSourceReleaseState(
     context,
     "tinyrustlm-generated-release-"
   ).outputRoot;
