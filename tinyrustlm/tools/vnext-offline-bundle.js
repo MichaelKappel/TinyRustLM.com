@@ -41,6 +41,8 @@ const redactionProfilePath = path.join(contractRoot,
   "public-safe-redaction-profile.v1.json");
 const phaseInvalidationProfilePath = path.join(contractRoot,
   "phase-invalidation-profile.v1.json");
+const campaignProjectionProfilePath = path.join(contractRoot,
+  "campaign-projection-profile.v1.json");
 const storeProfilePath = path.join(contractRoot, "receipt-store-profile.v1.json");
 
 const profileBytes = fs.readFileSync(profilePath);
@@ -48,12 +50,14 @@ const registryBytes = fs.readFileSync(registryPath);
 const signatureProfileBytes = fs.readFileSync(signatureProfilePath);
 const redactionProfileBytes = fs.readFileSync(redactionProfilePath);
 const phaseInvalidationProfileBytes = fs.readFileSync(phaseInvalidationProfilePath);
+const campaignProjectionProfileBytes = fs.readFileSync(campaignProjectionProfilePath);
 const storeProfileBytes = fs.readFileSync(storeProfilePath);
 const parsedProfile = parseStrictJson(profileBytes);
 const registry = parseStrictJson(registryBytes);
 const parsedSignatureProfile = parseStrictJson(signatureProfileBytes);
 const redactionProfile = parseStrictJson(redactionProfileBytes);
 const phaseInvalidationProfile = parseStrictJson(phaseInvalidationProfileBytes);
+const campaignProjectionProfile = parseStrictJson(campaignProjectionProfileBytes);
 const storeProfile = parseStrictJson(storeProfileBytes);
 
 const digestPattern = /^[a-f0-9]{64}$/u;
@@ -61,6 +65,7 @@ const contentIdPattern = /^sha256:[a-f0-9]{64}$/u;
 const safeIdPattern = /^[a-z0-9][a-z0-9._:-]{2,159}$/u;
 const environments = new Set(["development", "production", "staging"]);
 const expectedProfileBindingNames = Object.freeze([
+  "campaign-projection-profile",
   "contract-registry",
   "offline-bundle-profile",
   "phase-invalidation-profile",
@@ -264,6 +269,7 @@ const registrySha256 = sha256(registryBytes);
 const signatureProfileSha256 = sha256(signatureProfileBytes);
 const redactionProfileSha256 = sha256(redactionProfileBytes);
 const phaseInvalidationProfileSha256 = sha256(phaseInvalidationProfileBytes);
+const campaignProjectionProfileSha256 = sha256(campaignProjectionProfileBytes);
 const storeProfileSha256 = sha256(storeProfileBytes);
 const offlineBundleRecord = registry.records.find((record) =>
   record.name === "offlineBundle");
@@ -302,6 +308,14 @@ function validateInstalledProfiles() {
         "tinyrustlm.vnext.phase-invalidation.v1" ||
       phaseInvalidationProfile.status !== "frozen" ||
       phaseInvalidationProfile.contractRegistrySha256 !== registrySha256 ||
+      campaignProjectionProfile.profileId !==
+        "tinyrustlm.vnext.campaign-projection.v1" ||
+      campaignProjectionProfile.status !== "frozen" ||
+      campaignProjectionProfile.contractRegistrySha256 !== registrySha256 ||
+      campaignProjectionProfile.phaseInvalidationProfileSha256 !==
+        phaseInvalidationProfileSha256 ||
+      campaignProjectionProfile.receiptSignatureProfileSha256 !==
+        signatureProfileSha256 ||
       storeProfile.profileId !== "tinyrustlm.vnext.receipt-store.v1" ||
       storeProfile.contractRegistrySha256 !== registrySha256) {
     failEvidence("offline_bundle_profile_invalid", "offline-bundle-profile");
@@ -323,6 +337,13 @@ const registryJcsLimits = Object.freeze({
   maximumTotalStringCodeUnits: registry.limits.maximumTotalStringCodeUnits
 });
 const installedProfileBindings = deepFreeze([
+  {
+    name: "campaign-projection-profile",
+    documentKind: "profile",
+    documentId: campaignProjectionProfile.profileId,
+    byteLength: campaignProjectionProfileBytes.length,
+    sha256: campaignProjectionProfileSha256
+  },
   {
     name: "contract-registry",
     documentKind: "contract-registry",

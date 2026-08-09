@@ -104,8 +104,9 @@ copies and have a separate raw-byte SHA-256.
 
 ## Offline Binding
 
-The offline verification manifest now binds six exact public profiles or
-registries, including `phase-invalidation-profile`. This prevents a verifier
+The offline verification manifest now binds seven exact public profiles or
+registries, including `phase-invalidation-profile` and
+`campaign-projection-profile`. This prevents a verifier
 from substituting different currentness rules while claiming to verify the
 same bundle. The offline authority verifier still proves signature and bundle
 closure separately; campaign projection must consume both authority-valid
@@ -113,10 +114,6 @@ evidence and this semantic classification.
 
 ## Remaining Work
 
-- Add the truthful campaign-plan projection that enforces the exact
-  20/50/25/40/20 schedule, uniqueness, freshness, and no-double-count rules.
-- Increase and prove offline target-signature and signature-envelope bounds
-  before a complete campaign bundle is materialized.
 - Reproduce the currentness profile and hostile corpus in independent Rust and
   browser implementations.
 - Bind projection output into final attestation, release authorization,

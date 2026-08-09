@@ -32,6 +32,15 @@ const statusTransitions = Object.freeze({
   retired: new Set(["retired", "revoked"]),
   revoked: new Set(["revoked"])
 });
+const typedArrayPrototype = Object.getPrototypeOf(Uint8Array.prototype);
+const typedArrayBufferGetter = Object.getOwnPropertyDescriptor(
+  typedArrayPrototype, "buffer").get;
+const typedArrayByteLengthGetter = Object.getOwnPropertyDescriptor(
+  typedArrayPrototype, "byteLength").get;
+const typedArrayByteOffsetGetter = Object.getOwnPropertyDescriptor(
+  typedArrayPrototype, "byteOffset").get;
+const typedArrayLengthGetter = Object.getOwnPropertyDescriptor(
+  typedArrayPrototype, "length").get;
 
 function isPlainObject(value) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
@@ -75,11 +84,25 @@ function exactDataArray(value, maximum, code) {
 }
 
 function normalizedBytes(value, code) {
-  if (Buffer.isBuffer(value)) return Buffer.from(value);
-  if (value instanceof Uint8Array) {
-    return Buffer.from(value.buffer, value.byteOffset, value.byteLength);
+  if (!ArrayBuffer.isView(value)) failEvidence(code, "authority-input");
+  let backingBuffer;
+  let byteLength;
+  let byteOffset;
+  let elementLength;
+  try {
+    backingBuffer = typedArrayBufferGetter.call(value);
+    byteLength = typedArrayByteLengthGetter.call(value);
+    byteOffset = typedArrayByteOffsetGetter.call(value);
+    elementLength = typedArrayLengthGetter.call(value);
+  } catch {
+    failEvidence(code, "authority-input");
   }
-  failEvidence(code, "authority-input");
+  if (byteLength !== elementLength ||
+      (typeof SharedArrayBuffer === "function" &&
+        backingBuffer instanceof SharedArrayBuffer)) {
+    failEvidence(code, "authority-input");
+  }
+  return Buffer.from(new Uint8Array(backingBuffer, byteOffset, byteLength));
 }
 
 function boundedByteArray(value, maximumCount, maximumBytes, code) {

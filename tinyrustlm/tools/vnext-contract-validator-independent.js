@@ -335,7 +335,7 @@ function offlineBundle(value, location) {
   closed(value, ["bundleManifestSha256", "receiptIds", "signatureEnvelopeReceiptIds", "authorityRegistryReceiptIds", "revocationReceiptIds", "schemaHashes", "createdAtUtc"], location);
   digest(value.bundleManifestSha256, `${location}.bundleManifestSha256`);
   sortedList(value.receiptIds, 1, 2048, contentId, `${location}.receiptIds`);
-  sortedList(value.signatureEnvelopeReceiptIds, 1, 256, contentId, `${location}.signatureEnvelopeReceiptIds`);
+  sortedList(value.signatureEnvelopeReceiptIds, 1, 1024, contentId, `${location}.signatureEnvelopeReceiptIds`);
   sortedList(value.authorityRegistryReceiptIds, 1, 64, contentId, `${location}.authorityRegistryReceiptIds`);
   sortedList(value.revocationReceiptIds, 0, 256, contentId, `${location}.revocationReceiptIds`);
   sortedList(value.schemaHashes, 9, 32, hashBinding, `${location}.schemaHashes`, "name");
@@ -462,7 +462,7 @@ function validateReceipt(value) {
   const started = instant(value.startedAtUtc, "$.startedAtUtc");
   requireThat(instant(value.completedAtUtc, "$.completedAtUtc") >= started, "$.completedAtUtc");
   if (!revisionPattern.test(value.sourceRevision)) reject("field_invalid", "$.sourceRevision");
-  sortedList(value.inputReceiptIds, 0, 256, contentId, "$.inputReceiptIds");
+  sortedList(value.inputReceiptIds, 0, 2048, contentId, "$.inputReceiptIds");
   sortedList(value.inputHashes, 0, 256, hashBinding, "$.inputHashes", "name");
   sortedList(value.outputHashes, 0, 256, hashBinding, "$.outputHashes", "name");
   sortedList(value.tools, 1, 32, tool, "$.tools", "name");

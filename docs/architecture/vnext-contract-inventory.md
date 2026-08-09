@@ -131,18 +131,24 @@ bounded threat review. Phase 3 Node checkpoints now add domain-separated
 identity, create-only atomic receipt persistence, DAG reconstruction and
 quarantine, Ed25519 signing authority and revocation, closed offline bundles,
 canonical public-safe scan receipts, and exact semantic phase currentness.
+The current campaign checkpoint additionally freezes one exact campaign plan,
+authority-aware truthful projection, and sufficient complete-bundle bounds.
 
 `contracts/vnext/public-safe-redaction-profile.v1.json` binds the current
 registry. `tinyrustlm/tools/vnext-public-safe-redaction.js` accepts finalized
 canonical bytes only, scans exact secret encodings and contextual forbidden
 values, returns unchanged bytes only on pass, and replays the scan receipt with
-the private equality list. The offline manifest binds that profile and the
-frozen phase-invalidation profile as two of six exact profile inputs. See
+the private equality list. The offline manifest binds that profile, the frozen
+phase-invalidation profile, and the campaign-projection profile as three of
+seven exact profile inputs. See
 `docs/architecture/vnext-public-safe-redaction.md`.
 
 The phase classifier and its explicit supersession rules are documented in
 `docs/architecture/vnext-phase-invalidation.md`.
+The exact 20/50/25/40/20 plan and no-double-count projection are documented in
+`docs/architecture/vnext-campaign-plan-projection.md`.
 
 Rust/browser parity, archive-member scanning, production entry-point cutover,
-truthful campaign projection, and external campaign evidence remain incomplete.
+projection persistence and release integration, and external campaign evidence
+remain incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.

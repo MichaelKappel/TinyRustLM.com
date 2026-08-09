@@ -154,11 +154,17 @@ defined purpose, and the redaction scan accepts it.
 
 ## Change Rules
 
-Changing a required field, field meaning, enum, limit, identity domain,
-visibility, parser profile, redaction rule, or invariant requires a new
-registry and affected schema identifier. A new schema is accepted only after
-both validators and the shared hostile corpus pass. There is no permissive
-minor-version range.
+Before the first authorized production record exists, changing a required
+field, field meaning, enum, limit, identity domain, visibility, parser profile,
+redaction rule, or invariant replaces the current clean-slate registry. The
+family ID, bound profiles, vectors, generated corpus, validators,
+documentation, and complete test closure must change together. No reader for
+the replaced registry remains in the product path.
+
+After the first authorized production record exists, the same material change
+requires a new registry and affected schema identifier. A new schema is
+accepted only after both validators and the shared hostile corpus pass. There
+is no permissive minor-version range, dual reader, or automatic upgrade.
 
 Limits may be lowered before production only through a new frozen registry;
 they are never changed after seeing which value allows a preferred artifact or
@@ -204,8 +210,9 @@ predecessor release-authorizer key, rejects stale-registry signing and nonce
 replay, and evaluates compromise and currentness without network access.
 `tinyrustlm/tools/vnext-offline-bundle.js` adds one canonical closed manifest
 and a separate acyclic verification receipt. It binds all member bytes, all
-nine schema descriptors, the contract/redaction/signature/store/bundle
-profiles, target signatures, campaign/environment, and registry pins; rejects
+nine schema descriptors, the contract, campaign-projection,
+phase-invalidation, redaction, signature, store, and bundle profiles, target
+signatures, campaign/environment, and registry pins; rejects
 missing, extra, duplicate, unlinked, stale, interrupted, resource-exceeding,
 or drifted input; and invokes the authority verifier only with supplied member
 bytes.
@@ -218,8 +225,18 @@ result containing identities, counts, and classes rather than values. Its
 receipt builder and replay verifier bind target wire/content identity, exact
 profile and scanner, result hash, status, and protected equality-list count
 without publishing a secret hash. The offline manifest binds the redaction
-profile as its fifth installed profile. See
+profile as one of seven installed profile or registry bindings. See
 `docs/architecture/vnext-public-safe-redaction.md`.
+
+`tinyrustlm/tools/vnext-phase-invalidation.js` classifies immutable phase
+history through explicit same-operation supersession and dependency-only
+staleness. `tinyrustlm/tools/vnext-campaign-projection.js` finalizes the exact
+20/50/25/40/20 schedule and counts only planned, current-pass,
+authority-eligible evidence whose required earlier objectives are current.
+The complete synthetic capacity fixture verifies a 271-receipt offline bundle
+with 155 target signatures and 40 proof subjects; it changes no live campaign
+counter. See `docs/architecture/vnext-phase-invalidation.md` and
+`docs/architecture/vnext-campaign-plan-projection.md`.
 
 The authority result deliberately separates `signatureVerified`,
 `authorityAtIssue`, `temporalCurrent`, and `currentEvidenceEligible`. A valid
@@ -233,8 +250,8 @@ current eligibility for every declared target signature. Expired governance
 envelopes may authenticate immutable history but cannot become target-current
 evidence.
 
-The frozen offline profile is 3,514 bytes with SHA-256
-`488cad440d213da587a1258dc37de00789e566ae3024d89d3a43781c49b50369`.
+The frozen offline profile is 3,583 bytes with SHA-256
+`62e37b24391ce48cc8be71184e71a67ebd0972e90dca79cf8036099091349e9f`.
 The manifest excludes its verification receipt to avoid a manifest/receipt
 hash cycle; the receipt is finalized afterward and binds the manifest hash and
 complete member set. `docs/architecture/vnext-offline-verification-bundle.md`

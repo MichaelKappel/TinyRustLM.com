@@ -3,7 +3,7 @@
   "profileId": "tinyrustlm.vnext.phase-invalidation.v1",
   "status": "frozen",
   "versionPolicy": "single-current-profile-no-compatibility-reader",
-  "contractRegistrySha256": "e9f8c4d511bf1fe398f0e75d43dfb01a68acb996d99554cc8f5bf167084f1b2a",
+  "contractRegistrySha256": "812e3ace7526d867561f50bdbf24acc047773583391f85be9e0f3e4cbfe0366a",
   "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
   "receiptSchema": "tinyrustlm.vnext.receipt.v1",
   "inputPolicy": "bounded-final-canonical-receipt-bytes-only",

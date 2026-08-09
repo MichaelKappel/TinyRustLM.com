@@ -47,7 +47,7 @@ current contract registry SHA-256 and recognizes one set of public and private
 classes:
 
 The checked-in profile is 3,132 bytes with SHA-256
-`83cab2664951247ccf24462f409d1838a77cb3be88353e27d028211343627884`.
+`36f4fc504aee3e08b35e6e113669a354571c1917a5f0a19a94e82eccd644eaa7`.
 
 | Visibility | Contract classes |
 | --- | --- |

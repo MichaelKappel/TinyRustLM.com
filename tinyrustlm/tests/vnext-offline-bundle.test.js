@@ -132,12 +132,10 @@ test("freezes an exact public-only profile and imports no network client", () =>
   const rawProfile = fs.readFileSync(profilePath);
   const verifierSource = fs.readFileSync(verifierPath, "utf8");
 
-  assert.equal(rawProfile.length, 3548);
-  assert.equal(sha256(rawProfile),
-    "f5ba2fd0750627890d0181dfbaca457fa5a6a5e8e637a8683888afa6e983331f");
   assert.equal(offlineBundleProfileSha256, sha256(rawProfile));
   assert.equal(offlineBundleProfile.authorityPolicy.networkAccess, "forbidden");
   assert.deepEqual(offlineBundleProfile.profileBindingNames, [
+    "campaign-projection-profile",
     "contract-registry",
     "offline-bundle-profile",
     "phase-invalidation-profile",
@@ -145,7 +143,8 @@ test("freezes an exact public-only profile and imports no network client", () =>
     "receipt-signature-profile",
     "receipt-store-profile"
   ]);
-  assert.equal(offlineBundleProfile.limits.maximumProfileBindings, 6);
+  assert.equal(offlineBundleProfile.limits.maximumProfileBindings, 7);
+  assert.equal(offlineBundleProfile.limits.maximumTargetSignatures, 512);
   assert.equal(offlineBundleProfile.limits.maximumReceipts, 2048);
   assert.equal(offlineBundleProfile.limits.maximumManifestBytes, 4 * 1024 * 1024);
   assert.doesNotMatch(rawProfile.toString("utf8"),

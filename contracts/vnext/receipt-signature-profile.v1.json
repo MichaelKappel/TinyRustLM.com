@@ -173,7 +173,7 @@
     "maximumTotalSubjectBytes": 67108864,
     "maximumAuthorityRegistries": 64,
     "maximumRegistryDepth": 64,
-    "maximumSignatureEnvelopes": 256,
+    "maximumSignatureEnvelopes": 1024,
     "maximumRevocations": 256,
     "maximumTrustedRoots": 1
   }

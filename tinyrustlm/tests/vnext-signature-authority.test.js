@@ -354,3 +354,31 @@ test("rejects duplicate receipt identities and hostile input accessors", () => {
     }, () => fixture.root.bytes)
   })), "authority_receipt_input_invalid");
 });
+
+test("owns byte inputs and rejects shared or accessor-shadowed views", () => {
+  const fixture = makeRootProofGraph();
+  const shadowed = new Uint8Array(fixture.root.bytes);
+  let getterInvoked = false;
+  for (const name of ["buffer", "byteLength", "byteOffset", "length"]) {
+    Object.defineProperty(shadowed, name, {
+      configurable: true,
+      get() {
+        getterInvoked = true;
+        throw new Error("shadowed byte metadata must not run");
+      }
+    });
+  }
+  const result = verifyVnextAuthorityGraph(inputFrom(fixture, {
+    receiptBytes: [shadowed, fixture.signature.bytes]
+  }));
+  assert.equal(result.authorityGraphVerified, true);
+  assert.equal(getterInvoked, false);
+
+  if (typeof SharedArrayBuffer === "function") {
+    const shared = new Uint8Array(new SharedArrayBuffer(fixture.root.bytes.length));
+    shared.set(fixture.root.bytes);
+    throwsCode(() => verifyVnextAuthorityGraph(inputFrom(fixture, {
+      receiptBytes: [shared, fixture.signature.bytes]
+    })), "authority_receipt_input_invalid");
+  }
+});

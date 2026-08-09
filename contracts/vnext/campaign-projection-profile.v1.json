@@ -1,0 +1,165 @@
+{
+  "schema": "tinyrustlm.vnext.campaign_projection_profile.v1",
+  "profileId": "tinyrustlm.vnext.campaign-projection.v1",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-no-compatibility-reader",
+  "contractRegistrySha256": "812e3ace7526d867561f50bdbf24acc047773583391f85be9e0f3e4cbfe0366a",
+  "phaseInvalidationProfileId": "tinyrustlm.vnext.phase-invalidation.v1",
+  "phaseInvalidationProfileSha256": "8e0cccdc007e56ace6550163b0fe1acdd211e74b184053739785a1d925b113cb",
+  "receiptSignatureProfileId": "tinyrustlm.vnext.ed25519-authority.v1",
+  "receiptSignatureProfileSha256": "b1f5f1347ee14e1219972607c58f97f7c2b8f26545d09d1c02eeec970f946b56",
+  "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
+  "hashAlgorithm": "sha256",
+  "networkAccess": "forbidden",
+  "sourceMutation": "forbidden",
+  "historyPolicy": "retain-all-valid-evidence-and-count-current-authorized-evidence-only",
+  "planSchema": "tinyrustlm.vnext.campaign_plan.v1",
+  "resultSchema": "tinyrustlm.vnext.campaign_projection_result.v1",
+  "planIdentityDomain": "tinyrustlm.campaign-plan.identity.v1",
+  "planDraftFields": [
+    "announcements",
+    "applicationOrigin",
+    "browserRounds",
+    "campaignId",
+    "createdAtUtc",
+    "environment",
+    "memoryContractId",
+    "memoryRounds",
+    "models",
+    "p2pLanes",
+    "profileId",
+    "schema"
+  ],
+  "planFields": [
+    "announcements",
+    "applicationOrigin",
+    "browserRounds",
+    "campaignId",
+    "createdAtUtc",
+    "environment",
+    "memoryContractId",
+    "memoryRounds",
+    "models",
+    "p2pLanes",
+    "planId",
+    "profileId",
+    "schema"
+  ],
+  "modelFields": [
+    "artifactId",
+    "artifactSha256",
+    "modelSlotId",
+    "qualificationOperationId"
+  ],
+  "browserRoundFields": [
+    "memoryContinuityRequired",
+    "modelSlotId",
+    "operationId",
+    "restartId",
+    "roundId"
+  ],
+  "memoryRoundFields": [
+    "browserRoundId",
+    "companyIdHash",
+    "memoryRoundId",
+    "modelSlotId",
+    "operationId"
+  ],
+  "p2pLaneFields": [
+    "laneId",
+    "modelSlotId",
+    "processInstanceId"
+  ],
+  "announcementFields": [
+    "announcementId",
+    "modelSlotId",
+    "operationId"
+  ],
+  "objectiveTargets": {
+    "announcedModels": 20,
+    "cleanBrowserRounds": 50,
+    "liveMemoryRounds": 25,
+    "outsideProvenLanes": 40,
+    "qualifiedModels": 20
+  },
+  "objectiveReceiptBindings": [
+    {
+      "counterName": "qualifiedModels",
+      "phase": "qualification",
+      "receiptType": "qualification",
+      "role": "local-recorder",
+      "scope": "receipt-recording"
+    },
+    {
+      "counterName": "cleanBrowserRounds",
+      "phase": "browser-round",
+      "receiptType": "browser-round",
+      "role": "local-recorder",
+      "scope": "receipt-recording"
+    },
+    {
+      "counterName": "liveMemoryRounds",
+      "phase": "memory-continuity",
+      "receiptType": "memory-continuity",
+      "role": "local-recorder",
+      "scope": "receipt-recording"
+    },
+    {
+      "counterName": "announcedModels",
+      "phase": "catalog-announcement",
+      "receiptType": "catalog-announcement",
+      "role": "p2p-publisher",
+      "scope": "p2p-publication"
+    }
+  ],
+  "outsideProofBinding": {
+    "counterName": "outsideProvenLanes",
+    "schema": "tinyrustlm.vnext.outside_proof.v2",
+    "role": "outside-network-observer",
+    "scope": "outside-proof",
+    "networkScope": "outside-host-and-local-network"
+  },
+  "phaseOrder": [
+    "qualification",
+    "browser-round",
+    "memory-continuity",
+    "outside-proof",
+    "catalog-announcement"
+  ],
+  "countingPolicy": {
+    "requireExactPlanMatch": true,
+    "requireCurrentPassPhaseState": true,
+    "requireCurrentRoleCorrectSignature": true,
+    "requireCurrentPrerequisites": true,
+    "rejectBestOfN": true,
+    "countUnplannedEvidence": false,
+    "countExpiredEvidence": false,
+    "countConflictedEvidence": false,
+    "countSupersededEvidence": false,
+    "countStaleEvidence": false
+  },
+  "planPolicy": {
+    "arrayOrder": "strict-lexicographic-by-primary-id",
+    "artifactIdentity": "artifact-id-must-equal-sha256-prefix-plus-artifact-sha256",
+    "browserRestartMinimumPerModel": 2,
+    "lanesPerModel": 2,
+    "globalProcessIdentityUniqueness": true,
+    "memoryRoundBijection": "exactly-one-memory-round-per-designated-browser-round",
+    "announcementBijection": "exactly-one-announcement-per-model"
+  },
+  "limits": {
+    "maximumPlanBytes": 1048576,
+    "maximumProjectionResultBytes": 4194304,
+    "maximumReceiptInputs": 2048,
+    "maximumSubjectInputs": 2048,
+    "maximumTotalReceiptBytes": 67108864,
+    "maximumTotalSubjectBytes": 67108864,
+    "maximumDepth": 32,
+    "maximumTotalEntries": 131072,
+    "maximumObjectMembers": 64,
+    "maximumArrayItems": 4096,
+    "maximumStringCodeUnits": 65536,
+    "maximumTotalStringCodeUnits": 16777216,
+    "maximumNumberCharacters": 32
+  }
+}

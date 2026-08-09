@@ -1,6 +1,6 @@
 {
   "schema": "tinyrustlm.vnext.contract_corpus.v1",
-  "registrySha256": "e9f8c4d511bf1fe398f0e75d43dfb01a68acb996d99554cc8f5bf167084f1b2a",
+  "registrySha256": "812e3ace7526d867561f50bdbf24acc047773583391f85be9e0f3e4cbfe0366a",
   "generatorSourceSha256": "5ed85cd9ae53845a032b96b626d1d681f6d3e2a0f99cc80584a59fd7947fc415",
   "encoding": "base64-raw-json",
   "caseCount": 70,

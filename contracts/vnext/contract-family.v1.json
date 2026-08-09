@@ -1,6 +1,6 @@
 {
   "schema": "tinyrustlm.vnext.contract_registry.v1",
-  "familyId": "tinyrustlm-vnext-2026-08-09-r2",
+  "familyId": "tinyrustlm-vnext-2026-08-09-r3",
   "status": "frozen",
   "compatibility": "incompatible-clean-slate",
   "unknownFieldPolicy": "reject-at-every-object",
@@ -189,7 +189,7 @@
       "fields": [
         {"name": "bundleManifestSha256", "type": "sha256", "required": true},
         {"name": "receiptIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 1, "maximumItems": 2048, "unique": true, "sorted": true},
-        {"name": "signatureEnvelopeReceiptIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 1, "maximumItems": 256, "unique": true, "sorted": true},
+        {"name": "signatureEnvelopeReceiptIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 1, "maximumItems": 1024, "unique": true, "sorted": true},
         {"name": "authorityRegistryReceiptIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 1, "maximumItems": 64, "unique": true, "sorted": true},
         {"name": "revocationReceiptIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 0, "maximumItems": 256, "unique": true, "sorted": true},
         {"name": "schemaHashes", "type": "array", "required": true, "items": "record:hashBinding", "minimumItems": 9, "maximumItems": 32, "uniqueBy": "name", "sortedBy": "name"},
@@ -293,7 +293,7 @@
         {"name": "startedAtUtc", "type": "utc", "required": true},
         {"name": "completedAtUtc", "type": "utc", "required": true},
         {"name": "sourceRevision", "type": "source-revision", "required": true},
-        {"name": "inputReceiptIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 0, "maximumItems": 256, "unique": true, "sorted": true},
+        {"name": "inputReceiptIds", "type": "array", "required": true, "items": "content-id", "minimumItems": 0, "maximumItems": 2048, "unique": true, "sorted": true},
         {"name": "inputHashes", "type": "array", "required": true, "items": "record:hashBinding", "minimumItems": 0, "maximumItems": 256, "uniqueBy": "name", "sortedBy": "name"},
         {"name": "outputHashes", "type": "array", "required": true, "items": "record:hashBinding", "minimumItems": 0, "maximumItems": 256, "uniqueBy": "name", "sortedBy": "name"},
         {"name": "tools", "type": "array", "required": true, "items": "record:tool", "minimumItems": 1, "maximumItems": 32, "uniqueBy": "name", "sortedBy": "name"},

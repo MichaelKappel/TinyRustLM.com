@@ -10,18 +10,22 @@ receipt, or campaign completion claim.
 The current implementation is:
 
 - `contracts/vnext/offline-verification-bundle-profile.v1.json`;
+- `contracts/vnext/campaign-projection-profile.v1.json`;
 - `contracts/vnext/phase-invalidation-profile.v1.json`;
 - `contracts/vnext/public-safe-redaction-profile.v1.json`;
 - `tinyrustlm/tools/vnext-offline-bundle.js`; and
 - `tinyrustlm/tests/vnext-offline-bundle.test.js`.
 
-The current offline profile is 3,548 bytes with SHA-256
-`f5ba2fd0750627890d0181dfbaca457fa5a6a5e8e637a8683888afa6e983331f`.
+The current offline profile is 3,583 bytes with SHA-256
+`62e37b24391ce48cc8be71184e71a67ebd0972e90dca79cf8036099091349e9f`.
 Its newly bound public-safe redaction profile is 3,132 bytes with SHA-256
-`83cab2664951247ccf24462f409d1838a77cb3be88353e27d028211343627884`.
+`36f4fc504aee3e08b35e6e113669a354571c1917a5f0a19a94e82eccd644eaa7`.
 The manifest also binds the 2,755-byte frozen phase-invalidation profile with
 SHA-256
-`0fa5df794b14225bad520f4c37f67fdac425ed6658909af702626e763891601f`.
+`8e0cccdc007e56ace6550163b0fe1acdd211e74b184053739785a1d925b113cb`.
+The seventh binding is the 4,857-byte campaign-projection profile with
+SHA-256
+`a5dbe87a6971301c782120d3b30bb6059ab9cb26f2efac70b866a7bdb0b52067`.
 
 ## Acyclic Construction
 
@@ -67,8 +71,9 @@ The canonical manifest binds:
 
 - bundle state, profile ID, canonical JSON profile, creation time, campaign,
   environment, and registry pins;
-- the raw byte length and SHA-256 of the contract registry, phase-invalidation
-  profile, public-safe redaction profile, receipt-signature profile,
+- the raw byte length and SHA-256 of the contract registry,
+  campaign-projection profile, phase-invalidation profile, public-safe
+  redaction profile, receipt-signature profile,
   receipt-store profile, and offline-bundle profile;
 - the SHA-256 of the canonical descriptor for each of the nine vNext schemas;
 - sorted target signature-receipt IDs;
@@ -126,8 +131,8 @@ The frozen profile caps:
 - manifest bytes at 4 MiB;
 - receipts at 2,048 and aggregate receipt bytes at 64 MiB;
 - non-receipt subjects at 2,048 and aggregate subject bytes at 64 MiB;
-- target signatures at 128;
-- profile bindings at exactly six;
+- target signatures at 512;
+- profile bindings at exactly seven;
 - schema bindings at exactly nine; and
 - parser depth, entries, members, arrays, strings, and number characters.
 
@@ -168,8 +173,8 @@ No 20/50/25/40/20 campaign counter changes from this checkpoint.
   dedicated verifier with its protected known-secret list before release
   admission. The manifest profile binding prevents policy substitution but
   does not disclose or reconstruct private equality inputs.
-- Consume the bound phase-invalidation result in the truthful dashboard
-  projection.
+- Reproduce the bound campaign projection and its complete-bundle capacity
+  fixture in independent Rust and browser implementations.
 - Prove the Rust/Win32 directory-flush boundary before claiming production
   directory durability.
 - Run authorized production operations only after key custody, trusted time,

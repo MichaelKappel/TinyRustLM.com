@@ -1,7 +1,7 @@
 {
   "schema": "tinyrustlm.vnext.receipt_signature_vectors.v1",
   "profileId": "tinyrustlm.vnext.ed25519-authority.v1",
-  "profileSha256": "5edfd501e96085fe58ef98900cfe603e094013bbc038fe7ab25ebba99e20c8d5",
+  "profileSha256": "b1f5f1347ee14e1219972607c58f97f7c2b8f26545d09d1c02eeec970f946b56",
   "cases": [
     {
       "id": "outside-proof-valid-001",

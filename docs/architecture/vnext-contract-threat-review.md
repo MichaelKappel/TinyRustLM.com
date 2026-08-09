@@ -11,7 +11,7 @@ claim, a release, a model qualification, a browser campaign round, a live
 MemoryEndpoints continuity result, an outside-network P2P proof, or a catalog
 announcement.
 
-Reviewed at `2026-08-09T04:19:59Z`. The review is invalidated when any bound
+Reviewed at `2026-08-09T07:00:00Z`. The review is invalidated when any bound
 file changes, when the parser changes, or when a deferred proof obligation is
 reclassified without a new threat review.
 
@@ -19,10 +19,10 @@ reclassified without a new threat review.
 
 | Role | Path | Bytes | SHA-256 |
 | --- | --- | ---: | --- |
-| Frozen registry | `contracts/vnext/contract-family.v1.json` | 37,287 | `e9f8c4d511bf1fe398f0e75d43dfb01a68acb996d99554cc8f5bf167084f1b2a` |
-| Language-neutral corpus | `contracts/vnext/contract-corpus.v1.json` | 124,485 | `6c551849404a364dee14cda3270869fc0aebdeea4d171fb306d6b0f0110d774c` |
+| Frozen registry | `contracts/vnext/contract-family.v1.json` | 37,289 | `812e3ace7526d867561f50bdbf24acc047773583391f85be9e0f3e4cbfe0366a` |
+| Language-neutral corpus | `contracts/vnext/contract-corpus.v1.json` | 124,485 | `5dd338f94a9888bafd78ac829b655f5cc3ee7e1af1d30de3488970a888fdc89e` |
 | Registry interpreter | `tinyrustlm/tools/vnext-contract-validator-registry.js` | 29,900 | `d60d9b86be75e9cb17b81b043baabf19d74de80dadb23241d733bec6261ceabc` |
-| Independent validator | `tinyrustlm/tools/vnext-contract-validator-independent.js` | 41,771 | `dd639a03c28b98f4902770cfc54c4c268fce19967d9c484bbc7d1f7d110d4559` |
+| Independent validator | `tinyrustlm/tools/vnext-contract-validator-independent.js` | 41,773 | `d30bf36ee8c07a5f17be962227160adb84876ca04c058647d16b7dfe8a4d123d` |
 | Corpus generator | `tinyrustlm/tools/vnext-contract-corpus-generator.js` | 20,504 | `5ed85cd9ae53845a032b96b626d1d681f6d3e2a0f99cc80584a59fd7947fc415` |
 | Differential tests | `tinyrustlm/tests/vnext-contract-validator-conformance.test.js` | 10,585 | `f67578bac0f28bd0a00b6103d948a957f0f612fe39fb4f5cf96dd1fac1e79edc` |
 
@@ -32,6 +32,16 @@ Validator identities are
 registry and normalized generator source hashes. It contains 70 exact raw-byte
 cases: 14 accept cases and 56 reject cases. Both validators execute every case,
 for 140 differential verdicts.
+
+The current clean-slate registry family is
+`tinyrustlm-vnext-2026-08-09-r3`. Before any authorized production record, it
+replaces the prior checkpoint and raises only two receipt cardinalities needed
+for complete offline campaign closure: `inputReceiptIds` from 256 to 2,048 and
+`offlineBundle.signatureEnvelopeReceiptIds` from 256 to 1,024. The independent
+validator carries the same limits, the generated hostile corpus is rebound to
+the new registry bytes, and the complete synthetic campaign test verifies 271
+receipt parents and 155 target signatures. The product retains no reader for
+the replaced registry.
 
 The first proof schema was replaced before production because it embedded a
 signature-envelope ID while that envelope signed the proof ID. Those two
