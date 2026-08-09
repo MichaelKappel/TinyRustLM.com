@@ -1,7 +1,46 @@
 profile: tinyrustlm.source-workspace.v287
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-09T20:17:08Z
+updated_utc: 2026-08-09T22:06:41Z
+
+credit_window_handoff_2026_08_09:
+  authority: This is the newest private operational account. Read it before the older current-workspace block and dated history; it changes no historical receipt or campaign fact.
+  stopping_reason: The user ended the available credit window and requested every site be checked in with complete restart memory. All live publishing was deliberately stopped before this checkpoint.
+  active_repository:
+    root: E:\Source\.tinyrustlm-model-acquisition
+    branch: codex/model-acquisition-v2
+    upstream: origin/codex/model-acquisition-v2
+    implementation_head_before_handoff_commit: 0f145bb02bb97dd3554a9596c67a47a48a2bbb26
+    protected_checkout: E:\Source\Rust\TinyRustLM.com remains dirty and must not be reset, cleaned, overwritten, or used for release work.
+  pushed_site_heads:
+    TinyRustLM.MiRust.com: c34d70247b1a1213a181841560fd80f151543e25
+    MiniModel.MiRust.com: cb18263ac739b64af717aa6c5568b65b05af9962
+    MiniModel.org: b5a0248d76ce543eb3ce02fc016ff611b7e41c19
+    Runtime.MiRust.com: 4b179a1c6d458cf9b85ae2f5cde2925fe1fad086
+    MiRust.com: 4e3d8f52b0b20d9ccb51751e4182e8ab87fb3e43
+  production_truth:
+    TinyRustLM.com: Existing immutable successful release remains 0.2.1, released 2026-08-08 and published 2026-08-08T23:47:22.420Z from e964a095ede1c077b36b6476af5ee85b087f52f8. The active vNext milestone changed zero production web members, so no new version or publication was fabricated.
+    TinyRustLM.MiRust.com: Release 1.7.0 is incomplete but resumable. It stopped after 22 of 224 files at authenticated prefix 32768 of 39530 bytes for docs/reports/memory-systems-domains-research.md. Receipt deploy/receipts/site-deployment-20260809T214628Z-paused.json and nonce efa18f6e4a5a are authoritative.
+    MiniModel.MiRust.com: Release 1.0.0 exact closure is ready but publication has not started.
+    MiniModel.org: Release 1.0.0 exact closure and full green source gate are ready but publication has not started; closure contains zero model bytes.
+    Runtime.MiRust.com: Redirect behavior was observed, but no new immutable publication receipt exists and its FileZilla profile is misbound to the TinyRustLM.MiRust.com root.
+    MiRust.com: Pushed source is bounded metadata/governance only and is not a complete deployable WordPress production snapshot; no publication was attempted.
+    LMComposer.com: Live redirect was observed, but E:\Source\Rust\LMComposer.com has no Git repository or remote and therefore cannot be checked in until source-control enrollment exists.
+  exact_resume_order:
+    - Verify every named Git repository is clean and upstream-exact; verify no deployment process is running.
+    - From the TinyRustLM.MiRust.com clean release clone run `& .\tools\deploy-site.ps1 -Publish -ResumeNonce efa18f6e4a5a`; authenticate the remote prefix before appending.
+    - Require all 224 files, authoritative transport checks, and public HTTPS readback; then commit and push the append-only success receipt.
+    - Re-run the Runtime.MiRust.com exact redirect verifier after the developer portal is current; do not deploy Runtime with the misbound profile.
+    - Publish MiniModel.MiRust.com 1.0.0 from its frozen 32-file closure and commit/push its successful receipt only after complete readback.
+    - Publish MiniModel.org 1.0.0 from its frozen 34-file zero-model-byte closure and commit/push its successful receipt only after complete readback.
+    - Reverify all seven origins and update root workspace.uai with receipts, versions, release dates, publication timestamps, and blockers.
+    - Resume the enterprise clean-slate vNext implementation only after the urgent site publication checkpoint is closed or honestly recorded as externally blocked.
+  campaign_truth: qualified_models=0/20; clean_browser_rounds=0/50; live_memory_rounds=0/25; outside_proven_lanes=0/40; live_catalog_announcements=0/20
+  permanent_rules:
+    - Pre-public clean-slate only: no debt, legacy support, compatibility shim, migration reader, hidden fallback, test weakening, or low-quality patch.
+    - Check in and push after every healthy major change. Deploy each affected site whenever all of its complete gates pass.
+    - Keep documentation and marketing first-class, current, versioned, and synchronized across every affected site.
+    - Never convert source readiness, local tests, reachability, partial upload, mocks, fixtures, or cross-compilation into a publication, live, external, model-quality, or campaign-completion claim.
 current_workspace_handoff:
   authority: This block is the first-read operational account as of `2026-08-09T20:17:08Z`. It summarizes current truth and takes precedence over incompatible present-tense wording in dated history below. Historical receipts remain immutable evidence for their stated scope only.
   workspace_family_account:

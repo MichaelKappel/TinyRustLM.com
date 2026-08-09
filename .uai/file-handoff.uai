@@ -1,5 +1,18 @@
 profile: runtime-mirust.file-handoff.v67
-updated_utc: 2026-08-09T00:53:15Z
+updated_utc: 2026-08-09T22:06:41Z
+credit_window_handoff_2026_08_09:
+  status: source_control_checkpoint_complete_publication_checkpoint_incomplete
+  stopping_reason: User ended the available credit window.
+  active_branch_head_before_handoff_commit: 0f145bb02bb97dd3554a9596c67a47a48a2bbb26
+  site_heads:
+    TinyRustLM.MiRust.com: c34d70247b1a1213a181841560fd80f151543e25
+    MiniModel.MiRust.com: cb18263ac739b64af717aa6c5568b65b05af9962
+    MiniModel.org: b5a0248d76ce543eb3ce02fc016ff611b7e41c19
+    Runtime.MiRust.com: 4b179a1c6d458cf9b85ae2f5cde2925fe1fad086
+    MiRust.com: 4e3d8f52b0b20d9ccb51751e4182e8ab87fb3e43
+  urgent_resume: In TinyRustLM.MiRust.com run `& .\tools\deploy-site.ps1 -Publish -ResumeNonce efa18f6e4a5a`; preserve and authenticate the saved 32768-byte prefix before continuing. Complete readback and push a success receipt before starting MiniModel.MiRust.com and MiniModel.org publication.
+  blockers: Runtime deployment profile is misbound; MiRust source is not a full WordPress closure; LMComposer has no Git remote; live MemoryEndpoints and outside P2P authorities remain unavailable.
+  campaign_counts: 0/20 models; 0/50 browser rounds; 0/25 live memory rounds; 0/40 outside-proven lanes; 0/20 announcements
 current_active_handoff_closure:
   manifest: docs/report-intake/2026-08-08/active-handoff-closure/MANIFEST.md
   manifest_sha256: f03b2db911dd7b5dae675297f971e97e991f5de81e8ec0858f77e8ea7919f98a

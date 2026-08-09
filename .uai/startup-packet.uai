@@ -1,5 +1,12 @@
 profile: runtime-mirust.startup-packet.v100
-updated_utc: 2026-06-30T06:45:00Z
+updated_utc: 2026-08-09T22:06:41Z
+current_credit_window_handoff_2026_08_09:
+  first_read: Read the top-level `credit_window_handoff_2026_08_09` in workspace.uai before following older startup routes.
+  active_root: E:\Source\.tinyrustlm-model-acquisition
+  active_branch: codex/model-acquisition-v2
+  protected_root: E:\Source\Rust\TinyRustLM.com is dirty and must remain untouched.
+  immediate_operation: Resume TinyRustLM.MiRust.com 1.7.0 using nonce efa18f6e4a5a from its clean release clone; then publish the two frozen MiniModel 1.0.0 closures only after the documentation portal succeeds.
+  truth_boundary: TinyRustLM.MiRust.com, MiniModel.MiRust.com, and MiniModel.org are not yet fully published at the prepared versions. All campaign counters remain zero.
 startup_sequence:
   - Read AGENTS.md.
   - Read workspace.uai.

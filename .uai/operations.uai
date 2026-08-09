@@ -1,5 +1,11 @@
 profile: runtime-mirust.operations.v121
-updated_utc: 2026-07-15T05:05:00Z
+updated_utc: 2026-08-09T22:06:41Z
+credit_window_release_checkpoint_2026_08_09:
+  state: publishing_stopped_source_control_checkpoint_in_progress
+  TinyRustLM_MiRust_resume: From `E:\Source\Worktrees\rust-site-release-20260809\TinyRustLM.MiRust.com`, run `& .\tools\deploy-site.ps1 -Publish -ResumeNonce efa18f6e4a5a`; authenticate the 32768-byte staged prefix for the 39530-byte current file and preserve attempt history.
+  remaining_release_order: Finish TinyRustLM.MiRust.com 1.7.0; rerun Runtime destination verification; publish MiniModel.MiRust.com 1.0.0; publish MiniModel.org 1.0.0; reverify seven origins; update receipts and root workspace.
+  fail_closed: No partial upload, source commit, reachable page, local gate, or package is a successful publication. Do not use the misbound Runtime profile and do not deploy MiRust from its incomplete source snapshot.
+  campaign_counts: qualified_models=0/20; clean_browser_rounds=0/50; live_memory_rounds=0/25; external_lane_proofs=0/40; catalog_announcements=0/20
 current_dogfood_quality_campaign_intake:
   manifest: docs/report-intake/2026-07-14/dogfood-quality-campaign/MANIFEST.md
   synthesis: docs/report-intake/2026-07-14/dogfood-quality-campaign/tinyrustlm-dogfood-quality-campaign-intake-synthesis-2026-07-14.md
