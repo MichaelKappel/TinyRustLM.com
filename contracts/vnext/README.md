@@ -202,6 +202,12 @@ receipt and subject byte arrays, requires out-of-band root and terminal
 registry pins, authenticates successor registries and revocations through the
 predecessor release-authorizer key, rejects stale-registry signing and nonce
 replay, and evaluates compromise and currentness without network access.
+`tinyrustlm/tools/vnext-offline-bundle.js` adds one canonical closed manifest
+and a separate acyclic verification receipt. It binds all member bytes, all
+nine schema descriptors, the contract/signature/store/bundle profiles, target
+signatures, campaign/environment, and registry pins; rejects missing, extra,
+duplicate, unlinked, stale, interrupted, resource-exceeding, or drifted input;
+and invokes the authority verifier only with supplied member bytes.
 
 The authority result deliberately separates `signatureVerified`,
 `authorityAtIssue`, `temporalCurrent`, and `currentEvidenceEligible`. A valid
@@ -210,11 +216,22 @@ expired, its terminal key is retired or revoked, its registry is not current,
 or compromise history makes it stale. `authorityGraphVerified` means the
 provided bounded graph was reconstructed and its signatures were processed;
 callers must use `currentEvidenceEligible` for current evidence admission.
+The offline verifier additionally requires a current terminal registry and
+current eligibility for every declared target signature. Expired governance
+envelopes may authenticate immutable history but cannot become target-current
+evidence.
 
-This is a Node implementation checkpoint, not cross-language parity, offline
-bundle closure, production entry-point cutover, outside-network observation,
-or campaign evidence. Runtime tests generate ephemeral private keys only in
-process memory. Checked-in profiles and vectors contain public material only.
+The frozen offline profile is 3,477 bytes with SHA-256
+`4ebddebcbf7e8fcfadc06390c1c2754e80308bf5de433306eba73517978eed00`.
+The manifest excludes its verification receipt to avoid a manifest/receipt
+hash cycle; the receipt is finalized afterward and binds the manifest hash and
+complete member set. `docs/architecture/vnext-offline-verification-bundle.md`
+defines the exact boundary.
+
+This is a Node implementation checkpoint, not cross-language parity,
+production entry-point cutover, outside-network observation, or campaign
+evidence. Runtime tests generate ephemeral private keys only in process
+memory. Checked-in profiles and vectors contain public material only.
 
 ## Completion Boundary
 

@@ -12,12 +12,12 @@ The inventory command scanned only executable source under `tinyrustlm/tools`
 and `tinyrustlm/app`. It excluded documentation, tests, generated output,
 `node_modules`, and `target`.
 
-- 115 source files contain at least one string matching
+- 116 source files contain at least one string matching
   `tinyrustlm.<name>.v<number>`.
-- 238 distinct matching schema identifiers were found.
+- 243 distinct matching schema identifiers were found.
 - The sorted identifiers, joined with one LF after every identifier, occupy
-  10,773 UTF-8 bytes and have SHA-256
-  `35dc34df4544d0a48ba80e314a1b55c34757ca7d00a3f7c52ac6f828ed4231ab`.
+  10,967 UTF-8 bytes and have SHA-256
+  `caf0b3f4441cf923d188b943b147c802ca41dec11ad00b258ac287b5592615eb`.
 - 78 app/tool files contain 167 `JSON.parse` call sites. This count is an audit
   queue, not a claim that every call consumes hostile or signed input.
 - The raw release-authorization boundary is the first audited conversion: its
@@ -81,6 +81,12 @@ All nine control-plane encodings use the strict vNext canonical JSON profile.
 SLM2's internal fixed envelope and SLM-DCBOR-1 metadata remain governed by
 ADR-001 and are referenced by the artifact manifest rather than re-encoded as
 JSON model metadata.
+
+The offline verification manifest and its frozen profile are verifier support
+documents, not additional top-level product contracts. The manifest is
+identified by an externally pinned raw-byte SHA-256 and is followed by a
+separate `offline-verification-bundle` receipt, preserving the nine-member
+family and avoiding a manifest/receipt identity cycle.
 
 ## Cross-Boundary Identity
 

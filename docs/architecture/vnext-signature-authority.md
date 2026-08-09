@@ -92,9 +92,14 @@ gate.
 
 ## Remaining Boundaries
 
-This Node checkpoint does not prove Rust or browser parity, actual observer
-independence, production key custody, trusted production time, offline-bundle
-manifest closure, redaction/secret scans, complete receipt-DAG closure,
-production entry-point cutover, or campaign completion. No model, browser,
-MemoryEndpoints, P2P, catalog, package, site, or release counter changes from
-these tests.
+This authority function intentionally accepts a bounded graph rather than
+deciding whether a transport bundle is exact. The paired
+`vnext-offline-bundle.js` boundary now supplies Node-only exact manifest
+membership, receipt-parent closure, linked-subject checks, and target-current
+admission before returning an offline result.
+
+The combined Node checkpoint still does not prove Rust or browser parity,
+actual observer independence, production key custody, trusted production
+time, redaction/secret scans, production entry-point cutover, or campaign
+completion. No model, browser, MemoryEndpoints, P2P, catalog, package, site,
+or release counter changes from these tests.

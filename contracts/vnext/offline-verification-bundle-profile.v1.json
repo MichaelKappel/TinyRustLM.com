@@ -1,0 +1,118 @@
+{
+  "schema": "tinyrustlm.vnext.offline_bundle_profile.v1",
+  "profileId": "tinyrustlm.vnext.offline-bundle.v1",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-no-compatibility-reader",
+  "manifestSchema": "tinyrustlm.vnext.offline_bundle_manifest.v1",
+  "receiptSchema": "tinyrustlm.vnext.receipt.v1",
+  "verificationReceiptType": "offline-verification-bundle",
+  "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
+  "hashAlgorithm": "sha256",
+  "manifestState": "complete",
+  "verificationReceiptInputHashName": "offline-bundle-manifest",
+  "profileBindingNames": [
+    "contract-registry",
+    "offline-bundle-profile",
+    "receipt-signature-profile",
+    "receipt-store-profile"
+  ],
+  "profileBindingFields": [
+    "byteLength",
+    "documentId",
+    "documentKind",
+    "name",
+    "sha256"
+  ],
+  "schemaBindingFields": [
+    "name",
+    "sha256"
+  ],
+  "manifestFields": [
+    "bundleState",
+    "campaignId",
+    "canonicalJsonProfile",
+    "createdAtUtc",
+    "environment",
+    "expectedTerminalRegistryReceiptId",
+    "profileBindings",
+    "profileId",
+    "receipts",
+    "schema",
+    "schemaHashes",
+    "subjects",
+    "targetSignatureReceiptIds",
+    "totals",
+    "trustedRootRegistryReceiptId"
+  ],
+  "receiptMemberFields": [
+    "byteLength",
+    "receiptId",
+    "receiptType",
+    "schema",
+    "sha256"
+  ],
+  "subjectMemberFields": [
+    "byteLength",
+    "contractClass",
+    "schema",
+    "sha256",
+    "subjectId"
+  ],
+  "totalsFields": [
+    "receiptCount",
+    "subjectCount",
+    "totalReceiptBytes",
+    "totalSubjectBytes"
+  ],
+  "receiptCategories": {
+    "all": "receiptIds",
+    "signature-envelope": "signatureEnvelopeReceiptIds",
+    "authority-registry": "authorityRegistryReceiptIds",
+    "key-revocation": "revocationReceiptIds"
+  },
+  "closurePolicy": {
+    "verificationReceiptExcludedFromManifest": true,
+    "verificationReceiptCreatedAfterManifest": true,
+    "allReceiptParentsRequired": true,
+    "allAuthorityRegistriesLinkedRootToTerminal": true,
+    "allRevocationsApplicableToRegistryTransitions": true,
+    "allGovernanceSignaturesRequired": true,
+    "allNonReceiptSignatureSubjectsRequired": true,
+    "extraReceiptsRejected": true,
+    "extraSubjectsRejected": true,
+    "unlinkedReceiptsRejected": true,
+    "unlinkedSubjectsRejected": true
+  },
+  "currentnessPolicy": {
+    "terminalRegistryMustBeCurrent": true,
+    "targetSignaturesMustBeCurrentEvidenceEligible": true,
+    "governanceSignaturesMayRemainHistorical": true,
+    "manifestCreationMustNotBeAfterVerificationTime": true
+  },
+  "authorityPolicy": {
+    "trustedRootRegistryReceiptIdIsOutOfBand": true,
+    "expectedTerminalRegistryReceiptIdIsOutOfBand": true,
+    "campaignIdIsOutOfBand": true,
+    "environmentIsOutOfBand": true,
+    "verificationTimeIsOutOfBand": true,
+    "networkAccess": "forbidden"
+  },
+  "schemaHashDerivation": "sha256-of-vnext-jcs-contract-descriptor",
+  "limits": {
+    "maximumManifestBytes": 4194304,
+    "maximumReceipts": 2048,
+    "maximumSubjectDocuments": 2048,
+    "maximumTargetSignatures": 128,
+    "maximumTotalReceiptBytes": 67108864,
+    "maximumTotalSubjectBytes": 67108864,
+    "maximumProfileBindings": 4,
+    "maximumSchemaBindings": 9,
+    "maximumDepth": 32,
+    "maximumTotalEntries": 65536,
+    "maximumObjectMembers": 32,
+    "maximumArrayItems": 4096,
+    "maximumStringCodeUnits": 65536,
+    "maximumTotalStringCodeUnits": 8388608,
+    "maximumNumberCharacters": 32
+  }
+}

@@ -33,10 +33,10 @@ test("freezes exactly nine incompatible vNext contract family names", () => {
 
 test("records the reproducible current schema and parser-call inventory", () => {
   const text = fs.readFileSync(inventoryPath, "utf8");
-  assert.match(text, /115 source files/u);
-  assert.match(text, /238 distinct matching schema identifiers/u);
-  assert.match(text, /10,773 UTF-8 bytes/u);
-  assert.match(text, /35dc34df4544d0a48ba80e314a1b55c34757ca7d00a3f7c52ac6f828ed4231ab/u);
+  assert.match(text, /116 source files/u);
+  assert.match(text, /243 distinct matching schema identifiers/u);
+  assert.match(text, /10,967 UTF-8 bytes/u);
+  assert.match(text, /caf0b3f4441cf923d188b943b147c802ca41dec11ad00b258ac287b5592615eb/u);
   assert.match(text, /78 app\/tool files contain 167 `JSON\.parse` call sites/u);
 });
 

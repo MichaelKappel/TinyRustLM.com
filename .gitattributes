@@ -74,6 +74,9 @@ tinyrustlm/tests/vnext-receipt-*.test.js text eol=lf
 tinyrustlm/tools/vnext-jcs.js text eol=lf
 tinyrustlm/tools/vnext-evidence-error.js text eol=lf
 tinyrustlm/tools/vnext-receipt-*.js text eol=lf
+tinyrustlm/tests/vnext-*.test.js text eol=lf
+tinyrustlm/tests/helpers/vnext-*.js text eol=lf
+tinyrustlm/tools/vnext-*.js text eol=lf
 
 # Keep task-specialist case commitments and their exact tool hashes byte-stable.
 tinyrustlm/experiments/task-specialists/** text eol=lf

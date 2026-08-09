@@ -3,10 +3,10 @@
 ## Status
 
 Accepted as the target architecture. Canonical identity, public-key Ed25519
-payload verification, and a bounded Node authority/registry/revocation graph
-verifier exist locally. Cross-language parity, offline-bundle closure,
+payload verification, a bounded Node authority/registry/revocation graph, and
+closed offline-bundle verification exist locally. Cross-language parity,
 production entry-point cutover, independent observer operation, key custody,
-and release promotion remain incomplete.
+redaction execution, and release promotion remain incomplete.
 
 ## Decision Date
 
@@ -156,6 +156,18 @@ authorization, quality, license, and campaign completeness.
   key substitution, stale registry, subject binding, expiry, replay,
   revocation, known and unknown compromise time, duplicate identities, and
   hard input-count bounds.
+- **Observed local fact**:
+  `contracts/vnext/offline-verification-bundle-profile.v1.json` and
+  `tinyrustlm/tools/vnext-offline-bundle.js` bind an exact canonical manifest,
+  current schema/profile hashes, complete receipt and subject membership,
+  receipt-parent closure, target signatures, and the separate acyclic
+  verification receipt without network access.
+- **Observed local fact**: offline tests cover deterministic transport-order
+  independence, external trust pins, missing/extra/duplicate/drifted members,
+  profile and schema drift, noncanonical and interrupted bytes, wrong receipt
+  categories and parents, incomplete closure, unrelated valid members, stale
+  targets, successor governance, revocation, hostile accessors, and hard
+  count limits.
 - **Sourced public fact**: RFC 8785 specifies JCS canonical JSON at
   https://www.rfc-editor.org/rfc/rfc8785.
 - **Sourced public fact**: Ed25519 is specified by RFC 8032 at
@@ -221,6 +233,8 @@ historical evidence outside the active DAG.
 - Whether enterprise deployments require an additional FIPS-approved
   signature profile rather than Ed25519.
 - Final public retention policy for expired and revoked signature bundles.
+- Independent Rust/browser offline-bundle implementations and on-disk staged
+  bundle integration with the create-only receipt store.
 - Independent Rust/browser JCS implementation choice and audit results.
 
 ## Acceptance Tests

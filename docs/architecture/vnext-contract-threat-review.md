@@ -161,13 +161,14 @@ later-phase verifier returns objective evidence. A deferred invariant is never
 a warning-level pass.
 
 The later Phase 3 Node work now includes canonical identity finalization,
-public-key Ed25519 payload verification, and a bounded trusted authority graph
-verifier with explicit root/terminal pins, predecessor-authenticated registry
-succession, key continuity, signed revocation, stale-registry rejection,
-nonce replay rejection, and separate historical/current results. That work is
-outside this Phase 2 PASS. It does not close offline-bundle membership,
-redaction, Rust/browser parity, production entry-point cutover, independent
-observer operation, or any campaign gate.
+public-key Ed25519 payload verification, a bounded trusted authority graph,
+and exact offline-bundle membership and receipt-parent closure. The offline
+profile binds current schema/profile hashes, a separate acyclic verification
+receipt, external root/terminal/campaign/environment/hash pins, current target
+signatures, and all supplied receipt and subject bytes without network access.
+That work is outside this Phase 2 PASS. It does not close redaction,
+Rust/browser parity, production entry-point cutover, independent observer
+operation, or any campaign gate.
 
 ## No-Compatibility Decision
 
@@ -186,17 +187,23 @@ At review time:
 
 - `node --test tests/vnext-contract-registry.test.js tests/vnext-contract-validator-conformance.test.js`
   passed 13, failed 0, skipped 0.
-- The final complete `npm run test:unit` run passed 739, failed 0, skipped 0,
-  in 62.977 seconds, including real Chromium fault and local web-release smoke
-  scenarios.
+- The current complete `npm run test:unit` run passed 750, failed 0, skipped 0,
+  in 71.531 seconds, including real Chromium fault, local web-release smoke,
+  signing-authority, and closed offline-bundle scenarios.
+- The current ten-file contract, store, signing-authority, and offline-bundle
+  set passed 82, failed 0, skipped 0. The offline subset covers canonical
+  materialization, exact membership, external pins, complete receipt closure,
+  profile and schema drift, stale targets, governance succession, revocation,
+  interrupted bytes, hostile accessors, and finite resource limits.
 - Both validators produced the expected verdict for all 70 corpus records.
 - The test suite verifies source independence, corpus regeneration identity,
   the registry interpreter's three-way invariant partition, object-key order
   independence, required root fields, and nested unknown-field rejection.
 
 The full run includes the final invariant-report classification, threat review,
-and all focused contract tests. No test result is a substitute for the deferred
-cryptographic, cross-receipt, production, or campaign evidence above.
+and all focused contract tests. Node offline closure is now implemented, but no
+test result is a substitute for deferred cross-language parity, production
+entry-point cutover, independent operation, or campaign evidence.
 
 ## Exit Decision
 
