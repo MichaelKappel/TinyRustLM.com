@@ -373,8 +373,10 @@ test("parses only arguments owned by the selected fault runner", () => {
 
   const packageFault = parseArguments([
     "run-package", ...common, "--dotnet", "dotnet", "--package-source", "packages",
-    "--model-fixture", "model.slm", "--work-parent", "work"
+    "--model-fixture", "model.slm", "--composition-fixture", "composition.acg1",
+    "--work-parent", "work"
   ]);
+  assert.equal(Object.hasOwn(packageFault, "compositionFixturePath"), true);
   assert.equal(Object.hasOwn(packageFault, "dotnetPath"), true);
   assert.equal(Object.hasOwn(packageFault, "packageSource"), true);
   assert.equal(Object.hasOwn(packageFault, "modelFixturePath"), true);

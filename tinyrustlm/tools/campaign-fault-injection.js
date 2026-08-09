@@ -388,7 +388,7 @@ function faultToolIdentity(evidenceClass) {
       "tinyrustlm-campaign-fault-injection",
       "tinyrustlm-package-fault-scenarios"
     ]);
-    const toolVersions = Object.freeze([faultToolVersion, "1"]);
+    const toolVersions = Object.freeze([faultToolVersion, "2"]);
     const toolBinaryHashes = Object.freeze([faultToolHash, packageToolHash]);
     return Object.freeze({
       toolNames,
@@ -1350,6 +1350,7 @@ function attemptSatisfiesFault(receipt, fault, plan, receiptById = new Map(), pl
       item.hardwareEvidence?.browserExecutableHashVerified === true);
   const packageHardwareValid = fault.requiredEvidenceClass !== "package" ||
     [receipt, domainReceipt].every((item) => item?.hardwareEvidence?.actualDotnetProcess === true &&
+      item.hardwareEvidence?.compositionIdentityVerified === true &&
       item.hardwareEvidence?.consumerExecutionPassed === true &&
       item.hardwareEvidence?.dotnetExecutableHashVerified === true &&
       item.hardwareEvidence?.isolatedNuGetCache === true &&
@@ -1756,7 +1757,7 @@ function runBrowserFaults(options) {
 function runPackageFaults(options) {
   invariant(isPlainObject(options), "package fault injection options are invalid");
   const allowed = new Set([
-    "campaignId", "dotnetPath", "evidenceRoot", "modelFixturePath", "packageSource",
+    "campaignId", "compositionFixturePath", "dotnetPath", "evidenceRoot", "modelFixturePath", "packageSource",
     "planPath", "reportOutputPath", "sourceRevision", "workParent"
   ]);
   for (const key of Object.keys(options)) {
@@ -1771,6 +1772,7 @@ function runPackageFaults(options) {
     "package fault report output path is required");
   const executionOptions = Object.freeze({
     campaignId,
+    compositionFixturePath: path.resolve(options.compositionFixturePath),
     dotnetPath: path.resolve(options.dotnetPath),
     modelFixturePath: path.resolve(options.modelFixturePath),
     packageSource: path.resolve(options.packageSource),
@@ -2013,7 +2015,7 @@ function parseArguments(argv) {
   const commandArguments = command === "run-browser"
     ? ["--chromium", "--profile-parent", "--report-output"]
     : command === "run-package"
-      ? ["--dotnet", "--package-source", "--model-fixture", "--work-parent", "--report-output"]
+      ? ["--composition-fixture", "--dotnet", "--package-source", "--model-fixture", "--work-parent", "--report-output"]
       : command === "run-safe-local"
         ? ["--slm-pack", "--model-fixture", "--report-output"]
         : command === "request-host-restart"
@@ -2044,7 +2046,7 @@ function parseArguments(argv) {
     }
   }
   if (command === "run-package") {
-    for (const name of ["--dotnet", "--package-source", "--model-fixture", "--work-parent"]) {
+    for (const name of ["--composition-fixture", "--dotnet", "--package-source", "--model-fixture", "--work-parent"]) {
       invariant(values.has(name), `missing package fault argument: ${name}`);
     }
   }
@@ -2075,6 +2077,7 @@ function parseArguments(argv) {
     parsed.chromiumPath = path.resolve(values.get("--chromium"));
     parsed.profileParent = path.resolve(values.get("--profile-parent"));
   } else if (command === "run-package") {
+    parsed.compositionFixturePath = path.resolve(values.get("--composition-fixture"));
     parsed.dotnetPath = path.resolve(values.get("--dotnet"));
     parsed.packageSource = path.resolve(values.get("--package-source"));
     parsed.modelFixturePath = path.resolve(values.get("--model-fixture"));

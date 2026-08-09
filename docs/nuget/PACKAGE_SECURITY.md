@@ -5,7 +5,8 @@ The TinyRustLM NuGet SDK is a protected public boundary, not a source distributi
 ## Included
 
 - `.slm` validation, inspection, and safe loading.
-- Runtime harness operations for local `.slm` execution.
+- Explicit, exact-hash activation of bounded immutable `.acg1` composition graphs.
+- Runtime harness operations for local `.slm` execution after composition activation.
 - Metadata-only P2P manifest, signed-manifest verification, share metadata, announcement, announcement-catalog inspection, import plan, share-kit, local assembly, and local receipt-inspection workflows.
 - .NET wrappers, tests, samples, and native assets.
 
@@ -21,6 +22,8 @@ The native library returns JSON envelopes and owns runtime handles internally. C
 
 The .NET runtime wrapper validates managed generation options before crossing the native boundary, and the native public runtime SDK repeats the same validation before runtime mutation for direct ABI callers. Token counts, top-k candidate caps, and sampling probabilities must stay within the public fixed-buffer sampler contract. Invalid .NET values fail as managed argument errors; invalid direct native values fail with an `invalid_generation_options` JSON envelope rather than being widened, wrapped, or allowed to reach sampler calls.
 
+Loading a model does not select, infer, or synthesize a composition. The caller must supply a regular, non-symlink `.acg1` file between 512 bytes and 512 MiB, with a 64-byte-aligned length, plus its exact lowercase SHA-256 identity. The Rust runtime verifies the complete bundle, active-model identity, route, execution bindings, and member graph before activation. Generation fails closed while no graph is active, and failed activation does not promote the candidate graph.
+
 The .NET wrapper also rejects embedded NUL characters in every managed string before P/Invoke. This keeps file paths, prompts, JSON handoff documents, and share-kit request fields from being silently truncated by native C-string parsing.
 
 The .NET P2P wrapper mirrors Rust-side JSON byte budgets before native calls. Manifest or signed-manifest handoffs over 1 MiB, public-key JSON handoffs over 16 KiB, announcement handoffs over 256 KiB, local import receipt handoffs over 256 KiB, and announcement catalog handoffs over 4 MiB fail as managed argument errors before native C-string allocation or Rust parsing.
@@ -33,7 +36,7 @@ The .NET P2P wrapper validates the outer share-kit request shape before native J
 
 ## Release Checks
 
-`eng/verify-package.ps1` or `eng/verify-package.sh` must pass before publishing. It verifies workspace rustfmt with `cargo fmt --all --check`, workspace clippy with `cargo clippy --workspace --all-targets -- -D warnings`, Rust tests, .NET build/tests, NuGet packing, matching `.snupkg` symbol package generation, required native assets, package contents that must not include private authoring crates, source files, debug symbols in the main `.nupkg`, generated build-output directories, or local absolute paths, and a clean temporary consumer app that installs the produced packages and uses only the public `.slm`, runtime, UAIX memory/persona package planning and inspection, P2P metadata, signed-manifest verification, announcement JSON handoff, catalog application and inspection, local assembly, and receipt-inspection APIs.
+`eng/verify-package.ps1` or `eng/verify-package.sh` must pass before publishing. It verifies workspace rustfmt with `cargo fmt --all --check`, workspace clippy with `cargo clippy --workspace --all-targets -- -D warnings`, Rust tests, .NET build/tests, NuGet packing, matching `.snupkg` symbol package generation, required native assets, package contents that must not include private authoring crates, source files, debug symbols in the main `.nupkg`, generated build-output directories, or local absolute paths, and a clean temporary consumer app that installs the produced packages and uses only the public `.slm`, exact-hash `.acg1` activation, runtime, UAIX memory/persona package planning and inspection, P2P metadata, signed-manifest verification, announcement JSON handoff, catalog application and inspection, local assembly, and receipt-inspection APIs.
 
 For local development, required native assets default to the current machine RID. The official release workflow builds and downloads native bridge artifacts for `win-x64`, `linux-x64`, `osx-x64`, and `osx-arm64`, then runs `eng/verify-package.ps1 -RequiredNativeRids win-x64,linux-x64,osx-x64,osx-arm64` before publishing.
 
@@ -45,7 +48,7 @@ Both verifier entrypoints write `artifacts/reports/tinyrustlm-nuget-package-audi
 
 For NuGet.org releases, prefer `auth_mode=trusted_publishing` after a NuGet.org trusted publishing policy has been configured for repository, workflow file `release-nuget.yml`, and environment `nuget-release`. The workflow grants `id-token: write`, logs in through `NuGet/login@v1`, and never stores the temporary push key in release evidence. Use `auth_mode=api_key` for private feeds or for legacy scoped NuGet.org keys.
 
-`eng/verify-feed.ps1` is the clean consumer post-publish smoke. It installs the protected SDK packages from a configured feed into an isolated clean consumer app, then repeats `.slm`, runtime, UAIX memory/persona package, and P2P metadata workflow smoke coverage without using the local package artifact directory. It writes `artifacts/reports/tinyrustlm-nuget-feed-smoke.json`. The Unix wrapper records dependency failures, such as a missing `dotnet` CLI, in the same report schema. In the official release workflow this smoke is optional through `verify_after_publish`; feed-current and feed-hash verification are mandatory after every publish.
+`eng/verify-feed.ps1` is the clean consumer post-publish smoke. It installs the protected SDK packages from a configured feed into an isolated clean consumer app, then repeats `.slm` inspection/loading, exact-hash `.acg1` activation, runtime generation, UAIX memory/persona package, and P2P metadata workflow smoke coverage without using the local package artifact directory. It writes `artifacts/reports/tinyrustlm-nuget-feed-smoke.json`. The Unix wrapper records dependency failures, such as a missing `dotnet` CLI, in the same report schema. In the official release workflow this smoke is optional through `verify_after_publish`; feed-current and feed-hash verification are mandatory after every publish.
 
 `eng/verify-feed-current.ps1` is the feed freshness gate. It writes `artifacts/reports/tinyrustlm-nuget-feed-current.json` and fails when any protected package is missing the source-declared version or when the feed reports a newer version than the source tree. This keeps the NuGet distribution aligned with `dotnet/Directory.Build.props`. Set `TINYRUSTLM_FEED_PACKAGE_IDS` to the five `UAIX.Browser.*` package IDs when checking the branded Browser feed-current report instead of the default four `TinyRustLM.*` package IDs.
 

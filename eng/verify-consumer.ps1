@@ -1,6 +1,8 @@
 param(
     [string]$PackageSource = "",
     [string]$ModelPath = "",
+    [string]$CompositionPath = "",
+    [string]$CompositionSha256 = "",
     [string]$PackageVersion = "",
     [string]$CorePackageId = "",
     [string]$P2PPackageId = "",
@@ -27,6 +29,12 @@ if (-not $PackageSource) {
 if (-not $ModelPath) {
     $ModelPath = Join-Path $RepoRoot "tinyrustlm/models/tiny-test-model.slm"
 }
+if (-not $CompositionPath) {
+    $CompositionPath = Join-Path $RepoRoot "tinyrustlm/models/tiny-test-model.base.acg1"
+}
+if (-not $CompositionSha256) {
+    $CompositionSha256 = "sha256:1e3f267ff1ad5d076d7d1e6594f2e5e0fe7451e9055fe03f538ef756301d782f"
+}
 if (-not $PackageVersion) {
     $PackageVersion = (& (Join-Path $PSScriptRoot "get-package-version.ps1")).Trim()
 }
@@ -46,10 +54,14 @@ if (-not $ConversionPackageId) {
 if (-not (Test-Path -LiteralPath $ModelPath)) {
     throw "Model fixture does not exist: $ModelPath"
 }
+if (-not (Test-Path -LiteralPath $CompositionPath -PathType Leaf)) {
+    throw "Composition fixture does not exist: $CompositionPath"
+}
 if (Test-Path -LiteralPath $PackageSource) {
     $PackageSource = (Resolve-Path -LiteralPath $PackageSource).Path
 }
 $ModelPath = (Resolve-Path -LiteralPath $ModelPath).Path
+$CompositionPath = (Resolve-Path -LiteralPath $CompositionPath).Path
 
 $TempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("tinyrustlm-consumer-" + [System.Guid]::NewGuid().ToString("N"))
 $ProjectDir = Join-Path $TempRoot "ConsumerSmoke"
@@ -80,8 +92,10 @@ using System.Text.Json;
 using TinyRustLM;
 
 var modelPath = args.Length > 0 ? args[0] : throw new ArgumentException("model path argument is required");
-var memoryPackageId = args.Length > 1 ? args[1] : string.Empty;
-var conversionPackageId = args.Length > 2 ? args[2] : string.Empty;
+var compositionPath = args.Length > 1 ? args[1] : throw new ArgumentException("composition path argument is required");
+var compositionSha256 = args.Length > 2 ? args[2] : throw new ArgumentException("composition SHA-256 argument is required");
+var memoryPackageId = args.Length > 3 ? args[3] : string.Empty;
+var conversionPackageId = args.Length > 4 ? args[4] : string.Empty;
 var inspector = new TinySlmInspector();
 var inspection = inspector.Inspect(modelPath);
 if (!inspection.Sha256.StartsWith("sha256:", StringComparison.Ordinal) || inspection.ByteCount <= 0)
@@ -96,7 +110,10 @@ if (version.Product != "TinyRustLM public NuGet SDK" || version.NativeAbiVersion
     throw new InvalidOperationException("Package consumer version report did not expose the public native SDK boundary.");
 }
 var capabilities = factory.GetCapabilities();
-if (!capabilities.SlmValidation || !capabilities.Generation || !capabilities.P2PMetadataWorkflows)
+if (!capabilities.SlmValidation
+    || !capabilities.CompositionActivation
+    || !capabilities.Generation
+    || !capabilities.P2PMetadataWorkflows)
 {
     throw new InvalidOperationException("Package consumer capability report did not expose the public SDK surface.");
 }
@@ -289,6 +306,11 @@ finally
 using (var runtime = factory.CreateRuntime())
 {
     runtime.LoadModel(modelPath, inspection.Sha256);
+    var activation = runtime.ActivateComposition(compositionPath, compositionSha256);
+    if (activation.Sha256 != compositionSha256 || activation.ByteCount <= 0)
+    {
+        throw new InvalidOperationException("Package consumer composition activation was not identity-bound.");
+    }
     var generated = runtime.Generate("hello", new TinyRustLmGenerationOptions(MaxNewTokens: 2));
     if (generated.Diagnostics.Length == 0 || !runtime.GetDiagnostics().Contains("model_loaded", StringComparison.Ordinal))
     {
@@ -481,7 +503,18 @@ if (!string.IsNullOrWhiteSpace(conversionPackageId))
 Console.WriteLine($"TinyRustLM consumer smoke passed: {inspection.Sha256} {plan.RequiredPieces.Count} pieces, memory files {memoryPlan.RequiredFileCount} via {memoryPackageId}, conversion {(string.IsNullOrWhiteSpace(conversionPackageId) ? "skipped" : "validated")}, assembled {receipt.OutputPath}, receipt {receipt.ReceiptPath}, receipt inspection {receiptInspection.ReceiptSha256}");
 '@ | Set-Content -LiteralPath (Join-Path $ProjectDir "Program.cs") -Encoding UTF8
 
-    Invoke-DotNet -Arguments @("run", "--project", $ProjectDir, "--configuration", "Release", "--", $ModelPath, $MemoryPackageId, $ConversionPackageId)
+    Invoke-DotNet -Arguments @(
+        "run",
+        "--project",
+        $ProjectDir,
+        "--configuration",
+        "Release",
+        "--",
+        $ModelPath,
+        $CompositionPath,
+        $CompositionSha256,
+        $MemoryPackageId,
+        $ConversionPackageId)
     Write-Host "TinyRustLM consumer package source verified: $PackageSource @ $PackageVersion"
 }
 finally {

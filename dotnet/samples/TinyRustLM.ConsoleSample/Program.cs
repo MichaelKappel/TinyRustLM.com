@@ -7,15 +7,18 @@ if (args.Length == 1 && string.Equals(args[0], "--memory-setups", StringComparis
     return 0;
 }
 
-if (args.Length == 0)
+if (args.Length < 3)
 {
-    Console.Error.WriteLine("Usage: TinyRustLM.ConsoleSample <model.slm> [prompt]");
+    Console.Error.WriteLine(
+        "Usage: TinyRustLM.ConsoleSample <model.slm> <composition.acg1> <composition-sha256> [prompt]");
     Console.Error.WriteLine("       TinyRustLM.ConsoleSample --memory-setups");
     return 2;
 }
 
 var modelPath = args[0];
-var prompt = args.Length > 1 ? args[1] : "hello";
+var compositionPath = args[1];
+var compositionSha256 = args[2];
+var prompt = args.Length > 3 ? args[3] : "hello";
 
 PrintMemoryPlanPreview(memory);
 
@@ -26,6 +29,7 @@ Console.WriteLine($"model: {inspection.Sha256} {inspection.ByteCount} bytes {ins
 var factory = new TinyRustLmRuntimeFactory();
 using var runtime = factory.CreateRuntime();
 runtime.LoadModel(modelPath, inspection.Sha256);
+runtime.ActivateComposition(compositionPath, compositionSha256);
 var result = runtime.Generate(prompt, new TinyRustLmGenerationOptions(MaxNewTokens: 16));
 Console.WriteLine(result.Text);
 return 0;

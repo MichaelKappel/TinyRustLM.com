@@ -21,6 +21,12 @@ public sealed record TinyRustLmGenerationResult(string Text, string Diagnostics)
 /// <summary>Report returned after a model is loaded.</summary>
 public sealed record TinyRustLmLoadReport(SlmInspection Inspection, string Diagnostics);
 
+/// <summary>Report returned after an immutable composition graph is activated.</summary>
+public sealed record TinyRustLmCompositionActivationReport(
+    long ByteCount,
+    string Sha256,
+    string Diagnostics);
+
 /// <summary>Native SDK version report for diagnostics and support boundaries.</summary>
 public sealed record TinyRustLmSdkVersion(
     string SdkVersion,
@@ -34,6 +40,7 @@ public sealed record TinyRustLmCapabilities(
     string SdkVersion,
     bool SlmValidation,
     bool ModelLoading,
+    bool CompositionActivation,
     bool Generation,
     bool StepGeneration,
     bool Diagnostics,
@@ -47,6 +54,11 @@ public interface ITinyRustLmRuntime : IDisposable
 {
     /// <summary>Loads a validated .slm model into the runtime.</summary>
     TinyRustLmLoadReport LoadModel(string path, string? expectedSha256 = null);
+
+    /// <summary>Activates an immutable .acg1 graph with its exact SHA-256 identity.</summary>
+    TinyRustLmCompositionActivationReport ActivateComposition(
+        string path,
+        string expectedSha256);
 
     /// <summary>Unloads the active model.</summary>
     void UnloadModel();

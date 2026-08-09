@@ -2839,6 +2839,7 @@ public sealed class PackageBoundaryTests
         }
         foreach (var method in new[]
         {
+            "ActivateComposition/2",
             "Generate/2",
             "GetDiagnostics/0",
             "LoadModel/2",
@@ -2899,11 +2900,19 @@ public sealed class PackageBoundaryTests
         {
             yield return entry;
         }
+        foreach (var entry in RecordSurface("TinyRustLM.TinyRustLmCompositionActivationReport", 3,
+            "ByteCount",
+            "Diagnostics",
+            "Sha256"))
+        {
+            yield return entry;
+        }
         foreach (var entry in RecordSurface("TinyRustLM.TinyRustLmSdkVersion", 3, "NativeAbiVersion", "Product", "SdkVersion"))
         {
             yield return entry;
         }
-        foreach (var entry in RecordSurface("TinyRustLM.TinyRustLmCapabilities", 11,
+        foreach (var entry in RecordSurface("TinyRustLM.TinyRustLmCapabilities", 12,
+            "CompositionActivation",
             "Diagnostics",
             "ExcludedPrivateCapabilities",
             "Generation",
@@ -2972,6 +2981,7 @@ public sealed class PackageBoundaryTests
         yield return "M:TinyRustLM.TinyRustLmRuntimeFactory.GetVersion/0";
 
         yield return "T:TinyRustLM.TinyRustLmRuntime";
+        yield return "M:TinyRustLM.TinyRustLmRuntime.ActivateComposition/2";
         yield return "M:TinyRustLM.TinyRustLmRuntime.Dispose/0";
         yield return "M:TinyRustLM.TinyRustLmRuntime.Generate/2";
         yield return "M:TinyRustLM.TinyRustLmRuntime.GetDiagnostics/0";

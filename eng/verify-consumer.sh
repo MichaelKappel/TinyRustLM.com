@@ -9,6 +9,8 @@ CORE_PACKAGE_ID="${4:-${TINYRUSTLM_CONSUMER_CORE_PACKAGE_ID:-TinyRustLM.Core}}"
 P2P_PACKAGE_ID="${5:-${TINYRUSTLM_CONSUMER_P2P_PACKAGE_ID:-TinyRustLM.P2P}}"
 MEMORY_PACKAGE_ID="${6:-${TINYRUSTLM_CONSUMER_MEMORY_PACKAGE_ID:-TinyRustLM.Memory}}"
 CONVERSION_PACKAGE_ID="${7:-${TINYRUSTLM_CONSUMER_CONVERSION_PACKAGE_ID:-}}"
+COMPOSITION_PATH="${8:-$REPO_ROOT/tinyrustlm/models/tiny-test-model.base.acg1}"
+COMPOSITION_SHA256="${9:-sha256:1e3f267ff1ad5d076d7d1e6594f2e5e0fe7451e9055fe03f538ef756301d782f}"
 
 if ! command -v dotnet >/dev/null 2>&1; then
   echo "dotnet CLI is required to run TinyRustLM clean consumer package verification." >&2
@@ -21,8 +23,14 @@ if [[ ! -f "$MODEL_PATH" ]]; then
   echo "Model fixture does not exist: $MODEL_PATH" >&2
   exit 1
 fi
+if [[ ! -f "$COMPOSITION_PATH" ]]; then
+  echo "Composition fixture does not exist: $COMPOSITION_PATH" >&2
+  exit 1
+fi
 MODEL_DIR="$(cd "$(dirname "$MODEL_PATH")" && pwd)"
 MODEL_PATH="$MODEL_DIR/$(basename "$MODEL_PATH")"
+COMPOSITION_DIR="$(cd "$(dirname "$COMPOSITION_PATH")" && pwd)"
+COMPOSITION_PATH="$COMPOSITION_DIR/$(basename "$COMPOSITION_PATH")"
 
 TEMP_ROOT="$(mktemp -d)"
 PROJECT_DIR="$TEMP_ROOT/ConsumerSmoke"
@@ -50,8 +58,10 @@ using System.Text.Json;
 using TinyRustLM;
 
 var modelPath = args.Length > 0 ? args[0] : throw new ArgumentException("model path argument is required");
-var memoryPackageId = args.Length > 1 ? args[1] : string.Empty;
-var conversionPackageId = args.Length > 2 ? args[2] : string.Empty;
+var compositionPath = args.Length > 1 ? args[1] : throw new ArgumentException("composition path argument is required");
+var compositionSha256 = args.Length > 2 ? args[2] : throw new ArgumentException("composition SHA-256 argument is required");
+var memoryPackageId = args.Length > 3 ? args[3] : string.Empty;
+var conversionPackageId = args.Length > 4 ? args[4] : string.Empty;
 var inspector = new TinySlmInspector();
 var inspection = inspector.Inspect(modelPath);
 if (!inspection.Sha256.StartsWith("sha256:", StringComparison.Ordinal) || inspection.ByteCount <= 0)
@@ -66,7 +76,10 @@ if (version.Product != "TinyRustLM public NuGet SDK" || version.NativeAbiVersion
     throw new InvalidOperationException("Package consumer version report did not expose the public native SDK boundary.");
 }
 var capabilities = factory.GetCapabilities();
-if (!capabilities.SlmValidation || !capabilities.Generation || !capabilities.P2PMetadataWorkflows)
+if (!capabilities.SlmValidation
+    || !capabilities.CompositionActivation
+    || !capabilities.Generation
+    || !capabilities.P2PMetadataWorkflows)
 {
     throw new InvalidOperationException("Package consumer capability report did not expose the public SDK surface.");
 }
@@ -259,6 +272,11 @@ finally
 using (var runtime = factory.CreateRuntime())
 {
     runtime.LoadModel(modelPath, inspection.Sha256);
+    var activation = runtime.ActivateComposition(compositionPath, compositionSha256);
+    if (activation.Sha256 != compositionSha256 || activation.ByteCount <= 0)
+    {
+        throw new InvalidOperationException("Package consumer composition activation was not identity-bound.");
+    }
     var generated = runtime.Generate("hello", new TinyRustLmGenerationOptions(MaxNewTokens: 2));
     if (generated.Diagnostics.Length == 0 || !runtime.GetDiagnostics().Contains("model_loaded", StringComparison.Ordinal))
     {
@@ -451,5 +469,10 @@ if (!string.IsNullOrWhiteSpace(conversionPackageId))
 Console.WriteLine($"TinyRustLM consumer smoke passed: {inspection.Sha256} {plan.RequiredPieces.Count} pieces, memory files {memoryPlan.RequiredFileCount} via {memoryPackageId}, conversion {(string.IsNullOrWhiteSpace(conversionPackageId) ? "skipped" : "validated")}, assembled {receipt.OutputPath}, receipt {receipt.ReceiptPath}, receipt inspection {receiptInspection.ReceiptSha256}");
 CS
 
-dotnet run --project "$PROJECT_DIR" --configuration Release -- "$MODEL_PATH" "$MEMORY_PACKAGE_ID" "$CONVERSION_PACKAGE_ID"
+dotnet run --project "$PROJECT_DIR" --configuration Release -- \
+  "$MODEL_PATH" \
+  "$COMPOSITION_PATH" \
+  "$COMPOSITION_SHA256" \
+  "$MEMORY_PACKAGE_ID" \
+  "$CONVERSION_PACKAGE_ID"
 echo "TinyRustLM consumer package source verified: $PACKAGE_SOURCE @ $PACKAGE_VERSION"

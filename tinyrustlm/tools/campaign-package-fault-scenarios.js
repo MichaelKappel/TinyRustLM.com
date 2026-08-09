@@ -7,7 +7,7 @@ const path = require("node:path");
 
 const { canonicalJson } = require("./campaign-evidence-store.js");
 
-const packageScenarioSchema = "tinyrustlm.package_fault_scenario.v1";
+const packageScenarioSchema = "tinyrustlm.package_fault_scenario.v2";
 const packageOwnerSchema = "tinyrustlm.package_fault_owner.v1";
 const packageOwnerMarker = ".tinyrustlm-package-fault-owner.json";
 const packageFaultIds = Object.freeze(["package-restore-drift"]);
@@ -133,6 +133,8 @@ function validatePackageFaultInputs(options) {
     "dotnet executable is missing or invalid");
   invariant(regularFile(options.modelFixturePath, 64 * 1024 * 1024),
     "package model fixture is missing or invalid");
+  invariant(regularFile(options.compositionFixturePath, 512 * 1024 * 1024),
+    "package composition fixture is missing or invalid");
   invariant(typeof options.workParent === "string" && options.workParent.length > 0,
     "package fault work parent is required");
   return inspectPackageSource(options.packageSource);
@@ -240,7 +242,9 @@ function writeConsumerProject(projectDirectory, version) {
   const program = [
     "using TinyRustLM;",
     "",
-    "var modelPath = args.Length == 1 ? args[0] : throw new ArgumentException(\"model path required\");",
+    "var modelPath = args.Length == 3 ? args[0] : throw new ArgumentException(\"model, composition, and composition SHA-256 arguments required\");",
+    "var compositionPath = args[1];",
+    "var compositionSha256 = args[2];",
     "var inspection = new TinySlmInspector().Inspect(modelPath);",
     "if (inspection.ByteCount <= 0 || !inspection.Sha256.StartsWith(\"sha256:\", StringComparison.Ordinal))",
     "{",
@@ -251,6 +255,11 @@ function writeConsumerProject(projectDirectory, version) {
     "var factory = new TinyRustLmRuntimeFactory();",
     "using var runtime = factory.CreateRuntime();",
     "runtime.LoadModel(modelPath, inspection.Sha256);",
+    "var activation = runtime.ActivateComposition(compositionPath, compositionSha256);",
+    "if (activation.ByteCount <= 0 || activation.Sha256 != compositionSha256)",
+    "{",
+    "    throw new InvalidOperationException(\"composition activation was not identity-bound\");",
+    "}",
     "var generated = runtime.Generate(\"hello\", new TinyRustLmGenerationOptions(MaxNewTokens: 1));",
     "if (generated.Diagnostics.Length == 0)",
     "{",
@@ -453,8 +462,10 @@ function executePackageRestoreDrift(options) {
   const packageSource = validatePackageFaultInputs(options);
   const dotnetPath = fs.realpathSync.native(path.resolve(options.dotnetPath));
   const modelFixturePath = path.resolve(options.modelFixturePath);
+  const compositionFixturePath = path.resolve(options.compositionFixturePath);
   const dotnetExecutableSha256 = hashFileSync(dotnetPath);
   const modelFixtureSha256 = hashFileSync(modelFixturePath);
+  const compositionFixtureSha256 = hashFileSync(compositionFixturePath);
   const handle = createOwnedRoot(path.resolve(options.workParent), options.campaignId);
   let result = null;
   let deletion = null;
@@ -518,9 +529,9 @@ function executePackageRestoreDrift(options) {
     const recoveredPackages = verifyRecoveredPackages(recoveryCache, packageSource.required);
     const consumerRun = runDotnet(dotnetPath, [
       "run", "--project", projectPath, "--configuration", "Release", "--no-restore",
-      "--", modelFixturePath
+      "--", modelFixturePath, compositionFixturePath, `sha256:${compositionFixtureSha256}`
     ], recoveryEnvironment, projectDirectory, 60_000,
-    [packageSource.sourcePath, modelFixturePath]);
+    [packageSource.sourcePath, modelFixturePath, compositionFixturePath]);
     assertCommandPassed(consumerRun, "locked package consumer execution");
     const consumerExecutionPassed = consumerRun.transcript.includes(
       "TINYRUSTLM_LOCKED_CONSUMER_PASS");
@@ -530,6 +541,7 @@ function executePackageRestoreDrift(options) {
       approvedLockSha256: approvedLock.sha256,
       approvedPackageSetSha256: packageSource.manifestSha256,
       consumerExecutionPassed,
+      compositionFixtureSha256,
       consumerOutputSha256: consumerRun.outputSha256,
       dotnetVersion,
       driftDiagnosticCodes: driftRestore.diagnosticCodes,
@@ -553,6 +565,7 @@ function executePackageRestoreDrift(options) {
   return Object.freeze({
     hardwareEvidence: Object.freeze({
       actualDotnetProcess: true,
+      compositionIdentityVerified: true,
       consumerExecutionPassed: true,
       dotnetExecutableHashVerified: true,
       isolatedNuGetCache: true,
@@ -570,6 +583,7 @@ function executePackageRestoreDrift(options) {
       approvedLock: result.approvedLockSha256,
       approvedPackageSet: result.approvedPackageSetSha256,
       consumerExecution: result.consumerOutputSha256,
+      compositionFixture: compositionFixtureSha256,
       dotnetExecutable: dotnetExecutableSha256,
       dotnetVersion: sha256(result.dotnetVersion),
       driftedPackage: result.driftedPackageSha256,
@@ -599,6 +613,7 @@ function validateChildEvidence(value, faultId) {
   }
   const hardware = value.hardwareEvidence || {};
   invariant(hardware.actualDotnetProcess === true &&
+    hardware.compositionIdentityVerified === true &&
     hardware.consumerExecutionPassed === true &&
     hardware.dotnetExecutableHashVerified === true &&
     hardware.isolatedNuGetCache === true &&
@@ -624,6 +639,7 @@ function runPackageFaultScenario(faultId, options) {
     path.resolve(options.dotnetPath),
     path.resolve(options.packageSource),
     path.resolve(options.modelFixturePath),
+    path.resolve(options.compositionFixturePath),
     path.resolve(options.workParent),
     String(options.campaignId || "")
   ], {
@@ -648,15 +664,16 @@ function runPackageFaultScenario(faultId, options) {
 }
 
 async function childMain(argv) {
-  invariant(argv.length === 7 && argv[0] === "--child", "package child arguments are invalid");
+  invariant(argv.length === 8 && argv[0] === "--child", "package child arguments are invalid");
   const faultId = argv[1];
   invariant(packageFaultIdSet.has(faultId), "package child fault ID is unsupported");
   const result = childScenarios[faultId]({
-    campaignId: argv[6],
+    campaignId: argv[7],
+    compositionFixturePath: path.resolve(argv[5]),
     dotnetPath: path.resolve(argv[2]),
     modelFixturePath: path.resolve(argv[4]),
     packageSource: path.resolve(argv[3]),
-    workParent: path.resolve(argv[5])
+    workParent: path.resolve(argv[6])
   });
   process.stdout.write(`${JSON.stringify(result)}\n`);
 }

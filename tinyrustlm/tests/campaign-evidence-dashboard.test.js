@@ -220,6 +220,7 @@ function browserHardwareEvidence(fault, actualChromiumProcess = true) {
 function packageHardwareEvidence(fault) {
   return fault.requiredEvidenceClass === "package" ? {
     actualDotnetProcess: true,
+    compositionIdentityVerified: true,
     consumerExecutionPassed: true,
     dotnetExecutableHashVerified: true,
     isolatedNuGetCache: true,

@@ -6,6 +6,8 @@ namespace TinyRustLM.Core.Tests;
 
 public sealed class SdkCoreTests
 {
+    private const string FixtureCompositionSha256 =
+        "sha256:1e3f267ff1ad5d076d7d1e6594f2e5e0fe7451e9055fe03f538ef756301d782f";
     private const int MaxManifestJsonBytes = 1024 * 1024;
     private const int MaxAnnouncementJsonBytes = 256 * 1024;
     private const int MaxAnnouncementCatalogJsonBytes = 4 * 1024 * 1024;
@@ -31,6 +33,11 @@ public sealed class SdkCoreTests
         var load = runtime.LoadModel(FixtureModelPath());
 
         Assert.True(load.Inspection.TensorCount > 0);
+        var activation = runtime.ActivateComposition(
+            FixtureCompositionPath(),
+            FixtureCompositionSha256);
+        Assert.Equal(512, activation.ByteCount);
+        Assert.Equal(FixtureCompositionSha256, activation.Sha256);
         var result = runtime.Generate("hello", new TinyRustLmGenerationOptions(MaxNewTokens: 2));
         Assert.NotNull(result.Text);
         Assert.Contains("model_loaded", result.Diagnostics, StringComparison.Ordinal);
@@ -42,6 +49,7 @@ public sealed class SdkCoreTests
         var factory = new TinyRustLmRuntimeFactory();
         using var runtime = factory.CreateRuntime();
         runtime.LoadModel(FixtureModelPath());
+        runtime.ActivateComposition(FixtureCompositionPath(), FixtureCompositionSha256);
 
         var result = runtime.Generate(string.Empty, new TinyRustLmGenerationOptions(MaxNewTokens: 1));
 
@@ -60,12 +68,26 @@ public sealed class SdkCoreTests
         Assert.False(string.IsNullOrWhiteSpace(version.SdkVersion));
         Assert.True(version.NativeAbiVersion >= 1);
         Assert.True(capabilities.SlmValidation);
+        Assert.True(capabilities.CompositionActivation);
         Assert.True(capabilities.P2PMetadataWorkflows);
         Assert.True(capabilities.MemoryPackageWorkflows);
         Assert.Contains(capabilities.ExcludedPrivateCapabilities, item =>
             item.Contains("model conversion", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(capabilities.ExcludedPrivateCapabilities, item =>
             string.IsNullOrWhiteSpace(item));
+    }
+
+    [Fact]
+    public void RuntimeFailsClosedUntilCompositionIsActivated()
+    {
+        var factory = new TinyRustLmRuntimeFactory();
+        using var runtime = factory.CreateRuntime();
+        runtime.LoadModel(FixtureModelPath());
+
+        var error = Assert.Throws<TinyRustLmException>(() =>
+            runtime.Generate("hello", new TinyRustLmGenerationOptions(MaxNewTokens: 1)));
+
+        Assert.Contains("composition not active", error.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -582,6 +604,32 @@ public sealed class SdkCoreTests
         throw new FileNotFoundException("Could not locate tinyrustlm/models/tiny-test-model.slm.");
     }
 
+    private static string FixtureCompositionPath()
+    {
+        var configured = Environment.GetEnvironmentVariable("TINYRUSTLM_FIXTURE_COMPOSITION");
+        if (!string.IsNullOrWhiteSpace(configured))
+        {
+            return configured;
+        }
+
+        var current = new DirectoryInfo(AppContext.BaseDirectory);
+        for (var i = 0; i < 10 && current is not null; i++, current = current.Parent)
+        {
+            var candidate = Path.Combine(
+                current.FullName,
+                "tinyrustlm",
+                "models",
+                "tiny-test-model.base.acg1");
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+        }
+
+        throw new FileNotFoundException(
+            "Could not locate tinyrustlm/models/tiny-test-model.base.acg1.");
+    }
+
     public static IEnumerable<object[]> InvalidGenerationOptions()
     {
         yield return new object[]
@@ -647,6 +695,26 @@ public sealed class SdkCoreTests
                 runtime.LoadModel("bad\0path.slm");
             }),
             "path"
+        };
+        yield return new object[]
+        {
+            (Action)(() =>
+            {
+                var factory = new TinyRustLmRuntimeFactory();
+                using var runtime = factory.CreateRuntime();
+                runtime.ActivateComposition("bad\0path.acg1", FixtureCompositionSha256);
+            }),
+            "path"
+        };
+        yield return new object[]
+        {
+            (Action)(() =>
+            {
+                var factory = new TinyRustLmRuntimeFactory();
+                using var runtime = factory.CreateRuntime();
+                runtime.ActivateComposition(FixtureCompositionPath(), "sha256:bad\0digest");
+            }),
+            "expectedSha256"
         };
         yield return new object[]
         {

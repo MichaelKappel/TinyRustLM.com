@@ -21,7 +21,7 @@ use tinyrustlm_p2p::{
 use tinyrustlm_runtime_sdk::{runtime_capabilities, GenerationOptions, PublicRuntime, SDK_VERSION};
 use tinyrustlm_slm::{inspect_slm_path, SlmLoadPolicy};
 
-const NATIVE_ABI_VERSION: u32 = 7;
+const NATIVE_ABI_VERSION: u32 = 8;
 
 static NEXT_HANDLE: AtomicU64 = AtomicU64::new(1);
 static RUNTIMES: LazyLock<Mutex<BTreeMap<u64, PublicRuntime>>> =
@@ -131,6 +131,31 @@ pub unsafe extern "C" fn tinyrustlm_runtime_load_model_path_json(
     };
     with_runtime_mut(handle, |runtime| {
         runtime.load_model_path(PathBuf::from(path), &policy)
+    })
+}
+
+/// Activates an immutable `.acg1` composition graph for a loaded model.
+///
+/// # Safety
+///
+/// `path` and `expected_sha256` must be valid, null-terminated UTF-8 C strings
+/// for the duration of the call.
+#[no_mangle]
+pub unsafe extern "C" fn tinyrustlm_runtime_activate_composition_path_json(
+    handle: u64,
+    path: *const c_char,
+    expected_sha256: *const c_char,
+) -> *mut c_char {
+    let path = match c_string(path, "path") {
+        Ok(path) => path,
+        Err(error) => return json_error("invalid_argument", &error),
+    };
+    let expected_sha256 = match c_string(expected_sha256, "expected_sha256") {
+        Ok(value) => value,
+        Err(error) => return json_error("invalid_argument", &error),
+    };
+    with_runtime_mut(handle, |runtime| {
+        runtime.activate_composition_path(PathBuf::from(path), &expected_sha256)
     })
 }
 
@@ -681,6 +706,21 @@ mod tests {
         assert!(text.contains("\"ok\":false"), "{text}");
         assert!(text.contains("\"invalid_generation_options\""), "{text}");
         assert!(text.contains("max_new_tokens"), "{text}");
+        assert!(!text.contains("runtime_not_found"), "{text}");
+    }
+
+    #[test]
+    fn native_composition_activation_requires_both_identity_inputs() {
+        let ptr = unsafe {
+            tinyrustlm_runtime_activate_composition_path_json(0, std::ptr::null(), std::ptr::null())
+        };
+        let text = unsafe { c_string(ptr, "activate composition").expect("activation response") };
+        unsafe {
+            tinyrustlm_string_free(ptr);
+        }
+        assert!(text.contains("\"ok\":false"), "{text}");
+        assert!(text.contains("\"invalid_argument\""), "{text}");
+        assert!(text.contains("path pointer was null"), "{text}");
         assert!(!text.contains("runtime_not_found"), "{text}");
     }
 }

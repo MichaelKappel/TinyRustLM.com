@@ -26,6 +26,22 @@ public sealed class TinyRustLmRuntime : ITinyRustLmRuntime
     }
 
     /// <inheritdoc />
+    public TinyRustLmCompositionActivationReport ActivateComposition(
+        string path,
+        string expectedSha256)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(path);
+        ArgumentException.ThrowIfNullOrWhiteSpace(expectedSha256);
+        using var pathUtf8 = NativeJson.Utf8(path, nameof(path));
+        using var shaUtf8 = NativeJson.Utf8(expectedSha256, nameof(expectedSha256));
+        return NativeJson.Call<TinyRustLmCompositionActivationReport>(() =>
+            NativeMethods.tinyrustlm_runtime_activate_composition_path_json(
+                _handle.Value,
+                pathUtf8.Pointer,
+                shaUtf8.Pointer));
+    }
+
+    /// <inheritdoc />
     public void UnloadModel()
     {
         _ = NativeJson.Call<StatusReport>(() =>

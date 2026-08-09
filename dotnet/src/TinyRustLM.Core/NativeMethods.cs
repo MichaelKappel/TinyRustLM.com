@@ -37,6 +37,12 @@ internal static class NativeMethods
         IntPtr expectedSha256);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern IntPtr tinyrustlm_runtime_activate_composition_path_json(
+        ulong handle,
+        IntPtr path,
+        IntPtr expectedSha256);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern IntPtr tinyrustlm_runtime_unload_model_json(ulong handle);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]

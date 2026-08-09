@@ -709,6 +709,7 @@ function Get-ExpectedPublicApiEntries {
             'M:TinyRustLM.ITinyRustLmP2PClient.ValidateAnnouncementJson(System.String)',
             'M:TinyRustLM.ITinyRustLmP2PClient.VerifySignedManifest(System.String,System.String)',
             'M:TinyRustLM.ITinyRustLmP2PClient.VerifySignedManifestJson(System.String,System.String)',
+            'M:TinyRustLM.ITinyRustLmRuntime.ActivateComposition(System.String,System.String)',
             'M:TinyRustLM.ITinyRustLmRuntime.Generate(System.String,TinyRustLM.TinyRustLmGenerationOptions)',
             'M:TinyRustLM.ITinyRustLmRuntime.GetDiagnostics',
             'M:TinyRustLM.ITinyRustLmRuntime.LoadModel(System.String,System.String)',
@@ -737,7 +738,8 @@ function Get-ExpectedPublicApiEntries {
             'M:TinyRustLM.P2PSignedManifestVerification.#ctor(System.String,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)',
             'M:TinyRustLM.PrepareShareKitRequest.#ctor(System.String,System.String,System.String,System.String,System.String,System.String,System.Nullable{System.Int64})',
             'M:TinyRustLM.SlmInspection.#ctor(System.String,System.Int32,System.String,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.String,System.UInt64)',
-            'M:TinyRustLM.TinyRustLmCapabilities.#ctor(System.String,System.Int32,System.String,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Collections.Generic.IReadOnlyList{System.String})',
+            'M:TinyRustLM.TinyRustLmCapabilities.#ctor(System.String,System.Int32,System.String,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Collections.Generic.IReadOnlyList{System.String})',
+            'M:TinyRustLM.TinyRustLmCompositionActivationReport.#ctor(System.Int64,System.String,System.String)',
             'M:TinyRustLM.TinyRustLmGenerationOptions.#ctor(System.Int32,System.Single,System.Int32,System.Single,System.UInt32)',
             'M:TinyRustLM.TinyRustLmGenerationResult.#ctor(System.String,System.String)',
             'M:TinyRustLM.TinyRustLmLoadReport.#ctor(TinyRustLM.SlmInspection,System.String)',
@@ -784,6 +786,7 @@ function Get-ExpectedPublicApiEntries {
             'T:TinyRustLM.PrepareShareKitRequest',
             'T:TinyRustLM.SlmInspection',
             'T:TinyRustLM.TinyRustLmCapabilities',
+            'T:TinyRustLM.TinyRustLmCompositionActivationReport',
             'T:TinyRustLM.TinyRustLmGenerationOptions',
             'T:TinyRustLM.TinyRustLmGenerationResult',
             'T:TinyRustLM.TinyRustLmLoadReport',
@@ -806,6 +809,7 @@ function Get-ExpectedPublicApiEntries {
     if ($PackageId -eq "TinyRustLM.Core") {
         return @(
             'M:TinyRustLM.TinyRustLmException.#ctor(System.String,System.String)',
+            'M:TinyRustLM.TinyRustLmRuntime.ActivateComposition(System.String,System.String)',
             'M:TinyRustLM.TinyRustLmRuntime.Dispose',
             'M:TinyRustLM.TinyRustLmRuntime.Generate(System.String,TinyRustLM.TinyRustLmGenerationOptions)',
             'M:TinyRustLM.TinyRustLmRuntime.GetDiagnostics',

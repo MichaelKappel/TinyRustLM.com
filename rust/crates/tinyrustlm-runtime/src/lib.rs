@@ -3,6 +3,8 @@
 
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
+use std::fs::{self, File};
+use std::io::Read;
 use std::path::Path;
 use tinyrustlm_runtime::errors::ErrorCode;
 use tinyrustlm_runtime::generate::Runtime;
@@ -14,6 +16,10 @@ pub const SDK_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Maximum top-k candidate count accepted by the public runtime harness.
 pub const MAX_GENERATION_TOP_K: u32 = MAX_SAMPLING_CANDIDATES as u32;
+
+const MIN_COMPOSITION_BUNDLE_BYTES: u64 = 512;
+const MAX_COMPOSITION_BUNDLE_BYTES: u64 = 512 * 1024 * 1024;
+const COMPOSITION_BUNDLE_ALIGNMENT: u64 = 64;
 
 /// Runtime generation options accepted by the public harness.
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
@@ -122,6 +128,8 @@ pub struct RuntimeCapabilities {
     pub slm_validation: bool,
     /// Whether local model loading is available.
     pub model_loading: bool,
+    /// Whether immutable, hash-bound `.acg1` composition activation is available.
+    pub composition_activation: bool,
     /// Whether generation is available.
     pub generation: bool,
     /// Whether step-by-step generation is available.
@@ -142,6 +150,17 @@ pub struct LoadReport {
     /// Validated model inspection report.
     pub inspection: SlmInspection,
     /// Runtime diagnostics captured after loading.
+    pub diagnostics: String,
+}
+
+/// Public composition activation report.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct CompositionActivationReport {
+    /// Exact activated graph byte count.
+    pub byte_count: u64,
+    /// Canonical SHA-256 identity for the activated graph.
+    pub sha256: String,
+    /// Runtime diagnostics captured after atomic activation.
     pub diagnostics: String,
 }
 
@@ -189,6 +208,32 @@ impl PublicRuntime {
         } else {
             Err(RuntimeSdkError::Runtime(code.message().to_string()))
         }
+    }
+
+    /// Reads, verifies, and atomically activates one immutable `.acg1` graph.
+    pub fn activate_composition_path(
+        &mut self,
+        path: impl AsRef<Path>,
+        expected_sha256: &str,
+    ) -> Result<CompositionActivationReport, RuntimeSdkError> {
+        if self.loaded.is_none() {
+            return Err(RuntimeSdkError::Runtime(
+                ErrorCode::ModelNotLoaded.message().to_string(),
+            ));
+        }
+        let expected_digest = parse_sha256(expected_sha256)?;
+        let bytes = read_composition_bundle(path.as_ref())?;
+        let code = self
+            .runtime
+            .activate_composition_graph(&bytes, expected_digest);
+        if code != ErrorCode::Ok {
+            return Err(RuntimeSdkError::Runtime(code.message().to_string()));
+        }
+        Ok(CompositionActivationReport {
+            byte_count: bytes.len() as u64,
+            sha256: format!("sha256:{}", hex_digest(expected_digest)),
+            diagnostics: self.diagnostics(),
+        })
     }
 
     /// Generates text from a prompt with explicit sampling options.
@@ -268,6 +313,7 @@ pub fn runtime_capabilities() -> RuntimeCapabilities {
         sdk_version: SDK_VERSION.to_string(),
         slm_validation: true,
         model_loading: true,
+        composition_activation: true,
         generation: true,
         step_generation: true,
         diagnostics: true,
@@ -301,6 +347,8 @@ pub enum RuntimeSdkError {
     Slm(tinyrustlm_slm::SlmError),
     /// Generation options violated the public fixed-buffer runtime contract.
     InvalidGenerationOptions(String),
+    /// Composition input violated the bounded immutable graph contract.
+    InvalidComposition(String),
     /// Runtime execution failed.
     Runtime(String),
 }
@@ -310,9 +358,87 @@ impl Display for RuntimeSdkError {
         match self {
             Self::Slm(error) => Display::fmt(error, formatter),
             Self::InvalidGenerationOptions(message) => formatter.write_str(message),
+            Self::InvalidComposition(message) => formatter.write_str(message),
             Self::Runtime(message) => formatter.write_str(message),
         }
     }
+}
+
+fn read_composition_bundle(path: &Path) -> Result<Vec<u8>, RuntimeSdkError> {
+    let metadata = fs::symlink_metadata(path).map_err(|error| {
+        RuntimeSdkError::InvalidComposition(format!("composition graph metadata failed: {error}"))
+    })?;
+    if metadata.file_type().is_symlink()
+        || !metadata.is_file()
+        || metadata.len() < MIN_COMPOSITION_BUNDLE_BYTES
+        || metadata.len() > MAX_COMPOSITION_BUNDLE_BYTES
+        || !metadata.len().is_multiple_of(COMPOSITION_BUNDLE_ALIGNMENT)
+    {
+        return Err(RuntimeSdkError::InvalidComposition(
+            "composition graph file is not a bounded aligned regular file".to_string(),
+        ));
+    }
+    let byte_count = usize::try_from(metadata.len()).map_err(|_| {
+        RuntimeSdkError::InvalidComposition(
+            "composition graph byte count is not addressable".to_string(),
+        )
+    })?;
+    let mut bytes = Vec::new();
+    bytes.try_reserve_exact(byte_count).map_err(|_| {
+        RuntimeSdkError::InvalidComposition("composition graph allocation failed".to_string())
+    })?;
+    bytes.resize(byte_count, 0);
+    let mut file = File::open(path).map_err(|error| {
+        RuntimeSdkError::InvalidComposition(format!("composition graph open failed: {error}"))
+    })?;
+    file.read_exact(&mut bytes).map_err(|error| {
+        RuntimeSdkError::InvalidComposition(format!("composition graph read failed: {error}"))
+    })?;
+    let mut trailing = [0u8; 1];
+    if file.read(&mut trailing).map_err(|error| {
+        RuntimeSdkError::InvalidComposition(format!("composition graph read failed: {error}"))
+    })? != 0
+    {
+        return Err(RuntimeSdkError::InvalidComposition(
+            "composition graph changed while it was read".to_string(),
+        ));
+    }
+    Ok(bytes)
+}
+
+fn parse_sha256(value: &str) -> Result<[u8; 32], RuntimeSdkError> {
+    let raw = value.strip_prefix("sha256:").unwrap_or(value);
+    if raw.len() != 64
+        || !raw
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+    {
+        return Err(RuntimeSdkError::InvalidComposition(
+            "composition SHA-256 must be 64 lowercase hexadecimal characters".to_string(),
+        ));
+    }
+    let mut digest = [0u8; 32];
+    for (index, pair) in raw.as_bytes().chunks_exact(2).enumerate() {
+        digest[index] = (hex_nibble(pair[0]) << 4) | hex_nibble(pair[1]);
+    }
+    Ok(digest)
+}
+
+fn hex_nibble(value: u8) -> u8 {
+    match value {
+        b'0'..=b'9' => value - b'0',
+        b'a'..=b'f' => value - b'a' + 10,
+        _ => unreachable!("SHA-256 input is validated before decoding"),
+    }
+}
+
+fn hex_digest(value: [u8; 32]) -> String {
+    let mut output = String::with_capacity(64);
+    for byte in value {
+        use std::fmt::Write as _;
+        write!(&mut output, "{byte:02x}").expect("writing to a String cannot fail");
+    }
+    output
 }
 
 impl std::error::Error for RuntimeSdkError {}
@@ -328,15 +454,24 @@ mod tests {
     use super::*;
     use std::path::PathBuf;
 
+    const FIXTURE_COMPOSITION_SHA256: &str =
+        "sha256:1e3f267ff1ad5d076d7d1e6594f2e5e0fe7451e9055fe03f538ef756301d782f";
+
     fn fixture_model() -> PathBuf {
         PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .join("../../../tinyrustlm/models/tiny-test-model.slm")
+    }
+
+    fn fixture_composition() -> PathBuf {
+        PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../../tinyrustlm/models/tiny-test-model.base.acg1")
     }
 
     #[test]
     fn reports_public_capability_boundary() {
         let report = runtime_capabilities();
         assert!(report.slm_validation);
+        assert!(report.composition_activation);
         assert!(report.generation);
         assert!(report
             .excluded_private_capabilities
@@ -351,6 +486,11 @@ mod tests {
             .load_model_path(fixture_model(), &SlmLoadPolicy::default())
             .expect("load");
         assert!(load.inspection.tensor_count > 0);
+        let activation = runtime
+            .activate_composition_path(fixture_composition(), FIXTURE_COMPOSITION_SHA256)
+            .expect("activate composition");
+        assert_eq!(activation.byte_count, MIN_COMPOSITION_BUNDLE_BYTES);
+        assert_eq!(activation.sha256, FIXTURE_COMPOSITION_SHA256);
         let output = runtime
             .generate(
                 "hello",
@@ -361,6 +501,48 @@ mod tests {
             )
             .expect("generate");
         assert!(!output.diagnostics.is_empty());
+    }
+
+    #[test]
+    fn generation_requires_explicit_composition_activation() {
+        let mut runtime = PublicRuntime::create();
+        runtime
+            .load_model_path(fixture_model(), &SlmLoadPolicy::default())
+            .expect("load");
+
+        let error = runtime
+            .generate("hello", GenerationOptions::default())
+            .expect_err("generation must fail closed before composition activation");
+
+        assert!(matches!(error, RuntimeSdkError::Runtime(_)));
+        assert!(
+            error.to_string().contains("composition not active"),
+            "{error}"
+        );
+    }
+
+    #[test]
+    fn composition_activation_rejects_mismatched_identity() {
+        let mut runtime = PublicRuntime::create();
+        runtime
+            .load_model_path(fixture_model(), &SlmLoadPolicy::default())
+            .expect("load");
+
+        let error = runtime
+            .activate_composition_path(
+                fixture_composition(),
+                "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+            )
+            .expect_err("mismatched composition identity");
+
+        assert!(matches!(error, RuntimeSdkError::Runtime(_)));
+        assert!(!error.to_string().is_empty());
+        let generation_error = runtime
+            .generate("hello", GenerationOptions::default())
+            .expect_err("failed activation must not make a graph active");
+        assert!(generation_error
+            .to_string()
+            .contains("composition not active"));
     }
 
     #[test]

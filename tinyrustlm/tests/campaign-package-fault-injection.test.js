@@ -21,6 +21,8 @@ const workspaceRoot = path.resolve(__dirname, "../..");
 const packageSource = path.join(workspaceRoot, "artifacts", "packages");
 const modelFixturePath = path.join(workspaceRoot, "tinyrustlm", "models",
   "tiny-test-model.slm");
+const compositionFixturePath = path.join(workspaceRoot, "tinyrustlm", "models",
+  "tiny-test-model.base.acg1");
 
 function findDotnet() {
   const command = process.platform === "win32" ? "where.exe" : "which";
@@ -34,8 +36,13 @@ function findDotnet() {
 }
 
 const dotnetPath = findDotnet();
-const packageInputsAvailable = Boolean(dotnetPath && fs.existsSync(packageSource) &&
-  fs.existsSync(modelFixturePath));
+const packageFiles = fs.existsSync(packageSource)
+  ? fs.readdirSync(packageSource).filter((name) => name.endsWith(".nupkg"))
+  : [];
+const packageInputsAvailable = Boolean(dotnetPath &&
+  ["TinyRustLM.Abstractions", "TinyRustLM.Core", "TinyRustLM.Memory", "TinyRustLM.P2P"]
+    .every((packageId) => packageFiles.some((name) => name.startsWith(`${packageId}.`))) &&
+  fs.existsSync(modelFixturePath) && fs.existsSync(compositionFixturePath));
 
 function setup(context) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-package-fault-test-"));
@@ -44,6 +51,7 @@ function setup(context) {
     root,
     options: {
       campaignId,
+      compositionFixturePath,
       dotnetPath,
       evidenceRoot: path.join(root, "evidence"),
       modelFixturePath,
@@ -76,6 +84,7 @@ test("detects package drift and recovers through an isolated locked consumer", {
   assert.equal(attempt.hardwareEvidence.lockedModeRestore, true);
   assert.equal(attempt.hardwareEvidence.packageContentHashDriftObserved, true);
   assert.equal(attempt.hardwareEvidence.consumerExecutionPassed, true);
+  assert.equal(attempt.hardwareEvidence.compositionIdentityVerified, true);
   assert.equal(attempt.hardwareEvidence.ownedWorkRootDeleted, true);
   assert.equal(attempt.hardwareEvidence.packageHashesVerified, true);
   assert.equal(attempt.hardwareEvidence.dotnetExecutableHashVerified, true);
