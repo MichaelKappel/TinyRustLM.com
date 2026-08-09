@@ -60,7 +60,7 @@ impl ActiveCompositionExecution {
     }
 
     fn scratch_bytes(&self) -> usize {
-        self.specialist_scratch.len() * core::mem::size_of::<f32>()
+        core::mem::size_of_val(self.specialist_scratch.as_slice())
     }
 }
 
@@ -555,16 +555,17 @@ impl Runtime {
                 .as_mut()
                 .ok_or(ErrorCode::CompositionNotActive);
             match (model, cache, scratch, active) {
-                (Ok(model), Ok(cache), Ok(scratch), Ok(active)) => run_prefill(
-                    model,
-                    &active.graph,
-                    cache,
-                    &self.tokens,
-                    scratch,
-                    &mut active.specialist_scratch,
-                    &mut self.logits,
-                    &mut self.diagnostics,
-                ),
+                (Ok(model), Ok(cache), Ok(scratch), Ok(active)) => {
+                    let mut forward = ForwardContext {
+                        model,
+                        composition: &active.graph,
+                        cache,
+                        scratch,
+                        specialist_scratch: &mut active.specialist_scratch,
+                        logits: &mut self.logits,
+                    };
+                    run_prefill(&mut forward, &self.tokens, 0, &mut self.diagnostics)
+                }
                 (Err(error), _, _, _)
                 | (_, Err(error), _, _)
                 | (_, _, Err(error), _)
@@ -755,17 +756,15 @@ impl Runtime {
             suppress_repeated_token_run(&mut self.logits, &self.generated_tokens);
             let next = sample_with_rng(&self.logits, self.sampling_config, &mut self.rng)? as u32;
             if !self.tokenizer.is_eos(next) {
-                forward_token(
+                let mut forward = ForwardContext {
                     model,
-                    &active.graph,
+                    composition: &active.graph,
                     cache,
-                    next as usize,
-                    position,
                     scratch,
-                    &mut active.specialist_scratch,
-                    &mut self.logits,
-                    true,
-                )?;
+                    specialist_scratch: &mut active.specialist_scratch,
+                    logits: &mut self.logits,
+                };
+                forward_token(&mut forward, next as usize, position, true)?;
             }
             next
         };
@@ -1017,6 +1016,21 @@ struct GenerationRun<'a> {
     reusable_prefix_len: usize,
 }
 
+struct ForwardContext<'a> {
+    model: &'a Model,
+    composition: &'a ActiveComposition,
+    cache: &'a mut KvCache,
+    scratch: &'a mut ForwardScratch,
+    specialist_scratch: &'a mut [f32],
+    logits: &'a mut [f32],
+}
+
+impl ForwardContext<'_> {
+    fn peak_scratch_bytes(&self) -> usize {
+        self.scratch.peak_bytes() + core::mem::size_of_val(self.specialist_scratch)
+    }
+}
+
 #[derive(Clone, Copy, Debug, Default)]
 struct TextGenerationContract {
     requested_item_count: Option<usize>,
@@ -1048,15 +1062,18 @@ fn run_generation(run: GenerationRun<'_>) -> Result<(), ErrorCode> {
         reusable_prefix_len,
     } = run;
     generated_tokens.clear();
-    run_prefill_with_prefix(
+    let mut forward = ForwardContext {
         model,
         composition,
         cache,
-        prompt_tokens,
-        reusable_prefix_len,
         scratch,
         specialist_scratch,
         logits,
+    };
+    run_prefill(
+        &mut forward,
+        prompt_tokens,
+        reusable_prefix_len,
         diagnostics,
     )?;
     let max_context = model.header().max_context as usize;
@@ -1068,9 +1085,14 @@ fn run_generation(run: GenerationRun<'_>) -> Result<(), ErrorCode> {
             stop_reason = "context_limit";
             break;
         }
-        apply_repetition_penalty(logits, generated_tokens, sampling_config)?;
-        suppress_generation_stop_logits(logits, generated_tokens, max_new_tokens, tokenizer);
-        let mut next = sample_with_rng(logits, sampling_config, &mut rng)? as u32;
+        apply_repetition_penalty(forward.logits, generated_tokens, sampling_config)?;
+        suppress_generation_stop_logits(
+            forward.logits,
+            generated_tokens,
+            max_new_tokens,
+            tokenizer,
+        );
+        let mut next = sample_with_rng(forward.logits, sampling_config, &mut rng)? as u32;
         if tokenizer.is_eos(next)
             && generated_tokens.len() + 1 < max_new_tokens
             && (generated_text_has_incomplete_tail(tokenizer, generated_tokens)?
@@ -1080,79 +1102,42 @@ fn run_generation(run: GenerationRun<'_>) -> Result<(), ErrorCode> {
                     text_contract,
                 )?)
         {
-            suppress_token(logits, next);
-            next = sample_with_rng(logits, sampling_config, &mut rng)? as u32;
+            suppress_token(forward.logits, next);
+            next = sample_with_rng(forward.logits, sampling_config, &mut rng)? as u32;
         }
-        update_generation_details(diagnostics, logits, next);
+        update_generation_details(diagnostics, forward.logits, next);
         if tokenizer.is_eos(next) {
             stop_reason = "eos";
             break;
         }
         generated_tokens.push(next);
-        forward_token(
-            model,
-            composition,
-            cache,
-            next as usize,
-            position,
-            scratch,
-            specialist_scratch,
-            logits,
-            true,
-        )?;
+        forward_token(&mut forward, next as usize, position, true)?;
     }
 
-    diagnostics.kv_cache_length = cache.len();
-    diagnostics.peak_scratch_arena_usage =
-        scratch.peak_bytes() + specialist_scratch.len() * core::mem::size_of::<f32>();
+    diagnostics.kv_cache_length = forward.cache.len();
+    diagnostics.peak_scratch_arena_usage = forward.peak_scratch_bytes();
     diagnostics.tokens_per_second = 0.0;
     diagnostics.record_generation_quality(generated_tokens, stop_reason);
     Ok(())
 }
 
 fn run_prefill(
-    model: &Model,
-    composition: &ActiveComposition,
-    cache: &mut KvCache,
-    prompt_tokens: &[u32],
-    scratch: &mut ForwardScratch,
-    specialist_scratch: &mut [f32],
-    logits: &mut [f32],
-    diagnostics: &mut Diagnostics,
-) -> Result<(), ErrorCode> {
-    run_prefill_with_prefix(
-        model,
-        composition,
-        cache,
-        prompt_tokens,
-        0,
-        scratch,
-        specialist_scratch,
-        logits,
-        diagnostics,
-    )
-}
-
-fn run_prefill_with_prefix(
-    model: &Model,
-    composition: &ActiveComposition,
-    cache: &mut KvCache,
+    forward: &mut ForwardContext<'_>,
     prompt_tokens: &[u32],
     reusable_prefix_len: usize,
-    scratch: &mut ForwardScratch,
-    specialist_scratch: &mut [f32],
-    logits: &mut [f32],
     diagnostics: &mut Diagnostics,
 ) -> Result<(), ErrorCode> {
     if prompt_tokens.is_empty() {
         return Err(ErrorCode::InvalidLength);
     }
-    if prompt_tokens.len() >= model.header().max_context as usize {
+    if prompt_tokens.len() >= forward.model.header().max_context as usize {
         return Err(ErrorCode::ContextExceeded);
     }
     if reusable_prefix_len == 0 {
-        cache.reset();
-    } else if reusable_prefix_len >= prompt_tokens.len() || cache.len() != reusable_prefix_len {
+        forward.cache.reset();
+    } else if reusable_prefix_len >= prompt_tokens.len()
+        || forward.cache.len() != reusable_prefix_len
+    {
         return Err(ErrorCode::InvalidLength);
     }
     diagnostics.tokenizer_output = token_list(prompt_tokens);
@@ -1161,21 +1146,10 @@ fn run_prefill_with_prefix(
         prompt_tokens.len().saturating_sub(reusable_prefix_len) as u32;
     for (position, token) in prompt_tokens.iter().enumerate().skip(reusable_prefix_len) {
         let project_logits = position + 1 == prompt_tokens.len();
-        forward_token(
-            model,
-            composition,
-            cache,
-            *token as usize,
-            position,
-            scratch,
-            specialist_scratch,
-            logits,
-            project_logits,
-        )?;
+        forward_token(forward, *token as usize, position, project_logits)?;
     }
-    diagnostics.kv_cache_length = cache.len();
-    diagnostics.peak_scratch_arena_usage =
-        scratch.peak_bytes() + specialist_scratch.len() * core::mem::size_of::<f32>();
+    diagnostics.kv_cache_length = forward.cache.len();
+    diagnostics.peak_scratch_arena_usage = forward.peak_scratch_bytes();
     diagnostics.tokens_per_second = 0.0;
     Ok(())
 }
@@ -1206,19 +1180,17 @@ fn run_prefill_projecting_every_token(
     specialist_scratch: &mut [f32],
     logits: &mut [f32],
 ) -> Result<(), ErrorCode> {
-    cache.reset();
+    let mut forward = ForwardContext {
+        model,
+        composition,
+        cache,
+        scratch,
+        specialist_scratch,
+        logits,
+    };
+    forward.cache.reset();
     for (position, token) in prompt_tokens.iter().enumerate() {
-        forward_token(
-            model,
-            composition,
-            cache,
-            *token as usize,
-            position,
-            scratch,
-            specialist_scratch,
-            logits,
-            true,
-        )?;
+        forward_token(&mut forward, *token as usize, position, true)?;
     }
     Ok(())
 }
@@ -2043,16 +2015,17 @@ fn escape_json_string(value: &str) -> String {
 }
 
 fn forward_token(
-    model: &Model,
-    composition: &ActiveComposition,
-    cache: &mut KvCache,
+    context: &mut ForwardContext<'_>,
     token: usize,
     position: usize,
-    scratch: &mut ForwardScratch,
-    specialist_scratch: &mut [f32],
-    logits: &mut [f32],
     project_logits: bool,
 ) -> Result<(), ErrorCode> {
+    let model = context.model;
+    let composition = context.composition;
+    let cache = &mut *context.cache;
+    let scratch = &mut *context.scratch;
+    let specialist_scratch = &mut *context.specialist_scratch;
+    let logits = &mut *context.logits;
     let header = model.header();
     let hidden = header.hidden_size as usize;
     let layers = header.layer_count as usize;
@@ -2211,13 +2184,17 @@ fn forward_token(
         ffn_model(
             model,
             composition,
-            layer_indices,
-            hidden,
-            ffn,
-            &scratch.ffn_normed,
-            &mut scratch.ffn_scratch,
-            &mut scratch.ffn_out,
-            specialist_scratch,
+            FfnShape {
+                layer_indices,
+                hidden,
+                ffn,
+            },
+            FfnBuffers {
+                input: &scratch.ffn_normed,
+                scratch: &mut scratch.ffn_scratch,
+                out: &mut scratch.ffn_out,
+                specialist_scratch,
+            },
         )?;
         add_in_place(&mut scratch.residual, &scratch.ffn_out)?;
     }
@@ -2249,14 +2226,20 @@ fn forward_token(
 fn ffn_model(
     model: &Model,
     composition: &ActiveComposition,
-    layer_indices: LayerTensorIndices,
-    hidden: usize,
-    ffn: usize,
-    input: &[f32],
-    scratch: &mut [f32],
-    out: &mut [f32],
-    specialist_scratch: &mut [f32],
+    shape: FfnShape,
+    buffers: FfnBuffers<'_>,
 ) -> Result<(), ErrorCode> {
+    let FfnShape {
+        layer_indices,
+        hidden,
+        ffn,
+    } = shape;
+    let FfnBuffers {
+        input,
+        scratch,
+        out,
+        specialist_scratch,
+    } = buffers;
     if scratch.len() < ffn * 3 || out.len() != hidden || input.len() != hidden {
         return Err(ErrorCode::ShapeMismatch);
     }
@@ -2297,6 +2280,20 @@ fn ffn_model(
         },
     )?;
     Ok(())
+}
+
+#[derive(Clone, Copy)]
+struct FfnShape {
+    layer_indices: LayerTensorIndices,
+    hidden: usize,
+    ffn: usize,
+}
+
+struct FfnBuffers<'a> {
+    input: &'a [f32],
+    scratch: &'a mut [f32],
+    out: &'a mut [f32],
+    specialist_scratch: &'a mut [f32],
 }
 
 #[derive(Clone, Copy)]
@@ -3668,26 +3665,19 @@ mod tests {
         load_model_with_base(&mut reused, model_bytes);
         {
             let active = reused.active_composition.as_mut().unwrap();
+            let mut forward = ForwardContext {
+                model: reused.model.as_ref().unwrap(),
+                composition: &active.graph,
+                cache: reused.kv_cache.as_mut().unwrap(),
+                scratch: reused.scratch.as_mut().unwrap(),
+                specialist_scratch: &mut active.specialist_scratch,
+                logits: &mut reused.logits,
+            };
+            run_prefill(&mut forward, &prefix, 0, &mut reused.diagnostics).unwrap();
             run_prefill(
-                reused.model.as_ref().unwrap(),
-                &active.graph,
-                reused.kv_cache.as_mut().unwrap(),
-                &prefix,
-                reused.scratch.as_mut().unwrap(),
-                &mut active.specialist_scratch,
-                &mut reused.logits,
-                &mut reused.diagnostics,
-            )
-            .unwrap();
-            run_prefill_with_prefix(
-                reused.model.as_ref().unwrap(),
-                &active.graph,
-                reused.kv_cache.as_mut().unwrap(),
+                &mut forward,
                 &extended,
                 prefix.len(),
-                reused.scratch.as_mut().unwrap(),
-                &mut active.specialist_scratch,
-                &mut reused.logits,
                 &mut reused.diagnostics,
             )
             .unwrap();
@@ -3702,17 +3692,15 @@ mod tests {
         load_model_with_base(&mut fresh, model_bytes);
         {
             let active = fresh.active_composition.as_mut().unwrap();
-            run_prefill(
-                fresh.model.as_ref().unwrap(),
-                &active.graph,
-                fresh.kv_cache.as_mut().unwrap(),
-                &extended,
-                fresh.scratch.as_mut().unwrap(),
-                &mut active.specialist_scratch,
-                &mut fresh.logits,
-                &mut fresh.diagnostics,
-            )
-            .unwrap();
+            let mut forward = ForwardContext {
+                model: fresh.model.as_ref().unwrap(),
+                composition: &active.graph,
+                cache: fresh.kv_cache.as_mut().unwrap(),
+                scratch: fresh.scratch.as_mut().unwrap(),
+                specialist_scratch: &mut active.specialist_scratch,
+                logits: &mut fresh.logits,
+            };
+            run_prefill(&mut forward, &extended, 0, &mut fresh.diagnostics).unwrap();
         }
         let fresh_logits = fresh
             .logits
@@ -3892,18 +3880,15 @@ mod tests {
         {
             let position = reference.kv_cache.as_ref().unwrap().len();
             let active = reference.active_composition.as_mut().unwrap();
-            forward_token(
-                reference.model.as_ref().unwrap(),
-                &active.graph,
-                reference.kv_cache.as_mut().unwrap(),
-                expected_token as usize,
-                position,
-                reference.scratch.as_mut().unwrap(),
-                &mut active.specialist_scratch,
-                &mut reference.logits,
-                true,
-            )
-            .unwrap();
+            let mut forward = ForwardContext {
+                model: reference.model.as_ref().unwrap(),
+                composition: &active.graph,
+                cache: reference.kv_cache.as_mut().unwrap(),
+                scratch: reference.scratch.as_mut().unwrap(),
+                specialist_scratch: &mut active.specialist_scratch,
+                logits: &mut reference.logits,
+            };
+            forward_token(&mut forward, expected_token as usize, position, true).unwrap();
         }
 
         assert_eq!(runtime.generate_next_token(), ErrorCode::Ok);
