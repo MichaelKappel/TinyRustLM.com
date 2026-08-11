@@ -1,5 +1,5 @@
-profile: runtime-mirust.file-handoff.v69
-updated_utc: 2026-08-11T15:08:46Z
+profile: runtime-mirust.file-handoff.v71
+updated_utc: 2026-08-11T19:14:40Z
 site_release_reconciliation_2026_08_11:
   status: runtime_verification_and_minimodel_publication_checkpoint_complete
   active_branch_verified_parent: 790c6ff1eb7293e806a1adffcca15ee0cd940fab
@@ -105,40 +105,43 @@ current_deeper_small_model_research_intake:
   report_count: 12
   prompt_provenance_count: 1
   status: complete_verified_batch_preserved_external_work_tracked_outside_active_intake
-current_dogfood_campaign_execution:
-  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-dogfood-quality-campaign-execution-memory-2026-07-15.md
-  durable_memory_sha256: ac9e5d52c1bd1af5d2a355d57441e7b46827980990efef4ffc1febb982efdfbe
-  dashboard: artifacts/reports/dogfood-campaign-evidence-2026-07-15/campaign-status.json
-  final_attestation: artifacts/reports/dogfood-campaign-evidence-2026-07-15/final-attestation.json
-  remaining_risks: tinyrustlm/campaign-remaining-risks.v1.json
-  final_attestation_contract: docs/architecture/dogfood-campaign-final-attestation.md
-  memory_endpoints_platform_handoff: docs/report-intake/2026-08-08/active-handoff-closure/2026-07-18-memoryendpoints-platform-contract-and-live-continuity-retry-prompt.md
-  memory_endpoints_platform_handoff_sha256: ef1f1e3c133d05f18a07539fc88c8f7bdb1429d26e2edf6a5d4f398acb98fec4
-  memory_endpoints_platform_handoff_canonical_lf_sha256: f77f2297313a0b54361f7db0be38df4b32c34fa3e319fe3bceabab1ac33bdb26
+current_vnext_campaign_execution:
+  authoritative_goal: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+  authoritative_goal_sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+  control_plane: docs/architecture/dogfood-campaign-control-plane.md
+  runner: docs/architecture/vnext-campaign-runner.md
+  release_surface: docs/architecture/vnext-campaign-release-surface.md
+  site_publication: docs/architecture/vnext-site-publication.md
+  production_readback: docs/architecture/vnext-public-https-readback.md
+  campaign_release_profile: contracts/vnext/campaign-release-surface-profile.v1.json
+  campaign_release_profile_sha256: 0633f2bc4960f4c8a757bf10a8681f2481f0d8a5d0997c2d00ba58b02ed43bcc
+  site_publication_profile: contracts/vnext/site-publication-profile.v1.json
+  site_publication_profile_sha256: d959ce557e8b18a71514e2388a8eda7162182e38f5febf2e1a39b063fa5ba4bc
+  public_readback_profile: contracts/vnext/public-https-readback-profile.v1.json
+  public_readback_profile_sha256: a5d5fd2bcc08e1444f82c474e1c829ba8e108c53a0e52b0651cab1843d8edb73
+  cutover_status: complete_verified_single_vnext_release_publication_path_only
+  removed_superseded_release_tool_count: 7
+  removed_dedicated_test_files: 6
+  removed_mutable_alias_and_snapshot_files: 89
+  negative_conformance_test: tinyrustlm/tests/vnext-release-cutover.test.js
+  verification_node_quick_closure: 20/20 pass
+  verification_node_cutover: 4/4 pass
+  verification_node_release_surface: 23/23 pass
+  verification_node_complete: 848/848 pass; zero fail skip cancel todo
+  verification_generators: all six deterministic vNext generators produced exact Git-status identity
+  verification_rust: cargo fmt --all --check pass; cargo clippy --workspace --all-targets --locked -- -D warnings pass; cargo test --workspace --locked pass
+  changed_file_secret_scan: 14 files; 236912 bytes; 0 findings
+  production_manifest_intersection: 0 of 21 source entries changed
+  deployment_status: not_applicable_no_production_web_source_changed_no_version_release_log_or_live_claim
+  preserved_historical_receipts: artifacts/reports/dogfood-campaign-evidence-2026-07-15/receipts/sha256/
+  preserved_historical_receipt_count: 95
+  preserved_historical_receipt_bytes: 342169
+  historical_receipt_role: inert_audit_evidence_not_a_current_vnext_input
   memory_endpoints_live_status: not_connected_no_individual_accounts_validated_0_of_25
-  turbovec_turboquant_research_handoff: docs/report-intake/2026-07-18/turbovec-turboquant-and-handoff-audit/2026-07-17-six-disconnected-turbovec-turboquant-performance-accuracy-research-prompts.md
-  turbovec_turboquant_research_handoff_sha256: 900ae1008926b722090d0e0319904f8425536ac80a67b329dce90bec1a77f564
-  turbovec_turboquant_research_status: complete_nine_responsive_reports_reviewed_no_technical_claims_accepted
-  huihui_qwen2_5_1_5b_abliterated_sft_source_report: wiki/runtime-mirust/reports/tinyrustlm-huihui-ai-qwen2.5-1.5b-instruct-abliterated-sft-source-preflight-memory-2026-07-18.md
-  huihui_qwen2_5_1_5b_abliterated_sft_source_report_sha256: 77e21eff7aa62fb93abff5ad074f8c748542b8c2dc910a3bbe4c27c72cb800de
-  huihui_qwen2_5_1_5b_abliterated_sft_rejection_receipt: sha256:9b5662287e32274755679d44ef2928a64d0470490102e8c3920ef4b27b263f48
-  hiep_2_qwen3_math_source_report: wiki/runtime-mirust/reports/tinyrustlm-hiep-2-qwen3-0.6b-math-cpt-sft-source-preflight-memory-2026-07-18.md
-  hiep_2_qwen3_math_source_report_sha256: a25a23cfe9c22299d0abe5efe015f331bb4b494ff2ecbcaac43483a81d5fb0d9
-  hiep_2_qwen3_math_rejection_receipt: sha256:c76967274f5cf2f64d1e316f88ed313f65aa75235297bc80bb3ca1b49183df90
-  zainbhat_qwen3_source_report: wiki/runtime-mirust/reports/tinyrustlm-zainbhat-qwen3-0.6b-finetome-lora-merged-source-preflight-memory-2026-07-18.md
-  zainbhat_qwen3_source_report_sha256: 2e21bb3b1ce72cb1b7389f53d1e4fb60c236a46e70113cdec9cef5ce8a758c86
-  zainbhat_qwen3_rejection_receipt: sha256:e333d4cb0d7f7c99057ef29d0ce66ac02817017753cbd93d5b40183d72f8f209
-  qwen3_1_7b_source_report: wiki/runtime-mirust/reports/tinyrustlm-qwen3-1.7b-source-screen-memory-2026-07-16.md
-  qwen3_1_7b_source_report_sha256: 5af37d5977c775d1a27636fa934165c2d42ca49aa4a8a6ea88c28cc84f743bfb
-  qwen3_1_7b_rejection_receipt: sha256:164d828de5a2aa5d086f34f50a5855c323a1a6bcc186027d5f50d5df2d0f1540
-  fault_plan: tinyrustlm/campaign-fault-plan.v1.json
-  fault_report: artifacts/reports/tinyrustlm-campaign-fault-injection-v1.json
-  public_secret_scan: artifacts/reports/tinyrustlm-public-artifact-secret-scan-v2.json
-  dashboard_content_sha256: 5771d8830ac359cc39b8b1c83dfea7f8fb4d06784681d40127c2ff0b460975dc
-  public_secret_scan_receipt: sha256:f44e1dea1e4f0c18ce74fc652d4e0c84662b43f68d8929109b5b4bab7ce89c08
-  final_attestation_receipt: sha256:890089eff6208945e33a2c5f7bca3320ac4f21cb78fd459590cc03ed75e0e289
-  receipt_store_counts: 195_current_551_retained_0_quarantined
-  status: incomplete_14_blockers_62_terminal_rejections_17_of_24_fault_cases_unsigned_final_attestation_no_live_counters
+  outside_network_status: no_current_authorized_observer_evidence_0_of_40
+  catalog_status: no_current_live_announcements_0_of_20
+  campaign_counts: 0/20 models; 0/50 browser rounds; 0/25 live memory rounds; 0/40 outside-proven lanes; 0/20 announcements
+  status: gate_c_complete_verified_no_live_counter_advanced_next_gate_d_rust_win32_directory_flush_helper
 handoff_root: agent-file-handoff/
 active_buckets:
   content: agent-file-handoff/Content/

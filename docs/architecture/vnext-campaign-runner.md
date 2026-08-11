@@ -9,10 +9,11 @@ The implementation is `tinyrustlm/tools/vnext-campaign-runner.js`; focused
 conformance is `tinyrustlm/tests/vnext-campaign-runner.test.js`.
 
 This checkpoint implements deterministic local orchestration over already
-validated campaign stores. It is not a release authorization, public status
-endpoint, live campaign receipt, independent observer, MemoryEndpoints
-connection, catalog announcement, or operational release-surface cutover. Campaign
-counters remain 0/20, 0/50, 0/25, 0/40, and 0/20.
+validated campaign stores and is the sole maintained campaign projection path
+used by the release surface. It is not a live campaign receipt, independent
+observer, MemoryEndpoints connection, catalog announcement, production
+deployment, or public readback. Campaign counters remain 0/20, 0/50, 0/25,
+0/40, and 0/20.
 
 ## Authority Boundary
 
@@ -184,13 +185,10 @@ capacity only. It does not increment or predict any live campaign counter.
 
 ## Remaining Work
 
-- The superseded mutable runner and its isolated test are deleted without an
-  alias, fallback, compatibility reader, or second truth path. Cut remaining
-  final-attestation, release, dashboard/operator, and public-readback entry
-  points over to fresh results from this runner.
-- Bind only a freshly returned projection operation into final attestation,
-  release authorization, operator status, synchronized documentation, and
-  public readback.
+- Preserve the completed incompatible source cutover: every maintained
+  attestation, release, operator, deployment, and readback operation must
+  consume only a fresh result returned by this runner through the sole release
+  surface.
 - Measure maximum authorized closure latency and peak native/WASM memory on
   target release hosts.
 - Complete Rust/Win32 directory metadata flushing, bounded compressed archive

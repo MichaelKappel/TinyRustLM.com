@@ -231,12 +231,10 @@ the focused set was rerun, and only then did the complete rerun pass.
   bounded receipt and subject stores to this ABI, persists exact immutable
   operation and projection history, and reprojects exact current inputs on
   every new operation or byte-identical interruption resume.
-- The superseded mutable runner is deleted without aliases or compatibility
-  behavior. Cut final-attestation, release, dashboard/operator, and public
-  readback entry points over to fresh sole-runner results.
-- Bind only the reprojected result into final attestation, release
-  authorization, operator rendering, synchronized documentation, and public
-  readback.
+- Preserve the completed incompatible cutover: final attestation, release
+  authorization, operator rendering, synchronized documentation, deployment,
+  and public readback bind only a fresh sole-runner result through the sole
+  release surface.
 - Complete Rust/Win32 directory-flush evidence, archive-member scanning, and
   protected equality-list custody before production durability or release
   claims.

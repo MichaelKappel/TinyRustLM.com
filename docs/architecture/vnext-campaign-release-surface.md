@@ -15,14 +15,14 @@ commit receipt. Its frozen profile is
 
 This checkpoint implements fresh projection, final attestation, public-safe
 redaction, truthful operator status, release-manifest preparation, current
-Ed25519 release-authorizer verification, and immutable deployment-attempt
-admission. Exact static and combined production HTTPS readback admission,
+Ed25519 release-authorizer verification, immutable deployment-attempt
+admission, exact static and combined production HTTPS readback admission,
 deterministic site-publication plan persistence, current Ed25519 site-publisher
 authority, redacted pointer/history/published-claim materialization,
 generated-deployment admission, create-only published-claim persistence, and
-final publication admission are implemented. A real production run and
-deletion of the superseded release stack remain required before the surface is
-the operational publication entry point.
+final publication admission. The incompatible repository cutover makes this
+the sole maintained release and publication entry point. A real authorized
+production run remains required before any production publication claim.
 A prepared manifest is explicitly
 `not-authorized`; an authorized manifest is only
 `release-authorized-awaiting-deployment`. Neither state is a deployment,
@@ -625,6 +625,6 @@ No production invocation is asserted by this checkpoint. The complete local
 release graph through generated deployment admission, combined production
 readback invocation, restart-safe claim-prefix persistence, and final
 publication commit is implemented and covered only by fixture-labeled local
-orchestration evidence. Deletion of the superseded mutable publication stack,
-maintained-entry-point cutover, and a real authorized production execution are
-the next release gates.
+orchestration evidence. The maintained-entry-point cutover and source deletion
+are complete; a real authorized production execution and exact public readback
+remain independent release gates.

@@ -2,11 +2,12 @@
 
 ## Status
 
-This is the authoritative Phase 2 inventory captured on 2026-08-09. It
-separates observed current implementation from the incompatible vNext contract
-family. It does not promote vNext runtime support.
+This is the authoritative Phase 2 pre-cutover inventory captured on
+2026-08-09. It separates the observed former implementation from the
+incompatible vNext contract family. The measured counts below are a frozen
+baseline, not a current source-tree count and not a runtime-support claim.
 
-## Measured Current Surface
+## Measured Pre-Cutover Surface
 
 The inventory command scanned only executable source under `tinyrustlm/tools`
 and `tinyrustlm/app`. It excluded documentation, tests, generated output,
@@ -45,7 +46,7 @@ not make them one coherent family.
    handlers after the replacement passes. It does not hide them behind a
    compatibility package.
 
-## Current Boundary Findings
+## Pre-Cutover Boundary Findings
 
 | Class | Observed current implementation | Material gap | vNext disposition |
 | --- | --- | --- | --- |
@@ -56,7 +57,7 @@ not make them one coherent family.
 | Companion | Browser protocol v2 and the .NET SeedHost implement a closed loopback route family with scoped sessions and streaming. | Operation bodies, durable status, error vocabulary, and source/model/composition identity still span several schemas and language-specific validators. | Keep the accepted transport profile but replace its JSON bodies with one vNext request/response envelope and closed operation payload registry. |
 | P2P | Rust peer offers, browser MiniModel announcement validation, local share evidence, and catalog tooling exist. | Piece, artifact, composition, qualification, license, endpoint, and lane identities are not one vNext publication graph. | Use one complete piece manifest with canonical 4 MiB pieces and exact artifact/composition/qualification parents. Model bytes remain direct peer traffic. |
 | Proof | `tinyrustlm.p2p-outside-proof-v1` distinguishes complete outside transfer from local health and expires evidence. | The complete ADR-010 observer registry, role separation, revocation, offline bundle, and vNext signed payload are not implemented. | Use one expiring outside-observer proof content contract plus a separate role-bound signature envelope. |
-| Release | Campaign release evidence, final attestation, Ed25519 authorization, web deployment manifests, and `uaix.site_release.v1` exist as distinct contracts. | There is no single vNext release closure binding campaign, packages, sites, SBOM, provenance, claims, authorization, and HTTPS readback. | Use one immutable release manifest whose parents must already pass; publication creates descendants and never mutates the release. |
+| Release | Campaign release evidence, final attestation, Ed25519 authorization, web deployment manifests, and `uaix.site_release.v1` existed as distinct contracts. | The former implementation had no single vNext release closure binding campaign, packages, sites, SBOM, provenance, claims, authorization, and HTTPS readback. | The sole maintained vNext release surface now uses one immutable release manifest whose parents must already pass; publication creates descendants and never mutates the release. |
 | Claim | Quality strings such as `conversation-proven` appear in admissions, receipts, UI, docs, and catalog checks. | There is no one machine-readable registry that separates wording, scope, evidence class, freshness, blocker, withdrawal, and prohibited wording. | Use one claim record per exact subject/scope. Marketing and docs render only current supported claim records. |
 
 ## Frozen vNext Family Names
@@ -266,8 +267,10 @@ site-publisher authority and plan persistence are integrated into the sole
 release surface, together with generated-deployment admission, complete
 readback, restart-safe claim persistence, and final descendant admission.
 
-The superseded mutable runner is deleted. Remaining archive-member scanning,
-maintained-entry-point cutover, deletion of the superseded dashboard/release
-stack, a real production publication, and external campaign evidence remain
-incomplete.
+The incompatible maintained-entry-point cutover is complete. The superseded
+mutable runner and publication stack, their dedicated tests, rebuildable
+aliases, snapshot trees, old schemas, and stale current documentation are
+deleted without a compatibility path. Hash-addressed historical receipts and
+clean-history blobs remain inert evidence. Archive-member scanning, a real
+production publication, and external campaign evidence remain incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.

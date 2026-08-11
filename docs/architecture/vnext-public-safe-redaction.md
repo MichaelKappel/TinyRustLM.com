@@ -224,17 +224,20 @@ The focused tests cover:
 
 ## Remaining Work
 
-- Invoke the dedicated replay verifier from the release orchestrator with an
-  authorized protected equality list.
+- Preserve dedicated scan-receipt replay throughout the sole release surface
+  with the caller-protected equality list; production custody of that list
+  remains a separate operational gate.
 - Enumerate and scan both compressed bytes and every decoded archive member
   under an archive-specific bounded profile. This JSON-document boundary does
   not decompress archives.
 - Reproduce profile parsing, exact encodings, document and public-text detector
   semantics, canonical results, and receipt replay in Rust and browser/WASM
   implementations.
-- Replace every shipping producer and publication gate with this vNext
-  boundary, verify all dogfood callers, and delete superseded scanners.
-- Add exact phase invalidation and truthful dashboard projection.
+- Continue later incompatible product-phase cutovers until every shipping
+  producer uses this boundary; the maintained release and publication path is
+  already cut over and rejects restoration of its removed scanner path.
+- Preserve exact phase invalidation and truthful campaign projection through
+  the sole Rust-backed runner.
 - Obtain signed, authorized, deployment, and public-readback evidence before
   any public-safe or release claim.
 

@@ -215,9 +215,10 @@ rules without fabricating a production pass.
 
 ## Next Publication Gate
 
-The complete local graph now generates both controls as forward descendants,
+The complete local graph generates both controls as forward descendants,
 verifies current `site-publisher` authority, performs combined readback, and
-admits published `claim.v2` records only through a final commit receipt. The
-next gate is to cut every maintained entry point to that sole graph and delete
-the superseded mutable public-readback stack. No current production readback or
-publication is asserted by this checkpoint.
+admits published `claim.v2` records only through a final commit receipt. Every
+maintained release entry point now routes to that graph and negative
+conformance forbids restoration of the removed mutable readback path. The next
+gate is a real authorized production execution. No current production readback
+or publication is asserted by this checkpoint.

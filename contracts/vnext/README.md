@@ -486,10 +486,13 @@ one immutable release-surface receipt operation. Its tests include only
 fixture-labeled orchestration evidence; no production invocation is claimed.
 Deterministic pointer/history and published-claim candidate materialization is
 implemented as a pure module and integrated behind create-only plan evidence
-and current site-publisher authority. Generated-file deployment/readback,
-descendant persistence, and deletion of the superseded
-dashboard/release/public-readback stack remain incomplete. This is not
-outside-network observation or live campaign evidence.
+and current site-publisher authority. Generated-file deployment admission,
+complete readback, restart-safe descendant persistence, and final publication
+admission are integrated into that same surface. The incompatible source
+cutover deletes the superseded mutable publication implementation, dedicated
+tests, aliases, snapshots, schemas, and maintained documentation without a
+compatibility path. This remains local conformance evidence, not a production
+readback, outside-network observation, or live campaign result.
 Runtime tests generate ephemeral private keys only in process memory.
 Checked-in profiles and vectors contain public material only.
 

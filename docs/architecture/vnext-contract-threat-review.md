@@ -64,11 +64,11 @@ readbacks, and published-claim descendants point forward to the finalized
 release. No finalized content-addressed object points back to one of those
 descendants.
 
-These later local facts close the named cross-runtime implementation gaps only.
-They do not close archive-member scanning, protected production secret-list
-custody, maintained-entry-point cutover, authorized live MemoryEndpoints
-continuity, independent outside-network lane proofs, catalog publication, or a
-real production HTTPS readback. The
+These later local facts close the named cross-runtime implementation gaps and
+the maintained release-entry-point cutover only. They do not close
+archive-member scanning, protected production secret-list custody, authorized
+live MemoryEndpoints continuity, independent outside-network lane proofs,
+catalog publication, or a real production HTTPS readback. The
 production verifier rejects nonpublic DNS results, pins one public address,
 verifies normal TLS identity, and streams the exact closed inventory. The sole
 release surface now reconstructs deployment and authorization, invokes that
@@ -84,7 +84,7 @@ before one final commit receipt. Its integration test uses only fixture-labeled
 output and has not been used to claim a live pass. No local test changes a
 campaign counter.
 
-Reviewed at `2026-08-11T17:50:23Z`. The review is invalidated when any bound
+Reviewed at `2026-08-11T19:10:29Z`. The review is invalidated when any bound
 file changes, when the parser changes, or when a deferred proof obligation is
 reclassified without a new threat review.
 
@@ -169,7 +169,7 @@ verified by later phases.
 | Malformed or disguised text | Fatal UTF-8, BOM rejection, scalar checks, bounded text and string rules | Mitigated locally | Rust/browser parity was outside this Phase 2 checkpoint; the current addendum records later bounded parity |
 | Parser exhaustion | Byte, depth, entry, member, array, string, aggregate-string, and number-character limits | Mitigated locally | Wall-clock and allocation ceilings require measured native/browser tests |
 | Numeric identity drift | Unsafe integers, negative zero, overflow, underflow, and floats are rejected where unsupported | Mitigated locally | Cross-language RFC 8785 serialization remains deferred |
-| Schema confusion or downgrade | Only the nine exact registry-listed schemas are accepted, including proof v2, release v3, and claim v2, with no reader for their replaced forms | Mitigated locally | Production cutover and deletion of superseded entry points remain deferred |
+| Schema confusion or downgrade | Only the nine exact registry-listed schemas are accepted, including proof v2, release v3, and claim v2, with no reader for their replaced forms | Mitigated locally and at the maintained release cutover | Later product-phase entry points must pass their own incompatible cutover gates |
 | Proof/signature identity cycle | Proof v2 has no envelope-ID field; the signature receipt points one way to the finalized proof | Mitigated by incompatible replacement | Signature-descendant existence and authority remain deferred |
 | Unknown-field smuggling | Root and every nested object are closed; property tests inject unknown fields at every reachable object depth | Mitigated locally | New fields require a new frozen registry and review |
 | Missing-field defaulting | Every declared field is required; property tests delete every root field | Mitigated locally | Nested required-field deletion is covered by exact descriptors and corpus examples, not exhaustive combinatorics |
@@ -182,11 +182,11 @@ verified by later phases.
 | Worker or companion state confusion | Direction, operation, payload binding, pairing, session, sequence, and capability constraints are explicit | Mitigated locally | Replay store, process isolation, browser origin, and loopback authentication remain later gates |
 | P2P piece or Merkle drift | Piece indices, offsets, sizes, hashes, Merkle root, total bytes, and artifact identity are recomputed locally | Mitigated locally | File streaming, peer transfer, and final Rust artifact verification remain later gates |
 | Local reachability promoted as public | Proof requires outside-network scope, complete transfer, lane and endpoint binding, and bounded freshness | Mitigated structurally | Observer signature, independence, and matching P2P parent remain deferred |
-| Release or claim inflation | Acyclic release v3 binds the campaign plan/projection, attestation, packages, artifacts, approved claims, SBOM, provenance, changelog, remaining risks, current web build, exact control documents, and the closed static publication graph; the sole release surface requires complete fresh projection truth, same-snapshot parent identity, current-pass receipt closure, all 20 qualified artifact hashes, dependency closure, one CycloneDX SBOM, all current approved claims, exact static bytes, current release and site-publisher authority, admitted static and generated deployment attempts, exact static and combined readbacks, and one redacted plan before it can persist an exact claim prefix and final commit receipt | Mitigated for the local admission path | Maintained-entry-point cutover and a real authorized production run remain required |
+| Release or claim inflation | Acyclic release v3 binds the campaign plan/projection, attestation, packages, artifacts, approved claims, SBOM, provenance, changelog, remaining risks, current web build, exact control documents, and the closed static publication graph; the sole release surface requires complete fresh projection truth, same-snapshot parent identity, current-pass receipt closure, all 20 qualified artifact hashes, dependency closure, one CycloneDX SBOM, all current approved claims, exact static bytes, current release and site-publisher authority, admitted static and generated deployment attempts, exact static and combined readbacks, and one redacted plan before it can persist an exact claim prefix and final commit receipt | Mitigated for the local admission path and maintained source cutover | A real authorized production run remains required |
 | Local or injected response promoted as production readback | The standalone production verifier owns DNS and HTTPS, accepts no caller transport or response, rejects any nonpublic DNS member, pins one globally routable address, requires normal TLS hostname authorization, forbids redirects and transformed bodies, and streams every exact manifest asset; the release surface invokes it internally, independently validates canonical result closure, and persists only scan/readback descendants in exact dependency order | Mitigated locally | Fixture-labeled orchestration tests are not production execution, host resolver and process integrity remain trusted, and a real production run remains required |
 | DNS rebinding or split-address substitution | One bounded all-address lookup must contain only canonical public addresses; one successful bootstrap address is pinned through verifier-owned lookup callbacks and checked against every connected socket | Mitigated locally | Host resolver and process integrity remain trusted; this is not an outside-network observer proof |
 | Secret disclosure through public evidence | Private-by-default classes, public-safe field types, canonical LF UTF-8 public text, allowlisted canonical publication controls, redaction profile, forbidden keys/value classes, acyclic scan binding, and release-surface scans over selected documents, changelog, manifests, plan material, signatures, controls, deployment/readback receipts, claim candidates, and the final publication receipt | Reduced | Compressed members, cross-runtime detector parity, and protected-list production custody remain deferred |
-| Compatibility code becoming permanent | Validators recognize one incompatible family and contain no fallback, migration, deprecated alias, dual-read, or dual-write path | Mitigated in the new boundary | Old production readers and writers still exist elsewhere and must be deleted after verified cutover |
+| Compatibility code becoming permanent | Validators recognize one incompatible family; the maintained release cutover deletes the replaced readers, writers, mutable aliases, snapshots, schemas, dedicated tests, and stale documentation, and negative conformance forbids their return | Mitigated for the release path | Every later product-phase cutover must apply the same deletion rule |
 
 ## Validator Independence
 
@@ -240,8 +240,9 @@ The following are explicitly outside the Phase 2 pass:
   artifact reconstruction.
 - Rust, browser/WASM, worker, service worker, and companion implementations of
   the frozen contracts.
-- Removal of every superseded parser and dated schema from shipping entry
-  points after the incompatible cutover.
+- Continued negative conformance proving that removed release paths and dated
+  schemas do not return to maintained source, commands, configuration, or
+  documentation.
 - Real model qualification, live browser deletion receipts, authorized live
   MemoryEndpoints continuity, independent outside-network lane proofs, catalog
   announcements, package publication, and public HTTPS release readback.
@@ -264,8 +265,7 @@ separate acyclic verification receipt, external
 root/terminal/campaign/environment/hash pins, current target signatures, and
 all supplied receipt and subject bytes without network access. That work is
 outside this Phase 2 PASS. It does not close compressed archive-member
-scanning, production entry-point cutover, independent observer operation, or
-any campaign gate.
+scanning, independent observer operation, or any campaign gate.
 
 The redaction checkpoint also admits canonical public text only as fatal UTF-8,
 without BOM, CR, disallowed controls, or a missing terminal LF. It derives a
@@ -303,11 +303,12 @@ and never adds an authorization back-reference to the manifest. Deployment
 admission and exact HTTPS readback are now forward-only operations on that
 closure. A separate pure module now validates the publication plan and
 deterministically materializes pointer/history and published-claim candidates
-from one release-bound site-publisher signature. It has no network, clock,
-persistence, or source mutation and rejects the old ledger schema. Current
-authority-graph verification, generated-file deployment/readback, and
-create-only descendant admission remain unimplemented release-surface
-boundaries at this checkpoint; no real production readback has been asserted.
+  from one release-bound site-publisher signature. It has no network, clock,
+  persistence, or source mutation and rejects the old ledger schema. The sole
+  release surface now owns current authority-graph verification,
+  generated-deployment admission, complete readback, restart-safe claim-prefix
+  persistence, and final descendant admission. No real production readback has
+  been asserted.
 
 ## No-Compatibility Decision
 
@@ -315,50 +316,52 @@ The new validator boundary has no old schema aliases, migration adapters,
 best-effort field mapping, permissive version range, dual readers, dual
 writers, repair path, or fallback parser. Unknown and dated schemas fail.
 Superseded production paths are not retained for user compatibility because
-the product is pre-public dogfood. They may remain temporarily outside this
-boundary only until the replacement is integrated, tested, and then deleted.
-That temporary repository fact is not permission to connect old and new
-contracts.
+the product is pre-public dogfood. The maintained release paths, aliases,
+snapshots, schemas, dedicated tests, and stale documentation are deleted after
+replacement verification. Hash-addressed historical receipts remain inert
+evidence and have no admission edge into the current contracts.
 
 ## Verification Evidence
 
 At review time:
 
-- `node --test tests/vnext-contract-registry.test.js tests/vnext-contract-validator-conformance.test.js`
-  passed 13, failed 0, skipped 0.
-- The current complete `npm run test:unit` run passed 858, failed 0, skipped 0,
-  in 291.780 seconds, including real Chromium profile deletion and fault
-  checks, local web-release smoke, signing authority, campaign-runner
-  capacity, exact web-publication graph rejection, release preparation,
-  release authorization, and closed offline-bundle scenarios.
-- The current affected vNext contract, store, signing-authority,
-  release-surface, and offline-bundle set passed 161, failed 0, skipped 0. The
-  coverage includes canonical materialization, exact membership, external
-  pins, complete receipt closure, profile and schema drift, stale targets,
-  governance succession, revocation, web graph drift, immutable-cache path
-  identity, interrupted bytes, hostile accessors, and finite resource limits.
-- Both validators produced the expected verdict for all 82 corpus records.
-- The test suite verifies source independence, corpus regeneration identity,
-  the registry interpreter's three-way invariant partition, object-key order
-  independence, required root fields, and nested unknown-field rejection.
+- The cutover, pure publication, and standalone HTTPS closure passed 20/20 in
+  271.460 milliseconds.
+- The complete release-surface suite passed 23/23 in 679.865 seconds,
+  including honest zero, synthetic capacity, authority and byte drift,
+  generated readback, every claim-prefix interruption, and final commit
+  ordering.
+- The complete post-deletion `npm run test:unit` run passed 848/848 with zero
+  failures, skips, cancellations, or todos in 712.681 seconds. The physically
+  removed dedicated tests are absent from the glob; four new negative cutover
+  tests prove path absence, maintained-reference absence, sole vNext routing,
+  and exact preservation of inert historical receipts.
+- All six deterministic vNext generators reproduced checked-in bytes without
+  changing the worktree status.
+- `cargo fmt --all --check`, denied-warning all-target workspace Clippy, and
+  the complete locked Rust workspace tests passed. The Rust test run completed
+  in 49.2 seconds.
+- Both validators produced the expected verdict for all 82 corpus records in
+  the complete unit suite, including source independence, corpus regeneration
+  identity, invariant partitioning, object-key order independence, required
+  root fields, and nested unknown-field rejection.
 
 The full run includes the final invariant-report classification, threat review,
 and all focused contract tests. The later cross-language and browser boundaries
-are documented in the current addendum, but no test result substitutes for
-production entry-point cutover, independent operation, or campaign evidence.
+are documented in the current addendum, but no test result substitutes for an
+independent production operation or campaign evidence.
 
 ## Exit Decision
 
 Phase 2 closed after the bound hashes, this review, focused tests, complete unit
 suite, source hygiene, secret scan, and remote push were current in one
-checkpoint. The superseded mutable runner is deleted without an alias or
-compatibility entry point. Final attestation, operator projection, release v3
-preparation, and current release authorization now bind only a fresh
-sole-runner result. The current next boundary is exact generated-file
-deployment/readback, create-only publication descendants, and a real
-production run over an exact authorized release graph. Current site-publisher
-authority and candidate redaction are integrated and do not by themselves
-establish publication.
+checkpoint. The incompatible maintained release cutover is complete without an
+alias or compatibility entry point. Final attestation, operator projection,
+release v3 preparation, current release and site-publisher authorization,
+deployment admission, exact readback, and publication descendants bind only a
+fresh sole-runner result. The current next boundary is a real production run
+over an exact authorized release graph. Local authority and fixture readback
+coverage do not by themselves establish publication.
 Windows directory durability, archive-member scanning, and protected-list
 release custody remain separate prerequisites for their corresponding claims.
 

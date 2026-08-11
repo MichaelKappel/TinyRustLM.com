@@ -35,7 +35,6 @@ tinyrustlm/training/qwen3-cognitive-liberty-v3/preference-provenance-audit-contr
 tinyrustlm/tools/reference-raw-quality.py text eol=lf
 tinyrustlm/tools/source-model-screen-evidence.js text eol=lf
 tinyrustlm/tools/build-source-logit-golden.py text eol=lf
-tinyrustlm/tools/campaign-public-artifact-scope.js text eol=lf
 tinyrustlm/training/croissantllmchat-v0.1-source-screen-v1/assessment-control-v1.json text eol=lf
 
 # Keep the source-bound vector experiment and its validators byte-stable across
