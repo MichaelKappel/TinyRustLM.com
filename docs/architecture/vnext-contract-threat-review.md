@@ -38,6 +38,18 @@ same-directory atomic-create mechanics, and quarantines invalid, unaccepted,
 misaddressed, or interrupted entries. Stored subjects are immutable input
 history, not currentness decisions.
 
+One frozen `tinyrustlm.vnext.directory-flush.v1` Rust boundary now closes the
+raw Win32 API-access gap without changing Node store truth. It accepts only one
+bounded stdin request, validates an absolute owned root plus strict relative
+directory, rejects symbolic-link and reparse components, opens the directory
+with write access plus backup and open-reparse-point flags, and emits no raw
+path or host error. Caller-held single-writer ownership is an explicit
+precondition because stable Rust 1.96 cannot expose a Windows file-index
+identity through this boundary. The current Windows host completed the exact
+flush call and rejected a real junction. That is local API evidence only:
+create-only publication receipt integration, crash recovery, power
+interruption, and filesystem/device durability remain unproven.
+
 One frozen `tinyrustlm.vnext.campaign-runner.v1` boundary now performs two
 complete exact observations of every active campaign receipt and public
 subject, rejects cross-observation drift, binds caller pins and trusted time,
@@ -362,7 +374,8 @@ deployment admission, exact readback, and publication descendants bind only a
 fresh sole-runner result. The current next boundary is a real production run
 over an exact authorized release graph. Local authority and fixture readback
 coverage do not by themselves establish publication.
-Windows directory durability, archive-member scanning, and protected-list
-release custody remain separate prerequisites for their corresponding claims.
+The Rust/Win32 directory-flush primitive is implemented, but publication
+receipt integration and physical durability evidence remain prerequisites.
+Archive-member scanning and protected-list release custody also remain open.
 
 Campaign counters remain `0/20`, `0/50`, `0/25`, `0/40`, and `0/20`.

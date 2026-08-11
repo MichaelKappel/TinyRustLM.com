@@ -611,6 +611,15 @@ name = "tinyrustlm-browser-harness"
 version = "0.1.8"
 
 [[package]]
+name = "tinyrustlm-durability"
+version = "0.1.8"
+dependencies = [
+ "serde",
+ "serde_json",
+ "sha2",
+]
+
+[[package]]
 name = "tinyrustlm-evidence"
 version = "0.1.8"
 dependencies = [

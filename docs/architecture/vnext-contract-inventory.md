@@ -215,6 +215,13 @@ Create-only plan/projection persistence is documented in
 `docs/architecture/vnext-campaign-artifact-persistence.md`.
 Create-only public subject persistence is documented in
 `docs/architecture/vnext-subject-store.md`.
+The bounded Rust/Win32 directory-flush helper and its exact non-claims are
+documented in `docs/architecture/vnext-directory-durability.md`. Its
+5,539-byte frozen profile has SHA-256
+`51effab85d325493e77ca57de5aa14bf7d3fa2fd3b5f16139baadc8979d395bb`.
+The current Windows host executes the helper and rejects a real directory
+junction, but create-only publication receipt integration and physical
+power-loss evidence remain incomplete.
 The sole exact cross-store Rust-backed campaign runner is documented in
 `docs/architecture/vnext-campaign-runner.md`.
 The fresh-runner-only immutable attestation, operator, release-manifest,
@@ -271,6 +278,8 @@ The incompatible maintained-entry-point cutover is complete. The superseded
 mutable runner and publication stack, their dedicated tests, rebuildable
 aliases, snapshot trees, old schemas, and stale current documentation are
 deleted without a compatibility path. Hash-addressed historical receipts and
-clean-history blobs remain inert evidence. Archive-member scanning, a real
-production publication, and external campaign evidence remain incomplete.
+clean-history blobs remain inert evidence. The Rust directory-flush primitive
+is implemented but not yet integrated into publication receipts.
+Archive-member scanning, a real production publication, and external campaign
+evidence remain incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.

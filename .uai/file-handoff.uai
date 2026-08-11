@@ -1,5 +1,5 @@
-profile: runtime-mirust.file-handoff.v71
-updated_utc: 2026-08-11T19:14:40Z
+profile: runtime-mirust.file-handoff.v72
+updated_utc: 2026-08-11T19:47:05Z
 site_release_reconciliation_2026_08_11:
   status: runtime_verification_and_minimodel_publication_checkpoint_complete
   active_branch_verified_parent: 790c6ff1eb7293e806a1adffcca15ee0cd940fab
@@ -141,7 +141,27 @@ current_vnext_campaign_execution:
   outside_network_status: no_current_authorized_observer_evidence_0_of_40
   catalog_status: no_current_live_announcements_0_of_20
   campaign_counts: 0/20 models; 0/50 browser rounds; 0/25 live memory rounds; 0/40 outside-proven lanes; 0/20 announcements
-  status: gate_c_complete_verified_no_live_counter_advanced_next_gate_d_rust_win32_directory_flush_helper
+  gate_d_directory_durability:
+    status: rust_directory_flush_boundary_complete_verified_not_yet_integrated_into_publication_receipts
+    crate: rust/crates/tinyrustlm-durability
+    helper: tinyrustlm-directory-flush
+    profile: contracts/vnext/directory-flush-profile.v1.json
+    profile_bytes: 5539
+    profile_sha256: 51effab85d325493e77ca57de5aa14bf7d3fa2fd3b5f16139baadc8979d395bb
+    protocol: bounded stdin JSON; one path-redacted stdout JSON document; no network, raw path, raw request, or host-error output
+    owned_path_contract: absolute caller-owned root, strict one-to-64-component relative directory, canonical containment, no symbolic-link or Windows reparse components, pre-open/open-handle/post-flush inspection
+    concurrency_precondition: caller must hold single-writer ownership from initial inspection through post-flush inspection; stable Rust 1.96 file-index identity is not used
+    windows_method: GENERIC_WRITE plus FILE_SHARE_READ, FILE_SHARE_WRITE, FILE_SHARE_DELETE plus FILE_FLAG_BACKUP_SEMANTICS and FILE_FLAG_OPEN_REPARSE_POINT followed by File::sync_all
+    local_win_x64_evidence: exact directory flush succeeded and a real Windows directory junction was rejected as directory_path_link
+    focused_verification: 13/13 pass; seven owned-path/platform tests and six frozen-profile/library/process protocol tests
+    complete_rust_verification: cargo fmt --all --check pass; denied-warning locked all-target workspace Clippy pass; complete locked workspace 967/967 pass
+    changed_file_hygiene: 14 files; 201707 bytes; zero high-confidence secret, NUL, or non-ASCII findings
+    source_control_hardening: broad bin ignore now explicitly re-includes every Rust src/bin source path; helper executable source is visible to normal Git staging
+    production_manifest_intersection: 0 of 21 source entries changed
+    deployment_status: not_applicable_no_production_web_source_changed_no_version_release_log_or_live_claim
+    explicit_nonclaims: no physical power-loss proof; no Linux or physical ARM64 execution; no create-only publication receipt integration; no release or campaign counter
+    next_boundary: bind temporary-file fsync, create-if-absent disposition, exact directory observation, postpublication readback, helper binary identity, and configuration identity into immutable sole-vNext receipt lineage with restart and interruption tests
+  status: gate_c_complete_gate_d_directory_helper_complete_no_live_counter_advanced_next_durable_receipt_integration
 handoff_root: agent-file-handoff/
 active_buckets:
   content: agent-file-handoff/Content/

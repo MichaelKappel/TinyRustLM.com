@@ -322,6 +322,18 @@ interruption handling, and quarantine are shared with the receipt and campaign
 artifact stores. It exposes no mutable current pointer and grants no evidence
 currentness by itself. See `docs/architecture/vnext-subject-store.md`.
 
+`rust/crates/tinyrustlm-durability` now owns the sole Rust directory-flush
+boundary. Its 5,539-byte frozen profile has SHA-256
+`51effab85d325493e77ca57de5aa14bf7d3fa2fd3b5f16139baadc8979d395bb`.
+The helper accepts one bounded stdin request over an absolute owned root and a
+strict relative directory under caller-held single-writer ownership, rejects
+link and Windows reparse paths, opens a Win32 directory handle with exact
+access/share/flag semantics, and emits only a path-redacted success observation
+or bounded failure. The current Windows host executes that call successfully,
+but Node publication-receipt integration and physical power-loss evidence
+remain incomplete. See
+`docs/architecture/vnext-directory-durability.md`.
+
 `tinyrustlm/tools/vnext-campaign-runner.js` now composes those stores through
 one exact runner boundary. Its frozen 6,855-byte profile has SHA-256
 `d3eddd20b885556f6ad26804f122d60f7ff288c5bf4ef28a0929b52784f22323`.

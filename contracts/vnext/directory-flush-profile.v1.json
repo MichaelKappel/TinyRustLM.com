@@ -1,0 +1,147 @@
+{
+  "schema": "tinyrustlm.vnext.directory_flush_profile.v1",
+  "profileId": "tinyrustlm.vnext.directory-flush.v1",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-no-compatibility-reader",
+  "requestSchema": "tinyrustlm.vnext.directory_flush_request.v1",
+  "successObservationSchema": "tinyrustlm.vnext.directory_flush_observation.v1",
+  "failureSchema": "tinyrustlm.vnext.directory_flush_failure.v1",
+  "networkAccess": "forbidden",
+  "rawPathOutput": "forbidden",
+  "rawHostErrorOutput": "forbidden",
+  "requestTransport": "bounded-stdin-json",
+  "responseTransport": "single-stdout-json-document",
+  "requestMaximumBytes": 16384,
+  "pathContract": {
+    "ownedRoot": "absolute-existing-directory-with-no-symbolic-link-or-reparse-component",
+    "relativeDirectory": "one-to-64-normal-components-beneath-canonical-owned-root",
+    "maximumPathUtf8Bytes": 16384,
+    "maximumRelativeComponents": 64,
+    "maximumComponentUtf8Bytes": 255,
+    "canonicalContainmentRequired": true,
+    "preOpenInspectionRequired": true,
+    "openedHandleMetadataInspectionRequired": true,
+    "postFlushInspectionRequired": true,
+    "singleWriterOwnershipRequired": true,
+    "singleWriterMeaning": "the caller prevents independent path mutation from initial inspection through post-flush inspection"
+  },
+  "operationIdContract": {
+    "minimumBytes": 3,
+    "maximumBytes": 160,
+    "pattern": "^[a-z0-9][a-z0-9._:-]{2,159}$"
+  },
+  "directoryIdentity": {
+    "algorithm": "sha256",
+    "domain": "tinyrustlm.directory-flush.scope.v1",
+    "material": "utf8(canonical-absolute-owned-root) || 0x00 || utf8(normalized-relative-directory)",
+    "rawMaterialReturned": false
+  },
+  "platformMethods": {
+    "windows": {
+      "method": "win32-backup-semantics-flush-file-buffers",
+      "requiredAccess": "GENERIC_WRITE",
+      "shareMode": [
+        "FILE_SHARE_READ",
+        "FILE_SHARE_WRITE",
+        "FILE_SHARE_DELETE"
+      ],
+      "flags": [
+        "FILE_FLAG_BACKUP_SEMANTICS",
+        "FILE_FLAG_OPEN_REPARSE_POINT"
+      ],
+      "flushCall": "Rust File::sync_all over the opened directory handle",
+      "successMeaning": "the platform open, handle metadata inspection, sync_all, and post-flush path inspection returned success"
+    },
+    "unix": {
+      "method": "posix-directory-fsync",
+      "requiredAccess": "read",
+      "flushCall": "Rust File::sync_all over the opened directory descriptor",
+      "successMeaning": "the platform open, descriptor metadata inspection, sync_all, and post-flush path inspection returned success"
+    },
+    "other": {
+      "method": "unsupported-platform",
+      "policy": "fail-closed"
+    }
+  },
+  "successObservationFields": [
+    "architecture",
+    "directoryIdentitySha256",
+    "method",
+    "operatingSystem",
+    "operationId",
+    "profileId",
+    "profileSha256",
+    "schema",
+    "status"
+  ],
+  "failureFields": [
+    "errorCode",
+    "schema",
+    "status"
+  ],
+  "errorCodes": [
+    "directory_flush_denied",
+    "directory_flush_failed",
+    "directory_flush_unsupported",
+    "directory_metadata_failed",
+    "directory_observation_byte_limit",
+    "directory_observation_serialize_failed",
+    "directory_open_denied",
+    "directory_open_failed",
+    "directory_operation_id_invalid",
+    "directory_path_access_denied",
+    "directory_path_canonicalize_failed",
+    "directory_path_changed",
+    "directory_path_encoding_invalid",
+    "directory_path_escape",
+    "directory_path_inspection_failed",
+    "directory_path_link",
+    "directory_path_missing",
+    "directory_path_not_directory",
+    "directory_profile_invalid",
+    "directory_relative_path_invalid",
+    "directory_request_byte_limit",
+    "directory_request_invalid",
+    "directory_request_read_failed",
+    "directory_request_schema_invalid",
+    "directory_root_canonicalize_failed",
+    "directory_root_link",
+    "directory_root_missing",
+    "directory_root_not_absolute",
+    "directory_root_not_directory"
+  ],
+  "nonClaims": [
+    "A successful helper call is not physical power-loss evidence.",
+    "A successful helper call is not proof that a storage device ignored no flush request.",
+    "A successful helper call does not prove create-only publication, file-data fsync, readback, or receipt admission by itself.",
+    "The helper does not establish single-writer ownership; the caller must prevent independent mutation of the owned root for the operation lifetime.",
+    "A local Windows observation is not cross-platform or production deployment evidence."
+  ],
+  "primarySources": [
+    {
+      "title": "CreateFileW function",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew",
+      "retrievedUtc": "2026-08-11T00:00:00Z"
+    },
+    {
+      "title": "FlushFileBuffers function",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-flushfilebuffers",
+      "retrievedUtc": "2026-08-11T00:00:00Z"
+    },
+    {
+      "title": "Rust std::fs::File::sync_all",
+      "url": "https://doc.rust-lang.org/std/fs/struct.File.html#method.sync_all",
+      "retrievedUtc": "2026-08-11T00:00:00Z"
+    },
+    {
+      "title": "Rust std::os::windows::fs::OpenOptionsExt",
+      "url": "https://doc.rust-lang.org/std/os/windows/fs/trait.OpenOptionsExt.html",
+      "retrievedUtc": "2026-08-11T00:00:00Z"
+    },
+    {
+      "title": "Rust std::os::windows::fs::MetadataExt",
+      "url": "https://doc.rust-lang.org/std/os/windows/fs/trait.MetadataExt.html",
+      "retrievedUtc": "2026-08-11T00:00:00Z"
+    }
+  ]
+}
