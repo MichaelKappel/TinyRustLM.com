@@ -1,5 +1,5 @@
-profile: runtime-mirust.file-handoff.v72
-updated_utc: 2026-08-11T19:47:05Z
+profile: runtime-mirust.file-handoff.v73
+updated_utc: 2026-08-11T20:37:33Z
 site_release_reconciliation_2026_08_11:
   status: runtime_verification_and_minimodel_publication_checkpoint_complete
   active_branch_verified_parent: 790c6ff1eb7293e806a1adffcca15ee0cd940fab
@@ -142,26 +142,35 @@ current_vnext_campaign_execution:
   catalog_status: no_current_live_announcements_0_of_20
   campaign_counts: 0/20 models; 0/50 browser rounds; 0/25 live memory rounds; 0/40 outside-proven lanes; 0/20 announcements
   gate_d_directory_durability:
-    status: rust_directory_flush_boundary_complete_verified_not_yet_integrated_into_publication_receipts
+    status: rust_directory_flush_and_node_package_client_complete_verified_not_yet_integrated_into_publication_receipts
+    implementation_commit: d7333c1fda81a491e574106501035f57419988f9
     crate: rust/crates/tinyrustlm-durability
     helper: tinyrustlm-directory-flush
     profile: contracts/vnext/directory-flush-profile.v1.json
-    profile_bytes: 5539
-    profile_sha256: 51effab85d325493e77ca57de5aa14bf7d3fa2fd3b5f16139baadc8979d395bb
-    protocol: bounded stdin JSON; one path-redacted stdout JSON document; no network, raw path, raw request, or host-error output
-    owned_path_contract: absolute caller-owned root, strict one-to-64-component relative directory, canonical containment, no symbolic-link or Windows reparse components, pre-open/open-handle/post-flush inspection
-    concurrency_precondition: caller must hold single-writer ownership from initial inspection through post-flush inspection; stable Rust 1.96 file-index identity is not used
+    profile_bytes: 5820
+    profile_sha256: aaf82fde396e89d03e82a6cd7c761bfbedb1d766250dc9dd537124be68adcfd8
+    client: tinyrustlm/tools/vnext-directory-flush-client.js
+    client_profile: contracts/vnext/directory-flush-client-profile.v1.json
+    client_profile_bytes: 5068
+    client_profile_sha256: 9f367bbe58bf8afc8ecba57a1b33e5cda5a83592a80517c4db38d0775cf9fde6
+    client_source_closure_sha256: 37dc6e85be3655743a31de5623fa574f565578351f4c6b255621a9d976a8c487
+    protocol: bounded canonical stdin JSON; exact request SHA bound into one path-redacted canonical stdout observation; safe canonical failure only; no raw path, request, process output, or host-error result
+    owned_path_contract: absolute caller-owned root, explicit dot root scope or strict one-to-64-component relative directory, canonical containment, no symbolic-link or Windows reparse components, pre-open/open-handle/post-flush inspection
+    concurrency_precondition: caller must prevent rename, replacement, link, or reparse mutation of root and directory path components through post-flush inspection; concurrent member-file creation is permitted
     windows_method: GENERIC_WRITE plus FILE_SHARE_READ, FILE_SHARE_WRITE, FILE_SHARE_DELETE plus FILE_FLAG_BACKUP_SEMANTICS and FILE_FLAG_OPEN_REPARSE_POINT followed by File::sync_all
-    local_win_x64_evidence: exact directory flush succeeded and a real Windows directory junction was rejected as directory_path_link
-    focused_verification: 13/13 pass; seven owned-path/platform tests and six frozen-profile/library/process protocol tests
-    complete_rust_verification: cargo fmt --all --check pass; denied-warning locked all-target workspace Clippy pass; complete locked workspace 967/967 pass
-    changed_file_hygiene: 14 files; 201707 bytes; zero high-confidence secret, NUL, or non-ASCII findings
-    source_control_hardening: broad bin ignore now explicitly re-includes every Rust src/bin source path; helper executable source is visible to normal Git staging
-    production_manifest_intersection: 0 of 21 source entries changed
+    package_boundary: canonical manifest binds platform, RID, build/trust class, helper profile, executable bytes, and helper source closure; package links, ambiguity, drift, debug release claims, and before/after replacement fail closed
+    process_boundary: absolute local package root on Windows; shell false; zero arguments; empty child environment; verified package working directory; private bounded pipes; 10-second SIGKILL timeout; strict exit and output validation
+    result_boundary: path-redacted result binds client profile/source closure, Node runtime, helper profile/package/source/executable, platform, request, operation, directory identity, method, and observation
+    local_win_x64_evidence: exact packaged helper directory flush succeeded; real Rust and Node directory-link rejection passed; real helper failure was validated and propagated only as a bounded cause code
+    focused_verification: Rust 14/14 pass; Node client 32/32 pass
+    complete_node_verification: 880/880 pass; zero fail skip cancel todo; 739254.3978 ms
+    complete_rust_verification: cargo fmt --all --check pass; denied-warning locked all-target workspace Clippy pass; complete locked workspace test pass
+    changed_file_hygiene: 12 files; 194549 bytes; zero high-confidence secret, NUL, or non-ASCII findings
+    production_manifest_intersection: 0 of 23 publication members changed
     deployment_status: not_applicable_no_production_web_source_changed_no_version_release_log_or_live_claim
-    explicit_nonclaims: no physical power-loss proof; no Linux or physical ARM64 execution; no create-only publication receipt integration; no release or campaign counter
-    next_boundary: bind temporary-file fsync, create-if-absent disposition, exact directory observation, postpublication readback, helper binary identity, and configuration identity into immutable sole-vNext receipt lineage with restart and interruption tests
-  status: gate_c_complete_gate_d_directory_helper_complete_no_live_counter_advanced_next_durable_receipt_integration
+    explicit_nonclaims: Node supplies no OS network sandbox; local-test-build is not release provenance; no physical power-loss proof; no Linux or physical ARM64 execution; no create-only publication receipt integration; no release or campaign counter
+    next_boundary: cut receipt, subject, campaign-artifact, and campaign-runner publication through one mandatory durability receipt binding temporary-file fsync, create-if-absent disposition, exact directory observation, postpublication readback, client/helper identities, and restart/interruption evidence; delete the Win32 unavailable branch without compatibility support
+  status: gate_c_complete_gate_d_directory_client_complete_no_live_counter_advanced_next_four_store_durable_receipt_cutover
 handoff_root: agent-file-handoff/
 active_buckets:
   content: agent-file-handoff/Content/

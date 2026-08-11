@@ -1,7 +1,60 @@
-profile: tinyrustlm.source-workspace.v294
+profile: tinyrustlm.source-workspace.v295
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-11T19:49:29Z
+updated_utc: 2026-08-11T20:37:33Z
+
+current_checkpoint_2026_08_11_directory_flush_client_boundary:
+  authority: This is the newest first-read execution checkpoint. It adds to immutable history and supersedes older present-tense helper-only milestone, hash, resume, and next-action fields where they disagree. It does not alter prior receipts, production releases, or campaign counts.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  source_control:
+    root: E:\Source\.tinyrustlm-model-acquisition
+    branch: codex/model-acquisition-v2
+    implementation_commit: d7333c1fda81a491e574106501035f57419988f9
+    subject: Add vNext directory flush client boundary
+    upstream: origin/codex/model-acquisition-v2
+    verification: Local HEAD and upstream were exact at d7333c1fda81a491e574106501035f57419988f9 with a clean owned worktree before this private handoff edit.
+    protected_checkout: E:\Source\Rust\TinyRustLM.com remains heavily dirty with 783 unrelated tracked changes and must not be edited, reset, cleaned, reverted, or used for this branch.
+  implemented_scope:
+    - Extended the sole Rust helper protocol with explicit dot owned-root scope and exact request SHA-256 in every successful observation. Replaced the overly broad single-writer precondition with stable path-topology ownership while permitting concurrent member-file creation.
+    - Added one frozen Node package/process client with no compatibility reader, alternate helper, fallback, caller-supplied success, or injected production process seam.
+    - The client admits one canonical helper manifest binding platform, RID, build/trust class, helper profile, executable bytes, and helper source closure. It rejects links or exposed reparse paths, Windows UNC/device roots, duplicate and unknown fields, noncanonical or oversized manifests, profile/platform drift, debug release claims, and package or executable replacement before and after execution.
+    - The child starts by exact absolute executable path with no shell, arguments, parent environment variables, inherited stdio, or caller working directory. It uses private bounded pipes, the verified package root, a 10-second timeout, and SIGKILL. Raw process output and host errors never enter the returned result.
+    - Strict canonical success binds the exact operation, request, profile, platform, method, and directory identity. Strict canonical helper failure contributes only one bounded public-safe cause code. The client result binds its own profile/source closure and Node version plus the complete helper/package/request/observation identity chain.
+    - The client honestly records that Node supplies no OS network sandbox, local-test-build is not release provenance, source-closure hashing is not a signature, and local execution is not physical power-loss evidence.
+    - Contract README, inventory, threat review, and the dedicated durability document now describe the exact client boundary and still-unfinished store integration.
+  exact_artifacts:
+    directory_flush_profile: bytes=5820; sha256=aaf82fde396e89d03e82a6cd7c761bfbedb1d766250dc9dd537124be68adcfd8
+    directory_flush_client_profile: bytes=5068; sha256=9f367bbe58bf8afc8ecba57a1b33e5cda5a83592a80517c4db38d0775cf9fde6
+    directory_flush_client_source_closure_sha256: 37dc6e85be3655743a31de5623fa574f565578351f4c6b255621a9d976a8c487
+    directory_flush_client_source: bytes=28864; sha256=eb01ce20e233c6a039b20a07c0be30005279fb8d3840919065fc523416efb82f
+    directory_flush_client_tests: bytes=18113; sha256=ff093672afb880cd35926e8d09a24df8782d54a7a15368a9313af0cd9e329fc0
+    directory_flush_test_package_builder: bytes=4608; sha256=4a9940e4e51964ccdf39de0e140186aa44791581812bfdf1e21d3829d2c92dec
+    durability_document: bytes=12387; sha256=208d154bf2a942fa628bbc775c2c14e23aeff4a9d5f9ab2b25abffd7bb91503a
+  verification:
+    focused_rust: 14/14 passed, comprising eight owned-path/platform tests and six frozen-profile/library/process protocol tests.
+    focused_node: 32/32 passed, including real packaged helper success and safe failure plus hostile package, process, observation, and drift rejection.
+    complete_node: npm run test:unit passed 880/880 with zero failures, skips, cancellations, or todos in 739254.3978 ms.
+    complete_rust: cargo fmt --all --check passed; cargo clippy --workspace --all-targets --locked -- -D warnings passed; cargo test --workspace --locked passed.
+    hygiene: Cached and working diffs passed git diff --check; 12 changed files totaling 194549 bytes had zero high-confidence secret, NUL, or non-ASCII findings.
+  publication_truth:
+    deployment_manifest: tinyrustlm/deploy/web-deployment-manifest.v2.json declares 23 publication members.
+    delta: This 12-file implementation checkpoint intersects zero of those 23 members.
+    action: No site version, release date, Updates entry, deployment, publication receipt, or public HTTPS readback claim was created because no production closure byte changed and no authorized publication operation ran.
+  explicit_nonclaims:
+    - The receipt, subject, campaign-artifact, and campaign-runner stores do not yet invoke this client.
+    - No durability receipt yet binds temporary-file fsync, create-if-absent disposition, exact directory flush, postpublication readback, and complete client/helper identities as one accepted sequence.
+    - No OS network sandbox, signed release-package provenance, physical power interruption, filesystem/device matrix, Linux helper execution, or physical ARM64 helper execution was proven.
+    - No release, model qualification, browser round, live MemoryEndpoints round, outside-network lane proof, or catalog announcement follows from this checkpoint.
+  campaign_truth: qualified_models=0/20; clean_browser_rounds=0/50; authorized_live_memory_rounds=0/25; current_outside_network_lane_proofs=0/40; live_catalog_announcements=0/20
+  exact_next_action:
+    - Add red tests for one mandatory content-addressed durability receipt shared by receipt, subject, campaign-artifact, and campaign-runner publication.
+    - Cut all four callers through one production client invocation and bind payload hash/size, target file fsync, create-if-absent disposition, exact directory observation, complete client/helper identity, and exact postpublication readback. Remove required-or-explicitly-unavailable and unavailable-win32-node without a compatibility reader or fallback.
+    - Flush the explicitly owned root after creating layout/prefix directories, preserve stable path-topology ownership, and cover interruption, restart, disk full, lock contention, truncation, bit flip, stale temporary material, path substitution, helper failure, observation drift, and quarantine.
+    - Regenerate every transitive frozen profile/vector identity, run focused and complete gates, then commit and push the independently healthy four-store cutover before archive-member scanning.
+  known_blockers: MemoryEndpoints production access remains unauthorized and disconnected; model qualification, external P2P observation, catalog announcements, signing/deployment authorization, physical power-loss evidence, Linux helper execution, and physical linux-arm64 evidence remain objective work rather than inferred completion. Independent work must continue behind those blockers.
 
 current_checkpoint_2026_08_11_directory_durability_boundary:
   authority: This is the newest first-read execution checkpoint. It adds to immutable history and supersedes older present-tense milestone, hash, resume, and next-action fields where they disagree. It does not alter prior receipts, production releases, or campaign counts.
