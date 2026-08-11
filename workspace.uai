@@ -1,7 +1,59 @@
-profile: tinyrustlm.source-workspace.v291
+profile: tinyrustlm.source-workspace.v292
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-11T16:59:29Z
+updated_utc: 2026-08-11T18:23:48Z
+
+current_checkpoint_2026_08_11_generated_publication_admission:
+  authority: This is the newest first-read execution checkpoint. It adds to immutable history and supersedes older present-tense milestone, hash, resume, and next-action fields where they disagree. It does not alter prior receipts, production releases, or campaign counts.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  source_control:
+    root: E:\Source\.tinyrustlm-model-acquisition
+    branch: codex/model-acquisition-v2
+    implementation_commit: b31ebba7d39d0de56acc9a434f3192411a411f6a
+    subject: Complete vNext generated publication admission
+    upstream: origin/codex/model-acquisition-v2
+    verification: Local HEAD, upstream, and the remote branch were exact at b31ebba7d39d0de56acc9a434f3192411a411f6a with a clean owned worktree before this private handoff edit.
+    protected_checkout: E:\Source\Rust\TinyRustLM.com remains heavily dirty with unrelated user work and must not be edited, reset, cleaned, reverted, or used for this branch.
+  implemented_scope:
+    - The sole vNext release surface now continues from exact static readback and current site-publisher authority through three closed operations: generated-deployment attempt admission, complete static-plus-generated HTTPS readback, and final site-publication admission.
+    - `admitGeneratedDeploymentAttempt` reconstructs the release, static readback, publication plan, publisher authority, candidate scans, and exact two-file generated inventory before accepting one externally produced canonical attempt-only receipt. Caller deployment success is forbidden.
+    - `verifyGeneratedPublicationReadback` invokes the sole non-injectable production HTTPS verifier over one sorted closure containing up to 512 static assets plus the exact pointer and history controls. It independently revalidates every observation and persists only redaction then readback evidence. Caller transport, response, result, retry, and success inputs are forbidden.
+    - `finalizeSitePublication` reruns current publisher authority, reconstructs every immutable parent, rematerializes pointer, history, and published claims byte-for-byte, and validates the complete readback before persistence. It writes the final-receipt redaction, a lexicographic create-only claim prefix, and the final `site-publication` commit receipt last.
+    - An interrupted claim prefix is inert without the final receipt. Restart accepts only exact dependency states, revalidates all existing bytes, resumes at the first missing claim, and rejects gaps, extra members, changed bytes, premature commits, and caller publication truth.
+    - The standalone verifier's frozen ceiling is now 514 assets and 68,723,933,184 bytes, exactly the prior static maximum plus the bounded two-file generated maximum. It recognizes only the added `current-release-pointer` and `release-history` roles; the release surface separately enforces their exact paths, JSON media type, `no-store` policy, hashes, and combined inventory.
+    - Maintained architecture, contract inventory, threat review, profile documentation, and contract README now describe the implemented closure without claiming a live deployment or publication.
+  exact_artifacts:
+    campaign_release_surface_profile: bytes=18870; sha256=0633f2bc4960f4c8a757bf10a8681f2481f0d8a5d0997c2d00ba58b02ed43bcc
+    public_https_readback_profile: bytes=4689; sha256=a5d5fd2bcc08e1444f82c474e1c829ba8e108c53a0e52b0651cab1843d8edb73
+    campaign_release_surface_source: bytes=253633; sha256=86c6c3df2c7776a5ac87c3db1fcc5065c23ca90f04e54a4b0ea3809dd44c1856
+    public_https_readback_source: bytes=43318; sha256=a6d31f38bd73a67d687486849b4a92a316455b820d7529a793177a3035621451
+    campaign_release_surface_test: bytes=114453; sha256=dbb2366122c5e6ad7448cdbe3f7e4424150c7a963980c9063f867599b7f6a893
+    public_https_readback_test: bytes=14985; sha256=077f1e476a71e1ace920f2d1060800c94348b182d41e446e2318a7288f8dd143
+  verification:
+    focused_public_readback: 9 passed, 0 failed in 110.6062 ms.
+    focused_site_materializer: 7 passed, 0 failed in 188.784 ms.
+    release_surface_current_bytes: 23 passed, 0 failed, 0 skipped, 0 cancelled, 0 todo in 683934.9161 ms. The final-publication case interrupts and reopens after final redaction, every individual claim commit, and the final commit receipt.
+    adjacent_node_closure: Public-safe redaction, site publication, Node offline bundle, and deterministic Rust-vector replay passed 32/32 in 453.0529 ms.
+    rust_offline_parity: `cargo test --manifest-path rust/crates/tinyrustlm-evidence/Cargo.toml --test offline_bundle_contract` passed 3/3.
+    deterministic_generators: All six declared vNext generators completed in explicit write mode and introduced no additional tracked change, proving regenerated outputs byte-identical to the checked-in vectors and generated Rust/WASM source.
+    complete_node: `npm --prefix tinyrustlm run test:unit` passed 879/879 with zero failures, skips, cancellations, or todos in 724999.7777 ms.
+    complete_rust: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --locked -- -D warnings`, and `cargo test --workspace --locked` all passed; Clippy completed in 4.85 seconds and locked workspace tests completed in 60 seconds.
+    hygiene: JavaScript syntax/export validation, exact frozen profile hashes, stale-hash search, `git diff --check`, no-compatibility semantic review, and the production-source-manifest intersection audit passed.
+    secret_scan: The repository scanner covered all 12 changed files and 586716 content bytes with zero findings. No report or scan receipt was retained in source.
+  publication_truth:
+    deployment_manifest: `tinyrustlm/deploy/web-deployment-manifest.v2.json` declares 21 production source members and two generated release members.
+    delta: The 12-file implementation milestone intersects zero of the 21 production source members and changes neither generated release member.
+    action: No site version, release date, Updates entry, deployment, publication receipt, or public HTTPS readback claim was created because no production closure byte changed and no authorized production publication operation ran.
+  campaign_truth: qualified_models=0/20; clean_browser_rounds=0/50; authorized_live_memory_rounds=0/25; current_outside_network_lane_proofs=0/40; live_catalog_announcements=0/20
+  exact_next_action:
+    - Inventory every maintained import, script, test, configuration field, document, and package entry point that still references the superseded mutable dashboard, final-attestation, release-authorization, release-evidence, public-readback, public-artifact-scope, or old release-store stack.
+    - Cut all maintained callers directly to the complete vNext release surface, then delete the obsolete implementations, tests, configuration, and documentation in the same verified replacement change. Do not add wrappers, deprecation exports, migration readers, aliases, dual paths, or fallback behavior.
+    - Add negative conformance coverage that forbids old imports, execution routes, configuration, and maintained documentation references while preserving immutable historical receipts as inert evidence only.
+    - Run the complete Node and locked Rust gates, secret scan, deterministic generators, production-manifest intersection, and no-debt audit; commit and push the deletion milestone before proceeding to archive-member scanning and the remaining vNext runtime/campaign assignment.
+  known_blockers: MemoryEndpoints production access remains unauthorized and disconnected; model qualification, external P2P observation, catalog announcements, signing/deployment authorization, and physical-RID evidence remain objective work rather than inferred completion. Independent work must continue behind those blockers.
 
 current_checkpoint_2026_08_11_site_publication_authorization:
   authority: This is the newest first-read execution checkpoint. It adds to immutable history and supersedes older present-tense milestone, hash, resume, and next-action fields where they disagree. It does not alter prior receipts, production releases, or campaign counts.
