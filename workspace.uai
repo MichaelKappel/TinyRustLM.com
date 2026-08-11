@@ -1,43 +1,43 @@
-profile: tinyrustlm.source-workspace.v289
+profile: tinyrustlm.source-workspace.v290
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-11T03:36:21Z
+updated_utc: 2026-08-11T15:08:46Z
 
-credit_window_handoff_2026_08_09:
-  authority: This is the newest private operational account. Read it before the older current-workspace block and dated history; it changes no historical receipt or campaign fact.
+site_release_reconciliation_2026_08_11:
+  authority: This is the newest private operational account. Read it before dated history; it changes no historical receipt or campaign fact.
   continuation_goal:
     path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
     sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
     instruction: This 2026-08-10 self-contained execution assignment is the next-goal authority. It updates startup facts and dependency ordering without reducing the original full 20/50/25/40/20 completion target.
-  stopping_reason: The user ended the available credit window and requested every site be checked in with complete restart memory. All live publishing was deliberately stopped before this checkpoint.
   active_repository:
     root: E:\Source\.tinyrustlm-model-acquisition
     branch: codex/model-acquisition-v2
     upstream: origin/codex/model-acquisition-v2
-    implementation_head_before_handoff_commit: 0f145bb02bb97dd3554a9596c67a47a48a2bbb26
+    verified_parent_head: 790c6ff1eb7293e806a1adffcca15ee0cd940fab
     protected_checkout: E:\Source\Rust\TinyRustLM.com remains dirty and must not be reset, cleaned, overwritten, or used for release work.
   pushed_site_heads:
     TinyRustLM.MiRust.com: 6d77afc4b54f7f84db7efa33d8798aef61e9733f
-    MiniModel.MiRust.com: cb18263ac739b64af717aa6c5568b65b05af9962
-    MiniModel.org: b5a0248d76ce543eb3ce02fc016ff611b7e41c19
-    Runtime.MiRust.com: 4b179a1c6d458cf9b85ae2f5cde2925fe1fad086
+    MiniModel.MiRust.com: 4f2401fb8166b54c73a1b9d4ad36985bbcf6fb5d
+    MiniModel.org: 8439e224146c790ce6a9da36a32c4c49890cac52
+    Runtime.MiRust.com: 63b39e78d0814c9cacbbba891ea918c844e2b4db
     MiRust.com: 4e3d8f52b0b20d9ccb51751e4182e8ab87fb3e43
+    LMComposer.com: 36d6389fe82b0f53c4d8951aa6af5cb896fd8bf6
   production_truth:
     TinyRustLM.com: Existing immutable successful release remains 0.2.1, released 2026-08-08 and published 2026-08-08T23:47:22.420Z from e964a095ede1c077b36b6476af5ee85b087f52f8. The active vNext milestone changed zero production web members, so no new version or publication was fabricated.
     TinyRustLM.MiRust.com: Release 1.7.0 is published and readback-verified for frozen source 5c492e3a8fd96d1c676944755d73755c7b56eddb, tree cf0ea1442b0fb0dd251276ea602ee7275f35173c, and manifest 6407606c8ffcf5b4f966b77c54f511d25e1afa236ad1b148350d6e2bd4314500. The terminal operation authenticated or published all 224 files and completed at 2026-08-09T23:59:28.1969079Z. Receipt deploy/receipts/site-deployment-20260809T234347Z.json has SHA256 746666fc3b631b8f361c6d57e2debdc167cab0e315556ddc4e50f5cde1c20646.
-    MiniModel.MiRust.com: Release 1.0.0 exact closure is ready but publication has not started.
-    MiniModel.org: Release 1.0.0 exact closure and full green source gate are ready but publication has not started; closure contains zero model bytes.
-    Runtime.MiRust.com: Redirect behavior was observed, but no new immutable publication receipt exists and its FileZilla profile is misbound to the TinyRustLM.MiRust.com root.
+    MiniModel.MiRust.com: Release 1.0.0 is published and readback-verified. The 32-file, 297572-byte closure has manifest SHA256 cd26d06a393ef99fde0c4b009b500905530ce76a8abfe0e282e15e20869354f5. Failed receipt deploy/receipts/site-deployment-20260811T144133Z.json remains immutable. Success receipt deploy/receipts/site-deployment-20260811T144605Z.json has SHA256 176abffdeaf5a8af97c1c71e036816279dace8096f8845123ffbed19039a066c and completed 2026-08-11T14:51:56.4363903Z after all 32 transport identities, 31 public file identities, four smokes, and independent second readback passed.
+    MiniModel.org: Release 1.0.0 is published and readback-verified. Node 12/12, real desktop/mobile Chromium smoke, cargo fmt, denied-warning Clippy, and the complete locked Rust workspace passed. The 34-file, 546253-byte closure has zero model bytes and manifest SHA256 4052e62970b1968b2849a14954d6420d9a3e063c4e6e6257d5b3523ca4c8dc83. Success receipt deploy/receipts/site-deployment-20260811T145917Z.json has SHA256 1e402f83dbeaa301ef3de46ee2094239b9e5cadcdf4e5f8ecc7c03fd38f28e53 and completed 2026-08-11T15:03:29.8732879Z after all 34 transport identities, 32 public file identities, five smokes, and independent second readback passed. Active catalog availability remains zero models and zero peers.
+    Runtime.MiRust.com: Seven exact redirects and six destination HTTP 200 readbacks passed from clean upstream-exact source. Receipt verification/receipts/runtime-redirect-verification-20260811T143538Z.json has SHA256 9e12decbced5ab3b40ed3a10435a0a6267322c0c1063630af1f3861dcc5738bb. It explicitly records deployment_attempted false and deployment_profile_used false. The FileZilla profile remains misbound and forbidden for writes.
     MiRust.com: Pushed source is bounded metadata/governance only and is not a complete deployable WordPress production snapshot; no publication was attempted.
     LMComposer.com: Private repository `MichaelKappel/LMComposer.com` now owns the complete redirect source on `main`; initial closure commit `4871f23f3a6d1669dbd7f82efdc86b9d4120d55b` passed 4/4 contract tests and a zero-finding 17-file secret scan, and handoff head `36d6389fe82b0f53c4d8951aa6af5cb896fd8bf6` is pushed and upstream-exact. Live redirect observation still is not a publication receipt.
+  public_reconciliation:
+    observed_utc: 2026-08-11T15:06:00Z
+    result: All seven origins satisfied their bounded current HTTP contract. TinyRustLM.com, TinyRustLM.MiRust.com, both MiniModel sites, and MiRust.com returned 200; Runtime.MiRust.com redirected to the TinyRustLM developer portal; LMComposer.com redirected to TinyRustLM.com.
   exact_resume_order:
-    - Verify every named Git repository is clean and upstream-exact; verify no deployment process is running.
-    - Revalidate the pushed TinyRustLM.MiRust.com success receipt and public origin; do not replay the terminal operation as ordinary resume work.
-    - Re-run the Runtime.MiRust.com exact redirect verifier now that the developer portal is current; do not deploy Runtime with the misbound profile.
-    - Publish MiniModel.MiRust.com 1.0.0 from its frozen 32-file closure and commit/push its successful receipt only after complete readback.
-    - Publish MiniModel.org 1.0.0 from its frozen 34-file zero-model-byte closure and commit/push its successful receipt only after complete readback.
-    - Reverify all seven origins and update root workspace.uai with receipts, versions, release dates, publication timestamps, and blockers.
-    - Resume the enterprise clean-slate vNext implementation only after the urgent site publication checkpoint is closed or honestly recorded as externally blocked.
+    - Treat Runtime verification and both MiniModel 1.0.0 publications as terminal checkpoints; do not replay them as ordinary resume work.
+    - Keep the Runtime misbound profile and incomplete MiRust production snapshot as explicit write blockers.
+    - Resume Gate C in this active worktree: integrate the sole vNext publication path, cut maintained callers and documentation to it, and delete the obsolete mutable release stack without wrappers or dual readers.
+    - Run focused and complete Node/Rust/browser gates, then commit and push every healthy major change immediately.
   campaign_truth: qualified_models=0/20; clean_browser_rounds=0/50; live_memory_rounds=0/25; outside_proven_lanes=0/40; live_catalog_announcements=0/20
   permanent_rules:
     - Pre-public clean-slate only: no debt, legacy support, compatibility shim, migration reader, hidden fallback, test weakening, or low-quality patch.
@@ -45,13 +45,13 @@ credit_window_handoff_2026_08_09:
     - Keep documentation and marketing first-class, current, versioned, and synchronized across every affected site.
     - Never convert source readiness, local tests, reachability, partial upload, mocks, fixtures, or cross-compilation into a publication, live, external, model-quality, or campaign-completion claim.
 current_workspace_handoff:
-  authority: This block is the first-read operational account as of `2026-08-09T20:17:08Z`. It summarizes current truth and takes precedence over incompatible present-tense wording in dated history below. Historical receipts remain immutable evidence for their stated scope only.
+  authority: This block is the first-read operational account as of `2026-08-11T15:08:46Z`. Read it with `site_release_reconciliation_2026_08_11`; both supersede incompatible present-tense wording in dated history below. Historical receipts remain immutable evidence for their stated scope only.
   workspace_family_account:
     root_router: `E:\Source\Rust\workspace.uai` is the mutable full routing, site, publication, policy, and blocker account for the Rust site family. Read it fresh at every cold start, then return here for the complete source-controlled TinyRustLM execution handoff.
     exact_site_boundary: The related-site account includes only seven direct site roots under `E:\Source\Rust`: `LMComposer.com`, `MiniModel.MiRust.com`, `MiniModel.org`, `MiRust.com`, `Runtime.MiRust.com`, `TinyRustLM.com`, and `TinyRustLM.MiRust.com`.
     exclusions: `.local-secrets`, tooling, deployment staging, screenshots, archives, backups, preserved mirrors, external research trees, and repositories outside `E:\Source\Rust` are not sites in this account. External repositories belong under `E:\Source\external\{project-name}` and must not be added to project Git.
     implementation_boundary: This branch edits only `E:\Source\.tinyrustlm-model-acquisition`. The dirty canonical TinyRustLM checkout and every unrelated repository or worktree remain protected until ownership and status are explicitly reconciled.
-    publication_account: TinyRustLM.com is the only one of the seven sites with an immutable successful-publication receipt. For every other site, last publication is unknown despite any Git, HTTP, visible-date, or byte-match observation. The mutable root coordinator carries the detailed per-site purpose, source state, bounded observation, and operational status.
+    publication_account: TinyRustLM.com 0.2.1, TinyRustLM.MiRust.com 1.7.0, MiniModel.MiRust.com 1.0.0, and MiniModel.org 1.0.0 have immutable successful-publication evidence for their bounded closures. Runtime and LMComposer redirects are live-verified without deployment receipts; MiRust publication remains blocked by its incomplete WordPress production snapshot. The mutable root coordinator carries exact identities and claim boundaries.
     synchronization_rule: An affected release must keep product, catalog, developer documentation, marketing, redirects, machine-readable metadata, user-visible Updates history, and immutable release evidence consistent. A blocker remains visible and cannot be converted into a publication claim.
     campaign_account: The current objective remains 0/20 models, 0/50 clean-browser rounds, 0/25 authorized live memory rounds, 0/40 outside proofs, and 0/20 catalog announcements. No test, fixture, local probe, package, source commit, or reachable page changes those counters.
   documentation_integrity_account:
