@@ -1,7 +1,57 @@
-profile: tinyrustlm.source-workspace.v292
+profile: tinyrustlm.source-workspace.v293
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-11T18:23:48Z
+updated_utc: 2026-08-11T19:16:26Z
+
+current_checkpoint_2026_08_11_release_stack_cutover:
+  authority: This is the newest first-read execution checkpoint. It adds to immutable history and supersedes older present-tense milestone, hash, resume, and next-action fields where they disagree. It does not alter prior receipts, production releases, or campaign counts.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  source_control:
+    root: E:\Source\.tinyrustlm-model-acquisition
+    branch: codex/model-acquisition-v2
+    implementation_commit: 5c9c40c5f7f67528b4d8115620cadafb977cfb11
+    subject: Complete vNext release stack cutover
+    upstream: origin/codex/model-acquisition-v2
+    verification: Local HEAD, upstream, and the freshly fetched remote branch were exact at 5c9c40c5f7f67528b4d8115620cadafb977cfb11 with a clean owned worktree before this private handoff edit.
+    protected_checkout: E:\Source\Rust\TinyRustLM.com remains heavily dirty with unrelated user work and must not be edited, reset, cleaned, reverted, or used for this branch.
+  implemented_scope:
+    - Gate C is complete. Maintained callers, commands, documentation, and operator guidance now name only the sole vNext campaign runner, release surface, site-publication surface, and exact public HTTPS verifier.
+    - Seven superseded release tools, six dedicated test files, one stale final-attestation document, one obsolete risk configuration, and 89 mutable aliases or snapshot files were deleted without wrappers, migration readers, deprecated exports, or alternate execution paths.
+    - One negative conformance test now fails if a removed production path, schema, receipt type, alias, command, or documentation reference returns.
+    - The maintained control-plane document was rewritten as the vNext entry point. Contract inventory, threat review, redaction, runner, release, publication, readback, WASM-boundary, and Rust-parity documentation now describe the sole current path.
+    - Historical names may remain only inside immutable assignment, audit-memory, wiki, artifact, and clean-history material. They are inert evidence and are not current inputs or authority.
+  preserved_evidence:
+    historical_receipt_store: artifacts/reports/dogfood-campaign-evidence-2026-07-15/receipts/sha256/
+    historical_receipt_count: 95
+    historical_receipt_bytes: 342169
+    clean_history_blob_sha256: 4fd514b54e7564c6b23e732028198304aeb3c1880898d64fa81c2004a587b7ba
+    role: inert pre-vNext audit evidence only
+  verification:
+    focused_cutover_and_adjacent: 20/20 passed.
+    negative_conformance: 4/4 passed after the final private handoff edit.
+    release_surface: 23/23 passed with zero failures, skips, cancellations, or todos in 679864.6637 ms.
+    complete_node: `npm --prefix tinyrustlm run test:unit` passed 848/848 with zero failures, skips, cancellations, or todos in 712681.235 ms. The count intentionally falls from 879 after deleting 35 superseded tests and adding four current cutover tests.
+    deterministic_generators: All six vNext generators ran in explicit write mode and left exact Git-status identity, proving no generated-byte drift.
+    complete_rust: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --locked -- -D warnings`, and `cargo test --workspace --locked` passed.
+    identity: The runner, release-surface, site-publication, and public-readback profile hashes match their frozen documented identities.
+    hygiene: Cached and working diffs passed `git diff --check`; no-debt terms occur only in explicit rejection or parity language; the changed-file scanner covered 14 files and 237843 bytes with zero secret findings.
+  publication_truth:
+    deployment_manifest: `tinyrustlm/deploy/web-deployment-manifest.v2.json` declares 21 production source members and two generated release members.
+    delta: The 118-file cutover intersects zero of the 21 production source members and changes neither generated release member.
+    action: No site version, release date, Updates entry, deployment, publication receipt, or public HTTPS readback claim was created because no production closure byte changed and no authorized publication operation ran.
+  host_maintenance:
+    c_drive_cleanup: Reclaimed approximately 2.5 GiB, increasing free space from 38.64 GiB to 41.14 GiB by removing 122 owned stale TinyRustLM temporary trees and 67 stale temporary files.
+    retained_boundaries: Locked temporary files, permission-protected Windows Update data, active Edge cache, source, models, datasets, installers, package caches, Docker, and WSL were not removed.
+  campaign_truth: qualified_models=0/20; clean_browser_rounds=0/50; authorized_live_memory_rounds=0/25; current_outside_network_lane_proofs=0/40; live_catalog_announcements=0/20
+  exact_next_action:
+    - Begin Gate D by inventorying current Rust persistence boundaries, platform-specific durability code, receipts, tests, and documentation before editing.
+    - Add failing tests for honest Windows directory-flush behavior and implement the Rust/Win32 helper without pretending non-Windows or mocked evidence proves physical Windows durability.
+    - Bind file fsync, directory durability, create-only publication, and readback into explicit receipts with restart, disk-full, lock-contention, truncation, bit-flip, stale-temp, rename, and quarantine coverage.
+    - Continue Gate D with bounded compressed archive-member scanning and protected equality-list custody, committing and pushing each independently healthy major change.
+  known_blockers: MemoryEndpoints production access remains unauthorized and disconnected; model qualification, external P2P observation, catalog announcements, signing/deployment authorization, and physical linux-arm64 evidence remain objective work rather than inferred completion. Independent work must continue behind those blockers.
 
 current_checkpoint_2026_08_11_generated_publication_admission:
   authority: This is the newest first-read execution checkpoint. It adds to immutable history and supersedes older present-tense milestone, hash, resume, and next-action fields where they disagree. It does not alter prior receipts, production releases, or campaign counts.
