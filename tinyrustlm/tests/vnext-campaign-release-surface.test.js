@@ -353,6 +353,12 @@ function seedEphemeralAuthorityCase(roots, entry, options = {}) {
       signerId: "release-surface-authorizer",
       role: "release-authorizer",
       status: options.releaseKeyStatus ?? "active"
+    }),
+    siteKey: authorityKey({
+      keyId: "release-surface-site-publisher-key",
+      signerId: "release-surface-site-publisher",
+      role: "site-publisher",
+      status: options.siteKeyStatus ?? "active"
     })
   };
   authority.root = makeAuthorityRegistry({
@@ -361,7 +367,8 @@ function seedEphemeralAuthorityCase(roots, entry, options = {}) {
       authority.localKey,
       authority.observerKey,
       authority.p2pKey,
-      authority.releaseKey
+      authority.releaseKey,
+      authority.siteKey
     ]
   });
   receiptStore.put(authority.root.bytes);
@@ -959,6 +966,56 @@ function publicReadbackInput(entry, authority, prepared, releaseInput,
   };
 }
 
+function sitePublicationPlanInput(entry, authority, prepared, releaseInput,
+  authorizationReceipt, deploymentReceipt, readbackResult, label, overrides = {}) {
+  return {
+    authorizationReceiptId: authorizationReceipt.receipt.receiptId,
+    changelogBytes: releaseInput.changelogBytes,
+    deploymentReceiptId: deploymentReceipt.receipt.receiptId,
+    expectedCampaignId: entry.expectedCampaignId,
+    expectedEnvironment: entry.expectedEnvironment,
+    expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
+    knownSecrets: [],
+    operationId: operationId(label),
+    previousHistoryBytes: null,
+    publicReadbackReceiptId: readbackResult.publicReadbackReceiptId,
+    releaseManifestId: prepared.releaseManifestId,
+    sourceRevision,
+    trustedRootRegistryReceiptId: authority.root.receipt.receiptId,
+    verificationTimeUtc: "2026-08-09T00:36:00Z",
+    webDeploymentManifestBytes: releaseInput.webDeploymentManifestBytes,
+    webSecurityHeaderProfileBytes: releaseInput.webSecurityHeaderProfileBytes,
+    webPublicationGeneratorBytes: releaseInput.webPublicationGeneratorBytes,
+    ...overrides
+  };
+}
+
+function sitePublicationAuthorizationInput(entry, authority, prepared, releaseInput,
+  authorizationReceipt, deploymentReceipt, readbackResult, planResult,
+  sitePublisherSignature, overrides = {}) {
+  return {
+    authorizationReceiptId: authorizationReceipt.receipt.receiptId,
+    changelogBytes: releaseInput.changelogBytes,
+    deploymentReceiptId: deploymentReceipt.receipt.receiptId,
+    expectedCampaignId: entry.expectedCampaignId,
+    expectedEnvironment: entry.expectedEnvironment,
+    expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
+    knownSecrets: [],
+    previousHistoryBytes: null,
+    publicReadbackReceiptId: readbackResult.publicReadbackReceiptId,
+    releaseManifestId: prepared.releaseManifestId,
+    sitePublicationPlanReceiptId: planResult.sitePublicationPlanReceiptId,
+    sitePublisherSignatureReceiptBytes: sitePublisherSignature.bytes,
+    sourceRevision,
+    trustedRootRegistryReceiptId: authority.root.receipt.receiptId,
+    verificationTimeUtc: "2026-08-09T00:38:00Z",
+    webDeploymentManifestBytes: releaseInput.webDeploymentManifestBytes,
+    webSecurityHeaderProfileBytes: releaseInput.webSecurityHeaderProfileBytes,
+    webPublicationGeneratorBytes: releaseInput.webPublicationGeneratorBytes,
+    ...overrides
+  };
+}
+
 async function rejectsCode(callback, code) {
   await assert.rejects(callback, (error) => error?.code === code, `expected ${code}`);
 }
@@ -968,7 +1025,7 @@ test("freezes one no-compatibility campaign release surface profile", () => {
   const profile = parseStrictJson(bytes);
   assert.equal(campaignReleaseSurfaceProfileSha256, sha256(bytes));
   assert.equal(campaignReleaseSurfaceProfileSha256,
-    "504492d9314b0751f09b2110b92cd7b2d5b284a11506b00b82d46ec9f0c4d7db");
+    "4bdaae337cc14cb5782ed3bf096c3336f121fb7905c9c2a36978f6799a15f1d7");
   assert.equal(campaignReleaseSurfaceProfile.profileId,
     "tinyrustlm.vnext.campaign-release-surface.v1");
   assert.equal(profile.status, "frozen");
@@ -1000,6 +1057,12 @@ test("freezes one no-compatibility campaign release surface profile", () => {
     "exact-dependency-prefix-and-byte-identical-replay-only");
   assert.equal(profile.publicReadback.publicationPolicy,
     "forbidden-until-generated-files-published-claims-and-site-publisher-descendants");
+  assert.equal(profile.sitePublicationProfileSha256,
+    campaignReleaseSurfaceProfile.sitePublicationProfileSha256);
+  assert.equal(profile.sitePublicationPlan.callerTruthPolicy,
+    "status-currentness-verdict-counter-and-publication-inputs-forbidden");
+  assert.equal(profile.sitePublicationAuthorization.role, "site-publisher");
+  assert.equal(profile.sitePublicationAuthorization.scope, "site-publication");
   assert.equal(profile.operatorStatus.doneState,
     "forbidden-before-authorized-release-and-public-readback");
   assert.doesNotMatch(bytes.toString("utf8"),
@@ -1790,6 +1853,166 @@ test("verifies exact fixture-labeled HTTPS bytes through one immutable readback 
     publicReadbackPassed: true
   }), "release_surface_public_readback_input_invalid");
   assert.equal(publicReadbackFixtureCalls, callsBefore + 4);
+});
+
+test("prepares and authorizes deterministic site-publication candidates without publishing", {
+  timeout: 480_000
+}, async (t) => {
+  const roots = makeRoots(t);
+  const entry = acceptedCase("complete-capacity");
+  const authority = seedEphemeralAuthorityCase(roots, entry);
+  const releaseInput = seedReleaseInputs(roots, entry);
+  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+    runnerOptions(roots));
+  const prepared = await surface.prepareRelease(prepareInput(
+    entry,
+    "site-publication-preparation",
+    releaseInput,
+    {
+      expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
+      trustedRootRegistryReceiptId: authority.root.receipt.receiptId
+    }
+  ));
+  const release = createVnextSubjectStore(roots.subjects).read(
+    prepared.releaseManifestId
+  );
+  const releaseAuthorization = makeSignatureReceipt({
+    authorityRegistry: authority.root,
+    expiresAtUtc: "2026-08-09T01:00:00Z",
+    issuedAtUtc: "2026-08-09T00:31:00Z",
+    label: "site-publication-release-authorization",
+    receiptSourceRevision: sourceRevision,
+    releaseId: prepared.releaseManifestId,
+    scope: "release-authorization",
+    signingKey: authority.releaseKey,
+    subject: release
+  });
+  await surface.authorizeRelease(authorizeInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    releaseAuthorization
+  ));
+  const deploymentReceipt = deploymentAttemptReceipt(
+    entry,
+    prepared,
+    releaseAuthorization,
+    releaseInput,
+    "site-publication-static-deployment"
+  );
+  await surface.admitDeploymentAttempt(deploymentInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    releaseAuthorization,
+    deploymentReceipt
+  ));
+  const staticReadback = await surface.verifyPublicReadback(publicReadbackInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    releaseAuthorization,
+    deploymentReceipt,
+    "site-publication-static-readback"
+  ));
+  const planInput = sitePublicationPlanInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    releaseAuthorization,
+    deploymentReceipt,
+    staticReadback,
+    "site-publication-plan"
+  );
+  const plan = await surface.prepareSitePublication(planInput);
+
+  assert.equal(plan.state,
+    "site-publication-plan-prepared-awaiting-authorization");
+  assert.equal(plan.planStatus, "prepared");
+  assert.equal(plan.publicationStatus, "not-published");
+  assert.equal(plan.previousPublicationReceiptId, null);
+  assert.equal(plan.previousHistorySha256, null);
+  assert.match(plan.sitePublicationPlanReceiptId, /^sha256:[a-f0-9]{64}$/u);
+  const storedPlan = createVnextReceiptStore(roots.receipts).read(
+    plan.sitePublicationPlanReceiptId
+  );
+  assert.deepEqual(storedPlan.bytes, plan.sitePublicationPlanReceiptBytes);
+  assert.equal(storedPlan.receipt.receiptType, "site-synchronization");
+  assert.equal(storedPlan.receipt.phase, "site-synchronization");
+
+  const repeatedPlan = await surface.prepareSitePublication(planInput);
+  assert.equal(repeatedPlan.sitePublicationPlanReceiptId,
+    plan.sitePublicationPlanReceiptId);
+  assert.equal(repeatedPlan.planPersistence.prefix,
+    plan.planRedactionReceiptIds.length + 1);
+
+  const sitePublisherSignature = makeSignatureReceipt({
+    authorityRegistry: authority.root,
+    expiresAtUtc: "2026-08-09T00:39:00Z",
+    issuedAtUtc: "2026-08-09T00:37:00Z",
+    label: "site-publication-publisher-authorization",
+    receiptSourceRevision: sourceRevision,
+    releaseId: prepared.releaseManifestId,
+    scope: "site-publication",
+    signingKey: authority.siteKey,
+    subject: validateVnextReceiptBytes(plan.sitePublicationPlanReceiptBytes)
+  });
+  const publicationAuthorizationInput = sitePublicationAuthorizationInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    releaseAuthorization,
+    deploymentReceipt,
+    staticReadback,
+    plan,
+    sitePublisherSignature
+  );
+  const authorized = await surface.authorizeSitePublication(
+    publicationAuthorizationInput
+  );
+
+  assert.equal(authorized.state,
+    "site-publication-authorized-awaiting-generated-deployment");
+  assert.equal(authorized.authorizationStatus, "authorized");
+  assert.equal(authorized.currentEvidenceEligible, true);
+  assert.equal(authorized.publicationStatus,
+    "not-published-awaiting-generated-file-readback");
+  assert.equal(authorized.sitePublisherSignatureReceiptId,
+    sitePublisherSignature.receipt.receiptId);
+  assert.equal(authorized.generatedAssets.length, 2);
+  assert.equal(authorized.publishedClaimIds.length, releaseInput.claimIds.length);
+  assert.doesNotMatch(authorized.sitePublicationAuthorizationResultBytes
+    .toString("utf8"), /"publicationStatus":"published"|\bdone\b/iu);
+  const receiptStore = createVnextReceiptStore(roots.receipts);
+  assert.deepEqual(receiptStore.read(authorized.sitePublisherSignatureReceiptId).bytes,
+    sitePublisherSignature.bytes);
+  const subjectStore = createVnextSubjectStore(roots.subjects);
+  const activeSubjectIds = subjectStore.rebuild().activeSubjectIds;
+  for (const claimId of authorized.publishedClaimIds) {
+    assert.equal(activeSubjectIds.includes(claimId), false);
+  }
+
+  const repeatedAuthorization = await surface.authorizeSitePublication(
+    publicationAuthorizationInput
+  );
+  assert.equal(repeatedAuthorization.sitePublisherSignatureReceiptId,
+    authorized.sitePublisherSignatureReceiptId);
+  assert.equal(repeatedAuthorization.authorizationPersistence.prefix,
+    authorized.candidateRedactionReceiptIds.length + 1);
+
+  await rejectsCode(() => surface.authorizeSitePublication({
+    ...publicationAuthorizationInput,
+    publicationPassed: true
+  }), "release_surface_site_publication_authorization_input_invalid");
+  await rejectsCode(() => surface.authorizeSitePublication({
+    ...publicationAuthorizationInput,
+    verificationTimeUtc: "2026-08-09T00:39:00Z"
+  }), "release_surface_site_publisher_time_invalid");
 });
 
 test("rejects caller deployment truth and deployment-attempt binding drift", {

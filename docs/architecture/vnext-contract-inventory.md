@@ -220,7 +220,7 @@ The fresh-runner-only immutable attestation, operator, release-manifest
 preparation, and release-authorization boundary is documented
 in `docs/architecture/vnext-campaign-release-surface.md`. Its frozen profile
 has SHA-256
-`504492d9314b0751f09b2110b92cd7b2d5b284a11506b00b82d46ec9f0c4d7db`.
+`4bdaae337cc14cb5782ed3bf096c3336f121fb7905c9c2a36978f6799a15f1d7`.
 It admits no stored projection, caller verdict, counter set, dashboard state,
 or reused operation. It scans finalized attestation bytes before create-only
 receipt persistence and has no operator `done` state. Release preparation
@@ -242,7 +242,12 @@ operation: it reconstructs the complete deployment closure, reruns current
 authorization, invokes the non-injectable production verifier, independently
 revalidates its canonical result, and create-only persists the scan before one
 forward `public-readback` receipt. Local tests use fixture-labeled verifier
-output and do not establish a production readback.
+output and do not establish a production readback. The surface now also
+creates and scans deterministic publication-plan material, create-only
+persists the plan lineage, requires one current-evidence-eligible
+`site-publisher` Ed25519 signature, and scans every pointer, history, and
+published-claim candidate while leaving those candidates unpersisted and
+explicitly prepublication.
 
 Pure generated-publication materialization is documented in
 `docs/architecture/vnext-site-publication.md`. Its frozen profile SHA-256 is
@@ -250,11 +255,12 @@ Pure generated-publication materialization is documented in
 It adds no top-level contract-family schema: pointer/history documents are
 strict canonical generated files, while plan, signature, readback, and claim
 evidence use the existing receipt, release, and claim contracts. Current
-site-publisher authority and final generated-file production readback remain
-release-surface integration work.
+site-publisher authority and plan persistence are integrated into the sole
+release surface. Final generated-file deployment, production readback, and
+descendant admission remain release-surface work.
 
 The superseded mutable runner is deleted. Remaining archive-member scanning,
-generated pointer/history descendants, published claims, site-publisher
-authorization, deletion of the superseded dashboard/release stack, a real
-production readback, and external campaign evidence remain incomplete.
+generated-file deployment/readback, final pointer/history and published-claim
+admission, deletion of the superseded dashboard/release stack, a real
+production publication, and external campaign evidence remain incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.

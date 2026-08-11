@@ -48,6 +48,7 @@ const {
   publicSafeRedactionProfileSha256,
   scanKnownSecretRepresentations,
   scanVnextPublicDocumentBytes,
+  scanVnextPublicJsonControlBytes,
   scanVnextPublicTextBytes,
   verifyVnextRedactionScanReceipt
 } = require("./vnext-public-safe-redaction.js");
@@ -64,6 +65,12 @@ const {
 const {
   verifyVnextAuthorityGraph
 } = require("./vnext-signature-authority.js");
+const {
+  createVnextSitePublicationPlanMaterial,
+  materializeVnextSitePublication,
+  sitePublicationProfile,
+  sitePublicationProfileSha256
+} = require("./vnext-site-publication.js");
 const {
   createVnextSubjectStore,
   subjectStoreProfile,
@@ -85,6 +92,8 @@ const runnerSourceSha256 = sha256(fs.readFileSync(path.join(__dirname,
   "vnext-campaign-runner.js")));
 const publicHttpsReadbackSourceSha256 = sha256(fs.readFileSync(path.join(__dirname,
   "vnext-public-https-readback.js")));
+const sitePublicationSourceSha256 = sha256(fs.readFileSync(path.join(__dirname,
+  "vnext-site-publication.js")));
 
 const contentIdPattern = /^sha256:[a-f0-9]{64}$/u;
 const digestPattern = /^[a-f0-9]{64}$/u;
@@ -173,6 +182,45 @@ const publicReadbackInputFields = Object.freeze([
   "webSecurityHeaderProfileBytes",
   "webPublicationGeneratorBytes"
 ]);
+const sitePublicationPlanInputFields = Object.freeze([
+  "authorizationReceiptId",
+  "changelogBytes",
+  "deploymentReceiptId",
+  "expectedCampaignId",
+  "expectedEnvironment",
+  "expectedTerminalRegistryReceiptId",
+  "knownSecrets",
+  "operationId",
+  "previousHistoryBytes",
+  "publicReadbackReceiptId",
+  "releaseManifestId",
+  "sourceRevision",
+  "trustedRootRegistryReceiptId",
+  "verificationTimeUtc",
+  "webDeploymentManifestBytes",
+  "webSecurityHeaderProfileBytes",
+  "webPublicationGeneratorBytes"
+]);
+const sitePublicationAuthorizationInputFields = Object.freeze([
+  "authorizationReceiptId",
+  "changelogBytes",
+  "deploymentReceiptId",
+  "expectedCampaignId",
+  "expectedEnvironment",
+  "expectedTerminalRegistryReceiptId",
+  "knownSecrets",
+  "previousHistoryBytes",
+  "publicReadbackReceiptId",
+  "releaseManifestId",
+  "sitePublicationPlanReceiptId",
+  "sitePublisherSignatureReceiptBytes",
+  "sourceRevision",
+  "trustedRootRegistryReceiptId",
+  "verificationTimeUtc",
+  "webDeploymentManifestBytes",
+  "webSecurityHeaderProfileBytes",
+  "webPublicationGeneratorBytes"
+]);
 const optionFields = Object.freeze([
   "campaignArtifactStoreRoot",
   "expectedWasmModuleSha256",
@@ -189,12 +237,14 @@ const profileFields = Object.freeze([
   "subjectStoreProfileSha256", "publicSafeRedactionProfileId",
   "publicSafeRedactionProfileSha256", "receiptSignatureProfileId",
   "receiptSignatureProfileSha256", "publicHttpsReadbackProfileId",
-  "publicHttpsReadbackProfileSha256", "canonicalJsonProfile", "hashAlgorithm",
+  "publicHttpsReadbackProfileSha256", "sitePublicationProfileId",
+  "sitePublicationProfileSha256", "canonicalJsonProfile", "hashAlgorithm",
   "campaignTruthInput", "operationPolicy", "storedProjectionPolicy",
   "callerVerdictPolicy", "callerCounterPolicy", "mutablePointerPolicy",
   "networkAccess", "clockAccess", "sourceMutation", "attestation",
   "operatorStatus", "releasePreparation", "releaseAuthorization",
-  "releaseDeployment", "publicReadback", "limits"
+  "releaseDeployment", "publicReadback", "sitePublicationPlan",
+  "sitePublicationAuthorization", "limits"
 ]);
 const attestationProfileFields = Object.freeze([
   "receiptSchema", "receiptType", "phase", "completeStatus", "incompleteStatus",
@@ -238,6 +288,17 @@ const publicReadbackProfileFields = Object.freeze([
   "runtimePolicy", "timePolicy", "redactionPolicy", "persistencePolicy",
   "replayPolicy", "publicationPolicy"
 ]);
+const sitePublicationPlanProfileFields = Object.freeze([
+  "resultSchema", "preparedState", "receiptType", "phase", "status",
+  "evidenceScope", "lineagePolicy", "previousHistoryPolicy", "inputPolicy",
+  "callerTruthPolicy", "redactionPolicy", "persistencePolicy", "replayPolicy"
+]);
+const sitePublicationAuthorizationProfileFields = Object.freeze([
+  "resultSchema", "authorizedState", "signatureReceiptType", "role",
+  "signatureDomain", "scope", "signedSchema", "releaseIdPolicy",
+  "authorityPolicy", "registryPolicy", "timePolicy", "materializationPolicy",
+  "redactionPolicy", "persistencePolicy", "callerDecisionPolicy"
+]);
 const limitFields = Object.freeze([
   "maximumKnownSecrets", "maximumProjectionBytes", "maximumReceiptSnapshotMembers",
   "maximumSubjectSnapshotMembers", "maximumOperatorStatusBytes",
@@ -251,7 +312,11 @@ const limitFields = Object.freeze([
   "maximumAuthorizationResultBytes", "maximumDeploymentReceiptBytes",
   "maximumDeploymentResultBytes", "maximumPublicReadbackResultBytes",
   "maximumPublicReadbackReceiptBytes",
-  "maximumPublicReadbackAdmissionResultBytes"
+  "maximumPublicReadbackAdmissionResultBytes",
+  "maximumSitePublicationPlanResultBytes",
+  "maximumSitePublicationAuthorizationResultBytes",
+  "maximumSitePublicationHistoryBytes",
+  "maximumSitePublicationSignatureReceiptBytes"
 ]);
 const operatorFields = Object.freeze([
   "attestationReceiptId", "blockerCodes", "campaignId", "counts", "environment",
@@ -473,6 +538,11 @@ function validateInstalledProfile() {
     "release_surface_profile_invalid", step);
   exactDataObject(parsedProfile.publicReadback, publicReadbackProfileFields,
     "release_surface_profile_invalid", step);
+  exactDataObject(parsedProfile.sitePublicationPlan,
+    sitePublicationPlanProfileFields, "release_surface_profile_invalid", step);
+  exactDataObject(parsedProfile.sitePublicationAuthorization,
+    sitePublicationAuthorizationProfileFields,
+    "release_surface_profile_invalid", step);
   exactDataObject(parsedProfile.limits, limitFields,
     "release_surface_profile_invalid", step);
   const limitsValid = Object.values(parsedProfile.limits)
@@ -501,6 +571,8 @@ function validateInstalledProfile() {
         publicHttpsReadbackProfile.profileId ||
       parsedProfile.publicHttpsReadbackProfileSha256 !==
         publicHttpsReadbackProfileSha256 ||
+      parsedProfile.sitePublicationProfileId !== sitePublicationProfile.profileId ||
+      parsedProfile.sitePublicationProfileSha256 !== sitePublicationProfileSha256 ||
       parsedProfile.canonicalJsonProfile !== "rfc8785-jcs+tinyrustlm.strict-json.v1" ||
       parsedProfile.hashAlgorithm !== "sha256" ||
       parsedProfile.campaignTruthInput !==
@@ -513,7 +585,7 @@ function validateInstalledProfile() {
       parsedProfile.networkAccess !== "forbidden-until-public-readback-operation" ||
       parsedProfile.clockAccess !== "caller-trusted-verification-time-only" ||
       parsedProfile.sourceMutation !==
-        "create-only-attestation-redaction-release-manifest-authorization-signature-deployment-attempt-and-public-readback-receipts" ||
+        "create-only-attestation-redaction-release-manifest-authorization-signature-deployment-attempt-public-readback-site-publication-plan-and-site-publisher-receipts" ||
       parsedProfile.attestation.receiptSchema !== "tinyrustlm.vnext.receipt.v1" ||
       parsedProfile.attestation.receiptType !== "final-attestation" ||
       parsedProfile.attestation.phase !== "final-attestation" ||
@@ -689,6 +761,58 @@ function validateInstalledProfile() {
         "exact-dependency-prefix-and-byte-identical-replay-only" ||
       parsedProfile.publicReadback.publicationPolicy !==
         "forbidden-until-generated-files-published-claims-and-site-publisher-descendants" ||
+      parsedProfile.sitePublicationPlan.resultSchema !==
+        "tinyrustlm.vnext.site_publication_plan_result.v1" ||
+      parsedProfile.sitePublicationPlan.preparedState !==
+        "site-publication-plan-prepared-awaiting-authorization" ||
+      parsedProfile.sitePublicationPlan.receiptType !== "site-synchronization" ||
+      parsedProfile.sitePublicationPlan.phase !== "site-synchronization" ||
+      parsedProfile.sitePublicationPlan.status !== "pass" ||
+      parsedProfile.sitePublicationPlan.evidenceScope !==
+        sitePublicationProfile.plan.evidenceScope ||
+      parsedProfile.sitePublicationPlan.lineagePolicy !==
+        "exact-current-static-readback-release-and-approved-claim-closure" ||
+      parsedProfile.sitePublicationPlan.previousHistoryPolicy !==
+        "none-for-first-release-or-exact-current-published-history-hash" ||
+      parsedProfile.sitePublicationPlan.inputPolicy !==
+        "stored-release-readback-and-claims-plus-bound-generator-and-history-bytes" ||
+      parsedProfile.sitePublicationPlan.callerTruthPolicy !==
+        "status-currentness-verdict-counter-and-publication-inputs-forbidden" ||
+      parsedProfile.sitePublicationPlan.redactionPolicy !==
+        "scan-history-plan-material-and-final-plan-receipt-before-persistence" ||
+      parsedProfile.sitePublicationPlan.persistencePolicy !==
+        "plan-redaction-before-create-only-site-synchronization-receipt" ||
+      parsedProfile.sitePublicationPlan.replayPolicy !==
+        "exact-dependency-prefix-and-byte-identical-recovery-only" ||
+      parsedProfile.sitePublicationAuthorization.resultSchema !==
+        "tinyrustlm.vnext.site_publication_authorization_result.v1" ||
+      parsedProfile.sitePublicationAuthorization.authorizedState !==
+        "site-publication-authorized-awaiting-generated-deployment" ||
+      parsedProfile.sitePublicationAuthorization.signatureReceiptType !==
+        sitePublicationProfile.sitePublisher.receiptType ||
+      parsedProfile.sitePublicationAuthorization.role !==
+        sitePublicationProfile.sitePublisher.role ||
+      parsedProfile.sitePublicationAuthorization.signatureDomain !==
+        sitePublicationProfile.sitePublisher.signatureDomain ||
+      parsedProfile.sitePublicationAuthorization.scope !==
+        sitePublicationProfile.sitePublisher.scope ||
+      parsedProfile.sitePublicationAuthorization.signedSchema !==
+        sitePublicationProfile.sitePublisher.signedSchema ||
+      parsedProfile.sitePublicationAuthorization.releaseIdPolicy !==
+        "must-equal-plan-release-id" ||
+      parsedProfile.sitePublicationAuthorization.authorityPolicy !==
+        "exactly-one-current-evidence-eligible-signature" ||
+      parsedProfile.sitePublicationAuthorization.registryPolicy !==
+        "caller-pinned-root-and-terminal" ||
+      parsedProfile.sitePublicationAuthorization.timePolicy !==
+        "trusted-verification-time-and-finite-profile-lifetime" ||
+      parsedProfile.sitePublicationAuthorization.materializationPolicy !==
+        "pure-profile-bound-pointer-history-and-published-claim-candidates-only" ||
+      parsedProfile.sitePublicationAuthorization.redactionPolicy !==
+        "scan-signature-and-all-materialized-candidates-before-return" ||
+      parsedProfile.sitePublicationAuthorization.persistencePolicy !==
+        "signature-redaction-before-create-only-site-publisher-signature-receipt" ||
+      parsedProfile.sitePublicationAuthorization.callerDecisionPolicy !== "forbidden" ||
       !limitsValid ||
       parsedProfile.limits.maximumProjectionBytes !==
         campaignProjectionProfile.limits.maximumProjectionResultBytes ||
@@ -717,6 +841,12 @@ function validateInstalledProfile() {
       parsedProfile.limits.maximumPublicReadbackReceiptBytes !==
         receiptStoreProfile.wire.maximumReceiptBytes ||
       parsedProfile.limits.maximumPublicReadbackAdmissionResultBytes !== 262_144 ||
+      parsedProfile.limits.maximumSitePublicationPlanResultBytes !== 262_144 ||
+      parsedProfile.limits.maximumSitePublicationAuthorizationResultBytes !== 262_144 ||
+      parsedProfile.limits.maximumSitePublicationHistoryBytes !==
+        sitePublicationProfile.limits.maximumHistoryBytes ||
+      parsedProfile.limits.maximumSitePublicationSignatureReceiptBytes !==
+        receiptStoreProfile.wire.maximumReceiptBytes ||
       parsedProfile.limits.maximumChangelogBytes >
         publicSafeRedactionProfile.limits.maximumInputBytes) {
     failEvidence("release_surface_profile_invalid", step);
@@ -1068,6 +1198,92 @@ function normalizePublicReadbackInput(rawInput) {
     webPublicationGeneratorBytes,
     webSecurityHeaderProfileBytes
   });
+}
+
+function normalizeSitePublicationInput(rawInput, fields, code, step) {
+  const input = exactDataObject(rawInput, fields, code, step);
+  const knownSecrets = dataArray(input.knownSecrets,
+    parsedProfile.limits.maximumKnownSecrets,
+    "release_surface_known_secrets_invalid", step);
+  scanKnownSecretRepresentations(Buffer.from("{}", "utf8"), knownSecrets);
+  const webDeploymentManifestBytes = normalizeWebControlBytes(
+    input.webDeploymentManifestBytes,
+    "release_surface_web_deployment_manifest_invalid",
+    step
+  );
+  const webSecurityHeaderProfileBytes = normalizeWebControlBytes(
+    input.webSecurityHeaderProfileBytes,
+    "release_surface_web_security_headers_invalid",
+    step
+  );
+  const webPublicationGeneratorBytes = normalizeWebControlBytes(
+    input.webPublicationGeneratorBytes,
+    "release_surface_web_publication_generator_invalid",
+    step
+  );
+  let previousHistoryBytes = null;
+  if (input.previousHistoryBytes !== null) {
+    if (!Buffer.isBuffer(input.previousHistoryBytes) ||
+        input.previousHistoryBytes.length === 0 ||
+        input.previousHistoryBytes.length >
+          parsedProfile.limits.maximumSitePublicationHistoryBytes) {
+      failEvidence(code, step);
+    }
+    previousHistoryBytes = Buffer.from(input.previousHistoryBytes);
+  }
+  const planInput = fields === sitePublicationPlanInputFields;
+  if (!Buffer.isBuffer(input.changelogBytes) || input.changelogBytes.length === 0 ||
+      input.changelogBytes.length > parsedProfile.limits.maximumChangelogBytes ||
+      typeof input.expectedCampaignId !== "string" ||
+      !safeIdPattern.test(input.expectedCampaignId) ||
+      !["development", "production", "staging"].includes(
+        input.expectedEnvironment) ||
+      !contentIdPattern.test(input.expectedTerminalRegistryReceiptId) ||
+      !contentIdPattern.test(input.authorizationReceiptId) ||
+      !contentIdPattern.test(input.deploymentReceiptId) ||
+      !contentIdPattern.test(input.publicReadbackReceiptId) ||
+      !contentIdPattern.test(input.releaseManifestId) ||
+      !sourceRevisionPattern.test(input.sourceRevision) ||
+      !contentIdPattern.test(input.trustedRootRegistryReceiptId) ||
+      utcNanoseconds(input.verificationTimeUtc) === null ||
+      planInput && !contentIdPattern.test(input.operationId) ||
+      !planInput && (!contentIdPattern.test(input.sitePublicationPlanReceiptId) ||
+        !Buffer.isBuffer(input.sitePublisherSignatureReceiptBytes) ||
+        input.sitePublisherSignatureReceiptBytes.length === 0 ||
+        input.sitePublisherSignatureReceiptBytes.length >
+          parsedProfile.limits.maximumSitePublicationSignatureReceiptBytes)) {
+    failEvidence(code, step);
+  }
+  return Object.freeze({
+    ...input,
+    changelogBytes: Buffer.from(input.changelogBytes),
+    knownSecrets,
+    previousHistoryBytes,
+    sitePublisherSignatureReceiptBytes: planInput
+      ? null
+      : Buffer.from(input.sitePublisherSignatureReceiptBytes),
+    webDeploymentManifestBytes,
+    webPublicationGeneratorBytes,
+    webSecurityHeaderProfileBytes
+  });
+}
+
+function normalizeSitePublicationPlanInput(rawInput) {
+  return normalizeSitePublicationInput(
+    rawInput,
+    sitePublicationPlanInputFields,
+    "release_surface_site_publication_plan_input_invalid",
+    "release-surface-site-publication-plan-input"
+  );
+}
+
+function normalizeSitePublicationAuthorizationInput(rawInput) {
+  return normalizeSitePublicationInput(
+    rawInput,
+    sitePublicationAuthorizationInputFields,
+    "release_surface_site_publication_authorization_input_invalid",
+    "release-surface-site-publication-authorization-input"
+  );
 }
 
 function normalizeOptions(rawOptions) {
@@ -2198,6 +2414,362 @@ function validateStoredDeploymentAttempt(input, release, storedAuthorization,
     expectedSubjectIds: storedAuthorization.expectedSubjectIds,
     redaction
   });
+}
+
+function validateStoredStaticPublicReadback(input, release, storedDeployment,
+  receiptStore) {
+  const step = "release-surface-site-publication-static-readback";
+  const stored = receiptStore.read(input.publicReadbackReceiptId);
+  const validated = validateVnextReceiptBytes(stored.bytes);
+  const receipt = validated.receipt;
+  if (receipt.receiptId !== input.publicReadbackReceiptId ||
+      receipt.receiptType !== parsedProfile.publicReadback.receiptType ||
+      receipt.phase !== parsedProfile.publicReadback.phase ||
+      receipt.status !== parsedProfile.publicReadback.status ||
+      receipt.campaignId !== input.expectedCampaignId ||
+      receipt.sourceRevision !== input.sourceRevision ||
+      receipt.error !== null || receipt.blockerCode !== null ||
+      receipt.signatureEnvelope !== null || receipt.authorityRegistry !== null ||
+      receipt.keyRevocation !== null || receipt.offlineBundle !== null ||
+      receipt.attestationReference !==
+        release.value.campaignAttestationReceiptId ||
+      !sameStrings(receipt.inputReceiptIds, [input.deploymentReceiptId]) ||
+      compareUtc(storedDeployment.deployment.receipt.completedAtUtc,
+        receipt.startedAtUtc,
+        "release_surface_site_publication_static_readback_time_invalid", step) > 0 ||
+      compareUtc(receipt.completedAtUtc, input.verificationTimeUtc,
+        "release_surface_site_publication_static_readback_time_invalid", step) > 0) {
+    failEvidence("release_surface_site_publication_static_readback_invalid", step);
+  }
+  const activeReceipts = activeReceiptDocuments(receiptStore);
+  const redactionAttemptId = `release-public-readback-redaction-${
+    input.publicReadbackReceiptId.slice("sha256:".length)}`;
+  const redactionCandidates = [...activeReceipts.byId.values()].filter((entry) =>
+    entry.receipt.receiptType === "redaction-scan" &&
+      entry.receipt.attemptId === redactionAttemptId);
+  if (redactionCandidates.length !== 1) {
+    failEvidence("release_surface_site_publication_static_redaction_missing", step);
+  }
+  const redaction = redactionCandidates[0];
+  const verifiedScan = verifyVnextRedactionScanReceipt({
+    knownSecrets: input.knownSecrets,
+    receiptBytes: redaction.bytes,
+    targetBytes: stored.bytes,
+    targetKind: "document"
+  });
+  if (!verifiedScan.publicSafe || verifiedScan.scanStatus !== "pass" ||
+      redaction.receipt.campaignId !== input.expectedCampaignId ||
+      redaction.receipt.sourceRevision !== input.sourceRevision ||
+      redaction.receipt.startedAtUtc !== receipt.completedAtUtc ||
+      redaction.receipt.completedAtUtc !== receipt.completedAtUtc) {
+    failEvidence("release_surface_site_publication_static_redaction_invalid", step);
+  }
+  return Object.freeze({
+    activeReceipts,
+    expectedReceiptIds: [...new Set([
+      ...storedDeployment.expectedReceiptIds,
+      redaction.receipt.receiptId,
+      receipt.receiptId
+    ])].sort(),
+    expectedSubjectIds: storedDeployment.expectedSubjectIds,
+    readback: validated,
+    redaction
+  });
+}
+
+function currentSitePublicationReceipt(activeReceipts, planMaterial) {
+  const candidates = [...activeReceipts.byId.values()].filter((entry) => {
+    const receipt = entry.receipt;
+    if (receipt.receiptType !== "site-synchronization" ||
+        receipt.phase !== "site-publication" || receipt.status !== "pass") {
+      return false;
+    }
+    const parameters = new Map(receipt.publicParameters.map((parameter) =>
+      [parameter.name, parameter]));
+    return parameters.get("site-id")?.value === planMaterial.siteId &&
+      parameters.get("public-origin")?.value === planMaterial.publicOrigin;
+  });
+  const superseded = new Set(candidates.flatMap((entry) =>
+    entry.receipt.supersedesReceiptIds));
+  const current = candidates.filter((entry) =>
+    !superseded.has(entry.receipt.receiptId));
+  if (current.length > 1) {
+    failEvidence("release_surface_site_publication_history_conflict",
+      "release-surface-site-publication-history");
+  }
+  return current[0] ?? null;
+}
+
+function validatePreviousSitePublication(input, activeReceipts, planMaterial) {
+  const step = "release-surface-site-publication-history";
+  const current = currentSitePublicationReceipt(activeReceipts, planMaterial);
+  if (input.previousHistoryBytes === null) {
+    if (current !== null) {
+      failEvidence("release_surface_site_publication_history_required", step);
+    }
+    return null;
+  }
+  if (current === null) {
+    failEvidence("release_surface_site_publication_history_unbound", step);
+  }
+  const historyHash = hashBinding(current.receipt, "outputHashes",
+    "site-release-history", "release_surface_site_publication_history_unbound", step);
+  if (historyHash !== sha256(input.previousHistoryBytes)) {
+    failEvidence("release_surface_site_publication_history_changed", step);
+  }
+  return current;
+}
+
+function sitePublicationMaterialContext(input, release, staticReadback,
+  subjectStore) {
+  const approvedClaimBytes = release.value.claimIds.map((claimId) =>
+    subjectStore.read(claimId).bytes);
+  const material = createVnextSitePublicationPlanMaterial({
+    approvedClaimBytes,
+    previousHistoryBytes: input.previousHistoryBytes,
+    publicReadbackReceiptBytes: staticReadback.readback.bytes,
+    releaseManifestBytes: release.bytes,
+    webPublicationGeneratorBytes: input.webPublicationGeneratorBytes
+  });
+  const previousPublication = validatePreviousSitePublication(
+    input,
+    staticReadback.activeReceipts,
+    material.planMaterial
+  );
+  return Object.freeze({
+    approvedClaimBytes,
+    material,
+    previousPublication,
+    staticReadback
+  });
+}
+
+function createSitePublicationPlanReceipt(input, release, context) {
+  const material = context.material.planMaterial;
+  const inputHashes = [
+    { name: "approved-claim-set", sha256: material.approvedClaimSetSha256 },
+    {
+      name: "release-manifest-canonical-content",
+      sha256: material.releaseManifestSha256
+    },
+    { name: "site-publication-profile", sha256: sitePublicationProfileSha256 },
+    {
+      name: "web-publication-generator",
+      sha256: material.webPublicationGeneratorSha256
+    },
+    {
+      name: "web-security-header-profile",
+      sha256: material.webSecurityHeaderProfileSha256
+    }
+  ];
+  if (material.previousHistorySha256 !== null) {
+    inputHashes.push({
+      name: sitePublicationProfile.plan.optionalInputHashName,
+      sha256: material.previousHistorySha256
+    });
+  }
+  const publicParameters = [
+    {
+      name: "evidence-scope",
+      value: parsedProfile.sitePublicationPlan.evidenceScope,
+      unit: null
+    },
+    { name: "operation_id", value: input.operationId, unit: null },
+    { name: "public-origin", value: material.publicOrigin, unit: null },
+    { name: "site-id", value: material.siteId, unit: null },
+    { name: "subject_id", value: material.releaseId, unit: null }
+  ].sort((left, right) => left.name.localeCompare(right.name));
+  return finalizeVnextReceipt({
+    schema: "tinyrustlm.vnext.receipt.v1",
+    receiptType: parsedProfile.sitePublicationPlan.receiptType,
+    campaignId: input.expectedCampaignId,
+    attemptId: input.operationId,
+    phase: parsedProfile.sitePublicationPlan.phase,
+    status: parsedProfile.sitePublicationPlan.status,
+    startedAtUtc: input.verificationTimeUtc,
+    completedAtUtc: input.verificationTimeUtc,
+    sourceRevision: input.sourceRevision,
+    inputReceiptIds: [input.publicReadbackReceiptId],
+    inputHashes: inputHashes.sort((left, right) => left.name.localeCompare(right.name)),
+    outputHashes: [{
+      name: sitePublicationProfile.plan.outputHashName,
+      sha256: context.material.planMaterialSha256
+    }],
+    tools: [
+      {
+        name: "tinyrustlm.vnext.campaign-release-surface",
+        version: "1.0.0",
+        binarySha256: sourceSha256
+      },
+      {
+        name: "tinyrustlm.vnext.site-publication",
+        version: "1.0.0",
+        binarySha256: sitePublicationSourceSha256
+      }
+    ],
+    configurationSha256: domainSeparatedDigest(
+      sitePublicationProfile.plan.configurationIdentityDomain,
+      {
+        profileSha256: sitePublicationProfileSha256,
+        webPublicationGeneratorSha256: material.webPublicationGeneratorSha256
+      }
+    ),
+    runtime: runtimeRecord(),
+    publicParameters,
+    error: null,
+    blockerCode: null,
+    externalEvidenceReferences: [],
+    redaction: {
+      profile: "tinyrustlm.vnext.public_safe.v1",
+      decision: "public-safe"
+    },
+    attestationReference: release.value.campaignAttestationReceiptId,
+    signatureEnvelope: null,
+    authorityRegistry: null,
+    keyRevocation: null,
+    offlineBundle: null,
+    supersedesReceiptIds: []
+  });
+}
+
+function sitePublicationScan(input, targetBytes, targetKind, label) {
+  let scanner;
+  if (targetKind === "document") {
+    scanner = scanVnextPublicDocumentBytes;
+  } else if (targetKind === "public-json-control") {
+    scanner = scanVnextPublicJsonControlBytes;
+  } else if (targetKind === "public-text") {
+    scanner = scanVnextPublicTextBytes;
+  } else {
+    failEvidence("release_surface_site_publication_redaction_target_invalid",
+      "release-surface-site-publication-redaction");
+  }
+  const scan = scanner(targetBytes, { knownSecrets: input.knownSecrets });
+  const attemptIdentity = domainSeparatedDigest(
+    "tinyrustlm.site_publication.redaction_attempt.v1",
+    { label, targetSha256: sha256(targetBytes) }
+  );
+  const receipt = createVnextRedactionScanReceipt({
+    attemptId: `site-publication-redaction-${attemptIdentity}`,
+    campaignId: input.expectedCampaignId,
+    completedAtUtc: input.verificationTimeUtc,
+    scan,
+    sourceRevision: input.sourceRevision,
+    startedAtUtc: input.verificationTimeUtc
+  });
+  return Object.freeze({ label, receipt, scan, targetBytes, targetKind });
+}
+
+function sitePublicationPlanArtifacts(input, release, context) {
+  const planReceipt = createSitePublicationPlanReceipt(input, release, context);
+  const scans = [];
+  if (input.previousHistoryBytes !== null) {
+    scans.push(sitePublicationScan(input, input.previousHistoryBytes,
+      "public-json-control",
+      "previous-history-redaction"));
+  }
+  scans.push(sitePublicationScan(input, context.material.planMaterialBytes,
+    "public-json-control", "plan-material-redaction"));
+  scans.push(sitePublicationScan(input, planReceipt.bytes, "document",
+    "plan-receipt-redaction"));
+  return Object.freeze({ planReceipt, scans: Object.freeze(scans) });
+}
+
+function receiptPrefixLength(currentReceiptIds, baseReceiptIds, descendants,
+  code, step) {
+  const uniqueBase = [...new Set(baseReceiptIds)].sort();
+  const uniqueDescendants = [];
+  const seen = new Set(uniqueBase);
+  for (const receiptId of descendants) {
+    if (seen.has(receiptId)) failEvidence(code, step);
+    seen.add(receiptId);
+    uniqueDescendants.push(receiptId);
+  }
+  for (let length = 0; length <= uniqueDescendants.length; length += 1) {
+    const expected = [...uniqueBase, ...uniqueDescendants.slice(0, length)].sort();
+    if (sameStrings(currentReceiptIds, expected)) return length;
+  }
+  failEvidence(code, step);
+}
+
+function validateStoredSitePublicationPlan(input, release, context, receiptStore) {
+  const step = "release-surface-site-publication-plan";
+  const stored = receiptStore.read(input.sitePublicationPlanReceiptId);
+  const validated = validateVnextReceiptBytes(stored.bytes);
+  if (validated.receipt.receiptId !== input.sitePublicationPlanReceiptId ||
+      compareUtc(validated.receipt.completedAtUtc, input.verificationTimeUtc,
+        "release_surface_site_publication_plan_time_invalid", step) > 0) {
+    failEvidence("release_surface_site_publication_plan_invalid", step);
+  }
+  const planInput = Object.freeze({
+    ...input,
+    operationId: validated.receipt.attemptId,
+    verificationTimeUtc: validated.receipt.completedAtUtc
+  });
+  const artifacts = sitePublicationPlanArtifacts(planInput, release, context);
+  if (artifacts.planReceipt.receipt.receiptId !== input.sitePublicationPlanReceiptId ||
+      !artifacts.planReceipt.bytes.equals(stored.bytes)) {
+    failEvidence("release_surface_site_publication_plan_changed", step);
+  }
+  for (const scan of artifacts.scans) {
+    const persisted = receiptStore.read(scan.receipt.receipt.receiptId);
+    if (!persisted.bytes.equals(scan.receipt.bytes)) {
+      failEvidence("release_surface_site_publication_plan_redaction_changed", step);
+    }
+    const verified = verifyVnextRedactionScanReceipt({
+      knownSecrets: input.knownSecrets,
+      receiptBytes: persisted.bytes,
+      targetBytes: scan.targetBytes,
+      targetKind: scan.targetKind
+    });
+    if (!verified.publicSafe || verified.scanStatus !== "pass") {
+      failEvidence("release_surface_site_publication_plan_redaction_invalid", step);
+    }
+  }
+  return Object.freeze({ artifacts, planInput, stored: validated });
+}
+
+function verifySitePublisherAuthority(input, release, plan, signature,
+  activeReceipts, subjectStore) {
+  const step = "release-surface-site-publisher-authority";
+  const receiptBytesById = new Map([...activeReceipts.byId].map(([receiptId, entry]) =>
+    [receiptId, entry.bytes]));
+  const existing = receiptBytesById.get(signature.receipt.receiptId);
+  if (existing && !existing.equals(signature.bytes)) {
+    failEvidence("release_surface_site_publisher_identity_collision", step);
+  }
+  receiptBytesById.set(signature.receipt.receiptId, signature.bytes);
+  const subjectIds = subjectStore.rebuild().activeSubjectIds;
+  const authority = verifyVnextAuthorityGraph({
+    campaignId: input.expectedCampaignId,
+    environment: input.expectedEnvironment,
+    expectedTerminalRegistryReceiptId: input.expectedTerminalRegistryReceiptId,
+    receiptBytes: [...receiptBytesById].sort(([left], [right]) =>
+      left.localeCompare(right)).map(([, bytes]) => bytes),
+    subjectBytes: subjectIds.map((subjectId) => subjectStore.read(subjectId).bytes),
+    trustedRootRegistryReceiptId: input.trustedRootRegistryReceiptId,
+    verificationTimeUtc: input.verificationTimeUtc
+  });
+  const signatures = authority.signatures.filter((entry) =>
+    entry.role === parsedProfile.sitePublicationAuthorization.role &&
+      entry.scope === parsedProfile.sitePublicationAuthorization.scope &&
+      entry.signedSubjectId === plan.receipt.receiptId &&
+      entry.signedSchema === plan.receipt.schema);
+  const envelope = signature.receipt.signatureEnvelope;
+  if (signatures.length !== 1 ||
+      signatures[0].signatureReceiptId !== signature.receipt.receiptId ||
+      signatures[0].authorityRegistryReceiptId !==
+        envelope.authorityRegistryReceiptId ||
+      signatures[0].signatureVerified !== true ||
+      signatures[0].authorityAtIssue !== true ||
+      signatures[0].temporalCurrent !== true ||
+      signatures[0].currentEvidenceEligible !== true ||
+      signatures[0].staleReasons.length !== 0 ||
+      authority.terminalRegistryCurrent !== true ||
+      envelope.releaseId !== release.subjectId) {
+    failEvidence("release_surface_site_publisher_not_current", step);
+  }
+  return Object.freeze({ authority, signature: signatures[0] });
 }
 
 function assertReadbackPrefixCandidate(receiptStore, subjectStore,
@@ -3503,10 +4075,308 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
     });
   }
 
+  function reconstructSitePublication(input) {
+    const release = subjectStore.read(input.releaseManifestId);
+    const lineage = validatePreparedReleaseLineage(
+      input,
+      release,
+      runner,
+      artifactStore,
+      receiptStore,
+      subjectStore
+    );
+    const storedAuthorization = validateStoredReleaseAuthorization(
+      input,
+      release,
+      lineage,
+      receiptStore,
+      subjectStore
+    );
+    const storedDeployment = validateStoredDeploymentAttempt(
+      input,
+      release,
+      storedAuthorization,
+      receiptStore
+    );
+    const staticReadback = validateStoredStaticPublicReadback(
+      input,
+      release,
+      storedDeployment,
+      receiptStore
+    );
+    const publication = sitePublicationMaterialContext(
+      input,
+      release,
+      staticReadback,
+      subjectStore
+    );
+    return Object.freeze({
+      lineage,
+      publication,
+      release,
+      staticReadback,
+      storedAuthorization,
+      storedDeployment
+    });
+  }
+
+  function persistReceiptSequence(baseReceiptIds, baseSubjectIds, sequence, step) {
+    const currentReceiptIds = receiptStore.rebuild().activeReceiptIds;
+    const currentSubjectIds = subjectStore.rebuild().activeSubjectIds;
+    if (!sameStrings(currentSubjectIds, baseSubjectIds)) {
+      failEvidence("release_surface_site_publication_subject_snapshot_changed", step);
+    }
+    const prefix = receiptPrefixLength(
+      currentReceiptIds,
+      baseReceiptIds,
+      sequence.map((entry) => entry.receiptId),
+      "release_surface_site_publication_receipt_snapshot_changed",
+      step
+    );
+    for (let index = 0; index < prefix; index += 1) {
+      const existing = receiptStore.read(sequence[index].receiptId);
+      if (!existing.bytes.equals(sequence[index].bytes)) {
+        failEvidence("release_surface_site_publication_identity_collision", step);
+      }
+    }
+    const persistence = [];
+    for (let index = prefix; index < sequence.length; index += 1) {
+      persistence.push(receiptStore.put(sequence[index].bytes));
+      assertStoreMembership(
+        receiptStore,
+        subjectStore,
+        [...baseReceiptIds, ...sequence.slice(0, index + 1).map((entry) =>
+          entry.receiptId)],
+        baseSubjectIds,
+        step
+      );
+    }
+    return Object.freeze({ persistence: Object.freeze(persistence), prefix });
+  }
+
+  async function prepareSitePublication(rawInput) {
+    const step = "release-surface-site-publication-plan";
+    const input = normalizeSitePublicationPlanInput(rawInput);
+    const reconstructed = reconstructSitePublication(input);
+    const { publication, release, staticReadback } = reconstructed;
+    const artifacts = sitePublicationPlanArtifacts(input, release, publication);
+    const operationCandidates = [...staticReadback.activeReceipts.byId.values()]
+      .filter((entry) => entry.receipt.attemptId === input.operationId);
+    if (operationCandidates.some((entry) =>
+      entry.receipt.receiptId !== artifacts.planReceipt.receipt.receiptId)) {
+      failEvidence("release_surface_site_publication_operation_not_fresh", step);
+    }
+    const failedScan = artifacts.scans.find((entry) => !entry.scan.publicSafe);
+    if (failedScan) {
+      assertStoreMembership(
+        receiptStore,
+        subjectStore,
+        staticReadback.expectedReceiptIds,
+        staticReadback.expectedSubjectIds,
+        `${step}-redaction-failure-prefix`
+      );
+      receiptStore.put(failedScan.receipt.bytes);
+      failEvidence("release_surface_site_publication_plan_unsafe", step);
+    }
+    const sequence = [
+      ...artifacts.scans.map((entry) => ({
+        bytes: entry.receipt.bytes,
+        receiptId: entry.receipt.receipt.receiptId
+      })),
+      {
+        bytes: artifacts.planReceipt.bytes,
+        receiptId: artifacts.planReceipt.receipt.receiptId
+      }
+    ];
+    const persisted = persistReceiptSequence(
+      staticReadback.expectedReceiptIds,
+      staticReadback.expectedSubjectIds,
+      sequence,
+      step
+    );
+    const result = deepFreeze({
+      schema: parsedProfile.sitePublicationPlan.resultSchema,
+      campaignId: input.expectedCampaignId,
+      environment: input.expectedEnvironment,
+      releaseManifestId: input.releaseManifestId,
+      releaseManifestSha256: release.canonicalContentSha256,
+      sourceRevision: input.sourceRevision,
+      publicOrigin: publication.material.planMaterial.publicOrigin,
+      siteId: publication.material.planMaterial.siteId,
+      staticPublicReadbackReceiptId: input.publicReadbackReceiptId,
+      previousPublicationReceiptId:
+        publication.previousPublication?.receipt.receiptId ?? null,
+      previousHistorySha256:
+        publication.material.planMaterial.previousHistorySha256,
+      sitePublicationPlanReceiptId: artifacts.planReceipt.receipt.receiptId,
+      sitePublicationPlanMaterialSha256: publication.material.planMaterialSha256,
+      sitePublicationProfileId: sitePublicationProfile.profileId,
+      sitePublicationProfileSha256,
+      planStatus: "prepared",
+      publicationStatus: "not-published",
+      state: parsedProfile.sitePublicationPlan.preparedState,
+      verifiedAtUtc: input.verificationTimeUtc
+    });
+    const resultBytes = canonicalizeVnextJcsBytes(result);
+    if (resultBytes.length >
+        parsedProfile.limits.maximumSitePublicationPlanResultBytes ||
+        scanKnownSecretRepresentations(resultBytes, input.knownSecrets).findingCount !== 0) {
+      failEvidence("release_surface_site_publication_plan_result_unsafe", step);
+    }
+    return immutableReleasePreparationResult({
+      ...result,
+      planPersistence: persisted,
+      planRedactionReceiptIds: artifacts.scans.map((entry) =>
+        entry.receipt.receipt.receiptId)
+    }, {
+      sitePublicationPlanMaterialBytes: publication.material.planMaterialBytes,
+      sitePublicationPlanReceiptBytes: artifacts.planReceipt.bytes,
+      sitePublicationPlanResultBytes: resultBytes
+    });
+  }
+
+  async function authorizeSitePublication(rawInput) {
+    const step = "release-surface-site-publication-authorization";
+    const input = normalizeSitePublicationAuthorizationInput(rawInput);
+    const reconstructed = reconstructSitePublication(input);
+    const { publication, release, staticReadback } = reconstructed;
+    const storedPlan = validateStoredSitePublicationPlan(
+      input,
+      release,
+      publication,
+      receiptStore
+    );
+    const materialized = materializeVnextSitePublication({
+      approvedClaimBytes: publication.approvedClaimBytes,
+      previousHistoryBytes: input.previousHistoryBytes,
+      publicReadbackReceiptBytes: staticReadback.readback.bytes,
+      releaseManifestBytes: release.bytes,
+      sitePublicationPlanReceiptBytes: storedPlan.stored.bytes,
+      sitePublisherSignatureReceiptBytes: input.sitePublisherSignatureReceiptBytes,
+      webPublicationGeneratorBytes: input.webPublicationGeneratorBytes
+    });
+    const signature = validateVnextReceiptBytes(
+      input.sitePublisherSignatureReceiptBytes
+    );
+    const envelope = signature.receipt.signatureEnvelope;
+    if (compareUtc(envelope.issuedAtUtc, input.verificationTimeUtc,
+      "release_surface_site_publisher_time_invalid", step) > 0 ||
+        compareUtc(input.verificationTimeUtc, envelope.expiresAtUtc,
+          "release_surface_site_publisher_time_invalid", step) >= 0) {
+      failEvidence("release_surface_site_publisher_time_invalid", step);
+    }
+    const authority = verifySitePublisherAuthority(
+      input,
+      release,
+      storedPlan.stored,
+      signature,
+      staticReadback.activeReceipts,
+      subjectStore
+    );
+    const candidateScans = [
+      sitePublicationScan(input, signature.bytes, "document",
+        "site-publisher-signature-redaction"),
+      sitePublicationScan(input, materialized.pointerBytes, "public-json-control",
+        "pointer-redaction"),
+      sitePublicationScan(input, materialized.historyBytes, "public-json-control",
+        "history-redaction"),
+      ...materialized.publishedClaims.map((claim) => sitePublicationScan(
+        input,
+        claim.claimBytes,
+        "document",
+        `published-claim-redaction-${claim.claimId.slice("sha256:".length)}`
+      ))
+    ];
+    const failedScan = candidateScans.find((entry) => !entry.scan.publicSafe);
+    const planReceiptIds = [
+      ...staticReadback.expectedReceiptIds,
+      ...storedPlan.artifacts.scans.map((entry) => entry.receipt.receipt.receiptId),
+      storedPlan.stored.receipt.receiptId
+    ];
+    if (failedScan) {
+      assertStoreMembership(
+        receiptStore,
+        subjectStore,
+        planReceiptIds,
+        staticReadback.expectedSubjectIds,
+        `${step}-redaction-failure-prefix`
+      );
+      receiptStore.put(failedScan.receipt.bytes);
+      failEvidence("release_surface_site_publication_candidate_unsafe", step);
+    }
+    const sequence = [
+      {
+        bytes: candidateScans[0].receipt.bytes,
+        receiptId: candidateScans[0].receipt.receipt.receiptId
+      },
+      { bytes: signature.bytes, receiptId: signature.receipt.receiptId },
+      ...candidateScans.slice(1).map((entry) => ({
+        bytes: entry.receipt.bytes,
+        receiptId: entry.receipt.receipt.receiptId
+      }))
+    ];
+    const persisted = persistReceiptSequence(
+      planReceiptIds,
+      staticReadback.expectedSubjectIds,
+      sequence,
+      step
+    );
+    const result = deepFreeze({
+      schema: parsedProfile.sitePublicationAuthorization.resultSchema,
+      campaignId: input.expectedCampaignId,
+      environment: input.expectedEnvironment,
+      releaseManifestId: input.releaseManifestId,
+      releaseManifestSha256: release.canonicalContentSha256,
+      sourceRevision: input.sourceRevision,
+      publicOrigin: publication.material.planMaterial.publicOrigin,
+      siteId: publication.material.planMaterial.siteId,
+      sitePublicationPlanReceiptId: storedPlan.stored.receipt.receiptId,
+      sitePublisherSignatureReceiptId: signature.receipt.receiptId,
+      authorityRegistryReceiptId: envelope.authorityRegistryReceiptId,
+      trustedRootRegistryReceiptId: input.trustedRootRegistryReceiptId,
+      terminalRegistryReceiptId: authority.authority.terminalRegistryReceiptId,
+      signerId: envelope.signerId,
+      keyId: envelope.keyId,
+      nonceHash: envelope.nonceHash,
+      issuedAtUtc: envelope.issuedAtUtc,
+      expiresAtUtc: envelope.expiresAtUtc,
+      generatedInventorySha256: materialized.generatedInventorySha256,
+      generatedTotalBytes: materialized.generatedTotalBytes,
+      publishedClaimSetSha256: materialized.publishedClaimSetSha256,
+      currentEvidenceEligible: true,
+      authorizationStatus: "authorized",
+      publicationStatus: materialized.publicationStatus,
+      state: parsedProfile.sitePublicationAuthorization.authorizedState,
+      verifiedAtUtc: input.verificationTimeUtc
+    });
+    const resultBytes = canonicalizeVnextJcsBytes(result);
+    if (resultBytes.length >
+        parsedProfile.limits.maximumSitePublicationAuthorizationResultBytes ||
+        scanKnownSecretRepresentations(resultBytes, input.knownSecrets).findingCount !== 0) {
+      failEvidence("release_surface_site_publication_authorization_result_unsafe", step);
+    }
+    return immutableReleasePreparationResult({
+      ...result,
+      authorizationPersistence: persisted,
+      candidateRedactionReceiptIds: candidateScans.map((entry) =>
+        entry.receipt.receipt.receiptId),
+      generatedAssets: materialized.generatedAssets,
+      materializedPublication: materialized,
+      publishedClaimIds: materialized.publishedClaims.map((claim) => claim.claimId)
+    }, {
+      sitePublicationAuthorizationResultBytes: resultBytes,
+      sitePublisherSignatureReceiptBytes: signature.bytes,
+      siteReleaseHistoryBytes: materialized.historyBytes,
+      siteReleasePointerBytes: materialized.pointerBytes
+    });
+  }
+
   return Object.freeze({
     admitDeploymentAttempt,
     attestCampaign,
+    authorizeSitePublication,
     authorizeRelease,
+    prepareSitePublication,
     prepareRelease,
     verifyPublicReadback,
     profileId: parsedProfile.profileId,

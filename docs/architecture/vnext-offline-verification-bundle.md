@@ -18,8 +18,8 @@ The current implementation is:
 
 The current offline profile is 3,583 bytes with SHA-256
 `62e37b24391ce48cc8be71184e71a67ebd0972e90dca79cf8036099091349e9f`.
-Its newly bound public-safe redaction profile is 3,473 bytes with SHA-256
-`f1c5f00c631bb109f59c747abe0232468d783b3826acddc0019f91a1f746318a`.
+Its bound public-safe redaction profile is 3,910 bytes with SHA-256
+`3284ae637438327fd8ffb967ed6c9a8ef026cd5967e8a1b3602b7ade020cce6d`.
 The manifest also binds the 2,708-byte frozen phase-invalidation profile with
 SHA-256
 `924c515b2cddc081c9cbeac7e4c51fde213264ef2dff5bffcbc335430aafcbff`.

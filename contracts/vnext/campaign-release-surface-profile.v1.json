@@ -15,11 +15,13 @@
   "subjectStoreProfileId": "tinyrustlm.vnext.subject-store.v1",
   "subjectStoreProfileSha256": "8be12332d8c2936df74eed6548e03fff5d8f816479191814c639613444cc40c9",
   "publicSafeRedactionProfileId": "tinyrustlm.vnext.public-safe-redaction.v1",
-  "publicSafeRedactionProfileSha256": "f1c5f00c631bb109f59c747abe0232468d783b3826acddc0019f91a1f746318a",
+  "publicSafeRedactionProfileSha256": "3284ae637438327fd8ffb967ed6c9a8ef026cd5967e8a1b3602b7ade020cce6d",
   "receiptSignatureProfileId": "tinyrustlm.vnext.ed25519-authority.v1",
   "receiptSignatureProfileSha256": "c9f3c6813e3880ebff6c79d9975ba085405208260715b0c68eafdfb9cfcb5721",
   "publicHttpsReadbackProfileId": "tinyrustlm.vnext.public-https-readback.v1",
   "publicHttpsReadbackProfileSha256": "0cfeb00065d45fd860813f501d6c07417f8a6e6587dd524a81e5be426a84c419",
+  "sitePublicationProfileId": "tinyrustlm.vnext.site-publication.v1",
+  "sitePublicationProfileSha256": "d959ce557e8b18a71514e2388a8eda7162182e38f5febf2e1a39b063fa5ba4bc",
   "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
   "hashAlgorithm": "sha256",
   "campaignTruthInput": "fresh-sole-runner-return-created-and-consumed-inside-one-surface-call",
@@ -30,7 +32,7 @@
   "mutablePointerPolicy": "forbidden",
   "networkAccess": "forbidden-until-public-readback-operation",
   "clockAccess": "caller-trusted-verification-time-only",
-  "sourceMutation": "create-only-attestation-redaction-release-manifest-authorization-signature-deployment-attempt-and-public-readback-receipts",
+  "sourceMutation": "create-only-attestation-redaction-release-manifest-authorization-signature-deployment-attempt-public-readback-site-publication-plan-and-site-publisher-receipts",
   "attestation": {
     "receiptSchema": "tinyrustlm.vnext.receipt.v1",
     "receiptType": "final-attestation",
@@ -157,6 +159,38 @@
     "replayPolicy": "exact-dependency-prefix-and-byte-identical-replay-only",
     "publicationPolicy": "forbidden-until-generated-files-published-claims-and-site-publisher-descendants"
   },
+  "sitePublicationPlan": {
+    "resultSchema": "tinyrustlm.vnext.site_publication_plan_result.v1",
+    "preparedState": "site-publication-plan-prepared-awaiting-authorization",
+    "receiptType": "site-synchronization",
+    "phase": "site-synchronization",
+    "status": "pass",
+    "evidenceScope": "site-publication-plan-only",
+    "lineagePolicy": "exact-current-static-readback-release-and-approved-claim-closure",
+    "previousHistoryPolicy": "none-for-first-release-or-exact-current-published-history-hash",
+    "inputPolicy": "stored-release-readback-and-claims-plus-bound-generator-and-history-bytes",
+    "callerTruthPolicy": "status-currentness-verdict-counter-and-publication-inputs-forbidden",
+    "redactionPolicy": "scan-history-plan-material-and-final-plan-receipt-before-persistence",
+    "persistencePolicy": "plan-redaction-before-create-only-site-synchronization-receipt",
+    "replayPolicy": "exact-dependency-prefix-and-byte-identical-recovery-only"
+  },
+  "sitePublicationAuthorization": {
+    "resultSchema": "tinyrustlm.vnext.site_publication_authorization_result.v1",
+    "authorizedState": "site-publication-authorized-awaiting-generated-deployment",
+    "signatureReceiptType": "signature-envelope",
+    "role": "site-publisher",
+    "signatureDomain": "tinyrustlm.signature.site-publisher.v1",
+    "scope": "site-publication",
+    "signedSchema": "tinyrustlm.vnext.receipt.v1",
+    "releaseIdPolicy": "must-equal-plan-release-id",
+    "authorityPolicy": "exactly-one-current-evidence-eligible-signature",
+    "registryPolicy": "caller-pinned-root-and-terminal",
+    "timePolicy": "trusted-verification-time-and-finite-profile-lifetime",
+    "materializationPolicy": "pure-profile-bound-pointer-history-and-published-claim-candidates-only",
+    "redactionPolicy": "scan-signature-and-all-materialized-candidates-before-return",
+    "persistencePolicy": "signature-redaction-before-create-only-site-publisher-signature-receipt",
+    "callerDecisionPolicy": "forbidden"
+  },
   "limits": {
     "maximumKnownSecrets": 128,
     "maximumProjectionBytes": 4194304,
@@ -182,6 +216,10 @@
     "maximumDeploymentResultBytes": 262144,
     "maximumPublicReadbackResultBytes": 4194304,
     "maximumPublicReadbackReceiptBytes": 262144,
-    "maximumPublicReadbackAdmissionResultBytes": 262144
+    "maximumPublicReadbackAdmissionResultBytes": 262144,
+    "maximumSitePublicationPlanResultBytes": 262144,
+    "maximumSitePublicationAuthorizationResultBytes": 262144,
+    "maximumSitePublicationHistoryBytes": 4194304,
+    "maximumSitePublicationSignatureReceiptBytes": 262144
   }
 }

@@ -143,15 +143,23 @@ The generated inventory domain-separates exact path, role, length, SHA-256,
 media type, cache policy, and security-header-profile hash. The published-claim
 set likewise binds each claim ID and canonical-content hash.
 
-## Non-Claims And Remaining Integration
+## Release-Surface Integration And Non-Claims
 
 The focused conformance suite passes deterministic replay, defensive ownership,
 strict two-release history append, old-schema and noncanonical rejection,
 selection and binding drift, wrong plan/signature release, claim expiry,
 hostile accessors, and resource limits. Those tests are local fixture evidence.
 
-This checkpoint does not prove current site-publisher authority, generated-file
-deployment, generated production readback, claim persistence, final release
-publication, source-control publication, or any `20/50/25/40/20` campaign
-counter. Those operations must be integrated into the sole release surface and
-must retain create-only persistence and exact restart recovery.
+The sole release surface now reconstructs the exact static-readback closure,
+create-only persists the redacted plan lineage, verifies one current
+site-publisher Ed25519 authority graph, invokes this materializer, and scans the
+signature plus every generated control and claim candidate. Its conformance
+test also proves byte-identical plan and authorization replay, rejects caller
+publication truth, and rejects the publisher signature at expiry.
+
+This checkpoint still does not prove generated-file deployment, generated
+production readback, claim persistence, final release publication,
+source-control publication, or any `20/50/25/40/20` campaign counter. Those
+remaining operations must stay inside the sole release surface, retain
+create-only persistence and exact restart recovery, and admit pointer, history,
+and published-claim descendants only after exact deployed-byte readback.

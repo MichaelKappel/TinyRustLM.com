@@ -10,6 +10,7 @@ const { parseStrictJson } = require("../tools/strict-json.js");
 const {
   finalizeVnextIdentityDocument
 } = require("../tools/vnext-content-identity.js");
+const { canonicalizeVnextJcsBytes } = require("../tools/vnext-jcs.js");
 const {
   validateVnextReceiptBytes
 } = require("../tools/vnext-receipt-identity.js");
@@ -19,6 +20,7 @@ const {
   publicSafeRedactionProfileSha256,
   scanKnownSecretRepresentations,
   scanVnextPublicDocumentBytes,
+  scanVnextPublicJsonControlBytes,
   scanVnextPublicTextBytes,
   verifyVnextRedactionScanReceipt
 } = require("../tools/vnext-public-safe-redaction.js");
@@ -71,15 +73,15 @@ test("freezes a private-by-default byte-only public-safety profile", () => {
   const source = fs.readFileSync(path.join(repositoryRoot, "tinyrustlm", "tools",
     "vnext-public-safe-redaction.js"), "utf8");
 
-  assert.equal(rawProfile.length, 3473);
+  assert.equal(rawProfile.length, 3910);
   assert.equal(sha256(rawProfile),
-    "f1c5f00c631bb109f59c747abe0232468d783b3826acddc0019f91a1f746318a");
+    "3284ae637438327fd8ffb967ed6c9a8ef026cd5967e8a1b3602b7ade020cce6d");
   assert.equal(publicSafeRedactionProfileSha256, sha256(rawProfile));
   assert.equal(publicSafeRedactionProfile.contractRegistrySha256,
     sha256(registryBytes));
   assert.equal(publicSafeRedactionProfile.defaultVisibility, "private");
   assert.equal(publicSafeRedactionProfile.inputPolicy,
-    "bounded-final-canonical-document-or-lf-utf8-public-text-bytes-only");
+    "bounded-final-canonical-document-canonical-public-json-control-or-lf-utf8-public-text-bytes-only");
   assert.equal(publicSafeRedactionProfile.outputPolicy,
     "unchanged-canonical-bytes-on-pass-no-output-on-fail");
   assert.equal(publicSafeRedactionProfile.redactionMarkersAllowed, false);
@@ -95,7 +97,7 @@ test("freezes a private-by-default byte-only public-safety profile", () => {
     minimumBytes: 2
   });
   assert.deepEqual(publicSafeRedactionProfile.verificationTargetKinds,
-    ["document", "public-text"]);
+    ["document", "public-json-control", "public-text"]);
   assert.deepEqual(publicSafeRedactionProfile.knownSecretRepresentations, [
     "base64", "base64url", "hexadecimal", "percent-encoded", "utf16be",
     "utf16le", "utf8"
@@ -130,6 +132,55 @@ test("scans canonical LF UTF-8 public text without rewriting bytes", () => {
     throwsCode(() => scanVnextPublicTextBytes(invalid),
       "redaction_public_text_wire_invalid");
   }
+});
+
+test("scans only allowlisted canonical public JSON controls", () => {
+  const secret = "Synthetic-Control-Credential-8PzLm2Qv7Hk";
+  const value = {
+    schema: "tinyrustlm.vnext.site_publication_plan_material.v1",
+    releaseId: `sha256:${"a".repeat(64)}`,
+    releaseManifestSha256: "b".repeat(64),
+    publicOrigin: "https://tinyrustlm.example.com/"
+  };
+  const bytes = canonicalizeVnextJcsBytes(value);
+  const scan = scanVnextPublicJsonControlBytes(bytes);
+  assert.equal(scan.publicSafe, true);
+  assert.equal(scan.result.sourceClass, "public-json-control");
+  assert.equal(scan.result.sourceSchema, value.schema);
+  assert.deepEqual(scan.outputBytes, bytes);
+
+  const unsafeBytes = canonicalizeVnextJcsBytes({
+    ...value,
+    note: secret
+  });
+  const unsafe = scanVnextPublicJsonControlBytes(unsafeBytes, {
+    knownSecrets: [secret]
+  });
+  assert.equal(unsafe.publicSafe, false);
+  assert.ok(unsafe.result.findingClasses.includes("known-secret-utf8"));
+  assert.equal(unsafe.outputBytes, null);
+
+  throwsCode(() => scanVnextPublicJsonControlBytes(Buffer.from(
+    `${bytes.toString("utf8")}\n`, "utf8")), "redaction_public_json_wire_invalid");
+  throwsCode(() => scanVnextPublicJsonControlBytes(canonicalizeVnextJcsBytes({
+    schema: "tinyrustlm.vnext.unknown_control.v1"
+  })), "redaction_public_json_schema_invalid");
+
+  const receipt = createVnextRedactionScanReceipt({
+    attemptId: "public-json-control-scan",
+    campaignId: "campaign-redaction-test",
+    completedAtUtc: "2026-08-09T00:00:00Z",
+    scan,
+    sourceRevision: `git-sha1:${"c".repeat(40)}`,
+    startedAtUtc: "2026-08-09T00:00:00Z"
+  });
+  const verified = verifyVnextRedactionScanReceipt({
+    knownSecrets: [],
+    receiptBytes: receipt.bytes,
+    targetBytes: bytes,
+    targetKind: "public-json-control"
+  });
+  assert.equal(verified.publicSafe, true);
 });
 
 test("blocks secrets and generic credential patterns in public text", () => {

@@ -6,7 +6,7 @@
   "contractRegistrySha256": "dd1534f577f5468f94d4b3b4d7d8985751fd1ddc4a28a2ccee9f47462449bbf0",
   "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
   "defaultVisibility": "private",
-  "inputPolicy": "bounded-final-canonical-document-or-lf-utf8-public-text-bytes-only",
+  "inputPolicy": "bounded-final-canonical-document-canonical-public-json-control-or-lf-utf8-public-text-bytes-only",
   "outputPolicy": "unchanged-canonical-bytes-on-pass-no-output-on-fail",
   "knownSecretPolicy": "private-equality-input-not-persisted-or-committed",
   "networkAccess": "forbidden",
@@ -32,8 +32,19 @@
     "encoding": "utf8-no-bom-lf-only-no-controls-terminal-lf",
     "minimumBytes": 2
   },
+  "publicJsonControl": {
+    "class": "public-json-control",
+    "identityDomain": "tinyrustlm.public_json_control.content.v1",
+    "schemas": [
+      "tinyrustlm.vnext.site_publication_plan_material.v1",
+      "tinyrustlm.vnext.site_release_history.v1",
+      "tinyrustlm.vnext.site_release_pointer.v1"
+    ],
+    "wirePolicy": "strict-rfc8785-jcs-no-bom-no-trailing-bytes"
+  },
   "verificationTargetKinds": [
     "document",
+    "public-json-control",
     "public-text"
   ],
   "forbiddenFieldNames": [
@@ -120,7 +131,7 @@
     "sourceSubjectId"
   ],
   "limits": {
-    "maximumInputBytes": 2097152,
+    "maximumInputBytes": 4194304,
     "maximumKnownSecrets": 256,
     "minimumKnownSecretBytes": 8,
     "maximumKnownSecretBytes": 4096,

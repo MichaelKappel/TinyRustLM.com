@@ -2,9 +2,10 @@
 
 ## Status
 
-This document defines the bounded Node checkpoint for scanning either an
-already finalized vNext public contract or canonical public release text before
-it can become publishable evidence. The implementation is:
+This document defines the bounded Node checkpoint for scanning an already
+finalized vNext public contract, one allowlisted canonical generated-site JSON
+control, or canonical public release text before it can become publishable
+evidence. The implementation is:
 
 - `contracts/vnext/public-safe-redaction-profile.v1.json`;
 - `tinyrustlm/tools/vnext-public-safe-redaction.js`; and
@@ -28,16 +29,19 @@ The vNext rule is fail closed:
 2. Copy the bytes before validation.
 3. For a document, strict-parse and validate one exact current vNext schema.
 4. Reject every private schema and every unknown public schema.
-5. For public text, require fatal UTF-8 decoding, no BOM, LF-only line endings,
+5. For a generated-site JSON control, strict-parse exact RFC 8785 JCS bytes,
+   require one of the three frozen publication schemas, and derive a separate
+   domain-separated control identity.
+6. For public text, require fatal UTF-8 decoding, no BOM, LF-only line endings,
    no disallowed controls, and a terminal LF.
-6. Recompute the document identity through both validators, or derive the
-   public-text identity with its frozen domain and exact bytes.
-7. Scan known-secret encodings plus contextual pattern and entropy rules.
-8. Return the original canonical bytes unchanged only when no finding exists.
-9. Return no output bytes when any finding exists.
-10. Emit a separate canonical result containing identities, counts, and finding
+7. Recompute the document identity through both validators, or derive the
+   control/text identity with its frozen domain and exact bytes.
+8. Scan known-secret encodings plus contextual pattern and entropy rules.
+9. Return the original canonical bytes unchanged only when no finding exists.
+10. Return no output bytes when any finding exists.
+11. Emit a separate canonical result containing identities, counts, and finding
    classes only.
-11. Bind that result and target identity in a one-way `redaction-scan` receipt.
+12. Bind that result and target identity in a one-way `redaction-scan` receipt.
 
 No API accepts an arbitrary JavaScript object as the target. This prevents
 getters, coercion hooks, symbols, proxies, cycles, hidden properties, or object
@@ -49,25 +53,31 @@ The exact profile is `tinyrustlm.vnext.public-safe-redaction.v1`. It binds the
 current contract registry SHA-256 and recognizes one set of public and private
 classes:
 
-The checked-in profile is 3,473 bytes with SHA-256
-`f1c5f00c631bb109f59c747abe0232468d783b3826acddc0019f91a1f746318a`.
+The checked-in profile is 3,910 bytes with SHA-256
+`3284ae637438327fd8ffb967ed6c9a8ef026cd5967e8a1b3602b7ade020cce6d`.
 
 | Visibility | Contract classes |
 | --- | --- |
 | Public-safe candidates | artifact, claim, P2P, proof, receipt, release |
+| Canonical public JSON controls | publication plan material, current release pointer, current release history |
 | Canonical public text | public-text (`tinyrustlm.vnext.public_text.v1`) |
 | Always private | companion, context, worker |
 
 The input policy is
-`bounded-final-canonical-document-or-lf-utf8-public-text-bytes-only`. Public
-text must contain at least two bytes, end in LF, and contain no BOM, CR, NUL,
-DEL, or C0 control other than tab and LF. The output policy is
+`bounded-final-canonical-document-canonical-public-json-control-or-lf-utf8-public-text-bytes-only`.
+The control allowlist contains only
+`tinyrustlm.vnext.site_publication_plan_material.v1`,
+`tinyrustlm.vnext.site_release_pointer.v1`, and
+`tinyrustlm.vnext.site_release_history.v1`. Controls must be exact canonical
+JCS with no BOM, whitespace envelope, or trailing byte. Public text must
+contain at least two bytes, end in LF, and contain no BOM, CR, NUL, DEL, or C0
+control other than tab and LF. The output policy is
 `unchanged-canonical-bytes-on-pass-no-output-on-fail`. Redaction markers are
 forbidden.
 
 The profile permits at most:
 
-- 2 MiB of target bytes, matching the largest public vNext contract;
+- 4 MiB of target bytes, matching the bounded publication-history ceiling;
 - 256 privately supplied known secrets;
 - 8 through 4,096 UTF-8 bytes per known secret;
 - 256 KiB of known-secret bytes in total;
@@ -95,8 +105,10 @@ representations:
   percent triplets.
 
 The canonical parsed document is traversed iteratively under the frozen schema
-descriptors. Canonical public text is scanned as one bounded text value. Pattern
-classes cover authorization and bearer values,
+descriptors. Canonical generated-site controls are traversed completely,
+reject forbidden field names, and recognize only exact SHA-256, content-ID,
+and source-revision field forms as cryptographic types. Canonical public text
+is scanned as one bounded text value. Pattern classes cover authorization and bearer values,
 private key material, common public-provider credentials, JWTs, credential
 assignments, cookie credentials, credential-bearing URLs, secret invitation
 paths, private absolute paths, exception details, raw conversation or hosted
@@ -119,7 +131,7 @@ The result schema is
 `tinyrustlm.vnext.public_safe_scan_result.v1`. Its exact fields are:
 
 - result schema, profile ID, and exact profile SHA-256;
-- source schema and contract class, including the frozen public-text pair;
+- source schema and class, including the frozen control and public-text pairs;
 - source subject ID and canonical-content SHA-256;
 - SHA-256 and byte length of the exact source wire bytes;
 - private known-secret input count, but no value or value commitment;
@@ -149,9 +161,10 @@ bounded registered error and blocker code, no public output hash, and no secret
 text.
 
 `verifyVnextRedactionScanReceipt` independently validates the receipt, requires
-`targetKind=document` or `targetKind=public-text`, reruns that exact scanner over
-the supplied target bytes and private equality list, rebuilds the expected
-receipt, and requires byte equality. Supplying an incomplete
+`targetKind=document`, `targetKind=public-json-control`, or
+`targetKind=public-text`, reruns that exact scanner over the supplied target
+bytes and private equality list, rebuilds the expected receipt, and requires
+byte equality. Supplying an incomplete
 known-secret list to replay a prior failure changes the deterministic result
 and fails the receipt binding. A current signature descendant and trusted
 authority graph remain separate requirements for using the receipt as release
@@ -198,6 +211,8 @@ The focused tests cover:
   surrogate inputs;
 - canonical public text plus missing terminal LF, BOM, CRLF, invalid UTF-8,
   NUL, and other control rejection;
+- allowlisted canonical publication controls plus unknown-schema and
+  noncanonical-wire rejection;
 - all seven known-secret encoding families, including padding and case variants;
 - every frozen detector rule;
 - contextual entropy positives and cryptographic-field negatives;

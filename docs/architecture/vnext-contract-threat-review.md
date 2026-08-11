@@ -73,11 +73,14 @@ production verifier rejects nonpublic DNS results, pins one public address,
 verifies normal TLS identity, and streams the exact closed inventory. The sole
 release surface now reconstructs deployment and authorization, invokes that
 verifier, independently validates its canonical result, and persists an exact
-scan/readback pair. Its integration test uses only fixture-labeled output and
-has not been used to claim a live pass. No local test changes a campaign
-counter.
+scan/readback pair. It then reconstructs that static-readback closure,
+persists one redacted publication plan, verifies one exact current
+site-publisher Ed25519 authority graph, and scans every deterministic generated
+control and published-claim candidate without persisting or publishing those
+candidates. Its integration test uses only fixture-labeled output and has not
+been used to claim a live pass. No local test changes a campaign counter.
 
-Reviewed at `2026-08-09T20:10:05Z`. The review is invalidated when any bound
+Reviewed at `2026-08-11T16:03:39Z`. The review is invalidated when any bound
 file changes, when the parser changes, or when a deferred proof obligation is
 reclassified without a new threat review.
 
@@ -175,10 +178,10 @@ verified by later phases.
 | Worker or companion state confusion | Direction, operation, payload binding, pairing, session, sequence, and capability constraints are explicit | Mitigated locally | Replay store, process isolation, browser origin, and loopback authentication remain later gates |
 | P2P piece or Merkle drift | Piece indices, offsets, sizes, hashes, Merkle root, total bytes, and artifact identity are recomputed locally | Mitigated locally | File streaming, peer transfer, and final Rust artifact verification remain later gates |
 | Local reachability promoted as public | Proof requires outside-network scope, complete transfer, lane and endpoint binding, and bounded freshness | Mitigated structurally | Observer signature, independence, and matching P2P parent remain deferred |
-| Release or claim inflation | Acyclic release v3 binds the campaign plan/projection, attestation, packages, artifacts, approved claims, SBOM, provenance, changelog, remaining risks, current web build, exact control documents, and the closed static publication graph; the sole release surface requires complete fresh projection truth, same-snapshot parent identity, current-pass receipt closure, all 20 qualified artifact hashes, dependency closure, one CycloneDX SBOM, all current approved claims, exact static bytes, one current release-authorizer signature, one admitted deployment attempt, and one exact readback receipt over the immutable manifest | Mitigated through readback admission | A real production run, generated publication descendants, published-claim descendants, and site-publisher authority remain required |
+| Release or claim inflation | Acyclic release v3 binds the campaign plan/projection, attestation, packages, artifacts, approved claims, SBOM, provenance, changelog, remaining risks, current web build, exact control documents, and the closed static publication graph; the sole release surface requires complete fresh projection truth, same-snapshot parent identity, current-pass receipt closure, all 20 qualified artifact hashes, dependency closure, one CycloneDX SBOM, all current approved claims, exact static bytes, one current release-authorizer signature, one admitted deployment attempt, one exact static readback receipt, one redacted publication plan, and one current site-publisher signature before generating scanned candidates | Mitigated through candidate authorization | A real production run, exact generated-file deployment/readback, and create-only final descendants remain required |
 | Local or injected response promoted as production readback | The standalone production verifier owns DNS and HTTPS, accepts no caller transport or response, rejects any nonpublic DNS member, pins one globally routable address, requires normal TLS hostname authorization, forbids redirects and transformed bodies, and streams every exact manifest asset; the release surface invokes it internally, independently validates canonical result closure, and persists only scan/readback descendants in exact dependency order | Mitigated locally | Fixture-labeled orchestration tests are not production execution, host resolver and process integrity remain trusted, and a real production run remains required |
 | DNS rebinding or split-address substitution | One bounded all-address lookup must contain only canonical public addresses; one successful bootstrap address is pinned through verifier-owned lookup callbacks and checked against every connected socket | Mitigated locally | Host resolver and process integrity remain trusted; this is not an outside-network observer proof |
-| Secret disclosure through public evidence | Private-by-default classes, public-safe field types, canonical LF UTF-8 public text, redaction profile, forbidden keys/value classes, acyclic scan binding, and the preparation gate's scans over selected documents, changelog, and final manifest | Reduced | Compressed members, cross-runtime parity, and protected-list production custody remain deferred |
+| Secret disclosure through public evidence | Private-by-default classes, public-safe field types, canonical LF UTF-8 public text, allowlisted canonical publication controls, redaction profile, forbidden keys/value classes, acyclic scan binding, and release-surface scans over selected documents, changelog, manifests, plan material, signatures, controls, and claim candidates | Reduced | Compressed members, cross-runtime detector parity, and protected-list production custody remain deferred |
 | Compatibility code becoming permanent | Validators recognize one incompatible family and contain no fallback, migration, deprecated alias, dual-read, or dual-write path | Mitigated in the new boundary | Old production readers and writers still exist elsewhere and must be deleted after verified cutover |
 
 ## Validator Independence
@@ -347,10 +350,11 @@ suite, source hygiene, secret scan, and remote push were current in one
 checkpoint. The superseded mutable runner is deleted without an alias or
 compatibility entry point. Final attestation, operator projection, release v3
 preparation, and current release authorization now bind only a fresh
-sole-runner result. The current next boundary is release-surface integration of
-current site-publisher authority, exact generated-file deployment/readback,
-create-only publication descendants, and a real production run over an exact
-authorized release graph.
+sole-runner result. The current next boundary is exact generated-file
+deployment/readback, create-only publication descendants, and a real
+production run over an exact authorized release graph. Current site-publisher
+authority and candidate redaction are integrated and do not by themselves
+establish publication.
 Windows directory durability, archive-member scanning, and protected-list
 release custody remain separate prerequisites for their corresponding claims.
 

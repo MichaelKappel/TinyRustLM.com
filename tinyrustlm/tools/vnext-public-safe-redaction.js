@@ -164,11 +164,15 @@ const profileFields = Object.freeze([
   "knownSecretPolicy", "networkAccess", "sourceMutation", "redactionMarkersAllowed",
   "publicSafeClasses", "privateClasses", "forbiddenFieldNames",
   "forbiddenValueClasses", "knownSecretRepresentations", "detectorRuleIds",
-  "entropyExemptFieldTypes", "publicText", "verificationTargetKinds",
+  "entropyExemptFieldTypes", "publicJsonControl", "publicText",
+  "verificationTargetKinds",
   "resultSchema", "resultFields", "limits"
 ]);
 const publicTextFields = Object.freeze([
   "schema", "class", "identityDomain", "encoding", "minimumBytes"
+]);
+const publicJsonControlFields = Object.freeze([
+  "class", "identityDomain", "schemas", "wirePolicy"
 ]);
 const limitFields = Object.freeze([
   "maximumInputBytes", "maximumKnownSecrets", "minimumKnownSecretBytes",
@@ -183,13 +187,15 @@ function validateInstalledProfile() {
     "redaction_profile_invalid", "redaction-profile");
   exactKeys(parsedProfile.publicText, publicTextFields,
     "redaction_profile_invalid", "redaction-profile");
+  exactKeys(parsedProfile.publicJsonControl, publicJsonControlFields,
+    "redaction_profile_invalid", "redaction-profile");
   const registrySha256 = sha256(registryBytes);
   const publicClasses = registry.contracts.filter((entry) => entry.visibility === "public-safe")
     .map((entry) => entry.class).sort();
   const privateClasses = registry.contracts.filter((entry) => entry.visibility === "private")
     .map((entry) => entry.class).sort();
   const profileLimits = Object.values(parsedProfile.limits);
-  const maximumPublicBytes = Math.max(...registry.contracts
+  const maximumPublicBytes = Math.max(4_194_304, ...registry.contracts
     .filter((entry) => entry.visibility === "public-safe")
     .map((entry) => entry.maximumBytes));
   if (parsedProfile.schema !== "tinyrustlm.vnext.public_safe_redaction_profile.v1" ||
@@ -198,7 +204,7 @@ function validateInstalledProfile() {
       parsedProfile.contractRegistrySha256 !== registrySha256 ||
       parsedProfile.defaultVisibility !== registry.redaction.defaultVisibility ||
       parsedProfile.inputPolicy !==
-        "bounded-final-canonical-document-or-lf-utf8-public-text-bytes-only" ||
+        "bounded-final-canonical-document-canonical-public-json-control-or-lf-utf8-public-text-bytes-only" ||
       parsedProfile.outputPolicy !== "unchanged-canonical-bytes-on-pass-no-output-on-fail" ||
       parsedProfile.knownSecretPolicy !==
         "private-equality-input-not-persisted-or-committed" ||
@@ -220,8 +226,18 @@ function validateInstalledProfile() {
       parsedProfile.publicText.encoding !==
         "utf8-no-bom-lf-only-no-controls-terminal-lf" ||
       parsedProfile.publicText.minimumBytes !== 2 ||
+      parsedProfile.publicJsonControl.class !== "public-json-control" ||
+      parsedProfile.publicJsonControl.identityDomain !==
+        "tinyrustlm.public_json_control.content.v1" ||
+      !sameStrings(parsedProfile.publicJsonControl.schemas, [
+        "tinyrustlm.vnext.site_publication_plan_material.v1",
+        "tinyrustlm.vnext.site_release_history.v1",
+        "tinyrustlm.vnext.site_release_pointer.v1"
+      ]) ||
+      parsedProfile.publicJsonControl.wirePolicy !==
+        "strict-rfc8785-jcs-no-bom-no-trailing-bytes" ||
       !sameStrings(parsedProfile.verificationTargetKinds,
-        ["document", "public-text"]) ||
+        ["document", "public-json-control", "public-text"]) ||
       !sortedUniqueStrings(parsedProfile.resultFields) ||
       parsedProfile.resultSchema !== "tinyrustlm.vnext.public_safe_scan_result.v1" ||
       parsedProfile.limits.maximumInputBytes !== maximumPublicBytes ||
@@ -252,6 +268,25 @@ const resultJcsLimits = Object.freeze({
   maximumArrayItems: parsedProfile.limits.maximumFindingClasses,
   maximumStringCodeUnits: 512,
   maximumTotalStringCodeUnits: 8192
+});
+const publicJsonControlParserLimits = Object.freeze({
+  maximumBytes: parsedProfile.limits.maximumInputBytes,
+  maximumDepth: 32,
+  maximumTotalEntries: 131072,
+  maximumObjectMembers: 256,
+  maximumArrayItems: 4096,
+  maximumStringCodeUnits: 65536,
+  maximumTotalStringCodeUnits: 2_097_152,
+  maximumNumberCharacters: 128
+});
+const publicJsonControlJcsLimits = Object.freeze({
+  maximumDepth: 32,
+  maximumTotalEntries: 131072,
+  maximumObjectMembers: 256,
+  maximumArrayItems: 4096,
+  maximumStringCodeUnits: 65536,
+  maximumTotalStringCodeUnits: 2_097_152,
+  numberProfile: "vnext-safe-integer"
 });
 const fatalUtf8Decoder = new TextDecoder("utf-8", {
   fatal: true,
@@ -647,6 +682,105 @@ function scanVnextPublicDocumentBytes(input, options) {
     result.scanStatus === "pass" ? bytes : null);
 }
 
+function publicJsonControlFieldType(name, value) {
+  if (typeof value !== "string") return "bounded-text";
+  if (/(?:Sha256|Hash)$/u.test(name) && /^[a-f0-9]{64}$/u.test(value)) {
+    return "sha256";
+  }
+  if ((/(?:Id|Ids)$/u.test(name) || name === "releaseId") &&
+      /^sha256:[a-f0-9]{64}$/u.test(value)) {
+    return "content-id";
+  }
+  if (name === "sourceRevision" &&
+      /^(?:git-sha1:[a-f0-9]{40}|sha256:[a-f0-9]{64})$/u.test(value)) {
+    return "source-revision";
+  }
+  return "bounded-text";
+}
+
+function scanPublicJsonControlValue(root, findings, knownSecrets) {
+  const pending = [{ name: "", value: root }];
+  while (pending.length !== 0) {
+    const current = pending.pop();
+    if (Array.isArray(current.value)) {
+      for (let index = current.value.length - 1; index >= 0; index -= 1) {
+        pending.push({ name: current.name, value: current.value[index] });
+      }
+      continue;
+    }
+    if (isPlainObject(current.value)) {
+      for (const [name, value] of Object.entries(current.value)) {
+        if (forbiddenFieldNames.has(name)) addFinding(findings, "forbidden-field-name");
+        pending.push({ name, value });
+      }
+      continue;
+    }
+    if (typeof current.value === "string") {
+      scanString(current.value,
+        publicJsonControlFieldType(current.name, current.value),
+        findings,
+        knownSecrets);
+    }
+  }
+}
+
+function scanVnextPublicJsonControlBytes(input, options) {
+  const bytes = normalizeBytes(input);
+  if (bytes.length === 0 || bytes.length > parsedProfile.limits.maximumInputBytes) {
+    failEvidence("redaction_input_byte_limit", "public-safe-read");
+  }
+  const normalizedOptions = normalizeOptions(options);
+  let value;
+  try {
+    value = parseStrictJson(bytes, publicJsonControlParserLimits);
+  } catch (error) {
+    throw new VnextEvidenceError("redaction_public_json_invalid",
+      "public-safe-json", error?.code);
+  }
+  if (!isPlainObject(value) || typeof value.schema !== "string" ||
+      !parsedProfile.publicJsonControl.schemas.includes(value.schema)) {
+    failEvidence("redaction_public_json_schema_invalid", "public-safe-json");
+  }
+  let canonicalBytes;
+  try {
+    canonicalBytes = canonicalizeVnextJcsBytes(value, publicJsonControlJcsLimits);
+  } catch (error) {
+    throw new VnextEvidenceError("redaction_public_json_invalid",
+      "public-safe-json", error?.code);
+  }
+  if (!canonicalBytes.equals(bytes)) {
+    failEvidence("redaction_public_json_wire_invalid", "public-safe-json");
+  }
+  const secretScan = scanKnownSecretRepresentations(bytes,
+    normalizedOptions.knownSecrets.map((entry) => entry.secret));
+  const findings = new Set(secretScan.findingClasses);
+  scanPublicJsonControlValue(value, findings, normalizedOptions.knownSecrets);
+  const findingClasses = Object.freeze([...findings].sort());
+  const identity = crypto.createHash("sha256")
+    .update(Buffer.from(parsedProfile.publicJsonControl.identityDomain, "utf8"))
+    .update(Buffer.from([0]))
+    .update(bytes)
+    .digest("hex");
+  const result = {
+    schema: parsedProfile.resultSchema,
+    profileId: parsedProfile.profileId,
+    profileSha256: publicSafeRedactionProfileSha256,
+    sourceSchema: value.schema,
+    sourceClass: parsedProfile.publicJsonControl.class,
+    sourceSubjectId: `sha256:${identity}`,
+    sourceCanonicalContentSha256: identity,
+    sourceSha256: sha256(bytes),
+    sourceByteLength: bytes.length,
+    knownSecretCount: normalizedOptions.knownSecrets.length,
+    scanStatus: findingClasses.length === 0 ? "pass" : "fail",
+    findingCount: findingClasses.length,
+    findingClasses
+  };
+  const canonical = canonicalResult(result);
+  return immutableScan(result, canonical.bytes, canonical.sha256,
+    result.scanStatus === "pass" ? bytes : null);
+}
+
 function publicTextIdentity(bytes) {
   return crypto.createHash("sha256")
     .update(Buffer.from(parsedProfile.publicText.identityDomain, "utf8"))
@@ -849,7 +983,9 @@ function verifyVnextRedactionScanReceipt(input) {
   }
   const scanner = input.targetKind === "document"
     ? scanVnextPublicDocumentBytes
-    : scanVnextPublicTextBytes;
+    : input.targetKind === "public-json-control"
+      ? scanVnextPublicJsonControlBytes
+      : scanVnextPublicTextBytes;
   const scan = scanner(input.targetBytes, { knownSecrets: input.knownSecrets });
   const expected = createVnextRedactionScanReceipt({
     attemptId: receipt.attemptId,
@@ -883,6 +1019,7 @@ module.exports = Object.freeze({
   publicSafeRedactionProfileSha256,
   scanKnownSecretRepresentations,
   scanVnextPublicDocumentBytes,
+  scanVnextPublicJsonControlBytes,
   scanVnextPublicTextBytes,
   verifyVnextRedactionScanReceipt
 });
