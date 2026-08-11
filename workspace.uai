@@ -1,7 +1,59 @@
-profile: tinyrustlm.source-workspace.v295
+profile: tinyrustlm.source-workspace.v296
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-11T20:37:33Z
+updated_utc: 2026-08-11T21:02:53Z
+
+current_checkpoint_2026_08_11_durable_publication_trust_anchor:
+  authority: This is the newest first-read execution checkpoint. It adds to immutable history and supersedes older present-tense durability milestone, hash, resume, and next-action fields where they disagree. It does not alter prior receipts, production releases, or campaign counts.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  source_control:
+    root: E:\Source\.tinyrustlm-model-acquisition
+    branch: codex/model-acquisition-v2
+    implementation_commit: 9a3412cfeba122f33c5a525ff66969f0f4fce593
+    subject: Add vNext durable publication trust anchor
+    upstream: origin/codex/model-acquisition-v2
+    verification: After a fresh fetch, local HEAD, upstream, and the remote branch were exact at 9a3412cfeba122f33c5a525ff66969f0f4fce593 with a clean owned worktree before this private handoff edit.
+    protected_checkout: E:\Source\Rust\TinyRustLM.com remains heavily dirty with 783 unrelated tracked changes and must not be edited, reset, cleaned, reverted, or used for this branch.
+  implemented_scope:
+    - Froze `tinyrustlm.vnext.durable-publication.v1` as one incompatible production boundary beneath the four stores. It accepts no caller filesystem, platform, randomness, helper, process output, directory-flush result, readback result, compatibility reader, or fallback.
+    - Required a preexisting absolute privately owned root. The boundary never claims to have durably created its own root. Missing child directories are created one component at a time and each new entry's parent plus new directory are flushed through the verified Rust helper.
+    - Target publication now has one exact primitive: exclusive same-directory temporary, complete file fsync, hard-link create-if-absent, byte-identical existing-target acceptance, helper-backed target-directory flush, and exact bounded readback.
+    - A canonical content-addressed durability receipt binds target path/hash/size, store and durability profiles, implementation source closure, file fsync, publication primitive, target readback, and the complete client/helper/package/request/observation identity chain.
+    - The durability receipt is the explicit terminal persistence trust anchor. It excludes its own publication observation to avoid a self-hash cycle or infinite receipt chain. Creation still requires receipt file fsync, create-only publication, helper-backed receipt-directory flush, exact receipt readback, and a second exact target readback.
+    - Restart activation requires a matching current receipt, fresh helper-backed target and receipt directory flushes, and exact readbacks. A target without a receipt, a receipt without a target, profile drift, noncanonical bytes, unknown fields, and target bit drift remain inactive.
+    - Repeated byte-identical publication derives the same receipt in the same verified environment. Multiple equivalent receipts from independently verified helper packages select the lexicographically smallest receipt SHA without mutable pointers or best-of-N truth.
+    - ADR-012 and the maintained durability documentation record the bootstrap decision and explicit nonclaims.
+  exact_artifacts:
+    durable_publication_profile: bytes=6257; sha256=ff0d621b9e1136774384a66e97706f0c463c398298e45c019e18f75919ff6318
+    durable_publication_source_closure_sha256: 0d4bded4df6f4f7aa18271e1b32e8bff7a90aa2e9bd4494b6b5ccaa982e29f38
+    durable_publication_source: bytes=42126; sha256=1a644d44b03450c261342f1f3695e2e9b61ba7aff6b0f065111ca0ba46ddae06
+    durable_publication_tests: bytes=12517; sha256=d934c7dd4b9c8a24149c2405f260b0ad38b82299f0c02abf962f234974d05789
+    bootstrap_adr: bytes=4292; sha256=32e9f7d018116c9eb7eae9bc4bd64be351aca08fba294f74824d16d163edcf53
+    durability_document: bytes=14097; sha256=c1c9b00608a23827ece83d63729b79d65d546ac2d92a9fdb902a775db0101705
+  verification:
+    tdd_red_run: The new suite first failed because the production module did not exist. The first implementation then exposed and fixed an extra request field, wrong unknown-field error ordering, and Buffer freezing defect without weakening assertions.
+    focused_node: 44/44 passed with zero failures, skips, cancellations, or todos. This comprises 12 durable-publication tests and 32 directory-flush-client tests, including real packaged helper execution and hostile package, process, observation, and drift rejection.
+    focused_rust: 14/14 passed, comprising eight owned-path/platform tests and six frozen-profile/library/process tests.
+    syntax_and_diff: Both new Node files passed `node --check`; `git diff --check` passed apart from an informational autocrlf warning.
+    hygiene: Six changed files totaling 112346 bytes had zero high-confidence secret, absolute private-path, or non-ASCII findings.
+  publication_truth:
+    delta: The six-file foundation checkpoint changes no member of the 23-file production web publication closure.
+    action: No site version, release date, Updates entry, deployment, publication receipt, or public HTTPS readback claim was created because no production closure byte changed and no authorized publication operation ran.
+  explicit_nonclaims:
+    - The receipt, subject, campaign-artifact, and campaign-operation stores do not yet require this boundary; their superseded `required-or-explicitly-unavailable` and `unavailable-win32-node` path remains to be deleted in the next cutover.
+    - The disposable local receipts prove conformance only. They are not `tinyrustlm.vnext.receipt.v1` campaign records and do not advance campaign truth.
+    - No physical power interruption, controller/device cache behavior, OS network sandbox, signed release-package provenance, Linux helper execution, or physical ARM64 helper execution was proven.
+    - Gate D remains incomplete until all four stores cut over, hostile store/restart/quarantine tests pass, archive scanning closes, and protected equality-list custody closes.
+  campaign_truth: qualified_models=0/20; clean_browser_rounds=0/50; authorized_live_memory_rounds=0/25; current_outside_network_lane_proofs=0/40; live_catalog_announcements=0/20
+  exact_next_action:
+    - Add failing integration tests that make target bytes inactive without a matching durability receipt in receipt, subject, campaign-artifact, and operation stores.
+    - Replace every direct `vnext-create-only-files.js` publication and every Node directory sync with this sole boundary. Delete public IO/platform/random/helper success injection and both unavailable-result strings without compatibility support.
+    - Bind durability receipt SHA-256 into active metadata and runner snapshots, preserve failed or orphaned material through bounded quarantine, and cover interruption, restart, disk full, lock contention, truncation, bit flip, stale temporary material, path substitution, helper/package drift, and parent-closure rollback.
+    - Regenerate every transitive profile and vector identity, run complete Node and locked Rust gates, commit and push the independently healthy four-store cutover, then continue Gate D archive scanning and equality-list custody.
+  known_blockers: MemoryEndpoints production access remains unauthorized and disconnected; model qualification, external P2P observation, catalog announcements, signing/deployment authorization, physical power-loss evidence, Linux helper execution, and physical linux-arm64 evidence remain objective work rather than inferred completion. Independent work must continue behind those blockers.
 
 current_checkpoint_2026_08_11_directory_flush_client_boundary:
   authority: This is the newest first-read execution checkpoint. It adds to immutable history and supersedes older present-tense helper-only milestone, hash, resume, and next-action fields where they disagree. It does not alter prior receipts, production releases, or campaign counts.

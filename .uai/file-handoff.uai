@@ -1,5 +1,25 @@
-profile: runtime-mirust.file-handoff.v73
-updated_utc: 2026-08-11T20:37:33Z
+profile: runtime-mirust.file-handoff.v74
+updated_utc: 2026-08-11T21:02:53Z
+current_tinyrustlm_durable_publication_checkpoint_2026_08_11:
+  authority: Newest TinyRustLM first-read checkpoint; supersedes older present-tense Gate D status where different and preserves all immutable history.
+  goal: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+  goal_sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+  goal_status: active_incomplete
+  owned_worktree: E:\Source\.tinyrustlm-model-acquisition
+  branch: codex/model-acquisition-v2
+  implementation_commit: 9a3412cfeba122f33c5a525ff66969f0f4fce593
+  upstream_status: freshly fetched local, upstream, and remote exact at implementation commit before this handoff edit
+  protected_checkout: E:\Source\Rust\TinyRustLM.com remains protected with 783 unrelated tracked changes
+  result: one frozen non-recursive durable-publication trust anchor now composes target temporary fsync, hard-link create-if-absent publication, verified Rust directory flush, exact target readback, content-addressed activation receipt persistence, receipt directory flush, receipt readback, and restart revalidation without caller-supplied success
+  profile: contracts/vnext/durable-publication-profile.v1.json; bytes 6257; sha256 ff0d621b9e1136774384a66e97706f0c463c398298e45c019e18f75919ff6318
+  source_closure_sha256: 0d4bded4df6f4f7aa18271e1b32e8bff7a90aa2e9bd4494b6b5ccaa982e29f38
+  source: tinyrustlm/tools/vnext-durable-publication.js; bytes 42126; sha256 1a644d44b03450c261342f1f3695e2e9b61ba7aff6b0f065111ca0ba46ddae06
+  tests: 44/44 focused Node passed and 14/14 focused Rust passed; syntax, diff, ASCII, private-path, and high-confidence secret checks passed
+  bootstrap: durability receipt excludes its own publication evidence as the explicit terminal trust anchor; creation and restart still require real helper-backed receipt and target flush/readback observations; no recursive receipt or mutable pointer exists
+  deployment: none; zero production web closure bytes changed and no publication claim was created
+  nonclaims: four stores not yet cut over; Gate D incomplete; no physical power-loss, release-package, Linux, ARM64, live MemoryEndpoints, outside-network, catalog, deployment, or campaign evidence
+  campaign_counts: 0/20 models; 0/50 browser rounds; 0/25 live memory rounds; 0/40 outside-proven lanes; 0/20 announcements
+  next: cut receipt, subject, campaign-artifact, and operation/lock stores to this sole boundary; delete unavailable and injection paths; bind receipt identities into active metadata and snapshots; complete hostile store tests and all transitive profile/vector regeneration
 site_release_reconciliation_2026_08_11:
   status: runtime_verification_and_minimodel_publication_checkpoint_complete
   active_branch_verified_parent: 790c6ff1eb7293e806a1adffcca15ee0cd940fab
@@ -142,8 +162,9 @@ current_vnext_campaign_execution:
   catalog_status: no_current_live_announcements_0_of_20
   campaign_counts: 0/20 models; 0/50 browser rounds; 0/25 live memory rounds; 0/40 outside-proven lanes; 0/20 announcements
   gate_d_directory_durability:
-    status: rust_directory_flush_and_node_package_client_complete_verified_not_yet_integrated_into_publication_receipts
-    implementation_commit: d7333c1fda81a491e574106501035f57419988f9
+    status: rust_helper_node_client_and_nonrecursive_durable_publication_trust_anchor_complete_verified_not_yet_integrated_into_four_stores
+    implementation_commit: 9a3412cfeba122f33c5a525ff66969f0f4fce593
+    helper_client_commit: d7333c1fda81a491e574106501035f57419988f9
     crate: rust/crates/tinyrustlm-durability
     helper: tinyrustlm-directory-flush
     profile: contracts/vnext/directory-flush-profile.v1.json
@@ -154,6 +175,12 @@ current_vnext_campaign_execution:
     client_profile_bytes: 5068
     client_profile_sha256: 9f367bbe58bf8afc8ecba57a1b33e5cda5a83592a80517c4db38d0775cf9fde6
     client_source_closure_sha256: 37dc6e85be3655743a31de5623fa574f565578351f4c6b255621a9d976a8c487
+    durable_publication: tinyrustlm/tools/vnext-durable-publication.js
+    durable_publication_profile: contracts/vnext/durable-publication-profile.v1.json
+    durable_publication_profile_bytes: 6257
+    durable_publication_profile_sha256: ff0d621b9e1136774384a66e97706f0c463c398298e45c019e18f75919ff6318
+    durable_publication_source_closure_sha256: 0d4bded4df6f4f7aa18271e1b32e8bff7a90aa2e9bd4494b6b5ccaa982e29f38
+    bootstrap_adr: docs/architecture/adr/ADR-012-durable-publication-bootstrap.md
     protocol: bounded canonical stdin JSON; exact request SHA bound into one path-redacted canonical stdout observation; safe canonical failure only; no raw path, request, process output, or host-error result
     owned_path_contract: absolute caller-owned root, explicit dot root scope or strict one-to-64-component relative directory, canonical containment, no symbolic-link or Windows reparse components, pre-open/open-handle/post-flush inspection
     concurrency_precondition: caller must prevent rename, replacement, link, or reparse mutation of root and directory path components through post-flush inspection; concurrent member-file creation is permitted
@@ -162,15 +189,15 @@ current_vnext_campaign_execution:
     process_boundary: absolute local package root on Windows; shell false; zero arguments; empty child environment; verified package working directory; private bounded pipes; 10-second SIGKILL timeout; strict exit and output validation
     result_boundary: path-redacted result binds client profile/source closure, Node runtime, helper profile/package/source/executable, platform, request, operation, directory identity, method, and observation
     local_win_x64_evidence: exact packaged helper directory flush succeeded; real Rust and Node directory-link rejection passed; real helper failure was validated and propagated only as a bounded cause code
-    focused_verification: Rust 14/14 pass; Node client 32/32 pass
-    complete_node_verification: 880/880 pass; zero fail skip cancel todo; 739254.3978 ms
+    focused_verification: Rust 14/14 pass; combined Node client and durable-publication 44/44 pass
+    last_complete_node_verification_before_trust_anchor: 880/880 pass; zero fail skip cancel todo; 739254.3978 ms; rerun required after four-store cutover
     complete_rust_verification: cargo fmt --all --check pass; denied-warning locked all-target workspace Clippy pass; complete locked workspace test pass
     changed_file_hygiene: 12 files; 194549 bytes; zero high-confidence secret, NUL, or non-ASCII findings
     production_manifest_intersection: 0 of 23 publication members changed
     deployment_status: not_applicable_no_production_web_source_changed_no_version_release_log_or_live_claim
-    explicit_nonclaims: Node supplies no OS network sandbox; local-test-build is not release provenance; no physical power-loss proof; no Linux or physical ARM64 execution; no create-only publication receipt integration; no release or campaign counter
-    next_boundary: cut receipt, subject, campaign-artifact, and campaign-runner publication through one mandatory durability receipt binding temporary-file fsync, create-if-absent disposition, exact directory observation, postpublication readback, client/helper identities, and restart/interruption evidence; delete the Win32 unavailable branch without compatibility support
-  status: gate_c_complete_gate_d_directory_client_complete_no_live_counter_advanced_next_four_store_durable_receipt_cutover
+    explicit_nonclaims: Node supplies no OS network sandbox; local-test-build is not release provenance; no physical power-loss proof; no Linux or physical ARM64 execution; the four stores are not integrated; no release or campaign counter
+    next_boundary: cut receipt, subject, campaign-artifact, and campaign-runner publication through the sole durable-publication trust anchor; delete Win32 unavailable and caller success-injection branches without compatibility support; bind receipt identities into active metadata and snapshots; preserve hostile and interrupted material through bounded quarantine
+  status: gate_c_complete_gate_d_trust_anchor_complete_no_live_counter_advanced_next_four_store_durable_receipt_cutover
 handoff_root: agent-file-handoff/
 active_buckets:
   content: agent-file-handoff/Content/
