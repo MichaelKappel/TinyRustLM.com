@@ -1,7 +1,60 @@
-profile: tinyrustlm.source-workspace.v296
+profile: tinyrustlm.source-workspace.v297
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-11T21:02:53Z
+updated_utc: 2026-08-11T23:15:46Z
+
+current_checkpoint_2026_08_11_four_store_durable_receipt_cutover:
+  authority: This is the newest first-read execution checkpoint. It supersedes older present-tense store-cutover, identity, verification, resume, and next-action fields where different while preserving immutable history. It does not alter prior receipts, site releases, or campaign counts.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  source_control:
+    root: E:\Source\.tinyrustlm-model-acquisition
+    branch: codex/model-acquisition-v2
+    implementation_commit: 1171b493be9350575f917116cb4a99ab5a244600
+    subject: Cut vNext stores over to durable receipts
+    upstream: origin/codex/model-acquisition-v2
+    verification: After a fresh fetch, local HEAD and upstream were exact at the implementation commit and the owned worktree was clean before this private handoff edit.
+    protected_checkout: E:\Source\Rust\TinyRustLM.com remains protected with 805 unrelated tracked changes and must not be edited, reset, cleaned, reverted, or used for this branch.
+  implemented_scope:
+    - Cut the receipt, subject, campaign-artifact, campaign-operation, and append-only lock histories to the sole frozen durable-publication boundary. A target is active only with its matching content-addressed durability receipt; target-only, marker-only, noncanonical, profile-drifted, and byte-drifted material is inactive and preserved through bounded quarantine or failure evidence.
+    - Deleted the public filesystem, platform, random-byte, helper-result, directory-sync-success, and readback-success injection surfaces. Production opens only preexisting absolute owned roots, uses internal cryptographic nonces, invokes the verified Rust directory-flush helper, and returns bounded public-safe failures.
+    - Added verified helper-backed layout, rebuild, and quarantine directory flushing without restoring the removed Node unavailable-result path. The forbidden `required-or-explicitly-unavailable` and `unavailable-win32-node` strings remain absent from production and maintained architecture documentation.
+    - Bound campaign-plan, receipt, subject, projection, start-record, terminal-record, and lock durability receipt SHA-256 identities into runner snapshots and results. A missing committed operation or lock marker withdraws that history or fails closed; concurrent dead-lock successors use a frozen bounded observation policy and elect one generation.
+    - Regenerated the receipt identity and Rust offline-bundle corpora and updated every transitive profile, release-surface, Rust verifier, test, README, ADR, inventory, control-plane, and threat-review binding without a compatibility reader or dual path.
+  exact_artifacts:
+    durable_publication_profile: bytes=6592; sha256=a650102f064ab5f39a19bbbc3505bc58a4712c2b89b0df26a11ad5054dab4066
+    durable_publication_source_closure_sha256: 7743d0993a0f8fd4af900121c6456838980c48d463d6ec86b25e28f3d5bd121c
+    receipt_store_profile: bytes=2911; sha256=3903c7ea89a7f259edd35d22c44976efa48e05b670986c7f8cc362ed6ad67714
+    subject_store_profile: bytes=3475; sha256=1d3534a4c560a68d4df78c7815c0d15f5f0043cca5db89f784a7ee6c24ccbfe4
+    campaign_artifact_store_profile: bytes=4555; sha256=bf1bf598e5da63ec9508cab64bd36d3e38837167b3fa120a7e589f0e900dfadc
+    campaign_runner_profile: bytes=7302; sha256=8aa378f36e42c1d07ea072afebdfc7705ec57973a6712dac82832a8754213adf
+    campaign_release_surface_profile: bytes=18870; sha256=ae33c2564d281d9115229fcb777b5edaa6a1574ea21b56c22d86cba199e5679e
+    receipt_identity_vectors: bytes=8549; sha256=3f767f10cd3e7df4a267c97aa5dfd6cd0341a172fb469b76e9128251474e9197
+    offline_bundle_rust_vectors: bytes=658110; sha256=a630802b2db449d00c7029152ae0198e743114d1f42d241bebd8980e19491b3c
+  verification:
+    focused_node: 82/82 passed across durable publication, receipt store, subject store, campaign-artifact store, campaign runner, receipt vectors, and offline-bundle Rust vectors.
+    campaign_runner: 15/15 passed in 329759.4562 ms, including exact synthetic 20/50/25/40/20 capacity, process death, marker withdrawal, disk full, lock contention, cross-store mutation, and successor election.
+    campaign_release_surface: 6/23 independently passed. This includes the exact complete-capacity prepublication case in 418099.6378 ms plus five profile, honest-zero, drift, pin, and interrupted-history cases. The other 17 capacity-heavy release-surface cases and therefore the complete Node unit gate remain explicitly pending; no skip or inferred pass is recorded.
+    rust: cargo fmt --all --check passed; cargo clippy --workspace --all-targets --locked -- -D warnings passed; cargo test --workspace --locked passed, including exact Node/Rust offline-bundle parity.
+    generation: Receipt and offline-bundle corpora regenerated byte-identically at their recorded SHA-256 values.
+    hygiene: All 34 implementation files passed JavaScript syntax where applicable, JSON parsing, git diff --check, NUL, ASCII, private-path, and high-confidence secret checks.
+  publication_truth:
+    deployment_manifest: tinyrustlm/deploy/web-deployment-manifest.v2.json declares 23 publication members.
+    delta: The 34-file implementation commit intersects zero of those 23 members.
+    action: No site version, release date, Updates entry, deployment, publication receipt, or public HTTPS readback claim was created because no production web publication byte changed.
+  explicit_nonclaims:
+    - The full Node unit gate is not complete until the remaining 17 release-surface cases finish successfully; the two shell timeouts were process-budget failures, not product passes or semantic failures, and their orphaned test processes were explicitly terminated.
+    - Local helper execution is not physical power-loss proof, controller/device-cache proof, release-package provenance, Linux execution, or physical ARM64 execution.
+    - Gate D still requires archive/history scanning, equality-list custody closure, and the remaining complete release-surface gate before this durability phase can be called complete.
+    - No model qualification, browser round, authorized live memory round, outside-network lane proof, live catalog announcement, production deployment, or campaign completion was performed.
+  campaign_truth: qualified_models=0/20; clean_browser_rounds=0/50; authorized_live_memory_rounds=0/25; current_outside_network_lane_proofs=0/40; live_catalog_announcements=0/20
+  exact_next_action:
+    - Run the remaining 17 named campaign-release-surface cases to completion with orphan-process checks and preserve exact results; do not weaken the complete-capacity fixture or call the complete Node gate green early.
+    - Measure the verified helper invocation cost and, only through a new clean-slate frozen contract with equivalent activation truth, decide whether batch directory-flush receipts are warranted. Do not add caching, a fake helper, a compatibility path, or caller-supplied success to accelerate tests.
+    - Complete Gate D archive/history scanning and protected equality-list custody, regenerate any resulting identities, run the full Node and locked Rust gates, then commit and push the next healthy milestone.
+  known_blockers: MemoryEndpoints production access remains unauthorized and disconnected; model qualification, external P2P observation, catalog announcements, signing/deployment authorization, physical power-loss evidence, Linux helper execution, and physical linux-arm64 evidence remain objective work rather than inferred completion. Independent work must continue behind those blockers.
 
 current_checkpoint_2026_08_11_durable_publication_trust_anchor:
   authority: This is the newest first-read execution checkpoint. It adds to immutable history and supersedes older present-tense durability milestone, hash, resume, and next-action fields where they disagree. It does not alter prior receipts, production releases, or campaign counts.
