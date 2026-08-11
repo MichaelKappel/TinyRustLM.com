@@ -17,24 +17,28 @@ Its declared five-member source closure has SHA-256
 `37dc6e85be3655743a31de5623fa574f565578351f4c6b255621a9d976a8c487`.
 
 This checkpoint proves a bounded Rust operation/process protocol, the exact
-Node-to-packaged-Rust invocation boundary, and the standalone non-recursive
-durable-publication primitive. The primitive's 6,257-byte frozen profile has
+Node-to-packaged-Rust invocation boundary, and the sole non-recursive
+durable-publication primitive used by every current vNext store. The
+primitive's 6,592-byte frozen profile has
 SHA-256
-`ff0d621b9e1136774384a66e97706f0c463c398298e45c019e18f75919ff6318`.
+`a650102f064ab5f39a19bbbc3505bc58a4712c2b89b0df26a11ad5054dab4066`.
 Its six-member source closure has SHA-256
-`0d4bded4df6f4f7aa18271e1b32e8bff7a90aa2e9bd4494b6b5ccaa982e29f38`.
-The primitive is not yet the mandatory path of the receipt, subject,
-campaign-artifact, and campaign-operation stores, so their Win32
-`unavailable-win32-node` result remains superseded work awaiting deletion.
-Gate D is not complete and no campaign counter advances.
+`7743d0993a0f8fd4af900121c6456838980c48d463d6ec86b25e28f3d5bd121c`.
+The receipt, subject, campaign-artifact, campaign-operation, and append-only
+runner-lock paths all use this primitive. There is no unsupported-success
+class or caller-supplied durability path. Gate D remains incomplete because
+archive admission, protected equality-list custody, broader hostile/fuzz
+coverage, and physical evidence remain separate requirements. No campaign
+counter advances.
 
 ## Why A Separate Boundary Exists
 
-The current Node stores already use exclusive same-directory temporaries,
-bounded writes, file `fsync`, hard-link create-if-absent publication, and exact
-readback. Node cannot request the required Win32 directory handle flags through
-its public filesystem API, so those stores honestly return
-`unavailable-win32-node` when directory synchronization is unavailable.
+The current Node stores use exclusive same-directory temporaries, bounded
+writes, file `fsync`, hard-link create-if-absent publication, exact readback,
+and this verified helper for every required directory flush. Node cannot
+request the required Win32 directory-handle flags through its public
+filesystem API, so helper absence or failure is a bounded hard failure rather
+than a success-shaped unsupported result.
 
 Microsoft documents that opening a directory through `CreateFileW` requires
 `FILE_FLAG_BACKUP_SEMANTICS`. It separately documents that
@@ -174,10 +178,10 @@ On Unix, the helper opens the exact validated directory read-only and invokes
 fail as `directory_flush_unsupported`. Cross-compilation alone does not count
 as executed Linux or ARM64 evidence.
 
-## Receipt Integration Boundary
+## Store Integration Boundary
 
-The next Gate D change must integrate this client into the sole create-only
-publication path. The client now independently verifies the helper executable
+The client is integrated into the sole create-only vNext publication path. It
+independently verifies the helper executable
 and package identities, strict output schema, profile ID and hash, operation
 ID, platform, method, directory identity, and `performed` status. The store
 must bind:
@@ -190,11 +194,11 @@ must bind:
 - the client profile/source and Node runtime identities; and
 - the helper binary, package, source, and configuration identities
 
-into immutable vNext receipt lineage. A caller-supplied success flag or a
-synthetic observation is forbidden. Store activation must remain after the
-complete receipt-backed sequence. A failed or interrupted operation may leave
-only bytes that restart can revalidate; it cannot create accepted durability
-truth.
+into immutable vNext durability-receipt lineage. A caller-supplied success
+flag or synthetic observation is forbidden. Store activation occurs only
+after the complete receipt-backed sequence. A failed or interrupted operation
+may leave preserved bytes, but without a matching marker those bytes are
+inactive and are quarantined on reconstruction.
 
 `tinyrustlm/tools/vnext-durable-publication.js` now implements that sequence as
 an isolated production boundary. It accepts no caller filesystem, platform,
@@ -207,6 +211,13 @@ content-addressed durability receipt and activates only after that receipt's
 own file fsync, helper-backed directory flush, exact receipt readback, and a
 second exact target readback.
 
+`tinyrustlm/tools/vnext-create-only-files.js` is the only shared store adapter.
+It constructs the durable publisher internally from an exact store profile ID
+and SHA-256. It accepts no injected filesystem, platform, randomness, helper,
+readback, or success result. Layout creation, quarantine metadata changes, and
+other owned-directory synchronization use the same verified helper through the
+profile's auxiliary-directory-flush operation.
+
 The durability receipt deliberately excludes evidence of its own publication.
 Including that result would require either a self-hash cycle or an infinite
 receipt chain. The receipt file is therefore the explicit terminal persistence
@@ -218,7 +229,7 @@ without exact targets remain inactive.
 
 ## Verification
 
-The crate currently has 14 passing tests:
+The Rust crate currently has 14 passing focused tests:
 
 - eight owned-path and platform-operation tests, including actual Win32
   success and junction rejection; and
@@ -227,7 +238,7 @@ The crate currently has 14 passing tests:
   wrong schema, byte limits, path redaction, bounded failure, and real
   child-process execution.
 
-The Node client has 32 passing tests. They cover exact profile/source-closure
+The Node client has 32 passing focused tests. They cover exact profile/source-closure
 identity, real helper success and safe failure, owned-root scope, configured
 package discovery, accessor and unknown-field rejection, request bounds,
 empty-environment process execution, package-root link rejection, duplicate,
@@ -254,8 +265,11 @@ Retrieved 2026-08-11:
 
 ## Explicit Non-Claims
 
-- Gate D is not complete.
-- The four Node stores do not yet require the durable-publication primitive.
+- Gate D is not complete; compressed archive admission, protected equality-list
+  custody, broader parser fuzzing, and physical durability evidence remain.
+- All four current vNext Node stores and runner-lock records require the
+  durable-publication primitive; this does not prove unrelated older tools
+  have completed their clean-slate deletion gate.
 - Local hostile tests admit disposable durability receipts only; no production
   or campaign receipt follows from them.
 - The Node client does not impose an OS network sandbox or prove release

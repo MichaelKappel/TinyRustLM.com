@@ -17,7 +17,8 @@ const {
 } = require("./vnext-create-only-files.js");
 const {
   createVnextReceiptStore,
-  storeProfile: receiptStoreProfile
+  storeProfile: receiptStoreProfile,
+  storeProfileSha256: receiptStoreProfileSha256
 } = require("./vnext-receipt-store.js");
 const {
   createVnextSubjectStore,
@@ -29,12 +30,15 @@ const {
   campaignArtifactStoreProfileSha256,
   createVnextCampaignArtifactStore
 } = require("./vnext-campaign-artifact-store.js");
+const {
+  durablePublicationProfile,
+  durablePublicationProfileSha256
+} = require("./vnext-durable-publication.js");
 const { utcNanoseconds } = require("./vnext-signature-payload.js");
 const campaignEvidenceAdapter = require("./generated/vnext-campaign-evidence-wasm.js");
 
 const contractRoot = path.resolve(__dirname, "../../contracts/vnext");
 const profilePath = path.join(contractRoot, "campaign-runner-profile.v1.json");
-const receiptStoreProfilePath = path.join(contractRoot, "receipt-store-profile.v1.json");
 const campaignEvidenceProfilePath = path.join(
   contractRoot,
   "campaign-evidence-wasm-interface.v1.json"
@@ -42,7 +46,7 @@ const campaignEvidenceProfilePath = path.join(
 const profileBytes = fs.readFileSync(profilePath);
 const parsedProfile = parseStrictJson(profileBytes);
 const expectedCampaignRunnerProfileSha256 =
-  "d3eddd20b885556f6ad26804f122d60f7ff288c5bf4ef28a0929b52784f22323";
+  "8aa378f36e42c1d07ea072afebdfc7705ec57973a6712dac82832a8754213adf";
 const contentIdPattern = /^sha256:[a-f0-9]{64}$/u;
 const digestPattern = /^[a-f0-9]{64}$/u;
 const digestFilePattern = /^([a-f0-9]{64})\.json$/u;
@@ -57,10 +61,7 @@ const lockTemporaryPattern = /^\.([a-f0-9]{16})\.[0-9]{1,20}\.[a-f0-9]{4,64}\.tm
 const optionNames = Object.freeze([
   "campaignArtifactStoreRoot",
   "expectedWasmModuleSha256",
-  "io",
-  "platform",
   "processAlive",
-  "randomBytes",
   "receiptStoreRoot",
   "subjectStoreRoot",
   "wasmModuleBytes"
@@ -83,6 +84,7 @@ const runInputFields = Object.freeze([
 ]);
 const startFields = Object.freeze([
   "campaignArtifactStoreProfileId",
+  "campaignPlanDurabilityReceiptSha256",
   "campaignEvidenceProfileId",
   "campaignPlanId",
   "campaignPlanSha256",
@@ -106,6 +108,7 @@ const terminalFields = Object.freeze([
   "errorStep",
   "operationId",
   "outcome",
+  "projectionDurabilityReceiptSha256",
   "projectionResultSha256",
   "recordId",
   "schema",
@@ -120,7 +123,12 @@ const snapshotFields = Object.freeze([
   "profileSha256",
   "snapshotSha256"
 ]);
-const snapshotMemberFields = Object.freeze(["byteLength", "id", "wireSha256"]);
+const snapshotMemberFields = Object.freeze([
+  "byteLength",
+  "durabilityReceiptSha256",
+  "id",
+  "wireSha256"
+]);
 const lockClaimFields = Object.freeze([
   "generation",
   "nonce",
@@ -205,7 +213,7 @@ function validateInstalledProfile() {
     "canonicalJsonProfile", "hashAlgorithm", "networkAccess", "clockAccess",
     "environmentAccess", "randomAccess", "selectionPolicy", "projectionAuthority",
     "storedProjectionAuthority", "snapshotProtocol", "operationRecord", "layout",
-    "atomicCreate", "operationLock", "interruption", "rebuild", "limits",
+    "durablePublication", "operationLock", "interruption", "rebuild", "limits",
     "resultContract"
   ];
   try {
@@ -215,7 +223,6 @@ function validateInstalledProfile() {
     profileFailure();
   }
   if (sha256(profileBytes) !== expectedCampaignRunnerProfileSha256) profileFailure();
-  const receiptProfileSha256 = sha256(fs.readFileSync(receiptStoreProfilePath));
   const evidenceProfileSha256 = sha256(fs.readFileSync(campaignEvidenceProfilePath));
   const expectedLimits = {
     maximumWasmModuleBytes: 8388608,
@@ -250,7 +257,7 @@ function validateInstalledProfile() {
       parsedProfile.campaignArtifactStoreProfileSha256 !==
         campaignArtifactStoreProfileSha256 ||
       parsedProfile.receiptStoreProfileId !== receiptStoreProfile.profileId ||
-      parsedProfile.receiptStoreProfileSha256 !== receiptProfileSha256 ||
+      parsedProfile.receiptStoreProfileSha256 !== receiptStoreProfileSha256 ||
       parsedProfile.subjectStoreProfileId !== subjectStoreProfile.profileId ||
       parsedProfile.subjectStoreProfileSha256 !== subjectStoreProfileSha256 ||
       parsedProfile.operationRecordSchema !==
@@ -265,6 +272,7 @@ function validateInstalledProfile() {
       parsedProfile.networkAccess !== "forbidden" ||
       parsedProfile.clockAccess !== "caller-trusted-verification-time-only" ||
       parsedProfile.environmentAccess !== "forbidden" ||
+      parsedProfile.randomAccess !== "cryptographic-nonces-internal-only" ||
       parsedProfile.selectionPolicy !== "all-active-members-no-subset-selection" ||
       parsedProfile.projectionAuthority !==
         "sole-generated-rust-campaign-evidence-abi" ||
@@ -279,12 +287,29 @@ function validateInstalledProfile() {
       !sameStrings(parsedProfile.operationLock?.claimFields, lockClaimFields) ||
       !sameStrings(parsedProfile.operationLock?.releaseFields, lockReleaseFields) ||
       parsedProfile.layout?.mutablePointerPolicy !== "forbidden" ||
-      parsedProfile.atomicCreate?.publishPrimitive !== "hard-link-create-if-absent" ||
+      parsedProfile.durablePublication?.profileId !== durablePublicationProfile.profileId ||
+      parsedProfile.durablePublication?.profileSha256 !==
+        durablePublicationProfileSha256 ||
+      parsedProfile.durablePublication?.targetActivation !==
+        "matching-content-addressed-durability-receipt-required" ||
+      parsedProfile.durablePublication?.directoryFlush !==
+        "verified-rust-helper-required" ||
+      parsedProfile.durablePublication?.callerSuppliedSuccess !== "forbidden" ||
       parsedProfile.operationLock?.primitive !== "append-only-generation-claims" ||
       parsedProfile.operationLock?.claimSchema !==
         "tinyrustlm.vnext.campaign_runner_lock_claim.v1" ||
       parsedProfile.operationLock?.releaseSchema !==
         "tinyrustlm.vnext.campaign_runner_lock_release.v1" ||
+      !Number.isSafeInteger(
+        parsedProfile.operationLock?.publicationConflictMaximumObservations
+      ) ||
+      parsedProfile.operationLock.publicationConflictMaximumObservations < 2 ||
+      parsedProfile.operationLock.publicationConflictMaximumObservations > 1000 ||
+      !Number.isSafeInteger(
+        parsedProfile.operationLock?.publicationConflictWaitMilliseconds
+      ) ||
+      parsedProfile.operationLock.publicationConflictWaitMilliseconds < 1 ||
+      parsedProfile.operationLock.publicationConflictWaitMilliseconds > 1000 ||
       parsedProfile.operationLock?.deletionPolicy !== "never" ||
       parsedProfile.interruption?.startWithoutTerminalClassification !== "interrupted" ||
       parsedProfile.resultContract?.callerSuppliedVerdictAccepted !== false ||
@@ -401,6 +426,8 @@ function validateSnapshot(value, kind, expectedProfileId, expectedProfileSha256)
     );
     normalizeContentId(member.id, "campaign_runner_snapshot_member_invalid",
       "campaign-runner-operation");
+    normalizeDigest(member.durabilityReceiptSha256,
+      "campaign_runner_snapshot_member_invalid", "campaign-runner-operation");
     normalizeDigest(member.wireSha256, "campaign_runner_snapshot_member_invalid",
       "campaign-runner-operation");
     if (!Number.isSafeInteger(member.byteLength) || member.byteLength <= 0) {
@@ -419,6 +446,7 @@ function validateSnapshot(value, kind, expectedProfileId, expectedProfileSha256)
     }
     normalizedMembers.push({
       byteLength: member.byteLength,
+      durabilityReceiptSha256: member.durabilityReceiptSha256,
       id: member.id,
       wireSha256: member.wireSha256
     });
@@ -492,6 +520,7 @@ function validateCampaignRunnerOperationBytes(input) {
       }
     }
     if (utcNanoseconds(start.verificationTimeUtc) === null ||
+        !digestPattern.test(String(start.campaignPlanDurabilityReceiptSha256 || "")) ||
         start.campaignArtifactStoreProfileId !==
           parsedProfile.campaignArtifactStoreProfileId ||
         start.campaignEvidenceProfileId !== parsedProfile.campaignEvidenceProfileId) {
@@ -537,11 +566,14 @@ function validateCampaignRunnerOperationBytes(input) {
     if (terminal.outcome === "completed") {
       normalizeDigest(terminal.projectionResultSha256,
         "campaign_runner_operation_terminal_invalid", "campaign-runner-operation");
+      normalizeDigest(terminal.projectionDurabilityReceiptSha256,
+        "campaign_runner_operation_terminal_invalid", "campaign-runner-operation");
       if (terminal.errorCode !== null || terminal.errorStep !== null) {
         failEvidence("campaign_runner_operation_terminal_invalid",
           "campaign-runner-operation");
       }
     } else if (terminal.projectionResultSha256 !== null ||
+        terminal.projectionDurabilityReceiptSha256 !== null ||
         !errorCodePattern.test(String(terminal.errorCode || "")) ||
         !errorStepPattern.test(String(terminal.errorStep || ""))) {
       failEvidence("campaign_runner_operation_terminal_invalid",
@@ -588,13 +620,10 @@ function operationRecordRelativePath(recordId) {
   return `operations/sha256/${digest.slice(0, 2)}/${digest}.json`;
 }
 
-function createOperationStore(rootInput, options) {
-  const { io, platform, randomBytes } = options;
+function createOperationStore(rootInput) {
   const fileOps = createVnextCreateOnlyFiles({
     codePrefix: "campaign_runner_operation",
-    io,
-    platform,
-    randomBytes,
+    root: rootInput,
     steps: {
       open: "campaign-runner-store-open",
       path: "campaign-runner-operation-path",
@@ -603,6 +632,8 @@ function createOperationStore(rootInput, options) {
       read: "campaign-runner-operation-read",
       scan: "campaign-runner-operation-scan"
     },
+    storeProfileId: parsedProfile.profileId,
+    storeProfileSha256: campaignRunnerProfileSha256,
     streamBufferBytes: parsedProfile.limits.streamBufferBytes
   });
   const root = fileOps.normalizeRoot(rootInput);
@@ -676,6 +707,7 @@ function createOperationStore(rootInput, options) {
 
   function rebuild() {
     ensureLayout();
+    const durabilityIndex = fileOps.rebuildDurabilityIndex();
     let totalScanEntries = 0;
     const scan = (directory, maximum) => {
       const entries = fileOps.boundedDirectoryEntries(directory, maximum);
@@ -709,7 +741,7 @@ function createOperationStore(rootInput, options) {
       if (result !== null) quarantineCount += 1;
       return result;
     };
-    scanUnknown(root, new Set(["locks", "operations", "quarantine"]),
+    scanUnknown(root, new Set(["durability", "locks", "operations", "quarantine"]),
       newQuarantines, scan, quarantine);
     scanUnknown(layout.operations, new Set(["sha256"]), newQuarantines, scan, quarantine);
     scanUnknown(layout.locks, new Set(["claims", "releases"]), newQuarantines,
@@ -756,14 +788,22 @@ function createOperationStore(rootInput, options) {
           if (result !== null) newQuarantines.push(result);
           continue;
         }
+        let activation;
         let validated;
         try {
-          validated = validateCampaignRunnerOperationBytes(fileOps.boundedReadFile(
+          activation = fileOps.activateBytes(
             filePath,
             parsedProfile.limits.maximumOperationRecordBytes
-          ));
-        } catch (_error) {
-          const result = quarantine(filePath, "invalid_operation_record");
+          );
+          validated = validateCampaignRunnerOperationBytes(activation.bytes);
+        } catch (error) {
+          const reasonCode = error?.code ===
+            "campaign_runner_operation_durability_receipt_missing"
+            ? "durability_receipt_missing"
+            : error?.code === "campaign_runner_operation_target_readback_mismatch"
+              ? "durability_target_mismatch"
+              : "invalid_operation_record";
+          const result = quarantine(filePath, reasonCode);
           if (result !== null) newQuarantines.push(result);
           continue;
         }
@@ -782,6 +822,7 @@ function createOperationStore(rootInput, options) {
         const byteLength = validated.bytes.length;
         candidates.set(recordId, Object.freeze({
           byteLength,
+          durability: activation.durability,
           record: validated.record,
           relativePath: operationRecordRelativePath(recordId)
         }));
@@ -813,6 +854,7 @@ function createOperationStore(rootInput, options) {
     return immutableRecord({
       activeRecordIds: [...activeRecords.keys()].sort(),
       activeTotalBytes,
+      durabilityIndex,
       directoryMetadata: fileOps.syncDirectory(layout.shaRoot),
       existingQuarantineEntries,
       newQuarantines,
@@ -835,12 +877,14 @@ function createOperationStore(rootInput, options) {
       "campaign-runner-operation-read");
     const filePath = path.join(root, ...metadata.relativePath.split("/"));
     fileOps.assertNoLinkComponents(path.dirname(filePath), true);
+    let activation;
     let validated;
     try {
-      validated = validateCampaignRunnerOperationBytes(fileOps.boundedReadFile(
+      activation = fileOps.activateBytes(
         filePath,
         parsedProfile.limits.maximumOperationRecordBytes
-      ));
+      );
+      validated = validateCampaignRunnerOperationBytes(activation.bytes);
     } catch (error) {
       throw new VnextEvidenceError(
         "campaign_runner_operation_active_read_failed",
@@ -853,7 +897,11 @@ function createOperationStore(rootInput, options) {
       failEvidence("campaign_runner_operation_active_identity_changed",
         "campaign-runner-operation-read");
     }
-    return validated;
+    return Object.freeze({
+      bytes: validated.bytes,
+      durability: activation.durability,
+      record: validated.record
+    });
   }
 
   function inspect(operationIdInput) {
@@ -871,8 +919,14 @@ function createOperationStore(rootInput, options) {
       errorStep: terminal?.errorStep ?? null,
       operationId,
       projectionResultSha256: terminal?.projectionResultSha256 ?? null,
+      projectionDurabilityReceiptSha256:
+        terminal?.projectionDurabilityReceiptSha256 ?? null,
+      startedDurabilityReceiptSha256:
+        state.started.durability.durabilityReceiptSha256,
       startedRecordId: state.started.record.recordId,
       state: terminal === null ? "interrupted" : terminal.outcome,
+      terminalDurabilityReceiptSha256:
+        state.terminal?.durability.durabilityReceiptSha256 ?? null,
       terminalRecordId: terminal?.recordId ?? null
     });
   }
@@ -952,8 +1006,7 @@ function exactOptions(options) {
     failEvidence("campaign_runner_option_unknown", "campaign-runner-open");
   }
   const names = Object.getOwnPropertyNames(options);
-  if (names.some((name) => !optionNames.includes(name)) ||
-      requiredOptionNames.some((name) => !names.includes(name))) {
+  if (requiredOptionNames.some((name) => !names.includes(name))) {
     failEvidence("campaign_runner_option_unknown", "campaign-runner-open");
   }
   const values = {};
@@ -964,6 +1017,9 @@ function exactOptions(options) {
     }
     if (!("value" in descriptor)) {
       failEvidence("campaign_runner_option_accessor", "campaign-runner-open");
+    }
+    if (!optionNames.includes(name)) {
+      failEvidence("campaign_runner_option_unknown", "campaign-runner-open");
     }
     values[name] = descriptor.value;
   }
@@ -1035,6 +1091,7 @@ function snapshotPublic(kind, profileId, profileSha256, members, aggregateBytes)
     memberCount: members.length,
     members: members.map((member) => ({
       byteLength: member.byteLength,
+      durabilityReceiptSha256: member.durabilityReceiptSha256,
       id: member.id,
       wireSha256: member.wireSha256
     })),
@@ -1042,6 +1099,7 @@ function snapshotPublic(kind, profileId, profileSha256, members, aggregateBytes)
     profileSha256,
     snapshotSha256: snapshotIdentity(kind, profileId, profileSha256, members.map((member) => ({
       byteLength: member.byteLength,
+      durabilityReceiptSha256: member.durabilityReceiptSha256,
       id: member.id,
       wireSha256: member.wireSha256
     })))
@@ -1057,23 +1115,17 @@ function snapshotsEqual(left, right) {
   return left.members.every((member, index) => {
     const other = right.members[index];
     return member.id === other.id && member.wireSha256 === other.wireSha256 &&
+      member.durabilityReceiptSha256 === other.durabilityReceiptSha256 &&
       member.bytes.equals(other.bytes);
   });
 }
 
 async function createVnextCampaignRunner(rootInput, optionsInput) {
   const options = exactOptions(optionsInput);
-  const io = Object.hasOwn(options, "io") ? options.io : fs;
-  const platform = Object.hasOwn(options, "platform") ? options.platform : process.platform;
-  const randomBytes = Object.hasOwn(options, "randomBytes")
-    ? options.randomBytes
-    : crypto.randomBytes;
   const processAlive = Object.hasOwn(options, "processAlive")
     ? options.processAlive
     : defaultProcessAlive;
-  if ((typeof io !== "object" && typeof io !== "function") || io === null ||
-      typeof platform !== "string" || platform.length === 0 ||
-      typeof randomBytes !== "function" || typeof processAlive !== "function") {
+  if (typeof processAlive !== "function") {
     failEvidence("campaign_runner_options_invalid", "campaign-runner-open");
   }
   const root = normalizeAbsoluteRoot(rootInput, "campaign_runner_root_invalid");
@@ -1086,7 +1138,7 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
   ];
   for (let left = 0; left < roots.length; left += 1) {
     for (let right = left + 1; right < roots.length; right += 1) {
-      if (rootsOverlap(roots[left], roots[right], platform)) {
+      if (rootsOverlap(roots[left], roots[right], process.platform)) {
         failEvidence("campaign_runner_store_roots_overlap", "campaign-runner-open");
       }
     }
@@ -1107,26 +1159,11 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
     failEvidence("campaign_runner_wasm_identity_mismatch", "campaign-runner-open");
   }
   const verifier = await campaignEvidenceAdapter.instantiateCampaignEvidence(wasmModuleBytes);
-  const storeOptions = { io, platform, randomBytes };
-  const artifactStore = createVnextCampaignArtifactStore(roots[1], storeOptions);
-  const receiptStore = createVnextReceiptStore(roots[2], storeOptions);
-  const subjectStore = createVnextSubjectStore(roots[3], storeOptions);
-  const operationStore = createOperationStore(root, storeOptions);
-  const lockFileOps = createVnextCreateOnlyFiles({
-    codePrefix: "campaign_runner_lock",
-    io,
-    platform,
-    randomBytes,
-    steps: {
-      open: "campaign-runner-lock",
-      path: "campaign-runner-lock",
-      persist: "campaign-runner-lock",
-      quarantine: "campaign-runner-lock",
-      read: "campaign-runner-lock",
-      scan: "campaign-runner-lock"
-    },
-    streamBufferBytes: parsedProfile.limits.streamBufferBytes
-  });
+  const artifactStore = createVnextCampaignArtifactStore(roots[1]);
+  const receiptStore = createVnextReceiptStore(roots[2]);
+  const subjectStore = createVnextSubjectStore(roots[3]);
+  const operationStore = createOperationStore(root);
+  const lockFileOps = operationStore.fileOps;
 
   function lockGenerationFileName(generation) {
     if (!Number.isSafeInteger(generation) || generation < 0 ||
@@ -1221,17 +1258,32 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
       if (!match || !entry.isFile() || entry.isSymbolicLink()) {
         failEvidence("campaign_runner_lock_history_invalid", "campaign-runner-lock");
       }
-      const validated = kind === "claim"
-        ? validateLockClaim(lockFileOps.boundedReadFile(
-          filePath, parsedProfile.limits.maximumLockBytes))
-        : validateLockRelease(lockFileOps.boundedReadFile(
-          filePath, parsedProfile.limits.maximumLockBytes));
+      let activation;
+      let validated;
+      try {
+        activation = lockFileOps.activateBytes(
+          filePath,
+          parsedProfile.limits.maximumLockBytes
+        );
+        validated = kind === "claim"
+          ? validateLockClaim(activation.bytes)
+          : validateLockRelease(activation.bytes);
+      } catch (error) {
+        throw new VnextEvidenceError(
+          "campaign_runner_lock_history_invalid",
+          "campaign-runner-lock",
+          error?.code
+        );
+      }
       const generation = Number.parseInt(match[1], 16);
       if (!Number.isSafeInteger(generation) || generation !== validated.record.generation ||
           records.has(generation)) {
         failEvidence("campaign_runner_lock_history_invalid", "campaign-runner-lock");
       }
-      records.set(generation, validated);
+      records.set(generation, Object.freeze({
+        ...validated,
+        durability: activation.durability
+      }));
       if (records.size > parsedProfile.limits.maximumLockGenerations) {
         failEvidence("campaign_runner_lock_generation_limit", "campaign-runner-lock");
       }
@@ -1240,6 +1292,7 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
   }
 
   function rebuildLockHistory() {
+    lockFileOps.rebuildDurabilityIndex();
     const claimsResult = scanLockDirectory(operationStore.layout.lockClaims, "claim");
     const releasesResult = scanLockDirectory(operationStore.layout.lockReleases, "release");
     const claims = claimsResult.records;
@@ -1284,7 +1337,7 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
   function newLockNonce() {
     let nonce;
     try {
-      nonce = randomBytes(12);
+      nonce = crypto.randomBytes(12);
     } catch (error) {
       throw asEvidenceError(error, "campaign_runner_lock_random_failed",
         "campaign-runner-lock");
@@ -1296,8 +1349,29 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
   }
 
   function acquireLock() {
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-      const state = rebuildLockHistory();
+    const maximumObservations =
+      parsedProfile.operationLock.publicationConflictMaximumObservations;
+    const waitMilliseconds =
+      parsedProfile.operationLock.publicationConflictWaitMilliseconds;
+    const waitCell = new Int32Array(new SharedArrayBuffer(4));
+    let publicationConflict = false;
+    let incompletePublicationError = null;
+    for (let attempt = 0; attempt < maximumObservations; attempt += 1) {
+      let state;
+      try {
+        state = rebuildLockHistory();
+      } catch (error) {
+        if (publicationConflict &&
+            error?.code === "campaign_runner_lock_history_invalid" &&
+            error?.causeCode ===
+              "campaign_runner_operation_durability_receipt_missing" &&
+            attempt + 1 < maximumObservations) {
+          incompletePublicationError = error;
+          Atomics.wait(waitCell, 0, 0, waitMilliseconds);
+          continue;
+        }
+        throw error;
+      }
       if (state.latestClaim !== null && state.latestRelease === null) {
         let alive;
         try {
@@ -1328,7 +1402,11 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
       try {
         lockFileOps.publishBytes(target, bytes, parsedProfile.limits.maximumLockBytes);
       } catch (error) {
-        if (error?.code === "campaign_runner_lock_target_conflict") continue;
+        if (error?.code === "campaign_runner_operation_target_conflict") {
+          publicationConflict = true;
+          Atomics.wait(waitCell, 0, 0, waitMilliseconds);
+          continue;
+        }
         throw asEvidenceError(error, "campaign_runner_lock_create_failed",
           "campaign-runner-lock");
       }
@@ -1337,8 +1415,9 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
           verified.latestRelease !== null) {
         failEvidence("campaign_runner_lock_lost", "campaign-runner-lock");
       }
-      return claim;
+      return verified.latestClaim;
     }
+    if (incompletePublicationError !== null) throw incompletePublicationError;
     failEvidence("campaign_runner_busy", "campaign-runner-lock");
   }
 
@@ -1383,6 +1462,7 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
     return Object.freeze({
       bytes: plan.bytes,
       campaignId: plan.plan.campaignId,
+      durabilityReceiptSha256: plan.durability.durabilityReceiptSha256,
       environment: plan.plan.environment,
       planId: plan.plan.planId,
       planSha256: plan.planSha256,
@@ -1426,6 +1506,8 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
       }
       members.push(Object.freeze({
         byteLength: bytes.length,
+        durabilityReceiptSha256:
+          validated.durability.durabilityReceiptSha256,
         id,
         wireSha256: sha256(bytes),
         bytes: Buffer.from(bytes)
@@ -1478,6 +1560,7 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
   function startRecord(input, stable) {
     return finalizeOperationRecord({
       campaignArtifactStoreProfileId: parsedProfile.campaignArtifactStoreProfileId,
+      campaignPlanDurabilityReceiptSha256: stable.plan.durabilityReceiptSha256,
       campaignEvidenceProfileId: parsedProfile.campaignEvidenceProfileId,
       campaignPlanId: stable.plan.planId,
       campaignPlanSha256: stable.plan.planSha256,
@@ -1498,12 +1581,13 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
   }
 
   function terminalRecord(operationId, startedRecordId, outcome, projectionSha256,
-    errorCode, errorStep) {
+    projectionDurabilityReceiptSha256, errorCode, errorStep) {
     return finalizeOperationRecord({
       errorCode,
       errorStep,
       operationId,
       outcome,
+      projectionDurabilityReceiptSha256,
       projectionResultSha256: projectionSha256,
       schema: parsedProfile.operationRecordSchema,
       startedRecordId,
@@ -1551,6 +1635,7 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
         started.record.recordId,
         "completed",
         projectionPersistence.artifactSha256,
+        projectionPersistence.durability.durabilityReceiptSha256,
         null,
         null
       );
@@ -1559,7 +1644,13 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
         operationId: input.operationId,
         persistence: immutableRecord({
           projectionDisposition: projectionPersistence.disposition,
+          projectionDurabilityReceiptSha256:
+            projectionPersistence.durability.durabilityReceiptSha256,
           startedDisposition: startPersistence.disposition,
+          startedDurabilityReceiptSha256:
+            startPersistence.durability.durabilityReceiptSha256,
+          terminalDurabilityReceiptSha256:
+            terminalPersistence.durability.durabilityReceiptSha256,
           terminalDisposition: terminalPersistence.disposition
         }),
         projectionResultBytes: Buffer.from(projectionBytes),
@@ -1585,6 +1676,7 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
         input.operationId,
         started.record.recordId,
         "failed",
+        null,
         null,
         bounded.code,
         step

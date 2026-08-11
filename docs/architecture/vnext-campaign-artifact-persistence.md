@@ -9,7 +9,8 @@ invoke a browser, contact a service, or increment any campaign counter.
 
 The frozen store profile is
 `contracts/vnext/campaign-artifact-store-profile.v1.json`. Its SHA-256 is
-`778743a9d36d3ca9be56c3037529a31766e76af56127b8cb02a36adb5ad61136`.
+`bf1bf598e5da63ec9508cab64bd36d3e38837167b3fa120a7e589f0e900dfadc`
+over 4,555 exact bytes.
 The implementation is `tinyrustlm/tools/vnext-campaign-artifact-store.js`;
 its hostile and interruption tests are in
 `tinyrustlm/tests/vnext-campaign-artifact-store.test.js`.
@@ -63,7 +64,7 @@ the receipt and subject evidence used to create the snapshot remains current.
 Current truth still comes only from rerunning `projectVnextCampaign` with the
 caller-supplied trusted time, authority pins, receipt bytes, and subject bytes.
 
-## Atomic Create Algorithm
+## Receipt-Backed Create Algorithm
 
 For each accepted artifact, the store:
 
@@ -75,18 +76,20 @@ For each accepted artifact, the store:
 6. `fsync`s and closes the temporary;
 7. publishes with a hard link that cannot replace an existing target;
 8. removes the temporary link;
-9. synchronizes directory metadata, or records the explicit Node/Windows
-   unavailability class accepted by the frozen profile;
+9. flushes the target directory through the identity-verified Rust helper;
 10. rereads through a bounded no-follow descriptor and compares every byte;
-11. revalidates the parent plan after projection publication; and
-12. exposes the artifact in the in-process active map only after all checks
-    succeed.
+11. publishes a canonical content-addressed durability receipt through the
+    same fsync, create-only, helper-flush, and readback sequence;
+12. revalidates the parent plan after projection publication; and
+13. exposes the artifact in the in-process active map only after the target,
+    marker, and parent checks succeed.
 
-If the parent changes after preflight, a newly created projection is removed
-and the parent failure remains authoritative. If directory synchronization
-fails after publication, complete target bytes remain recoverable on restart.
-Disk-full, file-sync, link, conflict, and false-readback paths return bounded
-codes and do not publish partial bytes.
+If the parent changes after preflight, reconstruction withdraws and
+quarantines the newly created projection without deleting its immutable marker
+history. If helper synchronization or readback fails after target publication,
+the target may remain preserved but has no completed marker and is inactive on
+restart. Disk-full, file-sync, link, conflict, helper, and false-readback paths
+return bounded codes and never manufacture active durability truth.
 
 ## Rebuild And Resume
 
@@ -96,7 +99,10 @@ identity against wire identity, validates all plans before dependent
 projections, and quarantines invalid plans plus projections whose parent plan
 is absent. Unknown entries and old incomplete temporaries are quarantined;
 fresh temporaries remain pending for another live writer until the frozen
-five-minute threshold passes. Unrelated valid artifacts remain active.
+five-minute threshold passes. Every candidate also requires one exact current
+durability marker. A target without a marker, a marker without a target, or a
+target whose bytes drift from the marker remains inactive. Unrelated valid
+artifacts remain active.
 
 `resumeProjection(input)` does not select a stored snapshot by timestamp. It:
 
@@ -112,29 +118,28 @@ a new on-disk observation after writes by this or another process.
 
 ## Verification
 
-The focused result, campaign-store, and receipt-store suites pass 48 tests.
-They cover strict profile shape, accessor rejection, exact create/read/reuse,
+The focused campaign-artifact store suite passes 11/11. It covers strict
+profile shape, accessor rejection, exact create/read/reuse,
 missing parents, restart reprojection, immutable history, plan tamper,
-dependent withdrawal, fresh and stale temporaries, disk full, directory-sync
-failure, parent mutation after preflight, false readback, complete-campaign
-result validation, and all retained receipt DAG/concurrency cases.
-
-The complete Node gate passes 795 tests with zero failures and zero skips. The
-locked offline Rust plan-parity crate remains 7/7. These are local test facts,
-not live campaign evidence.
+dependent withdrawal, fresh and stale temporaries, disk full, verified-helper
+failure, parent mutation after preflight, and false readback. Broader Node and
+locked Rust gates are rerun at milestone closure; these focused facts are local
+test evidence, not live campaign evidence.
 
 ## Remaining Integration
 
-- Feed receipt-store and non-receipt subject bytes into the resume API from
-  one bounded campaign runner instead of test fixtures.
-- Bind selected projection artifacts into final attestation, release
-  authorization, operator rendering, documentation synchronization, and
-  public readback.
+- Preserve the completed runner integration: it observes every active receipt
+  and subject twice, binds every marker identity, and persists projections only
+  through this store.
+- Preserve the sole release-surface integration from fresh projection through
+  attestation, authorization, deployment admission, exact readback, and site
+  publication while the superseded mutable stack is deleted.
 - Preserve completed independent Rust currentness, signature-authority, and
   truthful-projection parity.
 - Preserve the generated campaign-evidence Rust/WASM boundary and its exact
   Node/Rust/real-Chromium plan, currentness, projection, and result parity.
-- Replace fixture evidence only with authorized production receipts.
+- Replace fixture evidence only with authorized production receipts and run
+  the real campaign gates.
 
 Campaign status remains 0/20 qualified models, 0/50 clean-browser rounds,
 0/25 live memory rounds, 0/40 outside-proven lanes, and 0/20 announcements.

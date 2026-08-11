@@ -6,11 +6,11 @@
   "campaignEvidenceProfileId": "tinyrustlm.vnext.campaign-evidence-wasm.v1",
   "campaignEvidenceProfileSha256": "173fed5fadd66f5ca56f57e5a9718f27bf03d8671c3d98047b5c9ec473a2071d",
   "campaignArtifactStoreProfileId": "tinyrustlm.vnext.campaign-artifact-store.v1",
-  "campaignArtifactStoreProfileSha256": "778743a9d36d3ca9be56c3037529a31766e76af56127b8cb02a36adb5ad61136",
+  "campaignArtifactStoreProfileSha256": "bf1bf598e5da63ec9508cab64bd36d3e38837167b3fa120a7e589f0e900dfadc",
   "receiptStoreProfileId": "tinyrustlm.vnext.receipt-store.v1",
-  "receiptStoreProfileSha256": "ec5e691fd9033a5b5d9ee1cccc0f8c7601d841035edbe6b0abbbe0229b1b227e",
+  "receiptStoreProfileSha256": "3903c7ea89a7f259edd35d22c44976efa48e05b670986c7f8cc362ed6ad67714",
   "subjectStoreProfileId": "tinyrustlm.vnext.subject-store.v1",
-  "subjectStoreProfileSha256": "8be12332d8c2936df74eed6548e03fff5d8f816479191814c639613444cc40c9",
+  "subjectStoreProfileSha256": "1d3534a4c560a68d4df78c7815c0d15f5f0043cca5db89f784a7ee6c24ccbfe4",
   "operationRecordSchema": "tinyrustlm.vnext.campaign_runner_operation.v1",
   "operationRecordIdentityDomain": "tinyrustlm.campaign-runner-operation.identity.v1",
   "snapshotIdentityDomain": "tinyrustlm.campaign-runner-snapshot.identity.v1",
@@ -19,7 +19,7 @@
   "networkAccess": "forbidden",
   "clockAccess": "caller-trusted-verification-time-only",
   "environmentAccess": "forbidden",
-  "randomAccess": "lock-and-create-only-file-nonces-only",
+  "randomAccess": "cryptographic-nonces-internal-only",
   "selectionPolicy": "all-active-members-no-subset-selection",
   "projectionAuthority": "sole-generated-rust-campaign-evidence-abi",
   "storedProjectionAuthority": "immutable-history-not-current-truth",
@@ -40,6 +40,7 @@
     ],
     "startFields": [
       "campaignArtifactStoreProfileId",
+      "campaignPlanDurabilityReceiptSha256",
       "campaignEvidenceProfileId",
       "campaignPlanId",
       "campaignPlanSha256",
@@ -63,6 +64,7 @@
       "errorStep",
       "operationId",
       "outcome",
+      "projectionDurabilityReceiptSha256",
       "projectionResultSha256",
       "recordId",
       "schema",
@@ -79,6 +81,7 @@
     ],
     "snapshotMemberFields": [
       "byteLength",
+      "durabilityReceiptSha256",
       "id",
       "wireSha256"
     ],
@@ -97,14 +100,15 @@
     "replacementPolicy": "never",
     "mutablePointerPolicy": "forbidden"
   },
-  "atomicCreate": {
-    "sameDirectoryTemporary": true,
-    "exclusiveTemporary": true,
-    "temporaryFileFsync": true,
-    "publishPrimitive": "hard-link-create-if-absent",
-    "existingTargetPolicy": "accept-only-byte-identical",
-    "directoryMetadataSync": "required-or-explicitly-unavailable",
-    "readbackVerification": true
+  "durablePublication": {
+    "profileId": "tinyrustlm.vnext.durable-publication.v1",
+    "profileSha256": "a650102f064ab5f39a19bbbc3505bc58a4712c2b89b0df26a11ad5054dab4066",
+    "targetActivation": "matching-content-addressed-durability-receipt-required",
+    "directoryFlush": "verified-rust-helper-required",
+    "restart": "fresh-target-and-receipt-directory-flushes-and-exact-readbacks",
+    "targetWithoutReceipt": "inactive",
+    "receiptWithoutTarget": "inactive",
+    "callerSuppliedSuccess": "forbidden"
   },
   "operationLock": {
     "primitive": "append-only-generation-claims",
@@ -131,6 +135,8 @@
     "releasedOwnerPolicy": "create-next-generation-claim",
     "unknownOwnerPolicy": "fail-closed",
     "processIdentityReusePolicy": "false-busy-is-safe-no-automatic-reclaim",
+    "publicationConflictMaximumObservations": 100,
+    "publicationConflictWaitMilliseconds": 25,
     "releasePolicy": "create-only-identity-bound-release",
     "deletionPolicy": "never"
   },
@@ -174,6 +180,7 @@
     "freshProjectionBytesReturned": true,
     "projectionResultIndependentlyValidatedByRust": true,
     "operationRecordIdsReturned": true,
+    "durabilityReceiptIdentitiesReturned": true,
     "absolutePathsReturned": false,
     "rawHostErrorsReturned": false,
     "rawEvidenceReturnedInErrors": false,

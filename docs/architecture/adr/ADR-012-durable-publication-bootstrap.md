@@ -45,6 +45,10 @@ For a target publication, the sole sequence is:
 9. reread the target exactly; and
 10. expose the target to the store only after every preceding step succeeds.
 
+Owned layout creation and quarantine mutations use a separate auxiliary
+directory-flush operation through the same verified helper. They do not create
+activation receipts and cannot be represented by caller-supplied success.
+
 The persisted receipt deliberately excludes evidence of its own publication.
 That exclusion is the explicit non-recursive bootstrap rule, not an omitted
 check. Creation accepts the receipt only after its file fsync, helper-backed
@@ -70,6 +74,8 @@ into the receipt store.
   the same receipt bytes.
 - A changed store profile derives a different receipt and cannot silently
   inherit old activation truth.
+- Store scanners may preserve an orphan target or orphan receipt as evidence,
+  but neither is active and neither is repaired into a pass.
 - Moving or copying a store does not grant local durability; restart must
   execute fresh local helper-backed flushes and readbacks.
 - No caller may inject filesystem success, directory-flush success, process

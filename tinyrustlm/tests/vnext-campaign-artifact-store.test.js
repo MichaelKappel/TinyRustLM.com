@@ -1,12 +1,16 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const childProcess = require("node:child_process");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 
+const {
+  ensureVnextDirectoryFlushTestPackage
+} = require("./helpers/vnext-directory-flush-test-package.js");
 const {
   campaignArtifactRelativePath,
   campaignArtifactStoreProfile,
@@ -17,7 +21,13 @@ const {
   projectVnextCampaign,
   validateCampaignPlanBytes
 } = require("../tools/vnext-campaign-projection.js");
+const {
+  durablePublicationProfile,
+  durablePublicationProfileSha256
+} = require("../tools/vnext-durable-publication.js");
 const { parseStrictJson } = require("../tools/strict-json.js");
+
+ensureVnextDirectoryFlushTestPackage();
 
 const repositoryRoot = path.resolve(__dirname, "../..");
 const profilePath = path.join(repositoryRoot, "contracts", "vnext",
@@ -66,44 +76,34 @@ function throwsCode(callback, code) {
   assert.throws(callback, (error) => error?.code === code, `expected ${code}`);
 }
 
-function proxyIo(overrides) {
-  return new Proxy(fs, {
-    get(target, property) {
-      if (Object.hasOwn(overrides, property)) return overrides[property];
-      return Reflect.get(target, property, target);
-    }
-  });
-}
-
-function trackedIo(hooks = {}) {
+function trackNativeFs(t, hooks = {}) {
   const descriptors = new Map();
-  return proxyIo({
-    openSync(filePath, flags, mode) {
-      const descriptor = fs.openSync(filePath, flags, mode);
+  const originalOpen = fs.openSync.bind(fs);
+  const originalClose = fs.closeSync.bind(fs);
+  const originalWrite = fs.writeSync.bind(fs);
+  const originalRead = fs.readSync.bind(fs);
+  const originalLink = fs.linkSync.bind(fs);
+  t.mock.method(fs, "openSync", (filePath, flags, mode) => {
+      const descriptor = originalOpen(filePath, flags, mode);
       descriptors.set(descriptor, path.resolve(filePath));
       return descriptor;
-    },
-    closeSync(descriptor) {
+  });
+  t.mock.method(fs, "closeSync", (descriptor) => {
       descriptors.delete(descriptor);
-      return fs.closeSync(descriptor);
-    },
-    writeSync(descriptor, buffer, offset, length, position) {
+      return originalClose(descriptor);
+  });
+  t.mock.method(fs, "writeSync", (descriptor, buffer, offset, length, position) => {
       hooks.beforeWrite?.(descriptors.get(descriptor), buffer, offset, length, position);
-      return fs.writeSync(descriptor, buffer, offset, length, position);
-    },
-    readSync(descriptor, buffer, offset, length, position) {
-      const count = fs.readSync(descriptor, buffer, offset, length, position);
+      return originalWrite(descriptor, buffer, offset, length, position);
+  });
+  t.mock.method(fs, "readSync", (descriptor, buffer, offset, length, position) => {
+      const count = originalRead(descriptor, buffer, offset, length, position);
       hooks.afterRead?.(descriptors.get(descriptor), buffer, offset, count, position);
       return count;
-    },
-    fsyncSync(descriptor) {
-      hooks.beforeFsync?.(descriptors.get(descriptor));
-      return fs.fsyncSync(descriptor);
-    },
-    linkSync(source, destination) {
+  });
+  t.mock.method(fs, "linkSync", (source, destination) => {
       hooks.beforeLink?.(source, destination);
-      return fs.linkSync(source, destination);
-    }
+      return originalLink(source, destination);
   });
 }
 
@@ -116,7 +116,10 @@ test("freezes one incompatible create-only campaign artifact store profile", () 
     "tinyrustlm.vnext.campaign-artifact-store.v1");
   assert.equal(profile.status, "frozen");
   assert.equal(profile.layout.mutablePointerPolicy, "forbidden");
-  assert.equal(profile.atomicCreate.publishPrimitive, "hard-link-create-if-absent");
+  assert.equal(profile.durablePublication.profileId, durablePublicationProfile.profileId);
+  assert.equal(profile.durablePublication.profileSha256, durablePublicationProfileSha256);
+  assert.equal(Object.hasOwn(profile, "atomicCreate"), false);
+  assert.doesNotMatch(profileBytes.toString("utf8"), /unavailable/iu);
   assert.equal(profile.resume.selectionPolicy,
     "caller-supplied-inputs-reprojected-no-mutable-pointer");
   assert.deepEqual(profile.acceptedArtifacts.map((entry) => entry.kind),
@@ -151,14 +154,23 @@ test("creates, reads, and idempotently reuses exact plan and projection bytes", 
   const planWrite = store.putPlan(plan.bytes);
   assert.equal(planWrite.disposition, "created");
   assert.equal(planWrite.artifactSha256, plan.planSha256);
-  assert.deepEqual(store.readPlan(plan.planSha256).bytes, plan.bytes);
+  assert.equal(planWrite.durability.schema, durablePublicationProfile.resultSchema);
+  assert.match(planWrite.durability.durabilityReceiptSha256, /^[a-f0-9]{64}$/u);
+  const planRead = store.readPlan(plan.planSha256);
+  assert.deepEqual(planRead.bytes, plan.bytes);
+  assert.equal(planRead.durability.durabilityReceiptSha256,
+    planWrite.durability.durabilityReceiptSha256);
   assert.equal(store.putPlan(plan.bytes).disposition, "existing-byte-identical");
 
   const resultWrite = store.putProjection(projection.resultBytes);
   assert.equal(resultWrite.disposition, "created");
   assert.equal(resultWrite.artifactSha256, projection.resultSha256);
-  assert.deepEqual(store.readProjection(projection.resultSha256).resultBytes,
+  assert.match(resultWrite.durability.durabilityReceiptSha256, /^[a-f0-9]{64}$/u);
+  const projectionRead = store.readProjection(projection.resultSha256);
+  assert.deepEqual(projectionRead.resultBytes,
     projection.resultBytes);
+  assert.equal(projectionRead.durability.durabilityReceiptSha256,
+    resultWrite.durability.durabilityReceiptSha256);
   assert.equal(store.putProjection(projection.resultBytes).disposition,
     "existing-byte-identical");
 });
@@ -213,7 +225,7 @@ test("withdraws tampered plans and their dependent projections on rebuild", (t) 
   assert.deepEqual(restarted.startup.activePlanSha256s, []);
   assert.deepEqual(restarted.startup.activeProjectionSha256s, []);
   assert.deepEqual(restarted.startup.newQuarantines.map((entry) => entry.reasonCode).sort(),
-    ["invalid_plan", "missing_plan"].sort());
+    ["durability_target_mismatch", "missing_plan"].sort());
   throwsCode(() => restarted.readPlan(plan.planSha256), "campaign_artifact_not_active");
   throwsCode(() => restarted.readProjection(projection.resultSha256),
     "campaign_artifact_not_active");
@@ -243,7 +255,8 @@ test("quarantines old incomplete temporaries and leaves fresh ones pending", (t)
 
 test("turns disk-full plan writes into bounded errors and removes partial temporaries", (t) => {
   const root = makeRoot(t);
-  const io = trackedIo({
+  const store = createVnextCampaignArtifactStore(root);
+  trackNativeFs(t, {
     beforeWrite(filePath) {
       if (filePath?.endsWith(".tmp")) {
         const error = new Error(`private disk detail ${root}`);
@@ -252,7 +265,6 @@ test("turns disk-full plan writes into bounded errors and removes partial tempor
       }
     }
   });
-  const store = createVnextCampaignArtifactStore(root, { io });
   const plan = planValue();
 
   let caught;
@@ -268,29 +280,30 @@ test("turns disk-full plan writes into bounded errors and removes partial tempor
   assert.equal(fs.readdirSync(prefix).some((name) => name.endsWith(".tmp")), false);
 });
 
-test("recovers a published plan after directory synchronization fails", (t) => {
+test("keeps a plan inactive when its verified helper directory flush fails", (t) => {
   const root = makeRoot(t);
   const plan = planValue();
   const target = physicalPath(root, "plan", plan.planSha256);
-  const prefix = path.dirname(target);
+  const store = createVnextCampaignArtifactStore(root);
   let injected = false;
-  const io = trackedIo({
-    beforeFsync(filePath) {
-      if (!injected && filePath === prefix) {
+  const originalSpawn = childProcess.spawnSync.bind(childProcess);
+  t.mock.method(childProcess, "spawnSync", (command, args, options) => {
+      const request = options?.input && parseStrictJson(options.input);
+      if (!injected && request?.operationId?.startsWith("durability:target-publish:")) {
         injected = true;
         const error = new Error(`private directory detail ${root}`);
         error.code = "EIO";
-        throw error;
+        return { error, status: null, stderr: Buffer.alloc(0), stdout: Buffer.alloc(0) };
       }
-    }
+      return originalSpawn(command, args, options);
   });
-  const store = createVnextCampaignArtifactStore(root, { io });
 
-  throwsCode(() => store.putPlan(plan.bytes), "campaign_artifact_directory_sync_failed");
+  throwsCode(() => store.putPlan(plan.bytes), "directory_flush_process_spawn_failed");
   assert.deepEqual(fs.readFileSync(target), plan.bytes);
   const restarted = createVnextCampaignArtifactStore(root);
-  assert.deepEqual(restarted.startup.activePlanSha256s, [plan.planSha256]);
-  assert.equal(restarted.putPlan(plan.bytes).disposition, "existing-byte-identical");
+  assert.deepEqual(restarted.startup.activePlanSha256s, []);
+  assert.deepEqual(restarted.startup.newQuarantines.map((entry) => entry.reasonCode),
+    ["durability_receipt_missing"]);
 });
 
 test("removes a newly published projection when its plan changes after preflight", (t) => {
@@ -299,8 +312,10 @@ test("removes a newly published projection when its plan changes after preflight
   const projection = emptyProjection(plan);
   const planPath = physicalPath(root, "plan", plan.planSha256);
   const projectionPath = physicalPath(root, "projection-result", projection.resultSha256);
+  const store = createVnextCampaignArtifactStore(root);
+  store.putPlan(plan.bytes);
   let injected = false;
-  const io = trackedIo({
+  trackNativeFs(t, {
     beforeLink(_source, destination) {
       if (!injected && destination === projectionPath) {
         injected = true;
@@ -310,8 +325,6 @@ test("removes a newly published projection when its plan changes after preflight
       }
     }
   });
-  const store = createVnextCampaignArtifactStore(root, { io });
-  store.putPlan(plan.bytes);
 
   throwsCode(() => store.putProjection(projection.resultBytes),
     "campaign_artifact_parent_plan_invalid");
@@ -325,8 +338,9 @@ test("fails a false readback without corrupting the published plan", (t) => {
   const root = makeRoot(t);
   const plan = planValue();
   const target = physicalPath(root, "plan", plan.planSha256);
+  const store = createVnextCampaignArtifactStore(root);
   let injected = false;
-  const io = trackedIo({
+  trackNativeFs(t, {
     afterRead(filePath, buffer, offset, count) {
       if (!injected && filePath === target && count > 0) {
         injected = true;
@@ -334,10 +348,11 @@ test("fails a false readback without corrupting the published plan", (t) => {
       }
     }
   });
-  const store = createVnextCampaignArtifactStore(root, { io });
 
   throwsCode(() => store.putPlan(plan.bytes), "campaign_artifact_readback_mismatch");
   assert.deepEqual(fs.readFileSync(target), plan.bytes);
   const restarted = createVnextCampaignArtifactStore(root);
-  assert.deepEqual(restarted.readPlan(plan.planSha256).bytes, plan.bytes);
+  assert.deepEqual(restarted.startup.activePlanSha256s, []);
+  assert.deepEqual(restarted.startup.newQuarantines.map((entry) => entry.reasonCode),
+    ["durability_receipt_missing"]);
 });

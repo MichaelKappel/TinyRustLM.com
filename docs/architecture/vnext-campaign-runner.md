@@ -3,8 +3,8 @@
 ## Status
 
 `tinyrustlm.vnext.campaign-runner.v1` is the sole clean-slate local campaign
-projection runner. Its frozen 6,855-byte profile has SHA-256
-`d3eddd20b885556f6ad26804f122d60f7ff288c5bf4ef28a0929b52784f22323`.
+projection runner. Its frozen 7,302-byte profile has SHA-256
+`8aa378f36e42c1d07ea072afebdfc7705ec57973a6712dac82832a8754213adf`.
 The implementation is `tinyrustlm/tools/vnext-campaign-runner.js`; focused
 conformance is `tinyrustlm/tests/vnext-campaign-runner.test.js`.
 
@@ -64,6 +64,7 @@ read boundary, copies every exact wire, hashes every copied wire, and computes
 a domain-separated snapshot identity over sorted records containing:
 
 - member identity;
+- exact durability-receipt SHA-256;
 - exact wire SHA-256; and
 - exact byte length.
 
@@ -96,10 +97,12 @@ and a create-only SHA-256 path. A start record binds:
 - caller-trusted verification time;
 - exact WASM module SHA-256;
 - all relevant profile identities; and
+- exact campaign-plan durability-receipt SHA-256; and
 - complete receipt and subject snapshots.
 
 A terminal record references exactly one start record. `completed` terminals
-bind one persisted projection-result SHA-256 and carry no error. `failed`
+bind one persisted projection-result SHA-256 plus that projection's exact
+durability-receipt SHA-256 and carry no error. `failed`
 terminals carry one bounded error code and step and no projection identity.
 Conflicting starts, conflicting terminals, missing starts, identity/path drift,
 unknown entries, noncanonical records, and old incomplete temporaries are
@@ -119,6 +122,12 @@ avoids check-delete-create stale-lock races. PID reuse can produce a safe false
 busy result; it cannot authorize unsafe reclamation. Lock history supplies no
 projection time or evidence currentness.
 
+Claims and releases are active only with exact durability markers. When two
+contenders collide before the winner's marker is visible, the loser performs
+at most 100 marker-bound observations separated by 25 milliseconds. It accepts
+only a fully reconstructed winner, returns `campaign_runner_busy` for a live
+winner, and fails closed if incomplete publication never resolves.
+
 The start record is created before Rust projection. The terminal record is
 created only after exact projection persistence. A process death can therefore
 leave a start without a terminal; rebuild classifies that operation as
@@ -128,11 +137,12 @@ idempotently reuses an exact projection if one survived the interruption. A
 changed snapshot or caller pin requires a new operation ID. Any terminal state
 also requires a new operation ID.
 
-Create-only operation files use same-directory exclusive temporaries, bounded
-writes, file fsync, no-replacement hard-link publication, exact byte-identical
-reuse, directory sync or explicit Node/Win32 unavailability, and exact
-readback. This does not close the separate production Win32 directory-handle
-flush obligation.
+Create-only operation and lock files use same-directory exclusive temporaries,
+bounded writes, file fsync, no-replacement hard-link publication, exact
+byte-identical reuse, verified Rust directory flush, exact readback, and a
+content-addressed durability marker. Missing or mismatched markers are
+inactive. The local test helper proves API behavior only; physical power-loss
+and release-package provenance remain separate gates.
 
 ## Failure Semantics
 
@@ -172,15 +182,17 @@ The focused suite covers:
 - exact synthetic 20/50/25/40/20 capacity over 271 receipts and 40 subjects;
 - a cross-store write between observations;
 - exact bounded Rust failure preservation;
-- real child-process death immediately after start hard-link publication;
+- real child-process death after a start marker's verified readback;
 - stale-lock recovery and fresh reprojection;
 - two real processes racing to succeed the same dead lock generation with
   exactly one elected successor;
 - a genuinely concurrent child process holding the operation lock;
 - disk-full start persistence; and
-- canonical operation-record identity validation.
+- canonical operation-record identity validation;
+- operation-history withdrawal when a start marker is absent; and
+- fail-closed lock reconstruction when a claim marker is absent.
 
-The focused suite passes 13/13. Synthetic completion proves bounded local
+The focused suite passes 15/15. Synthetic completion proves bounded local
 capacity only. It does not increment or predict any live campaign counter.
 
 ## Remaining Work
@@ -191,9 +203,9 @@ capacity only. It does not increment or predict any live campaign counter.
   surface.
 - Measure maximum authorized closure latency and peak native/WASM memory on
   target release hosts.
-- Complete Rust/Win32 directory metadata flushing, bounded compressed archive
-  scanning, and protected equality-list custody before corresponding
-  production claims.
+- Complete bounded compressed archive scanning, protected equality-list
+  custody, and physical durability exercises before corresponding production
+  claims.
 - Run authorized real model, browser, MemoryEndpoints, outside-observer,
   catalog, package, and HTTPS release gates. Mocks and synthetic capacity do
   not satisfy those gates.

@@ -8,8 +8,8 @@ vNext authority and campaign-projection code. The implementation is
 `tinyrustlm/tools/vnext-subject-store.js`; its frozen profile is
 `contracts/vnext/subject-store-profile.v1.json`.
 
-The profile is 3,285 bytes with SHA-256
-`8be12332d8c2936df74eed6548e03fff5d8f816479191814c639613444cc40c9`.
+The profile is 3,475 bytes with SHA-256
+`1d3534a4c560a68d4df78c7815c0d15f5f0043cca5db89f784a7ee6c24ccbfe4`.
 It is an incompatible clean-slate contract with no dated reader, alias,
 fallback, migration, dual writer, or mutable current pointer.
 
@@ -77,13 +77,17 @@ The store reuses `vnext-create-only-files.js` and performs:
 5. bounded writes, file `fsync`, and close;
 6. hard-link create-if-absent publication;
 7. acceptance of an existing target only when every byte is identical;
-8. directory synchronization or the explicit Node/Win32 unavailability class;
-9. bounded no-follow readback and exact byte comparison; and
-10. in-process activation only after the complete publication sequence.
+8. target-directory synchronization through the verified Rust helper;
+9. bounded no-follow readback and exact byte comparison;
+10. canonical content-addressed durability-receipt publication through the
+    same fsync, hard-link, helper-flush, and readback sequence; and
+11. in-process activation only after both target and marker verify.
 
 Independent processes publishing the same bytes converge on one immutable
-target. Conflicting bytes never replace it. Disk-full, short-write, sync,
-publication, target-conflict, and readback failures return bounded codes.
+target and one deterministic marker. Conflicting bytes never replace it.
+Disk-full, short-write, helper, publication, target-conflict, and readback
+failures return bounded codes. A surviving target without its marker remains
+preserved but inactive.
 
 ## Reconstruction And Interruption
 
@@ -91,7 +95,7 @@ Opening the store rebuilds all active state from disk. It scans only the owned
 layout, caps directory and aggregate entry counts, caps active subjects at
 2,048 and their aggregate canonical bytes at 64 MiB, and never follows a link.
 It revalidates every subject and checks schema, subject ID, path prefix,
-canonical hash, and byte limit.
+canonical hash, byte limit, exact marker binding, and target/marker readback.
 
 Malformed subjects, private or receipt schemas, identity-path mismatches,
 unknown entries, and old interrupted temporaries move to bounded quarantine.
@@ -99,25 +103,27 @@ A fresh temporary younger than five minutes remains pending because another
 process may still own it. Rebuild never deletes or edits an unrelated valid
 subject.
 
-An active read reopens and revalidates the exact file and compares the current
-schema, identity, canonical content hash, and byte length with the reconstructed
+An active read performs fresh helper-backed target and marker directory
+flushes, reopens both exact files, and compares schema, identity, canonical
+content hash, byte length, and durability identity with reconstructed
 metadata. Post-startup mutation therefore fails the read, and restart removes
 the invalid subject from active membership.
 
 ## Runner Contract
 
-The forthcoming campaign runner must rebuild the receipt and subject stores,
+The campaign runner rebuilds the receipt and subject stores,
 capture every active ID in sorted order, read every named member, and verify
 that a second bounded reconstruction has the same membership before invoking
 the sole generated Rust campaign-evidence ABI. It may not choose a preferred
 subset, trust directory names, accept a caller-supplied pass, or treat a stored
 projection as current.
 
-Each restart must repeat the store snapshot and Rust projection using explicit
+Each snapshot member includes its exact durability-receipt SHA-256. Each
+restart must repeat the store snapshot and Rust projection using explicit
 caller-owned campaign/environment/authority pins and trusted verification time.
 The exact freshly projected bytes may then be added to immutable projection
-history. Cross-store interruption and operation exclusion remain runner work,
-not properties claimed by this store checkpoint.
+history. Cross-store interruption and operation exclusion are runner
+properties, not claims made by this store alone.
 
 ## Verification
 
@@ -127,8 +133,6 @@ rejection, independent-process idempotence, conflicting artifact manifests,
 invalid and misaddressed quarantine, interrupted temporaries, disk full,
 post-startup mutation, restart withdrawal, and false readback.
 
-The focused suite passes 11/11, the receipt/content/artifact/inventory/threat
-neighborhood passes 59/59, and the complete Node gate passes 827/827 with zero
-failures and zero skips. This is local persistence evidence only. A
-source-control checkpoint is required before this implementation fact is
-promoted in the workspace handoff.
+The focused suite passes 11/11. This is local persistence evidence only;
+broader Node and Rust gates are rerun at milestone closure before the updated
+identity is promoted in the workspace handoff.

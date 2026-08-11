@@ -226,8 +226,10 @@ SHA-256
 and source-closure SHA-256
 `37dc6e85be3655743a31de5623fa574f565578351f4c6b255621a9d976a8c487`.
 The client verifies exact package, process, request, and observation identity
-without inheriting parent environment variables. Create-only publication
-receipt integration, OS network isolation, release provenance, and physical
+without inheriting parent environment variables. Every current vNext store,
+campaign-operation record, and runner-lock record now consumes the sole
+receipt-backed durable-publication primitive. OS network isolation, release
+provenance, archive admission, protected equality-list custody, and physical
 power-loss evidence remain incomplete.
 The sole exact cross-store Rust-backed campaign runner is documented in
 `docs/architecture/vnext-campaign-runner.md`.
@@ -235,7 +237,7 @@ The fresh-runner-only immutable attestation, operator, release-manifest,
 authorization, deployment/readback, and final-publication boundary is documented
 in `docs/architecture/vnext-campaign-release-surface.md`. Its frozen profile
 has SHA-256
-`0633f2bc4960f4c8a757bf10a8681f2481f0d8a5d0997c2d00ba58b02ed43bcc`.
+`ae33c2564d281d9115229fcb777b5edaa6a1574ea21b56c22d86cba199e5679e`.
 It admits no stored projection, caller verdict, counter set, dashboard state,
 or reused operation. It scans finalized attestation bytes before create-only
 receipt persistence and has no operator `done` state. Release preparation

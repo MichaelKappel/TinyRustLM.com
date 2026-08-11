@@ -9,6 +9,9 @@ const path = require("node:path");
 const test = require("node:test");
 
 const {
+  ensureVnextDirectoryFlushTestPackage
+} = require("./helpers/vnext-directory-flush-test-package.js");
+const {
   campaignRunnerProfile,
   campaignRunnerProfileSha256,
   createVnextCampaignRunner,
@@ -26,6 +29,8 @@ const {
 } = require("../tools/vnext-campaign-artifact-store.js");
 const { validateVnextReceiptBytes } = require("../tools/vnext-receipt-identity.js");
 const { parseStrictJson } = require("../tools/strict-json.js");
+
+ensureVnextDirectoryFlushTestPackage();
 
 const repositoryRoot = path.resolve(__dirname, "../..");
 const profilePath = path.join(repositoryRoot, "contracts", "vnext",
@@ -86,8 +91,29 @@ function makeRoots(t) {
     runner: path.join(parent, "runner"),
     subjects: path.join(parent, "subjects")
   });
+  for (const root of [roots.artifacts, roots.receipts, roots.runner, roots.subjects]) {
+    fs.mkdirSync(root, { mode: 0o700, recursive: false });
+  }
   t.after(() => fs.rmSync(parent, { recursive: true, force: true }));
   return roots;
+}
+
+function durabilityMarkerPath(root, durability) {
+  return path.join(root, ...durability.durabilityReceiptRelativePath.split("/"));
+}
+
+function findDurabilityMarker(root, targetRelativePath) {
+  const durabilityRoot = path.join(root, "durability", "sha256");
+  for (const prefix of fs.readdirSync(durabilityRoot).sort()) {
+    const prefixPath = path.join(durabilityRoot, prefix);
+    if (!fs.lstatSync(prefixPath).isDirectory()) continue;
+    for (const name of fs.readdirSync(prefixPath).sort()) {
+      const markerPath = path.join(prefixPath, name);
+      const marker = parseStrictJson(fs.readFileSync(markerPath));
+      if (marker.targetRelativePath === targetRelativePath) return markerPath;
+    }
+  }
+  assert.fail(`missing durability marker for ${targetRelativePath}`);
 }
 
 function acceptedCase(name) {
@@ -162,12 +188,39 @@ function runInput(entry, label) {
   };
 }
 
-function proxyIo(overrides) {
-  return new Proxy(fs, {
-    get(target, property) {
-      if (Object.hasOwn(overrides, property)) return overrides[property];
-      return Reflect.get(target, property, target);
-    }
+function trackNativeFs(t, hooks = {}) {
+  const descriptors = new Map();
+  const originalOpen = fs.openSync.bind(fs);
+  const originalClose = fs.closeSync.bind(fs);
+  const originalRead = fs.readSync.bind(fs);
+  const originalWrite = fs.writeSync.bind(fs);
+  const originalLink = fs.linkSync.bind(fs);
+  const originalOpendir = fs.opendirSync.bind(fs);
+  t.mock.method(fs, "openSync", (filePath, flags, mode) => {
+    const descriptor = originalOpen(filePath, flags, mode);
+    descriptors.set(descriptor, path.resolve(String(filePath)));
+    return descriptor;
+  });
+  t.mock.method(fs, "closeSync", (descriptor) => {
+    descriptors.delete(descriptor);
+    return originalClose(descriptor);
+  });
+  t.mock.method(fs, "readSync", (descriptor, buffer, offset, length, position) => {
+    const count = originalRead(descriptor, buffer, offset, length, position);
+    hooks.afterRead?.(descriptors.get(descriptor), buffer, offset, count, position);
+    return count;
+  });
+  t.mock.method(fs, "writeSync", (descriptor, buffer, offset, length, position) => {
+    hooks.beforeWrite?.(descriptors.get(descriptor), buffer, offset, length, position);
+    return originalWrite(descriptor, buffer, offset, length, position);
+  });
+  t.mock.method(fs, "linkSync", (source, destination) => {
+    hooks.beforeLink?.(path.resolve(String(source)), path.resolve(String(destination)));
+    return originalLink(source, destination);
+  });
+  t.mock.method(fs, "opendirSync", (directory, options) => {
+    hooks.beforeOpendir?.(path.resolve(String(directory)));
+    return originalOpendir(directory, options);
   });
 }
 
@@ -190,7 +243,7 @@ test("freezes one no-compatibility Rust-backed campaign runner profile", () => {
   ), "utf8");
   assert.equal(campaignRunnerProfileSha256, sha256(bytes));
   assert.equal(campaignRunnerProfileSha256,
-    "d3eddd20b885556f6ad26804f122d60f7ff288c5bf4ef28a0929b52784f22323");
+    "8aa378f36e42c1d07ea072afebdfc7705ec57973a6712dac82832a8754213adf");
   assert.equal(campaignRunnerProfile.profileId, "tinyrustlm.vnext.campaign-runner.v1");
   assert.equal(parsed.status, "frozen");
   assert.equal(parsed.selectionPolicy, "all-active-members-no-subset-selection");
@@ -199,7 +252,13 @@ test("freezes one no-compatibility Rust-backed campaign runner profile", () => {
   assert.equal(parsed.layout.mutablePointerPolicy, "forbidden");
   assert.equal(parsed.operationLock.primitive, "append-only-generation-claims");
   assert.equal(parsed.operationLock.deletionPolicy, "never");
+  assert.equal(parsed.operationLock.publicationConflictMaximumObservations, 100);
+  assert.equal(parsed.operationLock.publicationConflictWaitMilliseconds, 25);
   assert.equal(parsed.snapshotProtocol.observations, 2);
+  assert.deepEqual(parsed.operationRecord.snapshotMemberFields,
+    ["byteLength", "durabilityReceiptSha256", "id", "wireSha256"]);
+  assert.equal(Object.hasOwn(parsed, "atomicCreate"), false);
+  assert.doesNotMatch(bytes.toString("utf8"), /unavailable/iu);
   assert.equal(parsed.clockAccess, "caller-trusted-verification-time-only");
   assert.doesNotMatch(bytes.toString("utf8"),
     /fallback|migration|deprecated|alias|dual-reader|dual-writer/iu);
@@ -235,7 +294,7 @@ test("freezes one no-compatibility Rust-backed campaign runner profile", () => {
   ), "utf8");
   assert.match(runnerDocument, /tinyrustlm\.vnext\.campaign-runner\.v1/u);
   assert.match(runnerDocument,
-    /d3eddd20b885556f6ad26804f122d60f7ff288c5bf4ef28a0929b52784f22323/u);
+    /8aa378f36e42c1d07ea072afebdfc7705ec57973a6712dac82832a8754213adf/u);
   assert.equal(
     JSON.parse(fs.readFileSync(path.join(repositoryRoot, "tinyrustlm", "package.json"),
       "utf8")).scripts["test:vnext-campaign-runner"],
@@ -273,7 +332,7 @@ test("projects honest zero from every active store member and persists immutable
 }, async (t) => {
   const roots = makeRoots(t);
   const entry = acceptedCase("honest-zero");
-  seedCase(roots, entry);
+  const seeded = seedCase(roots, entry);
   const runner = await createVnextCampaignRunner(roots.runner, runnerOptions(roots));
   const input = runInput(entry, "honest-zero-run");
   const result = await runner.runProjection(input);
@@ -285,6 +344,17 @@ test("projects honest zero from every active store member and persists immutable
   assert.equal(result.receiptSnapshot.memberCount, 0);
   assert.equal(result.subjectSnapshot.memberCount, 0);
   assert.equal(result.persistence.projectionDisposition, "created");
+  assert.match(result.persistence.startedDurabilityReceiptSha256, /^[a-f0-9]{64}$/u);
+  assert.match(result.persistence.terminalDurabilityReceiptSha256, /^[a-f0-9]{64}$/u);
+  assert.match(result.persistence.projectionDurabilityReceiptSha256, /^[a-f0-9]{64}$/u);
+
+  const plan = seeded.artifactStore.readPlan(entry.expectedCampaignPlanSha256);
+  const started = runner.readOperationRecord(result.startedRecordId);
+  const terminal = runner.readOperationRecord(result.terminalRecordId);
+  assert.equal(started.record.campaignPlanDurabilityReceiptSha256,
+    plan.durability.durabilityReceiptSha256);
+  assert.equal(terminal.record.projectionDurabilityReceiptSha256,
+    result.persistence.projectionDurabilityReceiptSha256);
 
   const history = runner.inspectOperation(input.operationId);
   assert.equal(history.state, "completed");
@@ -307,6 +377,17 @@ test("reprojects trusted time and withdraws an expired outside proof on restart"
   const first = await createVnextCampaignRunner(roots.runner, runnerOptions(roots));
   const currentResult = await first.runProjection(runInput(current, "outside-current"));
   assert.deepEqual(Buffer.from(currentResult.projectionResultBytes), expectedBytes(current));
+  assert.equal(currentResult.receiptSnapshot.members.length > 0, true);
+  assert.equal(currentResult.subjectSnapshot.members.length > 0, true);
+  for (const member of [
+    ...currentResult.receiptSnapshot.members,
+    ...currentResult.subjectSnapshot.members
+  ]) {
+    assert.match(member.durabilityReceiptSha256, /^[a-f0-9]{64}$/u);
+  }
+  const currentStart = first.readOperationRecord(currentResult.startedRecordId);
+  assert.deepEqual(currentStart.record.receiptSnapshot, currentResult.receiptSnapshot);
+  assert.deepEqual(currentStart.record.subjectSnapshot, currentResult.subjectSnapshot);
 
   const restarted = await createVnextCampaignRunner(roots.runner, runnerOptions(roots));
   const expiredResult = await restarted.runProjection(runInput(expired, "outside-expired"));
@@ -360,32 +441,19 @@ test("rejects a cross-store change between its two exact observations", {
   const seeded = seedCase(roots, entry);
   const spare = vectors.subjects.find((candidate) => !entry.subjectIds.includes(candidate.subjectId));
   assert.ok(spare);
-  let armed = false;
+  const runner = await createVnextCampaignRunner(roots.runner, runnerOptions(roots));
   let injected = false;
-  const descriptors = new Map();
-  const io = proxyIo({
-    openSync(filePath, flags, mode) {
-      const descriptor = fs.openSync(filePath, flags, mode);
-      descriptors.set(descriptor, path.resolve(filePath));
-      return descriptor;
-    },
-    closeSync(descriptor) {
-      descriptors.delete(descriptor);
-      return fs.closeSync(descriptor);
-    },
-    readSync(descriptor, buffer, offset, length, position) {
-      const count = fs.readSync(descriptor, buffer, offset, length, position);
-      const filePath = descriptors.get(descriptor) || "";
-      if (armed && !injected && count > 0 && filePath.startsWith(roots.subjects) &&
-          filePath.endsWith(".json")) {
+  let durabilityScans = 0;
+  const durabilityRoot = path.resolve(roots.subjects, "durability", "sha256");
+  trackNativeFs(t, {
+    beforeOpendir(directory) {
+      if (directory === durabilityRoot) durabilityScans += 1;
+      if (!injected && durabilityScans === 2) {
         injected = true;
         seeded.subjectStore.put(Buffer.from(spare.bytesBase64, "base64"));
       }
-      return count;
     }
   });
-  const runner = await createVnextCampaignRunner(roots.runner, runnerOptions(roots, { io }));
-  armed = true;
   await rejectsCode(() => runner.runProjection(runInput(entry, "snapshot-race")),
     "campaign_runner_snapshot_changed");
   assert.equal(injected, true);
@@ -423,26 +491,42 @@ test("survives process death after start publication and resumes by fresh reproj
     const input = JSON.parse(process.argv[3]);
     const wasm = fs.readFileSync(process.argv[4]);
     const expected = process.argv[5];
-    let armed = false;
-    const io = new Proxy(fs, { get(target, property) {
-      if (property === "linkSync") return (source, destination) => {
-        const value = fs.linkSync(source, destination);
-        if (armed && String(destination).includes("operations") &&
-            String(destination).endsWith(".json")) process.exit(77);
-        return value;
-      };
-      return Reflect.get(target, property, target);
-    }});
     (async () => {
       const runner = await createVnextCampaignRunner(roots.runner, {
         campaignArtifactStoreRoot: roots.artifacts,
         expectedWasmModuleSha256: expected,
-        io,
         receiptStoreRoot: roots.receipts,
         subjectStoreRoot: roots.subjects,
         wasmModuleBytes: wasm
       });
-      armed = true;
+      const descriptorPaths = new Map();
+      let committedMarker = null;
+      const originalOpen = fs.openSync.bind(fs);
+      const originalClose = fs.closeSync.bind(fs);
+      const originalLink = fs.linkSync.bind(fs);
+      fs.openSync = (filePath, ...args) => {
+        const descriptor = originalOpen(filePath, ...args);
+        descriptorPaths.set(descriptor, String(filePath));
+        return descriptor;
+      };
+      fs.closeSync = (descriptor) => {
+        const filePath = descriptorPaths.get(descriptor);
+        descriptorPaths.delete(descriptor);
+        const value = originalClose(descriptor);
+        if (committedMarker !== null && filePath === committedMarker) process.exit(77);
+        return value;
+      };
+      fs.linkSync = (source, destination) => {
+        const value = originalLink(source, destination);
+        if (String(destination).includes("durability") &&
+            String(destination).endsWith(".json")) {
+          const marker = JSON.parse(fs.readFileSync(destination, "utf8"));
+          if (String(marker.targetRelativePath || "").startsWith("operations/sha256/")) {
+            committedMarker = String(destination);
+          }
+        }
+        return value;
+      };
       await runner.runProjection(input);
       process.exit(2);
     })().catch(() => process.exit(3));
@@ -461,9 +545,7 @@ test("survives process death after start publication and resumes by fresh reproj
   assert.deepEqual(fs.readdirSync(path.join(roots.runner, "locks", "releases")).sort(), []);
 
   const restarted = await createVnextCampaignRunner(roots.runner, runnerOptions(roots));
-  assert.ok(restarted.startup.newQuarantines.some(
-    (entry) => entry.reasonCode === "incomplete_temporary"
-  ));
+  assert.deepEqual(restarted.startup.newQuarantines, []);
   assert.equal(restarted.inspectOperation(input.operationId).state, "interrupted");
   const result = await restarted.runProjection(input);
   assert.deepEqual(Buffer.from(result.projectionResultBytes), expectedBytes(entry));
@@ -476,6 +558,46 @@ test("survives process death after start publication and resumes by fresh reproj
     fs.readdirSync(path.join(roots.runner, "locks", "releases")).sort(),
     ["0000000000000001.json"]
   );
+});
+
+test("withdraws an operation history whose committed start marker is absent", {
+  timeout: 120_000
+}, async (t) => {
+  const roots = makeRoots(t);
+  const entry = acceptedCase("honest-zero");
+  seedCase(roots, entry);
+  const first = await createVnextCampaignRunner(roots.runner, runnerOptions(roots));
+  const input = runInput(entry, "missing-operation-marker");
+  const result = await first.runProjection(input);
+  const started = first.readOperationRecord(result.startedRecordId);
+  fs.unlinkSync(durabilityMarkerPath(roots.runner, started.durability));
+
+  const restarted = await createVnextCampaignRunner(roots.runner, runnerOptions(roots));
+  assert.deepEqual(restarted.startup.activeRecordIds, []);
+  assert.deepEqual(
+    restarted.startup.newQuarantines.map((entry) => entry.reasonCode).sort(),
+    ["durability_receipt_missing", "missing_start"].sort()
+  );
+  throwsCode(() => restarted.inspectOperation(input.operationId),
+    "campaign_runner_operation_not_found");
+});
+
+test("fails closed when a committed lock claim marker is absent", {
+  timeout: 120_000
+}, async (t) => {
+  const roots = makeRoots(t);
+  const entry = acceptedCase("honest-zero");
+  seedCase(roots, entry);
+  const first = await createVnextCampaignRunner(roots.runner, runnerOptions(roots));
+  await first.runProjection(runInput(entry, "missing-lock-marker"));
+  const marker = findDurabilityMarker(
+    roots.runner,
+    "locks/claims/0000000000000000.json"
+  );
+  fs.unlinkSync(marker);
+
+  await rejectsCode(() => createVnextCampaignRunner(roots.runner, runnerOptions(roots)),
+    "campaign_runner_lock_history_invalid");
 });
 
 test("excludes a genuinely concurrent process operation", {
@@ -495,29 +617,24 @@ test("excludes a genuinely concurrent process operation", {
     const wasm = fs.readFileSync(process.argv[4]);
     const expected = process.argv[5];
     const signal = process.argv[6];
-    let armed = false;
     let held = false;
-    const io = new Proxy(fs, { get(target, property) {
-      if (property === "opendirSync") return (directory, options) => {
-        if (armed && !held && String(directory).startsWith(roots.artifacts)) {
-          held = true;
-          fs.writeFileSync(signal, "held", { flag: "wx" });
-          Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1500);
-        }
-        return fs.opendirSync(directory, options);
-      };
-      return Reflect.get(target, property, target);
-    }});
     (async () => {
       const runner = await createVnextCampaignRunner(roots.runner, {
         campaignArtifactStoreRoot: roots.artifacts,
         expectedWasmModuleSha256: expected,
-        io,
         receiptStoreRoot: roots.receipts,
         subjectStoreRoot: roots.subjects,
         wasmModuleBytes: wasm
       });
-      armed = true;
+      const originalOpendir = fs.opendirSync.bind(fs);
+      fs.opendirSync = (directory, options) => {
+        if (!held && String(directory).startsWith(roots.artifacts)) {
+          held = true;
+          fs.writeFileSync(signal, "held", { flag: "wx" });
+          Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1500);
+        }
+        return originalOpendir(directory, options);
+      };
       await runner.runProjection(input);
     })().then(() => process.exit(0)).catch((error) => {
       process.stderr.write(String(error && error.code || error));
@@ -560,27 +677,42 @@ test("elects one successor when two processes recover the same dead lock generat
     const input = JSON.parse(process.argv[3]);
     const wasm = fs.readFileSync(process.argv[4]);
     const expected = process.argv[5];
-    let armed = false;
-    const io = new Proxy(fs, { get(target, property) {
-      if (property === "linkSync") return (source, destination) => {
-        const value = fs.linkSync(source, destination);
-        if (armed && String(destination).includes("locks") &&
-            String(destination).includes("claims") &&
-            String(destination).endsWith(".json")) process.exit(81);
-        return value;
-      };
-      return Reflect.get(target, property, target);
-    }});
     (async () => {
       const runner = await createVnextCampaignRunner(roots.runner, {
         campaignArtifactStoreRoot: roots.artifacts,
         expectedWasmModuleSha256: expected,
-        io,
         receiptStoreRoot: roots.receipts,
         subjectStoreRoot: roots.subjects,
         wasmModuleBytes: wasm
       });
-      armed = true;
+      const descriptorPaths = new Map();
+      let committedMarker = null;
+      const originalOpen = fs.openSync.bind(fs);
+      const originalClose = fs.closeSync.bind(fs);
+      const originalLink = fs.linkSync.bind(fs);
+      fs.openSync = (filePath, ...args) => {
+        const descriptor = originalOpen(filePath, ...args);
+        descriptorPaths.set(descriptor, String(filePath));
+        return descriptor;
+      };
+      fs.closeSync = (descriptor) => {
+        const filePath = descriptorPaths.get(descriptor);
+        descriptorPaths.delete(descriptor);
+        const value = originalClose(descriptor);
+        if (committedMarker !== null && filePath === committedMarker) process.exit(81);
+        return value;
+      };
+      fs.linkSync = (source, destination) => {
+        const value = originalLink(source, destination);
+        if (String(destination).includes("durability") &&
+            String(destination).endsWith(".json")) {
+          const marker = JSON.parse(fs.readFileSync(destination, "utf8"));
+          if (String(marker.targetRelativePath || "").startsWith("locks/claims/")) {
+            committedMarker = String(destination);
+          }
+        }
+        return value;
+      };
       await runner.runProjection(input);
       process.exit(2);
     })().catch(() => process.exit(3));
@@ -605,24 +737,11 @@ test("elects one successor when two processes recover the same dead lock generat
     const barrier = process.argv[7];
     const winner = process.argv[8];
     const contender = process.argv[9];
-    let armed = false;
     let held = false;
-    const io = new Proxy(fs, { get(target, property) {
-      if (property === "opendirSync") return (directory, options) => {
-        if (armed && !held && path.resolve(directory).startsWith(path.resolve(roots.artifacts))) {
-          held = true;
-          fs.writeFileSync(winner, contender, { flag: "wx" });
-          Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1500);
-        }
-        return fs.opendirSync(directory, options);
-      };
-      return Reflect.get(target, property, target);
-    }});
     (async () => {
       const runner = await createVnextCampaignRunner(roots.runner, {
         campaignArtifactStoreRoot: roots.artifacts,
         expectedWasmModuleSha256: expected,
-        io,
         receiptStoreRoot: roots.receipts,
         subjectStoreRoot: roots.subjects,
         wasmModuleBytes: wasm
@@ -631,7 +750,15 @@ test("elects one successor when two processes recover the same dead lock generat
       while (!fs.existsSync(barrier)) {
         Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 10);
       }
-      armed = true;
+      const originalOpendir = fs.opendirSync.bind(fs);
+      fs.opendirSync = (directory, options) => {
+        if (!held && path.resolve(directory).startsWith(path.resolve(roots.artifacts))) {
+          held = true;
+          fs.writeFileSync(winner, contender, { flag: "wx" });
+          Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1500);
+        }
+        return originalOpendir(directory, options);
+      };
       await runner.runProjection(input);
     })().then(() => process.exit(0)).catch((error) => {
       if (error && error.code === "campaign_runner_busy") process.exit(9);
@@ -680,29 +807,18 @@ test("turns disk-full start persistence into a bounded failure with no false ter
   const roots = makeRoots(t);
   const entry = acceptedCase("honest-zero");
   seedCase(roots, entry);
+  const runner = await createVnextCampaignRunner(roots.runner, runnerOptions(roots));
   let armed = false;
-  const descriptors = new Map();
-  const io = proxyIo({
-    openSync(filePath, flags, mode) {
-      const descriptor = fs.openSync(filePath, flags, mode);
-      descriptors.set(descriptor, path.resolve(filePath));
-      return descriptor;
-    },
-    closeSync(descriptor) {
-      descriptors.delete(descriptor);
-      return fs.closeSync(descriptor);
-    },
-    writeSync(descriptor, buffer, offset, length, position) {
-      const filePath = descriptors.get(descriptor) || "";
+  trackNativeFs(t, {
+    beforeWrite(filePath) {
+      filePath ||= "";
       if (armed && filePath.startsWith(path.join(roots.runner, "operations"))) {
         const error = new Error("simulated disk full");
         error.code = "ENOSPC";
         throw error;
       }
-      return fs.writeSync(descriptor, buffer, offset, length, position);
     }
   });
-  const runner = await createVnextCampaignRunner(roots.runner, runnerOptions(roots, { io }));
   armed = true;
   await rejectsCode(() => runner.runProjection(runInput(entry, "disk-full")),
     "campaign_runner_operation_temporary_write_failed");

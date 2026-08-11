@@ -33,16 +33,18 @@ The maintained path consists of these incompatible vNext boundaries:
   network verifier. It owns DNS and HTTPS and accepts no caller transport or
   success verdict.
 - `tinyrustlm/tools/vnext-receipt-store.js` and
-  `tinyrustlm/tools/vnext-subject-store.js` provide bounded create-only stores.
+  `tinyrustlm/tools/vnext-subject-store.js` provide bounded create-only stores
+  whose targets activate only through exact content-addressed durability
+  markers and verified helper-backed directory flushes.
 - `tinyrustlm/tools/vnext-public-safe-redaction.js` validates every selected
   public document before its receipt or subject can be persisted.
 
 The frozen profiles are:
 
 - `contracts/vnext/campaign-runner-profile.v1.json`, SHA-256
-  `d3eddd20b885556f6ad26804f122d60f7ff288c5bf4ef28a0929b52784f22323`;
+  `8aa378f36e42c1d07ea072afebdfc7705ec57973a6712dac82832a8754213adf`;
 - `contracts/vnext/campaign-release-surface-profile.v1.json`, SHA-256
-  `0633f2bc4960f4c8a757bf10a8681f2481f0d8a5d0997c2d00ba58b02ed43bcc`;
+  `ae33c2564d281d9115229fcb777b5edaa6a1574ea21b56c22d86cba199e5679e`;
 - `contracts/vnext/site-publication-profile.v1.json`, SHA-256
   `d959ce557e8b18a71514e2388a8eda7162182e38f5febf2e1a39b063fa5ba4bc`;
 - `contracts/vnext/public-https-readback-profile.v1.json`, SHA-256

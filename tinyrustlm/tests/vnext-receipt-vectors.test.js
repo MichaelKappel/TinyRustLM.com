@@ -23,6 +23,10 @@ const {
   vectorPath,
   vectorSchema
 } = require("../tools/vnext-receipt-vector-generator.js");
+const {
+  durablePublicationProfile,
+  durablePublicationProfileSha256
+} = require("../tools/vnext-durable-publication.js");
 
 const registryPath = path.resolve(__dirname, "../../contracts/vnext/contract-family.v1.json");
 const profilePath = path.resolve(__dirname, "../../contracts/vnext/receipt-store-profile.v1.json");
@@ -154,7 +158,7 @@ test("freezes one incompatible create-only receipt-store profile", () => {
     "identity",
     "wire",
     "layout",
-    "atomicCreate",
+    "durablePublication",
     "concurrency",
     "rebuild",
     "limits",
@@ -173,8 +177,11 @@ test("freezes one incompatible create-only receipt-store profile", () => {
   assert.equal(profile.wire.canonicalJcsRequired, true);
   assert.equal(profile.wire.maximumReceiptBytes, 262144);
   assert.equal(profile.layout.replacementPolicy, "never");
-  assert.equal(profile.atomicCreate.publishPrimitive, "hard-link-create-if-absent");
-  assert.equal(profile.atomicCreate.existingTargetPolicy, "accept-only-byte-identical");
+  assert.equal(profile.durablePublication.profileId, durablePublicationProfile.profileId);
+  assert.equal(profile.durablePublication.profileSha256, durablePublicationProfileSha256);
+  assert.equal(profile.durablePublication.targetActivation,
+    "matching-content-addressed-durability-receipt-required");
+  assert.equal(profile.durablePublication.callerSuppliedSuccess, "forbidden");
   assert.equal(profile.concurrency.freshTemporaryPolicy, "leave-pending-without-mutation");
   assert.equal(profile.concurrency.minimumIncompleteTemporaryAgeMs, 300000);
   assert.equal(profile.rebuild.preserveUnrelatedValidReceipts, true);
@@ -183,6 +190,7 @@ test("freezes one incompatible create-only receipt-store profile", () => {
   assert.equal(profile.resultContract.absolutePathsReturned, false);
   assert.equal(profile.resultContract.rawHostErrorsReturned, false);
   assert.equal(profile.resultContract.rawInvalidBytesReturned, false);
+  assert.equal(profile.resultContract.durabilityReceiptResultReturned, true);
   assert.doesNotMatch(profileBytes.toString("utf8"),
     /legacy|fallback|migration|alias|dual-reader|dual-writer/iu);
 });

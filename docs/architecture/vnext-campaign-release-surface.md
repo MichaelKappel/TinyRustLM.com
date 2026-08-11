@@ -11,7 +11,7 @@ performing exact static and complete static-plus-generated production HTTPS
 readback, and admitting create-only publication descendants through one final
 commit receipt. Its frozen profile is
 `contracts/vnext/campaign-release-surface-profile.v1.json`, with SHA-256
-`0633f2bc4960f4c8a757bf10a8681f2481f0d8a5d0997c2d00ba58b02ed43bcc`.
+`ae33c2564d281d9115229fcb777b5edaa6a1574ea21b56c22d86cba199e5679e`.
 
 This checkpoint implements fresh projection, final attestation, public-safe
 redaction, truthful operator status, release-manifest preparation, current

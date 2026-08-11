@@ -8,7 +8,15 @@ const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 
+const {
+  ensureVnextDirectoryFlushTestPackage
+} = require("./helpers/vnext-directory-flush-test-package.js");
 const { parseStrictJson } = require("../tools/strict-json.js");
+const {
+  durablePublicationProfile,
+  durablePublicationProfileSha256,
+  createVnextDurablePublication
+} = require("../tools/vnext-durable-publication.js");
 const {
   finalizeVnextIdentityDocument,
   identityContractForSchema
@@ -19,6 +27,8 @@ const {
   subjectStoreProfile,
   subjectStoreProfileSha256
 } = require("../tools/vnext-subject-store.js");
+
+ensureVnextDirectoryFlushTestPackage();
 
 const repositoryRoot = path.resolve(__dirname, "../..");
 const corpusPath = path.join(repositoryRoot, "contracts", "vnext",
@@ -64,38 +74,47 @@ function throwsCode(callback, code) {
   assert.throws(callback, (error) => error?.code === code, `expected ${code}`);
 }
 
-function proxyIo(overrides) {
-  return new Proxy(fs, {
-    get(target, property) {
-      if (Object.hasOwn(overrides, property)) return overrides[property];
-      const value = Reflect.get(target, property);
-      return typeof value === "function" ? value.bind(target) : value;
-    }
+function trackNativeFs(t, hooks = {}) {
+  const descriptorPaths = new Map();
+  const originalOpen = fs.openSync.bind(fs);
+  const originalClose = fs.closeSync.bind(fs);
+  const originalWrite = fs.writeSync.bind(fs);
+  const originalRead = fs.readSync.bind(fs);
+  t.mock.method(fs, "openSync", (filePath, ...args) => {
+      const descriptor = originalOpen(filePath, ...args);
+      descriptorPaths.set(descriptor, path.resolve(String(filePath)));
+      return descriptor;
+  });
+  t.mock.method(fs, "closeSync", (descriptor) => {
+      descriptorPaths.delete(descriptor);
+      return originalClose(descriptor);
+  });
+  t.mock.method(fs, "writeSync", (descriptor, buffer, offset, length, position) => {
+      hooks.beforeWrite?.(descriptorPaths.get(descriptor));
+      return originalWrite(descriptor, buffer, offset, length, position);
+  });
+  t.mock.method(fs, "readSync", (descriptor, buffer, offset, length, position) => {
+      const count = originalRead(descriptor, buffer, offset, length, position);
+      hooks.afterRead?.(descriptorPaths.get(descriptor), buffer, offset, count);
+      return count;
   });
 }
 
-function trackedIo(hooks = {}) {
-  const descriptorPaths = new Map();
-  return proxyIo({
-    openSync(filePath, ...args) {
-      const descriptor = fs.openSync(filePath, ...args);
-      descriptorPaths.set(descriptor, path.resolve(String(filePath)));
-      return descriptor;
+function publishSeed(root, relativePath, bytes) {
+  const publisher = createVnextDurablePublication(root, {
+    codePrefix: "subject_seed",
+    steps: {
+      open: "subject-store-open",
+      path: "subject-store-path",
+      persist: "subject-store-persist",
+      read: "subject-store-read",
+      scan: "subject-store-scan"
     },
-    closeSync(descriptor) {
-      descriptorPaths.delete(descriptor);
-      return fs.closeSync(descriptor);
-    },
-    writeSync(descriptor, buffer, offset, length, position) {
-      hooks.beforeWrite?.(descriptorPaths.get(descriptor));
-      return fs.writeSync(descriptor, buffer, offset, length, position);
-    },
-    readSync(descriptor, buffer, offset, length, position) {
-      const count = fs.readSync(descriptor, buffer, offset, length, position);
-      hooks.afterRead?.(descriptorPaths.get(descriptor), buffer, offset, count);
-      return count;
-    }
+    storeProfileId: subjectStoreProfile.profileId,
+    storeProfileSha256: subjectStoreProfileSha256
   });
+  publisher.publishBytes(relativePath, bytes,
+    Math.max(...subjectStoreProfile.acceptedSubjects.map((entry) => entry.maximumBytes)));
 }
 
 function concurrentPut(root, bytes) {
@@ -134,6 +153,10 @@ test("freezes one public-only incompatible subject-store profile", () => {
   assert.equal(parsed.visibility, "public-safe-only");
   assert.equal(parsed.layout.mutablePointerPolicy, "forbidden");
   assert.equal(parsed.layout.replacementPolicy, "never");
+  assert.equal(parsed.durablePublication.profileId, durablePublicationProfile.profileId);
+  assert.equal(parsed.durablePublication.profileSha256, durablePublicationProfileSha256);
+  assert.equal(Object.hasOwn(parsed, "atomicCreate"), false);
+  assert.doesNotMatch(bytes.toString("utf8"), /unavailable/iu);
   assert.deepEqual(parsed.acceptedSubjects.map((entry) => entry.schema), [
     "tinyrustlm.vnext.artifact_manifest.v1",
     "tinyrustlm.vnext.claim.v2",
@@ -187,13 +210,16 @@ test("creates, reads, and byte-identically reuses every accepted subject class",
     assert.equal(created.canonicalContentSha256, value.canonicalContentSha256);
     assert.equal(created.disposition, "created");
     assert.equal(created.relativePath, subjectRelativePath(value.subjectId));
-    assert.equal(created.durability.fileData, "fsync-complete");
-    assert.ok(["performed", "unavailable-win32-node"].includes(
-      created.durability.directoryMetadata));
-    assert.equal(created.durability.readback, "verified");
+    assert.equal(created.durability.schema, durablePublicationProfile.resultSchema);
+    assert.equal(created.durability.profileSha256, durablePublicationProfileSha256);
+    assert.match(created.durability.durabilityReceiptSha256, /^[a-f0-9]{64}$/u);
+    assert.equal(created.durability.targetDirectoryFlush.status, "performed");
     assert.doesNotMatch(JSON.stringify(created),
       new RegExp(root.replace(/\\/gu, "\\\\"), "u"));
-    assert.deepEqual(store.read(value.subjectId).bytes, value.bytes);
+    const read = store.read(value.subjectId);
+    assert.deepEqual(read.bytes, value.bytes);
+    assert.equal(read.durability.durabilityReceiptSha256,
+      created.durability.durabilityReceiptSha256);
     assert.equal(store.put(value.bytes).disposition, "existing-byte-identical");
   }
 
@@ -251,12 +277,10 @@ test("quarantines invalid, unaccepted, and path-mismatched subjects on rebuild",
   const invalidPath = path.join(root, "subjects", "sha256", "aa", `${"a".repeat(64)}.json`);
   const contextPath = physicalPath(root, context.subjectId);
   const wrongPath = path.join(root, "subjects", "sha256", "ff", `${wrongDigest}.json`);
-  fs.mkdirSync(path.dirname(invalidPath), { recursive: true });
-  fs.mkdirSync(path.dirname(contextPath), { recursive: true });
-  fs.mkdirSync(path.dirname(wrongPath), { recursive: true });
-  fs.writeFileSync(invalidPath, Buffer.from("not-json"));
-  fs.writeFileSync(contextPath, context.bytes);
-  fs.writeFileSync(wrongPath, proof.bytes);
+  publishSeed(root, "subjects/sha256/aa/" + `${"a".repeat(64)}.json`,
+    Buffer.from("not-json"));
+  publishSeed(root, subjectRelativePath(context.subjectId), context.bytes);
+  publishSeed(root, `subjects/sha256/ff/${wrongDigest}.json`, proof.bytes);
 
   const store = createVnextSubjectStore(root);
   assert.deepEqual(store.startup.activeSubjectIds, []);
@@ -292,7 +316,8 @@ test("retains fresh temporaries and quarantines interrupted old writes", (t) => 
 test("turns disk-full writes into bounded errors without publishing partial subjects", (t) => {
   const root = makeRoot(t);
   const value = finalized("proof");
-  const io = trackedIo({
+  const store = createVnextSubjectStore(root);
+  trackNativeFs(t, {
     beforeWrite(filePath) {
       if (filePath?.endsWith(".tmp")) {
         const error = new Error(`private disk detail ${root}`);
@@ -301,7 +326,6 @@ test("turns disk-full writes into bounded errors without publishing partial subj
       }
     }
   });
-  const store = createVnextSubjectStore(root, { io });
   let caught;
   try {
     store.put(value.bytes);
@@ -328,7 +352,7 @@ test("detects post-startup subject mutation and withdraws it on restart", (t) =>
   const restarted = createVnextSubjectStore(root);
   assert.deepEqual(restarted.startup.activeSubjectIds, []);
   assert.deepEqual(restarted.startup.newQuarantines.map((entry) => entry.reasonCode),
-    ["invalid_subject"]);
+    ["durability_target_mismatch"]);
   throwsCode(() => restarted.read(value.subjectId), "subject_not_active");
 });
 
@@ -336,8 +360,9 @@ test("fails a false readback while retaining recoverable canonical bytes", (t) =
   const root = makeRoot(t);
   const value = finalized("proof");
   const target = physicalPath(root, value.subjectId);
+  const store = createVnextSubjectStore(root);
   let injected = false;
-  const io = trackedIo({
+  trackNativeFs(t, {
     afterRead(filePath, buffer, offset, count) {
       if (!injected && filePath === target && count > 0) {
         injected = true;
@@ -345,10 +370,11 @@ test("fails a false readback while retaining recoverable canonical bytes", (t) =
       }
     }
   });
-  const store = createVnextSubjectStore(root, { io });
 
   throwsCode(() => store.put(value.bytes), "subject_readback_mismatch");
   assert.deepEqual(fs.readFileSync(target), value.bytes);
   const restarted = createVnextSubjectStore(root);
-  assert.deepEqual(restarted.read(value.subjectId).bytes, value.bytes);
+  assert.deepEqual(restarted.startup.activeSubjectIds, []);
+  assert.deepEqual(restarted.startup.newQuarantines.map((entry) => entry.reasonCode),
+    ["durability_receipt_missing"]);
 });

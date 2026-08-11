@@ -33,10 +33,12 @@ zero network requests. The superseded plan-only ABI is deleted.
 One frozen `tinyrustlm.vnext.subject-store.v1` boundary now provides bounded,
 create-only host persistence for the five public-safe non-receipt identity
 schemas. It rejects private context and receipt records, validates canonical
-identity before publication and on every read, uses the shared no-follow and
-same-directory atomic-create mechanics, and quarantines invalid, unaccepted,
-misaddressed, or interrupted entries. Stored subjects are immutable input
-history, not currentness decisions.
+identity before publication and on every read, and publishes only through the
+sole receipt-backed durable-publication primitive. An entry is active only
+when its exact content-addressed durability marker reconstructs against the
+target bytes. Missing, mismatched, misaddressed, or interrupted target/marker
+pairs remain inactive and are quarantined as preserved evidence. Stored
+subjects are immutable input history, not currentness decisions.
 
 One frozen `tinyrustlm.vnext.directory-flush.v1` Rust boundary now closes the
 raw Win32 API-access gap without changing Node store truth. It accepts only one
@@ -52,19 +54,37 @@ platform, request, and canonical observation; invokes with no shell, arguments,
 or inherited environment; and rejects package links, malformed or ambiguous
 manifests, process-output abuse, substitution, and before/after package drift.
 Node does not provide an OS network sandbox, and a self-described package trust
-class is not signed provenance. This remains local API evidence only:
-create-only publication receipt integration, crash recovery, power
-interruption, and filesystem/device durability remain unproven.
+class is not signed provenance. The helper boundary remains local API evidence
+only; it does not prove release provenance, a physical power interruption, or
+filesystem/device behavior beyond the observed call.
+
+One frozen `tinyrustlm.vnext.durable-publication.v1` boundary now consumes that
+verified helper and is the sole publication primitive for current vNext stores.
+It accepts no caller filesystem, platform, randomness, helper result, process
+result, readback result, or success seam. It requires one preexisting absolute
+owned root, durably creates owned layout directories, fsyncs an exclusive
+same-directory temporary, publishes without replacement through a hard link,
+flushes the target directory, and performs exact readback. It then publishes a
+canonical content-addressed durability marker through the same sequence and
+activates only after fresh target/marker directory flushes and exact readbacks.
+A target without its exact marker, a marker without its exact target, and
+target drift from a marker are all inactive. Helper absence or failure is a
+bounded hard failure, not an unsupported-success class.
 
 One frozen `tinyrustlm.vnext.campaign-runner.v1` boundary now performs two
 complete exact observations of every active campaign receipt and public
 subject, rejects cross-observation drift, binds caller pins and trusted time,
 and invokes only the generated Rust campaign-evidence ABI. Runner-owned
 content-addressed start and terminal records are explicitly not receipts,
-claims, or currentness pointers. Append-only generation claims and
-identity-bound releases avoid stale-lock check-delete-create races while
-retaining dead-process recovery. Child-process interruption tests, restart
-reprojection, disk-full tests, and exact 271-receipt/40-subject synthetic capacity are bound in
+claims, or currentness pointers. Their snapshots bind every active store
+member's durability-marker SHA-256, starts bind the plan marker, and completed
+terminals bind the projection marker. Append-only lock claims and releases are
+also marker-backed. Identity-bound generations avoid stale-lock
+check-delete-create races while retaining dead-process recovery; a contender
+observes a colliding publication at most 100 times with 25-millisecond waits
+and fails closed if a complete winner never reconstructs. Child-process
+interruption tests, restart reprojection, disk-full tests, and exact
+271-receipt/40-subject synthetic capacity are bound in
 `docs/architecture/vnext-campaign-runner.md`.
 
 The clean-slate r5 registry also replaces the cyclic release/claim pair before
@@ -205,6 +225,11 @@ verified by later phases.
 | DNS rebinding or split-address substitution | One bounded all-address lookup must contain only canonical public addresses; one successful bootstrap address is pinned through verifier-owned lookup callbacks and checked against every connected socket | Mitigated locally | Host resolver and process integrity remain trusted; this is not an outside-network observer proof |
 | Secret disclosure through public evidence | Private-by-default classes, public-safe field types, canonical LF UTF-8 public text, allowlisted canonical publication controls, redaction profile, forbidden keys/value classes, acyclic scan binding, and release-surface scans over selected documents, changelog, manifests, plan material, signatures, controls, deployment/readback receipts, claim candidates, and the final publication receipt | Reduced | Compressed members, cross-runtime detector parity, and protected-list production custody remain deferred |
 | Compatibility code becoming permanent | Validators recognize one incompatible family; the maintained release cutover deletes the replaced readers, writers, mutable aliases, snapshots, schemas, dedicated tests, and stale documentation, and negative conformance forbids their return | Mitigated for the release path | Every later product-phase cutover must apply the same deletion rule |
+| Target bytes mistaken for durable truth | Every current store activates a target only through its exact content-addressed durability marker after fresh helper-backed directory flushes and exact target/marker readbacks | Mitigated for the current local store path | Physical power-loss and filesystem/device matrix evidence remain required |
+| Marker without target or target drift | Reconstruction recomputes target identity and marker binding; marker-only, target-only, and drifted pairs are inactive and preserved for quarantine rather than repaired | Mitigated locally | Operator retention and production-volume quarantine exercises remain required |
+| Injected durability success | Production constructors own filesystem, randomness, helper invocation, process result, and readback; hostile tests patch native boundaries only to prove rejection and cannot supply a successful production result | Mitigated locally | Release helper package provenance and host process integrity remain required |
+| Target/marker publication race | Target and marker paths are create-only; exact reuse is byte-bound, conflicting bytes fail, and runner-lock collision observation is bounded before a safe busy result or hard failure | Mitigated locally | Multi-host shared-filesystem behavior is outside the current owned-root contract |
+| Local flush promoted as physical proof | Profiles, receipts, docs, and errors name only the exact performed helper operation and explicitly exclude power-loss claims | Claim inflation prevented | Controlled interruption tests across supported filesystems, controllers, and physical RIDs remain open |
 
 ## Validator Independence
 
@@ -380,8 +405,11 @@ deployment admission, exact readback, and publication descendants bind only a
 fresh sole-runner result. The current next boundary is a real production run
 over an exact authorized release graph. Local authority and fixture readback
 coverage do not by themselves establish publication.
-The Rust/Win32 directory-flush primitive is implemented, but publication
-receipt integration and physical durability evidence remain prerequisites.
-Archive-member scanning and protected-list release custody also remain open.
+The Rust/Win32 directory-flush primitive and marker-backed publication
+integration are implemented across all current vNext stores, campaign-operation
+records, and runner-lock records. Physical durability evidence remains a
+prerequisite for the corresponding production claim. Archive-member scanning,
+protected equality-list release custody, broader hostile/fuzz coverage, and
+production helper provenance also remain open.
 
 Campaign counters remain `0/20`, `0/50`, `0/25`, `0/40`, and `0/20`.

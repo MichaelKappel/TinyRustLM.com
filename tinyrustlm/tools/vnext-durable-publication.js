@@ -120,6 +120,7 @@ function assertFrozenProfile() {
     Object.getOwnPropertyNames(durablePublicationProfile),
     [
       "activation",
+      "auxiliaryDirectoryFlush",
       "bootstrap",
       "directoryFlushClientProfileId",
       "directoryFlushClientProfileSha256",
@@ -158,6 +159,9 @@ function assertFrozenProfile() {
       profile.resultSchema !== "tinyrustlm.vnext.durable_publication_result.v1" ||
       profile.bootstrap.receiptExcludesOwnPublicationEvidence !== true ||
       profile.bootstrap.recursiveReceipt !== "forbidden" ||
+      profile.auxiliaryDirectoryFlush.existingDirectoryRequired !== true ||
+      profile.auxiliaryDirectoryFlush.verifiedRustHelperRequired !== true ||
+      profile.auxiliaryDirectoryFlush.callerSuppliedSuccess !== "forbidden" ||
       profile.ownedRoot.creationByStore !== "forbidden" ||
       profile.trust.callerSuppliedFlushSuccess !== "forbidden" ||
       profile.trust.callerSuppliedIoSuccess !== "forbidden" ||
@@ -262,6 +266,15 @@ function normalizeRelativePath(value, ownedRoot, code, step, allowDurability = f
 function directoryRelativePath(targetRelativePath) {
   const segments = targetRelativePath.split("/");
   return segments.length === 1 ? "." : segments.slice(0, -1).join("/");
+}
+
+function normalizeRelativeDirectory(value, ownedRoot, code, step) {
+  if (value === ".") return Object.freeze({ absolute: ownedRoot, relativePath: "." });
+  const normalized = normalizeRelativePath(value, ownedRoot, code, step, true);
+  return Object.freeze({
+    absolute: normalized.absolute,
+    relativePath: normalized.relativePath
+  });
 }
 
 function operationId(storeProfileSha256, stage, relativeDirectory, bindingSha256) {
@@ -583,6 +596,24 @@ function createVnextDurablePublication(rootInput, configurationInput) {
     });
   }
 
+  function flushOwnedDirectory(relativeDirectoryInput, stage, bindingSha256) {
+    const normalized = normalizeRelativeDirectory(
+      relativeDirectoryInput,
+      root,
+      code("directory_invalid"),
+      steps.path
+    );
+    if (typeof stage !== "string" || !/^[a-z][a-z0-9-]{2,39}$/u.test(stage)) {
+      failEvidence(code("directory_flush_stage_invalid"), steps.persist);
+    }
+    normalizeDigest(bindingSha256, code("directory_flush_binding_invalid"), steps.persist);
+    if (!fs.existsSync(normalized.absolute)) {
+      failEvidence(code("directory_missing"), steps.persist);
+    }
+    assertNoLinkComponents(normalized.absolute, true);
+    return flushDirectory(normalized.relativePath, stage, bindingSha256);
+  }
+
   function ensureDirectorySegments(segmentsInput) {
     if (!Array.isArray(segmentsInput) || segmentsInput.length === 0 ||
         segmentsInput.length > 64 || Object.getPrototypeOf(segmentsInput) !==
@@ -616,7 +647,9 @@ function createVnextDurablePublication(rootInput, configurationInput) {
           fs.mkdirSync(directory, { mode: 0o700, recursive: false });
           created = true;
         } catch (error) {
-          throw asEvidenceError(error, code("directory_create_failed"), steps.open);
+          if (error?.code !== "EEXIST") {
+            throw asEvidenceError(error, code("directory_create_failed"), steps.open);
+          }
         }
       }
       assertNoLinkComponents(directory, true);
@@ -714,9 +747,13 @@ function createVnextDurablePublication(rootInput, configurationInput) {
   }
 
   function writeSyncedTemporary(target, bytes, digest) {
+    const targetStem = path.basename(target, path.extname(target));
+    const temporaryIdentity = /^(?:[a-f0-9]{16}|[a-f0-9]{64})$/u.test(targetStem)
+      ? targetStem
+      : digest;
     const temporary = path.join(
       path.dirname(target),
-      `.${digest}.${process.pid}.${crypto.randomBytes(12).toString("hex")}.tmp`
+      `.${temporaryIdentity}.${process.pid}.${crypto.randomBytes(12).toString("hex")}.tmp`
     );
     let descriptor;
     try {
@@ -1112,6 +1149,7 @@ function createVnextDurablePublication(rootInput, configurationInput) {
   return Object.freeze({
     activateBytes,
     ensureDirectory: ensureDirectorySegments,
+    flushOwnedDirectory,
     profileId: durablePublicationProfile.profileId,
     profileSha256: durablePublicationProfileSha256,
     publishBytes,

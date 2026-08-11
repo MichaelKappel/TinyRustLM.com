@@ -7,9 +7,17 @@ const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 
+const {
+  ensureVnextDirectoryFlushTestPackage
+} = require("./helpers/vnext-directory-flush-test-package.js");
 const { parseStrictJson } = require("../tools/strict-json.js");
 const {
+  durablePublicationProfile,
+  durablePublicationProfileSha256
+} = require("../tools/vnext-durable-publication.js");
+const {
   finalizeVnextReceipt,
+  receiptMaximumBytes,
   receiptIdentityExcludedFields
 } = require("../tools/vnext-receipt-identity.js");
 const {
@@ -17,8 +25,14 @@ const {
   collectParentReceiptIds,
   createVnextReceiptStore,
   receiptRelativePath,
-  storeProfile
+  storeProfile,
+  storeProfileSha256
 } = require("../tools/vnext-receipt-store.js");
+const {
+  createVnextDurablePublication
+} = require("../tools/vnext-durable-publication.js");
+
+ensureVnextDirectoryFlushTestPackage();
 
 const corpusPath = path.resolve(__dirname, "../../contracts/vnext/contract-corpus.v1.json");
 const ownedPrefix = "tinyrustlm-vnext-receipt-store-";
@@ -53,49 +67,67 @@ function physicalPath(root, receiptId) {
   return path.join(root, ...receiptRelativePath(receiptId).split("/"));
 }
 
-function seedReceipt(root, value, relativePath = receiptRelativePath(value.receipt.receiptId)) {
+const seedPublishers = new Map();
+
+function seedPublisher(root) {
+  if (!seedPublishers.has(root)) {
+    seedPublishers.set(root, createVnextDurablePublication(root, {
+      codePrefix: "receipt_seed",
+      steps: {
+        open: "store-open",
+        path: "store-path",
+        persist: "receipt-persist",
+        read: "receipt-read",
+        scan: "store-scan"
+      },
+      storeProfileId: storeProfile.profileId,
+      storeProfileSha256
+    }));
+  }
+  return seedPublishers.get(root);
+}
+
+function seedBytes(root, relativePath, bytes) {
+  seedPublisher(root).publishBytes(relativePath, bytes, receiptMaximumBytes);
   const target = path.join(root, ...relativePath.split("/"));
-  fs.mkdirSync(path.dirname(target), { recursive: true });
-  fs.writeFileSync(target, value.bytes, { flag: "wx", mode: 0o600 });
   return target;
+}
+
+function seedReceipt(root, value, relativePath = receiptRelativePath(value.receipt.receiptId)) {
+  return seedBytes(root, relativePath, value.bytes);
 }
 
 function throwsCode(callback, code) {
   assert.throws(callback, (error) => error?.code === code, `expected ${code}`);
 }
 
-function proxyIo(overrides) {
-  return new Proxy(fs, {
-    get(target, property) {
-      if (Object.hasOwn(overrides, property)) return overrides[property];
-      const value = Reflect.get(target, property);
-      return typeof value === "function" ? value.bind(target) : value;
-    }
-  });
-}
-
-function trackedIo(hooks = {}) {
+function trackNativeFs(t, hooks = {}) {
   const descriptorPaths = new Map();
-  const io = proxyIo({
-    openSync(filePath, ...args) {
-      const descriptor = fs.openSync(filePath, ...args);
+  const originalOpen = fs.openSync.bind(fs);
+  const originalClose = fs.closeSync.bind(fs);
+  const originalFsync = fs.fsyncSync.bind(fs);
+  const originalLink = fs.linkSync.bind(fs);
+  const originalRead = fs.readSync.bind(fs);
+  const originalWrite = fs.writeSync.bind(fs);
+  t.mock.method(fs, "openSync", (filePath, ...args) => {
+      const descriptor = originalOpen(filePath, ...args);
       descriptorPaths.set(descriptor, path.resolve(String(filePath)));
       return descriptor;
-    },
-    closeSync(descriptor) {
+  });
+  t.mock.method(fs, "closeSync", (descriptor) => {
       descriptorPaths.delete(descriptor);
-      return fs.closeSync(descriptor);
-    },
-    fsyncSync(descriptor) {
+      return originalClose(descriptor);
+  });
+  t.mock.method(fs, "fsyncSync", (descriptor) => {
       hooks.beforeFsync?.(descriptorPaths.get(descriptor), descriptor);
-      return fs.fsyncSync(descriptor);
-    },
-    linkSync(source, destination) {
+      return originalFsync(descriptor);
+  });
+  t.mock.method(fs, "linkSync", (source, destination) => {
       hooks.beforeLink?.(path.resolve(source), path.resolve(destination));
-      return fs.linkSync(source, destination);
-    },
-    readSync(descriptor, buffer, offset, length, position) {
-      const count = fs.readSync(descriptor, buffer, offset, length, position);
+      return originalLink(source, destination);
+  });
+  t.mock.method(fs, "readSync", (descriptor, buffer, offset, length, position) => {
+      const count = originalRead(descriptor, buffer, offset, length, position);
       hooks.afterRead?.(
         descriptorPaths.get(descriptor),
         buffer,
@@ -104,9 +136,11 @@ function trackedIo(hooks = {}) {
         descriptor
       );
       return count;
-    }
   });
-  return io;
+  t.mock.method(fs, "writeSync", (descriptor, buffer, offset, length, position) => {
+      hooks.beforeWrite?.(descriptorPaths.get(descriptor), descriptor);
+      return originalWrite(descriptor, buffer, offset, length, position);
+  });
 }
 
 function concurrentPut(root, bytes) {
@@ -153,11 +187,11 @@ test("rejects accessor-bearing store options without executing them", (t) => {
 test("rejects explicit invalid options instead of silently selecting defaults", (t) => {
   const root = makeRoot(t);
   throwsCode(() => createVnextReceiptStore(root, { io: null }),
-    "receipt_store_io_invalid");
+    "receipt_store_option_unknown");
   throwsCode(() => createVnextReceiptStore(root, { platform: "" }),
-    "receipt_store_options_invalid");
+    "receipt_store_option_unknown");
   throwsCode(() => createVnextReceiptStore(root, { randomBytes: null }),
-    "receipt_store_options_invalid");
+    "receipt_store_option_unknown");
 });
 
 test("rejects coercive receipt identifiers and graph accessors without executing them", () => {
@@ -208,17 +242,36 @@ test("creates, reads, and idempotently reuses exact canonical receipt bytes", (t
   assert.equal(created.receiptId, value.receipt.receiptId);
   assert.equal(created.relativePath, receiptRelativePath(value.receipt.receiptId));
   assert.equal(created.disposition, "created");
-  assert.equal(created.durability.fileData, "fsync-complete");
-  assert.ok(["performed", "unavailable-win32-node"].includes(
-    created.durability.directoryMetadata));
-  assert.equal(created.durability.readback, "verified");
+  assert.equal(created.durability.schema, durablePublicationProfile.resultSchema);
+  assert.equal(created.durability.profileSha256, durablePublicationProfileSha256);
+  assert.match(created.durability.durabilityReceiptSha256, /^[a-f0-9]{64}$/u);
+  assert.equal(created.durability.durabilityReceiptStatus, "verified");
+  assert.equal(created.durability.targetDirectoryFlush.status, "performed");
+  assert.equal(created.durability.durabilityReceiptDirectoryFlush.status, "performed");
   assert.doesNotMatch(JSON.stringify(created), new RegExp(root.replace(/\\/gu, "\\\\"), "u"));
-  assert.deepEqual(store.read(value.receipt.receiptId).bytes, value.bytes);
+  const read = store.read(value.receipt.receiptId);
+  assert.deepEqual(read.bytes, value.bytes);
+  assert.equal(read.durability.durabilityReceiptSha256,
+    created.durability.durabilityReceiptSha256);
 
   const reused = store.put(value.bytes);
   assert.equal(reused.disposition, "existing-byte-identical");
   assert.equal(reused.receiptId, created.receiptId);
   assert.deepEqual(fs.readFileSync(physicalPath(root, created.receiptId)), value.bytes);
+});
+
+test("keeps an otherwise valid receipt inactive when its durability marker is absent", (t) => {
+  const root = makeRoot(t);
+  const store = createVnextReceiptStore(root);
+  const value = finalized("attempt-store-missing-durability-marker-001");
+  const created = store.put(value.bytes);
+  fs.unlinkSync(path.join(root, ...created.durability.durabilityReceiptRelativePath.split("/")));
+
+  const restarted = createVnextReceiptStore(root);
+  assert.deepEqual(restarted.startup.activeReceiptIds, []);
+  assert.equal(restarted.startup.newQuarantines.some((entry) =>
+    entry.reasonCode === "durability_receipt_missing"), true);
+  throwsCode(() => restarted.read(value.receipt.receiptId), "receipt_not_active");
 });
 
 test("serializes two independent process creates through immutable target identity", async (t) => {
@@ -286,7 +339,9 @@ test("does not publish a child when its parent changes after preflight", (t) => 
   const parentTarget = physicalPath(root, parent.receipt.receiptId);
   const childTarget = physicalPath(root, child.receipt.receiptId);
   let mutated = false;
-  const io = trackedIo({
+  const store = createVnextReceiptStore(root);
+  store.put(parent.bytes);
+  trackNativeFs(t, {
     beforeLink(_source, destination) {
       if (!mutated && destination === childTarget) {
         mutated = true;
@@ -294,8 +349,6 @@ test("does not publish a child when its parent changes after preflight", (t) => 
       }
     }
   });
-  const store = createVnextReceiptStore(root, { io });
-  store.put(parent.bytes);
 
   throwsCode(() => store.put(child.bytes), "receipt_active_parent_invalid");
   assert.equal(fs.existsSync(childTarget), false);
@@ -398,10 +451,10 @@ test("rejects a new quarantine mutation when the bounded quarantine is full", (t
   fs.writeFileSync(unexpected, "preserve");
   const quarantine = path.join(root, "quarantine");
   let syntheticIndex = 0;
-  const io = proxyIo({
-    opendirSync(directory) {
+  const originalOpendir = fs.opendirSync.bind(fs);
+  t.mock.method(fs, "opendirSync", (directory) => {
       if (path.resolve(directory) !== path.resolve(quarantine)) {
-        return fs.opendirSync(directory);
+        return originalOpendir(directory);
       }
       return {
         readSync() {
@@ -411,10 +464,9 @@ test("rejects a new quarantine mutation when the bounded quarantine is full", (t
         },
         closeSync() {}
       };
-    }
   });
 
-  throwsCode(() => createVnextReceiptStore(root, { io }),
+  throwsCode(() => createVnextReceiptStore(root),
     "receipt_store_quarantine_limit");
   assert.equal(fs.readFileSync(unexpected, "utf8"), "preserve");
 });
@@ -423,10 +475,10 @@ test("enforces the bounded per-directory scan before processing entries", (t) =>
   const root = makeRoot(t);
   const shaRoot = path.join(root, "receipts", "sha256");
   let syntheticIndex = 0;
-  const io = proxyIo({
-    opendirSync(directory) {
+  const originalOpendir = fs.opendirSync.bind(fs);
+  t.mock.method(fs, "opendirSync", (directory) => {
       if (path.resolve(directory) !== path.resolve(shaRoot)) {
-        return fs.opendirSync(directory);
+        return originalOpendir(directory);
       }
       return {
         readSync() {
@@ -436,10 +488,9 @@ test("enforces the bounded per-directory scan before processing entries", (t) =>
         },
         closeSync() {}
       };
-    }
   });
 
-  throwsCode(() => createVnextReceiptStore(root, { io }),
+  throwsCode(() => createVnextReceiptStore(root),
     "receipt_store_directory_entry_limit");
 });
 
@@ -448,13 +499,14 @@ test("quarantines truncation, temporary files, path drift, and unknown entries",
   const value = finalized("attempt-store-path-drift-001");
   const digest = value.receipt.receiptId.slice("sha256:".length);
   const prefix = path.join(root, "receipts", "sha256", digest.slice(0, 2));
-  fs.mkdirSync(prefix, { recursive: true });
-  fs.writeFileSync(path.join(prefix, `${"f".repeat(64)}.json`), value.bytes);
+  seedBytes(root,
+    `receipts/sha256/${digest.slice(0, 2)}/${"f".repeat(64)}.json`, value.bytes);
   const temporary = path.join(prefix, `.${digest}.${process.pid}.abcd.tmp`);
   fs.writeFileSync(temporary, Buffer.from("partial"));
   const old = new Date(Date.now() - storeProfile.concurrency.minimumIncompleteTemporaryAgeMs - 1000);
   fs.utimesSync(temporary, old, old);
-  fs.writeFileSync(path.join(prefix, `${"0".repeat(64)}.json`), Buffer.from("{"));
+  seedBytes(root,
+    `receipts/sha256/${digest.slice(0, 2)}/${"0".repeat(64)}.json`, Buffer.from("{"));
   fs.writeFileSync(path.join(root, "receipts", "sha256", "README.txt"), Buffer.from("unknown"));
 
   const store = createVnextReceiptStore(root);
@@ -535,20 +587,14 @@ test("does not traverse an unknown directory link during startup recovery", (t) 
 
 test("turns disk-full writes into bounded errors and removes partial temporaries", (t) => {
   const root = makeRoot(t);
-  const diskFullIo = new Proxy(fs, {
-    get(target, property) {
-      if (property === "writeSync") {
-        return () => {
-          const error = new Error(`sensitive host detail ${root}`);
-          error.code = "ENOSPC";
-          throw error;
-        };
-      }
-      const value = Reflect.get(target, property);
-      return typeof value === "function" ? value.bind(target) : value;
+  const store = createVnextReceiptStore(root);
+  trackNativeFs(t, {
+    beforeWrite() {
+      const error = new Error(`sensitive host detail ${root}`);
+      error.code = "ENOSPC";
+      throw error;
     }
   });
-  const store = createVnextReceiptStore(root, { io: diskFullIo });
   const value = finalized("attempt-store-disk-full-001");
   let caught;
   try {
@@ -566,7 +612,8 @@ test("turns disk-full writes into bounded errors and removes partial temporaries
 
 test("removes an unpublished temporary when file fsync fails", (t) => {
   const root = makeRoot(t);
-  const io = trackedIo({
+  const store = createVnextReceiptStore(root);
+  trackNativeFs(t, {
     beforeFsync(filePath) {
       if (filePath?.endsWith(".tmp")) {
         const error = new Error(`private fsync detail ${root}`);
@@ -575,7 +622,6 @@ test("removes an unpublished temporary when file fsync fails", (t) => {
       }
     }
   });
-  const store = createVnextReceiptStore(root, { io });
   const value = finalized("attempt-store-file-fsync-failure-001");
 
   let caught;
@@ -593,7 +639,8 @@ test("removes an unpublished temporary when file fsync fails", (t) => {
 
 test("removes an unpublished temporary when hard-link publication fails", (t) => {
   const root = makeRoot(t);
-  const io = trackedIo({
+  const store = createVnextReceiptStore(root);
+  trackNativeFs(t, {
     beforeLink(source, destination) {
       if (source.endsWith(".tmp") && destination.endsWith(".json")) {
         const error = new Error(`private link detail ${root}`);
@@ -602,7 +649,6 @@ test("removes an unpublished temporary when hard-link publication fails", (t) =>
       }
     }
   });
-  const store = createVnextReceiptStore(root, { io });
   const value = finalized("attempt-store-link-failure-001");
 
   let caught;
@@ -618,23 +664,23 @@ test("removes an unpublished temporary when hard-link publication fails", (t) =>
   assert.equal(fs.readdirSync(prefix).some((name) => name.endsWith(".tmp")), false);
 });
 
-test("recovers a published receipt after directory synchronization fails", (t) => {
+test("keeps a target inactive when its verified helper directory flush fails", (t) => {
   const root = makeRoot(t);
   const value = finalized("attempt-store-directory-fsync-failure-001");
   const target = physicalPath(root, value.receipt.receiptId);
-  const prefix = path.dirname(target);
+  const store = createVnextReceiptStore(root);
   let injected = false;
-  const io = trackedIo({
-    beforeFsync(filePath) {
-      if (!injected && filePath === prefix) {
+  const originalSpawn = childProcess.spawnSync.bind(childProcess);
+  t.mock.method(childProcess, "spawnSync", (command, args, options) => {
+      const request = options?.input && parseStrictJson(options.input);
+      if (!injected && request?.operationId?.startsWith("durability:target-publish:")) {
         injected = true;
         const error = new Error(`private directory fsync detail ${root}`);
         error.code = "EIO";
-        throw error;
+        return { error, status: null, stderr: Buffer.alloc(0), stdout: Buffer.alloc(0) };
       }
-    }
+      return originalSpawn(command, args, options);
   });
-  const store = createVnextReceiptStore(root, { io });
 
   let caught;
   try {
@@ -642,21 +688,22 @@ test("recovers a published receipt after directory synchronization fails", (t) =
   } catch (error) {
     caught = error;
   }
-  assert.equal(caught?.code, "receipt_directory_sync_failed");
-  assert.equal(caught?.causeCode, "eio");
+  assert.equal(caught?.code, "directory_flush_process_spawn_failed");
   assert.deepEqual(fs.readFileSync(target), value.bytes);
 
   const restarted = createVnextReceiptStore(root);
-  assert.deepEqual(restarted.startup.activeReceiptIds, [value.receipt.receiptId]);
-  assert.equal(restarted.put(value.bytes).disposition, "existing-byte-identical");
+  assert.deepEqual(restarted.startup.activeReceiptIds, []);
+  assert.equal(restarted.startup.newQuarantines.some((entry) =>
+    entry.reasonCode === "durability_receipt_missing"), true);
 });
 
 test("fails a false readback without corrupting the published receipt", (t) => {
   const root = makeRoot(t);
   const value = finalized("attempt-store-readback-failure-001");
   const target = physicalPath(root, value.receipt.receiptId);
+  const store = createVnextReceiptStore(root);
   let injected = false;
-  const io = trackedIo({
+  trackNativeFs(t, {
     afterRead(filePath, buffer, offset, count) {
       if (!injected && filePath === target && count > 0) {
         injected = true;
@@ -664,10 +711,11 @@ test("fails a false readback without corrupting the published receipt", (t) => {
       }
     }
   });
-  const store = createVnextReceiptStore(root, { io });
 
   throwsCode(() => store.put(value.bytes), "receipt_readback_mismatch");
   assert.deepEqual(fs.readFileSync(target), value.bytes);
   const restarted = createVnextReceiptStore(root);
-  assert.deepEqual(restarted.read(value.receipt.receiptId).bytes, value.bytes);
+  assert.deepEqual(restarted.startup.activeReceiptIds, []);
+  assert.equal(restarted.startup.newQuarantines.some((entry) =>
+    entry.reasonCode === "durability_receipt_missing"), true);
 });

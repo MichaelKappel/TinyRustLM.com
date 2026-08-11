@@ -117,6 +117,14 @@
     "restartAcceptance": "fresh-helper-backed-target-and-receipt-directory-flushes-plus-exact-readbacks",
     "recursiveReceipt": "forbidden"
   },
+  "auxiliaryDirectoryFlush": {
+    "purpose": "layout-rebuild-and-quarantine-metadata",
+    "relativeDirectoryPolicy": "owned-root-or-normal-components",
+    "existingDirectoryRequired": true,
+    "verifiedRustHelperRequired": true,
+    "callerSuppliedSuccess": "forbidden",
+    "result": "complete-directory-flush-client-result"
+  },
   "limits": {
     "maximumReceiptBytes": 65536,
     "maximumActiveReceipts": 262144,

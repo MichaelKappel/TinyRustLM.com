@@ -19,9 +19,12 @@ const {
 } = require("./vnext-create-only-files.js");
 const {
   VnextEvidenceError,
-  asEvidenceError,
   failEvidence
 } = require("./vnext-evidence-error.js");
+const {
+  durablePublicationProfile,
+  durablePublicationProfileSha256
+} = require("./vnext-durable-publication.js");
 
 const profilePath = path.resolve(
   __dirname,
@@ -33,14 +36,14 @@ const digestPattern = /^[a-f0-9]{64}$/u;
 const digestFilePattern = /^([a-f0-9]{64})\.json$/u;
 const prefixPattern = /^[a-f0-9]{2}$/u;
 const temporaryPattern = /^\.([a-f0-9]{64})\.[0-9]{1,20}\.[a-f0-9]{4,64}\.tmp$/u;
-const optionNames = Object.freeze(["io", "platform", "randomBytes"]);
+const optionNames = Object.freeze([]);
 const artifactKinds = Object.freeze(["plan", "projection-result"]);
 const profileFields = Object.freeze([
   "schema", "profileId", "status", "versionPolicy", "campaignProjectionProfileId",
   "campaignProjectionProfileSha256", "canonicalJsonProfile", "hashAlgorithm",
   "identityBasis", "networkAccess", "sourceMutation", "acceptedArtifacts",
   "projectionResultFields", "countFields", "countValueFields", "currentOperationFields",
-  "phaseStateCountFields", "countedEvidenceFields", "layout", "atomicCreate",
+  "phaseStateCountFields", "countedEvidenceFields", "layout", "durablePublication",
   "concurrency", "resume", "rebuild", "limits", "resultContract"
 ]);
 const acceptedArtifactFields = Object.freeze([
@@ -50,10 +53,9 @@ const layoutFields = Object.freeze([
   "planPattern", "projectionPattern", "temporaryPattern", "quarantineRoot",
   "pathLinkPolicy", "replacementPolicy", "mutablePointerPolicy"
 ]);
-const atomicCreateFields = Object.freeze([
-  "sameDirectoryTemporary", "exclusiveTemporary", "temporaryFileFsync",
-  "publishPrimitive", "existingTargetPolicy", "directoryMetadataSync",
-  "readbackVerification"
+const durablePublicationFields = Object.freeze([
+  "profileId", "profileSha256", "targetActivation", "directoryFlush", "restart",
+  "targetWithoutReceipt", "receiptWithoutTarget", "callerSuppliedSuccess"
 ]);
 const concurrencyFields = Object.freeze([
   "createWriters", "freshTemporaryPolicy", "minimumIncompleteTemporaryAgeMs",
@@ -73,7 +75,7 @@ const limitFields = Object.freeze([
 ]);
 const resultContractFields = Object.freeze([
   "absolutePathsReturned", "rawHostErrorsReturned", "rawInvalidBytesReturned",
-  "durabilityClassReturned", "boundedErrorCodesOnly"
+  "durabilityReceiptResultReturned", "boundedErrorCodesOnly"
 ]);
 const projectionResultFields = Object.freeze([
   "authorityStatus", "authorityTerminalRegistryReceiptId", "blockerCodes",
@@ -163,7 +165,7 @@ function validateInstalledProfile() {
   }
   exactDataObject(parsedProfile.layout, layoutFields,
     "campaign_artifact_store_profile_invalid", "campaign-artifact-store-profile");
-  exactDataObject(parsedProfile.atomicCreate, atomicCreateFields,
+  exactDataObject(parsedProfile.durablePublication, durablePublicationFields,
     "campaign_artifact_store_profile_invalid", "campaign-artifact-store-profile");
   exactDataObject(parsedProfile.concurrency, concurrencyFields,
     "campaign_artifact_store_profile_invalid", "campaign-artifact-store-profile");
@@ -213,14 +215,12 @@ function validateInstalledProfile() {
       parsedProfile.layout.pathLinkPolicy !== "reject-symbolic-link-or-reparse-point" ||
       parsedProfile.layout.replacementPolicy !== "never" ||
       parsedProfile.layout.mutablePointerPolicy !== "forbidden" ||
-      parsedProfile.atomicCreate.sameDirectoryTemporary !== true ||
-      parsedProfile.atomicCreate.exclusiveTemporary !== true ||
-      parsedProfile.atomicCreate.temporaryFileFsync !== true ||
-      parsedProfile.atomicCreate.publishPrimitive !== "hard-link-create-if-absent" ||
-      parsedProfile.atomicCreate.existingTargetPolicy !== "accept-only-byte-identical" ||
-      parsedProfile.atomicCreate.directoryMetadataSync !==
-        "required-or-explicitly-unavailable" ||
-      parsedProfile.atomicCreate.readbackVerification !== true ||
+      parsedProfile.durablePublication.profileId !== durablePublicationProfile.profileId ||
+      parsedProfile.durablePublication.profileSha256 !== durablePublicationProfileSha256 ||
+      parsedProfile.durablePublication.targetActivation !==
+        "matching-content-addressed-durability-receipt-required" ||
+      parsedProfile.durablePublication.directoryFlush !== "verified-rust-helper-required" ||
+      parsedProfile.durablePublication.callerSuppliedSuccess !== "forbidden" ||
       parsedProfile.concurrency.createWriters !==
         "multi-process-idempotent-hard-link" ||
       parsedProfile.concurrency.freshTemporaryPolicy !==
@@ -253,7 +253,7 @@ function validateInstalledProfile() {
       parsedProfile.resultContract.absolutePathsReturned !== false ||
       parsedProfile.resultContract.rawHostErrorsReturned !== false ||
       parsedProfile.resultContract.rawInvalidBytesReturned !== false ||
-      parsedProfile.resultContract.durabilityClassReturned !== true ||
+      parsedProfile.resultContract.durabilityReceiptResultReturned !== true ||
       parsedProfile.resultContract.boundedErrorCodesOnly !== true ||
       !limitValues.every((entry) => Number.isSafeInteger(entry) && entry > 0)) {
     failEvidence("campaign_artifact_store_profile_invalid",
@@ -278,15 +278,15 @@ function exactOptions(options) {
   }
   const result = {};
   for (const name of names) {
-    if (!optionNames.includes(name)) {
-      failEvidence("campaign_artifact_store_option_unknown", "campaign-artifact-store-open");
-    }
     const descriptor = Object.getOwnPropertyDescriptor(options, name);
     if (!descriptor || !descriptor.enumerable) {
       failEvidence("campaign_artifact_store_option_unknown", "campaign-artifact-store-open");
     }
     if (!("value" in descriptor)) {
       failEvidence("campaign_artifact_store_option_accessor", "campaign-artifact-store-open");
+    }
+    if (!optionNames.includes(name)) {
+      failEvidence("campaign_artifact_store_option_unknown", "campaign-artifact-store-open");
     }
     result[name] = descriptor.value;
   }
@@ -330,26 +330,10 @@ function ensureLayout(fileOps, root) {
 }
 
 function createVnextCampaignArtifactStore(rootInput, options = {}) {
-  const normalizedOptions = exactOptions(options);
-  const io = Object.hasOwn(normalizedOptions, "io") ? normalizedOptions.io : fs;
-  const platform = Object.hasOwn(normalizedOptions, "platform")
-    ? normalizedOptions.platform
-    : process.platform;
-  const randomBytes = Object.hasOwn(normalizedOptions, "randomBytes")
-    ? normalizedOptions.randomBytes
-    : crypto.randomBytes;
-  if (io === null || (typeof io !== "object" && typeof io !== "function")) {
-    failEvidence("campaign_artifact_store_io_invalid", "campaign-artifact-store-open");
-  }
-  if (typeof platform !== "string" || platform.length === 0 ||
-      typeof randomBytes !== "function") {
-    failEvidence("campaign_artifact_store_options_invalid", "campaign-artifact-store-open");
-  }
+  exactOptions(options);
   const fileOps = createVnextCreateOnlyFiles({
     codePrefix: "campaign_artifact",
-    io,
-    platform,
-    randomBytes,
+    root: rootInput,
     steps: {
       open: "campaign-artifact-store-open",
       path: "campaign-artifact-path",
@@ -358,6 +342,8 @@ function createVnextCampaignArtifactStore(rootInput, options = {}) {
       read: "campaign-artifact-read",
       scan: "campaign-artifact-scan"
     },
+    storeProfileId: parsedProfile.profileId,
+    storeProfileSha256: campaignArtifactStoreProfileSha256,
     streamBufferBytes: parsedProfile.limits.streamBufferBytes
   });
   const root = fileOps.normalizeRoot(rootInput);
@@ -372,12 +358,11 @@ function createVnextCampaignArtifactStore(rootInput, options = {}) {
   function readPlanFromMetadata(digest, metadata) {
     const filePath = path.join(root, ...metadata.relativePath.split("/"));
     fileOps.assertNoLinkComponents(path.dirname(filePath), true);
+    let activation;
     let validated;
     try {
-      validated = validateCampaignPlanBytes(fileOps.boundedReadFile(
-        filePath,
-        maximumBytesByKind.get("plan")
-      ));
+      activation = fileOps.activateBytes(filePath, maximumBytesByKind.get("plan"));
+      validated = validateCampaignPlanBytes(activation.bytes);
     } catch (error) {
       throw new VnextEvidenceError(
         "campaign_artifact_active_read_failed",
@@ -388,7 +373,7 @@ function createVnextCampaignArtifactStore(rootInput, options = {}) {
     if (validated.planSha256 !== digest) {
       failEvidence("campaign_artifact_active_identity_changed", "campaign-artifact-read");
     }
-    return validated;
+    return Object.freeze({ ...validated, durability: activation.durability });
   }
 
   function readPlan(digestInput) {
@@ -405,10 +390,15 @@ function createVnextCampaignArtifactStore(rootInput, options = {}) {
     const plan = readPlan(metadata.campaignPlanSha256);
     const filePath = path.join(root, ...metadata.relativePath.split("/"));
     fileOps.assertNoLinkComponents(path.dirname(filePath), true);
+    let activation;
     let validated;
     try {
+      activation = fileOps.activateBytes(
+        filePath,
+        maximumBytesByKind.get("projection-result")
+      );
       validated = validateCampaignProjectionResultBytes(
-        fileOps.boundedReadFile(filePath, maximumBytesByKind.get("projection-result")),
+        activation.bytes,
         plan.bytes
       );
     } catch (error) {
@@ -421,11 +411,12 @@ function createVnextCampaignArtifactStore(rootInput, options = {}) {
     if (validated.resultSha256 !== digest) {
       failEvidence("campaign_artifact_active_identity_changed", "campaign-artifact-read");
     }
-    return validated;
+    return Object.freeze({ ...validated, durability: activation.durability });
   }
 
   function rebuild() {
     ensureLayout(fileOps, root);
+    const durabilityIndex = fileOps.rebuildDurabilityIndex();
     let totalScanEntries = 0;
     const scanEntries = (directory, maximumEntries) => {
       const entries = fileOps.boundedDirectoryEntries(directory, maximumEntries);
@@ -472,7 +463,7 @@ function createVnextCampaignArtifactStore(rootInput, options = {}) {
         }
       }
     };
-    scanUnknownContainer(root, new Set(["plans", "projections", "quarantine"]));
+    scanUnknownContainer(root, new Set(["durability", "plans", "projections", "quarantine"]));
     scanUnknownContainer(layout.plans, new Set(["sha256"]));
     scanUnknownContainer(layout.projections, new Set(["sha256"]));
 
@@ -521,15 +512,19 @@ function createVnextCampaignArtifactStore(rootInput, options = {}) {
             if (quarantine !== null) newQuarantines.push(quarantine);
             continue;
           }
+          let activation;
           let metadata;
           try {
-            metadata = candidate(
-              fileOps.boundedReadFile(filePath, maximumBytesByKind.get(kind))
-            );
+            activation = fileOps.activateBytes(filePath, maximumBytesByKind.get(kind));
+            metadata = candidate(activation.bytes);
           } catch (error) {
-            const reasonCode = error?.code === "campaign_artifact_parent_plan_missing"
-              ? "missing_plan"
-              : kind === "plan" ? "invalid_plan" : "invalid_projection";
+            const reasonCode = error?.code === "campaign_artifact_durability_receipt_missing"
+              ? "durability_receipt_missing"
+              : error?.code === "campaign_artifact_target_readback_mismatch"
+                ? "durability_target_mismatch"
+                : error?.code === "campaign_artifact_parent_plan_missing"
+                  ? "missing_plan"
+                  : kind === "plan" ? "invalid_plan" : "invalid_projection";
             const quarantine = quarantineCandidate(filePath, reasonCode, digestMatch[1]);
             if (quarantine !== null) newQuarantines.push(quarantine);
             continue;
@@ -542,6 +537,7 @@ function createVnextCampaignArtifactStore(rootInput, options = {}) {
           }
           result.set(digest, Object.freeze({
             ...metadata,
+            durability: activation.durability,
             relativePath: campaignArtifactRelativePath(kind, digest)
           }));
           const maximumActive = kind === "plan"
@@ -586,6 +582,7 @@ function createVnextCampaignArtifactStore(rootInput, options = {}) {
     return immutableRecord({
       activePlanSha256s: [...activePlans.keys()].sort(),
       activeProjectionSha256s: [...activeProjections.keys()].sort(),
+      durabilityIndex,
       directoryMetadata: {
         plans: fileOps.syncDirectory(layout.planShaRoot),
         projections: fileOps.syncDirectory(layout.projectionShaRoot)
@@ -615,6 +612,7 @@ function createVnextCampaignArtifactStore(rootInput, options = {}) {
     activePlans.set(digest, Object.freeze({
       artifactSha256: digest,
       campaignId: plan.plan.campaignId,
+      durability: persistence.durability,
       planId: plan.plan.planId,
       relativePath
     }));
@@ -658,20 +656,14 @@ function createVnextCampaignArtifactStore(rootInput, options = {}) {
     try {
       readPlan(campaignPlanSha256);
     } catch (error) {
-      if (persistence.disposition === "created") {
-        try {
-          fileOps.assertNoLinkComponents(path.dirname(target), true);
-          io.unlinkSync(target);
-          fileOps.syncDirectory(path.dirname(target));
-        } catch (cleanupError) {
-          if (cleanupError?.code !== "ENOENT") {
-            throw asEvidenceError(
-              cleanupError,
-              "campaign_artifact_parent_cleanup_failed",
-              "campaign-artifact-persist"
-            );
-          }
-        }
+      try {
+        rebuild();
+      } catch (rebuildError) {
+        throw new VnextEvidenceError(
+          "campaign_artifact_parent_reconciliation_failed",
+          "campaign-artifact-persist",
+          rebuildError?.code
+        );
       }
       throw new VnextEvidenceError(
         "campaign_artifact_parent_plan_invalid",
@@ -682,6 +674,7 @@ function createVnextCampaignArtifactStore(rootInput, options = {}) {
     activeProjections.set(digest, Object.freeze({
       artifactSha256: digest,
       campaignPlanSha256,
+      durability: persistence.durability,
       relativePath,
       verificationTimeUtc: projection.result.verificationTimeUtc
     }));

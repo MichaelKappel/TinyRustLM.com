@@ -19,15 +19,28 @@ const {
   createVnextCreateOnlyFiles,
   immutableRecord
 } = require("./vnext-create-only-files.js");
+const {
+  durablePublicationProfile,
+  durablePublicationProfileSha256
+} = require("./vnext-durable-publication.js");
 
 const profilePath = path.resolve(__dirname, "../../contracts/vnext/receipt-store-profile.v1.json");
-const storeProfile = parseStrictJson(fs.readFileSync(profilePath));
+const profileBytes = fs.readFileSync(profilePath);
+const storeProfile = parseStrictJson(profileBytes);
+const storeProfileSha256 = crypto.createHash("sha256").update(profileBytes).digest("hex");
 const receiptIdPattern = /^sha256:([a-f0-9]{64})$/u;
 const digestFilePattern = /^([a-f0-9]{64})\.json$/u;
 const prefixPattern = /^[a-f0-9]{2}$/u;
 const temporaryPattern = /^\.([a-f0-9]{64})\.[0-9]{1,20}\.[a-f0-9]{4,64}\.tmp$/u;
 const quarantineReasonPattern = /^[a-z][a-z0-9_]{2,79}$/u;
-const storeOptionNames = Object.freeze(["io", "platform", "randomBytes"]);
+const storeOptionNames = Object.freeze([]);
+
+if (storeProfile.durablePublication?.profileId !== durablePublicationProfile.profileId ||
+    storeProfile.durablePublication?.profileSha256 !== durablePublicationProfileSha256 ||
+    storeProfile.durablePublication?.callerSuppliedSuccess !== "forbidden" ||
+    Object.hasOwn(storeProfile, "atomicCreate")) {
+  failEvidence("receipt_store_profile_invalid", "store-profile");
+}
 
 function isPlainObject(value) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
@@ -82,7 +95,6 @@ function exactOptions(options) {
     failEvidence("receipt_store_option_unknown", "store-open");
   }
   for (const name of names) {
-    if (!storeOptionNames.includes(name)) failEvidence("receipt_store_option_unknown", "store-open");
     const descriptor = Object.getOwnPropertyDescriptor(options, name);
     if (!descriptor || !descriptor.enumerable) {
       failEvidence("receipt_store_option_unknown", "store-open");
@@ -90,6 +102,7 @@ function exactOptions(options) {
     if (!("value" in descriptor)) {
       failEvidence("receipt_store_option_accessor", "store-open");
     }
+    if (!storeOptionNames.includes(name)) failEvidence("receipt_store_option_unknown", "store-open");
   }
   return Object.freeze(Object.fromEntries(names.map((name) =>
     [name, Object.getOwnPropertyDescriptor(options, name).value])));
@@ -274,26 +287,10 @@ function classifyReceiptGraph(records) {
 }
 
 function createVnextReceiptStore(rootInput, options = {}) {
-  const normalizedOptions = exactOptions(options);
-  const io = Object.hasOwn(normalizedOptions, "io") ? normalizedOptions.io : fs;
-  const platform = Object.hasOwn(normalizedOptions, "platform")
-    ? normalizedOptions.platform
-    : process.platform;
-  const randomBytes = Object.hasOwn(normalizedOptions, "randomBytes")
-    ? normalizedOptions.randomBytes
-    : crypto.randomBytes;
-  if (io === null || (typeof io !== "object" && typeof io !== "function")) {
-    failEvidence("receipt_store_io_invalid", "store-open");
-  }
-  if (typeof platform !== "string" || platform.length === 0 ||
-      typeof randomBytes !== "function") {
-    failEvidence("receipt_store_options_invalid", "store-open");
-  }
+  exactOptions(options);
   const fileOps = createVnextCreateOnlyFiles({
     codePrefix: "receipt",
-    io,
-    platform,
-    randomBytes,
+    root: rootInput,
     steps: {
       open: "store-open",
       path: "store-path",
@@ -302,6 +299,8 @@ function createVnextReceiptStore(rootInput, options = {}) {
       read: "receipt-read",
       scan: "store-scan"
     },
+    storeProfileId: storeProfile.profileId,
+    storeProfileSha256,
     streamBufferBytes: storeProfile.limits.streamBufferBytes
   });
   const root = fileOps.normalizeRoot(rootInput);
@@ -340,6 +339,7 @@ function createVnextReceiptStore(rootInput, options = {}) {
 
   function rebuild() {
     ensureLayout(fileOps, root);
+    const durabilityIndex = fileOps.rebuildDurabilityIndex();
     let totalScanEntries = 0;
     const scanEntries = (directory, maximumEntries) => {
       const entries = fileOps.boundedDirectoryEntries(directory, maximumEntries);
@@ -366,7 +366,7 @@ function createVnextReceiptStore(rootInput, options = {}) {
     };
     scanUnknownContainer(
       root,
-      new Set(["quarantine", "receipts"]),
+      new Set(["durability", "quarantine", "receipts"]),
       quarantines,
       scanEntries,
       quarantineCandidate
@@ -421,12 +421,17 @@ function createVnextReceiptStore(rootInput, options = {}) {
           continue;
         }
         let validated;
+        let activation;
         try {
-          validated = validateVnextReceiptBytes(
-            fileOps.boundedReadFile(filePath, receiptMaximumBytes)
-          );
-        } catch (_error) {
-          const result = quarantineCandidate(filePath, "invalid_receipt");
+          activation = fileOps.activateBytes(filePath, receiptMaximumBytes);
+          validated = validateVnextReceiptBytes(activation.bytes);
+        } catch (error) {
+          const reasonCode = error?.code === "receipt_durability_receipt_missing"
+            ? "durability_receipt_missing"
+            : error?.code === "receipt_target_readback_mismatch"
+              ? "durability_target_mismatch"
+              : "invalid_receipt";
+          const result = quarantineCandidate(filePath, reasonCode);
           if (result !== null) quarantines.push(result);
           continue;
         }
@@ -451,6 +456,7 @@ function createVnextReceiptStore(rootInput, options = {}) {
         }
         candidates.set(validated.receipt.receiptId, {
           receiptId: validated.receipt.receiptId,
+          durability: activation.durability,
           parentReceiptIds: collectParentReceiptIds(validated.receipt),
           relativePath: receiptRelativePath(validated.receipt.receiptId)
         });
@@ -475,11 +481,13 @@ function createVnextReceiptStore(rootInput, options = {}) {
       const candidate = candidates.get(receiptId);
       return [receiptId, Object.freeze({
         parentReceiptIds: candidate.parentReceiptIds,
+        durability: candidate.durability,
         relativePath: candidate.relativePath
       })];
     }));
     return immutableRecord({
       activeReceiptIds: [...active.keys()].sort(),
+      durabilityIndex,
       newQuarantines: quarantines,
       existingQuarantineEntries,
       pendingTemporaryCount,
@@ -495,18 +503,22 @@ function createVnextReceiptStore(rootInput, options = {}) {
     if (!metadata) failEvidence("receipt_not_active", "receipt-read");
     const filePath = path.join(root, ...metadata.relativePath.split("/"));
     fileOps.assertNoLinkComponents(path.dirname(filePath), true);
+    let activated;
     let validated;
     try {
-      validated = validateVnextReceiptBytes(
-        fileOps.boundedReadFile(filePath, receiptMaximumBytes)
-      );
+      activated = fileOps.activateBytes(filePath, receiptMaximumBytes);
+      validated = validateVnextReceiptBytes(activated.bytes);
     } catch (error) {
       throw asEvidenceError(error, "receipt_active_read_failed", "receipt-read");
     }
     if (validated.receipt.receiptId !== receiptId) {
       failEvidence("receipt_active_identity_changed", "receipt-read");
     }
-    return validated;
+    return Object.freeze({
+      bytes: validated.bytes,
+      durability: activated.durability,
+      receipt: validated.receipt
+    });
   }
 
   function validateActiveClosure(receiptId) {
@@ -573,56 +585,19 @@ function createVnextReceiptStore(rootInput, options = {}) {
     }
     const relativePath = receiptRelativePath(receiptId);
     const target = path.join(root, ...relativePath.split("/"));
-    const prefix = path.dirname(target);
-    if (!io.existsSync(prefix)) fileOps.ensureDirectory(prefix);
-    fileOps.assertNoLinkComponents(prefix, true);
     const bytes = validated.bytes;
-    const temporary = fileOps.writeSyncedTemporary(target, bytes);
-    let disposition = "created";
-    try {
-      fileOps.assertNoLinkComponents(prefix, true);
-      try {
-        io.linkSync(temporary, target);
-      } catch (error) {
-        if (error?.code !== "EEXIST") {
-          throw asEvidenceError(error, "receipt_publish_failed", "receipt-persist");
-        }
-        const existing = fileOps.boundedReadFile(target, receiptMaximumBytes);
-        if (!existing.equals(bytes)) failEvidence("receipt_target_conflict", "receipt-persist");
-        disposition = "existing-byte-identical";
-      }
-    } finally {
-      try {
-        io.unlinkSync(temporary);
-      } catch (_error) {
-        // Startup recovery will quarantine a surviving temporary.
-      }
-    }
-    fileOps.assertNoLinkComponents(prefix, true);
-    const directoryMetadata = fileOps.syncDirectory(prefix);
-    const readback = fileOps.boundedReadFile(target, receiptMaximumBytes);
-    if (!readback.equals(bytes)) failEvidence("receipt_readback_mismatch", "receipt-persist");
+    const persistence = fileOps.publishBytes(target, bytes, receiptMaximumBytes);
     try {
       for (const parent of parents) validateActiveClosure(parent);
     } catch (error) {
-      if (disposition === "created") {
-        try {
-          fileOps.assertNoLinkComponents(prefix, true);
-          io.unlinkSync(target);
-          fileOps.syncDirectory(prefix);
-        } catch (cleanupError) {
-          if (cleanupError?.code !== "ENOENT") {
-            throw new VnextEvidenceError(
-              "receipt_parent_cleanup_failed",
-              "receipt-persist",
-              asEvidenceError(
-                cleanupError,
-                "receipt_parent_cleanup_failed",
-                "receipt-persist"
-              ).causeCode
-            );
-          }
-        }
+      try {
+        rebuild();
+      } catch (rebuildError) {
+        throw new VnextEvidenceError(
+          "receipt_parent_reconciliation_failed",
+          "receipt-persist",
+          rebuildError?.code
+        );
       }
       throw new VnextEvidenceError(
         "receipt_active_parent_invalid",
@@ -630,16 +605,16 @@ function createVnextReceiptStore(rootInput, options = {}) {
         error?.code
       );
     }
-    active.set(receiptId, Object.freeze({ parentReceiptIds: parents, relativePath }));
+    active.set(receiptId, Object.freeze({
+      durability: persistence.durability,
+      parentReceiptIds: parents,
+      relativePath
+    }));
     return immutableRecord({
       receiptId,
       relativePath,
-      disposition,
-      durability: {
-        fileData: "fsync-complete",
-        directoryMetadata,
-        readback: "verified"
-      }
+      disposition: persistence.disposition,
+      durability: persistence.durability
     });
   }
 
@@ -657,5 +632,6 @@ module.exports = Object.freeze({
   collectParentReceiptIds,
   createVnextReceiptStore,
   receiptRelativePath,
-  storeProfile
+  storeProfile,
+  storeProfileSha256
 });

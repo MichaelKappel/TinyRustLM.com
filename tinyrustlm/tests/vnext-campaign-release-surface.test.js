@@ -8,7 +8,12 @@ const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 
+const {
+  ensureVnextDirectoryFlushTestPackage
+} = require("./helpers/vnext-directory-flush-test-package.js");
 const { canonicalizeVnextJcsBytes } = require("../tools/vnext-jcs.js");
+
+ensureVnextDirectoryFlushTestPackage();
 const publicReadbackModulePath = require.resolve(
   "../tools/vnext-public-https-readback.js"
 );
@@ -309,6 +314,9 @@ function makeRoots(t) {
     runner: path.join(parent, "runner"),
     subjects: path.join(parent, "subjects")
   });
+  for (const root of [roots.artifacts, roots.receipts, roots.runner, roots.subjects]) {
+    fs.mkdirSync(root, { mode: 0o700, recursive: false });
+  }
   t.after(() => fs.rmSync(parent, { recursive: true, force: true }));
   return roots;
 }
@@ -1269,7 +1277,7 @@ test("freezes one no-compatibility campaign release surface profile", () => {
   const profile = parseStrictJson(bytes);
   assert.equal(campaignReleaseSurfaceProfileSha256, sha256(bytes));
   assert.equal(campaignReleaseSurfaceProfileSha256,
-    "0633f2bc4960f4c8a757bf10a8681f2481f0d8a5d0997c2d00ba58b02ed43bcc");
+    "ae33c2564d281d9115229fcb777b5edaa6a1574ea21b56c22d86cba199e5679e");
   assert.equal(campaignReleaseSurfaceProfile.profileId,
     "tinyrustlm.vnext.campaign-release-surface.v1");
   assert.equal(profile.status, "frozen");
@@ -1618,26 +1626,42 @@ test("rejects failed and interrupted operation histories instead of resuming the
     const input = JSON.parse(process.argv[3]);
     const wasm = fs.readFileSync(process.argv[4]);
     const expected = process.argv[5];
-    let armed = false;
-    const io = new Proxy(fs, { get(target, property) {
-      if (property === "linkSync") return (source, destination) => {
-        const value = fs.linkSync(source, destination);
-        if (armed && String(destination).includes("operations") &&
-            String(destination).endsWith(".json")) process.exit(77);
-        return value;
-      };
-      return Reflect.get(target, property, target);
-    }});
     (async () => {
       const runner = await createVnextCampaignRunner(roots.runner, {
         campaignArtifactStoreRoot: roots.artifacts,
         expectedWasmModuleSha256: expected,
-        io,
         receiptStoreRoot: roots.receipts,
         subjectStoreRoot: roots.subjects,
         wasmModuleBytes: wasm
       });
-      armed = true;
+      const descriptorPaths = new Map();
+      let committedMarker = null;
+      const originalOpen = fs.openSync.bind(fs);
+      const originalClose = fs.closeSync.bind(fs);
+      const originalLink = fs.linkSync.bind(fs);
+      fs.openSync = (filePath, ...args) => {
+        const descriptor = originalOpen(filePath, ...args);
+        descriptorPaths.set(descriptor, String(filePath));
+        return descriptor;
+      };
+      fs.closeSync = (descriptor) => {
+        const filePath = descriptorPaths.get(descriptor);
+        descriptorPaths.delete(descriptor);
+        const value = originalClose(descriptor);
+        if (committedMarker !== null && filePath === committedMarker) process.exit(77);
+        return value;
+      };
+      fs.linkSync = (source, destination) => {
+        const value = originalLink(source, destination);
+        if (String(destination).includes("durability") &&
+            String(destination).endsWith(".json")) {
+          const marker = JSON.parse(fs.readFileSync(destination, "utf8"));
+          if (String(marker.targetRelativePath || "").startsWith("operations/sha256/")) {
+            committedMarker = String(destination);
+          }
+        }
+        return value;
+      };
       await runner.runProjection(input);
       process.exit(2);
     })().catch(() => process.exit(3));

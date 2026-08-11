@@ -18,6 +18,10 @@ const {
   createVnextCreateOnlyFiles,
   immutableRecord
 } = require("./vnext-create-only-files.js");
+const {
+  durablePublicationProfile,
+  durablePublicationProfileSha256
+} = require("./vnext-durable-publication.js");
 
 const profilePath = path.resolve(__dirname,
   "../../contracts/vnext/subject-store-profile.v1.json");
@@ -33,7 +37,7 @@ const subjectIdPattern = /^sha256:([a-f0-9]{64})$/u;
 const digestFilePattern = /^([a-f0-9]{64})\.json$/u;
 const prefixPattern = /^[a-f0-9]{2}$/u;
 const temporaryPattern = /^\.([a-f0-9]{64})\.[0-9]{1,20}\.[a-f0-9]{4,64}\.tmp$/u;
-const storeOptionNames = Object.freeze(["io", "platform", "randomBytes"]);
+const storeOptionNames = Object.freeze([]);
 const expectedAcceptedSchemas = Object.freeze([
   "tinyrustlm.vnext.artifact_manifest.v1",
   "tinyrustlm.vnext.claim.v2",
@@ -50,7 +54,7 @@ const profileFields = Object.freeze([
   "campaignProjectionProfileId", "campaignProjectionProfileSha256",
   "canonicalJsonProfile", "hashAlgorithm", "identityBasis", "visibility",
   "networkAccess", "sourceMutation", "acceptedSubjects", "rejectedSubjects",
-  "layout", "atomicCreate", "concurrency", "rebuild", "limits", "resultContract"
+  "layout", "durablePublication", "concurrency", "rebuild", "limits", "resultContract"
 ]);
 
 function sha256(bytes) {
@@ -120,10 +124,10 @@ function validateInstalledProfile() {
     ["subjectPattern", "temporaryPattern", "quarantineRoot", "pathLinkPolicy",
       "replacementPolicy", "mutablePointerPolicy"],
     "subject_store_profile_invalid", step);
-  exactObject(subjectStoreProfile.atomicCreate,
-    ["sameDirectoryTemporary", "exclusiveTemporary", "temporaryFileFsync",
-      "publishPrimitive", "existingTargetPolicy", "directoryMetadataSync",
-      "readbackVerification"], "subject_store_profile_invalid", step);
+  exactObject(subjectStoreProfile.durablePublication,
+    ["profileId", "profileSha256", "targetActivation", "directoryFlush", "restart",
+      "targetWithoutReceipt", "receiptWithoutTarget", "callerSuppliedSuccess"],
+    "subject_store_profile_invalid", step);
   exactObject(subjectStoreProfile.concurrency,
     ["createWriters", "freshTemporaryPolicy", "minimumIncompleteTemporaryAgeMs",
       "publishedHardLinkTemporaryPolicy", "rebuildInterferencePolicy"],
@@ -139,7 +143,7 @@ function validateInstalledProfile() {
     "subject_store_profile_invalid", step);
   exactObject(subjectStoreProfile.resultContract,
     ["absolutePathsReturned", "rawHostErrorsReturned", "rawInvalidBytesReturned",
-      "durabilityClassReturned", "boundedErrorCodesOnly"],
+      "durabilityReceiptResultReturned", "boundedErrorCodesOnly"],
     "subject_store_profile_invalid", step);
 
   const acceptedSchemas = accepted.map((entry) => entry.schema);
@@ -177,16 +181,15 @@ function validateInstalledProfile() {
         "reject-symbolic-link-or-reparse-point" ||
       subjectStoreProfile.layout.mutablePointerPolicy !== "forbidden" ||
       subjectStoreProfile.layout.replacementPolicy !== "never" ||
-      subjectStoreProfile.atomicCreate.sameDirectoryTemporary !== true ||
-      subjectStoreProfile.atomicCreate.exclusiveTemporary !== true ||
-      subjectStoreProfile.atomicCreate.temporaryFileFsync !== true ||
-      subjectStoreProfile.atomicCreate.publishPrimitive !==
-        "hard-link-create-if-absent" ||
-      subjectStoreProfile.atomicCreate.existingTargetPolicy !==
-        "accept-only-byte-identical" ||
-      subjectStoreProfile.atomicCreate.directoryMetadataSync !==
-        "required-or-explicitly-unavailable" ||
-      subjectStoreProfile.atomicCreate.readbackVerification !== true ||
+      subjectStoreProfile.durablePublication.profileId !==
+        durablePublicationProfile.profileId ||
+      subjectStoreProfile.durablePublication.profileSha256 !==
+        durablePublicationProfileSha256 ||
+      subjectStoreProfile.durablePublication.targetActivation !==
+        "matching-content-addressed-durability-receipt-required" ||
+      subjectStoreProfile.durablePublication.directoryFlush !==
+        "verified-rust-helper-required" ||
+      subjectStoreProfile.durablePublication.callerSuppliedSuccess !== "forbidden" ||
       subjectStoreProfile.concurrency.createWriters !==
         "multi-process-idempotent-hard-link" ||
       subjectStoreProfile.concurrency.freshTemporaryPolicy !==
@@ -213,7 +216,7 @@ function validateInstalledProfile() {
       subjectStoreProfile.resultContract.absolutePathsReturned !== false ||
       subjectStoreProfile.resultContract.rawHostErrorsReturned !== false ||
       subjectStoreProfile.resultContract.rawInvalidBytesReturned !== false ||
-      subjectStoreProfile.resultContract.durabilityClassReturned !== true ||
+      subjectStoreProfile.resultContract.durabilityReceiptResultReturned !== true ||
       subjectStoreProfile.resultContract.boundedErrorCodesOnly !== true ||
       !limitValues.every((entry) => Number.isSafeInteger(entry) && entry > 0)) {
     failEvidence("subject_store_profile_invalid", step);
@@ -240,12 +243,12 @@ function exactOptions(options) {
   }
   const names = Object.getOwnPropertyNames(options);
   for (const name of names) {
-    if (!storeOptionNames.includes(name)) {
-      failEvidence("subject_store_option_unknown", "subject-store-open");
-    }
     const descriptor = Object.getOwnPropertyDescriptor(options, name);
     if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
       failEvidence("subject_store_option_accessor", "subject-store-open");
+    }
+    if (!storeOptionNames.includes(name)) {
+      failEvidence("subject_store_option_unknown", "subject-store-open");
     }
   }
   return Object.freeze(Object.fromEntries(names.map((name) =>
@@ -279,26 +282,10 @@ function validateAcceptedSubjectBytes(input) {
 }
 
 function createVnextSubjectStore(rootInput, options = {}) {
-  const normalizedOptions = exactOptions(options);
-  const io = Object.hasOwn(normalizedOptions, "io") ? normalizedOptions.io : fs;
-  const platform = Object.hasOwn(normalizedOptions, "platform")
-    ? normalizedOptions.platform
-    : process.platform;
-  const randomBytes = Object.hasOwn(normalizedOptions, "randomBytes")
-    ? normalizedOptions.randomBytes
-    : crypto.randomBytes;
-  if (io === null || (typeof io !== "object" && typeof io !== "function")) {
-    failEvidence("subject_store_io_invalid", "subject-store-open");
-  }
-  if (typeof platform !== "string" || platform.length === 0 ||
-      typeof randomBytes !== "function") {
-    failEvidence("subject_store_options_invalid", "subject-store-open");
-  }
+  exactOptions(options);
   const fileOps = createVnextCreateOnlyFiles({
     codePrefix: "subject",
-    io,
-    platform,
-    randomBytes,
+    root: rootInput,
     steps: {
       open: "subject-store-open",
       path: "subject-store-path",
@@ -307,6 +294,8 @@ function createVnextSubjectStore(rootInput, options = {}) {
       read: "subject-store-read",
       scan: "subject-store-scan"
     },
+    storeProfileId: subjectStoreProfile.profileId,
+    storeProfileSha256: subjectStoreProfileSha256,
     streamBufferBytes: subjectStoreProfile.limits.streamBufferBytes
   });
   const root = fileOps.normalizeRoot(rootInput);
@@ -316,9 +305,9 @@ function createVnextSubjectStore(rootInput, options = {}) {
     const subjects = fileOps.safeChild(root, ["subjects"]);
     const shaRoot = fileOps.safeChild(root, ["subjects", "sha256"]);
     const quarantine = fileOps.safeChild(root, ["quarantine"]);
-    if (!io.existsSync(subjects)) fileOps.ensureDirectory(subjects);
-    if (!io.existsSync(shaRoot)) fileOps.ensureDirectory(shaRoot);
-    if (!io.existsSync(quarantine)) fileOps.ensureDirectory(quarantine);
+    fileOps.ensureDirectory(subjects);
+    fileOps.ensureDirectory(shaRoot);
+    fileOps.ensureDirectory(quarantine);
     return Object.freeze({ subjects, shaRoot, quarantine });
   }
 
@@ -328,6 +317,7 @@ function createVnextSubjectStore(rootInput, options = {}) {
 
   function rebuild() {
     layout = ensureLayout();
+    const durabilityIndex = fileOps.rebuildDurabilityIndex();
     let rebuiltTotalBytes = 0;
     let scannedEntryCount = 0;
     const scan = (directory, maximum) => {
@@ -369,7 +359,7 @@ function createVnextSubjectStore(rootInput, options = {}) {
           "unknown_entry");
       }
     };
-    scanUnknown(root, new Set(["quarantine", "subjects"]));
+    scanUnknown(root, new Set(["durability", "quarantine", "subjects"]));
     scanUnknown(layout.subjects, new Set(["sha256"]));
 
     const candidates = new Map();
@@ -408,14 +398,20 @@ function createVnextSubjectStore(rootInput, options = {}) {
           quarantine(filePath, "unknown_entry");
           continue;
         }
+        let activation;
         let subject;
         try {
-          subject = validateAcceptedSubjectBytes(
-            fileOps.boundedReadFile(filePath, maximumSingleSubjectBytes)
-          );
+          activation = fileOps.activateBytes(filePath, maximumSingleSubjectBytes);
+          subject = validateAcceptedSubjectBytes(activation.bytes);
         } catch (error) {
-          quarantine(filePath, error?.code === "subject_schema_not_allowed"
-            ? "schema_not_allowed" : "invalid_subject");
+          const reasonCode = error?.code === "subject_durability_receipt_missing"
+            ? "durability_receipt_missing"
+            : error?.code === "subject_target_readback_mismatch"
+              ? "durability_target_mismatch"
+              : error?.code === "subject_schema_not_allowed"
+                ? "schema_not_allowed"
+                : "invalid_subject";
+          quarantine(filePath, reasonCode);
           continue;
         }
         const { digest } = normalizeSubjectId(subject.subjectId);
@@ -431,6 +427,7 @@ function createVnextSubjectStore(rootInput, options = {}) {
         candidates.set(subject.subjectId, Object.freeze({
           byteLength,
           canonicalContentSha256: subject.canonicalContentSha256,
+          durability: activation.durability,
           relativePath: subjectRelativePath(subject.subjectId),
           schema: subject.schema
         }));
@@ -449,6 +446,7 @@ function createVnextSubjectStore(rootInput, options = {}) {
     return immutableRecord({
       activeSubjectIds: [...active.keys()].sort(),
       activeTotalBytes,
+      durabilityIndex,
       directoryMetadata: fileOps.syncDirectory(layout.shaRoot),
       existingQuarantineEntries,
       newQuarantines,
@@ -465,11 +463,11 @@ function createVnextSubjectStore(rootInput, options = {}) {
     if (!metadata) failEvidence("subject_not_active", "subject-store-read");
     const filePath = path.join(root, ...metadata.relativePath.split("/"));
     fileOps.assertNoLinkComponents(path.dirname(filePath), true);
+    let activation;
     let subject;
     try {
-      subject = validateAcceptedSubjectBytes(
-        fileOps.boundedReadFile(filePath, maximumSingleSubjectBytes)
-      );
+      activation = fileOps.activateBytes(filePath, maximumSingleSubjectBytes);
+      subject = validateAcceptedSubjectBytes(activation.bytes);
     } catch (error) {
       throw new VnextEvidenceError(
         "subject_active_read_failed",
@@ -482,7 +480,10 @@ function createVnextSubjectStore(rootInput, options = {}) {
         subject.bytes.length !== metadata.byteLength) {
       failEvidence("subject_active_identity_changed", "subject-store-read");
     }
-    return subject;
+    return Object.freeze({
+      ...subject,
+      durability: activation.durability
+    });
   }
 
   function put(input) {
@@ -506,6 +507,7 @@ function createVnextSubjectStore(rootInput, options = {}) {
     active.set(subject.subjectId, Object.freeze({
       byteLength: subject.bytes.length,
       canonicalContentSha256: subject.canonicalContentSha256,
+      durability: persistence.durability,
       relativePath,
       schema: subject.schema
     }));
