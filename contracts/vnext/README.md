@@ -337,10 +337,24 @@ and source-closure SHA-256
 It verifies package, executable, source, profile, platform, request, process,
 and observation identities before returning path-redacted evidence, with no
 inherited child environment or shell. The current Windows host executes that
-call successfully, but create-only publication-receipt integration, OS network
-isolation, release-package provenance, and physical power-loss evidence remain
-incomplete. See
+call successfully, but mandatory four-store integration, OS network isolation,
+release-package provenance, and physical power-loss evidence remain incomplete. See
 `docs/architecture/vnext-directory-durability.md`.
+
+`tinyrustlm/tools/vnext-durable-publication.js` now composes file fsync,
+hard-link create-if-absent publication, the verified helper call, exact target
+readback, and one forward-only content-addressed activation receipt. Its
+6,257-byte frozen profile has SHA-256
+`ff0d621b9e1136774384a66e97706f0c463c398298e45c019e18f75919ff6318`;
+its six-member source closure has SHA-256
+`0d4bded4df6f4f7aa18271e1b32e8bff7a90aa2e9bd4494b6b5ccaa982e29f38`.
+The receipt is the explicit non-recursive persistence trust anchor: it excludes
+its own publication observation to avoid a self-hash cycle, while creation and
+restart both require helper-backed directory flushes and exact readbacks before
+activation. No caller can inject filesystem or helper success into this
+boundary. The four maintained stores have not yet cut over, so this is a
+foundation checkpoint rather than Gate D completion or campaign evidence. See
+`docs/architecture/adr/ADR-012-durable-publication-bootstrap.md`.
 
 `tinyrustlm/tools/vnext-campaign-runner.js` now composes those stores through
 one exact runner boundary. Its frozen 6,855-byte profile has SHA-256

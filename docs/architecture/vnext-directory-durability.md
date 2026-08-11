@@ -16,11 +16,17 @@ SHA-256
 Its declared five-member source closure has SHA-256
 `37dc6e85be3655743a31de5623fa574f565578351f4c6b255621a9d976a8c487`.
 
-This checkpoint proves a bounded Rust operation/process protocol and the exact
-Node-to-packaged-Rust invocation boundary. It does not yet replace the Node
-create-only store's Win32 unavailability result, bind file fsync plus
-publication plus readback into a finalized vNext receipt, or complete Gate D.
-It does not advance a campaign counter.
+This checkpoint proves a bounded Rust operation/process protocol, the exact
+Node-to-packaged-Rust invocation boundary, and the standalone non-recursive
+durable-publication primitive. The primitive's 6,257-byte frozen profile has
+SHA-256
+`ff0d621b9e1136774384a66e97706f0c463c398298e45c019e18f75919ff6318`.
+Its six-member source closure has SHA-256
+`0d4bded4df6f4f7aa18271e1b32e8bff7a90aa2e9bd4494b6b5ccaa982e29f38`.
+The primitive is not yet the mandatory path of the receipt, subject,
+campaign-artifact, and campaign-operation stores, so their Win32
+`unavailable-win32-node` result remains superseded work awaiting deletion.
+Gate D is not complete and no campaign counter advances.
 
 ## Why A Separate Boundary Exists
 
@@ -190,6 +196,26 @@ complete receipt-backed sequence. A failed or interrupted operation may leave
 only bytes that restart can revalidate; it cannot create accepted durability
 truth.
 
+`tinyrustlm/tools/vnext-durable-publication.js` now implements that sequence as
+an isolated production boundary. It accepts no caller filesystem, platform,
+randomness, helper, process output, directory-flush result, or readback result.
+It requires a preexisting privately owned root, durably creates child layout
+directories one component at a time, fsyncs a same-directory temporary,
+publishes through a create-if-absent hard link, invokes the verified helper,
+and reads the target back exactly. It then persists a canonical
+content-addressed durability receipt and activates only after that receipt's
+own file fsync, helper-backed directory flush, exact receipt readback, and a
+second exact target readback.
+
+The durability receipt deliberately excludes evidence of its own publication.
+Including that result would require either a self-hash cycle or an infinite
+receipt chain. The receipt file is therefore the explicit terminal persistence
+trust anchor. Restart does not trust existence alone: it performs fresh helper
+flushes of the target and receipt directories and exact readbacks before
+activation. [ADR-012](adr/ADR-012-durable-publication-bootstrap.md) freezes
+this bootstrap rule. Targets without matching current receipts and receipts
+without exact targets remain inactive.
+
 ## Verification
 
 The crate currently has 14 passing tests:
@@ -229,8 +255,9 @@ Retrieved 2026-08-11:
 ## Explicit Non-Claims
 
 - Gate D is not complete.
-- Node store publication is not yet using this helper.
-- No vNext durable-publication receipt has been admitted.
+- The four Node stores do not yet require the durable-publication primitive.
+- Local hostile tests admit disposable durability receipts only; no production
+  or campaign receipt follows from them.
 - The Node client does not impose an OS network sandbox or prove release
   provenance for a self-described package.
 - The helper does not independently establish stable path-topology ownership

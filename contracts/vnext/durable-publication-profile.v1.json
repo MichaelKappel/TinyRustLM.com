@@ -1,0 +1,148 @@
+{
+  "schema": "tinyrustlm.vnext.durable_publication_profile.v1",
+  "profileId": "tinyrustlm.vnext.durable-publication.v1",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-no-compatibility-reader",
+  "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
+  "hashAlgorithm": "sha256",
+  "directoryFlushClientProfileId": "tinyrustlm.vnext.directory-flush-client.v1",
+  "directoryFlushClientProfileSha256": "9f367bbe58bf8afc8ecba57a1b33e5cda5a83592a80517c4db38d0775cf9fde6",
+  "directoryFlushClientSourceClosureSha256": "37dc6e85be3655743a31de5623fa574f565578351f4c6b255621a9d976a8c487",
+  "directoryFlushProfileId": "tinyrustlm.vnext.directory-flush.v1",
+  "directoryFlushProfileSha256": "aaf82fde396e89d03e82a6cd7c761bfbedb1d766250dc9dd537124be68adcfd8",
+  "receiptSchema": "tinyrustlm.vnext.durable_publication_receipt.v1",
+  "resultSchema": "tinyrustlm.vnext.durable_publication_result.v1",
+  "sourceClosureMembers": [
+    "contracts/vnext/durable-publication-profile.v1.json",
+    "tinyrustlm/tools/strict-json.js",
+    "tinyrustlm/tools/vnext-directory-flush-client.js",
+    "tinyrustlm/tools/vnext-durable-publication.js",
+    "tinyrustlm/tools/vnext-evidence-error.js",
+    "tinyrustlm/tools/vnext-jcs.js"
+  ],
+  "ownedRoot": {
+    "provisioning": "preexisting-absolute-private-root-required",
+    "creationByStore": "forbidden",
+    "pathLinkPolicy": "reject-symbolic-link-or-reparse-point",
+    "stablePathTopologyOwnershipRequired": true,
+    "relativeTargetPolicy": "one-to-64-normal-components",
+    "maximumRelativePathUtf8Bytes": 16384,
+    "maximumComponentUtf8Bytes": 255
+  },
+  "layout": {
+    "receiptRoot": "durability/sha256",
+    "receiptPattern": "durability/sha256/{receipt-digest-prefix-2}/{receipt-wire-sha256}.json",
+    "temporaryPattern": ".{target-or-receipt-digest}.{pid}.{nonce}.tmp",
+    "replacementPolicy": "never",
+    "mutablePointerPolicy": "forbidden",
+    "unknownEntryPolicy": "reject",
+    "orphanReceiptPolicy": "inactive-preserve-for-quarantine"
+  },
+  "targetSequence": [
+    "validate-owned-root-and-target-containment",
+    "create-missing-owned-directory-one-component-at-a-time",
+    "flush-created-directory-parent-and-created-directory",
+    "write-exclusive-same-directory-temporary",
+    "fsync-complete-temporary-file",
+    "hard-link-create-if-absent",
+    "accept-existing-target-only-when-byte-identical",
+    "remove-temporary-link",
+    "flush-target-directory-through-verified-rust-helper",
+    "exact-bounded-target-readback"
+  ],
+  "receiptSequence": [
+    "canonicalize-target-sequence-receipt",
+    "derive-receipt-identity-from-exact-wire-bytes",
+    "write-exclusive-same-directory-receipt-temporary",
+    "fsync-complete-receipt-temporary-file",
+    "hard-link-receipt-create-if-absent",
+    "accept-existing-receipt-only-when-byte-identical",
+    "remove-receipt-temporary-link",
+    "flush-receipt-directory-through-verified-rust-helper",
+    "exact-bounded-receipt-readback",
+    "exact-bounded-target-readback",
+    "activate-target"
+  ],
+  "receiptFields": [
+    "directoryFlush",
+    "fileDataStatus",
+    "implementationSourceClosureSha256",
+    "profileId",
+    "profileSha256",
+    "publicationPrimitive",
+    "readbackByteCount",
+    "readbackSha256",
+    "schema",
+    "storeProfileId",
+    "storeProfileSha256",
+    "targetByteCount",
+    "targetRelativePath",
+    "targetSha256"
+  ],
+  "resultFields": [
+    "durabilityReceiptByteCount",
+    "durabilityReceiptDisposition",
+    "durabilityReceiptDirectoryFlush",
+    "durabilityReceiptRelativePath",
+    "durabilityReceiptSha256",
+    "durabilityReceiptStatus",
+    "implementationSourceClosureSha256",
+    "profileId",
+    "profileSha256",
+    "schema",
+    "targetByteCount",
+    "targetDirectoryFlush",
+    "targetDisposition",
+    "targetReadbackStatus",
+    "targetRelativePath",
+    "targetSha256"
+  ],
+  "activation": {
+    "targetWithoutMatchingReceipt": "inactive",
+    "receiptWithoutMatchingTarget": "inactive",
+    "invalidReceipt": "inactive",
+    "conflictingReceipt": "inactive",
+    "restartRequiresFreshTargetDirectoryFlush": true,
+    "restartRequiresFreshReceiptDirectoryFlush": true,
+    "restartRequiresExactTargetReadback": true,
+    "restartRequiresExactReceiptReadback": true,
+    "selectionWhenMultipleEquivalentReceiptsExist": "lexicographically-smallest-wire-sha256",
+    "storeVisibility": "after-complete-receipt-backed-sequence-only"
+  },
+  "bootstrap": {
+    "terminalTrustAnchor": "content-addressed-durability-receipt-file",
+    "receiptExcludesOwnPublicationEvidence": true,
+    "reason": "including-the-receipt-publication-result-in-that-receipt-would-create-an-infinite-self-hash-cycle",
+    "creationAcceptance": "receipt-file-fsync-helper-backed-directory-flush-exact-receipt-readback-and-exact-target-readback",
+    "restartAcceptance": "fresh-helper-backed-target-and-receipt-directory-flushes-plus-exact-readbacks",
+    "recursiveReceipt": "forbidden"
+  },
+  "limits": {
+    "maximumReceiptBytes": 65536,
+    "maximumActiveReceipts": 262144,
+    "maximumDirectoryEntries": 262400,
+    "maximumScanEntries": 1048576,
+    "streamBufferBytes": 65536
+  },
+  "trust": {
+    "acceptedHelperTrustClasses": [
+      "local-test-build",
+      "release-package"
+    ],
+    "productionClaimTrustClass": "release-package-with-separate-current-release-provenance",
+    "callerSuppliedFlushSuccess": "forbidden",
+    "callerSuppliedIoSuccess": "forbidden",
+    "callerSuppliedReadbackSuccess": "forbidden",
+    "rawPathOutput": "forbidden",
+    "rawProcessOutput": "forbidden",
+    "rawHostErrorOutput": "forbidden"
+  },
+  "nonClaims": [
+    "A successful durable-publication result is not physical power-loss evidence.",
+    "A local-test-build helper is not release-package provenance.",
+    "A receipt proves the observed publication sequence under the bound helper and client identities; it does not prove that storage hardware honored flushes after power removal.",
+    "The Node client does not provide an OS network sandbox.",
+    "A historical receipt copied to another root is not active until fresh local helper-backed flushes and exact readbacks succeed.",
+    "Store conformance does not advance any model, browser, memory, lane, or catalog campaign counter."
+  ]
+}
