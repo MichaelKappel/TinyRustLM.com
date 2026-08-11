@@ -1,6 +1,8 @@
-profile: runtime-mirust.short-term-memory.v378
-updated_utc: 2026-08-10T00:01:19Z
+profile: runtime-mirust.short-term-memory.v379
+updated_utc: 2026-08-11T03:36:21Z
 current_state:
+  - >-
+    2026-08-10 NEXT LARGE GOAL: The self-contained continuation assignment is `docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md`, 44,224 bytes, 888 lines, SHA256 `92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0`. It starts from the verified seven-repository and TinyRustLM.MiRust.com 1.7.0 publication state, then closes Runtime/MiniModel release work, finishes the clean-slate Phase 3 release cutover and old-stack deletion, and continues through format, runtime, browser, intelligence, WebGPU, companion/P2P, model portfolio, real browser/memory campaigns, packages, sites, and final attestation. It preserves the full 20/50/25/40/20 finish line and all no-debt/no-legacy rules.
   - >-
     2026-08-10 RELEASE HANDOFF: Source-controlled site memory is pushed at TinyRustLM.MiRust.com `6d77afc4b54f7f84db7efa33d8798aef61e9733f`, MiniModel.MiRust.com `cb18263ac739b64af717aa6c5568b65b05af9962`, MiniModel.org `b5a0248d76ce543eb3ce02fc016ff611b7e41c19`, Runtime.MiRust.com `4b179a1c6d458cf9b85ae2f5cde2925fe1fad086`, MiRust.com `4e3d8f52b0b20d9ccb51751e4182e8ab87fb3e43`, and LMComposer.com `36d6389fe82b0f53c4d8951aa6af5cb896fd8bf6`. TinyRustLM.MiRust.com 1.7.0 is published and readback-verified by receipt SHA256 `746666fc3b631b8f361c6d57e2debdc167cab0e315556ddc4e50f5cde1c20646`. MiniModel.MiRust.com 1.0.0 and MiniModel.org 1.0.0 are release-ready but unpublished. Runtime has a misbound deployment profile and MiRust lacks a complete production snapshot. TinyRustLM.com remains immutably published at 0.2.1 from 2026-08-08 because current vNext work changed no production web members. All campaign counts remain zero. Read the top-level `credit_window_handoff_2026_08_09` in workspace.uai before doing anything else.
   - >-

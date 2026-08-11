@@ -1,10 +1,14 @@
-profile: tinyrustlm.source-workspace.v288
+profile: tinyrustlm.source-workspace.v289
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-10T00:01:19Z
+updated_utc: 2026-08-11T03:36:21Z
 
 credit_window_handoff_2026_08_09:
   authority: This is the newest private operational account. Read it before the older current-workspace block and dated history; it changes no historical receipt or campaign fact.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    instruction: This 2026-08-10 self-contained execution assignment is the next-goal authority. It updates startup facts and dependency ordering without reducing the original full 20/50/25/40/20 completion target.
   stopping_reason: The user ended the available credit window and requested every site be checked in with complete restart memory. All live publishing was deliberately stopped before this checkpoint.
   active_repository:
     root: E:\Source\.tinyrustlm-model-acquisition

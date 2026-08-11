@@ -1,10 +1,11 @@
-profile: runtime-mirust.next-recursive-prompt.v45
-updated_utc: 2026-08-10T00:01:19Z
+profile: runtime-mirust.next-recursive-prompt.v46
+updated_utc: 2026-08-11T03:36:21Z
 prompt: >
-  Resume from the 2026-08-10 release checkpoint before returning to broad enterprise vNext implementation. Work only in clean owned worktrees and never touch the protected dirty E:\Source\Rust\TinyRustLM.com checkout. Verify every pushed head in workspace.uai. TinyRustLM.MiRust.com 1.7.0 is terminally published and readback-verified by deploy/receipts/site-deployment-20260809T234347Z.json, SHA256 746666fc3b631b8f361c6d57e2debdc167cab0e315556ddc4e50f5cde1c20646. Next close Runtime verification, publish both frozen MiniModel 1.0.0 closures through their complete independent gates, and reverify seven origins. Only then return to the clean-slate vNext implementation and SHA-256-bound composition activation.
+  Read and execute the complete assignment at `docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md`, SHA256 `92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0`. Revalidate its mutable starting facts before acting. Work only in clean owned worktrees and never touch the protected dirty E:\Source\Rust\TinyRustLM.com checkout. Close Runtime verification and both frozen MiniModel 1.0.0 publications first, then finish the Phase 3 release-surface cutover and continue the full clean-slate enterprise objective without lowering the 20/50/25/40/20 completion target.
 primary_goal: >
-  Deliver the enterprise-quality pre-release TinyRustLM system described by the durable 2026-08-01 goal with no legacy support, compatibility shims, hidden fallbacks, technical debt, or inflated claims. Continue until objective runtime, model-quality, browser, MemoryEndpoints, P2P, package, deployment, documentation, and publication gates are satisfied or honestly blocked by unavailable external authority.
+  Deliver the enterprise-quality pre-release TinyRustLM system described by the authoritative 2026-08-10 continuation goal with no legacy support, compatibility shims, hidden fallbacks, technical debt, or inflated claims. Continue until objective runtime, model-quality, browser, MemoryEndpoints, P2P, package, deployment, documentation, and publication gates are satisfied or honestly blocked by unavailable external authority.
 required_context:
+  - docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
   - docs/report-intake/2026-08-01/enterprise-vnext-development-research/2026-08-01-authoritative-enterprise-vnext-development-goal-and-plan.md
   - wiki/runtime-mirust/reports/tinyrustlm-enterprise-vnext-development-goal-memory-2026-08-01.md
   - docs/report-intake/2026-08-08/active-handoff-closure/MANIFEST.md
