@@ -1,7 +1,61 @@
-profile: tinyrustlm.source-workspace.v293
+profile: tinyrustlm.source-workspace.v294
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-11T19:16:26Z
+updated_utc: 2026-08-11T19:49:29Z
+
+current_checkpoint_2026_08_11_directory_durability_boundary:
+  authority: This is the newest first-read execution checkpoint. It adds to immutable history and supersedes older present-tense milestone, hash, resume, and next-action fields where they disagree. It does not alter prior receipts, production releases, or campaign counts.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  source_control:
+    root: E:\Source\.tinyrustlm-model-acquisition
+    branch: codex/model-acquisition-v2
+    implementation_commit: 3856a7d50e03b2d654b21c94654a06b2a29c0b78
+    subject: Add vNext directory durability boundary
+    upstream: origin/codex/model-acquisition-v2
+    verification: Local HEAD, upstream, and the freshly fetched remote branch were exact at 3856a7d50e03b2d654b21c94654a06b2a29c0b78 with a clean owned worktree before this private handoff edit.
+    protected_checkout: E:\Source\Rust\TinyRustLM.com remains heavily dirty with unrelated user work and must not be edited, reset, cleaned, reverted, or used for this branch.
+  implemented_scope:
+    - Added the isolated `tinyrustlm-durability` workspace crate and sole `tinyrustlm-directory-flush` host process. The crate forbids unsafe Rust and has no network dependency or alternate implementation path.
+    - Frozen one current 16,384-byte bounded stdin JSON protocol. Strict Serde parsing rejects duplicate, unknown, malformed, oversized, and wrong-schema requests. Success returns one path-redacted observation; failure returns only schema, status, and one declared bounded code.
+    - Owned-path validation requires an absolute UTF-8 root, one-to-64 normal relative components, canonical containment, no symbolic-link or Windows reparse component, and pre-open, opened-handle, and post-flush metadata inspection.
+    - Windows opens the directory with `GENERIC_WRITE`, all three share modes, `FILE_FLAG_BACKUP_SEMANTICS`, and `FILE_FLAG_OPEN_REPARSE_POINT`, then requires `File::sync_all` success. Unix uses read-open plus directory `sync_all`; other platforms fail closed.
+    - Caller-held single-writer ownership is an explicit precondition because stable Rust 1.96 file-index and volume-serial access is experimental. The helper does not silently claim to defeat an independent concurrent writer.
+    - The Win64 host executed the actual directory flush path. A real Windows directory junction was created and rejected as `directory_path_link`. These are local API observations only.
+    - Corrected the repository ignore policy so normal Git staging includes every Rust `src/bin` source file even though generated `bin` directories remain ignored.
+    - Contract README, architecture inventory, threat review, dedicated durability documentation, Cargo workspace metadata, private file handoff, and lockfile were updated in the same checkpoint.
+  exact_artifacts:
+    directory_flush_profile: bytes=5539; sha256=51effab85d325493e77ca57de5aa14bf7d3fa2fd3b5f16139baadc8979d395bb
+    durability_library_git_blob: bytes=16493; sha256=75be507c9b08425f6f7a46f66866f6af336a99a4758fbd7b9e0276f8bcb91fdf
+    helper_process_git_blob: bytes=1303; sha256=7a507436035ceb0274e8d06acb3a4d281ad6c801c963930b886286c464b2c53d
+    path_contract_test_git_blob: bytes=6684; sha256=b7cd938613fe4cc3cb530b64bcb92325f0a1e3e49026d3443aba10120773b13f
+    protocol_test_git_blob: bytes=10092; sha256=b8c5bde560f30df03b72f97f649b09e7ea37757531cdf10629ff7ea7eac3b23b
+    durability_document_git_blob: bytes=8804; sha256=6cce9cc2a4da33cef7294c7ed12e594b92ab44114539283369f0bd225005c3a2
+  verification:
+    tdd_red_run: The initial stub produced six intended failures through `directory_flush_not_implemented`; implementation followed only after the behavioral tests were red.
+    focused: 13/13 passed, comprising seven owned-path/platform tests and six frozen-profile/library/process protocol tests.
+    windows_execution: The exact directory flush succeeded and a real junction rejection passed on the current win-x64 host.
+    complete_rust: `cargo fmt --all --check` passed; `cargo clippy --workspace --all-targets --locked -- -D warnings` passed; `cargo test --workspace --locked` passed all 967 listed tests with zero failures.
+    profile_conformance: Profile size and SHA, ID, schemas, request limit, exact success and failure fields, single-writer precondition, 29 sorted unique source-present error codes, Windows method, and non-claims are tested.
+    hygiene: Cached and working diffs passed `git diff --check`; 14 changed files totaling 201707 bytes had zero high-confidence secret, NUL, or non-ASCII findings; no unsafe, network, TODO, FIXME, HACK, `todo!`, or `unimplemented!` production marker was found.
+  publication_truth:
+    deployment_manifest: `tinyrustlm/deploy/web-deployment-manifest.v2.json` declares 21 production source members and two generated release members.
+    delta: This 14-file checkpoint intersects zero of the 21 production source members and changes neither generated release member.
+    action: No site version, release date, Updates entry, deployment, publication receipt, or public HTTPS readback claim was created because no production closure byte changed and no authorized publication operation ran.
+  explicit_nonclaims:
+    - The helper is not yet invoked by the sole vNext create-only receipt or subject stores.
+    - No receipt yet binds file fsync, create-if-absent disposition, directory flush, exact readback, helper identity, and configuration identity as one durable sequence.
+    - No physical power interruption, filesystem/device matrix, Linux execution, or physical ARM64 execution has been performed for this helper.
+    - No release, model qualification, browser round, live MemoryEndpoints round, outside-network lane proof, or catalog announcement follows from this checkpoint.
+  campaign_truth: qualified_models=0/20; clean_browser_rounds=0/50; authorized_live_memory_rounds=0/25; current_outside_network_lane_proofs=0/40; live_catalog_announcements=0/20
+  exact_next_action:
+    - Add failing integration tests around the sole current vNext receipt and subject publication stores for the complete temporary-file fsync, create-if-absent, exact directory-flush observation, postpublication readback, helper binary identity, and configuration identity sequence.
+    - Implement one bounded helper invocation adapter with no caller-supplied success, synthetic observation, compatibility path, or fallback. Activate a stored object only after the complete receipt-backed sequence validates.
+    - Cover restart, interruption at every durable boundary, disk full, lock contention, truncation, bit flip, stale temporary material, rename races, path substitution, helper failure, observation drift, and quarantine.
+    - Commit and push that independently healthy receipt-integration milestone before beginning bounded compressed archive-member scanning and protected equality-list custody.
+  known_blockers: MemoryEndpoints production access remains unauthorized and disconnected; model qualification, external P2P observation, catalog announcements, signing/deployment authorization, physical power-loss evidence, Linux helper execution, and physical linux-arm64 evidence remain objective work rather than inferred completion. Independent work must continue behind those blockers.
 
 current_checkpoint_2026_08_11_release_stack_cutover:
   authority: This is the newest first-read execution checkpoint. It adds to immutable history and supersedes older present-tense milestone, hash, resume, and next-action fields where they disagree. It does not alter prior receipts, production releases, or campaign counts.
