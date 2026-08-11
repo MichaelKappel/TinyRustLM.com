@@ -1,7 +1,54 @@
-profile: tinyrustlm.source-workspace.v290
+profile: tinyrustlm.source-workspace.v291
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-11T15:08:46Z
+updated_utc: 2026-08-11T16:59:29Z
+
+current_checkpoint_2026_08_11_site_publication_authorization:
+  authority: This is the newest first-read execution checkpoint. It adds to immutable history and supersedes older present-tense milestone, hash, resume, and next-action fields where they disagree. It does not alter prior receipts, production releases, or campaign counts.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  source_control:
+    root: E:\Source\.tinyrustlm-model-acquisition
+    branch: codex/model-acquisition-v2
+    implementation_commit: dfe7c037c43b3122e654a680f2d1d664a073a7be
+    subject: Integrate vNext site publication authorization
+    upstream: origin/codex/model-acquisition-v2
+    verification: Local HEAD and upstream were exact at dfe7c037c43b3122e654a680f2d1d664a073a7be with a clean owned worktree before this handoff edit.
+    protected_checkout: E:\Source\Rust\TinyRustLM.com remains heavily dirty with unrelated user work and must not be edited, reset, cleaned, reverted, or used for this branch.
+  implemented_scope:
+    - The sole vNext campaign release surface now deterministically creates and create-only persists a site-publication plan after exact static HTTPS readback admission.
+    - Current Ed25519 site-publisher authority is verified against the exact prepared plan, release ID, active registry graph, role, scope, signer, key, nonce, issue time, expiry, and verification time.
+    - Exact pointer, history, and published-claim candidates are materialized defensively, scanned without rewriting through canonical public JSON or finalized-document boundaries, and returned only as prepublication candidates.
+    - The surface persists plan, redaction, and authorization evidence only. It explicitly remains `not-published` and `not-published-awaiting-generated-file-readback`; no caller verdict, status, counter, publication truth, or generated descendant is accepted as authoritative input.
+    - Public-safe redaction now has one bounded canonical `public-json-control` class for only the allowlisted plan-material, release-history, and release-pointer schemas. Unknown target kinds fail closed.
+    - The transitive Rust offline-bundle profile pin and deterministic Node/Rust replay corpus were regenerated for the exact redaction profile identity.
+  exact_artifacts:
+    campaign_release_surface_profile: bytes=13705; sha256=4bdaae337cc14cb5782ed3bf096c3336f121fb7905c9c2a36978f6799a15f1d7
+    public_safe_redaction_profile: bytes=3910; sha256=3284ae637438327fd8ffb967ed6c9a8ef026cd5967e8a1b3602b7ade020cce6d
+    offline_bundle_rust_vectors: bytes=658110; sha256=0c8614ed110c5004c01966aa9cf027d7289cd5d551efb46f32dbd934b15508ec
+    campaign_release_surface_source: bytes=187284; sha256=9c18235843e06ce8cb63a51917489f795db6afb1cb341261cad5f47887921abf
+    public_safe_redaction_source: bytes=39876; sha256=4dea753ff31c6bc56ad4ebe03109fd6b037fac9d693901ecb03d8177c0cc35e5
+    campaign_release_surface_test: bytes=99743; sha256=77c877a83dbad0344707881dc5a9b514c71d22a5cb09c37546c24e74fd597c33
+    public_safe_redaction_test: bytes=22411; sha256=4c1b1f1dce46e11b9e7edead18855e9f15e51ab405d744a7aa5adc1987c9e0c3
+  verification:
+    release_surface_post_edit: 23 passed, 0 failed, 0 skipped, 0 cancelled, 0 todo in 499617.4611 ms.
+    current_adjacent_node: Public-safe redaction, site publication, and offline Rust-vector replay passed 21/21 after the final release-surface edit.
+    current_rust_parity: `cargo test --manifest-path rust/crates/tinyrustlm-evidence/Cargo.toml --test offline_bundle_contract` passed 3/3.
+    complete_unit_baseline: Repository-wide `npm --prefix tinyrustlm run test:unit` passed 879/879 with zero failures, skips, cancellations, or todos in 557.71 seconds before the final fail-closed scanner-target edit; the exact changed release surface was then rerun post-edit as the 23/23 gate above.
+    focused_baselines: Public-safe redaction passed 11/11, site publication passed 7/7, Node offline-vector replay passed 3/3, and Rust offline-vector parity passed 3/3.
+    hygiene: JavaScript syntax, `git diff --check`, deterministic vector replay, exact file hashes, non-test high-confidence secret scan, synthetic secret-fixture classification, and no-compatibility review passed. All compatibility terms are profile prohibitions or rejection assertions, not support paths.
+  publication_truth:
+    deployment_manifest: `tinyrustlm/deploy/web-deployment-manifest.v2.json` has 23 publish members, comprising 21 source members and two generated release members.
+    delta: The 18-file implementation checkpoint intersected zero of 21 production source members and changed no generated release member.
+    action: No site version, release date, Updates entry, deployment, publication receipt, or public HTTPS readback claim was created because no production closure byte changed and no production publication operation ran.
+  campaign_truth: qualified_models=0/20; clean_browser_rounds=0/50; authorized_live_memory_rounds=0/25; current_outside_network_lane_proofs=0/40; live_catalog_announcements=0/20
+  exact_next_action:
+    - Extend the sole release surface through generated-file deployment admission, exact generated pointer/history/claim HTTPS readback, and final descendant persistence without caller-supplied truth or a compatibility path.
+    - Cut maintained production callers and documentation to that completed surface, then delete the obsolete dashboard, final-attestation, release-authorization, release-evidence, public-readback, public-artifact-scope, and obsolete store paths in the same verified replacement change.
+    - Continue Win32 directory-flush evidence, compressed archive-member scanning, and protected equality-list custody behind this path; commit and push each healthy major change and deploy only when an affected production closure passes its independent gate.
+  known_blockers: MemoryEndpoints production access remains unauthorized and disconnected; model qualification, external P2P observation, catalog announcements, signing/deployment authorization, and physical-RID evidence remain objective work rather than inferred completion.
 
 site_release_reconciliation_2026_08_11:
   authority: This is the newest private operational account. Read it before dated history; it changes no historical receipt or campaign fact.
