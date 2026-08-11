@@ -34,8 +34,9 @@ The publication graph is deliberately acyclic:
    append-only history candidate, and direct `published` claim descendants.
    These bytes remain unpersisted and unclaimed.
 6. An authorized external deployment operation writes those exact generated
-   bytes. The sole production HTTPS verifier reads the bootstrap, pointer, and
-   history back and binds exact bytes, headers, origin, and TLS observations.
+   bytes. The sole production HTTPS verifier reads the complete sorted static
+   and generated closure back and binds exact bytes, headers, origin, and TLS
+   observations.
 7. Only after that generated-file readback may the release surface create-only
    persist the published claim descendants and final publication evidence.
 
@@ -157,9 +158,18 @@ signature plus every generated control and claim candidate. Its conformance
 test also proves byte-identical plan and authorization replay, rejects caller
 publication truth, and rejects the publisher signature at expiry.
 
-This checkpoint still does not prove generated-file deployment, generated
-production readback, claim persistence, final release publication,
-source-control publication, or any `20/50/25/40/20` campaign counter. Those
-remaining operations must stay inside the sole release surface, retain
-create-only persistence and exact restart recovery, and admit pointer, history,
-and published-claim descendants only after exact deployed-byte readback.
+Separate methods on that same surface now admit only one closed attempt-only
+generated-deployment receipt, invoke the sole HTTPS verifier over the exact
+static-plus-generated closure, independently revalidate and persist its
+readback receipt, and then rerun current publisher authority before final
+admission. Final admission reverifies all candidate redaction receipts,
+persists a lexicographic create-only published-claim prefix, and writes the
+scanned `site-publication` receipt last. Tests interrupt and reopen the stores
+after final redaction, after every claim, and after the commit receipt; an
+incomplete prefix is not publication evidence and resumes only from
+byte-identical disk state.
+
+This checkpoint still does not prove a live generated-file deployment, a live
+production readback, source-control publication, or any `20/50/25/40/20`
+campaign counter. It implements the sole local admission path for those future
+facts without turning fixture observations into production evidence.

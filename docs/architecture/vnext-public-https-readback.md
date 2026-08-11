@@ -3,12 +3,13 @@
 ## Decision
 
 TinyRustLM has one clean-slate production HTTPS verifier at
-`tinyrustlm/tools/vnext-public-https-readback.js`. It accepts the exact static
-asset inventory and frozen security-header profile selected by one release
-manifest, resolves one canonical public HTTPS origin, pins one publicly
-routable address, and streams every response exactly once. A successful
-return means only that this process observed the declared bytes and metadata
-through production HTTPS.
+`tinyrustlm/tools/vnext-public-https-readback.js`. It accepts one exact complete
+release inventory and frozen security-header profile reconstructed internally
+by the release surface. That inventory is either the release manifest's static
+graph or the sorted static-plus-generated publication closure. The verifier
+resolves one canonical public HTTPS origin, pins one publicly routable address,
+and streams every response exactly once. A successful return means only that
+this process observed the declared bytes and metadata through production HTTPS.
 
 This checkpoint does not create a receipt, authorize a release, prove that an
 upload occurred, establish an independent outside-network observer, publish a
@@ -17,7 +18,7 @@ forward-only descendants in the release graph.
 
 The sole frozen profile is
 `contracts/vnext/public-https-readback-profile.v1.json`, with SHA-256
-`0cfeb00065d45fd860813f501d6c07417f8a6e6587dd524a81e5be426a84c419`.
+`a5d5fd2bcc08e1444f82c474e1c829ba8e108c53a0e52b0651cab1843d8edb73`.
 There is no compatibility reader, caller-selected profile, legacy alias,
 fallback verifier, or permissive mode.
 
@@ -53,15 +54,20 @@ IP literal, and fit the 2,048-byte limit. Localhost and recognized local name
 suffixes are rejected. Production site releases must use their canonical DNS
 origin.
 
-Assets use the same closed role, media-type, cache-policy, and seven-field
-record vocabulary as `release_manifest.v3`. Paths are ASCII public paths and
-reject query or fragment delimiters, backslashes, dot segments, encoded dot,
-slash or backslash separators, cross-origin URL resolution, and values over
-2,048 bytes. Exactly one `/` bootstrap asset is required. Individual assets
-are limited to 8 GiB, the inventory to 512 assets, and the aggregate to 64 GiB.
-Every asset must bind the exact security-header profile hash. Model-byte paths
-are forbidden, immutable assets must contain their complete SHA-256 in the
-path, and an optional single service worker must be JavaScript with `no-cache`.
+Assets use the same closed media-type, cache-policy, and seven-field record
+vocabulary as `release_manifest.v3`, extended only with the
+`current-release-pointer` and `release-history` generated-control roles. Paths
+are ASCII public paths and reject query or fragment delimiters, backslashes,
+dot segments, encoded dot, slash or backslash separators, cross-origin URL
+resolution, and values over 2,048 bytes. Exactly one `/` bootstrap asset is
+required. Individual assets are limited to 8 GiB, the inventory to 514 assets,
+and the aggregate to 68,723,933,184 bytes: the static release maximum plus the
+bounded two-file generated maximum. Every asset must bind the exact
+security-header profile hash. Model-byte paths are forbidden, immutable assets
+must contain their complete SHA-256 in the path, and an optional single service
+worker must be JavaScript with `no-cache`. The release surface independently
+requires the two exact generated paths, roles, JSON media types, and `no-store`
+policy before it can construct the combined inventory.
 
 ## Security-Header Profile
 
@@ -189,13 +195,16 @@ pass, create a public-readback receipt, or increment a live count.
 
 ## Release-Surface Integration
 
-`vnext-campaign-release-surface.js` now accepts only one stored
-`deployment-attempt-only` receipt, reruns current authorization, invokes this
-production operation itself, independently validates the canonical result,
-binds the exact result and inventory into a `public-readback` receipt, scans
-result and receipt bytes, and persists the redaction receipt before the
-readback receipt. Restart recovery accepts only exact dependency-prefix states
-and byte-identical replay.
+`vnext-campaign-release-surface.js` owns both invocations. Static readback
+accepts only one stored `deployment-attempt-only` receipt and the exact manifest
+inventory. Generated publication readback accepts only the separate
+attempt-only generated-deployment receipt and constructs one sorted inventory
+from those already verified static assets plus both deterministic generated
+controls. Each operation reruns current authority, invokes this production
+verifier itself, independently validates the canonical result against its
+expected graph, scans result and receipt bytes, and persists the redaction
+receipt before the readback receipt. Restart recovery accepts only exact
+dependency-prefix states and byte-identical replay.
 
 The release-surface conformance test substitutes the module before the surface
 is loaded so deterministic fixture observations can exercise orchestration and
@@ -206,9 +215,9 @@ rules without fabricating a production pass.
 
 ## Next Publication Gate
 
-Generate and bind the current-release pointer and immutable history entry only
-as forward descendants, derive evidence-bound published `claim.v2` records,
-verify current `site-publisher` authority, and cut maintained entry points to
-that sole graph. Delete the superseded mutable public-readback stack only after
-the complete replacement passes. No current production readback or publication
-is asserted by this checkpoint.
+The complete local graph now generates both controls as forward descendants,
+verifies current `site-publisher` authority, performs combined readback, and
+admits published `claim.v2` records only through a final commit receipt. The
+next gate is to cut every maintained entry point to that sole graph and delete
+the superseded mutable public-readback stack. No current production readback or
+publication is asserted by this checkpoint.

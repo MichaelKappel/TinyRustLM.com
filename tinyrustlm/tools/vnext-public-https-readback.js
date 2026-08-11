@@ -26,8 +26,8 @@ const headerNamePattern = /^[!#$%&'*+.^_`|~0-9a-z-]+$/u;
 const publicPathPattern = /^\/(?!\/)[\x21-\x3e\x40-\x5a\x5e-\x7e]*$/u;
 const webCachePolicies = Object.freeze(["immutable", "no-cache", "no-store"]);
 const webAssetRoles = Object.freeze([
-  "application", "bootstrap", "documentation", "runtime", "runtime-metadata",
-  "service-worker", "style"
+  "application", "bootstrap", "current-release-pointer", "documentation",
+  "release-history", "runtime", "runtime-metadata", "service-worker", "style"
 ]);
 const webContentTypes = Object.freeze([
   "application/javascript", "application/json", "application/manifest+json",
@@ -345,9 +345,9 @@ function validateInstalledProfile() {
         "sha256-set-identity-only" ||
       parsedProfile.observation.rawBodyPersistence !== "forbidden" ||
       parsedProfile.observation.rawHeaderPersistence !== "forbidden" ||
-      !limitsValid || parsedProfile.limits.maximumAssets !== 512 ||
+      !limitsValid || parsedProfile.limits.maximumAssets !== 514 ||
       parsedProfile.limits.maximumAssetBytes !== 8_589_934_592 ||
-      parsedProfile.limits.maximumTotalBytes !== 68_719_476_736 ||
+      parsedProfile.limits.maximumTotalBytes !== 68_723_933_184 ||
       parsedProfile.limits.maximumDnsAddresses !== 32 ||
       parsedProfile.limits.maximumCertificates !== 32 ||
       parsedProfile.limits.maximumSecurityHeaders !== 32 ||

@@ -216,11 +216,11 @@ Create-only public subject persistence is documented in
 `docs/architecture/vnext-subject-store.md`.
 The sole exact cross-store Rust-backed campaign runner is documented in
 `docs/architecture/vnext-campaign-runner.md`.
-The fresh-runner-only immutable attestation, operator, release-manifest
-preparation, and release-authorization boundary is documented
+The fresh-runner-only immutable attestation, operator, release-manifest,
+authorization, deployment/readback, and final-publication boundary is documented
 in `docs/architecture/vnext-campaign-release-surface.md`. Its frozen profile
 has SHA-256
-`4bdaae337cc14cb5782ed3bf096c3336f121fb7905c9c2a36978f6799a15f1d7`.
+`0633f2bc4960f4c8a757bf10a8681f2481f0d8a5d0997c2d00ba58b02ed43bcc`.
 It admits no stored projection, caller verdict, counter set, dashboard state,
 or reused operation. It scans finalized attestation bytes before create-only
 receipt persistence and has no operator `done` state. Release preparation
@@ -246,8 +246,15 @@ output and do not establish a production readback. The surface now also
 creates and scans deterministic publication-plan material, create-only
 persists the plan lineage, requires one current-evidence-eligible
 `site-publisher` Ed25519 signature, and scans every pointer, history, and
-published-claim candidate while leaving those candidates unpersisted and
-explicitly prepublication.
+published-claim candidate without prematurely persisting them. It next admits
+one attempt-only generated-deployment receipt, invokes the same non-injectable
+verifier over the exact static-plus-generated closure, independently validates
+the complete result, and persists the generated readback lineage. Finalization
+reruns current publisher authority, rematerializes every candidate, persists
+only an exact lexicographic published-claim prefix, and writes the scanned
+`site-publication` commit receipt last. Interrupted prefixes are inert and
+byte-identical restart resumable. Local fixture observations do not establish a
+live deployment, readback, or publication.
 
 Pure generated-publication materialization is documented in
 `docs/architecture/vnext-site-publication.md`. Its frozen profile SHA-256 is
@@ -256,11 +263,11 @@ It adds no top-level contract-family schema: pointer/history documents are
 strict canonical generated files, while plan, signature, readback, and claim
 evidence use the existing receipt, release, and claim contracts. Current
 site-publisher authority and plan persistence are integrated into the sole
-release surface. Final generated-file deployment, production readback, and
-descendant admission remain release-surface work.
+release surface, together with generated-deployment admission, complete
+readback, restart-safe claim persistence, and final descendant admission.
 
 The superseded mutable runner is deleted. Remaining archive-member scanning,
-generated-file deployment/readback, final pointer/history and published-claim
-admission, deletion of the superseded dashboard/release stack, a real
-production publication, and external campaign evidence remain incomplete.
+maintained-entry-point cutover, deletion of the superseded dashboard/release
+stack, a real production publication, and external campaign evidence remain
+incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.

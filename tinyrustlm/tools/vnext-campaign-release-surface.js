@@ -221,6 +221,72 @@ const sitePublicationAuthorizationInputFields = Object.freeze([
   "webSecurityHeaderProfileBytes",
   "webPublicationGeneratorBytes"
 ]);
+const generatedDeploymentInputFields = Object.freeze([
+  "authorizationReceiptId",
+  "changelogBytes",
+  "deploymentReceiptId",
+  "expectedCampaignId",
+  "expectedEnvironment",
+  "expectedTerminalRegistryReceiptId",
+  "generatedDeploymentReceiptBytes",
+  "knownSecrets",
+  "previousHistoryBytes",
+  "publicReadbackReceiptId",
+  "releaseManifestId",
+  "sitePublicationPlanReceiptId",
+  "sitePublisherSignatureReceiptId",
+  "sourceRevision",
+  "trustedRootRegistryReceiptId",
+  "verificationTimeUtc",
+  "webDeploymentManifestBytes",
+  "webSecurityHeaderProfileBytes",
+  "webPublicationGeneratorBytes"
+]);
+const generatedPublicReadbackInputFields = Object.freeze([
+  "authorizationReceiptId",
+  "changelogBytes",
+  "deploymentReceiptId",
+  "expectedCampaignId",
+  "expectedEnvironment",
+  "expectedTerminalRegistryReceiptId",
+  "generatedDeploymentReceiptId",
+  "knownSecrets",
+  "operationId",
+  "previousHistoryBytes",
+  "publicReadbackReceiptId",
+  "releaseManifestId",
+  "sitePublicationPlanReceiptId",
+  "sitePublisherSignatureReceiptId",
+  "sourceRevision",
+  "trustedRootRegistryReceiptId",
+  "verificationTimeUtc",
+  "webDeploymentManifestBytes",
+  "webSecurityHeaderProfileBytes",
+  "webPublicationGeneratorBytes"
+]);
+const sitePublicationFinalizationInputFields = Object.freeze([
+  "authorizationReceiptId",
+  "changelogBytes",
+  "deploymentReceiptId",
+  "expectedCampaignId",
+  "expectedEnvironment",
+  "expectedTerminalRegistryReceiptId",
+  "generatedDeploymentReceiptId",
+  "generatedPublicReadbackReceiptId",
+  "knownSecrets",
+  "operationId",
+  "previousHistoryBytes",
+  "publicReadbackReceiptId",
+  "releaseManifestId",
+  "sitePublicationPlanReceiptId",
+  "sitePublisherSignatureReceiptId",
+  "sourceRevision",
+  "trustedRootRegistryReceiptId",
+  "verificationTimeUtc",
+  "webDeploymentManifestBytes",
+  "webSecurityHeaderProfileBytes",
+  "webPublicationGeneratorBytes"
+]);
 const optionFields = Object.freeze([
   "campaignArtifactStoreRoot",
   "expectedWasmModuleSha256",
@@ -244,7 +310,8 @@ const profileFields = Object.freeze([
   "networkAccess", "clockAccess", "sourceMutation", "attestation",
   "operatorStatus", "releasePreparation", "releaseAuthorization",
   "releaseDeployment", "publicReadback", "sitePublicationPlan",
-  "sitePublicationAuthorization", "limits"
+  "sitePublicationAuthorization", "generatedDeployment",
+  "generatedPublicReadback", "sitePublicationFinalization", "limits"
 ]);
 const attestationProfileFields = Object.freeze([
   "receiptSchema", "receiptType", "phase", "completeStatus", "incompleteStatus",
@@ -299,6 +366,27 @@ const sitePublicationAuthorizationProfileFields = Object.freeze([
   "authorityPolicy", "registryPolicy", "timePolicy", "materializationPolicy",
   "redactionPolicy", "persistencePolicy", "callerDecisionPolicy"
 ]);
+const generatedDeploymentProfileFields = Object.freeze([
+  "resultSchema", "admittedState", "receiptType", "phase", "status",
+  "evidenceScope", "lineagePolicy", "receiptPolicy", "inputReceiptPolicy",
+  "inputHashPolicy", "outputHashPolicy", "runtimePolicy", "timePolicy",
+  "redactionPolicy", "persistencePolicy", "callerSuccessPolicy"
+]);
+const generatedPublicReadbackProfileFields = Object.freeze([
+  "resultSchema", "verifiedState", "configurationIdentityDomain",
+  "combinedAssetInventoryIdentityDomain", "receiptType", "phase", "status",
+  "evidenceScope", "lineagePolicy", "networkPolicy", "resultPolicy",
+  "inputReceiptPolicy", "inputHashPolicy", "outputHashPolicy", "runtimePolicy",
+  "timePolicy", "redactionPolicy", "persistencePolicy", "replayPolicy",
+  "publicationPolicy"
+]);
+const sitePublicationFinalizationProfileFields = Object.freeze([
+  "resultSchema", "publishedState", "receiptType", "phase", "status",
+  "evidenceScope", "lineagePolicy", "authorityPolicy", "readbackPolicy",
+  "inputReceiptPolicy", "inputHashPolicy", "outputHashPolicy", "claimPolicy",
+  "historyPolicy", "redactionPolicy", "persistencePolicy", "interruptionPolicy",
+  "callerTruthPolicy"
+]);
 const limitFields = Object.freeze([
   "maximumKnownSecrets", "maximumProjectionBytes", "maximumReceiptSnapshotMembers",
   "maximumSubjectSnapshotMembers", "maximumOperatorStatusBytes",
@@ -316,7 +404,13 @@ const limitFields = Object.freeze([
   "maximumSitePublicationPlanResultBytes",
   "maximumSitePublicationAuthorizationResultBytes",
   "maximumSitePublicationHistoryBytes",
-  "maximumSitePublicationSignatureReceiptBytes"
+  "maximumSitePublicationSignatureReceiptBytes",
+  "maximumGeneratedDeploymentReceiptBytes",
+  "maximumGeneratedDeploymentResultBytes",
+  "maximumGeneratedPublicReadbackReceiptBytes",
+  "maximumGeneratedPublicReadbackAdmissionResultBytes",
+  "maximumSitePublicationReceiptBytes",
+  "maximumSitePublicationAdmissionResultBytes"
 ]);
 const operatorFields = Object.freeze([
   "attestationReceiptId", "blockerCodes", "campaignId", "counts", "environment",
@@ -543,6 +637,13 @@ function validateInstalledProfile() {
   exactDataObject(parsedProfile.sitePublicationAuthorization,
     sitePublicationAuthorizationProfileFields,
     "release_surface_profile_invalid", step);
+  exactDataObject(parsedProfile.generatedDeployment,
+    generatedDeploymentProfileFields, "release_surface_profile_invalid", step);
+  exactDataObject(parsedProfile.generatedPublicReadback,
+    generatedPublicReadbackProfileFields, "release_surface_profile_invalid", step);
+  exactDataObject(parsedProfile.sitePublicationFinalization,
+    sitePublicationFinalizationProfileFields,
+    "release_surface_profile_invalid", step);
   exactDataObject(parsedProfile.limits, limitFields,
     "release_surface_profile_invalid", step);
   const limitsValid = Object.values(parsedProfile.limits)
@@ -585,7 +686,7 @@ function validateInstalledProfile() {
       parsedProfile.networkAccess !== "forbidden-until-public-readback-operation" ||
       parsedProfile.clockAccess !== "caller-trusted-verification-time-only" ||
       parsedProfile.sourceMutation !==
-        "create-only-attestation-redaction-release-manifest-authorization-signature-deployment-attempt-public-readback-site-publication-plan-and-site-publisher-receipts" ||
+        "create-only-attestation-redaction-release-manifest-authorization-signature-deployment-attempt-public-readback-site-publication-plan-site-publisher-generated-deployment-generated-readback-final-publication-receipts-and-published-claim-subjects" ||
       parsedProfile.attestation.receiptSchema !== "tinyrustlm.vnext.receipt.v1" ||
       parsedProfile.attestation.receiptType !== "final-attestation" ||
       parsedProfile.attestation.phase !== "final-attestation" ||
@@ -813,6 +914,105 @@ function validateInstalledProfile() {
       parsedProfile.sitePublicationAuthorization.persistencePolicy !==
         "signature-redaction-before-create-only-site-publisher-signature-receipt" ||
       parsedProfile.sitePublicationAuthorization.callerDecisionPolicy !== "forbidden" ||
+      parsedProfile.generatedDeployment.resultSchema !==
+        "tinyrustlm.vnext.generated_publication_deployment_admission_result.v1" ||
+      parsedProfile.generatedDeployment.admittedState !==
+        "site-generated-deployment-attempt-admitted-awaiting-complete-readback" ||
+      parsedProfile.generatedDeployment.receiptType !== "deployment" ||
+      parsedProfile.generatedDeployment.phase !== "generated-publication-deployment" ||
+      parsedProfile.generatedDeployment.status !== "pass" ||
+      parsedProfile.generatedDeployment.evidenceScope !==
+        "generated-publication-deployment-attempt-only" ||
+      parsedProfile.generatedDeployment.lineagePolicy !==
+        "exact-static-readback-plan-current-site-publisher-and-materialized-generated-inventory" ||
+      parsedProfile.generatedDeployment.receiptPolicy !==
+        "externally-produced-canonical-receipt-with-closed-lineage-and-no-success-claim" ||
+      parsedProfile.generatedDeployment.inputReceiptPolicy !==
+        "exact-static-readback-plan-and-site-publisher-signature-parents" ||
+      parsedProfile.generatedDeployment.inputHashPolicy !==
+        "exact-release-plan-signature-profile-generator-header-and-generated-inventory" ||
+      parsedProfile.generatedDeployment.outputHashPolicy !==
+        "exact-submitted-generated-inventory-plus-bounded-public-safe-attempt-transcript-digest" ||
+      parsedProfile.generatedDeployment.runtimePolicy !==
+        "deployment-execution-class-only" ||
+      parsedProfile.generatedDeployment.timePolicy !==
+        "attempt-after-site-publisher-authorization-and-not-after-trusted-verification-time" ||
+      parsedProfile.generatedDeployment.redactionPolicy !==
+        "scan-final-canonical-generated-deployment-receipt-before-persistence" ||
+      parsedProfile.generatedDeployment.persistencePolicy !==
+        "generated-deployment-redaction-before-create-only-generated-deployment-receipt" ||
+      parsedProfile.generatedDeployment.callerSuccessPolicy !== "forbidden" ||
+      parsedProfile.generatedPublicReadback.resultSchema !==
+        "tinyrustlm.vnext.generated_publication_readback_admission_result.v1" ||
+      parsedProfile.generatedPublicReadback.verifiedState !==
+        "site-generated-public-readback-verified-awaiting-publication-commit" ||
+      parsedProfile.generatedPublicReadback.configurationIdentityDomain !==
+        "tinyrustlm.generated-publication-readback-configuration.v1" ||
+      parsedProfile.generatedPublicReadback.combinedAssetInventoryIdentityDomain !==
+        "tinyrustlm.complete-publication-web-asset-inventory.v1" ||
+      parsedProfile.generatedPublicReadback.receiptType !== "public-readback" ||
+      parsedProfile.generatedPublicReadback.phase !==
+        "generated-publication-readback" ||
+      parsedProfile.generatedPublicReadback.status !== "pass" ||
+      parsedProfile.generatedPublicReadback.evidenceScope !==
+        "exact-production-public-https-static-and-generated-asset-closure" ||
+      parsedProfile.generatedPublicReadback.lineagePolicy !==
+        "exact-generated-deployment-static-readback-plan-current-site-publisher-and-materialized-generated-inventory" ||
+      parsedProfile.generatedPublicReadback.networkPolicy !==
+        "surface-invokes-sole-production-verifier-over-sorted-static-plus-generated-closure-without-caller-transport-or-result" ||
+      parsedProfile.generatedPublicReadback.resultPolicy !==
+        "strict-canonical-result-revalidated-against-combined-inventory-and-profile" ||
+      parsedProfile.generatedPublicReadback.inputReceiptPolicy !==
+        "exact-generated-deployment-attempt-parent" ||
+      parsedProfile.generatedPublicReadback.inputHashPolicy !==
+        "exact-release-static-readback-plan-signature-generated-deployment-control-profiles-and-combined-inventory" ||
+      parsedProfile.generatedPublicReadback.outputHashPolicy !==
+        "exact-result-observation-dns-pinned-address-certificate-set-generated-and-combined-inventories" ||
+      parsedProfile.generatedPublicReadback.runtimePolicy !==
+        "deployment-execution-class-only" ||
+      parsedProfile.generatedPublicReadback.timePolicy !==
+        "readback-not-before-generated-deployment-and-current-site-publisher-at-trusted-verification-time" ||
+      parsedProfile.generatedPublicReadback.redactionPolicy !==
+        "scan-result-known-secret-representations-and-final-generated-readback-receipt-before-persistence" ||
+      parsedProfile.generatedPublicReadback.persistencePolicy !==
+        "generated-readback-redaction-before-create-only-generated-readback-receipt" ||
+      parsedProfile.generatedPublicReadback.replayPolicy !==
+        "exact-dependency-prefix-and-byte-identical-replay-only" ||
+      parsedProfile.generatedPublicReadback.publicationPolicy !==
+        "forbidden-until-create-only-published-claim-prefix-and-final-site-publication-receipt" ||
+      parsedProfile.sitePublicationFinalization.resultSchema !==
+        "tinyrustlm.vnext.site_publication_admission_result.v1" ||
+      parsedProfile.sitePublicationFinalization.publishedState !==
+        "site-publication-published" ||
+      parsedProfile.sitePublicationFinalization.receiptType !==
+        "site-synchronization" ||
+      parsedProfile.sitePublicationFinalization.phase !== "site-publication" ||
+      parsedProfile.sitePublicationFinalization.status !== "pass" ||
+      parsedProfile.sitePublicationFinalization.evidenceScope !==
+        "exact-production-site-publication-closure" ||
+      parsedProfile.sitePublicationFinalization.lineagePolicy !==
+        "exact-generated-readback-plan-release-current-site-publisher-and-deterministic-descendants" ||
+      parsedProfile.sitePublicationFinalization.authorityPolicy !==
+        "rerun-exactly-one-current-evidence-eligible-site-publisher-signature" ||
+      parsedProfile.sitePublicationFinalization.readbackPolicy !==
+        "exact-static-plus-generated-production-observation-closure" ||
+      parsedProfile.sitePublicationFinalization.inputReceiptPolicy !==
+        "exact-plan-site-publisher-signature-generated-deployment-and-generated-readback-parents" ||
+      parsedProfile.sitePublicationFinalization.inputHashPolicy !==
+        "exact-release-pointer-history-generated-inventory-published-claim-set-and-complete-observation" ||
+      parsedProfile.sitePublicationFinalization.outputHashPolicy !==
+        "exact-pointer-history-generated-inventory-and-published-claim-set" ||
+      parsedProfile.sitePublicationFinalization.claimPolicy !==
+        "direct-approved-claim-descendants-admitted-only-by-final-commit-receipt" ||
+      parsedProfile.sitePublicationFinalization.historyPolicy !==
+        "append-only-current-history-and-explicit-prior-publication-supersession" ||
+      parsedProfile.sitePublicationFinalization.redactionPolicy !==
+        "reverify-candidate-redactions-and-scan-final-publication-receipt-before-any-public-subject-persistence" ||
+      parsedProfile.sitePublicationFinalization.persistencePolicy !==
+        "final-receipt-redaction-then-create-only-published-claim-prefix-then-final-commit-receipt" ||
+      parsedProfile.sitePublicationFinalization.interruptionPolicy !==
+        "incomplete-prefix-inert-and-byte-identical-restart-resumable" ||
+      parsedProfile.sitePublicationFinalization.callerTruthPolicy !== "forbidden" ||
       !limitsValid ||
       parsedProfile.limits.maximumProjectionBytes !==
         campaignProjectionProfile.limits.maximumProjectionResultBytes ||
@@ -847,6 +1047,16 @@ function validateInstalledProfile() {
         sitePublicationProfile.limits.maximumHistoryBytes ||
       parsedProfile.limits.maximumSitePublicationSignatureReceiptBytes !==
         receiptStoreProfile.wire.maximumReceiptBytes ||
+      parsedProfile.limits.maximumGeneratedDeploymentReceiptBytes !==
+        receiptStoreProfile.wire.maximumReceiptBytes ||
+      parsedProfile.limits.maximumGeneratedDeploymentResultBytes !== 262_144 ||
+      parsedProfile.limits.maximumGeneratedPublicReadbackReceiptBytes !==
+        receiptStoreProfile.wire.maximumReceiptBytes ||
+      parsedProfile.limits.maximumGeneratedPublicReadbackAdmissionResultBytes !==
+        262_144 ||
+      parsedProfile.limits.maximumSitePublicationReceiptBytes !==
+        receiptStoreProfile.wire.maximumReceiptBytes ||
+      parsedProfile.limits.maximumSitePublicationAdmissionResultBytes !== 262_144 ||
       parsedProfile.limits.maximumChangelogBytes >
         publicSafeRedactionProfile.limits.maximumInputBytes) {
     failEvidence("release_surface_profile_invalid", step);
@@ -1283,6 +1493,110 @@ function normalizeSitePublicationAuthorizationInput(rawInput) {
     sitePublicationAuthorizationInputFields,
     "release_surface_site_publication_authorization_input_invalid",
     "release-surface-site-publication-authorization-input"
+  );
+}
+
+function normalizeSitePublicationContinuationInput(rawInput, fields, code, step) {
+  const input = exactDataObject(rawInput, fields, code, step);
+  const knownSecrets = dataArray(input.knownSecrets,
+    parsedProfile.limits.maximumKnownSecrets,
+    "release_surface_known_secrets_invalid", step);
+  scanKnownSecretRepresentations(Buffer.from("{}", "utf8"), knownSecrets);
+  const webDeploymentManifestBytes = normalizeWebControlBytes(
+    input.webDeploymentManifestBytes,
+    "release_surface_web_deployment_manifest_invalid",
+    step
+  );
+  const webSecurityHeaderProfileBytes = normalizeWebControlBytes(
+    input.webSecurityHeaderProfileBytes,
+    "release_surface_web_security_headers_invalid",
+    step
+  );
+  const webPublicationGeneratorBytes = normalizeWebControlBytes(
+    input.webPublicationGeneratorBytes,
+    "release_surface_web_publication_generator_invalid",
+    step
+  );
+  let previousHistoryBytes = null;
+  if (input.previousHistoryBytes !== null) {
+    if (!Buffer.isBuffer(input.previousHistoryBytes) ||
+        input.previousHistoryBytes.length === 0 ||
+        input.previousHistoryBytes.length >
+          parsedProfile.limits.maximumSitePublicationHistoryBytes) {
+      failEvidence(code, step);
+    }
+    previousHistoryBytes = Buffer.from(input.previousHistoryBytes);
+  }
+  const hasGeneratedReceiptBytes = fields === generatedDeploymentInputFields;
+  const hasGeneratedReceiptId = fields !== generatedDeploymentInputFields;
+  const hasGeneratedReadbackId = fields === sitePublicationFinalizationInputFields;
+  const hasOperationId = fields !== generatedDeploymentInputFields;
+  if (!Buffer.isBuffer(input.changelogBytes) || input.changelogBytes.length === 0 ||
+      input.changelogBytes.length > parsedProfile.limits.maximumChangelogBytes ||
+      typeof input.expectedCampaignId !== "string" ||
+      !safeIdPattern.test(input.expectedCampaignId) ||
+      !["development", "production", "staging"].includes(
+        input.expectedEnvironment) ||
+      !contentIdPattern.test(input.expectedTerminalRegistryReceiptId) ||
+      !contentIdPattern.test(input.authorizationReceiptId) ||
+      !contentIdPattern.test(input.deploymentReceiptId) ||
+      !contentIdPattern.test(input.publicReadbackReceiptId) ||
+      !contentIdPattern.test(input.releaseManifestId) ||
+      !contentIdPattern.test(input.sitePublicationPlanReceiptId) ||
+      !contentIdPattern.test(input.sitePublisherSignatureReceiptId) ||
+      !sourceRevisionPattern.test(input.sourceRevision) ||
+      !contentIdPattern.test(input.trustedRootRegistryReceiptId) ||
+      utcNanoseconds(input.verificationTimeUtc) === null ||
+      hasOperationId && !contentIdPattern.test(input.operationId) ||
+      hasGeneratedReceiptId &&
+        !contentIdPattern.test(input.generatedDeploymentReceiptId) ||
+      hasGeneratedReadbackId &&
+        !contentIdPattern.test(input.generatedPublicReadbackReceiptId) ||
+      hasGeneratedReceiptBytes &&
+        (!Buffer.isBuffer(input.generatedDeploymentReceiptBytes) ||
+          input.generatedDeploymentReceiptBytes.length === 0 ||
+          input.generatedDeploymentReceiptBytes.length >
+            parsedProfile.limits.maximumGeneratedDeploymentReceiptBytes)) {
+    failEvidence(code, step);
+  }
+  return Object.freeze({
+    ...input,
+    changelogBytes: Buffer.from(input.changelogBytes),
+    generatedDeploymentReceiptBytes: hasGeneratedReceiptBytes
+      ? Buffer.from(input.generatedDeploymentReceiptBytes)
+      : null,
+    knownSecrets,
+    previousHistoryBytes,
+    webDeploymentManifestBytes,
+    webPublicationGeneratorBytes,
+    webSecurityHeaderProfileBytes
+  });
+}
+
+function normalizeGeneratedDeploymentInput(rawInput) {
+  return normalizeSitePublicationContinuationInput(
+    rawInput,
+    generatedDeploymentInputFields,
+    "release_surface_generated_deployment_input_invalid",
+    "release-surface-generated-deployment-input"
+  );
+}
+
+function normalizeGeneratedPublicReadbackInput(rawInput) {
+  return normalizeSitePublicationContinuationInput(
+    rawInput,
+    generatedPublicReadbackInputFields,
+    "release_surface_generated_public_readback_input_invalid",
+    "release-surface-generated-public-readback-input"
+  );
+}
+
+function normalizeSitePublicationFinalizationInput(rawInput) {
+  return normalizeSitePublicationContinuationInput(
+    rawInput,
+    sitePublicationFinalizationInputFields,
+    "release_surface_site_publication_finalization_input_invalid",
+    "release-surface-site-publication-finalization-input"
   );
 }
 
@@ -2503,6 +2817,31 @@ function currentSitePublicationReceipt(activeReceipts, planMaterial) {
 function validatePreviousSitePublication(input, activeReceipts, planMaterial) {
   const step = "release-surface-site-publication-history";
   const current = currentSitePublicationReceipt(activeReceipts, planMaterial);
+  if (current !== null && publicParameter(current.receipt, "subject_id",
+    "release_surface_site_publication_history_unbound", step) ===
+      planMaterial.releaseId) {
+    if (current.receipt.supersedesReceiptIds.length === 0) {
+      if (input.previousHistoryBytes !== null) {
+        failEvidence("release_surface_site_publication_history_changed", step);
+      }
+      return null;
+    }
+    if (current.receipt.supersedesReceiptIds.length !== 1 ||
+        input.previousHistoryBytes === null) {
+      failEvidence("release_surface_site_publication_history_required", step);
+    }
+    const previous = activeReceipts.byId.get(current.receipt.supersedesReceiptIds[0]);
+    if (!previous || previous.receipt.receiptType !== "site-synchronization" ||
+        previous.receipt.phase !== "site-publication") {
+      failEvidence("release_surface_site_publication_history_unbound", step);
+    }
+    const previousHistoryHash = hashBinding(previous.receipt, "outputHashes",
+      "site-release-history", "release_surface_site_publication_history_unbound", step);
+    if (previousHistoryHash !== sha256(input.previousHistoryBytes)) {
+      failEvidence("release_surface_site_publication_history_changed", step);
+    }
+    return previous;
+  }
   if (input.previousHistoryBytes === null) {
     if (current !== null) {
       failEvidence("release_surface_site_publication_history_required", step);
@@ -2772,6 +3111,118 @@ function verifySitePublisherAuthority(input, release, plan, signature,
   return Object.freeze({ authority, signature: signatures[0] });
 }
 
+function sitePublicationCandidateScans(input, materialized, signature) {
+  return Object.freeze([
+    sitePublicationScan(input, signature.bytes, "document",
+      "site-publisher-signature-redaction"),
+    sitePublicationScan(input, materialized.pointerBytes, "public-json-control",
+      "pointer-redaction"),
+    sitePublicationScan(input, materialized.historyBytes, "public-json-control",
+      "history-redaction"),
+    ...materialized.publishedClaims.map((claim) => sitePublicationScan(
+      input,
+      claim.claimBytes,
+      "document",
+      `published-claim-redaction-${claim.claimId.slice("sha256:".length)}`
+    ))
+  ]);
+}
+
+function sitePublicationPlanReceiptIds(staticReadback, storedPlan) {
+  return [...new Set([
+    ...staticReadback.expectedReceiptIds,
+    ...storedPlan.artifacts.scans.map((entry) => entry.receipt.receipt.receiptId),
+    storedPlan.stored.receipt.receiptId
+  ])].sort();
+}
+
+function validateStoredSitePublicationAuthorization(input, reconstructed,
+  receiptStore, subjectStore) {
+  const step = "release-surface-stored-site-publication-authorization";
+  const { publication, release, staticReadback } = reconstructed;
+  const storedPlan = validateStoredSitePublicationPlan(
+    input,
+    release,
+    publication,
+    receiptStore
+  );
+  const storedSignature = receiptStore.read(input.sitePublisherSignatureReceiptId);
+  const signature = validateVnextReceiptBytes(storedSignature.bytes);
+  if (signature.receipt.receiptId !== input.sitePublisherSignatureReceiptId ||
+      !signature.bytes.equals(storedSignature.bytes)) {
+    failEvidence("release_surface_site_publisher_signature_invalid", step);
+  }
+  const materialized = materializeVnextSitePublication({
+    approvedClaimBytes: publication.approvedClaimBytes,
+    previousHistoryBytes: input.previousHistoryBytes,
+    publicReadbackReceiptBytes: staticReadback.readback.bytes,
+    releaseManifestBytes: release.bytes,
+    sitePublicationPlanReceiptBytes: storedPlan.stored.bytes,
+    sitePublisherSignatureReceiptBytes: signature.bytes,
+    webPublicationGeneratorBytes: input.webPublicationGeneratorBytes
+  });
+  const probe = sitePublicationCandidateScans(input, materialized, signature)[0];
+  const candidates = [...staticReadback.activeReceipts.byId.values()].filter((entry) =>
+    entry.receipt.receiptType === "redaction-scan" &&
+      entry.receipt.attemptId === probe.receipt.receipt.attemptId);
+  if (candidates.length !== 1) {
+    failEvidence("release_surface_site_publisher_redaction_missing", step);
+  }
+  const authorizationTimeUtc = candidates[0].receipt.completedAtUtc;
+  if (candidates[0].receipt.startedAtUtc !== authorizationTimeUtc ||
+      compareUtc(signature.receipt.signatureEnvelope.issuedAtUtc,
+        authorizationTimeUtc,
+        "release_surface_site_publisher_time_invalid", step) > 0 ||
+      compareUtc(authorizationTimeUtc, input.verificationTimeUtc,
+        "release_surface_site_publisher_time_invalid", step) > 0) {
+    failEvidence("release_surface_site_publisher_time_invalid", step);
+  }
+  const scans = sitePublicationCandidateScans(Object.freeze({
+    ...input,
+    verificationTimeUtc: authorizationTimeUtc
+  }), materialized, signature);
+  for (const scan of scans) {
+    const persisted = receiptStore.read(scan.receipt.receipt.receiptId);
+    if (!persisted.bytes.equals(scan.receipt.bytes)) {
+      failEvidence("release_surface_site_publication_candidate_changed", step);
+    }
+    const verified = verifyVnextRedactionScanReceipt({
+      knownSecrets: input.knownSecrets,
+      receiptBytes: persisted.bytes,
+      targetBytes: scan.targetBytes,
+      targetKind: scan.targetKind
+    });
+    if (!verified.publicSafe || verified.scanStatus !== "pass") {
+      failEvidence("release_surface_site_publication_candidate_unsafe", step);
+    }
+  }
+  const authority = verifySitePublisherAuthority(
+    input,
+    release,
+    storedPlan.stored,
+    signature,
+    staticReadback.activeReceipts,
+    subjectStore
+  );
+  const planReceiptIds = sitePublicationPlanReceiptIds(staticReadback, storedPlan);
+  const expectedReceiptIds = [...new Set([
+    ...planReceiptIds,
+    ...scans.map((entry) => entry.receipt.receipt.receiptId),
+    signature.receipt.receiptId
+  ])].sort();
+  return Object.freeze({
+    authority,
+    authorizationTimeUtc,
+    candidateScans: scans,
+    expectedReceiptIds,
+    expectedSubjectIds: staticReadback.expectedSubjectIds,
+    materialized,
+    planReceiptIds,
+    signature,
+    storedPlan
+  });
+}
+
 function assertReadbackPrefixCandidate(receiptStore, subjectStore,
   expectedReceiptIds, expectedSubjectIds) {
   const step = "release-surface-public-readback-prefix";
@@ -2792,7 +3243,7 @@ function assertReadbackPrefixCandidate(receiptStore, subjectStore,
   return Object.freeze({ currentReceiptIds, extras });
 }
 
-function readCanonicalPublicReadbackResult(rawResult, release,
+function readCanonicalPublicReadbackResult(rawResult, expectedGraph,
   webSecurityHeaderProfileBytes) {
   const step = "release-surface-public-readback-result";
   if (!isPlainObject(rawResult) || Object.getOwnPropertySymbols(rawResult).length !== 0) {
@@ -2849,7 +3300,7 @@ function readCanonicalPublicReadbackResult(rawResult, release,
   const security = validateVnextWebSecurityHeaderProfileBytes(
     webSecurityHeaderProfileBytes
   );
-  const manifest = release.value;
+  const manifest = expectedGraph;
   if (result.schema !== publicHttpsReadbackProfile.resultSchema ||
       result.profileId !== publicHttpsReadbackProfile.profileId ||
       result.profileSha256 !== publicHttpsReadbackProfileSha256 ||
@@ -3055,6 +3506,689 @@ function createPublicReadbackReceipt(input, release, storedAuthorization,
     keyRevocation: null,
     offlineBundle: null,
     supersedesReceiptIds: []
+  });
+}
+
+function exactHashBindings(actual, expected, code, step) {
+  const sorted = [...expected].sort((left, right) => left.name.localeCompare(right.name));
+  if (actual.length !== sorted.length || actual.some((entry, index) =>
+    entry.name !== sorted[index].name || entry.sha256 !== sorted[index].sha256)) {
+    failEvidence(code, step);
+  }
+}
+
+function combinedPublicationGraph(release, materialized) {
+  const step = "release-surface-complete-publication-graph";
+  const webAssets = [
+    ...release.value.webAssets.map((entry) => ({ ...entry })),
+    ...materialized.generatedAssets.map((entry) => ({ ...entry }))
+  ].sort((left, right) => left.path.localeCompare(right.path));
+  if (webAssets.length !== release.value.webAssets.length +
+      materialized.generatedAssets.length || webAssets.some((entry, index) =>
+        index > 0 && webAssets[index - 1].path >= entry.path)) {
+    failEvidence("release_surface_complete_publication_graph_invalid", step);
+  }
+  const webTotalBytes = webAssets.reduce((total, entry) => total + entry.byteLength, 0);
+  if (!Number.isSafeInteger(webTotalBytes) ||
+      webAssets.length > publicHttpsReadbackProfile.limits.maximumAssets ||
+      webTotalBytes > publicHttpsReadbackProfile.limits.maximumTotalBytes) {
+    failEvidence("release_surface_complete_publication_graph_limit", step);
+  }
+  const combinedAssetInventorySha256 = domainSeparatedDigest(
+    parsedProfile.generatedPublicReadback.combinedAssetInventoryIdentityDomain,
+    webAssets
+  );
+  return Object.freeze({
+    combinedAssetInventorySha256,
+    publicOrigin: release.value.publicOrigin,
+    webAssets: Object.freeze(webAssets.map((entry) => Object.freeze(entry))),
+    webTotalBytes
+  });
+}
+
+function validateGeneratedDeploymentAttemptReceipt(input, reconstructed,
+  authorization) {
+  const step = "release-surface-generated-deployment-receipt";
+  const { release } = reconstructed;
+  const materialized = authorization.materialized;
+  const validated = validateVnextReceiptBytes(input.generatedDeploymentReceiptBytes);
+  const receipt = validated.receipt;
+  const expectedInputReceiptIds = [
+    input.publicReadbackReceiptId,
+    input.sitePublicationPlanReceiptId,
+    input.sitePublisherSignatureReceiptId
+  ].sort();
+  const expectedInputHashes = [
+    {
+      name: "generated-asset-inventory",
+      sha256: materialized.generatedInventorySha256
+    },
+    {
+      name: "release-manifest-canonical-content",
+      sha256: release.canonicalContentSha256
+    },
+    {
+      name: "site-publication-plan-material",
+      sha256: materialized.planMaterialSha256
+    },
+    { name: "site-publication-profile", sha256: sitePublicationProfileSha256 },
+    {
+      name: "site-publisher-signature-canonical-content",
+      sha256: authorization.signature.receipt.canonicalContentSha256
+    },
+    {
+      name: "web-publication-generator",
+      sha256: release.value.webPublicationGeneratorSha256
+    },
+    {
+      name: "web-security-header-profile",
+      sha256: release.value.webSecurityHeaderProfileSha256
+    }
+  ];
+  exactHashBindings(receipt.inputHashes, expectedInputHashes,
+    "release_surface_generated_deployment_input_hash_invalid", step);
+  const submittedInventory = hashBinding(receipt, "outputHashes",
+    "submitted-generated-asset-inventory",
+    "release_surface_generated_deployment_output_invalid", step);
+  if (submittedInventory !== materialized.generatedInventorySha256 ||
+      receipt.outputHashes.length !== 2 ||
+      !sameStrings(receipt.outputHashes.map((entry) => entry.name), [
+        "deployment-attempt-transcript",
+        "submitted-generated-asset-inventory"
+      ])) {
+    failEvidence("release_surface_generated_deployment_output_invalid", step);
+  }
+  exactPublicParameters(receipt, [
+    {
+      name: "asset-count",
+      value: String(materialized.generatedAssets.length),
+      unit: "assets"
+    },
+    {
+      name: "authorization-receipt-id",
+      value: input.sitePublisherSignatureReceiptId,
+      unit: null
+    },
+    {
+      name: "evidence-scope",
+      value: parsedProfile.generatedDeployment.evidenceScope,
+      unit: null
+    },
+    { name: "operation_id", value: receipt.attemptId, unit: null },
+    { name: "public-origin", value: release.value.publicOrigin, unit: null },
+    { name: "site-id", value: materialized.planMaterial.siteId, unit: null },
+    { name: "subject_id", value: input.releaseManifestId, unit: null },
+    {
+      name: "total-bytes",
+      value: String(materialized.generatedTotalBytes),
+      unit: "bytes"
+    }
+  ], "release_surface_generated_deployment_parameters_invalid", step);
+  if (receipt.receiptType !== parsedProfile.generatedDeployment.receiptType ||
+      receipt.phase !== parsedProfile.generatedDeployment.phase ||
+      receipt.status !== parsedProfile.generatedDeployment.status ||
+      receipt.error !== null || receipt.blockerCode !== null ||
+      receipt.campaignId !== input.expectedCampaignId ||
+      receipt.sourceRevision !== input.sourceRevision ||
+      !contentIdPattern.test(receipt.attemptId) ||
+      !sameStrings(receipt.inputReceiptIds, expectedInputReceiptIds) ||
+      receipt.runtime.executionClass !== "deployment" ||
+      receipt.externalEvidenceReferences.length !== 2 ||
+      !receipt.externalEvidenceReferences.some((entry) =>
+        entry.kind === "https" && entry.value === release.value.publicOrigin) ||
+      !receipt.externalEvidenceReferences.some((entry) =>
+        entry.kind === "receipt" &&
+          entry.value === input.sitePublisherSignatureReceiptId) ||
+      receipt.attestationReference !== release.value.campaignAttestationReceiptId ||
+      receipt.signatureEnvelope !== null || receipt.authorityRegistry !== null ||
+      receipt.keyRevocation !== null || receipt.offlineBundle !== null ||
+      receipt.supersedesReceiptIds.length !== 0 ||
+      compareUtc(authorization.authorizationTimeUtc, receipt.startedAtUtc,
+        "release_surface_generated_deployment_time_invalid", step) > 0 ||
+      compareUtc(receipt.completedAtUtc, input.verificationTimeUtc,
+        "release_surface_generated_deployment_time_invalid", step) > 0) {
+    failEvidence("release_surface_generated_deployment_receipt_invalid", step);
+  }
+  return Object.freeze({ ...validated });
+}
+
+function validateStoredGeneratedDeploymentAttempt(input, reconstructed,
+  authorization, receiptStore) {
+  const step = "release-surface-stored-generated-deployment";
+  const stored = receiptStore.read(input.generatedDeploymentReceiptId);
+  const deployment = validateGeneratedDeploymentAttemptReceipt({
+    ...input,
+    generatedDeploymentReceiptBytes: stored.bytes
+  }, reconstructed, authorization);
+  if (deployment.receipt.receiptId !== input.generatedDeploymentReceiptId ||
+      !deployment.bytes.equals(stored.bytes)) {
+    failEvidence("release_surface_generated_deployment_identity_invalid", step);
+  }
+  const activeReceipts = activeReceiptDocuments(receiptStore);
+  const attemptId = `generated-deployment-redaction-${
+    deployment.receipt.receiptId.slice("sha256:".length)}`;
+  const candidates = [...activeReceipts.byId.values()].filter((entry) =>
+    entry.receipt.receiptType === "redaction-scan" &&
+      entry.receipt.attemptId === attemptId);
+  if (candidates.length !== 1) {
+    failEvidence("release_surface_generated_deployment_redaction_missing", step);
+  }
+  const redaction = candidates[0];
+  const verified = verifyVnextRedactionScanReceipt({
+    knownSecrets: input.knownSecrets,
+    receiptBytes: redaction.bytes,
+    targetBytes: deployment.bytes,
+    targetKind: "document"
+  });
+  if (!verified.publicSafe || verified.scanStatus !== "pass" ||
+      redaction.receipt.campaignId !== input.expectedCampaignId ||
+      redaction.receipt.sourceRevision !== input.sourceRevision ||
+      redaction.receipt.startedAtUtc !== deployment.receipt.completedAtUtc ||
+      redaction.receipt.completedAtUtc !== deployment.receipt.completedAtUtc ||
+      compareUtc(deployment.receipt.completedAtUtc, input.verificationTimeUtc,
+        "release_surface_generated_deployment_time_invalid", step) > 0) {
+    failEvidence("release_surface_generated_deployment_redaction_invalid", step);
+  }
+  return Object.freeze({
+    activeReceipts,
+    deployment,
+    expectedReceiptIds: [...new Set([
+      ...authorization.expectedReceiptIds,
+      redaction.receipt.receiptId,
+      deployment.receipt.receiptId
+    ])].sort(),
+    expectedSubjectIds: authorization.expectedSubjectIds,
+    redaction
+  });
+}
+
+function createGeneratedPublicReadbackReceipt(input, reconstructed,
+  authorization, storedGenerated, graph, verifiedResult) {
+  const release = reconstructed.release;
+  const materialized = authorization.materialized;
+  const result = verifiedResult.result;
+  const inputHashes = [
+    {
+      name: "campaign-release-surface-profile",
+      sha256: campaignReleaseSurfaceProfileSha256
+    },
+    {
+      name: "complete-web-asset-inventory",
+      sha256: graph.combinedAssetInventorySha256
+    },
+    {
+      name: "generated-asset-inventory",
+      sha256: materialized.generatedInventorySha256
+    },
+    {
+      name: "generated-deployment-attempt-canonical-content",
+      sha256: storedGenerated.deployment.receipt.canonicalContentSha256
+    },
+    {
+      name: "public-https-readback-profile",
+      sha256: publicHttpsReadbackProfileSha256
+    },
+    {
+      name: "release-manifest-canonical-content",
+      sha256: release.canonicalContentSha256
+    },
+    {
+      name: "site-publication-plan-material",
+      sha256: materialized.planMaterialSha256
+    },
+    { name: "site-publication-profile", sha256: sitePublicationProfileSha256 },
+    {
+      name: "site-publisher-signature-canonical-content",
+      sha256: authorization.signature.receipt.canonicalContentSha256
+    },
+    {
+      name: "static-public-readback-canonical-content",
+      sha256: reconstructed.staticReadback.readback.receipt.canonicalContentSha256
+    },
+    {
+      name: "web-security-header-profile",
+      sha256: release.value.webSecurityHeaderProfileSha256
+    }
+  ].sort((left, right) => left.name.localeCompare(right.name));
+  const outputHashes = [
+    { name: "certificate-set", sha256: result.certificateSetSha256 },
+    {
+      name: "complete-web-asset-inventory",
+      sha256: graph.combinedAssetInventorySha256
+    },
+    { name: "dns-address-set", sha256: result.dnsAddressSetSha256 },
+    {
+      name: "generated-asset-inventory",
+      sha256: materialized.generatedInventorySha256
+    },
+    {
+      name: "public-https-readback-observation-inventory",
+      sha256: result.observationInventorySha256
+    },
+    {
+      name: "public-https-readback-result",
+      sha256: verifiedResult.resultSha256
+    },
+    {
+      name: "public-https-readback-selected-address",
+      sha256: result.pinnedAddressSha256
+    }
+  ].sort((left, right) => left.name.localeCompare(right.name));
+  const publicParameters = [
+    { name: "asset-count", value: String(result.assetCount), unit: "assets" },
+    {
+      name: "certificate-count",
+      value: String(result.certificateCount),
+      unit: "certificates"
+    },
+    {
+      name: "dns-address-count",
+      value: String(result.dnsAddressCount),
+      unit: "addresses"
+    },
+    {
+      name: "evidence-scope",
+      value: parsedProfile.generatedPublicReadback.evidenceScope,
+      unit: null
+    },
+    {
+      name: "generated-asset-count",
+      value: String(materialized.generatedAssets.length),
+      unit: "assets"
+    },
+    {
+      name: "generated-deployment-receipt-id",
+      value: input.generatedDeploymentReceiptId,
+      unit: null
+    },
+    { name: "operation_id", value: input.operationId, unit: null },
+    { name: "public-origin", value: release.value.publicOrigin, unit: null },
+    {
+      name: "public-readback-profile-id",
+      value: publicHttpsReadbackProfile.profileId,
+      unit: null
+    },
+    { name: "site-id", value: materialized.planMaterial.siteId, unit: null },
+    { name: "subject_id", value: input.releaseManifestId, unit: null },
+    { name: "total-bytes", value: String(result.totalBytes), unit: "bytes" }
+  ].sort((left, right) => left.name.localeCompare(right.name));
+  return finalizeVnextReceipt({
+    schema: "tinyrustlm.vnext.receipt.v1",
+    receiptType: parsedProfile.generatedPublicReadback.receiptType,
+    campaignId: input.expectedCampaignId,
+    attemptId: input.operationId,
+    phase: parsedProfile.generatedPublicReadback.phase,
+    status: parsedProfile.generatedPublicReadback.status,
+    startedAtUtc: input.verificationTimeUtc,
+    completedAtUtc: input.verificationTimeUtc,
+    sourceRevision: input.sourceRevision,
+    inputReceiptIds: [input.generatedDeploymentReceiptId],
+    inputHashes,
+    outputHashes,
+    tools: [
+      {
+        name: "tinyrustlm.vnext.campaign-release-surface",
+        version: "1.0.0",
+        binarySha256: sourceSha256
+      },
+      {
+        name: "tinyrustlm.vnext.public-https-readback",
+        version: "1.0.0",
+        binarySha256: publicHttpsReadbackSourceSha256
+      },
+      {
+        name: "tinyrustlm.vnext.site-publication",
+        version: "1.0.0",
+        binarySha256: sitePublicationSourceSha256
+      }
+    ],
+    configurationSha256: domainSeparatedDigest(
+      parsedProfile.generatedPublicReadback.configurationIdentityDomain,
+      {
+        campaignReleaseSurfaceProfileSha256,
+        publicHttpsReadbackProfileSha256,
+        sitePublicationProfileSha256,
+        webSecurityHeaderProfileSha256:
+          release.value.webSecurityHeaderProfileSha256
+      }
+    ),
+    runtime: runtimeRecord("deployment"),
+    publicParameters,
+    error: null,
+    blockerCode: null,
+    externalEvidenceReferences: [
+      { kind: "https", value: release.value.publicOrigin },
+      { kind: "receipt", value: input.generatedDeploymentReceiptId }
+    ].sort((left, right) => left.value.localeCompare(right.value)),
+    redaction: {
+      profile: "tinyrustlm.vnext.public_safe.v1",
+      decision: "public-safe"
+    },
+    attestationReference: release.value.campaignAttestationReceiptId,
+    signatureEnvelope: null,
+    authorityRegistry: null,
+    keyRevocation: null,
+    offlineBundle: null,
+    supersedesReceiptIds: []
+  });
+}
+
+function validateStoredGeneratedPublicReadback(input, reconstructed,
+  authorization, storedGenerated, graph, receiptStore) {
+  const step = "release-surface-stored-generated-public-readback";
+  const stored = receiptStore.read(input.generatedPublicReadbackReceiptId);
+  const validated = validateVnextReceiptBytes(stored.bytes);
+  const receipt = validated.receipt;
+  const release = reconstructed.release;
+  const materialized = authorization.materialized;
+  const expectedConfigurationSha256 = domainSeparatedDigest(
+    parsedProfile.generatedPublicReadback.configurationIdentityDomain,
+    {
+      campaignReleaseSurfaceProfileSha256,
+      publicHttpsReadbackProfileSha256,
+      sitePublicationProfileSha256,
+      webSecurityHeaderProfileSha256: release.value.webSecurityHeaderProfileSha256
+    }
+  );
+  exactHashBindings(receipt.inputHashes, [
+    {
+      name: "campaign-release-surface-profile",
+      sha256: campaignReleaseSurfaceProfileSha256
+    },
+    {
+      name: "complete-web-asset-inventory",
+      sha256: graph.combinedAssetInventorySha256
+    },
+    {
+      name: "generated-asset-inventory",
+      sha256: materialized.generatedInventorySha256
+    },
+    {
+      name: "generated-deployment-attempt-canonical-content",
+      sha256: storedGenerated.deployment.receipt.canonicalContentSha256
+    },
+    {
+      name: "public-https-readback-profile",
+      sha256: publicHttpsReadbackProfileSha256
+    },
+    {
+      name: "release-manifest-canonical-content",
+      sha256: release.canonicalContentSha256
+    },
+    {
+      name: "site-publication-plan-material",
+      sha256: materialized.planMaterialSha256
+    },
+    { name: "site-publication-profile", sha256: sitePublicationProfileSha256 },
+    {
+      name: "site-publisher-signature-canonical-content",
+      sha256: authorization.signature.receipt.canonicalContentSha256
+    },
+    {
+      name: "static-public-readback-canonical-content",
+      sha256: reconstructed.staticReadback.readback.receipt.canonicalContentSha256
+    },
+    {
+      name: "web-security-header-profile",
+      sha256: release.value.webSecurityHeaderProfileSha256
+    }
+  ], "release_surface_generated_public_readback_input_hash_invalid", step);
+  const outputNames = [
+    "certificate-set",
+    "complete-web-asset-inventory",
+    "dns-address-set",
+    "generated-asset-inventory",
+    "public-https-readback-observation-inventory",
+    "public-https-readback-result",
+    "public-https-readback-selected-address"
+  ];
+  if (receipt.outputHashes.length !== outputNames.length ||
+      !sameStrings(receipt.outputHashes.map((entry) => entry.name), outputNames) ||
+      hashBinding(receipt, "outputHashes", "complete-web-asset-inventory",
+        "release_surface_generated_public_readback_output_invalid", step) !==
+          graph.combinedAssetInventorySha256 ||
+      hashBinding(receipt, "outputHashes", "generated-asset-inventory",
+        "release_surface_generated_public_readback_output_invalid", step) !==
+          materialized.generatedInventorySha256) {
+    failEvidence("release_surface_generated_public_readback_output_invalid", step);
+  }
+  exactPublicParameters(receipt, [
+    {
+      name: "asset-count",
+      value: String(graph.webAssets.length),
+      unit: "assets"
+    },
+    {
+      name: "certificate-count",
+      value: publicParameter(receipt, "certificate-count",
+        "release_surface_generated_public_readback_parameters_invalid", step),
+      unit: "certificates"
+    },
+    {
+      name: "dns-address-count",
+      value: publicParameter(receipt, "dns-address-count",
+        "release_surface_generated_public_readback_parameters_invalid", step),
+      unit: "addresses"
+    },
+    {
+      name: "evidence-scope",
+      value: parsedProfile.generatedPublicReadback.evidenceScope,
+      unit: null
+    },
+    {
+      name: "generated-asset-count",
+      value: String(materialized.generatedAssets.length),
+      unit: "assets"
+    },
+    {
+      name: "generated-deployment-receipt-id",
+      value: input.generatedDeploymentReceiptId,
+      unit: null
+    },
+    { name: "operation_id", value: receipt.attemptId, unit: null },
+    { name: "public-origin", value: release.value.publicOrigin, unit: null },
+    {
+      name: "public-readback-profile-id",
+      value: publicHttpsReadbackProfile.profileId,
+      unit: null
+    },
+    { name: "site-id", value: materialized.planMaterial.siteId, unit: null },
+    { name: "subject_id", value: input.releaseManifestId, unit: null },
+    { name: "total-bytes", value: String(graph.webTotalBytes), unit: "bytes" }
+  ], "release_surface_generated_public_readback_parameters_invalid", step);
+  const certificateCount = Number(publicParameter(receipt, "certificate-count",
+    "release_surface_generated_public_readback_parameters_invalid", step));
+  const dnsAddressCount = Number(publicParameter(receipt, "dns-address-count",
+    "release_surface_generated_public_readback_parameters_invalid", step));
+  if (!Number.isSafeInteger(certificateCount) || certificateCount < 1 ||
+      certificateCount > publicHttpsReadbackProfile.limits.maximumCertificates ||
+      !Number.isSafeInteger(dnsAddressCount) || dnsAddressCount < 1 ||
+      dnsAddressCount > publicHttpsReadbackProfile.limits.maximumDnsAddresses ||
+      receipt.receiptId !== input.generatedPublicReadbackReceiptId ||
+      !validated.bytes.equals(stored.bytes) ||
+      receipt.receiptType !== parsedProfile.generatedPublicReadback.receiptType ||
+      receipt.phase !== parsedProfile.generatedPublicReadback.phase ||
+      receipt.status !== parsedProfile.generatedPublicReadback.status ||
+      receipt.campaignId !== input.expectedCampaignId ||
+      receipt.sourceRevision !== input.sourceRevision ||
+      receipt.error !== null || receipt.blockerCode !== null ||
+      receipt.configurationSha256 !== expectedConfigurationSha256 ||
+      !sameStrings(receipt.inputReceiptIds, [input.generatedDeploymentReceiptId]) ||
+      receipt.runtime.executionClass !== "deployment" ||
+      receipt.externalEvidenceReferences.length !== 2 ||
+      !receipt.externalEvidenceReferences.some((entry) =>
+        entry.kind === "https" && entry.value === release.value.publicOrigin) ||
+      !receipt.externalEvidenceReferences.some((entry) =>
+        entry.kind === "receipt" &&
+          entry.value === input.generatedDeploymentReceiptId) ||
+      receipt.attestationReference !== release.value.campaignAttestationReceiptId ||
+      receipt.signatureEnvelope !== null || receipt.authorityRegistry !== null ||
+      receipt.keyRevocation !== null || receipt.offlineBundle !== null ||
+      receipt.supersedesReceiptIds.length !== 0 ||
+      compareUtc(storedGenerated.deployment.receipt.completedAtUtc,
+        receipt.startedAtUtc,
+        "release_surface_generated_public_readback_time_invalid", step) > 0 ||
+      compareUtc(receipt.completedAtUtc, input.verificationTimeUtc,
+        "release_surface_generated_public_readback_time_invalid", step) > 0) {
+    failEvidence("release_surface_generated_public_readback_invalid", step);
+  }
+  const activeReceipts = activeReceiptDocuments(receiptStore);
+  const attemptId = `generated-public-readback-redaction-${
+    receipt.receiptId.slice("sha256:".length)}`;
+  const candidates = [...activeReceipts.byId.values()].filter((entry) =>
+    entry.receipt.receiptType === "redaction-scan" &&
+      entry.receipt.attemptId === attemptId);
+  if (candidates.length !== 1) {
+    failEvidence("release_surface_generated_public_readback_redaction_missing", step);
+  }
+  const redaction = candidates[0];
+  const verified = verifyVnextRedactionScanReceipt({
+    knownSecrets: input.knownSecrets,
+    receiptBytes: redaction.bytes,
+    targetBytes: validated.bytes,
+    targetKind: "document"
+  });
+  if (!verified.publicSafe || verified.scanStatus !== "pass" ||
+      redaction.receipt.startedAtUtc !== receipt.completedAtUtc ||
+      redaction.receipt.completedAtUtc !== receipt.completedAtUtc) {
+    failEvidence("release_surface_generated_public_readback_redaction_invalid", step);
+  }
+  return Object.freeze({
+    activeReceipts,
+    expectedReceiptIds: [...new Set([
+      ...storedGenerated.expectedReceiptIds,
+      redaction.receipt.receiptId,
+      receipt.receiptId
+    ])].sort(),
+    expectedSubjectIds: storedGenerated.expectedSubjectIds,
+    readback: validated,
+    redaction
+  });
+}
+
+function createFinalSitePublicationReceipt(input, reconstructed, authorization,
+  storedGeneratedReadback, graph) {
+  const release = reconstructed.release;
+  const materialized = authorization.materialized;
+  const readbackReceipt = storedGeneratedReadback.readback.receipt;
+  const observationInventorySha256 = hashBinding(
+    readbackReceipt,
+    "outputHashes",
+    "public-https-readback-observation-inventory",
+    "release_surface_final_publication_readback_invalid",
+    "release-surface-final-publication-receipt"
+  );
+  const inputHashes = [
+    {
+      name: "complete-observation-inventory",
+      sha256: observationInventorySha256
+    },
+    {
+      name: "generated-asset-inventory",
+      sha256: materialized.generatedInventorySha256
+    },
+    { name: "site-release-history", sha256: sha256(materialized.historyBytes) },
+    { name: "site-release-pointer", sha256: sha256(materialized.pointerBytes) },
+    {
+      name: "published-claim-set",
+      sha256: materialized.publishedClaimSetSha256
+    },
+    {
+      name: "release-manifest-canonical-content",
+      sha256: release.canonicalContentSha256
+    },
+    { name: "site-publication-profile", sha256: sitePublicationProfileSha256 }
+  ].sort((left, right) => left.name.localeCompare(right.name));
+  const outputHashes = [
+    {
+      name: "generated-asset-inventory",
+      sha256: materialized.generatedInventorySha256
+    },
+    {
+      name: "published-claim-set",
+      sha256: materialized.publishedClaimSetSha256
+    },
+    { name: "site-release-history", sha256: sha256(materialized.historyBytes) },
+    { name: "site-release-pointer", sha256: sha256(materialized.pointerBytes) }
+  ].sort((left, right) => left.name.localeCompare(right.name));
+  return finalizeVnextReceipt({
+    schema: "tinyrustlm.vnext.receipt.v1",
+    receiptType: parsedProfile.sitePublicationFinalization.receiptType,
+    campaignId: input.expectedCampaignId,
+    attemptId: input.operationId,
+    phase: parsedProfile.sitePublicationFinalization.phase,
+    status: parsedProfile.sitePublicationFinalization.status,
+    startedAtUtc: input.verificationTimeUtc,
+    completedAtUtc: input.verificationTimeUtc,
+    sourceRevision: input.sourceRevision,
+    inputReceiptIds: [
+      input.generatedDeploymentReceiptId,
+      input.generatedPublicReadbackReceiptId,
+      input.sitePublicationPlanReceiptId,
+      input.sitePublisherSignatureReceiptId
+    ].sort(),
+    inputHashes,
+    outputHashes,
+    tools: [
+      {
+        name: "tinyrustlm.vnext.campaign-release-surface",
+        version: "1.0.0",
+        binarySha256: sourceSha256
+      },
+      {
+        name: "tinyrustlm.vnext.site-publication",
+        version: "1.0.0",
+        binarySha256: sitePublicationSourceSha256
+      }
+    ],
+    configurationSha256: domainSeparatedDigest(
+      "tinyrustlm.final-site-publication-configuration.v1",
+      {
+        campaignReleaseSurfaceProfileSha256,
+        sitePublicationProfileSha256,
+        combinedAssetInventorySha256: graph.combinedAssetInventorySha256
+      }
+    ),
+    runtime: runtimeRecord("deployment"),
+    publicParameters: [
+      {
+        name: "evidence-scope",
+        value: parsedProfile.sitePublicationFinalization.evidenceScope,
+        unit: null
+      },
+      {
+        name: "generated-asset-count",
+        value: String(materialized.generatedAssets.length),
+        unit: "assets"
+      },
+      { name: "operation_id", value: input.operationId, unit: null },
+      { name: "public-origin", value: release.value.publicOrigin, unit: null },
+      {
+        name: "published-claim-count",
+        value: String(materialized.publishedClaims.length),
+        unit: "claims"
+      },
+      { name: "site-id", value: materialized.planMaterial.siteId, unit: null },
+      { name: "subject_id", value: input.releaseManifestId, unit: null }
+    ].sort((left, right) => left.name.localeCompare(right.name)),
+    error: null,
+    blockerCode: null,
+    externalEvidenceReferences: [
+      { kind: "https", value: release.value.publicOrigin },
+      { kind: "receipt", value: input.generatedPublicReadbackReceiptId }
+    ].sort((left, right) => left.value.localeCompare(right.value)),
+    redaction: {
+      profile: "tinyrustlm.vnext.public_safe.v1",
+      decision: "public-safe"
+    },
+    attestationReference: release.value.campaignAttestationReceiptId,
+    signatureEnvelope: null,
+    authorityRegistry: null,
+    keyRevocation: null,
+    offlineBundle: null,
+    supersedesReceiptIds: reconstructed.publication.previousPublication === null
+      ? []
+      : [reconstructed.publication.previousPublication.receipt.receiptId]
   });
 }
 
@@ -3903,7 +5037,11 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
     });
     const verifiedResult = readCanonicalPublicReadbackResult(
       rawReadbackResult,
-      release,
+      {
+        publicOrigin: release.value.publicOrigin,
+        webAssets: release.value.webAssets,
+        webTotalBytes: release.value.webTotalBytes
+      },
       input.webSecurityHeaderProfileBytes
     );
     const resultKnownSecretScan = scanKnownSecretRepresentations(
@@ -4120,6 +5258,21 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
     });
   }
 
+  function reconstructAuthorizedSitePublication(input) {
+    const reconstructed = reconstructSitePublication(input);
+    const authorization = validateStoredSitePublicationAuthorization(
+      input,
+      reconstructed,
+      receiptStore,
+      subjectStore
+    );
+    const graph = combinedPublicationGraph(
+      reconstructed.release,
+      authorization.materialized
+    );
+    return Object.freeze({ authorization, graph, reconstructed });
+  }
+
   function persistReceiptSequence(baseReceiptIds, baseSubjectIds, sequence, step) {
     const currentReceiptIds = receiptStore.rebuild().activeReceiptIds;
     const currentSubjectIds = subjectStore.rebuild().activeSubjectIds;
@@ -4152,6 +5305,94 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
       );
     }
     return Object.freeze({ persistence: Object.freeze(persistence), prefix });
+  }
+
+  function persistFinalPublication(baseReceiptIds, baseSubjectIds, finalRedaction,
+    finalReceipt, publishedClaims, step) {
+    const claims = [...publishedClaims].sort((left, right) =>
+      left.claimId.localeCompare(right.claimId));
+    const expectedClaimIds = claims.map((entry) => entry.claimId);
+    const currentReceiptIds = receiptStore.rebuild().activeReceiptIds;
+    const withRedaction = [...new Set([
+      ...baseReceiptIds,
+      finalRedaction.receipt.receipt.receiptId
+    ])].sort();
+    const withCommit = [...new Set([
+      ...withRedaction,
+      finalReceipt.receipt.receiptId
+    ])].sort();
+    const hasBaseReceipts = sameStrings(currentReceiptIds, baseReceiptIds);
+    const hasRedaction = sameStrings(currentReceiptIds, withRedaction);
+    const hasCommit = sameStrings(currentReceiptIds, withCommit);
+    if (!hasBaseReceipts && !hasRedaction && !hasCommit) {
+      failEvidence("release_surface_final_publication_receipt_snapshot_changed", step);
+    }
+    const currentSubjectIds = subjectStore.rebuild().activeSubjectIds;
+    let claimPrefix = -1;
+    for (let length = 0; length <= expectedClaimIds.length; length += 1) {
+      const expected = [...new Set([
+        ...baseSubjectIds,
+        ...expectedClaimIds.slice(0, length)
+      ])].sort();
+      if (sameStrings(currentSubjectIds, expected)) {
+        claimPrefix = length;
+        break;
+      }
+    }
+    if (claimPrefix < 0 || hasBaseReceipts && claimPrefix !== 0 ||
+        hasCommit && claimPrefix !== expectedClaimIds.length) {
+      failEvidence("release_surface_final_publication_subject_snapshot_changed", step);
+    }
+    if (hasRedaction || hasCommit) {
+      const existing = receiptStore.read(finalRedaction.receipt.receipt.receiptId);
+      if (!existing.bytes.equals(finalRedaction.receipt.bytes)) {
+        failEvidence("release_surface_final_publication_redaction_changed", step);
+      }
+    }
+    for (let index = 0; index < claimPrefix; index += 1) {
+      const existing = subjectStore.read(claims[index].claimId);
+      if (!existing.bytes.equals(claims[index].claimBytes)) {
+        failEvidence("release_surface_final_publication_claim_changed", step);
+      }
+    }
+    if (hasCommit) {
+      const existing = receiptStore.read(finalReceipt.receipt.receiptId);
+      if (!existing.bytes.equals(finalReceipt.bytes)) {
+        failEvidence("release_surface_final_publication_commit_changed", step);
+      }
+    }
+    const receiptPersistence = [];
+    const subjectPersistence = [];
+    if (hasBaseReceipts) {
+      receiptPersistence.push(receiptStore.put(finalRedaction.receipt.bytes));
+      assertStoreMembership(receiptStore, subjectStore, withRedaction,
+        baseSubjectIds, `${step}-after-redaction`);
+    }
+    for (let index = claimPrefix; index < claims.length; index += 1) {
+      subjectPersistence.push(subjectStore.put(claims[index].claimBytes));
+      assertStoreMembership(
+        receiptStore,
+        subjectStore,
+        withRedaction,
+        [...baseSubjectIds, ...expectedClaimIds.slice(0, index + 1)],
+        `${step}-after-claim`
+      );
+    }
+    if (!hasCommit) {
+      receiptPersistence.push(receiptStore.put(finalReceipt.bytes));
+    }
+    assertStoreMembership(
+      receiptStore,
+      subjectStore,
+      withCommit,
+      [...baseSubjectIds, ...expectedClaimIds],
+      `${step}-after-commit`
+    );
+    return Object.freeze({
+      claimPrefix,
+      receiptPersistence: Object.freeze(receiptPersistence),
+      subjectPersistence: Object.freeze(subjectPersistence)
+    });
   }
 
   async function prepareSitePublication(rawInput) {
@@ -4273,26 +5514,13 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
       staticReadback.activeReceipts,
       subjectStore
     );
-    const candidateScans = [
-      sitePublicationScan(input, signature.bytes, "document",
-        "site-publisher-signature-redaction"),
-      sitePublicationScan(input, materialized.pointerBytes, "public-json-control",
-        "pointer-redaction"),
-      sitePublicationScan(input, materialized.historyBytes, "public-json-control",
-        "history-redaction"),
-      ...materialized.publishedClaims.map((claim) => sitePublicationScan(
-        input,
-        claim.claimBytes,
-        "document",
-        `published-claim-redaction-${claim.claimId.slice("sha256:".length)}`
-      ))
-    ];
+    const candidateScans = sitePublicationCandidateScans(
+      input,
+      materialized,
+      signature
+    );
     const failedScan = candidateScans.find((entry) => !entry.scan.publicSafe);
-    const planReceiptIds = [
-      ...staticReadback.expectedReceiptIds,
-      ...storedPlan.artifacts.scans.map((entry) => entry.receipt.receipt.receiptId),
-      storedPlan.stored.receipt.receiptId
-    ];
+    const planReceiptIds = sitePublicationPlanReceiptIds(staticReadback, storedPlan);
     if (failedScan) {
       assertStoreMembership(
         receiptStore,
@@ -4344,6 +5572,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
       generatedTotalBytes: materialized.generatedTotalBytes,
       publishedClaimSetSha256: materialized.publishedClaimSetSha256,
       currentEvidenceEligible: true,
+      candidatePublishedClaimCount: materialized.publishedClaims.length,
       authorizationStatus: "authorized",
       publicationStatus: materialized.publicationStatus,
       state: parsedProfile.sitePublicationAuthorization.authorizedState,
@@ -4361,8 +5590,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
       candidateRedactionReceiptIds: candidateScans.map((entry) =>
         entry.receipt.receipt.receiptId),
       generatedAssets: materialized.generatedAssets,
-      materializedPublication: materialized,
-      publishedClaimIds: materialized.publishedClaims.map((claim) => claim.claimId)
+      candidatePublishedClaimSetSha256: materialized.publishedClaimSetSha256
     }, {
       sitePublicationAuthorizationResultBytes: resultBytes,
       sitePublisherSignatureReceiptBytes: signature.bytes,
@@ -4371,13 +5599,344 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
     });
   }
 
+  async function admitGeneratedDeploymentAttempt(rawInput) {
+    const step = "release-surface-generated-deployment";
+    const input = normalizeGeneratedDeploymentInput(rawInput);
+    const { authorization, reconstructed } =
+      reconstructAuthorizedSitePublication(input);
+    const deployment = validateGeneratedDeploymentAttemptReceipt(
+      input,
+      reconstructed,
+      authorization
+    );
+    if (deployment.bytes.length >
+        parsedProfile.limits.maximumGeneratedDeploymentReceiptBytes) {
+      failEvidence("release_surface_generated_deployment_receipt_byte_limit", step);
+    }
+    const scan = scanVnextPublicDocumentBytes(deployment.bytes, {
+      knownSecrets: input.knownSecrets
+    });
+    const redaction = createVnextRedactionScanReceipt({
+      attemptId: `generated-deployment-redaction-${
+        deployment.receipt.receiptId.slice("sha256:".length)}`,
+      campaignId: input.expectedCampaignId,
+      completedAtUtc: deployment.receipt.completedAtUtc,
+      scan,
+      sourceRevision: input.sourceRevision,
+      startedAtUtc: deployment.receipt.completedAtUtc
+    });
+    const redactionEntry = {
+      bytes: redaction.bytes,
+      receiptId: redaction.receipt.receiptId
+    };
+    if (!scan.publicSafe) {
+      persistReceiptSequence(
+        authorization.expectedReceiptIds,
+        authorization.expectedSubjectIds,
+        [redactionEntry],
+        `${step}-redaction-failure`
+      );
+      failEvidence("release_surface_generated_deployment_unsafe", step);
+    }
+    const persistence = persistReceiptSequence(
+      authorization.expectedReceiptIds,
+      authorization.expectedSubjectIds,
+      [
+        redactionEntry,
+        { bytes: deployment.bytes, receiptId: deployment.receipt.receiptId }
+      ],
+      step
+    );
+    const result = deepFreeze({
+      schema: parsedProfile.generatedDeployment.resultSchema,
+      campaignId: input.expectedCampaignId,
+      environment: input.expectedEnvironment,
+      releaseManifestId: input.releaseManifestId,
+      releaseManifestSha256: reconstructed.release.canonicalContentSha256,
+      sourceRevision: input.sourceRevision,
+      publicOrigin: reconstructed.release.value.publicOrigin,
+      siteId: authorization.materialized.planMaterial.siteId,
+      sitePublicationPlanReceiptId: input.sitePublicationPlanReceiptId,
+      sitePublisherSignatureReceiptId: input.sitePublisherSignatureReceiptId,
+      generatedInventorySha256:
+        authorization.materialized.generatedInventorySha256,
+      generatedDeploymentReceiptId: deployment.receipt.receiptId,
+      generatedDeploymentRedactionReceiptId: redaction.receipt.receiptId,
+      generatedDeploymentAttemptId: deployment.receipt.attemptId,
+      evidenceScope: parsedProfile.generatedDeployment.evidenceScope,
+      deploymentStatus: "attempt-admitted",
+      completePublicReadbackStatus: "required-not-performed",
+      publicationStatus: "not-published",
+      state: parsedProfile.generatedDeployment.admittedState,
+      verifiedAtUtc: input.verificationTimeUtc
+    });
+    const resultBytes = canonicalizeVnextJcsBytes(result);
+    if (resultBytes.length >
+          parsedProfile.limits.maximumGeneratedDeploymentResultBytes ||
+        scanKnownSecretRepresentations(resultBytes, input.knownSecrets)
+          .findingCount !== 0) {
+      failEvidence("release_surface_generated_deployment_result_unsafe", step);
+    }
+    return immutableReleasePreparationResult({
+      ...result,
+      deploymentPersistence: persistence
+    }, {
+      generatedDeploymentReceiptBytes: deployment.bytes,
+      generatedDeploymentRedactionReceiptBytes: redaction.bytes,
+      generatedDeploymentResultBytes: resultBytes,
+      siteReleaseHistoryBytes: authorization.materialized.historyBytes,
+      siteReleasePointerBytes: authorization.materialized.pointerBytes
+    });
+  }
+
+  async function verifyGeneratedPublicationReadback(rawInput) {
+    const step = "release-surface-generated-public-readback";
+    const input = normalizeGeneratedPublicReadbackInput(rawInput);
+    const { authorization, graph, reconstructed } =
+      reconstructAuthorizedSitePublication(input);
+    const storedGenerated = validateStoredGeneratedDeploymentAttempt(
+      input,
+      reconstructed,
+      authorization,
+      receiptStore
+    );
+    assertReadbackPrefixCandidate(
+      receiptStore,
+      subjectStore,
+      storedGenerated.expectedReceiptIds,
+      storedGenerated.expectedSubjectIds
+    );
+    const rawResult = await performVnextPublicHttpsReadback({
+      publicOrigin: graph.publicOrigin,
+      webAssets: graph.webAssets.map((entry) => ({ ...entry })),
+      webSecurityHeaderProfileBytes: input.webSecurityHeaderProfileBytes
+    });
+    const verifiedResult = readCanonicalPublicReadbackResult(
+      rawResult,
+      graph,
+      input.webSecurityHeaderProfileBytes
+    );
+    if (scanKnownSecretRepresentations(verifiedResult.bytes,
+      input.knownSecrets).findingCount !== 0) {
+      failEvidence("release_surface_generated_public_readback_result_unsafe", step);
+    }
+    const readback = createGeneratedPublicReadbackReceipt(
+      input,
+      reconstructed,
+      authorization,
+      storedGenerated,
+      graph,
+      verifiedResult
+    );
+    if (readback.bytes.length >
+        parsedProfile.limits.maximumGeneratedPublicReadbackReceiptBytes) {
+      failEvidence("release_surface_generated_public_readback_receipt_byte_limit", step);
+    }
+    const scan = scanVnextPublicDocumentBytes(readback.bytes, {
+      knownSecrets: input.knownSecrets
+    });
+    const redaction = createVnextRedactionScanReceipt({
+      attemptId: `generated-public-readback-redaction-${
+        readback.receipt.receiptId.slice("sha256:".length)}`,
+      campaignId: input.expectedCampaignId,
+      completedAtUtc: input.verificationTimeUtc,
+      scan,
+      sourceRevision: input.sourceRevision,
+      startedAtUtc: input.verificationTimeUtc
+    });
+    const redactionEntry = {
+      bytes: redaction.bytes,
+      receiptId: redaction.receipt.receiptId
+    };
+    if (!scan.publicSafe) {
+      persistReceiptSequence(
+        storedGenerated.expectedReceiptIds,
+        storedGenerated.expectedSubjectIds,
+        [redactionEntry],
+        `${step}-redaction-failure`
+      );
+      failEvidence("release_surface_generated_public_readback_unsafe", step);
+    }
+    const persistence = persistReceiptSequence(
+      storedGenerated.expectedReceiptIds,
+      storedGenerated.expectedSubjectIds,
+      [
+        redactionEntry,
+        { bytes: readback.bytes, receiptId: readback.receipt.receiptId }
+      ],
+      step
+    );
+    const result = deepFreeze({
+      schema: parsedProfile.generatedPublicReadback.resultSchema,
+      campaignId: input.expectedCampaignId,
+      environment: input.expectedEnvironment,
+      releaseManifestId: input.releaseManifestId,
+      releaseManifestSha256: reconstructed.release.canonicalContentSha256,
+      sourceRevision: input.sourceRevision,
+      publicOrigin: graph.publicOrigin,
+      siteId: authorization.materialized.planMaterial.siteId,
+      sitePublisherSignatureReceiptId: input.sitePublisherSignatureReceiptId,
+      generatedDeploymentReceiptId: input.generatedDeploymentReceiptId,
+      generatedPublicReadbackReceiptId: readback.receipt.receiptId,
+      generatedPublicReadbackRedactionReceiptId: redaction.receipt.receiptId,
+      generatedInventorySha256:
+        authorization.materialized.generatedInventorySha256,
+      completeWebAssetInventorySha256: graph.combinedAssetInventorySha256,
+      completeObservationInventorySha256:
+        verifiedResult.result.observationInventorySha256,
+      publicHttpsReadbackResultSha256: verifiedResult.resultSha256,
+      evidenceScope: parsedProfile.generatedPublicReadback.evidenceScope,
+      deploymentStatus: "public-bytes-verified",
+      completePublicReadbackStatus: "verified",
+      publicationStatus: "not-published",
+      state: parsedProfile.generatedPublicReadback.verifiedState,
+      verifiedAtUtc: input.verificationTimeUtc
+    });
+    const resultBytes = canonicalizeVnextJcsBytes(result);
+    if (resultBytes.length >
+          parsedProfile.limits.maximumGeneratedPublicReadbackAdmissionResultBytes ||
+        scanKnownSecretRepresentations(resultBytes, input.knownSecrets)
+          .findingCount !== 0) {
+      failEvidence("release_surface_generated_public_readback_admission_unsafe", step);
+    }
+    return immutableReleasePreparationResult({
+      ...result,
+      readbackPersistence: persistence,
+      publicHttpsReadbackResult: verifiedResult.result
+    }, {
+      generatedPublicReadbackReceiptBytes: readback.bytes,
+      generatedPublicReadbackRedactionReceiptBytes: redaction.bytes,
+      generatedPublicReadbackAdmissionResultBytes: resultBytes,
+      publicHttpsReadbackResultBytes: verifiedResult.bytes
+    });
+  }
+
+  async function finalizeSitePublication(rawInput) {
+    const step = "release-surface-final-site-publication";
+    const input = normalizeSitePublicationFinalizationInput(rawInput);
+    const { authorization, graph, reconstructed } =
+      reconstructAuthorizedSitePublication(input);
+    const storedGenerated = validateStoredGeneratedDeploymentAttempt(
+      input,
+      reconstructed,
+      authorization,
+      receiptStore
+    );
+    const storedReadback = validateStoredGeneratedPublicReadback(
+      input,
+      reconstructed,
+      authorization,
+      storedGenerated,
+      graph,
+      receiptStore
+    );
+    const finalReceipt = createFinalSitePublicationReceipt(
+      input,
+      reconstructed,
+      authorization,
+      storedReadback,
+      graph
+    );
+    if (finalReceipt.bytes.length >
+        parsedProfile.limits.maximumSitePublicationReceiptBytes) {
+      failEvidence("release_surface_final_publication_receipt_byte_limit", step);
+    }
+    const finalRedaction = sitePublicationScan(
+      input,
+      finalReceipt.bytes,
+      "document",
+      "final-publication-receipt-redaction"
+    );
+    if (!finalRedaction.scan.publicSafe) {
+      assertStoreMembership(
+        receiptStore,
+        subjectStore,
+        storedReadback.expectedReceiptIds,
+        storedReadback.expectedSubjectIds,
+        `${step}-unsafe-prefix`
+      );
+      receiptStore.put(finalRedaction.receipt.bytes);
+      failEvidence("release_surface_final_publication_unsafe", step);
+    }
+    const persistence = persistFinalPublication(
+      storedReadback.expectedReceiptIds,
+      storedReadback.expectedSubjectIds,
+      finalRedaction,
+      finalReceipt,
+      authorization.materialized.publishedClaims,
+      step
+    );
+    const current = currentSitePublicationReceipt(
+      activeReceiptDocuments(receiptStore),
+      authorization.materialized.planMaterial
+    );
+    if (current === null ||
+        current.receipt.receiptId !== finalReceipt.receipt.receiptId) {
+      failEvidence("release_surface_final_publication_not_current", step);
+    }
+    const result = deepFreeze({
+      schema: parsedProfile.sitePublicationFinalization.resultSchema,
+      campaignId: input.expectedCampaignId,
+      environment: input.expectedEnvironment,
+      releaseManifestId: input.releaseManifestId,
+      releaseManifestSha256: reconstructed.release.canonicalContentSha256,
+      sourceRevision: input.sourceRevision,
+      publicOrigin: graph.publicOrigin,
+      siteId: authorization.materialized.planMaterial.siteId,
+      sitePublicationPlanReceiptId: input.sitePublicationPlanReceiptId,
+      sitePublisherSignatureReceiptId: input.sitePublisherSignatureReceiptId,
+      generatedDeploymentReceiptId: input.generatedDeploymentReceiptId,
+      generatedPublicReadbackReceiptId: input.generatedPublicReadbackReceiptId,
+      publicationReceiptId: finalReceipt.receipt.receiptId,
+      publicationRedactionReceiptId:
+        finalRedaction.receipt.receipt.receiptId,
+      generatedInventorySha256:
+        authorization.materialized.generatedInventorySha256,
+      completeWebAssetInventorySha256: graph.combinedAssetInventorySha256,
+      publishedClaimSetSha256:
+        authorization.materialized.publishedClaimSetSha256,
+      publishedClaimIds: authorization.materialized.publishedClaims
+        .map((entry) => entry.claimId).sort(),
+      siteReleasePointerSha256:
+        sha256(authorization.materialized.pointerBytes),
+      siteReleaseHistorySha256:
+        sha256(authorization.materialized.historyBytes),
+      evidenceScope: parsedProfile.sitePublicationFinalization.evidenceScope,
+      deploymentStatus: "public-bytes-verified",
+      completePublicReadbackStatus: "verified",
+      publicationStatus: "published",
+      state: parsedProfile.sitePublicationFinalization.publishedState,
+      publishedAtUtc: input.verificationTimeUtc
+    });
+    const resultBytes = canonicalizeVnextJcsBytes(result);
+    if (resultBytes.length >
+          parsedProfile.limits.maximumSitePublicationAdmissionResultBytes ||
+        scanKnownSecretRepresentations(resultBytes, input.knownSecrets)
+          .findingCount !== 0) {
+      failEvidence("release_surface_final_publication_result_unsafe", step);
+    }
+    return immutableReleasePreparationResult({
+      ...result,
+      publicationPersistence: persistence
+    }, {
+      publicationReceiptBytes: finalReceipt.bytes,
+      publicationRedactionReceiptBytes: finalRedaction.receipt.bytes,
+      sitePublicationAdmissionResultBytes: resultBytes,
+      siteReleaseHistoryBytes: authorization.materialized.historyBytes,
+      siteReleasePointerBytes: authorization.materialized.pointerBytes
+    });
+  }
+
   return Object.freeze({
+    admitGeneratedDeploymentAttempt,
     admitDeploymentAttempt,
     attestCampaign,
     authorizeSitePublication,
     authorizeRelease,
+    finalizeSitePublication,
     prepareSitePublication,
     prepareRelease,
+    verifyGeneratedPublicationReadback,
     verifyPublicReadback,
     profileId: parsedProfile.profileId,
     profileSha256: campaignReleaseSurfaceProfileSha256,

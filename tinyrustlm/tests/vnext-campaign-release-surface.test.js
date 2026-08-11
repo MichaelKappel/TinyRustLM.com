@@ -87,6 +87,7 @@ require.cache[publicReadbackModulePath].exports = Object.freeze({
 const receiptStoreModulePath = require.resolve("../tools/vnext-receipt-store.js");
 const productionReceiptStore = require(receiptStoreModulePath);
 let interruptAfterPublicReadbackRedaction = false;
+let receiptInterruptPredicate = null;
 
 function createFixtureAwareReceiptStore(root) {
   const store = productionReceiptStore.createVnextReceiptStore(root);
@@ -108,6 +109,11 @@ function createFixtureAwareReceiptStore(root) {
         interruptAfterPublicReadbackRedaction = false;
         throw new Error("fixture interruption after public-readback redaction commit");
       }
+      if (receiptInterruptPredicate !== null &&
+          receiptInterruptPredicate(receipt)) {
+        receiptInterruptPredicate = null;
+        throw new Error("fixture interruption after selected receipt commit");
+      }
       return persistence;
     }
   });
@@ -116,6 +122,41 @@ function createFixtureAwareReceiptStore(root) {
 require.cache[receiptStoreModulePath].exports = Object.freeze({
   ...productionReceiptStore,
   createVnextReceiptStore: createFixtureAwareReceiptStore
+});
+
+const subjectStoreModulePath = require.resolve("../tools/vnext-subject-store.js");
+const productionSubjectStore = require(subjectStoreModulePath);
+let publishedClaimInterruptRemaining = null;
+
+function createFixtureAwareSubjectStore(root) {
+  const store = productionSubjectStore.createVnextSubjectStore(root);
+  return Object.freeze({
+    profileId: store.profileId,
+    startup: store.startup,
+    read(subjectId) {
+      return store.read(subjectId);
+    },
+    rebuild() {
+      return store.rebuild();
+    },
+    put(bytes) {
+      const persistence = store.put(bytes);
+      if (publishedClaimInterruptRemaining !== null &&
+          bytes.includes(Buffer.from('"status":"published"', "utf8"))) {
+        publishedClaimInterruptRemaining -= 1;
+        if (publishedClaimInterruptRemaining === 0) {
+          publishedClaimInterruptRemaining = null;
+          throw new Error("fixture interruption after published-claim commit");
+        }
+      }
+      return persistence;
+    }
+  });
+}
+
+require.cache[subjectStoreModulePath].exports = Object.freeze({
+  ...productionSubjectStore,
+  createVnextSubjectStore: createFixtureAwareSubjectStore
 });
 
 const {
@@ -148,6 +189,9 @@ const {
 const {
   classifyVnextPhaseReceipts
 } = require("../tools/vnext-phase-invalidation.js");
+const {
+  sitePublicationProfileSha256
+} = require("../tools/vnext-site-publication.js");
 const {
   createVnextRedactionScanReceipt,
   scanVnextPublicDocumentBytes
@@ -1016,6 +1060,206 @@ function sitePublicationAuthorizationInput(entry, authority, prepared, releaseIn
   };
 }
 
+function generatedDeploymentAttemptReceipt(entry, prepared, releaseInput,
+  staticReadback, plan, authorized, sitePublisherSignature, label,
+  overrides = {}) {
+  const attemptId = operationId(label);
+  const base = {
+    schema: "tinyrustlm.vnext.receipt.v1",
+    receiptType: "deployment",
+    campaignId: entry.expectedCampaignId,
+    attemptId,
+    phase: "generated-publication-deployment",
+    status: "pass",
+    startedAtUtc: "2026-08-09T00:38:10Z",
+    completedAtUtc: "2026-08-09T00:38:20Z",
+    sourceRevision,
+    inputReceiptIds: [
+      staticReadback.publicReadbackReceiptId,
+      plan.sitePublicationPlanReceiptId,
+      sitePublisherSignature.receipt.receiptId
+    ].sort(),
+    inputHashes: [
+      {
+        name: "generated-asset-inventory",
+        sha256: authorized.generatedInventorySha256
+      },
+      {
+        name: "release-manifest-canonical-content",
+        sha256: prepared.releaseManifestSha256
+      },
+      {
+        name: "site-publication-plan-material",
+        sha256: plan.sitePublicationPlanMaterialSha256
+      },
+      { name: "site-publication-profile", sha256: sitePublicationProfileSha256 },
+      {
+        name: "site-publisher-signature-canonical-content",
+        sha256: sitePublisherSignature.receipt.canonicalContentSha256
+      },
+      {
+        name: "web-publication-generator",
+        sha256: sha256(releaseInput.webPublicationGeneratorBytes)
+      },
+      {
+        name: "web-security-header-profile",
+        sha256: sha256(releaseInput.webSecurityHeaderProfileBytes)
+      }
+    ].sort((left, right) => left.name.localeCompare(right.name)),
+    outputHashes: [
+      {
+        name: "deployment-attempt-transcript",
+        sha256: sha256(Buffer.from(`generated-deployment:${label}`, "utf8"))
+      },
+      {
+        name: "submitted-generated-asset-inventory",
+        sha256: authorized.generatedInventorySha256
+      }
+    ],
+    tools: [{
+      name: "tinyrustlm.vnext.generated-deployment-executor-test",
+      version: "1.0.0",
+      binarySha256: sha256(Buffer.from("generated-deployment-test", "utf8"))
+    }],
+    configurationSha256: sha256(Buffer.from("generated-deployment-config", "utf8")),
+    runtime: {
+      architecture: "x86_64",
+      executionClass: "deployment",
+      operatingSystem: "windows",
+      runtimeIdentifier: "node.test.generated-deployment"
+    },
+    publicParameters: [
+      {
+        name: "asset-count",
+        value: String(authorized.generatedAssets.length),
+        unit: "assets"
+      },
+      {
+        name: "authorization-receipt-id",
+        value: sitePublisherSignature.receipt.receiptId,
+        unit: null
+      },
+      {
+        name: "evidence-scope",
+        value: "generated-publication-deployment-attempt-only",
+        unit: null
+      },
+      { name: "operation_id", value: attemptId, unit: null },
+      { name: "public-origin", value: releaseInput.publicOrigin, unit: null },
+      { name: "site-id", value: authorized.siteId, unit: null },
+      { name: "subject_id", value: prepared.releaseManifestId, unit: null },
+      {
+        name: "total-bytes",
+        value: String(authorized.generatedTotalBytes),
+        unit: "bytes"
+      }
+    ].sort((left, right) => left.name.localeCompare(right.name)),
+    error: null,
+    blockerCode: null,
+    externalEvidenceReferences: [
+      { kind: "https", value: releaseInput.publicOrigin },
+      { kind: "receipt", value: sitePublisherSignature.receipt.receiptId }
+    ].sort((left, right) => left.value.localeCompare(right.value)),
+    redaction: {
+      profile: "tinyrustlm.vnext.public_safe.v1",
+      decision: "public-safe"
+    },
+    attestationReference: prepared.attestationReceiptId,
+    signatureEnvelope: null,
+    authorityRegistry: null,
+    keyRevocation: null,
+    offlineBundle: null,
+    supersedesReceiptIds: []
+  };
+  return finalizeVnextReceipt({
+    ...base,
+    ...overrides,
+    inputHashes: overrides.inputHashes ?? base.inputHashes,
+    inputReceiptIds: overrides.inputReceiptIds ?? base.inputReceiptIds,
+    outputHashes: overrides.outputHashes ?? base.outputHashes,
+    publicParameters: overrides.publicParameters ?? base.publicParameters,
+    runtime: overrides.runtime ? { ...base.runtime, ...overrides.runtime } : base.runtime
+  });
+}
+
+function generatedDeploymentInput(entry, authority, prepared, releaseInput,
+  releaseAuthorization, deploymentReceipt, staticReadback, plan,
+  sitePublisherSignature, generatedReceipt, overrides = {}) {
+  return {
+    authorizationReceiptId: releaseAuthorization.receipt.receiptId,
+    changelogBytes: releaseInput.changelogBytes,
+    deploymentReceiptId: deploymentReceipt.receipt.receiptId,
+    expectedCampaignId: entry.expectedCampaignId,
+    expectedEnvironment: entry.expectedEnvironment,
+    expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
+    generatedDeploymentReceiptBytes: generatedReceipt.bytes,
+    knownSecrets: [],
+    previousHistoryBytes: null,
+    publicReadbackReceiptId: staticReadback.publicReadbackReceiptId,
+    releaseManifestId: prepared.releaseManifestId,
+    sitePublicationPlanReceiptId: plan.sitePublicationPlanReceiptId,
+    sitePublisherSignatureReceiptId: sitePublisherSignature.receipt.receiptId,
+    sourceRevision,
+    trustedRootRegistryReceiptId: authority.root.receipt.receiptId,
+    verificationTimeUtc: "2026-08-09T00:38:30Z",
+    webDeploymentManifestBytes: releaseInput.webDeploymentManifestBytes,
+    webSecurityHeaderProfileBytes: releaseInput.webSecurityHeaderProfileBytes,
+    webPublicationGeneratorBytes: releaseInput.webPublicationGeneratorBytes,
+    ...overrides
+  };
+}
+
+function generatedReadbackInput(entry, authority, prepared, releaseInput,
+  releaseAuthorization, deploymentReceipt, staticReadback, plan,
+  sitePublisherSignature, generatedDeployment, label, overrides = {}) {
+  const base = generatedDeploymentInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    releaseAuthorization,
+    deploymentReceipt,
+    staticReadback,
+    plan,
+    sitePublisherSignature,
+    { bytes: Buffer.alloc(1) }
+  );
+  delete base.generatedDeploymentReceiptBytes;
+  return {
+    ...base,
+    generatedDeploymentReceiptId:
+      generatedDeployment.generatedDeploymentReceiptId,
+    operationId: operationId(label),
+    verificationTimeUtc: "2026-08-09T00:38:40Z",
+    ...overrides
+  };
+}
+
+function finalPublicationInput(entry, authority, prepared, releaseInput,
+  releaseAuthorization, deploymentReceipt, staticReadback, plan,
+  sitePublisherSignature, generatedDeployment, generatedReadback, label,
+  overrides = {}) {
+  return {
+    ...generatedReadbackInput(
+      entry,
+      authority,
+      prepared,
+      releaseInput,
+      releaseAuthorization,
+      deploymentReceipt,
+      staticReadback,
+      plan,
+      sitePublisherSignature,
+      generatedDeployment,
+      label
+    ),
+    generatedPublicReadbackReceiptId:
+      generatedReadback.generatedPublicReadbackReceiptId,
+    verificationTimeUtc: "2026-08-09T00:38:50Z",
+    ...overrides
+  };
+}
+
 async function rejectsCode(callback, code) {
   await assert.rejects(callback, (error) => error?.code === code, `expected ${code}`);
 }
@@ -1025,7 +1269,7 @@ test("freezes one no-compatibility campaign release surface profile", () => {
   const profile = parseStrictJson(bytes);
   assert.equal(campaignReleaseSurfaceProfileSha256, sha256(bytes));
   assert.equal(campaignReleaseSurfaceProfileSha256,
-    "4bdaae337cc14cb5782ed3bf096c3336f121fb7905c9c2a36978f6799a15f1d7");
+    "0633f2bc4960f4c8a757bf10a8681f2481f0d8a5d0997c2d00ba58b02ed43bcc");
   assert.equal(campaignReleaseSurfaceProfile.profileId,
     "tinyrustlm.vnext.campaign-release-surface.v1");
   assert.equal(profile.status, "frozen");
@@ -1063,6 +1307,11 @@ test("freezes one no-compatibility campaign release surface profile", () => {
     "status-currentness-verdict-counter-and-publication-inputs-forbidden");
   assert.equal(profile.sitePublicationAuthorization.role, "site-publisher");
   assert.equal(profile.sitePublicationAuthorization.scope, "site-publication");
+  assert.equal(profile.generatedDeployment.callerSuccessPolicy, "forbidden");
+  assert.equal(profile.generatedPublicReadback.networkPolicy,
+    "surface-invokes-sole-production-verifier-over-sorted-static-plus-generated-closure-without-caller-transport-or-result");
+  assert.equal(profile.sitePublicationFinalization.persistencePolicy,
+    "final-receipt-redaction-then-create-only-published-claim-prefix-then-final-commit-receipt");
   assert.equal(profile.operatorStatus.doneState,
     "forbidden-before-authorized-release-and-public-readback");
   assert.doesNotMatch(bytes.toString("utf8"),
@@ -1855,7 +2104,7 @@ test("verifies exact fixture-labeled HTTPS bytes through one immutable readback 
   assert.equal(publicReadbackFixtureCalls, callsBefore + 4);
 });
 
-test("prepares and authorizes deterministic site-publication candidates without publishing", {
+test("publishes deterministic site descendants only after complete generated-byte readback", {
   timeout: 480_000
 }, async (t) => {
   const roots = makeRoots(t);
@@ -1985,17 +2234,15 @@ test("prepares and authorizes deterministic site-publication candidates without 
   assert.equal(authorized.sitePublisherSignatureReceiptId,
     sitePublisherSignature.receipt.receiptId);
   assert.equal(authorized.generatedAssets.length, 2);
-  assert.equal(authorized.publishedClaimIds.length, releaseInput.claimIds.length);
+  assert.equal(authorized.candidatePublishedClaimCount, releaseInput.claimIds.length);
+  assert.match(authorized.candidatePublishedClaimSetSha256, /^[a-f0-9]{64}$/u);
   assert.doesNotMatch(authorized.sitePublicationAuthorizationResultBytes
     .toString("utf8"), /"publicationStatus":"published"|\bdone\b/iu);
   const receiptStore = createVnextReceiptStore(roots.receipts);
   assert.deepEqual(receiptStore.read(authorized.sitePublisherSignatureReceiptId).bytes,
     sitePublisherSignature.bytes);
   const subjectStore = createVnextSubjectStore(roots.subjects);
-  const activeSubjectIds = subjectStore.rebuild().activeSubjectIds;
-  for (const claimId of authorized.publishedClaimIds) {
-    assert.equal(activeSubjectIds.includes(claimId), false);
-  }
+  const prePublicationSubjectIds = subjectStore.rebuild().activeSubjectIds;
 
   const repeatedAuthorization = await surface.authorizeSitePublication(
     publicationAuthorizationInput
@@ -2004,6 +2251,161 @@ test("prepares and authorizes deterministic site-publication candidates without 
     authorized.sitePublisherSignatureReceiptId);
   assert.equal(repeatedAuthorization.authorizationPersistence.prefix,
     authorized.candidateRedactionReceiptIds.length + 1);
+
+  const generatedAttempt = generatedDeploymentAttemptReceipt(
+    entry,
+    prepared,
+    releaseInput,
+    staticReadback,
+    plan,
+    authorized,
+    sitePublisherSignature,
+    "site-publication-generated-deployment"
+  );
+  const generatedInput = generatedDeploymentInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    releaseAuthorization,
+    deploymentReceipt,
+    staticReadback,
+    plan,
+    sitePublisherSignature,
+    generatedAttempt
+  );
+  const generatedDeployment = await surface.admitGeneratedDeploymentAttempt(
+    generatedInput
+  );
+  assert.equal(generatedDeployment.state,
+    "site-generated-deployment-attempt-admitted-awaiting-complete-readback");
+  assert.equal(generatedDeployment.deploymentStatus, "attempt-admitted");
+  assert.equal(generatedDeployment.completePublicReadbackStatus,
+    "required-not-performed");
+  assert.equal(generatedDeployment.publicationStatus, "not-published");
+  assert.deepEqual(createVnextSubjectStore(roots.subjects).rebuild().activeSubjectIds,
+    prePublicationSubjectIds);
+
+  const generatedReadbackCalls = publicReadbackFixtureCalls;
+  const generatedReadback = await surface.verifyGeneratedPublicationReadback(
+    generatedReadbackInput(
+      entry,
+      authority,
+      prepared,
+      releaseInput,
+      releaseAuthorization,
+      deploymentReceipt,
+      staticReadback,
+      plan,
+      sitePublisherSignature,
+      generatedDeployment,
+      "site-publication-generated-readback"
+    )
+  );
+  assert.equal(publicReadbackFixtureCalls, generatedReadbackCalls + 1);
+  assert.equal(generatedReadback.state,
+    "site-generated-public-readback-verified-awaiting-publication-commit");
+  assert.equal(generatedReadback.completePublicReadbackStatus, "verified");
+  assert.equal(generatedReadback.publicationStatus, "not-published");
+  assert.equal(generatedReadback.publicHttpsReadbackResult.assetCount,
+    releaseInput.webAssets.length + authorized.generatedAssets.length);
+  assert.deepEqual(createVnextSubjectStore(roots.subjects).rebuild().activeSubjectIds,
+    prePublicationSubjectIds);
+
+  const finalInput = finalPublicationInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    releaseAuthorization,
+    deploymentReceipt,
+    staticReadback,
+    plan,
+    sitePublisherSignature,
+    generatedDeployment,
+    generatedReadback,
+    "site-publication-final-commit"
+  );
+  let publicationSurface = surface;
+  receiptInterruptPredicate = (receipt) => receipt.receiptType === "redaction-scan";
+  await assert.rejects(
+    publicationSurface.finalizeSitePublication(finalInput),
+    /fixture interruption after selected receipt commit/u
+  );
+  publicationSurface = await createVnextCampaignReleaseSurface(roots.runner,
+    runnerOptions(roots));
+  for (let index = 0; index < authorized.candidatePublishedClaimCount;
+    index += 1) {
+    publishedClaimInterruptRemaining = 1;
+    await assert.rejects(
+      publicationSurface.finalizeSitePublication(finalInput),
+      /fixture interruption after published-claim commit/u
+    );
+    publicationSurface = await createVnextCampaignReleaseSurface(roots.runner,
+      runnerOptions(roots));
+  }
+  receiptInterruptPredicate = (receipt) =>
+    receipt.receiptType === "site-synchronization" &&
+      receipt.phase === "site-publication";
+  await assert.rejects(
+    publicationSurface.finalizeSitePublication(finalInput),
+    /fixture interruption after selected receipt commit/u
+  );
+  publicationSurface = await createVnextCampaignReleaseSurface(roots.runner,
+    runnerOptions(roots));
+  const published = await publicationSurface.finalizeSitePublication(finalInput);
+  assert.equal(published.state, "site-publication-published");
+  assert.equal(published.publicationStatus, "published");
+  assert.equal(published.publishedClaimIds.length, releaseInput.claimIds.length);
+  assert.equal(published.publicationPersistence.claimPrefix,
+    published.publishedClaimIds.length);
+  assert.doesNotMatch(published.sitePublicationAdmissionResultBytes.toString("utf8"),
+    /"token"|"secret"|"credential"/iu);
+  const publishedSubjectStore = createVnextSubjectStore(roots.subjects);
+  for (const claimId of published.publishedClaimIds) {
+    const claim = publishedSubjectStore.read(claimId);
+    assert.equal(claim.value.status, "published");
+    assert.equal(claim.value.releaseId, prepared.releaseManifestId);
+  }
+  const publicationReceipt = createVnextReceiptStore(roots.receipts).read(
+    published.publicationReceiptId
+  );
+  assert.equal(publicationReceipt.receipt.receiptType, "site-synchronization");
+  assert.equal(publicationReceipt.receipt.phase, "site-publication");
+  assert.equal(publicationReceipt.receipt.status, "pass");
+
+  const replayedPublication = await publicationSurface.finalizeSitePublication(
+    finalInput
+  );
+  assert.equal(replayedPublication.publicationReceiptId,
+    published.publicationReceiptId);
+  assert.equal(replayedPublication.publicationPersistence.claimPrefix,
+    published.publishedClaimIds.length);
+
+  await rejectsCode(() => surface.admitGeneratedDeploymentAttempt({
+    ...generatedInput,
+    deployed: true
+  }), "release_surface_generated_deployment_input_invalid");
+  await rejectsCode(() => surface.verifyGeneratedPublicationReadback({
+    ...generatedReadbackInput(
+      entry,
+      authority,
+      prepared,
+      releaseInput,
+      releaseAuthorization,
+      deploymentReceipt,
+      staticReadback,
+      plan,
+      sitePublisherSignature,
+      generatedDeployment,
+      "site-publication-generated-readback-injection"
+    ),
+    publicReadbackPassed: true
+  }), "release_surface_generated_public_readback_input_invalid");
+  await rejectsCode(() => surface.finalizeSitePublication({
+    ...finalInput,
+    publicationPassed: true
+  }), "release_surface_site_publication_finalization_input_invalid");
 
   await rejectsCode(() => surface.authorizeSitePublication({
     ...publicationAuthorizationInput,

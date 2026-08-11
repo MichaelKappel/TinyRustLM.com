@@ -101,7 +101,7 @@ test("freezes one production-only HTTPS readback profile", () => {
   const bytes = fs.readFileSync(profilePath);
   assert.equal(readback.publicHttpsReadbackProfileSha256, sha256(bytes));
   assert.equal(readback.publicHttpsReadbackProfileSha256,
-    "0cfeb00065d45fd860813f501d6c07417f8a6e6587dd524a81e5be426a84c419");
+    "a5d5fd2bcc08e1444f82c474e1c829ba8e108c53a0e52b0651cab1843d8edb73");
   assert.equal(readback.publicHttpsReadbackProfile.profileId,
     "tinyrustlm.vnext.public-https-readback.v1");
   assert.equal(readback.publicHttpsReadbackProfile.resultSchema,
@@ -274,6 +274,25 @@ test("accepts only release-contract asset roles, media types, and safe paths", (
       ...valid,
       asset: { ...inputAsset, ...overrides }
     }), errorCode("public_readback_asset_invalid"));
+  }
+  for (const [role, pathValue] of [
+    ["current-release-pointer", "/.well-known/site-release.json"],
+    ["release-history", "/.well-known/site-release-history.json"]
+  ]) {
+    const body = Buffer.from("{}", "utf8");
+    const generated = asset(body, {
+      cachePolicy: "no-store",
+      contentType: "application/json",
+      path: pathValue,
+      role
+    });
+    const result = readback.verifyVnextReadbackResponseMetadata({
+      asset: generated,
+      rawHeaders: rawHeaders(generated),
+      securityHeaderProfileBytes: securityProfile(),
+      statusCode: 200
+    });
+    assert.equal(result.path, pathValue);
   }
 });
 

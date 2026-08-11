@@ -6,22 +6,23 @@
 turning a freshly executed campaign projection into immutable prepublication
 attestation evidence, an operator status view, and a create-only
 `release_manifest.v3` candidate, verifying its current release-authorizer
-signature, admitting one narrowly scoped deployment-attempt receipt, and
-performing exact production HTTPS readback, publication-plan preparation, and
-current site-publisher authorization as forward-only children. Its frozen profile is
+signature, admitting narrowly scoped static and generated deployment attempts,
+performing exact static and complete static-plus-generated production HTTPS
+readback, and admitting create-only publication descendants through one final
+commit receipt. Its frozen profile is
 `contracts/vnext/campaign-release-surface-profile.v1.json`, with SHA-256
-`4bdaae337cc14cb5782ed3bf096c3336f121fb7905c9c2a36978f6799a15f1d7`.
+`0633f2bc4960f4c8a757bf10a8681f2481f0d8a5d0997c2d00ba58b02ed43bcc`.
 
 This checkpoint implements fresh projection, final attestation, public-safe
 redaction, truthful operator status, release-manifest preparation, current
 Ed25519 release-authorizer verification, and immutable deployment-attempt
-admission. Exact production HTTPS readback admission, deterministic
-site-publication plan persistence, current Ed25519 site-publisher authority,
-and redacted pointer/history/published-claim candidate materialization are
-implemented. A real production run, generated-file deployment and readback,
-published-claim persistence, final publication admission, and deletion of the
-superseded release stack remain required before the surface is the operational
-publication entry point.
+admission. Exact static and combined production HTTPS readback admission,
+deterministic site-publication plan persistence, current Ed25519 site-publisher
+authority, redacted pointer/history/published-claim materialization,
+generated-deployment admission, create-only published-claim persistence, and
+final publication admission are implemented. A real production run and
+deletion of the superseded release stack remain required before the surface is
+the operational publication entry point.
 A prepared manifest is explicitly
 `not-authorized`; an authorized manifest is only
 `release-authorized-awaiting-deployment`. Neither state is a deployment,
@@ -46,7 +47,7 @@ campaign plan + current receipt/subject stores
   -> release-manifest redaction-scan receipt
 ```
 
-The implemented authorization edge and forthcoming publication edges continue
+The implemented authorization and publication edges continue
 forward from the prepared manifest:
 
 ```text
@@ -61,8 +62,11 @@ release_manifest.v3
   -> site-synchronization plan receipt [implemented]
   -> current site-publisher signature redaction and signature receipts [implemented]
   -> generated pointer/history and published-claim candidate scans [implemented]
-  -> exact generated-file deployment/readback [not implemented]
-  -> published claim.v2 descendants and final publication evidence [not implemented]
+  -> generated-deployment attempt scan and receipt [implemented; not success proof]
+  -> exact combined static-plus-generated HTTPS readback scan and receipt [implemented operation; no live receipt]
+  -> final-publication receipt scan [implemented]
+  -> create-only published claim.v2 prefix [implemented; inert before final receipt]
+  -> final site-publication commit receipt [implemented; no live receipt]
 ```
 
 The release manifest cannot list authorization, deployment, readback, or
@@ -153,6 +157,29 @@ published-claim candidate, persists only the signature and scan descendants,
 and returns defensive unpersisted candidate bytes with state
 `site-publication-authorized-awaiting-generated-deployment` and publication
 status `not-published-awaiting-generated-file-readback`.
+
+`admitGeneratedDeploymentAttempt` accepts one externally produced canonical
+attempt receipt only after reconstructing the exact plan, static readback,
+publisher signature, authority graph, and deterministic generated inventory.
+The receipt binds both generated assets, the release, plan, publisher
+signature, generator and header profiles, origin, site, byte count, and a
+bounded transcript digest. Its evidence scope is attempt-only and cannot claim
+that production serves the bytes.
+
+`verifyGeneratedPublicationReadback` rereads that attempt and invokes the same
+non-injectable production HTTPS verifier over one sorted closure containing all
+static assets and both generated controls. It independently validates every
+canonical observation against the combined inventory and persists only a
+redaction receipt followed by a generated-publication readback receipt. Its
+result remains explicitly `not-published`.
+
+`finalizeSitePublication` reruns current publisher authority, reconstructs every
+stored parent, rematerializes pointer, history, and claims byte-for-byte, and
+validates the complete readback receipt. It scans the final commit receipt,
+create-only persists each already-scanned published claim, and writes the
+`site-publication` receipt last. Published claims are admitted only when that
+last receipt exists and binds their complete set, pointer, history, generated
+inventory, and observation closure. No caller publication verdict is accepted.
 
 ## Final Attestation
 
@@ -378,11 +405,13 @@ operation. It rejects the old ledger schema outright.
 The sole release surface now reconstructs the exact static-readback lineage,
 creates and scans the plan receipt, verifies one current site-publisher
 authority graph, invokes this pure module, and scans every generated candidate.
-It deliberately does not persist the pointer, history, or published claims and
-does not claim publication. It must still deploy the exact generated inventory,
-invoke the sole HTTPS verifier for those generated files, and create-only
-persist final descendants only after exact readback. The pure result remains
-`not-published-awaiting-generated-file-readback`. See
+`authorizeSitePublication` deliberately does not persist the pointer, history,
+or published claims and does not claim publication; its pure result remains
+`not-published-awaiting-generated-file-readback`. Separate release-surface
+operations then admit one attempt-only generated deployment receipt, invoke the
+sole HTTPS verifier over the complete static-plus-generated closure, and
+create-only persist the scanned claim prefix before writing one final
+publication commit receipt. See
 `docs/architecture/vnext-site-publication.md`.
 
 ## Redaction And Secret Custody
@@ -495,8 +524,18 @@ each deterministic plan scan in fixed order, and the exact plan receipt.
 Site authorization accepts only that complete prefix followed by signature
 redaction, the exact signature, and candidate redaction receipts in fixed
 order. Restart recovery verifies every existing byte before appending a missing
-descendant. The pointer, history, and published claims remain outside both
-stores until generated-file deployment and readback are implemented.
+descendant. Generated deployment admission adds only its deterministic
+redaction and exact attempt-only receipt. Combined readback admission adds only
+its deterministic redaction and exact readback receipt after internally
+verifying every static and generated byte.
+
+Finalization accepts only that exact base, the final-receipt redaction, a
+lexicographically ordered prefix of byte-identical published claims, and then
+the final publication receipt. A partial claim prefix is inert because the
+commit receipt is absent. Restart reconstructs and reverifies every parent and
+candidate, resumes at the first missing claim, and writes the final receipt
+last. Any gap, changed byte, extra member, premature final receipt, or caller
+publication verdict fails closed.
 
 ## Verification
 
@@ -541,8 +580,8 @@ stores until generated-file deployment and readback are implemented.
 - exact deployment-attempt lineage, inventory and control-document binding;
 - rejection of caller deployment truth, fixture execution, scope drift, and
   attempted-inventory drift;
-- byte-identical deployment admission replay; and
-- unsafe deployment bytes retaining only bounded redaction evidence.
+- byte-identical deployment admission replay;
+- unsafe deployment bytes retaining only bounded redaction evidence;
 - internally invoked readback with no caller transport, response, result, or
   success field;
 - independent rejection of a malformed verifier result;
@@ -555,9 +594,15 @@ stores until generated-file deployment and readback are implemented.
 - current site-publisher Ed25519 authority, exact plan/release/scope binding,
   finite lifetime, and expiry rejection;
 - canonical pointer/history controls and direct published-claim candidate
-  redaction without candidate persistence; and
-- rejection of caller publication truth while every returned state remains
-  explicitly prepublication.
+  redaction without candidate persistence during authorization;
+- exact generated-deployment lineage and attempt-only semantics;
+- one internally invoked combined readback over the sorted static-plus-generated
+  graph, with independent result and receipt revalidation;
+- final receipt redaction before a lexicographic create-only published-claim
+  prefix and the final commit receipt last;
+- byte-identical restart recovery after final redaction, after every individual
+  claim commit, and after the final receipt commit; and
+- rejection of caller deployment, readback, and publication truth.
 
 The complete-capacity case is synthetic conformance evidence. It does not
 increment any live campaign counter.
@@ -567,16 +612,19 @@ increment any live campaign counter.
 `tinyrustlm/tools/vnext-public-https-readback.js` is the sole production-network
 verifier invoked by the forward-only release operation. It owns public DNS and
 HTTPS, pins one globally routable address,
-uses normal TLS hostname verification, and verifies the complete static
-inventory by exact status, length, media type, cache/security headers, stream
-count, and SHA-256. It has no caller transport or success input and returns no
-receipt. The release surface now reconstructs the admitted deployment and
-current authorization, invokes this exact module, independently revalidates
-its canonical result, and persists the scan/readback dependency pair. See
+uses normal TLS hostname verification, and verifies either the exact static
+inventory or the complete static-plus-generated inventory by exact status,
+length, media type, cache/security headers, stream count, and SHA-256. It has no
+caller transport or success input and returns no receipt. The release surface
+reconstructs each admitted deployment and current authority graph, invokes this
+exact module, independently revalidates its canonical result, and persists each
+scan/readback dependency pair. See
 `docs/architecture/vnext-public-https-readback.md`.
 
-No production invocation is asserted by this checkpoint. Deterministic
-pointer/history and evidence-bound published `claim.v2` candidates now exist;
-current `site-publisher` authority is integrated. Exact generated-file
-deployment/readback and create-only final admission are the next release-graph
-gate.
+No production invocation is asserted by this checkpoint. The complete local
+release graph through generated deployment admission, combined production
+readback invocation, restart-safe claim-prefix persistence, and final
+publication commit is implemented and covered only by fixture-labeled local
+orchestration evidence. Deletion of the superseded mutable publication stack,
+maintained-entry-point cutover, and a real authorized production execution are
+the next release gates.

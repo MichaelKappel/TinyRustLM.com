@@ -94,9 +94,9 @@
     "rawHeaderPersistence": "forbidden"
   },
   "limits": {
-    "maximumAssets": 512,
+    "maximumAssets": 514,
     "maximumAssetBytes": 8589934592,
-    "maximumTotalBytes": 68719476736,
+    "maximumTotalBytes": 68723933184,
     "maximumDnsAddresses": 32,
     "maximumCertificates": 32,
     "maximumSecurityHeaders": 32,
