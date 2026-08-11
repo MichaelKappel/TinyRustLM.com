@@ -43,10 +43,16 @@ raw Win32 API-access gap without changing Node store truth. It accepts only one
 bounded stdin request, validates an absolute owned root plus strict relative
 directory, rejects symbolic-link and reparse components, opens the directory
 with write access plus backup and open-reparse-point flags, and emits no raw
-path or host error. Caller-held single-writer ownership is an explicit
+path or host error. Caller-held stable path-topology ownership is an explicit
 precondition because stable Rust 1.96 cannot expose a Windows file-index
 identity through this boundary. The current Windows host completed the exact
-flush call and rejected a real junction. That is local API evidence only:
+flush call and rejected a real junction. The sole Node client additionally
+binds its profile and source closure, the helper package/source/executable,
+platform, request, and canonical observation; invokes with no shell, arguments,
+or inherited environment; and rejects package links, malformed or ambiguous
+manifests, process-output abuse, substitution, and before/after package drift.
+Node does not provide an OS network sandbox, and a self-described package trust
+class is not signed provenance. This remains local API evidence only:
 create-only publication receipt integration, crash recovery, power
 interruption, and filesystem/device durability remain unproven.
 

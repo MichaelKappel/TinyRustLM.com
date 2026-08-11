@@ -323,15 +323,23 @@ artifact stores. It exposes no mutable current pointer and grants no evidence
 currentness by itself. See `docs/architecture/vnext-subject-store.md`.
 
 `rust/crates/tinyrustlm-durability` now owns the sole Rust directory-flush
-boundary. Its 5,539-byte frozen profile has SHA-256
-`51effab85d325493e77ca57de5aa14bf7d3fa2fd3b5f16139baadc8979d395bb`.
+boundary. Its 5,820-byte frozen profile has SHA-256
+`aaf82fde396e89d03e82a6cd7c761bfbedb1d766250dc9dd537124be68adcfd8`.
 The helper accepts one bounded stdin request over an absolute owned root and a
-strict relative directory under caller-held single-writer ownership, rejects
+strict relative directory under caller-held stable path-topology ownership, rejects
 link and Windows reparse paths, opens a Win32 directory handle with exact
 access/share/flag semantics, and emits only a path-redacted success observation
-or bounded failure. The current Windows host executes that call successfully,
-but Node publication-receipt integration and physical power-loss evidence
-remain incomplete. See
+or bounded failure. The sole Node package/process client has a 5,068-byte
+frozen profile with SHA-256
+`9f367bbe58bf8afc8ecba57a1b33e5cda5a83592a80517c4db38d0775cf9fde6`
+and source-closure SHA-256
+`37dc6e85be3655743a31de5623fa574f565578351f4c6b255621a9d976a8c487`.
+It verifies package, executable, source, profile, platform, request, process,
+and observation identities before returning path-redacted evidence, with no
+inherited child environment or shell. The current Windows host executes that
+call successfully, but create-only publication-receipt integration, OS network
+isolation, release-package provenance, and physical power-loss evidence remain
+incomplete. See
 `docs/architecture/vnext-directory-durability.md`.
 
 `tinyrustlm/tools/vnext-campaign-runner.js` now composes those stores through

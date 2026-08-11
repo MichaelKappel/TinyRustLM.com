@@ -14,7 +14,8 @@
   "requestMaximumBytes": 16384,
   "pathContract": {
     "ownedRoot": "absolute-existing-directory-with-no-symbolic-link-or-reparse-component",
-    "relativeDirectory": "one-to-64-normal-components-beneath-canonical-owned-root",
+    "relativeDirectory": "explicit-dot-owned-root-scope-or-one-to-64-normal-components-beneath-canonical-owned-root",
+    "ownedRootScope": "explicit-dot",
     "maximumPathUtf8Bytes": 16384,
     "maximumRelativeComponents": 64,
     "maximumComponentUtf8Bytes": 255,
@@ -22,8 +23,8 @@
     "preOpenInspectionRequired": true,
     "openedHandleMetadataInspectionRequired": true,
     "postFlushInspectionRequired": true,
-    "singleWriterOwnershipRequired": true,
-    "singleWriterMeaning": "the caller prevents independent path mutation from initial inspection through post-flush inspection"
+    "stablePathTopologyOwnershipRequired": true,
+    "stablePathTopologyMeaning": "the caller prevents independent rename, replacement, link, or reparse mutation of root and directory path components from initial inspection through post-flush inspection; concurrent member-file creation is permitted"
   },
   "operationIdContract": {
     "minimumBytes": 3,
@@ -71,6 +72,7 @@
     "operationId",
     "profileId",
     "profileSha256",
+    "requestSha256",
     "schema",
     "status"
   ],
@@ -114,7 +116,7 @@
     "A successful helper call is not physical power-loss evidence.",
     "A successful helper call is not proof that a storage device ignored no flush request.",
     "A successful helper call does not prove create-only publication, file-data fsync, readback, or receipt admission by itself.",
-    "The helper does not establish single-writer ownership; the caller must prevent independent mutation of the owned root for the operation lifetime.",
+    "The helper does not establish stable path-topology ownership; the caller must prevent independent rename, replacement, link, or reparse mutation of root and directory components for the operation lifetime.",
     "A local Windows observation is not cross-platform or production deployment evidence."
   ],
   "primarySources": [

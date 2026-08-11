@@ -4,16 +4,23 @@
 
 `tinyrustlm.vnext.directory-flush.v1` is the sole current platform boundary for
 flushing one exact directory beneath an owned filesystem root. Its frozen
-profile is `contracts/vnext/directory-flush-profile.v1.json`, 5,539 bytes with
+profile is `contracts/vnext/directory-flush-profile.v1.json`, 5,820 bytes with
 SHA-256
-`51effab85d325493e77ca57de5aa14bf7d3fa2fd3b5f16139baadc8979d395bb`.
+`aaf82fde396e89d03e82a6cd7c761bfbedb1d766250dc9dd537124be68adcfd8`.
 The implementation is the `tinyrustlm-durability` Rust crate and the
-`tinyrustlm-directory-flush` process.
+`tinyrustlm-directory-flush` process. The sole Node process/package client is
+`tinyrustlm.vnext.directory-flush-client.v1`. Its frozen profile is
+`contracts/vnext/directory-flush-client-profile.v1.json`, 5,068 bytes with
+SHA-256
+`9f367bbe58bf8afc8ecba57a1b33e5cda5a83592a80517c4db38d0775cf9fde6`.
+Its declared five-member source closure has SHA-256
+`37dc6e85be3655743a31de5623fa574f565578351f4c6b255621a9d976a8c487`.
 
-This checkpoint proves a bounded Rust operation and process protocol. It does
-not yet replace the Node create-only store's Win32 unavailability result, bind
-file fsync plus publication plus readback into a finalized vNext receipt, or
-complete Gate D. It does not advance a campaign counter.
+This checkpoint proves a bounded Rust operation/process protocol and the exact
+Node-to-packaged-Rust invocation boundary. It does not yet replace the Node
+create-only store's Win32 unavailability result, bind file fsync plus
+publication plus readback into a finalized vNext receipt, or complete Gate D.
+It does not advance a campaign counter.
 
 ## Why A Separate Boundary Exists
 
@@ -64,7 +71,8 @@ Success emits exactly one path-redacted JSON observation:
   "operatingSystem": "windows",
   "operationId": "directory-flush-operation-001",
   "profileId": "tinyrustlm.vnext.directory-flush.v1",
-  "profileSha256": "51effab85d325493e77ca57de5aa14bf7d3fa2fd3b5f16139baadc8979d395bb",
+  "profileSha256": "aaf82fde396e89d03e82a6cd7c761bfbedb1d766250dc9dd537124be68adcfd8",
+  "requestSha256": "<64 lowercase hex>",
   "schema": "tinyrustlm.vnext.directory_flush_observation.v1",
   "status": "performed"
 }
@@ -75,19 +83,54 @@ root, and normalized relative directory. The raw identity material is never
 returned. Failure emits only `errorCode`, `schema`, and `status`; raw paths,
 request bytes, and host diagnostics are excluded.
 
+## Node Package And Process Boundary
+
+`tinyrustlm/tools/vnext-directory-flush-client.js` resolves one explicit
+absolute package root from
+`TINYRUSTLM_DIRECTORY_FLUSH_PACKAGE_ROOT`. On Windows it rejects UNC, device,
+and other non-drive-root forms before filesystem access. Every existing path
+component must be an ordinary directory or regular file rather than a link or
+exposed reparse point.
+
+The package contains one canonical JCS manifest and exactly named helper
+executable. The manifest binds operating system, architecture, RID, build
+profile, trust class, helper profile ID and hash, executable byte count and
+SHA-256, and helper source-closure SHA-256. The client rejects duplicate or
+unknown fields, noncanonical bytes, size overflow, platform drift, helper
+profile drift, unexpected executable names, self-described release trust on a
+debug build, and executable byte drift. It re-reads the manifest and executable
+after execution; replacement before or during the operation fails closed.
+
+The child receives no arguments, no parent environment variables, no inherited
+stdio, and no caller working directory. It runs from the verified package root
+with `shell: false`, private bounded pipes, a 10-second timeout, and `SIGKILL`
+as the timeout signal. Stdin is the canonical request. Stderr must be empty.
+Success and failure stdout must be bounded, strict, canonical documents. A
+validated helper failure contributes only its bounded public-safe error code as
+the client error cause.
+
+The path-redacted client result binds the client profile and source closure,
+Node runtime version, helper profile, package manifest, source closure,
+executable, platform/RID, request, operation, directory identity, method, and
+observation. The Node process API does not provide an OS network sandbox. The
+helper contract forbids network use, but a release claim additionally requires
+a trusted, provenance-verified package and controlled installation root. A
+`local-test-build` package is test evidence only.
+
 ## Owned-Path Validation
 
-The caller must own the root and prevent every independent writer from
-mutating it from initial inspection through post-flush inspection. Within that
-single-writer boundary, the library requires all of the following before
-opening a handle:
+The caller must own the root and prevent independent rename, replacement,
+link, or reparse mutation of the root and directory path components from
+initial inspection through post-flush inspection. Concurrent member-file
+creation is permitted. Within that stable-topology boundary, the library
+requires all of the following before opening a handle:
 
 1. The root is absolute, UTF-8 representable, bounded, present, and a
    directory.
 2. Every existing root component is inspected with `symlink_metadata` and is
    neither a symbolic link nor a Windows reparse point.
-3. The relative directory contains one to 64 normal components, with no root,
-   prefix, current-directory, or parent-directory component.
+3. The relative directory is either the explicit `.` owned-root scope or one
+   to 64 normal components, with no root, prefix, or parent component.
 4. Every relative component exists, is a directory, and is not a link or
    reparse point.
 5. Canonical containment beneath the canonical root holds.
@@ -127,17 +170,19 @@ as executed Linux or ARM64 evidence.
 
 ## Receipt Integration Boundary
 
-The next Gate D change must integrate this helper into the sole create-only
-publication path. The caller must independently verify the helper executable
-identity, strict output schema, profile ID and hash, operation ID, platform,
-method, directory identity, and `performed` status. It must then bind:
+The next Gate D change must integrate this client into the sole create-only
+publication path. The client now independently verifies the helper executable
+and package identities, strict output schema, profile ID and hash, operation
+ID, platform, method, directory identity, and `performed` status. The store
+must bind:
 
 - exact input and output byte hashes;
 - temporary-file fsync;
 - create-if-absent publication disposition;
 - this exact directory-flush observation;
-- exact postpublication readback; and
-- the helper binary and configuration identities
+- exact postpublication readback;
+- the client profile/source and Node runtime identities; and
+- the helper binary, package, source, and configuration identities
 
 into immutable vNext receipt lineage. A caller-supplied success flag or a
 synthetic observation is forbidden. Store activation must remain after the
@@ -147,14 +192,25 @@ truth.
 
 ## Verification
 
-The crate currently has 13 passing tests:
+The crate currently has 14 passing tests:
 
-- seven owned-path and platform-operation tests, including actual Win32
+- eight owned-path and platform-operation tests, including actual Win32
   success and junction rejection; and
 - six frozen-profile and strict library/process protocol tests, including
   exact profile identity and semantics, duplicate fields, unknown fields,
   wrong schema, byte limits, path redaction, bounded failure, and real
   child-process execution.
+
+The Node client has 32 passing tests. They cover exact profile/source-closure
+identity, real helper success and safe failure, owned-root scope, configured
+package discovery, accessor and unknown-field rejection, request bounds,
+empty-environment process execution, package-root link rejection, duplicate,
+noncanonical, oversized, platform-drifted, and profile-drifted manifests,
+debug/release trust mismatch, timeout, output overflow, stderr, signals,
+unexpected exit status, malformed success/failure documents, canonical
+observation substitution, and executable or manifest replacement before and
+after execution. Synthetic process results exercise only rejection branches;
+successful evidence is produced by the real packaged Rust helper.
 
 The crate forbids unsafe Rust. The frozen profile is compiled into the library
 and rehashed before every operation; a profile-byte mismatch fails as
@@ -167,7 +223,7 @@ Retrieved 2026-08-11:
 - [Microsoft CreateFileW](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew), last updated 2023-02-08. It documents directory handles and `FILE_FLAG_BACKUP_SEMANTICS`.
 - [Microsoft FlushFileBuffers](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-flushfilebuffers), last updated 2021-10-13. It documents `GENERIC_WRITE`, success/failure, and the scope of its flush guarantee.
 - [Rust OpenOptionsExt](https://doc.rust-lang.org/std/os/windows/fs/trait.OpenOptionsExt.html), Rust 1.96.0 documentation retrieved 2026-08-11. It documents Windows access, share, and custom flag control.
-- [Rust Windows MetadataExt](https://doc.rust-lang.org/std/os/windows/fs/trait.MetadataExt.html), Rust 1.96.0 documentation retrieved 2026-08-11. It documents stable file-attribute inspection; file-index and volume-serial access remain experimental on this toolchain, which is why single-writer ownership is an explicit caller precondition.
+- [Rust Windows MetadataExt](https://doc.rust-lang.org/std/os/windows/fs/trait.MetadataExt.html), Rust 1.96.0 documentation retrieved 2026-08-11. It documents stable file-attribute inspection; file-index and volume-serial access remain experimental on this toolchain, which is why stable path-topology ownership is an explicit caller precondition.
 - [Rust File::sync_all](https://doc.rust-lang.org/std/fs/struct.File.html#method.sync_all), Rust 1.96.0 documentation retrieved 2026-08-11. It documents synchronization of OS-internal content and metadata to the filesystem.
 
 ## Explicit Non-Claims
@@ -175,8 +231,10 @@ Retrieved 2026-08-11:
 - Gate D is not complete.
 - Node store publication is not yet using this helper.
 - No vNext durable-publication receipt has been admitted.
-- The helper does not independently establish single-writer ownership of its
-  caller-supplied root.
+- The Node client does not impose an OS network sandbox or prove release
+  provenance for a self-described package.
+- The helper does not independently establish stable path-topology ownership
+  of its caller-supplied root and directory components.
 - No physical power interruption has been executed.
 - No Linux or physical ARM64 execution evidence exists for this helper.
 - No release, deployment, publication, model qualification, browser round,

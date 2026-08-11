@@ -22,7 +22,7 @@ pub const DIRECTORY_FLUSH_REQUEST_MAXIMUM_BYTES: usize = 16_384;
 pub const DIRECTORY_FLUSH_PROFILE_ID: &str = "tinyrustlm.vnext.directory-flush.v1";
 /// The SHA-256 of the sole current directory-flush profile bytes.
 pub const DIRECTORY_FLUSH_PROFILE_SHA256: &str =
-    "51effab85d325493e77ca57de5aa14bf7d3fa2fd3b5f16139baadc8979d395bb";
+    "aaf82fde396e89d03e82a6cd7c761bfbedb1d766250dc9dd537124be68adcfd8";
 const DIRECTORY_IDENTITY_DOMAIN: &str = "tinyrustlm.directory-flush.scope.v1";
 const DIRECTORY_FLUSH_PROFILE_BYTES: &[u8] =
     include_bytes!("../../../../contracts/vnext/directory-flush-profile.v1.json");
@@ -31,7 +31,7 @@ const MAXIMUM_PATH_BYTES: usize = 16_384;
 const MAXIMUM_RELATIVE_COMPONENTS: usize = 64;
 const MAXIMUM_COMPONENT_BYTES: usize = 255;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 struct DirectoryFlushRequest {
     operation_id: String,
@@ -91,6 +91,7 @@ pub struct DirectoryFlushObservation {
     operation_id: String,
     profile_id: String,
     profile_sha256: String,
+    request_sha256: String,
     schema: String,
     status: String,
 }
@@ -114,6 +115,11 @@ impl DirectoryFlushObservation {
     /// Returns the SHA-256 of the frozen helper profile bytes.
     pub fn profile_sha256(&self) -> &str {
         &self.profile_sha256
+    }
+
+    /// Returns the SHA-256 of the exact request bytes bound to the operation.
+    pub fn request_sha256(&self) -> &str {
+        &self.request_sha256
     }
 
     /// Returns the path-redacted identity of the exact directory scope.
@@ -152,6 +158,28 @@ pub fn flush_owned_directory(
     relative_directory: &Path,
     operation_id: &str,
 ) -> Result<DirectoryFlushObservation, DurabilityError> {
+    let request = DirectoryFlushRequest {
+        operation_id: operation_id.to_owned(),
+        owned_root: path_text(owned_root)?.to_owned(),
+        relative_directory: path_text(relative_directory)?.to_owned(),
+        schema: DIRECTORY_FLUSH_REQUEST_SCHEMA.to_owned(),
+    };
+    let request_bytes = serde_json::to_vec(&request)
+        .map_err(|_| DurabilityError::new("directory_request_invalid"))?;
+    flush_owned_directory_bound(
+        owned_root,
+        relative_directory,
+        operation_id,
+        &lowercase_hex(&Sha256::digest(&request_bytes)),
+    )
+}
+
+fn flush_owned_directory_bound(
+    owned_root: &Path,
+    relative_directory: &Path,
+    operation_id: &str,
+    request_sha256: &str,
+) -> Result<DirectoryFlushObservation, DurabilityError> {
     validate_profile()?;
     validate_operation_id(operation_id)?;
     let root = validate_root(owned_root)?;
@@ -178,6 +206,7 @@ pub fn flush_owned_directory(
         operation_id: operation_id.to_owned(),
         profile_id: DIRECTORY_FLUSH_PROFILE_ID.to_owned(),
         profile_sha256: DIRECTORY_FLUSH_PROFILE_SHA256.to_owned(),
+        request_sha256: request_sha256.to_owned(),
         schema: DIRECTORY_FLUSH_OBSERVATION_SCHEMA.to_owned(),
         status: "performed".to_owned(),
     })
@@ -202,10 +231,11 @@ pub fn execute_directory_flush_request_bytes(input: &[u8]) -> Result<Vec<u8>, Du
     if request.schema != DIRECTORY_FLUSH_REQUEST_SCHEMA {
         return Err(DurabilityError::new("directory_request_schema_invalid"));
     }
-    let observation = flush_owned_directory(
+    let observation = flush_owned_directory_bound(
         Path::new(&request.owned_root),
         Path::new(&request.relative_directory),
         &request.operation_id,
+        &lowercase_hex(&Sha256::digest(input)),
     )?;
     let bytes = serde_json::to_vec(&observation)
         .map_err(|_| DurabilityError::new("directory_observation_serialize_failed"))?;
@@ -252,6 +282,9 @@ fn validate_relative_directory(relative: &Path) -> Result<PathBuf, DurabilityErr
     {
         return Err(DurabilityError::new("directory_relative_path_invalid"));
     }
+    if relative == Path::new(".") {
+        return Ok(PathBuf::from("."));
+    }
     let mut normalized = PathBuf::new();
     let mut component_count = 0usize;
     for component in relative.components() {
@@ -277,6 +310,9 @@ fn validate_relative_directory(relative: &Path) -> Result<PathBuf, DurabilityErr
 }
 
 fn validate_directory_scope(root: &Path, relative: &Path) -> Result<PathBuf, DurabilityError> {
+    if relative == Path::new(".") {
+        return Ok(root.to_path_buf());
+    }
     let directory = root.join(relative);
     if !directory.starts_with(root) {
         return Err(DurabilityError::new("directory_path_escape"));

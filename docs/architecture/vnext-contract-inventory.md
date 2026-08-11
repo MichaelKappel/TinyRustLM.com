@@ -217,10 +217,17 @@ Create-only public subject persistence is documented in
 `docs/architecture/vnext-subject-store.md`.
 The bounded Rust/Win32 directory-flush helper and its exact non-claims are
 documented in `docs/architecture/vnext-directory-durability.md`. Its
-5,539-byte frozen profile has SHA-256
-`51effab85d325493e77ca57de5aa14bf7d3fa2fd3b5f16139baadc8979d395bb`.
+5,820-byte frozen profile has SHA-256
+`aaf82fde396e89d03e82a6cd7c761bfbedb1d766250dc9dd537124be68adcfd8`.
 The current Windows host executes the helper and rejects a real directory
-junction, but create-only publication receipt integration and physical
+junction. Its sole Node package/process client has a 5,068-byte frozen profile,
+SHA-256
+`9f367bbe58bf8afc8ecba57a1b33e5cda5a83592a80517c4db38d0775cf9fde6`,
+and source-closure SHA-256
+`37dc6e85be3655743a31de5623fa574f565578351f4c6b255621a9d976a8c487`.
+The client verifies exact package, process, request, and observation identity
+without inheriting parent environment variables. Create-only publication
+receipt integration, OS network isolation, release provenance, and physical
 power-loss evidence remain incomplete.
 The sole exact cross-store Rust-backed campaign runner is documented in
 `docs/architecture/vnext-campaign-runner.md`.

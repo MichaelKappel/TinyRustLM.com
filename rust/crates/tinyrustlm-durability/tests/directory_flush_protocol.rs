@@ -84,9 +84,10 @@ fn frozen_profile_is_exact_and_internally_consistent() {
     assert_eq!(profile["rawPathOutput"], "forbidden");
     assert_eq!(profile["rawHostErrorOutput"], "forbidden");
     assert_eq!(
-        profile["pathContract"]["singleWriterOwnershipRequired"],
+        profile["pathContract"]["stablePathTopologyOwnershipRequired"],
         true
     );
+    assert_eq!(profile["pathContract"]["ownedRootScope"], "explicit-dot");
     assert_eq!(
         profile["platformMethods"]["windows"]["method"],
         "win32-backup-semantics-flush-file-buffers"
@@ -105,6 +106,7 @@ fn frozen_profile_is_exact_and_internally_consistent() {
             json!("operationId"),
             json!("profileId"),
             json!("profileSha256"),
+            json!("requestSha256"),
             json!("schema"),
             json!("status"),
         ]
@@ -139,7 +141,7 @@ fn frozen_profile_is_exact_and_internally_consistent() {
     assert!(non_claims.iter().any(|claim| {
         claim
             .as_str()
-            .is_some_and(|text| text.contains("does not establish single-writer ownership"))
+            .is_some_and(|text| text.contains("does not establish stable path-topology ownership"))
     }));
 }
 
@@ -156,6 +158,10 @@ fn strict_library_protocol_returns_path_redacted_observation() {
     assert_eq!(value["operationId"], "directory-flush-protocol-001");
     assert_eq!(value["profileId"], DIRECTORY_FLUSH_PROFILE_ID);
     assert_eq!(value["profileSha256"], DIRECTORY_FLUSH_PROFILE_SHA256);
+    assert_eq!(
+        value["requestSha256"],
+        format!("{:x}", Sha256::digest(&input))
+    );
     assert!(!String::from_utf8(output)
         .expect("UTF-8 observation")
         .contains(root.path().to_str().expect("UTF-8 test root")));

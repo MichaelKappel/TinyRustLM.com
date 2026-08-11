@@ -100,6 +100,20 @@ fn flushes_an_exact_owned_directory_with_public_safe_observation() {
 }
 
 #[test]
+fn flushes_the_explicit_owned_root_scope() {
+    let root = OwnedTestRoot::create("root-scope");
+    let observation = flush_owned_directory(
+        root.path(),
+        Path::new("."),
+        "directory-flush-operation-root-001",
+    )
+    .expect("flush owned root scope");
+
+    assert_eq!(observation.status(), "performed");
+    assert_eq!(observation.directory_identity_sha256().len(), 64);
+}
+
+#[test]
 fn rejects_non_absolute_owned_root() {
     let error = flush_owned_directory(
         Path::new("relative-root"),
