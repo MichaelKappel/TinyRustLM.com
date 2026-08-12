@@ -7,7 +7,9 @@ const test = require("node:test");
 
 const {
   extractTopLevelTestNames,
+  maximumConcurrentShards,
   releaseSurfaceShards,
+  runShardPool,
   shardPattern,
   validateShardPartition
 } = require("../tools/run-vnext-campaign-release-surface-gate.js");
@@ -24,6 +26,7 @@ test("freezes one exhaustive release-surface gate partition", () => {
   const partitionNames = releaseSurfaceShards.flat();
 
   assert.deepEqual(result, { shardCount: 6, testCount: 23 });
+  assert.equal(maximumConcurrentShards, 1);
   assert.equal(new Set(partitionNames).size, 23);
   assert.deepEqual([...partitionNames].sort(), [...names].sort());
   for (const shard of releaseSurfaceShards) {
@@ -31,6 +34,33 @@ test("freezes one exhaustive release-surface gate partition", () => {
     assert.deepEqual(names.filter((name) => expression.test(name)).sort(),
       [...shard].sort());
   }
+});
+
+test("bounds shard execution and preserves complete index order", async () => {
+  const items = ["zero", "one", "two", "three", "four"];
+  let active = 0;
+  let observedMaximum = 0;
+  const started = [];
+  const results = await runShardPool(items, 2, async (item, index) => {
+    active += 1;
+    observedMaximum = Math.max(observedMaximum, active);
+    started.push(index);
+    await new Promise((resolve) => setTimeout(resolve, index % 2 === 0 ? 8 : 1));
+    active -= 1;
+    return `${index}:${item}`;
+  });
+
+  assert.equal(observedMaximum, 2);
+  assert.deepEqual([...started].sort((left, right) => left - right), [0, 1, 2, 3, 4]);
+  assert.deepEqual(results, ["0:zero", "1:one", "2:two", "3:three", "4:four"]);
+});
+
+test("rejects invalid shard pool configuration", async () => {
+  const worker = async () => "unused";
+  await assert.rejects(runShardPool([], 1, worker), TypeError);
+  await assert.rejects(runShardPool(["one"], 0, worker), TypeError);
+  await assert.rejects(runShardPool(["one"], 2, worker), TypeError);
+  await assert.rejects(runShardPool(["one"], 1, null), TypeError);
 });
 
 test("rejects missing duplicate and unassigned release-surface tests", () => {

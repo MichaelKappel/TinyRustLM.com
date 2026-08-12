@@ -39,6 +39,8 @@ const signatureProfilePath = path.join(contractRoot,
   "receipt-signature-profile.v1.json");
 const redactionProfilePath = path.join(contractRoot,
   "public-safe-redaction-profile.v1.json");
+const equalityCustodyProfilePath = path.join(contractRoot,
+  "protected-equality-custody-profile.v1.json");
 const phaseInvalidationProfilePath = path.join(contractRoot,
   "phase-invalidation-profile.v1.json");
 const campaignProjectionProfilePath = path.join(contractRoot,
@@ -49,6 +51,7 @@ const profileBytes = fs.readFileSync(profilePath);
 const registryBytes = fs.readFileSync(registryPath);
 const signatureProfileBytes = fs.readFileSync(signatureProfilePath);
 const redactionProfileBytes = fs.readFileSync(redactionProfilePath);
+const equalityCustodyProfileBytes = fs.readFileSync(equalityCustodyProfilePath);
 const phaseInvalidationProfileBytes = fs.readFileSync(phaseInvalidationProfilePath);
 const campaignProjectionProfileBytes = fs.readFileSync(campaignProjectionProfilePath);
 const storeProfileBytes = fs.readFileSync(storeProfilePath);
@@ -56,6 +59,7 @@ const parsedProfile = parseStrictJson(profileBytes);
 const registry = parseStrictJson(registryBytes);
 const parsedSignatureProfile = parseStrictJson(signatureProfileBytes);
 const redactionProfile = parseStrictJson(redactionProfileBytes);
+const equalityCustodyProfile = parseStrictJson(equalityCustodyProfileBytes);
 const phaseInvalidationProfile = parseStrictJson(phaseInvalidationProfileBytes);
 const campaignProjectionProfile = parseStrictJson(campaignProjectionProfileBytes);
 const storeProfile = parseStrictJson(storeProfileBytes);
@@ -69,6 +73,7 @@ const expectedProfileBindingNames = Object.freeze([
   "contract-registry",
   "offline-bundle-profile",
   "phase-invalidation-profile",
+  "protected-equality-custody-profile",
   "public-safe-redaction-profile",
   "receipt-signature-profile",
   "receipt-store-profile"
@@ -268,6 +273,7 @@ const offlineBundleProfileSha256 = sha256(profileBytes);
 const registrySha256 = sha256(registryBytes);
 const signatureProfileSha256 = sha256(signatureProfileBytes);
 const redactionProfileSha256 = sha256(redactionProfileBytes);
+const equalityCustodyProfileSha256 = sha256(equalityCustodyProfileBytes);
 const phaseInvalidationProfileSha256 = sha256(phaseInvalidationProfileBytes);
 const campaignProjectionProfileSha256 = sha256(campaignProjectionProfileBytes);
 const storeProfileSha256 = sha256(storeProfileBytes);
@@ -364,6 +370,13 @@ const installedProfileBindings = deepFreeze([
     documentId: phaseInvalidationProfile.profileId,
     byteLength: phaseInvalidationProfileBytes.length,
     sha256: phaseInvalidationProfileSha256
+  },
+  {
+    name: "protected-equality-custody-profile",
+    documentKind: "profile",
+    documentId: equalityCustodyProfile.profileId,
+    byteLength: equalityCustodyProfileBytes.length,
+    sha256: equalityCustodyProfileSha256
   },
   {
     name: "public-safe-redaction-profile",

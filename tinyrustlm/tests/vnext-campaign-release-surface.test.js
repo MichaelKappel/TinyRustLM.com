@@ -11,6 +11,9 @@ const test = require("node:test");
 const {
   ensureVnextDirectoryFlushTestPackage
 } = require("./helpers/vnext-directory-flush-test-package.js");
+const {
+  makeProtectedEqualityCustody
+} = require("./helpers/vnext-protected-equality-fixtures.js");
 const { canonicalizeVnextJcsBytes } = require("../tools/vnext-jcs.js");
 
 ensureVnextDirectoryFlushTestPackage();
@@ -490,7 +493,36 @@ function seedEphemeralAuthorityCase(roots, entry, options = {}) {
   return Object.freeze(authority);
 }
 
-function runnerOptions(roots) {
+const equalityCustodyByRoots = new WeakMap();
+
+function equalityCustodyForRoots(roots, knownSecrets = []) {
+  const key = JSON.stringify(knownSecrets);
+  let fixture = equalityCustodyByRoots.get(roots);
+  if (fixture === undefined) {
+    fixture = Object.freeze({
+      key,
+      custody: makeProtectedEqualityCustody({ knownSecrets }).custody
+    });
+    equalityCustodyByRoots.set(roots, fixture);
+  }
+  assert.equal(fixture.key, key,
+    "one test release surface must retain one equality-custody revision");
+  return fixture.custody;
+}
+
+function runnerOptions(roots, knownSecrets = []) {
+  const wasm = buildWasm();
+  return {
+    campaignArtifactStoreRoot: roots.artifacts,
+    equalityCustody: equalityCustodyForRoots(roots, knownSecrets),
+    expectedWasmModuleSha256: sha256(wasm),
+    receiptStoreRoot: roots.receipts,
+    subjectStoreRoot: roots.subjects,
+    wasmModuleBytes: wasm
+  };
+}
+
+function campaignRunnerOptions(roots) {
   const wasm = buildWasm();
   return {
     campaignArtifactStoreRoot: roots.artifacts,
@@ -507,7 +539,6 @@ function surfaceInput(entry, label, overrides = {}) {
     expectedCampaignId: entry.expectedCampaignId,
     expectedEnvironment: entry.expectedEnvironment,
     expectedTerminalRegistryReceiptId: entry.expectedTerminalRegistryReceiptId,
-    knownSecrets: [],
     operationId: operationId(label),
     sourceRevision,
     trustedRootRegistryReceiptId: entry.trustedRootRegistryReceiptId,
@@ -879,7 +910,6 @@ function authorizeInput(entry, authority, prepared, releaseInput,
     expectedCampaignId: entry.expectedCampaignId,
     expectedEnvironment: entry.expectedEnvironment,
     expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
-    knownSecrets: [],
     releaseManifestId: prepared.releaseManifestId,
     sourceRevision,
     trustedRootRegistryReceiptId: authority.root.receipt.receiptId,
@@ -1009,7 +1039,6 @@ function deploymentInput(entry, authority, prepared, releaseInput,
     expectedCampaignId: entry.expectedCampaignId,
     expectedEnvironment: entry.expectedEnvironment,
     expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
-    knownSecrets: [],
     releaseManifestId: prepared.releaseManifestId,
     sourceRevision,
     trustedRootRegistryReceiptId: authority.root.receipt.receiptId,
@@ -1030,7 +1059,6 @@ function publicReadbackInput(entry, authority, prepared, releaseInput,
     expectedCampaignId: entry.expectedCampaignId,
     expectedEnvironment: entry.expectedEnvironment,
     expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
-    knownSecrets: [],
     operationId: operationId(label),
     releaseManifestId: prepared.releaseManifestId,
     sourceRevision,
@@ -1052,7 +1080,6 @@ function sitePublicationPlanInput(entry, authority, prepared, releaseInput,
     expectedCampaignId: entry.expectedCampaignId,
     expectedEnvironment: entry.expectedEnvironment,
     expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
-    knownSecrets: [],
     operationId: operationId(label),
     previousHistoryBytes: null,
     publicReadbackReceiptId: readbackResult.publicReadbackReceiptId,
@@ -1077,7 +1104,6 @@ function sitePublicationAuthorizationInput(entry, authority, prepared, releaseIn
     expectedCampaignId: entry.expectedCampaignId,
     expectedEnvironment: entry.expectedEnvironment,
     expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
-    knownSecrets: [],
     previousHistoryBytes: null,
     publicReadbackReceiptId: readbackResult.publicReadbackReceiptId,
     releaseManifestId: prepared.releaseManifestId,
@@ -1226,7 +1252,6 @@ function generatedDeploymentInput(entry, authority, prepared, releaseInput,
     expectedEnvironment: entry.expectedEnvironment,
     expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
     generatedDeploymentReceiptBytes: generatedReceipt.bytes,
-    knownSecrets: [],
     previousHistoryBytes: null,
     publicReadbackReceiptId: staticReadback.publicReadbackReceiptId,
     releaseManifestId: prepared.releaseManifestId,
@@ -1302,13 +1327,15 @@ test("freezes one no-compatibility campaign release surface profile", () => {
   const profile = parseStrictJson(bytes);
   assert.equal(campaignReleaseSurfaceProfileSha256, sha256(bytes));
   assert.equal(campaignReleaseSurfaceProfileSha256,
-    "e7e396e5127baed7084fa0f5cc285cfd83165b6a7350fa0ecac8439ce57e9033");
+    "100d72ee201b395820aa11aa5b4f8f23befdbf0fffb515dda385fb826cc6fcff");
   assert.equal(campaignReleaseSurfaceProfile.profileId,
     "tinyrustlm.vnext.campaign-release-surface.v1");
   assert.equal(profile.status, "frozen");
   assert.equal(profile.storedProjectionPolicy, "forbidden");
   assert.equal(profile.callerVerdictPolicy, "forbidden");
   assert.equal(profile.callerCounterPolicy, "forbidden");
+  assert.equal(profile.equalityCustodyPolicy,
+    "one-module-issued-signed-revision-pinned-at-surface-open-no-operation-substitution");
   assert.equal(profile.mutablePointerPolicy, "forbidden");
   assert.equal(profile.networkAccess, "forbidden-until-public-readback-operation");
   assert.equal(profile.releasePreparation.authorizationPolicy,
@@ -1357,8 +1384,13 @@ test("attests an honest zero projection without claiming release completion", {
   const roots = makeRoots(t);
   const entry = acceptedCase("honest-zero");
   seedCase(roots, entry);
+  const validOptions = runnerOptions(roots);
+  await rejectsCode(() => createVnextCampaignReleaseSurface(roots.runner, {
+    ...validOptions,
+    equalityCustody: { ...validOptions.equalityCustody }
+  }), "equality_custody_handle_invalid");
   const surface = await createVnextCampaignReleaseSurface(roots.runner,
-    runnerOptions(roots));
+    validOptions);
   const input = surfaceInput(entry, "honest-zero-attestation");
   const result = await surface.attestCampaign(input);
 
@@ -1454,7 +1486,7 @@ test("rejects stored projection, caller verdict, counter drift, and accessors", 
     }
   });
   await rejectsCode(() => surface.attestCampaign(hostile),
-    "release_surface_input_invalid_accessor");
+    "release_surface_input_invalid");
   assert.equal(invoked, false);
 
   const hostilePrepare = {
@@ -1626,7 +1658,7 @@ test("rejects failed and interrupted operation histories instead of resuming the
     expectedCampaignId: "campaign-vnext-wrong"
   });
   const failedRunner = await createVnextCampaignRunner(failedRoots.runner,
-    runnerOptions(failedRoots));
+    campaignRunnerOptions(failedRoots));
   await rejectsCode(() => failedRunner.runProjection({
     campaignPlanSha256: failedInput.campaignPlanSha256,
     expectedCampaignId: failedInput.expectedCampaignId,
@@ -1732,10 +1764,9 @@ test("records only a public-safe redaction failure when an attestation contains 
   seedCase(roots, entry);
   const secret = entry.receiptIds[0].slice("sha256:".length, "sha256:".length + 20);
   const surface = await createVnextCampaignReleaseSurface(roots.runner,
-    runnerOptions(roots));
-  const result = await surface.attestCampaign(surfaceInput(entry, "secret-attestation", {
-    knownSecrets: [secret]
-  }));
+    runnerOptions(roots, [secret]));
+  const result = await surface.attestCampaign(
+    surfaceInput(entry, "secret-attestation"));
 
   assert.equal(result.campaignComplete, true);
   assert.equal(result.releaseEligible, false);
@@ -2475,14 +2506,13 @@ test("rejects caller deployment truth and deployment-attempt binding drift", {
   const releaseInput = seedReleaseInputs(roots, entry);
   const protectedValue = "deployment-receipt-protected-value";
   const surface = await createVnextCampaignReleaseSurface(roots.runner,
-    runnerOptions(roots));
+    runnerOptions(roots, [protectedValue]));
   const prepared = await surface.prepareRelease(prepareInput(
     entry,
     "hostile-deployment-preparation",
     releaseInput,
     {
       expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
-      knownSecrets: [protectedValue],
       trustedRootRegistryReceiptId: authority.root.receipt.receiptId
     }
   ));
@@ -2505,8 +2535,7 @@ test("rejects caller deployment truth and deployment-attempt binding drift", {
     authority,
     prepared,
     releaseInput,
-    authorizationReceipt,
-    { knownSecrets: [protectedValue] }
+    authorizationReceipt
   ));
   const valid = deploymentAttemptReceipt(
     entry,
@@ -2521,8 +2550,7 @@ test("rejects caller deployment truth and deployment-attempt binding drift", {
     prepared,
     releaseInput,
     authorizationReceipt,
-    valid,
-    { knownSecrets: [protectedValue] }
+    valid
   );
   await rejectsCode(() => surface.admitDeploymentAttempt({
     ...validInput,
@@ -2610,8 +2638,7 @@ test("rejects caller deployment truth and deployment-attempt binding drift", {
   );
   await rejectsCode(() => surface.admitDeploymentAttempt({
     ...validInput,
-    deploymentReceiptBytes: unsafe.bytes,
-    knownSecrets: [protectedValue]
+    deploymentReceiptBytes: unsafe.bytes
   }), "release_surface_deployment_unsafe");
 
   const receiptStore = createVnextReceiptStore(roots.receipts);
@@ -2661,7 +2688,7 @@ test("resumes authorization after the redaction receipt committed alone", {
   });
   const authorizationScan = scanVnextPublicDocumentBytes(
     authorizationReceipt.bytes,
-    { knownSecrets: [] }
+    { equalityCustody: equalityCustodyForRoots(roots) }
   );
   const redactionReceipt = createVnextRedactionScanReceipt({
     attemptId: `release-authorization-redaction-${
@@ -2847,14 +2874,13 @@ test("persists only bounded redaction evidence for unsafe authorization bytes", 
   const releaseInput = seedReleaseInputs(roots, entry);
   const protectedValue = authority.releaseKey.record.signerId;
   const surface = await createVnextCampaignReleaseSurface(roots.runner,
-    runnerOptions(roots));
+    runnerOptions(roots, [protectedValue]));
   const prepared = await surface.prepareRelease(prepareInput(
     entry,
     "unsafe-authorization-preparation",
     releaseInput,
     {
       expectedTerminalRegistryReceiptId: authority.root.receipt.receiptId,
-      knownSecrets: [protectedValue],
       trustedRootRegistryReceiptId: authority.root.receipt.receiptId
     }
   ));
@@ -2879,8 +2905,7 @@ test("persists only bounded redaction evidence for unsafe authorization bytes", 
     authority,
     prepared,
     releaseInput,
-    authorizationReceipt,
-    { knownSecrets: [protectedValue] }
+    authorizationReceipt
   )), "release_surface_authorization_unsafe");
   const after = receiptStore.rebuild().activeReceiptIds;
   assert.equal(after.length, before.length + 1);
@@ -3008,12 +3033,11 @@ test("persists only public-safe failure evidence for an unsafe changelog", {
     changelogBytes: Buffer.from(`# TinyRustLM 1.0.0\n\n- ${secret}\n`, "utf8")
   });
   const surface = await createVnextCampaignReleaseSurface(roots.runner,
-    runnerOptions(roots));
+    runnerOptions(roots, [secret]));
   await rejectsCode(() => surface.prepareRelease(prepareInput(
     entry,
     "unsafe-release-changelog",
-    releaseInput,
-    { knownSecrets: [secret] }
+    releaseInput
   )), "release_surface_public_input_unsafe");
 
   const subjectStore = createVnextSubjectStore(roots.subjects);

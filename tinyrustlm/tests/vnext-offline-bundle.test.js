@@ -139,11 +139,12 @@ test("freezes an exact public-only profile and imports no network client", () =>
     "contract-registry",
     "offline-bundle-profile",
     "phase-invalidation-profile",
+    "protected-equality-custody-profile",
     "public-safe-redaction-profile",
     "receipt-signature-profile",
     "receipt-store-profile"
   ]);
-  assert.equal(offlineBundleProfile.limits.maximumProfileBindings, 7);
+  assert.equal(offlineBundleProfile.limits.maximumProfileBindings, 8);
   assert.equal(offlineBundleProfile.limits.maximumTargetSignatures, 512);
   assert.equal(offlineBundleProfile.limits.maximumReceipts, 2048);
   assert.equal(offlineBundleProfile.limits.maximumManifestBytes, 4 * 1024 * 1024);

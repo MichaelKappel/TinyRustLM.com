@@ -46,12 +46,17 @@ const {
   createVnextRedactionScanReceipt,
   publicSafeRedactionProfile,
   publicSafeRedactionProfileSha256,
-  scanKnownSecretRepresentations,
   scanVnextPublicDocumentBytes,
   scanVnextPublicJsonControlBytes,
   scanVnextPublicTextBytes,
   verifyVnextRedactionScanReceipt
 } = require("./vnext-public-safe-redaction.js");
+const {
+  inspectVnextProtectedEqualityCustody,
+  protectedEqualityCustodyProfile,
+  protectedEqualityCustodyProfileSha256,
+  scanVnextProtectedEqualityBytes
+} = require("./vnext-protected-equality-custody.js");
 const {
   performVnextPublicHttpsReadback,
   publicHttpsReadbackProfile,
@@ -106,7 +111,6 @@ const attestationInputFields = Object.freeze([
   "expectedCampaignId",
   "expectedEnvironment",
   "expectedTerminalRegistryReceiptId",
-  "knownSecrets",
   "operationId",
   "sourceRevision",
   "trustedRootRegistryReceiptId",
@@ -140,7 +144,6 @@ const authorizeInputFields = Object.freeze([
   "expectedCampaignId",
   "expectedEnvironment",
   "expectedTerminalRegistryReceiptId",
-  "knownSecrets",
   "releaseManifestId",
   "sourceRevision",
   "trustedRootRegistryReceiptId",
@@ -156,7 +159,6 @@ const deploymentInputFields = Object.freeze([
   "expectedCampaignId",
   "expectedEnvironment",
   "expectedTerminalRegistryReceiptId",
-  "knownSecrets",
   "releaseManifestId",
   "sourceRevision",
   "trustedRootRegistryReceiptId",
@@ -172,7 +174,6 @@ const publicReadbackInputFields = Object.freeze([
   "expectedCampaignId",
   "expectedEnvironment",
   "expectedTerminalRegistryReceiptId",
-  "knownSecrets",
   "operationId",
   "releaseManifestId",
   "sourceRevision",
@@ -189,7 +190,6 @@ const sitePublicationPlanInputFields = Object.freeze([
   "expectedCampaignId",
   "expectedEnvironment",
   "expectedTerminalRegistryReceiptId",
-  "knownSecrets",
   "operationId",
   "previousHistoryBytes",
   "publicReadbackReceiptId",
@@ -208,7 +208,6 @@ const sitePublicationAuthorizationInputFields = Object.freeze([
   "expectedCampaignId",
   "expectedEnvironment",
   "expectedTerminalRegistryReceiptId",
-  "knownSecrets",
   "previousHistoryBytes",
   "publicReadbackReceiptId",
   "releaseManifestId",
@@ -229,7 +228,6 @@ const generatedDeploymentInputFields = Object.freeze([
   "expectedEnvironment",
   "expectedTerminalRegistryReceiptId",
   "generatedDeploymentReceiptBytes",
-  "knownSecrets",
   "previousHistoryBytes",
   "publicReadbackReceiptId",
   "releaseManifestId",
@@ -250,7 +248,6 @@ const generatedPublicReadbackInputFields = Object.freeze([
   "expectedEnvironment",
   "expectedTerminalRegistryReceiptId",
   "generatedDeploymentReceiptId",
-  "knownSecrets",
   "operationId",
   "previousHistoryBytes",
   "publicReadbackReceiptId",
@@ -273,7 +270,6 @@ const sitePublicationFinalizationInputFields = Object.freeze([
   "expectedTerminalRegistryReceiptId",
   "generatedDeploymentReceiptId",
   "generatedPublicReadbackReceiptId",
-  "knownSecrets",
   "operationId",
   "previousHistoryBytes",
   "publicReadbackReceiptId",
@@ -289,6 +285,7 @@ const sitePublicationFinalizationInputFields = Object.freeze([
 ]);
 const optionFields = Object.freeze([
   "campaignArtifactStoreRoot",
+  "equalityCustody",
   "expectedWasmModuleSha256",
   "receiptStoreRoot",
   "subjectStoreRoot",
@@ -301,12 +298,14 @@ const profileFields = Object.freeze([
   "phaseInvalidationProfileId", "phaseInvalidationProfileSha256",
   "receiptStoreProfileId", "receiptStoreProfileSha256", "subjectStoreProfileId",
   "subjectStoreProfileSha256", "publicSafeRedactionProfileId",
-  "publicSafeRedactionProfileSha256", "receiptSignatureProfileId",
+  "publicSafeRedactionProfileSha256", "protectedEqualityCustodyProfileId",
+  "protectedEqualityCustodyProfileSha256", "receiptSignatureProfileId",
   "receiptSignatureProfileSha256", "publicHttpsReadbackProfileId",
   "publicHttpsReadbackProfileSha256", "sitePublicationProfileId",
   "sitePublicationProfileSha256", "canonicalJsonProfile", "hashAlgorithm",
   "campaignTruthInput", "operationPolicy", "storedProjectionPolicy",
-  "callerVerdictPolicy", "callerCounterPolicy", "mutablePointerPolicy",
+  "callerVerdictPolicy", "callerCounterPolicy", "equalityCustodyPolicy",
+  "mutablePointerPolicy",
   "networkAccess", "clockAccess", "sourceMutation", "attestation",
   "operatorStatus", "releasePreparation", "releaseAuthorization",
   "releaseDeployment", "publicReadback", "sitePublicationPlan",
@@ -388,7 +387,7 @@ const sitePublicationFinalizationProfileFields = Object.freeze([
   "callerTruthPolicy"
 ]);
 const limitFields = Object.freeze([
-  "maximumKnownSecrets", "maximumProjectionBytes", "maximumReceiptSnapshotMembers",
+  "maximumProjectionBytes", "maximumReceiptSnapshotMembers",
   "maximumSubjectSnapshotMembers", "maximumOperatorStatusBytes",
   "maximumBlockerCodes", "maximumCountRows", "maximumReleaseArtifactManifests",
   "maximumReleasePackageReceipts", "maximumReleaseClaims",
@@ -666,6 +665,10 @@ function validateInstalledProfile() {
       parsedProfile.publicSafeRedactionProfileId !== publicSafeRedactionProfile.profileId ||
       parsedProfile.publicSafeRedactionProfileSha256 !==
         publicSafeRedactionProfileSha256 ||
+      parsedProfile.protectedEqualityCustodyProfileId !==
+        protectedEqualityCustodyProfile.profileId ||
+      parsedProfile.protectedEqualityCustodyProfileSha256 !==
+        protectedEqualityCustodyProfileSha256 ||
       parsedProfile.receiptSignatureProfileId !== signatureProfile.profileId ||
       parsedProfile.receiptSignatureProfileSha256 !== signatureProfileSha256 ||
       parsedProfile.publicHttpsReadbackProfileId !==
@@ -682,6 +685,8 @@ function validateInstalledProfile() {
       parsedProfile.storedProjectionPolicy !== "forbidden" ||
       parsedProfile.callerVerdictPolicy !== "forbidden" ||
       parsedProfile.callerCounterPolicy !== "forbidden" ||
+      parsedProfile.equalityCustodyPolicy !==
+        "one-module-issued-signed-revision-pinned-at-surface-open-no-operation-substitution" ||
       parsedProfile.mutablePointerPolicy !== "forbidden" ||
       parsedProfile.networkAccess !== "forbidden-until-public-readback-operation" ||
       parsedProfile.clockAccess !== "caller-trusted-verification-time-only" ||
@@ -1092,29 +1097,21 @@ function runtimeRecord(executionClass = "local") {
   };
 }
 
-function normalizeInput(rawInput) {
+function normalizeInput(rawInput, equalityCustody) {
   const input = exactDataObject(rawInput, attestationInputFields,
     "release_surface_input_invalid", "release-surface-input");
-  const knownSecrets = dataArray(input.knownSecrets,
-    parsedProfile.limits.maximumKnownSecrets,
-    "release_surface_known_secrets_invalid", "release-surface-input");
-  scanKnownSecretRepresentations(Buffer.from("{}", "utf8"), knownSecrets);
   if (!digestPattern.test(input.campaignPlanSha256) ||
       !contentIdPattern.test(input.operationId) ||
       !sourceRevisionPattern.test(input.sourceRevision)) {
     failEvidence("release_surface_input_invalid", "release-surface-input");
   }
-  return Object.freeze({ ...input, knownSecrets });
+  return Object.freeze({ ...input, equalityCustody });
 }
 
-function normalizePrepareInput(rawInput) {
+function normalizePrepareInput(rawInput, equalityCustody) {
   const step = "release-surface-prepare-input";
   const input = exactDataObject(rawInput, prepareInputFields,
     "release_surface_prepare_input_invalid", step);
-  const knownSecrets = dataArray(input.knownSecrets,
-    parsedProfile.limits.maximumKnownSecrets,
-    "release_surface_known_secrets_invalid", step);
-  scanKnownSecretRepresentations(Buffer.from("{}", "utf8"), knownSecrets);
   const artifactManifestIds = sortedUniqueStringArray(
     input.artifactManifestIds,
     parsedProfile.limits.maximumReleaseArtifactManifests,
@@ -1246,7 +1243,7 @@ function normalizePrepareInput(rawInput) {
     changelogBytes: Buffer.from(input.changelogBytes),
     claimIds,
     generatedPublicationFiles,
-    knownSecrets,
+    equalityCustody,
     packageReceiptIds,
     remainingRiskCodes,
     retiredPublicPaths,
@@ -1259,14 +1256,10 @@ function normalizePrepareInput(rawInput) {
   });
 }
 
-function normalizeAuthorizeInput(rawInput) {
+function normalizeAuthorizeInput(rawInput, equalityCustody) {
   const step = "release-surface-authorize-input";
   const input = exactDataObject(rawInput, authorizeInputFields,
     "release_surface_authorize_input_invalid", step);
-  const knownSecrets = dataArray(input.knownSecrets,
-    parsedProfile.limits.maximumKnownSecrets,
-    "release_surface_known_secrets_invalid", step);
-  scanKnownSecretRepresentations(Buffer.from("{}", "utf8"), knownSecrets);
   const webDeploymentManifestBytes = normalizeWebControlBytes(
     input.webDeploymentManifestBytes,
     "release_surface_web_deployment_manifest_invalid",
@@ -1302,21 +1295,17 @@ function normalizeAuthorizeInput(rawInput) {
     ...input,
     authorizationReceiptBytes: Buffer.from(input.authorizationReceiptBytes),
     changelogBytes: Buffer.from(input.changelogBytes),
-    knownSecrets,
+    equalityCustody,
     webDeploymentManifestBytes,
     webPublicationGeneratorBytes,
     webSecurityHeaderProfileBytes
   });
 }
 
-function normalizeDeploymentInput(rawInput) {
+function normalizeDeploymentInput(rawInput, equalityCustody) {
   const step = "release-surface-deployment-input";
   const input = exactDataObject(rawInput, deploymentInputFields,
     "release_surface_deployment_input_invalid", step);
-  const knownSecrets = dataArray(input.knownSecrets,
-    parsedProfile.limits.maximumKnownSecrets,
-    "release_surface_known_secrets_invalid", step);
-  scanKnownSecretRepresentations(Buffer.from("{}", "utf8"), knownSecrets);
   const webDeploymentManifestBytes = normalizeWebControlBytes(
     input.webDeploymentManifestBytes,
     "release_surface_web_deployment_manifest_invalid",
@@ -1354,21 +1343,17 @@ function normalizeDeploymentInput(rawInput) {
     ...input,
     changelogBytes: Buffer.from(input.changelogBytes),
     deploymentReceiptBytes: Buffer.from(input.deploymentReceiptBytes),
-    knownSecrets,
+    equalityCustody,
     webDeploymentManifestBytes,
     webPublicationGeneratorBytes,
     webSecurityHeaderProfileBytes
   });
 }
 
-function normalizePublicReadbackInput(rawInput) {
+function normalizePublicReadbackInput(rawInput, equalityCustody) {
   const step = "release-surface-public-readback-input";
   const input = exactDataObject(rawInput, publicReadbackInputFields,
     "release_surface_public_readback_input_invalid", step);
-  const knownSecrets = dataArray(input.knownSecrets,
-    parsedProfile.limits.maximumKnownSecrets,
-    "release_surface_known_secrets_invalid", step);
-  scanKnownSecretRepresentations(Buffer.from("{}", "utf8"), knownSecrets);
   const webDeploymentManifestBytes = normalizeWebControlBytes(
     input.webDeploymentManifestBytes,
     "release_surface_web_deployment_manifest_invalid",
@@ -1403,19 +1388,15 @@ function normalizePublicReadbackInput(rawInput) {
   return Object.freeze({
     ...input,
     changelogBytes: Buffer.from(input.changelogBytes),
-    knownSecrets,
+    equalityCustody,
     webDeploymentManifestBytes,
     webPublicationGeneratorBytes,
     webSecurityHeaderProfileBytes
   });
 }
 
-function normalizeSitePublicationInput(rawInput, fields, code, step) {
+function normalizeSitePublicationInput(rawInput, equalityCustody, fields, code, step) {
   const input = exactDataObject(rawInput, fields, code, step);
-  const knownSecrets = dataArray(input.knownSecrets,
-    parsedProfile.limits.maximumKnownSecrets,
-    "release_surface_known_secrets_invalid", step);
-  scanKnownSecretRepresentations(Buffer.from("{}", "utf8"), knownSecrets);
   const webDeploymentManifestBytes = normalizeWebControlBytes(
     input.webDeploymentManifestBytes,
     "release_surface_web_deployment_manifest_invalid",
@@ -1467,7 +1448,7 @@ function normalizeSitePublicationInput(rawInput, fields, code, step) {
   return Object.freeze({
     ...input,
     changelogBytes: Buffer.from(input.changelogBytes),
-    knownSecrets,
+    equalityCustody,
     previousHistoryBytes,
     sitePublisherSignatureReceiptBytes: planInput
       ? null
@@ -1478,30 +1459,34 @@ function normalizeSitePublicationInput(rawInput, fields, code, step) {
   });
 }
 
-function normalizeSitePublicationPlanInput(rawInput) {
+function normalizeSitePublicationPlanInput(rawInput, equalityCustody) {
   return normalizeSitePublicationInput(
     rawInput,
+    equalityCustody,
     sitePublicationPlanInputFields,
     "release_surface_site_publication_plan_input_invalid",
     "release-surface-site-publication-plan-input"
   );
 }
 
-function normalizeSitePublicationAuthorizationInput(rawInput) {
+function normalizeSitePublicationAuthorizationInput(rawInput, equalityCustody) {
   return normalizeSitePublicationInput(
     rawInput,
+    equalityCustody,
     sitePublicationAuthorizationInputFields,
     "release_surface_site_publication_authorization_input_invalid",
     "release-surface-site-publication-authorization-input"
   );
 }
 
-function normalizeSitePublicationContinuationInput(rawInput, fields, code, step) {
+function normalizeSitePublicationContinuationInput(
+  rawInput,
+  equalityCustody,
+  fields,
+  code,
+  step
+) {
   const input = exactDataObject(rawInput, fields, code, step);
-  const knownSecrets = dataArray(input.knownSecrets,
-    parsedProfile.limits.maximumKnownSecrets,
-    "release_surface_known_secrets_invalid", step);
-  scanKnownSecretRepresentations(Buffer.from("{}", "utf8"), knownSecrets);
   const webDeploymentManifestBytes = normalizeWebControlBytes(
     input.webDeploymentManifestBytes,
     "release_surface_web_deployment_manifest_invalid",
@@ -1565,7 +1550,7 @@ function normalizeSitePublicationContinuationInput(rawInput, fields, code, step)
     generatedDeploymentReceiptBytes: hasGeneratedReceiptBytes
       ? Buffer.from(input.generatedDeploymentReceiptBytes)
       : null,
-    knownSecrets,
+    equalityCustody,
     previousHistoryBytes,
     webDeploymentManifestBytes,
     webPublicationGeneratorBytes,
@@ -1573,27 +1558,30 @@ function normalizeSitePublicationContinuationInput(rawInput, fields, code, step)
   });
 }
 
-function normalizeGeneratedDeploymentInput(rawInput) {
+function normalizeGeneratedDeploymentInput(rawInput, equalityCustody) {
   return normalizeSitePublicationContinuationInput(
     rawInput,
+    equalityCustody,
     generatedDeploymentInputFields,
     "release_surface_generated_deployment_input_invalid",
     "release-surface-generated-deployment-input"
   );
 }
 
-function normalizeGeneratedPublicReadbackInput(rawInput) {
+function normalizeGeneratedPublicReadbackInput(rawInput, equalityCustody) {
   return normalizeSitePublicationContinuationInput(
     rawInput,
+    equalityCustody,
     generatedPublicReadbackInputFields,
     "release_surface_generated_public_readback_input_invalid",
     "release-surface-generated-public-readback-input"
   );
 }
 
-function normalizeSitePublicationFinalizationInput(rawInput) {
+function normalizeSitePublicationFinalizationInput(rawInput, equalityCustody) {
   return normalizeSitePublicationContinuationInput(
     rawInput,
+    equalityCustody,
     sitePublicationFinalizationInputFields,
     "release_surface_site_publication_finalization_input_invalid",
     "release-surface-site-publication-finalization-input"
@@ -1607,7 +1595,9 @@ function normalizeOptions(rawOptions) {
       !Buffer.isBuffer(options.wasmModuleBytes)) {
     failEvidence("release_surface_options_invalid", "release-surface-open");
   }
-  return options;
+  const equalityCustodyBinding =
+    inspectVnextProtectedEqualityCustody(options.equalityCustody);
+  return Object.freeze({ ...options, equalityCustodyBinding });
 }
 
 function assertNeverUsedOperation(runner, operationId) {
@@ -2168,7 +2158,7 @@ function requirePreparationScan(activeReceipts, input, operationId, label,
     failEvidence("release_surface_preparation_scan_invalid", step);
   }
   const verified = verifyVnextRedactionScanReceipt({
-    knownSecrets: input.knownSecrets,
+    equalityCustody: input.equalityCustody,
     receiptBytes: candidate.bytes,
     targetBytes,
     targetKind
@@ -2331,7 +2321,7 @@ function validatePreparedReleaseLineage(input, release, runner, artifactStore,
   }
   for (const document of selectedDocuments) {
     const scan = scanVnextPublicDocumentBytes(document.bytes, {
-      knownSecrets: input.knownSecrets
+      equalityCustody: input.equalityCustody
     });
     if (!scan.publicSafe) {
       failEvidence("release_surface_prepared_public_input_unsafe", step);
@@ -2526,7 +2516,7 @@ function validateStoredReleaseAuthorization(input, release, lineage, receiptStor
   }
   const redaction = redactionCandidates[0];
   const verifiedScan = verifyVnextRedactionScanReceipt({
-    knownSecrets: input.knownSecrets,
+    equalityCustody: input.equalityCustody,
     receiptBytes: redaction.bytes,
     targetBytes: authorization.bytes,
     targetKind: "document"
@@ -2703,7 +2693,7 @@ function validateStoredDeploymentAttempt(input, release, storedAuthorization,
   }
   const redaction = redactionCandidates[0];
   const verifiedScan = verifyVnextRedactionScanReceipt({
-    knownSecrets: input.knownSecrets,
+    equalityCustody: input.equalityCustody,
     receiptBytes: redaction.bytes,
     targetBytes: deployment.bytes,
     targetKind: "document"
@@ -2766,7 +2756,7 @@ function validateStoredStaticPublicReadback(input, release, storedDeployment,
   }
   const redaction = redactionCandidates[0];
   const verifiedScan = verifyVnextRedactionScanReceipt({
-    knownSecrets: input.knownSecrets,
+    equalityCustody: input.equalityCustody,
     receiptBytes: redaction.bytes,
     targetBytes: stored.bytes,
     targetKind: "document"
@@ -2983,7 +2973,7 @@ function sitePublicationScan(input, targetBytes, targetKind, label) {
     failEvidence("release_surface_site_publication_redaction_target_invalid",
       "release-surface-site-publication-redaction");
   }
-  const scan = scanner(targetBytes, { knownSecrets: input.knownSecrets });
+  const scan = scanner(targetBytes, { equalityCustody: input.equalityCustody });
   const attemptIdentity = domainSeparatedDigest(
     "tinyrustlm.site_publication.redaction_attempt.v1",
     { label, targetSha256: sha256(targetBytes) }
@@ -3056,7 +3046,7 @@ function validateStoredSitePublicationPlan(input, release, context, receiptStore
       failEvidence("release_surface_site_publication_plan_redaction_changed", step);
     }
     const verified = verifyVnextRedactionScanReceipt({
-      knownSecrets: input.knownSecrets,
+      equalityCustody: input.equalityCustody,
       receiptBytes: persisted.bytes,
       targetBytes: scan.targetBytes,
       targetKind: scan.targetKind
@@ -3187,7 +3177,7 @@ function validateStoredSitePublicationAuthorization(input, reconstructed,
       failEvidence("release_surface_site_publication_candidate_changed", step);
     }
     const verified = verifyVnextRedactionScanReceipt({
-      knownSecrets: input.knownSecrets,
+      equalityCustody: input.equalityCustody,
       receiptBytes: persisted.bytes,
       targetBytes: scan.targetBytes,
       targetKind: scan.targetKind
@@ -3675,7 +3665,7 @@ function validateStoredGeneratedDeploymentAttempt(input, reconstructed,
   }
   const redaction = candidates[0];
   const verified = verifyVnextRedactionScanReceipt({
-    knownSecrets: input.knownSecrets,
+    equalityCustody: input.equalityCustody,
     receiptBytes: redaction.bytes,
     targetBytes: deployment.bytes,
     targetKind: "document"
@@ -4043,7 +4033,7 @@ function validateStoredGeneratedPublicReadback(input, reconstructed,
   }
   const redaction = candidates[0];
   const verified = verifyVnextRedactionScanReceipt({
-    knownSecrets: input.knownSecrets,
+    equalityCustody: input.equalityCustody,
     receiptBytes: redaction.bytes,
     targetBytes: validated.bytes,
     targetKind: "document"
@@ -4251,7 +4241,7 @@ function operatorStatus(input, runnerResult, projection, attestationReceiptId,
   if (bytes.length > parsedProfile.limits.maximumOperatorStatusBytes) {
     failEvidence("release_surface_operator_byte_limit", "release-surface-operator");
   }
-  const knownScan = scanKnownSecretRepresentations(bytes, input.knownSecrets);
+  const knownScan = scanVnextProtectedEqualityBytes(bytes, input.equalityCustody);
   if (knownScan.findingCount !== 0) {
     failEvidence("release_surface_operator_secret_detected", "release-surface-operator");
   }
@@ -4353,7 +4343,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
       subjectStore
     );
     const scan = scanVnextPublicDocumentBytes(attestation.bytes, {
-      knownSecrets: input.knownSecrets
+      equalityCustody: input.equalityCustody
     });
     const redactionReceipt = createVnextRedactionScanReceipt({
       attemptId: `redaction-${input.operationId.slice("sha256:".length)}`,
@@ -4410,7 +4400,10 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
   }
 
   async function attestCampaign(rawInput) {
-    return publicAttestationResult(await executeAttestation(normalizeInput(rawInput)));
+    return publicAttestationResult(await executeAttestation(normalizeInput(
+      rawInput,
+      options.equalityCustody
+    )));
   }
 
   function persistReleaseScan(input, campaignId, scan, label) {
@@ -4433,7 +4426,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
       if (seen.has(wireSha256)) continue;
       seen.add(wireSha256);
       const scan = scanVnextPublicDocumentBytes(document.bytes, {
-        knownSecrets: input.knownSecrets
+        equalityCustody: input.equalityCustody
       });
       if (!scan.publicSafe) {
         persistReleaseScan(input, campaignId, scan, "release-input-redaction");
@@ -4443,7 +4436,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
   }
 
   async function prepareRelease(rawInput) {
-    const input = normalizePrepareInput(rawInput);
+    const input = normalizePrepareInput(rawInput, options.equalityCustody);
     const execution = await executeAttestation(input);
     const { attestation, projection, redactionReceipt: attestationRedaction,
       runnerResult, scan: attestationScan } = execution;
@@ -4486,7 +4479,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
     scanReleaseDocuments(input, projection.campaignId, selectedDocuments);
 
     const changelogScan = scanVnextPublicTextBytes(input.changelogBytes, {
-      knownSecrets: input.knownSecrets
+      equalityCustody: input.equalityCustody
     });
     const changelogRedaction = persistReleaseScan(
       input,
@@ -4513,7 +4506,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
       }
     ].map((entry) => {
       const scan = scanVnextPublicTextBytes(entry.bytes, {
-        knownSecrets: input.knownSecrets
+        equalityCustody: input.equalityCustody
       });
       const persisted = persistReleaseScan(
         input,
@@ -4566,7 +4559,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
       failEvidence("release_surface_manifest_byte_limit", "release-surface-manifest");
     }
     const releaseScan = scanVnextPublicDocumentBytes(release.bytes, {
-      knownSecrets: input.knownSecrets
+      equalityCustody: input.equalityCustody
     });
     const baseReceiptIds = runnerResult.receiptSnapshot.members.map((member) => member.id);
     const baseSubjectIds = runnerResult.subjectSnapshot.members.map((member) => member.id);
@@ -4668,7 +4661,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
 
   async function authorizeRelease(rawInput) {
     const step = "release-surface-authorize";
-    const input = normalizeAuthorizeInput(rawInput);
+    const input = normalizeAuthorizeInput(rawInput, options.equalityCustody);
     const release = subjectStore.read(input.releaseManifestId);
     const lineage = validatePreparedReleaseLineage(
       input,
@@ -4680,7 +4673,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
     );
     const authorization = validateReleaseAuthorizationReceipt(input, release);
     const authorizationScan = scanVnextPublicDocumentBytes(authorization.bytes, {
-      knownSecrets: input.knownSecrets
+      equalityCustody: input.equalityCustody
     });
     const authorizationRedaction = createVnextRedactionScanReceipt({
       attemptId: `release-authorization-redaction-${
@@ -4780,9 +4773,9 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
         parsedProfile.limits.maximumAuthorizationResultBytes) {
       failEvidence("release_surface_authorization_result_byte_limit", step);
     }
-    const resultScan = scanKnownSecretRepresentations(
+    const resultScan = scanVnextProtectedEqualityBytes(
       authorizationResultBytes,
-      input.knownSecrets
+      input.equalityCustody
     );
     if (resultScan.findingCount !== 0) {
       failEvidence("release_surface_authorization_result_unsafe", step);
@@ -4835,7 +4828,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
 
   async function admitDeploymentAttempt(rawInput) {
     const step = "release-surface-deployment";
-    const input = normalizeDeploymentInput(rawInput);
+    const input = normalizeDeploymentInput(rawInput, options.equalityCustody);
     const release = subjectStore.read(input.releaseManifestId);
     const lineage = validatePreparedReleaseLineage(
       input,
@@ -4858,7 +4851,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
       storedAuthorization
     );
     const deploymentScan = scanVnextPublicDocumentBytes(deployment.bytes, {
-      knownSecrets: input.knownSecrets
+      equalityCustody: input.equalityCustody
     });
     const deploymentRedaction = createVnextRedactionScanReceipt({
       attemptId: `release-deployment-redaction-${
@@ -4942,9 +4935,9 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
     if (resultBytes.length > parsedProfile.limits.maximumDeploymentResultBytes) {
       failEvidence("release_surface_deployment_result_byte_limit", step);
     }
-    const resultScan = scanKnownSecretRepresentations(
+    const resultScan = scanVnextProtectedEqualityBytes(
       resultBytes,
-      input.knownSecrets
+      input.equalityCustody
     );
     if (resultScan.findingCount !== 0) {
       failEvidence("release_surface_deployment_result_unsafe", step);
@@ -5000,7 +4993,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
 
   async function verifyPublicReadback(rawInput) {
     const step = "release-surface-public-readback";
-    const input = normalizePublicReadbackInput(rawInput);
+    const input = normalizePublicReadbackInput(rawInput, options.equalityCustody);
     const release = subjectStore.read(input.releaseManifestId);
     const lineage = validatePreparedReleaseLineage(
       input,
@@ -5044,9 +5037,9 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
       },
       input.webSecurityHeaderProfileBytes
     );
-    const resultKnownSecretScan = scanKnownSecretRepresentations(
+    const resultKnownSecretScan = scanVnextProtectedEqualityBytes(
       verifiedResult.bytes,
-      input.knownSecrets
+      input.equalityCustody
     );
     if (resultKnownSecretScan.findingCount !== 0) {
       failEvidence("release_surface_public_readback_result_unsafe", step);
@@ -5063,7 +5056,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
       failEvidence("release_surface_public_readback_receipt_byte_limit", step);
     }
     const readbackScan = scanVnextPublicDocumentBytes(readback.bytes, {
-      knownSecrets: input.knownSecrets
+      equalityCustody: input.equalityCustody
     });
     const readbackRedaction = createVnextRedactionScanReceipt({
       attemptId: `release-public-readback-redaction-${
@@ -5153,9 +5146,9 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
         parsedProfile.limits.maximumPublicReadbackAdmissionResultBytes) {
       failEvidence("release_surface_public_readback_admission_result_byte_limit", step);
     }
-    const admissionScan = scanKnownSecretRepresentations(
+    const admissionScan = scanVnextProtectedEqualityBytes(
       admissionResultBytes,
-      input.knownSecrets
+      input.equalityCustody
     );
     if (admissionScan.findingCount !== 0) {
       failEvidence("release_surface_public_readback_admission_result_unsafe", step);
@@ -5397,7 +5390,8 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
 
   async function prepareSitePublication(rawInput) {
     const step = "release-surface-site-publication-plan";
-    const input = normalizeSitePublicationPlanInput(rawInput);
+    const input = normalizeSitePublicationPlanInput(rawInput,
+      options.equalityCustody);
     const reconstructed = reconstructSitePublication(input);
     const { publication, release, staticReadback } = reconstructed;
     const artifacts = sitePublicationPlanArtifacts(input, release, publication);
@@ -5461,7 +5455,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
     const resultBytes = canonicalizeVnextJcsBytes(result);
     if (resultBytes.length >
         parsedProfile.limits.maximumSitePublicationPlanResultBytes ||
-        scanKnownSecretRepresentations(resultBytes, input.knownSecrets).findingCount !== 0) {
+        scanVnextProtectedEqualityBytes(resultBytes, input.equalityCustody).findingCount !== 0) {
       failEvidence("release_surface_site_publication_plan_result_unsafe", step);
     }
     return immutableReleasePreparationResult({
@@ -5478,7 +5472,8 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
 
   async function authorizeSitePublication(rawInput) {
     const step = "release-surface-site-publication-authorization";
-    const input = normalizeSitePublicationAuthorizationInput(rawInput);
+    const input = normalizeSitePublicationAuthorizationInput(rawInput,
+      options.equalityCustody);
     const reconstructed = reconstructSitePublication(input);
     const { publication, release, staticReadback } = reconstructed;
     const storedPlan = validateStoredSitePublicationPlan(
@@ -5581,7 +5576,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
     const resultBytes = canonicalizeVnextJcsBytes(result);
     if (resultBytes.length >
         parsedProfile.limits.maximumSitePublicationAuthorizationResultBytes ||
-        scanKnownSecretRepresentations(resultBytes, input.knownSecrets).findingCount !== 0) {
+        scanVnextProtectedEqualityBytes(resultBytes, input.equalityCustody).findingCount !== 0) {
       failEvidence("release_surface_site_publication_authorization_result_unsafe", step);
     }
     return immutableReleasePreparationResult({
@@ -5601,7 +5596,8 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
 
   async function admitGeneratedDeploymentAttempt(rawInput) {
     const step = "release-surface-generated-deployment";
-    const input = normalizeGeneratedDeploymentInput(rawInput);
+    const input = normalizeGeneratedDeploymentInput(rawInput,
+      options.equalityCustody);
     const { authorization, reconstructed } =
       reconstructAuthorizedSitePublication(input);
     const deployment = validateGeneratedDeploymentAttemptReceipt(
@@ -5614,7 +5610,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
       failEvidence("release_surface_generated_deployment_receipt_byte_limit", step);
     }
     const scan = scanVnextPublicDocumentBytes(deployment.bytes, {
-      knownSecrets: input.knownSecrets
+      equalityCustody: input.equalityCustody
     });
     const redaction = createVnextRedactionScanReceipt({
       attemptId: `generated-deployment-redaction-${
@@ -5673,7 +5669,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
     const resultBytes = canonicalizeVnextJcsBytes(result);
     if (resultBytes.length >
           parsedProfile.limits.maximumGeneratedDeploymentResultBytes ||
-        scanKnownSecretRepresentations(resultBytes, input.knownSecrets)
+        scanVnextProtectedEqualityBytes(resultBytes, input.equalityCustody)
           .findingCount !== 0) {
       failEvidence("release_surface_generated_deployment_result_unsafe", step);
     }
@@ -5691,7 +5687,8 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
 
   async function verifyGeneratedPublicationReadback(rawInput) {
     const step = "release-surface-generated-public-readback";
-    const input = normalizeGeneratedPublicReadbackInput(rawInput);
+    const input = normalizeGeneratedPublicReadbackInput(rawInput,
+      options.equalityCustody);
     const { authorization, graph, reconstructed } =
       reconstructAuthorizedSitePublication(input);
     const storedGenerated = validateStoredGeneratedDeploymentAttempt(
@@ -5716,8 +5713,8 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
       graph,
       input.webSecurityHeaderProfileBytes
     );
-    if (scanKnownSecretRepresentations(verifiedResult.bytes,
-      input.knownSecrets).findingCount !== 0) {
+    if (scanVnextProtectedEqualityBytes(verifiedResult.bytes,
+      input.equalityCustody).findingCount !== 0) {
       failEvidence("release_surface_generated_public_readback_result_unsafe", step);
     }
     const readback = createGeneratedPublicReadbackReceipt(
@@ -5733,7 +5730,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
       failEvidence("release_surface_generated_public_readback_receipt_byte_limit", step);
     }
     const scan = scanVnextPublicDocumentBytes(readback.bytes, {
-      knownSecrets: input.knownSecrets
+      equalityCustody: input.equalityCustody
     });
     const redaction = createVnextRedactionScanReceipt({
       attemptId: `generated-public-readback-redaction-${
@@ -5795,7 +5792,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
     const resultBytes = canonicalizeVnextJcsBytes(result);
     if (resultBytes.length >
           parsedProfile.limits.maximumGeneratedPublicReadbackAdmissionResultBytes ||
-        scanKnownSecretRepresentations(resultBytes, input.knownSecrets)
+        scanVnextProtectedEqualityBytes(resultBytes, input.equalityCustody)
           .findingCount !== 0) {
       failEvidence("release_surface_generated_public_readback_admission_unsafe", step);
     }
@@ -5813,7 +5810,8 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
 
   async function finalizeSitePublication(rawInput) {
     const step = "release-surface-final-site-publication";
-    const input = normalizeSitePublicationFinalizationInput(rawInput);
+    const input = normalizeSitePublicationFinalizationInput(rawInput,
+      options.equalityCustody);
     const { authorization, graph, reconstructed } =
       reconstructAuthorizedSitePublication(input);
     const storedGenerated = validateStoredGeneratedDeploymentAttempt(
@@ -5911,7 +5909,7 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
     const resultBytes = canonicalizeVnextJcsBytes(result);
     if (resultBytes.length >
           parsedProfile.limits.maximumSitePublicationAdmissionResultBytes ||
-        scanKnownSecretRepresentations(resultBytes, input.knownSecrets)
+        scanVnextProtectedEqualityBytes(resultBytes, input.equalityCustody)
           .findingCount !== 0) {
       failEvidence("release_surface_final_publication_result_unsafe", step);
     }

@@ -15,7 +15,7 @@ use std::fmt;
 pub const OFFLINE_BUNDLE_PROFILE_ID: &str = "tinyrustlm.vnext.offline-bundle.v1";
 /// The SHA-256 of the exact frozen offline verification-bundle profile bytes.
 pub const OFFLINE_BUNDLE_PROFILE_SHA256: &str =
-    "62e37b24391ce48cc8be71184e71a67ebd0972e90dca79cf8036099091349e9f";
+    "2b14f8e2d4d176e020d2c3e89d05dda07acc933bc76df6044ddd5b4e7d751756";
 
 const MANIFEST_SCHEMA: &str = "tinyrustlm.vnext.offline_bundle_manifest.v1";
 const CANONICAL_JSON_PROFILE: &str = "rfc8785-jcs+tinyrustlm.strict-json.v1";
@@ -45,7 +45,7 @@ const EXPECTED_PROFILE_BINDINGS: &[ExpectedProfileBinding] = &[
         sha256: "dd1534f577f5468f94d4b3b4d7d8985751fd1ddc4a28a2ccee9f47462449bbf0",
     },
     ExpectedProfileBinding {
-        byte_length: 3_583,
+        byte_length: 3_625,
         document_id: "tinyrustlm.vnext.offline-bundle.v1",
         document_kind: "profile",
         name: "offline-bundle-profile",
@@ -59,11 +59,18 @@ const EXPECTED_PROFILE_BINDINGS: &[ExpectedProfileBinding] = &[
         sha256: "924c515b2cddc081c9cbeac7e4c51fde213264ef2dff5bffcbc335430aafcbff",
     },
     ExpectedProfileBinding {
-        byte_length: 3_910,
+        byte_length: 2_710,
+        document_id: "tinyrustlm.vnext.protected-equality-custody.v1",
+        document_kind: "profile",
+        name: "protected-equality-custody-profile",
+        sha256: "db66fccab135294d950f8e1350ac2bab0947aad14b4ec87ac1565a6463b6730a",
+    },
+    ExpectedProfileBinding {
+        byte_length: 4_040,
         document_id: "tinyrustlm.vnext.public-safe-redaction.v1",
         document_kind: "profile",
         name: "public-safe-redaction-profile",
-        sha256: "3284ae637438327fd8ffb967ed6c9a8ef026cd5967e8a1b3602b7ade020cce6d",
+        sha256: "4044b25f180949b0c9ef49cd60244ebbd0bb1a81479c0c9676fe30c8608e0e26",
     },
     ExpectedProfileBinding {
         byte_length: 5_726,

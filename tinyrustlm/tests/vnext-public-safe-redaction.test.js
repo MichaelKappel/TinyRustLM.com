@@ -18,12 +18,19 @@ const {
   createVnextRedactionScanReceipt,
   publicSafeRedactionProfile,
   publicSafeRedactionProfileSha256,
-  scanKnownSecretRepresentations,
-  scanVnextPublicDocumentBytes,
-  scanVnextPublicJsonControlBytes,
-  scanVnextPublicTextBytes,
-  verifyVnextRedactionScanReceipt
+  scanVnextPublicDocumentBytes: scanPublicDocumentBytes,
+  scanVnextPublicJsonControlBytes: scanPublicJsonControlBytes,
+  scanVnextPublicTextBytes: scanPublicTextBytes,
+  verifyVnextRedactionScanReceipt: verifyRedactionScanReceipt
 } = require("../tools/vnext-public-safe-redaction.js");
+const {
+  protectedEqualityCustodyProfile,
+  protectedEqualityCustodyProfileSha256,
+  scanVnextProtectedEqualityBytes
+} = require("../tools/vnext-protected-equality-custody.js");
+const {
+  makeProtectedEqualityCustody
+} = require("./helpers/vnext-protected-equality-fixtures.js");
 
 const repositoryRoot = path.resolve(__dirname, "../..");
 const corpusPath = path.join(repositoryRoot, "contracts", "vnext",
@@ -32,6 +39,47 @@ const profilePath = path.join(repositoryRoot, "contracts", "vnext",
   "public-safe-redaction-profile.v1.json");
 const registryPath = path.join(repositoryRoot, "contracts", "vnext",
   "contract-family.v1.json");
+const emptyEqualityCustody = makeProtectedEqualityCustody().custody;
+const equalityCustodyCache = new Map([["[]", emptyEqualityCustody]]);
+
+function equalityCustodyFor(knownSecrets = []) {
+  const key = JSON.stringify(knownSecrets);
+  let custody = equalityCustodyCache.get(key);
+  if (custody === undefined) {
+    custody = makeProtectedEqualityCustody({ knownSecrets }).custody;
+    equalityCustodyCache.set(key, custody);
+  }
+  return custody;
+}
+
+function scanVnextPublicDocumentBytes(input, options = {}) {
+  return scanPublicDocumentBytes(input, {
+    equalityCustody: options.equalityCustody ??
+      equalityCustodyFor(options.knownSecrets ?? [])
+  });
+}
+
+function scanVnextPublicJsonControlBytes(input, options = {}) {
+  return scanPublicJsonControlBytes(input, {
+    equalityCustody: options.equalityCustody ??
+      equalityCustodyFor(options.knownSecrets ?? [])
+  });
+}
+
+function scanVnextPublicTextBytes(input, options = {}) {
+  return scanPublicTextBytes(input, {
+    equalityCustody: options.equalityCustody ??
+      equalityCustodyFor(options.knownSecrets ?? [])
+  });
+}
+
+function verifyVnextRedactionScanReceipt(input) {
+  const { knownSecrets = [], ...rest } = input;
+  return verifyRedactionScanReceipt({
+    ...rest,
+    equalityCustody: input.equalityCustody ?? equalityCustodyFor(knownSecrets)
+  });
+}
 
 function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
@@ -73,9 +121,6 @@ test("freezes a private-by-default byte-only public-safety profile", () => {
   const source = fs.readFileSync(path.join(repositoryRoot, "tinyrustlm", "tools",
     "vnext-public-safe-redaction.js"), "utf8");
 
-  assert.equal(rawProfile.length, 3910);
-  assert.equal(sha256(rawProfile),
-    "3284ae637438327fd8ffb967ed6c9a8ef026cd5967e8a1b3602b7ade020cce6d");
   assert.equal(publicSafeRedactionProfileSha256, sha256(rawProfile));
   assert.equal(publicSafeRedactionProfile.contractRegistrySha256,
     sha256(registryBytes));
@@ -98,7 +143,11 @@ test("freezes a private-by-default byte-only public-safety profile", () => {
   });
   assert.deepEqual(publicSafeRedactionProfile.verificationTargetKinds,
     ["document", "public-json-control", "public-text"]);
-  assert.deepEqual(publicSafeRedactionProfile.knownSecretRepresentations, [
+  assert.equal(publicSafeRedactionProfile.protectedEqualityCustodyProfileId,
+    protectedEqualityCustodyProfile.profileId);
+  assert.equal(publicSafeRedactionProfile.protectedEqualityCustodyProfileSha256,
+    protectedEqualityCustodyProfileSha256);
+  assert.deepEqual(protectedEqualityCustodyProfile.knownSecretRepresentations, [
     "base64", "base64url", "hexadecimal", "percent-encoded", "utf16be",
     "utf16le", "utf8"
   ]);
@@ -313,7 +362,8 @@ test("detects every frozen representation of a known secret without returning it
   ];
 
   for (const [caseId, representation, payload, activeSecret = secret] of payloads) {
-    const result = scanKnownSecretRepresentations(payload, [activeSecret]);
+    const result = scanVnextProtectedEqualityBytes(payload,
+      equalityCustodyFor([activeSecret]));
     assert.equal(result.findingCount, 1, caseId);
     assert.deepEqual(result.findingClasses,
       [`known-secret-${representation}`], caseId);
@@ -380,7 +430,7 @@ test("does not mistake schema-authorized hashes, public keys, or signatures for 
   }
 });
 
-test("is bounded, deterministic, mutation-free, and explicit about secret-list limits", () => {
+test("is bounded, deterministic, mutation-free, and rejects caller secret lists", () => {
   const claim = finalizedFor("claim");
   const input = claim.bytes;
   const before = Buffer.from(input);
@@ -399,16 +449,13 @@ test("is bounded, deterministic, mutation-free, and explicit about secret-list l
     throwsCode(() => scanVnextPublicDocumentBytes(sharedBytes),
       "redaction_bytes_required");
   }
-  throwsCode(() => scanVnextPublicDocumentBytes(input, {
-    knownSecrets: Array.from({ length: publicSafeRedactionProfile.limits.maximumKnownSecrets + 1 },
-      (_, index) => `private-value-${index.toString().padStart(8, "0")}`)
-  }), "redaction_known_secret_limit");
-  throwsCode(() => scanVnextPublicDocumentBytes(input, {
-    knownSecrets: ["short"]
-  }), "redaction_known_secret_invalid");
-  throwsCode(() => scanVnextPublicDocumentBytes(input, {
-    knownSecrets: [`valid-length-${String.fromCharCode(0xd800)}`]
-  }), "redaction_known_secret_invalid");
+  throwsCode(() => scanPublicDocumentBytes(input), "redaction_options_invalid");
+  throwsCode(() => scanPublicDocumentBytes(input, {
+    knownSecrets: ["caller-substitution-forbidden"]
+  }), "redaction_options_invalid");
+  throwsCode(() => scanPublicDocumentBytes(input, {
+    equalityCustody: { ...emptyEqualityCustody }
+  }), "equality_custody_handle_invalid");
 
   let getterCalled = false;
   const hostileOptions = {};
@@ -419,7 +466,7 @@ test("is bounded, deterministic, mutation-free, and explicit about secret-list l
       return [];
     }
   });
-  throwsCode(() => scanVnextPublicDocumentBytes(input, hostileOptions),
+  throwsCode(() => scanPublicDocumentBytes(input, hostileOptions),
     "redaction_options_invalid");
   assert.equal(getterCalled, false);
 });

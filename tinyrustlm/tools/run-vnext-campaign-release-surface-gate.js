@@ -11,6 +11,7 @@ const releaseSurfaceTestFile = path.join(
   "vnext-campaign-release-surface.test.js"
 );
 const shardTimeoutMilliseconds = 21_600_000;
+const maximumConcurrentShards = 1;
 
 const releaseSurfaceShards = Object.freeze([
   Object.freeze([
@@ -163,6 +164,28 @@ function runShard(names, index, activeChildren) {
   });
 }
 
+async function runShardPool(shards, maximumConcurrency, worker) {
+  if (!Array.isArray(shards) || shards.length === 0 ||
+      !Number.isSafeInteger(maximumConcurrency) || maximumConcurrency < 1 ||
+      maximumConcurrency > shards.length || typeof worker !== "function") {
+    throw new TypeError("invalid release-surface shard pool configuration");
+  }
+  const results = new Array(shards.length);
+  let nextIndex = 0;
+  async function consume() {
+    while (nextIndex < shards.length) {
+      const index = nextIndex;
+      nextIndex += 1;
+      results[index] = await worker(shards[index], index);
+    }
+  }
+  await Promise.all(Array.from(
+    { length: Math.min(maximumConcurrency, shards.length) },
+    consume
+  ));
+  return results;
+}
+
 async function runGate() {
   const source = fs.readFileSync(releaseSurfaceTestFile, "utf8");
   const coverage = validateShardPartition(source);
@@ -182,9 +205,15 @@ async function runGate() {
   process.once("SIGINT", stopChildren);
   process.once("SIGTERM", stopChildren);
   try {
-    const results = await Promise.all(releaseSurfaceShards.map(
+    process.stdout.write(
+      `release-surface gate scheduling ${coverage.shardCount} shards with ` +
+      `maximum concurrency ${maximumConcurrentShards}\n`
+    );
+    const results = await runShardPool(
+      releaseSurfaceShards,
+      maximumConcurrentShards,
       (names, index) => runShard(names, index, activeChildren)
-    ));
+    );
     const failures = results.filter((result) => result.status !== "passed");
     if (failures.length > 0) {
       throw new Error(`release-surface gate failed: ${JSON.stringify(failures)}`);
@@ -209,7 +238,9 @@ if (require.main === module) {
 
 module.exports = Object.freeze({
   extractTopLevelTestNames,
+  maximumConcurrentShards,
   releaseSurfaceShards,
+  runShardPool,
   shardPattern,
   validateShardPartition
 });

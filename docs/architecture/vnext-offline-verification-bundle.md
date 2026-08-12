@@ -12,18 +12,22 @@ The current implementation is:
 - `contracts/vnext/offline-verification-bundle-profile.v1.json`;
 - `contracts/vnext/campaign-projection-profile.v1.json`;
 - `contracts/vnext/phase-invalidation-profile.v1.json`;
+- `contracts/vnext/protected-equality-custody-profile.v1.json`;
 - `contracts/vnext/public-safe-redaction-profile.v1.json`;
 - `tinyrustlm/tools/vnext-offline-bundle.js`; and
 - `tinyrustlm/tests/vnext-offline-bundle.test.js`.
 
-The current offline profile is 3,583 bytes with SHA-256
-`62e37b24391ce48cc8be71184e71a67ebd0972e90dca79cf8036099091349e9f`.
-Its bound public-safe redaction profile is 3,910 bytes with SHA-256
-`3284ae637438327fd8ffb967ed6c9a8ef026cd5967e8a1b3602b7ade020cce6d`.
-The manifest also binds the 2,708-byte frozen phase-invalidation profile with
+The current offline profile is 3,625 bytes with SHA-256
+`2b14f8e2d4d176e020d2c3e89d05dda07acc933bc76df6044ddd5b4e7d751756`.
+Its bound public-safe redaction profile is 4,040 bytes with SHA-256
+`4044b25f180949b0c9ef49cd60244ebbd0bb1a81479c0c9676fe30c8608e0e26`.
+The eighth profile binding is the 2,710-byte protected equality-custody
+profile with SHA-256
+`db66fccab135294d950f8e1350ac2bab0947aad14b4ec87ac1565a6463b6730a`.
+The manifest also binds the 2,721-byte frozen phase-invalidation profile with
 SHA-256
 `924c515b2cddc081c9cbeac7e4c51fde213264ef2dff5bffcbc335430aafcbff`.
-The seventh binding is the 4,857-byte campaign-projection profile with
+The campaign-projection binding is the 4,857-byte profile with
 SHA-256
 `a5ed56eb0c0b924eaac3222bb814732bd36f2bfeae217477cf7549ae732d4ae9`.
 
@@ -72,8 +76,8 @@ The canonical manifest binds:
 - bundle state, profile ID, canonical JSON profile, creation time, campaign,
   environment, and registry pins;
 - the raw byte length and SHA-256 of the contract registry,
-  campaign-projection profile, phase-invalidation profile, public-safe
-  redaction profile, receipt-signature profile,
+  campaign-projection profile, phase-invalidation profile, protected
+  equality-custody profile, public-safe redaction profile, receipt-signature profile,
   receipt-store profile, and offline-bundle profile;
 - the SHA-256 of the canonical descriptor for each of the nine vNext schemas;
 - sorted target signature-receipt IDs;
@@ -132,7 +136,7 @@ The frozen profile caps:
 - receipts at 2,048 and aggregate receipt bytes at 64 MiB;
 - non-receipt subjects at 2,048 and aggregate subject bytes at 64 MiB;
 - target signatures at 512;
-- profile bindings at exactly seven;
+- profile bindings at exactly eight;
 - schema bindings at exactly nine; and
 - parser depth, entries, members, arrays, strings, and number characters.
 

@@ -8,7 +8,9 @@
   "defaultVisibility": "private",
   "inputPolicy": "bounded-final-canonical-document-canonical-public-json-control-or-lf-utf8-public-text-bytes-only",
   "outputPolicy": "unchanged-canonical-bytes-on-pass-no-output-on-fail",
-  "knownSecretPolicy": "private-equality-input-not-persisted-or-committed",
+  "knownSecretPolicy": "one-protected-signed-custody-revision-required-no-caller-secret-list",
+  "protectedEqualityCustodyProfileId": "tinyrustlm.vnext.protected-equality-custody.v1",
+  "protectedEqualityCustodyProfileSha256": "db66fccab135294d950f8e1350ac2bab0947aad14b4ec87ac1565a6463b6730a",
   "networkAccess": "forbidden",
   "sourceMutation": "forbidden",
   "redactionMarkersAllowed": false,
@@ -80,15 +82,6 @@
     "stable-unnecessary-user-or-hardware-identifier",
     "unbounded-exception-message"
   ],
-  "knownSecretRepresentations": [
-    "base64",
-    "base64url",
-    "hexadecimal",
-    "percent-encoded",
-    "utf16be",
-    "utf16le",
-    "utf8"
-  ],
   "detectorRuleIds": [
     "authorization-header",
     "aws-access-key",
@@ -116,6 +109,12 @@
   ],
   "resultSchema": "tinyrustlm.vnext.public_safe_scan_result.v1",
   "resultFields": [
+    "equalityCustodyAuthorityKeyId",
+    "equalityCustodyAuthorityPublicKeySha256",
+    "equalityCustodyBindingSha256",
+    "equalityCustodyGeneration",
+    "equalityCustodyId",
+    "equalityCustodyRevisionId",
     "findingClasses",
     "findingCount",
     "knownSecretCount",
@@ -132,10 +131,6 @@
   ],
   "limits": {
     "maximumInputBytes": 4194304,
-    "maximumKnownSecrets": 256,
-    "minimumKnownSecretBytes": 8,
-    "maximumKnownSecretBytes": 4096,
-    "maximumTotalKnownSecretBytes": 262144,
     "maximumFindingClasses": 64,
     "maximumResultBytes": 65536,
     "entropyMinimumTokenLength": 32,

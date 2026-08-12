@@ -15,7 +15,9 @@
   "subjectStoreProfileId": "tinyrustlm.vnext.subject-store.v1",
   "subjectStoreProfileSha256": "0985099802be93bbf4b88f834470d7aa605d1e60e672e38ceb2ec7ffa6f3f916",
   "publicSafeRedactionProfileId": "tinyrustlm.vnext.public-safe-redaction.v1",
-  "publicSafeRedactionProfileSha256": "3284ae637438327fd8ffb967ed6c9a8ef026cd5967e8a1b3602b7ade020cce6d",
+  "publicSafeRedactionProfileSha256": "4044b25f180949b0c9ef49cd60244ebbd0bb1a81479c0c9676fe30c8608e0e26",
+  "protectedEqualityCustodyProfileId": "tinyrustlm.vnext.protected-equality-custody.v1",
+  "protectedEqualityCustodyProfileSha256": "db66fccab135294d950f8e1350ac2bab0947aad14b4ec87ac1565a6463b6730a",
   "receiptSignatureProfileId": "tinyrustlm.vnext.ed25519-authority.v1",
   "receiptSignatureProfileSha256": "c9f3c6813e3880ebff6c79d9975ba085405208260715b0c68eafdfb9cfcb5721",
   "publicHttpsReadbackProfileId": "tinyrustlm.vnext.public-https-readback.v1",
@@ -29,6 +31,7 @@
   "storedProjectionPolicy": "forbidden",
   "callerVerdictPolicy": "forbidden",
   "callerCounterPolicy": "forbidden",
+  "equalityCustodyPolicy": "one-module-issued-signed-revision-pinned-at-surface-open-no-operation-substitution",
   "mutablePointerPolicy": "forbidden",
   "networkAccess": "forbidden-until-public-readback-operation",
   "clockAccess": "caller-trusted-verification-time-only",
@@ -252,7 +255,6 @@
     "callerTruthPolicy": "forbidden"
   },
   "limits": {
-    "maximumKnownSecrets": 128,
     "maximumProjectionBytes": 4194304,
     "maximumReceiptSnapshotMembers": 2048,
     "maximumSubjectSnapshotMembers": 2048,

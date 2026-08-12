@@ -20,6 +20,13 @@ const {
   validateVnextReceiptBytes
 } = require("./vnext-receipt-identity.js");
 const {
+  inspectVnextProtectedEqualityCustody,
+  protectedEqualityCustodyProfile,
+  protectedEqualityCustodyProfileSha256,
+  scanVnextProtectedEqualityBytes,
+  scanVnextProtectedEqualityText
+} = require("./vnext-protected-equality-custody.js");
+const {
   VnextEvidenceError,
   failEvidence
 } = require("./vnext-evidence-error.js");
@@ -98,10 +105,6 @@ const detectorRuleIds = Object.freeze([
   ...detectorRules.map((entry) => entry.id),
   "high-entropy-unapproved"
 ].sort());
-const knownSecretRepresentations = Object.freeze([
-  "base64", "base64url", "hexadecimal", "percent-encoded", "utf16be",
-  "utf16le", "utf8"
-]);
 const issuedScans = new WeakSet();
 const typedArrayPrototype = Object.getPrototypeOf(Uint8Array.prototype);
 const typedArrayBufferGetter = Object.getOwnPropertyDescriptor(
@@ -161,9 +164,11 @@ function deepFreeze(value) {
 const profileFields = Object.freeze([
   "schema", "profileId", "status", "versionPolicy", "contractRegistrySha256",
   "canonicalJsonProfile", "defaultVisibility", "inputPolicy", "outputPolicy",
-  "knownSecretPolicy", "networkAccess", "sourceMutation", "redactionMarkersAllowed",
+  "knownSecretPolicy", "protectedEqualityCustodyProfileId",
+  "protectedEqualityCustodyProfileSha256", "networkAccess", "sourceMutation",
+  "redactionMarkersAllowed",
   "publicSafeClasses", "privateClasses", "forbiddenFieldNames",
-  "forbiddenValueClasses", "knownSecretRepresentations", "detectorRuleIds",
+  "forbiddenValueClasses", "detectorRuleIds",
   "entropyExemptFieldTypes", "publicJsonControl", "publicText",
   "verificationTargetKinds",
   "resultSchema", "resultFields", "limits"
@@ -175,9 +180,8 @@ const publicJsonControlFields = Object.freeze([
   "class", "identityDomain", "schemas", "wirePolicy"
 ]);
 const limitFields = Object.freeze([
-  "maximumInputBytes", "maximumKnownSecrets", "minimumKnownSecretBytes",
-  "maximumKnownSecretBytes", "maximumTotalKnownSecretBytes",
-  "maximumFindingClasses", "maximumResultBytes", "entropyMinimumTokenLength",
+  "maximumInputBytes", "maximumFindingClasses", "maximumResultBytes",
+  "entropyMinimumTokenLength",
   "entropyMaximumTokenLength", "entropyThresholdMilliBits"
 ]);
 
@@ -207,7 +211,11 @@ function validateInstalledProfile() {
         "bounded-final-canonical-document-canonical-public-json-control-or-lf-utf8-public-text-bytes-only" ||
       parsedProfile.outputPolicy !== "unchanged-canonical-bytes-on-pass-no-output-on-fail" ||
       parsedProfile.knownSecretPolicy !==
-        "private-equality-input-not-persisted-or-committed" ||
+        "one-protected-signed-custody-revision-required-no-caller-secret-list" ||
+      parsedProfile.protectedEqualityCustodyProfileId !==
+        protectedEqualityCustodyProfile.profileId ||
+      parsedProfile.protectedEqualityCustodyProfileSha256 !==
+        protectedEqualityCustodyProfileSha256 ||
       parsedProfile.networkAccess !== "forbidden" ||
       parsedProfile.sourceMutation !== "forbidden" ||
       parsedProfile.redactionMarkersAllowed !== false ||
@@ -217,7 +225,6 @@ function validateInstalledProfile() {
         [...registry.redaction.forbiddenFieldNames]) ||
       !sameStrings(parsedProfile.forbiddenValueClasses,
         [...registry.redaction.forbiddenValueClasses]) ||
-      !sameStrings(parsedProfile.knownSecretRepresentations, knownSecretRepresentations) ||
       !sameStrings(parsedProfile.detectorRuleIds, detectorRuleIds) ||
       !sortedUniqueStrings(parsedProfile.entropyExemptFieldTypes) ||
       parsedProfile.publicText.schema !== "tinyrustlm.vnext.public_text.v1" ||
@@ -242,8 +249,6 @@ function validateInstalledProfile() {
       parsedProfile.resultSchema !== "tinyrustlm.vnext.public_safe_scan_result.v1" ||
       parsedProfile.limits.maximumInputBytes !== maximumPublicBytes ||
       !profileLimits.every((value) => Number.isSafeInteger(value) && value > 0) ||
-      parsedProfile.limits.minimumKnownSecretBytes >
-        parsedProfile.limits.maximumKnownSecretBytes ||
       parsedProfile.limits.entropyMinimumTokenLength >
         parsedProfile.limits.entropyMaximumTokenLength ||
       parsedProfile.limits.maximumResultBytes > parsedProfile.limits.maximumInputBytes) {
@@ -317,179 +322,14 @@ function normalizeBytes(input, code = "redaction_bytes_required") {
   return Buffer.from(new Uint8Array(backingBuffer, byteOffset, byteLength));
 }
 
-function assertDataArray(value, code) {
-  if (!Array.isArray(value) || Object.getPrototypeOf(value) !== Array.prototype ||
-      Object.getOwnPropertySymbols(value).length !== 0 ||
-      Object.getOwnPropertyNames(value).length !== value.length + 1) {
-    failEvidence(code, "known-secret-input");
-  }
-  for (let index = 0; index < value.length; index += 1) {
-    const descriptor = Object.getOwnPropertyDescriptor(value, String(index));
-    if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
-      failEvidence(code, "known-secret-input");
-    }
-  }
-}
-
-function normalizeKnownSecrets(value) {
-  if (value === undefined) return Object.freeze([]);
-  assertDataArray(value, "redaction_known_secret_invalid");
-  if (value.length > parsedProfile.limits.maximumKnownSecrets) {
-    failEvidence("redaction_known_secret_limit", "known-secret-input");
-  }
-  const secrets = [];
-  let totalBytes = 0;
-  const seen = new Set();
-  for (let index = 0; index < value.length; index += 1) {
-    const secret = Object.getOwnPropertyDescriptor(value, String(index)).value;
-    if (typeof secret !== "string") {
-      failEvidence("redaction_known_secret_invalid", "known-secret-input");
-    }
-    for (let offset = 0; offset < secret.length; offset += 1) {
-      const codeUnit = secret.charCodeAt(offset);
-      if (codeUnit >= 0xd800 && codeUnit <= 0xdbff) {
-        const next = secret.charCodeAt(offset + 1);
-        if (!(next >= 0xdc00 && next <= 0xdfff)) {
-          failEvidence("redaction_known_secret_invalid", "known-secret-input");
-        }
-        offset += 1;
-      } else if (codeUnit >= 0xdc00 && codeUnit <= 0xdfff) {
-        failEvidence("redaction_known_secret_invalid", "known-secret-input");
-      }
-    }
-    const bytes = Buffer.from(secret, "utf8");
-    if (bytes.length < parsedProfile.limits.minimumKnownSecretBytes ||
-        bytes.length > parsedProfile.limits.maximumKnownSecretBytes ||
-        seen.has(secret)) {
-      failEvidence("redaction_known_secret_invalid", "known-secret-input");
-    }
-    totalBytes += bytes.length;
-    if (totalBytes > parsedProfile.limits.maximumTotalKnownSecretBytes) {
-      failEvidence("redaction_known_secret_limit", "known-secret-input");
-    }
-    seen.add(secret);
-    secrets.push(Object.freeze({ secret, bytes }));
-  }
-  return Object.freeze(secrets);
-}
-
-function percentEncodeEveryByte(bytes) {
-  return Array.from(bytes,
-    (byte) => `%${byte.toString(16).toUpperCase().padStart(2, "0")}`).join("");
-}
-
-function uniqueAsciiBuffers(values) {
-  return [...new Set(values)].map((value) => Buffer.from(value, "ascii"));
-}
-
-function isAsciiHex(byte) {
-  return (byte >= 0x30 && byte <= 0x39) ||
-    (byte >= 0x41 && byte <= 0x46) ||
-    (byte >= 0x61 && byte <= 0x66);
-}
-
-function lowerAsciiHex(byte) {
-  return byte >= 0x41 && byte <= 0x46 ? byte + 0x20 : byte;
-}
-
-function normalizeHexCase(bytes) {
-  const normalized = Buffer.from(bytes);
-  for (let index = 0; index < normalized.length; index += 1) {
-    normalized[index] = lowerAsciiHex(normalized[index]);
-  }
-  return normalized;
-}
-
-function normalizePercentHexCase(bytes) {
-  const normalized = Buffer.from(bytes);
-  for (let index = 0; index + 2 < normalized.length; index += 1) {
-    if (normalized[index] === 0x25 && isAsciiHex(normalized[index + 1]) &&
-        isAsciiHex(normalized[index + 2])) {
-      normalized[index + 1] = lowerAsciiHex(normalized[index + 1]);
-      normalized[index + 2] = lowerAsciiHex(normalized[index + 2]);
-      index += 2;
-    }
-  }
-  return normalized;
-}
-
-function secretRepresentations(entry) {
-  const utf16be = Buffer.from(entry.secret, "utf16le");
-  utf16be.swap16();
-  const encodedUri = encodeURIComponent(entry.secret);
-  const fullyEncoded = percentEncodeEveryByte(entry.bytes);
-  const standardBase64 = entry.bytes.toString("base64");
-  const unpaddedBase64 = standardBase64.replace(/=+$/u, "");
-  const unpaddedBase64Url = entry.bytes.toString("base64url");
-  const paddedBase64Url = unpaddedBase64Url +
-    "=".repeat((4 - (unpaddedBase64Url.length % 4)) % 4);
-  return Object.freeze([
-    Object.freeze({
-      id: "base64",
-      bytes: uniqueAsciiBuffers([standardBase64, unpaddedBase64])
-    }),
-    Object.freeze({
-      id: "base64url",
-      bytes: uniqueAsciiBuffers([unpaddedBase64Url, paddedBase64Url])
-    }),
-    Object.freeze({
-      id: "hexadecimal",
-      bytes: [Buffer.from(entry.bytes.toString("hex"), "ascii")]
-    }),
-    Object.freeze({
-      id: "percent-encoded",
-      bytes: uniqueAsciiBuffers([
-        fullyEncoded,
-        ...(encodedUri === entry.secret ? [] : [encodedUri])
-      ])
-    }),
-    Object.freeze({ id: "utf16be", bytes: [utf16be] }),
-    Object.freeze({ id: "utf16le", bytes: [Buffer.from(entry.secret, "utf16le")] }),
-    Object.freeze({ id: "utf8", bytes: [entry.bytes] })
-  ]);
-}
-
-function scanKnownSecretRepresentations(input, knownSecrets = []) {
-  const bytes = normalizeBytes(input);
-  if (bytes.length > parsedProfile.limits.maximumInputBytes) {
-    failEvidence("redaction_input_byte_limit", "public-safe-read");
-  }
-  const secrets = normalizeKnownSecrets(knownSecrets);
-  const findings = new Set();
-  const hexNormalizedBytes = secrets.length === 0 ? null : normalizeHexCase(bytes);
-  const percentNormalizedBytes = secrets.length === 0 ? null :
-    normalizePercentHexCase(bytes);
-  for (const entry of secrets) {
-    const matchedRepresentations = new Set();
-    for (const representation of secretRepresentations(entry)) {
-      if (representation.id === "base64url" &&
-          matchedRepresentations.has("base64")) {
-        continue;
-      }
-      const source = representation.id === "hexadecimal" ? hexNormalizedBytes :
-        representation.id === "percent-encoded" ? percentNormalizedBytes : bytes;
-      const candidates = representation.id === "hexadecimal" ?
-        representation.bytes.map(normalizeHexCase) :
-        representation.id === "percent-encoded" ?
-          representation.bytes.map(normalizePercentHexCase) : representation.bytes;
-      if (candidates.some((candidate) =>
-        candidate.length > 0 && source.includes(candidate))) {
-        matchedRepresentations.add(representation.id);
-        findings.add(`known-secret-${representation.id}`);
-      }
-    }
-  }
-  const findingClasses = Object.freeze([...findings].sort());
-  return Object.freeze({
-    findingCount: findingClasses.length,
-    findingClasses
-  });
-}
-
 function normalizeOptions(options) {
-  if (options === undefined) return Object.freeze({ knownSecrets: Object.freeze([]) });
-  exactKeys(options, ["knownSecrets"], "redaction_options_invalid", "public-safe-options");
-  return Object.freeze({ knownSecrets: normalizeKnownSecrets(options.knownSecrets) });
+  exactKeys(options, ["equalityCustody"],
+    "redaction_options_invalid", "public-safe-options");
+  return Object.freeze({
+    equalityCustody: options.equalityCustody,
+    equalityCustodyBinding:
+      inspectVnextProtectedEqualityCustody(options.equalityCustody)
+  });
 }
 
 function shannonEntropy(value) {
@@ -548,9 +388,10 @@ function addFinding(findings, value) {
   }
 }
 
-function scanString(value, fieldType, findings, knownSecrets) {
-  for (const entry of knownSecrets) {
-    if (value.includes(entry.secret)) addFinding(findings, "known-secret-utf8");
+function scanString(value, fieldType, findings, equalityCustody) {
+  if (equalityCustody !== null) {
+    const equalityScan = scanVnextProtectedEqualityText(value, equalityCustody);
+    for (const finding of equalityScan.findingClasses) addFinding(findings, finding);
   }
   for (const rule of detectorRules) {
     if (rule.pattern.test(value)) addFinding(findings, rule.id);
@@ -560,7 +401,7 @@ function scanString(value, fieldType, findings, knownSecrets) {
   }
 }
 
-function scanStructuredValue(value, contract, findings, knownSecrets) {
+function scanStructuredValue(value, contract, findings, equalityCustody) {
   const pending = [{ value, fields: contract.fields }];
   while (pending.length > 0) {
     const current = pending.pop();
@@ -583,14 +424,27 @@ function scanStructuredValue(value, contract, findings, knownSecrets) {
       } else if (nested?.kind === "array-primitive") {
         for (const entry of child) {
           if (typeof entry === "string") {
-            scanString(entry, nested.name, findings, knownSecrets);
+            scanString(entry, nested.name, findings, equalityCustody);
           }
         }
       } else if (typeof child === "string") {
-        scanString(child, primitiveType(descriptor), findings, knownSecrets);
+        scanString(child, primitiveType(descriptor), findings, equalityCustody);
       }
     }
   }
+}
+
+function equalityResultFields(secretScan) {
+  return {
+    equalityCustodyAuthorityKeyId: secretScan.binding.authorityKeyId,
+    equalityCustodyAuthorityPublicKeySha256:
+      secretScan.binding.authorityPublicKeySha256,
+    equalityCustodyBindingSha256: secretScan.bindingSha256,
+    equalityCustodyGeneration: secretScan.binding.generation,
+    equalityCustodyId: secretScan.binding.custodyId,
+    equalityCustodyRevisionId: secretScan.binding.revisionId,
+    knownSecretCount: secretScan.binding.knownSecretCount
+  };
 }
 
 function canonicalResult(value) {
@@ -656,11 +510,12 @@ function scanVnextPublicDocumentBytes(input, options) {
     failEvidence("redaction_descriptor_invalid", "public-safe-scan");
   }
 
-  const secretScan = scanKnownSecretRepresentations(bytes,
-    normalizedOptions.knownSecrets.map((entry) => entry.secret));
+  const secretScan = scanVnextProtectedEqualityBytes(bytes,
+    normalizedOptions.equalityCustody);
   const findings = new Set(secretScan.findingClasses);
   scanStructuredValue(identity.value, contract, findings,
-    normalizedOptions.knownSecrets);
+    normalizedOptions.equalityCustodyBinding.knownSecretCount === 0 ? null :
+      normalizedOptions.equalityCustody);
   const findingClasses = Object.freeze([...findings].sort());
   const result = {
     schema: parsedProfile.resultSchema,
@@ -672,7 +527,7 @@ function scanVnextPublicDocumentBytes(input, options) {
     sourceCanonicalContentSha256: identity.canonicalContentSha256,
     sourceSha256: sha256(bytes),
     sourceByteLength: bytes.length,
-    knownSecretCount: normalizedOptions.knownSecrets.length,
+    ...equalityResultFields(secretScan),
     scanStatus: findingClasses.length === 0 ? "pass" : "fail",
     findingCount: findingClasses.length,
     findingClasses
@@ -698,7 +553,7 @@ function publicJsonControlFieldType(name, value) {
   return "bounded-text";
 }
 
-function scanPublicJsonControlValue(root, findings, knownSecrets) {
+function scanPublicJsonControlValue(root, findings, equalityCustody) {
   const pending = [{ name: "", value: root }];
   while (pending.length !== 0) {
     const current = pending.pop();
@@ -719,7 +574,7 @@ function scanPublicJsonControlValue(root, findings, knownSecrets) {
       scanString(current.value,
         publicJsonControlFieldType(current.name, current.value),
         findings,
-        knownSecrets);
+        equalityCustody);
     }
   }
 }
@@ -751,10 +606,12 @@ function scanVnextPublicJsonControlBytes(input, options) {
   if (!canonicalBytes.equals(bytes)) {
     failEvidence("redaction_public_json_wire_invalid", "public-safe-json");
   }
-  const secretScan = scanKnownSecretRepresentations(bytes,
-    normalizedOptions.knownSecrets.map((entry) => entry.secret));
+  const secretScan = scanVnextProtectedEqualityBytes(bytes,
+    normalizedOptions.equalityCustody);
   const findings = new Set(secretScan.findingClasses);
-  scanPublicJsonControlValue(value, findings, normalizedOptions.knownSecrets);
+  scanPublicJsonControlValue(value, findings,
+    normalizedOptions.equalityCustodyBinding.knownSecretCount === 0 ? null :
+      normalizedOptions.equalityCustody);
   const findingClasses = Object.freeze([...findings].sort());
   const identity = crypto.createHash("sha256")
     .update(Buffer.from(parsedProfile.publicJsonControl.identityDomain, "utf8"))
@@ -771,7 +628,7 @@ function scanVnextPublicJsonControlBytes(input, options) {
     sourceCanonicalContentSha256: identity,
     sourceSha256: sha256(bytes),
     sourceByteLength: bytes.length,
-    knownSecretCount: normalizedOptions.knownSecrets.length,
+    ...equalityResultFields(secretScan),
     scanStatus: findingClasses.length === 0 ? "pass" : "fail",
     findingCount: findingClasses.length,
     findingClasses
@@ -818,10 +675,10 @@ function scanVnextPublicTextBytes(input, options) {
   const bytes = normalizeBytes(input);
   const normalizedOptions = normalizeOptions(options);
   const text = decodeCanonicalPublicText(bytes);
-  const secretScan = scanKnownSecretRepresentations(bytes,
-    normalizedOptions.knownSecrets.map((entry) => entry.secret));
+  const secretScan = scanVnextProtectedEqualityBytes(bytes,
+    normalizedOptions.equalityCustody);
   const findings = new Set(secretScan.findingClasses);
-  scanString(text, "bounded-text", findings, normalizedOptions.knownSecrets);
+  scanString(text, "bounded-text", findings, null);
   const findingClasses = Object.freeze([...findings].sort());
   const identity = publicTextIdentity(bytes);
   const result = {
@@ -834,7 +691,7 @@ function scanVnextPublicTextBytes(input, options) {
     sourceCanonicalContentSha256: identity,
     sourceSha256: sha256(bytes),
     sourceByteLength: bytes.length,
-    knownSecretCount: normalizedOptions.knownSecrets.length,
+    ...equalityResultFields(secretScan),
     scanStatus: findingClasses.length === 0 ? "pass" : "fail",
     findingCount: findingClasses.length,
     findingClasses
@@ -869,9 +726,11 @@ const scannerSourceSha256 = sha256(fs.readFileSync(__filename));
 
 function receiptConfigurationSha256(scan) {
   return sha256(canonicalizeVnextJcsBytes({
+    equalityCustodyBindingSha256: scan.result.equalityCustodyBindingSha256,
     knownSecretCount: scan.result.knownSecretCount,
     knownSecretPolicy: parsedProfile.knownSecretPolicy,
     profileSha256: publicSafeRedactionProfileSha256,
+    protectedEqualityCustodyProfileSha256,
     scannerSourceSha256
   }, resultJcsLimits));
 }
@@ -907,6 +766,14 @@ function createVnextRedactionScanReceipt(input) {
     sourceRevision: input.sourceRevision,
     inputReceiptIds: [],
     inputHashes: [
+      {
+        name: "protected-equality-custody-binding",
+        sha256: scan.result.equalityCustodyBindingSha256
+      },
+      {
+        name: "protected-equality-custody-profile",
+        sha256: protectedEqualityCustodyProfileSha256
+      },
       { name: "public-safe-redaction-profile", sha256: publicSafeRedactionProfileSha256 },
       {
         name: "target-canonical-content",
@@ -959,7 +826,7 @@ function createVnextRedactionScanReceipt(input) {
 }
 
 const verifierInputFields = Object.freeze([
-  "knownSecrets", "receiptBytes", "targetBytes", "targetKind"
+  "equalityCustody", "receiptBytes", "targetBytes", "targetKind"
 ]);
 
 function verifyVnextRedactionScanReceipt(input) {
@@ -986,7 +853,9 @@ function verifyVnextRedactionScanReceipt(input) {
     : input.targetKind === "public-json-control"
       ? scanVnextPublicJsonControlBytes
       : scanVnextPublicTextBytes;
-  const scan = scanner(input.targetBytes, { knownSecrets: input.knownSecrets });
+  const scan = scanner(input.targetBytes, {
+    equalityCustody: input.equalityCustody
+  });
   const expected = createVnextRedactionScanReceipt({
     attemptId: receipt.attemptId,
     campaignId: receipt.campaignId,
@@ -1017,7 +886,6 @@ module.exports = Object.freeze({
   createVnextRedactionScanReceipt,
   publicSafeRedactionProfile,
   publicSafeRedactionProfileSha256,
-  scanKnownSecretRepresentations,
   scanVnextPublicDocumentBytes,
   scanVnextPublicJsonControlBytes,
   scanVnextPublicTextBytes,

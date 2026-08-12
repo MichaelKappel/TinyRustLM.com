@@ -44,7 +44,7 @@ The frozen profiles are:
 - `contracts/vnext/campaign-runner-profile.v1.json`, SHA-256
   `b0ba96ea2aa25112adea781138a4351511c56372bd1fdc04575e529a2b4720a9`;
 - `contracts/vnext/campaign-release-surface-profile.v1.json`, SHA-256
-  `e7e396e5127baed7084fa0f5cc285cfd83165b6a7350fa0ecac8439ce57e9033`;
+  `100d72ee201b395820aa11aa5b4f8f23befdbf0fffb515dda385fb826cc6fcff`;
 - `contracts/vnext/site-publication-profile.v1.json`, SHA-256
   `d959ce557e8b18a71514e2388a8eda7162182e38f5febf2e1a39b063fa5ba4bc`;
 - `contracts/vnext/public-https-readback-profile.v1.json`, SHA-256

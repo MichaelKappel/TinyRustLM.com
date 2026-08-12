@@ -223,21 +223,26 @@ replay, and evaluates compromise and currentness without network access.
 `tinyrustlm/tools/vnext-offline-bundle.js` adds one canonical closed manifest
 and a separate acyclic verification receipt. It binds all member bytes, all
 nine schema descriptors, the contract, campaign-projection,
-phase-invalidation, redaction, signature, store, and bundle profiles, target
+phase-invalidation, protected equality-custody, redaction, signature, store,
+and bundle profiles, target
 signatures, campaign/environment, and registry pins; rejects
 missing, extra, duplicate, unlinked, stale, interrupted, resource-exceeding,
 or drifted input; and invokes the authority verifier only with supplied member
 bytes.
 
 `tinyrustlm/tools/vnext-public-safe-redaction.js` accepts finalized canonical
-public-contract bytes only, rejects every private class, scans seven bounded
-known-secret encoding families plus schema-contextual forbidden value classes, returns
+public-contract bytes only, rejects every private class, requires one
+module-issued signed custody revision, scans seven bounded known-secret
+encoding families plus schema-contextual forbidden value classes, returns
 the unchanged bytes only on zero findings, and emits a separate deterministic
 result containing identities, counts, and classes rather than values. Its
 receipt builder and replay verifier bind target wire/content identity, exact
-profile and scanner, result hash, status, and protected equality-list count
-without publishing a secret hash. The offline manifest binds the redaction
-profile as one of seven installed profile or registry bindings. See
+profile and scanner, result hash, status, custody identity/revision/generation,
+public-key fingerprint, and protected equality-list count without publishing a
+secret hash or list commitment. Callers cannot supply or change a raw list per
+operation. The offline manifest binds both custody and redaction profiles among
+eight installed profile or registry bindings. See
+`docs/architecture/vnext-protected-equality-custody.md` and
 `docs/architecture/vnext-public-safe-redaction.md`.
 
 `tinyrustlm/tools/vnext-phase-invalidation.js` classifies immutable phase
@@ -290,8 +295,8 @@ and freezes nine accepted results plus 26 exact hostile rejection codes. See
 The same crate now independently verifies exact offline manifest and member
 binding, the separate verification receipt, authority composition, closed
 receipt and subject membership, terminal currentness, and target current
-eligibility. Its public-only 658,110-byte corpus has SHA-256
-`6ff1b5745080fb4dc3135f4cb6a311f72669eb7179276160ed9976934a8c4bd4`
+eligibility. Its public-only 668,506-byte corpus has SHA-256
+`82b8239eb97089f2b9101a04da7f985deb80f044a620376393517438baf3f178`
 and freezes three accepted bundles plus 31 exact hostile rejection codes. See
 `docs/architecture/vnext-rust-offline-bundle-parity.md`.
 The same crate now independently produces and validates the exact truthful
@@ -371,7 +376,7 @@ helper success into this boundary. Receipt and subject ingestion use their
 sole batch paths; campaign-artifact, campaign-operation, and append-only
 runner-lock paths use the same durable primitive. Missing or mismatched
 receipts are inactive. This closes the batch integration slice, not the
-remaining archive, equality-custody, fuzz, physical durability, or campaign
+remaining archive, fuzz, physical durability, or campaign
 gates. See
 `docs/architecture/adr/ADR-012-durable-publication-bootstrap.md`.
 
@@ -389,11 +394,11 @@ best-of-N, mutable-currentness, or stored-result promotion path. See
 `tinyrustlm/tools/vnext-campaign-release-surface.js` now consumes that runner
 only by creating a never-before-used operation and receiving its exact result
 inside the same call. Its frozen profile has SHA-256
-`e7e396e5127baed7084fa0f5cc285cfd83165b6a7350fa0ecac8439ce57e9033`.
+`100d72ee201b395820aa11aa5b4f8f23befdbf0fffb515dda385fb826cc6fcff`.
 The surface independently validates the returned projection against the exact
 stored plan and runner operation records, finalizes a content-addressed
 complete-or-blocked attestation, scans the final canonical bytes against the
-protected equality list before persistence, and derives a canonical operator
+one signed custody revision pinned when the surface opens, and derives a canonical operator
 status with no `done` state. Its `prepareRelease` operation additionally
 requires complete 20/50/25/40/20 campaign truth; all 20 qualified artifact
 hashes; dependency closure; one CycloneDX 1.6 SBOM; current artifact,
@@ -502,8 +507,8 @@ current eligibility for every declared target signature. Expired governance
 envelopes may authenticate immutable history but cannot become target-current
 evidence.
 
-The frozen offline profile is 3,583 bytes with SHA-256
-`62e37b24391ce48cc8be71184e71a67ebd0972e90dca79cf8036099091349e9f`.
+The frozen offline profile is 3,625 bytes with SHA-256
+`2b14f8e2d4d176e020d2c3e89d05dda07acc933bc76df6044ddd5b4e7d751756`.
 The manifest excludes its verification receipt to avoid a manifest/receipt
 hash cycle; the receipt is finalized afterward and binds the manifest hash and
 complete member set. `docs/architecture/vnext-offline-verification-bundle.md`

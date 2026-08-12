@@ -1,0 +1,78 @@
+{
+  "schema": "tinyrustlm.vnext.protected_equality_custody_profile.v1",
+  "profileId": "tinyrustlm.vnext.protected-equality-custody.v1",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-no-compatibility-reader",
+  "contractRegistrySha256": "dd1534f577f5468f94d4b3b4d7d8985751fd1ddc4a28a2ccee9f47462449bbf0",
+  "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
+  "bundleSchema": "tinyrustlm.vnext.protected_equality_custody_bundle.v1",
+  "bundleVisibility": "private-memory-only-never-persisted-committed-logged-or-returned",
+  "signatureAlgorithm": "Ed25519",
+  "signatureDomain": "tinyrustlm.protected_equality_custody.v1",
+  "domainSeparatorByte": 0,
+  "authorityTrustPolicy": "exact-caller-pinned-public-key-and-key-id-at-custody-open",
+  "revisionPolicy": "exact-custody-revision-generation-and-predecessor-chain-pinned-before-scanning",
+  "revisionUniquenessPolicy": "authority-must-issue-a-new-opaque-revision-id-for-every-secret-set-change",
+  "timePolicy": "caller-trusted-verification-time-must-be-within-signed-validity-window",
+  "secretPolicy": "validated-private-memory-only-no-export-no-secret-hash-no-public-commitment",
+  "handlePolicy": "module-issued-opaque-handle-only-no-structural-substitution",
+  "scanPolicy": "all-frozen-representations-scanned-without-secret-material-in-results",
+  "networkAccess": "forbidden",
+  "clockAccess": "forbidden-caller-trusted-time-only",
+  "sourceMutation": "forbidden",
+  "signedFields": [
+    "algorithm",
+    "authorityKeyId",
+    "custodyId",
+    "expiresAtUtc",
+    "generation",
+    "issuedAtUtc",
+    "knownSecrets",
+    "previousRevisionId",
+    "revisionId",
+    "schema"
+  ],
+  "signatureExcludedFields": [
+    "signature"
+  ],
+  "trustInputFields": [
+    "authorityPublicKeyBase64",
+    "expectedAuthorityKeyId",
+    "expectedCustodyId",
+    "expectedGeneration",
+    "expectedRevisionId",
+    "verificationTimeUtc"
+  ],
+  "publicBindingSchema": "tinyrustlm.vnext.protected_equality_custody_binding.v1",
+  "publicBindingFields": [
+    "authorityKeyId",
+    "authorityPublicKeySha256",
+    "custodyId",
+    "generation",
+    "knownSecretCount",
+    "profileId",
+    "profileSha256",
+    "revisionId",
+    "schema"
+  ],
+  "knownSecretRepresentations": [
+    "base64",
+    "base64url",
+    "hexadecimal",
+    "percent-encoded",
+    "utf16be",
+    "utf16le",
+    "utf8"
+  ],
+  "limits": {
+    "maximumBundleBytes": 524288,
+    "maximumKnownSecrets": 256,
+    "minimumKnownSecretBytes": 8,
+    "maximumKnownSecretBytes": 4096,
+    "maximumTotalKnownSecretBytes": 262144,
+    "maximumScanBytes": 4194304,
+    "maximumLifetimeSeconds": 2592000,
+    "maximumGeneration": 4294967295,
+    "maximumFindingClasses": 16
+  }
+}

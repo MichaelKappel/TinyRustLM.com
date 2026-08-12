@@ -302,8 +302,9 @@ evidence boundary, and the bounded public subject store summarized above. The
 redaction boundary validates finalized
 bytes, rejects private schemas, scans seven bounded known-secret encoding
 families and contextual forbidden values, emits no secret values, and replays
-a one-way scan receipt against the protected equality list. The offline profile
-binds current schema/profile hashes, including the redaction profile, a
+a one-way scan receipt against one signed, caller-pinned, module-issued custody
+revision. The offline profile binds current schema/profile hashes, including
+the custody and redaction profiles, a
 separate acyclic verification receipt, external
 root/terminal/campaign/environment/hash pins, current target signatures, and
 all supplied receipt and subject bytes without network access. That work is

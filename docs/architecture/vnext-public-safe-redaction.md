@@ -8,13 +8,15 @@ control, or canonical public release text before it can become publishable
 evidence. The implementation is:
 
 - `contracts/vnext/public-safe-redaction-profile.v1.json`;
+- `contracts/vnext/protected-equality-custody-profile.v1.json`;
+- `tinyrustlm/tools/vnext-protected-equality-custody.js`;
 - `tinyrustlm/tools/vnext-public-safe-redaction.js`; and
 - `tinyrustlm/tests/vnext-public-safe-redaction.test.js`.
 
 The checkpoint proves deterministic local validation, scanning, receipt
-creation, and receipt replay for supplied bytes. It is not Rust or browser
-parity, an archive-export gate, production secret custody, a publication, or a
-campaign result.
+creation, protected equality-custody verification, and receipt replay for
+supplied bytes. It is not Rust or browser scanner parity, an archive-export
+gate, a publication, or a campaign result.
 
 ## Decision
 
@@ -36,7 +38,8 @@ The vNext rule is fail closed:
    no disallowed controls, and a terminal LF.
 7. Recompute the document identity through both validators, or derive the
    control/text identity with its frozen domain and exact bytes.
-8. Scan known-secret encodings plus contextual pattern and entropy rules.
+8. Require one module-issued protected equality-custody handle and scan its
+   seven encoding families plus contextual pattern and entropy rules.
 9. Return the original canonical bytes unchanged only when no finding exists.
 10. Return no output bytes when any finding exists.
 11. Emit a separate canonical result containing identities, counts, and finding
@@ -53,8 +56,10 @@ The exact profile is `tinyrustlm.vnext.public-safe-redaction.v1`. It binds the
 current contract registry SHA-256 and recognizes one set of public and private
 classes:
 
-The checked-in profile is 3,910 bytes with SHA-256
-`3284ae637438327fd8ffb967ed6c9a8ef026cd5967e8a1b3602b7ade020cce6d`.
+The checked-in redaction profile is 4,040 bytes with SHA-256
+`4044b25f180949b0c9ef49cd60244ebbd0bb1a81479c0c9676fe30c8608e0e26`.
+Its required protected equality-custody profile is 2,710 bytes with SHA-256
+`db66fccab135294d950f8e1350ac2bab0947aad14b4ec87ac1565a6463b6730a`.
 
 | Visibility | Contract classes |
 | --- | --- |
@@ -78,17 +83,26 @@ forbidden.
 The profile permits at most:
 
 - 4 MiB of target bytes, matching the bounded publication-history ceiling;
-- 256 privately supplied known secrets;
-- 8 through 4,096 UTF-8 bytes per known secret;
-- 256 KiB of known-secret bytes in total;
 - 64 distinct finding classes; and
 - 64 KiB of canonical result bytes.
 
-Known-secret strings must contain valid Unicode scalar values and arrive as a
-plain data array. They are held only for the scan call. Neither secret values
-nor public hashes of those values enter the result, receipt, profile, logs, or
-configuration hash. This avoids turning a public receipt into an offline
-dictionary oracle.
+The signed private custody bundle permits at most 256 unique secrets, 8 through
+4,096 UTF-8 bytes per secret, and 256 KiB of secret bytes in total. It must be
+strict canonical JSON and carry an Ed25519 signature over the exact custody ID,
+opaque revision ID, monotonic generation, predecessor, validity interval,
+authority key ID, and secret array. Opening custody requires the exact
+caller-pinned raw public key, key ID, custody ID, revision ID, generation, and
+trusted verification time. The module returns an opaque `WeakSet`-registered
+handle; structural copies are rejected.
+
+Each public scan result binds the custody/profile identity, generation,
+revision, public-key SHA-256 fingerprint, secret count, and a canonical binding
+SHA-256. It never returns the private bundle, secret values, a secret hash, or
+a public commitment to the secret list. The signature binds the private list
+to the opaque revision, and the authority must issue a new unpredictable
+revision ID whenever that list changes. This avoids turning public evidence
+into an offline dictionary oracle while making authority or revision
+substitution visible.
 
 ## Detection
 
@@ -134,13 +148,15 @@ The result schema is
 - source schema and class, including the frozen control and public-text pairs;
 - source subject ID and canonical-content SHA-256;
 - SHA-256 and byte length of the exact source wire bytes;
-- private known-secret input count, but no value or value commitment;
+- protected custody ID, revision, generation, authority key ID, public-key
+  fingerprint, binding SHA-256, and known-secret count, but no secret value,
+  secret hash, or public secret-list commitment;
 - `pass` or `fail`;
 - finding-class count; and
 - sorted distinct finding classes.
 
 The result is serialized with the vNext safe-integer JCS profile. Running the
-scanner twice over the same target and private equality list produces identical
+scanner twice over the same target and protected custody revision produces identical
 result bytes. The result SHA-256 is returned separately, so the result does not
 contain a self-referential hash.
 
@@ -163,30 +179,32 @@ text.
 `verifyVnextRedactionScanReceipt` independently validates the receipt, requires
 `targetKind=document`, `targetKind=public-json-control`, or
 `targetKind=public-text`, reruns that exact scanner over the supplied target
-bytes and private equality list, rebuilds the expected receipt, and requires
-byte equality. Supplying an incomplete
-known-secret list to replay a prior failure changes the deterministic result
-and fails the receipt binding. A current signature descendant and trusted
+bytes and the same module-issued custody handle, rebuilds the expected receipt,
+and requires byte equality. A caller cannot substitute an incomplete list:
+raw list fields, missing handles, and structural handle copies fail before
+scanning, while a different valid revision changes the bound identity. A
+current signature descendant and trusted
 authority graph remain separate requirements for using the receipt as release
 evidence.
 
 ## Offline Binding
 
-The offline verification manifest binds seven installed profiles:
+The offline verification manifest binds eight installed profiles:
 
 1. campaign-projection profile;
 2. contract registry;
 3. offline-bundle profile;
 4. phase-invalidation profile;
-5. public-safe redaction profile;
-6. receipt-signature profile; and
-7. receipt-store profile.
+5. protected equality-custody profile;
+6. public-safe redaction profile;
+7. receipt-signature profile; and
+8. receipt-store profile.
 
 This prevents scanner-policy substitution inside an otherwise valid offline
 bundle. The general offline verifier does not receive private known-secret
 values and therefore does not silently claim equality-list replay. An
 authorized release orchestrator must invoke the dedicated redaction receipt
-verifier with the protected list before admitting that scan as current release
+verifier with the protected custody handle before admitting that scan as current release
 evidence.
 
 ## Failure Semantics
@@ -194,8 +212,8 @@ evidence.
 All failures use bounded `VnextEvidenceError` codes and registered steps.
 Malformed JSON, unknown fields, private schemas, noncanonical wire, identity
 drift, accessor-bearing configuration, invalid secret strings, byte or count
-limits, finding overflow, receipt drift, wrong target bytes, and wrong private
-equality lists fail without returning source text.
+limits, finding overflow, receipt drift, wrong target bytes, and missing,
+forged, or mismatched custody handles fail without returning source text.
 
 The scanner does not retry, repair, choose a different representation, remove
 fields, truncate a secret, or emit a best-effort pass. A changed profile,
@@ -218,15 +236,15 @@ The focused tests cover:
 - contextual entropy positives and cryptographic-field negatives;
 - deterministic result bytes;
 - pass and fail receipt creation;
-- exact receipt replay with the protected equality list;
-- replay failure with a changed target or incomplete list; and
+- exact receipt replay with the protected custody revision;
+- replay failure with a changed target, changed revision, forged handle, or raw
+  caller-supplied list;
 - inclusion of the profile in offline manifest bindings.
 
 ## Remaining Work
 
-- Preserve dedicated scan-receipt replay throughout the sole release surface
-  with the caller-protected equality list; production custody of that list
-  remains a separate operational gate.
+- Connect the sole release surface to an authorized private custody loader and
+  signer without exposing bundle bytes or accepting per-operation secret lists.
 - Enumerate and scan both compressed bytes and every decoded archive member
   under an archive-specific bounded profile. This JSON-document boundary does
   not decompress archives.

@@ -25,16 +25,16 @@ The implementation binds:
 - profile bytes
   `contracts/vnext/offline-verification-bundle-profile.v1.json`;
 - profile SHA-256
-  `62e37b24391ce48cc8be71184e71a67ebd0972e90dca79cf8036099091349e9f`;
+  `2b14f8e2d4d176e020d2c3e89d05dda07acc933bc76df6044ddd5b4e7d751756`;
 - public authority seed
   `contracts/vnext/authority-graph-public-seed.v1.json`, 171,656 bytes,
   SHA-256
   `80eb5d068bee339b5562c5cbd16c6f546e430895d6c6fb4c1172a36b4786197e`;
 - generated cross-language corpus
-  `contracts/vnext/offline-bundle-rust-vectors.v1.json`, 658,110 bytes,
+  `contracts/vnext/offline-bundle-rust-vectors.v1.json`, 668,506 bytes,
   SHA-256
-  `6ff1b5745080fb4dc3135f4cb6a311f72669eb7179276160ed9976934a8c4bd4`;
-- all seven exact profile bindings and all nine exact schema-descriptor
+  `82b8239eb97089f2b9101a04da7f985deb80f044a620376393517438baf3f178`;
+- all eight exact profile bindings and all nine exact schema-descriptor
   hashes from contract family
   `tinyrustlm-vnext-2026-08-09-r5`; and
 - the completed strict Rust receipt, identity-subject, Ed25519 primitive, and
@@ -162,6 +162,5 @@ receipt, or public HTTPS readback claim.
 - Bind only that reprojected result into final attestation, release
   authorization, operator rendering, synchronized documentation, and public
   readback.
-- Complete the Rust/Win32 directory-flush proof, archive-member scanning, and
-  protected equality-list custody before production durability or release
-  claims.
+- Complete the Rust/Win32 directory-flush proof and bounded archive-member
+  admission before production durability or package-release claims.

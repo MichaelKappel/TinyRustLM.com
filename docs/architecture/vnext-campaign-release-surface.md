@@ -11,7 +11,7 @@ performing exact static and complete static-plus-generated production HTTPS
 readback, and admitting create-only publication descendants through one final
 commit receipt. Its frozen profile is
 `contracts/vnext/campaign-release-surface-profile.v1.json`, with SHA-256
-`e7e396e5127baed7084fa0f5cc285cfd83165b6a7350fa0ecac8439ce57e9033`.
+`100d72ee201b395820aa11aa5b4f8f23befdbf0fffb515dda385fb826cc6fcff`.
 
 This checkpoint implements fresh projection, final attestation, public-safe
 redaction, truthful operator status, release-manifest preparation, current
@@ -120,7 +120,8 @@ manifest. It accepts only the canonical authorization receipt bytes, canonical
 changelog bytes, exact deployment-manifest, security-header-profile, and
 publication-generator bytes, exact release-manifest ID, expected campaign and
 environment, source revision, caller-pinned root and terminal authority
-registries, trusted verification time, and the bounded protected equality list. It has no caller
+registries, and trusted verification time. The surface retains the one
+module-issued protected equality-custody handle captured at construction. It has no caller
 field for an authorization decision, status, deployment, publication, or live
 counter. It reconstructs the preparation operation and all required evidence
 from create-only storage instead of trusting a prepared-result object retained
@@ -416,10 +417,12 @@ publication commit receipt. See
 
 ## Redaction And Secret Custody
 
-The caller supplies a bounded protected equality list in process memory. The
-surface validates that list before running, scans the finalized canonical
-attestation across the frozen redaction profile, and creates the one-way scan
-receipt from the scan capability. Preparation applies the same protected list
+The constructor requires one signed, caller-pinned, module-issued protected
+equality-custody handle. It validates that opaque handle before running and
+retains it for all nine operations; operation inputs cannot replace it with a
+raw list or structural copy. The surface scans the finalized canonical
+attestation across the frozen redaction profile and creates the one-way scan
+receipt from the scan capability. Preparation applies the same custody revision
 to every selected public input, the strict LF UTF-8 changelog, and the final
 release manifest. Secret values and representations are never written to a
 receipt, operation record, status view, error, or path.
@@ -430,6 +433,11 @@ only the public-safe scan receipt, returns no attestation bytes, and renders
 `release-evidence-redaction-blocked`. The scan receipt contains finding classes
 and hashes, not the protected values. The operator view receives an additional
 protected-equality scan before it is returned.
+
+The public result and receipt bind custody ID, revision, generation, authority
+key identity and fingerprint, known-secret count, and canonical custody-binding
+SHA-256 without exposing a secret hash or list commitment. See
+`docs/architecture/vnext-protected-equality-custody.md`.
 
 For preparation, a changelog scan receipt is create-only persisted before the
 manifest is admitted. A selected-document or changelog finding persists only a

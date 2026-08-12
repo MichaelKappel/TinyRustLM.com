@@ -188,9 +188,10 @@ grants no production runner, release, or live campaign authority.
 registry. `tinyrustlm/tools/vnext-public-safe-redaction.js` accepts finalized
 canonical bytes only, scans exact secret encodings and contextual forbidden
 values, returns unchanged bytes only on pass, and replays the scan receipt with
-the private equality list. The offline manifest binds that profile, the frozen
-phase-invalidation profile, and the campaign-projection profile as three of
-seven exact profile inputs. See
+one signed, pinned, module-issued custody revision. The offline manifest binds
+the custody, redaction, frozen phase-invalidation, and campaign-projection
+profiles among eight exact profile inputs. See
+`docs/architecture/vnext-protected-equality-custody.md` and
 `docs/architecture/vnext-public-safe-redaction.md`.
 
 The phase classifier and its explicit supersession rules are documented in
@@ -243,7 +244,7 @@ The fresh-runner-only immutable attestation, operator, release-manifest,
 authorization, deployment/readback, and final-publication boundary is documented
 in `docs/architecture/vnext-campaign-release-surface.md`. Its frozen profile
 has SHA-256
-`e7e396e5127baed7084fa0f5cc285cfd83165b6a7350fa0ecac8439ce57e9033`.
+`100d72ee201b395820aa11aa5b4f8f23befdbf0fffb515dda385fb826cc6fcff`.
 It admits no stored projection, caller verdict, counter set, dashboard state,
 or reused operation. It scans finalized attestation bytes before create-only
 receipt persistence and has no operator `done` state. Release preparation
