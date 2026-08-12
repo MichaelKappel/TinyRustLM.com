@@ -1,7 +1,55 @@
-profile: tinyrustlm.source-workspace.v298
+profile: tinyrustlm.source-workspace.v299
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-12T08:32:56Z
+updated_utc: 2026-08-12T20:43:38Z
+
+current_checkpoint_2026_08_12_protected_equality_custody_source_preservation:
+  authority: This is the newest first-read execution checkpoint. It supersedes older present-tense custody, redaction, release-gate, source-control, resume, and next-action fields where different while preserving immutable history. It records an immediate source-preservation checkpoint requested by the human; it is not a completed Gate D, release, publication, or campaign result.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  source_control:
+    root: E:\Source\.tinyrustlm-model-acquisition
+    branch: codex/model-acquisition-v2
+    implementation_commit: ace9b9cd5b3f4e3e888382e4c877eeeaf35af056
+    subject: feat(security): bind protected equality custody
+    upstream: origin/codex/model-acquisition-v2
+    verification: The implementation commit was pushed, fetched, and local HEAD exactly equaled the remote branch at this checkpoint. This private handoff update is the only subsequent worktree change before its own commit.
+    protected_checkout: E:\Source\Rust\TinyRustLM.com remains a separate protected checkout with 788 user-owned status entries and normalized status SHA-256 21843993f4cedbcc6a6a438e5cef081a7d472043e7ac37bc6cb0846dc118e354. It was read only for inventory and was not edited, reset, cleaned, staged, committed, or used for the active branch.
+  implemented_scope:
+    - Added one frozen strict canonical private custody contract signed with domain-separated Ed25519 and opened only against caller-pinned public key, authority key ID, custody ID, revision ID, generation, and trusted verification time.
+    - Added one module-issued opaque custody handle backed by private weak collections. Structural copies, missing handles, raw per-operation secret lists, accessors, invalid signatures, revision drift, time drift, duplicate secrets, invalid Unicode, and resource excess fail closed.
+    - Compiles and scans UTF-8, UTF-16LE, UTF-16BE, Base64, Base64url, hexadecimal, and percent-encoded representations without returning secret values, secret hashes, bundle bytes, signing material, or a public secret-list commitment.
+    - Cut public-safe redaction and all nine release-surface operations to one construction-time custody handle. Results and receipts bind custody, revision, generation, authority identity, public-key fingerprint, secret count, profile identity, and canonical public binding hash.
+    - Added the custody profile as the eighth exact offline-bundle profile binding and regenerated Node/Rust parity vectors. Updated all affected architecture, threat, inventory, control-plane, and contract documentation with current hashes and explicit nonclaims.
+    - Changed the exhaustive release-surface gate to one serial shard at a time after measured multi-shard resource contention. Partition tests still prove all 23 named tests are assigned exactly once.
+  exact_artifacts:
+    protected_equality_custody_profile: bytes=2710; sha256=db66fccab135294d950f8e1350ac2bab0947aad14b4ec87ac1565a6463b6730a
+    public_safe_redaction_profile: bytes=4040; sha256=4044b25f180949b0c9ef49cd60244ebbd0bb1a81479c0c9676fe30c8608e0e26
+    campaign_release_surface_profile: bytes=19151; sha256=100d72ee201b395820aa11aa5b4f8f23befdbf0fffb515dda385fb826cc6fcff
+    offline_verification_bundle_profile: bytes=3625; sha256=2b14f8e2d4d176e020d2c3e89d05dda07acc933bc76df6044ddd5b4e7d751756
+    offline_bundle_rust_vectors: bytes=668506; sha256=82b8239eb97089f2b9101a04da7f985deb80f044a620376393517438baf3f178
+  verification:
+    focused_node: 30/30 passed for custody, redaction, offline closure, and Node/Rust vector replay.
+    affected_rust: `cargo test -p tinyrustlm-evidence --locked` passed all unit, integration, contract, parity, and doc-test targets after the transitive binding change.
+    release_gate_first_complete_run: 19/23 behavior tests passed. Four failures were exact custody-cutover fixture regressions: unknown-field versus accessor classification, a release-only option passed to the campaign runner, one undefined test secret, and one empty custody for an unsafe changelog. No production evidence-graph assertion failed.
+    release_gate_regression_rerun: The corrected four cases passed 4/4 in 587.2 seconds without weakening production validation.
+    release_gate_final_aggregate: A final serial exhaustive rerun was active on shard 4 when the human ordered immediate source check-in. It was terminated cleanly for that instruction and produced no aggregate verdict. Do not call the complete release gate passed from this checkpoint; rerun it before treating the milestone as fully gated.
+    hygiene: JavaScript syntax, focused strict-contract tests, stale-binding search, and `git diff --check` passed before the implementation commit. No release-gate process remained at source preservation.
+  publication_truth:
+    delta: This security and evidence-contract checkpoint was not evaluated as a complete affected production publication closure because the final exhaustive gate was interrupted for immediate check-in.
+    action: No deployment, site version, release date, Updates entry, publication receipt, or public HTTPS readback claim was created.
+  explicit_nonclaims:
+    - Signed local custody conformance is not production signer custody, authorized secret delivery, authority revocation operation, trusted clock operation, or protection against process-memory disclosure.
+    - The source-preservation commit is not a complete Gate D pass until the final exhaustive release-surface gate and remaining required broad gates pass.
+    - No model qualification, deletion-backed browser round, authorized live MemoryEndpoints round, outside-network lane proof, catalog announcement, deployment, or campaign completion occurred.
+  campaign_truth: qualified_models=0/20; clean_browser_rounds=0/50; authorized_live_memory_rounds=0/25; current_outside_network_lane_proofs=0/40; live_catalog_announcements=0/20
+  exact_next_action:
+    - Rerun `node tools/run-vnext-campaign-release-surface-gate.js` from `tinyrustlm` under the frozen serial scheduler and require one clean 23/23 aggregate verdict.
+    - Run the complete affected Node, campaign-runner, locked Rust, formatting, denied-warning Clippy, deterministic-generation, hygiene, and publication-intersection gates.
+    - Commit and push any corrections and the resulting verified handoff immediately, then continue Gate D with bounded compressed archive and immutable-history member admission. Do not start a production publication unless the complete affected release gate proves a real publication-byte delta and authorization.
+  known_blockers: MemoryEndpoints production access remains unauthorized and disconnected; model qualification, external P2P observation, catalog announcements, signing and deployment authorization, controlled power-loss evidence, Linux helper execution, and physical linux-arm64 evidence remain objective work rather than inferred completion.
 
 current_checkpoint_2026_08_12_batch_durable_evidence_ingestion:
   authority: This is the newest first-read execution checkpoint. It supersedes older present-tense durability-batch, profile-identity, release-gate, resume, and next-action fields where different while preserving immutable history. It does not alter prior receipts, site releases, or campaign counts.
