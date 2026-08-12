@@ -1,7 +1,38 @@
-profile: tinyrustlm.source-workspace.v299
+profile: tinyrustlm.source-workspace.v300
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-12T20:43:38Z
+updated_utc: 2026-08-12T21:10:10Z
+
+current_checkpoint_2026_08_12_site_family_source_preservation_audit:
+  authority: This is the newest first-read source-control checkpoint. It supersedes older present-tense repository, protected-checkout, source-preservation, and resume fields where different while preserving immutable history. It records the human-requested immediate check-in audit across every site project named by E:\Source\Rust\workspace.uai; it is not a release-gate pass, deployment, publication, or campaign result.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  authoritative_source_control:
+    TinyRustLM.com: worktree=E:\Source\.tinyrustlm-model-acquisition; branch=codex/model-acquisition-v2; head=990d82881bc4d65f239b88fe9c54750021521c09; upstream=origin/codex/model-acquisition-v2; dirty=0; ahead=0; behind=0; actual_remote=990d82881bc4d65f239b88fe9c54750021521c09
+    LMComposer.com: head=36d6389fe82b0f53c4d8951aa6af5cb896fd8bf6; dirty=0; ahead=0; behind=0; actual_remote=36d6389fe82b0f53c4d8951aa6af5cb896fd8bf6
+    MiniModel.MiRust.com: authoritative_release_worktree_head=4f2401fb8166b54c73a1b9d4ad36985bbcf6fb5d; dirty=0; ahead=0; behind=0; actual_remote=4f2401fb8166b54c73a1b9d4ad36985bbcf6fb5d
+    MiniModel.org: authoritative_release_worktree_head=8439e224146c790ce6a9da36a32c4c49890cac52; dirty=0; ahead=0; behind=0; actual_remote=8439e224146c790ce6a9da36a32c4c49890cac52
+    MiRust.com: authoritative_release_worktree_head=4e3d8f52b0b20d9ccb51751e4182e8ab87fb3e43; dirty=0; ahead=0; behind=0; actual_remote=4e3d8f52b0b20d9ccb51751e4182e8ab87fb3e43
+    Runtime.MiRust.com: authoritative_release_worktree_head=63b39e78d0814c9cacbbba891ea918c844e2b4db; dirty=0; ahead=0; behind=0; actual_remote=63b39e78d0814c9cacbbba891ea918c844e2b4db
+    TinyRustLM.MiRust.com: authoritative_release_worktree_head=6d77afc4b54f7f84db7efa33d8798aef61e9733f; dirty=0; ahead=0; behind=0; actual_remote=6d77afc4b54f7f84db7efa33d8798aef61e9733f
+    result: Every authoritative site repository is clean, contains zero unpushed commits, and exactly matches its upstream branch. Several direct site-root checkouts are clean historical checkouts behind their authoritative release worktrees; no source exists only in those older checkouts.
+  protected_checkout_reconciliation:
+    path: E:\Source\Rust\TinyRustLM.com
+    state: The checkout remains on local master at ae9aee1ed77013ab2fcf76a1d8b7c096fce3596b with 781 apparent tracked deletions, two tracked `.uai` modifications, downloaded model trees, inaccessible reference-logit payloads, and three untracked vector-preregistration files. Its existing Git metadata denies this session writes to `.git\logs\HEAD`; it remains protected and is not the active source authority.
+    audit: The two `.uai` rules already exist in stronger tracked form on the active pushed branch. The two locally deleted research prompts are already absent there. The preregistration manifest is byte-identical there, while the pushed validator and test retain stronger immutable historical Git-blob closure checks that the untracked protected-checkout variants remove. The artifact removals mix local disk cleanup, raw model payload removal, browser residue, and immutable evidence receipts; they are not a coherent source change and were not staged or pushed.
+    prohibition: Do not reset, clean, revert, overwrite, commit, or publish from this protected checkout. Do not add model weights, logits, external repositories, browser profiles, private evidence payloads, or downloaded artifacts to Git. Continue only in the owned active worktree.
+  verification_truth:
+    source_audit: All seven authoritative repositories were rechecked against actual remote branch hashes on 2026-08-12. No unpushed source was found.
+    active_release_gate: The protected-equality custody implementation and handoff commits remain pushed. Its focused 30/30 custody/redaction/offline tests, locked evidence-crate tests, and corrected 4/4 release-surface regression cases passed. The final serial 23-case aggregate rerun was interrupted for immediate check-in and has no complete verdict.
+  publication_truth: No deployable production closure was evaluated or published during this source-preservation audit. No site version, release date, Updates entry, deployment receipt, or public HTTPS readback was created.
+  campaign_truth: qualified_models=0/20; clean_browser_rounds=0/50; authorized_live_memory_rounds=0/25; current_outside_network_lane_proofs=0/40; live_catalog_announcements=0/20
+  exact_next_action:
+    - Rerun `node tools/run-vnext-campaign-release-surface-gate.js` from `tinyrustlm` under the frozen serial scheduler and require one clean 23/23 aggregate verdict.
+    - Run every remaining complete affected Node, campaign-runner, locked Rust, formatting, denied-warning Clippy, deterministic-generation, hygiene, documentation, and publication-intersection gate.
+    - Commit and push each independently healthy correction or milestone immediately. Publish an affected site only after its complete source, tests, documentation, security, authorization, transport, and public-readback gate passes.
+  known_blockers: E: reached zero free bytes during the audit; 6.9 GiB of regenerable Cargo target output was removed and the tracked handoff was restored byte-exactly before this edit. The protected checkout Git metadata is not writable by this session; MemoryEndpoints production access remains unauthorized and disconnected; model qualification, external P2P observation, catalog announcements, signing and deployment authorization, controlled power-loss evidence, Linux helper execution, and physical linux-arm64 evidence remain incomplete.
 
 current_checkpoint_2026_08_12_protected_equality_custody_source_preservation:
   authority: This is the newest first-read execution checkpoint. It supersedes older present-tense custody, redaction, release-gate, source-control, resume, and next-action fields where different while preserving immutable history. It records an immediate source-preservation checkpoint requested by the human; it is not a completed Gate D, release, publication, or campaign result.
