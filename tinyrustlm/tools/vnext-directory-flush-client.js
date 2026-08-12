@@ -30,7 +30,8 @@ const packageManifestFieldNames = Object.freeze([
   "executableSha256", "operatingSystem", "runtimeIdentifier", "schema",
   "sourceClosureSha256", "trustClass"
 ]);
-const observationFieldNames = Object.freeze([
+const batchObservationFieldNames = Object.freeze(["observations", "schema", "status"]);
+const observationMemberFieldNames = Object.freeze([
   "architecture", "directoryIdentitySha256", "method", "operatingSystem",
   "operationId", "profileId", "profileSha256", "requestSha256", "schema",
   "status"
@@ -50,7 +51,7 @@ const clientResultFieldNames = Object.freeze([
   "schema", "status"
 ]);
 const expectedDirectoryFlushProfileSha256 =
-  "aaf82fde396e89d03e82a6cd7c761bfbedb1d766250dc9dd537124be68adcfd8";
+  "bb9c76715d0b35d63a9da27006ff8f88840486cf287cec24279a1020a0443ddb";
 const hexSha256Pattern = /^[a-f0-9]{64}$/u;
 const operationIdPattern = /^[a-z0-9][a-z0-9._:-]{2,159}$/u;
 const safeErrorCodePattern = /^[a-z][a-z0-9_]{2,79}$/u;
@@ -82,6 +83,38 @@ function dataObjectValues(value, fieldNames, code, step) {
       failEvidence(code, step);
     }
     result[name] = descriptor.value;
+  }
+  return Object.freeze(result);
+}
+
+function dataArrayValues(value, minimumEntries, maximumEntries, code, step) {
+  if (!Array.isArray(value) || Object.getPrototypeOf(value) !== Array.prototype ||
+      Object.getOwnPropertySymbols(value).length !== 0 ||
+      !Number.isSafeInteger(value.length) || value.length < minimumEntries ||
+      value.length > maximumEntries) {
+    failEvidence(code, step);
+  }
+  const names = Object.getOwnPropertyNames(value);
+  const expectedNames = [
+    ...Array.from({ length: value.length }, (_entry, index) => String(index)),
+    "length"
+  ];
+  if (names.length !== expectedNames.length ||
+      names.some((name) => !expectedNames.includes(name))) {
+    failEvidence(code, step);
+  }
+  const lengthDescriptor = Object.getOwnPropertyDescriptor(value, "length");
+  if (!lengthDescriptor || !("value" in lengthDescriptor) ||
+      lengthDescriptor.value !== value.length) {
+    failEvidence(code, step);
+  }
+  const result = [];
+  for (let index = 0; index < value.length; index += 1) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, String(index));
+    if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
+      failEvidence(code, step);
+    }
+    result.push(descriptor.value);
   }
   return Object.freeze(result);
 }
@@ -138,9 +171,11 @@ function assertProfile() {
   const profileFields = [
     "schema", "profileId", "status", "versionPolicy", "canonicalJsonProfile",
     "hashAlgorithm", "directoryFlushProfileId", "directoryFlushProfileSha256",
-    "requestSchema", "observationSchema", "failureSchema", "clientResultSchema",
+    "requestSchema", "requestMemberSchema", "observationSchema",
+    "observationMemberSchema", "failureSchema", "clientResultSchema",
     "packageManifestSchema", "clientSourceClosureMembers", "package",
-    "packageManifestFields", "process", "result", "clientResultFields", "nonClaims"
+    "packageManifestFields", "batch", "process", "result", "clientResultFields",
+    "nonClaims"
   ];
   dataObjectValues(directoryFlushClientProfile, profileFields,
     "directory_flush_client_profile_invalid", "directory-flush-client-profile");
@@ -159,9 +194,13 @@ function assertProfile() {
       directoryFlushClientProfile.directoryFlushProfileSha256 !==
         expectedDirectoryFlushProfileSha256 ||
       directoryFlushClientProfile.requestSchema !==
-        "tinyrustlm.vnext.directory_flush_request.v1" ||
+        "tinyrustlm.vnext.directory_flush_batch_request.v1" ||
+      directoryFlushClientProfile.requestMemberSchema !==
+        "tinyrustlm.vnext.directory_flush_request_member.v1" ||
       directoryFlushClientProfile.observationSchema !==
-        "tinyrustlm.vnext.directory_flush_observation.v1" ||
+        "tinyrustlm.vnext.directory_flush_batch_observation.v1" ||
+      directoryFlushClientProfile.observationMemberSchema !==
+        "tinyrustlm.vnext.directory_flush_observation_member.v1" ||
       directoryFlushClientProfile.failureSchema !==
         "tinyrustlm.vnext.directory_flush_failure.v1" ||
       directoryFlushClientProfile.clientResultSchema !==
@@ -184,6 +223,11 @@ function assertProfile() {
     "stdout", "stderr", "successExitStatus", "failureExitStatus",
     "timeoutKillSignal", "timeoutMilliseconds", "maximumRequestBytes",
     "maximumStdoutBytes", "maximumStderrBytes"
+  ], "directory_flush_client_profile_invalid", "directory-flush-client-profile");
+  const batchProfile = dataObjectValues(directoryFlushClientProfile.batch, [
+    "minimumEntries", "maximumEntries", "canonicalMaximumTotalStringCodeUnits",
+    "ordering", "duplicateOperationIds", "processInvocations", "memberResult",
+    "partialHelperSuccess"
   ], "directory_flush_client_profile_invalid", "directory-flush-client-profile");
   const resultProfile = dataObjectValues(directoryFlushClientProfile.result, [
     "rawPathOutput", "rawProcessOutput", "rawHostErrorOutput",
@@ -220,16 +264,24 @@ function assertProfile() {
       processProfile.workingDirectory !== "verified-package-root" ||
       processProfile.stdio !== "private-bounded-pipes" ||
       !exactStringArray(processProfile.arguments, []) ||
-      processProfile.stdin !== "one-canonical-request-json-document" ||
-      processProfile.stdout !== "one-canonical-success-or-failure-json-document" ||
+      processProfile.stdin !== "one-canonical-sorted-batch-request-json-document" ||
+      processProfile.stdout !==
+        "one-canonical-batch-success-or-public-safe-failure-json-document" ||
       processProfile.stderr !== "must-be-empty" ||
       processProfile.successExitStatus !== 0 ||
       processProfile.failureExitStatus !== 2 ||
       processProfile.timeoutKillSignal !== "SIGKILL" ||
       processProfile.timeoutMilliseconds !== 10_000 ||
-      processProfile.maximumRequestBytes !== 16_384 ||
-      processProfile.maximumStdoutBytes !== 16_384 ||
+      processProfile.maximumRequestBytes !== 4_194_304 ||
+      processProfile.maximumStdoutBytes !== 4_194_304 ||
       processProfile.maximumStderrBytes !== 4_096 ||
+      batchProfile.minimumEntries !== 1 || batchProfile.maximumEntries !== 1_024 ||
+      batchProfile.canonicalMaximumTotalStringCodeUnits !== 4_194_304 ||
+      batchProfile.ordering !== "operation-id-bytewise-ascending" ||
+      batchProfile.duplicateOperationIds !== "forbidden" ||
+      batchProfile.processInvocations !== "exactly-one-per-flush-many-call" ||
+      batchProfile.memberResult !== "one-current-client-result-per-operation" ||
+      batchProfile.partialHelperSuccess !== "entire-client-call-fails-closed" ||
       !exactStringArray(directoryFlushClientProfile.packageManifestFields,
         packageManifestFieldNames) ||
       !exactStringArray(directoryFlushClientProfile.clientSourceClosureMembers,
@@ -253,7 +305,7 @@ function assertProfile() {
       !exactStringArray(directoryFlushClientProfile.clientResultFields,
         clientResultFieldNames) ||
       !Array.isArray(directoryFlushClientProfile.nonClaims) ||
-      directoryFlushClientProfile.nonClaims.length !== 8 ||
+      directoryFlushClientProfile.nonClaims.length !== 9 ||
       directoryFlushClientProfile.nonClaims.some((claim) =>
         typeof claim !== "string" || claim.length < 20 || claim.length > 240)) {
     failEvidence("directory_flush_client_profile_invalid",
@@ -443,7 +495,7 @@ function verifyExecutable(packageState, mismatchCode) {
   return Object.freeze({ byteCount: bytes.length, sha256: actualSha256 });
 }
 
-function requestBytes(input) {
+function requestMember(input) {
   const values = dataObjectValues(input, requestFieldNames,
     "directory_flush_request_invalid", "directory-flush-request");
   if (typeof values.operationId !== "string" ||
@@ -456,19 +508,61 @@ function requestBytes(input) {
       values.relativeDirectory.includes("\0")) {
     failEvidence("directory_flush_request_invalid", "directory-flush-request");
   }
-  const bytes = canonicalizeVnextJcsBytes({
+  const member = freezeRecord({
     operationId: values.operationId,
     ownedRoot: values.ownedRoot,
     relativeDirectory: values.relativeDirectory,
+    schema: directoryFlushClientProfile.requestMemberSchema
+  });
+  const bytes = canonicalizeVnextJcsBytes(member);
+  return freezeRecord({
+    bytes,
+    member,
+    requestSha256: sha256(bytes),
+    values
+  });
+}
+
+function requestBatchBytes(input) {
+  const values = dataArrayValues(input,
+    directoryFlushClientProfile.batch.minimumEntries,
+    directoryFlushClientProfile.batch.maximumEntries,
+    "directory_flush_batch_invalid", "directory-flush-request");
+  const members = values.map(requestMember);
+  members.sort((left, right) => Buffer.compare(
+    Buffer.from(left.values.operationId, "utf8"),
+    Buffer.from(right.values.operationId, "utf8")
+  ));
+  for (let index = 1; index < members.length; index += 1) {
+    if (members[index - 1].values.operationId === members[index].values.operationId) {
+      failEvidence("directory_flush_batch_invalid", "directory-flush-request");
+    }
+  }
+  let minimumWireBytes = 32;
+  for (const entry of members) {
+    minimumWireBytes += 64 + Buffer.byteLength(entry.values.operationId, "utf8") +
+      Buffer.byteLength(entry.values.ownedRoot, "utf8") +
+      Buffer.byteLength(entry.values.relativeDirectory, "utf8") +
+      Buffer.byteLength(directoryFlushClientProfile.requestMemberSchema, "utf8");
+    if (minimumWireBytes > directoryFlushClientProfile.process.maximumRequestBytes) {
+      failEvidence("directory_flush_request_byte_limit", "directory-flush-request");
+    }
+  }
+  const bytes = canonicalizeVnextJcsBytes({
+    requests: members.map((entry) => entry.member),
     schema: directoryFlushClientProfile.requestSchema
+  }, {
+    maximumArrayItems: directoryFlushClientProfile.batch.maximumEntries,
+    maximumTotalStringCodeUnits:
+      directoryFlushClientProfile.batch.canonicalMaximumTotalStringCodeUnits
   });
   if (bytes.length > directoryFlushClientProfile.process.maximumRequestBytes) {
     failEvidence("directory_flush_request_byte_limit", "directory-flush-request");
   }
-  return Object.freeze({ bytes, values });
+  return Object.freeze({ bytes, members: Object.freeze(members) });
 }
 
-function validateObservation(bytes, expected, packageState) {
+function validateObservationBatch(bytes, expectedMembers, packageState) {
   let parsed;
   try {
     parsed = parseStrictJson(bytes);
@@ -476,28 +570,45 @@ function validateObservation(bytes, expected, packageState) {
     throw asEvidenceError(error, "directory_flush_observation_invalid",
       "directory-flush-observation");
   }
-  const observation = dataObjectValues(parsed, observationFieldNames,
+  const batch = dataObjectValues(parsed, batchObservationFieldNames,
     "directory_flush_observation_invalid", "directory-flush-observation");
-  if (!canonicalizeVnextJcsBytes(observation).equals(bytes) ||
-      observation.schema !== directoryFlushClientProfile.observationSchema ||
-      observation.status !== "performed" ||
-      observation.operationId !== expected.operationId ||
-      observation.requestSha256 !== expected.requestSha256 ||
-      observation.profileId !== directoryFlushClientProfile.directoryFlushProfileId ||
-      observation.profileSha256 !==
-        directoryFlushClientProfile.directoryFlushProfileSha256 ||
-      observation.architecture !== packageState.manifest.architecture ||
-      observation.operatingSystem !== packageState.manifest.operatingSystem ||
-      !hexSha256Pattern.test(observation.directoryIdentitySha256) ||
-      !["win32-backup-semantics-flush-file-buffers", "posix-directory-fsync"]
-        .includes(observation.method) ||
-      (process.platform === "win32" && observation.method !==
-        "win32-backup-semantics-flush-file-buffers") ||
-      (process.platform !== "win32" && observation.method !==
-        "posix-directory-fsync")) {
+  if (!canonicalizeVnextJcsBytes(batch, {
+    maximumArrayItems: directoryFlushClientProfile.batch.maximumEntries,
+    maximumTotalStringCodeUnits:
+      directoryFlushClientProfile.batch.canonicalMaximumTotalStringCodeUnits
+  }).equals(bytes) ||
+      batch.schema !== directoryFlushClientProfile.observationSchema ||
+      batch.status !== "performed") {
     failEvidence("directory_flush_observation_invalid", "directory-flush-observation");
   }
-  return observation;
+  const rawObservations = dataArrayValues(batch.observations,
+    expectedMembers.length, expectedMembers.length,
+    "directory_flush_observation_invalid", "directory-flush-observation");
+  const observations = rawObservations.map((rawObservation, index) => {
+    const observation = dataObjectValues(rawObservation, observationMemberFieldNames,
+      "directory_flush_observation_invalid", "directory-flush-observation");
+    const expected = expectedMembers[index];
+    if (observation.schema !== directoryFlushClientProfile.observationMemberSchema ||
+        observation.status !== "performed" ||
+        observation.operationId !== expected.values.operationId ||
+        observation.requestSha256 !== expected.requestSha256 ||
+        observation.profileId !== directoryFlushClientProfile.directoryFlushProfileId ||
+        observation.profileSha256 !==
+          directoryFlushClientProfile.directoryFlushProfileSha256 ||
+        observation.architecture !== packageState.manifest.architecture ||
+        observation.operatingSystem !== packageState.manifest.operatingSystem ||
+        !hexSha256Pattern.test(observation.directoryIdentitySha256) ||
+        !["win32-backup-semantics-flush-file-buffers", "posix-directory-fsync"]
+          .includes(observation.method) ||
+        (process.platform === "win32" && observation.method !==
+          "win32-backup-semantics-flush-file-buffers") ||
+        (process.platform !== "win32" && observation.method !==
+          "posix-directory-fsync")) {
+      failEvidence("directory_flush_observation_invalid", "directory-flush-observation");
+    }
+    return freezeRecord(observation);
+  });
+  return Object.freeze(observations);
 }
 
 function validateFailure(bytes) {
@@ -524,9 +635,8 @@ function createVnextDirectoryFlushClient(packageRootInput) {
   const packageRoot = normalizeAbsoluteRoot(packageRootInput);
   const initialPackage = loadPackage(packageRoot);
 
-  function flush(input) {
-    const request = requestBytes(input);
-    const requestSha256 = sha256(request.bytes);
+  function flushMany(inputs) {
+    const request = requestBatchBytes(inputs);
     const currentPackage = loadPackage(packageRoot);
     if (!currentPackage.manifestBytes.equals(initialPackage.manifestBytes) ||
         currentPackage.manifestSha256 !== initialPackage.manifestSha256 ||
@@ -575,10 +685,11 @@ function createVnextDirectoryFlushClient(packageRootInput) {
     if (child.status !== directoryFlushClientProfile.process.successExitStatus) {
       failEvidence("directory_flush_process_failed", "directory-flush-process");
     }
-    const observation = validateObservation(child.stdout, {
-      operationId: request.values.operationId,
-      requestSha256
-    }, currentPackage);
+    const observations = validateObservationBatch(
+      child.stdout,
+      request.members,
+      currentPackage
+    );
     const finalPackage = loadPackage(packageRoot);
     if (!finalPackage.manifestBytes.equals(currentPackage.manifestBytes) ||
         finalPackage.manifestSha256 !== currentPackage.manifestSha256 ||
@@ -590,7 +701,7 @@ function createVnextDirectoryFlushClient(packageRootInput) {
     if (before.byteCount !== after.byteCount || before.sha256 !== after.sha256) {
       failEvidence("directory_flush_executable_changed", "directory-flush-process");
     }
-    return freezeRecord({
+    const results = observations.map((observation) => freezeRecord({
       architecture: observation.architecture,
       clientProfileId: directoryFlushClientProfile.profileId,
       clientProfileSha256: directoryFlushClientProfileSha256,
@@ -606,17 +717,22 @@ function createVnextDirectoryFlushClient(packageRootInput) {
       helperTrustClass: currentPackage.manifest.trustClass,
       method: observation.method,
       nodeRuntimeVersion: process.version,
-      observationSha256: sha256(child.stdout),
+      observationSha256: sha256(canonicalizeVnextJcsBytes(observation)),
       operatingSystem: observation.operatingSystem,
       operationId: observation.operationId,
       requestSha256: observation.requestSha256,
       runtimeIdentifier: currentPackage.manifest.runtimeIdentifier,
       schema: directoryFlushClientProfile.clientResultSchema,
       status: "performed"
-    });
+    }));
+    return Object.freeze(results);
   }
 
-  return Object.freeze({ flush });
+  function flush(input) {
+    return flushMany([input])[0];
+  }
+
+  return Object.freeze({ flush, flushMany });
 }
 
 function createConfiguredVnextDirectoryFlushClient() {

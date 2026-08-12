@@ -54,6 +54,11 @@ const records = [
   ]],
   ["ADR-011-campaign-evidence-browser-boundary.md", [
     "zero-import", "staged", "offline-bundle verdict"
+  ]],
+  ["ADR-012-durable-publication-bootstrap.md", [
+    "forward-only content-addressed durability receipt",
+    "same-directory target temporary",
+    "non-recursive bootstrap rule"
   ]]
 ];
 
@@ -61,7 +66,7 @@ function read(name) {
   return fs.readFileSync(path.join(adrDirectory, name), "utf8");
 }
 
-test("contains the complete accepted ADR-001 through ADR-011 inventory", () => {
+test("contains the complete accepted ADR-001 through ADR-012 inventory", () => {
   const actual = fs.readdirSync(adrDirectory)
     .filter((name) => /^ADR-\d{3}-.+\.md$/u.test(name))
     .sort();

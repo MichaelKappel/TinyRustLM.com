@@ -143,6 +143,20 @@ function trackNativeFs(t, hooks = {}) {
   });
 }
 
+test("binds one bounded no-partial-result receipt batch contract", () => {
+  assert.deepEqual(storeProfile.batch, {
+    minimumEntries: 1,
+    maximumEntries: 1024,
+    inputOrdering: "receipt-id-utf8-bytewise-ascending",
+    duplicateReceiptIds: "forbidden",
+    parentPolicy: "active-or-same-batch-directed-acyclic-graph",
+    preflight: "complete-before-publication",
+    publication: "one-durable-publish-many-call",
+    activation: "all-published-and-parents-revalidated-before-any-in-memory-activation",
+    partialResult: "forbidden"
+  });
+});
+
 function concurrentPut(root, bytes) {
   const modulePath = path.resolve(__dirname, "../tools/vnext-receipt-store.js");
   const script = [
@@ -258,6 +272,63 @@ test("creates, reads, and idempotently reuses exact canonical receipt bytes", (t
   assert.equal(reused.disposition, "existing-byte-identical");
   assert.equal(reused.receiptId, created.receiptId);
   assert.deepEqual(fs.readFileSync(physicalPath(root, created.receiptId)), value.bytes);
+});
+
+test("publishes an unordered receipt DAG through one bounded durable batch", (t) => {
+  const root = makeRoot(t);
+  const store = createVnextReceiptStore(root);
+  const parent = finalized("attempt-store-batch-parent-001");
+  const child = finalized("attempt-store-batch-child-001", [parent.receipt.receiptId]);
+  const independent = finalized("attempt-store-batch-independent-001");
+  const originalSpawnSync = childProcess.spawnSync;
+  const helperRequests = [];
+  t.mock.method(childProcess, "spawnSync", (file, argumentsList, options) => {
+    helperRequests.push(parseStrictJson(options.input));
+    return originalSpawnSync(file, argumentsList, options);
+  });
+
+  const results = store.putMany([child.bytes, independent.bytes, parent.bytes]);
+  const expectedIds = [parent, child, independent]
+    .map((entry) => entry.receipt.receiptId).sort();
+
+  assert.equal(Object.isFrozen(results), true);
+  assert.equal(results.every((entry) => Object.isFrozen(entry)), true);
+  assert.deepEqual(results.map((entry) => entry.receiptId), expectedIds);
+  assert.equal(results.every((entry) => entry.disposition === "created"), true);
+  const targetBatches = helperRequests.filter((batch) => batch.requests.every((entry) =>
+    entry.operationId.startsWith("durability:target-publish:")));
+  const receiptBatches = helperRequests.filter((batch) => batch.requests.every((entry) =>
+    entry.operationId.startsWith("durability:receipt-publish:")));
+  assert.equal(targetBatches.length, 1);
+  assert.equal(receiptBatches.length, 1);
+  assert.equal(targetBatches[0].requests.length, 3);
+  assert.equal(receiptBatches[0].requests.length, 3);
+  assert.equal(store.read(child.receipt.receiptId).receipt.attemptId,
+    "attempt-store-batch-child-001");
+});
+
+test("rejects malformed receipt batches before publishing any target", (t) => {
+  const root = makeRoot(t);
+  const store = createVnextReceiptStore(root);
+  const value = finalized("attempt-store-batch-invalid-001");
+  throwsCode(() => store.putMany([]), "receipt_batch_invalid");
+  throwsCode(() => store.putMany([value.bytes, value.bytes]),
+    "receipt_batch_duplicate_id");
+
+  let getterInvoked = false;
+  const hostile = [value.bytes];
+  Object.defineProperty(hostile, "0", {
+    enumerable: true,
+    get() {
+      getterInvoked = true;
+      return value.bytes;
+    }
+  });
+  throwsCode(() => store.putMany(hostile), "receipt_batch_invalid_accessor");
+  assert.equal(getterInvoked, false);
+  throwsCode(() => store.putMany(Array.from({ length: 1_025 }, () => value.bytes)),
+    "receipt_batch_invalid");
+  assert.equal(fs.existsSync(physicalPath(root, value.receipt.receiptId)), false);
 });
 
 test("keeps an otherwise valid receipt inactive when its durability marker is absent", (t) => {
@@ -673,7 +744,8 @@ test("keeps a target inactive when its verified helper directory flush fails", (
   const originalSpawn = childProcess.spawnSync.bind(childProcess);
   t.mock.method(childProcess, "spawnSync", (command, args, options) => {
       const request = options?.input && parseStrictJson(options.input);
-      if (!injected && request?.operationId?.startsWith("durability:target-publish:")) {
+      if (!injected && request?.requests?.some((entry) =>
+        entry.operationId.startsWith("durability:target-publish:"))) {
         injected = true;
         const error = new Error(`private directory fsync detail ${root}`);
         error.code = "EIO";

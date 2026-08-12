@@ -155,6 +155,16 @@ test("freezes one public-only incompatible subject-store profile", () => {
   assert.equal(parsed.layout.replacementPolicy, "never");
   assert.equal(parsed.durablePublication.profileId, durablePublicationProfile.profileId);
   assert.equal(parsed.durablePublication.profileSha256, durablePublicationProfileSha256);
+  assert.deepEqual(parsed.batch, {
+    minimumEntries: 1,
+    maximumEntries: 1024,
+    inputOrdering: "subject-id-utf8-bytewise-ascending",
+    duplicateSubjectIds: "forbidden",
+    preflight: "complete-before-publication",
+    publication: "one-durable-publish-many-call",
+    activation: "all-published-before-any-in-memory-activation",
+    partialResult: "forbidden"
+  });
   assert.equal(Object.hasOwn(parsed, "atomicCreate"), false);
   assert.doesNotMatch(bytes.toString("utf8"), /unavailable/iu);
   assert.deepEqual(parsed.acceptedSubjects.map((entry) => entry.schema), [
@@ -230,6 +240,65 @@ test("creates, reads, and byte-identically reuses every accepted subject class",
     values.reduce((total, entry) => total + entry.bytes.length, 0));
   assert.equal(fs.existsSync(path.join(root, "current")), false);
   assert.equal(fs.existsSync(path.join(root, "latest")), false);
+});
+
+test("publishes unordered subjects through one bounded durable batch", (t) => {
+  const root = makeRoot(t);
+  const store = createVnextSubjectStore(root);
+  const values = ["artifact", "claim", "proof", "p2p", "release"]
+    .map((name) => finalized(name));
+  const originalSpawnSync = childProcess.spawnSync;
+  const helperRequests = [];
+  t.mock.method(childProcess, "spawnSync", (file, argumentsList, options) => {
+    helperRequests.push(parseStrictJson(options.input));
+    return originalSpawnSync(file, argumentsList, options);
+  });
+
+  const results = store.putMany([
+    values[4].bytes,
+    values[1].bytes,
+    values[3].bytes,
+    values[0].bytes,
+    values[2].bytes
+  ]);
+
+  assert.equal(Object.isFrozen(results), true);
+  assert.equal(results.every((entry) => Object.isFrozen(entry)), true);
+  assert.deepEqual(results.map((entry) => entry.subjectId),
+    values.map((entry) => entry.subjectId).sort());
+  const targetBatches = helperRequests.filter((batch) => batch.requests.every((entry) =>
+    entry.operationId.startsWith("durability:target-publish:")));
+  const receiptBatches = helperRequests.filter((batch) => batch.requests.every((entry) =>
+    entry.operationId.startsWith("durability:receipt-publish:")));
+  assert.equal(targetBatches.length, 1);
+  assert.equal(receiptBatches.length, 1);
+  assert.equal(targetBatches[0].requests.length, 5);
+  assert.equal(receiptBatches[0].requests.length, 5);
+  for (const value of values) assert.deepEqual(store.read(value.subjectId).bytes, value.bytes);
+});
+
+test("rejects malformed subject batches before publishing any target", (t) => {
+  const root = makeRoot(t);
+  const store = createVnextSubjectStore(root);
+  const value = finalized("proof");
+  throwsCode(() => store.putMany([]), "subject_batch_invalid");
+  throwsCode(() => store.putMany([value.bytes, value.bytes]),
+    "subject_batch_duplicate_id");
+
+  let getterInvoked = false;
+  const hostile = [value.bytes];
+  Object.defineProperty(hostile, "0", {
+    enumerable: true,
+    get() {
+      getterInvoked = true;
+      return value.bytes;
+    }
+  });
+  throwsCode(() => store.putMany(hostile), "subject_batch_invalid_accessor");
+  assert.equal(getterInvoked, false);
+  throwsCode(() => store.putMany(Array.from({ length: 1_025 }, () => value.bytes)),
+    "subject_batch_invalid");
+  assert.equal(fs.existsSync(physicalPath(root, value.subjectId)), false);
 });
 
 test("rejects private context and receipt documents from the subject store", (t) => {

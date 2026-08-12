@@ -34,13 +34,24 @@
   },
   "durablePublication": {
     "profileId": "tinyrustlm.vnext.durable-publication.v1",
-    "profileSha256": "a650102f064ab5f39a19bbbc3505bc58a4712c2b89b0df26a11ad5054dab4066",
+    "profileSha256": "4c1006a986ced8359346cb856ea698c03cc187ae7a0b77b8108719a043becc35",
     "targetActivation": "matching-content-addressed-durability-receipt-required",
     "directoryFlush": "verified-rust-helper-required",
     "restart": "fresh-target-and-receipt-directory-flushes-and-exact-readbacks",
     "targetWithoutReceipt": "inactive",
     "receiptWithoutTarget": "inactive",
     "callerSuppliedSuccess": "forbidden"
+  },
+  "batch": {
+    "minimumEntries": 1,
+    "maximumEntries": 1024,
+    "inputOrdering": "receipt-id-utf8-bytewise-ascending",
+    "duplicateReceiptIds": "forbidden",
+    "parentPolicy": "active-or-same-batch-directed-acyclic-graph",
+    "preflight": "complete-before-publication",
+    "publication": "one-durable-publish-many-call",
+    "activation": "all-published-and-parents-revalidated-before-any-in-memory-activation",
+    "partialResult": "forbidden"
   },
   "concurrency": {
     "createWriters": "multi-process-idempotent-hard-link",

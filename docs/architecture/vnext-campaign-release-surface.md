@@ -11,7 +11,7 @@ performing exact static and complete static-plus-generated production HTTPS
 readback, and admitting create-only publication descendants through one final
 commit receipt. Its frozen profile is
 `contracts/vnext/campaign-release-surface-profile.v1.json`, with SHA-256
-`ae33c2564d281d9115229fcb777b5edaa6a1574ea21b56c22d86cba199e5679e`.
+`e7e396e5127baed7084fa0f5cc285cfd83165b6a7350fa0ecac8439ce57e9033`.
 
 This checkpoint implements fresh projection, final attestation, public-safe
 redaction, truthful operator status, release-manifest preparation, current
@@ -603,6 +603,26 @@ publication verdict fails closed.
 - byte-identical restart recovery after final redaction, after every individual
   claim commit, and after the final receipt commit; and
 - rejection of caller deployment, readback, and publication truth.
+
+The sole maintained command is
+`npm run test:vnext-campaign-release-surface`. It invokes
+`tools/run-vnext-campaign-release-surface-gate.js`, which parses the test file
+before execution and fails if any top-level test name is missing from the
+partition, appears twice, or is no longer present. The current frozen
+partition contains all 23 top-level cases exactly once across six disjoint
+anchored shards. Each shard executes the unchanged test file through the Node
+test runner in an independent process; every case still creates its own fresh
+durable roots. The gate waits for every child and fails on spawn failure,
+nonzero exit, signal, partition drift, or a bounded six-hour shard timeout.
+
+On 2026-08-11, the exhaustive partition passed 23/23 with zero failures,
+skips, cancellations, or todos. The six shard aggregates were 4/4, 4/4, 4/4,
+3/3, 4/4, and 4/4. A direct serial invocation was separately abandoned after
+an explicit three-hour process timeout without TAP output; it is not a pass,
+failure, or maintained gate. The partition changes orchestration only: it does
+not reuse a fixture, lower a threshold, remove a case, or advance campaign
+counters. The partition validator itself is covered by two fast hostile tests
+and supports a `--validate-only` mode for exact coverage inspection.
 
 The complete-capacity case is synthetic conformance evidence. It does not
 increment any live campaign counter.

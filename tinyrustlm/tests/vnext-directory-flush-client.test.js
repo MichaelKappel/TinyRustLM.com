@@ -66,21 +66,24 @@ function writeManifest(packageRoot, manifest) {
   fs.writeFileSync(manifestPath(packageRoot), canonicalizeVnextJcsBytes(manifest));
 }
 
-function request(root, operationId = "directory-flush-client-operation-900") {
-  return Object.freeze({ operationId, ownedRoot: root, relativeDirectory: "." });
+function request(root, operationId = "directory-flush-client-operation-900",
+  relativeDirectory = ".") {
+  return Object.freeze({ operationId, ownedRoot: root, relativeDirectory });
 }
 
 test("freezes one strict Node-to-Rust directory flush client profile", () => {
   const bytes = fs.readFileSync(profilePath);
   const profile = parseStrictJson(bytes);
-  assert.equal(bytes.length, 5_068);
+  assert.equal(bytes.length, 5_845);
   assert.equal(directoryFlushClientProfileSha256, sha256(bytes));
   assert.equal(directoryFlushClientProfileSha256,
-    "9f367bbe58bf8afc8ecba57a1b33e5cda5a83592a80517c4db38d0775cf9fde6");
+    "0d5fe88e8abb371a99db58f1ce3fabce180dc00f77287b6f44ea40d268d709a1");
   assert.equal(directoryFlushClientProfile.profileId,
     "tinyrustlm.vnext.directory-flush-client.v1");
   assert.equal(profile.directoryFlushProfileSha256,
-    "aaf82fde396e89d03e82a6cd7c761bfbedb1d766250dc9dd537124be68adcfd8");
+    "bb9c76715d0b35d63a9da27006ff8f88840486cf287cec24279a1020a0443ddb");
+  assert.equal(profile.batch.maximumEntries, 1_024);
+  assert.equal(profile.batch.processInvocations, "exactly-one-per-flush-many-call");
   assert.equal(profile.package.configuration,
     "explicit-absolute-root-from-one-environment-variable");
   assert.equal(profile.process.shell, false);
@@ -95,7 +98,7 @@ test("freezes one strict Node-to-Rust directory flush client profile", () => {
   assert.equal(profile.result.helperFailure,
     "strict-canonical-public-safe-cause-code-only");
   assert.equal(directoryFlushClientSourceClosureSha256,
-    "37dc6e85be3655743a31de5623fa574f565578351f4c6b255621a9d976a8c487");
+    "b265141e0749422bcdadefab7777c97d154f442ac18397f69664dd1af24447f3");
 });
 
 test("reconstructs the declared client source closure exactly", () => {
@@ -134,7 +137,7 @@ test("executes the exact packaged Rust helper and returns bounded path-redacted 
   assert.equal(result.operationId, "directory-flush-client-operation-001");
   assert.equal(result.directoryFlushProfileId, "tinyrustlm.vnext.directory-flush.v1");
   assert.equal(result.directoryFlushProfileSha256,
-    "aaf82fde396e89d03e82a6cd7c761bfbedb1d766250dc9dd537124be68adcfd8");
+    "bb9c76715d0b35d63a9da27006ff8f88840486cf287cec24279a1020a0443ddb");
   assert.equal(result.helperTrustClass, "local-test-build");
   assert.equal(result.clientProfileId,
     "tinyrustlm.vnext.directory-flush-client.v1");
@@ -150,6 +153,69 @@ test("executes the exact packaged Rust helper and returns bounded path-redacted 
   assert.equal(Object.isFrozen(result), true);
   assert.equal(JSON.stringify(result).includes(root), false);
   assert.equal(JSON.stringify(result).includes(packageRoot), false);
+});
+
+test("executes one verified helper process for a deterministic directory batch", (t) => {
+  const packageRoot = ensureVnextDirectoryFlushTestPackage();
+  const root = makeRoot(t);
+  for (const directory of ["first", "second", "third"]) {
+    fs.mkdirSync(path.join(root, directory));
+  }
+  const client = createVnextDirectoryFlushClient(packageRoot);
+  const originalSpawnSync = childProcess.spawnSync;
+  let spawnCount = 0;
+  t.mock.method(childProcess, "spawnSync", (...argumentsList) => {
+    spawnCount += 1;
+    return originalSpawnSync(...argumentsList);
+  });
+
+  const results = client.flushMany([
+    request(root, "directory-flush-client-batch-003", "third"),
+    request(root, "directory-flush-client-batch-001", "first"),
+    request(root, "directory-flush-client-batch-002", "second")
+  ]);
+
+  assert.equal(spawnCount, 1);
+  assert.deepEqual(results.map((entry) => entry.operationId), [
+    "directory-flush-client-batch-001",
+    "directory-flush-client-batch-002",
+    "directory-flush-client-batch-003"
+  ]);
+  assert.equal(new Set(results.map((entry) => entry.requestSha256)).size, 3);
+  assert.equal(new Set(results.map((entry) => entry.observationSha256)).size, 3);
+  for (const result of results) {
+    assert.deepEqual(Object.keys(result), directoryFlushClientProfile.clientResultFields);
+    assert.equal(Object.isFrozen(result), true);
+    assert.equal(JSON.stringify(result).includes(root), false);
+    assert.equal(JSON.stringify(result).includes(packageRoot), false);
+  }
+  assert.equal(Object.isFrozen(results), true);
+});
+
+test("rejects empty duplicate and accessor-bearing directory batches", (t) => {
+  const root = makeRoot(t);
+  const client = createVnextDirectoryFlushClient(
+    ensureVnextDirectoryFlushTestPackage()
+  );
+  throwsCode(() => client.flushMany([]), "directory_flush_batch_invalid");
+  throwsCode(() => client.flushMany([
+    request(root, "directory-flush-client-batch-004"),
+    request(root, "directory-flush-client-batch-004")
+  ]), "directory_flush_batch_invalid");
+  const hostile = [];
+  Object.defineProperty(hostile, "0", {
+    enumerable: true,
+    get() {
+      throw new Error("must not execute");
+    }
+  });
+  throwsCode(() => client.flushMany(hostile), "directory_flush_batch_invalid");
+  throwsCode(() => client.flushMany(Array.from({ length: 1_025 }, (_entry, index) =>
+    request(root, `directory-flush-client-count-${String(index).padStart(4, "0")}`))),
+  "directory_flush_batch_invalid");
+  throwsCode(() => client.flushMany(Array.from({ length: 1_024 }, (_entry, index) =>
+    request(root, `directory-flush-client-size-${String(index).padStart(4, "0")}`,
+      "a".repeat(5_000)))), "directory_flush_request_byte_limit");
 });
 
 test("supports the explicit owned-root scope through configured package discovery", (t) => {
@@ -189,8 +255,8 @@ test("rejects relative package roots and hostile request objects", (t) => {
   throwsCode(() => client.flush({
     operationId: "directory-flush-client-operation-004",
     ownedRoot: root,
-    relativeDirectory: "a".repeat(16_384)
-  }), "directory_flush_request_byte_limit");
+    relativeDirectory: "a".repeat(16_385)
+  }), "directory_flush_request_invalid");
 });
 
 test("requires explicit configured package discovery", (t) => {
@@ -408,7 +474,10 @@ test("rejects a substituted canonical success observation", (t) => {
     const observation = parseStrictJson(child.stdout);
     return { ...child, stdout: canonicalizeVnextJcsBytes({
       ...observation,
-      operationId: "substituted-operation"
+      observations: [{
+        ...observation.observations[0],
+        operationId: "substituted-operation"
+      }]
     }) };
   });
   throwsCode(() => client.flush(request(root,

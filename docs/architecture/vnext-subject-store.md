@@ -8,8 +8,8 @@ vNext authority and campaign-projection code. The implementation is
 `tinyrustlm/tools/vnext-subject-store.js`; its frozen profile is
 `contracts/vnext/subject-store-profile.v1.json`.
 
-The profile is 3,475 bytes with SHA-256
-`1d3534a4c560a68d4df78c7815c0d15f5f0043cca5db89f784a7ee6c24ccbfe4`.
+The profile is 3,845 bytes with SHA-256
+`0985099802be93bbf4b88f834470d7aa605d1e60e672e38ceb2ec7ffa6f3f916`.
 It is an incompatible clean-slate contract with no dated reader, alias,
 fallback, migration, dual writer, or mutable current pointer.
 
@@ -66,28 +66,41 @@ an immutable target conflict and fails closed.
 No absolute path, raw invalid bytes, raw host diagnostic, current pointer, or
 latest pointer crosses the result boundary.
 
-## Create-Only Publication
+## Batched Create-Only Publication
 
-The store reuses `vnext-create-only-files.js` and performs:
+`putMany` is the sole implementation. It accepts one to 1,024 exact subject
+wires, rejects accessors and non-arrays, validates and canonicalizes every
+member, rejects duplicate subject IDs, and preflights both active-count and
+aggregate-byte capacity before any publication. It orders targets by subject
+ID, calls the shared durable publisher exactly once, and activates no subject
+in memory until every target and content-addressed durability receipt verifies.
+`put` delegates to `putMany` with a size-one array and adds no second path.
 
-1. absolute root normalization and containment;
+The shared batch performs:
+
+1. absolute root normalization, containment, and complete unique-path
+   preflight;
 2. symbolic-link and reparse-point rejection;
 3. bounded canonical validation before writing;
-4. an exclusive mode-0600 same-directory temporary;
-5. bounded writes, file `fsync`, and close;
-6. hard-link create-if-absent publication;
-7. acceptance of an existing target only when every byte is identical;
-8. target-directory synchronization through the verified Rust helper;
-9. bounded no-follow readback and exact byte comparison;
-10. canonical content-addressed durability-receipt publication through the
-    same fsync, hard-link, helper-flush, and readback sequence; and
-11. in-process activation only after both target and marker verify.
+4. one exclusive mode-0600 same-directory temporary per target;
+5. bounded writes, file `fsync`, and close for every target;
+6. hard-link create-if-absent publication for every target;
+7. acceptance of existing targets only when every byte is identical;
+8. one sorted verified Rust-helper batch for all target directories;
+9. bounded no-follow readback and exact byte comparison for every target;
+10. one canonical content-addressed durability receipt per target, published
+    through the same fsync and hard-link sequence;
+11. one sorted verified Rust-helper batch for all receipt directories;
+12. exact readback of every receipt and target; and
+13. all-member activation only after the complete batch verifies.
 
 Independent processes publishing the same bytes converge on one immutable
-target and one deterministic marker. Conflicting bytes never replace it.
+target and one deterministic receipt. Conflicting bytes never replace it.
 Disk-full, short-write, helper, publication, target-conflict, and readback
 failures return bounded codes. A surviving target without its marker remains
-preserved but inactive.
+preserved but inactive. The API returns no partial result, but this is not an
+atomic filesystem transaction: interruption may leave inactive target or
+receipt files for reconstruction and quarantine.
 
 ## Reconstruction And Interruption
 
@@ -111,8 +124,8 @@ the invalid subject from active membership.
 
 ## Runner Contract
 
-The campaign runner rebuilds the receipt and subject stores,
-capture every active ID in sorted order, read every named member, and verify
+The campaign runner rebuilds the receipt and subject stores, captures every
+active ID in sorted order, reads every named member, and verifies
 that a second bounded reconstruction has the same membership before invoking
 the sole generated Rust campaign-evidence ABI. It may not choose a preferred
 subset, trust directory names, accept a caller-supplied pass, or treat a stored
@@ -131,8 +144,8 @@ properties, not claims made by this store alone.
 hostile options, coercive IDs, all five accepted classes, private and receipt
 rejection, independent-process idempotence, conflicting artifact manifests,
 invalid and misaddressed quarantine, interrupted temporaries, disk full,
-post-startup mutation, restart withdrawal, and false readback.
-
-The focused suite passes 11/11. This is local persistence evidence only;
-broader Node and Rust gates are rerun at milestone closure before the updated
-identity is promoted in the workspace handoff.
+post-startup mutation, restart withdrawal, false readback, unordered five-class
+batch admission, one-call publication, duplicate and malformed batch rejection,
+accessor rejection, and the exact 1,024-member limit. This is local persistence
+evidence only; broader Node and Rust gates are rerun at milestone closure before
+the updated identity is promoted in the workspace handoff.

@@ -96,6 +96,19 @@ let receiptInterruptPredicate = null;
 
 function createFixtureAwareReceiptStore(root) {
   const store = productionReceiptStore.createVnextReceiptStore(root);
+  function inspectCommittedReceipt(bytes) {
+    const receipt = validateVnextReceiptBytes(bytes).receipt;
+    if (interruptAfterPublicReadbackRedaction &&
+        receipt.receiptType === "redaction-scan" &&
+        receipt.attemptId.startsWith("release-public-readback-redaction-")) {
+      interruptAfterPublicReadbackRedaction = false;
+      throw new Error("fixture interruption after public-readback redaction commit");
+    }
+    if (receiptInterruptPredicate !== null && receiptInterruptPredicate(receipt)) {
+      receiptInterruptPredicate = null;
+      throw new Error("fixture interruption after selected receipt commit");
+    }
+  }
   return Object.freeze({
     profileId: store.profileId,
     startup: store.startup,
@@ -107,18 +120,12 @@ function createFixtureAwareReceiptStore(root) {
     },
     put(bytes) {
       const persistence = store.put(bytes);
-      const receipt = validateVnextReceiptBytes(bytes).receipt;
-      if (interruptAfterPublicReadbackRedaction &&
-          receipt.receiptType === "redaction-scan" &&
-          receipt.attemptId.startsWith("release-public-readback-redaction-")) {
-        interruptAfterPublicReadbackRedaction = false;
-        throw new Error("fixture interruption after public-readback redaction commit");
-      }
-      if (receiptInterruptPredicate !== null &&
-          receiptInterruptPredicate(receipt)) {
-        receiptInterruptPredicate = null;
-        throw new Error("fixture interruption after selected receipt commit");
-      }
+      inspectCommittedReceipt(bytes);
+      return persistence;
+    },
+    putMany(values) {
+      const persistence = store.putMany(values);
+      for (const bytes of values) inspectCommittedReceipt(bytes);
       return persistence;
     }
   });
@@ -135,6 +142,16 @@ let publishedClaimInterruptRemaining = null;
 
 function createFixtureAwareSubjectStore(root) {
   const store = productionSubjectStore.createVnextSubjectStore(root);
+  function inspectCommittedSubject(bytes) {
+    if (publishedClaimInterruptRemaining !== null &&
+        bytes.includes(Buffer.from('"status":"published"', "utf8"))) {
+      publishedClaimInterruptRemaining -= 1;
+      if (publishedClaimInterruptRemaining === 0) {
+        publishedClaimInterruptRemaining = null;
+        throw new Error("fixture interruption after published-claim commit");
+      }
+    }
+  }
   return Object.freeze({
     profileId: store.profileId,
     startup: store.startup,
@@ -146,14 +163,12 @@ function createFixtureAwareSubjectStore(root) {
     },
     put(bytes) {
       const persistence = store.put(bytes);
-      if (publishedClaimInterruptRemaining !== null &&
-          bytes.includes(Buffer.from('"status":"published"', "utf8"))) {
-        publishedClaimInterruptRemaining -= 1;
-        if (publishedClaimInterruptRemaining === 0) {
-          publishedClaimInterruptRemaining = null;
-          throw new Error("fixture interruption after published-claim commit");
-        }
-      }
+      inspectCommittedSubject(bytes);
+      return persistence;
+    },
+    putMany(values) {
+      const persistence = store.putMany(values);
+      for (const bytes of values) inspectCommittedSubject(bytes);
       return persistence;
     }
   });
@@ -330,6 +345,7 @@ function acceptedCase(name) {
 function addReceipts(store, receiptIds) {
   const requested = new Set(receiptIds);
   const complete = new Set();
+  const orderedBytes = [];
   function add(receiptId) {
     if (complete.has(receiptId)) return;
     const bytes = receipts.get(receiptId);
@@ -339,10 +355,11 @@ function addReceipts(store, receiptIds) {
       assert.ok(requested.has(parent), `case omits receipt parent ${parent}`);
       add(parent);
     }
-    store.put(bytes);
+    orderedBytes.push(bytes);
     complete.add(receiptId);
   }
   for (const receiptId of receiptIds) add(receiptId);
+  if (orderedBytes.length > 0) store.putMany(orderedBytes);
 }
 
 function seedCase(roots, entry) {
@@ -351,11 +368,12 @@ function seedCase(roots, entry) {
   const receiptStore = createVnextReceiptStore(roots.receipts);
   addReceipts(receiptStore, entry.receiptIds);
   const subjectStore = createVnextSubjectStore(roots.subjects);
-  for (const subjectId of entry.subjectIds) {
+  const subjectBytes = entry.subjectIds.map((subjectId) => {
     const bytes = subjects.get(subjectId);
     assert.ok(bytes, `missing subject ${subjectId}`);
-    subjectStore.put(bytes);
-  }
+    return bytes;
+  });
+  if (subjectBytes.length > 0) subjectStore.putMany(subjectBytes);
 }
 
 function seedEphemeralAuthorityCase(roots, entry, options = {}) {
@@ -372,6 +390,7 @@ function seedEphemeralAuthorityCase(roots, entry, options = {}) {
     )));
   const receiptStore = createVnextReceiptStore(roots.receipts);
   const complete = new Set();
+  const objectiveBytes = [];
   function addObjective(receiptId) {
     if (complete.has(receiptId)) return;
     const validated = objective.get(receiptId);
@@ -379,10 +398,11 @@ function seedEphemeralAuthorityCase(roots, entry, options = {}) {
     for (const parentId of collectParentReceiptIds(validated.receipt)) {
       addObjective(parentId);
     }
-    receiptStore.put(validated.bytes);
+    objectiveBytes.push(validated.bytes);
     complete.add(receiptId);
   }
   for (const receiptId of objective.keys()) addObjective(receiptId);
+  if (objectiveBytes.length > 0) receiptStore.putMany(objectiveBytes);
 
   const authority = {
     localKey: authorityKey({
@@ -423,7 +443,7 @@ function seedEphemeralAuthorityCase(roots, entry, options = {}) {
       authority.siteKey
     ]
   });
-  receiptStore.put(authority.root.bytes);
+  const objectiveSignatureBytes = [];
   for (const validated of objective.values()) {
     const isCatalog = validated.receipt.receiptType === "catalog-announcement";
     const signature = makeSignatureReceipt({
@@ -433,10 +453,13 @@ function seedEphemeralAuthorityCase(roots, entry, options = {}) {
       signingKey: isCatalog ? authority.p2pKey : authority.localKey,
       subject: validated
     });
-    receiptStore.put(signature.bytes);
+    objectiveSignatureBytes.push(signature.bytes);
   }
+  receiptStore.putMany([authority.root.bytes, ...objectiveSignatureBytes]);
 
   const subjectStore = createVnextSubjectStore(roots.subjects);
+  const proofBytes = [];
+  const proofSignatureBytes = [];
   for (const subjectId of entry.subjectIds) {
     const originalBytes = subjects.get(subjectId);
     assert.ok(originalBytes, `missing subject ${subjectId}`);
@@ -449,7 +472,7 @@ function seedEphemeralAuthorityCase(roots, entry, options = {}) {
       observerId: authority.observerKey.record.signerId,
       observerRegistryId: authority.root.receipt.receiptId
     });
-    subjectStore.put(proof.bytes);
+    proofBytes.push(proof.bytes);
     const signature = makeSignatureReceipt({
       authorityRegistry: authority.root,
       expiresAtUtc: proof.value.expiresAtUtc,
@@ -460,8 +483,10 @@ function seedEphemeralAuthorityCase(roots, entry, options = {}) {
       signingKey: authority.observerKey,
       subject: proof
     });
-    receiptStore.put(signature.bytes);
+    proofSignatureBytes.push(signature.bytes);
   }
+  if (proofBytes.length > 0) subjectStore.putMany(proofBytes);
+  if (proofSignatureBytes.length > 0) receiptStore.putMany(proofSignatureBytes);
   return Object.freeze(authority);
 }
 
@@ -1277,7 +1302,7 @@ test("freezes one no-compatibility campaign release surface profile", () => {
   const profile = parseStrictJson(bytes);
   assert.equal(campaignReleaseSurfaceProfileSha256, sha256(bytes));
   assert.equal(campaignReleaseSurfaceProfileSha256,
-    "ae33c2564d281d9115229fcb777b5edaa6a1574ea21b56c22d86cba199e5679e");
+    "e7e396e5127baed7084fa0f5cc285cfd83165b6a7350fa0ecac8439ce57e9033");
   assert.equal(campaignReleaseSurfaceProfile.profileId,
     "tinyrustlm.vnext.campaign-release-surface.v1");
   assert.equal(profile.status, "frozen");

@@ -93,7 +93,7 @@
   },
   "durablePublication": {
     "profileId": "tinyrustlm.vnext.durable-publication.v1",
-    "profileSha256": "a650102f064ab5f39a19bbbc3505bc58a4712c2b89b0df26a11ad5054dab4066",
+    "profileSha256": "4c1006a986ced8359346cb856ea698c03cc187ae7a0b77b8108719a043becc35",
     "targetActivation": "matching-content-addressed-durability-receipt-required",
     "directoryFlush": "verified-rust-helper-required",
     "restart": "fresh-target-and-receipt-directory-flushes-and-exact-readbacks",

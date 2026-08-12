@@ -129,6 +129,7 @@ function expectedBytes(entry) {
 function addReceipts(store, receiptIds) {
   const requested = new Set(receiptIds);
   const complete = new Set();
+  const orderedBytes = [];
   function add(receiptId) {
     if (complete.has(receiptId)) return;
     const bytes = receipts.get(receiptId);
@@ -138,18 +139,20 @@ function addReceipts(store, receiptIds) {
       assert.ok(requested.has(parent), `case omits receipt parent ${parent}`);
       add(parent);
     }
-    store.put(bytes);
+    orderedBytes.push(bytes);
     complete.add(receiptId);
   }
   for (const receiptId of receiptIds) add(receiptId);
+  if (orderedBytes.length > 0) store.putMany(orderedBytes);
 }
 
 function addSubjects(store, subjectIds) {
-  for (const subjectId of subjectIds) {
+  const values = subjectIds.map((subjectId) => {
     const bytes = subjects.get(subjectId);
     assert.ok(bytes, `missing subject ${subjectId}`);
-    store.put(bytes);
-  }
+    return bytes;
+  });
+  if (values.length > 0) store.putMany(values);
 }
 
 function seedCase(roots, entry) {
@@ -243,7 +246,7 @@ test("freezes one no-compatibility Rust-backed campaign runner profile", () => {
   ), "utf8");
   assert.equal(campaignRunnerProfileSha256, sha256(bytes));
   assert.equal(campaignRunnerProfileSha256,
-    "8aa378f36e42c1d07ea072afebdfc7705ec57973a6712dac82832a8754213adf");
+    "b0ba96ea2aa25112adea781138a4351511c56372bd1fdc04575e529a2b4720a9");
   assert.equal(campaignRunnerProfile.profileId, "tinyrustlm.vnext.campaign-runner.v1");
   assert.equal(parsed.status, "frozen");
   assert.equal(parsed.selectionPolicy, "all-active-members-no-subset-selection");
@@ -294,7 +297,7 @@ test("freezes one no-compatibility Rust-backed campaign runner profile", () => {
   ), "utf8");
   assert.match(runnerDocument, /tinyrustlm\.vnext\.campaign-runner\.v1/u);
   assert.match(runnerDocument,
-    /8aa378f36e42c1d07ea072afebdfc7705ec57973a6712dac82832a8754213adf/u);
+    /b0ba96ea2aa25112adea781138a4351511c56372bd1fdc04575e529a2b4720a9/u);
   assert.equal(
     JSON.parse(fs.readFileSync(path.join(repositoryRoot, "tinyrustlm", "package.json"),
       "utf8")).scripts["test:vnext-campaign-runner"],

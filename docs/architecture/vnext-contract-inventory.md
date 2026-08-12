@@ -217,27 +217,33 @@ Create-only public subject persistence is documented in
 `docs/architecture/vnext-subject-store.md`.
 The bounded Rust/Win32 directory-flush helper and its exact non-claims are
 documented in `docs/architecture/vnext-directory-durability.md`. Its
-5,820-byte frozen profile has SHA-256
-`aaf82fde396e89d03e82a6cd7c761bfbedb1d766250dc9dd537124be68adcfd8`.
+7,021-byte frozen profile has SHA-256
+`bb9c76715d0b35d63a9da27006ff8f88840486cf287cec24279a1020a0443ddb`.
 The current Windows host executes the helper and rejects a real directory
-junction. Its sole Node package/process client has a 5,068-byte frozen profile,
+junction. The helper accepts one sorted canonical batch of one to 1,024
+directories and emits no partial success document. Its sole Node
+package/process client has a 5,845-byte frozen profile,
 SHA-256
-`9f367bbe58bf8afc8ecba57a1b33e5cda5a83592a80517c4db38d0775cf9fde6`,
+`0d5fe88e8abb371a99db58f1ce3fabce180dc00f77287b6f44ea40d268d709a1`,
 and source-closure SHA-256
-`37dc6e85be3655743a31de5623fa574f565578351f4c6b255621a9d976a8c487`.
-The client verifies exact package, process, request, and observation identity
-without inheriting parent environment variables. Every current vNext store,
-campaign-operation record, and runner-lock record now consumes the sole
-receipt-backed durable-publication primitive. OS network isolation, release
-provenance, archive admission, protected equality-list custody, and physical
-power-loss evidence remain incomplete.
+`b265141e0749422bcdadefab7777c97d154f442ac18397f69664dd1af24447f3`.
+The client verifies exact package, one-process batch, request, and observation
+identity without inheriting parent environment variables. The durable
+publisher preflights one to 1,024 targets, batches target and receipt directory
+flushes, and activates only after complete verification. Receipt and subject
+stores use sole `putMany` paths; their size-one methods are wrappers. Every
+current vNext store, campaign-operation record, and runner-lock record consumes
+the sole receipt-backed durable-publication primitive. No batch claims an
+atomic filesystem transaction. OS network isolation, release provenance,
+archive admission, protected equality-list custody, and physical power-loss
+evidence remain incomplete.
 The sole exact cross-store Rust-backed campaign runner is documented in
 `docs/architecture/vnext-campaign-runner.md`.
 The fresh-runner-only immutable attestation, operator, release-manifest,
 authorization, deployment/readback, and final-publication boundary is documented
 in `docs/architecture/vnext-campaign-release-surface.md`. Its frozen profile
 has SHA-256
-`ae33c2564d281d9115229fcb777b5edaa6a1574ea21b56c22d86cba199e5679e`.
+`e7e396e5127baed7084fa0f5cc285cfd83165b6a7350fa0ecac8439ce57e9033`.
 It admits no stored projection, caller verdict, counter set, dashboard state,
 or reused operation. It scans finalized attestation bytes before create-only
 receipt persistence and has no operator `done` state. Release preparation

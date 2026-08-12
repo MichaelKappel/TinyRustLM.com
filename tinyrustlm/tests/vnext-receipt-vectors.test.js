@@ -159,6 +159,7 @@ test("freezes one incompatible create-only receipt-store profile", () => {
     "wire",
     "layout",
     "durablePublication",
+    "batch",
     "concurrency",
     "rebuild",
     "limits",
@@ -182,6 +183,10 @@ test("freezes one incompatible create-only receipt-store profile", () => {
   assert.equal(profile.durablePublication.targetActivation,
     "matching-content-addressed-durability-receipt-required");
   assert.equal(profile.durablePublication.callerSuppliedSuccess, "forbidden");
+  assert.equal(profile.batch.maximumEntries, 1024);
+  assert.equal(profile.batch.parentPolicy,
+    "active-or-same-batch-directed-acyclic-graph");
+  assert.equal(profile.batch.partialResult, "forbidden");
   assert.equal(profile.concurrency.freshTemporaryPolicy, "leave-pending-without-mutation");
   assert.equal(profile.concurrency.minimumIncompleteTemporaryAgeMs, 300000);
   assert.equal(profile.rebuild.preserveUnrelatedValidReceipts, true);

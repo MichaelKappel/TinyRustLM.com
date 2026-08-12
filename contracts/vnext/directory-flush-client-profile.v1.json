@@ -6,9 +6,11 @@
   "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
   "hashAlgorithm": "sha256",
   "directoryFlushProfileId": "tinyrustlm.vnext.directory-flush.v1",
-  "directoryFlushProfileSha256": "aaf82fde396e89d03e82a6cd7c761bfbedb1d766250dc9dd537124be68adcfd8",
-  "requestSchema": "tinyrustlm.vnext.directory_flush_request.v1",
-  "observationSchema": "tinyrustlm.vnext.directory_flush_observation.v1",
+  "directoryFlushProfileSha256": "bb9c76715d0b35d63a9da27006ff8f88840486cf287cec24279a1020a0443ddb",
+  "requestSchema": "tinyrustlm.vnext.directory_flush_batch_request.v1",
+  "requestMemberSchema": "tinyrustlm.vnext.directory_flush_request_member.v1",
+  "observationSchema": "tinyrustlm.vnext.directory_flush_batch_observation.v1",
+  "observationMemberSchema": "tinyrustlm.vnext.directory_flush_observation_member.v1",
   "failureSchema": "tinyrustlm.vnext.directory_flush_failure.v1",
   "clientResultSchema": "tinyrustlm.vnext.directory_flush_client_result.v1",
   "packageManifestSchema": "tinyrustlm.vnext.directory_flush_helper_manifest.v1",
@@ -52,6 +54,16 @@
     "sourceClosureSha256",
     "trustClass"
   ],
+  "batch": {
+    "minimumEntries": 1,
+    "maximumEntries": 1024,
+    "canonicalMaximumTotalStringCodeUnits": 4194304,
+    "ordering": "operation-id-bytewise-ascending",
+    "duplicateOperationIds": "forbidden",
+    "processInvocations": "exactly-one-per-flush-many-call",
+    "memberResult": "one-current-client-result-per-operation",
+    "partialHelperSuccess": "entire-client-call-fails-closed"
+  },
   "process": {
     "shell": false,
     "windowsHide": true,
@@ -61,15 +73,15 @@
     "workingDirectory": "verified-package-root",
     "stdio": "private-bounded-pipes",
     "arguments": [],
-    "stdin": "one-canonical-request-json-document",
-    "stdout": "one-canonical-success-or-failure-json-document",
+    "stdin": "one-canonical-sorted-batch-request-json-document",
+    "stdout": "one-canonical-batch-success-or-public-safe-failure-json-document",
     "stderr": "must-be-empty",
     "successExitStatus": 0,
     "failureExitStatus": 2,
     "timeoutKillSignal": "SIGKILL",
     "timeoutMilliseconds": 10000,
-    "maximumRequestBytes": 16384,
-    "maximumStdoutBytes": 16384,
+    "maximumRequestBytes": 4194304,
+    "maximumStdoutBytes": 4194304,
     "maximumStderrBytes": 4096
   },
   "result": {
@@ -121,6 +133,7 @@
     "Path checks do not prove that a POSIX absolute path resides on local fixed storage.",
     "Client source-closure hashing is an exact local file observation, not signed release provenance.",
     "A successful client result is not physical power-loss evidence.",
-    "The client result does not prove file-data fsync, create-only publication, readback, or receipt admission by itself."
+    "The client result does not prove file-data fsync, create-only publication, readback, or receipt admission by itself.",
+    "A successful batch returns one independently bound member result per requested operation but does not claim an atomic all-or-nothing storage transaction."
   ]
 }

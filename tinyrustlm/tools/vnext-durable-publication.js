@@ -78,6 +78,28 @@ function dataObjectValues(value, allowedNames, requiredNames, code, step) {
   return Object.freeze(result);
 }
 
+function dataArrayValues(value, minimumEntries, maximumEntries, code, step) {
+  if (!Array.isArray(value) || Object.getPrototypeOf(value) !== Array.prototype ||
+      Object.getOwnPropertySymbols(value).length !== 0 ||
+      !Number.isSafeInteger(value.length) || value.length < minimumEntries ||
+      value.length > maximumEntries) {
+    failEvidence(code, step);
+  }
+  const names = Object.getOwnPropertyNames(value);
+  if (names.length !== value.length + 1 || !names.includes("length")) {
+    failEvidence(code, step);
+  }
+  const result = [];
+  for (let index = 0; index < value.length; index += 1) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, String(index));
+    if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
+      failEvidence(code, step);
+    }
+    result.push(descriptor.value);
+  }
+  return Object.freeze(result);
+}
+
 function freezeRecord(value) {
   if (Buffer.isBuffer(value) || ArrayBuffer.isView(value)) return value;
   if (Array.isArray(value)) {
@@ -121,6 +143,7 @@ function assertFrozenProfile() {
     [
       "activation",
       "auxiliaryDirectoryFlush",
+      "batch",
       "bootstrap",
       "directoryFlushClientProfileId",
       "directoryFlushClientProfileSha256",
@@ -159,6 +182,18 @@ function assertFrozenProfile() {
       profile.resultSchema !== "tinyrustlm.vnext.durable_publication_result.v1" ||
       profile.bootstrap.receiptExcludesOwnPublicationEvidence !== true ||
       profile.bootstrap.recursiveReceipt !== "forbidden" ||
+      !isPlainObject(profile.batch) ||
+      profile.batch.minimumEntries !== 1 || profile.batch.maximumEntries !== 1_024 ||
+      profile.batch.inputOrdering !==
+        "target-relative-path-utf8-bytewise-ascending" ||
+      profile.batch.duplicateTargetPaths !== "forbidden" ||
+      profile.batch.directoryCreationFlush !==
+        "bounded-helper-batches-before-dependent-file-publication" ||
+      profile.batch.targetDirectoryFlush !==
+        "one-helper-batch-after-all-target-links" ||
+      profile.batch.receiptDirectoryFlush !==
+        "one-helper-batch-after-all-receipt-links" ||
+      profile.batch.partialResult !== "forbidden" ||
       profile.auxiliaryDirectoryFlush.existingDirectoryRequired !== true ||
       profile.auxiliaryDirectoryFlush.verifiedRustHelperRequired !== true ||
       profile.auxiliaryDirectoryFlush.callerSuppliedSuccess !== "forbidden" ||
@@ -294,12 +329,16 @@ function operationId(storeProfileSha256, stage, relativeDirectory, bindingSha256
   return `durability:${stage}:${sha256(material)}`;
 }
 
+function targetPublicationBinding(relativePath, targetSha256) {
+  return sha256(Buffer.from(`${relativePath}\0${targetSha256}`, "utf8"));
+}
+
 function expectedRequestSha256(ownedRoot, relativeDirectory, expectedOperationId) {
   return sha256(canonicalizeVnextJcsBytes({
     operationId: expectedOperationId,
     ownedRoot,
     relativeDirectory,
-    schema: directoryFlushClientProfile.requestSchema
+    schema: directoryFlushClientProfile.requestMemberSchema
   }));
 }
 
@@ -469,7 +508,7 @@ function validateDurablePublicationReceiptBytes(bytesInput, contextInput) {
     context.storeProfileSha256,
     "target-publish",
     targetDirectory,
-    receipt.targetSha256
+    targetPublicationBinding(target.relativePath, receipt.targetSha256)
   );
   const directoryFlush = validateDirectoryFlushResult(receipt.directoryFlush, {
     operationId: expectedOperationId,
@@ -587,13 +626,64 @@ function createVnextDurablePublication(rootInput, configurationInput) {
   assertNoLinkComponents(root, true);
   const directoryFlushClient = createConfiguredVnextDirectoryFlushClient();
 
-  function flushDirectory(relativeDirectory, stage, bindingSha256) {
-    const id = operationId(storeProfileSha256, stage, relativeDirectory, bindingSha256);
-    return directoryFlushClient.flush({
-      operationId: id,
-      ownedRoot: root,
-      relativeDirectory
+  function flushDirectoryBatch(specifications) {
+    if (!Array.isArray(specifications)) {
+      failEvidence(code("directory_flush_batch_invalid"), steps.persist);
+    }
+    if (specifications.length === 0) return Object.freeze([]);
+    const requests = specifications.map((specification) => {
+      if (!isPlainObject(specification) || typeof specification.relativeDirectory !== "string" ||
+          typeof specification.stage !== "string" ||
+          !/^[a-z][a-z0-9-]{2,39}$/u.test(specification.stage)) {
+        failEvidence(code("directory_flush_batch_invalid"), steps.persist);
+      }
+      normalizeDigest(
+        specification.bindingSha256,
+        code("directory_flush_binding_invalid"),
+        steps.persist
+      );
+      return Object.freeze({
+        operationId: operationId(
+          storeProfileSha256,
+          specification.stage,
+          specification.relativeDirectory,
+          specification.bindingSha256
+        ),
+        ownedRoot: root,
+        relativeDirectory: specification.relativeDirectory
+      });
     });
+    if (new Set(requests.map((request) => request.operationId)).size !== requests.length) {
+      failEvidence(code("directory_flush_batch_invalid"), steps.persist);
+    }
+    const byOperationId = new Map();
+    const maximumEntries = directoryFlushClientProfile.batch.maximumEntries;
+    for (let offset = 0; offset < requests.length; offset += maximumEntries) {
+      const results = directoryFlushClient.flushMany(
+        requests.slice(offset, offset + maximumEntries)
+      );
+      for (const result of results) {
+        if (byOperationId.has(result.operationId)) {
+          failEvidence(code("directory_flush_batch_invalid"), steps.persist);
+        }
+        byOperationId.set(result.operationId, result);
+      }
+    }
+    return Object.freeze(requests.map((request) => {
+      const result = byOperationId.get(request.operationId);
+      if (result === undefined) {
+        failEvidence(code("directory_flush_batch_invalid"), steps.persist);
+      }
+      return result;
+    }));
+  }
+
+  function flushDirectory(relativeDirectory, stage, bindingSha256) {
+    return flushDirectoryBatch([{
+      bindingSha256,
+      relativeDirectory,
+      stage
+    }])[0];
   }
 
   function flushOwnedDirectory(relativeDirectoryInput, stage, bindingSha256) {
@@ -614,7 +704,7 @@ function createVnextDurablePublication(rootInput, configurationInput) {
     return flushDirectory(normalized.relativePath, stage, bindingSha256);
   }
 
-  function ensureDirectorySegments(segmentsInput) {
+  function prepareDirectorySegments(segmentsInput, flushSpecifications) {
     if (!Array.isArray(segmentsInput) || segmentsInput.length === 0 ||
         segmentsInput.length > 64 || Object.getPrototypeOf(segmentsInput) !==
           Array.prototype || Object.getOwnPropertySymbols(segmentsInput).length !== 0 ||
@@ -635,7 +725,6 @@ function createVnextDurablePublication(rootInput, configurationInput) {
       }
       segments.push(segment);
     }
-    const observations = [];
     const current = [];
     for (const segment of segments) {
       current.push(segment);
@@ -660,11 +749,24 @@ function createVnextDurablePublication(rootInput, configurationInput) {
           `${storeProfileSha256}\0${relative}`,
           "utf8"
         ));
-        observations.push(flushDirectory(parent, "layout-parent", binding));
-        observations.push(flushDirectory(relative, "layout-child", binding));
+        flushSpecifications.push(Object.freeze({
+          bindingSha256: binding,
+          relativeDirectory: parent,
+          stage: "layout-parent"
+        }));
+        flushSpecifications.push(Object.freeze({
+          bindingSha256: binding,
+          relativeDirectory: relative,
+          stage: "layout-child"
+        }));
       }
     }
-    return freezeRecord(observations);
+  }
+
+  function ensureDirectorySegments(segmentsInput) {
+    const flushSpecifications = [];
+    prepareDirectorySegments(segmentsInput, flushSpecifications);
+    return freezeRecord(flushDirectoryBatch(flushSpecifications));
   }
 
   function boundedDirectoryEntries(directory, maximumEntries) {
@@ -791,8 +893,8 @@ function createVnextDurablePublication(rootInput, configurationInput) {
     }
   }
 
-  function publishFile(relativePathInput, bytesInput, maximumBytes, stage,
-    bindingSha256, allowDurability) {
+  function preparePublicationEntry(relativePathInput, bytesInput, maximumBytes,
+    allowDurability) {
     if (!Buffer.isBuffer(bytesInput) || !Number.isSafeInteger(maximumBytes) ||
         maximumBytes <= 0 || bytesInput.length <= 0 || bytesInput.length > maximumBytes) {
       failEvidence(code("publish_input_invalid"), steps.persist);
@@ -805,21 +907,36 @@ function createVnextDurablePublication(rootInput, configurationInput) {
       steps.path,
       allowDurability
     );
-    ensureDirectorySegments(normalized.segments.slice(0, -1));
-    assertNoLinkComponents(path.dirname(normalized.absolute), true);
-    const digest = sha256(bytes);
-    const temporary = writeSyncedTemporary(normalized.absolute, bytes, digest);
+    return freezeRecord({
+      absolute: normalized.absolute,
+      bytes,
+      digest: sha256(bytes),
+      maximumBytes,
+      relativePath: normalized.relativePath,
+      segments: normalized.segments
+    });
+  }
+
+  function publishPreparedFile(prepared) {
+    assertNoLinkComponents(path.dirname(prepared.absolute), true);
+    const temporary = writeSyncedTemporary(
+      prepared.absolute,
+      prepared.bytes,
+      prepared.digest
+    );
     let disposition = "created";
     try {
-      assertNoLinkComponents(path.dirname(normalized.absolute), true);
+      assertNoLinkComponents(path.dirname(prepared.absolute), true);
       try {
-        fs.linkSync(temporary, normalized.absolute);
+        fs.linkSync(temporary, prepared.absolute);
       } catch (error) {
         if (error?.code !== "EEXIST") {
           throw asEvidenceError(error, code("publish_failed"), steps.persist);
         }
-        const existing = boundedReadFile(normalized.absolute, maximumBytes);
-        if (!existing.equals(bytes)) failEvidence(code("target_conflict"), steps.persist);
+        const existing = boundedReadFile(prepared.absolute, prepared.maximumBytes);
+        if (!existing.equals(prepared.bytes)) {
+          failEvidence(code("target_conflict"), steps.persist);
+        }
         disposition = "existing-byte-identical";
       }
     } finally {
@@ -829,27 +946,16 @@ function createVnextDurablePublication(rootInput, configurationInput) {
         // A surviving temporary remains inactive and is visible to restart scanning.
       }
     }
-    const relativeDirectory = directoryRelativePath(normalized.relativePath);
-    const directoryFlush = flushDirectory(
-      relativeDirectory,
-      stage,
-      bindingSha256
-    );
-    const readback = boundedReadFile(normalized.absolute, maximumBytes);
-    if (!readback.equals(bytes)) failEvidence(code("readback_mismatch"), steps.persist);
     return freezeRecord({
-      bytes,
-      digest,
-      directoryFlush,
-      disposition,
-      relativePath: normalized.relativePath
+      ...prepared,
+      disposition
     });
   }
 
-  const layoutFlushes = [
-    ...ensureDirectorySegments(["durability"]),
-    ...ensureDirectorySegments(["durability", "sha256"])
-  ];
+  const layoutFlushSpecifications = [];
+  prepareDirectorySegments(["durability"], layoutFlushSpecifications);
+  prepareDirectorySegments(["durability", "sha256"], layoutFlushSpecifications);
+  const layoutFlushes = flushDirectoryBatch(layoutFlushSpecifications);
   const receiptShaRoot = path.join(root, "durability", "sha256");
   let receiptIndex = new Map();
   let pendingTemporaryCount = 0;
@@ -975,88 +1081,178 @@ function createVnextDurablePublication(rootInput, configurationInput) {
     });
   }
 
-  function publishBytes(relativePathInput, bytesInput, maximumBytes) {
-    if (!Buffer.isBuffer(bytesInput)) failEvidence(code("publish_input_invalid"), steps.persist);
-    const targetSha256 = sha256(bytesInput);
-    const target = publishFile(
-      relativePathInput,
-      bytesInput,
-      maximumBytes,
-      "target-publish",
-      targetSha256,
-      false
+  function normalizePublicationBatch(input) {
+    const values = dataArrayValues(
+      input,
+      durablePublicationProfile.batch.minimumEntries,
+      durablePublicationProfile.batch.maximumEntries,
+      code("publish_batch_invalid"),
+      steps.persist
     );
-    const receiptValue = {
-      directoryFlush: target.directoryFlush,
-      fileDataStatus: "temporary-file-fsync-complete",
-      implementationSourceClosureSha256: durablePublicationSourceClosureSha256,
-      profileId: durablePublicationProfile.profileId,
-      profileSha256: durablePublicationProfileSha256,
-      publicationPrimitive: "hard-link-create-if-absent-byte-identical",
-      readbackByteCount: target.bytes.length,
-      readbackSha256: target.digest,
-      schema: durablePublicationProfile.receiptSchema,
-      storeProfileId,
-      storeProfileSha256,
-      targetByteCount: target.bytes.length,
-      targetRelativePath: target.relativePath,
-      targetSha256: target.digest
-    };
-    const receiptBytes = canonicalizeVnextJcsBytes(receiptValue);
-    if (receiptBytes.length > durablePublicationProfile.limits.maximumReceiptBytes) {
-      failEvidence(code("durability_receipt_byte_limit"), steps.persist);
-    }
-    const receiptSha256 = sha256(receiptBytes);
-    const receiptRelativePath =
-      `durability/sha256/${receiptSha256.slice(0, 2)}/${receiptSha256}.json`;
-    const receiptFile = publishFile(
-      receiptRelativePath,
-      receiptBytes,
-      durablePublicationProfile.limits.maximumReceiptBytes,
-      "receipt-publish",
-      receiptSha256,
-      true
-    );
-    const receiptReadback = boundedReadFile(
-      path.join(root, ...receiptRelativePath.split("/")),
-      durablePublicationProfile.limits.maximumReceiptBytes
-    );
-    if (!receiptReadback.equals(receiptBytes)) {
-      failEvidence(code("durability_receipt_readback_mismatch"), steps.persist);
-    }
-    const targetReadback = boundedReadFile(
-      path.join(root, ...target.relativePath.split("/")),
-      maximumBytes
-    );
-    if (!targetReadback.equals(target.bytes)) {
-      failEvidence(code("target_readback_mismatch"), steps.persist);
-    }
-    const validated = validateDurablePublicationReceiptBytes(receiptBytes, {
-      ownedRoot: root,
-      storeProfileId,
-      storeProfileSha256
+    const prepared = values.map((entry) => {
+      const fields = ["bytes", "maximumBytes", "relativePath"];
+      const normalized = dataObjectValues(
+        entry,
+        fields,
+        fields,
+        code("publish_batch_invalid"),
+        steps.persist
+      );
+      return preparePublicationEntry(
+        normalized.relativePath,
+        normalized.bytes,
+        normalized.maximumBytes,
+        false
+      );
     });
-    const members = [...(receiptIndex.get(target.relativePath) || [])];
-    if (!members.some((member) => member.receiptSha256 === receiptSha256)) {
-      members.push(freezeRecord({
-        bytes: validated.bytes,
-        receipt: validated.receipt,
-        receiptRelativePath,
-        receiptSha256
-      }));
-      members.sort((left, right) =>
-        left.receiptSha256.localeCompare(right.receiptSha256, "en"));
-      receiptIndex.set(target.relativePath, Object.freeze(members));
+    prepared.sort((left, right) => Buffer.compare(
+      Buffer.from(left.relativePath, "utf8"),
+      Buffer.from(right.relativePath, "utf8")
+    ));
+    for (let index = 1; index < prepared.length; index += 1) {
+      if (prepared[index - 1].relativePath === prepared[index].relativePath) {
+        failEvidence(code("publish_batch_invalid"), steps.persist);
+      }
     }
-    return buildResult({
-      receiptFile,
-      receiptSha256,
+    return Object.freeze(prepared);
+  }
+
+  function publishMany(input) {
+    const preparedTargets = normalizePublicationBatch(input);
+    const targetLayoutFlushSpecifications = [];
+    for (const target of preparedTargets) {
+      const directorySegments = target.segments.slice(0, -1);
+      if (directorySegments.length > 0) {
+        prepareDirectorySegments(directorySegments, targetLayoutFlushSpecifications);
+      }
+    }
+    flushDirectoryBatch(targetLayoutFlushSpecifications);
+
+    const publishedTargets = preparedTargets.map(publishPreparedFile);
+    const targetDirectoryFlushes = flushDirectoryBatch(publishedTargets.map((target) => ({
+      bindingSha256: targetPublicationBinding(target.relativePath, target.digest),
+      relativeDirectory: directoryRelativePath(target.relativePath),
+      stage: "target-publish"
+    })));
+    const targets = publishedTargets.map((target, index) => freezeRecord({
+      ...target,
+      directoryFlush: targetDirectoryFlushes[index]
+    }));
+    for (const target of targets) {
+      const readback = boundedReadFile(target.absolute, target.maximumBytes);
+      if (!readback.equals(target.bytes)) {
+        failEvidence(code("readback_mismatch"), steps.persist);
+      }
+    }
+
+    const preparedReceipts = targets.map((target) => {
+      const receiptValue = {
+        directoryFlush: target.directoryFlush,
+        fileDataStatus: "temporary-file-fsync-complete",
+        implementationSourceClosureSha256: durablePublicationSourceClosureSha256,
+        profileId: durablePublicationProfile.profileId,
+        profileSha256: durablePublicationProfileSha256,
+        publicationPrimitive: "hard-link-create-if-absent-byte-identical",
+        readbackByteCount: target.bytes.length,
+        readbackSha256: target.digest,
+        schema: durablePublicationProfile.receiptSchema,
+        storeProfileId,
+        storeProfileSha256,
+        targetByteCount: target.bytes.length,
+        targetRelativePath: target.relativePath,
+        targetSha256: target.digest
+      };
+      const receiptBytes = canonicalizeVnextJcsBytes(receiptValue);
+      if (receiptBytes.length > durablePublicationProfile.limits.maximumReceiptBytes) {
+        failEvidence(code("durability_receipt_byte_limit"), steps.persist);
+      }
+      const receiptSha256 = sha256(receiptBytes);
+      const receiptRelativePath =
+        `durability/sha256/${receiptSha256.slice(0, 2)}/${receiptSha256}.json`;
+      return preparePublicationEntry(
+        receiptRelativePath,
+        receiptBytes,
+        durablePublicationProfile.limits.maximumReceiptBytes,
+        true
+      );
+    });
+    const receiptLayoutFlushSpecifications = [];
+    for (const receipt of preparedReceipts) {
+      prepareDirectorySegments(
+        receipt.segments.slice(0, -1),
+        receiptLayoutFlushSpecifications
+      );
+    }
+    flushDirectoryBatch(receiptLayoutFlushSpecifications);
+
+    const publishedReceipts = preparedReceipts.map(publishPreparedFile);
+    const receiptDirectoryFlushes = flushDirectoryBatch(publishedReceipts.map((receipt) => ({
+      bindingSha256: receipt.digest,
+      relativeDirectory: directoryRelativePath(receipt.relativePath),
+      stage: "receipt-publish"
+    })));
+    const receiptFiles = publishedReceipts.map((receipt, index) => freezeRecord({
+      ...receipt,
+      directoryFlush: receiptDirectoryFlushes[index]
+    }));
+
+    const validatedReceipts = [];
+    for (let index = 0; index < targets.length; index += 1) {
+      const target = targets[index];
+      const receiptFile = receiptFiles[index];
+      const receiptReadback = boundedReadFile(
+        receiptFile.absolute,
+        durablePublicationProfile.limits.maximumReceiptBytes
+      );
+      if (!receiptReadback.equals(receiptFile.bytes)) {
+        failEvidence(code("durability_receipt_readback_mismatch"), steps.persist);
+      }
+      const targetReadback = boundedReadFile(target.absolute, target.maximumBytes);
+      if (!targetReadback.equals(target.bytes)) {
+        failEvidence(code("target_readback_mismatch"), steps.persist);
+      }
+      validatedReceipts.push(validateDurablePublicationReceiptBytes(receiptFile.bytes, {
+        ownedRoot: root,
+        storeProfileId,
+        storeProfileSha256
+      }));
+    }
+
+    for (let index = 0; index < targets.length; index += 1) {
+      const target = targets[index];
+      const receiptFile = receiptFiles[index];
+      const validated = validatedReceipts[index];
+      const members = [...(receiptIndex.get(target.relativePath) || [])];
+      if (!members.some((member) => member.receiptSha256 === receiptFile.digest)) {
+        members.push(freezeRecord({
+          bytes: validated.bytes,
+          receipt: validated.receipt,
+          receiptRelativePath: receiptFile.relativePath,
+          receiptSha256: receiptFile.digest
+        }));
+        members.sort((left, right) =>
+          left.receiptSha256.localeCompare(right.receiptSha256, "en"));
+        receiptIndex.set(target.relativePath, Object.freeze(members));
+      }
+    }
+
+    return Object.freeze(targets.map((target, index) => buildResult({
+      receiptFile: receiptFiles[index],
+      receiptSha256: receiptFiles[index].digest,
       targetDirectoryFlush: target.directoryFlush,
       targetDisposition: target.disposition,
       targetRelativePath: target.relativePath,
       targetSha256: target.digest,
       targetByteCount: target.bytes.length
-    });
+    })));
+  }
+
+  function publishBytes(relativePathInput, bytesInput, maximumBytes) {
+    return publishMany([{
+      bytes: bytesInput,
+      maximumBytes,
+      relativePath: relativePathInput
+    }])[0];
   }
 
   function activateBytes(relativePathInput, maximumBytes) {
@@ -1098,17 +1294,19 @@ function createVnextDurablePublication(rootInput, configurationInput) {
       failEvidence(code("durability_receipt_readback_mismatch"), steps.read);
     }
     const targetDirectory = directoryRelativePath(target.relativePath);
-    const targetDirectoryFlush = flushDirectory(
-      targetDirectory,
-      "restart-target",
-      selected.receiptSha256
-    );
     const receiptDirectory = directoryRelativePath(selected.receiptRelativePath);
-    const receiptDirectoryFlush = flushDirectory(
-      receiptDirectory,
-      "restart-receipt",
-      selected.receiptSha256
-    );
+    const [targetDirectoryFlush, receiptDirectoryFlush] = flushDirectoryBatch([
+      {
+        bindingSha256: selected.receiptSha256,
+        relativeDirectory: targetDirectory,
+        stage: "restart-target"
+      },
+      {
+        bindingSha256: selected.receiptSha256,
+        relativeDirectory: receiptDirectory,
+        stage: "restart-receipt"
+      }
+    ]);
     const finalReceiptReadback = boundedReadFile(
       receiptPath,
       durablePublicationProfile.limits.maximumReceiptBytes
@@ -1153,6 +1351,7 @@ function createVnextDurablePublication(rootInput, configurationInput) {
     profileId: durablePublicationProfile.profileId,
     profileSha256: durablePublicationProfileSha256,
     publishBytes,
+    publishMany,
     rebuild,
     startup: freezeRecord({
       ...initialIndex,

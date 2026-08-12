@@ -5,7 +5,8 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const {
-  createVnextDurablePublication
+  createVnextDurablePublication,
+  durablePublicationProfile
 } = require("./vnext-durable-publication.js");
 const {
   asEvidenceError,
@@ -297,13 +298,53 @@ function createVnextCreateOnlyFiles(configurationInput) {
     return publishedHardLink || oldEnough ? "quarantine" : "pending";
   }
 
-  function publishBytes(target, bytes, maximumBytes) {
-    const relativePath = relativePathForAbsolute(target);
-    const durability = durable.publishBytes(relativePath, bytes, maximumBytes);
-    return immutableRecord({
+  function publishMany(input) {
+    if (!Array.isArray(input) || Object.getPrototypeOf(input) !== Array.prototype ||
+        Object.getOwnPropertySymbols(input).length !== 0 || input.length === 0 ||
+        input.length > durablePublicationProfile.batch.maximumEntries) {
+      failEvidence(code("publish_batch_invalid"), steps.persist);
+    }
+    const names = Object.getOwnPropertyNames(input);
+    if (names.length !== input.length + 1 || !names.includes("length")) {
+      failEvidence(code("publish_batch_invalid"), steps.persist);
+    }
+    const entries = [];
+    for (let index = 0; index < input.length; index += 1) {
+      const descriptor = Object.getOwnPropertyDescriptor(input, String(index));
+      if (!descriptor || !descriptor.enumerable || !("value" in descriptor) ||
+          !isPlainObject(descriptor.value)) {
+        failEvidence(code("publish_batch_invalid"), steps.persist);
+      }
+      const entry = descriptor.value;
+      const fields = ["bytes", "maximumBytes", "target"];
+      const entryNames = Object.getOwnPropertyNames(entry);
+      if (Object.getOwnPropertySymbols(entry).length !== 0 ||
+          entryNames.length !== fields.length ||
+          entryNames.some((name) => !fields.includes(name))) {
+        failEvidence(code("publish_batch_invalid"), steps.persist);
+      }
+      const values = {};
+      for (const name of fields) {
+        const field = Object.getOwnPropertyDescriptor(entry, name);
+        if (!field || !field.enumerable || !("value" in field)) {
+          failEvidence(code("publish_batch_invalid"), steps.persist);
+        }
+        values[name] = field.value;
+      }
+      entries.push(Object.freeze({
+        bytes: values.bytes,
+        maximumBytes: values.maximumBytes,
+        relativePath: relativePathForAbsolute(values.target)
+      }));
+    }
+    return immutableRecord(durable.publishMany(entries).map((durability) => ({
       disposition: durability.targetDisposition,
       durability
-    });
+    })));
+  }
+
+  function publishBytes(target, bytes, maximumBytes) {
+    return publishMany([{ bytes, maximumBytes, target }])[0];
   }
 
   function activateBytes(target, maximumBytes) {
@@ -399,6 +440,7 @@ function createVnextCreateOnlyFiles(configurationInput) {
     inspectIncompleteTemporary,
     normalizeRoot,
     publishBytes,
+    publishMany,
     quarantineEntry,
     rebuildDurabilityIndex: durable.rebuild,
     safeChild,

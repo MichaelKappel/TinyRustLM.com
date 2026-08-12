@@ -3,15 +3,28 @@
   "profileId": "tinyrustlm.vnext.directory-flush.v1",
   "status": "frozen",
   "versionPolicy": "single-current-profile-no-compatibility-reader",
-  "requestSchema": "tinyrustlm.vnext.directory_flush_request.v1",
-  "successObservationSchema": "tinyrustlm.vnext.directory_flush_observation.v1",
+  "requestSchema": "tinyrustlm.vnext.directory_flush_batch_request.v1",
+  "requestMemberSchema": "tinyrustlm.vnext.directory_flush_request_member.v1",
+  "successObservationSchema": "tinyrustlm.vnext.directory_flush_batch_observation.v1",
+  "successObservationMemberSchema": "tinyrustlm.vnext.directory_flush_observation_member.v1",
   "failureSchema": "tinyrustlm.vnext.directory_flush_failure.v1",
   "networkAccess": "forbidden",
   "rawPathOutput": "forbidden",
   "rawHostErrorOutput": "forbidden",
-  "requestTransport": "bounded-stdin-json",
-  "responseTransport": "single-stdout-json-document",
-  "requestMaximumBytes": 16384,
+  "requestTransport": "one-bounded-canonical-sorted-batch-stdin-json-document",
+  "responseTransport": "one-bounded-canonical-path-redacted-batch-stdout-json-document",
+  "requestMaximumBytes": 4194304,
+  "successObservationMaximumBytes": 4194304,
+  "maximumBatchEntries": 1024,
+  "batchContract": {
+    "minimumEntries": 1,
+    "maximumEntries": 1024,
+    "ordering": "operation-id-bytewise-ascending",
+    "duplicateOperationIds": "forbidden",
+    "canonicalInputRequired": true,
+    "memberFailure": "entire-batch-fails-with-one-public-safe-code",
+    "partialSuccessOutput": "forbidden"
+  },
   "pathContract": {
     "ownedRoot": "absolute-existing-directory-with-no-symbolic-link-or-reparse-component",
     "relativeDirectory": "explicit-dot-owned-root-scope-or-one-to-64-normal-components-beneath-canonical-owned-root",
@@ -64,7 +77,22 @@
       "policy": "fail-closed"
     }
   },
+  "requestFields": [
+    "requests",
+    "schema"
+  ],
+  "requestMemberFields": [
+    "operationId",
+    "ownedRoot",
+    "relativeDirectory",
+    "schema"
+  ],
   "successObservationFields": [
+    "observations",
+    "schema",
+    "status"
+  ],
+  "successObservationMemberFields": [
     "architecture",
     "directoryIdentitySha256",
     "method",
@@ -103,7 +131,10 @@
     "directory_profile_invalid",
     "directory_relative_path_invalid",
     "directory_request_byte_limit",
+    "directory_request_count_invalid",
     "directory_request_invalid",
+    "directory_request_noncanonical",
+    "directory_request_order_invalid",
     "directory_request_read_failed",
     "directory_request_schema_invalid",
     "directory_root_canonicalize_failed",
@@ -116,6 +147,7 @@
     "A successful helper call is not physical power-loss evidence.",
     "A successful helper call is not proof that a storage device ignored no flush request.",
     "A successful helper call does not prove create-only publication, file-data fsync, readback, or receipt admission by itself.",
+    "Batch execution amortizes one verified process invocation but is not an atomic all-or-nothing storage transaction; success means every listed directory flush returned success.",
     "The helper does not establish stable path-topology ownership; the caller must prevent independent rename, replacement, link, or reparse mutation of root and directory components for the operation lifetime.",
     "A local Windows observation is not cross-platform or production deployment evidence."
   ],

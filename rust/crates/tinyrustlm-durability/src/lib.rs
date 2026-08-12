@@ -9,20 +9,29 @@ use std::fs::{self, File, Metadata, OpenOptions};
 use std::io;
 use std::path::{Component, Path, PathBuf};
 
-/// The sole current successful directory-flush observation schema.
-pub const DIRECTORY_FLUSH_OBSERVATION_SCHEMA: &str =
-    "tinyrustlm.vnext.directory_flush_observation.v1";
+/// The sole current successful directory-flush batch observation schema.
+pub const DIRECTORY_FLUSH_BATCH_OBSERVATION_SCHEMA: &str =
+    "tinyrustlm.vnext.directory_flush_batch_observation.v1";
 /// The sole current directory-flush failure schema.
 pub const DIRECTORY_FLUSH_FAILURE_SCHEMA: &str = "tinyrustlm.vnext.directory_flush_failure.v1";
-/// The sole current directory-flush request schema.
-pub const DIRECTORY_FLUSH_REQUEST_SCHEMA: &str = "tinyrustlm.vnext.directory_flush_request.v1";
-/// The maximum accepted request wire size.
-pub const DIRECTORY_FLUSH_REQUEST_MAXIMUM_BYTES: usize = 16_384;
+/// The sole current directory-flush batch request schema.
+pub const DIRECTORY_FLUSH_BATCH_REQUEST_SCHEMA: &str =
+    "tinyrustlm.vnext.directory_flush_batch_request.v1";
+/// The sole current directory-flush request-member schema.
+pub const DIRECTORY_FLUSH_REQUEST_MEMBER_SCHEMA: &str =
+    "tinyrustlm.vnext.directory_flush_request_member.v1";
+/// The sole current directory-flush observation-member schema.
+pub const DIRECTORY_FLUSH_OBSERVATION_MEMBER_SCHEMA: &str =
+    "tinyrustlm.vnext.directory_flush_observation_member.v1";
+/// The maximum accepted request or success-observation wire size.
+pub const DIRECTORY_FLUSH_BATCH_MAXIMUM_BYTES: usize = 4_194_304;
+/// The maximum accepted operations in one helper process.
+pub const DIRECTORY_FLUSH_BATCH_MAXIMUM_ENTRIES: usize = 1_024;
 /// The sole current directory-flush profile identity.
 pub const DIRECTORY_FLUSH_PROFILE_ID: &str = "tinyrustlm.vnext.directory-flush.v1";
 /// The SHA-256 of the sole current directory-flush profile bytes.
 pub const DIRECTORY_FLUSH_PROFILE_SHA256: &str =
-    "aaf82fde396e89d03e82a6cd7c761bfbedb1d766250dc9dd537124be68adcfd8";
+    "bb9c76715d0b35d63a9da27006ff8f88840486cf287cec24279a1020a0443ddb";
 const DIRECTORY_IDENTITY_DOMAIN: &str = "tinyrustlm.directory-flush.scope.v1";
 const DIRECTORY_FLUSH_PROFILE_BYTES: &[u8] =
     include_bytes!("../../../../contracts/vnext/directory-flush-profile.v1.json");
@@ -33,11 +42,26 @@ const MAXIMUM_COMPONENT_BYTES: usize = 255;
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
-struct DirectoryFlushRequest {
+struct DirectoryFlushRequestMember {
     operation_id: String,
     owned_root: String,
     relative_directory: String,
     schema: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields, rename_all = "camelCase")]
+struct DirectoryFlushBatchRequest {
+    requests: Vec<DirectoryFlushRequestMember>,
+    schema: String,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct DirectoryFlushBatchObservation {
+    observations: Vec<DirectoryFlushObservation>,
+    schema: &'static str,
+    status: &'static str,
 }
 
 #[cfg(windows)]
@@ -158,11 +182,11 @@ pub fn flush_owned_directory(
     relative_directory: &Path,
     operation_id: &str,
 ) -> Result<DirectoryFlushObservation, DurabilityError> {
-    let request = DirectoryFlushRequest {
+    let request = DirectoryFlushRequestMember {
         operation_id: operation_id.to_owned(),
         owned_root: path_text(owned_root)?.to_owned(),
         relative_directory: path_text(relative_directory)?.to_owned(),
-        schema: DIRECTORY_FLUSH_REQUEST_SCHEMA.to_owned(),
+        schema: DIRECTORY_FLUSH_REQUEST_MEMBER_SCHEMA.to_owned(),
     };
     let request_bytes = serde_json::to_vec(&request)
         .map_err(|_| DurabilityError::new("directory_request_invalid"))?;
@@ -207,7 +231,7 @@ fn flush_owned_directory_bound(
         profile_id: DIRECTORY_FLUSH_PROFILE_ID.to_owned(),
         profile_sha256: DIRECTORY_FLUSH_PROFILE_SHA256.to_owned(),
         request_sha256: request_sha256.to_owned(),
-        schema: DIRECTORY_FLUSH_OBSERVATION_SCHEMA.to_owned(),
+        schema: DIRECTORY_FLUSH_OBSERVATION_MEMBER_SCHEMA.to_owned(),
         status: "performed".to_owned(),
     })
 }
@@ -220,26 +244,59 @@ fn validate_profile() -> Result<(), DurabilityError> {
     Ok(())
 }
 
-/// Executes one strict directory-flush request and returns a bounded,
-/// path-redacted JSON observation.
-pub fn execute_directory_flush_request_bytes(input: &[u8]) -> Result<Vec<u8>, DurabilityError> {
-    if input.is_empty() || input.len() > DIRECTORY_FLUSH_REQUEST_MAXIMUM_BYTES {
+/// Executes one strict canonical directory-flush batch and returns one
+/// bounded, path-redacted JSON batch observation.
+pub fn execute_directory_flush_batch_request_bytes(
+    input: &[u8],
+) -> Result<Vec<u8>, DurabilityError> {
+    if input.is_empty() || input.len() > DIRECTORY_FLUSH_BATCH_MAXIMUM_BYTES {
         return Err(DurabilityError::new("directory_request_byte_limit"));
     }
-    let request: DirectoryFlushRequest = serde_json::from_slice(input)
+    let request: DirectoryFlushBatchRequest = serde_json::from_slice(input)
         .map_err(|_| DurabilityError::new("directory_request_invalid"))?;
-    if request.schema != DIRECTORY_FLUSH_REQUEST_SCHEMA {
+    let canonical = serde_json::to_vec(&request)
+        .map_err(|_| DurabilityError::new("directory_request_invalid"))?;
+    if canonical != input {
+        return Err(DurabilityError::new("directory_request_noncanonical"));
+    }
+    if request.schema != DIRECTORY_FLUSH_BATCH_REQUEST_SCHEMA {
         return Err(DurabilityError::new("directory_request_schema_invalid"));
     }
-    let observation = flush_owned_directory_bound(
-        Path::new(&request.owned_root),
-        Path::new(&request.relative_directory),
-        &request.operation_id,
-        &lowercase_hex(&Sha256::digest(input)),
-    )?;
+    if !(1..=DIRECTORY_FLUSH_BATCH_MAXIMUM_ENTRIES).contains(&request.requests.len()) {
+        return Err(DurabilityError::new("directory_request_count_invalid"));
+    }
+
+    let mut previous_operation_id: Option<&str> = None;
+    for member in &request.requests {
+        if member.schema != DIRECTORY_FLUSH_REQUEST_MEMBER_SCHEMA {
+            return Err(DurabilityError::new("directory_request_schema_invalid"));
+        }
+        validate_operation_id(&member.operation_id)?;
+        if previous_operation_id.is_some_and(|previous| previous >= member.operation_id.as_str()) {
+            return Err(DurabilityError::new("directory_request_order_invalid"));
+        }
+        previous_operation_id = Some(&member.operation_id);
+    }
+
+    let mut observations = Vec::with_capacity(request.requests.len());
+    for member in &request.requests {
+        let member_bytes = serde_json::to_vec(member)
+            .map_err(|_| DurabilityError::new("directory_request_invalid"))?;
+        observations.push(flush_owned_directory_bound(
+            Path::new(&member.owned_root),
+            Path::new(&member.relative_directory),
+            &member.operation_id,
+            &lowercase_hex(&Sha256::digest(&member_bytes)),
+        )?);
+    }
+    let observation = DirectoryFlushBatchObservation {
+        observations,
+        schema: DIRECTORY_FLUSH_BATCH_OBSERVATION_SCHEMA,
+        status: "performed",
+    };
     let bytes = serde_json::to_vec(&observation)
         .map_err(|_| DurabilityError::new("directory_observation_serialize_failed"))?;
-    if bytes.len() > DIRECTORY_FLUSH_REQUEST_MAXIMUM_BYTES {
+    if bytes.len() > DIRECTORY_FLUSH_BATCH_MAXIMUM_BYTES {
         return Err(DurabilityError::new("directory_observation_byte_limit"));
     }
     Ok(bytes)

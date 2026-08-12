@@ -3,27 +3,28 @@
 ## Status And Scope
 
 `tinyrustlm.vnext.directory-flush.v1` is the sole current platform boundary for
-flushing one exact directory beneath an owned filesystem root. Its frozen
-profile is `contracts/vnext/directory-flush-profile.v1.json`, 5,820 bytes with
+flushing one sorted batch of one to 1,024 exact directories beneath an owned
+filesystem root. Its frozen profile is
+`contracts/vnext/directory-flush-profile.v1.json`, 7,021 bytes with
 SHA-256
-`aaf82fde396e89d03e82a6cd7c761bfbedb1d766250dc9dd537124be68adcfd8`.
+`bb9c76715d0b35d63a9da27006ff8f88840486cf287cec24279a1020a0443ddb`.
 The implementation is the `tinyrustlm-durability` Rust crate and the
 `tinyrustlm-directory-flush` process. The sole Node process/package client is
 `tinyrustlm.vnext.directory-flush-client.v1`. Its frozen profile is
-`contracts/vnext/directory-flush-client-profile.v1.json`, 5,068 bytes with
+`contracts/vnext/directory-flush-client-profile.v1.json`, 5,845 bytes with
 SHA-256
-`9f367bbe58bf8afc8ecba57a1b33e5cda5a83592a80517c4db38d0775cf9fde6`.
+`0d5fe88e8abb371a99db58f1ce3fabce180dc00f77287b6f44ea40d268d709a1`.
 Its declared five-member source closure has SHA-256
-`37dc6e85be3655743a31de5623fa574f565578351f4c6b255621a9d976a8c487`.
+`b265141e0749422bcdadefab7777c97d154f442ac18397f69664dd1af24447f3`.
 
 This checkpoint proves a bounded Rust operation/process protocol, the exact
 Node-to-packaged-Rust invocation boundary, and the sole non-recursive
 durable-publication primitive used by every current vNext store. The
-primitive's 6,592-byte frozen profile has
+primitive's 7,469-byte frozen profile has
 SHA-256
-`a650102f064ab5f39a19bbbc3505bc58a4712c2b89b0df26a11ad5054dab4066`.
+`4c1006a986ced8359346cb856ea698c03cc187ae7a0b77b8108719a043becc35`.
 Its six-member source closure has SHA-256
-`7743d0993a0f8fd4af900121c6456838980c48d463d6ec86b25e28f3d5bd121c`.
+`845acd1da5aa060ad7eb15dee0fdb866d9ac13ea20a699fe13f4ea6b0592b2d9`.
 The receipt, subject, campaign-artifact, campaign-operation, and append-only
 runner-lock paths all use this primitive. There is no unsupported-success
 class or caller-supplied durability path. Gate D remains incomplete because
@@ -55,43 +56,67 @@ helper therefore records the platform call as `performed`; it does not return
 
 ## Frozen Protocol
 
-The process accepts one JSON document on stdin, capped at 16,384 bytes:
+The process accepts one canonical JSON batch document on stdin, capped at
+4 MiB. It must contain one to 1,024 members sorted bytewise by unique
+`operationId`:
 
 ```json
 {
-  "operationId": "directory-flush-operation-001",
-  "ownedRoot": "<absolute private owned root>",
-  "relativeDirectory": "receipts/sha256",
-  "schema": "tinyrustlm.vnext.directory_flush_request.v1"
+  "requests": [
+    {
+      "operationId": "directory-flush-operation-001",
+      "ownedRoot": "<absolute private owned root>",
+      "relativeDirectory": "receipts/sha256",
+      "schema": "tinyrustlm.vnext.directory_flush_request_member.v1"
+    },
+    {
+      "operationId": "directory-flush-operation-002",
+      "ownedRoot": "<absolute private owned root>",
+      "relativeDirectory": "subjects/sha256",
+      "schema": "tinyrustlm.vnext.directory_flush_request_member.v1"
+    }
+  ],
+  "schema": "tinyrustlm.vnext.directory_flush_batch_request.v1"
 }
 ```
 
 Duplicate keys, unknown keys, a wrong schema, an invalid operation ID, an
-oversized request, a non-absolute root, and an unsafe relative path fail. Paths
-are transported through stdin rather than command-line arguments so ordinary
+empty or oversized batch, duplicate or out-of-order operation IDs, a
+non-absolute root, and an unsafe relative path fail the entire call. Paths are
+transported through stdin rather than command-line arguments so ordinary
 process listings do not disclose them.
 
-Success emits exactly one path-redacted JSON observation:
+Success emits exactly one canonical path-redacted batch observation, also
+capped at 4 MiB and ordered by operation ID:
 
 ```json
 {
-  "architecture": "x86_64",
-  "directoryIdentitySha256": "<64 lowercase hex>",
-  "method": "win32-backup-semantics-flush-file-buffers",
-  "operatingSystem": "windows",
-  "operationId": "directory-flush-operation-001",
-  "profileId": "tinyrustlm.vnext.directory-flush.v1",
-  "profileSha256": "aaf82fde396e89d03e82a6cd7c761bfbedb1d766250dc9dd537124be68adcfd8",
-  "requestSha256": "<64 lowercase hex>",
-  "schema": "tinyrustlm.vnext.directory_flush_observation.v1",
+  "observations": [
+    {
+      "architecture": "x86_64",
+      "directoryIdentitySha256": "<64 lowercase hex>",
+      "method": "win32-backup-semantics-flush-file-buffers",
+      "operatingSystem": "windows",
+      "operationId": "directory-flush-operation-001",
+      "profileId": "tinyrustlm.vnext.directory-flush.v1",
+      "profileSha256": "bb9c76715d0b35d63a9da27006ff8f88840486cf287cec24279a1020a0443ddb",
+      "requestSha256": "<64 lowercase hex>",
+      "schema": "tinyrustlm.vnext.directory_flush_observation_member.v1",
+      "status": "performed"
+    }
+  ],
+  "schema": "tinyrustlm.vnext.directory_flush_batch_observation.v1",
   "status": "performed"
 }
 ```
 
 The directory identity hashes a domain separator, canonical absolute owned
 root, and normalized relative directory. The raw identity material is never
-returned. Failure emits only `errorCode`, `schema`, and `status`; raw paths,
-request bytes, and host diagnostics are excluded.
+returned. If any member fails, the process emits no success members and only
+one failure document containing `errorCode`, `schema`, and `status`; raw paths,
+request bytes, host diagnostics, and partial success output are excluded. This
+all-or-no-result API is not an atomic storage transaction: earlier directory
+flushes may already have completed before a later member fails.
 
 ## Node Package And Process Boundary
 
@@ -111,7 +136,10 @@ profile drift, unexpected executable names, self-described release trust on a
 debug build, and executable byte drift. It re-reads the manifest and executable
 after execution; replacement before or during the operation fails closed.
 
-The child receives no arguments, no parent environment variables, no inherited
+`flushMany` is the sole client implementation. It preflights one to 1,024
+requests, rejects duplicates and accessors, sorts by operation ID, and invokes
+exactly one helper process. `flush` delegates through a size-one batch and adds
+no alternate path. The child receives no arguments, no parent environment variables, no inherited
 stdio, and no caller working directory. It runs from the verified package root
 with `shell: false`, private bounded pipes, a 10-second timeout, and `SIGKILL`
 as the timeout signal. Stdin is the canonical request. Stderr must be empty.
@@ -119,13 +147,13 @@ Success and failure stdout must be bounded, strict, canonical documents. A
 validated helper failure contributes only its bounded public-safe error code as
 the client error cause.
 
-The path-redacted client result binds the client profile and source closure,
+Each path-redacted member result binds the client profile and source closure,
 Node runtime version, helper profile, package manifest, source closure,
-executable, platform/RID, request, operation, directory identity, method, and
-observation. The Node process API does not provide an OS network sandbox. The
-helper contract forbids network use, but a release claim additionally requires
-a trusted, provenance-verified package and controlled installation root. A
-`local-test-build` package is test evidence only.
+executable, platform/RID, exact batch request and observation, operation,
+directory identity, and method. The Node process API does not provide an OS
+network sandbox. The helper contract forbids network use, but a release claim
+additionally requires a trusted, provenance-verified package and controlled
+installation root. A `local-test-build` package is test evidence only.
 
 ## Owned-Path Validation
 
@@ -203,13 +231,16 @@ inactive and are quarantined on reconstruction.
 `tinyrustlm/tools/vnext-durable-publication.js` now implements that sequence as
 an isolated production boundary. It accepts no caller filesystem, platform,
 randomness, helper, process output, directory-flush result, or readback result.
-It requires a preexisting privately owned root, durably creates child layout
-directories one component at a time, fsyncs a same-directory temporary,
-publishes through a create-if-absent hard link, invokes the verified helper,
-and reads the target back exactly. It then persists a canonical
-content-addressed durability receipt and activates only after that receipt's
-own file fsync, helper-backed directory flush, exact receipt readback, and a
-second exact target readback.
+It requires a preexisting privately owned root and accepts one to 1,024 unique
+target paths. It fully preflights the batch, durably creates child layout
+directories in bounded helper batches, fsyncs every same-directory temporary,
+publishes through create-if-absent hard links, flushes all target directories
+through one verified helper batch, and reads every target back exactly. It then
+persists one canonical content-addressed durability receipt per target, flushes
+all receipt directories through one verified helper batch, repeats exact
+receipt and target readback, and activates the complete batch only after all
+verification succeeds. It returns no partial result, but interruption may
+leave inactive files because the filesystem operations are not transactional.
 
 `tinyrustlm/tools/vnext-create-only-files.js` is the only shared store adapter.
 It constructs the durable publisher internally from an exact store profile ID
@@ -229,18 +260,20 @@ without exact targets remain inactive.
 
 ## Verification
 
-The Rust crate currently has 14 passing focused tests:
+The Rust crate's focused tests cover:
 
 - eight owned-path and platform-operation tests, including actual Win32
   success and junction rejection; and
-- six frozen-profile and strict library/process protocol tests, including
+- frozen-profile and strict library/process batch protocol cases, including
   exact profile identity and semantics, duplicate fields, unknown fields,
-  wrong schema, byte limits, path redaction, bounded failure, and real
-  child-process execution.
+  wrong schema, empty and oversized batches, duplicate and out-of-order IDs,
+  byte limits, path redaction, no partial success output, bounded failure, and
+  real child-process execution.
 
-The Node client has 32 passing focused tests. They cover exact profile/source-closure
+The Node client focused tests cover exact profile/source-closure
 identity, real helper success and safe failure, owned-root scope, configured
 package discovery, accessor and unknown-field rejection, request bounds,
+sorted multi-member transport, duplicate and 1,025-member rejection,
 empty-environment process execution, package-root link rejection, duplicate,
 noncanonical, oversized, platform-drifted, and profile-drifted manifests,
 debug/release trust mismatch, timeout, output overflow, stderr, signals,
@@ -276,6 +309,8 @@ Retrieved 2026-08-11:
   provenance for a self-described package.
 - The helper does not independently establish stable path-topology ownership
   of its caller-supplied root and directory components.
+- A successful batch is not an atomic all-or-nothing filesystem transaction;
+  it proves only that every listed directory flush returned success.
 - No physical power interruption has been executed.
 - No Linux or physical ARM64 execution evidence exists for this helper.
 - No release, deployment, publication, model qualification, browser round,

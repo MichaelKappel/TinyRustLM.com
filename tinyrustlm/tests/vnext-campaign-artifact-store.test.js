@@ -289,7 +289,8 @@ test("keeps a plan inactive when its verified helper directory flush fails", (t)
   const originalSpawn = childProcess.spawnSync.bind(childProcess);
   t.mock.method(childProcess, "spawnSync", (command, args, options) => {
       const request = options?.input && parseStrictJson(options.input);
-      if (!injected && request?.operationId?.startsWith("durability:target-publish:")) {
+      if (!injected && request?.requests?.some((entry) =>
+        entry.operationId.startsWith("durability:target-publish:"))) {
         injected = true;
         const error = new Error(`private directory detail ${root}`);
         error.code = "EIO";

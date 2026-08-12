@@ -34,10 +34,40 @@ const prefixPattern = /^[a-f0-9]{2}$/u;
 const temporaryPattern = /^\.([a-f0-9]{64})\.[0-9]{1,20}\.[a-f0-9]{4,64}\.tmp$/u;
 const quarantineReasonPattern = /^[a-z][a-z0-9_]{2,79}$/u;
 const storeOptionNames = Object.freeze([]);
+const receiptBatchFields = Object.freeze([
+  "minimumEntries",
+  "maximumEntries",
+  "inputOrdering",
+  "duplicateReceiptIds",
+  "parentPolicy",
+  "preflight",
+  "publication",
+  "activation",
+  "partialResult"
+]);
+
+const receiptBatchProfile = dataObjectValues(
+  storeProfile.batch,
+  receiptBatchFields,
+  receiptBatchFields,
+  "receipt_store_profile_invalid",
+  "store-profile"
+);
 
 if (storeProfile.durablePublication?.profileId !== durablePublicationProfile.profileId ||
     storeProfile.durablePublication?.profileSha256 !== durablePublicationProfileSha256 ||
     storeProfile.durablePublication?.callerSuppliedSuccess !== "forbidden" ||
+    receiptBatchProfile.minimumEntries !== 1 ||
+    receiptBatchProfile.maximumEntries !== durablePublicationProfile.batch.maximumEntries ||
+    receiptBatchProfile.inputOrdering !== "receipt-id-utf8-bytewise-ascending" ||
+    receiptBatchProfile.duplicateReceiptIds !== "forbidden" ||
+    receiptBatchProfile.parentPolicy !==
+      "active-or-same-batch-directed-acyclic-graph" ||
+    receiptBatchProfile.preflight !== "complete-before-publication" ||
+    receiptBatchProfile.publication !== "one-durable-publish-many-call" ||
+    receiptBatchProfile.activation !==
+      "all-published-and-parents-revalidated-before-any-in-memory-activation" ||
+    receiptBatchProfile.partialResult !== "forbidden" ||
     Object.hasOwn(storeProfile, "atomicCreate")) {
   failEvidence("receipt_store_profile_invalid", "store-profile");
 }
@@ -566,29 +596,125 @@ function createVnextReceiptStore(rootInput, options = {}) {
     return validateActiveClosure(receiptId);
   }
 
-  function put(input) {
-    const validated = validateVnextReceiptBytes(input);
-    const receiptId = validated.receipt.receiptId;
-    const parents = collectParentReceiptIds(validated.receipt);
-    if (parents.includes(receiptId)) failEvidence("receipt_self_parent", "receipt-persist");
-    for (const parent of parents) {
-      if (!active.has(parent)) failEvidence("receipt_parent_missing", "receipt-persist");
-      try {
-        validateActiveClosure(parent);
-      } catch (error) {
-        throw new VnextEvidenceError(
-          "receipt_active_parent_invalid",
-          "receipt-persist",
-          error?.code
-        );
+  function putMany(input) {
+    if (!Array.isArray(input) || input.length < receiptBatchProfile.minimumEntries ||
+        input.length > receiptBatchProfile.maximumEntries) {
+      failEvidence("receipt_batch_invalid", "receipt-persist");
+    }
+    const values = dataArrayValues(input, "receipt_batch_invalid", "receipt-persist");
+    const pending = new Map();
+    for (const value of values) {
+      const validated = validateVnextReceiptBytes(value);
+      const receiptId = validated.receipt.receiptId;
+      if (pending.has(receiptId)) {
+        failEvidence("receipt_batch_duplicate_id", "receipt-persist");
+      }
+      const parentReceiptIds = collectParentReceiptIds(validated.receipt);
+      if (parentReceiptIds.includes(receiptId)) {
+        failEvidence("receipt_self_parent", "receipt-persist");
+      }
+      pending.set(receiptId, Object.freeze({
+        bytes: validated.bytes,
+        parentReceiptIds,
+        receiptId,
+        relativePath: receiptRelativePath(receiptId)
+      }));
+    }
+
+    const entries = [...pending.values()].sort((left, right) =>
+      left.receiptId < right.receiptId ? -1 : left.receiptId > right.receiptId ? 1 : 0);
+    const newReceiptCount = entries.reduce((count, entry) =>
+      count + (active.has(entry.receiptId) ? 0 : 1), 0);
+    if (active.size + newReceiptCount > storeProfile.limits.maximumActiveReceipts) {
+      failEvidence("receipt_store_active_limit", "receipt-persist");
+    }
+
+    let projectedEdgeCount = 0;
+    for (const metadata of active.values()) {
+      projectedEdgeCount += metadata.parentReceiptIds.length;
+    }
+    for (const entry of entries) {
+      const existing = active.get(entry.receiptId);
+      if (existing) projectedEdgeCount -= existing.parentReceiptIds.length;
+      projectedEdgeCount += entry.parentReceiptIds.length;
+    }
+    if (!Number.isSafeInteger(projectedEdgeCount) ||
+        projectedEdgeCount > storeProfile.limits.maximumGraphEdges) {
+      failEvidence("receipt_store_graph_edge_limit", "receipt-persist");
+    }
+
+    const externalParents = new Set();
+    const indegree = new Map(entries.map((entry) => [entry.receiptId, 0]));
+    const dependents = new Map(entries.map((entry) => [entry.receiptId, []]));
+    for (const entry of entries) {
+      for (const parent of entry.parentReceiptIds) {
+        if (pending.has(parent)) {
+          indegree.set(entry.receiptId, indegree.get(entry.receiptId) + 1);
+          dependents.get(parent).push(entry.receiptId);
+        } else if (active.has(parent)) {
+          externalParents.add(parent);
+        } else {
+          failEvidence("receipt_parent_missing", "receipt-persist");
+        }
       }
     }
-    const relativePath = receiptRelativePath(receiptId);
-    const target = path.join(root, ...relativePath.split("/"));
-    const bytes = validated.bytes;
-    const persistence = fileOps.publishBytes(target, bytes, receiptMaximumBytes);
+    for (const valuesForParent of dependents.values()) valuesForParent.sort();
+    const ready = [...indegree.entries()]
+      .filter(([_receiptId, count]) => count === 0)
+      .map(([receiptId]) => receiptId)
+      .sort();
+    const activationOrder = [];
+    while (ready.length > 0) {
+      const receiptId = ready.shift();
+      activationOrder.push(receiptId);
+      for (const dependent of dependents.get(receiptId)) {
+        const next = indegree.get(dependent) - 1;
+        indegree.set(dependent, next);
+        if (next === 0) {
+          ready.push(dependent);
+          ready.sort();
+        }
+      }
+    }
+    if (activationOrder.length !== entries.length) {
+      failEvidence("receipt_batch_cycle", "receipt-persist");
+    }
+
+    function validateExternalParents() {
+      for (const parent of [...externalParents].sort()) {
+        try {
+          validateActiveClosure(parent);
+        } catch (error) {
+          throw new VnextEvidenceError(
+            "receipt_active_parent_invalid",
+            "receipt-persist",
+            error?.code
+          );
+        }
+      }
+    }
+
+    validateExternalParents();
+    const publications = fileOps.publishMany(entries.map((entry) => ({
+      bytes: entry.bytes,
+      maximumBytes: receiptMaximumBytes,
+      target: path.join(root, ...entry.relativePath.split("/"))
+    })));
+    const publicationByPath = new Map();
+    for (const publication of publications) {
+      const relativePath = publication?.durability?.targetRelativePath;
+      if (typeof relativePath !== "string" || publicationByPath.has(relativePath)) {
+        failEvidence("receipt_batch_publication_invalid", "receipt-persist");
+      }
+      publicationByPath.set(relativePath, publication);
+    }
+    if (publicationByPath.size !== entries.length ||
+        entries.some((entry) => !publicationByPath.has(entry.relativePath))) {
+      failEvidence("receipt_batch_publication_invalid", "receipt-persist");
+    }
+
     try {
-      for (const parent of parents) validateActiveClosure(parent);
+      validateExternalParents();
     } catch (error) {
       try {
         rebuild();
@@ -605,22 +731,35 @@ function createVnextReceiptStore(rootInput, options = {}) {
         error?.code
       );
     }
-    active.set(receiptId, Object.freeze({
-      durability: persistence.durability,
-      parentReceiptIds: parents,
-      relativePath
+
+    for (const receiptId of activationOrder) {
+      const entry = pending.get(receiptId);
+      const publication = publicationByPath.get(entry.relativePath);
+      active.set(receiptId, Object.freeze({
+        durability: publication.durability,
+        parentReceiptIds: entry.parentReceiptIds,
+        relativePath: entry.relativePath
+      }));
+    }
+    return immutableRecord(entries.map((entry) => {
+      const publication = publicationByPath.get(entry.relativePath);
+      return {
+        receiptId: entry.receiptId,
+        relativePath: entry.relativePath,
+        disposition: publication.disposition,
+        durability: publication.durability
+      };
     }));
-    return immutableRecord({
-      receiptId,
-      relativePath,
-      disposition: persistence.disposition,
-      durability: persistence.durability
-    });
+  }
+
+  function put(input) {
+    return putMany([input])[0];
   }
 
   return Object.freeze({
     profileId: storeProfile.profileId,
     put,
+    putMany,
     read,
     rebuild,
     startup

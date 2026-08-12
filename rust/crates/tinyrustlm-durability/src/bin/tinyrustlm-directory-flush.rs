@@ -4,8 +4,8 @@
 use serde::Serialize;
 use std::io::{self, Read, Write};
 use tinyrustlm_durability::{
-    execute_directory_flush_request_bytes, DIRECTORY_FLUSH_FAILURE_SCHEMA,
-    DIRECTORY_FLUSH_REQUEST_MAXIMUM_BYTES,
+    execute_directory_flush_batch_request_bytes, DIRECTORY_FLUSH_BATCH_MAXIMUM_BYTES,
+    DIRECTORY_FLUSH_FAILURE_SCHEMA,
 };
 
 #[derive(Serialize)]
@@ -19,10 +19,10 @@ struct Failure<'a> {
 fn main() {
     let mut input = Vec::new();
     let read = io::stdin()
-        .take((DIRECTORY_FLUSH_REQUEST_MAXIMUM_BYTES + 1) as u64)
+        .take((DIRECTORY_FLUSH_BATCH_MAXIMUM_BYTES + 1) as u64)
         .read_to_end(&mut input);
     let result = match read {
-        Ok(_) => execute_directory_flush_request_bytes(&input),
+        Ok(_) => execute_directory_flush_batch_request_bytes(&input),
         Err(_) => return fail("directory_request_read_failed"),
     };
     match result {

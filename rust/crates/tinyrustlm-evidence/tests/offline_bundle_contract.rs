@@ -118,7 +118,7 @@ fn rust_offline_profile_matches_the_exact_frozen_profile_and_public_seed() {
     );
     assert_eq!(
         format!("{:x}", Sha256::digest(VECTORS)),
-        "a630802b2db449d00c7029152ae0198e743114d1f42d241bebd8980e19491b3c"
+        "6ff1b5745080fb4dc3135f4cb6a311f72669eb7179276160ed9976934a8c4bd4"
     );
     assert_eq!(vectors.accepted_cases.len(), 3);
     assert_eq!(vectors.rejection_cases.len(), 31);

@@ -1,11 +1,14 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const childProcess = require("node:child_process");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
+
+const { parseStrictJson } = require("../tools/strict-json.js");
 
 const {
   ensureVnextDirectoryFlushTestPackage,
@@ -163,6 +166,76 @@ test("publishes one target and its content-addressed durability receipt", (t) =>
   assert.equal(receipt.receipt.targetSha256, sha256(bytes));
   assert.deepEqual(receipt.bytes, receiptBytes);
   assert.deepEqual(fs.readFileSync(path.join(root, ...relativePath.split("/"))), bytes);
+});
+
+test("publishes one deterministic durability batch through bounded helper batches", (t) => {
+  const root = makeRoot(t);
+  const boundary = createVnextDurablePublication(root, configuration());
+  const originalSpawnSync = childProcess.spawnSync;
+  const helperRequests = [];
+  t.mock.method(childProcess, "spawnSync", (file, argumentsList, options) => {
+    helperRequests.push(parseStrictJson(options.input));
+    return originalSpawnSync(file, argumentsList, options);
+  });
+  const results = boundary.publishMany([
+    { bytes: Buffer.from("batch target 003"), maximumBytes: 4096,
+      relativePath: "objects/batch/003.bin" },
+    { bytes: Buffer.from("batch target 001"), maximumBytes: 4096,
+      relativePath: "objects/batch/001.bin" },
+    { bytes: Buffer.from("batch target 002"), maximumBytes: 4096,
+      relativePath: "objects/batch/002.bin" }
+  ]);
+
+  assert.equal(Object.isFrozen(results), true);
+  assert.deepEqual(results.map((entry) => entry.targetRelativePath), [
+    "objects/batch/001.bin",
+    "objects/batch/002.bin",
+    "objects/batch/003.bin"
+  ]);
+  assert.equal(helperRequests.length, 4);
+  const targetBatches = helperRequests.filter((batch) => batch.requests.every((entry) =>
+    entry.operationId.startsWith("durability:target-publish:")));
+  const receiptBatches = helperRequests.filter((batch) => batch.requests.every((entry) =>
+    entry.operationId.startsWith("durability:receipt-publish:")));
+  assert.equal(targetBatches.length, 1);
+  assert.equal(receiptBatches.length, 1);
+  assert.equal(targetBatches[0].requests.length, 3);
+  assert.equal(receiptBatches[0].requests.length, 3);
+  assert.equal(new Set(results.map((entry) => entry.targetDirectoryFlush.operationId)).size, 3);
+  assert.equal(new Set(results.map((entry) =>
+    entry.durabilityReceiptDirectoryFlush.operationId)).size, 3);
+  for (const result of results) {
+    assert.equal(Object.isFrozen(result), true);
+    assert.equal(result.targetReadbackStatus, "verified");
+    assert.equal(result.durabilityReceiptStatus, "verified");
+  }
+});
+
+test("rejects malformed durability publication batches before writing", (t) => {
+  const root = makeRoot(t);
+  const boundary = createVnextDurablePublication(root, configuration());
+  throwsCode(() => boundary.publishMany([]), "durable_test_publish_batch_invalid");
+  const duplicate = {
+    bytes: Buffer.from("duplicate"),
+    maximumBytes: 4096,
+    relativePath: "objects/batch/duplicate.bin"
+  };
+  throwsCode(() => boundary.publishMany([duplicate, duplicate]),
+    "durable_test_publish_batch_invalid");
+  const hostile = [];
+  Object.defineProperty(hostile, "0", {
+    enumerable: true,
+    get() {
+      throw new Error("must not execute");
+    }
+  });
+  throwsCode(() => boundary.publishMany(hostile),
+    "durable_test_publish_batch_invalid");
+  throwsCode(() => boundary.publishMany(Array.from({ length: 1_025 }, (_entry, index) => ({
+    bytes: Buffer.from(`oversized ${index}`),
+    maximumBytes: 4096,
+    relativePath: `objects/batch/${String(index).padStart(4, "0")}.bin`
+  }))), "durable_test_publish_batch_invalid");
 });
 
 test("is idempotent and derives the same receipt for byte-identical reuse", (t) => {

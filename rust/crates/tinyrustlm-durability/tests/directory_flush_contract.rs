@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tinyrustlm_durability::{
-    flush_owned_directory, DIRECTORY_FLUSH_OBSERVATION_SCHEMA, DIRECTORY_FLUSH_PROFILE_ID,
+    flush_owned_directory, DIRECTORY_FLUSH_OBSERVATION_MEMBER_SCHEMA, DIRECTORY_FLUSH_PROFILE_ID,
     DIRECTORY_FLUSH_PROFILE_SHA256,
 };
 
@@ -78,7 +78,10 @@ fn flushes_an_exact_owned_directory_with_public_safe_observation() {
     )
     .expect("flush owned directory");
 
-    assert_eq!(observation.schema(), DIRECTORY_FLUSH_OBSERVATION_SCHEMA);
+    assert_eq!(
+        observation.schema(),
+        DIRECTORY_FLUSH_OBSERVATION_MEMBER_SCHEMA
+    );
     assert_eq!(observation.operation_id(), "directory-flush-operation-001");
     assert_eq!(observation.profile_id(), DIRECTORY_FLUSH_PROFILE_ID);
     assert_eq!(observation.profile_sha256(), DIRECTORY_FLUSH_PROFILE_SHA256);

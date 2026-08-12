@@ -54,7 +54,8 @@ const profileFields = Object.freeze([
   "campaignProjectionProfileId", "campaignProjectionProfileSha256",
   "canonicalJsonProfile", "hashAlgorithm", "identityBasis", "visibility",
   "networkAccess", "sourceMutation", "acceptedSubjects", "rejectedSubjects",
-  "layout", "durablePublication", "concurrency", "rebuild", "limits", "resultContract"
+  "layout", "durablePublication", "batch", "concurrency", "rebuild", "limits",
+  "resultContract"
 ]);
 
 function sha256(bytes) {
@@ -128,6 +129,10 @@ function validateInstalledProfile() {
     ["profileId", "profileSha256", "targetActivation", "directoryFlush", "restart",
       "targetWithoutReceipt", "receiptWithoutTarget", "callerSuppliedSuccess"],
     "subject_store_profile_invalid", step);
+  exactObject(subjectStoreProfile.batch,
+    ["minimumEntries", "maximumEntries", "inputOrdering", "duplicateSubjectIds",
+      "preflight", "publication", "activation", "partialResult"],
+    "subject_store_profile_invalid", step);
   exactObject(subjectStoreProfile.concurrency,
     ["createWriters", "freshTemporaryPolicy", "minimumIncompleteTemporaryAgeMs",
       "publishedHardLinkTemporaryPolicy", "rebuildInterferencePolicy"],
@@ -190,6 +195,17 @@ function validateInstalledProfile() {
       subjectStoreProfile.durablePublication.directoryFlush !==
         "verified-rust-helper-required" ||
       subjectStoreProfile.durablePublication.callerSuppliedSuccess !== "forbidden" ||
+      subjectStoreProfile.batch.minimumEntries !== 1 ||
+      subjectStoreProfile.batch.maximumEntries !==
+        durablePublicationProfile.batch.maximumEntries ||
+      subjectStoreProfile.batch.inputOrdering !==
+        "subject-id-utf8-bytewise-ascending" ||
+      subjectStoreProfile.batch.duplicateSubjectIds !== "forbidden" ||
+      subjectStoreProfile.batch.preflight !== "complete-before-publication" ||
+      subjectStoreProfile.batch.publication !== "one-durable-publish-many-call" ||
+      subjectStoreProfile.batch.activation !==
+        "all-published-before-any-in-memory-activation" ||
+      subjectStoreProfile.batch.partialResult !== "forbidden" ||
       subjectStoreProfile.concurrency.createWriters !==
         "multi-process-idempotent-hard-link" ||
       subjectStoreProfile.concurrency.freshTemporaryPolicy !==
@@ -486,44 +502,84 @@ function createVnextSubjectStore(rootInput, options = {}) {
     });
   }
 
-  function put(input) {
-    const subject = validateAcceptedSubjectBytes(input);
-    const existing = active.get(subject.subjectId);
-    if (!existing && active.size >= subjectStoreProfile.limits.maximumActiveSubjects) {
+  function putMany(input) {
+    const values = exactArray(input, subjectStoreProfile.batch.maximumEntries,
+      "subject_batch_invalid", "subject-store-persist");
+    if (values.length < subjectStoreProfile.batch.minimumEntries) {
+      failEvidence("subject_batch_invalid", "subject-store-persist");
+    }
+    const pending = new Map();
+    for (const value of values) {
+      const subject = validateAcceptedSubjectBytes(value);
+      if (pending.has(subject.subjectId)) {
+        failEvidence("subject_batch_duplicate_id", "subject-store-persist");
+      }
+      pending.set(subject.subjectId, subject);
+    }
+    const subjects = [...pending.values()].sort((left, right) =>
+      left.subjectId < right.subjectId ? -1 : left.subjectId > right.subjectId ? 1 : 0);
+    const newSubjects = subjects.filter((subject) => !active.has(subject.subjectId));
+    if (active.size + newSubjects.length > subjectStoreProfile.limits.maximumActiveSubjects) {
       failEvidence("subject_store_active_limit", "subject-store-persist");
     }
-    if (!existing && activeTotalBytes + subject.bytes.length >
+    const addedBytes = newSubjects.reduce((total, subject) => total + subject.bytes.length, 0);
+    if (!Number.isSafeInteger(addedBytes) || activeTotalBytes + addedBytes >
         subjectStoreProfile.limits.maximumTotalSubjectBytes) {
       failEvidence("subject_store_total_byte_limit", "subject-store-persist");
     }
-    const relativePath = subjectRelativePath(subject.subjectId);
-    const target = path.join(root, ...relativePath.split("/"));
-    const persistence = fileOps.publishBytes(
-      target,
-      subject.bytes,
-      acceptedMaximumBytes.get(subject.schema)
-    );
-    if (!existing) activeTotalBytes += subject.bytes.length;
-    active.set(subject.subjectId, Object.freeze({
-      byteLength: subject.bytes.length,
-      canonicalContentSha256: subject.canonicalContentSha256,
-      durability: persistence.durability,
-      relativePath,
-      schema: subject.schema
+
+    const publications = fileOps.publishMany(subjects.map((subject) => ({
+      bytes: subject.bytes,
+      maximumBytes: acceptedMaximumBytes.get(subject.schema),
+      target: path.join(root, ...subjectRelativePath(subject.subjectId).split("/"))
+    })));
+    const publicationByPath = new Map();
+    for (const publication of publications) {
+      const relativePath = publication?.durability?.targetRelativePath;
+      if (typeof relativePath !== "string" || publicationByPath.has(relativePath)) {
+        failEvidence("subject_batch_publication_invalid", "subject-store-persist");
+      }
+      publicationByPath.set(relativePath, publication);
+    }
+    if (publicationByPath.size !== subjects.length || subjects.some((subject) =>
+      !publicationByPath.has(subjectRelativePath(subject.subjectId)))) {
+      failEvidence("subject_batch_publication_invalid", "subject-store-persist");
+    }
+
+    activeTotalBytes += addedBytes;
+    for (const subject of subjects) {
+      const relativePath = subjectRelativePath(subject.subjectId);
+      const publication = publicationByPath.get(relativePath);
+      active.set(subject.subjectId, Object.freeze({
+        byteLength: subject.bytes.length,
+        canonicalContentSha256: subject.canonicalContentSha256,
+        durability: publication.durability,
+        relativePath,
+        schema: subject.schema
+      }));
+    }
+    return immutableRecord(subjects.map((subject) => {
+      const relativePath = subjectRelativePath(subject.subjectId);
+      const publication = publicationByPath.get(relativePath);
+      return {
+        subjectId: subject.subjectId,
+        canonicalContentSha256: subject.canonicalContentSha256,
+        disposition: publication.disposition,
+        durability: publication.durability,
+        relativePath,
+        schema: subject.schema
+      };
     }));
-    return immutableRecord({
-      subjectId: subject.subjectId,
-      canonicalContentSha256: subject.canonicalContentSha256,
-      disposition: persistence.disposition,
-      durability: persistence.durability,
-      relativePath,
-      schema: subject.schema
-    });
+  }
+
+  function put(input) {
+    return putMany([input])[0];
   }
 
   return Object.freeze({
     profileId: subjectStoreProfile.profileId,
     put,
+    putMany,
     read,
     rebuild,
     startup

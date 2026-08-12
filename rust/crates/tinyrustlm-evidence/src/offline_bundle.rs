@@ -73,11 +73,11 @@ const EXPECTED_PROFILE_BINDINGS: &[ExpectedProfileBinding] = &[
         sha256: "c9f3c6813e3880ebff6c79d9975ba085405208260715b0c68eafdfb9cfcb5721",
     },
     ExpectedProfileBinding {
-        byte_length: 2_911,
+        byte_length: 3_372,
         document_id: "tinyrustlm.vnext.receipt-store.v1",
         document_kind: "profile",
         name: "receipt-store-profile",
-        sha256: "3903c7ea89a7f259edd35d22c44976efa48e05b670986c7f8cc362ed6ad67714",
+        sha256: "c7ec3b8eec5628c610a22bb147a67ac8450d179ae7cb254c1f1e8df7e9224b47",
     },
 ];
 

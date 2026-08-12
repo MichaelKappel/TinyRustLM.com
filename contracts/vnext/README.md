@@ -291,7 +291,7 @@ The same crate now independently verifies exact offline manifest and member
 binding, the separate verification receipt, authority composition, closed
 receipt and subject membership, terminal currentness, and target current
 eligibility. Its public-only 658,110-byte corpus has SHA-256
-`a630802b2db449d00c7029152ae0198e743114d1f42d241bebd8980e19491b3c`
+`6ff1b5745080fb4dc3135f4cb6a311f72669eb7179276160ed9976934a8c4bd4`
 and freezes three accepted bundles plus 31 exact hostile rejection codes. See
 `docs/architecture/vnext-rust-offline-bundle-parity.md`.
 The same crate now independently produces and validates the exact truthful
@@ -304,7 +304,7 @@ result-wire rejections. See
 `tinyrustlm/tools/vnext-campaign-artifact-store.js` persists only exact
 campaign-plan and projection-result wires under raw-byte SHA-256 paths. Its
 4,555-byte frozen profile has SHA-256
-`bf1bf598e5da63ec9508cab64bd36d3e38837167b3fa120a7e589f0e900dfadc`.
+`5736c06bedc41ebda83f51bc80405050ec1a466bc14248b12381e9d6fb95a784`.
 It shares bounded no-follow validation and marker-backed durable publication
 with the receipt store but retains separate result-to-plan semantics. Stored
 results are immutable history; a missing or mismatched durability marker is
@@ -313,56 +313,71 @@ evidence rather than selecting a mutable current pointer. See
 `docs/architecture/vnext-campaign-artifact-persistence.md`.
 
 `tinyrustlm/tools/vnext-subject-store.js` completes the other host-side input
-store needed by the campaign runner. Its 3,475-byte frozen profile has SHA-256
-`1d3534a4c560a68d4df78c7815c0d15f5f0043cca5db89f784a7ee6c24ccbfe4`.
+store needed by the campaign runner. Its 3,845-byte frozen profile has SHA-256
+`0985099802be93bbf4b88f834470d7aa605d1e60e672e38ceb2ec7ffa6f3f916`.
 It admits only the five public-safe, non-receipt identity schemas, publishes
 exact canonical bytes under the validated subject ID, and explicitly rejects
-private context and receipt records. Bounded reconstruction, no-follow reads,
-same-directory marker-backed durable publication, exact target/marker
+private context and receipt records. Its sole `putMany` implementation fully
+preflights one to 1,024 unique subjects, orders them by subject ID, publishes
+the complete set through one durable batch, and activates no in-memory member
+until every target and durability receipt verifies. The size-one `put` method
+is only a wrapper over that path. Bounded reconstruction, no-follow reads,
+same-directory receipt-backed durable publication, exact target/receipt
 readback, total-byte limits, interruption handling, and quarantine are shared
 with the receipt and campaign artifact stores. It exposes no mutable current
 pointer and grants no evidence currentness by itself. See
 `docs/architecture/vnext-subject-store.md`.
 
 `rust/crates/tinyrustlm-durability` now owns the sole Rust directory-flush
-boundary. Its 5,820-byte frozen profile has SHA-256
-`aaf82fde396e89d03e82a6cd7c761bfbedb1d766250dc9dd537124be68adcfd8`.
-The helper accepts one bounded stdin request over an absolute owned root and a
-strict relative directory under caller-held stable path-topology ownership, rejects
-link and Windows reparse paths, opens a Win32 directory handle with exact
-access/share/flag semantics, and emits only a path-redacted success observation
-or bounded failure. The sole Node package/process client has a 5,068-byte
+boundary. Its 7,021-byte frozen profile has SHA-256
+`bb9c76715d0b35d63a9da27006ff8f88840486cf287cec24279a1020a0443ddb`.
+The helper accepts one canonical 1-to-1,024-member stdin batch, requires strict
+operation-ID ordering and unique IDs, and flushes each exact relative
+directory under caller-held stable path-topology ownership. It rejects link
+and Windows reparse paths, opens each Win32 directory handle with exact
+access/share/flag semantics, and emits only one canonical path-redacted batch
+observation or one bounded failure with no partial success document. The sole
+Node package/process client has a 5,845-byte
 frozen profile with SHA-256
-`9f367bbe58bf8afc8ecba57a1b33e5cda5a83592a80517c4db38d0775cf9fde6`
+`0d5fe88e8abb371a99db58f1ce3fabce180dc00f77287b6f44ea40d268d709a1`
 and source-closure SHA-256
-`37dc6e85be3655743a31de5623fa574f565578351f4c6b255621a9d976a8c487`.
-It verifies package, executable, source, profile, platform, request, process,
-and observation identities before returning path-redacted evidence, with no
-inherited child environment or shell. The current Windows host executes that
-call successfully, and every current vNext store now requires it. OS network
-isolation, release-package provenance, and physical power-loss evidence remain incomplete. See
+`b265141e0749422bcdadefab7777c97d154f442ac18397f69664dd1af24447f3`.
+Its `flushMany` method verifies package, executable, source, profile, platform,
+batch request, process, and observation identities before returning one
+independently bound result per operation from exactly one child process; its
+size-one `flush` method is a wrapper. There is no inherited child environment
+or shell. The current Windows host executes this boundary successfully, and
+every current vNext store now requires it. A successful batch is not an atomic
+filesystem transaction. OS network isolation, release-package provenance,
+and physical power-loss evidence remain incomplete. See
 `docs/architecture/vnext-directory-durability.md`.
 
 `tinyrustlm/tools/vnext-durable-publication.js` now composes file fsync,
-hard-link create-if-absent publication, the verified helper call, exact target
-readback, and one forward-only content-addressed activation receipt. Its
-6,592-byte frozen profile has SHA-256
-`a650102f064ab5f39a19bbbc3505bc58a4712c2b89b0df26a11ad5054dab4066`;
+hard-link create-if-absent publication, verified helper batches, exact target
+readback, and one forward-only content-addressed activation receipt per target.
+Its sole `publishMany` path fully preflights one to 1,024 targets, flushes all
+target directories in one helper batch and all receipt directories in another,
+and returns no partial API result. The size-one `publishBytes` method is only a
+wrapper. Its 7,469-byte frozen profile has SHA-256
+`4c1006a986ced8359346cb856ea698c03cc187ae7a0b77b8108719a043becc35`;
 its six-member source closure has SHA-256
-`7743d0993a0f8fd4af900121c6456838980c48d463d6ec86b25e28f3d5bd121c`.
+`845acd1da5aa060ad7eb15dee0fdb866d9ac13ea20a699fe13f4ea6b0592b2d9`.
 The receipt is the explicit non-recursive persistence trust anchor: it excludes
 its own publication observation to avoid a self-hash cycle, while creation and
 restart both require helper-backed directory flushes and exact readbacks before
-activation. No caller can inject filesystem or helper success into this
-boundary. Receipt, subject, campaign-artifact, campaign-operation, and
-append-only runner-lock paths have cut over; missing or mismatched markers are
-inactive. This closes the store integration slice, not the remaining archive,
-equality-custody, fuzz, physical durability, or campaign gates. See
+activation. A failed batch may leave preserved inactive files, so no atomic
+all-or-nothing filesystem claim is made. No caller can inject filesystem or
+helper success into this boundary. Receipt and subject ingestion use their
+sole batch paths; campaign-artifact, campaign-operation, and append-only
+runner-lock paths use the same durable primitive. Missing or mismatched
+receipts are inactive. This closes the batch integration slice, not the
+remaining archive, equality-custody, fuzz, physical durability, or campaign
+gates. See
 `docs/architecture/adr/ADR-012-durable-publication-bootstrap.md`.
 
 `tinyrustlm/tools/vnext-campaign-runner.js` now composes those stores through
 one exact runner boundary. Its frozen 7,302-byte profile has SHA-256
-`8aa378f36e42c1d07ea072afebdfc7705ec57973a6712dac82832a8754213adf`.
+`b0ba96ea2aa25112adea781138a4351511c56372bd1fdc04575e529a2b4720a9`.
 The runner observes every active receipt and subject twice, rejects any
 membership, marker, or wire change, binds caller pins, marker identities, and
 trusted verification time in a create-only start record, invokes only the generated Rust campaign-evidence
@@ -374,7 +389,7 @@ best-of-N, mutable-currentness, or stored-result promotion path. See
 `tinyrustlm/tools/vnext-campaign-release-surface.js` now consumes that runner
 only by creating a never-before-used operation and receiving its exact result
 inside the same call. Its frozen profile has SHA-256
-`ae33c2564d281d9115229fcb777b5edaa6a1574ea21b56c22d86cba199e5679e`.
+`e7e396e5127baed7084fa0f5cc285cfd83165b6a7350fa0ecac8439ce57e9033`.
 The surface independently validates the returned projection against the exact
 stored plan and runner operation records, finalizes a content-addressed
 complete-or-blocked attestation, scans the final canonical bytes against the
