@@ -1,7 +1,69 @@
-profile: tinyrustlm.source-workspace.v297
+profile: tinyrustlm.source-workspace.v298
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-11T23:15:46Z
+updated_utc: 2026-08-12T08:32:56Z
+
+current_checkpoint_2026_08_12_batch_durable_evidence_ingestion:
+  authority: This is the newest first-read execution checkpoint. It supersedes older present-tense durability-batch, profile-identity, release-gate, resume, and next-action fields where different while preserving immutable history. It does not alter prior receipts, site releases, or campaign counts.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  source_control:
+    root: E:\Source\.tinyrustlm-model-acquisition
+    branch: codex/model-acquisition-v2
+    implementation_commit: 03ba301507bb53c1c90273474acc42693011b696
+    subject: Batch vNext durable evidence ingestion
+    upstream: origin/codex/model-acquisition-v2
+    verification: After a fresh push and fetch, local HEAD, upstream, and the remote branch were exact at the implementation commit and the owned worktree was clean before this private handoff edit.
+    protected_checkout: E:\Source\Rust\TinyRustLM.com remains protected with 788 unrelated tracked changes and status SHA-256 a659df3f901e8990919cce67c18c7a6ba8a4bc03a26fba6f092d7a3ffae88e91; do not edit, reset, clean, revert, or use it for this branch.
+  implemented_scope:
+    - Replaced the single-directory helper request with the sole closed batch protocol. It accepts 1 through 1024 sorted unique operation identities in at most 4 MiB and returns one complete path-redacted observation or one bounded failure document. The retired single-request and single-observation schemas are absent from maintained sources.
+    - Added `flushMany` as the production Node boundary with one helper process per batch; `flush` is only its size-one API wrapper. Package, executable, profile, request, observation, process, path, and source-closure identities remain exact and no caller may inject success.
+    - Added `publishMany` with complete preflight, deterministic target order, one target-directory flush batch, exact target readback, one receipt-directory flush batch, exact receipt readback, and activation only after the complete set succeeds. It returns no partial API success but explicitly does not claim transactional filesystem mutation; inactive files may remain as preserved evidence.
+    - Added receipt-store `putMany` with exact wire and identity validation, aggregate capacity preflight, active-or-same-batch parent closure, deterministic topological order, cycle rejection, fresh external closure validation, one durable batch publication, and all-or-none activation. `put` is the size-one wrapper.
+    - Added subject-store `putMany` with exact closed-array validation, unique identities, aggregate capacity preflight, one durable batch publication, and activation only after complete success. Campaign fixtures now persist receipt and subject sets through those batch APIs.
+    - Added one repeatable campaign-release-surface gate runner. It freezes six nonoverlapping shards that cover all 23 exact test names once, validates the partition before execution, starts independent no-shell Node processes, bounds and terminates process trees, and retains the original test bodies and thresholds.
+    - Normalized ADR-012 into the mandatory accepted ADR shape and closed ADR-001 through ADR-012 inventory. The decision records batch semantics, nonrecursive durability bootstrap, explicit nonclaims, archive-custody unknowns, clean deletion, and forward-only rollback.
+  exact_artifacts:
+    directory_flush_profile: bytes=7021; sha256=bb9c76715d0b35d63a9da27006ff8f88840486cf287cec24279a1020a0443ddb
+    directory_flush_client_profile: bytes=5845; sha256=0d5fe88e8abb371a99db58f1ce3fabce180dc00f77287b6f44ea40d268d709a1
+    directory_flush_client_source_closure_sha256: b265141e0749422bcdadefab7777c97d154f442ac18397f69664dd1af24447f3
+    durable_publication_profile: bytes=7469; sha256=4c1006a986ced8359346cb856ea698c03cc187ae7a0b77b8108719a043becc35
+    durable_publication_source_closure_sha256: 845acd1da5aa060ad7eb15dee0fdb866d9ac13ea20a699fe13f4ea6b0592b2d9
+    receipt_store_profile: bytes=3372; sha256=c7ec3b8eec5628c610a22bb147a67ac8450d179ae7cb254c1f1e8df7e9224b47
+    subject_store_profile: bytes=3845; sha256=0985099802be93bbf4b88f834470d7aa605d1e60e672e38ceb2ec7ffa6f3f916
+    campaign_artifact_store_profile: bytes=4555; sha256=5736c06bedc41ebda83f51bc80405050ec1a466bc14248b12381e9d6fb95a784
+    campaign_runner_profile: bytes=7302; sha256=b0ba96ea2aa25112adea781138a4351511c56372bd1fdc04575e529a2b4720a9
+    campaign_release_surface_profile: bytes=18870; sha256=e7e396e5127baed7084fa0f5cc285cfd83165b6a7350fa0ecac8439ce57e9033
+    receipt_identity_vectors: bytes=8549; sha256=2159b95ab8caa061f943c7623408f095738a9117c05734d0f78a96b184cd616d
+    offline_bundle_rust_vectors: bytes=658110; sha256=6ff1b5745080fb4dc3135f4cb6a311f72669eb7179276160ed9976934a8c4bd4
+    adr_012: bytes=12196; sha256=74b31b7ddb7535906eaf81ff58a39e366f374aad443f185972478c4f17b77203
+    release_gate_runner: bytes=7614; sha256=9ec2f4724ba72eb33362de341c35eae12362009ab83d30d4e85d781dfa613b36
+  verification:
+    foundational_node: 101/101 passed across directory client, durable publication, receipt store, subject store, and campaign-artifact store.
+    broad_node: 884/884 passed across 123 non-release test files with zero failures, skips, cancellations, or todos in 163878.365 ms.
+    campaign_runner: 15/15 passed in 127411 ms, including exact synthetic 20/50/25/40/20 capacity without changing live counters.
+    campaign_release_surface: All 23 original cases passed through the exact exhaustive six-shard partition with shard results 4/4, 4/4, 4/4, 3/3, 4/4, and 4/4. The earlier direct serial invocation reached its three-hour shell ceiling and was terminated; that timeout is neither pass nor semantic failure and is not the release evidence.
+    rust: `cargo fmt --all --check` passed; `cargo clippy --workspace --all-targets --locked -- -D warnings` passed; `cargo test --workspace --locked` passed all workspace unit, integration, parity, CLI, and doc-test targets, including 15 durability tests and 438 runtime/SLM tests.
+    generation: Receipt and offline-bundle corpora regenerated byte-identically at the recorded SHA-256 values; release-gate partition validation reports 23 tests in six exhaustive shards.
+    architecture: ADR inventory and shape passed 14/14 through ADR-012.
+    hygiene: All 46 changed files passed applicable JavaScript syntax, strict UTF-8 JSON parsing, `git diff --check`, NUL, ASCII, private-path, high-confidence secret, removed-hash, and retired-schema checks. No relevant test process remained after completion.
+  publication_truth:
+    deployment_manifest: tinyrustlm/deploy/web-deployment-manifest.v2.json declares 21 source members and two generated release members.
+    delta: The 46-file implementation commit intersects zero of those 23 publication members.
+    action: No site version, release date, Updates entry, deployment, publication receipt, or public HTTPS readback claim was created because no production web publication byte changed.
+  explicit_nonclaims:
+    - Local helper and restart conformance are not physical power-loss proof, controller or device-cache proof, release-package provenance, Linux execution, or physical ARM64 execution.
+    - Complete batch API failure is not a claim of atomic filesystem transaction; inactive targets or receipts may remain and must be handled only by bounded restart validation, quarantine, retention, and custody rules.
+    - Gate D still requires archive and history scanning plus protected equality-list custody before the durability foundation can be called complete.
+    - No model qualification, clean browser round, authorized live memory round, outside-network lane proof, live catalog announcement, production deployment, or campaign completion was performed.
+  campaign_truth: qualified_models=0/20; clean_browser_rounds=0/50; authorized_live_memory_rounds=0/25; current_outside_network_lane_proofs=0/40; live_catalog_announcements=0/20
+  exact_next_action:
+    - Begin Gate D with failing tests and a closed profile for bounded compressed archive and immutable history-member scanning. Reject path traversal, absolute paths, duplicate normalized names, links, devices, sparse expansion, excessive nesting, count, per-member, aggregate, and compression-ratio abuse before accepting evidence.
+    - Close protected equality-list custody with immutable content identity, signer and role separation, authorization, append-only history, revocation and supersession behavior, exact release binding, redaction, restart validation, and no mutable alias or compatibility reader.
+    - Regenerate every transitive identity, run the complete Node, release-surface, locked Rust, deterministic-generation, hygiene, and publication-closure gates, then commit and push the next independently healthy milestone.
+  known_blockers: MemoryEndpoints production access remains unauthorized and disconnected; model qualification, external P2P observation, catalog announcements, signing and deployment authorization, controlled power-loss evidence, Linux helper execution, and physical linux-arm64 evidence remain objective work rather than inferred completion. Independent work must continue behind those blockers.
 
 current_checkpoint_2026_08_11_four_store_durable_receipt_cutover:
   authority: This is the newest first-read execution checkpoint. It supersedes older present-tense store-cutover, identity, verification, resume, and next-action fields where different while preserving immutable history. It does not alter prior receipts, site releases, or campaign counts.
