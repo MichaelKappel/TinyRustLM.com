@@ -9,6 +9,7 @@ const path = require("node:path");
 const test = require("node:test");
 
 const { chromium } = require("@playwright/test");
+const { resolveCargoTargetRoot } = require("./helpers/cargo-target-root.js");
 const {
   assertOwnedProfileFresh,
   createOwnedBrowserProfile,
@@ -44,8 +45,10 @@ const projectionVectorsPath = path.join(
   "contracts/vnext/campaign-projection-rust-vectors.v1.json"
 );
 const wasmPath = path.join(
-  repositoryRoot,
-  "target/wasm32-unknown-unknown/release/tinyrustlm_evidence_wasm.wasm"
+  resolveCargoTargetRoot(repositoryRoot, process.env.CARGO_TARGET_DIR),
+  "wasm32-unknown-unknown",
+  "release",
+  "tinyrustlm_evidence_wasm.wasm"
 );
 const boundaryDocumentPath = path.join(
   repositoryRoot,

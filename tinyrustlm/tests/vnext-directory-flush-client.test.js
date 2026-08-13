@@ -21,6 +21,7 @@ const {
   ensureVnextDirectoryFlushTestPackage,
   packageEnvironmentVariable
 } = require("./helpers/vnext-directory-flush-test-package.js");
+const { resolveCargoTargetRoot } = require("./helpers/cargo-target-root.js");
 
 const repositoryRoot = path.resolve(__dirname, "../..");
 const profilePath = path.join(repositoryRoot, "contracts", "vnext",
@@ -70,6 +71,22 @@ function request(root, operationId = "directory-flush-client-operation-900",
   relativeDirectory = ".") {
   return Object.freeze({ operationId, ownedRoot: root, relativeDirectory });
 }
+
+test("resolves only bounded absolute Cargo target roots for generated test packages", () => {
+  assert.equal(resolveCargoTargetRoot(repositoryRoot, undefined),
+    path.join(repositoryRoot, "target"));
+  const externalTarget = path.join(path.parse(repositoryRoot).root,
+    "tinyrustlm-generated-target");
+  assert.equal(resolveCargoTargetRoot(repositoryRoot, externalTarget),
+    path.normalize(externalTarget));
+  assert.throws(() => resolveCargoTargetRoot(repositoryRoot, "relative-target"),
+    /CARGO_TARGET_DIR must be an absolute path/u);
+  assert.throws(() => resolveCargoTargetRoot(repositoryRoot,
+    path.parse(repositoryRoot).root),
+    /CARGO_TARGET_DIR must not be a filesystem root/u);
+  assert.throws(() => resolveCargoTargetRoot("relative-repository", undefined),
+    /repository root must be an absolute path/u);
+});
 
 test("freezes one strict Node-to-Rust directory flush client profile", () => {
   const bytes = fs.readFileSync(profilePath);

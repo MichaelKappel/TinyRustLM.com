@@ -6,6 +6,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const { canonicalizeVnextJcsBytes } = require("../../tools/vnext-jcs.js");
+const { resolveCargoTargetRoot } = require("./cargo-target-root.js");
 
 const repositoryRoot = path.resolve(__dirname, "../../..");
 const packageEnvironmentVariable = "TINYRUSTLM_DIRECTORY_FLUSH_PACKAGE_ROOT";
@@ -76,6 +77,7 @@ function writeExact(filePath, bytes) {
 
 function ensureVnextDirectoryFlushTestPackage() {
   if (cachedPackageRoot !== undefined) return cachedPackageRoot;
+  const targetRoot = resolveCargoTargetRoot(repositoryRoot, process.env.CARGO_TARGET_DIR);
   const result = childProcess.spawnSync(cargoExecutable(), [
     "build", "-p", "tinyrustlm-durability", "--bin",
     "tinyrustlm-directory-flush", "--locked"
@@ -93,12 +95,11 @@ function ensureVnextDirectoryFlushTestPackage() {
   const executableFile = process.platform === "win32"
     ? "tinyrustlm-directory-flush.exe"
     : "tinyrustlm-directory-flush";
-  const sourceExecutable = path.join(repositoryRoot, "target", "debug", executableFile);
+  const sourceExecutable = path.join(targetRoot, "debug", executableFile);
   const executableBytes = fs.readFileSync(sourceExecutable);
   const sourceClosure = sourceClosureSha256();
   const packageRoot = path.join(
-    repositoryRoot,
-    "target",
+    targetRoot,
     "vnext-directory-flush-test-packages",
     `${runtimeIdentifier()}-${process.pid}-${sourceClosure.slice(0, 16)}`
   );
