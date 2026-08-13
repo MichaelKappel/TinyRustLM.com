@@ -12,6 +12,9 @@ const {
   ensureVnextDirectoryFlushTestPackage
 } = require("./helpers/vnext-directory-flush-test-package.js");
 const {
+  resolveCargoTargetRoot
+} = require("./helpers/cargo-target-root.js");
+const {
   campaignRunnerProfile,
   campaignRunnerProfileSha256,
   createVnextCampaignRunner,
@@ -39,7 +42,9 @@ const planPath = path.join(repositoryRoot, "contracts", "vnext",
   "campaign-plan-parity-fixture.v1.json");
 const vectorsPath = path.join(repositoryRoot, "contracts", "vnext",
   "campaign-projection-rust-vectors.v1.json");
-const wasmPath = path.join(repositoryRoot, "target", "wasm32-unknown-unknown", "release",
+const wasmPath = path.join(
+  resolveCargoTargetRoot(repositoryRoot, process.env.CARGO_TARGET_DIR),
+  "wasm32-unknown-unknown", "release",
   "tinyrustlm_evidence_wasm.wasm");
 const ownedPrefix = "tinyrustlm-vnext-campaign-runner-";
 const vectors = JSON.parse(fs.readFileSync(vectorsPath, "utf8"));
