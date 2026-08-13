@@ -1,7 +1,34 @@
-profile: tinyrustlm.source-workspace.v301
+profile: tinyrustlm.source-workspace.v302
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-13T07:15:32Z
+updated_utc: 2026-08-13T08:27:30Z
+
+current_checkpoint_2026_08_13_complete_release_surface_aggregate:
+  authority: This is the newest first-read release-surface verification checkpoint. It supersedes older present-tense aggregate-gate status where different while preserving immutable source and failure history. It is not a deployment, publication, production-readback, or campaign result.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  source_control:
+    source_commit: 2f9d3fccac6e3892637ca0a90d24a80bd4f6e897
+    prior_handoff_commit: b47881f84b59940aa9810e0c95ec73509735f794
+    branch: codex/model-acquisition-v2
+    upstream: origin/codex/model-acquisition-v2
+    pre_gate_checkin_truth: Both commits were pushed and actual-remote exact before the aggregate completed. All seven authoritative site repositories were clean and remote-exact at the preceding checkpoint.
+  verification:
+    command: node tools/run-vnext-campaign-release-surface-gate.js
+    environment: CARGO_TARGET_DIR=D:\TinyRustLM-vnext-20260812\cargo-target; TEMP and TMP=D:\TinyRustLM-vnext-20260812\temp; CARGO_INCREMENTAL=0
+    scheduler: six exhaustive shards; maximum concurrency one; all 23 frozen names assigned exactly once
+    result: 23/23 passed; failures=0; skipped=0; cancelled=0; todo=0
+    wall_time_seconds: 15973.3
+    shard_results: shard1=4/4; shard2=4/4; shard3=4/4; shard4=3/3; shard5=4/4; shard6=4/4
+    covered_truth: honest zero and complete prepublication projections; caller-truth rejection; web publication graph and inventory drift; campaign/environment/authority pins; interrupted history; protected-secret redaction; release preparation; Ed25519 authorization; deployment-attempt admission; fixture-labeled HTTPS readback; deterministic publication descendants; binding drift; authorization restart, expiry, and key activity; incomplete artifact/claim coverage; superseded evidence; and unsafe changelog minimization
+    nonclaim: This complete test gate uses fixture-labeled HTTPS verification where named. It does not establish a production deployment, public readback, production signing authority, site publication, or live campaign evidence.
+  publication_truth: No deployable production closure was changed or published by this verification. No site version, release date, Updates entry, deployment receipt, or public HTTPS readback changed.
+  campaign_truth: qualified_models=0/20; clean_browser_rounds=0/50; authorized_live_memory_rounds=0/25; current_outside_network_lane_proofs=0/40; live_catalog_announcements=0/20
+  exact_next_action:
+    - Run the remaining Gate C commands required by the frozen goal: vNext site-publication tests, complete Node unit suite, locked Rust formatting, denied-warning all-target Clippy, complete locked Rust workspace tests, deterministic generator replay, diff/hygiene checks, and production publication-manifest intersection.
+    - Commit and push each independently healthy milestone immediately. Publish only if a real affected production closure passes its complete authorization, deployment, and independent public-readback gate.
 
 current_checkpoint_2026_08_13_immediate_all_repository_checkin:
   authority: This is the newest first-read source-control checkpoint. It supersedes older present-tense repository heads and release-gate execution status where different while preserving immutable history. It records the human-requested immediate check-in of every authoritative source project named by E:\Source\Rust\workspace.uai; it is not a release, deployment, publication, or campaign result.
