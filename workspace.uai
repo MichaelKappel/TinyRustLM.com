@@ -1,7 +1,29 @@
-profile: tinyrustlm.source-workspace.v305
+profile: tinyrustlm.source-workspace.v306
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-13T18:01:36Z
+updated_utc: 2026-08-13T18:47:16Z
+
+current_checkpoint_2026_08_13_archive_scanner_and_all_repository_checkin:
+  authority: This is the newest first-read source-control, storage-containment, and Gate D restart checkpoint. It supersedes older present-tense repository heads, archive progress, free-space, automatic-fetch, and next-action descriptions where different while preserving immutable test, failure, release, and campaign history.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  repository_result: All seven authoritative site worktrees were clean before this handoff edit, had zero commits ahead of their configured upstreams, and exactly matched fresh actual-remote branch reads. TinyRustLM source commit `3f807e68b173b098ce001f90b38c57cabf31bb3e` is pushed on `origin/codex/model-acquisition-v2`; this checkpoint edit is the only subsequent local source change.
+  authoritative_heads_before_this_handoff:
+    TinyRustLM.com: 3f807e68b173b098ce001f90b38c57cabf31bb3e on codex/model-acquisition-v2
+    LMComposer.com: 36d6389fe82b0f53c4d8951aa6af5cb896fd8bf6 on main
+    MiniModel.MiRust.com: 4f2401fb8166b54c73a1b9d4ad36985bbcf6fb5d on master
+    MiniModel.org: 8439e224146c790ce6a9da36a32c4c49890cac52 on master
+    MiRust.com: 4e3d8f52b0b20d9ccb51751e4182e8ab87fb3e43 on master
+    Runtime.MiRust.com: 63b39e78d0814c9cacbbba891ea918c844e2b4db on master
+    TinyRustLM.MiRust.com: 6d77afc4b54f7f84db7efa33d8798aef61e9733f on master
+  archive_checkpoint: Commit `3f807e68b173b098ce001f90b38c57cabf31bb3e` implements the bounded canonical hostile-input ZIP and tar-gzip scanner in `rust/crates/tinyrustlm-archive`. Focused locked tests passed 16/16, formatting passed, and warnings-denied all-target locked Clippy passed. It validates the complete archive before callbacks, enforces portable paths and resource limits, rejects unsupported metadata, links, special files, duplicate names, nested archives, malformed streams, and integrity failures, and emits content identities. This is a healthy Gate D source milestone, not complete consumer cutover or a production release.
+  storage_containment: VS Code Git auto-fetch was the exact three-minute writer creating non-addressable `tmp_pack_*` files in the protected stale checkout. `git.autofetch` is now false in both active Windows profile settings and in `E:\Source\Rust\.vscode\settings.json`; a complete subsequent interval ended at 2026-08-13T18:47:15Z with no new pack. Automatic Git maintenance remains disabled. Cargo and temporary output must remain on D:.
+  active_worktree_storage: To preserve every tracked byte without touching the protected checkout, the owned active-worktree directories `docs/report-intake`, `tinyrustlm`, `.uai`, `contracts`, `raw`, `artifacts`, and `wiki` are exposed at their original E: paths through NTFS junctions to hash-verified recovery trees below `D:\TinyRustLM-vnext-20260812\temporary-relocation`. Git reports the complete active worktree clean at source head `3f807e68b173b098ce001f90b38c57cabf31bb3e` before this handoff edit. Do not remove those junctions or D: targets unless every byte has first been restored and verified at its authoritative path.
+  protected_checkout: `E:\Source\Rust\TinyRustLM.com` remains untouched protected stale user-owned state. No source, evidence, model, credential, complete object, ref, pack, temporary pack, checkout state, or Git metadata there was deleted, moved, edited, staged, committed, repacked, pruned, or published.
+  publication_truth: No production closure changed, no site was deployed, no release metadata changed, and live campaign counters remain 0/20, 0/50, 0/25, 0/40, and 0/20. MemoryEndpoints remains unauthorized and disconnected.
+  exact_resume: Work only through `E:\Source\.tinyrustlm-model-acquisition`. Continue Gate D by cutting `tinyrustlm-memory` and every maintained archive consumer over to `tinyrustlm-archive`, add the canonical Rust command boundary required by Node evidence scanning, delete the system-tar shell scanner path, run every focused and complete affected gate, and commit/push each healthy milestone. Publish only after a real deployable production intersection passes its complete authorization, deployment, and independent HTTPS readback gate.
 
 current_checkpoint_2026_08_13_immediate_all_repository_checkin:
   authority: This is the newest first-read source-control and restart checkpoint. It supersedes older present-tense repository heads, storage headroom, and Gate D next-action descriptions where different while preserving immutable test, failure, release, and campaign history.
