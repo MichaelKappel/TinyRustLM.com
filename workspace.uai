@@ -1,7 +1,31 @@
-profile: tinyrustlm.source-workspace.v308
+profile: tinyrustlm.source-workspace.v309
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-13T20:20:45Z
+updated_utc: 2026-08-13T20:55:12Z
+
+current_checkpoint_2026_08_13_immediate_all_repository_checkin_v2:
+  authority: This is the newest first-read source-control, Gate D package, storage, verification, and restart checkpoint. It supersedes older present-tense repository heads, package-progress status, test status, and next-action descriptions where different while preserving immutable failure, release, and campaign history. It is not a deployment, production readback, cross-platform execution result, or live campaign result.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  repository_result: Before this handoff edit, all seven authoritative site worktrees were clean. Explicit pushes for every configured branch exited successfully as `Everything up-to-date`, and fresh actual-remote branch reads exactly matched every local head. TinyRustLM source milestone `217ce6b3aef294631269cd5bfaee0f43508fa079` was already pushed to `origin/codex/model-acquisition-v2`; this tracked handoff edit is the only subsequent source change.
+  authoritative_heads_before_this_handoff:
+    TinyRustLM.com: 217ce6b3aef294631269cd5bfaee0f43508fa079 on codex/model-acquisition-v2
+    LMComposer.com: 36d6389fe82b0f53c4d8951aa6af5cb896fd8bf6 on main
+    MiniModel.MiRust.com: 4f2401fb8166b54c73a1b9d4ad36985bbcf6fb5d on master
+    MiniModel.org: 8439e224146c790ce6a9da36a32c4c49890cac52 on master
+    MiRust.com: 4e3d8f52b0b20d9ccb51751e4182e8ab87fb3e43 on master
+    Runtime.MiRust.com: 63b39e78d0814c9cacbbba891ea918c844e2b4db on master
+    TinyRustLM.MiRust.com: 6d77afc4b54f7f84db7efa33d8798aef61e9733f on master
+  gate_d_source_checkpoint:
+    commits: `ab12047fec0bf6d1d2c0b3b00939e228dcb5d46b` makes the archive package materializer compatible with Windows PowerShell 5.1; `26236864f9bd40dc1a5157045dc05938f0028059` fixes strict physical-root resolution and advances the public scanner to v4; `217ce6b3aef294631269cd5bfaee0f43508fa079` makes native package builds consume the exact resolved external Cargo target and adds script-level tests.
+    verification: The external archive-helper consumer suite passed 20/20; the broader affected Node set passed 47/47; the physical web scanner passed 2/2; archive Rust tests passed 20/20; memory Rust tests passed 10/10; rustfmt and warnings-denied Clippy passed. A broad temporary-junction run passed 899/910 with ten topology failures and one package-fixture skip; physical reruns closed nine topology failures, and a clean detached physical worktree closed the final vector harness failure at 14/14. Preserve the nonzero run as failure evidence rather than rewriting it as a pass.
+    package_truth: A clean physical detached worktree at `D:\tw\26236864` was moved to exact source `217ce6b3aef294631269cd5bfaee0f43508fa079`. MiniModel CLI/native dependencies were built from clean remote-exact MiniModel.org source `8439e224146c790ce6a9da36a32c4c49890cac52`; executable SHA256 is `10d8a0e9704432268ef56ad4bcec8ff4c677b2183dda9c2e152d7061caf0480` and native DLL SHA256 is `d2f5de08726ab7380c67242ea543642195adbb63bf0ebdd5ac83f30935d58d76`. The third complete package-verifier invocation produced four 0.1.8 `.nupkg` files, four `.snupkg` files, and a package-audit document with `status: pass` and zero policy findings. Its asynchronous terminal transcript was not recoverable after the execution context transitioned, and no matching process remains, so a complete verifier pass is not claimed until the post-audit package tests and isolated locked consumer are rerun or the complete verifier is rerun with a captured terminal result.
+  storage_boundary: E: has approximately 6,041,600 bytes free and D: approximately 2,218,983,424 bytes free at this checkpoint. Keep `CARGO_TARGET_DIR=D:\TinyRustLM-vnext-20260812\cargo-target`, `TEMP` and `TMP` at `D:\TinyRustLM-vnext-20260812\temp`, and `CARGO_INCREMENTAL=0`; preserve all documented junctions and keep automatic Git maintenance disabled.
+  protected_checkout: `E:\Source\Rust\TinyRustLM.com` remains untouched protected stale user-owned state. Do not edit, reset, clean, revert, commit, publish, repack, prune, delete temporary packs, or use it as source authority.
+  publication_truth: No production closure was authorized or deployed, no release metadata or public readback changed, and live campaign counters remain 0/20 qualified models, 0/50 clean browser rounds, 0/25 live memory rounds, 0/40 outside-proven lanes, and 0/20 announcements. MemoryEndpoints remains unauthorized and disconnected.
+  exact_resume: Commit and push this handoff, reverify all seven actual remote heads, then establish a captured terminal package verdict and close the package fault-injection skip. Continue complete physical Node and release-surface gates from `E:\Source\.tinyrustlm-model-acquisition`, committing and pushing each healthy milestone. Publish only if a real changed production closure passes complete authorization, deployment, and independent HTTPS readback.
 
 current_checkpoint_2026_08_13_per_rid_helper_package_and_repository_checkin:
   authority: This is the newest first-read source-control, Gate D package, storage, verification, and restart checkpoint. It supersedes older present-tense repository heads, archive-helper packaging status, test status, and next-action descriptions where different while preserving immutable test, failure, release, and campaign history. It is not a deployment, production readback, cross-platform execution result, or live campaign result.
