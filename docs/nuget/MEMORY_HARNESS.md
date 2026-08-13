@@ -9,7 +9,7 @@ The harness follows the public UAIX AI Memory Package Wizard at `https://uaix.or
 - Build a deterministic required-file plan for Base, Agent File Handoff, LLM Wiki, combined File Handoff plus LLM Wiki, Multi-Agent Communication, Talisman System, and Advanced Persona Profile packages.
 - Return a native-backed setup catalog so consumers discover supported setup strings, labels, public authority URLs, point-agent setup URLs, package features, and excluded private capabilities from the harness instead of hard-coding their own Wizard mode list.
 - Expose Wizard adoption features in that catalog, including the `script[data-ai-digest]` machine-readable digest convention, local browser draft restore, Safe Structured Output Mode, browser-generated ZIP packages, canonical starter ZIP downloads, package model JSON, knowledge graph JSON, and `llms.uai` / `llms-full.uai` exports.
-- Inspect `.uai` package directories, `.zip` files, and `.uaix` archives without extracting archive entries.
+- Inspect `.uai` package directories, `.zip` files, and ZIP-encoded `.uaix` archives without writing archive entries to disk. Every archive passes the frozen `tinyrustlm.vnext.archive-admission.v1` Rust authority before any decoded member reaches the memory harness; unsupported metadata, non-portable or duplicate paths, links, special files, nested archives, malformed streams, integrity failures, and bounded resource violations fail the whole package without partial member exposure.
 - Inspect UAIX memory manifest JSON.
 - Report required, missing, present, and hashed package files.
 - Report a machine-checkable `FileDeck` summary with universal, profile, configuration-specific, content-triggered, persona, evidence, export, and triggered style-axis counts.

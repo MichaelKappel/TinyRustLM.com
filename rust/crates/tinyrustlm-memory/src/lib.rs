@@ -7,9 +7,8 @@ use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt::{Display, Formatter};
 use std::fs;
-use std::io::{Cursor, Read};
 use std::path::{Component, Path};
-use zip::ZipArchive;
+use tinyrustlm_archive::{scan_archive_bytes, ArchiveFormat};
 
 /// Stable plan schema kind returned by the memory harness.
 pub const MEMORY_PACKAGE_PLAN_KIND: &str = "uaix.memory.package_plan.v0";
@@ -1732,40 +1731,35 @@ fn visit_directory(
 
 fn load_archive(path: &Path) -> Result<PackageSource, UaixMemoryError> {
     let bytes = fs::read(path).map_err(|error| UaixMemoryError::Io(error.to_string()))?;
-    let cursor = Cursor::new(bytes);
-    let mut archive = ZipArchive::new(cursor)
-        .map_err(|error| UaixMemoryError::InvalidPackage(error.to_string()))?;
-    if archive.len() > MAX_MEMORY_FILE_COUNT {
+    let mut entries = BTreeMap::new();
+    let mut consumer_error = None;
+    let admission = scan_archive_bytes(ArchiveFormat::Zip, &bytes, |member, content| {
+        if consumer_error.is_some() || !is_memory_package_path(member.normalized_path()) {
+            return;
+        }
+        let byte_count = u64::try_from(content.len()).unwrap_or(u64::MAX);
+        if byte_count > MAX_MEMORY_FILE_BYTES {
+            consumer_error = Some(UaixMemoryError::LimitExceeded(format!(
+                "{} exceeds {MAX_MEMORY_FILE_BYTES} bytes",
+                member.normalized_path()
+            )));
+            return;
+        }
+        entries.insert(
+            member.normalized_path().to_owned(),
+            package_entry(content.to_vec()),
+        );
+    })
+    .map_err(|error| {
+        UaixMemoryError::InvalidPackage(format!("archive admission rejected: {}", error.code()))
+    })?;
+    if admission.members().len() > MAX_MEMORY_FILE_COUNT {
         return Err(UaixMemoryError::LimitExceeded(format!(
             "archive file count exceeds {MAX_MEMORY_FILE_COUNT}"
         )));
     }
-    let mut entries = BTreeMap::new();
-    for index in 0..archive.len() {
-        let mut file = archive
-            .by_index(index)
-            .map_err(|error| UaixMemoryError::InvalidPackage(error.to_string()))?;
-        if file.is_dir() {
-            continue;
-        }
-        let Some(normalized) = normalize_archive_name(file.name()) else {
-            return Err(UaixMemoryError::InvalidPackage(format!(
-                "archive entry has unsafe path: {}",
-                file.name()
-            )));
-        };
-        if !is_memory_package_path(&normalized) {
-            continue;
-        }
-        if file.size() > MAX_MEMORY_FILE_BYTES {
-            return Err(UaixMemoryError::LimitExceeded(format!(
-                "{normalized} exceeds {MAX_MEMORY_FILE_BYTES} bytes"
-            )));
-        }
-        let mut bytes = Vec::with_capacity(file.size() as usize);
-        file.read_to_end(&mut bytes)
-            .map_err(|error| UaixMemoryError::Io(error.to_string()))?;
-        entries.insert(normalized, package_entry(bytes));
+    if let Some(error) = consumer_error {
+        return Err(error);
     }
     Ok(PackageSource {
         source_type: "archive".to_string(),
@@ -1968,7 +1962,94 @@ fn default_true() -> bool {
 mod tests {
     use super::*;
     use std::collections::BTreeSet;
+    use std::io::{Cursor, Write};
+    use std::path::PathBuf;
     use std::time::{SystemTime, UNIX_EPOCH};
+    use zip::write::SimpleFileOptions;
+    use zip::ZipWriter;
+
+    fn write_test_zip(label: &str, entries: &[(&str, &[u8])]) -> PathBuf {
+        let path = std::env::temp_dir().join(format!(
+            "tinyrustlm-memory-archive-{label}-{}.uaix",
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .expect("time")
+                .as_nanos()
+        ));
+        let cursor = Cursor::new(Vec::new());
+        let mut writer = ZipWriter::new(cursor);
+        for (name, bytes) in entries {
+            writer
+                .start_file(*name, SimpleFileOptions::default())
+                .expect("start member");
+            writer.write_all(bytes).expect("write member");
+        }
+        let bytes = writer.finish().expect("finish archive").into_inner();
+        fs::write(&path, bytes).expect("write archive");
+        path
+    }
+
+    fn invalid_archive_code(error: UaixMemoryError) -> String {
+        match error {
+            UaixMemoryError::InvalidPackage(message) => message,
+            other => panic!("expected invalid package, received {other}"),
+        }
+    }
+
+    #[test]
+    fn archive_source_accepts_a_canonical_zip_member() {
+        let path = write_test_zip("canonical", &[(".uai/identity.uai", b"canonical identity")]);
+
+        let source = load_package_source(&path).expect("load canonical archive");
+
+        assert_eq!(source.source_type, "archive");
+        assert_eq!(source.entries.len(), 1);
+        assert_eq!(
+            source
+                .entries
+                .get(".uai/identity.uai")
+                .and_then(|entry| entry.text.as_deref()),
+            Some("canonical identity")
+        );
+        fs::remove_file(path).expect("remove archive");
+    }
+
+    #[test]
+    fn archive_source_rejects_backslash_member_names() {
+        let path = write_test_zip(
+            "backslash",
+            &[(r".uai\identity.uai", b"ambiguous identity")],
+        );
+
+        let error = match load_package_source(&path) {
+            Ok(_) => panic!("backslash member must fail closed"),
+            Err(error) => error,
+        };
+        let message = invalid_archive_code(error);
+
+        assert!(message.contains("archive_member_path_nonportable"));
+        fs::remove_file(path).expect("remove archive");
+    }
+
+    #[test]
+    fn archive_source_rejects_duplicate_member_names() {
+        let path = write_test_zip(
+            "duplicate",
+            &[
+                (".uai/Identity.uai", b"first identity"),
+                (".uai/identity.UAI", b"second identity"),
+            ],
+        );
+
+        let error = match load_package_source(&path) {
+            Ok(_) => panic!("duplicate member must fail closed"),
+            Err(error) => error,
+        };
+        let message = invalid_archive_code(error);
+
+        assert!(message.contains("archive_member_path_duplicate"));
+        fs::remove_file(path).expect("remove archive");
+    }
 
     #[test]
     fn advanced_persona_plan_includes_required_dimension_files() {
