@@ -9,6 +9,8 @@ description = "Fail-closed bounded archive-member admission for TinyRustLM."
 
 [dependencies]
 flate2.workspace = true
+serde.workspace = true
+serde_json.workspace = true
 sha2.workspace = true
 tar.workspace = true
 zip.workspace = true

@@ -1,0 +1,91 @@
+{
+  "schema": "tinyrustlm.vnext.archive_scan_process_profile.v1",
+  "profileId": "tinyrustlm.vnext.archive-scan-process.v1",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-no-compatibility-reader",
+  "admissionProfileId": "tinyrustlm.vnext.archive-admission.v1",
+  "admissionProfileSha256": "05158f80e01817e31a2968bc4e2f9d1bb05fe53064384563f6546a5468046031",
+  "networkAccess": "forbidden",
+  "filesystemExtraction": "forbidden",
+  "request": {
+    "transport": "stdin-single-canonical-json-object",
+    "schema": "tinyrustlm.vnext.archive_scan_request.v1",
+    "maximumBytes": 16384,
+    "fieldsInCanonicalOrder": [
+      "archivePath",
+      "format",
+      "schema"
+    ],
+    "unknownFields": "forbidden",
+    "formats": [
+      "tar-gzip",
+      "zip"
+    ]
+  },
+  "archivePath": {
+    "maximumUtf8Bytes": 16384,
+    "absolutePathRequired": true,
+    "regularFileRequired": true,
+    "symbolicLinksAndReparsePoints": "forbidden-in-observed-components",
+    "maximumFileBytes": 536870912,
+    "readMode": "bounded-read-to-end-before-admission"
+  },
+  "successWire": {
+    "transport": "stdout-binary-framed-v1",
+    "magicHex": "5452415356310000",
+    "memberRecordType": 1,
+    "terminalRecordType": 2,
+    "memberRecord": [
+      "recordTypeU8",
+      "pathLengthU16BigEndian",
+      "contentLengthU64BigEndian",
+      "contentSha256LowerHex64",
+      "normalizedPathPrintableAscii",
+      "decodedContentBytes"
+    ],
+    "terminalRecord": [
+      "recordTypeU8",
+      "memberCountU32BigEndian",
+      "totalContentBytesU64BigEndian",
+      "formatCodeU8",
+      "archiveSha256LowerHex64",
+      "contentManifestSha256LowerHex64",
+      "admissionProfileSha256LowerHex64",
+      "processProfileSha256LowerHex64"
+    ],
+    "memberOrder": "archive-source-order-after-complete-admission",
+    "partialSuccess": "forbidden",
+    "stdoutBeforeCompleteArchiveAdmission": "forbidden"
+  },
+  "failure": {
+    "transport": "stderr-single-json-object",
+    "schema": "tinyrustlm.vnext.archive_scan_failure.v1",
+    "stdout": "empty-unless-output-transport-fails-after-admission",
+    "pathDisclosure": "forbidden",
+    "exitCode": 2,
+    "outputTransportExitCode": 3
+  },
+  "processErrorCodes": [
+    "archive_scan_format_invalid",
+    "archive_scan_output_failed",
+    "archive_scan_path_changed",
+    "archive_scan_path_invalid",
+    "archive_scan_path_link",
+    "archive_scan_path_missing",
+    "archive_scan_path_not_absolute",
+    "archive_scan_path_not_file",
+    "archive_scan_path_size_limit",
+    "archive_scan_process_profile_invalid",
+    "archive_scan_read_failed",
+    "archive_scan_request_byte_limit",
+    "archive_scan_request_invalid",
+    "archive_scan_request_noncanonical",
+    "archive_scan_request_read_failed",
+    "archive_scan_request_schema_invalid"
+  ],
+  "nonClaims": [
+    "The process boundary does not authorize publication, installation, extraction, or execution.",
+    "The process boundary does not perform malware analysis or prove source provenance.",
+    "A passing local process invocation is not a package-registry, deployment, or campaign receipt."
+  ]
+}

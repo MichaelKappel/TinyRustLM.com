@@ -8,8 +8,15 @@ use std::io::{self, Read};
 use sha2::{Digest, Sha256};
 
 mod path_contract;
+mod process_protocol;
 mod tar_gzip_format;
 mod zip_format;
+
+pub use process_protocol::{
+    execute_archive_scan_request_bytes, ArchiveScanProcessError, ARCHIVE_SCAN_FAILURE_SCHEMA,
+    ARCHIVE_SCAN_PROCESS_PROFILE_ID, ARCHIVE_SCAN_PROCESS_PROFILE_SHA256,
+    ARCHIVE_SCAN_REQUEST_MAXIMUM_BYTES,
+};
 
 /// The sole current archive-admission profile identity.
 pub const ARCHIVE_ADMISSION_PROFILE_ID: &str = "tinyrustlm.vnext.archive-admission.v1";
