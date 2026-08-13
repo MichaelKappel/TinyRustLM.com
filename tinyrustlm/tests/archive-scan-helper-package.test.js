@@ -1,6 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const { spawnSync } = require("node:child_process");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
@@ -43,6 +44,41 @@ function options(outputRoot, overrides = {}) {
     trustClass: "local-test-build",
     ...overrides
   };
+}
+
+if (process.platform === "win32") {
+  test("PowerShell builder rejects paths that are not fully qualified", () => {
+    const scriptPath = path.join(repositoryRoot, "eng", "build-archive-scan-helper.ps1");
+    for (const outputRoot of [
+      "relative-output",
+      "D:drive-relative",
+      "\\current-drive-rooted"
+    ]) {
+      const result = spawnSync("powershell.exe", [
+        "-NoLogo",
+        "-NoProfile",
+        "-NonInteractive",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        scriptPath,
+        "-OutputDirectory",
+        outputRoot
+      ], {
+        cwd: repositoryRoot,
+        encoding: "utf8",
+        windowsHide: true
+      });
+      assert.notEqual(result.status, 0, outputRoot);
+      const diagnostic = `${result.stdout}\n${result.stderr}`;
+      assert.match(
+        diagnostic,
+        /Archive scan helper output must be an absolute path/u,
+        outputRoot
+      );
+      assert.doesNotMatch(diagnostic, /IsPathFullyQualified/u, outputRoot);
+    }
+  });
 }
 
 test("materializes one create-only package consumed through the frozen client", (context) => {

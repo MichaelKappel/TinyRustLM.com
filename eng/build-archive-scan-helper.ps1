@@ -6,13 +6,30 @@ param(
 
 $ErrorActionPreference = "Stop"
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+$isWindowsHost = $env:OS -eq "Windows_NT" -or
+    (Get-Variable -Name IsWindows -ValueOnly -ErrorAction SilentlyContinue) -eq $true
+$isLinuxHost = (Get-Variable -Name IsLinux -ValueOnly -ErrorAction SilentlyContinue) -eq $true
+
+function Test-FullyQualifiedOutputPath {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    if ($isWindowsHost) {
+        return $Path -match '^[A-Za-z]:[\\/]' -or
+            $Path -match '^(?:\\\\|//)[^\\/]+[\\/][^\\/]+'
+    }
+    if ($isLinuxHost) {
+        return $Path.StartsWith("/", [StringComparison]::Ordinal)
+    }
+    return $false
+}
+
 $architecture = [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString().ToLowerInvariant()
 if ($architecture -eq "x64") { $architecture = "x64" }
 elseif ($architecture -eq "arm64") { $architecture = "arm64" }
 else { throw "Unsupported archive scan helper architecture: $architecture" }
 
-if ($IsLinux) { $rid = "linux-$architecture" }
-elseif ($IsWindows -or $env:OS -eq "Windows_NT") { $rid = "win-$architecture" }
+if ($isLinuxHost) { $rid = "linux-$architecture" }
+elseif ($isWindowsHost) { $rid = "win-$architecture" }
 else { throw "Archive scan release helpers support Windows and Linux only" }
 if ($rid -notin @("win-x64", "linux-x64", "linux-arm64")) {
     throw "Unsupported archive scan helper RID: $rid"
@@ -21,7 +38,7 @@ if ($rid -notin @("win-x64", "linux-x64", "linux-arm64")) {
 if ([string]::IsNullOrWhiteSpace($OutputDirectory)) {
     $OutputDirectory = Join-Path $RepoRoot "artifacts/archive-scan-helper/$rid"
 }
-elseif (-not [IO.Path]::IsPathFullyQualified($OutputDirectory)) {
+elseif (-not (Test-FullyQualifiedOutputPath -Path $OutputDirectory)) {
     throw "Archive scan helper output must be an absolute path"
 }
 $OutputDirectory = [IO.Path]::GetFullPath($OutputDirectory)
