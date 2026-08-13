@@ -7,8 +7,8 @@ const path = require("node:path");
 const test = require("node:test");
 
 const { scanPublicArtifacts } = require("../tools/public-evidence-secret-scan.js");
-const { ensureArchiveScanTestExecutable } = require(
-  "./helpers/archive-scan-test-executable.js"
+const { ensureArchiveScanTestPackage } = require(
+  "./helpers/archive-scan-test-package.js"
 );
 const { createStoredZip } = require("./helpers/archive-test-fixtures.js");
 
@@ -32,7 +32,7 @@ test("records a path-free passing report for a bounded public artifact scope", a
   assert.equal(result.receipt.publicSafeParameters.secretFindingCount, 0);
   assert.equal(result.report.scannedArtifactCount, 1);
   assert.equal(result.report.scopeComplete, true);
-  assert.equal(result.receipt.receiptType, "tinyrustlm.secret-scan-v3");
+  assert.equal(result.receipt.receiptType, "tinyrustlm.secret-scan-v4");
   assert.equal(result.receipt.publicSafeParameters.scopeKind, "test-public-release");
   assert.deepEqual(result.receipt.toolNames,
     ["tinyrustlm-public-artifact-secret-scan"]);
@@ -113,7 +113,7 @@ test("requires an explicit canonical archive scanner for every archive artifact"
     scopeKind: "test-public-release",
     sourceRevision: "a".repeat(40),
     startedAtUtc: "2026-08-13T08:00:00.000Z"
-  }), (error) => error.code === "archive_scan_executable_invalid");
+  }), (error) => error.code === "archive_scan_package_root_invalid");
   assert.equal(fs.existsSync(reportPath), false);
 });
 
@@ -127,7 +127,7 @@ test("scans decoded archive members and binds canonical admission evidence", asy
     { content: Buffer.from(`workspace_key=${secret}`), name: "content/settings.txt" }
   ]));
   const result = await scanPublicArtifacts({
-    archiveScannerExecutablePath: ensureArchiveScanTestExecutable(),
+    archiveScannerPackageRoot: ensureArchiveScanTestPackage(),
     artifacts: [{ label: "release/release.nupkg", path: archivePath }],
     campaignId: "secret-scan-archive-20260813",
     completedAtUtc: "2026-08-13T08:01:00.000Z",
@@ -146,13 +146,31 @@ test("scans decoded archive members and binds canonical admission evidence", asy
   assert.match(result.report.artifacts[0].archiveContentManifestSha256,
     /^[a-f0-9]{64}$/u);
   assert.match(result.report.archiveScannerExecutableSha256, /^[a-f0-9]{64}$/u);
+  assert.match(result.report.archiveScannerHelperManifestSha256,
+    /^[a-f0-9]{64}$/u);
+  assert.match(result.report.archiveScannerHelperPackageBuilderSourceClosureSha256,
+    /^[a-f0-9]{64}$/u);
+  assert.match(result.report.archiveScannerHelperProvenanceSha256,
+    /^[a-f0-9]{64}$/u);
+  assert.match(result.report.archiveScannerHelperSourceClosureSha256,
+    /^[a-f0-9]{64}$/u);
+  assert.match(result.report.archiveScannerHelperSourceRevision,
+    /^[a-f0-9]{40}$/u);
+  assert.equal(typeof result.report.archiveScannerHelperSourceWorktreeClean,
+    "boolean");
+  assert.equal(result.report.archiveScannerTrustClass,
+    process.env.TINYRUSTLM_ARCHIVE_SCAN_TEST_PACKAGE_ROOT
+      ? "release-package"
+      : "local-test-build");
   assert.deepEqual(result.receipt.toolNames, [
     "tinyrustlm-public-artifact-secret-scan",
+    "tinyrustlm-archive-scan-client",
     "tinyrustlm-archive-scan"
   ]);
-  assert.equal(result.receipt.toolBinaryHashes[1],
+  assert.equal(result.receipt.toolBinaryHashes[2],
     result.report.archiveScannerExecutableSha256);
   assert.equal(result.receipt.hardwareEvidence.archiveAdmissionPerformed, true);
+  assert.equal(result.receipt.hardwareEvidence.archiveHelperPackageVerified, true);
   const serialized = `${JSON.stringify(result.report)}${JSON.stringify(result.receipt)}`;
   assert.equal(serialized.includes(root), false);
   assert.equal(serialized.includes(secret), false);
@@ -169,7 +187,7 @@ test("rejects hostile archive paths before creating report evidence", async (con
     { content: Buffer.from("blocked"), name: "docs\\blocked.txt" }
   ]));
   await assert.rejects(scanPublicArtifacts({
-    archiveScannerExecutablePath: ensureArchiveScanTestExecutable(),
+    archiveScannerPackageRoot: ensureArchiveScanTestPackage(),
     artifacts: [{ label: "release/hostile.zip", path: archivePath }],
     campaignId: "secret-scan-hostile-20260813",
     completedAtUtc: "2026-08-13T08:01:00.000Z",

@@ -9,14 +9,19 @@ const test = require("node:test");
 
 const {
   archiveAdmissionProfileSha256,
+  archiveScanClientProfileId,
+  archiveScanClientProfileSha256,
+  archiveScanClientSourceClosureSha256,
   archiveScanProcessProfileSha256,
   createArchiveScanClient,
   createArchiveWireParser
 } = require("../tools/archive-scan-client.js");
-const { ensureArchiveScanTestExecutable } = require(
-  "./helpers/archive-scan-test-executable.js"
+const { ensureArchiveScanTestPackage } = require(
+  "./helpers/archive-scan-test-package.js"
 );
 const { createStoredZip, createTarGzip } = require("./helpers/archive-test-fixtures.js");
+const { canonicalizeVnextJcsBytes } = require("../tools/vnext-jcs.js");
+const repositoryRoot = path.resolve(__dirname, "../..");
 
 function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
@@ -74,6 +79,69 @@ function temporaryRoot(context, label) {
   context.after(() => fs.rmSync(root, { recursive: true, force: true }));
   return root;
 }
+
+function packageManifestPath(packageRoot) {
+  return path.join(packageRoot, "archive-scan-helper-manifest.v1.json");
+}
+
+function readPackageManifest(packageRoot) {
+  return JSON.parse(fs.readFileSync(packageManifestPath(packageRoot), "utf8"));
+}
+
+function writePackageManifest(packageRoot, manifest) {
+  fs.writeFileSync(packageManifestPath(packageRoot), canonicalizeVnextJcsBytes(manifest));
+}
+
+function packageProvenancePath(packageRoot) {
+  return path.join(packageRoot, "archive-scan-helper-provenance.v1.json");
+}
+
+function readPackageProvenance(packageRoot) {
+  return JSON.parse(fs.readFileSync(packageProvenancePath(packageRoot), "utf8"));
+}
+
+function writePackageProvenance(packageRoot, provenance) {
+  const bytes = canonicalizeVnextJcsBytes(provenance);
+  fs.writeFileSync(packageProvenancePath(packageRoot), bytes);
+  const manifest = readPackageManifest(packageRoot);
+  writePackageManifest(packageRoot, {
+    ...manifest,
+    provenanceByteCount: bytes.length,
+    provenanceSha256: sha256(bytes)
+  });
+}
+
+function clonePackage(context) {
+  const root = temporaryRoot(context, "tinyrustlm-archive-package-");
+  const packageRoot = path.join(root, "package");
+  fs.cpSync(ensureArchiveScanTestPackage(), packageRoot, { recursive: true });
+  return packageRoot;
+}
+
+test("binds the frozen client profile and complete Node source closure", () => {
+  const profilePath = path.join(
+    repositoryRoot,
+    "contracts",
+    "vnext",
+    "archive-scan-client-profile.v1.json"
+  );
+  const profileBytes = fs.readFileSync(profilePath);
+  const profile = JSON.parse(profileBytes);
+  assert.equal(sha256(profileBytes), archiveScanClientProfileSha256);
+  assert.equal(profile.profileId, archiveScanClientProfileId);
+  const members = profile.clientSourceClosureMembers.map((relativePath) => {
+    const bytes = fs.readFileSync(path.join(repositoryRoot, ...relativePath.split("/")));
+    return Object.freeze({
+      byteCount: bytes.length,
+      path: relativePath,
+      sha256: sha256(bytes)
+    });
+  });
+  assert.equal(
+    sha256(canonicalizeVnextJcsBytes(members)),
+    archiveScanClientSourceClosureSha256
+  );
+});
 
 test("parses arbitrarily split framed output and independently verifies member evidence", () => {
   const members = [
@@ -138,8 +206,33 @@ test("rejects corrupted content, terminal identity drift, trailing bytes, and ze
 
 test("streams real Rust ZIP and tar-gzip output through the same strict boundary", async (context) => {
   const root = temporaryRoot(context, "tinyrustlm-archive-client-");
-  const executablePath = ensureArchiveScanTestExecutable();
-  const client = createArchiveScanClient(executablePath);
+  const packageRoot = ensureArchiveScanTestPackage();
+  const client = createArchiveScanClient(packageRoot);
+  assert.equal(client.packageIdentity.clientProfileId, archiveScanClientProfileId);
+  assert.equal(client.packageIdentity.clientProfileSha256,
+    archiveScanClientProfileSha256);
+  assert.equal(client.packageIdentity.clientSourceClosureSha256,
+    archiveScanClientSourceClosureSha256);
+  assert.equal(client.packageIdentity.runtimeIdentifier,
+    process.platform === "win32" ? `win-${process.arch}` :
+      process.platform === "darwin" ? `osx-${process.arch}` :
+        `${process.platform}-${process.arch}`);
+  const expectedTrustClass = process.env.TINYRUSTLM_ARCHIVE_SCAN_TEST_PACKAGE_ROOT
+    ? "release-package"
+    : "local-test-build";
+  assert.equal(client.packageIdentity.trustClass, expectedTrustClass);
+  if (expectedTrustClass === "release-package") {
+    assert.equal(client.packageIdentity.buildProfile, "release");
+    assert.equal(client.packageIdentity.helperSourceWorktreeClean, true);
+  }
+  assert.match(client.packageIdentity.helperManifestSha256, /^[a-f0-9]{64}$/u);
+  assert.match(client.packageIdentity.helperPackageBuilderSourceClosureSha256,
+    /^[a-f0-9]{64}$/u);
+  assert.match(client.packageIdentity.helperProvenanceSha256, /^[a-f0-9]{64}$/u);
+  assert.match(client.packageIdentity.helperSourceClosureSha256, /^[a-f0-9]{64}$/u);
+  assert.match(client.packageIdentity.helperSourceRevision, /^[a-f0-9]{40}$/u);
+  assert.equal(typeof client.packageIdentity.helperSourceWorktreeClean, "boolean");
+  assert.equal(JSON.stringify(client.packageIdentity).includes(packageRoot), false);
   const cases = [
     ["zip", "release.zip", createStoredZip],
     ["tar-gzip", "release.tar.gz", createTarGzip]
@@ -190,7 +283,7 @@ test("real helper rejects a late hostile member without invoking content callbac
     { content: Buffer.from("hostile"), name: "docs\\escape.txt" }
   ]));
   let callbacks = 0;
-  await assert.rejects(createArchiveScanClient(ensureArchiveScanTestExecutable()).scan({
+  await assert.rejects(createArchiveScanClient(ensureArchiveScanTestPackage()).scan({
     archivePath,
     format: "zip",
     onContent() {
@@ -205,4 +298,94 @@ test("real helper rejects a late hostile member without invoking content callbac
   }), (error) => error.code === "archive_scan_helper_failed" &&
     error.causeCode === "archive_member_path_nonportable");
   assert.equal(callbacks, 0);
+});
+
+test("requires one canonical platform-bound helper package with no executable fallback", () => {
+  const packageRoot = ensureArchiveScanTestPackage();
+  const manifest = readPackageManifest(packageRoot);
+  assert.throws(
+    () => createArchiveScanClient(path.join(packageRoot, manifest.executableFile)),
+    (error) => error.code === "archive_scan_package_root_invalid"
+  );
+  assert.throws(
+    () => createArchiveScanClient("relative-package"),
+    (error) => error.code === "archive_scan_package_root_invalid"
+  );
+  if (process.platform === "win32") {
+    assert.throws(
+      () => createArchiveScanClient("\\\\example.invalid\\share\\package"),
+      (error) => error.code === "archive_scan_package_root_not_local"
+    );
+  }
+});
+
+test("rejects unknown noncanonical cross-platform and executable-drift package state", async (context) => {
+  await context.test("unknown manifest field", (subtest) => {
+    const packageRoot = clonePackage(subtest);
+    writePackageManifest(packageRoot, { ...readPackageManifest(packageRoot), unknown: true });
+    assert.throws(() => createArchiveScanClient(packageRoot),
+      (error) => error.code === "archive_scan_manifest_invalid");
+  });
+
+  await context.test("noncanonical manifest bytes", (subtest) => {
+    const packageRoot = clonePackage(subtest);
+    fs.writeFileSync(packageManifestPath(packageRoot),
+      `${JSON.stringify(readPackageManifest(packageRoot), null, 2)}\n`);
+    assert.throws(() => createArchiveScanClient(packageRoot),
+      (error) => error.code === "archive_scan_manifest_invalid");
+  });
+
+  await context.test("cross-platform manifest", (subtest) => {
+    const packageRoot = clonePackage(subtest);
+    const manifest = readPackageManifest(packageRoot);
+    writePackageManifest(packageRoot, {
+      ...manifest,
+      runtimeIdentifier: manifest.runtimeIdentifier === "win-x64"
+        ? "linux-x64"
+        : "win-x64"
+    });
+    assert.throws(() => createArchiveScanClient(packageRoot),
+      (error) => error.code === "archive_scan_manifest_invalid");
+  });
+
+  await context.test("executable identity drift", (subtest) => {
+    const packageRoot = clonePackage(subtest);
+    const manifest = readPackageManifest(packageRoot);
+    fs.appendFileSync(path.join(packageRoot, manifest.executableFile), Buffer.from([0]));
+    assert.throws(() => createArchiveScanClient(packageRoot),
+      (error) => error.code === "archive_scan_executable_identity_mismatch");
+  });
+
+  await context.test("provenance identity drift", (subtest) => {
+    const packageRoot = clonePackage(subtest);
+    fs.appendFileSync(packageProvenancePath(packageRoot), Buffer.from([0]));
+    assert.throws(() => createArchiveScanClient(packageRoot),
+      (error) => error.code === "archive_scan_provenance_identity_mismatch");
+  });
+
+  await context.test("provenance cross-binding drift", (subtest) => {
+    const packageRoot = clonePackage(subtest);
+    writePackageProvenance(packageRoot, {
+      ...readPackageProvenance(packageRoot),
+      sourceClosureSha256: "0".repeat(64)
+    });
+    assert.throws(() => createArchiveScanClient(packageRoot),
+      (error) => error.code === "archive_scan_provenance_invalid");
+  });
+});
+
+test("rejects package manifest drift before starting the helper", async (context) => {
+  const root = temporaryRoot(context, "tinyrustlm-archive-package-drift-");
+  const packageRoot = clonePackage(context);
+  const client = createArchiveScanClient(packageRoot);
+  writePackageProvenance(packageRoot, {
+    ...readPackageProvenance(packageRoot),
+    sourceRevision: "0".repeat(40)
+  });
+  const archivePath = path.join(root, "release.zip");
+  fs.writeFileSync(archivePath, createStoredZip([
+    { content: Buffer.from("public"), name: "docs/release.txt" }
+  ]));
+  await assert.rejects(client.scan({ archivePath, format: "zip" }),
+    (error) => error.code === "archive_scan_package_changed");
 });

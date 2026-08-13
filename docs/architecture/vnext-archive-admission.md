@@ -5,7 +5,7 @@
 This document records the sole current archive-member admission path as of
 2026-08-13. It replaces operating-system archive commands and consumer-owned
 ZIP parsing in current production code. Historical v2 scan receipts remain
-immutable evidence, but they are not accepted as current v3 scan authority and
+immutable evidence, but they are not accepted as current v4 scan authority and
 there is no compatibility reader.
 
 The implementation is local conformance evidence. It does not claim that a
@@ -14,12 +14,13 @@ used in a successful production publication.
 
 ## Frozen Profiles
 
-Two exact raw-byte profiles own the boundary:
+Three exact raw-byte profiles own the boundary:
 
 | Profile | Identifier | SHA-256 |
 | --- | --- | --- |
 | Archive admission | `tinyrustlm.vnext.archive-admission.v1` | `05158f80e01817e31a2968bc4e2f9d1bb05fe53064384563f6546a5468046031` |
 | Process transport | `tinyrustlm.vnext.archive-scan-process.v1` | `a5ab1ba16af4db2cf4660bee8c9efd9a32b018cc30211d2144f4c852912d05ad` |
+| Node client and helper package | `tinyrustlm.vnext.archive-scan-client.v1` | `08bb532cd88273f5633a8693040c2108fd7fef0935f9705f34b98cb1ab405441` |
 
 Both readers verify their profile bytes against the compiled or pinned hash.
 A changed profile requires a changed identity and rerun evidence. Unknown
@@ -78,15 +79,50 @@ both profile hashes. Ordinary rejection uses exit code 2, empty stdout, and one
 bounded path-free failure JSON object on stderr. Output transport failure uses
 exit code 3 and never constitutes partial success.
 
+## Helper Package And Provenance
+
+The Node client accepts one explicit absolute package root, not a direct
+executable path. The package is create-only and contains exactly the RID-native
+helper, `archive-scan-helper-manifest.v1.json`, and
+`archive-scan-helper-provenance.v1.json`. Both JSON files must be strict
+canonical JCS documents with their exact current schemas. Unknown fields,
+duplicate keys, alternate filenames, links or reparse points, noncanonical
+bytes, an existing output directory, and package mutation fail closed.
+
+The manifest binds the platform, RID, build profile, trust class, executable
+size and SHA-256, helper source closure, both Rust profiles, and provenance
+identity. The provenance binds the exact Git source revision, whether the
+source worktree was clean, `Cargo.lock`, Cargo and rustc versions, package
+builder source closure, helper source closure, process profile, executable,
+platform, and trust class. `release-package` is accepted only with a release
+build and a clean source worktree. A debug build cannot be relabeled as release
+because the executable's parent build-profile directory is checked.
+
+`tinyrustlm/tools/archive-scan-helper-package.js` owns materialization. It
+refuses replacement, copies and re-hashes the source executable, writes both
+metadata files exclusively with file fsync, performs exact readback, and on
+failure removes only the new output root it created. This is package creation
+durability, not a physical power-loss claim or publication authorization.
+
+`eng/build-archive-scan-helper.ps1` and
+`eng/build-archive-scan-helper.sh` provide current-host builds for `win-x64`,
+`linux-x64`, and `linux-arm64`. CI declares native jobs on each architecture,
+including GitHub's `ubuntu-24.04-arm` hosted runner label, then reruns the real
+consumer suite against the produced release package before artifact upload.
+The runner label is documented by [GitHub's hosted-runner reference](https://docs.github.com/en/actions/reference/runners/github-hosted-runners),
+retrieved 2026-08-13. A workflow declaration is not successful execution
+evidence; only a completed run can prove a particular package and runner.
+
 ## Node Verification
 
 `tinyrustlm/tools/archive-scan-client.js` requires an explicit absolute helper
-path whenever an archive is present. There is no `PATH` lookup, shell, system
+package root whenever an archive is present. There is no `PATH` lookup, shell, system
 `tar`, JavaScript ZIP fallback, or best-effort mode. The client:
 
 1. verifies both frozen profile files;
-2. resolves one observed regular helper file and hashes it before and after
-   every invocation;
+2. verifies the canonical package manifest, provenance, platform, trust class,
+   source and builder closures, and helper executable before and after every
+   invocation;
 3. resolves one bounded observed archive path;
 4. starts the helper with no arguments, no inherited environment variables,
    private pipes, `shell: false`, and a bounded timeout;
@@ -99,8 +135,8 @@ path whenever an archive is present. There is no `PATH` lookup, shell, system
    readback succeed.
 
 The public evidence scanner now emits
-`tinyrustlm.public_artifact_secret_scan.v3` reports and
-`tinyrustlm.secret-scan-v3` receipts. Plain files require pre/post identity
+`tinyrustlm.public_artifact_secret_scan.v4` reports and
+`tinyrustlm.secret-scan-v4` receipts. Plain files require pre/post identity
 agreement. Archives additionally require helper archive-hash agreement.
 Secret detection receives decoded member bytes directly and resets its carry
 at every member boundary so bytes from separate files cannot form an invented

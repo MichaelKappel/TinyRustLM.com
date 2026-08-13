@@ -8,6 +8,9 @@ const {
   archiveAdmissionProfileId,
   archiveAdmissionProfileSha256,
   archiveFormatForPath,
+  archiveScanClientProfileId,
+  archiveScanClientProfileSha256,
+  archiveScanClientSourceClosureSha256,
   archiveScanProcessProfileId,
   archiveScanProcessProfileSha256,
   createArchiveScanClient
@@ -15,17 +18,23 @@ const {
 const { CampaignEvidenceStore, canonicalJson } = require("./campaign-evidence-store.js");
 const { atomicReplace } = require("./durable-files.js");
 
-const reportSchema = "tinyrustlm.public_artifact_secret_scan.v3";
-const receiptType = "tinyrustlm.secret-scan-v3";
+const reportSchema = "tinyrustlm.public_artifact_secret_scan.v4";
+const receiptType = "tinyrustlm.secret-scan-v4";
 const maximumArtifactCount = 4096;
 const maximumArchiveBytes = 512 * 1024 * 1024;
 const maximumScannedContentBytes = 4 * 1024 * 1024 * 1024;
 const archiveExtensions = [".nupkg", ".snupkg", ".tar.gz", ".tgz", ".zip"];
 const scannerSourceFiles = Object.freeze([
-  "archive-scan-client.js",
-  "public-evidence-secret-scan.js",
-  "strict-json.js"
+  "contracts/vnext/archive-admission-profile.v1.json",
+  "contracts/vnext/archive-scan-client-profile.v1.json",
+  "contracts/vnext/archive-scan-process-profile.v1.json",
+  "tinyrustlm/tools/archive-scan-client.js",
+  "tinyrustlm/tools/public-evidence-secret-scan.js",
+  "tinyrustlm/tools/strict-json.js",
+  "tinyrustlm/tools/vnext-evidence-error.js",
+  "tinyrustlm/tools/vnext-jcs.js"
 ]);
+const repositoryRoot = path.resolve(__dirname, "../..");
 const scannerRules = Object.freeze([
   Object.freeze({
     code: "private_key_material",
@@ -212,7 +221,7 @@ async function scanArtifact(artifact, knownSecrets, archiveClient, maximumConten
   let admission = null;
   let scan;
   if (format !== null) {
-    invariant(archiveClient !== null, "archive scanner executable is required");
+    invariant(archiveClient !== null, "archive scanner package is required");
     const archiveResult = await scanArchiveContent(
       archiveClient,
       filePath,
@@ -253,9 +262,13 @@ async function scanArtifact(artifact, knownSecrets, archiveClient, maximumConten
 }
 
 function scannerSourceClosureSha256() {
-  const members = scannerSourceFiles.map((file) => {
-    const bytes = fs.readFileSync(path.join(__dirname, file));
-    return Object.freeze({ byteCount: bytes.length, file, sha256: sha256(bytes) });
+  const members = scannerSourceFiles.map((relativePath) => {
+    const bytes = fs.readFileSync(path.join(repositoryRoot, ...relativePath.split("/")));
+    return Object.freeze({
+      byteCount: bytes.length,
+      path: relativePath,
+      sha256: sha256(bytes)
+    });
   });
   return sha256(canonicalJson(members));
 }
@@ -293,7 +306,7 @@ async function scanPublicArtifacts(options) {
     count + (isArchive(String(artifact?.path || "")) ? 1 : 0), 0);
   const archiveClient = archiveArtifactCount === 0
     ? null
-    : createArchiveScanClient(options.archiveScannerExecutablePath);
+    : createArchiveScanClient(options.archiveScannerPackageRoot);
   const results = [];
   let remainingContentBytes = maximumScannedContentBytes;
   for (const artifact of options.artifacts) {
@@ -343,8 +356,36 @@ async function scanPublicArtifacts(options) {
     archiveScanProcessProfileSha256: archiveArtifactCount === 0
       ? null
       : archiveScanProcessProfileSha256,
-    archiveScannerExecutableByteCount: archiveClient?.executableIdentity.byteCount || 0,
-    archiveScannerExecutableSha256: archiveClient?.executableIdentity.sha256 || null,
+    archiveScanClientProfileId: archiveArtifactCount === 0
+      ? null
+      : archiveScanClientProfileId,
+    archiveScanClientProfileSha256: archiveArtifactCount === 0
+      ? null
+      : archiveScanClientProfileSha256,
+    archiveScanClientSourceClosureSha256: archiveArtifactCount === 0
+      ? null
+      : archiveScanClientSourceClosureSha256,
+    archiveScannerArchitecture: archiveClient?.packageIdentity.architecture || null,
+    archiveScannerBuildProfile: archiveClient?.packageIdentity.buildProfile || null,
+    archiveScannerExecutableByteCount:
+      archiveClient?.packageIdentity.executableByteCount || 0,
+    archiveScannerExecutableSha256:
+      archiveClient?.packageIdentity.executableSha256 || null,
+    archiveScannerHelperManifestSha256:
+      archiveClient?.packageIdentity.helperManifestSha256 || null,
+    archiveScannerHelperPackageBuilderSourceClosureSha256:
+      archiveClient?.packageIdentity.helperPackageBuilderSourceClosureSha256 || null,
+    archiveScannerHelperProvenanceSha256:
+      archiveClient?.packageIdentity.helperProvenanceSha256 || null,
+    archiveScannerHelperSourceClosureSha256:
+      archiveClient?.packageIdentity.helperSourceClosureSha256 || null,
+    archiveScannerHelperSourceRevision:
+      archiveClient?.packageIdentity.helperSourceRevision || null,
+    archiveScannerHelperSourceWorktreeClean:
+      archiveClient?.packageIdentity.helperSourceWorktreeClean ?? null,
+    archiveScannerOperatingSystem: archiveClient?.packageIdentity.operatingSystem || null,
+    archiveScannerRuntimeIdentifier: archiveClient?.packageIdentity.runtimeIdentifier || null,
+    archiveScannerTrustClass: archiveClient?.packageIdentity.trustClass || null,
     secretFindingCount,
     scopeManifestSha256,
     artifacts: results
@@ -371,9 +412,12 @@ async function scanPublicArtifacts(options) {
   const toolVersions = ["3"];
   const toolBinaryHashes = [sourceClosureSha256];
   if (archiveClient !== null) {
-    toolNames.push("tinyrustlm-archive-scan");
-    toolVersions.push(archiveScanProcessProfileId);
-    toolBinaryHashes.push(archiveClient.executableIdentity.sha256);
+    toolNames.push("tinyrustlm-archive-scan-client", "tinyrustlm-archive-scan");
+    toolVersions.push(archiveScanClientProfileId, archiveScanProcessProfileId);
+    toolBinaryHashes.push(
+      archiveScanClientSourceClosureSha256,
+      archiveClient.packageIdentity.executableSha256
+    );
   }
   const receipt = store.putReceipt({
     receiptType,
@@ -391,7 +435,18 @@ async function scanPublicArtifacts(options) {
       scannerSourceClosure: sourceClosureSha256,
       ...(archiveClient === null
         ? {}
-        : { archiveScannerExecutable: archiveClient.executableIdentity.sha256 })
+        : {
+          archiveScannerExecutable: archiveClient.packageIdentity.executableSha256,
+          archiveScannerHelperManifest:
+            archiveClient.packageIdentity.helperManifestSha256,
+          archiveScannerHelperPackageBuilderSourceClosure:
+            archiveClient.packageIdentity.helperPackageBuilderSourceClosureSha256,
+          archiveScannerHelperProvenance:
+            archiveClient.packageIdentity.helperProvenanceSha256,
+          archiveScannerHelperSourceClosure:
+            archiveClient.packageIdentity.helperSourceClosureSha256,
+          archiveScannerNodeClientSourceClosure: archiveScanClientSourceClosureSha256
+        })
     },
     sourceRevision: options.sourceRevision,
     toolNames,
@@ -403,11 +458,13 @@ async function scanPublicArtifacts(options) {
     hardwareEvidence: {
       archiveAdmissionPerformed: archiveArtifactCount > 0,
       archiveContentDecodedAndScanned: archiveArtifactCount > 0,
+      archiveHelperPackageVerified: archiveArtifactCount > 0,
       localFileReadback: true
     },
     configurationHash: sha256(canonicalJson({
       archiveAdmissionProfileSha256,
       archiveExtensions,
+      archiveScanClientProfileSha256,
       archiveScanProcessProfileSha256,
       scannerRuleCodes: scannerRules.map((rule) => rule.code),
       scopeComplete: options.scopeComplete,
@@ -425,7 +482,11 @@ async function scanPublicArtifacts(options) {
     },
     boundedDiagnostics: {
       archiveAdmissionProfileId: report.archiveAdmissionProfileId,
+      archiveScanClientProfileId: report.archiveScanClientProfileId,
       archiveScanProcessProfileId: report.archiveScanProcessProfileId,
+      archiveScannerHelperSourceWorktreeClean:
+        report.archiveScannerHelperSourceWorktreeClean,
+      archiveScannerTrustClass: report.archiveScannerTrustClass,
       findingCodes: Array.from(new Set(results.flatMap((result) => result.findings))).sort(),
       scannerRuleVersion: report.scannerRuleVersion
     },

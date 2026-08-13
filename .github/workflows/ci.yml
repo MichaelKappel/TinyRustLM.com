@@ -14,6 +14,57 @@ on:
         default: false
 
 jobs:
+  verify-archive-scan-helper:
+    name: Verify archive scanner (${{ matrix.rid }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+          - os: ubuntu-latest
+            rid: linux-x64
+          - os: ubuntu-24.04-arm
+            rid: linux-arm64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify archive package producer and local consumer
+        run: node --test tinyrustlm/tests/archive-scan-helper-package.test.js tinyrustlm/tests/archive-scan-client.test.js tinyrustlm/tests/public-evidence-secret-scan.test.js
+
+      - name: Build release archive scanner package (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: eng/build-archive-scan-helper.ps1 -Configuration release
+
+      - name: Build release archive scanner package (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: bash eng/build-archive-scan-helper.sh release
+
+      - name: Verify clean release-package consumer
+        env:
+          TINYRUSTLM_ARCHIVE_SCAN_TEST_PACKAGE_ROOT: ${{ github.workspace }}/artifacts/archive-scan-helper/${{ matrix.rid }}
+        run: node --test tinyrustlm/tests/archive-scan-client.test.js tinyrustlm/tests/public-evidence-secret-scan.test.js
+
+      - name: Upload verified archive scanner package
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-archive-scan-helper-${{ matrix.rid }}
+          path: artifacts/archive-scan-helper/${{ matrix.rid }}/*
+          if-no-files-found: error
+
   verify-nuget-sdk:
     name: Verify protected NuGet SDK
     runs-on: windows-latest

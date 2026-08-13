@@ -6,6 +6,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const { parseStrictJson } = require("./strict-json.js");
+const { canonicalizeVnextJcsBytes } = require("./vnext-jcs.js");
 
 const repositoryRoot = resolveRepositoryRoot();
 const archiveAdmissionProfilePath = path.join(
@@ -20,12 +21,21 @@ const archiveScanProcessProfilePath = path.join(
   "vnext",
   "archive-scan-process-profile.v1.json"
 );
+const archiveScanClientProfilePath = path.join(
+  repositoryRoot,
+  "contracts",
+  "vnext",
+  "archive-scan-client-profile.v1.json"
+);
 const archiveAdmissionProfileSha256 =
   "05158f80e01817e31a2968bc4e2f9d1bb05fe53064384563f6546a5468046031";
 const archiveScanProcessProfileSha256 =
   "a5ab1ba16af4db2cf4660bee8c9efd9a32b018cc30211d2144f4c852912d05ad";
+const archiveScanClientProfileSha256 =
+  "08bb532cd88273f5633a8693040c2108fd7fef0935f9705f34b98cb1ab405441";
 const archiveAdmissionProfileId = "tinyrustlm.vnext.archive-admission.v1";
 const archiveScanProcessProfileId = "tinyrustlm.vnext.archive-scan-process.v1";
+const archiveScanClientProfileId = "tinyrustlm.vnext.archive-scan-client.v1";
 const archiveScanRequestSchema = "tinyrustlm.vnext.archive_scan_request.v1";
 const archiveScanFailureSchema = "tinyrustlm.vnext.archive_scan_failure.v1";
 const wireMagic = Buffer.from("5452415356310000", "hex");
@@ -42,6 +52,8 @@ const maximumWireBytes = maximumTotalMemberBytes +
   maximumMemberCount * (1 + 2 + 8 + 64 + maximumMemberPathBytes) +
   wireMagic.length + 1 + 4 + 8 + 1 + 4 * 64;
 let safeProcessErrorCodes;
+let archiveScanClientProfile;
+let archiveScanClientSourceClosureSha256;
 
 function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
@@ -94,28 +106,38 @@ function resolveRepositoryRoot() {
 function verifyFrozenProfiles() {
   let admissionBytes;
   let processBytes;
+  let clientBytes;
   try {
     admissionBytes = fs.readFileSync(archiveAdmissionProfilePath);
     processBytes = fs.readFileSync(archiveScanProcessProfilePath);
+    clientBytes = fs.readFileSync(archiveScanClientProfilePath);
   } catch (_error) {
     fail("archive_scan_profile_read_failed");
   }
   if (sha256(admissionBytes) !== archiveAdmissionProfileSha256 ||
-      sha256(processBytes) !== archiveScanProcessProfileSha256) {
+      sha256(processBytes) !== archiveScanProcessProfileSha256 ||
+      sha256(clientBytes) !== archiveScanClientProfileSha256) {
     fail("archive_scan_profile_identity_mismatch");
   }
   let admissionProfile;
   let processProfile;
+  let clientProfile;
   try {
     admissionProfile = parseStrictJson(admissionBytes);
     processProfile = parseStrictJson(processBytes);
+    clientProfile = parseStrictJson(clientBytes);
   } catch (_error) {
     fail("archive_scan_profile_invalid");
   }
   if (admissionProfile.profileId !== archiveAdmissionProfileId ||
       processProfile.profileId !== archiveScanProcessProfileId ||
+      clientProfile.profileId !== archiveScanClientProfileId ||
       processProfile.admissionProfileId !== archiveAdmissionProfileId ||
       processProfile.admissionProfileSha256 !== archiveAdmissionProfileSha256 ||
+      clientProfile.admissionProfileId !== archiveAdmissionProfileId ||
+      clientProfile.admissionProfileSha256 !== archiveAdmissionProfileSha256 ||
+      clientProfile.processProfileId !== archiveScanProcessProfileId ||
+      clientProfile.processProfileSha256 !== archiveScanProcessProfileSha256 ||
       processProfile.request?.schema !== archiveScanRequestSchema ||
       processProfile.failure?.schema !== archiveScanFailureSchema ||
       !Array.isArray(admissionProfile.errorCodes) ||
@@ -123,13 +145,48 @@ function verifyFrozenProfiles() {
       admissionProfile.errorCodes.length === 0 ||
       processProfile.processErrorCodes.length === 0 ||
       [...admissionProfile.errorCodes, ...processProfile.processErrorCodes].some((code) =>
-        typeof code !== "string" || !/^[a-z][a-z0-9_]{2,79}$/u.test(code))) {
+        typeof code !== "string" || !/^[a-z][a-z0-9_]{2,79}$/u.test(code)) ||
+      clientProfile.schema !== "tinyrustlm.vnext.archive_scan_client_profile.v1" ||
+      clientProfile.status !== "frozen" ||
+      clientProfile.versionPolicy !== "single-current-profile-no-compatibility-reader" ||
+      clientProfile.canonicalJsonProfile !==
+        "rfc8785-jcs+tinyrustlm.strict-json.v1" ||
+      clientProfile.hashAlgorithm !== "sha256" ||
+      clientProfile.packageManifestSchema !==
+        "tinyrustlm.vnext.archive_scan_helper_manifest.v1" ||
+      clientProfile.packageProvenanceSchema !==
+        "tinyrustlm.vnext.archive_scan_helper_provenance.v1" ||
+      !Array.isArray(clientProfile.clientSourceClosureMembers) ||
+      clientProfile.clientSourceClosureMembers.length !== 7 ||
+      !Array.isArray(clientProfile.helperSourceClosureMembers) ||
+      clientProfile.helperSourceClosureMembers.length !== 11 ||
+      !Array.isArray(clientProfile.packageBuilderSourceClosureMembers) ||
+      clientProfile.packageBuilderSourceClosureMembers.length !== 5 ||
+      !Array.isArray(clientProfile.packageManifestFields) ||
+      clientProfile.packageManifestFields.length !== 17 ||
+      !Array.isArray(clientProfile.packageIdentityFields) ||
+      clientProfile.packageIdentityFields.length !== 16 ||
+      !Array.isArray(clientProfile.packageProvenanceFields) ||
+      clientProfile.packageProvenanceFields.length !== 15 ||
+      !clientProfile.package || typeof clientProfile.package !== "object" ||
+      clientProfile.package.configuration !== "explicit-absolute-root-from-caller" ||
+      clientProfile.package.manifestFile !==
+        "archive-scan-helper-manifest.v1.json" ||
+      clientProfile.package.manifestMaximumBytes !== 32_768 ||
+      clientProfile.package.provenanceFile !==
+        "archive-scan-helper-provenance.v1.json" ||
+      clientProfile.package.provenanceMaximumBytes !== 32_768 ||
+      clientProfile.package.executableMaximumBytes !== maximumExecutableBytes ||
+      !Array.isArray(clientProfile.package.acceptedTrustClasses) ||
+      clientProfile.package.acceptedTrustClasses.join(",") !==
+        "local-test-build,release-package") {
     fail("archive_scan_profile_invalid");
   }
   safeProcessErrorCodes = new Set([
     ...admissionProfile.errorCodes,
     ...processProfile.processErrorCodes
   ]);
+  archiveScanClientProfile = Object.freeze(clientProfile);
 }
 
 verifyFrozenProfiles();
@@ -241,6 +298,267 @@ function hashRegularFile(filePath, maximumBytes, code) {
     }
   }
 }
+
+function readBoundedRegularFile(filePath, maximumBytes, code) {
+  let descriptor;
+  try {
+    const linkStat = fs.lstatSync(filePath);
+    if (!linkStat.isFile() || linkStat.isSymbolicLink() || linkStat.size <= 0 ||
+        linkStat.size > maximumBytes) {
+      fail(code);
+    }
+    descriptor = fs.openSync(filePath,
+      Number(fs.constants.O_RDONLY) | Number(fs.constants.O_NOFOLLOW || 0));
+    const before = fs.fstatSync(descriptor);
+    if (!before.isFile() || before.size !== linkStat.size ||
+        (linkStat.dev && before.dev && linkStat.dev !== before.dev) ||
+        (linkStat.ino && before.ino && linkStat.ino !== before.ino)) {
+      fail(code);
+    }
+    const bytes = Buffer.alloc(before.size);
+    let offset = 0;
+    while (offset < bytes.length) {
+      const count = fs.readSync(descriptor, bytes, offset,
+        Math.min(65_536, bytes.length - offset), offset);
+      if (count <= 0) fail(code);
+      offset += count;
+    }
+    const after = fs.fstatSync(descriptor);
+    if (after.size !== before.size || after.mtimeMs !== before.mtimeMs ||
+        after.ctimeMs !== before.ctimeMs ||
+        (before.dev && after.dev && before.dev !== after.dev) ||
+        (before.ino && after.ino && before.ino !== after.ino)) {
+      fail(code);
+    }
+    return bytes;
+  } catch (error) {
+    if (error?.code === code) throw error;
+    fail(code);
+  } finally {
+    if (descriptor !== undefined) {
+      try {
+        fs.closeSync(descriptor);
+      } catch (_error) {
+        // The bounded private byte copy or a typed failure is already authoritative.
+      }
+    }
+  }
+}
+
+function computeClientSourceClosureSha256() {
+  const members = archiveScanClientProfile.clientSourceClosureMembers.map(
+    (relativePath) => {
+      if (typeof relativePath !== "string" || relativePath.length === 0 ||
+          relativePath.includes("\\") || relativePath.startsWith("/") ||
+          relativePath.split("/").some((part) => !part || part === "." || part === "..")) {
+        fail("archive_scan_profile_invalid");
+      }
+      const filePath = path.resolve(repositoryRoot, ...relativePath.split("/"));
+      if (path.relative(repositoryRoot, filePath).startsWith("..")) {
+        fail("archive_scan_profile_invalid");
+      }
+      const identity = hashRegularFile(
+        filePath,
+        16 * 1024 * 1024,
+        "archive_scan_profile_read_failed"
+      );
+      return Object.freeze({
+        byteCount: identity.byteCount,
+        path: relativePath,
+        sha256: identity.sha256
+      });
+    }
+  );
+  return sha256(canonicalizeVnextJcsBytes(members));
+}
+
+function normalizePackageRoot(rootInput) {
+  if (typeof rootInput !== "string" || rootInput.length < 3 ||
+      rootInput.length > 4_096 || rootInput.includes("\0") ||
+      !path.isAbsolute(rootInput) || path.resolve(rootInput) !== path.normalize(rootInput)) {
+    fail("archive_scan_package_root_invalid");
+  }
+  const resolved = path.resolve(rootInput);
+  if (process.platform === "win32" &&
+      !/^[A-Za-z]:\\$/u.test(path.parse(resolved).root)) {
+    fail("archive_scan_package_root_not_local");
+  }
+  let stat;
+  try {
+    stat = fs.lstatSync(resolved);
+  } catch (_error) {
+    fail("archive_scan_package_root_invalid");
+  }
+  if (!stat.isDirectory() || stat.isSymbolicLink() ||
+      path.parse(resolved).root === resolved) {
+    fail("archive_scan_package_root_invalid");
+  }
+  assertNoLinkComponents(resolved);
+  return resolved;
+}
+
+function expectedPlatform() {
+  const operatingSystem = process.platform === "win32" ? "windows" :
+    process.platform === "darwin" ? "macos" : process.platform;
+  const architecture = process.arch === "x64" ? "x86_64" :
+    process.arch === "arm64" ? "aarch64" : process.arch;
+  const osName = process.platform === "win32" ? "win" :
+    process.platform === "darwin" ? "osx" : process.platform;
+  return Object.freeze({
+    architecture,
+    operatingSystem,
+    runtimeIdentifier: `${osName}-${process.arch}`
+  });
+}
+
+function validatePackageManifest(bytes, packageRoot) {
+  let manifest;
+  try {
+    manifest = parseStrictJson(bytes);
+  } catch (_error) {
+    fail("archive_scan_manifest_invalid");
+  }
+  if (!manifest || typeof manifest !== "object" || Array.isArray(manifest) ||
+      Object.keys(manifest).join(",") !==
+        archiveScanClientProfile.packageManifestFields.join(",") ||
+      !canonicalizeVnextJcsBytes(manifest).equals(bytes)) {
+    fail("archive_scan_manifest_invalid");
+  }
+  const platform = expectedPlatform();
+  const executableFile = process.platform === "win32"
+    ? "tinyrustlm-archive-scan.exe"
+    : "tinyrustlm-archive-scan";
+  const digest = /^[a-f0-9]{64}$/u;
+  if (manifest.schema !== archiveScanClientProfile.packageManifestSchema ||
+      manifest.admissionProfileId !== archiveAdmissionProfileId ||
+      manifest.admissionProfileSha256 !== archiveAdmissionProfileSha256 ||
+      manifest.processProfileId !== archiveScanProcessProfileId ||
+      manifest.processProfileSha256 !== archiveScanProcessProfileSha256 ||
+      manifest.executableFile !== executableFile ||
+      !Number.isSafeInteger(manifest.executableByteCount) ||
+      manifest.executableByteCount <= 0 ||
+      manifest.executableByteCount > maximumExecutableBytes ||
+      !digest.test(manifest.executableSha256) ||
+      !digest.test(manifest.sourceClosureSha256) ||
+      !Number.isSafeInteger(manifest.provenanceByteCount) ||
+      manifest.provenanceByteCount <= 0 ||
+      manifest.provenanceByteCount >
+        archiveScanClientProfile.package.provenanceMaximumBytes ||
+      manifest.provenanceFile !== archiveScanClientProfile.package.provenanceFile ||
+      !digest.test(manifest.provenanceSha256) ||
+      !["debug", "release"].includes(manifest.buildProfile) ||
+      !archiveScanClientProfile.package.acceptedTrustClasses.includes(
+        manifest.trustClass) ||
+      (manifest.trustClass === "release-package" &&
+        manifest.buildProfile !== "release") ||
+      manifest.architecture !== platform.architecture ||
+      manifest.operatingSystem !== platform.operatingSystem ||
+      manifest.runtimeIdentifier !== platform.runtimeIdentifier) {
+    fail("archive_scan_manifest_invalid");
+  }
+  const executablePath = path.resolve(packageRoot, manifest.executableFile);
+  if (path.dirname(executablePath) !== packageRoot) {
+    fail("archive_scan_manifest_invalid");
+  }
+  return Object.freeze({ executablePath, manifest: Object.freeze({ ...manifest }) });
+}
+
+function validatePackageProvenance(bytes, manifest) {
+  let provenance;
+  try {
+    provenance = parseStrictJson(bytes);
+  } catch (_error) {
+    fail("archive_scan_provenance_invalid");
+  }
+  if (!provenance || typeof provenance !== "object" || Array.isArray(provenance) ||
+      Object.keys(provenance).join(",") !==
+        archiveScanClientProfile.packageProvenanceFields.join(",") ||
+      !canonicalizeVnextJcsBytes(provenance).equals(bytes)) {
+    fail("archive_scan_provenance_invalid");
+  }
+  const digest = /^[a-f0-9]{64}$/u;
+  const version = /^[A-Za-z0-9][A-Za-z0-9 ._+()/:;-]{2,255}$/u;
+  if (provenance.schema !== archiveScanClientProfile.packageProvenanceSchema ||
+      provenance.architecture !== manifest.architecture ||
+      provenance.buildProfile !== manifest.buildProfile ||
+      provenance.executableSha256 !== manifest.executableSha256 ||
+      provenance.operatingSystem !== manifest.operatingSystem ||
+      provenance.processProfileSha256 !== manifest.processProfileSha256 ||
+      provenance.runtimeIdentifier !== manifest.runtimeIdentifier ||
+      provenance.sourceClosureSha256 !== manifest.sourceClosureSha256 ||
+      provenance.trustClass !== manifest.trustClass ||
+      !digest.test(provenance.cargoLockSha256) ||
+      !digest.test(provenance.packageBuilderSourceClosureSha256) ||
+      !/^[a-f0-9]{40}$/u.test(provenance.sourceRevision) ||
+      typeof provenance.sourceWorktreeClean !== "boolean" ||
+      (provenance.trustClass === "release-package" &&
+        provenance.sourceWorktreeClean !== true) ||
+      !version.test(provenance.cargoVersion) ||
+      !version.test(provenance.rustcVersion)) {
+    fail("archive_scan_provenance_invalid");
+  }
+  return Object.freeze({ ...provenance });
+}
+
+function loadPackage(packageRoot) {
+  assertNoLinkComponents(packageRoot);
+  const manifestPath = path.join(
+    packageRoot,
+    archiveScanClientProfile.package.manifestFile
+  );
+  assertNoLinkComponents(manifestPath);
+  const manifestBytes = readBoundedRegularFile(
+    manifestPath,
+    archiveScanClientProfile.package.manifestMaximumBytes,
+    "archive_scan_manifest_read_failed"
+  );
+  const validated = validatePackageManifest(manifestBytes, packageRoot);
+  const provenancePath = path.join(
+    packageRoot,
+    archiveScanClientProfile.package.provenanceFile
+  );
+  assertNoLinkComponents(provenancePath);
+  const provenanceBytes = readBoundedRegularFile(
+    provenancePath,
+    archiveScanClientProfile.package.provenanceMaximumBytes,
+    "archive_scan_provenance_read_failed"
+  );
+  if (provenanceBytes.length !== validated.manifest.provenanceByteCount ||
+      sha256(provenanceBytes) !== validated.manifest.provenanceSha256) {
+    fail("archive_scan_provenance_identity_mismatch");
+  }
+  const provenance = validatePackageProvenance(
+    provenanceBytes,
+    validated.manifest
+  );
+  assertNoLinkComponents(validated.executablePath);
+  const executableIdentity = hashRegularFile(
+    validated.executablePath,
+    maximumExecutableBytes,
+    "archive_scan_executable_read_failed"
+  );
+  if (executableIdentity.byteCount !== validated.manifest.executableByteCount ||
+      executableIdentity.sha256 !== validated.manifest.executableSha256) {
+    fail("archive_scan_executable_identity_mismatch");
+  }
+  return Object.freeze({
+    executableIdentity,
+    executablePath: validated.executablePath,
+    manifest: validated.manifest,
+    manifestSha256: sha256(manifestBytes),
+    provenance,
+    provenanceSha256: sha256(provenanceBytes)
+  });
+}
+
+function packageStateMatches(left, right) {
+  return left.manifestSha256 === right.manifestSha256 &&
+    left.provenanceSha256 === right.provenanceSha256 &&
+    left.executableIdentity.byteCount === right.executableIdentity.byteCount &&
+    left.executableIdentity.sha256 === right.executableIdentity.sha256;
+}
+
+archiveScanClientSourceClosureSha256 = computeClientSourceClosureSha256();
 
 function decodeSha256(bytes) {
   if (bytes.length !== 64 || !bytes.every((byte) =>
@@ -600,17 +918,32 @@ function invokeScanner(executablePath, archivePath, format, callbacks) {
   });
 }
 
-function createArchiveScanClient(executablePathInput) {
-  const executablePath = normalizeObservedFile(
-    executablePathInput,
-    maximumExecutableBytes,
-    "archive_scan_executable_invalid"
-  );
-  const initialIdentity = hashRegularFile(
-    executablePath,
-    maximumExecutableBytes,
-    "archive_scan_executable_read_failed"
-  );
+function createArchiveScanClient(packageRootInput) {
+  const packageRoot = normalizePackageRoot(packageRootInput);
+  const initialPackage = loadPackage(packageRoot);
+  const packageIdentity = Object.freeze({
+    architecture: initialPackage.manifest.architecture,
+    buildProfile: initialPackage.manifest.buildProfile,
+    clientProfileId: archiveScanClientProfileId,
+    clientProfileSha256: archiveScanClientProfileSha256,
+    clientSourceClosureSha256: archiveScanClientSourceClosureSha256,
+    executableByteCount: initialPackage.executableIdentity.byteCount,
+    executableSha256: initialPackage.executableIdentity.sha256,
+    helperManifestSha256: initialPackage.manifestSha256,
+    helperPackageBuilderSourceClosureSha256:
+      initialPackage.provenance.packageBuilderSourceClosureSha256,
+    helperProvenanceSha256: initialPackage.provenanceSha256,
+    helperSourceClosureSha256: initialPackage.manifest.sourceClosureSha256,
+    helperSourceRevision: initialPackage.provenance.sourceRevision,
+    helperSourceWorktreeClean: initialPackage.provenance.sourceWorktreeClean,
+    operatingSystem: initialPackage.manifest.operatingSystem,
+    runtimeIdentifier: initialPackage.manifest.runtimeIdentifier,
+    trustClass: initialPackage.manifest.trustClass
+  });
+  if (Object.keys(packageIdentity).join(",") !==
+      archiveScanClientProfile.packageIdentityFields.join(",")) {
+    fail("archive_scan_profile_invalid");
+  }
 
   async function scan(options) {
     if (!options || typeof options !== "object" ||
@@ -622,38 +955,33 @@ function createArchiveScanClient(executablePathInput) {
       maximumArchiveBytes,
       "archive_scan_archive_invalid"
     );
-    const before = hashRegularFile(
-      executablePath,
-      maximumExecutableBytes,
-      "archive_scan_executable_read_failed"
-    );
-    if (before.byteCount !== initialIdentity.byteCount ||
-        before.sha256 !== initialIdentity.sha256) {
-      fail("archive_scan_executable_changed");
+    const before = loadPackage(packageRoot);
+    if (!packageStateMatches(initialPackage, before)) {
+      fail("archive_scan_package_changed");
     }
-    const result = await invokeScanner(executablePath, archivePath, options.format, {
+    const result = await invokeScanner(
+      before.executablePath,
+      archivePath,
+      options.format,
+      {
       onContent: options.onContent,
       onMemberEnd: options.onMemberEnd,
       onMemberStart: options.onMemberStart
-    });
-    const after = hashRegularFile(
-      executablePath,
-      maximumExecutableBytes,
-      "archive_scan_executable_read_failed"
+      }
     );
-    if (after.byteCount !== initialIdentity.byteCount ||
-        after.sha256 !== initialIdentity.sha256) {
-      fail("archive_scan_executable_changed");
+    const after = loadPackage(packageRoot);
+    if (!packageStateMatches(initialPackage, after)) {
+      fail("archive_scan_package_changed_during_execution");
     }
     return Object.freeze({
       ...result,
-      executableByteCount: after.byteCount,
-      executableSha256: after.sha256
+      executableByteCount: after.executableIdentity.byteCount,
+      executableSha256: after.executableIdentity.sha256
     });
   }
 
   return Object.freeze({
-    executableIdentity: initialIdentity,
+    packageIdentity,
     scan
   });
 }
@@ -662,6 +990,9 @@ module.exports = Object.freeze({
   archiveAdmissionProfileId,
   archiveAdmissionProfileSha256,
   archiveFormatForPath,
+  archiveScanClientProfileId,
+  archiveScanClientProfileSha256,
+  archiveScanClientSourceClosureSha256,
   archiveScanProcessProfileId,
   archiveScanProcessProfileSha256,
   createArchiveScanClient,
