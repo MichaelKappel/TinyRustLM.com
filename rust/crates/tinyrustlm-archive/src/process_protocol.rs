@@ -195,7 +195,7 @@ fn read_archive(path: &Path) -> Result<Vec<u8>, ArchiveScanProcessError> {
         .metadata()
         .map_err(|_| ArchiveScanProcessError::new("archive_scan_read_failed"))?;
     validate_file_metadata(&opened)?;
-    if opened.len() != before.len() {
+    if !metadata_snapshot_matches(&before, &opened) {
         return Err(ArchiveScanProcessError::new("archive_scan_path_changed"));
     }
     let mut bytes = Vec::with_capacity(usize::try_from(opened.len().min(65_536)).unwrap_or(65_536));
@@ -213,7 +213,7 @@ fn read_archive(path: &Path) -> Result<Vec<u8>, ArchiveScanProcessError> {
     let after = fs::symlink_metadata(path)
         .map_err(|_| ArchiveScanProcessError::new("archive_scan_path_changed"))?;
     validate_file_metadata(&after)?;
-    if after.len() != before.len() {
+    if !metadata_snapshot_matches(&before, &after) {
         return Err(ArchiveScanProcessError::new("archive_scan_path_changed"));
     }
     Ok(bytes)
@@ -257,6 +257,37 @@ fn metadata_is_link(metadata: &Metadata) -> bool {
     const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x0000_0400;
     metadata.file_type().is_symlink()
         || metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0
+}
+
+#[cfg(windows)]
+fn metadata_snapshot_matches(left: &Metadata, right: &Metadata) -> bool {
+    use std::os::windows::fs::MetadataExt;
+    left.len() == right.len()
+        && left.creation_time() == right.creation_time()
+        && left.last_write_time() == right.last_write_time()
+        && left.file_attributes() == right.file_attributes()
+}
+
+#[cfg(unix)]
+fn metadata_snapshot_matches(left: &Metadata, right: &Metadata) -> bool {
+    use std::os::unix::fs::MetadataExt;
+    left.dev() == right.dev()
+        && left.ino() == right.ino()
+        && left.len() == right.len()
+        && left.mtime() == right.mtime()
+        && left.mtime_nsec() == right.mtime_nsec()
+        && left.ctime() == right.ctime()
+        && left.ctime_nsec() == right.ctime_nsec()
+}
+
+#[cfg(not(any(windows, unix)))]
+fn metadata_snapshot_matches(left: &Metadata, right: &Metadata) -> bool {
+    left.len() == right.len()
+        && left
+            .modified()
+            .ok()
+            .zip(right.modified().ok())
+            .is_some_and(|(left_modified, right_modified)| left_modified == right_modified)
 }
 
 #[cfg(not(windows))]

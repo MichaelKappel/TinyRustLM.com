@@ -236,8 +236,14 @@ stores use sole `putMany` paths; their size-one methods are wrappers. Every
 current vNext store, campaign-operation record, and runner-lock record consumes
 the sole receipt-backed durable-publication primitive. No batch claims an
 atomic filesystem transaction. OS network isolation, release provenance,
-archive admission, protected equality-list custody, and physical power-loss
-evidence remain incomplete.
+protected equality-list custody, and physical power-loss evidence remain
+incomplete.
+The sole bounded ZIP and tar-gzip authority, its Rust process boundary, and the
+v3 public-artifact secret-scan cutover are documented in
+`docs/architecture/vnext-archive-admission.md`. Memory-package and public
+evidence consumers use that authority without extraction or a system-tool
+fallback. Production per-RID helper packaging, provenance, signing where
+required, and clean-consumer evidence remain open release work.
 The sole exact cross-store Rust-backed campaign runner is documented in
 `docs/architecture/vnext-campaign-runner.md`.
 The fresh-runner-only immutable attestation, operator, release-manifest,
@@ -295,7 +301,7 @@ mutable runner and publication stack, their dedicated tests, rebuildable
 aliases, snapshot trees, old schemas, and stale current documentation are
 deleted without a compatibility path. Hash-addressed historical receipts and
 clean-history blobs remain inert evidence. The Rust directory-flush primitive
-is implemented but not yet integrated into publication receipts.
-Archive-member scanning, a real production publication, and external campaign
-evidence remain incomplete.
+is integrated through the sole receipt-backed durable-publication path.
+A real production publication and external campaign evidence remain
+incomplete.
 This implementation status does not increment any 20/50/25/40/20 campaign counter.

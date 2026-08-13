@@ -205,6 +205,33 @@ Those gates require an advertised contract, authorized credentials or
 infrastructure, and objective receipts. A missing contract is a typed blocker,
 not a skipped pass.
 
+## Archive Secret Scans
+
+An artifact ending in `.zip`, `.nupkg`, `.snupkg`, `.tgz`, or `.tar.gz`
+requires an explicit absolute `tinyrustlm-archive-scan` executable path. The
+scanner never searches `PATH` and has no system-`tar` or JavaScript archive
+fallback. The Rust authority must admit the whole archive before any decoded
+member reaches secret detection.
+
+The v3 report binds the compressed archive hash, path-redacted decoded-content
+manifest hash, archive and process profile hashes, member counts, scanner
+source closure, and helper executable hash. Secret matching carry is cleared
+between members. Malformed paths, links, portable collisions, nested archives,
+integrity failures, unsupported features, or resource-limit violations abort
+the scan before a report or receipt is created.
+
+Focused verification:
+
+```powershell
+node --test tests/archive-scan-client.test.js `
+  tests/public-evidence-secret-scan.test.js `
+  tests/web-release-secret-scan.test.js
+```
+
+These local tests are conformance evidence. A production release additionally
+requires the helper's per-RID package provenance and the complete release,
+authorization, deployment, and HTTPS-readback gates.
+
 ## Checkpoint Report
 
 At each WIP checkpoint record:

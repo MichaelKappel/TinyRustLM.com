@@ -261,6 +261,9 @@ Fast browser and campaign checks:
 npm --prefix tinyrustlm run test:browser-contract
 node --test tinyrustlm/tests/dogfood-campaign.test.js tinyrustlm/tests/vnext-campaign-runner.test.js
 node --test tinyrustlm/tests/vnext-campaign-release-surface.test.js
+node --test tinyrustlm/tests/archive-scan-client.test.js `
+  tinyrustlm/tests/public-evidence-secret-scan.test.js `
+  tinyrustlm/tests/web-release-secret-scan.test.js
 ```
 
 The vNext runner command is a local verifier conformance gate. It snapshots
@@ -269,6 +272,13 @@ generated Rust campaign-evidence ABI, and preserves immutable operation and
 projection history. Its synthetic complete-capacity case is not a live
 campaign run and does not increment any campaign counter. See
 `docs/architecture/vnext-campaign-runner.md`.
+
+Archive-bearing public evidence uses the explicit Rust
+`tinyrustlm-archive-scan` process boundary. It does not call a system `tar`,
+extract members to disk, or accept a JavaScript parser fallback. The v3 scan
+receipt binds the scanner source closure, helper executable, compressed
+archive, decoded content manifest, and both frozen archive profiles. See
+`docs/architecture/vnext-archive-admission.md`.
 
 The vNext release-surface gate runs that sole runner inside the attestation
 call, rejects stored projections and caller counters, scans final canonical

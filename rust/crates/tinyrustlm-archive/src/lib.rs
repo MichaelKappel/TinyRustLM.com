@@ -23,6 +23,8 @@ pub const ARCHIVE_ADMISSION_PROFILE_ID: &str = "tinyrustlm.vnext.archive-admissi
 /// The SHA-256 of the sole current archive-admission profile bytes.
 pub const ARCHIVE_ADMISSION_PROFILE_SHA256: &str =
     "05158f80e01817e31a2968bc4e2f9d1bb05fe53064384563f6546a5468046031";
+const ARCHIVE_ADMISSION_PROFILE_BYTES: &[u8] =
+    include_bytes!("../../../../contracts/vnext/archive-admission-profile.v1.json");
 /// The maximum accepted compressed archive size.
 pub const MAXIMUM_ARCHIVE_BYTES: usize = 536_870_912;
 /// The maximum number of archive members, including directories.
@@ -211,7 +213,16 @@ pub fn scan_archive_bytes<F>(
 where
     F: FnMut(ArchiveMember<'_>, &[u8]),
 {
+    validate_admission_profile()?;
     scan_archive_bytes_with_limits(format, archive_bytes, PROFILE_LIMITS, visitor)
+}
+
+fn validate_admission_profile() -> Result<(), ArchiveAdmissionError> {
+    let actual = format!("{:x}", Sha256::digest(ARCHIVE_ADMISSION_PROFILE_BYTES));
+    if actual != ARCHIVE_ADMISSION_PROFILE_SHA256 {
+        return Err(ArchiveAdmissionError::new("archive_profile_invalid"));
+    }
+    Ok(())
 }
 
 fn scan_archive_bytes_with_limits<F>(
@@ -358,8 +369,7 @@ mod tests {
 
     #[test]
     fn frozen_profile_identity_matches_canonical_bytes() {
-        let bytes = include_bytes!("../../../../contracts/vnext/archive-admission-profile.v1.json");
-        let actual = format!("{:x}", Sha256::digest(bytes));
+        let actual = format!("{:x}", Sha256::digest(ARCHIVE_ADMISSION_PROFILE_BYTES));
 
         assert_eq!(actual, ARCHIVE_ADMISSION_PROFILE_SHA256);
     }
