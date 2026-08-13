@@ -1,7 +1,43 @@
-profile: tinyrustlm.source-workspace.v303
+profile: tinyrustlm.source-workspace.v304
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-13T17:33:51Z
+updated_utc: 2026-08-13T17:39:22Z
+
+current_checkpoint_2026_08_13_gate_c_complete_affected_closure:
+  authority: This is the newest first-read Gate C verification, publication-intersection, and restart checkpoint. It supersedes older present-tense Gate C, broad-gate, generator, hygiene, and next-action descriptions where different while preserving immutable failures and prior source history. It proves a complete affected source gate only; it is not production deployment, publication, production readback, or live campaign evidence.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  verified_source:
+    branch: codex/model-acquisition-v2
+    source_head_before_this_handoff: 4f91a29f85e00482044f9f726db1c74b56b935ae
+    upstream: origin/codex/model-acquisition-v2
+    status: clean and actual-remote exact before this handoff edit
+    changed_closure_from_760b3a4: seven files comprising one shared test-only Cargo-target resolver, five consuming test files, and workspace.uai
+  complete_verification:
+    release_surface: 23/23 passed across six exhaustive serial shards; failures=0; skipped=0; cancelled=0; todo=0; duration_seconds=15973.3
+    site_publication: 7/7 passed
+    complete_node: Corrected complete npm run test:unit passed 915/915; failures=0; skipped=0; cancelled=0; todo=0; duration_seconds=16103.5. Preserve the preceding 901/915 run and its single 14-case external-target failure class as failure-driven history.
+    campaign_runner: 15/15 passed after the shared Cargo-target correction
+    documentation_and_cutover: 24/24 passed across ADR inventory, contract inventory, threat review, and no-legacy cutover invariants
+    rust_format: cargo fmt --all --check passed
+    rust_clippy: cargo clippy --workspace --all-targets --locked -- -D warnings passed in 27.6 seconds with offline resolution and Cargo output on D:
+    complete_rust: cargo test --workspace --locked passed all workspace unit, integration, CLI, parity, hostile-input, runtime/SLM, and doc-test targets in 82.5 seconds; the runtime/SLM library group passed 438/438
+    deterministic_generation: Nine checked-in vNext generators replayed in declared write modes and left byte-identical clean Git status. The private task-specialist materializer was correctly excluded because it requires campaign-private destinations and is not a checked-in vector generator.
+    hygiene: Seven changed files had zero NUL bytes, zero non-ASCII bytes, and zero introduced high-confidence private-key, credential-URL, password, access-token, or API-key patterns. git diff --check passed.
+    publication_intersection: The deployment manifest contains exactly 23 members, comprising 21 source members and two generated-release members. Exactly zero of the seven changed files intersected those members.
+  publication_truth: The complete source gate proves no production web-byte delta. Publishing unchanged bytes would fabricate a release, so no site version, release date, Updates entry, deployment, release receipt, public HTTPS readback, or publication claim was created.
+  storage_and_restart_boundary:
+    E_free_after_handoff_preparation_mib: approximately 17
+    generated_output: Cargo target and test temp output remain on D:\TinyRustLM-vnext-20260812
+    node_dependency_state: TinyRustLM's ignored Playwright development install was intentionally removed with exact npm ci --omit=dev after Node gates completed. Run exact npm ci after authorized storage cleanup before the next browser-dependent test.
+    git_boundary: Keep gc.auto=0 and maintenance.auto=false for commits and pushes until an elevated operator removes only stale non-addressable tmp_pack files. Do not prune, repack, gc, alter complete packs, or touch the protected checkout.
+  campaign_truth: qualified_models=0/20; clean_browser_rounds=0/50; authorized_live_memory_rounds=0/25; current_outside_network_lane_proofs=0/40; live_catalog_announcements=0/20
+  exact_next_action:
+    - Preserve this complete Gate C checkpoint by commit and actual-remote-exact push with automatic Git maintenance disabled.
+    - Restore safe E: headroom through authorized stale-temp-pack cleanup and reinstall exact TinyRustLM development dependencies before browser work.
+    - Continue Gate D with failing tests and one bounded clean-slate contract for compressed archive and immutable history-member admission: reject traversal, absolute paths, duplicate normalized names, links, devices, sparse expansion, nested archives, count, per-member, aggregate, and compression-ratio abuse before accepting evidence. Add no archive fallback, legacy reader, compatibility shim, or partial-success path.
 
 current_checkpoint_2026_08_13_complete_node_regression_closure:
   authority: This is the newest first-read verification and source-control checkpoint. It supersedes older present-tense complete-Node, external-Cargo-target, disk-headroom, and resume descriptions where different while preserving immutable failures and prior evidence. It is not a deployment, publication, production readback, or live campaign result.
