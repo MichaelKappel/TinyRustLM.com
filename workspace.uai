@@ -1,7 +1,37 @@
-profile: tinyrustlm.source-workspace.v302
+profile: tinyrustlm.source-workspace.v303
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-13T08:27:30Z
+updated_utc: 2026-08-13T17:33:51Z
+
+current_checkpoint_2026_08_13_complete_node_regression_closure:
+  authority: This is the newest first-read verification and source-control checkpoint. It supersedes older present-tense complete-Node, external-Cargo-target, disk-headroom, and resume descriptions where different while preserving immutable failures and prior evidence. It is not a deployment, publication, production readback, or live campaign result.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  source_control:
+    branch: codex/model-acquisition-v2
+    external_target_source_commit: 2f9d3fccac6e3892637ca0a90d24a80bd4f6e897
+    aggregate_handoff_commit: 1a43f9e6795786fd9b2efb7e21303f6c647d3ebc
+    campaign_runner_correction_commit: dbd07cb88b43ce5efc2e07e2c8e60021eadce6ae
+    upstream: origin/codex/model-acquisition-v2
+    verification: Each named commit was pushed and actual-remote exact before this handoff edit. The six other authoritative site repositories remained source-clean and remote-exact at their preceding recorded hashes.
+  failure_driven_correction:
+    first_complete_node_run: 901/915 passed and 14/915 failed in 16323.1 seconds. Every failure was one ENOENT class in vnext-campaign-runner.test.js reading the repository-local WASM target while CARGO_TARGET_DIR intentionally routed generated output to D:.
+    correction: The campaign-runner test now uses the same strict shared absolute, non-root Cargo-target resolver as the helper, WASM evidence, and release-surface tests. Production runtime and package-link validation were not weakened.
+    focused_result: vnext-campaign-runner.test.js passed 15/15 in 146.7 seconds, including complete synthetic capacity, restart recovery, cross-process exclusion, disk-full behavior, and exact wire validation.
+    corrected_complete_node_result: npm run test:unit passed 915/915 with failures=0, skipped=0, cancelled=0, todo=0 in 16103.5 seconds.
+    adjacent_result: vnext-site-publication.test.js passed 7/7. The frozen serial release-surface aggregate remains passed 23/23 across six exhaustive shards.
+  storage_event:
+    observed: E: reached zero free bytes during the corrected complete Node run. Non-addressable read-only tmp_pack files accumulated in the shared protected-checkout Git object pack directory under an elevated owner unavailable to this session. No complete pack, ref, source, receipt, model, credential, or protected worktree file was removed or altered.
+    cleanup: Native cargo clean removed 446.3 MiB and 997.0 MiB of regenerable MiniModel.org target output. The attempted npm cleanup of an unrelated ACL-protected worktree failed with EPERM and changed no bytes. After the complete Node gate, exact npm ci --omit=dev removed TinyRustLM's ignored Playwright development install, left package-lock and Git status unchanged, and restored 17.1 MiB for this handoff.
+    prohibition: Do not run git prune, repack, gc, or maintenance against the shared object store while storage is constrained. Automatic Git maintenance must remain disabled for this checkpoint commit and push. Elevated operator cleanup is required for stale tmp_pack files after confirming no Git writer and retaining every complete pack/index/ref.
+  publication_truth: No deployable production closure was changed or published. No site version, release date, Updates entry, deployment receipt, or public HTTPS readback changed.
+  campaign_truth: qualified_models=0/20; clean_browser_rounds=0/50; authorized_live_memory_rounds=0/25; current_outside_network_lane_proofs=0/40; live_catalog_announcements=0/20
+  exact_next_action:
+    - Restore storage headroom through authorized stale-temp-pack cleanup before any disk-intensive operation; do not touch complete Git packs or protected source state.
+    - Run the remaining locked Rust formatting, denied-warning all-target Clippy, complete locked workspace tests, deterministic generator replay, diff/hygiene checks, documentation checks, and production publication-manifest intersection with Cargo output on D:.
+    - Commit and push each healthy milestone with automatic Git maintenance disabled while the shared store remains constrained. Publish only if a real production closure passes its complete authorization, deployment, and independent public-readback gate.
 
 current_checkpoint_2026_08_13_complete_release_surface_aggregate:
   authority: This is the newest first-read release-surface verification checkpoint. It supersedes older present-tense aggregate-gate status where different while preserving immutable source and failure history. It is not a deployment, publication, production-readback, or campaign result.
