@@ -1,7 +1,39 @@
-profile: tinyrustlm.source-workspace.v300
+profile: tinyrustlm.source-workspace.v301
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-12T21:10:10Z
+updated_utc: 2026-08-13T07:15:32Z
+
+current_checkpoint_2026_08_13_immediate_all_repository_checkin:
+  authority: This is the newest first-read source-control checkpoint. It supersedes older present-tense repository heads and release-gate execution status where different while preserving immutable history. It records the human-requested immediate check-in of every authoritative source project named by E:\Source\Rust\workspace.uai; it is not a release, deployment, publication, or campaign result.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  TinyRustLM_checkpoint:
+    worktree: E:\Source\.tinyrustlm-model-acquisition
+    branch: codex/model-acquisition-v2
+    source_commit: 2f9d3fccac6e3892637ca0a90d24a80bd4f6e897
+    subject: "test(campaign): support external cargo target roots"
+    remote: origin/codex/model-acquisition-v2
+    remote_verification: The source commit was pushed and independently re-read from the actual remote branch at the exact same hash before this handoff-only edit.
+    scope: One shared test-only resolver now permits an absolute non-root CARGO_TARGET_DIR outside the repository for native helper packages and WASM evidence fixtures. Production package-link rejection remains unchanged and focused directory-flush tests passed 35/35; the exact zero-projection release-surface case passed 1/1.
+  authoritative_repository_heads:
+    TinyRustLM.com: 2f9d3fccac6e3892637ca0a90d24a80bd4f6e897 on origin/codex/model-acquisition-v2
+    LMComposer.com: 36d6389fe82b0f53c4d8951aa6af5cb896fd8bf6 on origin/main
+    MiniModel.MiRust.com: 4f2401fb8166b54c73a1b9d4ad36985bbcf6fb5d on origin/master
+    MiniModel.org: 8439e224146c790ce6a9da36a32c4c49890cac52 on origin/master
+    MiRust.com: 4e3d8f52b0b20d9ccb51751e4182e8ab87fb3e43 on origin/master
+    Runtime.MiRust.com: 63b39e78d0814c9cacbbba891ea918c844e2b4db on origin/master
+    TinyRustLM.MiRust.com: 6d77afc4b54f7f84db7efa33d8798aef61e9733f on origin/master
+    verification: All seven authoritative worktrees were clean and each local head exactly matched a fresh actual-remote ls-remote result after the TinyRustLM source push. The six non-TinyRustLM repositories contained no outstanding source to commit.
+  protected_checkout: E:\Source\Rust\TinyRustLM.com remains protected stale user-owned state and was not edited, reset, cleaned, staged, committed, pushed, or used as source authority.
+  release_gate_truth: The frozen serial 23-case release-surface aggregate is still running. Shards 1, 2, and 3 passed; shard 4 remains active. No aggregate verdict exists yet, and this immediate source checkpoint must not be represented as a complete gate pass.
+  publication_truth: No site was deployed or published by this check-in. No version, release date, Updates entry, deployment receipt, or public HTTPS readback changed.
+  campaign_truth: qualified_models=0/20; clean_browser_rounds=0/50; authorized_live_memory_rounds=0/25; current_outside_network_lane_proofs=0/40; live_catalog_announcements=0/20
+  exact_next_action:
+    - Let the active frozen aggregate gate finish without interruption and record its exact result.
+    - Run the remaining complete affected Node, campaign-runner, locked Rust, formatting, denied-warning Clippy, deterministic-generation, hygiene, documentation, and publication-intersection gates.
+    - Commit and push every independently healthy milestone immediately. Publish only an affected production closure whose complete authorization, deployment, and independent public-readback gates pass.
 
 current_checkpoint_2026_08_12_site_family_source_preservation_audit:
   authority: This is the newest first-read source-control checkpoint. It supersedes older present-tense repository, protected-checkout, source-preservation, and resume fields where different while preserving immutable history. It records the human-requested immediate check-in audit across every site project named by E:\Source\Rust\workspace.uai; it is not a release-gate pass, deployment, publication, or campaign result.
