@@ -108,19 +108,24 @@ function releasePaths(siteRoot) {
     ledgerPath: path.join(root, "release", "site-release-ledger.v1.json"),
     cssPath: path.join(root, "updates", "updates.css"),
     scriptPath: path.join(root, "app", "site-release.js"),
-    outputPath: path.join(root, "updates", "index.html")
+    outputPath: path.join(root, "updates", "index.html"),
+    companionPath: path.join(root, "companion", "index.html")
   });
 }
 
 function expectedPage(siteRoot) {
   const locations = releasePaths(siteRoot);
   const ledger = parseReleaseLedger(fs.readFileSync(locations.ledgerPath)).ledger;
+  const cssSha256 = sha256File(locations.cssPath);
+  const scriptSha256 = sha256File(locations.scriptPath);
   return Object.freeze({
     html: renderUpdatesPage({
       ledger,
-      cssSha256: sha256File(locations.cssPath),
-      scriptSha256: sha256File(locations.scriptPath)
+      cssSha256,
+      scriptSha256
     }),
+    cssSha256,
+    scriptSha256,
     locations,
     ledger
   });
@@ -141,8 +146,43 @@ function requireOne(source, pattern, label) {
   invariant(matches.length === 1, `${label} is missing or duplicated`);
 }
 
+function stampCompanionPage(source, cssSha256, scriptSha256) {
+  const normalized = source.replace(/\r\n/gu, "\n");
+  const cssPattern = /\.\.\/updates\/updates\.css\?v=sha256-[a-f0-9]{64}/gu;
+  const scriptPattern = /\.\.\/app\/site-release\.js\?v=sha256-[a-f0-9]{64}/gu;
+  requireOne(normalized, cssPattern, "Companion updates stylesheet identity");
+  requireOne(normalized, scriptPattern, "Companion release script identity");
+  return normalized
+    .replace(cssPattern, `../updates/updates.css?v=sha256-${cssSha256}`)
+    .replace(scriptPattern, `../app/site-release.js?v=sha256-${scriptSha256}`);
+}
+
+function expectedReleaseSurfaces(siteRoot) {
+  const updates = expectedPage(siteRoot);
+  invariant(fs.existsSync(updates.locations.companionPath), "Companion page is missing");
+  return Object.freeze({
+    ...updates,
+    companionHtml: stampCompanionPage(
+      fs.readFileSync(updates.locations.companionPath, "utf8"),
+      updates.cssSha256,
+      updates.scriptSha256
+    )
+  });
+}
+
 function verifyReleaseSurfaces(siteRoot) {
-  const updates = verifyUpdatesPage(siteRoot);
+  const updates = expectedReleaseSurfaces(siteRoot);
+  invariant(fs.existsSync(updates.locations.outputPath), "Updates page is missing");
+  invariant(
+    fs.readFileSync(updates.locations.outputPath, "utf8").replace(/\r\n/gu, "\n") ===
+      updates.html,
+    "Updates page has drifted from the release ledger"
+  );
+  invariant(
+    fs.readFileSync(updates.locations.companionPath, "utf8").replace(/\r\n/gu, "\n") ===
+      updates.companionHtml,
+    "Companion page has stale release asset identities"
+  );
   const latest = updates.ledger.releases.at(-1);
   const appShell = fs.readFileSync(path.join(updates.locations.root, "app", "index.html"), "utf8");
   requireOne(
@@ -179,6 +219,13 @@ function writeUpdatesPage(siteRoot) {
   return verifyUpdatesPage(siteRoot);
 }
 
+function writeReleaseSurfaces(siteRoot) {
+  const expected = expectedReleaseSurfaces(siteRoot);
+  atomicReplace(expected.locations.outputPath, expected.html);
+  atomicReplace(expected.locations.companionPath, expected.companionHtml);
+  return verifyReleaseSurfaces(siteRoot);
+}
+
 function main(argv) {
   let siteRoot = path.join(__dirname, "..");
   let write = false;
@@ -190,7 +237,7 @@ function main(argv) {
       siteRoot = argument;
     }
   }
-  const result = write ? writeUpdatesPage(siteRoot) : verifyReleaseSurfaces(siteRoot);
+  const result = write ? writeReleaseSurfaces(siteRoot) : verifyReleaseSurfaces(siteRoot);
   process.stdout.write(
     `TinyRustLM updates page ${write ? "generated" : "verified"} for ` +
       `${result.ledger.releases.length} release entries\n`
@@ -211,5 +258,6 @@ module.exports = Object.freeze({
   renderUpdatesPage,
   verifyReleaseSurfaces,
   verifyUpdatesPage,
+  writeReleaseSurfaces,
   writeUpdatesPage
 });

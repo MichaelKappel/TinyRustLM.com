@@ -14,7 +14,9 @@ const {
   validateReleaseRecord
 } = require("../app/site-release.js");
 const {
+  verifyReleaseSurfaces,
   verifyUpdatesPage,
+  writeReleaseSurfaces,
   writeUpdatesPage
 } = require("../tools/site-release-page.js");
 const {
@@ -148,6 +150,59 @@ test("updates page is generated exactly from the release ledger and content-boun
   assert.match(result.html, /\.well-known\/site-release-history\.json/);
   assert.doesNotMatch(result.html, /<script>[^<]/);
   assert.equal(verifyUpdatesPage(isolatedRoot).html, result.html);
+});
+
+test("release-surface generation owns exact companion asset identities", (context) => {
+  const isolatedRoot = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-release-surfaces-"));
+  context.after(() => fs.rmSync(isolatedRoot, { recursive: true, force: true }));
+  for (const relativePath of [
+    "release/site-release-ledger.v1.json",
+    "updates/updates.css",
+    "app/site-release.js",
+    "app/index.html",
+    "companion/index.html"
+  ]) {
+    const destination = path.join(isolatedRoot, relativePath);
+    fs.mkdirSync(path.dirname(destination), { recursive: true });
+    fs.copyFileSync(path.join(siteRoot, relativePath), destination);
+  }
+  const result = writeReleaseSurfaces(isolatedRoot);
+  const companion = fs.readFileSync(result.locations.companionPath, "utf8");
+  assert.match(companion,
+    new RegExp(`updates\\.css\\?v=sha256-${result.cssSha256}`, "u"));
+  assert.match(companion,
+    new RegExp(`site-release\\.js\\?v=sha256-${result.scriptSha256}`, "u"));
+  assert.equal(verifyReleaseSurfaces(isolatedRoot).companionHtml, companion);
+});
+
+test("release-surface generation rejects duplicate companion asset references before writing", (context) => {
+  const isolatedRoot = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-release-duplicate-"));
+  context.after(() => fs.rmSync(isolatedRoot, { recursive: true, force: true }));
+  for (const relativePath of [
+    "release/site-release-ledger.v1.json",
+    "updates/updates.css",
+    "app/site-release.js",
+    "app/index.html",
+    "companion/index.html"
+  ]) {
+    const destination = path.join(isolatedRoot, relativePath);
+    fs.mkdirSync(path.dirname(destination), { recursive: true });
+    fs.copyFileSync(path.join(siteRoot, relativePath), destination);
+  }
+  const outputPath = path.join(isolatedRoot, "updates", "index.html");
+  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+  fs.writeFileSync(outputPath, "unchanged\n", "utf8");
+  fs.appendFileSync(
+    path.join(isolatedRoot, "companion", "index.html"),
+    '<link rel="stylesheet" href="../updates/updates.css?v=sha256-' +
+      `${"0".repeat(64)}">\n`,
+    "utf8"
+  );
+  assert.throws(
+    () => writeReleaseSurfaces(isolatedRoot),
+    /Companion updates stylesheet identity is missing or duplicated/u
+  );
+  assert.equal(fs.readFileSync(outputPath, "utf8"), "unchanged\n");
 });
 
 test("canonical app shell exposes the exact ledger version, dates, records, and updates route", () => {
