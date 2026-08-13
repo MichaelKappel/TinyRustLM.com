@@ -1,7 +1,33 @@
-profile: tinyrustlm.source-workspace.v307
+profile: tinyrustlm.source-workspace.v308
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-13T19:53:49Z
+updated_utc: 2026-08-13T20:20:45Z
+
+current_checkpoint_2026_08_13_per_rid_helper_package_and_repository_checkin:
+  authority: This is the newest first-read source-control, Gate D package, storage, verification, and restart checkpoint. It supersedes older present-tense repository heads, archive-helper packaging status, test status, and next-action descriptions where different while preserving immutable test, failure, release, and campaign history. It is not a deployment, production readback, cross-platform execution result, or live campaign result.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  repository_result: Before this handoff edit, all seven authoritative site worktrees were clean and fresh actual-remote branch reads exactly matched every local head. TinyRustLM source milestone `1894d9b5f94eab3d917a1a4f85247bbb6f14e4ad` was committed and pushed to `origin/codex/model-acquisition-v2`. Explicit pushes for all six unchanged non-TinyRustLM repositories exited successfully as `Everything up-to-date`.
+  authoritative_heads_before_this_handoff:
+    TinyRustLM.com: 1894d9b5f94eab3d917a1a4f85247bbb6f14e4ad on codex/model-acquisition-v2
+    LMComposer.com: 36d6389fe82b0f53c4d8951aa6af5cb896fd8bf6 on main
+    MiniModel.MiRust.com: 4f2401fb8166b54c73a1b9d4ad36985bbcf6fb5d on master
+    MiniModel.org: 8439e224146c790ce6a9da36a32c4c49890cac52 on master
+    MiRust.com: 4e3d8f52b0b20d9ccb51751e4182e8ab87fb3e43 on master
+    Runtime.MiRust.com: 63b39e78d0814c9cacbbba891ea918c844e2b4db on master
+    TinyRustLM.MiRust.com: 6d77afc4b54f7f84db7efa33d8798aef61e9733f on master
+  gate_d_package_checkpoint:
+    source_commit: 1894d9b5f94eab3d917a1a4f85247bbb6f14e4ad
+    client_profile_sha256: 08bb532cd88273f5633a8693040c2108fd7fef0935f9705f34b98cb1ab405441
+    result: The maintained Node archive client now accepts only a validated create-only per-RID helper package, not a caller-selected executable. The package binds canonical manifest and provenance documents, exact RID/platform/build/trust class, helper and package-builder source closures, source revision and clean-worktree truth, executable identity, and pre/post package-state verification. Production build scripts cover the current `win-x64`, `linux-x64`, and `linux-arm64` release set, and CI declares one native hosted job per RID. The public evidence scanner advances to v4 and binds this package closure. No compatibility executable route remains.
+    verification: Focused package materializer, archive client, and public evidence secret-scan tests passed 23/23 with zero failures or skips. JavaScript syntax, frozen client-profile SHA-256, stale-path search, and `git diff --check` passed before commit. The workflow declaration has not run in hosted CI, no clean release package has yet been built from this commit, and no linux-arm64 hardware-execution claim is made.
+    incomplete_gate_truth: The complete affected Node, Rust, generator, hygiene, release-surface, documentation, and production-intersection gates have not yet been rerun for this package milestone. The earlier complete `npm run test:unit` attempt still has no passing verdict because it was bounded at 20 minutes while progressing. Do not promote focused tests or a CI declaration into complete-gate evidence.
+  environment_boundary: E: remains critically constrained. Keep `CARGO_TARGET_DIR=D:\TinyRustLM-vnext-20260812\cargo-target`, `TEMP` and `TMP` at `D:\TinyRustLM-vnext-20260812\temp`, and `CARGO_INCREMENTAL=0`; preserve the documented junctions and split Node resolution commands.
+  protected_checkout: `E:\Source\Rust\TinyRustLM.com` remains untouched protected stale user-owned state. Do not edit, reset, clean, revert, commit, publish, repack, prune, delete temporary packs, or use it as source authority.
+  publication_truth: No production closure was authorized or deployed, no release metadata or public readback changed, and live campaign counters remain 0/20 qualified models, 0/50 clean browser rounds, 0/25 live memory rounds, 0/40 outside-proven lanes, and 0/20 announcements. MemoryEndpoints remains unauthorized and disconnected.
+  exact_resume: Work only through `E:\Source\.tinyrustlm-model-acquisition`. From a clean pushed source revision, materialize and consume the exact native `win-x64` release helper package outside the source tree, then run every complete affected gate and obtain real native CI evidence for each supported RID. Commit and push each healthy milestone. Publish only if a real changed production closure passes authorization, deployment, and independent HTTPS readback.
 
 current_checkpoint_2026_08_13_canonical_archive_cutover_and_repository_checkin:
   authority: This is the newest first-read source-control, Gate D, storage, verification, and restart checkpoint. It supersedes older present-tense repository heads, archive-consumer status, free-space, test-command, and next-action descriptions where different while preserving immutable test, failure, release, and campaign history. It is not a deployment, production readback, or live campaign result.
