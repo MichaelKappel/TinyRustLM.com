@@ -8,9 +8,11 @@ ZIP parsing in current production code. Historical v2 scan receipts remain
 immutable evidence, but they are not accepted as current v4 scan authority and
 there is no compatibility reader.
 
-The implementation is local conformance evidence. It does not claim that a
-release-packaged helper has been signed, published, installed on every RID, or
-used in a successful production publication.
+The implementation is local conformance evidence. One clean `win-x64`
+`release-package` built from source revision
+`ab12047fec0bf6d1d2c0b3b00939e228dcb5d46b` and passed the maintained
+clean-consumer suite on 2026-08-13. That package is not signed, published,
+installed on every RID, or evidence of a successful production publication.
 
 ## Frozen Profiles
 
@@ -22,7 +24,7 @@ Three exact raw-byte profiles own the boundary:
 | Process transport | `tinyrustlm.vnext.archive-scan-process.v1` | `a5ab1ba16af4db2cf4660bee8c9efd9a32b018cc30211d2144f4c852912d05ad` |
 | Node client and helper package | `tinyrustlm.vnext.archive-scan-client.v1` | `08bb532cd88273f5633a8693040c2108fd7fef0935f9705f34b98cb1ab405441` |
 
-Both readers verify their profile bytes against the compiled or pinned hash.
+Every reader verifies its profile bytes against the compiled or pinned hash.
 A changed profile requires a changed identity and rerun evidence. Unknown
 request fields, alternate formats, and noncanonical request bytes fail closed.
 
@@ -113,6 +115,22 @@ The runner label is documented by [GitHub's hosted-runner reference](https://doc
 retrieved 2026-08-13. A workflow declaration is not successful execution
 evidence; only a completed run can prove a particular package and runner.
 
+The local `win-x64` package observation for the source revision above is:
+
+| Identity | SHA-256 |
+| --- | --- |
+| Executable | `d9da2044181ded8028e66db9bfc4ee79c83df213c7a55a9057150cc3ba744117` |
+| Helper source closure | `9e4c97c0908f662b90e99fe0d774874ea5755d69d151706751543f9b64ac102b` |
+| Package-builder source closure | `57de3b8c8ec375b5dfc2f123c3f9164d499ac141f906760585fc769318342087` |
+| Manifest | `4ce7f124206994fd822f4c03269227956e7e583160b6c2400473c447e340cf70` |
+| Provenance | `c78ae055375f19357583734c2aaf57c65a1f3a7a762c3f8624f103dd2efb31b7` |
+
+The materializer reported `sourceWorktreeClean=true`, `buildProfile=release`,
+`trustClass=release-package`, and `runtimeIdentifier=win-x64`. The exact
+external package passed 20/20 archive-client and public-evidence tests with
+zero skips. These identities are bounded local build evidence, not a release
+ledger or substitute for independently retained CI artifacts.
+
 ## Node Verification
 
 `tinyrustlm/tools/archive-scan-client.js` requires an explicit absolute helper
@@ -167,6 +185,7 @@ Run the current focused gates with Cargo output outside the source worktree:
 $env:CARGO_TARGET_DIR = Join-Path $env:LOCALAPPDATA 'TinyRustLM\cargo-target'
 cargo test -p tinyrustlm-archive --all-targets --locked
 cargo clippy -p tinyrustlm-archive --all-targets --locked -- -D warnings
+node --test tinyrustlm/tests/archive-scan-helper-package.test.js
 node --test tinyrustlm/tests/archive-scan-client.test.js `
   tinyrustlm/tests/public-evidence-secret-scan.test.js `
   tinyrustlm/tests/web-release-secret-scan.test.js
@@ -187,7 +206,8 @@ A passing admission proves bounded structural and decoded-content handling for
 the exact bytes. It does not prove that those bytes are malware-free, licensed,
 provenance-approved, semantically correct, safe to execute, eligible for
 publication, or available from a registry. A local debug helper is not release
-provenance. Production closure still requires a per-RID packaged helper,
-source/build provenance, package and executable hashes, signing where required,
-malware-scan boundary evidence, clean-consumer tests, release authorization,
-deployment, and HTTPS readback.
+provenance. The bounded local `win-x64` package above does not establish the
+other RIDs or publication. Production closure still requires current native
+packages and clean-consumer evidence for every supported RID, successful
+hosted CI, signing where required, malware-scan boundary evidence, release
+authorization, deployment, and HTTPS readback.

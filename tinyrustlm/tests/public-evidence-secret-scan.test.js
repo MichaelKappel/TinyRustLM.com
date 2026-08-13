@@ -36,6 +36,7 @@ test("records a path-free passing report for a bounded public artifact scope", a
   assert.equal(result.receipt.publicSafeParameters.scopeKind, "test-public-release");
   assert.deepEqual(result.receipt.toolNames,
     ["tinyrustlm-public-artifact-secret-scan"]);
+  assert.deepEqual(result.receipt.toolVersions, ["4"]);
   assert.equal(result.report.archiveArtifactCount, 0);
   assert.equal(result.report.archiveMemberCount, 0);
   assert.equal(result.report.archiveAdmissionProfileId, null);
@@ -166,6 +167,11 @@ test("scans decoded archive members and binds canonical admission evidence", asy
     "tinyrustlm-public-artifact-secret-scan",
     "tinyrustlm-archive-scan-client",
     "tinyrustlm-archive-scan"
+  ]);
+  assert.deepEqual(result.receipt.toolVersions, [
+    "4",
+    result.report.archiveScanClientProfileId,
+    result.report.archiveScanProcessProfileId
   ]);
   assert.equal(result.receipt.toolBinaryHashes[2],
     result.report.archiveScannerExecutableSha256);

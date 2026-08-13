@@ -208,28 +208,48 @@ not a skipped pass.
 ## Archive Secret Scans
 
 An artifact ending in `.zip`, `.nupkg`, `.snupkg`, `.tgz`, or `.tar.gz`
-requires an explicit absolute `tinyrustlm-archive-scan` executable path. The
-scanner never searches `PATH` and has no system-`tar` or JavaScript archive
-fallback. The Rust authority must admit the whole archive before any decoded
-member reaches secret detection.
+requires an explicit absolute archive-helper package root. A package contains
+exactly the native `tinyrustlm-archive-scan` helper plus canonical manifest and
+provenance documents. The client never accepts a direct executable path,
+searches `PATH`, or falls back to system `tar` or JavaScript archive parsing.
+The Rust authority must admit the whole archive before any decoded member
+reaches secret detection.
 
-The v3 report binds the compressed archive hash, path-redacted decoded-content
-manifest hash, archive and process profile hashes, member counts, scanner
-source closure, and helper executable hash. Secret matching carry is cleared
-between members. Malformed paths, links, portable collisions, nested archives,
-integrity failures, unsupported features, or resource-limit violations abort
-the scan before a report or receipt is created.
+The v4 report binds the compressed archive hash, path-redacted decoded-content
+manifest hash, all three archive profile hashes, member counts, scanner and
+client source closures, package manifest and provenance, package-builder and
+helper source closures, source revision and clean-worktree observation, RID,
+platform, build profile, trust class, and helper executable hash. Secret
+matching carry is cleared between members. Malformed paths, links, portable
+collisions, nested archives, integrity failures, unsupported features,
+resource-limit violations, or package drift abort the scan before a report or
+receipt is created.
 
 Focused verification:
 
 ```powershell
+node --test tests/archive-scan-helper-package.test.js
 node --test tests/archive-scan-client.test.js `
   tests/public-evidence-secret-scan.test.js `
   tests/web-release-secret-scan.test.js
 ```
 
-These local tests are conformance evidence. A production release additionally
-requires the helper's per-RID package provenance and the complete release,
+Build a current native release package only into a new absolute directory whose
+parent already exists:
+
+```powershell
+..\eng\build-archive-scan-helper.ps1 -Configuration release `
+  -OutputDirectory <new-absolute-package-directory>
+$env:TINYRUSTLM_ARCHIVE_SCAN_TEST_PACKAGE_ROOT = `
+  '<new-absolute-package-directory>'
+node --test tests/archive-scan-client.test.js `
+  tests/public-evidence-secret-scan.test.js
+```
+
+The materializer rejects an existing output directory, dirty release source,
+cross-RID relabeling, and debug-as-release relabeling. These local tests are
+conformance evidence. A production release additionally requires current
+native package evidence for every supported RID and the complete signing,
 authorization, deployment, and HTTPS-readback gates.
 
 ## Checkpoint Report

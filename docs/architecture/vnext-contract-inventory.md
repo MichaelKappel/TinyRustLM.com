@@ -239,11 +239,16 @@ atomic filesystem transaction. OS network isolation, release provenance,
 protected equality-list custody, and physical power-loss evidence remain
 incomplete.
 The sole bounded ZIP and tar-gzip authority, its Rust process boundary, and the
-v3 public-artifact secret-scan cutover are documented in
-`docs/architecture/vnext-archive-admission.md`. Memory-package and public
-evidence consumers use that authority without extraction or a system-tool
-fallback. Production per-RID helper packaging, provenance, signing where
-required, and clean-consumer evidence remain open release work.
+v4 public-artifact secret-scan cutover are documented in
+`docs/architecture/vnext-archive-admission.md`. Its client/package profile has
+SHA-256
+`08bb532cd88273f5633a8693040c2108fd7fef0935f9705f34b98cb1ab405441`.
+Memory-package and public-evidence consumers use that authority without
+extraction or a system-tool fallback. One clean `win-x64` release package from
+source `ab12047fec0bf6d1d2c0b3b00939e228dcb5d46b` passed the exact maintained
+consumer tests. Current native package evidence for `linux-x64` and
+`linux-arm64`, hosted CI completion, signing where required, publication, and
+production readback remain open release work.
 The sole exact cross-store Rust-backed campaign runner is documented in
 `docs/architecture/vnext-campaign-runner.md`.
 The fresh-runner-only immutable attestation, operator, release-manifest,

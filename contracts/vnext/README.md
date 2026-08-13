@@ -333,6 +333,20 @@ with the receipt and campaign artifact stores. It exposes no mutable current
 pointer and grants no evidence currentness by itself. See
 `docs/architecture/vnext-subject-store.md`.
 
+`rust/crates/tinyrustlm-archive` owns the sole bounded ZIP and tar-gzip
+admission authority. Non-Rust consumers invoke only its framed
+`tinyrustlm-archive-scan` process through a create-only per-RID package. The
+client/package profile has SHA-256
+`08bb532cd88273f5633a8693040c2108fd7fef0935f9705f34b98cb1ab405441`
+and binds the two Rust archive profiles, exact helper and package-builder
+source closures, source revision and clean-worktree observation, Cargo and
+rustc versions, RID/platform, build profile, trust class, executable, canonical
+manifest, and canonical provenance. There is no direct-executable, `PATH`,
+system-archive-tool, JavaScript-parser, compatibility, or best-effort path.
+One local clean `win-x64` release package passed its exact consumer suite; this
+does not prove hosted CI, another RID, signing, publication, or production
+readback. See `docs/architecture/vnext-archive-admission.md`.
+
 `rust/crates/tinyrustlm-durability` now owns the sole Rust directory-flush
 boundary. Its 7,021-byte frozen profile has SHA-256
 `bb9c76715d0b35d63a9da27006ff8f88840486cf287cec24279a1020a0443ddb`.

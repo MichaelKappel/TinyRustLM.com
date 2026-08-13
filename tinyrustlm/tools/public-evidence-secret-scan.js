@@ -34,7 +34,7 @@ const scannerSourceFiles = Object.freeze([
   "tinyrustlm/tools/vnext-evidence-error.js",
   "tinyrustlm/tools/vnext-jcs.js"
 ]);
-const repositoryRoot = path.resolve(__dirname, "../..");
+const repositoryRoot = resolveRepositoryRoot();
 const scannerRules = Object.freeze([
   Object.freeze({
     code: "private_key_material",
@@ -97,6 +97,44 @@ function requireUtc(value, label) {
 
 function isArchive(filePath) {
   return archiveFormatForPath(filePath) !== null;
+}
+
+function resolveRepositoryRoot() {
+  const configured = Object.getOwnPropertyDescriptor(
+    process.env,
+    "TINYRUSTLM_REPOSITORY_ROOT"
+  );
+  const candidates = configured && "value" in configured && configured.value
+    ? [configured.value]
+    : [process.cwd(), path.resolve(process.cwd(), ".."), path.resolve(__dirname, "../..")];
+  const matches = [];
+  const identities = new Set();
+  for (const candidate of candidates) {
+    if (typeof candidate !== "string" || !path.isAbsolute(candidate) ||
+        candidate.includes("\0")) {
+      continue;
+    }
+    const normalized = path.normalize(candidate);
+    const identity = process.platform === "win32" ? normalized.toLowerCase() : normalized;
+    if (identities.has(identity)) continue;
+    identities.add(identity);
+    try {
+      if (fs.lstatSync(path.join(normalized, "Cargo.lock")).isFile() &&
+          fs.lstatSync(path.join(normalized, "tinyrustlm", "package.json")).isFile() &&
+          fs.lstatSync(path.join(normalized, "contracts", "vnext",
+            "archive-admission-profile.v1.json")).isFile() &&
+          fs.lstatSync(path.join(normalized, "contracts", "vnext",
+            "archive-scan-client-profile.v1.json")).isFile() &&
+          fs.lstatSync(path.join(normalized, "contracts", "vnext",
+            "archive-scan-process-profile.v1.json")).isFile()) {
+        matches.push(normalized);
+      }
+    } catch (_error) {
+      // Only one complete candidate root can own the source closure.
+    }
+  }
+  invariant(matches.length === 1, "public evidence repository root is invalid");
+  return matches[0];
 }
 
 function findingCodes(text, knownSecrets) {
@@ -409,7 +447,7 @@ async function scanPublicArtifacts(options) {
   const attempt = prior.reduce((maximum, receipt) => Math.max(maximum, receipt.attempt), 0) + 1;
   const passed = secretFindingCount === 0;
   const toolNames = ["tinyrustlm-public-artifact-secret-scan"];
-  const toolVersions = ["3"];
+  const toolVersions = ["4"];
   const toolBinaryHashes = [sourceClosureSha256];
   if (archiveClient !== null) {
     toolNames.push("tinyrustlm-archive-scan-client", "tinyrustlm-archive-scan");
