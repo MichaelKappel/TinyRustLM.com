@@ -1,7 +1,27 @@
-profile: tinyrustlm.source-workspace.v304
+profile: tinyrustlm.source-workspace.v305
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-13T17:39:22Z
+updated_utc: 2026-08-13T18:01:36Z
+
+current_checkpoint_2026_08_13_immediate_all_repository_checkin:
+  authority: This is the newest first-read source-control and restart checkpoint. It supersedes older present-tense repository heads, storage headroom, and Gate D next-action descriptions where different while preserving immutable test, failure, release, and campaign history.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  repository_result: All seven authoritative site repositories were clean after the TinyRustLM source checkpoint, explicit branch pushes exited successfully, and fresh `git ls-remote --heads` observations exactly matched every local head. No uncommitted or unpushed source remains before this handoff edit.
+  authoritative_heads:
+    TinyRustLM.com: 3d0847a292ed2cf0c3ff3b6fceec580884e6dfcf on codex/model-acquisition-v2
+    LMComposer.com: 36d6389fe82b0f53c4d8951aa6af5cb896fd8bf6 on main
+    MiniModel.MiRust.com: 4f2401fb8166b54c73a1b9d4ad36985bbcf6fb5d on master
+    MiniModel.org: 8439e224146c790ce6a9da36a32c4c49890cac52 on master
+    MiRust.com: 4e3d8f52b0b20d9ccb51751e4182e8ab87fb3e43 on master
+    Runtime.MiRust.com: 63b39e78d0814c9cacbbba891ea918c844e2b4db on master
+    TinyRustLM.MiRust.com: 6d77afc4b54f7f84db7efa33d8798aef61e9733f on master
+  archive_checkpoint: Commit `3d0847a292ed2cf0c3ff3b6fceec580884e6dfcf` freezes the sole current ZIP and tar-gzip admission profile, adds its hash-bound Rust authority, updates the locked dependency graph, and admits no archive while implementation is incomplete. `cargo fmt --all -- --check` passed and focused locked tests passed 2/2. This is a fail-closed source checkpoint, not completed Gate D archive scanning.
+  storage_boundary: E: recovered about 18 MiB by deleting only the ignored generated `dotnet/tools/TinyRustLM.SeedHost.Tool/bin` directory in the owned active worktree after a scoped `git clean -ndX` dry run. A new 393084928-byte non-addressable `tmp_pack_MBFWHw` remains in the protected stale checkout object store. Do not delete, move, repack, prune, clean, reset, or otherwise alter that protected checkout or object store.
+  publication_truth: No production closure changed, no site was deployed, no release metadata changed, and all live campaign counters remain 0/20, 0/50, 0/25, 0/40, and 0/20. MemoryEndpoints remains unauthorized and disconnected.
+  exact_resume: Work only in E:\Source\.tinyrustlm-model-acquisition. Continue Gate D by adding the hostile ZIP and tar-gzip corpus first, implement the bounded canonical Rust scanner until those tests pass, cut every archive consumer over to that sole authority, delete the shell scanner path, run complete affected gates, and commit/push each healthy milestone. Keep E: output minimal and route Cargo and temporary output to D:.
 
 current_checkpoint_2026_08_13_gate_c_complete_affected_closure:
   authority: This is the newest first-read Gate C verification, publication-intersection, and restart checkpoint. It supersedes older present-tense Gate C, broad-gate, generator, hygiene, and next-action descriptions where different while preserving immutable failures and prior source history. It proves a complete affected source gate only; it is not production deployment, publication, production readback, or live campaign evidence.
