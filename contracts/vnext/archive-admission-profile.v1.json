@@ -1,0 +1,156 @@
+{
+  "schema": "tinyrustlm.vnext.archive_admission_profile.v1",
+  "profileId": "tinyrustlm.vnext.archive-admission.v1",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-no-compatibility-reader",
+  "networkAccess": "forbidden",
+  "filesystemExtraction": "forbidden",
+  "inputTransport": "caller-owned-immutable-compressed-byte-slice",
+  "minimumArchiveBytes": 1,
+  "maximumArchiveBytes": 536870912,
+  "formats": [
+    {
+      "format": "tar-gzip",
+      "magicHex": "1f8b",
+      "memberCompression": "gzip-container",
+      "concatenatedStreams": "forbidden",
+      "trailingBytes": "forbidden"
+    },
+    {
+      "format": "zip",
+      "magicHex": "504b",
+      "allowedCompressionMethods": [
+        "deflate",
+        "stored"
+      ],
+      "encryptedMembers": "forbidden",
+      "archiveComments": "forbidden",
+      "memberComments": "forbidden",
+      "allowedExtraFieldIdsHex": [
+        "0001",
+        "5455"
+      ]
+    }
+  ],
+  "limits": {
+    "maximumMembers": 16384,
+    "maximumRegularMembers": 16384,
+    "maximumMemberNameBytes": 1024,
+    "maximumPathComponents": 64,
+    "maximumPathComponentBytes": 255,
+    "maximumMemberUncompressedBytes": 67108864,
+    "maximumTotalUncompressedBytes": 2147483648,
+    "maximumDecodedContainerBytes": 2214592512,
+    "maximumExpansionRatio": 200
+  },
+  "pathContract": {
+    "encoding": "printable-ascii",
+    "separator": "forward-slash-only",
+    "absolutePaths": "forbidden",
+    "emptyDotAndDotDotComponents": "forbidden",
+    "trailingDotOrSpace": "forbidden",
+    "windowsReservedDeviceNames": "forbidden-case-insensitively-with-any-extension",
+    "windowsAlternateDataStreams": "forbidden",
+    "portableCollisionKey": "ascii-lowercase-normalized-path-with-directory-trailer-removed",
+    "duplicatePortableCollisionKeys": "forbidden"
+  },
+  "memberContract": {
+    "allowedTypes": [
+      "directory",
+      "regular-file"
+    ],
+    "symbolicLinks": "forbidden",
+    "hardLinks": "forbidden",
+    "junctionsAndReparsePoints": "forbidden",
+    "devicesFifosAndSockets": "forbidden",
+    "directoryPayloads": "forbidden",
+    "declaredAndDecodedSizeEquality": "required",
+    "wholeMemberReadAndIntegrityCheck": "required-before-consumer-callback"
+  },
+  "nestedArchiveContract": {
+    "policy": "forbidden",
+    "filenameSuffixes": [
+      ".7z",
+      ".bz2",
+      ".gz",
+      ".nupkg",
+      ".rar",
+      ".snupkg",
+      ".tar",
+      ".tar.bz2",
+      ".tar.gz",
+      ".tar.xz",
+      ".tgz",
+      ".txz",
+      ".xz",
+      ".zip"
+    ],
+    "contentMagicFamilies": [
+      "7z",
+      "bzip2",
+      "gzip",
+      "rar",
+      "xz",
+      "zip"
+    ]
+  },
+  "admissionContract": {
+    "metadataPreflightRequired": true,
+    "allMemberContentIntegrityRequired": true,
+    "consumerCallbacksBeforeWholeArchiveAdmission": "forbidden",
+    "partialSuccess": "forbidden",
+    "rawArchiveSha256Required": true,
+    "pathRedactedMemberIdentityRequired": true,
+    "sortedContentManifestSha256Required": true
+  },
+  "errorCodes": [
+    "archive_comment_forbidden",
+    "archive_expansion_ratio_limit",
+    "archive_format_invalid",
+    "archive_input_byte_limit",
+    "archive_member_comment_forbidden",
+    "archive_member_compression_forbidden",
+    "archive_member_count_limit",
+    "archive_member_encrypted",
+    "archive_member_extra_field_forbidden",
+    "archive_member_name_invalid",
+    "archive_member_path_absolute",
+    "archive_member_path_duplicate",
+    "archive_member_path_nonportable",
+    "archive_member_path_traversal",
+    "archive_member_read_failed",
+    "archive_member_size_limit",
+    "archive_member_size_mismatch",
+    "archive_member_type_forbidden",
+    "archive_nested_forbidden",
+    "archive_no_regular_members",
+    "archive_profile_invalid",
+    "archive_tar_gzip_invalid",
+    "archive_total_size_limit",
+    "archive_trailing_bytes",
+    "archive_zip_invalid"
+  ],
+  "nonClaims": [
+    "Archive admission does not authorize publication, installation, extraction, or execution.",
+    "Archive admission does not perform malware analysis or prove source provenance.",
+    "Archive admission does not make caller-supplied paths safe; it accepts immutable bytes and emits no files.",
+    "A passing local scan is not a live package-registry, deployment, or campaign receipt."
+  ],
+  "primarySources": [
+    {
+      "title": "PKWARE ZIP File Format Specification",
+      "url": "https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT",
+      "retrievedUtc": "2026-08-13T00:00:00Z"
+    },
+    {
+      "title": "GNU tar manual - Basic Tar Format",
+      "url": "https://www.gnu.org/software/tar/manual/html_node/Standard.html",
+      "retrievedUtc": "2026-08-13T00:00:00Z"
+    },
+    {
+      "title": "RFC 1952 - GZIP file format specification version 4.3",
+      "url": "https://www.rfc-editor.org/rfc/rfc1952",
+      "retrievedUtc": "2026-08-13T00:00:00Z"
+    }
+  ]
+}

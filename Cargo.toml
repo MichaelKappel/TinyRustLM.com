@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "rust/experiments/tinyrustlm-vector-oracle",
+    "rust/crates/tinyrustlm-archive",
     "rust/crates/tinyrustlm-native",
     "rust/crates/tinyrustlm-memory",
     "rust/crates/tinyrustlm-memory-endpoints",
@@ -28,9 +29,11 @@ repository = "https://TinyRustLM.com/"
 [workspace.dependencies]
 base64 = "0.22.1"
 ed25519-dalek = "2.2.0"
+flate2 = { version = "1.1.9", default-features = false, features = ["rust_backend"] }
 serde = { version = "1.0.203", features = ["derive"] }
 serde_json = "1.0.117"
 sha2 = "0.10.8"
+tar = "0.4.44"
 url = "=2.5.8"
 zip = { version = "2", default-features = false, features = ["deflate"] }
 

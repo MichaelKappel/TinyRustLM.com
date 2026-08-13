@@ -1,0 +1,17 @@
+[package]
+name = "tinyrustlm-archive"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Fail-closed bounded archive-member admission for TinyRustLM."
+
+[dependencies]
+flate2.workspace = true
+sha2.workspace = true
+tar.workspace = true
+zip.workspace = true
+
+[lints]
+workspace = true
