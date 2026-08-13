@@ -1,7 +1,9 @@
 ###############################################################################
-# Set default behavior to automatically normalize line endings.
+# Keep every detected text file LF-canonical in every checkout. Hash-bound
+# source and generated identities must not depend on a developer's autocrlf
+# setting or host operating system.
 ###############################################################################
-* text=auto
+* text=auto eol=lf
 
 # Shell entry points are executed by Linux, WSL, and CI. Keep their shebangs
 # and option lines canonical on Windows checkouts as well.

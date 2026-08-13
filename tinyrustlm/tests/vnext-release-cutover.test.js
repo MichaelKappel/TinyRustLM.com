@@ -118,6 +118,14 @@ test("superseded release files and mutable aliases are absent", () => {
   }
 });
 
+test("every detected source text file has one portable LF checkout policy", () => {
+  const attributes = fs.readFileSync(absolute(".gitattributes"), "utf8");
+  assert.match(attributes, /^\* text=auto eol=lf$/mu);
+  assert.doesNotMatch(attributes, /^\* text=auto$/mu);
+  assert.match(attributes,
+    /^docs\/report-intake\/\*\* -text whitespace=-blank-at-eol,-blank-at-eof$/mu);
+});
+
 test("maintained code documentation commands and configuration reject old paths", () => {
   const maintainedRoots = [
     absolute(".gitattributes"),
