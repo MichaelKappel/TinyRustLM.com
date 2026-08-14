@@ -110,7 +110,7 @@ function Test-PackageAuditBinding {
     }
 
     $evidence.package_audit_status = [string]$audit.status
-    if ($audit.schema -ne "tinyrustlm.nuget.package_audit.v0") {
+    if ($audit.schema -ne "tinyrustlm.nuget.package_audit.v1") {
         $evidence.package_audit_error = "Package audit report schema mismatch: $($audit.schema)"
         return $evidence
     }

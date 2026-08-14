@@ -1074,6 +1074,19 @@ function Get-SymbolPackageUnexpectedEntries {
     return @($EntryNames | Where-Object { -not (Test-SymbolPackageEntryAllowed -EntryName $_) })
 }
 
+function Get-NoncanonicalTimestampEntries {
+    param([System.IO.Compression.ZipArchiveEntry[]]$Entries)
+
+    return @($Entries | Where-Object {
+        $_.LastWriteTime.Year -ne 1980 -or
+        $_.LastWriteTime.Month -ne 1 -or
+        $_.LastWriteTime.Day -ne 1 -or
+        $_.LastWriteTime.Hour -ne 0 -or
+        $_.LastWriteTime.Minute -ne 0 -or
+        $_.LastWriteTime.Second -ne 0
+    } | ForEach-Object { $_.FullName })
+}
+
 function Test-SymbolsPackageType {
     param([string]$NuspecText)
 
@@ -1177,6 +1190,7 @@ foreach ($package in $packageFiles) {
         $requiredSearchTerms = @(Get-RequiredSearchTerms -PackageId $packageId)
         $missingSearchTerms = @(Get-MissingSearchTerms -PackageId $packageId -Metadata $metadata)
         $metadataPolicyViolations = @(Get-MetadataPolicyViolations -PackageId $packageId -Metadata $metadata)
+        $noncanonicalTimestampEntries = @(Get-NoncanonicalTimestampEntries -Entries $entries)
 
         $packageReports += [ordered]@{
             name = $package.Name
@@ -1187,6 +1201,7 @@ foreach ($package in $packageFiles) {
             sha256 = (Get-FileHash -LiteralPath $package.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
             byte_count = $package.Length
             entry_count = $entries.Count
+            noncanonical_timestamp_entries = $noncanonicalTimestampEntries
             package_entry_names = $entryNames
             allowed_package_entry_patterns = $allowedPackageEntryPatterns
             unexpected_package_content_entries = $unexpectedPackageContentEntries
@@ -1250,6 +1265,7 @@ foreach ($symbolPackage in $symbolPackageFiles) {
             -ExpectedPackageVersion $expectedPackageVersion `
             -Metadata $metadata `
             -HasSymbolsPackageType $hasSymbolsPackageType)
+        $noncanonicalTimestampEntries = @(Get-NoncanonicalTimestampEntries -Entries $entries)
 
         $symbolPackageReports += [ordered]@{
             name = $symbolPackage.Name
@@ -1260,6 +1276,7 @@ foreach ($symbolPackage in $symbolPackageFiles) {
             sha256 = (Get-FileHash -LiteralPath $symbolPackage.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
             byte_count = $symbolPackage.Length
             entry_count = $entries.Count
+            noncanonical_timestamp_entries = $noncanonicalTimestampEntries
             package_entry_names = $entryNames
             pdb_entries = $pdbEntries
             has_symbols_package_type = $hasSymbolsPackageType
@@ -1306,12 +1323,24 @@ $allSourceFileEntries = @($packageReports | ForEach-Object { $_.source_file_entr
 $allDebugSymbolEntries = @($packageReports | ForEach-Object { $_.debug_symbol_entries } | Where-Object { $_ })
 $allGeneratedOutputEntries = @($packageReports | ForEach-Object { $_.generated_output_entries } | Where-Object { $_ })
 $allAbsolutePathMatches = @($packageReports | ForEach-Object { $_.absolute_path_matches } | Where-Object { $_ })
+$allNoncanonicalPackageTimestampEntries = @($packageReports | ForEach-Object {
+    $packageReport = $_
+    @($packageReport.noncanonical_timestamp_entries) | ForEach-Object {
+        [ordered]@{ package = $packageReport.name; entry = $_ }
+    }
+})
 $allSymbolPackageIdentityMismatches = @($symbolPackageReports | ForEach-Object { $_.package_identity_mismatches } | Where-Object { $_ })
 $allSymbolPackageUnexpectedEntries = @($symbolPackageReports | ForEach-Object { $_.unexpected_symbol_package_entries } | Where-Object { $_ })
 $allSymbolPackageMissingPdbEntries = @($symbolPackageReports | Where-Object { @($_.pdb_entries).Count -eq 0 } | ForEach-Object { $_.name })
 $allSymbolPackageSourceFileEntries = @($symbolPackageReports | ForEach-Object { $_.source_file_entries } | Where-Object { $_ })
 $allSymbolPackageGeneratedOutputEntries = @($symbolPackageReports | ForEach-Object { $_.generated_output_entries } | Where-Object { $_ })
 $allSymbolPackageAbsolutePathMatches = @($symbolPackageReports | ForEach-Object { $_.absolute_path_matches } | Where-Object { $_ })
+$allNoncanonicalSymbolPackageTimestampEntries = @($symbolPackageReports | ForEach-Object {
+    $packageReport = $_
+    @($packageReport.noncanonical_timestamp_entries) | ForEach-Object {
+        [ordered]@{ package = $packageReport.name; entry = $_ }
+    }
+})
 $checksPassed = @(
     $missingPackageEntries.Count -eq 0
     $unexpectedPackageEntries.Count -eq 0
@@ -1337,16 +1366,19 @@ $checksPassed = @(
     $allDebugSymbolEntries.Count -eq 0
     $allGeneratedOutputEntries.Count -eq 0
     $allAbsolutePathMatches.Count -eq 0
+    $allNoncanonicalPackageTimestampEntries.Count -eq 0
     $allSymbolPackageUnexpectedEntries.Count -eq 0
     $allSymbolPackageMissingPdbEntries.Count -eq 0
     $allSymbolPackageSourceFileEntries.Count -eq 0
     $allSymbolPackageGeneratedOutputEntries.Count -eq 0
     $allSymbolPackageAbsolutePathMatches.Count -eq 0
+    $allNoncanonicalSymbolPackageTimestampEntries.Count -eq 0
 ) -notcontains $false
 $status = if ($checksPassed) { "pass" } else { "fail" }
 $report = [ordered]@{
-    schema = "tinyrustlm.nuget.package_audit.v0"
+    schema = "tinyrustlm.nuget.package_audit.v1"
     generated_utc = [DateTimeOffset]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ")
+    canonical_entry_timestamp_utc = "1980-01-01T00:00:00Z"
     package_source = (Resolve-Path -LiteralPath $PackageSource).Path
     package_version = $sourcePackageVersion
     expected_package_names = $expectedPackageNames
@@ -1358,6 +1390,8 @@ $report = [ordered]@{
     missing_symbol_package_entries = $missingSymbolPackageEntries
     unexpected_symbol_package_entries = $unexpectedSymbolPackageEntries
     missing_native_rids = $missingNativeRids
+    noncanonical_package_timestamp_entries = $allNoncanonicalPackageTimestampEntries
+    noncanonical_symbol_package_timestamp_entries = $allNoncanonicalSymbolPackageTimestampEntries
     missing_package_count = $missingPackageEntries.Count
     unexpected_package_count = $unexpectedPackageEntries.Count
     missing_symbol_package_count = $missingSymbolPackageEntries.Count
@@ -1380,11 +1414,13 @@ $report = [ordered]@{
     debug_symbol_count = $allDebugSymbolEntries.Count
     generated_output_count = $allGeneratedOutputEntries.Count
     absolute_path_match_count = $allAbsolutePathMatches.Count
+    noncanonical_package_timestamp_entry_count = $allNoncanonicalPackageTimestampEntries.Count
     symbol_package_unexpected_entry_count = $allSymbolPackageUnexpectedEntries.Count
     symbol_package_missing_pdb_count = $allSymbolPackageMissingPdbEntries.Count
     symbol_package_source_file_count = $allSymbolPackageSourceFileEntries.Count
     symbol_package_generated_output_count = $allSymbolPackageGeneratedOutputEntries.Count
     symbol_package_absolute_path_match_count = $allSymbolPackageAbsolutePathMatches.Count
+    noncanonical_symbol_package_timestamp_entry_count = $allNoncanonicalSymbolPackageTimestampEntries.Count
     package_count = $packageReports.Count
     symbol_package_count = $symbolPackageReports.Count
     packages = $packageReports

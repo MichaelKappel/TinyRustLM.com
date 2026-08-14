@@ -606,6 +606,20 @@ public sealed class ReportIntakeMemoryTests
 
     private static string RepositoryRoot()
     {
+        var configured = Environment.GetEnvironmentVariable("TINYRUSTLM_REPO_ROOT");
+        if (!string.IsNullOrWhiteSpace(configured))
+        {
+            var fullPath = Path.GetFullPath(configured);
+            if (File.Exists(Path.Combine(fullPath, "Cargo.toml"))
+                && File.Exists(Path.Combine(fullPath, "dotnet", "TinyRustLM.sln")))
+            {
+                return fullPath;
+            }
+
+            throw new InvalidOperationException(
+                "TINYRUSTLM_REPO_ROOT does not identify a TinyRustLM repository root.");
+        }
+
         var current = new DirectoryInfo(AppContext.BaseDirectory);
         while (current is not null)
         {

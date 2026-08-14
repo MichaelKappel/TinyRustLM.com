@@ -24,6 +24,9 @@ public sealed class PackageBoundaryTests
             "dotnet/src/TinyRustLM.Memory/TinyRustLM.Memory.csproj",
             "dotnet/src/TinyRustLM.MemoryEndpoints/TinyRustLM.MemoryEndpoints.csproj",
             "dotnet/src/TinyRustLM.Conversion/TinyRustLM.Conversion.csproj",
+            "dotnet/tools/TinyRustLM.PackageCanonicalizer/TinyRustLM.PackageCanonicalizer.csproj",
+            "dotnet/tools/TinyRustLM.PackageCanonicalizer/NuGetPackageCanonicalizer.cs",
+            "dotnet/tools/TinyRustLM.PackageCanonicalizer/Program.cs",
             "eng/build-native.ps1",
             "eng/get-package-version.ps1",
             "eng/get-package-version.sh",
@@ -644,7 +647,12 @@ public sealed class PackageBoundaryTests
 
         foreach (var writer in new[] { powershellAuditWriter, bashAuditWriter })
         {
-            Assert.Contains("tinyrustlm.nuget.package_audit.v0", writer, StringComparison.Ordinal);
+            Assert.Contains("tinyrustlm.nuget.package_audit.v1", writer, StringComparison.Ordinal);
+            Assert.DoesNotContain("tinyrustlm.nuget.package_audit.v0", writer, StringComparison.Ordinal);
+            Assert.Contains("canonical_entry_timestamp_utc", writer, StringComparison.Ordinal);
+            Assert.Contains("noncanonical_timestamp_entries", writer, StringComparison.Ordinal);
+            Assert.Contains("noncanonical_package_timestamp_entry_count", writer, StringComparison.Ordinal);
+            Assert.Contains("noncanonical_symbol_package_timestamp_entry_count", writer, StringComparison.Ordinal);
             Assert.Contains("expected_package_names", writer, StringComparison.Ordinal);
             Assert.Contains("expected_symbol_package_names", writer, StringComparison.Ordinal);
             Assert.Contains("missing_package_entries", writer, StringComparison.Ordinal);
@@ -785,6 +793,10 @@ public sealed class PackageBoundaryTests
         Assert.Contains("Get-FileHash", powershellPack, StringComparison.Ordinal);
         Assert.Contains("$expectedPackageNames", powershellPack, StringComparison.Ordinal);
         Assert.Contains("$packageId.$packageVersion.snupkg", powershellPack, StringComparison.Ordinal);
+        Assert.Contains("dotnet/tools/TinyRustLM.PackageCanonicalizer/TinyRustLM.PackageCanonicalizer.csproj", powershellPack, StringComparison.Ordinal);
+        Assert.Contains("canonicalize", powershellPack, StringComparison.Ordinal);
+        Assert.Contains("--no-build", powershellPack, StringComparison.Ordinal);
+        Assert.Contains("--no-restore", powershellPack, StringComparison.Ordinal);
         Assert.Contains("PACKAGE_ID_PREFIX=\"${3:-TinyRustLM}\"", bashPack, StringComparison.Ordinal);
         Assert.Contains("ABSTRACTIONS_PACKAGE_ID=\"${TINYRUSTLM_ABSTRACTIONS_PACKAGE_ID:-$PACKAGE_ID_PREFIX.Abstractions}\"", bashPack, StringComparison.Ordinal);
         Assert.Contains("CORE_PACKAGE_ID=\"${TINYRUSTLM_CORE_PACKAGE_ID:-$PACKAGE_ID_PREFIX.Core}\"", bashPack, StringComparison.Ordinal);
@@ -822,6 +834,10 @@ public sealed class PackageBoundaryTests
         Assert.Contains("sha256sum", bashPack, StringComparison.Ordinal);
         Assert.Contains("expected_names", bashPack, StringComparison.Ordinal);
         Assert.Contains("$package_id.$package_version.snupkg", bashPack, StringComparison.Ordinal);
+        Assert.Contains("dotnet/tools/TinyRustLM.PackageCanonicalizer/TinyRustLM.PackageCanonicalizer.csproj", bashPack, StringComparison.Ordinal);
+        Assert.Contains("canonicalize", bashPack, StringComparison.Ordinal);
+        Assert.Contains("--no-build", bashPack, StringComparison.Ordinal);
+        Assert.Contains("--no-restore", bashPack, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1001,6 +1017,8 @@ public sealed class PackageBoundaryTests
 
         foreach (var script in new[] { powershellScript, bashScript })
         {
+            Assert.Contains("tinyrustlm.nuget.package_audit.v1", script, StringComparison.Ordinal);
+            Assert.DoesNotContain("tinyrustlm.nuget.package_audit.v0", script, StringComparison.Ordinal);
             Assert.Contains("Publish set contains unexpected package", script, StringComparison.Ordinal);
             Assert.Contains("Publish set contains unexpected symbol package", script, StringComparison.Ordinal);
             Assert.Contains("Required symbol package is missing from publish set", script, StringComparison.Ordinal);
@@ -1700,7 +1718,8 @@ public sealed class PackageBoundaryTests
         var root = document.RootElement;
         var packageVersion = PackageVersion();
 
-        Assert.Equal("tinyrustlm.nuget.package_audit.v0", root.GetProperty("schema").GetString());
+        Assert.Equal("tinyrustlm.nuget.package_audit.v1", root.GetProperty("schema").GetString());
+        Assert.Equal("1980-01-01T00:00:00Z", root.GetProperty("canonical_entry_timestamp_utc").GetString());
         Assert.Equal("pass", root.GetProperty("status").GetString());
         Assert.Equal(packageVersion, root.GetProperty("package_version").GetString());
         var includesOptionalMemoryEndpoints = root.GetProperty("packages")
@@ -1721,6 +1740,8 @@ public sealed class PackageBoundaryTests
         Assert.Empty(root.GetProperty("missing_symbol_package_entries").EnumerateArray());
         Assert.Empty(root.GetProperty("unexpected_symbol_package_entries").EnumerateArray());
         Assert.Empty(root.GetProperty("missing_native_rids").EnumerateArray());
+        Assert.Empty(root.GetProperty("noncanonical_package_timestamp_entries").EnumerateArray());
+        Assert.Empty(root.GetProperty("noncanonical_symbol_package_timestamp_entries").EnumerateArray());
         Assert.Equal(0, root.GetProperty("source_file_count").GetInt32());
         Assert.Equal(0, root.GetProperty("debug_symbol_count").GetInt32());
         Assert.Equal(0, root.GetProperty("generated_output_count").GetInt32());
@@ -1739,6 +1760,8 @@ public sealed class PackageBoundaryTests
         Assert.Equal(0, root.GetProperty("missing_public_api_entry_count").GetInt32());
         Assert.Equal(0, root.GetProperty("unexpected_public_api_entry_count").GetInt32());
         Assert.Equal(0, root.GetProperty("absolute_path_match_count").GetInt32());
+        Assert.Equal(0, root.GetProperty("noncanonical_package_timestamp_entry_count").GetInt32());
+        Assert.Equal(0, root.GetProperty("noncanonical_symbol_package_timestamp_entry_count").GetInt32());
 
         var expectedPackageNames = root.GetProperty("expected_package_names")
             .EnumerateArray()
@@ -1819,6 +1842,7 @@ public sealed class PackageBoundaryTests
             Assert.Empty(package.GetProperty("debug_symbol_entries").EnumerateArray());
             Assert.Empty(package.GetProperty("generated_output_entries").EnumerateArray());
             Assert.Empty(package.GetProperty("absolute_path_matches").EnumerateArray());
+            Assert.Empty(package.GetProperty("noncanonical_timestamp_entries").EnumerateArray());
             Assert.False(string.IsNullOrWhiteSpace(package.GetProperty("metadata").GetProperty("tags").GetString()));
             Assert.False(string.IsNullOrWhiteSpace(package.GetProperty("metadata").GetProperty("release_notes").GetString()));
         }
@@ -1836,6 +1860,7 @@ public sealed class PackageBoundaryTests
             Assert.Empty(symbolPackage.GetProperty("source_file_entries").EnumerateArray());
             Assert.Empty(symbolPackage.GetProperty("generated_output_entries").EnumerateArray());
             Assert.Empty(symbolPackage.GetProperty("absolute_path_matches").EnumerateArray());
+            Assert.Empty(symbolPackage.GetProperty("noncanonical_timestamp_entries").EnumerateArray());
         }
     }
 

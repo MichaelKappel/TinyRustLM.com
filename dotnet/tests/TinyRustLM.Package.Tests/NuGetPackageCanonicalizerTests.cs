@@ -44,6 +44,22 @@ public sealed class NuGetPackageCanonicalizerTests
         Assert.Equal(first, second);
         Assert.Equal(firstBytes, File.ReadAllBytes(package));
         Assert.Equal(contentBefore, ReadContentManifest(package));
+        Assert.Empty(Directory.EnumerateFiles(temporary.Path, ".tinyrustlm-canonical-*.tmp"));
+    }
+
+    [Fact]
+    public void AlreadyCanonicalPackageIsNotRewritten()
+    {
+        using var temporary = new TemporaryDirectory();
+        var package = Path.Combine(temporary.Path, "canonical.nupkg");
+        WritePackage(package, new DateTimeOffset(1980, 1, 1, 0, 0, 0, TimeSpan.Zero));
+        var before = File.ReadAllBytes(package);
+
+        var result = NuGetPackageCanonicalizer.Canonicalize(package);
+
+        Assert.Equal(before, File.ReadAllBytes(package));
+        Assert.Equal(Sha256(package), result.Sha256);
+        Assert.Empty(Directory.EnumerateFiles(temporary.Path, ".tinyrustlm-canonical-*.tmp"));
     }
 
     [Fact]
@@ -79,6 +95,75 @@ public sealed class NuGetPackageCanonicalizerTests
             () => NuGetPackageCanonicalizer.Canonicalize(package));
 
         Assert.Equal("package_entry_portable_duplicate", error.Code);
+        Assert.Equal(before, File.ReadAllBytes(package));
+    }
+
+    [Theory]
+    [InlineData("../escape.txt", "package_entry_path_unsafe")]
+    [InlineData("docs\\escape.txt", "package_entry_name_invalid")]
+    [InlineData("docs/CON.txt", "package_entry_path_unsafe")]
+    public void UnsafeEntryPathIsRejectedWithoutMutation(string entryName, string expectedCode)
+    {
+        using var temporary = new TemporaryDirectory();
+        var package = Path.Combine(temporary.Path, "unsafe.nupkg");
+        WritePackage(
+            package,
+            new DateTimeOffset(2026, 2, 3, 4, 5, 6, TimeSpan.Zero),
+            (entryName, "unsafe"));
+        var before = File.ReadAllBytes(package);
+
+        var error = Assert.Throws<PackageCanonicalizationException>(
+            () => NuGetPackageCanonicalizer.Canonicalize(package));
+
+        Assert.Equal(expectedCode, error.Code);
+        Assert.Equal(before, File.ReadAllBytes(package));
+        Assert.Empty(Directory.EnumerateFiles(temporary.Path, ".tinyrustlm-canonical-*.tmp"));
+    }
+
+    [Fact]
+    public void RelativePackagePathIsRejected()
+    {
+        var error = Assert.Throws<PackageCanonicalizationException>(
+            () => NuGetPackageCanonicalizer.Canonicalize("relative.nupkg"));
+
+        Assert.Equal("package_path_not_absolute", error.Code);
+    }
+
+    [Fact]
+    public void UnsupportedExtensionIsRejectedWithoutMutation()
+    {
+        using var temporary = new TemporaryDirectory();
+        var package = Path.Combine(temporary.Path, "package.zip");
+        WritePackage(package, new DateTimeOffset(2026, 2, 3, 4, 5, 6, TimeSpan.Zero));
+        var before = File.ReadAllBytes(package);
+
+        var error = Assert.Throws<PackageCanonicalizationException>(
+            () => NuGetPackageCanonicalizer.Canonicalize(package));
+
+        Assert.Equal("package_extension_unsupported", error.Code);
+        Assert.Equal(before, File.ReadAllBytes(package));
+    }
+
+    [Fact]
+    public void EntryCountAboveBoundIsRejectedWithoutMutation()
+    {
+        using var temporary = new TemporaryDirectory();
+        var package = Path.Combine(temporary.Path, "too-many.nupkg");
+        using (var stream = new FileStream(package, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None))
+        using (var archive = new ZipArchive(stream, ZipArchiveMode.Create, leaveOpen: false))
+        {
+            for (var index = 0; index <= NuGetPackageCanonicalizer.MaxEntryCount; index++)
+            {
+                var entry = archive.CreateEntry($"entries/{index:D4}.txt", CompressionLevel.NoCompression);
+                entry.LastWriteTime = new DateTimeOffset(2026, 2, 3, 4, 5, 6, TimeSpan.Zero);
+            }
+        }
+        var before = File.ReadAllBytes(package);
+
+        var error = Assert.Throws<PackageCanonicalizationException>(
+            () => NuGetPackageCanonicalizer.Canonicalize(package));
+
+        Assert.Equal("package_entry_count_limit_exceeded", error.Code);
         Assert.Equal(before, File.ReadAllBytes(package));
     }
 

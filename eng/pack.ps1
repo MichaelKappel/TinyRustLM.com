@@ -251,6 +251,31 @@ try {
     if ($IncludePrivateConversion) {
         Invoke-DotNet -Arguments (@("pack", "dotnet/src/TinyRustLM.Conversion/TinyRustLM.Conversion.csproj", "-c", $Configuration, "--no-build", "-o", $PackageOutput) + $packageProperties)
     }
+    $packageVersion = (& (Join-Path $PSScriptRoot "get-package-version.ps1")).Trim()
+    if ([string]::IsNullOrWhiteSpace($packageVersion)) {
+        throw "Package version could not be resolved from dotnet/Directory.Build.props."
+    }
+    $canonicalPackagePaths = @()
+    foreach ($packageId in $writtenPackageIds) {
+        foreach ($extension in @("nupkg", "snupkg")) {
+            $packagePath = Join-Path $PackageOutput "$packageId.$packageVersion.$extension"
+            if (-not (Test-Path -LiteralPath $packagePath -PathType Leaf)) {
+                throw "Expected package is missing before canonicalization: $packageId.$packageVersion.$extension"
+            }
+            $canonicalPackagePaths += (Resolve-Path -LiteralPath $packagePath).Path
+        }
+    }
+    Invoke-DotNet -Arguments (@(
+        "run",
+        "--project",
+        "dotnet/tools/TinyRustLM.PackageCanonicalizer/TinyRustLM.PackageCanonicalizer.csproj",
+        "-c",
+        $Configuration,
+        "--no-build",
+        "--no-restore",
+        "--",
+        "canonicalize"
+    ) + $canonicalPackagePaths)
     $env:TINYRUSTLM_PACKAGE_DIR = $PackageOutput
     Invoke-DotNet -Arguments (@(
         "test",

@@ -145,7 +145,7 @@ def package_audit_evidence():
         return evidence
 
     evidence["package_audit_status"] = str(audit.get("status", ""))
-    if audit.get("schema") != "tinyrustlm.nuget.package_audit.v0":
+    if audit.get("schema") != "tinyrustlm.nuget.package_audit.v1":
         evidence["package_audit_error"] = f"Package audit report schema mismatch: {audit.get('schema', '')}"
         return evidence
     if audit.get("status") != "pass":
@@ -328,7 +328,7 @@ if not os.path.isfile(audit_report):
 
 with open(audit_report, "r", encoding="utf-8-sig") as handle:
     audit = json.load(handle)
-if audit.get("schema") != "tinyrustlm.nuget.package_audit.v0":
+if audit.get("schema") != "tinyrustlm.nuget.package_audit.v1":
     raise SystemExit(f"Package audit report schema mismatch: {audit.get('schema', '')}")
 if audit.get("status") != "pass":
     raise SystemExit(f"Package audit report status is not pass: {audit.get('status', '')}")

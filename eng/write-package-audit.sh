@@ -1002,6 +1002,10 @@ for package_path in package_files:
         package_required_search_terms = required_search_terms(package_id)
         package_missing_search_terms = missing_search_terms(package_id, metadata)
         package_metadata_policy_violations = metadata_policy_violations(package_id, metadata)
+        noncanonical_timestamp_entries = [
+            entry.filename for entry in infos
+            if entry.date_time != (1980, 1, 1, 0, 0, 0)
+        ]
 
     package_reports.append({
         "name": package_path.name,
@@ -1012,6 +1016,7 @@ for package_path in package_files:
         "sha256": sha256_file(package_path),
         "byte_count": package_path.stat().st_size,
         "entry_count": len(entry_names),
+        "noncanonical_timestamp_entries": noncanonical_timestamp_entries,
         "package_entry_names": entry_names,
         "allowed_package_entry_patterns": allowed_entry_patterns,
         "unexpected_package_content_entries": unexpected_package_entries,
@@ -1073,6 +1078,10 @@ for symbol_package_path in symbol_package_files:
             metadata,
             symbols_type,
         )
+        noncanonical_timestamp_entries = [
+            entry.filename for entry in infos
+            if entry.date_time != (1980, 1, 1, 0, 0, 0)
+        ]
 
     symbol_package_reports.append({
         "name": symbol_package_path.name,
@@ -1083,6 +1092,7 @@ for symbol_package_path in symbol_package_files:
         "sha256": sha256_file(symbol_package_path),
         "byte_count": symbol_package_path.stat().st_size,
         "entry_count": len(entry_names),
+        "noncanonical_timestamp_entries": noncanonical_timestamp_entries,
         "package_entry_names": entry_names,
         "pdb_entries": pdb_entries,
         "has_symbols_package_type": symbols_type,
@@ -1119,6 +1129,11 @@ all_source_file_entries = [item for package in package_reports for item in packa
 all_debug_symbol_entries = [item for package in package_reports for item in package["debug_symbol_entries"]]
 all_generated_output_entries = [item for package in package_reports for item in package["generated_output_entries"]]
 all_absolute_path_matches = [item for package in package_reports for item in package["absolute_path_matches"]]
+all_noncanonical_package_timestamp_entries = [
+    {"package": package["name"], "entry": item}
+    for package in package_reports
+    for item in package["noncanonical_timestamp_entries"]
+]
 all_symbol_package_identity_mismatches = [
     item for package in symbol_package_reports
     for item in package["package_identity_mismatches"]
@@ -1142,6 +1157,11 @@ all_symbol_package_generated_output_entries = [
 all_symbol_package_absolute_path_matches = [
     item for package in symbol_package_reports
     for item in package["absolute_path_matches"]
+]
+all_noncanonical_symbol_package_timestamp_entries = [
+    {"package": package["name"], "entry": item}
+    for package in symbol_package_reports
+    for item in package["noncanonical_timestamp_entries"]
 ]
 
 checks_passed = not any((
@@ -1169,16 +1189,19 @@ checks_passed = not any((
     all_debug_symbol_entries,
     all_generated_output_entries,
     all_absolute_path_matches,
+    all_noncanonical_package_timestamp_entries,
     all_symbol_package_unexpected_entries,
     all_symbol_package_missing_pdb_entries,
     all_symbol_package_source_file_entries,
     all_symbol_package_generated_output_entries,
     all_symbol_package_absolute_path_matches,
+    all_noncanonical_symbol_package_timestamp_entries,
 ))
 status = "pass" if checks_passed else "fail"
 report = {
-    "schema": "tinyrustlm.nuget.package_audit.v0",
+    "schema": "tinyrustlm.nuget.package_audit.v1",
     "generated_utc": utc_now(),
+    "canonical_entry_timestamp_utc": "1980-01-01T00:00:00Z",
     "package_source": str(package_source.resolve()),
     "package_version": source_version,
     "expected_package_names": expected_names,
@@ -1190,6 +1213,8 @@ report = {
     "missing_symbol_package_entries": missing_symbol_package_entries,
     "unexpected_symbol_package_entries": unexpected_symbol_package_entries_for_set,
     "missing_native_rids": missing_native_rids,
+    "noncanonical_package_timestamp_entries": all_noncanonical_package_timestamp_entries,
+    "noncanonical_symbol_package_timestamp_entries": all_noncanonical_symbol_package_timestamp_entries,
     "missing_package_count": len(missing_package_entries),
     "unexpected_package_count": len(unexpected_package_entries),
     "missing_symbol_package_count": len(missing_symbol_package_entries),
@@ -1212,11 +1237,13 @@ report = {
     "debug_symbol_count": len(all_debug_symbol_entries),
     "generated_output_count": len(all_generated_output_entries),
     "absolute_path_match_count": len(all_absolute_path_matches),
+    "noncanonical_package_timestamp_entry_count": len(all_noncanonical_package_timestamp_entries),
     "symbol_package_unexpected_entry_count": len(all_symbol_package_unexpected_entries),
     "symbol_package_missing_pdb_count": len(all_symbol_package_missing_pdb_entries),
     "symbol_package_source_file_count": len(all_symbol_package_source_file_entries),
     "symbol_package_generated_output_count": len(all_symbol_package_generated_output_entries),
     "symbol_package_absolute_path_match_count": len(all_symbol_package_absolute_path_matches),
+    "noncanonical_symbol_package_timestamp_entry_count": len(all_noncanonical_symbol_package_timestamp_entries),
     "package_count": len(package_reports),
     "symbol_package_count": len(symbol_package_reports),
     "packages": package_reports,

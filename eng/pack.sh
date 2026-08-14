@@ -113,6 +113,7 @@ write_package_feed_readme() {
 
 "$REPO_ROOT/eng/build-native.sh" release
 mkdir -p "$PACKAGE_OUTPUT"
+PACKAGE_OUTPUT="$(cd "$PACKAGE_OUTPUT" && pwd -P)"
 move_to_archive() {
   local package="$1"
   local package_name
@@ -196,6 +197,26 @@ fi
 if [[ "$INCLUDE_PRIVATE_CONVERSION" == "1" || "$INCLUDE_PRIVATE_CONVERSION" == "true" ]]; then
   dotnet pack dotnet/src/TinyRustLM.Conversion/TinyRustLM.Conversion.csproj -c "$CONFIGURATION" --no-build -o "$PACKAGE_OUTPUT" "${PACKAGE_PROPERTIES[@]}"
 fi
+PACKAGE_VERSION="$("$REPO_ROOT/eng/get-package-version.sh")"
+if [[ -z "$PACKAGE_VERSION" ]]; then
+  echo "Package version could not be resolved from dotnet/Directory.Build.props." >&2
+  exit 1
+fi
+CANONICAL_PACKAGE_PATHS=()
+for package_id in "${PACKAGE_IDS[@]}"; do
+  for extension in nupkg snupkg; do
+    package_path="$PACKAGE_OUTPUT/$package_id.$PACKAGE_VERSION.$extension"
+    if [[ ! -f "$package_path" ]]; then
+      echo "Expected package is missing before canonicalization: $package_id.$PACKAGE_VERSION.$extension" >&2
+      exit 1
+    fi
+    CANONICAL_PACKAGE_PATHS+=("$package_path")
+  done
+done
+dotnet run \
+  --project dotnet/tools/TinyRustLM.PackageCanonicalizer/TinyRustLM.PackageCanonicalizer.csproj \
+  -c "$CONFIGURATION" --no-build --no-restore -- canonicalize \
+  "${CANONICAL_PACKAGE_PATHS[@]}"
 TINYRUSTLM_REPO_ROOT="$REPO_ROOT" TINYRUSTLM_PACKAGE_DIR="$PACKAGE_OUTPUT" dotnet test \
   dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj \
   -c "$CONFIGURATION" --no-build "${PACKAGE_PROPERTIES[@]}"
