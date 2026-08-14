@@ -1,0 +1,249 @@
+{
+  "schema": "tinyrustlm.vnext.archive_fuzz_hosted_verification_profile.v1",
+  "profileId": "tinyrustlm.vnext.archive-fuzz-hosted-verification.v1",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-no-compatibility-reader",
+  "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
+  "hashAlgorithm": "sha256",
+  "recordSchema": "tinyrustlm.vnext.archive_fuzz_hosted_verification.v1",
+  "recordFile": "archive-fuzz-hosted-verification.v1.json",
+  "executionClass": "github-hosted-address-sanitizer-fuzz",
+  "provider": "github-actions",
+  "repository": "MichaelKappel/TinyRustLM.com",
+  "workflowPath": ".github/workflows/ci.yml",
+  "workflowJob": "verify-archive-fuzz",
+  "acceptedEvents": [
+    "pull_request",
+    "push",
+    "workflow_dispatch"
+  ],
+  "acceptedArchitectures": [
+    "ARM64",
+    "X64"
+  ],
+  "operatingSystem": "Linux",
+  "runnerEnvironment": "github-hosted",
+  "toolchain": "nightly-2026-08-01",
+  "cargoFuzzVersion": "0.13.2",
+  "libfuzzerSysVersion": "0.4.13",
+  "sanitizer": "address",
+  "target": "structured_archive",
+  "fuzzProfileId": "tinyrustlm.vnext.archive-fuzz.v1",
+  "fuzzProfileSha256": "5af6f00aef3540aa6969bb122dc2a3efdde9b39049c0dfbb15cc1e0fa29ce22e",
+  "corpusManifestPath": "rust/crates/tinyrustlm-archive/fuzz/corpus/structured_archive/manifest.v1.json",
+  "corpusManifestSha256": "ad38ccecb671b47c5da5271e59219a091837d2f271c03624a09a3827c2076420",
+  "cargoLockPath": "rust/crates/tinyrustlm-archive/fuzz/Cargo.lock",
+  "cargoLockSha256": "ceae70bcca6821cf350a5cc13f21f650934c96e7209fbd67c46a75b50930af7b",
+  "verificationSourceClosureMembers": [
+    "contracts/vnext/archive-fuzz-hosted-verification-profile.v1.json",
+    "tinyrustlm/tools/archive-fuzz-hosted-verification.js",
+    "tinyrustlm/tools/strict-json.js",
+    "tinyrustlm/tools/vnext-jcs.js"
+  ],
+  "childEnvironmentAllowlist": [
+    "CARGO_HOME",
+    "HOME",
+    "LANG",
+    "LC_ALL",
+    "LC_CTYPE",
+    "LOGNAME",
+    "PATH",
+    "RUSTUP_HOME",
+    "SHELL",
+    "TERM",
+    "TMPDIR",
+    "USER"
+  ],
+  "steps": [
+    {
+      "id": "cargo-fuzz-version",
+      "command": "cargo",
+      "arguments": [
+        "+nightly-2026-08-01",
+        "fuzz",
+        "--version"
+      ],
+      "maximumDurationMilliseconds": 60000
+    },
+    {
+      "id": "rustc-version",
+      "command": "rustc",
+      "arguments": [
+        "+nightly-2026-08-01",
+        "--version",
+        "--verbose"
+      ],
+      "maximumDurationMilliseconds": 60000
+    },
+    {
+      "id": "corpus-manifest-replay",
+      "command": "cargo",
+      "arguments": [
+        "+nightly-2026-08-01",
+        "run",
+        "--locked",
+        "--manifest-path",
+        "{fuzzManifest}",
+        "--target-dir",
+        "{targetDir}",
+        "--bin",
+        "replay_archive_corpus"
+      ],
+      "maximumDurationMilliseconds": 600000
+    },
+    {
+      "id": "libfuzzer-corpus-replay",
+      "command": "cargo",
+      "arguments": [
+        "+nightly-2026-08-01",
+        "fuzz",
+        "run",
+        "--fuzz-dir",
+        "{fuzzRoot}",
+        "--target-dir",
+        "{targetDir}",
+        "--sanitizer",
+        "address",
+        "structured_archive",
+        "{corpusDir}",
+        "--",
+        "-runs=0",
+        "-max_len=4096",
+        "-timeout=5",
+        "-print_final_stats=1",
+        "-dict={dictionaryPath}",
+        "-artifact_prefix={findingsDir}/"
+      ],
+      "maximumDurationMilliseconds": 600000
+    },
+    {
+      "id": "bounded-sanitizer-fuzz",
+      "command": "cargo",
+      "arguments": [
+        "+nightly-2026-08-01",
+        "fuzz",
+        "run",
+        "--fuzz-dir",
+        "{fuzzRoot}",
+        "--target-dir",
+        "{targetDir}",
+        "--sanitizer",
+        "address",
+        "structured_archive",
+        "{corpusDir}",
+        "--",
+        "-max_total_time=60",
+        "-max_len=4096",
+        "-timeout=5",
+        "-print_final_stats=1",
+        "-dict={dictionaryPath}",
+        "-artifact_prefix={findingsDir}/"
+      ],
+      "maximumDurationMilliseconds": 600000
+    }
+  ],
+  "recordFields": [
+    "architecture",
+    "cargoFuzzVersion",
+    "cargoLockSha256",
+    "corpusManifestSha256",
+    "eventName",
+    "executionClass",
+    "failureCode",
+    "findings",
+    "finishedUtc",
+    "fuzzProfileId",
+    "fuzzProfileSha256",
+    "libfuzzerSysVersion",
+    "nodeVersion",
+    "operatingSystem",
+    "profileId",
+    "profileSha256",
+    "provider",
+    "repository",
+    "runnerEnvironment",
+    "sanitizer",
+    "schema",
+    "scratchCleanup",
+    "sourceRevision",
+    "sourceWorktreeClean",
+    "startedUtc",
+    "steps",
+    "target",
+    "toolchain",
+    "verdict",
+    "verificationSourceClosureSha256",
+    "workflowJob",
+    "workflowPath",
+    "workflowRunAttempt",
+    "workflowRunId",
+    "workflowSha256"
+  ],
+  "stepRecordFields": [
+    "durationMilliseconds",
+    "exitCode",
+    "id",
+    "outputLimitExceeded",
+    "signal",
+    "stderrByteCount",
+    "stderrFile",
+    "stderrSha256",
+    "stdoutByteCount",
+    "stdoutFile",
+    "stdoutSha256",
+    "timedOut"
+  ],
+  "findingRecordFields": [
+    "byteCount",
+    "file",
+    "sha256"
+  ],
+  "limits": {
+    "maximumFindingBytes": 4096,
+    "maximumFindingCount": 16,
+    "maximumLogBytesPerStream": 8388608,
+    "maximumRecordBytes": 65536,
+    "maximumRunAttempt": 1000,
+    "maximumRunIdCharacters": 24,
+    "maximumSourceMemberBytes": 16777216,
+    "maximumTotalFindingBytes": 65536,
+    "maximumTotalDurationMilliseconds": 1200000,
+    "maximumWorkflowBytes": 1048576
+  },
+  "pathPolicy": {
+    "evidenceRoot": "one-create-only-runner-temp-child",
+    "linksAndReparsePoints": "reject-where-host-api-exposes-them",
+    "rawLogs": "bounded-private-artifact-not-public-receipt",
+    "repository": "read-only-clean-checkout",
+    "scratchRoot": "github-runner-temp-existing-directory",
+    "scratchWorktree": "one-tool-owned-unique-child-removed-before-record"
+  },
+  "recordPolicy": {
+    "canonicalJcsRequired": true,
+    "directoryFsyncRequired": true,
+    "fileFsyncRequired": true,
+    "pathDisclosureForbidden": true,
+    "readbackRequired": true,
+    "replacementForbidden": true
+  },
+  "scratchCleanup": "completed-before-record",
+  "verdicts": [
+    "fail",
+    "pass"
+  ],
+  "failureCodes": [
+    "archive_fuzz_hosted_command_failed",
+    "archive_fuzz_hosted_command_launch_failed",
+    "archive_fuzz_hosted_command_output_limit",
+    "archive_fuzz_hosted_command_timeout",
+    "archive_fuzz_hosted_findings_limit",
+    "archive_fuzz_hosted_tool_identity_mismatch"
+  ],
+  "nonClaims": [
+    "A canonical runner record is not a GitHub signature, OIDC attestation, or independent observation receipt.",
+    "Workflow source, a branch push, or an uploaded artifact does not prove that a hosted job completed successfully.",
+    "One bounded sanitizer interval is not proof that the parser has no defects and does not replace longer campaigns.",
+    "A linux-x64 sanitizer run does not prove linux-arm64 or win-x64 native execution, and the inverse is also true.",
+    "Fuzz verification does not establish physical durability, production custody, publication, deployment, public readback, or campaign progress."
+  ]
+}

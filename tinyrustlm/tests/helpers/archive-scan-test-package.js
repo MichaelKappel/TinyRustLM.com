@@ -60,9 +60,18 @@ function ensureArchiveScanTestPackage() {
   const executableFile = process.platform === "win32"
     ? "tinyrustlm-archive-scan.exe"
     : "tinyrustlm-archive-scan";
+  const packageParent = path.join(targetRoot, "archive-scan-test-packages");
+  try {
+    fs.mkdirSync(packageParent, { recursive: false });
+  } catch (error) {
+    if (error?.code !== "EEXIST") throw error;
+    const metadata = fs.lstatSync(packageParent);
+    if (!metadata.isDirectory() || metadata.isSymbolicLink()) {
+      throw new Error("archive scan test package parent is invalid");
+    }
+  }
   const packageRoot = path.join(
-    targetRoot,
-    "archive-scan-test-packages",
+    packageParent,
     `${runtimeIdentifier()}-${process.pid}`
   );
   fs.rmSync(packageRoot, { recursive: true, force: true });

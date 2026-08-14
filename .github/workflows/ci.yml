@@ -2,7 +2,6 @@ name: TinyRustLM NuGet CI
 
 on:
   push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
@@ -44,7 +43,7 @@ jobs:
           node-version: '22'
 
       - name: Verify archive package producer and local consumer
-        run: node --test tinyrustlm/tests/archive-fuzz-contract.test.js tinyrustlm/tests/archive-scan-helper-package.test.js tinyrustlm/tests/archive-scan-helper-verification.test.js tinyrustlm/tests/archive-scan-client.test.js tinyrustlm/tests/public-evidence-secret-scan.test.js
+        run: node --test tinyrustlm/tests/archive-fuzz-contract.test.js tinyrustlm/tests/archive-fuzz-hosted-verification.test.js tinyrustlm/tests/archive-scan-helper-package.test.js tinyrustlm/tests/archive-scan-helper-verification.test.js tinyrustlm/tests/archive-scan-client.test.js tinyrustlm/tests/public-evidence-secret-scan.test.js
 
       - name: Build release archive scanner package (Windows)
         if: runner.os == 'Windows'
@@ -102,52 +101,33 @@ jobs:
           cargo +nightly-2026-08-01 install cargo-fuzz --version 0.13.2 --locked
           test "$(cargo +nightly-2026-08-01 fuzz --version)" = "cargo-fuzz 0.13.2"
 
-      - name: Replay exact frozen manifest
-        run: cargo +nightly-2026-08-01 run --locked --manifest-path rust/crates/tinyrustlm-archive/fuzz/Cargo.toml --bin replay_archive_corpus
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
-      - name: Prepare isolated fuzz corpus
+      - name: Verify hosted fuzz evidence contract
+        run: node --test tinyrustlm/tests/archive-fuzz-contract.test.js tinyrustlm/tests/archive-fuzz-hosted-verification.test.js
+
+      - name: Fetch exact locked fuzz dependencies
         shell: bash
-        run: |
-          mkdir -p "${RUNNER_TEMP}/archive-fuzz-corpus"
-          mkdir -p "${RUNNER_TEMP}/archive-fuzz-artifacts"
-          cp rust/crates/tinyrustlm-archive/fuzz/corpus/structured_archive/*.seed "${RUNNER_TEMP}/archive-fuzz-corpus/"
+        run: cargo +nightly-2026-08-01 fetch --locked --manifest-path rust/crates/tinyrustlm-archive/fuzz/Cargo.toml
 
-      - name: Replay corpus through libFuzzer
+      - name: Run and record pinned hosted sanitizer verification
         shell: bash
-        run: |
-          cargo +nightly-2026-08-01 fuzz run \
-            --fuzz-dir "${GITHUB_WORKSPACE}/rust/crates/tinyrustlm-archive/fuzz" \
-            --target-dir "${RUNNER_TEMP}/archive-fuzz-target" \
-            structured_archive "${RUNNER_TEMP}/archive-fuzz-corpus" -- \
-            -runs=0 \
-            -max_len=4096 \
-            -timeout=5 \
-            -dict="${GITHUB_WORKSPACE}/rust/crates/tinyrustlm-archive/fuzz/dictionaries/structured_archive.dict" \
-            -artifact_prefix="${RUNNER_TEMP}/archive-fuzz-artifacts/"
+        run: >-
+          node tinyrustlm/tools/archive-fuzz-hosted-verification.js run
+          "${RUNNER_TEMP}/archive-fuzz-hosted-verification"
+          "${RUNNER_TEMP}"
 
-      - name: Run bounded sanitizer fuzzing
-        shell: bash
-        run: |
-          cargo +nightly-2026-08-01 fuzz run \
-            --fuzz-dir "${GITHUB_WORKSPACE}/rust/crates/tinyrustlm-archive/fuzz" \
-            --target-dir "${RUNNER_TEMP}/archive-fuzz-target" \
-            structured_archive "${RUNNER_TEMP}/archive-fuzz-corpus" -- \
-            -max_total_time=60 \
-            -max_len=4096 \
-            -timeout=5 \
-            -print_final_stats=1 \
-            -dict="${GITHUB_WORKSPACE}/rust/crates/tinyrustlm-archive/fuzz/dictionaries/structured_archive.dict" \
-            -artifact_prefix="${RUNNER_TEMP}/archive-fuzz-artifacts/"
-
-      - name: Upload failure artifacts and working corpus
-        if: failure()
+      - name: Upload hosted sanitizer verification
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: tinyrustlm-archive-fuzz-failure-inputs
-          path: |
-            ${{ runner.temp }}/archive-fuzz-artifacts/*
-            ${{ runner.temp }}/archive-fuzz-corpus/*
-          if-no-files-found: warn
+          name: tinyrustlm-archive-fuzz-hosted-verification-${{ runner.arch }}
+          path: ${{ runner.temp }}/archive-fuzz-hosted-verification/*
+          if-no-files-found: error
+          retention-days: 90
 
   verify-nuget-sdk:
     name: Verify protected NuGet SDK

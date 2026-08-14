@@ -171,7 +171,7 @@ test("fuzz workspace calls the sole parser and pins every moving tool", () => {
   assert.doesNotMatch(replay, /--bless|write_manifest|update_manifest/u);
 });
 
-test("CI replays every RID and runs one pinned bounded sanitizer target", () => {
+test("CI replays every RID and delegates sanitizer evidence to one pinned runner", () => {
   const workflow = readBytes(
     path.join(repositoryRoot, ".github", "workflows", "ci.yml")
   ).toString("utf8");
@@ -201,11 +201,15 @@ test("CI replays every RID and runs one pinned bounded sanitizer target", () => 
     workflow,
     /cargo \+nightly-2026-08-01 install cargo-fuzz --version 0\.13\.2 --locked/u
   );
-  assert.match(workflow, /--bin replay_archive_corpus/u);
-  assert.match(workflow, /-runs=0/u);
-  assert.match(workflow, /-max_total_time=60/u);
-  assert.match(workflow, /-max_len=4096/u);
-  assert.match(workflow, /\$\{RUNNER_TEMP\}\/archive-fuzz-corpus/u);
-  assert.match(workflow, /Upload failure artifacts and working corpus/u);
+  assert.match(workflow, /Fetch exact locked fuzz dependencies/u);
+  assert.match(workflow, /Run and record pinned hosted sanitizer verification/u);
+  assert.match(
+    workflow,
+    /node tinyrustlm\/tools\/archive-fuzz-hosted-verification\.js run/u
+  );
+  assert.match(workflow, /Upload hosted sanitizer verification/u);
+  assert.match(workflow, /if: always\(\)/u);
+  assert.match(workflow, /retention-days: 90/u);
+  assert.doesNotMatch(workflow, /-max_total_time=60/u);
   assert.doesNotMatch(workflow, /cargo \+nightly fuzz/u);
 });
