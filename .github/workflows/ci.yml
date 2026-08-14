@@ -81,6 +81,80 @@ jobs:
           path: ${{ runner.temp }}/archive-scan-helper-verification/${{ matrix.rid }}/*
           if-no-files-found: error
 
+  verify-directory-flush-helper:
+    name: Verify directory flush helper (${{ matrix.rid }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+          - os: ubuntu-latest
+            rid: linux-x64
+          - os: ubuntu-24.04-arm
+            rid: linux-arm64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify package, client, and replay contracts
+        run: >-
+          node --preserve-symlinks --preserve-symlinks-main --test --test-concurrency=1
+          tinyrustlm/tests/directory-flush-helper-package.test.js
+          tinyrustlm/tests/directory-flush-helper-verification.test.js
+          tinyrustlm/tests/vnext-directory-flush-client.test.js
+
+      - name: Build release directory flush package (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: eng/build-directory-flush-helper.ps1 -Configuration release
+
+      - name: Build release directory flush package (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: bash eng/build-directory-flush-helper.sh release
+
+      - name: Record native fixed-directory replay
+        run: >-
+          node --preserve-symlinks --preserve-symlinks-main
+          tinyrustlm/tools/directory-flush-helper-verification.js run
+          "${{ github.workspace }}/artifacts/directory-flush-helper/${{ matrix.rid }}"
+          "${{ runner.temp }}/directory-flush-helper-verification/${{ matrix.rid }}"
+          "${{ runner.temp }}"
+
+      - name: Verify retained package and replay record
+        run: >-
+          node --preserve-symlinks --preserve-symlinks-main
+          tinyrustlm/tools/directory-flush-helper-verification.js verify
+          "${{ github.workspace }}/artifacts/directory-flush-helper/${{ matrix.rid }}"
+          "${{ runner.temp }}/directory-flush-helper-verification/${{ matrix.rid }}"
+
+      - name: Upload verified directory flush package
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-directory-flush-helper-${{ matrix.rid }}
+          path: artifacts/directory-flush-helper/${{ matrix.rid }}/*
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Upload native replay record
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-directory-flush-helper-verification-${{ matrix.rid }}
+          path: ${{ runner.temp }}/directory-flush-helper-verification/${{ matrix.rid }}/*
+          if-no-files-found: error
+          retention-days: 90
+
   verify-archive-fuzz:
     name: Verify structured archive fuzz target
     runs-on: ubuntu-latest

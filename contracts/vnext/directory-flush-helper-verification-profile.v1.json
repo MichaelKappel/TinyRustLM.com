@@ -1,0 +1,190 @@
+{
+  "schema": "tinyrustlm.vnext.directory_flush_helper_verification_profile.v1",
+  "profileId": "tinyrustlm.vnext.directory-flush-helper-verification.v1",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-no-compatibility-reader",
+  "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
+  "hashAlgorithm": "sha256",
+  "directoryFlushProfileId": "tinyrustlm.vnext.directory-flush.v1",
+  "directoryFlushProfileSha256": "bb9c76715d0b35d63a9da27006ff8f88840486cf287cec24279a1020a0443ddb",
+  "clientProfileId": "tinyrustlm.vnext.directory-flush-client.v1",
+  "clientProfileSha256": "0d5fe88e8abb371a99db58f1ce3fabce180dc00f77287b6f44ea40d268d709a1",
+  "clientSourceClosureSha256": "b265141e0749422bcdadefab7777c97d154f442ac18397f69664dd1af24447f3",
+  "packageManifestSchema": "tinyrustlm.vnext.directory_flush_helper_manifest.v1",
+  "packageProvenanceSchema": "tinyrustlm.vnext.directory_flush_helper_provenance.v1",
+  "verificationSchema": "tinyrustlm.vnext.directory_flush_helper_verification.v1",
+  "receiptFile": "directory-flush-helper-verification.v1.json",
+  "executionClass": "native-package-fixed-directory-replay",
+  "scratchCleanup": "completed-before-receipt",
+  "verdict": "pass",
+  "acceptedPackageTrustClasses": [
+    "local-test-build",
+    "release-package"
+  ],
+  "supportedRuntimeIdentifiers": [
+    "linux-arm64",
+    "linux-x64",
+    "win-x64"
+  ],
+  "helperSourceClosureMembers": [
+    "Cargo.lock",
+    "Cargo.toml",
+    "contracts/vnext/directory-flush-profile.v1.json",
+    "rust/crates/tinyrustlm-durability/Cargo.toml",
+    "rust/crates/tinyrustlm-durability/src/bin/tinyrustlm-directory-flush.rs",
+    "rust/crates/tinyrustlm-durability/src/lib.rs"
+  ],
+  "packageBuilderSourceClosureMembers": [
+    "contracts/vnext/directory-flush-client-profile.v1.json",
+    "contracts/vnext/directory-flush-helper-verification-profile.v1.json",
+    "tinyrustlm/tools/directory-flush-helper-package.js",
+    "tinyrustlm/tools/strict-json.js",
+    "tinyrustlm/tools/vnext-jcs.js"
+  ],
+  "verificationSourceClosureMembers": [
+    "contracts/vnext/directory-flush-helper-verification-profile.v1.json",
+    "tinyrustlm/tools/directory-flush-helper-verification.js",
+    "tinyrustlm/tools/strict-json.js",
+    "tinyrustlm/tools/vnext-jcs.js"
+  ],
+  "package": {
+    "manifestFile": "directory-flush-helper-manifest.v1.json",
+    "provenanceFile": "directory-flush-helper-provenance.v1.json",
+    "executableMaximumBytes": 67108864,
+    "provenanceMaximumBytes": 32768,
+    "manifestMaximumBytes": 16384,
+    "exactFileSetRequired": true,
+    "createOnlyOutput": true,
+    "releaseSourceWorktreeCleanRequired": true
+  },
+  "packageManifestFields": [
+    "architecture",
+    "buildProfile",
+    "directoryFlushProfileId",
+    "directoryFlushProfileSha256",
+    "executableByteCount",
+    "executableFile",
+    "executableSha256",
+    "operatingSystem",
+    "runtimeIdentifier",
+    "schema",
+    "sourceClosureSha256",
+    "trustClass"
+  ],
+  "packageProvenanceFields": [
+    "architecture",
+    "buildProfile",
+    "cargoLockSha256",
+    "cargoVersion",
+    "directoryFlushProfileSha256",
+    "executableSha256",
+    "operatingSystem",
+    "packageBuilderSourceClosureSha256",
+    "runtimeIdentifier",
+    "rustcVersion",
+    "schema",
+    "sourceClosureSha256",
+    "sourceRevision",
+    "sourceWorktreeClean",
+    "trustClass"
+  ],
+  "receiptFields": [
+    "architecture",
+    "buildProfile",
+    "cases",
+    "clientProfileId",
+    "clientProfileSha256",
+    "clientSourceClosureSha256",
+    "executionClass",
+    "executableByteCount",
+    "executableSha256",
+    "helperManifestSha256",
+    "helperPackageBuilderSourceClosureSha256",
+    "helperProvenanceSha256",
+    "helperSourceClosureSha256",
+    "helperSourceRevision",
+    "helperSourceWorktreeClean",
+    "nodeVersion",
+    "operatingSystem",
+    "profileId",
+    "profileSha256",
+    "runtimeIdentifier",
+    "schema",
+    "scratchCleanup",
+    "trustClass",
+    "verdict",
+    "verificationSourceClosureSha256"
+  ],
+  "caseReceiptFields": [
+    "caseId",
+    "directoryIdentitySha256",
+    "fixtureByteCount",
+    "fixtureSha256",
+    "method",
+    "observationSha256",
+    "operationId",
+    "requestSha256"
+  ],
+  "caseFields": [
+    "caseId",
+    "fixtureBase64",
+    "fixtureByteCount",
+    "fixtureRelativePath",
+    "fixtureSha256",
+    "operationId",
+    "relativeDirectory"
+  ],
+  "cases": [
+    {
+      "caseId": "nested-state-directory",
+      "fixtureBase64": "VGlueVJ1c3RMTSBkaXJlY3RvcnkgZmx1c2ggbmVzdGVkIHZlY3Rvci4K",
+      "fixtureByteCount": 42,
+      "fixtureRelativePath": "state/checkpoints/vector.txt",
+      "fixtureSha256": "c6e3d0b1ae0ccde152214f4d9d26a5df6a0d8b1d1e67a78ccfabcc2b93e17c7f",
+      "operationId": "directory-flush-fixed-nested-state",
+      "relativeDirectory": "state/checkpoints"
+    },
+    {
+      "caseId": "owned-root-directory",
+      "fixtureBase64": "VGlueVJ1c3RMTSBkaXJlY3RvcnkgZmx1c2ggcm9vdCB2ZWN0b3IuCg==",
+      "fixtureByteCount": 40,
+      "fixtureRelativePath": "root-vector.txt",
+      "fixtureSha256": "da0bdd4d0197e6aff467caadf37a4b9fa5101c3ac30bb3d3241852f594f00d31",
+      "operationId": "directory-flush-fixed-owned-root",
+      "relativeDirectory": "."
+    }
+  ],
+  "limits": {
+    "maximumReceiptBytes": 32768,
+    "maximumSourceMemberBytes": 16777216,
+    "maximumCases": 2,
+    "maximumFixtureBytesPerCase": 4096,
+    "maximumPathCodeUnits": 4096
+  },
+  "pathPolicy": {
+    "configuration": "explicit-absolute-package-output-and-scratch-roots",
+    "linksAndReparsePoints": "reject-where-host-api-exposes-them",
+    "roots": "pairwise-disjoint-and-not-ancestor-related",
+    "outputRoot": "create-only-after-all-replays-and-scratch-cleanup",
+    "packageRoot": "read-only-through-frozen-directory-flush-client",
+    "scratchRoot": "caller-owned-existing-directory",
+    "scratchWorktree": "one-tool-owned-unique-child-removed-before-receipt"
+  },
+  "receiptPolicy": {
+    "canonicalJcsRequired": true,
+    "fileFsyncRequired": true,
+    "pathDisclosureForbidden": true,
+    "rawProcessOutputForbidden": true,
+    "readbackRequired": true,
+    "timestampOmitted": "replay-record-does-not-claim-observation-time"
+  },
+  "nonClaims": [
+    "A deterministic replay record is not a signed attestation or observation-time receipt.",
+    "A local-test-build record is not release-package provenance.",
+    "One host RID does not prove execution on another RID or physical architecture.",
+    "A successful directory flush call is not controlled power-loss or storage-device evidence.",
+    "An empty child environment and a no-network helper contract are not operating-system process or network isolation.",
+    "Workflow source and an uploaded package do not prove a hosted job completed successfully.",
+    "A passing replay does not prove signing, publication, deployment, public readback, or campaign progress."
+  ]
+}
