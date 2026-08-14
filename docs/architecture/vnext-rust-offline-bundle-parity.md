@@ -157,10 +157,15 @@ receipt, or public HTTPS readback claim.
 - Preserve the sole generated browser currentness and projection execution
   boundary from Rust; do not add handwritten JavaScript semantics or a second
   ABI. See `docs/architecture/vnext-campaign-evidence-wasm-boundary.md`.
-- Connect bounded create-only receipt and subject stores to one campaign
-  runner, then persist and reproject the exact current result.
-- Bind only that reprojected result into final attestation, release
-  authorization, operator rendering, synchronized documentation, and public
-  readback.
-- Complete the Rust/Win32 directory-flush proof and bounded archive-member
-  admission before production durability or package-release claims.
+- The bounded stores, sole runner, final attestation, release authorization,
+  operator projection, deployment/readback admission, and publication
+  descendants are integrated. Preserve that clean cut and do not accept an
+  offline-bundle verdict as mutable campaign truth.
+- Preserve the integrated Rust/Win32 directory-flush client, bounded archive
+  authority, and protected equality-custody handle. Production durability and
+  package-release claims still require controlled physical power-loss
+  evidence, current helper provenance/execution for every supported RID,
+  authorized production custody, broader hostile/fuzz coverage, and OS
+  isolation.
+- Execute the authorized real campaign and publication gates; no local bundle,
+  parity corpus, or synthetic capacity fixture advances a live counter.

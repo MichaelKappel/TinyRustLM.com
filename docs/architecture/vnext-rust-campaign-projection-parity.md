@@ -175,11 +175,15 @@ receipt, or public HTTPS readback claim.
   plan, receipt, subject, pins, and result bytes while keeping projection
   semantics in Rust. See
   `docs/architecture/vnext-campaign-evidence-wasm-boundary.md`.
-- Connect bounded create-only receipt and subject stores to one campaign
-  runner, then persist and reproject the exact current result.
-- Bind only that reprojected result into final attestation, release
-  authorization, operator rendering, synchronized documentation, and public
-  readback.
-- Complete Rust/Win32 directory-flush evidence, archive-member scanning, and
-  protected equality-list custody before production durability or release
-  claims.
+- The bounded stores, sole runner, final attestation, release authorization,
+  operator projection, deployment/readback admission, and publication
+  descendants are integrated. Preserve that incompatible cutover and never
+  reintroduce a stored-result truth input or second projection path.
+- Preserve the integrated Rust/Win32 directory-flush client, bounded archive
+  authority, and protected equality-custody handle. Complete controlled
+  physical power-loss evidence, current helper provenance/execution for every
+  supported RID, authorized production custody, broader hostile/fuzz coverage,
+  and OS isolation before production durability or release claims.
+- Run the authorized real model, browser, MemoryEndpoints, outside-observer,
+  catalog, package, deployment, and HTTPS gates. Fixture capacity remains
+  non-live evidence.

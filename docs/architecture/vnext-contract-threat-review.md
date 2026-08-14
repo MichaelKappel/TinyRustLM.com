@@ -103,10 +103,13 @@ release. No finalized content-addressed object points back to one of those
 descendants.
 
 These later local facts close the named cross-runtime implementation gaps and
-the maintained release-entry-point cutover only. They do not close
-archive-member scanning, protected production secret-list custody, authorized
-live MemoryEndpoints continuity, independent outside-network lane proofs,
-catalog publication, or a real production HTTPS readback. The
+the maintained release-entry-point cutover. Subsequent Gate D checkpoints also
+integrate one bounded archive authority and one module-issued protected
+equality-custody contract. They do not close authorized production custody,
+current native helper provenance/execution for every supported RID, controlled
+physical power-loss evidence, authorized live MemoryEndpoints continuity,
+independent outside-network lane proofs, catalog publication, or a real
+production HTTPS readback. The
 production verifier rejects nonpublic DNS results, pins one public address,
 verifies normal TLS identity, and streams the exact closed inventory. The sole
 release surface now reconstructs deployment and authorization, invokes that
@@ -196,7 +199,7 @@ verified by later phases.
 | Content to identity | Claimed hash and content ID | Field shape and declared derivation profile | RFC 8785 JCS and domain-separated hash recomputation |
 | Signature to authority | Envelope, key, role, time, registry, revocation | Local shape, role/domain, and time-window checks | Ed25519 verification and trusted registry chain |
 | Receipt to evidence DAG | Parent IDs and evidence references | Local sorting, uniqueness, state, and typed payload checks | Parent loading, closure, cycle, role, and freshness checks |
-| Private to public evidence | Public-safe record, canonical public text, and redaction profile | Closed public schema, canonical LF UTF-8 text, and forbidden value classes | The later Node checkpoint performs exact document/text scans and receipt replay; Rust/browser parity, protected-list release integration, and bounded archive-member scanning remain |
+| Private to public evidence | Public-safe record, canonical public text, and redaction profile | Closed public schema, canonical LF UTF-8 text, forbidden value classes, bounded archive decoding, and a module-issued protected equality handle | Authorized production custody issuer/private loader, current per-RID helper provenance, broader fuzz/property evidence, and live release operation |
 | Local P2P to public claim | Manifest, lane proof, claim wording | Local identity, route, transfer, state, and expiry checks | Outside observer signature, full transfer, and publication authority |
 
 ## Threat Analysis
@@ -308,8 +311,11 @@ the custody and redaction profiles, a
 separate acyclic verification receipt, external
 root/terminal/campaign/environment/hash pins, current target signatures, and
 all supplied receipt and subject bytes without network access. That work is
-outside this Phase 2 PASS. It does not close compressed archive-member
-scanning, independent observer operation, or any campaign gate.
+outside this Phase 2 PASS. Later local Gate D checkpoints implement bounded
+archive-member scanning and protected equality-custody integration, but they
+do not establish production custody, independent observer operation, current
+multi-RID helper provenance, physical power-loss behavior, or any campaign
+gate.
 
 The redaction checkpoint also admits canonical public text only as fatal UTF-8,
 without BOM, CR, disallowed controls, or a missing terminal LF. It derives a
@@ -408,9 +414,10 @@ over an exact authorized release graph. Local authority and fixture readback
 coverage do not by themselves establish publication.
 The Rust/Win32 directory-flush primitive and marker-backed publication
 integration are implemented across all current vNext stores, campaign-operation
-records, and runner-lock records. Physical durability evidence remains a
-prerequisite for the corresponding production claim. Archive-member scanning,
-protected equality-list release custody, broader hostile/fuzz coverage, and
-production helper provenance also remain open.
+records, and runner-lock records. The sole bounded archive authority and
+module-issued protected equality handle are integrated into current release
+operations. Physical durability, authorized production custody, current
+multi-RID helper provenance/execution, OS isolation, and broader hostile/fuzz
+coverage remain prerequisites for the corresponding production claims.
 
 Campaign counters remain `0/20`, `0/50`, `0/25`, `0/40`, and `0/20`.

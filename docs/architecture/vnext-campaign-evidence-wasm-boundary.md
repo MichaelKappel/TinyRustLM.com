@@ -235,8 +235,11 @@ the focused set was rerun, and only then did the complete rerun pass.
   authorization, operator rendering, synchronized documentation, deployment,
   and public readback bind only a fresh sole-runner result through the sole
   release surface.
-- Complete Rust/Win32 directory-flush evidence, archive-member scanning, and
-  protected equality-list custody before production durability or release
-  claims.
+- Preserve the integrated Rust/Win32 directory-flush client, bounded archive
+  authority, and construction-time protected equality handle. Production
+  durability and release claims still require controlled physical power-loss
+  evidence, current helper provenance/execution for every supported RID,
+  authorized production custody, broader hostile/fuzz coverage, and OS
+  process/network isolation.
 - Replace fixtures only with authorized raw objective receipts from real
   phases. No local conformance test increments a live campaign counter.

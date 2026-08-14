@@ -27,10 +27,12 @@ Its six-member source closure has SHA-256
 `845acd1da5aa060ad7eb15dee0fdb866d9ac13ea20a699fe13f4ea6b0592b2d9`.
 The receipt, subject, campaign-artifact, campaign-operation, and append-only
 runner-lock paths all use this primitive. There is no unsupported-success
-class or caller-supplied durability path. Gate D remains incomplete because
-archive admission, protected equality-list custody, broader hostile/fuzz
-coverage, and physical evidence remain separate requirements. No campaign
-counter advances.
+class or caller-supplied durability path. Bounded archive admission and the
+module-issued protected equality-custody contract are also integrated locally.
+Gate D remains incomplete because controlled physical power-loss evidence,
+current per-RID helper provenance and execution, authorized production custody,
+OS process/network isolation, and broader hostile/fuzz coverage remain
+separate requirements. No campaign counter advances.
 
 ## Why A Separate Boundary Exists
 
@@ -318,8 +320,10 @@ Retrieved 2026-08-11:
 
 ## Explicit Non-Claims
 
-- Gate D is not complete; compressed archive admission, protected equality-list
-  custody, broader parser fuzzing, and physical durability evidence remain.
+- Gate D is not complete. Bounded archive admission and local protected
+  equality-custody integration are implemented, but production custody,
+  current multi-RID helper provenance/execution, broader parser fuzzing, OS
+  isolation, and controlled physical durability evidence remain.
 - All four current vNext Node stores and runner-lock records require the
   durable-publication primitive; this does not prove unrelated older tools
   have completed their clean-slate deletion gate.

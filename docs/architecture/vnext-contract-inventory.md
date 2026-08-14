@@ -235,9 +235,10 @@ flushes, and activates only after complete verification. Receipt and subject
 stores use sole `putMany` paths; their size-one methods are wrappers. Every
 current vNext store, campaign-operation record, and runner-lock record consumes
 the sole receipt-backed durable-publication primitive. No batch claims an
-atomic filesystem transaction. OS network isolation, release provenance,
-protected equality-list custody, and physical power-loss evidence remain
-incomplete.
+atomic filesystem transaction. OS network isolation, current helper provenance
+and clean-consumer execution for every supported RID, authorized production
+equality-custody issuance and private loading, broader hostile/fuzz evidence,
+and controlled physical power-loss evidence remain incomplete.
 The sole bounded ZIP and tar-gzip authority, its Rust process boundary, and the
 v4 public-artifact secret-scan cutover are documented in
 `docs/architecture/vnext-archive-admission.md`. Its client/package profile has

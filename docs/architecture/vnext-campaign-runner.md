@@ -203,8 +203,11 @@ capacity only. It does not increment or predict any live campaign counter.
   surface.
 - Measure maximum authorized closure latency and peak native/WASM memory on
   target release hosts.
-- Complete bounded compressed archive scanning, protected equality-list
-  custody, and physical durability exercises before corresponding production
+- Preserve the sole bounded archive authority and construction-time protected
+  equality handle already used by release operations. Complete current helper
+  provenance and clean-consumer execution for every supported RID, authorized
+  production custody, broader hostile/fuzz evidence, OS isolation, and
+  controlled physical durability exercises before corresponding production
   claims.
 - Run authorized real model, browser, MemoryEndpoints, outside-observer,
   catalog, package, and HTTPS release gates. Mocks and synthetic capacity do

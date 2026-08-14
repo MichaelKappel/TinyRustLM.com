@@ -134,9 +134,15 @@ exact readback, and quarantine for invalid entries. Operation history is
 append-only. A process interruption can leave a valid incomplete prefix, but
 cannot create a mutable pass or authorize a later phase.
 
-Windows directory metadata flushing, bounded archive-member scanning, and
-protected production equality-list custody remain separate Gate D obligations.
-No production durability claim may exceed the evidence for those boundaries.
+The Win32 directory-flush helper, bounded ZIP/tar-gzip admission authority,
+and module-issued protected equality-custody contract are integrated into the
+current local vNext paths. Those contracts prove bounded local conformance,
+not production operation. Gate D still requires controlled physical
+power-loss/filesystem evidence, current native helper provenance and clean
+consumers for every supported RID, an authorized production custody issuer and
+private loader, broader fuzz/property/differential coverage, and the declared
+OS process/network isolation. No production durability or release claim may
+exceed that evidence.
 
 ## Completion Predicate
 
