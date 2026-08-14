@@ -125,6 +125,18 @@ before one final commit receipt. Its integration test uses only fixture-labeled
 output and has not been used to claim a live pass. No local test changes a
 campaign counter.
 
+The current archive Gate D checkpoint adds one frozen
+`tinyrustlm.vnext.archive-scan-helper-verification.v1` profile with SHA-256
+`825c2b76c7a1a2bc53cd79db778018b1efcb963d3e95bd16f21a7f029f4edd42`.
+One clean local `win-x64` release package from source revision
+`5db9e943ecdbcef83e27be1782d9bcb5ec4109fe` passed its 20/20 consumer
+suite and replayed the exact ZIP and tar-gzip vectors through the packaged
+native helper. Its canonical replay receipt has SHA-256
+`dde3309fa52fcc87925757f85335970d4f7807855debcae0dd405ad0ce5cddd8`.
+CI source performs the same replay for each declared RID and uploads its receipt
+separately from the package, but no completed hosted run or non-Windows native
+execution is claimed at this checkpoint.
+
 Reviewed at `2026-08-11T19:10:29Z`. The review is invalidated when any bound
 file changes, when the parser changes, or when a deferred proof obligation is
 reclassified without a new threat review.
@@ -395,6 +407,12 @@ At review time:
   the complete unit suite, including source independence, corpus regeneration
   identity, invariant partitioning, object-key order independence, required
   root fields, and nested unknown-field rejection.
+- The current clean physical-worktree Node suite passed 947/947 with no
+  failures, skips, cancellations, or todos in 15,703.062 seconds. Its stdout
+  transcript has SHA-256
+  `78375d023e9d67aee323c200e1f590155f452a7808164c017e53fca47aea0708`;
+  stderr was empty. The exact current `win-x64` release package then passed its
+  20/20 consumer suite and produced the native replay receipt identified above.
 
 The full run includes the final invariant-report classification, threat review,
 and all focused contract tests. The later cross-language and browser boundaries

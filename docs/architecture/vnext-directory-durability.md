@@ -36,6 +36,13 @@ structured archive target and frozen 29-seed hostile corpus now replay locally;
 hosted sanitizer execution, longer campaigns, and retention/minimization of any
 future crash findings remain open. No campaign counter advances.
 
+The adjacent archive-scan boundary now also has one clean current `win-x64`
+release package and one deterministic fixed-vector native replay receipt from
+source revision `5db9e943ecdbcef83e27be1782d9bcb5ec4109fe`. That evidence is
+specific to `tinyrustlm-archive-scan`; it does not provide current release
+provenance or per-RID execution for `tinyrustlm-directory-flush`, and it does
+not narrow the physical-durability requirements in this document.
+
 ## Why A Separate Boundary Exists
 
 The current Node stores use exclusive same-directory temporaries, bounded
@@ -343,6 +350,7 @@ Retrieved 2026-08-11:
   it proves only that every listed directory flush returned success.
 - No physical power interruption has been executed.
 - No Linux or physical ARM64 execution evidence exists for this helper.
+- The local archive-scan package replay is not directory-flush-helper evidence.
 - No release, deployment, publication, model qualification, browser round,
   live memory round, outside lane proof, or catalog announcement follows from
   these tests.

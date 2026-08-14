@@ -229,6 +229,7 @@ Focused verification:
 
 ```powershell
 node --test tests/archive-scan-helper-package.test.js
+node --test tests/archive-scan-helper-verification.test.js
 node --test tests/archive-scan-client.test.js `
   tests/public-evidence-secret-scan.test.js `
   tests/web-release-secret-scan.test.js
@@ -244,13 +245,25 @@ $env:TINYRUSTLM_ARCHIVE_SCAN_TEST_PACKAGE_ROOT = `
   '<new-absolute-package-directory>'
 node --test tests/archive-scan-client.test.js `
   tests/public-evidence-secret-scan.test.js
+
+$scratchRoot = '<existing-absolute-scratch-parent>'
+$verificationOutput = '<new-absolute-verification-output-directory>'
+node tools/archive-scan-helper-verification.js `
+  '<new-absolute-package-directory>' `
+  $verificationOutput `
+  $scratchRoot
 ```
 
 The materializer rejects an existing output directory, dirty release source,
 cross-RID relabeling, and debug-as-release relabeling. These local tests are
-conformance evidence. A production release additionally requires current
-native package evidence for every supported RID and the complete signing,
-authorization, deployment, and HTTPS-readback gates.
+conformance evidence. The verifier replays exactly one frozen ZIP and one
+frozen tar-gzip vector through the packaged helper, removes its unique scratch
+child, and writes exactly one canonical create-only receipt. That receipt is a
+deterministic native-package replay record and deliberately omits observation
+time. A production release additionally requires current native package and
+replay evidence for every supported RID, independently retained hosted-CI
+evidence, and the complete signing, authorization, deployment, and
+HTTPS-readback gates.
 
 ## Checkpoint Report
 

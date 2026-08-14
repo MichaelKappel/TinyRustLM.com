@@ -343,9 +343,19 @@ source closures, source revision and clean-worktree observation, Cargo and
 rustc versions, RID/platform, build profile, trust class, executable, canonical
 manifest, and canonical provenance. There is no direct-executable, `PATH`,
 system-archive-tool, JavaScript-parser, compatibility, or best-effort path.
-One local clean `win-x64` release package passed its exact consumer suite; this
-does not prove hosted CI, another RID, signing, publication, or production
-readback. See `docs/architecture/vnext-archive-admission.md`.
+The native-package replay profile
+`tinyrustlm.vnext.archive-scan-helper-verification.v1` has SHA-256
+`825c2b76c7a1a2bc53cd79db778018b1efcb963d3e95bd16f21a7f029f4edd42`.
+It admits exactly one ZIP and one tar-gzip vector through a packaged native
+helper, removes its unique scratch child, and writes one create-only canonical
+receipt only after exact member and package identity readback. One local clean
+`win-x64` release package from source revision
+`5db9e943ecdbcef83e27be1782d9bcb5ec4109fe` passed its 20/20 consumer
+suite and produced replay receipt
+`dde3309fa52fcc87925757f85335970d4f7807855debcae0dd405ad0ce5cddd8`.
+This does not prove hosted CI, another RID, signing, publication, production
+readback, or observation time. See
+`docs/architecture/vnext-archive-admission.md`.
 
 `rust/crates/tinyrustlm-durability` now owns the sole Rust directory-flush
 boundary. Its 7,021-byte frozen profile has SHA-256

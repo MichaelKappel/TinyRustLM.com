@@ -3,26 +3,28 @@
 ## Status
 
 This document records the sole current archive-member admission path as of
-2026-08-13. It replaces operating-system archive commands and consumer-owned
+2026-08-14. It replaces operating-system archive commands and consumer-owned
 ZIP parsing in current production code. Historical v2 scan receipts remain
 immutable evidence, but they are not accepted as current v4 scan authority and
 there is no compatibility reader.
 
 The implementation is local conformance evidence. One clean `win-x64`
 `release-package` built from source revision
-`ab12047fec0bf6d1d2c0b3b00939e228dcb5d46b` and passed the maintained
-clean-consumer suite on 2026-08-13. That package is not signed, published,
-installed on every RID, or evidence of a successful production publication.
+`5db9e943ecdbcef83e27be1782d9bcb5ec4109fe` passed the maintained
+clean-consumer suite and the frozen native-package vector replay on 2026-08-14.
+That package is not signed, published, installed on every RID, or evidence of a
+successful hosted-CI or production publication operation.
 
 ## Frozen Profiles
 
-Three exact raw-byte profiles own the boundary:
+Four exact raw-byte profiles own the boundary:
 
 | Profile | Identifier | SHA-256 |
 | --- | --- | --- |
 | Archive admission | `tinyrustlm.vnext.archive-admission.v1` | `05158f80e01817e31a2968bc4e2f9d1bb05fe53064384563f6546a5468046031` |
 | Process transport | `tinyrustlm.vnext.archive-scan-process.v1` | `a5ab1ba16af4db2cf4660bee8c9efd9a32b018cc30211d2144f4c852912d05ad` |
 | Node client and helper package | `tinyrustlm.vnext.archive-scan-client.v1` | `08bb532cd88273f5633a8693040c2108fd7fef0935f9705f34b98cb1ab405441` |
+| Native package fixed-vector replay | `tinyrustlm.vnext.archive-scan-helper-verification.v1` | `825c2b76c7a1a2bc53cd79db778018b1efcb963d3e95bd16f21a7f029f4edd42` |
 
 Every reader verifies its profile bytes against the compiled or pinned hash.
 A changed profile requires a changed identity and rerun evidence. Unknown
@@ -110,7 +112,8 @@ durability, not a physical power-loss claim or publication authorization.
 `eng/build-archive-scan-helper.sh` provide current-host builds for `win-x64`,
 `linux-x64`, and `linux-arm64`. CI declares native jobs on each architecture,
 including GitHub's `ubuntu-24.04-arm` hosted runner label, then reruns the real
-consumer suite against the produced release package before artifact upload.
+consumer suite and the fixed-vector native verifier against the produced
+release package before separate package and verification-receipt uploads.
 The runner label is documented by [GitHub's hosted-runner reference](https://docs.github.com/en/actions/reference/runners/github-hosted-runners),
 retrieved 2026-08-13. A workflow declaration is not successful execution
 evidence; only a completed run can prove a particular package and runner.
@@ -119,17 +122,50 @@ The local `win-x64` package observation for the source revision above is:
 
 | Identity | SHA-256 |
 | --- | --- |
-| Executable | `d9da2044181ded8028e66db9bfc4ee79c83df213c7a55a9057150cc3ba744117` |
+| Executable | `bde6cb38779cf9245e07621c3f26ad2bc638a4e4da729f4bb5e891a3c26250aa` |
 | Helper source closure | `9e4c97c0908f662b90e99fe0d774874ea5755d69d151706751543f9b64ac102b` |
 | Package-builder source closure | `57de3b8c8ec375b5dfc2f123c3f9164d499ac141f906760585fc769318342087` |
-| Manifest | `4ce7f124206994fd822f4c03269227956e7e583160b6c2400473c447e340cf70` |
-| Provenance | `c78ae055375f19357583734c2aaf57c65a1f3a7a762c3f8624f103dd2efb31b7` |
+| Manifest | `1eae9e16fcf4570858d84c34003bea33833bdcc5b47dad83ca4903bd080188aa` |
+| Provenance | `71f23c7229c9fda429d952c4375aafa9ef432eaa471a48802ce4b174baa996b6` |
 
 The materializer reported `sourceWorktreeClean=true`, `buildProfile=release`,
 `trustClass=release-package`, and `runtimeIdentifier=win-x64`. The exact
 external package passed 20/20 archive-client and public-evidence tests with
-zero skips. These identities are bounded local build evidence, not a release
-ledger or substitute for independently retained CI artifacts.
+zero skips. The consumer transcript has SHA-256
+`7e78a34f438fabbbdc03e9a725e05b99fde60a916a326ef809cba60c4aa20c0e`.
+These identities are bounded local build evidence, not a release ledger or
+substitute for independently retained CI artifacts.
+
+## Native Package Fixed-Vector Replay
+
+`tinyrustlm/tools/archive-scan-helper-verification.js` is the only current
+native package replay entry point. It requires three explicit, absolute,
+pairwise-disjoint roots: a read-only helper package, an absent create-only
+receipt output, and an existing caller-owned scratch parent. It rejects links
+where the host API exposes them, verifies the package through the frozen Node
+client, creates one unique scratch child, and removes that child before any
+receipt is written.
+
+The frozen profile contains exactly two small canonical vectors, one ZIP and
+one tar-gzip. Each replay must execute the packaged helper, reproduce the exact
+archive SHA-256, sorted content-manifest SHA-256, member count, aggregate
+content bytes, member paths, member bytes, and member hashes, and retain package
+identity before the verifier can create a receipt. The output directory then
+contains exactly one canonical JCS file,
+`archive-scan-helper-verification.v1.json`, written exclusively with file fsync
+and exact readback.
+
+The local package above produced a 2,031-byte receipt with SHA-256
+`dde3309fa52fcc87925757f85335970d4f7807855debcae0dd405ad0ce5cddd8`.
+It binds client source closure
+`914c3900571148899f7fbebdcd97873c775edb2900189bb4ebe28e7271d1f2db`
+and verifier source closure
+`df35d6c53dcd7266f0292b2b36cc3a570d6b2aa3d4862801da1934f77d9283f0`
+in addition to every package identity listed above. Its two case identities
+are `canonical-package-tar-gzip` and `canonical-package-zip`. The receipt
+intentionally has no timestamp: it is a deterministic package/vector replay
+record, not proof of observation time, hosted execution, signing, publication,
+physical durability, or production operation.
 
 ## Node Verification
 
@@ -186,6 +222,7 @@ $env:CARGO_TARGET_DIR = Join-Path $env:LOCALAPPDATA 'TinyRustLM\cargo-target'
 cargo test -p tinyrustlm-archive --all-targets --locked
 cargo clippy -p tinyrustlm-archive --all-targets --locked -- -D warnings
 node --test tinyrustlm/tests/archive-scan-helper-package.test.js
+node --test tinyrustlm/tests/archive-scan-helper-verification.test.js
 node --test tinyrustlm/tests/archive-scan-client.test.js `
   tinyrustlm/tests/public-evidence-secret-scan.test.js `
   tinyrustlm/tests/web-release-secret-scan.test.js
@@ -231,6 +268,15 @@ The first consumer run is retained separately: it passed 8/24 and failed 16
 helper-dependent cases because that process omitted the required external
 Cargo target and exhausted E:. Cargo removed exactly the 87 generated files;
 the corrected D:-contained rerun supplied the terminal verdict above.
+
+The current clean physical-worktree Node run at source revision
+`5db9e943ecdbcef83e27be1782d9bcb5ec4109fe` passed 947/947 with zero
+failures, skips, cancellations, or todos. Its stdout transcript has SHA-256
+`78375d023e9d67aee323c200e1f590155f452a7808164c017e53fca47aea0708`;
+stderr was empty. That complete local run includes four focused tests for the
+verification profile and CLI. The separate current release-package consumer
+run passed 20/20, and the native verifier produced the receipt identified
+above. No hosted run is inferred from these local results.
 
 ## Structured Fuzz And Corpus Checkpoint
 
@@ -281,10 +327,11 @@ the exact bytes. It does not prove that those bytes are malware-free, licensed,
 provenance-approved, semantically correct, safe to execute, eligible for
 publication, or available from a registry. A local debug helper is not release
 provenance. The bounded local `win-x64` package above does not establish the
-other RIDs or publication. Production closure still requires current native
-packages and clean-consumer evidence for every supported RID, successful
-hosted CI, signing where required, malware-scan boundary evidence, release
-authorization, deployment, and HTTPS readback.
+other RIDs or publication. Its deterministic replay receipt does not establish
+observation time or an independently operated witness. Production closure
+still requires current native packages and clean-consumer evidence for every
+supported RID, successful hosted CI, signing where required, malware-scan
+boundary evidence, release authorization, deployment, and HTTPS readback.
 The maintained target and frozen seed corpus do not prove absence of parser
 defects. Hosted CI has not run for this source checkpoint, so no sanitizer
 result is claimed. No crash was observed and therefore no retained minimized
