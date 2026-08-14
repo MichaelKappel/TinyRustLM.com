@@ -574,3 +574,404 @@ fn rejects_archives_without_regular_members() {
         "archive_no_regular_members"
     );
 }
+
+const GENERATED_ARCHIVE_CASES: usize = 64;
+const GENERATED_ARCHIVE_SEED: u64 = 0x6f4d_26b9_8a31_c5e7;
+const MUTATIONS_PER_FORMAT: usize = 128;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct LogicalMember {
+    path: String,
+    content: Vec<u8>,
+}
+
+type MemberVisit = (String, Vec<u8>);
+type ScanWithVisitsResult = Result<(ArchiveAdmission, Vec<MemberVisit>), ArchiveAdmissionError>;
+
+fn next_generated(state: &mut u64) -> u64 {
+    *state = state
+        .wrapping_mul(6_364_136_223_846_793_005)
+        .wrapping_add(1_442_695_040_888_963_407);
+    *state ^ (*state >> 29)
+}
+
+fn shuffled_indices(length: usize, state: &mut u64) -> Vec<usize> {
+    let mut indices = (0..length).collect::<Vec<_>>();
+    for upper in (1..length).rev() {
+        let bound = u64::try_from(upper + 1).expect("generated case bound fits u64");
+        let selected = usize::try_from(next_generated(state) % bound)
+            .expect("generated case index fits usize");
+        indices.swap(upper, selected);
+    }
+    indices
+}
+
+fn generated_members(case_index: usize, state: &mut u64) -> Vec<LogicalMember> {
+    let member_count =
+        usize::try_from(next_generated(state) % 6 + 1).expect("generated member count fits usize");
+    let mut members = Vec::with_capacity(member_count);
+    for member_index in 0..member_count {
+        let group = next_generated(state) % 17;
+        let content_length = usize::try_from(next_generated(state) % 257)
+            .expect("generated content length fits usize");
+        let mut content = Vec::with_capacity(content_length);
+        for _ in 0..content_length {
+            content.push(
+                u8::try_from(next_generated(state) >> 56).expect("the high byte of a u64 fits u8"),
+            );
+        }
+        if let Some(first) = content.first_mut() {
+            *first = b'@';
+        }
+        members.push(LogicalMember {
+            path: format!("case-{case_index:03}/group-{group:02}/member-{member_index:02}.bin"),
+            content,
+        });
+    }
+    members
+}
+
+fn encode_logical_archive(
+    format: ArchiveFormat,
+    members: &[LogicalMember],
+    order: &[usize],
+) -> Vec<u8> {
+    match format {
+        ArchiveFormat::Zip => {
+            let specs = order
+                .iter()
+                .enumerate()
+                .map(|(position, member_index)| {
+                    let member = &members[*member_index];
+                    ZipSpec {
+                        name: &member.path,
+                        content: &member.content,
+                        kind: ZipKind::File(if position % 2 == 0 {
+                            CompressionMethod::Stored
+                        } else {
+                            CompressionMethod::Deflated
+                        }),
+                    }
+                })
+                .collect::<Vec<_>>();
+            zip_bytes(&specs)
+        }
+        ArchiveFormat::TarGzip => {
+            let specs = order
+                .iter()
+                .map(|member_index| {
+                    let member = &members[*member_index];
+                    TarSpec {
+                        name: member.path.as_bytes(),
+                        content: &member.content,
+                        entry_type: b'0',
+                        link_name: b"",
+                    }
+                })
+                .collect::<Vec<_>>();
+            tar_gzip(&specs)
+        }
+    }
+}
+
+fn reference_sha256(bytes: &[u8]) -> [u8; 32] {
+    <sha2::Sha256 as sha2::Digest>::digest(bytes).into()
+}
+
+fn reference_hex(digest: &[u8; 32]) -> String {
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut output = String::with_capacity(64);
+    for byte in digest {
+        output.push(char::from(HEX[usize::from(*byte >> 4)]));
+        output.push(char::from(HEX[usize::from(*byte & 0x0f)]));
+    }
+    output
+}
+
+fn reference_path_identity(path: &str) -> [u8; 32] {
+    let mut hasher = sha2::Sha256::default();
+    sha2::Digest::update(&mut hasher, b"tinyrustlm.archive-member-path.v1\0");
+    sha2::Digest::update(&mut hasher, path.as_bytes());
+    sha2::Digest::finalize(hasher).into()
+}
+
+fn reference_content_evidence(visits: &[MemberVisit]) -> (String, Vec<(String, String, u64)>, u64) {
+    let mut sorted = visits.iter().collect::<Vec<_>>();
+    sorted.sort_by(|left, right| left.0.cmp(&right.0));
+
+    let mut manifest = sha2::Sha256::default();
+    sha2::Digest::update(&mut manifest, b"tinyrustlm.archive-content-manifest.v1\0");
+    sha2::Digest::update(
+        &mut manifest,
+        u64::try_from(sorted.len())
+            .expect("generated visit count fits u64")
+            .to_be_bytes(),
+    );
+    let mut evidence = Vec::with_capacity(sorted.len());
+    let mut total = 0_u64;
+    for (path, content) in sorted {
+        let path_digest = reference_path_identity(path);
+        let content_digest = reference_sha256(content);
+        let content_length = u64::try_from(content.len()).expect("generated content fits u64");
+        sha2::Digest::update(&mut manifest, path_digest);
+        sha2::Digest::update(&mut manifest, content_digest);
+        sha2::Digest::update(&mut manifest, content_length.to_be_bytes());
+        total = total
+            .checked_add(content_length)
+            .expect("generated aggregate content fits u64");
+        evidence.push((
+            reference_hex(&path_digest),
+            reference_hex(&content_digest),
+            content_length,
+        ));
+    }
+    let manifest_digest: [u8; 32] = sha2::Digest::finalize(manifest).into();
+    (reference_hex(&manifest_digest), evidence, total)
+}
+
+fn assert_admission_consistent(
+    format: ArchiveFormat,
+    archive_bytes: &[u8],
+    admission: &ArchiveAdmission,
+    visits: &[MemberVisit],
+) {
+    let (manifest_sha256, expected_members, total_bytes) = reference_content_evidence(visits);
+    assert_eq!(admission.format(), format);
+    assert_eq!(
+        admission.archive_sha256(),
+        reference_hex(&reference_sha256(archive_bytes))
+    );
+    assert_eq!(admission.content_manifest_sha256(), manifest_sha256);
+    assert_eq!(admission.total_uncompressed_bytes(), total_bytes);
+    assert_eq!(admission.members().len(), expected_members.len());
+    for (actual, expected) in admission.members().iter().zip(expected_members) {
+        assert_eq!(actual.path_identity_sha256(), expected.0);
+        assert_eq!(actual.content_sha256(), expected.1);
+        assert_eq!(actual.uncompressed_bytes(), expected.2);
+    }
+}
+
+fn scan_with_visits(format: ArchiveFormat, archive_bytes: &[u8]) -> ScanWithVisitsResult {
+    let mut visits = Vec::new();
+    let admission = scan_archive_bytes(format, archive_bytes, |member, content| {
+        visits.push((member.normalized_path().to_string(), content.to_vec()));
+    })?;
+    Ok((admission, visits))
+}
+
+fn profile_error_codes() -> std::collections::BTreeSet<String> {
+    let profile: serde_json::Value =
+        serde_json::from_slice(ARCHIVE_ADMISSION_PROFILE_BYTES).expect("frozen profile is JSON");
+    profile["errorCodes"]
+        .as_array()
+        .expect("frozen profile declares errorCodes")
+        .iter()
+        .map(|code| {
+            code.as_str()
+                .expect("frozen error code is a string")
+                .to_string()
+        })
+        .collect()
+}
+
+#[test]
+fn generated_equivalent_formats_match_independent_content_evidence() {
+    let mut state = GENERATED_ARCHIVE_SEED;
+    for case_index in 0..GENERATED_ARCHIVE_CASES {
+        let members = generated_members(case_index, &mut state);
+        let zip_order = shuffled_indices(members.len(), &mut state);
+        let tar_order = shuffled_indices(members.len(), &mut state);
+        let zip = encode_logical_archive(ArchiveFormat::Zip, &members, &zip_order);
+        let tar = encode_logical_archive(ArchiveFormat::TarGzip, &members, &tar_order);
+        let (zip_admission, mut zip_visits) =
+            scan_with_visits(ArchiveFormat::Zip, &zip).expect("generated ZIP must be admitted");
+        let (tar_admission, mut tar_visits) = scan_with_visits(ArchiveFormat::TarGzip, &tar)
+            .expect("generated tar-gzip must be admitted");
+
+        assert_admission_consistent(ArchiveFormat::Zip, &zip, &zip_admission, &zip_visits);
+        assert_admission_consistent(ArchiveFormat::TarGzip, &tar, &tar_admission, &tar_visits);
+        assert_ne!(
+            zip_admission.archive_sha256(),
+            tar_admission.archive_sha256()
+        );
+        assert_eq!(
+            zip_admission.content_manifest_sha256(),
+            tar_admission.content_manifest_sha256()
+        );
+        assert_eq!(zip_admission.members(), tar_admission.members());
+        assert_eq!(
+            zip_admission.total_uncompressed_bytes(),
+            tar_admission.total_uncompressed_bytes()
+        );
+        zip_visits.sort_by(|left, right| left.0.cmp(&right.0));
+        tar_visits.sort_by(|left, right| left.0.cmp(&right.0));
+        assert_eq!(zip_visits, tar_visits, "generated case {case_index}");
+    }
+}
+
+fn single_member_verdict(format: ArchiveFormat, name: &str) -> Result<String, &'static str> {
+    let bytes = match format {
+        ArchiveFormat::Zip => zip_file(name, b"path-case", CompressionMethod::Stored),
+        ArchiveFormat::TarGzip => tar_file(name, b"path-case"),
+    };
+    let mut visits = Vec::new();
+    match scan_archive_bytes(format, &bytes, |member, content| {
+        visits.push((member.normalized_path().to_string(), content.to_vec()));
+    }) {
+        Ok(admission) => {
+            assert_admission_consistent(format, &bytes, &admission, &visits);
+            assert_eq!(visits.len(), 1);
+            Ok(visits[0].0.clone())
+        }
+        Err(error) => {
+            assert!(visits.is_empty(), "rejected path {name} exposed content");
+            Err(error.code())
+        }
+    }
+}
+
+#[test]
+fn generated_path_mutations_have_cross_format_verdict_parity() {
+    for case_index in 0..32 {
+        let leaf = format!("leaf-{case_index:02}.dat");
+        let valid = format!("root-{case_index:02}/branch_{case_index:02}/{leaf}");
+        let reserved = case_index % 9 + 1;
+        let cases = [
+            (valid.clone(), None),
+            (format!("../{valid}"), Some("archive_member_path_traversal")),
+            (
+                format!("root-{case_index:02}/../{leaf}"),
+                Some("archive_member_path_traversal"),
+            ),
+            (format!("./{valid}"), Some("archive_member_path_traversal")),
+            (
+                valid.replace('/', "\\"),
+                Some("archive_member_path_nonportable"),
+            ),
+            (
+                format!("root-{case_index:02}//{leaf}"),
+                Some("archive_member_name_invalid"),
+            ),
+            (
+                format!("root-{case_index:02}/COM{reserved}.bin"),
+                Some("archive_member_path_nonportable"),
+            ),
+            (
+                format!("root-{case_index:02}/trailing./{leaf}"),
+                Some("archive_member_path_nonportable"),
+            ),
+            (
+                format!("root-{case_index:02}/name:stream"),
+                Some("archive_member_path_nonportable"),
+            ),
+            (format!("/{valid}"), Some("archive_member_path_absolute")),
+            (
+                format!("root-{case_index:02}/caf\u{e9}.dat"),
+                Some("archive_member_name_invalid"),
+            ),
+        ];
+
+        for (name, expected_error) in cases {
+            let zip = single_member_verdict(ArchiveFormat::Zip, &name);
+            let tar = single_member_verdict(ArchiveFormat::TarGzip, &name);
+            assert_eq!(zip, tar, "cross-format path verdict for {name}");
+            match expected_error {
+                Some(code) => assert_eq!(zip, Err(code), "path {name}"),
+                None => assert_eq!(zip.as_deref(), Ok(name.as_str()), "path {name}"),
+            }
+        }
+    }
+}
+
+fn mutation_members() -> Vec<LogicalMember> {
+    (0..6)
+        .map(|index| LogicalMember {
+            path: format!("mutation/group-{}/member-{index}.bin", index % 3),
+            content: (0..128)
+                .map(|offset| {
+                    u8::try_from((index * 37 + offset * 19) % 251)
+                        .expect("generated mutation byte fits u8")
+                })
+                .collect(),
+        })
+        .collect()
+}
+
+#[test]
+fn every_proper_generated_archive_prefix_rejects_before_member_exposure() {
+    let error_codes = profile_error_codes();
+    let members = mutation_members();
+    let order = (0..members.len()).collect::<Vec<_>>();
+    for format in [ArchiveFormat::Zip, ArchiveFormat::TarGzip] {
+        let archive = encode_logical_archive(format, &members, &order);
+        for prefix_length in 0..archive.len() {
+            let mut visits = 0_usize;
+            let error = scan_archive_bytes(format, &archive[..prefix_length], |_, _| visits += 1)
+                .expect_err("every proper archive prefix must be rejected");
+            assert_eq!(
+                visits, 0,
+                "{format:?} prefix {prefix_length} exposed a member"
+            );
+            assert!(
+                error_codes.contains(error.code()),
+                "{format:?} prefix {prefix_length} returned undeclared code {}",
+                error.code()
+            );
+        }
+    }
+}
+
+#[test]
+fn deterministic_single_bit_mutations_reject_or_emit_consistent_evidence() {
+    let error_codes = profile_error_codes();
+    let members = mutation_members();
+    let order = [5, 2, 0, 4, 1, 3];
+    for format in [ArchiveFormat::Zip, ArchiveFormat::TarGzip] {
+        let archive = encode_logical_archive(format, &members, &order);
+        let (baseline, baseline_visits) =
+            scan_with_visits(format, &archive).expect("mutation baseline must be admitted");
+        assert_admission_consistent(format, &archive, &baseline, &baseline_visits);
+
+        let sample_count = MUTATIONS_PER_FORMAT.min(archive.len());
+        let mut rejected = 0_usize;
+        for sample_index in 0..sample_count {
+            let offset = sample_index * archive.len() / sample_count;
+            let mut mutated = archive.clone();
+            mutated[offset] ^= 1_u8 << (sample_index % 8);
+            let mut visits = Vec::new();
+            match scan_archive_bytes(format, &mutated, |member, content| {
+                visits.push((member.normalized_path().to_string(), content.to_vec()));
+            }) {
+                Ok(admission) => {
+                    assert_admission_consistent(format, &mutated, &admission, &visits);
+                }
+                Err(error) => {
+                    rejected += 1;
+                    assert!(
+                        visits.is_empty(),
+                        "{format:?} mutation {sample_index} exposed partial content"
+                    );
+                    assert!(
+                        error_codes.contains(error.code()),
+                        "{format:?} mutation {sample_index} returned undeclared code {}",
+                        error.code()
+                    );
+                }
+            }
+        }
+        assert!(rejected > 0, "{format:?} mutations must exercise rejection");
+
+        if format == ArchiveFormat::TarGzip {
+            let mut metadata_only = archive.clone();
+            metadata_only[9] ^= 1;
+            let (admission, visits) = scan_with_visits(format, &metadata_only)
+                .expect("changing the RFC 1952 OS byte preserves payload validity");
+            assert_admission_consistent(format, &metadata_only, &admission, &visits);
+            assert_ne!(baseline.archive_sha256(), admission.archive_sha256());
+            assert_eq!(
+                baseline.content_manifest_sha256(),
+                admission.content_manifest_sha256()
+            );
+        }
+    }
+}
