@@ -20,6 +20,8 @@ __pycache__/
 node_modules/
 playwright-report/
 test-results/
+rust/crates/tinyrustlm-archive/fuzz/artifacts/
+rust/crates/tinyrustlm-archive/fuzz/coverage/
 tinyrustlm/artifacts/playwright/**
 artifacts/native/**
 artifacts/packages/**

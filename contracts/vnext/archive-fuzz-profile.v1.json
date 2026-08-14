@@ -47,7 +47,7 @@
   "engine": {
     "cargoFuzzVersion": "0.13.2",
     "libfuzzerSysVersion": "0.4.13",
-    "toolchain": "nightly",
+    "toolchain": "nightly-2026-08-01",
     "sanitizerRunner": "linux-x64-or-linux-arm64",
     "ciMaximumInputBytes": 4096,
     "ciMaximumTotalSeconds": 60

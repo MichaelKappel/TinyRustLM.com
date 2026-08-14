@@ -20,8 +20,11 @@ const { ensureArchiveScanTestPackage } = require(
   "./helpers/archive-scan-test-package.js"
 );
 const { createStoredZip, createTarGzip } = require("./helpers/archive-test-fixtures.js");
+const { resolveRepositoryRoot } = require("./helpers/repository-root.js");
 const { canonicalizeVnextJcsBytes } = require("../tools/vnext-jcs.js");
-const repositoryRoot = path.resolve(__dirname, "../..");
+const repositoryRoot = resolveRepositoryRoot({
+  requiredFiles: ["contracts/vnext/archive-scan-client-profile.v1.json"]
+});
 
 function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");

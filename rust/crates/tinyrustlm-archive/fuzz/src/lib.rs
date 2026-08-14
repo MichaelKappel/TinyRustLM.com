@@ -23,7 +23,8 @@ pub const MAXIMUM_MATERIALIZED_ARCHIVE_BYTES: usize = 65_536;
 /// Frozen fuzz-profile identity.
 pub const ARCHIVE_FUZZ_PROFILE_ID: &str = "tinyrustlm.vnext.archive-fuzz.v1";
 /// SHA-256 of the exact checked-in fuzz profile.
-pub const ARCHIVE_FUZZ_PROFILE_SHA256: &str = "PENDING";
+pub const ARCHIVE_FUZZ_PROFILE_SHA256: &str =
+    "5af6f00aef3540aa6969bb122dc2a3efdde9b39049c0dfbb15cc1e0fa29ce22e";
 
 const ARCHIVE_FUZZ_PROFILE_BYTES: &[u8] =
     include_bytes!("../../../../../contracts/vnext/archive-fuzz-profile.v1.json");
@@ -152,7 +153,7 @@ impl<'a> Arbitrary<'a> for FuzzProgram {
         }
         let format = decode_format(u8::arbitrary(input)?);
         let mode = decode_mode(u8::arbitrary(input)?);
-        let payload = input.take_rest();
+        let payload = input.bytes(input.len())?;
         if INPUT_MAGIC.len() + 2 + payload.len() > MAXIMUM_INPUT_BYTES {
             return Err(ArbitraryError::IncorrectFormat);
         }
@@ -300,7 +301,10 @@ pub fn exercise_program(program: &FuzzProgram) -> ExerciseReport {
         Ok(admission) => {
             assert_eq!(admission.format(), format);
             assert!(!visits.is_empty(), "admission exposed no regular member");
-            assert_eq!(admission.archive_sha256(), hex_sha256(&sha256(&archive_bytes)));
+            assert_eq!(
+                admission.archive_sha256(),
+                hex_sha256(&sha256(&archive_bytes))
+            );
             assert_admission_matches_oracle(&admission, &visits);
             ExerciseVerdict::Admitted
         }
@@ -366,7 +370,9 @@ fn materialize_archive(program: &FuzzProgram) -> Vec<u8> {
 
     let mut members = generated_members(&program.payload);
     match program.mode {
-        ProgramMode::Canonical | ProgramMode::Truncation | ProgramMode::BitFlip
+        ProgramMode::Canonical
+        | ProgramMode::Truncation
+        | ProgramMode::BitFlip
         | ProgramMode::TrailingData => {}
         ProgramMode::PathContract => apply_path_case(&mut members, &program.payload),
         ProgramMode::NestedArchive => apply_nested_case(&mut members, &program.payload),
@@ -410,8 +416,8 @@ fn generated_members(payload: &[u8]) -> Vec<MemberSpec> {
     (0..count)
         .map(|index| {
             let selector = payload_byte(payload, index + 1);
-            let length = 1
-                + usize::from(payload_byte(payload, index + MAXIMUM_GENERATED_MEMBERS + 1))
+            let length =
+                1 + usize::from(payload_byte(payload, index + MAXIMUM_GENERATED_MEMBERS + 1))
                     % MAXIMUM_GENERATED_MEMBER_BYTES;
             let content = (0..length)
                 .map(|offset| payload_byte(payload, index * 17 + offset + 9) ^ index as u8)
@@ -549,7 +555,10 @@ fn encode_tar_gzip(members: &[MemberSpec]) -> Vec<u8> {
 
 fn append_tar_member(output: &mut Vec<u8>, member: &MemberSpec) {
     let name = member.name.as_bytes();
-    assert!(name.len() <= 100, "fuzz-generated tar path exceeded ustar name field");
+    assert!(
+        name.len() <= 100,
+        "fuzz-generated tar path exceeded ustar name field"
+    );
     let mut header = [0_u8; 512];
     header[..name.len()].copy_from_slice(name);
     write_octal(&mut header[100..108], 0o644);
@@ -625,7 +634,9 @@ fn assert_admission_matches_oracle(
         manifest.update(path_digest);
         manifest.update(content_digest);
         manifest.update(length.to_be_bytes());
-        total = total.checked_add(length).expect("bounded oracle total overflow");
+        total = total
+            .checked_add(length)
+            .expect("bounded oracle total overflow");
     }
     let manifest_digest: [u8; 32] = manifest.finalize().into();
     assert_eq!(

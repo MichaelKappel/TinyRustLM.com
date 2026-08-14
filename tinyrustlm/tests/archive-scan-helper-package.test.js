@@ -15,8 +15,11 @@ const { ensureArchiveScanTestPackage } = require(
   "./helpers/archive-scan-test-package.js"
 );
 const { resolveCargoTargetRoot } = require("./helpers/cargo-target-root.js");
+const { resolveRepositoryRoot } = require("./helpers/repository-root.js");
 
-const repositoryRoot = path.resolve(__dirname, "../..");
+const repositoryRoot = resolveRepositoryRoot({
+  requiredFiles: ["eng/build-archive-scan-helper.ps1"]
+});
 
 function makeRoot(context, label) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), label));

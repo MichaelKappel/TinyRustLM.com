@@ -35,6 +35,5 @@ required-features = ["fuzzing"]
 [[bin]]
 name = "replay_archive_corpus"
 path = "src/bin/replay_archive_corpus.rs"
-test = false
 doc = false
 bench = false
