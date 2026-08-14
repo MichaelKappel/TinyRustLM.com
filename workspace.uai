@@ -1,7 +1,20 @@
-profile: tinyrustlm.source-workspace.v314
+profile: tinyrustlm.source-workspace.v315
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-14T03:53:36Z
+updated_utc: 2026-08-14T04:11:45Z
+
+current_checkpoint_2026_08_14_structured_fuzz_wip_checkin_v1:
+  authority: This is the newest first-read source-control and restart checkpoint. It supersedes older present-tense TinyRustLM heads and next-action descriptions where different while preserving all immutable verification, failure, release, publication, and campaign evidence. It records an unverified WIP preservation commit, not a completed fuzz harness or healthy implementation milestone.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  source_control: TinyRustLM WIP source commit `8064bf7e6179a8ff53d684dc23278338bd0da854` is pushed on `origin/codex/model-acquisition-v2`. This tracked handoff is the only intended subsequent commit and cannot identify its own content hash without self-reference; outside-Git `E:\Source\Rust\workspace.uai` records the final pushed remote head after that commit. The six unchanged authoritative repository heads remain `36d6389fe82b0f53c4d8951aa6af5cb896fd8bf6`, `4f2401fb8166b54c73a1b9d4ad36985bbcf6fb5d`, `8439e224146c790ce6a9da36a32c4c49890cac52`, `4e3d8f52b0b20d9ccb51751e4182e8ab87fb3e43`, `63b39e78d0814c9cacbbba891ea918c844e2b4db`, and `6d77afc4b54f7f84db7efa33d8798aef61e9733f`; each was explicitly pushed, clean, and fresh actual-remote exact. Protected dirty `E:\Source\Rust\TinyRustLM.com` was not edited, staged, cleaned, reset, committed, pushed, or used as authority.
+  wip_boundary: Commit `8064bf7` contains only `contracts/vnext/archive-fuzz-profile.v1.json`, the independent fuzz `Cargo.toml`, `fuzz_targets/structured_archive.rs`, and `src/lib.rs`, totaling 811 inserted lines. It has not been built or tested. `ARCHIVE_FUZZ_PROFILE_SHA256` remains `PENDING`; the declared stable replay executable is missing; no corpus, exact corpus manifest, dictionary, lockfile, README, or CI integration is complete. This is recoverability evidence only and must not be cited as maintained fuzz, sanitizer, corpus replay, Gate D, release, deployment, publication, or campaign evidence.
+  physical_worktree: Clean detached `D:\tw\3116220` remains at verified commit `a422dfbda9bb384d3dfabcbedeb6b5083c70eedc`; do not advance it to unverified WIP merely for equality.
+  handoff_verification: `git diff --check` passes. With `TINYRUSTLM_REPO_ROOT` explicit and restore, build, and temporary outputs confined to D:, filtered `ReportIntakeMemoryTests` passes 9/9 with zero failures or skips. This validates the handoff contract only and does not test the incomplete fuzz code.
+  production_truth: No production member, package, version, release date, site, public readback, MemoryEndpoints account, or catalog state changed. MemoryEndpoints remains unauthorized and disconnected. Campaign counters remain 0/20 qualified models, 0/50 deletion-backed browser rounds, 0/25 authorized live memory rounds, 0/40 outside-network lane proofs, and 0/20 live catalog announcements.
+  exact_resume: Complete the structured fuzz workspace and stable corpus replay path without a second parser or compatibility route. Bind the exact profile hash, add the bounded corpus and strict manifest, dictionary, lockfile, documentation, and CI jobs, then run focused and affected Rust/Node/documentation/memory gates with all generated output on D:. Preserve the WIP commit and follow it with a tested implementation milestone. Leave the protected checkout untouched and retain every production/live blocker and zero counter.
 
 current_checkpoint_2026_08_14_archive_properties_v1:
   authority: This is the newest first-read TinyRustLM source, archive hostile-input, documentation, verification, storage, publication, and restart checkpoint. It supersedes older present-tense TinyRustLM heads, archive test counts, broader-property status, storage, and next-action descriptions where different while preserving immutable failures, releases, and campaign history. It is local deterministic conformance evidence, not maintained structured fuzzing, production durability, another-RID execution, package publication, deployment, public readback, or live campaign evidence.
