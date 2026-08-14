@@ -254,6 +254,19 @@ source `ab12047fec0bf6d1d2c0b3b00939e228dcb5d46b` passed the exact maintained
 consumer tests. Current native package evidence for `linux-x64` and
 `linux-arm64`, hosted CI completion, signing where required, publication, and
 production readback remain open release work.
+Every maintained .NET test project now declares
+`<IsTestProject>true</IsTestProject>` directly. A structured XML test enumerates
+the complete `dotnet/tests` tree and requires that declaration plus exactly one
+`Microsoft.NET.Test.Sdk` reference in every project. This prevents newer SDKs
+from returning a zero exit code after silently skipping a project whose test
+identity was only inferred. Core test data is linked explicitly into the test
+output under `fixtures/`; tests read that one output-local path instead of
+walking ancestor directories for source files. On the current Windows host,
+externally built outputs on `D:` execute 75 Core, 68 Package, and 50 SeedHost
+tests with zero failures or skips. The SeedHost result uses the retained
+CLI/native pair built from exact MiniModel source revision
+`8439e224146c790ce6a9da36a32c4c49890cac52`; it is local current-host evidence,
+not another-RID, package-publication, deployment, or live-service evidence.
 The protected NuGet path now has one first-class BCL-only
 `TinyRustLM.PackageCanonicalizer` tool in the .NET solution. Both pack scripts
 invoke that same executable after packing and before tests, audit, hashes, or
