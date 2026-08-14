@@ -451,23 +451,8 @@ public sealed class MemoryEndpointsTransportTests
     }
 
     private static string ExampleCapabilities()
-    {
-        var directory = new DirectoryInfo(AppContext.BaseDirectory);
-        while (directory is not null)
-        {
-            var path = Path.Combine(
-                directory.FullName,
-                "docs",
-                "nuget",
-                "memoryendpoints-distributed-sync-capabilities-v1.example.json");
-            if (File.Exists(path))
-            {
-                return File.ReadAllText(path);
-            }
-            directory = directory.Parent;
-        }
-        throw new InvalidOperationException("Unable to locate distributed-sync capabilities.");
-    }
+        => TestFixtureFiles.ReadText(
+            "memoryendpoints-distributed-sync-capabilities-v1.example.json");
 
     private static string Sha256(string value) =>
         Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(value))).ToLowerInvariant();

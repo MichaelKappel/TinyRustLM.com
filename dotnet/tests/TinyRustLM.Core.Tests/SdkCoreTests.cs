@@ -1,5 +1,6 @@
 using System.Text.Json;
 using TinyRustLM;
+using TinyRustLM.Tests;
 using Xunit;
 
 namespace TinyRustLM.Core.Tests;
@@ -588,20 +589,10 @@ public sealed class SdkCoreTests
         var configured = Environment.GetEnvironmentVariable("TINYRUSTLM_FIXTURE_MODEL");
         if (!string.IsNullOrWhiteSpace(configured))
         {
-            return configured;
+            return TestFixtureFiles.RequireConfigured(configured, "TINYRUSTLM_FIXTURE_MODEL");
         }
 
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        for (var i = 0; i < 10 && current is not null; i++, current = current.Parent)
-        {
-            var candidate = Path.Combine(current.FullName, "tinyrustlm", "models", "tiny-test-model.slm");
-            if (File.Exists(candidate))
-            {
-                return candidate;
-            }
-        }
-
-        throw new FileNotFoundException("Could not locate tinyrustlm/models/tiny-test-model.slm.");
+        return TestFixtureFiles.Require("tiny-test-model.slm");
     }
 
     private static string FixtureCompositionPath()
@@ -609,25 +600,12 @@ public sealed class SdkCoreTests
         var configured = Environment.GetEnvironmentVariable("TINYRUSTLM_FIXTURE_COMPOSITION");
         if (!string.IsNullOrWhiteSpace(configured))
         {
-            return configured;
+            return TestFixtureFiles.RequireConfigured(
+                configured,
+                "TINYRUSTLM_FIXTURE_COMPOSITION");
         }
 
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        for (var i = 0; i < 10 && current is not null; i++, current = current.Parent)
-        {
-            var candidate = Path.Combine(
-                current.FullName,
-                "tinyrustlm",
-                "models",
-                "tiny-test-model.base.acg1");
-            if (File.Exists(candidate))
-            {
-                return candidate;
-            }
-        }
-
-        throw new FileNotFoundException(
-            "Could not locate tinyrustlm/models/tiny-test-model.base.acg1.");
+        return TestFixtureFiles.Require("tiny-test-model.base.acg1");
     }
 
     public static IEnumerable<object[]> InvalidGenerationOptions()

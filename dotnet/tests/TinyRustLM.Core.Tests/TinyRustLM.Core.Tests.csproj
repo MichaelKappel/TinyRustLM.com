@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
@@ -15,5 +16,16 @@
     <ProjectReference Include="..\..\src\TinyRustLM.Memory\TinyRustLM.Memory.csproj" />
     <ProjectReference Include="..\..\src\TinyRustLM.MemoryEndpoints\TinyRustLM.MemoryEndpoints.csproj" />
     <ProjectReference Include="..\..\src\TinyRustLM.P2P\TinyRustLM.P2P.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\docs\nuget\memoryendpoints-distributed-sync-capabilities-v1.example.json"
+          Link="fixtures\memoryendpoints-distributed-sync-capabilities-v1.example.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\tinyrustlm\models\tiny-test-model.slm"
+          Link="fixtures\tiny-test-model.slm"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\tinyrustlm\models\tiny-test-model.base.acg1"
+          Link="fixtures\tiny-test-model.base.acg1"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
