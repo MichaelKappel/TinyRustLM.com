@@ -232,6 +232,48 @@ helper-dependent cases because that process omitted the required external
 Cargo target and exhausted E:. Cargo removed exactly the 87 generated files;
 the corrected D:-contained rerun supplied the terminal verdict above.
 
+## Structured Fuzz And Corpus Checkpoint
+
+Source commit `f2b19d6e499aa77207cb6123aa5c31abb084d95c` adds one
+independent structure-aware fuzz workspace around the sole
+`scan_archive_bytes` API. It contains no second archive parser, performs no
+filesystem extraction or network access, and uses ZIP and tar-gzip writers only
+to generate bounded inputs. The frozen 2,914-byte fuzz profile has SHA-256
+`5af6f00aef3540aa6969bb122dc2a3efdde9b39049c0dfbb15cc1e0fa29ce22e`.
+Its pinned `Cargo.lock` has SHA-256
+`ceae70bcca6821cf350a5cc13f21f650934c96e7209fbd67c46a75b50930af7b`.
+
+The frozen corpus manifest has SHA-256
+`ad38ccecb671b47c5da5271e59219a091837d2f271c03624a09a3827c2076420`.
+It binds 29 unique `TAF1` seeds no larger than 4,096 bytes: two canonical
+admissions and 27 exact fail-closed path, nested-content, member-type,
+truncation, bit-flip, trailing-data, and malformed-container verdicts. Stable
+replay verifies the exact seed set, byte lengths, hashes, decoded format and
+mode, verdict, callback count, and generated archive length. Hash drift and an
+unlisted seed are explicit negative tests. The observation mode is read-only;
+there is no manifest-update or `--bless` path.
+
+The independent fuzz workspace passes 9/9 unit and replay tests, including the
+29-seed replay; its fuzzer target type-checks with `libfuzzer-sys 0.4.13`; and
+denied-warning all-target Clippy passes. The affected Node archive boundary
+passes 27/27, and the production archive crate continues to pass 24/24 with
+denied-warning Clippy. CI source now replays the corpus on `win-x64`,
+`linux-x64`, and `linux-arm64`, and defines one 60-second AddressSanitizer-backed
+run using `cargo-fuzz 0.13.2` and `nightly-2026-08-01` on Linux.
+
+Final combined transcripts are retained under
+`D:\TinyRustLM-vnext-20260812\test-logs\archive-fuzz-final-20260814T0438Z`.
+The focused fuzz transcript has SHA-256
+`c34473d0e18f23337548255cf6a0cf610ad41ab7c6f4590095cfa6306e15b6a9`;
+the production archive transcript has SHA-256
+`eb550c37a5776d9367b1b65fed8f80c17c446c30c780bcaf403f109d1b32b24f`;
+the 27-test affected Node transcript has SHA-256
+`8b5d664883fbca107647f9cf1b46e500a9a5b04b5437e8ec5b75840a10622c37`;
+and the 75-test documentation-linked transcript has SHA-256
+`9ae472706d56ba032b414d791d710fc28a458492688567e32d1187a4646f0f49`.
+The tracked-memory contract passes 9/9 with transcript SHA-256
+`dde750ec2f94d5cd9d7dfc95cc115a28931242fe60ff9176493bb4b660c1c17b`.
+
 ## Non-Claims And Remaining Gates
 
 A passing admission proves bounded structural and decoded-content handling for
@@ -243,7 +285,9 @@ other RIDs or publication. Production closure still requires current native
 packages and clean-consumer evidence for every supported RID, successful
 hosted CI, signing where required, malware-scan boundary evidence, release
 authorization, deployment, and HTTPS readback.
-Deterministic generated properties are not a substitute for maintained
-structured fuzz targets, retained minimized crash corpora, sanitizer coverage,
-or long-running fuzz execution on every supported native parser build; those
-remain open Gate D evidence.
+The maintained target and frozen seed corpus do not prove absence of parser
+defects. Hosted CI has not run for this source checkpoint, so no sanitizer
+result is claimed. No crash was observed and therefore no retained minimized
+crash corpus exists. Hosted pinned-toolchain execution, longer fuzz campaigns,
+retention and minimization of any future findings, and repeated execution on
+the supported native parser builds remain open Gate D evidence.

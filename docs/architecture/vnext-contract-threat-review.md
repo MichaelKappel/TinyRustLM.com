@@ -199,7 +199,7 @@ verified by later phases.
 | Content to identity | Claimed hash and content ID | Field shape and declared derivation profile | RFC 8785 JCS and domain-separated hash recomputation |
 | Signature to authority | Envelope, key, role, time, registry, revocation | Local shape, role/domain, and time-window checks | Ed25519 verification and trusted registry chain |
 | Receipt to evidence DAG | Parent IDs and evidence references | Local sorting, uniqueness, state, and typed payload checks | Parent loading, closure, cycle, role, and freshness checks |
-| Private to public evidence | Public-safe record, canonical public text, and redaction profile | Closed public schema, canonical LF UTF-8 text, forbidden value classes, bounded archive decoding, a module-issued protected equality handle, and deterministic cross-format/path/truncation/mutation properties | Authorized production custody issuer/private loader, current per-RID helper provenance, structured fuzz targets with retained minimized malicious corpora, and live release operation |
+| Private to public evidence | Public-safe record, canonical public text, and redaction profile | Closed public schema, canonical LF UTF-8 text, forbidden value classes, bounded archive decoding, a module-issued protected equality handle, deterministic cross-format/path/truncation/mutation properties, one maintained structured target, and a frozen 29-seed hostile corpus | Authorized production custody issuer/private loader, current per-RID helper provenance, hosted sanitizer and longer fuzz execution, retention/minimization of future crash findings, and live release operation |
 | Local P2P to public claim | Manifest, lane proof, claim wording | Local identity, route, transfer, state, and expiry checks | Outside observer signature, full transfer, and publication authority |
 
 ## Threat Analysis
@@ -417,9 +417,11 @@ integration are implemented across all current vNext stores, campaign-operation
 records, and runner-lock records. The sole bounded archive authority and
 module-issued protected equality handle are integrated into current release
 operations. Physical durability, authorized production custody, current
-multi-RID helper provenance/execution, OS isolation, structured fuzz targets,
-and retained minimized malicious-corpus expansion remain prerequisites for the
-corresponding production claims. Deterministic cross-format, path,
-every-prefix, and single-bit mutation properties pass locally.
+multi-RID helper provenance/execution, and OS isolation remain prerequisites
+for the corresponding production claims. One maintained structured archive
+target and frozen 29-seed hostile corpus now replay locally; hosted sanitizer
+execution, longer campaigns, and retention/minimization of any future crash
+findings remain open. Deterministic cross-format, path, every-prefix, and
+single-bit mutation properties pass locally.
 
 Campaign counters remain `0/20`, `0/50`, `0/25`, `0/40`, and `0/20`.

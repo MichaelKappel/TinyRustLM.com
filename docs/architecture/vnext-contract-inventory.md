@@ -237,10 +237,12 @@ current vNext store, campaign-operation record, and runner-lock record consumes
 the sole receipt-backed durable-publication primitive. No batch claims an
 atomic filesystem transaction. OS network isolation, current helper provenance
 and clean-consumer execution for every supported RID, authorized production
-equality-custody issuance and private loading, maintained structured fuzz
-targets with retained minimized malicious corpora, and controlled physical
-power-loss evidence remain incomplete. Deterministic cross-format, path,
-every-prefix, and single-bit mutation properties pass locally.
+equality-custody issuance and private loading, and controlled physical
+power-loss evidence remain incomplete. One maintained structured archive target
+and frozen 29-seed hostile corpus now replay locally; hosted sanitizer
+execution, longer campaigns, and retention/minimization of future crash
+findings remain open. Deterministic cross-format, path, every-prefix, and
+single-bit mutation properties pass locally.
 The sole bounded ZIP and tar-gzip authority, its Rust process boundary, and the
 v4 public-artifact secret-scan cutover are documented in
 `docs/architecture/vnext-archive-admission.md`. Its client/package profile has

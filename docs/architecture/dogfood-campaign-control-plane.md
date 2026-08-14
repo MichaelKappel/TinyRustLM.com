@@ -140,10 +140,12 @@ current local vNext paths. Those contracts prove bounded local conformance,
 not production operation. Gate D still requires controlled physical
 power-loss/filesystem evidence, current native helper provenance and clean
 consumers for every supported RID, an authorized production custody issuer and
-private loader, maintained structured fuzz targets with retained minimized
-malicious corpora, and the declared OS process/network isolation. Deterministic
-cross-format, path, every-prefix, and single-bit mutation properties now pass
-locally, but no production durability or release claim may exceed that evidence.
+private loader, and the declared OS process/network isolation. One maintained
+structured archive target and frozen 29-seed hostile corpus now replay locally;
+hosted sanitizer execution, longer campaigns, and retention/minimization of
+future crash findings remain open. Deterministic cross-format, path,
+every-prefix, and single-bit mutation properties now pass locally, but no
+production durability or release claim may exceed that evidence.
 
 ## Completion Predicate
 

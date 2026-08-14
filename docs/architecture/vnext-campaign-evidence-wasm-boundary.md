@@ -239,9 +239,11 @@ the focused set was rerun, and only then did the complete rerun pass.
   authority, and construction-time protected equality handle. Production
   durability and release claims still require controlled physical power-loss
   evidence, current helper provenance/execution for every supported RID,
-  authorized production custody, structured fuzz targets with retained
-  minimized malicious corpora, and OS process/network isolation. Deterministic
-  cross-format, path, every-prefix, and single-bit mutation properties pass
+  authorized production custody, and OS process/network isolation. One
+  maintained structured archive target and frozen 29-seed hostile corpus now
+  replay locally; hosted sanitizer execution, longer fuzz campaigns, and
+  retention/minimization of any future crash findings remain open. Deterministic
+  cross-format, path, every-prefix, and single-bit mutation properties also pass
   locally.
 - Replace fixtures only with authorized raw objective receipts from real
   phases. No local conformance test increments a live campaign counter.

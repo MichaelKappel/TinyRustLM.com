@@ -31,9 +31,10 @@ class or caller-supplied durability path. Bounded archive admission and the
 module-issued protected equality-custody contract are also integrated locally.
 Gate D remains incomplete because controlled physical power-loss evidence,
 current per-RID helper provenance and execution, authorized production custody,
-OS process/network isolation, structured fuzz targets, and retained minimized
-malicious-corpus expansion remain
-separate requirements. No campaign counter advances.
+and OS process/network isolation remain separate requirements. One maintained
+structured archive target and frozen 29-seed hostile corpus now replay locally;
+hosted sanitizer execution, longer campaigns, and retention/minimization of any
+future crash findings remain open. No campaign counter advances.
 
 ## Why A Separate Boundary Exists
 
@@ -321,12 +322,14 @@ Retrieved 2026-08-11:
 
 ## Explicit Non-Claims
 
-- Gate D is not complete. Bounded archive admission and local protected
-  equality-custody integration are implemented, but production custody,
-  current multi-RID helper provenance/execution, structured parser fuzz targets,
-  retained minimized malicious corpora, OS isolation, and controlled physical
-  durability evidence remain. Deterministic cross-format, path, every-prefix,
-  and single-bit mutation properties pass locally.
+- Gate D is not complete. Bounded archive admission, local protected
+  equality-custody integration, one maintained structured parser fuzz target,
+  and a frozen 29-seed hostile corpus are implemented. Production custody,
+  current multi-RID helper provenance/execution, hosted sanitizer execution,
+  longer fuzz campaigns, retention/minimization of future crash findings, OS
+  isolation, and controlled physical durability evidence remain. Deterministic
+  cross-format, path, every-prefix, and single-bit mutation properties pass
+  locally.
 - All four current vNext Node stores and runner-lock records require the
   durable-publication primitive; this does not prove unrelated older tools
   have completed their clean-slate deletion gate.
