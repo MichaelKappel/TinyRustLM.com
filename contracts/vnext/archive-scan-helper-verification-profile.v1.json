@@ -1,0 +1,167 @@
+{
+  "schema": "tinyrustlm.vnext.archive_scan_helper_verification_profile.v1",
+  "profileId": "tinyrustlm.vnext.archive-scan-helper-verification.v1",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-no-compatibility-reader",
+  "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
+  "hashAlgorithm": "sha256",
+  "verificationSchema": "tinyrustlm.vnext.archive_scan_helper_verification.v1",
+  "receiptFile": "archive-scan-helper-verification.v1.json",
+  "executionClass": "native-package-fixed-vector-replay",
+  "scratchCleanup": "completed-before-receipt",
+  "verdict": "pass",
+  "acceptedPackageTrustClasses": [
+    "local-test-build",
+    "release-package"
+  ],
+  "verificationSourceClosureMembers": [
+    "contracts/vnext/archive-scan-helper-verification-profile.v1.json",
+    "tinyrustlm/tools/archive-scan-helper-verification.js",
+    "tinyrustlm/tools/strict-json.js",
+    "tinyrustlm/tools/vnext-jcs.js"
+  ],
+  "receiptFields": [
+    "architecture",
+    "buildProfile",
+    "cases",
+    "clientProfileId",
+    "clientProfileSha256",
+    "clientSourceClosureSha256",
+    "executionClass",
+    "executableByteCount",
+    "executableSha256",
+    "helperManifestSha256",
+    "helperPackageBuilderSourceClosureSha256",
+    "helperProvenanceSha256",
+    "helperSourceClosureSha256",
+    "helperSourceRevision",
+    "helperSourceWorktreeClean",
+    "nodeVersion",
+    "operatingSystem",
+    "profileId",
+    "profileSha256",
+    "runtimeIdentifier",
+    "schema",
+    "scratchCleanup",
+    "trustClass",
+    "verdict",
+    "verificationSourceClosureSha256"
+  ],
+  "caseReceiptFields": [
+    "archiveByteCount",
+    "archiveSha256",
+    "caseId",
+    "contentManifestSha256",
+    "format",
+    "memberCount",
+    "totalContentBytes"
+  ],
+  "vectorCaseFields": [
+    "archiveBase64",
+    "archiveByteCount",
+    "archiveSha256",
+    "caseId",
+    "expected",
+    "fileName",
+    "format"
+  ],
+  "vectorExpectedFields": [
+    "contentManifestSha256",
+    "memberCount",
+    "members",
+    "totalContentBytes"
+  ],
+  "vectorMemberFields": [
+    "contentBase64",
+    "contentByteCount",
+    "contentSha256",
+    "path"
+  ],
+  "limits": {
+    "maximumReceiptBytes": 32768,
+    "maximumSourceMemberBytes": 16777216,
+    "maximumVectorArchiveBytes": 4096,
+    "maximumVectorCases": 2,
+    "maximumVectorContentBytes": 4096,
+    "maximumVectorMembersPerCase": 4
+  },
+  "pathPolicy": {
+    "configuration": "explicit-absolute-package-output-and-scratch-roots",
+    "linksAndReparsePoints": "reject-where-host-api-exposes-them",
+    "outputRoot": "create-only-after-all-replays-and-scratch-cleanup",
+    "packageRoot": "read-only-through-frozen-archive-scan-client",
+    "scratchRoot": "caller-owned-existing-directory",
+    "scratchWorktree": "one-tool-owned-unique-child-removed-before-receipt"
+  },
+  "receiptPolicy": {
+    "canonicalJcsRequired": true,
+    "fileFsyncRequired": true,
+    "pathDisclosureForbidden": true,
+    "rawProcessOutputForbidden": true,
+    "readbackRequired": true,
+    "timestampOmitted": "deterministic-replay-record-does-not-claim-observation-time"
+  },
+  "cases": [
+    {
+      "archiveBase64": "H4sIAAAAAAACCu3UwQqDMAwG4J73FMMH6FKtuu1tokZ0tDqaKsjYu4/tIshgDIbg6HdJm/SSw19LHiv0eHBkCJnkhftO/BYAQKb1qwLAsgKk+Xx+9lWeJSD2IFYwsEcnAHzbTW5gb+z7d5/my+U24hZx2ZDF6BzNG8qRXFu3Jfq27+RIpe+dHFV034ngv/Bki97woSFzJSe5wTjNVs6/ArXMv451yP8aQMWJTrP8eMKirKj+9h5+hCAIgm16AKgnvbgADAAA",
+      "archiveByteCount": 198,
+      "archiveSha256": "38bf0a28a4a687f76dbbf04edc85ad3fd70905394af636fc491c8be21412e77d",
+      "caseId": "canonical-package-tar-gzip",
+      "expected": {
+        "contentManifestSha256": "1e6bd2756f9b93b54b7e7fad260d8380992105694980a4aa0af0d2227270934c",
+        "memberCount": 2,
+        "members": [
+          {
+            "contentBase64": "eyJzY2hlbWEiOiJ0aW55cnVzdGxtLnZlcmlmaWNhdGlvbi52ZWN0b3IudjEifQo=",
+            "contentByteCount": 47,
+            "contentSha256": "f26613e9e299de02bd39ca930702af78ec9992c4c1c7938e3852009e6e995343",
+            "path": "metadata/release.json"
+          },
+          {
+            "contentBase64": "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nzg5YWJjZGVmMDEyMzQ1Njc4OWFiY2RlZgo=",
+            "contentByteCount": 65,
+            "contentSha256": "694ff60b8fa08c3df3bc8acf79dd84ea9da54b66cf1597d9ecc4bd6d02d446c8",
+            "path": "symbols/helper.sha256"
+          }
+        ],
+        "totalContentBytes": 112
+      },
+      "fileName": "canonical-package.tar.gz",
+      "format": "tar-gzip"
+    },
+    {
+      "archiveBase64": "UEsDBBQAAAAAAAAAIQD+ID9NHAAAABwAAAAVAAAAZG9jcy92ZXJpZmljYXRpb24udHh0VGlueVJ1c3RMTSBhcmNoaXZlIHZlcmlmaWVyClBLAwQUAAAAAAAAACEAxFBA2goAAAAKAAAAJAAAAHJ1bnRpbWVzL3BvcnRhYmxlL25hdGl2ZS9ydW50aW1lLmJpbgABAgP6+/z9/v9QSwECFAMUAAAAAAAAACEA/iA/TRwAAAAcAAAAFQAAAAAAAAAAAAAApIEAAAAAZG9jcy92ZXJpZmljYXRpb24udHh0UEsBAhQDFAAAAAAAAAAhAMRQQNoKAAAACgAAACQAAAAAAAAAAAAAAKSBTwAAAHJ1bnRpbWVzL3BvcnRhYmxlL25hdGl2ZS9ydW50aW1lLmJpblBLBQYAAAAAAgACAJUAAACbAAAAAAA=",
+      "archiveByteCount": 326,
+      "archiveSha256": "e08b94a7eb91772cda32a9a7f0886130bb9afdb8eb1fba737ebb4d3a20f05685",
+      "caseId": "canonical-package-zip",
+      "expected": {
+        "contentManifestSha256": "c20d58bfbae32112e54b9558e89ab23fa7dd74bd4f3d8e529663cfef886141f6",
+        "memberCount": 2,
+        "members": [
+          {
+            "contentBase64": "VGlueVJ1c3RMTSBhcmNoaXZlIHZlcmlmaWVyCg==",
+            "contentByteCount": 28,
+            "contentSha256": "9cb79982513059f7df2f620f14f8ec3c3d429cbf157cf80f129139bd52f23f83",
+            "path": "docs/verification.txt"
+          },
+          {
+            "contentBase64": "AAECA/r7/P3+/w==",
+            "contentByteCount": 10,
+            "contentSha256": "623bf06d7016a00a36589e7cb02a6aaea6339e3fb9040a9252eb59485a65b1f7",
+            "path": "runtimes/portable/native/runtime.bin"
+          }
+        ],
+        "totalContentBytes": 38
+      },
+      "fileName": "canonical-package.zip",
+      "format": "zip"
+    }
+  ],
+  "nonClaims": [
+    "A deterministic replay record is not a signed attestation or observation-time receipt.",
+    "A local-test-build record is not release-package provenance.",
+    "One host RID does not prove execution on another RID or physical architecture.",
+    "A passing replay does not prove malware freedom, operating-system isolation, publication, deployment, or public readback.",
+    "Workflow source and an uploaded package do not prove a hosted job completed successfully."
+  ]
+}

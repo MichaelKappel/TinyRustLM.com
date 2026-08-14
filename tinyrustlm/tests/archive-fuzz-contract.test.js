@@ -177,6 +177,23 @@ test("CI replays every RID and runs one pinned bounded sanitizer target", () => 
   ).toString("utf8");
 
   assert.match(workflow, /Replay frozen hostile archive corpus/u);
+  assert.match(workflow, /rid: win-x64/u);
+  assert.match(workflow, /rid: linux-x64/u);
+  assert.match(workflow, /rid: linux-arm64/u);
+  assert.match(workflow, /os: ubuntu-24\.04-arm/u);
+  assert.match(workflow, /Record native fixed-vector replay/u);
+  assert.match(
+    workflow,
+    /node tinyrustlm\/tools\/archive-scan-helper-verification\.js/u
+  );
+  assert.match(
+    workflow,
+    /tinyrustlm-archive-scan-helper-verification-\$\{\{ matrix\.rid \}\}/u
+  );
+  assert.match(
+    workflow,
+    /\$\{\{ runner\.temp \}\}\/archive-scan-helper-verification\/\$\{\{ matrix\.rid \}\}/u
+  );
   assert.match(workflow, /verify-archive-fuzz:/u);
   assert.match(workflow, /toolchain: nightly-2026-08-01/u);
   assert.match(workflow, /components: rust-src/u);

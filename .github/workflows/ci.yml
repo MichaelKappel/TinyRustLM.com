@@ -44,7 +44,7 @@ jobs:
           node-version: '22'
 
       - name: Verify archive package producer and local consumer
-        run: node --test tinyrustlm/tests/archive-fuzz-contract.test.js tinyrustlm/tests/archive-scan-helper-package.test.js tinyrustlm/tests/archive-scan-client.test.js tinyrustlm/tests/public-evidence-secret-scan.test.js
+        run: node --test tinyrustlm/tests/archive-fuzz-contract.test.js tinyrustlm/tests/archive-scan-helper-package.test.js tinyrustlm/tests/archive-scan-helper-verification.test.js tinyrustlm/tests/archive-scan-client.test.js tinyrustlm/tests/public-evidence-secret-scan.test.js
 
       - name: Build release archive scanner package (Windows)
         if: runner.os == 'Windows'
@@ -59,13 +59,27 @@ jobs:
       - name: Verify clean release-package consumer
         env:
           TINYRUSTLM_ARCHIVE_SCAN_TEST_PACKAGE_ROOT: ${{ github.workspace }}/artifacts/archive-scan-helper/${{ matrix.rid }}
-        run: node --test tinyrustlm/tests/archive-scan-client.test.js tinyrustlm/tests/public-evidence-secret-scan.test.js
+        run: node --test tinyrustlm/tests/archive-scan-client.test.js tinyrustlm/tests/archive-scan-helper-verification.test.js tinyrustlm/tests/public-evidence-secret-scan.test.js
+
+      - name: Record native fixed-vector replay
+        run: >-
+          node tinyrustlm/tools/archive-scan-helper-verification.js
+          "${{ github.workspace }}/artifacts/archive-scan-helper/${{ matrix.rid }}"
+          "${{ runner.temp }}/archive-scan-helper-verification/${{ matrix.rid }}"
+          "${{ runner.temp }}"
 
       - name: Upload verified archive scanner package
         uses: actions/upload-artifact@v4
         with:
           name: tinyrustlm-archive-scan-helper-${{ matrix.rid }}
           path: artifacts/archive-scan-helper/${{ matrix.rid }}/*
+          if-no-files-found: error
+
+      - name: Upload native replay record
+        uses: actions/upload-artifact@v4
+        with:
+          name: tinyrustlm-archive-scan-helper-verification-${{ matrix.rid }}
+          path: ${{ runner.temp }}/archive-scan-helper-verification/${{ matrix.rid }}/*
           if-no-files-found: error
 
   verify-archive-fuzz:
