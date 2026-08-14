@@ -6415,6 +6415,7 @@ mod tests {
     use super::*;
     use crate::{provenance, slm_validate};
     use std::io::Write;
+    use std::ops::Deref;
     use std::time::{SystemTime, UNIX_EPOCH};
     use tinyrustlm_runtime::active_composition::ActiveCompositionBundle;
     use tinyrustlm_runtime::content_identity::{ContentId, ExecutionBindings};
@@ -9980,15 +9981,61 @@ mod tests {
         f32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]])
     }
 
-    // Creates a temp directory path unique enough for parallel cargo tests.
-    fn unique_dir(label: &str) -> std::path::PathBuf {
+    struct TestDirectory {
+        path: PathBuf,
+    }
+
+    impl Deref for TestDirectory {
+        type Target = Path;
+
+        fn deref(&self) -> &Self::Target {
+            &self.path
+        }
+    }
+
+    impl AsRef<Path> for TestDirectory {
+        fn as_ref(&self) -> &Path {
+            &self.path
+        }
+    }
+
+    impl Drop for TestDirectory {
+        fn drop(&mut self) {
+            if let Err(error) = fs::remove_dir_all(&self.path) {
+                if self.path.exists() && !std::thread::panicking() {
+                    panic!(
+                        "failed to remove safetensors test directory {}: {error}",
+                        self.path.display()
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn removes_owned_safetensors_test_directory_on_drop() {
+        let path;
+        {
+            let dir = unique_dir("owned-cleanup");
+            path = dir.to_path_buf();
+            fs::create_dir_all(&dir).unwrap();
+            fs::write(dir.join("fixture.bin"), b"fixture").unwrap();
+            assert!(path.exists());
+        }
+        assert!(!path.exists());
+    }
+
+    // Creates an owned temp directory path unique enough for parallel cargo tests.
+    fn unique_dir(label: &str) -> TestDirectory {
         let nanos = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
             .as_nanos();
-        std::env::temp_dir().join(format!(
-            "tinyrustlm-safetensors-{label}-{}-{nanos}",
-            std::process::id()
-        ))
+        TestDirectory {
+            path: std::env::temp_dir().join(format!(
+                "tinyrustlm-safetensors-{label}-{}-{nanos}",
+                std::process::id()
+            )),
+        }
     }
 }
