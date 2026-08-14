@@ -165,7 +165,8 @@ receipt, or public HTTPS readback claim.
   authority, and protected equality-custody handle. Production durability and
   package-release claims still require controlled physical power-loss
   evidence, current helper provenance/execution for every supported RID,
-  authorized production custody, broader hostile/fuzz coverage, and OS
-  isolation.
+  authorized production custody, structured fuzz targets with retained
+  minimized malicious corpora, and OS isolation. Deterministic cross-format,
+  path, every-prefix, and single-bit mutation properties pass locally.
 - Execute the authorized real campaign and publication gates; no local bundle,
   parity corpus, or synthetic capacity fixture advances a live counter.

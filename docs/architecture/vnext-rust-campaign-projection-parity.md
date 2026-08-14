@@ -182,8 +182,10 @@ receipt, or public HTTPS readback claim.
 - Preserve the integrated Rust/Win32 directory-flush client, bounded archive
   authority, and protected equality-custody handle. Complete controlled
   physical power-loss evidence, current helper provenance/execution for every
-  supported RID, authorized production custody, broader hostile/fuzz coverage,
-  and OS isolation before production durability or release claims.
+  supported RID, authorized production custody, structured fuzz targets with
+  retained minimized malicious corpora, and OS isolation before production
+  durability or release claims. Deterministic cross-format, path, every-prefix,
+  and single-bit mutation properties pass locally.
 - Run the authorized real model, browser, MemoryEndpoints, outside-observer,
   catalog, package, deployment, and HTTPS gates. Fixture capacity remains
   non-live evidence.

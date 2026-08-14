@@ -200,6 +200,38 @@ reserved names and trailing output, execute the real Rust helper for ZIP and
 tar-gzip, detect decoded secrets, and prove a late hostile member invokes no
 content callback.
 
+Source revision `04cd9db9642ac438caf711ef61af81ec4cd45d86` adds a
+bounded deterministic property layer without adding a second parser. The
+fixed generator identity is seed `0x6f4d26b98a31c5e7` with 64 logical archive
+cases. Independently ordered ZIP and tar-gzip encodings must produce identical
+sorted member evidence and content-manifest identity, while exact compressed
+archive identities remain distinct. The test oracle independently recomputes
+the domain-separated path identities, member digests, aggregate length, raw
+archive digest, and content-manifest digest from callback bytes.
+
+The same layer materializes 352 generated cross-format path-verdict pairs,
+checks every proper byte prefix of one fixed six-member corpus in each format,
+and applies 128 deterministic single-bit mutations per format. A mutation may
+either reject with one error code declared by the frozen profile before any
+callback, or admit and match the independent evidence oracle exactly. A
+tar-gzip metadata-only mutation also proves that archive identity changes
+without changing content identity.
+
+The final Rust transcript
+`D:\TinyRustLM-vnext-20260812\test-logs\archive-property-final2-20260813T202304.stdout.log`
+has SHA-256
+`77af3864f0a7a19fc4ba0ef797321de08035f3a333472a349e02f6b1eaf62712`
+and records 24/24 passing tests. Denied-warning all-target Clippy passed; its
+stderr transcript has SHA-256
+`bd38213a961e771c440e7f9f4dc192a54d27f0cb17b4c73b059f57c7abeab161`.
+The contained helper/client/public-scanner rerun passed 24/24; transcript
+SHA-256 is
+`7740513c1a794c9791bee82413771ba1f9b58ba9699ceaa5d3460bd74461ab97`.
+The first consumer run is retained separately: it passed 8/24 and failed 16
+helper-dependent cases because that process omitted the required external
+Cargo target and exhausted E:. Cargo removed exactly the 87 generated files;
+the corrected D:-contained rerun supplied the terminal verdict above.
+
 ## Non-Claims And Remaining Gates
 
 A passing admission proves bounded structural and decoded-content handling for
@@ -211,3 +243,7 @@ other RIDs or publication. Production closure still requires current native
 packages and clean-consumer evidence for every supported RID, successful
 hosted CI, signing where required, malware-scan boundary evidence, release
 authorization, deployment, and HTTPS readback.
+Deterministic generated properties are not a substitute for maintained
+structured fuzz targets, retained minimized crash corpora, sanitizer coverage,
+or long-running fuzz execution on every supported native parser build; those
+remain open Gate D evidence.

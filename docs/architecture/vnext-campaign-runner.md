@@ -206,9 +206,10 @@ capacity only. It does not increment or predict any live campaign counter.
 - Preserve the sole bounded archive authority and construction-time protected
   equality handle already used by release operations. Complete current helper
   provenance and clean-consumer execution for every supported RID, authorized
-  production custody, broader hostile/fuzz evidence, OS isolation, and
-  controlled physical durability exercises before corresponding production
-  claims.
+  production custody, structured fuzz targets with retained minimized malicious
+  corpora, OS isolation, and controlled physical durability exercises before
+  corresponding production claims. Deterministic cross-format, path,
+  every-prefix, and single-bit mutation properties pass locally.
 - Run authorized real model, browser, MemoryEndpoints, outside-observer,
   catalog, package, and HTTPS release gates. Mocks and synthetic capacity do
   not satisfy those gates.
