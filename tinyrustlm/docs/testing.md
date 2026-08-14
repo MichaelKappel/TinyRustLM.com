@@ -265,6 +265,42 @@ replay evidence for every supported RID, independently retained hosted-CI
 evidence, and the complete signing, authorization, deployment, and
 HTTPS-readback gates.
 
+## Hosted Archive Fuzz Evidence
+
+The hosted sanitizer job has one source authority:
+
+```bash
+node tools/archive-fuzz-hosted-verification.js run \
+  "${RUNNER_TEMP}/archive-fuzz-hosted-verification" \
+  "${RUNNER_TEMP}"
+```
+
+The runner refuses local or self-hosted substitutions. It requires exact
+GitHub repository, workflow, job, run, attempt, event, clean source revision,
+Linux, runner class, and process architecture values. Child commands receive
+an allowlisted environment with Cargo offline mode and no workflow token. The
+frozen sequence verifies cargo-fuzz and rustc identities, replays the exact
+manifest, replays the copied corpus through libFuzzer, and runs one explicit
+AddressSanitizer interval. It then removes its owned scratch child before
+creating one path-free canonical record plus bounded private logs and any
+bounded crash inputs. A failed record is uploaded but the job remains failed.
+
+After downloading an artifact into an existing absolute directory, verify it
+from the exact matching clean source revision:
+
+```powershell
+node tools/archive-fuzz-hosted-verification.js verify `
+  '<absolute-downloaded-evidence-directory>'
+```
+
+The verifier rejects source, workflow, profile, corpus, lock, closure, log,
+finding, JSON, file-set, verdict, and path drift. A successful local verifier
+result proves only that the downloaded record is internally consistent with
+the matching source. The GitHub run status and artifact custody must still be
+independently retained; this record is not an OIDC attestation or signature.
+Workflow text, a branch push, or a synthetic unit fixture is never counted as
+hosted sanitizer execution.
+
 ## Checkpoint Report
 
 At each WIP checkpoint record:

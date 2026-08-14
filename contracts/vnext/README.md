@@ -357,6 +357,21 @@ This does not prove hosted CI, another RID, signing, publication, production
 readback, or observation time. See
 `docs/architecture/vnext-archive-admission.md`.
 
+The separate hosted-fuzz execution profile
+`tinyrustlm.vnext.archive-fuzz-hosted-verification.v1` has SHA-256
+`0943bba8ceba94c6f925cd5cb33d163c33d654e4e59266c00ca3ef6346bfc415`.
+Its sole runner requires a clean matching GitHub-hosted Linux checkout, exact
+run and job identities, `nightly-2026-08-01`, `cargo-fuzz 0.13.2`,
+`libfuzzer-sys 0.4.13`, explicit AddressSanitizer, the frozen 29-seed corpus,
+and an offline child-process environment that excludes workflow credentials.
+It records exact bounded stdout/stderr identities and retained crash inputs,
+removes only its owned scratch child, then creates one canonical path-free
+pass or fail record. The strict verifier rejects drift, tampering, unexpected
+files, noncanonical JSON, incomplete pass records, and local attempts to
+manufacture a hosted run. CI source uploads this record on both success and
+failure. No hosted artifact has yet been independently retrieved and verified,
+so this source milestone is not a sanitizer-execution result.
+
 `rust/crates/tinyrustlm-durability` now owns the sole Rust directory-flush
 boundary. Its 7,021-byte frozen profile has SHA-256
 `bb9c76715d0b35d63a9da27006ff8f88840486cf287cec24279a1020a0443ddb`.

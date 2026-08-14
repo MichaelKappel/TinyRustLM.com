@@ -307,6 +307,34 @@ denied-warning Clippy. CI source now replays the corpus on `win-x64`,
 `linux-x64`, and `linux-arm64`, and defines one 60-second AddressSanitizer-backed
 run using `cargo-fuzz 0.13.2` and `nightly-2026-08-01` on Linux.
 
+Source commit `c45faabcd27f9768fe53531f52ba655f7e4e6b7c` replaces the
+ad hoc sanitizer command sequence with the single frozen
+`tinyrustlm.vnext.archive-fuzz-hosted-verification.v1` runner and verifier.
+The 7,150-byte profile has SHA-256
+`0943bba8ceba94c6f925cd5cb33d163c33d654e4e59266c00ca3ef6346bfc415`.
+The runner requires the exact GitHub repository, workflow, job, run, attempt,
+event, clean source revision, hosted Linux runner class, and matching x64 or
+ARM64 process architecture. It copies only manifest-bound seeds into an owned
+runner-temp child, executes pinned cargo-fuzz and rustc identity probes, stable
+manifest replay, libFuzzer corpus replay, and one explicit AddressSanitizer
+interval with network-disabled child processes. Bounded raw logs remain
+private CI artifacts; the canonical record contains only their byte counts and
+hashes. A failing command stays a failing CI step while its record and bounded
+crash inputs remain available for append-only diagnosis. Local execution
+without the GitHub-hosted environment fails before evidence creation.
+
+The exact committed physical-worktree archive union passes 36/36 with zero
+skips. Its stdout SHA-256 is
+`a799342037f5c82b9945cab2055dcbbf69a40a20ef376ea603ee3aa3105e491b`;
+stderr is empty. Three affected .NET workflow/package assertions pass with TRX
+SHA-256
+`fb89ba75c4571fc54b089d5dba38bd17f09c55532520e1ad122a5625c66d2c17`.
+The first fresh external-Cargo-target union passed 16/36 and exposed a test
+helper that assumed its package parent survived an earlier run. The helper now
+creates and validates only that direct owned parent; the second fresh target
+and the clean committed physical worktree both pass 36/36 without weakening
+the production package materializer's path or link policy.
+
 Final combined transcripts are retained under
 `D:\TinyRustLM-vnext-20260812\test-logs\archive-fuzz-final-20260814T0438Z`.
 The focused fuzz transcript has SHA-256
@@ -333,8 +361,10 @@ still requires current native packages and clean-consumer evidence for every
 supported RID, successful hosted CI, signing where required, malware-scan
 boundary evidence, release authorization, deployment, and HTTPS readback.
 The maintained target and frozen seed corpus do not prove absence of parser
-defects. Hosted CI has not run for this source checkpoint, so no sanitizer
-result is claimed. No crash was observed and therefore no retained minimized
-crash corpus exists. Hosted pinned-toolchain execution, longer fuzz campaigns,
+defects. A branch push and workflow source are not hosted execution evidence.
+No hosted record or raw hosted log set has yet been independently retrieved and
+verified for this source checkpoint, so no sanitizer result is claimed. No
+crash was observed locally and therefore no retained minimized crash corpus
+exists. Hosted artifact retrieval and verification, longer fuzz campaigns,
 retention and minimization of any future findings, and repeated execution on
 the supported native parser builds remain open Gate D evidence.

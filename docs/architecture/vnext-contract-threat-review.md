@@ -211,7 +211,7 @@ verified by later phases.
 | Content to identity | Claimed hash and content ID | Field shape and declared derivation profile | RFC 8785 JCS and domain-separated hash recomputation |
 | Signature to authority | Envelope, key, role, time, registry, revocation | Local shape, role/domain, and time-window checks | Ed25519 verification and trusted registry chain |
 | Receipt to evidence DAG | Parent IDs and evidence references | Local sorting, uniqueness, state, and typed payload checks | Parent loading, closure, cycle, role, and freshness checks |
-| Private to public evidence | Public-safe record, canonical public text, and redaction profile | Closed public schema, canonical LF UTF-8 text, forbidden value classes, bounded archive decoding, a module-issued protected equality handle, deterministic cross-format/path/truncation/mutation properties, one maintained structured target, and a frozen 29-seed hostile corpus | Authorized production custody issuer/private loader, current per-RID helper provenance, hosted sanitizer and longer fuzz execution, retention/minimization of future crash findings, and live release operation |
+| Private to public evidence | Public-safe record, canonical public text, and redaction profile | Closed public schema, canonical LF UTF-8 text, forbidden value classes, bounded archive decoding, a module-issued protected equality handle, deterministic cross-format/path/truncation/mutation properties, one maintained structured target, a frozen 29-seed hostile corpus, and one canonical hosted-run record/verifier that retains bounded private logs and crash inputs without promoting failures | Authorized production custody issuer/private loader, current independently retrieved per-RID helper records, verified hosted sanitizer artifacts, longer fuzz execution, retention/minimization of future crash findings, and live release operation |
 | Local P2P to public claim | Manifest, lane proof, claim wording | Local identity, route, transfer, state, and expiry checks | Outside observer signature, full transfer, and publication authority |
 
 ## Threat Analysis
@@ -437,9 +437,13 @@ module-issued protected equality handle are integrated into current release
 operations. Physical durability, authorized production custody, current
 multi-RID helper provenance/execution, and OS isolation remain prerequisites
 for the corresponding production claims. One maintained structured archive
-target and frozen 29-seed hostile corpus now replay locally; hosted sanitizer
-execution, longer campaigns, and retention/minimization of any future crash
-findings remain open. Deterministic cross-format, path, every-prefix, and
-single-bit mutation properties pass locally.
+target and frozen 29-seed hostile corpus now replay locally. One frozen runner
+and verifier can emit a canonical GitHub-hosted AddressSanitizer pass or fail
+record with bounded log and finding identities, and every branch push is now
+eligible for that job. No hosted artifact has been independently retrieved or
+verified, so hosted sanitizer execution, longer campaigns, and
+retention/minimization of any future crash findings remain open.
+Deterministic cross-format, path, every-prefix, and single-bit mutation
+properties pass locally.
 
 Campaign counters remain `0/20`, `0/50`, `0/25`, `0/40`, and `0/20`.
