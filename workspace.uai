@@ -1,7 +1,23 @@
-profile: tinyrustlm.source-workspace.v318
+profile: tinyrustlm.source-workspace.v319
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-14T05:03:31Z
+updated_utc: 2026-08-14T05:10:56Z
+
+current_checkpoint_2026_08_14_immediate_all_source_push_v2:
+  authority: This is the newest first-read all-repository source-preservation, explicit-push, remote-equality, topology, and restart checkpoint. It supersedes older present-tense repository-head and push statements while preserving immutable implementation, verification, failure, publication, and campaign history.
+  request_result: The seven authoritative repositories named by outside-Git `E:\Source\Rust\workspace.uai` were audited immediately. Every authoritative worktree had zero modified, staged, or untracked entries. Each configured authoritative branch was then explicitly pushed, every push reported `Everything up-to-date`, and a separate actual-remote branch read exactly matched the local head. There was no uncommitted authoritative source to rescue. This tracked handoff is the only new source change and cannot name its own final commit without self-reference; outside-Git root memory records that final pushed head.
+  authoritative_remote_heads_before_this_handoff:
+    TinyRustLM.com: `fd95c410aa5353c93d5a9610db6de36ce16110f4` on `origin/codex/model-acquisition-v2`
+    LMComposer.com: `36d6389fe82b0f53c4d8951aa6af5cb896fd8bf6` on `origin/main`
+    MiniModel.MiRust.com: `4f2401fb8166b54c73a1b9d4ad36985bbcf6fb5d` on `origin/master`
+    MiniModel.org: `8439e224146c790ce6a9da36a32c4c49890cac52` on `origin/master`
+    MiRust.com: `4e3d8f52b0b20d9ccb51751e4182e8ab87fb3e43` on `origin/master`
+    Runtime.MiRust.com: `63b39e78d0814c9cacbbba891ea918c844e2b4db` on `origin/master`
+    TinyRustLM.MiRust.com: `6d77afc4b54f7f84db7efa33d8798aef61e9733f` on `origin/master`
+  local_topology: Authoritative TinyRustLM worktree `E:\Source\.tinyrustlm-model-acquisition`, direct LMComposer checkout, and the five clean release worktrees under `E:\Source\Worktrees\rust-site-release-20260809` are the audited sources above. The five direct site folders are clean stale views and were not force-updated while E: had only 868,352 free bytes. Protected dirty `E:\Source\Rust\TinyRustLM.com` contains 805 pre-existing status entries and was not edited, staged, cleaned, reset, committed, pushed, or used as authority.
+  handoff_verification: `git diff --check` passes. D:-contained execution of the exact filtered `ReportIntakeMemoryTests` suite passes 9/9 with zero failures or skips. Machine-readable test output is retained on D: outside source control; this checkpoint does not try to self-bind a receipt whose bytes precede its own insertion.
+  production_truth: No production member, package, version, release date, site, deployment, public readback, MemoryEndpoints account, catalog state, or live campaign counter changed. MemoryEndpoints remains unauthorized and disconnected; counters remain 0/20, 0/50, 0/25, 0/40, and 0/20.
+  exact_resume: Verify this handoff, commit and push it, update and back up outside-Git root memory with the final TinyRustLM head, advance the clean detached physical worktree, and re-read all seven actual remote branches. Continue the frozen vNext goal only in the clean active worktree with generated output on D:. Preserve the protected checkout and Git junctions, and publish only after complete authorization, deployment, and independent HTTPS readback.
 
 current_checkpoint_2026_08_14_dotnet_test_execution_v1:
   authority: This is the newest first-read .NET test-execution, output-topology, verification, source-control, and restart checkpoint. It supersedes older present-tense .NET test counts and any assumption that a zero `dotnet test` exit code necessarily means tests ran, while preserving immutable implementation, failure, release, publication, and campaign history.
