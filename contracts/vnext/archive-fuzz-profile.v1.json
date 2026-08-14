@@ -1,0 +1,81 @@
+{
+  "schema": "tinyrustlm.vnext.archive_fuzz_profile.v1",
+  "profileId": "tinyrustlm.vnext.archive-fuzz.v1",
+  "status": "frozen",
+  "target": "structured_archive",
+  "inputWire": {
+    "magicAscii": "TAF1",
+    "version": 1,
+    "maximumBytes": 4096,
+    "formats": [
+      "tar-gzip",
+      "zip"
+    ],
+    "modes": [
+      "bit-flip",
+      "canonical",
+      "member-type",
+      "nested-archive",
+      "path-contract",
+      "raw-container",
+      "trailing-data",
+      "truncation"
+    ]
+  },
+  "systemUnderTest": {
+    "crate": "tinyrustlm-archive",
+    "entryPoint": "scan_archive_bytes",
+    "archiveAdmissionProfileId": "tinyrustlm.vnext.archive-admission.v1",
+    "archiveAdmissionProfileSha256": "05158f80e01817e31a2968bc4e2f9d1bb05fe53064384563f6546a5468046031",
+    "secondParser": "forbidden",
+    "filesystemExtraction": "forbidden",
+    "networkAccess": "forbidden"
+  },
+  "generatorLimits": {
+    "maximumGeneratedMembers": 4,
+    "maximumGeneratedMemberBytes": 32,
+    "maximumMaterializedArchiveBytes": 65536
+  },
+  "requiredInvariants": [
+    "a rejected archive invokes zero consumer callbacks",
+    "every rejection uses an error code declared by the frozen archive admission profile",
+    "an admitted archive invokes one callback per admitted regular member",
+    "callback content hashes match callback bytes",
+    "admission archive identity matches the exact materialized compressed bytes",
+    "admission member and content-manifest evidence matches an independent fuzz-harness oracle"
+  ],
+  "engine": {
+    "cargoFuzzVersion": "0.13.2",
+    "libfuzzerSysVersion": "0.4.13",
+    "toolchain": "nightly",
+    "sanitizerRunner": "linux-x64-or-linux-arm64",
+    "ciMaximumInputBytes": 4096,
+    "ciMaximumTotalSeconds": 60
+  },
+  "corpus": {
+    "schema": "tinyrustlm.vnext.archive_fuzz_corpus.v1",
+    "manifest": "rust/crates/tinyrustlm-archive/fuzz/corpus/structured_archive/manifest.v1.json",
+    "stableReplayRequired": true,
+    "exactVerdictRequired": true,
+    "minimizeNewFindingsBeforeRetention": true,
+    "overwriteExistingFinding": "forbidden"
+  },
+  "nonClaims": [
+    "A bounded CI fuzz interval is not proof that the parser has no defects.",
+    "A seed corpus is not a retained crash corpus and does not claim that a crash was observed.",
+    "Windows stable corpus replay is not sanitizer-backed libFuzzer execution.",
+    "Fuzzing does not establish physical durability, production custody, package publication, deployment, public readback, or campaign progress."
+  ],
+  "primarySources": [
+    {
+      "title": "Rust Fuzz Book - Structure-Aware Fuzzing",
+      "url": "https://rust-fuzz.github.io/book/cargo-fuzz/structure-aware-fuzzing.html",
+      "retrievedUtc": "2026-08-14T00:00:00Z"
+    },
+    {
+      "title": "rust-fuzz cargo-fuzz",
+      "url": "https://github.com/rust-fuzz/cargo-fuzz",
+      "retrievedUtc": "2026-08-14T00:00:00Z"
+    }
+  ]
+}
