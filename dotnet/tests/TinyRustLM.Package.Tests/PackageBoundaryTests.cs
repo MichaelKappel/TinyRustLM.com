@@ -2,6 +2,7 @@ using System.IO.Compression;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Xunit;
 
 namespace TinyRustLM.Package.Tests;
@@ -718,6 +719,27 @@ public sealed class PackageBoundaryTests
             Assert.Contains("debug_symbol_entries", writer, StringComparison.Ordinal);
             Assert.Contains("generated_output_entries", writer, StringComparison.Ordinal);
         }
+    }
+
+    [Fact]
+    public void PackageAuditWritersUseTheSamePublicApiContract()
+    {
+        var root = RepositoryRoot();
+        var powershellWriter = File.ReadAllText(Path.Combine(root, "eng/write-package-audit.ps1"));
+        var bashWriter = File.ReadAllText(Path.Combine(root, "eng/write-package-audit.sh"));
+
+        static string[] PublicApiEntries(string source) => Regex
+            .Matches(source, "[\"']([MPTF]:TinyRustLM\\.[^\"']+)[\"']", RegexOptions.CultureInvariant)
+            .Select(match => match.Groups[1].Value)
+            .Distinct(StringComparer.Ordinal)
+            .Order(StringComparer.Ordinal)
+            .ToArray();
+
+        var powershellEntries = PublicApiEntries(powershellWriter);
+        var bashEntries = PublicApiEntries(bashWriter);
+
+        Assert.NotEmpty(powershellEntries);
+        Assert.Equal(powershellEntries, bashEntries);
     }
 
     [Fact]

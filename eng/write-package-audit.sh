@@ -564,7 +564,7 @@ def expected_public_api_entries(package_id):
             "M:TinyRustLM.P2PSignedManifest.#ctor(System.String,System.Int32,TinyRustLM.P2PManifest,TinyRustLM.P2PManifestSignature)",
             "M:TinyRustLM.P2PSignedManifestVerification.#ctor(System.String,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)",
             "M:TinyRustLM.PrepareShareKitRequest.#ctor(System.String,System.String,System.String,System.String,System.String,System.String,System.Nullable{System.Int64})",
-            "M:TinyRustLM.SlmInspection.#ctor(System.String,System.Int32,System.String,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.String,System.UInt64)",
+            "M:TinyRustLM.SlmInspection.#ctor(System.String,System.Int32,System.String,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.String,System.UInt64)",
             "M:TinyRustLM.TinyRustLmCapabilities.#ctor(System.String,System.Int32,System.String,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Collections.Generic.IReadOnlyList{System.String})",
             "M:TinyRustLM.TinyRustLmCompositionActivationReport.#ctor(System.Int64,System.String,System.String)",
             "M:TinyRustLM.TinyRustLmGenerationOptions.#ctor(System.Int32,System.Single,System.Int32,System.Single,System.UInt32)",
