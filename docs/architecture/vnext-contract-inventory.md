@@ -249,6 +249,22 @@ source `ab12047fec0bf6d1d2c0b3b00939e228dcb5d46b` passed the exact maintained
 consumer tests. Current native package evidence for `linux-x64` and
 `linux-arm64`, hosted CI completion, signing where required, publication, and
 production readback remain open release work.
+The protected NuGet path now has one first-class BCL-only
+`TinyRustLM.PackageCanonicalizer` tool in the .NET solution. Both pack scripts
+invoke that same executable after packing and before tests, audit, hashes, or
+publication planning. It rejects signed archives, reparse targets, unsafe or
+nonportable ZIP names, portable duplicates, and bounded-size violations;
+rewrites only through a same-directory exclusive temporary; assigns the one
+ZIP epoch timestamp; proves ordered metadata and decompressed-content
+equivalence before promotion; and performs final readback. There is no shell
+rewrite or compatibility canonicalizer. Package audit is a clean cut to
+`tinyrustlm.nuget.package_audit.v1`; maintained publish readers reject v0.
+Two complete `win-x64` package builds from source `9e60539` reproduced all
+eight unsigned main/symbol package bytes exactly, and current parity source
+`7cc3579` passes 67/67 package tests plus independent PowerShell/Bash v1 audits
+whose normalized 939-leaf documents are equal. These local results do not
+prove signing, feed transformation, public availability, or execution on any
+other RID.
 The sole exact cross-store Rust-backed campaign runner is documented in
 `docs/architecture/vnext-campaign-runner.md`.
 The fresh-runner-only immutable attestation, operator, release-manifest,

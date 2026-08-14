@@ -180,7 +180,19 @@ F5 reuses an already-running TinyRustLM server only after checking the app page 
 
 The protected NuGet distribution lives under `dotnet/`, `rust/crates/`, `eng/`, and `docs/nuget/`. It packages only the public ecosystem surface: `.slm` validation/inspection, native-backed runtime harness operations, metadata-bound P2P share/import workflows, local signed-manifest verification, local manifest-piece verification and assembly with receipt sidecars plus receipt inspection, .NET wrappers, tests, samples, package metadata, and CI/release automation. It deliberately excludes `.slm` authoring internals, conversion tools, quantization authoring, adapter authoring or auto-assembly, selector generation, offline breeding, lineage promotion, eval/provenance authoring, premium routing, optimizer logic, encryption key handling, telemetry, license-server internals, commercial orchestration, and private training/model-ranking logic.
 
-Current local release-gate evidence for July 6, 2026 is green for `cargo fmt --all --check`, `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace`, and `eng\verify-package.ps1`. The verifier rebuilt the native bridge, ran workspace rustfmt and clippy, ran focused Rust and .NET tests, packed the protected SDK packages, wrote the package audit, and passed the clean consumer install/runtime/P2P/memory smoke from local package references.
+Current local package evidence is source-bound and deliberately split. Source
+`9e60539a55b6df1680d58c4a8980b96eed1ae5e7` completed the full Windows
+package verifier twice, including Rust and .NET tests, four protected
+`.nupkg` files, four matching `.snupkg` files, the clean isolated consumer,
+and a zero-finding `tinyrustlm.nuget.package_audit.v1` report. The two clean
+builds reproduced all eight unsigned package files byte-for-byte. Source
+`7cc35791376365898b6400129b2fc6ee67e95706` changes no package-producing
+input; it corrects the Bash audit writer's public API literal and adds a
+cross-writer regression. At that source the complete package test project
+passes 67/67, and independently rerun PowerShell and Bash audits both pass for
+the same `win-x64` package set with zero noncanonical timestamp entries. This
+is local reproducibility and package-policy evidence, not NuGet publication,
+signing, other-RID execution, or feed readback.
 
 Run the full NuGet verifier from the repository root:
 

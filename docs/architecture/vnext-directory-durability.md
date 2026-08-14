@@ -286,6 +286,26 @@ The crate forbids unsafe Rust. The frozen profile is compiled into the library
 and rehashed before every operation; a profile-byte mismatch fails as
 `directory_profile_invalid`.
 
+## Adjacent Package Reproducibility Boundary
+
+Unsigned NuGet archives use the separate first-class
+`TinyRustLM.PackageCanonicalizer` tool before package audit, hash-manifest
+generation, or publication planning. The tool applies the ZIP epoch timestamp
+through a same-directory exclusive temporary and verifies entry metadata plus
+decompressed content before replacement and final readback. Both PowerShell
+and Bash pack paths invoke that one implementation; there is no shell-specific
+ZIP mutator or legacy audit reader. Two complete physical `win-x64` builds
+from source `9e60539` reproduced all eight `.nupkg`/`.snupkg` bytes exactly,
+and current source `7cc3579` passes the 67-test package suite and cross-writer
+v1 audit parity.
+
+This boundary removes timestamp-only archive drift. It does not replace the
+directory-flush helper, prove persistence across power loss, make signing
+reproducible, authorize publication, or establish package execution on another
+RID. Signed packages are rejected because post-signature ZIP mutation would
+invalidate the signature; repository signatures added by a public feed remain
+a separately verified transformation.
+
 ## Primary Sources
 
 Retrieved 2026-08-11:
