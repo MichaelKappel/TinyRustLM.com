@@ -1,7 +1,33 @@
-profile: tinyrustlm.source-workspace.v309
+profile: tinyrustlm.source-workspace.v310
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-13T20:55:12Z
+updated_utc: 2026-08-14T01:53:35Z
+
+current_checkpoint_2026_08_14_immediate_all_repository_checkin:
+  authority: This is the newest first-read source-control, verification, package-failure, publication, and restart checkpoint. It supersedes older present-tense repository heads, Gate D package status, complete-gate status, production-intersection status, and next-action descriptions where different while preserving immutable failures, releases, and campaign history. It is not a deployment, production readback, cross-platform execution result, package-publication result, or live campaign result.
+  continuation_goal:
+    path: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+    sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    status: active and incomplete
+  repository_result: Immediately before this handoff edit, all seven authoritative site worktrees were clean and fresh actual-remote branch reads exactly matched every local head. TinyRustLM source head `b6735ba007f1d59a64a507a6ab611d03535d3fce` was already pushed on `origin/codex/model-acquisition-v2`; this memory update is the only subsequent tracked source change. Direct site roots that are intentionally older are not source authority; the release worktrees named below remain authoritative.
+  authoritative_heads_before_this_handoff:
+    TinyRustLM.com: b6735ba007f1d59a64a507a6ab611d03535d3fce on codex/model-acquisition-v2 at E:\Source\.tinyrustlm-model-acquisition
+    LMComposer.com: 36d6389fe82b0f53c4d8951aa6af5cb896fd8bf6 on main at E:\Source\Rust\LMComposer.com
+    MiniModel.MiRust.com: 4f2401fb8166b54c73a1b9d4ad36985bbcf6fb5d on master at E:\Source\Worktrees\rust-site-release-20260809\MiniModel.MiRust.com
+    MiniModel.org: 8439e224146c790ce6a9da36a32c4c49890cac52 on master at E:\Source\Worktrees\rust-site-release-20260809\MiniModel.org
+    MiRust.com: 4e3d8f52b0b20d9ccb51751e4182e8ab87fb3e43 on master at E:\Source\Worktrees\rust-site-release-20260809\MiRust.com
+    Runtime.MiRust.com: 63b39e78d0814c9cacbbba891ea918c844e2b4db on master at E:\Source\Worktrees\rust-site-release-20260809\Runtime.MiRust.com
+    TinyRustLM.MiRust.com: 6d77afc4b54f7f84db7efa33d8798aef61e9733f on master at E:\Source\Worktrees\rust-site-release-20260809\TinyRustLM.MiRust.com
+  current_source_and_verification:
+    source_commits: `3116220` freezes LF checkout bytes; `07a84e8` owns companion asset identities; `35bd1c4` regenerates portable asset identities; `b6735ba` gives slm-pack tests RAII-owned safetensors fixtures and proves zero fixture residue.
+    complete_gates: The physical non-release Node surface passed 917/917 with real Chromium. The release surface passed 23/23 across six shards. The complete locked Rust workspace passed after the owned storage-full failure was preserved and repaired; slm-pack passed 439/439, workspace doc tests passed, rustfmt and warnings-denied Clippy passed, and all nine checked-in generators replayed byte-identically at tree `8f7e0c6847a222eb1659e4d09df851b4bcbe79d7`.
+    preserved_failures: The first complete Rust run failed on StorageFull while cleaning one of 438 slm-pack tests. The failure was preserved, cleanup ownership was fixed generally, and complete reruns passed. Do not erase or recast the initial failure.
+  package_truth: The retained 0.1.8 package feed is not current-source-qualified. A current-head audit failed only `package_documentation_mismatch_count=13` because package documentation bytes predated the enforced LF source bytes; all other audit finding classes were zero. Existing package tests passed 55/55, the isolated consumer passed, and package fault injection passed 3/3, but those results do not repair the failed current-source audit. A subsequent `eng/pack.ps1` rebuild attempt stopped with six SeedHost test failures because the physical worktree could not find the sibling MiniModel CLI/native outputs. The failed transcript is retained at `D:\TinyRustLM-vnext-20260812\test-logs\package-rebuild-b6735ba.log`. No rebuilt package set, package publication, or package pass is claimed.
+  production_intersection: Relative to baseline `217ce6b3aef294631269cd5bfaee0f43508fa079`, exactly four files intersect the 23-member deployment manifest: `tinyrustlm/app/index.html`, `tinyrustlm/companion/index.html`, `tinyrustlm/index.html`, and `tinyrustlm/updates/index.html`. Their changes correct cache-bust identities for canonical LF bytes. The public site remains version 0.2.1 with release date 2026-08-08; it was not silently renumbered or deployed.
+  storage_boundary: E: remains critically constrained and generated output must stay on D:. Keep `CARGO_TARGET_DIR=D:\TinyRustLM-vnext-20260812\cargo-target`, `TEMP` and `TMP` at `D:\TinyRustLM-vnext-20260812\temp`, `NUGET_PACKAGES=D:\TinyRustLM-vnext-20260812\nuget-packages`, and `CARGO_INCREMENTAL=0`. Preserve all documented junctions and keep Git auto-fetch and maintenance disabled.
+  protected_checkout: `E:\Source\Rust\TinyRustLM.com` remains untouched protected stale user-owned state. Do not edit, reset, clean, revert, commit, publish, repack, prune, delete temporary packs, or use it as source authority.
+  publication_truth: A production release is required by the four-file intersection but is blocked on the incomplete vNext site-publisher authorization, deployment, and independent HTTPS readback graph. No legacy publication path may substitute for that authority. No production closure was deployed, no release metadata or public readback changed, live campaign counters remain 0/20 qualified models, 0/50 clean browser rounds, 0/25 live memory rounds, 0/40 outside-proven lanes, and 0/20 announcements, and MemoryEndpoints remains unauthorized and disconnected.
+  exact_resume: Commit and push this handoff, explicitly push all six unchanged authoritative branches, and verify all seven actual remote heads. Then build the clean remote-exact MiniModel CLI/native dependency into the physical verification topology, rebuild the packages, require a zero-finding current-head audit, rerun package tests plus isolated consumer and fault injection, update the stale Gate D documentation, and commit/push that closure. Continue remaining physical, cross-RID, fuzz, and clean-slate vNext work. Publish only after the exact vNext authorization, deployment, and independent HTTPS readback predicate is complete.
 
 current_checkpoint_2026_08_13_immediate_all_repository_checkin_v2:
   authority: This is the newest first-read source-control, Gate D package, storage, verification, and restart checkpoint. It supersedes older present-tense repository heads, package-progress status, test status, and next-action descriptions where different while preserving immutable failure, release, and campaign history. It is not a deployment, production readback, cross-platform execution result, or live campaign result.
