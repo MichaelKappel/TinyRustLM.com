@@ -1,7 +1,23 @@
-profile: tinyrustlm.source-workspace.v316
+profile: tinyrustlm.source-workspace.v317
 project_name: TinyRustLM
 canonical_root: E:\Source\Rust\TinyRustLM.com
-updated_utc: 2026-08-14T04:42:35Z
+updated_utc: 2026-08-14T04:48:54Z
+
+current_checkpoint_2026_08_14_immediate_all_source_checkin_v1:
+  authority: This is the newest first-read all-repository source-preservation and restart checkpoint. It supersedes older present-tense repository-head and local-checkout-equality statements while preserving immutable implementation, verification, failure, publication, and campaign history.
+  request_result: The seven authoritative repositories named by outside-Git `E:\Source\Rust\workspace.uai` were audited immediately. Every authoritative worktree had zero modified, staged, or untracked files, so there was no uncommitted source to rescue in any repository. Actual remote branch reads contain the authoritative commits listed below. This tracked handoff is the only new source change and cannot identify its own final commit without self-reference; the outside-Git root account records that pushed final head.
+  authoritative_remote_heads:
+    TinyRustLM.com: `283ac5bfd1fd585e2e129267c05c45b3353b3f09` on `origin/codex/model-acquisition-v2` before this handoff
+    LMComposer.com: `36d6389fe82b0f53c4d8951aa6af5cb896fd8bf6` on `origin/main`
+    MiniModel.MiRust.com: `4f2401fb8166b54c73a1b9d4ad36985bbcf6fb5d` on `origin/master`
+    MiniModel.org: `8439e224146c790ce6a9da36a32c4c49890cac52` on `origin/master`
+    MiRust.com: `4e3d8f52b0b20d9ccb51751e4182e8ab87fb3e43` on `origin/master`
+    Runtime.MiRust.com: `63b39e78d0814c9cacbbba891ea918c844e2b4db` on `origin/master`
+    TinyRustLM.MiRust.com: `6d77afc4b54f7f84db7efa33d8798aef61e9733f` on `origin/master`
+  local_topology: Authoritative TinyRustLM worktree `E:\Source\.tinyrustlm-model-acquisition` and direct LMComposer checkout are clean at their remote heads. The five direct folders `MiniModel.MiRust.com`, `MiniModel.org`, `MiRust.com`, `Runtime.MiRust.com`, and `TinyRustLM.MiRust.com` are clean but locally stale views; their actual remote branches hold the newer authoritative commits above. With E: at only 1,236,992 free bytes and no source at risk, those stale folders were not force-updated merely to consume storage or create checkout risk. Refresh them only by a verified fast-forward with adequate staging capacity; never treat their stale local heads as release authority.
+  protected_checkout: Dirty `E:\Source\Rust\TinyRustLM.com` remains protected user-owned state and was not edited, staged, cleaned, reset, committed, pushed, or used as authority.
+  production_truth: No production member, package, version, release date, site, deployment, public readback, MemoryEndpoints account, catalog state, or live campaign counter changed. MemoryEndpoints remains unauthorized and disconnected; counters remain 0/20, 0/50, 0/25, 0/40, and 0/20.
+  exact_resume: Commit and push this tracked handoff, update and back up outside-Git root routing memory with the final TinyRustLM commit, and re-read every actual remote branch. Continue the frozen vNext goal only from the clean active TinyRustLM worktree, keep generated output on D:, preserve the protected checkout and Git junctions, and publish only after complete authorization, deployment, and independent HTTPS readback.
 
 current_checkpoint_2026_08_14_structured_archive_fuzz_v1:
   authority: This is the newest first-read TinyRustLM source, structured archive-fuzz, hostile-corpus, documentation, verification, storage, publication, and restart checkpoint. It supersedes older present-tense TinyRustLM heads, statements that a maintained archive fuzz target or versioned hostile seed corpus is absent, and next-action descriptions where different while preserving immutable failures, releases, publications, and campaign history. It is local and CI-source conformance evidence, not a hosted sanitizer result, long-running fuzz result, crash finding, retained minimized crash corpus, production durability, deployment, public readback, or live campaign evidence.
