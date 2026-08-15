@@ -612,25 +612,51 @@ publication verdict fails closed.
   claim commit, and after the final receipt commit; and
 - rejection of caller deployment, readback, and publication truth.
 
-The sole maintained command is
-`npm run test:vnext-campaign-release-surface`. It invokes
-`tools/run-vnext-campaign-release-surface-gate.js`, which parses the test file
-before execution and fails if any top-level test name is missing from the
-partition, appears twice, or is no longer present. The current frozen
-partition contains all 23 top-level cases exactly once across six disjoint
-anchored shards. Each shard executes the unchanged test file through the Node
-test runner in an independent process; every case still creates its own fresh
-durable roots. The gate waits for every child and fails on spawn failure,
-nonzero exit, signal, partition drift, or a bounded six-hour shard timeout.
+The sole maintained execution command is
+`npm run test:vnext-campaign-release-surface -- <absolute-evidence-root>`.
+The caller supplies only an existing absolute evidence root; it cannot supply
+a verdict, result, test count, source identity, or receipt. The standalone
+verification command is
+`node tools/run-vnext-campaign-release-surface-gate.js verify <absolute-evidence-root>`.
+Partition-only inspection uses the explicit `validate` operation. There is no
+implicit repository output directory or compatibility argument reader.
 
-On 2026-08-11, the exhaustive partition passed 23/23 with zero failures,
-skips, cancellations, or todos. The six shard aggregates were 4/4, 4/4, 4/4,
-3/3, 4/4, and 4/4. A direct serial invocation was separately abandoned after
-an explicit three-hour process timeout without TAP output; it is not a pass,
-failure, or maintained gate. The partition changes orchestration only: it does
-not reuse a fixture, lower a threshold, remove a case, or advance campaign
-counters. The partition validator itself is covered by two fast hostile tests
-and supports a `--validate-only` mode for exact coverage inspection.
+`contracts/vnext/campaign-release-surface-gate-profile.v1.json` freezes all 23
+top-level cases exactly once across six disjoint anchored shards. Before any
+execution or reuse, the gate requires a clean exact Git head and tree and binds
+the profile, runner, complete implementation closure, unchanged test file,
+ordered partition, Node executable bytes and version, operating system,
+architecture, bounded tool identities, and a hashed allowlisted child
+environment into one content-addressed run identity. The child receives no
+ambient credentials: only the frozen allowlist and fixed offline/no-color
+values cross the process boundary.
+
+Every fresh shard runs the unchanged test file in an independent process and
+retains bounded raw stdout and stderr in an internally named create-only
+attempt directory. A canonical shard receipt is committed only after terminal
+process state, file fsync, source revalidation, exact log readback, and an
+independent parser agree. Pass requires the exact expected test names and
+counts, exit zero, empty stderr, and zero failures, skips, cancellations, and
+todos. Timeouts, signals, output limits, incomplete attempts, malformed logs,
+and failed receipts remain immutable evidence but cannot satisfy resume.
+
+After all six shard receipts independently verify against the current run
+identity, the gate commits one atomic create-only aggregate receipt and then
+verifies the complete graph again. A restart reuses only exact valid pass
+receipts for the same content-addressed source, partition, tools, and
+environment. Source, runner, test, partition, output, or environment drift
+creates a different run identity or fails verification; no stale pass is
+silently carried forward. File fsync is recorded without claiming universal
+directory-entry survival, which remains a separate native durability gate.
+
+On 2026-08-11, an earlier clean source revision's exhaustive partition passed
+23/23 with zero failures, skips, cancellations, or todos. The six shard
+aggregates were 4/4, 4/4, 4/4, 3/3, 4/4, and 4/4. That historical result is not
+a pass for a later source revision. Subsequent outer-wrapper timeouts are also
+retained as infrastructure evidence, not product failures or complete-suite
+passes. Sharding and verified resume change orchestration only: they do not
+reuse fixture verdicts, lower a threshold, remove a case, or advance campaign
+counters.
 
 The complete-capacity case is synthetic conformance evidence. It does not
 increment any live campaign counter.

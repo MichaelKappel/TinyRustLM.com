@@ -6,7 +6,11 @@ const path = require("node:path");
 const test = require("node:test");
 
 const {
+  buildChildEnvironment,
+  deriveShardObservation,
   extractTopLevelTestNames,
+  gateProfileId,
+  gateProfileSha256,
   maximumConcurrentShards,
   releaseSurfaceShards,
   runShardPool,
@@ -19,6 +23,39 @@ const releaseSurfaceTestPath = path.resolve(
   "vnext-campaign-release-surface.test.js"
 );
 
+function passingSpecOutput(names, overrides = {}) {
+  const summary = {
+    cancelled: 0,
+    fail: 0,
+    pass: names.length,
+    skipped: 0,
+    tests: names.length,
+    todo: 0,
+    ...overrides
+  };
+  return Buffer.from([
+    ...names.map((name, index) => `✔ ${name} (${index + 1}.25ms)`),
+    `ℹ tests ${summary.tests}`,
+    "ℹ suites 0",
+    `ℹ pass ${summary.pass}`,
+    `ℹ fail ${summary.fail}`,
+    `ℹ cancelled ${summary.cancelled}`,
+    `ℹ skipped ${summary.skipped}`,
+    `ℹ todo ${summary.todo}`,
+    "ℹ duration_ms 12.5",
+    ""
+  ].join("\n"), "utf8");
+}
+
+const successfulTerminal = Object.freeze({
+  exitCode: 0,
+  logWriteFailed: false,
+  outputLimitExceeded: false,
+  signal: null,
+  spawnFailed: false,
+  timedOut: false
+});
+
 test("freezes one exhaustive release-surface gate partition", () => {
   const source = fs.readFileSync(releaseSurfaceTestPath, "utf8");
   const result = validateShardPartition(source);
@@ -26,6 +63,10 @@ test("freezes one exhaustive release-surface gate partition", () => {
   const partitionNames = releaseSurfaceShards.flat();
 
   assert.deepEqual(result, { shardCount: 6, testCount: 23 });
+  assert.equal(gateProfileId,
+    "tinyrustlm.vnext.campaign-release-surface-gate.v1");
+  assert.equal(gateProfileSha256,
+    "6134443c924326066559e9997b76f741951caef0a4b3d050cac67661948dc134");
   assert.equal(maximumConcurrentShards, 1);
   assert.equal(new Set(partitionNames).size, 23);
   assert.deepEqual([...partitionNames].sort(), [...names].sort());
@@ -34,6 +75,137 @@ test("freezes one exhaustive release-surface gate partition", () => {
     assert.deepEqual(names.filter((name) => expression.test(name)).sort(),
       [...shard].sort());
   }
+});
+
+test("cuts the package entry point to the evidence-root run operation", () => {
+  const packageValue = JSON.parse(fs.readFileSync(
+    path.resolve(__dirname, "../package.json"),
+    "utf8"
+  ));
+  assert.equal(
+    packageValue.scripts["test:vnext-campaign-release-surface"],
+    "node tools/run-vnext-campaign-release-surface-gate.js run"
+  );
+});
+
+test("derives a pass only from exact terminal output", () => {
+  const names = releaseSurfaceShards[0];
+  const result = deriveShardObservation(
+    passingSpecOutput(names),
+    Buffer.alloc(0),
+    successfulTerminal,
+    names
+  );
+
+  assert.deepEqual(result, {
+    failureCode: null,
+    observedTestNames: [...names],
+    summary: {
+      cancelled: 0,
+      fail: 0,
+      pass: names.length,
+      skipped: 0,
+      tests: names.length,
+      todo: 0
+    },
+    verdict: "pass"
+  });
+});
+
+test("rejects incomplete duplicate skipped and stderr-bearing output", () => {
+  const names = releaseSurfaceShards[0];
+  const incomplete = deriveShardObservation(
+    passingSpecOutput(names.slice(0, -1)),
+    Buffer.alloc(0),
+    successfulTerminal,
+    names
+  );
+  assert.equal(incomplete.failureCode, "child_output_invalid");
+  assert.equal(incomplete.verdict, "fail");
+
+  const duplicate = deriveShardObservation(
+    passingSpecOutput([names[0], names[0], ...names.slice(2)]),
+    Buffer.alloc(0),
+    successfulTerminal,
+    names
+  );
+  assert.equal(duplicate.failureCode, "child_output_invalid");
+
+  const skipped = deriveShardObservation(
+    passingSpecOutput(names, { pass: names.length - 1, skipped: 1 }),
+    Buffer.alloc(0),
+    successfulTerminal,
+    names
+  );
+  assert.equal(skipped.failureCode, "child_output_invalid");
+
+  const stderr = deriveShardObservation(
+    passingSpecOutput(names),
+    Buffer.from("warning\n", "utf8"),
+    successfulTerminal,
+    names
+  );
+  assert.equal(stderr.failureCode, "child_stderr_nonempty");
+
+  const contradictoryFailure = deriveShardObservation(
+    Buffer.from(
+      passingSpecOutput(names).toString("utf8").replace(
+        "ℹ tests",
+        "✖ hidden contradiction (1ms)\nℹ tests"
+      ),
+      "utf8"
+    ),
+    Buffer.alloc(0),
+    successfulTerminal,
+    names
+  );
+  assert.equal(contradictoryFailure.failureCode, "child_output_invalid");
+});
+
+test("gives bounded terminal failures precedence over attractive output", () => {
+  const names = releaseSurfaceShards[0];
+  const stdout = passingSpecOutput(names);
+  const cases = [
+    [{ ...successfulTerminal, outputLimitExceeded: true }, "child_output_limit"],
+    [{ ...successfulTerminal, logWriteFailed: true }, "child_log_write_failed"],
+    [{ ...successfulTerminal, timedOut: true }, "child_timeout"],
+    [{ ...successfulTerminal, spawnFailed: true }, "child_spawn_failed"],
+    [{ ...successfulTerminal, signal: "SIGKILL" }, "child_signal"],
+    [{ ...successfulTerminal, exitCode: 9 }, "child_exit_nonzero"]
+  ];
+  for (const [terminal, failureCode] of cases) {
+    const result = deriveShardObservation(
+      stdout,
+      Buffer.alloc(0),
+      Object.freeze(terminal),
+      names
+    );
+    assert.equal(result.failureCode, failureCode);
+    assert.equal(result.verdict, "fail");
+  }
+});
+
+test("projects only frozen non-secret child environment bindings", () => {
+  const first = buildChildEnvironment({
+    CARGO_TARGET_DIR: "D:\\owned-target",
+    PATH: "C:\\tools",
+    SECRET_TOKEN: "must-not-cross"
+  });
+  const second = buildChildEnvironment({
+    CARGO_TARGET_DIR: "D:\\owned-target",
+    PATH: "C:\\tools",
+    SECRET_TOKEN: "different-secret"
+  });
+
+  assert.deepEqual(first, second);
+  assert.equal(Object.hasOwn(first.environment, "SECRET_TOKEN"), false);
+  assert.equal(first.environment.CARGO_NET_OFFLINE, "true");
+  assert.equal(first.environment.FORCE_COLOR, "0");
+  assert.equal(first.environment.TZ, "UTC");
+  assert.equal(JSON.stringify(first.bindings).includes("must-not-cross"), false);
+  assert.equal(JSON.stringify(first.bindings).includes("D:\\owned-target"), false);
+  assert.match(first.bindings.find((entry) =>
+    entry.name === "CARGO_TARGET_DIR").sha256, /^[a-f0-9]{64}$/u);
 });
 
 test("bounds shard execution and preserves complete index order", async () => {

@@ -1,0 +1,164 @@
+{
+  "schema": "tinyrustlm.vnext.campaign_release_surface_gate_profile.v1",
+  "profileId": "tinyrustlm.vnext.campaign-release-surface-gate.v1",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-no-compatibility-reader",
+  "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
+  "hashAlgorithm": "sha256",
+  "executionClass": "clean-source-local-node-independent-shards",
+  "sourcePolicy": "clean-exact-head-and-tree",
+  "reporter": "spec",
+  "maximumConcurrentShards": 1,
+  "shardTimeoutMilliseconds": 21600000,
+  "runnerFile": "tinyrustlm/tools/run-vnext-campaign-release-surface-gate.js",
+  "implementationFiles": [
+    "contracts/vnext/campaign-release-surface-gate-profile.v1.json",
+    "tinyrustlm/tools/run-vnext-campaign-release-surface-gate.js",
+    "tinyrustlm/tools/strict-json.js",
+    "tinyrustlm/tools/vnext-jcs.js"
+  ],
+  "testFile": "tinyrustlm/tests/vnext-campaign-release-surface.test.js",
+  "files": {
+    "aggregateReceipt": "aggregate-receipt.v1.json",
+    "runIdentity": "run-identity.v1.json",
+    "shardIdentity": "shard-identity.v1.json",
+    "shardReceipt": "shard-receipt.v1.json",
+    "stderr": "stderr.log",
+    "stdout": "stdout.log"
+  },
+  "schemas": {
+    "aggregateReceipt": "tinyrustlm.vnext.campaign_release_surface_gate_aggregate.v1",
+    "runIdentity": "tinyrustlm.vnext.campaign_release_surface_gate_run_identity.v1",
+    "shardIdentity": "tinyrustlm.vnext.campaign_release_surface_gate_shard_identity.v1",
+    "shardReceipt": "tinyrustlm.vnext.campaign_release_surface_gate_shard_receipt.v1"
+  },
+  "summaryFields": [
+    "cancelled",
+    "fail",
+    "pass",
+    "skipped",
+    "tests",
+    "todo"
+  ],
+  "childEnvironmentAllowlist": [
+    "APPDATA",
+    "CARGO",
+    "CARGO_HOME",
+    "CARGO_TARGET_DIR",
+    "COMSPEC",
+    "DOTNET_CLI_HOME",
+    "HOME",
+    "HOMEDRIVE",
+    "HOMEPATH",
+    "LANG",
+    "LC_ALL",
+    "LOCALAPPDATA",
+    "NUGET_PACKAGES",
+    "PATH",
+    "PATHEXT",
+    "PROGRAMDATA",
+    "PROGRAMFILES",
+    "PROGRAMFILES(X86)",
+    "PROGRAMW6432",
+    "RUSTUP_HOME",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "TMPDIR",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "fixedChildEnvironment": {
+    "CARGO_NET_OFFLINE": "true",
+    "FORCE_COLOR": "0",
+    "NODE_DISABLE_COLORS": "1",
+    "NO_COLOR": "1",
+    "RUST_BACKTRACE": "0",
+    "TZ": "UTC"
+  },
+  "toolIdentityCommands": [
+    {
+      "id": "cargo",
+      "command": "cargo",
+      "arguments": ["--version", "--verbose"]
+    },
+    {
+      "id": "git",
+      "command": "git",
+      "arguments": ["--version"]
+    },
+    {
+      "id": "rustc",
+      "command": "rustc",
+      "arguments": ["--version", "--verbose"]
+    }
+  ],
+  "limits": {
+    "maximumAggregateBytes": 131072,
+    "maximumAttemptDirectoriesPerShard": 1024,
+    "maximumEvidenceRootCharacters": 4096,
+    "maximumExecutableBytes": 134217728,
+    "maximumIdentityBytes": 131072,
+    "maximumLogBytesPerStream": 16777216,
+    "maximumReceiptBytes": 131072,
+    "maximumSourceMemberBytes": 67108864,
+    "maximumTerminalDurationMilliseconds": 21605000,
+    "maximumToolIdentityBytes": 65536
+  },
+  "failureCodes": [
+    "child_exit_nonzero",
+    "child_log_write_failed",
+    "child_output_invalid",
+    "child_output_limit",
+    "child_signal",
+    "child_spawn_failed",
+    "child_stderr_nonempty",
+    "child_timeout"
+  ],
+  "verdicts": ["fail", "pass"],
+  "durabilityPolicy": "create-only-file-fsync-with-separate-directory-durability-gate",
+  "shards": [
+    [
+      "freezes one no-compatibility campaign release surface profile",
+      "attests an honest zero projection without claiming release completion",
+      "attests exact complete capacity while remaining prepublication",
+      "rejects stored projection, caller verdict, counter drift, and accessors"
+    ],
+    [
+      "rejects malformed web publication graphs before campaign replay",
+      "rejects a valid-looking web inventory that drifts from build evidence",
+      "rejects campaign, environment, and authority pin mismatches",
+      "rejects failed and interrupted operation histories instead of resuming them"
+    ],
+    [
+      "records only a public-safe redaction failure when an attestation contains a known secret",
+      "prepares one complete public-safe release without authorizing publication",
+      "authorizes only the exact prepared manifest through current Ed25519 authority",
+      "admits only an exact deployment-attempt receipt without claiming deployment"
+    ],
+    [
+      "verifies exact fixture-labeled HTTPS bytes through one immutable readback receipt",
+      "publishes deterministic site descendants only after complete generated-byte readback",
+      "rejects caller deployment truth and deployment-attempt binding drift"
+    ],
+    [
+      "resumes authorization after the redaction receipt committed alone",
+      "rejects caller authorization truth, wrong bindings, expiry, and snapshot drift",
+      "rejects an authorization key that was not active at signature issue",
+      "persists only bounded redaction evidence for unsafe authorization bytes"
+    ],
+    [
+      "refuses release preparation when the fresh campaign projection is incomplete",
+      "rejects incomplete artifact coverage and omitted current approved claims",
+      "rejects expired claims and superseded package evidence",
+      "persists only public-safe failure evidence for an unsafe changelog"
+    ]
+  ],
+  "nonClaims": [
+    "A shard receipt is local test evidence, not hosted execution evidence.",
+    "A complete aggregate is not deployment, publication, or public HTTPS readback evidence.",
+    "File fsync does not claim directory-entry survival across power loss on every platform.",
+    "Fixture-labeled network tests are not production network operations.",
+    "No campaign counter advances from this gate."
+  ]
+}

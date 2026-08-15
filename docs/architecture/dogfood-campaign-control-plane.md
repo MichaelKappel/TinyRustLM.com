@@ -181,7 +181,7 @@ The maintained local gate includes:
 
 ```powershell
 npm --prefix tinyrustlm run test:vnext-release-cutover
-npm --prefix tinyrustlm run test:vnext-campaign-release-surface
+npm --prefix tinyrustlm run test:vnext-campaign-release-surface -- <absolute-evidence-root>
 node --test tinyrustlm/tests/vnext-site-publication.test.js
 npm --prefix tinyrustlm run test:unit
 cargo fmt --all --check
@@ -189,6 +189,12 @@ cargo clippy --workspace --all-targets --locked -- -D warnings
 cargo test --workspace --locked
 git diff --check
 ```
+
+The release-surface evidence root must already exist outside the repository.
+The content-addressed run identity and independently verified create-only shard
+receipts make interrupted execution resumable without accepting a caller
+verdict or carrying a pass across source, test, runner, tool, or environment
+drift.
 
 All deterministic vNext generators must reproduce checked-in bytes. A local
 green gate authorizes a source-control checkpoint only. Production publication
