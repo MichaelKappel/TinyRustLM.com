@@ -206,7 +206,7 @@ const releaseRuntime = bootstrapVnextCampaignReleaseRuntime(
   releaseTrustDescriptorBytes
 );
 releaseTrustDescriptorBytes.fill(0);
-const createVnextCampaignReleaseSurface =
+const createCampaignReleaseSurface =
   releaseRuntime.createCampaignReleaseSurface;
 const {
   createVnextCampaignRunner
@@ -1332,7 +1332,7 @@ test("freezes one no-compatibility campaign release surface profile", () => {
   const profile = parseStrictJson(bytes);
   assert.equal(campaignReleaseSurfaceProfileSha256, sha256(bytes));
   assert.equal(campaignReleaseSurfaceProfileSha256,
-    "100d72ee201b395820aa11aa5b4f8f23befdbf0fffb515dda385fb826cc6fcff");
+    "41c8c23b995c71fc16d2fc677cbdd28967de65f7c15e926b82f9e9cbb82c8913");
   assert.equal(campaignReleaseSurfaceProfile.profileId,
     "tinyrustlm.vnext.campaign-release-surface.v1");
   assert.equal(profile.status, "frozen");
@@ -1396,11 +1396,11 @@ test("attests an honest zero projection without claiming release completion", {
   const entry = acceptedCase("honest-zero");
   seedCase(roots, entry);
   const validOptions = runnerOptions(roots);
-  await rejectsCode(() => createVnextCampaignReleaseSurface(roots.runner, {
+  await rejectsCode(() => createCampaignReleaseSurface(roots.runner, {
     ...validOptions,
     equalityCustody: {}
   }), "release_surface_options_invalid");
-  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+  const surface = await createCampaignReleaseSurface(roots.runner,
     validOptions);
   const input = surfaceInput(entry, "honest-zero-attestation");
   const result = await surface.attestCampaign(input);
@@ -1443,7 +1443,7 @@ test("attests exact complete capacity while remaining prepublication", {
   const roots = makeRoots(t);
   const entry = acceptedCase("complete-capacity");
   seedCase(roots, entry);
-  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+  const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   const result = await surface.attestCampaign(surfaceInput(entry, "complete-attestation"));
 
@@ -1475,7 +1475,7 @@ test("rejects stored projection, caller verdict, counter drift, and accessors", 
   const roots = makeRoots(t);
   const entry = acceptedCase("honest-zero");
   seedCase(roots, entry);
-  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+  const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   const base = surfaceInput(entry, "forbidden-caller-truth");
   for (const injected of [
@@ -1541,7 +1541,7 @@ test("rejects malformed web publication graphs before campaign replay", {
   const entry = acceptedCase("complete-capacity");
   seedCase(roots, entry);
   const releaseInput = seedReleaseInputs(roots, entry);
-  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+  const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   const base = prepareInput(entry, "invalid-web-graph", releaseInput);
   const rootlessAssets = releaseInput.webAssets.slice(1);
@@ -1611,7 +1611,7 @@ test("rejects a valid-looking web inventory that drifts from build evidence", {
   const entry = acceptedCase("complete-capacity");
   seedCase(roots, entry);
   const releaseInput = seedReleaseInputs(roots, entry);
-  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+  const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   const driftedAssets = releaseInput.webAssets.map((asset) =>
     asset.role === "application" ? {
@@ -1638,7 +1638,7 @@ test("rejects campaign, environment, and authority pin mismatches", {
   const roots = makeRoots(t);
   const entry = acceptedCase("honest-zero");
   seedCase(roots, entry);
-  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+  const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   const cases = [
     ["campaign", { expectedCampaignId: "campaign-vnext-wrong" },
@@ -1679,7 +1679,7 @@ test("rejects failed and interrupted operation histories instead of resuming the
     trustedRootRegistryReceiptId: failedInput.trustedRootRegistryReceiptId,
     verificationTimeUtc: failedInput.verificationTimeUtc
   }), "campaign_plan_projection_mismatch");
-  const failedSurface = await createVnextCampaignReleaseSurface(failedRoots.runner,
+  const failedSurface = await createCampaignReleaseSurface(failedRoots.runner,
     runnerOptions(failedRoots));
   await rejectsCode(() => failedSurface.attestCampaign(failedInput),
     "release_surface_operation_not_fresh");
@@ -1759,7 +1759,7 @@ test("rejects failed and interrupted operation histories instead of resuming the
     windowsHide: true
   });
   assert.equal(child.status, 77, `${child.stdout}\n${child.stderr}`);
-  const interruptedSurface = await createVnextCampaignReleaseSurface(
+  const interruptedSurface = await createCampaignReleaseSurface(
     interruptedRoots.runner,
     runnerOptions(interruptedRoots)
   );
@@ -1774,7 +1774,7 @@ test("records only a public-safe redaction failure when an attestation contains 
   const entry = acceptedCase("complete-capacity");
   seedCase(roots, entry);
   const secret = entry.receiptIds[0].slice("sha256:".length, "sha256:".length + 20);
-  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+  const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots, [secret]));
   const result = await surface.attestCampaign(
     surfaceInput(entry, "secret-attestation"));
@@ -1802,7 +1802,7 @@ test("prepares one complete public-safe release without authorizing publication"
   const entry = acceptedCase("complete-capacity");
   seedCase(roots, entry);
   const releaseInput = seedReleaseInputs(roots, entry);
-  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+  const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   const result = await surface.prepareRelease(prepareInput(
     entry,
@@ -1870,7 +1870,7 @@ test("authorizes only the exact prepared manifest through current Ed25519 author
   const entry = acceptedCase("complete-capacity");
   const authority = seedEphemeralAuthorityCase(roots, entry);
   const releaseInput = seedReleaseInputs(roots, entry);
-  const preparationSurface = await createVnextCampaignReleaseSurface(roots.runner,
+  const preparationSurface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   const prepared = await preparationSurface.prepareRelease(prepareInput(
     entry,
@@ -1902,7 +1902,7 @@ test("authorizes only the exact prepared manifest through current Ed25519 author
     releaseInput,
     authorizationReceipt
   );
-  const authorizingSurface = await createVnextCampaignReleaseSurface(roots.runner,
+  const authorizingSurface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   const result = await authorizingSurface.authorizeRelease(input);
 
@@ -1950,7 +1950,7 @@ test("admits only an exact deployment-attempt receipt without claiming deploymen
   const entry = acceptedCase("complete-capacity");
   const authority = seedEphemeralAuthorityCase(roots, entry);
   const releaseInput = seedReleaseInputs(roots, entry);
-  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+  const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   const prepared = await surface.prepareRelease(prepareInput(
     entry,
@@ -2040,7 +2040,7 @@ test("verifies exact fixture-labeled HTTPS bytes through one immutable readback 
   const entry = acceptedCase("complete-capacity");
   const authority = seedEphemeralAuthorityCase(roots, entry);
   const releaseInput = seedReleaseInputs(roots, entry);
-  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+  const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   const prepared = await surface.prepareRelease(prepareInput(
     entry,
@@ -2202,7 +2202,7 @@ test("publishes deterministic site descendants only after complete generated-byt
   const entry = acceptedCase("complete-capacity");
   const authority = seedEphemeralAuthorityCase(roots, entry);
   const releaseInput = seedReleaseInputs(roots, entry);
-  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+  const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   const prepared = await surface.prepareRelease(prepareInput(
     entry,
@@ -2423,7 +2423,7 @@ test("publishes deterministic site descendants only after complete generated-byt
     publicationSurface.finalizeSitePublication(finalInput),
     /fixture interruption after selected receipt commit/u
   );
-  publicationSurface = await createVnextCampaignReleaseSurface(roots.runner,
+  publicationSurface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   for (let index = 0; index < authorized.candidatePublishedClaimCount;
     index += 1) {
@@ -2432,7 +2432,7 @@ test("publishes deterministic site descendants only after complete generated-byt
       publicationSurface.finalizeSitePublication(finalInput),
       /fixture interruption after published-claim commit/u
     );
-    publicationSurface = await createVnextCampaignReleaseSurface(roots.runner,
+    publicationSurface = await createCampaignReleaseSurface(roots.runner,
       runnerOptions(roots));
   }
   receiptInterruptPredicate = (receipt) =>
@@ -2442,7 +2442,7 @@ test("publishes deterministic site descendants only after complete generated-byt
     publicationSurface.finalizeSitePublication(finalInput),
     /fixture interruption after selected receipt commit/u
   );
-  publicationSurface = await createVnextCampaignReleaseSurface(roots.runner,
+  publicationSurface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   const published = await publicationSurface.finalizeSitePublication(finalInput);
   assert.equal(published.state, "site-publication-published");
@@ -2516,7 +2516,7 @@ test("rejects caller deployment truth and deployment-attempt binding drift", {
   const authority = seedEphemeralAuthorityCase(roots, entry);
   const releaseInput = seedReleaseInputs(roots, entry);
   const protectedValue = "deployment-receipt-protected-value";
-  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+  const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots, [protectedValue]));
   const prepared = await surface.prepareRelease(prepareInput(
     entry,
@@ -2672,7 +2672,7 @@ test("resumes authorization after the redaction receipt committed alone", {
   const entry = acceptedCase("complete-capacity");
   const authority = seedEphemeralAuthorityCase(roots, entry);
   const releaseInput = seedReleaseInputs(roots, entry);
-  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+  const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   const prepared = await surface.prepareRelease(prepareInput(
     entry,
@@ -2723,7 +2723,7 @@ test("resumes authorization after the redaction receipt committed alone", {
   assert.equal(redactionReceipts.length, 1);
   const redactionReceipt = redactionReceipts[0];
 
-  const restarted = await createVnextCampaignReleaseSurface(roots.runner,
+  const restarted = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   const result = await restarted.authorizeRelease(authorizeInput(
     entry,
@@ -2751,7 +2751,7 @@ test("rejects caller authorization truth, wrong bindings, expiry, and snapshot d
   const entry = acceptedCase("complete-capacity");
   const authority = seedEphemeralAuthorityCase(roots, entry);
   const releaseInput = seedReleaseInputs(roots, entry);
-  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+  const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   const prepared = await surface.prepareRelease(prepareInput(
     entry,
@@ -2847,7 +2847,7 @@ test("rejects an authorization key that was not active at signature issue", {
     releaseKeyStatus: "retired"
   });
   const releaseInput = seedReleaseInputs(roots, entry);
-  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+  const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   const prepared = await surface.prepareRelease(prepareInput(
     entry,
@@ -2891,7 +2891,7 @@ test("persists only bounded redaction evidence for unsafe authorization bytes", 
   const authority = seedEphemeralAuthorityCase(roots, entry);
   const releaseInput = seedReleaseInputs(roots, entry);
   const protectedValue = authority.releaseKey.record.signerId;
-  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+  const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots, [protectedValue]));
   const prepared = await surface.prepareRelease(prepareInput(
     entry,
@@ -2945,7 +2945,7 @@ test("refuses release preparation when the fresh campaign projection is incomple
   const entry = acceptedCase("complete-capacity");
   seedCase(roots, entry);
   const releaseInput = seedReleaseInputs(roots, entry);
-  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+  const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   await rejectsCode(() => surface.prepareRelease(prepareInput(
     entry,
@@ -2966,7 +2966,7 @@ test("rejects incomplete artifact coverage and omitted current approved claims",
   const entry = acceptedCase("complete-capacity");
   seedCase(artifactRoots, entry);
   const artifactRelease = seedReleaseInputs(artifactRoots, entry);
-  const artifactSurface = await createVnextCampaignReleaseSurface(artifactRoots.runner,
+  const artifactSurface = await createCampaignReleaseSurface(artifactRoots.runner,
     runnerOptions(artifactRoots));
   await rejectsCode(() => artifactSurface.prepareRelease(prepareInput(
     entry,
@@ -2999,7 +2999,7 @@ test("rejects incomplete artifact coverage and omitted current approved claims",
   const claimRoots = makeRoots(t);
   seedCase(claimRoots, entry);
   const claimRelease = seedReleaseInputs(claimRoots, entry, { claimCount: 2 });
-  const claimSurface = await createVnextCampaignReleaseSurface(claimRoots.runner,
+  const claimSurface = await createCampaignReleaseSurface(claimRoots.runner,
     runnerOptions(claimRoots));
   await rejectsCode(() => claimSurface.prepareRelease(prepareInput(
     entry,
@@ -3018,7 +3018,7 @@ test("rejects expired claims and superseded package evidence", {
   const claimRelease = seedReleaseInputs(claimRoots, entry, {
     claimExpiresAtUtc: "2026-08-08T12:00:00Z"
   });
-  const claimSurface = await createVnextCampaignReleaseSurface(claimRoots.runner,
+  const claimSurface = await createCampaignReleaseSurface(claimRoots.runner,
     runnerOptions(claimRoots));
   await rejectsCode(() => claimSurface.prepareRelease(prepareInput(
     entry,
@@ -3031,7 +3031,7 @@ test("rejects expired claims and superseded package evidence", {
   const packageRelease = seedReleaseInputs(packageRoots, entry, {
     supersedePackage: true
   });
-  const packageSurface = await createVnextCampaignReleaseSurface(packageRoots.runner,
+  const packageSurface = await createCampaignReleaseSurface(packageRoots.runner,
     runnerOptions(packageRoots));
   await rejectsCode(() => packageSurface.prepareRelease(prepareInput(
     entry,
@@ -3050,7 +3050,7 @@ test("persists only public-safe failure evidence for an unsafe changelog", {
   const releaseInput = seedReleaseInputs(roots, entry, {
     changelogBytes: Buffer.from(`# TinyRustLM 1.0.0\n\n- ${secret}\n`, "utf8")
   });
-  const surface = await createVnextCampaignReleaseSurface(roots.runner,
+  const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots, [secret]));
   await rejectsCode(() => surface.prepareRelease(prepareInput(
     entry,

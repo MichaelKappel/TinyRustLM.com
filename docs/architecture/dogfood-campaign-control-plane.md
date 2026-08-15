@@ -44,7 +44,7 @@ The frozen profiles are:
 - `contracts/vnext/campaign-runner-profile.v1.json`, SHA-256
   `b0ba96ea2aa25112adea781138a4351511c56372bd1fdc04575e529a2b4720a9`;
 - `contracts/vnext/campaign-release-surface-profile.v1.json`, SHA-256
-  `100d72ee201b395820aa11aa5b4f8f23befdbf0fffb515dda385fb826cc6fcff`;
+  `41c8c23b995c71fc16d2fc677cbdd28967de65f7c15e926b82f9e9cbb82c8913`;
 - `contracts/vnext/site-publication-profile.v1.json`, SHA-256
   `d959ce557e8b18a71514e2388a8eda7162182e38f5febf2e1a39b063fa5ba4bc`;
 - `contracts/vnext/public-https-readback-profile.v1.json`, SHA-256
@@ -184,7 +184,7 @@ The maintained local gate includes:
 npm --prefix tinyrustlm run test:vnext-release-cutover
 npm --prefix tinyrustlm run test:vnext-campaign-release-surface -- <absolute-evidence-root>
 node --test tinyrustlm/tests/vnext-site-publication.test.js
-npm --prefix tinyrustlm run test:unit
+npm --prefix tinyrustlm run test:unit -- <absolute-evidence-root>
 cargo fmt --all --check
 cargo clippy --workspace --all-targets --locked -- -D warnings
 cargo test --workspace --locked

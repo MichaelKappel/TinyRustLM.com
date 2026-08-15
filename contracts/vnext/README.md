@@ -246,19 +246,21 @@ eight installed profile or registry bindings. See
 `docs/architecture/vnext-public-safe-redaction.md`.
 
 `tinyrustlm/tools/vnext-protected-equality-private-loader.js` is the single
-current local private ingress for that custody. Its frozen 3,254-byte profile
+current local private ingress for that custody. Its frozen 3,323-byte profile
 has SHA-256
-`e209d31c0c8b2243aa231092feabf5106acdb141f72d32a18e2f1940c5af84e3`,
-and its exact nine-member source closure has SHA-256
-`63843bfea80972ce402d8987ce72ac47ba47f1b769ecabe5de5d0ba8b3a14b77`.
+`c786ee4bf66810eb3c7cbe4db2be9ad15f24b26096988df7f819c400822e43a9`,
+and its exact ten-member source closure has SHA-256
+`96d170e0eee5d1dbfad57504268dc3eecb1eeb6c779f6dab076ad07a4474c2b8`.
 It accepts canonical public trust bytes, reads the private signed bundle only
 from inherited non-file pipe descriptor 3, closes that descriptor on every
 attempt, and zeros owned delivery buffers. It accepts no private path,
 environment, argument, standard-input, network, clock, retry, compatibility,
 or unsigned mode. See
-`docs/architecture/vnext-protected-equality-private-loader.md`. The production
-issuer, authorized launcher, release-bootstrap-only wiring, revocation, trusted
-time, and OS isolation remain incomplete.
+`docs/architecture/vnext-protected-equality-private-loader.md`. The release
+bootstrap now opens exactly one custody revision through descriptor 3 and the
+public custody facade exposes no constructor. The production issuer,
+authorized launcher, revocation source, trusted-time provider, and OS isolation
+remain incomplete.
 
 `tinyrustlm/tools/vnext-phase-invalidation.js` classifies immutable phase
 history through explicit same-operation supersession and dependency-only
@@ -448,7 +450,7 @@ best-of-N, mutable-currentness, or stored-result promotion path. See
 `tinyrustlm/tools/vnext-campaign-release-surface.js` now consumes that runner
 only by creating a never-before-used operation and receiving its exact result
 inside the same call. Its frozen profile has SHA-256
-`100d72ee201b395820aa11aa5b4f8f23befdbf0fffb515dda385fb826cc6fcff`.
+`41c8c23b995c71fc16d2fc677cbdd28967de65f7c15e926b82f9e9cbb82c8913`.
 The surface independently validates the returned projection against the exact
 stored plan and runner operation records, finalizes a content-addressed
 complete-or-blocked attestation, scans the final canonical bytes against the

@@ -177,9 +177,9 @@ test("the maintained operator route names only the sole vNext publication graph"
 
   const releaseSurface = require("../tools/vnext-campaign-release-surface.js");
   assert.deepEqual(Object.keys(releaseSurface).sort(), [
+    "bootstrapVnextCampaignReleaseRuntime",
     "campaignReleaseSurfaceProfile",
-    "campaignReleaseSurfaceProfileSha256",
-    "createVnextCampaignReleaseSurface"
+    "campaignReleaseSurfaceProfileSha256"
   ]);
 });
 

@@ -101,7 +101,7 @@ The JavaScript contract tests use the pinned Playwright dependency:
 
 ```powershell
 npm --prefix tinyrustlm ci
-npm --prefix tinyrustlm run test:unit
+npm --prefix tinyrustlm run test:unit -- <absolute-evidence-root>
 npm --prefix tinyrustlm run smoke:web-release-local -- <new-output-directory>
 ```
 
@@ -260,7 +260,7 @@ Fast browser and campaign checks:
 ```powershell
 npm --prefix tinyrustlm run test:browser-contract
 node --test tinyrustlm/tests/dogfood-campaign.test.js tinyrustlm/tests/vnext-campaign-runner.test.js
-node --test tinyrustlm/tests/vnext-campaign-release-surface.test.js
+npm --prefix tinyrustlm run test:vnext-campaign-release-surface -- <absolute-evidence-root>
 node --test tinyrustlm/tests/archive-scan-helper-package.test.js
 node --test tinyrustlm/tests/archive-scan-client.test.js `
   tinyrustlm/tests/public-evidence-secret-scan.test.js `

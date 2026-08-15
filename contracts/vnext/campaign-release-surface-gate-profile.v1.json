@@ -8,6 +8,7 @@
   "executionClass": "clean-source-local-node-independent-shards",
   "sourcePolicy": "clean-exact-head-and-tree",
   "reporter": "spec",
+  "testIsolation": "none",
   "custodyFixturePolicy": "real-inherited-pipe-per-shard-with-secret-sensitive-tests-isolated",
   "maximumConcurrentShards": 1,
   "shardTimeoutMilliseconds": 21600000,
@@ -18,6 +19,7 @@
     "tinyrustlm/tests/helpers/vnext-campaign-release-surface-test-custody.js",
     "tinyrustlm/tests/helpers/vnext-protected-equality-fixtures.js",
     "tinyrustlm/tools/run-vnext-campaign-release-surface-gate.js",
+    "tinyrustlm/tools/run-vnext-unit-test-gate.js",
     "tinyrustlm/tools/strict-json.js",
     "tinyrustlm/tools/vnext-jcs.js"
   ],

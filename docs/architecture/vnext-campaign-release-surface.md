@@ -11,7 +11,7 @@ performing exact static and complete static-plus-generated production HTTPS
 readback, and admitting create-only publication descendants through one final
 commit receipt. Its frozen profile is
 `contracts/vnext/campaign-release-surface-profile.v1.json`, with SHA-256
-`100d72ee201b395820aa11aa5b4f8f23befdbf0fffb515dda385fb826cc6fcff`.
+`41c8c23b995c71fc16d2fc677cbdd28967de65f7c15e926b82f9e9cbb82c8913`.
 
 This checkpoint implements fresh projection, final attestation, public-safe
 redaction, truthful operator status, release-manifest preparation, current
@@ -77,11 +77,14 @@ r5 contract checkpoint.
 
 ## Fresh Truth Boundary
 
-`createVnextCampaignReleaseSurface` constructs the sole campaign runner
-internally. `attestCampaign` accepts only plan, campaign, environment,
-authority, trusted-time, operation, source-revision, and protected
-known-secret inputs. It rejects unknown fields and accessors before any
-operation. In particular, it has no input field for:
+`bootstrapVnextCampaignReleaseRuntime` consumes canonical public trust bytes,
+loads one signed custody revision from fixed inherited non-file pipe descriptor
+3, and returns a closure-bound `createCampaignReleaseSurface` function. The
+module exports no direct surface factory and the public custody facade exports
+no constructor. `attestCampaign` accepts only plan, campaign, environment,
+authority, trusted-time, operation, and source-revision inputs. It rejects
+unknown fields and accessors before any operation. In particular, it has no
+input field for:
 
 - projection bytes or a projection hash;
 - dashboard counters;
@@ -417,10 +420,11 @@ publication commit receipt. See
 
 ## Redaction And Secret Custody
 
-The constructor requires one signed, caller-pinned, module-issued protected
-equality-custody handle. It validates that opaque handle before running and
-retains it for all nine operations; operation inputs cannot replace it with a
-raw list or structural copy. The surface scans the finalized canonical
+The runtime bootstrap requires one signed, publicly pinned, module-issued
+protected equality-custody handle loaded from descriptor 3. It validates that
+opaque handle before opening any surface and retains it for all nine
+operations; surface options and operation inputs cannot replace it with a raw
+list, private bundle, or structural copy. The surface scans the finalized canonical
 attestation across the frozen redaction profile and creates the one-way scan
 receipt from the scan capability. Preparation applies the same custody revision
 to every selected public input, the strict LF UTF-8 changelog, and the final
@@ -440,13 +444,12 @@ SHA-256 without exposing a secret hash or list commitment. See
 `docs/architecture/vnext-protected-equality-custody.md` and
 `docs/architecture/vnext-protected-equality-private-loader.md`.
 
-The bounded inherited-pipe loader is implemented locally, but this constructor
-still receives an already issued opaque handle. Production closure therefore
-requires one further incompatible API cut: the sole release bootstrap must
-open custody through fixed descriptor 3 and the low-level caller-created
-custody route must disappear from the production-facing surface. Until that
-cut and an authorized issuer/launcher are proven, the local handle tests are
-not production custody evidence.
+The bounded inherited-pipe loader is now the sole release bootstrap ingress.
+The former public surface factory and public custody constructor are absent.
+This closes local caller-substitution wiring, but it does not prove an
+authorized production issuer or launcher, current revocation, trusted-time
+acquisition, crash-dump and swap controls, or OS process and network isolation.
+The real-pipe tests remain local evidence rather than production custody proof.
 
 For preparation, a changelog scan receipt is create-only persisted before the
 manifest is admitted. A selected-document or changelog finding persists only a
@@ -630,8 +633,11 @@ verification command is
 Partition-only inspection uses the explicit `validate` operation. There is no
 implicit repository output directory or compatibility argument reader.
 
-`contracts/vnext/campaign-release-surface-gate-profile.v1.json` freezes all 23
-top-level cases exactly once across six disjoint anchored shards. Before any
+`contracts/vnext/campaign-release-surface-gate-profile.v1.json` is 6,322 bytes
+with SHA-256
+`aaf94b86be0bba757d4dc8743f810f8801b4389a3c388dda4cf23090c43011a1`.
+It freezes all 23 top-level cases exactly once across eight disjoint anchored
+shards. Before any
 execution or reuse, the gate requires a clean exact Git head and tree and binds
 the profile, runner, complete implementation closure, unchanged test file,
 ordered partition, Node executable bytes and version, operating system,
@@ -640,8 +646,14 @@ environment into one content-addressed run identity. The child receives no
 ambient credentials: only the frozen allowlist and fixed offline/no-color
 values cross the process boundary.
 
-Every fresh shard runs the unchanged test file in an independent process and
-retains bounded raw stdout and stderr in an internally named create-only
+Every fresh shard runs the unchanged test file in an independent process with
+Node test isolation disabled so that the test module remains in the process
+that owns inherited descriptor 3. A strict test launcher creates one signed
+private bundle, writes it only to the inherited pipe, passes only canonical
+public trust bytes through a test-scoped environment binding, and zeroes its
+owned bytes. The two secret-sensitive tests are isolated into separate
+one-test shards with distinct custody revisions; all other shards receive an
+empty protected list. Each shard retains bounded raw stdout and stderr in an internally named create-only
 attempt directory. A canonical shard receipt is committed only after terminal
 process state, file fsync, source revalidation, exact log readback, and an
 independent parser agree. Pass requires the exact expected test names and
@@ -649,7 +661,7 @@ counts, exit zero, empty stderr, and zero failures, skips, cancellations, and
 todos. Timeouts, signals, output limits, incomplete attempts, malformed logs,
 and failed receipts remain immutable evidence but cannot satisfy resume.
 
-After all six shard receipts independently verify against the current run
+After all eight shard receipts independently verify against the current run
 identity, the gate commits one atomic create-only aggregate receipt and then
 verifies the complete graph again. A restart reuses only exact valid pass
 receipts for the same content-addressed source, partition, tools, and

@@ -195,11 +195,11 @@ profiles among eight exact profile inputs. See
 `docs/architecture/vnext-public-safe-redaction.md`.
 
 The local custody ingress is now frozen by
-`protected-equality-private-loader-profile.v1.json`. Its 3,254 bytes have
+`protected-equality-private-loader-profile.v1.json`. Its 3,323 bytes have
 SHA-256
-`e209d31c0c8b2243aa231092feabf5106acdb141f72d32a18e2f1940c5af84e3`,
-and its canonical nine-member source closure has SHA-256
-`63843bfea80972ce402d8987ce72ac47ba47f1b769ecabe5de5d0ba8b3a14b77`.
+`c786ee4bf66810eb3c7cbe4db2be9ad15f24b26096988df7f819c400822e43a9`,
+and its canonical ten-member source closure has SHA-256
+`96d170e0eee5d1dbfad57504268dc3eecb1eeb6c779f6dab076ad07a4474c2b8`.
 The loader accepts only canonical public pins and inherited non-file pipe
 descriptor 3, performs bounded single-use reads, closes the descriptor, and
 zeros owned delivery buffers. It does not prove an authorized issuer, launcher,
@@ -302,7 +302,7 @@ The fresh-runner-only immutable attestation, operator, release-manifest,
 authorization, deployment/readback, and final-publication boundary is documented
 in `docs/architecture/vnext-campaign-release-surface.md`. Its frozen profile
 has SHA-256
-`100d72ee201b395820aa11aa5b4f8f23befdbf0fffb515dda385fb826cc6fcff`.
+`41c8c23b995c71fc16d2fc677cbdd28967de65f7c15e926b82f9e9cbb82c8913`.
 It admits no stored projection, caller verdict, counter set, dashboard state,
 or reused operation. It scans finalized attestation bytes before create-only
 receipt persistence and has no operator `done` state. Release preparation

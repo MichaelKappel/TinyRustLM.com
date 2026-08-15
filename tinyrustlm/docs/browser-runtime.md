@@ -199,7 +199,7 @@ gates.
 ```powershell
 npm --prefix tinyrustlm run test:browser-contract
 node --test tinyrustlm/tests/dogfood-campaign.test.js tinyrustlm/tests/vnext-campaign-runner.test.js
-node --test tinyrustlm/tests/vnext-campaign-release-surface.test.js
+npm --prefix tinyrustlm run test:vnext-campaign-release-surface -- <absolute-evidence-root>
 cargo run -p tinyrustlm-browser-harness -- .\tinyrustlm
 ```
 

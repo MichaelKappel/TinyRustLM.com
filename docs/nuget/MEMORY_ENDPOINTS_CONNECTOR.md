@@ -144,7 +144,8 @@ As of 2026-07-10, the credential-free probe of `https://tinyrustlm.com/api/memor
 - Rust contract: `cargo test -p tinyrustlm-memory-endpoints`
 - .NET wrapper: `dotnet test dotnet/tests/TinyRustLM.Core.Tests/TinyRustLM.Core.Tests.csproj --no-restore --filter MemoryEndpoints`
 - Browser wire, local outbox, pull-before-push, revision, conflict, retrieval,
-  and distributed-authority contracts: `npm --prefix tinyrustlm run test:unit`.
+  and distributed-authority contracts:
+  `npm --prefix tinyrustlm run test:unit -- <absolute-evidence-root>`.
 - Real Chromium release surface at desktop, narrow-desktop, and mobile widths:
   `eng/verify-tinyrustlm-ui.ps1 -RunBrowserSmoke` or
   `RUN_BROWSER_SMOKE=1 eng/verify-tinyrustlm-ui.sh`. This is a browser and

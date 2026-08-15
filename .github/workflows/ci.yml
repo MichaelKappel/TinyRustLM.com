@@ -40,7 +40,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
 
       - name: Verify archive package producer and local consumer
         run: node --test tinyrustlm/tests/archive-fuzz-contract.test.js tinyrustlm/tests/archive-fuzz-hosted-verification.test.js tinyrustlm/tests/archive-scan-helper-package.test.js tinyrustlm/tests/archive-scan-helper-verification.test.js tinyrustlm/tests/archive-scan-client.test.js tinyrustlm/tests/public-evidence-secret-scan.test.js
@@ -105,7 +105,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
 
       - name: Verify package, client, and replay contracts
         run: >-
@@ -178,7 +178,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
 
       - name: Verify hosted fuzz evidence contract
         run: node --test tinyrustlm/tests/archive-fuzz-contract.test.js tinyrustlm/tests/archive-fuzz-hosted-verification.test.js
@@ -226,7 +226,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
           cache: npm
           cache-dependency-path: tinyrustlm/package-lock.json
 
@@ -243,7 +243,10 @@ jobs:
 
       - name: Verify offline and distributed MemoryEndpoints sync contracts
         shell: pwsh
-        run: npm --prefix tinyrustlm run test:unit
+        run: |
+          $evidenceRoot = Join-Path $env:RUNNER_TEMP 'tinyrustlm-release-surface-gate'
+          New-Item -ItemType Directory -Path $evidenceRoot | Out-Null
+          npm --prefix tinyrustlm run test:unit -- $evidenceRoot
 
       - name: Verify deployed distributed-sync wire contract against fixture
         shell: pwsh
@@ -325,7 +328,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
           cache: npm
           cache-dependency-path: TinyRustLM.com/tinyrustlm/package-lock.json
 

@@ -3,22 +3,26 @@
 ## Status
 
 This document defines the single current local ingress boundary for a private
-protected-equality custody bundle. The implementation checkpoint is commit
-`23a8c2ff077714747e072e56d2bac39904caec66`.
+protected-equality custody bundle. The loader implementation began at commit
+`23a8c2ff077714747e072e56d2bac39904caec66`; the release bootstrap now consumes
+that loader directly and exposes no public custody constructor.
 
 The frozen profile is
 `contracts/vnext/protected-equality-private-loader-profile.v1.json`. It is
-3,254 bytes with SHA-256
-`e209d31c0c8b2243aa231092feabf5106acdb141f72d32a18e2f1940c5af84e3`.
-The exact nine-member implementation source closure has SHA-256
-`63843bfea80972ce402d8987ce72ac47ba47f1b769ecabe5de5d0ba8b3a14b77`.
+3,323 bytes with SHA-256
+`c786ee4bf66810eb3c7cbe4db2be9ad15f24b26096988df7f819c400822e43a9`.
+The exact ten-member implementation source closure has SHA-256
+`96d170e0eee5d1dbfad57504268dc3eecb1eeb6c779f6dab076ad07a4474c2b8`.
 
 The implementation consists of:
 
 - `tinyrustlm/tools/vnext-protected-equality-private-loader.js`;
 - `tinyrustlm/tests/helpers/vnext-protected-equality-private-loader-child.js`;
 - `tinyrustlm/tests/vnext-protected-equality-private-loader.test.js`; and
-- the existing signed-bundle verifier and opaque-handle implementation in
+- the constructor-bearing signed-bundle verifier and opaque-handle
+  implementation in
+  `tinyrustlm/tools/vnext-protected-equality-custody-internal.js`; and
+- the constructor-free public inspection and scanning facade in
   `tinyrustlm/tools/vnext-protected-equality-custody.js`.
 
 This is one clean-slate contract. It has no path-based private loader, standard

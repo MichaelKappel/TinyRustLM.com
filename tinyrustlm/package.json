@@ -3,6 +3,9 @@
   "version": "0.0.0-private",
   "private": true,
   "description": "Browser acceptance tests for the TinyRustLM web-to-companion boundary.",
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "scripts": {
     "generate:vnext-campaign-evidence-wasm": "node tools/vnext-campaign-evidence-wasm-codegen.js --write",
     "generate:vnext-authority-rust-vectors": "node tools/vnext-authority-rust-vectors.js --write",
@@ -10,11 +13,11 @@
     "generate:vnext-offline-bundle-rust-vectors": "node tools/vnext-offline-bundle-rust-vectors.js --write",
     "generate:vnext-phase-invalidation-rust-vectors": "node tools/vnext-phase-invalidation-rust-vectors.js --write",
     "generate:vnext-signature-rust-vectors": "node tools/vnext-signature-rust-vectors.js --write",
-    "test:unit": "node --test tests/*.test.js",
+    "test:unit": "node tools/run-vnext-unit-test-gate.js all",
     "test:vnext-authority-rust-vectors": "node --test tests/vnext-authority-rust-vectors.test.js",
     "test:vnext-campaign-projection-rust-vectors": "node --test tests/vnext-campaign-projection-rust-vectors.test.js",
     "test:vnext-campaign-evidence-wasm": "node --test tests/vnext-campaign-evidence-wasm.test.js",
-    "test:vnext-campaign-release-surface": "node tools/run-vnext-campaign-release-surface-gate.js run",
+    "test:vnext-campaign-release-surface": "node tools/run-vnext-unit-test-gate.js release-surface",
     "test:vnext-release-cutover": "node --test tests/vnext-release-cutover.test.js",
     "test:vnext-campaign-runner": "node --test tests/vnext-campaign-runner.test.js",
     "test:vnext-offline-bundle-rust-vectors": "node --test tests/vnext-offline-bundle-rust-vectors.test.js",

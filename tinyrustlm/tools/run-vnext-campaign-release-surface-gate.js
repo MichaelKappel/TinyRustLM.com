@@ -8,6 +8,9 @@ const { TextDecoder } = require("node:util");
 
 const { parseStrictJson } = require("./strict-json.js");
 const { canonicalizeVnextJcsBytes } = require("./vnext-jcs.js");
+const {
+  fixtureProfileForTestNames
+} = require("../tests/helpers/vnext-campaign-release-surface-test-custody.js");
 
 const repositoryRoot = resolveRepositoryRoot();
 const gateProfilePath = path.join(
@@ -18,7 +21,7 @@ const gateProfilePath = path.join(
 );
 const gateProfileId = "tinyrustlm.vnext.campaign-release-surface-gate.v1";
 const gateProfileSha256 =
-  "6134443c924326066559e9997b76f741951caef0a4b3d050cac67661948dc134";
+  "aaf94b86be0bba757d4dc8743f810f8801b4389a3c388dda4cf23090c43011a1";
 const sha256Pattern = /^[a-f0-9]{64}$/u;
 const gitObjectPattern = /^[a-f0-9]{40}$/u;
 const attemptIdPattern = /^attempt-[1-9][0-9]{12,15}-[a-f0-9]{32}$/u;
@@ -219,13 +222,13 @@ function loadGateProfile() {
     fail("release_gate_profile_invalid");
   }
   assertDataObject(value, [
-    "canonicalJsonProfile", "childEnvironmentAllowlist", "durabilityPolicy",
-    "executionClass", "failureCodes", "files", "fixedChildEnvironment",
-    "hashAlgorithm", "implementationFiles", "limits", "maximumConcurrentShards",
-    "nonClaims", "profileId", "reporter", "runnerFile", "schema", "schemas",
-    "shardTimeoutMilliseconds", "shards", "sourcePolicy", "status",
-    "summaryFields", "testFile", "toolIdentityCommands", "verdicts",
-    "versionPolicy"
+    "canonicalJsonProfile", "childEnvironmentAllowlist", "custodyFixturePolicy",
+    "durabilityPolicy", "executionClass", "failureCodes", "files",
+    "fixedChildEnvironment", "hashAlgorithm", "implementationFiles", "limits",
+    "maximumConcurrentShards", "nonClaims", "profileId", "reporter",
+    "runnerFile", "schema", "schemas", "shardTimeoutMilliseconds", "shards",
+    "sourcePolicy", "status", "summaryFields", "testFile", "testIsolation",
+    "testLauncherFile", "toolIdentityCommands", "verdicts", "versionPolicy"
   ], "release_gate_profile_invalid");
   if (value.schema !==
         "tinyrustlm.vnext.campaign_release_surface_gate_profile.v1" ||
@@ -236,18 +239,27 @@ function loadGateProfile() {
       value.hashAlgorithm !== "sha256" ||
       value.executionClass !== "clean-source-local-node-independent-shards" ||
       value.sourcePolicy !== "clean-exact-head-and-tree" ||
-      value.reporter !== "spec" || value.maximumConcurrentShards !== 1 ||
+      value.custodyFixturePolicy !==
+        "real-inherited-pipe-per-shard-with-secret-sensitive-tests-isolated" ||
+      value.reporter !== "spec" || value.testIsolation !== "none" ||
+      value.maximumConcurrentShards !== 1 ||
       value.shardTimeoutMilliseconds !== 21_600_000 ||
       value.runnerFile !==
         "tinyrustlm/tools/run-vnext-campaign-release-surface-gate.js" ||
       value.testFile !== "tinyrustlm/tests/vnext-campaign-release-surface.test.js" ||
+      value.testLauncherFile !==
+        "tinyrustlm/tests/helpers/vnext-campaign-release-surface-launcher.js" ||
       value.durabilityPolicy !==
         "create-only-file-fsync-with-separate-directory-durability-gate") {
     fail("release_gate_profile_invalid");
   }
   exactStringArray(value.implementationFiles, [
     "contracts/vnext/campaign-release-surface-gate-profile.v1.json",
+    "tinyrustlm/tests/helpers/vnext-campaign-release-surface-launcher.js",
+    "tinyrustlm/tests/helpers/vnext-campaign-release-surface-test-custody.js",
+    "tinyrustlm/tests/helpers/vnext-protected-equality-fixtures.js",
     "tinyrustlm/tools/run-vnext-campaign-release-surface-gate.js",
+    "tinyrustlm/tools/run-vnext-unit-test-gate.js",
     "tinyrustlm/tools/strict-json.js",
     "tinyrustlm/tools/vnext-jcs.js"
   ], "release_gate_profile_invalid");
@@ -342,7 +354,7 @@ function loadGateProfile() {
     }
     exactStringArray(entry.arguments, expected[2], "release_gate_profile_invalid");
   });
-  if (!Array.isArray(value.shards) || value.shards.length !== 6 ||
+  if (!Array.isArray(value.shards) || value.shards.length !== 8 ||
       value.shards.some((shard) => !Array.isArray(shard) || shard.length === 0 ||
         shard.some((name) => typeof name !== "string" || name.length === 0 ||
           name.length > 512))) {
@@ -947,7 +959,10 @@ function deriveShardObservation(stdout, stderr, terminal, expectedNames) {
 
 function childArguments(names) {
   return Object.freeze([
+    gateProfile.testLauncherFile,
+    fixtureProfileForTestNames(names),
     "--test",
+    `--test-isolation=${gateProfile.testIsolation}`,
     `--test-reporter=${gateProfile.reporter}`,
     `--test-name-pattern=${shardPattern(names)}`,
     gateProfile.testFile
@@ -1637,6 +1652,7 @@ if (require.main === module) {
 module.exports = Object.freeze({
   buildChildEnvironment,
   buildRunContext,
+  childArguments,
   deriveShardObservation,
   extractTopLevelTestNames,
   gateProfileId,

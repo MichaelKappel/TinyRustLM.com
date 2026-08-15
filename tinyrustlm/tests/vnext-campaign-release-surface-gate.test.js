@@ -7,6 +7,7 @@ const test = require("node:test");
 
 const {
   buildChildEnvironment,
+  childArguments,
   deriveShardObservation,
   extractTopLevelTestNames,
   gateProfileId,
@@ -17,6 +18,11 @@ const {
   shardPattern,
   validateShardPartition
 } = require("../tools/run-vnext-campaign-release-surface-gate.js");
+const {
+  fixtureProfiles,
+  secretAttestationTest,
+  unsafeChangelogTest
+} = require("./helpers/vnext-campaign-release-surface-test-custody.js");
 
 const releaseSurfaceTestPath = path.resolve(
   __dirname,
@@ -62,11 +68,11 @@ test("freezes one exhaustive release-surface gate partition", () => {
   const names = extractTopLevelTestNames(source);
   const partitionNames = releaseSurfaceShards.flat();
 
-  assert.deepEqual(result, { shardCount: 6, testCount: 23 });
+  assert.deepEqual(result, { shardCount: 8, testCount: 23 });
   assert.equal(gateProfileId,
     "tinyrustlm.vnext.campaign-release-surface-gate.v1");
   assert.equal(gateProfileSha256,
-    "6134443c924326066559e9997b76f741951caef0a4b3d050cac67661948dc134");
+    "aaf94b86be0bba757d4dc8743f810f8801b4389a3c388dda4cf23090c43011a1");
   assert.equal(maximumConcurrentShards, 1);
   assert.equal(new Set(partitionNames).size, 23);
   assert.deepEqual([...partitionNames].sort(), [...names].sort());
@@ -77,6 +83,29 @@ test("freezes one exhaustive release-surface gate partition", () => {
   }
 });
 
+test("launches every shard through one exact inherited-pipe custody profile", () => {
+  for (const names of releaseSurfaceShards) {
+    const argumentsList = childArguments(names);
+    assert.equal(argumentsList[0],
+      "tinyrustlm/tests/helpers/vnext-campaign-release-surface-launcher.js");
+    assert.equal(argumentsList[1], names.includes(secretAttestationTest)
+      ? fixtureProfiles.secretAttestation
+      : names.includes(unsafeChangelogTest)
+        ? fixtureProfiles.unsafeChangelog
+        : fixtureProfiles.empty);
+    assert.deepEqual(argumentsList.slice(2), [
+      "--test",
+      "--test-isolation=none",
+      "--test-reporter=spec",
+      `--test-name-pattern=${shardPattern(names)}`,
+      "tinyrustlm/tests/vnext-campaign-release-surface.test.js"
+    ]);
+    if (argumentsList[1] !== fixtureProfiles.empty) {
+      assert.equal(names.length, 1);
+    }
+  }
+});
+
 test("cuts the package entry point to the evidence-root run operation", () => {
   const packageValue = JSON.parse(fs.readFileSync(
     path.resolve(__dirname, "../package.json"),
@@ -84,8 +113,11 @@ test("cuts the package entry point to the evidence-root run operation", () => {
   ));
   assert.equal(
     packageValue.scripts["test:vnext-campaign-release-surface"],
-    "node tools/run-vnext-campaign-release-surface-gate.js run"
+    "node tools/run-vnext-unit-test-gate.js release-surface"
   );
+  assert.equal(packageValue.scripts["test:unit"],
+    "node tools/run-vnext-unit-test-gate.js all");
+  assert.equal(packageValue.engines.node, ">=24.0.0");
 });
 
 test("derives a pass only from exact terminal output", () => {

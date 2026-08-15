@@ -7,6 +7,7 @@ public-safety scanner and campaign release surface. The implementation is:
 
 - `contracts/vnext/protected-equality-custody-profile.v1.json`;
 - `contracts/vnext/protected-equality-private-loader-profile.v1.json`;
+- `tinyrustlm/tools/vnext-protected-equality-custody-internal.js`;
 - `tinyrustlm/tools/vnext-protected-equality-custody.js`;
 - `tinyrustlm/tools/vnext-protected-equality-private-loader.js`;
 - `tinyrustlm/tests/helpers/vnext-protected-equality-fixtures.js`; and
@@ -18,10 +19,10 @@ The checked-in profile is 2,710 bytes with SHA-256
 It is a clean-slate, single-current contract. There is no compatibility reader,
 unsigned mode, default secret list, or per-operation list override.
 
-The private-loader profile is 3,254 bytes with SHA-256
-`e209d31c0c8b2243aa231092feabf5106acdb141f72d32a18e2f1940c5af84e3`.
-Its exact nine-member source closure has SHA-256
-`63843bfea80972ce402d8987ce72ac47ba47f1b769ecabe5de5d0ba8b3a14b77`.
+The private-loader profile is 3,323 bytes with SHA-256
+`c786ee4bf66810eb3c7cbe4db2be9ad15f24b26096988df7f819c400822e43a9`.
+Its exact ten-member source closure has SHA-256
+`96d170e0eee5d1dbfad57504268dc3eecb1eeb6c779f6dab076ad07a4474c2b8`.
 See `docs/architecture/vnext-protected-equality-private-loader.md` for its
 transport, bounds, zeroization, verification, and non-claim boundary.
 

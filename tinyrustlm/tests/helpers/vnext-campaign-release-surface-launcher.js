@@ -29,15 +29,19 @@ function fail() {
 
 function exactArguments() {
   const values = process.argv.slice(2);
-  if (values.length !== 5 || values[1] !== "--test" ||
-      values[2] !== "--test-reporter=spec" ||
-      !values[3].startsWith("--test-name-pattern=") ||
-      values[4] !== expectedTestFile ||
+  if (values.length !== 6 || values[1] !== "--test" ||
+      values[2] !== "--test-isolation=none" ||
+      values[3] !== "--test-reporter=spec" ||
+      !values[4].startsWith("--test-name-pattern=") ||
+      values[5] !== expectedTestFile ||
       values.some((value) => typeof value !== "string" || value.length === 0 ||
         value.length > 16_384 || value.includes("\0"))) {
     throw new Error("release surface test launcher arguments are invalid");
   }
-  return Object.freeze({ fixtureProfileId: values[0], nodeArguments: values.slice(1) });
+  return Object.freeze({
+    fixtureProfileId: values[0],
+    nodeArguments: values.slice(1)
+  });
 }
 
 function publicTrustDescriptorBytes(fixture) {
