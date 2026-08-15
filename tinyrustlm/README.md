@@ -261,6 +261,7 @@ Fast browser and campaign checks:
 npm --prefix tinyrustlm run test:browser-contract
 node --test tinyrustlm/tests/dogfood-campaign.test.js tinyrustlm/tests/vnext-campaign-runner.test.js
 npm --prefix tinyrustlm run test:vnext-campaign-release-surface -- <absolute-evidence-root>
+npm --prefix tinyrustlm run verify:vnext-campaign-release-surface -- <absolute-evidence-root>
 node --test tinyrustlm/tests/archive-scan-helper-package.test.js
 node --test tinyrustlm/tests/archive-scan-client.test.js `
   tinyrustlm/tests/public-evidence-secret-scan.test.js `

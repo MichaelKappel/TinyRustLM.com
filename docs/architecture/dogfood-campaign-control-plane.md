@@ -183,6 +183,7 @@ The maintained local gate includes:
 ```powershell
 npm --prefix tinyrustlm run test:vnext-release-cutover
 npm --prefix tinyrustlm run test:vnext-campaign-release-surface -- <absolute-evidence-root>
+npm --prefix tinyrustlm run verify:vnext-campaign-release-surface -- <absolute-evidence-root>
 node --test tinyrustlm/tests/vnext-site-publication.test.js
 npm --prefix tinyrustlm run test:unit -- <absolute-evidence-root>
 cargo fmt --all --check

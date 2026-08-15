@@ -14,6 +14,7 @@ node --test tinyrustlm/tests/model-acquisition-v2.test.js tinyrustlm/tests/compa
 node tinyrustlm/tools/web-release-local-smoke.js <new-output-directory>
 node --test tinyrustlm/tests/dogfood-campaign.test.js tinyrustlm/tests/vnext-campaign-runner.test.js
 npm --prefix tinyrustlm run test:vnext-campaign-release-surface -- <absolute-evidence-root>
+npm --prefix tinyrustlm run verify:vnext-campaign-release-surface -- <absolute-evidence-root>
 ```
 
 `test:browser-contract` covers:

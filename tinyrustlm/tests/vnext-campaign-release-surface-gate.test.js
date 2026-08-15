@@ -149,7 +149,7 @@ test("launches every shard through one exact inherited-pipe custody profile", ()
   assert.doesNotMatch(source, /runnerOptions\(\s*roots,\s*\[/u);
 });
 
-test("cuts the package entry point to the evidence-root run operation", () => {
+test("cuts package entry points to evidence-root run and verification operations", () => {
   const packageValue = JSON.parse(fs.readFileSync(
     path.resolve(__dirname, "../package.json"),
     "utf8"
@@ -157,6 +157,10 @@ test("cuts the package entry point to the evidence-root run operation", () => {
   assert.equal(
     packageValue.scripts["test:vnext-campaign-release-surface"],
     "node tools/run-vnext-unit-test-gate.js release-surface"
+  );
+  assert.equal(
+    packageValue.scripts["verify:vnext-campaign-release-surface"],
+    "node tools/run-vnext-campaign-release-surface-gate.js verify"
   );
   assert.equal(packageValue.scripts["test:unit"],
     "node tools/run-vnext-unit-test-gate.js all");

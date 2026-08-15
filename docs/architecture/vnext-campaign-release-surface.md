@@ -624,12 +624,15 @@ publication verdict fails closed.
   claim commit, and after the final receipt commit; and
 - rejection of caller deployment, readback, and publication truth.
 
-The sole maintained execution command is
-`npm run test:vnext-campaign-release-surface -- <absolute-evidence-root>`.
+The sole maintained execution and verification commands are
+`npm run test:vnext-campaign-release-surface -- <absolute-evidence-root>` and
+`npm run verify:vnext-campaign-release-surface -- <absolute-evidence-root>`.
 The caller supplies only an existing absolute evidence root; it cannot supply
-a verdict, result, test count, source identity, or receipt. The standalone
-verification command is
-`node tools/run-vnext-campaign-release-surface-gate.js verify <absolute-evidence-root>`.
+a verdict, result, test count, source identity, or receipt. Both commands enter
+the same npm lifecycle so the verifier reproduces the exact identity-bound
+`HOME` and `PATH` projection used by execution. A plain shell invocation is not
+the maintained operator route because a different allowlisted environment must
+fail closed with a different run identity.
 Partition-only inspection uses the explicit `validate` operation. There is no
 implicit repository output directory or compatibility argument reader.
 
