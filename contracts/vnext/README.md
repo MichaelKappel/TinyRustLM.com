@@ -245,6 +245,21 @@ eight installed profile or registry bindings. See
 `docs/architecture/vnext-protected-equality-custody.md` and
 `docs/architecture/vnext-public-safe-redaction.md`.
 
+`tinyrustlm/tools/vnext-protected-equality-private-loader.js` is the single
+current local private ingress for that custody. Its frozen 3,254-byte profile
+has SHA-256
+`e209d31c0c8b2243aa231092feabf5106acdb141f72d32a18e2f1940c5af84e3`,
+and its exact nine-member source closure has SHA-256
+`63843bfea80972ce402d8987ce72ac47ba47f1b769ecabe5de5d0ba8b3a14b77`.
+It accepts canonical public trust bytes, reads the private signed bundle only
+from inherited non-file pipe descriptor 3, closes that descriptor on every
+attempt, and zeros owned delivery buffers. It accepts no private path,
+environment, argument, standard-input, network, clock, retry, compatibility,
+or unsigned mode. See
+`docs/architecture/vnext-protected-equality-private-loader.md`. The production
+issuer, authorized launcher, release-bootstrap-only wiring, revocation, trusted
+time, and OS isolation remain incomplete.
+
 `tinyrustlm/tools/vnext-phase-invalidation.js` classifies immutable phase
 history through explicit same-operation supersession and dependency-only
 staleness. `tinyrustlm/tools/vnext-campaign-projection.js` finalizes the exact

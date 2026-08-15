@@ -194,6 +194,18 @@ profiles among eight exact profile inputs. See
 `docs/architecture/vnext-protected-equality-custody.md` and
 `docs/architecture/vnext-public-safe-redaction.md`.
 
+The local custody ingress is now frozen by
+`protected-equality-private-loader-profile.v1.json`. Its 3,254 bytes have
+SHA-256
+`e209d31c0c8b2243aa231092feabf5106acdb141f72d32a18e2f1940c5af84e3`,
+and its canonical nine-member source closure has SHA-256
+`63843bfea80972ce402d8987ce72ac47ba47f1b769ecabe5de5d0ba8b3a14b77`.
+The loader accepts only canonical public pins and inherited non-file pipe
+descriptor 3, performs bounded single-use reads, closes the descriptor, and
+zeros owned delivery buffers. It does not prove an authorized issuer, launcher,
+release bootstrap, revocation source, trusted time, or OS isolation. See
+`docs/architecture/vnext-protected-equality-private-loader.md`.
+
 The phase classifier and its explicit supersession rules are documented in
 `docs/architecture/vnext-phase-invalidation.md`.
 The independent Rust currentness boundary is documented in
@@ -237,7 +249,8 @@ current vNext store, campaign-operation record, and runner-lock record consumes
 the sole receipt-backed durable-publication primitive. No batch claims an
 atomic filesystem transaction. OS network isolation, current helper provenance
 and clean-consumer execution for every supported RID, authorized production
-equality-custody issuance and private loading, and controlled physical
+  equality-custody issuance, authorized private launching, release-bootstrap
+  exclusivity, and controlled physical
 power-loss evidence remain incomplete. One maintained structured archive target
 and frozen 29-seed hostile corpus now replay locally; hosted sanitizer
 execution, longer campaigns, and retention/minimization of future crash

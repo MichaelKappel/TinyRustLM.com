@@ -437,7 +437,16 @@ protected-equality scan before it is returned.
 The public result and receipt bind custody ID, revision, generation, authority
 key identity and fingerprint, known-secret count, and canonical custody-binding
 SHA-256 without exposing a secret hash or list commitment. See
-`docs/architecture/vnext-protected-equality-custody.md`.
+`docs/architecture/vnext-protected-equality-custody.md` and
+`docs/architecture/vnext-protected-equality-private-loader.md`.
+
+The bounded inherited-pipe loader is implemented locally, but this constructor
+still receives an already issued opaque handle. Production closure therefore
+requires one further incompatible API cut: the sole release bootstrap must
+open custody through fixed descriptor 3 and the low-level caller-created
+custody route must disappear from the production-facing surface. Until that
+cut and an authorized issuer/launcher are proven, the local handle tests are
+not production custody evidence.
 
 For preparation, a changelog scan receipt is create-only persisted before the
 manifest is admitted. A selected-document or changelog finding persists only a

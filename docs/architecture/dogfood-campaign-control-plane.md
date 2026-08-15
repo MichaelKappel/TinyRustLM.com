@@ -139,8 +139,9 @@ and module-issued protected equality-custody contract are integrated into the
 current local vNext paths. Those contracts prove bounded local conformance,
 not production operation. Gate D still requires controlled physical
 power-loss/filesystem evidence, current native helper provenance and clean
-consumers for every supported RID, an authorized production custody issuer and
-private loader, and the declared OS process/network isolation. One maintained
+  consumers for every supported RID, an authorized production custody issuer
+  and launcher, release-bootstrap-only use of the implemented inherited-pipe
+  private loader, and the declared OS process/network isolation. One maintained
 structured archive target and frozen 29-seed hostile corpus now replay locally;
 hosted sanitizer execution, longer campaigns, and retention/minimization of
 future crash findings remain open. Deterministic cross-format, path,

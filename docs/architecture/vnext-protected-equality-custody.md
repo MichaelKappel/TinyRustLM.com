@@ -6,14 +6,24 @@ This document defines the single current custody boundary used by the vNext
 public-safety scanner and campaign release surface. The implementation is:
 
 - `contracts/vnext/protected-equality-custody-profile.v1.json`;
+- `contracts/vnext/protected-equality-private-loader-profile.v1.json`;
 - `tinyrustlm/tools/vnext-protected-equality-custody.js`;
+- `tinyrustlm/tools/vnext-protected-equality-private-loader.js`;
 - `tinyrustlm/tests/helpers/vnext-protected-equality-fixtures.js`; and
-- `tinyrustlm/tests/vnext-protected-equality-custody.test.js`.
+- `tinyrustlm/tests/vnext-protected-equality-custody.test.js` plus the real
+  child-process private-loader suite.
 
 The checked-in profile is 2,710 bytes with SHA-256
 `db66fccab135294d950f8e1350ac2bab0947aad14b4ec87ac1565a6463b6730a`.
 It is a clean-slate, single-current contract. There is no compatibility reader,
 unsigned mode, default secret list, or per-operation list override.
+
+The private-loader profile is 3,254 bytes with SHA-256
+`e209d31c0c8b2243aa231092feabf5106acdb141f72d32a18e2f1940c5af84e3`.
+Its exact nine-member source closure has SHA-256
+`63843bfea80972ce402d8987ce72ac47ba47f1b769ecabe5de5d0ba8b3a14b77`.
+See `docs/architecture/vnext-protected-equality-private-loader.md` for its
+transport, bounds, zeroization, verification, and non-claim boundary.
 
 ## Threat Model
 
@@ -67,8 +77,9 @@ invalid revision chains before producing a handle.
 
 Generation 1 requires a null predecessor. Every later generation requires a
 different safe predecessor revision ID. A bundle may live for at most 30 days.
-The parser has no clock or network access; its caller must supply the trusted
-verification timestamp.
+The parser has no clock or network access. The private loader receives the
+trusted verification timestamp in canonical public control bytes and receives
+the private bundle only through inherited non-file pipe descriptor 3.
 
 ## Trust Pins
 
@@ -81,11 +92,12 @@ Custody opening requires an exact data object with six fields:
 - expected revision ID; and
 - trusted verification time in UTC.
 
-The signed values must equal every corresponding caller pin. Trust is not
+The signed values must equal every corresponding launcher pin. Trust is not
 derived from names embedded in the bundle. The current contract intentionally
 does not perform online discovery, key rotation, revocation lookup, or clock
 acquisition. Those inputs must be resolved and authorized before custody is
-opened.
+opened. The loader rejects noncanonical, unknown-field, accessor-bearing,
+shared, empty, or oversized public trust input before a custody handle exists.
 
 ## Bounds
 
@@ -117,6 +129,12 @@ constructing a lookalike object cannot recreate this identity and fails with
 The inspection API returns only the public binding. There is no API that
 exports private bundle bytes, a secret, a secret hash, a compiled
 representation, or signing material.
+
+The private loader closes descriptor 3 on every observed success and failure
+and zeros all delivery buffers it owns. The verifier separately zeros its
+defensive bundle, canonical-wire, signature-payload, decoded-signature, and
+decoded-public-key buffers. Compiled representations remain only behind the
+opaque live handle; JavaScript and OS runtime copies are an explicit non-claim.
 
 ## Equality Scanning
 
@@ -172,23 +190,31 @@ empty custody, signature and trust-pin substitution, canonical-wire drift,
 validity boundaries, revision-chain rules, secret bounds and duplication,
 invalid Unicode, hostile accessors, shared or oversized scan buffers,
 defensive copies, deterministic public bindings, absence of secret material,
-and structural-handle forgery. Release-surface tests additionally prove that
+and structural-handle forgery. The private-loader suite adds a real inherited
+pipe, regular-file and missing-descriptor rejection, byte bounds, canonical
+public trust input, signature and pin failures, private-value absence, source
+closure, buffer-zeroing paths, and descriptor closure. Release-surface tests
+additionally prove that
 all nine public operations retain the construction-time custody and reject raw
 `knownSecrets` fields before invoking getters.
 
 ## Operational Requirements
 
-Production use still requires an authorized issuer and private loader that:
+The bounded inherited-pipe private loader now exists locally. Production use
+still requires an authorized issuer and launcher that:
 
 - generates a cryptographically unpredictable new revision ID whenever the
   list changes;
 - persists generation and predecessor state transactionally;
 - protects the signing key outside public browser and report surfaces;
-- delivers canonical bundle bytes without logging or durable public storage;
+- delivers canonical bundle bytes through the dedicated inherited pipe without
+  logging or durable public storage;
 - resolves current authority, revocation, and trusted-time inputs; and
-- destroys private delivery buffers after opening to the extent supported by
-  the host runtime.
+- excludes credentials from environment, argument, standard-input, logging,
+  crash-dump, and network surfaces; and
+- makes the release bootstrap use only the loader-issued custody path.
 
 Until those controls exist and are authorized, tests prove only the local
-contract and integration behavior. They are not evidence of production key
-custody, production secret delivery, publication, or campaign completion.
+contract, inherited-pipe transport, and integration behavior. They are not
+evidence of production key custody, authorized production secret delivery,
+publication, or campaign completion.

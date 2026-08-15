@@ -243,8 +243,10 @@ The focused tests cover:
 
 ## Remaining Work
 
-- Connect the sole release surface to an authorized private custody loader and
-  signer without exposing bundle bytes or accepting per-operation secret lists.
+- Route the sole release bootstrap exclusively through the implemented bounded
+  inherited-pipe private loader, then remove the low-level factory from the
+  production-facing API. The authorized issuer, launcher, revocation source,
+  and signing-key custody remain external and unproven.
 - Enumerate and scan both compressed bytes and every decoded archive member
   under an archive-specific bounded profile. This JSON-document boundary does
   not decompress archives.
