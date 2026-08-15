@@ -188,6 +188,30 @@ cache log to the full C: drive. The direct D-temporary-backed Node command with
 `--preserve-symlinks --preserve-symlinks-main` is the terminal passing run. No
 assertion or production path was weakened.
 
+The D:-backed documentation and adjacent-contract union also passes 77/77
+with zero failures, skips, cancellations, or todos. Its 13,202-byte stdout
+has SHA-256
+`6a40fd8ec78841a58e7fd7a7741c4f39714a5c1bf8e607c8cb6599b6d9fbbbed`;
+stderr is empty. The first broad attempt remains a 59/63 infrastructure
+failure because concurrent Cargo children wrote to E: and encountered
+`ENOSPC`. A later D:-targeted attempt remains a topology failure because the
+parent's preserve-symlink flags did not reach spawned Node processes. Setting
+the same flags through `NODE_OPTIONS` for the complete process tree passed the
+campaign runner 15/15 and then the full union without changing source or test
+assertions.
+
+With the repository root and every restore, build, result, temporary, package,
+HTTP-cache, plugin-cache, and NuGet-scratch path explicitly confined to D:,
+filtered `ReportIntakeMemoryTests` passes 9/9 with zero failures or skips.
+Stdout SHA-256 is
+`91380c8f24e87721cff48d20ab829f53d4dd5f2eebb1118de624bade47722552`,
+and TRX SHA-256 is
+`974ae9383e74600608c9686810e2da71304b84c9ea91f8436d2b77dff5831171`;
+stderr is empty. Preserve the preceding restore attempt as infrastructure
+failure: NuGet tried to write vulnerability metadata to the full C: HTTP
+cache. The successful rerun retained vulnerability audit and warnings-as-error
+policy.
+
 ## Remaining Production Work
 
 This checkpoint does not complete production custody. The following remain
