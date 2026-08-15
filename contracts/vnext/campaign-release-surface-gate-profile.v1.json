@@ -135,6 +135,9 @@
       "persists only public-safe failure evidence for an unsafe changelog"
     ],
     [
+      "persists only bounded redaction evidence for unsafe authorization bytes"
+    ],
+    [
       "freezes one no-compatibility campaign release surface profile",
       "attests an honest zero projection without claiming release completion",
       "attests exact complete capacity while remaining prepublication",
@@ -158,8 +161,7 @@
     [
       "resumes authorization after the redaction receipt committed alone",
       "rejects caller authorization truth, wrong bindings, expiry, and snapshot drift",
-      "rejects an authorization key that was not active at signature issue",
-      "persists only bounded redaction evidence for unsafe authorization bytes"
+      "rejects an authorization key that was not active at signature issue"
     ],
     [
       "refuses release preparation when the fresh campaign projection is incomplete",

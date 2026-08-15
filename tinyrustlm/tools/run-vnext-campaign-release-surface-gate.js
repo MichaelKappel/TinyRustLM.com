@@ -21,7 +21,7 @@ const gateProfilePath = path.join(
 );
 const gateProfileId = "tinyrustlm.vnext.campaign-release-surface-gate.v1";
 const gateProfileSha256 =
-  "c2b680d770dc68a9f505eae46b7d97bffe08b546712fcb5768ea479ac0d66445";
+  "78670eb50b53afc248172417b77b9c8368ef70ffa8560f32ad199079db06bd46";
 const sha256Pattern = /^[a-f0-9]{64}$/u;
 const gitObjectPattern = /^[a-f0-9]{40}$/u;
 const attemptIdPattern = /^attempt-[1-9][0-9]{12,15}-[a-f0-9]{32}$/u;
@@ -354,7 +354,7 @@ function loadGateProfile() {
     }
     exactStringArray(entry.arguments, expected[2], "release_gate_profile_invalid");
   });
-  if (!Array.isArray(value.shards) || value.shards.length !== 9 ||
+  if (!Array.isArray(value.shards) || value.shards.length !== 10 ||
       value.shards.some((shard) => !Array.isArray(shard) || shard.length === 0 ||
         shard.some((name) => typeof name !== "string" || name.length === 0 ||
           name.length > 512))) {

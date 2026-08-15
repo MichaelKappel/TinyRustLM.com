@@ -13,9 +13,9 @@ const {
 } = require("./helpers/vnext-directory-flush-test-package.js");
 const { resolveCargoTargetRoot } = require("./helpers/cargo-target-root.js");
 const {
-  deploymentBindingSecret,
+  fixtureProfiles,
   knownSecretsForFixtureProfile,
-  unsafeChangelogSecret
+  unsafeAuthorizationSecret
 } = require("./helpers/vnext-campaign-release-surface-test-custody.js");
 const { canonicalizeVnextJcsBytes } = require("../tools/vnext-jcs.js");
 
@@ -448,7 +448,7 @@ function seedEphemeralAuthorityCase(roots, entry, options = {}) {
     }),
     releaseKey: authorityKey({
       keyId: "release-surface-authorizer-key",
-      signerId: "release-surface-authorizer",
+      signerId: unsafeAuthorizationSecret,
       role: "release-authorizer",
       status: options.releaseKeyStatus ?? "active"
     }),
@@ -516,9 +516,9 @@ function seedEphemeralAuthorityCase(roots, entry, options = {}) {
   return Object.freeze(authority);
 }
 
-function runnerOptions(roots, knownSecrets = []) {
-  assert.deepEqual(knownSecrets, releaseFixtureKnownSecrets,
-    "release shard custody fixture does not match the requested secret set");
+function runnerOptions(roots, requiredFixtureProfileId = fixtureProfiles.empty) {
+  assert.equal(releaseFixtureProfileId, requiredFixtureProfileId,
+    "release shard custody fixture profile does not match the test");
   const wasm = buildWasm();
   return {
     campaignArtifactStoreRoot: roots.artifacts,
@@ -527,6 +527,14 @@ function runnerOptions(roots, knownSecrets = []) {
     subjectStoreRoot: roots.subjects,
     wasmModuleBytes: wasm
   };
+}
+
+function releaseFixtureSecret(requiredFixtureProfileId) {
+  assert.equal(releaseFixtureProfileId, requiredFixtureProfileId,
+    "release shard custody fixture profile does not match the protected test");
+  assert.equal(releaseFixtureKnownSecrets.length, 1,
+    "protected release shard must receive exactly one inherited secret");
+  return releaseFixtureKnownSecrets[0];
 }
 
 function campaignRunnerOptions(roots) {
@@ -1775,9 +1783,11 @@ test("records only a public-safe redaction failure when an attestation contains 
   const roots = makeRoots(t);
   const entry = acceptedCase("complete-capacity");
   seedCase(roots, entry);
-  const secret = entry.receiptIds[0].slice("sha256:".length, "sha256:".length + 20);
+  const secret = releaseFixtureSecret(fixtureProfiles.secretAttestation);
+  assert.equal(secret,
+    entry.receiptIds[0].slice("sha256:".length, "sha256:".length + 20));
   const surface = await createCampaignReleaseSurface(roots.runner,
-    runnerOptions(roots, [secret]));
+    runnerOptions(roots, fixtureProfiles.secretAttestation));
   const result = await surface.attestCampaign(
     surfaceInput(entry, "secret-attestation"));
 
@@ -2517,9 +2527,9 @@ test("rejects caller deployment truth and deployment-attempt binding drift", {
   const entry = acceptedCase("complete-capacity");
   const authority = seedEphemeralAuthorityCase(roots, entry);
   const releaseInput = seedReleaseInputs(roots, entry);
-  const protectedValue = deploymentBindingSecret;
+  const protectedValue = releaseFixtureSecret(fixtureProfiles.deploymentBinding);
   const surface = await createCampaignReleaseSurface(roots.runner,
-    runnerOptions(roots, [protectedValue]));
+    runnerOptions(roots, fixtureProfiles.deploymentBinding));
   const prepared = await surface.prepareRelease(prepareInput(
     entry,
     "hostile-deployment-preparation",
@@ -2892,9 +2902,10 @@ test("persists only bounded redaction evidence for unsafe authorization bytes", 
   const entry = acceptedCase("complete-capacity");
   const authority = seedEphemeralAuthorityCase(roots, entry);
   const releaseInput = seedReleaseInputs(roots, entry);
-  const protectedValue = authority.releaseKey.record.signerId;
+  const protectedValue = releaseFixtureSecret(fixtureProfiles.unsafeAuthorization);
+  assert.equal(authority.releaseKey.record.signerId, protectedValue);
   const surface = await createCampaignReleaseSurface(roots.runner,
-    runnerOptions(roots, [protectedValue]));
+    runnerOptions(roots, fixtureProfiles.unsafeAuthorization));
   const prepared = await surface.prepareRelease(prepareInput(
     entry,
     "unsafe-authorization-preparation",
@@ -3048,12 +3059,12 @@ test("persists only public-safe failure evidence for an unsafe changelog", {
   const roots = makeRoots(t);
   const entry = acceptedCase("complete-capacity");
   seedCase(roots, entry);
-  const secret = unsafeChangelogSecret;
+  const secret = releaseFixtureSecret(fixtureProfiles.unsafeChangelog);
   const releaseInput = seedReleaseInputs(roots, entry, {
     changelogBytes: Buffer.from(`# TinyRustLM 1.0.0\n\n- ${secret}\n`, "utf8")
   });
   const surface = await createCampaignReleaseSurface(roots.runner,
-    runnerOptions(roots, [secret]));
+    runnerOptions(roots, fixtureProfiles.unsafeChangelog));
   await rejectsCode(() => surface.prepareRelease(prepareInput(
     entry,
     "unsafe-release-changelog",

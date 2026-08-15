@@ -10,6 +10,7 @@ const fixtureProfiles = Object.freeze({
   deploymentBinding: "release-surface-deployment-binding",
   empty: "release-surface-empty",
   secretAttestation: "release-surface-secret-attestation",
+  unsafeAuthorization: "release-surface-unsafe-authorization",
   unsafeChangelog: "release-surface-unsafe-changelog"
 });
 const deploymentBindingTest =
@@ -17,6 +18,9 @@ const deploymentBindingTest =
 const deploymentBindingSecret = "deployment-receipt-protected-value";
 const secretAttestationTest =
   "records only a public-safe redaction failure when an attestation contains a known secret";
+const unsafeAuthorizationTest =
+  "persists only bounded redaction evidence for unsafe authorization bytes";
+const unsafeAuthorizationSecret = "release-surface-authorizer";
 const unsafeChangelogTest =
   "persists only public-safe failure evidence for an unsafe changelog";
 const unsafeChangelogSecret = "release-secret-material-93c17f2a";
@@ -51,6 +55,8 @@ function knownSecretsForFixtureProfile(profileId) {
       return Object.freeze([]);
     case fixtureProfiles.secretAttestation:
       return Object.freeze([attestationSecret()]);
+    case fixtureProfiles.unsafeAuthorization:
+      return Object.freeze([unsafeAuthorizationSecret]);
     case fixtureProfiles.unsafeChangelog:
       return Object.freeze([unsafeChangelogSecret]);
     default:
@@ -66,6 +72,9 @@ function fixtureProfileForTestNames(rawNames) {
   }
   if (names.includes(secretAttestationTest)) {
     secretProfiles.push(fixtureProfiles.secretAttestation);
+  }
+  if (names.includes(unsafeAuthorizationTest)) {
+    secretProfiles.push(fixtureProfiles.unsafeAuthorization);
   }
   if (names.includes(unsafeChangelogTest)) {
     secretProfiles.push(fixtureProfiles.unsafeChangelog);
@@ -84,6 +93,8 @@ module.exports = Object.freeze({
   fixtureProfiles,
   knownSecretsForFixtureProfile,
   secretAttestationTest,
+  unsafeAuthorizationSecret,
+  unsafeAuthorizationTest,
   unsafeChangelogSecret,
   unsafeChangelogTest
 });

@@ -24,6 +24,8 @@ const {
   fixtureProfiles,
   knownSecretsForFixtureProfile,
   secretAttestationTest,
+  unsafeAuthorizationSecret,
+  unsafeAuthorizationTest,
   unsafeChangelogSecret,
   unsafeChangelogTest
 } = require("./helpers/vnext-campaign-release-surface-test-custody.js");
@@ -72,11 +74,11 @@ test("freezes one exhaustive release-surface gate partition", () => {
   const names = extractTopLevelTestNames(source);
   const partitionNames = releaseSurfaceShards.flat();
 
-  assert.deepEqual(result, { shardCount: 9, testCount: 23 });
+  assert.deepEqual(result, { shardCount: 10, testCount: 23 });
   assert.equal(gateProfileId,
     "tinyrustlm.vnext.campaign-release-surface-gate.v1");
   assert.equal(gateProfileSha256,
-    "c2b680d770dc68a9f505eae46b7d97bffe08b546712fcb5768ea479ac0d66445");
+    "78670eb50b53afc248172417b77b9c8368ef70ffa8560f32ad199079db06bd46");
   assert.equal(maximumConcurrentShards, 1);
   assert.equal(new Set(partitionNames).size, 23);
   assert.deepEqual([...partitionNames].sort(), [...names].sort());
@@ -88,17 +90,29 @@ test("freezes one exhaustive release-surface gate partition", () => {
 });
 
 test("launches every shard through one exact inherited-pipe custody profile", () => {
+  const protectedProfiles = [
+    [deploymentBindingTest, fixtureProfiles.deploymentBinding,
+      deploymentBindingSecret],
+    [secretAttestationTest, fixtureProfiles.secretAttestation, null],
+    [unsafeAuthorizationTest, fixtureProfiles.unsafeAuthorization,
+      unsafeAuthorizationSecret],
+    [unsafeChangelogTest, fixtureProfiles.unsafeChangelog,
+      unsafeChangelogSecret]
+  ];
+  const profileByTestName = new Map(protectedProfiles.map(
+    ([testName, profileId]) => [testName, profileId]
+  ));
   for (const names of releaseSurfaceShards) {
     const argumentsList = childArguments(names);
+    const protectedNames = names.filter((name) => profileByTestName.has(name));
+    assert.ok(protectedNames.length <= 1,
+      "each protected test must own a distinct shard");
+    const expectedProfile = protectedNames.length === 1
+      ? profileByTestName.get(protectedNames[0])
+      : fixtureProfiles.empty;
     assert.equal(argumentsList[0],
       "tinyrustlm/tests/helpers/vnext-campaign-release-surface-launcher.js");
-    assert.equal(argumentsList[1], names.includes(deploymentBindingTest)
-      ? fixtureProfiles.deploymentBinding
-      : names.includes(secretAttestationTest)
-        ? fixtureProfiles.secretAttestation
-        : names.includes(unsafeChangelogTest)
-          ? fixtureProfiles.unsafeChangelog
-          : fixtureProfiles.empty);
+    assert.equal(argumentsList[1], expectedProfile);
     assert.deepEqual(argumentsList.slice(2), [
       "--test",
       "--test-isolation=none",
@@ -111,13 +125,6 @@ test("launches every shard through one exact inherited-pipe custody profile", ()
     }
   }
 
-  const protectedProfiles = [
-    [deploymentBindingTest, fixtureProfiles.deploymentBinding,
-      deploymentBindingSecret],
-    [secretAttestationTest, fixtureProfiles.secretAttestation, null],
-    [unsafeChangelogTest, fixtureProfiles.unsafeChangelog,
-      unsafeChangelogSecret]
-  ];
   for (const [testName, profileId, literalSecret] of protectedProfiles) {
     const matchingShards = releaseSurfaceShards.filter((names) =>
       names.includes(testName));
@@ -128,6 +135,18 @@ test("launches every shard through one exact inherited-pipe custody profile", ()
     assert.equal(knownSecrets.length, 1);
     if (literalSecret !== null) assert.equal(knownSecrets[0], literalSecret);
   }
+
+  const source = fs.readFileSync(releaseSurfaceTestPath, "utf8");
+  const explicitProtectedProfiles = [...source.matchAll(
+    /runnerOptions\(\s*roots,\s*fixtureProfiles\.([A-Za-z][A-Za-z0-9]*)\s*\)/gu
+  )].map((match) => match[1]).sort();
+  assert.deepEqual(explicitProtectedProfiles, [
+    "deploymentBinding",
+    "secretAttestation",
+    "unsafeAuthorization",
+    "unsafeChangelog"
+  ]);
+  assert.doesNotMatch(source, /runnerOptions\(\s*roots,\s*\[/u);
 });
 
 test("cuts the package entry point to the evidence-root run operation", () => {
