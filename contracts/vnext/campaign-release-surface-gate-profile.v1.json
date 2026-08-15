@@ -126,6 +126,15 @@
   "durabilityPolicy": "create-only-file-fsync-with-separate-directory-durability-gate",
   "shards": [
     [
+      "rejects caller deployment truth and deployment-attempt binding drift"
+    ],
+    [
+      "records only a public-safe redaction failure when an attestation contains a known secret"
+    ],
+    [
+      "persists only public-safe failure evidence for an unsafe changelog"
+    ],
+    [
       "freezes one no-compatibility campaign release surface profile",
       "attests an honest zero projection without claiming release completion",
       "attests exact complete capacity while remaining prepublication",
@@ -144,8 +153,7 @@
     ],
     [
       "verifies exact fixture-labeled HTTPS bytes through one immutable readback receipt",
-      "publishes deterministic site descendants only after complete generated-byte readback",
-      "rejects caller deployment truth and deployment-attempt binding drift"
+      "publishes deterministic site descendants only after complete generated-byte readback"
     ],
     [
       "resumes authorization after the redaction receipt committed alone",
@@ -157,12 +165,6 @@
       "refuses release preparation when the fresh campaign projection is incomplete",
       "rejects incomplete artifact coverage and omitted current approved claims",
       "rejects expired claims and superseded package evidence"
-    ],
-    [
-      "records only a public-safe redaction failure when an attestation contains a known secret"
-    ],
-    [
-      "persists only public-safe failure evidence for an unsafe changelog"
     ]
   ],
   "nonClaims": [

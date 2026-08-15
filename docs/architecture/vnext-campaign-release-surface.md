@@ -633,10 +633,10 @@ verification command is
 Partition-only inspection uses the explicit `validate` operation. There is no
 implicit repository output directory or compatibility argument reader.
 
-`contracts/vnext/campaign-release-surface-gate-profile.v1.json` is 6,322 bytes
+`contracts/vnext/campaign-release-surface-gate-profile.v1.json` is 6,334 bytes
 with SHA-256
-`aaf94b86be0bba757d4dc8743f810f8801b4389a3c388dda4cf23090c43011a1`.
-It freezes all 23 top-level cases exactly once across eight disjoint anchored
+`c2b680d770dc68a9f505eae46b7d97bffe08b546712fcb5768ea479ac0d66445`.
+It freezes all 23 top-level cases exactly once across nine disjoint anchored
 shards. Before any
 execution or reuse, the gate requires a clean exact Git head and tree and binds
 the profile, runner, complete implementation closure, unchanged test file,
@@ -651,9 +651,11 @@ Node test isolation disabled so that the test module remains in the process
 that owns inherited descriptor 3. A strict test launcher creates one signed
 private bundle, writes it only to the inherited pipe, passes only canonical
 public trust bytes through a test-scoped environment binding, and zeroes its
-owned bytes. The two secret-sensitive tests are isolated into separate
+owned bytes. The three secret-sensitive tests are isolated into separate
 one-test shards with distinct custody revisions; all other shards receive an
-empty protected list. Each shard retains bounded raw stdout and stderr in an internally named create-only
+empty protected list. Those three shards run first so custody/profile drift
+fails before the longer ordinary release exercises. Each shard retains bounded
+raw stdout and stderr in an internally named create-only
 attempt directory. A canonical shard receipt is committed only after terminal
 process state, file fsync, source revalidation, exact log readback, and an
 independent parser agree. Pass requires the exact expected test names and
@@ -661,7 +663,7 @@ counts, exit zero, empty stderr, and zero failures, skips, cancellations, and
 todos. Timeouts, signals, output limits, incomplete attempts, malformed logs,
 and failed receipts remain immutable evidence but cannot satisfy resume.
 
-After all eight shard receipts independently verify against the current run
+After all nine shard receipts independently verify against the current run
 identity, the gate commits one atomic create-only aggregate receipt and then
 verifies the complete graph again. A restart reuses only exact valid pass
 receipts for the same content-addressed source, partition, tools, and

@@ -13,7 +13,9 @@ const {
 } = require("./helpers/vnext-directory-flush-test-package.js");
 const { resolveCargoTargetRoot } = require("./helpers/cargo-target-root.js");
 const {
-  knownSecretsForFixtureProfile
+  deploymentBindingSecret,
+  knownSecretsForFixtureProfile,
+  unsafeChangelogSecret
 } = require("./helpers/vnext-campaign-release-surface-test-custody.js");
 const { canonicalizeVnextJcsBytes } = require("../tools/vnext-jcs.js");
 
@@ -2515,7 +2517,7 @@ test("rejects caller deployment truth and deployment-attempt binding drift", {
   const entry = acceptedCase("complete-capacity");
   const authority = seedEphemeralAuthorityCase(roots, entry);
   const releaseInput = seedReleaseInputs(roots, entry);
-  const protectedValue = "deployment-receipt-protected-value";
+  const protectedValue = deploymentBindingSecret;
   const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots, [protectedValue]));
   const prepared = await surface.prepareRelease(prepareInput(
@@ -3046,7 +3048,7 @@ test("persists only public-safe failure evidence for an unsafe changelog", {
   const roots = makeRoots(t);
   const entry = acceptedCase("complete-capacity");
   seedCase(roots, entry);
-  const secret = "release-secret-material-93c17f2a";
+  const secret = unsafeChangelogSecret;
   const releaseInput = seedReleaseInputs(roots, entry, {
     changelogBytes: Buffer.from(`# TinyRustLM 1.0.0\n\n- ${secret}\n`, "utf8")
   });

@@ -19,8 +19,12 @@ const {
   validateShardPartition
 } = require("../tools/run-vnext-campaign-release-surface-gate.js");
 const {
+  deploymentBindingSecret,
+  deploymentBindingTest,
   fixtureProfiles,
+  knownSecretsForFixtureProfile,
   secretAttestationTest,
+  unsafeChangelogSecret,
   unsafeChangelogTest
 } = require("./helpers/vnext-campaign-release-surface-test-custody.js");
 
@@ -68,11 +72,11 @@ test("freezes one exhaustive release-surface gate partition", () => {
   const names = extractTopLevelTestNames(source);
   const partitionNames = releaseSurfaceShards.flat();
 
-  assert.deepEqual(result, { shardCount: 8, testCount: 23 });
+  assert.deepEqual(result, { shardCount: 9, testCount: 23 });
   assert.equal(gateProfileId,
     "tinyrustlm.vnext.campaign-release-surface-gate.v1");
   assert.equal(gateProfileSha256,
-    "aaf94b86be0bba757d4dc8743f810f8801b4389a3c388dda4cf23090c43011a1");
+    "c2b680d770dc68a9f505eae46b7d97bffe08b546712fcb5768ea479ac0d66445");
   assert.equal(maximumConcurrentShards, 1);
   assert.equal(new Set(partitionNames).size, 23);
   assert.deepEqual([...partitionNames].sort(), [...names].sort());
@@ -88,11 +92,13 @@ test("launches every shard through one exact inherited-pipe custody profile", ()
     const argumentsList = childArguments(names);
     assert.equal(argumentsList[0],
       "tinyrustlm/tests/helpers/vnext-campaign-release-surface-launcher.js");
-    assert.equal(argumentsList[1], names.includes(secretAttestationTest)
-      ? fixtureProfiles.secretAttestation
-      : names.includes(unsafeChangelogTest)
-        ? fixtureProfiles.unsafeChangelog
-        : fixtureProfiles.empty);
+    assert.equal(argumentsList[1], names.includes(deploymentBindingTest)
+      ? fixtureProfiles.deploymentBinding
+      : names.includes(secretAttestationTest)
+        ? fixtureProfiles.secretAttestation
+        : names.includes(unsafeChangelogTest)
+          ? fixtureProfiles.unsafeChangelog
+          : fixtureProfiles.empty);
     assert.deepEqual(argumentsList.slice(2), [
       "--test",
       "--test-isolation=none",
@@ -103,6 +109,24 @@ test("launches every shard through one exact inherited-pipe custody profile", ()
     if (argumentsList[1] !== fixtureProfiles.empty) {
       assert.equal(names.length, 1);
     }
+  }
+
+  const protectedProfiles = [
+    [deploymentBindingTest, fixtureProfiles.deploymentBinding,
+      deploymentBindingSecret],
+    [secretAttestationTest, fixtureProfiles.secretAttestation, null],
+    [unsafeChangelogTest, fixtureProfiles.unsafeChangelog,
+      unsafeChangelogSecret]
+  ];
+  for (const [testName, profileId, literalSecret] of protectedProfiles) {
+    const matchingShards = releaseSurfaceShards.filter((names) =>
+      names.includes(testName));
+    assert.equal(matchingShards.length, 1);
+    assert.deepEqual(matchingShards[0], [testName]);
+    assert.equal(childArguments(matchingShards[0])[1], profileId);
+    const knownSecrets = knownSecretsForFixtureProfile(profileId);
+    assert.equal(knownSecrets.length, 1);
+    if (literalSecret !== null) assert.equal(knownSecrets[0], literalSecret);
   }
 });
 

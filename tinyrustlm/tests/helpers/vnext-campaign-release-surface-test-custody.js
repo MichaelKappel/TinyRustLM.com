@@ -7,10 +7,14 @@ const repositoryRoot = path.resolve(__dirname, "../../..");
 const vectorsPath = path.join(repositoryRoot, "contracts", "vnext",
   "campaign-projection-rust-vectors.v1.json");
 const fixtureProfiles = Object.freeze({
+  deploymentBinding: "release-surface-deployment-binding",
   empty: "release-surface-empty",
   secretAttestation: "release-surface-secret-attestation",
   unsafeChangelog: "release-surface-unsafe-changelog"
 });
+const deploymentBindingTest =
+  "rejects caller deployment truth and deployment-attempt binding drift";
+const deploymentBindingSecret = "deployment-receipt-protected-value";
 const secretAttestationTest =
   "records only a public-safe redaction failure when an attestation contains a known secret";
 const unsafeChangelogTest =
@@ -41,6 +45,8 @@ function attestationSecret() {
 
 function knownSecretsForFixtureProfile(profileId) {
   switch (profileId) {
+    case fixtureProfiles.deploymentBinding:
+      return Object.freeze([deploymentBindingSecret]);
     case fixtureProfiles.empty:
       return Object.freeze([]);
     case fixtureProfiles.secretAttestation:
@@ -55,6 +61,9 @@ function knownSecretsForFixtureProfile(profileId) {
 function fixtureProfileForTestNames(rawNames) {
   const names = exactStringArray(rawNames, "release surface test names");
   const secretProfiles = [];
+  if (names.includes(deploymentBindingTest)) {
+    secretProfiles.push(fixtureProfiles.deploymentBinding);
+  }
   if (names.includes(secretAttestationTest)) {
     secretProfiles.push(fixtureProfiles.secretAttestation);
   }
@@ -69,6 +78,8 @@ function fixtureProfileForTestNames(rawNames) {
 }
 
 module.exports = Object.freeze({
+  deploymentBindingSecret,
+  deploymentBindingTest,
   fixtureProfileForTestNames,
   fixtureProfiles,
   knownSecretsForFixtureProfile,
