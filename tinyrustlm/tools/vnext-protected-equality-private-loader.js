@@ -9,7 +9,7 @@ const {
   createVnextProtectedEqualityCustody,
   protectedEqualityCustodyProfile,
   protectedEqualityCustodyProfileSha256
-} = require("./vnext-protected-equality-custody.js");
+} = require("./vnext-protected-equality-custody-internal.js");
 const { asEvidenceError, failEvidence } = require("./vnext-evidence-error.js");
 const { canonicalizeVnextJcsBytes } = require("./vnext-jcs.js");
 
@@ -143,6 +143,7 @@ const expectedSourceClosureMembers = Object.freeze([
   "tinyrustlm/tools/strict-json.js",
   "tinyrustlm/tools/vnext-evidence-error.js",
   "tinyrustlm/tools/vnext-jcs.js",
+  "tinyrustlm/tools/vnext-protected-equality-custody-internal.js",
   "tinyrustlm/tools/vnext-protected-equality-custody.js",
   "tinyrustlm/tools/vnext-protected-equality-private-loader.js",
   "tinyrustlm/tools/vnext-signature-payload.js"

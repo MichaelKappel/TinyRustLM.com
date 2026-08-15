@@ -4,16 +4,19 @@ const crypto = require("node:crypto");
 
 const { canonicalizeVnextJcsBytes } = require("../../tools/vnext-jcs.js");
 const {
-  createVnextProtectedEqualityCustody,
   protectedEqualityCustodyProfile
 } = require("../../tools/vnext-protected-equality-custody.js");
+
+const {
+  createVnextProtectedEqualityCustody
+} = require("../../tools/vnext-protected-equality-custody-internal.js");
 
 function publicKeyBase64(publicKey) {
   const der = publicKey.export({ format: "der", type: "spki" });
   return der.subarray(der.length - 32).toString("base64");
 }
 
-function makeProtectedEqualityCustody(options = {}) {
+function makeProtectedEqualityBundle(options = {}) {
   const keyPair = options.keyPair ?? crypto.generateKeyPairSync("ed25519");
   const authorityKeyId = options.authorityKeyId ?? "equality-authority-test";
   const custodyId = options.custodyId ?? "equality-custody-test";
@@ -56,15 +59,27 @@ function makeProtectedEqualityCustody(options = {}) {
     expectedRevisionId: revisionId,
     verificationTimeUtc
   };
-  const custody = createVnextProtectedEqualityCustody(bundleBytes, trustInput);
   return Object.freeze({
     authorityPublicKeyBase64,
     bundleBytes,
-    custody,
     keyPair,
     payload: Object.freeze(payload),
     trustInput: Object.freeze(trustInput)
   });
 }
 
-module.exports = Object.freeze({ makeProtectedEqualityCustody });
+function makeProtectedEqualityCustody(options = {}) {
+  const fixture = makeProtectedEqualityBundle(options);
+  return Object.freeze({
+    ...fixture,
+    custody: createVnextProtectedEqualityCustody(
+      fixture.bundleBytes,
+      fixture.trustInput
+    )
+  });
+}
+
+module.exports = Object.freeze({
+  makeProtectedEqualityBundle,
+  makeProtectedEqualityCustody
+});

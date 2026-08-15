@@ -15,7 +15,7 @@ const {
   protectedEqualityPrivateLoaderSourceClosureSha256
 } = require("../tools/vnext-protected-equality-private-loader.js");
 const {
-  makeProtectedEqualityCustody
+  makeProtectedEqualityBundle
 } = require("./helpers/vnext-protected-equality-fixtures.js");
 
 const repositoryRoot = path.resolve(__dirname, "../..");
@@ -161,7 +161,7 @@ test("freezes the inherited-pipe loader profile and exact source closure", () =>
 
 test("loads one signed private bundle, closes fd 3, and leaks no private value", async () => {
   const secret = "Synthetic-Loader-Secret-7mQ2zK9v";
-  const fixture = makeProtectedEqualityCustody({ knownSecrets: [secret] });
+  const fixture = makeProtectedEqualityBundle({ knownSecrets: [secret] });
   const execution = await runLoaderChild({
     bundleBytes: fixture.bundleBytes,
     targetBytes: Buffer.from(secret, "utf8"),
@@ -182,7 +182,7 @@ test("loads one signed private bundle, closes fd 3, and leaks no private value",
 });
 
 test("rejects missing and regular-file descriptor 3 transports", async (t) => {
-  const fixture = makeProtectedEqualityCustody();
+  const fixture = makeProtectedEqualityBundle();
   const trustBytes = trustDescriptorBytes(fixture);
   const missing = await runLoaderChild({
     bundleBytes: fixture.bundleBytes,
@@ -216,7 +216,7 @@ test("rejects missing and regular-file descriptor 3 transports", async (t) => {
 });
 
 test("rejects oversized, empty, malformed, and signature-invalid private bundles", async () => {
-  const fixture = makeProtectedEqualityCustody();
+  const fixture = makeProtectedEqualityBundle();
   const trustBytes = trustDescriptorBytes(fixture);
   const cases = [
     [Buffer.alloc(protectedEqualityPrivateLoaderProfile.limits
@@ -239,7 +239,7 @@ test("rejects oversized, empty, malformed, and signature-invalid private bundles
 });
 
 test("rejects noncanonical, unknown-field, and mismatched public trust input", async () => {
-  const fixture = makeProtectedEqualityCustody();
+  const fixture = makeProtectedEqualityBundle();
   const canonicalTrust = trustDescriptorBytes(fixture);
   const cases = [
     [Buffer.concat([canonicalTrust, Buffer.from("\n", "ascii")]),

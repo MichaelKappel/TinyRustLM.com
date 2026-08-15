@@ -58,6 +58,11 @@ const {
   scanVnextProtectedEqualityBytes
 } = require("./vnext-protected-equality-custody.js");
 const {
+  loadVnextProtectedEqualityCustodyFromInheritedPipe,
+  protectedEqualityPrivateLoaderProfile,
+  protectedEqualityPrivateLoaderProfileSha256
+} = require("./vnext-protected-equality-private-loader.js");
+const {
   performVnextPublicHttpsReadback,
   publicHttpsReadbackProfile,
   publicHttpsReadbackProfileSha256,
@@ -285,7 +290,6 @@ const sitePublicationFinalizationInputFields = Object.freeze([
 ]);
 const optionFields = Object.freeze([
   "campaignArtifactStoreRoot",
-  "equalityCustody",
   "expectedWasmModuleSha256",
   "receiptStoreRoot",
   "subjectStoreRoot",
@@ -299,12 +303,15 @@ const profileFields = Object.freeze([
   "receiptStoreProfileId", "receiptStoreProfileSha256", "subjectStoreProfileId",
   "subjectStoreProfileSha256", "publicSafeRedactionProfileId",
   "publicSafeRedactionProfileSha256", "protectedEqualityCustodyProfileId",
-  "protectedEqualityCustodyProfileSha256", "receiptSignatureProfileId",
+  "protectedEqualityCustodyProfileSha256",
+  "protectedEqualityPrivateLoaderProfileId",
+  "protectedEqualityPrivateLoaderProfileSha256", "receiptSignatureProfileId",
   "receiptSignatureProfileSha256", "publicHttpsReadbackProfileId",
   "publicHttpsReadbackProfileSha256", "sitePublicationProfileId",
   "sitePublicationProfileSha256", "canonicalJsonProfile", "hashAlgorithm",
   "campaignTruthInput", "operationPolicy", "storedProjectionPolicy",
-  "callerVerdictPolicy", "callerCounterPolicy", "equalityCustodyPolicy",
+  "callerVerdictPolicy", "callerCounterPolicy",
+  "protectedEqualityBootstrapPolicy",
   "mutablePointerPolicy",
   "networkAccess", "clockAccess", "sourceMutation", "attestation",
   "operatorStatus", "releasePreparation", "releaseAuthorization",
@@ -669,6 +676,10 @@ function validateInstalledProfile() {
         protectedEqualityCustodyProfile.profileId ||
       parsedProfile.protectedEqualityCustodyProfileSha256 !==
         protectedEqualityCustodyProfileSha256 ||
+      parsedProfile.protectedEqualityPrivateLoaderProfileId !==
+        protectedEqualityPrivateLoaderProfile.profileId ||
+      parsedProfile.protectedEqualityPrivateLoaderProfileSha256 !==
+        protectedEqualityPrivateLoaderProfileSha256 ||
       parsedProfile.receiptSignatureProfileId !== signatureProfile.profileId ||
       parsedProfile.receiptSignatureProfileSha256 !== signatureProfileSha256 ||
       parsedProfile.publicHttpsReadbackProfileId !==
@@ -685,8 +696,8 @@ function validateInstalledProfile() {
       parsedProfile.storedProjectionPolicy !== "forbidden" ||
       parsedProfile.callerVerdictPolicy !== "forbidden" ||
       parsedProfile.callerCounterPolicy !== "forbidden" ||
-      parsedProfile.equalityCustodyPolicy !==
-        "one-module-issued-signed-revision-pinned-at-surface-open-no-operation-substitution" ||
+      parsedProfile.protectedEqualityBootstrapPolicy !==
+        "one-process-runtime-loads-one-signed-revision-from-fixed-inherited-pipe-before-any-surface-open-no-caller-custody-input" ||
       parsedProfile.mutablePointerPolicy !== "forbidden" ||
       parsedProfile.networkAccess !== "forbidden-until-public-readback-operation" ||
       parsedProfile.clockAccess !== "caller-trusted-verification-time-only" ||
@@ -1588,7 +1599,7 @@ function normalizeSitePublicationFinalizationInput(rawInput, equalityCustody) {
   );
 }
 
-function normalizeOptions(rawOptions) {
+function normalizeOptions(rawOptions, equalityCustody) {
   const options = exactDataObject(rawOptions, optionFields,
     "release_surface_options_invalid", "release-surface-open");
   if (!digestPattern.test(options.expectedWasmModuleSha256) ||
@@ -1596,8 +1607,8 @@ function normalizeOptions(rawOptions) {
     failEvidence("release_surface_options_invalid", "release-surface-open");
   }
   const equalityCustodyBinding =
-    inspectVnextProtectedEqualityCustody(options.equalityCustody);
-  return Object.freeze({ ...options, equalityCustodyBinding });
+    inspectVnextProtectedEqualityCustody(equalityCustody);
+  return Object.freeze({ ...options, equalityCustody, equalityCustodyBinding });
 }
 
 function assertNeverUsedOperation(runner, operationId) {
@@ -4298,8 +4309,12 @@ function immutableReleasePreparationResult(value, buffers) {
   return Object.freeze(result);
 }
 
-async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
-  const options = normalizeOptions(rawOptions);
+async function createCampaignReleaseSurfaceForRuntime(
+  rootInput,
+  rawOptions,
+  equalityCustody
+) {
+  const options = normalizeOptions(rawOptions, equalityCustody);
   const runner = await createVnextCampaignRunner(rootInput, {
     campaignArtifactStoreRoot: options.campaignArtifactStoreRoot,
     expectedWasmModuleSha256: options.expectedWasmModuleSha256,
@@ -5942,8 +5957,28 @@ async function createVnextCampaignReleaseSurface(rootInput, rawOptions) {
   });
 }
 
+function bootstrapVnextCampaignReleaseRuntime(rawTrustDescriptorBytes) {
+  const equalityCustody =
+    loadVnextProtectedEqualityCustodyFromInheritedPipe(rawTrustDescriptorBytes);
+  const equalityCustodyBinding =
+    inspectVnextProtectedEqualityCustody(equalityCustody);
+  async function createCampaignReleaseSurface(rootInput, rawOptions) {
+    return createCampaignReleaseSurfaceForRuntime(
+      rootInput,
+      rawOptions,
+      equalityCustody
+    );
+  }
+  return Object.freeze({
+    createCampaignReleaseSurface,
+    equalityCustodyBinding,
+    profileId: parsedProfile.profileId,
+    profileSha256: campaignReleaseSurfaceProfileSha256
+  });
+}
+
 module.exports = Object.freeze({
+  bootstrapVnextCampaignReleaseRuntime,
   campaignReleaseSurfaceProfile,
-  campaignReleaseSurfaceProfileSha256,
-  createVnextCampaignReleaseSurface
+  campaignReleaseSurfaceProfileSha256
 });

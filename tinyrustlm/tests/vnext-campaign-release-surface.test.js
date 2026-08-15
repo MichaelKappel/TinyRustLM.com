@@ -13,8 +13,8 @@ const {
 } = require("./helpers/vnext-directory-flush-test-package.js");
 const { resolveCargoTargetRoot } = require("./helpers/cargo-target-root.js");
 const {
-  makeProtectedEqualityCustody
-} = require("./helpers/vnext-protected-equality-fixtures.js");
+  knownSecretsForFixtureProfile
+} = require("./helpers/vnext-campaign-release-surface-test-custody.js");
 const { canonicalizeVnextJcsBytes } = require("../tools/vnext-jcs.js");
 
 ensureVnextDirectoryFlushTestPackage();
@@ -184,10 +184,30 @@ require.cache[subjectStoreModulePath].exports = Object.freeze({
 });
 
 const {
+  bootstrapVnextCampaignReleaseRuntime,
   campaignReleaseSurfaceProfile,
-  campaignReleaseSurfaceProfileSha256,
-  createVnextCampaignReleaseSurface
+  campaignReleaseSurfaceProfileSha256
 } = require("../tools/vnext-campaign-release-surface.js");
+const releaseFixtureProfileId =
+  process.env.TINYRUSTLM_TEST_EQUALITY_FIXTURE_PROFILE;
+const releaseFixtureKnownSecrets =
+  knownSecretsForFixtureProfile(releaseFixtureProfileId);
+const releaseTrustDescriptorBase64 =
+  process.env.TINYRUSTLM_TEST_EQUALITY_TRUST_DESCRIPTOR_BASE64;
+assert.match(releaseTrustDescriptorBase64,
+  /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/u);
+const releaseTrustDescriptorBytes = Buffer.from(
+  releaseTrustDescriptorBase64,
+  "base64"
+);
+assert.equal(releaseTrustDescriptorBytes.toString("base64"),
+  releaseTrustDescriptorBase64);
+const releaseRuntime = bootstrapVnextCampaignReleaseRuntime(
+  releaseTrustDescriptorBytes
+);
+releaseTrustDescriptorBytes.fill(0);
+const createVnextCampaignReleaseSurface =
+  releaseRuntime.createCampaignReleaseSurface;
 const {
   createVnextCampaignRunner
 } = require("../tools/vnext-campaign-runner.js");
@@ -216,10 +236,6 @@ const {
 const {
   sitePublicationProfileSha256
 } = require("../tools/vnext-site-publication.js");
-const {
-  createVnextRedactionScanReceipt,
-  scanVnextPublicDocumentBytes
-} = require("../tools/vnext-public-safe-redaction.js");
 const { parseStrictJson } = require("../tools/strict-json.js");
 const {
   authorityKey,
@@ -498,28 +514,12 @@ function seedEphemeralAuthorityCase(roots, entry, options = {}) {
   return Object.freeze(authority);
 }
 
-const equalityCustodyByRoots = new WeakMap();
-
-function equalityCustodyForRoots(roots, knownSecrets = []) {
-  const key = JSON.stringify(knownSecrets);
-  let fixture = equalityCustodyByRoots.get(roots);
-  if (fixture === undefined) {
-    fixture = Object.freeze({
-      key,
-      custody: makeProtectedEqualityCustody({ knownSecrets }).custody
-    });
-    equalityCustodyByRoots.set(roots, fixture);
-  }
-  assert.equal(fixture.key, key,
-    "one test release surface must retain one equality-custody revision");
-  return fixture.custody;
-}
-
 function runnerOptions(roots, knownSecrets = []) {
+  assert.deepEqual(knownSecrets, releaseFixtureKnownSecrets,
+    "release shard custody fixture does not match the requested secret set");
   const wasm = buildWasm();
   return {
     campaignArtifactStoreRoot: roots.artifacts,
-    equalityCustody: equalityCustodyForRoots(roots, knownSecrets),
     expectedWasmModuleSha256: sha256(wasm),
     receiptStoreRoot: roots.receipts,
     subjectStoreRoot: roots.subjects,
@@ -1339,8 +1339,14 @@ test("freezes one no-compatibility campaign release surface profile", () => {
   assert.equal(profile.storedProjectionPolicy, "forbidden");
   assert.equal(profile.callerVerdictPolicy, "forbidden");
   assert.equal(profile.callerCounterPolicy, "forbidden");
-  assert.equal(profile.equalityCustodyPolicy,
-    "one-module-issued-signed-revision-pinned-at-surface-open-no-operation-substitution");
+  assert.equal(profile.protectedEqualityBootstrapPolicy,
+    "one-process-runtime-loads-one-signed-revision-from-fixed-inherited-pipe-before-any-surface-open-no-caller-custody-input");
+  assert.equal(profile.protectedEqualityPrivateLoaderProfileId,
+    "tinyrustlm.vnext.protected-equality-private-loader.v1");
+  assert.equal(profile.protectedEqualityPrivateLoaderProfileSha256,
+    campaignReleaseSurfaceProfile.protectedEqualityPrivateLoaderProfileSha256);
+  assert.equal(releaseRuntime.equalityCustodyBinding.knownSecretCount,
+    releaseFixtureKnownSecrets.length);
   assert.equal(profile.mutablePointerPolicy, "forbidden");
   assert.equal(profile.networkAccess, "forbidden-until-public-readback-operation");
   assert.equal(profile.releasePreparation.authorizationPolicy,
@@ -1392,8 +1398,8 @@ test("attests an honest zero projection without claiming release completion", {
   const validOptions = runnerOptions(roots);
   await rejectsCode(() => createVnextCampaignReleaseSurface(roots.runner, {
     ...validOptions,
-    equalityCustody: { ...validOptions.equalityCustody }
-  }), "equality_custody_handle_invalid");
+    equalityCustody: {}
+  }), "release_surface_options_invalid");
   const surface = await createVnextCampaignReleaseSurface(roots.runner,
     validOptions);
   const input = surfaceInput(entry, "honest-zero-attestation");
@@ -2691,24 +2697,31 @@ test("resumes authorization after the redaction receipt committed alone", {
     signingKey: authority.releaseKey,
     subject: release
   });
-  const authorizationScan = scanVnextPublicDocumentBytes(
-    authorizationReceipt.bytes,
-    { equalityCustody: equalityCustodyForRoots(roots) }
-  );
-  const redactionReceipt = createVnextRedactionScanReceipt({
-    attemptId: `release-authorization-redaction-${
-      authorizationReceipt.receipt.receiptId.slice("sha256:".length)}`,
-    campaignId: entry.expectedCampaignId,
-    completedAtUtc: "2026-08-09T00:32:00Z",
-    scan: authorizationScan,
-    sourceRevision,
-    startedAtUtc: "2026-08-09T00:32:00Z"
+  const redactionAttemptId = `release-authorization-redaction-${
+    authorizationReceipt.receipt.receiptId.slice("sha256:".length)}`;
+  t.after(() => {
+    receiptInterruptPredicate = null;
   });
+  receiptInterruptPredicate = (receipt) =>
+    receipt.receiptType === "redaction-scan" &&
+    receipt.attemptId === redactionAttemptId;
+  await assert.rejects(() => surface.authorizeRelease(authorizeInput(
+    entry,
+    authority,
+    prepared,
+    releaseInput,
+    authorizationReceipt
+  )), /fixture interruption after selected receipt commit/u);
   const receiptStore = createVnextReceiptStore(roots.receipts);
-  receiptStore.put(redactionReceipt.bytes);
   assert.equal(receiptStore.rebuild().activeReceiptIds.includes(
     authorizationReceipt.receipt.receiptId
   ), false);
+  const redactionReceipts = receiptStore.rebuild().activeReceiptIds
+    .map((receiptId) => receiptStore.read(receiptId))
+    .filter((receipt) => receipt.receipt.receiptType === "redaction-scan" &&
+      receipt.receipt.attemptId === redactionAttemptId);
+  assert.equal(redactionReceipts.length, 1);
+  const redactionReceipt = redactionReceipts[0];
 
   const restarted = await createVnextCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));

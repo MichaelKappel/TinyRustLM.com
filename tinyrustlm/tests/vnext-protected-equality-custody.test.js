@@ -8,12 +8,14 @@ const test = require("node:test");
 
 const { canonicalizeVnextJcsBytes } = require("../tools/vnext-jcs.js");
 const {
-  createVnextProtectedEqualityCustody,
   inspectVnextProtectedEqualityCustody,
   protectedEqualityCustodyProfile,
   protectedEqualityCustodyProfileSha256,
   scanVnextProtectedEqualityBytes
 } = require("../tools/vnext-protected-equality-custody.js");
+const {
+  createVnextProtectedEqualityCustody
+} = require("../tools/vnext-protected-equality-custody-internal.js");
 const {
   makeProtectedEqualityCustody
 } = require("./helpers/vnext-protected-equality-fixtures.js");
@@ -45,6 +47,14 @@ test("freezes one private signed equality-custody contract", () => {
     "validated-private-memory-only-no-export-no-secret-hash-no-public-commitment");
   assert.equal(protectedEqualityCustodyProfile.handlePolicy,
     "module-issued-opaque-handle-only-no-structural-substitution");
+  assert.deepEqual(Object.keys(require(
+    "../tools/vnext-protected-equality-custody.js")).sort(), [
+    "inspectVnextProtectedEqualityCustody",
+    "protectedEqualityCustodyProfile",
+    "protectedEqualityCustodyProfileSha256",
+    "scanVnextProtectedEqualityBytes",
+    "scanVnextProtectedEqualityText"
+  ]);
   assert.doesNotMatch(source,
     /node:(?:http|https|net|tls|dns)|\bfetch\s*\(|child_process|spawn|execFile/u);
   assert.doesNotMatch(source, /console\.|process\.env|Date\.now|new Date\s*\(/u);

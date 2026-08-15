@@ -8,16 +8,21 @@
   "executionClass": "clean-source-local-node-independent-shards",
   "sourcePolicy": "clean-exact-head-and-tree",
   "reporter": "spec",
+  "custodyFixturePolicy": "real-inherited-pipe-per-shard-with-secret-sensitive-tests-isolated",
   "maximumConcurrentShards": 1,
   "shardTimeoutMilliseconds": 21600000,
   "runnerFile": "tinyrustlm/tools/run-vnext-campaign-release-surface-gate.js",
   "implementationFiles": [
     "contracts/vnext/campaign-release-surface-gate-profile.v1.json",
+    "tinyrustlm/tests/helpers/vnext-campaign-release-surface-launcher.js",
+    "tinyrustlm/tests/helpers/vnext-campaign-release-surface-test-custody.js",
+    "tinyrustlm/tests/helpers/vnext-protected-equality-fixtures.js",
     "tinyrustlm/tools/run-vnext-campaign-release-surface-gate.js",
     "tinyrustlm/tools/strict-json.js",
     "tinyrustlm/tools/vnext-jcs.js"
   ],
   "testFile": "tinyrustlm/tests/vnext-campaign-release-surface.test.js",
+  "testLauncherFile": "tinyrustlm/tests/helpers/vnext-campaign-release-surface-launcher.js",
   "files": {
     "aggregateReceipt": "aggregate-receipt.v1.json",
     "runIdentity": "run-identity.v1.json",
@@ -131,7 +136,6 @@
       "rejects failed and interrupted operation histories instead of resuming them"
     ],
     [
-      "records only a public-safe redaction failure when an attestation contains a known secret",
       "prepares one complete public-safe release without authorizing publication",
       "authorizes only the exact prepared manifest through current Ed25519 authority",
       "admits only an exact deployment-attempt receipt without claiming deployment"
@@ -150,7 +154,12 @@
     [
       "refuses release preparation when the fresh campaign projection is incomplete",
       "rejects incomplete artifact coverage and omitted current approved claims",
-      "rejects expired claims and superseded package evidence",
+      "rejects expired claims and superseded package evidence"
+    ],
+    [
+      "records only a public-safe redaction failure when an attestation contains a known secret"
+    ],
+    [
       "persists only public-safe failure evidence for an unsafe changelog"
     ]
   ],

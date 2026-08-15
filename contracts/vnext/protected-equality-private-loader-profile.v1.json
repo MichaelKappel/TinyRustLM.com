@@ -38,6 +38,7 @@
     "tinyrustlm/tools/strict-json.js",
     "tinyrustlm/tools/vnext-evidence-error.js",
     "tinyrustlm/tools/vnext-jcs.js",
+    "tinyrustlm/tools/vnext-protected-equality-custody-internal.js",
     "tinyrustlm/tools/vnext-protected-equality-custody.js",
     "tinyrustlm/tools/vnext-protected-equality-private-loader.js",
     "tinyrustlm/tools/vnext-signature-payload.js"
