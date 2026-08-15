@@ -312,11 +312,16 @@ function normalizeSecrets(value) {
 function signingBytesFor(bundle) {
   const payload = {};
   for (const name of parsedProfile.signedFields) payload[name] = bundle[name];
-  return Buffer.concat([
-    Buffer.from(parsedProfile.signatureDomain, "utf8"),
-    Buffer.from([parsedProfile.domainSeparatorByte]),
-    canonicalizeVnextJcsBytes(payload, bundleJcsLimits)
-  ]);
+  const domainBytes = Buffer.from(parsedProfile.signatureDomain, "utf8");
+  const separatorBytes = Buffer.from([parsedProfile.domainSeparatorByte]);
+  const payloadBytes = canonicalizeVnextJcsBytes(payload, bundleJcsLimits);
+  try {
+    return Buffer.concat([domainBytes, separatorBytes, payloadBytes]);
+  } finally {
+    domainBytes.fill(0);
+    separatorBytes.fill(0);
+    payloadBytes.fill(0);
+  }
 }
 
 function bindingFor(bundle, knownSecretCount, authorityPublicKeySha256) {
@@ -341,95 +346,109 @@ function bindingFor(bundle, knownSecretCount, authorityPublicKeySha256) {
 function createVnextProtectedEqualityCustody(rawBundleBytes, rawTrustInput) {
   const bundleBytes = normalizeBytes(rawBundleBytes,
     "equality_custody_bundle_bytes_required", "protected-equality-custody");
-  if (bundleBytes.length === 0 ||
-      bundleBytes.length > parsedProfile.limits.maximumBundleBytes) {
-    failEvidence("equality_custody_bundle_byte_limit", "protected-equality-custody");
-  }
-  let parsedBundle;
+  let authorityPublicKeyBytes = null;
+  let canonicalBundleBytes = null;
+  let signatureBytes = null;
+  let verificationBytes = null;
   try {
-    parsedBundle = parseStrictJson(bundleBytes, bundleParserLimits);
-  } catch (error) {
-    failEvidence("equality_custody_bundle_invalid", "protected-equality-custody",
-      error?.code);
-  }
-  const bundle = exactDataObject(parsedBundle, bundleFields,
-    "equality_custody_bundle_invalid", "protected-equality-custody");
-  let canonicalBundleBytes;
-  try {
-    canonicalBundleBytes = canonicalizeVnextJcsBytes(bundle, bundleJcsLimits);
-  } catch (error) {
-    failEvidence("equality_custody_bundle_invalid", "protected-equality-custody",
-      error?.code);
-  }
-  if (!canonicalBundleBytes.equals(bundleBytes)) {
-    failEvidence("equality_custody_bundle_wire_invalid", "protected-equality-custody");
-  }
-  const trust = exactDataObject(rawTrustInput, parsedProfile.trustInputFields,
-    "equality_custody_trust_input_invalid", "protected-equality-custody");
-  for (const value of [bundle.authorityKeyId, bundle.custodyId, bundle.revisionId,
-    trust.expectedAuthorityKeyId, trust.expectedCustodyId, trust.expectedRevisionId]) {
-    if (typeof value !== "string" || !safeIdPattern.test(value)) {
-      failEvidence("equality_custody_identifier_invalid", "protected-equality-custody");
+    if (bundleBytes.length === 0 ||
+        bundleBytes.length > parsedProfile.limits.maximumBundleBytes) {
+      failEvidence("equality_custody_bundle_byte_limit", "protected-equality-custody");
     }
+    let parsedBundle;
+    try {
+      parsedBundle = parseStrictJson(bundleBytes, bundleParserLimits);
+    } catch (error) {
+      failEvidence("equality_custody_bundle_invalid", "protected-equality-custody",
+        error?.code);
+    }
+    const bundle = exactDataObject(parsedBundle, bundleFields,
+      "equality_custody_bundle_invalid", "protected-equality-custody");
+    try {
+      canonicalBundleBytes = canonicalizeVnextJcsBytes(bundle, bundleJcsLimits);
+    } catch (error) {
+      failEvidence("equality_custody_bundle_invalid", "protected-equality-custody",
+        error?.code);
+    }
+    if (!canonicalBundleBytes.equals(bundleBytes)) {
+      failEvidence("equality_custody_bundle_wire_invalid", "protected-equality-custody");
+    }
+    const trust = exactDataObject(rawTrustInput, parsedProfile.trustInputFields,
+      "equality_custody_trust_input_invalid", "protected-equality-custody");
+    for (const value of [bundle.authorityKeyId, bundle.custodyId, bundle.revisionId,
+      trust.expectedAuthorityKeyId, trust.expectedCustodyId,
+      trust.expectedRevisionId]) {
+      if (typeof value !== "string" || !safeIdPattern.test(value)) {
+        failEvidence("equality_custody_identifier_invalid",
+          "protected-equality-custody");
+      }
+    }
+    if (bundle.schema !== parsedProfile.bundleSchema ||
+        bundle.algorithm !== parsedProfile.signatureAlgorithm ||
+        bundle.authorityKeyId !== trust.expectedAuthorityKeyId ||
+        bundle.custodyId !== trust.expectedCustodyId ||
+        bundle.revisionId !== trust.expectedRevisionId ||
+        !Number.isSafeInteger(bundle.generation) || bundle.generation < 1 ||
+        bundle.generation > parsedProfile.limits.maximumGeneration ||
+        bundle.generation !== trust.expectedGeneration) {
+      failEvidence("equality_custody_pin_mismatch", "protected-equality-custody");
+    }
+    if (bundle.generation === 1 ? bundle.previousRevisionId !== null :
+      typeof bundle.previousRevisionId !== "string" ||
+        !safeIdPattern.test(bundle.previousRevisionId) ||
+        bundle.previousRevisionId === bundle.revisionId) {
+      failEvidence("equality_custody_revision_chain_invalid",
+        "protected-equality-custody");
+    }
+    const issuedAt = utcNanoseconds(bundle.issuedAtUtc);
+    const expiresAt = utcNanoseconds(bundle.expiresAtUtc);
+    const verificationTime = utcNanoseconds(trust.verificationTimeUtc);
+    if (issuedAt === null || expiresAt === null || verificationTime === null ||
+        expiresAt <= issuedAt ||
+        expiresAt - issuedAt >
+          BigInt(parsedProfile.limits.maximumLifetimeSeconds) * 1_000_000_000n ||
+        verificationTime < issuedAt || verificationTime > expiresAt) {
+      failEvidence("equality_custody_time_invalid", "protected-equality-custody");
+    }
+    const secrets = normalizeSecrets(bundle.knownSecrets);
+    signatureBytes = decodeCanonicalBase64(bundle.signature, 64,
+      "equality_custody_signature_invalid");
+    authorityPublicKeyBytes = decodeCanonicalBase64(
+      trust.authorityPublicKeyBase64,
+      32,
+      "equality_custody_public_key_invalid"
+    );
+    const publicKey = rawEd25519PublicKey(trust.authorityPublicKeyBase64);
+    let verified = false;
+    try {
+      verificationBytes = signingBytesFor(bundle);
+      verified = crypto.verify(null, verificationBytes, publicKey, signatureBytes);
+    } catch {
+      failEvidence("equality_custody_signature_invalid", "protected-equality-custody");
+    }
+    if (!verified) {
+      failEvidence("equality_custody_signature_invalid", "protected-equality-custody");
+    }
+    const binding = bindingFor(bundle, secrets.length,
+      sha256(authorityPublicKeyBytes));
+    const compiledSecrets = Object.freeze(secrets.map((secret) =>
+      Object.freeze({ representations: representations(secret) })));
+    const custody = Object.freeze({
+      schema: binding.value.schema,
+      custodyId: binding.value.custodyId,
+      revisionId: binding.value.revisionId,
+      generation: binding.value.generation
+    });
+    privateCustodies.set(custody, Object.freeze({ binding, compiledSecrets }));
+    issuedCustodies.add(custody);
+    return custody;
+  } finally {
+    bundleBytes.fill(0);
+    if (authorityPublicKeyBytes !== null) authorityPublicKeyBytes.fill(0);
+    if (canonicalBundleBytes !== null) canonicalBundleBytes.fill(0);
+    if (signatureBytes !== null) signatureBytes.fill(0);
+    if (verificationBytes !== null) verificationBytes.fill(0);
   }
-  if (bundle.schema !== parsedProfile.bundleSchema ||
-      bundle.algorithm !== parsedProfile.signatureAlgorithm ||
-      bundle.authorityKeyId !== trust.expectedAuthorityKeyId ||
-      bundle.custodyId !== trust.expectedCustodyId ||
-      bundle.revisionId !== trust.expectedRevisionId ||
-      !Number.isSafeInteger(bundle.generation) || bundle.generation < 1 ||
-      bundle.generation > parsedProfile.limits.maximumGeneration ||
-      bundle.generation !== trust.expectedGeneration) {
-    failEvidence("equality_custody_pin_mismatch", "protected-equality-custody");
-  }
-  if (bundle.generation === 1 ? bundle.previousRevisionId !== null :
-    typeof bundle.previousRevisionId !== "string" ||
-      !safeIdPattern.test(bundle.previousRevisionId) ||
-      bundle.previousRevisionId === bundle.revisionId) {
-    failEvidence("equality_custody_revision_chain_invalid",
-      "protected-equality-custody");
-  }
-  const issuedAt = utcNanoseconds(bundle.issuedAtUtc);
-  const expiresAt = utcNanoseconds(bundle.expiresAtUtc);
-  const verificationTime = utcNanoseconds(trust.verificationTimeUtc);
-  if (issuedAt === null || expiresAt === null || verificationTime === null ||
-      expiresAt <= issuedAt ||
-      expiresAt - issuedAt >
-        BigInt(parsedProfile.limits.maximumLifetimeSeconds) * 1_000_000_000n ||
-      verificationTime < issuedAt || verificationTime > expiresAt) {
-    failEvidence("equality_custody_time_invalid", "protected-equality-custody");
-  }
-  const secrets = normalizeSecrets(bundle.knownSecrets);
-  const signature = decodeCanonicalBase64(bundle.signature, 64,
-    "equality_custody_signature_invalid");
-  const authorityPublicKeyBytes = decodeCanonicalBase64(
-    trust.authorityPublicKeyBase64,
-    32,
-    "equality_custody_public_key_invalid"
-  );
-  const publicKey = rawEd25519PublicKey(trust.authorityPublicKeyBase64);
-  let verified = false;
-  try {
-    verified = crypto.verify(null, signingBytesFor(bundle), publicKey, signature);
-  } catch {
-    failEvidence("equality_custody_signature_invalid", "protected-equality-custody");
-  }
-  if (!verified) {
-    failEvidence("equality_custody_signature_invalid", "protected-equality-custody");
-  }
-  const binding = bindingFor(bundle, secrets.length,
-    sha256(authorityPublicKeyBytes));
-  const compiledSecrets = Object.freeze(secrets.map((secret) =>
-    Object.freeze({ representations: representations(secret) })));
-  const custody = Object.freeze({
-    schema: binding.value.schema,
-    custodyId: binding.value.custodyId,
-    revisionId: binding.value.revisionId,
-    generation: binding.value.generation
-  });
-  privateCustodies.set(custody, Object.freeze({ binding, compiledSecrets }));
-  issuedCustodies.add(custody);
-  return custody;
 }
 
 function privateCustodyFor(custody) {

@@ -1,0 +1,72 @@
+{
+  "schema": "tinyrustlm.vnext.protected_equality_private_loader_profile.v1",
+  "profileId": "tinyrustlm.vnext.protected-equality-private-loader.v1",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-no-compatibility-reader",
+  "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
+  "custodyProfileId": "tinyrustlm.vnext.protected-equality-custody.v1",
+  "custodyProfileSha256": "db66fccab135294d950f8e1350ac2bab0947aad14b4ec87ac1565a6463b6730a",
+  "trustDescriptorSchema": "tinyrustlm.vnext.protected_equality_trust_descriptor.v1",
+  "trustDescriptorVisibility": "public-control-input-without-private-secret-values",
+  "trustDescriptorFields": [
+    "authorityPublicKeyBase64",
+    "expectedAuthorityKeyId",
+    "expectedCustodyId",
+    "expectedGeneration",
+    "expectedRevisionId",
+    "schema",
+    "verificationTimeUtc"
+  ],
+  "privateBundleTransport": {
+    "descriptor": 3,
+    "descriptorType": "inherited-non-file-pipe",
+    "fileTypeCheck": "fstat-s-ififo-and-reject-files-directories-links-devices-and-sockets",
+    "launcherOwnership": "authorized-launcher-preopens-write-end-writes-one-canonical-bundle-and-closes",
+    "loaderOwnership": "loader-closes-read-end-on-every-attempt",
+    "readPolicy": "single-use-bounded-read-until-eof-no-retry",
+    "pathInput": "forbidden",
+    "argumentInput": "forbidden-for-private-bundle",
+    "environmentInput": "forbidden",
+    "standardInput": "forbidden",
+    "networkInput": "forbidden",
+    "runtimeClockInput": "forbidden-trusted-time-is-in-canonical-public-control-input"
+  },
+  "sourceClosureMembers": [
+    "contracts/vnext/protected-equality-custody-profile.v1.json",
+    "contracts/vnext/protected-equality-private-loader-profile.v1.json",
+    "contracts/vnext/receipt-signature-profile.v1.json",
+    "tinyrustlm/tools/strict-json.js",
+    "tinyrustlm/tools/vnext-evidence-error.js",
+    "tinyrustlm/tools/vnext-jcs.js",
+    "tinyrustlm/tools/vnext-protected-equality-custody.js",
+    "tinyrustlm/tools/vnext-protected-equality-private-loader.js",
+    "tinyrustlm/tools/vnext-signature-payload.js"
+  ],
+  "sourceClosurePolicy": "canonical-array-of-relative-path-byte-count-and-sha256-records",
+  "zeroization": {
+    "ownedBuffers": [
+      "bundle-chunks",
+      "bundle-concatenation",
+      "read-scratch",
+      "trust-descriptor-copy"
+    ],
+    "timing": "finally-after-success-or-failure",
+    "primitive": "node-buffer-fill-zero-best-effort",
+    "callerBuffers": "never-mutated",
+    "compiledCustodyMemory": "retained-only-behind-module-issued-opaque-handle"
+  },
+  "limits": {
+    "maximumTrustDescriptorBytes": 4096,
+    "maximumPrivateBundleBytes": 524288,
+    "readBufferBytes": 16384,
+    "maximumReadOperations": 33,
+    "maximumSourceMemberBytes": 1048576
+  },
+  "nonClaims": [
+    "The loader does not issue or sign protected equality bundles.",
+    "The loader does not acquire trusted time, discover authorities, or evaluate revocation.",
+    "A local inherited-pipe test is not evidence of an authorized production launcher or issuer.",
+    "Best-effort buffer zeroization is not a guarantee against process-memory disclosure or runtime copies.",
+    "Loading custody does not authorize publication or advance any campaign counter."
+  ]
+}

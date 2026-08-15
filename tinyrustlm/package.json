@@ -19,6 +19,7 @@
     "test:vnext-campaign-runner": "node --test tests/vnext-campaign-runner.test.js",
     "test:vnext-offline-bundle-rust-vectors": "node --test tests/vnext-offline-bundle-rust-vectors.test.js",
     "test:vnext-phase-invalidation-rust-vectors": "node --test tests/vnext-phase-invalidation-rust-vectors.test.js",
+    "test:vnext-protected-equality-private-loader": "node --preserve-symlinks --preserve-symlinks-main --test tests/vnext-protected-equality-private-loader.test.js",
     "test:vnext-signature-rust-vectors": "node --test tests/vnext-signature-rust-vectors.test.js",
     "test:vnext-subject-store": "node --test tests/vnext-subject-store.test.js",
     "test:ui": "node --test tests/browser-model-admission.test.js tests/browser-round-evidence.test.js tests/companion-bridge.test.js tests/fresh-browser-conversation.test.js tests/model-acquisition-v2.test.js tests/run-browser-round.test.js tests/site-release-browser.test.js tests/site-release-contract.test.js tests/static-shell-parity.test.js tests/web-deployment-manifest.test.js tests/web-release-browser-smoke.test.js",
