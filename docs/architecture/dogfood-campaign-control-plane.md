@@ -3,7 +3,7 @@
 ## Status
 
 This document is the maintained operator and architecture entry point for the
-clean-slate TinyRustLM campaign control plane as of 2026-08-11. The sole local
+clean-slate TinyRustLM campaign control plane as of 2026-08-15. The sole local
 release and publication path is vNext. The repository retains no second
 mutable release path, compatibility wrapper, migration reader, deprecated
 command, or fallback authority.
@@ -195,6 +195,17 @@ The content-addressed run identity and independently verified create-only shard
 receipts make interrupted execution resumable without accepting a caller
 verdict or carrying a pass across source, test, runner, tool, or environment
 drift.
+
+The current local source checkpoint is revision
+`734852491e31b772b9b6925f7ac5afe2093becbe`. Its six-shard aggregate passed
+23/23 with SHA-256
+`79f042bba91eae7c262452a81a5bc3117b75be6fa399e367b85b95636bff6c8b`,
+and independent read-only verification returned the same identity. The
+complementary serial Node run passed 945/945 across the other 132 tracked test
+files with empty stderr. These local results authorize documentation and
+source-control checkpointing only; they do not satisfy hosted RID, physical
+durability, production custody, deployment, readback, publication, or campaign
+completion gates.
 
 All deterministic vNext generators must reproduce checked-in bytes. A local
 green gate authorizes a source-control checkpoint only. Production publication

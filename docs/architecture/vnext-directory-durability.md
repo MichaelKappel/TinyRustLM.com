@@ -30,11 +30,28 @@ runner-lock paths all use this primitive. There is no unsupported-success
 class or caller-supplied durability path. Bounded archive admission and the
 module-issued protected equality-custody contract are also integrated locally.
 Gate D remains incomplete because controlled physical power-loss evidence,
-current per-RID helper provenance and execution, authorized production custody,
-and OS process/network isolation remain separate requirements. One maintained
+`linux-x64` and physical `linux-arm64` helper provenance and execution,
+authorized production custody, and OS process/network isolation remain
+separate requirements. One maintained
 structured archive target and frozen 29-seed hostile corpus now replay locally;
 hosted sanitizer execution, longer campaigns, and retention/minimization of any
 future crash findings remain open. No campaign counter advances.
+
+Current clean `win-x64` release-package evidence was produced from source
+revision `734852491e31b772b9b6925f7ac5afe2093becbe`. The 194,048-byte executable
+has SHA-256
+`24b2fe562dd26df7c2bcf94022d477972be63a85cd085e912f5df7294b126cbb`;
+its canonical manifest and provenance have SHA-256
+`6a3484ec96e9ae4b70d3fde311e47bb24713ed8465f77bdce91ddd498cf96c89`
+and
+`ea8beb03ed67691df35033e9836f48b1160ed5fce8722d4f2a0f73b1c27c3677`.
+The package binds a clean worktree, release build, `release-package` trust
+class, Cargo.lock, Rust/Cargo identities, and the exact helper and package
+builder source closures. The frozen fixed-directory replay produced one
+2,472-byte canonical pass receipt with SHA-256
+`7560a0073196238200c3387a13616ccaf1305e6e8c32f3216d8d240d6f9ef58e`;
+an independent read-only verification returned the same identity. This closes
+only the current local Windows package/replay requirement.
 
 The adjacent archive-scan boundary now also has one clean current `win-x64`
 release package and one deterministic fixed-vector native replay receipt from
@@ -292,6 +309,18 @@ unexpected exit status, malformed success/failure documents, canonical
 observation substitution, and executable or manifest replacement before and
 after execution. Synthetic process results exercise only rejection branches;
 successful evidence is produced by the real packaged Rust helper.
+
+The frozen package verifier profile
+`tinyrustlm.vnext.directory-flush-helper-verification.v1` is 6,871 bytes with
+SHA-256
+`02d03e864e24d14451dd24f4e684c918bfdd2264cdd9d534a196b6d268f4e04e`.
+On 2026-08-15, its real `win-x64` replay flushed the owned root and one nested
+state directory through `FlushFileBuffers`, removed its owned scratch before
+receipt persistence, emitted empty stderr, and passed independent read-only
+verification without changing package bytes. The receipt binds the executable,
+manifest, provenance, client profile and closure, helper and package-builder
+closures, verification closure, runtime, build/trust class, and both exact case
+observations.
 
 The crate forbids unsafe Rust. The frozen profile is compiled into the library
 and rehashed before every operation; a profile-byte mismatch fails as

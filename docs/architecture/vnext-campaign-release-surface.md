@@ -658,6 +658,23 @@ passes. Sharding and verified resume change orchestration only: they do not
 reuse fixture verdicts, lower a threshold, remove a case, or advance campaign
 counters.
 
+On 2026-08-15, the content-addressed gate ran from clean source revision
+`734852491e31b772b9b6925f7ac5afe2093becbe`, tree
+`7c8efc2999affee7b4ead873fe8e2d39b5d4b87f`, under run identity
+`85bc09c517b27741f62a083813b0616eb53c13b291b8bb285fe77498ca2b30dd`.
+All six immutable shard receipts passed 4/4, 4/4, 4/4, 3/3, 4/4, and 4/4 with
+zero failures, skips, cancellations, or todos. Their exact aggregate is 2,859
+bytes with SHA-256
+`79f042bba91eae7c262452a81a5bc3117b75be6fa399e367b85b95636bff6c8b`;
+the standalone read-only verifier returned the same aggregate identity and
+23-test verdict. The complementary serial run excluded only this already
+covered test file and passed 945/945 tests across 132 tracked files with zero
+failures, skips, cancellations, or todos. Its stdout has SHA-256
+`9a5d6dcc08398011d0f327e6aee8dc87a95d5a0f7ef10039cef821a8a2586f1e`;
+stderr is empty. This is current local Windows source evidence, not production
+authorization, deployment, public readback, publication, or live campaign
+progress.
+
 The complete-capacity case is synthetic conformance evidence. It does not
 increment any live campaign counter.
 
