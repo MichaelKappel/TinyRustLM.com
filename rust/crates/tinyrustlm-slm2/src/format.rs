@@ -31,6 +31,7 @@ const KV_PROFILE: &str = "tinyrustlm.kv-f32/1";
 const MINIMUM_RUNTIME: &str = "tinyrustlm.runtime/2.0";
 const OPERATOR_PROFILE: &str = "tinyrustlm.decoder-f32/1";
 const TENSOR_PROFILE: &str = "tinyrustlm.tensor-f32/1";
+const TENSOR_ROLE_PROFILE: &str = "tinyrustlm.decoder-f32-tensor-roles/1";
 
 /// A model role admitted by the exact SLM2 2.0 profile.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -87,6 +88,10 @@ pub struct ModelSpec {
     pub normalization_epsilon: f32,
     /// Whether input embeddings and output projection share exact weights.
     pub tied_embeddings: bool,
+    /// Whether every transformer layer carries Q, K, and V projection biases.
+    pub qkv_bias: bool,
+    /// Whether every transformer layer carries per-head Q and K normalization weights.
+    pub qk_normalization: bool,
 }
 
 impl ModelSpec {
@@ -114,12 +119,16 @@ impl ModelSpec {
         {
             return Err(Slm2Error::new("slm2-invalid-model-metadata"));
         }
-        self.head_count
+        let query_width = self
+            .head_count
             .checked_mul(self.head_dimension)
             .ok_or_else(|| Slm2Error::new("slm2-invalid-model-metadata"))?;
         self.kv_head_count
             .checked_mul(self.head_dimension)
             .ok_or_else(|| Slm2Error::new("slm2-invalid-model-metadata"))?;
+        if query_width != self.embedding_size || i32::try_from(self.layer_count).is_err() {
+            return Err(Slm2Error::new("slm2-invalid-model-metadata"));
+        }
         Ok(())
     }
 }
@@ -258,6 +267,202 @@ impl<R> TensorInput<R> {
     pub const fn spec(&self) -> &TensorSpec {
         &self.spec
     }
+}
+
+/// Materializes the exact required tensor descriptors for one closed model specification.
+///
+/// The result is in canonical tensor-key order. A converter may use this as its
+/// sole destination registry; parser and writer validation reject any missing,
+/// additional, renamed, reshaped, or incorrectly indexed tensor.
+pub fn required_model_tensors(
+    spec: &ModelSpec,
+    payload_alignment: u32,
+) -> Result<Vec<TensorSpec>, Slm2Error> {
+    spec.validate()?;
+    let query_width = u64::from(
+        spec.head_count
+            .checked_mul(spec.head_dimension)
+            .ok_or_else(|| Slm2Error::new("slm2-invalid-model-metadata"))?,
+    );
+    let kv_width = u64::from(
+        spec.kv_head_count
+            .checked_mul(spec.head_dimension)
+            .ok_or_else(|| Slm2Error::new("slm2-invalid-model-metadata"))?,
+    );
+    let embedding = u64::from(spec.embedding_size);
+    let feed_forward = u64::from(spec.feed_forward_size);
+    let vocabulary = u64::from(spec.vocabulary_size);
+    let head_dimension = u64::from(spec.head_dimension);
+    let per_layer = 9_usize
+        .checked_add(if spec.qkv_bias { 3 } else { 0 })
+        .and_then(|value| value.checked_add(if spec.qk_normalization { 2 } else { 0 }))
+        .ok_or_else(|| Slm2Error::new("slm2-invalid-model-metadata"))?;
+    let capacity = usize::try_from(spec.layer_count)
+        .ok()
+        .and_then(|layers| layers.checked_mul(per_layer))
+        .and_then(|layers| layers.checked_add(if spec.tied_embeddings { 2 } else { 3 }))
+        .ok_or_else(|| Slm2Error::new("slm2-invalid-model-metadata"))?;
+    let mut tensors = Vec::with_capacity(capacity);
+
+    push_required_tensor(
+        &mut tensors,
+        "model.token-embedding.weight",
+        "model.token-embedding.weight".to_owned(),
+        -1,
+        &[vocabulary, embedding],
+        payload_alignment,
+    )?;
+    push_required_tensor(
+        &mut tensors,
+        "model.final-normalization.weight",
+        "model.final-normalization.weight".to_owned(),
+        -1,
+        &[embedding],
+        payload_alignment,
+    )?;
+    if !spec.tied_embeddings {
+        push_required_tensor(
+            &mut tensors,
+            "model.output-projection.weight",
+            "model.output-projection.weight".to_owned(),
+            -1,
+            &[vocabulary, embedding],
+            payload_alignment,
+        )?;
+    }
+
+    for layer in 0..spec.layer_count {
+        let layer_index =
+            i32::try_from(layer).map_err(|_| Slm2Error::new("slm2-invalid-model-metadata"))?;
+        let prefix = format!("model.layers.{layer}");
+        for (role, suffix, shape) in [
+            (
+                "layer.attention-normalization.weight",
+                "attention-normalization.weight",
+                vec![embedding],
+            ),
+            (
+                "layer.feed-forward-normalization.weight",
+                "feed-forward-normalization.weight",
+                vec![embedding],
+            ),
+            (
+                "layer.attention.query-projection.weight",
+                "attention.query-projection.weight",
+                vec![query_width, embedding],
+            ),
+            (
+                "layer.attention.key-projection.weight",
+                "attention.key-projection.weight",
+                vec![kv_width, embedding],
+            ),
+            (
+                "layer.attention.value-projection.weight",
+                "attention.value-projection.weight",
+                vec![kv_width, embedding],
+            ),
+            (
+                "layer.attention.output-projection.weight",
+                "attention.output-projection.weight",
+                vec![embedding, query_width],
+            ),
+            (
+                "layer.feed-forward.gate-projection.weight",
+                "feed-forward.gate-projection.weight",
+                vec![feed_forward, embedding],
+            ),
+            (
+                "layer.feed-forward.down-projection.weight",
+                "feed-forward.down-projection.weight",
+                vec![embedding, feed_forward],
+            ),
+            (
+                "layer.feed-forward.up-projection.weight",
+                "feed-forward.up-projection.weight",
+                vec![feed_forward, embedding],
+            ),
+        ] {
+            push_required_tensor(
+                &mut tensors,
+                role,
+                format!("{prefix}.{suffix}"),
+                layer_index,
+                &shape,
+                payload_alignment,
+            )?;
+        }
+        if spec.qkv_bias {
+            for (role, suffix, shape) in [
+                (
+                    "layer.attention.query-projection.bias",
+                    "attention.query-projection.bias",
+                    query_width,
+                ),
+                (
+                    "layer.attention.key-projection.bias",
+                    "attention.key-projection.bias",
+                    kv_width,
+                ),
+                (
+                    "layer.attention.value-projection.bias",
+                    "attention.value-projection.bias",
+                    kv_width,
+                ),
+            ] {
+                push_required_tensor(
+                    &mut tensors,
+                    role,
+                    format!("{prefix}.{suffix}"),
+                    layer_index,
+                    &[shape],
+                    payload_alignment,
+                )?;
+            }
+        }
+        if spec.qk_normalization {
+            for (role, suffix) in [
+                (
+                    "layer.attention.query-normalization.weight",
+                    "attention.query-normalization.weight",
+                ),
+                (
+                    "layer.attention.key-normalization.weight",
+                    "attention.key-normalization.weight",
+                ),
+            ] {
+                push_required_tensor(
+                    &mut tensors,
+                    role,
+                    format!("{prefix}.{suffix}"),
+                    layer_index,
+                    &[head_dimension],
+                    payload_alignment,
+                )?;
+            }
+        }
+    }
+    tensors.sort_by_key(tensor_sort_key);
+    Ok(tensors)
+}
+
+fn push_required_tensor(
+    tensors: &mut Vec<TensorSpec>,
+    semantic_role: &str,
+    canonical_name: String,
+    layer: i32,
+    shape: &[u64],
+    payload_alignment: u32,
+) -> Result<(), Slm2Error> {
+    tensors.push(TensorSpec::new(
+        semantic_role,
+        canonical_name,
+        layer,
+        -1,
+        -1,
+        shape,
+        payload_alignment,
+    )?);
+    Ok(())
 }
 
 /// Bounded reader policy for one validation operation.
@@ -527,6 +732,7 @@ where
         .collect::<Result<_, Slm2Error>>()?;
 
     let sorted_specs: Vec<&TensorSpec> = order.iter().map(|index| &tensors[*index].spec).collect();
+    validate_tensor_registry(spec, &sorted_specs)?;
     let tensor_layout_sha256 = hash_tensor_layout(spec.artifact_class, &sorted_specs)?;
     let manifest = encode_manifest(spec, &tensor_layout_sha256)?;
     if manifest.is_empty() || manifest.len() as u64 > MAXIMUM_MANIFEST_BYTES {
@@ -716,6 +922,7 @@ where
         .map(validated_tensor_spec)
         .collect::<Result<_, _>>()?;
     let layout_refs: Vec<&TensorSpec> = layout_specs.iter().collect();
+    validate_tensor_registry(&spec, &layout_refs)?;
     let actual_layout_sha256 = hash_tensor_layout(spec.artifact_class, &layout_refs)?;
     if actual_layout_sha256 != expected_layout_sha256 {
         return Err(Slm2Error::new("slm2-layout-hash-drift"));
@@ -812,6 +1019,8 @@ fn encode_manifest(
             "rope_theta_bits",
             Value::Unsigned(u64::from(spec.rope_theta.to_bits())),
         ),
+        ("qk_normalization", Value::Bool(spec.qk_normalization)),
+        ("qkv_bias", Value::Bool(spec.qkv_bias)),
         (
             "tensor_layout_sha256",
             Value::Bytes(tensor_layout_sha256.to_vec()),
@@ -826,6 +1035,10 @@ fn encode_manifest(
         ("kv_profile", Value::Text(KV_PROFILE.to_owned())),
         ("minimum_runtime", Value::Text(MINIMUM_RUNTIME.to_owned())),
         ("operator_profile", Value::Text(OPERATOR_PROFILE.to_owned())),
+        (
+            "tensor_role_profile",
+            Value::Text(TENSOR_ROLE_PROFILE.to_owned()),
+        ),
         ("tensor_profile", Value::Text(TENSOR_PROFILE.to_owned())),
     ]);
     let manifest = cbor::map(vec![
@@ -876,6 +1089,7 @@ fn decode_manifest(
             "kv_profile",
             "minimum_runtime",
             "operator_profile",
+            "tensor_role_profile",
             "tensor_profile",
         ],
     )?;
@@ -883,6 +1097,7 @@ fn decode_manifest(
         ("kv_profile", KV_PROFILE),
         ("minimum_runtime", MINIMUM_RUNTIME),
         ("operator_profile", OPERATOR_PROFILE),
+        ("tensor_role_profile", TENSOR_ROLE_PROFILE),
         ("tensor_profile", TENSOR_PROFILE),
     ] {
         if required(requirements, key)?.as_text()? != literal {
@@ -906,6 +1121,8 @@ fn decode_manifest(
             "normalization_epsilon_bits",
             "normalization_profile",
             "position_profile",
+            "qk_normalization",
+            "qkv_bias",
             "rope_theta_bits",
             "tensor_layout_sha256",
             "tied_embeddings",
@@ -936,6 +1153,8 @@ fn decode_manifest(
         rope_theta: positive_f32_bits(body, "rope_theta_bits")?,
         normalization_epsilon: positive_f32_bits(body, "normalization_epsilon_bits")?,
         tied_embeddings: required(body, "tied_embeddings")?.as_bool()?,
+        qkv_bias: required(body, "qkv_bias")?.as_bool()?,
+        qk_normalization: required(body, "qk_normalization")?.as_bool()?,
     };
     spec.validate()?;
     let digest_bytes = required(body, "tensor_layout_sha256")?.as_bytes()?;
@@ -946,6 +1165,24 @@ fn decode_manifest(
         return Err(Slm2Error::new("slm2-invalid-model-metadata"));
     }
     Ok((spec, digest))
+}
+
+fn validate_tensor_registry(spec: &ModelSpec, actual: &[&TensorSpec]) -> Result<(), Slm2Error> {
+    let expected = required_model_tensors(spec, 64)
+        .map_err(|_| Slm2Error::new("slm2-invalid-tensor-registry"))?;
+    if actual.len() != expected.len()
+        || actual.iter().zip(&expected).any(|(actual, expected)| {
+            actual.semantic_role != expected.semantic_role
+                || actual.canonical_name != expected.canonical_name
+                || actual.layer != expected.layer
+                || actual.subindex_0 != -1
+                || actual.subindex_1 != -1
+                || actual.shape() != expected.shape()
+        })
+    {
+        return Err(Slm2Error::new("slm2-invalid-tensor-registry"));
+    }
+    Ok(())
 }
 
 fn exact_map<'a>(value: &'a Value, expected: &[&str]) -> Result<&'a [(String, Value)], Slm2Error> {
@@ -1803,6 +2040,8 @@ mod tests {
             rope_theta: 10_000.0,
             normalization_epsilon: 0.000_01,
             tied_embeddings: true,
+            qkv_bias: false,
+            qk_normalization: false,
         }
     }
 
@@ -1813,13 +2052,25 @@ mod tests {
             .collect()
     }
 
+    fn reference_tensors() -> Vec<TensorInput<Cursor<Vec<u8>>>> {
+        let mut tensors = required_model_tensors(&reference_spec(), 64)
+            .unwrap()
+            .into_iter()
+            .enumerate()
+            .map(|(tensor_index, spec)| {
+                let count = usize::try_from(spec.logical_elements().unwrap()).unwrap();
+                let values = (0..count)
+                    .map(|value_index| (tensor_index * 10_000 + value_index + 1) as f32 / 1024.0)
+                    .collect::<Vec<_>>();
+                TensorInput::new(spec, Cursor::new(f32_bytes(&values)))
+            })
+            .collect::<Vec<_>>();
+        tensors.reverse();
+        tensors
+    }
+
     fn write_fixture() -> (Vec<u8>, ModelIdentity) {
-        let first = TensorSpec::new("embedding", "model/embed", -1, -1, -1, &[2, 2], 64).unwrap();
-        let second = TensorSpec::new("normalization", "model/norm", -1, -1, -1, &[2], 256).unwrap();
-        let mut tensors = vec![
-            TensorInput::new(second, Cursor::new(f32_bytes(&[5.0, 6.0]))),
-            TensorInput::new(first, Cursor::new(f32_bytes(&[1.0, 2.0, 3.0, 4.0]))),
-        ];
+        let mut tensors = reference_tensors();
         let mut output = Cursor::new(Vec::new());
         let identity = write_model(&mut output, &reference_spec(), &mut tensors).unwrap();
         (output.into_inner(), identity)
@@ -1835,9 +2086,15 @@ mod tests {
             validate_model(&mut Cursor::new(&first), ValidationPolicy::default()).unwrap();
         assert_eq!(validated.identity(), &identity);
         assert_eq!(validated.spec(), &reference_spec());
-        assert_eq!(validated.tensors().len(), 2);
-        assert_eq!(validated.tensors()[0].canonical_name(), "model/embed");
-        assert_eq!(validated.tensors()[1].payload_alignment(), 256);
+        assert_eq!(validated.tensors().len(), 11);
+        assert!(validated
+            .tensors()
+            .iter()
+            .any(|tensor| tensor.canonical_name() == "model.token-embedding.weight"));
+        assert!(validated
+            .tensors()
+            .iter()
+            .all(|tensor| tensor.payload_alignment() == 64));
     }
 
     #[test]
@@ -1900,11 +2157,8 @@ mod tests {
 
     #[test]
     fn writer_rejects_shape_size_nonfinite_and_duplicate_names() {
-        let tensor = TensorSpec::new("embedding", "model/embed", -1, -1, -1, &[2], 64).unwrap();
-        let mut short = vec![TensorInput::new(
-            tensor.clone(),
-            Cursor::new(f32_bytes(&[1.0])),
-        )];
+        let mut short = reference_tensors();
+        short[0].reader = Cursor::new(Vec::new());
         assert_eq!(
             write_model(&mut Cursor::new(Vec::new()), &reference_spec(), &mut short,)
                 .unwrap_err()
@@ -1912,10 +2166,8 @@ mod tests {
             "slm2-tensor-size-mismatch"
         );
 
-        let mut nonfinite = vec![TensorInput::new(
-            tensor.clone(),
-            Cursor::new(f32_bytes(&[1.0, f32::INFINITY])),
-        )];
+        let mut nonfinite = reference_tensors();
+        nonfinite[0].reader.get_mut()[..4].copy_from_slice(&f32::INFINITY.to_le_bytes());
         assert_eq!(
             write_model(
                 &mut Cursor::new(Vec::new()),
@@ -1927,10 +2179,14 @@ mod tests {
             "slm2-nonfinite-f32"
         );
 
-        let mut duplicate = vec![
-            TensorInput::new(tensor.clone(), Cursor::new(f32_bytes(&[1.0, 2.0]))),
-            TensorInput::new(tensor, Cursor::new(f32_bytes(&[3.0, 4.0]))),
-        ];
+        let mut duplicate = reference_tensors();
+        let duplicate_spec = duplicate[0].spec.clone();
+        let duplicate_values =
+            vec![0_u8; duplicate_spec.expected_payload_bytes().unwrap() as usize];
+        duplicate.push(TensorInput::new(
+            duplicate_spec,
+            Cursor::new(duplicate_values),
+        ));
         assert_eq!(
             write_model(
                 &mut Cursor::new(Vec::new()),
@@ -1951,5 +2207,57 @@ mod tests {
         assert!(TensorSpec::new("role", "name", -2, -1, -1, &[1], 64).is_err());
         assert!(TensorSpec::new("role", "name", -1, -1, -1, &[0], 64).is_err());
         assert!(TensorSpec::new("role", "name", -1, -1, -1, &[1], 96).is_err());
+    }
+
+    #[test]
+    fn tensor_registry_is_exact_and_conditionally_complete() {
+        let base = reference_spec();
+        let tensors = required_model_tensors(&base, 256).unwrap();
+        assert_eq!(tensors.len(), 11);
+        assert!(tensors
+            .iter()
+            .all(|tensor| tensor.payload_alignment() == 256));
+        assert!(!tensors
+            .iter()
+            .any(|tensor| tensor.semantic_role().ends_with(".bias")));
+
+        let expanded = ModelSpec {
+            tied_embeddings: false,
+            qkv_bias: true,
+            qk_normalization: true,
+            ..base
+        };
+        let expanded_tensors = required_model_tensors(&expanded, 64).unwrap();
+        assert_eq!(expanded_tensors.len(), 17);
+        assert!(expanded_tensors
+            .iter()
+            .any(|tensor| tensor.semantic_role() == "model.output-projection.weight"));
+        assert_eq!(
+            expanded_tensors
+                .iter()
+                .filter(|tensor| tensor.semantic_role().ends_with(".bias"))
+                .count(),
+            3
+        );
+        assert_eq!(
+            expanded_tensors
+                .iter()
+                .filter(|tensor| tensor.semantic_role().contains("-normalization.weight"))
+                .count(),
+            5
+        );
+
+        let mut missing = reference_tensors();
+        missing.pop();
+        assert_eq!(
+            write_model(
+                &mut Cursor::new(Vec::new()),
+                &reference_spec(),
+                &mut missing,
+            )
+            .unwrap_err()
+            .code(),
+            "slm2-invalid-tensor-registry"
+        );
     }
 }

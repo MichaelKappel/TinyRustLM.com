@@ -11,16 +11,16 @@ mod format;
 mod piece;
 
 pub use format::{
-    validate_model, write_model, ArtifactClass, ModelIdentity, ModelSpec, TensorInput, TensorSpec,
-    ValidatedModel, ValidatedTensor, ValidationPolicy,
+    required_model_tensors, validate_model, write_model, ArtifactClass, ModelIdentity, ModelSpec,
+    TensorInput, TensorSpec, ValidatedModel, ValidatedTensor, ValidationPolicy,
 };
-pub use piece::{build_piece_manifest, PieceIdentity, PieceManifest};
+pub use piece::{build_piece_manifest, PieceIdentity, PieceManifest, PIECE_BYTES};
 
 /// The exact machine-readable SLM2 format profile identity.
 pub const SLM2_FORMAT_PROFILE_ID: &str = "org.minimodel.slm2/2.0";
 /// The SHA-256 of the exact machine-readable SLM2 format profile bytes.
 pub const SLM2_FORMAT_PROFILE_SHA256: &str =
-    "f272caf64cacb7a4705fee0c958f15ee0cac3985d8728458a80f812913d66554";
+    "b3f90c67d396d16a3ca561cbb288c10dc542a10e00d758704d1d6a17b3c3ff0f";
 const SLM2_FORMAT_PROFILE_BYTES: &[u8] =
     include_bytes!("../../../../contracts/vnext/slm2-format-profile.v1.json");
 

@@ -804,6 +804,7 @@ dependencies = [
 name = "tinyrustlm-slm2"
 version = "0.1.8"
 dependencies = [
+ "serde",
  "serde_json",
  "sha2",
 ]

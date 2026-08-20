@@ -5,8 +5,8 @@ use std::io::Cursor;
 
 use serde_json::{Map, Value};
 use tinyrustlm_slm2::{
-    build_piece_manifest, validate_model, write_model, ArtifactClass, ModelSpec, TensorInput,
-    TensorSpec, ValidationPolicy, SLM2_FORMAT_PROFILE_ID, SLM2_FORMAT_PROFILE_SHA256,
+    build_piece_manifest, required_model_tensors, validate_model, write_model, ArtifactClass,
+    ModelSpec, TensorInput, ValidationPolicy, SLM2_FORMAT_PROFILE_ID, SLM2_FORMAT_PROFILE_SHA256,
 };
 
 const VECTOR_BYTES: &[u8] =
@@ -97,6 +97,8 @@ fn reference_spec() -> ModelSpec {
         rope_theta: 10_000.0,
         normalization_epsilon: 0.000_01,
         tied_embeddings: true,
+        qkv_bias: false,
+        qk_normalization: false,
     }
 }
 
@@ -108,13 +110,19 @@ fn f32_bytes(values: &[f32]) -> Vec<u8> {
 }
 
 fn write_reference() -> (Vec<u8>, tinyrustlm_slm2::ModelIdentity) {
-    let embedding = TensorSpec::new("embedding", "model/embed", -1, -1, -1, &[2, 2], 64).unwrap();
-    let normalization =
-        TensorSpec::new("normalization", "model/norm", -1, -1, -1, &[2], 256).unwrap();
-    let mut tensors = vec![
-        TensorInput::new(normalization, Cursor::new(f32_bytes(&[5.0, 6.0]))),
-        TensorInput::new(embedding, Cursor::new(f32_bytes(&[1.0, 2.0, 3.0, 4.0]))),
-    ];
+    let mut tensors = required_model_tensors(&reference_spec(), 64)
+        .unwrap()
+        .into_iter()
+        .enumerate()
+        .map(|(tensor_index, spec)| {
+            let count = spec.shape().iter().copied().product::<u64>().max(1) as usize;
+            let values = (0..count)
+                .map(|value_index| (tensor_index * 10_000 + value_index + 1) as f32 / 1024.0)
+                .collect::<Vec<_>>();
+            TensorInput::new(spec, Cursor::new(f32_bytes(&values)))
+        })
+        .collect::<Vec<_>>();
+    tensors.reverse();
     let mut output = Cursor::new(Vec::new());
     let identity = write_model(&mut output, &reference_spec(), &mut tensors).unwrap();
     (output.into_inner(), identity)
@@ -199,7 +207,10 @@ fn checked_in_vector_matches_public_writer_reader_and_piece_api() {
         ],
         "vector",
     );
-    assert_eq!(text(vector, "id"), "base-model-two-f32-tensors");
+    assert_eq!(
+        text(vector, "id"),
+        "base-model-required-f32-tensor-registry"
+    );
 
     let expected_bytes = decode_hex(text(vector, "artifactHex"));
     assert_eq!(
@@ -289,10 +300,14 @@ fn checked_in_vector_matches_public_writer_reader_and_piece_api() {
         .iter()
         .map(|value| value.as_str().expect("string-table item must be text"))
         .collect();
-    assert_eq!(
-        expected_strings,
-        vec!["embedding", "model/embed", "model/norm", "normalization"]
-    );
+    let required_tensors = required_model_tensors(&reference_spec(), 64).unwrap();
+    let required_strings = required_tensors
+        .iter()
+        .flat_map(|tensor| [tensor.semantic_role(), tensor.canonical_name()])
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .collect::<Vec<_>>();
+    assert_eq!(expected_strings, required_strings);
 
     let expected_tensors = array(field(vector, "tensors"), "tensors");
     assert_eq!(validated.tensors().len(), expected_tensors.len());

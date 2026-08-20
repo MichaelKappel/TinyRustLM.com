@@ -149,6 +149,8 @@
       "normalization_epsilon_bits",
       "normalization_profile",
       "position_profile",
+      "qk_normalization",
+      "qkv_bias",
       "rope_theta_bits",
       "tensor_layout_sha256",
       "tied_embeddings",
@@ -179,12 +181,140 @@
       "tensor_layout_sha256"
     ],
     "booleanFields": [
+      "qk_normalization",
+      "qkv_bias",
       "tied_embeddings"
     ],
     "invariants": [
       "kv-head-count-no-greater-than-head-count",
       "head-count-divisible-by-kv-head-count",
+      "head-count-times-head-dimension-equals-embedding-size",
+      "layer-count-fits-signed-layer-index",
+      "tensor-role-registry-complete-and-exact",
       "tensor-layout-sha256-recomputed-from-canonical-descriptors"
+    ]
+  },
+  "tensorRoleRegistry": {
+    "profileId": "tinyrustlm.decoder-f32-tensor-roles/1",
+    "unexpectedTensors": "fatal",
+    "missingTensors": "fatal",
+    "duplicateRoles": "fatal",
+    "layerField": "minus-one-for-global-zero-based-for-transformer-layer",
+    "subindexFields": "exactly-minus-one",
+    "payloadAlignment": "any-valid-format-alignment-bound-by-each-record",
+    "shapeSymbols": {
+      "vocabulary_size": "model-body-vocabulary-size",
+      "embedding_size": "model-body-embedding-size",
+      "feed_forward_size": "model-body-feed-forward-size",
+      "query_width": "head-count-times-head-dimension",
+      "kv_width": "kv-head-count-times-head-dimension",
+      "head_dimension": "model-body-head-dimension"
+    },
+    "topLevel": [
+      {
+        "semanticRole": "model.token-embedding.weight",
+        "canonicalName": "model.token-embedding.weight",
+        "condition": "always",
+        "shape": ["vocabulary_size", "embedding_size"]
+      },
+      {
+        "semanticRole": "model.final-normalization.weight",
+        "canonicalName": "model.final-normalization.weight",
+        "condition": "always",
+        "shape": ["embedding_size"]
+      },
+      {
+        "semanticRole": "model.output-projection.weight",
+        "canonicalName": "model.output-projection.weight",
+        "condition": "tied_embeddings-is-false",
+        "shape": ["vocabulary_size", "embedding_size"]
+      }
+    ],
+    "perLayer": [
+      {
+        "semanticRole": "layer.attention-normalization.weight",
+        "canonicalName": "model.layers.{layer}.attention-normalization.weight",
+        "condition": "always",
+        "shape": ["embedding_size"]
+      },
+      {
+        "semanticRole": "layer.feed-forward-normalization.weight",
+        "canonicalName": "model.layers.{layer}.feed-forward-normalization.weight",
+        "condition": "always",
+        "shape": ["embedding_size"]
+      },
+      {
+        "semanticRole": "layer.attention.query-projection.weight",
+        "canonicalName": "model.layers.{layer}.attention.query-projection.weight",
+        "condition": "always",
+        "shape": ["query_width", "embedding_size"]
+      },
+      {
+        "semanticRole": "layer.attention.key-projection.weight",
+        "canonicalName": "model.layers.{layer}.attention.key-projection.weight",
+        "condition": "always",
+        "shape": ["kv_width", "embedding_size"]
+      },
+      {
+        "semanticRole": "layer.attention.value-projection.weight",
+        "canonicalName": "model.layers.{layer}.attention.value-projection.weight",
+        "condition": "always",
+        "shape": ["kv_width", "embedding_size"]
+      },
+      {
+        "semanticRole": "layer.attention.output-projection.weight",
+        "canonicalName": "model.layers.{layer}.attention.output-projection.weight",
+        "condition": "always",
+        "shape": ["embedding_size", "query_width"]
+      },
+      {
+        "semanticRole": "layer.feed-forward.gate-projection.weight",
+        "canonicalName": "model.layers.{layer}.feed-forward.gate-projection.weight",
+        "condition": "always",
+        "shape": ["feed_forward_size", "embedding_size"]
+      },
+      {
+        "semanticRole": "layer.feed-forward.down-projection.weight",
+        "canonicalName": "model.layers.{layer}.feed-forward.down-projection.weight",
+        "condition": "always",
+        "shape": ["embedding_size", "feed_forward_size"]
+      },
+      {
+        "semanticRole": "layer.feed-forward.up-projection.weight",
+        "canonicalName": "model.layers.{layer}.feed-forward.up-projection.weight",
+        "condition": "always",
+        "shape": ["feed_forward_size", "embedding_size"]
+      },
+      {
+        "semanticRole": "layer.attention.query-projection.bias",
+        "canonicalName": "model.layers.{layer}.attention.query-projection.bias",
+        "condition": "qkv_bias-is-true",
+        "shape": ["query_width"]
+      },
+      {
+        "semanticRole": "layer.attention.key-projection.bias",
+        "canonicalName": "model.layers.{layer}.attention.key-projection.bias",
+        "condition": "qkv_bias-is-true",
+        "shape": ["kv_width"]
+      },
+      {
+        "semanticRole": "layer.attention.value-projection.bias",
+        "canonicalName": "model.layers.{layer}.attention.value-projection.bias",
+        "condition": "qkv_bias-is-true",
+        "shape": ["kv_width"]
+      },
+      {
+        "semanticRole": "layer.attention.query-normalization.weight",
+        "canonicalName": "model.layers.{layer}.attention.query-normalization.weight",
+        "condition": "qk_normalization-is-true",
+        "shape": ["head_dimension"]
+      },
+      {
+        "semanticRole": "layer.attention.key-normalization.weight",
+        "canonicalName": "model.layers.{layer}.attention.key-normalization.weight",
+        "condition": "qk_normalization-is-true",
+        "shape": ["head_dimension"]
+      }
     ]
   },
   "requirements": {
@@ -192,12 +322,14 @@
       "kv_profile",
       "minimum_runtime",
       "operator_profile",
+      "tensor_role_profile",
       "tensor_profile"
     ],
     "literalValues": {
       "kv_profile": "tinyrustlm.kv-f32/1",
       "minimum_runtime": "tinyrustlm.runtime/2.0",
       "operator_profile": "tinyrustlm.decoder-f32/1",
+      "tensor_role_profile": "tinyrustlm.decoder-f32-tensor-roles/1",
       "tensor_profile": "tinyrustlm.tensor-f32/1"
     }
   },
