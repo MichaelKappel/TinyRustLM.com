@@ -11,6 +11,41 @@ This registry is an incompatible clean-slate contract. It does not map, alias,
 upgrade, or fall back to any dated TinyRustLM schema. Existing records remain
 historical evidence outside the vNext DAG.
 
+## SLM2 Model Format Checkpoint
+
+The model-byte format is a separate exact binary contract referenced by the
+artifact family rather than another JSON schema in the nine-member registry.
+The current development-only profile is
+`slm2-format-profile.v1.json`, 14,097 bytes with SHA-256
+`f272caf64cacb7a4705fee0c958f15ee0cac3985d8728458a80f812913d66554`.
+It admits only complete class-1 base models or class-2 specialist models with
+dense finite little-endian F32 tensors. Tokenizers, templates, adapters,
+composition graphs, provenance, licenses, qualification, signatures, and peer
+locations remain separate exact artifacts or receipts.
+
+`slm2-format-vectors.v1.json` is the language-neutral byte contract. Its one
+seed artifact is exactly 1,800 bytes with SHA-256
+`14ad14add8c8205e29040307eb42a4c749fb161fe7105e1de2bcbfc032ca81c4`.
+The public Rust writer reproduces those bytes from deliberately reversed
+tensor inputs; the streaming Rust reader, an independently written Node-core
+reader, and the Rust piece/Merkle implementation reproduce every declared
+identity. Both readers reject the five frozen artifact mutations, and the
+independent Node SLM-DCBOR-1 parser also rejects nonshortest, duplicate,
+indefinite, tagged, floating, trailing, non-ASCII, and non-text-key forms.
+
+The bounded raw parser-fuzz profile is
+`slm2-fuzz-profile.v1.json`, 3,061 bytes with SHA-256
+`ee114d831d180afdb15c2f8ea00e76212083fd764c605f2cf193f0770708a641`.
+Its 26-seed stable corpus contains one exact admission and 25 single-fault
+rejections across envelope, metadata, string, tensor, layout, payload, and
+trailing-byte classes. The stable Rust replay verifies the exact seed set,
+bytes, hashes, verdicts, error codes, and admitted tensor count. The optional
+libFuzzer target compiles with `libfuzzer-sys` 0.4.13. This is deterministic
+local parser evidence, not a long-running sanitizer result, converter/runtime
+conformance result, model qualification, deployment, publication, or live
+campaign evidence. See
+`docs/architecture/vnext-slm2-format-implementation.md`.
+
 ## Parsing
 
 Every JSON input is first consumed as bounded bytes. Before schema validation,
@@ -629,8 +664,10 @@ Checked-in profiles and vectors contain public material only.
 
 ## Completion Boundary
 
-The registry freezes design. It does not prove that the SLM2 parser, runtime,
-browser worker, companion, P2P fleet, observer, release system, or claim
-renderer implements these contracts. Implementation claims begin only after
-the corresponding phase tests and objective receipts exist. No campaign
-counter is earned by this registry.
+The registry freezes design and is not itself implementation evidence. The
+separately identified local SLM2 parser/writer/vector/fuzz checkpoint above
+proves only its bounded format-conformance scope; it does not prove conversion,
+runtime correctness, browser support, model quality, or production admission.
+The browser worker, companion, P2P fleet, observer, release system, and claim
+renderer still require their corresponding phase tests and objective receipts.
+No campaign counter is earned by this registry or the local SLM2 checkpoint.

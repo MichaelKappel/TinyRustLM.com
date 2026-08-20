@@ -2,9 +2,13 @@
 
 ## Status
 
-Accepted as the exact unpromoted SLM2 2.0 model-container baseline. Parser,
-writer, conformance, converter, runtime, WASM, browser, and cutover gates remain
-required. No public availability or model-quality claim follows from this ADR.
+Accepted as the exact unpromoted SLM2 2.0 model-container baseline. The bounded
+Rust parser, writer, piece identities, language-neutral vector, independent
+Node vector validator, stable hostile corpus replay, and optional libFuzzer
+target are implemented and locally test-bound. Converter, scalar runtime,
+WASM, browser, sustained sanitizer fuzz, physical-target, and clean cutover
+gates remain required. No public availability or model-quality claim follows
+from this ADR.
 
 ## Decision Date
 
@@ -229,6 +233,19 @@ only from an owned staging file after writer success and independent readback.
 - **Observed local fact**: ADR-010's receipt and signature system uses bounded
   canonical JSON and detached role-specific Ed25519 envelopes, so embedding a
   second evidence encoding in SLM2 would duplicate an authority boundary.
+- **Observed local fact**: `rust/crates/tinyrustlm-slm2` now implements one
+  unsafe-free bounded writer, reader, and fixed-piece/Merkle identity path for
+  the exact profile. It is not wired into production model selection.
+- **Observed local fact**: the 1,800-byte checked-in seed artifact has SHA-256
+  `14ad14add8c8205e29040307eb42a4c749fb161fe7105e1de2bcbfc032ca81c4`;
+  the public Rust API and an independently written Node-core parser reproduce
+  its manifest, tensor-layout, tensor-payload, artifact, piece, and Merkle
+  identities.
+- **Observed local fact**: the bounded fuzz profile has SHA-256
+  `ee114d831d180afdb15c2f8ea00e76212083fd764c605f2cf193f0770708a641`.
+  Stable replay covers one admission and 25 exact rejections, while every
+  proper prefix of the seed artifact rejects. No sustained sanitizer campaign
+  or crash-retention result is claimed.
 - **Sourced public fact**: RFC 8949 defines CBOR and deterministic encoding at
   https://www.rfc-editor.org/rfc/rfc8949.html.
 - **Sourced public fact**: FIPS 180-4 specifies SHA-256 at
@@ -303,7 +320,9 @@ compatibility crate, command, feature flag, or test-only production selector.
 - F32 scalar runtime, WASM, browser loading, WebGPU staging, and physical RID
   evidence.
 - Measured lower policy limits for browser classes.
-- Independent language implementation and long-running fuzz evidence.
+- Long-running sanitizer fuzz execution, retained crash triage, and minimized
+  regression evidence for any future finding. The current independent Node
+  parser is a conformance oracle, not a production implementation.
 - Production release authorization and catalog publication.
 
 These are explicit incomplete gates, not permission to accept alternate bytes.

@@ -1,0 +1,36 @@
+[workspace]
+members = ["."]
+
+[package]
+name = "tinyrustlm-slm2-fuzz"
+version = "0.0.0"
+edition = "2021"
+publish = false
+license = "Proprietary"
+
+[package.metadata]
+cargo-fuzz = true
+
+[features]
+fuzzing = ["dep:libfuzzer-sys"]
+
+[dependencies]
+libfuzzer-sys = { version = "=0.4.13", optional = true }
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.150"
+sha2 = "=0.10.9"
+tinyrustlm-slm2 = { path = ".." }
+
+[[bin]]
+name = "raw_slm2"
+path = "fuzz_targets/raw_slm2.rs"
+test = false
+doc = false
+bench = false
+required-features = ["fuzzing"]
+
+[[bin]]
+name = "replay_slm2_corpus"
+path = "src/bin/replay_slm2_corpus.rs"
+doc = false
+bench = false

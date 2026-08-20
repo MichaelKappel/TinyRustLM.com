@@ -1,0 +1,274 @@
+{
+  "schema": "tinyrustlm.vnext.slm2_fuzz_corpus.v1",
+  "corpusId": "tinyrustlm.vnext.slm2-fuzz-corpus.v1",
+  "status": "frozen",
+  "generatorId": "tinyrustlm.tools.generate-slm2-fuzz-corpus.v1",
+  "fuzzProfileId": "tinyrustlm.vnext.slm2-fuzz.v1",
+  "fuzzProfileSha256": "ee114d831d180afdb15c2f8ea00e76212083fd764c605f2cf193f0770708a641",
+  "formatProfileId": "org.minimodel.slm2/2.0",
+  "formatProfileSha256": "f272caf64cacb7a4705fee0c958f15ee0cac3985d8728458a80f812913d66554",
+  "sourceVectorId": "base-model-two-f32-tensors",
+  "sourceVectorArtifactSha256": "14ad14add8c8205e29040307eb42a4c749fb161fe7105e1de2bcbfc032ca81c4",
+  "entries": [
+    {
+      "id": "01-canonical-valid-vector",
+      "file": "01-canonical-valid-vector.seed",
+      "bytes": 1800,
+      "sha256": "14ad14add8c8205e29040307eb42a4c749fb161fe7105e1de2bcbfc032ca81c4",
+      "class": "canonical-valid-vector",
+      "verdict": "admit",
+      "errorCode": null,
+      "tensorCount": 2
+    },
+    {
+      "id": "02-legacy-slm1-short",
+      "file": "02-legacy-slm1-short.seed",
+      "bytes": 4,
+      "sha256": "9b9302c7f68243c0820323c39e62eebd5f4ae2d3d75fe83c53db09d6c3b44488",
+      "class": "legacy-or-truncated-envelope",
+      "verdict": "reject",
+      "errorCode": "slm2-truncated-header",
+      "tensorCount": null
+    },
+    {
+      "id": "03-truncated-header",
+      "file": "03-truncated-header.seed",
+      "bytes": 223,
+      "sha256": "ce310bf8c5a8dc4c906d0cf197e69fabf128f805bb98014b05819f091ce3d736",
+      "class": "legacy-or-truncated-envelope",
+      "verdict": "reject",
+      "errorCode": "slm2-truncated-header",
+      "tensorCount": null
+    },
+    {
+      "id": "04-wrong-magic",
+      "file": "04-wrong-magic.seed",
+      "bytes": 1800,
+      "sha256": "27449aaa33f080b8b0b338554777152151b55f7452b4d3402829ec56ed00aad0",
+      "class": "header-identity-and-version-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-invalid-magic",
+      "tensorCount": null
+    },
+    {
+      "id": "05-invalid-format-id",
+      "file": "05-invalid-format-id.seed",
+      "bytes": 1800,
+      "sha256": "9b9fa89e8e7fd6f4311f8c62ebbbfcaeff9341c08a13be20310ba87dead40c9e",
+      "class": "header-identity-and-version-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-invalid-format-id",
+      "tensorCount": null
+    },
+    {
+      "id": "06-unsupported-version",
+      "file": "06-unsupported-version.seed",
+      "bytes": 1800,
+      "sha256": "d5b5e11a5b95b08005bf744f284f20b5b973acc296201859ce65f97753f8b600",
+      "class": "header-identity-and-version-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-unsupported-version",
+      "tensorCount": null
+    },
+    {
+      "id": "07-invalid-byte-order",
+      "file": "07-invalid-byte-order.seed",
+      "bytes": 1800,
+      "sha256": "dc4b0ded3fbda0adac97c7773d4b3c2b0d9fb519b46aa96a306d106ce823360d",
+      "class": "header-identity-and-version-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-invalid-byte-order",
+      "tensorCount": null
+    },
+    {
+      "id": "08-unsupported-artifact-class",
+      "file": "08-unsupported-artifact-class.seed",
+      "bytes": 1800,
+      "sha256": "d821f6c7306a5435c1f7148e50eb571b9bcf454707a9e700bd545e4fceb8d1ca",
+      "class": "header-identity-and-version-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-unsupported-artifact-class",
+      "tensorCount": null
+    },
+    {
+      "id": "09-nonzero-header-flags",
+      "file": "09-nonzero-header-flags.seed",
+      "bytes": 1800,
+      "sha256": "0839f6872d68584d2d1c070e1a67d43d5a2f62216337f2d9273d1078c90cfbd5",
+      "class": "header-identity-and-version-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-invalid-header-flags",
+      "tensorCount": null
+    },
+    {
+      "id": "10-unsupported-table",
+      "file": "10-unsupported-table.seed",
+      "bytes": 1800,
+      "sha256": "bb77ad327931e7a36419bbeab5c693be434cacc12829acd6c3f7024832381812",
+      "class": "header-identity-and-version-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-unsupported-table",
+      "tensorCount": null
+    },
+    {
+      "id": "11-nonzero-section-padding",
+      "file": "11-nonzero-section-padding.seed",
+      "bytes": 1800,
+      "sha256": "a15477cbb36569508c9264ec2705a8864b20933dc2c39a5cc3fc8ce6af1a4e6c",
+      "class": "section-layout-and-padding-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-nonzero-padding",
+      "tensorCount": null
+    },
+    {
+      "id": "12-invalid-section-layout",
+      "file": "12-invalid-section-layout.seed",
+      "bytes": 1800,
+      "sha256": "cd24eca39ed9885ec37af794dae8d884cc8e00b6c1bb7e3d45bbe471320dd3f3",
+      "class": "section-layout-and-padding-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-invalid-section-layout",
+      "tensorCount": null
+    },
+    {
+      "id": "13-indefinite-manifest",
+      "file": "13-indefinite-manifest.seed",
+      "bytes": 1800,
+      "sha256": "17bb8ba8c15ff3bb093f4e1e91b926b8d18f2b302b9d379a9f0b50078f71c6ae",
+      "class": "noncanonical-metadata",
+      "verdict": "reject",
+      "errorCode": "slm2-invalid-metadata",
+      "tensorCount": null
+    },
+    {
+      "id": "14-manifest-class-conflict",
+      "file": "14-manifest-class-conflict.seed",
+      "bytes": 1800,
+      "sha256": "7b743d2e543b0739e3f38146fb9d3b1d7bb678877d21fb7a6a8f2c1e26c71fc0",
+      "class": "noncanonical-metadata",
+      "verdict": "reject",
+      "errorCode": "slm2-invalid-model-metadata",
+      "tensorCount": null
+    },
+    {
+      "id": "15-invalid-string-offset",
+      "file": "15-invalid-string-offset.seed",
+      "bytes": 1800,
+      "sha256": "51773ae77071f8b4790c9b7243fd4ab4af6155dc8513be88474ccedc847d2bf4",
+      "class": "string-table-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-invalid-string-table",
+      "tensorCount": null
+    },
+    {
+      "id": "16-nonascii-string",
+      "file": "16-nonascii-string.seed",
+      "bytes": 1800,
+      "sha256": "902f299ff3d052f8404926afdd281c4304fdcdb505eebaefc9fd60fd653f9373",
+      "class": "string-table-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-invalid-string-table",
+      "tensorCount": null
+    },
+    {
+      "id": "17-invalid-tensor-reserved",
+      "file": "17-invalid-tensor-reserved.seed",
+      "bytes": 1800,
+      "sha256": "1fb7c9b339e514389862f9ead5e39542dc91de6322e42af9aa9513ca1dcaaaa1",
+      "class": "tensor-table-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-invalid-tensor",
+      "tensorCount": null
+    },
+    {
+      "id": "18-tensor-size-mismatch",
+      "file": "18-tensor-size-mismatch.seed",
+      "bytes": 1800,
+      "sha256": "90b0d52b67c914d494d0c5d4693c61e754f1627aae03a137a130d7d7c7c4bae5",
+      "class": "tensor-table-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-tensor-size-mismatch",
+      "tensorCount": null
+    },
+    {
+      "id": "19-duplicate-tensor-name",
+      "file": "19-duplicate-tensor-name.seed",
+      "bytes": 1800,
+      "sha256": "53901abeb228881732d8621e8c38b2bb1ebbf2b7d4ecc769a72ad63afd328a42",
+      "class": "tensor-table-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-invalid-tensor-order",
+      "tensorCount": null
+    },
+    {
+      "id": "20-invalid-tensor-alignment",
+      "file": "20-invalid-tensor-alignment.seed",
+      "bytes": 1800,
+      "sha256": "ee711fc45f9a73140986359bb702547be7bf358f474d4dc0fad1ce6c517ca5a2",
+      "class": "tensor-table-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-invalid-tensor",
+      "tensorCount": null
+    },
+    {
+      "id": "21-layout-hash-drift",
+      "file": "21-layout-hash-drift.seed",
+      "bytes": 1800,
+      "sha256": "35b7f1ad139d2661cf5810a379a389fdc9b6e30675ef33590405ed61fc4b4ab5",
+      "class": "layout-identity-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-layout-hash-drift",
+      "tensorCount": null
+    },
+    {
+      "id": "22-payload-relative-offset",
+      "file": "22-payload-relative-offset.seed",
+      "bytes": 1800,
+      "sha256": "365e5d7cff822abb43f6d97a1f37a2985e456d6ba75da443d1adb6c51c46915b",
+      "class": "payload-layout-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-invalid-payload-layout",
+      "tensorCount": null
+    },
+    {
+      "id": "23-nonzero-payload-gap",
+      "file": "23-nonzero-payload-gap.seed",
+      "bytes": 1800,
+      "sha256": "255384054f76a225c6e9cf81d3663a9fc2880553218eeea5f12e3f72a87cb009",
+      "class": "payload-layout-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-nonzero-padding",
+      "tensorCount": null
+    },
+    {
+      "id": "24-payload-hash-drift",
+      "file": "24-payload-hash-drift.seed",
+      "bytes": 1800,
+      "sha256": "62f22506145ddf26725d76bf47dca423e644b755b5c0a25d7e3113f1c99a755a",
+      "class": "payload-finiteness-and-identity-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-payload-hash-drift",
+      "tensorCount": null
+    },
+    {
+      "id": "25-nonfinite-f32",
+      "file": "25-nonfinite-f32.seed",
+      "bytes": 1800,
+      "sha256": "ae56762394753a65f74d3b381e485c76c7ed1ae27f6189ff4eb7b3ecc6f218cd",
+      "class": "payload-finiteness-and-identity-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-nonfinite-f32",
+      "tensorCount": null
+    },
+    {
+      "id": "26-trailing-byte",
+      "file": "26-trailing-byte.seed",
+      "bytes": 1801,
+      "sha256": "2447afbcff2a9458e7ed00549816083d5f521b5baf0080ee3f17b80238a98015",
+      "class": "trailing-byte-mutation",
+      "verdict": "reject",
+      "errorCode": "slm2-file-size-mismatch",
+      "tensorCount": null
+    }
+  ]
+}

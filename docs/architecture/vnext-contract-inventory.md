@@ -50,7 +50,7 @@ not make them one coherent family.
 
 | Class | Observed current implementation | Material gap | vNext disposition |
 | --- | --- | --- | --- |
-| Artifact | SLM1 parsing, ACG1 composition, model manifests, adapter sidecars, and content-identity experiments are implemented in separate Rust, Node, and browser paths. | No single SLM2 metadata/key registry, artifact-class registry, limits table, or independently packed conformance corpus exists. | Regenerate reviewed sources into SLM2 and one immutable external artifact manifest. Delete SLM1 production admission after the SLM2 gate. |
+| Artifact | SLM1 remains in the historical production path. A separate unpromoted SLM2 crate now implements the exact dense-F32 writer, bounded reader, tensor/piece/Merkle identities, language-neutral vector, independent Node conformance reader, and deterministic hostile replay. | Source-family conversion, scalar runtime conformance, tokenizer/template/composition byte profiles, WASM/browser loading, sustained sanitizer fuzz, production routing, and SLM1 deletion remain incomplete. | Keep SLM2 inactive until all remaining gates pass, regenerate reviewed sources into SLM2 plus one immutable external artifact manifest, then delete SLM1 admission without a compatibility reader. |
 | Receipt | `CampaignEvidenceStore` provides closed fields, content addressing, redaction, immutable files, DAG rebuild, and quarantine; many task-specific receipt types wrap it. | Current receipt identity/canonicalization and nested parameter shapes are not the complete ADR-010 vNext profile. | Replace all campaign phase evidence with one envelope/content receipt contract plus typed `receiptType` and phase semantics. |
 | Context | Conversation, prompt-token, memory, retrieval, KV, and local-store contracts are split across browser and tooling schemas. | Trust labels, current-turn precedence, deterministic truncation, cache identity, and public/private handling are not one closed context package. | Use one private, volatile context package with explicit segment trust, budget, compiler, model/composition, tokenizer, and template identities. |
 | Worker | Browser generation and fault tests use several ad hoc `postMessage` shapes; there is no single production worker envelope. | Message/session/generation identity, cancellation, stale-response rejection, deadlines, transfer ownership, and payload privacy are not frozen together. | Use one small private worker envelope; transfer large/private payload bytes separately and bind them by byte count and SHA-256. |
@@ -142,6 +142,14 @@ bounded threat review. Phase 3 Node checkpoints now add domain-separated
 identity, create-only atomic receipt persistence, DAG reconstruction and
 quarantine, Ed25519 signing authority and revocation, closed offline bundles,
 canonical public-safe scan receipts, and exact semantic phase currentness.
+The separate model-byte boundary now also has the exact SLM2 2.0 F32 profile,
+an unsafe-free bounded Rust writer/reader and piece implementation, one
+language-neutral seed artifact, an independently written Node-core parser, and
+a 26-seed stable raw-parser corpus with one admission and 25 exact rejections.
+Every proper seed prefix rejects, corpus generation replays byte-identically,
+and the optional libFuzzer target compiles. This remains inactive local format
+conformance: no converter, forward pass, WASM/browser load, sustained
+sanitizer campaign, model qualification, or production cutover is established.
 The current campaign checkpoint additionally freezes one exact campaign plan,
 authority-aware truthful projection, and sufficient complete-bundle bounds.
 The plan finalization boundary now has an independent strict Rust

@@ -11,13 +11,16 @@
       "manifestSha256": "f90e0efa3af00af489859735d5942eb075e9621bf5a01d9b421ba2f4454fa17a",
       "tensorLayoutSha256": "599fc162203a46fe2aa427de897397a8262216c0141ce801c2194882f3c92ab2",
       "header": {
+        "headerBytes": 224,
         "artifactClass": 1,
+        "fileSize": 1800,
         "manifestOffset": 256,
         "manifestLength": 714,
         "stringTableOffset": 1024,
         "stringTableLength": 71,
         "tensorTableOffset": 1152,
         "tensorCount": 2,
+        "tensorRecordBytes": 192,
         "payloadOffset": 1536,
         "payloadLength": 264
       },
@@ -31,7 +34,11 @@
         {
           "semanticRole": "embedding",
           "canonicalName": "model/embed",
+          "layer": -1,
+          "subindex0": -1,
+          "subindex1": -1,
           "shape": [2, 2],
+          "logicalElements": 4,
           "payloadRelativeOffset": 0,
           "payloadLength": 16,
           "payloadAlignment": 64,
@@ -40,7 +47,11 @@
         {
           "semanticRole": "normalization",
           "canonicalName": "model/norm",
+          "layer": -1,
+          "subindex0": -1,
+          "subindex1": -1,
           "shape": [2],
+          "logicalElements": 2,
           "payloadRelativeOffset": 256,
           "payloadLength": 8,
           "payloadAlignment": 256,
@@ -57,11 +68,11 @@
         "merkleRoot": "78aeb862785054819d6d77bc3b3315015259ef833c79dc52b0e368759efaf059"
       },
       "mutations": [
-        {"id": "wrong-magic", "operation": "xor-byte", "offset": 0, "value": 1},
-        {"id": "nonzero-header-padding", "operation": "set-byte", "offset": 224, "value": 1},
-        {"id": "payload-hash-drift", "operation": "xor-byte", "offset": 1536, "value": 1},
-        {"id": "nonfinite-f32", "operation": "replace-hex", "offset": 1536, "hex": "0000c07f"},
-        {"id": "trailing-byte", "operation": "append-hex", "hex": "00"}
+        {"id": "wrong-magic", "operation": "xor-byte", "offset": 0, "value": 1, "expectedError": "slm2-invalid-magic"},
+        {"id": "nonzero-header-padding", "operation": "set-byte", "offset": 224, "value": 1, "expectedError": "slm2-nonzero-padding"},
+        {"id": "payload-hash-drift", "operation": "xor-byte", "offset": 1536, "value": 1, "expectedError": "slm2-payload-hash-drift"},
+        {"id": "nonfinite-f32", "operation": "replace-hex", "offset": 1536, "hex": "0000c07f", "expectedError": "slm2-nonfinite-f32"},
+        {"id": "trailing-byte", "operation": "append-hex", "hex": "00", "expectedError": "slm2-file-size-mismatch"}
       ]
     }
   ]

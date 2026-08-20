@@ -1952,28 +1952,4 @@ mod tests {
         assert!(TensorSpec::new("role", "name", -1, -1, -1, &[0], 64).is_err());
         assert!(TensorSpec::new("role", "name", -1, -1, -1, &[1], 96).is_err());
     }
-
-    #[test]
-    fn emit_vector_material_for_profile_maintenance() {
-        let (bytes, identity) = write_fixture();
-        let validated =
-            validate_model(&mut Cursor::new(&bytes), ValidationPolicy::default()).unwrap();
-        let pieces = crate::build_piece_manifest(&mut Cursor::new(&bytes)).unwrap();
-        println!("artifact_hex={}", crate::hex_lower(&bytes));
-        println!("artifact_bytes={}", identity.byte_length());
-        println!("artifact_sha256={}", identity.artifact_sha256_hex());
-        println!("manifest_sha256={}", identity.manifest_sha256_hex());
-        println!(
-            "tensor_layout_sha256={}",
-            crate::hex_lower(validated.tensor_layout_sha256())
-        );
-        println!("merkle_root={}", pieces.merkle_root_hex());
-        for tensor in validated.tensors() {
-            println!(
-                "tensor={} hash={}",
-                tensor.canonical_name(),
-                crate::hex_lower(tensor.payload_sha256())
-            );
-        }
-    }
 }

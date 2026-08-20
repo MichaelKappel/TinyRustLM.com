@@ -24,19 +24,19 @@ unpublished path after its replacement passes.
 
 | ID | Decision | Status | Implementation boundary |
 | --- | --- | --- | --- |
-| ADR-001 | [vNext metadata grammar](ADR-001-vnext-metadata-grammar.md) | Accepted | SLM2 parser/writer pending; not promoted |
-| ADR-002 | [Hash and Merkle profile](ADR-002-hash-and-merkle-profile.md) | Accepted | SHA-256 exists; SLM2 Merkle profile pending |
-| ADR-003 | [Alignment and tensor layout](ADR-003-alignment-and-tensor-layout.md) | Accepted | SLM2 layout pending; not promoted |
+| ADR-001 | [vNext metadata grammar](ADR-001-vnext-metadata-grammar.md) | Accepted | Strict SLM-DCBOR-1 implemented and cross-validated for unpromoted SLM2 |
+| ADR-002 | [Hash and Merkle profile](ADR-002-hash-and-merkle-profile.md) | Accepted | SLM2 whole, tensor, piece, and Merkle identities implemented and vector-bound; not promoted |
+| ADR-003 | [Alignment and tensor layout](ADR-003-alignment-and-tensor-layout.md) | Accepted | SLM2 F32 layout writer/reader and hostile vectors implemented; runtime pending |
 | ADR-004 | [Companion transport](ADR-004-companion-transport.md) | Accepted | Protocol v2 implemented on tested loopback profile |
 | ADR-005 | [Browser persistence](ADR-005-browser-persistence.md) | Accepted | Ephemeral file and companion paths exist; OPFS tier pending |
-| ADR-006 | [Quantization profiles](ADR-006-quantization-profiles.md) | Accepted | F32/Q8/Q4 implemented in SLM1; SLM2 profiles pending |
+| ADR-006 | [Quantization profiles](ADR-006-quantization-profiles.md) | Accepted | SLM2 dense F32 storage oracle implemented; execution and every quantized profile remain unpromoted |
 | ADR-007 | [WebGPU support profile](ADR-007-webgpu-support-profile.md) | Accepted | Not implemented and not promoted |
 | ADR-008 | [Specialist composition](ADR-008-specialist-composition.md) | Accepted | Hash-bound ACG1 activation implemented; SLM2 binding pending |
 | ADR-009 | [Service-worker release model](ADR-009-service-worker-release-model.md) | Accepted | Not implemented and not promoted |
 | ADR-010 | [Evidence signing](ADR-010-evidence-signing.md) | Accepted | Canonical receipts and selected Ed25519 verification exist; full role profile pending |
 | ADR-011 | [Campaign evidence browser boundary](ADR-011-campaign-evidence-browser-boundary.md) | Accepted | Generated zero-import Rust/WASM evidence boundary implemented and browser-test-bound |
 | ADR-012 | [Durable publication bootstrap](ADR-012-durable-publication-bootstrap.md) | Accepted | Store-level target and receipt durability implemented and locally test-bound; physical power-loss proof pending |
-| ADR-013 | [Exact SLM2 2.0 F32 model format profile](ADR-013-slm2-format-profile.md) | Accepted | Exact unpromoted model-container contract frozen; parser, writer, vectors, converter, runtime, WASM/browser, and SLM1 deletion pending |
+| ADR-013 | [Exact SLM2 2.0 F32 model format profile](ADR-013-slm2-format-profile.md) | Accepted | Rust parser/writer/pieces, independent Node vector validation, and bounded fuzz replay implemented; converter, runtime, WASM/browser, promotion, and SLM1 deletion pending |
 
 ## Evidence Labels
 
