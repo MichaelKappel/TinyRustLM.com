@@ -1,7 +1,8 @@
-profile: runtime-mirust.taboo.v24
-updated_utc: 2026-08-09T05:51:49Z
+profile: runtime-mirust.taboo.v25
+updated_utc: 2026-08-20T17:43:51Z
 scope: public_site_voice_project_copy_and_local_app_consent
 purpose: Keep TinyRustLM browser-first, preserve constructive local-model craft and user agency, and prohibit unexpected attempts to access programs on a user's computer.
+slm2_legacy_and_claim_prohibition: "Do not add SLM1 support, legacy readers or writers, format aliases, version negotiation, migration shims, dual-format activation, permissive CBOR, hidden repair, best-effort parsing, parser disagreement tolerance, or fallback after an SLM2 rejection. Do not weaken a frozen hostile case, choose only an easy fuzz seed, suppress a stable rejection code, or call a compiled fuzz target a sustained sanitizer campaign. Do not claim that local vectors, fixtures, corpus replay, structural validation, distinct bytes, or one attractive output prove a real model, conversion readiness, browser readiness, quality, release, publication, or campaign progress. Require one current exact SLM2 profile, independent identity reproduction, bounded fail-closed parsing, sanitizer-backed fuzz evidence, real target integration, untouched raw outputs, and objective promotion receipts."
 pre_release_no_debt_no_legacy_prohibition: Until the human explicitly removes this rule, do not incur technical debt or preserve obsolete behavior for compatibility. Do not add shims, dual contracts, migration branches, deprecated aliases, or fallback paths for superseded code. Rewrite cleanly, verify the replacement, remove superseded implementation, and retain immutable evidence only as audit truth rather than legacy support.
 pre_publication_no_debt_policy_id: pre-publication-clean-slate-v1
 pre_publication_no_debt_prohibition: "Until the human explicitly removes this prohibition, do not add or retain technical debt, legacy or backward-compatibility support, compatibility shims, deprecated aliases, dual contracts, migration branches, fallback paths for superseded code, low-quality patches, knowingly temporary architecture, or deferred cleanup."
