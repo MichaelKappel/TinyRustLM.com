@@ -801,6 +801,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "tinyrustlm-slm2"
+version = "0.1.8"
+dependencies = [
+ "serde_json",
+ "sha2",
+]
+
+[[package]]
 name = "tinyrustlm-vector-oracle"
 version = "0.1.8"
 

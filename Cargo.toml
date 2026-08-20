@@ -11,6 +11,7 @@ members = [
     "rust/crates/tinyrustlm-evidence-wasm",
     "rust/crates/tinyrustlm-runtime",
     "rust/crates/tinyrustlm-slm",
+    "rust/crates/tinyrustlm-slm2",
     "tinyrustlm/runtime",
     "tinyrustlm/tools/browser_harness",
     "tinyrustlm/tools/local_connect",
