@@ -137,11 +137,17 @@ cannot create a mutable pass or authorize a later phase.
 The Win32 directory-flush helper, bounded ZIP/tar-gzip admission authority,
 and module-issued protected equality-custody contract are integrated into the
 current local vNext paths. Those contracts prove bounded local conformance,
-not production operation. Gate D still requires controlled physical
-power-loss/filesystem evidence, current native helper provenance and clean
-  consumers for every supported RID, an authorized production custody issuer
-  and launcher, release-bootstrap-only use of the implemented inherited-pipe
-  private loader, and the declared OS process/network isolation. One maintained
+not production operation. The sole controlled power-loss source verifier is
+also implemented: it binds three externally signed records to one exact helper,
+machine, volume, filesystem, cache and interruption class, boot transition,
+protected witness context, and protected time, and its public replay path
+requires byte-identical regeneration from all source evidence. Maintained local
+tests derive only `fixture-only`; no physical attempt or production witness
+record exists. Gate D still requires the actual controlled physical
+power-loss/filesystem matrix, current native helper provenance and clean
+consumers for every supported RID, an authorized production custody issuer and
+launcher, release-bootstrap-only use of the implemented inherited-pipe private
+loader, and the declared OS process/network isolation. One maintained
 structured archive target and frozen 29-seed hostile corpus now replay locally;
 hosted sanitizer execution, longer campaigns, and retention/minimization of
 future crash findings remain open. Deterministic cross-format, path,

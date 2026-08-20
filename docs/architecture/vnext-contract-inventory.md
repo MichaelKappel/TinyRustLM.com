@@ -247,15 +247,29 @@ flushes, and activates only after complete verification. Receipt and subject
 stores use sole `putMany` paths; their size-one methods are wrappers. Every
 current vNext store, campaign-operation record, and runner-lock record consumes
 the sole receipt-backed durable-publication primitive. No batch claims an
-atomic filesystem transaction. OS network isolation, current helper provenance
-and clean-consumer execution for every supported RID, authorized production
-  equality-custody issuance, authorized private launching, release-bootstrap
-  exclusivity, and controlled physical
-power-loss evidence remain incomplete. One maintained structured archive target
-and frozen 29-seed hostile corpus now replay locally; hosted sanitizer
-execution, longer campaigns, and retention/minimization of future crash
-findings remain open. Deterministic cross-format, path, every-prefix, and
-single-bit mutation properties pass locally.
+atomic filesystem transaction.
+
+The adjacent
+`tinyrustlm.vnext.controlled-power-loss-verification.v1` source boundary is
+documented in
+`docs/architecture/vnext-controlled-power-loss-verification.md`. Its frozen
+7,665-byte profile has SHA-256
+`00f4f787d62ca6f388ae06acb4c23134144ad25668d749aac9cd91dca9decfd1`,
+and its exact six-member source closure has SHA-256
+`de8a707cd97f20806f84f76afd07ea974c3cbef1f701ed33dcae5935ec1434ac`.
+It requires evidence-backed replay of three externally signed records and
+cannot expose a standalone receipt parser as proof. Maintained fixtures derive
+only `fixture-only`; no real physical attempt or production witness record
+exists.
+
+OS network isolation, current helper provenance and clean-consumer execution
+for every supported RID, authorized production equality-custody issuance,
+authorized private launching, release-bootstrap exclusivity, and actual
+controlled physical power-loss evidence remain incomplete. One maintained
+structured archive target and frozen 29-seed hostile corpus now replay locally;
+hosted sanitizer execution, longer campaigns, and retention/minimization of
+future crash findings remain open. Deterministic cross-format, path,
+every-prefix, and single-bit mutation properties pass locally.
 The sole bounded ZIP and tar-gzip authority, its Rust process boundary, and the
 v4 public-artifact secret-scan cutover are documented in
 `docs/architecture/vnext-archive-admission.md`. Its client/package profile has

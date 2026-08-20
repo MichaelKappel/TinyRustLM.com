@@ -836,6 +836,7 @@ function validateControlledPowerLossVerificationReceipt(input) {
       .includes(receipt.interruptionClass) ||
       !controlledPowerLossVerificationProfile.acceptedStorageCacheClasses
         .includes(receipt.storageCacheClass) ||
+      typeof receipt.witnessCurrentlyTrusted !== "boolean" ||
       receipt.sourceRevision !== receipt.helper.helperSourceRevision) {
     failEvidence(code, step);
   }
@@ -978,6 +979,27 @@ function verifyControlledPowerLossEvidence(options) {
   });
 }
 
+function verifyControlledPowerLossReceiptReplay(options) {
+  const code = "controlled_power_loss_receipt_replay_invalid";
+  const step = "controlled-power-loss-replay";
+  assertDataObject(options, [
+    "evidenceRoot", "helperEvidenceRoot", "helperPackageRoot", "receiptBytes",
+    "trustedWitness", "verificationTimeUtc"
+  ], code, step);
+  const supplied = validateControlledPowerLossVerificationReceipt(options.receiptBytes);
+  const regenerated = verifyControlledPowerLossEvidence({
+    evidenceRoot: options.evidenceRoot,
+    helperEvidenceRoot: options.helperEvidenceRoot,
+    helperPackageRoot: options.helperPackageRoot,
+    trustedWitness: options.trustedWitness,
+    verificationTimeUtc: options.verificationTimeUtc
+  });
+  if (!supplied.bytes.equals(regenerated.bytes)) {
+    failEvidence("controlled_power_loss_receipt_replay_mismatch", step);
+  }
+  return supplied;
+}
+
 function deepFreeze(value) {
   if (value !== null && typeof value === "object") {
     for (const entry of Object.values(value)) deepFreeze(entry);
@@ -1000,7 +1022,7 @@ module.exports = Object.freeze({
   controlledPowerLossVerificationProfile,
   controlledPowerLossVerificationProfileId,
   controlledPowerLossVerificationProfileSha256,
-  validateControlledPowerLossVerificationReceipt,
   verificationSourceClosureSha256: verificationSourceClosure.sha256,
-  verifyControlledPowerLossEvidence
+  verifyControlledPowerLossEvidence,
+  verifyControlledPowerLossReceiptReplay
 });

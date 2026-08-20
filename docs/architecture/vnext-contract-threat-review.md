@@ -58,6 +58,17 @@ class is not signed provenance. The helper boundary remains local API evidence
 only; it does not prove release provenance, a physical power interruption, or
 filesystem/device behavior beyond the observed call.
 
+One adjacent frozen controlled power-loss verification source boundary now
+requires three canonical Ed25519 witness records, a protected caller trust
+record and verification time, one exact independently replayed helper package,
+stable machine/volume/filesystem/cache/interruption bindings, changed boot
+identity, exact target/activation/armed state, bounded chronology, and
+evidence-backed byte-identical receipt replay. The module exports no standalone
+receipt parser that could be mistaken for physical proof. A local helper always
+derives `fixture-only`, and every receipt keeps broad durability, release, and
+campaign authorization false. No physical interruption or production witness
+record has been supplied.
+
 One frozen `tinyrustlm.vnext.durable-publication.v1` boundary now consumes that
 verified helper and is the sole publication primitive for current vNext stores.
 It accepts no caller filesystem, platform, randomness, helper result, process
@@ -105,11 +116,12 @@ descendants.
 These later local facts close the named cross-runtime implementation gaps and
 the maintained release-entry-point cutover. Subsequent Gate D checkpoints also
 integrate one bounded archive authority and one module-issued protected
-equality-custody contract. They do not close authorized production custody,
-current native helper provenance/execution for every supported RID, controlled
-physical power-loss evidence, authorized live MemoryEndpoints continuity,
-independent outside-network lane proofs, catalog publication, or a real
-production HTTPS readback. The
+equality-custody contract, plus the evidence-backed controlled power-loss
+source verifier described above. They do not close authorized production
+custody, current native helper provenance/execution for every supported RID,
+actual controlled physical attempts and production witness records, authorized
+live MemoryEndpoints continuity, independent outside-network lane proofs,
+catalog publication, or a real production HTTPS readback. The
 production verifier rejects nonpublic DNS results, pins one public address,
 verifies normal TLS identity, and streams the exact closed inventory. The sole
 release surface now reconstructs deployment and authorization, invokes that
@@ -244,7 +256,9 @@ verified by later phases.
 | Marker without target or target drift | Reconstruction recomputes target identity and marker binding; marker-only, target-only, and drifted pairs are inactive and preserved for quarantine rather than repaired | Mitigated locally | Operator retention and production-volume quarantine exercises remain required |
 | Injected durability success | Production constructors own filesystem, randomness, helper invocation, process result, and readback; hostile tests patch native boundaries only to prove rejection and cannot supply a successful production result | Mitigated locally | Release helper package provenance and host process integrity remain required |
 | Target/marker publication race | Target and marker paths are create-only; exact reuse is byte-bound, conflicting bytes fail, and runner-lock collision observation is bounded before a safe busy result or hard failure | Mitigated locally | Multi-host shared-filesystem behavior is outside the current owned-root contract |
-| Local flush promoted as physical proof | Profiles, receipts, docs, and errors name only the exact performed helper operation and explicitly exclude power-loss claims | Claim inflation prevented | Controlled interruption tests across supported filesystems, controllers, and physical RIDs remain open |
+| Local flush promoted as physical proof | The physical verifier requires three externally signed records, exact release-helper identity for physical eligibility, changed boot identity, stable machine/volume/state bindings, and evidence-backed receipt replay; a local helper can derive only `fixture-only` | Verifier implemented; no physical result | Controlled interruption tests across supported filesystems, controllers, storage classes, and physical RIDs remain open |
+| Evidence file selects its own witness or trusted time | Witness public key/status/validity and verification time come only from the protected caller; all three signatures must bind that exact witness and fall inside its authority interval | Mitigated in source | Production witness enrollment, protected trust distribution, and trusted-time custody remain open |
+| Rehashed receipt promoted without signed source evidence | No standalone receipt parser is exported; replay regenerates verification from the exact helper package, helper receipt, three signed records, protected witness context, and protected time, then requires byte-identical receipt output | Mitigated in source | Campaign admission of retained real source records and independent production replay remain open |
 
 ## Validator Independence
 
@@ -324,10 +338,10 @@ separate acyclic verification receipt, external
 root/terminal/campaign/environment/hash pins, current target signatures, and
 all supplied receipt and subject bytes without network access. That work is
 outside this Phase 2 PASS. Later local Gate D checkpoints implement bounded
-archive-member scanning and protected equality-custody integration, but they
-do not establish production custody, independent observer operation, current
-multi-RID helper provenance, physical power-loss behavior, or any campaign
-gate.
+archive-member scanning, protected equality-custody integration, and the
+controlled power-loss source verifier, but they do not establish production
+custody, independent observer operation, current multi-RID helper provenance,
+real physical power-loss behavior, or any campaign gate.
 
 The redaction checkpoint also admits canonical public text only as fatal UTF-8,
 without BOM, CR, disallowed controls, or a missing terminal LF. It derives a

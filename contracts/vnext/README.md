@@ -410,8 +410,25 @@ size-one `flush` method is a wrapper. There is no inherited child environment
 or shell. The current Windows host executes this boundary successfully, and
 every current vNext store now requires it. A successful batch is not an atomic
 filesystem transaction. OS network isolation, release-package provenance,
-and physical power-loss evidence remain incomplete. See
+and real physical power-loss evidence remain incomplete. See
 `docs/architecture/vnext-directory-durability.md`.
+
+`tinyrustlm.vnext.controlled-power-loss-verification.v1` is the sole current
+source verifier for a controlled physical attempt. Its frozen 7,665-byte
+profile has SHA-256
+`00f4f787d62ca6f388ae06acb4c23134144ad25668d749aac9cd91dca9decfd1`;
+its exact six-member source closure has SHA-256
+`de8a707cd97f20806f84f76afd07ea974c3cbef1f701ed33dcae5935ec1434ac`.
+It verifies three canonical Ed25519 witness records against one exact helper
+package and helper receipt, protected caller trust and time, exact state,
+machine/volume/boot identities, filesystem/cache/interruption classes, and
+bounded chronology. Its public replay operation regenerates verification from
+all source evidence and requires byte-identical receipt output; there is no
+public standalone receipt parser that can promote a self-described receipt.
+Local helper tests can emit only `fixture-only`, and every receipt keeps broad
+durability, release, and campaign authorization false. No real physical
+attempt or production witness evidence exists. See
+`docs/architecture/vnext-controlled-power-loss-verification.md`.
 
 `tinyrustlm/tools/vnext-durable-publication.js` now composes file fsync,
 hard-link create-if-absent publication, verified helper batches, exact target

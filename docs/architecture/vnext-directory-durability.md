@@ -29,13 +29,27 @@ The receipt, subject, campaign-artifact, campaign-operation, and append-only
 runner-lock paths all use this primitive. There is no unsupported-success
 class or caller-supplied durability path. Bounded archive admission and the
 module-issued protected equality-custody contract are also integrated locally.
-Gate D remains incomplete because controlled physical power-loss evidence,
-`linux-x64` and physical `linux-arm64` helper provenance and execution,
-authorized production custody, and OS process/network isolation remain
-separate requirements. One maintained
+The sole controlled physical power-loss verification source boundary is now
+implemented and requires evidence-backed replay of three externally signed
+records. Gate D remains incomplete because no real controlled interruption or
+production witness record exists, and `linux-x64` and physical `linux-arm64`
+helper provenance and execution, authorized production custody, and OS
+process/network isolation remain separate requirements. One maintained
 structured archive target and frozen 29-seed hostile corpus now replay locally;
 hosted sanitizer execution, longer campaigns, and retention/minimization of any
 future crash findings remain open. No campaign counter advances.
+
+The controlled verifier's frozen 7,665-byte profile has SHA-256
+`00f4f787d62ca6f388ae06acb4c23134144ad25668d749aac9cd91dca9decfd1`.
+Its exact six-member source closure has SHA-256
+`de8a707cd97f20806f84f76afd07ea974c3cbef1f701ed33dcae5935ec1434ac`.
+It binds one exact helper package, helper verification receipt, machine,
+volume, filesystem, cache class, interruption class, preboot/postboot identity,
+target/activation/armed state, protected witness context, and protected time.
+The public replay API must regenerate verification from those source records
+and compare the supplied receipt bytes exactly; no standalone receipt parser is
+an evidence authority. See
+`docs/architecture/vnext-controlled-power-loss-verification.md`.
 
 Current clean `win-x64` release-package evidence was produced from source
 revision `734852491e31b772b9b6925f7ac5afe2093becbe`. The 194,048-byte executable
@@ -360,12 +374,13 @@ Retrieved 2026-08-11:
 
 - Gate D is not complete. Bounded archive admission, local protected
   equality-custody integration, one maintained structured parser fuzz target,
-  and a frozen 29-seed hostile corpus are implemented. Production custody,
-  current multi-RID helper provenance/execution, hosted sanitizer execution,
-  longer fuzz campaigns, retention/minimization of future crash findings, OS
-  isolation, and controlled physical durability evidence remain. Deterministic
-  cross-format, path, every-prefix, and single-bit mutation properties pass
-  locally.
+  a frozen 29-seed hostile corpus, and the controlled physical power-loss
+  verification source boundary are implemented. Production custody, current
+  multi-RID helper provenance/execution, hosted sanitizer execution, longer
+  fuzz campaigns, retention/minimization of future crash findings, OS
+  isolation, actual controlled interruption records, and the required physical
+  matrix remain. Deterministic cross-format, path, every-prefix, and single-bit
+  mutation properties pass locally.
 - All four current vNext Node stores and runner-lock records require the
   durable-publication primitive; this does not prove unrelated older tools
   have completed their clean-slate deletion gate.
@@ -377,7 +392,10 @@ Retrieved 2026-08-11:
   of its caller-supplied root and directory components.
 - A successful batch is not an atomic all-or-nothing filesystem transaction;
   it proves only that every listed directory flush returned success.
-- No physical power interruption has been executed.
+- No physical power interruption has been executed. The controlled verifier's
+  maintained local helper and ephemeral witness produce only `fixture-only`.
+- No production witness, protected production trust record, externally signed
+  three-record attempt, or evidence-backed physical `pass` receipt exists.
 - No Linux or physical ARM64 execution evidence exists for this helper.
 - The local archive-scan package replay is not directory-flush-helper evidence.
 - No release, deployment, publication, model qualification, browser round,

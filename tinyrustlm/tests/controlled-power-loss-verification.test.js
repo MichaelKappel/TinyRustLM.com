@@ -7,14 +7,16 @@ const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 
+const controlledPowerLossVerification = require(
+  "../tools/controlled-power-loss-verification.js");
 const {
   controlledPowerLossVerificationProfile: profile,
   controlledPowerLossVerificationProfileId,
   controlledPowerLossVerificationProfileSha256,
-  validateControlledPowerLossVerificationReceipt,
   verificationSourceClosureSha256,
-  verifyControlledPowerLossEvidence
-} = require("../tools/controlled-power-loss-verification.js");
+  verifyControlledPowerLossEvidence,
+  verifyControlledPowerLossReceiptReplay
+} = controlledPowerLossVerification;
 const {
   materializeDirectoryFlushHelperPackage
 } = require("../tools/directory-flush-helper-package.js");
@@ -32,6 +34,12 @@ const { resolveRepositoryRoot } = require("./helpers/repository-root.js");
 const repositoryRoot = resolveRepositoryRoot({
   requiredFiles: ["eng/build-directory-flush-helper.ps1"]
 });
+const architecturePath = path.join(
+  repositoryRoot,
+  "docs",
+  "architecture",
+  "vnext-controlled-power-loss-verification.md"
+);
 const signatureDomain = "tinyrustlm.controlled-power-loss.physical-witness.v1";
 const verificationTimeUtc = "2026-08-20T00:00:15Z";
 let sharedRoot;
@@ -312,6 +320,14 @@ function refinalizeReceipt(receipt) {
 }
 
 test("freezes one controlled physical power-loss verification contract", () => {
+  assert.deepEqual(Object.keys(controlledPowerLossVerification).sort(), [
+    "controlledPowerLossVerificationProfile",
+    "controlledPowerLossVerificationProfileId",
+    "controlledPowerLossVerificationProfileSha256",
+    "verificationSourceClosureSha256",
+    "verifyControlledPowerLossEvidence",
+    "verifyControlledPowerLossReceiptReplay"
+  ]);
   assert.equal(controlledPowerLossVerificationProfileId,
     "tinyrustlm.vnext.controlled-power-loss-verification.v1");
   assert.match(controlledPowerLossVerificationProfileSha256, /^[a-f0-9]{64}$/u);
@@ -323,6 +339,13 @@ test("freezes one controlled physical power-loss verification contract", () => {
     ["local-test-build", "release-package"]);
   assert.equal(profile.nonClaims.some((entry) =>
     /never initiates a shutdown, restart, power cut, signature/u.test(entry)), true);
+  const architecture = fs.readFileSync(architecturePath, "utf8");
+  assert.match(architecture, new RegExp(controlledPowerLossVerificationProfileSha256,
+    "u"));
+  assert.match(architecture, new RegExp(verificationSourceClosureSha256, "u"));
+  assert.match(architecture,
+    /There is no public standalone receipt parser that can be mistaken for proof\./u);
+  assert.match(architecture, /No physical power interruption has been executed\./u);
 });
 
 test("verifies three signed records while retaining fixture-only authority", (context) => {
@@ -339,8 +362,10 @@ test("verifies three signed records while retaining fixture-only authority", (co
   assert.equal(result.receipt.campaignProgressAuthorized, false);
   assert.equal(result.receipt.interruptionClass, "managed-pdu-power-cut");
   assert.equal(result.receipt.verificationTimeUtc, verificationTimeUtc);
-  assert.deepEqual(validateControlledPowerLossVerificationReceipt(result.bytes).receipt,
-    result.receipt);
+  assert.deepEqual(verifyControlledPowerLossReceiptReplay({
+    ...current.options,
+    receiptBytes: result.bytes
+  }).receipt, result.receipt);
   assert.notEqual(result.bytes, result.bytes);
   const publicText = result.bytes.toString("utf8");
   assert.equal(publicText.includes(current.evidenceRoot), false);
@@ -501,16 +526,29 @@ test("rejects refreshed identities that inflate fixture or authorization claims"
   const promoted = clone(result.receipt);
   promoted.verdict = "pass";
   promoted.evidenceTier = "physical-executed";
-  throwsCode(() => validateControlledPowerLossVerificationReceipt(
-    refinalizeReceipt(promoted)), "controlled_power_loss_verification_receipt_invalid");
+  throwsCode(() => verifyControlledPowerLossReceiptReplay({
+    ...current.options,
+    receiptBytes: refinalizeReceipt(promoted)
+  }), "controlled_power_loss_verification_receipt_invalid");
 
   const authorized = clone(result.receipt);
   authorized.releaseAuthorized = true;
-  throwsCode(() => validateControlledPowerLossVerificationReceipt(
-    refinalizeReceipt(authorized)), "controlled_power_loss_verification_receipt_invalid");
+  throwsCode(() => verifyControlledPowerLossReceiptReplay({
+    ...current.options,
+    receiptBytes: refinalizeReceipt(authorized)
+  }), "controlled_power_loss_verification_receipt_invalid");
 
   const broad = clone(result.receipt);
   broad.broadDurabilityClaimAuthorized = true;
-  throwsCode(() => validateControlledPowerLossVerificationReceipt(
-    refinalizeReceipt(broad)), "controlled_power_loss_verification_receipt_invalid");
+  throwsCode(() => verifyControlledPowerLossReceiptReplay({
+    ...current.options,
+    receiptBytes: refinalizeReceipt(broad)
+  }), "controlled_power_loss_verification_receipt_invalid");
+
+  const untypedTrust = clone(result.receipt);
+  untypedTrust.witnessCurrentlyTrusted = "active";
+  throwsCode(() => verifyControlledPowerLossReceiptReplay({
+    ...current.options,
+    receiptBytes: refinalizeReceipt(untypedTrust)
+  }), "controlled_power_loss_verification_receipt_invalid");
 });
