@@ -59,6 +59,11 @@ const records = [
     "forward-only content-addressed durability receipt",
     "same-directory target temporary",
     "non-recursive bootstrap rule"
+  ]],
+  ["ADR-013-slm2-format-profile.md", [
+    "SLM2 2.0",
+    "detached Ed25519",
+    "Dense F32"
   ]]
 ];
 
@@ -66,7 +71,7 @@ function read(name) {
   return fs.readFileSync(path.join(adrDirectory, name), "utf8");
 }
 
-test("contains the complete accepted ADR-001 through ADR-012 inventory", () => {
+test("contains the complete accepted ADR-001 through ADR-013 inventory", () => {
   const actual = fs.readdirSync(adrDirectory)
     .filter((name) => /^ADR-\d{3}-.+\.md$/u.test(name))
     .sort();

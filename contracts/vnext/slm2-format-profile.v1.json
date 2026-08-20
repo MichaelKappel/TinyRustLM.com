@@ -1,0 +1,330 @@
+{
+  "schema": "tinyrustlm.vnext.slm2-format-profile.v1",
+  "profileId": "org.minimodel.slm2/2.0",
+  "status": "development-unpromoted",
+  "byteOrder": "little-endian",
+  "format": {
+    "magicHex": "534c4d320d0a1a0a",
+    "formatIdHex": "6d696e696d6f64656c2e736c6d320000",
+    "major": 2,
+    "minor": 0,
+    "headerBytes": 224,
+    "sectionAlignment": 64,
+    "byteOrderMarker": 16909060,
+    "maximumExactFileBytes": 9007199254740991,
+    "defaultPolicyMaximumFileBytes": 68719476736,
+    "flags": 0,
+    "reservedBytes": "all-zero"
+  },
+  "artifactClasses": [
+    {
+      "id": 1,
+      "name": "base-model",
+      "externalArtifactClass": "base-model"
+    },
+    {
+      "id": 2,
+      "name": "specialist-model",
+      "externalArtifactClass": "specialist-model"
+    }
+  ],
+  "header": {
+    "fields": [
+      {"name": "magic", "offset": 0, "bytes": 8, "type": "fixed-bytes"},
+      {"name": "format_id", "offset": 8, "bytes": 16, "type": "fixed-bytes"},
+      {"name": "header_size", "offset": 24, "bytes": 4, "type": "u32", "value": 224},
+      {"name": "version_major", "offset": 28, "bytes": 2, "type": "u16", "value": 2},
+      {"name": "version_minor", "offset": 30, "bytes": 2, "type": "u16", "value": 0},
+      {"name": "byte_order_marker", "offset": 32, "bytes": 4, "type": "u32", "value": 16909060},
+      {"name": "artifact_class", "offset": 36, "bytes": 2, "type": "u16"},
+      {"name": "header_flags", "offset": 38, "bytes": 2, "type": "u16", "value": 0},
+      {"name": "file_size", "offset": 40, "bytes": 8, "type": "u64"},
+      {"name": "manifest_offset", "offset": 48, "bytes": 8, "type": "u64"},
+      {"name": "manifest_length", "offset": 56, "bytes": 8, "type": "u64"},
+      {"name": "string_table_offset", "offset": 64, "bytes": 8, "type": "u64"},
+      {"name": "string_table_length", "offset": 72, "bytes": 8, "type": "u64"},
+      {"name": "quant_table_offset", "offset": 80, "bytes": 8, "type": "u64", "value": 0},
+      {"name": "quant_count", "offset": 88, "bytes": 4, "type": "u32", "value": 0},
+      {"name": "quant_record_size", "offset": 92, "bytes": 4, "type": "u32", "value": 0},
+      {"name": "tensor_table_offset", "offset": 96, "bytes": 8, "type": "u64"},
+      {"name": "tensor_count", "offset": 104, "bytes": 4, "type": "u32"},
+      {"name": "tensor_record_size", "offset": 108, "bytes": 4, "type": "u32", "value": 192},
+      {"name": "blob_table_offset", "offset": 112, "bytes": 8, "type": "u64", "value": 0},
+      {"name": "blob_count", "offset": 120, "bytes": 4, "type": "u32", "value": 0},
+      {"name": "blob_record_size", "offset": 124, "bytes": 4, "type": "u32", "value": 0},
+      {"name": "auxiliary_table_offset", "offset": 128, "bytes": 8, "type": "u64", "value": 0},
+      {"name": "auxiliary_count", "offset": 136, "bytes": 4, "type": "u32", "value": 0},
+      {"name": "auxiliary_record_size", "offset": 140, "bytes": 4, "type": "u32", "value": 0},
+      {"name": "payload_offset", "offset": 144, "bytes": 8, "type": "u64"},
+      {"name": "payload_length", "offset": 152, "bytes": 8, "type": "u64"},
+      {"name": "reserved", "offset": 160, "bytes": 64, "type": "zero-bytes"}
+    ]
+  },
+  "sections": {
+    "canonicalOrder": [
+      "manifest",
+      "string-table",
+      "tensor-table",
+      "payload"
+    ],
+    "placement": "each-present-section-starts-at-align-up(previous-end,64)",
+    "padding": "zero",
+    "gaps": "forbidden-except-derived-zero-alignment-padding",
+    "overlap": "forbidden",
+    "aliases": "forbidden",
+    "trailingBytes": "forbidden",
+    "absentTables": "offset-count-record-size-all-zero",
+    "quantTable": "absent-in-2.0-f32-reference-profile",
+    "blobTable": "absent-in-2.0-model-profile",
+    "auxiliaryTable": "absent-in-2.0-model-profile"
+  },
+  "limits": {
+    "maximumManifestBytes": 4194304,
+    "maximumStringTableBytes": 16777216,
+    "maximumStrings": 262144,
+    "maximumStringBytes": 255,
+    "maximumTensors": 262144,
+    "maximumTensorRank": 8,
+    "minimumTensorAlignment": 64,
+    "maximumTensorAlignment": 4096,
+    "maximumMetadataDepth": 16,
+    "maximumMetadataItems": 65536,
+    "maximumMetadataMapEntries": 4096,
+    "maximumMetadataArrayEntries": 65536,
+    "maximumMetadataByteStringBytes": 4194304,
+    "maximumMetadataTextBytes": 16384,
+    "streamBufferBytes": 1048576
+  },
+  "metadata": {
+    "encoding": "SLM-DCBOR-1",
+    "schemaValue": "org.minimodel.slm/2.0",
+    "topLevelKeys": [
+      "artifact_class",
+      "body",
+      "dependencies",
+      "extensions",
+      "requirements",
+      "schema"
+    ],
+    "allowedTypes": [
+      "unsigned-integer",
+      "negative-integer",
+      "definite-byte-string",
+      "definite-text-string",
+      "definite-array",
+      "definite-text-keyed-map",
+      "false",
+      "true",
+      "null"
+    ],
+    "forbiddenTypes": [
+      "floating-point",
+      "tag",
+      "undefined",
+      "unassigned-simple-value",
+      "indefinite-length",
+      "break"
+    ],
+    "integerEncoding": "shortest",
+    "mapOrder": "shorter-complete-encoded-key-first-then-bytewise-lexical",
+    "duplicateKeys": "fatal",
+    "trailingBytes": "fatal",
+    "textPolicy": "ASCII-only-in-2.0-model-profile",
+    "unknownCoreKeys": "fatal",
+    "dependencies": "exactly-empty",
+    "extensions": "exactly-empty"
+  },
+  "modelBody": {
+    "exactKeys": [
+      "activation_profile",
+      "architecture_profile",
+      "attention_profile",
+      "context_length",
+      "embedding_size",
+      "feed_forward_size",
+      "head_count",
+      "head_dimension",
+      "kv_head_count",
+      "layer_count",
+      "normalization_epsilon_bits",
+      "normalization_profile",
+      "position_profile",
+      "rope_theta_bits",
+      "tensor_layout_sha256",
+      "tied_embeddings",
+      "vocabulary_size"
+    ],
+    "literalValues": {
+      "activation_profile": "tinyrustlm.silu-gated/1",
+      "architecture_profile": "tinyrustlm.decoder-transformer/1",
+      "attention_profile": "tinyrustlm.causal-gqa/1",
+      "normalization_profile": "tinyrustlm.rmsnorm/1",
+      "position_profile": "tinyrustlm.rope/1"
+    },
+    "positiveU32Fields": [
+      "context_length",
+      "embedding_size",
+      "feed_forward_size",
+      "head_count",
+      "head_dimension",
+      "kv_head_count",
+      "layer_count",
+      "vocabulary_size"
+    ],
+    "f32BitPatternPositiveFiniteFields": [
+      "normalization_epsilon_bits",
+      "rope_theta_bits"
+    ],
+    "digestFields": [
+      "tensor_layout_sha256"
+    ],
+    "booleanFields": [
+      "tied_embeddings"
+    ],
+    "invariants": [
+      "kv-head-count-no-greater-than-head-count",
+      "head-count-divisible-by-kv-head-count",
+      "tensor-layout-sha256-recomputed-from-canonical-descriptors"
+    ]
+  },
+  "requirements": {
+    "exactKeys": [
+      "kv_profile",
+      "minimum_runtime",
+      "operator_profile",
+      "tensor_profile"
+    ],
+    "literalValues": {
+      "kv_profile": "tinyrustlm.kv-f32/1",
+      "minimum_runtime": "tinyrustlm.runtime/2.0",
+      "operator_profile": "tinyrustlm.decoder-f32/1",
+      "tensor_profile": "tinyrustlm.tensor-f32/1"
+    }
+  },
+  "machineIdentifiers": {
+    "grammar": "[a-z0-9][a-z0-9._/-]{0,254}",
+    "forbidden": [
+      "empty-component",
+      "dot-component",
+      "dot-dot-component",
+      "leading-slash",
+      "trailing-slash",
+      "backslash",
+      "colon",
+      "percent",
+      "control",
+      "whitespace"
+    ],
+    "comparison": "raw-ASCII-bytes"
+  },
+  "stringTable": {
+    "prefix": [
+      {"name": "string_count", "type": "u32"},
+      {"name": "byte_pool_length", "type": "u32"}
+    ],
+    "offsets": "u32[string_count+1]",
+    "offsetZero": 0,
+    "finalOffset": "byte_pool_length",
+    "strings": "nonempty-valid-machine-identifiers",
+    "ordering": "strict-raw-byte-ascending",
+    "duplicates": "forbidden",
+    "internalPadding": "forbidden"
+  },
+  "tensorRecord": {
+    "bytes": 192,
+    "fields": [
+      {"name": "record_version", "offset": 0, "bytes": 2, "type": "u16", "value": 1},
+      {"name": "rank", "offset": 2, "bytes": 1, "type": "u8"},
+      {"name": "flags", "offset": 3, "bytes": 1, "type": "u8", "value": 0},
+      {"name": "element_type", "offset": 4, "bytes": 2, "type": "u16", "value": 1},
+      {"name": "quant_profile_index", "offset": 6, "bytes": 2, "type": "u16", "value": 65535},
+      {"name": "semantic_role_string_id", "offset": 8, "bytes": 4, "type": "u32"},
+      {"name": "canonical_name_string_id", "offset": 12, "bytes": 4, "type": "u32"},
+      {"name": "layer", "offset": 16, "bytes": 4, "type": "i32"},
+      {"name": "subindex_0", "offset": 20, "bytes": 4, "type": "i32"},
+      {"name": "subindex_1", "offset": 24, "bytes": 4, "type": "i32"},
+      {"name": "reserved_0", "offset": 28, "bytes": 4, "type": "u32", "value": 0},
+      {"name": "shape", "offset": 32, "bytes": 64, "type": "u64[8]"},
+      {"name": "logical_element_count", "offset": 96, "bytes": 8, "type": "u64"},
+      {"name": "stored_bytes", "offset": 104, "bytes": 8, "type": "u64"},
+      {"name": "payload_relative_offset", "offset": 112, "bytes": 8, "type": "u64"},
+      {"name": "payload_length", "offset": 120, "bytes": 8, "type": "u64"},
+      {"name": "payload_alignment", "offset": 128, "bytes": 4, "type": "u32"},
+      {"name": "block_elements", "offset": 132, "bytes": 4, "type": "u32", "value": 0},
+      {"name": "block_bytes", "offset": 136, "bytes": 4, "type": "u32", "value": 0},
+      {"name": "scale_type", "offset": 140, "bytes": 2, "type": "u16", "value": 0},
+      {"name": "zero_point_type", "offset": 142, "bytes": 2, "type": "u16", "value": 0},
+      {"name": "packing_order", "offset": 144, "bytes": 2, "type": "u16", "value": 0},
+      {"name": "accumulator_type", "offset": 146, "bytes": 2, "type": "u16", "value": 0},
+      {"name": "tail_rule", "offset": 148, "bytes": 2, "type": "u16", "value": 0},
+      {"name": "flags_2", "offset": 150, "bytes": 2, "type": "u16", "value": 0},
+      {"name": "auxiliary_first", "offset": 152, "bytes": 4, "type": "u32", "value": 0},
+      {"name": "auxiliary_count", "offset": 156, "bytes": 4, "type": "u32", "value": 0},
+      {"name": "payload_hash", "offset": 160, "bytes": 32, "type": "sha256"}
+    ],
+    "ordering": [
+      "semantic-role-raw-bytes",
+      "layer-signed",
+      "subindex-0-signed",
+      "subindex-1-signed",
+      "canonical-name-raw-bytes"
+    ],
+    "duplicateSortKeys": "forbidden",
+    "duplicateNames": "forbidden",
+    "rank": "0-through-8",
+    "shape": "positive-used-dimensions-zero-unused-dimensions",
+    "layout": "contiguous-row-major",
+    "elementType": "IEEE-754-binary32-little-endian",
+    "payloadBytes": "logical-element-count-times-4",
+    "payloadValues": "finite-only",
+    "alignment": "power-of-two-64-through-4096"
+  },
+  "hashing": {
+    "algorithm": "SHA-256",
+    "wholeArtifact": "plain-sha256-over-all-file-bytes",
+    "manifest": "plain-sha256-over-exact-manifest-bytes",
+    "tensorLayoutDomain": "tinyrustlm.slm2.tensor-layout.v1",
+    "tensorPayloadDomain": "tinyrustlm.slm2.tensor-payload.v1",
+    "pieceSizeBytes": 4194304,
+    "piecePlainDigest": "plain-sha256-over-piece-bytes",
+    "merkleLeafDomain": "TinyRustLM-Merkle-Leaf-v1",
+    "merkleNodeDomain": "TinyRustLM-Merkle-Node-v1",
+    "merkleCarryDomain": "TinyRustLM-Merkle-Carry-v1",
+    "merkleRootDomain": "TinyRustLM-Merkle-Root-v1",
+    "wholeArtifactHashEmbedded": false
+  },
+  "externalBindings": {
+    "tokenizer": "tokenizer2.0-artifact-by-exact-sha256",
+    "chatTemplate": "template2.0-artifact-by-exact-sha256",
+    "lowRankAdapter": "lora2.0-artifact-bound-to-exact-base",
+    "composition": "acg2.0-artifact-with-ordered-dependencies",
+    "pieceManifest": "canonical-json-receipt-bound-to-whole-artifact-sha256",
+    "provenance": "canonical-json-receipt-bound-to-whole-artifact-sha256",
+    "license": "canonical-json-artifact-or-receipt-bound-to-whole-artifact-sha256",
+    "qualification": "canonical-json-receipt-bound-to-whole-artifact-sha256",
+    "signature": "detached-ed25519-jcs-envelope-bound-to-subject-receipt-and-artifact-sha256",
+    "embeddedPaths": false,
+    "embeddedUrls": false,
+    "embeddedCredentials": false,
+    "embeddedSignatures": false
+  },
+  "forwardPolicy": {
+    "acceptedVersion": "exactly-2.0",
+    "unknownMajor": "fatal",
+    "unknownMinor": "fatal",
+    "unknownArtifactClass": "fatal",
+    "unknownHeaderFlags": "fatal",
+    "unknownTensorFlags": "fatal",
+    "unknownCoreMetadataKeys": "fatal",
+    "unknownRequiredFields": "fatal",
+    "extensionsInVersion2_0": "must-be-empty",
+    "futureChange": "new-adr-new-exact-profile-explicit-parser-support-no-fallback"
+  },
+  "cutover": {
+    "slm1AcceptedBySlm2Reader": false,
+    "dualReaderAllowed": false,
+    "migrationReaderAllowed": false,
+    "automaticReinterpretationAllowed": false,
+    "productionPromotion": "forbidden-until-converter-runtime-wasm-browser-and-hostile-gates-pass"
+  }
+}
