@@ -302,6 +302,9 @@ pub fn required_model_tensors(
         .and_then(|layers| layers.checked_mul(per_layer))
         .and_then(|layers| layers.checked_add(if spec.tied_embeddings { 2 } else { 3 }))
         .ok_or_else(|| Slm2Error::new("slm2-invalid-model-metadata"))?;
+    if capacity > MAXIMUM_TENSORS as usize {
+        return Err(Slm2Error::new("slm2-invalid-model-metadata"));
+    }
     let mut tensors = Vec::with_capacity(capacity);
 
     push_required_tensor(
@@ -2245,6 +2248,14 @@ mod tests {
                 .filter(|tensor| tensor.semantic_role().contains("-normalization.weight"))
                 .count(),
             5
+        );
+        let oversized = ModelSpec {
+            layer_count: i32::MAX as u32,
+            ..expanded
+        };
+        assert_eq!(
+            required_model_tensors(&oversized, 64).unwrap_err().code(),
+            "slm2-invalid-model-metadata"
         );
 
         let mut missing = reference_tensors();

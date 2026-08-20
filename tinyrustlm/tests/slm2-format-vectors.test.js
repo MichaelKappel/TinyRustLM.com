@@ -11,11 +11,13 @@ const vectorPath = path.join(repositoryRoot, "contracts/vnext/slm2-format-vector
 const profilePath = path.join(repositoryRoot, "contracts/vnext/slm2-format-profile.v1.json");
 const vectorDocument = JSON.parse(fs.readFileSync(vectorPath, "utf8"));
 const profileBytes = fs.readFileSync(profilePath);
+const profileDocument = JSON.parse(profileBytes.toString("utf8"));
 
 const HEADER_BYTES = 224;
 const TENSOR_RECORD_BYTES = 192;
 const SECTION_ALIGNMENT = 64;
 const PIECE_BYTES = 4_194_304;
+const MAXIMUM_TENSORS = 262_144;
 const MAX_SAFE_BIGINT = BigInt(Number.MAX_SAFE_INTEGER);
 const MAGIC = Buffer.from([0x53, 0x4c, 0x4d, 0x32, 0x0d, 0x0a, 0x1a, 0x0a]);
 const FORMAT_ID = Buffer.from("minimodel.slm2\0\0", "ascii");
@@ -25,6 +27,132 @@ const MERKLE_LEAF_DOMAIN = Buffer.from("TinyRustLM-Merkle-Leaf-v1\0", "ascii");
 const MERKLE_NODE_DOMAIN = Buffer.from("TinyRustLM-Merkle-Node-v1\0", "ascii");
 const MERKLE_CARRY_DOMAIN = Buffer.from("TinyRustLM-Merkle-Carry-v1\0", "ascii");
 const MERKLE_ROOT_DOMAIN = Buffer.from("TinyRustLM-Merkle-Root-v1\0", "ascii");
+const TENSOR_ROLE_PROFILE = "tinyrustlm.decoder-f32-tensor-roles/1";
+const TOP_LEVEL_TENSOR_DEFINITIONS = [
+  {
+    semanticRole: "model.token-embedding.weight",
+    canonicalName: "model.token-embedding.weight",
+    condition: "always",
+    shape: ["vocabulary_size", "embedding_size"]
+  },
+  {
+    semanticRole: "model.final-normalization.weight",
+    canonicalName: "model.final-normalization.weight",
+    condition: "always",
+    shape: ["embedding_size"]
+  },
+  {
+    semanticRole: "model.output-projection.weight",
+    canonicalName: "model.output-projection.weight",
+    condition: "tied_embeddings-is-false",
+    shape: ["vocabulary_size", "embedding_size"]
+  }
+];
+const PER_LAYER_TENSOR_DEFINITIONS = [
+  {
+    semanticRole: "layer.attention-normalization.weight",
+    canonicalName: "model.layers.{layer}.attention-normalization.weight",
+    condition: "always",
+    shape: ["embedding_size"]
+  },
+  {
+    semanticRole: "layer.feed-forward-normalization.weight",
+    canonicalName: "model.layers.{layer}.feed-forward-normalization.weight",
+    condition: "always",
+    shape: ["embedding_size"]
+  },
+  {
+    semanticRole: "layer.attention.query-projection.weight",
+    canonicalName: "model.layers.{layer}.attention.query-projection.weight",
+    condition: "always",
+    shape: ["query_width", "embedding_size"]
+  },
+  {
+    semanticRole: "layer.attention.key-projection.weight",
+    canonicalName: "model.layers.{layer}.attention.key-projection.weight",
+    condition: "always",
+    shape: ["kv_width", "embedding_size"]
+  },
+  {
+    semanticRole: "layer.attention.value-projection.weight",
+    canonicalName: "model.layers.{layer}.attention.value-projection.weight",
+    condition: "always",
+    shape: ["kv_width", "embedding_size"]
+  },
+  {
+    semanticRole: "layer.attention.output-projection.weight",
+    canonicalName: "model.layers.{layer}.attention.output-projection.weight",
+    condition: "always",
+    shape: ["embedding_size", "query_width"]
+  },
+  {
+    semanticRole: "layer.feed-forward.gate-projection.weight",
+    canonicalName: "model.layers.{layer}.feed-forward.gate-projection.weight",
+    condition: "always",
+    shape: ["feed_forward_size", "embedding_size"]
+  },
+  {
+    semanticRole: "layer.feed-forward.down-projection.weight",
+    canonicalName: "model.layers.{layer}.feed-forward.down-projection.weight",
+    condition: "always",
+    shape: ["embedding_size", "feed_forward_size"]
+  },
+  {
+    semanticRole: "layer.feed-forward.up-projection.weight",
+    canonicalName: "model.layers.{layer}.feed-forward.up-projection.weight",
+    condition: "always",
+    shape: ["feed_forward_size", "embedding_size"]
+  },
+  {
+    semanticRole: "layer.attention.query-projection.bias",
+    canonicalName: "model.layers.{layer}.attention.query-projection.bias",
+    condition: "qkv_bias-is-true",
+    shape: ["query_width"]
+  },
+  {
+    semanticRole: "layer.attention.key-projection.bias",
+    canonicalName: "model.layers.{layer}.attention.key-projection.bias",
+    condition: "qkv_bias-is-true",
+    shape: ["kv_width"]
+  },
+  {
+    semanticRole: "layer.attention.value-projection.bias",
+    canonicalName: "model.layers.{layer}.attention.value-projection.bias",
+    condition: "qkv_bias-is-true",
+    shape: ["kv_width"]
+  },
+  {
+    semanticRole: "layer.attention.query-normalization.weight",
+    canonicalName: "model.layers.{layer}.attention.query-normalization.weight",
+    condition: "qk_normalization-is-true",
+    shape: ["head_dimension"]
+  },
+  {
+    semanticRole: "layer.attention.key-normalization.weight",
+    canonicalName: "model.layers.{layer}.attention.key-normalization.weight",
+    condition: "qk_normalization-is-true",
+    shape: ["head_dimension"]
+  }
+];
+const EXPECTED_TENSOR_ROLE_REGISTRY = {
+  profileId: TENSOR_ROLE_PROFILE,
+  unexpectedTensors: "fatal",
+  missingTensors: "fatal",
+  duplicateRoles: "fatal",
+  layerField: "minus-one-for-global-zero-based-for-transformer-layer",
+  subindexFields: "exactly-minus-one",
+  payloadAlignment: "any-valid-format-alignment-bound-by-each-record",
+  shapeSymbols: {
+    vocabulary_size: "model-body-vocabulary-size",
+    embedding_size: "model-body-embedding-size",
+    feed_forward_size: "model-body-feed-forward-size",
+    query_width: "head-count-times-head-dimension",
+    kv_width: "kv-head-count-times-head-dimension",
+    head_dimension: "model-body-head-dimension"
+  },
+  topLevel: TOP_LEVEL_TENSOR_DEFINITIONS,
+  perLayer: PER_LAYER_TENSOR_DEFINITIONS
+};
 
 class Slm2ValidationError extends Error {
   constructor(code) {
@@ -300,13 +428,14 @@ function validateManifest(bytes, artifactClass) {
     fail("slm2-invalid-model-metadata");
   }
   const requirements = exactMap(required(manifest, "requirements"), [
-    "kv_profile", "minimum_runtime", "operator_profile", "tensor_profile"
+    "kv_profile", "minimum_runtime", "operator_profile", "tensor_profile", "tensor_role_profile"
   ]);
   for (const [key, expected] of [
     ["kv_profile", "tinyrustlm.kv-f32/1"],
     ["minimum_runtime", "tinyrustlm.runtime/2.0"],
     ["operator_profile", "tinyrustlm.decoder-f32/1"],
-    ["tensor_profile", "tinyrustlm.tensor-f32/1"]
+    ["tensor_profile", "tinyrustlm.tensor-f32/1"],
+    ["tensor_role_profile", TENSOR_ROLE_PROFILE]
   ]) {
     if (required(requirements, key) !== expected) fail("slm2-invalid-model-metadata");
   }
@@ -314,7 +443,8 @@ function validateManifest(bytes, artifactClass) {
     "activation_profile", "architecture_profile", "attention_profile", "context_length",
     "embedding_size", "feed_forward_size", "head_count", "head_dimension", "kv_head_count",
     "layer_count", "normalization_epsilon_bits", "normalization_profile", "position_profile",
-    "rope_theta_bits", "tensor_layout_sha256", "tied_embeddings", "vocabulary_size"
+    "qk_normalization", "qkv_bias", "rope_theta_bits", "tensor_layout_sha256", "tied_embeddings",
+    "vocabulary_size"
   ]);
   for (const [key, expected] of [
     ["activation_profile", "tinyrustlm.silu-gated/1"],
@@ -337,10 +467,15 @@ function validateManifest(bytes, artifactClass) {
     headDimension: positiveU32(required(body, "head_dimension")),
     ropeTheta: positiveFloatBits(required(body, "rope_theta_bits")),
     normalizationEpsilon: positiveFloatBits(required(body, "normalization_epsilon_bits")),
+    qkNormalization: required(body, "qk_normalization"),
+    qkvBias: required(body, "qkv_bias"),
     tiedEmbeddings: required(body, "tied_embeddings")
   };
-  if (typeof spec.tiedEmbeddings !== "boolean" || spec.kvHeadCount > spec.headCount
-      || spec.headCount % spec.kvHeadCount !== 0) {
+  if (typeof spec.qkNormalization !== "boolean" || typeof spec.qkvBias !== "boolean"
+      || typeof spec.tiedEmbeddings !== "boolean" || spec.kvHeadCount > spec.headCount
+      || spec.headCount % spec.kvHeadCount !== 0
+      || BigInt(spec.headCount) * BigInt(spec.headDimension) !== BigInt(spec.embeddingSize)
+      || spec.layerCount > 0x7fff_ffff) {
     fail("slm2-invalid-model-metadata");
   }
   const layoutHash = required(body, "tensor_layout_sha256");
@@ -445,6 +580,81 @@ function compareTensorKeys(left, right) {
     || Buffer.compare(Buffer.from(left.canonicalName), Buffer.from(right.canonicalName));
 }
 
+function tensorConditionEnabled(condition, spec) {
+  if (condition === "always") return true;
+  if (condition === "tied_embeddings-is-false") return !spec.tiedEmbeddings;
+  if (condition === "qkv_bias-is-true") return spec.qkvBias;
+  if (condition === "qk_normalization-is-true") return spec.qkNormalization;
+  throw new Error(`unsupported tensor registry condition ${condition}`);
+}
+
+function tensorShapeDimension(symbol, spec) {
+  const values = {
+    vocabulary_size: spec.vocabularySize,
+    embedding_size: spec.embeddingSize,
+    feed_forward_size: spec.feedForwardSize,
+    query_width: spec.headCount * spec.headDimension,
+    kv_width: spec.kvHeadCount * spec.headDimension,
+    head_dimension: spec.headDimension
+  };
+  if (!Object.hasOwn(values, symbol)) {
+    throw new Error(`unsupported tensor registry shape symbol ${symbol}`);
+  }
+  return values[symbol];
+}
+
+function requiredModelTensors(spec) {
+  const topLevel = TOP_LEVEL_TENSOR_DEFINITIONS.filter((definition) => (
+    tensorConditionEnabled(definition.condition, spec)
+  ));
+  const perLayer = PER_LAYER_TENSOR_DEFINITIONS.filter((definition) => (
+    tensorConditionEnabled(definition.condition, spec)
+  ));
+  const expectedCount = topLevel.length + spec.layerCount * perLayer.length;
+  if (!Number.isSafeInteger(expectedCount) || expectedCount <= 0 || expectedCount > MAXIMUM_TENSORS) {
+    fail("slm2-invalid-tensor-registry");
+  }
+  const tensors = topLevel.map((definition) => ({
+    semanticRole: definition.semanticRole,
+    canonicalName: definition.canonicalName,
+    layer: -1,
+    subindex0: -1,
+    subindex1: -1,
+    shape: definition.shape.map((symbol) => tensorShapeDimension(symbol, spec))
+  }));
+  for (let layer = 0; layer < spec.layerCount; layer += 1) {
+    for (const definition of perLayer) {
+      tensors.push({
+        semanticRole: definition.semanticRole,
+        canonicalName: definition.canonicalName.replace("{layer}", String(layer)),
+        layer,
+        subindex0: -1,
+        subindex1: -1,
+        shape: definition.shape.map((symbol) => tensorShapeDimension(symbol, spec))
+      });
+    }
+  }
+  return tensors.sort(compareTensorKeys);
+}
+
+function validateTensorRegistry(spec, tensors) {
+  const expected = requiredModelTensors(spec);
+  if (tensors.length !== expected.length) fail("slm2-invalid-tensor-registry");
+  for (let index = 0; index < tensors.length; index += 1) {
+    const actual = tensors[index];
+    const requiredTensor = expected[index];
+    if (actual.semanticRole !== requiredTensor.semanticRole
+        || actual.canonicalName !== requiredTensor.canonicalName
+        || actual.layer !== requiredTensor.layer
+        || actual.subindex0 !== -1
+        || actual.subindex1 !== -1
+        || actual.shape.length !== requiredTensor.shape.length
+        || actual.shape.some((dimension, shapeIndex) => dimension !== requiredTensor.shape[shapeIndex])) {
+      fail("slm2-invalid-tensor-registry");
+    }
+  }
+}
+
 function identifierFrame(value) {
   return Buffer.concat([leU32(Buffer.byteLength(value, "ascii")), Buffer.from(value, "ascii")]);
 }
@@ -543,6 +753,7 @@ function validateArtifact(bytes) {
     payloadLength: readU64(bytes, 152)
   };
   if (header.manifestLength === 0 || header.stringTableLength === 0 || header.tensorCount === 0
+      || header.tensorCount > MAXIMUM_TENSORS
       || header.tensorRecordBytes !== TENSOR_RECORD_BYTES || header.payloadLength === 0) {
     fail("slm2-invalid-section");
   }
@@ -578,6 +789,7 @@ function validateArtifact(bytes) {
     }
     names.add(tensors[index].canonicalName);
   }
+  validateTensorRegistry(spec, tensors);
   const actualLayoutHash = tensorLayoutHash(artifactClass, tensors);
   if (!actualLayoutHash.equals(layoutHash)) fail("slm2-layout-hash-drift");
 
@@ -642,6 +854,40 @@ function applyMutation(source, mutation) {
   throw new Error(`unsupported mutation ${mutation.operation}`);
 }
 
+function setManifestBooleanTrue(source, key) {
+  const bytes = Buffer.from(source);
+  const manifestOffset = readU64(bytes, 48);
+  const manifestLength = readU64(bytes, 56);
+  const keyBytes = Buffer.from(key, "ascii");
+  const keyOffset = bytes.indexOf(keyBytes, manifestOffset);
+  const valueOffset = keyOffset + keyBytes.length;
+  assert.ok(keyOffset >= manifestOffset);
+  assert.ok(valueOffset < manifestOffset + manifestLength);
+  assert.equal(bytes[valueOffset], 0xf4);
+  bytes[valueOffset] = 0xf5;
+  return bytes;
+}
+
+test("profile publishes the exact independently implemented tensor-role registry", () => {
+  assert.deepEqual(profileDocument.tensorRoleRegistry, EXPECTED_TENSOR_ROLE_REGISTRY);
+  assert.deepEqual(profileDocument.requirements, {
+    exactKeys: [
+      "kv_profile", "minimum_runtime", "operator_profile", "tensor_role_profile", "tensor_profile"
+    ],
+    literalValues: {
+      kv_profile: "tinyrustlm.kv-f32/1",
+      minimum_runtime: "tinyrustlm.runtime/2.0",
+      operator_profile: "tinyrustlm.decoder-f32/1",
+      tensor_role_profile: TENSOR_ROLE_PROFILE,
+      tensor_profile: "tinyrustlm.tensor-f32/1"
+    }
+  });
+  assert.deepEqual(profileDocument.modelBody.booleanFields, [
+    "qk_normalization", "qkv_bias", "tied_embeddings"
+  ]);
+  assert.ok(profileDocument.modelBody.invariants.includes("tensor-role-registry-complete-and-exact"));
+});
+
 test("independently parses and reproduces every checked-in SLM2 vector identity", () => {
   assert.deepEqual(Object.keys(vectorDocument).sort(), ["profileId", "profileSha256", "schema", "vectors"]);
   assert.equal(vectorDocument.schema, "tinyrustlm.vnext.slm2-format-vectors.v1");
@@ -671,8 +917,68 @@ test("independently parses and reproduces every checked-in SLM2 vector identity"
     headDimension: 4,
     ropeTheta: 10_000,
     normalizationEpsilon: Math.fround(0.000_01),
+    qkNormalization: false,
+    qkvBias: false,
     tiedEmbeddings: true
   });
+});
+
+test("independent registry expands every model flag and rejects incomplete or oversized registries", () => {
+  const baseSpec = {
+    artifactClass: 1,
+    vocabularySize: 32,
+    contextLength: 128,
+    embeddingSize: 8,
+    feedForwardSize: 16,
+    layerCount: 1,
+    headCount: 2,
+    kvHeadCount: 1,
+    headDimension: 4,
+    ropeTheta: 10_000,
+    normalizationEpsilon: Math.fround(0.000_01),
+    qkNormalization: false,
+    qkvBias: false,
+    tiedEmbeddings: true
+  };
+  const base = requiredModelTensors(baseSpec);
+  assert.equal(base.length, 11);
+  validateTensorRegistry(baseSpec, base);
+
+  const expandedSpec = {
+    ...baseSpec,
+    qkNormalization: true,
+    qkvBias: true,
+    tiedEmbeddings: false
+  };
+  const expanded = requiredModelTensors(expandedSpec);
+  assert.equal(expanded.length, 17);
+  assert.ok(expanded.some((tensor) => tensor.semanticRole === "model.output-projection.weight"));
+  assert.equal(expanded.filter((tensor) => tensor.semanticRole.endsWith(".bias")).length, 3);
+  assert.equal(expanded.filter((tensor) => tensor.semanticRole.includes("-normalization.weight")).length, 5);
+  validateTensorRegistry(expandedSpec, expanded);
+
+  assert.throws(
+    () => validateTensorRegistry(expandedSpec, expanded.slice(1)),
+    (error) => error instanceof Slm2ValidationError && error.code === "slm2-invalid-tensor-registry"
+  );
+  const reshaped = expanded.map((tensor) => ({ ...tensor, shape: [...tensor.shape] }));
+  reshaped[0].shape[0] += 1;
+  assert.throws(
+    () => validateTensorRegistry(expandedSpec, reshaped),
+    (error) => error instanceof Slm2ValidationError && error.code === "slm2-invalid-tensor-registry"
+  );
+  assert.throws(
+    () => requiredModelTensors({ ...expandedSpec, layerCount: 0x7fff_ffff }),
+    (error) => error instanceof Slm2ValidationError && error.code === "slm2-invalid-tensor-registry"
+  );
+});
+
+test("independent parser rejects a canonical manifest whose flags require absent tensors", () => {
+  const source = strictHex(vectorDocument.vectors[0].artifactHex);
+  assert.throws(
+    () => validateArtifact(setManifestBooleanTrue(source, "qkv_bias")),
+    (error) => error instanceof Slm2ValidationError && error.code === "slm2-invalid-tensor-registry"
+  );
 });
 
 test("independent parser rejects every frozen hostile artifact mutation", () => {
