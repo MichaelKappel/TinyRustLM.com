@@ -16,35 +16,44 @@ historical evidence outside the vNext DAG.
 The model-byte format is a separate exact binary contract referenced by the
 artifact family rather than another JSON schema in the nine-member registry.
 The current development-only profile is
-`slm2-format-profile.v1.json`, 14,097 bytes with SHA-256
-`f272caf64cacb7a4705fee0c958f15ee0cac3985d8728458a80f812913d66554`.
+`slm2-format-profile.v1.json`, 19,321 bytes with SHA-256
+`b3f90c67d396d16a3ca561cbb288c10dc542a10e00d758704d1d6a17b3c3ff0f`.
 It admits only complete class-1 base models or class-2 specialist models with
-dense finite little-endian F32 tensors. Tokenizers, templates, adapters,
+dense finite little-endian F32 tensors. Each artifact must contain the exact
+canonical decoder tensor registry selected by layer count, tied embeddings,
+QKV bias, and Q/K normalization; missing, additional, renamed, reshaped, or
+wrongly indexed tensors are fatal. Tokenizers, templates, adapters,
 composition graphs, provenance, licenses, qualification, signatures, and peer
 locations remain separate exact artifacts or receipts.
 
 `slm2-format-vectors.v1.json` is the language-neutral byte contract. Its one
-seed artifact is exactly 1,800 bytes with SHA-256
-`14ad14add8c8205e29040307eb42a4c749fb161fe7105e1de2bcbfc032ca81c4`.
+seed artifact is exactly 7,680 bytes with 11 required tensors and SHA-256
+`3f28af0124e49f3ad1c177958eea5d5bd2823b63821451d44c05da6602fc402d`.
 The public Rust writer reproduces those bytes from deliberately reversed
 tensor inputs; the streaming Rust reader, an independently written Node-core
 reader, and the Rust piece/Merkle implementation reproduce every declared
-identity. Both readers reject the five frozen artifact mutations, and the
-independent Node SLM-DCBOR-1 parser also rejects nonshortest, duplicate,
-indefinite, tagged, floating, trailing, non-ASCII, and non-text-key forms.
+identity. The Node implementation independently derives every conditional
+tensor role, name, layer, subindex, and shape and rejects a canonical manifest
+whose flags require absent tensors. Both readers reject the five frozen
+artifact mutations, and the independent Node SLM-DCBOR-1 parser also rejects
+nonshortest, duplicate, indefinite, tagged, floating, trailing, non-ASCII, and
+non-text-key forms.
 
 The bounded raw parser-fuzz profile is
-`slm2-fuzz-profile.v1.json`, 3,061 bytes with SHA-256
-`ee114d831d180afdb15c2f8ea00e76212083fd764c605f2cf193f0770708a641`.
-Its 26-seed stable corpus contains one exact admission and 25 single-fault
-rejections across envelope, metadata, string, tensor, layout, payload, and
-trailing-byte classes. The harness deserializes the exact hashed profile into
-closed typed records and proves every executable limit, ordered error code,
-declared check, replay rule, and prohibited behavior agrees with its source
-contract before parser entry. The stable Rust replay consumes those shared
-limits and verifies the exact seed set, bytes, hashes, verdicts, error codes,
-and admitted tensor count; hostile tests reject membership, identity, ordering,
-path, byte, and verdict drift. The optional libFuzzer target compiles with
+`slm2-fuzz-profile.v1.json`, 3,187 bytes with SHA-256
+`995a88e52692df204455ea94725de603af38b785a6f9f708a37bf7baa3ae2ce8`.
+Its 27-seed stable corpus contains one exact admission and 26 single-fault
+rejections across envelope, metadata, string, tensor, exact registry, layout,
+payload, and trailing-byte classes. The registry seed changes one canonical
+DCBOR Boolean so the manifest requires absent QKV biases. The harness
+deserializes the exact hashed profile into closed typed records and proves
+every executable limit, ordered error code, declared check, replay rule, and
+prohibited behavior agrees with its source contract before parser entry. Every
+admission is rechecked against the public required-registry API. The stable
+Rust replay consumes those shared limits and verifies the exact seed set,
+bytes, hashes, verdicts, error codes, and admitted tensor count; hostile tests
+reject membership, identity, ordering, path, byte, and verdict drift. The
+optional libFuzzer target compiles with
 `libfuzzer-sys` 0.4.13. This is deterministic local parser evidence, not a
 long-running sanitizer result, converter/runtime conformance result, model
 qualification, deployment, publication, or live campaign evidence. See

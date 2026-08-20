@@ -4,7 +4,7 @@
   "version": 1,
   "status": "development-unpromoted",
   "formatProfileId": "org.minimodel.slm2/2.0",
-  "formatProfileSha256": "f272caf64cacb7a4705fee0c958f15ee0cac3985d8728458a80f812913d66554",
+  "formatProfileSha256": "b3f90c67d396d16a3ca561cbb288c10dc542a10e00d758704d1d6a17b3c3ff0f",
   "input": {
     "kind": "raw-complete-slm2-artifact-bytes",
     "maximumBytes": 1048576,
@@ -24,6 +24,7 @@
       "piece-manifest-sha256-equals-independent-sha256",
       "piece-manifest-sha256-equals-model-identity",
       "tensor-count-within-policy",
+      "tensor-registry-matches-public-required-registry",
       "all-payload-ranges-within-input"
     ],
     "rejectedArtifactChecks": [
@@ -52,6 +53,7 @@
     "slm2-invalid-string-table",
     "slm2-invalid-tensor",
     "slm2-invalid-tensor-order",
+    "slm2-invalid-tensor-registry",
     "slm2-io",
     "slm2-layout-hash-drift",
     "slm2-nonfinite-f32",
@@ -74,6 +76,7 @@
     "noncanonical-metadata",
     "string-table-mutation",
     "tensor-table-mutation",
+    "tensor-registry-mutation",
     "layout-identity-mutation",
     "payload-layout-mutation",
     "payload-finiteness-and-identity-mutation",

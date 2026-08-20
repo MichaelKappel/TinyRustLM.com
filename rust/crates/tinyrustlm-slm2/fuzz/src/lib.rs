@@ -10,8 +10,8 @@ use std::sync::OnceLock;
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
 use tinyrustlm_slm2::{
-    build_piece_manifest, validate_model, ValidationPolicy, SLM2_FORMAT_PROFILE_ID,
-    SLM2_FORMAT_PROFILE_SHA256,
+    build_piece_manifest, required_model_tensors, validate_model, ValidationPolicy,
+    SLM2_FORMAT_PROFILE_ID, SLM2_FORMAT_PROFILE_SHA256,
 };
 
 /// Largest complete raw artifact forwarded to the SLM2 parser by this harness.
@@ -22,7 +22,7 @@ pub const MAXIMUM_TENSORS: u32 = 4_096;
 pub const SLM2_FUZZ_PROFILE_ID: &str = "tinyrustlm.vnext.slm2-fuzz.v1";
 /// SHA-256 of the exact checked-in SLM2 fuzz profile.
 pub const SLM2_FUZZ_PROFILE_SHA256: &str =
-    "ee114d831d180afdb15c2f8ea00e76212083fd764c605f2cf193f0770708a641";
+    "995a88e52692df204455ea94725de603af38b785a6f9f708a37bf7baa3ae2ce8";
 /// Exact schema required for one stable corpus manifest.
 pub const CORPUS_MANIFEST_SCHEMA: &str = "tinyrustlm.vnext.slm2_fuzz_corpus.v1";
 /// Largest stable corpus manifest admitted before JSON parsing.
@@ -50,6 +50,7 @@ const ALLOWED_PARSER_ERROR_CODES: &[&str] = &[
     "slm2-invalid-string-table",
     "slm2-invalid-tensor",
     "slm2-invalid-tensor-order",
+    "slm2-invalid-tensor-registry",
     "slm2-io",
     "slm2-layout-hash-drift",
     "slm2-nonfinite-f32",
@@ -71,6 +72,7 @@ const ACCEPTED_ARTIFACT_CHECKS: &[&str] = &[
     "piece-manifest-sha256-equals-independent-sha256",
     "piece-manifest-sha256-equals-model-identity",
     "tensor-count-within-policy",
+    "tensor-registry-matches-public-required-registry",
     "all-payload-ranges-within-input",
 ];
 const REJECTED_ARTIFACT_CHECKS: &[&str] = &[
@@ -88,6 +90,7 @@ const SEED_CLASSES: &[&str] = &[
     "noncanonical-metadata",
     "string-table-mutation",
     "tensor-table-mutation",
+    "tensor-registry-mutation",
     "layout-identity-mutation",
     "payload-layout-mutation",
     "payload-finiteness-and-identity-mutation",
@@ -225,7 +228,7 @@ fn validate_frozen_profile() {
     assert_eq!(SLM2_FORMAT_PROFILE_ID, "org.minimodel.slm2/2.0");
     assert_eq!(
         SLM2_FORMAT_PROFILE_SHA256,
-        "f272caf64cacb7a4705fee0c958f15ee0cac3985d8728458a80f812913d66554"
+        "b3f90c67d396d16a3ca561cbb288c10dc542a10e00d758704d1d6a17b3c3ff0f"
     );
     assert_eq!(
         hex_sha256(&sha256(SLM2_FUZZ_PROFILE_BYTES)),
@@ -314,6 +317,17 @@ pub fn exercise_bytes(bytes: &[u8]) -> ExerciseReport {
             assert_eq!(model.identity().byte_length(), bytes.len() as u64);
             assert_eq!(model.identity().artifact_sha256(), &independent_digest);
             assert!(model.tensors().len() <= MAXIMUM_TENSORS as usize);
+            let required = required_model_tensors(model.spec(), 64)
+                .expect("parser-admitted model must have one bounded required tensor registry");
+            assert_eq!(model.tensors().len(), required.len());
+            for (actual, expected) in model.tensors().iter().zip(&required) {
+                assert_eq!(actual.semantic_role(), expected.semantic_role());
+                assert_eq!(actual.canonical_name(), expected.canonical_name());
+                assert_eq!(actual.layer(), expected.layer());
+                assert_eq!(actual.subindex_0(), -1);
+                assert_eq!(actual.subindex_1(), -1);
+                assert_eq!(actual.shape(), expected.shape());
+            }
             for tensor in model.tensors() {
                 let end = tensor
                     .payload_offset()
@@ -385,7 +399,7 @@ mod tests {
         let bytes = vector_artifact();
         let report = exercise_bytes(&bytes);
         assert_eq!(report.verdict(), &ExerciseVerdict::Admitted);
-        assert_eq!(report.tensor_count(), Some(2));
+        assert_eq!(report.tensor_count(), Some(11));
         assert_eq!(report.input_sha256(), hex_sha256(&sha256(&bytes)));
     }
 

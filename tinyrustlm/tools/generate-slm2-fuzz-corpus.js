@@ -7,7 +7,7 @@ const path = require("node:path");
 
 const GENERATOR_ID = "tinyrustlm.tools.generate-slm2-fuzz-corpus.v1";
 const FUZZ_PROFILE_ID = "tinyrustlm.vnext.slm2-fuzz.v1";
-const FUZZ_PROFILE_SHA256 = "ee114d831d180afdb15c2f8ea00e76212083fd764c605f2cf193f0770708a641";
+const FUZZ_PROFILE_SHA256 = "995a88e52692df204455ea94725de603af38b785a6f9f708a37bf7baa3ae2ce8";
 const FORMAT_PROFILE_ID = "org.minimodel.slm2/2.0";
 const repositoryRoot = path.resolve(__dirname, "../..");
 const vectorPath = path.join(repositoryRoot, "contracts/vnext/slm2-format-vectors.v1.json");
@@ -58,6 +58,13 @@ function buildSeeds(vector) {
   const header = vector.header;
   const firstTensor = header.tensorTableOffset;
   const secondTensor = firstTensor + header.tensorRecordBytes;
+  const firstTensorNameStringId = artifact.readUInt32LE(firstTensor + 12);
+  const firstPayloadEnd = header.payloadOffset
+    + Number(artifact.readBigUInt64LE(firstTensor + 112))
+    + Number(artifact.readBigUInt64LE(firstTensor + 120));
+  const secondPayloadStart = header.payloadOffset
+    + Number(artifact.readBigUInt64LE(secondTensor + 112));
+  assert.ok(firstPayloadEnd < secondPayloadStart);
   const layoutDigest = strictHex(vector.tensorLayoutSha256);
   const layoutOffset = artifact.indexOf(layoutDigest);
   assert.notEqual(layoutOffset, -1);
@@ -70,9 +77,18 @@ function buildSeeds(vector) {
   const classOffset = artifact.indexOf(classMarker);
   assert.notEqual(classOffset, -1);
   assert.equal(artifact.indexOf(classMarker, classOffset + 1), -1);
+  const qkvBiasMarker = Buffer.concat([
+    Buffer.from([0x68]),
+    Buffer.from("qkv_bias", "ascii"),
+    Buffer.from([0xf4])
+  ]);
+  const qkvBiasOffset = artifact.indexOf(qkvBiasMarker, header.manifestOffset);
+  assert.ok(qkvBiasOffset >= header.manifestOffset);
+  assert.ok(qkvBiasOffset + qkvBiasMarker.length <= header.manifestOffset + header.manifestLength);
+  assert.equal(artifact.indexOf(qkvBiasMarker, qkvBiasOffset + 1), -1);
 
   return [
-    seed("01-canonical-valid-vector", "canonical-valid-vector", Buffer.from(artifact), null, 2),
+    seed("01-canonical-valid-vector", "canonical-valid-vector", Buffer.from(artifact), null, 11),
     seed("02-legacy-slm1-short", "legacy-or-truncated-envelope", Buffer.from("SLM1", "ascii"),
       "slm2-truncated-header"),
     seed("03-truncated-header", "legacy-or-truncated-envelope", artifact.subarray(0, 223),
@@ -113,20 +129,24 @@ function buildSeeds(vector) {
     seed("18-tensor-size-mismatch", "tensor-table-mutation", changed(artifact,
       (bytes) => bytes.writeBigUInt64LE(3n, firstTensor + 96)), "slm2-tensor-size-mismatch"),
     seed("19-duplicate-tensor-name", "tensor-table-mutation", changed(artifact,
-      (bytes) => bytes.writeUInt32LE(1, secondTensor + 12)), "slm2-invalid-tensor-order"),
+      (bytes) => bytes.writeUInt32LE(firstTensorNameStringId, secondTensor + 12)),
+    "slm2-invalid-tensor-order"),
     seed("20-invalid-tensor-alignment", "tensor-table-mutation", changed(artifact,
       (bytes) => bytes.writeUInt32LE(96, firstTensor + 128)), "slm2-invalid-tensor"),
-    seed("21-layout-hash-drift", "layout-identity-mutation", changed(artifact,
+    seed("21-tensor-registry-flag-mismatch", "tensor-registry-mutation", changed(artifact,
+      (bytes) => { bytes[qkvBiasOffset + qkvBiasMarker.length - 1] = 0xf5; }),
+    "slm2-invalid-tensor-registry"),
+    seed("22-layout-hash-drift", "layout-identity-mutation", changed(artifact,
       (bytes) => { bytes[layoutOffset] ^= 1; }), "slm2-layout-hash-drift"),
-    seed("22-payload-relative-offset", "payload-layout-mutation", changed(artifact,
+    seed("23-payload-relative-offset", "payload-layout-mutation", changed(artifact,
       (bytes) => bytes.writeBigUInt64LE(1n, firstTensor + 112)), "slm2-invalid-payload-layout"),
-    seed("23-nonzero-payload-gap", "payload-layout-mutation", changed(artifact,
-      (bytes) => { bytes[header.payloadOffset + 16] = 1; }), "slm2-nonzero-padding"),
-    seed("24-payload-hash-drift", "payload-finiteness-and-identity-mutation", changed(artifact,
+    seed("24-nonzero-payload-gap", "payload-layout-mutation", changed(artifact,
+      (bytes) => { bytes[firstPayloadEnd] = 1; }), "slm2-nonzero-padding"),
+    seed("25-payload-hash-drift", "payload-finiteness-and-identity-mutation", changed(artifact,
       (bytes) => { bytes[header.payloadOffset] ^= 1; }), "slm2-payload-hash-drift"),
-    seed("25-nonfinite-f32", "payload-finiteness-and-identity-mutation", changed(artifact,
+    seed("26-nonfinite-f32", "payload-finiteness-and-identity-mutation", changed(artifact,
       (bytes) => bytes.writeUInt32LE(0x7fc0_0000, header.payloadOffset)), "slm2-nonfinite-f32"),
-    seed("26-trailing-byte", "trailing-byte-mutation", Buffer.concat([artifact, Buffer.from([0])]),
+    seed("27-trailing-byte", "trailing-byte-mutation", Buffer.concat([artifact, Buffer.from([0])]),
       "slm2-file-size-mismatch")
   ];
 }

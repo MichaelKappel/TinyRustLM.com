@@ -107,7 +107,9 @@ The initial model body has the exact field registry in the profile. It binds
 the closed decoder-transformer, causal grouped-query attention, SiLU-gated
 activation, RMSNorm, and RoPE profiles; positive dimensions and context; F32
 bit patterns for positive finite RoPE theta and normalization epsilon; tied
-embedding behavior; and the recomputed tensor-layout SHA-256.
+embedding behavior; explicit QKV-bias and Q/K-normalization Booleans; the
+invariant `head_count * head_dimension == embedding_size`; a layer count that
+fits the signed descriptor index; and the recomputed tensor-layout SHA-256.
 
 All SLM2 2.0 metadata text is ASCII. Machine identifiers use
 `[a-z0-9][a-z0-9._/-]{0,254}` with no empty, `.` or `..` component, leading or
@@ -120,6 +122,7 @@ The requirements map is exact and binds:
 - `tinyrustlm.runtime/2.0`;
 - `tinyrustlm.decoder-f32/1`;
 - `tinyrustlm.tensor-f32/1`;
+- `tinyrustlm.decoder-f32-tensor-roles/1`;
 - `tinyrustlm.kv-f32/1`.
 
 Unknown keys, versions, classes, flags, profiles, or nonempty extensions fail.
@@ -144,6 +147,19 @@ Duplicate sort keys and duplicate canonical names are fatal. Rank is zero
 through eight. Rank zero is one scalar element. Used dimensions are positive,
 unused dimensions are zero, and checked multiplication reproduces the stored
 logical element count.
+
+The profile freezes one exact decoder tensor-role registry. Every artifact has
+token embedding and final normalization tensors plus these nine tensors for
+each zero-based layer: attention and feed-forward normalization; query, key,
+value, and output projections; and gate, down, and up feed-forward projections.
+An untied model additionally has one output projection. `qkv_bias=true` adds
+query, key, and value biases per layer. `qk_normalization=true` adds query and
+key normalization weights per layer. Semantic roles, canonical names, layer
+indices, `-1` subindices, and symbolic shapes are exact. Missing, additional,
+renamed, reshaped, or wrongly indexed tensors fail with
+`slm2-invalid-tensor-registry`; record alignment may vary only within the
+existing format alignment rule. Required cardinality above the profile's
+262,144-tensor ceiling fails before registry allocation.
 
 SLM2 2.0 admits only little-endian IEEE 754 binary32 tensor payloads. Payload
 length is exactly `logical_element_count * 4`, and every value is finite.
@@ -195,8 +211,9 @@ The sole SLM2 parser validates cheap structure before allocation or hashing:
 5. zero padding;
 6. canonical metadata grammar and exact schema;
 7. string table;
-8. tensor descriptors, sort order, shapes, and payload plan;
-9. streamed tensor hashes, finite F32 values, layout hash, and whole-file hash.
+8. tensor descriptors, sort order, shapes, and exact conditional registry;
+9. payload plan, streamed tensor hashes, finite F32 values, layout hash, and
+   whole-file hash.
 
 Every offset, length, count, shape product, alignment, conversion to `usize`,
 and stream position uses checked arithmetic. Metadata and tables are bounded;
@@ -236,14 +253,16 @@ only from an owned staging file after writer success and independent readback.
 - **Observed local fact**: `rust/crates/tinyrustlm-slm2` now implements one
   unsafe-free bounded writer, reader, and fixed-piece/Merkle identity path for
   the exact profile. It is not wired into production model selection.
-- **Observed local fact**: the 1,800-byte checked-in seed artifact has SHA-256
-  `14ad14add8c8205e29040307eb42a4c749fb161fe7105e1de2bcbfc032ca81c4`;
+- **Observed local fact**: the 7,680-byte checked-in 11-tensor seed artifact has
+  SHA-256
+  `3f28af0124e49f3ad1c177958eea5d5bd2823b63821451d44c05da6602fc402d`;
   the public Rust API and an independently written Node-core parser reproduce
   its manifest, tensor-layout, tensor-payload, artifact, piece, and Merkle
   identities.
 - **Observed local fact**: the bounded fuzz profile has SHA-256
-  `ee114d831d180afdb15c2f8ea00e76212083fd764c605f2cf193f0770708a641`.
-  Stable replay covers one admission and 25 exact rejections, while every
+  `995a88e52692df204455ea94725de603af38b785a6f9f708a37bf7baa3ae2ce8`.
+  Stable replay covers one admission and 26 exact rejections, including a
+  canonical manifest requiring absent QKV bias tensors, while every
   proper prefix of the seed artifact rejects. No sustained sanitizer campaign
   or crash-retention result is claimed.
 - **Sourced public fact**: RFC 8949 defines CBOR and deterministic encoding at

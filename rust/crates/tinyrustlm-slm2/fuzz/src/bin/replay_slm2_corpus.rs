@@ -19,10 +19,10 @@ use tinyrustlm_slm2_fuzz::{
 const CORPUS_ID: &str = "tinyrustlm.vnext.slm2-fuzz-corpus.v1";
 const FORMAT_PROFILE_ID: &str = "org.minimodel.slm2/2.0";
 const FORMAT_PROFILE_SHA256: &str =
-    "f272caf64cacb7a4705fee0c958f15ee0cac3985d8728458a80f812913d66554";
-const SOURCE_VECTOR_ID: &str = "base-model-two-f32-tensors";
+    "b3f90c67d396d16a3ca561cbb288c10dc542a10e00d758704d1d6a17b3c3ff0f";
+const SOURCE_VECTOR_ID: &str = "base-model-required-f32-tensor-registry";
 const SOURCE_VECTOR_ARTIFACT_SHA256: &str =
-    "14ad14add8c8205e29040307eb42a4c749fb161fe7105e1de2bcbfc032ca81c4";
+    "3f28af0124e49f3ad1c177958eea5d5bd2823b63821451d44c05da6602fc402d";
 
 type DynError = Box<dyn Error>;
 
@@ -409,9 +409,9 @@ mod tests {
         let fixture = copy_frozen_corpus();
         let summary = replay_manifest(&fixture.manifest()).unwrap();
         assert_eq!(summary.schema, CORPUS_MANIFEST_SCHEMA);
-        assert_eq!(summary.entries, 26);
+        assert_eq!(summary.entries, 27);
         assert_eq!(summary.admitted, 1);
-        assert_eq!(summary.rejected, 25);
+        assert_eq!(summary.rejected, 26);
     }
 
     #[test]
