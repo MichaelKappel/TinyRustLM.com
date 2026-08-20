@@ -38,12 +38,16 @@ The bounded raw parser-fuzz profile is
 `ee114d831d180afdb15c2f8ea00e76212083fd764c605f2cf193f0770708a641`.
 Its 26-seed stable corpus contains one exact admission and 25 single-fault
 rejections across envelope, metadata, string, tensor, layout, payload, and
-trailing-byte classes. The stable Rust replay verifies the exact seed set,
-bytes, hashes, verdicts, error codes, and admitted tensor count. The optional
-libFuzzer target compiles with `libfuzzer-sys` 0.4.13. This is deterministic
-local parser evidence, not a long-running sanitizer result, converter/runtime
-conformance result, model qualification, deployment, publication, or live
-campaign evidence. See
+trailing-byte classes. The harness deserializes the exact hashed profile into
+closed typed records and proves every executable limit, ordered error code,
+declared check, replay rule, and prohibited behavior agrees with its source
+contract before parser entry. The stable Rust replay consumes those shared
+limits and verifies the exact seed set, bytes, hashes, verdicts, error codes,
+and admitted tensor count; hostile tests reject membership, identity, ordering,
+path, byte, and verdict drift. The optional libFuzzer target compiles with
+`libfuzzer-sys` 0.4.13. This is deterministic local parser evidence, not a
+long-running sanitizer result, converter/runtime conformance result, model
+qualification, deployment, publication, or live campaign evidence. See
 `docs/architecture/vnext-slm2-format-implementation.md`.
 
 ## Parsing

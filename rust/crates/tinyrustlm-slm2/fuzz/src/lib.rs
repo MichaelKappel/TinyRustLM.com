@@ -5,7 +5,9 @@
 //! unpromoted SLM2 model parser.
 
 use std::io::Cursor;
+use std::sync::OnceLock;
 
+use serde::Deserialize;
 use sha2::{Digest, Sha256};
 use tinyrustlm_slm2::{
     build_piece_manifest, validate_model, ValidationPolicy, SLM2_FORMAT_PROFILE_ID,
@@ -21,6 +23,12 @@ pub const SLM2_FUZZ_PROFILE_ID: &str = "tinyrustlm.vnext.slm2-fuzz.v1";
 /// SHA-256 of the exact checked-in SLM2 fuzz profile.
 pub const SLM2_FUZZ_PROFILE_SHA256: &str =
     "ee114d831d180afdb15c2f8ea00e76212083fd764c605f2cf193f0770708a641";
+/// Exact schema required for one stable corpus manifest.
+pub const CORPUS_MANIFEST_SCHEMA: &str = "tinyrustlm.vnext.slm2_fuzz_corpus.v1";
+/// Largest stable corpus manifest admitted before JSON parsing.
+pub const MAXIMUM_CORPUS_MANIFEST_BYTES: u64 = 131_072;
+/// Largest exact stable corpus membership admitted by replay.
+pub const MAXIMUM_CORPUS_ENTRIES: usize = 256;
 
 const SLM2_FUZZ_PROFILE_BYTES: &[u8] =
     include_bytes!("../../../../../contracts/vnext/slm2-fuzz-profile.v1.json");
@@ -56,6 +64,98 @@ const ALLOWED_PARSER_ERROR_CODES: &[&str] = &[
     "slm2-unsupported-table",
     "slm2-unsupported-version",
 ];
+const ACCEPTED_ARTIFACT_CHECKS: &[&str] = &[
+    "identity-byte-length-equals-input-length",
+    "identity-sha256-equals-independent-sha256",
+    "piece-manifest-byte-length-equals-input-length",
+    "piece-manifest-sha256-equals-independent-sha256",
+    "piece-manifest-sha256-equals-model-identity",
+    "tensor-count-within-policy",
+    "all-payload-ranges-within-input",
+];
+const REJECTED_ARTIFACT_CHECKS: &[&str] = &[
+    "stable-error-code-is-in-allowlist",
+    "no-panic",
+    "no-activation",
+    "no-output-file",
+    "no-network",
+];
+const SEED_CLASSES: &[&str] = &[
+    "canonical-valid-vector",
+    "legacy-or-truncated-envelope",
+    "header-identity-and-version-mutation",
+    "section-layout-and-padding-mutation",
+    "noncanonical-metadata",
+    "string-table-mutation",
+    "tensor-table-mutation",
+    "layout-identity-mutation",
+    "payload-layout-mutation",
+    "payload-finiteness-and-identity-mutation",
+    "trailing-byte-mutation",
+];
+const PROHIBITED_BEHAVIORS: &[&str] = &[
+    "unbounded-input-forwarding",
+    "panic-as-rejection",
+    "parser-output-repair",
+    "best-of-n-parser-selection",
+    "activation-of-fuzzed-artifacts",
+    "network-access",
+    "model-byte-publication",
+    "fuzz-result-as-production-qualification",
+];
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct FuzzProfile {
+    schema: String,
+    profile_id: String,
+    version: u32,
+    status: String,
+    format_profile_id: String,
+    format_profile_sha256: String,
+    input: InputProfile,
+    validation_policy: ValidationPolicyProfile,
+    target: TargetProfile,
+    allowed_parser_error_codes: Vec<String>,
+    seed_classes: Vec<String>,
+    stable_replay: StableReplayProfile,
+    prohibited: Vec<String>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct InputProfile {
+    kind: String,
+    maximum_bytes: usize,
+    empty_input: String,
+    oversized_input: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct ValidationPolicyProfile {
+    maximum_file_bytes: usize,
+    maximum_tensors: u32,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct TargetProfile {
+    parser: String,
+    accepted_artifact_checks: Vec<String>,
+    rejected_artifact_checks: Vec<String>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct StableReplayProfile {
+    manifest_schema: String,
+    manifest_status: String,
+    exact_seed_set_required: bool,
+    seed_symlinks_allowed: bool,
+    manifest_maximum_bytes: u64,
+    maximum_entries: usize,
+}
 
 /// Stable outcome after one bounded parser exercise.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -117,6 +217,11 @@ impl ExerciseReport {
 
 /// Verifies that the exact fuzz and format profiles remain bound to this harness.
 pub fn validate_profile_identity() {
+    static VALIDATED: OnceLock<()> = OnceLock::new();
+    VALIDATED.get_or_init(validate_frozen_profile);
+}
+
+fn validate_frozen_profile() {
     assert_eq!(SLM2_FORMAT_PROFILE_ID, "org.minimodel.slm2/2.0");
     assert_eq!(
         SLM2_FORMAT_PROFILE_SHA256,
@@ -125,6 +230,67 @@ pub fn validate_profile_identity() {
     assert_eq!(
         hex_sha256(&sha256(SLM2_FUZZ_PROFILE_BYTES)),
         SLM2_FUZZ_PROFILE_SHA256
+    );
+
+    let profile: FuzzProfile = serde_json::from_slice(SLM2_FUZZ_PROFILE_BYTES)
+        .expect("frozen SLM2 fuzz profile must have the exact typed shape");
+    assert_eq!(profile.schema, "tinyrustlm.vnext.slm2-fuzz-profile.v1");
+    assert_eq!(profile.profile_id, SLM2_FUZZ_PROFILE_ID);
+    assert_eq!(profile.version, 1);
+    assert_eq!(profile.status, "development-unpromoted");
+    assert_eq!(profile.format_profile_id, SLM2_FORMAT_PROFILE_ID);
+    assert_eq!(profile.format_profile_sha256, SLM2_FORMAT_PROFILE_SHA256);
+
+    assert_eq!(profile.input.kind, "raw-complete-slm2-artifact-bytes");
+    assert_eq!(profile.input.maximum_bytes, MAXIMUM_INPUT_BYTES);
+    assert_eq!(profile.input.empty_input, "parser-rejection");
+    assert_eq!(
+        profile.input.oversized_input,
+        "harness-rejection-before-parser"
+    );
+    assert_eq!(
+        profile.validation_policy.maximum_file_bytes,
+        MAXIMUM_INPUT_BYTES
+    );
+    assert_eq!(profile.validation_policy.maximum_tensors, MAXIMUM_TENSORS);
+
+    assert_eq!(profile.target.parser, "tinyrustlm_slm2::validate_model");
+    assert_strings_eq(
+        &profile.target.accepted_artifact_checks,
+        ACCEPTED_ARTIFACT_CHECKS,
+    );
+    assert_strings_eq(
+        &profile.target.rejected_artifact_checks,
+        REJECTED_ARTIFACT_CHECKS,
+    );
+    assert_strings_eq(
+        &profile.allowed_parser_error_codes,
+        ALLOWED_PARSER_ERROR_CODES,
+    );
+    assert_strings_eq(&profile.seed_classes, SEED_CLASSES);
+
+    assert_eq!(
+        profile.stable_replay.manifest_schema,
+        CORPUS_MANIFEST_SCHEMA
+    );
+    assert_eq!(profile.stable_replay.manifest_status, "frozen");
+    assert!(profile.stable_replay.exact_seed_set_required);
+    assert!(!profile.stable_replay.seed_symlinks_allowed);
+    assert_eq!(
+        profile.stable_replay.manifest_maximum_bytes,
+        MAXIMUM_CORPUS_MANIFEST_BYTES
+    );
+    assert_eq!(
+        profile.stable_replay.maximum_entries,
+        MAXIMUM_CORPUS_ENTRIES
+    );
+    assert_strings_eq(&profile.prohibited, PROHIBITED_BEHAVIORS);
+}
+
+fn assert_strings_eq(actual: &[String], expected: &[&str]) {
+    assert_eq!(
+        actual.iter().map(String::as_str).collect::<Vec<_>>(),
+        expected
     );
 }
 

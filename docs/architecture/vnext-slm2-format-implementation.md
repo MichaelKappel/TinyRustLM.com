@@ -101,6 +101,17 @@ parser entry and use a policy capped at 4,096 tensors. An admitted artifact
 must reproduce an independent complete SHA-256, bounded tensor ranges, and the
 piece manifest. A rejection must use one exact profile-allowlisted parser code.
 
+Harness startup hashes and then deserializes the complete fuzz profile through
+closed `deny_unknown_fields` Rust records exactly once. It requires the
+profile ID, version, status, linked format identity, input policy, validation
+policy, parser name, admission checks, rejection checks, complete ordered
+error vocabulary, seed classes, replay schema/status/limits, symlink rule,
+exact-membership rule, and prohibited behaviors to equal the executable
+constants. Stable replay imports its manifest byte and entry ceilings from
+that same library boundary. A source-only change to either the declarations or
+the executable constants therefore fails before a fuzzed artifact reaches the
+parser.
+
 The generated corpus contains 26 unique seeds occupying 43,428 bytes:
 
 - one canonical admission;
@@ -116,9 +127,11 @@ The generated corpus contains 26 unique seeds occupying 43,428 bytes:
 The generator owns the exact corpus directory, emits every seed and the
 manifest deterministically, and supports a read-only `--check` mode. Stable
 Rust replay rejects symlink/path escape, manifest drift, extra/missing seed,
-byte/hash drift, and verdict drift. Current replay reports 26 entries, one
-admitted, and 25 rejected. Every proper prefix of the 1,800-byte seed also
-rejects under a deterministic Rust test.
+byte/hash drift, duplicate or noncanonical identity/order, and verdict drift.
+Direct replay regressions copy the frozen corpus into uniquely owned temporary
+directories and exercise those failures without modifying checked-in seeds.
+Current replay reports 26 entries, one admitted, and 25 rejected. Every proper
+prefix of the 1,800-byte seed also rejects under a deterministic Rust test.
 
 The optional libFuzzer target compiles with `libfuzzer-sys` 0.4.13. No claim is
 made that a sustained AddressSanitizer interval has run for this new target.
@@ -134,7 +147,8 @@ The current focused local checkpoint passes:
 - all 1,800 proper-prefix rejection checks inside the integration suite;
 - three independent Node vector/DCBOR tests;
 - one Node fuzz-profile/corpus/source-boundary test;
-- two fuzz-library tests and one replay-command test;
+- two fuzz-library tests and five replay-command tests, including exact replay
+  plus hostile manifest, membership, path, byte, and verdict drift;
 - exact 26-seed stable replay with one admission and 25 rejections;
 - warnings-denied Clippy and rustfmt for the production and fuzz workspaces;
 - compilation of the feature-enabled `raw_slm2` libFuzzer target.

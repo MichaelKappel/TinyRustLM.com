@@ -39,7 +39,18 @@ test("SLM2 fuzz profile, generated corpus, and source boundary are exact", () =>
   assert.equal(profile.profileId, "tinyrustlm.vnext.slm2-fuzz.v1");
   assert.equal(profile.status, "development-unpromoted");
   assert.equal(profile.input.maximumBytes, 1_048_576);
+  assert.equal(profile.validationPolicy.maximumFileBytes, profile.input.maximumBytes);
   assert.equal(profile.validationPolicy.maximumTensors, 4_096);
+  assert.equal(profile.stableReplay.manifestSchema,
+    "tinyrustlm.vnext.slm2_fuzz_corpus.v1");
+  assert.equal(profile.stableReplay.manifestMaximumBytes, 131_072);
+  assert.equal(profile.stableReplay.maximumEntries, 256);
+  assert.equal(profile.stableReplay.exactSeedSetRequired, true);
+  assert.equal(profile.stableReplay.seedSymlinksAllowed, false);
+  assert.equal(new Set(profile.allowedParserErrorCodes).size,
+    profile.allowedParserErrorCodes.length);
+  assert.deepEqual(profile.allowedParserErrorCodes,
+    [...profile.allowedParserErrorCodes].sort());
   assert.ok(profile.prohibited.includes("activation-of-fuzzed-artifacts"));
   assert.ok(profile.prohibited.includes("fuzz-result-as-production-qualification"));
 
@@ -70,6 +81,19 @@ test("SLM2 fuzz profile, generated corpus, and source boundary are exact", () =>
   assert.match(target, /bytes\.len\(\) <= MAXIMUM_INPUT_BYTES/u);
   assert.match(target, /exercise_bytes\(bytes\)/u);
 
+  const harness = fs.readFileSync(path.join(fuzzRoot, "src/lib.rs"), "utf8");
+  assert.match(harness, /OnceLock/u);
+  assert.match(harness, /deny_unknown_fields/u);
+  assert.match(harness, /allowed_parser_error_codes/u);
+  assert.match(harness, /MAXIMUM_CORPUS_MANIFEST_BYTES/u);
+  assert.match(harness, /MAXIMUM_CORPUS_ENTRIES/u);
+  const replay = fs.readFileSync(
+    path.join(fuzzRoot, "src/bin/replay_slm2_corpus.rs"), "utf8"
+  );
+  assert.match(replay,
+    /CORPUS_MANIFEST_SCHEMA, MAXIMUM_CORPUS_ENTRIES, MAXIMUM_CORPUS_MANIFEST_BYTES/u);
+  assert.doesNotMatch(replay, /const MAXIMUM_(?:MANIFEST_BYTES|CORPUS_ENTRIES)/u);
+
   const implementationDocument = fs.readFileSync(implementationDocumentPath, "utf8");
   assert.match(implementationDocument,
     /f272caf64cacb7a4705fee0c958f15ee0cac3985d8728458a80f812913d66554/u);
@@ -78,11 +102,13 @@ test("SLM2 fuzz profile, generated corpus, and source boundary are exact", () =>
   assert.match(implementationDocument,
     /971da88da5eb7a0724acb78202acc00ffd5de0a9f76e0d123e11ed4062dc65f9/u);
   assert.match(implementationDocument, /26 entries, one\s+admitted, and 25 rejected/u);
+  assert.match(implementationDocument, /closed `deny_unknown_fields` Rust records/u);
+  assert.match(implementationDocument, /two fuzz-library tests and five replay-command tests/u);
   assert.match(implementationDocument, /inactive and unpromoted/u);
   assert.match(implementationDocument, /No claim is\s+made that a sustained AddressSanitizer interval has run/u);
   assert.match(implementationDocument, /Campaign\s+counters remain 0\/20 qualified models/u);
 
   const contractReadme = fs.readFileSync(contractReadmePath, "utf8");
   assert.match(contractReadme, /## SLM2 Model Format Checkpoint/u);
-  assert.match(contractReadme, /not a long-running sanitizer result/u);
+  assert.match(contractReadme, /not a\s+long-running sanitizer result/u);
 });
