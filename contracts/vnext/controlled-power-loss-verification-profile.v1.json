@@ -1,0 +1,245 @@
+{
+  "schema": "tinyrustlm.vnext.controlled_power_loss_verification_profile.v1",
+  "profileId": "tinyrustlm.vnext.controlled-power-loss-verification.v1",
+  "status": "frozen",
+  "versionPolicy": "single-current-profile-no-compatibility-reader",
+  "canonicalJsonProfile": "rfc8785-jcs+tinyrustlm.strict-json.v1",
+  "hashAlgorithm": "sha256",
+  "receiptIdentityDomain": "tinyrustlm.controlled-power-loss.verification-receipt.v1",
+  "signatureAlgorithm": "ed25519",
+  "signatureDomain": "tinyrustlm.controlled-power-loss.physical-witness.v1",
+  "witnessRole": "physical-durability-observer",
+  "schemas": {
+    "preregistration": "tinyrustlm.vnext.controlled_power_loss_preregistration.v1",
+    "preInterruption": "tinyrustlm.vnext.controlled_power_loss_pre_interruption_record.v1",
+    "postRestart": "tinyrustlm.vnext.controlled_power_loss_post_restart_observation.v1",
+    "verificationReceipt": "tinyrustlm.vnext.controlled_power_loss_verification_receipt.v1"
+  },
+  "evidenceFiles": {
+    "preregistration": "controlled-power-loss-preregistration.v1.json",
+    "preInterruption": "controlled-power-loss-pre-interruption.v1.json",
+    "postRestart": "controlled-power-loss-post-restart.v1.json"
+  },
+  "helper": {
+    "verificationProfileId": "tinyrustlm.vnext.directory-flush-helper-verification.v1",
+    "verificationReceiptFile": "directory-flush-helper-verification.v1.json",
+    "manifestFile": "directory-flush-helper-manifest.v1.json",
+    "provenanceFile": "directory-flush-helper-provenance.v1.json",
+    "acceptedTrustClasses": [
+      "local-test-build",
+      "release-package"
+    ],
+    "releaseEligibleTrustClass": "release-package"
+  },
+  "acceptedRuntimePlatforms": [
+    {
+      "runtimeIdentifier": "linux-arm64",
+      "operatingSystem": "linux",
+      "architecture": "aarch64",
+      "method": "posix-directory-fsync",
+      "filesystems": [
+        "ext4"
+      ]
+    },
+    {
+      "runtimeIdentifier": "linux-x64",
+      "operatingSystem": "linux",
+      "architecture": "x86_64",
+      "method": "posix-directory-fsync",
+      "filesystems": [
+        "ext4"
+      ]
+    },
+    {
+      "runtimeIdentifier": "win-x64",
+      "operatingSystem": "windows",
+      "architecture": "x86_64",
+      "method": "win32-backup-semantics-flush-file-buffers",
+      "filesystems": [
+        "ntfs"
+      ]
+    }
+  ],
+  "acceptedInterruptionClasses": [
+    "external-ac-power-removal",
+    "managed-pdu-power-cut"
+  ],
+  "acceptedStorageCacheClasses": [
+    "unknown",
+    "volatile-with-power-loss-protection",
+    "volatile-without-power-loss-protection",
+    "write-through"
+  ],
+  "trustedWitnessFields": [
+    "compromisedAtUtc",
+    "keyId",
+    "publicKey",
+    "revokedAtUtc",
+    "role",
+    "status",
+    "validFromUtc",
+    "validUntilUtc",
+    "witnessId"
+  ],
+  "witnessSignatureFields": [
+    "keyId",
+    "signature",
+    "signatureDomain",
+    "signedAtUtc",
+    "signedPayloadSha256",
+    "witnessId"
+  ],
+  "helperIdentityFields": [
+    "architecture",
+    "buildProfile",
+    "clientProfileSha256",
+    "clientSourceClosureSha256",
+    "directoryFlushProfileSha256",
+    "executableByteCount",
+    "executableSha256",
+    "helperManifestSha256",
+    "helperPackageBuilderSourceClosureSha256",
+    "helperProvenanceSha256",
+    "helperSourceClosureSha256",
+    "helperSourceRevision",
+    "helperSourceWorktreeClean",
+    "method",
+    "operatingSystem",
+    "runtimeIdentifier",
+    "trustClass",
+    "verificationProfileSha256",
+    "verificationReceiptSha256",
+    "verificationSourceClosureSha256"
+  ],
+  "stateFields": [
+    "activationMarker",
+    "armedMarker",
+    "targetPayload"
+  ],
+  "stateMemberFields": [
+    "byteCount",
+    "sha256"
+  ],
+  "preregistrationFields": [
+    "expectedState",
+    "filesystem",
+    "helper",
+    "machineIdentitySha256",
+    "maximumObservationDelaySeconds",
+    "plannedInterruptionClass",
+    "preBootIdentitySha256",
+    "registeredAtUtc",
+    "schema",
+    "storageCacheClass",
+    "targetId",
+    "testId",
+    "volumeIdentitySha256",
+    "witness",
+    "witnessChallengeSha256"
+  ],
+  "preInterruptionFields": [
+    "armedMarkerPresent",
+    "filesystem",
+    "gracefulDisarmMarkerPresent",
+    "gracefulShutdownRequested",
+    "helper",
+    "interruptionAuthorized",
+    "machineIdentitySha256",
+    "observedState",
+    "plannedInterruptionClass",
+    "preBootIdentitySha256",
+    "preregistrationSha256",
+    "recordedAtUtc",
+    "schema",
+    "storageCacheClass",
+    "targetId",
+    "testId",
+    "volumeIdentitySha256",
+    "witness"
+  ],
+  "postRestartFields": [
+    "armedMarkerPresent",
+    "bootIdentityChanged",
+    "filesystem",
+    "gracefulDisarmMarkerPresent",
+    "gracefulShutdownObserved",
+    "helper",
+    "interruptionObserved",
+    "machineIdentitySha256",
+    "observedAtUtc",
+    "observedState",
+    "postBootIdentitySha256",
+    "preBootIdentitySha256",
+    "preInterruptionRecordSha256",
+    "preregistrationSha256",
+    "schema",
+    "storageCacheClass",
+    "targetId",
+    "testId",
+    "volumeIdentitySha256",
+    "witness"
+  ],
+  "verificationReceiptFields": [
+    "broadDurabilityClaimAuthorized",
+    "campaignProgressAuthorized",
+    "canonicalContentSha256",
+    "claimScope",
+    "evidenceTier",
+    "filesystem",
+    "helper",
+    "interruptionClass",
+    "machineIdentitySha256",
+    "observationDelaySeconds",
+    "postBootIdentitySha256",
+    "postRestartObservationSha256",
+    "preBootIdentitySha256",
+    "preInterruptionRecordSha256",
+    "preregistrationSha256",
+    "profileId",
+    "profileSha256",
+    "receiptId",
+    "releaseAuthorized",
+    "schema",
+    "signedWitnessDocumentsVerified",
+    "sourceRevision",
+    "storageCacheClass",
+    "targetId",
+    "testId",
+    "trustedWitnessContextSha256",
+    "verdict",
+    "verificationSourceClosureSha256",
+    "verificationTimeUtc",
+    "volumeIdentitySha256",
+    "witnessCurrentlyTrusted",
+    "witnessId",
+    "witnessKeyId",
+    "witnessPublicKeySha256"
+  ],
+  "limits": {
+    "maximumDocumentBytes": 65536,
+    "maximumEvidenceBytes": 196608,
+    "maximumHelperMemberBytes": 67108864,
+    "maximumPathCodeUnits": 4096,
+    "maximumPayloadBytes": 17592186044416,
+    "maximumObservationDelaySeconds": 86400,
+    "maximumSigningLagSeconds": 300,
+    "maximumSourceMemberBytes": 16777216
+  },
+  "verificationSourceClosureMembers": [
+    "contracts/vnext/controlled-power-loss-verification-profile.v1.json",
+    "contracts/vnext/directory-flush-helper-verification-profile.v1.json",
+    "tinyrustlm/tools/controlled-power-loss-verification.js",
+    "tinyrustlm/tools/directory-flush-helper-verification.js",
+    "tinyrustlm/tools/strict-json.js",
+    "tinyrustlm/tools/vnext-jcs.js"
+  ],
+  "claimScope": "one-exact-helper-package-machine-volume-filesystem-and-controlled-physical-power-loss-attempt",
+  "nonClaims": [
+    "A profile, fixture, unsigned record, simulated restart, process termination, or virtual-machine reset is not controlled physical power-loss evidence.",
+    "The verifier never initiates a shutdown, restart, power cut, signature, or witness enrollment operation.",
+    "The trusted witness key and verification time must come from an authorized protected caller; evidence files cannot choose their own trust root.",
+    "A local-test-build helper can exercise parser and signature logic but can emit only a fixture-only verdict.",
+    "One passing attempt is scoped to the exact helper package, machine, volume, filesystem, cache class, and interruption class recorded by the signed documents.",
+    "A passing verification receipt does not authorize a broad durability claim, release, deployment, publication, campaign counter, or production operation."
+  ]
+}
