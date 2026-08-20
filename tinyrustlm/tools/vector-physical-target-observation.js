@@ -18,6 +18,7 @@ const {
 const {
   validateReceiptFile: validateBrowserReceiptFile
 } = require("./vector-browser-wasm-verification.js");
+const { readGitBlob } = require("./vector-historical-git-input.js");
 
 const sampleSchema = "tinyrustlm.exact_flat_physical_target_sample.v1";
 const observationSchema = "tinyrustlm.exact_flat_physical_target_observation.v1";
@@ -225,20 +226,16 @@ function hashInputAtRevision(relativePath, revision) {
   const cacheKey = `${revision}:${relativePath}`;
   const cached = historicalInputCache.get(cacheKey);
   if (cached) return cached;
-  const result = childProcess.spawnSync("git", ["show", `${revision}:${relativePath}`], {
-    cwd: repositoryRoot,
-    encoding: null,
-    maxBuffer: maximumInputBytes + 1,
-    shell: false,
-    windowsHide: true
-  });
-  invariant(result.status === 0 && !result.error && Buffer.isBuffer(result.stdout) &&
-    result.stdout.length > 0 && result.stdout.length <= maximumInputBytes,
-  `historical input is missing or invalid: ${relativePath}`);
+  const bytes = readGitBlob(
+    repositoryRoot,
+    revision,
+    relativePath,
+    maximumInputBytes
+  );
   const input = Object.freeze({
     path: relativePath,
-    bytes: result.stdout.length,
-    sha256: sha256(result.stdout)
+    bytes: bytes.length,
+    sha256: sha256(bytes)
   });
   historicalInputCache.set(cacheKey, input);
   return input;
