@@ -1,5 +1,27 @@
-profile: runtime-mirust.file-handoff.v80
-updated_utc: 2026-08-21T06:53:02Z
+profile: runtime-mirust.file-handoff.v81
+updated_utc: 2026-08-21T15:26:26Z
+current_qwen3_tokenizer2_parity_preregistration_2026_08_21:
+  authority: Newest TinyRustLM first-read checkpoint; closes the no-output preregistration, independent-verifier, complete repository verification, release-surface evidence, push, and actual-remote equality boundary only while preserving every parity-result, browser-WASM, Template2, model, release, publication, and campaign boundary.
+  goal: docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md
+  goal_sha256: 115ae434bf9dee0b4f27767f126d951989c5ec684241e2e3a6238de094e65d33
+  frozen_parent_goal_sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+  goal_status: active_incomplete
+  owned_worktree: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  branch: codex/model-acquisition-v2
+  implementation_commit: dc0f5f783de54b8c556064bc1d8a6b21d9cdb9a9
+  upstream_status: implementation commit pushed; local HEAD, FETCH_HEAD, tracking ref, and fresh ls-remote were exact at the same commit before this handoff edit
+  protected_checkout: E:\Source\Rust\TinyRustLM.com remained untouched
+  preregistration: 2,048-case 464,043-byte corpus SHA256 9503fd6df325f1a46dec56674d2aa72ce225d6bf1c9477abd56bb4542ef99caa; generator SHA256 eb2c4a7473b65a1d59161c3a2919613cefdd8138bf5ebb7ecfd6dfb82f566a0f; execution preregistration SHA256 bccc1631c519774ca46d77100ba59dae0d3eb4dcc681cd227f192bf558319466; verification preregistration SHA256 cc1472a7531095323dc1fe2fc2bb878bedfff4cc2cc5b5651f129c4800b0ed05; source closure SHA256 3f97f1a43506f4908c991e85e54ab46e2e92dfd02d3f9aec59453f7dacf6b8b0
+  tools: independent verifier SHA256 67791ba375cc8be2b84f1985eea42a810e4dca4edcc91fb0a9bd9e91ec979173; Python oracle SHA256 3b0ca14db4a3aac163db0bf73c8091aa05aaf515d969ec699c765f04c63c9660; Rust runner SHA256 9c3ad5b929cc34ef0a01cc0abbb53a7859e6e89e7d45c68d61f388722a349511; hostile Node tests SHA256 57d38bc14d959e6ab1db864c095f20d4b5ea22d47ed308b114fa7a05bada12a3
+  pinned_authority: Qwen/Qwen3-0.6B revision c1899de289a04d12100db370d81485cdf75e47ca; source lock 1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70; tokenizer aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4; Tokenizer2 artifact 7,038,773 bytes at cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b; tokenizers 0.22.2 source revision f383101a26663708484cac0727792aad74f78234; environment lock 68c36c8492c59c0006e3bfa018b0d84dbc1832379733512c4e979b9a17ac49eb
+  no_output_boundary: The corpus, execution rules, verification rules, oracle, candidate runner, verifier, and hostile tests were committed and pushed before any comparative oracle or candidate output was generated. Zero parity output files or verdicts exist at this checkpoint.
+  tests: hostile preregistration 9/9; full standard Node 995/995 with zero skips; full Rust workspace passed; full all-target workspace Clippy passed with warnings denied; rustfmt, Ruff, Python compile, corpus regeneration check, preregistration self-check, JSON, diff, and sensitive-path checks passed; report-intake memory verifier reopened 231 durable rows with zero mismatches; .NET ReportIntakeMemoryTests passed 9/9
+  release_surface_evidence: External create-only run 3a18eb7d44b529fc1d8885f343cb8c78b4c351dc262e80ab3c5403c9249c21ed passed all 10 shards and 23/23 tests with zero failures, skips, cancellations, todos, timeouts, or stderr; aggregate receipt SHA256 381e144e8e8125da0b4eb188bc6a6535fb5854baf986bead69f9994c741f7056 binds source revision dc0f5f783de54b8c556064bc1d8a6b21d9cdb9a9 and tree a324b59cffa493df737ffba2dd135545df01296f
+  preserved_history: Two interrupted receiptless attempts remain append-only, including the completed-but-unreceipted first shard-8 attempt; neither was converted into a pass. The successful resume created new attempt evidence and the aggregate references only validated receipts.
+  authority_boundary: This is repository and preregistration evidence only, not a parity result, browser-WASM pass, release gate completion for a product, version, deployment, publication, model quality, acquisition, chat, MemoryEndpoints, or campaign proof.
+  external_blockers: Two genuinely separate holdout authors must complete the 140/140 authoring-required custody splits; the exact 1,024-record curriculum and teacher lineage remain absent; two genuinely separate complete record-bound curriculum review ledgers remain absent; the agent must not impersonate any contributor or reviewer.
+  campaign_counts: 0/20 models; 0/50 browser rounds; 0/25 live memory rounds; 0/40 outside-proven lanes; 0/20 announcements
+  next: Revalidate every bound identity and the clean pushed tree, create one new private create-only execution root, run exactly two pinned Python-oracle executions and exactly two Rust-candidate executions without repair or selection, then invoke the independent verifier. Preserve any mismatch as the result and add a general regression only in a later commit; advance to full-artifact real-Chromium WASM only after exact native parity passes.
 current_qwen3_tokenizer2_conversion_2026_08_20:
   authority: Newest TinyRustLM first-read checkpoint; closes exact pinned-Qwen tokenizer source admission, canonical Tokenizer2 conversion, duplicate external artifact reproduction, and conversion receipt binding only while preserving every parity, browser, Template2, model, release, publication, and campaign boundary.
   goal: docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md

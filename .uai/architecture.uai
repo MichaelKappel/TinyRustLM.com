@@ -1,11 +1,22 @@
-profile: runtime-mirust.architecture.v118
-updated_utc: 2026-08-21T06:53:02Z
+profile: runtime-mirust.architecture.v119
+updated_utc: 2026-08-21T15:26:26Z
 active_product:
   name: TinyRustLM
   root: tinyrustlm/
   goal: 100% custom Rust/WASM browser-local SLM runtime and UI.
   live_public_site: TinyRustLM.com
   public_site_boundary: Runtime.MiRust.com remains project/docs identity; TinyRustLM.com is the live local `.slm` import surface and must not auto-fetch hosted `/models/` bytes; SLMComposer.com is retired historical naming.
+current_qwen3_tokenizer2_parity_preregistration_boundary_2026_08_21:
+  implementation_commit: dc0f5f783de54b8c556064bc1d8a6b21d9cdb9a9
+  source_control: Pushed and independently exact through local HEAD, FETCH_HEAD, tracking ref, and fresh ls-remote before the UAI handoff edit; protected E:\Source\Rust\TinyRustLM.com remained untouched.
+  corpus: 2,048 immutable cases in 17 categories; 464,043 bytes; SHA256 9503fd6df325f1a46dec56674d2aa72ce225d6bf1c9477abd56bb4542ef99caa; generator SHA256 eb2c4a7473b65a1d59161c3a2919613cefdd8138bf5ebb7ecfd6dfb82f566a0f.
+  execution_contract: SHA256 bccc1631c519774ca46d77100ba59dae0d3eb4dcc681cd227f192bf558319466 freezes exactly two pinned Python tokenizers-0.22.2 oracle runs and two Rust Tokenizer2 candidate runs, separate create-only output paths, exact byte preservation, and no best-of-N or repair.
+  verification_contract: SHA256 cc1472a7531095323dc1fe2fc2bb878bedfff4cc2cc5b5651f129c4800b0ed05 binds independent verifier SHA256 67791ba375cc8be2b84f1985eea42a810e4dca4edcc91fb0a9bd9e91ec979173, Python oracle SHA256 3b0ca14db4a3aac163db0bf73c8091aa05aaf515d969ec699c765f04c63c9660, Rust runner SHA256 9c3ad5b929cc34ef0a01cc0abbb53a7859e6e89e7d45c68d61f388722a349511, hostile tests SHA256 57d38bc14d959e6ab1db864c095f20d4b5ea22d47ed308b114fa7a05bada12a3, and source closure SHA256 3f97f1a43506f4908c991e85e54ab46e2e92dfd02d3f9aec59453f7dacf6b8b0.
+  pinned_runtime_authority: Qwen revision c1899de289a04d12100db370d81485cdf75e47ca; tokenizer SHA256 aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4; full Tokenizer2 artifact SHA256 cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b; tokenizers 0.22.2 source revision f383101a26663708484cac0727792aad74f78234; exact environment lock SHA256 68c36c8492c59c0006e3bfa018b0d84dbc1832379733512c4e979b9a17ac49eb.
+  no_output_boundary: All corpus, execution, verification, tool, source, and environment identities were committed and pushed before comparative observation; no oracle output, candidate output, mismatch, or parity verdict exists at this checkpoint.
+  repository_evidence: Full Node 995/995 with zero skips, full Rust workspace, warnings-denied all-target Clippy, formatting and static checks, 231-row memory verification, .NET 9/9, and external release-surface 10 shards/23 tests pass. Aggregate receipt SHA256 381e144e8e8125da0b4eb188bc6a6535fb5854baf986bead69f9994c741f7056 binds source revision dc0f5f783de54b8c556064bc1d8a6b21d9cdb9a9 and tree a324b59cffa493df737ffba2dd135545df01296f.
+  evidence_boundary: The release-surface gate validates repository release machinery only. It is not a product release, deployment, publication, tokenizer parity result, browser-WASM result, Template2 result, model conversion, model quality, acquisition, chat, MemoryEndpoints, or campaign evidence.
+  next: Execute the frozen 2+2 native comparison exactly once in a new private create-only root and let the independent verifier decide. Preserve any mismatch unchanged. Only an exact pass permits full-artifact real-Chromium WASM parity and resource evidence before Template2.
 current_qwen3_tokenizer2_conversion_boundary_2026_08_20:
   implementation_commit: 202d5f531057d2bad74812b9befd35fd340232e3
   conversion_profile: tinyrustlm.qwen-bytelevel-to-tokenizer2/1; SHA256 f70465a08b41599fe59f41b850912d0d408f0ec67e84ebeb7591524d1b14e12b
