@@ -5,7 +5,9 @@ This tool deliberately stops before training. It freezes a sole, auditable path
 from a rejected-but-provenance-clean base checkpoint to a new derivative:
 
 * validate the checked-in behavioral and training profile;
-* deterministically seal private holdouts outside Git;
+* initialize distinct-custody holdout authoring outside Git;
+* assemble complete development and independent-audit contributions;
+* deterministically seal only the custody-bound private holdouts;
 * audit a curriculum against hash-only exclusions and a separately executed,
   hash-bound semantic review; and
 * issue a CPU pilot authorization only when every input and stop rule is exact.
@@ -23,6 +25,7 @@ import json
 import math
 import os
 import re
+import secrets
 import stat
 import sys
 import unicodedata
@@ -34,6 +37,9 @@ from typing import Any, Iterable, Mapping, Sequence
 
 
 PROFILE_SCHEMA = "tinyrustlm.qwen3_working_model_profile.v1"
+HOLDOUT_CUSTODY_PLAN_SCHEMA = "tinyrustlm.holdout_custody_plan.v1"
+HOLDOUT_CONTRIBUTION_SCHEMA = "tinyrustlm.holdout_contribution.v1"
+HOLDOUT_CUSTODY_RECEIPT_SCHEMA = "tinyrustlm.holdout_custody_receipt.v1"
 FACTOR_PACK_SCHEMA = "tinyrustlm.sealed_holdout_factor_pack.v1"
 PRIVATE_HOLDOUT_SCHEMA = "tinyrustlm.sealed_holdout_case.v1"
 PRIVATE_INDEX_SCHEMA = "tinyrustlm.contamination_exclusion_index.v1"
@@ -48,6 +54,12 @@ TRAINING_LOCK_SCHEMA = "tinyrustlm.cpu_pilot_training_lock.v1"
 PRIVATE_HOLDOUT_FILENAME = "materialized-holdouts.private.jsonl"
 PRIVATE_INDEX_FILENAME = "exclusion-index.private.json"
 PUBLIC_RECEIPT_FILENAME = "holdout-seal-receipt.public.json"
+HOLDOUT_CUSTODY_PLAN_FILENAME = "holdout-custody-plan.public.json"
+DEVELOPMENT_CONTRIBUTION_FILENAME = "development-contribution.private.json"
+INDEPENDENT_AUDIT_CONTRIBUTION_FILENAME = "independent-audit-contribution.private.json"
+HOLDOUT_SEED_FILENAME = "holdout-seed.private.bin"
+ASSEMBLED_FACTOR_PACK_FILENAME = "factor-pack.private.json"
+HOLDOUT_CUSTODY_RECEIPT_FILENAME = "holdout-custody-receipt.public.json"
 
 MAX_PROFILE_BYTES = 4 * 1024 * 1024
 MAX_FACTOR_PACK_BYTES = 64 * 1024 * 1024
@@ -164,6 +176,63 @@ STOP_RULE_KEYS = {
     "retry_requirement",
 }
 FACTOR_PACK_KEYS = {"schema", "pack_id", "cases"}
+HOLDOUT_CUSTODY_PLAN_KEYS = {
+    "schema",
+    "status",
+    "plan_id",
+    "profile_id",
+    "profile_sha256",
+    "control_program_sha256",
+    "case_count",
+    "split_counts",
+    "slot_set_sha256",
+    "seed_commitment",
+    "slots",
+    "development_template_sha256",
+    "independent_audit_template_sha256",
+    "contains_raw_prompts",
+    "contains_answer_anchors",
+    "contains_seed",
+}
+HOLDOUT_SLOT_KEYS = {"case_id", "split", "task_family", "required_factors"}
+HOLDOUT_CONTRIBUTION_KEYS = {
+    "schema",
+    "status",
+    "contribution_id",
+    "plan_id",
+    "profile_id",
+    "profile_sha256",
+    "slot_set_sha256",
+    "split",
+    "author_identity_sha256",
+    "custody_domain_sha256",
+    "cases",
+}
+HOLDOUT_CUSTODY_RECEIPT_KEYS = {
+    "schema",
+    "status",
+    "plan_id",
+    "profile_id",
+    "profile_sha256",
+    "control_program_sha256",
+    "plan_sha256",
+    "slot_set_sha256",
+    "seed_commitment",
+    "development_contribution_sha256",
+    "independent_audit_contribution_sha256",
+    "development_author_identity_sha256",
+    "independent_audit_author_identity_sha256",
+    "development_custody_domain_sha256",
+    "independent_audit_custody_domain_sha256",
+    "case_count",
+    "split_counts",
+    "category_count",
+    "factor_pack_sha256",
+    "contains_raw_prompts",
+    "contains_answer_anchors",
+    "contains_seed",
+    "training_authority",
+}
 FACTOR_CASE_KEYS = {
     "case_id",
     "split",
@@ -274,6 +343,19 @@ class CategoryPolicy:
 
 
 @dataclass(frozen=True)
+class ValidatedFactorCase:
+    case_id: str
+    split: str
+    task_family: str
+    category: CategoryPolicy
+    template_family_id: str
+    prompt_variants: tuple[str, ...]
+    answer_anchor_variants: tuple[tuple[str, ...], ...]
+    entities: tuple[tuple[str, str], ...]
+    scenario_factors: dict[str, str]
+
+
+@dataclass(frozen=True)
 class WorkingModelProfile:
     path: Path
     profile_sha256: str
@@ -333,6 +415,10 @@ def sha256_file(path: Path) -> str:
         while chunk := stream.read(1024 * 1024):
             digest.update(chunk)
     return "sha256:" + digest.hexdigest()
+
+
+def control_program_sha256() -> str:
+    return sha256_file(Path(__file__).resolve())
 
 
 def _is_symlink_or_reparse(path: Path) -> bool:
@@ -1198,6 +1284,576 @@ def _entity_pairs(value: Any, label: str) -> tuple[tuple[str, str], ...]:
     return tuple(pairs)
 
 
+def _validate_factor_case(
+    profile: WorkingModelProfile,
+    case: dict[str, Any],
+    label: str,
+) -> ValidatedFactorCase:
+    require_exact_keys(case, FACTOR_CASE_KEYS, label)
+    case_id = require_id(case["case_id"], f"{label}.case_id")
+    split = require_string(case["split"], f"{label}.split")
+    if split not in {"development", "independent-audit"}:
+        raise ValueError(f"{label}.split must be development or independent-audit")
+    task_family = require_id(case["task_family"], f"{label}.task_family")
+    category = profile.categories_by_id.get(task_family)
+    if category is None:
+        raise ValueError(f"{label}.task_family is not declared by the profile")
+    template_family_id = require_id(
+        case["template_family_id"], f"{label}.template_family_id"
+    )
+    prompt_variants = require_string_list(
+        case["prompt_variants"],
+        f"{label}.prompt_variants",
+        profile.minimum_prompt_variants,
+        1000,
+    )
+    normalized_prompts = tuple(normalize_text(prompt) for prompt in prompt_variants)
+    if len(set(normalized_prompts)) != len(normalized_prompts):
+        raise ValueError(
+            f"{label}.prompt_variants must be distinct after normalization"
+        )
+    anchor_variant_values = case["answer_anchor_variants"]
+    if (
+        not isinstance(anchor_variant_values, list)
+        or not profile.minimum_anchor_variants <= len(anchor_variant_values) <= 1000
+    ):
+        raise ValueError(
+            f"{label}.answer_anchor_variants must contain at least "
+            f"{profile.minimum_anchor_variants} variants"
+        )
+    anchor_variants = tuple(
+        require_string_list(
+            value,
+            f"{label}.answer_anchor_variants[{anchor_index}]",
+            1,
+            64,
+        )
+        for anchor_index, value in enumerate(anchor_variant_values)
+    )
+    normalized_anchor_variants = {
+        tuple(sorted(normalize_text(anchor) for anchor in anchors))
+        for anchors in anchor_variants
+    }
+    if len(normalized_anchor_variants) != len(anchor_variants):
+        raise ValueError(
+            f"{label}.answer_anchor_variants must be distinct after normalization"
+        )
+    entities = _entity_pairs(case["entities"], f"{label}.entities")
+    factors = _require_object(case["scenario_factors"], f"{label}.scenario_factors")
+    if set(factors) != set(category.required_factors):
+        raise ValueError(
+            f"{label}.scenario_factors must exactly match category required factors"
+        )
+    normalized_factors = {
+        require_id(key, f"{label}.scenario_factors key"): require_string(
+            value, f"{label}.scenario_factors.{key}"
+        )
+        for key, value in sorted(factors.items())
+    }
+    return ValidatedFactorCase(
+        case_id=case_id,
+        split=split,
+        task_family=task_family,
+        category=category,
+        template_family_id=template_family_id,
+        prompt_variants=prompt_variants,
+        answer_anchor_variants=anchor_variants,
+        entities=entities,
+        scenario_factors=normalized_factors,
+    )
+
+
+def _holdout_slots(profile: WorkingModelProfile) -> tuple[dict[str, Any], ...]:
+    category_count = len(profile.categories)
+    total = profile.cases_per_category * category_count
+    exact_development = (
+        profile.cases_per_category * profile.development_holdout_count / total
+    )
+    base_development = math.floor(exact_development)
+    development_by_category = {
+        category.category_id: base_development for category in profile.categories
+    }
+    remaining = profile.development_holdout_count - (base_development * category_count)
+    ranked_categories = sorted(
+        profile.categories,
+        key=lambda category: (
+            -(exact_development - base_development),
+            category.category_id,
+        ),
+    )
+    for category in ranked_categories[:remaining]:
+        development_by_category[category.category_id] += 1
+
+    slots: list[dict[str, Any]] = []
+    for category in profile.categories:
+        development_count = development_by_category[category.category_id]
+        selected_development_indices = {
+            index
+            for index in range(profile.cases_per_category)
+            if math.floor((index + 1) * development_count / profile.cases_per_category)
+            > math.floor(index * development_count / profile.cases_per_category)
+        }
+        split_ordinals: Counter[str] = Counter()
+        for case_index in range(profile.cases_per_category):
+            split = (
+                "development"
+                if case_index in selected_development_indices
+                else "independent-audit"
+            )
+            split_ordinals[split] += 1
+            split_label = "dev" if split == "development" else "audit"
+            slots.append(
+                {
+                    "case_id": (
+                        f"{category.category_id}-{split_label}-"
+                        f"{split_ordinals[split]:03d}"
+                    ),
+                    "split": split,
+                    "task_family": category.category_id,
+                    "required_factors": list(category.required_factors),
+                }
+            )
+
+    split_counts = Counter(slot["split"] for slot in slots)
+    if split_counts != Counter(
+        {
+            "development": profile.development_holdout_count,
+            "independent-audit": profile.independent_audit_holdout_count,
+        }
+    ):
+        raise ValueError("profile holdout split cannot be allocated deterministically")
+    return tuple(sorted(slots, key=lambda item: item["case_id"]))
+
+
+def _holdout_contribution_template(
+    profile: WorkingModelProfile,
+    plan_id: str,
+    slot_set_sha256: str,
+    split: str,
+    slots: Sequence[dict[str, Any]],
+) -> dict[str, Any]:
+    cases = []
+    for slot in slots:
+        if slot["split"] != split:
+            continue
+        cases.append(
+            {
+                "case_id": slot["case_id"],
+                "split": split,
+                "task_family": slot["task_family"],
+                "template_family_id": "",
+                "prompt_variants": [],
+                "answer_anchor_variants": [],
+                "entities": [],
+                "scenario_factors": {factor: "" for factor in slot["required_factors"]},
+            }
+        )
+    return {
+        "schema": HOLDOUT_CONTRIBUTION_SCHEMA,
+        "status": "authoring-required",
+        "contribution_id": "",
+        "plan_id": plan_id,
+        "profile_id": profile.profile_id,
+        "profile_sha256": profile.profile_sha256,
+        "slot_set_sha256": slot_set_sha256,
+        "split": split,
+        "author_identity_sha256": "",
+        "custody_domain_sha256": "",
+        "cases": cases,
+    }
+
+
+def initialize_holdout_custody(
+    profile: WorkingModelProfile,
+    plan_id: str,
+    output_root: Path,
+) -> dict[str, Any]:
+    plan_id = require_id(plan_id, "holdout custody plan_id")
+    output_root = _validate_external_output_root(output_root)
+    slots = _holdout_slots(profile)
+    slot_set_sha256 = sha256_bytes(canonical_json_bytes(slots))
+    development_template = _holdout_contribution_template(
+        profile, plan_id, slot_set_sha256, "development", slots
+    )
+    independent_template = _holdout_contribution_template(
+        profile, plan_id, slot_set_sha256, "independent-audit", slots
+    )
+    development_payload = _json_document_bytes(development_template)
+    independent_payload = _json_document_bytes(independent_template)
+    seed = secrets.token_bytes(profile.secret_seed_bytes)
+    split_counts = dict(sorted(Counter(slot["split"] for slot in slots).items()))
+    plan = {
+        "schema": HOLDOUT_CUSTODY_PLAN_SCHEMA,
+        "status": "awaiting-distinct-contributions",
+        "plan_id": plan_id,
+        "profile_id": profile.profile_id,
+        "profile_sha256": profile.profile_sha256,
+        "control_program_sha256": control_program_sha256(),
+        "case_count": len(slots),
+        "split_counts": split_counts,
+        "slot_set_sha256": slot_set_sha256,
+        "seed_commitment": sha256_bytes(b"tinyrustlm-holdout-seed-v1\x00" + seed),
+        "slots": list(slots),
+        "development_template_sha256": sha256_bytes(development_payload),
+        "independent_audit_template_sha256": sha256_bytes(independent_payload),
+        "contains_raw_prompts": False,
+        "contains_answer_anchors": False,
+        "contains_seed": False,
+    }
+    output_root.mkdir()
+    _write_new_atomic(
+        output_root / DEVELOPMENT_CONTRIBUTION_FILENAME, development_payload
+    )
+    _write_new_atomic(
+        output_root / INDEPENDENT_AUDIT_CONTRIBUTION_FILENAME,
+        independent_payload,
+    )
+    _write_new_atomic(output_root / HOLDOUT_SEED_FILENAME, seed)
+    _write_new_atomic(
+        output_root / HOLDOUT_CUSTODY_PLAN_FILENAME, _json_document_bytes(plan)
+    )
+    return plan
+
+
+def _validate_holdout_custody_plan(
+    profile: WorkingModelProfile, path: Path
+) -> tuple[dict[str, Any], tuple[dict[str, Any], ...]]:
+    plan = read_json_object(path, MAX_FACTOR_PACK_BYTES, "holdout custody plan")
+    require_exact_keys(plan, HOLDOUT_CUSTODY_PLAN_KEYS, "holdout custody plan")
+    if plan["schema"] != HOLDOUT_CUSTODY_PLAN_SCHEMA:
+        raise ValueError(
+            f"holdout custody plan schema must be {HOLDOUT_CUSTODY_PLAN_SCHEMA}"
+        )
+    if plan["status"] != "awaiting-distinct-contributions":
+        raise ValueError("holdout custody plan status is not authoring-ready")
+    require_id(plan["plan_id"], "holdout custody plan plan_id")
+    if plan["profile_id"] != profile.profile_id:
+        raise ValueError("holdout custody plan profile id mismatch")
+    if plan["profile_sha256"] != profile.profile_sha256:
+        raise ValueError("holdout custody plan profile SHA-256 mismatch")
+    require_sha256(
+        plan["control_program_sha256"],
+        "holdout custody plan control_program_sha256",
+    )
+    if plan["control_program_sha256"] != control_program_sha256():
+        raise ValueError("holdout custody plan was created by another control program")
+    case_count = require_integer(
+        plan["case_count"],
+        "holdout custody plan case_count",
+        profile.holdout_case_count,
+        profile.holdout_case_count,
+    )
+    slots = _require_object_list(
+        plan["slots"], "holdout custody plan slots", case_count, case_count
+    )
+    expected_slots = _holdout_slots(profile)
+    for index, slot in enumerate(slots):
+        require_exact_keys(
+            slot, HOLDOUT_SLOT_KEYS, f"holdout custody plan slots[{index}]"
+        )
+    if canonical_json_bytes(slots) != canonical_json_bytes(expected_slots):
+        raise ValueError("holdout custody plan slots drifted from the profile")
+    expected_split_counts = dict(
+        sorted(Counter(slot["split"] for slot in expected_slots).items())
+    )
+    if plan["split_counts"] != expected_split_counts:
+        raise ValueError("holdout custody plan split counts mismatch")
+    expected_slot_hash = sha256_bytes(canonical_json_bytes(expected_slots))
+    if plan["slot_set_sha256"] != expected_slot_hash:
+        raise ValueError("holdout custody plan slot-set identity mismatch")
+    require_sha256(plan["seed_commitment"], "holdout custody plan seed_commitment")
+    require_sha256(
+        plan["development_template_sha256"],
+        "holdout custody plan development_template_sha256",
+    )
+    require_sha256(
+        plan["independent_audit_template_sha256"],
+        "holdout custody plan independent_audit_template_sha256",
+    )
+    expected_development_template = _holdout_contribution_template(
+        profile,
+        plan["plan_id"],
+        expected_slot_hash,
+        "development",
+        expected_slots,
+    )
+    expected_independent_template = _holdout_contribution_template(
+        profile,
+        plan["plan_id"],
+        expected_slot_hash,
+        "independent-audit",
+        expected_slots,
+    )
+    if plan["development_template_sha256"] != sha256_bytes(
+        _json_document_bytes(expected_development_template)
+    ):
+        raise ValueError("holdout custody plan development template identity mismatch")
+    if plan["independent_audit_template_sha256"] != sha256_bytes(
+        _json_document_bytes(expected_independent_template)
+    ):
+        raise ValueError(
+            "holdout custody plan independent-audit template identity mismatch"
+        )
+    for key in ("contains_raw_prompts", "contains_answer_anchors", "contains_seed"):
+        if require_bool(plan[key], f"holdout custody plan {key}"):
+            raise ValueError(f"holdout custody plan {key} must be false")
+    return plan, expected_slots
+
+
+def _validate_holdout_contribution(
+    profile: WorkingModelProfile,
+    plan: dict[str, Any],
+    slots: Sequence[dict[str, Any]],
+    path: Path,
+    expected_split: str,
+) -> tuple[dict[str, Any], tuple[ValidatedFactorCase, ...]]:
+    contribution = read_json_object(
+        path, MAX_FACTOR_PACK_BYTES, f"{expected_split} holdout contribution"
+    )
+    require_exact_keys(
+        contribution,
+        HOLDOUT_CONTRIBUTION_KEYS,
+        f"{expected_split} holdout contribution",
+    )
+    label = f"{expected_split} holdout contribution"
+    if contribution["schema"] != HOLDOUT_CONTRIBUTION_SCHEMA:
+        raise ValueError(f"{label} schema must be {HOLDOUT_CONTRIBUTION_SCHEMA}")
+    if contribution["status"] != "complete":
+        raise ValueError(f"{label} status must be complete")
+    require_id(contribution["contribution_id"], f"{label}.contribution_id")
+    if contribution["plan_id"] != plan["plan_id"]:
+        raise ValueError(f"{label} plan id mismatch")
+    if contribution["profile_id"] != profile.profile_id:
+        raise ValueError(f"{label} profile id mismatch")
+    if contribution["profile_sha256"] != profile.profile_sha256:
+        raise ValueError(f"{label} profile SHA-256 mismatch")
+    if contribution["slot_set_sha256"] != plan["slot_set_sha256"]:
+        raise ValueError(f"{label} slot-set identity mismatch")
+    if contribution["split"] != expected_split:
+        raise ValueError(f"{label} split mismatch")
+    require_sha256(
+        contribution["author_identity_sha256"], f"{label}.author_identity_sha256"
+    )
+    require_sha256(
+        contribution["custody_domain_sha256"], f"{label}.custody_domain_sha256"
+    )
+    expected_slots = tuple(slot for slot in slots if slot["split"] == expected_split)
+    case_values = _require_object_list(
+        contribution["cases"],
+        f"{label}.cases",
+        len(expected_slots),
+        len(expected_slots),
+    )
+    validated_cases: list[ValidatedFactorCase] = []
+    for index, (case, slot) in enumerate(zip(case_values, expected_slots, strict=True)):
+        validated = _validate_factor_case(profile, case, f"{label}.cases[{index}]")
+        if validated.case_id != slot["case_id"]:
+            raise ValueError(f"{label} case order or identity drifted")
+        if validated.split != expected_split:
+            raise ValueError(f"{label} contains a case assigned to another split")
+        if validated.task_family != slot["task_family"]:
+            raise ValueError(f"{label} case task family drifted from its slot")
+        validated_cases.append(validated)
+    return contribution, tuple(validated_cases)
+
+
+def assemble_holdout_contributions(
+    profile: WorkingModelProfile,
+    plan_path: Path,
+    development_path: Path,
+    independent_audit_path: Path,
+    output_root: Path,
+) -> dict[str, Any]:
+    output_root = _validate_external_output_root(output_root)
+    plan, slots = _validate_holdout_custody_plan(profile, plan_path)
+    development, development_cases = _validate_holdout_contribution(
+        profile, plan, slots, development_path, "development"
+    )
+    independent, independent_cases = _validate_holdout_contribution(
+        profile, plan, slots, independent_audit_path, "independent-audit"
+    )
+    if development["author_identity_sha256"] == independent["author_identity_sha256"]:
+        raise ValueError("holdout contributions require distinct author identities")
+    if development["custody_domain_sha256"] == independent["custody_domain_sha256"]:
+        raise ValueError("holdout contributions require distinct custody domains")
+
+    all_validated = development_cases + independent_cases
+    template_ids: set[str] = set()
+    normalized_prompts: set[str] = set()
+    factor_values: defaultdict[tuple[str, str, str], set[str]] = defaultdict(set)
+    for validated in all_validated:
+        if validated.template_family_id in template_ids:
+            raise ValueError("holdout template family ids must be globally unique")
+        template_ids.add(validated.template_family_id)
+        for prompt in validated.prompt_variants:
+            normalized = normalize_text(prompt)
+            if normalized in normalized_prompts:
+                raise ValueError("holdout prompt variants must be globally distinct")
+            normalized_prompts.add(normalized)
+        for factor, value in validated.scenario_factors.items():
+            factor_values[(validated.task_family, "all", factor)].add(value)
+            factor_values[(validated.task_family, validated.split, factor)].add(value)
+
+    for category in profile.categories:
+        category_cases = [
+            case for case in all_validated if case.task_family == category.category_id
+        ]
+        if len(category_cases) != profile.cases_per_category:
+            raise ValueError("holdout category coverage drifted during assembly")
+        for factor in category.required_factors:
+            values = factor_values[(category.category_id, "all", factor)]
+            if len(values) < category.minimum_distinct_values_per_factor:
+                raise ValueError(
+                    f"holdout factor {category.category_id}.{factor} lacks diversity"
+                )
+            for split in ("development", "independent-audit"):
+                split_case_count = sum(
+                    1 for case in category_cases if case.split == split
+                )
+                required = min(
+                    category.minimum_distinct_values_per_factor, split_case_count
+                )
+                if len(factor_values[(category.category_id, split, factor)]) < required:
+                    raise ValueError(
+                        f"holdout factor {category.category_id}.{factor} lacks "
+                        f"{split} diversity"
+                    )
+
+    case_by_id = {
+        case["case_id"]: case
+        for contribution in (development, independent)
+        for case in contribution["cases"]
+    }
+    factor_pack = {
+        "schema": FACTOR_PACK_SCHEMA,
+        "pack_id": plan["plan_id"],
+        "cases": [case_by_id[slot["case_id"]] for slot in slots],
+    }
+    factor_pack_payload = _json_document_bytes(factor_pack)
+    receipt = {
+        "schema": HOLDOUT_CUSTODY_RECEIPT_SCHEMA,
+        "status": "assembled-awaiting-holdout-seal",
+        "plan_id": plan["plan_id"],
+        "profile_id": profile.profile_id,
+        "profile_sha256": profile.profile_sha256,
+        "control_program_sha256": control_program_sha256(),
+        "plan_sha256": sha256_file(plan_path),
+        "slot_set_sha256": plan["slot_set_sha256"],
+        "seed_commitment": plan["seed_commitment"],
+        "development_contribution_sha256": sha256_file(development_path),
+        "independent_audit_contribution_sha256": sha256_file(independent_audit_path),
+        "development_author_identity_sha256": development["author_identity_sha256"],
+        "independent_audit_author_identity_sha256": independent[
+            "author_identity_sha256"
+        ],
+        "development_custody_domain_sha256": development["custody_domain_sha256"],
+        "independent_audit_custody_domain_sha256": independent["custody_domain_sha256"],
+        "case_count": len(all_validated),
+        "split_counts": dict(
+            sorted(Counter(case.split for case in all_validated).items())
+        ),
+        "category_count": len(profile.categories),
+        "factor_pack_sha256": sha256_bytes(factor_pack_payload),
+        "contains_raw_prompts": False,
+        "contains_answer_anchors": False,
+        "contains_seed": False,
+        "training_authority": False,
+    }
+    output_root.mkdir()
+    _write_new_atomic(output_root / ASSEMBLED_FACTOR_PACK_FILENAME, factor_pack_payload)
+    _write_new_atomic(
+        output_root / HOLDOUT_CUSTODY_RECEIPT_FILENAME,
+        _json_document_bytes(receipt),
+    )
+    return receipt
+
+
+def _validate_holdout_custody_receipt(
+    profile: WorkingModelProfile,
+    path: Path,
+    factor_pack_path: Path,
+    seed: bytes,
+) -> dict[str, Any]:
+    receipt = read_json_object(
+        path, MAX_SEMANTIC_RECEIPT_BYTES, "holdout custody receipt"
+    )
+    require_exact_keys(receipt, HOLDOUT_CUSTODY_RECEIPT_KEYS, "holdout custody receipt")
+    if receipt["schema"] != HOLDOUT_CUSTODY_RECEIPT_SCHEMA:
+        raise ValueError(
+            f"holdout custody receipt schema must be {HOLDOUT_CUSTODY_RECEIPT_SCHEMA}"
+        )
+    if receipt["status"] != "assembled-awaiting-holdout-seal":
+        raise ValueError("holdout custody receipt status is not seal-ready")
+    require_id(receipt["plan_id"], "holdout custody receipt plan_id")
+    if receipt["profile_id"] != profile.profile_id:
+        raise ValueError("holdout custody receipt profile id mismatch")
+    if receipt["profile_sha256"] != profile.profile_sha256:
+        raise ValueError("holdout custody receipt profile SHA-256 mismatch")
+    for key in (
+        "control_program_sha256",
+        "plan_sha256",
+        "slot_set_sha256",
+        "seed_commitment",
+        "development_contribution_sha256",
+        "independent_audit_contribution_sha256",
+        "development_author_identity_sha256",
+        "independent_audit_author_identity_sha256",
+        "development_custody_domain_sha256",
+        "independent_audit_custody_domain_sha256",
+        "factor_pack_sha256",
+    ):
+        require_sha256(receipt[key], f"holdout custody receipt {key}")
+    if receipt["control_program_sha256"] != control_program_sha256():
+        raise ValueError("holdout custody receipt came from another control program")
+    if (
+        receipt["development_author_identity_sha256"]
+        == receipt["independent_audit_author_identity_sha256"]
+    ):
+        raise ValueError("holdout custody receipt author identities are not distinct")
+    if (
+        receipt["development_custody_domain_sha256"]
+        == receipt["independent_audit_custody_domain_sha256"]
+    ):
+        raise ValueError("holdout custody receipt domains are not distinct")
+    if receipt["seed_commitment"] != sha256_bytes(
+        b"tinyrustlm-holdout-seed-v1\x00" + seed
+    ):
+        raise ValueError("holdout custody receipt seed commitment mismatch")
+    if receipt["factor_pack_sha256"] != sha256_file(factor_pack_path):
+        raise ValueError("holdout custody receipt factor-pack identity mismatch")
+    if (
+        require_integer(
+            receipt["case_count"],
+            "holdout custody receipt case_count",
+            profile.holdout_case_count,
+            profile.holdout_case_count,
+        )
+        != profile.holdout_case_count
+    ):
+        raise AssertionError("unreachable holdout custody case-count drift")
+    expected_splits = {
+        "development": profile.development_holdout_count,
+        "independent-audit": profile.independent_audit_holdout_count,
+    }
+    if receipt["split_counts"] != expected_splits:
+        raise ValueError("holdout custody receipt split counts mismatch")
+    if require_integer(
+        receipt["category_count"],
+        "holdout custody receipt category_count",
+        len(profile.categories),
+        len(profile.categories),
+    ) != len(profile.categories):
+        raise AssertionError("unreachable holdout custody category-count drift")
+    for key in ("contains_raw_prompts", "contains_answer_anchors", "contains_seed"):
+        if require_bool(receipt[key], f"holdout custody receipt {key}"):
+            raise ValueError(f"holdout custody receipt {key} must be false")
+    if require_bool(
+        receipt["training_authority"], "holdout custody receipt training_authority"
+    ):
+        raise ValueError("holdout custody receipt cannot grant training authority")
+    return receipt
+
+
 def _validate_external_output_root(output_root: Path) -> Path:
     if not output_root.is_absolute():
         raise ValueError("output root must be absolute")
@@ -1274,6 +1930,7 @@ def seal_holdouts(
     profile: WorkingModelProfile,
     factor_pack_path: Path,
     seed_path: Path,
+    custody_receipt_path: Path,
     output_root: Path,
 ) -> dict[str, Any]:
     output_root = _validate_external_output_root(output_root)
@@ -1295,6 +1952,11 @@ def seal_holdouts(
         raise ValueError(
             f"private holdout seed must be exactly {profile.secret_seed_bytes} bytes"
         )
+    custody_receipt = _validate_holdout_custody_receipt(
+        profile, custody_receipt_path, factor_pack_path, seed
+    )
+    if factor_pack["pack_id"] != custody_receipt["plan_id"]:
+        raise ValueError("factor pack id does not match the custody plan id")
 
     materialized: list[dict[str, Any]] = []
     indexed_cases: list[dict[str, Any]] = []
@@ -1303,58 +1965,16 @@ def seal_holdouts(
     category_counts: Counter[str] = Counter()
     for index, case in enumerate(case_values):
         label = f"private factor pack cases[{index}]"
-        require_exact_keys(case, FACTOR_CASE_KEYS, label)
-        case_id = require_id(case["case_id"], f"{label}.case_id")
+        validated = _validate_factor_case(profile, case, label)
+        case_id = validated.case_id
         if case_id in case_ids:
             raise ValueError("private factor pack case ids must be unique")
         case_ids.add(case_id)
-        split = require_string(case["split"], f"{label}.split")
-        if split not in {"development", "independent-audit"}:
-            raise ValueError(f"{label}.split must be development or independent-audit")
-        task_family = require_id(case["task_family"], f"{label}.task_family")
-        category = profile.categories_by_id.get(task_family)
-        if category is None:
-            raise ValueError(f"{label}.task_family is not declared by the profile")
-        template_family_id = require_id(
-            case["template_family_id"], f"{label}.template_family_id"
-        )
-        prompt_variants = require_string_list(
-            case["prompt_variants"],
-            f"{label}.prompt_variants",
-            profile.minimum_prompt_variants,
-            1000,
-        )
-        anchor_variant_values = case["answer_anchor_variants"]
-        if (
-            not isinstance(anchor_variant_values, list)
-            or not profile.minimum_anchor_variants <= len(anchor_variant_values) <= 1000
-        ):
-            raise ValueError(
-                f"{label}.answer_anchor_variants must contain at least {profile.minimum_anchor_variants} variants"
-            )
-        anchor_variants = tuple(
-            require_string_list(
-                value, f"{label}.answer_anchor_variants[{anchor_index}]", 1, 64
-            )
-            for anchor_index, value in enumerate(anchor_variant_values)
-        )
-        entities = _entity_pairs(case["entities"], f"{label}.entities")
-        factors = _require_object(case["scenario_factors"], f"{label}.scenario_factors")
-        if set(factors) != set(category.required_factors):
-            raise ValueError(
-                f"{label}.scenario_factors must exactly match category required factors"
-            )
-        normalized_factors = {
-            require_id(key, f"{label}.scenario_factors key"): require_string(
-                value, f"{label}.scenario_factors.{key}"
-            )
-            for key, value in sorted(factors.items())
-        }
-        prompt = prompt_variants[
-            _hmac_index(seed, "prompt", case_id, len(prompt_variants))
+        prompt = validated.prompt_variants[
+            _hmac_index(seed, "prompt", case_id, len(validated.prompt_variants))
         ]
-        anchors = anchor_variants[
-            _hmac_index(seed, "anchors", case_id, len(anchor_variants))
+        anchors = validated.answer_anchor_variants[
+            _hmac_index(seed, "anchors", case_id, len(validated.answer_anchor_variants))
         ]
         case_commitment = (
             "sha256:"
@@ -1362,21 +1982,22 @@ def seal_holdouts(
                 seed, f"case\x00{case_id}".encode("utf-8"), hashlib.sha256
             ).hexdigest()
         )
-        entity_values = tuple((kind, surface) for kind, surface in entities)
+        entity_values = validated.entities
         materialized.append(
             {
                 "schema": PRIVATE_HOLDOUT_SCHEMA,
                 "case_id": case_id,
                 "case_commitment": case_commitment,
-                "split": split,
-                "task_family": task_family,
-                "template_family_id": template_family_id,
+                "split": validated.split,
+                "task_family": validated.task_family,
+                "template_family_id": validated.template_family_id,
                 "prompt": prompt,
                 "answer_anchors": list(anchors),
                 "entities": [
-                    {"kind": kind, "value": surface} for kind, surface in entities
+                    {"kind": kind, "value": surface}
+                    for kind, surface in validated.entities
                 ],
-                "scenario_factors": normalized_factors,
+                "scenario_factors": validated.scenario_factors,
             }
         )
         answer_hashes = tuple(
@@ -1402,10 +2023,12 @@ def seal_holdouts(
             {
                 "case_commitment": case_commitment,
                 "source_class": "sealed-holdout",
-                "split": split,
-                "task_family_sha256": sha256_bytes(task_family.encode("utf-8")),
+                "split": validated.split,
+                "task_family_sha256": sha256_bytes(
+                    validated.task_family.encode("utf-8")
+                ),
                 "template_family_sha256": sha256_bytes(
-                    template_family_id.encode("utf-8")
+                    validated.template_family_id.encode("utf-8")
                 ),
                 "derived_template_signature_sha256": sha256_bytes(
                     template_signature(prompt, entity_values).encode("utf-8")
@@ -1429,8 +2052,8 @@ def seal_holdouts(
                 "answer_token_ngram_hashes": list(answer_ngrams),
             }
         )
-        split_counts[split] += 1
-        category_counts[task_family] += 1
+        split_counts[validated.split] += 1
+        category_counts[validated.task_family] += 1
 
     expected_splits = {
         "development": profile.development_holdout_count,
@@ -1548,8 +2171,10 @@ def seal_holdouts(
         "status": "sealed",
         "profile_id": profile.profile_id,
         "profile_sha256": profile.profile_sha256,
+        "control_program_sha256": control_program_sha256(),
         "factor_pack_id_sha256": sha256_bytes(pack_id.encode("utf-8")),
         "factor_pack_sha256": sha256_file(factor_pack_path),
+        "custody_receipt_sha256": sha256_file(custody_receipt_path),
         "seed_commitment": index_value["seed_commitment"],
         "algorithm_id": "hmac-sha256-variant-selection-and-sha256-exclusion-index-v1",
         "case_count": len(materialized),
@@ -2325,8 +2950,10 @@ def _validate_public_holdout_receipt(
         "status",
         "profile_id",
         "profile_sha256",
+        "control_program_sha256",
         "factor_pack_id_sha256",
         "factor_pack_sha256",
+        "custody_receipt_sha256",
         "seed_commitment",
         "algorithm_id",
         "case_count",
@@ -2351,6 +2978,10 @@ def _validate_public_holdout_receipt(
         raise ValueError("holdout receipt is not bound to the exact profile")
     if receipt["exclusion_index_sha256"] != expected_index_sha256:
         raise ValueError("holdout receipt exclusion index identity does not match")
+    require_sha256(
+        receipt["control_program_sha256"],
+        "holdout receipt control_program_sha256",
+    )
     if receipt["case_count"] != profile.holdout_case_count:
         raise ValueError("holdout receipt case count drifted")
     if receipt["public_evaluation_case_count"] != profile.evaluation_case_count:
@@ -2362,6 +2993,10 @@ def _validate_public_holdout_receipt(
     require_sha256(
         receipt["evaluation_artifact_set_sha256"],
         "holdout receipt evaluation_artifact_set_sha256",
+    )
+    require_sha256(
+        receipt["custody_receipt_sha256"],
+        "holdout receipt custody_receipt_sha256",
     )
     if any(
         receipt[key] is not False
@@ -2538,19 +3173,67 @@ def _command_verify_profile(args: argparse.Namespace) -> dict[str, Any]:
     }
 
 
+def _custody_plan_cli_summary(plan: dict[str, Any]) -> dict[str, Any]:
+    return {
+        key: plan[key]
+        for key in (
+            "schema",
+            "status",
+            "plan_id",
+            "profile_id",
+            "profile_sha256",
+            "control_program_sha256",
+            "case_count",
+            "split_counts",
+            "slot_set_sha256",
+            "seed_commitment",
+            "development_template_sha256",
+            "independent_audit_template_sha256",
+            "contains_raw_prompts",
+            "contains_answer_anchors",
+            "contains_seed",
+        )
+    }
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
-    verify = subparsers.add_parser("verify-profile")
+    verify = subparsers.add_parser(
+        "verify-profile", help="verify the exact checked-in profile and fixtures"
+    )
     verify.add_argument("profile", type=Path)
 
-    seal = subparsers.add_parser("seal-holdouts")
+    initialize = subparsers.add_parser(
+        "initialize-holdout-custody",
+        help="create a private seed and two incomplete custody templates",
+    )
+    initialize.add_argument("profile", type=Path)
+    initialize.add_argument("plan_id")
+    initialize.add_argument("output_root", type=Path)
+
+    assemble = subparsers.add_parser(
+        "assemble-holdout-contributions",
+        help="validate distinct completed contributions and assemble a factor pack",
+    )
+    assemble.add_argument("profile", type=Path)
+    assemble.add_argument("plan", type=Path)
+    assemble.add_argument("development_contribution", type=Path)
+    assemble.add_argument("independent_audit_contribution", type=Path)
+    assemble.add_argument("output_root", type=Path)
+
+    seal = subparsers.add_parser(
+        "seal-holdouts", help="seal only a factor pack bound by its custody receipt"
+    )
     seal.add_argument("profile", type=Path)
     seal.add_argument("factor_pack", type=Path)
     seal.add_argument("seed", type=Path)
+    seal.add_argument("custody_receipt", type=Path)
     seal.add_argument("output_root", type=Path)
 
-    audit = subparsers.add_parser("audit-curriculum")
+    audit = subparsers.add_parser(
+        "audit-curriculum", help="audit a reviewed curriculum against exclusions"
+    )
     audit.add_argument("profile", type=Path)
     audit.add_argument("curriculum", type=Path)
     audit.add_argument("exclusion_index", type=Path)
@@ -2558,7 +3241,9 @@ def _parser() -> argparse.ArgumentParser:
     audit.add_argument("output", type=Path)
     audit.add_argument("--tombstones", type=Path)
 
-    freeze = subparsers.add_parser("freeze-training-lock")
+    freeze = subparsers.add_parser(
+        "freeze-training-lock", help="issue a hash-bound CPU pilot authorization"
+    )
     freeze.add_argument("profile", type=Path)
     freeze.add_argument("request", type=Path)
     freeze.add_argument("output", type=Path)
@@ -2570,11 +3255,25 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         if args.command == "verify-profile":
             result = _command_verify_profile(args)
+        elif args.command == "initialize-holdout-custody":
+            plan = initialize_holdout_custody(
+                load_profile(args.profile), args.plan_id, args.output_root
+            )
+            result = _custody_plan_cli_summary(plan)
+        elif args.command == "assemble-holdout-contributions":
+            result = assemble_holdout_contributions(
+                load_profile(args.profile),
+                args.plan,
+                args.development_contribution,
+                args.independent_audit_contribution,
+                args.output_root,
+            )
         elif args.command == "seal-holdouts":
             result = seal_holdouts(
                 load_profile(args.profile),
                 args.factor_pack,
                 args.seed,
+                args.custody_receipt,
                 args.output_root,
             )
         elif args.command == "audit-curriculum":

@@ -307,11 +307,78 @@ class WorkingModelControlFixture:
         }
 
     def _seal(self, name: str = "sealed") -> tuple[Path, dict[str, object]]:
+        custody, assembled = self._assembled_holdout_custody()
         output = self.root / name
         receipt = MODULE.seal_holdouts(
-            MODULE.load_profile(self.profile), self.factor_pack, self.seed, output
+            MODULE.load_profile(self.profile),
+            assembled / MODULE.ASSEMBLED_FACTOR_PACK_FILENAME,
+            custody / MODULE.HOLDOUT_SEED_FILENAME,
+            assembled / MODULE.HOLDOUT_CUSTODY_RECEIPT_FILENAME,
+            output,
         )
         return output, receipt
+
+    def _assembled_holdout_custody(self) -> tuple[Path, Path]:
+        cached = getattr(self, "_assembled_custody_paths", None)
+        if cached is not None:
+            return cached
+        custody, _ = self._initialize_custody("sealing-custody")
+        development, independent = self._complete_holdout_contributions(custody)
+        assembled = self.root / "sealing-assembled"
+        MODULE.assemble_holdout_contributions(
+            MODULE.load_profile(self.profile),
+            custody / MODULE.HOLDOUT_CUSTODY_PLAN_FILENAME,
+            development,
+            independent,
+            assembled,
+        )
+        self._assembled_custody_paths = (custody, assembled)
+        return custody, assembled
+
+    def _initialize_custody(
+        self, name: str = "holdout-custody"
+    ) -> tuple[Path, dict[str, object]]:
+        output = self.root / name
+        plan = MODULE.initialize_holdout_custody(
+            MODULE.load_profile(self.profile), "fixture-custody-v1", output
+        )
+        return output, plan
+
+    def _complete_holdout_contributions(self, custody: Path) -> tuple[Path, Path]:
+        source_cases = {
+            case["task_family"]: case for case in self._factor_pack_value()["cases"]
+        }
+        outputs = []
+        for filename, identity_value, custody_value in (
+            (
+                MODULE.DEVELOPMENT_CONTRIBUTION_FILENAME,
+                sha("a"),
+                sha("c"),
+            ),
+            (
+                MODULE.INDEPENDENT_AUDIT_CONTRIBUTION_FILENAME,
+                sha("b"),
+                sha("d"),
+            ),
+        ):
+            template = json.loads((custody / filename).read_text(encoding="utf-8"))
+            template["status"] = "complete"
+            template["contribution_id"] = filename.removesuffix(".private.json")
+            template["author_identity_sha256"] = identity_value
+            template["custody_domain_sha256"] = custody_value
+            for case in template["cases"]:
+                source = source_cases[case["task_family"]]
+                case["template_family_id"] = source["template_family_id"]
+                case["prompt_variants"] = source["prompt_variants"]
+                case["answer_anchor_variants"] = source["answer_anchor_variants"]
+                case["entities"] = source["entities"]
+                case["scenario_factors"] = source["scenario_factors"]
+            completed = self.root / f"completed-{filename}"
+            completed.write_text(
+                json.dumps(template, indent=2) + "\n", encoding="utf-8"
+            )
+            outputs.append(completed)
+        return outputs[0], outputs[1]
 
     def _record(
         self,
@@ -441,6 +508,178 @@ class ControlInputValidationTests(WorkingModelControlFixture, unittest.TestCase)
             MODULE.read_json_object(duplicate, 1024, "duplicate fixture")
 
 
+class HoldoutCustodyTests(WorkingModelControlFixture, unittest.TestCase):
+    def test_initialize_creates_private_templates_seed_and_public_safe_plan(
+        self,
+    ) -> None:
+        custody, plan = self._initialize_custody()
+
+        self.assertEqual(plan["status"], "awaiting-distinct-contributions")
+        self.assertEqual(plan["case_count"], 2)
+        self.assertEqual(
+            plan["split_counts"], {"development": 1, "independent-audit": 1}
+        )
+        self.assertEqual(len((custody / MODULE.HOLDOUT_SEED_FILENAME).read_bytes()), 32)
+        for filename in (
+            MODULE.DEVELOPMENT_CONTRIBUTION_FILENAME,
+            MODULE.INDEPENDENT_AUDIT_CONTRIBUTION_FILENAME,
+        ):
+            template = json.loads((custody / filename).read_text(encoding="utf-8"))
+            self.assertEqual(template["status"], "authoring-required")
+            self.assertEqual(len(template["cases"]), 1)
+            self.assertEqual(template["cases"][0]["prompt_variants"], [])
+        public_bytes = (custody / MODULE.HOLDOUT_CUSTODY_PLAN_FILENAME).read_bytes()
+        self.assertNotIn(bytes(range(32)), public_bytes)
+        self.assertNotIn(b"Avery", public_bytes)
+        summary = MODULE._custody_plan_cli_summary(plan)
+        self.assertNotIn("slots", summary)
+        self.assertEqual(summary["case_count"], 2)
+
+    def test_initialize_refuses_existing_output_root(self) -> None:
+        custody, _ = self._initialize_custody()
+
+        with self.assertRaisesRegex(ValueError, "already exists"):
+            MODULE.initialize_holdout_custody(
+                MODULE.load_profile(self.profile), "fixture-custody-v1", custody
+            )
+
+    def test_distinct_completed_contributions_assemble_and_seal(self) -> None:
+        custody, _ = self._initialize_custody()
+        development, independent = self._complete_holdout_contributions(custody)
+        assembled = self.root / "assembled-holdouts"
+
+        receipt = MODULE.assemble_holdout_contributions(
+            MODULE.load_profile(self.profile),
+            custody / MODULE.HOLDOUT_CUSTODY_PLAN_FILENAME,
+            development,
+            independent,
+            assembled,
+        )
+
+        self.assertEqual(receipt["status"], "assembled-awaiting-holdout-seal")
+        self.assertFalse(receipt["training_authority"])
+        self.assertEqual(
+            receipt["control_program_sha256"], MODULE.control_program_sha256()
+        )
+        public_bytes = (
+            assembled / MODULE.HOLDOUT_CUSTODY_RECEIPT_FILENAME
+        ).read_bytes()
+        self.assertNotIn(b"Avery", public_bytes)
+        sealed = self.root / "custody-sealed"
+        sealed_receipt = MODULE.seal_holdouts(
+            MODULE.load_profile(self.profile),
+            assembled / MODULE.ASSEMBLED_FACTOR_PACK_FILENAME,
+            custody / MODULE.HOLDOUT_SEED_FILENAME,
+            assembled / MODULE.HOLDOUT_CUSTODY_RECEIPT_FILENAME,
+            sealed,
+        )
+        self.assertEqual(sealed_receipt["case_count"], 2)
+        self.assertEqual(
+            sealed_receipt["control_program_sha256"],
+            MODULE.control_program_sha256(),
+        )
+
+    def test_plan_from_another_control_program_is_rejected(self) -> None:
+        custody, _ = self._initialize_custody()
+        development, independent = self._complete_holdout_contributions(custody)
+        source_plan = custody / MODULE.HOLDOUT_CUSTODY_PLAN_FILENAME
+        plan = json.loads(source_plan.read_text(encoding="utf-8"))
+        plan["control_program_sha256"] = sha("f")
+        plan_path = self.root / "foreign-control-plan.json"
+        plan_path.write_text(json.dumps(plan) + "\n", encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "another control program"):
+            MODULE.assemble_holdout_contributions(
+                MODULE.load_profile(self.profile),
+                plan_path,
+                development,
+                independent,
+                self.root / "foreign-control-output",
+            )
+
+    def test_tampered_authoring_template_identity_is_rejected(self) -> None:
+        custody, _ = self._initialize_custody()
+        development, independent = self._complete_holdout_contributions(custody)
+        source_plan = custody / MODULE.HOLDOUT_CUSTODY_PLAN_FILENAME
+        plan = json.loads(source_plan.read_text(encoding="utf-8"))
+        plan["development_template_sha256"] = sha("e")
+        plan_path = self.root / "tampered-template-plan.json"
+        plan_path.write_text(json.dumps(plan) + "\n", encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "template identity mismatch"):
+            MODULE.assemble_holdout_contributions(
+                MODULE.load_profile(self.profile),
+                plan_path,
+                development,
+                independent,
+                self.root / "tampered-template-output",
+            )
+
+    def test_same_author_identity_is_rejected(self) -> None:
+        custody, _ = self._initialize_custody()
+        development, independent = self._complete_holdout_contributions(custody)
+        value = json.loads(independent.read_text(encoding="utf-8"))
+        value["author_identity_sha256"] = sha("a")
+        independent.write_text(json.dumps(value) + "\n", encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "distinct author identities"):
+            MODULE.assemble_holdout_contributions(
+                MODULE.load_profile(self.profile),
+                custody / MODULE.HOLDOUT_CUSTODY_PLAN_FILENAME,
+                development,
+                independent,
+                self.root / "same-author-output",
+            )
+
+    def test_same_custody_domain_is_rejected(self) -> None:
+        custody, _ = self._initialize_custody()
+        development, independent = self._complete_holdout_contributions(custody)
+        value = json.loads(independent.read_text(encoding="utf-8"))
+        value["custody_domain_sha256"] = sha("c")
+        independent.write_text(json.dumps(value) + "\n", encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "distinct custody domains"):
+            MODULE.assemble_holdout_contributions(
+                MODULE.load_profile(self.profile),
+                custody / MODULE.HOLDOUT_CUSTODY_PLAN_FILENAME,
+                development,
+                independent,
+                self.root / "same-custody-output",
+            )
+
+    def test_unfinished_authoring_template_is_rejected(self) -> None:
+        custody, _ = self._initialize_custody()
+        development, _ = self._complete_holdout_contributions(custody)
+
+        with self.assertRaisesRegex(ValueError, "status must be complete"):
+            MODULE.assemble_holdout_contributions(
+                MODULE.load_profile(self.profile),
+                custody / MODULE.HOLDOUT_CUSTODY_PLAN_FILENAME,
+                development,
+                custody / MODULE.INDEPENDENT_AUDIT_CONTRIBUTION_FILENAME,
+                self.root / "unfinished-output",
+            )
+
+    def test_cross_custody_prompt_reuse_is_rejected(self) -> None:
+        custody, _ = self._initialize_custody()
+        development, independent = self._complete_holdout_contributions(custody)
+        development_value = json.loads(development.read_text(encoding="utf-8"))
+        independent_value = json.loads(independent.read_text(encoding="utf-8"))
+        independent_value["cases"][0]["prompt_variants"][0] = development_value[
+            "cases"
+        ][0]["prompt_variants"][0]
+        independent.write_text(json.dumps(independent_value) + "\n", encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "globally distinct"):
+            MODULE.assemble_holdout_contributions(
+                MODULE.load_profile(self.profile),
+                custody / MODULE.HOLDOUT_CUSTODY_PLAN_FILENAME,
+                development,
+                independent,
+                self.root / "overlap-output",
+            )
+
+
 class HoldoutSealingTests(WorkingModelControlFixture, unittest.TestCase):
     def test_seal_is_deterministic_and_public_receipt_contains_no_private_text(
         self,
@@ -468,16 +707,39 @@ class HoldoutSealingTests(WorkingModelControlFixture, unittest.TestCase):
 
     def test_seal_refuses_existing_output_root(self) -> None:
         output, _ = self._seal()
+        custody, assembled = self._assembled_holdout_custody()
 
         with self.assertRaisesRegex(ValueError, "already exists"):
             MODULE.seal_holdouts(
-                MODULE.load_profile(self.profile), self.factor_pack, self.seed, output
+                MODULE.load_profile(self.profile),
+                assembled / MODULE.ASSEMBLED_FACTOR_PACK_FILENAME,
+                custody / MODULE.HOLDOUT_SEED_FILENAME,
+                assembled / MODULE.HOLDOUT_CUSTODY_RECEIPT_FILENAME,
+                output,
             )
 
     def test_seal_rejects_wrong_seed_length(self) -> None:
-        self.seed.write_bytes(b"too short")
+        custody, _ = self._assembled_holdout_custody()
+        (custody / MODULE.HOLDOUT_SEED_FILENAME).write_bytes(b"too short")
 
         with self.assertRaisesRegex(ValueError, "exactly 32 bytes"):
+            self._seal()
+
+    def test_seal_rejects_correct_length_seed_outside_custody(self) -> None:
+        custody, _ = self._assembled_holdout_custody()
+        (custody / MODULE.HOLDOUT_SEED_FILENAME).write_bytes(b"x" * 32)
+
+        with self.assertRaisesRegex(ValueError, "seed commitment mismatch"):
+            self._seal()
+
+    def test_seal_rejects_factor_pack_changed_after_custody_assembly(self) -> None:
+        _, assembled = self._assembled_holdout_custody()
+        factor_pack = assembled / MODULE.ASSEMBLED_FACTOR_PACK_FILENAME
+        value = json.loads(factor_pack.read_text(encoding="utf-8"))
+        value["cases"][0]["prompt_variants"][0] += " Additional detail."
+        factor_pack.write_text(json.dumps(value) + "\n", encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "factor-pack identity mismatch"):
             self._seal()
 
 

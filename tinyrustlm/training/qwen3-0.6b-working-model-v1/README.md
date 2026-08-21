@@ -47,6 +47,64 @@ factual disposition, PII scan, license review, and malicious-artifact scan.
 Hidden teacher reasoning is prohibited. Raw rejected drafts remain external
 evidence and may not be silently repaired into accepted records.
 
+## Distinct Holdout Custody
+
+Private holdouts do not begin as an untracked factor pack. The only accepted
+path first creates an immutable slot plan, two incomplete contribution
+templates, and a private 32-byte selection seed outside Git:
+
+```powershell
+py -3 tinyrustlm/tools/qwen3-working-model-controls.py `
+  initialize-holdout-custody `
+  tinyrustlm/training/qwen3-0.6b-working-model-v1/profile.v1.json `
+  qwen3-working-model-holdout-custody-v5 `
+  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-custody-v5
+```
+
+The development author and independent-audit author must receive separate
+copies of their template. They must produce new `status: complete`
+contribution files; the initialized templates are evidence and must not be
+overwritten. Each completed case must provide a globally unique template
+family, at least four normalized-distinct prompt variants, at least three
+normalized-distinct answer-anchor variants, the exact required scenario
+factors, and explicit entity surfaces. The two contributions must bind
+different author-identity hashes and different custody-domain hashes.
+
+Assembly is create-only and refuses missing or reordered slots, profile or
+program drift, unfinished templates, duplicate prompts, duplicate template
+families, insufficient factor diversity, a shared author identity, or a shared
+custody domain:
+
+Distinct hashes are necessary structural evidence, not proof that two people
+or organizations are independent. The completed contributions still require
+authorized custody review before their receipt can support an independent-audit
+claim.
+
+```powershell
+py -3 tinyrustlm/tools/qwen3-working-model-controls.py `
+  assemble-holdout-contributions `
+  tinyrustlm/training/qwen3-0.6b-working-model-v1/profile.v1.json `
+  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-custody-v5/holdout-custody-plan.public.json `
+  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/development-contribution-complete.private.json `
+  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/independent-audit-contribution-complete.private.json `
+  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-assembly-v1
+```
+
+The current public-safe plan is 51,462 bytes at SHA-256
+`c1cca1f282b8a8221c66fec9ef6639fb6066469d484cd30348bd182b53476fdc`.
+It binds profile SHA-256
+`f5c3d7bfae351bb5ee84631c6fc8e7f00c02f2b705bdaef7de9472854df8ac5f`,
+control-program SHA-256
+`37ae9c4068e6a1d55fa5ccf742eded44ad745e25b1026a16ccfaad420126f8de`,
+slot-set SHA-256
+`88598e47e0dc1eead6714c0eb43d094071bc442854e71e34ae2fc80c0597eb82`,
+140 development slots, 140 independent-audit slots, and a seed commitment.
+It contains no raw prompt, answer anchor, or seed. Both contribution templates
+remain `authoring-required`; therefore no factor pack, holdout seal, audit
+result, or training authority exists. Earlier local `v1` through `v4`
+initialization attempts are preserved as invalidated history and are not accepted by the
+current control-program identity.
+
 ## Sealed Exclusions
 
 The private holdout set contains exactly 280 cases: 20 per curriculum family,
@@ -69,14 +127,18 @@ Run the sealer only into a new external directory:
 ```powershell
 py -3 tinyrustlm/tools/qwen3-working-model-controls.py seal-holdouts `
   tinyrustlm/training/qwen3-0.6b-working-model-v1/profile.v1.json `
-  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/factor-pack.private.json `
-  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-seed.private.bin `
+  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-assembly-v1/factor-pack.private.json `
+  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-custody-v5/holdout-seed.private.bin `
+  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-assembly-v1/holdout-custody-receipt.public.json `
   E:/TinyRustLM-vnext-evidence/qwen3-working-model-v1/holdout-seal-v1
 ```
 
 The command refuses an existing output directory, a symlinked input, an output
 inside the worktree, a non-`C:`/`E:` Windows drive, a wrong seed size, category
-or split drift, and malformed or unpinned evaluation fixtures.
+or split drift, malformed or unpinned evaluation fixtures, a factor pack not
+bound by the custody receipt, a seed outside the custody commitment, or a
+custody receipt from another control-program identity. There is no direct
+factor-pack-to-sealer compatibility path.
 
 ## Contamination Gate
 
@@ -137,7 +199,9 @@ A retry requires a new preregistration and a material method or data change.
 ## Current Status
 
 - Profile and control implementation: implemented and tested locally.
-- Private 280-case factor pack: not yet sealed.
+- Private custody plan: initialized with 280 empty authoring slots; distinct
+  contributions remain outstanding.
+- Private 280-case factor pack: not assembled or sealed.
 - Pilot curriculum: not yet materialized or reviewed.
 - Semantic audit: not run.
 - CPU pilot authorization: not issued.
