@@ -1,0 +1,17 @@
+[package]
+name = "tinyrustlm-slm2-runtime-wasm-conformance"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Raw WASM conformance boundary for the scalar SLM2 correctness runtime."
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+tinyrustlm-slm2-runtime = { path = "../tinyrustlm-slm2-runtime" }
+
+[lints]
+workspace = true

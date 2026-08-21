@@ -50,7 +50,7 @@ not make them one coherent family.
 
 | Class | Observed current implementation | Material gap | vNext disposition |
 | --- | --- | --- | --- |
-| Artifact | SLM1 remains in the historical production path. A separate unpromoted SLM2 crate now implements the exact dense-F32 writer, bounded reader, conditional decoder tensor-role registry, tensor/piece/Merkle identities, language-neutral vector, independent Node conformance reader, and deterministic hostile replay. | Source-family conversion, scalar runtime conformance, tokenizer/template/composition byte profiles, WASM/browser loading, sustained sanitizer fuzz, production routing, and SLM1 deletion remain incomplete. | Keep SLM2 inactive until all remaining gates pass, regenerate reviewed sources into SLM2 plus one immutable external artifact manifest, then delete SLM1 admission without a compatibility reader. |
+| Artifact | SLM1 remains in the historical production path. Separate unpromoted SLM2 crates implement the exact dense-F32 format, scalar runtime, independent Node operator oracle, native differential replay, and canonical-fixture replay in Node WASM and real Chromium. | Source-family conversion, source-framework and real-model runtime parity, tokenizer/template/composition byte profiles, production browser ingestion, seeded sampling, sustained sanitizer fuzz, production routing, and SLM1 deletion remain incomplete. | Keep SLM2 inactive until all remaining gates pass, regenerate reviewed sources into SLM2 plus one immutable external artifact manifest, then delete SLM1 admission without a compatibility reader. |
 | Receipt | `CampaignEvidenceStore` provides closed fields, content addressing, redaction, immutable files, DAG rebuild, and quarantine; many task-specific receipt types wrap it. | Current receipt identity/canonicalization and nested parameter shapes are not the complete ADR-010 vNext profile. | Replace all campaign phase evidence with one envelope/content receipt contract plus typed `receiptType` and phase semantics. |
 | Context | Conversation, prompt-token, memory, retrieval, KV, and local-store contracts are split across browser and tooling schemas. | Trust labels, current-turn precedence, deterministic truncation, cache identity, and public/private handling are not one closed context package. | Use one private, volatile context package with explicit segment trust, budget, compiler, model/composition, tokenizer, and template identities. |
 | Worker | Browser generation and fault tests use several ad hoc `postMessage` shapes; there is no single production worker envelope. | Message/session/generation identity, cancellation, stale-response rejection, deadlines, transfer ownership, and payload privacy are not frozen together. | Use one small private worker envelope; transfer large/private payload bytes separately and bind them by byte count and SHA-256. |
@@ -149,9 +149,14 @@ parser that derives the exact conditional registry, and a 27-seed stable
 raw-parser corpus with one admission and 26 exact rejections, including one
 canonical manifest whose flags require absent tensors.
 Every proper seed prefix rejects, corpus generation replays byte-identically,
-and the optional libFuzzer target compiles. This remains inactive local format
-conformance: no converter, forward pass, WASM/browser load, sustained
-sanitizer campaign, model qualification, or production cutover is established.
+and the optional libFuzzer target compiles. A separate unsafe-free scalar Rust
+runtime now reproduces six independently generated Node operator traces and
+two bounded generation cases over the canonical fixture. An import-free
+conformance module executes the same core through Node WASM and real Chromium.
+This remains inactive canonical-fixture evidence: no source conversion,
+source-framework or real-model parity, tokenizer/template path, product browser
+ingestion, sustained sanitizer campaign, model qualification, or production
+cutover is established.
 The current campaign checkpoint additionally freezes one exact campaign plan,
 authority-aware truthful projection, and sufficient complete-bundle bounds.
 The plan finalization boundary now has an independent strict Rust
@@ -234,6 +239,8 @@ The independent Rust plan boundary is documented in
 `docs/architecture/vnext-rust-campaign-plan-parity.md`.
 The generated browser campaign-evidence WASM boundary is documented in
 `docs/architecture/vnext-campaign-evidence-wasm-boundary.md`.
+The bounded SLM2 scalar native and browser-WASM checkpoint is documented in
+`docs/architecture/vnext-slm2-scalar-wasm-conformance.md`.
 Create-only plan/projection persistence is documented in
 `docs/architecture/vnext-campaign-artifact-persistence.md`.
 Create-only public subject persistence is documented in

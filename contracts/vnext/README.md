@@ -59,6 +59,24 @@ long-running sanitizer result, converter/runtime conformance result, model
 qualification, deployment, publication, or live campaign evidence. See
 `docs/architecture/vnext-slm2-format-implementation.md`.
 
+## SLM2 Scalar Runtime Conformance Checkpoint
+
+`slm2-runtime-vectors.v1.json` is a 48,369-byte language-neutral scalar
+execution contract with SHA-256
+`c7a0fdaf1dd578928e6a438be308dad5a9e8cc10e2bbb6da4b2c5e10bebe71f1`.
+An independent Node implementation performs explicit F32 rounding and freezes
+six forward steps, every operator boundary, final logits, token decisions,
+positions, KV growth, and two generation cases over the canonical public SLM2
+fixture. The unsafe-free Rust scalar runtime reproduces the contract natively.
+An import-free conformance-only WASM module calls that same Rust core and
+reproduces the vectors in Node and real Chromium without network requests.
+
+This is bounded canonical-fixture conformance. It does not establish a
+production model-transfer ABI, source-framework parity, tokenizer/template
+behavior, useful-model qualification, SIMD, threaded WASM, WebGPU, deployment,
+or live campaign evidence. See
+`docs/architecture/vnext-slm2-scalar-wasm-conformance.md`.
+
 ## Parsing
 
 Every JSON input is first consumed as bounded bytes. Before schema validation,
@@ -678,9 +696,10 @@ Checked-in profiles and vectors contain public material only.
 ## Completion Boundary
 
 The registry freezes design and is not itself implementation evidence. The
-separately identified local SLM2 parser/writer/vector/fuzz checkpoint above
-proves only its bounded format-conformance scope; it does not prove conversion,
-runtime correctness, browser support, model quality, or production admission.
+separately identified SLM2 checkpoints prove bounded format conformance and
+canonical-fixture scalar native/browser-WASM conformance. They do not prove
+source conversion, tokenizer/template correctness, real-model runtime parity,
+model quality, product browser activation, or production admission.
 The browser worker, companion, P2P fleet, observer, release system, and claim
 renderer still require their corresponding phase tests and objective receipts.
 No campaign counter is earned by this registry or the local SLM2 checkpoint.

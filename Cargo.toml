@@ -12,6 +12,8 @@ members = [
     "rust/crates/tinyrustlm-runtime",
     "rust/crates/tinyrustlm-slm",
     "rust/crates/tinyrustlm-slm2",
+    "rust/crates/tinyrustlm-slm2-runtime",
+    "rust/crates/tinyrustlm-slm2-runtime-wasm-conformance",
     "rust/crates/tinyrustlm-convert",
     "tinyrustlm/runtime",
     "tinyrustlm/tools/browser_harness",

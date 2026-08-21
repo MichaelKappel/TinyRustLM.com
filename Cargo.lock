@@ -821,6 +821,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "tinyrustlm-slm2-runtime"
+version = "0.1.8"
+dependencies = [
+ "serde",
+ "serde_json",
+ "tinyrustlm-slm2",
+]
+
+[[package]]
+name = "tinyrustlm-slm2-runtime-wasm-conformance"
+version = "0.1.8"
+dependencies = [
+ "tinyrustlm-slm2-runtime",
+]
+
+[[package]]
 name = "tinyrustlm-vector-oracle"
 version = "0.1.8"
 
