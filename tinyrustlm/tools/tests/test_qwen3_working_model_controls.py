@@ -43,6 +43,10 @@ class WorkingModelProfileTests(unittest.TestCase):
         self.assertEqual(profile.holdout_case_count, 280)
         self.assertEqual(profile.evaluation_case_count, 52)
         self.assertEqual(
+            profile.review_rubric_id, "qwen3-working-model-pilot-review-v1"
+        )
+        self.assertEqual(len(profile.review_checklist), 14)
+        self.assertEqual(
             profile.source_revision, "c1899de289a04d12100db370d81485cdf75e47ca"
         )
         self.assertEqual(profile.source_status, "terminally-rejected-as-product-model")
@@ -93,6 +97,11 @@ class WorkingModelControlFixture:
             ),
             encoding="utf-8",
         )
+        self.review_rubric = self.root / "review-rubric.json"
+        self.review_rubric.write_text(
+            json.dumps(self._review_rubric_value(), indent=2) + "\n",
+            encoding="utf-8",
+        )
         self.profile = self.root / "profile.json"
         self.profile.write_text(
             json.dumps(self._profile_value(), indent=2) + "\n", encoding="utf-8"
@@ -121,6 +130,32 @@ class WorkingModelControlFixture:
 
     def tearDown(self) -> None:
         self._temporary.cleanup()
+
+    def _review_rubric_value(self) -> dict[str, object]:
+        return {
+            "schema": MODULE.CURRICULUM_REVIEW_RUBRIC_SCHEMA,
+            "rubric_id": "fixture-curriculum-review-v1",
+            "status_values": ["pass", "fail", "not-applicable"],
+            "decision_values": ["accept", "reject"],
+            "checklist": [
+                {"id": "substantive-help", "applicability": "always"},
+                {"id": "instruction-following", "applicability": "always"},
+                {"id": "factual-accuracy", "applicability": "task-specific"},
+                {"id": "no-hidden-reasoning", "applicability": "always"},
+                {"id": "no-malicious-artifact", "applicability": "always"},
+            ],
+            "acceptance": {
+                "always_pass": [
+                    "substantive-help",
+                    "instruction-following",
+                    "no-hidden-reasoning",
+                    "no-malicious-artifact",
+                ],
+                "no_fail": True,
+                "response_rewrite_forbidden": True,
+                "hidden_reasoning_forbidden": True,
+            },
+        }
 
     def _profile_value(self) -> dict[str, object]:
         return {
@@ -168,6 +203,21 @@ class WorkingModelControlFixture:
                     "synthetic-reviewed",
                 ],
                 "allowed_license_ids": ["Apache-2.0", "CC0-1.0"],
+                "review_policy": {
+                    "rubric": {
+                        "path": str(self.review_rubric),
+                        "bytes": self.review_rubric.stat().st_size,
+                        "sha256": MODULE.sha256_file(self.review_rubric),
+                    },
+                    "candidate_projection": "curriculum-record-without-review-v1",
+                    "primary_reviewer_count": 2,
+                    "distinct_reviewer_identities_required": True,
+                    "distinct_custody_domains_required": True,
+                    "disagreement_policy": "third-distinct-reviewer-required",
+                    "unnecessary_adjudication_forbidden": True,
+                    "response_rewrite_forbidden": True,
+                    "hidden_reasoning_forbidden": True,
+                },
                 "categories": [
                     {
                         "id": "ordinary-conversation",
@@ -418,7 +468,7 @@ class WorkingModelControlFixture:
             },
             "review": {
                 "decision": "accept",
-                "rubric_sha256": sha("1"),
+                "rubric_sha256": MODULE.sha256_file(self.review_rubric),
                 "factual_verification": "not-applicable",
                 "reviewer_count": 2,
                 "disagreement_status": "none",
@@ -429,11 +479,183 @@ class WorkingModelControlFixture:
             },
         }
 
-    def _write_curriculum(self, records: list[dict[str, object]]) -> Path:
-        path = self.root / "curriculum.jsonl"
+    def _write_curriculum(
+        self,
+        records: list[dict[str, object]],
+        *,
+        primary_outcomes: dict[str, tuple[str, str]] | None = None,
+        adjudication_outcomes: dict[str, str] | None = None,
+        name: str = "curriculum",
+    ) -> Path:
+        profile = MODULE.load_profile(self.profile)
+        review_id = f"fixture-{name}-review-v1"
+        primary_outcomes = primary_outcomes or {}
+        adjudication_outcomes = adjudication_outcomes or {}
+        reviewer_identities = (sha("a"), sha("b"))
+        custody_domains = (sha("c"), sha("d"))
+        primary_decisions: list[list[dict[str, object]]] = [[], []]
+        adjudications: list[dict[str, object]] = []
+
+        def checklist(decision: str) -> list[dict[str, str]]:
+            result = []
+            for check_id, applicability in profile.review_checklist:
+                status = "pass" if applicability == "always" else "not-applicable"
+                if decision == "reject" and check_id == "substantive-help":
+                    status = "fail"
+                result.append({"id": check_id, "status": status})
+            return result
+
+        for record in records:
+            record_id = str(record["record_id"])
+            candidates = MODULE._review_candidate_identities(record)
+            outcomes = primary_outcomes.get(record_id, ("accept", "accept"))
+            decisions_for_record: list[dict[str, object]] = []
+            for reviewer_index, outcome in enumerate(outcomes):
+                decision = {
+                    "schema": MODULE.CURRICULUM_REVIEW_DECISION_SCHEMA,
+                    "review_id": review_id,
+                    "record_id": record_id,
+                    **candidates,
+                    "rubric_sha256": profile.review_rubric_sha256,
+                    "reviewer_identity_sha256": reviewer_identities[reviewer_index],
+                    "custody_domain_sha256": custody_domains[reviewer_index],
+                    "decision": outcome,
+                    "factual_verification": "not-applicable",
+                    "checklist": checklist(outcome),
+                    "pii_scan_status": "pass",
+                    "license_review_status": "pass",
+                    "malicious_artifact_scan_status": "pass",
+                    "comment_sha256": sha(str(reviewer_index + 1)),
+                }
+                primary_decisions[reviewer_index].append(decision)
+                decisions_for_record.append(
+                    {
+                        "decision": outcome,
+                        "factual_verification": "not-applicable",
+                        "sha256": MODULE.sha256_bytes(
+                            MODULE.canonical_json_bytes(decision)
+                        ),
+                    }
+                )
+
+            if outcomes == ("accept", "accept"):
+                record["review"] = MODULE._derived_review_summary(
+                    profile,
+                    review_id,
+                    record_id,
+                    candidates["candidate_sha256"],
+                    decisions_for_record,
+                    None,
+                )
+            elif outcomes[0] != outcomes[1] and record_id in adjudication_outcomes:
+                adjudication_outcome = adjudication_outcomes[record_id]
+                adjudication = {
+                    "schema": MODULE.CURRICULUM_REVIEW_ADJUDICATION_SCHEMA,
+                    "review_id": review_id,
+                    "record_id": record_id,
+                    **candidates,
+                    "rubric_sha256": profile.review_rubric_sha256,
+                    "primary_decision_sha256s": [
+                        decision["sha256"] for decision in decisions_for_record
+                    ],
+                    "adjudicator_identity_sha256": sha("5"),
+                    "custody_domain_sha256": sha("6"),
+                    "decision": adjudication_outcome,
+                    "factual_verification": "not-applicable",
+                    "checklist": checklist(adjudication_outcome),
+                    "pii_scan_status": "pass",
+                    "license_review_status": "pass",
+                    "malicious_artifact_scan_status": "pass",
+                    "reason_code": "primary-review-disagreement",
+                    "comment_sha256": sha("7"),
+                }
+                adjudications.append(adjudication)
+                if adjudication_outcome == "accept":
+                    record["review"] = MODULE._derived_review_summary(
+                        profile,
+                        review_id,
+                        record_id,
+                        candidates["candidate_sha256"],
+                        decisions_for_record,
+                        {
+                            "decision": "accept",
+                            "factual_verification": "not-applicable",
+                            "sha256": MODULE.sha256_bytes(
+                                MODULE.canonical_json_bytes(adjudication)
+                            ),
+                        },
+                    )
+
+        self.primary_review_ledgers = []
+        for index, decisions in enumerate(primary_decisions, 1):
+            ledger = self.root / f"{name}-primary-review-{index}.jsonl"
+            ledger.write_text(
+                "".join(json.dumps(item, sort_keys=True) + "\n" for item in decisions),
+                encoding="utf-8",
+            )
+            self.primary_review_ledgers.append(ledger)
+
+        self.adjudication_ledger = None
+        if adjudications:
+            self.adjudication_ledger = self.root / f"{name}-adjudication.jsonl"
+            self.adjudication_ledger.write_text(
+                "".join(
+                    json.dumps(item, sort_keys=True) + "\n" for item in adjudications
+                ),
+                encoding="utf-8",
+            )
+
+        path = self.root / f"{name}.jsonl"
         path.write_text(
             "".join(json.dumps(record, sort_keys=True) + "\n" for record in records),
             encoding="utf-8",
+        )
+
+        def identity(file_path: Path) -> dict[str, object]:
+            return {
+                "path": str(file_path),
+                "bytes": file_path.stat().st_size,
+                "sha256": MODULE.sha256_file(file_path),
+            }
+
+        primary_descriptors = []
+        for index, ledger in enumerate(self.primary_review_ledgers):
+            primary_descriptors.append(
+                {
+                    **identity(ledger),
+                    "reviewer_identity_sha256": reviewer_identities[index],
+                    "custody_domain_sha256": custody_domains[index],
+                }
+            )
+        adjudication_descriptor = None
+        if self.adjudication_ledger is not None:
+            adjudication_descriptor = {
+                **identity(self.adjudication_ledger),
+                "adjudicator_identity_sha256": sha("5"),
+                "custody_domain_sha256": sha("6"),
+            }
+        manifest = {
+            "schema": MODULE.CURRICULUM_REVIEW_MANIFEST_SCHEMA,
+            "status": "complete",
+            "review_id": review_id,
+            "profile_id": profile.profile_id,
+            "profile_sha256": profile.profile_sha256,
+            "control_program_sha256": MODULE.control_program_sha256(),
+            "curriculum_sha256": MODULE.sha256_file(path),
+            "rubric_sha256": profile.review_rubric_sha256,
+            "candidate_projection": "curriculum-record-without-review-v1",
+            "record_count": len(records),
+            "record_order_sha256": MODULE.sha256_bytes(
+                MODULE.canonical_json_bytes([record["record_id"] for record in records])
+            ),
+            "primary_reviewer_ledgers": primary_descriptors,
+            "adjudication_ledger": adjudication_descriptor,
+            "contains_raw_curriculum": False,
+            "training_authority": False,
+        }
+        self.review_manifest = self.root / f"{name}-review-manifest.json"
+        self.review_manifest.write_text(
+            json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
         )
         return path
 
@@ -506,6 +728,12 @@ class ControlInputValidationTests(WorkingModelControlFixture, unittest.TestCase)
 
         with self.assertRaisesRegex(ValueError, "valid UTF-8 JSON"):
             MODULE.read_json_object(duplicate, 1024, "duplicate fixture")
+
+    def test_profile_rejects_review_rubric_drift(self) -> None:
+        self.review_rubric.write_text("{}\n", encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "review rubric byte length|SHA-256"):
+            MODULE.load_profile(self.profile)
 
 
 class HoldoutCustodyTests(WorkingModelControlFixture, unittest.TestCase):
@@ -754,6 +982,7 @@ class CurriculumAuditTests(WorkingModelControlFixture, unittest.TestCase):
         report = MODULE.audit_curriculum(
             MODULE.load_profile(self.profile),
             curriculum,
+            self.review_manifest,
             index,
             semantic,
             None,
@@ -763,7 +992,279 @@ class CurriculumAuditTests(WorkingModelControlFixture, unittest.TestCase):
         self.assertEqual(report["status"], "pass")
         self.assertEqual(report["record_count"], 2)
         self.assertEqual(report["finding_count"], 0)
+        self.assertEqual(report["adjudicated_record_count"], 0)
+        self.assertEqual(
+            report["review_manifest_sha256"], MODULE.sha256_file(self.review_manifest)
+        )
         self.assertEqual(MODULE.read_json_object(output, 1024 * 1024, "audit"), report)
+
+    def test_review_manifest_is_required(self) -> None:
+        sealed, _ = self._seal()
+        curriculum = self._write_curriculum(self._clean_records())
+        index = sealed / MODULE.PRIVATE_INDEX_FILENAME
+        semantic = self._semantic_receipt(curriculum, index)
+
+        with self.assertRaisesRegex(ValueError, "review manifest.*regular"):
+            MODULE.audit_curriculum(
+                MODULE.load_profile(self.profile),
+                curriculum,
+                self.root / "missing-review-manifest.json",
+                index,
+                semantic,
+                None,
+                self.root / "audit.json",
+            )
+
+    def test_review_manifest_binds_the_exact_control_program(self) -> None:
+        sealed, _ = self._seal()
+        curriculum = self._write_curriculum(self._clean_records())
+        index = sealed / MODULE.PRIVATE_INDEX_FILENAME
+        semantic = self._semantic_receipt(curriculum, index)
+        manifest = json.loads(self.review_manifest.read_text(encoding="utf-8"))
+        manifest["control_program_sha256"] = sha("0")
+        self.review_manifest.write_text(json.dumps(manifest) + "\n", encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "control program identity"):
+            MODULE.audit_curriculum(
+                MODULE.load_profile(self.profile),
+                curriculum,
+                self.review_manifest,
+                index,
+                semantic,
+                None,
+                self.root / "audit.json",
+            )
+
+    def test_primary_reviewer_identities_and_custody_must_be_distinct(self) -> None:
+        sealed, _ = self._seal()
+        curriculum = self._write_curriculum(self._clean_records())
+        index = sealed / MODULE.PRIVATE_INDEX_FILENAME
+        semantic = self._semantic_receipt(curriculum, index)
+        manifest = json.loads(self.review_manifest.read_text(encoding="utf-8"))
+        manifest["primary_reviewer_ledgers"][1]["reviewer_identity_sha256"] = manifest[
+            "primary_reviewer_ledgers"
+        ][0]["reviewer_identity_sha256"]
+        manifest["primary_reviewer_ledgers"][1]["custody_domain_sha256"] = manifest[
+            "primary_reviewer_ledgers"
+        ][0]["custody_domain_sha256"]
+        self.review_manifest.write_text(json.dumps(manifest) + "\n", encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "reviewer identities must be distinct"):
+            MODULE.audit_curriculum(
+                MODULE.load_profile(self.profile),
+                curriculum,
+                self.review_manifest,
+                index,
+                semantic,
+                None,
+                self.root / "audit.json",
+            )
+
+    def test_primary_reviewer_custody_domains_must_be_distinct(self) -> None:
+        sealed, _ = self._seal()
+        curriculum = self._write_curriculum(self._clean_records())
+        index = sealed / MODULE.PRIVATE_INDEX_FILENAME
+        semantic = self._semantic_receipt(curriculum, index)
+        manifest = json.loads(self.review_manifest.read_text(encoding="utf-8"))
+        manifest["primary_reviewer_ledgers"][1]["custody_domain_sha256"] = manifest[
+            "primary_reviewer_ledgers"
+        ][0]["custody_domain_sha256"]
+        self.review_manifest.write_text(json.dumps(manifest) + "\n", encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "custody domains must be distinct"):
+            MODULE.audit_curriculum(
+                MODULE.load_profile(self.profile),
+                curriculum,
+                self.review_manifest,
+                index,
+                semantic,
+                None,
+                self.root / "audit.json",
+            )
+
+    def test_primary_review_ledger_must_cover_every_record(self) -> None:
+        sealed, _ = self._seal()
+        curriculum = self._write_curriculum(self._clean_records())
+        index = sealed / MODULE.PRIVATE_INDEX_FILENAME
+        semantic = self._semantic_receipt(curriculum, index)
+        ledger = self.primary_review_ledgers[1]
+        first_line = ledger.read_text(encoding="utf-8").splitlines()[0]
+        ledger.write_text(first_line + "\n", encoding="utf-8")
+        manifest = json.loads(self.review_manifest.read_text(encoding="utf-8"))
+        manifest["primary_reviewer_ledgers"][1]["bytes"] = ledger.stat().st_size
+        manifest["primary_reviewer_ledgers"][1]["sha256"] = MODULE.sha256_file(ledger)
+        self.review_manifest.write_text(json.dumps(manifest) + "\n", encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "exactly cover the curriculum"):
+            MODULE.audit_curriculum(
+                MODULE.load_profile(self.profile),
+                curriculum,
+                self.review_manifest,
+                index,
+                semantic,
+                None,
+                self.root / "audit.json",
+            )
+
+    def test_review_decision_cannot_drift_from_candidate(self) -> None:
+        sealed, _ = self._seal()
+        curriculum = self._write_curriculum(self._clean_records())
+        index = sealed / MODULE.PRIVATE_INDEX_FILENAME
+        semantic = self._semantic_receipt(curriculum, index)
+        ledger = self.primary_review_ledgers[0]
+        decisions = [
+            json.loads(line) for line in ledger.read_text(encoding="utf-8").splitlines()
+        ]
+        decisions[0]["candidate_sha256"] = sha("0")
+        ledger.write_text(
+            "".join(json.dumps(item) + "\n" for item in decisions), encoding="utf-8"
+        )
+        manifest = json.loads(self.review_manifest.read_text(encoding="utf-8"))
+        manifest["primary_reviewer_ledgers"][0]["bytes"] = ledger.stat().st_size
+        manifest["primary_reviewer_ledgers"][0]["sha256"] = MODULE.sha256_file(ledger)
+        self.review_manifest.write_text(json.dumps(manifest) + "\n", encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "immutable candidate"):
+            MODULE.audit_curriculum(
+                MODULE.load_profile(self.profile),
+                curriculum,
+                self.review_manifest,
+                index,
+                semantic,
+                None,
+                self.root / "audit.json",
+            )
+
+    def test_review_disagreement_requires_adjudication(self) -> None:
+        sealed, _ = self._seal()
+        curriculum = self._write_curriculum(
+            self._clean_records(),
+            primary_outcomes={"ordinary-clean": ("accept", "reject")},
+        )
+        index = sealed / MODULE.PRIVATE_INDEX_FILENAME
+        semantic = self._semantic_receipt(curriculum, index)
+
+        with self.assertRaisesRegex(ValueError, "require.*adjudication"):
+            MODULE.audit_curriculum(
+                MODULE.load_profile(self.profile),
+                curriculum,
+                self.review_manifest,
+                index,
+                semantic,
+                None,
+                self.root / "audit.json",
+            )
+
+    def test_distinct_adjudicator_can_resolve_a_disagreement(self) -> None:
+        sealed, _ = self._seal()
+        curriculum = self._write_curriculum(
+            self._clean_records(),
+            primary_outcomes={"ordinary-clean": ("accept", "reject")},
+            adjudication_outcomes={"ordinary-clean": "accept"},
+        )
+        index = sealed / MODULE.PRIVATE_INDEX_FILENAME
+        semantic = self._semantic_receipt(curriculum, index)
+
+        report = MODULE.audit_curriculum(
+            MODULE.load_profile(self.profile),
+            curriculum,
+            self.review_manifest,
+            index,
+            semantic,
+            None,
+            self.root / "audit.json",
+        )
+
+        self.assertEqual(report["status"], "pass")
+        self.assertEqual(report["adjudicated_record_count"], 1)
+
+    def test_adjudicator_must_be_distinct_from_primary_reviewers(self) -> None:
+        sealed, _ = self._seal()
+        curriculum = self._write_curriculum(
+            self._clean_records(),
+            primary_outcomes={"ordinary-clean": ("accept", "reject")},
+            adjudication_outcomes={"ordinary-clean": "accept"},
+        )
+        index = sealed / MODULE.PRIVATE_INDEX_FILENAME
+        semantic = self._semantic_receipt(curriculum, index)
+        manifest = json.loads(self.review_manifest.read_text(encoding="utf-8"))
+        manifest["adjudication_ledger"]["adjudicator_identity_sha256"] = manifest[
+            "primary_reviewer_ledgers"
+        ][0]["reviewer_identity_sha256"]
+        self.review_manifest.write_text(json.dumps(manifest) + "\n", encoding="utf-8")
+
+        with self.assertRaisesRegex(
+            ValueError, "adjudicator identity must be distinct"
+        ):
+            MODULE.audit_curriculum(
+                MODULE.load_profile(self.profile),
+                curriculum,
+                self.review_manifest,
+                index,
+                semantic,
+                None,
+                self.root / "audit.json",
+            )
+
+    def test_adjudication_is_forbidden_when_primary_reviewers_agree(self) -> None:
+        sealed, _ = self._seal()
+        curriculum = self._write_curriculum(self._clean_records())
+        index = sealed / MODULE.PRIVATE_INDEX_FILENAME
+        semantic = self._semantic_receipt(curriculum, index)
+        unnecessary = self.root / "unnecessary-adjudication.jsonl"
+        unnecessary.write_text("{}\n", encoding="utf-8")
+        manifest = json.loads(self.review_manifest.read_text(encoding="utf-8"))
+        manifest["adjudication_ledger"] = {
+            "path": str(unnecessary),
+            "bytes": unnecessary.stat().st_size,
+            "sha256": MODULE.sha256_file(unnecessary),
+            "adjudicator_identity_sha256": sha("5"),
+            "custody_domain_sha256": sha("6"),
+        }
+        self.review_manifest.write_text(json.dumps(manifest) + "\n", encoding="utf-8")
+
+        with self.assertRaisesRegex(
+            ValueError, "forbidden when primary reviewers agree"
+        ):
+            MODULE.audit_curriculum(
+                MODULE.load_profile(self.profile),
+                curriculum,
+                self.review_manifest,
+                index,
+                semantic,
+                None,
+                self.root / "audit.json",
+            )
+
+    def test_forged_review_summary_is_rejected_even_when_manifest_is_rehashed(
+        self,
+    ) -> None:
+        sealed, _ = self._seal()
+        curriculum = self._write_curriculum(self._clean_records())
+        records = [
+            json.loads(line)
+            for line in curriculum.read_text(encoding="utf-8").splitlines()
+        ]
+        records[0]["review"]["decision_sha256"] = sha("0")
+        curriculum.write_text(
+            "".join(json.dumps(record) + "\n" for record in records), encoding="utf-8"
+        )
+        manifest = json.loads(self.review_manifest.read_text(encoding="utf-8"))
+        manifest["curriculum_sha256"] = MODULE.sha256_file(curriculum)
+        self.review_manifest.write_text(json.dumps(manifest) + "\n", encoding="utf-8")
+        index = sealed / MODULE.PRIVATE_INDEX_FILENAME
+        semantic = self._semantic_receipt(curriculum, index)
+
+        with self.assertRaisesRegex(ValueError, "summary is not derived"):
+            MODULE.audit_curriculum(
+                MODULE.load_profile(self.profile),
+                curriculum,
+                self.review_manifest,
+                index,
+                semantic,
+                None,
+                self.root / "audit.json",
+            )
 
     def test_exact_normalized_holdout_prompt_is_rejected(self) -> None:
         sealed, _ = self._seal()
@@ -782,6 +1283,7 @@ class CurriculumAuditTests(WorkingModelControlFixture, unittest.TestCase):
         report = MODULE.audit_curriculum(
             MODULE.load_profile(self.profile),
             curriculum,
+            self.review_manifest,
             sealed / MODULE.PRIVATE_INDEX_FILENAME,
             semantic,
             None,
@@ -807,6 +1309,7 @@ class CurriculumAuditTests(WorkingModelControlFixture, unittest.TestCase):
         report = MODULE.audit_curriculum(
             MODULE.load_profile(self.profile),
             curriculum,
+            self.review_manifest,
             sealed / MODULE.PRIVATE_INDEX_FILENAME,
             semantic,
             None,
@@ -837,6 +1340,7 @@ class CurriculumAuditTests(WorkingModelControlFixture, unittest.TestCase):
         report = MODULE.audit_curriculum(
             MODULE.load_profile(self.profile),
             curriculum,
+            self.review_manifest,
             sealed / MODULE.PRIVATE_INDEX_FILENAME,
             semantic,
             None,
@@ -874,6 +1378,7 @@ class CurriculumAuditTests(WorkingModelControlFixture, unittest.TestCase):
         report = MODULE.audit_curriculum(
             MODULE.load_profile(self.profile),
             curriculum,
+            self.review_manifest,
             sealed / MODULE.PRIVATE_INDEX_FILENAME,
             semantic,
             None,
@@ -900,6 +1405,7 @@ class CurriculumAuditTests(WorkingModelControlFixture, unittest.TestCase):
             MODULE.audit_curriculum(
                 MODULE.load_profile(self.profile),
                 curriculum,
+                self.review_manifest,
                 sealed / MODULE.PRIVATE_INDEX_FILENAME,
                 semantic,
                 None,
@@ -934,6 +1440,7 @@ class CurriculumAuditTests(WorkingModelControlFixture, unittest.TestCase):
         report = MODULE.audit_curriculum(
             MODULE.load_profile(self.profile),
             curriculum,
+            self.review_manifest,
             sealed / MODULE.PRIVATE_INDEX_FILENAME,
             semantic,
             tombstones,
@@ -976,6 +1483,7 @@ class TrainingLockTests(WorkingModelControlFixture, unittest.TestCase):
                     ],
                     "curriculum": self._identity(curriculum),
                     "curriculum_audit": self._identity(audit),
+                    "review_manifest": self._identity(self.review_manifest),
                     "holdout_receipt": self._identity(
                         sealed / MODULE.PUBLIC_RECEIPT_FILENAME
                     ),
@@ -1011,6 +1519,7 @@ class TrainingLockTests(WorkingModelControlFixture, unittest.TestCase):
         MODULE.audit_curriculum(
             MODULE.load_profile(self.profile),
             curriculum,
+            self.review_manifest,
             sealed / MODULE.PRIVATE_INDEX_FILENAME,
             semantic,
             self.tombstones,
@@ -1042,6 +1551,36 @@ class TrainingLockTests(WorkingModelControlFixture, unittest.TestCase):
         request = self._request(sealed, curriculum, semantic, audit)
 
         with self.assertRaisesRegex(ValueError, "curriculum audit must pass"):
+            MODULE.freeze_training_lock(
+                MODULE.load_profile(self.profile), request, self.root / "lock.json"
+            )
+
+    def test_training_lock_reopens_review_evidence_and_rejects_manifest_drift(
+        self,
+    ) -> None:
+        sealed, _ = self._seal()
+        curriculum = self._write_curriculum(self._clean_records())
+        semantic = self._semantic_receipt(
+            curriculum, sealed / MODULE.PRIVATE_INDEX_FILENAME
+        )
+        audit = self.root / "audit.json"
+        MODULE.audit_curriculum(
+            MODULE.load_profile(self.profile),
+            curriculum,
+            self.review_manifest,
+            sealed / MODULE.PRIVATE_INDEX_FILENAME,
+            semantic,
+            self.tombstones,
+            audit,
+        )
+        manifest = json.loads(self.review_manifest.read_text(encoding="utf-8"))
+        manifest["status"] = "complete"
+        self.review_manifest.write_text(
+            json.dumps(manifest, separators=(",", ":")) + "\n", encoding="utf-8"
+        )
+        request = self._request(sealed, curriculum, semantic, audit)
+
+        with self.assertRaisesRegex(ValueError, "does not bind.*review manifest"):
             MODULE.freeze_training_lock(
                 MODULE.load_profile(self.profile), request, self.root / "lock.json"
             )

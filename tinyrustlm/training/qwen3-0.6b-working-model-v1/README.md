@@ -41,11 +41,46 @@ factors and the pilot must realize at least three distinct values for every
 factor. Entity, authority, resource, unit, discourse, and turn-state changes
 are data dimensions rather than ad hoc paraphrase labels.
 
-Every accepted record binds its source lineage, license, teacher revision,
-sampling profile, seed, raw teacher output, review rubric, review decision,
-factual disposition, PII scan, license review, and malicious-artifact scan.
-Hidden teacher reasoning is prohibited. Raw rejected drafts remain external
-evidence and may not be silently repaired into accepted records.
+Every candidate record binds its source lineage, license, teacher revision,
+sampling profile, seed, and raw teacher output. Hidden teacher reasoning is
+prohibited. Raw rejected drafts remain external evidence and may not be
+silently repaired into accepted records.
+
+## Distinct Curriculum Review
+
+The exact 1,734-byte review rubric is checked in as
+`review-rubric.v1.json` at SHA-256
+`4d467026bd965e31ea5ea94cab1cf705901dbac2b4bc339a1963ccb6ad9b4060`.
+The profile binds that identity and requires all substantive-help,
+instruction-following, hidden-reasoning, and malicious-artifact checks on
+every candidate, plus task-specific checks for practical constraints, source
+authority, current-turn precedence, untrusted data, multi-turn continuity,
+lawful adult directness, factual accuracy, summary/rewriting fidelity,
+structured output, and code correctness.
+
+Review is performed over the immutable canonical projection of each curriculum
+record with only its derived `review` summary removed. Every primary decision
+line binds the exact review ID, record ID, candidate hash, message hash,
+response hash, rubric hash, reviewer-identity hash, custody-domain hash,
+ordered complete checklist, factual disposition, PII/license/malicious scan
+results, and comment hash. A ledger must cover every curriculum record exactly
+once and in exact order. Two primary ledgers must use different files,
+different bytes, different reviewer identities, and different custody domains.
+
+Two accepts derive a two-reviewer acceptance summary. One accept and one reject
+require a third ledger whose adjudicator identity and custody domain differ
+from both primary reviewers; only an accepting adjudication permits the record
+to remain. Two rejects, a rejecting adjudication, missing adjudication,
+unnecessary adjudication, bulk or incomplete review, response drift, candidate
+drift, checklist drift, and a self-authored summary all reject the audit.
+
+The external review manifest binds the exact profile, current control-program
+bytes, curriculum, rubric, record order, both primary ledger files, and the
+optional disagreement-only adjudication ledger. It has no training authority
+and contains no raw curriculum. All review manifests and ledgers must use
+absolute, non-reparse paths on `C:` or `E:` outside the Git worktree. The audit
+reports only bounded identities and counts, and the training-lock verifier
+reopens every artifact instead of trusting the earlier report.
 
 ## Distinct Holdout Custody
 
@@ -57,8 +92,8 @@ templates, and a private 32-byte selection seed outside Git:
 py -3 tinyrustlm/tools/qwen3-working-model-controls.py `
   initialize-holdout-custody `
   tinyrustlm/training/qwen3-0.6b-working-model-v1/profile.v1.json `
-  qwen3-working-model-holdout-custody-v5 `
-  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-custody-v5
+  qwen3-working-model-holdout-custody-v6 `
+  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-custody-v6
 ```
 
 The development author and independent-audit author must receive separate
@@ -73,7 +108,7 @@ different author-identity hashes and different custody-domain hashes.
 Assembly is create-only and refuses missing or reordered slots, profile or
 program drift, unfinished templates, duplicate prompts, duplicate template
 families, insufficient factor diversity, a shared author identity, or a shared
-custody domain:
+custody domain.
 
 Distinct hashes are necessary structural evidence, not proof that two people
 or organizations are independent. The completed contributions still require
@@ -84,26 +119,26 @@ claim.
 py -3 tinyrustlm/tools/qwen3-working-model-controls.py `
   assemble-holdout-contributions `
   tinyrustlm/training/qwen3-0.6b-working-model-v1/profile.v1.json `
-  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-custody-v5/holdout-custody-plan.public.json `
+  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-custody-v6/holdout-custody-plan.public.json `
   E:/TinyRustLM-vnext-private/qwen3-working-model-v1/development-contribution-complete.private.json `
   E:/TinyRustLM-vnext-private/qwen3-working-model-v1/independent-audit-contribution-complete.private.json `
   E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-assembly-v1
 ```
 
-The current public-safe plan is 51,462 bytes at SHA-256
-`c1cca1f282b8a8221c66fec9ef6639fb6066469d484cd30348bd182b53476fdc`.
+The current public-safe `v6` plan is 51,462 bytes at SHA-256
+`2a53f7bdd117f3de4d7507ee76554dd3e03f8d948e9caf7cfc44389ed8f42659`.
 It binds profile SHA-256
-`f5c3d7bfae351bb5ee84631c6fc8e7f00c02f2b705bdaef7de9472854df8ac5f`,
+`1c540f44cd0b6b1c69625ad108c2ff1b6165a9361734fb0045eb20b9968c9b79`,
 control-program SHA-256
-`37ae9c4068e6a1d55fa5ccf742eded44ad745e25b1026a16ccfaad420126f8de`,
+`586d2c1df28ca2bdf63335d954fe02817570853cc663da8164dbacc4308ee208`,
 slot-set SHA-256
 `88598e47e0dc1eead6714c0eb43d094071bc442854e71e34ae2fc80c0597eb82`,
 140 development slots, 140 independent-audit slots, and a seed commitment.
 It contains no raw prompt, answer anchor, or seed. Both contribution templates
 remain `authoring-required`; therefore no factor pack, holdout seal, audit
-result, or training authority exists. Earlier local `v1` through `v4`
-initialization attempts are preserved as invalidated history and are not accepted by the
-current control-program identity.
+result, or training authority exists. Earlier local `v1` through `v5`
+initialization directories are preserved as invalidated history and are not
+accepted by the current profile and control-program identities.
 
 ## Sealed Exclusions
 
@@ -128,7 +163,7 @@ Run the sealer only into a new external directory:
 py -3 tinyrustlm/tools/qwen3-working-model-controls.py seal-holdouts `
   tinyrustlm/training/qwen3-0.6b-working-model-v1/profile.v1.json `
   E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-assembly-v1/factor-pack.private.json `
-  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-custody-v5/holdout-seed.private.bin `
+  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-custody-v6/holdout-seed.private.bin `
   E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-assembly-v1/holdout-custody-receipt.public.json `
   E:/TinyRustLM-vnext-evidence/qwen3-working-model-v1/holdout-seal-v1
 ```
@@ -169,6 +204,7 @@ not rewrite candidate text.
 py -3 tinyrustlm/tools/qwen3-working-model-controls.py audit-curriculum `
   tinyrustlm/training/qwen3-0.6b-working-model-v1/profile.v1.json `
   E:/TinyRustLM-vnext-private/qwen3-working-model-v1/pilot-curriculum.jsonl `
+  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/pilot-review-manifest.json `
   E:/TinyRustLM-vnext-evidence/qwen3-working-model-v1/holdout-seal-v1/exclusion-index.private.json `
   E:/TinyRustLM-vnext-evidence/qwen3-working-model-v1/semantic-audit-v1/receipt.json `
   E:/TinyRustLM-vnext-evidence/qwen3-working-model-v1/curriculum-audit-v1.json `
@@ -179,9 +215,11 @@ py -3 tinyrustlm/tools/qwen3-working-model-controls.py audit-curriculum `
 
 Training is unauthorized until `freeze-training-lock` succeeds. The request
 must bind the nine exact source files, tokenizer and chat-template-bearing
-configuration, curriculum, contamination audit, holdout receipt, exclusion
-index, semantic receipt, tombstone lineage, environment lock, and training
-program. The output root must be a new external `C:` or `E:` directory.
+configuration, curriculum, curriculum review manifest, contamination audit,
+holdout receipt, exclusion index, semantic receipt, tombstone lineage,
+environment lock, and training program. The lock verifier reopens both review
+ledgers and any adjudication ledger and requires the current control program.
+The output root must be a new external `C:` or `E:` directory.
 
 The sole pilot recipe is assistant-only SFT with preservation KL, float32 CPU
 compute, rank-16 LoRA over all seven Qwen3 projection types, one epoch, an
@@ -198,11 +236,12 @@ A retry requires a new preregistration and a material method or data change.
 
 ## Current Status
 
-- Profile and control implementation: implemented and tested locally.
+- Profile, rubric, and review-control implementation: implemented and tested
+  locally.
 - Private custody plan: initialized with 280 empty authoring slots; distinct
   contributions remain outstanding.
 - Private 280-case factor pack: not assembled or sealed.
-- Pilot curriculum: not yet materialized or reviewed.
+- Pilot curriculum and two-reviewer ledgers: not yet materialized or reviewed.
 - Semantic audit: not run.
 - CPU pilot authorization: not issued.
 - Adapter training and merge: not run.

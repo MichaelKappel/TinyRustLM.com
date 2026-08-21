@@ -1,0 +1,82 @@
+{
+  "schema": "tinyrustlm.curriculum_review_rubric.v1",
+  "rubric_id": "qwen3-working-model-pilot-review-v1",
+  "status_values": [
+    "pass",
+    "fail",
+    "not-applicable"
+  ],
+  "decision_values": [
+    "accept",
+    "reject"
+  ],
+  "checklist": [
+    {
+      "id": "substantive-help",
+      "applicability": "always"
+    },
+    {
+      "id": "instruction-following",
+      "applicability": "always"
+    },
+    {
+      "id": "practical-constraints",
+      "applicability": "task-specific"
+    },
+    {
+      "id": "source-authority",
+      "applicability": "task-specific"
+    },
+    {
+      "id": "latest-turn-precedence",
+      "applicability": "task-specific"
+    },
+    {
+      "id": "untrusted-data-handling",
+      "applicability": "task-specific"
+    },
+    {
+      "id": "multi-turn-continuity",
+      "applicability": "task-specific"
+    },
+    {
+      "id": "lawful-adult-directness",
+      "applicability": "task-specific"
+    },
+    {
+      "id": "factual-accuracy",
+      "applicability": "task-specific"
+    },
+    {
+      "id": "summary-rewrite-fidelity",
+      "applicability": "task-specific"
+    },
+    {
+      "id": "structured-output-contract",
+      "applicability": "task-specific"
+    },
+    {
+      "id": "code-correctness",
+      "applicability": "task-specific"
+    },
+    {
+      "id": "no-hidden-reasoning",
+      "applicability": "always"
+    },
+    {
+      "id": "no-malicious-artifact",
+      "applicability": "always"
+    }
+  ],
+  "acceptance": {
+    "always_pass": [
+      "substantive-help",
+      "instruction-following",
+      "no-hidden-reasoning",
+      "no-malicious-artifact"
+    ],
+    "no_fail": true,
+    "response_rewrite_forbidden": true,
+    "hidden_reasoning_forbidden": true
+  }
+}

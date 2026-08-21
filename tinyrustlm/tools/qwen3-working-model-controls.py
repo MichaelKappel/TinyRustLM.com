@@ -32,6 +32,7 @@ import unicodedata
 import uuid
 from collections import Counter, defaultdict
 from dataclasses import dataclass
+from itertools import zip_longest
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
@@ -45,6 +46,11 @@ PRIVATE_HOLDOUT_SCHEMA = "tinyrustlm.sealed_holdout_case.v1"
 PRIVATE_INDEX_SCHEMA = "tinyrustlm.contamination_exclusion_index.v1"
 PUBLIC_RECEIPT_SCHEMA = "tinyrustlm.sealed_holdout_receipt.v1"
 CURRICULUM_RECORD_SCHEMA = "tinyrustlm.behavioral_curriculum_record.v1"
+CURRICULUM_REVIEW_RUBRIC_SCHEMA = "tinyrustlm.curriculum_review_rubric.v1"
+CURRICULUM_REVIEW_MANIFEST_SCHEMA = "tinyrustlm.curriculum_review_manifest.v1"
+CURRICULUM_REVIEW_DECISION_SCHEMA = "tinyrustlm.curriculum_review_decision.v1"
+CURRICULUM_REVIEW_ADJUDICATION_SCHEMA = "tinyrustlm.curriculum_review_adjudication.v1"
+CURRICULUM_REVIEW_CLOSURE_SCHEMA = "tinyrustlm.curriculum_review_closure.v1"
 SEMANTIC_RECEIPT_SCHEMA = "tinyrustlm.semantic_contamination_receipt.v1"
 TOMBSTONE_SCHEMA = "tinyrustlm.curriculum_tombstone.v1"
 CURRICULUM_AUDIT_SCHEMA = "tinyrustlm.curriculum_contamination_audit.v1"
@@ -65,6 +71,8 @@ MAX_PROFILE_BYTES = 4 * 1024 * 1024
 MAX_FACTOR_PACK_BYTES = 64 * 1024 * 1024
 MAX_PRIVATE_INDEX_BYTES = 256 * 1024 * 1024
 MAX_CURRICULUM_BYTES = 4 * 1024 * 1024 * 1024
+MAX_REVIEW_MANIFEST_BYTES = 16 * 1024 * 1024
+MAX_REVIEW_LEDGER_BYTES = 4 * 1024 * 1024 * 1024
 MAX_SEMANTIC_RECEIPT_BYTES = 4 * 1024 * 1024
 MAX_TOMBSTONE_BYTES = 256 * 1024 * 1024
 MAX_TRAINING_REQUEST_BYTES = 16 * 1024 * 1024
@@ -110,7 +118,35 @@ CURRICULUM_KEYS = {
     "maximum_record_bytes",
     "allowed_provenance_classes",
     "allowed_license_ids",
+    "review_policy",
     "categories",
+}
+REVIEW_POLICY_KEYS = {
+    "rubric",
+    "candidate_projection",
+    "primary_reviewer_count",
+    "distinct_reviewer_identities_required",
+    "distinct_custody_domains_required",
+    "disagreement_policy",
+    "unnecessary_adjudication_forbidden",
+    "response_rewrite_forbidden",
+    "hidden_reasoning_forbidden",
+}
+PROFILE_RUBRIC_IDENTITY_KEYS = {"path", "bytes", "sha256"}
+REVIEW_RUBRIC_KEYS = {
+    "schema",
+    "rubric_id",
+    "status_values",
+    "decision_values",
+    "checklist",
+    "acceptance",
+}
+REVIEW_RUBRIC_CHECKLIST_KEYS = {"id", "applicability"}
+REVIEW_RUBRIC_ACCEPTANCE_KEYS = {
+    "always_pass",
+    "no_fail",
+    "response_rewrite_forbidden",
+    "hidden_reasoning_forbidden",
 }
 CATEGORY_KEYS = {
     "id",
@@ -285,6 +321,76 @@ REVIEW_KEYS = {
     "license_review_status",
     "malicious_artifact_scan_status",
 }
+REVIEW_MANIFEST_KEYS = {
+    "schema",
+    "status",
+    "review_id",
+    "profile_id",
+    "profile_sha256",
+    "control_program_sha256",
+    "curriculum_sha256",
+    "rubric_sha256",
+    "candidate_projection",
+    "record_count",
+    "record_order_sha256",
+    "primary_reviewer_ledgers",
+    "adjudication_ledger",
+    "contains_raw_curriculum",
+    "training_authority",
+}
+PRIMARY_REVIEW_LEDGER_IDENTITY_KEYS = {
+    "path",
+    "bytes",
+    "sha256",
+    "reviewer_identity_sha256",
+    "custody_domain_sha256",
+}
+ADJUDICATION_LEDGER_IDENTITY_KEYS = {
+    "path",
+    "bytes",
+    "sha256",
+    "adjudicator_identity_sha256",
+    "custody_domain_sha256",
+}
+REVIEW_DECISION_KEYS = {
+    "schema",
+    "review_id",
+    "record_id",
+    "candidate_sha256",
+    "messages_sha256",
+    "response_sha256",
+    "rubric_sha256",
+    "reviewer_identity_sha256",
+    "custody_domain_sha256",
+    "decision",
+    "factual_verification",
+    "checklist",
+    "pii_scan_status",
+    "license_review_status",
+    "malicious_artifact_scan_status",
+    "comment_sha256",
+}
+REVIEW_ADJUDICATION_KEYS = {
+    "schema",
+    "review_id",
+    "record_id",
+    "candidate_sha256",
+    "messages_sha256",
+    "response_sha256",
+    "rubric_sha256",
+    "primary_decision_sha256s",
+    "adjudicator_identity_sha256",
+    "custody_domain_sha256",
+    "decision",
+    "factual_verification",
+    "checklist",
+    "pii_scan_status",
+    "license_review_status",
+    "malicious_artifact_scan_status",
+    "reason_code",
+    "comment_sha256",
+}
+REVIEW_CHECKLIST_ITEM_KEYS = {"id", "status"}
 SEMANTIC_RECEIPT_KEYS = {
     "schema",
     "audit_id",
@@ -320,6 +426,7 @@ TRAINING_REQUEST_KEYS = {
     "source_files",
     "curriculum",
     "curriculum_audit",
+    "review_manifest",
     "holdout_receipt",
     "exclusion_index",
     "semantic_receipt",
@@ -375,6 +482,12 @@ class WorkingModelProfile:
     maximum_record_bytes: int
     allowed_provenance_classes: frozenset[str]
     allowed_license_ids: frozenset[str]
+    review_rubric_path: Path
+    review_rubric_bytes: int
+    review_rubric_sha256: str
+    review_rubric_id: str
+    review_checklist: tuple[tuple[str, str], ...]
+    review_always_pass: frozenset[str]
     categories: tuple[CategoryPolicy, ...]
     holdout_case_count: int
     development_holdout_count: int
@@ -928,6 +1041,71 @@ def _parse_eval_fixture(
     return tuple(cases)
 
 
+def _load_review_rubric(
+    path: Path, expected_bytes: int, expected_sha256: str
+) -> tuple[str, tuple[tuple[str, str], ...], frozenset[str]]:
+    actual_bytes = verify_regular_file(path, MAX_PROFILE_BYTES, "review rubric")
+    if actual_bytes != expected_bytes:
+        raise ValueError("review rubric byte length does not match the profile")
+    if sha256_file(path) != expected_sha256:
+        raise ValueError("review rubric SHA-256 does not match the profile")
+    rubric = read_json_object(path, MAX_PROFILE_BYTES, "review rubric")
+    require_exact_keys(rubric, REVIEW_RUBRIC_KEYS, "review rubric")
+    if rubric["schema"] != CURRICULUM_REVIEW_RUBRIC_SCHEMA:
+        raise ValueError(
+            f"review rubric schema must be {CURRICULUM_REVIEW_RUBRIC_SCHEMA}"
+        )
+    rubric_id = require_id(rubric["rubric_id"], "review rubric rubric_id")
+    if require_string_list(
+        rubric["status_values"], "review rubric status_values", 3, 3
+    ) != ("pass", "fail", "not-applicable"):
+        raise ValueError("review rubric status_values drifted")
+    if require_string_list(
+        rubric["decision_values"], "review rubric decision_values", 2, 2
+    ) != ("accept", "reject"):
+        raise ValueError("review rubric decision_values drifted")
+
+    checklist_values = _require_object_list(
+        rubric["checklist"], "review rubric checklist", 1, 128
+    )
+    checklist: list[tuple[str, str]] = []
+    for index, item in enumerate(checklist_values):
+        label = f"review rubric checklist[{index}]"
+        require_exact_keys(item, REVIEW_RUBRIC_CHECKLIST_KEYS, label)
+        check_id = require_id(item["id"], f"{label}.id")
+        applicability = require_string(item["applicability"], f"{label}.applicability")
+        if applicability not in {"always", "task-specific"}:
+            raise ValueError(f"{label}.applicability is invalid")
+        checklist.append((check_id, applicability))
+    if len({check_id for check_id, _ in checklist}) != len(checklist):
+        raise ValueError("review rubric checklist ids must be unique")
+
+    acceptance = _require_object(rubric["acceptance"], "review rubric acceptance")
+    require_exact_keys(
+        acceptance, REVIEW_RUBRIC_ACCEPTANCE_KEYS, "review rubric acceptance"
+    )
+    always_pass = frozenset(
+        require_string_list(
+            acceptance["always_pass"], "review rubric acceptance.always_pass", 1, 128
+        )
+    )
+    declared_always = {
+        check_id for check_id, applicability in checklist if applicability == "always"
+    }
+    if always_pass != declared_always:
+        raise ValueError(
+            "review rubric acceptance.always_pass must equal all always-applicable checks"
+        )
+    for key in (
+        "no_fail",
+        "response_rewrite_forbidden",
+        "hidden_reasoning_forbidden",
+    ):
+        if require_bool(acceptance[key], f"review rubric acceptance.{key}") is not True:
+            raise ValueError(f"review rubric acceptance.{key} must be true")
+    return rubric_id, tuple(checklist), always_pass
+
+
 def load_profile(path: Path) -> WorkingModelProfile:
     value = read_json_object(path, MAX_PROFILE_BYTES, "working-model profile")
     require_exact_keys(value, PROFILE_KEYS, "working-model profile")
@@ -1074,6 +1252,55 @@ def load_profile(path: Path) -> WorkingModelProfile:
             curriculum["allowed_license_ids"], "curriculum.allowed_license_ids", 1, 64
         )
     )
+    review_policy = _require_object(
+        curriculum["review_policy"], "curriculum.review_policy"
+    )
+    require_exact_keys(review_policy, REVIEW_POLICY_KEYS, "curriculum.review_policy")
+    rubric_identity = _require_object(
+        review_policy["rubric"], "curriculum.review_policy.rubric"
+    )
+    require_exact_keys(
+        rubric_identity,
+        PROFILE_RUBRIC_IDENTITY_KEYS,
+        "curriculum.review_policy.rubric",
+    )
+    raw_rubric_path = Path(
+        require_string(
+            rubric_identity["path"],
+            "curriculum.review_policy.rubric.path",
+            maximum=32768,
+        )
+    )
+    rubric_path = (
+        raw_rubric_path.resolve()
+        if raw_rubric_path.is_absolute()
+        else (repository_root / raw_rubric_path).resolve()
+    )
+    rubric_bytes = require_integer(
+        rubric_identity["bytes"],
+        "curriculum.review_policy.rubric.bytes",
+        1,
+        MAX_PROFILE_BYTES,
+    )
+    rubric_sha256 = require_sha256(
+        rubric_identity["sha256"], "curriculum.review_policy.rubric.sha256"
+    )
+    rubric_id, review_checklist, review_always_pass = _load_review_rubric(
+        rubric_path, rubric_bytes, rubric_sha256
+    )
+    exact_review_policy = {
+        "candidate_projection": "curriculum-record-without-review-v1",
+        "primary_reviewer_count": 2,
+        "distinct_reviewer_identities_required": True,
+        "distinct_custody_domains_required": True,
+        "disagreement_policy": "third-distinct-reviewer-required",
+        "unnecessary_adjudication_forbidden": True,
+        "response_rewrite_forbidden": True,
+        "hidden_reasoning_forbidden": True,
+    }
+    for key, expected in exact_review_policy.items():
+        if review_policy[key] != expected:
+            raise ValueError(f"curriculum.review_policy.{key} drifted")
     category_values = _require_object_list(
         curriculum["categories"], "curriculum.categories", 1, 128
     )
@@ -1239,6 +1466,12 @@ def load_profile(path: Path) -> WorkingModelProfile:
         maximum_record_bytes,
         provenance_classes,
         license_ids,
+        rubric_path,
+        rubric_bytes,
+        rubric_sha256,
+        rubric_id,
+        review_checklist,
+        review_always_pass,
         tuple(categories),
         holdout_count,
         development_count,
@@ -1887,6 +2120,20 @@ def _require_allowed_storage_drive(path: Path, label: str) -> None:
         raise ValueError(
             f"{label} must be on C: or E:; D: and other drives are forbidden"
         )
+
+
+def _require_external_evidence_location(path: Path, label: str) -> Path:
+    if not path.is_absolute():
+        raise ValueError(f"{label} must use an absolute path")
+    _require_allowed_storage_drive(path, label)
+    _reject_reparse_chain(path, label)
+    resolved = path.resolve()
+    repository_root = Path(__file__).resolve().parents[2]
+    try:
+        resolved.relative_to(repository_root)
+    except ValueError:
+        return resolved
+    raise ValueError(f"{label} must remain outside the Git worktree")
 
 
 def _write_new_atomic(path: Path, payload: bytes) -> None:
@@ -2572,12 +2819,23 @@ def _validate_record(
     require_exact_keys(review, REVIEW_KEYS, f"{label}.review")
     if review["decision"] != "accept":
         raise ValueError(f"{label} review decision must be accept")
-    require_sha256(review["rubric_sha256"], f"{label}.review.rubric_sha256")
+    if (
+        require_sha256(review["rubric_sha256"], f"{label}.review.rubric_sha256")
+        != profile.review_rubric_sha256
+    ):
+        raise ValueError(f"{label}.review.rubric_sha256 drifted from the profile")
     if review["factual_verification"] not in {"verified", "not-applicable"}:
         raise ValueError(f"{label}.review.factual_verification is invalid")
-    require_integer(review["reviewer_count"], f"{label}.review.reviewer_count", 2, 100)
+    reviewer_count = require_integer(
+        review["reviewer_count"], f"{label}.review.reviewer_count", 2, 3
+    )
     if review["disagreement_status"] not in {"none", "adjudicated"}:
         raise ValueError(f"{label}.review.disagreement_status is invalid")
+    if (reviewer_count, review["disagreement_status"]) not in {
+        (2, "none"),
+        (3, "adjudicated"),
+    }:
+        raise ValueError(f"{label}.review reviewer count and disagreement drifted")
     require_sha256(review["decision_sha256"], f"{label}.review.decision_sha256")
     for scan_key in (
         "pii_scan_status",
@@ -2596,6 +2854,501 @@ def _validate_record(
         disposition,
         normalized_factors,
     )
+
+
+def curriculum_candidate_projection(record: Mapping[str, Any]) -> dict[str, Any]:
+    """Return the immutable review candidate without its derived review summary."""
+    if set(record) != CURRICULUM_RECORD_KEYS:
+        raise ValueError("curriculum record keys must be exact before projection")
+    return {key: record[key] for key in sorted(CURRICULUM_RECORD_KEYS - {"review"})}
+
+
+def _review_candidate_identities(record: Mapping[str, Any]) -> dict[str, str]:
+    return {
+        "candidate_sha256": sha256_bytes(
+            canonical_json_bytes(curriculum_candidate_projection(record))
+        ),
+        "messages_sha256": sha256_bytes(canonical_json_bytes(record["messages"])),
+        "response_sha256": sha256_bytes(
+            require_string(
+                record["response"], "review candidate response", maximum=MAX_TEXT_BYTES
+            ).encode("utf-8")
+        ),
+    }
+
+
+def _validate_review_checklist(
+    profile: WorkingModelProfile, value: Any, label: str
+) -> tuple[tuple[str, str], ...]:
+    items = _require_object_list(
+        value, label, len(profile.review_checklist), len(profile.review_checklist)
+    )
+    result: list[tuple[str, str]] = []
+    for index, (item, expected) in enumerate(zip(items, profile.review_checklist)):
+        item_label = f"{label}[{index}]"
+        require_exact_keys(item, REVIEW_CHECKLIST_ITEM_KEYS, item_label)
+        check_id = require_id(item["id"], f"{item_label}.id")
+        status = require_string(item["status"], f"{item_label}.status")
+        expected_id, applicability = expected
+        if check_id != expected_id:
+            raise ValueError(f"{label} order or ids drifted from the rubric")
+        if status not in {"pass", "fail", "not-applicable"}:
+            raise ValueError(f"{item_label}.status is invalid")
+        if applicability == "always" and status == "not-applicable":
+            raise ValueError(f"{item_label} is always applicable")
+        result.append((check_id, status))
+    return tuple(result)
+
+
+def _validate_review_assessment(
+    profile: WorkingModelProfile, value: Mapping[str, Any], label: str
+) -> dict[str, Any]:
+    decision = require_string(value["decision"], f"{label}.decision")
+    if decision not in {"accept", "reject"}:
+        raise ValueError(f"{label}.decision is invalid")
+    factual = require_string(
+        value["factual_verification"], f"{label}.factual_verification"
+    )
+    if factual not in {"verified", "not-applicable", "failed"}:
+        raise ValueError(f"{label}.factual_verification is invalid")
+    checklist = _validate_review_checklist(
+        profile, value["checklist"], f"{label}.checklist"
+    )
+    scan_values: dict[str, str] = {}
+    for scan_key in (
+        "pii_scan_status",
+        "license_review_status",
+        "malicious_artifact_scan_status",
+    ):
+        scan = require_string(value[scan_key], f"{label}.{scan_key}")
+        if scan not in {"pass", "fail"}:
+            raise ValueError(f"{label}.{scan_key} is invalid")
+        scan_values[scan_key] = scan
+    require_sha256(value["comment_sha256"], f"{label}.comment_sha256")
+
+    checklist_failures = {
+        check_id for check_id, status in checklist if status == "fail"
+    }
+    always_statuses = dict(checklist)
+    failed = (
+        factual == "failed"
+        or bool(checklist_failures)
+        or any(scan == "fail" for scan in scan_values.values())
+    )
+    if decision == "accept":
+        if failed:
+            raise ValueError(f"{label} cannot accept a failed assessment")
+        if any(
+            always_statuses[check_id] != "pass"
+            for check_id in profile.review_always_pass
+        ):
+            raise ValueError(f"{label} must pass every always-required rubric check")
+    elif not failed:
+        raise ValueError(f"{label} rejection must identify at least one failed control")
+    return {
+        "decision": decision,
+        "factual_verification": factual,
+        "checklist": checklist,
+        **scan_values,
+    }
+
+
+def _validate_primary_review_decision(
+    profile: WorkingModelProfile,
+    value: dict[str, Any],
+    label: str,
+    *,
+    review_id: str,
+    record_id: str,
+    candidate_identities: Mapping[str, str],
+    reviewer_identity_sha256: str,
+    custody_domain_sha256: str,
+) -> dict[str, Any]:
+    require_exact_keys(value, REVIEW_DECISION_KEYS, label)
+    if value["schema"] != CURRICULUM_REVIEW_DECISION_SCHEMA:
+        raise ValueError(f"{label}.schema must be {CURRICULUM_REVIEW_DECISION_SCHEMA}")
+    if value["review_id"] != review_id:
+        raise ValueError(f"{label}.review_id does not match the manifest")
+    if require_id(value["record_id"], f"{label}.record_id") != record_id:
+        raise ValueError(f"{label}.record_id does not match the curriculum order")
+    for key, expected in candidate_identities.items():
+        if require_sha256(value[key], f"{label}.{key}") != expected:
+            raise ValueError(f"{label}.{key} does not match the immutable candidate")
+    if (
+        require_sha256(value["rubric_sha256"], f"{label}.rubric_sha256")
+        != profile.review_rubric_sha256
+    ):
+        raise ValueError(f"{label}.rubric_sha256 drifted from the profile")
+    if (
+        require_sha256(
+            value["reviewer_identity_sha256"], f"{label}.reviewer_identity_sha256"
+        )
+        != reviewer_identity_sha256
+    ):
+        raise ValueError(f"{label} reviewer identity does not match its ledger")
+    if (
+        require_sha256(value["custody_domain_sha256"], f"{label}.custody_domain_sha256")
+        != custody_domain_sha256
+    ):
+        raise ValueError(f"{label} custody domain does not match its ledger")
+    assessment = _validate_review_assessment(profile, value, label)
+    return {**assessment, "sha256": sha256_bytes(canonical_json_bytes(value))}
+
+
+def _validate_review_adjudication(
+    profile: WorkingModelProfile,
+    value: dict[str, Any],
+    label: str,
+    *,
+    review_id: str,
+    record_id: str,
+    candidate_identities: Mapping[str, str],
+    primary_decision_sha256s: Sequence[str],
+    adjudicator_identity_sha256: str,
+    custody_domain_sha256: str,
+) -> dict[str, Any]:
+    require_exact_keys(value, REVIEW_ADJUDICATION_KEYS, label)
+    if value["schema"] != CURRICULUM_REVIEW_ADJUDICATION_SCHEMA:
+        raise ValueError(
+            f"{label}.schema must be {CURRICULUM_REVIEW_ADJUDICATION_SCHEMA}"
+        )
+    if value["review_id"] != review_id:
+        raise ValueError(f"{label}.review_id does not match the manifest")
+    if require_id(value["record_id"], f"{label}.record_id") != record_id:
+        raise ValueError(f"{label}.record_id does not match the disagreement order")
+    for key, expected in candidate_identities.items():
+        if require_sha256(value[key], f"{label}.{key}") != expected:
+            raise ValueError(f"{label}.{key} does not match the immutable candidate")
+    if (
+        require_sha256(value["rubric_sha256"], f"{label}.rubric_sha256")
+        != profile.review_rubric_sha256
+    ):
+        raise ValueError(f"{label}.rubric_sha256 drifted from the profile")
+    primary_hashes = require_string_list(
+        value["primary_decision_sha256s"],
+        f"{label}.primary_decision_sha256s",
+        2,
+        2,
+    )
+    for index, digest in enumerate(primary_hashes):
+        require_sha256(digest, f"{label}.primary_decision_sha256s[{index}]")
+    if primary_hashes != tuple(primary_decision_sha256s):
+        raise ValueError(f"{label} primary decision identities do not match")
+    if (
+        require_sha256(
+            value["adjudicator_identity_sha256"],
+            f"{label}.adjudicator_identity_sha256",
+        )
+        != adjudicator_identity_sha256
+    ):
+        raise ValueError(f"{label} adjudicator identity does not match its ledger")
+    if (
+        require_sha256(value["custody_domain_sha256"], f"{label}.custody_domain_sha256")
+        != custody_domain_sha256
+    ):
+        raise ValueError(f"{label} custody domain does not match its ledger")
+    require_id(value["reason_code"], f"{label}.reason_code")
+    assessment = _validate_review_assessment(profile, value, label)
+    return {**assessment, "sha256": sha256_bytes(canonical_json_bytes(value))}
+
+
+def _derived_review_summary(
+    profile: WorkingModelProfile,
+    review_id: str,
+    record_id: str,
+    candidate_sha256: str,
+    primary_decisions: Sequence[Mapping[str, Any]],
+    adjudication: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    primary_hashes = [decision["sha256"] for decision in primary_decisions]
+    final_assessments = (
+        list(primary_decisions) if adjudication is None else [adjudication]
+    )
+    factual = (
+        "verified"
+        if any(item["factual_verification"] == "verified" for item in final_assessments)
+        else "not-applicable"
+    )
+    closure = {
+        "schema": CURRICULUM_REVIEW_CLOSURE_SCHEMA,
+        "review_id": review_id,
+        "record_id": record_id,
+        "candidate_sha256": candidate_sha256,
+        "rubric_sha256": profile.review_rubric_sha256,
+        "primary_decision_sha256s": primary_hashes,
+        "adjudication_sha256": adjudication["sha256"] if adjudication else None,
+        "final_decision": "accept",
+    }
+    return {
+        "decision": "accept",
+        "rubric_sha256": profile.review_rubric_sha256,
+        "factual_verification": factual,
+        "reviewer_count": 3 if adjudication else 2,
+        "disagreement_status": "adjudicated" if adjudication else "none",
+        "decision_sha256": sha256_bytes(canonical_json_bytes(closure)),
+        "pii_scan_status": "pass",
+        "license_review_status": "pass",
+        "malicious_artifact_scan_status": "pass",
+    }
+
+
+def _resolve_review_ledger_descriptor(
+    value: Any,
+    label: str,
+    *,
+    expected_keys: set[str],
+    actor_key: str,
+) -> tuple[Path, dict[str, Any], str, str]:
+    descriptor = _require_object(value, label)
+    require_exact_keys(descriptor, expected_keys, label)
+    actor_sha256 = require_sha256(descriptor[actor_key], f"{label}.{actor_key}")
+    custody_sha256 = require_sha256(
+        descriptor["custody_domain_sha256"], f"{label}.custody_domain_sha256"
+    )
+    path, identity = _resolve_identity(
+        {key: descriptor[key] for key in FILE_IDENTITY_KEYS}, label
+    )
+    _require_external_evidence_location(path, label)
+    if identity["bytes"] > MAX_REVIEW_LEDGER_BYTES:
+        raise ValueError(f"{label} exceeds the review-ledger byte bound")
+    return path, identity, actor_sha256, custody_sha256
+
+
+def _validate_review_evidence(
+    profile: WorkingModelProfile,
+    curriculum_path: Path,
+    review_manifest_path: Path,
+) -> dict[str, Any]:
+    _require_external_evidence_location(review_manifest_path, "review manifest")
+    curriculum_sha256 = sha256_file(curriculum_path)
+    manifest = read_json_object(
+        review_manifest_path, MAX_REVIEW_MANIFEST_BYTES, "review manifest"
+    )
+    require_exact_keys(manifest, REVIEW_MANIFEST_KEYS, "review manifest")
+    if manifest["schema"] != CURRICULUM_REVIEW_MANIFEST_SCHEMA:
+        raise ValueError(
+            f"review manifest schema must be {CURRICULUM_REVIEW_MANIFEST_SCHEMA}"
+        )
+    if manifest["status"] != "complete":
+        raise ValueError("review manifest status must be complete")
+    review_id = require_id(manifest["review_id"], "review manifest review_id")
+    if (
+        manifest["profile_id"] != profile.profile_id
+        or manifest["profile_sha256"] != profile.profile_sha256
+    ):
+        raise ValueError("review manifest is not bound to the exact profile")
+    if (
+        require_sha256(
+            manifest["control_program_sha256"],
+            "review manifest control_program_sha256",
+        )
+        != control_program_sha256()
+    ):
+        raise ValueError("review manifest control program identity does not match")
+    if manifest["curriculum_sha256"] != curriculum_sha256:
+        raise ValueError("review manifest curriculum SHA-256 does not match")
+    if manifest["rubric_sha256"] != profile.review_rubric_sha256:
+        raise ValueError("review manifest rubric SHA-256 drifted from the profile")
+    if manifest["candidate_projection"] != "curriculum-record-without-review-v1":
+        raise ValueError("review manifest candidate projection drifted")
+    record_count = require_integer(
+        manifest["record_count"], "review manifest record_count", 1, 10000000
+    )
+    require_sha256(
+        manifest["record_order_sha256"], "review manifest record_order_sha256"
+    )
+    if require_bool(
+        manifest["contains_raw_curriculum"], "review manifest contains_raw_curriculum"
+    ):
+        raise ValueError("review manifest must not contain raw curriculum")
+    if require_bool(
+        manifest["training_authority"], "review manifest training_authority"
+    ):
+        raise ValueError("review manifest must not grant training authority")
+
+    primary_values = _require_object_list(
+        manifest["primary_reviewer_ledgers"],
+        "review manifest primary_reviewer_ledgers",
+        2,
+        2,
+    )
+    primary_ledgers = [
+        _resolve_review_ledger_descriptor(
+            value,
+            f"review manifest primary_reviewer_ledgers[{index}]",
+            expected_keys=PRIMARY_REVIEW_LEDGER_IDENTITY_KEYS,
+            actor_key="reviewer_identity_sha256",
+        )
+        for index, value in enumerate(primary_values)
+    ]
+    if len({item[2] for item in primary_ledgers}) != 2:
+        raise ValueError("primary reviewer identities must be distinct")
+    if len({item[3] for item in primary_ledgers}) != 2:
+        raise ValueError("primary reviewer custody domains must be distinct")
+    if len({item[0] for item in primary_ledgers}) != 2:
+        raise ValueError("primary review ledgers must be separate files")
+    if len({item[1]["sha256"] for item in primary_ledgers}) != 2:
+        raise ValueError("primary review ledger bytes must be distinct")
+
+    adjudication_descriptor = manifest["adjudication_ledger"]
+    adjudication_ledger: tuple[Path, dict[str, Any], str, str] | None = None
+    if adjudication_descriptor is not None:
+        adjudication_ledger = _resolve_review_ledger_descriptor(
+            adjudication_descriptor,
+            "review manifest adjudication_ledger",
+            expected_keys=ADJUDICATION_LEDGER_IDENTITY_KEYS,
+            actor_key="adjudicator_identity_sha256",
+        )
+        if adjudication_ledger[2] in {item[2] for item in primary_ledgers}:
+            raise ValueError(
+                "adjudicator identity must be distinct from both reviewers"
+            )
+        if adjudication_ledger[3] in {item[3] for item in primary_ledgers}:
+            raise ValueError("adjudicator custody must be distinct from both reviewers")
+        if adjudication_ledger[0] in {item[0] for item in primary_ledgers}:
+            raise ValueError("adjudication must use a separate ledger file")
+
+    sentinel = object()
+    curriculum_records = iter_json_lines(
+        curriculum_path, MAX_CURRICULUM_BYTES, "curriculum"
+    )
+    primary_records = [
+        iter_json_lines(
+            item[0], MAX_REVIEW_LEDGER_BYTES, f"primary review ledger {index + 1}"
+        )
+        for index, item in enumerate(primary_ledgers)
+    ]
+    record_ids: list[str] = []
+    unique_record_ids: set[str] = set()
+    disagreements: list[dict[str, Any]] = []
+    for line_number, values in enumerate(
+        zip_longest(curriculum_records, *primary_records, fillvalue=sentinel), 1
+    ):
+        if any(value is sentinel for value in values):
+            raise ValueError("primary review ledgers must exactly cover the curriculum")
+        record = values[0]
+        assert isinstance(record, dict)
+        validated = _validate_record(record, profile, line_number)
+        current_record_id = validated[0]
+        if current_record_id in unique_record_ids:
+            raise ValueError("curriculum record ids must be unique")
+        record_ids.append(current_record_id)
+        unique_record_ids.add(current_record_id)
+        candidate_identities = _review_candidate_identities(record)
+        decisions = [
+            _validate_primary_review_decision(
+                profile,
+                values[index + 1],
+                f"primary review ledger {index + 1} line {line_number}",
+                review_id=review_id,
+                record_id=current_record_id,
+                candidate_identities=candidate_identities,
+                reviewer_identity_sha256=primary_ledgers[index][2],
+                custody_domain_sha256=primary_ledgers[index][3],
+            )
+            for index in range(2)
+        ]
+        decision_values = {decision["decision"] for decision in decisions}
+        if len(decision_values) == 1:
+            if decision_values != {"accept"}:
+                raise ValueError(
+                    f"curriculum record {current_record_id} was rejected by both reviewers"
+                )
+            expected_review = _derived_review_summary(
+                profile,
+                review_id,
+                current_record_id,
+                candidate_identities["candidate_sha256"],
+                decisions,
+                None,
+            )
+            if record["review"] != expected_review:
+                raise ValueError(
+                    f"curriculum record {current_record_id} review summary is not derived"
+                )
+        else:
+            disagreements.append(
+                {
+                    "record_id": current_record_id,
+                    "candidate_identities": candidate_identities,
+                    "primary_decisions": decisions,
+                    "review_summary": record["review"],
+                }
+            )
+
+    if len(record_ids) != record_count:
+        raise ValueError("review manifest record count does not match the curriculum")
+    record_order_sha256 = sha256_bytes(canonical_json_bytes(record_ids))
+    if manifest["record_order_sha256"] != record_order_sha256:
+        raise ValueError("review manifest record order SHA-256 does not match")
+
+    adjudicated_count = 0
+    if disagreements:
+        if adjudication_ledger is None:
+            raise ValueError(
+                "review disagreements require a third-party adjudication ledger"
+            )
+        adjudication_records = iter_json_lines(
+            adjudication_ledger[0], MAX_REVIEW_LEDGER_BYTES, "adjudication ledger"
+        )
+        for index, values in enumerate(
+            zip_longest(disagreements, adjudication_records, fillvalue=sentinel), 1
+        ):
+            if any(value is sentinel for value in values):
+                raise ValueError(
+                    "adjudication ledger must exactly cover primary-review disagreements"
+                )
+            disagreement, raw_adjudication = values
+            assert isinstance(disagreement, dict) and isinstance(raw_adjudication, dict)
+            primary_decision_sha256s = [
+                decision["sha256"] for decision in disagreement["primary_decisions"]
+            ]
+            adjudication = _validate_review_adjudication(
+                profile,
+                raw_adjudication,
+                f"adjudication ledger line {index}",
+                review_id=review_id,
+                record_id=disagreement["record_id"],
+                candidate_identities=disagreement["candidate_identities"],
+                primary_decision_sha256s=primary_decision_sha256s,
+                adjudicator_identity_sha256=adjudication_ledger[2],
+                custody_domain_sha256=adjudication_ledger[3],
+            )
+            if adjudication["decision"] != "accept":
+                raise ValueError(
+                    f"curriculum record {disagreement['record_id']} was rejected by adjudication"
+                )
+            expected_review = _derived_review_summary(
+                profile,
+                review_id,
+                disagreement["record_id"],
+                disagreement["candidate_identities"]["candidate_sha256"],
+                disagreement["primary_decisions"],
+                adjudication,
+            )
+            if disagreement["review_summary"] != expected_review:
+                raise ValueError(
+                    f"curriculum record {disagreement['record_id']} adjudicated summary is not derived"
+                )
+            adjudicated_count += 1
+    elif adjudication_ledger is not None:
+        raise ValueError(
+            "adjudication ledger is forbidden when primary reviewers agree"
+        )
+
+    return {
+        "review_id": review_id,
+        "manifest_sha256": sha256_file(review_manifest_path),
+        "control_program_sha256": manifest["control_program_sha256"],
+        "rubric_sha256": profile.review_rubric_sha256,
+        "record_count": record_count,
+        "record_order_sha256": record_order_sha256,
+        "primary_ledger_sha256s": [item[1]["sha256"] for item in primary_ledgers],
+        "adjudication_ledger_sha256": (
+            adjudication_ledger[1]["sha256"] if adjudication_ledger else None
+        ),
+        "adjudicated_record_count": adjudicated_count,
+    }
 
 
 def _build_exclusion_lookups(cases: Sequence[dict[str, Any]]) -> dict[str, Any]:
@@ -2717,6 +3470,7 @@ def _load_tombstones(path: Path | None) -> tuple[dict[str, Any], ...]:
 def audit_curriculum(
     profile: WorkingModelProfile,
     curriculum_path: Path,
+    review_manifest_path: Path,
     exclusion_index_path: Path,
     semantic_receipt_path: Path,
     tombstone_path: Path | None,
@@ -2727,6 +3481,11 @@ def audit_curriculum(
     )
     index = _validate_index(profile, exclusion_index_path)
     curriculum_sha256 = sha256_file(curriculum_path)
+    review_evidence = _validate_review_evidence(
+        profile, curriculum_path, review_manifest_path
+    )
+    if review_evidence["record_count"] != record_count:
+        raise ValueError("review evidence record count does not match the curriculum")
     index_sha256 = sha256_file(exclusion_index_path)
     semantic_receipt = _validate_semantic_receipt(
         profile,
@@ -2895,6 +3654,14 @@ def audit_curriculum(
         "profile_id": profile.profile_id,
         "profile_sha256": profile.profile_sha256,
         "curriculum_sha256": curriculum_sha256,
+        "review_manifest_sha256": review_evidence["manifest_sha256"],
+        "control_program_sha256": review_evidence["control_program_sha256"],
+        "review_id": review_evidence["review_id"],
+        "review_rubric_sha256": review_evidence["rubric_sha256"],
+        "review_record_order_sha256": review_evidence["record_order_sha256"],
+        "primary_review_ledger_sha256s": review_evidence["primary_ledger_sha256s"],
+        "adjudication_ledger_sha256": review_evidence["adjudication_ledger_sha256"],
+        "adjudicated_record_count": review_evidence["adjudicated_record_count"],
         "exclusion_index_sha256": index_sha256,
         "semantic_receipt_sha256": sha256_file(semantic_receipt_path),
         "tombstone_lineage_sha256": sha256_file(tombstone_path)
@@ -3071,6 +3838,9 @@ def freeze_training_lock(
     audit_path, audit_identity = _resolve_identity(
         request["curriculum_audit"], "training lock request curriculum_audit"
     )
+    review_manifest_path, review_manifest_identity = _resolve_identity(
+        request["review_manifest"], "training lock request review_manifest"
+    )
     holdout_receipt_path, holdout_identity = _resolve_identity(
         request["holdout_receipt"], "training lock request holdout_receipt"
     )
@@ -3095,8 +3865,12 @@ def freeze_training_lock(
         raise ValueError("curriculum audit must pass")
     if audit.get("profile_sha256") != profile.profile_sha256:
         raise ValueError("curriculum audit profile identity does not match")
+    if audit.get("control_program_sha256") != control_program_sha256():
+        raise ValueError("curriculum audit control program identity does not match")
     if audit.get("curriculum_sha256") != curriculum_identity["sha256"]:
         raise ValueError("curriculum audit does not bind the requested curriculum")
+    if audit.get("review_manifest_sha256") != review_manifest_identity["sha256"]:
+        raise ValueError("curriculum audit does not bind the requested review manifest")
     if audit.get("exclusion_index_sha256") != index_identity["sha256"]:
         raise ValueError("curriculum audit does not bind the requested exclusion index")
     if audit.get("semantic_receipt_sha256") != semantic_identity["sha256"]:
@@ -3108,6 +3882,15 @@ def freeze_training_lock(
             "curriculum audit does not bind the requested tombstone lineage"
         )
     _validate_index(profile, index_path)
+    review_evidence = _validate_review_evidence(
+        profile, curriculum_path, review_manifest_path
+    )
+    if review_evidence["manifest_sha256"] != audit["review_manifest_sha256"]:
+        raise ValueError("review evidence changed after the curriculum audit")
+    if review_evidence["record_count"] != audit["record_count"]:
+        raise ValueError(
+            "review evidence record count changed after the curriculum audit"
+        )
     _validate_semantic_receipt(
         profile,
         semantic_path,
@@ -3143,6 +3926,8 @@ def freeze_training_lock(
         ],
         "curriculum": curriculum_identity,
         "curriculum_audit": audit_identity,
+        "review_manifest": review_manifest_identity,
+        "review_evidence": review_evidence,
         "holdout_receipt": holdout_identity,
         "exclusion_index": index_identity,
         "semantic_receipt": semantic_identity,
@@ -3236,6 +4021,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     audit.add_argument("profile", type=Path)
     audit.add_argument("curriculum", type=Path)
+    audit.add_argument("review_manifest", type=Path)
     audit.add_argument("exclusion_index", type=Path)
     audit.add_argument("semantic_receipt", type=Path)
     audit.add_argument("output", type=Path)
@@ -3280,6 +4066,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             result = audit_curriculum(
                 load_profile(args.profile),
                 args.curriculum,
+                args.review_manifest,
                 args.exclusion_index,
                 args.semantic_receipt,
                 args.tombstones,

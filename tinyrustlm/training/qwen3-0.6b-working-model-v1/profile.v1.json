@@ -145,6 +145,21 @@
       "CC0-1.0",
       "MIT"
     ],
+    "review_policy": {
+      "rubric": {
+        "path": "tinyrustlm/training/qwen3-0.6b-working-model-v1/review-rubric.v1.json",
+        "bytes": 1734,
+        "sha256": "sha256:4d467026bd965e31ea5ea94cab1cf705901dbac2b4bc339a1963ccb6ad9b4060"
+      },
+      "candidate_projection": "curriculum-record-without-review-v1",
+      "primary_reviewer_count": 2,
+      "distinct_reviewer_identities_required": true,
+      "distinct_custody_domains_required": true,
+      "disagreement_policy": "third-distinct-reviewer-required",
+      "unnecessary_adjudication_forbidden": true,
+      "response_rewrite_forbidden": true,
+      "hidden_reasoning_forbidden": true
+    },
     "categories": [
       {
         "id": "ordinary-conversation",
