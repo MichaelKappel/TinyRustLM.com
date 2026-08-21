@@ -1,7 +1,7 @@
-profile: runtime-mirust.file-handoff.v83
-updated_utc: 2026-08-21T16:03:14Z
-current_qwen3_tokenizer2_parity_v2_preregistration_2026_08_21:
-  authority: Newest TinyRustLM first-read checkpoint; preserves the terminal v1 verifier defect and four private raw outputs, and closes the append-only v2 verifier, regression, documentation, and no-v2-output preregistration boundary only.
+profile: runtime-mirust.file-handoff.v84
+updated_utc: 2026-08-21T16:25:57Z
+current_qwen3_tokenizer2_native_parity_2026_08_21:
+  authority: Newest TinyRustLM first-read checkpoint; preserves the terminal v1 verifier defect and closes exact pinned-Qwen native Tokenizer2 source-oracle parity through the append-only v2 successor only.
   goal: docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md
   goal_sha256: 115ae434bf9dee0b4f27767f126d951989c5ec684241e2e3a6238de094e65d33
   frozen_parent_goal_sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
@@ -9,18 +9,19 @@ current_qwen3_tokenizer2_parity_v2_preregistration_2026_08_21:
   owned_worktree: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
   branch: codex/model-acquisition-v2
   registration_parent_commit: bd21df3e080085ea9ceedfb065ef51f0d1b09ac5
-  implementation_commit: 6e653482bc551d17f50ab2cf676236bceb139e42
-  upstream_status: implementation commit pushed; local HEAD, tracking ref, FETCH_HEAD, and fresh ls-remote were exact at 6e653482bc551d17f50ab2cf676236bceb139e42 before this UAI-only handoff edit
+  observation_source_commit: ddb12889bd29d411ec8639c9120b9858caf0bc43
+  upstream_status: observation source commit was pushed and exact across local HEAD, tracking ref, and fresh ls-remote before v2 output; this result documentation must be committed and pushed next
   protected_checkout: E:\Source\Rust\TinyRustLM.com remained untouched
   v1_terminal_result: Exactly two oracle outputs and two candidate outputs were created. Each pair is byte-stable, but verifier v1 SHA256 67791ba375cc8be2b84f1985eea42a810e4dca4edcc91fb0a9bd9e91ec979173 failed before token comparison with bounded code verifier-json-object-member-order-defect. No v1 receipt or parity decision exists; all four raw files remain immutable and excluded.
   v1_output_identities: oracle runs are each 1,827,322 bytes at SHA256 6f0aaf3b021296554ebf2bd60882323931566e06f2f43400e46101a92228de52; candidate runs are each 1,697,228 bytes at SHA256 ac571be6710b9064ee420e680deaf21a6a2d2e0d1099512c19767160f4aac290
   root_cause: V1 used JSON.stringify equality for objects, making nonsemantic object-member insertion order affect validation across Python and JavaScript. Changing producer output is forbidden repair; v1 remains unchanged.
   v2_preregistration: 4,373 bytes at SHA256 c02523a654c95007b9169bcd4c835b4283f9c7459796d8a943cc4ed0381242b3; v2 verifier 42,844 bytes at SHA256 1fac2f476e04b5624fa7030791f5f40faa87d7269a5e215320e1dcab0925f1ad; candidate executable 576,512 bytes at SHA256 1ee0339cecd32cf5651c295b3ead0ff9c612be42fa80bf42e43686804ac480fe
   v2_semantics: Ignore JSON object member order only; preserve array order and deep-strict primitive identity. Bind two fresh oracle basenames, two fresh candidate basenames, one receipt basename, one new external run-directory identity, and one verifier invocation. Rehash source, artifact, and candidate executable after observation.
-  no_v2_output_boundary: The registered v2 output directory identity qwen3-tokenizer2-parity-v2-20260821-v1 does not exist. The complete v2 implementation checkpoint is pushed and fresh-remote exact.
-  verification: focused v2 regressions 5/5; full standard Node 1,000/1,000 with zero skips; full locked/offline Rust workspace passed; full all-target warnings-denied Clippy passed; both v1 and v2 preregistration checks, profile/source/artifact/executable hashes, JSON, and diff hygiene passed
-  authority_boundary: No tokenizer parity, browser-WASM, Template2, model runtime, model quality, release, deployment, publication, MemoryEndpoints, or campaign credit exists. Counters remain 0/20, 0/50, 0/25, 0/40, 0/20.
-  next: Commit and push this UAI-only handoff, revalidate every bound identity and confirm the root remains absent, then create only the registered v2 root, generate exactly two new oracle and two new candidate outputs, and invoke verifier v2 exactly once. Preserve its pass or rejection without repair or selection.
+  v2_result: Exactly two fresh oracle and two fresh candidate outputs were generated under the registered private root and verifier v2 was invoked exactly once. Both pairs are byte-identical. All 2,048 cases and 69,294 tokens match with zero token-ID or decoded-Unicode mismatches; maximum case length is 5,966 tokens.
+  v2_evidence: Oracle outputs are each 1,827,322 bytes at SHA256 6f0aaf3b021296554ebf2bd60882323931566e06f2f43400e46101a92228de52; candidate outputs are each 1,697,228 bytes at SHA256 ac571be6710b9064ee420e680deaf21a6a2d2e0d1099512c19767160f4aac290; receipt is 3,974 bytes at SHA256 4ebbfa2bc59d43bdbcd5b3b2528bed66035ff2a3165f554ac6867e7cc7fe0ea6.
+  verification: Receipt status exact-source-parity-verified; exact source inventory, artifact, and executable identities were rehashed after observation; focused v2 regressions 5/5, full locked/offline Rust workspace, and warnings-denied Clippy passed. The result-doc checkpoint's canonical 143-file standard Node partition passes 1,000/1,000 with zero failures/skips and empty stderr; stdout SHA256 is c2f77c41022e266061942fe93fa57922d2f6a6245bec624cd6c6fed6fea72d4a. Preserve one over-broad 1,001-file invocation that passed all 1,000 standard tests but failed the separately delegated release-surface file because it lacked that gate's custody launcher; no release-surface claim was made.
+  authority_boundary: Native Tokenizer2 source parity now passes. No browser-WASM, Template2, model runtime, model quality, release, deployment, publication, MemoryEndpoints, or campaign credit exists. Counters remain 0/20, 0/50, 0/25, 0/40, 0/20.
+  next: Commit and push this result checkpoint, then preregister full-artifact real-Chromium WASM parity, repeated-use, cancellation, privacy, and bounded resource evidence before generating browser-comparative output. Preserve the v1 failure and v2 pass unchanged.
 prior_qwen3_tokenizer2_parity_preregistration_2026_08_21:
   authority: Newest TinyRustLM first-read checkpoint; closes the no-output preregistration, independent-verifier, complete repository verification, release-surface evidence, push, and actual-remote equality boundary only while preserving every parity-result, browser-WASM, Template2, model, release, publication, and campaign boundary.
   goal: docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md
@@ -90,7 +91,7 @@ current_production_slm2_acquisition_browser_release_goal_2026_08_20:
   execution_order: Tokenizer2; Template2; deterministic sampling; composition; real conversion and parity; production P2P-or-convert; browser activation; useful-model qualification; clean-profile conversation; release; deployment; HTTPS readback
   external_blockers: two genuine holdout authors, exact reviewed 1,024-record curriculum and teacher lineage, and two genuine independent reviewer ledgers remain required; never impersonate them
   campaign_counts: 0/20 models; 0/50 browser rounds; 0/25 live memory rounds; 0/40 outside-proven lanes; 0/20 announcements
-  next: preserve pushed Tokenizer2 conversion commit 202d5f531057d2bad74812b9befd35fd340232e3; close broad source-oracle parity and real browser-WASM full-artifact Gate A evidence before beginning dependent Template2; commit and push each coherent green major change
+  next: preserve pushed Tokenizer2 conversion and exact native-parity receipt 4ebbfa2bc59d43bdbcd5b3b2528bed66035ff2a3165f554ac6867e7cc7fe0ea6; close separately preregistered real-browser WASM full-artifact Gate A evidence before beginning dependent Template2; commit and push each coherent green major change
 current_slm2_scalar_wasm_conformance_2026_08_20:
   authority: Newest TinyRustLM first-read checkpoint; supersedes only the scalar/WASM implementation next action while preserving immutable model-training, conversion, format, sanitizer, release, publication, and campaign history.
   goal: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md

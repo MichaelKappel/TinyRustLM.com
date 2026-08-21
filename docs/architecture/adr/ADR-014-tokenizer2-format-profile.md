@@ -14,7 +14,10 @@ contract were preregistered before comparative output. The v1 run completed
 four repeat-stable outputs, but its verifier failed structurally before token
 comparison because it treated JSON object member order as semantic. V1 has no
 receipt or parity decision. An append-only corrected v2 verifier and fresh run
-set are preregistered but remain unexecuted.
+set were preregistered and pushed before observation. The one authorized v2
+execution matched all 2,048 cases and 69,294 tokens exactly, with zero
+mismatches and byte-stable repeated outputs. Native source-oracle parity now
+passes; real-browser WASM replay and resource evidence remain open.
 
 ## Decision Date
 
@@ -38,11 +41,13 @@ tokens, 151,387 ordered merges, and 26 contiguous added tokens, for a total
 vocabulary of 151,669. Two exact external conversions from the locked source
 closure produced the same 7,038,773-byte Tokenizer2 artifact with SHA-256
 `cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b`.
-The artifact remains unpromoted pending source-oracle and browser-WASM parity.
+The artifact remains unpromoted pending real-browser WASM parity and bounded
+resource evidence.
 
-**Local verification required**: the converted tokenizer must still be
-replayed against the exact upstream implementation over a preregistered broad
-adversarial corpus natively and through real browser WASM.
+**Local verification required**: native replay against the exact upstream
+implementation now passes over the preregistered broad adversarial corpus. The
+same accepted artifact and frozen cases must still pass real Chromium WASM
+with repeated-use, cancellation, privacy, and resource evidence.
 
 ## Decision
 
@@ -189,8 +194,10 @@ It binds a fresh four-output run set and verifier SHA-256
 V2 ignores object member order as nonsemantic, preserves array order, requires
 strict primitive identity, pins the candidate executable, rehashes source,
 artifact, and executable after observation, and writes one create-only pass or
-rejection receipt. No v2 comparative output exists at this preregistration
-checkpoint.
+rejection receipt. The one authorized run produced two byte-identical oracle
+outputs and two byte-identical candidate outputs, then compared all 2,048 cases
+and 69,294 tokens with zero mismatches. Its 3,974-byte receipt has SHA-256
+`4ebbfa2bc59d43bdbcd5b3b2528bed66035ff2a3165f554ac6867e7cc7fe0ea6`.
 
 ## Threat Analysis
 
@@ -285,12 +292,13 @@ as a browser runtime fallback after Rust/WASM integration passes.
 
 ## Unknowns
 
-Execution of the preregistered behavioral parity experiment across ordinary
-text, multilingual text, adversarial Unicode, whitespace, punctuation,
-added-token interactions, and decoding remains pending. Its 2,048 exact cases,
+Native execution of the preregistered behavioral parity experiment now passes
+across ordinary text, multilingual text, adversarial Unicode, whitespace,
+punctuation, added-token interactions, and decoding. Its 2,048 exact cases,
 two-run-per-implementation policy, result schema, comparison rule, evidence
-privacy policy, and fatal mismatch rule are frozen. Structural parity for every
-pinned vocabulary entry, merge, and added token is enforced during conversion.
+privacy policy, and fatal mismatch rule remain frozen. Structural parity for
+every pinned vocabulary entry, merge, and added token is enforced during
+conversion.
 
 The source tokenizer's maximum observed token byte length and production
 artifact size must be recorded by conversion evidence rather than inferred.
@@ -303,11 +311,11 @@ Template2 linkage and thinking-mode semantics are pending.
 The useful model, source-framework parity, P2P-or-convert acquisition, and
 browser-local conversation are pending.
 
-**Local verification required**: the four registered source/native outputs,
-source-parity pass or rejection receipt, full-artifact WASM receipt, and
-performance receipt must be created and revalidated in the owned worktree and
-external evidence root. The corpus and both preregistration contracts already
-exist and must not be changed after observation begins.
+**Local verification required**: the four registered v2 source/native outputs
+and exact parity receipt now exist and revalidate outside Git. A
+full-artifact real-Chromium WASM receipt and resource receipt must still be
+created under a new no-output preregistration. The native corpus and contracts
+must not be changed after observation.
 
 ## Acceptance Tests
 

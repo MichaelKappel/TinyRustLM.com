@@ -11,10 +11,13 @@ separate execution and verification preregistrations passed their hostile
 pre-observation gates. The v1 four-output run was repeat-stable, but its frozen
 verifier failed before token comparison because it treated JSON object member
 order as semantic; no v1 receipt or parity decision exists. An append-only v2
-verifier and fresh run set are now preregistered, with no v2 output generated.
+verifier and fresh run set were preregistered and pushed before observation.
+The one authorized v2 execution then matched all 2,048 cases and 69,294 tokens
+exactly, with zero token-ID or decoded-Unicode mismatches and byte-identical
+repeated outputs.
 
-This is complete pinned-Qwen tokenizer *format conversion* evidence. It is not
-complete source-oracle behavioral parity, browser-WASM evidence, Template2,
+This is complete pinned-Qwen tokenizer format-conversion and native
+source-oracle parity evidence. It is not browser-WASM evidence, Template2,
 model conversion, model qualification, release evidence, deployment evidence,
 or campaign credit.
 
@@ -37,8 +40,9 @@ or campaign credit.
 | Source-parity execution preregistration | 5,792 bytes; SHA-256 `bccc1631c519774ca46d77100ba59dae0d3eb4dcc681cd227f192bf558319466` |
 | Source-parity v1 verification preregistration | 2,064 bytes; SHA-256 `cc1472a7531095323dc1fe2fc2bb878bedfff4cc2cc5b5651f129c4800b0ed05`; terminal verifier defect, no decision |
 | V1 source-parity verifier | 36,521 bytes; SHA-256 `67791ba375cc8be2b84f1985eea42a810e4dca4edcc91fb0a9bd9e91ec979173`; retained unchanged |
-| Source-parity v2 verification preregistration | 4,373 bytes; SHA-256 `c02523a654c95007b9169bcd4c835b4283f9c7459796d8a943cc4ed0381242b3`; no v2 output yet |
+| Source-parity v2 verification preregistration | 4,373 bytes; SHA-256 `c02523a654c95007b9169bcd4c835b4283f9c7459796d8a943cc4ed0381242b3` |
 | V2 source-parity verifier | 42,844 bytes; SHA-256 `1fac2f476e04b5624fa7030791f5f40faa87d7269a5e215320e1dcab0925f1ad` |
+| V2 source-parity receipt | 3,974 bytes; SHA-256 `4ebbfa2bc59d43bdbcd5b3b2528bed66035ff2a3165f554ac6867e7cc7fe0ea6`; 2,048/2,048 exact, zero mismatches |
 
 The profile is normative. Vectors narrow implementations to exact examples
 and hostile inputs; they do not add semantics to the profile.
@@ -158,6 +162,10 @@ Current local gates pass:
 - the complete Rust workspace: 1,062 tests across 54 suites, with zero
   failures and zero ignored tests;
 - two external full-tokenizer conversions with identical artifact bytes.
+- two fresh pinned Python oracle outputs that are byte-identical;
+- two fresh native Rust outputs that are byte-identical;
+- exact v2 comparison of 2,048 cases and 69,294 tokens with zero mismatches;
+- post-observation source, artifact, and candidate-executable rehashing.
 
 The vector artifact is 7,459 bytes with SHA-256
 `2b2c3c5f58baacd7af68e2ccffa1cb03e113fa281b1832224d684f9ac03eaff1`
@@ -198,19 +206,19 @@ deterministic format-conversion claim.
 
 ## Remaining Gate A Work
 
-1. Commit, push, and independently revalidate the v2 verification
-   preregistration; then execute its fresh two-oracle/two-candidate run set and
-   invoke the v2 verifier exactly once for a create-only parity pass or
-   rejection receipt. The terminal v1 outputs remain excluded.
-2. Replay the exact full artifact through native Rust and browser WASM.
-3. Measure load time, resident memory, peak allocation, encoding throughput,
-   decoding throughput, and bounded rejection behavior.
-4. Bind the accepted Tokenizer2 identity into Template2 and the composition
-   graph without embedding or aliasing it.
+1. Preregister browser cases, resource ceilings, exact identities, and receipt
+   semantics before generating browser-comparative output.
+2. Replay the exact accepted full artifact through real Chromium WASM against
+   the frozen source/native corpus, including repeated use and cancellation.
+3. Measure load time, WASM memory growth, encoding throughput, decoding
+   throughput, and bounded rejection behavior without network access.
+4. Bind the browser-accepted Tokenizer2 identity into Template2 and the
+   composition graph without embedding or aliasing it.
 
 The source parser, exact rejection surface, duplicate conversion, and receipt
-binding are complete. Until the four remaining steps pass, Gate A is a strong
-conversion checkpoint but not accepted tokenizer parity or product evidence.
+binding are complete, and exact native source-oracle parity now passes. Until
+the browser and resource steps pass, Gate A is not accepted browser tokenizer
+or product evidence.
 
 ## Claim Boundary
 

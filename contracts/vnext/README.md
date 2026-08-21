@@ -138,17 +138,21 @@ It binds the terminal v1 failure, a fresh four-output run set, one pinned native
 executable, and a 42,844-byte verifier with SHA-256
 `1fac2f476e04b5624fa7030791f5f40faa87d7269a5e215320e1dcab0925f1ad`.
 V2 ignores nonsemantic JSON object member order while preserving array order
-and strict primitive identity. At this checkpoint no v2 comparative output
-exists; v2 must be pushed and revalidated before its external run directory is
-created.
+and strict primitive identity. After its implementation and UAI checkpoint
+were pushed and fresh-remote exact, one registered v2 execution produced two
+fresh byte-stable oracle outputs and two fresh byte-stable native outputs. All
+2,048 cases and 69,294 tokens matched exactly. The 3,974-byte create-only
+verification receipt has SHA-256
+`4ebbfa2bc59d43bdbcd5b3b2528bed66035ff2a3165f554ac6867e7cc7fe0ea6`.
 
-This checkpoint is complete pinned-Qwen *tokenizer format conversion* only. It
-is not broad source-oracle encoding parity, browser-WASM execution, Template2,
-model conversion, model qualification, release, deployment, or campaign
-evidence. See `docs/architecture/vnext-tokenizer2-format-implementation.md`,
-ADR-014, and
+This checkpoint is complete pinned-Qwen tokenizer format conversion plus exact
+native source-oracle encoding and decoding parity. It is not browser-WASM
+execution, Template2, model conversion, model qualification, release,
+deployment, or campaign evidence. See
+`docs/architecture/vnext-tokenizer2-format-implementation.md`, ADR-014, and
 `wiki/runtime-mirust/reports/tinyrustlm-qwen3-tokenizer2-conversion-memory-2026-08-20.md`.
-The verifier failure and append-only successor are recorded in
+The immutable v1 verifier failure and successful append-only v2 successor are
+recorded in
 `docs/architecture/qwen3-tokenizer2-parity-verifier-v1-failure-and-v2-preregistration.md`.
 
 ## Parsing

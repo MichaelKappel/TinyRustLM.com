@@ -1,4 +1,4 @@
-# Qwen3 Tokenizer2 Parity Verifier V1 Failure And V2 Preregistration
+# Qwen3 Tokenizer2 Parity Verifier V1 Failure And V2 Result
 
 ## Status
 
@@ -14,6 +14,15 @@ Tokenizer2 parity rejection, a parity pass, browser-WASM evidence, model-runtime
 evidence, model-quality evidence, release authority, deployment evidence, or
 campaign credit. The four raw outputs remain private, create-only, unchanged,
 and excluded from the successor comparison.
+
+The append-only v2 successor was committed and pushed before its registered
+output root was created. On 2026-08-21, its one authorized execution generated
+exactly two fresh source-oracle outputs and two fresh candidate outputs, then
+invoked verifier v2 exactly once. All 2,048 cases matched with zero token-ID or
+decoded-Unicode mismatches. The create-only v2 receipt is 3,974 bytes with
+SHA-256
+`4ebbfa2bc59d43bdbcd5b3b2528bed66035ff2a3165f554ac6867e7cc7fe0ea6`.
+This closes native source-oracle parity only.
 
 ## Frozen V1 Evidence
 
@@ -79,16 +88,44 @@ artifact.
 | New run directory identity | `qwen3-tokenizer2-parity-v2-20260821-v1` |
 | Required runs | Two new oracle outputs, two new candidate outputs, one verifier invocation |
 
-At this preregistration checkpoint the named v2 output directory does not
-exist, no v2 comparative output exists, and no v2 parity claim is made. The v2
-profile and implementation must be committed, pushed, and independently
-revalidated before that directory is created.
+## V2 Execution Result
+
+The v2 preregistration implementation commit
+`6e653482bc551d17f50ab2cf676236bceb139e42` and its UAI checkpoint commit
+`ddb12889bd29d411ec8639c9120b9858caf0bc43` were pushed and independently
+matched by local HEAD, tracking state, and fresh remote readback before the
+registered output root was created. Preflight also revalidated the frozen v1
+evidence, source tokenizer, Tokenizer2 artifact, and candidate executable.
+
+| V2 evidence | Byte length | SHA-256 |
+| --- | ---: | --- |
+| Oracle run 1 | 1,827,322 | `6f0aaf3b021296554ebf2bd60882323931566e06f2f43400e46101a92228de52` |
+| Oracle run 2 | 1,827,322 | `6f0aaf3b021296554ebf2bd60882323931566e06f2f43400e46101a92228de52` |
+| Candidate run 1 | 1,697,228 | `ac571be6710b9064ee420e680deaf21a6a2d2e0d1099512c19767160f4aac290` |
+| Candidate run 2 | 1,697,228 | `ac571be6710b9064ee420e680deaf21a6a2d2e0d1099512c19767160f4aac290` |
+| Verification receipt v2 | 3,974 | `4ebbfa2bc59d43bdbcd5b3b2528bed66035ff2a3165f554ac6867e7cc7fe0ea6` |
+
+Both implementations independently report 2,048 cases, 69,294 total tokens,
+and a 5,966-token maximum case. Each implementation's repeated outputs are
+byte-identical. Verifier v2 compared every case in order and found zero
+mismatches across exact token IDs, include-all decoding, and skip-special
+decoding. After observation it rehashed the five-file source inventory, the
+7,038,773-byte artifact, and the 576,512-byte candidate executable without
+identity drift.
+
+The private evidence remains outside Git under the exact registered directory
+identity `qwen3-tokenizer2-parity-v2-20260821-v1`. V1 remains an immutable,
+receiptless verifier-defect attempt; v2 neither rewrites nor reuses it.
 
 ## Next Gate
 
-After the pushed v2 preregistration is revalidated, generate only the four
-registered fresh outputs with the pinned producers and invoke v2 once. Preserve
-either receipt without repair or selection. Exact native source parity, if
-verified, authorizes only the next gate: full-artifact parity and bounded
-resource evidence in real Chromium WASM. It does not authorize Template2,
-model inference, model quality, publication, deployment, or campaign counts.
+Preregister and execute full-artifact parity plus bounded resource evidence in
+real Chromium WASM. The browser gate must consume the exact accepted
+Tokenizer2 artifact and corpus, preserve native/browser outputs, exercise
+repeated use and cancellation, prove zero unexpected network requests, and
+measure load, memory, encoding, decoding, and bounded-failure behavior.
+
+Native source parity does not authorize Template2, model inference, model
+quality, publication, deployment, or campaign counts. Campaign counters remain
+0/20 models, 0/50 browser rounds, 0/25 live memory rounds, 0/40 outside-proven
+lanes, and 0/20 announcements.
