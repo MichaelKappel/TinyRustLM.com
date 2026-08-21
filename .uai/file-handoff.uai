@@ -1,5 +1,22 @@
-profile: runtime-mirust.file-handoff.v76
-updated_utc: 2026-08-21T04:13:00Z
+profile: runtime-mirust.file-handoff.v77
+updated_utc: 2026-08-21T05:00:46Z
+current_slm2_scalar_wasm_conformance_2026_08_20:
+  authority: Newest TinyRustLM first-read checkpoint; supersedes only the scalar/WASM implementation next action while preserving immutable model-training, conversion, format, sanitizer, release, publication, and campaign history.
+  goal: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+  goal_sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+  goal_status: active_incomplete
+  owned_worktree: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  branch: codex/model-acquisition-v2
+  implementation_commit: 80f199d51f49417a699c57743550bf81153fa6e6
+  upstream_status: pushed and local, upstream, and freshly fetched remote exact before this handoff edit
+  protected_checkout: E:\Source\Rust\TinyRustLM.com must remain untouched
+  result: unsafe-free scalar SLM2 runtime, independent Node oracle, language-neutral full-operator vectors, and exact scalar crate executed through Node and real Chromium WASM are implemented and verified for the canonical public fixture
+  identities: runtime vector c7a0fdaf1dd578928e6a438be308dad5a9e8cc10e2bbb6da4b2c5e10bebe71f1; artifact c010e2818c64713310699e9ad928d3b22cfeb004756ae8e03acaaee5897e613a; Node oracle df0b51548dce1a7174166479504a35fe6f5b256dd3168cae970ac8c1df7257b9; architecture dd0a1fed96dcbb1ad790ffb1a58a71c3e530fcbe74aa8e7d81f565d6a068b6ac; durable report 70ab1b45b859d59b14cf957abe223880529e3f0d7602d4fb3c97c23d029657c8
+  tests: 29 substantive Rust tests and 13/13 independent Node tests pass; locked/offline rustfmt, denied-warning Clippy, wasm32 release build, generator check, real Chromium replay with zero network requests, diff hygiene, and sensitive-pattern scan pass
+  authority_boundary: canonical-fixture conformance only; no real source model, tokenizer/template, stochastic sampler, source parity, production model transfer, P2P-or-convert acquisition, chat, quality, release, deployment, publication, MemoryEndpoints, or campaign proof exists
+  external_blockers: two genuinely separate holdout authors, exact 1,024-record curriculum with teacher lineage, and two genuinely separate complete record-bound reviewer ledgers remain required; the agent must not impersonate them
+  campaign_counts: 0/20 models; 0/50 browser rounds; 0/25 live memory rounds; 0/40 outside-proven lanes; 0/20 announcements
+  next: do not repeat valid fixture conformance unless invalidated; implement exact tokenizer/template/sampling contracts and production large-model WASM plus P2P-or-convert browser lifecycle while awaiting genuine human evidence
 current_qwen3_cpu_pilot_trainer_2026_08_20:
   authority: Newest TinyRustLM first-read checkpoint; supersedes older present-tense working-model next actions while preserving immutable source, SLM2, sanitizer, release, publication, and campaign history.
   goal: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md

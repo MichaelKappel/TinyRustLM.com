@@ -1,11 +1,31 @@
-profile: runtime-mirust.long-term-memory-ledger.v351
-updated_utc: 2026-08-21T04:13:00Z
+profile: runtime-mirust.long-term-memory-ledger.v352
+updated_utc: 2026-08-21T05:00:46Z
 storage_mode: hybrid
 ledger_rule:
   pointer_only_not_context_free: true
   summary_policy: Routing-only, one sentence, 35 words maximum, no durable body memory.
   allowed_statuses: current, retired, superseded, quarantined
 records:
+  - stable_id: tinyrustlm_slm2_scalar_wasm_conformance_2026_08_20_current
+    memory_domain: tinyrustlm.runtime.slm2_scalar_wasm_conformance
+    pointer_type: wiki_report
+    path: wiki/runtime-mirust/reports/tinyrustlm-slm2-scalar-wasm-conformance-memory-2026-08-20.md
+    target_location: wiki/runtime-mirust/reports/tinyrustlm-slm2-scalar-wasm-conformance-memory-2026-08-20.md
+    label: TinyRustLM SLM2 Scalar And Browser WASM Conformance
+    summary: Routes exact canonical-fixture scalar, independent Node, and real-Chromium WASM conformance while preserving real-model, tokenizer, production-transfer, acquisition, quality, and release boundaries.
+    pointer_status: current
+    authority: exact checked-in scalar runtime, language-neutral vectors, independent Node oracle, conformance-only WASM wrapper, real Chromium replay, and current sole SLM2 profile
+    source_authority: implementation and documentation commit 80f199d51f49417a699c57743550bf81153fa6e6
+    source_identity: runtime-vector sha256 c7a0fdaf1dd578928e6a438be308dad5a9e8cc10e2bbb6da4b2c5e10bebe71f1; canonical artifact sha256 c010e2818c64713310699e9ad928d3b22cfeb004756ae8e03acaaee5897e613a
+    review_status: verified_fixture_scalar_wasm_conformance
+    quarantine_status: none
+    review_evidence: docs/architecture/vnext-slm2-scalar-wasm-conformance.md
+    contextual_trigger: Read before SLM2 scalar, tokenizer, sampling, WASM, model-transfer, acquisition, conversion, browser, or runtime promotion work.
+    checksum_hash: sha256:70ab1b45b859d59b14cf957abe223880529e3f0d7602d4fb3c97c23d029657c8
+    sha256: 70ab1b45b859d59b14cf957abe223880529e3f0d7602d4fb3c97c23d029657c8
+    last_reviewed_utc: 2026-08-21T05:00:46Z
+    owner_or_reviewer: TinyRustLM Agent
+    truth_boundary: Proves canonical-fixture scalar/native, Node-WASM, and real-Chromium conformance only; real model, tokenizer/template, seeded sampling, source parity, production transfer, acquisition, quality, deployment, and campaign progress remain false.
   - stable_id: tinyrustlm_qwen3_cpu_pilot_trainer_2026_08_20_current
     memory_domain: tinyrustlm.model_training.qwen3_cpu_pilot
     pointer_type: wiki_report

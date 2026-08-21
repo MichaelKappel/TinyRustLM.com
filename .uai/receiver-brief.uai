@@ -1,5 +1,15 @@
-profile: runtime-mirust.receiver-brief.v14
-updated_utc: 2026-08-21T04:13:00Z
+profile: runtime-mirust.receiver-brief.v15
+updated_utc: 2026-08-21T05:00:46Z
+current_handoff_2026_08_20_slm2_scalar_wasm:
+  authority: This is the newest current handoff and supersedes only the prior runtime-implementation next action while preserving all model-training and historical routes.
+  objective: Deliver one provenance-bound useful Qwen3 derivative through untouched screening, sole-SLM2 conversion, exact tokenizer/template/sampling, scalar/WASM parity, P2P-or-convert acquisition, and genuine browser-local multi-turn chat.
+  owned_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  branch: codex/model-acquisition-v2
+  protected_root: E:\Source\Rust\TinyRustLM.com must not be modified.
+  current_result: Commit `80f199d51f49417a699c57743550bf81153fa6e6` is pushed and remote-exact. The canonical fixture passes the unsafe-free scalar runtime, independent Node oracle, Node-WASM, and real Chromium-WASM conformance gates.
+  exact_resume: Read the scalar/WASM durable report, do not rerun its valid fixture evidence without invalidation, and implement tokenizer/template/seeded-sampling contracts plus the production large-model WASM and P2P-or-local-conversion browser lifecycle while waiting for genuine human contributions.
+  blocking_inputs: Two genuinely separate holdout authors, the exact reviewed 1,024-record curriculum and teacher lineage, and two genuinely separate complete reviewer ledgers remain absent. This agent must not impersonate any of them.
+  truth_boundary: Fixture conformance is not a real model, product-browser activation, quality, deployment, MemoryEndpoints, or campaign result. Counters remain 0/20, 0/50, 0/25, 0/40, and 0/20.
 current_handoff_2026_08_20_qwen3_cpu_pilot:
   authority: This current handoff supersedes the older present-tense browser-assembly brief while preserving its durable historical routes.
   objective: Deliver one provenance-bound useful Qwen3 derivative through untouched screening, sole-SLM2 conversion, scalar/WASM conformance, P2P-or-convert acquisition, and genuine browser-local multi-turn chat.
@@ -20,6 +30,7 @@ must_read:
   - .uai/test-plan.uai
   - .uai/report-synthesis.uai
   - .uai/taboo.uai
+  - wiki/runtime-mirust/reports/tinyrustlm-slm2-scalar-wasm-conformance-memory-2026-08-20.md
   - wiki/runtime-mirust/reports/tinyrustlm-qwen3-cpu-pilot-trainer-memory-2026-08-20.md
   - tinyrustlm/README.md
   - wiki/runtime-mirust/reports/report-intake-index-2026-06-25.md
