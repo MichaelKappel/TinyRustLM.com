@@ -1,7 +1,7 @@
-profile: runtime-mirust.startup-packet.v102
-updated_utc: 2026-08-21T05:00:46Z
+profile: runtime-mirust.startup-packet.v103
+updated_utc: 2026-08-21T05:12:41Z
 current_slm2_scalar_wasm_handoff_2026_08_20:
-  first_read: Read the newest top-level checkpoint in `workspace.uai`, then `wiki/runtime-mirust/reports/tinyrustlm-slm2-scalar-wasm-conformance-memory-2026-08-20.md`, before following older startup routes.
+  first_read: Read the newest top-level checkpoint in `workspace.uai`, then `docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md` and `wiki/runtime-mirust/reports/tinyrustlm-slm2-scalar-wasm-conformance-memory-2026-08-20.md`, before following older startup routes.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
   active_branch: codex/model-acquisition-v2
   protected_root: E:\Source\Rust\TinyRustLM.com must remain untouched.

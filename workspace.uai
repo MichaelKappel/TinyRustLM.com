@@ -1,7 +1,15 @@
-profile: tinyrustlm.source-workspace.v343
+profile: tinyrustlm.source-workspace.v344
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-21T05:00:46Z
+updated_utc: 2026-08-21T05:12:41Z
+
+current_goal_prompt_2026_08_20_production_slm2_acquisition_browser_release_v1:
+  authority: This is the newest self-contained execution prompt for the next deployable TinyRustLM vertical slice. It continues and does not replace or narrow the frozen enterprise goal. It starts after valid canonical-fixture scalar/native and real-Chromium WASM conformance and orders the remaining work through exact Tokenizer2, Template2, deterministic sampling, composition, real conversion/parity, production P2P-or-convert acquisition, browser activation, useful-model qualification, clean-profile conversation, release, deployment, and public HTTPS readback.
+  prompt: `docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md`, 30,243 bytes, 659 lines, SHA256 `115ae434bf9dee0b4f27767f126d951989c5ec684241e2e3a6238de094e65d33`.
+  frozen_parent: `docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md`, SHA256 `92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0`, remains active and incomplete.
+  execution_boundary: Modify only this recovery clone on `codex/model-acquisition-v2`; preserve `E:\Source\Rust\TinyRustLM.com`; do not write to `D:`. Build clean-slate SLM2 only with no legacy reader, compatibility support, hidden repair, fallback success, or debt. Do not deploy fixture-backed claims.
+  current_truth: Commit `80f199d51f49417a699c57743550bf81153fa6e6` proves canonical-fixture scalar/native, Node-WASM, and real-Chromium WASM conformance only. Human holdout authors, the exact reviewed 1,024-record curriculum, and two independent reviewer ledgers remain absent. The agent must not impersonate contributors or reviewers. Counters remain 0/20, 0/50, 0/25, 0/40, and 0/20.
+  next: Read the new prompt in full, revalidate mutable state, and begin Gate A by freezing the exact Tokenizer2 byte profile before Template2, deterministic sampling, or production browser integration.
 
 current_checkpoint_2026_08_20_slm2_scalar_wasm_conformance_v1:
   authority: This is the newest first-read SLM2 scalar-native and browser-WASM fixture-conformance checkpoint. It supersedes only the prior next action to implement scalar and WASM correctness evidence while preserving the Qwen3 trainer, curriculum, holdout, converter, format, sanitizer, release, publication, and campaign records. It is not a real-model pass, source-framework parity result, tokenizer or chat-template result, production large-model browser ABI, acquisition result, useful-model qualification, deployment, publication, MemoryEndpoints operation, or campaign progress.

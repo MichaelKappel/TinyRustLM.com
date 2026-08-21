@@ -1,5 +1,17 @@
-profile: runtime-mirust.file-handoff.v77
-updated_utc: 2026-08-21T05:00:46Z
+profile: runtime-mirust.file-handoff.v78
+updated_utc: 2026-08-21T05:12:41Z
+current_production_slm2_acquisition_browser_release_goal_2026_08_20:
+  authority: Newest self-contained next-deployable-goal prompt; continues and does not replace or narrow the frozen enterprise goal.
+  prompt: docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md
+  prompt_identity: 30,243 bytes; 659 lines; SHA256 115ae434bf9dee0b4f27767f126d951989c5ec684241e2e3a6238de094e65d33
+  owned_worktree: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  branch: codex/model-acquisition-v2
+  protected_checkout: E:\Source\Rust\TinyRustLM.com must remain untouched
+  proven_start: commit 80f199d51f49417a699c57743550bf81153fa6e6 proves canonical-fixture scalar/native, Node-WASM, and real-Chromium WASM conformance only
+  execution_order: Tokenizer2; Template2; deterministic sampling; composition; real conversion and parity; production P2P-or-convert; browser activation; useful-model qualification; clean-profile conversation; release; deployment; HTTPS readback
+  external_blockers: two genuine holdout authors, exact reviewed 1,024-record curriculum and teacher lineage, and two genuine independent reviewer ledgers remain required; never impersonate them
+  campaign_counts: 0/20 models; 0/50 browser rounds; 0/25 live memory rounds; 0/40 outside-proven lanes; 0/20 announcements
+  next: revalidate mutable state and begin Gate A Tokenizer2; commit and push each coherent green major change
 current_slm2_scalar_wasm_conformance_2026_08_20:
   authority: Newest TinyRustLM first-read checkpoint; supersedes only the scalar/WASM implementation next action while preserving immutable model-training, conversion, format, sanitizer, release, publication, and campaign history.
   goal: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md

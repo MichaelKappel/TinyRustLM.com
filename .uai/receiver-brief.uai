@@ -1,5 +1,9 @@
-profile: runtime-mirust.receiver-brief.v15
-updated_utc: 2026-08-21T05:00:46Z
+profile: runtime-mirust.receiver-brief.v16
+updated_utc: 2026-08-21T05:12:41Z
+current_goal_prompt_2026_08_20:
+  path: docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md
+  identity: 30,243 bytes, 659 lines, SHA256 `115ae434bf9dee0b4f27767f126d951989c5ec684241e2e3a6238de094e65d33`
+  instruction: Execute it as the next deployable vertical slice, beginning with Tokenizer2. It continues the frozen enterprise goal, preserves fixture-conformance claim limits, forbids legacy/debt, and ends only after real P2P-or-convert acquisition, useful browser-local chat, release, deployment, and HTTPS readback.
 current_handoff_2026_08_20_slm2_scalar_wasm:
   authority: This is the newest current handoff and supersedes only the prior runtime-implementation next action while preserving all model-training and historical routes.
   objective: Deliver one provenance-bound useful Qwen3 derivative through untouched screening, sole-SLM2 conversion, exact tokenizer/template/sampling, scalar/WASM parity, P2P-or-convert acquisition, and genuine browser-local multi-turn chat.
@@ -24,6 +28,7 @@ brief: Runtime.MiRust.com now contains TinyRustLM, a zero-dependency Rust/WASM b
 must_read:
   - AGENTS.md
   - workspace.uai
+  - docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md
   - .uai/workspace-guidance.uai
   - .uai/file-handoff.uai
   - .uai/long-term-memory.uai
