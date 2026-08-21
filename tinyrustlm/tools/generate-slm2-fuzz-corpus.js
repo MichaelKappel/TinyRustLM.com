@@ -7,7 +7,7 @@ const path = require("node:path");
 
 const GENERATOR_ID = "tinyrustlm.tools.generate-slm2-fuzz-corpus.v1";
 const FUZZ_PROFILE_ID = "tinyrustlm.vnext.slm2-fuzz.v1";
-const FUZZ_PROFILE_SHA256 = "995a88e52692df204455ea94725de603af38b785a6f9f708a37bf7baa3ae2ce8";
+const FUZZ_PROFILE_SHA256 = "dc16fd2abf142e6a9c8a72bbfc3d998b980af486e094406d73933cae6732a487";
 const FORMAT_PROFILE_ID = "org.minimodel.slm2/2.0";
 const repositoryRoot = path.resolve(__dirname, "../..");
 const vectorPath = path.join(repositoryRoot, "contracts/vnext/slm2-format-vectors.v1.json");

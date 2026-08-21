@@ -107,9 +107,12 @@ The initial model body has the exact field registry in the profile. It binds
 the closed decoder-transformer, causal grouped-query attention, SiLU-gated
 activation, RMSNorm, and RoPE profiles; positive dimensions and context; F32
 bit patterns for positive finite RoPE theta and normalization epsilon; tied
-embedding behavior; explicit QKV-bias and Q/K-normalization Booleans; the
-invariant `head_count * head_dimension == embedding_size`; a layer count that
-fits the signed descriptor index; and the recomputed tensor-layout SHA-256.
+embedding behavior; explicit QKV-bias and Q/K-normalization Booleans; checked
+`u32` query and KV widths derived independently from head counts and head
+dimension; a layer count that fits the signed descriptor index; and the
+recomputed tensor-layout SHA-256. Query width is not required to equal residual
+embedding width because architectures such as Qwen3 use wider query
+projections and contract them through the attention output projection.
 
 All SLM2 2.0 metadata text is ASCII. Machine identifiers use
 `[a-z0-9][a-z0-9._/-]{0,254}` with no empty, `.` or `..` component, leading or
@@ -253,14 +256,14 @@ only from an owned staging file after writer success and independent readback.
 - **Observed local fact**: `rust/crates/tinyrustlm-slm2` now implements one
   unsafe-free bounded writer, reader, and fixed-piece/Merkle identity path for
   the exact profile. It is not wired into production model selection.
-- **Observed local fact**: the 7,680-byte checked-in 11-tensor seed artifact has
+- **Observed local fact**: the 8,448-byte checked-in 11-tensor seed artifact has
   SHA-256
-  `3f28af0124e49f3ad1c177958eea5d5bd2823b63821451d44c05da6602fc402d`;
+  `c010e2818c64713310699e9ad928d3b22cfeb004756ae8e03acaaee5897e613a`;
   the public Rust API and an independently written Node-core parser reproduce
   its manifest, tensor-layout, tensor-payload, artifact, piece, and Merkle
   identities.
 - **Observed local fact**: the bounded fuzz profile has SHA-256
-  `995a88e52692df204455ea94725de603af38b785a6f9f708a37bf7baa3ae2ce8`.
+  `dc16fd2abf142e6a9c8a72bbfc3d998b980af486e094406d73933cae6732a487`.
   Stable replay covers one admission and 26 exact rejections, including a
   canonical manifest requiring absent QKV bias tensors, while every
   proper prefix of the seed artifact rejects. No sustained sanitizer campaign

@@ -20,7 +20,7 @@ pub use piece::{build_piece_manifest, PieceIdentity, PieceManifest, PIECE_BYTES}
 pub const SLM2_FORMAT_PROFILE_ID: &str = "org.minimodel.slm2/2.0";
 /// The SHA-256 of the exact machine-readable SLM2 format profile bytes.
 pub const SLM2_FORMAT_PROFILE_SHA256: &str =
-    "b3f90c67d396d16a3ca561cbb288c10dc542a10e00d758704d1d6a17b3c3ff0f";
+    "387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625";
 const SLM2_FORMAT_PROFILE_BYTES: &[u8] =
     include_bytes!("../../../../contracts/vnext/slm2-format-profile.v1.json");
 

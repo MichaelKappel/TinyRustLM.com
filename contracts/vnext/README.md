@@ -16,8 +16,8 @@ historical evidence outside the vNext DAG.
 The model-byte format is a separate exact binary contract referenced by the
 artifact family rather than another JSON schema in the nine-member registry.
 The current development-only profile is
-`slm2-format-profile.v1.json`, 19,321 bytes with SHA-256
-`b3f90c67d396d16a3ca561cbb288c10dc542a10e00d758704d1d6a17b3c3ff0f`.
+`slm2-format-profile.v1.json`, 19,303 bytes with SHA-256
+`387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625`.
 It admits only complete class-1 base models or class-2 specialist models with
 dense finite little-endian F32 tensors. Each artifact must contain the exact
 canonical decoder tensor registry selected by layer count, tied embeddings,
@@ -27,8 +27,8 @@ composition graphs, provenance, licenses, qualification, signatures, and peer
 locations remain separate exact artifacts or receipts.
 
 `slm2-format-vectors.v1.json` is the language-neutral byte contract. Its one
-seed artifact is exactly 7,680 bytes with 11 required tensors and SHA-256
-`3f28af0124e49f3ad1c177958eea5d5bd2823b63821451d44c05da6602fc402d`.
+seed artifact is exactly 8,448 bytes with 11 required tensors and SHA-256
+`c010e2818c64713310699e9ad928d3b22cfeb004756ae8e03acaaee5897e613a`.
 The public Rust writer reproduces those bytes from deliberately reversed
 tensor inputs; the streaming Rust reader, an independently written Node-core
 reader, and the Rust piece/Merkle implementation reproduce every declared
@@ -41,7 +41,7 @@ non-text-key forms.
 
 The bounded raw parser-fuzz profile is
 `slm2-fuzz-profile.v1.json`, 3,187 bytes with SHA-256
-`995a88e52692df204455ea94725de603af38b785a6f9f708a37bf7baa3ae2ce8`.
+`dc16fd2abf142e6a9c8a72bbfc3d998b980af486e094406d73933cae6732a487`.
 Its 27-seed stable corpus contains one exact admission and 26 single-fault
 rejections across envelope, metadata, string, tensor, exact registry, layout,
 payload, and trailing-byte classes. The registry seed changes one canonical

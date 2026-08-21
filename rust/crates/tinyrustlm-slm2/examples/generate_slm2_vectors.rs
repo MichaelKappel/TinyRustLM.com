@@ -63,7 +63,7 @@ fn reference_spec() -> ModelSpec {
         layer_count: 1,
         head_count: 2,
         kv_head_count: 1,
-        head_dimension: 4,
+        head_dimension: 8,
         rope_theta: 10_000.0,
         normalization_epsilon: 0.000_01,
         tied_embeddings: true,

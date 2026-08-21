@@ -19,10 +19,10 @@ use tinyrustlm_slm2_fuzz::{
 const CORPUS_ID: &str = "tinyrustlm.vnext.slm2-fuzz-corpus.v1";
 const FORMAT_PROFILE_ID: &str = "org.minimodel.slm2/2.0";
 const FORMAT_PROFILE_SHA256: &str =
-    "b3f90c67d396d16a3ca561cbb288c10dc542a10e00d758704d1d6a17b3c3ff0f";
+    "387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625";
 const SOURCE_VECTOR_ID: &str = "base-model-required-f32-tensor-registry";
 const SOURCE_VECTOR_ARTIFACT_SHA256: &str =
-    "3f28af0124e49f3ad1c177958eea5d5bd2823b63821451d44c05da6602fc402d";
+    "c010e2818c64713310699e9ad928d3b22cfeb004756ae8e03acaaee5897e613a";
 
 type DynError = Box<dyn Error>;
 

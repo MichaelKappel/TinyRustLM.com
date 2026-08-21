@@ -22,7 +22,7 @@ pub const MAXIMUM_TENSORS: u32 = 4_096;
 pub const SLM2_FUZZ_PROFILE_ID: &str = "tinyrustlm.vnext.slm2-fuzz.v1";
 /// SHA-256 of the exact checked-in SLM2 fuzz profile.
 pub const SLM2_FUZZ_PROFILE_SHA256: &str =
-    "995a88e52692df204455ea94725de603af38b785a6f9f708a37bf7baa3ae2ce8";
+    "dc16fd2abf142e6a9c8a72bbfc3d998b980af486e094406d73933cae6732a487";
 /// Exact schema required for one stable corpus manifest.
 pub const CORPUS_MANIFEST_SCHEMA: &str = "tinyrustlm.vnext.slm2_fuzz_corpus.v1";
 /// Largest stable corpus manifest admitted before JSON parsing.
@@ -228,7 +228,7 @@ fn validate_frozen_profile() {
     assert_eq!(SLM2_FORMAT_PROFILE_ID, "org.minimodel.slm2/2.0");
     assert_eq!(
         SLM2_FORMAT_PROFILE_SHA256,
-        "b3f90c67d396d16a3ca561cbb288c10dc542a10e00d758704d1d6a17b3c3ff0f"
+        "387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625"
     );
     assert_eq!(
         hex_sha256(&sha256(SLM2_FUZZ_PROFILE_BYTES)),

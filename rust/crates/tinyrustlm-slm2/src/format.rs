@@ -119,14 +119,13 @@ impl ModelSpec {
         {
             return Err(Slm2Error::new("slm2-invalid-model-metadata"));
         }
-        let query_width = self
-            .head_count
+        self.head_count
             .checked_mul(self.head_dimension)
             .ok_or_else(|| Slm2Error::new("slm2-invalid-model-metadata"))?;
         self.kv_head_count
             .checked_mul(self.head_dimension)
             .ok_or_else(|| Slm2Error::new("slm2-invalid-model-metadata"))?;
-        if query_width != self.embedding_size || i32::try_from(self.layer_count).is_err() {
+        if i32::try_from(self.layer_count).is_err() {
             return Err(Slm2Error::new("slm2-invalid-model-metadata"));
         }
         Ok(())
@@ -2039,7 +2038,7 @@ mod tests {
             layer_count: 1,
             head_count: 2,
             kv_head_count: 1,
-            head_dimension: 4,
+            head_dimension: 8,
             rope_theta: 10_000.0,
             normalization_epsilon: 0.000_01,
             tied_embeddings: true,

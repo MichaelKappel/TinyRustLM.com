@@ -15,14 +15,14 @@ admission, publication, catalog availability, or any live campaign count.
 
 | Authority | Exact identity |
 | --- | --- |
-| Format profile | `org.minimodel.slm2/2.0`; 19,321 bytes; SHA-256 `b3f90c67d396d16a3ca561cbb288c10dc542a10e00d758704d1d6a17b3c3ff0f` |
-| Vector document | 24,667 bytes; SHA-256 `1e3a00ddb32d80ff67407fcaa58bd576196c37b6ff3452720ae26cbd67370f8e` |
-| Seed artifact | 7,680 bytes; SHA-256 `3f28af0124e49f3ad1c177958eea5d5bd2823b63821451d44c05da6602fc402d` |
-| Seed manifest | SHA-256 `ca52af1e58f4090def0298e1d80885d0377e3da4063068893ea76866b653d22a` |
-| Seed tensor layout | SHA-256 `dfb77a7a2f87db4d1333b9d204a9ce44ef0fe3613228b89666895ad671c53da6` |
-| Seed Merkle root | `8b988e90ef40ac8f3b2c32cd1bd70e308c5d6ad447941a73af426e6faf9704e8` |
-| Fuzz profile | `tinyrustlm.vnext.slm2-fuzz.v1`; 3,187 bytes; SHA-256 `995a88e52692df204455ea94725de603af38b785a6f9f708a37bf7baa3ae2ce8` |
-| Corpus manifest | 10,040 bytes; SHA-256 `1e449cb26b43f91de8e7534124e09b422ec346dbbaed5652d3b76a8f64abb76a` |
+| Format profile | `org.minimodel.slm2/2.0`; 19,303 bytes; SHA-256 `387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625` |
+| Vector document | 26,210 bytes; SHA-256 `18991615212a1e230f49032cc487664098667694c4817b954d69edd40af4e17e` |
+| Seed artifact | 8,448 bytes; SHA-256 `c010e2818c64713310699e9ad928d3b22cfeb004756ae8e03acaaee5897e613a` |
+| Seed manifest | SHA-256 `1aacc7e30dadf88c9e7d9c75d6bc21000ba86d174fbb0c441b6dad160d154f05` |
+| Seed tensor layout | SHA-256 `46f727ad637170f4dbe6247c40e0ede6bc48b13d82c31cbace05b42394d6d487` |
+| Seed Merkle root | `fb1d8382afdd5fcc325add765576eea5a802b2ef01a78dc3309c2c21e3afa474` |
+| Fuzz profile | `tinyrustlm.vnext.slm2-fuzz.v1`; 3,187 bytes; SHA-256 `dc16fd2abf142e6a9c8a72bbfc3d998b980af486e094406d73933cae6732a487` |
+| Corpus manifest | 10,040 bytes; SHA-256 `9b97aa1c7203c3dd573aeb570d4f8d75cc347df39cf405265518b386b51467ea` |
 | Fuzz dependency lock | 6,766 bytes; SHA-256 `9b6561a9894953d73d969c4976dd8b9f38eb7a80f34cbec62050041b12e12d88` |
 
 The profile is normative. The vector and fuzz documents bind implementations
@@ -144,7 +144,7 @@ byte/hash drift, duplicate or noncanonical identity/order, and verdict drift.
 Direct replay regressions copy the frozen corpus into uniquely owned temporary
 directories and exercise those failures without modifying checked-in seeds.
 Current replay reports 27 entries, one admitted, and 26 rejected. Every proper
-prefix of the 7,680-byte seed also rejects under a deterministic Rust test.
+prefix of the 8,448-byte seed also rejects under a deterministic Rust test.
 
 The first regeneration replay exposed two old vector-specific generator
 assumptions: a hardcoded string ID did not duplicate the new first tensor name,
@@ -164,7 +164,7 @@ until the corrected parser and complete affected gates pass.
 The current focused local checkpoint passes:
 
 - 15 Rust unit tests and three public vector/hostile integration tests;
-- all 7,680 proper-prefix rejection checks inside the integration suite;
+- all 8,448 proper-prefix rejection checks inside the integration suite;
 - six independent Node profile/vector/registry/DCBOR tests;
 - one Node fuzz-profile/corpus/source-boundary test;
 - two fuzz-library tests and five replay-command tests, including exact replay

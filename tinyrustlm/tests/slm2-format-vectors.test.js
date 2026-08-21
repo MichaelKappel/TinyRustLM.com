@@ -474,7 +474,8 @@ function validateManifest(bytes, artifactClass) {
   if (typeof spec.qkNormalization !== "boolean" || typeof spec.qkvBias !== "boolean"
       || typeof spec.tiedEmbeddings !== "boolean" || spec.kvHeadCount > spec.headCount
       || spec.headCount % spec.kvHeadCount !== 0
-      || BigInt(spec.headCount) * BigInt(spec.headDimension) !== BigInt(spec.embeddingSize)
+      || BigInt(spec.headCount) * BigInt(spec.headDimension) > 0xffff_ffffn
+      || BigInt(spec.kvHeadCount) * BigInt(spec.headDimension) > 0xffff_ffffn
       || spec.layerCount > 0x7fff_ffff) {
     fail("slm2-invalid-model-metadata");
   }
@@ -886,6 +887,9 @@ test("profile publishes the exact independently implemented tensor-role registry
     "qk_normalization", "qkv_bias", "tied_embeddings"
   ]);
   assert.ok(profileDocument.modelBody.invariants.includes("tensor-role-registry-complete-and-exact"));
+  assert.ok(profileDocument.modelBody.invariants.includes("query-and-kv-width-products-fit-u32"));
+  assert.ok(!profileDocument.modelBody.invariants.includes(
+    "head-count-times-head-dimension-equals-embedding-size"));
 });
 
 test("independently parses and reproduces every checked-in SLM2 vector identity", () => {
@@ -914,7 +918,7 @@ test("independently parses and reproduces every checked-in SLM2 vector identity"
     layerCount: 1,
     headCount: 2,
     kvHeadCount: 1,
-    headDimension: 4,
+    headDimension: 8,
     ropeTheta: 10_000,
     normalizationEpsilon: Math.fround(0.000_01),
     qkNormalization: false,
@@ -933,7 +937,7 @@ test("independent registry expands every model flag and rejects incomplete or ov
     layerCount: 1,
     headCount: 2,
     kvHeadCount: 1,
-    headDimension: 4,
+    headDimension: 8,
     ropeTheta: 10_000,
     normalizationEpsilon: Math.fround(0.000_01),
     qkNormalization: false,

@@ -188,7 +188,7 @@
     "invariants": [
       "kv-head-count-no-greater-than-head-count",
       "head-count-divisible-by-kv-head-count",
-      "head-count-times-head-dimension-equals-embedding-size",
+      "query-and-kv-width-products-fit-u32",
       "layer-count-fits-signed-layer-index",
       "tensor-role-registry-complete-and-exact",
       "tensor-layout-sha256-recomputed-from-canonical-descriptors"

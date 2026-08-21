@@ -93,7 +93,7 @@ fn reference_spec() -> ModelSpec {
         layer_count: 1,
         head_count: 2,
         kv_head_count: 1,
-        head_dimension: 4,
+        head_dimension: 8,
         rope_theta: 10_000.0,
         normalization_epsilon: 0.000_01,
         tied_embeddings: true,
@@ -301,6 +301,16 @@ fn checked_in_vector_matches_public_writer_reader_and_piece_api() {
         .map(|value| value.as_str().expect("string-table item must be text"))
         .collect();
     let required_tensors = required_model_tensors(&reference_spec(), 64).unwrap();
+    let query_projection = required_tensors
+        .iter()
+        .find(|tensor| tensor.semantic_role() == "layer.attention.query-projection.weight")
+        .expect("the canonical registry must contain a query projection");
+    assert_eq!(query_projection.shape(), &[16, 8]);
+    let output_projection = required_tensors
+        .iter()
+        .find(|tensor| tensor.semantic_role() == "layer.attention.output-projection.weight")
+        .expect("the canonical registry must contain an attention output projection");
+    assert_eq!(output_projection.shape(), &[8, 16]);
     let required_strings = required_tensors
         .iter()
         .flat_map(|tensor| [tensor.semantic_role(), tensor.canonical_name()])

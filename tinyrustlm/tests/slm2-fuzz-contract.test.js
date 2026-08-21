@@ -35,11 +35,11 @@ test("SLM2 fuzz profile, generated corpus, and source boundary are exact", () =>
 
   const profileBytes = fs.readFileSync(profilePath);
   const profile = JSON.parse(profileBytes);
-  assert.equal(sha256(profileBytes), "995a88e52692df204455ea94725de603af38b785a6f9f708a37bf7baa3ae2ce8");
+  assert.equal(sha256(profileBytes), "dc16fd2abf142e6a9c8a72bbfc3d998b980af486e094406d73933cae6732a487");
   assert.equal(profile.profileId, "tinyrustlm.vnext.slm2-fuzz.v1");
   assert.equal(profile.status, "development-unpromoted");
   assert.equal(profile.formatProfileSha256,
-    "b3f90c67d396d16a3ca561cbb288c10dc542a10e00d758704d1d6a17b3c3ff0f");
+    "387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625");
   assert.equal(profile.input.maximumBytes, 1_048_576);
   assert.equal(profile.validationPolicy.maximumFileBytes, profile.input.maximumBytes);
   assert.equal(profile.validationPolicy.maximumTensors, 4_096);
@@ -65,7 +65,7 @@ test("SLM2 fuzz profile, generated corpus, and source boundary are exact", () =>
   assert.equal(manifest.formatProfileSha256, profile.formatProfileSha256);
   assert.equal(manifest.sourceVectorId, "base-model-required-f32-tensor-registry");
   assert.equal(manifest.sourceVectorArtifactSha256,
-    "3f28af0124e49f3ad1c177958eea5d5bd2823b63821451d44c05da6602fc402d");
+    "c010e2818c64713310699e9ad928d3b22cfeb004756ae8e03acaaee5897e613a");
   assert.equal(manifest.entries.length, 27);
   assert.equal(manifest.entries.filter((entry) => entry.verdict === "admit").length, 1);
   assert.equal(manifest.entries.filter((entry) => entry.verdict === "reject").length, 26);
@@ -113,11 +113,11 @@ test("SLM2 fuzz profile, generated corpus, and source boundary are exact", () =>
 
   const implementationDocument = fs.readFileSync(implementationDocumentPath, "utf8");
   assert.match(implementationDocument,
-    /b3f90c67d396d16a3ca561cbb288c10dc542a10e00d758704d1d6a17b3c3ff0f/u);
+    /387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625/u);
   assert.match(implementationDocument,
-    /995a88e52692df204455ea94725de603af38b785a6f9f708a37bf7baa3ae2ce8/u);
+    /dc16fd2abf142e6a9c8a72bbfc3d998b980af486e094406d73933cae6732a487/u);
   assert.match(implementationDocument,
-    /1e449cb26b43f91de8e7534124e09b422ec346dbbaed5652d3b76a8f64abb76a/u);
+    /9b97aa1c7203c3dd573aeb570d4f8d75cc347df39cf405265518b386b51467ea/u);
   assert.match(implementationDocument, /27 entries, one admitted, and 26 rejected/u);
   assert.match(implementationDocument, /canonical manifest flag mutation/u);
   assert.match(implementationDocument, /closed `deny_unknown_fields` Rust records/u);

@@ -4,7 +4,7 @@
   "version": 1,
   "status": "development-unpromoted",
   "formatProfileId": "org.minimodel.slm2/2.0",
-  "formatProfileSha256": "b3f90c67d396d16a3ca561cbb288c10dc542a10e00d758704d1d6a17b3c3ff0f",
+  "formatProfileSha256": "387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625",
   "input": {
     "kind": "raw-complete-slm2-artifact-bytes",
     "maximumBytes": 1048576,
