@@ -1,7 +1,7 @@
-profile: runtime-mirust.next-recursive-prompt.v47
-updated_utc: 2026-08-11T15:08:46Z
+profile: runtime-mirust.next-recursive-prompt.v48
+updated_utc: 2026-08-21T04:13:00Z
 prompt: >
-  Read and execute the complete assignment at `docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md`, SHA256 `92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0`. Revalidate mutable facts before acting. Work only in clean owned worktrees and never touch the protected dirty E:\Source\Rust\TinyRustLM.com checkout. Runtime verification and both frozen MiniModel 1.0.0 publications are terminally complete with immutable receipts recorded in workspace.uai; do not replay them. Resume Gate C now: finish the sole vNext release/publication path, cut every maintained caller and document to it, delete the obsolete mutable stack without wrappers or dual readers, and continue the full clean-slate enterprise objective without lowering the 20/50/25/40/20 completion target.
+  Read and execute the complete working-model assignment recorded by the newest checkpoint in `workspace.uai`, the frozen enterprise goal at `docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md` SHA256 `92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0`, and `wiki/runtime-mirust/reports/tinyrustlm-qwen3-cpu-pilot-trainer-memory-2026-08-20.md` SHA256 `a77d1748d06707d18e4a7f26df2d01011a8ca4a2893e33c2c659654fb45d06c4`. Revalidate mutable facts before acting. Modify only `E:\Source\.tinyrustlm-model-acquisition-recovered-20260819` on `codex/model-acquisition-v2`; never touch `E:\Source\Rust\TinyRustLM.com`. The exact offline trainer and environment lock are complete, but environment lock v3 has `training_authority: false`. Obtain genuinely separate holdout and curriculum-review contributions without impersonation, complete no-cheat authorization, run one deterministic CPU pilot, and continue in dependency order through merge, untouched screening, sole-SLM2 conversion, scalar/WASM conformance, functional P2P-or-convert acquisition, and genuine browser-local multi-turn chat. Do not lower or increment the 20/50/25/40/20 campaign targets without matching live evidence.
 primary_goal: >
   Deliver the enterprise-quality pre-release TinyRustLM system described by the authoritative 2026-08-10 continuation goal with no legacy support, compatibility shims, hidden fallbacks, technical debt, or inflated claims. Continue until objective runtime, model-quality, browser, MemoryEndpoints, P2P, package, deployment, documentation, and publication gates are satisfied or honestly blocked by unavailable external authority.
 required_context:
@@ -11,6 +11,7 @@ required_context:
   - docs/report-intake/2026-08-08/active-handoff-closure/MANIFEST.md
   - docs/report-intake/2026-08-08/active-handoff-closure/tinyrustlm-active-handoff-closure-synthesis-2026-08-08.md
   - wiki/runtime-mirust/reports/tinyrustlm-active-handoff-closure-memory-2026-08-08.md
+  - wiki/runtime-mirust/reports/tinyrustlm-qwen3-cpu-pilot-trainer-memory-2026-08-20.md
   - docs/architecture
   - .uai/test-plan.uai
   - .uai/intake-outcome-ledger.uai
@@ -20,12 +21,14 @@ active_intake: []
 active_intake_truth: >
   Content and Improvement contain placeholders only after six exact source artifacts were durably preserved and routed on 2026-08-08. The enterprise goal remains active through the goal system and durable memory. External MemoryEndpoints work and future compressed-vector research remain tracked blockers or planned work, not unprocessed intake files.
 current_slice:
-  - Integrate `tinyrustlm/tools/vnext-site-publication.js` into the sole current release surface.
-  - Bind current site-publisher Ed25519 authority, exact release/source/site/origin scope, expiry, and static readback identity.
-  - Generate deterministic forward-only pointer, append-only history, and direct evidence-bound published claim descendants without cyclic ancestry or self-reference.
-  - Persist receipts and public subjects create-only after redaction; reconstruct truth from stores and reject caller-provided status, counters, verdicts, or currentness.
-  - Cut every maintained caller, command, test helper, configuration path, and architecture document to the vNext replacement.
-  - Delete the six obsolete mutable release tools, their dedicated tests, stale maintained documentation, mutable snapshots, aliases, and obsolete schemas without compatibility wrappers or dual readers.
+  - Preserve implementation commit `09c0e2bc96d728f220b322fbe9d33774f8664b1e`, trainer SHA256 `aded5f91db040008685a506e6a59e09593b68bdb69688095fa0aef8db8e0c50b`, and environment-lock-v3 SHA256 `68c36c8492c59c0006e3bfa018b0d84dbc1832379733512c4e979b9a17ac49eb` as the exact non-authorizing trainer foundation.
+  - Obtain two genuinely separate completed `holdout-custody-v6` contributions. Never author or sign either contribution as this agent.
+  - Materialize the exact 1,024-record pilot curriculum and complete teacher, license, PII, malicious-artifact, and removal lineage outside Git.
+  - Obtain two complete record-ordered primary review ledgers under distinct reviewer identities and custody domains; use a third distinct adjudicator only for actual disagreement.
+  - Assemble and seal holdouts create-only, then pass exact lexical, n-gram, entity, template, answer, tombstone, and complete blinded semantic contamination gates.
+  - Freeze one exact training lock only after the control program reopens every source, review, holdout, audit, environment, trainer, recipe, stop-rule, and output-root input.
+  - Run one deterministic CPU pilot, preserve every checkpoint and terminal result, and merge only an eligible final adapter into a new cryptographically identified source artifact.
+  - Run untouched behavioral screening before deterministic sole-SLM2 conversion, then establish scalar/native and browser-WASM conformance before acquisition and browser promotion.
 immutable_evidence:
   - The ExactFlat sealed baseline passed only its bounded numerical, controlled-memory, and registered process-crash gates. It is not semantic-memory or product evidence.
   - The frozen TurboVec 0.9.0 four-bit native reference arm is terminally unqualified. Never rerun it, alter its thresholds, or repair its failed process into a pass.
@@ -39,15 +42,18 @@ engineering_rules:
   - Do not weaken tests, fabricate live evidence, infer publication from package creation, or infer public reachability from local probes.
   - Keep marketing, documentation, version, release date, last-publish metadata, and per-site update logs synchronized with every stable publication.
 next_steps:
-  - Inspect the current vNext release surface, site-publication implementation, contracts, tests, callers, and the six obsolete tools before editing.
-  - Add the smallest generic failing Gate C tests for any missing sole-path, signature, ancestry, replay, drift, redaction, deterministic-output, and interruption invariant.
-  - Implement the replacement and delete obsolete production paths in the same verified cutover; add negative conformance checks forbidding removed imports, commands, documentation, and configuration.
-  - Run `npm --prefix tinyrustlm run test:vnext-campaign-release-surface`, `node --test tinyrustlm/tests/vnext-site-publication.test.js`, the complete Node unit gate, Rust fmt, denied-warning Clippy, locked workspace tests, deterministic generator checks, `git diff --check`, and affected browser/deployment tests.
-  - Commit and push each coherent green milestone immediately; publish only when affected production closure bytes and their complete independent release gate require it.
-  - Continue with Windows directory durability, hostile archive scanning, and protected equality-list custody after Gate C closes.
+  - Revalidate the current worktree, remote head, frozen-goal hash, external custody plan, source inventory, wheelhouse manifest, and environment lock before consuming any new contribution.
+  - Treat missing genuine holdout authors or curriculum reviewers as explicit external blockers; continue only independent engineering work that cannot forge or weaken those gates.
+  - Validate every received contribution against the exact current profile, program, identity, custody, order, factor-diversity, overlap, and bounded-storage contracts before assembly.
+  - Materialize and review the curriculum without exposing private records in Git or public receipts, then run all contamination controls and preserve every rejection and tombstone.
+  - Verify the exact training lock and run the pinned trainer only after `training_authority` is explicitly granted by the current control program.
+  - Preserve raw outputs and exact identities through merge, untouched screen, SLM2 conversion, scalar/WASM parity, acquisition, clean-profile browser conversation, privacy scan, and receipts.
+  - Run focused tests after each change and complete affected release gates before deployment; commit and push every coherent green major change immediately.
 success_criteria:
-  - One release truth path runs from current receipt/subject stores through projection, attestation, preparation, authorization, deployment admission, exact readback, site-publisher authorization, publication descendants, and published-claim admission.
-  - Pointer, history, and claim descendants are deterministic, bounded, redacted, forward-only, acyclic, create-only, restart-reconstructable, and bound to current signed authority plus exact deployed bytes.
-  - Expired/revoked authority, replay, caller truth injection, source/manifest/snapshot/origin/route/byte drift, cyclic ancestry, generated-document backreferences, partial persistence, and secret-bearing output fail closed.
-  - Obsolete mutable tools, tests, commands, stores, schemas, configuration, and maintained documentation are absent, with no alias, shim, migration reader, or dual path.
-  - Complete affected tests pass, source is committed/pushed, documentation is synchronized, and no campaign or release claim exceeds current receipts.
+  - One cryptographically identified derivative has acceptable provenance and passes the preregistered untouched behavioral screen without repair, retry selection, best-of-N, or answer injection.
+  - Its exact source, tokenizer, chat template, training data and reviews, adapter, merged bytes, converter, SLM2 output, runtime, WASM, acquisition, and browser receipts form one content-addressed evidence graph.
+  - Conversion is deterministic and produces only canonical SLM2; unsupported or ambiguous tensors fail closed and no SLM1 reader, compatibility alias, migration, repair, or fallback exists.
+  - Scalar native inference is the reference and browser WASM conforms for identical model bytes, prompts, tokens, sampling profiles, seeds, KV-cache state, stop conditions, and bounded malformed inputs.
+  - The browser acquires a verified P2P artifact when available or performs explicit local conversion when unavailable; it never downloads text or scripts as a substitute.
+  - A fresh browser profile completes genuine multi-turn local chat with one rendering per answer, truthful cancellation/restart behavior, no prompt or model upload, and deletion/privacy evidence.
+  - Complete affected tests pass, source and UAI memory are committed and pushed, documentation and release history are synchronized, deployment occurs only after full gates, and no campaign claim exceeds live receipts.

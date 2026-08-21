@@ -1,11 +1,31 @@
-profile: runtime-mirust.long-term-memory-ledger.v350
-updated_utc: 2026-08-09T00:53:15Z
+profile: runtime-mirust.long-term-memory-ledger.v351
+updated_utc: 2026-08-21T04:13:00Z
 storage_mode: hybrid
 ledger_rule:
   pointer_only_not_context_free: true
   summary_policy: Routing-only, one sentence, 35 words maximum, no durable body memory.
   allowed_statuses: current, retired, superseded, quarantined
 records:
+  - stable_id: tinyrustlm_qwen3_cpu_pilot_trainer_2026_08_20_current
+    memory_domain: tinyrustlm.model_training.qwen3_cpu_pilot
+    pointer_type: wiki_report
+    path: wiki/runtime-mirust/reports/tinyrustlm-qwen3-cpu-pilot-trainer-memory-2026-08-20.md
+    target_location: wiki/runtime-mirust/reports/tinyrustlm-qwen3-cpu-pilot-trainer-memory-2026-08-20.md
+    label: TinyRustLM Qwen3 CPU Pilot Trainer
+    summary: Routes the exact offline CPU environment, deterministic LoRA trainer, durable replay controls, non-authorizing evidence boundary, and externally blocked human custody and review gates.
+    pointer_status: current
+    authority: exact checked-in trainer and tests, create-only external wheelhouse and environment lock, fresh verifier output, and current frozen working-model profile
+    source_authority: implementation commit 09c0e2bc96d728f220b322fbe9d33774f8664b1e; profile sha256 1c540f44cd0b6b1c69625ad108c2ff1b6165a9361734fb0045eb20b9968c9b79
+    source_identity: trainer sha256 aded5f91db040008685a506e6a59e09593b68bdb69688095fa0aef8db8e0c50b; environment-lock-v3 sha256 68c36c8492c59c0006e3bfa018b0d84dbc1832379733512c4e979b9a17ac49eb
+    review_status: verified_non_authorizing_trainer_milestone
+    quarantine_status: none
+    review_evidence: wiki/runtime-mirust/reports/tinyrustlm-qwen3-cpu-pilot-trainer-memory-2026-08-20.md
+    contextual_trigger: Read before Qwen3 curriculum authorization, CPU training, checkpoint recovery, adapter candidacy, model-quality, conversion, or working-model vertical-slice claims.
+    checksum_hash: sha256:a77d1748d06707d18e4a7f26df2d01011a8ca4a2893e33c2c659654fb45d06c4
+    sha256: a77d1748d06707d18e4a7f26df2d01011a8ca4a2893e33c2c659654fb45d06c4
+    last_reviewed_utc: 2026-08-21T04:13:00Z
+    owner_or_reviewer: TinyRustLM Agent
+    truth_boundary: Proves the pinned trainer and environment controls only; training authorization, a trained adapter, model quality, conversion, runtime, browser, deployment, MemoryEndpoints, and campaign progress remain false.
   - stable_id: tinyrustlm_active_handoff_closure_2026_08_08_current
     memory_domain: tinyrustlm.report_intake.active_handoff_closure
     pointer_type: wiki_report

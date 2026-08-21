@@ -1,5 +1,22 @@
-profile: runtime-mirust.file-handoff.v75
-updated_utc: 2026-08-11T23:15:46Z
+profile: runtime-mirust.file-handoff.v76
+updated_utc: 2026-08-21T04:13:00Z
+current_qwen3_cpu_pilot_trainer_2026_08_20:
+  authority: Newest TinyRustLM first-read checkpoint; supersedes older present-tense working-model next actions while preserving immutable source, SLM2, sanitizer, release, publication, and campaign history.
+  goal: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+  goal_sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+  goal_status: active_incomplete
+  owned_worktree: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  branch: codex/model-acquisition-v2
+  implementation_commit: 09c0e2bc96d728f220b322fbe9d33774f8664b1e
+  upstream_status: pushed and actual-remote exact before this handoff edit
+  protected_checkout: E:\Source\Rust\TinyRustLM.com must remain untouched
+  result: sole pinned offline CPU float32 Qwen3 LoRA trainer, exact environment lock, isolation hook, durable checkpoint/restart chain, terminal stops, and final-only no-quality-claim candidate path are implemented and verified
+  identities: trainer aded5f91db040008685a506e6a59e09593b68bdb69688095fa0aef8db8e0c50b; environment spec 635d198495ba1e3c4c8954ba27bc2d25dea2159ff96210b67943623d4886aed2; wheelhouse manifest c69cdc8bc3e1c8dc40ac7bbb85d27307ba24f526ac0ad25575eaa4000fcefd46; environment lock 68c36c8492c59c0006e3bfa018b0d84dbc1832379733512c4e979b9a17ac49eb; durable report a77d1748d06707d18e4a7f26df2d01011a8ca4a2893e33c2c659654fb45d06c4
+  tests: 47/47 focused trainer and 88/88 combined control/trainer pass; Ruff, complete environment rehash, offline import/isolation probe, Torch state round trip, diff hygiene, Git object equality, push, and remote equality pass
+  authority_boundary: environment lock v3 has `training_authority: false`; no curriculum, human review, holdout seal, semantic pass, adapter, model quality, conversion, runtime, browser, deployment, publication, MemoryEndpoints, or campaign proof exists
+  external_blockers: two genuinely separate holdout authors and two genuinely separate curriculum reviewers must provide complete evidence; the agent must not impersonate them
+  campaign_counts: 0/20 models; 0/50 browser rounds; 0/25 live memory rounds; 0/40 outside-proven lanes; 0/20 announcements
+  next: materialize the exact 1,024-record curriculum and teacher lineage outside Git, obtain genuine custody and review contributions, assemble/seal holdouts, pass lexical and blinded semantic audits, freeze the exact training lock, then run one deterministic pilot
 current_tinyrustlm_four_store_durable_receipt_cutover_2026_08_11:
   authority: Newest TinyRustLM first-read checkpoint; supersedes older present-tense store-cutover and Gate D status where different and preserves all immutable history.
   goal: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md

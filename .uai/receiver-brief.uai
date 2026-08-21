@@ -1,5 +1,15 @@
-profile: runtime-mirust.receiver-brief.v13
-updated_utc: 2026-06-29T01:39:45Z
+profile: runtime-mirust.receiver-brief.v14
+updated_utc: 2026-08-21T04:13:00Z
+current_handoff_2026_08_20_qwen3_cpu_pilot:
+  authority: This current handoff supersedes the older present-tense browser-assembly brief while preserving its durable historical routes.
+  objective: Deliver one provenance-bound useful Qwen3 derivative through untouched screening, sole-SLM2 conversion, scalar/WASM conformance, P2P-or-convert acquisition, and genuine browser-local multi-turn chat.
+  owned_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  branch: codex/model-acquisition-v2
+  protected_root: E:\Source\Rust\TinyRustLM.com must not be modified.
+  current_result: Commit `09c0e2bc96d728f220b322fbe9d33774f8664b1e` is pushed and remote-exact. The pinned offline CPU trainer and environment lock are implemented and verified; environment lock v3 explicitly has no training authority.
+  blocking_inputs: Two genuinely separate holdout authors must complete `holdout-custody-v6`; the 1,024-record curriculum and teacher lineage must be materialized; two genuinely separate reviewers must complete exact record-bound ledgers. This agent must not impersonate any of them.
+  exact_resume: After real contributions arrive, assemble and seal holdouts, run lexical and blinded semantic audits, freeze the exact training lock, run one deterministic CPU pilot, and continue through merge, untouched quality, SLM2, runtime/WASM, acquisition, and browser gates.
+  truth_boundary: No training, adapter, model-quality, conversion, runtime, browser, deployment, MemoryEndpoints, or campaign claim advanced. Counters remain 0/20, 0/50, 0/25, 0/40, and 0/20.
 brief: Runtime.MiRust.com now contains TinyRustLM, a zero-dependency Rust/WASM browser-local SLM runtime and UI with ADP1/ASP1/ALR1 runtime adapter validation and apply, Rust-owned runtime assembly diagnostics, browser-routed ADP1/ASP1/ALR1 adapter-family stacks with pre-WASM full-stack byte preflight plus Rust semantic validation before apply, browser-verified module-plan receipts with `browser-constrained-v1` profile, `single-threaded-wasm-local-v1` execution profile, `local-no-store-v1` fetch policy, `same-origin-loopback-local-v1` origin policy, and `module_plan_adapter_validation_strategy=rust-validate-before-apply-v1`, assembly traces, eval-case evidence checksum display, assembly eval-digest proof, fetched evidence-file integrity proof, generated q4/q8/f32 selector roots, and route-soak proof for generated self-assembly routes. Model Breeding routes through durable research, report synthesis, short-term routes, checksum pointers, and concept lanes for heritable artifacts, mate selection, phenotype evidence, and local fit until source and tests prove concrete runtime support.
 must_read:
   - AGENTS.md
@@ -10,6 +20,7 @@ must_read:
   - .uai/test-plan.uai
   - .uai/report-synthesis.uai
   - .uai/taboo.uai
+  - wiki/runtime-mirust/reports/tinyrustlm-qwen3-cpu-pilot-trainer-memory-2026-08-20.md
   - tinyrustlm/README.md
   - wiki/runtime-mirust/reports/report-intake-index-2026-06-25.md
   - wiki/runtime-mirust/reports/report-intake-index-2026-06-26.md

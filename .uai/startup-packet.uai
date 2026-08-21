@@ -1,5 +1,14 @@
-profile: runtime-mirust.startup-packet.v100
-updated_utc: 2026-08-09T22:06:41Z
+profile: runtime-mirust.startup-packet.v101
+updated_utc: 2026-08-21T04:13:00Z
+current_working_model_handoff_2026_08_20:
+  first_read: Read the newest top-level checkpoint in `workspace.uai`, then `wiki/runtime-mirust/reports/tinyrustlm-qwen3-cpu-pilot-trainer-memory-2026-08-20.md`, before following older startup routes.
+  active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  active_branch: codex/model-acquisition-v2
+  protected_root: E:\Source\Rust\TinyRustLM.com must remain untouched.
+  implementation_head: 09c0e2bc96d728f220b322fbe9d33774f8664b1e is pushed and actual-remote exact before the UAI handoff edit.
+  current_result: The exact offline CPU trainer and environment lock are complete and independently reverified; environment lock v3 says `training_authority: false`.
+  immediate_operation: Obtain genuinely separate `holdout-custody-v6` authors and two record-bound curriculum reviewers, materialize the exact 1,024-record curriculum, then assemble/seal/audit and freeze a training lock before training. Never impersonate human custody or review.
+  truth_boundary: No training, adapter, model-quality, conversion, runtime, browser, deployment, publication, MemoryEndpoints, or campaign gate advanced; counters remain zero.
 current_credit_window_handoff_2026_08_09:
   first_read: Read the top-level `credit_window_handoff_2026_08_09` in workspace.uai before following older startup routes.
   active_root: E:\Source\.tinyrustlm-model-acquisition
