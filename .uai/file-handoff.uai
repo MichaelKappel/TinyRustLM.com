@@ -1,5 +1,23 @@
-profile: runtime-mirust.file-handoff.v78
-updated_utc: 2026-08-21T05:12:41Z
+profile: runtime-mirust.file-handoff.v79
+updated_utc: 2026-08-21T06:07:26Z
+current_tokenizer2_format_foundation_2026_08_20:
+  authority: Newest TinyRustLM first-read checkpoint; closes the miniature Tokenizer2 profile, independent-vector, canonical-writer, bounded-parser, encoder, and decoder foundation only while preserving every model, SLM2, trainer, release, publication, and campaign boundary.
+  goal: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
+  goal_sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+  goal_status: active_incomplete
+  owned_worktree: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  branch: codex/model-acquisition-v2
+  implementation_commit: 5321f1409cb1c77ddf2090b0b864114dbe9f3d64
+  upstream_status: implementation commit pushed successfully before this handoff edit
+  protected_checkout: E:\Source\Rust\TinyRustLM.com was read only for pinned source evidence and must remain untouched
+  result: sole clean-slate org.minimodel.tokenizer2/2.0 binary contract, Node-authored language-neutral vectors, independent Node writer/parser/encoder/decoder, and unsafe-free Rust writer/parser/encoder/decoder are implemented and verified for the canonical miniature artifact
+  identities: profile 628427bf6e7f8d34ed14b331a5c636606aee9d5ef45a36a3cadc13338669b8de; vectors 9fef7d6c8576d971d72fd248dcedce2888ca0fe2a944fbbb914fed8e07f218aa; artifact 2b2c3c5f58baacd7af68e2ccffa1cb03e113fa281b1832224d684f9ac03eaff1; Node oracle bf63b1d985a9af9d42707ec54976d9a78c5d85ac7d87d33ca0818ec030008715; durable report 06ea1006403992ebf6df034047a053d1a6ef46f685e6ef3e9869097a242a6541
+  pinned_source: Qwen revision c1899de289a04d12100db370d81485cdf75e47ca; tokenizer aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4; tokenizers 0.22.2 revision f383101a26663708484cac0727792aad74f78234; Unicode normalization 9.0.0; categories and Oniguruma 16.0.0
+  tests: full Rust workspace tests pass; full workspace all-target Clippy passes with warnings denied; rustfmt passes; focused Rust 17/17 and direct Node 24/24 pass; deterministic Node generation, every proper-prefix rejection, JSON parsing, diff hygiene, sensitive-pattern scan, and frozen-goal hash pass
+  authority_boundary: 7,459-byte miniature contract evidence only; no complete Qwen Tokenizer2 conversion, broad source-oracle parity, full-artifact native/WASM replay, Template2, sampling, real model, quality, acquisition, chat, release, deployment, publication, MemoryEndpoints, or campaign proof exists
+  external_blockers: two genuinely separate holdout authors, exact 1,024-record curriculum with teacher lineage, and two genuinely separate complete record-bound reviewer ledgers remain required; the agent must not impersonate them
+  campaign_counts: 0/20 models; 0/50 browser rounds; 0/25 live memory rounds; 0/40 outside-proven lanes; 0/20 announcements
+  next: finish Gate A by implementing one exact bounded Qwen source parser, converting twice outside Git, issuing a complete conversion receipt, proving broad tokenizers-0.22.2 parity, and replaying the full artifact in native Rust and browser WASM before beginning dependent Template2 product work
 current_production_slm2_acquisition_browser_release_goal_2026_08_20:
   authority: Newest self-contained next-deployable-goal prompt; continues and does not replace or narrow the frozen enterprise goal.
   prompt: docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md
@@ -11,7 +29,7 @@ current_production_slm2_acquisition_browser_release_goal_2026_08_20:
   execution_order: Tokenizer2; Template2; deterministic sampling; composition; real conversion and parity; production P2P-or-convert; browser activation; useful-model qualification; clean-profile conversation; release; deployment; HTTPS readback
   external_blockers: two genuine holdout authors, exact reviewed 1,024-record curriculum and teacher lineage, and two genuine independent reviewer ledgers remain required; never impersonate them
   campaign_counts: 0/20 models; 0/50 browser rounds; 0/25 live memory rounds; 0/40 outside-proven lanes; 0/20 announcements
-  next: revalidate mutable state and begin Gate A Tokenizer2; commit and push each coherent green major change
+  next: preserve pushed Tokenizer2 foundation commit 5321f1409cb1c77ddf2090b0b864114dbe9f3d64; close full pinned-Qwen conversion, source-oracle parity, and native/WASM full-artifact Gate A evidence before beginning dependent Template2; commit and push each coherent green major change
 current_slm2_scalar_wasm_conformance_2026_08_20:
   authority: Newest TinyRustLM first-read checkpoint; supersedes only the scalar/WASM implementation next action while preserving immutable model-training, conversion, format, sanitizer, release, publication, and campaign history.
   goal: docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md
