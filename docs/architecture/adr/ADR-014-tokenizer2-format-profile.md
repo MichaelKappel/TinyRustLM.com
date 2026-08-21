@@ -5,9 +5,10 @@
 Accepted
 
 The profile is accepted as the sole clean-slate Tokenizer2 target. Its current
-implementation is development-only and unpromoted until pinned-source
-conversion, full source-oracle parity, native and WASM replay, browser
-activation, and useful-model qualification all pass.
+implementation is development-only and unpromoted until full source-oracle
+parity, native and WASM replay, browser activation, and useful-model
+qualification all pass. Exact pinned-source conversion now passes as a narrow
+precondition rather than a promotion result.
 
 ## Decision Date
 
@@ -28,12 +29,14 @@ release authorization, deployment, publication, or campaign credit.
 
 **Observed local fact**: the pinned Qwen3-0.6B tokenizer has 151,643 base
 tokens, 151,387 ordered merges, and 26 contiguous added tokens, for a total
-vocabulary of 151,669. The source bytes and revision remain external inputs;
-they have not yet been converted into a promoted Tokenizer2 artifact.
+vocabulary of 151,669. Two exact external conversions from the locked source
+closure produced the same 7,038,773-byte Tokenizer2 artifact with SHA-256
+`cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b`.
+The artifact remains unpromoted pending source-oracle and browser-WASM parity.
 
-**Local verification required**: the complete pinned tokenizer must still be
-converted twice and replayed against the exact upstream implementation over a
-broad adversarial corpus.
+**Local verification required**: the converted tokenizer must still be
+replayed against the exact upstream implementation over a preregistered broad
+adversarial corpus natively and through real browser WASM.
 
 ## Decision
 
@@ -139,8 +142,19 @@ exhaustive requirement that every proper artifact prefix reject.
 The source oracle is Hugging Face tokenizers 0.22.2 at source revision
 `f383101a26663708484cac0727792aad74f78234`. Its normalization dependency is
 `unicode-normalization-alignments` 0.1.12 and its regex path is Oniguruma
-6.9.10. These public identities are source facts, not evidence that the full
-private conversion has passed.
+6.9.10.
+
+The exact conversion profile is
+`contracts/vnext/qwen-tokenizer2-conversion-profile.v1.json`, 3,501 bytes,
+SHA-256
+`f70465a08b41599fe59f41b850912d0d408f0ec67e84ebeb7591524d1b14e12b`.
+The source lock is
+`contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json`, 1,108 bytes,
+SHA-256
+`1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70`.
+Two conversions reproduce the exact artifact identity stated above and issue
+separate create-only durability receipts. This is conversion evidence, not
+source-oracle parity evidence.
 
 ## Threat Analysis
 
@@ -219,7 +233,9 @@ executable product contract.
 ## Clean Deletion Impact
 
 The old converter behavior that copied `tokenizer.json` and labeled it
-Tokenizer2 must be deleted when the exact source converter lands.
+Tokenizer2 has been deleted. The converter now emits canonical `.tok2` bytes,
+reparses them before promotion, and records raw publisher Jinja only as
+unpromoted source evidence rather than falsely labeling it Template2.
 
 Any runtime tokenizer JSON parser, dynamically supplied regex, script-based
 tokenization, duplicate tokenizer section, or SLM1 tokenizer reader in the
@@ -233,10 +249,10 @@ as a browser runtime fallback after Rust/WASM integration passes.
 
 ## Unknowns
 
-The exact full-source conversion artifact identity is not yet established.
-
-Full parity across every pinned vocabulary entry, merge, added token, ordinary
-corpus item, adversarial Unicode case, and malformed source case is pending.
+Full behavioral parity across ordinary corpus items, multilingual text,
+adversarial Unicode, whitespace, punctuation, added-token interactions, and
+decoding cases remains pending. Structural parity for every pinned vocabulary
+entry, merge, and added token is enforced during conversion.
 
 The source tokenizer's maximum observed token byte length and production
 artifact size must be recorded by conversion evidence rather than inferred.
@@ -249,9 +265,9 @@ Template2 linkage and thinking-mode semantics are pending.
 The useful model, source-framework parity, P2P-or-convert acquisition, and
 browser-local conversation are pending.
 
-**Local verification required**: the exact pinned Qwen source files, hashes,
-conversion tool identity, output identity, source-oracle corpus, and receipts
-must all be revalidated in the owned worktree and external evidence root.
+**Local verification required**: the preregistered source-oracle corpus, native
+parity receipt, full-artifact WASM receipt, and performance receipt must be
+created and revalidated in the owned worktree and external evidence root.
 
 ## Acceptance Tests
 

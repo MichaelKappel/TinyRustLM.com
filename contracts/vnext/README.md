@@ -99,10 +99,27 @@ four decodings, 13 single-fault mutations, and rejection of every proper
 artifact prefix. The Node oracle invokes no Rust, subprocess, or network
 operation.
 
-This checkpoint is not full pinned-Qwen conversion, complete source-oracle
-parity, browser-WASM execution, model qualification, release, deployment, or
-campaign evidence. See `docs/architecture/vnext-tokenizer2-format-implementation.md`
-and ADR-014.
+`qwen-tokenizer2-conversion-profile.v1.json` is the sole exact source-to-
+Tokenizer2 conversion profile. It is 3,501 bytes with SHA-256
+`f70465a08b41599fe59f41b850912d0d408f0ec67e84ebeb7591524d1b14e12b`.
+The exact five-file `Qwen/Qwen3-0.6B` source closure is bound by
+`qwen3-0.6b-tokenizer2-source-lock.v1.json`, 1,108 bytes with SHA-256
+`1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70`.
+Two external conversions produce one byte-identical 7,038,773-byte Tokenizer2
+artifact with SHA-256
+`cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b`.
+The converter rejects duplicate or unknown source members, nonexact pipeline
+options, redundant vocabulary or merge disagreement, source drift, and
+non-create-only output. It independently reparses the complete staged artifact
+before promotion and binds the source, profiles, executable, output, counts,
+special IDs, and directory durability in a receipt.
+
+This checkpoint is complete pinned-Qwen *tokenizer format conversion* only. It
+is not broad source-oracle encoding parity, browser-WASM execution, Template2,
+model conversion, model qualification, release, deployment, or campaign
+evidence. See `docs/architecture/vnext-tokenizer2-format-implementation.md`,
+ADR-014, and
+`wiki/runtime-mirust/reports/tinyrustlm-qwen3-tokenizer2-conversion-memory-2026-08-20.md`.
 
 ## Parsing
 

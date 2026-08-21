@@ -4,11 +4,14 @@
 
 This document records the development-only Tokenizer2 2.0 checkpoint on
 2026-08-20. The exact miniature contract, independent vectors, Node oracle,
-and unsafe-free Rust implementation pass their focused local gates.
+unsafe-free Rust implementation, strict pinned-Qwen source parser, and two
+byte-identical external full-tokenizer conversions pass their applicable
+local gates.
 
-This is not full pinned-Qwen conversion evidence, complete source-oracle
-parity, browser-WASM evidence, model qualification, release evidence,
-deployment evidence, or campaign credit.
+This is complete pinned-Qwen tokenizer *format conversion* evidence. It is not
+complete source-oracle behavioral parity, browser-WASM evidence, Template2,
+model conversion, model qualification, release evidence, deployment evidence,
+or campaign credit.
 
 ## Exact Authorities
 
@@ -22,6 +25,9 @@ deployment evidence, or campaign credit.
 | Normalization authority | `unicode-normalization-alignments` 0.1.12; Unicode 9.0.0 |
 | Category authority | `unicode-general-category` 1.1.0; Unicode 16.0.0 |
 | Regex authority | Oniguruma 6.9.10; Unicode 16.0.0 |
+| Qwen conversion profile | 3,501 bytes; SHA-256 `f70465a08b41599fe59f41b850912d0d408f0ec67e84ebeb7591524d1b14e12b` |
+| Pinned source lock | 1,108 bytes; SHA-256 `1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70` |
+| Full converted tokenizer | 7,038,773 bytes; SHA-256 `cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b` |
 
 The profile is normative. Vectors narrow implementations to exact examples
 and hostile inputs; they do not add semantics to the profile.
@@ -127,7 +133,7 @@ cannot be used to qualify or chat with a production model.
 
 ## Current Verification
 
-Focused local gates currently pass:
+Current local gates pass:
 
 - 13 Rust contract tests;
 - four Rust cross-language vector tests;
@@ -136,6 +142,11 @@ Focused local gates currently pass:
 - exhaustive prefix truncation replay in both implementations;
 - warnings-denied Clippy for every crate target;
 - workspace rustfmt for current Rust changes.
+- 11 of 11 integrated Qwen2 converter tests;
+- 8 of 8 standalone pinned-tokenizer conversion tests;
+- the complete Rust workspace: 1,062 tests across 54 suites, with zero
+  failures and zero ignored tests;
+- two external full-tokenizer conversions with identical artifact bytes.
 
 The vector artifact is 7,459 bytes with SHA-256
 `2b2c3c5f58baacd7af68e2ccffa1cb03e113fa281b1832224d684f9ac03eaff1`
@@ -160,27 +171,33 @@ Observed source structure:
 - 26 contiguous added-token IDs;
 - EOS `<|im_end|>`, pad `<|endoftext|>`, and no BOS or unknown token.
 
-These observations shaped the profile. They are not a conversion receipt and
-do not authorize promotion.
+These observations now feed one closed duplicate-member-rejecting source
+parser. The exact five-file source lock is rehashed before and after source
+inspection. The converter requires exact redundant vocabulary and merge
+agreement, exact pipeline options, contiguous IDs, byte alphabet, merge
+closure, added tokens, and model/tokenizer special IDs.
+
+Two create-only conversions independently produce a 7,038,773-byte artifact
+with SHA-256
+`cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b`.
+Each receipt binds the source lock, all five source files, conversion and
+format profiles, converter executable, output counts and identity, special
+IDs, and an actual Windows directory flush. These receipts authorize only the
+deterministic format-conversion claim.
 
 ## Remaining Gate A Work
 
-1. Replace the existing converter's copied-JSON behavior with one closed,
-   duplicate-member-rejecting source parser for the exact pinned Qwen source.
-2. Reject every unknown or nonexact tokenizer source field and option.
-3. Convert the full pinned source twice outside Git and prove byte identity.
-4. Bind source revision, source hashes, converter binary/configuration,
-   profile, output length, and output SHA-256 in a durable receipt.
-5. Compare broad ordinary, multilingual, punctuation, whitespace, added-token,
+1. Compare broad ordinary, multilingual, punctuation, whitespace, added-token,
    Unicode-boundary, and adversarial cases against tokenizers 0.22.2.
-6. Replay the exact full artifact through native Rust and browser WASM.
-7. Measure load time, resident memory, peak allocation, encoding throughput,
+2. Replay the exact full artifact through native Rust and browser WASM.
+3. Measure load time, resident memory, peak allocation, encoding throughput,
    decoding throughput, and bounded rejection behavior.
-8. Bind the accepted Tokenizer2 identity into Template2 and the composition
+4. Bind the accepted Tokenizer2 identity into Template2 and the composition
    graph without embedding or aliasing it.
 
-Until those steps pass, Gate A is a strong implementation checkpoint but not
-complete source conversion or product evidence.
+The source parser, exact rejection surface, duplicate conversion, and receipt
+binding are complete. Until the four remaining steps pass, Gate A is a strong
+conversion checkpoint but not accepted tokenizer parity or product evidence.
 
 ## Claim Boundary
 
