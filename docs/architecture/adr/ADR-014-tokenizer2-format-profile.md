@@ -8,7 +8,9 @@ The profile is accepted as the sole clean-slate Tokenizer2 target. Its current
 implementation is development-only and unpromoted until full source-oracle
 parity, native and WASM replay, browser activation, and useful-model
 qualification all pass. Exact pinned-source conversion now passes as a narrow
-precondition rather than a promotion result.
+precondition rather than a promotion result. The exact 2,048-case
+source-parity corpus, execution contract, and independent verification
+contract are preregistered before comparative output, but remain unexecuted.
 
 ## Decision Date
 
@@ -156,6 +158,26 @@ Two conversions reproduce the exact artifact identity stated above and issue
 separate create-only durability receipts. This is conversion evidence, not
 source-oracle parity evidence.
 
+The output-free source-parity corpus is
+`contracts/vnext/qwen-tokenizer2-parity-cases.v1.json`, 464,043 bytes,
+SHA-256
+`9503fd6df325f1a46dec56674d2aa72ce225d6bf1c9477abd56bb4542ef99caa`.
+The execution preregistration is
+`contracts/vnext/qwen-tokenizer2-parity-preregistration.v1.json`, 5,792 bytes,
+SHA-256
+`bccc1631c519774ca46d77100ba59dae0d3eb4dcc681cd227f192bf558319466`.
+The independent verification preregistration is
+`contracts/vnext/qwen-tokenizer2-parity-verification-preregistration.v1.json`,
+2,064 bytes, SHA-256
+`cc1472a7531095323dc1fe2fc2bb878bedfff4cc2cc5b5651f129c4800b0ed05`.
+It binds the verifier at SHA-256
+`67791ba375cc8be2b84f1985eea42a810e4dca4edcc91fb0a9bd9e91ec979173`.
+The experiment requires two byte-identical oracle outputs, two byte-identical
+candidate outputs, exact token IDs, exact include-all and skip-special decode
+strings for every case, post-observation source and artifact rehashing, and a
+create-only pass or rejection receipt. None of those comparative runs has been
+executed at preregistration time.
+
 ## Threat Analysis
 
 Unbounded counts or lengths could allocate attacker-selected memory. The
@@ -249,10 +271,12 @@ as a browser runtime fallback after Rust/WASM integration passes.
 
 ## Unknowns
 
-Full behavioral parity across ordinary corpus items, multilingual text,
-adversarial Unicode, whitespace, punctuation, added-token interactions, and
-decoding cases remains pending. Structural parity for every pinned vocabulary
-entry, merge, and added token is enforced during conversion.
+Execution of the preregistered behavioral parity experiment across ordinary
+text, multilingual text, adversarial Unicode, whitespace, punctuation,
+added-token interactions, and decoding remains pending. Its 2,048 exact cases,
+two-run-per-implementation policy, result schema, comparison rule, evidence
+privacy policy, and fatal mismatch rule are frozen. Structural parity for every
+pinned vocabulary entry, merge, and added token is enforced during conversion.
 
 The source tokenizer's maximum observed token byte length and production
 artifact size must be recorded by conversion evidence rather than inferred.
@@ -265,9 +289,11 @@ Template2 linkage and thinking-mode semantics are pending.
 The useful model, source-framework parity, P2P-or-convert acquisition, and
 browser-local conversation are pending.
 
-**Local verification required**: the preregistered source-oracle corpus, native
-parity receipt, full-artifact WASM receipt, and performance receipt must be
-created and revalidated in the owned worktree and external evidence root.
+**Local verification required**: the four registered source/native outputs,
+source-parity pass or rejection receipt, full-artifact WASM receipt, and
+performance receipt must be created and revalidated in the owned worktree and
+external evidence root. The corpus and both preregistration contracts already
+exist and must not be changed after observation begins.
 
 ## Acceptance Tests
 

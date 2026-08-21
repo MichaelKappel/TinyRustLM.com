@@ -114,6 +114,22 @@ non-create-only output. It independently reparses the complete staged artifact
 before promotion and binds the source, profiles, executable, output, counts,
 special IDs, and directory durability in a receipt.
 
+`qwen-tokenizer2-parity-cases.v1.json` freezes the output-free 2,048-case
+source-parity corpus before either implementation is observed. It is 464,043
+bytes with SHA-256
+`9503fd6df325f1a46dec56674d2aa72ce225d6bf1c9477abd56bb4542ef99caa`.
+The 5,792-byte execution preregistration has SHA-256
+`bccc1631c519774ca46d77100ba59dae0d3eb4dcc681cd227f192bf558319466`;
+the independent 2,064-byte verification preregistration has SHA-256
+`cc1472a7531095323dc1fe2fc2bb878bedfff4cc2cc5b5651f129c4800b0ed05`.
+They bind two offline Hugging Face tokenizers 0.22.2 runs, two native Rust
+runs, exact token-ID and decoded-Unicode equality, raw repeat-byte equality,
+post-observation source and artifact rehashing, create-only receipts, fatal
+mismatch handling, and a verifier with SHA-256
+`67791ba375cc8be2b84f1985eea42a810e4dca4edcc91fb0a9bd9e91ec979173`.
+This is preregistration evidence only; neither implementation has yet emitted
+a comparative output under the frozen experiment.
+
 This checkpoint is complete pinned-Qwen *tokenizer format conversion* only. It
 is not broad source-oracle encoding parity, browser-WASM execution, Template2,
 model conversion, model qualification, release, deployment, or campaign

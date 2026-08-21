@@ -1,0 +1,50 @@
+{
+  "schema": "tinyrustlm.vnext.qwen-tokenizer2-parity-verification-preregistration.v1",
+  "profileId": "tinyrustlm.qwen-tokenizer2-source-parity-verification/1",
+  "status": "registered-before-comparative-output",
+  "registeredAtUtc": "2026-08-21T07:00:00Z",
+  "registrationParentCommit": "8210bda0614ef0b9237327d36d05e08f34c799df",
+  "executionPreregistration": {
+    "path": "contracts/vnext/qwen-tokenizer2-parity-preregistration.v1.json",
+    "schema": "tinyrustlm.vnext.qwen-tokenizer2-parity-preregistration.v1",
+    "profileId": "tinyrustlm.qwen-tokenizer2-source-parity/1",
+    "byteLength": 5792,
+    "sha256": "bccc1631c519774ca46d77100ba59dae0d3eb4dcc681cd227f192bf558319466"
+  },
+  "verifier": {
+    "implementation": "tinyrustlm-qwen-tokenizer2-parity-verifier",
+    "version": "1",
+    "scriptPath": "tinyrustlm/tools/qwen-tokenizer2-parity-verifier.js",
+    "scriptSha256": "67791ba375cc8be2b84f1985eea42a810e4dca4edcc91fb0a9bd9e91ec979173",
+    "resultSchema": "tinyrustlm.qwen_tokenizer2_parity_result.v1",
+    "receiptSchema": "tinyrustlm.qwen_tokenizer2_parity_verification_receipt.v1"
+  },
+  "execution": {
+    "requiredOracleRuns": 2,
+    "requiredCandidateRuns": 2,
+    "maximumResultBytes": 67108864,
+    "comparison": "exact-token-ids-and-exact-decoded-unicode",
+    "sourceRehashAfterObservation": true,
+    "artifactRehashAfterObservation": true,
+    "rawRunByteEqualityRequired": true,
+    "createOnlyReceipt": true,
+    "mismatchIsFatal": true,
+    "rawOutputsPreserved": true
+  },
+  "receipt": {
+    "maximumMismatchRecords": 128,
+    "includePromptText": false,
+    "includeDecodedText": false,
+    "includeTokenIds": false,
+    "includePrivateAbsolutePaths": false
+  },
+  "claimBoundary": {
+    "tokenizerSourceParityMayBeClaimedAfterPass": true,
+    "browserWasmMayBeClaimed": false,
+    "modelRuntimeMayBeClaimed": false,
+    "modelQualityMayBeClaimed": false,
+    "releaseMayBeClaimed": false,
+    "campaignCreditMayBeClaimed": false,
+    "requiredNextGate": "full-artifact-real-chromium-wasm-parity-and-resource-evidence"
+  }
+}

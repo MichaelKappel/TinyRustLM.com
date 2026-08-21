@@ -1,0 +1,148 @@
+{
+  "schema": "tinyrustlm.vnext.qwen-tokenizer2-parity-preregistration.v1",
+  "profileId": "tinyrustlm.qwen-tokenizer2-source-parity/1",
+  "status": "registered-before-comparative-output",
+  "registeredAtUtc": "2026-08-21T07:00:00Z",
+  "registrationParentCommit": "8210bda0614ef0b9237327d36d05e08f34c799df",
+  "source": {
+    "modelId": "Qwen/Qwen3-0.6B",
+    "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+    "sourceLockPath": "contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json",
+    "sourceLockSha256": "1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70",
+    "tokenizerPath": "tokenizer.json",
+    "tokenizerSha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+  },
+  "artifact": {
+    "formatProfileId": "org.minimodel.tokenizer2/2.0",
+    "byteLength": 7038773,
+    "sha256": "cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b"
+  },
+  "corpus": {
+    "path": "contracts/vnext/qwen-tokenizer2-parity-cases.v1.json",
+    "schema": "tinyrustlm.qwen_tokenizer2_parity_cases.v1",
+    "corpusId": "qwen3-0.6b-tokenizer2-parity-2048-v1",
+    "generatorPath": "tinyrustlm/tools/qwen-tokenizer2-parity-corpus.js",
+    "generatorSha256": "eb2c4a7473b65a1d59161c3a2919613cefdd8138bf5ebb7ecfd6dfb82f566a0f",
+    "byteLength": 464043,
+    "sha256": "9503fd6df325f1a46dec56674d2aa72ce225d6bf1c9477abd56bb4542ef99caa",
+    "caseCount": 2048,
+    "categoryCounts": {
+      "added-token-exact": 104,
+      "added-token-near-miss": 104,
+      "adversarial-boundary": 96,
+      "chat-serialization": 64,
+      "code-json": 128,
+      "combining-boundary": 96,
+      "contractions-case": 128,
+      "emoji-joiners": 96,
+      "empty-minimal": 16,
+      "long-input": 16,
+      "multilingual": 256,
+      "numbers-units": 128,
+      "ordinary-conversation": 240,
+      "punctuation-symbols": 160,
+      "randomized-unicode-mix": 96,
+      "unicode-normalization": 160,
+      "whitespace-linebreak": 160
+    }
+  },
+  "oracle": {
+    "implementation": "huggingface-tokenizers",
+    "version": "0.22.2",
+    "sourceRevision": "f383101a26663708484cac0727792aad74f78234",
+    "scriptPath": "tinyrustlm/tools/qwen-tokenizer2-source-oracle.py",
+    "scriptSha256": "3b0ca14db4a3aac163db0bf73c8091aa05aaf515d969ec699c765f04c63c9660",
+    "pythonVersion": "3.12.10",
+    "pythonExecutableSha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+    "wheelFile": "tokenizers-0.22.2-cp39-abi3-win_amd64.whl",
+    "wheelSha256": "c9ea31edff2968b44a88f97d784c2f16dc0729b8b143ed004699ebca91f05c48",
+    "environmentLockSha256": "68c36c8492c59c0006e3bfa018b0d84dbc1832379733512c4e979b9a17ac49eb",
+    "networkAllowed": false,
+    "childProcessAllowed": false
+  },
+  "candidate": {
+    "implementation": "tinyrustlm-tokenizer2",
+    "version": "0.1.8",
+    "runnerPath": "rust/crates/tinyrustlm-tokenizer2/examples/qwen_tokenizer2_parity.rs",
+    "runnerSha256": "9c3ad5b929cc34ef0a01cc0abbb53a7859e6e89e7d45c68d61f388722a349511",
+    "sourceClosureSha256": "3f97f1a43506f4908c991e85e54ab46e2e92dfd02d3f9aec59453f7dacf6b8b0",
+    "sourceClosure": [
+      {
+        "path": "Cargo.lock",
+        "byteLength": 25138,
+        "sha256": "eaad78cd9b318c0e0c39eacc7afcc1a699e32dc6fea569f2fcad7bf5f6663122"
+      },
+      {
+        "path": "Cargo.toml",
+        "byteLength": 1666,
+        "sha256": "b19d8c61d47fcfc18f2bf3ccd6eca57b275e8a4f3ebea64232df67d1e52ab74f"
+      },
+      {
+        "path": "rust/crates/tinyrustlm-tokenizer2/Cargo.toml",
+        "byteLength": 474,
+        "sha256": "2b53a781e5abfe1958fbf5744092e9c5561350aa2e8567d9fdb542177cb4f0c3"
+      },
+      {
+        "path": "rust/crates/tinyrustlm-tokenizer2/examples/qwen_tokenizer2_parity.rs",
+        "byteLength": 25475,
+        "sha256": "9c3ad5b929cc34ef0a01cc0abbb53a7859e6e89e7d45c68d61f388722a349511"
+      },
+      {
+        "path": "rust/crates/tinyrustlm-tokenizer2/src/format.rs",
+        "byteLength": 17669,
+        "sha256": "50237453d82aac92d4afa89e81a74e0e7640504aa32f73429d6eae693fdbbf2f"
+      },
+      {
+        "path": "rust/crates/tinyrustlm-tokenizer2/src/lib.rs",
+        "byteLength": 380,
+        "sha256": "0b0c6c8b69479dbfac4d9dba1d1c617006a0024ab0764840aa834e0f69af7839"
+      },
+      {
+        "path": "rust/crates/tinyrustlm-tokenizer2/src/runtime.rs",
+        "byteLength": 32475,
+        "sha256": "9caacd4dc43c0651e22be3419d4c68fdabef6fc24f5977c0dea0499860690e77"
+      }
+    ]
+  },
+  "execution": {
+    "addSpecialTokens": false,
+    "decodeModes": [
+      "include-all",
+      "skip-special"
+    ],
+    "requiredOracleRuns": 2,
+    "requiredCandidateRuns": 2,
+    "maximumInputBytes": 32768,
+    "maximumOutputTokens": 65536,
+    "maximumDecodedBytes": 131072,
+    "comparison": "exact-token-ids-and-exact-decoded-unicode",
+    "bestOfN": false,
+    "repair": false,
+    "outputLocation": "private-external-create-only"
+  },
+  "acceptance": {
+    "corpusCommittedBeforeObservation": true,
+    "sourceLockRevalidated": true,
+    "sourceRehashedAfterObservation": true,
+    "exactCaseOrderRequired": true,
+    "exactTokenIdsRequired": true,
+    "exactIncludeAllDecodeRequired": true,
+    "exactSkipSpecialDecodeRequired": true,
+    "repeatedOracleBytesRequired": true,
+    "repeatedCandidateBytesRequired": true,
+    "everyCaseRequired": true,
+    "mismatchIsFatal": true,
+    "rawOutputsPreserved": true,
+    "networkRequestMaximum": 0,
+    "childProcessMaximum": 0
+  },
+  "claimBoundary": {
+    "tokenizerSourceParityMayBeClaimedAfterPass": true,
+    "browserWasmMayBeClaimed": false,
+    "modelRuntimeMayBeClaimed": false,
+    "modelQualityMayBeClaimed": false,
+    "releaseMayBeClaimed": false,
+    "campaignCreditMayBeClaimed": false,
+    "requiredNextGate": "full-artifact-real-chromium-wasm-parity-and-resource-evidence"
+  }
+}
