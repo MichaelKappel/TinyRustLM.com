@@ -1,0 +1,89 @@
+{
+  "profileId": "tinyrustlm.qwen2-safetensors-to-slm2-f32/1",
+  "status": "development-unpromoted",
+  "source": {
+    "container": "safetensors-v1-single-file",
+    "modelType": "qwen2",
+    "architecture": "Qwen2ForCausalLM",
+    "dtypes": ["BF16", "F32"],
+    "layout": "contiguous-row-major",
+    "headerMaximumBytes": 16777216,
+    "tensorRanges": "ordered-contiguous-complete-no-overlap-no-holes",
+    "unknownTensors": "fatal",
+    "missingTensors": "fatal",
+    "duplicateTensors": "fatal",
+    "shapeMismatch": "fatal",
+    "nonfiniteValues": "fatal"
+  },
+  "architecture": {
+    "activation": "silu-gated",
+    "attention": "causal-grouped-query",
+    "normalization": "rmsnorm",
+    "position": "rope",
+    "queryHeadWidth": "hidden-size-divided-by-query-head-count",
+    "queryKeyValueBias": true,
+    "queryKeyNormalization": false,
+    "tiedEmbeddingsRequired": true,
+    "slidingWindowRequired": false,
+    "ropeScalingRequired": null
+  },
+  "tensorMapping": {
+    "model.embed_tokens.weight": "model.token-embedding.weight",
+    "model.norm.weight": "model.final-normalization.weight",
+    "model.layers.{layer}.input_layernorm.weight": "model.layers.{layer}.attention-normalization.weight",
+    "model.layers.{layer}.post_attention_layernorm.weight": "model.layers.{layer}.feed-forward-normalization.weight",
+    "model.layers.{layer}.self_attn.q_proj.weight": "model.layers.{layer}.attention.query-projection.weight",
+    "model.layers.{layer}.self_attn.k_proj.weight": "model.layers.{layer}.attention.key-projection.weight",
+    "model.layers.{layer}.self_attn.v_proj.weight": "model.layers.{layer}.attention.value-projection.weight",
+    "model.layers.{layer}.self_attn.o_proj.weight": "model.layers.{layer}.attention.output-projection.weight",
+    "model.layers.{layer}.self_attn.q_proj.bias": "model.layers.{layer}.attention.query-projection.bias",
+    "model.layers.{layer}.self_attn.k_proj.bias": "model.layers.{layer}.attention.key-projection.bias",
+    "model.layers.{layer}.self_attn.v_proj.bias": "model.layers.{layer}.attention.value-projection.bias",
+    "model.layers.{layer}.mlp.gate_proj.weight": "model.layers.{layer}.feed-forward.gate-projection.weight",
+    "model.layers.{layer}.mlp.down_proj.weight": "model.layers.{layer}.feed-forward.down-projection.weight",
+    "model.layers.{layer}.mlp.up_proj.weight": "model.layers.{layer}.feed-forward.up-projection.weight"
+  },
+  "output": {
+    "formatProfile": "org.minimodel.slm2/2.0",
+    "tensorProfile": "tinyrustlm.tensor-f32/1",
+    "payloadAlignmentBytes": 64,
+    "bf16Conversion": "zero-extend-bfloat16-low-16-bits-to-ieee754-binary32",
+    "f32Conversion": "identity-little-endian",
+    "tokenizerArtifact": "exact-source-tokenizer-json-bytes",
+    "templateArtifact": "exact-utf8-chat-template-string-bytes"
+  },
+  "sourceLock": {
+    "schema": "tinyrustlm.qwen2_source_lock.v1",
+    "requiredFiles": [
+      "config.json",
+      "generation_config.json",
+      "LICENSE",
+      "merges.txt",
+      "model.safetensors",
+      "README.md",
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "vocab.json"
+    ],
+    "identity": "exact-byte-count-and-sha256-per-file",
+    "paths": "direct-relative-file-names-only",
+    "links": "forbidden"
+  },
+  "transaction": {
+    "destination": "new-create-only-files",
+    "staging": "same-directory",
+    "modelValidation": "independent-slm2-reader-before-promotion",
+    "sourceDrift": "rehash-model-after-write-and-reject-on-change",
+    "fileFlush": "required-before-promotion",
+    "promotion": "same-directory-create-only-hard-link-then-unlink-staging",
+    "directoryFlush": "required-after-artifact-promotion",
+    "receipt": "create-only-after-artifact-promotion",
+    "interruption": "staging-preserved-and-never-treated-as-complete"
+  },
+  "claimBoundary": {
+    "converterClaim": "structural-and-byte-conversion-only",
+    "qualityClaim": "none",
+    "runtimeClaim": "none",
+    "requiredNextGate": "untouched-source-slm2-native-slm2-wasm-quality-and-runtime-conformance"
+  }
+}

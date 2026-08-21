@@ -12,6 +12,7 @@ members = [
     "rust/crates/tinyrustlm-runtime",
     "rust/crates/tinyrustlm-slm",
     "rust/crates/tinyrustlm-slm2",
+    "rust/crates/tinyrustlm-convert",
     "tinyrustlm/runtime",
     "tinyrustlm/tools/browser_harness",
     "tinyrustlm/tools/local_connect",
