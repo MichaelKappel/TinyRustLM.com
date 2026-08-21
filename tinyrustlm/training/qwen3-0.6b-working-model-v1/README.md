@@ -234,6 +234,118 @@ the preregistered behavior and preservation floors, or more than a 2%
 ordinary-helpfulness regression. Failed adapter bytes are terminally rejected.
 A retry requires a new preregistration and a material method or data change.
 
+## Pinned CPU Environment
+
+`cpu-environment.v1.json` is the sole CPU-pilot environment specification. It
+pins CPython 3.12.10 on Windows AMD64, ten root distributions and their exact
+PyPI wheel bytes, the complete-runtime constraints, offline environment
+variables, CPU float32 execution, deterministic PyTorch algorithms, eight
+intra-operation threads, one inter-operation thread, AdamW, assistant-only
+SFT plus preservation KL, no sequence packing, no truncation, and an explicit
+positive-rate final optimizer update. The checked-in specification is 4,622
+bytes at SHA-256
+`635d198495ba1e3c4c8954ba27bc2d25dea2159ff96210b67943623d4886aed2`.
+
+The external v2 wheelhouse manifest binds all 39 transitive wheel artifacts.
+It is 10,151 bytes at SHA-256
+`c69cdc8bc3e1c8dc40ac7bbb85d27307ba24f526ac0ad25575eaa4000fcefd46`;
+its artifact-set SHA-256 is
+`f5ffe27669384075d514d27fab2f6d06f00badc22c2c8ff113bb6618b56a7ece`.
+The wheels occupy 170,527,657 bytes. Source distributions, editable installs,
+system site packages, unowned distributions, CUDA builds, and the forbidden
+package set are rejected.
+
+The current external v3 environment lock is 17,964 bytes at SHA-256
+`68c36c8492c59c0006e3bfa018b0d84dbc1832379733512c4e979b9a17ac49eb`.
+It binds every installed distribution file, distribution-set SHA-256
+`ae837c77159fce892b1626d947dc390a86f5d530fd5fe45f7890b905bf8db707`,
+the virtual-environment interpreter and `pyvenv.cfg`, the CPU/platform
+identity, the wheelhouse manifest, `pip check`, runtime imports, and the exact
+134,232-byte trainer at SHA-256
+`aded5f91db040008685a506e6a59e09593b68bdb69688095fa0aef8db8e0c50b`.
+The lock says `training_authority: false`. The v1 wheelhouse manifest and v1/v2
+environment locks remain immutable invalidated history after the scheduler and
+trainer changed.
+
+Use create-only versioned outputs whenever the specification or trainer
+changes:
+
+```powershell
+$python = 'E:/TinyRustLM-vnext-tools/qwen3-cpu-pilot-v1/venv/Scripts/python.exe'
+$trainer = 'tinyrustlm/tools/qwen3-working-model-trainer.py'
+$profile = 'tinyrustlm/training/qwen3-0.6b-working-model-v1/profile.v1.json'
+$environment = 'tinyrustlm/training/qwen3-0.6b-working-model-v1/cpu-environment.v1.json'
+$tools = 'E:/TinyRustLM-vnext-tools/qwen3-cpu-pilot-v1'
+
+& $python $trainer seal-wheelhouse `
+  $environment "$tools/wheelhouse" "$tools/wheelhouse-manifest.v4.json"
+
+& $python $trainer capture-environment `
+  $environment $profile "$tools/wheelhouse-manifest.v4.json" `
+  "$tools/environment-lock.v4.json"
+
+& $python $trainer verify-environment `
+  $environment $profile "$tools/environment-lock.v4.json"
+```
+
+The separate bootstrap wheelhouse and bootstrap site are installation tools,
+not members of the captured training environment and not training evidence.
+
+## Authorized Trainer Operation
+
+`qwen3-working-model-trainer.py` verifies its own exact bytes before any ML
+package import. On the training path it applies the frozen environment and
+installs a Python audit hook that rejects socket creation, binding, name
+resolution, connection, sending, and child-process launch before probing or
+loading ML packages. It then rehashes the environment, source checkpoint,
+curriculum, and training-lock bindings for those inputs. The model and
+tokenizer load from the exact local nine-file source with `local_files_only=True` and
+`trust_remote_code=False`.
+
+The trainer uses one seeded curriculum order, assistant-only targets,
+Qwen3 non-thinking chat rendering, no truncation, rank-16 LoRA across all
+seven projection types, same-base adapter-disabled preservation KL, cumulative
+full-run metrics, preregistered stop rules, and final-checkpoint-only candidate
+selection. Complete checkpoints bind safe adapter bytes, optimizer state,
+RNG state, cumulative metrics, and the prior checkpoint receipt. Interrupted
+checkpoint or candidate staging must be moved, without deletion, into the
+owned `interrupted/` archive by the explicit quarantine command. A completed
+candidate can recover a missing top-level receipt idempotently. A terminal
+decision is durable before rejected adapter preservation starts and can never
+be resumed.
+
+After the independent custody, curriculum, review, contamination, semantic,
+and training-lock gates exist, run the exact authorized inputs:
+
+```powershell
+$lock = 'E:/TinyRustLM-vnext-evidence/qwen3-working-model-v1/training-lock-v1.json'
+$source = 'E:/TinyRustLM-vnext-private/qwen3-working-model-v1/source'
+$curriculum = 'E:/TinyRustLM-vnext-private/qwen3-working-model-v1/pilot-curriculum.jsonl'
+$environmentLock = 'E:/TinyRustLM-vnext-tools/qwen3-cpu-pilot-v1/environment-lock.v3.json'
+
+& $python $trainer verify-training-lock `
+  $profile $lock $environment $environmentLock $source $curriculum
+
+& $python $trainer train `
+  $profile $lock $environment $environmentLock $source $curriculum
+```
+
+After an interruption, preserve staging first if the trainer requires it, then
+request explicit verified resume:
+
+```powershell
+& $python $trainer quarantine-interrupted-output `
+  $profile $lock $environment $environmentLock $source $curriculum
+
+& $python $trainer train `
+  $profile $lock $environment $environmentLock $source $curriculum --resume
+```
+
+Environment capture, environment verification, training-input verification,
+checkpoint completion, or candidate production is not a model-quality claim.
+The merged derivative must still pass the untouched source screen and every
+downstream SLM2/runtime/browser gate.
+
 ## Current Status
 
 - Profile, rubric, and review-control implementation: implemented and tested
@@ -243,7 +355,13 @@ A retry requires a new preregistration and a material method or data change.
 - Private 280-case factor pack: not assembled or sealed.
 - Pilot curriculum and two-reviewer ledgers: not yet materialized or reviewed.
 - Semantic audit: not run.
-- CPU pilot authorization: not issued.
+- Pinned CPU wheelhouse manifest v2 and environment lock v3: captured and independently
+  reverified locally; neither grants training authority.
+- Sole CPU trainer and hostile contract tests: implemented; 47 focused trainer
+  tests and 88 combined control/trainer tests, Ruff lint, Ruff formatting, and
+  the offline ML import probe pass locally.
+- CPU pilot authorization: not issued because the custody, curriculum,
+  review, exclusion, and semantic artifacts remain incomplete.
 - Adapter training and merge: not run.
 - Untouched derivative source screen: not run.
 - SLM2 conversion and native/WASM inference: not run for a qualified model.

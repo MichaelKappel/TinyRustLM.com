@@ -1,0 +1,143 @@
+{
+  "schema": "tinyrustlm.qwen3_cpu_environment_spec.v1",
+  "environment_id": "qwen3-0.6b-cpu-pilot-win-amd64-v1",
+  "status": "locked",
+  "python": {
+    "implementation": "CPython",
+    "version": "3.12.10",
+    "cache_tag": "cpython-312",
+    "pointer_bits": 64
+  },
+  "platform": {
+    "system": "Windows",
+    "machine": "AMD64"
+  },
+  "runtime": {
+    "device": "cpu",
+    "parameter_dtype": "float32",
+    "compute_dtype": "float32",
+    "intraop_threads": 8,
+    "interop_threads": 1,
+    "deterministic_algorithms": true,
+    "deterministic_warn_only": false,
+    "matmul_precision": "highest",
+    "mkldnn_enabled": true,
+    "network_access": "forbidden",
+    "user_site_packages": "forbidden"
+  },
+  "training_algorithm": {
+    "optimizer": "torch-adamw-v1",
+    "adam_beta1": 0.9,
+    "adam_beta2": 0.999,
+    "adam_epsilon": 1e-08,
+    "scheduler": "linear-warmup-then-linear-decay-positive-final-update-v1",
+    "preservation_kl_temperature": 1.0,
+    "sequence_overflow": "reject-record-no-truncation",
+    "sequence_packing": false,
+    "gradient_checkpointing": false,
+    "checkpoint_state": "safe-adapter-plus-weights-only-optimizer-state",
+    "resume_policy": "explicit-complete-checkpoint-only"
+  },
+  "required_environment": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "HF_DATASETS_OFFLINE": "1",
+    "HF_HUB_DISABLE_TELEMETRY": "1",
+    "HF_HUB_OFFLINE": "1",
+    "MKL_NUM_THREADS": "8",
+    "OMP_NUM_THREADS": "8",
+    "PYTHONNOUSERSITE": "1",
+    "TOKENIZERS_PARALLELISM": "false",
+    "TRANSFORMERS_OFFLINE": "1",
+    "WANDB_DISABLED": "true"
+  },
+  "required_distributions": [
+    {
+      "name": "accelerate",
+      "version": "1.14.0",
+      "wheel_filename": "accelerate-1.14.0-py3-none-any.whl",
+      "wheel_bytes": 389246,
+      "wheel_sha256": "sha256:e94390c2863b873be18f623f9df48a0d8fe5eff13ea7f1a00092b0a7904888c6"
+    },
+    {
+      "name": "huggingface-hub",
+      "version": "1.28.0",
+      "wheel_filename": "huggingface_hub-1.28.0-py3-none-any.whl",
+      "wheel_bytes": 793202,
+      "wheel_sha256": "sha256:58a8bacb03072edfc38067065e9dc24bbb34805410fcd36a1632de0b329660bb"
+    },
+    {
+      "name": "numpy",
+      "version": "2.5.2",
+      "wheel_filename": "numpy-2.5.2-cp312-cp312-win_amd64.whl",
+      "wheel_bytes": 12464674,
+      "wheel_sha256": "sha256:28ac63476ec7651484215ee7fa15a1f78b57c14621f01e392afe17b9a1390ce4"
+    },
+    {
+      "name": "peft",
+      "version": "0.20.0",
+      "wheel_filename": "peft-0.20.0-py3-none-any.whl",
+      "wheel_bytes": 775777,
+      "wheel_sha256": "sha256:0fbba16ffebfad3de96e06f2da6860fd860292324b85b6141909fa1e26ea9233"
+    },
+    {
+      "name": "pip",
+      "version": "26.2.1",
+      "wheel_filename": "pip-26.2.1-py3-none-any.whl",
+      "wheel_bytes": 1816632,
+      "wheel_sha256": "sha256:71138adf1f4ca900cdb7d289c21b7494329f2332b6d85f0e1c42108c0384ed3e"
+    },
+    {
+      "name": "safetensors",
+      "version": "0.8.0",
+      "wheel_filename": "safetensors-0.8.0-cp310-abi3-win_amd64.whl",
+      "wheel_bytes": 355540,
+      "wheel_sha256": "sha256:096ec1a98435df7beb08853bb5aa9081a84f23d0adc67ed1a0a10550f608373f"
+    },
+    {
+      "name": "setuptools",
+      "version": "84.0.0",
+      "wheel_filename": "setuptools-84.0.0-py3-none-any.whl",
+      "wheel_bytes": 818216,
+      "wheel_sha256": "sha256:51a52592b3b99e102b609654876bd65f19f999935166d1352678931132b0c670"
+    },
+    {
+      "name": "tokenizers",
+      "version": "0.22.2",
+      "wheel_filename": "tokenizers-0.22.2-cp39-abi3-win_amd64.whl",
+      "wheel_bytes": 2747786,
+      "wheel_sha256": "sha256:c9ea31edff2968b44a88f97d784c2f16dc0729b8b143ed004699ebca91f05c48"
+    },
+    {
+      "name": "torch",
+      "version": "2.13.0",
+      "wheel_filename": "torch-2.13.0-cp312-cp312-win_amd64.whl",
+      "wheel_bytes": 122057313,
+      "wheel_sha256": "sha256:024c6cc0c1b085f2f91f20a3dc27b0471d021c31ce84b81be3afdc39f791fd9d"
+    },
+    {
+      "name": "transformers",
+      "version": "5.14.1",
+      "wheel_filename": "transformers-5.14.1-py3-none-any.whl",
+      "wheel_bytes": 11625234,
+      "wheel_sha256": "sha256:9db974c4079ede2d1a3ea7ca5a240df33f2cc26fc2b36ba64c5f2a4f43b6e725"
+    }
+  ],
+  "forbidden_distributions": [
+    "bitsandbytes",
+    "deepspeed",
+    "tensorflow",
+    "torchao",
+    "torchvision",
+    "wandb"
+  ],
+  "capture_policy": {
+    "clean_virtual_environment_required": true,
+    "system_site_packages": false,
+    "editable_installs": false,
+    "unowned_distributions": false,
+    "distribution_file_hashes": true,
+    "wheelhouse_manifest_required": true,
+    "pip_check_required": true,
+    "training_authority": false
+  }
+}
