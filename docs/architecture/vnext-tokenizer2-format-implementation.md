@@ -7,8 +7,11 @@ This document records the development-only Tokenizer2 2.0 checkpoint on
 unsafe-free Rust implementation, strict pinned-Qwen source parser, and two
 byte-identical external full-tokenizer conversions pass their applicable
 local gates. A deterministic output-free 2,048-case source-parity corpus plus
-separate execution and verification preregistrations now pass their hostile
-pre-observation gates. No comparative output has been generated yet.
+separate execution and verification preregistrations passed their hostile
+pre-observation gates. The v1 four-output run was repeat-stable, but its frozen
+verifier failed before token comparison because it treated JSON object member
+order as semantic; no v1 receipt or parity decision exists. An append-only v2
+verifier and fresh run set are now preregistered, with no v2 output generated.
 
 This is complete pinned-Qwen tokenizer *format conversion* evidence. It is not
 complete source-oracle behavioral parity, browser-WASM evidence, Template2,
@@ -32,8 +35,10 @@ or campaign credit.
 | Full converted tokenizer | 7,038,773 bytes; SHA-256 `cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b` |
 | Source-parity corpus | 2,048 cases; 464,043 bytes; SHA-256 `9503fd6df325f1a46dec56674d2aa72ce225d6bf1c9477abd56bb4542ef99caa` |
 | Source-parity execution preregistration | 5,792 bytes; SHA-256 `bccc1631c519774ca46d77100ba59dae0d3eb4dcc681cd227f192bf558319466` |
-| Source-parity verification preregistration | 2,064 bytes; SHA-256 `cc1472a7531095323dc1fe2fc2bb878bedfff4cc2cc5b5651f129c4800b0ed05` |
-| Independent source-parity verifier | 36,521 bytes; SHA-256 `67791ba375cc8be2b84f1985eea42a810e4dca4edcc91fb0a9bd9e91ec979173` |
+| Source-parity v1 verification preregistration | 2,064 bytes; SHA-256 `cc1472a7531095323dc1fe2fc2bb878bedfff4cc2cc5b5651f129c4800b0ed05`; terminal verifier defect, no decision |
+| V1 source-parity verifier | 36,521 bytes; SHA-256 `67791ba375cc8be2b84f1985eea42a810e4dca4edcc91fb0a9bd9e91ec979173`; retained unchanged |
+| Source-parity v2 verification preregistration | 4,373 bytes; SHA-256 `c02523a654c95007b9169bcd4c835b4283f9c7459796d8a943cc4ed0381242b3`; no v2 output yet |
+| V2 source-parity verifier | 42,844 bytes; SHA-256 `1fac2f476e04b5624fa7030791f5f40faa87d7269a5e215320e1dcab0925f1ad` |
 
 The profile is normative. Vectors narrow implementations to exact examples
 and hostile inputs; they do not add semantics to the profile.
@@ -193,9 +198,10 @@ deterministic format-conversion claim.
 
 ## Remaining Gate A Work
 
-1. Execute the frozen 2,048-case corpus twice through the isolated tokenizers
-   0.22.2 oracle and twice through native Rust, then issue the independent
-   create-only exact-parity pass or rejection receipt.
+1. Commit, push, and independently revalidate the v2 verification
+   preregistration; then execute its fresh two-oracle/two-candidate run set and
+   invoke the v2 verifier exactly once for a create-only parity pass or
+   rejection receipt. The terminal v1 outputs remain excluded.
 2. Replay the exact full artifact through native Rust and browser WASM.
 3. Measure load time, resident memory, peak allocation, encoding throughput,
    decoding throughput, and bounded rejection behavior.

@@ -120,15 +120,27 @@ bytes with SHA-256
 `9503fd6df325f1a46dec56674d2aa72ce225d6bf1c9477abd56bb4542ef99caa`.
 The 5,792-byte execution preregistration has SHA-256
 `bccc1631c519774ca46d77100ba59dae0d3eb4dcc681cd227f192bf558319466`;
-the independent 2,064-byte verification preregistration has SHA-256
+the original 2,064-byte verification preregistration has SHA-256
 `cc1472a7531095323dc1fe2fc2bb878bedfff4cc2cc5b5651f129c4800b0ed05`.
 They bind two offline Hugging Face tokenizers 0.22.2 runs, two native Rust
 runs, exact token-ID and decoded-Unicode equality, raw repeat-byte equality,
 post-observation source and artifact rehashing, create-only receipts, fatal
 mismatch handling, and a verifier with SHA-256
 `67791ba375cc8be2b84f1985eea42a810e4dca4edcc91fb0a9bd9e91ec979173`.
-This is preregistration evidence only; neither implementation has yet emitted
-a comparative output under the frozen experiment.
+The four v1 outputs were created exactly once, but that verifier failed before
+comparison because it incorrectly treated JSON object member order as semantic.
+No receipt or parity decision exists for v1, and its immutable raw outputs are
+excluded from all successor comparisons.
+
+The append-only 4,373-byte v2 verification preregistration has SHA-256
+`c02523a654c95007b9169bcd4c835b4283f9c7459796d8a943cc4ed0381242b3`.
+It binds the terminal v1 failure, a fresh four-output run set, one pinned native
+executable, and a 42,844-byte verifier with SHA-256
+`1fac2f476e04b5624fa7030791f5f40faa87d7269a5e215320e1dcab0925f1ad`.
+V2 ignores nonsemantic JSON object member order while preserving array order
+and strict primitive identity. At this checkpoint no v2 comparative output
+exists; v2 must be pushed and revalidated before its external run directory is
+created.
 
 This checkpoint is complete pinned-Qwen *tokenizer format conversion* only. It
 is not broad source-oracle encoding parity, browser-WASM execution, Template2,
@@ -136,6 +148,8 @@ model conversion, model qualification, release, deployment, or campaign
 evidence. See `docs/architecture/vnext-tokenizer2-format-implementation.md`,
 ADR-014, and
 `wiki/runtime-mirust/reports/tinyrustlm-qwen3-tokenizer2-conversion-memory-2026-08-20.md`.
+The verifier failure and append-only successor are recorded in
+`docs/architecture/qwen3-tokenizer2-parity-verifier-v1-failure-and-v2-preregistration.md`.
 
 ## Parsing
 

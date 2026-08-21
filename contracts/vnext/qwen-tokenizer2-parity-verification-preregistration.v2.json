@@ -1,0 +1,114 @@
+{
+  "schema": "tinyrustlm.vnext.qwen-tokenizer2-parity-verification-preregistration.v2",
+  "profileId": "tinyrustlm.qwen-tokenizer2-source-parity-verification/2",
+  "status": "registered-after-v1-terminal-verifier-defect-before-v2-output",
+  "registeredAtUtc": "2026-08-21T15:44:28Z",
+  "registrationParentCommit": "bd21df3e080085ea9ceedfb065ef51f0d1b09ac5",
+  "executionPreregistration": {
+    "path": "contracts/vnext/qwen-tokenizer2-parity-preregistration.v1.json",
+    "schema": "tinyrustlm.vnext.qwen-tokenizer2-parity-preregistration.v1",
+    "profileId": "tinyrustlm.qwen-tokenizer2-source-parity/1",
+    "byteLength": 5792,
+    "sha256": "bccc1631c519774ca46d77100ba59dae0d3eb4dcc681cd227f192bf558319466"
+  },
+  "predecessorFailure": {
+    "attemptId": "qwen3-tokenizer2-parity-20260821-v1",
+    "status": "terminal-verifier-defect-no-parity-decision",
+    "boundedFailureCode": "verifier-json-object-member-order-defect",
+    "executionProfileSha256": "bccc1631c519774ca46d77100ba59dae0d3eb4dcc681cd227f192bf558319466",
+    "verificationProfileSha256": "cc1472a7531095323dc1fe2fc2bb878bedfff4cc2cc5b5651f129c4800b0ed05",
+    "verifierSha256": "67791ba375cc8be2b84f1985eea42a810e4dca4edcc91fb0a9bd9e91ec979173",
+    "receiptCreated": false,
+    "rawOutputsPreserved": true,
+    "excludedFromV2Comparison": true,
+    "outputIdentities": [
+      {
+        "role": "source-oracle",
+        "ordinal": 1,
+        "byteLength": 1827322,
+        "sha256": "6f0aaf3b021296554ebf2bd60882323931566e06f2f43400e46101a92228de52"
+      },
+      {
+        "role": "source-oracle",
+        "ordinal": 2,
+        "byteLength": 1827322,
+        "sha256": "6f0aaf3b021296554ebf2bd60882323931566e06f2f43400e46101a92228de52"
+      },
+      {
+        "role": "candidate",
+        "ordinal": 1,
+        "byteLength": 1697228,
+        "sha256": "ac571be6710b9064ee420e680deaf21a6a2d2e0d1099512c19767160f4aac290"
+      },
+      {
+        "role": "candidate",
+        "ordinal": 2,
+        "byteLength": 1697228,
+        "sha256": "ac571be6710b9064ee420e680deaf21a6a2d2e0d1099512c19767160f4aac290"
+      }
+    ]
+  },
+  "runSet": {
+    "attemptId": "qwen3-tokenizer2-parity-v2-20260821-v1",
+    "outputDirectoryName": "qwen3-tokenizer2-parity-v2-20260821-v1",
+    "oracleRunFiles": [
+      "oracle-run-1.json",
+      "oracle-run-2.json"
+    ],
+    "candidateRunFiles": [
+      "candidate-run-1.json",
+      "candidate-run-2.json"
+    ],
+    "receiptFile": "parity-verification-receipt.v2.json",
+    "generatedAfterRegistrationRequired": true,
+    "priorRunReuseAllowed": false,
+    "outputPathsCreateOnly": true,
+    "requiredVerifierRuns": 1,
+    "candidateExecutable": {
+      "byteLength": 576512,
+      "sha256": "1ee0339cecd32cf5651c295b3ead0ff9c612be42fa80bf42e43686804ac480fe"
+    }
+  },
+  "verifier": {
+    "implementation": "tinyrustlm-qwen-tokenizer2-parity-verifier",
+    "version": "2",
+    "scriptPath": "tinyrustlm/tools/qwen-tokenizer2-parity-verifier-v2.js",
+    "scriptSha256": "1fac2f476e04b5624fa7030791f5f40faa87d7269a5e215320e1dcab0925f1ad",
+    "resultSchema": "tinyrustlm.qwen_tokenizer2_parity_result.v1",
+    "receiptSchema": "tinyrustlm.qwen_tokenizer2_parity_verification_receipt.v2",
+    "comparisonSemantics": {
+      "jsonObjectMemberOrder": "ignored-as-nonsemantic",
+      "jsonArrayOrder": "preserved-as-semantic",
+      "primitiveTypes": "deep-strict"
+    }
+  },
+  "execution": {
+    "requiredOracleRuns": 2,
+    "requiredCandidateRuns": 2,
+    "maximumResultBytes": 67108864,
+    "comparison": "exact-token-ids-and-exact-decoded-unicode",
+    "sourceRehashAfterObservation": true,
+    "artifactRehashAfterObservation": true,
+    "rawRunByteEqualityRequired": true,
+    "createOnlyReceipt": true,
+    "mismatchIsFatal": true,
+    "rawOutputsPreserved": true,
+    "inputBasenameBindingRequired": true
+  },
+  "receipt": {
+    "maximumMismatchRecords": 128,
+    "includePromptText": false,
+    "includeDecodedText": false,
+    "includeTokenIds": false,
+    "includePrivateAbsolutePaths": false
+  },
+  "claimBoundary": {
+    "tokenizerSourceParityMayBeClaimedAfterPass": true,
+    "browserWasmMayBeClaimed": false,
+    "modelRuntimeMayBeClaimed": false,
+    "modelQualityMayBeClaimed": false,
+    "releaseMayBeClaimed": false,
+    "campaignCreditMayBeClaimed": false,
+    "requiredNextGate": "full-artifact-real-chromium-wasm-parity-and-resource-evidence"
+  }
+}

@@ -1,12 +1,23 @@
-profile: runtime-mirust.architecture.v119
-updated_utc: 2026-08-21T15:26:26Z
+profile: runtime-mirust.architecture.v120
+updated_utc: 2026-08-21T15:57:12Z
 active_product:
   name: TinyRustLM
   root: tinyrustlm/
   goal: 100% custom Rust/WASM browser-local SLM runtime and UI.
   live_public_site: TinyRustLM.com
   public_site_boundary: Runtime.MiRust.com remains project/docs identity; TinyRustLM.com is the live local `.slm` import surface and must not auto-fetch hosted `/models/` bytes; SLMComposer.com is retired historical naming.
-current_qwen3_tokenizer2_parity_preregistration_boundary_2026_08_21:
+current_qwen3_tokenizer2_parity_v2_preregistration_boundary_2026_08_21:
+  registration_parent_commit: bd21df3e080085ea9ceedfb065ef51f0d1b09ac5
+  v1_terminal_evidence: Two private oracle outputs are each 1,827,322 bytes at SHA256 6f0aaf3b021296554ebf2bd60882323931566e06f2f43400e46101a92228de52; two private candidate outputs are each 1,697,228 bytes at SHA256 ac571be6710b9064ee420e680deaf21a6a2d2e0d1099512c19767160f4aac290. Frozen verifier v1 failed before comparison because object-member insertion order affected JSON.stringify equality. No receipt or parity decision exists.
+  append_only_rule: V1 verifier, profiles, and outputs remain immutable audit evidence and are excluded from v2. The correction is a new verifier and profile, not a compatibility reader or a rewritten result.
+  verification_contract_v2: 4,373 bytes; SHA256 c02523a654c95007b9169bcd4c835b4283f9c7459796d8a943cc4ed0381242b3; binds the terminal predecessor, exact new run directory and basenames, no prior-output reuse, one verifier invocation, create-only receipt, and post-observation source, artifact, and candidate-executable rehashing.
+  verifier_v2: 42,844 bytes; SHA256 1fac2f476e04b5624fa7030791f5f40faa87d7269a5e215320e1dcab0925f1ad; object member order is nonsemantic, array order remains semantic, and primitive equality is deep-strict.
+  candidate_executable: 576,512 bytes; SHA256 1ee0339cecd32cf5651c295b3ead0ff9c612be42fa80bf42e43686804ac480fe.
+  no_v2_output_boundary: The registered qwen3-tokenizer2-parity-v2-20260821-v1 output directory is absent. The v2 implementation, profile, regression, failure report, architecture docs, and UAI memory must be committed, pushed, and fresh-remote verified before any v2 output is created.
+  repository_evidence: Focused v2 regressions pass 5/5; full standard Node passes 1,000/1,000 with zero skips; full locked/offline Rust workspace and all-target warnings-denied Clippy pass; v1 and v2 preregistration self-checks and all bound identities pass.
+  evidence_boundary: No native tokenizer parity, browser-WASM, Template2, model runtime, model quality, acquisition, chat, release, deployment, publication, MemoryEndpoints, or campaign evidence exists. Counters remain 0/20, 0/50, 0/25, 0/40, 0/20.
+  next: Push and revalidate v2 first. Then create only its registered external root, generate exactly two fresh oracle and two fresh candidate outputs, and invoke verifier v2 exactly once. Preserve either verdict without repair, retry selection, normalization, or rule changes.
+prior_qwen3_tokenizer2_parity_preregistration_boundary_2026_08_21:
   implementation_commit: dc0f5f783de54b8c556064bc1d8a6b21d9cdb9a9
   source_control: Pushed and independently exact through local HEAD, FETCH_HEAD, tracking ref, and fresh ls-remote before the UAI handoff edit; protected E:\Source\Rust\TinyRustLM.com remained untouched.
   corpus: 2,048 immutable cases in 17 categories; 464,043 bytes; SHA256 9503fd6df325f1a46dec56674d2aa72ce225d6bf1c9477abd56bb4542ef99caa; generator SHA256 eb2c4a7473b65a1d59161c3a2919613cefdd8138bf5ebb7ecfd6dfb82f566a0f.

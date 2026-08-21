@@ -10,7 +10,11 @@ parity, native and WASM replay, browser activation, and useful-model
 qualification all pass. Exact pinned-source conversion now passes as a narrow
 precondition rather than a promotion result. The exact 2,048-case
 source-parity corpus, execution contract, and independent verification
-contract are preregistered before comparative output, but remain unexecuted.
+contract were preregistered before comparative output. The v1 run completed
+four repeat-stable outputs, but its verifier failed structurally before token
+comparison because it treated JSON object member order as semantic. V1 has no
+receipt or parity decision. An append-only corrected v2 verifier and fresh run
+set are preregistered but remain unexecuted.
 
 ## Decision Date
 
@@ -166,17 +170,27 @@ The execution preregistration is
 `contracts/vnext/qwen-tokenizer2-parity-preregistration.v1.json`, 5,792 bytes,
 SHA-256
 `bccc1631c519774ca46d77100ba59dae0d3eb4dcc681cd227f192bf558319466`.
-The independent verification preregistration is
+The original independent verification preregistration is
 `contracts/vnext/qwen-tokenizer2-parity-verification-preregistration.v1.json`,
 2,064 bytes, SHA-256
 `cc1472a7531095323dc1fe2fc2bb878bedfff4cc2cc5b5651f129c4800b0ed05`.
 It binds the verifier at SHA-256
 `67791ba375cc8be2b84f1985eea42a810e4dca4edcc91fb0a9bd9e91ec979173`.
-The experiment requires two byte-identical oracle outputs, two byte-identical
-candidate outputs, exact token IDs, exact include-all and skip-special decode
-strings for every case, post-observation source and artifact rehashing, and a
-create-only pass or rejection receipt. None of those comparative runs has been
-executed at preregistration time.
+That run produced its two byte-identical oracle outputs and two byte-identical
+candidate outputs, then terminated with a verifier defect before comparison and
+without a receipt. Its evidence remains immutable and excluded.
+
+The successor verification preregistration is
+`contracts/vnext/qwen-tokenizer2-parity-verification-preregistration.v2.json`,
+4,373 bytes, SHA-256
+`c02523a654c95007b9169bcd4c835b4283f9c7459796d8a943cc4ed0381242b3`.
+It binds a fresh four-output run set and verifier SHA-256
+`1fac2f476e04b5624fa7030791f5f40faa87d7269a5e215320e1dcab0925f1ad`.
+V2 ignores object member order as nonsemantic, preserves array order, requires
+strict primitive identity, pins the candidate executable, rehashes source,
+artifact, and executable after observation, and writes one create-only pass or
+rejection receipt. No v2 comparative output exists at this preregistration
+checkpoint.
 
 ## Threat Analysis
 

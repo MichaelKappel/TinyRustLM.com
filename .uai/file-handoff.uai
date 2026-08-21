@@ -1,6 +1,25 @@
-profile: runtime-mirust.file-handoff.v81
-updated_utc: 2026-08-21T15:26:26Z
-current_qwen3_tokenizer2_parity_preregistration_2026_08_21:
+profile: runtime-mirust.file-handoff.v82
+updated_utc: 2026-08-21T15:57:12Z
+current_qwen3_tokenizer2_parity_v2_preregistration_2026_08_21:
+  authority: Newest TinyRustLM first-read checkpoint; preserves the terminal v1 verifier defect and four private raw outputs, and closes the append-only v2 verifier, regression, documentation, and no-v2-output preregistration boundary only.
+  goal: docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md
+  goal_sha256: 115ae434bf9dee0b4f27767f126d951989c5ec684241e2e3a6238de094e65d33
+  frozen_parent_goal_sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+  goal_status: active_incomplete
+  owned_worktree: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  branch: codex/model-acquisition-v2
+  registration_parent_commit: bd21df3e080085ea9ceedfb065ef51f0d1b09ac5
+  protected_checkout: E:\Source\Rust\TinyRustLM.com remained untouched
+  v1_terminal_result: Exactly two oracle outputs and two candidate outputs were created. Each pair is byte-stable, but verifier v1 SHA256 67791ba375cc8be2b84f1985eea42a810e4dca4edcc91fb0a9bd9e91ec979173 failed before token comparison with bounded code verifier-json-object-member-order-defect. No v1 receipt or parity decision exists; all four raw files remain immutable and excluded.
+  v1_output_identities: oracle runs are each 1,827,322 bytes at SHA256 6f0aaf3b021296554ebf2bd60882323931566e06f2f43400e46101a92228de52; candidate runs are each 1,697,228 bytes at SHA256 ac571be6710b9064ee420e680deaf21a6a2d2e0d1099512c19767160f4aac290
+  root_cause: V1 used JSON.stringify equality for objects, making nonsemantic object-member insertion order affect validation across Python and JavaScript. Changing producer output is forbidden repair; v1 remains unchanged.
+  v2_preregistration: 4,373 bytes at SHA256 c02523a654c95007b9169bcd4c835b4283f9c7459796d8a943cc4ed0381242b3; v2 verifier 42,844 bytes at SHA256 1fac2f476e04b5624fa7030791f5f40faa87d7269a5e215320e1dcab0925f1ad; candidate executable 576,512 bytes at SHA256 1ee0339cecd32cf5651c295b3ead0ff9c612be42fa80bf42e43686804ac480fe
+  v2_semantics: Ignore JSON object member order only; preserve array order and deep-strict primitive identity. Bind two fresh oracle basenames, two fresh candidate basenames, one receipt basename, one new external run-directory identity, and one verifier invocation. Rehash source, artifact, and candidate executable after observation.
+  no_v2_output_boundary: The registered v2 output directory identity qwen3-tokenizer2-parity-v2-20260821-v1 does not exist. Commit, push, and fresh-remote verify this complete checkpoint before creating it.
+  verification: focused v2 regressions 5/5; full standard Node 1,000/1,000 with zero skips; full locked/offline Rust workspace passed; full all-target warnings-denied Clippy passed; both v1 and v2 preregistration checks, profile/source/artifact/executable hashes, JSON, and diff hygiene passed
+  authority_boundary: No tokenizer parity, browser-WASM, Template2, model runtime, model quality, release, deployment, publication, MemoryEndpoints, or campaign credit exists. Counters remain 0/20, 0/50, 0/25, 0/40, 0/20.
+  next: Commit and push this v2 preregistration while its output root remains absent; fresh-remote verify every bound identity; then create only the registered v2 root, generate exactly two new oracle and two new candidate outputs, and invoke verifier v2 exactly once. Preserve its pass or rejection without repair or selection.
+prior_qwen3_tokenizer2_parity_preregistration_2026_08_21:
   authority: Newest TinyRustLM first-read checkpoint; closes the no-output preregistration, independent-verifier, complete repository verification, release-surface evidence, push, and actual-remote equality boundary only while preserving every parity-result, browser-WASM, Template2, model, release, publication, and campaign boundary.
   goal: docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md
   goal_sha256: 115ae434bf9dee0b4f27767f126d951989c5ec684241e2e3a6238de094e65d33
