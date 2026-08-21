@@ -77,6 +77,33 @@ behavior, useful-model qualification, SIMD, threaded WASM, WebGPU, deployment,
 or live campaign evidence. See
 `docs/architecture/vnext-slm2-scalar-wasm-conformance.md`.
 
+## Tokenizer2 Format Checkpoint
+
+`tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2
+2.0 byte and algorithm contract. It is 12,442 bytes with SHA-256
+`628427bf6e7f8d34ed14b331a5c636606aee9d5ef45a36a3cadc13338669b8de`.
+It freezes a 192-byte header, implicit-ID token table, implicit-rank merge
+table, tightly packed byte table, exact base and added-token closure, Unicode
+9 NFC, Unicode 16 Qwen split semantics, ByteLevel mapping, ranked BPE, and
+explicit decoding modes. Unknown fields, flags, profiles, versions, gaps,
+duplicates, malformed UTF-8, and trailing bytes fail closed.
+
+`tokenizer2-format-vectors.v1.json` is a 25,552-byte independent
+language-neutral contract with SHA-256
+`9fef7d6c8576d971d72fd248dcedce2888ca0fe2a944fbbb914fed8e07f218aa`.
+Its Node-core writer owns one 7,459-byte canonical artifact with SHA-256
+`2b2c3c5f58baacd7af68e2ccffa1cb03e113fa281b1832224d684f9ac03eaff1`.
+The unsafe-free Rust writer reproduces those independently authored bytes.
+Both implementations replay 11 frozen pretoken boundaries, 12 encodings,
+four decodings, 13 single-fault mutations, and rejection of every proper
+artifact prefix. The Node oracle invokes no Rust, subprocess, or network
+operation.
+
+This checkpoint is not full pinned-Qwen conversion, complete source-oracle
+parity, browser-WASM execution, model qualification, release, deployment, or
+campaign evidence. See `docs/architecture/vnext-tokenizer2-format-implementation.md`
+and ADR-014.
+
 ## Parsing
 
 Every JSON input is first consumed as bounded bytes. Before schema validation,
