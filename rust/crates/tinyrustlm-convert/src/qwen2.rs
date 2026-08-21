@@ -14,12 +14,19 @@ use tinyrustlm_slm2::{
     required_model_tensors, validate_model, write_model, ArtifactClass, ModelIdentity, ModelSpec,
     TensorInput, TensorSpec, ValidationPolicy, SLM2_FORMAT_PROFILE_ID, SLM2_FORMAT_PROFILE_SHA256,
 };
+use tinyrustlm_tokenizer2::{
+    Tokenizer2, TokenizerPolicy, TOKENIZER2_FORMAT_PROFILE_ID, TOKENIZER2_FORMAT_PROFILE_SHA256,
+};
+
+use crate::qwen_tokenizer::{
+    parse_qwen_tokenizer, ParsedQwenTokenizer, QwenTokenizerModelContract,
+};
 
 /// The sole current Qwen2 Safetensors to SLM2 conversion profile.
 pub const QWEN2_CONVERSION_PROFILE_ID: &str = "tinyrustlm.qwen2-safetensors-to-slm2-f32/1";
 /// The SHA-256 of the exact checked-in Qwen2 conversion profile bytes.
 pub const QWEN2_CONVERSION_PROFILE_SHA256: &str =
-    "aeafbc2baa25b5e6b8d3a11a40a2d96f23fab9c4dbb4809747664a97238c33eb";
+    "db4d16ce83460856588bda98829a16bbc23805f82ecad0f40b9380c77ea092fc";
 /// The exact source-lock schema consumed by this converter.
 pub const QWEN2_SOURCE_LOCK_SCHEMA: &str = "tinyrustlm.qwen2_source_lock.v1";
 
@@ -355,8 +362,7 @@ struct InspectedSource {
     data_offset: u64,
     tensors: BTreeMap<String, SourceTensor>,
     parameter_count: u64,
-    tokenizer_bytes: Vec<u8>,
-    chat_template_bytes: Vec<u8>,
+    tokenizer: ParsedQwenTokenizer,
 }
 
 struct TensorReader {
@@ -490,8 +496,8 @@ struct ConversionReceipt<'a> {
     converter: ConverterReceipt<'a>,
     source: SourceReceipt<'a>,
     model: ModelReceipt,
-    tokenizer: SidecarReceipt,
-    chat_template: SidecarReceipt,
+    tokenizer: TokenizerReceipt,
+    chat_template: SourceTemplateReceipt,
     durability: DurabilityReceipt,
     conversion_claim: &'static str,
     quality_status: &'static str,
@@ -559,11 +565,31 @@ struct ModelSpecReceipt {
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
-struct SidecarReceipt {
+struct TokenizerReceipt {
     path: String,
     byte_length: u64,
     sha256: String,
-    format_profile: &'static str,
+    format_profile_id: &'static str,
+    format_profile_sha256: &'static str,
+    token_count: u32,
+    base_token_count: u32,
+    merge_count: u32,
+    added_token_count: u32,
+    special_token_count: u32,
+    bos_token_id: Option<u32>,
+    eos_token_id: Option<u32>,
+    pad_token_id: Option<u32>,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct SourceTemplateReceipt {
+    path: String,
+    byte_length: u64,
+    sha256: String,
+    source_format: &'static str,
+    promotion_status: &'static str,
+    required_next_gate: &'static str,
 }
 
 #[derive(Serialize)]
@@ -627,8 +653,40 @@ pub fn convert_locked_qwen2_source(
         return Err(Qwen2ConversionError::new("qwen2-output-validation-failed"));
     }
 
-    write_create_only_synced(&outputs.tokenizer_stage, &source.tokenizer_bytes)?;
-    write_create_only_synced(&outputs.template_stage, &source.chat_template_bytes)?;
+    let mut tokenizer_stage = create_new_file(&outputs.tokenizer_stage)?;
+    let written_tokenizer_identity = source
+        .tokenizer
+        .write(&mut tokenizer_stage)
+        .map_err(|error| Qwen2ConversionError::new(error.code()))?;
+    tokenizer_stage
+        .sync_all()
+        .map_err(|_| Qwen2ConversionError::new("qwen2-output-flush-failed"))?;
+    drop(tokenizer_stage);
+    let tokenizer_artifact = read_bounded_regular_file(
+        &outputs.tokenizer_stage,
+        TOKENIZER_MAXIMUM_BYTES,
+        "qwen2-tokenizer2-validation-failed",
+    )?;
+    let tokenizer_policy =
+        TokenizerPolicy::new(TOKENIZER_MAXIMUM_BYTES, 1_048_576, 1_048_576, 4_194_304)
+            .map_err(|_| Qwen2ConversionError::new("qwen2-tokenizer2-validation-failed"))?;
+    let validated_tokenizer = Tokenizer2::from_bytes(tokenizer_artifact, tokenizer_policy)
+        .map_err(|_| Qwen2ConversionError::new("qwen2-tokenizer2-validation-failed"))?;
+    if validated_tokenizer.identity() != written_tokenizer_identity
+        || validated_tokenizer.token_count() != source.tokenizer.token_count()
+        || validated_tokenizer.base_token_count() != source.tokenizer.base_token_count()
+        || validated_tokenizer.bos_token_id() != source.tokenizer.bos_token_id()
+        || validated_tokenizer.eos_token_id() != source.tokenizer.eos_token_id()
+        || validated_tokenizer.pad_token_id() != source.tokenizer.pad_token_id()
+    {
+        return Err(Qwen2ConversionError::new(
+            "qwen2-tokenizer2-validation-failed",
+        ));
+    }
+    write_create_only_synced(
+        &outputs.template_stage,
+        source.tokenizer.chat_template_bytes(),
+    )?;
     let final_identities = verify_locked_files(&source_directory, &lock.files)?;
     if initial_identities != final_identities {
         return Err(Qwen2ConversionError::new("qwen2-source-drift"));
@@ -679,17 +737,28 @@ pub fn convert_locked_qwen2_source(
             tensor_count: validated.tensors().len(),
             specification: model_spec_receipt(&source.spec),
         },
-        tokenizer: SidecarReceipt {
+        tokenizer: TokenizerReceipt {
             path: outputs.tokenizer_name.clone(),
-            byte_length: source.tokenizer_bytes.len() as u64,
-            sha256: sha256_bytes(&source.tokenizer_bytes),
-            format_profile: "tokenizer2.0",
+            byte_length: written_tokenizer_identity.byte_length,
+            sha256: hex_lower(&written_tokenizer_identity.sha256),
+            format_profile_id: TOKENIZER2_FORMAT_PROFILE_ID,
+            format_profile_sha256: TOKENIZER2_FORMAT_PROFILE_SHA256,
+            token_count: source.tokenizer.token_count(),
+            base_token_count: source.tokenizer.base_token_count(),
+            merge_count: source.tokenizer.merge_count(),
+            added_token_count: source.tokenizer.added_token_count(),
+            special_token_count: source.tokenizer.special_token_count(),
+            bos_token_id: source.tokenizer.bos_token_id(),
+            eos_token_id: source.tokenizer.eos_token_id(),
+            pad_token_id: source.tokenizer.pad_token_id(),
         },
-        chat_template: SidecarReceipt {
+        chat_template: SourceTemplateReceipt {
             path: outputs.template_name.clone(),
-            byte_length: source.chat_template_bytes.len() as u64,
-            sha256: sha256_bytes(&source.chat_template_bytes),
-            format_profile: "template2.0",
+            byte_length: source.tokenizer.chat_template_bytes().len() as u64,
+            sha256: sha256_bytes(source.tokenizer.chat_template_bytes()),
+            source_format: "publisher-jinja-text",
+            promotion_status: "unpromoted-source-evidence-only",
+            required_next_gate: "template2-exact-declarative-conversion-and-parity",
         },
         durability: DurabilityReceipt {
             operation_id: durability.operation_id().to_owned(),
@@ -838,34 +907,40 @@ fn inspect_source(
         TOKENIZER_MAXIMUM_BYTES,
         "qwen2-tokenizer-invalid",
     )?;
-    let _: Value = serde_json::from_slice(&tokenizer_bytes)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-tokenizer-invalid"))?;
     let tokenizer_config_bytes = read_bounded_regular_file(
         &source.join("tokenizer_config.json"),
         TOKENIZER_CONFIG_MAXIMUM_BYTES,
         "qwen2-tokenizer-config-invalid",
     )?;
-    let tokenizer_config: UniqueObject = serde_json::from_slice(&tokenizer_config_bytes)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-tokenizer-config-invalid"))?;
-    let chat_template = tokenizer_config
-        .0
-        .get("chat_template")
-        .and_then(Value::as_str)
-        .ok_or_else(|| Qwen2ConversionError::new("qwen2-chat-template-invalid"))?;
-    if chat_template.is_empty()
-        || chat_template.len() > TOKENIZER_CONFIG_MAXIMUM_BYTES as usize
-        || chat_template.contains('\0')
-    {
-        return Err(Qwen2ConversionError::new("qwen2-chat-template-invalid"));
-    }
+    let vocab_bytes = read_bounded_regular_file(
+        &source.join("vocab.json"),
+        TOKENIZER_MAXIMUM_BYTES,
+        "qwen2-tokenizer-vocab-invalid",
+    )?;
+    let merges_bytes = read_bounded_regular_file(
+        &source.join("merges.txt"),
+        TOKENIZER_MAXIMUM_BYTES,
+        "qwen2-tokenizer-merges-invalid",
+    )?;
+    let tokenizer = parse_qwen_tokenizer(
+        &tokenizer_bytes,
+        &tokenizer_config_bytes,
+        &vocab_bytes,
+        &merges_bytes,
+        QwenTokenizerModelContract {
+            vocabulary_size: config.vocab_size,
+            bos_token_id: config.bos_token_id,
+            eos_token_id: config.eos_token_id,
+        },
+    )
+    .map_err(|error| Qwen2ConversionError::new(error.code()))?;
     Ok(InspectedSource {
         spec,
         dtype,
         data_offset,
         tensors,
         parameter_count,
-        tokenizer_bytes,
-        chat_template_bytes: chat_template.as_bytes().to_vec(),
+        tokenizer,
     })
 }
 
@@ -1161,7 +1236,7 @@ impl OutputPaths {
             .ok_or_else(|| Qwen2ConversionError::new("qwen2-output-path-invalid"))?
             .to_owned();
         let model = parent.join(&model_name);
-        let tokenizer_name = format!("{model_name}.tokenizer.json");
+        let tokenizer_name = format!("{model_name}.tokenizer.tok2");
         let template_name = format!("{model_name}.chat-template.txt");
         let receipt_name = format!("{model_name}.conversion-receipt.json");
         let tokenizer = parent.join(&tokenizer_name);

@@ -1,0 +1,82 @@
+{
+  "schema": "tinyrustlm.vnext.qwen-tokenizer2-conversion-profile.v1",
+  "profileId": "tinyrustlm.qwen-bytelevel-to-tokenizer2/1",
+  "status": "development-unpromoted",
+  "source": {
+    "family": "Qwen3ForCausalLM-with-Qwen2Tokenizer",
+    "requiredFiles": [
+      "config.json",
+      "merges.txt",
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "vocab.json"
+    ],
+    "inventory": "exact-five-regular-non-link-files",
+    "identity": "exact-byte-length-and-sha256-before-and-after-conversion",
+    "lockSchema": "tinyrustlm.qwen_tokenizer2_source_lock.v1",
+    "lockMaximumBytes": 1048576,
+    "tokenizerMaximumBytes": 67108864,
+    "configMaximumBytes": 1048576,
+    "paths": "direct-relative-file-names-only",
+    "duplicateJsonMembers": "fatal",
+    "unknownJsonMembers": "fatal"
+  },
+  "admission": {
+    "normalizer": "NFC",
+    "pretokenizer": "exact-qwen-frozen-split-followed-by-bytelevel-false-false-false",
+    "postProcessor": "bytelevel-false-false-false",
+    "decoder": "bytelevel-false-false-false",
+    "bpeOptions": "null-dropout-null-unknown-empty-affixes-no-fuse-no-fallback-honor-merges",
+    "vocabulary": "unique-contiguous-zero-based-u32-ids",
+    "byteLevel": "reverse-frozen-gpt2-byte-to-unicode-alphabet",
+    "mergeClosure": "base-token-count-equals-256-plus-merge-count",
+    "mergeOutput": "output-id-equals-256-plus-rank-and-output-bytes-equal-left-plus-right",
+    "standaloneVocab": "must-exactly-equal-tokenizer-json-model-vocab",
+    "standaloneMerges": "lf-only-version-0.2-and-must-exactly-equal-tokenizer-json-model-merges",
+    "addedTokens": "unique-contiguous-after-base-false-strip-false-normalized",
+    "addedTokenDecoder": "must-exactly-equal-tokenizer-json-added-token-records",
+    "specialTokenSet": "union-of-additional-and-bos-eos-pad-unk-must-equal-special-added-tokens",
+    "modelVocabulary": "must-cover-tokenizer-ids",
+    "modelEos": "must-equal-tokenizer-eos",
+    "modelBos": "must-equal-tokenizer-bos-or-pad-when-tokenizer-bos-is-absent"
+  },
+  "output": {
+    "formatProfileId": "org.minimodel.tokenizer2/2.0",
+    "formatProfileSha256": "628427bf6e7f8d34ed14b331a5c636606aee9d5ef45a36a3cadc13338669b8de",
+    "writer": "canonical-rust-tokenizer2-writer",
+    "validation": "independent-tokenizer2-reader-before-promotion",
+    "runtimeJson": "forbidden",
+    "browserExecutableSourcePipeline": "forbidden"
+  },
+  "transaction": {
+    "output": "absolute-new-tok2-file",
+    "staging": "create-only-same-directory",
+    "flush": "file-sync-before-promotion",
+    "promotion": "create-only-hard-link-then-remove-stage",
+    "directoryFlush": "required-after-artifact-and-receipt-promotion",
+    "receipt": "create-only-canonical-json-after-artifact-promotion",
+    "interruption": "staging-or-partial-publication-is-not-success"
+  },
+  "receipt": {
+    "schema": "tinyrustlm.qwen_tokenizer2_conversion_receipt.v1",
+    "binds": [
+      "source-lock-bytes",
+      "all-five-source-identities",
+      "converter-profile",
+      "converter-executable",
+      "tokenizer2-profile",
+      "artifact-bytes",
+      "token-counts",
+      "special-token-ids",
+      "durability-receipts"
+    ]
+  },
+  "claimBoundary": {
+    "converterClaim": "deterministic-tokenizer-format-conversion-only",
+    "sourceOracleParityClaim": "none",
+    "browserWasmClaim": "none",
+    "modelRuntimeClaim": "none",
+    "modelQualityClaim": "none",
+    "requiredNextGate": "broad-source-oracle-parity-and-full-artifact-native-browser-wasm-replay"
+  }
+}

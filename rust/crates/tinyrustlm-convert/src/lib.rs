@@ -2,9 +2,16 @@
 #![doc = "Fail-closed source-family converters for the TinyRustLM SLM2 format."]
 
 mod qwen2;
+mod qwen_tokenizer;
+mod qwen_tokenizer2;
 
 pub use qwen2::{
     convert_locked_qwen2_source, ConverterExecutionIdentity, Qwen2ConversionError,
     Qwen2ConversionResult, QWEN2_CONVERSION_PROFILE_ID, QWEN2_CONVERSION_PROFILE_SHA256,
     QWEN2_SOURCE_LOCK_SCHEMA,
+};
+pub use qwen_tokenizer2::{
+    convert_locked_qwen_tokenizer2_source, QwenTokenizer2ConversionError,
+    QwenTokenizer2ConversionResult, QWEN_TOKENIZER2_CONVERSION_PROFILE_ID,
+    QWEN_TOKENIZER2_CONVERSION_PROFILE_SHA256, QWEN_TOKENIZER2_SOURCE_LOCK_SCHEMA,
 };

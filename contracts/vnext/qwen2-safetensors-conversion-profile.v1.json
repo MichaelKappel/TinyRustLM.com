@@ -49,8 +49,17 @@
     "payloadAlignmentBytes": 64,
     "bf16Conversion": "zero-extend-bfloat16-low-16-bits-to-ieee754-binary32",
     "f32Conversion": "identity-little-endian",
-    "tokenizerArtifact": "exact-source-tokenizer-json-bytes",
-    "templateArtifact": "exact-utf8-chat-template-string-bytes"
+    "tokenizerArtifact": {
+      "formatProfileId": "org.minimodel.tokenizer2/2.0",
+      "formatProfileSha256": "628427bf6e7f8d34ed14b331a5c636606aee9d5ef45a36a3cadc13338669b8de",
+      "conversion": "closed-qwen-bytelevel-source-to-canonical-tokenizer2",
+      "validation": "independent-tokenizer2-reader-before-promotion"
+    },
+    "templateArtifact": {
+      "format": "publisher-jinja-text",
+      "status": "unpromoted-source-evidence-only",
+      "requiredNextGate": "template2-exact-declarative-conversion-and-parity"
+    }
   },
   "sourceLock": {
     "schema": "tinyrustlm.qwen2_source_lock.v1",
@@ -79,6 +88,17 @@
     "directoryFlush": "required-after-artifact-promotion",
     "receipt": "create-only-after-artifact-promotion",
     "interruption": "staging-preserved-and-never-treated-as-complete"
+  },
+  "tokenizerSourceAdmission": {
+    "jsonMembers": "duplicate-or-unknown-is-fatal",
+    "pipeline": "exact-tokenizer2-algorithm-profile-1-source-semantics",
+    "vocabulary": "unique-contiguous-zero-based-ids-with-bytelevel-reversal",
+    "mergeClosure": "base-count-equals-256-plus-merge-count-and-output-id-equals-256-plus-rank",
+    "redundantVocab": "vocab-json-must-exactly-equal-tokenizer-json-model-vocab",
+    "redundantMerges": "merges-txt-must-exactly-equal-tokenizer-json-model-merges",
+    "addedTokens": "contiguous-after-base-and-exactly-equal-tokenizer-config-decoder-map",
+    "specialTokens": "declared-special-set-and-model-token-ids-must-agree",
+    "runtimeJson": "forbidden"
   },
   "claimBoundary": {
     "converterClaim": "structural-and-byte-conversion-only",

@@ -15,6 +15,7 @@ use tinyrustlm_convert::{
 use tinyrustlm_slm2::{
     required_model_tensors, validate_model, ArtifactClass, ModelSpec, ValidationPolicy,
 };
+use tinyrustlm_tokenizer2::{Tokenizer2, TokenizerPolicy, TOKENIZER2_FORMAT_PROFILE_ID};
 
 static NEXT_TEMPORARY_ROOT: AtomicU64 = AtomicU64::new(0);
 
@@ -83,7 +84,7 @@ impl Fixture {
 fn fixture_spec() -> ModelSpec {
     ModelSpec {
         artifact_class: ArtifactClass::BaseModel,
-        vocabulary_size: 32,
+        vocabulary_size: 259,
         context_length: 128,
         embedding_size: 8,
         feed_forward_size: 16,
@@ -147,8 +148,8 @@ fn write_source_files(source: &Path, mutation: FixtureMutation) {
     let config = json!({
         "architectures": ["Qwen2ForCausalLM"],
         "attention_dropout": 0.0,
-        "bos_token_id": 1,
-        "eos_token_id": 2,
+        "bos_token_id": 257,
+        "eos_token_id": 258,
         "hidden_act": "silu",
         "hidden_size": 8,
         "initializer_range": 0.02,
@@ -167,30 +168,154 @@ fn write_source_files(source: &Path, mutation: FixtureMutation) {
         "transformers_version": "fixture-1",
         "use_cache": true,
         "use_sliding_window": false,
-        "vocab_size": 32
+        "vocab_size": 259
     });
     write_json(source.join("config.json"), &config);
     write_json(
         source.join("generation_config.json"),
-        &json!({"bos_token_id": 1, "eos_token_id": 2}),
+        &json!({"bos_token_id": 257, "eos_token_id": 258}),
     );
     fs::write(source.join("LICENSE"), b"Apache License 2.0 fixture\n").unwrap();
     fs::write(source.join("README.md"), b"# Qwen2 fixture\n").unwrap();
+    let vocab = byte_level_vocab();
     fs::write(source.join("merges.txt"), b"#version: 0.2\na b\n").unwrap();
+    write_json(source.join("vocab.json"), &json!(vocab));
     write_json(
         source.join("tokenizer.json"),
-        &json!({"schema": "fixture-tokenizer", "vocabularySize": 32}),
+        &json!({
+            "version": "1.0",
+            "truncation": null,
+            "padding": null,
+            "added_tokens": [
+                {
+                    "id": 257,
+                    "content": "<bos>",
+                    "single_word": false,
+                    "lstrip": false,
+                    "rstrip": false,
+                    "normalized": false,
+                    "special": true
+                },
+                {
+                    "id": 258,
+                    "content": "<eos>",
+                    "single_word": false,
+                    "lstrip": false,
+                    "rstrip": false,
+                    "normalized": false,
+                    "special": true
+                }
+            ],
+            "normalizer": {"type": "NFC"},
+            "pre_tokenizer": {
+                "type": "Sequence",
+                "pretokenizers": [
+                    {
+                        "type": "Split",
+                        "pattern": {
+                            "Regex": "(?i:'s|'t|'re|'ve|'m|'ll|'d)|[^\\r\\n\\p{L}\\p{N}]?\\p{L}+|\\p{N}| ?[^\\s\\p{L}\\p{N}]+[\\r\\n]*|\\s*[\\r\\n]+|\\s+(?!\\S)|\\s+"
+                        },
+                        "behavior": "Isolated",
+                        "invert": false
+                    },
+                    {
+                        "type": "ByteLevel",
+                        "add_prefix_space": false,
+                        "trim_offsets": false,
+                        "use_regex": false
+                    }
+                ]
+            },
+            "post_processor": {
+                "type": "ByteLevel",
+                "add_prefix_space": false,
+                "trim_offsets": false,
+                "use_regex": false
+            },
+            "decoder": {
+                "type": "ByteLevel",
+                "add_prefix_space": false,
+                "trim_offsets": false,
+                "use_regex": false
+            },
+            "model": {
+                "type": "BPE",
+                "dropout": null,
+                "unk_token": null,
+                "continuing_subword_prefix": "",
+                "end_of_word_suffix": "",
+                "fuse_unk": false,
+                "byte_fallback": false,
+                "ignore_merges": false,
+                "vocab": vocab,
+                "merges": [["a", "b"]]
+            }
+        }),
     );
     write_json(
         source.join("tokenizer_config.json"),
         &json!({
+            "add_bos_token": false,
+            "add_prefix_space": false,
+            "added_tokens_decoder": {
+                "257": {
+                    "content": "<bos>",
+                    "lstrip": false,
+                    "normalized": false,
+                    "rstrip": false,
+                    "single_word": false,
+                    "special": true
+                },
+                "258": {
+                    "content": "<eos>",
+                    "lstrip": false,
+                    "normalized": false,
+                    "rstrip": false,
+                    "single_word": false,
+                    "special": true
+                }
+            },
+            "additional_special_tokens": ["<bos>", "<eos>"],
             "bos_token": "<bos>",
             "eos_token": "<eos>",
-            "chat_template": "{% for message in messages %}{{ message['role'] }}: {{ message['content'] }}\\n{% endfor %}assistant:"
+            "chat_template": "{% for message in messages %}{{ message['role'] }}: {{ message['content'] }}\\n{% endfor %}assistant:",
+            "clean_up_tokenization_spaces": false,
+            "errors": "replace",
+            "model_max_length": 128,
+            "pad_token": "<bos>",
+            "split_special_tokens": false,
+            "tokenizer_class": "Qwen2Tokenizer",
+            "unk_token": null
         }),
     );
-    write_json(source.join("vocab.json"), &json!({"<unk>": 0}));
     write_safetensors(source.join("model.safetensors"), mutation);
+}
+
+fn byte_level_vocab() -> BTreeMap<String, u32> {
+    let mut bytes = (b'!'..=b'~')
+        .chain(0xa1_u8..=0xac)
+        .chain(0xae_u8..=0xff)
+        .collect::<Vec<_>>();
+    let mut code_points = bytes
+        .iter()
+        .map(|byte| u32::from(*byte))
+        .collect::<Vec<_>>();
+    let mut extension = 0_u32;
+    for byte in 0_u8..=u8::MAX {
+        if !bytes.contains(&byte) {
+            bytes.push(byte);
+            code_points.push(256 + extension);
+            extension += 1;
+        }
+    }
+    let mut vocab = bytes
+        .into_iter()
+        .zip(code_points)
+        .enumerate()
+        .map(|(id, (_, code_point))| (char::from_u32(code_point).unwrap().to_string(), id as u32))
+        .collect::<BTreeMap<_, _>>();
+    vocab.insert("ab".to_owned(), 256);
+    vocab
 }
 
 fn write_safetensors(path: PathBuf, mutation: FixtureMutation) {
@@ -302,7 +427,7 @@ fn profile_identity_and_deterministic_conversion_are_exact() {
     );
     assert_eq!(
         QWEN2_CONVERSION_PROFILE_SHA256,
-        "aeafbc2baa25b5e6b8d3a11a40a2d96f23fab9c4dbb4809747664a97238c33eb"
+        "db4d16ce83460856588bda98829a16bbc23805f82ecad0f40b9380c77ea092fc"
     );
     let fixture = Fixture::new(FixtureMutation::None);
     let first = convert_locked_qwen2_source(
@@ -338,6 +463,31 @@ fn profile_identity_and_deterministic_conversion_are_exact() {
     );
     assert_eq!(receipt["qualityStatus"], "not-assessed-by-converter");
     assert_eq!(receipt["runtimeStatus"], "not-assessed-by-converter");
+    assert_eq!(
+        receipt["tokenizer"]["formatProfileId"],
+        TOKENIZER2_FORMAT_PROFILE_ID
+    );
+    assert_eq!(receipt["tokenizer"]["tokenCount"], 259);
+    assert_eq!(receipt["tokenizer"]["baseTokenCount"], 257);
+    assert_eq!(receipt["tokenizer"]["mergeCount"], 1);
+    assert_eq!(
+        receipt["chatTemplate"]["sourceFormat"],
+        "publisher-jinja-text"
+    );
+    assert_eq!(
+        receipt["chatTemplate"]["promotionStatus"],
+        "unpromoted-source-evidence-only"
+    );
+    let tokenizer_bytes = fs::read(first.tokenizer_path()).unwrap();
+    let tokenizer = Tokenizer2::from_bytes(
+        tokenizer_bytes,
+        TokenizerPolicy::new(1_048_576, 65_536, 65_536, 262_144).unwrap(),
+    )
+    .unwrap();
+    assert_eq!(tokenizer.token_count(), 259);
+    let mut encoded = Vec::new();
+    tokenizer.encode("ab<eos>", &mut encoded).unwrap();
+    assert_eq!(encoded, vec![256, 258]);
 }
 
 #[test]
@@ -422,4 +572,92 @@ fn successful_output_is_create_only() {
     )
     .unwrap_err();
     assert_eq!(error.code(), "qwen2-output-already-exists");
+}
+
+#[test]
+fn duplicate_tokenizer_json_member_is_rejected_after_relocking() {
+    let fixture = Fixture::new(FixtureMutation::None);
+    let path = fixture.source.join("tokenizer.json");
+    let source = fs::read_to_string(&path).unwrap();
+    let duplicate = source.replacen('{', "{\n  \"version\": \"1.0\",", 1);
+    fs::write(path, duplicate).unwrap();
+    write_lock(&fixture.source, &fixture.lock);
+    let error = convert_locked_qwen2_source(
+        &fixture.lock,
+        &fixture.source,
+        &fixture.output,
+        &Fixture::execution(),
+    )
+    .unwrap_err();
+    assert_eq!(error.code(), "qwen-tokenizer-json-invalid");
+    assert!(!fixture.output.exists());
+}
+
+#[test]
+fn unknown_tokenizer_pipeline_member_is_rejected_after_relocking() {
+    let fixture = Fixture::new(FixtureMutation::None);
+    let path = fixture.source.join("tokenizer.json");
+    let mut tokenizer: Value = serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();
+    tokenizer["unexpected"] = json!(true);
+    write_json(path, &tokenizer);
+    write_lock(&fixture.source, &fixture.lock);
+    let error = convert_locked_qwen2_source(
+        &fixture.lock,
+        &fixture.source,
+        &fixture.output,
+        &Fixture::execution(),
+    )
+    .unwrap_err();
+    assert_eq!(error.code(), "qwen-tokenizer-json-invalid");
+}
+
+#[test]
+fn redundant_vocab_disagreement_is_rejected_after_relocking() {
+    let fixture = Fixture::new(FixtureMutation::None);
+    let path = fixture.source.join("vocab.json");
+    let mut vocab: Value = serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();
+    vocab["a"] = json!(999);
+    write_json(path, &vocab);
+    write_lock(&fixture.source, &fixture.lock);
+    let error = convert_locked_qwen2_source(
+        &fixture.lock,
+        &fixture.source,
+        &fixture.output,
+        &Fixture::execution(),
+    )
+    .unwrap_err();
+    assert_eq!(error.code(), "qwen-tokenizer-vocab-mismatch");
+}
+
+#[test]
+fn redundant_merges_disagreement_is_rejected_after_relocking() {
+    let fixture = Fixture::new(FixtureMutation::None);
+    fs::write(fixture.source.join("merges.txt"), b"#version: 0.2\na c\n").unwrap();
+    write_lock(&fixture.source, &fixture.lock);
+    let error = convert_locked_qwen2_source(
+        &fixture.lock,
+        &fixture.source,
+        &fixture.output,
+        &Fixture::execution(),
+    )
+    .unwrap_err();
+    assert_eq!(error.code(), "qwen-tokenizer-merges-mismatch");
+}
+
+#[test]
+fn unsupported_bytelevel_option_is_rejected_after_relocking() {
+    let fixture = Fixture::new(FixtureMutation::None);
+    let path = fixture.source.join("tokenizer.json");
+    let mut tokenizer: Value = serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();
+    tokenizer["decoder"]["use_regex"] = json!(true);
+    write_json(path, &tokenizer);
+    write_lock(&fixture.source, &fixture.lock);
+    let error = convert_locked_qwen2_source(
+        &fixture.lock,
+        &fixture.source,
+        &fixture.output,
+        &Fixture::execution(),
+    )
+    .unwrap_err();
+    assert_eq!(error.code(), "qwen-tokenizer-pipeline-unsupported");
 }

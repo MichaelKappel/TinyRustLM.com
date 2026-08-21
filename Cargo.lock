@@ -687,6 +687,7 @@ dependencies = [
  "sha2",
  "tinyrustlm-durability",
  "tinyrustlm-slm2",
+ "tinyrustlm-tokenizer2",
 ]
 
 [[package]]
