@@ -14,6 +14,8 @@
     "generate:vnext-phase-invalidation-rust-vectors": "node tools/vnext-phase-invalidation-rust-vectors.js --write",
     "generate:slm2-runtime-vectors": "node tools/slm2-runtime-reference.js --write",
     "generate:tokenizer2-format-vectors": "node tools/tokenizer2-reference.js --write",
+    "test:tokenizer2-wasm": "node --test tests/tokenizer2-wasm-boundary.test.js",
+    "test:qwen-tokenizer2-browser-wasm-preregistration": "node --test tests/qwen-tokenizer2-browser-wasm-preregistration.test.js",
     "generate:vnext-signature-rust-vectors": "node tools/vnext-signature-rust-vectors.js --write",
     "test:unit": "node tools/run-vnext-unit-test-gate.js all",
     "test:vnext-authority-rust-vectors": "node --test tests/vnext-authority-rust-vectors.test.js",

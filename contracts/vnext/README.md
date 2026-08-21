@@ -155,6 +155,29 @@ The immutable v1 verifier failure and successful append-only v2 successor are
 recorded in
 `docs/architecture/qwen3-tokenizer2-parity-verifier-v1-failure-and-v2-preregistration.md`.
 
+The production-shaped Tokenizer2 WASM interface is now frozen in
+`tokenizer2-wasm-interface.v1.json`, 4,030 bytes with SHA-256
+`375c270b6836968eddd53bca6523dd1461dd5d77dc537be11f1fd78be9ad4d99`.
+Its import-free 320,996-byte release module has SHA-256
+`058c6ffb494e90b101409951ba78b4fc7d8098a868c861a276ef3f415ede27cc`.
+The miniature artifact passes the same Rust core through native tests, Node
+WASM, and a fresh real-Chromium profile with zero requests and proven profile
+deletion.
+
+The full-artifact browser execution is registered, but has not yet been run.
+`qwen-tokenizer2-browser-wasm-preregistration.v1.json` is 9,343 bytes with
+SHA-256
+`8734360e7fc2e0d4cb4f6ace87e2b5ec2922f983eededa7f5b246fad928050f3`.
+Its independent 2,453-byte verification preregistration has SHA-256
+`560347bb1db2f1299bc3f54d5e2a8a5d6adbb26e1a55b908c4bb754d72f540a2`.
+Together they bind the 151,669-token artifact shape, immutable native result,
+2,048-case corpus, source closure, WASM module, browser binaries, two owned
+profiles, worker termination and recovery, resource ceilings, raw outputs, and
+one verifier invocation. They authorize no browser parity claim until this
+checkpoint is committed, pushed, fresh-remote verified, and executed exactly
+as registered. See
+`docs/architecture/qwen3-tokenizer2-browser-wasm-preregistration.md`.
+
 ## Parsing
 
 Every JSON input is first consumed as bounded bytes. Before schema validation,

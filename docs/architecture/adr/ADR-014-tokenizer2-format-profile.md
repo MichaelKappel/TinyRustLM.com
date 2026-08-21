@@ -17,7 +17,10 @@ receipt or parity decision. An append-only corrected v2 verifier and fresh run
 set were preregistered and pushed before observation. The one authorized v2
 execution matched all 2,048 cases and 69,294 tokens exactly, with zero
 mismatches and byte-stable repeated outputs. Native source-oracle parity now
-passes; real-browser WASM replay and resource evidence remain open.
+passes. The production WASM interface, import-free module, two-run Chromium
+execution, and independent verification are preregistered without producing
+full-artifact browser output; real-browser replay and resource evidence remain
+open.
 
 ## Decision Date
 
@@ -44,10 +47,23 @@ closure produced the same 7,038,773-byte Tokenizer2 artifact with SHA-256
 The artifact remains unpromoted pending real-browser WASM parity and bounded
 resource evidence.
 
+**Observed local fact**: the frozen production WASM interface is 4,030 bytes
+with SHA-256
+`375c270b6836968eddd53bca6523dd1461dd5d77dc537be11f1fd78be9ad4d99`,
+and the zero-import release module is 320,996 bytes with SHA-256
+`058c6ffb494e90b101409951ba78b4fc7d8098a868c861a276ef3f415ede27cc`.
+Native, Node-WASM, and fresh real-Chromium miniature replay pass. The
+full-artifact execution preregistration is 9,343 bytes with SHA-256
+`8734360e7fc2e0d4cb4f6ace87e2b5ec2922f983eededa7f5b246fad928050f3`;
+the independent verification preregistration is 2,453 bytes with SHA-256
+`560347bb1db2f1299bc3f54d5e2a8a5d6adbb26e1a55b908c4bb754d72f540a2`.
+No full-artifact browser output exists at this checkpoint.
+
 **Local verification required**: native replay against the exact upstream
 implementation now passes over the preregistered broad adversarial corpus. The
-same accepted artifact and frozen cases must still pass real Chromium WASM
-with repeated-use, cancellation, privacy, and resource evidence.
+registered runner and verifier must still consume the same accepted artifact
+and frozen cases in real Chromium with repeated-use, true worker termination,
+fresh-worker recovery, privacy, deletion, and resource evidence.
 
 ## Decision
 
@@ -240,9 +256,11 @@ nonexact field before writing any output.
 
 ## Performance Evidence
 
-The current evidence is correctness evidence over a 7,459-byte miniature
-artifact. It does not claim production Qwen tokenizer load time, throughput,
-memory, WASM speed, or browser responsiveness.
+The current browser evidence is correctness evidence over a 7,459-byte
+miniature artifact through the production-shaped WASM boundary. It does not
+claim production Qwen tokenizer load time, throughput, memory, WASM speed, or
+browser responsiveness. Those full-artifact measurements are registered but
+have not been observed.
 
 The Rust parser reads the complete in-memory tokenizer artifact once, uses
 bounded tables, and builds explicit token, byte, added-token, and merge
@@ -303,8 +321,10 @@ conversion.
 The source tokenizer's maximum observed token byte length and production
 artifact size must be recorded by conversion evidence rather than inferred.
 
-Tokenizer2 WASM load, encode, decode, cancellation, and repeated browser use
-are pending.
+The production Tokenizer2 WASM boundary is implemented and its miniature
+native, Node, and real-Chromium gates pass. Full-artifact load, encode, decode,
+true worker cancellation, fresh-worker recovery, repeated browser use, and
+bounded resource evidence are preregistered but unexecuted.
 
 Template2 linkage and thinking-mode semantics are pending.
 
@@ -312,10 +332,11 @@ The useful model, source-framework parity, P2P-or-convert acquisition, and
 browser-local conversation are pending.
 
 **Local verification required**: the four registered v2 source/native outputs
-and exact parity receipt now exist and revalidate outside Git. A
-full-artifact real-Chromium WASM receipt and resource receipt must still be
-created under a new no-output preregistration. The native corpus and contracts
-must not be changed after observation.
+and exact parity receipt now exist and revalidate outside Git. The
+full-artifact real-Chromium WASM execution and independent verifier are frozen
+under a new no-output preregistration, but neither has run. The registration
+must first be committed, pushed, and verified from the fresh remote; the
+native corpus and contracts must not change after observation.
 
 ## Acceptance Tests
 

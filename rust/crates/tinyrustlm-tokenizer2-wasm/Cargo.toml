@@ -1,0 +1,27 @@
+[package]
+name = "tinyrustlm-tokenizer2-wasm"
+version = "0.1.8"
+edition = "2021"
+license = "Proprietary"
+authors = ["TinyRustLM maintainers"]
+repository = "https://TinyRustLM.com/"
+description = "Bounded import-free WebAssembly boundary for the canonical Tokenizer2 runtime."
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+tinyrustlm-tokenizer2 = { path = "../tinyrustlm-tokenizer2" }
+
+[workspace]
+resolver = "2"
+
+[lints.rust]
+missing_docs = "deny"
+unsafe_code = "warn"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "z"
+panic = "abort"

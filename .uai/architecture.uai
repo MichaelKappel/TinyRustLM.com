@@ -1,11 +1,22 @@
-profile: runtime-mirust.architecture.v122
-updated_utc: 2026-08-21T16:25:57Z
+profile: runtime-mirust.architecture.v124
+updated_utc: 2026-08-21T17:47:18Z
 active_product:
   name: TinyRustLM
   root: tinyrustlm/
   goal: 100% custom Rust/WASM browser-local SLM runtime and UI.
   live_public_site: TinyRustLM.com
   public_site_boundary: Runtime.MiRust.com remains project/docs identity; TinyRustLM.com is the live local `.slm` import surface and must not auto-fetch hosted `/models/` bytes; SLMComposer.com is retired historical naming.
+current_qwen3_tokenizer2_browser_wasm_preregistration_boundary_2026_08_21:
+  authority: This is a no-output full-artifact browser-WASM preregistration checkpoint. Native source parity remains proven separately; the production-shaped WASM boundary passes miniature native, Node, and real-Chromium replay only. No full-artifact browser result exists yet.
+  source_control: Registration parent is 21a6b733959ad48c9c04cbcb08f47cf4e55fa99f. Commit and push this complete preregistration checkpoint, fetch the remote afresh, prove local/tracking/FETCH_HEAD/remote equality, and reprove output-root absence before execution. Protected E:\Source\Rust\TinyRustLM.com remains untouched; never write D:.
+  artifact: Exact 7,038,773-byte Tokenizer2 SHA256 cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b has 151,669 tokens, 151,643 base tokens, and 26 added tokens. These header values are bound by the execution profile and consumed by runner/verifier without duplicate vocabulary constants.
+  wasm: Interface is 4,030 bytes at SHA256 375c270b6836968eddd53bca6523dd1461dd5d77dc537be11f1fd78be9ad4d99; zero-import release module is 320,996 bytes at SHA256 058c6ffb494e90b101409951ba78b4fc7d8098a868c861a276ef3f415ede27cc; adapter is 11,829 bytes at SHA256 bf0f5f68925322fdbc166178add363288f9a45b3231153a4974238d040b1e049; 24-file source closure SHA256 is f56d4ec7ea31bcd03999785ebf631121ae9288c7ef2816a59af97f8fb99cc031.
+  preregistration: Execution profile is 9,343 bytes at SHA256 8734360e7fc2e0d4cb4f6ace87e2b5ec2922f983eededa7f5b246fad928050f3; independent verification profile is 2,453 bytes at SHA256 560347bb1db2f1299bc3f54d5e2a8a5d6adbb26e1a55b908c4bb754d72f540a2; runner SHA256 is 690d43695562485707e3a971ffe21d2b000c817c52129f09ecf6fc6d79000316; verifier SHA256 is 3b1a42c003338c62a9e0a488bd4146a0d4dfc02c6d9e6038460fc3736abe0a52.
+  execution: Exactly two owned persistent Chromium profiles must replay all 2,048 cases in order with exact IDs and both decodes, zero network and page errors, process closure, profile deletion, bounded resources, run-1 true worker termination, quiet-period proof, fresh-worker recovery, no retry, no repair, and one verifier invocation.
+  no_output_boundary: Registered private output root qwen3-tokenizer2-browser-wasm-20260821-v1 is absent. Do not create it before fresh-remote equality is proven. A failure is terminal and create-only; never rerun or overwrite this registration.
+  repository_verification: Focused browser preregistration tests pass 6/6, WASM-boundary tests pass 5/5, preserved native preregistration tests pass 14/14, the independent WASM crate passes format, unit, doc, and locked/offline all-target warnings-denied Clippy checks, and the root workspace passes format, locked/offline all-target tests, and warnings-denied Clippy. The canonical standard Node partition passes 1,011/1,011 with zero failures or skips. The aggregate launcher then correctly refused release evidence with release_gate_source_not_clean because this preregistration checkpoint was not yet committed; release-surface evidence must be generated only from the ensuing clean implementation commit.
+  evidence_boundary: This preregistration and miniature boundary are not full-artifact browser parity, Template2, model runtime, quality, acquisition, chat, release, deployment, publication, MemoryEndpoints, or campaign evidence. Counters remain 0/20, 0/50, 0/25, 0/40, 0/20.
+  next: Complete all affected gates, commit/push/fresh-remote verify, recheck exact private inputs and absent output root, execute the runner exactly once, and invoke the verifier exactly once only after both runs complete. Preserve any failure; advance to Template2 only after an exact pass.
 current_qwen3_tokenizer2_native_parity_boundary_2026_08_21:
   registration_parent_commit: bd21df3e080085ea9ceedfb065ef51f0d1b09ac5
   implementation_commit: 6e653482bc551d17f50ab2cf676236bceb139e42

@@ -1,5 +1,24 @@
-profile: runtime-mirust.file-handoff.v84
-updated_utc: 2026-08-21T16:25:57Z
+profile: runtime-mirust.file-handoff.v86
+updated_utc: 2026-08-21T17:47:18Z
+current_qwen3_tokenizer2_browser_wasm_preregistration_2026_08_21:
+  authority: Newest TinyRustLM first-read checkpoint; closes the implementation and no-output registration of the full-artifact real-Chromium Tokenizer2 WASM experiment only. It does not close execution, verification, Template2, model runtime, model quality, acquisition, chat, release, deployment, publication, MemoryEndpoints, or campaign gates.
+  goal: docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md
+  goal_sha256: 115ae434bf9dee0b4f27767f126d951989c5ec684241e2e3a6238de094e65d33
+  frozen_parent_goal_sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+  owned_worktree: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  branch: codex/model-acquisition-v2
+  registration_parent_commit: 21a6b733959ad48c9c04cbcb08f47cf4e55fa99f
+  protected_checkout: E:\Source\Rust\TinyRustLM.com remains untouched
+  artifact: 7,038,773 bytes; SHA256 cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b; 151,669 total, 151,643 base, and 26 added tokens
+  frozen_inputs: Corpus is 2,048 cases at SHA256 9503fd6df325f1a46dec56674d2aa72ce225d6bf1c9477abd56bb4542ef99caa; immutable native result SHA256 is ac571be6710b9064ee420e680deaf21a6a2d2e0d1099512c19767160f4aac290; native receipt SHA256 is 4ebbfa2bc59d43bdbcd5b3b2528bed66035ff2a3165f554ac6867e7cc7fe0ea6.
+  wasm: Interface 4,030 bytes at SHA256 375c270b6836968eddd53bca6523dd1461dd5d77dc537be11f1fd78be9ad4d99; zero-import module 320,996 bytes at SHA256 058c6ffb494e90b101409951ba78b4fc7d8098a868c861a276ef3f415ede27cc; adapter 11,829 bytes at SHA256 bf0f5f68925322fdbc166178add363288f9a45b3231153a4974238d040b1e049; 24-file source closure SHA256 f56d4ec7ea31bcd03999785ebf631121ae9288c7ef2816a59af97f8fb99cc031.
+  preregistration: Execution profile 9,343 bytes at SHA256 8734360e7fc2e0d4cb4f6ace87e2b5ec2922f983eededa7f5b246fad928050f3; verification profile 2,453 bytes at SHA256 560347bb1db2f1299bc3f54d5e2a8a5d6adbb26e1a55b908c4bb754d72f540a2; runner SHA256 690d43695562485707e3a971ffe21d2b000c817c52129f09ecf6fc6d79000316; verifier SHA256 3b1a42c003338c62a9e0a488bd4146a0d4dfc02c6d9e6038460fc3736abe0a52.
+  browser: Playwright 1.61.1 manifest SHA256 9d8556509e073169efec663b7f71c13f17d7002b307d00d48bf88ee91c387f3e; Chromium 149.0.7827.55 executable SHA256 b798f9e53a98d29eb7f36f8c409f905d3184780a04d2bcb56989067194784bd1.
+  execution_rule: Exactly two independent fresh profiles, complete ordered corpus replay, exact IDs and two decode modes, raw private output, zero network/errors, process closure, deletion, resource bounds, run-1 forced worker termination and fresh-worker recovery, no retry/repair/best-of-N, and exactly one verifier invocation.
+  no_output_boundary: E:\TinyRustLM-vnext-private\qwen3-tokenizer2-browser-wasm-20260821-v1 is absent. Commit and push this checkpoint, fetch the remote afresh, prove local/tracking/FETCH_HEAD/remote equality, and reprove absence before creating output.
+  current_verification: Focused browser preregistration tests pass 6/6, WASM-boundary tests pass 5/5, preserved native preregistration tests pass 14/14, the standalone WASM crate passes format, unit, doc, and locked/offline all-target warnings-denied Clippy checks, and the root Rust workspace passes format, locked/offline all-target tests, and warnings-denied Clippy. The canonical standard Node partition passes 1,011/1,011 with zero failures or skips. The aggregate launcher then correctly stopped with release_gate_source_not_clean because the implementation was still uncommitted; commit this exact implementation first, then run the release-surface gate from that clean immutable commit.
+  authority_boundary: Campaign counters remain 0/20 models, 0/50 browser rounds, 0/25 live memory rounds, 0/40 outside-proven lanes, and 0/20 announcements. MemoryEndpoints remains unauthorized and disconnected.
+  next: Run the complete affected gate, commit and push, verify the fresh remote and inputs, execute the registered runner exactly once, then invoke the verifier exactly once if both raw runs exist. Preserve terminal failure evidence without retry; only an exact pass permits Template2.
 current_qwen3_tokenizer2_native_parity_2026_08_21:
   authority: Newest TinyRustLM first-read checkpoint; preserves the terminal v1 verifier defect and closes exact pinned-Qwen native Tokenizer2 source-oracle parity through the append-only v2 successor only.
   goal: docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md

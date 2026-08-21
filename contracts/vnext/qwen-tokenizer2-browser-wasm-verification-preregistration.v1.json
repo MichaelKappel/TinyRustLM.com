@@ -1,0 +1,63 @@
+{
+  "schema": "tinyrustlm.vnext.qwen-tokenizer2-browser-wasm-verification-preregistration.v1",
+  "profileId": "tinyrustlm.qwen-tokenizer2-browser-wasm-verification/1",
+  "status": "registered-before-full-artifact-browser-output",
+  "registeredAtUtc": "2026-08-21T16:49:50Z",
+  "registrationParentCommit": "21a6b733959ad48c9c04cbcb08f47cf4e55fa99f",
+  "executionPreregistration": {
+    "path": "contracts/vnext/qwen-tokenizer2-browser-wasm-preregistration.v1.json",
+    "schema": "tinyrustlm.vnext.qwen-tokenizer2-browser-wasm-preregistration.v1",
+    "profileId": "tinyrustlm.qwen-tokenizer2-browser-wasm/1",
+    "byteLength": 9343,
+    "sha256": "8734360e7fc2e0d4cb4f6ace87e2b5ec2922f983eededa7f5b246fad928050f3"
+  },
+  "verifier": {
+    "implementation": "tinyrustlm-qwen-tokenizer2-browser-wasm-verifier",
+    "version": "1",
+    "scriptPath": "tinyrustlm/tools/qwen-tokenizer2-browser-wasm-verifier.js",
+    "scriptByteLength": 26486,
+    "scriptSha256": "3b1a42c003338c62a9e0a488bd4146a0d4dfc02c6d9e6038460fc3736abe0a52"
+  },
+  "runSet": {
+    "outputDirectoryName": "qwen3-tokenizer2-browser-wasm-20260821-v1",
+    "browserRunFiles": [
+      "browser-run-1.json",
+      "browser-run-2.json"
+    ],
+    "resultFile": "browser-wasm-verification-result.v1.json",
+    "requiredVerifierRuns": 1,
+    "createOnlyResult": true,
+    "priorRunReuseAllowed": false
+  },
+  "comparison": {
+    "caseOrder": "exact",
+    "tokenIds": "exact-u32-arrays",
+    "decodeIncludeAll": "exact-unicode-string",
+    "decodeSkipSpecial": "exact-unicode-string",
+    "nativeResultAuthority": "registered-v2-candidate-run-1",
+    "browserRunsRequired": 2,
+    "mismatchIsFatal": true,
+    "objectMemberOrder": "nonsemantic",
+    "arrayOrder": "semantic",
+    "repair": false,
+    "bestOfN": false
+  },
+  "result": {
+    "schema": "tinyrustlm.qwen_tokenizer2_browser_wasm_verification_result.v1",
+    "maximumBytes": 1048576,
+    "includePromptText": false,
+    "includeDecodedText": false,
+    "includeTokenIds": false,
+    "includePrivateAbsolutePaths": false,
+    "failurePreservedAtSameCreateOnlyPath": true
+  },
+  "claimBoundary": {
+    "tokenizerSourceParityRemainsVerified": true,
+    "tokenizerBrowserWasmParityMayBeClaimedAfterPass": true,
+    "modelRuntimeMayBeClaimed": false,
+    "modelQualityMayBeClaimed": false,
+    "releaseMayBeClaimed": false,
+    "campaignCreditMayBeClaimed": false,
+    "requiredNextGate": "template2-byte-profile-and-source-parity"
+  }
+}
