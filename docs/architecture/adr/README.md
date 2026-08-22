@@ -39,6 +39,7 @@ unpublished path after its replacement passes.
 | ADR-013 | [Exact SLM2 2.0 F32 model format profile](ADR-013-slm2-format-profile.md) | Accepted | Rust parser/writer/pieces, independent Node vector validation, and bounded fuzz replay implemented; converter, runtime, WASM/browser, promotion, and SLM1 deletion pending |
 | ADR-014 | [Exact Tokenizer2 2.0 Qwen ByteLevel BPE profile](ADR-014-tokenizer2-format-profile.md) | Accepted | Full pinned-source, native, and real-Chromium WASM parity pass; Template2 composition and model promotion pending |
 | ADR-015 | [Exact Template2 2.0 Qwen chat-rendering profile](ADR-015-template2-format-profile.md) | Accepted | Binary contract, independent vectors, Rust implementation, and exact 1,024-case source/native parity pass; browser-WASM composition remains pending |
+| ADR-016 | [Exact Sampling2 2.0 deterministic token-selection profile](ADR-016-sampling2-format-profile.md) | Accepted | Binary contract, normative Q48 table, independent vectors, and unsafe-free Rust implementation pass locally; native/WASM composition and model promotion remain pending |
 
 ## Evidence Labels
 

@@ -68,6 +68,8 @@ tinyrustlm/tools/atomic-composition-activation*.js text eol=lf
 # Keep the incompatible vNext contract registry, generated conformance corpus,
 # and independent validators byte-stable on every checkout.
 contracts/vnext/** text eol=lf
+# Normative vNext binary artifacts must bypass text and line-ending filters.
+contracts/vnext/**/*.bin binary
 tinyrustlm/tests/vnext-contract-*.test.js text eol=lf
 tinyrustlm/tools/vnext-contract-*.js text eol=lf
 tinyrustlm/tests/vnext-jcs.test.js text eol=lf

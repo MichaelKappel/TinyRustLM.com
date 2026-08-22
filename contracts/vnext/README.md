@@ -231,6 +231,43 @@ This registration is complete and must not be rerun. See ADR-015,
 `docs/architecture/vnext-template2-format-implementation.md`, and
 `docs/architecture/qwen3-template2-source-parity-preregistration.md`.
 
+## Sampling2 Format Checkpoint
+
+`sampling2-format-profile.v1.json` is the sole development-only Sampling2 2.0
+artifact and deterministic token-selection contract. It is 19,333 bytes with
+SHA-256
+`ec65e8f1a54c1e4ca95ebda88bde091dad11337250e541bbda60e8cac311428d`.
+It freezes exact binary32 admission, Q20 conversion, generated-token repetition,
+stable ties, top-k, table-backed temperature weights, top-p, SplitMix64,
+xoshiro256**, unbiased `u128` selection, exact 40-byte state, stop handling,
+context and generation limits, cancellation, and fail-atomic output.
+
+`sampling2-exp-q48-table.v1.bin` is the normative 65,544-byte table with
+SHA-256
+`fce2345bd4ddc53f137ecc36a48afca02a73ebd3549acce942628e440429c677`.
+Production runtimes consume those bytes and do not call a host exponential
+function.
+
+`sampling2-format-vectors.v1.json` is a 151,569-byte independent contract with
+SHA-256
+`4fe731f2e8714e9a6fe7689964a88a7fbe8150faf6af053cbf0be38390daaa9f`.
+Its Node-core writer owns one 65,800-byte canonical artifact with SHA-256
+`9e02fcfbba169330a2ee1bf40cea015dc4067925e051f6ae5f197a5f880bfe89`.
+The unsafe-free `tinyrustlm-sampling2` crate independently reproduces the
+artifact, fixed scores, PRNG sequences, a forced 16-word rejection path,
+selected tokens, state bytes, terminal outcomes, mutations, and every proper
+prefix rejection. It has one standalone pinned Cargo workspace so the root
+manifest and lockfile remain byte-identical to the completed Template2
+registration; this is evidence isolation, not a product fallback.
+
+Sampling2 contains no implicit product defaults and assigns no meaning to stop
+tokens. Final composition must bind the exact selected config and the exact
+ordered stop set supplied by Template2. This checkpoint is local native
+contract evidence only; native/WASM composition, real Chromium, real model,
+quality, release, deployment, publication, and campaign gates remain open.
+See ADR-016 and
+`docs/architecture/vnext-sampling2-format-implementation.md`.
+
 ## Parsing
 
 Every JSON input is first consumed as bounded bytes. Before schema validation,
