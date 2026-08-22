@@ -9,7 +9,8 @@ const test = require("node:test");
 const {
   discoverStandardUnitTestFiles,
   normalizeEvidenceRoot,
-  releaseSurfaceTestFile
+  releaseSurfaceTestFile,
+  standardTestArguments
 } = require("../tools/run-vnext-unit-test-gate.js");
 
 const testsRoot = path.resolve(__dirname);
@@ -35,4 +36,19 @@ test("requires one existing direct absolute evidence root", (t) => {
   assert.equal(normalizeEvidenceRoot(root), path.normalize(root));
   assert.throws(() => normalizeEvidenceRoot("relative"),
     (error) => error?.code === "unit_gate_evidence_root_invalid");
+});
+
+test("serializes the canonical standard partition across test files", () => {
+  const argumentsList = standardTestArguments([
+    "tests/alpha.test.js",
+    "tests/beta.test.js"
+  ]);
+  assert.deepEqual(argumentsList, [
+    "--test",
+    "--test-reporter=spec",
+    "--test-concurrency=1",
+    "tests/alpha.test.js",
+    "tests/beta.test.js"
+  ]);
+  assert.equal(Object.isFrozen(argumentsList), true);
 });

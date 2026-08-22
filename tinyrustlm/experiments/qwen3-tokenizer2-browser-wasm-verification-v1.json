@@ -1,0 +1,100 @@
+{
+  "schema": "tinyrustlm.qwen_tokenizer2_browser_wasm_verification_result.v1",
+  "profileId": "tinyrustlm.qwen-tokenizer2-browser-wasm-verification/1",
+  "status": "exact-full-artifact-browser-wasm-parity-verified",
+  "verifiedAtUtc": "2026-08-22T01:39:48.164Z",
+  "registration": {
+    "executionPreregistrationSha256": "8734360e7fc2e0d4cb4f6ace87e2b5ec2922f983eededa7f5b246fad928050f3",
+    "verificationPreregistrationSha256": "560347bb1db2f1299bc3f54d5e2a8a5d6adbb26e1a55b908c4bb754d72f540a2",
+    "verifierSha256": "3b1a42c003338c62a9e0a488bd4146a0d4dfc02c6d9e6038460fc3736abe0a52"
+  },
+  "nativeEvidence": {
+    "receiptByteLength": 3974,
+    "receiptSha256": "4ebbfa2bc59d43bdbcd5b3b2528bed66035ff2a3165f554ac6867e7cc7fe0ea6",
+    "candidateResultByteLength": 1697228,
+    "candidateResultSha256": "ac571be6710b9064ee420e680deaf21a6a2d2e0d1099512c19767160f4aac290",
+    "sourceParityStatus": "exact-source-parity-verified"
+  },
+  "artifact": {
+    "byteLength": 7038773,
+    "sha256": "cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b",
+    "tokenCount": 151669,
+    "baseTokenCount": 151643,
+    "addedTokenCount": 26
+  },
+  "wasm": {
+    "moduleByteLength": 320996,
+    "moduleSha256": "058c6ffb494e90b101409951ba78b4fc7d8098a868c861a276ef3f415ede27cc",
+    "interfaceSha256": "375c270b6836968eddd53bca6523dd1461dd5d77dc537be11f1fd78be9ad4d99",
+    "adapterSha256": "bf0f5f68925322fdbc166178add363288f9a45b3231153a4974238d040b1e049",
+    "sourceClosureSha256": "f56d4ec7ea31bcd03999785ebf631121ae9288c7ef2816a59af97f8fb99cc031",
+    "importCount": 0
+  },
+  "browser": {
+    "engine": "chromium",
+    "version": "149.0.7827.55",
+    "executableSha256": "b798f9e53a98d29eb7f36f8c409f905d3184780a04d2bcb56989067194784bd1",
+    "independentRunCount": 2,
+    "allProcessesClosed": true,
+    "allProfilesDeleted": true,
+    "totalNetworkRequestCount": 0,
+    "totalConsoleErrorCount": 0,
+    "totalPageErrorCount": 0
+  },
+  "runs": [
+    {
+      "runNumber": 1,
+      "byteLength": 1700181,
+      "sha256": "0ed18293784438035b06d99e8709c382ccef1a775c70f00d624a3964d3c92905",
+      "sourceRevision": "f4c6cabd05977b07fc8a6a441ec0550ba233bc2f",
+      "caseCount": 2048,
+      "totalTokenCount": 69294,
+      "maximumTokenCount": 5966,
+      "cancellationExercised": true
+    },
+    {
+      "runNumber": 2,
+      "byteLength": 1699041,
+      "sha256": "fb493d2e251c8efa6e12d73664aa319ad4901235fa46edf5b00fc4b43806e920",
+      "sourceRevision": "f4c6cabd05977b07fc8a6a441ec0550ba233bc2f",
+      "caseCount": 2048,
+      "totalTokenCount": 69294,
+      "maximumTokenCount": 5966,
+      "cancellationExercised": false
+    }
+  ],
+  "comparison": {
+    "mode": "exact-native-to-two-independent-browser-runs",
+    "caseCount": 2048,
+    "totalTokenCount": 69294,
+    "maximumTokenCount": 5966,
+    "exactCaseOrder": true,
+    "exactTokenIds": true,
+    "exactIncludeAllDecode": true,
+    "exactSkipSpecialDecode": true,
+    "browserRepeatEqual": true,
+    "workerRecoveryEqual": true,
+    "mismatchCount": 0
+  },
+  "resources": {
+    "maximumWasmLinearMemoryBytesObserved": 24117248,
+    "registeredMaximumWasmLinearMemoryBytes": 536870912,
+    "maximumInstantiateMsObserved": 18.40000009536743,
+    "maximumArtifactLoadMsObserved": 204.40000009536743,
+    "maximumCorpusEncodeMsObserved": 88.19999980926514,
+    "maximumCorpusDecodeIncludeAllMsObserved": 5.399999618530273,
+    "maximumCorpusDecodeSkipSpecialMsObserved": 4.399998903274536,
+    "maximumTotalMsObserved": 1094.0999999046326,
+    "registeredOperationTimeoutMs": 900000,
+    "allBoundsSatisfied": true
+  },
+  "claimBoundary": {
+    "tokenizerSourceParityVerified": true,
+    "tokenizerBrowserWasmParityVerified": true,
+    "modelRuntimeVerified": false,
+    "modelQualityVerified": false,
+    "releaseAuthorized": false,
+    "campaignCreditAuthorized": false,
+    "requiredNextGate": "template2-byte-profile-and-source-parity"
+  }
+}

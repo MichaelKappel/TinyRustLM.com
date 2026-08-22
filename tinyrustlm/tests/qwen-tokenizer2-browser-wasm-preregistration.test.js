@@ -15,6 +15,7 @@ const {
   resourceSummary,
   validateVerificationProfileFile
 } = require("../tools/qwen-tokenizer2-browser-wasm-verifier.js");
+const { parseStrictJson } = require("../tools/strict-json.js");
 
 const repositoryRoot = path.resolve(__dirname, "../..");
 
@@ -187,4 +188,101 @@ test("forbids hidden retries, repair, legacy fallback, and claim inflation", () 
   assert.equal(execution.claimBoundary.modelQualityMayBeClaimed, false);
   assert.equal(execution.claimBoundary.releaseMayBeClaimed, false);
   assert.equal(execution.claimBoundary.campaignCreditMayBeClaimed, false);
+});
+
+test("locks the bounded public-safe full-artifact browser result", () => {
+  const resultPath = path.join(
+    repositoryRoot,
+    "tinyrustlm",
+    "experiments",
+    "qwen3-tokenizer2-browser-wasm-verification-v1.json"
+  );
+  const bytes = fs.readFileSync(resultPath);
+  const resultValue = parseStrictJson(bytes);
+  const execution = validatePreregistrationFile();
+  const verification = validateVerificationProfileFile(execution);
+
+  assert.equal(bytes.length, 3909);
+  assert.equal(
+    sha256(bytes),
+    "f828190b2ff5d3c1e794cb50f3b0dd8c41367ed09fca758eeb513fb1ec2c964e"
+  );
+  assert.equal(
+    resultValue.schema,
+    "tinyrustlm.qwen_tokenizer2_browser_wasm_verification_result.v1"
+  );
+  assert.equal(resultValue.status, "exact-full-artifact-browser-wasm-parity-verified");
+  assert.equal(
+    resultValue.registration.executionPreregistrationSha256,
+    execution.sha256
+  );
+  assert.equal(
+    resultValue.registration.verificationPreregistrationSha256,
+    verification.sha256
+  );
+  assert.deepEqual(
+    resultValue.runs.map((run) => ({
+      runNumber: run.runNumber,
+      byteLength: run.byteLength,
+      sha256: run.sha256,
+      sourceRevision: run.sourceRevision,
+      cancellationExercised: run.cancellationExercised
+    })),
+    [
+      {
+        runNumber: 1,
+        byteLength: 1700181,
+        sha256: "0ed18293784438035b06d99e8709c382ccef1a775c70f00d624a3964d3c92905",
+        sourceRevision: "f4c6cabd05977b07fc8a6a441ec0550ba233bc2f",
+        cancellationExercised: true
+      },
+      {
+        runNumber: 2,
+        byteLength: 1699041,
+        sha256: "fb493d2e251c8efa6e12d73664aa319ad4901235fa46edf5b00fc4b43806e920",
+        sourceRevision: "f4c6cabd05977b07fc8a6a441ec0550ba233bc2f",
+        cancellationExercised: false
+      }
+    ]
+  );
+  assert.deepEqual(resultValue.comparison, {
+    mode: "exact-native-to-two-independent-browser-runs",
+    caseCount: 2048,
+    totalTokenCount: 69294,
+    maximumTokenCount: 5966,
+    exactCaseOrder: true,
+    exactTokenIds: true,
+    exactIncludeAllDecode: true,
+    exactSkipSpecialDecode: true,
+    browserRepeatEqual: true,
+    workerRecoveryEqual: true,
+    mismatchCount: 0
+  });
+  assert.equal(resultValue.browser.independentRunCount, 2);
+  assert.equal(resultValue.browser.allProcessesClosed, true);
+  assert.equal(resultValue.browser.allProfilesDeleted, true);
+  assert.equal(resultValue.browser.totalNetworkRequestCount, 0);
+  assert.equal(resultValue.browser.totalConsoleErrorCount, 0);
+  assert.equal(resultValue.browser.totalPageErrorCount, 0);
+  assert.equal(resultValue.resources.allBoundsSatisfied, true);
+  assert.ok(
+    resultValue.resources.maximumWasmLinearMemoryBytesObserved <=
+      resultValue.resources.registeredMaximumWasmLinearMemoryBytes
+  );
+  assert.ok(
+    resultValue.resources.maximumTotalMsObserved <=
+      resultValue.resources.registeredOperationTimeoutMs
+  );
+  assert.deepEqual(resultValue.claimBoundary, {
+    tokenizerSourceParityVerified: true,
+    tokenizerBrowserWasmParityVerified: true,
+    modelRuntimeVerified: false,
+    modelQualityVerified: false,
+    releaseAuthorized: false,
+    campaignCreditAuthorized: false,
+    requiredNextGate: "template2-byte-profile-and-source-parity"
+  });
+  assert.equal(Object.hasOwn(resultValue, "results"), false);
+  assert.equal(resultValue.runs.some((run) => Object.hasOwn(run, "results")), false);
+  assert.doesNotMatch(bytes.toString("utf8"), /[A-Z]:\\|TinyRustLM-vnext-private/iu);
 });

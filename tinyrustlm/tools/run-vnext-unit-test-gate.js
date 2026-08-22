@@ -79,13 +79,24 @@ function discoverStandardUnitTestFiles() {
   return Object.freeze(standardFiles);
 }
 
-function runStandardUnitTests() {
-  const files = discoverStandardUnitTestFiles();
-  const result = childProcess.spawnSync(process.execPath, [
+function standardTestArguments(files) {
+  if (!Array.isArray(files) || files.length === 0 ||
+      files.some((entry) => typeof entry !== "string" ||
+        !/^tests\/[a-z0-9][a-z0-9.-]*\.test\.js$/u.test(entry) ||
+        entry === releaseSurfaceTestFile)) {
+    fail("unit_gate_test_inventory_invalid");
+  }
+  return Object.freeze([
     "--test",
     "--test-reporter=spec",
+    "--test-concurrency=1",
     ...files
-  ], {
+  ]);
+}
+
+function runStandardUnitTests() {
+  const files = discoverStandardUnitTestFiles();
+  const result = childProcess.spawnSync(process.execPath, standardTestArguments(files), {
     cwd: packageRoot,
     env: process.env,
     shell: false,
@@ -128,5 +139,6 @@ if (require.main === module) {
 module.exports = Object.freeze({
   discoverStandardUnitTestFiles,
   normalizeEvidenceRoot,
-  releaseSurfaceTestFile
+  releaseSurfaceTestFile,
+  standardTestArguments
 });

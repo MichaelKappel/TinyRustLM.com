@@ -1,20 +1,47 @@
-# Qwen3 Tokenizer2 Full-Artifact Browser-WASM Preregistration
+# Qwen3 Tokenizer2 Full-Artifact Browser-WASM Preregistration And Result
 
 ## Status
 
 On 2026-08-21, the production-shaped Tokenizer2 WASM boundary and one exact
 full-artifact real-Chromium experiment were frozen before producing any
-full-artifact browser-comparative output. The same Rust Tokenizer2 core passes
-native tests, Node WASM replay, and a miniature real-Chromium replay with zero
-network requests and proven owned-profile deletion.
+full-artifact browser-comparative output. On 2026-08-22, after implementation
+commit `4461ee0c3c09f42ae44bf1eb9dd0d76ffe0bc8dc` and gate checkpoint
+`f4c6cabd05977b07fc8a6a441ec0550ba233bc2f` were pushed and independently
+read back from the remote, every registered input rehashed exactly and the
+registered output root was still absent. The runner was then invoked once and
+the independent verifier was invoked once.
 
-This is a preregistration checkpoint only. It is not full-artifact browser-WASM
-parity, production resource evidence, Template2 evidence, model-runtime
-evidence, model quality, release authority, deployment evidence, or campaign
-credit. The registered output root
-`qwen3-tokenizer2-browser-wasm-20260821-v1` does not exist at this checkpoint.
-It must remain absent until this implementation is committed, pushed, and
-verified against a fresh remote readback.
+Both fresh Chromium profiles replayed all 2,048 cases exactly. The verifier
+found zero token-ID, include-all decode, skip-special decode, repeatability, or
+fresh-worker-recovery mismatches. It also accepted process closure, profile
+deletion, zero network requests, zero browser errors, forced worker
+termination, and every registered resource bound. This closes the exact
+full-artifact Tokenizer2 native-to-browser-WASM parity gate for the registered
+artifact and implementation.
+
+This result is not Template2 evidence, model-runtime evidence, model quality,
+release authority, deployment evidence, or campaign credit. Raw per-case
+browser documents remain private outside Git. The bounded public-safe result
+contains no prompts, decoded text, token IDs, or private absolute paths.
+
+## Verified Result
+
+| Evidence | Exact identity or result |
+| --- | --- |
+| Observation source revision | `f4c6cabd05977b07fc8a6a441ec0550ba233bc2f` |
+| Browser run 1 | 1,700,181 bytes; SHA-256 `0ed18293784438035b06d99e8709c382ccef1a775c70f00d624a3964d3c92905`; cancellation and fresh-worker recovery exercised |
+| Browser run 2 | 1,699,041 bytes; SHA-256 `fb493d2e251c8efa6e12d73664aa319ad4901235fa46edf5b00fc4b43806e920` |
+| Public-safe verification result | 3,909 bytes; SHA-256 `f828190b2ff5d3c1e794cb50f3b0dd8c41367ed09fca758eeb513fb1ec2c964e` |
+| Comparison | 2,048 cases; 69,294 tokens; maximum 5,966 tokens; zero mismatches |
+| Browser isolation | two independent profiles; all processes closed; all profiles deleted; zero network, console-error, or page-error events |
+| Maximum observed WASM memory | 24,117,248 bytes against the registered 536,870,912-byte ceiling |
+| Maximum observed total operation time | 1,094.10 ms against the registered 900,000 ms ceiling |
+| Next required gate | `template2-byte-profile-and-source-parity` |
+
+The committed bounded result is
+`tinyrustlm/experiments/qwen3-tokenizer2-browser-wasm-verification-v1.json`
+and is byte-identical to the create-only verifier result. The two raw run
+documents remain immutable outside Git under their registered identities.
 
 ## Exact Authorities
 
@@ -125,7 +152,7 @@ token IDs, and private absolute paths. A terminal failure is written to the
 same registered create-only result path and does not authorize a receipt or a
 retry.
 
-## Next Action
+## Gate Execution And Next Action
 
 Precommit verification passes the focused browser preregistration tests 6/6,
 the WASM-boundary tests 5/5, the preserved native preregistration tests 14/14,
@@ -149,14 +176,31 @@ interruptions and one passing-but-unreceipted shard-8 child output remain
 incomplete history; only the 10 verified shard receipts authorize the
 aggregate.
 
-1. Commit this bounded result/UAI checkpoint and push both local commits.
-2. Fetch the remote afresh and prove local HEAD, tracking state, `FETCH_HEAD`,
-   and the actual remote branch are identical.
-3. Reprove that the registered output root is absent.
-4. Execute the registered runner exactly once, followed by the registered
-   verifier exactly once if and only if both raw runs complete.
-5. Preserve any terminal failure. On success, record the bounded result and
-   advance to Template2 without claiming model-runtime or campaign evidence.
+Those five execution prerequisites were completed in order. The output root
+was absent after fresh-remote equality, 33 direct identity checks passed, the
+runner created exactly two raw runs, and the verifier created exactly one
+bounded result. The output root now contains those three files only. The
+profile parent is empty, no registered process remains live, and no failure
+receipt exists. This registration is complete and must never be rerun.
+
+The result checkpoint first exposed a separate test-runner reliability defect:
+the 145-file standard partition used Node's unconstrained cross-file default,
+and the real `browser-crash` fault timed out under concurrent Chromium load.
+That failure remains evidence. The complete six-fault browser file then passed
+3/3 in isolation. A new launcher regression failed before implementation and
+now requires `--test-concurrency=1` for the canonical standard partition; no
+test, assertion, browser fault, or release-surface custody case was removed.
+The final serialized partition passes 1,013/1,013 with zero failures, skips,
+cancellations, todos, or stderr across all 145 standard files in 449 seconds.
+
+Next, define one clean-slate Template2 byte profile before accepting publisher
+template output. Bind the exact pinned Qwen source template, parser semantics,
+special-token contract, role and turn rules, whitespace, generation-prompt
+behavior, bounded rendering, deterministic vectors, independent oracle, native
+source parity, and real-browser WASM replay. Do not execute publisher code or
+add a Jinja runtime, compatibility reader, repair path, or fallback. Preserve
+the accepted Tokenizer2 identity as an immutable dependency and advance to
+deterministic sampling only after exact Template2 source parity passes.
 
 Campaign counters remain 0/20 models, 0/50 browser rounds, 0/25 live memory
 rounds, 0/40 outside-proven lanes, and 0/20 announcements.
