@@ -1,0 +1,267 @@
+{
+  "schema": "tinyrustlm.template2_source_oracle_environment_lock.v1",
+  "profileId": "tinyrustlm.template2-source-oracle-python/1",
+  "platform": "win-x64",
+  "pythonVersion": "3.12.10",
+  "launcher": {
+    "relativePath": "Scripts/python.exe",
+    "byteLength": 274424,
+    "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+  },
+  "baseInterpreter": {
+    "basename": "python.exe",
+    "byteLength": 104952,
+    "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a"
+  },
+  "packages": [
+    {
+      "name": "Jinja2",
+      "version": "3.1.6"
+    },
+    {
+      "name": "MarkupSafe",
+      "version": "3.0.3"
+    }
+  ],
+  "packageRoots": [
+    "Lib/site-packages/jinja2",
+    "Lib/site-packages/jinja2-3.1.6.dist-info",
+    "Lib/site-packages/markupsafe",
+    "Lib/site-packages/markupsafe-3.0.3.dist-info"
+  ],
+  "exclusions": [
+    "__pycache__-directories",
+    "pyc-files"
+  ],
+  "execution": {
+    "isolatedMode": true,
+    "bytecodeWrites": false,
+    "dedicatedEmptyPycachePrefix": true,
+    "networkAllowed": false,
+    "childProcessAllowed": false
+  },
+  "sourceClosureSha256": "0138606aefe81a2a6d1b19917ef0456f5dfc23b0bd4361d87b80638ed6801155",
+  "fileCount": 44,
+  "files": [
+    {
+      "path": "Lib/site-packages/jinja2-3.1.6.dist-info/INSTALLER",
+      "byteLength": 4,
+      "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+    },
+    {
+      "path": "Lib/site-packages/jinja2-3.1.6.dist-info/METADATA",
+      "byteLength": 2871,
+      "sha256": "68c5548fb67c4132a13898d9b31ec50c6bea2abdd915d921f214355c3a6499c8"
+    },
+    {
+      "path": "Lib/site-packages/jinja2-3.1.6.dist-info/RECORD",
+      "byteLength": 3619,
+      "sha256": "1bb3b46d00f55f63d24c3a34a7f955ef6692d4691217a53b15261769607f9f7c"
+    },
+    {
+      "path": "Lib/site-packages/jinja2-3.1.6.dist-info/WHEEL",
+      "byteLength": 82,
+      "sha256": "ff6a3334508b59cf776cae1628708ef9e0d410d0e5a3e76073d714deaa2460ee"
+    },
+    {
+      "path": "Lib/site-packages/jinja2-3.1.6.dist-info/entry_points.txt",
+      "byteLength": 58,
+      "sha256": "38bf39818535783f1cb8f9629227c59e05e97818dac65eab209f0a902ff7afe2"
+    },
+    {
+      "path": "Lib/site-packages/jinja2-3.1.6.dist-info/licenses/LICENSE.txt",
+      "byteLength": 1475,
+      "sha256": "3b49dcee4105eb37bac10faf1be260408fe85d252b8e9df2e0979fc1e094437b"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/__init__.py",
+      "byteLength": 1928,
+      "sha256": "c717a93bd8bb0c7b2a910ae004476e2ed7e8cf6402b93ebf81b2f85d237585b5"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/_identifier.py",
+      "byteLength": 1958,
+      "sha256": "ff361cb4d2b346a964fe6bab4cd973ae3bb514524bed56bf223aaa77b8a2da55"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/async_utils.py",
+      "byteLength": 2834,
+      "sha256": "bcaf8f76cba8ace3275929c4913de25094489139d880ed93e8c9c6c43807239a"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/bccache.py",
+      "byteLength": 14061,
+      "sha256": "821d2ab3daee9675e8d0f857e634c9cb6507cc8f3016743ade8fefc3b9e1cd18"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/compiler.py",
+      "byteLength": 74131,
+      "sha256": "f51a42425e57f3c0479652623ec1cf876f791e1d2e029bf0149350baeb542de3"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/constants.py",
+      "byteLength": 1433,
+      "sha256": "18ca05c9d045fe476969128fa0ce5c97932f8aab9544b57266d7e9e7ed7a8e0d"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/debug.py",
+      "byteLength": 6297,
+      "sha256": "0a71ea0831ddf81546bed8bff19b13a259d7361037102b18fba9ffda9c14f07c"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/defaults.py",
+      "byteLength": 1267,
+      "sha256": "6e805c4b0efc87e969db461b697489b2a900236b8dfe60ff4ed0b27697aae705"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/environment.py",
+      "byteLength": 61513,
+      "sha256": "f6786b3fb0a1f8d6c65f4d30bf2af8cb2fae84d1ead8e09ceb48201ab9e2fdf9"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/exceptions.py",
+      "byteLength": 5071,
+      "sha256": "8a81de1eb5b009635a5d7d629c798755b96f73885a3bb017b230a9dc67d6bf1d"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/ext.py",
+      "byteLength": 31875,
+      "sha256": "e4f1797877e1f265c02315c71d1076c576d7a218bca44de71d23b16baeae4bb1"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/filters.py",
+      "byteLength": 55212,
+      "sha256": "3d0fc481df67f634a0b671906321782b98f69d8c21508ba584f9f28a691dafe9"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/idtracking.py",
+      "byteLength": 10555,
+      "sha256": "fa5979948a7bde930bdc4ad46222098fbb5d996c5c1ff2250efdf203f862658a"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/lexer.py",
+      "byteLength": 29786,
+      "sha256": "2d88988a8e9bafe4dea7d9cf72ea565ec3c4b6396ec37a75994fa534155151f9"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/loaders.py",
+      "byteLength": 24055,
+      "sha256": "c08ae7c63bdc6ea8795705b6f0d4a47e8b620eaf2a342c4839215b1948922c1e"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/meta.py",
+      "byteLength": 4397,
+      "sha256": "3930cf91a16f5361e0bf1fba6a4cfbd79e05f012166919af25c045bf0a291f0c"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/nativetypes.py",
+      "byteLength": 4210,
+      "sha256": "ec620600b54981dc8bf34a1925d4146947f04ade6ada549265b5edd1d35ffcce"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/nodes.py",
+      "byteLength": 34579,
+      "sha256": "9b50eecdcafaaa1648f0943a57226050d8a78c07f96d0ce28d29839ccb2f531f"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/optimizer.py",
+      "byteLength": 1651,
+      "sha256": "ac99c246543ba59b04126321b100e00bfa4ac831f13f94cf4bacd53c6b2072ef"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/parser.py",
+      "byteLength": 40383,
+      "sha256": "94b385cb7b0498773921a1074621f5b1056721dda6a14433872789653b5d637d"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/py.typed",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/runtime.py",
+      "byteLength": 34249,
+      "sha256": "80393e1af76b8895ea82c19b1e0adc2933f4629eb33d7ce1ceb2290851f78c05"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/sandbox.py",
+      "byteLength": 15009,
+      "sha256": "330d9a8ad958d88f256bb15885c5f6606f41b5461c2e70f41a1ddddbd7035ab6"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/tests.py",
+      "byteLength": 5926,
+      "sha256": "54bb018551675a0f8fc52073d4c8519cd5a03f5a2f5e4de778ed452d031e0bd4"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/utils.py",
+      "byteLength": 24129,
+      "sha256": "ad1a77a3d7bb64a4b87f2ad645b10bc8b729b8655315c9e8a1a39ad6ac7f1489"
+    },
+    {
+      "path": "Lib/site-packages/jinja2/visitor.py",
+      "byteLength": 3557,
+      "sha256": "11c9cbd4f2307ffe1154238cc6c44db91f005c76d2d6a7c074c384da780a273e"
+    },
+    {
+      "path": "Lib/site-packages/markupsafe-3.0.3.dist-info/INSTALLER",
+      "byteLength": 4,
+      "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508"
+    },
+    {
+      "path": "Lib/site-packages/markupsafe-3.0.3.dist-info/METADATA",
+      "byteLength": 2764,
+      "sha256": "f0ae5dbb09d50fb5f7632c3d53f0220995ef76019e5892e0a545740136a4e3cb"
+    },
+    {
+      "path": "Lib/site-packages/markupsafe-3.0.3.dist-info/RECORD",
+      "byteLength": 1104,
+      "sha256": "d2b82cc3750bb0cd40c0f6e13f388c346bff58aaaf2791f289411ec92e04bd81"
+    },
+    {
+      "path": "Lib/site-packages/markupsafe-3.0.3.dist-info/WHEEL",
+      "byteLength": 101,
+      "sha256": "f143fdc7da6e588d0fd55fddecada831306a7de2cd9b6d424f367f3edaf43575"
+    },
+    {
+      "path": "Lib/site-packages/markupsafe-3.0.3.dist-info/licenses/LICENSE.txt",
+      "byteLength": 1503,
+      "sha256": "4631ec0db5fd90a547e336817264c6798214338146f8ac94b4a57f96ee8c9ec4"
+    },
+    {
+      "path": "Lib/site-packages/markupsafe-3.0.3.dist-info/top_level.txt",
+      "byteLength": 11,
+      "sha256": "ab2d0f9637b9209bafb020637a32728430a310075c0cb2bfd9a81571ec7c67a5"
+    },
+    {
+      "path": "Lib/site-packages/markupsafe/__init__.py",
+      "byteLength": 13644,
+      "sha256": "badd8b5e3fbab2a908554752031f9d6e807972b01a446e72ec43b8e3b8666aba"
+    },
+    {
+      "path": "Lib/site-packages/markupsafe/_native.py",
+      "byteLength": 218,
+      "sha256": "da9b64278d3209ca7d92adcbd4daa98237e9641fa86e789828514a50e9078784"
+    },
+    {
+      "path": "Lib/site-packages/markupsafe/_speedups.c",
+      "byteLength": 4527,
+      "sha256": "79f73a6b3739d166cac523629f1578ae4b485f6c7359f2ac2ef9dc0bc67723fc"
+    },
+    {
+      "path": "Lib/site-packages/markupsafe/_speedups.cp312-win_amd64.pyd",
+      "byteLength": 13312,
+      "sha256": "6107cd12e027357194947a9e4881aecf468790d2cb6ef4dd6ec77f5736232098"
+    },
+    {
+      "path": "Lib/site-packages/markupsafe/_speedups.pyi",
+      "byteLength": 42,
+      "sha256": "2d20e65d839e7c7e07569017b8bf2c97b02db4bc34a178759e3568559a76c2a4"
+    },
+    {
+      "path": "Lib/site-packages/markupsafe/py.typed",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

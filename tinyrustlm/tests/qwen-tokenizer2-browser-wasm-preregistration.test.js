@@ -6,18 +6,42 @@ const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
 
+const { createRegisteredGitTree } = require(
+  "./helpers/registered-git-tree.js"
+);
+const workingRepositoryRoot = path.resolve(__dirname, "../..");
+const browserProfilePath = path.join(
+  workingRepositoryRoot,
+  "contracts/vnext/qwen-tokenizer2-browser-wasm-preregistration.v1.json"
+);
+const browserProfile = JSON.parse(fs.readFileSync(browserProfilePath, "utf8"));
+const registeredTree = createRegisteredGitTree({
+  profilePath:
+    "contracts/vnext/qwen-tokenizer2-browser-wasm-preregistration.v1.json",
+  requiredPaths: [
+    "contracts/vnext/qwen-tokenizer2-browser-wasm-verification-preregistration.v1.json",
+    ...browserProfile.wasm.sourceClosure.map((entry) => entry.path)
+  ],
+  linkNodeModules: true
+});
+test.after(() => registeredTree.dispose());
+
 const {
   sourceClosureSha256,
   validatePreregistrationFile
-} = require("../tools/qwen-tokenizer2-browser-wasm-runner.js");
+} = registeredTree.requireModule(
+  "tinyrustlm/tools/qwen-tokenizer2-browser-wasm-runner.js"
+);
 const {
   compareResults,
   resourceSummary,
   validateVerificationProfileFile
-} = require("../tools/qwen-tokenizer2-browser-wasm-verifier.js");
+} = registeredTree.requireModule(
+  "tinyrustlm/tools/qwen-tokenizer2-browser-wasm-verifier.js"
+);
 const { parseStrictJson } = require("../tools/strict-json.js");
 
-const repositoryRoot = path.resolve(__dirname, "../..");
+const repositoryRoot = registeredTree.repositoryRoot;
 
 function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
@@ -88,6 +112,14 @@ function syntheticComparison() {
 }
 
 test("pins the no-output browser preregistration and verification profile", () => {
+  assert.equal(
+    registeredTree.registrationCommit,
+    "4461ee0c3c09f42ae44bf1eb9dd0d76ffe0bc8dc"
+  );
+  assert.equal(
+    registeredTree.registrationParentCommit,
+    "21a6b733959ad48c9c04cbcb08f47cf4e55fa99f"
+  );
   const execution = validatePreregistrationFile();
   const verification = validateVerificationProfileFile(execution);
   assert.equal(execution.bytes.length, 9343);
@@ -192,7 +224,7 @@ test("forbids hidden retries, repair, legacy fallback, and claim inflation", () 
 
 test("locks the bounded public-safe full-artifact browser result", () => {
   const resultPath = path.join(
-    repositoryRoot,
+    workingRepositoryRoot,
     "tinyrustlm",
     "experiments",
     "qwen3-tokenizer2-browser-wasm-verification-v1.json"

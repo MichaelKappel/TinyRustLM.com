@@ -1,5 +1,19 @@
-profile: runtime-mirust.file-handoff.v89
-updated_utc: 2026-08-22T09:42:26Z
+profile: runtime-mirust.file-handoff.v91
+updated_utc: 2026-08-22T11:49:08Z
+current_qwen3_template2_preregistration_checkpoint_2026_08_22:
+  authority: Newest TinyRustLM first-read checkpoint. Template2 2.0 binary contract, independent vectors, unsafe-free Rust implementation, exact pinned Qwen publisher source, output-free parity corpus, isolated oracle, release candidate, zero-retry observation runner, and independent verifier are preregistered without comparative output. This is not a parity result or product evidence.
+  goal: docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md
+  goal_sha256: 115ae434bf9dee0b4f27767f126d951989c5ec684241e2e3a6238de094e65d33
+  frozen_parent_goal_sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+  owned_worktree: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  branch: codex/model-acquisition-v2
+  registration_parent_commit: 81a6d53844761d10c0eb1563b5420788c1772f8f
+  exact_contracts: Template2 profile SHA256 14ff1df8dd6760119ac36e719ab396fff8e71d0719c2e1c83118f58693ea7bfa; vectors b02d50f4f181bb3414a5b14e49544ff7c094f0c98f0f5def0c276bbbd1674160; canonical artifact 5300b0b43188a8c73ed62e7e4fbab6eff358ae0395166791852b072a8009c9c8; source lock 22070f5f605a71580a928291e19fe06d7eb961531732c15f10735c2d677df660.
+  registration: Corpus SHA256 59febbdbec44cfcf92e233626fd7fb3fb140fd43dddee64e684837a7e76df99b; execution preregistration c42f7dfb14b6861bd8db47dd1fbca590961ed573c69835556815cbe5cdef1051; verification preregistration c61b9556b30fa3a82085d53a96b1e468fa1fa1a5cd81e7b92f961da1ad473095; attempt qwen3-template2-parity-20260822-v1; exact order source-1, source-2, candidate-1, candidate-2, verifier-1; zero retries.
+  preflight: Validation-only preflight passes all 1,024 cases and exact source/environment/candidate identities after correcting closure sort to explicit UTF-8 bytewise order. Dedicated pycache is empty; comparative output count is zero; focused architecture/vector/preregistration tests pass 33/33.
+  gate_and_history_fix: Historical Tokenizer2 suites now replay their exact registered Git trees at commits dc0f5f783de54b8c556064bc1d8a6b21d9cdb9a9, 6e653482bc551d17f50ab2cf676236bceb139e42, and 4461ee0c3c09f42ae44bf1eb9dd0d76ffe0bc8dc, each with exact sole-parent verification. Affected tests pass 55/55. The first complete post-fix standard partition passed 1,029 executed tests, failed 0, and retained one package-input conditional skip in 456 seconds. Package generation failed closed before output because sibling MiniModel.org CLI/native build outputs are absent; do not bypass or promote that external prerequisite.
+  protected_boundary: E:\Source\Rust\TinyRustLM.com remains untouched; never write D:; preserve completed Tokenizer2 evidence without rerun; MemoryEndpoints remains unauthorized and disconnected; counters remain 0/20, 0/50, 0/25, 0/40, 0/20.
+  next: Complete full Gate B tests and audits, commit/push, prove local/tracking/FETCH_HEAD/fresh-remote equality and output-root absence, then invoke the exact observer once. Preserve terminal failure without retry. On pass commit only bounded content-free evidence and preregister Template2 browser-WASM before browser output.
 current_source_release_surface_checkpoint_2026_08_22:
   authority: Newest TinyRustLM first-read checkpoint. Exact source 7efc50ecdf14e80d2ba12c73a059a89c07696b92 passed the complete 10-shard current-source release-surface gate after one source-integrity interruption was preserved and repaired only by exact HEAD restoration. This is repository release-surface evidence only, not product release, deployment, publication, model quality, MemoryEndpoints, P2P, or campaign progress.
   goal: docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md

@@ -7,14 +7,43 @@ const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 
-const { buildCorpus } = require("../tools/qwen-tokenizer2-parity-corpus.js");
+const { createRegisteredGitTree } = require(
+  "./helpers/registered-git-tree.js"
+);
+const registeredTree = createRegisteredGitTree({
+  profilePath:
+    "contracts/vnext/qwen-tokenizer2-parity-verification-preregistration.v2.json",
+  requiredPaths: [
+    "Cargo.lock",
+    "Cargo.toml",
+    "contracts/vnext/qwen-tokenizer2-parity-cases.v1.json",
+    "contracts/vnext/qwen-tokenizer2-parity-preregistration.v1.json",
+    "contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json",
+    "rust/crates/tinyrustlm-tokenizer2/Cargo.toml",
+    "rust/crates/tinyrustlm-tokenizer2/examples/qwen_tokenizer2_parity.rs",
+    "rust/crates/tinyrustlm-tokenizer2/src/format.rs",
+    "rust/crates/tinyrustlm-tokenizer2/src/lib.rs",
+    "rust/crates/tinyrustlm-tokenizer2/src/runtime.rs",
+    "tinyrustlm/tools/qwen-tokenizer2-parity-corpus.js",
+    "tinyrustlm/tools/qwen-tokenizer2-parity-verifier-v2.js",
+    "tinyrustlm/tools/qwen-tokenizer2-source-oracle.py",
+    "tinyrustlm/tools/strict-json.js"
+  ]
+});
+test.after(() => registeredTree.dispose());
+
+const { buildCorpus } = registeredTree.requireModule(
+  "tinyrustlm/tools/qwen-tokenizer2-parity-corpus.js"
+);
 const {
   canonicalJsonBytes,
   validatePreregistrationFiles,
   validateResultDocument,
   validateRunSetPaths,
   verificationProfilePath
-} = require("../tools/qwen-tokenizer2-parity-verifier-v2.js");
+} = registeredTree.requireModule(
+  "tinyrustlm/tools/qwen-tokenizer2-parity-verifier-v2.js"
+);
 
 /** Computes lowercase SHA-256 for exact evidence bytes. */
 function sha256(bytes) {
@@ -106,6 +135,14 @@ function makeRunSet(parent, directoryName) {
 }
 
 test("validates the append-only v2 preregistration and frozen v1 failure", () => {
+  assert.equal(
+    registeredTree.registrationCommit,
+    "6e653482bc551d17f50ab2cf676236bceb139e42"
+  );
+  assert.equal(
+    registeredTree.registrationParentCommit,
+    "bd21df3e080085ea9ceedfb065ef51f0d1b09ac5"
+  );
   const profiles = validatePreregistrationFiles();
   assert.equal(profiles.verification.sha256,
     "c02523a654c95007b9169bcd4c835b4283f9c7459796d8a943cc4ed0381242b3");

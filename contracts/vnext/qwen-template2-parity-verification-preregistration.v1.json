@@ -1,0 +1,130 @@
+{
+  "schema": "tinyrustlm.vnext.qwen-template2-parity-verification-preregistration.v1",
+  "profileId": "tinyrustlm.qwen3-template2-source-parity-verification/1",
+  "status": "registered-before-comparative-output",
+  "registeredAtUtc": "2026-08-22T10:30:00Z",
+  "registrationParentCommit": "81a6d53844761d10c0eb1563b5420788c1772f8f",
+  "executionPreregistration": {
+    "path": "contracts/vnext/qwen-template2-parity-preregistration.v1.json",
+    "schema": "tinyrustlm.vnext.qwen-template2-parity-preregistration.v1",
+    "profileId": "tinyrustlm.qwen3-template2-source-parity/1",
+    "byteLength": 6631,
+    "sha256": "c42f7dfb14b6861bd8db47dd1fbca590961ed573c69835556815cbe5cdef1051"
+  },
+  "runSet": {
+    "attemptId": "qwen3-template2-parity-20260822-v1",
+    "outputDirectoryName": "qwen3-template2-parity-20260822-v1",
+    "oracleRunFiles": [
+      "oracle-run-1.json",
+      "oracle-run-2.json"
+    ],
+    "candidateRunFiles": [
+      "candidate-run-1.json",
+      "candidate-run-2.json"
+    ],
+    "receiptFile": "parity-verification-receipt.v1.json",
+    "generatedAfterRegistrationRequired": true,
+    "priorRunReuseAllowed": false,
+    "outputPathsCreateOnly": true,
+    "requiredVerifierRuns": 1,
+    "candidateExecutable": {
+      "basename": "qwen_template2_parity.exe",
+      "byteLength": 387584,
+      "sha256": "948d16894ffff63f39c4b5c31e61b7b6f8f004b8161f0bb4e29d40e6681ce51d"
+    }
+  },
+  "observationRunner": {
+    "implementation": "tinyrustlm-qwen-template2-parity-observation",
+    "version": "1",
+    "scriptPath": "tinyrustlm/tools/qwen-template2-parity-observation.js",
+    "scriptByteLength": 14268,
+    "scriptSha256": "c1721bed07baadeee65b3f1e918b40d07ba4d28f22c07663662680fdf2cfc4e9",
+    "nodeVersion": "v24.14.0",
+    "nodeExecutableByteLength": 91380224,
+    "nodeExecutableSha256": "63c259c81e5d472b5f11c8d506070130cb04a1ecf84b80377a34ed6ec9048088",
+    "executionOrder": [
+      "source-oracle-1",
+      "source-oracle-2",
+      "candidate-1",
+      "candidate-2",
+      "verifier-1"
+    ],
+    "requiredChildProcesses": 5,
+    "retryCount": 0,
+    "rootMustNotExist": true,
+    "terminalFailurePreserved": true,
+    "networkAllowed": false
+  },
+  "verifier": {
+    "implementation": "tinyrustlm-qwen-template2-parity-verifier",
+    "version": "1",
+    "scriptPath": "tinyrustlm/tools/qwen-template2-parity-verifier.js",
+    "scriptByteLength": 47408,
+    "scriptSha256": "a278d2a1d787d9adba4af2bc4d3eb8a622723f5f0feda4c449763d10c2820954",
+    "nodeVersion": "v24.14.0",
+    "nodeExecutableByteLength": 91380224,
+    "nodeExecutableSha256": "63c259c81e5d472b5f11c8d506070130cb04a1ecf84b80377a34ed6ec9048088",
+    "sourceClosureSha256": "be1906c577e1468f215e3809e90065d45782e8609586785ae356512d76eabb47",
+    "sourceClosure": [
+      {
+        "path": "tinyrustlm/tools/qwen-template2-parity-corpus.js",
+        "byteLength": 12814,
+        "sha256": "25f50232373fcf91a73bb91db464bb53624cf8ad8b5600263cc71e10a44bd791"
+      },
+      {
+        "path": "tinyrustlm/tools/strict-json.js",
+        "byteLength": 11529,
+        "sha256": "8935f3918c9a12722404ad120c73dae80965c723301a00c7e60767c45a78790e"
+      },
+      {
+        "path": "tinyrustlm/tools/template2-reference.js",
+        "byteLength": 35530,
+        "sha256": "6489359b02cbe97692159ac4bd662b05a0804bf845552d0aa980aa304e17177e"
+      },
+      {
+        "path": "tinyrustlm/tools/template2-source-oracle-environment.js",
+        "byteLength": 7207,
+        "sha256": "952ff6175eadee734e28cd44eab8bfb6170efcfb6f7bcb2d382ee52bf8484ab9"
+      }
+    ],
+    "resultSchema": "tinyrustlm.qwen3_template2_parity_result.v1",
+    "receiptSchema": "tinyrustlm.qwen3_template2_parity_verification_receipt.v1",
+    "comparisonSemantics": {
+      "jsonObjectMemberOrder": "ignored-as-nonsemantic",
+      "jsonArrayOrder": "preserved-as-semantic",
+      "primitiveTypes": "deep-strict"
+    }
+  },
+  "execution": {
+    "requiredOracleRuns": 2,
+    "requiredCandidateRuns": 2,
+    "maximumResultBytes": 16777216,
+    "maximumReceiptBytes": 1048576,
+    "comparison": "exact-rendered-utf8-bytes-and-case-order",
+    "sourceRehashAfterObservation": true,
+    "environmentRehashAfterObservation": true,
+    "candidateExecutableRehashAfterObservation": true,
+    "artifactRecreationAfterObservation": true,
+    "rawRunByteEqualityRequired": true,
+    "createOnlyReceipt": true,
+    "mismatchIsFatal": true,
+    "rawOutputsPreserved": true,
+    "inputBasenameBindingRequired": true
+  },
+  "receipt": {
+    "maximumMismatchRecords": 0,
+    "includeMessageContent": false,
+    "includeRenderedText": false,
+    "includeRenderedHex": false,
+    "includePrivateAbsolutePaths": false
+  },
+  "claimBoundary": {
+    "templateSourceParityMayBeClaimedAfterPass": true,
+    "browserWasmMayBeClaimed": false,
+    "modelRuntimeMayBeClaimed": false,
+    "modelQualityMayBeClaimed": false,
+    "releaseMayBeClaimed": false,
+    "campaignCreditMayBeClaimed": false,
+    "requiredNextGate": "deterministic-sampling-profile-and-template2-wasm-composition-conformance"
+  }
+}

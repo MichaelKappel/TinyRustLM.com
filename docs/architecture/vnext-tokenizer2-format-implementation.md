@@ -16,13 +16,13 @@ The one authorized v2 execution then matched all 2,048 cases and 69,294 tokens
 exactly, with zero token-ID or decoded-Unicode mismatches and byte-identical
 repeated outputs.
 
-This is complete pinned-Qwen tokenizer format-conversion and native
-source-oracle parity evidence. The production-shaped WASM boundary passes its
-miniature native, Node-WASM, and fresh real-Chromium gates, and the
-full-artifact browser experiment is preregistered without producing browser
-output. This is not full-artifact browser-WASM evidence, Template2, model
-conversion, model qualification, release evidence, deployment evidence, or
-campaign credit.
+This is complete pinned-Qwen tokenizer format conversion, native source-oracle
+parity, and full-artifact real-Chromium WASM parity evidence. The registered
+browser execution replayed all 2,048 cases and 69,294 tokens twice, exercised
+true worker termination and fresh-worker recovery, and passed privacy,
+deletion, and resource gates with zero mismatches. This is not Template2
+parity, model conversion, model qualification, release evidence, deployment
+evidence, or campaign credit.
 
 ## Exact Authorities
 
@@ -48,8 +48,9 @@ campaign credit.
 | V2 source-parity receipt | 3,974 bytes; SHA-256 `4ebbfa2bc59d43bdbcd5b3b2528bed66035ff2a3165f554ac6867e7cc7fe0ea6`; 2,048/2,048 exact, zero mismatches |
 | Tokenizer2 WASM interface | 4,030 bytes; SHA-256 `375c270b6836968eddd53bca6523dd1461dd5d77dc537be11f1fd78be9ad4d99` |
 | Import-free Tokenizer2 WASM module | 320,996 bytes; SHA-256 `058c6ffb494e90b101409951ba78b4fc7d8098a868c861a276ef3f415ede27cc` |
-| Full-artifact browser execution preregistration | 9,343 bytes; SHA-256 `8734360e7fc2e0d4cb4f6ace87e2b5ec2922f983eededa7f5b246fad928050f3`; no output yet |
-| Browser verification preregistration | 2,453 bytes; SHA-256 `560347bb1db2f1299bc3f54d5e2a8a5d6adbb26e1a55b908c4bb754d72f540a2`; one future verifier invocation |
+| Full-artifact browser execution preregistration | 9,343 bytes; SHA-256 `8734360e7fc2e0d4cb4f6ace87e2b5ec2922f983eededa7f5b246fad928050f3`; completed exactly once |
+| Browser verification preregistration | 2,453 bytes; SHA-256 `560347bb1db2f1299bc3f54d5e2a8a5d6adbb26e1a55b908c4bb754d72f540a2`; completed exactly once |
+| Full-artifact browser result | 3,909 bytes; SHA-256 `f828190b2ff5d3c1e794cb50f3b0dd8c41367ed09fca758eeb513fb1ec2c964e`; zero mismatches |
 
 The profile is normative. Vectors narrow implementations to exact examples
 and hostile inputs; they do not add semantics to the profile.
@@ -211,23 +212,30 @@ format profiles, converter executable, output counts and identity, special
 IDs, and an actual Windows directory flush. These receipts authorize only the
 deterministic format-conversion claim.
 
-## Remaining Gate A Work
+## Completed Gate A And Next Dependency
 
-1. Commit and push the frozen browser implementation and preregistrations,
-   verify them from the fresh remote, and prove the registered output root did
-   not exist before that checkpoint.
-2. Execute exactly once the accepted full artifact through real Chromium WASM against
-   the frozen source/native corpus, including repeated use and cancellation.
-3. Measure load time, WASM memory growth, encoding throughput, decoding
-   throughput, and bounded rejection behavior without network access.
-4. Bind the browser-accepted Tokenizer2 identity into Template2 and the
+1. Preserve the completed browser implementation, registrations, two raw runs,
+   and bounded result without rerun or overwrite.
+2. Bind the browser-accepted Tokenizer2 identity into Template2 and the
    composition graph without embedding or aliasing it.
+3. Complete the separately preregistered Template2 source/native and browser
+   gates before deterministic sampling.
+4. Reuse Tokenizer2 evidence only while every bound artifact, runtime, corpus,
+   and browser identity remains exact.
 
 The source parser, exact rejection surface, duplicate conversion, receipt
-binding, native source-oracle parity, production WASM boundary, and no-output
-browser preregistration are complete. Until the registered browser and
-resource steps pass, Gate A is not accepted browser tokenizer or product
-evidence.
+binding, native source-oracle parity, production WASM boundary, and registered
+browser/resource steps are complete. Gate A now authorizes dependent
+Template2 work only; it is not model or product evidence.
+
+Historical Tokenizer2 test replay resolves each canonical preregistration to
+the one Git commit that introduced those exact bytes, requires its sole parent
+to equal `registrationParentCommit`, and materializes only registered files
+from that tree. This preserves hostile mutation, canonical JSON, semantic
+ordering, closure, receipt, browser, and claim-boundary tests while allowing
+clean-slate descendants to add unrelated crates. Current descendant aggregate
+manifests are never substituted for the registered source tree, and frozen
+profiles, verifiers, results, and raw evidence remain byte-immutable.
 
 ## Claim Boundary
 

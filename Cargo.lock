@@ -838,6 +838,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "tinyrustlm-template2"
+version = "0.1.8"
+dependencies = [
+ "serde",
+ "serde_json",
+ "sha2",
+]
+
+[[package]]
 name = "tinyrustlm-tokenizer2"
 version = "0.1.8"
 dependencies = [

@@ -1,0 +1,1122 @@
+{
+  "schema": "tinyrustlm.vnext.template2-format-vectors.v1",
+  "profileId": "org.minimodel.template2/2.0",
+  "profileSha256": "14ff1df8dd6760119ac36e719ab396fff8e71d0719c2e1c83118f58693ea7bfa",
+  "independentOracle": {
+    "implementation": "tinyrustlm/tools/template2-reference.js",
+    "sourceSha256": "6489359b02cbe97692159ac4bd662b05a0804bf845552d0aa980aa304e17177e",
+    "roles": [
+      "vector-generator",
+      "writer",
+      "parser",
+      "renderer"
+    ]
+  },
+  "sourceAuthority": {
+    "modelId": "Qwen/Qwen3-0.6B",
+    "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+    "sourceTemplateByteLength": 4168,
+    "sourceTemplateSha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+    "sourceModelConfigSha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+    "tokenizerArtifactByteLength": 7038773,
+    "tokenizerArtifactSha256": "cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b"
+  },
+  "vectors": [
+    {
+      "id": "qwen3-chatml-no-tools-thinking-disabled-v1",
+      "artifactHex": "54504c320d0a1a0a6d696e696d6f64656c2e74706c320000000100000200000004030201010000007b0500000000000000010000000000001f0000001800000000040000000000007b01000000000000cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7ba55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd4810000035676b000000000075500200805102005c5002005d5002005d5002005b5002000001000000000400000010000000110000a0000000000300010001000100000001000000000000000000000000000000000000000c00000001000f005c500200000000000c000000000000000a00000002000f005d5002000000000016000000000000000600000003000100ffffffff000000001c000000000000000400000004000100ffffffff0000000020000000000000000900000005000100ffffffff0000000029000000000000000100000006000100ffffffff000000002a000000000000001300000007000100ffffffff000000003d000000000000000d00000008000e005b500200000000004a000000000000001400000008000e005e500200000000005e000000000000001200000008000e005f5002000000000070000000000000000d00000008000e0060500200000000007d000000000000000b00000008000e00615002000000000088000000000000000e00000008000e00625002000000000096000000000000000c00000008000e006350020000000000a2000000000000001000000008000e006450020000000000b2000000000000000e00000008000e006550020000000000c0000000000000000e00000008000e006650020000000000ce000000000000000d00000008000e006750020000000000db000000000000000d00000008000e006850020000000000e8000000000000000b000000080006006950020000000000f3000000000000000c000000080006006a50020000000000ff000000000000000e000000080006006b500200000000000d010000000000000e000000080006006c500200000000001b010000000000000e000000080006006d5002000000000029010000000000000b000000080006006e5002000000000034010000000000000d000000080006006f5002000000000041010000000000000c0000000800060070500200000000004d010000000000000f0000000800060071500200000000005c01000000000000100000000800060072500200000000006c01000000000000070000000800060073500200000000007301000000000000080000000800060074500200000000000000000000000000000000000000000000000000000000003c7c696d5f73746172747c3e3c7c696d5f656e647c3e73797374656d75736572617373697374616e740a3c7468696e6b3e0a0a3c2f7468696e6b3e0a0a3c7c656e646f66746578747c3e3c7c6f626a6563745f7265665f73746172747c3e3c7c6f626a6563745f7265665f656e647c3e3c7c626f785f73746172747c3e3c7c626f785f656e647c3e3c7c717561645f73746172747c3e3c7c717561645f656e647c3e3c7c766973696f6e5f73746172747c3e3c7c766973696f6e5f656e647c3e3c7c766973696f6e5f7061647c3e3c7c696d6167655f7061647c3e3c7c766964656f5f7061647c3e3c746f6f6c5f63616c6c3e3c2f746f6f6c5f63616c6c3e3c7c66696d5f7072656669787c3e3c7c66696d5f6d6964646c657c3e3c7c66696d5f7375666669787c3e3c7c66696d5f7061647c3e3c7c7265706f5f6e616d657c3e3c7c66696c655f7365707c3e3c746f6f6c5f726573706f6e73653e3c2f746f6f6c5f726573706f6e73653e3c7468696e6b3e3c2f7468696e6b3e",
+      "artifactByteLength": 1403,
+      "artifactSha256": "5300b0b43188a8c73ed62e7e4fbab6eff358ae0395166791852b072a8009c9c8",
+      "header": {
+        "fileSize": 1403,
+        "literalTableOffset": 256,
+        "literalCount": 31,
+        "byteTableOffset": 1024,
+        "byteTableLength": 379,
+        "tokenizerArtifactSha256": "cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b",
+        "sourceTemplateSha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+        "sourceModelConfigSha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+        "tokenizerArtifactByteLength": 7038773,
+        "tokenizerTokenCount": 151669,
+        "modelVocabularySize": 151936,
+        "stopTokenIds": [
+          151645,
+          151643
+        ]
+      },
+      "literals": [
+        {
+          "index": 0,
+          "kind": 1,
+          "flags": 15,
+          "tokenId": 151644,
+          "utf8Hex": "3c7c696d5f73746172747c3e"
+        },
+        {
+          "index": 1,
+          "kind": 2,
+          "flags": 15,
+          "tokenId": 151645,
+          "utf8Hex": "3c7c696d5f656e647c3e"
+        },
+        {
+          "index": 2,
+          "kind": 3,
+          "flags": 1,
+          "tokenId": null,
+          "utf8Hex": "73797374656d"
+        },
+        {
+          "index": 3,
+          "kind": 4,
+          "flags": 1,
+          "tokenId": null,
+          "utf8Hex": "75736572"
+        },
+        {
+          "index": 4,
+          "kind": 5,
+          "flags": 1,
+          "tokenId": null,
+          "utf8Hex": "617373697374616e74"
+        },
+        {
+          "index": 5,
+          "kind": 6,
+          "flags": 1,
+          "tokenId": null,
+          "utf8Hex": "0a"
+        },
+        {
+          "index": 6,
+          "kind": 7,
+          "flags": 1,
+          "tokenId": null,
+          "utf8Hex": "3c7468696e6b3e0a0a3c2f7468696e6b3e0a0a"
+        },
+        {
+          "index": 7,
+          "kind": 8,
+          "flags": 14,
+          "tokenId": 151643,
+          "utf8Hex": "3c7c656e646f66746578747c3e"
+        },
+        {
+          "index": 8,
+          "kind": 8,
+          "flags": 14,
+          "tokenId": 151646,
+          "utf8Hex": "3c7c6f626a6563745f7265665f73746172747c3e"
+        },
+        {
+          "index": 9,
+          "kind": 8,
+          "flags": 14,
+          "tokenId": 151647,
+          "utf8Hex": "3c7c6f626a6563745f7265665f656e647c3e"
+        },
+        {
+          "index": 10,
+          "kind": 8,
+          "flags": 14,
+          "tokenId": 151648,
+          "utf8Hex": "3c7c626f785f73746172747c3e"
+        },
+        {
+          "index": 11,
+          "kind": 8,
+          "flags": 14,
+          "tokenId": 151649,
+          "utf8Hex": "3c7c626f785f656e647c3e"
+        },
+        {
+          "index": 12,
+          "kind": 8,
+          "flags": 14,
+          "tokenId": 151650,
+          "utf8Hex": "3c7c717561645f73746172747c3e"
+        },
+        {
+          "index": 13,
+          "kind": 8,
+          "flags": 14,
+          "tokenId": 151651,
+          "utf8Hex": "3c7c717561645f656e647c3e"
+        },
+        {
+          "index": 14,
+          "kind": 8,
+          "flags": 14,
+          "tokenId": 151652,
+          "utf8Hex": "3c7c766973696f6e5f73746172747c3e"
+        },
+        {
+          "index": 15,
+          "kind": 8,
+          "flags": 14,
+          "tokenId": 151653,
+          "utf8Hex": "3c7c766973696f6e5f656e647c3e"
+        },
+        {
+          "index": 16,
+          "kind": 8,
+          "flags": 14,
+          "tokenId": 151654,
+          "utf8Hex": "3c7c766973696f6e5f7061647c3e"
+        },
+        {
+          "index": 17,
+          "kind": 8,
+          "flags": 14,
+          "tokenId": 151655,
+          "utf8Hex": "3c7c696d6167655f7061647c3e"
+        },
+        {
+          "index": 18,
+          "kind": 8,
+          "flags": 14,
+          "tokenId": 151656,
+          "utf8Hex": "3c7c766964656f5f7061647c3e"
+        },
+        {
+          "index": 19,
+          "kind": 8,
+          "flags": 6,
+          "tokenId": 151657,
+          "utf8Hex": "3c746f6f6c5f63616c6c3e"
+        },
+        {
+          "index": 20,
+          "kind": 8,
+          "flags": 6,
+          "tokenId": 151658,
+          "utf8Hex": "3c2f746f6f6c5f63616c6c3e"
+        },
+        {
+          "index": 21,
+          "kind": 8,
+          "flags": 6,
+          "tokenId": 151659,
+          "utf8Hex": "3c7c66696d5f7072656669787c3e"
+        },
+        {
+          "index": 22,
+          "kind": 8,
+          "flags": 6,
+          "tokenId": 151660,
+          "utf8Hex": "3c7c66696d5f6d6964646c657c3e"
+        },
+        {
+          "index": 23,
+          "kind": 8,
+          "flags": 6,
+          "tokenId": 151661,
+          "utf8Hex": "3c7c66696d5f7375666669787c3e"
+        },
+        {
+          "index": 24,
+          "kind": 8,
+          "flags": 6,
+          "tokenId": 151662,
+          "utf8Hex": "3c7c66696d5f7061647c3e"
+        },
+        {
+          "index": 25,
+          "kind": 8,
+          "flags": 6,
+          "tokenId": 151663,
+          "utf8Hex": "3c7c7265706f5f6e616d657c3e"
+        },
+        {
+          "index": 26,
+          "kind": 8,
+          "flags": 6,
+          "tokenId": 151664,
+          "utf8Hex": "3c7c66696c655f7365707c3e"
+        },
+        {
+          "index": 27,
+          "kind": 8,
+          "flags": 6,
+          "tokenId": 151665,
+          "utf8Hex": "3c746f6f6c5f726573706f6e73653e"
+        },
+        {
+          "index": 28,
+          "kind": 8,
+          "flags": 6,
+          "tokenId": 151666,
+          "utf8Hex": "3c2f746f6f6c5f726573706f6e73653e"
+        },
+        {
+          "index": 29,
+          "kind": 8,
+          "flags": 6,
+          "tokenId": 151667,
+          "utf8Hex": "3c7468696e6b3e"
+        },
+        {
+          "index": 30,
+          "kind": 8,
+          "flags": 6,
+          "tokenId": 151668,
+          "utf8Hex": "3c2f7468696e6b3e"
+        }
+      ],
+      "renderCases": [
+        {
+          "id": "single-user",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Hello"
+            }
+          ],
+          "expectedUtf8Hex": "3c7c696d5f73746172747c3e757365720a48656c6c6f3c7c696d5f656e647c3e0a3c7c696d5f73746172747c3e617373697374616e740a3c7468696e6b3e0a0a3c2f7468696e6b3e0a0a",
+          "expectedInsertions": [
+            {
+              "kind": "message-start",
+              "messageIndex": 0,
+              "tokenId": 151644,
+              "byteOffset": 0
+            },
+            {
+              "kind": "message-end",
+              "messageIndex": 0,
+              "tokenId": 151645,
+              "byteOffset": 22
+            },
+            {
+              "kind": "generation-start",
+              "messageIndex": null,
+              "tokenId": 151644,
+              "byteOffset": 33
+            },
+            {
+              "kind": "thinking-start",
+              "messageIndex": null,
+              "tokenId": 151667,
+              "byteOffset": 55
+            },
+            {
+              "kind": "thinking-end",
+              "messageIndex": null,
+              "tokenId": 151668,
+              "byteOffset": 64
+            }
+          ]
+        },
+        {
+          "id": "system-and-user",
+          "messages": [
+            {
+              "role": "system",
+              "content": "Be concise."
+            },
+            {
+              "role": "user",
+              "content": "Summarize this."
+            }
+          ],
+          "expectedUtf8Hex": "3c7c696d5f73746172747c3e73797374656d0a426520636f6e636973652e3c7c696d5f656e647c3e0a3c7c696d5f73746172747c3e757365720a53756d6d6172697a6520746869732e3c7c696d5f656e647c3e0a3c7c696d5f73746172747c3e617373697374616e740a3c7468696e6b3e0a0a3c2f7468696e6b3e0a0a",
+          "expectedInsertions": [
+            {
+              "kind": "message-start",
+              "messageIndex": 0,
+              "tokenId": 151644,
+              "byteOffset": 0
+            },
+            {
+              "kind": "message-end",
+              "messageIndex": 0,
+              "tokenId": 151645,
+              "byteOffset": 30
+            },
+            {
+              "kind": "message-start",
+              "messageIndex": 1,
+              "tokenId": 151644,
+              "byteOffset": 41
+            },
+            {
+              "kind": "message-end",
+              "messageIndex": 1,
+              "tokenId": 151645,
+              "byteOffset": 73
+            },
+            {
+              "kind": "generation-start",
+              "messageIndex": null,
+              "tokenId": 151644,
+              "byteOffset": 84
+            },
+            {
+              "kind": "thinking-start",
+              "messageIndex": null,
+              "tokenId": 151667,
+              "byteOffset": 106
+            },
+            {
+              "kind": "thinking-end",
+              "messageIndex": null,
+              "tokenId": 151668,
+              "byteOffset": 115
+            }
+          ]
+        },
+        {
+          "id": "multi-turn",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Plan this."
+            },
+            {
+              "role": "assistant",
+              "content": "I can help."
+            },
+            {
+              "role": "user",
+              "content": "Use only what I have."
+            }
+          ],
+          "expectedUtf8Hex": "3c7c696d5f73746172747c3e757365720a506c616e20746869732e3c7c696d5f656e647c3e0a3c7c696d5f73746172747c3e617373697374616e740a492063616e2068656c702e3c7c696d5f656e647c3e0a3c7c696d5f73746172747c3e757365720a557365206f6e6c792077686174204920686176652e3c7c696d5f656e647c3e0a3c7c696d5f73746172747c3e617373697374616e740a3c7468696e6b3e0a0a3c2f7468696e6b3e0a0a",
+          "expectedInsertions": [
+            {
+              "kind": "message-start",
+              "messageIndex": 0,
+              "tokenId": 151644,
+              "byteOffset": 0
+            },
+            {
+              "kind": "message-end",
+              "messageIndex": 0,
+              "tokenId": 151645,
+              "byteOffset": 27
+            },
+            {
+              "kind": "message-start",
+              "messageIndex": 1,
+              "tokenId": 151644,
+              "byteOffset": 38
+            },
+            {
+              "kind": "message-end",
+              "messageIndex": 1,
+              "tokenId": 151645,
+              "byteOffset": 71
+            },
+            {
+              "kind": "message-start",
+              "messageIndex": 2,
+              "tokenId": 151644,
+              "byteOffset": 82
+            },
+            {
+              "kind": "message-end",
+              "messageIndex": 2,
+              "tokenId": 151645,
+              "byteOffset": 120
+            },
+            {
+              "kind": "generation-start",
+              "messageIndex": null,
+              "tokenId": 151644,
+              "byteOffset": 131
+            },
+            {
+              "kind": "thinking-start",
+              "messageIndex": null,
+              "tokenId": 151667,
+              "byteOffset": 153
+            },
+            {
+              "kind": "thinking-end",
+              "messageIndex": null,
+              "tokenId": 151668,
+              "byteOffset": 162
+            }
+          ]
+        },
+        {
+          "id": "empty-user",
+          "messages": [
+            {
+              "role": "user",
+              "content": ""
+            }
+          ],
+          "expectedUtf8Hex": "3c7c696d5f73746172747c3e757365720a3c7c696d5f656e647c3e0a3c7c696d5f73746172747c3e617373697374616e740a3c7468696e6b3e0a0a3c2f7468696e6b3e0a0a",
+          "expectedInsertions": [
+            {
+              "kind": "message-start",
+              "messageIndex": 0,
+              "tokenId": 151644,
+              "byteOffset": 0
+            },
+            {
+              "kind": "message-end",
+              "messageIndex": 0,
+              "tokenId": 151645,
+              "byteOffset": 17
+            },
+            {
+              "kind": "generation-start",
+              "messageIndex": null,
+              "tokenId": 151644,
+              "byteOffset": 28
+            },
+            {
+              "kind": "thinking-start",
+              "messageIndex": null,
+              "tokenId": 151667,
+              "byteOffset": 50
+            },
+            {
+              "kind": "thinking-end",
+              "messageIndex": null,
+              "tokenId": 151668,
+              "byteOffset": 59
+            }
+          ]
+        },
+        {
+          "id": "empty-system-and-assistant",
+          "messages": [
+            {
+              "role": "system",
+              "content": ""
+            },
+            {
+              "role": "user",
+              "content": "First"
+            },
+            {
+              "role": "assistant",
+              "content": ""
+            },
+            {
+              "role": "user",
+              "content": "Second"
+            }
+          ],
+          "expectedUtf8Hex": "3c7c696d5f73746172747c3e73797374656d0a3c7c696d5f656e647c3e0a3c7c696d5f73746172747c3e757365720a46697273743c7c696d5f656e647c3e0a3c7c696d5f73746172747c3e617373697374616e740a3c7c696d5f656e647c3e0a3c7c696d5f73746172747c3e757365720a5365636f6e643c7c696d5f656e647c3e0a3c7c696d5f73746172747c3e617373697374616e740a3c7468696e6b3e0a0a3c2f7468696e6b3e0a0a",
+          "expectedInsertions": [
+            {
+              "kind": "message-start",
+              "messageIndex": 0,
+              "tokenId": 151644,
+              "byteOffset": 0
+            },
+            {
+              "kind": "message-end",
+              "messageIndex": 0,
+              "tokenId": 151645,
+              "byteOffset": 19
+            },
+            {
+              "kind": "message-start",
+              "messageIndex": 1,
+              "tokenId": 151644,
+              "byteOffset": 30
+            },
+            {
+              "kind": "message-end",
+              "messageIndex": 1,
+              "tokenId": 151645,
+              "byteOffset": 52
+            },
+            {
+              "kind": "message-start",
+              "messageIndex": 2,
+              "tokenId": 151644,
+              "byteOffset": 63
+            },
+            {
+              "kind": "message-end",
+              "messageIndex": 2,
+              "tokenId": 151645,
+              "byteOffset": 85
+            },
+            {
+              "kind": "message-start",
+              "messageIndex": 3,
+              "tokenId": 151644,
+              "byteOffset": 96
+            },
+            {
+              "kind": "message-end",
+              "messageIndex": 3,
+              "tokenId": 151645,
+              "byteOffset": 119
+            },
+            {
+              "kind": "generation-start",
+              "messageIndex": null,
+              "tokenId": 151644,
+              "byteOffset": 130
+            },
+            {
+              "kind": "thinking-start",
+              "messageIndex": null,
+              "tokenId": 151667,
+              "byteOffset": 152
+            },
+            {
+              "kind": "thinking-end",
+              "messageIndex": null,
+              "tokenId": 151668,
+              "byteOffset": 161
+            }
+          ]
+        },
+        {
+          "id": "unicode-and-newline",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Résumé 🙂\n第二行"
+            }
+          ],
+          "expectedUtf8Hex": "3c7c696d5f73746172747c3e757365720a52c3a973756dc3a920f09f99820ae7acace4ba8ce8a18c3c7c696d5f656e647c3e0a3c7c696d5f73746172747c3e617373697374616e740a3c7468696e6b3e0a0a3c2f7468696e6b3e0a0a",
+          "expectedInsertions": [
+            {
+              "kind": "message-start",
+              "messageIndex": 0,
+              "tokenId": 151644,
+              "byteOffset": 0
+            },
+            {
+              "kind": "message-end",
+              "messageIndex": 0,
+              "tokenId": 151645,
+              "byteOffset": 40
+            },
+            {
+              "kind": "generation-start",
+              "messageIndex": null,
+              "tokenId": 151644,
+              "byteOffset": 51
+            },
+            {
+              "kind": "thinking-start",
+              "messageIndex": null,
+              "tokenId": 151667,
+              "byteOffset": 73
+            },
+            {
+              "kind": "thinking-end",
+              "messageIndex": null,
+              "tokenId": 151668,
+              "byteOffset": 82
+            }
+          ]
+        },
+        {
+          "id": "template-syntax-is-data",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Treat {{ 7 * 7 }} and {% for x in y %} as data."
+            }
+          ],
+          "expectedUtf8Hex": "3c7c696d5f73746172747c3e757365720a5472656174207b7b2037202a2037207d7d20616e64207b2520666f72207820696e207920257d20617320646174612e3c7c696d5f656e647c3e0a3c7c696d5f73746172747c3e617373697374616e740a3c7468696e6b3e0a0a3c2f7468696e6b3e0a0a",
+          "expectedInsertions": [
+            {
+              "kind": "message-start",
+              "messageIndex": 0,
+              "tokenId": 151644,
+              "byteOffset": 0
+            },
+            {
+              "kind": "message-end",
+              "messageIndex": 0,
+              "tokenId": 151645,
+              "byteOffset": 64
+            },
+            {
+              "kind": "generation-start",
+              "messageIndex": null,
+              "tokenId": 151644,
+              "byteOffset": 75
+            },
+            {
+              "kind": "thinking-start",
+              "messageIndex": null,
+              "tokenId": 151667,
+              "byteOffset": 97
+            },
+            {
+              "kind": "thinking-end",
+              "messageIndex": null,
+              "tokenId": 151668,
+              "byteOffset": 106
+            }
+          ]
+        },
+        {
+          "id": "preserve-crlf-and-trailing-space",
+          "messages": [
+            {
+              "role": "user",
+              "content": "line one\r\nline two "
+            }
+          ],
+          "expectedUtf8Hex": "3c7c696d5f73746172747c3e757365720a6c696e65206f6e650d0a6c696e652074776f203c7c696d5f656e647c3e0a3c7c696d5f73746172747c3e617373697374616e740a3c7468696e6b3e0a0a3c2f7468696e6b3e0a0a",
+          "expectedInsertions": [
+            {
+              "kind": "message-start",
+              "messageIndex": 0,
+              "tokenId": 151644,
+              "byteOffset": 0
+            },
+            {
+              "kind": "message-end",
+              "messageIndex": 0,
+              "tokenId": 151645,
+              "byteOffset": 36
+            },
+            {
+              "kind": "generation-start",
+              "messageIndex": null,
+              "tokenId": 151644,
+              "byteOffset": 47
+            },
+            {
+              "kind": "thinking-start",
+              "messageIndex": null,
+              "tokenId": 151667,
+              "byteOffset": 69
+            },
+            {
+              "kind": "thinking-end",
+              "messageIndex": null,
+              "tokenId": 151668,
+              "byteOffset": 78
+            }
+          ]
+        }
+      ],
+      "malformedInputs": [
+        {
+          "id": "empty-messages",
+          "messages": [],
+          "expectedError": "template2-message-count"
+        },
+        {
+          "id": "assistant-first",
+          "messages": [
+            {
+              "role": "assistant",
+              "content": "x"
+            }
+          ],
+          "expectedError": "template2-role-order"
+        },
+        {
+          "id": "system-only",
+          "messages": [
+            {
+              "role": "system",
+              "content": "x"
+            }
+          ],
+          "expectedError": "template2-role-order"
+        },
+        {
+          "id": "system-after-user",
+          "messages": [
+            {
+              "role": "user",
+              "content": "x"
+            },
+            {
+              "role": "system",
+              "content": "y"
+            },
+            {
+              "role": "user",
+              "content": "z"
+            }
+          ],
+          "expectedError": "template2-role-order"
+        },
+        {
+          "id": "consecutive-users",
+          "messages": [
+            {
+              "role": "user",
+              "content": "x"
+            },
+            {
+              "role": "user",
+              "content": "y"
+            }
+          ],
+          "expectedError": "template2-role-order"
+        },
+        {
+          "id": "final-assistant",
+          "messages": [
+            {
+              "role": "user",
+              "content": "x"
+            },
+            {
+              "role": "assistant",
+              "content": "y"
+            }
+          ],
+          "expectedError": "template2-role-order"
+        },
+        {
+          "id": "duplicate-system",
+          "messages": [
+            {
+              "role": "system",
+              "content": "x"
+            },
+            {
+              "role": "system",
+              "content": "y"
+            },
+            {
+              "role": "user",
+              "content": "z"
+            }
+          ],
+          "expectedError": "template2-role-order"
+        },
+        {
+          "id": "unknown-role",
+          "messages": [
+            {
+              "role": "developer",
+              "content": "x"
+            }
+          ],
+          "expectedError": "template2-role"
+        },
+        {
+          "id": "unknown-field",
+          "messages": [
+            {
+              "role": "user",
+              "content": "x",
+              "name": "n"
+            }
+          ],
+          "expectedError": "template2-message-shape"
+        },
+        {
+          "id": "nested-content",
+          "messages": [
+            {
+              "role": "user",
+              "content": {
+                "text": "x"
+              }
+            }
+          ],
+          "expectedError": "template2-content-type"
+        },
+        {
+          "id": "numeric-content",
+          "messages": [
+            {
+              "role": "user",
+              "content": 7
+            }
+          ],
+          "expectedError": "template2-content-type"
+        }
+      ],
+      "forbiddenContentCases": [
+        {
+          "tokenId": 151644,
+          "utf8Hex": "3c7c696d5f73746172747c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151645,
+          "utf8Hex": "3c7c696d5f656e647c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151643,
+          "utf8Hex": "3c7c656e646f66746578747c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151646,
+          "utf8Hex": "3c7c6f626a6563745f7265665f73746172747c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151647,
+          "utf8Hex": "3c7c6f626a6563745f7265665f656e647c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151648,
+          "utf8Hex": "3c7c626f785f73746172747c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151649,
+          "utf8Hex": "3c7c626f785f656e647c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151650,
+          "utf8Hex": "3c7c717561645f73746172747c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151651,
+          "utf8Hex": "3c7c717561645f656e647c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151652,
+          "utf8Hex": "3c7c766973696f6e5f73746172747c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151653,
+          "utf8Hex": "3c7c766973696f6e5f656e647c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151654,
+          "utf8Hex": "3c7c766973696f6e5f7061647c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151655,
+          "utf8Hex": "3c7c696d6167655f7061647c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151656,
+          "utf8Hex": "3c7c766964656f5f7061647c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151657,
+          "utf8Hex": "3c746f6f6c5f63616c6c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151658,
+          "utf8Hex": "3c2f746f6f6c5f63616c6c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151659,
+          "utf8Hex": "3c7c66696d5f7072656669787c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151660,
+          "utf8Hex": "3c7c66696d5f6d6964646c657c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151661,
+          "utf8Hex": "3c7c66696d5f7375666669787c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151662,
+          "utf8Hex": "3c7c66696d5f7061647c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151663,
+          "utf8Hex": "3c7c7265706f5f6e616d657c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151664,
+          "utf8Hex": "3c7c66696c655f7365707c3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151665,
+          "utf8Hex": "3c746f6f6c5f726573706f6e73653e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151666,
+          "utf8Hex": "3c2f746f6f6c5f726573706f6e73653e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151667,
+          "utf8Hex": "3c7468696e6b3e",
+          "expectedError": "template2-content-control-token"
+        },
+        {
+          "tokenId": 151668,
+          "utf8Hex": "3c2f7468696e6b3e",
+          "expectedError": "template2-content-control-token"
+        }
+      ],
+      "boundaryCases": [
+        {
+          "id": "maximum-messages",
+          "recipe": "optional-empty-system-plus-255-empty-alternating-conversation-messages",
+          "expected": "pass"
+        },
+        {
+          "id": "message-count-over",
+          "recipe": "257-empty-alternating-conversation-messages",
+          "expectedError": "template2-message-count"
+        },
+        {
+          "id": "maximum-message-content",
+          "asciiByteLength": 262144,
+          "expected": "pass"
+        },
+        {
+          "id": "message-content-over",
+          "asciiByteLength": 262145,
+          "expectedError": "template2-content-limit"
+        },
+        {
+          "id": "maximum-total-content",
+          "asciiByteLength": 1048576,
+          "expected": "pass"
+        },
+        {
+          "id": "total-content-over",
+          "asciiByteLength": 1048577,
+          "expectedError": "template2-total-content-limit"
+        },
+        {
+          "id": "maximum-prompt-tokens",
+          "tokenCount": 40960,
+          "expected": "pass"
+        },
+        {
+          "id": "prompt-token-over",
+          "tokenCount": 40961,
+          "expectedError": "template2-token-limit"
+        }
+      ],
+      "mutations": [
+        {
+          "id": "wrong-magic",
+          "operation": "xor-byte",
+          "offset": 0,
+          "value": 1,
+          "expectedError": "template2-header"
+        },
+        {
+          "id": "unknown-minor",
+          "operation": "set-byte",
+          "offset": 30,
+          "value": 1,
+          "expectedError": "template2-header"
+        },
+        {
+          "id": "unknown-renderer-profile",
+          "operation": "replace-hex",
+          "offset": 36,
+          "hex": "0200",
+          "expectedError": "template2-profile"
+        },
+        {
+          "id": "unknown-header-flag",
+          "operation": "set-byte",
+          "offset": 38,
+          "value": 1,
+          "expectedError": "template2-profile"
+        },
+        {
+          "id": "wrong-file-size",
+          "operation": "replace-hex",
+          "offset": 40,
+          "hex": "7c05000000000000",
+          "expectedError": "template2-header"
+        },
+        {
+          "id": "wrong-byte-table-offset",
+          "operation": "replace-hex",
+          "offset": 64,
+          "hex": "4004000000000000",
+          "expectedError": "template2-layout"
+        },
+        {
+          "id": "wrong-tokenizer-binding",
+          "operation": "xor-byte",
+          "offset": 80,
+          "value": 1,
+          "expectedError": "template2-source-binding"
+        },
+        {
+          "id": "wrong-template-binding",
+          "operation": "xor-byte",
+          "offset": 112,
+          "value": 1,
+          "expectedError": "template2-source-binding"
+        },
+        {
+          "id": "nonzero-header-reserved",
+          "operation": "set-byte",
+          "offset": 246,
+          "value": 1,
+          "expectedError": "template2-profile"
+        },
+        {
+          "id": "nonzero-section-padding",
+          "operation": "set-byte",
+          "offset": 1000,
+          "value": 1,
+          "expectedError": "template2-padding"
+        },
+        {
+          "id": "unknown-literal-kind",
+          "operation": "replace-hex",
+          "offset": 268,
+          "hex": "0900",
+          "expectedError": "template2-literal-order"
+        },
+        {
+          "id": "unknown-literal-flag",
+          "operation": "replace-hex",
+          "offset": 270,
+          "hex": "1f00",
+          "expectedError": "template2-literal-flags"
+        },
+        {
+          "id": "wrong-literal-token-id",
+          "operation": "replace-hex",
+          "offset": 272,
+          "hex": "01000000",
+          "expectedError": "template2-token-binding"
+        },
+        {
+          "id": "wrong-literal-bytes",
+          "operation": "xor-byte",
+          "offset": 1024,
+          "value": 1,
+          "expectedError": "template2-literal-bytes"
+        },
+        {
+          "id": "trailing-byte",
+          "operation": "append-hex",
+          "hex": "00",
+          "expectedError": "template2-header"
+        }
+      ],
+      "truncation": {
+        "operation": "every-prefix-length",
+        "startInclusive": 0,
+        "endExclusive": 1403,
+        "expected": "reject"
+      }
+    }
+  ]
+}

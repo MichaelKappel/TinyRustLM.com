@@ -13,6 +13,7 @@ members = [
     "rust/crates/tinyrustlm-slm",
     "rust/crates/tinyrustlm-slm2",
     "rust/crates/tinyrustlm-tokenizer2",
+    "rust/crates/tinyrustlm-template2",
     "rust/crates/tinyrustlm-slm2-runtime",
     "rust/crates/tinyrustlm-slm2-runtime-wasm-conformance",
     "rust/crates/tinyrustlm-convert",

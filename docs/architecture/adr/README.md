@@ -37,7 +37,8 @@ unpublished path after its replacement passes.
 | ADR-011 | [Campaign evidence browser boundary](ADR-011-campaign-evidence-browser-boundary.md) | Accepted | Generated zero-import Rust/WASM evidence boundary implemented and browser-test-bound |
 | ADR-012 | [Durable publication bootstrap](ADR-012-durable-publication-bootstrap.md) | Accepted | Store-level target and receipt durability implemented and locally test-bound; physical power-loss proof pending |
 | ADR-013 | [Exact SLM2 2.0 F32 model format profile](ADR-013-slm2-format-profile.md) | Accepted | Rust parser/writer/pieces, independent Node vector validation, and bounded fuzz replay implemented; converter, runtime, WASM/browser, promotion, and SLM1 deletion pending |
-| ADR-014 | [Exact Tokenizer2 2.0 Qwen ByteLevel BPE profile](ADR-014-tokenizer2-format-profile.md) | Accepted | Full pinned-source conversion passes; 2,048-case source-parity execution and independent verification are preregistered but unexecuted; WASM/browser and promotion pending |
+| ADR-014 | [Exact Tokenizer2 2.0 Qwen ByteLevel BPE profile](ADR-014-tokenizer2-format-profile.md) | Accepted | Full pinned-source, native, and real-Chromium WASM parity pass; Template2 composition and model promotion pending |
+| ADR-015 | [Exact Template2 2.0 Qwen chat-rendering profile](ADR-015-template2-format-profile.md) | Accepted | Binary contract, independent vectors, Rust implementation, and output-free source-parity preregistration pass; comparative source/native execution is unexecuted |
 
 ## Evidence Labels
 

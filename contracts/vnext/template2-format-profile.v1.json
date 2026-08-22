@@ -1,0 +1,310 @@
+{
+  "schema": "tinyrustlm.vnext.template2-format-profile.v1",
+  "profileId": "org.minimodel.template2/2.0",
+  "status": "development-unpromoted",
+  "byteOrder": "little-endian",
+  "selectedContract": {
+    "modelId": "Qwen/Qwen3-0.6B",
+    "sourceRevision": "c1899de289a04d12100db370d81485cdf75e47ca",
+    "rendererProfileId": 1,
+    "rendererProfileName": "qwen3-chatml-no-tools-thinking-disabled-v1",
+    "supportedSubset": "optional-leading-system-then-strict-user-assistant-alternation-ending-user-for-generation",
+    "unsupportedSourceCapabilities": [
+      "tools",
+      "tool-role-messages",
+      "tool-calls",
+      "reasoning-content-fields",
+      "thinking-enabled-generation",
+      "render-without-generation-prompt",
+      "non-string-content"
+    ]
+  },
+  "sourceAuthority": {
+    "tokenizerConfigPath": "tokenizer_config.json",
+    "tokenizerConfigByteLength": 9732,
+    "tokenizerConfigSha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+    "chatTemplateUtf8ByteLength": 4168,
+    "chatTemplateSha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+    "modelConfigPath": "config.json",
+    "modelConfigByteLength": 726,
+    "modelConfigSha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+    "sourceTemplateEngine": "Hugging-Face-Jinja-chat-template",
+    "conversionRule": "accept-only-the-exact-pinned-source-template-and-compile-only-the-declared-supported-subset",
+    "sourceTemplateStoredInArtifact": false,
+    "sourceExecutableStoredInArtifact": false
+  },
+  "tokenizerBinding": {
+    "formatProfileId": "org.minimodel.tokenizer2/2.0",
+    "artifactByteLength": 7038773,
+    "artifactSha256": "cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b",
+    "tokenCount": 151669,
+    "modelVocabularySize": 151936,
+    "beginningOfTextTokenId": 151643,
+    "messageStartTokenId": 151644,
+    "messageEndTokenId": 151645,
+    "thinkingStartTokenId": 151667,
+    "thinkingEndTokenId": 151668,
+    "automaticBos": false,
+    "automaticEos": false
+  },
+  "format": {
+    "magicHex": "54504c320d0a1a0a",
+    "formatIdHex": "6d696e696d6f64656c2e74706c320000",
+    "major": 2,
+    "minor": 0,
+    "headerBytes": 256,
+    "sectionAlignment": 64,
+    "byteOrderMarker": 16909060,
+    "rendererProfile": 1,
+    "flags": 0,
+    "noneTokenId": 4294967295,
+    "literalRecordBytes": 24,
+    "literalCount": 31,
+    "reservedBytes": "all-zero",
+    "wholeArtifactHashEmbedded": false
+  },
+  "header": {
+    "fields": [
+      {"name": "magic", "offset": 0, "bytes": 8, "type": "fixed-bytes"},
+      {"name": "format_id", "offset": 8, "bytes": 16, "type": "fixed-bytes"},
+      {"name": "header_size", "offset": 24, "bytes": 4, "type": "u32", "value": 256},
+      {"name": "version_major", "offset": 28, "bytes": 2, "type": "u16", "value": 2},
+      {"name": "version_minor", "offset": 30, "bytes": 2, "type": "u16", "value": 0},
+      {"name": "byte_order_marker", "offset": 32, "bytes": 4, "type": "u32", "value": 16909060},
+      {"name": "renderer_profile", "offset": 36, "bytes": 2, "type": "u16", "value": 1},
+      {"name": "header_flags", "offset": 38, "bytes": 2, "type": "u16", "value": 0},
+      {"name": "file_size", "offset": 40, "bytes": 8, "type": "u64"},
+      {"name": "literal_table_offset", "offset": 48, "bytes": 8, "type": "u64", "value": 256},
+      {"name": "literal_count", "offset": 56, "bytes": 4, "type": "u32", "value": 31},
+      {"name": "literal_record_size", "offset": 60, "bytes": 4, "type": "u32", "value": 24},
+      {"name": "byte_table_offset", "offset": 64, "bytes": 8, "type": "u64"},
+      {"name": "byte_table_length", "offset": 72, "bytes": 8, "type": "u64"},
+      {"name": "tokenizer_artifact_sha256", "offset": 80, "bytes": 32, "type": "sha256"},
+      {"name": "source_template_sha256", "offset": 112, "bytes": 32, "type": "sha256"},
+      {"name": "source_model_config_sha256", "offset": 144, "bytes": 32, "type": "sha256"},
+      {"name": "source_template_byte_length", "offset": 176, "bytes": 4, "type": "u32", "value": 4168},
+      {"name": "tokenizer_artifact_byte_length", "offset": 180, "bytes": 8, "type": "u64", "value": 7038773},
+      {"name": "tokenizer_token_count", "offset": 188, "bytes": 4, "type": "u32", "value": 151669},
+      {"name": "model_vocabulary_size", "offset": 192, "bytes": 4, "type": "u32", "value": 151936},
+      {"name": "message_start_token_id", "offset": 196, "bytes": 4, "type": "u32", "value": 151644},
+      {"name": "message_end_token_id", "offset": 200, "bytes": 4, "type": "u32", "value": 151645},
+      {"name": "primary_stop_token_id", "offset": 204, "bytes": 4, "type": "u32", "value": 151645},
+      {"name": "secondary_stop_token_id", "offset": 208, "bytes": 4, "type": "u32", "value": 151643},
+      {"name": "maximum_message_count", "offset": 212, "bytes": 4, "type": "u32", "value": 256},
+      {"name": "maximum_content_bytes_per_message", "offset": 216, "bytes": 4, "type": "u32", "value": 262144},
+      {"name": "maximum_total_content_bytes", "offset": 220, "bytes": 4, "type": "u32", "value": 1048576},
+      {"name": "maximum_rendered_bytes", "offset": 224, "bytes": 4, "type": "u32", "value": 1114112},
+      {"name": "maximum_prompt_tokens", "offset": 228, "bytes": 4, "type": "u32", "value": 40960},
+      {"name": "maximum_nested_containers", "offset": 232, "bytes": 2, "type": "u16", "value": 0},
+      {"name": "role_count", "offset": 234, "bytes": 2, "type": "u16", "value": 3},
+      {"name": "thinking_mode", "offset": 236, "bytes": 2, "type": "u16", "value": 1},
+      {"name": "generation_prompt_policy", "offset": 238, "bytes": 2, "type": "u16", "value": 1},
+      {"name": "system_message_policy", "offset": 240, "bytes": 2, "type": "u16", "value": 1},
+      {"name": "tool_policy", "offset": 242, "bytes": 2, "type": "u16", "value": 0},
+      {"name": "content_encoding", "offset": 244, "bytes": 2, "type": "u16", "value": 1},
+      {"name": "reserved", "offset": 246, "bytes": 10, "type": "zero-bytes"}
+    ]
+  },
+  "sections": {
+    "canonicalOrder": [
+      "literal-table",
+      "byte-table"
+    ],
+    "placement": "literal-table-starts-at-header-end; byte-table-starts-at-align-up(literal-table-end,64)",
+    "padding": "zero",
+    "gaps": "forbidden-except-derived-zero-alignment-padding",
+    "overlap": "forbidden",
+    "aliases": "forbidden",
+    "trailingBytes": "forbidden",
+    "byteTableTerminal": true
+  },
+  "literalRecord": {
+    "bytes": 24,
+    "fields": [
+      {"name": "byte_relative_offset", "offset": 0, "bytes": 8, "type": "u64"},
+      {"name": "byte_length", "offset": 8, "bytes": 4, "type": "u32"},
+      {"name": "kind", "offset": 12, "bytes": 2, "type": "u16"},
+      {"name": "flags", "offset": 14, "bytes": 2, "type": "u16"},
+      {"name": "token_id", "offset": 16, "bytes": 4, "type": "u32-or-none"},
+      {"name": "reserved", "offset": 20, "bytes": 4, "type": "u32", "value": 0}
+    ],
+    "flags": [
+      {"bit": 0, "name": "renderer-emitted"},
+      {"bit": 1, "name": "forbidden-in-message-content"},
+      {"bit": 2, "name": "tokenizer-added-token"},
+      {"bit": 3, "name": "tokenizer-special-token"}
+    ],
+    "unknownFlags": "fatal",
+    "bytePlacement": "nonempty-tightly-packed-in-record-order",
+    "duplicateByteStrings": "fatal",
+    "duplicateTokenIds": "fatal-except-none-token-id",
+    "tokenIdRule": "added-token-flag-requires-an-in-range-token-id-and-absence-requires-none-token-id",
+    "specialRule": "special-token-flag-requires-added-token-flag",
+    "ordering": "seven-required-renderer-literals-in-kind-order-then-all-remaining-added-tokens-in-ascending-token-id-order"
+  },
+  "literalKinds": [
+    {"id": 1, "name": "message-start", "count": 1, "utf8": "<|im_start|>", "tokenId": 151644, "flags": 15},
+    {"id": 2, "name": "message-end", "count": 1, "utf8": "<|im_end|>", "tokenId": 151645, "flags": 15},
+    {"id": 3, "name": "system-role", "count": 1, "utf8": "system", "tokenId": null, "flags": 1},
+    {"id": 4, "name": "user-role", "count": 1, "utf8": "user", "tokenId": null, "flags": 1},
+    {"id": 5, "name": "assistant-role", "count": 1, "utf8": "assistant", "tokenId": null, "flags": 1},
+    {"id": 6, "name": "line-feed", "count": 1, "utf8Hex": "0a", "tokenId": null, "flags": 1},
+    {"id": 7, "name": "thinking-disabled-generation-prefix", "count": 1, "utf8Hex": "3c7468696e6b3e0a0a3c2f7468696e6b3e0a0a", "tokenId": null, "flags": 1},
+    {"id": 8, "name": "remaining-forbidden-added-token", "count": 24, "ordering": "ascending-token-id-excluding-message-start-and-message-end"}
+  ],
+  "roles": {
+    "accepted": [
+      "system",
+      "user",
+      "assistant"
+    ],
+    "matching": "case-sensitive-exact-ASCII-enum",
+    "aliases": "forbidden",
+    "unknownRole": "fatal",
+    "system": "optional-exactly-once-only-at-index-zero",
+    "firstConversationalRole": "user",
+    "conversationOrder": "strict-user-assistant-alternation",
+    "generationFinalRole": "user",
+    "minimumMessages": 1,
+    "emptyMessageList": "fatal"
+  },
+  "messageSchema": {
+    "fields": [
+      "role",
+      "content"
+    ],
+    "roleType": "closed-enum",
+    "contentType": "valid-UTF8-string",
+    "unknownFields": "fatal-at-every-serialized-boundary",
+    "duplicateFields": "fatal-at-every-serialized-boundary",
+    "nonStringContent": "fatal",
+    "nestedContainers": "forbidden",
+    "emptyContent": "allowed-and-rendered-as-zero-content-bytes",
+    "contentTransformation": "none",
+    "contentNormalization": "none",
+    "contentTrimming": "none",
+    "lineEndingTransformation": "none",
+    "templateSyntaxInContent": "ordinary-data-and-never-evaluated",
+    "forbiddenContent": "any-exact-tokenizer-added-token-literal-bound-to-this-profile",
+    "forbiddenContentReason": "prevents-message-data-from-synthesizing-model-control-or-auxiliary-token-boundaries"
+  },
+  "rendering": {
+    "operation": "render-next-assistant-generation-prompt-only",
+    "preconditions": [
+      "validate-artifact-and-runtime-policy",
+      "validate-message-count",
+      "validate-role-order",
+      "validate-each-content-byte-length",
+      "validate-total-content-byte-length",
+      "reject-every-forbidden-content-literal",
+      "compute-exact-rendered-byte-length-with-checked-arithmetic-before-allocation"
+    ],
+    "messageEncoding": "message-start-plus-role-label-plus-LF-plus-content-plus-message-end-plus-LF",
+    "generationEncoding": "message-start-plus-assistant-role-plus-LF-plus-thinking-disabled-generation-prefix",
+    "generationPrompt": "always-present",
+    "thinkingMode": "explicitly-disabled",
+    "thinkingPrefixUtf8": "<think>\n\n</think>\n\n",
+    "tools": "forbidden",
+    "bosInsertion": "none",
+    "eosInsertion": "none-beyond-explicit-message-end-literals",
+    "trailingBytes": "exactly-two-LF-bytes-after-thinking-end",
+    "output": "exact-valid-UTF8-bytes-plus-ordered-control-insertion-records",
+    "partialOutputOnFailure": "forbidden"
+  },
+  "controlInsertions": {
+    "records": "ordered-by-rendered-byte-offset",
+    "messageStart": {"tokenId": 151644, "owner": "template2"},
+    "messageEnd": {"tokenId": 151645, "owner": "template2"},
+    "generationStart": {"tokenId": 151644, "owner": "template2"},
+    "thinkingStart": {"tokenId": 151667, "owner": "template2"},
+    "thinkingEnd": {"tokenId": 151668, "owner": "template2"},
+    "beginningOfSequence": {"inserted": false, "owner": "none"},
+    "automaticTokenizerPostprocessing": "forbidden",
+    "doubleInsertion": "fatal-at-composition-validation"
+  },
+  "stopping": {
+    "orderedTokenIds": [
+      151645,
+      151643
+    ],
+    "meaning": [
+      "message-end",
+      "end-of-text"
+    ],
+    "ownership": "sampling-runtime-consumes-the-frozen-stop-set-template-renderer-does-not-append-a-generation-stop"
+  },
+  "limits": {
+    "maximumExactFileBytes": 9007199254740991,
+    "defaultPolicyMaximumArtifactBytes": 1048576,
+    "maximumMessageCount": 256,
+    "maximumContentBytesPerMessage": 262144,
+    "maximumTotalContentBytes": 1048576,
+    "maximumRenderedBytes": 1114112,
+    "maximumPromptTokens": 40960,
+    "maximumNestedContainers": 0,
+    "maximumLiteralCount": 31,
+    "maximumLiteralBytes": 1048576,
+    "compositionContextRule": "rendered-prompt-token-count-plus-declared-generation-budget-must-not-exceed-the-active-model-context-limit",
+    "limitFailure": "fatal-with-no-partial-rendered-output"
+  },
+  "sourceAdmission": {
+    "sourceIdentity": "exact-tokenizer-config-byte-length-and-sha256-before-and-after-conversion",
+    "chatTemplateIdentity": "exact-UTF8-byte-length-and-sha256",
+    "supportedBranchInputs": {
+      "tools": null,
+      "add_generation_prompt": true,
+      "enable_thinking": false,
+      "messages": "exact-role-content-string-objects-satisfying-profile-order-and-content-rules"
+    },
+    "unsupportedSourceTemplate": "fatal",
+    "unknownTemplateHash": "fatal",
+    "modifiedTemplate": "fatal",
+    "executableExpressionsInArtifact": "unrepresentable",
+    "loopsInArtifact": "unrepresentable",
+    "arbitraryFieldAccessInArtifact": "unrepresentable",
+    "unknownOperationsInArtifact": "unrepresentable",
+    "sourceParity": "exact-rendered-UTF8-bytes-for-every-preregistered-supported-case",
+    "sourceBroaderThanCompiledSubset": true,
+    "unsupportedBehaviorHandling": "reject-at-request-boundary-never-fallback-to-source-Jinja"
+  },
+  "compositionBinding": {
+    "templateArtifact": "plain-sha256-and-byte-length",
+    "tokenizerArtifact": "must-exactly-match-the-hash-length-and-token-count-in-this-artifact",
+    "model": "must-match-the-pinned-Qwen3-family-configuration-hash-until-a-new-profile-is-defined",
+    "sampling": "must-consume-the-exact-ordered-stop-token-set",
+    "context": "must-enforce-template-maximum-prompt-tokens-and-model-prompt-plus-generation-limit",
+    "missingOrSurplusDependency": "fatal",
+    "hashEqualityAlone": "insufficient-without-semantic-profile-validation"
+  },
+  "hashing": {
+    "algorithm": "SHA-256",
+    "wholeArtifact": "plain-sha256-over-all-file-bytes",
+    "profile": "plain-sha256-over-exact-machine-readable-profile-bytes",
+    "sourceTemplate": "plain-sha256-over-exact-UTF8-template-bytes",
+    "embeddedWholeArtifactHash": false
+  },
+  "forwardPolicy": {
+    "acceptedVersion": "exactly-2.0",
+    "unknownMajor": "fatal",
+    "unknownMinor": "fatal",
+    "unknownRendererProfile": "fatal",
+    "unknownHeaderFlags": "fatal",
+    "unknownLiteralKind": "fatal",
+    "unknownLiteralFlags": "fatal",
+    "unknownThinkingMode": "fatal",
+    "unknownRole": "fatal",
+    "unknownPolicy": "fatal",
+    "futureChange": "new-adr-new-exact-profile-explicit-parser-support-no-fallback"
+  },
+  "cutover": {
+    "legacyTemplatesAccepted": false,
+    "rawJinjaAcceptedByRuntime": false,
+    "JavaScriptTemplatesAcceptedByRuntime": false,
+    "dualReaderAllowed": false,
+    "migrationReaderAllowed": false,
+    "templateAliasesAllowed": false,
+    "automaticVersionNegotiationAllowed": false,
+    "runtimeFallbackAllowed": false,
+    "productionPromotion": "forbidden-until-source-oracle-native-wasm-browser-composition-and-useful-model-gates-pass"
+  }
+}

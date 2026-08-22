@@ -69,6 +69,11 @@ const records = [
     "Tokenizer2 2.0",
     "Unicode 9.0.0",
     "does not accept tokenizer JSON"
+  ]],
+  ["ADR-015-template2-format-profile.md", [
+    "Template2 2.0",
+    "publisher Jinja",
+    "strict user-assistant alternation"
   ]]
 ];
 
@@ -76,7 +81,7 @@ function read(name) {
   return fs.readFileSync(path.join(adrDirectory, name), "utf8");
 }
 
-test("contains the complete accepted ADR-001 through ADR-014 inventory", () => {
+test("contains the complete accepted ADR-001 through ADR-015 inventory", () => {
   const actual = fs.readdirSync(adrDirectory)
     .filter((name) => /^ADR-\d{3}-.+\.md$/u.test(name))
     .sort();

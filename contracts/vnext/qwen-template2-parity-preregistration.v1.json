@@ -1,0 +1,156 @@
+{
+  "schema": "tinyrustlm.vnext.qwen-template2-parity-preregistration.v1",
+  "profileId": "tinyrustlm.qwen3-template2-source-parity/1",
+  "status": "registered-before-comparative-output",
+  "registeredAtUtc": "2026-08-22T10:30:00Z",
+  "registrationParentCommit": "81a6d53844761d10c0eb1563b5420788c1772f8f",
+  "source": {
+    "modelId": "Qwen/Qwen3-0.6B",
+    "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+    "sourceLockPath": "contracts/vnext/qwen3-0.6b-template2-source-lock.v1.json",
+    "sourceLockByteLength": 1580,
+    "sourceLockSha256": "22070f5f605a71580a928291e19fe06d7eb961531732c15f10735c2d677df660",
+    "tokenizerConfigSha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+    "sourceTemplateByteLength": 4168,
+    "sourceTemplateSha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+    "modelConfigSha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd"
+  },
+  "artifact": {
+    "formatProfileId": "org.minimodel.template2/2.0",
+    "formatProfileSha256": "14ff1df8dd6760119ac36e719ab396fff8e71d0719c2e1c83118f58693ea7bfa",
+    "byteLength": 1403,
+    "sha256": "5300b0b43188a8c73ed62e7e4fbab6eff358ae0395166791852b072a8009c9c8",
+    "tokenizerArtifactSha256": "cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b"
+  },
+  "corpus": {
+    "path": "contracts/vnext/qwen-template2-parity-cases.v1.json",
+    "schema": "tinyrustlm.qwen3_template2_parity_cases.v1",
+    "corpusId": "qwen3-0.6b-template2-parity-1024-v1",
+    "generatorPath": "tinyrustlm/tools/qwen-template2-parity-corpus.js",
+    "generatorSha256": "25f50232373fcf91a73bb91db464bb53624cf8ad8b5600263cc71e10a44bd791",
+    "byteLength": 667912,
+    "sha256": "59febbdbec44cfcf92e233626fd7fb3fb140fd43dddee64e684837a7e76df99b",
+    "caseCount": 1024,
+    "categoryCounts": {
+      "bounded-long-content": 64,
+      "empty-content": 32,
+      "fixed-contract": 32,
+      "multi-turn": 256,
+      "multilingual-unicode": 128,
+      "ordinary-single-turn": 224,
+      "system-single-turn": 128,
+      "template-syntax-data": 64,
+      "whitespace-line-ending": 96
+    }
+  },
+  "oracle": {
+    "implementation": "jinja2-immutable-sandbox",
+    "pythonVersion": "3.12.10",
+    "jinjaVersion": "3.1.6",
+    "markupSafeVersion": "3.0.3",
+    "scriptPath": "tinyrustlm/tools/qwen-template2-source-oracle.py",
+    "scriptSha256": "e4dc5da1da8380ca47254b928ef5d252c903f88d3e96760cae134de5b431177d",
+    "environmentLockPath": "contracts/vnext/template2-source-oracle-environment-lock.v1.json",
+    "environmentLockByteLength": 9213,
+    "environmentLockSha256": "f803927a2e1747a7130233c5a5847514b71603e71fc8c63cfff5eeaf1ef5d6f9",
+    "launcherSha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
+    "baseInterpreterSha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+    "sourceClosureSha256": "0138606aefe81a2a6d1b19917ef0456f5dfc23b0bd4361d87b80638ed6801155",
+    "networkAllowed": false,
+    "childProcessAllowed": false
+  },
+  "candidate": {
+    "implementation": "tinyrustlm-template2",
+    "version": "0.1.8",
+    "runnerPath": "rust/crates/tinyrustlm-template2/examples/qwen_template2_parity.rs",
+    "runnerSha256": "2137995af18657a98351b95a77fee4552669f8fe2bebcf12f5a472aef1076ba4",
+    "sourceClosureSha256": "9bd0dd9209a57d0d9f72698689f15ebc3b3bc76dd833afc818b372920ad31f47",
+    "sourceClosure": [
+      {
+        "path": "Cargo.lock",
+        "byteLength": 25252,
+        "sha256": "c75e9e71c5a73da2ba11634ef24d261c89479d6e1c22cf08dd50f0def21b84c5"
+      },
+      {
+        "path": "Cargo.toml",
+        "byteLength": 1706,
+        "sha256": "baf905b1de452a2bc0d7e4dcb3a09a0c895fbbf4b4475f6db732757b5b05be6c"
+      },
+      {
+        "path": "contracts/vnext/template2-format-profile.v1.json",
+        "byteLength": 15111,
+        "sha256": "14ff1df8dd6760119ac36e719ab396fff8e71d0719c2e1c83118f58693ea7bfa"
+      },
+      {
+        "path": "rust/crates/tinyrustlm-template2/Cargo.toml",
+        "byteLength": 381,
+        "sha256": "cdc48e9770c63b1eb01dd8671de3b8ee7f7d9b45351a59a21fb508a716b08166"
+      },
+      {
+        "path": "rust/crates/tinyrustlm-template2/examples/qwen_template2_parity.rs",
+        "byteLength": 44815,
+        "sha256": "2137995af18657a98351b95a77fee4552669f8fe2bebcf12f5a472aef1076ba4"
+      },
+      {
+        "path": "rust/crates/tinyrustlm-template2/src/format.rs",
+        "byteLength": 13550,
+        "sha256": "ebae67164180a0aa9b460f76b99d14e90810a8b2b503ea7dccfafe36d699e3d8"
+      },
+      {
+        "path": "rust/crates/tinyrustlm-template2/src/lib.rs",
+        "byteLength": 433,
+        "sha256": "0200921749bf81712ecae52ebbe39789c86994b0d1f8769613695566e6e8c99d"
+      },
+      {
+        "path": "rust/crates/tinyrustlm-template2/src/runtime.rs",
+        "byteLength": 23139,
+        "sha256": "26f4cfdb4b8262657a96bd2599903043e1933433c0eea2480463b25a2a41fb86"
+      }
+    ],
+    "executableBasename": "qwen_template2_parity.exe",
+    "executableByteLength": 387584,
+    "executableSha256": "948d16894ffff63f39c4b5c31e61b7b6f8f004b8161f0bb4e29d40e6681ce51d"
+  },
+  "execution": {
+    "tools": null,
+    "addGenerationPrompt": true,
+    "enableThinking": false,
+    "requiredOracleRuns": 2,
+    "requiredCandidateRuns": 2,
+    "maximumMessages": 16,
+    "maximumContentBytesPerMessage": 32768,
+    "maximumTotalContentBytesPerCase": 65536,
+    "maximumRenderedBytesPerCase": 131072,
+    "maximumResultBytes": 16777216,
+    "comparison": "exact-rendered-utf8-bytes-and-case-order",
+    "bestOfN": false,
+    "repair": false,
+    "outputLocation": "private-external-create-only"
+  },
+  "acceptance": {
+    "corpusCommittedBeforeObservation": true,
+    "sourceLockRevalidated": true,
+    "sourceRehashedAfterObservation": true,
+    "environmentRehashedAfterObservation": true,
+    "candidateExecutableRehashedAfterObservation": true,
+    "artifactRecreatedAfterObservation": true,
+    "exactCaseOrderRequired": true,
+    "exactRenderedBytesRequired": true,
+    "repeatedOracleBytesRequired": true,
+    "repeatedCandidateBytesRequired": true,
+    "everyCaseRequired": true,
+    "mismatchIsFatal": true,
+    "rawOutputsPreserved": true,
+    "networkRequestMaximum": 0,
+    "childProcessMaximum": 0
+  },
+  "claimBoundary": {
+    "templateSourceParityMayBeClaimedAfterPass": true,
+    "browserWasmMayBeClaimed": false,
+    "modelRuntimeMayBeClaimed": false,
+    "modelQualityMayBeClaimed": false,
+    "releaseMayBeClaimed": false,
+    "campaignCreditMayBeClaimed": false,
+    "requiredNextGate": "deterministic-sampling-profile-and-template2-wasm-composition-conformance"
+  }
+}

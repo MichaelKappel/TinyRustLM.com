@@ -18,9 +18,11 @@ set were preregistered and pushed before observation. The one authorized v2
 execution matched all 2,048 cases and 69,294 tokens exactly, with zero
 mismatches and byte-stable repeated outputs. Native source-oracle parity now
 passes. The production WASM interface, import-free module, two-run Chromium
-execution, and independent verification are preregistered without producing
-full-artifact browser output; real-browser replay and resource evidence remain
-open.
+execution, and independent verification subsequently passed exactly as
+registered. The bounded 3,909-byte result has SHA-256
+`f828190b2ff5d3c1e794cb50f3b0dd8c41367ed09fca758eeb513fb1ec2c964e`.
+That registration is complete and must not be rerun. Template2 composition
+and every model-dependent gate remain open.
 
 ## Decision Date
 
@@ -44,8 +46,8 @@ tokens, 151,387 ordered merges, and 26 contiguous added tokens, for a total
 vocabulary of 151,669. Two exact external conversions from the locked source
 closure produced the same 7,038,773-byte Tokenizer2 artifact with SHA-256
 `cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b`.
-The artifact remains unpromoted pending real-browser WASM parity and bounded
-resource evidence.
+The artifact remains unpromoted pending Template2 composition and every
+model-dependent qualification gate.
 
 **Observed local fact**: the frozen production WASM interface is 4,030 bytes
 with SHA-256
@@ -57,13 +59,15 @@ full-artifact execution preregistration is 9,343 bytes with SHA-256
 `8734360e7fc2e0d4cb4f6ace87e2b5ec2922f983eededa7f5b246fad928050f3`;
 the independent verification preregistration is 2,453 bytes with SHA-256
 `560347bb1db2f1299bc3f54d5e2a8a5d6adbb26e1a55b908c4bb754d72f540a2`.
-No full-artifact browser output exists at this checkpoint.
+One authorized execution replayed all 2,048 cases and 69,294 tokens through
+two fresh Chromium profiles with zero mismatches, zero network requests, all
+processes closed, all profiles deleted, and bounded cancellation/recovery and
+resource evidence.
 
-**Local verification required**: native replay against the exact upstream
-implementation now passes over the preregistered broad adversarial corpus. The
-registered runner and verifier must still consume the same accepted artifact
-and frozen cases in real Chromium with repeated-use, true worker termination,
-fresh-worker recovery, privacy, deletion, and resource evidence.
+**Local verification required**: preserve the completed native and browser
+registrations without rerun. Dependent Template2 composition must bind this
+exact Tokenizer2 identity and independently prove prompt tokenization without
+double control insertion.
 
 ## Decision
 
@@ -256,11 +260,12 @@ nonexact field before writing any output.
 
 ## Performance Evidence
 
-The current browser evidence is correctness evidence over a 7,459-byte
-miniature artifact through the production-shaped WASM boundary. It does not
-claim production Qwen tokenizer load time, throughput, memory, WASM speed, or
-browser responsiveness. Those full-artifact measurements are registered but
-have not been observed.
+The full 7,038,773-byte Qwen Tokenizer2 artifact now has correctness and
+bounded resource evidence through the production-shaped WASM boundary in two
+fresh Chromium profiles. Maximum observed WASM memory was 24,117,248 bytes and
+maximum total operation time was 1,094.10 ms under the registered experiment.
+These measurements describe that exact machine and run; they do not establish
+a universal performance guarantee or useful-model responsiveness.
 
 The Rust parser reads the complete in-memory tokenizer artifact once, uses
 bounded tables, and builds explicit token, byte, added-token, and merge
@@ -321,22 +326,22 @@ conversion.
 The source tokenizer's maximum observed token byte length and production
 artifact size must be recorded by conversion evidence rather than inferred.
 
-The production Tokenizer2 WASM boundary is implemented and its miniature
-native, Node, and real-Chromium gates pass. Full-artifact load, encode, decode,
-true worker cancellation, fresh-worker recovery, repeated browser use, and
-bounded resource evidence are preregistered but unexecuted.
+The production Tokenizer2 WASM boundary and its full-artifact load, encode,
+decode, true worker cancellation, fresh-worker recovery, repeated browser use,
+deletion, privacy, and bounded resource evidence pass under the completed
+registration. That evidence is immutable and must not be rerun.
 
-Template2 linkage and thinking-mode semantics are pending.
+Template2 linkage and thinking-mode semantics are now specified and
+implemented under ADR-015, but exact source/native and browser parity remain
+pending.
 
 The useful model, source-framework parity, P2P-or-convert acquisition, and
 browser-local conversation are pending.
 
-**Local verification required**: the four registered v2 source/native outputs
-and exact parity receipt now exist and revalidate outside Git. The
-full-artifact real-Chromium WASM execution and independent verifier are frozen
-under a new no-output preregistration, but neither has run. The registration
-must first be committed, pushed, and verified from the fresh remote; the
-native corpus and contracts must not change after observation.
+**Local verification required**: preserve the four native outputs, native
+receipt, two browser outputs, and bounded browser result exactly. Continue
+with the separately preregistered Template2 source/native gate; do not rerun
+Tokenizer2 absent a bound identity invalidation.
 
 ## Acceptance Tests
 
@@ -364,6 +369,14 @@ ambiguous added tokens, drifted special IDs, and source identity drift.
 
 The full converted artifact must match the pinned source oracle over the
 preregistered corpus natively and in browser WASM before promotion.
+
+Immutable registration tests must reopen source-closure members from the
+single Git commit that added the exact canonical profile. That commit must
+have the profile's preregistered parent as its sole parent, and the checked-in
+profile bytes must still equal the registration blob. A later descendant
+worktree may add crates or package scripts without pretending that its
+aggregate `Cargo.toml`, `Cargo.lock`, or package manifest is the historical
+Tokenizer2 source closure.
 
 No acceptance test may repair output, retry for a preferred answer, preserve
 a legacy reader, or convert a failure into a skip.

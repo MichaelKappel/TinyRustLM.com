@@ -1,5 +1,11 @@
-profile: runtime-mirust.receiver-brief.v16
-updated_utc: 2026-08-21T05:12:41Z
+profile: runtime-mirust.receiver-brief.v18
+updated_utc: 2026-08-22T11:49:08Z
+current_template2_preregistration_2026_08_22:
+  authority: Template2 2.0 contract, vectors, Rust implementation, pinned Qwen source, output-free 1,024-case corpus, isolated oracle, candidate, observer, and verifier are complete before comparative output.
+  execution_profile_sha256: c42f7dfb14b6861bd8db47dd1fbca590961ed573c69835556815cbe5cdef1051
+  verification_profile_sha256: c61b9556b30fa3a82085d53a96b1e468fa1fa1a5cd81e7b92f961da1ad473095
+  current_truth: Validation-only preflight passes; comparative output count is zero. Exact Git-registration replay fixes historical Tokenizer2 tests without changing frozen evidence; affected tests pass 55/55. The first post-fix standard partition executed 1,029 passes with zero failures and one honest absent-package conditional skip. The package pipeline failed closed before output because sibling MiniModel.org CLI/native builds are absent. Finish audits, commit/push/fresh-remote verify, prove output-root absence, then execute the registered five-process zero-retry observer exactly once.
+  claim_boundary: No Template2 parity, browser, model, quality, release, deployment, MemoryEndpoints, or campaign evidence exists. Counters remain 0/20, 0/50, 0/25, 0/40, 0/20.
 current_goal_prompt_2026_08_20:
   path: docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md
   identity: 30,243 bytes, 659 lines, SHA256 `115ae434bf9dee0b4f27767f126d951989c5ec684241e2e3a6238de094e65d33`

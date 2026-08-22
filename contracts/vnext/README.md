@@ -146,9 +146,10 @@ verification receipt has SHA-256
 `4ebbfa2bc59d43bdbcd5b3b2528bed66035ff2a3165f554ac6867e7cc7fe0ea6`.
 
 This checkpoint is complete pinned-Qwen tokenizer format conversion plus exact
-native source-oracle encoding and decoding parity. It is not browser-WASM
-execution, Template2, model conversion, model qualification, release,
-deployment, or campaign evidence. See
+native source-oracle encoding and decoding parity. The separately registered
+full-artifact browser-WASM gate also passes. This is not Template2 parity,
+model conversion, model qualification, release, deployment, or campaign
+evidence. See
 `docs/architecture/vnext-tokenizer2-format-implementation.md`, ADR-014, and
 `wiki/runtime-mirust/reports/tinyrustlm-qwen3-tokenizer2-conversion-memory-2026-08-20.md`.
 The immutable v1 verifier failure and successful append-only v2 successor are
@@ -164,7 +165,8 @@ The miniature artifact passes the same Rust core through native tests, Node
 WASM, and a fresh real-Chromium profile with zero requests and proven profile
 deletion.
 
-The full-artifact browser execution is registered, but has not yet been run.
+The full-artifact browser execution completed exactly once after its source
+checkpoint was pushed and fresh-remote exact.
 `qwen-tokenizer2-browser-wasm-preregistration.v1.json` is 9,343 bytes with
 SHA-256
 `8734360e7fc2e0d4cb4f6ace87e2b5ec2922f983eededa7f5b246fad928050f3`.
@@ -173,10 +175,56 @@ Its independent 2,453-byte verification preregistration has SHA-256
 Together they bind the 151,669-token artifact shape, immutable native result,
 2,048-case corpus, source closure, WASM module, browser binaries, two owned
 profiles, worker termination and recovery, resource ceilings, raw outputs, and
-one verifier invocation. They authorize no browser parity claim until this
-checkpoint is committed, pushed, fresh-remote verified, and executed exactly
-as registered. See
+one verifier invocation. Two fresh Chromium runs matched all 2,048 cases and
+69,294 tokens with zero mismatches, zero network requests, process closure,
+profile deletion, and bounded resource evidence. The 3,909-byte bounded result
+has SHA-256
+`f828190b2ff5d3c1e794cb50f3b0dd8c41367ed09fca758eeb513fb1ec2c964e`.
+The registration is complete and must not be rerun. See
 `docs/architecture/qwen3-tokenizer2-browser-wasm-preregistration.md`.
+
+## Template2 Format Checkpoint
+
+`template2-format-profile.v1.json` is the sole development-only Template2 2.0
+byte and rendering contract. It is 15,111 bytes with SHA-256
+`14ff1df8dd6760119ac36e719ab396fff8e71d0719c2e1c83118f58693ea7bfa`.
+It freezes one 256-byte header, 31 fixed literal records, exact source and
+Tokenizer2 bindings, strict role/content messages, optional leading system,
+strict user-assistant alternation ending in user, exact whitespace,
+thinking-disabled generation prefix, 26 forbidden control literals, ordered
+stop IDs, and bounded fail-empty rendering.
+
+`template2-format-vectors.v1.json` is a 34,773-byte independent contract with
+SHA-256
+`b02d50f4f181bb3414a5b14e49544ff7c094f0c98f0f5def0c276bbbd1674160`.
+Its Node-core writer owns one 1,403-byte canonical artifact with SHA-256
+`5300b0b43188a8c73ed62e7e4fbab6eff358ae0395166791852b072a8009c9c8`.
+The unsafe-free Rust implementation reproduces those bytes and all rendering,
+insertion, malformed-message, forbidden-content, boundary, mutation, and
+proper-prefix behavior independently.
+
+`qwen3-0.6b-template2-source-lock.v1.json` binds the exact publisher template,
+model configuration, Tokenizer2 source parent, supported source branch, and
+unsupported capabilities. It is 1,580 bytes with SHA-256
+`22070f5f605a71580a928291e19fe06d7eb961531732c15f10735c2d677df660`.
+Publisher Jinja remains a pinned development oracle and is never stored or
+executed by the product runtime.
+
+The output-free source-parity corpus is 667,912 bytes with 1,024 cases and
+SHA-256
+`59febbdbec44cfcf92e233626fd7fb3fb140fd43dddee64e684837a7e76df99b`.
+The 6,631-byte execution preregistration has SHA-256
+`c42f7dfb14b6861bd8db47dd1fbca590961ed573c69835556815cbe5cdef1051`.
+The 5,030-byte independent verification preregistration has SHA-256
+`c61b9556b30fa3a82085d53a96b1e468fa1fa1a5cd81e7b92f961da1ad473095`.
+
+A validation-only preflight rehashed all source, environment, corpus,
+candidate, artifact, executable, and profile identities and accepted all 1,024
+cases without rendering publisher or candidate comparative output. Source and
+native parity remain unexecuted until this checkpoint is committed, pushed,
+and fresh-remote exact. See ADR-015,
+`docs/architecture/vnext-template2-format-implementation.md`, and
+`docs/architecture/qwen3-template2-source-parity-preregistration.md`.
 
 ## Parsing
 

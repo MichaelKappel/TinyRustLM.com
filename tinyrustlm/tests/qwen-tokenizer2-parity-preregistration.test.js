@@ -6,8 +6,35 @@ const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 
+const { createRegisteredGitTree } = require(
+  "./helpers/registered-git-tree.js"
+);
+const registeredTree = createRegisteredGitTree({
+  profilePath: "contracts/vnext/qwen-tokenizer2-parity-preregistration.v1.json",
+  requiredPaths: [
+    "Cargo.lock",
+    "Cargo.toml",
+    "contracts/vnext/qwen-tokenizer2-parity-cases.v1.json",
+    "contracts/vnext/qwen-tokenizer2-parity-verification-preregistration.v1.json",
+    "contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json",
+    "rust/crates/tinyrustlm-tokenizer2/Cargo.toml",
+    "rust/crates/tinyrustlm-tokenizer2/examples/qwen_tokenizer2_parity.rs",
+    "rust/crates/tinyrustlm-tokenizer2/src/format.rs",
+    "rust/crates/tinyrustlm-tokenizer2/src/lib.rs",
+    "rust/crates/tinyrustlm-tokenizer2/src/runtime.rs",
+    "tinyrustlm/tools/qwen-tokenizer2-parity-corpus.js",
+    "tinyrustlm/tools/qwen-tokenizer2-parity-verifier.js",
+    "tinyrustlm/tools/qwen-tokenizer2-source-oracle.py",
+    "tinyrustlm/tools/strict-json.js"
+  ]
+});
+test.after(() => registeredTree.dispose());
+
 const { buildCorpus, canonicalBytes: canonicalCorpusBytes } = require(
-  "../tools/qwen-tokenizer2-parity-corpus.js"
+  path.join(
+    registeredTree.repositoryRoot,
+    "tinyrustlm/tools/qwen-tokenizer2-parity-corpus.js"
+  )
 );
 const {
   compareResultSets,
@@ -19,7 +46,9 @@ const {
   validateVerificationProfile,
   verificationProfilePath,
   writeCreateOnly
-} = require("../tools/qwen-tokenizer2-parity-verifier.js");
+} = registeredTree.requireModule(
+  "tinyrustlm/tools/qwen-tokenizer2-parity-verifier.js"
+);
 
 /** Creates a JSON-compatible mutable copy. */
 function clone(value) {
@@ -75,6 +104,14 @@ function inertResult(kind, execution, corpus) {
 }
 
 test("validates both frozen Qwen Tokenizer2 parity preregistrations", () => {
+  assert.equal(
+    registeredTree.registrationCommit,
+    "dc0f5f783de54b8c556064bc1d8a6b21d9cdb9a9"
+  );
+  assert.equal(
+    registeredTree.registrationParentCommit,
+    "8210bda0614ef0b9237327d36d05e08f34c799df"
+  );
   const profiles = validatePreregistrationFiles();
   assert.equal(
     profiles.execution.sha256,
@@ -88,6 +125,15 @@ test("validates both frozen Qwen Tokenizer2 parity preregistrations", () => {
     profiles.verification.profile.claimBoundary.modelQualityMayBeClaimed,
     false
   );
+});
+
+test("registered-tree replay rejects traversal and drive-qualified paths", () => {
+  for (const profilePath of ["../profile.json", "C:/profile.json", "a//profile.json"]) {
+    assert.throws(
+      () => createRegisteredGitTree({ profilePath, requiredPaths: ["Cargo.toml"] }),
+      /unsafe/u
+    );
+  }
 });
 
 test("rebuilds an output-free corpus with exact committed bytes", () => {
