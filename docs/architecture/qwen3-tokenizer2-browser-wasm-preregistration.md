@@ -135,15 +135,27 @@ to issue release evidence with `release_gate_source_not_clean`, as required,
 because this implementation was not yet committed. Release-surface evidence
 must be created from the ensuing clean implementation commit.
 
-1. Pass the complete affected source, Rust, Node, Chromium, formatting, and
-   preregistration gates.
-2. Commit and push this no-output checkpoint.
-3. Fetch the remote afresh and prove local HEAD, tracking state, `FETCH_HEAD`,
+Clean implementation commit
+`4461ee0c3c09f42ae44bf1eb9dd0d76ffe0bc8dc` then passed the complete
+repository gate. The canonical standard Node partition passed 1,011/1,011.
+Release run
+`c857474c1737af06714b5e56da8b15b46d4683504e8370258bd9479f89cbd017`
+passed 23/23 tests in 10 exhaustive shards. Its 3,995-byte aggregate has
+SHA-256
+`b6416f47539093f3ea5a31dbfa60379a7288a8cca5fcc60be90646613bbd8b21`,
+and the independent verifier returned the same identity and pass verdict.
+The external evidence retains 12 append-only attempts: two outer-wrapper
+interruptions and one passing-but-unreceipted shard-8 child output remain
+incomplete history; only the 10 verified shard receipts authorize the
+aggregate.
+
+1. Commit this bounded result/UAI checkpoint and push both local commits.
+2. Fetch the remote afresh and prove local HEAD, tracking state, `FETCH_HEAD`,
    and the actual remote branch are identical.
-4. Reprove that the registered output root is absent.
-5. Execute the registered runner exactly once, followed by the registered
+3. Reprove that the registered output root is absent.
+4. Execute the registered runner exactly once, followed by the registered
    verifier exactly once if and only if both raw runs complete.
-6. Preserve any terminal failure. On success, record the bounded result and
+5. Preserve any terminal failure. On success, record the bounded result and
    advance to Template2 without claiming model-runtime or campaign evidence.
 
 Campaign counters remain 0/20 models, 0/50 browser rounds, 0/25 live memory
