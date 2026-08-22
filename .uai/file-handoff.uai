@@ -1,5 +1,22 @@
-profile: runtime-mirust.file-handoff.v92
-updated_utc: 2026-08-22T12:26:46Z
+profile: runtime-mirust.file-handoff.v93
+updated_utc: 2026-08-22T13:55:26Z
+current_sampling2_format_checkpoint_2026_08_22:
+  authority: Newest TinyRustLM first-read checkpoint. Sampling2 2.0 exact binary contract, normative Q48 table, independent Node vectors, unsafe-free Rust implementation, explicit terminal controller, Git binary preservation, complete affected gates, and remote identity proof pass. This is native contract evidence only.
+  goal: docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md
+  goal_sha256: 115ae434bf9dee0b4f27767f126d951989c5ec684241e2e3a6238de094e65d33
+  frozen_parent_goal_sha256: 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+  owned_worktree: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  protected_worktree: E:\Source\Rust\TinyRustLM.com
+  branch: codex/model-acquisition-v2
+  implementation_commit: 78aeb8d0f95f95330f97a572c5ef02b8d2b41fd5
+  remote_proof: Local HEAD, origin tracking ref, fresh FETCH_HEAD, and fresh actual `ls-remote` all equal the implementation commit.
+  exact_authorities: Profile `ec65e8f1a54c1e4ca95ebda88bde091dad11337250e541bbda60e8cac311428d`; Q48 table `fce2345bd4ddc53f137ecc36a48afca02a73ebd3549acce942628e440429c677`; vectors `4fe731f2e8714e9a6fe7689964a88a7fbe8150faf6af053cbf0be38390daaa9f`; canonical artifact `9e02fcfbba169330a2ee1bf40cea015dc4067925e051f6ae5f197a5f880bfe89`; independent Node source `bd7b4ed8cf1bdaef10f8b2041df476f842b08e0d65325d0b0e439cd0b8697b7b`.
+  isolation: `rust/crates/tinyrustlm-sampling2` is an exact-lock standalone workspace because accepted Template2 evidence binds root Cargo manifest SHA256 `baf905b1de452a2bc0d7e4dcb3a09a0c895fbbf4b4475f6db732757b5b05be6c` and lock SHA256 `c75e9e71c5a73da2ba11634ef24d261c89479d6e1c22cf08dd50f0def21b84c5`. Do not add it to the root workspace until a newly preregistered composition closure explicitly supersedes that frozen boundary.
+  failure_history: The first full partition failed exactly two Template2 closure tests after root Cargo membership changed; it reported 1,038 pass, 2 fail, and one truthful skip across 1,041. Exact root restoration plus standalone isolation fixed the cause and the affected suite passed 7/7. Staging later caught Git text filtering of the binary table; binary attributes, renormalization, and a general filtered/unfiltered blob regression fixed it before commit. Preserve both failure facts.
+  verification: Sampling2 Node 9/9, Rust contract 10/10, Rust vector 8/8, generator check, standalone locked tests, standalone denied-warning all-target Clippy, root locked all-target tests, root denied-warning all-target Clippy, rustfmt, JavaScript syntax, exact hashes, frozen goals, binary identity, secret/path scan, and diff hygiene pass. Final canonical serial standard Node passes 1,041, fails 0, skips one truthful missing package input, total 1,042 in 455.3 seconds.
+  immutable_evidence: Never rerun completed Tokenizer2 browser-WASM or Template2 source/native observations. No private raw evidence was changed.
+  exact_resume: First preregister Prompt2 composition with exact artifacts, config, stop IDs, runtime/vocabulary, messages, rendered bytes, token IDs, context arithmetic, native/WASM interfaces, Chromium identities, fresh profiles, worker termination/recovery, zero-network rules, bounds, output roots, and one verifier. Commit/push/fresh-remote verify before comparative output. Then execute native and fresh-Chromium composition without retries, repair, selection, double control insertion, profile reuse, or stale-worker reuse.
+  claim_boundary: No real model, quality, acquisition, browser chat, release, deployment, publication, MemoryEndpoints, or campaign evidence follows. MemoryEndpoints is unauthorized and disconnected; counters remain 0/20, 0/50, 0/25, 0/40, 0/20. Never write `D:`.
 current_qwen3_template2_source_parity_checkpoint_2026_08_22:
   authority: Newest TinyRustLM first-read checkpoint. Template2 2.0 binary contract, independent vectors, unsafe-free Rust implementation, exact pinned Qwen publisher source, output-free corpus, isolated oracle, release candidate, zero-retry observation runner, and independent verifier pass exact source/native parity for the frozen supported branch. This is not browser, model, quality, release, or campaign evidence.
   goal: docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md
