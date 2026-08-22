@@ -47,6 +47,10 @@ const observationPath = path.join(
   repositoryRoot,
   "tinyrustlm/tools/qwen-template2-parity-observation.js"
 );
+const publicResultPath = path.join(
+  repositoryRoot,
+  "tinyrustlm/experiments/qwen3-template2-source-parity-verification-v1.json"
+);
 
 function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
@@ -255,4 +259,39 @@ test("profile drift is terminal before any comparative execution", () => {
     (error) => error instanceof Template2VerificationError &&
       error.code === "template2-verifier-profile-invalid"
   );
+});
+
+test("locks the bounded content-free source-parity result", () => {
+  const result = strictDocument(publicResultPath, 1024 * 1024);
+  assert.equal(result.bytes.length, 4727);
+  assert.equal(
+    sha256(result.bytes),
+    "c985f3c95e6554425de1743b723009cb92c17246eac4859c2f9feaa0aa5e3fa0"
+  );
+  assert.equal(result.value.status, "exact-source-native-template-parity-verified");
+  assert.equal(result.value.sourceControl.registrationCommit,
+    "2693cec9eeff6af991c78d42a0eb9c9fe5716f60");
+  assert.equal(result.value.registration.childProcessCount, 5);
+  assert.equal(result.value.registration.retryCount, 0);
+  assert.equal(result.value.comparison.caseCount, 1024);
+  assert.equal(result.value.comparison.mismatchCount, 0);
+  assert.equal(result.value.comparison.exactRenderedBytes, true);
+  assert.equal(result.value.comparison.repeatedOracleBytes, true);
+  assert.equal(result.value.comparison.repeatedCandidateBytes, true);
+  assert.equal(result.value.privateEvidence.receiptByteLength, 4206);
+  assert.equal(result.value.privateEvidence.receiptSha256,
+    "d0a848a0827f536fb69b2d6f19ffb84102b1ff83ac2efed25e564fa9b2810cdb");
+  assert.equal(result.value.privateEvidence.messageContentIncludedInPublicResult,
+    false);
+  assert.equal(result.value.privateEvidence.renderedTextIncludedInPublicResult,
+    false);
+  assert.equal(result.value.privateEvidence.renderedHexIncludedInPublicResult,
+    false);
+  assert.equal(result.value.privateEvidence.privateAbsolutePathsIncludedInPublicResult,
+    false);
+  assert.equal(result.value.claimBoundary.templateSourceParityVerified, true);
+  assert.equal(result.value.claimBoundary.templateBrowserWasmParityVerified, false);
+  assert.equal(result.value.claimBoundary.modelRuntimeVerified, false);
+  assert.equal(result.value.claimBoundary.releaseAuthorized, false);
+  assert.equal(result.value.claimBoundary.campaignCreditAuthorized, false);
 });

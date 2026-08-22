@@ -1,11 +1,11 @@
-profile: runtime-mirust.receiver-brief.v18
-updated_utc: 2026-08-22T11:49:08Z
-current_template2_preregistration_2026_08_22:
-  authority: Template2 2.0 contract, vectors, Rust implementation, pinned Qwen source, output-free 1,024-case corpus, isolated oracle, candidate, observer, and verifier are complete before comparative output.
+profile: runtime-mirust.receiver-brief.v19
+updated_utc: 2026-08-22T12:26:46Z
+current_template2_source_parity_2026_08_22:
+  authority: Template2 2.0 contract, vectors, Rust implementation, pinned Qwen source, output-free 1,024-case corpus, isolated oracle, candidate, observer, and verifier pass exact source/native parity for the frozen supported branch.
   execution_profile_sha256: c42f7dfb14b6861bd8db47dd1fbca590961ed573c69835556815cbe5cdef1051
   verification_profile_sha256: c61b9556b30fa3a82085d53a96b1e468fa1fa1a5cd81e7b92f961da1ad473095
-  current_truth: Validation-only preflight passes; comparative output count is zero. Exact Git-registration replay fixes historical Tokenizer2 tests without changing frozen evidence; affected tests pass 55/55. The first post-fix standard partition executed 1,029 passes with zero failures and one honest absent-package conditional skip. The package pipeline failed closed before output because sibling MiniModel.org CLI/native builds are absent. Finish audits, commit/push/fresh-remote verify, prove output-root absence, then execute the registered five-process zero-retry observer exactly once.
-  claim_boundary: No Template2 parity, browser, model, quality, release, deployment, MemoryEndpoints, or campaign evidence exists. Counters remain 0/20, 0/50, 0/25, 0/40, 0/20.
+  current_truth: Registration commit 2693cec9eeff6af991c78d42a0eb9c9fe5716f60 was pushed/fresh-remote exact before one five-process zero-retry observer invocation. Two byte-stable source runs and two byte-stable candidate runs matched all 1,024 cases and 483,375 rendered bytes with zero mismatches. Private receipt SHA256 is d0a848a0827f536fb69b2d6f19ffb84102b1ff83ac2efed25e564fa9b2810cdb; bounded public result SHA256 is c985f3c95e6554425de1743b723009cb92c17246eac4859c2f9feaa0aa5e3fa0. Never rerun. Validate/commit/push this result checkpoint, then separately preregister deterministic sampling and Template2-plus-Tokenizer2 native/real-Chromium composition.
+  claim_boundary: Exact source/native Template2 parity exists. No browser, model, quality, release, deployment, MemoryEndpoints, or campaign evidence exists. Counters remain 0/20, 0/50, 0/25, 0/40, 0/20.
 current_goal_prompt_2026_08_20:
   path: docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md
   identity: 30,243 bytes, 659 lines, SHA256 `115ae434bf9dee0b4f27767f126d951989c5ec684241e2e3a6238de094e65d33`

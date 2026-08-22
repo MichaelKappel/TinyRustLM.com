@@ -9,15 +9,17 @@ an unsafe-free Rust implementation, a pinned Qwen3 source lock, an output-free
 candidate, a zero-retry observation runner, and an independent verifier are
 implemented.
 
-The pre-observation gates pass. A validation-only Python preflight rehashed
-the exact profile, complete Rust source closure, release executable, Python
-environment closure, pinned source files, and all corpus cases. It did not
-compile or render the publisher template and created no comparative output.
+The pre-observation gates passed. Registration commit
+`2693cec9eeff6af991c78d42a0eb9c9fe5716f60` was pushed and proven equal across
+local HEAD, tracking ref, fresh `FETCH_HEAD`, and the actual remote branch.
+The registered output root and both cache roots were absent, then the one
+authorized five-process observation passed all 1,024 cases with zero retries
+and zero mismatches.
 
-This is a preregistered implementation checkpoint, not a parity result.
-Source/native parity, Template2 WASM, browser execution, sampling,
-composition, model runtime, model quality, acquisition, chat, release,
-deployment, publication, and campaign credit remain open.
+This is exact Template2 source/native parity evidence for the frozen supported
+Qwen3 branch. Template2 WASM, browser execution, sampling, composition, model
+runtime, model quality, acquisition, chat, release, deployment, publication,
+and campaign credit remain open.
 
 ## Exact Authorities
 
@@ -43,6 +45,8 @@ deployment, publication, and campaign credit remain open.
 | Rust release candidate | 387,584 bytes; SHA-256 `948d16894ffff63f39c4b5c31e61b7b6f8f004b8161f0bb4e29d40e6681ce51d` |
 | Independent verifier | 47,408 bytes; SHA-256 `a278d2a1d787d9adba4af2bc4d3eb8a622723f5f0feda4c449763d10c2820954` |
 | Observation runner | 14,268 bytes; SHA-256 `c1721bed07baadeee65b3f1e918b40d07ba4d28f22c07663662680fdf2cfc4e9` |
+| Source/native parity receipt | 4,206 bytes; SHA-256 `d0a848a0827f536fb69b2d6f19ffb84102b1ff83ac2efed25e564fa9b2810cdb`; 1,024/1,024 exact |
+| Public content-free result | 4,727 bytes; SHA-256 `c985f3c95e6554425de1743b723009cb92c17246eac4859c2f9feaa0aa5e3fa0` |
 
 The profile is normative. Vectors and source observations narrow the exact
 selected behavior; they do not add unsupported publisher capabilities.
@@ -209,30 +213,34 @@ The following focused gates pass before comparative execution:
   source, environment, and candidate identity;
 - empty preflight pycache and zero comparative output files.
 
-These gates prove that the observation is ready to be frozen in source
-control. They do not prove source/native parity.
+The final complete standard Node partition additionally passed 1,030 executed
+tests with zero failures and retained one truthful conditional package test
+skip because independently built MiniModel sibling package inputs were absent.
+
+After those gates, the one authorized observation produced two byte-identical
+1,181,169-byte source-oracle results and two byte-identical 1,181,161-byte
+candidate results. The independent verifier accepted exact case order, all
+483,375 rendered bytes, repeated producer stability, post-observation source,
+environment, executable, and artifact rehashes, and zero mismatches.
 
 ## Remaining Gate B Work
 
-1. Commit and push this exact implementation and preregistration checkpoint.
-2. Fetch through a fresh remote view and prove local HEAD, tracking ref,
-   `FETCH_HEAD`, and remote branch identity are equal.
-3. Rehash every registered file and executable from that clean revision.
-4. Prove the registered external output directory does not exist.
-5. Invoke the observation runner exactly once.
-6. Do not retry if a terminal failure occurs.
-7. On pass, preserve all raw evidence outside Git and commit only the bounded
-   content-free verification result.
-8. Build and preregister the Template2 WASM/browser boundary against the
+1. Preserve the completed registration, four raw results, receipt, and public
+   result without rerun or overwrite.
+2. Build and preregister the Template2 WASM/browser boundary against the
    accepted native result before any browser output.
-9. Bind accepted Template2 and Tokenizer2 into deterministic sampling and
-   composition only after native and browser gates pass.
+3. Prove exact Template2-plus-Tokenizer2 composition in native Rust and two
+   fresh real-Chromium workers, including no double control insertion,
+   cancellation, recovery, zero network, deletion, and resource bounds.
+4. Bind accepted Template2 and Tokenizer2 into deterministic sampling only
+   after that browser composition gate passes.
 
 ## Claim Boundary
 
-This checkpoint grants no source-parity, browser-WASM, model-runtime,
-model-quality, browser-round, memory-round, P2P-lane, catalog, release,
-deployment, or publication claim.
+This checkpoint grants exact source/native Template2 parity for the frozen
+supported branch. It grants no browser-WASM, model-runtime, model-quality,
+browser-round, memory-round, P2P-lane, catalog, release, deployment, or
+publication claim.
 
 MemoryEndpoints remains unauthorized and disconnected. Campaign counters
 remain 0/20 models, 0/50 browser rounds, 0/25 live memory rounds, 0/40

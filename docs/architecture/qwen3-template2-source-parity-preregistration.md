@@ -2,17 +2,19 @@
 
 ## Status
 
-This is the no-comparative-output registration checkpoint for exact
-`Qwen/Qwen3-0.6B` publisher-template to Rust Template2 parity.
+This document preserves the no-comparative-output registration and completed
+result for exact `Qwen/Qwen3-0.6B` publisher-template to Rust Template2 parity.
 
 The execution and independent verification contracts were created before any
 publisher-oracle render or candidate comparative render. A validation-only
 preflight passed all identities and 1,024 cases without compiling or rendering
-the publisher template. The registered observation output directory has not
-been created.
+the publisher template. Registration commit
+`2693cec9eeff6af991c78d42a0eb9c9fe5716f60` was then pushed and proven equal
+across all required remote views before the output directory was created.
 
-This document records intent and immutable inputs. It is not a parity pass,
-rejection, receipt, browser result, model result, or release claim.
+The one authorized observation passed exact source/native parity. This remains
+neither a browser result, model result, quality result, nor release claim, and
+the completed attempt must not be rerun.
 
 ## Registration Boundary
 
@@ -31,6 +33,8 @@ rejection, receipt, browser result, model result, or release claim.
 | Prior output reuse | forbidden |
 | Output creation | create-only |
 | Comparative output at registration | none |
+| Registration commit | `2693cec9eeff6af991c78d42a0eb9c9fe5716f60` |
+| Observation result | 1,024/1,024 exact; zero mismatches |
 
 The registration becomes executable only after the exact checkpoint is
 committed, pushed, fetched from a fresh remote view, and proven equal across
@@ -181,13 +185,43 @@ environment generator was corrected to explicit UTF-8 bytewise ordering, the
 lock and all transitive profile identities were regenerated, and a regression
 requires malformed closures to fail with the registered typed error.
 
-The final validation-only preflight passes all 1,024 cases and all registered
-identities. Its dedicated pycache directory remains empty. No comparative
-output file exists.
+The final validation-only preflight passed all 1,024 cases and all registered
+identities. Its dedicated pycache directory remained empty and no comparative
+output existed before the pushed registration barrier.
 
-## Execution Preconditions
+## Completed Observation
 
-Before observation, all of the following must be objective facts:
+Before execution, local HEAD, tracking ref, fresh `FETCH_HEAD`, and actual
+remote all resolved to registration commit
+`2693cec9eeff6af991c78d42a0eb9c9fe5716f60`. Its sole parent was the frozen
+registration parent. The exact output root and both pycache roots were absent,
+all registered inputs rehashed, and no candidate process existed.
+
+The observer was invoked once. It ran exactly two source-oracle processes, two
+candidate processes, and one verifier process in the registered order with
+zero retries. The source outputs are byte-identical at 1,181,169 bytes and
+SHA-256
+`bcc6e94f2f53bc858775ed627abff367daf095c5b3962d23bc4087a0852cb21c`.
+The candidate outputs are byte-identical at 1,181,161 bytes and SHA-256
+`749e00f2fb06d83165905e9eac310d034a3bde1aecc5e7dd4c90730ed34a9862`.
+
+The verifier accepted all 1,024 cases, exact case order, all 483,375 rendered
+bytes, repeated producer stability, a 7,204-byte maximum render, and zero
+mismatches. It rehashed the source, Python environment, candidate executable,
+and recreated artifact after observation.
+
+The private create-only receipt is 4,206 bytes with SHA-256
+`d0a848a0827f536fb69b2d6f19ffb84102b1ff83ac2efed25e564fa9b2810cdb`.
+The four raw outputs and receipt remain outside Git. The bounded 4,727-byte
+public result at
+`tinyrustlm/experiments/qwen3-template2-source-parity-verification-v1.json`
+has SHA-256
+`c985f3c95e6554425de1743b723009cb92c17246eac4859c2f9feaa0aa5e3fa0`
+and contains no message content, rendered text, rendered hex, or private path.
+
+## Fulfilled Execution Preconditions
+
+Before observation, all of the following were proven as objective facts:
 
 - the worktree contains this exact registration;
 - tests and repository audits pass;
@@ -201,14 +235,16 @@ Before observation, all of the following must be objective facts:
 - the two dedicated pycache paths do not exist;
 - no prior attempt output is reused.
 
-Only then may the observation runner be invoked once.
+Only then was the observation runner invoked once. These facts are historical
+evidence, not permission to invoke it again.
 
 ## Claim Boundary
 
-This checkpoint proves that one exact parity experiment is registered and
-ready for source-control freezing. It does not prove that the source and Rust
-renderers agree.
+This checkpoint proves exact source/native rendering parity for the frozen
+supported publisher branch and exact candidate identity.
 
-No model, quality, browser, acquisition, release, deployment, publication,
-MemoryEndpoints, or campaign claim follows. Campaign counters remain 0/20,
-0/50, 0/25, 0/40, and 0/20.
+No model, quality, browser-WASM, acquisition, release, deployment, publication,
+MemoryEndpoints, or campaign claim follows. The next required gate is a
+separately preregistered deterministic-sampling and Template2-plus-Tokenizer2
+native/real-Chromium composition conformance run. Campaign counters remain
+0/20, 0/50, 0/25, 0/40, and 0/20.

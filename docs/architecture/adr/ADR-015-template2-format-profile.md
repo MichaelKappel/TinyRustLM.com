@@ -10,11 +10,12 @@ unsafe-free Rust parser/writer/renderer, exact source lock, output-free parity
 corpus, isolated publisher oracle, native candidate, observation runner, and
 independent verifier are implemented and preregistered.
 
-The profile remains development-only and unpromoted. No publisher-oracle
-rendered output, candidate comparative output, parity receipt, browser-WASM
-Template2 result, model-runtime result, or product claim exists at this
-checkpoint. Comparative execution is forbidden until this registration is
-committed, pushed, fetched into a fresh remote view, and proven byte-exact.
+The profile remains development-only and unpromoted. After registration commit
+`2693cec9eeff6af991c78d42a0eb9c9fe5716f60` was pushed and proven equal across
+local, tracking, fresh-fetch, and actual remote views, the one authorized
+source/native observation passed all 1,024 cases with zero mismatches. No
+browser-WASM Template2 result, model-runtime result, or product claim exists
+at this checkpoint, and the completed registration must not be rerun.
 
 ## Decision Date
 
@@ -48,9 +49,10 @@ with an optional first system message.
 branch into declarative Template2 bytes. The product never executes publisher
 Jinja, stores executable template expressions, or ships a Jinja interpreter.
 
-**Local verification required**: the exact preregistered publisher oracle and
-Rust candidate must independently render all 1,024 frozen supported cases
-twice, produce byte-stable raw results, and match every rendered UTF-8 byte.
+**Observed local fact**: the exact preregistered publisher oracle and Rust
+candidate independently rendered all 1,024 frozen supported cases twice. Both
+producer pairs are byte-stable and every one of the 483,375 rendered UTF-8
+bytes matches in exact case order.
 
 ## Decision
 
@@ -192,6 +194,17 @@ A validation-only preflight rehashed the profiles, complete candidate closure,
 Python/Jinja closure, source lock, pinned source files, and all 1,024 cases.
 It passed without calling source rendering or creating comparative output.
 
+The one registered observation then invoked exactly two source runs, two
+candidate runs, and one verifier with zero retries. Its 4,206-byte bounded
+receipt has SHA-256
+`d0a848a0827f536fb69b2d6f19ffb84102b1ff83ac2efed25e564fa9b2810cdb`.
+The 4,727-byte public content-free result has SHA-256
+`c985f3c95e6554425de1743b723009cb92c17246eac4859c2f9feaa0aa5e3fa0`.
+It records 1,024 exact cases, 483,375 total rendered bytes, a 7,204-byte
+maximum, exact repeated producer bytes, exact source/native bytes, and zero
+mismatches without message content, rendered text, rendered hex, or private
+paths.
+
 ## Threat Analysis
 
 Executable publisher expressions could reach runtime. Template2 stores only a
@@ -232,10 +245,10 @@ value as semantic.
 
 ## Performance Evidence
 
-Current performance evidence is limited to bounded miniature vectors and
-validation-only preregistration checks. No publisher-oracle or candidate
-comparative render timing has been observed, and no browser-WASM Template2
-memory or throughput claim is made.
+Current correctness evidence includes the full preregistered 1,024-case native
+source comparison. The registration did not define a publishable timing or
+memory benchmark, so no native performance, browser-WASM memory, or throughput
+claim is made from its short wall-clock duration.
 
 The Rust renderer computes exact output size with checked arithmetic, reserves
 once, and writes deterministic bytes plus bounded insertion records. This is
@@ -276,8 +289,9 @@ development-only conformance authority outside shipped runtime assets.
 
 ## Unknowns
 
-Exact source/native parity has not yet been observed. The preregistered run may
-pass or reveal a profile, oracle, candidate, or verifier defect.
+Exact source/native parity is complete for the frozen supported publisher
+branch. Its four raw files and bounded receipt remain private evidence outside
+Git and must be preserved without rerun or overwrite.
 
 The production Template2 WASM boundary, repeated browser execution,
 cancellation/recovery, profile deletion, and resource evidence are pending.
@@ -290,10 +304,10 @@ Deterministic sampling, source-framework real-model parity, useful-model
 quality, acquisition, chat UX, release, deployment, and publication remain
 pending.
 
-**Local verification required**: after this exact checkpoint is pushed and
-fresh-remote exact, create the one registered external output directory and
-run exactly two source observations, two candidate observations, and one
-verifier invocation with zero retries.
+**Local verification required**: build a separately preregistered production
+Template2 WASM boundary and prove native-to-real-Chromium composition against
+this accepted identity before any browser output or deterministic sampling
+claim.
 
 ## Acceptance Tests
 
@@ -320,9 +334,9 @@ The isolated source oracle, native candidate, observation runner, and verifier
 must rehash every bound input before comparative execution.
 
 After commit, push, and fresh-remote equality, exactly two source runs and two
-candidate runs must be byte-stable. The independent verifier must compare all
-cases once and write one create-only bounded receipt only if every rendered
-byte matches.
+candidate runs were byte-stable. The independent verifier compared all cases
+once and wrote one create-only bounded receipt because every rendered byte
+matched.
 
 No test may execute comparative output before registration, retry, select,
 repair, normalize, reorder, hand-edit, overwrite, hide a mismatch, preserve a

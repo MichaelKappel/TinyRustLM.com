@@ -220,9 +220,14 @@ The 5,030-byte independent verification preregistration has SHA-256
 
 A validation-only preflight rehashed all source, environment, corpus,
 candidate, artifact, executable, and profile identities and accepted all 1,024
-cases without rendering publisher or candidate comparative output. Source and
-native parity remain unexecuted until this checkpoint is committed, pushed,
-and fresh-remote exact. See ADR-015,
+cases without rendering publisher or candidate comparative output. After
+registration commit `2693cec9eeff6af991c78d42a0eb9c9fe5716f60` was pushed and
+fresh-remote exact, one zero-retry observation matched all 1,024 cases and
+483,375 rendered bytes exactly. Its 4,206-byte receipt has SHA-256
+`d0a848a0827f536fb69b2d6f19ffb84102b1ff83ac2efed25e564fa9b2810cdb`;
+the 4,727-byte public-safe result has SHA-256
+`c985f3c95e6554425de1743b723009cb92c17246eac4859c2f9feaa0aa5e3fa0`.
+This registration is complete and must not be rerun. See ADR-015,
 `docs/architecture/vnext-template2-format-implementation.md`, and
 `docs/architecture/qwen3-template2-source-parity-preregistration.md`.
 

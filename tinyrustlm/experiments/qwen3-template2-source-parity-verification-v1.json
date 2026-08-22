@@ -1,0 +1,123 @@
+{
+  "schema": "tinyrustlm.qwen3_template2_source_parity_verification_result.v1",
+  "profileId": "tinyrustlm.qwen3-template2-source-parity-verification/1",
+  "status": "exact-source-native-template-parity-verified",
+  "verifiedAtUtc": "2026-08-22T12:09:44.402Z",
+  "sourceControl": {
+    "registrationParentCommit": "81a6d53844761d10c0eb1563b5420788c1772f8f",
+    "registrationCommit": "2693cec9eeff6af991c78d42a0eb9c9fe5716f60",
+    "branch": "codex/model-acquisition-v2",
+    "localTrackingFetchAndRemoteEqualBeforeObservation": true
+  },
+  "registration": {
+    "attemptId": "qwen3-template2-parity-20260822-v1",
+    "executionPreregistrationByteLength": 6631,
+    "executionPreregistrationSha256": "c42f7dfb14b6861bd8db47dd1fbca590961ed573c69835556815cbe5cdef1051",
+    "verificationPreregistrationByteLength": 5030,
+    "verificationPreregistrationSha256": "c61b9556b30fa3a82085d53a96b1e468fa1fa1a5cd81e7b92f961da1ad473095",
+    "outputRootWasAbsent": true,
+    "childProcessCount": 5,
+    "retryCount": 0
+  },
+  "source": {
+    "modelId": "Qwen/Qwen3-0.6B",
+    "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+    "sourceLockSha256": "22070f5f605a71580a928291e19fe06d7eb961531732c15f10735c2d677df660",
+    "sourceTemplateSha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8"
+  },
+  "artifact": {
+    "formatProfileId": "org.minimodel.template2/2.0",
+    "byteLength": 1403,
+    "sha256": "5300b0b43188a8c73ed62e7e4fbab6eff358ae0395166791852b072a8009c9c8",
+    "tokenizerArtifactSha256": "cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b"
+  },
+  "corpus": {
+    "corpusId": "qwen3-0.6b-template2-parity-1024-v1",
+    "caseCount": 1024,
+    "byteLength": 667912,
+    "sha256": "59febbdbec44cfcf92e233626fd7fb3fb140fd43dddee64e684837a7e76df99b",
+    "expectedRenderedBytesPresent": false
+  },
+  "implementations": {
+    "sourceOracle": {
+      "name": "jinja2-immutable-sandbox",
+      "version": "3.1.6",
+      "launcherSha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
+      "sourceClosureSha256": "0138606aefe81a2a6d1b19917ef0456f5dfc23b0bd4361d87b80638ed6801155"
+    },
+    "candidate": {
+      "name": "tinyrustlm-template2",
+      "version": "0.1.8",
+      "executableSha256": "948d16894ffff63f39c4b5c31e61b7b6f8f004b8161f0bb4e29d40e6681ce51d",
+      "sourceClosureSha256": "9bd0dd9209a57d0d9f72698689f15ebc3b3bc76dd833afc818b372920ad31f47"
+    },
+    "verifier": {
+      "name": "tinyrustlm-qwen-template2-parity-verifier",
+      "version": "1",
+      "scriptSha256": "a278d2a1d787d9adba4af2bc4d3eb8a622723f5f0feda4c449763d10c2820954",
+      "sourceClosureSha256": "be1906c577e1468f215e3809e90065d45782e8609586785ae356512d76eabb47"
+    }
+  },
+  "rawRuns": [
+    {
+      "role": "source-oracle",
+      "ordinal": 1,
+      "byteLength": 1181169,
+      "sha256": "bcc6e94f2f53bc858775ed627abff367daf095c5b3962d23bc4087a0852cb21c"
+    },
+    {
+      "role": "source-oracle",
+      "ordinal": 2,
+      "byteLength": 1181169,
+      "sha256": "bcc6e94f2f53bc858775ed627abff367daf095c5b3962d23bc4087a0852cb21c"
+    },
+    {
+      "role": "candidate",
+      "ordinal": 1,
+      "byteLength": 1181161,
+      "sha256": "749e00f2fb06d83165905e9eac310d034a3bde1aecc5e7dd4c90730ed34a9862"
+    },
+    {
+      "role": "candidate",
+      "ordinal": 2,
+      "byteLength": 1181161,
+      "sha256": "749e00f2fb06d83165905e9eac310d034a3bde1aecc5e7dd4c90730ed34a9862"
+    }
+  ],
+  "comparison": {
+    "caseCount": 1024,
+    "totalRenderedBytes": 483375,
+    "maximumRenderedBytes": 7204,
+    "mismatchCount": 0,
+    "exactCaseOrder": true,
+    "exactRenderedBytes": true,
+    "repeatedOracleBytes": true,
+    "repeatedCandidateBytes": true
+  },
+  "postObservation": {
+    "sourceRehashed": true,
+    "environmentRehashed": true,
+    "candidateExecutableRehashed": true,
+    "artifactRecreated": true,
+    "environmentLockSha256": "f803927a2e1747a7130233c5a5847514b71603e71fc8c63cfff5eeaf1ef5d6f9"
+  },
+  "privateEvidence": {
+    "retention": "outside-git",
+    "rawRunCount": 4,
+    "receiptByteLength": 4206,
+    "receiptSha256": "d0a848a0827f536fb69b2d6f19ffb84102b1ff83ac2efed25e564fa9b2810cdb",
+    "messageContentIncludedInPublicResult": false,
+    "renderedTextIncludedInPublicResult": false,
+    "renderedHexIncludedInPublicResult": false,
+    "privateAbsolutePathsIncludedInPublicResult": false
+  },
+  "claimBoundary": {
+    "templateSourceParityVerified": true,
+    "templateBrowserWasmParityVerified": false,
+    "modelRuntimeVerified": false,
+    "modelQualityVerified": false,
+    "releaseAuthorized": false,
+    "campaignCreditAuthorized": false,
+    "requiredNextGate": "deterministic-sampling-profile-and-template2-wasm-composition-conformance"
+  }
+}
