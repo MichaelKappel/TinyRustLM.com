@@ -40,6 +40,7 @@ unpublished path after its replacement passes.
 | ADR-014 | [Exact Tokenizer2 2.0 Qwen ByteLevel BPE profile](ADR-014-tokenizer2-format-profile.md) | Accepted | Full pinned-source, native, and real-Chromium WASM parity pass; Template2 composition and model promotion pending |
 | ADR-015 | [Exact Template2 2.0 Qwen chat-rendering profile](ADR-015-template2-format-profile.md) | Accepted | Binary contract, independent vectors, Rust implementation, and exact 1,024-case source/native parity pass; browser-WASM composition remains pending |
 | ADR-016 | [Exact Sampling2 2.0 deterministic token-selection profile](ADR-016-sampling2-format-profile.md) | Accepted | Binary contract, normative Q48 table, independent vectors, and unsafe-free Rust implementation pass locally; native/WASM composition and model promotion remain pending |
+| ADR-017 | [Exact Prompt2 2.0 prompt-composition profile](ADR-017-prompt2-composition-profile.md) | Accepted | Exact dependency-bound artifact, three binary wires, rendered-token recomposition, and independent Node/Rust native vectors pass locally; registered accepted-artifact and browser-WASM execution remain pending |
 
 ## Evidence Labels
 

@@ -1,5 +1,12 @@
-profile: runtime-mirust.file-handoff.v93
-updated_utc: 2026-08-22T13:55:26Z
+profile: runtime-mirust.file-handoff.v94
+updated_utc: 2026-08-23T15:32:31Z
+current_prompt2_format_precommit_checkpoint_2026_08_23:
+  authority: Newest TinyRustLM first-read checkpoint. Prompt2 2.0 exact dependency-bound composition artifact, three wires, independent Node vectors, unsafe-free Rust implementation, docs, and focused tests pass locally; complete clean-source release gating, registered full-artifact output, and browser-WASM remain pending.
+  branch_and_parent: Work is uncommitted on `codex/model-acquisition-v2` over `8ba937442330cc9e9ed78953c29b717d792f3be0`. Commit reviewed bytes before rerunning the clean-source-only complete wrapper. Modify only this recovered worktree; preserve `E:\Source\Rust\TinyRustLM.com`; never write `D:`.
+  identities: Profile `b317ae0207522399e63125c57daf91d97432f95b26bd8fb71db746934ff05c8c`; vectors `9d3354785614ff60edc679b6fea6797164ffac368edaa9d3d50912b525048cc0`; artifact `d3a123f327e7c4c3eb53d642c4b8d98c39a0b30bac2cc1970922612ae502f142`; Node source `e993bde73b69422197e50b968869f19cfd9093cfc3aec4472205a67d47efdedd`; Rust lock `48dca83e7e45403cc012835e593db612003ed49c5fd9024473f1f52a9af21b29`.
+  preserved_failures: Strict JSON rejected the first oversized single-string vector and remained strict; deterministic chunks fixed representation. The first complete wrapper standard partition passed 1,053/1,054 with zero failures and one truthful skip, then release gating correctly returned `release_gate_source_not_clean`. Do not report a complete pass or receipt.
+  exact_resume: Static and root-workspace audits pass. Verify staged bytes, commit Prompt2 core, rerun the complete wrapper in a new owned external root from clean source, update memory, push, and prove local/tracking/FETCH_HEAD/remote equality. Then preregister exact full-artifact native and two fresh-Chromium Prompt2 composition before output.
+  nonclaims: No full-artifact Prompt2 output, browser composition, real model, quality, acquisition, release, deployment, publication, MemoryEndpoints, or campaign progress. Preserve old Tokenizer2 and Template2 evidence without rerun; counters stay zero.
 current_sampling2_format_checkpoint_2026_08_22:
   authority: Newest TinyRustLM first-read checkpoint. Sampling2 2.0 exact binary contract, normative Q48 table, independent Node vectors, unsafe-free Rust implementation, explicit terminal controller, Git binary preservation, complete affected gates, and remote identity proof pass. This is native contract evidence only.
   goal: docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md

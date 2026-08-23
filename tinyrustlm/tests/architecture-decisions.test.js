@@ -79,6 +79,11 @@ const records = [
     "Sampling2 2.0",
     "xoshiro256**",
     "round-ties-to-even"
+  ]],
+  ["ADR-017-prompt2-composition-profile.md", [
+    "Prompt2 2.0",
+    "rendered-token recomposition",
+    "does not truncate"
   ]]
 ];
 
@@ -86,7 +91,7 @@ function read(name) {
   return fs.readFileSync(path.join(adrDirectory, name), "utf8");
 }
 
-test("contains the complete accepted ADR-001 through ADR-016 inventory", () => {
+test("contains the complete accepted ADR-001 through ADR-017 inventory", () => {
   const actual = fs.readdirSync(adrDirectory)
     .filter((name) => /^ADR-\d{3}-.+\.md$/u.test(name))
     .sort();

@@ -50,7 +50,7 @@ not make them one coherent family.
 
 | Class | Observed current implementation | Material gap | vNext disposition |
 | --- | --- | --- | --- |
-| Artifact | SLM1 remains in the historical production path. Separate unpromoted SLM2 crates implement the exact dense-F32 format and scalar runtime; Tokenizer2 and Template2 have exact pinned-source parity; Sampling2 has an exact integer selection contract and cross-language native vectors; the canonical SLM2 fixture also replays through Node WASM and real Chromium. | Source-family conversion, source-framework and real-model runtime parity, exact Tokenizer2/Template2/Sampling2 composition, production browser ingestion, Sampling2 browser-WASM execution, sustained sanitizer fuzz, production routing, and SLM1 deletion remain incomplete. | Keep SLM2 inactive until all remaining gates pass, regenerate reviewed sources into SLM2 plus one immutable external artifact manifest, then delete SLM1 admission without a compatibility reader. |
+| Artifact | SLM1 remains in the historical production path. Separate unpromoted SLM2 crates implement the exact dense-F32 format and scalar runtime; Tokenizer2 and Template2 have exact pinned-source parity; Sampling2 has an exact integer selection contract and cross-language native vectors; Prompt2 has an exact bound composition artifact, three binary wires, and cross-language native vectors; the canonical SLM2 fixture also replays through Node WASM and real Chromium. | Source-family conversion, source-framework and real-model runtime parity, registered accepted-artifact Prompt2 execution, production browser ingestion, Prompt2 and Sampling2 browser-WASM execution, sustained sanitizer fuzz, production routing, and SLM1 deletion remain incomplete. | Keep SLM2 inactive until all remaining gates pass, regenerate reviewed sources into SLM2 plus one immutable external artifact manifest, then delete SLM1 admission without a compatibility reader. |
 | Receipt | `CampaignEvidenceStore` provides closed fields, content addressing, redaction, immutable files, DAG rebuild, and quarantine; many task-specific receipt types wrap it. | Current receipt identity/canonicalization and nested parameter shapes are not the complete ADR-010 vNext profile. | Replace all campaign phase evidence with one envelope/content receipt contract plus typed `receiptType` and phase semantics. |
 | Context | Conversation, prompt-token, memory, retrieval, KV, and local-store contracts are split across browser and tooling schemas. | Trust labels, current-turn precedence, deterministic truncation, cache identity, and public/private handling are not one closed context package. | Use one private, volatile context package with explicit segment trust, budget, compiler, model/composition, tokenizer, and template identities. |
 | Worker | Browser generation and fault tests use several ad hoc `postMessage` shapes; there is no single production worker envelope. | Message/session/generation identity, cancellation, stale-response rejection, deadlines, transfer ownership, and payload privacy are not frozen together. | Use one small private worker envelope; transfer large/private payload bytes separately and bind them by byte count and SHA-256. |
@@ -159,10 +159,16 @@ source/native parity. Sampling2 2.0 has an exact binary profile, normative Q48
 weight table, independent Node implementation, unsafe-free Rust implementation,
 and cross-language native vectors covering deterministic fixed-score,
 repetition, filtering, PRNG, unbiased selection, and terminal generation
-semantics. This remains inactive evidence: no source conversion,
-source-framework or real-model parity, exact three-artifact composition,
-Sampling2 browser-WASM execution, product browser ingestion, sustained
-sanitizer campaign, model qualification, or production cutover is established.
+semantics. Prompt2 2.0 now binds those three accepted algorithm artifacts into
+one exact 512-byte composition artifact, strict load/request/result wires,
+rendered-token recomposition rule, control-insertion map, initial Sampling2
+controller state, independent Node implementation, unsafe-free Rust
+implementation, and cross-language native vectors. This remains inactive
+evidence: no source conversion, source-framework or real-model parity,
+registered full-artifact Prompt2 native execution, Prompt2 or Sampling2
+browser-WASM execution, product browser ingestion, sustained sanitizer
+campaign, model qualification, or production cutover is established. See
+`docs/architecture/vnext-prompt2-format-implementation.md`.
 The current campaign checkpoint additionally freezes one exact campaign plan,
 authority-aware truthful projection, and sufficient complete-bundle bounds.
 The plan finalization boundary now has an independent strict Rust

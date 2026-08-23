@@ -268,6 +268,41 @@ quality, release, deployment, publication, and campaign gates remain open.
 See ADR-016 and
 `docs/architecture/vnext-sampling2-format-implementation.md`.
 
+## Prompt2 Composition Checkpoint
+
+`prompt2-format-profile.v1.json` is the sole development-only Prompt2 2.0
+composition profile. It is 19,423 bytes with SHA-256
+`b317ae0207522399e63125c57daf91d97432f95b26bd8fb71db746934ff05c8c`.
+Its exact 512-byte artifact has SHA-256
+`d3a123f327e7c4c3eb53d642c4b8d98c39a0b30bac2cc1970922612ae502f142`
+and binds the accepted Tokenizer2, Template2, Sampling2, Q48 table, pinned Qwen
+source configuration and template, SLM2 format, and scalar-runtime-vector
+identities. It does not bind model tensor bytes or grant a model claim.
+
+`prompt2-format-vectors.v1.json` is a 347,026-byte independent contract with
+SHA-256
+`9d3354785614ff60edc679b6fea6797164ffac368edaa9d3d50912b525048cc0`.
+It freezes the exact artifact, load bundle, three requests, active and
+40,960-token context-limit results, all proper artifact prefixes, and 40
+registered mutations. Large result bytes use deterministic 32 KiB JSON chunks
+so the repository strict JSON string ceiling remains unchanged.
+
+The independent Node implementation and unsafe-free `tinyrustlm-prompt2` Rust
+crate reproduce every wire and stable rejection. Composition renders once,
+tokenizes the complete rendered UTF-8 once, independently recomposes each
+non-control span plus Template2-owned control token, requires exact token-array
+equality, maps every control insertion, and constructs one Sampling2 controller
+from the complete caller-supplied configuration and seed. There are no defaults,
+truncation, repair, retries, best-of-N selection, aliases, legacy readers, or
+fallback paths.
+
+This checkpoint is exact format and local native composition evidence only.
+The accepted full Tokenizer2 artifact has not yet been executed through Prompt2
+under a frozen output-free registration. Native comparative output, browser
+WASM, fresh Chromium, a real SLM2 model, quality, release, deployment,
+publication, MemoryEndpoints, and campaign gates remain open. See ADR-017 and
+`docs/architecture/vnext-prompt2-format-implementation.md`.
+
 ## Parsing
 
 Every JSON input is first consumed as bounded bytes. Before schema validation,

@@ -1,5 +1,12 @@
-profile: runtime-mirust.receiver-brief.v20
-updated_utc: 2026-08-22T13:55:26Z
+profile: runtime-mirust.receiver-brief.v21
+updated_utc: 2026-08-23T15:32:31Z
+current_prompt2_format_precommit_2026_08_23:
+  authority: Prompt2 2.0 exact composition artifact, strict load/request/result wires, independent Node vectors, unsafe-free Rust implementation, ADR, and focused gates pass locally. Full accepted-artifact execution and browser-WASM are not yet registered or run.
+  source_control: Uncommitted over `8ba937442330cc9e9ed78953c29b717d792f3be0`. The complete wrapper correctly refused dirty source after the standard partition; commit first and rerun clean before push/remote proof.
+  identities: Profile `b317ae0207522399e63125c57daf91d97432f95b26bd8fb71db746934ff05c8c`; vectors `9d3354785614ff60edc679b6fea6797164ffac368edaa9d3d50912b525048cc0`; artifact `d3a123f327e7c4c3eb53d642c4b8d98c39a0b30bac2cc1970922612ae502f142`; Node source `e993bde73b69422197e50b968869f19cfd9093cfc3aec4472205a67d47efdedd`; Rust lock `48dca83e7e45403cc012835e593db612003ed49c5fd9024473f1f52a9af21b29`.
+  gates: Node 11/11, ADR 19/19, Rust contract 4/4, Rust vectors 3/3, generator, rustfmt, and denied-warning Clippy pass. Standard partition passed 1,053/1,054 with zero failures and one truthful skip; complete wrapper remains failed at `release_gate_source_not_clean` with no receipt.
+  exact_resume: Static and root-workspace audits pass. Verify staged bytes, commit, rerun complete clean-source wrapper in a fresh external root, update UAI, push/fresh-remote verify, then preregister full-artifact native and two-profile Chromium composition before output.
+  claim_boundary: Local native composition contract only. Preserve existing Tokenizer2/Template2 evidence. No browser, model, quality, release, MemoryEndpoints, or campaign claim; counters remain zero.
 current_sampling2_format_2026_08_22:
   authority: Sampling2 2.0 exact binary contract, normative Q48 table, independent Node vectors, unsafe-free Rust implementation, Git binary preservation, and complete current-source gates pass as native deterministic sampling evidence.
   source_control: Commit `78aeb8d0f95f95330f97a572c5ef02b8d2b41fd5` is pushed and exact across local HEAD, tracking ref, fresh FETCH_HEAD, and actual remote.
