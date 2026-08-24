@@ -1,0 +1,385 @@
+{
+  "schema": "tinyrustlm.production-slm2-clean-cut-preregistration.v1",
+  "profileId": "tinyrustlm.production-slm2-clean-cut/1",
+  "status": "registered-before-workspace-or-executable-cutover",
+  "registeredAtUtc": "2026-08-24T07:06:14Z",
+  "registrationParentCommit": "49e261cf76d3d7256d6a3d1b7663e36424b95763",
+  "registrationParentTree": "6e735f93409d28d6fbf92adf3f4f1092c9eabee4",
+  "authority": {
+    "workspaceRoot": "E:/Source/.tinyrustlm-model-acquisition-recovered-20260819",
+    "branch": "codex/model-acquisition-v2",
+    "productLifecycle": "prelaunch-single-product",
+    "productGenerationCount": 1,
+    "secondProductGenerationExists": false,
+    "technicalIdentifiersAreProductGenerations": false,
+    "allowedTechnicalIdentityExamples": [
+      "acg2.0",
+      "org.minimodel.prompt2/2.0",
+      "org.minimodel.sampling2/2.0",
+      "org.minimodel.slm2/2.0",
+      "org.minimodel.template2/2.0",
+      "org.minimodel.tokenizer2/2.0",
+      "schema-version",
+      "semantic-version"
+    ],
+    "frozenEnterpriseGoal": {
+      "path": "docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md",
+      "sha256": "92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0"
+    },
+    "productionGoal": {
+      "path": "docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md",
+      "sha256": "115ae434bf9dee0b4f27767f126d951989c5ec684241e2e3a6238de094e65d33"
+    },
+    "memoryEndpointsAuthorized": false,
+    "writeDriveDAllowed": false
+  },
+  "preCutoverInputs": {
+    "rootCargoManifest": {
+      "path": "Cargo.toml",
+      "byteLength": 1706,
+      "sha256": "baf905b1de452a2bc0d7e4dcb3a09a0c895fbbf4b4475f6db732757b5b05be6c"
+    },
+    "rootCargoLock": {
+      "path": "Cargo.lock",
+      "byteLength": 25252,
+      "sha256": "c75e9e71c5a73da2ba11634ef24d261c89479d6e1c22cf08dd50f0def21b84c5"
+    },
+    "acceptedCleanGate": {
+      "sourceRevision": "a84125ff591f4029cdfa31c0a1e2a7ac0bb6e5b7",
+      "standardTests": 1054,
+      "standardPass": 1053,
+      "standardFail": 0,
+      "standardTruthfulMissingPackageInputSkip": 1,
+      "releaseShards": 10,
+      "releaseTests": 23,
+      "releaseRunId": "ab6aaee4e6c22822877ca629556dffee700f9dda05970d51e9f1761d9a5a4521",
+      "releaseAggregateSha256": "31e5e8ed29337d3a053b2875c32a05c03d2c8e8f7f9e195449bb3d4c591c314f",
+      "rerunAuthorized": false
+    },
+    "immutableTokenizer2Evidence": {
+      "artifactSha256": "cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b",
+      "nativeVerificationSha256": "4ebbfa2bc59d43bdbcd5b3b2528bed66035ff2a3165f554ac6867e7cc7fe0ea6",
+      "browserVerificationSha256": "f828190b2ff5d3c1e794cb50f3b0dd8c41367ed09fca758eeb513fb1ec2c964e",
+      "rerunAuthorized": false
+    },
+    "immutableTemplate2Evidence": {
+      "artifactSha256": "5300b0b43188a8c73ed62e7e4fbab6eff358ae0395166791852b072a8009c9c8",
+      "sourceParityVerificationSha256": "c985f3c95e6554425de1743b723009cb92c17246eac4859c2f9feaa0aa5e3fa0",
+      "rerunAuthorized": false
+    }
+  },
+  "observedReleaseBlockers": [
+    {
+      "blockerId": "obsolete-executable-runtime-closure",
+      "status": "confirmed-local-fact",
+      "summary": "The browser, C ABI, .NET wrapper, P2P validator, companion converter, and package graph still reach the superseded SLM1 runtime or writer."
+    },
+    {
+      "blockerId": "composition-contract-absent",
+      "status": "confirmed-local-fact",
+      "summary": "No production acg2.0 parser, writer, validator, or transactional activation implementation exists."
+    },
+    {
+      "blockerId": "qwen3-model-converter-absent",
+      "status": "confirmed-local-fact",
+      "summary": "The current model converter does not emit a complete Qwen3 SLM2 model artifact."
+    },
+    {
+      "blockerId": "production-browser-wasm-boundary-absent",
+      "status": "confirmed-local-fact",
+      "summary": "The SLM2 WASM crate is a conformance fixture boundary, not the production browser runtime."
+    },
+    {
+      "blockerId": "release-store-quadratic-validation",
+      "status": "confirmed-local-fact",
+      "summary": "Publication sequencing performs complete receipt and subject store rebuilds inside per-item persistence and restart loops."
+    },
+    {
+      "blockerId": "qualified-model-evidence-absent",
+      "status": "external-and-human-custody-blocked",
+      "summary": "No source or trained derivative has the complete independently authorized, contamination-controlled quality evidence required for promotion."
+    }
+  ],
+  "cleanSlateRules": {
+    "legacyReaders": false,
+    "legacyWriters": false,
+    "dualRuntime": false,
+    "dualArtifactFormat": false,
+    "compatibilityAliases": false,
+    "migrationShims": false,
+    "deprecatedRoutes": false,
+    "permissiveFallbacks": false,
+    "temporaryFeatureFlags": false,
+    "responseRepair": false,
+    "hiddenRetries": false,
+    "bestOfN": false,
+    "expectedAnswerInjection": false,
+    "fixtureAsProductSuccess": false,
+    "testWeakening": false,
+    "knownDebtAtRelease": false,
+    "historicalEvidenceMayRemainNonExecutable": true,
+    "obsoleteExecutablePathsMustBeDeletedAfterReplacement": true
+  },
+  "intentionalInvalidation": {
+    "rootCargoManifestMayChange": true,
+    "rootCargoLockMayChange": true,
+    "acceptedCleanGateRemainsHistoricalEvidenceOnly": true,
+    "tokenizer2EvidenceRemainsValidIfBoundBytesAndSemanticsDoNotChange": true,
+    "template2EvidenceRemainsValidIfBoundBytesAndSemanticsDoNotChange": true,
+    "runtimeEvidenceMustBeRegenerated": true,
+    "conversionEvidenceMustBeGenerated": true,
+    "nativeAbiEvidenceMustBeRegenerated": true,
+    "dotnetPackageEvidenceMustBeRegenerated": true,
+    "p2pEvidenceMustBeRegenerated": true,
+    "browserChatEvidenceMustBeGenerated": true,
+    "releaseEvidenceMustBeRegenerated": true
+  },
+  "canonicalComponentOwnership": [
+    {
+      "componentId": "slm2-artifact",
+      "path": "rust/crates/tinyrustlm-slm2",
+      "responsibility": "sole model byte format, bounded parser, writer primitives, and tensor validation"
+    },
+    {
+      "componentId": "composition2",
+      "path": "rust/crates/tinyrustlm-composition2",
+      "responsibility": "sole acg2.0 composition format, parser, writer, identity binding, and activation preflight"
+    },
+    {
+      "componentId": "tokenizer2",
+      "path": "rust/crates/tinyrustlm-tokenizer2",
+      "responsibility": "sole tokenizer artifact parser, encoder, and decoder"
+    },
+    {
+      "componentId": "template2",
+      "path": "rust/crates/tinyrustlm-template2",
+      "responsibility": "sole bounded declarative chat renderer"
+    },
+    {
+      "componentId": "sampling2",
+      "path": "rust/crates/tinyrustlm-sampling2",
+      "responsibility": "sole deterministic sampling implementation"
+    },
+    {
+      "componentId": "prompt2",
+      "path": "rust/crates/tinyrustlm-prompt2",
+      "responsibility": "sole Template2, Tokenizer2, and Sampling2 prompt composition controller"
+    },
+    {
+      "componentId": "runtime",
+      "path": "rust/crates/tinyrustlm-runtime",
+      "responsibility": "sole host-facing SLM2 conversation runtime and scalar correctness authority"
+    },
+    {
+      "componentId": "browser-runtime-wasm",
+      "path": "rust/crates/tinyrustlm-browser-runtime-wasm",
+      "responsibility": "sole typed browser WASM boundary over the canonical runtime"
+    },
+    {
+      "componentId": "converter",
+      "path": "rust/crates/tinyrustlm-convert",
+      "responsibility": "sole pinned-source Qwen3 conversion, validation, and content-addressed receipt CLI"
+    },
+    {
+      "componentId": "native-abi",
+      "path": "rust/crates/tinyrustlm-native",
+      "responsibility": "sole C ABI over the canonical runtime and SLM2 validators"
+    },
+    {
+      "componentId": "dotnet-runtime",
+      "path": "dotnet/src/TinyRustLM.Core",
+      "responsibility": "sole managed runtime wrapper over the current native ABI"
+    },
+    {
+      "componentId": "p2p",
+      "path": "rust/crates/tinyrustlm-p2p",
+      "responsibility": "sole direct piece transport and SLM2 composition admission implementation"
+    },
+    {
+      "componentId": "companion",
+      "path": "dotnet/src/TinyRustLM.SeedHost",
+      "responsibility": "sole loopback P2P-first-or-convert acquisition coordinator"
+    },
+    {
+      "componentId": "browser-worker",
+      "path": "tinyrustlm/app/model-runtime-worker.js",
+      "responsibility": "sole browser-owned streaming, validation, activation, generation, cancellation, and recovery path"
+    },
+    {
+      "componentId": "browser-ui",
+      "path": "tinyrustlm/app/app.js",
+      "responsibility": "sole user command and exactly-once raw assistant rendering path"
+    }
+  ],
+  "obsoleteExecutableClosure": {
+    "deleteCompletely": [
+      "rust/crates/tinyrustlm-slm",
+      "tinyrustlm/runtime",
+      "tinyrustlm/tools/slm_pack",
+      "tinyrustlm/tools/atomic-composition-activation-preregistration.js",
+      "tinyrustlm/tests/atomic-composition-activation-preregistration.test.js",
+      "tinyrustlm/experiments/specialist-portfolio/atomic-composition-activation-preregistration.v1.json"
+    ],
+    "rewriteWithoutCompatibilitySurface": [
+      "rust/crates/tinyrustlm-runtime",
+      "rust/crates/tinyrustlm-native",
+      "rust/crates/tinyrustlm-p2p",
+      "dotnet/src/TinyRustLM.Abstractions/RuntimeModels.cs",
+      "dotnet/src/TinyRustLM.Abstractions/SlmModels.cs",
+      "dotnet/src/TinyRustLM.Conversion/TinySlmConversionTool.cs",
+      "dotnet/src/TinyRustLM.Core",
+      "dotnet/src/TinyRustLM.SeedHost/SeedHostBridgeConversionOperations.cs",
+      "dotnet/src/TinyRustLM.SeedHost/TinyRustLMConversionExecutableLocator.cs",
+      "tinyrustlm/app/browser-model-admission.js",
+      "tinyrustlm/app/companion-bridge.js",
+      "tinyrustlm/app/app.js"
+    ],
+    "forbiddenExecutableTokensAfterCutover": [
+      "ACG1",
+      ".acg1",
+      "tinyrustlm-slm-pack",
+      "tinyrustlm-runtime-sdk",
+      "generate_two_sentence_text",
+      "generate_status_reason_json"
+    ],
+    "scopeExcludesImmutableHistoricalReportsAndContentAddressedHistory": true
+  },
+  "artifactChain": {
+    "modelFormatProfile": "org.minimodel.slm2/2.0",
+    "tokenizerFormatProfile": "org.minimodel.tokenizer2/2.0",
+    "templateFormatProfile": "org.minimodel.template2/2.0",
+    "samplingFormatProfile": "org.minimodel.sampling2/2.0",
+    "promptFormatProfile": "org.minimodel.prompt2/2.0",
+    "compositionFormatProfile": "acg2.0",
+    "sourceFamily": "Qwen/Qwen3-0.6B",
+    "sourceRevision": "c1899de289a04d12100db370d81485cdf75e47ca",
+    "sourceModelConversionStatusAtRegistration": "not-implemented",
+    "productionQuantizationStatusAtRegistration": "not-promoted",
+    "referenceWeightProfile": "f32-reference",
+    "firstCompressedCandidate": "q8-weight-only-explicit-tensor-role-profile",
+    "runtimeRepackingAllowed": false,
+    "unknownProfilesFailClosed": true,
+    "compositionRequiresExactIdentityAndByteLengthForEveryMember": true
+  },
+  "runtimeContract": {
+    "activation": "validate-complete-composition-before-transactional-swap",
+    "modelLoad": "bounded-streaming-no-unbounded-second-copy",
+    "promptPath": "template2-then-tokenizer2-then-prompt2",
+    "generationPath": "canonical-runtime-then-sampling2",
+    "rawOutputRendering": "exactly-once-without-repair",
+    "kvCache": "composition-bound-transactional-and-context-bounded",
+    "cancellation": "cooperative-native-and-worker-termination-browser",
+    "staleMessagePolicy": "reject-by-operation-and-composition-identity",
+    "networkPolicy": "no-prompt-or-model-byte-upload-to-project-origins"
+  },
+  "conversionContract": {
+    "command": "tinyrustlm-convert",
+    "p2pPreference": "current-verified-exact-composition-only",
+    "noPeerBehavior": "automatic-reviewed-pinned-source-acquisition-and-local-conversion",
+    "instructionFileDownload": false,
+    "scriptDownload": false,
+    "requestFileDownload": false,
+    "streamSourceHashing": true,
+    "sameDirectoryCreateOnlyPromotion": true,
+    "resumeBindsAllInputAndToolIdentities": true,
+    "structuralConversionIsQualityEvidence": false
+  },
+  "releaseStoreReplacement": {
+    "problem": "whole-store-rebuild-inside-per-item-persistence",
+    "startupRule": "one-full-validated-rebuild-per-open-store-instance",
+    "sameProcessSnapshotRule": "immutable-in-memory-active-id-snapshot-with-zero-filesystem-scan",
+    "writeRule": "validate-complete-batch-then-create-only-publish-in-dependency-order",
+    "recoveryRule": "fresh-open-full-rebuild-then-exact-prefix-classification",
+    "receiptSequenceRule": "putMany-remaining-prefix-then-one-in-memory-membership-proof",
+    "finalPublicationRule": "redaction-receipt-then-putMany-remaining-claims-then-final-commit-receipt",
+    "commitVisibilityRule": "final-publication-receipt-is-absent-until-all-claims-are-durable-and-verified",
+    "exhaustiveProofRule": "pure-prefix-classifier-tests-every-prefix-from-zero-through-maximum",
+    "physicalFaultRule": "real-filesystem-restart-at-before-first-midpoint-and-after-last-before-commit-boundaries",
+    "forbiddenOptimization": "remove-validation-or-increase-timeout",
+    "maximumBatchEntries": 1024,
+    "maximumFullStoreRebuildsWithoutInjectedRestart": 2,
+    "maximumFullStoreRebuildsPerInjectedRestart": 2,
+    "maximumFullStoreRebuildsInsideAnyPerItemLoop": 0,
+    "maximumSameProcessMembershipFilesystemScans": 0,
+    "completeCapacityWallClockCeilingMs": 180000,
+    "wallClockIsSecondaryToDeterministicOperationCounters": true
+  },
+  "implementationOrder": [
+    "preregistration-and-fresh-remote-barrier",
+    "bounded-release-store-snapshot-batch-and-prefix-proof",
+    "slm2-q8-profile-and-independent-vectors",
+    "acg2-format-parser-writer-and-transactional-activation",
+    "qwen3-model-converter-and-repeat-conversion",
+    "canonical-runtime-prompt-sampling-and-kv-integration",
+    "production-browser-runtime-wasm-worker-boundary",
+    "native-abi-and-dotnet-wrapper-rewrite",
+    "p2p-and-companion-acquisition-rewrite",
+    "browser-p2p-first-or-convert-user-journey",
+    "source-native-wasm-numerical-parity",
+    "untouched-quality-qualification",
+    "clean-profile-multiturn-browser-acceptance",
+    "package-release-deployment-and-public-readback",
+    "delete-obsolete-executable-closure-and-run-final-audit"
+  ],
+  "verificationGates": {
+    "rust": [
+      "format",
+      "check-all-targets-locked",
+      "test-all-targets-locked",
+      "clippy-all-targets-warnings-denied",
+      "wasm32-release-build",
+      "malformed-input-corpus",
+      "fuzz-or-deterministic-fuzz-replay"
+    ],
+    "interop": [
+      "native-abi-export-allowlist",
+      "native-abi-hostile-input",
+      "dotnet-unit",
+      "dotnet-package-consumer",
+      "rid-native-header-and-real-execution-where-authorized"
+    ],
+    "browser": [
+      "real-chromium-zero-project-upload",
+      "large-artifact-streaming-and-quota-preflight",
+      "worker-crash-cancellation-and-fresh-worker-recovery",
+      "multiturn-kv-continuity",
+      "exactly-once-assistant-rendering",
+      "fresh-profile-close-delete-and-secret-scan",
+      "desktop-narrow-and-mobile-accessibility"
+    ],
+    "release": [
+      "bounded-complete-capacity-publication",
+      "append-only-failure-history",
+      "secret-and-private-evidence-scan",
+      "source-remote-exactness",
+      "version-release-date-and-publication-log",
+      "public-https-readback"
+    ]
+  },
+  "registrationOutputBoundary": {
+    "modelBytesCreatedByThisRegistration": false,
+    "conversionOutputCreatedByThisRegistration": false,
+    "runtimeOutputCreatedByThisRegistration": false,
+    "evaluationOutputCreatedByThisRegistration": false,
+    "browserOutputCreatedByThisRegistration": false,
+    "publicationReceiptCreatedByThisRegistration": false,
+    "externalExecutionAuthorizedByThisRegistrationAlone": false
+  },
+  "claimBoundary": {
+    "runtimeVerified": false,
+    "conversionVerified": false,
+    "modelQualityVerified": false,
+    "browserChatVerified": false,
+    "p2pAvailabilityVerified": false,
+    "releaseAuthorized": false,
+    "deploymentVerified": false,
+    "campaignCreditAuthorized": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}
