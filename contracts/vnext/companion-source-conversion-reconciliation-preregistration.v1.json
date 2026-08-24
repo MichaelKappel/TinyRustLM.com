@@ -1,0 +1,500 @@
+{
+  "schema": "tinyrustlm.companion-source-conversion-reconciliation-preregistration.v1",
+  "profileId": "tinyrustlm.companion-source-conversion-reconciliation/1",
+  "status": "registered-before-reconciliation-implementation-and-output",
+  "registeredAtUtc": "2026-08-24T21:36:01Z",
+  "registrationParentCommit": "d0c589cb984fd4eb70271dc3ff3f3beae5d363f3",
+  "registrationParentTree": "c6beb42bb8a89376a63050f83df30d05ef5153ef",
+  "authority": {
+    "productLifecycle": "prelaunch-single-product",
+    "productGenerationCount": 1,
+    "technicalVersionIsProductGeneration": false,
+    "workspaceRoot": "E:/Source/.tinyrustlm-model-acquisition-recovered-20260819",
+    "branch": "codex/model-acquisition-v2",
+    "companionOwner": "dotnet/src/TinyRustLM.Companion",
+    "managedConversionOwner": "dotnet/src/TinyRustLM.Conversion",
+    "nativeConversionOwner": "rust/crates/tinyrustlm-convert",
+    "memoryEndpointsAuthorized": false,
+    "writeDriveDAllowed": false
+  },
+  "productBoundary": {
+    "productCount": 1,
+    "prelaunch": true,
+    "legacySupport": false,
+    "compatibilityReaders": false,
+    "migrationWriters": false,
+    "aliases": false,
+    "fallbacks": false,
+    "responseRepair": false,
+    "automaticRetry": false,
+    "bestOfN": false
+  },
+  "registeredSourceClosure": [
+    {
+      "path": "dotnet/src/TinyRustLM.Companion/CompanionContracts.cs",
+      "byteLength": 9618,
+      "sha256": "603a40f089197ccef5d171aaaf1f3f502b0c8fadd1323c813cb84762cfb9d239"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Companion/CompanionOperationJournal.cs",
+      "byteLength": 18402,
+      "sha256": "a0f3779ede38fe11850347988422c922c609509000bdec89a4926b4e88305eb0"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Companion/CompanionSourceConversion.cs",
+      "byteLength": 6576,
+      "sha256": "1e05ae99631d16c6c2866fd2f87dd0216e7d256097809bc13788a4c8367fce36"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Companion/TinyRustLM.Companion.csproj",
+      "byteLength": 604,
+      "sha256": "d373792afe25b54d70ee4b664d3d2cebc28c7def207ac7d5f6982bc036ccfc63"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Conversion/TinyRustLmConversionTool.cs",
+      "byteLength": 37281,
+      "sha256": "9d356698ad2dfc9758bd09226d40a337486b0d7df25cc7691766e5f22895cd21"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Conversion/TinyRustLM.Conversion.csproj",
+      "byteLength": 3189,
+      "sha256": "0b9b0f7fabb15850ae7abf839203c6c12b02a7301ed7cb88a30ea692bf842a4b"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Companion.Tests/CompanionContractTests.cs",
+      "byteLength": 3402,
+      "sha256": "1aad948f929392744ca65112c965ff4612f3d0ff84737e9dd5f4eb547cbc1ff6"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Companion.Tests/CompanionOperationJournalTests.cs",
+      "byteLength": 5877,
+      "sha256": "6d34451b9cef25a85e1eb781db377ea22de8f9f9641774abbcbb756ecf76262f"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Companion.Tests/CompanionSourceConversionTests.cs",
+      "byteLength": 11042,
+      "sha256": "43e89497c493ad4e512502d445f8afdfddd31d68c71bd7f29444571a4a36bea6"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Companion.Tests/TinyRustLM.Companion.Tests.csproj",
+      "byteLength": 858,
+      "sha256": "0e320527b6787ae5d275cd6d84ee09edb02bb4cad443bb63aacf823ae5fd4de1"
+    },
+    {
+      "path": "dotnet/tools/TinyRustLM.ConversionFixtureTool/Program.cs",
+      "byteLength": 10706,
+      "sha256": "bea7ac4db77412c32c4f70114bc497c15e8bd0c389459f18f1e6788161f96615"
+    },
+    {
+      "path": "dotnet/tools/TinyRustLM.ConversionFixtureTool/TinyRustLM.ConversionFixtureTool.csproj",
+      "byteLength": 150,
+      "sha256": "0d8367afb2258b673345c8cd06571ee45a40374578afcdfc8e87feb7845a3f52"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/qwen3_composition.rs",
+      "byteLength": 59532,
+      "sha256": "ff6f338c4abf1311e702072cf54dee592a8b075b5076d1e67e7714b9ac4b1966"
+    },
+    {
+      "path": "contracts/vnext/qwen3-composition-conversion-profile.v1.json",
+      "byteLength": 7978,
+      "sha256": "2f95f79783ec6cd12160d51f9697c5c77aab2e6cd46afeb5140fdb513e5d8158"
+    }
+  ],
+  "exactTechnicalIdentities": {
+    "compositionProfileId": "tinyrustlm.qwen3-complete-composition-conversion/1",
+    "compositionProfileSha256": "2f95f79783ec6cd12160d51f9697c5c77aab2e6cd46afeb5140fdb513e5d8158",
+    "nativeAttemptSchema": "tinyrustlm.qwen3_composition_attempt.v1",
+    "nativePassSchema": "tinyrustlm.qwen3_composition_conversion_receipt.v1",
+    "nativeRejectionSchema": "tinyrustlm.qwen3_composition_rejection.v1",
+    "managedIntentSchema": "tinyrustlm.qwen3-composition-conversion-intent.v1",
+    "companionIntentSchema": "tinyrustlm.companion.source-conversion-intent.v1",
+    "operationRecordSchema": "tinyrustlm.companion.operation.v2",
+    "durableCompositionSchema": "tinyrustlm.verified-composition.v1",
+    "liveObservationSchema": "tinyrustlm.composition-conversion-live-observation.v1"
+  },
+  "managedConversionIntent": {
+    "type": "TinyRustLmCompositionConversionIntent",
+    "creationMethod": "CreateCompositionIntent",
+    "launchMethod": "ConvertCompositionAsync",
+    "canonicalFieldsInOrder": [
+      "schema",
+      "modelSourceLockPath",
+      "modelSourceLockSha256",
+      "modelSourceDirectory",
+      "tokenizerSourceLockPath",
+      "tokenizerSourceLockSha256",
+      "tokenizerSourceDirectory",
+      "compositionProfileSha256",
+      "outputRoot",
+      "converterExecutablePath",
+      "converterExecutableSha256",
+      "maximumDurationMilliseconds",
+      "maximumSummaryBytes",
+      "maximumErrorBytes",
+      "terminalRule"
+    ],
+    "terminalRule": "existing-output-root-is-never-resumed",
+    "pathRules": {
+      "encoding": "normalized-absolute-platform-path",
+      "maximumCharacters": 32767,
+      "embeddedNulAllowed": false,
+      "sourceLocksMustBeExistingDirectRegularNonReparseFilesAtCreation": true,
+      "sourceDirectoriesMustBeExistingDirectNonReparseDirectoriesAtCreation": true,
+      "converterMustBeExistingDirectRegularNonReparseFileAtCreation": true,
+      "outputRootMustBeAbsentAtCreation": true,
+      "outputParentMustBeExistingDirectNonReparseDirectoryAtCreation": true,
+      "sourceAndOutputTreesMustNotOverlap": true
+    },
+    "identityRules": {
+      "hashAlgorithm": "sha256",
+      "digestEncoding": "lowercase-hex",
+      "modelLockHashMustMatchAcquisitionRequest": true,
+      "tokenizerLockHashMustMatchAcquisitionRequest": true,
+      "compositionProfileHashMustMatchFrozenProfile": true,
+      "converterExecutableHashedBeforeIntentCreation": true,
+      "converterExecutableRehashedImmediatelyBeforeLaunch": true,
+      "sourceLocksRehashedImmediatelyBeforeLaunch": true,
+      "pathAndPolicyFieldsMustEqualPersistedIntentBeforeLaunch": true
+    },
+    "policyBounds": {
+      "minimumDurationMilliseconds": 1,
+      "maximumDurationMilliseconds": 604800000,
+      "minimumSummaryBytes": 1,
+      "maximumSummaryBytes": 1048576,
+      "minimumErrorBytes": 1,
+      "maximumErrorBytes": 65536
+    },
+    "recoveryRule": "valid-terminal-evidence-is-verified-from-intent-and-durable-output-without-rereading-current-source-or-converter-bytes"
+  },
+  "companionIntentEnvelope": {
+    "fileName": "source-conversion.intent.json",
+    "location": "owned-operation-directory",
+    "writeMode": "create-only",
+    "maximumBytes": 65536,
+    "encoding": "utf8-without-bom",
+    "canonicalJson": true,
+    "finalLf": true,
+    "canonicalFieldsInOrder": [
+      "schema",
+      "operationId",
+      "requestSha256",
+      "conversion"
+    ],
+    "nestedConversion": "exact-managed-conversion-intent",
+    "duplicatePropertiesAllowed": false,
+    "unknownPropertiesAllowed": false,
+    "caseInsensitivePropertiesAllowed": false,
+    "existingFileRule": "accept-only-when-existing-bytes-equal-the-new-canonical-bytes-exactly",
+    "overwriteAllowed": false,
+    "deleteAllowed": false,
+    "publicEvidence": false,
+    "containsPrivatePaths": true,
+    "publicErrorMayContainPath": false
+  },
+  "operationJournalCutover": {
+    "replacementSchema": "tinyrustlm.companion.operation.v2",
+    "priorSchemaReaderRetained": false,
+    "migrationWritten": false,
+    "newField": "sourceConversionIntentSha256",
+    "newFieldType": "nullable-lowercase-sha256",
+    "createValue": null,
+    "peerBranchValue": null,
+    "sourceAcquiringValue": null,
+    "sourceConvertingValue": "required",
+    "sourceVerifyingCompositionValue": "required-and-unchanged",
+    "sourceAvailableValue": "required-and-unchanged",
+    "sourceTerminalRule": "cancelled-or-rejected-before-intent-may-be-null-but-a-terminal-transition-after-intent-must-preserve-the-exact-hash",
+    "immutabilityRule": "once-non-null-the-intent-hash-never-changes-or-returns-to-null",
+    "bindingOrder": [
+      "validate-acquisition-and-local-inputs",
+      "create-managed-conversion-intent",
+      "write-or-exactly-observe-create-only-companion-intent",
+      "rehash-persisted-intent",
+      "advance-acquiring-source-to-converting-with-intent-hash",
+      "revalidate-exact-intent-and-launch"
+    ]
+  },
+  "durableAndLiveResultSeparation": {
+    "durableType": "TinyRustLmVerifiedComposition",
+    "durableFields": [
+      "schema",
+      "operationId",
+      "outputRoot",
+      "receiptPath",
+      "receiptSha256",
+      "artifacts",
+      "graphIdentitySha256",
+      "modelSourceLockSha256",
+      "tokenizerSourceLockSha256",
+      "converterVersion",
+      "converterExecutableSha256",
+      "requiredNextGate"
+    ],
+    "liveType": "TinyRustLmCompositionConversionObservation",
+    "liveFields": [
+      "schema",
+      "summarySha256",
+      "duration"
+    ],
+    "liveResultType": "TinyRustLmCompositionConversionResult",
+    "liveResultFields": [
+      "composition",
+      "observation"
+    ],
+    "recoveredResultMayClaimProcessExit": false,
+    "recoveredResultMayClaimStdout": false,
+    "recoveredResultMayClaimDuration": false,
+    "recoveredResultMayClaimStructuralComposition": true
+  },
+  "terminalInspector": {
+    "method": "InspectCompositionTerminal",
+    "input": "exact-persisted-managed-conversion-intent",
+    "statuses": [
+      "pending",
+      "pass",
+      "rejected"
+    ],
+    "rootRules": {
+      "absentRoot": "pending",
+      "regularNonReparseRootWithoutTerminalFile": "pending-after-bounded-direct-inventory-validation",
+      "rootPathIsFile": "invalid",
+      "rootIsReparse": "invalid",
+      "nestedDirectoryOrReparseEntry": "invalid",
+      "moreThanTwelveDirectEntries": "invalid",
+      "passAndRejectionBothPresent": "invalid"
+    },
+    "passVerification": [
+      "terminal-rejection-is-absent",
+      "exact-ten-file-success-inventory",
+      "bounded-strict-pass-receipt-json",
+      "profile-identity",
+      "native-operation-identity",
+      "model-and-tokenizer-lock-identities-from-intent",
+      "converter-executable-identity-from-intent",
+      "all-six-artifact-lengths-and-streamed-sha256-identities",
+      "all-six-format-profile-identities",
+      "component-receipt-identities",
+      "graph-and-resource-contract",
+      "durability-contract",
+      "attempt-receipt-identity",
+      "strict-nonclaim-boundary"
+    ],
+    "rejectionVerification": [
+      "terminal-pass-is-absent",
+      "bounded-direct-regular-nonreparse-inventory",
+      "bounded-strict-rejection-json",
+      "rejection-schema-status-profile-and-operation",
+      "safe-no-op-is-false",
+      "retryable-is-false",
+      "bounded-public-safe-error-code",
+      "bounded-strict-attempt-json",
+      "attempt-source-profile-operation-and-converter-identities-match-intent-and-rejection"
+    ],
+    "recoveryDoesNotRequire": [
+      "captured-stdout",
+      "captured-stderr",
+      "exit-code",
+      "duration",
+      "current-source-lock-files",
+      "current-source-directories",
+      "current-converter-executable"
+    ]
+  },
+  "companionReconciliation": {
+    "method": "ReconcileTerminal",
+    "admittedCurrentStates": [
+      "Converting",
+      "VerifyingComposition"
+    ],
+    "requiredBranch": "Source",
+    "requiredIntentBinding": true,
+    "pendingCode": "awaiting-terminal-evidence",
+    "invalidEvidenceCode": "companion-conversion-terminal-invalid",
+    "noStateChangeForPending": true,
+    "noProcessLaunch": true,
+    "noProcessAdoption": true,
+    "noPidInference": true,
+    "noTimestampInference": true,
+    "noProcessKill": true,
+    "noAutomaticRetry": true,
+    "noOutputMutation": true,
+    "terminalJournalStatesAreImmutable": true,
+    "recoveryDecisionTable": [
+      {
+        "currentState": "Converting",
+        "terminalEvidence": "pending",
+        "journalTransitions": [],
+        "result": "pending-awaiting-terminal-evidence"
+      },
+      {
+        "currentState": "VerifyingComposition",
+        "terminalEvidence": "pending",
+        "journalTransitions": [],
+        "result": "pending-awaiting-terminal-evidence"
+      },
+      {
+        "currentState": "Converting",
+        "terminalEvidence": "pass",
+        "journalTransitions": [
+          "VerifyingComposition",
+          "Available"
+        ],
+        "result": "available-with-durable-composition-only"
+      },
+      {
+        "currentState": "VerifyingComposition",
+        "terminalEvidence": "pass",
+        "journalTransitions": [
+          "Available"
+        ],
+        "result": "available-with-durable-composition-only"
+      },
+      {
+        "currentState": "Converting-or-VerifyingComposition",
+        "terminalEvidence": "valid-native-rejection",
+        "journalTransitions": [
+          "Rejected"
+        ],
+        "result": "rejected-with-native-public-safe-error-code"
+      },
+      {
+        "currentState": "Converting-or-VerifyingComposition",
+        "terminalEvidence": "invalid-or-tampered",
+        "journalTransitions": [
+          "Rejected"
+        ],
+        "result": "rejected-with-companion-conversion-terminal-invalid"
+      }
+    ]
+  },
+  "cancellationRace": {
+    "scope": "caller-cancellation-after-owned-process-tree-termination",
+    "validPassWins": true,
+    "validNativeRejectionWins": true,
+    "noTerminalEvidenceBecomesCancelled": true,
+    "invalidTerminalEvidenceBecomesRejected": true,
+    "knownLiveProtocolViolationMayBeReconciledIntoPass": false,
+    "examplesOfKnownLiveProtocolViolation": [
+      "converter-timeout",
+      "converter-output-limit",
+      "converter-unexpected-stderr",
+      "converter-executable-drift",
+      "nonzero-exit-without-valid-native-rejection"
+    ]
+  },
+  "crashWindows": [
+    {
+      "window": "before-intent-publication",
+      "durableState": "AcquiringSource-without-intent",
+      "recovery": "caller-may-submit-the-same-validated-request"
+    },
+    {
+      "window": "after-intent-publication-before-journal-transition",
+      "durableState": "AcquiringSource-with-exact-intent",
+      "recovery": "same-request-observes-identical-intent-then-continues"
+    },
+    {
+      "window": "after-converting-transition-before-or-during-process",
+      "durableState": "Converting-with-intent",
+      "recovery": "inspect-only-and-remain-pending-until-terminal-evidence"
+    },
+    {
+      "window": "after-native-pass-before-managed-verification",
+      "durableState": "Converting-with-valid-pass",
+      "recovery": "independently-verify-and-advance-to-available"
+    },
+    {
+      "window": "after-native-rejection-before-managed-rejection",
+      "durableState": "Converting-with-valid-rejection",
+      "recovery": "verify-and-advance-to-rejected"
+    },
+    {
+      "window": "after-verifying-composition-transition-before-available",
+      "durableState": "VerifyingComposition-with-valid-pass",
+      "recovery": "independently-verify-and-advance-to-available"
+    },
+    {
+      "window": "after-terminal-journal-state",
+      "durableState": "Available-or-Cancelled-or-Rejected",
+      "recovery": "no-write-terminal-state-remains-immutable"
+    }
+  ],
+  "requiredTests": [
+    "canonical-intent-bytes-and-sha256",
+    "intent-normalizes-and-hashes-every-file-path-and-policy-input",
+    "intent-rejects-source-profile-or-converter-drift-before-launch",
+    "intent-create-only-first-write",
+    "identical-intent-second-observation-is-idempotent",
+    "changed-existing-intent-is-rejected-without-overwrite",
+    "duplicate-or-unknown-intent-json-is-rejected",
+    "operation-v2-requires-and-preserves-source-intent-hash",
+    "operation-v2-rejects-intent-hash-on-peer-branch",
+    "operation-v1-is-not-read-or-migrated",
+    "valid-pass-recovers-from-converting",
+    "valid-pass-recovers-from-verifying-composition",
+    "valid-rejection-recovers-from-both-admitted-states",
+    "absent-root-stays-pending-with-no-journal-write",
+    "incomplete-root-stays-pending-with-no-journal-write",
+    "pending-reconciliation-does-not-launch-retry-adopt-or-kill",
+    "pass-and-rejection-collision-is-rejected",
+    "malformed-terminal-json-is-rejected",
+    "extra-file-directory-reparse-and-file-count-overflow-are-rejected",
+    "artifact-component-receipt-graph-source-tool-profile-and-operation-drift-are-rejected",
+    "recovery-succeeds-after-original-source-and-converter-paths-are-unavailable",
+    "late-cancellation-with-valid-pass-becomes-available",
+    "late-cancellation-with-valid-rejection-becomes-rejected",
+    "late-cancellation-without-terminal-evidence-becomes-cancelled",
+    "known-live-protocol-violation-is-not-laundered-by-reconciliation",
+    "available-cancelled-and-rejected-states-cannot-be-overwritten",
+    "public-errors-contain-no-private-paths",
+    "fixtures-cannot-claim-real-model-or-campaign-credit"
+  ],
+  "claimBoundary": {
+    "durablePassMayClaim": [
+      "exact-source-lock-binding",
+      "exact-converter-identity-binding",
+      "complete-six-artifact-structural-composition",
+      "artifact-byte-identities",
+      "native-durability-receipt"
+    ],
+    "recoveredPassMayNotClaim": [
+      "managed-process-exit-code",
+      "managed-stdout-observation",
+      "managed-stderr-observation",
+      "conversion-duration",
+      "source-framework-numerical-parity",
+      "native-inference",
+      "browser-wasm-inference",
+      "browser-chat",
+      "model-quality",
+      "p2p-availability",
+      "publication",
+      "campaign-credit"
+    ],
+    "fixtureEvidenceIsProductEvidence": false,
+    "terminalEvidenceMayBeRepaired": false,
+    "terminalEvidenceMayBeOverwritten": false
+  },
+  "registrationOutputBoundary": {
+    "companionOrConversionProductionCodeChanged": false,
+    "operationRecordV2Created": false,
+    "sourceConversionIntentCreated": false,
+    "conversionProcessStarted": false,
+    "terminalOutputInspected": false,
+    "terminalPassRecovered": false,
+    "terminalRejectionRecovered": false,
+    "realModelConversionRun": false,
+    "nativeRuntimeOutputObserved": false,
+    "browserOutputObserved": false,
+    "qualityOutputObserved": false,
+    "campaignCreditAuthorized": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}
