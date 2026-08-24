@@ -1,11 +1,28 @@
-profile: runtime-mirust.long-term-memory-ledger.v352
-updated_utc: 2026-08-21T05:00:46Z
+profile: runtime-mirust.long-term-memory-ledger.v353
+updated_utc: 2026-08-24T23:49:14Z
 storage_mode: hybrid
 ledger_rule:
   pointer_only_not_context_free: true
   summary_policy: Routing-only, one sentence, 35 words maximum, no durable body memory.
   allowed_statuses: current, retired, superseded, quarantined
 records:
+  - stable_id: tinyrustlm_companion_loopback_codec_vectors_2026_08_24_current
+    memory_domain: tinyrustlm.companion.loopback_codec_vectors
+    pointer_type: architecture_report
+    path: docs/architecture/2026-08-24-companion-loopback-capability-codec-and-vectors.md
+    target_location: docs/architecture/2026-08-24-companion-loopback-capability-codec-and-vectors.md
+    label: Companion Loopback Capability Codec And Cross-Language Vectors
+    summary: Routes remote-exact corrected-profile transcript, proof, HKDF, canonical installation, independent Node, browser WebCrypto, and managed vector evidence while preserving listener, physical-browser, model, release, and campaign boundaries.
+    pointer_status: current
+    authority: remote-exact primitive implementation under corrected output-free profile /2
+    source_authority: implementation commit 9eb7163ea4659d088b66a5143243c708dfe14bb3
+    source_identity: vector sha256 6fb87e2ccebaf3c15c7af3452e05ee35c44ece40b8abf3ed1e45b9985cfc0e15; tree e226939116c0fbfb93c6cc341c4e9b1d2a564377
+    review_status: verified_cross_language_primitive_conformance
+    quarantine_status: none
+    review_evidence: browser 8/8; managed 169/169; release build and format pass
+    contextual_trigger: Read before Companion installation, pairing, session, rotation, listener, browser client, artifact transfer, or deployment work.
+    checksum_hash: sha256:db52ab23b74fa5815ab945ab2180b61152b33580d328362f09a68b411273ec82
+    sha256: db52ab23b74fa5815ab945ab2180b61152b33580d328362f09a68b411273ec82
   - stable_id: tinyrustlm_slm2_scalar_wasm_conformance_2026_08_20_current
     memory_domain: tinyrustlm.runtime.slm2_scalar_wasm_conformance
     pointer_type: wiki_report

@@ -1,9 +1,12 @@
-profile: runtime-mirust.workspace-guidance.v135
-updated_utc: 2026-07-15T05:05:00Z
-canonical_root: E:\Source\Rust\TinyRustLM.com
+profile: runtime-mirust.workspace-guidance.v136
+updated_utc: 2026-08-24T23:49:14Z
+canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+active_branch: codex/model-acquisition-v2
+protected_checkout: E:\Source\Rust\TinyRustLM.com
 startup_rule: Read AGENTS.md, workspace.uai, and local .uai startup files before broad loading.
+active_recovery_checkout_rule_2026_08_24: All current TinyRustLM goal work, edits, commits, pushes, tests, and deployment preparation occur only in `E:\Source\.tinyrustlm-model-acquisition-recovered-20260819` on `codex/model-acquisition-v2`. Never modify the protected `E:\Source\Rust\TinyRustLM.com` checkout and never write `D:`. Reverify branch, frozen-goal hash, and current remote-exact checkpoint before work.
 dogfood_quality_campaign_rule_2026_07_14: Before changing qualification, campaign receipts, browser automation, live MemoryEndpoints continuity, P2P proof, catalog publication, package release, or final acceptance, read `docs/report-intake/2026-07-14/dogfood-quality-campaign/MANIFEST.md`, its synthesis and TDD plan, and `wiki/runtime-mirust/reports/tinyrustlm-dogfood-quality-campaign-intake-memory-2026-07-14.md`, SHA256 `3cba671650e6f4c60c439b47e08af11889a00c2022c8dc6288fef9b38ac1fa51`. Do not turn research, fixtures, local probes, cross-compilation, or mutable summaries into stronger evidence.
-source_folder_correction_2026_07_08: Work in E:\Source\Rust\TinyRustLM.com for TinyRustLM source. E:\Source\Rust\SLMComposer.com is a retired historical name; its source tree was mirrored into TinyRustLM.com, the local folder was deleted on 2026-07-08, and it must not be used or recreated as the active workspace.
+source_folder_correction_2026_07_08: Historical note only. `E:\Source\Rust\SLMComposer.com` is retired and must not be recreated. The old `E:\Source\Rust\TinyRustLM.com` checkout is now protected and non-authoritative for this active goal; use only the recovered canonical root above.
 bleeding_edge_intake_rule_2026_07_08: Read docs/report-intake/2026-07-08/MANIFEST.md, docs/report-intake/2026-07-08/tinyrustlm-bleeding-edge-intake-synthesis-2026-07-08.md, docs/report-intake/2026-07-08/tinyrustlm-bleeding-edge-tdd-plan-2026-07-08.md, and wiki/runtime-mirust/reports/tinyrustlm-bleeding-edge-system-plan-memory-2026-07-08.md before changing runtime quality, honest eval, `.slm` trust metadata, browser/WASM, MiniModel/P2P, quantization, compression, distillation, model search, open-core, or NuGet boundaries.
 memory_strategy:
   hot_memory: .uai/

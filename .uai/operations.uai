@@ -1,5 +1,12 @@
-profile: runtime-mirust.operations.v124
-updated_utc: 2026-08-24T23:24:37Z
+profile: runtime-mirust.operations.v125
+updated_utc: 2026-08-24T23:49:14Z
+companion_loopback_codec_vectors_checkpoint_2026_08_24:
+  source: commit=9eb7163ea4659d088b66a5143243c708dfe14bb3; tree=e226939116c0fbfb93c6cc341c4e9b1d2a564377; branch=codex/model-acquisition-v2; local_tracking_fetch_direct_remote_exact=true
+  authority: profile=tinyrustlm.companion.loopback-capability/2; registration_commit=912f8ebe1a2b774977eaf2ed298d8ac162d35fa0
+  vectors: bytes=4731; sha256=6fb87e2ccebaf3c15c7af3452e05ee35c44ece40b8abf3ed1e45b9985cfc0e15; independent_oracle=node_crypto_manual_rfc5869; browser=8/8
+  managed: companion=51/51; core=80/80; package=38/38; total=169/169-zero-skips; release_build=true; format=true; diff=true
+  output: listener=false; port=false; pairing=false; session=false; browser_request=false; artifact=false; model=false; package=false; deployment=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
+  next: Implement create-only installation plus fake-time pairing/session state; then rotation/revocation, listener, browser client, projection, and six-artifact transfer. Delete old and intermediate owners at complete cutover. Fix full Node 15 failures before deployment.
 companion_loopback_correction_checkpoint_2026_08_24:
   source: commit=912f8ebe1a2b774977eaf2ed298d8ac162d35fa0; tree=f89b28db05b340e82b0aac96d9856c0b8b15252e; local_tracking_fetch_direct_remote_exact=true
   authority: profile=tinyrustlm.companion.loopback-capability/2; bytes=22681; sha256=6ad07dda97ae50d8e6c3fc1a581e6742d2e18c66484a4a9864e1b3bc7a57ae81; decision_bytes=13411; decision_sha256=b574af05032bd52f7b37ffc831e1661eb9625e88afcf629f7e24ffc648be28f4
