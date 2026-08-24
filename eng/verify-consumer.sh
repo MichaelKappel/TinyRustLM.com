@@ -4,9 +4,6 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PACKAGE_SOURCE="${1:-$REPO_ROOT/artifacts/packages}"
 PACKAGE_VERSION="${2:-$("$REPO_ROOT/eng/get-package-version.sh")}"
-CORE_PACKAGE_ID="${3:-${TINYRUSTLM_CONSUMER_CORE_PACKAGE_ID:-TinyRustLM.Core}}"
-P2P_PACKAGE_ID="${4:-${TINYRUSTLM_CONSUMER_P2P_PACKAGE_ID:-TinyRustLM.P2P}}"
-CONVERSION_PACKAGE_ID="${5:-${TINYRUSTLM_CONSUMER_CONVERSION_PACKAGE_ID:-}}"
 SLM2_VECTORS="$REPO_ROOT/contracts/vnext/slm2-q8-weight-vectors.v1.json"
 ACG2_VECTORS="$REPO_ROOT/contracts/vnext/acg2-format-vectors.v1.json"
 PROGRAM_SOURCE="$REPO_ROOT/eng/consumer-smoke/Program.cs"
@@ -53,16 +50,29 @@ trap cleanup EXIT
 export NUGET_PACKAGES="$TEMP_ROOT/packages"
 export NUGET_HTTP_CACHE_PATH="$TEMP_ROOT/http-cache"
 
+include_memory_endpoints=0
+include_conversion=0
+if [[ -d "$PACKAGE_SOURCE" ]]; then
+  [[ -f "$PACKAGE_SOURCE/TinyRustLM.MemoryEndpoints.$PACKAGE_VERSION.nupkg" ]] && include_memory_endpoints=1
+  [[ -f "$PACKAGE_SOURCE/TinyRustLM.Conversion.$PACKAGE_VERSION.nupkg" ]] && include_conversion=1
+fi
+
 dotnet new console --framework net8.0 --no-restore --output "$PROJECT_DIR"
 cp "$PROGRAM_SOURCE" "$PROJECT_DIR/Program.cs"
 cd "$PROJECT_DIR"
-dotnet add package "$CORE_PACKAGE_ID" --version "$PACKAGE_VERSION" --source "$PACKAGE_SOURCE"
-dotnet add package "$P2P_PACKAGE_ID" --version "$PACKAGE_VERSION" --source "$PACKAGE_SOURCE"
+dotnet add package TinyRustLM.Abstractions --version "$PACKAGE_VERSION" --source "$PACKAGE_SOURCE"
+dotnet add package TinyRustLM.Core --version "$PACKAGE_VERSION" --source "$PACKAGE_SOURCE"
+dotnet add package TinyRustLM.P2P --version "$PACKAGE_VERSION" --source "$PACKAGE_SOURCE"
+memory_endpoints_flag="absent"
 conversion_flag="absent"
-if [[ -n "$CONVERSION_PACKAGE_ID" ]]; then
-  dotnet add package "$CONVERSION_PACKAGE_ID" --version "$PACKAGE_VERSION" --source "$PACKAGE_SOURCE"
+if [[ "$include_memory_endpoints" == 1 ]]; then
+  dotnet add package TinyRustLM.MemoryEndpoints --version "$PACKAGE_VERSION" --source "$PACKAGE_SOURCE"
+  memory_endpoints_flag="required"
+fi
+if [[ "$include_conversion" == 1 ]]; then
+  dotnet add package TinyRustLM.Conversion --version "$PACKAGE_VERSION" --source "$PACKAGE_SOURCE"
   conversion_flag="required"
 fi
 dotnet build --no-restore --configuration Release
 dotnet run --no-build --no-restore --configuration Release -- \
-  "$SLM2_VECTORS" "$ACG2_VECTORS" "$WORK_DIR" "$conversion_flag"
+  "$SLM2_VECTORS" "$ACG2_VECTORS" "$WORK_DIR" "$memory_endpoints_flag" "$conversion_flag"

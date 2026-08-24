@@ -6481,7 +6481,7 @@
         browser_local_only: true,
         project_server_receives_memory_files: false,
         persona_source_mutation_allowed: false,
-        native_archive_validation_package: "UAIX.Browser.Memory"
+        native_archive_validation_package: "TinyRustLM.MemoryEndpoints"
       }
     };
   }

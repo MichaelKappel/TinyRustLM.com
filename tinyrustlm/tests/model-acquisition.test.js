@@ -13,7 +13,7 @@ const bridge = fs.readFileSync(
   "utf8"
 );
 const companionGuide = fs.readFileSync(
-  path.join(__dirname, "..", "..", "docs", "nuget", "SEED_HOST.md"),
+  path.join(__dirname, "..", "..", "docs", "companion", "README.md"),
   "utf8"
 );
 const companionPage = fs.readFileSync(
@@ -61,13 +61,13 @@ test("retired text and script handoffs cannot return to the chooser", () => {
   assert.doesNotMatch(html, /Share Metadata|share metadata|share-metadata/);
 });
 
-test("the browser routes companion acquisition to a truthful pending release", () => {
+test("the browser routes companion acquisition to a truthful unavailable release", () => {
   assert.match(html, /id="companionPackageLink"[^>]+href="\/companion\/"/);
   assert.match(html, /id="companionPackageLink"[^>]+target="_blank"[^>]+rel="noopener noreferrer"/);
-  assert.match(companionPage, /Package 0\.3\.0 is the prelaunch source target/);
-  assert.match(companionPage, /id="companionPackageStatus"[^>]*>Public package pending/);
-  assert.match(companionPage, /id="companionDeploymentStatus"[^>]*>Deployment blocked/);
-  assert.doesNotMatch(companionPage, /www\.nuget\.org\/packages\/UAIX\.Browser/);
+  assert.match(companionPage, /sole TinyRustLM companion is being rebuilt around SLM2/);
+  assert.match(companionPage, /id="companionPackageStatus"[^>]*>Companion unavailable/);
+  assert.match(companionPage, /id="companionDeploymentStatus"[^>]*>Release gate open/);
+  assert.doesNotMatch(companionPage, /www\.nuget\.org\/packages\//);
   assert.doesNotMatch(companionPage, /dotnet\s+(?:add\s+package|tool\s+install)/i);
   assert.match(
     companionPage,
@@ -78,13 +78,13 @@ test("the browser routes companion acquisition to a truthful pending release", (
     new RegExp(`site-release\\.js\\?v=sha256-${sha256(siteReleaseScript)}`)
   );
   assert.doesNotMatch(companionPage, /\.txt|\.ps1|conversion-request|share-kit/i);
-  assert.match(companionGuide, /not an install authority until/);
-  assert.match(companionGuide, /No package URL or install command is published/);
-  assert.match(companionGuide, /Release status: blocked/);
-  assert.match(companionGuide, /sole registered SLM2/);
-  assert.doesNotMatch(companionGuide, /www\.nuget\.org\/packages\/UAIX\.Browser/);
+  assert.match(companionGuide, /prelaunch and unavailable for installation/);
+  assert.match(companionGuide, /No package URL, archive URL, tool command, or install command/);
+  assert.match(companionGuide, /old public-package lane has been deleted/);
+  assert.match(companionGuide, /canonical `tinyrustlm-convert` executable/);
+  assert.doesNotMatch(companionGuide, /www\.nuget\.org\/packages\//);
   assert.doesNotMatch(companionGuide, /dotnet (?:add package|tool install)/);
-  assert.doesNotMatch(companionGuide, /`tinyrustlm-slm-pack` binary/);
+  assert.doesNotMatch(companionGuide, /tinyrustlm-slm-pack/);
   assert.doesNotMatch(companionGuide, /existing Qwen q4 artifact is classified/);
   assert.doesNotMatch(companionGuide, /UAIX_NUGET_FEED|reviewed folder feed/);
 });

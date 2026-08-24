@@ -159,7 +159,6 @@ def expected_package_names(package_version):
         f"TinyRustLM.Abstractions.{package_version}.nupkg",
         f"TinyRustLM.Core.{package_version}.nupkg",
         f"TinyRustLM.P2P.{package_version}.nupkg",
-        f"TinyRustLM.Memory.{package_version}.nupkg",
     ]
 
 
@@ -168,7 +167,6 @@ def expected_symbol_package_names(package_version):
         f"TinyRustLM.Abstractions.{package_version}.snupkg",
         f"TinyRustLM.Core.{package_version}.snupkg",
         f"TinyRustLM.P2P.{package_version}.snupkg",
-        f"TinyRustLM.Memory.{package_version}.snupkg",
     ]
 
 
@@ -304,9 +302,15 @@ def metadata_policy_violations(package_id, metadata):
         violations.append("require_license_acceptance:true")
     if "tinyrustlm" not in str(metadata.get("authors", "")).lower():
         violations.append("authors:TinyRustLM")
-    title = str(metadata.get("title", "")).lower()
-    if "tinyrustlm" not in title or "uaix browser" not in title:
-        violations.append("title:TinyRustLM-UAIX-Browser")
+    expected_titles = {
+        "TinyRustLM.Abstractions": "TinyRustLM SDK Abstractions",
+        "TinyRustLM.Core": "TinyRustLM p2pLLM Runtime SDK",
+        "TinyRustLM.P2P": "TinyRustLM p2pRuntime P2P SDK",
+        "TinyRustLM.MemoryEndpoints": "TinyRustLM MemoryEndpoints Optional Connector",
+        "TinyRustLM.Conversion": "TinyRustLM SLM2 Conversion Process Owner",
+    }
+    if metadata.get("title") != expected_titles.get(package_id):
+        violations.append("title:exact-package-contract")
     if len(str(metadata.get("description", ""))) < 120:
         violations.append("description:min-120")
     if package_id.lower() not in str(metadata.get("tags", "")).lower():
@@ -315,14 +319,7 @@ def metadata_policy_violations(package_id, metadata):
 
 
 def required_search_terms(package_id):
-    terms = {
-        "TinyRustLM",
-        "UAIX",
-        "UAIX.org",
-        "Rust",
-        "AI",
-        "UAIX.Browser",
-    }
+    terms = {"TinyRustLM", "UAIX", "UAIX.org", "Rust", "AI", "browser-local"}
     if package_id == "TinyRustLM.Abstractions":
         terms.update({
             "abstractions",
@@ -332,22 +329,27 @@ def required_search_terms(package_id):
             "p2pLLM",
             "p2pLLM.com",
             "MiniModel",
-            ".slm",
-            ".uai",
-            "memory",
-            "persona",
+            "SLM2",
+            "ACG2",
+            "Prompt2",
+            "Tokenizer2",
+            "Template2",
+            "Sampling2",
         })
     elif package_id == "TinyRustLM.Core":
         terms.update({
             "p2pLLM",
             "p2pLLM.com",
-            ".slm",
+            "SLM2",
+            "ACG2",
+            "Prompt2",
+            "Tokenizer2",
+            "Template2",
+            "Sampling2",
             "runtime",
-            "harness",
             "native",
-            "safe",
-            "generate",
-            "diagnostics",
+            "model-validation",
+            "bounded-generation",
         })
     elif package_id == "TinyRustLM.P2P":
         terms.update({
@@ -355,35 +357,14 @@ def required_search_terms(package_id):
             "p2pRuntime.com",
             "P2P",
             "peer-to-peer",
+            "direct-transport",
+            "fixed-piece",
             "model-sharing",
             "MiniModel",
             "manifest",
-            "announcement",
-            "catalog",
-            "receipt",
-        })
-    elif package_id == "TinyRustLM.Memory":
-        terms.update({
-            "memory",
-            "ai-memory",
-            ".uai",
-            ".uaix",
-            "persona",
-            "AI Memory Package Wizard",
-            "ai-digest",
-            "point-agent-urls",
-            "canonical-starter-zip",
-            "safe-structured-output",
-            "agent-pickup",
-            "session-log",
-            "manifest-overlay",
-            "package-model",
-            "knowledge-graph",
-            "personality-pack",
-            "persona-deck",
-            "triggered-style-axes",
-            "LLM Wiki",
-            "file-handoff",
+            "share-kit",
+            "SLM2",
+            "ACG2",
         })
     elif package_id == "TinyRustLM.MemoryEndpoints":
         terms.update({
@@ -401,6 +382,17 @@ def required_search_terms(package_id):
             "checkpoint",
             "stale-index",
             "prompt-injection-defense",
+        })
+    elif package_id == "TinyRustLM.Conversion":
+        terms.update({
+            "p2pLLM",
+            "p2pLLM.com",
+            "SLM2",
+            "Tokenizer2",
+            "Qwen3",
+            "conversion",
+            "tinyrustlm-convert",
+            "local-feed",
         })
     return sorted(terms)
 
@@ -447,14 +439,12 @@ def expected_package_documentation_entries(package_id):
     elif package_id == "TinyRustLM.P2P":
         entries.append({"entry": "docs/API_BOUNDARY.md", "source": "docs/nuget/API_BOUNDARY.md"})
         entries.append({"entry": "docs/P2P_SHARE_FLOW.md", "source": "docs/nuget/P2P_SHARE_FLOW.md"})
-    elif package_id == "TinyRustLM.Memory":
-        entries.append({"entry": "docs/API_BOUNDARY.md", "source": "docs/nuget/API_BOUNDARY.md"})
-        entries.append({"entry": "docs/MEMORY_HARNESS.md", "source": "docs/nuget/MEMORY_HARNESS.md"})
     elif package_id == "TinyRustLM.MemoryEndpoints":
         entries.append({"entry": "docs/API_BOUNDARY.md", "source": "docs/nuget/API_BOUNDARY.md"})
-        entries.append({"entry": "docs/MEMORY_HARNESS.md", "source": "docs/nuget/MEMORY_HARNESS.md"})
         entries.append({"entry": "docs/MEMORY_ENDPOINTS_CONNECTOR.md", "source": "docs/nuget/MEMORY_ENDPOINTS_CONNECTOR.md"})
         entries.append({"entry": "docs/MEMORY_ENDPOINTS_DISTRIBUTED_SYNC_V1.md", "source": "docs/nuget/MEMORY_ENDPOINTS_DISTRIBUTED_SYNC_V1.md"})
+    elif package_id == "TinyRustLM.Conversion":
+        entries.append({"entry": "docs/PACKAGE_SECURITY.md", "source": "docs/nuget/PACKAGE_SECURITY.md"})
     return entries
 
 
@@ -501,187 +491,24 @@ def xml_documentation_member_names(archive, entry_name):
 
 
 def expected_public_api_entries(package_id):
-    if package_id == "TinyRustLM.MemoryEndpoints":
-        baseline = repo_root / "eng" / "public-api" / "TinyRustLM.MemoryEndpoints.txt"
-        if not baseline.is_file():
-            raise SystemExit(f"Missing approved MemoryEndpoints public API baseline: {baseline}")
-        return sorted({
-            line.strip()
-            for line in baseline.read_text(encoding="utf-8").splitlines()
-            if line.strip() and not line.lstrip().startswith("#")
-        })
-    entries = {
-        "TinyRustLM.Abstractions": [
-            "M:TinyRustLM.ISlmInspector.Inspect(System.String)",
-            "M:TinyRustLM.ITinyRustLmMemoryClient.GetRequiredFiles(TinyRustLM.UaixMemoryPackageRequest)",
-            "M:TinyRustLM.ITinyRustLmMemoryClient.GetRequiredFilesJson(TinyRustLM.UaixMemoryPackageRequest)",
-            "M:TinyRustLM.ITinyRustLmMemoryClient.GetSupportedSetups",
-            "M:TinyRustLM.ITinyRustLmMemoryClient.GetSupportedSetupsJson",
-            "M:TinyRustLM.ITinyRustLmMemoryClient.InspectManifest(System.String)",
-            "M:TinyRustLM.ITinyRustLmMemoryClient.InspectPackage(System.String,TinyRustLM.UaixMemoryPackageRequest)",
-            "M:TinyRustLM.ITinyRustLmMemoryClient.ValidatePackage(System.String,TinyRustLM.UaixMemoryPackageRequest)",
-            "M:TinyRustLM.ITinyRustLmP2PClient.ApplyReceivedAnnouncement(System.String,System.String)",
-            "M:TinyRustLM.ITinyRustLmP2PClient.ApplyReceivedAnnouncementJson(System.String,System.String)",
-            "M:TinyRustLM.ITinyRustLmP2PClient.ExportShareMetadata(System.String)",
-            "M:TinyRustLM.ITinyRustLmP2PClient.ExportShareMetadataJson(System.String)",
-            "M:TinyRustLM.ITinyRustLmP2PClient.ImportFromManifest(System.String)",
-            "M:TinyRustLM.ITinyRustLmP2PClient.ImportFromManifest(System.String,System.String,System.String)",
-            "M:TinyRustLM.ITinyRustLmP2PClient.InspectAnnouncementCatalog(System.String)",
-            "M:TinyRustLM.ITinyRustLmP2PClient.InspectAnnouncementCatalogJson(System.String)",
-            "M:TinyRustLM.ITinyRustLmP2PClient.InspectLocalImportReceipt(System.String,System.String)",
-            "M:TinyRustLM.ITinyRustLmP2PClient.InspectManifest(System.String)",
-            "M:TinyRustLM.ITinyRustLmP2PClient.PrepareLocalShareKit(TinyRustLM.PrepareShareKitRequest)",
-            "M:TinyRustLM.ITinyRustLmP2PClient.PrepareLocalShareKitJson(TinyRustLM.PrepareShareKitRequest)",
-            "M:TinyRustLM.ITinyRustLmP2PClient.ValidateAnnouncement(System.String)",
-            "M:TinyRustLM.ITinyRustLmP2PClient.ValidateAnnouncementJson(System.String)",
-            "M:TinyRustLM.ITinyRustLmP2PClient.VerifySignedManifest(System.String,System.String)",
-            "M:TinyRustLM.ITinyRustLmP2PClient.VerifySignedManifestJson(System.String,System.String)",
-            "M:TinyRustLM.ITinyRustLmRuntime.ActivateComposition(System.String,System.String)",
-            "M:TinyRustLM.ITinyRustLmRuntime.Generate(System.String,TinyRustLM.TinyRustLmGenerationOptions)",
-            "M:TinyRustLM.ITinyRustLmRuntime.GetDiagnostics",
-            "M:TinyRustLM.ITinyRustLmRuntime.LoadModel(System.String,System.String)",
-            "M:TinyRustLM.ITinyRustLmRuntime.Reset",
-            "M:TinyRustLM.ITinyRustLmRuntime.Step",
-            "M:TinyRustLM.ITinyRustLmRuntime.UnloadModel",
-            "M:TinyRustLM.ITinyRustLmRuntimeFactory.CreateRuntime",
-            "M:TinyRustLM.ITinyRustLmRuntimeFactory.GetCapabilities",
-            "M:TinyRustLM.ITinyRustLmRuntimeFactory.GetVersion",
-            "M:TinyRustLM.P2PAnnouncement.#ctor(System.String,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.Int64,System.Boolean,System.Int64)",
-            "M:TinyRustLM.P2PAnnouncementCatalog.#ctor(System.String,System.Int32,System.Collections.Generic.IReadOnlyList{TinyRustLM.P2PAnnouncement})",
-            "M:TinyRustLM.P2PAnnouncementCatalogInspection.#ctor(System.String,System.Int32,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int64,System.Boolean)",
-            "M:TinyRustLM.P2PImportPlan.#ctor(System.String,System.Int32,System.String,System.String,System.String,System.String,System.Collections.Generic.IReadOnlyList{TinyRustLM.P2PPiece},System.String)",
-            "M:TinyRustLM.P2PLocalImportBoundary.#ctor(System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)",
-            "M:TinyRustLM.P2PLocalImportReceipt.#ctor(System.String,System.Int32,System.String,System.String,System.String,System.String,System.Int64,System.String,System.String,System.String,System.Int64,System.Int32,System.Int32,System.Int64,TinyRustLM.P2PLocalImportBoundary)",
-            "M:TinyRustLM.P2PLocalImportReceiptInspection.#ctor(System.String,System.Int32,System.String,System.String,System.String,System.String,System.String,System.Int64,System.String,System.String,System.String,System.Int64,System.Int32,System.Int32,System.Boolean,TinyRustLM.P2PLocalImportBoundary)",
-            "M:TinyRustLM.P2PManifest.#ctor(System.String,System.Int32,System.String,System.String,TinyRustLM.SlmInspection,System.String,System.Int64,System.Int64,System.Int32,System.Collections.Generic.IReadOnlyList{TinyRustLM.P2PPiece},System.Int64,TinyRustLM.P2PManifestBoundary)",
-            "M:TinyRustLM.P2PManifestBoundary.#ctor(System.Boolean,System.Boolean,System.Boolean,System.Boolean)",
-            "M:TinyRustLM.P2PManifestInspection.#ctor(System.String,System.Int32,System.String,System.String,System.String,System.String,System.Int64,System.Int32,System.Int64,System.Boolean)",
-            "M:TinyRustLM.P2PManifestSignature.#ctor(System.String,System.String,System.String,System.String,System.String,System.String)",
-            "M:TinyRustLM.P2PPiece.#ctor(System.Int32,System.String,System.Int64,System.String)",
-            "M:TinyRustLM.P2PPublicKeyDocument.#ctor(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)",
-            "M:TinyRustLM.P2PShareKitReport.#ctor(System.String,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.String,TinyRustLM.P2PManifest)",
-            "M:TinyRustLM.P2PShareMetadata.#ctor(System.String,System.Int32,System.String,System.String,System.String,System.String,System.Int64,System.Int32,System.Int64,TinyRustLM.P2PManifestBoundary)",
-            "M:TinyRustLM.P2PSignedManifest.#ctor(System.String,System.Int32,TinyRustLM.P2PManifest,TinyRustLM.P2PManifestSignature)",
-            "M:TinyRustLM.P2PSignedManifestVerification.#ctor(System.String,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)",
-            "M:TinyRustLM.PrepareShareKitRequest.#ctor(System.String,System.String,System.String,System.String,System.String,System.String,System.Nullable{System.Int64})",
-            "M:TinyRustLM.SlmInspection.#ctor(System.String,System.Int32,System.String,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.String,System.UInt64)",
-            "M:TinyRustLM.TinyRustLmCapabilities.#ctor(System.String,System.Int32,System.String,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Collections.Generic.IReadOnlyList{System.String})",
-            "M:TinyRustLM.TinyRustLmCompositionActivationReport.#ctor(System.Int64,System.String,System.String)",
-            "M:TinyRustLM.TinyRustLmGenerationOptions.#ctor(System.Int32,System.Single,System.Int32,System.Single,System.UInt32)",
-            "M:TinyRustLM.TinyRustLmGenerationResult.#ctor(System.String,System.String)",
-            "M:TinyRustLM.TinyRustLmLoadReport.#ctor(TinyRustLM.SlmInspection,System.String)",
-            "M:TinyRustLM.TinyRustLmSdkVersion.#ctor(System.String,System.Int32,System.String)",
-            "M:TinyRustLM.UaixAdvancedPersonaOptions.#ctor(System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte)",
-            "M:TinyRustLM.UaixMemoryBoundary.#ctor(System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)",
-            "M:TinyRustLM.UaixMemoryFileStatus.#ctor(System.String,System.String,System.String,System.Boolean,System.Int64,System.String)",
-            "M:TinyRustLM.UaixMemoryManifestInspection.#ctor(System.String,System.Int32,System.String,System.String,System.String,System.Boolean,System.Int32,System.Collections.Generic.IReadOnlyList{System.String},System.Boolean,System.Collections.Generic.IReadOnlyList{System.String})",
-            "M:TinyRustLM.UaixMemoryFileDeckSummary.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)",
-            "M:TinyRustLM.UaixMemoryPackageInspection.#ctor(System.String,System.Int32,System.String,System.String,System.String,System.Collections.Generic.IReadOnlyList{TinyRustLM.UaixMemoryFileStatus},TinyRustLM.UaixMemoryFileDeckSummary,System.Collections.Generic.IReadOnlyList{TinyRustLM.UaixPersonaDimensionInspection},System.Boolean,System.Int32,System.Collections.Generic.IReadOnlyList{System.String},System.Collections.Generic.IReadOnlyList{System.String},System.Boolean,System.Int32,System.Boolean,TinyRustLM.UaixMemoryManifestInspection,TinyRustLM.UaixMemoryBoundary)",
-            "M:TinyRustLM.UaixMemoryPackagePlan.#ctor(System.String,System.Int32,System.String,System.Collections.Generic.IReadOnlyList{TinyRustLM.UaixMemoryRequiredFile},TinyRustLM.UaixMemoryFileDeckSummary,System.Int32,System.Collections.Generic.IReadOnlyList{System.String},TinyRustLM.UaixMemoryBoundary)",
-            "M:TinyRustLM.UaixMemoryPackageRequest.#ctor(System.String,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,TinyRustLM.UaixAdvancedPersonaOptions)",
-            "M:TinyRustLM.UaixMemoryRequiredFile.#ctor(System.String,System.String,System.String,System.String)",
-            "M:TinyRustLM.UaixMemorySetupCatalog.#ctor(System.String,System.Int32,System.Collections.Generic.IReadOnlyList{TinyRustLM.UaixMemorySetupDescriptor},System.Int32,System.Collections.Generic.IReadOnlyList{System.String},TinyRustLM.UaixMemoryBoundary)",
-            "M:TinyRustLM.UaixMemorySetupDescriptor.#ctor(System.String,System.String,System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.Collections.Generic.IReadOnlyList{System.String},System.Collections.Generic.IReadOnlyList{System.String})",
-            "M:TinyRustLM.UaixPersonaDimensionInspection.#ctor(System.String,System.String,System.Boolean,System.Int64,System.String,System.Boolean,System.Nullable{System.Byte},System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Collections.Generic.IReadOnlyList{System.String})",
-            "P:TinyRustLM.TinyRustLmGenerationOptions.MaxNewTokens",
-            "P:TinyRustLM.TinyRustLmGenerationOptions.Seed",
-            "P:TinyRustLM.TinyRustLmGenerationOptions.Temperature",
-            "P:TinyRustLM.TinyRustLmGenerationOptions.TopK",
-            "P:TinyRustLM.TinyRustLmGenerationOptions.TopP",
-            "T:TinyRustLM.ISlmInspector",
-            "T:TinyRustLM.ITinyRustLmMemoryClient",
-            "T:TinyRustLM.ITinyRustLmP2PClient",
-            "T:TinyRustLM.ITinyRustLmRuntime",
-            "T:TinyRustLM.ITinyRustLmRuntimeFactory",
-            "T:TinyRustLM.P2PAnnouncement",
-            "T:TinyRustLM.P2PAnnouncementCatalog",
-            "T:TinyRustLM.P2PAnnouncementCatalogInspection",
-            "T:TinyRustLM.P2PImportPlan",
-            "T:TinyRustLM.P2PLocalImportBoundary",
-            "T:TinyRustLM.P2PLocalImportReceipt",
-            "T:TinyRustLM.P2PLocalImportReceiptInspection",
-            "T:TinyRustLM.P2PManifest",
-            "T:TinyRustLM.P2PManifestBoundary",
-            "T:TinyRustLM.P2PManifestInspection",
-            "T:TinyRustLM.P2PManifestSignature",
-            "T:TinyRustLM.P2PPiece",
-            "T:TinyRustLM.P2PPublicKeyDocument",
-            "T:TinyRustLM.P2PShareKitReport",
-            "T:TinyRustLM.P2PShareMetadata",
-            "T:TinyRustLM.P2PSignedManifest",
-            "T:TinyRustLM.P2PSignedManifestVerification",
-            "T:TinyRustLM.PrepareShareKitRequest",
-            "T:TinyRustLM.SlmInspection",
-            "T:TinyRustLM.TinyRustLmCapabilities",
-            "T:TinyRustLM.TinyRustLmCompositionActivationReport",
-            "T:TinyRustLM.TinyRustLmGenerationOptions",
-            "T:TinyRustLM.TinyRustLmGenerationResult",
-            "T:TinyRustLM.TinyRustLmLoadReport",
-            "T:TinyRustLM.TinyRustLmSdkVersion",
-            "T:TinyRustLM.UaixAdvancedPersonaOptions",
-            "T:TinyRustLM.UaixMemoryBoundary",
-            "T:TinyRustLM.UaixMemoryFileStatus",
-            "T:TinyRustLM.UaixMemoryFileDeckSummary",
-            "T:TinyRustLM.UaixMemoryManifestInspection",
-            "T:TinyRustLM.UaixMemoryPackageInspection",
-            "T:TinyRustLM.UaixMemoryPackagePlan",
-            "T:TinyRustLM.UaixMemoryPackageRequest",
-            "T:TinyRustLM.UaixMemoryRequiredFile",
-            "T:TinyRustLM.UaixMemorySetupCatalog",
-            "T:TinyRustLM.UaixMemorySetupDescriptor",
-            "T:TinyRustLM.UaixPersonaDimensionInspection",
-        ],
-        "TinyRustLM.Core": [
-            "M:TinyRustLM.TinyRustLmException.#ctor(System.String,System.String)",
-            "M:TinyRustLM.TinyRustLmRuntime.ActivateComposition(System.String,System.String)",
-            "M:TinyRustLM.TinyRustLmRuntime.Dispose",
-            "M:TinyRustLM.TinyRustLmRuntime.Generate(System.String,TinyRustLM.TinyRustLmGenerationOptions)",
-            "M:TinyRustLM.TinyRustLmRuntime.GetDiagnostics",
-            "M:TinyRustLM.TinyRustLmRuntime.LoadModel(System.String,System.String)",
-            "M:TinyRustLM.TinyRustLmRuntime.Reset",
-            "M:TinyRustLM.TinyRustLmRuntime.Step",
-            "M:TinyRustLM.TinyRustLmRuntime.UnloadModel",
-            "M:TinyRustLM.TinyRustLmRuntimeFactory.CreateRuntime",
-            "M:TinyRustLM.TinyRustLmRuntimeFactory.GetCapabilities",
-            "M:TinyRustLM.TinyRustLmRuntimeFactory.GetVersion",
-            "M:TinyRustLM.TinySlmInspector.Inspect(System.String)",
-            "P:TinyRustLM.TinyRustLmException.Code",
-            "T:TinyRustLM.TinyRustLmException",
-            "T:TinyRustLM.TinyRustLmRuntime",
-            "T:TinyRustLM.TinyRustLmRuntimeFactory",
-            "T:TinyRustLM.TinySlmInspector",
-        ],
-        "TinyRustLM.P2P": [
-            "M:TinyRustLM.TinyRustLmP2PClient.ApplyReceivedAnnouncement(System.String,System.String)",
-            "M:TinyRustLM.TinyRustLmP2PClient.ApplyReceivedAnnouncementJson(System.String,System.String)",
-            "M:TinyRustLM.TinyRustLmP2PClient.ExportShareMetadata(System.String)",
-            "M:TinyRustLM.TinyRustLmP2PClient.ExportShareMetadataJson(System.String)",
-            "M:TinyRustLM.TinyRustLmP2PClient.ImportFromManifest(System.String)",
-            "M:TinyRustLM.TinyRustLmP2PClient.ImportFromManifest(System.String,System.String,System.String)",
-            "M:TinyRustLM.TinyRustLmP2PClient.InspectAnnouncementCatalog(System.String)",
-            "M:TinyRustLM.TinyRustLmP2PClient.InspectAnnouncementCatalogJson(System.String)",
-            "M:TinyRustLM.TinyRustLmP2PClient.InspectLocalImportReceipt(System.String,System.String)",
-            "M:TinyRustLM.TinyRustLmP2PClient.InspectManifest(System.String)",
-            "M:TinyRustLM.TinyRustLmP2PClient.PrepareLocalShareKit(TinyRustLM.PrepareShareKitRequest)",
-            "M:TinyRustLM.TinyRustLmP2PClient.PrepareLocalShareKitJson(TinyRustLM.PrepareShareKitRequest)",
-            "M:TinyRustLM.TinyRustLmP2PClient.ValidateAnnouncement(System.String)",
-            "M:TinyRustLM.TinyRustLmP2PClient.ValidateAnnouncementJson(System.String)",
-            "M:TinyRustLM.TinyRustLmP2PClient.VerifySignedManifest(System.String,System.String)",
-            "M:TinyRustLM.TinyRustLmP2PClient.VerifySignedManifestJson(System.String,System.String)",
-            "T:TinyRustLM.TinyRustLmP2PClient",
-        ],
-        "TinyRustLM.Memory": [
-            "M:TinyRustLM.TinyRustLmMemoryClient.GetRequiredFiles(TinyRustLM.UaixMemoryPackageRequest)",
-            "M:TinyRustLM.TinyRustLmMemoryClient.GetRequiredFilesJson(TinyRustLM.UaixMemoryPackageRequest)",
-            "M:TinyRustLM.TinyRustLmMemoryClient.GetSupportedSetups",
-            "M:TinyRustLM.TinyRustLmMemoryClient.GetSupportedSetupsJson",
-            "M:TinyRustLM.TinyRustLmMemoryClient.InspectManifest(System.String)",
-            "M:TinyRustLM.TinyRustLmMemoryClient.InspectPackage(System.String,TinyRustLM.UaixMemoryPackageRequest)",
-            "M:TinyRustLM.TinyRustLmMemoryClient.ValidatePackage(System.String,TinyRustLM.UaixMemoryPackageRequest)",
-            "T:TinyRustLM.TinyRustLmMemoryClient",
-        ],
+    supported_package_ids = {
+        "TinyRustLM.Abstractions",
+        "TinyRustLM.Core",
+        "TinyRustLM.P2P",
+        "TinyRustLM.MemoryEndpoints",
+        "TinyRustLM.Conversion",
     }
-    return entries.get(package_id, [])
+    if package_id not in supported_package_ids:
+        return []
+
+    baseline_path = repo_root / "eng" / "public-api" / f"{package_id}.txt"
+    if not baseline_path.is_file():
+        raise SystemExit(f"Missing approved public API baseline for {package_id}: {baseline_path}")
+    return sorted({
+        line.strip()
+        for line in baseline_path.read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.startswith("#")
+    })
 
 
 def missing_public_api_entries(expected, actual):
@@ -758,32 +585,18 @@ def expected_dependencies(package_id, package_version):
                 "exclude": "Build,Analyzers",
             },
         ]
-    if package_id == "TinyRustLM.Memory":
-        return [
-            {
-                "id": "TinyRustLM.Abstractions",
-                "version": package_version,
-                "exclude": "Build,Analyzers",
-            },
-            {
-                "id": "TinyRustLM.Core",
-                "version": package_version,
-                "exclude": "Build,Analyzers",
-            },
-        ]
     if package_id == "TinyRustLM.MemoryEndpoints":
-        return [
-            {
-                "id": "TinyRustLM.Abstractions",
-                "version": package_version,
-                "exclude": "Build,Analyzers",
-            },
-            {
-                "id": "TinyRustLM.Memory",
-                "version": package_version,
-                "exclude": "Build,Analyzers",
-            },
-        ]
+        return [{
+            "id": "TinyRustLM.Abstractions",
+            "version": package_version,
+            "exclude": "Build,Analyzers",
+        }]
+    if package_id == "TinyRustLM.Conversion":
+        return [{
+            "id": "TinyRustLM.Core",
+            "version": package_version,
+            "exclude": "Build,Analyzers",
+        }]
     return []
 
 
@@ -819,14 +632,22 @@ def unexpected_native_entries(package_id, native_entries):
 
 
 def allowed_native_entries(package_id):
-    if package_id != "TinyRustLM.Core":
-        return []
-    return [
-        "runtimes/win-x64/native/tinyrustlm_native.dll",
-        "runtimes/linux-x64/native/libtinyrustlm_native.so",
-        "runtimes/osx-x64/native/libtinyrustlm_native.dylib",
-        "runtimes/osx-arm64/native/libtinyrustlm_native.dylib",
-    ]
+    if package_id == "TinyRustLM.Core":
+        return [
+            "runtimes/win-x64/native/tinyrustlm_native.dll",
+            "runtimes/linux-x64/native/libtinyrustlm_native.so",
+            "runtimes/linux-arm64/native/libtinyrustlm_native.so",
+        ]
+    if package_id == "TinyRustLM.Conversion":
+        return [
+            "tools/win-x64/tinyrustlm-convert.exe",
+            "contentFiles/any/any/tinyrustlm/tools/win-x64/tinyrustlm-convert.exe",
+            "tools/linux-x64/tinyrustlm-convert",
+            "contentFiles/any/any/tinyrustlm/tools/linux-x64/tinyrustlm-convert",
+            "tools/linux-arm64/tinyrustlm-convert",
+            "contentFiles/any/any/tinyrustlm/tools/linux-arm64/tinyrustlm-convert",
+        ]
+    return []
 
 
 def package_identity_mismatches(package_name, expected_id, expected_version, metadata):
@@ -937,6 +758,10 @@ optional_memory_endpoints_name = f"TinyRustLM.MemoryEndpoints.{source_version}.n
 if optional_memory_endpoints_name in package_names:
     expected_names.append(optional_memory_endpoints_name)
     expected_symbol_names.append(f"TinyRustLM.MemoryEndpoints.{source_version}.snupkg")
+optional_conversion_name = f"TinyRustLM.Conversion.{source_version}.nupkg"
+if optional_conversion_name in package_names:
+    expected_names.append(optional_conversion_name)
+    expected_symbol_names.append(f"TinyRustLM.Conversion.{source_version}.snupkg")
 missing_package_entries = [name for name in expected_names if name not in package_names]
 unexpected_package_entries = [name for name in package_names if name not in expected_names]
 missing_symbol_package_entries = [name for name in expected_symbol_names if name not in symbol_package_names]

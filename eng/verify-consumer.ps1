@@ -1,9 +1,6 @@
 param(
     [string]$PackageSource = "",
-    [string]$PackageVersion = "",
-    [string]$CorePackageId = "",
-    [string]$P2PPackageId = "",
-    [string]$ConversionPackageId = ""
+    [string]$PackageVersion = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -24,21 +21,17 @@ if (-not $PackageSource) {
 if (-not $PackageVersion) {
     $PackageVersion = (& (Join-Path $PSScriptRoot "get-package-version.ps1")).Trim()
 }
-if (-not $CorePackageId) {
-    $CorePackageId = if ($env:TINYRUSTLM_CONSUMER_CORE_PACKAGE_ID) { $env:TINYRUSTLM_CONSUMER_CORE_PACKAGE_ID } else { "TinyRustLM.Core" }
-}
-if (-not $P2PPackageId) {
-    $P2PPackageId = if ($env:TINYRUSTLM_CONSUMER_P2P_PACKAGE_ID) { $env:TINYRUSTLM_CONSUMER_P2P_PACKAGE_ID } else { "TinyRustLM.P2P" }
-}
-if (-not $ConversionPackageId -and $env:TINYRUSTLM_CONSUMER_CONVERSION_PACKAGE_ID) {
-    $ConversionPackageId = $env:TINYRUSTLM_CONSUMER_CONVERSION_PACKAGE_ID
-}
 if ([string]::IsNullOrWhiteSpace($PackageSource) -or [string]::IsNullOrWhiteSpace($PackageVersion)) {
     throw "Package source and exact package version are required."
 }
+$isFolderSource = Test-Path -LiteralPath $PackageSource -PathType Container
 if (Test-Path -LiteralPath $PackageSource) {
     $PackageSource = (Resolve-Path -LiteralPath $PackageSource).Path
 }
+$includeMemoryEndpoints = $isFolderSource -and
+    (Test-Path -LiteralPath (Join-Path $PackageSource "TinyRustLM.MemoryEndpoints.$PackageVersion.nupkg") -PathType Leaf)
+$includeConversion = $isFolderSource -and
+    (Test-Path -LiteralPath (Join-Path $PackageSource "TinyRustLM.Conversion.$PackageVersion.nupkg") -PathType Leaf)
 
 $Slm2Vectors = (Resolve-Path -LiteralPath (Join-Path $RepoRoot "contracts/vnext/slm2-q8-weight-vectors.v1.json")).Path
 $Acg2Vectors = (Resolve-Path -LiteralPath (Join-Path $RepoRoot "contracts/vnext/acg2-format-vectors.v1.json")).Path
@@ -62,16 +55,21 @@ try {
     Copy-Item -LiteralPath $ProgramSource -Destination (Join-Path $ProjectDir "Program.cs") -Force
     Push-Location $ProjectDir
     try {
-        Invoke-DotNet -Arguments @("add", "package", $CorePackageId, "--version", $PackageVersion, "--source", $PackageSource)
-        Invoke-DotNet -Arguments @("add", "package", $P2PPackageId, "--version", $PackageVersion, "--source", $PackageSource)
-        if (-not [string]::IsNullOrWhiteSpace($ConversionPackageId)) {
-            Invoke-DotNet -Arguments @("add", "package", $ConversionPackageId, "--version", $PackageVersion, "--source", $PackageSource)
+        Invoke-DotNet -Arguments @("add", "package", "TinyRustLM.Abstractions", "--version", $PackageVersion, "--source", $PackageSource)
+        Invoke-DotNet -Arguments @("add", "package", "TinyRustLM.Core", "--version", $PackageVersion, "--source", $PackageSource)
+        Invoke-DotNet -Arguments @("add", "package", "TinyRustLM.P2P", "--version", $PackageVersion, "--source", $PackageSource)
+        if ($includeMemoryEndpoints) {
+            Invoke-DotNet -Arguments @("add", "package", "TinyRustLM.MemoryEndpoints", "--version", $PackageVersion, "--source", $PackageSource)
+        }
+        if ($includeConversion) {
+            Invoke-DotNet -Arguments @("add", "package", "TinyRustLM.Conversion", "--version", $PackageVersion, "--source", $PackageSource)
         }
         Invoke-DotNet -Arguments @("build", "--no-restore", "--configuration", "Release")
-        $conversionFlag = if ([string]::IsNullOrWhiteSpace($ConversionPackageId)) { "absent" } else { "required" }
+        $memoryEndpointsFlag = if ($includeMemoryEndpoints) { "required" } else { "absent" }
+        $conversionFlag = if ($includeConversion) { "required" } else { "absent" }
         Invoke-DotNet -Arguments @(
             "run", "--no-build", "--no-restore", "--configuration", "Release", "--",
-            $Slm2Vectors, $Acg2Vectors, $WorkDir, $conversionFlag)
+            $Slm2Vectors, $Acg2Vectors, $WorkDir, $memoryEndpointsFlag, $conversionFlag)
     }
     finally {
         Pop-Location

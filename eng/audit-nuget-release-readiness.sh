@@ -152,6 +152,14 @@ steps = [
     step("remote_feed_current", os.environ["REMOTE_CURRENT_STATUS"], os.environ["REMOTE_FEED_CURRENT_REPORT"], os.environ["REMOTE_CURRENT_ERROR"]),
     step("remote_feed_hashes", os.environ["REMOTE_HASH_STATUS"], os.environ["REMOTE_FEED_HASH_REPORT"], os.environ["REMOTE_HASH_ERROR"]),
 ]
+expected_package_ids = ["TinyRustLM.Abstractions", "TinyRustLM.Core", "TinyRustLM.P2P"]
+publish_plan = read_report(os.environ["PUBLISH_PLAN_REPORT"])
+publish_plan_package_ids = sorted(str(item.get("package_id", "")) for item in publish_plan.get("packages", []))
+publish_plan_symbol_package_ids = sorted(str(item.get("package_id", "")) for item in publish_plan.get("symbol_packages", []))
+package_graph_match = (
+    publish_plan_package_ids == sorted(expected_package_ids)
+    and publish_plan_symbol_package_ids == sorted(expected_package_ids)
+)
 local_names = {"publish_plan_dry_run", "local_feed_current", "local_feed_hashes"}
 local_failures = []
 for item in steps:
@@ -163,6 +171,15 @@ for item in steps:
     expected_report_status = "dry_run" if item["name"] == "publish_plan_dry_run" else "pass"
     if item["report_status"] != expected_report_status:
         local_failures.append(item)
+if not package_graph_match:
+    local_failures.append({
+        "name": "current_public_package_graph",
+        "status": "fail",
+        "report_path": os.environ["PUBLISH_PLAN_REPORT"],
+        "report_written": os.path.isfile(os.environ["PUBLISH_PLAN_REPORT"]),
+        "report_status": str(publish_plan.get("status", "")),
+        "error_message": "Publish plan is not the exact three-package public TinyRustLM graph.",
+    })
 remote_current = next(item for item in steps if item["name"] == "remote_feed_current")
 remote_hash = next(item for item in steps if item["name"] == "remote_feed_hashes")
 api_key_present = os.environ["API_KEY_PRESENT"] == "true"
@@ -208,7 +225,6 @@ package_source = os.environ["PACKAGE_SOURCE"]
 if os.path.isdir(package_source):
     package_source = os.path.abspath(package_source)
 
-publish_plan = read_report(os.environ["PUBLISH_PLAN_REPORT"])
 local_feed_hashes = read_report(os.environ["LOCAL_FEED_HASH_REPORT"])
 
 report = {
@@ -216,6 +232,8 @@ report = {
     "generated_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     "status": status,
     "package_version": os.environ["PACKAGE_VERSION"],
+    "expected_package_ids": expected_package_ids,
+    "package_graph_match": package_graph_match,
     "package_source": package_source,
     "nuget_source": os.environ["NUGET_SOURCE"],
     "secret_material_included": False,

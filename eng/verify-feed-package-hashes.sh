@@ -188,11 +188,7 @@ if not os.path.isfile(publish_plan_report):
 
 publish_plan_report = os.path.abspath(publish_plan_report)
 publish_plan = read_json_file(publish_plan_report)
-supported_publish_plan_schemas = {
-    "tinyrustlm.nuget.publish_plan.v0",
-    "uaix.browser.nuget.publish_plan.v0",
-}
-if publish_plan.get("schema") not in supported_publish_plan_schemas:
+if publish_plan.get("schema") != "tinyrustlm.nuget.publish_plan.v0":
     raise SystemExit(f"Publish plan report schema mismatch: {publish_plan.get('schema', '')}")
 if not publish_plan.get("package_audit_match"):
     raise SystemExit(f"Publish plan report is not bound to a passing package audit: {publish_plan_report}")
@@ -200,6 +196,13 @@ if not publish_plan.get("package_hash_manifest_match"):
     raise SystemExit(f"Publish plan report is not bound to a passing package SHA-256 manifest: {publish_plan_report}")
 if re.fullmatch(r"[0-9a-f]{64}", str(publish_plan.get("package_hash_manifest_sha256", ""))) is None:
     raise SystemExit(f"Publish plan report is missing a valid package SHA-256 manifest hash: {publish_plan_report}")
+expected_package_ids = ["TinyRustLM.Abstractions", "TinyRustLM.Core", "TinyRustLM.P2P"]
+publish_package_ids = sorted(str(item.get("package_id", "")) for item in publish_plan.get("packages", []))
+publish_symbol_package_ids = sorted(str(item.get("package_id", "")) for item in publish_plan.get("symbol_packages", []))
+if publish_package_ids != sorted(expected_package_ids):
+    raise SystemExit("Publish plan package IDs are not the exact current public package set.")
+if publish_symbol_package_ids != sorted(expected_package_ids):
+    raise SystemExit("Publish plan symbol package IDs are not the exact current public package set.")
 
 source_kind = "folder" if os.path.isdir(source) else "nuget-v3"
 resolved_source = os.path.abspath(source) if source_kind == "folder" else source

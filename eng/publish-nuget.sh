@@ -437,13 +437,11 @@ EXPECTED_NAMES=(
   "TinyRustLM.Abstractions.${PACKAGE_VERSION}.nupkg"
   "TinyRustLM.Core.${PACKAGE_VERSION}.nupkg"
   "TinyRustLM.P2P.${PACKAGE_VERSION}.nupkg"
-  "TinyRustLM.Memory.${PACKAGE_VERSION}.nupkg"
 )
 EXPECTED_SYMBOL_NAMES=(
   "TinyRustLM.Abstractions.${PACKAGE_VERSION}.snupkg"
   "TinyRustLM.Core.${PACKAGE_VERSION}.snupkg"
   "TinyRustLM.P2P.${PACKAGE_VERSION}.snupkg"
-  "TinyRustLM.Memory.${PACKAGE_VERSION}.snupkg"
 )
 
 contains_expected_package() {

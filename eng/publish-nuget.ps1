@@ -471,8 +471,7 @@ try {
     $requiredPackages = @(
         "TinyRustLM.Abstractions",
         "TinyRustLM.Core",
-        "TinyRustLM.P2P",
-        "TinyRustLM.Memory"
+        "TinyRustLM.P2P"
     )
     $expectedNames = @($requiredPackages | ForEach-Object { "$_.$PackageVersion.nupkg" })
     $expectedSymbolNames = @($requiredPackages | ForEach-Object { "$_.$PackageVersion.snupkg" })

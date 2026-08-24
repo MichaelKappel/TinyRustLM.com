@@ -39,10 +39,8 @@ jobs:
             rid: win-x64
           - os: ubuntu-latest
             rid: linux-x64
-          - os: macos-13
-            rid: osx-x64
-          - os: macos-14
-            rid: osx-arm64
+          - os: ubuntu-24.04-arm
+            rid: linux-arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -53,12 +51,15 @@ jobs:
       - name: Build native bridge (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: eng/build-native.ps1 -Configuration release
+        run: eng/build-native.ps1 -Configuration release -Rid ${{ matrix.rid }}
 
       - name: Build native bridge (Unix)
         if: runner.os != 'Windows'
         shell: bash
-        run: eng/build-native.sh release
+        run: eng/build-native.sh release ${{ matrix.rid }}
+
+      - name: Execute native contract tests on target hardware
+        run: cargo test --locked -p tinyrustlm-native
 
       - name: Upload native bridge
         uses: actions/upload-artifact@v4
@@ -98,21 +99,25 @@ jobs:
           name: tinyrustlm-native-linux-x64
           path: artifacts/native/linux-x64
 
-      - name: Download osx-x64 native bridge
+      - name: Download linux-arm64 native bridge
         uses: actions/download-artifact@v4
         with:
-          name: tinyrustlm-native-osx-x64
-          path: artifacts/native/osx-x64
-
-      - name: Download osx-arm64 native bridge
-        uses: actions/download-artifact@v4
-        with:
-          name: tinyrustlm-native-osx-arm64
-          path: artifacts/native/osx-arm64
+          name: tinyrustlm-native-linux-arm64
+          path: artifacts/native/linux-arm64
 
       - name: Verify and pack
         shell: pwsh
-        run: eng/verify-package.ps1 -RequiredNativeRids win-x64,linux-x64,osx-x64,osx-arm64
+        run: eng/verify-package.ps1 -RequiredNativeRids win-x64,linux-x64,linux-arm64
+
+      - name: Verify exact public package graph
+        shell: pwsh
+        run: |
+          $expected = @('TinyRustLM.Abstractions', 'TinyRustLM.Core', 'TinyRustLM.P2P')
+          $audit = Get-Content -LiteralPath artifacts/packages/tinyrustlm-nuget-package-audit.json -Raw | ConvertFrom-Json
+          $actual = @($audit.packages | ForEach-Object { $_.package_id } | Sort-Object)
+          if (($actual -join "`n") -cne (($expected | Sort-Object) -join "`n")) {
+              throw 'Packed public package graph does not match the exact three-package authority.'
+          }
 
       - name: Upload NuGet packages
         uses: actions/upload-artifact@v4
@@ -127,7 +132,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tinyrustlm-nuget-reports
-          path: artifacts/reports/*.json
+          path: |
+            artifacts/packages/tinyrustlm-nuget-package-audit.json
+            artifacts/packages/SHA256SUMS-TinyRustLM-*.txt
+            artifacts/reports/*.json
 
       - name: Audit NuGet release readiness
         id: readiness
@@ -137,7 +145,7 @@ jobs:
           NUGET_SOURCE: ${{ inputs.source }}
           TINYRUSTLM_NUGET_AUTH_MODE: ${{ inputs.auth_mode }}
         run: |
-          eng/audit-nuget-release-readiness.ps1 -PackageSource artifacts/packages -NuGetSource $env:NUGET_SOURCE -AuthMode $env:TINYRUSTLM_NUGET_AUTH_MODE -FailOnBlocked
+          eng/audit-nuget-release-readiness.ps1 -PackageSource artifacts/packages -AuditReport artifacts/packages/tinyrustlm-nuget-package-audit.json -NuGetSource $env:NUGET_SOURCE -AuthMode $env:TINYRUSTLM_NUGET_AUTH_MODE -FailOnBlocked
           $report = Get-Content -LiteralPath artifacts/reports/tinyrustlm-nuget-release-readiness.json -Raw | ConvertFrom-Json
           "status=$($report.status)" >> $env:GITHUB_OUTPUT
 
@@ -169,7 +177,7 @@ jobs:
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
           NUGET_SOURCE: ${{ inputs.source }}
-        run: eng/publish-nuget.ps1 -SkipVerification -PackageSource artifacts/packages -NuGetSource $env:NUGET_SOURCE
+        run: eng/publish-nuget.ps1 -SkipVerification -PackageSource artifacts/packages -AuditReport artifacts/packages/tinyrustlm-nuget-package-audit.json -NuGetSource $env:NUGET_SOURCE
 
       - name: Publish packages with Trusted Publishing
         if: ${{ steps.readiness.outputs.status != 'published_current' && inputs.auth_mode == 'trusted_publishing' }}
@@ -177,7 +185,7 @@ jobs:
         env:
           NUGET_SOURCE: ${{ inputs.source }}
           TINYRUSTLM_TEMP_NUGET_API_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
-        run: eng/publish-nuget.ps1 -SkipVerification -PackageSource artifacts/packages -NuGetSource $env:NUGET_SOURCE -ApiKey $env:TINYRUSTLM_TEMP_NUGET_API_KEY
+        run: eng/publish-nuget.ps1 -SkipVerification -PackageSource artifacts/packages -AuditReport artifacts/packages/tinyrustlm-nuget-package-audit.json -NuGetSource $env:NUGET_SOURCE -ApiKey $env:TINYRUSTLM_TEMP_NUGET_API_KEY
 
       - name: Verify publish plan report schema
         if: ${{ always() && hashFiles('artifacts/reports/tinyrustlm-nuget-publish-plan.json') != '' }}

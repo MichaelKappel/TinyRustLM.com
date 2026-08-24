@@ -1,0 +1,19 @@
+# Approved XML documentation members for TinyRustLM.Core.
+
+M:TinyRustLM.TinyRustLmException.#ctor(System.String)
+M:TinyRustLM.TinyRustLmRuntime.ActivateComposition(TinyRustLM.TinyRustLmActivationRequest,TinyRustLM.TinyRustLmOperationId)
+M:TinyRustLM.TinyRustLmRuntime.AdvanceOperation(TinyRustLM.TinyRustLmOperationId,TinyRustLM.TinyRustLmOperationId)
+M:TinyRustLM.TinyRustLmRuntime.BeginRequest(System.ReadOnlyMemory{System.Byte},TinyRustLM.TinyRustLmOperationId)
+M:TinyRustLM.TinyRustLmRuntime.Dispose
+M:TinyRustLM.TinyRustLmRuntime.Finish
+M:TinyRustLM.TinyRustLmRuntime.GetState
+M:TinyRustLM.TinyRustLmRuntime.SetTranscriptRevision(System.UInt64)
+M:TinyRustLM.TinyRustLmRuntime.Step(System.Boolean)
+M:TinyRustLM.TinyRustLmRuntimeFactory.CreateRuntime(TinyRustLM.TinyRustLmRuntimePolicy,TinyRustLM.TinyRustLmOperationId,System.UInt64)
+M:TinyRustLM.TinyRustLmRuntimeFactory.GetNativeContract
+M:TinyRustLM.TinyRustLmSlm2Inspector.Inspect(System.String,TinyRustLM.Slm2InspectionPolicy)
+P:TinyRustLM.TinyRustLmException.Code
+T:TinyRustLM.TinyRustLmException
+T:TinyRustLM.TinyRustLmRuntime
+T:TinyRustLM.TinyRustLmRuntimeFactory
+T:TinyRustLM.TinyRustLmSlm2Inspector

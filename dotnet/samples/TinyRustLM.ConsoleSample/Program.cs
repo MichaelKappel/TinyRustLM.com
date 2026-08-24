@@ -35,6 +35,7 @@ runtime.ActivateComposition(
     operation);
 
 var requestWire = File.ReadAllBytes(args[6]);
+runtime.SetTranscriptRevision(0);
 runtime.BeginRequest(requestWire, operation);
 for (uint stepCount = 0; stepCount < contract.Limits.MaximumSequenceTokens; stepCount++)
 {

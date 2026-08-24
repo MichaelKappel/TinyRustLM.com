@@ -1,16 +1,26 @@
-# SLM Validation
+# SLM2 Validation
 
-The NuGet SDK validates `.slm` files through the supported TinyRustLM runtime parser.
+The managed SDK validates only the current mixed-Q8 SLM2 technical contract
+through the canonical Rust runtime parser. There is no earlier model-format
+reader, generic format reader, quantization fallback, or compatibility mode.
 
 Validation checks include:
 
-- `SLM1` magic and supported format version.
-- Header length and field sanity.
-- Transformer shape consistency.
-- Tokenizer and tensor-directory ranges.
-- Tensor data ranges and supported `f32`, `q8_0`, `q5_0`, and `q4_0` dtype values.
-- Embedded runtime checksum.
-- Optional expected SHA-256 match.
-- Default public safe-loading byte budget.
+- exact SLM2 magic, format profile, schema, manifest, and layout identities;
+- bounded header, tensor directory, tensor count, and artifact length;
+- checked transformer geometry and tensor spans;
+- role-owned row-wise signed-Q8 matrix and embedding records;
+- F32 normalization and declared optional-bias records;
+- exact quantization scale layout and finite values;
+- embedded artifact identity and optional expected SHA-256; and
+- the configured safe-inspection byte ceiling.
 
-The SDK reports shape, tokenizer bytes, tensor counts, quantization summary, byte count, artifact SHA-256, and runtime checksum. Safe inspection and loading are compatibility checks, not model-quality or browser-admission claims. The SDK does not expose `.slm` authoring internals or conversion tools.
+Inspection reports architecture, tensor and parameter counts, model geometry,
+context and vocabulary bounds, byte count, artifact SHA-256, and exact
+technical identities. Structural validation does not prove source provenance,
+license suitability, numerical parity, assistant quality, browser activation,
+P2P reachability, or publication.
+
+A usable chat model additionally requires an exact ACG2 composition binding
+SLM2, Tokenizer2, Template2, Sampling2, and Prompt2, followed by the registered
+native, real-browser, and untouched-quality gates.

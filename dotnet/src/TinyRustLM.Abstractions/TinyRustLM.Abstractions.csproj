@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <PackageId>$(TinyRustLmAbstractionsPackageId)</PackageId>
-    <Title>TinyRustLM / UAIX Browser SDK Abstractions</Title>
+    <PackageId>TinyRustLM.Abstractions</PackageId>
+    <Title>TinyRustLM SDK Abstractions</Title>
     <Summary>Exact public contracts for TinyRustLM SLM2 inspection, ACG2 activation, bounded conversation execution, and direct transport.</Summary>
     <Description>Public .NET records and interfaces for the sole prelaunch TinyRustLM product: mixed-Q8 SLM2 inspection, fail-atomic ACG2 composition activation, Prompt2 request execution, immutable operation identities, bounded runtime state, and composition-bound fixed-piece P2P transport. The package contains no legacy loader, compatibility facade, response repair, announcement catalog, model authoring, or local memory-package API.</Description>
-    <PackageTags>TinyRustLM;TinyRustLM.Abstractions;TinyRustLM.com;UAIX;UAIX.org;UAIX.Browser;Browser;UAIX.Browser.Core.Abstractions;p2pRuntime;p2pRuntime.com;p2pLLM;p2pLLM.com;MiniModel;MiniModel.org;SLM2;.slm;ACG2;Prompt2;Tokenizer2;Template2;Sampling2;AI;LLM;P2P;Rust;SDK;abstractions;interfaces;DTO;protected-sdk</PackageTags>
+    <PackageTags>TinyRustLM;TinyRustLM.Abstractions;TinyRustLM.com;UAIX;UAIX.org;browser-local;p2pRuntime;p2pRuntime.com;p2pLLM;p2pLLM.com;MiniModel;MiniModel.org;SLM2;.slm;ACG2;Prompt2;Tokenizer2;Template2;Sampling2;AI;LLM;P2P;Rust;SDK;abstractions;interfaces;DTO;protected-sdk</PackageTags>
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>

@@ -1,39 +1,84 @@
 # P2P Share Flow
 
-The public P2P SDK is metadata-bound. It helps developers share already-created `.slm` artifacts without exposing TinyRustLM private authoring logic, peer discovery, premium routing, or conversion tools.
+`TinyRustLM.P2P` is the public managed boundary over the canonical Rust
+fixed-piece transport. It handles already-qualified SLM2 model artifacts and
+complete ACG2 compositions. It does not discover peers, publish catalog
+announcements, sign manifests, fetch network content, convert models, or judge
+model quality.
 
-## Prepare Share Kit
+TinyRustLM is one prelaunch product. This is the only current P2P SDK surface;
+there is no earlier manifest, announcement, receipt, or compatibility API.
 
-`TinyRustLmP2PClient.PrepareLocalShareKit` validates the `.slm`, splits it into SHA-256-addressed piece files, writes `tinyrustlm.p2p-manifest.v0.json`, exports share metadata, and optionally writes a consenting peer announcement. The .NET method returns a typed `P2PShareKitReport` with manifest paths, hashes, typed manifest metadata, and public boundary flags. Use `PrepareLocalShareKitJson` only when the exact native JSON document is needed for handoff or audit storage. When `PublicBaseUrl` is supplied, it is validated directly before any announcement is written.
+## Prepare A Share Kit
 
-`ExportShareMetadata(manifestJson)` returns typed `P2PShareMetadata` for catalog or UI integration. Use `ExportShareMetadataJson` when writing the metadata document directly.
+`TinyRustLmP2PClient.PrepareShareKit` accepts a
+`PrepareShareKitRequest`. The request binds:
 
-The manifest declares piece routes and checksums but does not embed model bytes.
+- the existing artifact path;
+- a create-only output directory;
+- the artifact-manifest content ID;
+- qualification and provenance receipt content IDs;
+- the reviewed license expression;
+- the creation timestamp; and
+- a `TinyRustLmP2PAdmission` that identifies either an SLM2 model plus its
+  exact ACG2 composition path or an ACG2 composition artifact.
 
-## Signed Manifest Verification
+Rust validates the admitted artifact, creates fixed 4 MiB pieces, writes a
+canonical bounded manifest, and returns `P2PShareKitReport`. Each report binds
+the output directory, manifest path, piece directory, and parsed manifest.
+Existing output is rejected rather than overwritten.
 
-`VerifySignedManifest(signedManifestJson, publicKeyJson)` validates a metadata-only `tinyrustlm.p2p_signed_manifest.v0` envelope before a catalog or receiver trusts the wrapped manifest. The verifier first validates the wrapped `tinyrustlm.p2p_manifest.v0` document, then checks that `signature.kind=external-signature-v0`, `signature.payload_sha256` matches the SDK canonical manifest payload, `signature.value` uses `ed25519-base64:`, and the signature verifies against the supplied local `minimodel.public_key.v0` public-key JSON.
+The SDK does not start a listener or claim that the share kit is reachable.
+Loopback, LAN, and NAT-hairpin probes are not outside-network proof.
 
-The public key document must declare `key_algorithm=ed25519`, `usage=minimodel-manifest-signing-v0`, matching publisher id, signing key id, public-key route, public-key SHA-256, and `revoked=false`. The API performs no signing, private-key handling, remote key discovery, transparency-log lookup, peer discovery, conversion, or catalog publication. Use `VerifySignedManifestJson` only when writing the exact native verification report for audit or interop storage.
+## Inspect A Manifest
 
-## Import From Manifest
+`TinyRustLmP2PClient.InspectManifest` accepts bounded canonical manifest bytes
+and returns `P2PManifest` only after the native authority validates the closed
+schema, content identities, artifact length and hash, qualification and
+provenance identities, reviewed license expression, sorted composition-member
+identities, public-safe redaction decision, fixed piece geometry, every piece
+offset and hash, total length, and Merkle profile.
 
-`ImportFromManifest(manifestJson)` validates the manifest and returns an import plan. Importers that fetch pieces themselves must verify each piece SHA-256, assemble the `.slm`, and verify the final artifact SHA-256 before loading.
+Unknown fields, missing fields, noncanonical structure, invalid identities,
+piece gaps or overlap, wrong piece size, inconsistent totals, and invalid
+redaction state fail closed.
 
-`ImportFromManifest(manifestJson, shareKitRoot, outputPath)` performs the local import gate when the caller already has a share kit on disk. It resolves only safe relative manifest piece routes under `shareKitRoot`, verifies every piece SHA-256 and byte count, assembles a temporary output file, verifies the final artifact SHA-256, runs the public `.slm` validator, refuses to overwrite an existing output path or receipt path, writes `<output.slm>.p2p-import-receipt.json`, and returns the same `tinyrustlm.p2p_local_import_receipt.v0` receipt. This method performs no network fetches, peer discovery, private routing, conversion, or model-ranking logic.
+## Assemble Verified Pieces
 
-## Inspect Local Import Receipt
+`TinyRustLmP2PClient.AssembleArtifact` accepts an
+`AssembleArtifactRequest`, the exact canonical manifest bytes, and the same
+admission class used by the sender. Rust resolves only the declared piece
+directory, verifies every ordered piece and the complete artifact, performs
+SLM2 or ACG2 semantic admission, and promotes the output create-only.
 
-`InspectLocalImportReceipt(receiptJson, outputPath)` validates a `tinyrustlm.p2p_local_import_receipt.v0` sidecar against a caller-supplied local `.slm` output. The receipt's stored output path is treated as provenance only, so developers can move verified artifacts between workspaces while still proving the local bytes match the receipt's artifact SHA-256, byte count, boundary flags, verified piece count, and public `.slm` validator. The inspector performs no network fetches, peer discovery, private routing, conversion, or model-ranking logic.
+The returned `P2PImportedArtifact` reports the output path, manifest content
+ID, artifact SHA-256, and byte count. It is local assembly evidence only. It is
+not source provenance, quality qualification, public reachability, catalog
+publication, or browser activation evidence.
 
-## Announcements
+## Operational Ownership
 
-Announcements require `peer_consent=true`, a metadata-only manifest URL, manifest SHA-256, artifact SHA-256, and artifact byte count. The SDK accepts public `https://` manifest URLs and explicit-port loopback `http://127.0.0.1:<port>`, `http://localhost:<port>`, or `http://[::1]:<port>` URLs for local development. Announcement and `PublicBaseUrl` validation rejects credentials, whitespace, query strings, fragments, backslashes, dot-segment traversal, and encoded dot/slash/backslash path traversal before metadata is trusted.
+The private TinyRustLM companion will own peer discovery, HTTPS transfer,
+resumable operation state, and browser streaming after its release gates pass.
+The public SDK deliberately exposes no announcement catalog, signature store,
+network fallback, arbitrary URL fetch, mutable import receipt, credential
+handling, or model-byte proxy.
 
-`ValidateAnnouncement(announcementJson)` returns a typed `P2PAnnouncement`. Use `ValidateAnnouncementJson(announcementJson)` only when writing the exact validated native announcement document for audit, handoff, or interop storage.
+MiniModel.org may publish catalog and discovery metadata. Model bytes move
+directly between consenting peers and never through a project-hosted website.
+No production companion or public P2P lane is currently released or proven.
 
-## Catalog Application
+## Required Evidence
 
-`ApplyReceivedAnnouncement` validates an announcement and stores it once in a typed local `P2PAnnouncementCatalog` keyed by peer, manifest, and manifest SHA-256. The same peer plus manifest identity may be replayed only when the model id, manifest URL, manifest SHA-256, artifact SHA-256, and artifact byte count stay stable; conflicting re-announcements fail closed before catalog mutation. Existing catalog JSON is capped at 4 MiB before parsing. Use `ApplyReceivedAnnouncementJson` when exchanging or storing the exact native catalog JSON.
+Before a real composition can be offered, independently preserve:
 
-`InspectAnnouncementCatalog(catalogJson)` validates an existing catalog without applying a new announcement and returns `P2PAnnouncementCatalogInspection` with the catalog SHA-256, announcement count, peer count, manifest count, model count, total announced artifact bytes, and validity flag. Use `InspectAnnouncementCatalogJson` when writing the exact inspection document for audit or interop storage.
+1. exact source, provenance, license, and qualification receipts;
+2. the complete ACG2 composition identity and all member identities;
+3. deterministic SLM2 conversion and native/browser conformance;
+4. create-only share-kit and assembly evidence;
+5. current outside-network reachability proof for every advertised lane; and
+6. catalog publication plus public HTTPS readback when authorized.
+
+Fixture tests, local assembly, package creation, and HTTP success do not meet
+those gates.

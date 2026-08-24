@@ -1,255 +1,301 @@
 # TinyRustLM
 
-Canonical Rust source root for the TinyRustLM client-side SLM runtime and browser-local UI.
+TinyRustLM is a prelaunch browser-local language-model system. Rust owns model
+formats, composition, tokenization, template rendering, sampling, prompt
+assembly, inference, conversion, and direct-piece admission. The browser owns
+the user experience and transports typed bytes to the same Rust authority
+compiled to WebAssembly. The .NET SDK is a checked managed boundary over the
+canonical native ABI.
 
-Current public app route: `https://TinyRustLM.com/`.
-Current developer portal: `https://TinyRustLM.MiRust.com/developer-portal/`.
-`Runtime.MiRust.com` is retired as a separate documentation authority, and `SLMComposer.com` is no longer the canonical public app identity.
-
-The active implementation target is `tinyrustlm/`: a 100% custom Rust/WASM browser-local AI app named TinyRustLM. The runtime is zero-dependency by design: no third-party Rust crates, no JavaScript frameworks, no tokenizer libraries, no inference frameworks, no package-manager runtime, no remote inference API, and no CDN dependency.
-
-## Active Workspace
-
-- `TinyRustLM.sln`: Visual Studio 2022 solution wrapper for building and running the Rust/WASM app through NMake.
-- `tinyrustlm/app/`: static browser UI with handwritten HTML, CSS, JavaScript, local-only notice, local conversation transcript, diagnostics, benchmark panels, Step Token console control, graph-backed model selection, developer console, and product footer.
-- `tinyrustlm/runtime/`: no-crate Rust runtime for WASM exports, memory transfer, `.slm` parsing, f32/q8_0/q4_0 `ADP1`, `ASP1`, and `ALR1` adapter apply, tokenizer, math kernels, quant helpers, KV cache, sampler, diagnostics, and native eval-case execution.
-- `tinyrustlm/tools/slm_pack/`: no-crate Rust utility for `.slm` authoring and validation, trained-source conversion, immutable composition graphs, provenance/runtime/evaluation evidence, direct-parameter and adapter-fusion operators with receipts, the standard candidate/promotion/admission pipeline, population and parent-pool planning, and graph-backed selector registries.
-- `tinyrustlm/tools/local_server/`: no-crate Rust static server for local browser hosting, Visual Studio F5, and browser-smoke startup.
-- `tinyrustlm/tools/browser_harness/`: no-crate Rust mini browser contract harness for static app crawl, local-only asset policy, immutable graph activation checks, and optional loopback route checks.
-- `tinyrustlm/docs/`: architecture, `.slm`, tokenizer, quantization, browser runtime, testing, and performance notes.
-- `tinyrustlm/tests/fixtures/`: small text fixtures for runtime tests.
-- `.uai/`: hot Project Handoff memory and routing state.
-- `wiki/runtime-mirust/`: local LLM Wiki source namespace for AIWikis publication.
-- `agent-file-handoff/Content` and `agent-file-handoff/Improvement`: active intake buckets only.
-
-## Web-To-Companion Boundary
-
-`UAIX.Browser.p2pRuntime.SeedHost`,
-`UAIX.Browser.p2pRuntime.SeedHost.Tool`, and the `uaix-p2p-seed` command provide
-the downloadable P2P companion. TinyRustLM.com remains the browser chat UI and
-MiniModel.org remains the catalog and discovery authority, while the companion
-owns direct peer import, Rust verification, durable restart and resume state,
-local model storage, and optional two-lane sharing. Package `0.3.0` is the sole
-source target for the canonical bridge contract. It has no versioned route
-family or compatibility aliases. It uses exact Host and Origin checks,
-one-time pairing, short-lived operation-scoped capabilities, rotation,
-revocation, bounded requests, and receipt-revalidated model and composition
-streaming. The library, tool, and symbol packages must be published and
-independently read back before the matching web assets may deploy. No package
-URL or install command is an authority while that gate is pending; the exact
-verified command will be published with the accepted release.
-
-The `public-local-only` gate proves the browser starts with no project-hosted
-model and no autoload fallback. A
-proof-ready MiniModel row remains `Set Peer URL` until the user supplies a
-consenting peer or loads a Rust-valid signed announcement with current external
-proof. The `Get model` action first imports a complete identity-matched P2P
-offer. When no complete verified offer exists, a paired companion resolves the
-exact reviewed Hugging Face revision, resumes bounded source downloads,
-verifies source hashes, runs the packaged Rust converter and validator, creates
-an immutable base-only composition graph, and streams the `.slm` plus `.acg1`
-directly into browser-local WASM. Progress and typed failures remain in the
-application. There are no README, TXT, request JSON, shell, PowerShell,
-conversion-kit, or import-kit downloads in the acquisition path.
-
-Model bytes travel only from a consenting peer or immutable source host to the
-user-run companion and then over the secured loopback bridge to browser-local
-WASM. Prompts and responses never go to the companion or a public project
-domain. Conversion and structural validation prove that an artifact is
-runnable; they do not establish assistant quality.
-
-The acceptance suite in `tinyrustlm/e2e/companion.spec.js` executes one-time
-pairing replay rejection, two-peer identity disagreement, direct import,
-companion restart/resume, revocation, and a 969,648,576-byte Qwen
-import-to-WASM conversation. `tinyrustlm/e2e/conversation.spec.js` verifies the
-locked empty-state transition and exactly one assistant renderer. See
-`docs/nuget/SEED_HOST.md` for install and bridge operation.
+This repository is the canonical Rust source root. No TinyRustLM product has
+launched, so there is no product V1/V2 split or customer compatibility surface.
+Names such as SLM2, ACG2, Tokenizer2, Template2, Sampling2, Prompt2, ABI
+revisions, schemas, and package versions are exact technical identities. They
+are not product generations.
 
 ## Current Status
 
-TinyRustLM implements the static browser shell, WASM memory boundary, byte and custom BPE tokenizers, `.slm` parsing, f32/q8_0/q4_0 kernels, KV-cache-backed generation, deterministic smoke fixtures, trained-source conversion, and native evaluation.
+Repository package version: `0.1.8`.
 
-The browser model selector has one accepted deployment contract. Every generated entry is backed by a standard selector admission record and an immutable `.acg1` composition graph whose route and checksum bind the complete `.slm` artifact. The browser does not expose mutable adapter-family, assembly, or module-plan controls, and it does not accept a separate multi-parent admission schema.
+Lifecycle: prelaunch. No package, model, deployment, P2P-reachability, or live
+service claim follows from a local build.
 
-Offline blend, delta, sparse-delta, sign-merge, soup, and adapter-fusion operators emit recomputable receipts. Sign-merge and soup receipts now carry deterministic child IDs derived from the output checksum plus fixed operator IDs, so they enter the same receipt-bound `candidate-manifest`, `promotion-template`, and `admission-record` pipeline as every other candidate. There is no second quality path.
+The following evidence is complete for its exact bound bytes:
 
-Runtime smoke proves execution only. Assistant-quality promotion still requires passed task-evaluation evidence and a declared quality scope; structural validity, conversion, or one attractive response is not a quality claim.
+- the SLM2 structural parser, canonical tensor registry, hostile corpus, and
+  scalar fixture runtime;
+- native, raw-WASM, Node-WASM, and Chromium replay of the canonical scalar
+  fixture;
+- the full Qwen3 Tokenizer2 native and two-profile Chromium-WASM parity gate;
+- exact publisher-source-to-native Template2 rendering parity for the frozen
+  supported Qwen3 branch; and
+- the current fifteen-symbol native ABI and canonical managed SDK surface.
 
-## Intended Commands
+These results do not prove a real production model, model quality, Template2
+browser composition, seeded sampling parity, production acquisition, a public
+peer, a deployed browser conversation, or package publication. The next model
+path must close deterministic Sampling2 plus Template2/Tokenizer2 native and
+real-Chromium composition conformance before real-model promotion.
 
-Run these once a Rust toolchain is installed or exposed:
+Campaign counters remain:
 
-Product, candidate, checkpoint, raw-tensor, and P2P piece bytes are not stored
-in Git. Set `TINYRUSTLM_MODEL_PATH` to an absolute path under the
-operator-controlled external model store. The example manifest is generated
-under `target`; neither path is campaign qualification evidence by itself.
+- qualified models: `0/20`;
+- deletion-backed clean-browser rounds: `0/50`;
+- authorized live MemoryEndpoints rounds: `0/25`;
+- current outside-network lane proofs: `0/40`; and
+- live catalog announcements: `0/20`.
 
-```powershell
-$env:TINYRUSTLM_MODEL_PATH = '<absolute external .slm path>'
-$env:TINYRUSTLM_MODEL_MANIFEST_PATH = '.\target\external-model.slm.manifest'
-cargo fmt --all
-cargo clippy --workspace --all-targets -- -D warnings
-cargo test --workspace
-cargo rustdoc -p tinyrustlm-runtime --lib -- -D missing_docs
-cargo rustdoc -p tinyrustlm-slm-pack --bin tinyrustlm-slm-pack -- -D missing_docs
-cargo rustdoc -p tinyrustlm-local-server --bin tinyrustlm-local-server -- -D missing_docs
-cargo rustdoc -p tinyrustlm-browser-harness --bin tinyrustlm-browser-harness -- -D missing_docs
-rustup target add wasm32-unknown-unknown
-cargo build -p tinyrustlm-runtime --release --target wasm32-unknown-unknown
-Copy-Item .\target\wasm32-unknown-unknown\release\tinyrustlm_runtime.wasm .\tinyrustlm\runtime\tinyrustlm.wasm
-cargo run -p tinyrustlm-slm-pack -- runtime-wasm-manifest .\tinyrustlm\runtime\tinyrustlm.wasm .\tinyrustlm\runtime\tinyrustlm.wasm.manifest
-cargo build -p tinyrustlm-runtime --release --target wasm32-unknown-unknown --features wasm-simd
-Copy-Item .\target\wasm32-unknown-unknown\release\tinyrustlm_runtime.wasm .\tinyrustlm\runtime\tinyrustlm-simd.wasm
-cargo run -p tinyrustlm-slm-pack -- runtime-wasm-manifest .\tinyrustlm\runtime\tinyrustlm-simd.wasm .\tinyrustlm\runtime\tinyrustlm-simd.wasm.manifest
-cargo run -p tinyrustlm-slm-pack -- .\tinyrustlm\models\tiny-test-model.slm tiny-fixture
-cargo run -p tinyrustlm-slm-pack -- .\tinyrustlm\models\tiny-test-model-bpe.slm tiny-fixture-bpe
-cargo run -p tinyrustlm-slm-pack -- .\tinyrustlm\models\tiny-test-model-tied.slm tiny-fixture-tied
-cargo run -p tinyrustlm-slm-pack -- manifest $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_MANIFEST_PATH converted-trained
-cargo run -p tinyrustlm-slm-pack -- validate-manifest $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_MANIFEST_PATH
-cargo run -p tinyrustlm-slm-pack -- compatibility $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_PATH .\target\model-breeding\tinylm16-q8-self.compat
-cargo run -p tinyrustlm-slm-pack -- lineage-template .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage tinylm16-q8-self-candidate identity-parent-set browser-local-16m-budget
-cargo run -p tinyrustlm-slm-pack -- validate-lineage .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage
-cargo run -p tinyrustlm-slm-pack -- blend-candidate .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_PATH .\target\model-breeding\tinylm16-q8-blend.slm .\target\model-breeding\tinylm16-q8-blend.operator
-cargo run -p tinyrustlm-slm-pack -- validate-blend-candidate .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_PATH .\target\model-breeding\tinylm16-q8-blend.slm .\target\model-breeding\tinylm16-q8-blend.operator
-cargo run -p tinyrustlm-slm-pack -- delta-candidate .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_PATH .\target\model-breeding\tinylm16-q8-delta.slm .\target\model-breeding\tinylm16-q8-delta.operator 1000000
-cargo run -p tinyrustlm-slm-pack -- validate-delta-candidate .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_PATH .\target\model-breeding\tinylm16-q8-delta.slm .\target\model-breeding\tinylm16-q8-delta.operator
-cargo run -p tinyrustlm-slm-pack -- sparse-delta-candidate .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_PATH .\target\model-breeding\tinylm16-q8-sparse-delta.slm .\target\model-breeding\tinylm16-q8-sparse-delta.operator 1000000 250000
-cargo run -p tinyrustlm-slm-pack -- validate-sparse-delta-candidate .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_PATH .\target\model-breeding\tinylm16-q8-sparse-delta.slm .\target\model-breeding\tinylm16-q8-sparse-delta.operator
-cargo run -p tinyrustlm-slm-pack -- adapter-delta .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_PATH .\target\model-breeding\tinylm16-q8.adapter.delta .\target\model-breeding\tinylm16-q8.adapter.delta.manifest
-cargo run -p tinyrustlm-slm-pack -- validate-adapter-delta .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_PATH .\target\model-breeding\tinylm16-q8.adapter.delta .\target\model-breeding\tinylm16-q8.adapter.delta.manifest
-cargo run -p tinyrustlm-slm-pack -- sparse-adapter-delta .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_PATH .\target\model-breeding\tinylm16-q8.adapter.sparse.asp1 .\target\model-breeding\tinylm16-q8.adapter.sparse.asp1.manifest 1000000 250000
-cargo run -p tinyrustlm-slm-pack -- validate-sparse-adapter-delta .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_PATH .\target\model-breeding\tinylm16-q8.adapter.sparse.asp1 .\target\model-breeding\tinylm16-q8.adapter.sparse.asp1.manifest
-cargo run -p tinyrustlm-slm-pack -- low-rank-adapter-delta .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_PATH .\target\model-breeding\tinylm16-q8.adapter.lowrank.alr1 .\target\model-breeding\tinylm16-q8.adapter.lowrank.alr1.manifest 1
-cargo run -p tinyrustlm-slm-pack -- validate-low-rank-adapter-delta .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_PATH .\target\model-breeding\tinylm16-q8.adapter.lowrank.alr1 .\target\model-breeding\tinylm16-q8.adapter.lowrank.alr1.manifest
-cargo run -p tinyrustlm-slm-pack -- fuse-adapter-delta .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_PATH .\target\model-breeding\tinylm16-q8.adapter.delta .\target\model-breeding\tinylm16-q8.adapter.delta.manifest .\target\model-breeding\tinylm16-q8-adapter-fused.slm .\target\model-breeding\tinylm16-q8-adapter-fuse.operator
-cargo run -p tinyrustlm-slm-pack -- validate-fuse-adapter-delta .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_PATH .\target\model-breeding\tinylm16-q8.adapter.delta .\target\model-breeding\tinylm16-q8.adapter.delta.manifest .\target\model-breeding\tinylm16-q8-adapter-fused.slm .\target\model-breeding\tinylm16-q8-adapter-fuse.operator
-cargo run -p tinyrustlm-slm-pack -- sign-merge-candidate .\target\model-breeding\population.ledger .\target\model-breeding\population.review .\target\model-breeding\parent-pool.recipe .\target\model-breeding\parent-pool-sign-merge.slm .\target\model-breeding\parent-pool-sign-merge.operator --parents $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_PATH --admissions .\target\model-breeding\frontier.admission .\target\model-breeding\pool.admission
-cargo run -p tinyrustlm-slm-pack -- validate-sign-merge-candidate .\target\model-breeding\population.ledger .\target\model-breeding\population.review .\target\model-breeding\parent-pool.recipe .\target\model-breeding\parent-pool-sign-merge.slm .\target\model-breeding\parent-pool-sign-merge.operator --parents $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_PATH --admissions .\target\model-breeding\frontier.admission .\target\model-breeding\pool.admission
-# Continue sign-merge and soup outputs through the standard lineage, candidate,
-# promotion, admission, composition-graph, and selector-registry commands.
-# Use the exact candidate_id and operator_id recorded in the operator receipt,
-# and pass that receipt as the final optional input at each quality phase.
-cargo run -p tinyrustlm-slm-pack -- candidate-manifest .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage .\target\model-breeding\tinylm16-q8-blend.slm .\target\model-breeding\tinylm16-q8-self.candidate
-cargo run -p tinyrustlm-slm-pack -- validate-candidate .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage .\target\model-breeding\tinylm16-q8-blend.slm .\target\model-breeding\tinylm16-q8-self.candidate
-cargo run -p tinyrustlm-slm-pack -- promotion-template .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage .\target\model-breeding\tinylm16-q8-blend.slm .\target\model-breeding\tinylm16-q8-self.candidate .\target\model-breeding\tinylm16-q8-self.promotion local-smoke-runner browser-local-runtime-smoke-and-eval
-cargo run -p tinyrustlm-slm-pack -- validate-promotion .\target\model-breeding\tinylm16-q8-self.compat .\target\model-breeding\tinylm16-q8-self.lineage .\target\model-breeding\tinylm16-q8-blend.slm .\target\model-breeding\tinylm16-q8-self.candidate .\target\model-breeding\tinylm16-q8-self.promotion
-cargo run -p tinyrustlm-slm-pack -- manifest .\target\model-breeding\tinylm16-q8-blend.slm .\target\model-breeding\tinylm16-q8-blend.slm.manifest deterministic-smoke
-cargo run -p tinyrustlm-slm-pack -- quality-gate .\target\model-breeding\tinylm16-q8-blend.slm .\target\model-breeding\tinylm16-q8-blend.slm.manifest runtime-smoke
-cargo run -p tinyrustlm-slm-pack -- runtime-smoke .\target\model-breeding\tinylm16-q8-blend.slm .\target\model-breeding\tinylm16-q8-blend.slm.manifest .\target\model-breeding\tinylm16-q8-blend.runtime
-cargo run -p tinyrustlm-slm-pack -- source-template .\target\trained-source-smoke\source-tiny tiny-fixture
-cargo run -p tinyrustlm-slm-pack -- validate-source .\target\trained-source-smoke\source-tiny
-cargo run -p tinyrustlm-slm-pack -- convert-trained .\target\trained-source-smoke\source-tiny .\target\trained-source-smoke\tiny-converted-f32.slm f32
-cargo run -p tinyrustlm-slm-pack -- convert-trained .\target\trained-source-smoke\source-tiny .\target\trained-source-smoke\tiny-converted-q8.slm q8_0
-cargo run -p tinyrustlm-slm-pack -- convert-trained .\target\trained-source-smoke\source-tiny .\target\trained-source-smoke\tiny-converted-q4.slm q4_0
-cargo run -p tinyrustlm-slm-pack -- source-template .\target\trained-source-smoke\source-tiny-tied tiny-fixture-tied
-cargo run -p tinyrustlm-slm-pack -- validate-source .\target\trained-source-smoke\source-tiny-tied
-cargo run -p tinyrustlm-slm-pack -- convert-trained .\target\trained-source-smoke\source-tiny-tied .\target\trained-source-smoke\tiny-tied-converted-q8.slm q8_0
-cargo run -p tinyrustlm-slm-pack -- source-template .\target\trained-source-smoke\source-tiny-bpe tiny-fixture-bpe
-cargo run -p tinyrustlm-slm-pack -- validate-source .\target\trained-source-smoke\source-tiny-bpe
-cargo run -p tinyrustlm-slm-pack -- convert-trained .\target\trained-source-smoke\source-tiny-bpe .\target\trained-source-smoke\tiny-bpe-converted-q8.slm q8_0
-cargo run -p tinyrustlm-slm-pack -- runtime-smoke .\target\trained-source-smoke\tiny-converted-q8.slm .\target\trained-source-smoke\tiny-converted-q8.slm.manifest .\target\trained-source-smoke\tiny-converted-q8.runtime
-cargo run -p tinyrustlm-runtime --bin tinyrustlm-eval -- .\target\trained-source-smoke\tiny-converted-q8.slm .\target\trained-source-smoke\tiny-converted-q8.slm.manifest .\tinyrustlm\tests\fixtures\assistant-quality-eval-cases.txt .\target\trained-source-smoke\tiny-converted-q8.eval
-cargo run -p tinyrustlm-slm-pack -- quality-gate .\target\trained-source-smoke\tiny-converted-q8.slm .\target\trained-source-smoke\tiny-converted-q8.slm.manifest assistant-quality .\target\trained-source-smoke\tiny-converted-q8.eval
-cargo run -p tinyrustlm-slm-pack -- eval-template $env:TINYRUSTLM_MODEL_PATH $env:TINYRUSTLM_MODEL_MANIFEST_PATH "${env:TINYRUSTLM_MODEL_PATH}.eval" assistant-quality
-cargo run -p tinyrustlm-browser-harness -- .\tinyrustlm
-cargo run -p tinyrustlm-local-server -- .\tinyrustlm 8080
-```
+MemoryEndpoints is unauthorized and disconnected. Its optional contract code
+and fixtures are not evidence of a live account, enrollment, continuity,
+cleanup, or production service.
 
-Then serve the static app with the checked-in no-crate Rust static server:
+## Sole Architecture
 
-```powershell
-cargo run -p tinyrustlm-local-server -- .\tinyrustlm 8080
-```
+| Responsibility | Authority |
+| --- | --- |
+| Model artifact | `tinyrustlm-slm2` |
+| Atomic composition | `tinyrustlm-composition2` |
+| Tokenization | `tinyrustlm-tokenizer2` |
+| Chat rendering | `tinyrustlm-template2` |
+| Sampling | `tinyrustlm-sampling2` |
+| Prompt assembly | `tinyrustlm-prompt2` |
+| Conversation runtime | `tinyrustlm-runtime` |
+| Browser runtime boundary | Rust compiled to WebAssembly |
+| Source conversion | `tinyrustlm-convert` |
+| Native ABI | `tinyrustlm-native` |
+| Managed runtime | `TinyRustLM.Core` |
+| Fixed-piece direct transport | `tinyrustlm-p2p` and `TinyRustLM.P2P` |
+| Browser presentation | `tinyrustlm/app` |
 
-Visual Studio 2022:
+One activated ACG2 composition binds exactly one SLM2 model, Tokenizer2,
+Template2, Sampling2, and Prompt2 artifact. Every member has an exact content
+identity and profile. Rust validates all members and their cross-contract
+invariants before fail-atomic activation. JavaScript and .NET do not repair,
+reinterpret, partially activate, or provide fallback members.
 
-```text
-Open TinyRustLM.sln, then Build Solution and press F5.
-```
+The production source target remains the immutable `Qwen/Qwen3-0.6B` revision
+recorded in the architecture contracts. Source selection is not quality
+promotion. F32 remains the numerical conversion oracle, and the first compact
+candidate is the explicitly specified mixed-Q8 SLM2 profile. Q4, Q5, ternary,
+one-bit, TurboQuant-like, TurboVec-like, and compressed-KV profiles remain
+experiments until their own contracts and quality evidence exist.
 
-F5 reuses an already-running TinyRustLM server only after checking the app page and WASM route. If port 8080 is occupied by another local service, the run helper walks to the next free loopback port. See `docs/visual-studio.md` for the exact prerequisites and helper scripts.
+## Required User Flow
 
-## NuGet SDK
+The release is not complete until the browser performs this exact journey:
 
-The protected NuGet distribution lives under `dotnet/`, `rust/crates/`, `eng/`, and `docs/nuget/`. It packages only the public ecosystem surface: `.slm` validation/inspection, native-backed runtime harness operations, metadata-bound P2P share/import workflows, local signed-manifest verification, local manifest-piece verification and assembly with receipt sidecars plus receipt inspection, .NET wrappers, tests, samples, package metadata, and CI/release automation. It deliberately excludes `.slm` authoring internals, conversion tools, quantization authoring, adapter authoring or auto-assembly, selector generation, offline breeding, lineage promotion, eval/provenance authoring, premium routing, optimizer logic, encryption key handling, telemetry, license-server internals, commercial orchestration, and private training/model-ranking logic.
+1. The user selects a supported model.
+2. The browser asks the local companion for the exact composition identity.
+3. A current verified direct peer is preferred when one genuinely exists.
+4. Otherwise the companion acquires the pinned upstream source and performs
+   reviewed deterministic local conversion.
+5. The browser streams, hashes, validates, persists, and transactionally
+   activates the exact composition.
+6. Rust WebAssembly performs genuine local inference.
+7. A useful multi-turn conversation renders each raw assistant answer once.
 
-Current local package evidence is source-bound and deliberately split. Source
-`9e60539a55b6df1680d58c4a8980b96eed1ae5e7` completed the full Windows
-package verifier twice, including Rust and .NET tests, four protected
-`.nupkg` files, four matching `.snupkg` files, the clean isolated consumer,
-and a zero-finding `tinyrustlm.nuget.package_audit.v1` report. The two clean
-builds reproduced all eight unsigned package files byte-for-byte. Source
-`7cc35791376365898b6400129b2fc6ee67e95706` changes no package-producing
-input; it corrects the Bash audit writer's public API literal and adds a
-cross-writer regression. At that source the complete package test project
-passes 67/67, and independently rerun PowerShell and Bash audits both pass for
-the same `win-x64` package set with zero noncanonical timestamp entries. This
-is local reproducibility and package-policy evidence, not NuGet publication,
-signing, other-RID execution, or feed readback.
+A `.txt`, JSON request, PowerShell file, shell script, conversion request, or
+fixture response is never a substitute for the requested working-model action.
+Model bytes and prompts must not pass through a TinyRustLM, MiniModel, or other
+project-hosted website.
 
-Run the full NuGet verifier from the repository root:
+## Repository Layout
+
+- `rust/crates/` contains the canonical Rust formats, runtime, converter,
+  native boundary, direct-piece transport, durability, and evidence crates.
+- `tinyrustlm/` contains browser assets, WebAssembly adapters, conformance
+  tools, tests, and bounded public-safe experiment results.
+- `contracts/vnext/` contains machine-readable current technical contracts and
+  preregistrations. The directory name is historical branch vocabulary; it
+  does not name a second product generation.
+- `dotnet/` contains the managed SDK, optional connector, private conversion
+  wrapper, samples, and tests.
+- `eng/` contains create-only build, package, audit, consumer, publication,
+  feed-readback, and release-readiness tools.
+- `docs/architecture/` records current ownership, accepted evidence, precise
+  claim boundaries, and remaining gates.
+- `docs/nuget/` is the authoritative managed SDK and release documentation.
+- `wiki/runtime-mirust/` retains durable project memory and historical evidence
+  without making old behavior executable.
+
+Large model files, raw private outputs, browser profiles, training data,
+credentials, and generated evidence stay outside Git on operator-owned `E:` or
+`C:` storage. Project work must never write them to `D:`.
+
+## Build And Test
+
+Prerequisites:
+
+- current stable Rust with the required WASM target;
+- .NET SDK 8;
+- Node.js 24 and `npm ci --prefix tinyrustlm` for browser tests;
+- Python 3.12 only for pinned offline source-oracle and training tooling; and
+- Playwright's pinned Chromium when a registered browser gate requires it.
+
+Build the canonical Rust workspace:
 
 ```powershell
-eng\verify-package.ps1
+cargo build --workspace --locked
 ```
 
-On Unix-like shells, use `eng/verify-package.sh`.
-
-Both verifiers build the public native bridge, run `cargo fmt --all --check`, run `cargo clippy --workspace --all-targets -- -D warnings`, run focused Rust and .NET tests, pack `TinyRustLM.Abstractions`, `TinyRustLM.Core`, `TinyRustLM.P2P`, and `TinyRustLM.Memory` into `artifacts/packages`, verify package contents do not include private authoring surfaces, source files, debug symbols, generated build-output directories, or local absolute paths, then install the produced packages into a clean temporary console app and exercise `.slm` inspect/load/generate, UAIX `.uai` memory/persona package planning and inspection, plus metadata-bound P2P share/import, signed-manifest verification, announcement JSON handoff, catalog application and inspection, and receipt-inspection workflows from package references. The .NET wrapper exposes `GetVersion()`, typed `P2PShareKitReport` / `P2PShareMetadata` / `P2PSignedManifestVerification` / `P2PAnnouncementCatalog` / `P2PAnnouncementCatalogInspection` APIs, UAIX memory/persona package APIs with machine-checkable `FileDeck` counts, Wizard AI digest/starter ZIP/persona deck discovery through `GetSupportedSetups()`, and explicit raw JSON handoff helpers. See `docs/nuget/README.md`, `docs/nuget/API_BOUNDARY.md`, and `docs/nuget/MEMORY_HARNESS.md`.
-
-The public P2P SDK validates announcement URLs directly: `PublicBaseUrl` and received manifest URLs accept HTTPS or explicit-port loopback HTTP only, and reject credentials, whitespace, query strings, fragments, backslashes, dot-segment traversal, and encoded traversal before metadata is trusted or announcement output is written. Received announcement catalogs deduplicate honest replays but reject conflicting same-peer/same-manifest metadata before mutation, and `InspectAnnouncementCatalog` gives consumers a typed SHA/count/byte inspection report with a 4 MiB catalog budget.
-
-The public P2P SDK also verifies `tinyrustlm.p2p_signed_manifest.v0` envelopes against local metadata-only `minimodel.public_key.v0` public-key JSON. `VerifySignedManifest` validates the wrapped manifest, canonical payload SHA-256, `external-signature-v0`, `ed25519-base64:` signature bytes, matching publisher/key/route/SHA usage, and `revoked=false`, while leaving signing, private-key handling, remote key discovery, transparency-log policy, and commercial publisher services outside the protected NuGet package.
-
-MiniModel signed-manifest verification now accepts only `signature.kind=external-signature-v0`, rejects comments and unsafe or missing key routes, requires `signature.payload_sha256` to match the canonical sorted non-signature manifest body, and prints that digest from `minimodel verify-manifest` for publisher review. `minimodel verify-signed-manifest <manifest> <public-key-json>` adds local Ed25519 verification against a metadata-only `minimodel.public_key.v0` public-key document with matching publisher, key, route, SHA-256, manifest-signing usage, and `revoked=false`. This hardens the public P2P/catalog intake without exposing private conversion, ranking, or commercial trust-policy internals; transparency-log inclusion and remote key-discovery policy remain later work.
-
-Use `eng\publish-nuget.ps1 -SkipVerification -DryRun` after package verification to audit the package push set before publishing to NuGet or a private feed. Publish scripts require exactly the four source-versioned protected packages, reject stale or unintended extra `TinyRustLM*.nupkg` files before any push, require the packages to match the latest `tinyrustlm-nuget-package-audit.json` names, SHA-256 values, and byte counts, require `SHA256SUMS-TinyRustLM-<version>.txt` to match the same package bytes, and write `artifacts/reports/tinyrustlm-nuget-publish-plan.json` with package hashes, audit-binding evidence, SHA256SUMS manifest evidence, target feed evidence, redacted `push_failed` evidence for authenticated push failures, and no secret material.
-
-For the UAIX Browser local folder feed, run:
+Run Rust formatting, checks, tests, and warnings-denied Clippy:
 
 ```powershell
-eng\pack.ps1 `
-  -PackageOutput <local-UAIX-Browser-feed> `
-  -PackageIdPrefix UAIX.Browser `
-  -AbstractionsPackageId UAIX.Browser.Core.Abstractions `
-  -CorePackageId UAIX.Browser.p2pLLM.Runtime `
-  -P2PPackageId UAIX.Browser.p2pRuntime.P2P `
-  -MemoryPackageId UAIX.Browser.Memory `
-  -IncludePrivateConversion `
-  -ConversionPackageId UAIX.Browser.p2pLLM.Conversion `
-  -ArchiveOtherPackages
+cargo fmt --all --check
+cargo check --workspace --all-targets --locked
+cargo test --workspace --locked
+cargo clippy --workspace --all-targets --locked -- -D warnings
 ```
 
-This writes `UAIX.Browser.Core.Abstractions`, `UAIX.Browser.p2pLLM.Runtime`, `UAIX.Browser.p2pRuntime.P2P`, `UAIX.Browser.Memory`, and the controlled local `UAIX.Browser.p2pLLM.Conversion` wrapper, preserves the `TinyRustLM.*` assembly/public namespace surface, moves non-matching root `.nupkg` / `.snupkg` files, stale same-ID Browser packages, and previous `SHA256SUMS-UAIX.Browser-*.txt` plus `README-UAIX.Browser-*.txt` feed files into the feed's `Archive` folder before replacing current Browser artifacts, and writes `SHA256SUMS-UAIX.Browser-<version>.txt` plus `README-UAIX.Browser-<version>.txt` for the exact current package and symbol package set.
+Build the managed solution:
 
-After packing the Browser feed, run `eng\verify-browser-feed.ps1 -PackageSource <local-UAIX-Browser-feed>` to audit the exact five branded package IDs, nuspec metadata, required search terms, dependency graph, hash manifest, and local-path leakage. It writes `artifacts/reports/uaix-browser-nuget-feed-audit.json`.
+```powershell
+dotnet build dotnet/TinyRustLM.sln -c Release
+```
 
-Run `eng\publish-browser-nuget.ps1 -PackageSource <local-UAIX-Browser-feed> -DryRun` before any branded Browser push. It requires the `uaix.browser.nuget.feed_audit.v0` report, `SHA256SUMS-UAIX.Browser-<version>.txt`, generated `README-UAIX.Browser-<version>.txt`, all five `.nupkg` files, and all five `.snupkg` files to agree, then writes `artifacts/reports/uaix-browser-nuget-publish-plan.json` with schema `uaix.browser.nuget.publish_plan.v0`, including hash evidence for the feed README as symbol-visibility documentation. The real push path sends `.nupkg` packages with `--no-symbols`, then explicitly pushes each `.snupkg`. NuGet Package Manager generally lists installable `.nupkg` packages; each `.snupkg` is a debug-symbol sidecar verified through the local folder feed, generated `README-UAIX.Browser-<version>.txt`, `SymbolsPackage`/PDB evidence, SHA256SUMS membership, publish-plan hashes, and feed-hash reports.
+Run the managed package and core test projects:
 
-To prove the branded Browser feed is current on NuGet.org or a private feed, run the same feed-current verifier with `TINYRUSTLM_FEED_PACKAGE_IDS=UAIX.Browser.Core.Abstractions,UAIX.Browser.p2pLLM.Runtime,UAIX.Browser.p2pRuntime.P2P,UAIX.Browser.Memory,UAIX.Browser.p2pLLM.Conversion` and `-ReportOutput artifacts/reports/uaix-browser-nuget-feed-current.json`. The feed monitor can run this path with `verify_browser_feed_current=true` or repository variable `UAIX_BROWSER_NUGET_MONITOR_VERIFY_CURRENT=true`.
+```powershell
+dotnet test dotnet/tests/TinyRustLM.Core.Tests/TinyRustLM.Core.Tests.csproj -c Release
+dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release
+```
 
-Run `eng\audit-nuget-release-readiness.ps1` or `eng/audit-nuget-release-readiness.sh` for a no-push readiness audit that refreshes the dry-run publish plan, proves the local package folder through feed-current/feed-hash checks, checks the target feed, verifies target-feed bytes when the declared version is already listed, and writes `artifacts/reports/tinyrustlm-nuget-release-readiness.json` with blockers, next actions, `auth_mode`, and only non-secret credential metadata such as boolean `api_key_present`. The release workflow runs this audit with blocked-state failure before pushing, skips the push when the feed is already `published_current`, and still runs mandatory feed-current/feed-hash gates.
+Run the canonical Node unit partition through its serialized launcher:
 
-NuGet.org releases can use `.github/workflows/release-nuget.yml` with `auth_mode=trusted_publishing` after a NuGet.org trusted publishing policy is configured for workflow file `release-nuget.yml` and environment `nuget-release`; the workflow grants `id-token: write`, uses `NuGet/login@v1`, and passes the short-lived key into the same audited publisher. Private feeds and legacy NuGet.org releases use `auth_mode=api_key` with scoped `NUGET_API_KEY`.
+```powershell
+npm --prefix tinyrustlm run test:unit -- E:\TinyRustLM-private-evidence\unit-gate
+```
 
-The branded UAIX Browser lane uses `.github/workflows/release-browser-nuget.yml`. It builds the same native bridge matrix, packs the five `UAIX.Browser.*` package IDs with `-IncludePrivateConversion`, runs `eng\verify-browser-feed.ps1`, gates the push with `eng\audit-browser-nuget-release-readiness.ps1`, publishes through `eng\publish-browser-nuget.ps1`, uploads `uaix-browser-nuget-publish-plan.json`, then runs mandatory Browser feed-current and feed package-hash gates into `uaix-browser-nuget-feed-current.json` and `uaix-browser-nuget-feed-hashes.json`. The Browser readiness report uses schema `uaix.browser.nuget.release_readiness.v0`, writes `uaix-browser-nuget-release-readiness.json`, and by default writes its no-push dry-run plan to `uaix-browser-nuget-release-readiness-publish-plan-dry-run.json` so it does not overwrite retained post-push `uaix-browser-nuget-publish-plan.json` evidence; pass `-PublishPlanReport` only when a caller intentionally wants a different readiness dry-run path. The report lifts package counts, symbol counts, SHA256SUMS evidence, and feed README hash/match evidence to top-level fields, blocks missing API keys or unsupported Trusted Publishing sources, blocks `blocked_remote_hash_mismatch` when an immutable feed version has different bytes, and skips redundant pushes when the target feed is already `published_current`. If NuGet.org has the declared version with different bytes, bump `dotnet/Directory.Build.props` `VersionPrefix` before publishing corrected Browser packages. Its optional `verify_after_publish=true` consumer smoke restores `UAIX.Browser.p2pLLM.Runtime`, `UAIX.Browser.p2pRuntime.P2P`, `UAIX.Browser.Memory`, and `UAIX.Browser.p2pLLM.Conversion` through the configurable `eng\verify-consumer.ps1` package-ID parameters, then validates `.slm`, runtime, UAIX memory/persona, P2P, and controlled conversion-wrapper paths from the published feed.
+Every one-shot preregistered experiment has its own execution authority. Do not
+rerun a completed Tokenizer2 or Template2 observation through a generic test
+command.
 
-The July 6, 2026 NuGet.org current-version check found no listed versions for `TinyRustLM.Abstractions`, `TinyRustLM.Core`, `TinyRustLM.P2P`, or `TinyRustLM.Memory`; local TinyRustLM packages are verified and dry-run publish-ready, but public NuGet.org availability must not be claimed until an authenticated publish completes and `eng\verify-feed-current.ps1` plus `eng\verify-feed-package-hashes.ps1` pass against NuGet.org for the source-declared version. The no-push readiness audit clears each expected subreport before running its step and records `report_written`, preventing stale publish-plan or feed evidence from being reused.
+## .NET Package Graph
 
-The official NuGet release workflow builds native bridge artifacts on Windows, Linux, Intel macOS, and ARM macOS, then requires `win-x64`, `linux-x64`, `osx-x64`, and `osx-arm64` runtime assets in `TinyRustLM.Core` before push. After publishing through either scoped API key or NuGet.org Trusted Publishing, it always runs feed-current and feed package-hash gates with short indexing retries; the heavier clean consumer feed smoke remains optional through `verify_after_publish`.
+The default public package transaction contains exactly:
 
-PowerShell and Bash verifier runs both write `artifacts/reports/tinyrustlm-nuget-package-audit.json` with package SHA-256 values, native RID coverage, required NuGet metadata, XML documentation entries, dependency metadata, private-surface scan results, source/debug-symbol/generated-output leakage counts, and local absolute path match counts. Publish runs write `artifacts/reports/tinyrustlm-nuget-publish-plan.json` with the exact push set, package hashes, package sizes, package version, target feed, package-audit report hash, audit match status, SHA256SUMS manifest path/hash/match status, dry-run or push status, redacted publish-error evidence when a push fails, and the no-secret-material flag. Readiness audits write `artifacts/reports/tinyrustlm-nuget-release-readiness.json` with local gate status, remote feed status, blockers, next actions, and no secret material.
+| Package | Role |
+| --- | --- |
+| `TinyRustLM.Abstractions` | Immutable managed contracts |
+| `TinyRustLM.Core` | Exact native ABI and bounded conversation runtime |
+| `TinyRustLM.P2P` | Composition-bound fixed-piece preparation and assembly |
 
-After publishing to a feed, run `eng\verify-feed.ps1 -NuGetSource <feed-url-or-source-name>` to prove a clean consumer can install and use the package version declared in `dotnet/Directory.Build.props` from that feed. This writes `artifacts/reports/tinyrustlm-nuget-feed-smoke.json`.
+Two packages are excluded by default:
 
-Run `eng\verify-feed-current.ps1 -NuGetSource <v3-feed-url-or-local-package-folder>` after feed indexing to prove all four protected packages expose the source-declared version and that the source tree is not behind the feed's latest reported package version. Set `TINYRUSTLM_FEED_PACKAGE_IDS` to a comma-separated package-id list when checking the UAIX Browser branded package set instead of the default TinyRustLM package IDs.
+- `TinyRustLM.MemoryEndpoints` is an optional disconnected connector contract.
+- `TinyRustLM.Conversion` is private local tooling for the exact
+  `tinyrustlm-convert` process.
 
-Run `eng\verify-feed-package-hashes.ps1 -NuGetSource <v3-feed-url-or-local-package-folder>` with the publish plan after feed indexing to prove the plan is bound to package-audit plus SHA256SUMS evidence and the feed serves the exact audited package bytes recorded in `tinyrustlm-nuget-publish-plan.json`. This writes `artifacts/reports/tinyrustlm-nuget-feed-hashes.json`.
+There is no alternate branded package family, configurable package-ID prefix,
+local memory facade, browser-specific duplicate package lane, public conversion
+package, or compatibility package.
 
-Run `eng\verify-public-doc-sites.ps1` when the sibling TinyRustLM and MiniModel documentation checkouts are present to prove those public mirrors still describe the four-package SDK and SHA256SUMS-bound publish/feed-hash contract. This writes `artifacts/reports/tinyrustlm-public-doc-sites-audit.json`.
+The current native release RID set is exactly `win-x64`, `linux-x64`, and
+`linux-arm64`. Cross-compilation proves only binary production and inspection;
+real-hardware execution requires separate evidence.
 
-The `nuget-feed-monitor.yml` workflow runs the same current-version check on demand. Scheduled monitoring is opt-in: set repository variable `TINYRUSTLM_NUGET_MONITOR_ENABLED=true` after the NuGet or private feed is authoritative, and optionally set `TINYRUSTLM_NUGET_SOURCE`, `TINYRUSTLM_NUGET_MONITOR_ALLOW_NEWER`, plus `TINYRUSTLM_NUGET_MONITOR_VERIFY_CONSUMER=true` when the monitor should also run the clean consumer install/runtime/P2P smoke. If the retained publish-plan JSON is available to the monitor, set `TINYRUSTLM_NUGET_MONITOR_VERIFY_HASHES=true` and `TINYRUSTLM_NUGET_MONITOR_PUBLISH_PLAN_REPORT=<path>` to also verify feed package bytes against the audited publish plan. Set `UAIX_BROWSER_NUGET_MONITOR_VERIFY_CURRENT=true` and optionally `UAIX_BROWSER_NUGET_SOURCE=<feed>` to keep the five UAIX Browser package IDs current with the same source-declared version.
+Create and verify an exact host-RID default package transaction in a new output
+directory:
 
-## Memory Setup
+```powershell
+eng\verify-package.ps1 -PackageOutput artifacts\packages-current
+```
 
-UAIX Project Handoff is active through `.uai/`, following the setup flow at `https://uaix.org/en-us/tools/ai-memory-package-wizard/#setup-file-handoff`. LLM Wiki long memory targets AIWikis.org under `https://aiwikis.org/runtime-mirust/`, with local source records in `wiki/runtime-mirust/`. Hot `.uai` files keep current routing, synthesis, and proof-of-use pointers. Durable report bodies belong in Markdown/wiki files and raw evidence manifests, not inside `.uai/long-term-memory.uai`; the long-term memory ledger stays pointer-only, checksum-bearing, and routing-only.
+Include the disconnected optional connector or private converter only when the
+specific audit requires them:
+
+```powershell
+eng\verify-package.ps1 `
+  -PackageOutput artifacts\packages-expanded `
+  -IncludeOptionalMemoryEndpoints `
+  -IncludePrivateConversion
+```
+
+The output directory must be absent or empty. The transaction builds explicit
+projects, canonicalizes package archives, audits exact identities, dependencies,
+contents, public API baselines, native assets, symbols, metadata, and hashes,
+then installs exact package files into an isolated consumer cache.
+
+See:
+
+- `docs/nuget/README.md` for package commands and boundaries;
+- `docs/nuget/API_BOUNDARY.md` for the public managed contract;
+- `docs/nuget/PACKAGE_SECURITY.md` for package and supply-chain gates; and
+- `docs/nuget/PRIVATE_FEED.md` for publication-state semantics.
+
+## Publication
+
+Only a clean committed source revision may produce release evidence. Local
+HEAD, the configured upstream, a fresh `FETCH_HEAD`, and the actual remote
+branch must agree before a release transaction begins. Packages are immutable;
+an uploaded version is never rebuilt or replaced.
+
+After a clean source-bound package transaction, create a no-push plan:
+
+```powershell
+eng\publish-nuget.ps1 `
+  -PackageSource artifacts\packages-current `
+  -SkipVerification `
+  -DryRun
+```
+
+Then verify the exact local folder as a feed:
+
+```powershell
+eng\verify-feed-current.ps1 -NuGetSource artifacts\packages-current
+eng\verify-feed-package-hashes.ps1 -NuGetSource artifacts\packages-current
+```
+
+`eng\audit-nuget-release-readiness.ps1` evaluates local evidence, target-feed
+state, authorization mode, and blockers without converting an external blocker
+into a skip. A successful pack or dry run is not publication. Completion
+requires registry indexing, exact public byte readback, symbol evidence, clean
+public-feed consumption, and affected-site HTTPS readback.
+
+No production package publication is asserted by this README.
+
+## Security And Evidence Rules
+
+- Unknown schema fields, profiles, members, routes, operations, and package IDs
+  fail closed.
+- Parsing and rendering are bounded before allocation.
+- Artifacts are streamed for hashing and promoted create-only after validation.
+- Activation, conversion, piece assembly, and release output are transactional.
+- Raw model output is preserved and rendered exactly once without repair.
+- Sampling uses declared product behavior; best-of-N selection is forbidden.
+- Quoted, retrieved, and hosted memory is untrusted data.
+- Credentials, invitation URLs, tokens, raw prompts, private paths, and model
+  bytes never enter public receipts, screenshots, logs, or source control.
+- Mocks, fixtures, local probes, cross-compilation, package files, and HTTP
+  success are never relabeled as live or public evidence.
+- Failed and obsolete receipts remain append-only evidence and are never
+  overwritten into passes.
+
+## Documentation And Change Discipline
+
+Architecture, developer, package, product, marketing, and pure documentation
+sites are release surfaces. Every coherent major change that builds and passes
+its affected tests is committed and pushed promptly. Every affected site is
+deployed when its complete gate passes, with a visible version, release date,
+last-published fact, consistent update log, and independent HTTPS readback.
+
+Historical reports may describe superseded facts, but current instructions,
+tests, package metadata, workflows, and executable code must describe only the
+sole current architecture. No alias, migration, compatibility reader, fallback,
+temporary adapter, disabled old route, or known debt is retained for a product
+that has not launched.
+
+The authoritative execution goals are:
+
+- `docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md`;
+- `docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md`;
+- `docs/architecture/2026-08-24-production-slm2-clean-cut-preregistration.md`;
+- `docs/architecture/qwen3-tokenizer2-browser-wasm-preregistration.md`; and
+- `docs/architecture/qwen3-template2-source-parity-preregistration.md`.
+
+The project is complete only when one provenance-bound useful model passes
+untouched screening, deterministic SLM2 conversion, scalar-native and real-
+browser WASM conformance, verified P2P-or-convert acquisition, and genuine
+multi-turn browser-local chat, then is documented, committed, pushed, deployed,
+and independently read back. The broader 20-model and 50-round campaign remains
+separate work.

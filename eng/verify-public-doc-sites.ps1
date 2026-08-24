@@ -4,10 +4,24 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$RepoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
-$SourceRoot = Resolve-Path (Join-Path $RepoRoot "..")
-if (-not $ReportOutput) {
-    $ReportOutput = Join-Path $RepoRoot "artifacts/reports/tinyrustlm-public-doc-sites-audit.json"
+$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+$SourceRoot = (Resolve-Path (Join-Path $RepoRoot "..")).Path
+$MaximumDocumentBytes = 8MB
+$CheckedAtUtc = [DateTime]::UtcNow.ToString("o")
+$RunId = [DateTime]::UtcNow.ToString("yyyyMMddTHHmmssfffffffZ")
+
+if ([string]::IsNullOrWhiteSpace($ReportOutput)) {
+    $ReportOutput = Join-Path $RepoRoot "artifacts/reports/tinyrustlm-public-doc-sites-audit-$RunId.json"
+}
+$ReportOutput = [IO.Path]::GetFullPath($ReportOutput)
+if (Test-Path -LiteralPath $ReportOutput) {
+    throw "ReportOutput is create-only and already exists: $ReportOutput"
+}
+
+function Get-Sha256Text {
+    param([string]$Text)
+    $bytes = [Text.Encoding]::UTF8.GetBytes($Text)
+    return [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($bytes)).ToLowerInvariant()
 }
 
 function Get-FileSha256 {
@@ -15,306 +29,225 @@ function Get-FileSha256 {
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
 }
 
-function New-Check {
+function Resolve-DefaultSiteRoot {
+    param([string]$SiteName)
+
+    $candidates = @(
+        (Join-Path $SourceRoot "Rust/$SiteName"),
+        (Join-Path $SourceRoot $SiteName)
+    )
+    foreach ($candidate in $candidates) {
+        if (Test-Path -LiteralPath $candidate -PathType Container) {
+            return (Resolve-Path -LiteralPath $candidate).Path
+        }
+    }
+    return [IO.Path]::GetFullPath($candidates[0])
+}
+
+function New-DocumentCheck {
     param(
-        [string]$Name,
-        [string]$Path,
-        [string[]]$RequiredTerms = @(),
-        [string[]]$ForbiddenTerms = @()
+        [string]$SiteName,
+        [string]$SiteRoot,
+        [string]$RelativePath,
+        [string[]]$RequiredTerms,
+        [string[]]$ForbiddenPatterns
     )
 
-    $exists = Test-Path -LiteralPath $Path -PathType Leaf
-    $text = if ($exists) { Get-Content -LiteralPath $Path -Raw } else { "" }
+    $path = Join-Path $SiteRoot $RelativePath
+    $exists = Test-Path -LiteralPath $path -PathType Leaf
+    $byteLength = if ($exists) { (Get-Item -LiteralPath $path).Length } else { 0 }
+    $bounded = $exists -and $byteLength -le $MaximumDocumentBytes
+    $text = ""
+    $decodeError = ""
+    if ($bounded) {
+        try {
+            $strictUtf8 = [Text.UTF8Encoding]::new($false, $true)
+            $text = $strictUtf8.GetString([IO.File]::ReadAllBytes($path))
+        }
+        catch [Text.DecoderFallbackException] {
+            $decodeError = "invalid_utf8"
+        }
+    }
     $missingTerms = @($RequiredTerms | Where-Object {
         $text.IndexOf($_, [StringComparison]::OrdinalIgnoreCase) -lt 0
     })
-    $forbiddenMatches = @($ForbiddenTerms | Where-Object {
-        $text.IndexOf($_, [StringComparison]::OrdinalIgnoreCase) -ge 0
-    })
-    $status = if ($exists -and $missingTerms.Count -eq 0 -and $forbiddenMatches.Count -eq 0) { "pass" } else { "fail" }
+    $forbiddenMatches = New-Object System.Collections.Generic.List[string]
+    foreach ($pattern in $ForbiddenPatterns) {
+        if ([regex]::IsMatch($text, $pattern, [Text.RegularExpressions.RegexOptions]::IgnoreCase)) {
+            $forbiddenMatches.Add($pattern)
+        }
+    }
+    $status = if ($bounded -and -not $decodeError -and $missingTerms.Count -eq 0 -and $forbiddenMatches.Count -eq 0) {
+        "pass"
+    }
+    else {
+        "fail"
+    }
 
     return [ordered]@{
-        name = $Name
-        path = $Path
+        site = $SiteName
+        relative_path = $RelativePath.Replace('\', '/')
         exists = $exists
+        bounded = $bounded
+        byte_length = $byteLength
+        sha256 = if ($exists) { Get-FileSha256 -Path $path } else { "" }
+        decode_error = $decodeError
         status = $status
-        sha256 = if ($exists) { Get-FileSha256 -Path $Path } else { "" }
         required_terms = @($RequiredTerms)
         missing_terms = @($missingTerms)
-        forbidden_terms = @($ForbiddenTerms)
+        forbidden_pattern_count = $ForbiddenPatterns.Count
         forbidden_matches = @($forbiddenMatches)
     }
 }
 
-if ($SiteRoots.Count -eq 0) {
-    $SiteRoots = @(
-        (Join-Path $SourceRoot "TinyRustLM.com"),
-        (Join-Path $SourceRoot "TinyRustLM.MiRust.com"),
-        (Join-Path $SourceRoot "MiniModel.org"),
-        (Join-Path $SourceRoot "MiniModel.MiRust.com")
-    )
-}
+$siteNames = @(
+    "TinyRustLM.com",
+    "TinyRustLM.MiRust.com",
+    "MiniModel.org",
+    "MiniModel.MiRust.com"
+)
 
-$resolvedSiteRoots = @($SiteRoots | ForEach-Object {
-    if (Test-Path -LiteralPath $_ -PathType Container) {
-        (Resolve-Path -LiteralPath $_).Path
+$resolvedSites = [ordered]@{}
+if ($SiteRoots.Count -gt 0) {
+    foreach ($root in $SiteRoots) {
+        $full = [IO.Path]::GetFullPath($root)
+        $name = Split-Path -Leaf $full
+        if ($siteNames -notcontains $name) {
+            throw "Unsupported site root '$root'. Expected one of: $($siteNames -join ', ')"
+        }
+        if ($resolvedSites.Contains($name)) {
+            throw "Duplicate site root for $name"
+        }
+        $resolvedSites[$name] = $full
     }
-    else {
-        $_
+}
+foreach ($siteName in $siteNames) {
+    if (-not $resolvedSites.Contains($siteName)) {
+        $resolvedSites[$siteName] = Resolve-DefaultSiteRoot -SiteName $siteName
     }
-})
-
-$checks = New-Object System.Collections.Generic.List[object]
-$siteRootReports = New-Object System.Collections.Generic.List[object]
-foreach ($siteRoot in $resolvedSiteRoots) {
-    $siteRootReports.Add([ordered]@{
-        path = $siteRoot
-        exists = Test-Path -LiteralPath $siteRoot -PathType Container
-    })
 }
 
-$siteMap = @{
-    "TinyRustLM.com" = @(
-        "README.md"
-    )
-    "TinyRustLM.MiRust.com" = @(
-        "README.md",
-        "llms.txt",
-        "llms-full.txt",
-        "docs/long-term-memory.md",
-        "data/pages.php"
-    )
-    "MiniModel.org" = @(
-        "docs/catalog-boundary.md"
-    )
-    "MiniModel.MiRust.com" = @(
-        "README.md",
-        "llms.txt",
-        "llms-full.txt",
-        "docs/catalog-boundary.md"
-    )
-}
+$oldBrowserPrefix = "UAIX" + ".Browser"
+$oldCompositionName = "ACG" + "1"
+$forbiddenPatterns = @(
+    [regex]::Escape($oldBrowserPrefix),
+    'TinyRustLM\.Memory(?!Endpoints)',
+    [regex]::Escape("tinyrustlm" + "-slm-pack"),
+    [regex]::Escape("." + $oldCompositionName.ToLowerInvariant()) + '(?:\b|`)',
+    '\b' + [regex]::Escape($oldCompositionName) + '\b',
+    '\bproduct\s+V2\b',
+    'download(?:ing)?\s+(?:a\s+)?(?:conversion\s+)?(?:request|script|text\s+file)',
+    'download(?:ing)?\s+(?:a\s+)?\.txt'
+)
 
-$commonRequiredTerms = @(
+$publicationTerms = @(
+    "Last published",
+    "Release date",
+    "Update"
+)
+$packageTerms = @(
     "TinyRustLM.Abstractions",
     "TinyRustLM.Core",
     "TinyRustLM.P2P",
-    "TinyRustLM.Memory",
-    ".snupkg",
-    "symbol package",
-    "symbol-hash-bound"
+    "SLM2",
+    "public readback"
 )
-$canonicalTinyRustLmRequiredTerms = @(
-    "Canonical Rust source root",
-    "https://TinyRustLM.com/",
-    "UAIX.Browser.p2pRuntime.SeedHost",
-    "UAIX.Browser.p2pRuntime.SeedHost.Tool",
-    "uaix-p2p-seed",
-    "0.3.0",
-    ".snupkg",
-    "MiniModel.org"
-)
-$shaRequiredTerms = @("SHA256SUMS", "symbol_publish_mode", "explicit_snupkg_push_after_primary_package")
-$browserFeedRequiredTerms = @("SymbolsPackage", "PDB evidence", "NuGet Package Manager", "debug-symbol sidecar")
-$browserFeedCurrentRequiredTerms = @(
-    "TINYRUSTLM_FEED_PACKAGE_IDS",
-    "UAIX_BROWSER_NUGET_MONITOR_VERIFY_CURRENT",
-    "uaix-browser-nuget-feed-current.json"
-)
-$browserPublishRequiredTerms = @(
-    "release-browser-nuget.yml",
-    "audit-browser-nuget-release-readiness.ps1",
-    "uaix.browser.nuget.release_readiness.v0",
-    "uaix-browser-nuget-release-readiness.json",
-    "uaix-browser-nuget-release-readiness-publish-plan-dry-run.json",
-    "published_current",
-    "blocked_remote_hash_mismatch",
-    "VersionPrefix",
-    "publish-browser-nuget.ps1",
-    "uaix.browser.nuget.publish_plan.v0",
-    "uaix-browser-nuget-publish-plan.json",
-    "uaix-browser-nuget-feed-hashes.json",
-    "UAIX.Browser.p2pLLM.Runtime"
-)
-$browserNuGetPublishedRequiredTerms = @(
-    "UAIX.Browser.Core.Abstractions",
-    "UAIX.Browser.p2pLLM.Runtime",
-    "UAIX.Browser.p2pRuntime.P2P",
-    "UAIX.Browser.Memory",
-    "UAIX.Browser.p2pLLM.Conversion",
-    "0.1.8",
-    "post-publish verified"
-)
-$uiVerificationRequiredTerms = @(
-    "tinyrustlm.ui_verification.v1",
-    "verify-tinyrustlm-ui.ps1",
-    "web-release-local-smoke.js",
-    "RunDeepAcquisition",
-    "model-acquisition.test.js",
-    "Local .slm",
-    "Hugging Face",
-    "Get model",
-    "Advanced tools",
-    ".acg1"
-)
-$publicRootVerificationRequiredTerms = @(
-    "tinyrustlm.public_root_verification.v1",
-    "verify-tinyrustlm-public-root.ps1",
-    "verify-tinyrustlm-public-root.sh",
-    "tinyrustlm-public-root-verification.json",
-    "ui_verification_sha256"
-)
-$browserMemoryFileDeckRequiredTerms = @(
-    "FileDeck",
-    "FileDeck 62 required",
-    "UAIX memory active",
-    "UAIX exports verified",
-    "persona source evidence bound",
-    "uaix_memory=advanced_persona_profile"
-)
-$localConnectCategoryBindingRequiredTerms = @(
-    "unknown endpoint-listed app",
-    "row-selected category",
-    "known app category drift",
-    "typed-action-dry-run-default-execution-consent-v1",
-    "x-tinyrustlm-execution-consent",
-    "native-opener-v1"
-)
-$huggingFaceTopCompatibleRequiredTerms = @(
-    "top 100",
-    "top 500",
-    "TinyRustLM-ready",
-    "Popular",
-    "New releases",
-    "Get model"
-)
-$browserCompanionBoundaryRequiredTerms = @(
-    "public-local-only",
-    "one-time pairing",
+$tinyRustLmTerms = @(
+    "browser-local",
     "P2P-first",
-    "canonical companion",
-    "conversion-kit",
-    "e2e/companion.spec.js",
-    "969,648,576",
-    "Prompts and responses never"
+    "local conversion",
+    "no prompts",
+    "TinyRustLM.Abstractions",
+    "TinyRustLM.Core",
+    "TinyRustLM.P2P",
+    "SLM2"
 )
-$miniModelPeerMetadataCorsRequiredTerms = @(
-    "CORS/PNA",
-    "Check Peer",
-    "non-CORS"
+$miniModelTerms = @(
+    "direct P2P",
+    "does not proxy model bytes",
+    "cryptographic",
+    "SLM2"
 )
 
-foreach ($siteRoot in $resolvedSiteRoots) {
-    $siteName = Split-Path -Leaf $siteRoot
-    if (-not $siteMap.ContainsKey($siteName)) {
-        continue
-    }
-    foreach ($relativePath in $siteMap[$siteName]) {
-        $requiredTerms = if ($siteName -eq "TinyRustLM.com") {
-            @($canonicalTinyRustLmRequiredTerms)
-        }
-        else {
-            @($commonRequiredTerms)
-        }
-        if ($siteName -in @("TinyRustLM.MiRust.com", "MiniModel.org", "MiniModel.MiRust.com")) {
-            $requiredTerms += $shaRequiredTerms
-            $requiredTerms += $browserNuGetPublishedRequiredTerms
-        }
-        if ($siteName -eq "TinyRustLM.MiRust.com") {
-            $requiredTerms += $browserFeedRequiredTerms
-            $requiredTerms += $browserFeedCurrentRequiredTerms
-            $requiredTerms += $browserPublishRequiredTerms
-            $requiredTerms += $uiVerificationRequiredTerms
-            $requiredTerms += $publicRootVerificationRequiredTerms
-            $requiredTerms += $browserMemoryFileDeckRequiredTerms
-            $requiredTerms += $localConnectCategoryBindingRequiredTerms
-            $requiredTerms += $huggingFaceTopCompatibleRequiredTerms
-        }
-        if ($siteName -eq "TinyRustLM.com" -and $relativePath -eq "README.md") {
-            $requiredTerms += $browserCompanionBoundaryRequiredTerms
-        }
-        elseif ($relativePath -eq "docs/catalog-boundary.md") {
-            $requiredTerms += @("SHA256SUMS-bound")
-            $requiredTerms += $miniModelPeerMetadataCorsRequiredTerms
-        }
+$siteRules = [ordered]@{
+    "TinyRustLM.com" = @(
+        [ordered]@{ path = "README.md"; terms = @($tinyRustLmTerms + $publicationTerms) }
+    )
+    "TinyRustLM.MiRust.com" = @(
+        [ordered]@{ path = "README.md"; terms = @($packageTerms + $publicationTerms) },
+        [ordered]@{ path = "llms.txt"; terms = @($packageTerms + $publicationTerms) },
+        [ordered]@{ path = "llms-full.txt"; terms = @($packageTerms + $publicationTerms) },
+        [ordered]@{ path = "docs/long-term-memory.md"; terms = @($packageTerms) }
+    )
+    "MiniModel.org" = @(
+        [ordered]@{ path = "docs/catalog-boundary.md"; terms = @($miniModelTerms + $publicationTerms) }
+    )
+    "MiniModel.MiRust.com" = @(
+        [ordered]@{ path = "README.md"; terms = @($miniModelTerms + $publicationTerms) },
+        [ordered]@{ path = "llms.txt"; terms = @($miniModelTerms + $publicationTerms) },
+        [ordered]@{ path = "llms-full.txt"; terms = @($miniModelTerms + $publicationTerms) },
+        [ordered]@{ path = "docs/catalog-boundary.md"; terms = @($miniModelTerms) }
+    )
+}
 
-        $checks.Add((New-Check `
-            -Name "$siteName/$relativePath" `
-            -Path (Join-Path $siteRoot $relativePath) `
-            -RequiredTerms $requiredTerms))
+$checks = New-Object System.Collections.Generic.List[object]
+$sites = New-Object System.Collections.Generic.List[object]
+foreach ($siteName in $siteNames) {
+    $siteRoot = [string]$resolvedSites[$siteName]
+    $rootExists = Test-Path -LiteralPath $siteRoot -PathType Container
+    $sites.Add([ordered]@{
+        name = $siteName
+        configured_root_sha256 = Get-Sha256Text -Text $siteRoot
+        exists = $rootExists
+        required_document_count = $siteRules[$siteName].Count
+    })
+    foreach ($rule in $siteRules[$siteName]) {
+        $checks.Add((New-DocumentCheck `
+            -SiteName $siteName `
+            -SiteRoot $siteRoot `
+            -RelativePath $rule.path `
+            -RequiredTerms $rule.terms `
+            -ForbiddenPatterns $forbiddenPatterns))
     }
 }
 
-$staleMatches = New-Object System.Collections.Generic.List[object]
-$staleLiteralPatterns = @(
-    'authenticated publish plus feed-current and feed-hash verification',
-    'feed-current and feed-hash verification passes',
-    'feed-current plus feed-hash verification',
-    'NuGet.org has zero listed versions',
-    'NuGet.org reports zero listed versions',
-    'blocked_missing_api_key',
-    'version `0.1.1` with SHA256SUMS-bound package-hash evidence',
-    'version `0.1.2` and passed clean consumer',
-    'typed-action-dry-run-default-v1',
-    'TinyRustLM.Abstractions, TinyRustLM.Core, and TinyRustLM.P2P',
-    'TinyRustLM.Abstractions`, `TinyRustLM.Core`, and `TinyRustLM.P2P'
-)
-
-$staleScanFiles = @($checks.ToArray() |
-    Where-Object { $_.exists } |
-    ForEach-Object { Get-Item -LiteralPath $_.path })
-foreach ($file in $staleScanFiles) {
-    $lineNumber = 0
-    foreach ($line in (Get-Content -LiteralPath $file.FullName)) {
-        $lineNumber++
-        if ($line.Contains("TinyRustLM.Abstractions") -and $line.Contains("TinyRustLM.P2P") -and -not $line.Contains("TinyRustLM.Memory")) {
-            $staleMatches.Add([ordered]@{
-                path = $file.FullName
-                line = $lineNumber
-                pattern = "three_package_without_memory"
-                text = $line
-            })
-        }
-        foreach ($pattern in $staleLiteralPatterns) {
-            if ($line.IndexOf($pattern, [StringComparison]::OrdinalIgnoreCase) -ge 0) {
-                $staleMatches.Add([ordered]@{
-                    path = $file.FullName
-                    line = $lineNumber
-                    pattern = $pattern
-                    text = $line
-                })
-            }
-        }
-    }
-}
-
-$missingRoots = @($siteRootReports | Where-Object { -not $_.exists })
-$missingFiles = @($checks | Where-Object { -not $_.exists })
 $failedChecks = @($checks | Where-Object { $_.status -ne "pass" })
-$status = if ($missingRoots.Count -eq 0 -and $failedChecks.Count -eq 0 -and $staleMatches.Count -eq 0) { "pass" } else { "fail" }
-
+$missingSites = @($sites | Where-Object { -not $_.exists })
 $report = [ordered]@{
-    schema = "tinyrustlm.docs.public_site_audit.v0"
-    generated_utc = [DateTimeOffset]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ")
-    status = $status
-    repository_root = (Resolve-Path -LiteralPath $RepoRoot).Path
-    source_root = (Resolve-Path -LiteralPath $SourceRoot).Path
-    secret_material_included = $false
-    site_roots = @($siteRootReports.ToArray())
-    missing_site_root_count = $missingRoots.Count
-    missing_file_count = $missingFiles.Count
+    schema = "tinyrustlm.public_doc_sites_audit.v1"
+    checked_at_utc = $CheckedAtUtc
+    status = if ($failedChecks.Count -eq 0 -and $missingSites.Count -eq 0) { "pass" } else { "fail" }
+    product_lifecycle = "prelaunch-single-product"
+    package_graph = @("TinyRustLM.Abstractions", "TinyRustLM.Core", "TinyRustLM.P2P")
+    optional_disconnected_package = "TinyRustLM.MemoryEndpoints"
+    private_package = "TinyRustLM.Conversion"
+    current_model_format = "SLM2"
+    model_flow = "verified-p2p-first-otherwise-reviewed-local-conversion"
+    maximum_document_bytes = $MaximumDocumentBytes
+    site_count = $sites.Count
+    missing_site_count = $missingSites.Count
+    check_count = $checks.Count
     failed_check_count = $failedChecks.Count
-    stale_match_count = $staleMatches.Count
-    checks = @($checks.ToArray())
-    stale_matches = @($staleMatches.ToArray())
+    sites = @($sites)
+    checks = @($checks)
+    secret_material_included = $false
+    absolute_site_paths_included = $false
 }
 
 $reportDirectory = Split-Path -Parent $ReportOutput
-New-Item -ItemType Directory -Force -Path $reportDirectory | Out-Null
-$report | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $ReportOutput -Encoding UTF8
-Write-Host "TinyRustLM public doc-sites audit written to $ReportOutput"
-
-if ($status -ne "pass") {
-    throw "TinyRustLM public doc-sites audit failed. See $ReportOutput"
+New-Item -ItemType Directory -Path $reportDirectory -Force | Out-Null
+$temporaryPath = "$ReportOutput.tmp-$([Guid]::NewGuid().ToString('N'))"
+try {
+    $report | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $temporaryPath -Encoding utf8NoBOM
+    Move-Item -LiteralPath $temporaryPath -Destination $ReportOutput
 }
-Write-Host "TinyRustLM public doc-sites audit passed."
+finally {
+    if (Test-Path -LiteralPath $temporaryPath) {
+        Remove-Item -LiteralPath $temporaryPath -Force
+    }
+}
+
+Write-Host "TinyRustLM public documentation audit written to $ReportOutput"
+if ($report.status -ne "pass") {
+    throw "Public documentation audit failed: $($failedChecks.Count) document checks failed and $($missingSites.Count) site roots are missing."
+}

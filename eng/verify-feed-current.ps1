@@ -2,7 +2,6 @@ param(
     [string]$NuGetSource = "",
     [string]$PackageVersion = "",
     [string]$ReportOutput = "",
-    [string[]]$PackageIds = @(),
     [switch]$AllowNewer
 )
 
@@ -18,23 +17,11 @@ if (-not $ReportOutput) {
     $ReportOutput = Join-Path $RepoRoot "artifacts/reports/tinyrustlm-nuget-feed-current.json"
 }
 
-if ($PackageIds.Count -eq 0 -and -not [string]::IsNullOrWhiteSpace($env:TINYRUSTLM_FEED_PACKAGE_IDS)) {
-    $PackageIds = @($env:TINYRUSTLM_FEED_PACKAGE_IDS -split "[,;]" |
-        ForEach-Object { $_.Trim() } |
-        Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
-}
-
-$requiredPackages = if ($PackageIds.Count -gt 0) {
-    @($PackageIds | Sort-Object -Unique)
-}
-else {
-    @(
-        "TinyRustLM.Abstractions",
-        "TinyRustLM.Core",
-        "TinyRustLM.P2P",
-        "TinyRustLM.Memory"
-    )
-}
+$requiredPackages = @(
+    "TinyRustLM.Abstractions",
+    "TinyRustLM.Core",
+    "TinyRustLM.P2P"
+)
 
 function ConvertTo-SemVerRecord {
     param([string]$Version)

@@ -4,9 +4,9 @@ using System.Text;
 using System.Text.Json;
 using TinyRustLM;
 
-if (args.Length != 4)
+if (args.Length != 5)
 {
-    throw new ArgumentException("Expected SLM2 vectors, ACG2 vectors, work root, and conversion-package flag.");
+    throw new ArgumentException("Expected SLM2 vectors, ACG2 vectors, work root, MemoryEndpoints flag, and conversion flag.");
 }
 
 Directory.CreateDirectory(args[2]);
@@ -137,6 +137,19 @@ catch (TinyRustLmException)
 Require(tamperRejected, "Tampered canonical manifest was not rejected.");
 
 if (args[3] == "required")
+{
+    var type = Type.GetType(
+        "TinyRustLM.MemoryEndpointsRetryState, TinyRustLM.MemoryEndpoints",
+        throwOnError: true)!;
+    var empty = type.GetProperty(
+        "Empty",
+        BindingFlags.Public | BindingFlags.Static)
+        ?? throw new InvalidOperationException("MemoryEndpoints offline retry-state contract is missing.");
+    Require(empty.GetValue(null) is not null, "MemoryEndpoints offline retry-state contract returned null.");
+    Console.WriteLine("consumer-smoke-memory-endpoints-package-untrusted-offline");
+}
+
+if (args[4] == "required")
 {
     var type = Type.GetType(
         "TinyRustLM.TinyRustLmConversionTool, TinyRustLM.Conversion",

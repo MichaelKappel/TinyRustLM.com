@@ -67,11 +67,7 @@ if (-not (Test-Path -LiteralPath $PublishPlanReport)) {
 }
 $PublishPlanReport = (Resolve-Path -LiteralPath $PublishPlanReport).Path
 $publishPlan = Get-Content -LiteralPath $PublishPlanReport -Raw | ConvertFrom-Json
-$supportedPublishPlanSchemas = @(
-    "tinyrustlm.nuget.publish_plan.v0",
-    "uaix.browser.nuget.publish_plan.v0"
-)
-if ($supportedPublishPlanSchemas -notcontains [string]$publishPlan.schema) {
+if ([string]$publishPlan.schema -ne "tinyrustlm.nuget.publish_plan.v0") {
     throw "Publish plan report schema mismatch: $($publishPlan.schema)"
 }
 if (-not $publishPlan.package_audit_match) {
@@ -82,6 +78,20 @@ if (-not $publishPlan.package_hash_manifest_match) {
 }
 if ([string]::IsNullOrWhiteSpace([string]$publishPlan.package_hash_manifest_sha256) -or [string]$publishPlan.package_hash_manifest_sha256 -notmatch "^[0-9a-f]{64}$") {
     throw "Publish plan report is missing a valid package SHA-256 manifest hash: $PublishPlanReport"
+}
+$expectedPackageIds = @(
+    "TinyRustLM.Abstractions",
+    "TinyRustLM.Core",
+    "TinyRustLM.P2P"
+)
+$publishPackageIds = @($publishPlan.packages | ForEach-Object { [string]$_.package_id } | Sort-Object)
+$publishSymbolPackageIds = @($publishPlan.symbol_packages | ForEach-Object { [string]$_.package_id } | Sort-Object)
+$expectedSortedPackageIds = @($expectedPackageIds | Sort-Object)
+if (($publishPackageIds -join "`n") -cne ($expectedSortedPackageIds -join "`n")) {
+    throw "Publish plan package IDs are not the exact current public package set."
+}
+if (($publishSymbolPackageIds -join "`n") -cne ($expectedSortedPackageIds -join "`n")) {
+    throw "Publish plan symbol package IDs are not the exact current public package set."
 }
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem

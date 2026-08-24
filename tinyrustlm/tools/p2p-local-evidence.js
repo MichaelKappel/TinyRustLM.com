@@ -196,7 +196,7 @@ function writeLocalFleetEvidence(options) {
       serveLifecycle: validated.hashes.serve_stdout
     },
     sourceRevision,
-    toolNames: ["uaix-p2p-seed", "minimodel"],
+    toolNames: ["tinyrustlm-companion", "minimodel"],
     toolVersions: ["content-hash-bound", "content-hash-bound"],
     toolBinaryHashes: [validated.hashes.tool, validated.hashes.minimodel],
     runtimeIdentifier: "win-x64",

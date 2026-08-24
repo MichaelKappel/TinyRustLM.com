@@ -1,117 +1,225 @@
-# Private Feed Publishing
+# TinyRustLM Private Feed Review
 
-TinyRustLM packages should be published to a private NuGet feed until the public SDK boundary has completed legal, security, and product review.
+Use a private or local folder feed to review the exact public TinyRustLM package
+candidate before any NuGet.org publication. TinyRustLM is one prelaunch product;
+SLM2 and numbered schemas are technical identities, not an old/new product
+split. The review lane contains no compatibility package family or legacy
+surface.
 
-As of the July 6, 2026 public-feed check, NuGet.org did not list `TinyRustLM.Abstractions`, `TinyRustLM.Core`, `TinyRustLM.P2P`, or `TinyRustLM.Memory`. Use the private-feed flow below for review, then promote to NuGet.org only with an authenticated publish run and passing post-publish feed-current/feed-hash verification.
+The public candidate is always exactly:
 
-Private feeds must use scoped feed credentials through `api_key` mode. NuGet.org Trusted Publishing is supported only for NuGet.org sources, where a NuGet.org trusted publishing policy can exchange a GitHub OIDC token for a short-lived push key.
+- `TinyRustLM.Abstractions`
+- `TinyRustLM.Core`
+- `TinyRustLM.P2P`
 
-## Recommended Flow
+Optional `TinyRustLM.MemoryEndpoints` remains unauthorized and disconnected.
+Private `TinyRustLM.Conversion` remains local process tooling. Neither package
+may enter the three-package public publish plan.
 
-1. Run `eng/verify-package.ps1` locally, or `eng/verify-package.sh` on Unix-like shells, or use `release-nuget.yml` for a publish candidate that must include `win-x64`, `linux-x64`, `osx-x64`, and `osx-arm64` native bridge artifacts.
-2. Review `artifacts/packages/*.nupkg`, `artifacts/packages/*.snupkg`, and `artifacts/reports/tinyrustlm-nuget-package-audit.json`.
-3. Confirm the audit report status is `pass`, package and symbol-package SHA-256 values are recorded, required metadata, required search-term, and XML-documentation gaps are empty, private-surface matches are empty, main-package source/debug-symbol/generated-output leakage counts are zero, symbol-package source/generated/local-path leakage counts are zero, local absolute path match counts are zero, and native RID coverage matches the intended feed audience.
-4. Audit the package push set:
+## 1. Create A Fresh Package Transaction
 
-```powershell
-eng\publish-nuget.ps1 -SkipVerification -DryRun -PackageSource artifacts\packages
-```
+Choose a new absent or empty output directory. Never point the package command
+at a prior transaction and never delete an unknown directory to make a gate
+pass.
 
-The dry run and real publish path reject stale or unintended extra `TinyRustLM*.nupkg` or `TinyRustLM*.snupkg` files. The package source must contain exactly `TinyRustLM.Abstractions`, `TinyRustLM.Core`, `TinyRustLM.P2P`, and `TinyRustLM.Memory` at the version declared by `dotnet/Directory.Build.props`, plus matching `.snupkg` files for those package IDs and version. Those package and symbol package names, SHA-256 values, and byte counts must match the package-audit report from step 2.
-
-The publish command writes `artifacts/reports/tinyrustlm-nuget-publish-plan.json` with package and symbol package SHA-256 values, byte counts, package source, package-audit report hash, audit match status, target feed, symbol publish mode, dry-run or push status, and source provenance for the producing checkout. It requires `SHA256SUMS-TinyRustLM-<version>.txt` to bind both the protected `.nupkg` files and their matching `.snupkg` symbol packages. The source-provenance block records only non-secret git/CI identifiers such as commit, branch, dirty-tree status, tracked/untracked change counts, CI provider, and GitHub run metadata; the report deliberately records `secret_material_included=false` and never stores API keys or push tokens. Authenticated pushes run from the package output directory, push each `.nupkg` with `--no-symbols`, and then push each matching `.snupkg` explicitly so symbol publication is auditable. Authenticated push failures are recorded as `push_failed` with a redacted `publish_error`; the official release workflow still validates and uploads that report when it exists.
-
-NuGet Package Manager generally lists installable `.nupkg` packages rather than `.snupkg` symbol files. Treat each `.snupkg` as a debug-symbol sidecar: verify it through the folder feed contents, workflow artifacts, `SymbolsPackage`/PDB evidence, `SHA256SUMS-*` membership, publish-plan hashes, and feed-hash reports.
-
-5. Run the release-readiness audit before pushing:
-
-```powershell
-eng\audit-nuget-release-readiness.ps1 -NuGetSource <private-feed-url>
-```
-
-The audit writes `artifacts/reports/tinyrustlm-nuget-release-readiness.json` with local feed-current/hash evidence, target-feed status, blocker status, top-level package and symbol package counts, package-and-symbol SHA256SUMS manifest binding, local symbol hash/byte-count mismatch counts, `auth_mode`, and only non-secret credential metadata such as boolean `api_key_present`. Use `-AuthMode api_key -FailOnBlocked` in automation when the private feed must be publishable from that environment. `-AuthMode trusted_publishing` is intentionally blocked for non-NuGet.org sources. When the official release workflow sees `published_current`, it skips the push step and still runs the mandatory feed-current/feed-hash gates.
-
-6. Publish to a private feed:
+PowerShell on the current host RID:
 
 ```powershell
-eng\publish-nuget.ps1 -SkipVerification -PackageSource artifacts\packages -NuGetSource <private-feed-url> -ApiKey <token>
+eng\verify-package.ps1 `
+  -Configuration Release `
+  -PackageOutput artifacts\packages-private-review-001
 ```
 
-Preserve `artifacts/reports/tinyrustlm-nuget-package-audit.json`, `artifacts/reports/tinyrustlm-nuget-release-readiness.json`, and `artifacts/reports/tinyrustlm-nuget-publish-plan.json` with release evidence.
+Bash on the current host RID:
 
-When using `.github/workflows/release-nuget.yml` for a private feed, dispatch it with `auth_mode=api_key`, `source=<private-v3-feed-url>`, and a repository secret `NUGET_API_KEY` scoped to the package push operation.
+```bash
+eng/verify-package.sh Release artifacts/packages-private-review-001
+```
 
-7. Once the feed has indexed the package and credentials are configured, run the optional post-publish consumer smoke:
+For a release candidate, first build native assets on matching Windows x64,
+Linux x64, and real Linux ARM64 systems. Aggregate the exact assets under
+`artifacts/native/win-x64`, `artifacts/native/linux-x64`, and
+`artifacts/native/linux-arm64`, then require all three RIDs:
 
 ```powershell
-eng\verify-feed.ps1 -NuGetSource <private-feed-url-or-source-name>
+eng\verify-package.ps1 `
+  -Configuration Release `
+  -PackageOutput artifacts\packages-private-release-001 `
+  -RequiredNativeRids win-x64,linux-x64,linux-arm64
 ```
 
-This writes `artifacts/reports/tinyrustlm-nuget-feed-smoke.json` with the clean consumer smoke status, package version, feed source, and no-secret-material flag.
+The completed directory must contain three `.nupkg` files, three matching
+`.snupkg` files, `tinyrustlm-nuget-package-audit.json`,
+`SHA256SUMS-TinyRustLM-<version>.txt`, and the bounded folder-feed readme. The
+audit status must be `pass` and its package IDs must match the exact public set.
 
-8. Verify that the feed now exposes the source-declared package version for all four protected packages. The official release workflow runs this gate automatically after every publish:
+## 2. Review The Package Audit
+
+The audit is authoritative only for the package bytes whose names, sizes, and
+SHA-256 hashes it records. Review at least:
+
+- package and symbol package counts;
+- missing and unexpected package names;
+- NuGet ID/version identity;
+- dependency closure and protected metadata;
+- checked-in public API baseline comparison;
+- package metadata and declared documentation files;
+- canonical archive timestamps and entry allowlists;
+- portable PDB and `SymbolsPackage` evidence;
+- exact native RID coverage and native placement;
+- private/source/debug/generated/local-path scan counts; and
+- the terminal status and error collections.
+
+Do not edit the report or package bytes. Any correction requires a new package
+transaction and new output directory.
+
+## 3. Verify The Folder Feed
+
+The package transaction already runs the isolated consumer. Re-run the
+read-only feed checks when reviewing retained bytes:
 
 ```powershell
-eng\verify-feed-current.ps1 -NuGetSource <private-v3-feed-url>
+eng\verify-feed-current.ps1 `
+  -NuGetSource artifacts\packages-private-release-001
 ```
 
-On Unix-like shells, use `eng/verify-feed-current.sh <private-v3-feed-url>`.
-
-This writes `artifacts/reports/tinyrustlm-nuget-feed-current.json` with the declared version, latest reported version, and current-version status for `TinyRustLM.Abstractions`, `TinyRustLM.Core`, `TinyRustLM.P2P`, and `TinyRustLM.Memory`.
-
-For the UAIX Browser package lane, run the same command with `TINYRUSTLM_FEED_PACKAGE_IDS=UAIX.Browser.Core.Abstractions,UAIX.Browser.p2pLLM.Runtime,UAIX.Browser.p2pRuntime.P2P,UAIX.Browser.Memory,UAIX.Browser.p2pLLM.Conversion` and `-ReportOutput artifacts/reports/uaix-browser-nuget-feed-current.json`.
-
-Before pushing the UAIX Browser package lane to a private feed, run:
+Create a dry-run publish plan bound to the exact audit and SHA-256 manifest:
 
 ```powershell
-eng\publish-browser-nuget.ps1 -PackageSource <local-UAIX-Browser-feed> -NuGetSource <private-v3-feed-url-or-name> -DryRun
+eng\publish-nuget.ps1 `
+  -SkipVerification `
+  -DryRun `
+  -PackageSource artifacts\packages-private-release-001 `
+  -AuditReport artifacts\packages-private-release-001\tinyrustlm-nuget-package-audit.json `
+  -ReportOutput artifacts\reports\tinyrustlm-nuget-publish-plan-private-review-001.json
 ```
 
-The dry run writes `artifacts/reports/uaix-browser-nuget-publish-plan.json` with schema `uaix.browser.nuget.publish_plan.v0`. It requires `SHA256SUMS-UAIX.Browser-<version>.txt`, generated `README-UAIX.Browser-<version>.txt`, the Browser feed audit, all five audited `.nupkg` files, and all five matching `.snupkg` files to agree, including README hash/match evidence for symbol sidecar visibility. A non-dry run requires `-ApiKey` or `NUGET_API_KEY` and publishes the five audited Browser `.nupkg` files with `--no-symbols`, then publishes the five matching `.snupkg` files explicitly.
-
-When using GitHub Actions for the branded Browser lane, dispatch `.github/workflows/release-browser-nuget.yml` with `auth_mode=api_key` for private feeds. The workflow packs the exact five `UAIX.Browser.*` package IDs, audits them with `eng\verify-browser-feed.ps1`, uploads `.nupkg` and `.snupkg` artifacts, gates publication with `eng\audit-browser-nuget-release-readiness.ps1`, publishes with `eng\publish-browser-nuget.ps1`, and requires `uaix-browser-nuget-feed-current.json` plus `uaix-browser-nuget-feed-hashes.json` before completion. The readiness audit writes `uaix-browser-nuget-release-readiness.json` with schema `uaix.browser.nuget.release_readiness.v0`, writes its no-push dry-run plan to `uaix-browser-nuget-release-readiness-publish-plan-dry-run.json` by default instead of overwriting retained post-push `uaix-browser-nuget-publish-plan.json` evidence, records top-level package/symbol counts and SHA256SUMS binding fields, blocks missing credentials before push, and returns `published_current` so the workflow can skip a redundant push while still running post-publish feed checks. If it returns `blocked_remote_hash_mismatch` against NuGet.org, the listed version is immutable with different bytes; bump `dotnet/Directory.Build.props` `VersionPrefix` before publishing corrected Browser packages. For NuGet.org only, dispatch the same workflow with `auth_mode=trusted_publishing` after configuring a trusted publishing policy for workflow file `release-browser-nuget.yml` and environment `nuget-release`.
-
-9. Verify that the feed serves the exact package bytes from the publish plan. The official release workflow runs this gate automatically after every publish:
+Verify every folder-feed package byte and ZIP entry against that retained plan:
 
 ```powershell
-eng\verify-feed-package-hashes.ps1 -NuGetSource <private-v3-feed-url-or-package-folder>
+eng\verify-feed-package-hashes.ps1 `
+  -NuGetSource artifacts\packages-private-release-001 `
+  -PublishPlanReport artifacts\reports\tinyrustlm-nuget-publish-plan-private-review-001.json `
+  -ReportOutput artifacts\reports\tinyrustlm-nuget-folder-feed-hashes-private-review-001.json
 ```
 
-This writes `artifacts/reports/tinyrustlm-nuget-feed-hashes.json` with per-package integrity evidence. Pass `-PublishPlanReport artifacts/reports/uaix-browser-nuget-publish-plan.json -ReportOutput artifacts/reports/uaix-browser-nuget-feed-hashes.json` for the branded Browser lane. Local folder feeds must match the publish-plan `.nupkg` SHA-256 values and byte counts exactly and the same report also verifies each matching `.snupkg` symbol package. NuGet.org may add `.signature.p7s` repository-signature bytes after upload; NuGet v3 feed checks accept that only when every original package entry matches by path, byte count, and SHA-256 and `.signature.p7s` is the only additional entry.
-
-For ongoing private-feed monitoring, set repository variable `TINYRUSTLM_NUGET_MONITOR_ENABLED=true` and `TINYRUSTLM_NUGET_SOURCE=<private-v3-feed-url>`, then use `.github/workflows/nuget-feed-monitor.yml` for scheduled or manual feed-current reports. Set `TINYRUSTLM_NUGET_MONITOR_VERIFY_CONSUMER=true` after feed credentials and native runtime assets are ready for scheduled clean consumer install/runtime/P2P smoke reports. Set `TINYRUSTLM_NUGET_MONITOR_VERIFY_HASHES=true` and `TINYRUSTLM_NUGET_MONITOR_PUBLISH_PLAN_REPORT=<path>` only when the retained publish-plan JSON is available to the monitor. Set `UAIX_BROWSER_NUGET_MONITOR_VERIFY_CURRENT=true` and `UAIX_BROWSER_NUGET_SOURCE=<private-v3-feed-url-or-folder>` when the same monitor should check the branded Browser package IDs.
-
-10. Run `eng/verify-consumer.ps1 -PackageSource artifacts\packages` if you need to repeat the local artifact install smoke separately from the full verifier. The consumer smoke exercises `.slm` inspect/load/generate, UAIX memory/persona package planning and inspection, metadata-bound P2P share/import, signed-manifest verification, announcement/catalog handoff, local assembly, and receipt inspection from package references.
-    For branded Browser packages, run `eng\verify-consumer.ps1 -PackageSource <feed-url-or-folder> -CorePackageId UAIX.Browser.p2pLLM.Runtime -P2PPackageId UAIX.Browser.p2pRuntime.P2P -MemoryPackageId UAIX.Browser.Memory -ConversionPackageId UAIX.Browser.p2pLLM.Conversion` so the smoke restores the public UAIX package IDs, exercises the same `TinyRustLM` API namespace, and validates the controlled conversion wrapper against the fixture `.slm`.
-11. Install from a clean sample application against the private feed and verify that only `TinyRustLM.Abstractions`, `TinyRustLM.Core`, `TinyRustLM.P2P`, `TinyRustLM.Memory`, docs, and runtime-native assets are present.
-
-## Local UAIX Folder Feed Alias
-
-For the UAIX deployment folder feed, build the protected Browser package line under the branded `UAIX.Browser.*` package IDs:
+Run the clean consumer explicitly when needed:
 
 ```powershell
-eng\pack.ps1 `
-  -PackageOutput <local-UAIX-Browser-feed> `
-  -PackageIdPrefix UAIX.Browser `
-  -AbstractionsPackageId UAIX.Browser.Core.Abstractions `
-  -CorePackageId UAIX.Browser.p2pLLM.Runtime `
-  -P2PPackageId UAIX.Browser.p2pRuntime.P2P `
-  -MemoryPackageId UAIX.Browser.Memory `
-  -IncludePrivateConversion `
-  -ConversionPackageId UAIX.Browser.p2pLLM.Conversion `
-  -ArchiveOtherPackages
+eng\verify-consumer.ps1 `
+  -PackageSource artifacts\packages-private-release-001 `
+  -PackageVersion 0.1.8
 ```
 
-This keeps the compiled assemblies and public namespaces as `TinyRustLM.*`, but writes package IDs and dependencies as `UAIX.Browser.Core.Abstractions`, `UAIX.Browser.p2pLLM.Runtime`, `UAIX.Browser.p2pRuntime.P2P`, `UAIX.Browser.Memory`, and the controlled/local `UAIX.Browser.p2pLLM.Conversion` wrapper. `-ArchiveOtherPackages` moves non-`UAIX.Browser` `.nupkg` and `.snupkg` files, stale same-ID Browser packages, and previous `SHA256SUMS-UAIX.Browser-*.txt` plus `README-UAIX.Browser-*.txt` feed files from the feed root into the feed's `Archive` folder before current Browser packages are replaced, and the pack script writes `SHA256SUMS-UAIX.Browser-<version>.txt` plus `README-UAIX.Browser-<version>.txt` for the exact current package and symbol package set. Use this only for local/private folder feeds; the public protected release path remains the audited `TinyRustLM.*` package set without exposing private conversion internals.
+The consumer uses an owned temporary project and isolated NuGet caches. It
+loads only the packaged native asset and exercises SLM2 inspection, exact native
+ABI validation, runtime handle ownership, ACG2/SLM2 fixed-piece round trips,
+create-only collision rejection, and manifest-tamper rejection.
 
-Audit the branded feed after packing:
+## 4. Audit Release Readiness
+
+Run the readiness control plane with the package-local audit path and the
+intended private feed URL:
 
 ```powershell
-eng\verify-browser-feed.ps1 -PackageSource <local-UAIX-Browser-feed>
+eng\audit-nuget-release-readiness.ps1 `
+  -PackageSource artifacts\packages-private-release-001 `
+  -AuditReport artifacts\packages-private-release-001\tinyrustlm-nuget-package-audit.json `
+  -NuGetSource <private-feed-v3-url> `
+  -AuthMode api_key
 ```
 
-The Browser feed audit writes `artifacts/reports/uaix-browser-nuget-feed-audit.json` and fails if any branded `.nupkg` or matching `.snupkg` symbol package is missing, renamed, missing required NuGet search metadata, has an unexpected same-version dependency graph, is absent from `SHA256SUMS-UAIX.Browser-<version>.txt`, is absent from generated `README-UAIX.Browser-<version>.txt` symbol visibility guidance, lacks `SymbolsPackage`/PDB evidence, carries unexpected symbol-package entries, or leaks local absolute paths in package text entries.
+Without a scoped key, `blocked_missing_api_key` is truthful evidence, not a
+test failure to bypass. If the exact version and bytes already exist remotely,
+the status may be `published_current`. If the version exists with different
+bytes, publication is blocked because package versions are immutable.
 
-## Feed Policy
+## 5. Publish To An Authorized Private Feed
 
-Use scoped credentials, immutable package versions, package retention, and manual approval for public promotion. Do not publish packages that include private conversion, adapter, selector, breeding, or training artifacts.
+Provide the key through a secret environment or direct secure process parameter.
+Never write it into Git, a `.uai` file, package metadata, command transcript,
+report, screenshot, or documentation example.
+
+```powershell
+$env:NUGET_API_KEY = '<scoped-private-feed-key>'
+eng\publish-nuget.ps1 `
+  -SkipVerification `
+  -PackageSource artifacts\packages-private-release-001 `
+  -AuditReport artifacts\packages-private-release-001\tinyrustlm-nuget-package-audit.json `
+  -NuGetSource <private-feed-v3-url>
+```
+
+The publisher refuses missing or extra packages, optional packages, changed
+hashes, a stale version, a failed/missing audit, or a mismatched SHA-256
+manifest. Primary and symbol packages are pushed explicitly. A partial failure
+is recorded as `push_failed` and cannot be relabeled as success.
+
+## 6. Verify Private-Feed Readback
+
+After indexing, perform public-style readback against the private feed:
+
+```powershell
+eng\verify-feed-current.ps1 -NuGetSource <private-feed-v3-url>
+
+eng\verify-feed-package-hashes.ps1 `
+  -NuGetSource <private-feed-v3-url> `
+  -PublishPlanReport artifacts\reports\tinyrustlm-nuget-publish-plan.json
+
+eng\verify-feed.ps1 -NuGetSource <private-feed-v3-url>
+```
+
+The first command proves that all three exact package IDs expose the declared
+version. The second compares remote primary package bytes with the audited
+publish plan and records the feed's symbol-verification boundary. The third
+restores and executes the packages in an isolated consumer.
+
+Package creation or push output is not public readback. Keep the feed-current,
+feed-hash, consumer, and publish-plan reports together as one candidate review
+record.
+
+## 7. Promote To NuGet.org
+
+Promotion reuses the exact reviewed package bytes; it does not rebuild or
+rename them. The protected `release-nuget.yml` workflow:
+
+1. builds and tests native assets on `win-x64`, `linux-x64`, and real
+   `linux-arm64` runners;
+2. executes the package transaction and exact public graph assertion;
+3. audits readiness against NuGet.org;
+4. authenticates with a scoped API key or short-lived Trusted Publishing
+   credential;
+5. pushes the exact primary and symbol packages; and
+6. requires feed-current and feed-hash public readback after indexing.
+
+Optional clean-consumer public readback is additional evidence. A local folder
+feed or private feed does not itself prove NuGet.org publication.
+
+## Optional Local Packages
+
+To review the optional connector and private conversion wrapper without making
+them public candidates, use a separate new output directory:
+
+```powershell
+eng\verify-package.ps1 `
+  -Configuration Release `
+  -PackageOutput artifacts\packages-optional-local-review-001 `
+  -IncludeOptionalMemoryEndpoints `
+  -IncludePrivateConversion
+```
+
+That transaction must audit and install all selected packages. Do not pass the
+result to `publish-nuget`; the closed public allowlist will reject it. Local
+fixture success for `TinyRustLM.MemoryEndpoints` must remain labeled offline,
+unauthorized, and disconnected.
+
+## Evidence And Retention
+
+Retain package, symbol, audit, manifest, publish-plan, readiness, feed-current,
+feed-hash, and consumer identities according to the release evidence policy.
+Reports may contain public IDs, hashes, sizes, counts, statuses, versions, and
+bounded error codes. They must not contain credentials, invitation URLs,
+tokens, prompts, model bytes, or unsafe private paths.
+
+A private-feed review proves only the tested package distribution boundary. It
+does not qualify a model, prove browser-WASM behavior, establish public P2P
+reachability, deploy a site, or authorize MemoryEndpoints.

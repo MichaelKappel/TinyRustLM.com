@@ -124,12 +124,7 @@ if [[ "$RUN_BROWSER_SMOKE" == "1" || "$RUN_DEEP_ACQUISITION" == "1" ]]; then
 fi
 
 if [[ "$RUN_DEEP_ACQUISITION" == "1" ]]; then
-  node --test "$REPO_ROOT/tinyrustlm/tests/model-acquisition.test.js" "$REPO_ROOT/tinyrustlm/tests/companion-bridge.test.js"
-  GATES[acquisition_browser_bridge]="pass"
-  dotnet test "$REPO_ROOT/dotnet/tests/TinyRustLM.SeedHost.Tests/TinyRustLM.SeedHost.Tests.csproj" -c Release
-  GATES[acquisition_companion]="pass"
-  cargo test -p tinyrustlm-slm-pack --test huggingface_conversion_cli
-  GATES[acquisition_converter]="pass"
+  fail "Deep acquisition is unavailable until the clean TinyRustLM companion and complete-composition converter gates are registered."
 fi
 
 if [[ "$RUN_VISUAL_LOCK" == "1" ]]; then

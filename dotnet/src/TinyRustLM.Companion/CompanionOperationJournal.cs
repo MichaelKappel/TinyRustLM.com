@@ -1,0 +1,381 @@
+using System.Collections.Concurrent;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace TinyRustLM.Companion;
+
+public sealed class CompanionOperationJournal
+{
+    private const string MarkerFileName = ".tinyrustlm-companion-root";
+    private const string OperationsDirectoryName = "operations";
+    private const int MaximumRecordBytes = 65_536;
+    private static readonly ConcurrentDictionary<string, SemaphoreSlim> InProcessLocks =
+        new(StringComparer.OrdinalIgnoreCase);
+    private readonly string _operationsRoot;
+    private readonly TimeProvider _timeProvider;
+
+    public CompanionOperationJournal(string rootPath, TimeProvider? timeProvider = null)
+    {
+        var root = RequireOwnedRoot(rootPath);
+        _operationsRoot = Path.Combine(root, OperationsDirectoryName);
+        Directory.CreateDirectory(_operationsRoot);
+        RejectReparsePoint(_operationsRoot, "journal-operations-root");
+        _timeProvider = timeProvider ?? TimeProvider.System;
+    }
+
+    public static string CreateOwnedRoot(string rootPath)
+    {
+        var root = FullPath(rootPath, nameof(rootPath));
+        if (Directory.Exists(root) || File.Exists(root))
+        {
+            throw new CompanionContractException("journal-root-exists");
+        }
+        var parent = Path.GetDirectoryName(root);
+        if (string.IsNullOrWhiteSpace(parent) || !Directory.Exists(parent))
+        {
+            throw new CompanionContractException("journal-root-parent");
+        }
+        RejectReparsePoint(parent, "journal-root-parent");
+
+        Directory.CreateDirectory(root);
+        try
+        {
+            WriteCreateOnly(
+                Path.Combine(root, MarkerFileName),
+                Encoding.ASCII.GetBytes(CompanionContract.OwnedRootMarker));
+            Directory.CreateDirectory(Path.Combine(root, OperationsDirectoryName));
+            return root;
+        }
+        catch
+        {
+            if (Directory.Exists(root) && !Directory.EnumerateFileSystemEntries(root).Any())
+            {
+                Directory.Delete(root);
+            }
+            throw;
+        }
+    }
+
+    public CompanionOperationRecord Create(CompanionAcquireRequest request)
+    {
+        var normalized = CompanionContract.ValidateAndNormalize(request);
+        var operationId = CompanionContract.OperationId(normalized);
+        var finalDirectory = OperationDirectory(operationId);
+        if (Directory.Exists(finalDirectory) || File.Exists(finalDirectory))
+        {
+            throw new CompanionContractException("journal-operation-exists");
+        }
+
+        var stagingDirectory = Path.Combine(
+            _operationsRoot,
+            $".staging-{operationId}-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(stagingDirectory);
+        try
+        {
+            var requestBytes = Serialize(normalized);
+            var now = Timestamp();
+            var record = new CompanionOperationRecord(
+                CompanionContract.OperationRecordSchema,
+                operationId,
+                Sha256(requestBytes),
+                0,
+                CompanionOperationState.Queued,
+                CompanionAcquisitionBranch.Undecided,
+                now,
+                now,
+                0,
+                null,
+                null,
+                null);
+            Directory.CreateDirectory(Path.Combine(stagingDirectory, "history"));
+            WriteCreateOnly(Path.Combine(stagingDirectory, "request.json"), requestBytes);
+            var recordBytes = Serialize(record);
+            WriteCreateOnly(Path.Combine(stagingDirectory, "history", SequenceFile(0)), recordBytes);
+            WriteCreateOnly(Path.Combine(stagingDirectory, "current.json"), recordBytes);
+            Directory.Move(stagingDirectory, finalDirectory);
+            return record;
+        }
+        catch
+        {
+            if (Directory.Exists(stagingDirectory))
+            {
+                Directory.Delete(stagingDirectory, recursive: true);
+            }
+            throw;
+        }
+    }
+
+    public CompanionOperationRecord Read(string operationId)
+    {
+        RequireOperationId(operationId);
+        return ReadRecord(Path.Combine(OperationDirectory(operationId), "current.json"), operationId);
+    }
+
+    public CompanionOperationRecord Advance(
+        string operationId,
+        CompanionOperationState nextState,
+        CompanionAcquisitionBranch branch,
+        ulong completedBytes = 0,
+        ulong? totalBytes = null,
+        CompanionArtifactSet? artifacts = null,
+        string? errorCode = null)
+    {
+        RequireOperationId(operationId);
+        var gate = InProcessLocks.GetOrAdd(operationId, static _ => new SemaphoreSlim(1, 1));
+        if (!gate.Wait(0))
+        {
+            throw new CompanionContractException("journal-operation-busy");
+        }
+
+        try
+        {
+            var directory = OperationDirectory(operationId);
+            using var processLock = AcquireProcessLock(Path.Combine(directory, "operation.lock"));
+            var current = ReadRecord(Path.Combine(directory, "current.json"), operationId);
+            ValidateTransition(current.State, nextState);
+            ValidateRecordFields(nextState, branch, completedBytes, totalBytes, artifacts, errorCode);
+            var next = current with
+            {
+                Sequence = checked(current.Sequence + 1),
+                State = nextState,
+                Branch = branch,
+                UpdatedAtUtc = Timestamp(),
+                CompletedBytes = completedBytes,
+                TotalBytes = totalBytes,
+                Artifacts = artifacts,
+                ErrorCode = errorCode
+            };
+            var bytes = Serialize(next);
+            var historyPath = Path.Combine(directory, "history", SequenceFile(next.Sequence));
+            WriteCreateOnly(historyPath, bytes);
+            ReplaceCurrent(Path.Combine(directory, "current.json"), bytes);
+            return next;
+        }
+        finally
+        {
+            gate.Release();
+        }
+    }
+
+    private static void ValidateTransition(CompanionOperationState current, CompanionOperationState next)
+    {
+        var allowed = current switch
+        {
+            CompanionOperationState.Queued => next is CompanionOperationState.CheckingPeers
+                or CompanionOperationState.Cancelled or CompanionOperationState.Rejected,
+            CompanionOperationState.CheckingPeers => next is CompanionOperationState.FetchingPeer
+                or CompanionOperationState.AcquiringSource or CompanionOperationState.Cancelled
+                or CompanionOperationState.Rejected,
+            CompanionOperationState.FetchingPeer => next is CompanionOperationState.VerifyingPeer
+                or CompanionOperationState.CheckingPeers or CompanionOperationState.Cancelled
+                or CompanionOperationState.Rejected,
+            CompanionOperationState.VerifyingPeer => next is CompanionOperationState.Available
+                or CompanionOperationState.CheckingPeers or CompanionOperationState.AcquiringSource
+                or CompanionOperationState.Cancelled or CompanionOperationState.Rejected,
+            CompanionOperationState.AcquiringSource => next is CompanionOperationState.Converting
+                or CompanionOperationState.Cancelled or CompanionOperationState.Rejected,
+            CompanionOperationState.Converting => next is CompanionOperationState.VerifyingComposition
+                or CompanionOperationState.Cancelled or CompanionOperationState.Rejected,
+            CompanionOperationState.VerifyingComposition => next is CompanionOperationState.Available
+                or CompanionOperationState.Rejected,
+            _ => false
+        };
+        if (!allowed)
+        {
+            throw new CompanionContractException("journal-transition");
+        }
+    }
+
+    private static void ValidateRecordFields(
+        CompanionOperationState state,
+        CompanionAcquisitionBranch branch,
+        ulong completedBytes,
+        ulong? totalBytes,
+        CompanionArtifactSet? artifacts,
+        string? errorCode)
+    {
+        if (totalBytes is not null && (totalBytes == 0 || completedBytes > totalBytes))
+        {
+            throw new CompanionContractException("journal-progress");
+        }
+        if (state == CompanionOperationState.Available)
+        {
+            CompanionContract.ValidateArtifactSet(
+                artifacts ?? throw new CompanionContractException("journal-artifacts-required"));
+            if (branch is not (CompanionAcquisitionBranch.Peer or CompanionAcquisitionBranch.Source) ||
+                errorCode is not null)
+            {
+                throw new CompanionContractException("journal-available-fields");
+            }
+        }
+        else if (artifacts is not null)
+        {
+            throw new CompanionContractException("journal-artifacts-premature");
+        }
+        if (state == CompanionOperationState.Rejected)
+        {
+            if (!IsErrorCode(errorCode))
+            {
+                throw new CompanionContractException("journal-rejection-code");
+            }
+        }
+        else if (errorCode is not null)
+        {
+            throw new CompanionContractException("journal-unexpected-error");
+        }
+    }
+
+    private CompanionOperationRecord ReadRecord(string path, string operationId)
+    {
+        byte[] bytes;
+        try
+        {
+            var info = new FileInfo(path);
+            if (!info.Exists || info.Length is <= 0 or > MaximumRecordBytes ||
+                (info.Attributes & FileAttributes.ReparsePoint) != 0)
+            {
+                throw new CompanionContractException("journal-record-file");
+            }
+            bytes = File.ReadAllBytes(path);
+        }
+        catch (IOException)
+        {
+            throw new CompanionContractException("journal-record-read");
+        }
+
+        CompanionOperationRecord record;
+        try
+        {
+            record = JsonSerializer.Deserialize<CompanionOperationRecord>(bytes, JsonOptions)
+                ?? throw new CompanionContractException("journal-record-json");
+        }
+        catch (JsonException)
+        {
+            throw new CompanionContractException("journal-record-json");
+        }
+        if (record.Schema != CompanionContract.OperationRecordSchema ||
+            record.OperationId != operationId ||
+            record.RequestSha256.Length != 64)
+        {
+            throw new CompanionContractException("journal-record-contract");
+        }
+        return record;
+    }
+
+    private string OperationDirectory(string operationId) => Path.Combine(_operationsRoot, operationId);
+
+    private string Timestamp() => _timeProvider.GetUtcNow().ToString("O");
+
+    private static FileStream AcquireProcessLock(string path)
+    {
+        try
+        {
+            return new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, 1,
+                FileOptions.WriteThrough);
+        }
+        catch (IOException)
+        {
+            throw new CompanionContractException("journal-operation-busy");
+        }
+    }
+
+    private static void ReplaceCurrent(string path, byte[] bytes)
+    {
+        var temporary = Path.Combine(
+            Path.GetDirectoryName(path)!,
+            $".current-{Guid.NewGuid():N}.tmp");
+        WriteCreateOnly(temporary, bytes);
+        try
+        {
+            File.Move(temporary, path, overwrite: true);
+        }
+        finally
+        {
+            if (File.Exists(temporary))
+            {
+                File.Delete(temporary);
+            }
+        }
+    }
+
+    private static void WriteCreateOnly(string path, byte[] bytes)
+    {
+        using var stream = new FileStream(
+            path,
+            FileMode.CreateNew,
+            FileAccess.Write,
+            FileShare.None,
+            65_536,
+            FileOptions.WriteThrough);
+        stream.Write(bytes);
+        stream.Flush(flushToDisk: true);
+    }
+
+    private static byte[] Serialize<T>(T value)
+    {
+        var bytes = JsonSerializer.SerializeToUtf8Bytes(value, JsonOptions);
+        if (bytes.Length is 0 or > MaximumRecordBytes)
+        {
+            throw new CompanionContractException("journal-record-size");
+        }
+        return bytes;
+    }
+
+    private static string RequireOwnedRoot(string value)
+    {
+        var root = FullPath(value, nameof(value));
+        if (!Directory.Exists(root))
+        {
+            throw new CompanionContractException("journal-root-missing");
+        }
+        RejectReparsePoint(root, "journal-root-reparse");
+        var marker = Path.Combine(root, MarkerFileName);
+        if (!File.Exists(marker) || File.ReadAllText(marker, Encoding.ASCII) != CompanionContract.OwnedRootMarker)
+        {
+            throw new CompanionContractException("journal-root-marker");
+        }
+        return root;
+    }
+
+    private static string FullPath(string value, string parameterName)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value, parameterName);
+        if (value.IndexOf('\0', StringComparison.Ordinal) >= 0)
+        {
+            throw new ArgumentException("The path contains an embedded NUL.", parameterName);
+        }
+        return Path.GetFullPath(value);
+    }
+
+    private static void RejectReparsePoint(string path, string code)
+    {
+        if ((File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0)
+        {
+            throw new CompanionContractException(code);
+        }
+    }
+
+    private static void RequireOperationId(string value)
+    {
+        CompanionContract.RequireDigest(value, "journal-operation-id");
+    }
+
+    private static bool IsErrorCode(string? value) => value is { Length: >= 1 and <= 128 } &&
+        value.All(character => character is (>= 'a' and <= 'z') or (>= '0' and <= '9') or '-');
+
+    private static string SequenceFile(ulong sequence) => $"{sequence:D20}.json";
+
+    private static string Sha256(byte[] bytes) =>
+        Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(bytes)).ToLowerInvariant();
+
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        AllowTrailingCommas = false,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        ReadCommentHandling = JsonCommentHandling.Disallow,
+        UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow,
+        WriteIndented = false,
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.KebabCaseLower, allowIntegerValues: false) }
+    };
+}

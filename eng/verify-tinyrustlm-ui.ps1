@@ -137,24 +137,7 @@ try {
     }
 
     if ($RunDeepAcquisition) {
-        Invoke-NativeGate "acquisition_browser_bridge" "node" @(
-            "--test",
-            (Join-Path $RepoRoot "tinyrustlm/tests/model-acquisition.test.js"),
-            (Join-Path $RepoRoot "tinyrustlm/tests/companion-bridge.test.js")
-        )
-        $gates.acquisition_browser_bridge = "pass"
-
-        Invoke-NativeGate "acquisition_companion" "dotnet" @(
-            "test",
-            (Join-Path $RepoRoot "dotnet/tests/TinyRustLM.SeedHost.Tests/TinyRustLM.SeedHost.Tests.csproj"),
-            "-c", "Release"
-        )
-        $gates.acquisition_companion = "pass"
-
-        Invoke-NativeGate "acquisition_converter" "cargo" @(
-            "test", "-p", "tinyrustlm-slm-pack", "--test", "huggingface_conversion_cli"
-        )
-        $gates.acquisition_converter = "pass"
+        throw "Deep acquisition is unavailable until the clean TinyRustLM companion and complete-composition converter gates are registered."
     }
 
     if ($RunVisualLock) {

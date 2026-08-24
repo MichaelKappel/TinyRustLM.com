@@ -116,9 +116,9 @@ or publication evidence.
 contract library. Credentials are supplied only to an in-memory client and are
 not serializable DTO fields. Received memory remains untrusted data.
 
-The current project has no authorization to perform production MemoryEndpoints
-operations. Unit and fixture behavior cannot be reported as live account,
-continuity, enrollment, cleanup, or readiness evidence.
+Production MemoryEndpoints operation is unauthorized and disconnected. Unit
+and fixture behavior cannot be reported as live account, continuity,
+enrollment, cleanup, or readiness evidence.
 
 ## Package And Consumer Gates
 

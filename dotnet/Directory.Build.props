@@ -11,8 +11,10 @@
     <DebugSymbols>true</DebugSymbols>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <RepositoryUrl>https://TinyRustLM.com/</RepositoryUrl>
+    <RepositoryUrl>https://github.com/MichaelKappel/TinyRustLM.com.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>false</EmbedUntrackedSources>
     <Authors>TinyRustLM maintainers</Authors>
     <Company>TinyRustLM</Company>
     <Copyright>Copyright TinyRustLM maintainers</Copyright>
@@ -20,14 +22,8 @@
     <PackageProjectUrl>https://TinyRustLM.com/</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageTags>TinyRustLM;TinyRustLM.com;UAIX;UAIX.org;UAIX.Browser;Browser;p2pRuntime;p2pRuntime.com;p2pLLM;p2pLLM.com;MiniModel;MiniModel.org;SLM2;.slm;ACG2;Prompt2;Tokenizer2;Template2;Sampling2;AI;LLM;P2P;peer-to-peer;Rust;runtime;model-sharing;model-validation;protected-sdk</PackageTags>
+    <PackageTags>TinyRustLM;TinyRustLM.com;UAIX;UAIX.org;browser-local;p2pRuntime;p2pRuntime.com;p2pLLM;p2pLLM.com;MiniModel;MiniModel.org;SLM2;.slm;ACG2;Prompt2;Tokenizer2;Template2;Sampling2;AI;LLM;P2P;peer-to-peer;Rust;runtime;model-sharing;model-validation;protected-sdk</PackageTags>
     <PackageReleaseNotes>Prelaunch single-product SDK for exact mixed-Q8 SLM2 inspection, fail-atomic ACG2 composition activation, bounded Prompt2 and Sampling2 conversation execution, exact native-contract validation, immutable operation identities, and composition-bound fixed-piece direct transport. The package boundary is the sole current implementation: it contains no compatibility APIs, model aliases, response repair, announcement/catalog control plane, local memory-package facade, legacy model loader, host sampling knobs, diagnostics text, conversion authoring, training, routing, telemetry, or licensing internals.</PackageReleaseNotes>
-    <TinyRustLmPackageIdPrefix Condition="'$(TinyRustLmPackageIdPrefix)' == ''">TinyRustLM</TinyRustLmPackageIdPrefix>
-    <TinyRustLmAbstractionsPackageId Condition="'$(TinyRustLmAbstractionsPackageId)' == ''">$(TinyRustLmPackageIdPrefix).Abstractions</TinyRustLmAbstractionsPackageId>
-    <TinyRustLmCorePackageId Condition="'$(TinyRustLmCorePackageId)' == ''">$(TinyRustLmPackageIdPrefix).Core</TinyRustLmCorePackageId>
-    <TinyRustLmP2PPackageId Condition="'$(TinyRustLmP2PPackageId)' == ''">$(TinyRustLmPackageIdPrefix).P2P</TinyRustLmP2PPackageId>
-    <TinyRustLmMemoryEndpointsPackageId Condition="'$(TinyRustLmMemoryEndpointsPackageId)' == ''">$(TinyRustLmPackageIdPrefix).MemoryEndpoints</TinyRustLmMemoryEndpointsPackageId>
-    <TinyRustLmConversionPackageId Condition="'$(TinyRustLmConversionPackageId)' == ''">$(TinyRustLmPackageIdPrefix).Conversion</TinyRustLmConversionPackageId>
     <TinyRustLmPackOptionalMemoryEndpoints Condition="'$(TinyRustLmPackOptionalMemoryEndpoints)' == ''">false</TinyRustLmPackOptionalMemoryEndpoints>
     <TinyRustLmPackPrivateConversion Condition="'$(TinyRustLmPackPrivateConversion)' == ''">false</TinyRustLmPackPrivateConversion>
     <VersionPrefix>0.1.8</VersionPrefix>

@@ -22,16 +22,16 @@
       <div class="release-band-inner">
         <p class="eyebrow">Desktop companion</p>
         <h1 id="companion-title">TinyRustLM desktop companion</h1>
-        <p class="release-summary">Package 0.3.0 is the prelaunch source target for the canonical companion. Installation remains unavailable until the SLM2-only package, clean-consumer, publication, and public-readback gates pass. No earlier package is supported.</p>
+        <p class="release-summary">The sole TinyRustLM companion is being rebuilt around SLM2, verified direct P2P acquisition, and reviewed local conversion. No companion artifact or install command is released until its clean build, package, browser, publication, and public-readback gates pass.</p>
         <p class="release-facts">
-          <span>Source target <strong>0.3.0</strong></span>
+          <span>Artifact <strong>Not released</strong></span>
           <span>Site <strong>v<span data-release-version>0.2.1</span></strong></span>
           <span>Released <strong><time data-release-date datetime="2026-08-08">2026-08-08</time></strong></span>
           <span>Last published <strong><time data-release-published-at>Awaiting live verification</time></strong></span>
         </p>
         <div class="package-actions" aria-label="Companion release status">
-          <span id="companionPackageStatus" class="package-action" aria-disabled="true">Public package pending</span>
-          <span id="companionDeploymentStatus">Deployment blocked</span>
+          <span id="companionPackageStatus" class="package-action" aria-disabled="true">Companion unavailable</span>
+          <span id="companionDeploymentStatus">Release gate open</span>
         </div>
       </div>
     </section>
@@ -39,17 +39,15 @@
       <div class="history-inner install-steps">
         <div class="install-step">
           <h2 id="install-title">1. Availability</h2>
-          <p>The install command will appear only after the exact public package is independently read back. The browser does not silently install or execute desktop software.</p>
+          <p>Installation controls appear only after the exact signed companion archive is independently read back. The browser never silently installs or executes desktop software.</p>
         </div>
         <div class="install-step">
-          <h2>2. Verify</h2>
-          <p>Run the packaged readiness check before starting a model operation.</p>
-          <pre class="command-block"><code>.\.uaix-tools\uaix-p2p-seed doctor --json</code></pre>
+          <h2>2. Get a model</h2>
+          <p>When the companion is released, Get model will prefer an exact verified peer and otherwise perform the reviewed source acquisition and local conversion directly.</p>
         </div>
         <div class="install-step">
           <h2>3. Connect</h2>
-          <p>Start the loopback bridge for the exact TinyRustLM origin, return to the chat, and choose Connect desktop companion. Pairing is one time and the browser keeps the short-lived capability in memory only.</p>
-          <pre class="command-block"><code>.\.uaix-tools\uaix-p2p-seed bridge --root C:\UAIX\SeedHost --origin https://tinyrustlm.com --port 43127</code></pre>
+          <p>The released browser flow will request explicit loopback pairing and keep its short-lived capability in memory only. No prompt or model byte is sent through the TinyRustLM website.</p>
         </div>
       </div>
     </section>

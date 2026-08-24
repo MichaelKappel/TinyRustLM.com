@@ -75,6 +75,11 @@ $AuthMode = $AuthMode.Trim().ToLowerInvariant()
 if ($AuthMode -notin @("api_key", "trusted_publishing")) {
     throw "AuthMode must be 'api_key' or 'trusted_publishing'."
 }
+$ExpectedPackageIds = @(
+    "TinyRustLM.Abstractions",
+    "TinyRustLM.Core",
+    "TinyRustLM.P2P"
+)
 
 function Test-NuGetOrgSource {
     param([string]$Source)
@@ -252,6 +257,23 @@ $localStepFailures = @($steps | Where-Object {
     }
     return $_.report_status -ne "pass"
 })
+$publishPlanSummary = Read-JsonReport -Path $PublishPlanReport
+$localFeedHashSummary = Read-JsonReport -Path $LocalFeedHashReport
+$publishPlanPackageIds = @($publishPlanSummary.packages | ForEach-Object { [string]$_.package_id } | Sort-Object)
+$publishPlanSymbolPackageIds = @($publishPlanSummary.symbol_packages | ForEach-Object { [string]$_.package_id } | Sort-Object)
+$expectedSortedPackageIds = @($ExpectedPackageIds | Sort-Object)
+$packageGraphMatch = (($publishPlanPackageIds -join "`n") -ceq ($expectedSortedPackageIds -join "`n")) `
+    -and (($publishPlanSymbolPackageIds -join "`n") -ceq ($expectedSortedPackageIds -join "`n"))
+if (-not $packageGraphMatch) {
+    $localStepFailures += [ordered]@{
+        name = "current_public_package_graph"
+        status = "fail"
+        report_path = $PublishPlanReport
+        report_written = Test-Path -LiteralPath $PublishPlanReport -PathType Leaf
+        report_status = Get-JsonStringValue -Object $publishPlanSummary -Name "status"
+        error_message = "Publish plan is not the exact three-package public TinyRustLM graph."
+    }
+}
 $remoteCurrentStep = $steps | Where-Object { $_.name -eq "remote_feed_current" } | Select-Object -First 1
 $remoteHashStep = $steps | Where-Object { $_.name -eq "remote_feed_hashes" } | Select-Object -First 1
 $apiKeyPresent = -not [string]::IsNullOrWhiteSpace($ApiKey)
@@ -306,14 +328,13 @@ if (Test-Path -LiteralPath $PackageSource) {
     $resolvedPackageSource = (Resolve-Path -LiteralPath $PackageSource).Path
 }
 
-$publishPlanSummary = Read-JsonReport -Path $PublishPlanReport
-$localFeedHashSummary = Read-JsonReport -Path $LocalFeedHashReport
-
 $report = [ordered]@{
     schema = "tinyrustlm.nuget.release_readiness.v0"
     generated_utc = [DateTimeOffset]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ")
     status = $status
     package_version = $PackageVersion
+    expected_package_ids = @($ExpectedPackageIds)
+    package_graph_match = $packageGraphMatch
     package_source = $resolvedPackageSource
     nuget_source = $NuGetSource
     secret_material_included = $false

@@ -1,65 +1,232 @@
-# Package Security
+# TinyRustLM Package Security
 
-The TinyRustLM NuGet SDK is a protected public boundary, not a source distribution of the full product.
+This document defines the release-security boundary for the TinyRustLM .NET
+SDK. TinyRustLM is one prelaunch product. SLM2 and other numbered technical
+contracts do not create a product-generation support obligation. Obsolete
+package IDs, APIs, assets, scripts, and workflows are deleted rather than
+retained as compatibility or migration paths.
 
-## Included
+## Authority And Package Allowlist
 
-- `.slm` validation, inspection, and safe loading.
-- Explicit, exact-hash activation of bounded immutable `.acg1` composition graphs.
-- Runtime harness operations for local `.slm` execution after composition activation.
-- Metadata-only P2P manifest, signed-manifest verification, share metadata, announcement, announcement-catalog inspection, import plan, share-kit, local assembly, and local receipt-inspection workflows.
-- .NET wrappers, tests, samples, and native assets.
+Rust is the sole authority for model formats, composition, prompt compilation,
+sampling, generation, and fixed-piece artifact admission. Managed packages may
+transport exact requests and reports but may not reinterpret, repair, or
+replace Rust decisions.
 
-## Excluded
+The public package allowlist is closed:
 
-- `.slm` authoring internals.
-- Model conversion and quantization authoring tools.
-- Premium weights, adapter authoring, adapter auto-assembly, selector generation, offline breeding, lineage promotion, eval/provenance authoring, model-ranking logic, premium optimizers, encryption key handling, telemetry backends, license server internals, and server-assisted commercial features.
+1. `TinyRustLM.Abstractions`
+2. `TinyRustLM.Core`
+3. `TinyRustLM.P2P`
 
-## Native Boundary
+`TinyRustLM.MemoryEndpoints` is optional, unauthorized, and disconnected from
+production. It is not part of the default publish set. Hosted records are
+untrusted data and cannot become system instructions.
 
-The native library returns JSON envelopes and owns runtime handles internally. Callers receive only validated reports, generated text, diagnostics, and metadata workflow outputs. Native strings must be freed through the exported `tinyrustlm_string_free` function; the .NET wrapper handles this automatically.
+`TinyRustLM.Conversion` is private local-feed process tooling. It is never
+accepted by the public publish command. Its converter executables remain
+separate from the runtime native library.
 
-The .NET runtime wrapper validates managed generation options before crossing the native boundary, and the native public runtime SDK repeats the same validation before runtime mutation for direct ABI callers. Token counts, top-k candidate caps, and sampling probabilities must stay within the public fixed-buffer sampler contract. Invalid .NET values fail as managed argument errors; invalid direct native values fail with an `invalid_generation_options` JSON envelope rather than being widened, wrapped, or allowed to reach sampler calls.
+Any extra or missing package, symbol package, dependency, RID asset, public API,
+or archive entry is a release failure.
 
-Loading a model does not select, infer, or synthesize a composition. The caller must supply a regular, non-symlink `.acg1` file between 512 bytes and 512 MiB, with a 64-byte-aligned length, plus its exact lowercase SHA-256 identity. The Rust runtime verifies the complete bundle, active-model identity, route, execution bindings, and member graph before activation. Generation fails closed while no graph is active, and failed activation does not promote the candidate graph.
+## Exact Dependency Graph
 
-The .NET wrapper also rejects embedded NUL characters in every managed string before P/Invoke. This keeps file paths, prompts, JSON handoff documents, and share-kit request fields from being silently truncated by native C-string parsing.
+- `TinyRustLM.Abstractions` has no TinyRustLM package dependency.
+- `TinyRustLM.Core` depends only on the same exact version of
+  `TinyRustLM.Abstractions`.
+- `TinyRustLM.P2P` depends only on the same exact versions of
+  `TinyRustLM.Abstractions` and `TinyRustLM.Core`.
+- Optional `TinyRustLM.MemoryEndpoints` depends only on
+  `TinyRustLM.Abstractions`.
+- Private `TinyRustLM.Conversion` depends only on `TinyRustLM.Core` and its
+  transitive `TinyRustLM.Abstractions` dependency.
 
-The .NET P2P wrapper mirrors Rust-side JSON byte budgets before native calls. Manifest or signed-manifest handoffs over 1 MiB, public-key JSON handoffs over 16 KiB, announcement handoffs over 256 KiB, local import receipt handoffs over 256 KiB, and announcement catalog handoffs over 4 MiB fail as managed argument errors before native C-string allocation or Rust parsing.
+Protected references exclude build and analyzer assets from dependency
+propagation. Cycles, floating versions, alias package IDs, and a standalone
+memory facade are forbidden.
 
-Signed-manifest verification is local and metadata-only. The public package verifies `tinyrustlm.p2p_signed_manifest.v0` envelopes against local `minimodel.public_key.v0` JSON with Ed25519 signatures, matching key metadata, and revoked-key rejection. It does not expose signing, private-key storage, key hosting, remote key discovery, transparency-log policy, publisher services, premium routing, or commercial trust backends.
+## Native Asset Boundary
 
-The bridge preserves empty managed strings as empty native strings rather than null pointers, so empty prompts and empty-but-present handoff values cannot be confused with omitted optional arguments.
+Only `TinyRustLM.Core` may carry the runtime library:
 
-The .NET P2P wrapper validates the outer share-kit request shape before native JSON serialization. Missing `ModelPath` / `OutputDir` and `PieceSize` values outside 1 KiB through 16 MiB fail as managed argument errors before the request can reach the native bridge.
+| RID | Required package entry |
+| --- | --- |
+| `win-x64` | `runtimes/win-x64/native/tinyrustlm_native.dll` |
+| `linux-x64` | `runtimes/linux-x64/native/libtinyrustlm_native.so` |
+| `linux-arm64` | `runtimes/linux-arm64/native/libtinyrustlm_native.so` |
 
-## Release Checks
+The package audit rejects native entries in `TinyRustLM.Abstractions`,
+`TinyRustLM.P2P`, and `TinyRustLM.MemoryEndpoints`, unknown RIDs, unexpected
+filenames, or native files outside the exact runtime placement.
 
-`eng/verify-package.ps1` or `eng/verify-package.sh` must pass before publishing. It verifies workspace rustfmt with `cargo fmt --all --check`, workspace clippy with `cargo clippy --workspace --all-targets -- -D warnings`, Rust tests, .NET build/tests, NuGet packing, matching `.snupkg` symbol package generation, required native assets, package contents that must not include private authoring crates, source files, debug symbols in the main `.nupkg`, generated build-output directories, or local absolute paths, and a clean temporary consumer app that installs the produced packages and uses only the public `.slm`, exact-hash `.acg1` activation, runtime, UAIX memory/persona package planning and inspection, P2P metadata, signed-manifest verification, announcement JSON handoff, catalog application and inspection, local assembly, and receipt-inspection APIs.
+The release workflow builds each library on matching target hardware and runs
+the native contract tests there. The Linux ARM64 lane uses a real ARM64 runner.
+Cross-compilation, QEMU smoke, or header inspection alone must be labeled as
+such and cannot satisfy the real-hardware release gate.
 
-Every project below `dotnet/tests` must explicitly declare `<IsTestProject>true</IsTestProject>` and exactly one `Microsoft.NET.Test.Sdk` reference. `TestProjectExecutionContractTests` parses every test project as XML and fails on omission or duplication. This is a release-integrity requirement: an SDK message that a project was skipped, even with process exit code zero, is not test evidence. Core test fixtures are copied into the external test output and consumed only from its fixed `fixtures` directory; test binaries do not search parent directories for source-tree data. Current local `D:`-contained execution covers 75 Core, 68 Package, and 50 SeedHost tests with zero failures or skips. SeedHost's six native cases require an explicitly identified MiniModel CLI, native library, source snapshot, and `.slm` fixture; absence is a hard failure rather than a skip.
+Managed loading validates the exact native self-description and fifteen-symbol
+ABI before creating a runtime. It does not probe old symbols, search arbitrary
+fallback paths, or fall back to a managed inference engine.
 
-For local development, required native assets default to the current machine RID. The official release workflow builds and downloads native bridge artifacts for `win-x64`, `linux-x64`, `osx-x64`, and `osx-arm64`, then runs `eng/verify-package.ps1 -RequiredNativeRids win-x64,linux-x64,osx-x64,osx-arm64` before publishing.
+## Private Converter Assets
 
-The PowerShell and Bash pack paths share one BCL-only `TinyRustLM.PackageCanonicalizer` implementation. It operates only on absolute paths to unsigned `.nupkg` and `.snupkg` files, rejects reparse files and direct parents, signed archives, unsafe or nonportable entry names, portable name collisions, excessive entry/name/package/uncompressed sizes, and source mutation, and streams all hashes. It rewrites only ZIP entry timestamps to `1980-01-01T00:00:00Z` in an exclusive same-directory temporary copy, proves ordered content and metadata equivalence, flushes that copy, promotes it only after verification, and performs final readback. A package already in canonical form is not rewritten. This is a timestamp-drift control for otherwise identical unsigned package inputs, not a cross-toolchain determinism claim and not a durability claim across sudden power loss.
+When explicitly requested, `TinyRustLM.Conversion` may contain only the exact
+`tinyrustlm-convert` executable for `win-x64`, `linux-x64`, and `linux-arm64`
+under its reviewed `tools` and `contentFiles` locations. The package audit
+requires the selected RID assets and rejects unrelated authoring or training
+tools.
 
-Both verifier entrypoints write `artifacts/reports/tinyrustlm-nuget-package-audit.json` with schema `tinyrustlm.nuget.package_audit.v1`, a machine-readable audit record with the expected source-versioned package names, expected source-versioned symbol package names, missing/unexpected package entries, missing/unexpected symbol package entries, package identity checks, symbol package identity checks, package and symbol package hashes, package sizes, package ZIP entry names, canonical timestamp identity, package-qualified noncanonical timestamp entries, allowed package entry patterns, unexpected package content entries, symbol package PDB entries, public API XML member entries, expected public API entries, missing/unexpected public API entries, required NuGet metadata, metadata policy violations, required search terms, missing search terms, declared package-file entries, package documentation entries, expected package documentation source hashes, packaged documentation hashes, XML documentation entries, expected dependency entries, dependency metadata, native RID coverage, allowed native entries, required RID gaps, native placement evidence, private-surface scan results, source/debug-symbol/generated-output leakage counts, and local absolute path match counts. The audit fails if any main or symbol package entry is not timestamp-canonical, if the package folder does not contain exactly `TinyRustLM.Abstractions`, `TinyRustLM.Core`, `TinyRustLM.P2P`, and `TinyRustLM.Memory` at the source-declared version, or if any package's nuspec `id` / `version` differs from its protected filename and source version. It also fails if a matching `.snupkg` is missing, lacks `SymbolsPackage` type metadata, lacks a managed portable PDB entry, contains source files or generated-output paths, or carries entries outside the NuGet symbol-package allow-list. The audit fails if package title, description, tags, release notes, project URL, and repository URL stop carrying required discovery terms such as `UAIX.org`, `UAIX.Browser`, `p2pRuntime`, `p2pRuntime.com`, `p2pLLM`, `p2pLLM.com`, `MiniModel`, `.slm`, `.uai`, `memory`, and `persona`. The metadata policy also requires project URL `https://tinyrustlm.com/`, repository type `git`, `README.md`, `LICENSE.txt`, license acceptance, TinyRustLM authorship, TinyRustLM / UAIX Browser title text, meaningful descriptions, and exact package-ID tags. The audit fails if any package entry falls outside the narrow public allow-list: NuGet metadata, nuspec, README/license, package-specific public docs, `lib/net8.0` DLL/XML outputs, and approved Core native runtime assets. The audit fails if a package's XML documentation exposes a public API member outside the approved SDK surface or omits a required public API member. The post-pack package tests also reflect the packaged assemblies and fail if binary public types, constructor arity, DTO properties, or declared workflow methods drift outside the approved SDK surface. The audit fails if declared docs are missing or if packaged README/license/package docs do not byte-match the current `docs/nuget` sources. The audit fails if package dependencies drift away from the public graph: `TinyRustLM.Abstractions` has no package dependencies, `TinyRustLM.Core` depends only on same-version `TinyRustLM.Abstractions`, `TinyRustLM.P2P` depends only on same-version `TinyRustLM.Abstractions` and `TinyRustLM.Core`, and `TinyRustLM.Memory` depends only on same-version `TinyRustLM.Abstractions` and `TinyRustLM.Core`. The dependency audit also requires protected package references to retain `exclude=Build,Analyzers` metadata. The audit also fails if native runtime entries appear outside `TinyRustLM.Core`, or if `TinyRustLM.Core` carries native files outside the allowed RID/native filename set; `TinyRustLM.Abstractions`, `TinyRustLM.P2P`, and `TinyRustLM.Memory` stay managed metadata/API packages. CI and release workflows upload this report as a build artifact, and upload both `.nupkg` and `.snupkg` files under the `tinyrustlm-nuget-packages` artifact.
+The wrapper invokes the executable directly with a closed argument contract.
+It applies duration and output limits, bounds stdout and stderr, supports
+cancellation, rejects reparse inputs, validates exact summaries, and rehashes
+promoted SLM2 or Tokenizer2 output. Structural conversion is not model-quality
+or browser evidence.
 
-`eng/publish-nuget.ps1 -DryRun -SkipVerification` lists the exact packages that would be pushed after package verification. Real publication requires `NUGET_API_KEY` or `-ApiKey` and validates that exactly the four protected SDK packages plus their matching `.snupkg` symbol packages are present before pushing. For NuGet.org Trusted Publishing, the release workflow obtains a short-lived NuGet.org key with `NuGet/login@v1` and passes it through the same `-ApiKey` path; private feeds continue to use scoped API keys. Stale versions, renamed package experiments, unintended extra `TinyRustLM*.nupkg` or `TinyRustLM*.snupkg` files, missing package-audit reports, missing `SHA256SUMS-TinyRustLM-<version>.txt` manifests, packages whose SHA-256/byte counts differ from `tinyrustlm-nuget-package-audit.json`, symbol packages whose SHA-256/byte counts differ from the package audit, packages or symbol packages missing from the generated SHA256SUMS manifest, or packages or symbol packages whose hashes differ from that manifest fail closed before any push. Authenticated pushes run from the package output directory, push each `.nupkg` with `--no-symbols`, and then push each matching `.snupkg` explicitly. The command writes `artifacts/reports/tinyrustlm-nuget-publish-plan.json` with the exact package and symbol package names, hashes, sizes, package source, target feed, symbol publish mode, package-audit report hash, audit match status, SHA256SUMS manifest path/hash/match status, dry-run/push status, source provenance for the producing checkout, and `secret_material_included=false`; release workflows validate and upload this report as publish evidence whenever the report exists. The source-provenance block records only non-secret git/CI identifiers such as commit, branch, dirty-tree status, tracked/untracked change counts, CI provider, and GitHub run metadata, never API keys or push tokens. If `dotnet nuget push` fails during an authenticated publish, the scripts overwrite the report with status `push_failed` and a redacted `publish_error` so partial attempts cannot be mistaken for publish-ready evidence.
+## Public API Baselines
 
-`eng/audit-nuget-release-readiness.ps1` and `eng/audit-nuget-release-readiness.sh` are the no-push release-readiness gate. They refresh the dry-run publish plan, run local package-folder feed-current and feed-hash checks, query the target feed, verify target-feed package bytes when the declared version is already present, and write `artifacts/reports/tinyrustlm-nuget-release-readiness.json`. Before each sub-step, the expected subreport path is removed; the readiness report then records `report_written` for that step. This prevents stale feed-current, feed-hash, or publish-plan JSON from being reused when a step fails before writing fresh evidence. The report records `auth_mode`, `api_key_present`, `trusted_publishing_requested`, and `trusted_publishing_supported` only as non-secret booleans/labels and keeps `secret_material_included=false`; it also records top-level publish-plan package/symbol counts, `symbol_publish_mode`, package-and-symbol SHA256SUMS manifest hash/match evidence, local feed-hash package/symbol counts, local symbol verification mode, and local package/symbol mismatch counts so release reviewers can see symbol-bound readiness without opening every subreport. `blocked_trusted_publishing_unsupported` prevents accidental private-feed pushes through NuGet.org-only OIDC mode. The official release workflow runs the PowerShell audit with `-FailOnBlocked` before `dotnet nuget push`, validates and uploads the readiness report when it exists, skips the push step when readiness is already `published_current`, and still runs the mandatory feed-current/feed-hash gates.
+Each package has one sorted checked-in baseline under `eng/public-api`. The
+package auditor compares the packaged XML documentation member set with that
+baseline. Package tests also inspect managed metadata and package projects.
 
-For NuGet.org releases, prefer `auth_mode=trusted_publishing` after a NuGet.org trusted publishing policy has been configured for repository, workflow file `release-nuget.yml`, and environment `nuget-release`. The workflow grants `id-token: write`, logs in through `NuGet/login@v1`, and never stores the temporary push key in release evidence. Use `auth_mode=api_key` for private feeds or for legacy scoped NuGet.org keys.
+An intentional prelaunch API rewrite updates the current baseline only after
+all producers, consumers, samples, docs, and tests are changed coherently. Old
+members are removed. Type forwards, obsolete attributes, deprecated aliases,
+and compatibility facades are not acceptable substitutes for deletion.
 
-`eng/verify-feed.ps1` is the clean consumer post-publish smoke. It installs the protected SDK packages from a configured feed into an isolated clean consumer app, then repeats `.slm` inspection/loading, exact-hash `.acg1` activation, runtime generation, UAIX memory/persona package, and P2P metadata workflow smoke coverage without using the local package artifact directory. It writes `artifacts/reports/tinyrustlm-nuget-feed-smoke.json`. The Unix wrapper records dependency failures, such as a missing `dotnet` CLI, in the same report schema. In the official release workflow this smoke is optional through `verify_after_publish`; feed-current and feed-hash verification are mandatory after every publish.
+## Hostile Archive Inspection
 
-`eng/verify-feed-current.ps1` is the feed freshness gate. It writes `artifacts/reports/tinyrustlm-nuget-feed-current.json` and fails when any protected package is missing the source-declared version or when the feed reports a newer version than the source tree. This keeps the NuGet distribution aligned with `dotnet/Directory.Build.props`. Set `TINYRUSTLM_FEED_PACKAGE_IDS` to the five `UAIX.Browser.*` package IDs when checking the branded Browser feed-current report instead of the default four `TinyRustLM.*` package IDs.
+Every `.nupkg` and `.snupkg` is treated as hostile ZIP input. Canonicalization
+and audit reject:
 
-`eng/publish-browser-nuget.ps1` and `.sh` are the branded Browser publish gates. They write `artifacts/reports/uaix-browser-nuget-publish-plan.json` with schema `uaix.browser.nuget.publish_plan.v0`, require the passing `uaix.browser.nuget.feed_audit.v0` report, require `SHA256SUMS-UAIX.Browser-<version>.txt`, require generated `README-UAIX.Browser-<version>.txt` symbol-visibility guidance, reject missing or unexpected Browser `.nupkg` / `.snupkg` files, keep push secrets out of the report, record feed README hash/match evidence, and explicitly push `.snupkg` symbol packages after the primary package pushes. `eng/audit-browser-nuget-release-readiness.ps1` and `.sh` run the same no-push dry-run check, but their default dry-run report path is `artifacts/reports/uaix-browser-nuget-release-readiness-publish-plan-dry-run.json` so routine readiness checks do not overwrite the retained post-push `uaix-browser-nuget-publish-plan.json` evidence; use the `PublishPlanReport` parameter or `UAIX_BROWSER_PUBLISH_PLAN_REPORT` only for an intentional alternate readiness path.
+- absolute paths, traversal, backslashes, reserved names, and unsafe portable
+  path collisions;
+- duplicate entries and case-insensitive collisions;
+- signed archives that would be invalidated by canonicalization;
+- unsupported extensions, oversized entry counts, and malformed ZIP data;
+- noncanonical timestamps or extra archive content;
+- source files, generated `bin`, `obj`, `target`, or `artifacts` paths;
+- unexpected debug files in primary packages;
+- local absolute source paths and private authoring surfaces;
+- missing or unexpected managed DLL, XML, native, readme, license, or package
+  documentation entries; and
+- package metadata, dependencies, API members, or RID entries outside the
+  closed package-specific allowlist.
 
-`eng/verify-feed-package-hashes.ps1` is the feed artifact-integrity gate. It reads `artifacts/reports/tinyrustlm-nuget-publish-plan.json`, requires that plan to be bound to both a passing package audit and a passing `SHA256SUMS-TinyRustLM-<version>.txt` manifest, downloads or reads each protected package from a NuGet v3 feed or local package folder, carries the package-audit and SHA256SUMS manifest hashes forward into the feed-hash report, and writes `artifacts/reports/tinyrustlm-nuget-feed-hashes.json`. Local/private folder feeds must match audited `.nupkg` SHA-256 values and byte counts exactly and also verify matching `.snupkg` symbol package hashes and byte counts from the publish plan. NuGet.org may add `.signature.p7s` repository-signature bytes after upload; for NuGet v3 feeds the verifier accepts that only when every original package entry matches by path, byte count, and SHA-256 and the only additional entry is `.signature.p7s`. For NuGet v3 package feeds it records `symbol_package_verification_mode=nuget_v3_package_feed_does_not_expose_snupkg_symbols`, because the package flat-container endpoint does not expose symbol sidecars. The official release workflow runs both feed-current and feed-hash gates after publishing and retries briefly to tolerate feed indexing delay before failing the release.
+Canonical package archives use one deterministic entry order and timestamp
+identity before hashes are recorded. A later repository signature is a distinct
+phase and may not be silently removed or rewritten.
 
-`eng/verify-public-doc-sites.ps1` is the local documentation mirror gate. When the sibling TinyRustLM.com, TinyRustLM.MiRust.com, MiniModel.org, and MiniModel.MiRust.com checkouts are present, it writes `artifacts/reports/tinyrustlm-public-doc-sites-audit.json` and fails if public docs omit `TinyRustLM.Memory`, omit `.snupkg` symbol package or `symbol_publish_mode` release evidence, omit TinyRustLM mirror `SymbolsPackage` and PDB evidence for the UAIX Browser feed audit, omit SHA256SUMS-bound publish/feed-hash wording, or reintroduce stale three-package NuGet status claims.
+## Symbol Packages And SourceLink
 
-`.github/workflows/nuget-feed-monitor.yml` is the ongoing feed monitor. It runs the same freshness gate on demand and can run daily once `TINYRUSTLM_NUGET_MONITOR_ENABLED=true` is configured for the repository. The monitor does not use package-push secrets. It uploads the feed-current report by default, when `TINYRUSTLM_NUGET_MONITOR_VERIFY_CONSUMER=true` it also uploads the clean consumer feed-smoke report, and when `TINYRUSTLM_NUGET_MONITOR_VERIFY_HASHES=true` plus `TINYRUSTLM_NUGET_MONITOR_PUBLISH_PLAN_REPORT=<path>` are configured it also uploads feed package-byte hash evidence. Set `UAIX_BROWSER_NUGET_MONITOR_VERIFY_CURRENT=true` to also upload `uaix-browser-nuget-feed-current.json` for `UAIX.Browser.Core.Abstractions`, `UAIX.Browser.p2pLLM.Runtime`, `UAIX.Browser.p2pRuntime.P2P`, `UAIX.Browser.Memory`, and `UAIX.Browser.p2pLLM.Conversion`.
+Every public `.nupkg` has one matching `.snupkg` at the same package ID and
+version. The symbol package must declare `SymbolsPackage`, contain the expected
+portable PDB, and remain within its narrow allowlist. Source files, generated
+output trees, and private absolute paths are rejected.
+
+Repository URL/type, source revision, portable PDB identity, and SourceLink
+behavior are reviewed as one supply-chain claim. Creating an `.snupkg` is not
+proof that a registry accepted or serves it.
+
+## Create-Only Package Transaction
+
+Every transaction uses a new absent or empty output directory. Reusing a
+nonempty folder fails before packing. The scripts do not recursively clean an
+unknown path or overwrite prior evidence.
+
+The transaction runs current Rust formatting, warnings-denied lint and tests,
+explicit managed restores/builds/tests, exact package creation, package
+canonicalization, package audit, isolated consumer execution, package and
+symbol hashing, and bounded manifest creation.
+
+The audit report schema is `tinyrustlm.nuget.package_audit.v1`. A passing report
+binds:
+
+- exact package and symbol names, IDs, versions, sizes, and SHA-256 values;
+- package metadata, dependencies, API baselines, documentation, and ZIP entry
+  inventories;
+- native RID coverage and exact allowed native entries;
+- portable PDB and symbol-package evidence;
+- private/source/debug/generated/local-path scan results; and
+- missing, unexpected, mismatch, and terminal status counts.
+
+The package transaction then installs only the packed bytes into a fresh
+temporary project with isolated global and HTTP NuGet caches. It proves SLM2
+inspection, exact native contract loading, runtime handle ownership, ACG2 and
+SLM2 piece assembly, byte identity, create-only collision rejection, and
+manifest-tamper rejection. Host build outputs and globally cached packages may
+not satisfy this gate.
+
+## Hash Manifest And Publish Binding
+
+`SHA256SUMS-TinyRustLM-<version>.txt` contains the package and symbol package
+hashes from the completed transaction. The publish command requires:
+
+- exactly the three public package files and three symbol packages;
+- a passing package-audit report containing the same names, sizes, and hashes;
+- the matching SHA-256 manifest with no missing, extra, duplicate, or malformed
+  rows; and
+- the source-declared package version.
+
+`TinyRustLM.MemoryEndpoints`, `TinyRustLM.Conversion`, an unknown TinyRustLM
+package, stale version, changed byte, or extra archive blocks publication before
+the first push.
+
+The publish report uses schema `tinyrustlm.nuget.publish_plan.v0`, records
+`secret_material_included=false`, and includes only bounded source-control/CI
+provenance. It preserves `push_failed` evidence when any primary or symbol push
+fails so a partial attempt cannot be presented as success.
+
+## Credential Boundary
+
+API keys and short-lived Trusted Publishing credentials enter only through
+explicit process parameters or environment variables. They must not appear in
+Git, command-formatting output, JSON reports, package metadata, manifests,
+exception text, screenshots, or retained logs.
+
+The PowerShell publisher redacts the argument following `--api-key`. The Bash
+publisher must provide equivalent redaction. Publication uses the configured
+feed only; Trusted Publishing is accepted only for NuGet.org with the reviewed
+workflow/environment policy.
+
+## Release Readiness And Public Readback
+
+The readiness audit proves the local package folder before evaluating remote
+state. It creates a dry-run publish plan, verifies the local feed version and
+exact hashes, queries the remote feed, and reports one of the explicit states
+such as blocked local verification, blocked authentication, ready to publish,
+published current, or remote hash mismatch.
+
+After an authorized push, public readback is mandatory:
+
+1. all three package IDs expose the source-declared version;
+2. no undeclared newer-version condition is hidden;
+3. flat-container package bytes match the retained publish plan;
+4. symbol publication evidence is retained and reviewed;
+5. an isolated clean consumer restores and executes the public packages when
+   that smoke is requested; and
+6. reports remain free of credentials and private paths.
+
+Upload logs, package creation, and registry version visibility alone are not a
+publication claim. A version that exists remotely with different immutable
+bytes is a blocker; the same package version is never overwritten.
+
+## Failure And Incident Handling
+
+Failed and obsolete receipts are preserved. A changed package, API baseline,
+native binary, auditor, publish plan, or feed observation invalidates only its
+dependent phases, but no prior evidence is overwritten.
+
+When a gate finds an obsolete API, package, workflow, asset, documentation
+instruction, source leak, wrong RID, hash mismatch, or consumer failure:
+
+1. preserve the exact failure;
+2. add a general regression test;
+3. fix the sole current owner;
+4. delete the superseded executable or documentation path;
+5. rerun the invalidated package transaction in a new output directory; and
+6. publish only after every applicable gate and public readback passes.
+
+Package security proves distribution integrity for the tested SDK bytes. It
+does not prove model provenance, conversational quality, browser-WASM parity,
+public P2P reachability, site deployment, or live MemoryEndpoints operation.

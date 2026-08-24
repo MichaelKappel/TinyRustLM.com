@@ -1,18 +1,21 @@
 param(
     [ValidateSet("debug", "release")]
-    [string]$Configuration = "release"
+    [string]$Configuration = "release",
+    [ValidateSet("", "win-x64", "linux-x64", "linux-arm64")]
+    [string]$Rid = ""
 )
 
 $ErrorActionPreference = "Stop"
 $RepoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
+
 function Resolve-CargoTargetDirectory {
     if (-not $env:CARGO_TARGET_DIR) {
         return [IO.Path]::GetFullPath((Join-Path $RepoRoot "target"))
     }
 
     $configured = $env:CARGO_TARGET_DIR
-    $isWindowsAbsolute = $configured -match '^[A-Za-z]:[\\/]'
-    $isUncAbsolute = $configured -match '^(?:\\\\|//)[^\\/]+[\\/][^\\/]+'
+    $isWindowsAbsolute = $configured -match '^[A-Za-z]:[\/]'
+    $isUncAbsolute = $configured -match '^(?:\\|//)[^\/]+[\/][^\/]+'
     $isPosixAbsolute = $configured.StartsWith("/", [StringComparison]::Ordinal)
     if (-not ($isWindowsAbsolute -or $isUncAbsolute -or $isPosixAbsolute)) {
         throw "CARGO_TARGET_DIR must be an absolute path"
@@ -26,38 +29,56 @@ function Resolve-CargoTargetDirectory {
     return $resolved
 }
 
-function Invoke-Cargo {
-    param(
-        [string[]]$Arguments
-    )
-
-    & cargo @Arguments
-    if ($LASTEXITCODE -ne 0) {
-        throw "cargo $($Arguments -join ' ') failed with exit code $LASTEXITCODE"
+function Get-HostRid {
+    $architecture = [Runtime.InteropServices.RuntimeInformation]::OSArchitecture
+    $isWindows = [Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([Runtime.InteropServices.OSPlatform]::Windows)
+    $isLinux = [Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([Runtime.InteropServices.OSPlatform]::Linux)
+    if ($isWindows -and $architecture -eq [Runtime.InteropServices.Architecture]::X64) {
+        return "win-x64"
     }
+    if ($isLinux -and $architecture -eq [Runtime.InteropServices.Architecture]::X64) {
+        return "linux-x64"
+    }
+    if ($isLinux -and $architecture -eq [Runtime.InteropServices.Architecture]::Arm64) {
+        return "linux-arm64"
+    }
+    throw "This host is not one of the supported TinyRustLM native RIDs"
 }
 
-$ProfileArg = if ($Configuration -eq "release") { "--release" } else { "" }
-$TargetDir = Resolve-CargoTargetDirectory
-$Rid = if ($IsLinux) { "linux-x64" } elseif ($IsMacOS) { "osx-x64" } else { "win-x64" }
-$NativeName = if ($IsLinux) { "libtinyrustlm_native.so" } elseif ($IsMacOS) { "libtinyrustlm_native.dylib" } else { "tinyrustlm_native.dll" }
-$ProfileDir = if ($Configuration -eq "release") { "release" } else { "debug" }
-$OutputDir = Join-Path $RepoRoot "artifacts/native/$Rid"
+if ([string]::IsNullOrWhiteSpace($Rid)) {
+    $Rid = Get-HostRid
+}
+
+$targetTriple = switch ($Rid) {
+    "win-x64" { "x86_64-pc-windows-msvc" }
+    "linux-x64" { "x86_64-unknown-linux-gnu" }
+    "linux-arm64" { "aarch64-unknown-linux-gnu" }
+    default { throw "Unsupported native RID: $Rid" }
+}
+$nativeName = if ($Rid -eq "win-x64") { "tinyrustlm_native.dll" } else { "libtinyrustlm_native.so" }
+$profileDirectory = if ($Configuration -eq "release") { "release" } else { "debug" }
+$targetDirectory = Resolve-CargoTargetDirectory
+$outputDirectory = Join-Path $RepoRoot "artifacts/native/$Rid"
+$cargoArguments = @("build", "-p", "tinyrustlm-native", "--target", $targetTriple)
+if ($Configuration -eq "release") {
+    $cargoArguments += "--release"
+}
 
 Push-Location $RepoRoot
 try {
-    if ($ProfileArg) {
-        Invoke-Cargo -Arguments @("build", "-p", "tinyrustlm-native", "--release")
-    } else {
-        Invoke-Cargo -Arguments @("build", "-p", "tinyrustlm-native")
+    & cargo @cargoArguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "cargo $($cargoArguments -join ' ') failed with exit code $LASTEXITCODE"
     }
-    New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
-    $NativeSource = Join-Path (Join-Path $TargetDir $ProfileDir) $NativeName
-    if (-not (Test-Path -LiteralPath $NativeSource -PathType Leaf)) {
-        throw "TinyRustLM native build output is missing"
+
+    $nativeSource = Join-Path $targetDirectory "$targetTriple/$profileDirectory/$nativeName"
+    if (-not (Test-Path -LiteralPath $nativeSource -PathType Leaf)) {
+        throw "TinyRustLM native build output is missing: $nativeSource"
     }
-    Copy-Item -LiteralPath $NativeSource -Destination (Join-Path $OutputDir $NativeName) -Force
-    Write-Host "TinyRustLM native library copied to $OutputDir"
+
+    New-Item -ItemType Directory -Force -Path $outputDirectory | Out-Null
+    Copy-Item -LiteralPath $nativeSource -Destination (Join-Path $outputDirectory $nativeName) -Force
+    Write-Host "TinyRustLM native library copied to $outputDirectory"
 }
 finally {
     Pop-Location

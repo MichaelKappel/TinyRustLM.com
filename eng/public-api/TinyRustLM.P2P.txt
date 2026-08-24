@@ -1,0 +1,6 @@
+# Approved XML documentation members for TinyRustLM.P2P.
+
+M:TinyRustLM.TinyRustLmP2PClient.AssembleArtifact(TinyRustLM.AssembleArtifactRequest,System.ReadOnlyMemory{System.Byte})
+M:TinyRustLM.TinyRustLmP2PClient.InspectManifest(System.ReadOnlyMemory{System.Byte})
+M:TinyRustLM.TinyRustLmP2PClient.PrepareShareKit(TinyRustLM.PrepareShareKitRequest)
+T:TinyRustLM.TinyRustLmP2PClient

@@ -16,13 +16,7 @@ from datetime import datetime, timezone
 
 source, package_version, report_output, allow_newer_raw = sys.argv[1:5]
 allow_newer = allow_newer_raw == "1"
-package_ids_raw = os.environ.get("TINYRUSTLM_FEED_PACKAGE_IDS", "")
-package_ids = [
-    item.strip()
-    for item in package_ids_raw.replace(";", ",").split(",")
-    if item.strip()
-] or ["TinyRustLM.Abstractions", "TinyRustLM.Core", "TinyRustLM.P2P", "TinyRustLM.Memory"]
-package_ids = sorted(set(package_ids))
+package_ids = ["TinyRustLM.Abstractions", "TinyRustLM.Core", "TinyRustLM.P2P"]
 
 
 def semver_key(version):
