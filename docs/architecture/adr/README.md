@@ -44,7 +44,7 @@ path after its replacement passes.
 | ADR-016 | [Exact Sampling2 2.0 deterministic token-selection profile](ADR-016-sampling2-format-profile.md) | Accepted | Binary contract, normative Q48 table, independent vectors, and unsafe-free Rust implementation pass locally; native/WASM composition and model promotion remain pending |
 | ADR-017 | [Exact Prompt2 2.0 prompt-composition profile](ADR-017-prompt2-composition-profile.md) | Accepted | Exact dependency-bound artifact, three binary wires, rendered-token recomposition, and independent Node/Rust native vectors pass locally; registered accepted-artifact and browser-WASM execution remain pending |
 | ADR-018 | [Exact SLM2 mixed-Q8 weight profile](ADR-018-slm2-q8-weight-profile.md) | Accepted | Exact role-bound Q8/F32 artifact, independent vectors, Rust scalar runtime, hostile corpus, and Node/Chromium WASM fixture conformance pass locally; real-model promotion remains pending |
-| ADR-019 | [Exact ACG2 champion composition format](ADR-019-acg2-champion-format.md) | Accepted | Output-free exact five-member identity graph accepted; implementation and activation remain pending |
+| ADR-019 | [Exact ACG2 champion composition format](ADR-019-acg2-champion-format.md) | Accepted | Corrected output-free registration is remote-exact; deterministic format, bounded resolution, fail-atomic activation, and browser-WASM conformance are implemented but unpromoted |
 
 ## Evidence Labels
 

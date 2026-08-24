@@ -1,0 +1,30 @@
+[package]
+name = "tinyrustlm-composition2"
+version = "0.1.0"
+edition = "2021"
+license = "Proprietary"
+authors = ["TinyRustLM maintainers"]
+repository = "https://TinyRustLM.com/"
+description = "Canonical ACG2 graph, bounded member resolution, and fail-atomic activation."
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+sha2 = "=0.10.9"
+tinyrustlm-prompt2 = { path = "../tinyrustlm-prompt2" }
+tinyrustlm-sampling2 = { path = "../tinyrustlm-sampling2" }
+tinyrustlm-slm2 = { path = "../tinyrustlm-slm2" }
+tinyrustlm-template2 = { path = "../tinyrustlm-template2" }
+tinyrustlm-tokenizer2 = { path = "../tinyrustlm-tokenizer2" }
+
+[dev-dependencies]
+serde_json = "=1.0.150"
+
+[lints.rust]
+missing_docs = "deny"
+unsafe_code = "deny"
+
+[workspace]
+members = ["."]
+resolver = "2"

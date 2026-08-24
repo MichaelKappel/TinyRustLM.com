@@ -12,6 +12,10 @@ const registrationPath = path.join(
   repositoryRoot,
   "contracts/vnext/acg2-champion-format-preregistration.v1.json"
 );
+const correctedRegistrationPath = path.join(
+  repositoryRoot,
+  "contracts/vnext/acg2-champion-format-preregistration.v2.json"
+);
 const architecturePath = path.join(
   repositoryRoot,
   "docs/architecture/2026-08-24-acg2-champion-format-preregistration.md"
@@ -23,6 +27,9 @@ const decisionPath = path.join(
 const registrationBytes = fs.readFileSync(registrationPath);
 const registrationText = registrationBytes.toString("utf8");
 const registration = parseStrictJson(registrationBytes);
+const correctedRegistration = parseStrictJson(
+  fs.readFileSync(correctedRegistrationPath)
+);
 
 function assertExactFieldCoverage(fields, expectedBytes) {
   let cursor = 0;
@@ -194,17 +201,53 @@ test("requires an isolated independent oracle and exhaustive hostile coverage", 
   assert.ok(registration.requiredTests.includes("native-and-wasm-conformance"));
 });
 
-test("creates no implementation output or inflated product claim", () => {
+test("preserves output-free history while admitting only corrected output", () => {
   const expected = registration.expectedImplementationOutputs;
+  assert.deepEqual(correctedRegistration.expectedImplementationOutputs, expected);
+  assert.deepEqual(correctedRegistration.predecessorRegistration, {
+    path: "contracts/vnext/acg2-champion-format-preregistration.v1.json",
+    byteLength: 11929,
+    sha256: "afec4dccad2062728677b6987519ce2385a1bca3761fe8f0927ac80242d6403d",
+    registrationCommit: "39feda199eea782ff32f9ffb2b93f7c1a1b21d33",
+    effectiveStatus: "terminally-superseded-before-output",
+    defect: "prompt-member-profile-bound-superseded-dense-f32-SLM2-dependencies",
+    artifactOutputCreated: false,
+    vectorOutputCreated: false,
+    implementationOutputCreated: false,
+    browserOutputCreated: false,
+    mayBeEditedOrReused: false,
+    remainsImmutableAuditHistory: true
+  });
+
   for (const key of ["machineProfile", "languageNeutralVectors", "rustCrate",
     "nodeOracle", "nodeTest"]) {
-    assert.equal(fs.existsSync(path.join(repositoryRoot, expected[key])), false,
-      `${key} must remain absent before remote-exact registration`);
+    assert.equal(fs.existsSync(path.join(repositoryRoot, expected[key])), true,
+      `${key} must exist only after the corrected remote-exact registration`);
   }
   assert.equal(fs.existsSync(path.join(repositoryRoot, expected.architectureDecision)), true);
+
+  const implementedProfile = parseStrictJson(
+    fs.readFileSync(path.join(repositoryRoot, expected.machineProfile))
+  );
+  assert.equal(implementedProfile.profileId, "org.minimodel.acg2/2.0");
+  assert.equal(implementedProfile.status, "implemented-unpromoted");
+  assert.equal(implementedProfile.productLifecycle, "prelaunch-single-product");
+  assert.equal(implementedProfile.technicalIdentityIsProductGeneration, false);
+  assert.equal(implementedProfile.memberProfiles[4].profileSha256,
+    correctedRegistration.memberProfiles[4].profileSha256);
+  assert.notEqual(implementedProfile.memberProfiles[4].profileSha256,
+    registration.memberProfiles[4].profileSha256);
+
   assert.ok(Object.values(registration.registrationOutputBoundary)
     .every((value) => value === false));
   assert.ok(Object.values(registration.claimBoundary).every((value) => value === false));
+  assert.equal(implementedProfile.claimBoundary.establishesAfterAllRequiredEvidence,
+    "exact-ACG2-format-resolution-and-activation-conformance-for-the-bound-five-member-profile");
+  assert.ok(implementedProfile.claimBoundary.doesNotEstablish.includes(
+    "a-provenance-bound-real-model"
+  ));
+  assert.deepEqual(Object.values(implementedProfile.claimBoundary.campaignCounters),
+    ["0/20", "0/50", "0/25", "0/40", "0/20"]);
   for (const value of Object.values(registration.forbidden)) assert.equal(value, false);
 });
 

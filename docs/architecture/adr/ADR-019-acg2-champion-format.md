@@ -2,9 +2,16 @@
 
 ## Status
 
-Accepted for implementation after the output-free preregistration is committed
-and proven equal to the actual remote branch. No ACG2 output exists at the time
-of this decision.
+Accepted and implemented as an unpromoted technical format boundary. The
+corrected output-free preregistration is remote-exact at commit
+`416c3c1154b86feed5bdc41751609f4670462981`; the implementation remains local
+development evidence until its own commit and remote verification complete.
+
+The implementation does not establish a second product generation. TinyRustLM
+has one prelaunch product, no released composition population, and no legacy
+support obligation. `ACG2`, technical version 2.0, preregistration schema
+suffix `v2`, and paths containing `vnext` are exact protocol or repository
+identities only.
 
 ## Decision Date
 
@@ -110,18 +117,30 @@ ACG2 is a technical byte identity, not a V2 product.
 
 - **Observed local fact**: SLM2, Tokenizer2, Template2, Sampling2, and Prompt2
   each have exact technical identities and local conformance evidence.
-- **Observed local fact**: no current production ACG2 parser, writer, or atomic
-  activation owner exists.
+- **Observed local fact**: the corrected registration was committed before any
+  ACG2 implementation output and was proven equal across local, tracking,
+  fetched, and actual remote state.
+- **Observed local fact**: a built-ins-only Node oracle and an unsafe-free Rust
+  crate independently reproduce the canonical graph bytes and all stable
+  hostile verdicts.
+- **Observed local fact**: the Rust crate implements bounded member resolution,
+  exact owner parsing, dependency closure, resource preflight, stale-operation
+  rejection, and one fail-atomic activation owner.
+- **Observed local fact**: an import-free raw WASM conformance module replays
+  the graph corpus in Node WebAssembly and a fresh Chromium profile with zero
+  network requests.
 - **Observed local fact**: obsolete executable composition paths remain a
   registered release blocker and must be deleted in the clean cut.
 - **Engineering decision**: a fixed identity-only graph is the smallest
   complete composition contract for the first champion.
 - **Engineering decision**: all member bytes are independently verified and
   parsed before one transactional activation.
-- **Local verification required**: independent Node and Rust implementations
-  must reproduce bytes, identities, and rejection codes.
-- **Local verification required**: the production runtime and browser worker
-  must prove failure atomicity and successful cache invalidation.
+- **Local verification required**: the product runtime, browser worker,
+  converter, artifact store, companion, and P2P consumers must be replaced by
+  this one graph boundary and all superseded executable paths must be deleted.
+- **Local verification required**: a provenance-bound real model must prove
+  source parity, native inference, browser inference, memory bounds, quality,
+  restart behavior, and multi-turn conversation before promotion.
 
 ## Threat Analysis
 
@@ -145,11 +164,16 @@ identities reject stale worker messages.
 
 ## Performance Evidence
 
-No runtime performance claim follows from this output-free decision.
+No real-model runtime performance claim follows from the format implementation.
 
 The graph itself has a fixed 896-byte parsing cost. Member hashing uses one
-fixed 1 MiB buffer and one open member stream. These are design limits, not
-measured real-model results.
+fixed 1 MiB buffer and one open member stream. Focused tests prove those
+software bounds using synthetic and accepted dependency fixtures; they are not
+measured real-model throughput or peak-memory results.
+
+The conformance WASM currently exists only to prove exact parser/writer behavior
+in browser execution. It is not the product model runtime and supplies no chat,
+latency, quality, or sustained-memory evidence.
 
 Promotion must record cold resolution time, hashing throughput, parse time,
 peak resident bytes, model mapping behavior, activation scratch, KV reset cost,
@@ -163,6 +187,10 @@ weight shadow. Physical and browser memory measurements remain required.
 
 There is no released composition contract to preserve. The prelaunch product
 accepts only the exact ACG2 champion profile.
+
+No product V2, old product, or compatibility cohort exists. Technical `2.0`
+identifiers describe incompatible bytes; they do not authorize a second
+product line or retention of superseded code.
 
 Unknown versions, artifact classes, member counts, roles, formats, flags,
 profile hashes, padding, or trailing bytes fail closed. No negotiation or
@@ -182,6 +210,12 @@ evidence. They are never runtime input or support authority.
 
 No unused adapter fields, extension records, old-format aliases, or temporary
 dual activation APIs remain after the cutover.
+
+The implementation checkpoint intentionally isolates ACG2 in one exact-lock
+crate while the registered root workspace remains immutable evidence. This is
+not a supported parallel runtime. The root registration and consumer rewrite
+must be one clean replacement, followed by deletion of the superseded
+executable closure before any product claim.
 
 ## Unknowns
 
@@ -213,6 +247,12 @@ dual activation APIs remain after the cutover.
 13. Native and real-browser WASM paths consume the same graph and members.
 14. Source scans reject ACG1, migration, alias, fallback, paths, URLs, hidden
     retries, and speculative extension parsing in current executable code.
+
+Items 1 through 11 have focused local implementation evidence, including 32
+registered hostile artifacts. Item 13 has format-level Node WebAssembly and
+fresh-Chromium evidence. Product-consumer closure, repeated real-model
+switching, and complete source deletion in items 12 through 14 remain
+promotion gates.
 
 ## Rollback
 

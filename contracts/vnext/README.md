@@ -297,6 +297,45 @@ WASM, fresh Chromium, a real SLM2 model, quality, release, deployment,
 publication, MemoryEndpoints, and campaign gates remain open. See ADR-017 and
 `docs/architecture/vnext-prompt2-format-implementation.md`.
 
+## ACG2 Champion Composition Checkpoint
+
+`acg2-format-profile.v1.json` is the sole implemented, unpromoted ACG2
+champion graph profile. It is 13,793 bytes with SHA-256
+`944ed9b5b0ee2605ebb9ac13f2e5388c181bc857fdbfc082e62e9ae7b07c79be`.
+One graph is exactly 896 little-endian bytes: a 256-byte header and exactly
+five 128-byte records in model, tokenizer, template, sampling, and prompt
+order. It embeds identities only. Paths, URLs, aliases, optional members,
+extensions, credentials, and member payload bytes are forbidden.
+
+`acg2-format-vectors.v1.json` is 74,373 bytes with SHA-256
+`d7f0f956ccbc909b242d24410ff9f2f60216d8ff8537a108bff0f698c7b6a441`.
+It freezes one canonical mixed-Q8 graph, one cryptographically distinct valid
+model graph, all 896 proper-prefix rejections, and 32 exact hostile verdicts.
+The canonical graph SHA-256 is
+`2f45314ae3617c348beff2617927d08dbe0058dd947d01b4f89aa77e0f57e9ff`.
+
+The built-ins-only Node oracle and unsafe-free `tinyrustlm-composition2` Rust
+crate independently reproduce the graph bytes and stable errors. Rust also
+implements one-open-source resolution, one fixed 1 MiB streaming hash buffer,
+canonical member parsing, exact Prompt2 dependency closure, complete resource
+preflight, stale-operation rejection, and one ownership-swap activation that
+clears KV and generation state while preserving the transcript. An import-free
+WASM conformance ABI replays the corpus in Node WebAssembly and fresh Chromium
+with zero network.
+
+This remains technical format evidence. No real model has been converted,
+qualified, or executed through the product browser path. The standalone crate
+is an exact-lock staging boundary while registered root evidence stays
+immutable; it is not a supported parallel runtime. Product integration must
+replace all consumers and delete superseded executable ACG1/SLM1 paths in one
+clean cut. See ADR-019 and
+`docs/architecture/vnext-acg2-format-implementation.md`.
+
+ACG2 technical version 2.0 and this directory's `vnext` name do not designate
+a product V2. TinyRustLM has one prelaunch product, no legacy population, no
+compatibility obligation, and no authority for migration, alias, fallback, or
+dual-runtime code.
+
 ## Parsing
 
 Every JSON input is first consumed as bounded bytes. Before schema validation,

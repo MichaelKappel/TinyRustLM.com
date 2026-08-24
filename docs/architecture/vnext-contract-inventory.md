@@ -1,4 +1,4 @@
-# TinyRustLM vNext Contract Inventory
+# TinyRustLM Technical Contract Inventory
 
 ## Status
 
@@ -6,6 +6,12 @@ This is the authoritative Phase 2 pre-cutover inventory captured on
 2026-08-09. It separates the observed former implementation from the
 incompatible vNext contract family. The measured counts below are a frozen
 baseline, not a current source-tree count and not a runtime-support claim.
+
+`vNext` is a frozen repository and schema namespace in this document, not a
+product generation. TinyRustLM is one prelaunch product. There is no product
+V2, released legacy population, compatibility obligation, migration cohort,
+or authority to retain parallel executable implementations. Technical format
+identities such as SLM2 and ACG2 remain exact byte-protocol names only.
 
 ## Measured Pre-Cutover Surface
 
@@ -163,12 +169,20 @@ semantics. Prompt2 2.0 now binds those three accepted algorithm artifacts into
 one exact 512-byte composition artifact, strict load/request/result wires,
 rendered-token recomposition rule, control-insertion map, initial Sampling2
 controller state, independent Node implementation, unsafe-free Rust
-implementation, and cross-language native vectors. This remains inactive
-evidence: no source conversion, source-framework or real-model parity,
-registered full-artifact Prompt2 native execution, Prompt2 or Sampling2
-browser-WASM execution, product browser ingestion, sustained sanitizer
-campaign, model qualification, or production cutover is established. See
-`docs/architecture/vnext-prompt2-format-implementation.md`.
+implementation, and cross-language native vectors. ACG2 now binds the exact
+mixed-Q8 SLM2, Tokenizer2, Template2, Sampling2, and corrected Prompt2
+identities into one fixed 896-byte graph. Its independent Node and unsafe-free
+Rust implementations reproduce one canonical graph, one distinct valid-model
+graph, all proper-prefix failures, and 32 stable hostile verdicts. Rust adds
+one-source bounded resolution, exact owner parsing, dependency closure,
+resource preflight, and fail-atomic activation; its import-free conformance
+WASM replays in Node and fresh Chromium with zero network. This remains
+inactive evidence: no source conversion, source-framework or real-model
+parity, registered full-artifact Prompt2 native execution, product browser
+ingestion, sustained sanitizer campaign, model qualification, or production
+cutover is established. See
+`docs/architecture/vnext-prompt2-format-implementation.md` and
+`docs/architecture/vnext-acg2-format-implementation.md`.
 The current campaign checkpoint additionally freezes one exact campaign plan,
 authority-aware truthful projection, and sufficient complete-bundle bounds.
 The plan finalization boundary now has an independent strict Rust
