@@ -124,7 +124,7 @@ if [[ "$RUN_BROWSER_SMOKE" == "1" || "$RUN_DEEP_ACQUISITION" == "1" ]]; then
 fi
 
 if [[ "$RUN_DEEP_ACQUISITION" == "1" ]]; then
-  node --test "$REPO_ROOT/tinyrustlm/tests/model-acquisition-v2.test.js" "$REPO_ROOT/tinyrustlm/tests/companion-bridge.test.js"
+  node --test "$REPO_ROOT/tinyrustlm/tests/model-acquisition.test.js" "$REPO_ROOT/tinyrustlm/tests/companion-bridge.test.js"
   GATES[acquisition_browser_bridge]="pass"
   dotnet test "$REPO_ROOT/dotnet/tests/TinyRustLM.SeedHost.Tests/TinyRustLM.SeedHost.Tests.csproj" -c Release
   GATES[acquisition_companion]="pass"

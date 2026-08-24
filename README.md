@@ -29,22 +29,15 @@ The active implementation target is `tinyrustlm/`: a 100% custom Rust/WASM brows
 the downloadable P2P companion. TinyRustLM.com remains the browser chat UI and
 MiniModel.org remains the catalog and discovery authority, while the companion
 owns direct peer import, Rust verification, durable restart and resume state,
-local model storage, and optional two-lane sharing. Version `0.2.0` is the
-single current bridge contract. It uses exact Host and Origin checks, one-time
-pairing, short-lived operation-scoped capabilities, rotation, revocation,
-bounded requests, and receipt-revalidated model and composition streaming.
-The current public packages are the
-[`UAIX.Browser.p2pRuntime.SeedHost` library](https://www.nuget.org/packages/UAIX.Browser.p2pRuntime.SeedHost/0.2.0)
-and
-[`UAIX.Browser.p2pRuntime.SeedHost.Tool` companion](https://www.nuget.org/packages/UAIX.Browser.p2pRuntime.SeedHost.Tool/0.2.0)
-on NuGet.org. Install the companion into an operator-owned tool directory with
-the version-pinned command, then run `doctor` before pairing it with the
-browser:
-
-```powershell
-dotnet tool install UAIX.Browser.p2pRuntime.SeedHost.Tool --version 0.2.0 --tool-path .\.uaix-tools
-.\.uaix-tools\uaix-p2p-seed doctor --json
-```
+local model storage, and optional two-lane sharing. Package `0.3.0` is the sole
+source target for the canonical bridge contract. It has no versioned route
+family or compatibility aliases. It uses exact Host and Origin checks,
+one-time pairing, short-lived operation-scoped capabilities, rotation,
+revocation, bounded requests, and receipt-revalidated model and composition
+streaming. The library, tool, and symbol packages must be published and
+independently read back before the matching web assets may deploy. No package
+URL or install command is an authority while that gate is pending; the exact
+verified command will be published with the accepted release.
 
 The `public-local-only` gate proves the browser starts with no project-hosted
 model and no autoload fallback. A

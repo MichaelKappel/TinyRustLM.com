@@ -110,7 +110,7 @@ $canonicalTinyRustLmRequiredTerms = @(
     "UAIX.Browser.p2pRuntime.SeedHost",
     "UAIX.Browser.p2pRuntime.SeedHost.Tool",
     "uaix-p2p-seed",
-    "0.2.0",
+    "0.3.0",
     ".snupkg",
     "MiniModel.org"
 )
@@ -150,7 +150,7 @@ $uiVerificationRequiredTerms = @(
     "verify-tinyrustlm-ui.ps1",
     "web-release-local-smoke.js",
     "RunDeepAcquisition",
-    "model-acquisition-v2.test.js",
+    "model-acquisition.test.js",
     "Local .slm",
     "Hugging Face",
     "Get model",
@@ -192,7 +192,7 @@ $browserCompanionBoundaryRequiredTerms = @(
     "public-local-only",
     "one-time pairing",
     "P2P-first",
-    "protocol-v2",
+    "canonical companion",
     "conversion-kit",
     "e2e/companion.spec.js",
     "969,648,576",

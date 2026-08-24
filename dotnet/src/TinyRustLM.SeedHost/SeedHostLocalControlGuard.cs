@@ -194,30 +194,30 @@ public sealed class SeedHostLocalControlGuard
     /// <summary>Map every action to one stable host-visible risk category.</summary>
     public static SeedHostLocalControlRiskCategory RiskCategory(
         SeedHostLocalControlAction action) => action switch
-    {
-        SeedHostLocalControlAction.InspectFleet =>
-            SeedHostLocalControlRiskCategory.ReadOnlyInspection,
-        SeedHostLocalControlAction.ConfigureFleet
-            or SeedHostLocalControlAction.AdmitModel
-            or SeedHostLocalControlAction.RemoveModel
-            or SeedHostLocalControlAction.EnableModel
-            or SeedHostLocalControlAction.DisableModel =>
-            SeedHostLocalControlRiskCategory.ModelAndFleetConfiguration,
-        SeedHostLocalControlAction.StartLane
-            or SeedHostLocalControlAction.StopLane
-            or SeedHostLocalControlAction.RestartLane =>
-            SeedHostLocalControlRiskCategory.SeedLaneProcessControl,
-        SeedHostLocalControlAction.InstallService
-            or SeedHostLocalControlAction.UninstallService =>
-            SeedHostLocalControlRiskCategory.LocalServiceInstallation,
-        SeedHostLocalControlAction.StartService
-            or SeedHostLocalControlAction.StopService
-            or SeedHostLocalControlAction.RestartService =>
-            SeedHostLocalControlRiskCategory.LocalServiceControl,
-        _ => throw new SeedHostValidationException(
-            "unknown_local_control_action",
-            "Local control requested an unsupported seed-host action.")
-    };
+        {
+            SeedHostLocalControlAction.InspectFleet =>
+                SeedHostLocalControlRiskCategory.ReadOnlyInspection,
+            SeedHostLocalControlAction.ConfigureFleet
+                or SeedHostLocalControlAction.AdmitModel
+                or SeedHostLocalControlAction.RemoveModel
+                or SeedHostLocalControlAction.EnableModel
+                or SeedHostLocalControlAction.DisableModel =>
+                SeedHostLocalControlRiskCategory.ModelAndFleetConfiguration,
+            SeedHostLocalControlAction.StartLane
+                or SeedHostLocalControlAction.StopLane
+                or SeedHostLocalControlAction.RestartLane =>
+                SeedHostLocalControlRiskCategory.SeedLaneProcessControl,
+            SeedHostLocalControlAction.InstallService
+                or SeedHostLocalControlAction.UninstallService =>
+                SeedHostLocalControlRiskCategory.LocalServiceInstallation,
+            SeedHostLocalControlAction.StartService
+                or SeedHostLocalControlAction.StopService
+                or SeedHostLocalControlAction.RestartService =>
+                SeedHostLocalControlRiskCategory.LocalServiceControl,
+            _ => throw new SeedHostValidationException(
+                "unknown_local_control_action",
+                "Local control requested an unsupported seed-host action.")
+        };
 
     private static string RequiredPath(string value)
     {

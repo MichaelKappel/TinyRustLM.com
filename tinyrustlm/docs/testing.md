@@ -10,7 +10,7 @@ From the repository root:
 
 ```powershell
 npm --prefix tinyrustlm run test:browser-contract
-node --test tinyrustlm/tests/model-acquisition-v2.test.js tinyrustlm/tests/companion-bridge.test.js
+node --test tinyrustlm/tests/model-acquisition.test.js tinyrustlm/tests/companion-bridge.test.js
 node tinyrustlm/tools/web-release-local-smoke.js <new-output-directory>
 node --test tinyrustlm/tests/dogfood-campaign.test.js tinyrustlm/tests/vnext-campaign-runner.test.js
 npm --prefix tinyrustlm run test:vnext-campaign-release-surface -- <absolute-evidence-root>
@@ -32,8 +32,8 @@ npm --prefix tinyrustlm run verify:vnext-campaign-release-surface -- <absolute-e
 - public-result field minimization;
 - preservation of failed browser attempts.
 
-The acquisition-v2 and companion tests additionally require P2P-first
-selection, immutable supported-source contracts, fixed protocol-v2 conversion
+The acquisition and companion tests additionally require P2P-first selection,
+immutable supported-source contracts, fixed canonical conversion
 routes, receipt-bound model and composition streaming, and complete removal of
 README/TXT, script, request-file, conversion-kit, import-kit, and share-kit
 browser downloads. The local web-release smoke uses real Chromium at desktop,

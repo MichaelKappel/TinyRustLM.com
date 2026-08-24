@@ -129,12 +129,6 @@ public sealed record SeedHostBridgeSharingStatus(
 /// </summary>
 public sealed class SeedHostBridgeServer : IAsyncDisposable
 {
-    /// <summary>Current bridge wire protocol version.</summary>
-    public const int ProtocolVersion = 2;
-
-    /// <summary>Header carrying the exact bridge protocol version.</summary>
-    public const string ProtocolVersionHeader = "X-TinyRustLM-Bridge-Version";
-
     /// <summary>Header carrying a volatile origin-bound browser capability.</summary>
     public const string CapabilityHeader = "X-TinyRustLM-Bridge-Capability";
 
@@ -145,7 +139,6 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
     private static readonly string[] CorsAllowedHeaders =
     [
         "content-type",
-        ProtocolVersionHeader.ToLowerInvariant(),
         CapabilityHeader.ToLowerInvariant(),
         RequestIdHeader.ToLowerInvariant()
     ];
@@ -305,7 +298,6 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
                 await HandlePreflightAsync(context, origin).ConfigureAwait(false);
                 return;
             }
-            RequireProtocolVersion(context.Request);
             await next(context).ConfigureAwait(false);
         }
         catch (SeedHostValidationException error)
@@ -331,12 +323,11 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
 
     private void MapRoutes(WebApplication app)
     {
-        app.MapGet("/v2/health", async context =>
+        app.MapGet("/health", async context =>
         {
             await WriteJsonAsync(context, StatusCodes.Status200OK, new
             {
                 service = "tinyrustlm-companion-bridge",
-                protocol_version = ProtocolVersion,
                 pairing_state = sessions.HasActiveSessions ? "paired" : "unpaired",
                 transport = "ipv4-loopback-http1",
                 credentials_persisted = false,
@@ -344,7 +335,7 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
             }).ConfigureAwait(false);
         });
 
-        app.MapPost("/v2/pair", async context =>
+        app.MapPost("/pair", async context =>
         {
             var request = await ReadJsonAsync<PairRequest>(context).ConfigureAwait(false);
             var session = sessions.Pair(
@@ -354,14 +345,14 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
             await WriteJsonAsync(context, StatusCodes.Status200OK, session).ConfigureAwait(false);
         });
 
-        app.MapGet("/v2/status", async context =>
+        app.MapGet("/status", async context =>
         {
             Authorize(context, SeedHostBridgeScope.Status);
             var status = await operations.GetStatusAsync(context.RequestAborted).ConfigureAwait(false);
             await WriteJsonAsync(context, StatusCodes.Status200OK, status).ConfigureAwait(false);
         });
 
-        app.MapPost("/v2/session/revoke", async context =>
+        app.MapPost("/session/revoke", async context =>
         {
             _ = await ReadJsonAsync<EmptyRequest>(context).ConfigureAwait(false);
             Authorize(context, SeedHostBridgeScope.Status, isMutation: true);
@@ -371,7 +362,7 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
             context.Response.StatusCode = StatusCodes.Status204NoContent;
         });
 
-        app.MapPost("/v2/session/rotate", async context =>
+        app.MapPost("/session/rotate", async context =>
         {
             _ = await ReadJsonAsync<EmptyRequest>(context).ConfigureAwait(false);
             Authorize(context, SeedHostBridgeScope.Status, isMutation: true);
@@ -381,7 +372,7 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
             await WriteJsonAsync(context, StatusCodes.Status200OK, session).ConfigureAwait(false);
         });
 
-        app.MapPost("/v2/imports", async context =>
+        app.MapPost("/imports", async context =>
         {
             Authorize(context, SeedHostBridgeScope.ImportsCreate, isMutation: true);
             var request = await ReadJsonAsync<ImportRequest>(context).ConfigureAwait(false);
@@ -394,7 +385,7 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
             await WriteJsonAsync(context, StatusCodes.Status202Accepted, status).ConfigureAwait(false);
         });
 
-        app.MapGet("/v2/imports/{operationId}", async context =>
+        app.MapGet("/imports/{operationId}", async context =>
         {
             Authorize(context, SeedHostBridgeScope.ImportsRead);
             var status = await operations.GetImportAsync(
@@ -404,7 +395,7 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
             await WriteJsonAsync(context, StatusCodes.Status200OK, status).ConfigureAwait(false);
         });
 
-        app.MapPost("/v2/imports/{operationId}/cancel", async context =>
+        app.MapPost("/imports/{operationId}/cancel", async context =>
         {
             Authorize(context, SeedHostBridgeScope.ImportsCancel, isMutation: true);
             _ = await ReadJsonAsync<EmptyRequest>(context).ConfigureAwait(false);
@@ -415,7 +406,7 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
             await WriteJsonAsync(context, StatusCodes.Status200OK, status).ConfigureAwait(false);
         });
 
-        app.MapPost("/v2/conversions", async context =>
+        app.MapPost("/conversions", async context =>
         {
             Authorize(context, SeedHostBridgeScope.ConversionsCreate, isMutation: true);
             var request = await ReadJsonAsync<ConversionRequest>(context).ConfigureAwait(false);
@@ -428,7 +419,7 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
             await WriteJsonAsync(context, StatusCodes.Status202Accepted, status).ConfigureAwait(false);
         });
 
-        app.MapGet("/v2/conversions/{operationId}", async context =>
+        app.MapGet("/conversions/{operationId}", async context =>
         {
             Authorize(context, SeedHostBridgeScope.ConversionsRead);
             var status = await operations.GetConversionAsync(
@@ -438,7 +429,7 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
             await WriteJsonAsync(context, StatusCodes.Status200OK, status).ConfigureAwait(false);
         });
 
-        app.MapPost("/v2/conversions/{operationId}/cancel", async context =>
+        app.MapPost("/conversions/{operationId}/cancel", async context =>
         {
             Authorize(context, SeedHostBridgeScope.ConversionsCancel, isMutation: true);
             _ = await ReadJsonAsync<EmptyRequest>(context).ConfigureAwait(false);
@@ -449,7 +440,7 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
             await WriteJsonAsync(context, StatusCodes.Status200OK, status).ConfigureAwait(false);
         });
 
-        app.MapGet("/v2/models", async context =>
+        app.MapGet("/models", async context =>
         {
             Authorize(context, SeedHostBridgeScope.ModelsRead);
             var models = await operations.ListModelsAsync(context.RequestAborted).ConfigureAwait(false);
@@ -460,14 +451,14 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
                 .ConfigureAwait(false);
         });
 
-        app.MapGet("/v2/models/{operationId}/content", async context =>
+        app.MapGet("/models/{operationId}/content", async context =>
         {
             Authorize(context, SeedHostBridgeScope.ModelsStream);
             if (context.Request.Headers.ContainsKey("Range"))
             {
                 throw new SeedHostValidationException(
                     "bridge_ranges_unsupported",
-                    "Protocol v2 model streams require one complete receipt-verified artifact.");
+                    "Model streams require one complete receipt-verified artifact.");
             }
             await using var model = await operations.OpenModelAsync(
                     RequireRouteValue(context, "operationId"),
@@ -482,14 +473,14 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
                 .ConfigureAwait(false);
         });
 
-        app.MapGet("/v2/models/{operationId}/composition", async context =>
+        app.MapGet("/models/{operationId}/composition", async context =>
         {
             Authorize(context, SeedHostBridgeScope.ModelsStream);
             if (context.Request.Headers.ContainsKey("Range"))
             {
                 throw new SeedHostValidationException(
                     "bridge_ranges_unsupported",
-                    "Protocol v2 composition streams require one complete Rust-validated graph.");
+                    "Composition streams require one complete Rust-validated graph.");
             }
             await using var composition = await operations.OpenCompositionAsync(
                     RequireRouteValue(context, "operationId"),
@@ -503,7 +494,7 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
                 .ConfigureAwait(false);
         });
 
-        app.MapGet("/v2/sharing", async context =>
+        app.MapGet("/sharing", async context =>
         {
             Authorize(context, SeedHostBridgeScope.SharingManage);
             var status = await RequireSharingOperations()
@@ -512,7 +503,7 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
             await WriteJsonAsync(context, StatusCodes.Status200OK, status).ConfigureAwait(false);
         });
 
-        app.MapPost("/v2/sharing/initialize", async context =>
+        app.MapPost("/sharing/initialize", async context =>
         {
             Authorize(context, SeedHostBridgeScope.SharingManage, isMutation: true);
             var request = await ReadJsonAsync<SharingInitializeRequest>(context).ConfigureAwait(false);
@@ -522,7 +513,7 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
             await WriteJsonAsync(context, StatusCodes.Status200OK, status).ConfigureAwait(false);
         });
 
-        app.MapPost("/v2/sharing/imports/{operationId}/admit", async context =>
+        app.MapPost("/sharing/imports/{operationId}/admit", async context =>
         {
             Authorize(context, SeedHostBridgeScope.SharingManage, isMutation: true);
             var request = await ReadJsonAsync<SharingAdmissionRequest>(context).ConfigureAwait(false);
@@ -535,11 +526,11 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
             await WriteJsonAsync(context, StatusCodes.Status200OK, status).ConfigureAwait(false);
         });
 
-        app.MapPost("/v2/sharing/imports/{operationId}/enable", context =>
+        app.MapPost("/sharing/imports/{operationId}/enable", context =>
             SetSharingEnabledAsync(context, enabled: true));
-        app.MapPost("/v2/sharing/imports/{operationId}/disable", context =>
+        app.MapPost("/sharing/imports/{operationId}/disable", context =>
             SetSharingEnabledAsync(context, enabled: false));
-        app.MapPost("/v2/sharing/imports/{operationId}/remove", async context =>
+        app.MapPost("/sharing/imports/{operationId}/remove", async context =>
         {
             Authorize(context, SeedHostBridgeScope.SharingManage, isMutation: true);
             _ = await ReadJsonAsync<EmptyRequest>(context).ConfigureAwait(false);
@@ -728,20 +719,6 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
     private static string RequireOriginHeader(HttpRequest request) =>
         RequireSingleHeader(request, "Origin", "bridge_origin_denied");
 
-    private static void RequireProtocolVersion(HttpRequest request)
-    {
-        var value = RequireSingleHeader(
-            request,
-            ProtocolVersionHeader,
-            "bridge_protocol_version_required");
-        if (!string.Equals(value, ProtocolVersion.ToString(), StringComparison.Ordinal))
-        {
-            throw new SeedHostValidationException(
-                "bridge_protocol_version_unsupported",
-                "The browser and bridge protocol versions do not match.");
-        }
-    }
-
     private static string RequireSingleHeader(
         HttpRequest request,
         string name,
@@ -825,8 +802,6 @@ public sealed class SeedHostBridgeServer : IAsyncDisposable
         "bridge_origin_denied" or "bridge_origin_mismatch" or "bridge_scope_denied"
             or "bridge_scope_not_granted" or "bridge_sharing_disabled" =>
             StatusCodes.Status403Forbidden,
-        "bridge_protocol_version_required" or "bridge_protocol_version_unsupported" =>
-            StatusCodes.Status426UpgradeRequired,
         "bridge_content_length_required" => StatusCodes.Status411LengthRequired,
         "bridge_request_too_large" => StatusCodes.Status413PayloadTooLarge,
         "bridge_pairing_code_consumed" or "bridge_request_replay" =>

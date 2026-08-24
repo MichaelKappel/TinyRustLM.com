@@ -623,12 +623,11 @@ async function createCompanionFixture(applicationOrigin, options = {}) {
       });
       const pairingCode = await waitForPairingCode(bridgeProcess);
       await waitForHttp(
-        "http://127.0.0.1:43127/v1/health",
+        "http://127.0.0.1:43127/health",
         bridgeProcess,
         10000,
         {
-          Origin: applicationOrigin,
-          "X-TinyRustLM-Bridge-Version": "1"
+          Origin: applicationOrigin
         }
       );
       return pairingCode;

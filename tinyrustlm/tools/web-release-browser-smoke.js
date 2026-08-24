@@ -354,14 +354,14 @@ async function runPageObservation(
       const releaseDate = releaseSurface?.querySelector("[data-release-date]");
       const releasePublishedAt = releaseSurface?.querySelector("[data-release-published-at]");
       const companionPackageLink = document.querySelector(
-        'a.package-action[href="https://www.nuget.org/packages/UAIX.Browser.p2pRuntime.SeedHost.Tool/0.2.0"]'
+        'a.package-action[href="https://www.nuget.org/packages/UAIX.Browser.p2pRuntime.SeedHost.Tool/0.3.0"]'
       );
       const companionInstallCommandPresent = Array.from(
         document.querySelectorAll(".command-block code")
       ).some((node) => (
         node.textContent || ""
       ).includes(
-        "dotnet tool install UAIX.Browser.p2pRuntime.SeedHost.Tool --version 0.2.0"
+        "dotnet tool install UAIX.Browser.p2pRuntime.SeedHost.Tool --version 0.3.0"
       ));
       return {
         appShellPresent: Boolean(appShell),

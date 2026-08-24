@@ -40,12 +40,14 @@ public sealed class MemoryEndpointsRetrievalTests
             "memory-cross",
             "revision-cross",
             "Must not cross projects.",
-            1_000_000) with { ScopeId = "other-project" };
+            1_000_000) with
+        { ScopeId = "other-project" };
         var tombstone = Candidate(
             "memory-deleted",
             "revision-deleted",
             "Deleted.",
-            1_000_000) with { Status = MemoryEndpointsRetrievalStatus.Tombstone };
+            1_000_000) with
+        { Status = MemoryEndpointsRetrievalStatus.Tombstone };
         var candidates = new[] { old, duplicate, crossProject, hostile, tombstone, current };
 
         var first = MemoryEndpointsRetrievalContract.PackMemoryContext(candidates, Policy(), Budget());

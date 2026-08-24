@@ -209,7 +209,6 @@ function redactString(value, knownSecrets) {
 // shared redaction marker would destroy receipt identity. Validate them as
 // identifiers and reject known-secret contamination instead.
 function publicIdentifier(value, knownSecrets, fieldName) {
-  if (value === redactedValue) return value; // Read legacy v1 receipts.
   invariant(safeNamePattern.test(value), `${fieldName} is not a safe public identifier`);
   invariant(!value.includes("//") && value.split("/").every((part) => part !== "." && part !== ".."),
     `${fieldName} contains an invalid segment`);

@@ -36,7 +36,7 @@ model assembly are not accepted campaign inputs.
 
 The chooser exposes one `Get model` command. It first selects a complete,
 identity-matched MiniModel P2P offer with its composition graph. If no such
-offer is available, an explicitly paired protocol-v2 companion downloads the
+offer is available, an explicitly paired canonical companion downloads the
 exact reviewed Hugging Face revision, resumes and hashes bounded source files,
 runs the packaged Rust converter and validator, creates a receipt-bound
 base-only `.acg1`, and streams both the `.slm` and graph into the current

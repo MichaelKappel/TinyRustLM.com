@@ -113,6 +113,12 @@ test("preserves long public model IDs without mistaking them for credentials", (
   assert.throws(() => secretStore.putReceipt(receiptInput({
     publicSafeParameters: { modelId: "publisher/privateAgentCredential", round: 1 }
   })), /modelId contains a known secret/u);
+
+  for (const fieldName of ["modelId", "sourceModelId"]) {
+    assert.throws(() => store.putReceipt(receiptInput({
+      publicSafeParameters: { [fieldName]: "[REDACTED]", round: 1 }
+    })), new RegExp(`${fieldName} is not a safe public identifier`, "u"));
+  }
 });
 
 test("allows different tools to share a version or identical reviewed binary", (context) => {

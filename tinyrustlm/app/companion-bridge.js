@@ -8,8 +8,6 @@
   "use strict";
 
   const DEFAULT_ENDPOINT = "http://127.0.0.1:43127/";
-  const PROTOCOL_VERSION = "2";
-  const PROTOCOL_HEADER = "X-TinyRustLM-Bridge-Version";
   const CAPABILITY_HEADER = "X-TinyRustLM-Bridge-Capability";
   const REQUEST_ID_HEADER = "X-TinyRustLM-Bridge-Request-Id";
   const MAXIMUM_JSON_BYTES = 1024 * 1024;
@@ -64,7 +62,7 @@
         typeof window === "object" &&
         typeof BroadcastChannel === "function"
       ) {
-        channel = new BroadcastChannel("tinyrustlm-companion-bridge-v2");
+        channel = new BroadcastChannel("tinyrustlm-companion-bridge");
         ownsChannel = true;
       }
       privateState.set(this, {
@@ -103,15 +101,14 @@
     }
 
     async detect(options) {
-      const value = await requestJson(this, "/v2/health", {
+      const value = await requestJson(this, "/health", {
         method: "GET",
         authenticated: false,
         signal: options && options.signal
       });
       if (
         !value ||
-        value.service !== "tinyrustlm-companion-bridge" ||
-        Number(value.protocol_version) !== Number(PROTOCOL_VERSION)
+        value.service !== "tinyrustlm-companion-bridge"
       ) {
         throw new CompanionBridgeError(
           "bridge_identity_invalid",
@@ -129,7 +126,7 @@
     async pair(code, requestedScopes, options) {
       const pairingCode = requireText(code, "pairing code", 1024);
       const scopes = normalizeScopes(requestedScopes || DEFAULT_SCOPES);
-      const value = await requestJson(this, "/v2/pair", {
+      const value = await requestJson(this, "/pair", {
         method: "POST",
         authenticated: false,
         body: {
@@ -166,7 +163,7 @@
     }
 
     async status(options) {
-      const value = await requestJson(this, "/v2/status", {
+      const value = await requestJson(this, "/status", {
         method: "GET",
         signal: options && options.signal
       });
@@ -175,7 +172,7 @@
     }
 
     async listModels(options) {
-      const value = await requestJson(this, "/v2/models", {
+      const value = await requestJson(this, "/models", {
         method: "GET",
         signal: options && options.signal
       });
@@ -200,7 +197,7 @@
       const requests = peerImportRequests.map((value) =>
         requireUtf8Text(value, "peer import request", MAXIMUM_PEER_REQUEST_BYTES)
       );
-      return requestJson(this, "/v2/imports", {
+      return requestJson(this, "/imports", {
         method: "POST",
         mutation: true,
         body: {
@@ -213,7 +210,7 @@
 
     async getImport(operationId, options) {
       const id = requireImportOperationId(operationId);
-      return requestJson(this, `/v2/imports/${id}`, {
+      return requestJson(this, `/imports/${id}`, {
         method: "GET",
         signal: options && options.signal
       });
@@ -221,7 +218,7 @@
 
     async cancelImport(operationId, options) {
       const id = requireImportOperationId(operationId);
-      return requestJson(this, `/v2/imports/${id}/cancel`, {
+      return requestJson(this, `/imports/${id}/cancel`, {
         method: "POST",
         mutation: true,
         body: {},
@@ -235,7 +232,7 @@
         "conversion request",
         MAXIMUM_JSON_BYTES
       );
-      return requestJson(this, "/v2/conversions", {
+      return requestJson(this, "/conversions", {
         method: "POST",
         mutation: true,
         body: {
@@ -248,7 +245,7 @@
 
     async getConversion(operationId, options) {
       const id = requireConversionOperationId(operationId);
-      return requestJson(this, `/v2/conversions/${id}`, {
+      return requestJson(this, `/conversions/${id}`, {
         method: "GET",
         signal: options && options.signal
       });
@@ -256,7 +253,7 @@
 
     async cancelConversion(operationId, options) {
       const id = requireConversionOperationId(operationId);
-      return requestJson(this, `/v2/conversions/${id}/cancel`, {
+      return requestJson(this, `/conversions/${id}/cancel`, {
         method: "POST",
         mutation: true,
         body: {},
@@ -266,7 +263,7 @@
 
     async getSharing(options) {
       requireGrantedScope(this, "sharing_manage");
-      const value = await requestJson(this, "/v2/sharing", {
+      const value = await requestJson(this, "/sharing", {
         method: "GET",
         signal: options && options.signal
       });
@@ -276,7 +273,7 @@
     async initializeSharing(fleetId, options) {
       requireGrantedScope(this, "sharing_manage");
       const id = requireStableId(fleetId, "sharing fleet ID");
-      const value = await requestJson(this, "/v2/sharing/initialize", {
+      const value = await requestJson(this, "/sharing/initialize", {
         method: "POST",
         mutation: true,
         body: { fleet_id: id },
@@ -289,7 +286,7 @@
       requireGrantedScope(this, "sharing_manage");
       const id = requireImportOperationId(operationId);
       const endpoints = normalizeSharingEndpoints(laneEndpoints);
-      const value = await requestJson(this, `/v2/sharing/imports/${id}/admit`, {
+      const value = await requestJson(this, `/sharing/imports/${id}/admit`, {
         method: "POST",
         mutation: true,
         body: { lane_endpoints: endpoints },
@@ -305,7 +302,7 @@
         throw new TypeError("sharing enabled state is invalid");
       }
       const action = enabled ? "enable" : "disable";
-      const value = await requestJson(this, `/v2/sharing/imports/${id}/${action}`, {
+      const value = await requestJson(this, `/sharing/imports/${id}/${action}`, {
         method: "POST",
         mutation: true,
         body: {},
@@ -317,7 +314,7 @@
     async removeImportFromSharing(operationId, options) {
       requireGrantedScope(this, "sharing_manage");
       const id = requireImportOperationId(operationId);
-      const value = await requestJson(this, `/v2/sharing/imports/${id}/remove`, {
+      const value = await requestJson(this, `/sharing/imports/${id}/remove`, {
         method: "POST",
         mutation: true,
         body: {},
@@ -330,7 +327,7 @@
       const id = requireOperationId(operationId);
       const source = options && typeof options === "object" ? options : {};
       const result = await streamVerifiedBinary(this, {
-        path: `/v2/models/${id}/content`,
+        path: `/models/${id}/content`,
         signal: source.signal,
         expectedByteCount: source.expectedByteCount,
         maximumByteCount: MAXIMUM_MODEL_STREAM_BYTES,
@@ -356,7 +353,7 @@
       const id = requireOperationId(operationId);
       const source = options && typeof options === "object" ? options : {};
       const result = await streamVerifiedBinary(this, {
-        path: `/v2/models/${id}/composition`,
+        path: `/models/${id}/composition`,
         signal: source.signal,
         expectedByteCount: source.expectedByteCount,
         maximumByteCount: MAXIMUM_COMPOSITION_STREAM_BYTES,
@@ -373,7 +370,7 @@
         return false;
       }
       try {
-        await requestEmpty(this, "/v2/session/revoke", {
+        await requestEmpty(this, "/session/revoke", {
           method: "POST",
           mutation: true,
           body: {},
@@ -538,7 +535,7 @@
     if (authenticated && !source.skipRotation) {
       await ensureRotated(client, source.signal);
     }
-    const headers = { [PROTOCOL_HEADER]: PROTOCOL_VERSION };
+    const headers = {};
     if (authenticated) {
       headers[CAPABILITY_HEADER] = state.capability;
     }
@@ -608,7 +605,7 @@
   async function rotateCapability(client, signal) {
     const state = stateOf(client);
     const previousScopes = state.scopes.slice();
-    const response = await sendRequest(client, "/v2/session/rotate", {
+    const response = await sendRequest(client, "/session/rotate", {
       method: "POST",
       mutation: true,
       body: {},
@@ -1003,7 +1000,7 @@
       return;
     }
     state.channel.postMessage({
-      kind: "tinyrustlm.companion_state.v2",
+      kind: "tinyrustlm.companion_state",
       state: nextState,
       at: new Date().toISOString()
     });
@@ -1033,7 +1030,6 @@
     MINIMUM_MODEL_STREAM_TIMEOUT_MILLISECONDS,
     MAXIMUM_MODEL_STREAM_TIMEOUT_MILLISECONDS,
     modelStreamTimeoutMilliseconds,
-    PROTOCOL_HEADER,
     CAPABILITY_HEADER,
     REQUEST_ID_HEADER
   });

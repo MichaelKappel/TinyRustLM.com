@@ -1505,7 +1505,7 @@ internal sealed class SeedHostBridgeConversionOperations : IAsyncDisposable
     private static string CreateOperationId(byte[] requestBytes)
     {
         using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
-        hash.AppendData("TinyRustLM bridge conversion v2\0"u8);
+        hash.AppendData("TinyRustLM canonical bridge conversion\0"u8);
         hash.AppendData(requestBytes);
         return $"conversion-{Convert.ToHexString(hash.GetHashAndReset()).ToLowerInvariant()}";
     }

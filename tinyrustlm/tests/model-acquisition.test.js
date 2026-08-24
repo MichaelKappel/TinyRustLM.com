@@ -61,16 +61,14 @@ test("retired text and script handoffs cannot return to the chooser", () => {
   assert.doesNotMatch(html, /Share Metadata|share metadata|share-metadata/);
 });
 
-test("the browser routes companion acquisition to the exact public package", () => {
-  const packageUrl =
-    "https://www.nuget.org/packages/UAIX.Browser.p2pRuntime.SeedHost.Tool/0.2.0";
+test("the browser routes companion acquisition to a truthful pending release", () => {
   assert.match(html, /id="companionPackageLink"[^>]+href="\/companion\/"/);
   assert.match(html, /id="companionPackageLink"[^>]+target="_blank"[^>]+rel="noopener noreferrer"/);
-  assert.match(
-    companionPage,
-    new RegExp(`href="${packageUrl.replaceAll(".", "\\.")}"`)
-  );
-  assert.match(companionPage, /dotnet tool install UAIX\.Browser\.p2pRuntime\.SeedHost\.Tool/);
+  assert.match(companionPage, /Package 0\.3\.0 is the prelaunch source target/);
+  assert.match(companionPage, /Public package pending/);
+  assert.match(companionPage, /Deployment blocked/);
+  assert.doesNotMatch(companionPage, /www\.nuget\.org\/packages\/UAIX\.Browser/);
+  assert.doesNotMatch(companionPage, /dotnet tool install/);
   assert.match(
     companionPage,
     new RegExp(`updates\\.css\\?v=sha256-${sha256(updatesCss)}`)
@@ -80,14 +78,22 @@ test("the browser routes companion acquisition to the exact public package", () 
     new RegExp(`site-release\\.js\\?v=sha256-${sha256(siteReleaseScript)}`)
   );
   assert.doesNotMatch(companionPage, /\.txt|\.ps1|conversion-request|share-kit/i);
-  assert.match(companionGuide, /Install the version-pinned public packages from NuGet\.org/);
-  assert.match(companionGuide, /dotnet tool install UAIX\.Browser\.p2pRuntime\.SeedHost\.Tool/);
+  assert.match(companionGuide, /not an install authority until/);
+  assert.match(companionGuide, /No package URL or install command is published/);
+  assert.match(companionGuide, /Release status: blocked/);
+  assert.match(companionGuide, /sole registered SLM2/);
+  assert.doesNotMatch(companionGuide, /www\.nuget\.org\/packages\/UAIX\.Browser/);
+  assert.doesNotMatch(companionGuide, /dotnet (?:add package|tool install)/);
+  assert.doesNotMatch(companionGuide, /`tinyrustlm-slm-pack` binary/);
+  assert.doesNotMatch(companionGuide, /existing Qwen q4 artifact is classified/);
   assert.doesNotMatch(companionGuide, /UAIX_NUGET_FEED|reviewed folder feed/);
 });
 
-test("protocol v2 streams both receipt-checked runtime artifacts", () => {
-  assert.match(bridge, /\/v2\/models\/\$\{id\}\/content/);
-  assert.match(bridge, /\/v2\/models\/\$\{id\}\/composition/);
+test("the canonical bridge streams both receipt-checked runtime artifacts", () => {
+  assert.match(bridge, /\/models\/\$\{id\}\/content/);
+  assert.match(bridge, /\/models\/\$\{id\}\/composition/);
+  assert.doesNotMatch(bridge, /\/v[0-9]+\//);
+  assert.doesNotMatch(bridge, /X-TinyRustLM-Bridge-Version/);
   assert.match(bridge, /X-TinyRustLM-Artifact-Sha256/);
   assert.match(bridge, /X-TinyRustLM-Composition-Sha256/);
   assert.match(bridge, /expectedByteCount/);

@@ -710,7 +710,7 @@
     consolePaused: "slmcomposer.ui.consolePaused"
   };
 
-  const uiPreferenceVersion = "local-ai-dashboard-v2";
+  const uiPreferenceIdentity = "local-ai-dashboard";
 
   const starterProfiles = {
     fast: {
@@ -1110,8 +1110,8 @@
     renderConversation();
   }
 
-  function resetUiPreferencesForVersion() {
-    if (storageGet(uiStorageKeys.version, "") === uiPreferenceVersion) {
+  function resetUiPreferencesForIdentity() {
+    if (storageGet(uiStorageKeys.version, "") === uiPreferenceIdentity) {
       return;
     }
     storageRemove(uiStorageKeys.mode);
@@ -1124,7 +1124,7 @@
     storageRemove(uiStorageKeys.localConnectApprovedApps);
     storageRemove(uiStorageKeys.localConnectApprovedAppCategories);
     storageRemove(uiStorageKeys.localConnectEndpointUrl);
-    storageSet(uiStorageKeys.version, uiPreferenceVersion);
+    storageSet(uiStorageKeys.version, uiPreferenceIdentity);
   }
 
   function initialAppMode() {
@@ -4074,7 +4074,7 @@
   }
 
   function initializeUiShell() {
-    resetUiPreferencesForVersion();
+    resetUiPreferencesForIdentity();
     state.p2pEnabled = storageGet(uiStorageKeys.p2pEnabled, "true") !== "false";
     state.peerBaseUrl = storageGet(uiStorageKeys.peerBaseUrl, "");
     restoreMemoryEndpointsSettings();

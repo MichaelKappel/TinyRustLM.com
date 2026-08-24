@@ -404,7 +404,7 @@ public sealed class PackageBoundaryTests
             Assert.Contains("tinyrustlm-local-server", script, StringComparison.Ordinal);
             Assert.Contains("test:ui", script, StringComparison.Ordinal);
             Assert.Contains("web-release-local-smoke.js", script, StringComparison.Ordinal);
-            Assert.Contains("model-acquisition-v2.test.js", script, StringComparison.Ordinal);
+            Assert.Contains("model-acquisition.test.js", script, StringComparison.Ordinal);
             Assert.Contains("companion-bridge.test.js", script, StringComparison.Ordinal);
             Assert.Contains("TinyRustLM.SeedHost.Tests", script, StringComparison.Ordinal);
             Assert.Contains("huggingface_conversion_cli", script, StringComparison.Ordinal);
@@ -1178,7 +1178,7 @@ public sealed class PackageBoundaryTests
             Assert.Contains("verify-tinyrustlm-ui.ps1", script, StringComparison.Ordinal);
             Assert.Contains("web-release-local-smoke.js", script, StringComparison.Ordinal);
             Assert.Contains("RunDeepAcquisition", script, StringComparison.Ordinal);
-            Assert.Contains("model-acquisition-v2.test.js", script, StringComparison.Ordinal);
+            Assert.Contains("model-acquisition.test.js", script, StringComparison.Ordinal);
             Assert.Contains("Local .slm", script, StringComparison.Ordinal);
             Assert.Contains("Hugging Face", script, StringComparison.Ordinal);
             Assert.Contains("Get model", script, StringComparison.Ordinal);

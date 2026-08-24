@@ -139,7 +139,7 @@ try {
     if ($RunDeepAcquisition) {
         Invoke-NativeGate "acquisition_browser_bridge" "node" @(
             "--test",
-            (Join-Path $RepoRoot "tinyrustlm/tests/model-acquisition-v2.test.js"),
+            (Join-Path $RepoRoot "tinyrustlm/tests/model-acquisition.test.js"),
             (Join-Path $RepoRoot "tinyrustlm/tests/companion-bridge.test.js")
         )
         $gates.acquisition_browser_bridge = "pass"

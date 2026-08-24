@@ -17,20 +17,12 @@ a second chat-history state machine.
 - Native runtime assets: Windows x64, Linux x64, and Linux ARM64 when the
   corresponding release asset has passed its native CI job
 
-Install the version-pinned public packages from NuGet.org. The package pages
-are
-[`UAIX.Browser.p2pRuntime.SeedHost` 0.2.0](https://www.nuget.org/packages/UAIX.Browser.p2pRuntime.SeedHost/0.2.0)
-and
-[`UAIX.Browser.p2pRuntime.SeedHost.Tool` 0.2.0](https://www.nuget.org/packages/UAIX.Browser.p2pRuntime.SeedHost.Tool/0.2.0).
-
-```powershell
-dotnet add package UAIX.Browser.p2pRuntime.SeedHost `
-  --version 0.2.0
-
-dotnet tool install UAIX.Browser.p2pRuntime.SeedHost.Tool `
-  --version 0.2.0 `
-  --tool-path .\.uaix-tools
-```
+Package `0.3.0` is the sole prelaunch source target for this contract. It is
+not an install authority until the library, tool, and symbol packages have
+passed clean-consumer verification, been published, and been independently
+read back from NuGet.org. No package URL or install command is published while
+that gate is pending. The accepted package identities and exact verified
+commands will be added only after immutable public readback succeeds.
 
 Run `doctor` before creating a fleet:
 
@@ -55,22 +47,25 @@ The command prints one pairing code to the local console. The server retains
 only its digest, accepts the code once, and invalidates it after use, expiry,
 or bridge shutdown. Successful pairing creates a short-lived capability bound
 to the exact browser origin and closed operation scopes. Capabilities rotate
-and revoke through dedicated protocol routes and are lost when the bridge
+and revoke through dedicated contract routes and are lost when the bridge
 restarts. They are separate from P2P peer configuration and optional
 MemoryEndpoints credentials.
 
-The protocol-v2 loopback API exposes only health, pairing/session control,
+The canonical loopback API exposes only health, pairing/session control,
 path-free runtime status, admitted-model listing, bounded import and conversion
 control and progress, receipt-revalidated model and composition streaming, and
 optional sharing control.
-Every non-health operation validates the exact `Host`, `Origin`, protocol
-version, method, capability scope, and mutation request ID. The bridge has no
+Every non-health operation validates the exact `Host`, `Origin`, closed route,
+method, capability scope, and mutation request ID. The bridge has no
 arbitrary path, shell, cookie, generic proxy, remote-control, or prompt route.
 Prompts and responses remain inside the browser.
 
 ## Direct Model Acquisition
 
-The browser has one supported acquisition flow:
+**Release status: blocked.** The companion still contains superseded SLM1
+conversion and fixture assumptions. They are not a supported prelaunch path
+and package `0.3.0` must not be built or published until the complete SLM2-only
+replacement deletes them. The required release flow is:
 
 1. Prefer a complete MiniModel offer whose artifact, piece set, model identity,
    and immutable composition graph agree.
@@ -80,8 +75,8 @@ The browser has one supported acquisition flow:
    source to an exact 40-hex commit and explicit reviewed source-file contract.
 4. Queue the immutable conversion request through the companion.
 5. Resume bounded source downloads, verify exact byte counts and SHA-256
-   digests, review the source contract, and invoke the packaged
-   `tinyrustlm-slm-pack` binary.
+   digests, review the source contract, and invoke the sole registered SLM2
+   conversion executable.
 6. Reinspect the conversion receipt, validate the resulting `.slm`, create and
    inspect a base-only `.acg1`, then stream both artifacts to the browser.
 7. Activate the graph in Rust/WASM before reporting the model ready.
@@ -126,8 +121,9 @@ uaix-p2p-seed add-model `
 
 The Qwen example is only valid after substituting addresses controlled by the
 operator. `203.0.113.10` is a documentation address and must not be announced.
-The existing Qwen q4 artifact is classified as `conversation-proven` and
-`full-assistant-quality-pending`; the tiny q8 fixture is runtime-smoke-only.
+No model is currently release-admitted. The old tiny q8 fixture is diagnostic
+history only and cannot satisfy model quality, SLM2 integration, or release
+gates.
 
 Serve both lanes in the foreground:
 
@@ -173,8 +169,9 @@ silently configured by the package.
   internals are not included. The packaged Rust converter supports only the
   reviewed public source contracts declared by this release.
 
-NuGet.org publishes the library package, tool package, and their symbol
-sidecars. A clean public install must resolve exactly version `0.2.0`; inspect
+The release gate requires NuGet.org to publish the library package, tool
+package, and their symbol sidecars. A clean public install must then resolve
+exactly version `0.3.0`; inspect
 the downloaded package with `dotnet nuget verify --all <package-path>` when an
 independent repository-signature check is required. Self-contained companion
 archives are a separate release channel and are not claimed as public until a

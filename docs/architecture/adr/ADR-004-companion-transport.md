@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted. Protocol v2 is implemented for its exact IPv4 loopback profile.
+Accepted. One canonical companion contract is implemented for its exact IPv4
+loopback profile.
 Broader browser, operating-system, IPv6, and native-inference claims remain
 unpromoted until target execution evidence exists.
 
@@ -19,9 +20,9 @@ P2P serving, MemoryEndpoints, arbitrary local automation, or model semantics.
 ## Decision
 
 The browser uses ordinary Fetch over HTTP/1.1 to the explicit numeric endpoint
-http://127.0.0.1:43127. Protocol version 2 is the sole accepted route family.
-The browser does not scan ports or contact loopback before explicit user
-action.
+http://127.0.0.1:43127. The closed, unversioned route table is the sole
+companion interface. The browser does not scan ports or contact loopback before
+explicit user action.
 
 The protocol permits only GET, POST, and CORS OPTIONS generated for its closed
 route table. It has:
@@ -81,7 +82,7 @@ is named only from physical tests.
 ## Authoritative Evidence
 
 - **Observed local fact**: tinyrustlm/app/companion-bridge.js accepts only
-  http://127.0.0.1:43127 and protocol v2.
+  http://127.0.0.1:43127 and the canonical closed route table.
 - **Observed local fact**:
   dotnet/src/TinyRustLM.SeedHost/SeedHostBridgeServer.cs implements
   loopback-only HTTP/1.1, exact Host and Origin checks, scoped sessions, closed
@@ -131,9 +132,10 @@ on completion, cancellation, session loss, or page disposal.
 
 ## Compatibility Impact
 
-Protocol v2 is the only accepted browser bridge contract. Retired v0/v1 routes,
-aliases, request files, scripts, and silent fallback transports are not
-supported.
+The unversioned route table is the only browser bridge contract. There are no
+versioned route aliases, request-file transports, scripts, migration readers,
+or silent fallback transports. Every maintained browser, companion, test, and
+dogfood client changes together.
 
 IPv6 loopback, another port, another browser transport, or native inference
 commands require an explicit revised profile and new evidence. Failure to
@@ -159,7 +161,7 @@ unused scopes, and documentation that asks a user to run generated files.
 
 ## Acceptance Tests
 
-1. Wrong Host, Origin, port, protocol, method, route, scope, capability,
+1. Wrong Host, Origin, port, method, route, scope, capability,
    pairing code, replay ID, and duplicate header fail closed.
 2. DNS names and non-loopback endpoints are rejected by the browser client.
 3. Oversized, malformed, slow, truncated, and extra-field JSON fail with
@@ -178,7 +180,7 @@ unused scopes, and documentation that asks a user to run generated files.
 ## Rollback
 
 Rollback reverts the browser assets and companion package as one
-content-addressed release pair and revokes incompatible sessions. It never
-reenables retired route versions or handoff-file workflows. Models already
-verified in the local store remain inert data until a matching supported
-release revalidates them.
+content-addressed release pair and revokes sessions issued by the replaced
+pair. It never adds route aliases or handoff-file workflows. Models already
+verified in the local store remain inert data until the selected release
+revalidates them.

@@ -88,7 +88,7 @@ test.describe("real web-to-companion boundary", () => {
     );
 
     const firstCompanionRequest = page.waitForRequest(
-      (request) => request.url() === "http://127.0.0.1:43127/v1/health"
+      (request) => request.url() === "http://127.0.0.1:43127/health"
     );
     await page.locator("#companionDetectButton").click();
     await firstCompanionRequest;
@@ -105,7 +105,7 @@ test.describe("real web-to-companion boundary", () => {
     const modelStreamRequests = [];
     page.on("request", (request) => {
       if (
-        request.url().startsWith("http://127.0.0.1:43127/v1/models/") &&
+        request.url().startsWith("http://127.0.0.1:43127/models/") &&
         request.url().endsWith("/content")
       ) {
         modelStreamRequests.push(request.url());
@@ -121,7 +121,7 @@ test.describe("real web-to-companion boundary", () => {
       });
       const importRequestPromise = page.waitForRequest((request) =>
         request.method() === "POST" &&
-        request.url() === "http://127.0.0.1:43127/v1/imports"
+        request.url() === "http://127.0.0.1:43127/imports"
       );
       await result.getByRole("button", { name: "Import & load" }).click();
       const importRequest = await importRequestPromise;
@@ -173,7 +173,7 @@ test.describe("real web-to-companion boundary", () => {
     page.on("response", async (response) => {
       if (
         response.status() >= 400 &&
-        response.url() === "http://127.0.0.1:43127/v1/imports"
+        response.url() === "http://127.0.0.1:43127/imports"
       ) {
         try {
           const value = await response.json();
@@ -312,7 +312,7 @@ test.describe("real web-to-companion boundary", () => {
       await expect(page.locator("#companionPairingControls")).toBeVisible();
 
       const browserModelStreams = requests.filter((entry) =>
-        entry.url.startsWith("http://127.0.0.1:43127/v1/models/") &&
+        entry.url.startsWith("http://127.0.0.1:43127/models/") &&
         entry.url.endsWith("/content")
       );
       expect(browserModelStreams).toHaveLength(1);
@@ -416,7 +416,7 @@ test.describe("real web-to-companion boundary", () => {
       });
       const firstImportRequest = page.waitForRequest((request) =>
         request.method() === "POST" &&
-        request.url() === "http://127.0.0.1:43127/v1/imports"
+        request.url() === "http://127.0.0.1:43127/imports"
       );
       await result.getByRole("button", { name: "Import & load" }).click();
       const firstImportBody = (await firstImportRequest).postDataJSON();
@@ -475,7 +475,7 @@ test.describe("real web-to-companion boundary", () => {
       await expect(page.locator("#conversation #response")).toHaveCount(1);
 
       const browserModelStreams = requests.filter((entry) =>
-        entry.url.startsWith("http://127.0.0.1:43127/v1/models/") &&
+        entry.url.startsWith("http://127.0.0.1:43127/models/") &&
         entry.url.endsWith("/content")
       );
       expect(browserModelStreams).toHaveLength(1);

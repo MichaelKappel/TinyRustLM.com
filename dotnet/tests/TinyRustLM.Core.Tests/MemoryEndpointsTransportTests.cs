@@ -254,25 +254,25 @@ public sealed class MemoryEndpointsTransportTests
         string conflictCode,
         ulong serverSequence,
         string revisionId) => new
-    {
-        receiptId = $"syncreceipt-{status}",
-        workspaceId = "workspace-fixture",
-        idempotencyKeyHash = $"sha256:{Sha256("mutation-1")}",
-        bodyHash = CanonicalMutation().BodyHash,
-        logicalMemoryId = "logical-memory-a",
-        syncRevisionId = revisionId,
-        serverSequence,
-        status,
-        conflict = status == "conflict",
-        conflictCode,
-        currentHeadRevisionId = status == "applied" ? "syncrev-parent" : "syncrev-current",
-        httpStatus = status == "applied" ? "202 Accepted" : "409 Conflict",
-        createdAt = "2026-07-10T22:01:00Z",
-        idempotencyKeyExposed = false,
-        valuesRedacted = true,
-        rawCredentialExposed = false,
-        rawPayloadExposed = false
-    };
+        {
+            receiptId = $"syncreceipt-{status}",
+            workspaceId = "workspace-fixture",
+            idempotencyKeyHash = $"sha256:{Sha256("mutation-1")}",
+            bodyHash = CanonicalMutation().BodyHash,
+            logicalMemoryId = "logical-memory-a",
+            syncRevisionId = revisionId,
+            serverSequence,
+            status,
+            conflict = status == "conflict",
+            conflictCode,
+            currentHeadRevisionId = status == "applied" ? "syncrev-parent" : "syncrev-current",
+            httpStatus = status == "applied" ? "202 Accepted" : "409 Conflict",
+            createdAt = "2026-07-10T22:01:00Z",
+            idempotencyKeyExposed = false,
+            valuesRedacted = true,
+            rawCredentialExposed = false,
+            rawPayloadExposed = false
+        };
 
     private static object Revision(string status, string conflictCode, ulong serverSequence) => new
     {
@@ -320,18 +320,18 @@ public sealed class MemoryEndpointsTransportTests
         string status,
         string conflictCode,
         ulong sequence) => new
-    {
-        schemaVersion = "memoryendpoints.sync_operator_summary.v1",
-        action,
-        status,
-        serverSequence = sequence,
-        conflict = status == "conflict",
-        conflictCode,
-        persisted = true,
-        valuesRedacted = true,
-        rawCredentialExposed = false,
-        rawPayloadExposed = false
-    };
+        {
+            schemaVersion = "memoryendpoints.sync_operator_summary.v1",
+            action,
+            status,
+            serverSequence = sequence,
+            conflict = status == "conflict",
+            conflictCode,
+            persisted = true,
+            valuesRedacted = true,
+            rawCredentialExposed = false,
+            rawPayloadExposed = false
+        };
 
     private static string ChangePageJson(ulong afterSequence, ulong nextSequence) =>
         JsonSerializer.Serialize(new

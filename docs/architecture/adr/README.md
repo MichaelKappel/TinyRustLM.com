@@ -27,7 +27,7 @@ unpublished path after its replacement passes.
 | ADR-001 | [vNext metadata grammar](ADR-001-vnext-metadata-grammar.md) | Accepted | Strict SLM-DCBOR-1 implemented and cross-validated for unpromoted SLM2 |
 | ADR-002 | [Hash and Merkle profile](ADR-002-hash-and-merkle-profile.md) | Accepted | SLM2 whole, tensor, piece, and Merkle identities implemented and vector-bound; not promoted |
 | ADR-003 | [Alignment and tensor layout](ADR-003-alignment-and-tensor-layout.md) | Accepted | SLM2 F32 layout writer/reader and hostile vectors implemented; runtime pending |
-| ADR-004 | [Companion transport](ADR-004-companion-transport.md) | Accepted | Protocol v2 implemented on tested loopback profile |
+| ADR-004 | [Companion transport](ADR-004-companion-transport.md) | Accepted | Canonical companion contract implemented on tested loopback profile |
 | ADR-005 | [Browser persistence](ADR-005-browser-persistence.md) | Accepted | Ephemeral file and companion paths exist; OPFS tier pending |
 | ADR-006 | [Quantization profiles](ADR-006-quantization-profiles.md) | Accepted | SLM2 dense F32 storage oracle implemented; execution and every quantized profile remain unpromoted |
 | ADR-007 | [WebGPU support profile](ADR-007-webgpu-support-profile.md) | Accepted | Not implemented and not promoted |
