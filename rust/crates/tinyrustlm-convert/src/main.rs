@@ -9,7 +9,7 @@ use std::process::ExitCode;
 use serde_json::json;
 use sha2::{Digest, Sha256};
 use tinyrustlm_convert::{
-    convert_locked_qwen2_source, convert_locked_qwen_tokenizer2_source, ConverterExecutionIdentity,
+    convert_locked_qwen3_source, convert_locked_qwen_tokenizer2_source, ConverterExecutionIdentity,
 };
 
 const HASH_BUFFER_BYTES: usize = 1_048_576;
@@ -38,18 +38,18 @@ fn run() -> Result<(), &'static str> {
         ConverterExecutionIdentity::new(env!("CARGO_PKG_VERSION"), sha256_file(&executable)?)
             .map_err(|error| error.code())?;
     let summary = match arguments[1].to_str() {
-        Some("qwen2-safetensors") => {
+        Some("qwen3-safetensors") => {
             let result =
-                convert_locked_qwen2_source(&source_lock, &source_directory, &output, &execution)
+                convert_locked_qwen3_source(&source_lock, &source_directory, &output, &execution)
                     .map_err(|error| error.code())?;
             json!({
-                "schema": "tinyrustlm.qwen2_conversion_cli_summary.v1",
+                "schema": "tinyrustlm.qwen3_conversion_cli_summary.v1",
                 "status": "pass",
                 "modelFile": file_name(result.model_path())?,
                 "modelBytes": result.model_identity().byte_length(),
                 "modelSha256": result.model_identity().artifact_sha256_hex(),
                 "receiptFile": file_name(result.receipt_path())?,
-                "requiredNextGate": "untouched-source-slm2-native-slm2-wasm-quality-and-runtime-conformance"
+                "requiredNextGate": "source-native-browser-numerical-parity-and-untouched-quality-qualification"
             })
         }
         Some("qwen-tokenizer2") => {

@@ -14,7 +14,7 @@ use tinyrustlm_tokenizer2::{
     TOKENIZER2_FORMAT_PROFILE_SHA256,
 };
 
-use crate::qwen2::ConverterExecutionIdentity;
+use crate::execution::ConverterExecutionIdentity;
 use crate::qwen_tokenizer::{
     parse_qwen_tokenizer, ParsedQwenTokenizer, QwenTokenizerModelContract,
 };

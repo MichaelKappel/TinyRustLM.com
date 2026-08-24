@@ -56,7 +56,6 @@ pub(crate) struct ParsedQwenTokenizer {
     bos_token_id: Option<u32>,
     eos_token_id: Option<u32>,
     pad_token_id: Option<u32>,
-    chat_template_bytes: Vec<u8>,
 }
 
 impl ParsedQwenTokenizer {
@@ -118,10 +117,6 @@ impl ParsedQwenTokenizer {
 
     pub(crate) const fn pad_token_id(&self) -> Option<u32> {
         self.pad_token_id
-    }
-
-    pub(crate) fn chat_template_bytes(&self) -> &[u8] {
-        &self.chat_template_bytes
     }
 }
 
@@ -370,6 +365,7 @@ fn validate_pipeline(
     tokenizer: &RawTokenizer,
     config: &RawTokenizerConfig,
 ) -> Result<(), QwenTokenizerError> {
+    // Qwen3 intentionally reuses the upstream Qwen2Tokenizer class identity.
     let split_valid = matches!(
         tokenizer.pre_tokenizer.pretokenizers.as_slice(),
         [
@@ -567,7 +563,6 @@ fn build_tokenizer(
         bos_token_id,
         eos_token_id,
         pad_token_id,
-        chat_template_bytes: config.chat_template.into_bytes(),
     })
 }
 

@@ -65,11 +65,11 @@ behavior, useful-model qualification, SIMD, threaded WASM, WebGPU, deployment,
 or live campaign evidence. See
 `docs/architecture/vnext-slm2-scalar-wasm-conformance.md`.
 
-## Qwen3 Model Conversion Preregistration
+## Qwen3 Model Conversion
 
-`qwen3-safetensors-conversion-profile.v1.json` freezes the sole production-
-bound source-model conversion contract before converter code or Qwen3 SLM2
-output changes. It is 14,419 bytes at SHA-256
+`qwen3-safetensors-conversion-profile.v1.json` froze the sole production-bound
+source-model conversion contract before converter code or Qwen3 SLM2 output
+changed. It is 14,419 bytes at SHA-256
 `313069152daa70a2c2b5070f9d1350379a5800f647d5c3ac8d23a75ff9ead968`.
 It selects dense Qwen3 grouped-query attention with paired Q/K
 normalization, one exact nine-file source closure, strict single-file
@@ -77,13 +77,15 @@ Safetensors validation, bounded BF16/F32 streaming, and exact mixed-Q8 SLM2
 output. Conversion publishes the independently reparsed model first and its
 content-addressed receipt last through create-only same-directory durability.
 
-The converter does not regenerate Tokenizer2 or Template2, promote model
-quality, run a runtime, or create campaign credit. The selected unchanged
-Qwen3-0.6B base remains terminally rejected as a product model. The completed
-converter replacement must delete the Qwen2/F32 converter and may retain no
-fallback, compatibility, migration, alias, alternate quantization, or dense
-model path. See
-`docs/architecture/qwen3-slm2-converter-preregistration.md`.
+The implemented converter does not regenerate Tokenizer2 or Template2,
+promote model quality, run a runtime, or create campaign credit. It replaced
+and deleted the Qwen2/F32 model converter and retains no fallback,
+compatibility, migration, alias, alternate quantization, or dense model path.
+The selected unchanged Qwen3-0.6B base remains terminally rejected as a
+product model. See the immutable before-output decision in
+`docs/architecture/qwen3-slm2-converter-preregistration.md` and the current
+implementation record in
+`docs/architecture/qwen3-slm2-converter-implementation.md`.
 
 ## Tokenizer2 Format Checkpoint
 

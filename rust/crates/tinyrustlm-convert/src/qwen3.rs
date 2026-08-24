@@ -13,34 +13,32 @@ use tinyrustlm_durability::flush_owned_directory;
 use tinyrustlm_slm2::{
     required_model_tensors, validate_model, write_model, ArtifactClass, ModelIdentity, ModelSpec,
     TensorInput, TensorSpec, ValidationPolicy, SLM2_FORMAT_PROFILE_ID, SLM2_FORMAT_PROFILE_SHA256,
-};
-use tinyrustlm_tokenizer2::{
-    Tokenizer2, TokenizerPolicy, TOKENIZER2_FORMAT_PROFILE_ID, TOKENIZER2_FORMAT_PROFILE_SHA256,
+    SLM2_Q8_WEIGHT_PROFILE_ID, SLM2_Q8_WEIGHT_PROFILE_SHA256,
 };
 
-use crate::qwen_tokenizer::{
-    parse_qwen_tokenizer, ParsedQwenTokenizer, QwenTokenizerModelContract,
-};
+use crate::execution::ConverterExecutionIdentity;
 
-/// The sole current Qwen2 Safetensors to SLM2 conversion profile.
-pub const QWEN2_CONVERSION_PROFILE_ID: &str = "tinyrustlm.qwen2-safetensors-to-slm2-f32/1";
-/// The SHA-256 of the exact checked-in Qwen2 conversion profile bytes.
-pub const QWEN2_CONVERSION_PROFILE_SHA256: &str =
-    "db4d16ce83460856588bda98829a16bbc23805f82ecad0f40b9380c77ea092fc";
+/// The sole current Qwen3 Safetensors to SLM2 conversion profile.
+pub const QWEN3_CONVERSION_PROFILE_ID: &str = "tinyrustlm.qwen3-safetensors-to-slm2-mixed-q8/1";
+/// The SHA-256 of the exact checked-in Qwen3 conversion profile bytes.
+pub const QWEN3_CONVERSION_PROFILE_SHA256: &str =
+    "313069152daa70a2c2b5070f9d1350379a5800f647d5c3ac8d23a75ff9ead968";
 /// The exact source-lock schema consumed by this converter.
-pub const QWEN2_SOURCE_LOCK_SCHEMA: &str = "tinyrustlm.qwen2_source_lock.v1";
+pub const QWEN3_SOURCE_LOCK_SCHEMA: &str = "tinyrustlm.qwen3_source_lock.v1";
 
-const QWEN2_ARCHITECTURE_PROFILE_ID: &str = "tinyrustlm.qwen2-dense-gqa/1";
-const CONVERSION_RECEIPT_SCHEMA: &str = "tinyrustlm.qwen2_conversion_receipt.v1";
+const QWEN3_ARCHITECTURE_PROFILE_ID: &str = "tinyrustlm.qwen3-dense-gqa-qk-norm/1";
+const CONVERSION_RECEIPT_SCHEMA: &str = "tinyrustlm.qwen3_conversion_receipt.v1";
+const TENSOR_PROFILE_ID: &str = "tinyrustlm.tensor-mixed-q8-row-f32/1";
+const TENSOR_INVENTORY_HASH_DOMAIN: &[u8] = b"tinyrustlm.qwen3.source-tensor-inventory.v1\0";
 const SOURCE_LOCK_MAXIMUM_BYTES: u64 = 1_048_576;
 const CONFIG_MAXIMUM_BYTES: u64 = 1_048_576;
-const TOKENIZER_CONFIG_MAXIMUM_BYTES: u64 = 1_048_576;
-const TOKENIZER_MAXIMUM_BYTES: u64 = 64 * 1_048_576;
 const SAFETENSORS_HEADER_MAXIMUM_BYTES: u64 = 16 * 1_048_576;
 const HASH_BUFFER_BYTES: usize = 1_048_576;
 const TENSOR_PAYLOAD_ALIGNMENT: u32 = 64;
+const OUTPUT_MAXIMUM_BYTES: u64 = 68_719_476_736;
+const OUTPUT_MAXIMUM_TENSORS: u32 = 262_144;
 const PROFILE_BYTES: &[u8] =
-    include_bytes!("../../../../contracts/vnext/qwen2-safetensors-conversion-profile.v1.json");
+    include_bytes!("../../../../contracts/vnext/qwen3-safetensors-conversion-profile.v1.json");
 const REQUIRED_SOURCE_FILES: [&str; 9] = [
     "LICENSE",
     "README.md",
@@ -55,11 +53,11 @@ const REQUIRED_SOURCE_FILES: [&str; 9] = [
 
 /// A bounded, public-safe converter failure.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub struct Qwen2ConversionError {
+pub struct Qwen3ConversionError {
     code: &'static str,
 }
 
-impl Qwen2ConversionError {
+impl Qwen3ConversionError {
     const fn new(code: &'static str) -> Self {
         Self { code }
     }
@@ -70,76 +68,26 @@ impl Qwen2ConversionError {
     }
 }
 
-impl fmt::Display for Qwen2ConversionError {
+impl fmt::Display for Qwen3ConversionError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter.write_str(self.code)
     }
 }
 
-impl Error for Qwen2ConversionError {}
-
-/// Identity of the exact converter executable running one operation.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ConverterExecutionIdentity {
-    implementation_version: String,
-    executable_sha256: String,
-}
-
-impl ConverterExecutionIdentity {
-    /// Creates a validated converter execution identity.
-    pub fn new(
-        implementation_version: impl Into<String>,
-        executable_sha256: impl Into<String>,
-    ) -> Result<Self, Qwen2ConversionError> {
-        let result = Self {
-            implementation_version: implementation_version.into(),
-            executable_sha256: executable_sha256.into(),
-        };
-        if !valid_safe_identifier(&result.implementation_version, 128)
-            || !valid_sha256(&result.executable_sha256)
-        {
-            return Err(Qwen2ConversionError::new(
-                "qwen2-converter-identity-invalid",
-            ));
-        }
-        Ok(result)
-    }
-
-    /// Returns the bounded implementation version.
-    pub fn implementation_version(&self) -> &str {
-        &self.implementation_version
-    }
-
-    /// Returns the lowercase executable SHA-256.
-    pub fn executable_sha256(&self) -> &str {
-        &self.executable_sha256
-    }
-}
+impl Error for Qwen3ConversionError {}
 
 /// Successful output identities from one complete conversion transaction.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Qwen2ConversionResult {
+pub struct Qwen3ConversionResult {
     model_path: PathBuf,
-    tokenizer_path: PathBuf,
-    template_path: PathBuf,
     receipt_path: PathBuf,
     model_identity: ModelIdentity,
 }
 
-impl Qwen2ConversionResult {
+impl Qwen3ConversionResult {
     /// Returns the promoted SLM2 model path.
     pub fn model_path(&self) -> &Path {
         &self.model_path
-    }
-
-    /// Returns the promoted exact tokenizer artifact path.
-    pub fn tokenizer_path(&self) -> &Path {
-        &self.tokenizer_path
-    }
-
-    /// Returns the promoted exact chat-template artifact path.
-    pub fn template_path(&self) -> &Path {
-        &self.template_path
     }
 
     /// Returns the promoted conversion receipt path.
@@ -155,7 +103,7 @@ impl Qwen2ConversionResult {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
-struct Qwen2SourceLock {
+struct Qwen3SourceLock {
     schema: String,
     model_id: String,
     revision: String,
@@ -207,11 +155,13 @@ impl LockedFiles {
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct Qwen2Config {
+struct Qwen3Config {
     architectures: Vec<String>,
+    attention_bias: bool,
     attention_dropout: f64,
     bos_token_id: u32,
     eos_token_id: u32,
+    head_dim: u32,
     hidden_act: String,
     hidden_size: u32,
     initializer_range: f64,
@@ -223,8 +173,11 @@ struct Qwen2Config {
     num_hidden_layers: u32,
     num_key_value_heads: u32,
     rms_norm_eps: f64,
+    #[serde(rename = "rope_scaling")]
+    _rope_scaling: (),
     rope_theta: f64,
-    sliding_window: u32,
+    #[serde(rename = "sliding_window")]
+    _sliding_window: (),
     tie_word_embeddings: bool,
     torch_dtype: String,
     transformers_version: String,
@@ -362,7 +315,7 @@ struct InspectedSource {
     data_offset: u64,
     tensors: BTreeMap<String, SourceTensor>,
     parameter_count: u64,
-    tokenizer: ParsedQwenTokenizer,
+    tensor_inventory_sha256: String,
 }
 
 struct TensorReader {
@@ -380,15 +333,15 @@ impl TensorReader {
         path: PathBuf,
         source_payload_offset: u64,
         tensor: &SourceTensor,
-    ) -> Result<Self, Qwen2ConversionError> {
+    ) -> Result<Self, Qwen3ConversionError> {
         let source_elements = tensor
             .end
             .checked_sub(tensor.start)
             .and_then(|length| length.checked_div(tensor.dtype.source_bytes()))
-            .ok_or_else(|| Qwen2ConversionError::new("qwen2-source-offset-invalid"))?;
+            .ok_or_else(|| Qwen3ConversionError::new("qwen3-arithmetic-overflow"))?;
         let output_length = source_elements
             .checked_mul(4)
-            .ok_or_else(|| Qwen2ConversionError::new("qwen2-source-offset-invalid"))?;
+            .ok_or_else(|| Qwen3ConversionError::new("qwen3-arithmetic-overflow"))?;
         Ok(Self {
             path,
             source_payload_offset,
@@ -412,13 +365,13 @@ impl TensorReader {
                         .checked_mul(self.source_dtype.source_bytes())
                         .and_then(|relative| offset.checked_add(relative))
                 })
-                .ok_or_else(|| io::Error::other("qwen2 source offset overflow"))?;
+                .ok_or_else(|| io::Error::other("qwen3 source offset overflow"))?;
             file.seek(SeekFrom::Start(source_position))?;
             self.file = Some(file);
         }
         self.file
             .as_mut()
-            .ok_or_else(|| io::Error::other("qwen2 source file unavailable"))
+            .ok_or_else(|| io::Error::other("qwen3 source file unavailable"))
     }
 }
 
@@ -431,12 +384,12 @@ impl Read for TensorReader {
         if !self.position.is_multiple_of(4) || output.len() < 4 {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidInput,
-                "qwen2 tensor reads must be aligned f32 words",
+                "qwen3 tensor reads must be aligned f32 words",
             ));
         }
         let remaining = self.output_length - self.position;
         let requested = usize::try_from(remaining.min(output.len() as u64))
-            .map_err(|_| io::Error::other("qwen2 tensor read overflow"))?;
+            .map_err(|_| io::Error::other("qwen3 tensor read overflow"))?;
         let count = requested - (requested % 4);
         match self.source_dtype {
             SourceDtype::F32 => self.ensure_file()?.read_exact(&mut output[..count])?,
@@ -476,11 +429,11 @@ impl Seek for TensorReader {
         if next < 0 || next > i128::from(self.output_length) || next % 4 != 0 {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidInput,
-                "qwen2 tensor seek is outside an aligned payload",
+                "qwen3 tensor seek is outside an aligned payload",
             ));
         }
         self.position =
-            u64::try_from(next).map_err(|_| io::Error::other("qwen2 tensor seek overflow"))?;
+            u64::try_from(next).map_err(|_| io::Error::other("qwen3 tensor seek overflow"))?;
         self.file = None;
         Ok(self.position)
     }
@@ -496,12 +449,12 @@ struct ConversionReceipt<'a> {
     converter: ConverterReceipt<'a>,
     source: SourceReceipt<'a>,
     model: ModelReceipt,
-    tokenizer: TokenizerReceipt,
-    chat_template: SourceTemplateReceipt,
     durability: DurabilityReceipt,
     conversion_claim: &'static str,
-    quality_status: &'static str,
-    runtime_status: &'static str,
+    model_quality_status: &'static str,
+    source_framework_parity_status: &'static str,
+    native_runtime_status: &'static str,
+    browser_wasm_status: &'static str,
     required_next_gate: &'static str,
 }
 
@@ -523,11 +476,13 @@ struct SourceReceipt<'a> {
     architecture_profile_id: &'a str,
     license_spdx: &'a str,
     license_disposition: &'a str,
+    files: &'a LockedFiles,
     source_model_sha256: &'a str,
     source_model_bytes: u64,
     source_dtype: &'static str,
     tensor_count: usize,
     parameter_count: u64,
+    tensor_inventory_sha256: &'a str,
 }
 
 #[derive(Serialize)]
@@ -536,6 +491,9 @@ struct ModelReceipt {
     path: String,
     format_profile_id: &'static str,
     format_profile_sha256: &'static str,
+    weight_profile_id: &'static str,
+    weight_profile_sha256: &'static str,
+    tensor_profile_id: &'static str,
     byte_length: u64,
     artifact_sha256: String,
     manifest_sha256: String,
@@ -565,35 +523,6 @@ struct ModelSpecReceipt {
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
-struct TokenizerReceipt {
-    path: String,
-    byte_length: u64,
-    sha256: String,
-    format_profile_id: &'static str,
-    format_profile_sha256: &'static str,
-    token_count: u32,
-    base_token_count: u32,
-    merge_count: u32,
-    added_token_count: u32,
-    special_token_count: u32,
-    bos_token_id: Option<u32>,
-    eos_token_id: Option<u32>,
-    pad_token_id: Option<u32>,
-}
-
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-struct SourceTemplateReceipt {
-    path: String,
-    byte_length: u64,
-    sha256: String,
-    source_format: &'static str,
-    promotion_status: &'static str,
-    required_next_gate: &'static str,
-}
-
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
 struct DurabilityReceipt {
     operation_id: String,
     directory_identity_sha256: String,
@@ -603,28 +532,28 @@ struct DurabilityReceipt {
     status: String,
 }
 
-/// Converts one exact locked Qwen2 checkpoint into deterministic SLM2 F32 bytes.
+/// Converts one exact locked Qwen3 checkpoint into deterministic mixed-Q8 SLM2 bytes.
 ///
-/// The source lock and source directory remain read-only. The model, exact
-/// tokenizer, exact chat template, and conversion receipt are create-only
-/// siblings. Interrupted staging files are preserved and never accepted as
-/// complete output.
-pub fn convert_locked_qwen2_source(
+/// The source lock and source directory remain read-only. The model and
+/// conversion receipt are create-only siblings. Tokenizer2 and Template2 have
+/// separate accepted owners and are deliberately not emitted here. Interrupted
+/// staging files are preserved and never accepted as complete output.
+pub fn convert_locked_qwen3_source(
     source_lock_path: &Path,
     source_directory: &Path,
     output_model_path: &Path,
     execution: &ConverterExecutionIdentity,
-) -> Result<Qwen2ConversionResult, Qwen2ConversionError> {
+) -> Result<Qwen3ConversionResult, Qwen3ConversionError> {
     validate_profile()?;
     let lock_bytes = read_bounded_regular_file(
         source_lock_path,
         SOURCE_LOCK_MAXIMUM_BYTES,
-        "qwen2-source-lock-invalid",
+        "qwen3-source-lock-invalid",
     )?;
-    let lock: Qwen2SourceLock = serde_json::from_slice(&lock_bytes)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-source-lock-invalid"))?;
+    let lock: Qwen3SourceLock = serde_json::from_slice(&lock_bytes)
+        .map_err(|_| Qwen3ConversionError::new("qwen3-source-lock-invalid"))?;
     validate_source_lock(&lock)?;
-    let source_directory = validate_directory(source_directory, "qwen2-source-directory-invalid")?;
+    let source_directory = validate_directory(source_directory, "qwen3-source-directory-invalid")?;
     validate_source_inventory(&source_directory)?;
     let initial_identities = verify_locked_files(&source_directory, &lock.files)?;
     let source = inspect_source(&source_directory, &lock)?;
@@ -632,7 +561,7 @@ pub fn convert_locked_qwen2_source(
     let outputs = OutputPaths::new(output_model_path)?;
     outputs.validate_absent()?;
     if source_directory == outputs.parent {
-        return Err(Qwen2ConversionError::new("qwen2-output-overlaps-source"));
+        return Err(Qwen3ConversionError::new("qwen3-output-overlaps-source"));
     }
 
     let model_source = source_directory.join("model.safetensors");
@@ -642,71 +571,40 @@ pub fn convert_locked_qwen2_source(
         write_model(&mut model_stage, &source.spec, &mut inputs).map_err(map_slm2_error)?;
     model_stage
         .sync_all()
-        .map_err(|_| Qwen2ConversionError::new("qwen2-output-flush-failed"))?;
+        .map_err(|_| Qwen3ConversionError::new("qwen3-output-flush-failed"))?;
     drop(model_stage);
 
     let mut staged_model = File::open(&outputs.model_stage)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-output-validation-failed"))?;
-    let validated = validate_model(&mut staged_model, ValidationPolicy::default())
-        .map_err(|_| Qwen2ConversionError::new("qwen2-output-validation-failed"))?;
+        .map_err(|_| Qwen3ConversionError::new("qwen3-output-validation-failed"))?;
+    let validation_policy = ValidationPolicy::new(OUTPUT_MAXIMUM_BYTES, OUTPUT_MAXIMUM_TENSORS)
+        .map_err(|_| Qwen3ConversionError::new("qwen3-output-validation-failed"))?;
+    let validated = validate_model(&mut staged_model, validation_policy)
+        .map_err(|_| Qwen3ConversionError::new("qwen3-output-validation-failed"))?;
     if validated.identity() != &written_identity || validated.spec() != &source.spec {
-        return Err(Qwen2ConversionError::new("qwen2-output-validation-failed"));
+        return Err(Qwen3ConversionError::new("qwen3-output-validation-failed"));
     }
+    let tensor_layout_sha256 = hex_lower(validated.tensor_layout_sha256());
+    let tensor_count = validated.tensors().len();
+    drop(staged_model);
 
-    let mut tokenizer_stage = create_new_file(&outputs.tokenizer_stage)?;
-    let written_tokenizer_identity = source
-        .tokenizer
-        .write(&mut tokenizer_stage)
-        .map_err(|error| Qwen2ConversionError::new(error.code()))?;
-    tokenizer_stage
-        .sync_all()
-        .map_err(|_| Qwen2ConversionError::new("qwen2-output-flush-failed"))?;
-    drop(tokenizer_stage);
-    let tokenizer_artifact = read_bounded_regular_file(
-        &outputs.tokenizer_stage,
-        TOKENIZER_MAXIMUM_BYTES,
-        "qwen2-tokenizer2-validation-failed",
-    )?;
-    let tokenizer_policy =
-        TokenizerPolicy::new(TOKENIZER_MAXIMUM_BYTES, 1_048_576, 1_048_576, 4_194_304)
-            .map_err(|_| Qwen2ConversionError::new("qwen2-tokenizer2-validation-failed"))?;
-    let validated_tokenizer = Tokenizer2::from_bytes(tokenizer_artifact, tokenizer_policy)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-tokenizer2-validation-failed"))?;
-    if validated_tokenizer.identity() != written_tokenizer_identity
-        || validated_tokenizer.token_count() != source.tokenizer.token_count()
-        || validated_tokenizer.base_token_count() != source.tokenizer.base_token_count()
-        || validated_tokenizer.bos_token_id() != source.tokenizer.bos_token_id()
-        || validated_tokenizer.eos_token_id() != source.tokenizer.eos_token_id()
-        || validated_tokenizer.pad_token_id() != source.tokenizer.pad_token_id()
-    {
-        return Err(Qwen2ConversionError::new(
-            "qwen2-tokenizer2-validation-failed",
-        ));
-    }
-    write_create_only_synced(
-        &outputs.template_stage,
-        source.tokenizer.chat_template_bytes(),
-    )?;
     let final_identities = verify_locked_files(&source_directory, &lock.files)?;
     if initial_identities != final_identities {
-        return Err(Qwen2ConversionError::new("qwen2-source-drift"));
+        return Err(Qwen3ConversionError::new("qwen3-source-drift"));
     }
 
     promote_create_only(&outputs.model_stage, &outputs.model)?;
-    promote_create_only(&outputs.tokenizer_stage, &outputs.tokenizer)?;
-    promote_create_only(&outputs.template_stage, &outputs.template)?;
     let operation_id = format!(
-        "qwen2-convert-{}",
+        "qwen3-convert-{}",
         &written_identity.artifact_sha256_hex()[..20]
     );
     let durability = flush_owned_directory(&outputs.parent, Path::new("."), &operation_id)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-directory-flush-failed"))?;
+        .map_err(|_| Qwen3ConversionError::new("qwen3-directory-flush-failed"))?;
 
     let receipt = ConversionReceipt {
         schema: CONVERSION_RECEIPT_SCHEMA,
         status: "pass",
-        converter_profile_id: QWEN2_CONVERSION_PROFILE_ID,
-        converter_profile_sha256: QWEN2_CONVERSION_PROFILE_SHA256,
+        converter_profile_id: QWEN3_CONVERSION_PROFILE_ID,
+        converter_profile_sha256: QWEN3_CONVERSION_PROFILE_SHA256,
         converter: ConverterReceipt {
             implementation_version: execution.implementation_version(),
             executable_sha256: execution.executable_sha256(),
@@ -720,45 +618,27 @@ pub fn convert_locked_qwen2_source(
             architecture_profile_id: &lock.architecture_profile_id,
             license_spdx: &lock.license_spdx,
             license_disposition: &lock.license_disposition,
+            files: &lock.files,
             source_model_sha256: &lock.files.model.sha256,
             source_model_bytes: lock.files.model.byte_length,
             source_dtype: source.dtype.label(),
             tensor_count: source.tensors.len(),
             parameter_count: source.parameter_count,
+            tensor_inventory_sha256: &source.tensor_inventory_sha256,
         },
         model: ModelReceipt {
             path: outputs.model_name.clone(),
             format_profile_id: SLM2_FORMAT_PROFILE_ID,
             format_profile_sha256: SLM2_FORMAT_PROFILE_SHA256,
+            weight_profile_id: SLM2_Q8_WEIGHT_PROFILE_ID,
+            weight_profile_sha256: SLM2_Q8_WEIGHT_PROFILE_SHA256,
+            tensor_profile_id: TENSOR_PROFILE_ID,
             byte_length: written_identity.byte_length(),
             artifact_sha256: written_identity.artifact_sha256_hex(),
             manifest_sha256: written_identity.manifest_sha256_hex(),
-            tensor_layout_sha256: hex_lower(validated.tensor_layout_sha256()),
-            tensor_count: validated.tensors().len(),
+            tensor_layout_sha256,
+            tensor_count,
             specification: model_spec_receipt(&source.spec),
-        },
-        tokenizer: TokenizerReceipt {
-            path: outputs.tokenizer_name.clone(),
-            byte_length: written_tokenizer_identity.byte_length,
-            sha256: hex_lower(&written_tokenizer_identity.sha256),
-            format_profile_id: TOKENIZER2_FORMAT_PROFILE_ID,
-            format_profile_sha256: TOKENIZER2_FORMAT_PROFILE_SHA256,
-            token_count: source.tokenizer.token_count(),
-            base_token_count: source.tokenizer.base_token_count(),
-            merge_count: source.tokenizer.merge_count(),
-            added_token_count: source.tokenizer.added_token_count(),
-            special_token_count: source.tokenizer.special_token_count(),
-            bos_token_id: source.tokenizer.bos_token_id(),
-            eos_token_id: source.tokenizer.eos_token_id(),
-            pad_token_id: source.tokenizer.pad_token_id(),
-        },
-        chat_template: SourceTemplateReceipt {
-            path: outputs.template_name.clone(),
-            byte_length: source.tokenizer.chat_template_bytes().len() as u64,
-            sha256: sha256_bytes(source.tokenizer.chat_template_bytes()),
-            source_format: "publisher-jinja-text",
-            promotion_status: "unpromoted-source-evidence-only",
-            required_next_gate: "template2-exact-declarative-conversion-and-parity",
         },
         durability: DurabilityReceipt {
             operation_id: durability.operation_id().to_owned(),
@@ -769,13 +649,15 @@ pub fn convert_locked_qwen2_source(
             status: durability.status().to_owned(),
         },
         conversion_claim: "structural-and-byte-conversion-only",
-        quality_status: "not-assessed-by-converter",
-        runtime_status: "not-assessed-by-converter",
+        model_quality_status: "not-assessed-by-converter",
+        source_framework_parity_status: "not-assessed-by-converter",
+        native_runtime_status: "not-assessed-by-converter",
+        browser_wasm_status: "not-assessed-by-converter",
         required_next_gate:
-            "untouched-source-slm2-native-slm2-wasm-quality-and-runtime-conformance",
+            "source-native-browser-numerical-parity-and-untouched-quality-qualification",
     };
     let mut receipt_bytes = serde_json::to_vec_pretty(&receipt)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-receipt-serialization-failed"))?;
+        .map_err(|_| Qwen3ConversionError::new("qwen3-receipt-serialization-failed"))?;
     receipt_bytes.push(b'\n');
     write_create_only_synced(&outputs.receipt_stage, &receipt_bytes)?;
     promote_create_only(&outputs.receipt_stage, &outputs.receipt)?;
@@ -784,33 +666,31 @@ pub fn convert_locked_qwen2_source(
         Path::new("."),
         &format!("{operation_id}-receipt"),
     )
-    .map_err(|_| Qwen2ConversionError::new("qwen2-directory-flush-failed"))?;
+    .map_err(|_| Qwen3ConversionError::new("qwen3-directory-flush-failed"))?;
 
-    Ok(Qwen2ConversionResult {
+    Ok(Qwen3ConversionResult {
         model_path: outputs.model,
-        tokenizer_path: outputs.tokenizer,
-        template_path: outputs.template,
         receipt_path: outputs.receipt,
         model_identity: written_identity,
     })
 }
 
-fn validate_profile() -> Result<(), Qwen2ConversionError> {
-    if sha256_bytes(PROFILE_BYTES) != QWEN2_CONVERSION_PROFILE_SHA256 {
-        return Err(Qwen2ConversionError::new("qwen2-conversion-profile-drift"));
+fn validate_profile() -> Result<(), Qwen3ConversionError> {
+    if sha256_bytes(PROFILE_BYTES) != QWEN3_CONVERSION_PROFILE_SHA256 {
+        return Err(Qwen3ConversionError::new("qwen3-conversion-profile-drift"));
     }
     let profile: UniqueObject = serde_json::from_slice(PROFILE_BYTES)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-conversion-profile-invalid"))?;
-    if profile.0.get("profileId").and_then(Value::as_str) != Some(QWEN2_CONVERSION_PROFILE_ID) {
-        return Err(Qwen2ConversionError::new(
-            "qwen2-conversion-profile-invalid",
+        .map_err(|_| Qwen3ConversionError::new("qwen3-conversion-profile-invalid"))?;
+    if profile.0.get("profileId").and_then(Value::as_str) != Some(QWEN3_CONVERSION_PROFILE_ID) {
+        return Err(Qwen3ConversionError::new(
+            "qwen3-conversion-profile-invalid",
         ));
     }
     Ok(())
 }
 
-fn validate_source_lock(lock: &Qwen2SourceLock) -> Result<(), Qwen2ConversionError> {
-    if lock.schema != QWEN2_SOURCE_LOCK_SCHEMA
+fn validate_source_lock(lock: &Qwen3SourceLock) -> Result<(), Qwen3ConversionError> {
+    if lock.schema != QWEN3_SOURCE_LOCK_SCHEMA
         || !valid_model_id(&lock.model_id)
         || !valid_revision(&lock.revision)
         || !matches!(
@@ -821,35 +701,35 @@ fn validate_source_lock(lock: &Qwen2SourceLock) -> Result<(), Qwen2ConversionErr
             lock.artifact_class.as_str(),
             "base-model" | "specialist-model"
         )
-        || lock.architecture_profile_id != QWEN2_ARCHITECTURE_PROFILE_ID
+        || lock.architecture_profile_id != QWEN3_ARCHITECTURE_PROFILE_ID
         || lock.license_spdx != "Apache-2.0"
         || lock.license_disposition != "redistribution-and-conversion-approved"
     {
-        return Err(Qwen2ConversionError::new("qwen2-source-lock-invalid"));
+        return Err(Qwen3ConversionError::new("qwen3-source-lock-invalid"));
     }
     for (expected, locked) in lock.files.entries() {
         if locked.path != expected || locked.byte_length == 0 || !valid_sha256(&locked.sha256) {
-            return Err(Qwen2ConversionError::new("qwen2-source-lock-invalid"));
+            return Err(Qwen3ConversionError::new("qwen3-source-lock-invalid"));
         }
     }
     Ok(())
 }
 
-fn validate_source_inventory(source: &Path) -> Result<(), Qwen2ConversionError> {
+fn validate_source_inventory(source: &Path) -> Result<(), Qwen3ConversionError> {
     let mut actual = BTreeSet::new();
     let entries = fs::read_dir(source)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-source-inventory-invalid"))?;
+        .map_err(|_| Qwen3ConversionError::new("qwen3-source-inventory-invalid"))?;
     for entry in entries {
         let entry =
-            entry.map_err(|_| Qwen2ConversionError::new("qwen2-source-inventory-invalid"))?;
+            entry.map_err(|_| Qwen3ConversionError::new("qwen3-source-inventory-invalid"))?;
         let name = entry
             .file_name()
             .into_string()
-            .map_err(|_| Qwen2ConversionError::new("qwen2-source-inventory-invalid"))?;
+            .map_err(|_| Qwen3ConversionError::new("qwen3-source-inventory-invalid"))?;
         let metadata = fs::symlink_metadata(entry.path())
-            .map_err(|_| Qwen2ConversionError::new("qwen2-source-inventory-invalid"))?;
+            .map_err(|_| Qwen3ConversionError::new("qwen3-source-inventory-invalid"))?;
         if metadata_is_link(&metadata) || !metadata.is_file() || !actual.insert(name) {
-            return Err(Qwen2ConversionError::new("qwen2-source-inventory-invalid"));
+            return Err(Qwen3ConversionError::new("qwen3-source-inventory-invalid"));
         }
     }
     let expected = REQUIRED_SOURCE_FILES
@@ -857,7 +737,7 @@ fn validate_source_inventory(source: &Path) -> Result<(), Qwen2ConversionError> 
         .map(|name| (*name).to_owned())
         .collect::<BTreeSet<_>>();
     if actual != expected {
-        return Err(Qwen2ConversionError::new("qwen2-source-inventory-invalid"));
+        return Err(Qwen3ConversionError::new("qwen3-source-inventory-invalid"));
     }
     Ok(())
 }
@@ -865,21 +745,21 @@ fn validate_source_inventory(source: &Path) -> Result<(), Qwen2ConversionError> 
 fn verify_locked_files(
     source: &Path,
     files: &LockedFiles,
-) -> Result<Vec<(String, u64, String)>, Qwen2ConversionError> {
+) -> Result<Vec<(String, u64, String)>, Qwen3ConversionError> {
     let mut identities = Vec::with_capacity(9);
     for (expected, locked) in files.entries() {
         let path = source.join(expected);
         let metadata = fs::symlink_metadata(&path)
-            .map_err(|_| Qwen2ConversionError::new("qwen2-source-file-invalid"))?;
+            .map_err(|_| Qwen3ConversionError::new("qwen3-source-file-invalid"))?;
         if metadata_is_link(&metadata)
             || !metadata.is_file()
             || metadata.len() != locked.byte_length
         {
-            return Err(Qwen2ConversionError::new("qwen2-source-file-invalid"));
+            return Err(Qwen3ConversionError::new("qwen3-source-file-invalid"));
         }
         let digest = sha256_file(&path)?;
         if digest != locked.sha256 {
-            return Err(Qwen2ConversionError::new("qwen2-source-hash-mismatch"));
+            return Err(Qwen3ConversionError::new("qwen3-source-hash-mismatch"));
         }
         identities.push((expected.to_owned(), metadata.len(), digest));
     }
@@ -888,69 +768,38 @@ fn verify_locked_files(
 
 fn inspect_source(
     source: &Path,
-    lock: &Qwen2SourceLock,
-) -> Result<InspectedSource, Qwen2ConversionError> {
+    lock: &Qwen3SourceLock,
+) -> Result<InspectedSource, Qwen3ConversionError> {
     let config_bytes = read_bounded_regular_file(
         &source.join("config.json"),
         CONFIG_MAXIMUM_BYTES,
-        "qwen2-config-invalid",
+        "qwen3-config-invalid",
     )?;
-    let config: Qwen2Config = serde_json::from_slice(&config_bytes)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-config-invalid"))?;
+    let config: Qwen3Config = serde_json::from_slice(&config_bytes)
+        .map_err(|_| Qwen3ConversionError::new("qwen3-config-invalid"))?;
     let spec = model_spec_from_config(&config, &lock.artifact_class)?;
     let model_path = source.join("model.safetensors");
     let (data_offset, tensors, dtype, parameter_count) =
         inspect_safetensors(&model_path, &config, &spec)?;
-
-    let tokenizer_bytes = read_bounded_regular_file(
-        &source.join("tokenizer.json"),
-        TOKENIZER_MAXIMUM_BYTES,
-        "qwen2-tokenizer-invalid",
-    )?;
-    let tokenizer_config_bytes = read_bounded_regular_file(
-        &source.join("tokenizer_config.json"),
-        TOKENIZER_CONFIG_MAXIMUM_BYTES,
-        "qwen2-tokenizer-config-invalid",
-    )?;
-    let vocab_bytes = read_bounded_regular_file(
-        &source.join("vocab.json"),
-        TOKENIZER_MAXIMUM_BYTES,
-        "qwen2-tokenizer-vocab-invalid",
-    )?;
-    let merges_bytes = read_bounded_regular_file(
-        &source.join("merges.txt"),
-        TOKENIZER_MAXIMUM_BYTES,
-        "qwen2-tokenizer-merges-invalid",
-    )?;
-    let tokenizer = parse_qwen_tokenizer(
-        &tokenizer_bytes,
-        &tokenizer_config_bytes,
-        &vocab_bytes,
-        &merges_bytes,
-        QwenTokenizerModelContract {
-            vocabulary_size: config.vocab_size,
-            bos_token_id: config.bos_token_id,
-            eos_token_id: config.eos_token_id,
-        },
-    )
-    .map_err(|error| Qwen2ConversionError::new(error.code()))?;
+    let tensor_inventory_sha256 = source_tensor_inventory_sha256(&tensors)?;
     Ok(InspectedSource {
         spec,
         dtype,
         data_offset,
         tensors,
         parameter_count,
-        tokenizer,
+        tensor_inventory_sha256,
     })
 }
 
 fn model_spec_from_config(
-    config: &Qwen2Config,
+    config: &Qwen3Config,
     artifact_class: &str,
-) -> Result<ModelSpec, Qwen2ConversionError> {
-    if config.architectures != ["Qwen2ForCausalLM"]
-        || config.model_type != "qwen2"
+) -> Result<ModelSpec, Qwen3ConversionError> {
+    if config.architectures != ["Qwen3ForCausalLM"]
+        || config.model_type != "qwen3"
         || config.hidden_act != "silu"
+        || config.attention_bias
         || config.attention_dropout != 0.0
         || !config.initializer_range.is_finite()
         || config.initializer_range <= 0.0
@@ -961,27 +810,40 @@ fn model_spec_from_config(
         || !config.tie_word_embeddings
         || !config.use_cache
         || config.use_sliding_window
+        || config.head_dim == 0
+        || config.hidden_size == 0
+        || config.intermediate_size == 0
+        || config.max_position_embeddings == 0
         || config.max_window_layers == 0
         || config.max_window_layers > config.num_hidden_layers
-        || config.sliding_window != config.max_position_embeddings
         || config.transformers_version.is_empty()
         || config.bos_token_id >= config.vocab_size
         || config.eos_token_id >= config.vocab_size
         || !matches!(config.torch_dtype.as_str(), "bfloat16" | "float32")
         || config.num_attention_heads == 0
+        || config.num_hidden_layers == 0
+        || config.num_key_value_heads == 0
         || !config
-            .hidden_size
-            .is_multiple_of(config.num_attention_heads)
+            .num_attention_heads
+            .is_multiple_of(config.num_key_value_heads)
+        || config
+            .head_dim
+            .checked_mul(config.num_attention_heads)
+            .is_none()
+        || config
+            .head_dim
+            .checked_mul(config.num_key_value_heads)
+            .is_none()
     {
-        return Err(Qwen2ConversionError::new(
-            "qwen2-config-semantics-unsupported",
+        return Err(Qwen3ConversionError::new(
+            "qwen3-config-semantics-unsupported",
         ));
     }
     let spec = ModelSpec {
         artifact_class: match artifact_class {
             "base-model" => ArtifactClass::BaseModel,
             "specialist-model" => ArtifactClass::SpecialistModel,
-            _ => return Err(Qwen2ConversionError::new("qwen2-source-lock-invalid")),
+            _ => return Err(Qwen3ConversionError::new("qwen3-source-lock-invalid")),
         },
         vocabulary_size: config.vocab_size,
         context_length: config.max_position_embeddings,
@@ -990,65 +852,65 @@ fn model_spec_from_config(
         layer_count: config.num_hidden_layers,
         head_count: config.num_attention_heads,
         kv_head_count: config.num_key_value_heads,
-        head_dimension: config.hidden_size / config.num_attention_heads,
+        head_dimension: config.head_dim,
         rope_theta: config.rope_theta as f32,
         normalization_epsilon: config.rms_norm_eps as f32,
         tied_embeddings: true,
-        qkv_bias: true,
-        qk_normalization: false,
+        qkv_bias: false,
+        qk_normalization: true,
     };
     required_model_tensors(&spec, TENSOR_PAYLOAD_ALIGNMENT)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-config-semantics-unsupported"))?;
+        .map_err(|_| Qwen3ConversionError::new("qwen3-config-semantics-unsupported"))?;
     Ok(spec)
 }
 
 fn inspect_safetensors(
     path: &Path,
-    config: &Qwen2Config,
+    config: &Qwen3Config,
     spec: &ModelSpec,
-) -> Result<(u64, BTreeMap<String, SourceTensor>, SourceDtype, u64), Qwen2ConversionError> {
+) -> Result<(u64, BTreeMap<String, SourceTensor>, SourceDtype, u64), Qwen3ConversionError> {
     let metadata = fs::symlink_metadata(path)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-safetensors-invalid"))?;
+        .map_err(|_| Qwen3ConversionError::new("qwen3-safetensors-invalid"))?;
     if metadata_is_link(&metadata) || !metadata.is_file() || metadata.len() < 9 {
-        return Err(Qwen2ConversionError::new("qwen2-safetensors-invalid"));
+        return Err(Qwen3ConversionError::new("qwen3-safetensors-invalid"));
     }
     let mut file =
-        File::open(path).map_err(|_| Qwen2ConversionError::new("qwen2-safetensors-invalid"))?;
+        File::open(path).map_err(|_| Qwen3ConversionError::new("qwen3-safetensors-invalid"))?;
     let mut length_bytes = [0_u8; 8];
     file.read_exact(&mut length_bytes)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-safetensors-invalid"))?;
+        .map_err(|_| Qwen3ConversionError::new("qwen3-safetensors-invalid"))?;
     let header_length = u64::from_le_bytes(length_bytes);
     if header_length == 0 || header_length > SAFETENSORS_HEADER_MAXIMUM_BYTES {
-        return Err(Qwen2ConversionError::new("qwen2-safetensors-invalid"));
+        return Err(Qwen3ConversionError::new("qwen3-safetensors-invalid"));
     }
     let data_offset = 8_u64
         .checked_add(header_length)
-        .ok_or_else(|| Qwen2ConversionError::new("qwen2-safetensors-invalid"))?;
+        .ok_or_else(|| Qwen3ConversionError::new("qwen3-safetensors-invalid"))?;
     if data_offset > metadata.len() {
-        return Err(Qwen2ConversionError::new("qwen2-safetensors-invalid"));
+        return Err(Qwen3ConversionError::new("qwen3-safetensors-invalid"));
     }
     let mut header_bytes = vec![
         0_u8;
         usize::try_from(header_length).map_err(|_| {
-            Qwen2ConversionError::new("qwen2-safetensors-invalid")
+            Qwen3ConversionError::new("qwen3-safetensors-invalid")
         })?
     ];
     file.read_exact(&mut header_bytes)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-safetensors-invalid"))?;
+        .map_err(|_| Qwen3ConversionError::new("qwen3-safetensors-invalid"))?;
     let mut deserializer = serde_json::Deserializer::from_slice(&header_bytes);
     let header = SafetensorsHeader::deserialize(&mut deserializer)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-safetensors-invalid"))?;
+        .map_err(|_| Qwen3ConversionError::new("qwen3-safetensors-invalid"))?;
     deserializer
         .end()
-        .map_err(|_| Qwen2ConversionError::new("qwen2-safetensors-invalid"))?;
+        .map_err(|_| Qwen3ConversionError::new("qwen3-safetensors-invalid"))?;
     if header.tensors.is_empty() {
-        return Err(Qwen2ConversionError::new("qwen2-safetensors-invalid"));
+        return Err(Qwen3ConversionError::new("qwen3-safetensors-invalid"));
     }
 
     let expected_dtype = match config.torch_dtype.as_str() {
         "bfloat16" => SourceDtype::Bf16,
         "float32" => SourceDtype::F32,
-        _ => return Err(Qwen2ConversionError::new("qwen2-source-dtype-unsupported")),
+        _ => return Err(Qwen3ConversionError::new("qwen3-source-dtype-unsupported")),
     };
     let mut tensors = BTreeMap::new();
     let mut ranges = Vec::new();
@@ -1057,10 +919,13 @@ fn inspect_safetensors(
         let dtype = match raw.dtype.as_str() {
             "BF16" => SourceDtype::Bf16,
             "F32" => SourceDtype::F32,
-            _ => return Err(Qwen2ConversionError::new("qwen2-source-dtype-unsupported")),
+            _ => return Err(Qwen3ConversionError::new("qwen3-source-dtype-unsupported")),
         };
-        if dtype != expected_dtype || raw.shape.is_empty() || raw.shape.len() > 8 {
-            return Err(Qwen2ConversionError::new("qwen2-safetensors-invalid"));
+        if dtype != expected_dtype {
+            return Err(Qwen3ConversionError::new("qwen3-source-dtype-unsupported"));
+        }
+        if raw.shape.is_empty() || raw.shape.len() > 8 {
+            return Err(Qwen3ConversionError::new("qwen3-safetensors-invalid"));
         }
         let elements = raw
             .shape
@@ -1071,17 +936,17 @@ fn inspect_safetensors(
                 }
                 product.checked_mul(*dimension)
             })
-            .ok_or_else(|| Qwen2ConversionError::new("qwen2-safetensors-invalid"))?;
+            .ok_or_else(|| Qwen3ConversionError::new("qwen3-safetensors-invalid"))?;
         let expected_bytes = elements
             .checked_mul(dtype.source_bytes())
-            .ok_or_else(|| Qwen2ConversionError::new("qwen2-safetensors-invalid"))?;
+            .ok_or_else(|| Qwen3ConversionError::new("qwen3-safetensors-invalid"))?;
         let [start, end] = raw.data_offsets;
         if start > end || end - start != expected_bytes {
-            return Err(Qwen2ConversionError::new("qwen2-safetensors-invalid"));
+            return Err(Qwen3ConversionError::new("qwen3-safetensors-invalid"));
         }
         parameter_count = parameter_count
             .checked_add(elements)
-            .ok_or_else(|| Qwen2ConversionError::new("qwen2-safetensors-invalid"))?;
+            .ok_or_else(|| Qwen3ConversionError::new("qwen3-safetensors-invalid"))?;
         ranges.push((start, end, name.clone()));
         tensors.insert(
             name,
@@ -1097,12 +962,12 @@ fn inspect_safetensors(
     let mut cursor = 0_u64;
     for (start, end, _) in &ranges {
         if *start != cursor {
-            return Err(Qwen2ConversionError::new("qwen2-safetensors-range-invalid"));
+            return Err(Qwen3ConversionError::new("qwen3-safetensors-range-invalid"));
         }
         cursor = *end;
     }
     if cursor != metadata.len() - data_offset {
-        return Err(Qwen2ConversionError::new("qwen2-safetensors-range-invalid"));
+        return Err(Qwen3ConversionError::new("qwen3-safetensors-range-invalid"));
     }
     validate_tensor_inventory(spec, &tensors)?;
     Ok((data_offset, tensors, expected_dtype, parameter_count))
@@ -1111,44 +976,75 @@ fn inspect_safetensors(
 fn validate_tensor_inventory(
     spec: &ModelSpec,
     source: &BTreeMap<String, SourceTensor>,
-) -> Result<(), Qwen2ConversionError> {
+) -> Result<(), Qwen3ConversionError> {
     let required = required_model_tensors(spec, TENSOR_PAYLOAD_ALIGNMENT)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-tensor-registry-invalid"))?;
+        .map_err(|_| Qwen3ConversionError::new("qwen3-tensor-registry-invalid"))?;
     if required.len() != source.len() {
-        return Err(Qwen2ConversionError::new("qwen2-tensor-inventory-mismatch"));
+        return Err(Qwen3ConversionError::new("qwen3-tensor-inventory-mismatch"));
     }
     let mut expected_names = BTreeSet::new();
     for target in &required {
         let source_name = source_name_for_target(target)?;
         if !expected_names.insert(source_name.clone()) {
-            return Err(Qwen2ConversionError::new("qwen2-tensor-registry-invalid"));
+            return Err(Qwen3ConversionError::new("qwen3-tensor-registry-invalid"));
         }
         let tensor = source
             .get(&source_name)
-            .ok_or_else(|| Qwen2ConversionError::new("qwen2-tensor-inventory-mismatch"))?;
+            .ok_or_else(|| Qwen3ConversionError::new("qwen3-tensor-inventory-mismatch"))?;
         if tensor.shape != target.shape() {
-            return Err(Qwen2ConversionError::new("qwen2-tensor-shape-mismatch"));
+            return Err(Qwen3ConversionError::new("qwen3-tensor-shape-mismatch"));
         }
     }
     if expected_names != source.keys().cloned().collect() {
-        return Err(Qwen2ConversionError::new("qwen2-tensor-inventory-mismatch"));
+        return Err(Qwen3ConversionError::new("qwen3-tensor-inventory-mismatch"));
     }
+    Ok(())
+}
+
+fn source_tensor_inventory_sha256(
+    tensors: &BTreeMap<String, SourceTensor>,
+) -> Result<String, Qwen3ConversionError> {
+    let mut hasher = Sha256::new();
+    hasher.update(TENSOR_INVENTORY_HASH_DOMAIN);
+    let tensor_count = u32::try_from(tensors.len())
+        .map_err(|_| Qwen3ConversionError::new("qwen3-arithmetic-overflow"))?;
+    hasher.update(tensor_count.to_le_bytes());
+    for (name, tensor) in tensors {
+        hash_bounded_bytes(&mut hasher, name.as_bytes())?;
+        hash_bounded_bytes(&mut hasher, tensor.dtype.label().as_bytes())?;
+        let rank = u32::try_from(tensor.shape.len())
+            .map_err(|_| Qwen3ConversionError::new("qwen3-arithmetic-overflow"))?;
+        hasher.update(rank.to_le_bytes());
+        for dimension in &tensor.shape {
+            hasher.update(dimension.to_le_bytes());
+        }
+        hasher.update(tensor.start.to_le_bytes());
+        hasher.update(tensor.end.to_le_bytes());
+    }
+    Ok(hex_lower(&hasher.finalize()))
+}
+
+fn hash_bounded_bytes(hasher: &mut Sha256, bytes: &[u8]) -> Result<(), Qwen3ConversionError> {
+    let length = u32::try_from(bytes.len())
+        .map_err(|_| Qwen3ConversionError::new("qwen3-arithmetic-overflow"))?;
+    hasher.update(length.to_le_bytes());
+    hasher.update(bytes);
     Ok(())
 }
 
 fn build_tensor_inputs(
     source: &InspectedSource,
     model_path: &Path,
-) -> Result<Vec<TensorInput<TensorReader>>, Qwen2ConversionError> {
+) -> Result<Vec<TensorInput<TensorReader>>, Qwen3ConversionError> {
     required_model_tensors(&source.spec, TENSOR_PAYLOAD_ALIGNMENT)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-tensor-registry-invalid"))?
+        .map_err(|_| Qwen3ConversionError::new("qwen3-tensor-registry-invalid"))?
         .into_iter()
         .map(|target| {
             let source_name = source_name_for_target(&target)?;
             let tensor = source
                 .tensors
                 .get(&source_name)
-                .ok_or_else(|| Qwen2ConversionError::new("qwen2-tensor-inventory-mismatch"))?;
+                .ok_or_else(|| Qwen3ConversionError::new("qwen3-tensor-inventory-mismatch"))?;
             Ok(TensorInput::new(
                 target,
                 TensorReader::new(model_path.to_path_buf(), source.data_offset, tensor)?,
@@ -1157,7 +1053,7 @@ fn build_tensor_inputs(
         .collect()
 }
 
-fn source_name_for_target(target: &TensorSpec) -> Result<String, Qwen2ConversionError> {
+fn source_name_for_target(target: &TensorSpec) -> Result<String, Qwen3ConversionError> {
     let layer = target.layer();
     let result = match target.semantic_role() {
         "model.token-embedding.weight" if layer == -1 => "model.embed_tokens.weight".to_owned(),
@@ -1171,23 +1067,20 @@ fn source_name_for_target(target: &TensorSpec) -> Result<String, Qwen2Conversion
         "layer.attention.query-projection.weight" if layer >= 0 => {
             format!("model.layers.{layer}.self_attn.q_proj.weight")
         }
+        "layer.attention.query-normalization.weight" if layer >= 0 => {
+            format!("model.layers.{layer}.self_attn.q_norm.weight")
+        }
         "layer.attention.key-projection.weight" if layer >= 0 => {
             format!("model.layers.{layer}.self_attn.k_proj.weight")
+        }
+        "layer.attention.key-normalization.weight" if layer >= 0 => {
+            format!("model.layers.{layer}.self_attn.k_norm.weight")
         }
         "layer.attention.value-projection.weight" if layer >= 0 => {
             format!("model.layers.{layer}.self_attn.v_proj.weight")
         }
         "layer.attention.output-projection.weight" if layer >= 0 => {
             format!("model.layers.{layer}.self_attn.o_proj.weight")
-        }
-        "layer.attention.query-projection.bias" if layer >= 0 => {
-            format!("model.layers.{layer}.self_attn.q_proj.bias")
-        }
-        "layer.attention.key-projection.bias" if layer >= 0 => {
-            format!("model.layers.{layer}.self_attn.k_proj.bias")
-        }
-        "layer.attention.value-projection.bias" if layer >= 0 => {
-            format!("model.layers.{layer}.self_attn.v_proj.bias")
         }
         "layer.feed-forward.gate-projection.weight" if layer >= 0 => {
             format!("model.layers.{layer}.mlp.gate_proj.weight")
@@ -1198,7 +1091,7 @@ fn source_name_for_target(target: &TensorSpec) -> Result<String, Qwen2Conversion
         "layer.feed-forward.up-projection.weight" if layer >= 0 => {
             format!("model.layers.{layer}.mlp.up_proj.weight")
         }
-        _ => return Err(Qwen2ConversionError::new("qwen2-tensor-registry-invalid")),
+        _ => return Err(Qwen3ConversionError::new("qwen3-tensor-registry-invalid")),
     };
     Ok(result)
 }
@@ -1206,71 +1099,51 @@ fn source_name_for_target(target: &TensorSpec) -> Result<String, Qwen2Conversion
 struct OutputPaths {
     parent: PathBuf,
     model: PathBuf,
-    tokenizer: PathBuf,
-    template: PathBuf,
     receipt: PathBuf,
     model_stage: PathBuf,
-    tokenizer_stage: PathBuf,
-    template_stage: PathBuf,
     receipt_stage: PathBuf,
     model_name: String,
-    tokenizer_name: String,
-    template_name: String,
 }
 
 impl OutputPaths {
-    fn new(model: &Path) -> Result<Self, Qwen2ConversionError> {
+    fn new(model: &Path) -> Result<Self, Qwen3ConversionError> {
         if !model.is_absolute()
             || model.extension().and_then(|value| value.to_str()) != Some("slm2")
         {
-            return Err(Qwen2ConversionError::new("qwen2-output-path-invalid"));
+            return Err(Qwen3ConversionError::new("qwen3-output-path-invalid"));
         }
         let parent = model
             .parent()
-            .ok_or_else(|| Qwen2ConversionError::new("qwen2-output-path-invalid"))?;
-        let parent = validate_directory(parent, "qwen2-output-directory-invalid")?;
+            .ok_or_else(|| Qwen3ConversionError::new("qwen3-output-path-invalid"))?;
+        let parent = validate_directory(parent, "qwen3-output-directory-invalid")?;
         let model_name = model
             .file_name()
             .and_then(|value| value.to_str())
             .filter(|value| valid_file_name(value))
-            .ok_or_else(|| Qwen2ConversionError::new("qwen2-output-path-invalid"))?
+            .ok_or_else(|| Qwen3ConversionError::new("qwen3-output-path-invalid"))?
             .to_owned();
         let model = parent.join(&model_name);
-        let tokenizer_name = format!("{model_name}.tokenizer.tok2");
-        let template_name = format!("{model_name}.chat-template.txt");
         let receipt_name = format!("{model_name}.conversion-receipt.json");
-        let tokenizer = parent.join(&tokenizer_name);
-        let template = parent.join(&template_name);
         let receipt = parent.join(&receipt_name);
         Ok(Self {
             parent: parent.clone(),
             model: model.clone(),
-            tokenizer: tokenizer.clone(),
-            template: template.clone(),
             receipt: receipt.clone(),
             model_stage: parent.join(format!(".{model_name}.staging")),
-            tokenizer_stage: parent.join(format!(".{tokenizer_name}.staging")),
-            template_stage: parent.join(format!(".{template_name}.staging")),
             receipt_stage: parent.join(format!(".{receipt_name}.staging")),
             model_name,
-            tokenizer_name,
-            template_name,
         })
     }
 
-    fn validate_absent(&self) -> Result<(), Qwen2ConversionError> {
+    fn validate_absent(&self) -> Result<(), Qwen3ConversionError> {
         for path in [
             &self.model,
-            &self.tokenizer,
-            &self.template,
             &self.receipt,
             &self.model_stage,
-            &self.tokenizer_stage,
-            &self.template_stage,
             &self.receipt_stage,
         ] {
             if fs::symlink_metadata(path).is_ok() {
-                return Err(Qwen2ConversionError::new("qwen2-output-already-exists"));
+                return Err(Qwen3ConversionError::new("qwen3-output-already-exists"));
             }
         }
         Ok(())
@@ -1296,64 +1169,64 @@ fn model_spec_receipt(spec: &ModelSpec) -> ModelSpecReceipt {
     }
 }
 
-fn create_new_file(path: &Path) -> Result<File, Qwen2ConversionError> {
+fn create_new_file(path: &Path) -> Result<File, Qwen3ConversionError> {
     OpenOptions::new()
         .write(true)
         .read(true)
         .create_new(true)
         .open(path)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-output-create-failed"))
+        .map_err(|_| Qwen3ConversionError::new("qwen3-output-create-failed"))
 }
 
-fn write_create_only_synced(path: &Path, bytes: &[u8]) -> Result<(), Qwen2ConversionError> {
+fn write_create_only_synced(path: &Path, bytes: &[u8]) -> Result<(), Qwen3ConversionError> {
     let mut file = create_new_file(path)?;
     file.write_all(bytes)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-output-write-failed"))?;
+        .map_err(|_| Qwen3ConversionError::new("qwen3-output-write-failed"))?;
     file.sync_all()
-        .map_err(|_| Qwen2ConversionError::new("qwen2-output-flush-failed"))
+        .map_err(|_| Qwen3ConversionError::new("qwen3-output-flush-failed"))
 }
 
-fn promote_create_only(source: &Path, destination: &Path) -> Result<(), Qwen2ConversionError> {
+fn promote_create_only(source: &Path, destination: &Path) -> Result<(), Qwen3ConversionError> {
     let metadata = fs::symlink_metadata(source)
-        .map_err(|_| Qwen2ConversionError::new("qwen2-output-promotion-failed"))?;
+        .map_err(|_| Qwen3ConversionError::new("qwen3-output-promotion-failed"))?;
     if metadata_is_link(&metadata) || !metadata.is_file() {
-        return Err(Qwen2ConversionError::new("qwen2-output-promotion-failed"));
+        return Err(Qwen3ConversionError::new("qwen3-output-promotion-failed"));
     }
     match fs::hard_link(source, destination) {
         Ok(()) => {}
         Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
-            return Err(Qwen2ConversionError::new("qwen2-output-already-exists"));
+            return Err(Qwen3ConversionError::new("qwen3-output-already-exists"));
         }
-        Err(_) => return Err(Qwen2ConversionError::new("qwen2-output-promotion-failed")),
+        Err(_) => return Err(Qwen3ConversionError::new("qwen3-output-promotion-failed")),
     }
-    fs::remove_file(source).map_err(|_| Qwen2ConversionError::new("qwen2-output-promotion-failed"))
+    fs::remove_file(source).map_err(|_| Qwen3ConversionError::new("qwen3-output-promotion-failed"))
 }
 
 fn read_bounded_regular_file(
     path: &Path,
     maximum_bytes: u64,
     code: &'static str,
-) -> Result<Vec<u8>, Qwen2ConversionError> {
-    let metadata = fs::symlink_metadata(path).map_err(|_| Qwen2ConversionError::new(code))?;
+) -> Result<Vec<u8>, Qwen3ConversionError> {
+    let metadata = fs::symlink_metadata(path).map_err(|_| Qwen3ConversionError::new(code))?;
     if metadata_is_link(&metadata)
         || !metadata.is_file()
         || metadata.len() == 0
         || metadata.len() > maximum_bytes
     {
-        return Err(Qwen2ConversionError::new(code));
+        return Err(Qwen3ConversionError::new(code));
     }
-    fs::read(path).map_err(|_| Qwen2ConversionError::new(code))
+    fs::read(path).map_err(|_| Qwen3ConversionError::new(code))
 }
 
-fn validate_directory(path: &Path, code: &'static str) -> Result<PathBuf, Qwen2ConversionError> {
+fn validate_directory(path: &Path, code: &'static str) -> Result<PathBuf, Qwen3ConversionError> {
     if !path.is_absolute() {
-        return Err(Qwen2ConversionError::new(code));
+        return Err(Qwen3ConversionError::new(code));
     }
-    let metadata = fs::symlink_metadata(path).map_err(|_| Qwen2ConversionError::new(code))?;
+    let metadata = fs::symlink_metadata(path).map_err(|_| Qwen3ConversionError::new(code))?;
     if metadata_is_link(&metadata) || !metadata.is_dir() {
-        return Err(Qwen2ConversionError::new(code));
+        return Err(Qwen3ConversionError::new(code));
     }
-    fs::canonicalize(path).map_err(|_| Qwen2ConversionError::new(code))
+    fs::canonicalize(path).map_err(|_| Qwen3ConversionError::new(code))
 }
 
 #[cfg(windows)]
@@ -1370,15 +1243,15 @@ fn metadata_is_link(metadata: &fs::Metadata) -> bool {
     metadata.file_type().is_symlink()
 }
 
-fn sha256_file(path: &Path) -> Result<String, Qwen2ConversionError> {
+fn sha256_file(path: &Path) -> Result<String, Qwen3ConversionError> {
     let mut file =
-        File::open(path).map_err(|_| Qwen2ConversionError::new("qwen2-source-hash-failed"))?;
+        File::open(path).map_err(|_| Qwen3ConversionError::new("qwen3-source-file-invalid"))?;
     let mut hasher = Sha256::new();
     let mut buffer = vec![0_u8; HASH_BUFFER_BYTES];
     loop {
         let count = file
             .read(&mut buffer)
-            .map_err(|_| Qwen2ConversionError::new("qwen2-source-hash-failed"))?;
+            .map_err(|_| Qwen3ConversionError::new("qwen3-source-file-invalid"))?;
         if count == 0 {
             break;
         }
@@ -1437,10 +1310,10 @@ fn valid_file_name(value: &str) -> bool {
             .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-'))
 }
 
-fn map_slm2_error(error: tinyrustlm_slm2::Slm2Error) -> Qwen2ConversionError {
+fn map_slm2_error(error: tinyrustlm_slm2::Slm2Error) -> Qwen3ConversionError {
     match error.code() {
-        "slm2-nonfinite-f32" => Qwen2ConversionError::new("qwen2-source-nonfinite"),
-        "slm2-source-drift" => Qwen2ConversionError::new("qwen2-source-drift"),
-        _ => Qwen2ConversionError::new("qwen2-slm2-write-failed"),
+        "slm2-nonfinite-f32" => Qwen3ConversionError::new("qwen3-source-nonfinite"),
+        "slm2-source-drift" => Qwen3ConversionError::new("qwen3-source-drift"),
+        _ => Qwen3ConversionError::new("qwen3-output-write-failed"),
     }
 }
