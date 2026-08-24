@@ -5,7 +5,7 @@ edition.workspace = true
 license.workspace = true
 authors.workspace = true
 repository.workspace = true
-description = "C ABI bridge for the public TinyRustLM NuGet SDK."
+description = "Bounded C ABI for the canonical TinyRustLM SLM2 runtime and direct transport."
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -13,10 +13,11 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 serde.workspace = true
 serde_json.workspace = true
-tinyrustlm-memory = { path = "../tinyrustlm-memory" }
+tinyrustlm-composition2 = { path = "../tinyrustlm-composition2" }
 tinyrustlm-p2p = { path = "../tinyrustlm-p2p" }
-tinyrustlm-runtime-sdk = { path = "../tinyrustlm-runtime" }
-tinyrustlm-slm = { path = "../tinyrustlm-slm" }
+tinyrustlm-runtime = { path = "../tinyrustlm-runtime" }
+tinyrustlm-sampling2 = { path = "../tinyrustlm-sampling2" }
+tinyrustlm-slm2 = { path = "../tinyrustlm-slm2" }
 
 [lints]
 workspace = true

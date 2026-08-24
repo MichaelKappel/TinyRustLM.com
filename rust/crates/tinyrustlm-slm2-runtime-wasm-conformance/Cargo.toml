@@ -11,7 +11,7 @@ description = "Raw WASM conformance boundary for the scalar SLM2 correctness run
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-tinyrustlm-slm2-runtime = { path = "../tinyrustlm-slm2-runtime" }
+tinyrustlm-runtime = { path = "../tinyrustlm-runtime" }
 
 [lints]
 workspace = true

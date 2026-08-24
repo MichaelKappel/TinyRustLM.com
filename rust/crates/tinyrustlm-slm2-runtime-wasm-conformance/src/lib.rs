@@ -2,7 +2,7 @@
 #![doc = "Raw WASM conformance boundary for the scalar SLM2 correctness runtime."]
 
 use std::sync::{Mutex, MutexGuard, OnceLock};
-use tinyrustlm_slm2_runtime::{select_greedy, RuntimePolicy, ScalarSession};
+use tinyrustlm_runtime::{select_greedy, RuntimePolicy, ScalarSession};
 
 const CANONICAL_MODEL: &[u8] =
     include_bytes!("../../tinyrustlm-slm2/fuzz/corpus/raw_slm2/01-canonical-valid-vector.seed");

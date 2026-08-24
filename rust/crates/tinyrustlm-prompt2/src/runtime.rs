@@ -8,7 +8,8 @@ use tinyrustlm_template2::{
     QWEN3_TEMPLATE2_ARTIFACT_SHA256, TEMPLATE2_FORMAT_PROFILE_ID, TEMPLATE2_FORMAT_PROFILE_SHA256,
 };
 use tinyrustlm_tokenizer2::{
-    Tokenizer2, TokenizerPolicy, TOKENIZER2_FORMAT_PROFILE_ID, TOKENIZER2_FORMAT_PROFILE_SHA256,
+    DecodeMode, Tokenizer2, TokenizerPolicy, TOKENIZER2_FORMAT_PROFILE_ID,
+    TOKENIZER2_FORMAT_PROFILE_SHA256,
 };
 
 use crate::format::{
@@ -188,6 +189,20 @@ impl Prompt2Runtime {
     /// Returns the validated Sampling2 runtime used by generation controllers.
     pub const fn sampling(&self) -> &Sampling2 {
         &self.sampling
+    }
+
+    /// Decodes visible generated IDs through the already-owned Tokenizer2.
+    ///
+    /// Template-owned special tokens are excluded explicitly. Invalid IDs,
+    /// output limits, and invalid UTF-8 remain fatal without replacement.
+    pub fn decode_generated(
+        &self,
+        token_ids: &[u32],
+        output: &mut String,
+    ) -> Result<(), Prompt2Error> {
+        self.tokenizer
+            .decode(token_ids, DecodeMode::SkipSpecial, output)
+            .map_err(map_tokenizer_error)
     }
 
     fn map_control_insertions(

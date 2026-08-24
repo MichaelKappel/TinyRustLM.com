@@ -315,7 +315,7 @@ function merkleRoot(value) {
     u64le(piece.length),
     Buffer.from(piece.sha256, "hex")
   ));
-  let level = 0;
+  let level = 1;
   while (nodes.length > 1) {
     const parents = [];
     for (let index = 0; index < nodes.length; index += 2) {

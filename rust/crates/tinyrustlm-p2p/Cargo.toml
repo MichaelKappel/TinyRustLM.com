@@ -5,15 +5,16 @@ edition.workspace = true
 license.workspace = true
 authors.workspace = true
 repository.workspace = true
-description = "Public TinyRustLM metadata-bound P2P share/import SDK boundary."
+description = "Canonical fixed-piece direct transport and SLM2 composition admission."
 
 [dependencies]
-base64.workspace = true
-ed25519-dalek.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 sha2.workspace = true
-tinyrustlm-slm = { path = "../tinyrustlm-slm" }
+tinyrustlm-composition2 = { path = "../tinyrustlm-composition2" }
+tinyrustlm-durability = { path = "../tinyrustlm-durability" }
+tinyrustlm-evidence = { path = "../tinyrustlm-evidence" }
+tinyrustlm-slm2 = { path = "../tinyrustlm-slm2" }
 
 [lints]
 workspace = true

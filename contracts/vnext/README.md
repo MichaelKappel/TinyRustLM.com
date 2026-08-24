@@ -677,7 +677,7 @@ The same crate now independently verifies exact offline manifest and member
 binding, the separate verification receipt, authority composition, closed
 receipt and subject membership, terminal currentness, and target current
 eligibility. Its public-only 668,506-byte corpus has SHA-256
-`82b8239eb97089f2b9101a04da7f985deb80f044a620376393517438baf3f178`
+`3bfa7509169461a55e8d0b9fab6a624fe1049e3c956fd7d3308ef9bfa8cfff6c`
 and freezes three accepted bundles plus 31 exact hostile rejection codes. See
 `docs/architecture/vnext-rust-offline-bundle-parity.md`.
 The same crate now independently produces and validates the exact truthful

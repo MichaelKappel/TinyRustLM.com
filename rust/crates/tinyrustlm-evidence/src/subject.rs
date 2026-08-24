@@ -8,6 +8,7 @@ use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use std::net::{Ipv4Addr, Ipv6Addr};
 use std::sync::OnceLock;
+use std::{error::Error, fmt};
 use url::{Host, Url};
 
 const CONTRACT_REGISTRY_BYTES: &[u8] =
@@ -103,6 +104,161 @@ struct RegistryIndex {
 }
 
 static REGISTRY: OnceLock<RegistryIndex> = OnceLock::new();
+
+/// Stable public-safe failure returned by registered subject operations.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct RegisteredSubjectError {
+    code: &'static str,
+}
+
+impl RegisteredSubjectError {
+    /// Returns the stable public-safe failure code.
+    pub const fn code(self) -> &'static str {
+        self.code
+    }
+}
+
+impl fmt::Display for RegisteredSubjectError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(self.code)
+    }
+}
+
+impl Error for RegisteredSubjectError {}
+
+/// One canonical, identity-checked subject from the frozen contract registry.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RegisteredSubject {
+    canonical_content_sha256: String,
+    contract_class: String,
+    schema: String,
+    subject_id: String,
+    bytes: Vec<u8>,
+}
+
+impl RegisteredSubject {
+    /// Returns the registered contract class.
+    pub fn contract_class(&self) -> &str {
+        &self.contract_class
+    }
+
+    /// Returns the exact registered schema.
+    pub fn schema(&self) -> &str {
+        &self.schema
+    }
+
+    /// Returns the subject's canonical content identity.
+    pub fn canonical_content_sha256(&self) -> &str {
+        &self.canonical_content_sha256
+    }
+
+    /// Returns the exact subject identifier.
+    pub fn subject_id(&self) -> &str {
+        &self.subject_id
+    }
+
+    /// Returns the canonical JSON wire bytes.
+    pub fn bytes(&self) -> &[u8] {
+        &self.bytes
+    }
+}
+
+/// Validates one canonical subject against the frozen contract registry.
+pub fn validate_registered_subject(
+    bytes: &[u8],
+) -> Result<RegisteredSubject, RegisteredSubjectError> {
+    let subject = validate_identity_subject_bytes(bytes).map_err(registered_failure)?;
+    Ok(registered_subject(subject, bytes.to_vec()))
+}
+
+/// Finalizes a subject draft by deriving only its registry-declared identity fields.
+///
+/// The draft must be a JSON object containing every non-derived field. Every field
+/// listed by the registry as identity-excluded must be absent. The returned bytes
+/// are canonical and independently passed through the same full validator used for
+/// externally supplied subjects.
+pub fn finalize_registered_subject(
+    draft: &Value,
+) -> Result<RegisteredSubject, RegisteredSubjectError> {
+    let mut value = draft.clone();
+    let schema = value
+        .as_object()
+        .and_then(|object| object.get("schema"))
+        .and_then(Value::as_str)
+        .ok_or_else(|| registered_failure("identity_registry_validation_failed"))?
+        .to_owned();
+    let index = registry().map_err(registered_failure)?;
+    let contract_index = *index
+        .contracts
+        .get(&schema)
+        .ok_or_else(|| registered_failure("identity_registry_validation_failed"))?;
+    let contract = &index.registry.contracts[contract_index];
+    if contract.class == "receipt" || contract.identity_domain.is_none() {
+        return Err(registered_failure("identity_schema_not_supported"));
+    }
+    let object = value
+        .as_object_mut()
+        .ok_or_else(|| registered_failure("identity_registry_validation_failed"))?;
+    if contract
+        .identity_excluded_fields
+        .iter()
+        .any(|field| object.contains_key(field))
+    {
+        return Err(registered_failure("identity_derived_field_present"));
+    }
+    let identity_bytes = canonical_value_bytes(&value)
+        .map_err(|_| registered_failure("identity_profile_invalid"))?;
+    let digest = lowercase_hex(&domain_digest(
+        contract
+            .identity_domain
+            .as_deref()
+            .ok_or_else(|| registered_failure("identity_profile_invalid"))?,
+        &identity_bytes,
+    ));
+    let canonical_hash_field = contract
+        .canonical_hash_field
+        .as_deref()
+        .ok_or_else(|| registered_failure("identity_profile_invalid"))?;
+    let identity_field = contract
+        .identity_field
+        .as_deref()
+        .ok_or_else(|| registered_failure("identity_profile_invalid"))?;
+    let object = value
+        .as_object_mut()
+        .ok_or_else(|| registered_failure("identity_profile_invalid"))?;
+    object.insert(
+        canonical_hash_field.to_owned(),
+        Value::String(digest.clone()),
+    );
+    if contract
+        .identity_excluded_fields
+        .iter()
+        .any(|field| field == identity_field)
+    {
+        object.insert(
+            identity_field.to_owned(),
+            Value::String(format!("sha256:{digest}")),
+        );
+    }
+    let bytes = canonical_value_bytes(&value)
+        .map_err(|_| registered_failure("identity_profile_invalid"))?;
+    let subject = validate_identity_subject_bytes(&bytes).map_err(registered_failure)?;
+    Ok(registered_subject(subject, bytes))
+}
+
+fn registered_subject(subject: IdentitySubject, bytes: Vec<u8>) -> RegisteredSubject {
+    RegisteredSubject {
+        canonical_content_sha256: subject.canonical_content_sha256,
+        contract_class: subject.contract_class,
+        schema: subject.schema,
+        subject_id: subject.subject_id,
+        bytes,
+    }
+}
+
+const fn registered_failure(code: &'static str) -> RegisteredSubjectError {
+    RegisteredSubjectError { code }
+}
 
 pub(crate) fn validate_identity_subject_bytes(
     bytes: &[u8],
@@ -675,7 +831,7 @@ fn merkle_root(artifact_bytes: u64, pieces: &[Value]) -> Result<String, &'static
             &[&index.to_le_bytes(), &length.to_le_bytes(), &hash],
         ));
     }
-    let mut level = 0u32;
+    let mut level = 1u32;
     while nodes.len() > 1 {
         let mut parents = Vec::with_capacity(nodes.len().div_ceil(2));
         for (parent_index, pair) in nodes.chunks(2).enumerate() {
@@ -1035,6 +1191,40 @@ mod tests {
             assert!(valid_content_id(&subject.subject_id), "{case_id}");
             assert!(valid_digest(&subject.canonical_content_sha256), "{case_id}");
         }
+    }
+
+    #[test]
+    fn public_finalizer_derives_and_revalidates_the_registered_p2p_identity() {
+        let finalized = finalized_corpus_case("valid-p2p");
+        let mut draft: Value =
+            serde_json::from_slice(&finalized).expect("finalized P2P subject must parse");
+        let object = draft
+            .as_object_mut()
+            .expect("P2P subject must remain an object");
+        object.remove("manifestId");
+        object.remove("canonicalContentSha256");
+
+        let subject = finalize_registered_subject(&draft).expect("draft must finalize");
+        assert_eq!(subject.contract_class(), "p2p");
+        assert_eq!(subject.schema(), "tinyrustlm.vnext.p2p_manifest.v1");
+        assert_eq!(subject.bytes(), finalized);
+        assert_eq!(
+            validate_registered_subject(subject.bytes()).expect("wire must revalidate"),
+            subject
+        );
+    }
+
+    #[test]
+    fn public_finalizer_rejects_caller_supplied_derived_identity_fields() {
+        let finalized = finalized_corpus_case("valid-p2p");
+        let draft: Value =
+            serde_json::from_slice(&finalized).expect("finalized P2P subject must parse");
+        assert_eq!(
+            finalize_registered_subject(&draft)
+                .expect_err("derived fields must be authority-owned")
+                .code(),
+            "identity_derived_field_present"
+        );
     }
 
     #[test]

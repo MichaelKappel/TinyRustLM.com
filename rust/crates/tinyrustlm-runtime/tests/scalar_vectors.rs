@@ -1,7 +1,7 @@
 //! Independent Node-oracle conformance tests for the scalar SLM2 runtime.
 
 use serde::Deserialize;
-use tinyrustlm_slm2_runtime::{
+use tinyrustlm_runtime::{
     select_greedy, RuntimePolicy, ScalarSession, ScalarTraceSink, ScalarTraceStage,
 };
 
@@ -353,13 +353,19 @@ fn scalar_generation_matches_independent_bounded_and_stop_cases() {
         let mut session =
             ScalarSession::from_bytes(canonical_model(), policy(case.required_maximum_position))
                 .unwrap();
-        let output = session
-            .generate_greedy(
-                &case.prompt_tokens,
-                case.maximum_new_tokens,
-                &case.stop_tokens,
-            )
-            .unwrap();
+        let mut logits = Vec::new();
+        for token in &case.prompt_tokens {
+            logits = session.forward_token(*token).unwrap().to_vec();
+        }
+        let mut output = Vec::new();
+        for _ in 0..case.maximum_new_tokens {
+            let token = select_greedy(&logits).unwrap();
+            output.push(token);
+            logits = session.forward_token(token).unwrap().to_vec();
+            if case.stop_tokens.contains(&token) {
+                break;
+            }
+        }
         assert_eq!(output, case.output_tokens, "{}", case.id);
         assert_eq!(
             session.position().unwrap(),

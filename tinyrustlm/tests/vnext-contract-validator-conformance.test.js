@@ -49,6 +49,42 @@ function validators() {
   return [validateVnextSchemaWithRegistry, validateVnextSchemaIndependently];
 }
 
+function u32(value) {
+  const output = Buffer.alloc(4);
+  output.writeUInt32LE(value);
+  return output;
+}
+
+function u64(value) {
+  const output = Buffer.alloc(8);
+  output.writeBigUInt64LE(BigInt(value));
+  return output;
+}
+
+function framedHash(label, parts) {
+  const hash = crypto.createHash("sha256");
+  hash.update(Buffer.from(label, "ascii"));
+  hash.update(Buffer.from([0]));
+  for (const part of parts) hash.update(part);
+  return hash.digest();
+}
+
+function twoPieceMerkle(firstParentLevel) {
+  const pieces = [
+    { index: 0, length: 4_194_304, sha256: "11".repeat(32) },
+    { index: 1, length: 1, sha256: "22".repeat(32) }
+  ];
+  const leaves = pieces.map((entry) => framedHash("TinyRustLM-Merkle-Leaf-v1", [
+    u64(entry.index), u64(entry.length), Buffer.from(entry.sha256, "hex")
+  ]));
+  const parent = framedHash("TinyRustLM-Merkle-Node-v1", [
+    u32(firstParentLevel), u64(0), leaves[0], leaves[1]
+  ]);
+  return framedHash("TinyRustLM-Merkle-Root-v1", [
+    u64(4_194_305), u64(2), parent
+  ]).toString("hex");
+}
+
 function reverseObjectKeys(value) {
   if (Array.isArray(value)) return value.map(reverseObjectKeys);
   if (value === null || typeof value !== "object") return value;
@@ -182,6 +218,27 @@ test("makes both validators agree with every expected corpus verdict", () => {
     "artifact", "claim", "companion", "context", "p2p", "parser", "proof",
     "receipt", "release", "worker"
   ]);
+});
+
+test("binds the first Merkle parent to level one for multi-piece artifacts", () => {
+  const corpus = loadCorpus();
+  const accepted = corpus.cases.find((item) => item.id === "valid-p2p");
+  const value = parseStrictJson(Buffer.from(accepted.payloadBase64, "base64"));
+  value.artifactBytes = 4_194_305;
+  value.pieceCount = 2;
+  value.pieces = [
+    { index: 0, offset: 0, length: 4_194_304, sha256: "11".repeat(32) },
+    { index: 1, offset: 4_194_304, length: 1, sha256: "22".repeat(32) }
+  ];
+  value.merkleRootSha256 = twoPieceMerkle(1);
+  const wire = Buffer.from(JSON.stringify(value), "utf8");
+  for (const validate of validators()) assert.equal(validate(wire).contractClass, "p2p");
+
+  value.merkleRootSha256 = twoPieceMerkle(0);
+  const hostile = Buffer.from(JSON.stringify(value), "utf8");
+  for (const validate of validators()) {
+    assert.throws(() => validate(hostile));
+  }
 });
 
 test("accepts key-order permutations and rejects every missing root field", () => {

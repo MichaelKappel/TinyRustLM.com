@@ -206,12 +206,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fasteval"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f4cdac9e4065d7c48e30770f8665b8cef9a3a73a63a4056a33a5f395bc7cf75"
-
-[[package]]
 name = "fiat-crypto"
 version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -679,6 +673,19 @@ name = "tinyrustlm-browser-harness"
 version = "0.1.8"
 
 [[package]]
+name = "tinyrustlm-composition2"
+version = "0.1.8"
+dependencies = [
+ "serde_json",
+ "sha2",
+ "tinyrustlm-prompt2",
+ "tinyrustlm-sampling2",
+ "tinyrustlm-slm2",
+ "tinyrustlm-template2",
+ "tinyrustlm-tokenizer2",
+]
+
+[[package]]
 name = "tinyrustlm-convert"
 version = "0.1.8"
 dependencies = [
@@ -759,57 +766,55 @@ version = "0.1.8"
 dependencies = [
  "serde",
  "serde_json",
- "tinyrustlm-memory",
+ "tinyrustlm-composition2",
  "tinyrustlm-p2p",
- "tinyrustlm-runtime-sdk",
- "tinyrustlm-slm",
+ "tinyrustlm-runtime",
+ "tinyrustlm-sampling2",
+ "tinyrustlm-slm2",
 ]
 
 [[package]]
 name = "tinyrustlm-p2p"
 version = "0.1.8"
 dependencies = [
- "base64",
- "ed25519-dalek",
  "serde",
  "serde_json",
  "sha2",
- "tinyrustlm-slm",
+ "tinyrustlm-composition2",
+ "tinyrustlm-durability",
+ "tinyrustlm-evidence",
+ "tinyrustlm-slm2",
+]
+
+[[package]]
+name = "tinyrustlm-prompt2"
+version = "0.1.8"
+dependencies = [
+ "serde_json",
+ "sha2",
+ "tinyrustlm-sampling2",
+ "tinyrustlm-template2",
+ "tinyrustlm-tokenizer2",
 ]
 
 [[package]]
 name = "tinyrustlm-runtime"
 version = "0.1.8"
 dependencies = [
- "fasteval",
-]
-
-[[package]]
-name = "tinyrustlm-runtime-sdk"
-version = "0.1.8"
-dependencies = [
- "serde",
- "tinyrustlm-runtime",
- "tinyrustlm-slm",
-]
-
-[[package]]
-name = "tinyrustlm-slm"
-version = "0.1.8"
-dependencies = [
- "serde",
- "sha2",
- "tinyrustlm-runtime",
-]
-
-[[package]]
-name = "tinyrustlm-slm-pack"
-version = "0.1.8"
-dependencies = [
  "serde",
  "serde_json",
+ "tinyrustlm-composition2",
+ "tinyrustlm-prompt2",
+ "tinyrustlm-sampling2",
+ "tinyrustlm-slm2",
+]
+
+[[package]]
+name = "tinyrustlm-sampling2"
+version = "0.1.8"
+dependencies = [
+ "serde_json",
  "sha2",
- "tinyrustlm-runtime",
 ]
 
 [[package]]
@@ -822,19 +827,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "tinyrustlm-slm2-runtime"
-version = "0.1.8"
-dependencies = [
- "serde",
- "serde_json",
- "tinyrustlm-slm2",
-]
-
-[[package]]
 name = "tinyrustlm-slm2-runtime-wasm-conformance"
 version = "0.1.8"
 dependencies = [
- "tinyrustlm-slm2-runtime",
+ "tinyrustlm-runtime",
 ]
 
 [[package]]

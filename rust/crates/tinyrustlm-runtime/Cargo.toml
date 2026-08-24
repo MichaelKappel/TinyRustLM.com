@@ -1,16 +1,21 @@
 [package]
-name = "tinyrustlm-runtime-sdk"
+name = "tinyrustlm-runtime"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
 repository.workspace = true
-description = "Public TinyRustLM runtime harness SDK boundary."
+description = "Canonical SLM2 conversation runtime and scalar correctness authority."
 
 [dependencies]
+tinyrustlm-composition2 = { path = "../tinyrustlm-composition2" }
+tinyrustlm-prompt2 = { path = "../tinyrustlm-prompt2" }
+tinyrustlm-sampling2 = { path = "../tinyrustlm-sampling2" }
+tinyrustlm-slm2 = { path = "../tinyrustlm-slm2" }
+
+[dev-dependencies]
 serde.workspace = true
-tinyrustlm-runtime = { path = "../../../tinyrustlm/runtime" }
-tinyrustlm-slm = { path = "../tinyrustlm-slm" }
+serde_json.workspace = true
 
 [lints]
 workspace = true

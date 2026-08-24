@@ -1,7 +1,7 @@
-profile: tinyrustlm.source-workspace.v381
+profile: tinyrustlm.source-workspace.v382
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-24T14:01:30Z
+updated_utc: 2026-08-24T15:26:15Z
 
 current_checkpoint_2026_08_24_qwen3_slm2_converter_implementation_v1:
   authority: This is the newest first-read implementation checkpoint for TinyRustLM's one enterprise-quality prelaunch product. There is no product V2, released old generation, compatibility population, migration obligation, fallback authority, dual converter, temporary dense path, deferred cleanup, or permission for known debt. SLM2 and numbered profile/schema names remain exact technical identities only. The permanent clean-slate rule in totem and taboo remains controlling.
@@ -1007,7 +1007,7 @@ current_checkpoint_2026_08_12_protected_equality_custody_source_preservation:
     public_safe_redaction_profile: bytes=4040; sha256=4044b25f180949b0c9ef49cd60244ebbd0bb1a81479c0c9676fe30c8608e0e26
     campaign_release_surface_profile: bytes=19151; sha256=100d72ee201b395820aa11aa5b4f8f23befdbf0fffb515dda385fb826cc6fcff
     offline_verification_bundle_profile: bytes=3625; sha256=2b14f8e2d4d176e020d2c3e89d05dda07acc933bc76df6044ddd5b4e7d751756
-    offline_bundle_rust_vectors: bytes=668506; sha256=82b8239eb97089f2b9101a04da7f985deb80f044a620376393517438baf3f178
+    offline_bundle_rust_vectors: bytes=668506; sha256=3bfa7509169461a55e8d0b9fab6a624fe1049e3c956fd7d3308ef9bfa8cfff6c
   verification:
     focused_node: 30/30 passed for custody, redaction, offline closure, and Node/Rust vector replay.
     affected_rust: `cargo test -p tinyrustlm-evidence --locked` passed all unit, integration, contract, parity, and doc-test targets after the transitive binding change.
@@ -1057,7 +1057,7 @@ current_checkpoint_2026_08_12_batch_durable_evidence_ingestion:
     directory_flush_client_source_closure_sha256: b265141e0749422bcdadefab7777c97d154f442ac18397f69664dd1af24447f3
     durable_publication_profile: bytes=7469; sha256=4c1006a986ced8359346cb856ea698c03cc187ae7a0b77b8108719a043becc35
     durable_publication_source_closure_sha256: 845acd1da5aa060ad7eb15dee0fdb866d9ac13ea20a699fe13f4ea6b0592b2d9
-    receipt_store_profile: bytes=3372; sha256=c7ec3b8eec5628c610a22bb147a67ac8450d179ae7cb254c1f1e8df7e9224b47
+    receipt_store_profile: bytes=4236; sha256=1721e8d26cfd93617ce570a744796c8d95d5fc1fd628ac3ee94f1a484832ade5
     subject_store_profile: bytes=3845; sha256=0985099802be93bbf4b88f834470d7aa605d1e60e672e38ceb2ec7ffa6f3f916
     campaign_artifact_store_profile: bytes=4555; sha256=5736c06bedc41ebda83f51bc80405050ec1a466bc14248b12381e9d6fb95a784
     campaign_runner_profile: bytes=7302; sha256=b0ba96ea2aa25112adea781138a4351511c56372bd1fdc04575e529a2b4720a9

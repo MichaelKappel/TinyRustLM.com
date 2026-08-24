@@ -1,5 +1,5 @@
 #![forbid(unsafe_code)]
-#![doc = "Scalar correctness-reference inference for canonical SLM2 models."]
+#![doc = "Scalar correctness implementation owned by the canonical runtime."]
 
 use std::error::Error;
 use std::fmt::{self, Display, Formatter};
@@ -162,7 +162,7 @@ struct LayerTensors {
 }
 
 /// One fully validated, still-inactive SLM2 model held without an F32 shadow copy.
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct ScalarModel {
     bytes: Vec<u8>,
     validated: ValidatedModel,
@@ -224,6 +224,11 @@ impl ScalarModel {
     /// Returns the exact artifact byte identity.
     pub fn artifact_sha256_hex(&self) -> String {
         self.validated.identity().artifact_sha256_hex()
+    }
+
+    /// Returns the exact binary artifact SHA-256.
+    pub const fn artifact_sha256(&self) -> &[u8; 32] {
+        self.validated.identity().artifact_sha256()
     }
 
     fn tensor(&self, index: usize) -> Result<TensorView<'_>, ScalarRuntimeError> {
@@ -479,7 +484,7 @@ impl Scratch {
 }
 
 /// Stateful scalar execution over one exact SLM2 model.
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct ScalarSession {
     model: ScalarModel,
     policy: RuntimePolicy,
@@ -627,57 +632,6 @@ impl ScalarSession {
             return Err(error);
         }
         Ok(&self.scratch.logits)
-    }
-
-    /// Resets, prefills, and greedily generates one bounded token sequence.
-    pub fn generate_greedy(
-        &mut self,
-        prompt_tokens: &[u32],
-        maximum_new_tokens: u32,
-        stop_tokens: &[u32],
-    ) -> Result<Vec<u32>, ScalarRuntimeError> {
-        if prompt_tokens.is_empty() || maximum_new_tokens == 0 {
-            return Err(ScalarRuntimeError::new("slm2-runtime-invalid-generation"));
-        }
-        let required = u32::try_from(prompt_tokens.len())
-            .ok()
-            .and_then(|length| length.checked_add(maximum_new_tokens))
-            .ok_or_else(|| ScalarRuntimeError::new("slm2-runtime-sequence-limit"))?;
-        if required > self.policy.maximum_sequence_tokens {
-            return Err(ScalarRuntimeError::new("slm2-runtime-sequence-limit"));
-        }
-        if prompt_tokens
-            .iter()
-            .chain(stop_tokens)
-            .any(|token| *token >= self.model.spec().vocabulary_size)
-        {
-            return Err(ScalarRuntimeError::new("slm2-runtime-token-range"));
-        }
-
-        self.reset();
-        for token in prompt_tokens {
-            if let Err(error) = self.forward_token(*token) {
-                self.reset();
-                return Err(error);
-            }
-        }
-        let mut output = Vec::new();
-        output
-            .try_reserve_exact(checked_usize(maximum_new_tokens)?)
-            .map_err(|_| ScalarRuntimeError::new("slm2-runtime-allocation"))?;
-        for index in 0..maximum_new_tokens {
-            let token = select_greedy(&self.scratch.logits)?;
-            output.push(token);
-            let should_stop = stop_tokens.contains(&token) || index + 1 == maximum_new_tokens;
-            if let Err(error) = self.forward_token(token) {
-                self.reset();
-                return Err(error);
-            }
-            if should_stop {
-                break;
-            }
-        }
-        Ok(output)
     }
 }
 
@@ -1365,19 +1319,42 @@ mod tests {
     }
 
     #[test]
-    fn greedy_generation_is_replayable_and_obeys_stop_tokens() {
+    fn scalar_forward_replay_is_deterministic_and_exposes_stop_decisions() {
         let mut replay_session = session(4);
-        let first = replay_session.generate_greedy(&[1], 2, &[]).unwrap();
-        let second = replay_session.generate_greedy(&[1], 2, &[]).unwrap();
+        let first = replay_scalar_case(&mut replay_session, &[1], 2, &[]);
+        let second = replay_scalar_case(&mut replay_session, &[1], 2, &[]);
         assert_eq!(first, second);
         assert_eq!(first.len(), 2);
         assert_eq!(replay_session.position().unwrap(), 3);
 
         let mut stop_session = session(4);
-        let next = stop_session.generate_greedy(&[1], 1, &[]).unwrap()[0];
-        let stopped = stop_session.generate_greedy(&[1], 2, &[next]).unwrap();
+        let next = replay_scalar_case(&mut stop_session, &[1], 1, &[])[0];
+        let stopped = replay_scalar_case(&mut stop_session, &[1], 2, &[next]);
         assert_eq!(stopped, vec![next]);
         assert_eq!(stop_session.position().unwrap(), 2);
+    }
+
+    fn replay_scalar_case(
+        session: &mut ScalarSession,
+        prompt: &[u32],
+        maximum_new_tokens: u32,
+        stop_tokens: &[u32],
+    ) -> Vec<u32> {
+        session.reset();
+        let mut logits = Vec::new();
+        for token in prompt {
+            logits = session.forward_token(*token).unwrap().to_vec();
+        }
+        let mut output = Vec::new();
+        for _ in 0..maximum_new_tokens {
+            let token = select_greedy(&logits).unwrap();
+            output.push(token);
+            logits = session.forward_token(token).unwrap().to_vec();
+            if stop_tokens.contains(&token) {
+                break;
+            }
+        }
+        output
     }
 
     #[test]

@@ -1,25 +1,20 @@
 [package]
 name = "tinyrustlm-prompt2"
-version = "0.1.0"
-edition = "2021"
-license = "Proprietary"
-authors = ["TinyRustLM maintainers"]
-repository = "https://TinyRustLM.com/"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
 description = "Canonical Prompt2 artifact, wire contracts, and exact prompt composition runtime."
 
 [dependencies]
-sha2 = "=0.10.9"
+sha2.workspace = true
 tinyrustlm-sampling2 = { path = "../tinyrustlm-sampling2" }
 tinyrustlm-template2 = { path = "../tinyrustlm-template2" }
 tinyrustlm-tokenizer2 = { path = "../tinyrustlm-tokenizer2" }
 
 [dev-dependencies]
-serde_json = "=1.0.150"
+serde_json.workspace = true
 
-[lints.rust]
-missing_docs = "deny"
-unsafe_code = "forbid"
-
-[workspace]
-members = ["."]
-resolver = "2"
+[lints]
+workspace = true

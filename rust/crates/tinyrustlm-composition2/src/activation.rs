@@ -84,6 +84,11 @@ impl ActivationState {
         self.active.as_ref().map(|active| active.graph().identity())
     }
 
+    /// Borrows the sole active prepared composition without copying ownership.
+    pub fn active(&self) -> Option<&PreparedComposition> {
+        self.active.as_ref()
+    }
+
     /// Returns current committed KV payload bytes.
     pub const fn kv_cache_bytes(&self) -> u64 {
         self.kv_cache_bytes
@@ -127,6 +132,23 @@ impl ActivationState {
     /// Replaces visible transcript state without touching model state.
     pub fn set_transcript(&mut self, transcript: TranscriptState) {
         self.transcript = transcript;
+    }
+
+    /// Begins one generation transaction under the current operation identity.
+    ///
+    /// A stale identity returns before mutation. Success preserves composition,
+    /// operation, and transcript state while clearing composition-bound KV and
+    /// generated-token accounting for the next request.
+    pub fn begin_generation(
+        &mut self,
+        expected_operation: OperationIdentity,
+    ) -> Result<(), Acg2Error> {
+        if expected_operation != self.operation {
+            return Err(Acg2Error::new("acg2-stale-operation"));
+        }
+        self.kv_cache_bytes = 0;
+        self.generation.token_ids.clear();
+        Ok(())
     }
 
     /// Performs one infallible ownership swap after the sole stale-operation check.
@@ -224,6 +246,60 @@ mod tests {
             state.operation().bytes(),
             state.active_identity().unwrap().graph_identity_sha256
         );
+    }
+
+    #[test]
+    fn active_borrow_preserves_the_single_prepared_owner() {
+        let operation = OperationIdentity::new([9; 32]).unwrap();
+        let mut state = ActivationState::new(operation, TranscriptState::new(4));
+        assert!(state.active().is_none());
+        state
+            .activate(
+                PreparedComposition::fixture(fixture_graph(8_704, 1)),
+                operation,
+            )
+            .unwrap();
+        assert_eq!(
+            state.active().unwrap().graph().identity(),
+            state.active_identity().unwrap()
+        );
+    }
+
+    #[test]
+    fn begin_generation_is_stale_safe_and_clears_only_request_state() {
+        let operation = OperationIdentity::new([9; 32]).unwrap();
+        let transcript = TranscriptState::new(15);
+        let mut state = ActivationState::new(operation, transcript);
+        state
+            .activate(
+                PreparedComposition::fixture(fixture_graph(8_704, 1)),
+                operation,
+            )
+            .unwrap();
+        state.set_kv_cache_bytes(4_096);
+        state.record_generated_token(17).unwrap();
+        let identity = state.active_identity();
+        let current_operation = state.operation();
+
+        assert_eq!(
+            state
+                .begin_generation(OperationIdentity::new([8; 32]).unwrap())
+                .unwrap_err()
+                .code(),
+            "acg2-stale-operation"
+        );
+        assert_eq!(state.active_identity(), identity);
+        assert_eq!(state.operation(), current_operation);
+        assert_eq!(state.transcript(), transcript);
+        assert_eq!(state.kv_cache_bytes(), 4_096);
+        assert_eq!(state.generation().token_ids(), [17]);
+
+        state.begin_generation(current_operation).unwrap();
+        assert_eq!(state.active_identity(), identity);
+        assert_eq!(state.operation(), current_operation);
+        assert_eq!(state.transcript(), transcript);
+        assert_eq!(state.kv_cache_bytes(), 0);
+        assert!(state.generation().token_ids().is_empty());
     }
 
     #[test]

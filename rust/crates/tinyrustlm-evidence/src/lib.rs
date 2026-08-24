@@ -38,6 +38,10 @@ pub use signature::{
     derive_signature_material, verify_signature_primitive, SignatureError, SignatureMaterial,
     VerifiedSignature, SIGNATURE_PROFILE_ID, SIGNATURE_PROFILE_SHA256,
 };
+pub use subject::{
+    finalize_registered_subject, validate_registered_subject, RegisteredSubject,
+    RegisteredSubjectError,
+};
 
 /// The one current campaign-plan schema.
 pub const CAMPAIGN_PLAN_SCHEMA: &str = "tinyrustlm.vnext.campaign_plan.v1";

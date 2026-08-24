@@ -436,7 +436,7 @@ function independentMerkle(value) {
   let levelNodes = value.pieces.map((entry) => framedHash("TinyRustLM-Merkle-Leaf-v1", [
     u64(entry.index), u64(entry.length), Buffer.from(entry.sha256, "hex")
   ]));
-  let level = 0;
+  let level = 1;
   while (levelNodes.length > 1) {
     const next = [];
     for (let offset = 0; offset < levelNodes.length; offset += 2) {
