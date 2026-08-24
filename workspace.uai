@@ -1,7 +1,12 @@
-profile: tinyrustlm.source-workspace.v389
+profile: tinyrustlm.source-workspace.v390
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-24T23:13:38Z
+updated_utc: 2026-08-24T23:24:37Z
+
+current_checkpoint_2026_08_24_companion_loopback_capability_correction_v2:
+  authority: Sole output-free implementation authority is remote-exact commit `912f8ebe1a2b774977eaf2ed298d8ac162d35fa0`, tree `f89b28db05b340e82b0aac96d9856c0b8b15252e`, profile `tinyrustlm.companion.loopback-capability/2`, 22,681 bytes, SHA256 `6ad07dda97ae50d8e6c3fc1a581e6742d2e18c66484a4a9864e1b3bc7a57ae81`. Correction architecture is 13,411 bytes at SHA256 `b574af05032bd52f7b37ffc831e1661eb9625e88afcf629f7e24ffc648be28f4`. It binds parent `0f08fb6b53f50013220a156ebb8006e258c5c0d1`, tree `9137bc158e83fc35df2da77f6edfb61eafe60cb9`.
+  supersession: Profile `/1` at SHA256 `81e3f2f3795a51c0bce86e1aca66f6a7234608a3dd044cd7a9b1cbbf90c9ba77` is preserved byte-identically as non-executable registration history. No output existed when audit found incomplete ordered proof/HKDF/rotation fields and missing exact JSON/status/error/sequence/projection/artifact-metadata rules. `/2` adopts exact content-addressed `/1` decisions, replaces three pointers, and adds the missing bytes. No runtime profile inheritance, compatibility reader, or migration exists.
+  exact_resume: Implement canonical network JSON, identifier grammar, u32-framed transcript codec, HKDF/HMAC, and independent .NET/browser vectors first. Then pairing/session sequence state, rotation/revocation, strict Kestrel listener/raw-socket tests, browser memory-only client/current LNA, operation projection, six-artifact transfer, and deletion of the old bridge. Full Node remains 1,150 pass, 15 fail, one skip and must be repaired to zero failures before deployment. No listener/model/package/site/MemoryEndpoints/campaign claim exists; counters remain zero.
 
 current_checkpoint_2026_08_24_companion_loopback_capability_registration_v1:
   authority: This is the newest first-read checkpoint for TinyRustLM's one enterprise-quality prelaunch product. Registration commit `c28020c90ff8a973b9a0c07ec93ca3475d2220c4`, tree `64107eeb6eb2db5c6ac3d0d99daba0c185c470ac`, is exact across local HEAD, tracking, fresh FETCH_HEAD, and direct remote on `codex/model-acquisition-v2`. There is no prior launched protocol, compatibility population, migration obligation, alternate host, fallback, repair, retry selection, temporary dual path, or permission for known debt.

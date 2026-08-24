@@ -1,5 +1,11 @@
-profile: runtime-mirust.operations.v123
-updated_utc: 2026-08-24T23:13:38Z
+profile: runtime-mirust.operations.v124
+updated_utc: 2026-08-24T23:24:37Z
+companion_loopback_correction_checkpoint_2026_08_24:
+  source: commit=912f8ebe1a2b774977eaf2ed298d8ac162d35fa0; tree=f89b28db05b340e82b0aac96d9856c0b8b15252e; local_tracking_fetch_direct_remote_exact=true
+  authority: profile=tinyrustlm.companion.loopback-capability/2; bytes=22681; sha256=6ad07dda97ae50d8e6c3fc1a581e6742d2e18c66484a4a9864e1b3bc7a57ae81; decision_bytes=13411; decision_sha256=b574af05032bd52f7b37ffc831e1661eb9625e88afcf629f7e24ffc648be28f4
+  superseded: profile=/1; immutable=true; executable=false; output_occurred=false
+  passed: corrected_union=56/56; strict_json=true; ascii_nul=true; diff=true; frozen_goal=true; remote_exact=true
+  next: Implement canonical codec and independent cross-language vectors first. Then pairing/session/rotation/revocation, strict listener, browser client, projection, transfer, and old-bridge deletion. Deployment remains blocked by the 15 complete-gate failures.
 companion_loopback_registration_checkpoint_2026_08_24:
   source: commit=c28020c90ff8a973b9a0c07ec93ca3475d2220c4; tree=64107eeb6eb2db5c6ac3d0d99daba0c185c470ac; branch=codex/model-acquisition-v2; local_tracking_fetch_direct_remote_exact=true
   registration: profile=tinyrustlm.companion.loopback-capability/1; bytes=39311; sha256=81e3f2f3795a51c0bce86e1aca66f6a7234608a3dd044cd7a9b1cbbf90c9ba77; decision_bytes=23557; decision_sha256=0c6708baec6f1cdbf401b2da5d4fa35372acaf126389c04f36384b3f6d4bc242; parent=480a22c58d1acedcb5e83d36bfa0ea75e43041b6; parent_tree=46f15125f6d9b02a6582dcdb78b0dd5641cc884b
