@@ -62,6 +62,15 @@
     "receiptWithoutTarget": "inactive",
     "callerSuppliedSuccess": "forbidden"
   },
+  "activeStateAccess": {
+    "startup": "one-full-validated-rebuild-per-store-open",
+    "crossInstanceSync": "same-process-same-root-generation-only-registry-rebuilds-before-access",
+    "membershipSnapshot": "immutable-active-ids-and-total-bytes-no-filesystem-scan",
+    "documentSnapshot": "immutable-validated-documents-with-defensive-byte-copies-no-filesystem-scan",
+    "cachedDocumentRead": "active-membership-required-validated-owned-copy-no-filesystem-read",
+    "physicalRead": "target-and-durability-receipt-read-twice-exact-bytes-hash-and-subject-validation",
+    "restartValidation": "fresh-store-open-full-rebuild-with-verified-directory-flush-readback"
+  },
   "batch": {
     "minimumEntries": 1,
     "maximumEntries": 1024,

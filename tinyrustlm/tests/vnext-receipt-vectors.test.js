@@ -140,15 +140,16 @@ test("freezes one independently recomputable receipt identity", () => {
   assert.equal(validateVnextReceiptBytes(finalBytes).receipt.receiptId, item.receiptId);
 });
 
-test("freezes one incompatible create-only receipt-store profile", () => {
+test("freezes one sole prelaunch create-only receipt-store profile", () => {
   const profileBytes = fs.readFileSync(profilePath);
   const profile = parseStrictJson(profileBytes);
   const registrySha256 = sha256(fs.readFileSync(registryPath));
 
   assert.deepEqual(Object.keys(profile), [
+    "schema",
     "profileId",
     "status",
-    "compatibility",
+    "versionPolicy",
     "contractRegistrySha256",
     "receiptSchema",
     "canonicalizationProfile",
@@ -159,15 +160,18 @@ test("freezes one incompatible create-only receipt-store profile", () => {
     "wire",
     "layout",
     "durablePublication",
+    "activeStateAccess",
     "batch",
     "concurrency",
     "rebuild",
     "limits",
     "resultContract"
   ]);
+  assert.equal(profile.schema, "tinyrustlm.vnext.receipt_store_profile.v1");
   assert.equal(profile.profileId, "tinyrustlm.vnext.receipt-store.v1");
   assert.equal(profile.status, "frozen");
-  assert.equal(profile.compatibility, "incompatible-no-dated-receipt-reader");
+  assert.equal(profile.versionPolicy,
+    "single-current-profile-no-compatibility-reader");
   assert.equal(profile.contractRegistrySha256, registrySha256);
   assert.equal(profile.canonicalizationProfile, vnextJcsProfile);
   assert.equal(profile.canonicalizationBase, jcsProfile);
@@ -183,6 +187,22 @@ test("freezes one incompatible create-only receipt-store profile", () => {
   assert.equal(profile.durablePublication.targetActivation,
     "matching-content-addressed-durability-receipt-required");
   assert.equal(profile.durablePublication.callerSuppliedSuccess, "forbidden");
+  assert.deepEqual(profile.activeStateAccess, {
+    startup: "one-full-validated-rebuild-per-store-open",
+    crossInstanceSync:
+      "same-process-same-root-generation-only-registry-rebuilds-before-access",
+    membershipSnapshot: "immutable-active-ids-no-filesystem-scan",
+    documentSnapshot:
+      "immutable-validated-documents-with-defensive-byte-copies-no-filesystem-scan",
+    cachedDocumentRead:
+      "active-membership-required-validated-owned-copy-no-filesystem-read",
+    physicalRead:
+      "target-and-durability-receipt-read-twice-exact-bytes-hash-and-receipt-validation",
+    batchPhysicalRead:
+      "one-shared-parent-closure-each-target-and-durability-receipt-read-twice-exact-bytes-hash-and-receipt-validation",
+    restartValidation:
+      "fresh-store-open-full-rebuild-with-verified-directory-flush-readback"
+  });
   assert.equal(profile.batch.maximumEntries, 1024);
   assert.equal(profile.batch.parentPolicy,
     "active-or-same-batch-directed-acyclic-graph");

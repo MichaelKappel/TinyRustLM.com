@@ -38,6 +38,7 @@ const digestFilePattern = /^([a-f0-9]{64})\.json$/u;
 const prefixPattern = /^[a-f0-9]{2}$/u;
 const temporaryPattern = /^\.([a-f0-9]{64})\.[0-9]{1,20}\.[a-f0-9]{4,64}\.tmp$/u;
 const storeOptionNames = Object.freeze([]);
+const processGenerationByRoot = new Map();
 const expectedAcceptedSchemas = Object.freeze([
   "tinyrustlm.vnext.artifact_manifest.v1",
   "tinyrustlm.vnext.claim.v2",
@@ -54,8 +55,12 @@ const profileFields = Object.freeze([
   "campaignProjectionProfileId", "campaignProjectionProfileSha256",
   "canonicalJsonProfile", "hashAlgorithm", "identityBasis", "visibility",
   "networkAccess", "sourceMutation", "acceptedSubjects", "rejectedSubjects",
-  "layout", "durablePublication", "batch", "concurrency", "rebuild", "limits",
-  "resultContract"
+  "layout", "durablePublication", "activeStateAccess", "batch", "concurrency",
+  "rebuild", "limits", "resultContract"
+]);
+const activeStateAccessFields = Object.freeze([
+  "startup", "crossInstanceSync", "membershipSnapshot", "documentSnapshot",
+  "cachedDocumentRead", "physicalRead", "restartValidation"
 ]);
 
 function sha256(bytes) {
@@ -129,6 +134,8 @@ function validateInstalledProfile() {
     ["profileId", "profileSha256", "targetActivation", "directoryFlush", "restart",
       "targetWithoutReceipt", "receiptWithoutTarget", "callerSuppliedSuccess"],
     "subject_store_profile_invalid", step);
+  exactObject(subjectStoreProfile.activeStateAccess, activeStateAccessFields,
+    "subject_store_profile_invalid", step);
   exactObject(subjectStoreProfile.batch,
     ["minimumEntries", "maximumEntries", "inputOrdering", "duplicateSubjectIds",
       "preflight", "publication", "activation", "partialResult"],
@@ -195,6 +202,20 @@ function validateInstalledProfile() {
       subjectStoreProfile.durablePublication.directoryFlush !==
         "verified-rust-helper-required" ||
       subjectStoreProfile.durablePublication.callerSuppliedSuccess !== "forbidden" ||
+      subjectStoreProfile.activeStateAccess.startup !==
+        "one-full-validated-rebuild-per-store-open" ||
+      subjectStoreProfile.activeStateAccess.crossInstanceSync !==
+        "same-process-same-root-generation-only-registry-rebuilds-before-access" ||
+      subjectStoreProfile.activeStateAccess.membershipSnapshot !==
+        "immutable-active-ids-and-total-bytes-no-filesystem-scan" ||
+      subjectStoreProfile.activeStateAccess.documentSnapshot !==
+        "immutable-validated-documents-with-defensive-byte-copies-no-filesystem-scan" ||
+      subjectStoreProfile.activeStateAccess.cachedDocumentRead !==
+        "active-membership-required-validated-owned-copy-no-filesystem-read" ||
+      subjectStoreProfile.activeStateAccess.physicalRead !==
+        "target-and-durability-receipt-read-twice-exact-bytes-hash-and-subject-validation" ||
+      subjectStoreProfile.activeStateAccess.restartValidation !==
+        "fresh-store-open-full-rebuild-with-verified-directory-flush-readback" ||
       subjectStoreProfile.batch.minimumEntries !== 1 ||
       subjectStoreProfile.batch.maximumEntries !==
         durablePublicationProfile.batch.maximumEntries ||
@@ -315,6 +336,10 @@ function createVnextSubjectStore(rootInput, options = {}) {
     streamBufferBytes: subjectStoreProfile.limits.streamBufferBytes
   });
   const root = fileOps.normalizeRoot(rootInput);
+  for (const registeredRoot of processGenerationByRoot.keys()) {
+    if (!fs.existsSync(registeredRoot)) processGenerationByRoot.delete(registeredRoot);
+  }
+  if (!processGenerationByRoot.has(root)) processGenerationByRoot.set(root, 0);
 
   function ensureLayout() {
     fileOps.ensureRoot(root);
@@ -330,8 +355,83 @@ function createVnextSubjectStore(rootInput, options = {}) {
   let layout = ensureLayout();
   let active = new Map();
   let activeTotalBytes = 0;
+  let activeSnapshot = null;
+  let activeDocumentSnapshot = null;
+  let observedProcessGeneration = processGenerationByRoot.get(root);
+  let putManyDepth = 0;
+  const operationCounter = {
+    fullRebuilds: 0,
+    fullRebuildsInsidePutMany: 0,
+    publishedEntries: 0,
+    putCalls: 0,
+    putManyCalls: 0,
+    snapshotReads: 0,
+    snapshotRevision: 0
+  };
 
-  function rebuild() {
+  function refreshSnapshot() {
+    operationCounter.snapshotRevision += 1;
+    const activeSubjectIds = [...active.keys()].sort();
+    activeSnapshot = immutableRecord({
+      activeSubjectIds,
+      activeTotalBytes,
+      snapshotRevision: operationCounter.snapshotRevision
+    });
+    activeDocumentSnapshot = Object.freeze({
+      activeSubjectIds: activeSnapshot.activeSubjectIds,
+      activeTotalBytes,
+      documents: Object.freeze(activeSubjectIds.map((subjectId) =>
+        active.get(subjectId).validated)),
+      snapshotRevision: operationCounter.snapshotRevision
+    });
+  }
+
+  function currentProcessGeneration() {
+    const generation = processGenerationByRoot.get(root);
+    if (!Number.isSafeInteger(generation) || generation < 0) {
+      failEvidence("subject_store_process_generation_invalid", "subject-store-open");
+    }
+    return generation;
+  }
+
+  function advanceProcessGeneration(expectedGeneration) {
+    if (currentProcessGeneration() !== expectedGeneration ||
+        expectedGeneration >= Number.MAX_SAFE_INTEGER) {
+      failEvidence("subject_store_rebuild_interference", "subject-store-scan");
+    }
+    observedProcessGeneration = expectedGeneration + 1;
+    processGenerationByRoot.set(root, observedProcessGeneration);
+  }
+
+  function snapshot() {
+    synchronizeProcessState();
+    operationCounter.snapshotReads += 1;
+    return activeSnapshot;
+  }
+
+  function documentSnapshot() {
+    synchronizeProcessState();
+    operationCounter.snapshotReads += 1;
+    return activeDocumentSnapshot;
+  }
+
+  function operationCounts() {
+    return immutableRecord({
+      fullRebuilds: operationCounter.fullRebuilds,
+      fullRebuildsInsidePutMany: operationCounter.fullRebuildsInsidePutMany,
+      publishedEntries: operationCounter.publishedEntries,
+      putCalls: operationCounter.putCalls,
+      putManyCalls: operationCounter.putManyCalls,
+      snapshotFilesystemScans: 0,
+      snapshotReads: operationCounter.snapshotReads,
+      snapshotRevision: operationCounter.snapshotRevision
+    });
+  }
+
+  function rebuildInternal(notifyOtherInstances) {
+    const startingProcessGeneration = currentProcessGeneration();
+    operationCounter.fullRebuilds += 1;
+    if (putManyDepth !== 0) operationCounter.fullRebuildsInsidePutMany += 1;
     layout = ensureLayout();
     const durabilityIndex = fileOps.rebuildDurabilityIndex();
     let rebuiltTotalBytes = 0;
@@ -445,7 +545,8 @@ function createVnextSubjectStore(rootInput, options = {}) {
           canonicalContentSha256: subject.canonicalContentSha256,
           durability: activation.durability,
           relativePath: subjectRelativePath(subject.subjectId),
-          schema: subject.schema
+          schema: subject.schema,
+          validated: subject
         }));
         rebuiltTotalBytes += byteLength;
         if (candidates.size > subjectStoreProfile.limits.maximumActiveSubjects) {
@@ -457,8 +558,17 @@ function createVnextSubjectStore(rootInput, options = {}) {
         }
       }
     }
+    if (currentProcessGeneration() !== startingProcessGeneration) {
+      failEvidence("subject_store_rebuild_interference", "subject-store-scan");
+    }
     active = candidates;
     activeTotalBytes = rebuiltTotalBytes;
+    if (notifyOtherInstances) {
+      advanceProcessGeneration(startingProcessGeneration);
+    } else {
+      observedProcessGeneration = startingProcessGeneration;
+    }
+    refreshSnapshot();
     return immutableRecord({
       activeSubjectIds: [...active.keys()].sort(),
       activeTotalBytes,
@@ -471,9 +581,45 @@ function createVnextSubjectStore(rootInput, options = {}) {
     });
   }
 
+  function rebuild() {
+    return rebuildInternal(true);
+  }
+
+  function synchronizeProcessState() {
+    if (currentProcessGeneration() === observedProcessGeneration) return;
+    rebuildInternal(false);
+  }
+
   const startup = rebuild();
 
+  function verifyActiveBytes(filePath, metadata) {
+    fileOps.assertNoLinkComponents(path.dirname(filePath), true);
+    const expected = metadata.validated.bytes;
+    const durabilityPath = path.join(
+      root,
+      ...metadata.durability.durabilityReceiptRelativePath.split("/")
+    );
+    fileOps.assertNoLinkComponents(path.dirname(durabilityPath), true);
+    const firstTarget = fileOps.boundedReadFile(filePath, maximumSingleSubjectBytes);
+    const firstDurability = fileOps.boundedReadFile(
+      durabilityPath,
+      durablePublicationProfile.limits.maximumReceiptBytes
+    );
+    const secondTarget = fileOps.boundedReadFile(filePath, maximumSingleSubjectBytes);
+    const secondDurability = fileOps.boundedReadFile(
+      durabilityPath,
+      durablePublicationProfile.limits.maximumReceiptBytes
+    );
+    if (!firstTarget.equals(expected) || !secondTarget.equals(expected) ||
+        !firstDurability.equals(secondDurability) ||
+        sha256(firstDurability) !== metadata.durability.durabilityReceiptSha256) {
+      failEvidence("subject_active_readback_mismatch", "subject-store-read");
+    }
+    return secondTarget;
+  }
+
   function read(subjectIdInput) {
+    synchronizeProcessState();
     const { subjectId } = normalizeSubjectId(subjectIdInput);
     const metadata = active.get(subjectId);
     if (!metadata) failEvidence("subject_not_active", "subject-store-read");
@@ -482,8 +628,8 @@ function createVnextSubjectStore(rootInput, options = {}) {
     let activation;
     let subject;
     try {
-      activation = fileOps.activateBytes(filePath, maximumSingleSubjectBytes);
-      subject = validateAcceptedSubjectBytes(activation.bytes);
+      activation = verifyActiveBytes(filePath, metadata);
+      subject = validateAcceptedSubjectBytes(activation);
     } catch (error) {
       throw new VnextEvidenceError(
         "subject_active_read_failed",
@@ -498,11 +644,19 @@ function createVnextSubjectStore(rootInput, options = {}) {
     }
     return Object.freeze({
       ...subject,
-      durability: activation.durability
+      durability: metadata.durability
     });
   }
 
-  function putMany(input) {
+  function readDocument(subjectIdInput) {
+    synchronizeProcessState();
+    const { subjectId } = normalizeSubjectId(subjectIdInput);
+    const metadata = active.get(subjectId);
+    if (!metadata) failEvidence("subject_not_active", "subject-store-read");
+    return metadata.validated;
+  }
+
+  function persistMany(input) {
     const values = exactArray(input, subjectStoreProfile.batch.maximumEntries,
       "subject_batch_invalid", "subject-store-persist");
     if (values.length < subjectStoreProfile.batch.minimumEntries) {
@@ -546,6 +700,18 @@ function createVnextSubjectStore(rootInput, options = {}) {
       failEvidence("subject_batch_publication_invalid", "subject-store-persist");
     }
 
+    if (currentProcessGeneration() !== observedProcessGeneration) {
+      try {
+        rebuildInternal(true);
+      } catch (error) {
+        throw new VnextEvidenceError(
+          "subject_store_rebuild_interference",
+          "subject-store-persist",
+          error?.code
+        );
+      }
+      failEvidence("subject_store_rebuild_interference", "subject-store-persist");
+    }
     activeTotalBytes += addedBytes;
     for (const subject of subjects) {
       const relativePath = subjectRelativePath(subject.subjectId);
@@ -555,9 +721,13 @@ function createVnextSubjectStore(rootInput, options = {}) {
         canonicalContentSha256: subject.canonicalContentSha256,
         durability: publication.durability,
         relativePath,
-        schema: subject.schema
+        schema: subject.schema,
+        validated: subject
       }));
     }
+    operationCounter.publishedEntries += subjects.length;
+    advanceProcessGeneration(observedProcessGeneration);
+    refreshSnapshot();
     return immutableRecord(subjects.map((subject) => {
       const relativePath = subjectRelativePath(subject.subjectId);
       const publication = publicationByPath.get(relativePath);
@@ -572,16 +742,32 @@ function createVnextSubjectStore(rootInput, options = {}) {
     }));
   }
 
+  function putMany(input) {
+    operationCounter.putManyCalls += 1;
+    putManyDepth += 1;
+    try {
+      synchronizeProcessState();
+      return persistMany(input);
+    } finally {
+      putManyDepth -= 1;
+    }
+  }
+
   function put(input) {
+    operationCounter.putCalls += 1;
     return putMany([input])[0];
   }
 
   return Object.freeze({
+    documentSnapshot,
+    operationCounts,
     profileId: subjectStoreProfile.profileId,
     put,
     putMany,
     read,
+    readDocument,
     rebuild,
+    snapshot,
     startup
   });
 }

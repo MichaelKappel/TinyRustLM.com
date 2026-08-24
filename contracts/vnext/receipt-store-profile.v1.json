@@ -1,7 +1,8 @@
 {
+  "schema": "tinyrustlm.vnext.receipt_store_profile.v1",
   "profileId": "tinyrustlm.vnext.receipt-store.v1",
   "status": "frozen",
-  "compatibility": "incompatible-no-dated-receipt-reader",
+  "versionPolicy": "single-current-profile-no-compatibility-reader",
   "contractRegistrySha256": "dd1534f577f5468f94d4b3b4d7d8985751fd1ddc4a28a2ccee9f47462449bbf0",
   "receiptSchema": "tinyrustlm.vnext.receipt.v1",
   "canonicalizationProfile": "tinyrustlm.vnext.jcs-safe-integer.v1",
@@ -41,6 +42,16 @@
     "targetWithoutReceipt": "inactive",
     "receiptWithoutTarget": "inactive",
     "callerSuppliedSuccess": "forbidden"
+  },
+  "activeStateAccess": {
+    "startup": "one-full-validated-rebuild-per-store-open",
+    "crossInstanceSync": "same-process-same-root-generation-only-registry-rebuilds-before-access",
+    "membershipSnapshot": "immutable-active-ids-no-filesystem-scan",
+    "documentSnapshot": "immutable-validated-documents-with-defensive-byte-copies-no-filesystem-scan",
+    "cachedDocumentRead": "active-membership-required-validated-owned-copy-no-filesystem-read",
+    "physicalRead": "target-and-durability-receipt-read-twice-exact-bytes-hash-and-receipt-validation",
+    "batchPhysicalRead": "one-shared-parent-closure-each-target-and-durability-receipt-read-twice-exact-bytes-hash-and-receipt-validation",
+    "restartValidation": "fresh-store-open-full-rebuild-with-verified-directory-flush-readback"
   },
   "batch": {
     "minimumEntries": 1,

@@ -2,9 +2,9 @@
 
 ## Status
 
-`tinyrustlm.vnext.campaign-runner.v1` is the sole clean-slate local campaign
-projection runner. Its frozen 7,302-byte profile has SHA-256
-`b0ba96ea2aa25112adea781138a4351511c56372bd1fdc04575e529a2b4720a9`.
+`tinyrustlm.vnext.campaign-runner.v1` is the sole prelaunch local campaign
+projection runner. Its frozen 7,703-byte profile has SHA-256
+`c7e85b52c34fac59b65edee68d048c51fcdb5580321eb538dccc07c1164f68c3`.
 The implementation is `tinyrustlm/tools/vnext-campaign-runner.js`; focused
 conformance is `tinyrustlm/tests/vnext-campaign-runner.test.js`.
 
@@ -58,22 +58,39 @@ Callers must provision the correct campaign roots before invoking the runner.
 
 ## Exact Snapshot Protocol
 
-Each observation performs a bounded store rebuild, takes the store's sorted
-active identity list, reads every named member through that store's validating
-read boundary, copies every exact wire, hashes every copied wire, and computes
-a domain-separated snapshot identity over sorted records containing:
+Opening the runner performs one bounded, fully validated rebuild for each
+receipt-store and subject-store instance. Each evidence observation then takes
+that same open store's immutable sorted membership snapshot and reads every
+named member through the physical validating boundary. Receipt batches share
+one parent-closure traversal. Each physical read reopens the exact target and
+durability-receipt files twice, checks them against the validated owned bytes
+and durability identity, validates the content identity again, copies every
+wire, hashes every copy, and computes a domain-separated snapshot identity
+over sorted records containing:
 
 - member identity;
 - exact durability-receipt SHA-256;
 - exact wire SHA-256; and
 - exact byte length.
 
-The snapshot also binds store profile ID, store profile SHA-256, member count,
-and aggregate bytes. A second complete observation must be byte-for-byte and
-member-for-member identical to the first. Projection uses only the second
-observation's private copies. A write after that observation is later state and
-must appear in a later operation; it does not mutate the completed immutable
-snapshot.
+The artifact plan remains independently authoritative and is rebuilt and read
+on both observations. Before the second content observation, the runner checks
+receipt and subject membership again so a same-process publication cannot hide
+between the plan read and evidence reads. The second complete observation must
+be byte-for-byte and member-for-member identical to the first. Projection uses
+only the second observation's private copies. A write after that observation is
+later state and must appear in a later operation; it does not mutate the
+completed immutable snapshot.
+
+The snapshot binds store profile ID, store profile SHA-256, member count, and
+aggregate bytes. Membership and validated-document snapshots are immutable and
+perform no filesystem scan. A fresh store open, including every physical
+restart used by recovery tests, always performs the complete rebuild with
+verified directory-flush and exact readback proof. This preserves restart
+authority without placing a full-directory rebuild inside either member loop.
+Cross-instance coordination retains only a same-process generation number; it
+never retains global evidence bytes. If another same-root instance opens or
+publishes, a stale instance performs a full validated rebuild before access.
 
 The runner caps projection input at 2,048 receipts, 2,048 subjects, 64 MiB of
 receipt bytes, and 64 MiB of subject bytes, matching the generated Rust/WASM

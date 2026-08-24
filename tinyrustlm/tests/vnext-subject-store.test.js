@@ -141,7 +141,7 @@ function concurrentPut(root, bytes) {
   });
 }
 
-test("freezes one public-only incompatible subject-store profile", () => {
+test("freezes one public-only sole prelaunch subject-store profile", () => {
   const bytes = fs.readFileSync(profilePath);
   const parsed = parseStrictJson(bytes);
 
@@ -155,6 +155,20 @@ test("freezes one public-only incompatible subject-store profile", () => {
   assert.equal(parsed.layout.replacementPolicy, "never");
   assert.equal(parsed.durablePublication.profileId, durablePublicationProfile.profileId);
   assert.equal(parsed.durablePublication.profileSha256, durablePublicationProfileSha256);
+  assert.deepEqual(parsed.activeStateAccess, {
+    startup: "one-full-validated-rebuild-per-store-open",
+    crossInstanceSync:
+      "same-process-same-root-generation-only-registry-rebuilds-before-access",
+    membershipSnapshot: "immutable-active-ids-and-total-bytes-no-filesystem-scan",
+    documentSnapshot:
+      "immutable-validated-documents-with-defensive-byte-copies-no-filesystem-scan",
+    cachedDocumentRead:
+      "active-membership-required-validated-owned-copy-no-filesystem-read",
+    physicalRead:
+      "target-and-durability-receipt-read-twice-exact-bytes-hash-and-subject-validation",
+    restartValidation:
+      "fresh-store-open-full-rebuild-with-verified-directory-flush-readback"
+  });
   assert.deepEqual(parsed.batch, {
     minimumEntries: 1,
     maximumEntries: 1024,
@@ -275,6 +289,69 @@ test("publishes unordered subjects through one bounded durable batch", (t) => {
   assert.equal(targetBatches[0].requests.length, 5);
   assert.equal(receiptBatches[0].requests.length, 5);
   for (const value of values) assert.deepEqual(store.read(value.subjectId).bytes, value.bytes);
+});
+
+test("serves immutable subject membership snapshots without rescanning", (t) => {
+  const root = makeRoot(t);
+  const store = createVnextSubjectStore(root);
+  const values = ["artifact", "claim", "proof", "p2p", "release"]
+    .map((name) => finalized(name));
+
+  const empty = store.snapshot();
+  assert.equal(Object.isFrozen(empty), true);
+  assert.equal(Object.isFrozen(empty.activeSubjectIds), true);
+  assert.deepEqual(empty.activeSubjectIds, []);
+  assert.equal(empty.activeTotalBytes, 0);
+  for (let index = 0; index < 1_024; index += 1) {
+    assert.equal(store.snapshot(), empty);
+  }
+
+  const persisted = store.putMany(values.map((entry) => entry.bytes));
+  const populated = store.snapshot();
+  assert.notEqual(populated, empty);
+  assert.deepEqual(populated.activeSubjectIds,
+    persisted.map((entry) => entry.subjectId).sort());
+  assert.equal(populated.activeTotalBytes,
+    values.reduce((total, entry) => total + entry.bytes.length, 0));
+  const documentSnapshot = store.documentSnapshot();
+  assert.equal(Object.isFrozen(documentSnapshot), true);
+  assert.equal(Object.isFrozen(documentSnapshot.documents), true);
+  assert.deepEqual(documentSnapshot.activeSubjectIds, populated.activeSubjectIds);
+  assert.deepEqual(documentSnapshot.documents.map((entry) => entry.subjectId),
+    populated.activeSubjectIds);
+  assert.equal(store.readDocument(populated.activeSubjectIds[0]),
+    documentSnapshot.documents[0]);
+  const firstDocumentBytes = documentSnapshot.documents[0].bytes;
+  firstDocumentBytes[0] ^= 0xff;
+  assert.notDeepEqual(firstDocumentBytes, documentSnapshot.documents[0].bytes);
+  throwsCode(() => store.readDocument("sha256:0000000000000000000000000000000000000000000000000000000000000000"),
+    "subject_not_active");
+  assert.deepEqual(store.operationCounts(), {
+    fullRebuilds: 1,
+    fullRebuildsInsidePutMany: 0,
+    publishedEntries: 5,
+    putCalls: 0,
+    putManyCalls: 1,
+    snapshotFilesystemScans: 0,
+    snapshotReads: 1_027,
+    snapshotRevision: 2
+  });
+});
+
+test("rebuilds before access when another same-root subject store advances", (t) => {
+  const root = makeRoot(t);
+  const first = createVnextSubjectStore(root);
+  const second = createVnextSubjectStore(root);
+
+  assert.deepEqual(first.snapshot().activeSubjectIds, []);
+  assert.equal(first.operationCounts().fullRebuilds, 2);
+  const subject = finalized("claim");
+  second.put(subject.bytes);
+
+  assert.deepEqual(first.snapshot().activeSubjectIds, [subject.subjectId]);
+  assert.equal(first.operationCounts().fullRebuilds, 3);
+  assert.equal(first.operationCounts().snapshotFilesystemScans, 0);
+  assert.deepEqual(first.read(subject.subjectId).bytes, subject.bytes);
 });
 
 test("rejects malformed subject batches before publishing any target", (t) => {

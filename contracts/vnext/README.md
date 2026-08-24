@@ -627,8 +627,8 @@ evidence rather than selecting a mutable current pointer. See
 `docs/architecture/vnext-campaign-artifact-persistence.md`.
 
 `tinyrustlm/tools/vnext-subject-store.js` completes the other host-side input
-store needed by the campaign runner. Its 3,845-byte frozen profile has SHA-256
-`0985099802be93bbf4b88f834470d7aa605d1e60e672e38ceb2ec7ffa6f3f916`.
+store needed by the campaign runner. Its 4,518-byte frozen profile has SHA-256
+`63cd21ef8dda687f06c486c373840ed101fe2534d7b769d943064571416f94e5`.
 It admits only the five public-safe, non-receipt identity schemas, publishes
 exact canonical bytes under the validated subject ID, and explicitly rejects
 private context and receipt records. Its sole `putMany` implementation fully
@@ -641,6 +641,21 @@ readback, total-byte limits, interruption handling, and quarantine are shared
 with the receipt and campaign artifact stores. It exposes no mutable current
 pointer and grants no evidence currentness by itself. See
 `docs/architecture/vnext-subject-store.md`.
+
+`tinyrustlm/tools/vnext-receipt-store.js` uses the same single prelaunch access
+model. Its 4,236-byte frozen profile has SHA-256
+`1721e8d26cfd93617ce570a744796c8d95d5fc1fd628ac3ee94f1a484832ade5`.
+Each store open performs one complete validated rebuild. Same-open immutable
+membership and document snapshots perform no filesystem scans; physical reads
+reopen target and durability-receipt bytes twice and revalidate exact receipt
+identity, while batch reads share one parent-closure traversal. Cached document
+reads are active-member-only orchestration copies, not a replacement for
+physical restart proof. Cross-instance state retains only a monotonic
+same-process generation number and forces stale instances to rebuild before
+access; no global registry retains evidence bytes. The sole `putMany` path
+publishes a complete sorted DAG
+batch and activates it only after all external parents and durable bytes
+revalidate.
 
 `rust/crates/tinyrustlm-archive` owns the sole bounded ZIP and tar-gzip
 admission authority. Non-Rust consumers invoke only its framed
@@ -746,10 +761,12 @@ gates. See
 `docs/architecture/adr/ADR-012-durable-publication-bootstrap.md`.
 
 `tinyrustlm/tools/vnext-campaign-runner.js` now composes those stores through
-one exact runner boundary. Its frozen 7,302-byte profile has SHA-256
-`b0ba96ea2aa25112adea781138a4351511c56372bd1fdc04575e529a2b4720a9`.
-The runner observes every active receipt and subject twice, rejects any
-membership, marker, or wire change, binds caller pins, marker identities, and
+one exact runner boundary. Its frozen 7,703-byte profile has SHA-256
+`c7e85b52c34fac59b65edee68d048c51fcdb5580321eb538dccc07c1164f68c3`.
+The runner performs one full rebuild per opened receipt/subject store, then
+observes every active receipt and subject twice through immutable membership
+and exact physical readback. It rejects any membership, marker, or wire change,
+binds caller pins, marker identities, and
 trusted verification time in a create-only start record, invokes only the generated Rust campaign-evidence
 ABI, validates the returned result again through Rust, and persists immutable
 projection and terminal history. It exposes no evidence-subset, caller-verdict,
@@ -759,7 +776,7 @@ best-of-N, mutable-currentness, or stored-result promotion path. See
 `tinyrustlm/tools/vnext-campaign-release-surface.js` now consumes that runner
 only by creating a never-before-used operation and receiving its exact result
 inside the same call. Its frozen profile has SHA-256
-`41c8c23b995c71fc16d2fc677cbdd28967de65f7c15e926b82f9e9cbb82c8913`.
+`a7d82d79e28ee6fded64a47ad0be4a47003fe498a1de835824d2ff2b425f57ee`.
 The surface independently validates the returned projection against the exact
 stored plan and runner operation records, finalizes a content-addressed
 complete-or-blocked attestation, scans the final canonical bytes against the

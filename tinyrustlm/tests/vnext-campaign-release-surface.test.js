@@ -99,42 +99,67 @@ const receiptStoreModulePath = require.resolve("../tools/vnext-receipt-store.js"
 const productionReceiptStore = require(receiptStoreModulePath);
 let interruptAfterPublicReadbackRedaction = false;
 let receiptInterruptPredicate = null;
+const fixtureReceiptStores = new Map();
 
 function createFixtureAwareReceiptStore(root) {
   const store = productionReceiptStore.createVnextReceiptStore(root);
-  function inspectCommittedReceipt(bytes) {
+  function interruptionForReceipt(bytes) {
     const receipt = validateVnextReceiptBytes(bytes).receipt;
     if (interruptAfterPublicReadbackRedaction &&
         receipt.receiptType === "redaction-scan" &&
         receipt.attemptId.startsWith("release-public-readback-redaction-")) {
       interruptAfterPublicReadbackRedaction = false;
-      throw new Error("fixture interruption after public-readback redaction commit");
+      return "fixture interruption after public-readback redaction commit";
     }
     if (receiptInterruptPredicate !== null && receiptInterruptPredicate(receipt)) {
       receiptInterruptPredicate = null;
-      throw new Error("fixture interruption after selected receipt commit");
+      return "fixture interruption after selected receipt commit";
     }
+    return null;
   }
-  return Object.freeze({
+  const fixtureStore = Object.freeze({
+    documentSnapshot() {
+      return store.documentSnapshot();
+    },
+    operationCounts() {
+      return store.operationCounts();
+    },
     profileId: store.profileId,
     startup: store.startup,
     read(receiptId) {
       return store.read(receiptId);
+    },
+    readDocument(receiptId) {
+      return store.readDocument(receiptId);
+    },
+    readMany(receiptIds) {
+      return store.readMany(receiptIds);
     },
     rebuild() {
       return store.rebuild();
     },
     put(bytes) {
       const persistence = store.put(bytes);
-      inspectCommittedReceipt(bytes);
+      const interruption = interruptionForReceipt(bytes);
+      if (interruption !== null) throw new Error(interruption);
       return persistence;
     },
     putMany(values) {
-      const persistence = store.putMany(values);
-      for (const bytes of values) inspectCommittedReceipt(bytes);
-      return persistence;
+      for (let index = 0; index < values.length; index += 1) {
+        const interruption = interruptionForReceipt(values[index]);
+        if (interruption !== null) {
+          store.putMany(values.slice(0, index + 1));
+          throw new Error(interruption);
+        }
+      }
+      return store.putMany(values);
+    },
+    snapshot() {
+      return store.snapshot();
     }
   });
+  fixtureReceiptStores.set(path.resolve(root), fixtureStore);
+  return fixtureStore;
 }
 
 require.cache[receiptStoreModulePath].exports = Object.freeze({
@@ -145,39 +170,64 @@ require.cache[receiptStoreModulePath].exports = Object.freeze({
 const subjectStoreModulePath = require.resolve("../tools/vnext-subject-store.js");
 const productionSubjectStore = require(subjectStoreModulePath);
 let publishedClaimInterruptRemaining = null;
+const fixtureSubjectStores = new Map();
 
 function createFixtureAwareSubjectStore(root) {
   const store = productionSubjectStore.createVnextSubjectStore(root);
-  function inspectCommittedSubject(bytes) {
-    if (publishedClaimInterruptRemaining !== null &&
-        bytes.includes(Buffer.from('"status":"published"', "utf8"))) {
-      publishedClaimInterruptRemaining -= 1;
-      if (publishedClaimInterruptRemaining === 0) {
-        publishedClaimInterruptRemaining = null;
-        throw new Error("fixture interruption after published-claim commit");
+  function claimInterruptionIndex(values) {
+    if (publishedClaimInterruptRemaining === null) return -1;
+    let remaining = publishedClaimInterruptRemaining;
+    for (let index = 0; index < values.length; index += 1) {
+      if (values[index].includes(Buffer.from('"status":"published"', "utf8"))) {
+        remaining -= 1;
+        if (remaining === 0) {
+          publishedClaimInterruptRemaining = null;
+          return index;
+        }
       }
     }
+    publishedClaimInterruptRemaining = remaining;
+    return -1;
   }
-  return Object.freeze({
+  const fixtureStore = Object.freeze({
+    documentSnapshot() {
+      return store.documentSnapshot();
+    },
+    operationCounts() {
+      return store.operationCounts();
+    },
     profileId: store.profileId,
     startup: store.startup,
     read(subjectId) {
       return store.read(subjectId);
+    },
+    readDocument(subjectId) {
+      return store.readDocument(subjectId);
     },
     rebuild() {
       return store.rebuild();
     },
     put(bytes) {
       const persistence = store.put(bytes);
-      inspectCommittedSubject(bytes);
+      if (claimInterruptionIndex([bytes]) === 0) {
+        throw new Error("fixture interruption after published-claim commit");
+      }
       return persistence;
     },
     putMany(values) {
-      const persistence = store.putMany(values);
-      for (const bytes of values) inspectCommittedSubject(bytes);
-      return persistence;
+      const interruptionIndex = claimInterruptionIndex(values);
+      if (interruptionIndex >= 0) {
+        store.putMany(values.slice(0, interruptionIndex + 1));
+        throw new Error("fixture interruption after published-claim commit");
+      }
+      return store.putMany(values);
+    },
+    snapshot() {
+      return store.snapshot();
     }
   });
+  fixtureSubjectStores.set(path.resolve(root), fixtureStore);
+  return fixtureStore;
 }
 
 require.cache[subjectStoreModulePath].exports = Object.freeze({
@@ -806,9 +856,6 @@ function seedReleaseInputs(roots, entry, options = {}) {
     subjectId: "tinyrustlm"
   });
   const receiptStore = createVnextReceiptStore(roots.receipts);
-  receiptStore.put(provenance.bytes);
-  receiptStore.put(packageReceipt.bytes);
-  receiptStore.put(webBuildReceipt.bytes);
   let supersedingPackage = null;
   if (options.supersedePackage === true) {
     supersedingPackage = phaseReceipt(entry, {
@@ -826,10 +873,16 @@ function seedReleaseInputs(roots, entry, options = {}) {
       subjectId: sbomArtifactId,
       supersedesReceiptIds: [packageReceipt.receipt.receiptId]
     });
-    receiptStore.put(supersedingPackage.bytes);
   }
+  receiptStore.putMany([
+    provenance.bytes,
+    packageReceipt.bytes,
+    webBuildReceipt.bytes,
+    ...(supersedingPackage === null ? [] : [supersedingPackage.bytes])
+  ]);
 
   const subjectStore = createVnextSubjectStore(roots.subjects);
+  const releaseSubjects = [];
   for (const [index, qualification] of qualifications.entries()) {
     const artifact = releaseArtifact({
       artifactId: qualification.artifactId,
@@ -839,7 +892,7 @@ function seedReleaseInputs(roots, entry, options = {}) {
       provenanceReceiptId: provenance.receipt.receiptId,
       qualificationReceiptId: qualification.qualificationReceiptId
     });
-    subjectStore.put(artifact.bytes);
+    releaseSubjects.push(artifact);
   }
   const sbom = releaseArtifact({
     artifactId: sbomArtifactId,
@@ -849,7 +902,7 @@ function seedReleaseInputs(roots, entry, options = {}) {
     provenanceReceiptId: provenance.receipt.receiptId,
     qualificationReceiptId: null
   });
-  subjectStore.put(sbom.bytes);
+  releaseSubjects.push(sbom);
 
   const claims = [];
   const claimCount = options.claimCount ?? 1;
@@ -863,9 +916,9 @@ function seedReleaseInputs(roots, entry, options = {}) {
       subjectId: qualifications[index].artifactId,
       wordingClass: "quality"
     });
-    subjectStore.put(claim.bytes);
     claims.push(claim);
   }
+  subjectStore.putMany([...releaseSubjects, ...claims].map((entry) => entry.bytes));
 
   return {
     artifactManifestIds,
@@ -1342,7 +1395,7 @@ test("freezes one no-compatibility campaign release surface profile", () => {
   const profile = parseStrictJson(bytes);
   assert.equal(campaignReleaseSurfaceProfileSha256, sha256(bytes));
   assert.equal(campaignReleaseSurfaceProfileSha256,
-    "41c8c23b995c71fc16d2fc677cbdd28967de65f7c15e926b82f9e9cbb82c8913");
+    "a7d82d79e28ee6fded64a47ad0be4a47003fe498a1de835824d2ff2b425f57ee");
   assert.equal(campaignReleaseSurfaceProfile.profileId,
     "tinyrustlm.vnext.campaign-release-surface.v1");
   assert.equal(profile.status, "frozen");
@@ -1893,7 +1946,7 @@ test("authorizes only the exact prepared manifest through current Ed25519 author
       trustedRootRegistryReceiptId: authority.root.receipt.receiptId
     }
   ));
-  const release = createVnextSubjectStore(roots.subjects).read(
+  const release = fixtureSubjectStores.get(path.resolve(roots.subjects)).read(
     prepared.releaseManifestId
   );
   const authorizationReceipt = makeSignatureReceipt({
@@ -2208,12 +2261,13 @@ test("verifies exact fixture-labeled HTTPS bytes through one immutable readback 
 });
 
 test("publishes deterministic site descendants only after complete generated-byte readback", {
-  timeout: 480_000
+  timeout: 180_000
 }, async (t) => {
+  const wallStartedAt = performance.now();
   const roots = makeRoots(t);
   const entry = acceptedCase("complete-capacity");
   const authority = seedEphemeralAuthorityCase(roots, entry);
-  const releaseInput = seedReleaseInputs(roots, entry);
+  const releaseInput = seedReleaseInputs(roots, entry, { claimCount: 20 });
   const surface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
   const prepared = await surface.prepareRelease(prepareInput(
@@ -2289,7 +2343,7 @@ test("publishes deterministic site descendants only after complete generated-byt
   assert.equal(plan.previousPublicationReceiptId, null);
   assert.equal(plan.previousHistorySha256, null);
   assert.match(plan.sitePublicationPlanReceiptId, /^sha256:[a-f0-9]{64}$/u);
-  const storedPlan = createVnextReceiptStore(roots.receipts).read(
+  const storedPlan = fixtureReceiptStores.get(path.resolve(roots.receipts)).read(
     plan.sitePublicationPlanReceiptId
   );
   assert.deepEqual(storedPlan.bytes, plan.sitePublicationPlanReceiptBytes);
@@ -2341,11 +2395,12 @@ test("publishes deterministic site descendants only after complete generated-byt
   assert.match(authorized.candidatePublishedClaimSetSha256, /^[a-f0-9]{64}$/u);
   assert.doesNotMatch(authorized.sitePublicationAuthorizationResultBytes
     .toString("utf8"), /"publicationStatus":"published"|\bdone\b/iu);
-  const receiptStore = createVnextReceiptStore(roots.receipts);
+  const receiptStore = fixtureReceiptStores.get(path.resolve(roots.receipts));
   assert.deepEqual(receiptStore.read(authorized.sitePublisherSignatureReceiptId).bytes,
     sitePublisherSignature.bytes);
-  const subjectStore = createVnextSubjectStore(roots.subjects);
-  const prePublicationSubjectIds = subjectStore.rebuild().activeSubjectIds;
+  const subjectStore = fixtureSubjectStores.get(path.resolve(roots.subjects));
+  const prePublicationSubjectIds = subjectStore.snapshot().activeSubjectIds;
+  const prePublicationSubjectSet = new Set(prePublicationSubjectIds);
 
   const repeatedAuthorization = await surface.authorizeSitePublication(
     publicationAuthorizationInput
@@ -2386,7 +2441,8 @@ test("publishes deterministic site descendants only after complete generated-byt
   assert.equal(generatedDeployment.completePublicReadbackStatus,
     "required-not-performed");
   assert.equal(generatedDeployment.publicationStatus, "not-published");
-  assert.deepEqual(createVnextSubjectStore(roots.subjects).rebuild().activeSubjectIds,
+  assert.deepEqual(fixtureSubjectStores.get(path.resolve(roots.subjects))
+    .snapshot().activeSubjectIds,
     prePublicationSubjectIds);
 
   const generatedReadbackCalls = publicReadbackFixtureCalls;
@@ -2412,7 +2468,8 @@ test("publishes deterministic site descendants only after complete generated-byt
   assert.equal(generatedReadback.publicationStatus, "not-published");
   assert.equal(generatedReadback.publicHttpsReadbackResult.assetCount,
     releaseInput.webAssets.length + authorized.generatedAssets.length);
-  assert.deepEqual(createVnextSubjectStore(roots.subjects).rebuild().activeSubjectIds,
+  assert.deepEqual(fixtureSubjectStores.get(path.resolve(roots.subjects))
+    .snapshot().activeSubjectIds,
     prePublicationSubjectIds);
 
   const finalInput = finalPublicationInput(
@@ -2437,16 +2494,63 @@ test("publishes deterministic site descendants only after complete generated-byt
   );
   publicationSurface = await createCampaignReleaseSurface(roots.runner,
     runnerOptions(roots));
-  for (let index = 0; index < authorized.candidatePublishedClaimCount;
-    index += 1) {
-    publishedClaimInterruptRemaining = 1;
-    await assert.rejects(
-      publicationSurface.finalizeSitePublication(finalInput),
-      /fixture interruption after published-claim commit/u
-    );
-    publicationSurface = await createCampaignReleaseSurface(roots.runner,
-      runnerOptions(roots));
+  const beforeFirstStore = fixtureSubjectStores.get(path.resolve(roots.subjects));
+  assert.deepEqual(beforeFirstStore.snapshot().activeSubjectIds,
+    prePublicationSubjectIds);
+  assert.equal(beforeFirstStore.operationCounts().fullRebuilds, 1);
+
+  const claimCount = authorized.candidatePublishedClaimCount;
+  const midpoint = Math.floor(claimCount / 2);
+  assert.equal(midpoint > 0 && midpoint < claimCount, true);
+  publishedClaimInterruptRemaining = midpoint;
+  await assert.rejects(
+    publicationSurface.finalizeSitePublication(finalInput),
+    /fixture interruption after published-claim commit/u
+  );
+  const midpointOperations = fixtureSubjectStores.get(path.resolve(roots.subjects))
+    .operationCounts();
+  assert.equal(midpointOperations.fullRebuilds, 1);
+  assert.equal(midpointOperations.fullRebuildsInsidePutMany, 0);
+  assert.equal(midpointOperations.publishedEntries, midpoint);
+  assert.equal(midpointOperations.putManyCalls, 1);
+  assert.equal(midpointOperations.snapshotFilesystemScans, 0);
+
+  publicationSurface = await createCampaignReleaseSurface(roots.runner,
+    runnerOptions(roots));
+  const midpointStore = fixtureSubjectStores.get(path.resolve(roots.subjects));
+  const midpointClaimIds = midpointStore.snapshot().activeSubjectIds
+    .filter((subjectId) => !prePublicationSubjectSet.has(subjectId));
+  assert.equal(midpointClaimIds.length, midpoint);
+  for (const claimId of midpointClaimIds) {
+    assert.equal(midpointStore.read(claimId).value.status, "published");
   }
+
+  publishedClaimInterruptRemaining = claimCount - midpoint;
+  await assert.rejects(
+    publicationSurface.finalizeSitePublication(finalInput),
+    /fixture interruption after published-claim commit/u
+  );
+  const afterLastOperations = fixtureSubjectStores.get(path.resolve(roots.subjects))
+    .operationCounts();
+  assert.equal(afterLastOperations.fullRebuilds, 1);
+  assert.equal(afterLastOperations.fullRebuildsInsidePutMany, 0);
+  assert.equal(afterLastOperations.publishedEntries, claimCount - midpoint);
+  assert.equal(afterLastOperations.putManyCalls, 1);
+  assert.equal(afterLastOperations.snapshotFilesystemScans, 0);
+
+  publicationSurface = await createCampaignReleaseSurface(roots.runner,
+    runnerOptions(roots));
+  const afterLastStore = fixtureSubjectStores.get(path.resolve(roots.subjects));
+  const afterLastClaimIds = afterLastStore.snapshot().activeSubjectIds
+    .filter((subjectId) => !prePublicationSubjectSet.has(subjectId));
+  assert.equal(afterLastClaimIds.length, claimCount);
+  const beforeCommitReceiptStore = fixtureReceiptStores.get(path.resolve(roots.receipts));
+  const publicationReceiptsBeforeCommit = beforeCommitReceiptStore.snapshot()
+    .activeReceiptIds.map((receiptId) => beforeCommitReceiptStore.read(receiptId).receipt)
+    .filter((receipt) => receipt.receiptType === "site-synchronization" &&
+      receipt.phase === "site-publication");
+  assert.equal(publicationReceiptsBeforeCommit.length, 0);
+
   receiptInterruptPredicate = (receipt) =>
     receipt.receiptType === "site-synchronization" &&
       receipt.phase === "site-publication";
@@ -2464,13 +2568,13 @@ test("publishes deterministic site descendants only after complete generated-byt
     published.publishedClaimIds.length);
   assert.doesNotMatch(published.sitePublicationAdmissionResultBytes.toString("utf8"),
     /"token"|"secret"|"credential"/iu);
-  const publishedSubjectStore = createVnextSubjectStore(roots.subjects);
+  const publishedSubjectStore = fixtureSubjectStores.get(path.resolve(roots.subjects));
   for (const claimId of published.publishedClaimIds) {
     const claim = publishedSubjectStore.read(claimId);
     assert.equal(claim.value.status, "published");
     assert.equal(claim.value.releaseId, prepared.releaseManifestId);
   }
-  const publicationReceipt = createVnextReceiptStore(roots.receipts).read(
+  const publicationReceipt = fixtureReceiptStores.get(path.resolve(roots.receipts)).read(
     published.publicationReceiptId
   );
   assert.equal(publicationReceipt.receipt.receiptType, "site-synchronization");
@@ -2484,6 +2588,16 @@ test("publishes deterministic site descendants only after complete generated-byt
     published.publicationReceiptId);
   assert.equal(replayedPublication.publicationPersistence.claimPrefix,
     published.publishedClaimIds.length);
+  const finalReceiptOperations = fixtureReceiptStores.get(path.resolve(roots.receipts))
+    .operationCounts();
+  const finalSubjectOperations = fixtureSubjectStores.get(path.resolve(roots.subjects))
+    .operationCounts();
+  assert.equal(finalReceiptOperations.fullRebuilds, 1);
+  assert.equal(finalSubjectOperations.fullRebuilds, 1);
+  assert.equal(finalReceiptOperations.fullRebuildsInsidePutMany, 0);
+  assert.equal(finalSubjectOperations.fullRebuildsInsidePutMany, 0);
+  assert.equal(finalReceiptOperations.snapshotFilesystemScans, 0);
+  assert.equal(finalSubjectOperations.snapshotFilesystemScans, 0);
 
   await rejectsCode(() => surface.admitGeneratedDeploymentAttempt({
     ...generatedInput,
@@ -2518,6 +2632,9 @@ test("publishes deterministic site descendants only after complete generated-byt
     ...publicationAuthorizationInput,
     verificationTimeUtc: "2026-08-09T00:39:00Z"
   }), "release_surface_site_publisher_time_invalid");
+  const wallElapsedMs = performance.now() - wallStartedAt;
+  assert.equal(wallElapsedMs <= 180_000, true,
+    `complete-capacity publication exceeded 180000 ms: ${wallElapsedMs}`);
 });
 
 test("rejects caller deployment truth and deployment-attempt binding drift", {

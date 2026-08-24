@@ -42,9 +42,9 @@ The maintained path consists of these incompatible vNext boundaries:
 The frozen profiles are:
 
 - `contracts/vnext/campaign-runner-profile.v1.json`, SHA-256
-  `b0ba96ea2aa25112adea781138a4351511c56372bd1fdc04575e529a2b4720a9`;
+  `c7e85b52c34fac59b65edee68d048c51fcdb5580321eb538dccc07c1164f68c3`;
 - `contracts/vnext/campaign-release-surface-profile.v1.json`, SHA-256
-  `41c8c23b995c71fc16d2fc677cbdd28967de65f7c15e926b82f9e9cbb82c8913`;
+  `a7d82d79e28ee6fded64a47ad0be4a47003fe498a1de835824d2ff2b425f57ee`;
 - `contracts/vnext/site-publication-profile.v1.json`, SHA-256
   `d959ce557e8b18a71514e2388a8eda7162182e38f5febf2e1a39b063fa5ba4bc`;
 - `contracts/vnext/public-https-readback-profile.v1.json`, SHA-256

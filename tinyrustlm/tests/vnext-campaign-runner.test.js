@@ -240,7 +240,7 @@ async function rejectsCode(callback, code) {
   await assert.rejects(callback, (error) => error?.code === code, `expected ${code}`);
 }
 
-test("freezes one no-compatibility Rust-backed campaign runner profile", () => {
+test("freezes one sole prelaunch Rust-backed campaign runner profile", () => {
   const bytes = fs.readFileSync(profilePath);
   const parsed = parseStrictJson(bytes);
   const source = fs.readFileSync(path.join(
@@ -251,7 +251,7 @@ test("freezes one no-compatibility Rust-backed campaign runner profile", () => {
   ), "utf8");
   assert.equal(campaignRunnerProfileSha256, sha256(bytes));
   assert.equal(campaignRunnerProfileSha256,
-    "b0ba96ea2aa25112adea781138a4351511c56372bd1fdc04575e529a2b4720a9");
+    "c7e85b52c34fac59b65edee68d048c51fcdb5580321eb538dccc07c1164f68c3");
   assert.equal(campaignRunnerProfile.profileId, "tinyrustlm.vnext.campaign-runner.v1");
   assert.equal(parsed.status, "frozen");
   assert.equal(parsed.selectionPolicy, "all-active-members-no-subset-selection");
@@ -263,6 +263,21 @@ test("freezes one no-compatibility Rust-backed campaign runner profile", () => {
   assert.equal(parsed.operationLock.publicationConflictMaximumObservations, 100);
   assert.equal(parsed.operationLock.publicationConflictWaitMilliseconds, 25);
   assert.equal(parsed.snapshotProtocol.observations, 2);
+  assert.deepEqual(parsed.snapshotProtocol, {
+    observations: 2,
+    planObservation: "rebuild-and-read-active-plan-each-observation",
+    evidenceStoreOpen:
+      "one-full-validated-rebuild-per-receipt-and-subject-store-instance",
+    evidenceMembershipObservation:
+      "immutable-same-open-active-id-snapshot-before-each-content-observation",
+    evidenceContentObservation:
+      "read-every-active-member-with-exact-target-durability-and-identity-validation",
+    interObservationMembershipCheck: "required-before-second-content-observation",
+    comparison: "exact-profile-membership-wire-hash-and-aggregate-byte-equality",
+    projectionInput: "second-observation-owned-byte-copies",
+    changePolicy: "fail-closed-new-operation-required",
+    futureWritePolicy: "later-state-reproject-on-next-operation"
+  });
   assert.deepEqual(parsed.operationRecord.snapshotMemberFields,
     ["byteLength", "durabilityReceiptSha256", "id", "wireSha256"]);
   assert.equal(Object.hasOwn(parsed, "atomicCreate"), false);
@@ -302,7 +317,7 @@ test("freezes one no-compatibility Rust-backed campaign runner profile", () => {
   ), "utf8");
   assert.match(runnerDocument, /tinyrustlm\.vnext\.campaign-runner\.v1/u);
   assert.match(runnerDocument,
-    /b0ba96ea2aa25112adea781138a4351511c56372bd1fdc04575e529a2b4720a9/u);
+    /c7e85b52c34fac59b65edee68d048c51fcdb5580321eb538dccc07c1164f68c3/u);
   assert.equal(
     JSON.parse(fs.readFileSync(path.join(repositoryRoot, "tinyrustlm", "package.json"),
       "utf8")).scripts["test:vnext-campaign-runner"],
@@ -451,12 +466,11 @@ test("rejects a cross-store change between its two exact observations", {
   assert.ok(spare);
   const runner = await createVnextCampaignRunner(roots.runner, runnerOptions(roots));
   let injected = false;
-  let durabilityScans = 0;
-  const durabilityRoot = path.resolve(roots.subjects, "durability", "sha256");
+  let artifactRootScans = 0;
+  const artifactRoot = path.resolve(roots.artifacts);
   trackNativeFs(t, {
     beforeOpendir(directory) {
-      if (directory === durabilityRoot) durabilityScans += 1;
-      if (!injected && durabilityScans === 2) {
+      if (directory === artifactRoot && ++artifactRootScans === 2) {
         injected = true;
         seeded.subjectStore.put(Buffer.from(spare.bytesBase64, "base64"));
       }

@@ -307,6 +307,87 @@ test("publishes an unordered receipt DAG through one bounded durable batch", (t)
     "attempt-store-batch-child-001");
 });
 
+test("serves immutable receipt membership snapshots without rescanning", (t) => {
+  const root = makeRoot(t);
+  const store = createVnextReceiptStore(root);
+  const parent = finalized("attempt-store-snapshot-parent-001");
+  const child = finalized("attempt-store-snapshot-child-001",
+    [parent.receipt.receiptId]);
+  const independent = finalized("attempt-store-snapshot-independent-001");
+
+  const empty = store.snapshot();
+  assert.equal(Object.isFrozen(empty), true);
+  assert.equal(Object.isFrozen(empty.activeReceiptIds), true);
+  assert.deepEqual(empty.activeReceiptIds, []);
+  for (let index = 0; index < 1_024; index += 1) {
+    assert.equal(store.snapshot(), empty);
+  }
+
+  const persisted = store.putMany([child.bytes, independent.bytes, parent.bytes]);
+  const populated = store.snapshot();
+  assert.notEqual(populated, empty);
+  assert.deepEqual(populated.activeReceiptIds,
+    persisted.map((entry) => entry.receiptId).sort());
+  const documents = store.readMany(populated.activeReceiptIds);
+  assert.equal(Object.isFrozen(documents), true);
+  assert.deepEqual(documents.map((entry) => entry.receipt.receiptId),
+    populated.activeReceiptIds);
+  throwsCode(() => store.readMany([
+    populated.activeReceiptIds[0],
+    populated.activeReceiptIds[0]
+  ]), "receipt_read_batch_invalid");
+  let getterInvoked = false;
+  const hostile = [populated.activeReceiptIds[0]];
+  Object.defineProperty(hostile, "0", {
+    enumerable: true,
+    get() {
+      getterInvoked = true;
+      return populated.activeReceiptIds[0];
+    }
+  });
+  throwsCode(() => store.readMany(hostile), "receipt_read_batch_invalid_accessor");
+  assert.equal(getterInvoked, false);
+  const documentSnapshot = store.documentSnapshot();
+  assert.equal(Object.isFrozen(documentSnapshot), true);
+  assert.equal(Object.isFrozen(documentSnapshot.documents), true);
+  assert.deepEqual(documentSnapshot.activeReceiptIds, populated.activeReceiptIds);
+  assert.deepEqual(documentSnapshot.documents.map((entry) => entry.receipt.receiptId),
+    populated.activeReceiptIds);
+  assert.equal(store.readDocument(populated.activeReceiptIds[0]),
+    documentSnapshot.documents[0]);
+  const firstDocumentBytes = documentSnapshot.documents[0].bytes;
+  firstDocumentBytes[0] ^= 0xff;
+  assert.notDeepEqual(firstDocumentBytes, documentSnapshot.documents[0].bytes);
+  throwsCode(() => store.readDocument("sha256:0000000000000000000000000000000000000000000000000000000000000000"),
+    "receipt_not_active");
+  assert.deepEqual(store.operationCounts(), {
+    fullRebuilds: 1,
+    fullRebuildsInsidePutMany: 0,
+    publishedEntries: 3,
+    putCalls: 0,
+    putManyCalls: 1,
+    snapshotFilesystemScans: 0,
+    snapshotReads: 1_027,
+    snapshotRevision: 2
+  });
+});
+
+test("rebuilds before access when another same-root receipt store advances", (t) => {
+  const root = makeRoot(t);
+  const first = createVnextReceiptStore(root);
+  const second = createVnextReceiptStore(root);
+
+  assert.deepEqual(first.snapshot().activeReceiptIds, []);
+  assert.equal(first.operationCounts().fullRebuilds, 2);
+  const receipt = finalized("attempt-store-generation-sync-001");
+  second.put(receipt.bytes);
+
+  assert.deepEqual(first.snapshot().activeReceiptIds, [receipt.receipt.receiptId]);
+  assert.equal(first.operationCounts().fullRebuilds, 3);
+  assert.equal(first.operationCounts().snapshotFilesystemScans, 0);
+  assert.deepEqual(first.read(receipt.receipt.receiptId).bytes, receipt.bytes);
+});
+
 test("rejects malformed receipt batches before publishing any target", (t) => {
   const root = makeRoot(t);
   const store = createVnextReceiptStore(root);

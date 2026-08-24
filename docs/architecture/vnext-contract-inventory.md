@@ -347,7 +347,7 @@ The fresh-runner-only immutable attestation, operator, release-manifest,
 authorization, deployment/readback, and final-publication boundary is documented
 in `docs/architecture/vnext-campaign-release-surface.md`. Its frozen profile
 has SHA-256
-`41c8c23b995c71fc16d2fc677cbdd28967de65f7c15e926b82f9e9cbb82c8913`.
+`a7d82d79e28ee6fded64a47ad0be4a47003fe498a1de835824d2ff2b425f57ee`.
 It admits no stored projection, caller verdict, counter set, dashboard state,
 or reused operation. It scans finalized attestation bytes before create-only
 receipt persistence and has no operator `done` state. Release preparation

@@ -84,7 +84,7 @@ const EXPECTED_PROFILE_BINDINGS: &[ExpectedProfileBinding] = &[
         document_id: "tinyrustlm.vnext.receipt-store.v1",
         document_kind: "profile",
         name: "receipt-store-profile",
-        sha256: "c7ec3b8eec5628c610a22bb147a67ac8450d179ae7cb254c1f1e8df7e9224b47",
+        sha256: "1721e8d26cfd93617ce570a744796c8d95d5fc1fd628ac3ee94f1a484832ade5",
     },
 ];
 

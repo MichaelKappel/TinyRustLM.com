@@ -11,7 +11,7 @@ performing exact static and complete static-plus-generated production HTTPS
 readback, and admitting create-only publication descendants through one final
 commit receipt. Its frozen profile is
 `contracts/vnext/campaign-release-surface-profile.v1.json`, with SHA-256
-`41c8c23b995c71fc16d2fc677cbdd28967de65f7c15e926b82f9e9cbb82c8913`.
+`a7d82d79e28ee6fded64a47ad0be4a47003fe498a1de835824d2ff2b425f57ee`.
 
 This checkpoint implements fresh projection, final attestation, public-safe
 redaction, truthful operator status, release-manifest preparation, current
@@ -557,6 +557,17 @@ candidate, resumes at the first missing claim, and writes the final receipt
 last. Any gap, changed byte, extra member, premature final receipt, or caller
 publication verdict fails closed.
 
+The finalization implementation opens each receipt or subject store once per
+physical attempt, uses immutable same-open membership/document snapshots for
+orchestration, publishes the remaining receipt suffix with one bounded
+`putMany`, publishes all remaining claims with one bounded `putMany`, verifies
+the resulting snapshot, and commits last. Its pure prefix classifier proves
+every exact prefix from zero through the 1,024-entry store batch ceiling and
+rejects gaps, duplicates, foreign identities, and premature commits. Restart
+tests cover interruption before the first claim, at the midpoint, after the
+last claim but before commit, and after commit. No full store rebuild occurs
+inside an item loop.
+
 ## Verification
 
 `tinyrustlm/tests/vnext-campaign-release-surface.test.js` covers:
@@ -620,6 +631,9 @@ publication verdict fails closed.
   graph, with independent result and receipt revalidation;
 - final receipt redaction before a lexicographic create-only published-claim
   prefix and the final commit receipt last;
+- exact prefix classification for every length from zero through 1,024,
+  immutable snapshot access with zero membership scans, bounded suffix batches,
+  and no full rebuild inside a batch loop;
 - byte-identical restart recovery after final redaction, after every individual
   claim commit, and after the final receipt commit; and
 - rejection of caller deployment, readback, and publication truth.

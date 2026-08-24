@@ -16,9 +16,6 @@ const {
   validateCampaignProjectionResultBytes
 } = require("./vnext-campaign-projection.js");
 const {
-  createVnextCampaignArtifactStore
-} = require("./vnext-campaign-artifact-store.js");
-const {
   finalizeVnextIdentityDocument,
   identityContractForSchema
 } = require("./vnext-content-identity.js");
@@ -28,6 +25,9 @@ const {
 const {
   failEvidence
 } = require("./vnext-evidence-error.js");
+const {
+  classifyExactIdPrefix
+} = require("./vnext-exact-id-prefix.js");
 const {
   domainSeparatedDigest,
   finalizeVnextReceipt,
@@ -39,7 +39,6 @@ const {
   phaseInvalidationProfileSha256
 } = require("./vnext-phase-invalidation.js");
 const {
-  createVnextReceiptStore,
   storeProfile: receiptStoreProfile
 } = require("./vnext-receipt-store.js");
 const {
@@ -82,9 +81,9 @@ const {
   sitePublicationProfileSha256
 } = require("./vnext-site-publication.js");
 const {
-  createVnextSubjectStore,
   subjectStoreProfile,
-  subjectStoreProfileSha256
+  subjectStoreProfileSha256,
+  validateAcceptedSubjectBytes
 } = require("./vnext-subject-store.js");
 
 const contractRoot = path.resolve(__dirname, "../../contracts/vnext");
@@ -1642,12 +1641,103 @@ function countParameters(projection) {
   ]);
 }
 
-function currentAttestationIds(receiptStore, campaignId) {
-  const rebuilt = receiptStore.rebuild();
+function materializeRunnerEvidence(runnerResult, receiptStore, subjectStore) {
+  const step = "release-surface-snapshot";
+  const internal = runnerResult.validatedEvidenceSnapshot;
+  const materialize = (kind, publicSnapshot, internalMembers, activeIds, validate) => {
+    const expectedIds = publicSnapshot.members.map((member) => member.id);
+    if (!Array.isArray(internalMembers) ||
+        !sameStrings(activeIds, expectedIds) ||
+        internalMembers.length !== publicSnapshot.members.length) {
+      failEvidence("release_surface_snapshot_changed", step);
+    }
+    const documents = new Map();
+    for (let index = 0; index < publicSnapshot.members.length; index += 1) {
+      const expected = publicSnapshot.members[index];
+      const member = internalMembers[index];
+      if (!member || member.id !== expected.id ||
+          member.byteLength !== expected.byteLength ||
+          member.durabilityReceiptSha256 !== expected.durabilityReceiptSha256 ||
+          member.wireSha256 !== expected.wireSha256 || !Buffer.isBuffer(member.bytes)) {
+        failEvidence("release_surface_snapshot_changed", step);
+      }
+      const validated = validate(member.bytes);
+      const id = kind === "receipt" ? validated.receipt.receiptId : validated.subjectId;
+      if (id !== expected.id || validated.bytes.length !== expected.byteLength ||
+          sha256(validated.bytes) !== expected.wireSha256) {
+        failEvidence("release_surface_snapshot_changed", step);
+      }
+      documents.set(id, validated);
+    }
+    return documents;
+  };
+  return Object.freeze({
+    receipts: materialize(
+      "receipt",
+      runnerResult.receiptSnapshot,
+      internal?.receipts,
+      receiptStore.snapshot().activeReceiptIds,
+      validateVnextReceiptBytes
+    ),
+    subjects: materialize(
+      "subject",
+      runnerResult.subjectSnapshot,
+      internal?.subjects,
+      subjectStore.snapshot().activeSubjectIds,
+      validateAcceptedSubjectBytes
+    )
+  });
+}
+
+function materializeStoredEvidence(snapshotRecord, receiptStore, subjectStore) {
+  const step = "release-surface-snapshot";
+  const materialize = (kind, publicSnapshot, activeIds, validatedDocuments) => {
+    const expectedIds = publicSnapshot.members.map((member) => member.id);
+    const activeIdSet = new Set(activeIds);
+    if (expectedIds.some((id) => !activeIdSet.has(id)) ||
+        validatedDocuments.length !== publicSnapshot.members.length) {
+      failEvidence("release_surface_snapshot_changed", step);
+    }
+    const documents = new Map();
+    for (let index = 0; index < publicSnapshot.members.length; index += 1) {
+      const expected = publicSnapshot.members[index];
+      const validated = validatedDocuments[index];
+      const id = kind === "receipt" ? validated.receipt.receiptId : validated.subjectId;
+      if (id !== expected.id || validated.bytes.length !== expected.byteLength ||
+          sha256(validated.bytes) !== expected.wireSha256) {
+        failEvidence("release_surface_snapshot_changed", step);
+      }
+      documents.set(id, validated);
+    }
+    return documents;
+  };
+  const receiptDocuments = receiptStore.documentSnapshot();
+  const subjectDocuments = subjectStore.documentSnapshot();
+  const activeReceiptIds = receiptDocuments.activeReceiptIds;
+  const activeSubjectIds = subjectDocuments.activeSubjectIds;
+  const receiptIds = snapshotRecord.receiptSnapshot.members.map((member) => member.id);
+  const subjectIds = snapshotRecord.subjectSnapshot.members.map((member) => member.id);
+  return Object.freeze({
+    receipts: materialize(
+      "receipt",
+      snapshotRecord.receiptSnapshot,
+      activeReceiptIds,
+      receiptIds.map((receiptId) => receiptStore.readDocument(receiptId))
+    ),
+    subjects: materialize(
+      "subject",
+      snapshotRecord.subjectSnapshot,
+      activeSubjectIds,
+      subjectIds.map((subjectId) => subjectStore.readDocument(subjectId))
+    )
+  });
+}
+
+function currentAttestationIds(receipts, campaignId) {
   const attestations = [];
   const superseded = new Set();
-  for (const receiptId of rebuilt.activeReceiptIds) {
-    const receipt = receiptStore.read(receiptId).receipt;
+  for (const [receiptId, validated] of receipts) {
+    const receipt = validated.receipt;
     for (const parentId of receipt.supersedesReceiptIds) superseded.add(parentId);
     if (receipt.campaignId === campaignId && receipt.receiptType === "final-attestation") {
       attestations.push(receiptId);
@@ -1658,11 +1748,11 @@ function currentAttestationIds(receiptStore, campaignId) {
     failEvidence("release_surface_attestation_conflict_limit",
       "release-surface-attestation");
   }
-  return Object.freeze({ activeReceiptIds: rebuilt.activeReceiptIds, current });
+  return Object.freeze({ activeReceiptIds: [...receipts.keys()].sort(), current });
 }
 
-function createAttestation(input, runnerResult, projection, runner, receiptStore,
-  subjectStore) {
+function createAttestation(input, runnerResult, projection, runner, subjectStore,
+  evidenceDocuments) {
   const history = runner.inspectOperation(input.operationId);
   if (history.state !== "completed" ||
       history.startedRecordId !== runnerResult.startedRecordId ||
@@ -1680,12 +1770,12 @@ function createAttestation(input, runnerResult, projection, runner, receiptStore
     failEvidence("release_surface_operation_binding_mismatch",
       "release-surface-attestation");
   }
-  const current = currentAttestationIds(receiptStore, projection.campaignId);
+  const current = currentAttestationIds(evidenceDocuments.receipts, projection.campaignId);
   if (!sameStrings(current.activeReceiptIds,
     runnerResult.receiptSnapshot.members.map((member) => member.id))) {
     failEvidence("release_surface_snapshot_changed", "release-surface-attestation");
   }
-  const currentSubjects = subjectStore.rebuild().activeSubjectIds;
+  const currentSubjects = subjectStore.snapshot().activeSubjectIds;
   if (!sameStrings(currentSubjects,
     runnerResult.subjectSnapshot.members.map((member) => member.id))) {
     failEvidence("release_surface_snapshot_changed", "release-surface-attestation");
@@ -1812,26 +1902,9 @@ function hashBinding(receipt, collectionName, name, code, step) {
   return entry.sha256;
 }
 
-function snapshotDocuments(runnerResult, campaignId, receiptStore, subjectStore) {
+function snapshotDocuments(runnerResult, campaignId, evidenceDocuments) {
   const step = "release-surface-snapshot";
-  const receipts = new Map();
-  for (const member of runnerResult.receiptSnapshot.members) {
-    const validated = receiptStore.read(member.id);
-    if (validated.bytes.length !== member.byteLength ||
-        sha256(validated.bytes) !== member.wireSha256) {
-      failEvidence("release_surface_snapshot_changed", step);
-    }
-    receipts.set(member.id, validated);
-  }
-  const subjects = new Map();
-  for (const member of runnerResult.subjectSnapshot.members) {
-    const validated = subjectStore.read(member.id);
-    if (validated.bytes.length !== member.byteLength ||
-        sha256(validated.bytes) !== member.wireSha256) {
-      failEvidence("release_surface_snapshot_changed", step);
-    }
-    subjects.set(member.id, validated);
-  }
+  const { receipts, subjects } = evidenceDocuments;
   const supportedTypes = new Set(phaseInvalidationProfile.supportedPhaseReceiptTypes);
   const phaseReceiptBytes = [...receipts.values()]
     .filter((entry) => supportedTypes.has(entry.receipt.receiptType))
@@ -2142,11 +2215,11 @@ function validateReleaseClaims(input, context) {
 }
 
 function activeReceiptDocuments(receiptStore) {
-  const rebuilt = receiptStore.rebuild();
+  const snapshot = receiptStore.snapshot();
   return Object.freeze({
-    ids: rebuilt.activeReceiptIds,
-    byId: new Map(rebuilt.activeReceiptIds.map((receiptId) =>
-      [receiptId, receiptStore.read(receiptId)]))
+    ids: snapshot.activeReceiptIds,
+    byId: new Map(snapshot.activeReceiptIds.map((receiptId) =>
+      [receiptId, receiptStore.readDocument(receiptId)]))
   });
 }
 
@@ -2200,7 +2273,7 @@ function validatePreparedReleaseLineage(input, release, runner, artifactStore,
         manifest.webPublicationGeneratorSha256) {
     failEvidence("release_surface_prepared_manifest_invalid", step);
   }
-  const attestation = receiptStore.read(manifest.campaignAttestationReceiptId);
+  const attestation = receiptStore.readDocument(manifest.campaignAttestationReceiptId);
   const attestationReceipt = attestation.receipt;
   if (attestationReceipt.receiptType !== parsedProfile.attestation.receiptType ||
       attestationReceipt.phase !== parsedProfile.attestation.phase ||
@@ -2282,10 +2355,15 @@ function validatePreparedReleaseLineage(input, release, runner, artifactStore,
       storedProjection.result.blockerCodes.length !== 0) {
     failEvidence("release_surface_prepared_projection_invalid", step);
   }
-  const context = snapshotDocuments({
+  const storedSnapshot = {
     receiptSnapshot: startedRecord.receiptSnapshot,
     subjectSnapshot: startedRecord.subjectSnapshot
-  }, input.expectedCampaignId, receiptStore, subjectStore);
+  };
+  const context = snapshotDocuments(
+    storedSnapshot,
+    input.expectedCampaignId,
+    materializeStoredEvidence(storedSnapshot, receiptStore, subjectStore)
+  );
   const releaseInput = Object.freeze({
     artifactManifestIds: manifest.artifactManifestIds,
     changelogBytes: input.changelogBytes,
@@ -2469,14 +2547,14 @@ function verifyReleaseAuthorizationAuthority(input, release, authorization,
     failEvidence("release_surface_authorization_identity_collision", step);
   }
   receiptBytesById.set(authorization.receipt.receiptId, authorization.bytes);
-  const subjectIds = subjectStore.rebuild().activeSubjectIds;
+  const subjectIds = subjectStore.snapshot().activeSubjectIds;
   const authority = verifyVnextAuthorityGraph({
     campaignId: input.expectedCampaignId,
     environment: input.expectedEnvironment,
     expectedTerminalRegistryReceiptId: input.expectedTerminalRegistryReceiptId,
     receiptBytes: [...receiptBytesById].sort(([left], [right]) =>
       left.localeCompare(right)).map(([, bytes]) => bytes),
-    subjectBytes: subjectIds.map((subjectId) => subjectStore.read(subjectId).bytes),
+    subjectBytes: subjectIds.map((subjectId) => subjectStore.readDocument(subjectId).bytes),
     trustedRootRegistryReceiptId: input.trustedRootRegistryReceiptId,
     verificationTimeUtc: input.verificationTimeUtc
   });
@@ -2507,7 +2585,7 @@ function verifyReleaseAuthorizationAuthority(input, release, authorization,
 function validateStoredReleaseAuthorization(input, release, lineage, receiptStore,
   subjectStore) {
   const step = "release-surface-deployment-authorization";
-  const authorization = receiptStore.read(input.authorizationReceiptId);
+  const authorization = receiptStore.readDocument(input.authorizationReceiptId);
   const validated = validateReleaseAuthorizationReceipt({
     ...input,
     authorizationReceiptBytes: authorization.bytes
@@ -2684,7 +2762,7 @@ function validateDeploymentAttemptReceipt(input, release, storedAuthorization) {
 function validateStoredDeploymentAttempt(input, release, storedAuthorization,
   receiptStore) {
   const step = "release-surface-public-readback-deployment";
-  const stored = receiptStore.read(input.deploymentReceiptId);
+  const stored = receiptStore.readDocument(input.deploymentReceiptId);
   const deployment = validateDeploymentAttemptReceipt({
     ...input,
     deploymentReceiptBytes: stored.bytes
@@ -2734,7 +2812,7 @@ function validateStoredDeploymentAttempt(input, release, storedAuthorization,
 function validateStoredStaticPublicReadback(input, release, storedDeployment,
   receiptStore) {
   const step = "release-surface-site-publication-static-readback";
-  const stored = receiptStore.read(input.publicReadbackReceiptId);
+  const stored = receiptStore.readDocument(input.publicReadbackReceiptId);
   const validated = validateVnextReceiptBytes(stored.bytes);
   const receipt = validated.receipt;
   if (receipt.receiptId !== input.publicReadbackReceiptId ||
@@ -2863,7 +2941,7 @@ function validatePreviousSitePublication(input, activeReceipts, planMaterial) {
 function sitePublicationMaterialContext(input, release, staticReadback,
   subjectStore) {
   const approvedClaimBytes = release.value.claimIds.map((claimId) =>
-    subjectStore.read(claimId).bytes);
+    subjectStore.readDocument(claimId).bytes);
   const material = createVnextSitePublicationPlanMaterial({
     approvedClaimBytes,
     previousHistoryBytes: input.previousHistoryBytes,
@@ -3017,24 +3095,14 @@ function sitePublicationPlanArtifacts(input, release, context) {
 
 function receiptPrefixLength(currentReceiptIds, baseReceiptIds, descendants,
   code, step) {
-  const uniqueBase = [...new Set(baseReceiptIds)].sort();
-  const uniqueDescendants = [];
-  const seen = new Set(uniqueBase);
-  for (const receiptId of descendants) {
-    if (seen.has(receiptId)) failEvidence(code, step);
-    seen.add(receiptId);
-    uniqueDescendants.push(receiptId);
-  }
-  for (let length = 0; length <= uniqueDescendants.length; length += 1) {
-    const expected = [...uniqueBase, ...uniqueDescendants.slice(0, length)].sort();
-    if (sameStrings(currentReceiptIds, expected)) return length;
-  }
-  failEvidence(code, step);
+  const prefix = classifyExactIdPrefix(currentReceiptIds, baseReceiptIds, descendants);
+  if (prefix < 0) failEvidence(code, step);
+  return prefix;
 }
 
 function validateStoredSitePublicationPlan(input, release, context, receiptStore) {
   const step = "release-surface-site-publication-plan";
-  const stored = receiptStore.read(input.sitePublicationPlanReceiptId);
+  const stored = receiptStore.readDocument(input.sitePublicationPlanReceiptId);
   const validated = validateVnextReceiptBytes(stored.bytes);
   if (validated.receipt.receiptId !== input.sitePublicationPlanReceiptId ||
       compareUtc(validated.receipt.completedAtUtc, input.verificationTimeUtc,
@@ -3052,7 +3120,7 @@ function validateStoredSitePublicationPlan(input, release, context, receiptStore
     failEvidence("release_surface_site_publication_plan_changed", step);
   }
   for (const scan of artifacts.scans) {
-    const persisted = receiptStore.read(scan.receipt.receipt.receiptId);
+    const persisted = receiptStore.readDocument(scan.receipt.receipt.receiptId);
     if (!persisted.bytes.equals(scan.receipt.bytes)) {
       failEvidence("release_surface_site_publication_plan_redaction_changed", step);
     }
@@ -3079,14 +3147,14 @@ function verifySitePublisherAuthority(input, release, plan, signature,
     failEvidence("release_surface_site_publisher_identity_collision", step);
   }
   receiptBytesById.set(signature.receipt.receiptId, signature.bytes);
-  const subjectIds = subjectStore.rebuild().activeSubjectIds;
+  const subjectIds = subjectStore.snapshot().activeSubjectIds;
   const authority = verifyVnextAuthorityGraph({
     campaignId: input.expectedCampaignId,
     environment: input.expectedEnvironment,
     expectedTerminalRegistryReceiptId: input.expectedTerminalRegistryReceiptId,
     receiptBytes: [...receiptBytesById].sort(([left], [right]) =>
       left.localeCompare(right)).map(([, bytes]) => bytes),
-    subjectBytes: subjectIds.map((subjectId) => subjectStore.read(subjectId).bytes),
+    subjectBytes: subjectIds.map((subjectId) => subjectStore.readDocument(subjectId).bytes),
     trustedRootRegistryReceiptId: input.trustedRootRegistryReceiptId,
     verificationTimeUtc: input.verificationTimeUtc
   });
@@ -3147,7 +3215,7 @@ function validateStoredSitePublicationAuthorization(input, reconstructed,
     publication,
     receiptStore
   );
-  const storedSignature = receiptStore.read(input.sitePublisherSignatureReceiptId);
+  const storedSignature = receiptStore.readDocument(input.sitePublisherSignatureReceiptId);
   const signature = validateVnextReceiptBytes(storedSignature.bytes);
   if (signature.receipt.receiptId !== input.sitePublisherSignatureReceiptId ||
       !signature.bytes.equals(storedSignature.bytes)) {
@@ -3183,7 +3251,7 @@ function validateStoredSitePublicationAuthorization(input, reconstructed,
     verificationTimeUtc: authorizationTimeUtc
   }), materialized, signature);
   for (const scan of scans) {
-    const persisted = receiptStore.read(scan.receipt.receipt.receiptId);
+    const persisted = receiptStore.readDocument(scan.receipt.receipt.receiptId);
     if (!persisted.bytes.equals(scan.receipt.bytes)) {
       failEvidence("release_surface_site_publication_candidate_changed", step);
     }
@@ -3227,7 +3295,7 @@ function validateStoredSitePublicationAuthorization(input, reconstructed,
 function assertReadbackPrefixCandidate(receiptStore, subjectStore,
   expectedReceiptIds, expectedSubjectIds) {
   const step = "release-surface-public-readback-prefix";
-  const currentReceiptIds = receiptStore.rebuild().activeReceiptIds;
+  const currentReceiptIds = receiptStore.snapshot().activeReceiptIds;
   const base = new Set(expectedReceiptIds);
   if (expectedReceiptIds.some((receiptId) => !currentReceiptIds.includes(receiptId))) {
     failEvidence("release_surface_receipt_snapshot_member_missing", step);
@@ -3237,7 +3305,7 @@ function assertReadbackPrefixCandidate(receiptStore, subjectStore,
       extras.length) {
     failEvidence("release_surface_public_readback_snapshot_changed", step);
   }
-  const currentSubjectIds = subjectStore.rebuild().activeSubjectIds;
+  const currentSubjectIds = subjectStore.snapshot().activeSubjectIds;
   if (!sameStrings(currentSubjectIds, expectedSubjectIds)) {
     failEvidence("release_surface_public_readback_subject_snapshot_changed", step);
   }
@@ -3656,7 +3724,7 @@ function validateGeneratedDeploymentAttemptReceipt(input, reconstructed,
 function validateStoredGeneratedDeploymentAttempt(input, reconstructed,
   authorization, receiptStore) {
   const step = "release-surface-stored-generated-deployment";
-  const stored = receiptStore.read(input.generatedDeploymentReceiptId);
+  const stored = receiptStore.readDocument(input.generatedDeploymentReceiptId);
   const deployment = validateGeneratedDeploymentAttemptReceipt({
     ...input,
     generatedDeploymentReceiptBytes: stored.bytes
@@ -3877,7 +3945,7 @@ function createGeneratedPublicReadbackReceipt(input, reconstructed,
 function validateStoredGeneratedPublicReadback(input, reconstructed,
   authorization, storedGenerated, graph, receiptStore) {
   const step = "release-surface-stored-generated-public-readback";
-  const stored = receiptStore.read(input.generatedPublicReadbackReceiptId);
+  const stored = receiptStore.readDocument(input.generatedPublicReadbackReceiptId);
   const validated = validateVnextReceiptBytes(stored.bytes);
   const receipt = validated.receipt;
   const release = reconstructed.release;
@@ -4195,8 +4263,8 @@ function createFinalSitePublicationReceipt(input, reconstructed, authorization,
 
 function assertStoreMembership(receiptStore, subjectStore, expectedReceiptIds,
   expectedSubjectIds, step) {
-  const currentReceiptIds = receiptStore.rebuild().activeReceiptIds;
-  const currentSubjectIds = subjectStore.rebuild().activeSubjectIds;
+  const currentReceiptIds = receiptStore.snapshot().activeReceiptIds;
+  const currentSubjectIds = subjectStore.snapshot().activeSubjectIds;
   const expectedReceipts = [...new Set(expectedReceiptIds)].sort();
   const expectedSubjects = [...new Set(expectedSubjectIds)].sort();
   if (!sameStrings(currentReceiptIds, expectedReceipts)) {
@@ -4322,9 +4390,7 @@ async function createCampaignReleaseSurfaceForRuntime(
     subjectStoreRoot: options.subjectStoreRoot,
     wasmModuleBytes: options.wasmModuleBytes
   });
-  const artifactStore = createVnextCampaignArtifactStore(options.campaignArtifactStoreRoot);
-  const receiptStore = createVnextReceiptStore(options.receiptStoreRoot);
-  const subjectStore = createVnextSubjectStore(options.subjectStoreRoot);
+  const { artifactStore, receiptStore, subjectStore } = runner.evidenceStores;
 
   async function executeAttestation(input) {
     assertNeverUsedOperation(runner, input.operationId);
@@ -4337,6 +4403,11 @@ async function createCampaignReleaseSurfaceForRuntime(
       trustedRootRegistryReceiptId: input.trustedRootRegistryReceiptId,
       verificationTimeUtc: input.verificationTimeUtc
     });
+    const evidenceDocuments = materializeRunnerEvidence(
+      runnerResult,
+      receiptStore,
+      subjectStore
+    );
     const plan = artifactStore.readPlan(input.campaignPlanSha256);
     const validatedProjection = validateCampaignProjectionResultBytes(
       runnerResult.projectionResultBytes,
@@ -4354,8 +4425,8 @@ async function createCampaignReleaseSurfaceForRuntime(
       runnerResult,
       validatedProjection.result,
       runner,
-      receiptStore,
-      subjectStore
+      subjectStore,
+      evidenceDocuments
     );
     const scan = scanVnextPublicDocumentBytes(attestation.bytes, {
       equalityCustody: input.equalityCustody
@@ -4388,7 +4459,8 @@ async function createCampaignReleaseSurfaceForRuntime(
       redactionReceipt,
       runnerResult,
       scan,
-      status
+      status,
+      evidenceDocuments
     });
   }
 
@@ -4453,8 +4525,9 @@ async function createCampaignReleaseSurfaceForRuntime(
   async function prepareRelease(rawInput) {
     const input = normalizePrepareInput(rawInput, options.equalityCustody);
     const execution = await executeAttestation(input);
-    const { attestation, projection, redactionReceipt: attestationRedaction,
-      runnerResult, scan: attestationScan } = execution;
+    const { attestation, evidenceDocuments, projection,
+      redactionReceipt: attestationRedaction, runnerResult,
+      scan: attestationScan } = execution;
     if (!projection.complete) {
       failEvidence("release_surface_campaign_incomplete", "release-surface-prepare");
     }
@@ -4465,8 +4538,7 @@ async function createCampaignReleaseSurfaceForRuntime(
     const context = snapshotDocuments(
       runnerResult,
       projection.campaignId,
-      receiptStore,
-      subjectStore
+      evidenceDocuments
     );
     const evidence = validateReleaseEvidence(input, projection, context);
     const claims = validateReleaseClaims(input, context);
@@ -4620,7 +4692,7 @@ async function createCampaignReleaseSurfaceForRuntime(
       [...baseSubjectIds, release.subjectId],
       "release-surface-after-manifest"
     );
-    const readback = subjectStore.read(release.subjectId);
+    const readback = subjectStore.readDocument(release.subjectId);
     if (!readback.bytes.equals(release.bytes)) {
       failEvidence("release_surface_manifest_readback_mismatch",
         "release-surface-manifest");
@@ -4677,7 +4749,7 @@ async function createCampaignReleaseSurfaceForRuntime(
   async function authorizeRelease(rawInput) {
     const step = "release-surface-authorize";
     const input = normalizeAuthorizeInput(rawInput, options.equalityCustody);
-    const release = subjectStore.read(input.releaseManifestId);
+    const release = subjectStore.readDocument(input.releaseManifestId);
     const lineage = validatePreparedReleaseLineage(
       input,
       release,
@@ -4709,7 +4781,7 @@ async function createCampaignReleaseSurfaceForRuntime(
       ...withRedaction,
       authorization.receipt.receiptId
     ])].sort();
-    const currentReceiptIds = receiptStore.rebuild().activeReceiptIds;
+    const currentReceiptIds = receiptStore.snapshot().activeReceiptIds;
     const isPrepared = sameStrings(currentReceiptIds, preparedReceiptIds);
     const hasRedaction = sameStrings(currentReceiptIds, withRedaction);
     const isAuthorized = sameStrings(currentReceiptIds, withAuthorization);
@@ -4724,7 +4796,7 @@ async function createCampaignReleaseSurfaceForRuntime(
       "release-surface-authorization-before-verification"
     );
     if (hasRedaction || isAuthorized) {
-      const existingScan = receiptStore.read(
+      const existingScan = receiptStore.readDocument(
         authorizationRedaction.receipt.receiptId
       );
       if (!existingScan.bytes.equals(authorizationRedaction.bytes)) {
@@ -4732,7 +4804,7 @@ async function createCampaignReleaseSurfaceForRuntime(
       }
     }
     if (isAuthorized) {
-      const existingAuthorization = receiptStore.read(
+      const existingAuthorization = receiptStore.readDocument(
         authorization.receipt.receiptId
       );
       if (!existingAuthorization.bytes.equals(authorization.bytes)) {
@@ -4844,7 +4916,7 @@ async function createCampaignReleaseSurfaceForRuntime(
   async function admitDeploymentAttempt(rawInput) {
     const step = "release-surface-deployment";
     const input = normalizeDeploymentInput(rawInput, options.equalityCustody);
-    const release = subjectStore.read(input.releaseManifestId);
+    const release = subjectStore.readDocument(input.releaseManifestId);
     const lineage = validatePreparedReleaseLineage(
       input,
       release,
@@ -4887,7 +4959,7 @@ async function createCampaignReleaseSurfaceForRuntime(
       ...withRedaction,
       deployment.receipt.receiptId
     ])].sort();
-    const currentReceiptIds = receiptStore.rebuild().activeReceiptIds;
+    const currentReceiptIds = receiptStore.snapshot().activeReceiptIds;
     const isAuthorized = sameStrings(currentReceiptIds, authorizedReceiptIds);
     const hasRedaction = sameStrings(currentReceiptIds, withRedaction);
     const hasDeployment = sameStrings(currentReceiptIds, withDeployment);
@@ -4902,7 +4974,7 @@ async function createCampaignReleaseSurfaceForRuntime(
       "release-surface-deployment-before-verification"
     );
     if (hasRedaction || hasDeployment) {
-      const existingScan = receiptStore.read(
+      const existingScan = receiptStore.readDocument(
         deploymentRedaction.receipt.receiptId
       );
       if (!existingScan.bytes.equals(deploymentRedaction.bytes)) {
@@ -4910,7 +4982,7 @@ async function createCampaignReleaseSurfaceForRuntime(
       }
     }
     if (hasDeployment) {
-      const existingDeployment = receiptStore.read(deployment.receipt.receiptId);
+      const existingDeployment = receiptStore.readDocument(deployment.receipt.receiptId);
       if (!existingDeployment.bytes.equals(deployment.bytes)) {
         failEvidence("release_surface_deployment_identity_collision", step);
       }
@@ -5009,7 +5081,7 @@ async function createCampaignReleaseSurfaceForRuntime(
   async function verifyPublicReadback(rawInput) {
     const step = "release-surface-public-readback";
     const input = normalizePublicReadbackInput(rawInput, options.equalityCustody);
-    const release = subjectStore.read(input.releaseManifestId);
+    const release = subjectStore.readDocument(input.releaseManifestId);
     const lineage = validatePreparedReleaseLineage(
       input,
       release,
@@ -5092,7 +5164,7 @@ async function createCampaignReleaseSurfaceForRuntime(
       ...withRedaction,
       readback.receipt.receiptId
     ])].sort();
-    const currentReceiptIds = receiptStore.rebuild().activeReceiptIds;
+    const currentReceiptIds = receiptStore.snapshot().activeReceiptIds;
     const isDeployed = sameStrings(currentReceiptIds, deployedReceiptIds);
     const hasRedaction = sameStrings(currentReceiptIds, withRedaction);
     const hasReadback = sameStrings(currentReceiptIds, withReadback);
@@ -5107,7 +5179,7 @@ async function createCampaignReleaseSurfaceForRuntime(
       "release-surface-public-readback-before-verification"
     );
     if (hasRedaction || hasReadback) {
-      const existingScan = receiptStore.read(
+      const existingScan = receiptStore.readDocument(
         readbackRedaction.receipt.receiptId
       );
       if (!existingScan.bytes.equals(readbackRedaction.bytes)) {
@@ -5115,7 +5187,7 @@ async function createCampaignReleaseSurfaceForRuntime(
       }
     }
     if (hasReadback) {
-      const existingReadback = receiptStore.read(readback.receipt.receiptId);
+      const existingReadback = receiptStore.readDocument(readback.receipt.receiptId);
       if (!existingReadback.bytes.equals(readback.bytes)) {
         failEvidence("release_surface_public_readback_identity_collision", step);
       }
@@ -5222,7 +5294,7 @@ async function createCampaignReleaseSurfaceForRuntime(
   }
 
   function reconstructSitePublication(input) {
-    const release = subjectStore.read(input.releaseManifestId);
+    const release = subjectStore.readDocument(input.releaseManifestId);
     const lineage = validatePreparedReleaseLineage(
       input,
       release,
@@ -5282,8 +5354,8 @@ async function createCampaignReleaseSurfaceForRuntime(
   }
 
   function persistReceiptSequence(baseReceiptIds, baseSubjectIds, sequence, step) {
-    const currentReceiptIds = receiptStore.rebuild().activeReceiptIds;
-    const currentSubjectIds = subjectStore.rebuild().activeSubjectIds;
+    const currentReceiptIds = receiptStore.snapshot().activeReceiptIds;
+    const currentSubjectIds = subjectStore.snapshot().activeSubjectIds;
     if (!sameStrings(currentSubjectIds, baseSubjectIds)) {
       failEvidence("release_surface_site_publication_subject_snapshot_changed", step);
     }
@@ -5295,23 +5367,22 @@ async function createCampaignReleaseSurfaceForRuntime(
       step
     );
     for (let index = 0; index < prefix; index += 1) {
-      const existing = receiptStore.read(sequence[index].receiptId);
+      const existing = receiptStore.readDocument(sequence[index].receiptId);
       if (!existing.bytes.equals(sequence[index].bytes)) {
         failEvidence("release_surface_site_publication_identity_collision", step);
       }
     }
-    const persistence = [];
-    for (let index = prefix; index < sequence.length; index += 1) {
-      persistence.push(receiptStore.put(sequence[index].bytes));
-      assertStoreMembership(
-        receiptStore,
-        subjectStore,
-        [...baseReceiptIds, ...sequence.slice(0, index + 1).map((entry) =>
-          entry.receiptId)],
-        baseSubjectIds,
-        step
-      );
-    }
+    const remaining = sequence.slice(prefix);
+    const persistence = remaining.length === 0
+      ? []
+      : receiptStore.putMany(remaining.map((entry) => entry.bytes));
+    assertStoreMembership(
+      receiptStore,
+      subjectStore,
+      [...baseReceiptIds, ...sequence.map((entry) => entry.receiptId)],
+      baseSubjectIds,
+      step
+    );
     return Object.freeze({ persistence: Object.freeze(persistence), prefix });
   }
 
@@ -5320,7 +5391,7 @@ async function createCampaignReleaseSurfaceForRuntime(
     const claims = [...publishedClaims].sort((left, right) =>
       left.claimId.localeCompare(right.claimId));
     const expectedClaimIds = claims.map((entry) => entry.claimId);
-    const currentReceiptIds = receiptStore.rebuild().activeReceiptIds;
+    const currentReceiptIds = receiptStore.snapshot().activeReceiptIds;
     const withRedaction = [...new Set([
       ...baseReceiptIds,
       finalRedaction.receipt.receipt.receiptId
@@ -5335,36 +5406,30 @@ async function createCampaignReleaseSurfaceForRuntime(
     if (!hasBaseReceipts && !hasRedaction && !hasCommit) {
       failEvidence("release_surface_final_publication_receipt_snapshot_changed", step);
     }
-    const currentSubjectIds = subjectStore.rebuild().activeSubjectIds;
-    let claimPrefix = -1;
-    for (let length = 0; length <= expectedClaimIds.length; length += 1) {
-      const expected = [...new Set([
-        ...baseSubjectIds,
-        ...expectedClaimIds.slice(0, length)
-      ])].sort();
-      if (sameStrings(currentSubjectIds, expected)) {
-        claimPrefix = length;
-        break;
-      }
-    }
+    const currentSubjectIds = subjectStore.snapshot().activeSubjectIds;
+    const claimPrefix = classifyExactIdPrefix(
+      currentSubjectIds,
+      baseSubjectIds,
+      expectedClaimIds
+    );
     if (claimPrefix < 0 || hasBaseReceipts && claimPrefix !== 0 ||
         hasCommit && claimPrefix !== expectedClaimIds.length) {
       failEvidence("release_surface_final_publication_subject_snapshot_changed", step);
     }
     if (hasRedaction || hasCommit) {
-      const existing = receiptStore.read(finalRedaction.receipt.receipt.receiptId);
+      const existing = receiptStore.readDocument(finalRedaction.receipt.receipt.receiptId);
       if (!existing.bytes.equals(finalRedaction.receipt.bytes)) {
         failEvidence("release_surface_final_publication_redaction_changed", step);
       }
     }
     for (let index = 0; index < claimPrefix; index += 1) {
-      const existing = subjectStore.read(claims[index].claimId);
+      const existing = subjectStore.readDocument(claims[index].claimId);
       if (!existing.bytes.equals(claims[index].claimBytes)) {
         failEvidence("release_surface_final_publication_claim_changed", step);
       }
     }
     if (hasCommit) {
-      const existing = receiptStore.read(finalReceipt.receipt.receiptId);
+      const existing = receiptStore.readDocument(finalReceipt.receipt.receiptId);
       if (!existing.bytes.equals(finalReceipt.bytes)) {
         failEvidence("release_surface_final_publication_commit_changed", step);
       }
@@ -5376,16 +5441,19 @@ async function createCampaignReleaseSurfaceForRuntime(
       assertStoreMembership(receiptStore, subjectStore, withRedaction,
         baseSubjectIds, `${step}-after-redaction`);
     }
-    for (let index = claimPrefix; index < claims.length; index += 1) {
-      subjectPersistence.push(subjectStore.put(claims[index].claimBytes));
-      assertStoreMembership(
-        receiptStore,
-        subjectStore,
-        withRedaction,
-        [...baseSubjectIds, ...expectedClaimIds.slice(0, index + 1)],
-        `${step}-after-claim`
-      );
+    const remainingClaims = claims.slice(claimPrefix);
+    if (remainingClaims.length > 0) {
+      subjectPersistence.push(...subjectStore.putMany(
+        remainingClaims.map((entry) => entry.claimBytes)
+      ));
     }
+    assertStoreMembership(
+      receiptStore,
+      subjectStore,
+      hasCommit ? withCommit : withRedaction,
+      [...baseSubjectIds, ...expectedClaimIds],
+      `${step}-after-claims`
+    );
     if (!hasCommit) {
       receiptPersistence.push(receiptStore.put(finalReceipt.bytes));
     }

@@ -8,9 +8,9 @@ vNext authority and campaign-projection code. The implementation is
 `tinyrustlm/tools/vnext-subject-store.js`; its frozen profile is
 `contracts/vnext/subject-store-profile.v1.json`.
 
-The profile is 3,845 bytes with SHA-256
-`0985099802be93bbf4b88f834470d7aa605d1e60e672e38ceb2ec7ffa6f3f916`.
-It is an incompatible clean-slate contract with no dated reader, alias,
+The profile is 4,518 bytes with SHA-256
+`63cd21ef8dda687f06c486c373840ed101fe2534d7b769d943064571416f94e5`.
+It is the single prelaunch contract. There is no dated reader, alias,
 fallback, migration, dual writer, or mutable current pointer.
 
 This store does not classify phase currentness, verify an authority graph,
@@ -116,17 +116,30 @@ A fresh temporary younger than five minutes remains pending because another
 process may still own it. Rebuild never deletes or edits an unrelated valid
 subject.
 
-An active read performs fresh helper-backed target and marker directory
-flushes, reopens both exact files, and compares schema, identity, canonical
-content hash, byte length, and durability identity with reconstructed
-metadata. Post-startup mutation therefore fails the read, and restart removes
+An active physical read reopens the exact target and durability-receipt files
+twice, compares both observations with the validated owned bytes and durability
+identity, and validates schema, subject identity, canonical content hash, and
+byte length again. It does not rerun a directory flush: directory-flush proof
+belongs to durable publication and fresh store-open reconstruction. A
+post-startup mutation therefore fails the physical read, and restart removes
 the invalid subject from active membership.
+
+Successful reconstruction and durable publication also produce immutable
+membership and validated-document snapshots. Snapshot access performs no
+filesystem scan and returns defensive byte copies. The cached document lookup
+requires active membership and is reserved for same-open orchestration that is
+already bound to an immutable membership snapshot. Every new store instance
+still performs one complete helper-backed rebuild before exposing active state.
+The process-wide cross-instance registry retains only a monotonic generation
+number per existing root, never subject bytes or validated documents. A stale
+same-root instance rebuilds from disk before its next access when that
+generation changes.
 
 ## Runner Contract
 
-The campaign runner rebuilds the receipt and subject stores, captures every
-active ID in sorted order, reads every named member, and verifies
-that a second bounded reconstruction has the same membership before invoking
+The campaign runner opens the receipt and subject stores once, captures every
+active ID from immutable sorted membership, physically reads every named
+member twice, and verifies exact membership and byte identity before invoking
 the sole generated Rust campaign-evidence ABI. It may not choose a preferred
 subset, trust directory names, accept a caller-supplied pass, or treat a stored
 projection as current.

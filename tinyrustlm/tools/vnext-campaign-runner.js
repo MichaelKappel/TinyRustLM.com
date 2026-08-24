@@ -46,7 +46,7 @@ const campaignEvidenceProfilePath = path.join(
 const profileBytes = fs.readFileSync(profilePath);
 const parsedProfile = parseStrictJson(profileBytes);
 const expectedCampaignRunnerProfileSha256 =
-  "b0ba96ea2aa25112adea781138a4351511c56372bd1fdc04575e529a2b4720a9";
+  "c7e85b52c34fac59b65edee68d048c51fcdb5580321eb538dccc07c1164f68c3";
 const contentIdPattern = /^sha256:[a-f0-9]{64}$/u;
 const digestPattern = /^[a-f0-9]{64}$/u;
 const digestFilePattern = /^([a-f0-9]{64})\.json$/u;
@@ -128,6 +128,18 @@ const snapshotMemberFields = Object.freeze([
   "durabilityReceiptSha256",
   "id",
   "wireSha256"
+]);
+const snapshotProtocolFields = Object.freeze([
+  "observations",
+  "planObservation",
+  "evidenceStoreOpen",
+  "evidenceMembershipObservation",
+  "evidenceContentObservation",
+  "interObservationMembershipCheck",
+  "comparison",
+  "projectionInput",
+  "changePolicy",
+  "futureWritePolicy"
 ]);
 const lockClaimFields = Object.freeze([
   "generation",
@@ -279,6 +291,27 @@ function validateInstalledProfile() {
       parsedProfile.storedProjectionAuthority !==
         "immutable-history-not-current-truth" ||
       parsedProfile.snapshotProtocol?.observations !== 2 ||
+      Object.keys(parsedProfile.snapshotProtocol).length !== snapshotProtocolFields.length ||
+      !snapshotProtocolFields.every((name) =>
+        Object.hasOwn(parsedProfile.snapshotProtocol, name)) ||
+      parsedProfile.snapshotProtocol.planObservation !==
+        "rebuild-and-read-active-plan-each-observation" ||
+      parsedProfile.snapshotProtocol.evidenceStoreOpen !==
+        "one-full-validated-rebuild-per-receipt-and-subject-store-instance" ||
+      parsedProfile.snapshotProtocol.evidenceMembershipObservation !==
+        "immutable-same-open-active-id-snapshot-before-each-content-observation" ||
+      parsedProfile.snapshotProtocol.evidenceContentObservation !==
+        "read-every-active-member-with-exact-target-durability-and-identity-validation" ||
+      parsedProfile.snapshotProtocol.interObservationMembershipCheck !==
+        "required-before-second-content-observation" ||
+      parsedProfile.snapshotProtocol.comparison !==
+        "exact-profile-membership-wire-hash-and-aggregate-byte-equality" ||
+      parsedProfile.snapshotProtocol.projectionInput !==
+        "second-observation-owned-byte-copies" ||
+      parsedProfile.snapshotProtocol.changePolicy !==
+        "fail-closed-new-operation-required" ||
+      parsedProfile.snapshotProtocol.futureWritePolicy !==
+        "later-state-reproject-on-next-operation" ||
       !sameStrings(parsedProfile.operationRecord?.startFields, startFields) ||
       !sameStrings(parsedProfile.operationRecord?.terminalFields, terminalFields) ||
       !sameStrings(parsedProfile.operationRecord?.snapshotFields, snapshotFields) ||
@@ -1120,6 +1153,29 @@ function snapshotsEqual(left, right) {
   });
 }
 
+function immutableEvidenceSnapshot(receipts, subjects) {
+  const copyMembers = (members) => Object.freeze(members.map((member) => {
+    const canonical = Buffer.from(member.bytes);
+    const result = {
+      byteLength: member.byteLength,
+      durabilityReceiptSha256: member.durabilityReceiptSha256,
+      id: member.id,
+      wireSha256: member.wireSha256
+    };
+    Object.defineProperty(result, "bytes", {
+      enumerable: true,
+      get() {
+        return Buffer.from(canonical);
+      }
+    });
+    return Object.freeze(result);
+  }));
+  return Object.freeze({
+    receipts: copyMembers(receipts.members),
+    subjects: copyMembers(subjects.members)
+  });
+}
+
 async function createVnextCampaignRunner(rootInput, optionsInput) {
   const options = exactOptions(optionsInput);
   const processAlive = Object.hasOwn(options, "processAlive")
@@ -1473,8 +1529,8 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
   function observeStore(kind) {
     const receipt = kind === "receipt";
     const store = receipt ? receiptStore : subjectStore;
-    const rebuilt = store.rebuild();
-    const ids = receipt ? rebuilt.activeReceiptIds : rebuilt.activeSubjectIds;
+    const snapshot = store.snapshot();
+    const ids = receipt ? snapshot.activeReceiptIds : snapshot.activeSubjectIds;
     const maximumCount = receipt
       ? parsedProfile.limits.maximumReceiptInputs
       : parsedProfile.limits.maximumSubjectInputs;
@@ -1489,8 +1545,12 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
     }
     const members = [];
     let aggregateBytes = 0;
-    for (const id of ids) {
-      const validated = store.read(id);
+    const validatedMembers = receipt
+      ? store.readMany(ids)
+      : ids.map((id) => store.read(id));
+    for (let index = 0; index < ids.length; index += 1) {
+      const id = ids[index];
+      const validated = validatedMembers[index];
       const bytes = validated.bytes;
       const maximumSingle = receipt
         ? parsedProfile.limits.maximumReceiptBytes
@@ -1525,14 +1585,31 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
     });
   }
 
+  function membershipMatches(kind, observed) {
+    const receipt = kind === "receipt";
+    const store = receipt ? receiptStore : subjectStore;
+    const snapshot = store.snapshot();
+    const ids = receipt ? snapshot.activeReceiptIds : snapshot.activeSubjectIds;
+    return Array.isArray(ids) && ids.length === observed.members.length &&
+      ids.every((id, index) => id === observed.members[index].id);
+  }
+
   function stableInputs(planSha256) {
     const first = {
       plan: observePlan(planSha256),
       receipts: observeStore("receipt"),
       subjects: observeStore("subject")
     };
+    const secondPlan = observePlan(planSha256);
+    if (first.plan.wireSha256 !== secondPlan.wireSha256 ||
+        first.plan.planId !== secondPlan.planId ||
+        !first.plan.bytes.equals(secondPlan.bytes) ||
+        !membershipMatches("receipt", first.receipts) ||
+        !membershipMatches("subject", first.subjects)) {
+      failEvidence("campaign_runner_snapshot_changed", "campaign-runner-snapshot");
+    }
     const second = {
-      plan: observePlan(planSha256),
+      plan: secondPlan,
       receipts: observeStore("receipt"),
       subjects: observeStore("subject")
     };
@@ -1641,6 +1718,10 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
       );
       const terminalPersistence = operationStore.put(terminal);
       return Object.freeze({
+        validatedEvidenceSnapshot: immutableEvidenceSnapshot(
+          stable.receipts,
+          stable.subjects
+        ),
         operationId: input.operationId,
         persistence: immutableRecord({
           projectionDisposition: projectionPersistence.disposition,
@@ -1722,6 +1803,11 @@ async function createVnextCampaignRunner(rootInput, optionsInput) {
   }
 
   return Object.freeze({
+    evidenceStores: Object.freeze({
+      artifactStore,
+      receiptStore,
+      subjectStore
+    }),
     inspectOperation: operationStore.inspect,
     lockStartup,
     profileId: parsedProfile.profileId,
