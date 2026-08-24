@@ -1,5 +1,13 @@
-profile: runtime-mirust.operations.v121
-updated_utc: 2026-08-09T22:06:41Z
+profile: runtime-mirust.operations.v122
+updated_utc: 2026-08-24T22:39:11Z
+companion_reconciliation_checkpoint_2026_08_24:
+  source: commit=87a0fc1c799f5359b44e3e5bdcb35b2d3500f22c; tree=5327e22727b7fc3ac7dbb8c67b7f92f2bbc418a2; branch=codex/model-acquisition-v2; remote_exact=true
+  preregistration: commit=af7857bbc4afa122d8013f2952b2944b53b6e3d2; machine_sha256=087038104f63d6e78373691034aaf586de803059d68c47a12acc2140bf3ac971; architecture_sha256=c4fe01d64a65c51e8803ae4b16bc18bfd52b868faaadf5e4003f4f40b362a180
+  tests: managed=163/163; core=80/80; companion=45/45; package=38/38; preregistration=12/12; skips=0; api_entries=49
+  package_transaction: root=E:\TinyRustLM-vnext-private\package-transactions\package-87a0fc1-win-x64; audit_sha256=b9c11d61c0957597331823024d6e309865ff70fb7ef92035e2fad61451bdf231; hash_manifest_sha256=228af1b0d0a6397e40e94d2df380328da819a7f89107719ce2991ba9b8d8e513; package_count=5; symbol_package_count=5; defect_counts=0; claim=local-clean-source-win-x64-only
+  generated_converter_custody: path=E:\TinyRustLM-vnext-private\package-transactions\package-87a0fc1-win-x64\generated-tool\tinyrustlm-convert.exe; sha256=14e73352644be8ca7db4ee1658927f07c6ab1b5700a8eb7bfa045e6b79cb91d7; repository_copy_absent=true
+  next_operation: Create and fresh-remote verify one output-free exact numeric-loopback capability registration before producing a listener, port, route, pairing response, discovery file, or browser request. Then implement and fault-test it before six-artifact browser transfer.
+  claim_boundary: No real model, listener, browser transfer, quality result, P2P availability, package publication, site deployment, public readback, or MemoryEndpoints operation exists. Campaign counts remain 0/20, 0/50, 0/25, 0/40, 0/20.
 credit_window_release_checkpoint_2026_08_09:
   state: publishing_stopped_source_control_checkpoint_in_progress
   TinyRustLM_MiRust_resume: From `E:\Source\Worktrees\rust-site-release-20260809\TinyRustLM.MiRust.com`, run `& .\tools\deploy-site.ps1 -Publish -ResumeNonce efa18f6e4a5a`; authenticate the 32768-byte staged prefix for the 39530-byte current file and preserve attempt history.
