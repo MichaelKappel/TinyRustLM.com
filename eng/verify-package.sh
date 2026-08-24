@@ -55,5 +55,5 @@ node --test \
 "$REPO_ROOT/eng/pack.sh" "$CONFIGURATION" "$PACKAGE_OUTPUT"
 "$REPO_ROOT/eng/write-package-audit.sh" "$PACKAGE_OUTPUT" "$REPORT_OUTPUT" "${REQUIRED_NATIVE_RIDS[@]}"
 TINYRUSTLM_REPO_ROOT="$REPO_ROOT" TINYRUSTLM_PACKAGE_DIR="$PACKAGE_OUTPUT" TINYRUSTLM_PACKAGE_AUDIT_REPORT="$REPORT_OUTPUT" dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c "$CONFIGURATION" --no-build
-"$REPO_ROOT/eng/verify-consumer.sh" "$PACKAGE_OUTPUT" "$REPO_ROOT/tinyrustlm/models/tiny-test-model.slm" "$PACKAGE_VERSION"
+"$REPO_ROOT/eng/verify-consumer.sh" "$PACKAGE_OUTPUT" "$PACKAGE_VERSION"
 echo "TinyRustLM NuGet package verification passed."

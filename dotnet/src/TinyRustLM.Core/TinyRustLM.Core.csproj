@@ -2,9 +2,9 @@
   <PropertyGroup>
     <PackageId>$(TinyRustLmCorePackageId)</PackageId>
     <Title>TinyRustLM / UAIX Browser p2pLLM Runtime SDK</Title>
-    <Summary>Native-backed TinyRustLM .slm inspection, safe loading, generation, diagnostics, and p2pLLM runtime harness APIs.</Summary>
-    <Description>Public TinyRustLM .NET SDK for .slm validation, safe model inspection and loading, p2pLLM.com runtime harness lifecycle operations, generation, step/reset, diagnostics, SDK version and capability queries, and protected Rust native runtime assets. This package backs the UAIX.Browser.p2pLLM.Runtime local feed identity without exposing conversion, quantization authoring, training, routing, telemetry, licensing, or model-authoring internals.</Description>
-    <PackageTags>TinyRustLM;TinyRustLM.Core;TinyRustLM.com;UAIX;UAIX.org;UAIX.Browser;Browser;UAIX.Browser.p2pLLM.Runtime;p2pLLM;p2pLLM.com;SLM;.slm;AI;LLM;Rust;native;runtime;runtime-harness;model-validation;model-inspection;safe-loading;generate;diagnostics;protected-sdk</PackageTags>
+    <Summary>Native-backed mixed-Q8 SLM2 inspection and bounded ACG2 conversation runtime for TinyRustLM.</Summary>
+    <Description>Public TinyRustLM .NET SDK over the exact current 15-symbol native ABI. It validates the native contract, inspects mixed-Q8 SLM2 artifacts, fail-atomically activates five-member ACG2 compositions, executes canonical Prompt2 requests through Tokenizer2, Template2, and Sampling2, and exposes bounded state and raw terminal output. It contains no legacy model loader, compatibility API, diagnostics text, response repair, model authoring, training, routing, telemetry, or licensing internals.</Description>
+    <PackageTags>TinyRustLM;TinyRustLM.Core;TinyRustLM.com;UAIX;UAIX.org;UAIX.Browser;Browser;UAIX.Browser.p2pLLM.Runtime;p2pLLM;p2pLLM.com;SLM2;.slm;ACG2;Prompt2;Tokenizer2;Template2;Sampling2;AI;LLM;Rust;native;runtime;model-validation;model-inspection;bounded-generation;protected-sdk</PackageTags>
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>

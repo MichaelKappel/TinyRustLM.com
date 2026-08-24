@@ -13,118 +13,120 @@ internal static class NativeMethods
     }
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_sdk_version_json();
+    [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory)]
+    internal static extern IntPtr tinyrustlm_native_contract_json();
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_sdk_capabilities_json();
+    [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory)]
+    internal static extern void tinyrustlm_string_free(IntPtr pointer);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern void tinyrustlm_string_free(IntPtr ptr);
+    [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory)]
+    internal static extern IntPtr tinyrustlm_slm2_inspect_json(
+        [In] byte[] request,
+        nuint requestLength);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_slm_inspect_path_json(IntPtr path);
+    [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory)]
+    internal static extern IntPtr tinyrustlm_runtime_create_json(
+        [In] byte[] request,
+        nuint requestLength,
+        [In] byte[] operation,
+        nuint operationLength,
+        ulong transcriptRevision);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_runtime_create_json();
+    [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory)]
+    internal static extern IntPtr tinyrustlm_runtime_destroy_json(ulong handle);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern int tinyrustlm_runtime_destroy(ulong handle);
+    [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory)]
+    internal static extern IntPtr tinyrustlm_runtime_state_json(ulong handle);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_runtime_load_model_path_json(
+    [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory)]
+    internal static extern IntPtr tinyrustlm_runtime_activate_json(
         ulong handle,
-        IntPtr path,
-        IntPtr expectedSha256);
+        [In] byte[] request,
+        nuint requestLength,
+        [In] byte[] expectedOperation,
+        nuint expectedOperationLength);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_runtime_activate_composition_path_json(
+    [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory)]
+    internal static extern IntPtr tinyrustlm_runtime_advance_operation_json(
         ulong handle,
-        IntPtr path,
-        IntPtr expectedSha256);
+        [In] byte[] expectedCurrent,
+        nuint expectedCurrentLength,
+        [In] byte[] next,
+        nuint nextLength);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_runtime_unload_model_json(ulong handle);
-
-    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_runtime_generate_json(
+    [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory)]
+    internal static extern IntPtr tinyrustlm_runtime_set_transcript_json(
         ulong handle,
-        IntPtr prompt,
-        uint maxNewTokens,
-        double temperature,
-        uint topK,
-        double topP,
-        uint seed);
+        ulong transcriptRevision);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_runtime_step_json(ulong handle);
+    [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory)]
+    internal static extern IntPtr tinyrustlm_runtime_begin_request_json(
+        ulong handle,
+        [In] byte[] request,
+        nuint requestLength,
+        [In] byte[] expectedOperation,
+        nuint expectedOperationLength);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_runtime_reset_json(ulong handle);
+    [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory)]
+    internal static extern IntPtr tinyrustlm_runtime_step_json(ulong handle, byte cancelled);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_runtime_diagnostics_json(ulong handle);
+    [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory)]
+    internal static extern IntPtr tinyrustlm_runtime_finish_json(ulong handle);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_p2p_prepare_share_kit_json(IntPtr requestJson);
+    [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory)]
+    internal static extern IntPtr tinyrustlm_p2p_prepare_share_kit_json(
+        [In] byte[] request,
+        nuint requestLength);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_p2p_inspect_manifest_json(IntPtr manifestJson);
+    [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory)]
+    internal static extern IntPtr tinyrustlm_p2p_inspect_manifest_json(
+        [In] byte[] manifest,
+        nuint manifestLength);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_p2p_verify_signed_manifest_json(
-        IntPtr signedManifestJson,
-        IntPtr publicKeyJson);
-
-    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_p2p_import_from_manifest_json(IntPtr manifestJson);
-
-    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_p2p_assemble_from_manifest_json(
-        IntPtr manifestJson,
-        IntPtr shareKitRoot,
-        IntPtr outputPath);
-
-    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_p2p_inspect_local_import_receipt_json(
-        IntPtr receiptJson,
-        IntPtr outputPath);
-
-    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_p2p_export_share_metadata_json(IntPtr manifestJson);
-
-    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_p2p_validate_announcement_json(IntPtr announcementJson);
-
-    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_p2p_apply_received_announcement_json(
-        IntPtr announcementJson,
-        IntPtr existingCatalogJson);
-
-    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_p2p_inspect_announcement_catalog_json(IntPtr catalogJson);
-
-    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_memory_required_files_json(IntPtr requestJson);
-
-    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_memory_supported_setups_json();
-
-    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_memory_inspect_package_path_json(
-        IntPtr packagePath,
-        IntPtr requestJson);
-
-    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    internal static extern IntPtr tinyrustlm_memory_inspect_manifest_json(IntPtr manifestJson);
+    [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory)]
+    internal static extern IntPtr tinyrustlm_p2p_assemble_json(
+        [In] byte[] request,
+        nuint requestLength,
+        [In] byte[] manifest,
+        nuint manifestLength);
 
     private static IntPtr ResolveNativeLibrary(
         string libraryName,
         Assembly assembly,
         DllImportSearchPath? searchPath)
     {
+        _ = searchPath;
         if (!string.Equals(libraryName, LibraryName, StringComparison.Ordinal))
         {
             return IntPtr.Zero;
+        }
+
+        var configuredPath = Environment.GetEnvironmentVariable("TINYRUSTLM_NATIVE_PATH");
+        if (!string.IsNullOrWhiteSpace(configuredPath))
+        {
+            var exactPath = Directory.Exists(configuredPath)
+                ? Path.Combine(configuredPath, NativeLibraryFileName())
+                : configuredPath;
+            if (!File.Exists(exactPath) || !NativeLibrary.TryLoad(exactPath, out var configuredHandle))
+            {
+                throw new DllNotFoundException("TINYRUSTLM_NATIVE_PATH does not identify a loadable current native library.");
+            }
+
+            return configuredHandle;
         }
 
         foreach (var candidate in NativeLibraryCandidates(assembly))
@@ -141,48 +143,49 @@ internal static class NativeMethods
     private static IEnumerable<string> NativeLibraryCandidates(Assembly assembly)
     {
         var fileName = NativeLibraryFileName();
-        var env = Environment.GetEnvironmentVariable("TINYRUSTLM_NATIVE_PATH");
-        if (!string.IsNullOrWhiteSpace(env))
-        {
-            yield return Directory.Exists(env) ? Path.Combine(env, fileName) : env;
-        }
+        var runtimeIdentifier = RuntimeIdentifier();
+        var baseDirectory = AppContext.BaseDirectory;
+        yield return Path.Combine(baseDirectory, fileName);
+        yield return Path.Combine(baseDirectory, "runtimes", runtimeIdentifier, "native", fileName);
 
-        var baseDir = AppContext.BaseDirectory;
-        yield return Path.Combine(baseDir, fileName);
-        yield return Path.Combine(baseDir, "runtimes", RuntimeIdentifier(), "native", fileName);
-
-        var assemblyDir = Path.GetDirectoryName(assembly.Location);
-        if (!string.IsNullOrWhiteSpace(assemblyDir))
+        var assemblyDirectory = Path.GetDirectoryName(assembly.Location);
+        if (!string.IsNullOrWhiteSpace(assemblyDirectory) &&
+            !string.Equals(assemblyDirectory, baseDirectory, StringComparison.OrdinalIgnoreCase))
         {
-            yield return Path.Combine(assemblyDir, fileName);
-            yield return Path.Combine(assemblyDir, "runtimes", RuntimeIdentifier(), "native", fileName);
-        }
-
-        var current = new DirectoryInfo(baseDir);
-        for (var i = 0; i < 8 && current is not null; i++, current = current.Parent)
-        {
-            yield return Path.Combine(current.FullName, "artifacts", "native", RuntimeIdentifier(), fileName);
-            yield return Path.Combine(current.FullName, "..", "..", "..", "artifacts", "native", RuntimeIdentifier(), fileName);
+            yield return Path.Combine(assemblyDirectory, fileName);
+            yield return Path.Combine(assemblyDirectory, "runtimes", runtimeIdentifier, "native", fileName);
         }
     }
 
-    private static string RuntimeIdentifier()
+    internal static string RuntimeIdentifier()
     {
-        var arch = RuntimeInformation.ProcessArchitecture switch
+        if (!Environment.Is64BitProcess)
         {
-            Architecture.Arm64 => "arm64",
+            throw new PlatformNotSupportedException("TinyRustLM requires a 64-bit process.");
+        }
+
+        var architecture = RuntimeInformation.ProcessArchitecture switch
+        {
             Architecture.X64 => "x64",
-            _ => "x64"
+            Architecture.Arm64 => "arm64",
+            _ => throw new PlatformNotSupportedException("TinyRustLM supports only x64 and arm64 processes.")
         };
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            return $"win-{arch}";
+            return $"win-{architecture}";
         }
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            return $"linux-{architecture}";
+        }
+
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
-            return $"osx-{arch}";
+            return $"osx-{architecture}";
         }
-        return $"linux-{arch}";
+
+        throw new PlatformNotSupportedException("TinyRustLM supports Windows, Linux, and macOS.");
     }
 
     private static string NativeLibraryFileName()
@@ -191,10 +194,17 @@ internal static class NativeMethods
         {
             return "tinyrustlm_native.dll";
         }
+
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
             return "libtinyrustlm_native.dylib";
         }
-        return "libtinyrustlm_native.so";
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            return "libtinyrustlm_native.so";
+        }
+
+        throw new PlatformNotSupportedException("TinyRustLM supports Windows, Linux, and macOS.");
     }
 }

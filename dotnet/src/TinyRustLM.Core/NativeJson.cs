@@ -1,85 +1,108 @@
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace TinyRustLM;
 
 internal static class NativeJson
 {
+    internal const int MaximumResponseBytes = 33_554_432;
+
     internal static readonly JsonSerializerOptions SerializerOptions = new()
     {
-        PropertyNameCaseInsensitive = true,
-        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-        WriteIndented = true
+        AllowTrailingCommas = false,
+        PropertyNameCaseInsensitive = false,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        ReadCommentHandling = JsonCommentHandling.Disallow,
+        UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow,
+        WriteIndented = false
     };
 
-    internal static T Call<T>(Func<IntPtr> nativeCall)
+    internal static T Call<T>(Func<IntPtr> nativeCall, int maximumResponseBytes = MaximumResponseBytes)
+        where T : class
     {
-        var json = CallRaw(nativeCall);
-        var envelope = JsonSerializer.Deserialize<NativeEnvelope<T>>(json, SerializerOptions)
-            ?? throw new TinyRustLmException("invalid_native_response", "Native response was empty.");
-        if (!envelope.Ok)
-        {
-            var error = envelope.Error ?? new NativeError("native_error", "Native operation failed.");
-            throw new TinyRustLmException(error.Code, error.Message);
-        }
-        return envelope.Value ?? throw new TinyRustLmException(
-            "invalid_native_response",
-            "Native response did not include a value.");
-    }
-
-    internal static string CallRaw(Func<IntPtr> nativeCall)
-    {
-        var ptr = nativeCall();
-        if (ptr == IntPtr.Zero)
-        {
-            throw new TinyRustLmException("null_native_response", "Native call returned a null response pointer.");
-        }
+        var bytes = CallRaw(nativeCall, maximumResponseBytes);
+        NativeEnvelope<T> envelope;
         try
         {
-            return Marshal.PtrToStringUTF8(ptr)
-                ?? throw new TinyRustLmException("invalid_native_response", "Native response was not UTF-8.");
+            envelope = JsonSerializer.Deserialize<NativeEnvelope<T>>(bytes, SerializerOptions)
+                ?? throw new TinyRustLmException("native-response-empty");
+        }
+        catch (JsonException)
+        {
+            throw new TinyRustLmException("native-response-json");
+        }
+
+        if (envelope.Ok)
+        {
+            if (envelope.Value is null || envelope.Error is not null)
+            {
+                throw new TinyRustLmException("native-response-envelope");
+            }
+
+            return envelope.Value;
+        }
+
+        if (envelope.Value is not null || envelope.Error is null ||
+            !ManagedValidation.IsFailureCode(envelope.Error.Code))
+        {
+            throw new TinyRustLmException("native-response-envelope");
+        }
+
+        throw new TinyRustLmException(envelope.Error.Code);
+    }
+
+    internal static byte[] Serialize<T>(T value, ulong maximumBytes, string argumentName)
+    {
+        ArgumentNullException.ThrowIfNull(value, argumentName);
+        var bytes = JsonSerializer.SerializeToUtf8Bytes(value, SerializerOptions);
+        if (bytes.Length == 0 || (ulong)bytes.Length > maximumBytes)
+        {
+            throw new ArgumentException("The serialized request exceeds the advertised native limit.", argumentName);
+        }
+
+        return bytes;
+    }
+
+    private static byte[] CallRaw(Func<IntPtr> nativeCall, int maximumResponseBytes)
+    {
+        ArgumentNullException.ThrowIfNull(nativeCall);
+        if (maximumResponseBytes <= 0 || maximumResponseBytes > MaximumResponseBytes)
+        {
+            throw new ArgumentOutOfRangeException(nameof(maximumResponseBytes));
+        }
+
+        var pointer = nativeCall();
+        if (pointer == IntPtr.Zero)
+        {
+            throw new TinyRustLmException("native-response-pointer");
+        }
+
+        try
+        {
+            var length = 0;
+            while (length <= maximumResponseBytes && Marshal.ReadByte(pointer, length) != 0)
+            {
+                length++;
+            }
+
+            if (length == 0 || length > maximumResponseBytes)
+            {
+                throw new TinyRustLmException("native-response-size");
+            }
+
+            var bytes = new byte[length];
+            Marshal.Copy(pointer, bytes, 0, length);
+            return bytes;
         }
         finally
         {
-            NativeMethods.tinyrustlm_string_free(ptr);
+            NativeMethods.tinyrustlm_string_free(pointer);
         }
     }
 
-    internal static Utf8NativeString Utf8(string? value, string? argumentName = null) =>
-        new(value, argumentName);
+    private sealed record NativeEnvelope<T>(bool Ok, T? Value, NativeError? Error)
+        where T : class;
 
-    internal static void ThrowIfContainsEmbeddedNul(string? value, string argumentName)
-    {
-        if (value?.IndexOf('\0', StringComparison.Ordinal) >= 0)
-        {
-            throw new ArgumentException(
-                "String arguments passed to TinyRustLM native code cannot contain embedded NUL characters.",
-                argumentName);
-        }
-    }
-
-    private sealed record NativeEnvelope<T>(bool Ok, T? Value, NativeError? Error);
-
-    private sealed record NativeError(string Code, string Message);
-}
-
-internal sealed class Utf8NativeString : IDisposable
-{
-    internal Utf8NativeString(string? value, string? argumentName)
-    {
-        NativeJson.ThrowIfContainsEmbeddedNul(value, argumentName ?? "value");
-        Pointer = value is null
-            ? IntPtr.Zero
-            : Marshal.StringToCoTaskMemUTF8(value);
-    }
-
-    internal IntPtr Pointer { get; }
-
-    public void Dispose()
-    {
-        if (Pointer != IntPtr.Zero)
-        {
-            Marshal.FreeCoTaskMem(Pointer);
-        }
-    }
+    private sealed record NativeError(string Code);
 }

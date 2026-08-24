@@ -1,59 +1,77 @@
-using System.Text.Json;
 using TinyRustLM;
 
-if (args.Length < 2)
+if (args.Length == 0)
 {
-    Console.Error.WriteLine("Usage: TinyRustLM.P2PShareSample <model.slm> <output-dir> [https://peer.example/share]");
+    Usage();
     return 2;
 }
 
 var client = new TinyRustLmP2PClient();
-var report = client.PrepareLocalShareKit(new PrepareShareKitRequest(
-    ModelPath: args[0],
-    OutputDir: args[1],
-    ManifestId: null,
-    ModelId: null,
-    PeerId: "sample-peer",
-    PublicBaseUrl: args.Length > 2 ? args[2] : null,
-    PieceSize: 1024 * 1024));
-
-Console.WriteLine(JsonSerializer.Serialize(report, new JsonSerializerOptions
+switch (args[0])
 {
-    PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-    WriteIndented = true
-}));
+    case "prepare-acg2" when args.Length == 8:
+        PrintShare(client.PrepareShareKit(Prepare(args, TinyRustLmP2PAdmission.ForAcg2Composition())));
+        return 0;
 
-var manifestJson = File.ReadAllText(report.ManifestPath);
-if (!string.IsNullOrWhiteSpace(report.AnnouncementPath))
-{
-    var announcementJson = File.ReadAllText(report.AnnouncementPath);
-    var announcement = client.ValidateAnnouncement(announcementJson);
-    var catalogJson = client.ApplyReceivedAnnouncementJson(announcementJson);
+    case "prepare-slm2" when args.Length == 9:
+        PrintShare(client.PrepareShareKit(Prepare(args, TinyRustLmP2PAdmission.ForSlm2Model(args[8]))));
+        return 0;
 
-    Console.WriteLine(JsonSerializer.Serialize(announcement, new JsonSerializerOptions
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-        WriteIndented = true
-    }));
-    Console.WriteLine(catalogJson);
+    case "inspect" when args.Length == 2:
+        var manifest = client.InspectManifest(File.ReadAllBytes(args[1]));
+        Console.WriteLine($"{manifest.ManifestId} {manifest.ArtifactSha256} {manifest.ArtifactBytes}");
+        return 0;
+
+    case "assemble-acg2" when args.Length == 4:
+        PrintImport(client.AssembleArtifact(
+            new AssembleArtifactRequest(
+                args[2],
+                args[3],
+                TinyRustLmP2PAdmission.ForAcg2Composition()),
+            File.ReadAllBytes(args[1])));
+        return 0;
+
+    case "assemble-slm2" when args.Length == 5:
+        PrintImport(client.AssembleArtifact(
+            new AssembleArtifactRequest(
+                args[2],
+                args[3],
+                TinyRustLmP2PAdmission.ForSlm2Model(args[4])),
+            File.ReadAllBytes(args[1])));
+        return 0;
+
+    default:
+        Usage();
+        return 2;
 }
 
-var importOutputPath = Path.Combine(
-    args[1],
-    $"sample-imported-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}.slm");
-var receipt = client.ImportFromManifest(manifestJson, args[1], importOutputPath);
-var receiptInspection = client.InspectLocalImportReceipt(
-    File.ReadAllText(receipt.ReceiptPath),
-    importOutputPath);
+static PrepareShareKitRequest Prepare(string[] values, TinyRustLmP2PAdmission admission) => new(
+    ArtifactPath: values[1],
+    OutputDirectory: values[2],
+    ArtifactManifestId: values[3],
+    QualificationReceiptId: values[4],
+    ProvenanceReceiptId: values[5],
+    LicenseExpression: values[6],
+    CreatedAtUtc: values[7],
+    Admission: admission);
 
-Console.WriteLine(JsonSerializer.Serialize(receipt, new JsonSerializerOptions
+static void PrintShare(P2PShareKitReport report) =>
+    Console.WriteLine($"{report.Manifest.ManifestId} {report.ManifestPath} {report.PieceDirectory}");
+
+static void PrintImport(P2PImportedArtifact report) =>
+    Console.WriteLine($"{report.ManifestId} {report.ArtifactSha256} {report.OutputPath}");
+
+static void Usage()
 {
-    PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-    WriteIndented = true
-}));
-Console.WriteLine(JsonSerializer.Serialize(receiptInspection, new JsonSerializerOptions
-{
-    PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-    WriteIndented = true
-}));
-return 0;
+    Console.Error.WriteLine("Commands:");
+    Console.Error.WriteLine(
+        "  prepare-acg2 <artifact> <new-output-dir> <artifact-manifest-id> <qualification-id> " +
+        "<provenance-id> <license> <created-at-utc>");
+    Console.Error.WriteLine(
+        "  prepare-slm2 <artifact> <new-output-dir> <artifact-manifest-id> <qualification-id> " +
+        "<provenance-id> <license> <created-at-utc> <composition.acg2>");
+    Console.Error.WriteLine("  inspect <manifest.json>");
+    Console.Error.WriteLine("  assemble-acg2 <manifest.json> <piece-dir> <new-output-path>");
+    Console.Error.WriteLine(
+        "  assemble-slm2 <manifest.json> <piece-dir> <new-output-path> <composition.acg2>");
+}

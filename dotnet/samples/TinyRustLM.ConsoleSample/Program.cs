@@ -1,71 +1,51 @@
 using TinyRustLM;
 
-var memory = new TinyRustLmMemoryClient();
-if (args.Length == 1 && string.Equals(args[0], "--memory-setups", StringComparison.OrdinalIgnoreCase))
-{
-    PrintMemorySetups(memory);
-    return 0;
-}
-
-if (args.Length < 3)
+if (args.Length != 8)
 {
     Console.Error.WriteLine(
-        "Usage: TinyRustLM.ConsoleSample <model.slm> <composition.acg1> <composition-sha256> [prompt]");
-    Console.Error.WriteLine("       TinyRustLM.ConsoleSample --memory-setups");
+        "Usage: TinyRustLM.ConsoleSample <model.slm2> <tokenizer.tok2> <template.tpl2> " +
+        "<sampling.sampling2> <prompt.prompt2> <composition.acg2> <request.prompt2-wire> " +
+        "<operation-id-hex>");
     return 2;
 }
 
-var modelPath = args[0];
-var compositionPath = args[1];
-var compositionSha256 = args[2];
-var prompt = args.Length > 3 ? args[3] : "hello";
-
-PrintMemoryPlanPreview(memory);
-
-var inspector = new TinySlmInspector();
-var inspection = inspector.Inspect(modelPath);
-Console.WriteLine($"model: {inspection.Sha256} {inspection.ByteCount} bytes {inspection.Quantization}");
-
+var operation = TinyRustLmOperationId.Parse(args[7]);
 var factory = new TinyRustLmRuntimeFactory();
-using var runtime = factory.CreateRuntime();
-runtime.LoadModel(modelPath, inspection.Sha256);
-runtime.ActivateComposition(compositionPath, compositionSha256);
-var result = runtime.Generate(prompt, new TinyRustLmGenerationOptions(MaxNewTokens: 16));
-Console.WriteLine(result.Text);
-return 0;
+var contract = factory.GetNativeContract();
+var modelLength = checked((ulong)new FileInfo(args[0]).Length);
+var inspection = new TinyRustLmSlm2Inspector().Inspect(
+    args[0],
+    new Slm2InspectionPolicy(modelLength, 262_144));
+Console.WriteLine($"SLM2 {inspection.ArtifactSha256} ({inspection.ArtifactBytes} bytes)");
 
-static void PrintMemorySetups(TinyRustLmMemoryClient memory)
+using var runtime = factory.CreateRuntime(
+    new TinyRustLmRuntimePolicy(
+        contract.Limits.MaximumModelBytes,
+        contract.Limits.MaximumSequenceTokens,
+        contract.Limits.MaximumKvBytes,
+        contract.Limits.MaximumScratchBytes,
+        contract.Limits.MaximumResolvedMemberBytes,
+        contract.Limits.MaximumResidentDependencyBytes,
+        contract.Limits.MaximumPrompt2RequestBytes),
+    operation);
+runtime.ActivateComposition(
+    new TinyRustLmActivationRequest(
+        args[5],
+        new TinyRustLmMemberPaths(args[0], args[1], args[2], args[3], args[4])),
+    operation);
+
+var requestWire = File.ReadAllBytes(args[6]);
+runtime.BeginRequest(requestWire, operation);
+for (uint stepCount = 0; stepCount < contract.Limits.MaximumSequenceTokens; stepCount++)
 {
-    var catalog = memory.GetSupportedSetups();
-    Console.WriteLine($"UAIX memory setup catalog: {catalog.Kind} ({catalog.SetupCount} setups)");
-    foreach (var setup in catalog.Setups)
+    var step = runtime.Step();
+    if (step.Status.Kind != "active")
     {
-        Console.WriteLine($"- {setup.Setup}: {setup.Label}");
-        Console.WriteLine($"  {setup.Summary}");
+        var output = runtime.Finish();
+        Console.Write(output.Text);
+        return 0;
     }
 }
 
-static void PrintMemoryPlanPreview(TinyRustLmMemoryClient memory)
-{
-    var catalog = memory.GetSupportedSetups();
-    var advancedPersona = catalog.Setups.First(setup =>
-        string.Equals(setup.Setup, "advanced_persona_profile", StringComparison.Ordinal));
-    var plan = memory.GetRequiredFiles(new UaixMemoryPackageRequest(
-        Setup: advancedPersona.Setup,
-        CodeLikeArtifacts: true,
-        CommunicationStyle: true,
-        AdvancedPersona: new UaixAdvancedPersonaOptions(SenseOfStyleDepth: 2)));
-
-    Console.WriteLine($"memory setup: {advancedPersona.Label} ({plan.RequiredFileCount} required files)");
-    Console.WriteLine(
-        $"  deck: {plan.FileDeck.PersonaDimensionFiles} persona files, {plan.FileDeck.EvidenceFiles} evidence files, {plan.FileDeck.ExportFiles} exports");
-    foreach (var requiredFile in plan.RequiredFiles.Take(5))
-    {
-        Console.WriteLine($"  {requiredFile.Path} [{requiredFile.State}]");
-    }
-
-    if (plan.RequiredFileCount > 5)
-    {
-        Console.WriteLine($"  ... {plan.RequiredFileCount - 5} more files planned by UAIX.Browser.Memory");
-    }
-}
+Console.Error.WriteLine("The runtime exceeded its advertised sequence bound without a terminal state.");
+return 1;

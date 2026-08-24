@@ -5,6 +5,5 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\TinyRustLM.Core\TinyRustLM.Core.csproj" />
-    <ProjectReference Include="..\..\src\TinyRustLM.Memory\TinyRustLM.Memory.csproj" />
   </ItemGroup>
 </Project>

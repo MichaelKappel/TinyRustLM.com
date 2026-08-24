@@ -4,21 +4,20 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 NUGET_SOURCE="${1:-${NUGET_SOURCE:-https://api.nuget.org/v3/index.json}}"
 PACKAGE_VERSION="${2:-$("$REPO_ROOT/eng/get-package-version.sh")}"
-MODEL_PATH="${3:-$REPO_ROOT/tinyrustlm/models/tiny-test-model.slm}"
-REPORT_OUTPUT="${4:-$REPO_ROOT/artifacts/reports/tinyrustlm-nuget-feed-smoke.json}"
+REPORT_OUTPUT="${3:-$REPO_ROOT/artifacts/reports/tinyrustlm-nuget-feed-smoke.json}"
 
 write_feed_smoke_report() {
   local status="$1"
   local error_message="$2"
   local consumer_output="${3:-}"
-  python3 - "$REPORT_OUTPUT" "$status" "$error_message" "$NUGET_SOURCE" "$PACKAGE_VERSION" "$MODEL_PATH" "$consumer_output" <<'PY'
+  python3 - "$REPORT_OUTPUT" "$status" "$error_message" "$NUGET_SOURCE" "$PACKAGE_VERSION" "$consumer_output" <<'PY'
 import hashlib
 import json
 import os
 import sys
 from datetime import datetime, timezone
 
-report_output, status, error_message, nuget_source, package_version, model_path, consumer_output = sys.argv[1:8]
+report_output, status, error_message, nuget_source, package_version, consumer_output = sys.argv[1:7]
 consumer_excerpt = " ".join(consumer_output.split())[:1000]
 report = {
     "schema": "tinyrustlm.nuget.feed_smoke.v0",
@@ -26,9 +25,12 @@ report = {
     "status": status,
     "nuget_source": nuget_source,
     "package_version": package_version,
-    "model_path": model_path,
+    "canonical_vectors": [
+        "contracts/vnext/slm2-q8-weight-vectors.v1.json",
+        "contracts/vnext/acg2-format-vectors.v1.json",
+    ],
     "secret_material_included": False,
-    "local_piece_assembly_verified": "consumer-smoke-assembled.slm" in consumer_output,
+    "local_piece_assembly_verified": "consumer-smoke-slm2-assembled" in consumer_output,
     "consumer_output_sha256": hashlib.sha256(consumer_output.encode("utf-8")).hexdigest() if consumer_output else "",
     "consumer_output_excerpt": consumer_excerpt,
     "error_message": error_message,
@@ -43,7 +45,7 @@ PY
 }
 
 consumer_output=""
-if consumer_output="$("$REPO_ROOT/eng/verify-consumer.sh" "$NUGET_SOURCE" "$MODEL_PATH" "$PACKAGE_VERSION" 2>&1)"; then
+if consumer_output="$("$REPO_ROOT/eng/verify-consumer.sh" "$NUGET_SOURCE" "$PACKAGE_VERSION" 2>&1)"; then
   printf '%s\n' "$consumer_output"
   write_feed_smoke_report "pass" "" "$consumer_output"
   echo "TinyRustLM published feed verification passed: $NUGET_SOURCE @ $PACKAGE_VERSION"

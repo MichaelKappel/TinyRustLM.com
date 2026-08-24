@@ -1,32 +1,63 @@
-using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
 
 namespace TinyRustLM;
 
-internal sealed class NativeRuntimeHandle : SafeHandle
+internal sealed class NativeRuntimeHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
     internal NativeRuntimeHandle(ulong value)
-        : base(IntPtr.Zero, ownsHandle: true)
+        : base(ownsHandle: true)
     {
-        if (value == 0)
+        if (value == 0 || value > long.MaxValue || !Environment.Is64BitProcess)
         {
-            throw new TinyRustLmException("invalid_runtime_handle", "Native runtime handle was zero.");
+            throw new TinyRustLmException("native-runtime-handle");
         }
-        SetHandle((IntPtr)unchecked((long)value));
-    }
 
-    public override bool IsInvalid => handle == IntPtr.Zero;
+        SetHandle(new IntPtr((long)value));
+    }
 
     internal ulong Value
     {
         get
         {
-            ObjectDisposedException.ThrowIf(IsClosed, this);
-            return unchecked((ulong)handle.ToInt64());
+            if (IsClosed || IsInvalid)
+            {
+                throw new ObjectDisposedException(nameof(NativeRuntimeHandle));
+            }
+
+            return checked((ulong)handle.ToInt64());
         }
+    }
+
+    internal void DestroyChecked()
+    {
+        if (IsClosed || IsInvalid)
+        {
+            return;
+        }
+
+        var value = Value;
+        var report = NativeJson.Call<NativeRuntimeDestroyReport>(() =>
+            NativeMethods.tinyrustlm_runtime_destroy_json(value));
+        NativeReportValidation.RequireSchema(report.Schema, "tinyrustlm.native.runtime_destroy/1");
+        if (!report.Destroyed || report.Handle != value)
+        {
+            throw new TinyRustLmException("native-runtime-destroy-report");
+        }
+
+        SetHandleAsInvalid();
     }
 
     protected override bool ReleaseHandle()
     {
-        return NativeMethods.tinyrustlm_runtime_destroy(unchecked((ulong)handle.ToInt64())) == 0;
+        var pointer = NativeMethods.tinyrustlm_runtime_destroy_json(unchecked((ulong)handle.ToInt64()));
+        if (pointer == IntPtr.Zero)
+        {
+            return false;
+        }
+
+        NativeMethods.tinyrustlm_string_free(pointer);
+        return true;
     }
 }
+
+internal sealed record NativeRuntimeDestroyReport(string Schema, ulong Handle, bool Destroyed);

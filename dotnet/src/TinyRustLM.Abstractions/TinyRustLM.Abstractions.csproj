@@ -2,9 +2,9 @@
   <PropertyGroup>
     <PackageId>$(TinyRustLmAbstractionsPackageId)</PackageId>
     <Title>TinyRustLM / UAIX Browser SDK Abstractions</Title>
-    <Summary>Shared public DTOs and interfaces for TinyRustLM, UAIX Browser, p2pLLM, p2pRuntime, and UAIX memory package clients.</Summary>
-    <Description>Stable public .NET interfaces, records, DTOs, and capability flags for TinyRustLM .slm validation, p2pLLM runtime harness operations, p2pRuntime P2P model sharing, MiniModel manifest metadata, and UAIX.org .uai memory and persona package workflows. This package is the shared abstraction layer for the UAIX.Browser.Core.Abstractions local feed identity.</Description>
-    <PackageTags>TinyRustLM;TinyRustLM.Abstractions;TinyRustLM.com;UAIX;UAIX.org;UAIX.Browser;Browser;UAIX.Browser.Core.Abstractions;p2pRuntime;p2pRuntime.com;p2pLLM;p2pLLM.com;MiniModel;MiniModel.org;SLM;.slm;UAI;.uai;AI;LLM;P2P;Rust;SDK;abstractions;interfaces;DTO;memory;persona;protected-sdk</PackageTags>
+    <Summary>Exact public contracts for TinyRustLM SLM2 inspection, ACG2 activation, bounded conversation execution, and direct transport.</Summary>
+    <Description>Public .NET records and interfaces for the sole prelaunch TinyRustLM product: mixed-Q8 SLM2 inspection, fail-atomic ACG2 composition activation, Prompt2 request execution, immutable operation identities, bounded runtime state, and composition-bound fixed-piece P2P transport. The package contains no legacy loader, compatibility facade, response repair, announcement catalog, model authoring, or local memory-package API.</Description>
+    <PackageTags>TinyRustLM;TinyRustLM.Abstractions;TinyRustLM.com;UAIX;UAIX.org;UAIX.Browser;Browser;UAIX.Browser.Core.Abstractions;p2pRuntime;p2pRuntime.com;p2pLLM;p2pLLM.com;MiniModel;MiniModel.org;SLM2;.slm;ACG2;Prompt2;Tokenizer2;Template2;Sampling2;AI;LLM;P2P;Rust;SDK;abstractions;interfaces;DTO;protected-sdk</PackageTags>
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>

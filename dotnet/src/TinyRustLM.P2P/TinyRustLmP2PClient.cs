@@ -1,358 +1,233 @@
-using System.Text;
-using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace TinyRustLM;
 
-/// <summary>Native-backed metadata-bound TinyRustLM P2P workflow client.</summary>
+/// <summary>Native-backed composition-bound fixed-piece direct transport.</summary>
 public sealed class TinyRustLmP2PClient : ITinyRustLmP2PClient
 {
-    private const long MinPieceSize = 1024;
-    private const long MaxPieceSize = 16 * 1024 * 1024;
-    private const int MaxManifestJsonBytes = 1024 * 1024;
-    private const int MaxPublicKeyJsonBytes = 16 * 1024;
-    private const int MaxAnnouncementJsonBytes = 256 * 1024;
-    private const int MaxAnnouncementCatalogJsonBytes = 4 * 1024 * 1024;
-    private const int MaxReceiptJsonBytes = 256 * 1024;
-
     /// <inheritdoc />
-    public P2PShareKitReport PrepareLocalShareKit(PrepareShareKitRequest request)
-    {
-        using var requestUtf8 = NativeJson.Utf8(PrepareShareKitRequestJson(request), nameof(request));
-        return NativeJson.Call<P2PShareKitReport>(() =>
-            NativeMethods.tinyrustlm_p2p_prepare_share_kit_json(requestUtf8.Pointer));
-    }
-
-    /// <inheritdoc />
-    public string PrepareLocalShareKitJson(PrepareShareKitRequest request)
-    {
-        using var requestUtf8 = NativeJson.Utf8(PrepareShareKitRequestJson(request), nameof(request));
-        var report = NativeJson.Call<JsonElement>(() =>
-            NativeMethods.tinyrustlm_p2p_prepare_share_kit_json(requestUtf8.Pointer));
-        return JsonSerializer.Serialize(report, NativeJson.SerializerOptions);
-    }
-
-    private static string PrepareShareKitRequestJson(PrepareShareKitRequest request)
+    public P2PShareKitReport PrepareShareKit(PrepareShareKitRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
-        ValidatePrepareShareKitRequest(request);
-        var nativeRequest = new NativePrepareShareKitRequest(
-            request.ModelPath,
-            request.OutputDir,
-            request.ManifestId,
-            request.ModelId,
-            request.PeerId,
-            request.PublicBaseUrl,
-            request.PieceSize);
-        return JsonSerializer.Serialize(nativeRequest, NativeJson.SerializerOptions);
+        ValidatePrepareRequest(request);
+        var contract = NativeContractAuthority.Get();
+        var requestBytes = NativeJson.Serialize(
+            new NativePrepareEnvelope(
+                NativeContractAuthority.P2PPrepareSchema,
+                new NativePrepareRequest(
+                    request.ArtifactPath,
+                    request.OutputDirectory,
+                    request.ArtifactManifestId,
+                    request.QualificationReceiptId,
+                    request.ProvenanceReceiptId,
+                    request.LicenseExpression,
+                    request.CreatedAtUtc,
+                    NativeAdmission.From(request.Admission))),
+            contract.Limits.MaximumP2PRequestJsonBytes,
+            nameof(request));
+        var report = NativeJson.Call<P2PShareKitReport>(() =>
+            NativeMethods.tinyrustlm_p2p_prepare_share_kit_json(
+                requestBytes,
+                (nuint)requestBytes.Length));
+        RequireSchema(report.Schema, "tinyrustlm.native.p2p_share_kit/1");
+        RequireNativeText(report.OutputDirectory);
+        RequireNativeText(report.ManifestPath);
+        RequireNativeText(report.PieceDirectory);
+        ValidateManifest(report.Manifest);
+        return report;
     }
 
-    private static void ValidatePrepareShareKitRequest(PrepareShareKitRequest request)
+    /// <inheritdoc />
+    public P2PManifest InspectManifest(ReadOnlyMemory<byte> canonicalManifestJson)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(request.ModelPath, nameof(request.ModelPath));
-        ArgumentException.ThrowIfNullOrWhiteSpace(request.OutputDir, nameof(request.OutputDir));
-        NativeJson.ThrowIfContainsEmbeddedNul(request.ModelPath, nameof(request.ModelPath));
-        NativeJson.ThrowIfContainsEmbeddedNul(request.OutputDir, nameof(request.OutputDir));
-        NativeJson.ThrowIfContainsEmbeddedNul(request.ManifestId, nameof(request.ManifestId));
-        NativeJson.ThrowIfContainsEmbeddedNul(request.ModelId, nameof(request.ModelId));
-        NativeJson.ThrowIfContainsEmbeddedNul(request.PeerId, nameof(request.PeerId));
-        NativeJson.ThrowIfContainsEmbeddedNul(request.PublicBaseUrl, nameof(request.PublicBaseUrl));
-        if (request.PieceSize is { } pieceSize
-            && (pieceSize < MinPieceSize || pieceSize > MaxPieceSize))
+        var contract = NativeContractAuthority.Get();
+        ManagedValidation.RequireBytes(
+            canonicalManifestJson,
+            nameof(canonicalManifestJson),
+            contract.Limits.MaximumP2PManifestBytes);
+        var manifestBytes = canonicalManifestJson.ToArray();
+        var manifest = NativeJson.Call<P2PManifest>(() =>
+            NativeMethods.tinyrustlm_p2p_inspect_manifest_json(
+                manifestBytes,
+                (nuint)manifestBytes.Length));
+        ValidateManifest(manifest);
+        return manifest;
+    }
+
+    /// <inheritdoc />
+    public P2PImportedArtifact AssembleArtifact(
+        AssembleArtifactRequest request,
+        ReadOnlyMemory<byte> canonicalManifestJson)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ManagedValidation.RequireText(request.PieceDirectory, nameof(request.PieceDirectory));
+        ManagedValidation.RequireText(request.OutputPath, nameof(request.OutputPath));
+        ArgumentNullException.ThrowIfNull(request.Admission);
+        var contract = NativeContractAuthority.Get();
+        ManagedValidation.RequireBytes(
+            canonicalManifestJson,
+            nameof(canonicalManifestJson),
+            contract.Limits.MaximumP2PManifestBytes);
+        var requestBytes = NativeJson.Serialize(
+            new NativeAssembleRequest(
+                NativeContractAuthority.P2PAssembleSchema,
+                request.PieceDirectory,
+                request.OutputPath,
+                NativeAdmission.From(request.Admission)),
+            contract.Limits.MaximumP2PRequestJsonBytes,
+            nameof(request));
+        var manifestBytes = canonicalManifestJson.ToArray();
+        var report = NativeJson.Call<P2PImportedArtifact>(() =>
+            NativeMethods.tinyrustlm_p2p_assemble_json(
+                requestBytes,
+                (nuint)requestBytes.Length,
+                manifestBytes,
+                (nuint)manifestBytes.Length));
+        RequireSchema(report.Schema, "tinyrustlm.native.p2p_imported_artifact/1");
+        if (!IsNativeText(report.OutputPath) ||
+            !ManagedValidation.IsContentId(report.ManifestId) ||
+            !ManagedValidation.IsDigest(report.ArtifactSha256) ||
+            report.ArtifactBytes == 0)
         {
-            throw new ArgumentOutOfRangeException(
-                nameof(request.PieceSize),
-                pieceSize,
-                $"PieceSize must be between {MinPieceSize} and {MaxPieceSize} bytes.");
+            throw new TinyRustLmException("native-p2p-import-report");
+        }
+
+        return report;
+    }
+
+    private static void ValidatePrepareRequest(PrepareShareKitRequest request)
+    {
+        ManagedValidation.RequireText(request.ArtifactPath, nameof(request.ArtifactPath));
+        ManagedValidation.RequireText(request.OutputDirectory, nameof(request.OutputDirectory));
+        ManagedValidation.RequireContentId(request.ArtifactManifestId, nameof(request.ArtifactManifestId));
+        ManagedValidation.RequireContentId(request.QualificationReceiptId, nameof(request.QualificationReceiptId));
+        ManagedValidation.RequireContentId(request.ProvenanceReceiptId, nameof(request.ProvenanceReceiptId));
+        ManagedValidation.RequireText(request.LicenseExpression, nameof(request.LicenseExpression), 256);
+        ManagedValidation.RequireText(request.CreatedAtUtc, nameof(request.CreatedAtUtc), 64);
+        ArgumentNullException.ThrowIfNull(request.Admission);
+        _ = NativeAdmission.From(request.Admission);
+    }
+
+    private static void ValidateManifest(P2PManifest manifest)
+    {
+        ArgumentNullException.ThrowIfNull(manifest);
+        RequireSchema(manifest.Schema, "tinyrustlm.vnext.p2p_manifest.v1");
+        if (manifest.Pieces is null ||
+            manifest.CompositionArtifactIds is null ||
+            manifest.Redaction is null ||
+            !ManagedValidation.IsContentId(manifest.ManifestId) ||
+            !ManagedValidation.IsDigest(manifest.CanonicalContentSha256) ||
+            !ManagedValidation.IsContentId(manifest.ArtifactManifestId) ||
+            !ManagedValidation.IsContentId(manifest.ArtifactId) ||
+            !ManagedValidation.IsDigest(manifest.ArtifactSha256) ||
+            !ManagedValidation.IsDigest(manifest.MerkleRootSha256) ||
+            !ManagedValidation.IsContentId(manifest.QualificationReceiptId) ||
+            !ManagedValidation.IsContentId(manifest.ProvenanceReceiptId) ||
+            !IsNativeText(manifest.LicenseExpression, 256) ||
+            !IsNativeText(manifest.CreatedAtUtc, 64) ||
+            manifest.ArtifactBytes == 0 ||
+            manifest.PieceBytes != 4_194_304 ||
+            manifest.PieceCount == 0 ||
+            manifest.PieceCount != (ulong)manifest.Pieces.Count ||
+            manifest.MerkleProfile != "tinyrustlm.merkle.sha256-4mib.v1" ||
+            manifest.Redaction.Profile != "tinyrustlm.vnext.public_safe.v1" ||
+            manifest.Redaction.Decision != "public-safe")
+        {
+            throw new TinyRustLmException("native-p2p-manifest-report");
+        }
+
+        ulong expectedOffset = 0;
+        for (var index = 0; index < manifest.Pieces.Count; index++)
+        {
+            var piece = manifest.Pieces[index];
+            if (piece is null ||
+                !ManagedValidation.IsDigest(piece.Sha256) ||
+                piece.Index != (ulong)index || piece.Offset != expectedOffset ||
+                piece.Length == 0 || piece.Length > manifest.PieceBytes)
+            {
+                throw new TinyRustLmException("native-p2p-piece-report");
+            }
+
+            expectedOffset = checked(expectedOffset + piece.Length);
+        }
+
+        if (expectedOffset != manifest.ArtifactBytes ||
+            !manifest.CompositionArtifactIds.SequenceEqual(
+                manifest.CompositionArtifactIds.OrderBy(value => value, StringComparer.Ordinal),
+                StringComparer.Ordinal))
+        {
+            throw new TinyRustLmException("native-p2p-manifest-report");
+        }
+
+        foreach (var compositionId in manifest.CompositionArtifactIds)
+        {
+            if (!ManagedValidation.IsContentId(compositionId))
+            {
+                throw new TinyRustLmException("native-p2p-manifest-report");
+            }
         }
     }
 
-    /// <inheritdoc />
-    public P2PManifestInspection InspectManifest(string manifestJson)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(manifestJson);
-        ValidateJsonHandoff(
-            manifestJson,
-            MaxManifestJsonBytes,
-            nameof(manifestJson),
-            "P2P manifest JSON");
-        using var manifestUtf8 = NativeJson.Utf8(manifestJson, nameof(manifestJson));
-        return NativeJson.Call<P2PManifestInspection>(() =>
-            NativeMethods.tinyrustlm_p2p_inspect_manifest_json(manifestUtf8.Pointer));
-    }
+    private static bool IsNativeText(string? value, int maximumCharacters = 4096) =>
+        !string.IsNullOrWhiteSpace(value) &&
+        value.Length <= maximumCharacters &&
+        value.IndexOf('\0', StringComparison.Ordinal) < 0;
 
-    /// <inheritdoc />
-    public P2PSignedManifestVerification VerifySignedManifest(
-        string signedManifestJson,
-        string publicKeyJson)
+    private static void RequireNativeText(string? value)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(signedManifestJson);
-        ArgumentException.ThrowIfNullOrWhiteSpace(publicKeyJson);
-        ValidateJsonHandoff(
-            signedManifestJson,
-            MaxManifestJsonBytes,
-            nameof(signedManifestJson),
-            "signed P2P manifest JSON");
-        ValidateJsonHandoff(
-            publicKeyJson,
-            MaxPublicKeyJsonBytes,
-            nameof(publicKeyJson),
-            "P2P public key JSON");
-        using var signedManifestUtf8 = NativeJson.Utf8(signedManifestJson, nameof(signedManifestJson));
-        using var publicKeyUtf8 = NativeJson.Utf8(publicKeyJson, nameof(publicKeyJson));
-        return NativeJson.Call<P2PSignedManifestVerification>(() =>
-            NativeMethods.tinyrustlm_p2p_verify_signed_manifest_json(
-                signedManifestUtf8.Pointer,
-                publicKeyUtf8.Pointer));
-    }
-
-    /// <inheritdoc />
-    public string VerifySignedManifestJson(string signedManifestJson, string publicKeyJson)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(signedManifestJson);
-        ArgumentException.ThrowIfNullOrWhiteSpace(publicKeyJson);
-        ValidateJsonHandoff(
-            signedManifestJson,
-            MaxManifestJsonBytes,
-            nameof(signedManifestJson),
-            "signed P2P manifest JSON");
-        ValidateJsonHandoff(
-            publicKeyJson,
-            MaxPublicKeyJsonBytes,
-            nameof(publicKeyJson),
-            "P2P public key JSON");
-        using var signedManifestUtf8 = NativeJson.Utf8(signedManifestJson, nameof(signedManifestJson));
-        using var publicKeyUtf8 = NativeJson.Utf8(publicKeyJson, nameof(publicKeyJson));
-        var verification = NativeJson.Call<JsonElement>(() =>
-            NativeMethods.tinyrustlm_p2p_verify_signed_manifest_json(
-                signedManifestUtf8.Pointer,
-                publicKeyUtf8.Pointer));
-        return JsonSerializer.Serialize(verification, NativeJson.SerializerOptions);
-    }
-
-    /// <inheritdoc />
-    public P2PImportPlan ImportFromManifest(string manifestJson)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(manifestJson);
-        ValidateJsonHandoff(
-            manifestJson,
-            MaxManifestJsonBytes,
-            nameof(manifestJson),
-            "P2P manifest JSON");
-        using var manifestUtf8 = NativeJson.Utf8(manifestJson, nameof(manifestJson));
-        return NativeJson.Call<P2PImportPlan>(() =>
-            NativeMethods.tinyrustlm_p2p_import_from_manifest_json(manifestUtf8.Pointer));
-    }
-
-    /// <inheritdoc />
-    public P2PLocalImportReceipt ImportFromManifest(
-        string manifestJson,
-        string shareKitRoot,
-        string outputPath)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(manifestJson);
-        ArgumentException.ThrowIfNullOrWhiteSpace(shareKitRoot);
-        ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
-        ValidateJsonHandoff(
-            manifestJson,
-            MaxManifestJsonBytes,
-            nameof(manifestJson),
-            "P2P manifest JSON");
-        using var manifestUtf8 = NativeJson.Utf8(manifestJson, nameof(manifestJson));
-        using var shareKitRootUtf8 = NativeJson.Utf8(shareKitRoot, nameof(shareKitRoot));
-        using var outputPathUtf8 = NativeJson.Utf8(outputPath, nameof(outputPath));
-        return NativeJson.Call<P2PLocalImportReceipt>(() =>
-            NativeMethods.tinyrustlm_p2p_assemble_from_manifest_json(
-                manifestUtf8.Pointer,
-                shareKitRootUtf8.Pointer,
-                outputPathUtf8.Pointer));
-    }
-
-    /// <inheritdoc />
-    public P2PLocalImportReceiptInspection InspectLocalImportReceipt(string receiptJson, string outputPath)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(receiptJson);
-        ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
-        ValidateJsonHandoff(
-            receiptJson,
-            MaxReceiptJsonBytes,
-            nameof(receiptJson),
-            "P2P local import receipt JSON");
-        using var receiptUtf8 = NativeJson.Utf8(receiptJson, nameof(receiptJson));
-        using var outputPathUtf8 = NativeJson.Utf8(outputPath, nameof(outputPath));
-        return NativeJson.Call<P2PLocalImportReceiptInspection>(() =>
-            NativeMethods.tinyrustlm_p2p_inspect_local_import_receipt_json(
-                receiptUtf8.Pointer,
-                outputPathUtf8.Pointer));
-    }
-
-    /// <inheritdoc />
-    public P2PShareMetadata ExportShareMetadata(string manifestJson)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(manifestJson);
-        ValidateJsonHandoff(
-            manifestJson,
-            MaxManifestJsonBytes,
-            nameof(manifestJson),
-            "P2P manifest JSON");
-        using var manifestUtf8 = NativeJson.Utf8(manifestJson, nameof(manifestJson));
-        return NativeJson.Call<P2PShareMetadata>(() =>
-            NativeMethods.tinyrustlm_p2p_export_share_metadata_json(manifestUtf8.Pointer));
-    }
-
-    /// <inheritdoc />
-    public string ExportShareMetadataJson(string manifestJson)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(manifestJson);
-        ValidateJsonHandoff(
-            manifestJson,
-            MaxManifestJsonBytes,
-            nameof(manifestJson),
-            "P2P manifest JSON");
-        using var manifestUtf8 = NativeJson.Utf8(manifestJson, nameof(manifestJson));
-        var metadata = NativeJson.Call<JsonElement>(() =>
-            NativeMethods.tinyrustlm_p2p_export_share_metadata_json(manifestUtf8.Pointer));
-        return JsonSerializer.Serialize(metadata, NativeJson.SerializerOptions);
-    }
-
-    /// <inheritdoc />
-    public P2PAnnouncement ValidateAnnouncement(string announcementJson)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(announcementJson);
-        ValidateJsonHandoff(
-            announcementJson,
-            MaxAnnouncementJsonBytes,
-            nameof(announcementJson),
-            "P2P announcement JSON");
-        using var announcementUtf8 = NativeJson.Utf8(announcementJson, nameof(announcementJson));
-        return NativeJson.Call<P2PAnnouncement>(() =>
-            NativeMethods.tinyrustlm_p2p_validate_announcement_json(announcementUtf8.Pointer));
-    }
-
-    /// <inheritdoc />
-    public string ValidateAnnouncementJson(string announcementJson)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(announcementJson);
-        ValidateJsonHandoff(
-            announcementJson,
-            MaxAnnouncementJsonBytes,
-            nameof(announcementJson),
-            "P2P announcement JSON");
-        using var announcementUtf8 = NativeJson.Utf8(announcementJson, nameof(announcementJson));
-        var announcement = NativeJson.Call<JsonElement>(() =>
-            NativeMethods.tinyrustlm_p2p_validate_announcement_json(announcementUtf8.Pointer));
-        return JsonSerializer.Serialize(announcement, NativeJson.SerializerOptions);
-    }
-
-    /// <inheritdoc />
-    public P2PAnnouncementCatalog ApplyReceivedAnnouncement(string announcementJson, string? existingCatalogJson = null)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(announcementJson);
-        ValidateJsonHandoff(
-            announcementJson,
-            MaxAnnouncementJsonBytes,
-            nameof(announcementJson),
-            "P2P announcement JSON");
-        ValidateOptionalJsonHandoff(
-            existingCatalogJson,
-            MaxAnnouncementCatalogJsonBytes,
-            nameof(existingCatalogJson),
-            "P2P announcement catalog JSON");
-        using var announcementUtf8 = NativeJson.Utf8(announcementJson, nameof(announcementJson));
-        using var catalogUtf8 = NativeJson.Utf8(existingCatalogJson, nameof(existingCatalogJson));
-        return NativeJson.Call<P2PAnnouncementCatalog>(() =>
-            NativeMethods.tinyrustlm_p2p_apply_received_announcement_json(
-                announcementUtf8.Pointer,
-                catalogUtf8.Pointer));
-    }
-
-    /// <inheritdoc />
-    public string ApplyReceivedAnnouncementJson(string announcementJson, string? existingCatalogJson = null)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(announcementJson);
-        ValidateJsonHandoff(
-            announcementJson,
-            MaxAnnouncementJsonBytes,
-            nameof(announcementJson),
-            "P2P announcement JSON");
-        ValidateOptionalJsonHandoff(
-            existingCatalogJson,
-            MaxAnnouncementCatalogJsonBytes,
-            nameof(existingCatalogJson),
-            "P2P announcement catalog JSON");
-        using var announcementUtf8 = NativeJson.Utf8(announcementJson, nameof(announcementJson));
-        using var catalogUtf8 = NativeJson.Utf8(existingCatalogJson, nameof(existingCatalogJson));
-        var catalog = NativeJson.Call<JsonElement>(() =>
-            NativeMethods.tinyrustlm_p2p_apply_received_announcement_json(
-                announcementUtf8.Pointer,
-                catalogUtf8.Pointer));
-        return JsonSerializer.Serialize(catalog, NativeJson.SerializerOptions);
-    }
-
-    /// <inheritdoc />
-    public P2PAnnouncementCatalogInspection InspectAnnouncementCatalog(string catalogJson)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(catalogJson);
-        ValidateJsonHandoff(
-            catalogJson,
-            MaxAnnouncementCatalogJsonBytes,
-            nameof(catalogJson),
-            "P2P announcement catalog JSON");
-        using var catalogUtf8 = NativeJson.Utf8(catalogJson, nameof(catalogJson));
-        return NativeJson.Call<P2PAnnouncementCatalogInspection>(() =>
-            NativeMethods.tinyrustlm_p2p_inspect_announcement_catalog_json(catalogUtf8.Pointer));
-    }
-
-    /// <inheritdoc />
-    public string InspectAnnouncementCatalogJson(string catalogJson)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(catalogJson);
-        ValidateJsonHandoff(
-            catalogJson,
-            MaxAnnouncementCatalogJsonBytes,
-            nameof(catalogJson),
-            "P2P announcement catalog JSON");
-        using var catalogUtf8 = NativeJson.Utf8(catalogJson, nameof(catalogJson));
-        var inspection = NativeJson.Call<JsonElement>(() =>
-            NativeMethods.tinyrustlm_p2p_inspect_announcement_catalog_json(catalogUtf8.Pointer));
-        return JsonSerializer.Serialize(inspection, NativeJson.SerializerOptions);
-    }
-
-    private static void ValidateOptionalJsonHandoff(
-        string? json,
-        int maxUtf8Bytes,
-        string parameterName,
-        string documentName)
-    {
-        if (json is null)
+        if (!IsNativeText(value))
         {
-            return;
-        }
-
-        ValidateJsonHandoff(json, maxUtf8Bytes, parameterName, documentName);
-    }
-
-    private static void ValidateJsonHandoff(
-        string json,
-        int maxUtf8Bytes,
-        string parameterName,
-        string documentName)
-    {
-        NativeJson.ThrowIfContainsEmbeddedNul(json, parameterName);
-        var byteCount = Encoding.UTF8.GetByteCount(json);
-        if (byteCount > maxUtf8Bytes)
-        {
-            throw new ArgumentException(
-                $"{documentName} exceeded the {maxUtf8Bytes} UTF-8 byte budget.",
-                parameterName);
+            throw new TinyRustLmException("native-p2p-report");
         }
     }
 
-    private sealed record NativePrepareShareKitRequest(
-        string ModelPath,
-        string OutputDir,
-        string? ManifestId,
-        string? ModelId,
-        string? PeerId,
-        string? PublicBaseUrl,
-        long? PieceSize);
+    private static void RequireSchema(string actual, string expected)
+    {
+        if (!string.Equals(actual, expected, StringComparison.Ordinal))
+        {
+            throw new TinyRustLmException("native-report-schema");
+        }
+    }
+
+    private sealed record NativePrepareEnvelope(string Schema, NativePrepareRequest Request);
+
+    private sealed record NativePrepareRequest(
+        string ArtifactPath,
+        string OutputDirectory,
+        string ArtifactManifestId,
+        string QualificationReceiptId,
+        string ProvenanceReceiptId,
+        string LicenseExpression,
+        string CreatedAtUtc,
+        NativeAdmission Admission);
+
+    private sealed record NativeAssembleRequest(
+        string Schema,
+        string PieceDirectory,
+        string OutputPath,
+        NativeAdmission Admission);
+
+    private sealed record NativeAdmission(
+        string Kind,
+        [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        string? CompositionPath)
+    {
+        internal static NativeAdmission From(TinyRustLmP2PAdmission admission)
+        {
+            ArgumentNullException.ThrowIfNull(admission);
+            return admission.Kind switch
+            {
+                TinyRustLmP2PArtifactKind.Slm2Model => Slm2(admission.CompositionPath),
+                TinyRustLmP2PArtifactKind.Acg2Composition when admission.CompositionPath is null =>
+                    new NativeAdmission("acg2-composition", null),
+                _ => throw new ArgumentException("The artifact admission is inconsistent.", nameof(admission))
+            };
+        }
+
+        private static NativeAdmission Slm2(string? compositionPath)
+        {
+            ManagedValidation.RequireText(compositionPath!, nameof(compositionPath));
+            return new NativeAdmission("slm2-model", compositionPath);
+        }
+    }
 }

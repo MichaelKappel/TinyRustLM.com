@@ -1,132 +1,152 @@
 namespace TinyRustLM;
 
-/// <summary>Native-backed public TinyRustLM runtime harness.</summary>
+/// <summary>One serialized managed owner for a native composition runtime.</summary>
 public sealed class TinyRustLmRuntime : ITinyRustLmRuntime
 {
-    private const int MaxSamplingCandidates = 1024;
-
+    private readonly object _sync = new();
+    private readonly TinyRustLmNativeContract _contract;
     private readonly NativeRuntimeHandle _handle;
+    private bool _disposed;
 
-    internal TinyRustLmRuntime(ulong handle)
+    internal TinyRustLmRuntime(NativeRuntimeHandle handle, TinyRustLmNativeContract contract)
     {
-        _handle = new NativeRuntimeHandle(handle);
+        _handle = handle;
+        _contract = contract;
     }
 
     /// <inheritdoc />
-    public TinyRustLmLoadReport LoadModel(string path, string? expectedSha256 = null)
+    public TinyRustLmRuntimeState GetState() => Locked(() =>
+        NativeReportValidation.RuntimeState(NativeJson.Call<TinyRustLmRuntimeState>(() =>
+            NativeMethods.tinyrustlm_runtime_state_json(_handle.Value))));
+
+    /// <inheritdoc />
+    public TinyRustLmRuntimeState ActivateComposition(
+        TinyRustLmActivationRequest request,
+        TinyRustLmOperationId expectedOperation)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(path);
-        using var pathUtf8 = NativeJson.Utf8(path, nameof(path));
-        using var shaUtf8 = NativeJson.Utf8(expectedSha256, nameof(expectedSha256));
-        return NativeJson.Call<TinyRustLmLoadReport>(() =>
-            NativeMethods.tinyrustlm_runtime_load_model_path_json(
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(expectedOperation);
+        ValidateActivation(request);
+        var requestBytes = NativeJson.Serialize(
+            new NativeActivationRequest(
+                NativeContractAuthority.RuntimeActivationSchema,
+                request.GraphPath,
+                request.Members),
+            _contract.Limits.MaximumRuntimeJsonBytes,
+            nameof(request));
+        var operation = expectedOperation.ToArray();
+        return Locked(() => NativeReportValidation.RuntimeState(
+            NativeJson.Call<TinyRustLmRuntimeState>(() =>
+                NativeMethods.tinyrustlm_runtime_activate_json(
+                    _handle.Value,
+                    requestBytes,
+                    (nuint)requestBytes.Length,
+                    operation,
+                    (nuint)operation.Length))));
+    }
+
+    /// <inheritdoc />
+    public TinyRustLmRuntimeState AdvanceOperation(
+        TinyRustLmOperationId expectedCurrent,
+        TinyRustLmOperationId next)
+    {
+        ArgumentNullException.ThrowIfNull(expectedCurrent);
+        ArgumentNullException.ThrowIfNull(next);
+        var expectedBytes = expectedCurrent.ToArray();
+        var nextBytes = next.ToArray();
+        return Locked(() => NativeReportValidation.RuntimeState(
+            NativeJson.Call<TinyRustLmRuntimeState>(() =>
+                NativeMethods.tinyrustlm_runtime_advance_operation_json(
+                    _handle.Value,
+                    expectedBytes,
+                    (nuint)expectedBytes.Length,
+                    nextBytes,
+                    (nuint)nextBytes.Length))));
+    }
+
+    /// <inheritdoc />
+    public TinyRustLmRuntimeState SetTranscriptRevision(ulong transcriptRevision) => Locked(() =>
+        NativeReportValidation.RuntimeState(NativeJson.Call<TinyRustLmRuntimeState>(() =>
+            NativeMethods.tinyrustlm_runtime_set_transcript_json(
                 _handle.Value,
-                pathUtf8.Pointer,
-                shaUtf8.Pointer));
+                transcriptRevision))));
+
+    /// <inheritdoc />
+    public TinyRustLmRuntimeState BeginRequest(
+        ReadOnlyMemory<byte> prompt2Request,
+        TinyRustLmOperationId expectedOperation)
+    {
+        ArgumentNullException.ThrowIfNull(expectedOperation);
+        ManagedValidation.RequireBytes(
+            prompt2Request,
+            nameof(prompt2Request),
+            _contract.Limits.MaximumPrompt2RequestBytes);
+        var requestBytes = prompt2Request.ToArray();
+        var operation = expectedOperation.ToArray();
+        return Locked(() => NativeReportValidation.RuntimeState(
+            NativeJson.Call<TinyRustLmRuntimeState>(() =>
+                NativeMethods.tinyrustlm_runtime_begin_request_json(
+                    _handle.Value,
+                    requestBytes,
+                    (nuint)requestBytes.Length,
+                    operation,
+                    (nuint)operation.Length))));
     }
 
     /// <inheritdoc />
-    public TinyRustLmCompositionActivationReport ActivateComposition(
-        string path,
-        string expectedSha256)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(path);
-        ArgumentException.ThrowIfNullOrWhiteSpace(expectedSha256);
-        using var pathUtf8 = NativeJson.Utf8(path, nameof(path));
-        using var shaUtf8 = NativeJson.Utf8(expectedSha256, nameof(expectedSha256));
-        return NativeJson.Call<TinyRustLmCompositionActivationReport>(() =>
-            NativeMethods.tinyrustlm_runtime_activate_composition_path_json(
-                _handle.Value,
-                pathUtf8.Pointer,
-                shaUtf8.Pointer));
-    }
+    public TinyRustLmRuntimeStep Step(bool cancelled = false) => Locked(() =>
+        NativeReportValidation.RuntimeStep(NativeJson.Call<TinyRustLmRuntimeStep>(() =>
+            NativeMethods.tinyrustlm_runtime_step_json(_handle.Value, cancelled ? (byte)1 : (byte)0))));
 
     /// <inheritdoc />
-    public void UnloadModel()
-    {
-        _ = NativeJson.Call<StatusReport>(() =>
-            NativeMethods.tinyrustlm_runtime_unload_model_json(_handle.Value));
-    }
-
-    /// <inheritdoc />
-    public TinyRustLmGenerationResult Generate(string prompt, TinyRustLmGenerationOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(prompt);
-        var generationOptions = options ?? new TinyRustLmGenerationOptions();
-        ValidateGenerationOptions(generationOptions);
-        using var promptUtf8 = NativeJson.Utf8(prompt, nameof(prompt));
-        return NativeJson.Call<TinyRustLmGenerationResult>(() =>
-            NativeMethods.tinyrustlm_runtime_generate_json(
-                _handle.Value,
-                promptUtf8.Pointer,
-                (uint)generationOptions.MaxNewTokens,
-                generationOptions.Temperature,
-                (uint)generationOptions.TopK,
-                generationOptions.TopP,
-                generationOptions.Seed));
-    }
-
-    /// <inheritdoc />
-    public TinyRustLmGenerationResult Step()
-    {
-        return NativeJson.Call<TinyRustLmGenerationResult>(() =>
-            NativeMethods.tinyrustlm_runtime_step_json(_handle.Value));
-    }
-
-    /// <inheritdoc />
-    public void Reset()
-    {
-        _ = NativeJson.Call<StatusReport>(() =>
-            NativeMethods.tinyrustlm_runtime_reset_json(_handle.Value));
-    }
-
-    /// <inheritdoc />
-    public string GetDiagnostics()
-    {
-        var report = NativeJson.Call<DiagnosticsReport>(() =>
-            NativeMethods.tinyrustlm_runtime_diagnostics_json(_handle.Value));
-        return report.Diagnostics;
-    }
+    public TinyRustLmRuntimeOutput Finish() => Locked(() =>
+        NativeReportValidation.RuntimeOutput(NativeJson.Call<TinyRustLmRuntimeOutput>(() =>
+            NativeMethods.tinyrustlm_runtime_finish_json(_handle.Value))));
 
     /// <inheritdoc />
     public void Dispose()
     {
-        _handle.Dispose();
+        lock (_sync)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            try
+            {
+                _handle.DestroyChecked();
+            }
+            finally
+            {
+                _handle.Dispose();
+                _disposed = true;
+            }
+        }
     }
 
-    private sealed record StatusReport(string Status);
-
-    private sealed record DiagnosticsReport(string Diagnostics);
-
-    private static void ValidateGenerationOptions(TinyRustLmGenerationOptions options)
+    private T Locked<T>(Func<T> operation)
     {
-        if (options.MaxNewTokens <= 0)
+        lock (_sync)
         {
-            throw new ArgumentOutOfRangeException(
-                nameof(options.MaxNewTokens),
-                options.MaxNewTokens,
-                "MaxNewTokens must be greater than zero.");
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            return operation();
         }
-        if (!float.IsFinite(options.Temperature) || options.Temperature < 0.0f)
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof(options.Temperature),
-                options.Temperature,
-                "Temperature must be finite and greater than or equal to zero.");
-        }
-        if (options.TopK <= 0 || options.TopK > MaxSamplingCandidates)
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof(options.TopK),
-                options.TopK,
-                $"TopK must be between 1 and {MaxSamplingCandidates}.");
-        }
-        if (!float.IsFinite(options.TopP) || options.TopP <= 0.0f || options.TopP > 1.0f)
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof(options.TopP),
-                options.TopP,
-                "TopP must be finite, greater than zero, and less than or equal to one.");
-        }
+    }
+
+    private static void ValidateActivation(TinyRustLmActivationRequest request)
+    {
+        ManagedValidation.RequireText(request.GraphPath, nameof(request.GraphPath));
+        ArgumentNullException.ThrowIfNull(request.Members);
+        ManagedValidation.RequireText(request.Members.Model, nameof(request.Members.Model));
+        ManagedValidation.RequireText(request.Members.Tokenizer, nameof(request.Members.Tokenizer));
+        ManagedValidation.RequireText(request.Members.Template, nameof(request.Members.Template));
+        ManagedValidation.RequireText(request.Members.Sampling, nameof(request.Members.Sampling));
+        ManagedValidation.RequireText(request.Members.Prompt, nameof(request.Members.Prompt));
     }
 }
+
+internal sealed record NativeActivationRequest(
+    string Schema,
+    string GraphPath,
+    TinyRustLmMemberPaths Members);

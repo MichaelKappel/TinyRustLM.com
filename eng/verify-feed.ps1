@@ -1,7 +1,6 @@
 param(
     [string]$NuGetSource = "",
     [string]$PackageVersion = "",
-    [string]$ModelPath = "",
     [string]$ReportOutput = ""
 )
 
@@ -9,9 +8,6 @@ $ErrorActionPreference = "Stop"
 $RepoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 if (-not $NuGetSource) {
     $NuGetSource = if ($env:NUGET_SOURCE) { $env:NUGET_SOURCE } else { "https://api.nuget.org/v3/index.json" }
-}
-if (-not $ModelPath) {
-    $ModelPath = Join-Path $RepoRoot "tinyrustlm/models/tiny-test-model.slm"
 }
 if (-not $PackageVersion) {
     $PackageVersion = (& (Join-Path $PSScriptRoot "get-package-version.ps1")).Trim()
@@ -39,9 +35,12 @@ function Write-FeedSmokeReport {
         status = $Status
         nuget_source = $NuGetSource
         package_version = $PackageVersion
-        model_path = $ModelPath
+        canonical_vectors = @(
+            "contracts/vnext/slm2-q8-weight-vectors.v1.json",
+            "contracts/vnext/acg2-format-vectors.v1.json"
+        )
         secret_material_included = $false
-        local_piece_assembly_verified = $ConsumerOutput.Contains("consumer-smoke-assembled.slm")
+        local_piece_assembly_verified = $ConsumerOutput.Contains("consumer-smoke-slm2-assembled")
         consumer_output_sha256 = Get-Sha256Text $ConsumerOutput
         consumer_output_excerpt = $consumerExcerpt
         error_message = $ErrorMessage
@@ -74,7 +73,6 @@ try {
     $consumerOutputLines = & (Join-Path $PSScriptRoot "verify-consumer.ps1") `
         -PackageSource $NuGetSource `
         -PackageVersion $PackageVersion `
-        -ModelPath $ModelPath `
         2>&1
     $consumerOutput = ($consumerOutputLines | Out-String).Trim()
     if ($consumerOutput) {

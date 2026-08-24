@@ -2,9 +2,9 @@
   <PropertyGroup>
     <PackageId>$(TinyRustLmP2PPackageId)</PackageId>
     <Title>TinyRustLM / UAIX Browser p2pRuntime P2P SDK</Title>
-    <Summary>Metadata-bound p2pRuntime share, import, announcement, catalog, and MiniModel manifest workflows for .slm adoption.</Summary>
-    <Description>Public TinyRustLM .NET SDK for p2pRuntime.com peer-to-peer .slm model sharing and import workflows: MiniModel manifest inspection, local piece verification, signed-manifest verification, share-kit metadata, announcement validation, catalog application and inspection, import receipts, and safe metadata handoff. This package backs the UAIX.Browser.p2pRuntime.P2P local feed identity while keeping peer discovery services, premium routing, publisher services, training, and model-authoring internals out of the package.</Description>
-    <PackageTags>TinyRustLM;TinyRustLM.P2P;TinyRustLM.com;UAIX;UAIX.org;UAIX.Browser;Browser;UAIX.Browser.p2pRuntime.P2P;p2pRuntime;p2pRuntime.com;P2P;peer-to-peer;model-sharing;MiniModel;MiniModel.org;manifest;announcement;catalog;share-kit;import;receipt;SLM;.slm;AI;LLM;Rust;protected-sdk</PackageTags>
+    <Summary>Composition-bound fixed-piece direct transport for exact TinyRustLM SLM2 and ACG2 artifacts.</Summary>
+    <Description>Public TinyRustLM .NET SDK for creating immutable four-MiB-piece share kits, inspecting canonical public-safe manifests, and create-only assembling exact SLM2 or ACG2 artifacts after hash and semantic admission. The package exposes no peer discovery, announcements, catalogs, signed-manifest compatibility layer, receipt sidecars, network fallback, model-byte proxy, training, or model-authoring internals.</Description>
+    <PackageTags>TinyRustLM;TinyRustLM.P2P;TinyRustLM.com;UAIX;UAIX.org;UAIX.Browser;Browser;UAIX.Browser.p2pRuntime.P2P;p2pRuntime;p2pRuntime.com;P2P;peer-to-peer;direct-transport;fixed-piece;model-sharing;MiniModel;MiniModel.org;manifest;share-kit;assembly;SLM2;.slm;ACG2;AI;LLM;Rust;protected-sdk</PackageTags>
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>

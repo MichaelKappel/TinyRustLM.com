@@ -16,15 +16,22 @@ public sealed class PackageBoundaryTests
         var required = new[]
         {
             "rust/crates/tinyrustlm-runtime/Cargo.toml",
-            "rust/crates/tinyrustlm-slm/Cargo.toml",
-            "rust/crates/tinyrustlm-memory/Cargo.toml",
-            "rust/crates/tinyrustlm-memory-endpoints/Cargo.toml",
+            "rust/crates/tinyrustlm-slm2/Cargo.toml",
+            "rust/crates/tinyrustlm-tokenizer2/Cargo.toml",
+            "rust/crates/tinyrustlm-template2/Cargo.toml",
+            "rust/crates/tinyrustlm-sampling2/Cargo.toml",
+            "rust/crates/tinyrustlm-prompt2/Cargo.toml",
+            "rust/crates/tinyrustlm-composition2/Cargo.toml",
             "rust/crates/tinyrustlm-p2p/Cargo.toml",
             "rust/crates/tinyrustlm-native/Cargo.toml",
+            "rust/crates/tinyrustlm-convert/Cargo.toml",
             "dotnet/TinyRustLM.sln",
-            "dotnet/src/TinyRustLM.Memory/TinyRustLM.Memory.csproj",
+            "dotnet/src/TinyRustLM.Abstractions/TinyRustLM.Abstractions.csproj",
+            "dotnet/src/TinyRustLM.Core/TinyRustLM.Core.csproj",
+            "dotnet/src/TinyRustLM.P2P/TinyRustLM.P2P.csproj",
             "dotnet/src/TinyRustLM.MemoryEndpoints/TinyRustLM.MemoryEndpoints.csproj",
             "dotnet/src/TinyRustLM.Conversion/TinyRustLM.Conversion.csproj",
+            "dotnet/tools/TinyRustLM.ConversionFixtureTool/TinyRustLM.ConversionFixtureTool.csproj",
             "dotnet/tools/TinyRustLM.PackageCanonicalizer/TinyRustLM.PackageCanonicalizer.csproj",
             "dotnet/tools/TinyRustLM.PackageCanonicalizer/NuGetPackageCanonicalizer.cs",
             "dotnet/tools/TinyRustLM.PackageCanonicalizer/Program.cs",
@@ -43,6 +50,8 @@ public sealed class PackageBoundaryTests
             "eng/verify-browser-feed.ps1",
             "eng/verify-browser-feed.sh",
             "eng/verify-consumer.ps1",
+            "eng/verify-consumer.sh",
+            "eng/consumer-smoke/Program.cs",
             "eng/verify-feed-current.ps1",
             "eng/verify-feed-current.sh",
             "eng/verify-feed-package-hashes.ps1",
@@ -72,7 +81,6 @@ public sealed class PackageBoundaryTests
             "docs/nuget/MEMORY_ENDPOINTS_CONNECTOR.md",
             "docs/nuget/MEMORY_ENDPOINTS_DISTRIBUTED_SYNC_V1.md",
             "docs/nuget/memoryendpoints-distributed-sync-capabilities-v1.example.json",
-            "docs/nuget/MEMORY_HARNESS.md",
             "docs/nuget/PACKAGE_SECURITY.md",
             "docs/nuget/PRIVATE_FEED.md",
             "docs/nuget/README.md",
@@ -523,24 +531,22 @@ public sealed class PackageBoundaryTests
     }
 
     [Fact]
-    public void ConsoleSampleUsesMemorySetupCatalog()
+    public void ConsoleSampleExercisesSoleCompositionRuntime()
     {
         var root = RepositoryRoot();
         var sample = File.ReadAllText(Path.Combine(root, "dotnet/samples/TinyRustLM.ConsoleSample/Program.cs"));
         var sampleProject = File.ReadAllText(Path.Combine(root, "dotnet/samples/TinyRustLM.ConsoleSample/TinyRustLM.ConsoleSample.csproj"));
-        var readme = File.ReadAllText(Path.Combine(root, "docs/nuget/README.md"));
-        var memoryHarness = File.ReadAllText(Path.Combine(root, "docs/nuget/MEMORY_HARNESS.md"));
 
-        Assert.Contains(@"..\..\src\TinyRustLM.Memory\TinyRustLM.Memory.csproj", sampleProject, StringComparison.Ordinal);
-        Assert.Contains("TinyRustLmMemoryClient", sample, StringComparison.Ordinal);
-        Assert.Contains("--memory-setups", sample, StringComparison.Ordinal);
-        Assert.Contains("GetSupportedSetups()", sample, StringComparison.Ordinal);
-        Assert.Contains("advanced_persona_profile", sample, StringComparison.Ordinal);
-        Assert.Contains("GetRequiredFiles", sample, StringComparison.Ordinal);
-        Assert.Contains("FileDeck", sample, StringComparison.Ordinal);
-        Assert.Contains("UAIX.Browser.Memory", sample, StringComparison.Ordinal);
-        Assert.Contains("Consumers should use `GetSupportedSetups()`", readme, StringComparison.Ordinal);
-        Assert.Contains("TinyRustLM.ConsoleSample --memory-setups", memoryHarness, StringComparison.Ordinal);
+        Assert.DoesNotContain("TinyRustLM.Memory", sampleProject, StringComparison.Ordinal);
+        Assert.Contains("TinyRustLmRuntimeFactory", sample, StringComparison.Ordinal);
+        Assert.Contains("GetNativeContract()", sample, StringComparison.Ordinal);
+        Assert.Contains("TinyRustLmSlm2Inspector", sample, StringComparison.Ordinal);
+        Assert.Contains("TinyRustLmRuntimePolicy", sample, StringComparison.Ordinal);
+        Assert.Contains("ActivateComposition", sample, StringComparison.Ordinal);
+        Assert.Contains("BeginRequest", sample, StringComparison.Ordinal);
+        Assert.Contains("runtime.Step()", sample, StringComparison.Ordinal);
+        Assert.Contains("runtime.Finish()", sample, StringComparison.Ordinal);
+        Assert.DoesNotContain("TinySlm", sample, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -555,10 +561,15 @@ public sealed class PackageBoundaryTests
         var protectedCrates = new[]
         {
             "rust/crates/tinyrustlm-runtime/Cargo.toml",
-            "rust/crates/tinyrustlm-slm/Cargo.toml",
-            "rust/crates/tinyrustlm-memory/Cargo.toml",
+            "rust/crates/tinyrustlm-slm2/Cargo.toml",
+            "rust/crates/tinyrustlm-tokenizer2/Cargo.toml",
+            "rust/crates/tinyrustlm-template2/Cargo.toml",
+            "rust/crates/tinyrustlm-sampling2/Cargo.toml",
+            "rust/crates/tinyrustlm-prompt2/Cargo.toml",
+            "rust/crates/tinyrustlm-composition2/Cargo.toml",
             "rust/crates/tinyrustlm-p2p/Cargo.toml",
-            "rust/crates/tinyrustlm-native/Cargo.toml"
+            "rust/crates/tinyrustlm-native/Cargo.toml",
+            "rust/crates/tinyrustlm-convert/Cargo.toml"
         };
 
         Assert.Equal(packageVersion, cargoVersion);
@@ -566,66 +577,86 @@ public sealed class PackageBoundaryTests
         Assert.Contains("<TinyRustLmAbstractionsPackageId Condition=\"'$(TinyRustLmAbstractionsPackageId)' == ''\">$(TinyRustLmPackageIdPrefix).Abstractions</TinyRustLmAbstractionsPackageId>", props, StringComparison.Ordinal);
         Assert.Contains("<TinyRustLmCorePackageId Condition=\"'$(TinyRustLmCorePackageId)' == ''\">$(TinyRustLmPackageIdPrefix).Core</TinyRustLmCorePackageId>", props, StringComparison.Ordinal);
         Assert.Contains("<TinyRustLmP2PPackageId Condition=\"'$(TinyRustLmP2PPackageId)' == ''\">$(TinyRustLmPackageIdPrefix).P2P</TinyRustLmP2PPackageId>", props, StringComparison.Ordinal);
-        Assert.Contains("<TinyRustLmMemoryPackageId Condition=\"'$(TinyRustLmMemoryPackageId)' == ''\">$(TinyRustLmPackageIdPrefix).Memory</TinyRustLmMemoryPackageId>", props, StringComparison.Ordinal);
         Assert.Contains("<TinyRustLmMemoryEndpointsPackageId Condition=\"'$(TinyRustLmMemoryEndpointsPackageId)' == ''\">$(TinyRustLmPackageIdPrefix).MemoryEndpoints</TinyRustLmMemoryEndpointsPackageId>", props, StringComparison.Ordinal);
         Assert.Contains("<TinyRustLmConversionPackageId Condition=\"'$(TinyRustLmConversionPackageId)' == ''\">$(TinyRustLmPackageIdPrefix).Conversion</TinyRustLmConversionPackageId>", props, StringComparison.Ordinal);
         Assert.Contains("<TinyRustLmPackOptionalMemoryEndpoints Condition=\"'$(TinyRustLmPackOptionalMemoryEndpoints)' == ''\">false</TinyRustLmPackOptionalMemoryEndpoints>", props, StringComparison.Ordinal);
         Assert.Contains("<TinyRustLmPackPrivateConversion Condition=\"'$(TinyRustLmPackPrivateConversion)' == ''\">false</TinyRustLmPackPrivateConversion>", props, StringComparison.Ordinal);
+        Assert.DoesNotContain("TinyRustLmMemoryPackageId", props, StringComparison.Ordinal);
         Assert.Contains("<DebugType>portable</DebugType>", props, StringComparison.Ordinal);
         Assert.Contains("<DebugSymbols>true</DebugSymbols>", props, StringComparison.Ordinal);
         Assert.Contains("<IncludeSymbols>true</IncludeSymbols>", props, StringComparison.Ordinal);
         Assert.Contains("<SymbolPackageFormat>snupkg</SymbolPackageFormat>", props, StringComparison.Ordinal);
-        Assert.Contains("UAIX.Browser", packageTags, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("UAIX.org", packageTags, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("p2pRuntime", packageTags, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("p2pRuntime.com", packageTags, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("p2pLLM", packageTags, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("p2pLLM.com", packageTags, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("MiniModel", packageTags, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains(".slm", packageTags, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains(".uai", packageTags, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("ai-memory", packageTags, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("receipt-sidecar inspection", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("typed share-kit", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("direct announcement URL validation", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("announcement JSON handoff", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("catalog inspection", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("managed/native generation-option validation", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("embedded-NUL string-boundary validation", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("empty-string native bridge preservation", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("managed share-kit request validation", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("managed P2P JSON byte-budget preflight", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("UAIX memory/persona package validation", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("declared package-file audit gates", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("package documentation hash parity audit", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("exact package-set audit", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("package identity audit", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("package metadata policy audit", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("public dependency graph audit", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("dependency metadata policy audit", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("native asset placement audit", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("native asset filename audit", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("package entry allow-list audit", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("public API surface audit", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("binary public surface gate", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("publish-plan source provenance gate", releaseNotes, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("workspace rustfmt/clippy release gates", releaseNotes, StringComparison.OrdinalIgnoreCase);
+
+        foreach (var requiredTag in new[]
+        {
+            "UAIX.Browser",
+            "p2pRuntime",
+            "p2pLLM",
+            "MiniModel",
+            "SLM2",
+            "ACG2",
+            "Prompt2",
+            "Tokenizer2",
+            "Template2",
+            "Sampling2"
+        })
+        {
+            Assert.Contains(requiredTag, packageTags, StringComparison.OrdinalIgnoreCase);
+        }
+        Assert.DoesNotContain("ai-memory", packageTags, StringComparison.OrdinalIgnoreCase);
+
+        foreach (var requiredClaim in new[]
+        {
+            "Prelaunch single-product SDK",
+            "mixed-Q8 SLM2 inspection",
+            "fail-atomic ACG2 composition activation",
+            "bounded Prompt2 and Sampling2 conversation execution",
+            "exact native-contract validation",
+            "immutable operation identities",
+            "composition-bound fixed-piece direct transport",
+            "no compatibility APIs",
+            "local memory-package facade",
+            "legacy model loader"
+        })
+        {
+            Assert.Contains(requiredClaim, releaseNotes, StringComparison.OrdinalIgnoreCase);
+        }
+        foreach (var obsoleteClaim in new[]
+        {
+            "receipt-sidecar inspection",
+            "direct announcement URL validation",
+            "announcement JSON handoff",
+            "catalog inspection",
+            "managed/native generation-option validation"
+        })
+        {
+            Assert.DoesNotContain(obsoleteClaim, releaseNotes, StringComparison.OrdinalIgnoreCase);
+        }
+
         foreach (var relativePath in protectedCrates)
         {
-            var crateToml = File.ReadAllText(Path.Combine(root, relativePath));
-            Assert.Contains("version.workspace = true", crateToml, StringComparison.Ordinal);
+            var cratePath = Path.Combine(root, relativePath);
+            Assert.True(File.Exists(cratePath), relativePath);
+            Assert.Contains(
+                "version.workspace = true",
+                File.ReadAllText(cratePath),
+                StringComparison.Ordinal);
         }
+
         AssertPackageIdUsesProperty(root, "dotnet/src/TinyRustLM.Abstractions/TinyRustLM.Abstractions.csproj", "TinyRustLmAbstractionsPackageId");
         AssertPackageIdUsesProperty(root, "dotnet/src/TinyRustLM.Core/TinyRustLM.Core.csproj", "TinyRustLmCorePackageId");
         AssertPackageIdUsesProperty(root, "dotnet/src/TinyRustLM.P2P/TinyRustLM.P2P.csproj", "TinyRustLmP2PPackageId");
-        AssertPackageIdUsesProperty(root, "dotnet/src/TinyRustLM.Memory/TinyRustLM.Memory.csproj", "TinyRustLmMemoryPackageId");
         AssertPackageIdUsesProperty(root, "dotnet/src/TinyRustLM.MemoryEndpoints/TinyRustLM.MemoryEndpoints.csproj", "TinyRustLmMemoryEndpointsPackageId");
-        AssertPackageProjectSearchMetadata(root, "dotnet/src/TinyRustLM.Abstractions/TinyRustLM.Abstractions.csproj", "UAIX.Browser", "UAIX.org", "p2pRuntime", "p2pRuntime.com", "p2pLLM", "p2pLLM.com", "MiniModel", ".slm", ".uai", "memory", "persona");
-        AssertPackageProjectSearchMetadata(root, "dotnet/src/TinyRustLM.Core/TinyRustLM.Core.csproj", "UAIX.Browser.p2pLLM.Runtime", "UAIX.org", "p2pLLM", "p2pLLM.com", ".slm", "runtime", "harness", "diagnostics");
-        AssertPackageProjectSearchMetadata(root, "dotnet/src/TinyRustLM.P2P/TinyRustLM.P2P.csproj", "UAIX.Browser.p2pRuntime.P2P", "UAIX.org", "p2pRuntime", "p2pRuntime.com", "MiniModel", "manifest", "announcement", "catalog", "receipt");
-        AssertPackageProjectSearchMetadata(root, "dotnet/src/TinyRustLM.Memory/TinyRustLM.Memory.csproj", "UAIX.Browser.Memory", "UAIX.org", ".uai", ".uaix", "AI Memory Package Wizard", "ai-digest", "point-agent-urls", "prompt-nudges", "canonical-starter-zip", "safe-structured-output", "review-export-checks", "agent-use-blocks", "dtmi-policy", "family-aware-required-files", "agent-pickup", "session-log", "manifest-json", "manifest-overlay", "package-model", "knowledge-graph", "persona", "personality-packs", "persona-deck", "triggered-style-axes", "LLM-Wiki", "multi-agent", "talisman-system");
-        AssertPackageProjectSearchMetadata(root, "dotnet/src/TinyRustLM.MemoryEndpoints/TinyRustLM.MemoryEndpoints.csproj", "MemoryEndpoints.com", "LocalEndpoints.com", ".uai", "short-term-memory", "long-term-memory", "optional-plugin", "local-connect");
-        AssertPackageProjectSearchMetadata(root, "dotnet/src/TinyRustLM.Conversion/TinyRustLM.Conversion.csproj", "UAIX.Browser.p2pLLM.Conversion", "UAIX.org", "p2pLLM", "p2pLLM.com", ".slm", "conversion", "local-feed");
+        AssertPackageIdUsesProperty(root, "dotnet/src/TinyRustLM.Conversion/TinyRustLM.Conversion.csproj", "TinyRustLmConversionPackageId");
+        Assert.False(
+            File.Exists(Path.Combine(root, "dotnet/src/TinyRustLM.Memory/TinyRustLM.Memory.csproj")),
+            "The deleted local memory facade must not return.");
+
+        AssertPackageProjectSearchMetadata(root, "dotnet/src/TinyRustLM.Abstractions/TinyRustLM.Abstractions.csproj", "UAIX.Browser.Core.Abstractions", "SLM2", "ACG2", "Prompt2", "Tokenizer2", "Template2", "Sampling2");
+        AssertPackageProjectSearchMetadata(root, "dotnet/src/TinyRustLM.Core/TinyRustLM.Core.csproj", "UAIX.Browser.p2pLLM.Runtime", "SLM2", "ACG2", "Prompt2", "bounded-generation");
+        AssertPackageProjectSearchMetadata(root, "dotnet/src/TinyRustLM.P2P/TinyRustLM.P2P.csproj", "UAIX.Browser.p2pRuntime.P2P", "fixed-piece", "manifest", "share-kit", "SLM2", "ACG2");
+        AssertPackageProjectSearchMetadata(root, "dotnet/src/TinyRustLM.MemoryEndpoints/TinyRustLM.MemoryEndpoints.csproj", "MemoryEndpoints.com", "LocalEndpoints.com", "short-term-memory", "long-term-memory", "optional-plugin", "local-connect");
+        AssertPackageProjectSearchMetadata(root, "dotnet/src/TinyRustLM.Conversion/TinyRustLM.Conversion.csproj", "UAIX.Browser.p2pLLM.Conversion", "SLM2", "Tokenizer2", "Qwen3", "tinyrustlm-convert", "local-feed");
     }
 
     [Fact]
@@ -772,7 +803,7 @@ public sealed class PackageBoundaryTests
     }
 
     [Fact]
-    public void PackScriptsRemoveStaleSelectedPackagePrefixBeforePacking()
+    public void PackScriptsProduceOnlyTheCanonicalPackageSet()
     {
         var root = RepositoryRoot();
         var powershellPack = File.ReadAllText(Path.Combine(root, "eng/pack.ps1"));
@@ -782,84 +813,60 @@ public sealed class PackageBoundaryTests
         Assert.Contains("[string]$AbstractionsPackageId = \"\"", powershellPack, StringComparison.Ordinal);
         Assert.Contains("[string]$CorePackageId = \"\"", powershellPack, StringComparison.Ordinal);
         Assert.Contains("[string]$P2PPackageId = \"\"", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("[string]$MemoryPackageId = \"\"", powershellPack, StringComparison.Ordinal);
         Assert.Contains("[string]$MemoryEndpointsPackageId = \"\"", powershellPack, StringComparison.Ordinal);
         Assert.Contains("[string]$ConversionPackageId = \"\"", powershellPack, StringComparison.Ordinal);
         Assert.Contains("[switch]$IncludeOptionalMemoryEndpoints", powershellPack, StringComparison.Ordinal);
         Assert.Contains("[switch]$IncludePrivateConversion", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("[switch]$ArchiveOtherPackages", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("Archive", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("Move-ToArchive", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("SHA256SUMS-$PackageIdPrefix-*.txt", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("Move-ToArchive -File $_ -ArchivePath $archiveOutput", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("$writtenPackageIds", powershellPack, StringComparison.Ordinal);
+        Assert.DoesNotContain("MemoryPackageId", powershellPack, StringComparison.Ordinal);
+        Assert.DoesNotContain("TinyRustLM.Memory/TinyRustLM.Memory.csproj", powershellPack, StringComparison.Ordinal);
+
+        Assert.Contains("$writtenPackageIds = @($AbstractionsPackageId, $CorePackageId, $P2PPackageId)", powershellPack, StringComparison.Ordinal);
+        Assert.Contains("$writtenPackageIds += $MemoryEndpointsPackageId", powershellPack, StringComparison.Ordinal);
+        Assert.Contains("$writtenPackageIds += $ConversionPackageId", powershellPack, StringComparison.Ordinal);
         Assert.Contains("/p:TinyRustLmAbstractionsPackageId=$AbstractionsPackageId", powershellPack, StringComparison.Ordinal);
         Assert.Contains("/p:TinyRustLmCorePackageId=$CorePackageId", powershellPack, StringComparison.Ordinal);
         Assert.Contains("/p:TinyRustLmP2PPackageId=$P2PPackageId", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("/p:TinyRustLmMemoryPackageId=$MemoryPackageId", powershellPack, StringComparison.Ordinal);
         Assert.Contains("/p:TinyRustLmMemoryEndpointsPackageId=$MemoryEndpointsPackageId", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("/p:TinyRustLmPackOptionalMemoryEndpoints=true", powershellPack, StringComparison.Ordinal);
         Assert.Contains("/p:TinyRustLmConversionPackageId=$ConversionPackageId", powershellPack, StringComparison.Ordinal);
+        Assert.Contains("/p:TinyRustLmPackOptionalMemoryEndpoints=true", powershellPack, StringComparison.Ordinal);
         Assert.Contains("/p:TinyRustLmPackPrivateConversion=true", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("dotnet/src/TinyRustLM.Memory/TinyRustLM.Memory.csproj", powershellPack, StringComparison.Ordinal);
+        Assert.Contains("dotnet/src/TinyRustLM.Abstractions/TinyRustLM.Abstractions.csproj", powershellPack, StringComparison.Ordinal);
+        Assert.Contains("dotnet/src/TinyRustLM.Core/TinyRustLM.Core.csproj", powershellPack, StringComparison.Ordinal);
+        Assert.Contains("dotnet/src/TinyRustLM.P2P/TinyRustLM.P2P.csproj", powershellPack, StringComparison.Ordinal);
         Assert.Contains("dotnet/src/TinyRustLM.MemoryEndpoints/TinyRustLM.MemoryEndpoints.csproj", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm-slm-pack", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("Remove-Item", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("SHA256SUMS-$ManifestPrefix-$packageVersion.txt", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("README-$ManifestPrefix-$packageVersion.txt", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("Write-PackageFeedReadme", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("NuGet Package Manager generally lists installable .nupkg packages", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("debug-symbol sidecar", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("get-package-version.ps1", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("Get-FileHash", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("$expectedPackageNames", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("$packageId.$packageVersion.snupkg", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("dotnet/tools/TinyRustLM.PackageCanonicalizer/TinyRustLM.PackageCanonicalizer.csproj", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("canonicalize", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("--no-build", powershellPack, StringComparison.Ordinal);
-        Assert.Contains("--no-restore", powershellPack, StringComparison.Ordinal);
+        Assert.Contains("dotnet/src/TinyRustLM.Conversion/TinyRustLM.Conversion.csproj", powershellPack, StringComparison.Ordinal);
+        Assert.Contains("tinyrustlm-convert", powershellPack, StringComparison.Ordinal);
+        Assert.DoesNotContain("tinyrustlm-slm-pack", powershellPack, StringComparison.Ordinal);
+
         Assert.Contains("PACKAGE_ID_PREFIX=\"${3:-TinyRustLM}\"", bashPack, StringComparison.Ordinal);
         Assert.Contains("ABSTRACTIONS_PACKAGE_ID=\"${TINYRUSTLM_ABSTRACTIONS_PACKAGE_ID:-$PACKAGE_ID_PREFIX.Abstractions}\"", bashPack, StringComparison.Ordinal);
         Assert.Contains("CORE_PACKAGE_ID=\"${TINYRUSTLM_CORE_PACKAGE_ID:-$PACKAGE_ID_PREFIX.Core}\"", bashPack, StringComparison.Ordinal);
         Assert.Contains("P2P_PACKAGE_ID=\"${TINYRUSTLM_P2P_PACKAGE_ID:-$PACKAGE_ID_PREFIX.P2P}\"", bashPack, StringComparison.Ordinal);
-        Assert.Contains("MEMORY_PACKAGE_ID=\"${TINYRUSTLM_MEMORY_PACKAGE_ID:-$PACKAGE_ID_PREFIX.Memory}\"", bashPack, StringComparison.Ordinal);
         Assert.Contains("MEMORY_ENDPOINTS_PACKAGE_ID=\"${TINYRUSTLM_MEMORY_ENDPOINTS_PACKAGE_ID:-$PACKAGE_ID_PREFIX.MemoryEndpoints}\"", bashPack, StringComparison.Ordinal);
         Assert.Contains("CONVERSION_PACKAGE_ID=\"${TINYRUSTLM_CONVERSION_PACKAGE_ID:-$PACKAGE_ID_PREFIX.Conversion}\"", bashPack, StringComparison.Ordinal);
-        Assert.Contains("INCLUDE_OPTIONAL_MEMORY_ENDPOINTS=\"${TINYRUSTLM_INCLUDE_OPTIONAL_MEMORY_ENDPOINTS:-0}\"", bashPack, StringComparison.Ordinal);
-        Assert.Contains("INCLUDE_PRIVATE_CONVERSION=\"${TINYRUSTLM_INCLUDE_PRIVATE_CONVERSION:-0}\"", bashPack, StringComparison.Ordinal);
-        Assert.Contains("ARCHIVE_OTHER_PACKAGES=\"${4:-0}\"", bashPack, StringComparison.Ordinal);
-        Assert.Contains("ARCHIVE_OUTPUT=\"$PACKAGE_OUTPUT/Archive\"", bashPack, StringComparison.Ordinal);
-        Assert.Contains("move_to_archive()", bashPack, StringComparison.Ordinal);
-        Assert.Contains("\"SHA256SUMS-$PACKAGE_ID_PREFIX-\"*.txt", bashPack, StringComparison.Ordinal);
-        Assert.Contains("move_to_archive \"$package\"", bashPack, StringComparison.Ordinal);
-        Assert.Contains("PACKAGE_IDS", bashPack, StringComparison.Ordinal);
+        Assert.DoesNotContain("MEMORY_PACKAGE_ID", bashPack, StringComparison.Ordinal);
+        Assert.Contains("PACKAGE_IDS=(\"$ABSTRACTIONS_PACKAGE_ID\" \"$CORE_PACKAGE_ID\" \"$P2P_PACKAGE_ID\")", bashPack, StringComparison.Ordinal);
+        Assert.Contains("PACKAGE_IDS+=(\"$MEMORY_ENDPOINTS_PACKAGE_ID\")", bashPack, StringComparison.Ordinal);
+        Assert.Contains("PACKAGE_IDS+=(\"$CONVERSION_PACKAGE_ID\")", bashPack, StringComparison.Ordinal);
         Assert.Contains("/p:TinyRustLmAbstractionsPackageId=$ABSTRACTIONS_PACKAGE_ID", bashPack, StringComparison.Ordinal);
         Assert.Contains("/p:TinyRustLmCorePackageId=$CORE_PACKAGE_ID", bashPack, StringComparison.Ordinal);
         Assert.Contains("/p:TinyRustLmP2PPackageId=$P2P_PACKAGE_ID", bashPack, StringComparison.Ordinal);
-        Assert.Contains("/p:TinyRustLmMemoryPackageId=$MEMORY_PACKAGE_ID", bashPack, StringComparison.Ordinal);
         Assert.Contains("/p:TinyRustLmMemoryEndpointsPackageId=$MEMORY_ENDPOINTS_PACKAGE_ID", bashPack, StringComparison.Ordinal);
-        Assert.Contains("/p:TinyRustLmPackOptionalMemoryEndpoints=true", bashPack, StringComparison.Ordinal);
         Assert.Contains("/p:TinyRustLmConversionPackageId=$CONVERSION_PACKAGE_ID", bashPack, StringComparison.Ordinal);
-        Assert.Contains("/p:TinyRustLmPackPrivateConversion=true", bashPack, StringComparison.Ordinal);
-        Assert.Contains("dotnet/src/TinyRustLM.Memory/TinyRustLM.Memory.csproj", bashPack, StringComparison.Ordinal);
-        Assert.Contains("dotnet/src/TinyRustLM.MemoryEndpoints/TinyRustLM.MemoryEndpoints.csproj", bashPack, StringComparison.Ordinal);
-        Assert.Contains("dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj", bashPack, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm-slm-pack", bashPack, StringComparison.Ordinal);
-        Assert.Contains("-delete", bashPack, StringComparison.Ordinal);
-        Assert.Contains("SHA256SUMS-$PACKAGE_ID_PREFIX-$package_version.txt", bashPack, StringComparison.Ordinal);
-        Assert.Contains("README-$PACKAGE_ID_PREFIX-$package_version.txt", bashPack, StringComparison.Ordinal);
-        Assert.Contains("write_package_feed_readme", bashPack, StringComparison.Ordinal);
-        Assert.Contains("NuGet Package Manager generally lists installable .nupkg packages", bashPack, StringComparison.Ordinal);
-        Assert.Contains("debug-symbol sidecar", bashPack, StringComparison.Ordinal);
-        Assert.Contains("get-package-version.sh", bashPack, StringComparison.Ordinal);
-        Assert.Contains("sha256sum", bashPack, StringComparison.Ordinal);
-        Assert.Contains("expected_names", bashPack, StringComparison.Ordinal);
-        Assert.Contains("$package_id.$package_version.snupkg", bashPack, StringComparison.Ordinal);
-        Assert.Contains("dotnet/tools/TinyRustLM.PackageCanonicalizer/TinyRustLM.PackageCanonicalizer.csproj", bashPack, StringComparison.Ordinal);
-        Assert.Contains("canonicalize", bashPack, StringComparison.Ordinal);
-        Assert.Contains("--no-build", bashPack, StringComparison.Ordinal);
-        Assert.Contains("--no-restore", bashPack, StringComparison.Ordinal);
+        Assert.Contains("tinyrustlm-convert", bashPack, StringComparison.Ordinal);
+        Assert.DoesNotContain("tinyrustlm-slm-pack", bashPack, StringComparison.Ordinal);
+        Assert.DoesNotContain("TinyRustLM.Memory/TinyRustLM.Memory.csproj", bashPack, StringComparison.Ordinal);
+
+        foreach (var script in new[] { powershellPack, bashPack })
+        {
+            Assert.Contains("TinyRustLM.PackageCanonicalizer", script, StringComparison.Ordinal);
+            Assert.Contains("canonicalize", script, StringComparison.Ordinal);
+            Assert.Contains("--no-build", script, StringComparison.Ordinal);
+            Assert.Contains("--no-restore", script, StringComparison.Ordinal);
+            Assert.Contains("SHA256SUMS-", script, StringComparison.Ordinal);
+            Assert.Contains("README-", script, StringComparison.Ordinal);
+            Assert.Contains("Archive", script, StringComparison.OrdinalIgnoreCase);
+        }
     }
 
     [Fact]
@@ -878,7 +885,8 @@ public sealed class PackageBoundaryTests
 
         Assert.DoesNotContain("slm_pack", coreProject, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("TinyRustLmPackPrivateConversion", conversionProject, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm-slm-pack", conversionProject, StringComparison.Ordinal);
+        Assert.Contains("tinyrustlm-convert", conversionProject, StringComparison.Ordinal);
+        Assert.DoesNotContain("tinyrustlm-slm-pack", conversionProject, StringComparison.Ordinal);
         Assert.DoesNotContain("tools/slm_pack", nativeCargo, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("selector", nativeCargo, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("breeding", nativeCargo, StringComparison.OrdinalIgnoreCase);
@@ -1190,173 +1198,129 @@ public sealed class PackageBoundaryTests
     }
 
     [Fact]
-    public void P2PPublicSdkExposesLocalAssemblyBoundary()
+    public void P2PPublicSdkExposesOnlyCanonicalFixedPieceAssembly()
     {
         var root = RepositoryRoot();
         var p2pRust = File.ReadAllText(Path.Combine(root, "rust/crates/tinyrustlm-p2p/src/lib.rs"));
-        var nativeRust = File.ReadAllText(Path.Combine(root, "rust/crates/tinyrustlm-native/src/lib.rs"));
-        var runtimeSdkRust = File.ReadAllText(Path.Combine(root, "rust/crates/tinyrustlm-runtime/src/lib.rs"));
+        var nativeFfi = File.ReadAllText(Path.Combine(root, "rust/crates/tinyrustlm-native/src/ffi.rs"));
         var nativeMethods = File.ReadAllText(Path.Combine(root, "dotnet/src/TinyRustLM.Core/NativeMethods.cs"));
-        var nativeJson = File.ReadAllText(Path.Combine(root, "dotnet/src/TinyRustLM.Core/NativeJson.cs"));
         var runtimeModels = File.ReadAllText(Path.Combine(root, "dotnet/src/TinyRustLM.Abstractions/RuntimeModels.cs"));
         var runtimeFactory = File.ReadAllText(Path.Combine(root, "dotnet/src/TinyRustLM.Core/TinyRustLmRuntimeFactory.cs"));
         var abstractions = File.ReadAllText(Path.Combine(root, "dotnet/src/TinyRustLM.Abstractions/P2PModels.cs"));
         var client = File.ReadAllText(Path.Combine(root, "dotnet/src/TinyRustLM.P2P/TinyRustLmP2PClient.cs"));
         var verifyConsumerPowerShell = File.ReadAllText(Path.Combine(root, "eng/verify-consumer.ps1"));
         var verifyConsumerBash = File.ReadAllText(Path.Combine(root, "eng/verify-consumer.sh"));
+        var consumerSmoke = File.ReadAllText(Path.Combine(root, "eng/consumer-smoke/Program.cs"));
         var boundaryDoc = File.ReadAllText(Path.Combine(root, "docs/nuget/API_BOUNDARY.md"));
 
-        Assert.Contains("TinyRustLmSdkVersion", runtimeModels, StringComparison.Ordinal);
-        Assert.Contains("GetVersion()", runtimeModels, StringComparison.Ordinal);
-        Assert.Contains("embedded NUL", nativeJson, StringComparison.Ordinal);
-        Assert.Contains("ThrowIfContainsEmbeddedNul", nativeJson, StringComparison.Ordinal);
-        Assert.Contains("value is null", nativeJson, StringComparison.Ordinal);
-        Assert.DoesNotContain("string.IsNullOrEmpty(value)", nativeJson, StringComparison.Ordinal);
-        Assert.Contains("MAX_GENERATION_TOP_K", runtimeSdkRust, StringComparison.Ordinal);
-        Assert.Contains("InvalidGenerationOptions", runtimeSdkRust, StringComparison.Ordinal);
-        Assert.Contains("GenerationOptions::from_native", nativeRust, StringComparison.Ordinal);
-        Assert.Contains("invalid_generation_options", nativeRust, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm_sdk_version_json", nativeMethods, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm_sdk_version_json", runtimeFactory, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm.p2p_local_import_receipt.v0", p2pRust, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm.p2p_local_import_receipt_inspection.v0", p2pRust, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm.p2p_signed_manifest_verification.v0", p2pRust, StringComparison.Ordinal);
-        Assert.Contains("assemble_from_manifest_text", p2pRust, StringComparison.Ordinal);
-        Assert.Contains("inspect_local_import_receipt_text", p2pRust, StringComparison.Ordinal);
-        Assert.Contains("verify_signed_manifest_text", p2pRust, StringComparison.Ordinal);
-        Assert.Contains("minimodel.public_key.v0", p2pRust, StringComparison.Ordinal);
-        Assert.Contains("safe_load_slm_from_path", p2pRust, StringComparison.Ordinal);
-        Assert.Contains("network_fetch_performed: false", p2pRust, StringComparison.Ordinal);
-        Assert.Contains("private_routing_used: false", p2pRust, StringComparison.Ordinal);
-        Assert.Contains("normalize_public_base_url", p2pRust, StringComparison.Ordinal);
-        Assert.DoesNotContain("placeholder.json", p2pRust, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("tinyrustlm_p2p_assemble_from_manifest_json", nativeRust, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm_p2p_inspect_local_import_receipt_json", nativeRust, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm_p2p_verify_signed_manifest_json", nativeRust, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm_p2p_inspect_announcement_catalog_json", nativeRust, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm_p2p_assemble_from_manifest_json", nativeMethods, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm_p2p_inspect_local_import_receipt_json", nativeMethods, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm_p2p_verify_signed_manifest_json", nativeMethods, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm_p2p_inspect_announcement_catalog_json", nativeMethods, StringComparison.Ordinal);
-        Assert.Contains("P2PShareKitReport", abstractions, StringComparison.Ordinal);
-        Assert.Contains("P2PShareMetadata", abstractions, StringComparison.Ordinal);
-        Assert.Contains("P2PManifestBoundary", abstractions, StringComparison.Ordinal);
-        Assert.Contains("P2PManifestSignature", abstractions, StringComparison.Ordinal);
-        Assert.Contains("P2PSignedManifest", abstractions, StringComparison.Ordinal);
-        Assert.Contains("P2PPublicKeyDocument", abstractions, StringComparison.Ordinal);
-        Assert.Contains("P2PSignedManifestVerification", abstractions, StringComparison.Ordinal);
-        Assert.Contains("P2PLocalImportReceipt", abstractions, StringComparison.Ordinal);
-        Assert.Contains("P2PLocalImportReceiptInspection", abstractions, StringComparison.Ordinal);
-        Assert.Contains("P2PAnnouncement", abstractions, StringComparison.Ordinal);
-        Assert.Contains("P2PAnnouncementCatalog", abstractions, StringComparison.Ordinal);
-        Assert.Contains("P2PAnnouncementCatalogInspection", abstractions, StringComparison.Ordinal);
-        Assert.Contains("VerifySignedManifest", abstractions, StringComparison.Ordinal);
-        Assert.Contains("VerifySignedManifestJson", abstractions, StringComparison.Ordinal);
-        Assert.Contains("ValidateAnnouncementJson", abstractions, StringComparison.Ordinal);
-        Assert.Contains("ApplyReceivedAnnouncementJson", abstractions, StringComparison.Ordinal);
-        Assert.Contains("InspectAnnouncementCatalogJson", abstractions, StringComparison.Ordinal);
-        Assert.Contains("ReceiptPath", abstractions, StringComparison.Ordinal);
-        Assert.Contains("P2PShareKitReport PrepareLocalShareKit", client, StringComparison.Ordinal);
-        Assert.Contains("ValidatePrepareShareKitRequest", client, StringComparison.Ordinal);
-        Assert.Contains("ValidateJsonHandoff", client, StringComparison.Ordinal);
-        Assert.Contains("ValidateOptionalJsonHandoff", client, StringComparison.Ordinal);
-        Assert.Contains("MinPieceSize", client, StringComparison.Ordinal);
-        Assert.Contains("MaxPieceSize", client, StringComparison.Ordinal);
-        Assert.Contains("MaxManifestJsonBytes", client, StringComparison.Ordinal);
-        Assert.Contains("MaxPublicKeyJsonBytes", client, StringComparison.Ordinal);
-        Assert.Contains("MaxAnnouncementJsonBytes", client, StringComparison.Ordinal);
-        Assert.Contains("MaxAnnouncementCatalogJsonBytes", client, StringComparison.Ordinal);
-        Assert.Contains("MaxReceiptJsonBytes", client, StringComparison.Ordinal);
-        Assert.Contains("PrepareLocalShareKitJson", client, StringComparison.Ordinal);
-        Assert.Contains("P2PShareMetadata ExportShareMetadata", client, StringComparison.Ordinal);
-        Assert.Contains("ExportShareMetadataJson", client, StringComparison.Ordinal);
-        Assert.Contains("P2PSignedManifestVerification VerifySignedManifest", client, StringComparison.Ordinal);
-        Assert.Contains("VerifySignedManifestJson", client, StringComparison.Ordinal);
-        Assert.Contains("P2PAnnouncement ValidateAnnouncement", client, StringComparison.Ordinal);
-        Assert.Contains("ValidateAnnouncementJson", client, StringComparison.Ordinal);
-        Assert.Contains("P2PAnnouncementCatalog ApplyReceivedAnnouncement", client, StringComparison.Ordinal);
-        Assert.Contains("ApplyReceivedAnnouncementJson", client, StringComparison.Ordinal);
-        Assert.Contains("P2PAnnouncementCatalogInspection InspectAnnouncementCatalog", client, StringComparison.Ordinal);
-        Assert.Contains("InspectAnnouncementCatalogJson", client, StringComparison.Ordinal);
-        Assert.Contains("ImportFromManifest(", client, StringComparison.Ordinal);
-        Assert.Contains("InspectLocalImportReceipt", client, StringComparison.Ordinal);
-        Assert.Contains("GetVersion()", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("GetVersion()", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("CorePackageId", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("P2PPackageId", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("MemoryPackageId", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("ConversionPackageId", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("TinyRustLM.Memory", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("TinyRustLM.Memory", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("TINYRUSTLM_CONSUMER_CORE_PACKAGE_ID", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("TINYRUSTLM_CONSUMER_CORE_PACKAGE_ID", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("TINYRUSTLM_CONSUMER_P2P_PACKAGE_ID", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("TINYRUSTLM_CONSUMER_P2P_PACKAGE_ID", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("TINYRUSTLM_CONSUMER_MEMORY_PACKAGE_ID", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("TINYRUSTLM_CONSUMER_MEMORY_PACKAGE_ID", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("TINYRUSTLM_CONSUMER_CONVERSION_PACKAGE_ID", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("TINYRUSTLM_CONSUMER_CONVERSION_PACKAGE_ID", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("TinyRustLmMemoryClient", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("TinyRustLmMemoryClient", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("uaix.memory.setup_catalog.v0", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("uaix.memory.setup_catalog.v0", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("advanced_persona_profile", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("advanced_persona_profile", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("ai-memory-package-wizard", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("ai-memory-package-wizard", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("personality-packs", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("personality-packs", verifyConsumerBash, StringComparison.Ordinal);
-        foreach (var feature in new[]
+        var expectedSymbols = new[]
         {
-            "ai_digest_script_data_ai_digest",
-            "point_agent_urls",
-            "canonical_starter_zip_downloads",
-            "uaix_zip_txt_template_decks",
-            "source_persona_preservation_rule",
-            "non_inference_rules",
-            "triggered_style_axes"
+            "tinyrustlm_native_contract_json",
+            "tinyrustlm_string_free",
+            "tinyrustlm_slm2_inspect_json",
+            "tinyrustlm_runtime_create_json",
+            "tinyrustlm_runtime_destroy_json",
+            "tinyrustlm_runtime_state_json",
+            "tinyrustlm_runtime_activate_json",
+            "tinyrustlm_runtime_advance_operation_json",
+            "tinyrustlm_runtime_set_transcript_json",
+            "tinyrustlm_runtime_begin_request_json",
+            "tinyrustlm_runtime_step_json",
+            "tinyrustlm_runtime_finish_json",
+            "tinyrustlm_p2p_prepare_share_kit_json",
+            "tinyrustlm_p2p_inspect_manifest_json",
+            "tinyrustlm_p2p_assemble_json"
+        }.OrderBy(symbol => symbol, StringComparer.Ordinal).ToArray();
+        var managedSymbols = Regex.Matches(
+                nativeMethods,
+                @"internal static extern \w+\s+(tinyrustlm_[a-z0-9_]+)\s*\(")
+            .Select(match => match.Groups[1].Value)
+            .OrderBy(symbol => symbol, StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.Equal(expectedSymbols, managedSymbols);
+        foreach (var symbol in expectedSymbols)
+        {
+            Assert.Contains(symbol, nativeFfi, StringComparison.Ordinal);
+            Assert.Contains(symbol, boundaryDoc, StringComparison.Ordinal);
+        }
+
+        Assert.Contains("TinyRustLmNativeContract", runtimeModels, StringComparison.Ordinal);
+        Assert.Contains("GetNativeContract()", runtimeFactory, StringComparison.Ordinal);
+        Assert.Contains("CreateRuntime(", runtimeFactory, StringComparison.Ordinal);
+        Assert.Contains("TinyRustLmOperationId", runtimeModels, StringComparison.Ordinal);
+        Assert.Contains("ActivateComposition", runtimeModels, StringComparison.Ordinal);
+        Assert.Contains("BeginRequest", runtimeModels, StringComparison.Ordinal);
+        Assert.DoesNotContain("TinyRustLmSdkVersion", runtimeModels, StringComparison.Ordinal);
+        Assert.DoesNotContain("TinySlm", runtimeModels, StringComparison.Ordinal);
+
+        Assert.Contains("tinyrustlm.vnext.p2p_manifest.v1", p2pRust, StringComparison.Ordinal);
+        Assert.Contains("tinyrustlm.merkle.sha256-4mib.v1", p2pRust, StringComparison.Ordinal);
+        Assert.Contains("prepare_share_kit", p2pRust, StringComparison.Ordinal);
+        Assert.Contains("inspect_manifest", p2pRust, StringComparison.Ordinal);
+        Assert.Contains("assemble_from_piece_directory", p2pRust, StringComparison.Ordinal);
+        Assert.Contains("TinyRustLmP2PAdmission", abstractions, StringComparison.Ordinal);
+        Assert.Contains("P2PManifest", abstractions, StringComparison.Ordinal);
+        Assert.Contains("P2PShareKitReport", abstractions, StringComparison.Ordinal);
+        Assert.Contains("P2PImportedArtifact", abstractions, StringComparison.Ordinal);
+        Assert.Contains("PrepareShareKit", client, StringComparison.Ordinal);
+        Assert.Contains("InspectManifest", client, StringComparison.Ordinal);
+        Assert.Contains("AssembleArtifact", client, StringComparison.Ordinal);
+
+        foreach (var obsoleteSurface in new[]
+        {
+            "SignedManifest",
+            "LocalImportReceipt",
+            "Announcement",
+            "Catalog",
+            "TinySlm",
+            "acg1"
         })
         {
-            Assert.Contains(feature, verifyConsumerPowerShell, StringComparison.Ordinal);
-            Assert.Contains(feature, verifyConsumerBash, StringComparison.Ordinal);
+            Assert.DoesNotContain(obsoleteSurface, abstractions, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain(obsoleteSurface, client, StringComparison.OrdinalIgnoreCase);
         }
-        Assert.Contains("TinySlmConversionTool", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("TinySlmConversionTool", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("ValidateSlm", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("ValidateSlm", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("P2PShareKitReport", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("P2PShareKitReport", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("consumer-smoke-assembled.slm", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("consumer-smoke-assembled.slm", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("ReceiptPath", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("ReceiptPath", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("InspectLocalImportReceipt", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("InspectLocalImportReceipt", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("ValidateAnnouncementJson", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("ValidateAnnouncementJson", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("ApplyReceivedAnnouncementJson", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("ApplyReceivedAnnouncementJson", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("InspectAnnouncementCatalog", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("InspectAnnouncementCatalog", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("VerifySignedManifest", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("VerifySignedManifest", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("VerifySignedManifestJson", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("VerifySignedManifestJson", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("p2p_signed_manifest_invalid", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("p2p_signed_manifest_invalid", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm.p2p_announcement_catalog_inspection.v0", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm.p2p_announcement_catalog_inspection.v0", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("consumer-smoke-unsafe-url", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("consumer-smoke-unsafe-url", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("public_base_url", verifyConsumerPowerShell, StringComparison.Ordinal);
-        Assert.Contains("public_base_url", verifyConsumerBash, StringComparison.Ordinal);
-        Assert.Contains("local manifest-declared pieces", boundaryDoc, StringComparison.Ordinal);
-        Assert.Contains("typed local share-kit report", boundaryDoc, StringComparison.Ordinal);
-        Assert.Contains("typed share metadata", boundaryDoc, StringComparison.Ordinal);
-        Assert.Contains("signed-manifest verification", boundaryDoc, StringComparison.Ordinal);
-        Assert.Contains("announcement/catalog JSON handoff", boundaryDoc, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("inspect a local import receipt", boundaryDoc, StringComparison.Ordinal);
-        Assert.DoesNotContain("slm_pack", client, StringComparison.OrdinalIgnoreCase);
+
+        foreach (var script in new[] { verifyConsumerPowerShell, verifyConsumerBash })
+        {
+            Assert.Contains("eng/consumer-smoke/Program.cs", script, StringComparison.Ordinal);
+            Assert.Contains("slm2-q8-weight-vectors.v1.json", script, StringComparison.Ordinal);
+            Assert.Contains("acg2-format-vectors.v1.json", script, StringComparison.Ordinal);
+            Assert.Contains("NUGET_PACKAGES", script, StringComparison.Ordinal);
+            Assert.Contains("NUGET_HTTP_CACHE_PATH", script, StringComparison.Ordinal);
+            Assert.Contains("TinyRustLM.Core", script, StringComparison.Ordinal);
+            Assert.Contains("TinyRustLM.P2P", script, StringComparison.Ordinal);
+            Assert.DoesNotContain("TinyRustLM.Memory", script, StringComparison.Ordinal);
+            Assert.DoesNotContain("TinySlm", script, StringComparison.Ordinal);
+        }
+
+        foreach (var marker in new[]
+        {
+            "consumer-smoke-native-contract-15",
+            "consumer-smoke-slm2-inspected",
+            "consumer-smoke-acg2-assembled",
+            "consumer-smoke-slm2-assembled",
+            "consumer-smoke-create-only-rejected",
+            "consumer-smoke-manifest-tamper-rejected"
+        })
+        {
+            Assert.Contains(marker, consumerSmoke, StringComparison.Ordinal);
+        }
+        Assert.Contains("TinyRustLmSlm2Inspector", consumerSmoke, StringComparison.Ordinal);
+        Assert.Contains("TinyRustLmRuntimeFactory", consumerSmoke, StringComparison.Ordinal);
+        Assert.Contains("TinyRustLmP2PClient", consumerSmoke, StringComparison.Ordinal);
+        Assert.Contains("TinyRustLmConversionTool", consumerSmoke, StringComparison.Ordinal);
+        Assert.DoesNotContain("TinySlm", consumerSmoke, StringComparison.Ordinal);
+
+        Assert.Contains("exactly these fifteen symbols", boundaryDoc, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("PrepareShareKit", boundaryDoc, StringComparison.Ordinal);
+        Assert.Contains("InspectManifest", boundaryDoc, StringComparison.Ordinal);
+        Assert.Contains("AssembleArtifact", boundaryDoc, StringComparison.Ordinal);
+        Assert.Contains("tinyrustlm.vnext.p2p_manifest.v1", boundaryDoc, StringComparison.Ordinal);
+        Assert.Contains("tinyrustlm.merkle.sha256-4mib.v1", boundaryDoc, StringComparison.Ordinal);
+        Assert.Contains("There is no local `TinyRustLM.Memory` package", boundaryDoc, StringComparison.Ordinal);
+        Assert.DoesNotContain("TinySlmInspector", boundaryDoc, StringComparison.Ordinal);
+        Assert.DoesNotContain(".acg1", boundaryDoc, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

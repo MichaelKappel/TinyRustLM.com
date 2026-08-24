@@ -5,7 +5,6 @@ param(
     [string]$AbstractionsPackageId = "",
     [string]$CorePackageId = "",
     [string]$P2PPackageId = "",
-    [string]$MemoryPackageId = "",
     [string]$MemoryEndpointsPackageId = "",
     [string]$ConversionPackageId = "",
     [switch]$IncludeOptionalMemoryEndpoints,
@@ -139,9 +138,6 @@ if ([string]::IsNullOrWhiteSpace($CorePackageId)) {
 if ([string]::IsNullOrWhiteSpace($P2PPackageId)) {
     $P2PPackageId = "$PackageIdPrefix.P2P"
 }
-if ([string]::IsNullOrWhiteSpace($MemoryPackageId)) {
-    $MemoryPackageId = "$PackageIdPrefix.Memory"
-}
 if ([string]::IsNullOrWhiteSpace($MemoryEndpointsPackageId)) {
     $MemoryEndpointsPackageId = "$PackageIdPrefix.MemoryEndpoints"
 }
@@ -151,10 +147,9 @@ if ([string]::IsNullOrWhiteSpace($ConversionPackageId)) {
 Assert-PackageId -Value $AbstractionsPackageId -Name "AbstractionsPackageId"
 Assert-PackageId -Value $CorePackageId -Name "CorePackageId"
 Assert-PackageId -Value $P2PPackageId -Name "P2PPackageId"
-Assert-PackageId -Value $MemoryPackageId -Name "MemoryPackageId"
 Assert-PackageId -Value $MemoryEndpointsPackageId -Name "MemoryEndpointsPackageId"
 Assert-PackageId -Value $ConversionPackageId -Name "ConversionPackageId"
-$writtenPackageIds = @($AbstractionsPackageId, $CorePackageId, $P2PPackageId, $MemoryPackageId)
+$writtenPackageIds = @($AbstractionsPackageId, $CorePackageId, $P2PPackageId)
 if ($IncludeOptionalMemoryEndpoints) {
     $writtenPackageIds += $MemoryEndpointsPackageId
 }
@@ -220,14 +215,13 @@ foreach ($packageId in $writtenPackageIds) {
 Push-Location $RepoRoot
 try {
     if ($IncludePrivateConversion) {
-        Invoke-Cargo -Arguments @("build", "-p", "tinyrustlm-slm-pack", "--release")
+        Invoke-Cargo -Arguments @("build", "-p", "tinyrustlm-convert", "--release")
     }
     $packageProperties = @(
         "/p:TinyRustLmPackageIdPrefix=$PackageIdPrefix",
         "/p:TinyRustLmAbstractionsPackageId=$AbstractionsPackageId",
         "/p:TinyRustLmCorePackageId=$CorePackageId",
         "/p:TinyRustLmP2PPackageId=$P2PPackageId",
-        "/p:TinyRustLmMemoryPackageId=$MemoryPackageId",
         "/p:TinyRustLmMemoryEndpointsPackageId=$MemoryEndpointsPackageId",
         "/p:TinyRustLmConversionPackageId=$ConversionPackageId"
     )
@@ -244,7 +238,6 @@ try {
     Invoke-DotNet -Arguments (@("pack", "dotnet/src/TinyRustLM.Abstractions/TinyRustLM.Abstractions.csproj", "-c", $Configuration, "--no-build", "-o", $PackageOutput) + $packageProperties)
     Invoke-DotNet -Arguments (@("pack", "dotnet/src/TinyRustLM.Core/TinyRustLM.Core.csproj", "-c", $Configuration, "--no-build", "-o", $PackageOutput) + $packageProperties)
     Invoke-DotNet -Arguments (@("pack", "dotnet/src/TinyRustLM.P2P/TinyRustLM.P2P.csproj", "-c", $Configuration, "--no-build", "-o", $PackageOutput) + $packageProperties)
-    Invoke-DotNet -Arguments (@("pack", "dotnet/src/TinyRustLM.Memory/TinyRustLM.Memory.csproj", "-c", $Configuration, "--no-build", "-o", $PackageOutput) + $packageProperties)
     if ($IncludeOptionalMemoryEndpoints) {
         Invoke-DotNet -Arguments (@("pack", "dotnet/src/TinyRustLM.MemoryEndpoints/TinyRustLM.MemoryEndpoints.csproj", "-c", $Configuration, "--no-build", "-o", $PackageOutput) + $packageProperties)
     }

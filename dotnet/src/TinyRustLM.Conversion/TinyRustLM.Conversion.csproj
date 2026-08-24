@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>$(TinyRustLmConversionPackageId)</PackageId>
-    <Title>TinyRustLM / UAIX Browser p2pLLM Conversion Wrapper</Title>
-    <Summary>Controlled local-feed wrapper for TinyRustLM .slm conversion command discovery and execution.</Summary>
-    <Description>Controlled local-feed TinyRustLM .NET wrapper for p2pLLM.com .slm conversion command workflows and packaged tinyrustlm-slm-pack tool discovery. This package backs the UAIX.Browser.p2pLLM.Conversion local feed identity and is intentionally not part of the protected public SDK because model conversion, quantization authoring, recipes, ranking, and training logic remain private.</Description>
+    <Title>TinyRustLM / UAIX Browser SLM2 Conversion Process Owner</Title>
+    <Summary>Bounded create-only wrapper for the exact TinyRustLM Qwen3-to-SLM2 and Qwen-to-Tokenizer2 converter.</Summary>
+    <Description>Controlled local-feed process owner for the sole current tinyrustlm-convert executable. It invokes only locked Qwen3 safetensors-to-mixed-Q8-SLM2 and Qwen-tokenizer-to-Tokenizer2 transactions, applies explicit duration and output limits, supports cancellation, rejects reparse inputs, validates exact structured summaries, and rehashes promoted artifacts. It contains no old converter commands, compatibility facade, GGUF branch, model ranking, training, or response repair.</Description>
     <IsPackable>$(TinyRustLmPackPrivateConversion)</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageTags>TinyRustLM;TinyRustLM.Conversion;TinyRustLM.com;UAIX;UAIX.org;UAIX.Browser;Browser;UAIX.Browser.p2pLLM.Conversion;p2pLLM;p2pLLM.com;SLM;.slm;AI;LLM;Rust;conversion;converter;tinyrustlm-slm-pack;local-feed;controlled-package;private-sdk</PackageTags>
+    <PackageTags>TinyRustLM;TinyRustLM.Conversion;TinyRustLM.com;UAIX;UAIX.org;UAIX.Browser;Browser;UAIX.Browser.p2pLLM.Conversion;p2pLLM;p2pLLM.com;SLM2;.slm;Tokenizer2;Qwen3;AI;LLM;Rust;conversion;converter;tinyrustlm-convert;local-feed;controlled-package;private-sdk</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\TinyRustLM.Core\TinyRustLM.Core.csproj" />
@@ -14,9 +14,9 @@
   <ItemGroup>
     <None Include="..\..\..\docs\nuget\README.md" Pack="true" PackagePath="\" />
     <None Include="..\..\..\docs\nuget\PACKAGE_SECURITY.md" Pack="true" PackagePath="docs\" />
-    <None Include="..\..\..\target\release\tinyrustlm-slm-pack.exe" Pack="true" PackagePath="tools\win-x64\" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\..\target\release\tinyrustlm-slm-pack.exe')" />
-    <None Include="..\..\..\target\release\tinyrustlm-slm-pack.exe" Pack="true" PackagePath="contentFiles\any\any\tinyrustlm\tools\win-x64\" PackageCopyToOutput="true" Visible="false" Condition="Exists('..\..\..\target\release\tinyrustlm-slm-pack.exe')" />
-    <None Include="..\..\..\target\release\tinyrustlm-slm-pack" Pack="true" PackagePath="tools\linux-x64\" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\..\target\release\tinyrustlm-slm-pack') And '$(OS)' != 'Windows_NT'" />
-    <None Include="..\..\..\target\release\tinyrustlm-slm-pack" Pack="true" PackagePath="contentFiles\any\any\tinyrustlm\tools\linux-x64\" PackageCopyToOutput="true" Visible="false" Condition="Exists('..\..\..\target\release\tinyrustlm-slm-pack') And '$(OS)' != 'Windows_NT'" />
+    <None Include="..\..\..\target\release\tinyrustlm-convert.exe" Pack="true" PackagePath="tools\win-x64\" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\..\target\release\tinyrustlm-convert.exe')" />
+    <None Include="..\..\..\target\release\tinyrustlm-convert.exe" Pack="true" PackagePath="contentFiles\any\any\tinyrustlm\tools\win-x64\" PackageCopyToOutput="true" Visible="false" Condition="Exists('..\..\..\target\release\tinyrustlm-convert.exe')" />
+    <None Include="..\..\..\target\release\tinyrustlm-convert" Pack="true" PackagePath="tools\linux-x64\" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\..\target\release\tinyrustlm-convert') And '$(OS)' != 'Windows_NT'" />
+    <None Include="..\..\..\target\release\tinyrustlm-convert" Pack="true" PackagePath="contentFiles\any\any\tinyrustlm\tools\linux-x64\" PackageCopyToOutput="true" Visible="false" Condition="Exists('..\..\..\target\release\tinyrustlm-convert') And '$(OS)' != 'Windows_NT'" />
   </ItemGroup>
 </Project>

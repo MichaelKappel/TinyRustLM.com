@@ -1,26 +1,143 @@
-# API Boundary
+# TinyRustLM .NET API Boundary
 
-The NuGet SDK exposes only public ecosystem capabilities.
+TinyRustLM is one prelaunch product. Numbered identifiers such as SLM2, ACG2,
+Tokenizer2, Template2, Prompt2, and Sampling2 name exact technical contracts;
+they are not product generations. The package surface exposes only the sole
+current implementation. It has no compatibility API, migration reader, alias,
+fallback runtime, response repair, or parallel model path.
 
-## Public Surface
+## Package Set
 
-- `.slm` validation and inspection through `TinySlmInspector`.
-- Runtime lifecycle through `TinyRustLmRuntimeFactory` and `ITinyRustLmRuntime`.
-- Runtime operations: create, destroy, load model, activate an immutable hash-bound `.acg1` composition graph, unload model, generate, step, reset, diagnostics, version, and capability query. Model loading never guesses or auto-creates a graph; generation fails closed in `model-loaded-no-active-composition` until explicit activation succeeds. Managed generation options are validated before P/Invoke, and the native public runtime SDK validates the same fixed-buffer sampler contract before runtime mutation, so invalid token counts, sampler candidate caps, and non-finite sampling values fail before generation work begins.
-- Managed strings crossing the native boundary reject embedded NUL characters before P/Invoke so model paths, composition paths and digests, prompts, JSON handoff documents, and share-kit request fields cannot be truncated by C-string parsing. Empty strings are preserved as real empty native strings rather than null pointers; null remains the "not supplied" sentinel for optional native arguments.
-- P2P metadata-bound workflows through `TinyRustLmP2PClient`: prepare a typed local share-kit report, inspect manifest, verify a signed-manifest envelope with local MiniModel public-key JSON, plan import from manifest, locally assemble manifest-declared pieces into a verified `.slm`, write and inspect a local import receipt sidecar, export typed share metadata, validate announcement, apply received announcement, and inspect announcement catalogs. The signed-manifest verification API accepts `tinyrustlm.p2p_signed_manifest.v0` JSON plus metadata-only `minimodel.public_key.v0` public-key JSON, requires `external-signature-v0`, `ed25519-base64:` signatures, matching publisher/key/route/SHA usage, and `revoked=false`, and performs no signing, remote key discovery, transparency-log lookup, or publisher-service work. The managed wrapper rejects missing share-kit model/output paths and piece sizes outside 1 KiB through 16 MiB before serializing request JSON, and rejects oversized JSON handoff documents before P/Invoke: manifests or signed-manifest envelopes over 1 MiB, public-key documents over 16 KiB, announcements over 256 KiB, local import receipts over 256 KiB, and announcement catalogs over 4 MiB. Public announcement URLs are limited to HTTPS or explicit-port loopback HTTP, with credentials, query strings, fragments, and traversal rejected. Announcement catalogs reject conflicting same-peer/same-manifest metadata before mutation and are capped at 4 MiB before parsing. `VerifySignedManifestJson`, `ValidateAnnouncementJson`, `ApplyReceivedAnnouncementJson`, and `InspectAnnouncementCatalogJson` provide signed-manifest and announcement/catalog JSON handoff for audit files and catalog exchange without exposing private routing logic; other raw JSON helpers exist only for exact handoff/audit documents.
-- UAIX memory package workflows through `TinyRustLmMemoryClient`: return required-file plans for basic memory, agent-file-handoff, LLM Wiki, combined flows, and advanced persona profiles; require the Wizard's local-first export deck including agent pickup, session log, manifest, manifest overlay, package model, knowledge graph, and llms exports; inspect `.uai` folders, `.zip`, and `.uaix` archives without extraction; inspect UAIX memory manifest JSON; fail package validation when the manifest overlay does not declare the effective required-file set; and, for advanced persona packages, report per-dimension evidence for `depth_level_0_to_10`, disclosure boundary, source confidence, and non-inference rules. The public memory harness follows the UAIX memory package wizard and persona-pack shape while refusing hosted import validation, automatic repository writes, automatic LLM Wiki sync, persona-fidelity certification, persona source mutation, and any proprietary memory optimization/ranking logic.
+The default package set contains exactly three packages:
 
-Archive inspection has one authority: `.zip` and ZIP-encoded `.uaix` bytes must pass `tinyrustlm.vnext.archive-admission.v1` in `tinyrustlm-archive` before the memory crate receives a member. The memory crate has no production ZIP parser, path normalizer, duplicate-resolution rule, or partial-success path of its own; it layers only its narrower package file-count, relevant-member size, and UAIX path-selection rules after complete archive admission.
-- Optional MemoryEndpoints workflows through `TinyRustLmMemoryEndpointsClient` and the deterministic public contracts in `TinyRustLM.MemoryEndpoints`: opt-in direct-CORS connector calls; public-safe status/handoff save and search; meeting-room coordination; credential-free outbox preparation; immutable event, payload-hash, and idempotency identity; retry and authoritative-receipt validation; deterministic retrieval, deduplication, supersession, bounded context packing, and body-free receipts; exact-parent revision/conflict decisions; tombstone and device-authority checks; monotonic checkpoints; stale-index reporting; and retention-aware compaction planning. Credentials are supplied to an in-memory client and are never part of serializable DTOs. Local decision helpers remain deterministic client logic; hosted authority stays behind the MemoryEndpoints service API.
-- Distributed-sync capability negotiation and typed transport through `MemoryEndpointsDistributedSyncProtocol`, `MemoryEndpointsDistributedSyncTransport`, and `TinyRustLmMemoryEndpointsClient`: parse the exact bounded public capability envelope without credentials; require complete live authority before mutation APIs activate; reject unknown fields and route drift; confine advertised routes to the configured `/api/matm/sync/` origin; canonicalize the deployed single-parent mutation request and cross-runtime body hash; verify typed decision, confirmation, and receipt identity; pull monotonic public-safe revisions after a checkpoint; read authoritative heads and indexed-through watermarks; and perform idempotent device registration, rotation, revocation, and retention-policy reads. Protected responses are byte-bounded and require `Cache-Control: no-store`. Received summaries remain untrusted retrieval data. The browser `MemoryEndpointsDistributedSyncClient.synchronizePending` performs pull-before-push under the existing Web Lock and delegates transactional IndexedDB commits through explicit callbacks. These APIs expose an interoperability client and deterministic validation engine, not MemoryEndpoints storage, server-side conflict selection, device secrets, retention jobs, database credentials, key rotation internals, or orchestration.
+- `TinyRustLM.Abstractions` contains immutable public records, enums, and
+  interfaces.
+- `TinyRustLM.Core` owns the managed wrapper over the exact native contract.
+- `TinyRustLM.P2P` owns composition-bound fixed-piece preparation, inspection,
+  and create-only assembly.
 
-## Private Surface Not Packaged
+Two packages are explicitly optional and excluded by default:
 
-The NuGet projects and native bridge do not reference `slm_pack`, conversion commands, selector registry generation, adapter-family code, training-source code, offline breeding operators, promotion logic, premium optimizers, telemetry, license-server internals, or commercial orchestration.
+- `TinyRustLM.MemoryEndpoints` contains the connector contract. Its presence
+  does not prove that the service is authorized, connected, or production
+  ready.
+- `TinyRustLM.Conversion` is private local-feed tooling around the exact
+  `tinyrustlm-convert` process. It is not a model-selection or training API.
 
-The package audit treats the XML documentation member list as the public managed API contract. `TinyRustLM.Abstractions` may expose only public DTOs and interfaces, `TinyRustLM.Core` may expose only the inspector/runtime/factory/SDK exception, `TinyRustLM.P2P` may expose only `TinyRustLmP2PClient`, `TinyRustLM.Memory` may expose only `TinyRustLmMemoryClient`, and the optional `TinyRustLM.MemoryEndpoints` package may expose only its approved connector, outbox, retrieval, revision, retention, and coordination records and methods. Missing or unexpected public API members fail the release gate before publish. The post-pack test suite reflects freshly packaged assemblies and enforces the binary public surface: exported types, public constructor arity, DTO properties, enum values, and declared workflow methods must match the approved SDK contract.
+There is no local `TinyRustLM.Memory` package or memory facade.
 
-## Extension Points
+## Native Contract
 
-Commercial or proprietary features should attach behind separate packages or services. Public packages may accept already-produced `.slm` files, local manifest-declared pieces, and metadata, but must not reveal authoring recipes, ranking logic, training data, model optimization strategies, encryption keys, peer-discovery services, premium routing, or enterprise orchestration workflows.
+`TinyRustLM.Core` validates the native contract before creating a runtime. The
+contract contains exactly these fifteen symbols:
+
+1. `tinyrustlm_native_contract_json`
+2. `tinyrustlm_string_free`
+3. `tinyrustlm_slm2_inspect_json`
+4. `tinyrustlm_runtime_create_json`
+5. `tinyrustlm_runtime_destroy_json`
+6. `tinyrustlm_runtime_state_json`
+7. `tinyrustlm_runtime_activate_json`
+8. `tinyrustlm_runtime_advance_operation_json`
+9. `tinyrustlm_runtime_set_transcript_json`
+10. `tinyrustlm_runtime_begin_request_json`
+11. `tinyrustlm_runtime_step_json`
+12. `tinyrustlm_runtime_finish_json`
+13. `tinyrustlm_p2p_prepare_share_kit_json`
+14. `tinyrustlm_p2p_inspect_manifest_json`
+15. `tinyrustlm_p2p_assemble_json`
+
+Native-owned UTF-8 JSON results are released only through
+`tinyrustlm_string_free`. Managed code rejects embedded NUL characters,
+validates request and response bounds, requires exact schema identities, and
+does not normalize or repair native reports. Runtime handles are represented by
+`SafeHandle` ownership and are destroyed once.
+
+## Runtime Surface
+
+`TinyRustLmRuntimeFactory.GetNativeContract` returns the validated exact
+contract. `CreateRuntime` creates an empty runtime with an immutable operation
+identity and bounded policy.
+
+`ITinyRustLmRuntime` exposes only the canonical state machine:
+
+- inspect SLM2 through `TinyRustLmSlm2Inspector`;
+- activate a complete five-member ACG2 composition fail-atomically;
+- advance the immutable operation identity;
+- set the transcript revision;
+- begin one Prompt2 request;
+- step deterministic Sampling2 generation, including explicit cancellation;
+- finish and return the unmodified terminal output; and
+- inspect bounded state and dispose the runtime.
+
+Activation binds exact SLM2, Tokenizer2, Template2, Sampling2, and Prompt2
+members. A failed preflight cannot partially replace active state. Advancing an
+operation clears generation and KV state while retaining only state explicitly
+allowed by the native contract. Managed callers cannot provide alternate host
+sampling knobs or invoke a second runtime.
+
+## Fixed-Piece P2P Surface
+
+`TinyRustLmP2PClient` exposes three operations:
+
+- `PrepareShareKit` creates immutable four-MiB pieces and one canonical
+  `tinyrustlm.vnext.p2p_manifest.v1` manifest.
+- `InspectManifest` validates bounded canonical manifest bytes without network
+  access or repair.
+- `AssembleArtifact` reads manifest-declared pieces and create-only assembles
+  one exact SLM2 or ACG2 artifact after piece, Merkle, whole-artifact, and
+  semantic admission.
+
+The Merkle profile is `tinyrustlm.merkle.sha256-4mib.v1`. SLM2 admission also
+binds the exact ACG2 composition path supplied by
+`TinyRustLmP2PAdmission.ForSlm2Model`. ACG2 admission uses
+`TinyRustLmP2PAdmission.ForAcg2Composition`.
+
+This package is direct transport, not a discovery or catalog control plane. It
+does not expose peer discovery, announcements, catalogs, signatures, receipt
+sidecars, public reachability claims, network fallback, model-byte proxying, or
+model authoring.
+
+## Conversion Boundary
+
+`TinyRustLM.Conversion` invokes only the locked `tinyrustlm-convert`
+transactions for Qwen3 safetensors to mixed-Q8 SLM2 and Qwen tokenizer data to
+Tokenizer2. The wrapper enforces create-only outputs, bounded stdout/stderr,
+duration and cancellation limits, exact structured summaries, expected output
+and receipt existence, and streamed output-hash revalidation.
+
+Conversion is structural and provenance evidence. It is not model quality,
+native inference, browser WASM parity, browser conversation, P2P availability,
+or publication evidence.
+
+## MemoryEndpoints Boundary
+
+`TinyRustLM.MemoryEndpoints` remains an optional connector and deterministic
+contract library. Credentials are supplied only to an in-memory client and are
+not serializable DTO fields. Received memory remains untrusted data.
+
+The current project has no authorization to perform production MemoryEndpoints
+operations. Unit and fixture behavior cannot be reported as live account,
+continuity, enrollment, cleanup, or readiness evidence.
+
+## Package And Consumer Gates
+
+Release verification must:
+
+1. build the Rust workspace and managed solution with warnings denied;
+2. verify the exact fifteen native symbols and packaged native asset hashes;
+3. create isolated consumer projects and NuGet caches;
+4. install only the built package files at the exact package version;
+5. materialize the canonical SLM2 and ACG2 vectors;
+6. inspect SLM2, create/advance/dispose an empty runtime, prepare/inspect/
+   assemble ACG2 and SLM2, and compare exact bytes;
+7. prove create-only collision and manifest-tamper rejection;
+8. reject unexpected package IDs, files, dependencies, exported APIs, symbols,
+   stale documentation, and private authoring code; and
+9. distinguish local package success from registry publication and public
+   readback.
+
+The public API baseline is derived from checked-in approved member lists and
+freshly packaged assemblies. Intentional prelaunch rewrites update the current
+baseline and delete superseded APIs; they do not retain type forwards,
+deprecated members, or facade packages.
