@@ -25,7 +25,7 @@ const profilePath = path.join(repositoryRoot, "contracts/vnext/prompt2-format-pr
 const vectorPath = path.join(repositoryRoot, "contracts/vnext/prompt2-format-vectors.v1.json");
 
 const PROFILE_ID = "org.minimodel.prompt2/2.0";
-const PROFILE_SHA256 = "b317ae0207522399e63125c57daf91d97432f95b26bd8fb71db746934ff05c8c";
+const PROFILE_SHA256 = "f9eb4cbecfb52f5e2857216c999754da94021a5427a86732d33fe15efc0d062c";
 const ARTIFACT_MAGIC = Buffer.from("50524d320d0a1a0a", "hex");
 const ARTIFACT_FORMAT_ID = Buffer.from("6d696e696d6f64656c2e70726d320000", "hex");
 const LOAD_MAGIC = Buffer.from("50324c440d0a1a0a", "hex");
@@ -69,8 +69,12 @@ const SAMPLING_ARTIFACT_SHA256 = "9e02fcfbba169330a2ee1bf40cea015dc4067925e051f6
 const SAMPLING_TABLE_SHA256 = "fce2345bd4ddc53f137ecc36a48afca02a73ebd3549acce942628e440429c677";
 const SOURCE_MODEL_CONFIG_SHA256 = "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd";
 const SOURCE_TEMPLATE_SHA256 = "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8";
-const SLM2_FORMAT_PROFILE_SHA256 = "387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625";
-const SLM2_RUNTIME_VECTOR_SHA256 = "c7a0fdaf1dd578928e6a438be308dad5a9e8cc10e2bbb6da4b2c5e10bebe71f1";
+const SLM2_FORMAT_PROFILE_SHA256 = "5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8";
+const SLM2_RUNTIME_Q8_VECTOR_SHA256 = "c437ebb5e59c9059c49324d12d43e556493e62f5d6b2e857e369ca08674333a0";
+const SUPERSEDED_SLM2_FORMAT_PROFILE_SHA256 =
+  "387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625";
+const SUPERSEDED_SLM2_RUNTIME_VECTOR_SHA256 =
+  "c7a0fdaf1dd578928e6a438be308dad5a9e8cc10e2bbb6da4b2c5e10bebe71f1";
 
 const ROLE_IDS = Object.freeze({ system: 1, user: 2, assistant: 3 });
 const ID_ROLES = Object.freeze({ 1: "system", 2: "user", 3: "assistant" });
@@ -252,7 +256,7 @@ function writePrompt2() {
   putDigest(artifact, 368, SOURCE_MODEL_CONFIG_SHA256);
   putDigest(artifact, 400, SOURCE_TEMPLATE_SHA256);
   putDigest(artifact, 432, SLM2_FORMAT_PROFILE_SHA256);
-  putDigest(artifact, 464, SLM2_RUNTIME_VECTOR_SHA256);
+  putDigest(artifact, 464, SLM2_RUNTIME_Q8_VECTOR_SHA256);
   return artifact;
 }
 
@@ -311,7 +315,7 @@ function parsePrompt2(input, policy = {}) {
     exactDigest(bytes, 368, SOURCE_MODEL_CONFIG_SHA256) &&
     exactDigest(bytes, 400, SOURCE_TEMPLATE_SHA256) &&
     exactDigest(bytes, 432, SLM2_FORMAT_PROFILE_SHA256) &&
-    exactDigest(bytes, 464, SLM2_RUNTIME_VECTOR_SHA256),
+    exactDigest(bytes, 464, SLM2_RUNTIME_Q8_VECTOR_SHA256),
   "prompt2-dependency-identity");
   invariant(sha256Hex(bytes) === ARTIFACT_SHA256, "prompt2-identity");
   return Object.freeze({
@@ -968,6 +972,14 @@ function applyMutation(input, mutation) {
     bytes.fill(mutation.value, mutation.offset, mutation.offset + mutation.length);
     return bytes;
   }
+  if (mutation.kind === "set-hex") {
+    const replacement = strictHex(mutation.hex);
+    invariant(Number.isSafeInteger(mutation.offset) && mutation.offset >= 0 &&
+      replacement.length > 0 && mutation.offset + replacement.length <= bytes.length,
+    "prompt2-vector-mutation");
+    replacement.copy(bytes, mutation.offset);
+    return bytes;
+  }
   fail("prompt2-vector-mutation");
 }
 
@@ -1166,6 +1178,10 @@ function renderVectorDocument() {
     { id: "bad-vocabulary", kind: "set-u32", offset: 84, value: 151_935 },
     { id: "bad-stop-order", kind: "set-u32", offset: 128, value: 151_643 },
     { id: "bad-tokenizer-hash", kind: "xor", offset: 176, mask: 1 },
+    { id: "superseded-slm2-format-profile", kind: "set-hex", offset: 432,
+      hex: SUPERSEDED_SLM2_FORMAT_PROFILE_SHA256 },
+    { id: "superseded-slm2-runtime-vector", kind: "set-hex", offset: 464,
+      hex: SUPERSEDED_SLM2_RUNTIME_VECTOR_SHA256 },
     { id: "bad-reserved", kind: "xor", offset: 496, mask: 1 },
     { id: "truncated", kind: "truncate", length: 511 },
     { id: "trailing", kind: "append", hex: "00" }

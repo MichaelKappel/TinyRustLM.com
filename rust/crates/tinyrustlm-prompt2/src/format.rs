@@ -51,20 +51,20 @@ pub(crate) const SOURCE_MODEL_CONFIG_SHA256: &str =
 pub(crate) const SOURCE_TEMPLATE_SHA256: &str =
     "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8";
 const SLM2_FORMAT_PROFILE_SHA256: &str =
-    "387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625";
-const SLM2_RUNTIME_VECTOR_SHA256: &str =
-    "c7a0fdaf1dd578928e6a438be308dad5a9e8cc10e2bbb6da4b2c5e10bebe71f1";
+    "5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8";
+const SLM2_RUNTIME_Q8_VECTOR_SHA256: &str =
+    "c437ebb5e59c9059c49324d12d43e556493e62f5d6b2e857e369ca08674333a0";
 
 /// Exact Prompt2 2.0 profile identifier.
 pub const PROMPT2_FORMAT_PROFILE_ID: &str = "org.minimodel.prompt2/2.0";
 
 /// SHA-256 of the exact machine-readable Prompt2 profile bytes.
 pub const PROMPT2_FORMAT_PROFILE_SHA256: &str =
-    "b317ae0207522399e63125c57daf91d97432f95b26bd8fb71db746934ff05c8c";
+    "f9eb4cbecfb52f5e2857216c999754da94021a5427a86732d33fe15efc0d062c";
 
 /// SHA-256 of the sole canonical Prompt2 artifact.
 pub const PROMPT2_ARTIFACT_SHA256: &str =
-    "d3a123f327e7c4c3eb53d642c4b8d98c39a0b30bac2cc1970922612ae502f142";
+    "27aaed18b62930213a2395e398e68d18a90d4280e24c23d794e3e94352d7e1f3";
 
 /// Stable fail-closed Prompt2 error.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -244,7 +244,7 @@ fn canonical_artifact() -> Result<[u8; ARTIFACT_BYTES], Prompt2Error> {
     put_digest(&mut artifact, 368, SOURCE_MODEL_CONFIG_SHA256)?;
     put_digest(&mut artifact, 400, SOURCE_TEMPLATE_SHA256)?;
     put_digest(&mut artifact, 432, SLM2_FORMAT_PROFILE_SHA256)?;
-    put_digest(&mut artifact, 464, SLM2_RUNTIME_VECTOR_SHA256)?;
+    put_digest(&mut artifact, 464, SLM2_RUNTIME_Q8_VECTOR_SHA256)?;
     let digest: [u8; 32] = Sha256::digest(artifact).into();
     if hex_lower(&digest) != PROMPT2_ARTIFACT_SHA256 {
         return Err(Prompt2Error::new("prompt2-identity"));
@@ -305,7 +305,7 @@ fn validate_bound_fields(bytes: &[u8]) -> Result<(), Prompt2Error> {
         (368, SOURCE_MODEL_CONFIG_SHA256),
         (400, SOURCE_TEMPLATE_SHA256),
         (432, SLM2_FORMAT_PROFILE_SHA256),
-        (464, SLM2_RUNTIME_VECTOR_SHA256),
+        (464, SLM2_RUNTIME_Q8_VECTOR_SHA256),
     ];
     for (offset, expected) in digests {
         if bytes.get(offset..offset + 32) != Some(decode_hex_32(expected)?.as_slice()) {

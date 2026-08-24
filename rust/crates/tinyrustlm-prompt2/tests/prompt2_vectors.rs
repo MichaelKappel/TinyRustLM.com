@@ -177,6 +177,10 @@ fn apply_mutation(original: &[u8], mutation: &Value) -> Vec<u8> {
         }
         "fill" => output[offset..offset + number(&mutation["length"]) as usize]
             .fill(number(&mutation["value"]) as u8),
+        "set-hex" => {
+            let replacement = hex_bytes(text(&mutation["hex"]));
+            output[offset..offset + replacement.len()].copy_from_slice(&replacement);
+        }
         _ => panic!("unknown mutation {kind}"),
     }
     output

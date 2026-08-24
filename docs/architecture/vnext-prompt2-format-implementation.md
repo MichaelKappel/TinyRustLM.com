@@ -6,6 +6,8 @@ Prompt2 2.0 is an implemented, development-only format, wire, and native
 composition boundary. Its canonical profile, independent Node implementation,
 cross-language vectors, unsafe-free Rust implementation, request/result wire
 formats, and load-bundle geometry pass focused local tests.
+Its mixed-Q8 SLM2 dependency replacement was frozen before output at
+remote-exact commit `6684585964e79d7237bd05398dad4cafd455d1e2`.
 
 The exact accepted full Tokenizer2 artifact has not yet been executed through
 this new composition runtime. Native comparative output, browser WASM,
@@ -28,10 +30,10 @@ exact SLM2 artifact and conversion receipt in addition to the Prompt2 family.
 
 | Artifact | Bytes | SHA-256 |
 | --- | ---: | --- |
-| Prompt2 profile | 19,423 | `b317ae0207522399e63125c57daf91d97432f95b26bd8fb71db746934ff05c8c` |
-| Prompt2 vectors | 347,026 | `9d3354785614ff60edc679b6fea6797164ffac368edaa9d3d50912b525048cc0` |
-| Node reference | 57,959 | `e993bde73b69422197e50b968869f19cfd9093cfc3aec4472205a67d47efdedd` |
-| Canonical Prompt2 artifact | 512 | `d3a123f327e7c4c3eb53d642c4b8d98c39a0b30bac2cc1970922612ae502f142` |
+| Prompt2 profile | 19,421 | `f9eb4cbecfb52f5e2857216c999754da94021a5427a86732d33fe15efc0d062c` |
+| Prompt2 vectors | 347,532 | `4b4a4497245ee371e4f3e2b930e3413caa0f8bb70b04c3385880b11de83c487e` |
+| Node reference | 58,803 | `7beb1edec00d0f24f8c308419a0b00e30abee090c331a5d563a6783f4e9f04ef` |
+| Canonical Prompt2 artifact | 512 | `27aaed18b62930213a2395e398e68d18a90d4280e24c23d794e3e94352d7e1f3` |
 | Standalone Rust lockfile | 5,928 | `48dca83e7e45403cc012835e593db612003ed49c5fd9024473f1f52a9af21b29` |
 
 The Prompt2 artifact binds these already accepted inputs:
@@ -45,8 +47,12 @@ The Prompt2 artifact binds these already accepted inputs:
 - Sampling2 Q48 table `fce2345b...c677`;
 - pinned Qwen source model configuration `660db3b7...7dd`;
 - pinned publisher template `a55ee1b1...d8`;
-- SLM2 format profile `387c0ff4...8625`; and
-- accepted scalar-runtime vectors `c7a0fdaf...71f1`.
+- mixed-Q8 SLM2 format profile `5ac819cb...738d8`; and
+- accepted runtime-Q8 vectors `c437ebb5...733a0`.
+
+The superseded dense-F32 profile and scalar-runtime-vector digests are
+registered hostile inputs. They fail the dependency-identity check and are not
+accepted through a compatibility path.
 
 The root `Cargo.toml` and `Cargo.lock` remain byte-identical to their accepted
 pre-Prompt2 state. Prompt2 is a standalone exact-lock workspace because those
@@ -143,7 +149,7 @@ has not produced full-artifact composition output before preregistration.
 ## Local Verification
 
 Focused Node verification passes 11 tests. It covers generator equality,
-profile/artifact identities, all 512 proper prefixes, 13 artifact mutations,
+profile/artifact identities, all 512 proper prefixes, 15 artifact mutations,
 three request cases, nine request mutations, two result cases, 18 result
 mutations, strict JSON limits, load geometry, dependency rejection, source
 isolation, and the claim boundary.

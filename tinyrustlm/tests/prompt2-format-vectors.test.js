@@ -76,6 +76,12 @@ test("Prompt2 profile and sole canonical artifact identities are exact", () => {
     byteLength: 512,
     sha256: ARTIFACT_SHA256
   });
+  assert.equal(profile.dependencyBinding.slm2.formatProfileSha256,
+    "5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8");
+  assert.equal(profile.dependencyBinding.slm2.runtimeQ8VectorSha256,
+    "c437ebb5e59c9059c49324d12d43e556493e62f5d6b2e857e369ca08674333a0");
+  assert.equal(Object.hasOwn(profile.dependencyBinding.slm2,
+    "scalarRuntimeVectorSha256"), false);
 });
 
 test("Prompt2 parser rejects every proper canonical artifact prefix", () => {
@@ -198,7 +204,7 @@ test("Prompt2 load bundle is exact, contiguous, bounded, and dependency validati
 });
 
 test("Prompt2 profile preserves the unpromoted no-legacy and zero-campaign claim boundary", () => {
-  assert.equal(profile.status, "development-unpromoted");
+  assert.equal(profile.status, "implemented-unpromoted");
   assert.equal(profile.selectedContract.modelArtifactBoundHere, false);
   assert.match(profile.selectedContract.compatibilityPolicy,
     /no-version-range-alias-migration-repair-or-fallback/u);

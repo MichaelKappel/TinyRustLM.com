@@ -258,22 +258,25 @@ See ADR-016 and
 
 ## Prompt2 Composition Checkpoint
 
-`prompt2-format-profile.v1.json` is the sole development-only Prompt2 2.0
-composition profile. It is 19,423 bytes with SHA-256
-`b317ae0207522399e63125c57daf91d97432f95b26bd8fb71db746934ff05c8c`.
+`prompt2-format-profile.v1.json` is the sole implemented, unpromoted Prompt2
+2.0 composition profile. It is 19,421 bytes with SHA-256
+`f9eb4cbecfb52f5e2857216c999754da94021a5427a86732d33fe15efc0d062c`.
 Its exact 512-byte artifact has SHA-256
-`d3a123f327e7c4c3eb53d642c4b8d98c39a0b30bac2cc1970922612ae502f142`
+`27aaed18b62930213a2395e398e68d18a90d4280e24c23d794e3e94352d7e1f3`
 and binds the accepted Tokenizer2, Template2, Sampling2, Q48 table, pinned Qwen
-source configuration and template, SLM2 format, and scalar-runtime-vector
-identities. It does not bind model tensor bytes or grant a model claim.
+source configuration and template, current mixed-Q8 SLM2 format, and
+runtime-Q8-vector identities. It does not bind model tensor bytes or grant a
+model claim.
 
-`prompt2-format-vectors.v1.json` is a 347,026-byte independent contract with
+`prompt2-format-vectors.v1.json` is a 347,532-byte independent contract with
 SHA-256
-`9d3354785614ff60edc679b6fea6797164ffac368edaa9d3d50912b525048cc0`.
+`4b4a4497245ee371e4f3e2b930e3413caa0f8bb70b04c3385880b11de83c487e`.
 It freezes the exact artifact, load bundle, three requests, active and
-40,960-token context-limit results, all proper artifact prefixes, and 40
+40,960-token context-limit results, all proper artifact prefixes, and 42
 registered mutations. Large result bytes use deterministic 32 KiB JSON chunks
 so the repository strict JSON string ceiling remains unchanged.
+The artifact mutation set explicitly rejects both superseded dense-F32 SLM2
+dependency digests.
 
 The independent Node implementation and unsafe-free `tinyrustlm-prompt2` Rust
 crate reproduce every wire and stable rejection. Composition renders once,
@@ -285,6 +288,9 @@ truncation, repair, retries, best-of-N selection, aliases, legacy readers, or
 fallback paths.
 
 This checkpoint is exact format and local native composition evidence only.
+The mixed-Q8 dependency replacement was preregistered at remote-exact commit
+`6684585964e79d7237bd05398dad4cafd455d1e2`; the earlier ACG2 registration is
+terminally superseded before output and cannot be used for implementation.
 The accepted full Tokenizer2 artifact has not yet been executed through Prompt2
 under a frozen output-free registration. Native comparative output, browser
 WASM, fresh Chromium, a real SLM2 model, quality, release, deployment,

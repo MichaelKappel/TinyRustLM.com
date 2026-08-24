@@ -60,14 +60,16 @@ bytes.
 
 The artifact binds exact Tokenizer2, Template2, Sampling2, sampling-table,
 source-model-configuration, source-template, SLM2 format, and SLM2
-scalar-vector hashes. It also freezes all dependency byte lengths, tokenizer
+runtime-Q8-vector hashes. It also freezes all dependency byte lengths, tokenizer
 token count, model vocabulary, resource ceilings, explicit disabled-thinking
 mode, no automatic BOS, no automatic EOS, and the ordered stop set.
 
 The sole artifact is 512 bytes with SHA-256
-`d3a123f327e7c4c3eb53d642c4b8d98c39a0b30bac2cc1970922612ae502f142`.
+`27aaed18b62930213a2395e398e68d18a90d4280e24c23d794e3e94352d7e1f3`.
 Alternate dependency hashes, sizes, field values, flags, versions, reserved
 bytes, prefixes, and trailing bytes are fatal.
+The prior dense-F32 SLM2 profile and scalar-runtime-vector digests are explicit
+hostile vectors and have no executable fallback.
 
 The load wire is `tinyrustlm.prompt2-load-bundle/1`. It contains one 128-byte
 header followed by exactly Prompt2, Tokenizer2, Template2, and Sampling2 bytes
@@ -177,16 +179,16 @@ fallback.
 ## Authoritative Evidence
 
 The normative machine profile is
-`contracts/vnext/prompt2-format-profile.v1.json`, 19,423 bytes with SHA-256
-`b317ae0207522399e63125c57daf91d97432f95b26bd8fb71db746934ff05c8c`.
+`contracts/vnext/prompt2-format-profile.v1.json`, 19,421 bytes with SHA-256
+`f9eb4cbecfb52f5e2857216c999754da94021a5427a86732d33fe15efc0d062c`.
 
 The independent vector document is
-`contracts/vnext/prompt2-format-vectors.v1.json`, 347,026 bytes with SHA-256
-`9d3354785614ff60edc679b6fea6797164ffac368edaa9d3d50912b525048cc0`.
+`contracts/vnext/prompt2-format-vectors.v1.json`, 347,532 bytes with SHA-256
+`4b4a4497245ee371e4f3e2b930e3413caa0f8bb70b04c3385880b11de83c487e`.
 
 The independent Node implementation is
-`tinyrustlm/tools/prompt2-reference.js`, 57,959 bytes with SHA-256
-`e993bde73b69422197e50b968869f19cfd9093cfc3aec4472205a67d47efdedd`.
+`tinyrustlm/tools/prompt2-reference.js`, 58,803 bytes with SHA-256
+`7beb1edec00d0f24f8c308419a0b00e30abee090c331a5d563a6783f4e9f04ef`.
 It imports only accepted local JavaScript contract authorities and Node core
 crypto, filesystem, and path modules. It invokes no Rust, subprocess, network,
 template engine, or model.
@@ -197,9 +199,11 @@ SHA-256
 `48dca83e7e45403cc012835e593db612003ed49c5fd9024473f1f52a9af21b29`.
 This preserves immutable root Cargo inputs; it is not a compatibility runtime.
 
-The vector corpus owns one artifact, all 512 proper artifact prefixes, 13
+The vector corpus owns one artifact, all 512 proper artifact prefixes, 15
 artifact mutations, three requests, nine request mutations, one active result,
 one structural 40,960-token context-limit result, and 18 result mutations.
+The two additional artifact mutations install the exact superseded SLM2
+dependency digests and require stable fail-closed rejection.
 
 Focused local evidence includes 11 passing Node tests, four passing Rust
 contract tests, and three passing Rust cross-language vector tests. Rust

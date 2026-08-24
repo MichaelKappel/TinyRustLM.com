@@ -1,7 +1,7 @@
 {
   "schema": "tinyrustlm.vnext.prompt2-format-profile.v1",
   "profileId": "org.minimodel.prompt2/2.0",
-  "status": "development-unpromoted",
+  "status": "implemented-unpromoted",
   "byteOrder": "little-endian",
   "selectedContract": {
     "modelId": "Qwen/Qwen3-0.6B",
@@ -37,9 +37,9 @@
     },
     "slm2": {
       "formatProfileId": "org.minimodel.slm2/2.0",
-      "formatProfileSha256": "387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625",
-      "scalarRuntimeVectorSha256": "c7a0fdaf1dd578928e6a438be308dad5a9e8cc10e2bbb6da4b2c5e10bebe71f1",
-      "bindingMeaning": "accepted-format-and-scalar-arithmetic-authorities-only-not-a-real-model-or-production-runtime-interface"
+      "formatProfileSha256": "5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8",
+      "runtimeQ8VectorSha256": "c437ebb5e59c9059c49324d12d43e556493e62f5d6b2e857e369ca08674333a0",
+      "bindingMeaning": "accepted-mixed-q8-format-and-scalar-runtime-authorities-only-not-a-real-model-or-production-runtime-interface"
     },
     "sourceModelConfig": {
       "path": "config.json",
@@ -98,7 +98,7 @@
       { "offset": 368, "bytes": 32, "type": "sha256", "name": "sourceModelConfigSha256" },
       { "offset": 400, "bytes": 32, "type": "sha256", "name": "sourceTemplateSha256" },
       { "offset": 432, "bytes": 32, "type": "sha256", "name": "slm2FormatProfileSha256" },
-      { "offset": 464, "bytes": 32, "type": "sha256", "name": "slm2ScalarRuntimeVectorSha256" },
+      { "offset": 464, "bytes": 32, "type": "sha256", "name": "slm2RuntimeQ8VectorSha256" },
       { "offset": 496, "bytes": 16, "type": "zero", "name": "reserved" }
     ]
   },
