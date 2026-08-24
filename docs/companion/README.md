@@ -35,9 +35,11 @@ relabels, repacks, or partially activates an artifact.
 
 The Rust executable now implements one exact complete command,
 `tinyrustlm-convert qwen3-composition`, that creates and independently verifies
-the six required artifacts under one terminal receipt. Companion integration is
-still pending: the current private operation kernel does not invoke that
-command, and therefore cannot report `Available` from conversion.
+the six required artifacts under one terminal receipt. The private managed
+wrapper now invokes only that command and independently revalidates its exact
+inventory, operation and receipt lineage, and streamed member hashes. The
+private Companion source branch reports `Available` only after mapping all six
+verified identities through `VerifyingComposition`.
 
 ## Implemented Foundation
 
@@ -57,11 +59,20 @@ machine from `Queued` through peer or source work to terminal `Available`,
 `Cancelled`, or `Rejected`. `Available` requires exact positive records for
 ACG2, SLM2, Tokenizer2, Template2, Sampling2, and Prompt2.
 
+The journal now reopens and verifies each immutable acquisition request before
+source conversion. The source coordinator binds the journaled model-lock,
+tokenizer-lock, and composition-profile hashes to one create-only converter
+process; journals native rejection or cancellation without deleting evidence;
+and advances through `Converting`, `VerifyingComposition`, and `Available` only
+after complete verification. Its deterministic executable fixture is test
+evidence only and cannot satisfy a real-model gate.
+
 This foundation is not yet a companion release. It does not listen on loopback,
-discover or fetch peers, download model source, invoke the converter, stream a
-composition to the browser, install a service, or expose an installation
-artifact. The deep acquisition gate remains explicitly unavailable until those
-production owners and their registered evidence exist.
+discover or fetch peers, download model source, recover a completed conversion
+after process loss, stream a composition to the browser, install a service, or
+expose an installation artifact. No real source has been passed through the
+coordinator. The deep acquisition gate remains explicitly unavailable until
+those production owners and their registered evidence exist.
 
 ## Browser Boundary
 

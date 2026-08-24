@@ -88,6 +88,44 @@ public sealed class CompanionOperationJournalTests : IDisposable
         Assert.Equal("journal-root-marker", error.Code);
     }
 
+    [Fact]
+    public void JournalRejectsAValidButTamperedImmutableRequest()
+    {
+        Directory.CreateDirectory(_parent);
+        var root = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(_parent, "owned"));
+        var journal = new CompanionOperationJournal(root);
+        var created = journal.Create(CompanionContractTests.Request());
+        var requestPath = Path.Combine(root, "operations", created.OperationId, "request.json");
+        var tampered = File.ReadAllText(requestPath).Replace(
+            "qwen3-0.6b",
+            "qwen3-0.7b",
+            StringComparison.Ordinal);
+        File.WriteAllText(requestPath, tampered);
+
+        var error = Assert.Throws<CompanionContractException>(() =>
+            journal.ReadRequest(created.OperationId));
+        Assert.Equal("journal-request-identity", error.Code);
+    }
+
+    [Fact]
+    public void JournalRejectsDuplicateRequestPropertiesBeforeInterpretingThem()
+    {
+        Directory.CreateDirectory(_parent);
+        var root = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(_parent, "owned"));
+        var journal = new CompanionOperationJournal(root);
+        var created = journal.Create(CompanionContractTests.Request());
+        var requestPath = Path.Combine(root, "operations", created.OperationId, "request.json");
+        var text = File.ReadAllText(requestPath).Replace(
+            "\"modelId\":\"qwen3-0.6b\"",
+            "\"modelId\":\"qwen3-0.6b\",\"modelId\":\"qwen3-0.6b\"",
+            StringComparison.Ordinal);
+        File.WriteAllText(requestPath, text);
+
+        var error = Assert.Throws<CompanionContractException>(() =>
+            journal.ReadRequest(created.OperationId));
+        Assert.Equal("journal-request-json", error.Code);
+    }
+
     public void Dispose()
     {
         if (Directory.Exists(_parent))

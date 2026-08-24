@@ -77,6 +77,28 @@ replaced only after its history entry is durable. Same-process and cross-
 process exclusion prevent concurrent transitions. Reparse-point roots and
 records fail closed.
 
+## Complete Source Conversion Integration
+
+The private managed conversion owner now invokes only
+`tinyrustlm-convert qwen3-composition`. Its request binds both source-lock
+hashes, both source directories, the registered composition-profile hash, and
+one absent output root. It owns bounded process execution and process-tree
+cancellation, parses strict summary and terminal evidence, recomputes the
+operation identity, rejects inventory drift, and freshly hashes all six
+artifacts and both component receipts. The former component-level managed
+success API is deleted.
+
+The Companion source coordinator reloads and verifies the immutable acquisition
+request, transitions through `Converting` and `VerifyingComposition`, and
+attaches exact ACG2, SLM2, Tokenizer2, Template2, Sampling2, and Prompt2
+identities only when entering `Available`. Typed native failure becomes
+`Rejected`; caller cancellation becomes `Cancelled`; neither path deletes
+started evidence or retries.
+
+The deterministic converter executable used by managed tests is a process and
+contract fixture, not a valid model or composition. No real source conversion,
+runtime inference, browser transfer, or quality result is claimed.
+
 ## Deleted Authority
 
 The cut removes:
@@ -97,10 +119,10 @@ input, or install instruction may use them.
 
 The current source checkpoint passes:
 
-- `TinyRustLM.Companion.Tests`: 10/10;
+- `TinyRustLM.Companion.Tests`: 18/18;
 - `TinyRustLM.Package.Tests`: 38/38 after documentation regression coverage;
-- `TinyRustLM.Core.Tests`: 49/49;
-- complete managed solution: 97/97 after documentation regression coverage;
+- `TinyRustLM.Core.Tests`: 60/60;
+- complete managed solution: 116/116 after documentation regression coverage;
 - browser model-acquisition contract: 5/5; and
 - diff hygiene plus the frozen authoritative-goal SHA-256 check.
 
@@ -113,12 +135,13 @@ publication, public readback, companion release, or product deployment.
 
 ## Remaining Work
 
-The private companion is not yet a process host. It does not yet provide:
+The private companion is not yet a released process host. It does not yet
+provide:
 
 1. a selected and adversarially verified loopback capability protocol;
 2. direct peer discovery and resumable piece transfer;
 3. immutable reviewed source acquisition;
-4. one complete-composition converter transaction;
+4. restart recovery around a terminal complete-composition transaction;
 5. composition transfer and atomic browser storage;
 6. real model activation and multi-turn chat;
 7. signed three-RID companion archives; or

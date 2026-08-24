@@ -13,5 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\TinyRustLM.Companion\TinyRustLM.Companion.csproj" />
+    <ProjectReference Include="..\..\tools\TinyRustLM.ConversionFixtureTool\TinyRustLM.ConversionFixtureTool.csproj"
+                      ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>

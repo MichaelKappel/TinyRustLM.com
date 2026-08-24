@@ -612,7 +612,7 @@ public sealed class PackageBoundaryTests
         Assert.Contains("mixed-Q8 SLM2", validation, StringComparison.Ordinal);
         Assert.Contains("tinyrustlm.companion.acquire.v1", companion, StringComparison.Ordinal);
         Assert.Contains("tinyrustlm.companion.operation.v1", companion, StringComparison.Ordinal);
-        Assert.Contains("Proposed", transportAdr, StringComparison.Ordinal);
+        Assert.Contains("Accepted", transportAdr, StringComparison.Ordinal);
         Assert.Contains("No current route table or port is release authority", transportAdr, StringComparison.Ordinal);
     }
 

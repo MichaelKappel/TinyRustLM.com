@@ -161,8 +161,9 @@ published, or announced by this implementation checkpoint. The unchanged
 `Qwen/Qwen3-0.6B` source remains terminally rejected as a product model and may
 be used only as a numerical-parity ancestor.
 
-The next gate is private managed-wrapper and companion integration around the
-complete transaction, followed by exact source-framework versus native SLM2
-versus browser-WASM numerical parity and untouched quality qualification of a
+The complete transaction now has one strict managed process owner and one
+private Companion source-branch coordinator. The next gate is restart-safe
+private transport, followed by exact source-framework versus native SLM2 versus
+browser-WASM numerical parity and untouched quality qualification of a
 genuinely trained derivative. MemoryEndpoints remains unauthorized and disconnected.
 Campaign counters remain 0/20, 0/50, 0/25, 0/40, and 0/20.

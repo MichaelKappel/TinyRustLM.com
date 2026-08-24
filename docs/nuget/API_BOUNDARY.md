@@ -100,16 +100,18 @@ model authoring.
 
 ## Conversion Boundary
 
-`TinyRustLM.Conversion` invokes only the locked `tinyrustlm-convert`
-transactions for Qwen3 safetensors to mixed-Q8 SLM2 and Qwen tokenizer data to
-Tokenizer2. The wrapper enforces create-only outputs, bounded stdout/stderr,
-duration and cancellation limits, exact structured summaries, expected output
-and receipt existence, and streamed output-hash revalidation.
+`TinyRustLM.Conversion` invokes only the locked
+`tinyrustlm-convert qwen3-composition` transaction. The managed request binds
+the expected model source-lock, tokenizer source-lock, registered profile, two
+source directories, and one absent output root. The wrapper owns bounded
+stdout/stderr, duration, process-tree cancellation, strict summary and receipt
+parsing, deterministic operation-ID recomputation, exact terminal inventory,
+and fresh streamed hashes for all six artifacts and both component receipts.
 
-The Rust executable now implements the separately registered
-`qwen3-composition` transaction over all six artifacts. The managed wrapper has
-not yet adopted that command at this checkpoint. Component conversion through
-the wrapper is therefore not complete composition availability.
+There is no managed model-only or tokenizer-only success operation. Those
+native component commands are private compiler primitives whose receipts feed
+the complete transaction. An individual component receipt is never
+composition availability.
 
 Conversion is structural and provenance evidence. It is not model quality,
 native inference, browser WASM parity, browser conversation, P2P availability,

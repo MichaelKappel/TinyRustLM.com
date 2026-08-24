@@ -2,14 +2,11 @@
 
 ## Status
 
-Proposed. The private operation-contract and durable-journal foundation exists,
-but no loopback server, browser capability protocol, peer fetcher, source
-downloader, complete-composition converter coordinator, installer, or release
-artifact is implemented or published.
+Accepted
 
-The former SeedHost implementation and its public-package/tool lane were
-deleted before launch. It is not a compatibility authority and must not be
-restored.
+The protocol family and security invariants are accepted. Exact route schemas,
+limits, installation discovery, and pairing bytes must still be preregistered
+and physically verified before a listener is implemented or exposed.
 
 ## Decision Date
 
@@ -17,113 +14,243 @@ restored.
 
 ## Scope
 
-This ADR defines the required boundary between TinyRustLM.com and the future
-user-owned private companion. It covers operation identity, trust, transport,
-progress, cancellation, and artifact transfer. It does not authorize public
-P2P announcements, MemoryEndpoints, arbitrary local automation, model
-conversion shortcuts, or model-quality claims.
+This decision governs the private user-owned Companion boundary used by
+TinyRustLM.com for verified direct-peer acquisition, reviewed source
+conversion, progress, cancellation, and complete composition transfer.
 
-## Foundation Already Established
+It does not authorize model-byte proxying through a project site, public P2P
+announcement, MemoryEndpoints access, arbitrary local file access, arbitrary
+process execution, model-quality claims, or a released installer.
 
-The nonpackable `TinyRustLM.Companion` solution component owns two closed
-technical schemas:
+**Observed local fact**: the nonpackable `TinyRustLM.Companion` component owns
+the strict `tinyrustlm.companion.acquire.v1` request, the strict
+`tinyrustlm.companion.operation.v1` record, an owned create-only journal, and a
+source coordinator that invokes only the complete `qwen3-composition`
+transaction. No loopback listener or browser capability implementation exists.
+No current route table or port is release authority.
 
-- `tinyrustlm.companion.acquire.v1`; and
-- `tinyrustlm.companion.operation.v1`.
+## Decision
 
-The acquisition request binds one public `owner/name` repository, one immutable
-40-hex revision, exact model and tokenizer source-lock SHA-256 values, one
-composition-profile SHA-256, explicit source-acquisition approval, a positive
-maximum-source-byte budget, and no more than two ordered HTTPS peer candidates.
-Credentials, query strings, fragments, IP literals, duplicate peers, mutable
-revisions, unknown fields, and ambiguous values fail closed.
+**Engineering decision**: the Companion will expose one closed HTTP/1.1
+capability protocol over explicit loopback listeners. IPv4 binds exactly
+`127.0.0.1`; an IPv6 listener, when enabled and tested, binds exactly `::1`.
+The process never binds a wildcard, LAN address, public address, or hostname.
 
-The durable operation states are `Queued`, `CheckingPeers`, `FetchingPeer`,
-`VerifyingPeer`, `AcquiringSource`, `Converting`, `VerifyingComposition`,
-`Available`, `Cancelled`, and `Rejected`. Availability requires exact positive
-records for ACG2, SLM2, Tokenizer2, Template2, Sampling2, and Prompt2.
+The listener accepts only an exact registered Host value for its active
+loopback endpoint and an exact registered `Origin` value for TinyRustLM.com.
+Missing, duplicated, malformed, opaque, `null`, unpaired development, or
+unexpected Origin values fail before route dispatch. DNS names are not treated
+as proof of loopback identity.
 
-The current journal requires an explicitly created owned root, immutable
-numbered history, a bounded strict current record, same-process and
-cross-process exclusion, typed transitions, create-only operation identity,
-and terminal-state immutability. This is a persistence foundation, not proof of
-the remaining network or conversion path.
+The protocol uses explicit user pairing and short-lived origin-bound bearer
+capabilities. Capabilities are carried in a request header, never in a URL,
+cookie, referrer, command line, report, screenshot, or durable browser store by
+default. Pairing, capability issue, rotation, expiry, revocation, and replay
+semantics are part of the future output-free registration.
 
-## Required Transport Decision
+The route table is closed and versioned. Unknown method, path, media type,
+schema, field, operation, state, sequence, artifact kind, range, or capability
+fails with one bounded public-safe error. There is no generic file route,
+directory route, proxy route, command route, environment route, diagnostics
+dump, or extension route.
 
-The released browser and companion will use one closed loopback capability
-protocol chosen only after current Chromium, Firefox, WebKit, CORS, Private
-Network Access, DNS-rebinding, CSRF, Host/Origin, proxy, and installer behavior
-is physically verified. No current route table or port is release authority.
+Acquisition is P2P-first only when the requested immutable composition has a
+currently eligible peer candidate and exact evidence. Otherwise, explicit
+source-acquisition consent permits the pinned public source and sole canonical
+converter path. A TXT, JSON, PowerShell, shell, README, conversion kit, or
+instruction download is never a model action.
 
-The selected design must provide:
+Artifact transfer streams only the six members of one journaled available
+composition. Each response binds operation ID, artifact kind, byte length, and
+SHA-256. The browser independently hashes every complete member and performs
+one fail-atomic Rust admission. Partial members never activate.
 
-- deterministic discovery without broad port scanning;
-- mutual browser-origin and installed-companion authentication;
-- explicit user pairing and short-lived, origin-bound capabilities;
-- no cookies, URL credentials, ambient authentication, or durable browser
-  secret storage by default;
-- bounded strict requests and typed public-safe failures;
-- resumable immutable progress from the durable journal;
-- race-safe cancellation;
-- content-addressed streaming of complete verified compositions;
-- no arbitrary file, command, process, proxy, or credential surface; and
-- exact listener, connection, body, timeout, and resource limits.
+Progress is a projection of immutable Companion journal history. Cancellation
+is request-bound, race-safe, terminal, and owns the complete child-process or
+transfer cancellation tree. A lost response does not create a second logical
+operation. Restart recovery must inspect immutable evidence and may only
+recover the same operation or produce a typed terminal rejection.
 
-Downloading TXT, JSON, PowerShell, shell, README, conversion-request, or share
-kit instructions is prohibited. One user action must perform verified direct
-P2P acquisition or, after explicit approval, reviewed source acquisition and
-canonical local conversion.
+HTTP request parsing has explicit line, header-count, header-byte, body-byte,
+connection, idle, operation, and response limits. Request bodies use exact
+length; ambiguous framing, conflicting lengths, unsupported transfer coding,
+obs-fold, request smuggling forms, and slow-body abuse fail closed. Response
+compression is disabled for secret-bearing control responses.
 
-## Trust Boundary
+Prompts never traverse this transport. Model and composition bytes remain
+between the user's browser, user-owned Companion, reviewed public source, and
+consenting direct peers. TinyRustLM.com and MiniModel.org do not proxy them.
 
-TinyRustLM.com remains a public static application. Prompts and model bytes do
-not pass through TinyRustLM.com, MiniModel.org, analytics services, or another
-project-hosted website. MiniModel.org may provide public catalog and discovery
-metadata only. The private companion transports bytes between consenting peers
-or acquires an immutable reviewed public source.
+## Alternatives
 
-Rust remains authoritative for source inspection, conversion, SLM2,
-Tokenizer2, Template2, Sampling2, Prompt2, ACG2, hashing, semantic validation,
-and runtime behavior. Managed code may orchestrate exact typed operations but
-may not repair output, infer defaults, or implement a second converter.
+Loopback HTTPS with a locally installed private CA was rejected as the first
+transport because certificate installation, trust-store mutation, enterprise
+interception, rotation, and removal enlarge installer privilege and failure
+surface. It can be reconsidered only through a new preregistered decision.
 
-## Threats To Close Before Acceptance
+Native messaging was rejected as the sole browser path because it requires
+browser-specific extension installation and policy integration. It may inform
+future deployment research but is not a fallback.
 
-The implementation must test malicious public origins, DNS rebinding, forged
-and duplicate Host/Origin headers, CSRF, port squatting, companion
-impersonation, capability theft and replay, stale tabs, service workers,
-extensions, oversized or slow requests, parser ambiguity, response smuggling,
-arbitrary-path attempts, symlink/reparse substitution, resource exhaustion,
-operation guessing, duplicate progress events, cancellation races, and public
-listener exposure.
+WebSocket was rejected for the initial contract because bidirectional framing,
+upgrade handling, long-lived connection ownership, proxy behavior, and replay
+state add complexity that bounded HTTP request and response operations do not
+need.
 
-Same-user malware is not solved by a loopback protocol, but the companion must
-still use least privilege, narrow capabilities, bounded owned roots, and no
-administrative credentials.
+Custom URI schemes were rejected for transporting secrets or model bytes.
+They have difficult browser UX, logging, quoting, and handler-substitution
+boundaries.
 
-## Acceptance Evidence
+Downloading scripts or instruction files was rejected because it transfers
+operational burden and security decisions to the user while failing to deliver
+the requested working model.
 
-1. The protocol is preregistered with exact schemas, limits, threat model, and
-   browser/OS matrix before comparative output.
-2. Wrong origin, host, method, route, schema, field, capability, operation,
-   size, sequence, and artifact identity fail closed.
-3. Pairing and mutations are race tested; capabilities rotate and revoke.
-4. Peer acquisition and source conversion survive restart through immutable
-   operation evidence or terminate with a typed state.
-5. Every transferred member matches its declared length and SHA-256 before one
-   atomic browser activation.
-6. Real clean-browser tests cover acquire, cancel, resume, activate, chat,
-   process closure, profile deletion, and secret/network scanning.
-7. Signed private companion archives execute on every RID claimed as executed
-   and are independently read back before install controls appear.
+An in-browser hosted conversion service was rejected because prompts or model
+bytes must not be sent to a TinyRustLM, MiniModel, or other project-operated
+backend.
 
-Unit tests, a local loopback fixture, package construction, or a successful
-HTTP response do not satisfy these gates.
+## Authoritative Evidence
 
-## Current Claim Boundary
+**Observed local fact**: the current managed solution passes 116 tests: 60
+Core tests, 38 package-boundary tests, and 18 Companion tests. These tests prove
+strict complete-conversion orchestration, immutable-request tamper rejection,
+state transitions, process-tree cancellation, and fixture evidence retention.
 
-No companion is installable. No transport is released. No real model has
-qualified. No outside peer lane or catalog announcement is proven.
-MemoryEndpoints is unauthorized and disconnected. Campaign counters remain
-0/20, 0/50, 0/25, 0/40, and 0/20.
+The exact complete conversion profile is
+`tinyrustlm.qwen3-complete-composition-conversion/1` at SHA-256
+`2f95f79783ec6cd12160d51f9697c5c77aab2e6cd46afeb5140fdb513e5d8158`.
+
+The architecture inventory test requires this ADR to remain accepted,
+decision-specific, and complete. The package and browser contract tests reject
+the removed instruction-download and public host paths.
+
+**Local verification required**: no current test proves an HTTP listener,
+browser pairing, CORS behavior, Private Network Access behavior, DNS-rebinding
+resistance, real source acquisition, real artifact streaming, installation,
+or public release. A deterministic converter fixture is not real-model proof.
+
+## Threat Analysis
+
+The primary remote threats are hostile public origins, CSRF, DNS rebinding,
+Host substitution, Origin ambiguity, capability theft, capability replay,
+operation guessing, stale tabs, malicious service workers, extensions,
+oversized requests, slow requests, parser differentials, request smuggling,
+response splitting, and resource exhaustion.
+
+The primary local threats are port squatting, Companion impersonation,
+symlink or reparse substitution, arbitrary-path access, process-argument
+injection, environment leakage, crash-dump leakage, stale owned roots, partial
+conversion, corrupted terminal evidence, and concurrent operation mutation.
+
+Mitigations are exact numeric loopback binding, exact Host and Origin checks,
+explicit pairing, short-lived least-privilege capabilities, closed routes,
+strict duplicate-rejecting JSON, no shell execution, create-only owned roots,
+immutable operation identity, streamed hashing, bounded resources, typed
+errors, and terminal-state immutability.
+
+Same-user malware can read another process or browser under many operating
+system configurations and is not solved by loopback HTTP. The design still
+minimizes ambient authority and never returns administrator, workspace, cloud,
+signing, or MemoryEndpoints credentials to the browser.
+
+## Performance Evidence
+
+No production transport performance is claimed. The current managed tests use
+small deterministic process fixtures and do not establish startup latency,
+stream throughput, peak RSS, connection capacity, hashing cost, cancellation
+latency for a real model, or browser persistence cost.
+
+Promotion requires measured first-response latency, steady streaming
+throughput, hashing throughput, memory, CPU, file-handle count, cancellation
+latency, and restart behavior for one real six-artifact composition on each
+claimed operating system and browser profile.
+
+Performance must not weaken identity checks, buffer the model in one managed
+allocation, omit browser rehashing, keep unbounded connections, or introduce a
+less secure fallback route.
+
+## Compatibility Impact
+
+TinyRustLM is prelaunch and has one product generation. There is no prior
+Companion protocol to support. Technical schema identifiers carry exact
+contract identity and do not imply a second product generation.
+
+No legacy route, deprecated route, response-repair reader, alternate host,
+package alias, dual listener, migration endpoint, script handoff, or old
+SeedHost behavior is retained.
+
+Browsers and operating systems are supported only after the exact current
+build passes the registered physical matrix. Unsupported environments receive
+a truthful unavailable state rather than another protocol.
+
+## Clean Deletion Impact
+
+The accepted Companion is the sole local serving boundary. No parallel host,
+script handoff, executable-discovery path, browser fixture, package lane,
+command family, route family, test lane, documentation lane, or deployment job
+may implement the same responsibility.
+
+Any experimental transport that loses promotion is deleted before launch with
+its route registration, installer changes, tests, secrets, and documentation.
+It is not left behind a feature flag.
+
+## Unknowns
+
+**Local verification required**: exact Chrome, Edge, Firefox, and WebKit mixed-
+content and Private Network Access behavior must be observed against the
+selected numeric loopback origin from the production HTTPS site.
+
+The deterministic installation-discovery mechanism, selected port lifecycle,
+pairing ceremony, capability lifetime, CORS header set, preflight behavior,
+range policy, response streaming primitive, and multi-user isolation require
+output-free preregistration before implementation.
+
+Windows firewall prompts, endpoint security products, enterprise proxies,
+Linux sandboxing, IPv6 availability, sleep and resume, port collision, browser
+restart, Companion restart, and OS restart need physical evidence.
+
+The source-acquisition owner, peer-discovery authority, and exact restart
+recovery algorithm remain separate implementation gates. MemoryEndpoints is
+unauthorized and disconnected.
+
+## Acceptance Tests
+
+1. Register exact route, schema, header, origin, capability, size, timeout,
+   concurrency, and error contracts before comparative server output.
+2. Prove listeners bind only `127.0.0.1` and explicitly tested `::1`, never a
+   wildcard, LAN, public interface, or substituted hostname.
+3. Reject wrong or duplicate Host, Origin, method, route, media type, field,
+   capability, operation, sequence, range, and framing.
+4. Prove pairing requires explicit user action and capabilities expire,
+   rotate, revoke, and resist replay across origins and operations.
+5. Stream all six exact members with bounded memory and independently verify
+   length and SHA-256 in the browser before one atomic activation.
+6. Exercise P2P success, no-peer source conversion, native rejection,
+   cancellation, lost response, duplicate request, process crash, browser
+   crash, Companion restart, and machine-restart recovery.
+7. Scan URLs, headers, logs, traces, screenshots, browser storage, profile
+   files, command lines, environment, and crash artifacts for secrets, prompts,
+   private paths, and model-byte leakage.
+8. Run clean-profile Chromium, Edge, Firefox, and WebKit tests at supported
+   desktop and mobile viewports with exact production-origin mapping.
+9. Execute signed Companion archives on every RID claimed as executed and
+   independently read back published bytes and checksums before install UI is
+   enabled.
+10. Keep all campaign counters at zero unless separate live receipt gates are
+    satisfied.
+
+## Rollback
+
+Because the product is prelaunch, rollback means deleting an unpromoted
+transport implementation and returning the browser to a truthful unavailable
+state. It never means restoring SeedHost, an instruction download, a hosted
+model proxy, a compatibility endpoint, or an unverified listener.
+
+Immutable failed registrations, raw test evidence, and typed rejection history
+remain preserved. A replacement transport requires a new output-free
+registration and must pass the full acceptance matrix before it can become the
+sole implementation.
+
+No real model, browser conversation, public peer lane, Companion release, or
+site deployment is claimed by this decision. Campaign counters remain 0/20,
+0/50, 0/25, 0/40, and 0/20.

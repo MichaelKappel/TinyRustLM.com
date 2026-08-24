@@ -79,15 +79,13 @@ tools.
 
 The wrapper invokes the executable directly with a closed argument contract.
 It applies duration and output limits, bounds stdout and stderr, supports
-cancellation, rejects reparse inputs, validates exact summaries, and rehashes
-promoted SLM2 or Tokenizer2 output. Structural conversion is not model-quality
-or browser evidence.
-
-The Rust executable's complete `qwen3-composition` command is implemented but
-not yet exposed by this managed wrapper. Until the wrapper validates its output
-root, six artifacts, component receipts, terminal receipt, graph identity, and
-nonzero failure semantics, managed conversion cannot claim a complete
-composition.
+cancellation with owned process-tree termination, rejects reparse inputs,
+validates expected source-lock and profile identities, parses strict summaries
+and terminal evidence, rejects extra or missing output files, recomputes the
+operation identity, and freshly hashes all six artifacts plus both component
+receipts. It invokes only `qwen3-composition`; no component-level managed
+success API exists. Complete structural conversion is still not model-quality,
+native-runtime, browser, P2P, or publication evidence.
 
 ## Public API Baselines
 

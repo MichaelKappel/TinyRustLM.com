@@ -30,14 +30,15 @@ The following evidence is complete for its exact bound bytes:
 - exact publisher-source-to-native Template2 rendering parity for the frozen
   supported Qwen3 branch;
 - the complete create-only Qwen3 six-artifact composition conversion
-  transaction and cross-contract rejection tests, without a real-source run;
+  transaction, its strict managed process owner, and the private Companion
+  source-branch integration, without a real-source run;
   and
 - the current fifteen-symbol native ABI and canonical managed SDK surface.
 
 These results do not prove a real production model, model quality, a complete
 real-source conversion, production acquisition, a public peer, a deployed
-browser conversation, or package publication. The next path must integrate the
-complete transaction into the private companion, then prove exact
+browser conversation, or package publication. The next path must preregister
+and implement restart-safe private Companion transport, then prove exact
 source/native/browser numerical parity and untouched quality before promotion.
 
 Campaign counters remain:
@@ -79,8 +80,10 @@ reinterpret, partially activate, or provide fallback members.
 `tinyrustlm-convert qwen3-composition` is the sole complete conversion command.
 Its Qwen3 model and Tokenizer2 operations are internal exact compiler
 primitives; an individual component receipt is not composition availability.
-The private managed wrapper and companion have not yet adopted this complete
-command, and no real complete-command pass is claimed.
+The private managed wrapper now invokes only this complete command, and the
+private Companion source branch reaches `Available` only from its six verified
+artifact identities. The deterministic process fixture proves orchestration,
+not a real complete-command pass.
 
 The production source target remains the immutable `Qwen/Qwen3-0.6B` revision
 recorded in the architecture contracts. Source selection is not quality

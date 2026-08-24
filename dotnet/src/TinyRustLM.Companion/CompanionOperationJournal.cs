@@ -112,6 +112,44 @@ public sealed class CompanionOperationJournal
         return ReadRecord(Path.Combine(OperationDirectory(operationId), "current.json"), operationId);
     }
 
+    public CompanionAcquireRequest ReadRequest(string operationId)
+    {
+        RequireOperationId(operationId);
+        var path = Path.Combine(OperationDirectory(operationId), "request.json");
+        var bytes = ReadBoundedRegularFile(
+            path,
+            "journal-request-file",
+            "journal-request-file");
+        CompanionAcquireRequest request;
+        try
+        {
+            RejectDuplicateJsonProperties(bytes, "journal-request-json");
+            request = JsonSerializer.Deserialize<CompanionAcquireRequest>(bytes, JsonOptions)
+                ?? throw new CompanionContractException("journal-request-json");
+        }
+        catch (JsonException)
+        {
+            throw new CompanionContractException("journal-request-json");
+        }
+
+        CompanionAcquireRequest normalized;
+        try
+        {
+            normalized = CompanionContract.ValidateAndNormalize(request);
+        }
+        catch (CompanionContractException)
+        {
+            throw new CompanionContractException("journal-request-contract");
+        }
+        var current = Read(operationId);
+        if (CompanionContract.OperationId(normalized) != operationId ||
+            Sha256(bytes) != current.RequestSha256)
+        {
+            throw new CompanionContractException("journal-request-identity");
+        }
+        return normalized;
+    }
+
     public CompanionOperationRecord Advance(
         string operationId,
         CompanionOperationState nextState,
@@ -228,25 +266,15 @@ public sealed class CompanionOperationJournal
 
     private CompanionOperationRecord ReadRecord(string path, string operationId)
     {
-        byte[] bytes;
-        try
-        {
-            var info = new FileInfo(path);
-            if (!info.Exists || info.Length is <= 0 or > MaximumRecordBytes ||
-                (info.Attributes & FileAttributes.ReparsePoint) != 0)
-            {
-                throw new CompanionContractException("journal-record-file");
-            }
-            bytes = File.ReadAllBytes(path);
-        }
-        catch (IOException)
-        {
-            throw new CompanionContractException("journal-record-read");
-        }
+        var bytes = ReadBoundedRegularFile(
+            path,
+            "journal-record-file",
+            "journal-record-read");
 
         CompanionOperationRecord record;
         try
         {
+            RejectDuplicateJsonProperties(bytes, "journal-record-json");
             record = JsonSerializer.Deserialize<CompanionOperationRecord>(bytes, JsonOptions)
                 ?? throw new CompanionContractException("journal-record-json");
         }
@@ -261,6 +289,90 @@ public sealed class CompanionOperationJournal
             throw new CompanionContractException("journal-record-contract");
         }
         return record;
+    }
+
+    private static byte[] ReadBoundedRegularFile(
+        string path,
+        string validationCode,
+        string ioCode)
+    {
+        try
+        {
+            var info = new FileInfo(path);
+            if (!info.Exists || info.Length is <= 0 or > MaximumRecordBytes ||
+                (info.Attributes & FileAttributes.ReparsePoint) != 0)
+            {
+                throw new CompanionContractException(validationCode);
+            }
+            using var stream = new FileStream(
+                path,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.Read,
+                MaximumRecordBytes,
+                FileOptions.SequentialScan);
+            var length = stream.Length;
+            if (length is <= 0 or > MaximumRecordBytes)
+            {
+                throw new CompanionContractException(validationCode);
+            }
+            var bytes = new byte[checked((int)length)];
+            stream.ReadExactly(bytes);
+            if (stream.Position != length || stream.Length != length)
+            {
+                throw new CompanionContractException(validationCode);
+            }
+            return bytes;
+        }
+        catch (IOException)
+        {
+            throw new CompanionContractException(ioCode);
+        }
+    }
+
+    private static void RejectDuplicateJsonProperties(byte[] bytes, string code)
+    {
+        try
+        {
+            var reader = new Utf8JsonReader(bytes, new JsonReaderOptions
+            {
+                AllowTrailingCommas = false,
+                CommentHandling = JsonCommentHandling.Disallow,
+                MaxDepth = 64
+            });
+            var objects = new Stack<HashSet<string>>();
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.StartObject)
+                {
+                    objects.Push(new HashSet<string>(StringComparer.Ordinal));
+                }
+                else if (reader.TokenType == JsonTokenType.PropertyName)
+                {
+                    var property = reader.GetString();
+                    if (objects.Count == 0 || property is null || !objects.Peek().Add(property))
+                    {
+                        throw new CompanionContractException(code);
+                    }
+                }
+                else if (reader.TokenType == JsonTokenType.EndObject)
+                {
+                    if (objects.Count == 0)
+                    {
+                        throw new CompanionContractException(code);
+                    }
+                    objects.Pop();
+                }
+            }
+            if (objects.Count != 0)
+            {
+                throw new CompanionContractException(code);
+            }
+        }
+        catch (JsonException)
+        {
+            throw new CompanionContractException(code);
+        }
     }
 
     private string OperationDirectory(string operationId) => Path.Combine(_operationsRoot, operationId);

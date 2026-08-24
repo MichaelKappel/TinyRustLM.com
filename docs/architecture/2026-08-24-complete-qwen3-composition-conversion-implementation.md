@@ -207,11 +207,13 @@ full command pass receipt exists. The unchanged Qwen3-0.6B base remains
 terminally rejected as a product model and is usable only for numerical parity
 and derivative ancestry.
 
-The next implementation gate is to replace the private managed conversion
-wrapper's component-level operation with this one complete transaction, then
-connect it to the private companion journal. Only after that boundary is green
-may an external pinned source be run once for source/native/browser numerical
-parity and a genuinely useful derivative be evaluated for promotion.
+The private managed wrapper now exposes only this complete transaction, and the
+private Companion source coordinator reaches `Available` only from its six
+verified member identities. That implementation is documented in
+`2026-08-24-managed-complete-composition-source-integration.md`. The next gate
+is restart-safe private transport registration and implementation, followed by
+one external pinned-source run for source/native/browser numerical parity and
+untouched qualification of a genuinely useful derivative.
 
 MemoryEndpoints remains unauthorized and disconnected. Campaign counters
 remain 0/20, 0/50, 0/25, 0/40, and 0/20.

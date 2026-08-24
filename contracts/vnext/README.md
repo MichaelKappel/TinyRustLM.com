@@ -119,12 +119,15 @@ all six artifacts, exact cross-member vocabulary/context relationships, bounded
 resource preflight, component receipts, and mutually exclusive terminal
 evidence. The component converter commands remain private exact compiler
 primitives; only `tinyrustlm-convert qwen3-composition` can establish the
-complete conversion boundary consumed by the product. No complete command has
-yet run against real model source. See the immutable output-free registration
-in
+complete conversion boundary consumed by the product. The private managed
+wrapper and Companion source branch now consume only that boundary and require
+all six rehashed identities before availability. No complete command has yet
+run against real model source. See the immutable output-free registration in
 `docs/architecture/2026-08-24-complete-qwen3-composition-conversion-preregistration.md`
 and the implementation record in
-`docs/architecture/2026-08-24-complete-qwen3-composition-conversion-implementation.md`.
+`docs/architecture/2026-08-24-complete-qwen3-composition-conversion-implementation.md`,
+plus the managed integration record in
+`docs/architecture/2026-08-24-managed-complete-composition-source-integration.md`.
 
 ## Tokenizer2 Format Checkpoint
 
