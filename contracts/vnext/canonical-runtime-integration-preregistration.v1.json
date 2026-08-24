@@ -1,0 +1,255 @@
+{
+  "schema": "tinyrustlm.canonical-runtime-integration-preregistration.v1",
+  "profileId": "tinyrustlm.canonical-runtime-integration/1",
+  "status": "registered-output-free-before-runtime-integration",
+  "registeredAtUtc": "2026-08-24T14:12:47Z",
+  "registrationParentCommit": "564884c5986ea507405e9bb0d6989b1d1ad6c04d",
+  "registrationParentTree": "891eb2ba080c140bbc148f53e7835bfb69912672",
+  "authority": {
+    "workspaceRoot": "E:/Source/.tinyrustlm-model-acquisition-recovered-20260819",
+    "branch": "codex/model-acquisition-v2",
+    "productLifecycle": "prelaunch-single-product",
+    "productGenerationCount": 1,
+    "secondProductGenerationExists": false,
+    "technicalRevisionIsProductGeneration": false,
+    "cleanCutProfile": "tinyrustlm.production-slm2-clean-cut/1",
+    "memoryEndpointsAuthorized": false,
+    "writeDriveDAllowed": false
+  },
+  "remoteExactInputs": {
+    "cleanCutRegistration": {
+      "path": "contracts/vnext/production-slm2-clean-cut-preregistration.v1.json",
+      "sha256": "dc0213a34b63cf392c99e929bf0380d36698bce0ec995f5572aac2e8e287444a"
+    },
+    "composition2Implementation": {
+      "commit": "c489801d01d10e1445b42599efb58f83550479d1",
+      "profileSha256": "944ed9b5b0ee2605ebb9ac13f2e5388c181bc857fdbfc082e62e9ae7b07c79be"
+    },
+    "prompt2Implementation": {
+      "commit": "fb321d4ce9eec0510162a27e4527bc626a307755",
+      "profileSha256": "f9eb4cbecfb52f5e2857216c999754da94021a5427a86732d33fe15efc0d062c"
+    },
+    "sampling2Implementation": {
+      "commit": "78aeb8d0f95f95330f97a572c5ef02b8d2b41fd5",
+      "profileSha256": "ec65e8f1a54c1e4ca95ebda88bde091dad11337250e541bbda60e8cac311428d"
+    },
+    "slm2MixedQ8Implementation": {
+      "commit": "005be4efbcacd0301888df0b12d0db9f1611be58",
+      "profileSha256": "5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8",
+      "runtimeVectorSha256": "c437ebb5e59c9059c49324d12d43e556493e62f5d6b2e857e369ca08674333a0"
+    }
+  },
+  "observedIntegrationGap": {
+    "compositionActiveRuntimeBorrow": "absent",
+    "compositionGenerationTransactionReset": "absent",
+    "promptGeneratedTokenDecode": "absent",
+    "currentHostRuntime": "obsolete-SLM1-wrapper",
+    "currentScalarOwner": "duplicate-standalone-crate",
+    "compatibilityWrapperAllowed": false,
+    "duplicateTokenizerRuntimeAllowed": false,
+    "duplicateScalarAuthorityAllowed": false
+  },
+  "authorizedOwnerPreservingApiAdditions": {
+    "composition2": [
+      {
+        "signature": "ActivationState::active() -> Option<&PreparedComposition>",
+        "purpose": "borrow-the-sole-active-prepared-composition-without-copy-or-second-owner",
+        "mutation": false
+      },
+      {
+        "signature": "ActivationState::begin_generation(expected_operation) -> Result<(), Acg2Error>",
+        "purpose": "stale-checked-clear-of-composition-bound-kv-and-generated-token-accounting",
+        "mutationOnStaleIdentity": false
+      }
+    ],
+    "prompt2": [
+      {
+        "signature": "Prompt2Runtime::decode_generated(token_ids, output) -> Result<(), Prompt2Error>",
+        "purpose": "decode-with-the-already-owned-Tokenizer2-runtime-in-explicit-skip-special-mode",
+        "outputRepair": false,
+        "replacementCharacters": false
+      }
+    ],
+    "formatWireAndAlgorithmChangesAuthorized": false,
+    "artifactRegenerationAuthorized": false,
+    "acceptedEvidenceRerunAuthorized": false
+  },
+  "canonicalRuntimeOwnership": {
+    "cratePath": "rust/crates/tinyrustlm-runtime",
+    "packageName": "tinyrustlm-runtime",
+    "responsibility": "sole-host-facing-conversation-runtime-and-scalar-correctness-authority",
+    "owns": [
+      "one-ActivationState",
+      "one-active-ScalarSession",
+      "one-composition-bound-committed-token-sequence",
+      "at-most-one-live-Prompt2Plan",
+      "one-reused-logit-bit-scratch-buffer"
+    ],
+    "doesNotOwn": [
+      "second-tokenizer-runtime",
+      "second-prompt-runtime",
+      "F32-model-weight-shadow",
+      "runtime-repacked-model",
+      "path-or-URL-authority",
+      "network-authority",
+      "presentation-state"
+    ]
+  },
+  "scalarAuthorityMove": {
+    "source": "rust/crates/tinyrustlm-slm2-runtime",
+    "destination": "rust/crates/tinyrustlm-runtime",
+    "copyAllowed": false,
+    "moveExactArithmeticAndTests": true,
+    "deleteSourceCrateAfterRetarget": true,
+    "retargetWasmConformanceCrate": "tinyrustlm-runtime",
+    "preserveArithmeticProfile": "tinyrustlm.runtime-q8-scalar-f32-ordered/1",
+    "preserveErrorCodes": true,
+    "preserveIndependentVectorsWithoutRegeneration": true,
+    "greedyConvenienceIsProductGenerationPath": false
+  },
+  "activationAlgorithm": [
+    "parse-exact-acg2-graph",
+    "resolve-hash-parse-and-cross-check-all-five-members-with-one-open-source-at-a-time",
+    "accept-complete-graph-resource-plan-before-state-mutation",
+    "reopen-only-the-exact-model-member",
+    "read-exactly-one-bounded-owned-SLM2-byte-vector",
+    "validate-and-index-direct-mixed-Q8-bytes-without-F32-shadow",
+    "preflight-and-allocate-one-scalar-session",
+    "compare-model-byte-identity-and-closed-model-spec-to-the-prepared-composition",
+    "reject-stale-operation-without-changing-active-runtime",
+    "perform-ActivationState-ownership-swap",
+    "infallibly-install-the-already-prepared-scalar-session"
+  ],
+  "conversationStateMachine": {
+    "states": [
+      "empty",
+      "active-idle",
+      "generating",
+      "terminal-output-ready"
+    ],
+    "begin": [
+      "require-active-composition-and-no-live-generation",
+      "compile-one-Prompt2-request-exactly-once",
+      "stale-check-and-begin-one-composition-generation-transaction",
+      "reuse-KV-only-when-the-complete-new-prompt-has-the-exact-committed-token-prefix",
+      "otherwise-reset-and-prefill-the-complete-canonical-prompt",
+      "clear-session-and-accounting-on-prefill-failure"
+    ],
+    "step": [
+      "check-cancellation-before-sampling",
+      "convert-current-finite-F32-logits-to-exact-u32-bit-patterns-in-one-reused-buffer",
+      "advance-the-sole-Sampling2-controller-once",
+      "forward-each-selected-token-including-a-template-owned-stop-token-into-KV",
+      "emit-only-non-stop-token-ids",
+      "record-only-non-stop-token-ids-in-composition-generation-state",
+      "update-exact-committed-KV-byte-accounting",
+      "never-retry-repair-or-select-an-alternate-token"
+    ],
+    "finish": [
+      "require-terminal-controller-state",
+      "decode-all-generated-non-stop-token-ids-once-through-the-active-Prompt2-owned-Tokenizer2",
+      "return-raw-output-with-terminal-reason-and-exact-identities",
+      "do-not-normalize-repair-complete-or-rewrite-output"
+    ]
+  },
+  "resourceContract": {
+    "modelBytes": "one-bounded-owned-artifact-vector",
+    "modelWeightShadowBytes": 0,
+    "memberHashBufferBytes": 1048576,
+    "requestBytes": "mandatory-positive-policy-ceiling",
+    "resolvedMemberBytes": "mandatory-positive-policy-ceiling",
+    "residentDependencyBytes": "mandatory-positive-policy-ceiling",
+    "sequenceTokens": "minimum-of-runtime-policy-and-model-context",
+    "kvBytes": "preallocated-bounded-F32-and-composition-accounted",
+    "scratchBytes": "preflighted-scalar-scratch-plus-one-vocabulary-u32-bit-buffer",
+    "checkedArithmetic": true,
+    "allocationFailure": "typed-failure-before-activation-or-generation-output"
+  },
+  "failureContract": {
+    "stablePublicSafeCodes": true,
+    "underlyingDomainCodesPreserved": true,
+    "partialOutputReturnedAsSuccess": false,
+    "activeCompositionPreservedOnCandidateFailure": true,
+    "activeRuntimePreservedOnStaleActivation": true,
+    "generationStateClearedOnPrefillOrForwardFailure": true,
+    "automaticRetry": false,
+    "bestOfN": false,
+    "responseRepair": false,
+    "fallbackRuntime": false
+  },
+  "requiredTests": [
+    "registration-profile-identity-and-no-output-boundary",
+    "composition-active-borrow-has-one-owner-and-no-copy",
+    "begin-generation-stale-operation-preserves-all-state",
+    "begin-generation-current-operation-clears-kv-and-generated-state-only",
+    "prompt-decode-uses-owned-tokenizer-skip-special-and-fails-invalid-utf8",
+    "scalar-independent-vector-suite-passes-after-owner-move",
+    "wasm-conformance-build-links-only-canonical-runtime",
+    "candidate-member-hash-or-parse-failure-preserves-active-runtime",
+    "candidate-scalar-load-or-memory-preflight-failure-preserves-active-runtime",
+    "stale-activation-preserves-active-runtime",
+    "exact-prefix-kv-reuse-and-nonprefix-reset",
+    "sampling-stop-context-maximum-and-cancellation-transitions",
+    "selected-stop-token-enters-kv-but-not-visible-output",
+    "raw-decode-occurs-once-without-repair",
+    "malformed-oversized-and-allocation-boundary-rejection",
+    "forbidden-executable-token-source-audit"
+  ],
+  "forbidden": {
+    "productV2": false,
+    "legacyRuntime": false,
+    "runtimeSdkAlias": false,
+    "dualScalarCrate": false,
+    "compatibilityShim": false,
+    "migration": false,
+    "fallback": false,
+    "secondTokenizerRuntime": false,
+    "secondPromptRuntime": false,
+    "denseWeightShadow": false,
+    "runtimeRepacking": false,
+    "hiddenRetry": false,
+    "bestOfN": false,
+    "responseRepair": false,
+    "expectedAnswerInjection": false,
+    "testWeakening": false,
+    "fixtureAsModelQuality": false
+  },
+  "expectedImplementationOutputs": {
+    "compositionOwnerEdits": "rust/crates/tinyrustlm-composition2/src/activation.rs",
+    "promptOwnerEdits": "rust/crates/tinyrustlm-prompt2/src/runtime.rs",
+    "runtimeOwner": "rust/crates/tinyrustlm-runtime",
+    "scalarSourceCrateDeleted": "rust/crates/tinyrustlm-slm2-runtime",
+    "wasmConformanceRetargeted": "rust/crates/tinyrustlm-slm2-runtime-wasm-conformance",
+    "rootWorkspaceUpdated": "Cargo.toml",
+    "implementationDecision": "docs/architecture/canonical-runtime-integration-implementation.md"
+  },
+  "registrationOutputBoundary": {
+    "compositionApiChanged": false,
+    "promptApiChanged": false,
+    "runtimeImplementationChanged": false,
+    "scalarCrateMoved": false,
+    "workspaceChanged": false,
+    "runtimeOutputCreated": false,
+    "browserOutputCreated": false,
+    "modelBytesCreated": false,
+    "evidenceRerun": false,
+    "campaignCreditAuthorized": false
+  },
+  "claimBoundary": {
+    "runtimeIntegrated": false,
+    "realModelLoaded": false,
+    "modelQualityVerified": false,
+    "browserChatVerified": false,
+    "p2pAvailabilityVerified": false,
+    "packagePublished": false,
+    "siteDeployed": false,
+    "memoryEndpointsOperationPerformed": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}

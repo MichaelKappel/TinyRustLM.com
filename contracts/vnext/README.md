@@ -65,6 +65,23 @@ behavior, useful-model qualification, SIMD, threaded WASM, WebGPU, deployment,
 or live campaign evidence. See
 `docs/architecture/vnext-slm2-scalar-wasm-conformance.md`.
 
+## Canonical Runtime Integration Registration
+
+`canonical-runtime-integration-preregistration.v1.json` is the output-free
+registration for moving scalar correctness into the sole host-facing runtime
+and integrating Composition2, Prompt2, Sampling2, and composition-bound KV
+without duplicate owners. It is 10,764 bytes with SHA-256
+`dbc2c686c2e276062e3d96c37002a6aa310d96231c3bdcf66655c611d9cb10ea`.
+
+The registration permits only three owner-preserving API additions: a shared
+borrow of the active prepared composition, a stale-checked generation-state
+reset, and generated-token decoding through Prompt2's already-owned
+Tokenizer2. It requires moving rather than copying the scalar implementation,
+deleting the displaced scalar crate, and retargeting the conformance fixture
+to `tinyrustlm-runtime`. It creates no runtime output, model evidence, browser
+claim, release, or campaign credit. See
+`docs/architecture/2026-08-24-canonical-runtime-integration-preregistration.md`.
+
 ## Qwen3 Model Conversion
 
 `qwen3-safetensors-conversion-profile.v1.json` froze the sole production-bound
