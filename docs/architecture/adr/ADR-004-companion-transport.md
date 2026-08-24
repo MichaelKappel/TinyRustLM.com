@@ -4,9 +4,10 @@
 
 Accepted
 
-The protocol family and security invariants are accepted. Exact route schemas,
-limits, installation discovery, and pairing bytes must still be preregistered
-and physically verified before a listener is implemented or exposed.
+The protocol family, exact route schemas, limits, installation discovery,
+cryptographic transcripts, and pairing ceremony are preregistered by
+`tinyrustlm.companion.loopback-capability/1`. They still require implementation
+and physical verification before a listener is released or exposed.
 
 ## Decision Date
 
@@ -46,11 +47,21 @@ Missing, duplicated, malformed, opaque, `null`, unpaired development, or
 unexpected Origin values fail before route dispatch. DNS names are not treated
 as proof of loopback identity.
 
-The protocol uses explicit user pairing and short-lived origin-bound bearer
-capabilities. Capabilities are carried in a request header, never in a URL,
-cookie, referrer, command line, report, screenshot, or durable browser store by
-default. Pairing, capability issue, rotation, expiry, revocation, and replay
-semantics are part of the future output-free registration.
+The protocol uses explicit user pairing and short-lived origin-bound
+proof-of-possession sessions. The pairing secret and derived session key never
+cross the wire. Every authenticated request and response carries a
+domain-separated HMAC-SHA-256 proof that binds protocol, installation, process,
+session, epoch, sequence, method or status, exact Host, exact Origin, path,
+content type, byte length, and SHA-256 of the exact body bytes. There is no
+bearer capability, cookie, Authorization header, URL secret, or durable browser
+key.
+
+The exact pairing, rotation, revocation, expiry, replay, CORS, Local Network
+Access, HTTP parser, and artifact-transfer semantics are frozen in
+`contracts/vnext/companion-loopback-capability-preregistration.v1.json`. The
+first listener binds only numeric IPv4 `127.0.0.1` on OS-selected port zero.
+IPv6, localhost names, a fixed port, port scanning, and alternate protocols are
+not part of this contract.
 
 The route table is closed and versioned. Unknown method, path, media type,
 schema, field, operation, state, sequence, artifact kind, range, or capability
@@ -150,10 +161,11 @@ injection, environment leakage, crash-dump leakage, stale owned roots, partial
 conversion, corrupted terminal evidence, and concurrent operation mutation.
 
 Mitigations are exact numeric loopback binding, exact Host and Origin checks,
-explicit pairing, short-lived least-privilege capabilities, closed routes,
-strict duplicate-rejecting JSON, no shell execution, create-only owned roots,
-immutable operation identity, streamed hashing, bounded resources, typed
-errors, and terminal-state immutability.
+explicit proof-of-possession pairing, short-lived memory-only session keys,
+per-request and per-response proofs, strict sequence replay defense, closed
+routes, strict duplicate-rejecting JSON, no shell execution, create-only owned
+roots, immutable operation identity, streamed hashing, bounded resources,
+typed errors, and terminal-state immutability.
 
 Same-user malware can read another process or browser under many operating
 system configurations and is not solved by loopback HTTP. The design still
@@ -207,10 +219,10 @@ It is not left behind a feature flag.
 content and Private Network Access behavior must be observed against the
 selected numeric loopback origin from the production HTTPS site.
 
-The deterministic installation-discovery mechanism, selected port lifecycle,
-pairing ceremony, capability lifetime, CORS header set, preflight behavior,
-range policy, response streaming primitive, and multi-user isolation require
-output-free preregistration before implementation.
+The registered installation-discovery mechanism, selected port lifecycle,
+pairing ceremony, session lifetime, CORS header set, preflight behavior, fixed-
+chunk policy, response streaming primitive, and multi-user isolation require
+implementation and physical verification.
 
 Windows firewall prompts, endpoint security products, enterprise proxies,
 Linux sandboxing, IPv6 availability, sleep and resume, port collision, browser
@@ -223,14 +235,16 @@ disconnected.
 
 ## Acceptance Tests
 
-1. Register exact route, schema, header, origin, capability, size, timeout,
-   concurrency, and error contracts before comparative server output.
+1. Keep the exact route, schema, header, origin, proof, size, timeout,
+   concurrency, and error registration immutable before comparative server
+   output.
 2. Prove listeners bind only `127.0.0.1` and explicitly tested `::1`, never a
    wildcard, LAN, public interface, or substituted hostname.
 3. Reject wrong or duplicate Host, Origin, method, route, media type, field,
    capability, operation, sequence, range, and framing.
-4. Prove pairing requires explicit user action and capabilities expire,
-   rotate, revoke, and resist replay across origins and operations.
+4. Prove pairing requires explicit user action and session keys expire,
+   rotate, revoke, never cross the wire, and resist replay across origins and
+   operations.
 5. Stream all six exact members with bounded memory and independently verify
    length and SHA-256 in the browser before one atomic activation.
 6. Exercise P2P success, no-peer source conversion, native rejection,
