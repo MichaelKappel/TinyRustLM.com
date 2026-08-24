@@ -1,5 +1,12 @@
-profile: runtime-mirust.operations.v122
-updated_utc: 2026-08-24T22:39:11Z
+profile: runtime-mirust.operations.v123
+updated_utc: 2026-08-24T23:13:38Z
+companion_loopback_registration_checkpoint_2026_08_24:
+  source: commit=c28020c90ff8a973b9a0c07ec93ca3475d2220c4; tree=64107eeb6eb2db5c6ac3d0d99daba0c185c470ac; branch=codex/model-acquisition-v2; local_tracking_fetch_direct_remote_exact=true
+  registration: profile=tinyrustlm.companion.loopback-capability/1; bytes=39311; sha256=81e3f2f3795a51c0bce86e1aca66f6a7234608a3dd044cd7a9b1cbbf90c9ba77; decision_bytes=23557; decision_sha256=0c6708baec6f1cdbf401b2da5d4fa35372acaf126389c04f36384b3f6d4bc242; parent=480a22c58d1acedcb5e83d36bfa0ea75e43041b6; parent_tree=46f15125f6d9b02a6582dcdb78b0dd5641cc884b
+  passed: registration=15/15; targeted=53/53; managed=163/163-zero-skips; strict_json=true; ascii_nul_whitespace=true; frozen_goal=true
+  blocked_deployment_gate: full_node=1150-pass/15-fail/1-skip/1166-total; root_classes=build-script-name,git-blob-crlf-registration,template2-source-closure,combined-wasm-exports,stale-shell-asset,threat-review-binding,web-cascade
+  output_boundary: listener=false; port=false; pairing_code=false; pairing_secret=false; session=false; browser_request=false; artifact_chunk=false; operation=false; model=false; package=false; deployment=false; memoryendpoints=false; campaign=false
+  next: Implement exact transcript codec and independent vectors, pairing/session/rotation/revocation server, strict raw-socket boundary, browser memory-only client, six-artifact transfer, and delete the old bridge. Fix the seven observed full-gate root classes before deployment. Do not add a compatibility path.
 companion_reconciliation_checkpoint_2026_08_24:
   source: commit=87a0fc1c799f5359b44e3e5bdcb35b2d3500f22c; tree=5327e22727b7fc3ac7dbb8c67b7f92f2bbc418a2; branch=codex/model-acquisition-v2; remote_exact=true
   preregistration: commit=af7857bbc4afa122d8013f2952b2944b53b6e3d2; machine_sha256=087038104f63d6e78373691034aaf586de803059d68c47a12acc2140bf3ac971; architecture_sha256=c4fe01d64a65c51e8803ae4b16bc18bfd52b868faaadf5e4003f4f40b362a180
