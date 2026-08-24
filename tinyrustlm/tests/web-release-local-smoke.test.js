@@ -34,7 +34,7 @@ test("local web release smoke proves the exact closure in real Chromium", {
   );
   const report = JSON.parse(persistedBytes.toString("utf8"));
   assert.equal(report.browserClosed, true);
-  assert.equal(report.schema, "tinyrustlm.web_release_browser_smoke.v4");
+  assert.equal(report.schema, "tinyrustlm.web_release_browser_smoke.v5");
   assert.equal(report.routeCount, 4);
   assert.equal(report.networkPolicy, "exact-release-closure-deny-before-send");
   assert.equal(report.failureCode, null);
@@ -63,8 +63,10 @@ test("local web release smoke proves the exact closure in real Chromium", {
   );
   assert.equal(companion.length, 3);
   for (const observation of companion) {
-    assert.equal(observation.surfaceKind, "companion-install");
-    assert.equal(observation.companionPackageLinkPresent, true);
-    assert.equal(observation.companionInstallCommandPresent, true);
+    assert.equal(observation.surfaceKind, "companion-release");
+    assert.equal(observation.companionPackagePending, true);
+    assert.equal(observation.companionDeploymentBlocked, true);
+    assert.equal(observation.companionPackageLinkPresent, false);
+    assert.equal(observation.companionInstallCommandPresent, false);
   }
 });

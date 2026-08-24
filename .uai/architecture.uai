@@ -1,5 +1,6 @@
-profile: runtime-mirust.architecture.v137
-updated_utc: 2026-08-24T02:19:47Z
+profile: runtime-mirust.architecture.v138
+updated_utc: 2026-08-24T02:34:39Z
+current_clean_gate_failure_and_fix_2026_08_24: Remote-exact source `2abada7a3adb989ec8897205112d61c5a4d72477` passed 1,052 of 1,054 serial standard tests, retained one truthful missing-package-input skip, and failed one real-Chromium web-release smoke before release shards started. Bounded 737-byte failure record SHA256 `12134eee50c7a2589e90b6f7d41260434f68524b77dec1d62d3c225794e21b50` preserves the failure. Root cause was an active smoke contract requiring the unpublished package link and install command prohibited by the canonical package boundary. The clean replacement advances the report to `tinyrustlm.web_release_browser_smoke.v5`, classifies `/companion/` as `companion-release`, requires explicit pending/blocked DOM identities, and rejects package links and install commands. Focused Chromium 1/1, affected union 12/12, and UI 78/78 pass. Commit/push this fix, then use a new fresh evidence root for the complete gate; never reuse or relabel the failed attempt.
 active_product:
   name: TinyRustLM
   root: tinyrustlm/

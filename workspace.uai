@@ -1,7 +1,17 @@
-profile: tinyrustlm.source-workspace.v365
+profile: tinyrustlm.source-workspace.v366
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-24T02:19:47Z
+updated_utc: 2026-08-24T02:34:39Z
+
+current_checkpoint_2026_08_24_canonical_companion_clean_gate_failure_and_fix_v1:
+  authority: This is the newest first-read failure-preservation and red/green correction checkpoint. It does not overwrite or complete the preceding canonical companion checkpoint and grants no release, deployment, package, model, MemoryEndpoints, P2P, or campaign authority.
+  remote_source: Companion commit `2abada7a3adb989ec8897205112d61c5a4d72477` was pushed and proven equal across local HEAD, tracking, FETCH_HEAD, and actual `ls-remote` before the gate.
+  failed_gate: Fresh external evidence root `canonical-companion-clean-gate-20260824T022505Z` was proven absent before creation and direct/non-reparse. The maintained complete wrapper passed 1,052, failed one, and skipped one truthful missing-package-input case across 1,054 standard tests in 388,631.5713 ms. The failing real-Chromium test was `local web release smoke proves the exact closure in real Chromium`, failure code `BROWSER_SMOKE_FAILED`. Release shards did not start. Preserve the 737-byte bounded failure record SHA256 `12134eee50c7a2589e90b6f7d41260434f68524b77dec1d62d3c225794e21b50`; no retry was performed on that source/root.
+  root_cause: The active web-release browser smoke still classified the companion as an install surface and required the exact NuGet link and install command. That contradicted the canonical unpublished-package rule and made the complete gate catch a real stale-contract defect.
+  fix: Browser-smoke report identity advances incompatibly to `tinyrustlm.web_release_browser_smoke.v5`. The route class is `companion-release`; the page exposes exact `companionPackageStatus` and `companionDeploymentStatus` identities; the smoke requires `Public package pending` and `Deployment blocked`; it detects any UAIX Browser NuGet package link and any `dotnet add package` or `dotnet tool install` code and requires both absent. Testing documentation records this prepublication contract. No compatibility reader remains for report v4.
+  verification: Focused real Chromium passes 1/1; the affected model-acquisition, browser-smoke, and local-Chromium union passes 12/12; complete UI passes 78/78. Run syntax, formatting, memory, diff, and secret checks before commit.
+  exact_resume: Commit and push this fix, fetch, and prove remote equality. Create a different fresh external root proven absent and run the complete serial standard plus sharded release wrapper against the new clean commit. Never reuse or relabel the failed root. Only after a complete pass may the SLM2-only consumer replacement preregistration proceed.
+  claim_boundary: MemoryEndpoints remains unauthorized and disconnected. Package `0.3.0` remains unbuilt and unpublished. Deployment remains blocked. Campaign counters remain 0/20, 0/50, 0/25, 0/40, and 0/20.
 
 current_checkpoint_2026_08_24_canonical_companion_clean_slate_v1:
   authority: This is the newest first-read prelaunch companion, acquisition, package-source, browser, documentation, and no-legacy checkpoint. TinyRustLM has one current product contract. The companion now exposes only unversioned closed loopback routes; no versioned route family, protocol negotiation, compatibility header, alias, migration reader, fallback, or retained superseded executable behavior exists.

@@ -65,10 +65,10 @@ test("the browser routes companion acquisition to a truthful pending release", (
   assert.match(html, /id="companionPackageLink"[^>]+href="\/companion\/"/);
   assert.match(html, /id="companionPackageLink"[^>]+target="_blank"[^>]+rel="noopener noreferrer"/);
   assert.match(companionPage, /Package 0\.3\.0 is the prelaunch source target/);
-  assert.match(companionPage, /Public package pending/);
-  assert.match(companionPage, /Deployment blocked/);
+  assert.match(companionPage, /id="companionPackageStatus"[^>]*>Public package pending/);
+  assert.match(companionPage, /id="companionDeploymentStatus"[^>]*>Deployment blocked/);
   assert.doesNotMatch(companionPage, /www\.nuget\.org\/packages\/UAIX\.Browser/);
-  assert.doesNotMatch(companionPage, /dotnet tool install/);
+  assert.doesNotMatch(companionPage, /dotnet\s+(?:add\s+package|tool\s+install)/i);
   assert.match(
     companionPage,
     new RegExp(`updates\\.css\\?v=sha256-${sha256(updatesCss)}`)

@@ -37,7 +37,11 @@ immutable supported-source contracts, fixed canonical conversion
 routes, receipt-bound model and composition streaming, and complete removal of
 README/TXT, script, request-file, conversion-kit, import-kit, and share-kit
 browser downloads. The local web-release smoke uses real Chromium at desktop,
-narrow-desktop, and mobile viewports.
+narrow-desktop, and mobile viewports. While the companion package is
+unpublished, that smoke requires explicit `Public package pending` and
+`Deployment blocked` states and rejects any NuGet package link or `dotnet`
+install command. Publishing a package changes this contract and requires a new
+report schema plus immutable public-package readback evidence.
 
 The campaign tests cover:
 

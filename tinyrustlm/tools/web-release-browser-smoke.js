@@ -15,7 +15,7 @@ const {
   validateWebDeploymentManifest
 } = require("./web-deployment-manifest.js");
 
-const reportSchema = "tinyrustlm.web_release_browser_smoke.v4";
+const reportSchema = "tinyrustlm.web_release_browser_smoke.v5";
 const canonicalPublicOrigin = "https://tinyrustlm.com";
 const viewports = Object.freeze([
   Object.freeze({ name: "desktop", width: 1440, height: 1000 }),
@@ -25,7 +25,7 @@ const viewports = Object.freeze([
 const routes = Object.freeze([
   Object.freeze({ kind: "application", name: "root", path: "/" }),
   Object.freeze({ kind: "application", name: "app", path: "/app/" }),
-  Object.freeze({ kind: "companion-install", name: "companion", path: "/companion/" }),
+  Object.freeze({ kind: "companion-release", name: "companion", path: "/companion/" }),
   Object.freeze({ kind: "release-history", name: "updates", path: "/updates/" })
 ]);
 const maximumErrorEvents = 32;
@@ -353,16 +353,24 @@ async function runPageObservation(
       const releaseVersion = releaseSurface?.querySelector("[data-release-version]");
       const releaseDate = releaseSurface?.querySelector("[data-release-date]");
       const releasePublishedAt = releaseSurface?.querySelector("[data-release-published-at]");
-      const companionPackageLink = document.querySelector(
-        'a.package-action[href="https://www.nuget.org/packages/UAIX.Browser.p2pRuntime.SeedHost.Tool/0.3.0"]'
-      );
-      const companionInstallCommandPresent = Array.from(
-        document.querySelectorAll(".command-block code")
-      ).some((node) => (
-        node.textContent || ""
-      ).includes(
-        "dotnet tool install UAIX.Browser.p2pRuntime.SeedHost.Tool --version 0.3.0"
-      ));
+      const companionPackageStatus = document.querySelector("#companionPackageStatus");
+      const companionDeploymentStatus = document.querySelector("#companionDeploymentStatus");
+      const companionPackageLinkPresent = Array.from(
+        document.querySelectorAll("a[href]")
+      ).some((anchor) => {
+        try {
+          const target = new URL(anchor.href);
+          const hostname = target.hostname.toLowerCase();
+          return (hostname === "nuget.org" || hostname.endsWith(".nuget.org")) &&
+            target.pathname.toLowerCase().startsWith("/packages/uaix.browser");
+        } catch {
+          return false;
+        }
+      });
+      const companionInstallCommandPresent =
+        /dotnet\s+(?:add\s+package|tool\s+install)/iu.test(
+          document.documentElement.textContent || ""
+        );
       return {
         appShellPresent: Boolean(appShell),
         browserModelAdmissionPresent: Boolean(window.TinyRustLMBrowserModelAdmission),
@@ -393,7 +401,11 @@ async function runPageObservation(
             )
           : null,
         releaseEntryCount: document.querySelectorAll(".release-entry").length,
-        companionPackageLinkPresent: Boolean(companionPackageLink),
+        companionPackagePending:
+          companionPackageStatus?.textContent?.trim() === "Public package pending",
+        companionDeploymentBlocked:
+          companionDeploymentStatus?.textContent?.trim() === "Deployment blocked",
+        companionPackageLinkPresent,
         companionInstallCommandPresent,
         documentWidth: document.documentElement.scrollWidth,
         viewportWidth: window.innerWidth,
@@ -470,6 +482,8 @@ async function runPageObservation(
       releaseSurfaceContentOverflowPixels: state.releaseSurfaceContentOverflowPixels,
       companionPackageLinkPresent: state.companionPackageLinkPresent,
       companionInstallCommandPresent: state.companionInstallCommandPresent,
+      companionPackagePending: state.companionPackagePending,
+      companionDeploymentBlocked: state.companionDeploymentBlocked,
       releaseSurfaceViewportOverflowPixels: state.releaseSurfaceRect
         ? Math.max(
             0,
@@ -593,13 +607,23 @@ async function runPageObservation(
       );
     } else {
       observationInvariant(
-        route.kind === "companion-install" && state.companionPackageLinkPresent,
-        "companion_package_link_missing",
+        route.kind === "companion-release" && state.companionPackagePending,
+        "companion_package_pending_status_missing",
         diagnostic
       );
       observationInvariant(
-        state.companionInstallCommandPresent,
-        "companion_install_command_missing",
+        state.companionDeploymentBlocked,
+        "companion_deployment_blocked_status_missing",
+        diagnostic
+      );
+      observationInvariant(
+        !state.companionPackageLinkPresent,
+        "companion_unpublished_package_link_present",
+        diagnostic
+      );
+      observationInvariant(
+        !state.companionInstallCommandPresent,
+        "companion_unpublished_install_command_present",
         diagnostic
       );
     }
@@ -623,10 +647,16 @@ async function runPageObservation(
       releaseSurfaceContentOverflowPixels: state.releaseSurfaceContentOverflowPixels,
       releaseSurfaceViewportOverflowPixels: diagnostic.releaseSurfaceViewportOverflowPixels,
       releaseEntryCount: route.kind === "release-history" ? state.releaseEntryCount : null,
-      companionPackageLinkPresent: route.kind === "companion-install"
+      companionPackagePending: route.kind === "companion-release"
+        ? state.companionPackagePending
+        : null,
+      companionDeploymentBlocked: route.kind === "companion-release"
+        ? state.companionDeploymentBlocked
+        : null,
+      companionPackageLinkPresent: route.kind === "companion-release"
         ? state.companionPackageLinkPresent
         : null,
-      companionInstallCommandPresent: route.kind === "companion-install"
+      companionInstallCommandPresent: route.kind === "companion-release"
         ? state.companionInstallCommandPresent
         : null,
       requestCount,

@@ -1,5 +1,6 @@
-profile: runtime-mirust.receiver-brief.v26
-updated_utc: 2026-08-24T02:19:47Z
+profile: runtime-mirust.receiver-brief.v27
+updated_utc: 2026-08-24T02:34:39Z
+current_clean_gate_failure_and_fix: Remote-exact `2abada7a3adb989ec8897205112d61c5a4d72477` failed one of 1,054 standard tests because browser smoke still demanded prohibited unpublished install assets; 1,052 passed and one package-input case skipped truthfully. Preserve record `12134eee50c7a2589e90b6f7d41260434f68524b77dec1d62d3c225794e21b50`. Schema v5 fixes the contract and focused Chromium 1/1, affected 12/12, UI 78/78 pass. Commit/push before a new-root complete rerun.
 current_install_surface: No current installation-facing page or guide exposes an unpublished `0.3.0` package URL or install command. Keep package and deployment blocked until the complete SLM2-only publication gate passes.
 current_canonical_companion_cutover_2026_08_24:
   authority: One current prelaunch product contract now spans browser, C# companion, tests, Playwright, package source, and docs. It uses unversioned closed routes only; all active version negotiation, aliases, migration readers, and superseded identities are removed.
