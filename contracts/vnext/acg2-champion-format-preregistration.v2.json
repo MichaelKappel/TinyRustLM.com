@@ -1,0 +1,361 @@
+{
+  "schema": "tinyrustlm.acg2-champion-format-preregistration.v2",
+  "profileId": "tinyrustlm.acg2-champion-format-preregistration/2",
+  "status": "registered-output-free-after-prompt2-q8-rebind",
+  "registeredAtUtc": "2026-08-24T12:14:28Z",
+  "registrationParentCommit": "c4030d394c56b8eeb422900e74935703c048c703",
+  "registrationParentTree": "89cb3c8bb272c4c43fb9a1d5349877cf83c21032",
+  "technicalRevision": 2,
+  "authority": {
+    "workspaceRoot": "E:/Source/.tinyrustlm-model-acquisition-recovered-20260819",
+    "branch": "codex/model-acquisition-v2",
+    "productLifecycle": "prelaunch-single-product",
+    "productGenerationCount": 1,
+    "secondProductGenerationExists": false,
+    "technicalRevisionIsProductGeneration": false,
+    "formatId": "org.minimodel.acg2/2.0",
+    "compositionProfile": "tinyrustlm.champion-composition-five-member/1",
+    "artifactClass": "champion-chat-composition",
+    "modelContainer": "SLM2-only",
+    "memoryEndpointsAuthorized": false,
+    "writeDriveDAllowed": false
+  },
+  "predecessorRegistration": {
+    "path": "contracts/vnext/acg2-champion-format-preregistration.v1.json",
+    "byteLength": 11929,
+    "sha256": "afec4dccad2062728677b6987519ce2385a1bca3761fe8f0927ac80242d6403d",
+    "registrationCommit": "39feda199eea782ff32f9ffb2b93f7c1a1b21d33",
+    "effectiveStatus": "terminally-superseded-before-output",
+    "defect": "prompt-member-profile-bound-superseded-dense-f32-SLM2-dependencies",
+    "artifactOutputCreated": false,
+    "vectorOutputCreated": false,
+    "implementationOutputCreated": false,
+    "browserOutputCreated": false,
+    "mayBeEditedOrReused": false,
+    "remainsImmutableAuditHistory": true
+  },
+  "prompt2RebindAuthority": {
+    "registration": {
+      "path": "contracts/vnext/prompt2-q8-dependency-rebind-preregistration.v1.json",
+      "byteLength": 11709,
+      "sha256": "6f97685e1db5fcdf7e5ecb00b70434e74cceda82ca104bc9845688aeab7e3188",
+      "commit": "6684585964e79d7237bd05398dad4cafd455d1e2"
+    },
+    "implementationCommit": "fb321d4ce9eec0510162a27e4527bc626a307755",
+    "implementationTree": "e7660a01762b137b6ebb173df267ae370b2797b2",
+    "remoteExactBeforeThisRegistration": true,
+    "profile": {
+      "path": "contracts/vnext/prompt2-format-profile.v1.json",
+      "byteLength": 19421,
+      "sha256": "f9eb4cbecfb52f5e2857216c999754da94021a5427a86732d33fe15efc0d062c"
+    },
+    "artifact": {
+      "byteLength": 512,
+      "sha256": "27aaed18b62930213a2395e398e68d18a90d4280e24c23d794e3e94352d7e1f3"
+    },
+    "runtimeQ8VectorSha256": "c437ebb5e59c9059c49324d12d43e556493e62f5d6b2e857e369ca08674333a0"
+  },
+  "closedGraph": {
+    "memberCount": 5,
+    "memberOrder": [
+      "model",
+      "tokenizer",
+      "template",
+      "sampling",
+      "prompt"
+    ],
+    "embeddedMemberBytes": false,
+    "externalPaths": false,
+    "externalUrls": false,
+    "mutableAliases": false,
+    "optionalMembers": false,
+    "duplicateMembers": false,
+    "lowRankAdapters": false,
+    "specialistOverlays": false,
+    "routerPolicy": false,
+    "unknownMembers": "fatal",
+    "missingMembers": "fatal",
+    "additionalMembers": "fatal"
+  },
+  "binaryContract": {
+    "magicHex": "414347320d0a1a0a",
+    "formatIdAsciiPaddedHex": "6d696e696d6f64656c2e616367320000",
+    "byteOrder": "little-endian",
+    "fileBytes": 896,
+    "headerBytes": 256,
+    "memberRecordBytes": 128,
+    "memberCount": 5,
+    "memberTableOffset": 256,
+    "memberTableBytes": 640,
+    "trailingBytes": false,
+    "header": {
+      "fields": [
+        {"name": "magic", "offset": 0, "bytes": 8, "type": "bytes", "valueHex": "414347320d0a1a0a"},
+        {"name": "format_id", "offset": 8, "bytes": 16, "type": "bytes", "valueHex": "6d696e696d6f64656c2e616367320000"},
+        {"name": "major_version", "offset": 24, "bytes": 2, "type": "u16", "value": 2},
+        {"name": "minor_version", "offset": 26, "bytes": 2, "type": "u16", "value": 0},
+        {"name": "byte_order", "offset": 28, "bytes": 1, "type": "u8", "value": 1},
+        {"name": "artifact_class", "offset": 29, "bytes": 1, "type": "u8", "value": 1},
+        {"name": "flags", "offset": 30, "bytes": 2, "type": "u16", "value": 0},
+        {"name": "header_bytes", "offset": 32, "bytes": 4, "type": "u32", "value": 256},
+        {"name": "member_count", "offset": 36, "bytes": 4, "type": "u32", "value": 5},
+        {"name": "member_record_bytes", "offset": 40, "bytes": 4, "type": "u32", "value": 128},
+        {"name": "reserved_0", "offset": 44, "bytes": 4, "type": "zero-bytes"},
+        {"name": "file_bytes", "offset": 48, "bytes": 8, "type": "u64", "value": 896},
+        {"name": "member_table_offset", "offset": 56, "bytes": 8, "type": "u64", "value": 256},
+        {"name": "member_table_bytes", "offset": 64, "bytes": 8, "type": "u64", "value": 640},
+        {"name": "resolved_member_bytes", "offset": 72, "bytes": 8, "type": "u64", "value": "checked-sum-of-member-byte-lengths"},
+        {"name": "graph_identity_sha256", "offset": 80, "bytes": 32, "type": "bytes", "value": "derived"},
+        {"name": "member_table_sha256", "offset": 112, "bytes": 32, "type": "bytes", "value": "derived"},
+        {"name": "reserved", "offset": 144, "bytes": 112, "type": "zero-bytes"}
+      ]
+    },
+    "memberRecord": {
+      "fields": [
+        {"name": "record_version", "offset": 0, "bytes": 2, "type": "u16", "value": 1},
+        {"name": "role", "offset": 2, "bytes": 2, "type": "u16", "value": "closed-enum"},
+        {"name": "format", "offset": 4, "bytes": 2, "type": "u16", "value": "closed-enum"},
+        {"name": "flags", "offset": 6, "bytes": 2, "type": "u16", "value": 0},
+        {"name": "ordinal", "offset": 8, "bytes": 4, "type": "u32", "value": "zero-based-record-index"},
+        {"name": "reserved_0", "offset": 12, "bytes": 4, "type": "zero-bytes"},
+        {"name": "artifact_bytes", "offset": 16, "bytes": 8, "type": "u64", "value": "positive-bounded"},
+        {"name": "artifact_sha256", "offset": 24, "bytes": 32, "type": "bytes", "value": "nonzero"},
+        {"name": "format_profile_sha256", "offset": 56, "bytes": 32, "type": "bytes", "value": "exact-role-profile"},
+        {"name": "reserved", "offset": 88, "bytes": 40, "type": "zero-bytes"}
+      ]
+    },
+    "enums": {
+      "byteOrder": {"littleEndian": 1},
+      "artifactClass": {"championChatComposition": 1},
+      "memberRole": {"model": 1, "tokenizer": 2, "template": 3, "sampling": 4, "prompt": 5},
+      "memberFormat": {"slm2": 1, "tokenizer2": 2, "template2": 3, "sampling2": 4, "prompt2": 5}
+    }
+  },
+  "memberProfiles": [
+    {
+      "ordinal": 0,
+      "role": "model",
+      "roleCode": 1,
+      "format": "slm2",
+      "formatCode": 1,
+      "formatId": "org.minimodel.slm2/2.0",
+      "profilePath": "contracts/vnext/slm2-format-profile.v1.json",
+      "profileSha256": "5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8",
+      "maximumArtifactBytes": 68719476736
+    },
+    {
+      "ordinal": 1,
+      "role": "tokenizer",
+      "roleCode": 2,
+      "format": "tokenizer2",
+      "formatCode": 2,
+      "formatId": "org.minimodel.tokenizer2/2.0",
+      "profilePath": "contracts/vnext/tokenizer2-format-profile.v1.json",
+      "profileSha256": "628427bf6e7f8d34ed14b331a5c636606aee9d5ef45a36a3cadc13338669b8de",
+      "maximumArtifactBytes": 67108864
+    },
+    {
+      "ordinal": 2,
+      "role": "template",
+      "roleCode": 3,
+      "format": "template2",
+      "formatCode": 3,
+      "formatId": "org.minimodel.template2/2.0",
+      "profilePath": "contracts/vnext/template2-format-profile.v1.json",
+      "profileSha256": "14ff1df8dd6760119ac36e719ab396fff8e71d0719c2e1c83118f58693ea7bfa",
+      "maximumArtifactBytes": 1048576
+    },
+    {
+      "ordinal": 3,
+      "role": "sampling",
+      "roleCode": 4,
+      "format": "sampling2",
+      "formatCode": 4,
+      "formatId": "org.minimodel.sampling2/2.0",
+      "profilePath": "contracts/vnext/sampling2-format-profile.v1.json",
+      "profileSha256": "ec65e8f1a54c1e4ca95ebda88bde091dad11337250e541bbda60e8cac311428d",
+      "maximumArtifactBytes": 65800
+    },
+    {
+      "ordinal": 4,
+      "role": "prompt",
+      "roleCode": 5,
+      "format": "prompt2",
+      "formatCode": 5,
+      "formatId": "org.minimodel.prompt2/2.0",
+      "profilePath": "contracts/vnext/prompt2-format-profile.v1.json",
+      "profileSha256": "f9eb4cbecfb52f5e2857216c999754da94021a5427a86732d33fe15efc0d062c",
+      "maximumArtifactBytes": 512
+    }
+  ],
+  "dependencyClosure": {
+    "prompt2ProfileMustBind": {
+      "slm2FormatProfileSha256": "5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8",
+      "slm2RuntimeQ8VectorSha256": "c437ebb5e59c9059c49324d12d43e556493e62f5d6b2e857e369ca08674333a0",
+      "tokenizer2ProfileSha256": "628427bf6e7f8d34ed14b331a5c636606aee9d5ef45a36a3cadc13338669b8de",
+      "tokenizer2ArtifactSha256": "cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b",
+      "template2ProfileSha256": "14ff1df8dd6760119ac36e719ab396fff8e71d0719c2e1c83118f58693ea7bfa",
+      "template2ArtifactSha256": "5300b0b43188a8c73ed62e7e4fbab6eff358ae0395166791852b072a8009c9c8",
+      "sampling2ProfileSha256": "ec65e8f1a54c1e4ca95ebda88bde091dad11337250e541bbda60e8cac311428d",
+      "sampling2ArtifactSha256": "9e02fcfbba169330a2ee1bf40cea015dc4067925e051f6ae5f197a5f880bfe89"
+    },
+    "modelMemberProfileMustEqualPrompt2Slm2Profile": true,
+    "tokenizerMemberProfileMustEqualPrompt2TokenizerProfile": true,
+    "templateMemberProfileMustEqualPrompt2TemplateProfile": true,
+    "samplingMemberProfileMustEqualPrompt2SamplingProfile": true,
+    "artifactHashesMustMatchPrompt2BoundDependencies": true,
+    "mismatch": "fatal-before-resource-preflight-or-state-mutation"
+  },
+  "identity": {
+    "algorithm": "SHA-256",
+    "memberTableSha256": "plain-sha256-over-all-640-member-record-bytes",
+    "graphIdentityDomainAsciiNul": "tinyrustlm.acg2.champion-graph.v1\\0",
+    "graphIdentityFraming": [
+      "domain-ascii-and-zero-byte",
+      "major-version-u16le",
+      "minor-version-u16le",
+      "artifact-class-u8",
+      "member-count-u32le",
+      "resolved-member-bytes-u64le",
+      "member-table-bytes"
+    ],
+    "wholeArtifact": "plain-sha256-over-all-896-file-bytes",
+    "memberIdentity": "exact-byte-length-plus-plain-artifact-sha256-plus-format-profile-sha256",
+    "changingAnyMemberFieldChangesGraphIdentity": true
+  },
+  "limits": {
+    "maximumGraphBytes": 896,
+    "maximumMembers": 5,
+    "maximumResolvedMemberBytes": 68787700488,
+    "streamHashBufferBytes": 1048576,
+    "checkedArithmetic": true,
+    "maximumInputFilesOpenConcurrently": 1,
+    "maximumPendingActivationGraphs": 1
+  },
+  "validationOrder": [
+    "bounded-file-length",
+    "header-magic-format-version-byte-order-class-flags-and-reserved",
+    "derived-fixed-layout",
+    "member-record-version-role-format-flags-ordinal-and-reserved",
+    "exact-role-order-and-profile-hashes",
+    "positive-role-specific-member-lengths",
+    "checked-resolved-byte-sum",
+    "member-table-sha256",
+    "graph-identity-sha256",
+    "whole-composition-sha256",
+    "stream-each-resolved-member-length-and-sha256",
+    "parse-each-member-with-its-canonical-format-owner",
+    "prompt2-dependency-hashes-match-tokenizer-template-sampling-and-model-contract",
+    "complete-runtime-resource-preflight",
+    "transactional-activation"
+  ],
+  "activation": {
+    "candidateValidationMutatesActiveState": false,
+    "candidateValidationAllocatesModelWeightShadow": false,
+    "allMembersVerifiedBeforeSwap": true,
+    "allMembersParsedBeforeSwap": true,
+    "promptDependenciesCrossCheckedBeforeSwap": true,
+    "resourcePlanAcceptedBeforeSwap": true,
+    "successfulSwapIsAtomic": true,
+    "successfulSwapClearsKvCache": true,
+    "successfulSwapClearsGenerationState": true,
+    "failedSwapPreservesActiveComposition": true,
+    "failedSwapPreservesKvCache": true,
+    "failedSwapPreservesGenerationState": true,
+    "failedSwapPreservesOperationState": true,
+    "failedSwapPreservesTranscriptState": true,
+    "staleOperationIdentity": "fatal-without-state-change"
+  },
+  "independentOracle": {
+    "path": "tinyrustlm/tools/acg2-reference.js",
+    "language": "Node.js-builtins-only",
+    "mayInvokeRust": false,
+    "mayInvokeSubprocess": false,
+    "mayUseNetwork": false,
+    "mayReadGeneratedRustOutput": false,
+    "requiredFunctions": [
+      "writer",
+      "parser",
+      "identity-derivation",
+      "hostile-mutation-generation"
+    ]
+  },
+  "expectedImplementationOutputs": {
+    "machineProfile": "contracts/vnext/acg2-format-profile.v1.json",
+    "languageNeutralVectors": "contracts/vnext/acg2-format-vectors.v1.json",
+    "rustCrate": "rust/crates/tinyrustlm-composition2",
+    "nodeOracle": "tinyrustlm/tools/acg2-reference.js",
+    "nodeTest": "tinyrustlm/tests/acg2-format-vectors.test.js",
+    "architectureDecision": "docs/architecture/adr/ADR-019-acg2-champion-format.md"
+  },
+  "forbidden": {
+    "acg1Reader": false,
+    "acg1Writer": false,
+    "formatNegotiation": false,
+    "compatibilityAlias": false,
+    "migration": false,
+    "optionalMemberFallback": false,
+    "pathOrUrlMemberLocator": false,
+    "embeddedCredentials": false,
+    "embeddedModelBytes": false,
+    "mutableMemberAlias": false,
+    "unknownMember": false,
+    "adapterMemberInThisProfile": false,
+    "routerMemberInThisProfile": false,
+    "partialActivation": false,
+    "inPlaceMutation": false,
+    "retrySelection": false,
+    "fixtureAsQualityEvidence": false,
+    "secondProductGeneration": false,
+    "reusePredecessorRegistration": false,
+    "testWeakening": false
+  },
+  "requiredTests": [
+    "independent-node-and-rust-byte-equality",
+    "every-proper-prefix-rejection",
+    "every-header-field-hostile-mutation",
+    "every-member-field-hostile-mutation",
+    "role-order-format-and-profile-mismatch-rejection",
+    "member-length-and-hash-drift-rejection",
+    "member-table-and-graph-hash-drift-rejection",
+    "trailing-byte-rejection",
+    "stream-hash-large-model-with-bounded-buffer",
+    "missing-extra-reordered-and-duplicate-member-rejection",
+    "prompt2-cross-dependency-mismatch-rejection",
+    "superseded-prompt2-profile-and-artifact-rejection",
+    "failed-activation-preserves-all-active-state",
+    "successful-activation-invalidates-kv-and-generation-state",
+    "repeated-switch-bounded-memory",
+    "native-and-wasm-conformance",
+    "node-oracle-source-isolation",
+    "source-scan-for-forbidden-executable-contracts"
+  ],
+  "registrationOutputBoundary": {
+    "machineProfileCreated": false,
+    "vectorArtifactCreated": false,
+    "compositionArtifactCreated": false,
+    "rustCrateCreated": false,
+    "runtimeOutputCreated": false,
+    "browserOutputCreated": false,
+    "modelBytesCreated": false,
+    "campaignCreditAuthorized": false
+  },
+  "claimBoundary": {
+    "formatImplemented": false,
+    "activationImplemented": false,
+    "realModelConverted": false,
+    "modelQualityVerified": false,
+    "browserChatVerified": false,
+    "p2pAvailabilityVerified": false,
+    "packagePublished": false,
+    "siteDeployed": false,
+    "memoryEndpointsOperationPerformed": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}
