@@ -1,5 +1,12 @@
-profile: runtime-mirust.file-handoff.v100
-updated_utc: 2026-08-24T02:34:39Z
+profile: runtime-mirust.file-handoff.v101
+updated_utc: 2026-08-24T06:49:31Z
+current_canonical_companion_clean_gate_pass_2026_08_24:
+  source: Exact commit `a84125ff591f4029cdfa31c0a1e2a7ac0bb6e5b7` and tree `610bc0d848e22eec39200cbacdaf10e3b22fe10b` were remote-exact before execution.
+  result: Fresh direct root `canonical-companion-clean-gate-20260824T023848Z` passed 1,053/1,054 standard tests with zero failures and one truthful skip. Release run `ab6aaee4e6c22822877ca629556dffee700f9dda05970d51e9f1761d9a5a4521` passed 10/10 shards and 23/23 tests. Maintained verification and independent PowerShell hashing reproduce aggregate size 3,995 and SHA256 `31e5e8ed29337d3a053b2875c32a05c03d2c8e8f7f9e195449bb3d4c591c314f`; the root has 42 bounded files totaling 40,313 bytes.
+  history: Preserve failed source-`2abada7` root and record SHA256 `12134eee50c7a2589e90b6f7d41260434f68524b77dec1d62d3c225794e21b50`; never overwrite or convert it into the later pass.
+  blocker: Generated-byte publication validation took 6,381,891.9148 ms; shard 8 took 7,853,326.4993 ms and synchronous work defeated the nominal timeout. Correctness passes, but release-gate performance remains a hard no-debt blocker. Active SLM1 code and assumptions also remain hard blockers.
+  next: Commit/push/remote-verify this UAI checkpoint. Then preregister and implement one SLM2-only product-consumer and bounded release-graph replacement, deleting all active SLM1 behavior in the same verified major change. Do not build, publish, or deploy package `0.3.0` before that closure passes.
+  nonclaims: No model, package publication, deployment, public readback, MemoryEndpoints operation, outside P2P proof, or campaign progress; counters stay 0/20, 0/50, 0/25, 0/40, 0/20.
 current_clean_gate_failure_and_fix_2026_08_24: Source `2abada7a3adb989ec8897205112d61c5a4d72477` is remote-exact. Its fresh complete wrapper stopped before release shards at standard result 1,052 pass, 1 fail, 1 truthful skip across 1,054; failure record SHA256 is `12134eee50c7a2589e90b6f7d41260434f68524b77dec1d62d3c225794e21b50`. The failing browser smoke still required an unpublished package link/install command. Report schema v5 now proves explicit pending/blocked states and absence of both; focused Chromium 1/1, affected 12/12, and UI 78/78 pass. Commit and push before rerunning the full gate in a new fresh root.
 current_canonical_companion_checkpoint_2026_08_24:
   authority: Newest TinyRustLM first-read checkpoint. One canonical prelaunch companion contract replaces every active versioned browser/server path. There are no compatibility aliases, protocol-version headers, migration readers, dual routes, or fallback behavior.
