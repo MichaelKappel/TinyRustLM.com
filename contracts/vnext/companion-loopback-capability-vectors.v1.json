@@ -1,0 +1,91 @@
+{
+  "schema": "tinyrustlm.companion.loopback-capability-vectors.v1",
+  "profileId": "tinyrustlm.companion.loopback-capability/2",
+  "oracle": "independent-node-crypto-sha256-hmac-sha256-and-manual-rfc5869-single-block",
+  "testMaterialIsSecret": false,
+  "transcript": {
+    "fields": [
+      "alpha",
+      "",
+      "\u03b2",
+      "e\u0301"
+    ],
+    "hex": "00000005616c7068610000000000000002ceb20000000365cc81",
+    "sha256": "9096441aaa7dc1668abdb658d1604a4cd84b0cb4c5b2da4da3ef74029952421c"
+  },
+  "pairingSecretHex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+  "pairingContext": {
+    "installationId": "00112233445566778899aabbccddeeff",
+    "processInstanceId": "102132435465768798a9bacbdcedfe0f",
+    "claimId": "11223344556677889900aabbccddeeff",
+    "browserNonce": "ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8",
+    "serverNonce": "QEFCQ0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaW1xdXl8",
+    "sessionId": "ffeeddccbbaa00998877665544332211",
+    "keyEpoch": 1,
+    "host": "127.0.0.1:54321",
+    "origin": "https://tinyrustlm.com",
+    "sessionExpiresAtUtc": "2026-08-25T07:00:00Z",
+    "idleTimeoutSeconds": 900
+  },
+  "pairingExpected": {
+    "serverProof": "2ys7VFIlasMuotWflOu4JPSjAWHFvxi3YVINtbpaSwo",
+    "sessionSaltHex": "09dd8ed41351f40e8cde0aca356bbf265656afa471e093024cce3a32cee802f9",
+    "sessionKeyHex": "9148f3a77d378e396148981dc9f2c4f51c782375186aaaea33a89486f2b3ffc7",
+    "browserProof": "XvcjzpfljgT-wurJbp8JK1g3Flvomg-WGsyOd4gZ1iQ",
+    "completeRequestSha256": "03e45c98154916ded3948f9c1fe7ff9382f9b0ff838d48d245e0a36815722e73",
+    "completionProof": "cOCb4H0Emnh3ak6Noxzx6Io-43woOOpsgU0Q3bi38go"
+  },
+  "request": {
+    "sequence": 7,
+    "method": "GET",
+    "path": "/tinyrustlm-companion/1/session",
+    "contentType": "",
+    "contentLength": 0,
+    "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "proof": "5YpmQ5Arc1zjr46RAcPfJCh6GTiDXZzDn4LcJScMGKQ"
+  },
+  "response": {
+    "status": 200,
+    "contentType": "application/json",
+    "contentLength": 434,
+    "responseMetadataSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "contentSha256": "4eba6d3135ddf3fa0a991d62f1b2e20d909d1c6d770143f5ccd92e961b0d6fe2",
+    "proof": "yiL3XI2B_Qcc52Wu6aGOo9yLIRmkP1Oh1VAPH7Kvl-w",
+    "bodyUtf8": "{\"schema\":\"tinyrustlm.companion.loopback.session-status.v1\",\"protocolId\":\"tinyrustlm.companion.loopback-capability/2\",\"installationId\":\"00112233445566778899aabbccddeeff\",\"processInstanceId\":\"102132435465768798a9bacbdcedfe0f\",\"sessionId\":\"ffeeddccbbaa00998877665544332211\",\"keyEpoch\":1,\"acceptedSequence\":7,\"nextSequence\":8,\"sessionExpiresAtUtc\":\"2026-08-25T07:00:00Z\",\"keyExpiresAtUtc\":\"2026-08-24T23:15:00Z\",\"idleTimeoutSeconds\":900}"
+  },
+  "artifact": {
+    "operationId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "role": "model",
+    "artifactId": "slm2:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "artifactSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "artifactBytes": 8388609,
+    "chunkIndex": 2,
+    "chunkCount": 3,
+    "chunkOffset": 8388608,
+    "chunkBytes": 1,
+    "metadataSha256": "44e2d319d816b55a642db9481d56d8a69b66963b598a9268f9fa5f0a7ab732ad",
+    "chunkContentHex": "7f",
+    "chunkContentSha256": "620bfdaa346b088fb49998d92f19a7eaf6bfc2fb0aee015753966da1028cb731",
+    "responseSequence": 8,
+    "responsePath": "/tinyrustlm-companion/1/operations/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/artifacts/model/chunks/2",
+    "responseProof": "Y1tSUlP_w_8Y2Bx9yOzFDN3ZwwdUV6R7RxlvgKa_Vsc"
+  },
+  "rotationContext": {
+    "rotationId": "abcdef0123456789abcdef0123456789",
+    "browserNonce": "YGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn8",
+    "serverNonce": "gIGCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp8",
+    "currentEpoch": 1,
+    "nextEpoch": 2
+  },
+  "rotationExpected": {
+    "rotationSaltHex": "3e0d4a6df8f7beb0cd4b22c5ee15f16b1f215032d434fcc473c08cd580c19883",
+    "rotatedSessionKeyHex": "51e3e3b82e9faf06463462edf0dd897ba8189b475bcfed109da89ff4e7514413",
+    "newKeyProof": "Kfvo3e3ojAyX8dAXvlie_MoEBxt31ldaajCUrJ4bnxM",
+    "commitRequestSha256": "f0d374148301cd1c8f3a6a06894790407d5f4e34d2a59474aba24f3f9bdc8487",
+    "completionProof": "lfaGPIls6L6GMYkZNrwEBA8K0hvB1Qd66Vp6GRCqIuA"
+  },
+  "installationRecord": {
+    "canonicalFileHex": "7b22736368656d61223a2274696e79727573746c6d2e636f6d70616e696f6e2e696e7374616c6c6174696f6e2e7631222c22696e7374616c6c6174696f6e4964223a223030313132323333343435353636373738383939616162626363646465656666227d0a",
+    "sha256": "5971f14282d0d3d220c51b886cf6a73f27bec59805bf751bd328324dd27981a5"
+  }
+}

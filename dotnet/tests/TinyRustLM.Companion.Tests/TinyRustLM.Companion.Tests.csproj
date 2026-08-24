@@ -16,4 +16,9 @@
     <ProjectReference Include="..\..\tools\TinyRustLM.ConversionFixtureTool\TinyRustLM.ConversionFixtureTool.csproj"
                       ReferenceOutputAssembly="false" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\contracts\vnext\companion-loopback-capability-vectors.v1.json"
+          Link="companion-loopback-capability-vectors.v1.json"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>
