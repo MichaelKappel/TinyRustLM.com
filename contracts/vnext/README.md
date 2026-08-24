@@ -104,6 +104,23 @@ product model. See the immutable before-output decision in
 implementation record in
 `docs/architecture/qwen3-slm2-converter-implementation.md`.
 
+`qwen3-composition-conversion-profile.v1.json` freezes the sole complete
+source-to-composition transaction before its Rust implementation or any
+complete output. It is 7,978 bytes at SHA-256
+`2f95f79783ec6cd12160d51f9697c5c77aab2e6cd46afeb5140fdb513e5d8158`.
+It binds related exact model and tokenizer source locks, the exact
+Qwen3-0.6B architecture relationship, six ordered SLM2/Tokenizer2/Template2/
+Sampling2/Prompt2/ACG2 artifacts, bounded one-at-a-time dependency resolution,
+create-only terminal pass or rejection evidence, and explicit nonclaims for
+quality, runtime, browser, P2P, and publication.
+
+The component converter commands remain private exact compiler primitives;
+only `tinyrustlm-convert qwen3-composition` can establish the complete
+conversion boundary consumed by the product. This registration creates no
+complete composition bytes, receipt, runtime output, browser result, or
+campaign credit. See
+`docs/architecture/2026-08-24-complete-qwen3-composition-conversion-preregistration.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2
