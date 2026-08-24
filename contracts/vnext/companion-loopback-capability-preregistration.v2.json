@@ -1,0 +1,693 @@
+{
+  "schema": "tinyrustlm.companion-loopback-capability-preregistration.v2",
+  "profileId": "tinyrustlm.companion.loopback-capability/2",
+  "status": "corrected-before-listener-browser-client-or-protocol-output",
+  "registeredAtUtc": "2026-08-24T23:17:52Z",
+  "registrationParentCommit": "0f08fb6b53f50013220a156ebb8006e258c5c0d1",
+  "registrationParentTree": "9137bc158e83fc35df2da77f6edfb61eafe60cb9",
+  "supersededRegistration": {
+    "schema": "tinyrustlm.companion-loopback-capability-preregistration.v1",
+    "profileId": "tinyrustlm.companion.loopback-capability/1",
+    "path": "contracts/vnext/companion-loopback-capability-preregistration.v1.json",
+    "byteLength": 39311,
+    "sha256": "81e3f2f3795a51c0bce86e1aca66f6a7234608a3dd044cd7a9b1cbbf90c9ba77",
+    "retainedAsImmutableHistory": true,
+    "executableAuthority": false,
+    "implementationOutputOccurred": false,
+    "supersessionReasonCodes": [
+      "pairing-proof-fields-not-ordered",
+      "hkdf-salt-and-info-not-exact",
+      "rotation-proof-fields-not-ordered",
+      "canonical-http-json-bytes-not-exact",
+      "session-status-wire-not-exact",
+      "error-status-map-not-exact",
+      "artifact-response-metadata-not-proof-bound",
+      "sequence-commit-point-not-exact"
+    ]
+  },
+  "baseProfileAdoption": {
+    "mode": "exact-content-addressed-design-input-not-runtime-profile-inheritance",
+    "adoptedTopLevelKeys": [
+      "authority",
+      "productBoundary",
+      "publicSourceBasis",
+      "transport",
+      "installationIdentity",
+      "endpointDiscovery",
+      "cryptography",
+      "pairing",
+      "session",
+      "rotation",
+      "revocation",
+      "routeTable",
+      "operationProtocol",
+      "artifactTransfer",
+      "corsAndLocalNetwork",
+      "browserFetch",
+      "httpLimits",
+      "requestHeaderPolicy",
+      "responsePolicy",
+      "stableErrorCodes",
+      "implementationPlan",
+      "requiredTests",
+      "registrationOutputBoundary",
+      "claimBoundary",
+      "campaignCounters"
+    ],
+    "replacementPointers": [
+      "/cryptography/transcriptEncoding",
+      "/session/requestProofFieldsInOrder",
+      "/session/responseProofFieldsInOrder"
+    ],
+    "additiveCorrectionSections": [
+      "canonicalWire",
+      "identifierGrammar",
+      "installationRecordWire",
+      "pairingTranscripts",
+      "sessionKeyDerivation",
+      "sessionWire",
+      "requestAuthenticationStateMachine",
+      "rotationTranscripts",
+      "revocationWire",
+      "operationProjectionWire",
+      "artifactResponseMetadata",
+      "httpErrorMap",
+      "preflightWire",
+      "implementationOrder",
+      "additionalRequiredTests"
+    ],
+    "resolutionRule": "use-every-adopted-v1-field-except-the-three-exact-replacement-pointers-then-require-every-v2-additive-section",
+    "runtimeReadsEitherRegistration": false,
+    "compatibilityReaderCreated": false,
+    "migrationCreated": false
+  },
+  "authority": {
+    "productLifecycle": "prelaunch-single-product",
+    "technicalVersionIsProductGeneration": false,
+    "branch": "codex/model-acquisition-v2",
+    "productionOrigin": "https://tinyrustlm.com",
+    "memoryEndpointsAuthorized": false,
+    "writeDriveDAllowed": false
+  },
+  "canonicalWire": {
+    "jsonEncoding": "utf8-without-bom",
+    "jsonLeadingOrTrailingWhitespaceAllowed": false,
+    "jsonFinalLfAllowed": false,
+    "jsonObjectMemberOrder": "exact-schema-order",
+    "jsonUnknownMembersAllowed": false,
+    "jsonDuplicateMembersAllowed": false,
+    "jsonCommentsAllowed": false,
+    "jsonTrailingCommasAllowed": false,
+    "jsonMaximumDepth": 16,
+    "jsonControlStrings": "ascii-only",
+    "jsonUnsignedIntegerEncoding": "shortest-decimal-no-sign-no-leading-zero",
+    "jsonNullEncoding": "null",
+    "jsonBooleanEncoding": "lowercase-json-literal",
+    "timestampEncoding": "utc-rfc3339-whole-seconds-yyyy-MM-ddTHH:mm:ssZ",
+    "timestampRegex": "^[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$",
+    "requestJsonMediaType": "application/json",
+    "mediaTypeParametersAllowed": false,
+    "responseJsonMediaType": "application/json",
+    "binaryMediaType": "application/octet-stream",
+    "canonicalBodyHash": "lowercase-hex-sha256-of-exact-transferred-body-bytes",
+    "emptyBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "identifierGrammar": {
+    "installationId": "^[0-9a-f]{32}$",
+    "processInstanceId": "^[0-9a-f]{32}$",
+    "claimId": "^[0-9a-f]{32}$",
+    "sessionId": "^[0-9a-f]{32}$",
+    "rotationId": "^[0-9a-f]{32}$",
+    "revocationId": "^[0-9a-f]{32}$",
+    "cancellationId": "^[0-9a-f]{32}$",
+    "operationId": "^[0-9a-f]{64}$",
+    "sha256": "^[0-9a-f]{64}$",
+    "nonce": "^[A-Za-z0-9_-]{43}$",
+    "proof": "^[A-Za-z0-9_-]{43}$",
+    "port": "shortest-decimal-1024-through-65535",
+    "epoch": "shortest-decimal-1-through-64",
+    "sequence": "shortest-decimal-1-through-1000000",
+    "chunkIndex": "shortest-decimal-zero-through-16383"
+  },
+  "installationRecordWire": {
+    "schema": "tinyrustlm.companion.installation.v1",
+    "fieldsInOrder": [
+      "schema",
+      "installationId"
+    ],
+    "maximumBytes": 4096,
+    "fileEncoding": "utf8-without-bom-final-lf",
+    "fileJsonWithoutFinalLfMatchesCanonicalWire": true,
+    "createdAtFieldAllowed": false,
+    "secretFieldAllowed": false,
+    "unknownFieldAllowed": false
+  },
+  "transcriptEncoding": {
+    "fieldEncoding": "utf8",
+    "fieldPrefix": "u32-big-endian-byte-length",
+    "fieldOrder": "exact-listed-order",
+    "maximumFieldBytes": 65536,
+    "maximumFieldCount": 32,
+    "maximumTranscriptBytes": 131072,
+    "emptyFieldAllowedOnlyWhenExplicitlyNamed": true,
+    "normalizationAllowed": false,
+    "delimiterBytesAllowed": false
+  },
+  "pairingTranscripts": {
+    "coreFieldsInOrder": [
+      "protocol-id",
+      "installation-id",
+      "process-instance-id",
+      "claim-id",
+      "browser-nonce",
+      "server-nonce",
+      "session-id",
+      "key-epoch-decimal",
+      "host",
+      "origin",
+      "session-expires-at-utc",
+      "idle-timeout-seconds-decimal"
+    ],
+    "serverProof": {
+      "key": "raw-32-byte-pairing-secret",
+      "fieldsInOrder": [
+        "TinyRustLM companion pairing server proof 1",
+        "protocol-id",
+        "installation-id",
+        "process-instance-id",
+        "claim-id",
+        "browser-nonce",
+        "server-nonce",
+        "session-id",
+        "key-epoch-decimal",
+        "host",
+        "origin",
+        "session-expires-at-utc",
+        "idle-timeout-seconds-decimal"
+      ]
+    },
+    "browserProof": {
+      "key": "derived-32-byte-session-key",
+      "fieldsInOrder": [
+        "TinyRustLM companion pairing browser proof 1",
+        "protocol-id",
+        "installation-id",
+        "process-instance-id",
+        "claim-id",
+        "browser-nonce",
+        "server-nonce",
+        "session-id",
+        "key-epoch-decimal",
+        "host",
+        "origin",
+        "session-expires-at-utc",
+        "idle-timeout-seconds-decimal"
+      ]
+    },
+    "completionProof": {
+      "key": "derived-32-byte-session-key",
+      "fieldsInOrder": [
+        "TinyRustLM companion pairing completion proof 1",
+        "protocol-id",
+        "installation-id",
+        "process-instance-id",
+        "claim-id",
+        "browser-nonce",
+        "server-nonce",
+        "session-id",
+        "key-epoch-decimal",
+        "host",
+        "origin",
+        "session-expires-at-utc",
+        "idle-timeout-seconds-decimal",
+        "complete-request-content-sha256"
+      ]
+    }
+  },
+  "sessionKeyDerivation": {
+    "algorithm": "HKDF-SHA-256-RFC5869",
+    "inputKeyMaterial": "raw-32-byte-pairing-secret",
+    "saltBytes": "sha256-of-salt-transcript",
+    "saltTranscriptFieldsInOrder": [
+      "TinyRustLM companion session capability salt 1",
+      "protocol-id",
+      "installation-id",
+      "process-instance-id",
+      "claim-id",
+      "browser-nonce",
+      "server-nonce",
+      "session-id",
+      "key-epoch-decimal",
+      "host",
+      "origin"
+    ],
+    "infoBytes": "exact-info-transcript",
+    "infoTranscriptFieldsInOrder": [
+      "TinyRustLM companion session capability key 1",
+      "protocol-id",
+      "installation-id",
+      "process-instance-id",
+      "claim-id",
+      "browser-nonce",
+      "server-nonce",
+      "session-id",
+      "key-epoch-decimal",
+      "host",
+      "origin",
+      "session-expires-at-utc",
+      "idle-timeout-seconds-decimal"
+    ],
+    "outputBytes": 32,
+    "extract": "hmac-sha256-key-salt-message-input-key-material",
+    "expand": "rfc5869-single-block-hmac-sha256-prk-info-0x01"
+  },
+  "sessionWire": {
+    "statusSchema": "tinyrustlm.companion.loopback.session-status.v1",
+    "statusFieldsInOrder": [
+      "schema",
+      "protocolId",
+      "installationId",
+      "processInstanceId",
+      "sessionId",
+      "keyEpoch",
+      "acceptedSequence",
+      "nextSequence",
+      "sessionExpiresAtUtc",
+      "keyExpiresAtUtc",
+      "idleTimeoutSeconds"
+    ],
+    "maximumBytes": 4096,
+    "requestProofFieldsInOrder": [
+      "TinyRustLM companion request proof 1",
+      "protocol-id",
+      "installation-id",
+      "process-instance-id",
+      "session-id",
+      "key-epoch-decimal",
+      "sequence-decimal",
+      "method",
+      "host",
+      "origin",
+      "path",
+      "content-type-or-empty",
+      "content-length-decimal",
+      "content-sha256"
+    ],
+    "responseProofFieldsInOrder": [
+      "TinyRustLM companion response proof 1",
+      "protocol-id",
+      "installation-id",
+      "process-instance-id",
+      "session-id",
+      "key-epoch-decimal",
+      "sequence-decimal",
+      "request-method",
+      "request-path",
+      "status-decimal",
+      "content-type",
+      "content-length-decimal",
+      "response-metadata-sha256",
+      "content-sha256"
+    ],
+    "controlResponseMetadataSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "sessionIdHeader": "X-TinyRustLM-Session",
+    "epochHeader": "X-TinyRustLM-Epoch",
+    "sequenceHeader": "X-TinyRustLM-Sequence",
+    "contentHashHeader": "X-TinyRustLM-Content-SHA256",
+    "requestProofHeader": "X-TinyRustLM-Request-Proof",
+    "responseMetadataHashHeader": "X-TinyRustLM-Response-Metadata-SHA256",
+    "responseProofHeader": "X-TinyRustLM-Response-Proof"
+  },
+  "requestAuthenticationStateMachine": {
+    "preAuthenticationChecksInOrder": [
+      "connection-limit",
+      "request-line-and-target-form",
+      "header-count-and-bytes",
+      "duplicate-security-headers",
+      "exact-host",
+      "exact-origin",
+      "closed-method-and-route",
+      "header-allowlist",
+      "framing-and-content-length",
+      "body-size-and-time",
+      "content-sha256-header-equals-exact-body",
+      "session-epoch-sequence-shape",
+      "session-lookup",
+      "absolute-idle-and-key-expiry",
+      "request-proof-constant-time-verification"
+    ],
+    "sequenceCommitPoint": "atomic-after-all-preauthentication-checks-and-valid-request-proof-before-route-handler",
+    "validAuthenticatedContractFailureConsumesSequence": true,
+    "invalidProofConsumesSequence": false,
+    "wrongSequenceConsumesSequence": false,
+    "unknownSessionConsumesSequence": false,
+    "oneInFlightReservationReleasedAfterResponseMaterialized": true,
+    "handlerExceptionResult": "proven-internal-failure-and-consumed-sequence",
+    "authenticatedErrorUsesSameSequenceAndResponseProof": true,
+    "unprovedErrorTrustedByBrowser": false,
+    "preflightConsumesSequence": false,
+    "pairingConsumesSessionSequence": false
+  },
+  "rotationTranscripts": {
+    "keyDerivation": {
+      "algorithm": "HKDF-SHA-256-RFC5869",
+      "inputKeyMaterial": "current-32-byte-session-key",
+      "saltBytes": "sha256-of-rotation-salt-transcript",
+      "saltTranscriptFieldsInOrder": [
+        "TinyRustLM companion rotated session salt 1",
+        "protocol-id",
+        "installation-id",
+        "process-instance-id",
+        "session-id",
+        "rotation-id",
+        "browser-nonce",
+        "server-nonce",
+        "current-epoch-decimal",
+        "next-epoch-decimal",
+        "host",
+        "origin"
+      ],
+      "infoTranscriptFieldsInOrder": [
+        "TinyRustLM companion rotated session key 1",
+        "protocol-id",
+        "installation-id",
+        "process-instance-id",
+        "session-id",
+        "rotation-id",
+        "browser-nonce",
+        "server-nonce",
+        "current-epoch-decimal",
+        "next-epoch-decimal",
+        "host",
+        "origin"
+      ],
+      "outputBytes": 32
+    },
+    "newKeyProofFieldsInOrder": [
+      "TinyRustLM companion rotation new key proof 1",
+      "protocol-id",
+      "installation-id",
+      "process-instance-id",
+      "session-id",
+      "rotation-id",
+      "browser-nonce",
+      "server-nonce",
+      "current-epoch-decimal",
+      "next-epoch-decimal",
+      "host",
+      "origin"
+    ],
+    "completionProofFieldsInOrder": [
+      "TinyRustLM companion rotation completion proof 1",
+      "protocol-id",
+      "installation-id",
+      "process-instance-id",
+      "session-id",
+      "rotation-id",
+      "next-epoch-decimal",
+      "host",
+      "origin",
+      "commit-request-content-sha256"
+    ],
+    "commitResponseHeaderProofKey": "new-session-key",
+    "exactOldKeyCommitReplayReturnsStoredBytes": true,
+    "exactOldKeyCommitReplayConsumesSequenceAgain": false,
+    "allOtherOldKeyRequestsAfterCommit": "capability-revoked"
+  },
+  "revocationWire": {
+    "requestSchema": "tinyrustlm.companion.loopback.revoke-request.v1",
+    "requestFieldsInOrder": [
+      "schema",
+      "revocationId"
+    ],
+    "responseSchema": "tinyrustlm.companion.loopback.revoked.v1",
+    "responseFieldsInOrder": [
+      "schema",
+      "revocationId",
+      "revoked"
+    ],
+    "revokedValue": true,
+    "responseAndHeadersMaterializedBeforeKeyErasure": true,
+    "laterRequestMayReturnTrustedAuthenticatedError": false
+  },
+  "operationProjectionWire": {
+    "schema": "tinyrustlm.companion.loopback.operation-projection.v1",
+    "fieldsInOrder": [
+      "schema",
+      "operationId",
+      "sequence",
+      "state",
+      "branch",
+      "completedBytes",
+      "totalBytes",
+      "artifacts",
+      "errorCode"
+    ],
+    "stateEncoding": "exact-CompanionOperationState-enum-name",
+    "branchEncoding": "exact-CompanionAcquisitionBranch-enum-name",
+    "nullableFields": [
+      "totalBytes",
+      "artifacts",
+      "errorCode"
+    ],
+    "artifactsAbsentEncoding": "null",
+    "artifactsAvailableEncoding": "array-of-exactly-six-in-role-order",
+    "artifactFieldsInOrder": [
+      "role",
+      "artifactId",
+      "sha256",
+      "byteCount",
+      "chunkCount"
+    ],
+    "artifactRolesInOrder": [
+      "composition",
+      "model",
+      "tokenizer",
+      "template",
+      "sampling",
+      "prompt"
+    ],
+    "chunkCountFormula": "ceiling-byteCount-divided-by-4194304",
+    "maximumBytes": 16384,
+    "privatePathAllowed": false,
+    "sourceUrlAllowed": false,
+    "promptAllowed": false
+  },
+  "artifactResponseMetadata": {
+    "encoding": "transcript-encoding",
+    "fieldsInOrder": [
+      "TinyRustLM companion artifact response metadata 1",
+      "operation-id",
+      "artifact-role",
+      "artifact-id",
+      "artifact-sha256",
+      "artifact-bytes-decimal",
+      "chunk-index-decimal",
+      "chunk-count-decimal",
+      "chunk-offset-decimal",
+      "chunk-bytes-decimal"
+    ],
+    "hash": "lowercase-hex-sha256-of-exact-metadata-transcript",
+    "hashHeader": "X-TinyRustLM-Response-Metadata-SHA256",
+    "requiredHeadersInOrder": [
+      "X-TinyRustLM-Artifact-Role",
+      "X-TinyRustLM-Artifact-Id",
+      "X-TinyRustLM-Artifact-SHA256",
+      "X-TinyRustLM-Artifact-Bytes",
+      "X-TinyRustLM-Chunk-Index",
+      "X-TinyRustLM-Chunk-Count",
+      "X-TinyRustLM-Chunk-Offset",
+      "X-TinyRustLM-Chunk-Bytes",
+      "X-TinyRustLM-Content-SHA256",
+      "X-TinyRustLM-Response-Metadata-SHA256",
+      "X-TinyRustLM-Response-Proof"
+    ],
+    "browserRecomputesMetadataHash": true,
+    "responseProofBindsMetadataHash": true
+  },
+  "httpErrorMap": {
+    "400": [
+      "request-malformed",
+      "request-line-too-large",
+      "request-headers-too-large",
+      "request-header-not-allowed",
+      "request-framing-invalid",
+      "request-body-timeout",
+      "cors-preflight-invalid",
+      "json-invalid"
+    ],
+    "403": [
+      "origin-invalid",
+      "pairing-proof-invalid",
+      "capability-invalid",
+      "capability-replay",
+      "capability-sequence",
+      "rotation-proof-invalid"
+    ],
+    "404": [
+      "route-not-found",
+      "operation-not-found"
+    ],
+    "405": [
+      "method-not-allowed"
+    ],
+    "409": [
+      "pairing-claim-conflict",
+      "session-request-in-flight",
+      "rotation-conflict",
+      "operation-terminal",
+      "operation-not-available",
+      "artifact-identity-drift"
+    ],
+    "410": [
+      "pairing-code-expired",
+      "pairing-consumed",
+      "capability-expired",
+      "capability-idle-expired",
+      "capability-revoked",
+      "rotation-expired"
+    ],
+    "413": [
+      "request-body-too-large"
+    ],
+    "415": [
+      "media-type-invalid"
+    ],
+    "422": [
+      "contract-invalid",
+      "artifact-role-invalid",
+      "artifact-chunk-invalid"
+    ],
+    "429": [
+      "pairing-capacity",
+      "resource-limit"
+    ],
+    "503": [
+      "companion-unavailable"
+    ],
+    "500": [
+      "internal-failure"
+    ],
+    "hostInvalidStatus": 421,
+    "hostInvalidCode": "host-invalid",
+    "oneCodeHasExactlyOneStatus": true,
+    "errorBodySchema": "tinyrustlm.companion.loopback.error.v1",
+    "errorBodyFieldsInOrder": [
+      "schema",
+      "code"
+    ],
+    "unknownOrInvalidSessionResponseProofPresent": false,
+    "browserTrustsUnprovedErrorCode": false,
+    "browserMapsUnprovedFailureTo": "companion-unavailable"
+  },
+  "preflightWire": {
+    "status": 204,
+    "contentLength": 0,
+    "bodyBytes": 0,
+    "responseHeaders": {
+      "Access-Control-Allow-Origin": "https://tinyrustlm.com",
+      "Access-Control-Allow-Methods": "exact-requested-registered-method",
+      "Access-Control-Allow-Headers": "lowercase-sorted-exact-requested-allowed-header-set",
+      "Access-Control-Max-Age": "300",
+      "Vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "Cache-Control": "no-store",
+      "Content-Length": "0"
+    },
+    "allowCredentialsHeaderPresent": false,
+    "privateNetworkAccessHeaderPresent": false,
+    "sessionProofHeaderPresent": false,
+    "stateMutation": false
+  },
+  "registeredSourceClosure": [
+    {
+      "path": "contracts/vnext/companion-loopback-capability-preregistration.v1.json",
+      "byteLength": 39311,
+      "sha256": "81e3f2f3795a51c0bce86e1aca66f6a7234608a3dd044cd7a9b1cbbf90c9ba77"
+    },
+    {
+      "path": "docs/architecture/2026-08-24-companion-loopback-capability-preregistration.md",
+      "byteLength": 23557,
+      "sha256": "0c6708baec6f1cdbf401b2da5d4fa35372acaf126389c04f36384b3f6d4bc242"
+    },
+    {
+      "path": "docs/architecture/adr/ADR-004-companion-transport.md",
+      "byteLength": 14097,
+      "sha256": "d6c04c73eda2a5a00245a5ebe06117ff5efd4ad8752a7cca40ed18bd231c7677"
+    },
+    {
+      "path": "tinyrustlm/tests/companion-loopback-capability-preregistration.test.js",
+      "byteLength": 13951,
+      "sha256": "bc4983202dbb2cf492de9fec580834aa0076e6f1ad0f370f76a1b1f1c909668f"
+    }
+  ],
+  "implementationOrder": [
+    "commit-push-fetch-and-direct-remote-verify-this-correction",
+    "implement-canonical-transcript-json-and-identifier-codecs",
+    "freeze-independent-dotnet-and-browser-cryptographic-vectors",
+    "implement-pairing-and-session-state-with-fake-monotonic-time",
+    "implement-rotation-and-revocation",
+    "implement-strict-kestrel-listener-and-raw-socket-rejection",
+    "implement-browser-memory-only-client-and-current-lna-observation",
+    "implement-operation-projection-and-six-artifact-transfer",
+    "delete-superseded-browser-bridge-and-test",
+    "run-complete-gates-and-fix-all-observed-baseline-failures-before-deployment"
+  ],
+  "additionalRequiredTests": [
+    "v1-remains-byte-identical-and-non-executable",
+    "v2-registration-precedes-every-planned-implementation-file",
+    "every-adopted-base-key-exists-in-exact-v1-profile",
+    "canonical-network-json-rejects-leading-trailing-whitespace-and-final-lf",
+    "canonical-network-json-rejects-unknown-duplicate-reordered-and-nonascii-control-fields",
+    "installation-record-is-two-field-canonical-file-with-final-lf",
+    "transcript-u32-length-framing-cross-language-vectors-match",
+    "pairing-server-proof-cross-language-vector-matches",
+    "session-hkdf-cross-language-vector-matches-rfc5869",
+    "pairing-browser-and-completion-proof-cross-language-vectors-match",
+    "request-and-response-proof-cross-language-vectors-match",
+    "artifact-response-metadata-hash-and-proof-cross-language-vectors-match",
+    "rotation-key-new-key-proof-and-completion-proof-cross-language-vectors-match",
+    "sequence-commits-only-after-valid-proof-and-before-handler",
+    "valid-authenticated-contract-error-consumes-one-sequence-and-is-proven",
+    "invalid-proof-sequence-and-session-do-not-consume-sequence",
+    "unproved-error-never-supplies-trusted-browser-code",
+    "every-stable-error-code-maps-to-exactly-one-http-status",
+    "preflight-header-order-and-values-are-exact-and-state-free",
+    "operation-projection-is-canonical-public-safe-and-six-role-ordered",
+    "response-proof-rejects-artifact-header-substitution"
+  ],
+  "registrationOutputBoundary": {
+    "loopbackListenerStarted": false,
+    "portBound": false,
+    "pairingCodeGenerated": false,
+    "pairingSecretGenerated": false,
+    "sessionCreated": false,
+    "browserLoopbackRequestMade": false,
+    "artifactChunkServed": false,
+    "operationCreated": false,
+    "implementationFileCreated": false,
+    "modelConverted": false,
+    "modelActivated": false,
+    "packageBuilt": false,
+    "packagePublished": false,
+    "siteDeployed": false,
+    "memoryEndpointsOperation": false,
+    "campaignCounterAdvanced": false
+  },
+  "claimBoundary": {
+    "registrationIsImplementation": false,
+    "registrationIsCryptographicConformance": false,
+    "unitTestIsPhysicalBrowserProof": false,
+    "loopbackIsPublicP2p": false,
+    "fixtureIsRealModel": false,
+    "structuralCompositionIsQuality": false,
+    "packageBuildIsPublication": false,
+    "localSiteIsDeployment": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}

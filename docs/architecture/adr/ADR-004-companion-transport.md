@@ -5,9 +5,12 @@
 Accepted
 
 The protocol family, exact route schemas, limits, installation discovery,
-cryptographic transcripts, and pairing ceremony are preregistered by
-`tinyrustlm.companion.loopback-capability/1`. They still require implementation
-and physical verification before a listener is released or exposed.
+cryptographic transcripts, and pairing ceremony are preregistered by sole
+implementation authority `tinyrustlm.companion.loopback-capability/2`. Profile
+`/1` remains immutable non-executable registration history because its proof
+and key-derivation field order was not complete. The corrected profile still
+requires implementation and physical verification before a listener is
+released or exposed.
 
 ## Decision Date
 
@@ -58,8 +61,10 @@ key.
 
 The exact pairing, rotation, revocation, expiry, replay, CORS, Local Network
 Access, HTTP parser, and artifact-transfer semantics are frozen in
-`contracts/vnext/companion-loopback-capability-preregistration.v1.json`. The
-first listener binds only numeric IPv4 `127.0.0.1` on OS-selected port zero.
+`contracts/vnext/companion-loopback-capability-preregistration.v2.json`, which
+binds the first profile by immutable hash and closes its preimplementation
+ambiguities. The first listener binds only numeric IPv4 `127.0.0.1` on
+OS-selected port zero.
 IPv6, localhost names, a fixed port, port scanning, and alternate protocols are
 not part of this contract.
 
