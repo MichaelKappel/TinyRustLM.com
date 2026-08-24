@@ -1,0 +1,393 @@
+{
+  "schema": "tinyrustlm.slm2-q8-weight-profile-preregistration.v1",
+  "profileId": "tinyrustlm.slm2-q8-weight-profile-preregistration/1",
+  "status": "registered-before-profile-vector-or-model-output",
+  "registeredAtUtc": "2026-08-24T10:14:12Z",
+  "registrationParentCommit": "0c25253ca3a9572d1f1bc152a091cd71cd4c992b",
+  "registrationParentTree": "408b956dbf8d38cb6a8540366be591490ac011f9",
+  "authority": {
+    "workspaceRoot": "E:/Source/.tinyrustlm-model-acquisition-recovered-20260819",
+    "branch": "codex/model-acquisition-v2",
+    "productLifecycle": "prelaunch-single-product",
+    "productGenerationCount": 1,
+    "secondProductGenerationExists": false,
+    "technicalIdentifiersAreProductGenerations": false,
+    "modelContainer": "SLM2-only",
+    "memoryEndpointsAuthorized": false,
+    "writeDriveDAllowed": false,
+    "productionCleanCutRegistration": {
+      "path": "contracts/vnext/production-slm2-clean-cut-preregistration.v1.json",
+      "byteLength": 16398,
+      "sha256": "dc0213a34b63cf392c99e929bf0380d36698bce0ec995f5572aac2e8e287444a"
+    },
+    "currentUnpromotedF32Profile": {
+      "path": "contracts/vnext/slm2-format-profile.v1.json",
+      "byteLength": 19303,
+      "sha256": "387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625"
+    }
+  },
+  "cleanSlateRules": {
+    "slm1Reader": false,
+    "slm1Writer": false,
+    "legacyQuantizationAlias": false,
+    "genericQ8Alias": false,
+    "dualProductionModelFormat": false,
+    "runtimeRepacking": false,
+    "profileNegotiation": false,
+    "unknownProfileFallback": false,
+    "implicitEncodingFromByteLength": false,
+    "permissiveTail": false,
+    "deferredExecutableCleanup": false,
+    "testWeakening": false,
+    "fixtureAsModelQuality": false,
+    "namedTurboQuantOrTurboVecClaim": false,
+    "oneBitModelClaim": false,
+    "historicalEvidenceMayRemainNonExecutable": true
+  },
+  "profileIdentities": {
+    "containerProfile": "org.minimodel.slm2/2.0",
+    "referenceWeightProfile": "tinyrustlm.weight-f32-reference/1",
+    "productionWeightProfile": "tinyrustlm.weight-q8-row-symmetric-f32-scale/1",
+    "quantizerProfile": "tinyrustlm.quantize-q8-row-symmetric-f32/1",
+    "operatorProfile": "tinyrustlm.decoder-q8-row-symmetric-f32-accumulate/1",
+    "tensorProfile": "tinyrustlm.tensor-mixed-q8-row-f32/1",
+    "tensorRoleProfile": "tinyrustlm.decoder-matrix-q8-normalization-bias-f32-roles/1",
+    "scalarKernelProfile": "tinyrustlm.matmul-q8-row-f32-scalar/1",
+    "kvProfile": "tinyrustlm.kv-f32/1",
+    "minimumRuntime": "tinyrustlm.runtime/2.0"
+  },
+  "containerChange": {
+    "headerBytes": 224,
+    "headerVersionMajor": 2,
+    "headerVersionMinor": 0,
+    "tensorRecordBytes": 192,
+    "quantTable": {
+      "offsetHeaderField": 80,
+      "countHeaderField": 88,
+      "recordSizeHeaderField": 92,
+      "count": 1,
+      "recordBytes": 128
+    },
+    "sectionOrder": [
+      "manifest",
+      "string-table",
+      "quantization-table",
+      "tensor-table",
+      "payloads"
+    ],
+    "sectionAlignmentBytes": 64,
+    "derivedPadding": "zero-only",
+    "discretionaryGaps": false,
+    "trailingBytes": false,
+    "quantizedArtifactRequiresExactlyOneQuantRecord": true,
+    "f32ReferenceArtifactQuantTable": "absent",
+    "mixedProductionArtifactQuantTable": "exactly-one-record"
+  },
+  "quantRecord": {
+    "bytes": 128,
+    "fields": [
+      {"name": "record_version", "offset": 0, "bytes": 2, "type": "u16", "value": 1},
+      {"name": "flags", "offset": 2, "bytes": 2, "type": "u16", "value": 0},
+      {"name": "storage_profile_string_id", "offset": 4, "bytes": 4, "type": "u32"},
+      {"name": "quantizer_profile_string_id", "offset": 8, "bytes": 4, "type": "u32"},
+      {"name": "scalar_kernel_profile_string_id", "offset": 12, "bytes": 4, "type": "u32"},
+      {"name": "role_profile_string_id", "offset": 16, "bytes": 4, "type": "u32"},
+      {"name": "source_element_type", "offset": 20, "bytes": 2, "type": "u16", "value": 1},
+      {"name": "stored_element_type", "offset": 22, "bytes": 2, "type": "u16", "value": 2},
+      {"name": "code_bits", "offset": 24, "bytes": 2, "type": "u16", "value": 8},
+      {"name": "code_signedness", "offset": 26, "bytes": 2, "type": "u16", "value": 1},
+      {"name": "code_min", "offset": 28, "bytes": 2, "type": "i16", "value": -127},
+      {"name": "code_max", "offset": 30, "bytes": 2, "type": "i16", "value": 127},
+      {"name": "scale_type", "offset": 32, "bytes": 2, "type": "u16", "value": 1},
+      {"name": "zero_point_type", "offset": 34, "bytes": 2, "type": "u16", "value": 0},
+      {"name": "packing_order", "offset": 36, "bytes": 2, "type": "u16", "value": 1},
+      {"name": "accumulator_type", "offset": 38, "bytes": 2, "type": "u16", "value": 1},
+      {"name": "tail_rule", "offset": 40, "bytes": 2, "type": "u16", "value": 1},
+      {"name": "rounding_mode", "offset": 42, "bytes": 2, "type": "u16", "value": 1},
+      {"name": "row_axis", "offset": 44, "bytes": 2, "type": "u16", "value": 0},
+      {"name": "reserved_0", "offset": 46, "bytes": 2, "type": "u16", "value": 0},
+      {"name": "divisor_f32_bits", "offset": 48, "bytes": 4, "type": "u32", "value": 1123942400},
+      {"name": "zero_row_scale_f32_bits", "offset": 52, "bytes": 4, "type": "u32", "value": 1065353216},
+      {"name": "reserved", "offset": 56, "bytes": 72, "type": "zero-bytes"}
+    ],
+    "stringIdsResolveToExactProfileIdentities": true,
+    "unknownOrDuplicateRecord": "fatal"
+  },
+  "encodingEnums": {
+    "elementType": {
+      "f32": 1,
+      "q8RowSymmetric": 2
+    },
+    "scaleType": {
+      "none": 0,
+      "littleEndianF32": 1
+    },
+    "zeroPointType": {
+      "none": 0
+    },
+    "packingOrder": {
+      "none": 0,
+      "outerRowsScaleThenSignedCodes": 1
+    },
+    "accumulatorType": {
+      "none": 0,
+      "binary32OrderedNoFma": 1
+    },
+    "tailRule": {
+      "none": 0,
+      "completeRank2RowsNoTailNoPadding": 1
+    },
+    "roundingMode": {
+      "nearestHalfAwayFromZeroAfterBinary32Division": 1
+    },
+    "codeSignedness": {
+      "signedTwosComplement": 1
+    }
+  },
+  "tensorRolePolicy": {
+    "selectionRule": "exact-semantic-role-not-name-pattern-or-byte-length",
+    "q8Requirements": {
+      "rank": 2,
+      "quantProfileIndex": 0,
+      "elementType": 2,
+      "roles": [
+        "model.token-embedding.weight",
+        "model.output-projection.weight",
+        "layer.attention.query-projection.weight",
+        "layer.attention.key-projection.weight",
+        "layer.attention.value-projection.weight",
+        "layer.attention.output-projection.weight",
+        "layer.feed-forward.gate-projection.weight",
+        "layer.feed-forward.down-projection.weight",
+        "layer.feed-forward.up-projection.weight"
+      ]
+    },
+    "f32Requirements": {
+      "quantProfileIndex": 65535,
+      "elementType": 1,
+      "roles": [
+        "model.final-normalization.weight",
+        "layer.attention-normalization.weight",
+        "layer.feed-forward-normalization.weight",
+        "layer.attention.query-normalization.weight",
+        "layer.attention.key-normalization.weight",
+        "layer.attention.query-projection.bias",
+        "layer.attention.key-projection.bias",
+        "layer.attention.value-projection.bias"
+      ]
+    },
+    "tiedOutputRule": "output-projection-absent-when-tied-otherwise-q8",
+    "optionalRoleRule": "qkv-bias-and-qk-normalization-follow-model-flags-and-remain-f32",
+    "additionalMissingRenamedOrWronglyEncodedRole": "fatal"
+  },
+  "q8TensorRecord": {
+    "recordVersion": 1,
+    "elementType": 2,
+    "quantProfileIndex": 0,
+    "rank": 2,
+    "logicalRows": "shape[0]",
+    "rowElements": "shape[1]",
+    "blockElements": "shape[1]",
+    "blockBytes": "checked-add(shape[1],4)",
+    "storedBytes": "checked-multiply(shape[0],checked-add(shape[1],4))",
+    "payloadLength": "storedBytes",
+    "scaleType": 1,
+    "zeroPointType": 0,
+    "packingOrder": 1,
+    "accumulatorType": 1,
+    "tailRule": 1,
+    "flags": 0,
+    "flags2": 0,
+    "auxiliaryFirst": 0,
+    "auxiliaryCount": 0,
+    "codeMinus128Allowed": false
+  },
+  "f32TensorRecord": {
+    "semantics": "preserve-current-exact-f32-reference-record",
+    "elementType": 1,
+    "quantProfileIndex": 65535,
+    "storedBytes": "checked-multiply(logical-element-count,4)",
+    "quantizationFields": "all-zero",
+    "payloadValues": "finite-only"
+  },
+  "rowPayload": {
+    "order": "for-each-outer-row-in-increasing-index",
+    "rowPrefix": "one-little-endian-binary32-scale",
+    "rowCodes": "shape[1]-signed-int8-two-complement-bytes-in-increasing-column-order",
+    "interRowPaddingBytes": 0,
+    "tensorTailBytes": 0,
+    "scale": {
+      "nonzeroRow": "correctly-rounded-binary32(maximum-absolute-source-value / binary32(127))",
+      "allPositiveOrNegativeZeroRow": "binary32(1)",
+      "mustBePositiveFinite": true,
+      "negativeZeroAllowed": false
+    },
+    "code": {
+      "normalized": "correctly-rounded-binary32(source-value / stored-scale)",
+      "rounding": "nearest-integer-half-away-from-zero",
+      "clampInclusive": [-127, 127],
+      "negative128": "fatal",
+      "sourceValues": "finite-binary32-only"
+    }
+  },
+  "scalarKernel": {
+    "dequantization": "binary32(stored-scale * binary32(code))",
+    "matrixInputOrder": "increasing-column-index",
+    "matrixOutputOrder": "increasing-row-index",
+    "term": "binary32(input-value * dequantized-weight)",
+    "accumulation": "binary32(previous-sum + term)-from-positive-zero",
+    "fusedMultiplyAdd": false,
+    "accumulator": "binary32",
+    "nonfiniteInputOrOutput": "fatal",
+    "simdAndWasmRequirement": "match-preregistered-scalar-tolerance-and-token-ranking-gates-before-use"
+  },
+  "identityDomains": {
+    "tensorLayout": "tinyrustlm.slm2.tensor-layout.mixed-q8-row.v1\\0",
+    "tensorPayload": "tinyrustlm.slm2.tensor-payload.mixed-q8-row.v1\\0",
+    "layoutMustBind": [
+      "semantic-role",
+      "canonical-name",
+      "layer-and-subindices",
+      "rank-and-shape",
+      "logical-element-count",
+      "element-type",
+      "quant-profile-identity-or-none",
+      "stored-bytes",
+      "payload-alignment",
+      "block-elements-and-block-bytes",
+      "scale-zero-point-packing-accumulator-tail-and-flags"
+    ],
+    "payloadMustBind": [
+      "artifact-class",
+      "complete-layout-fields",
+      "payload-length",
+      "exact-payload-bytes"
+    ],
+    "wholeArtifact": "plain-sha256-over-all-file-bytes"
+  },
+  "implementationTargets": {
+    "machineProfile": "contracts/vnext/slm2-q8-weight-profile.v1.json",
+    "containerProfile": "contracts/vnext/slm2-format-profile.v1.json",
+    "languageNeutralVectors": "contracts/vnext/slm2-q8-weight-vectors.v1.json",
+    "independentOracle": "tinyrustlm/tools/slm2-q8-reference.js",
+    "independentOracleTest": "tinyrustlm/tests/slm2-q8-weight-vectors.test.js",
+    "rustFormat": "rust/crates/tinyrustlm-slm2/src/format.rs",
+    "rustVectors": "rust/crates/tinyrustlm-slm2/tests/q8_vectors.rs",
+    "rustGenerator": "rust/crates/tinyrustlm-slm2/examples/generate_q8_vectors.rs",
+    "architectureDecision": "docs/architecture/adr/ADR-018-slm2-q8-weight-profile.md"
+  },
+  "independentOracleRules": {
+    "language": "Node.js-builtins-only",
+    "mayInvokeRust": false,
+    "mayInvokeSubprocess": false,
+    "mayUseNetwork": false,
+    "mayReadGeneratedRustOutput": false,
+    "roles": [
+      "f32-to-q8-row-quantizer",
+      "container-writer",
+      "container-parser",
+      "scalar-matvec-oracle",
+      "hostile-mutation-generator"
+    ],
+    "vectorDocumentBindsOracleSourceSha256": true,
+    "rustMustReproduceIndependentBytes": true
+  },
+  "requiredVectors": {
+    "canonicalArtifactCount": 1,
+    "canonicalModel": "one-layer-closed-registry-with-q8-matrices-f32-normalizations-and-optional-f32-bias-coverage",
+    "rowCases": [
+      "all-positive-and-negative-zero",
+      "positive-and-negative-extrema",
+      "positive-half-tie",
+      "negative-half-tie",
+      "just-below-and-above-half",
+      "rounded-scale-clamp",
+      "non-power-of-two-scale"
+    ],
+    "matvecCases": [
+      "zero-row",
+      "mixed-sign-row",
+      "multiple-rows",
+      "finite-extreme-without-overflow"
+    ],
+    "everyProperArtifactPrefixRejects": true,
+    "writerDeterminismRuns": 2,
+    "repeatConversionByteIdentityRequiredLater": true
+  },
+  "hostileCases": [
+    "quant-table-offset-count-and-record-size-drift",
+    "unknown-or-duplicate-quant-profile",
+    "quant-record-reserved-nonzero",
+    "profile-string-id-out-of-range-or-wrong-identity",
+    "unknown-element-scale-zero-point-packing-accumulator-tail-or-rounding-enum",
+    "q8-encoding-on-f32-only-role",
+    "f32-encoding-on-q8-required-role",
+    "q8-rank-not-two",
+    "quant-profile-index-not-zero",
+    "block-elements-or-block-bytes-drift",
+    "stored-bytes-or-payload-length-drift",
+    "zero-negative-nonfinite-or-noncanonical-zero-row-scale",
+    "negative-128-code",
+    "missing-extra-or-inter-row-padding-byte",
+    "payload-hash-layout-hash-or-whole-artifact-drift",
+    "integer-overflow-or-policy-limit",
+    "nonzero-derived-padding-or-trailing-byte"
+  ],
+  "verificationGates": {
+    "registration": [
+      "exact-byte-length-and-sha256",
+      "parent-commit-and-tree",
+      "current-profile-input-identity",
+      "closed-field-offsets-without-overlap",
+      "clean-slate-and-claim-boundary",
+      "no-model-vector-or-runtime-output"
+    ],
+    "implementation": [
+      "independent-node-writer-parser-quantizer-and-matvec",
+      "rust-byte-exact-reproduction",
+      "every-proper-prefix-rejection",
+      "all-hostile-cases-exact-public-safe-verdicts",
+      "bounded-streaming-and-checked-arithmetic",
+      "rustfmt-cargo-check-test-and-clippy-warnings-denied",
+      "current-profile-and-vector-identity-update",
+      "no-slm1-acg1-or-generic-q8-production-path"
+    ],
+    "promotionLater": [
+      "repeat-pinned-qwen3-conversion-byte-identity",
+      "source-f32-q8-scalar-native-and-wasm-numerical-parity",
+      "untouched-semantic-quality-and-regression-budget",
+      "browser-memory-latency-cancellation-and-restart",
+      "complete-obsolete-executable-deletion-closure"
+    ]
+  },
+  "registrationOutputBoundary": {
+    "q8MachineProfileCreated": false,
+    "q8VectorDocumentCreated": false,
+    "q8ArtifactBytesCreated": false,
+    "q8ModelBytesCreated": false,
+    "q8RuntimeKernelCreated": false,
+    "sourceConversionExecuted": false,
+    "browserExecutionPerformed": false,
+    "qualityEvaluationPerformed": false,
+    "publicationPerformed": false
+  },
+  "claimBoundary": {
+    "profileImplemented": false,
+    "vectorsVerified": false,
+    "runtimeVerified": false,
+    "conversionVerified": false,
+    "modelQualityVerified": false,
+    "browserVerified": false,
+    "p2pAvailabilityVerified": false,
+    "releaseAuthorized": false,
+    "deploymentVerified": false,
+    "campaignCreditAuthorized": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}
