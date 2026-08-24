@@ -51,7 +51,9 @@ projection. There is no alias, alternate ID, or repair reader.
 
 ## Durable Journal
 
-The exact operation schema is `tinyrustlm.companion.operation.v1`. The closed
+The exact operation schema is `tinyrustlm.companion.operation.v2`. It replaces
+the prelaunch v1 record outright; no v1 reader, migration, alias, or fallback is
+retained. The closed
 state set is:
 
 - `Queued`;
@@ -77,23 +79,50 @@ replaced only after its history entry is durable. Same-process and cross-
 process exclusion prevent concurrent transitions. Reparse-point roots and
 records fail closed.
 
+Source conversion additionally owns one private create-only
+`tinyrustlm.companion.source-conversion-intent.v1` envelope. Its canonical
+UTF-8 bytes bind the operation and request identities to the normalized managed
+conversion intent. Its SHA-256 is introduced only on the source transition from
+`AcquiringSource` to `Converting`, remains unchanged through every later source
+record, and is forbidden on the peer branch. Identical bytes can be observed
+idempotently; changed, malformed, duplicate-key, unknown-field, noncanonical,
+or identity-mismatched bytes fail without overwrite.
+
 ## Complete Source Conversion Integration
 
 The private managed conversion owner now invokes only
-`tinyrustlm-convert qwen3-composition`. Its request binds both source-lock
-hashes, both source directories, the registered composition-profile hash, and
-one absent output root. It owns bounded process execution and process-tree
-cancellation, parses strict summary and terminal evidence, recomputes the
-operation identity, rejects inventory drift, and freshly hashes all six
+`tinyrustlm-convert qwen3-composition`. Before process creation it freezes and
+persists both source-lock paths and hashes, both source directories, the
+registered composition-profile hash, one absent output root, exact converter
+path and executable hash, resource limits, and terminal rule. Launch revalidates
+every external path, hash, policy, and tree relationship. The owner runs one
+bounded process tree, parses strict live summary and error output, recomputes
+the operation identity, rejects inventory drift, and freshly hashes all six
 artifacts and both component receipts. The former component-level managed
 success API is deleted.
 
+Durable composition facts are distinct from live stdout hash and elapsed time.
+The output-only inspector launches no process and does not require the original
+source locks, source directories, or converter file still to exist. An absent
+or bounded nonterminal root remains pending without a journal write. A valid
+native rejection is verified against the attempt lineage. A valid pass requires
+the exact ten-file inventory and independently closes the attempt, receipt,
+component, source, tool, profile, operation, graph, durability, resource,
+nonclaim, and six-artifact hash graph. A pass/rejection collision, malformed
+terminal file, unexpected entry, directory, reparse point, over-limit inventory,
+or identity drift is invalid evidence.
+
 The Companion source coordinator reloads and verifies the immutable acquisition
-request, transitions through `Converting` and `VerifyingComposition`, and
-attaches exact ACG2, SLM2, Tokenizer2, Template2, Sampling2, and Prompt2
-identities only when entering `Available`. Typed native failure becomes
-`Rejected`; caller cancellation becomes `Cancelled`; neither path deletes
-started evidence or retries.
+request and exact bound intent, transitions through `Converting` and
+`VerifyingComposition`, and attaches exact ACG2, SLM2, Tokenizer2, Template2,
+Sampling2, and Prompt2 identities only when entering `Available`. Explicit
+terminal reconciliation is admitted only from `Converting` or
+`VerifyingComposition`; terminal journal states cannot be overwritten. After
+owned-process cancellation, a valid pass wins, a valid native rejection wins,
+and no terminal evidence becomes `Cancelled`. A known live timeout, output
+overflow, unexpected stderr, executable drift, or process failure remains
+`Rejected` and cannot be laundered by recovery. No path deletes evidence,
+repairs output, adopts an unknown process, relaunches automatically, or retries.
 
 The deterministic converter executable used by managed tests is a process and
 contract fixture, not a valid model or composition. No real source conversion,
@@ -119,10 +148,10 @@ input, or install instruction may use them.
 
 The current source checkpoint passes:
 
-- `TinyRustLM.Companion.Tests`: 18/18;
+- `TinyRustLM.Companion.Tests`: 45/45;
 - `TinyRustLM.Package.Tests`: 38/38 after documentation regression coverage;
-- `TinyRustLM.Core.Tests`: 60/60;
-- complete managed solution: 116/116 after documentation regression coverage;
+- `TinyRustLM.Core.Tests`: 80/80;
+- complete managed solution: 163/163 after documentation regression coverage;
 - browser model-acquisition contract: 5/5; and
 - diff hygiene plus the frozen authoritative-goal SHA-256 check.
 
@@ -141,7 +170,8 @@ provide:
 1. a selected and adversarially verified loopback capability protocol;
 2. direct peer discovery and resumable piece transfer;
 3. immutable reviewed source acquisition;
-4. restart recovery around a terminal complete-composition transaction;
+4. authenticated process ownership and explicit user-authorized new-attempt
+   handling for an absent or nonterminal conversion root;
 5. composition transfer and atomic browser storage;
 6. real model activation and multi-turn chat;
 7. signed three-RID companion archives; or

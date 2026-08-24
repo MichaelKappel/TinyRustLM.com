@@ -11,7 +11,26 @@ public sealed record CompanionSourceConversionRequest(
 
 public sealed record CompanionSourceConversionResult(
     CompanionOperationRecord Operation,
-    TinyRustLmCompositionConversionResult Conversion);
+    TinyRustLmVerifiedComposition Composition,
+    TinyRustLmCompositionConversionObservation? LiveObservation);
+
+public enum CompanionSourceConversionReconciliationStatus
+{
+    /// <summary>The attempt has no terminal native evidence yet.</summary>
+    Pending,
+
+    /// <summary>The durable composition was verified and made available.</summary>
+    Available,
+
+    /// <summary>A native rejection or invalid terminal evidence was preserved.</summary>
+    Rejected
+}
+
+public sealed record CompanionSourceConversionReconciliationResult(
+    CompanionSourceConversionReconciliationStatus Status,
+    CompanionOperationRecord Operation,
+    TinyRustLmVerifiedComposition? Composition,
+    string? ErrorCode);
 
 public sealed class CompanionSourceConversion
 {
@@ -43,19 +62,22 @@ public sealed class CompanionSourceConversion
         var acquisition = _journal.ReadRequest(operationId);
         if (acquisition.CompositionProfileSha256 != TinyRustLmConversionTool.CompositionProfileSha256)
         {
-            throw new CompanionContractException("companion-conversion-profile");
+            const string code = "companion-conversion-profile";
+            _journal.Advance(
+                operationId,
+                CompanionOperationState.Rejected,
+                CompanionAcquisitionBranch.Source,
+                current.CompletedBytes,
+                current.TotalBytes,
+                errorCode: code);
+            throw new CompanionContractException(code);
         }
 
-        current = _journal.Advance(
-            operationId,
-            CompanionOperationState.Converting,
-            CompanionAcquisitionBranch.Source,
-            current.CompletedBytes,
-            current.TotalBytes);
-        TinyRustLmCompositionConversionResult conversion;
+        TinyRustLmCompositionConversionIntent conversionIntent;
+        CompanionPersistedSourceConversionIntent persistedIntent;
         try
         {
-            conversion = await _tool.ConvertCompositionAsync(
+            conversionIntent = _tool.CreateCompositionIntent(
                 new TinyRustLmCompositionConversionRequest(
                     request.ModelSourceLockPath,
                     acquisition.ModelSourceLockSha256,
@@ -64,11 +86,103 @@ public sealed class CompanionSourceConversion
                     acquisition.TokenizerSourceLockSha256,
                     request.TokenizerSourceDirectory,
                     acquisition.CompositionProfileSha256,
-                    request.OutputRoot),
-                cancellationToken).ConfigureAwait(false);
+                    request.OutputRoot));
+            persistedIntent = _journal.PersistSourceConversionIntent(
+                new CompanionSourceConversionIntent(
+                    CompanionContract.SourceConversionIntentSchema,
+                    operationId,
+                    current.RequestSha256,
+                    conversionIntent));
+            current = _journal.Advance(
+                operationId,
+                CompanionOperationState.Converting,
+                CompanionAcquisitionBranch.Source,
+                current.CompletedBytes,
+                current.TotalBytes,
+                sourceConversionIntentSha256: persistedIntent.Sha256);
+        }
+        catch (TinyRustLmException error)
+        {
+            _journal.Advance(
+                operationId,
+                CompanionOperationState.Rejected,
+                CompanionAcquisitionBranch.Source,
+                current.CompletedBytes,
+                current.TotalBytes,
+                errorCode: error.Code);
+            throw;
+        }
+        catch (CompanionContractException error)
+        {
+            _journal.Advance(
+                operationId,
+                CompanionOperationState.Rejected,
+                CompanionAcquisitionBranch.Source,
+                current.CompletedBytes,
+                current.TotalBytes,
+                errorCode: error.Code);
+            throw;
+        }
+        catch (Exception error) when (error is ArgumentException or IOException or UnauthorizedAccessException)
+        {
+            const string code = "companion-conversion-input";
+            _journal.Advance(
+                operationId,
+                CompanionOperationState.Rejected,
+                CompanionAcquisitionBranch.Source,
+                current.CompletedBytes,
+                current.TotalBytes,
+                errorCode: code);
+            throw new CompanionContractException(code);
+        }
+
+        TinyRustLmCompositionConversionResult conversion;
+        try
+        {
+            conversion = await _tool.ConvertCompositionAsync(conversionIntent, cancellationToken)
+                .ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
+            TinyRustLmCompositionTerminalInspection inspection;
+            try
+            {
+                inspection = TinyRustLmConversionTool.InspectCompositionTerminal(conversionIntent);
+            }
+            catch (TinyRustLmException)
+            {
+                const string code = "companion-conversion-terminal-invalid";
+                _journal.Advance(
+                    operationId,
+                    CompanionOperationState.Rejected,
+                    CompanionAcquisitionBranch.Source,
+                    current.CompletedBytes,
+                    current.TotalBytes,
+                    errorCode: code);
+                throw new CompanionContractException(code);
+            }
+
+            if (inspection.Status == TinyRustLmCompositionTerminalStatus.Pass)
+            {
+                return CompleteAvailable(
+                    operationId,
+                    inspection.Composition ?? throw new CompanionContractException(
+                        "companion-conversion-terminal-invalid"),
+                    liveObservation: null);
+            }
+            if (inspection.Status == TinyRustLmCompositionTerminalStatus.Rejected)
+            {
+                var code = inspection.ErrorCode ?? "companion-conversion-terminal-invalid";
+                _journal.Advance(
+                    operationId,
+                    CompanionOperationState.Rejected,
+                    CompanionAcquisitionBranch.Source,
+                    current.CompletedBytes,
+                    current.TotalBytes,
+                    errorCode: code);
+                throw new TinyRustLmException(code);
+            }
+
             _journal.Advance(
                 operationId,
                 CompanionOperationState.Cancelled,
@@ -101,8 +215,116 @@ public sealed class CompanionSourceConversion
             throw new CompanionContractException(code);
         }
 
-        if (conversion.ModelSourceLockSha256 != acquisition.ModelSourceLockSha256 ||
-            conversion.TokenizerSourceLockSha256 != acquisition.TokenizerSourceLockSha256)
+        if (conversion.Composition.ModelSourceLockSha256 != acquisition.ModelSourceLockSha256 ||
+            conversion.Composition.TokenizerSourceLockSha256 != acquisition.TokenizerSourceLockSha256)
+        {
+            const string code = "companion-conversion-source-identity";
+            _journal.Advance(
+                operationId,
+                CompanionOperationState.Rejected,
+                CompanionAcquisitionBranch.Source,
+                current.CompletedBytes,
+                current.TotalBytes,
+                errorCode: code);
+            throw new CompanionContractException(code);
+        }
+
+        return CompleteAvailable(
+            operationId,
+            conversion.Composition,
+            conversion.Observation);
+    }
+
+    public CompanionSourceConversionReconciliationResult ReconcileTerminal(string operationId)
+    {
+        var current = _journal.Read(operationId);
+        if (current.Branch != CompanionAcquisitionBranch.Source ||
+            current.State is not (CompanionOperationState.Converting or
+                CompanionOperationState.VerifyingComposition) ||
+            current.SourceConversionIntentSha256 is null ||
+            current.Artifacts is not null ||
+            current.ErrorCode is not null)
+        {
+            throw new CompanionContractException("companion-conversion-reconciliation-state");
+        }
+
+        CompanionPersistedSourceConversionIntent persisted;
+        TinyRustLmCompositionTerminalInspection inspection;
+        try
+        {
+            persisted = _journal.ReadSourceConversionIntent(operationId);
+            inspection = TinyRustLmConversionTool.InspectCompositionTerminal(
+                persisted.Intent.Conversion);
+        }
+        catch (Exception error) when (error is CompanionContractException or TinyRustLmException)
+        {
+            const string code = "companion-conversion-terminal-invalid";
+            var rejected = _journal.Advance(
+                operationId,
+                CompanionOperationState.Rejected,
+                CompanionAcquisitionBranch.Source,
+                current.CompletedBytes,
+                current.TotalBytes,
+                errorCode: code);
+            return new CompanionSourceConversionReconciliationResult(
+                CompanionSourceConversionReconciliationStatus.Rejected,
+                rejected,
+                null,
+                code);
+        }
+
+        if (inspection.Status == TinyRustLmCompositionTerminalStatus.Pending)
+        {
+            return new CompanionSourceConversionReconciliationResult(
+                CompanionSourceConversionReconciliationStatus.Pending,
+                current,
+                null,
+                "awaiting-terminal-evidence");
+        }
+        if (inspection.Status == TinyRustLmCompositionTerminalStatus.Rejected)
+        {
+            var code = inspection.ErrorCode ?? "companion-conversion-terminal-invalid";
+            var rejected = _journal.Advance(
+                operationId,
+                CompanionOperationState.Rejected,
+                CompanionAcquisitionBranch.Source,
+                current.CompletedBytes,
+                current.TotalBytes,
+                errorCode: code);
+            return new CompanionSourceConversionReconciliationResult(
+                CompanionSourceConversionReconciliationStatus.Rejected,
+                rejected,
+                null,
+                code);
+        }
+
+        var completed = CompleteAvailable(
+            operationId,
+            inspection.Composition ?? throw new CompanionContractException(
+                "companion-conversion-terminal-invalid"),
+            liveObservation: null);
+        return new CompanionSourceConversionReconciliationResult(
+            CompanionSourceConversionReconciliationStatus.Available,
+            completed.Operation,
+            completed.Composition,
+            null);
+    }
+
+    private CompanionSourceConversionResult CompleteAvailable(
+        string operationId,
+        TinyRustLmVerifiedComposition composition,
+        TinyRustLmCompositionConversionObservation? liveObservation)
+    {
+        var current = _journal.Read(operationId);
+        if (current.Branch != CompanionAcquisitionBranch.Source ||
+            current.State is not (CompanionOperationState.Converting or
+                CompanionOperationState.VerifyingComposition))
+        {
+            throw new CompanionContractException("companion-conversion-completion-state");
+        }
+        var acquisition = _journal.ReadRequest(operationId);
+        if (composition.ModelSourceLockSha256 != acquisition.ModelSourceLockSha256 ||
+            composition.TokenizerSourceLockSha256 != acquisition.TokenizerSourceLockSha256)
         {
             const string code = "companion-conversion-source-identity";
             _journal.Advance(
@@ -119,9 +341,9 @@ public sealed class CompanionSourceConversion
         ulong totalBytes;
         try
         {
-            artifacts = ToCompanionArtifacts(conversion.Artifacts);
+            artifacts = ToCompanionArtifacts(composition.Artifacts);
             CompanionContract.ValidateArtifactSet(artifacts);
-            totalBytes = conversion.Artifacts.InCanonicalOrder()
+            totalBytes = composition.Artifacts.InCanonicalOrder()
                 .Aggregate(0UL, (total, artifact) => checked(total + artifact.ByteLength));
         }
         catch (Exception error) when (error is CompanionContractException or OverflowException)
@@ -137,12 +359,15 @@ public sealed class CompanionSourceConversion
             throw new CompanionContractException(code);
         }
 
-        _journal.Advance(
-            operationId,
-            CompanionOperationState.VerifyingComposition,
-            CompanionAcquisitionBranch.Source,
-            totalBytes,
-            totalBytes);
+        if (current.State == CompanionOperationState.Converting)
+        {
+            _journal.Advance(
+                operationId,
+                CompanionOperationState.VerifyingComposition,
+                CompanionAcquisitionBranch.Source,
+                totalBytes,
+                totalBytes);
+        }
         var available = _journal.Advance(
             operationId,
             CompanionOperationState.Available,
@@ -150,7 +375,10 @@ public sealed class CompanionSourceConversion
             totalBytes,
             totalBytes,
             artifacts);
-        return new CompanionSourceConversionResult(available, conversion);
+        return new CompanionSourceConversionResult(
+            available,
+            composition,
+            liveObservation);
     }
 
     private static CompanionArtifactSet ToCompanionArtifacts(

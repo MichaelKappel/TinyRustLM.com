@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -18,6 +19,24 @@ public sealed record TinyRustLmCompositionConversionRequest(
     string TokenizerSourceDirectory,
     string CompositionProfileSha256,
     string OutputRoot);
+
+/// <summary>Immutable, normalized inputs for one exact native composition attempt.</summary>
+public sealed record TinyRustLmCompositionConversionIntent(
+    string Schema,
+    string ModelSourceLockPath,
+    string ModelSourceLockSha256,
+    string ModelSourceDirectory,
+    string TokenizerSourceLockPath,
+    string TokenizerSourceLockSha256,
+    string TokenizerSourceDirectory,
+    string CompositionProfileSha256,
+    string OutputRoot,
+    string ConverterExecutablePath,
+    string ConverterExecutableSha256,
+    long MaximumDurationMilliseconds,
+    int MaximumSummaryBytes,
+    int MaximumErrorBytes,
+    string TerminalRule);
 
 /// <summary>Explicit process and output ceilings for a composition conversion.</summary>
 public sealed record TinyRustLmConversionPolicy(
@@ -54,8 +73,8 @@ public sealed record TinyRustLmCompositionArtifactSet(
         [Model, Tokenizer, Template, Sampling, Prompt, Composition];
 }
 
-/// <summary>Verified identities and evidence from one complete composition conversion.</summary>
-public sealed record TinyRustLmCompositionConversionResult(
+/// <summary>Facts independently verified from one durable complete-composition output.</summary>
+public sealed record TinyRustLmVerifiedComposition(
     string Schema,
     string OperationId,
     string OutputRoot,
@@ -67,13 +86,52 @@ public sealed record TinyRustLmCompositionConversionResult(
     string TokenizerSourceLockSha256,
     string ConverterVersion,
     string ConverterExecutableSha256,
-    string RequiredNextGate,
+    string RequiredNextGate);
+
+/// <summary>Observations available only to the process that owned native execution.</summary>
+public sealed record TinyRustLmCompositionConversionObservation(
+    string Schema,
     string SummarySha256,
     TimeSpan Duration);
+
+/// <summary>Durable composition proof plus live execution observations.</summary>
+public sealed record TinyRustLmCompositionConversionResult(
+    TinyRustLmVerifiedComposition Composition,
+    TinyRustLmCompositionConversionObservation Observation);
+
+/// <summary>Valid terminal states discoverable without launching a converter.</summary>
+public enum TinyRustLmCompositionTerminalStatus
+{
+    /// <summary>No mutually exclusive terminal file exists yet.</summary>
+    Pending,
+
+    /// <summary>A complete pass was independently verified from durable bytes.</summary>
+    Pass,
+
+    /// <summary>A native terminal rejection and its attempt lineage were verified.</summary>
+    Rejected
+}
+
+/// <summary>One read-only inspection of an exact composition attempt.</summary>
+public sealed record TinyRustLmCompositionTerminalInspection(
+    TinyRustLmCompositionTerminalStatus Status,
+    TinyRustLmVerifiedComposition? Composition,
+    string? ErrorCode);
 
 /// <summary>Fail-closed process owner for the sole complete TinyRustLM conversion transaction.</summary>
 public sealed partial class TinyRustLmConversionTool
 {
+    /// <summary>The exact managed intent schema.</summary>
+    public const string CompositionIntentSchema =
+        "tinyrustlm.qwen3-composition-conversion-intent.v1";
+
+    /// <summary>The exact schema for durable managed composition facts.</summary>
+    public const string VerifiedCompositionSchema = "tinyrustlm.verified-composition.v1";
+
+    /// <summary>The exact schema for live-only process observations.</summary>
+    public const string LiveObservationSchema =
+        "tinyrustlm.composition-conversion-live-observation.v1";
+
     /// <summary>The registered complete-composition profile identifier.</summary>
     public const string CompositionProfileId = "tinyrustlm.qwen3-complete-composition-conversion/1";
 
@@ -84,13 +142,16 @@ public sealed partial class TinyRustLmConversionTool
     private const string SummarySchema = "tinyrustlm.qwen3_composition_conversion_cli_summary.v1";
     private const string ReceiptSchema = "tinyrustlm.qwen3_composition_conversion_receipt.v1";
     private const string AttemptSchema = "tinyrustlm.qwen3_composition_attempt.v1";
+    private const string RejectionSchema = "tinyrustlm.qwen3_composition_rejection.v1";
     private const string RequiredNextGate =
         "source-native-browser-numerical-parity-untouched-quality-and-product-chat";
     private const string ReceiptFileName = "composition.conversion-receipt.json";
     private const string AttemptFileName = "composition.attempt.json";
     private const string RejectionFileName = "composition.rejection.json";
+    private const string TerminalRule = "existing-output-root-is-never-resumed";
     private const int HashBufferBytes = 1_048_576;
     private const int MaximumReceiptBytes = 1_048_576;
+    private const int MaximumOutputFiles = 12;
     private readonly TinyRustLmConversionPolicy _policy;
     private readonly string _toolPath;
 
@@ -127,6 +188,7 @@ public sealed partial class TinyRustLmConversionTool
         _policy = policy ?? TinyRustLmConversionPolicy.Default;
         if (_policy.MaximumDuration <= TimeSpan.Zero ||
             _policy.MaximumDuration > TimeSpan.FromDays(7) ||
+            _policy.MaximumDuration.Ticks % TimeSpan.TicksPerMillisecond != 0 ||
             _policy.MaximumSummaryBytes is < 1 or > 1_048_576 ||
             _policy.MaximumErrorBytes is < 1 or > 65_536)
         {
@@ -151,10 +213,9 @@ public sealed partial class TinyRustLmConversionTool
         return new TinyRustLmConversionTool(path, policy);
     }
 
-    /// <summary>Runs and independently verifies one complete create-only composition conversion.</summary>
-    public async Task<TinyRustLmCompositionConversionResult> ConvertCompositionAsync(
-        TinyRustLmCompositionConversionRequest request,
-        CancellationToken cancellationToken = default)
+    /// <summary>Validates, normalizes, and hashes every input before an attempt can start.</summary>
+    public TinyRustLmCompositionConversionIntent CreateCompositionIntent(
+        TinyRustLmCompositionConversionRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
         var modelLock = RequireExistingRegularFile(
@@ -170,6 +231,8 @@ public sealed partial class TinyRustLmConversionTool
             request.TokenizerSourceDirectory,
             nameof(request.TokenizerSourceDirectory));
         var outputRoot = RequireCreateOnlyOutputRoot(request.OutputRoot, nameof(request.OutputRoot));
+        ValidateTreeRelationships(modelDirectory, tokenizerDirectory, outputRoot);
+
         var modelLockSha256 = Sha256File(modelLock);
         var tokenizerLockSha256 = Sha256File(tokenizerLock);
         if (!IsDigest(request.ModelSourceLockSha256) ||
@@ -186,11 +249,77 @@ public sealed partial class TinyRustLmConversionTool
         {
             throw new TinyRustLmException("converter-composition-profile-identity");
         }
-        var toolSha256Before = Sha256File(_toolPath);
+
+        var intent = new TinyRustLmCompositionConversionIntent(
+            CompositionIntentSchema,
+            modelLock,
+            modelLockSha256,
+            modelDirectory,
+            tokenizerLock,
+            tokenizerLockSha256,
+            tokenizerDirectory,
+            request.CompositionProfileSha256,
+            outputRoot,
+            _toolPath,
+            Sha256File(_toolPath),
+            checked((long)_policy.MaximumDuration.TotalMilliseconds),
+            _policy.MaximumSummaryBytes,
+            _policy.MaximumErrorBytes,
+            TerminalRule);
+        ValidateCompositionIntent(intent);
+        return intent;
+    }
+
+    /// <summary>Validates the immutable intent without requiring its external files to exist.</summary>
+    public static void ValidateCompositionIntent(TinyRustLmCompositionConversionIntent intent)
+    {
+        ArgumentNullException.ThrowIfNull(intent);
+        if (intent.Schema != CompositionIntentSchema)
+        {
+            throw new TinyRustLmException("converter-intent-schema");
+        }
+        RequireCanonicalPath(intent.ModelSourceLockPath, trimEndingSeparator: false);
+        RequireCanonicalPath(intent.ModelSourceDirectory, trimEndingSeparator: true);
+        RequireCanonicalPath(intent.TokenizerSourceLockPath, trimEndingSeparator: false);
+        RequireCanonicalPath(intent.TokenizerSourceDirectory, trimEndingSeparator: true);
+        RequireCanonicalPath(intent.OutputRoot, trimEndingSeparator: true);
+        RequireCanonicalPath(intent.ConverterExecutablePath, trimEndingSeparator: false);
+        if (!IsDigest(intent.ModelSourceLockSha256) ||
+            !IsDigest(intent.TokenizerSourceLockSha256) ||
+            !IsDigest(intent.ConverterExecutableSha256))
+        {
+            throw new TinyRustLmException("converter-intent-identity");
+        }
+        if (intent.CompositionProfileSha256 != CompositionProfileSha256)
+        {
+            throw new TinyRustLmException("converter-intent-profile");
+        }
+        if (intent.MaximumDurationMilliseconds is < 1 or > 604_800_000 ||
+            intent.MaximumSummaryBytes is < 1 or > 1_048_576 ||
+            intent.MaximumErrorBytes is < 1 or > 65_536)
+        {
+            throw new TinyRustLmException("converter-intent-policy");
+        }
+        if (intent.TerminalRule != TerminalRule)
+        {
+            throw new TinyRustLmException("converter-intent-terminal-rule");
+        }
+        ValidateTreeRelationships(
+            intent.ModelSourceDirectory,
+            intent.TokenizerSourceDirectory,
+            intent.OutputRoot);
+    }
+
+    /// <summary>Runs and independently verifies one exact create-only composition intent.</summary>
+    public async Task<TinyRustLmCompositionConversionResult> ConvertCompositionAsync(
+        TinyRustLmCompositionConversionIntent intent,
+        CancellationToken cancellationToken = default)
+    {
+        ValidateIntentForLaunch(intent);
 
         var startInfo = new ProcessStartInfo
         {
-            FileName = _toolPath,
+            FileName = intent.ConverterExecutablePath,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             StandardOutputEncoding = new UTF8Encoding(false, true),
@@ -199,25 +328,26 @@ public sealed partial class TinyRustLmConversionTool
             CreateNoWindow = true
         };
         startInfo.ArgumentList.Add("qwen3-composition");
-        startInfo.ArgumentList.Add(modelLock);
-        startInfo.ArgumentList.Add(modelDirectory);
-        startInfo.ArgumentList.Add(tokenizerLock);
-        startInfo.ArgumentList.Add(tokenizerDirectory);
-        startInfo.ArgumentList.Add(outputRoot);
+        startInfo.ArgumentList.Add(intent.ModelSourceLockPath);
+        startInfo.ArgumentList.Add(intent.ModelSourceDirectory);
+        startInfo.ArgumentList.Add(intent.TokenizerSourceLockPath);
+        startInfo.ArgumentList.Add(intent.TokenizerSourceDirectory);
+        startInfo.ArgumentList.Add(intent.OutputRoot);
 
+        cancellationToken.ThrowIfCancellationRequested();
         var stopwatch = Stopwatch.StartNew();
-        using var process = Process.Start(startInfo)
-            ?? throw new TinyRustLmException("converter-process-start");
+        using var process = StartProcess(startInfo);
         var stdoutTask = ReadBoundedAsync(
             process.StandardOutput.BaseStream,
-            _policy.MaximumSummaryBytes,
+            intent.MaximumSummaryBytes,
             process);
         var stderrTask = ReadBoundedAsync(
             process.StandardError.BaseStream,
-            _policy.MaximumErrorBytes,
+            intent.MaximumErrorBytes,
             process);
 
-        using var timeout = new CancellationTokenSource(_policy.MaximumDuration);
+        using var timeout = new CancellationTokenSource(
+            TimeSpan.FromMilliseconds(intent.MaximumDurationMilliseconds));
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken,
             timeout.Token);
@@ -258,29 +388,63 @@ public sealed partial class TinyRustLmConversionTool
         }
 
         var result = VerifySummary(
-            outputRoot,
-            modelLockSha256,
-            tokenizerLockSha256,
-            toolSha256Before,
+            intent,
             stdout,
             stopwatch.Elapsed);
-        if (Sha256File(_toolPath) != toolSha256Before)
+        if (!FileHashEquals(intent.ConverterExecutablePath, intent.ConverterExecutableSha256))
         {
             throw new TinyRustLmException("converter-executable-drift");
         }
         return result;
     }
 
+    /// <summary>Inspects one exact output root without launching, adopting, or killing a process.</summary>
+    public static TinyRustLmCompositionTerminalInspection InspectCompositionTerminal(
+        TinyRustLmCompositionConversionIntent intent)
+    {
+        ValidateCompositionIntent(intent);
+        var inventory = ReadBoundedOutputInventory(intent.OutputRoot);
+        if (inventory is null)
+        {
+            return new TinyRustLmCompositionTerminalInspection(
+                TinyRustLmCompositionTerminalStatus.Pending,
+                null,
+                null);
+        }
+
+        var hasPass = inventory.Contains(ReceiptFileName);
+        var hasRejection = inventory.Contains(RejectionFileName);
+        if (hasPass && hasRejection)
+        {
+            throw new TinyRustLmException("converter-terminal-collision");
+        }
+        if (hasPass)
+        {
+            return new TinyRustLmCompositionTerminalInspection(
+                TinyRustLmCompositionTerminalStatus.Pass,
+                VerifyDurablePass(intent),
+                null);
+        }
+        if (hasRejection)
+        {
+            return new TinyRustLmCompositionTerminalInspection(
+                TinyRustLmCompositionTerminalStatus.Rejected,
+                null,
+                VerifyDurableRejection(intent));
+        }
+        return new TinyRustLmCompositionTerminalInspection(
+            TinyRustLmCompositionTerminalStatus.Pending,
+            null,
+            null);
+    }
+
     private static TinyRustLmCompositionConversionResult VerifySummary(
-        string outputRoot,
-        string modelLockSha256,
-        string tokenizerLockSha256,
-        string toolSha256,
+        TinyRustLmCompositionConversionIntent intent,
         byte[] summaryBytes,
         TimeSpan duration)
     {
         var summary = Deserialize<NativeConversionSummary>(summaryBytes, "converter-summary-json");
-        var outputName = Path.GetFileName(outputRoot);
+        var outputName = Path.GetFileName(intent.OutputRoot);
         if (summary.Schema != SummarySchema ||
             summary.Status != "pass" ||
             !IsOperationId(summary.OperationId) ||
@@ -294,106 +458,129 @@ public sealed partial class TinyRustLmConversionTool
             throw new TinyRustLmException("converter-summary-contract");
         }
 
-        RejectReparsePoint(outputRoot, "converter-output-root");
-        ValidateInventory(outputRoot);
-        var summaryArtifacts = new TinyRustLmCompositionArtifact[ArtifactExpectations.Length];
+        var composition = VerifyDurablePass(intent);
+        if (summary.OperationId != composition.OperationId ||
+            summary.GraphIdentitySha256 != composition.GraphIdentitySha256)
+        {
+            throw new TinyRustLmException("converter-summary-contract");
+        }
+        var artifacts = composition.Artifacts.InCanonicalOrder();
         for (var index = 0; index < ArtifactExpectations.Length; index++)
         {
             var expected = ArtifactExpectations[index];
             var observed = summary.Artifacts[index];
+            var artifact = artifacts[index];
             if (observed.Kind != expected.Kind ||
                 observed.File != expected.FileName ||
-                observed.ByteLength == 0 ||
-                !IsDigest(observed.Sha256))
-            {
-                throw new TinyRustLmException("converter-summary-artifacts");
-            }
-
-            var path = Path.Combine(outputRoot, expected.FileName);
-            var identity = ReadIdentity(path, "converter-artifact-file");
-            if (identity.ByteLength != observed.ByteLength || identity.Sha256 != observed.Sha256)
+                observed.ByteLength != artifact.ByteLength ||
+                observed.Sha256 != artifact.Sha256)
             {
                 throw new TinyRustLmException("converter-artifact-identity");
             }
-            summaryArtifacts[index] = new TinyRustLmCompositionArtifact(
-                expected.Kind,
-                expected.FileName,
-                path,
-                identity.ByteLength,
-                identity.Sha256);
         }
 
-        var receiptPath = Path.Combine(outputRoot, ReceiptFileName);
+        return new TinyRustLmCompositionConversionResult(
+            composition,
+            new TinyRustLmCompositionConversionObservation(
+                LiveObservationSchema,
+                Sha256Bytes(summaryBytes),
+                duration));
+    }
+
+    private static TinyRustLmVerifiedComposition VerifyDurablePass(
+        TinyRustLmCompositionConversionIntent intent)
+    {
+        ValidatePassInventory(intent.OutputRoot);
+        var receiptPath = Path.Combine(intent.OutputRoot, ReceiptFileName);
         var receiptBytes = ReadBoundedRegularFile(
             receiptPath,
             MaximumReceiptBytes,
             "converter-receipt-file");
         var receipt = Deserialize<NativeCompleteReceipt>(receiptBytes, "converter-receipt-json");
-        ValidateReceipt(
-            receipt,
-            outputRoot,
-            summary,
-            summaryArtifacts,
-            modelLockSha256,
-            tokenizerLockSha256,
-            toolSha256);
-        ValidateAttempt(
-            outputRoot,
-            summary.OperationId,
-            modelLockSha256,
-            tokenizerLockSha256,
-            receipt.Converter.ImplementationVersion,
-            toolSha256);
+        if (receipt.Artifacts is null || receipt.Artifacts.Count != ArtifactExpectations.Length)
+        {
+            throw new TinyRustLmException("converter-receipt-contract");
+        }
 
-        var artifacts = new TinyRustLmCompositionArtifactSet(
-            summaryArtifacts[0],
-            summaryArtifacts[1],
-            summaryArtifacts[2],
-            summaryArtifacts[3],
-            summaryArtifacts[4],
-            summaryArtifacts[5]);
-        return new TinyRustLmCompositionConversionResult(
-            SummarySchema,
-            summary.OperationId,
-            outputRoot,
+        var verifiedArtifacts = new TinyRustLmCompositionArtifact[ArtifactExpectations.Length];
+        for (var index = 0; index < ArtifactExpectations.Length; index++)
+        {
+            var expected = ArtifactExpectations[index];
+            var observed = receipt.Artifacts[index];
+            if (observed.Ordinal != expected.Ordinal ||
+                observed.Kind != expected.Kind ||
+                observed.File != expected.FileName ||
+                observed.FormatProfileId != expected.FormatProfileId ||
+                observed.FormatProfileSha256 != expected.FormatProfileSha256 ||
+                observed.ByteLength == 0 ||
+                !IsDigest(observed.Sha256))
+            {
+                throw new TinyRustLmException("converter-receipt-artifacts");
+            }
+            var artifactPath = Path.Combine(intent.OutputRoot, expected.FileName);
+            var identity = ReadIdentity(artifactPath, "converter-artifact-file");
+            if (identity.ByteLength != observed.ByteLength || identity.Sha256 != observed.Sha256)
+            {
+                throw new TinyRustLmException("converter-receipt-artifacts");
+            }
+            verifiedArtifacts[index] = new TinyRustLmCompositionArtifact(
+                expected.Kind,
+                expected.FileName,
+                artifactPath,
+                identity.ByteLength,
+                identity.Sha256);
+        }
+
+        ValidateReceipt(receipt, intent, verifiedArtifacts);
+        var attempt = ReadAndValidateAttempt(intent);
+        if (attempt.OperationId != receipt.OperationId ||
+            attempt.ConverterVersion != receipt.Converter.ImplementationVersion)
+        {
+            throw new TinyRustLmException("converter-attempt-contract");
+        }
+
+        return new TinyRustLmVerifiedComposition(
+            VerifiedCompositionSchema,
+            receipt.OperationId,
+            intent.OutputRoot,
             receiptPath,
             Sha256Bytes(receiptBytes),
-            artifacts,
-            summary.GraphIdentitySha256,
-            modelLockSha256,
-            tokenizerLockSha256,
+            new TinyRustLmCompositionArtifactSet(
+                verifiedArtifacts[0],
+                verifiedArtifacts[1],
+                verifiedArtifacts[2],
+                verifiedArtifacts[3],
+                verifiedArtifacts[4],
+                verifiedArtifacts[5]),
+            receipt.Graph.GraphIdentitySha256,
+            intent.ModelSourceLockSha256,
+            intent.TokenizerSourceLockSha256,
             receipt.Converter.ImplementationVersion,
-            toolSha256,
-            RequiredNextGate,
-            Sha256Bytes(summaryBytes),
-            duration);
+            intent.ConverterExecutableSha256,
+            RequiredNextGate);
     }
 
     private static void ValidateReceipt(
         NativeCompleteReceipt receipt,
-        string outputRoot,
-        NativeConversionSummary summary,
-        IReadOnlyList<TinyRustLmCompositionArtifact> artifacts,
-        string modelLockSha256,
-        string tokenizerLockSha256,
-        string toolSha256)
+        TinyRustLmCompositionConversionIntent intent,
+        IReadOnlyList<TinyRustLmCompositionArtifact> artifacts)
     {
         if (receipt.Schema != ReceiptSchema ||
             receipt.Status != "pass" ||
             receipt.ProfileId != CompositionProfileId ||
             receipt.ProfileSha256 != CompositionProfileSha256 ||
-            receipt.OperationId != summary.OperationId ||
+            !IsOperationId(receipt.OperationId) ||
             receipt.Converter is null ||
             !IsSafeIdentifier(receipt.Converter.ImplementationVersion) ||
-            receipt.Converter.ExecutableSha256 != toolSha256 ||
+            receipt.Converter.ExecutableSha256 != intent.ConverterExecutableSha256 ||
             receipt.Source is null ||
-            receipt.Source.ModelLockSha256 != modelLockSha256 ||
-            receipt.Source.TokenizerLockSha256 != tokenizerLockSha256 ||
+            receipt.Source.ModelLockSha256 != intent.ModelSourceLockSha256 ||
+            receipt.Source.TokenizerLockSha256 != intent.TokenizerSourceLockSha256 ||
             receipt.Source.RelationshipStatus != "exact" ||
             receipt.Artifacts is null ||
             receipt.Artifacts.Count != ArtifactExpectations.Length ||
             receipt.Graph is null ||
-            receipt.Graph.GraphIdentitySha256 != summary.GraphIdentitySha256 ||
+            !IsDigest(receipt.Graph.GraphIdentitySha256) ||
             !IsDigest(receipt.Graph.MemberTableSha256) ||
             receipt.Graph.ResolvedMemberBytes == 0 ||
             receipt.ComponentReceipts is null ||
@@ -403,7 +590,7 @@ public sealed partial class TinyRustLmConversionTool
             receipt.ResourcePlan.ModelTensorCount is 0 or > 2_048 ||
             receipt.ResourcePlan.StreamHashBufferBytes != HashBufferBytes ||
             receipt.Durability is null ||
-            receipt.Durability.OperationId != summary.OperationId ||
+            receipt.Durability.OperationId != receipt.OperationId ||
             !IsDigest(receipt.Durability.DirectoryIdentitySha256) ||
             !IsSafeIdentifier(receipt.Durability.Method) ||
             !IsSafeIdentifier(receipt.Durability.OperatingSystem) ||
@@ -423,11 +610,11 @@ public sealed partial class TinyRustLmConversionTool
         }
 
         var expectedOperationId = ComputeOperationId(
-            modelLockSha256,
-            tokenizerLockSha256,
+            intent.ModelSourceLockSha256,
+            intent.TokenizerSourceLockSha256,
             receipt.Converter.ImplementationVersion,
-            toolSha256);
-        if (summary.OperationId != expectedOperationId)
+            intent.ConverterExecutableSha256);
+        if (receipt.OperationId != expectedOperationId)
         {
             throw new TinyRustLmException("converter-operation-identity");
         }
@@ -450,25 +637,20 @@ public sealed partial class TinyRustLmConversionTool
         }
 
         ValidateComponentReceipt(
-            outputRoot,
+            intent.OutputRoot,
             receipt.ComponentReceipts.Model,
             "model.slm2.conversion-receipt.json");
         ValidateComponentReceipt(
-            outputRoot,
+            intent.OutputRoot,
             receipt.ComponentReceipts.Tokenizer,
             "tokenizer.tokenizer2.conversion-receipt.json");
     }
 
-    private static void ValidateAttempt(
-        string outputRoot,
-        string operationId,
-        string modelLockSha256,
-        string tokenizerLockSha256,
-        string converterVersion,
-        string toolSha256)
+    private static NativeAttemptReceipt ReadAndValidateAttempt(
+        TinyRustLmCompositionConversionIntent intent)
     {
         var bytes = ReadBoundedRegularFile(
-            Path.Combine(outputRoot, AttemptFileName),
+            Path.Combine(intent.OutputRoot, AttemptFileName),
             MaximumReceiptBytes,
             "converter-attempt-file");
         var attempt = Deserialize<NativeAttemptReceipt>(bytes, "converter-attempt-json");
@@ -476,15 +658,43 @@ public sealed partial class TinyRustLmConversionTool
             attempt.Status != "started" ||
             attempt.ProfileId != CompositionProfileId ||
             attempt.ProfileSha256 != CompositionProfileSha256 ||
-            attempt.OperationId != operationId ||
-            attempt.ModelLockSha256 != modelLockSha256 ||
-            attempt.TokenizerLockSha256 != tokenizerLockSha256 ||
-            attempt.ConverterVersion != converterVersion ||
-            attempt.ConverterExecutableSha256 != toolSha256 ||
-            attempt.TerminalRule != "existing-output-root-is-never-resumed")
+            !IsOperationId(attempt.OperationId) ||
+            attempt.ModelLockSha256 != intent.ModelSourceLockSha256 ||
+            attempt.TokenizerLockSha256 != intent.TokenizerSourceLockSha256 ||
+            !IsSafeIdentifier(attempt.ConverterVersion) ||
+            attempt.ConverterExecutableSha256 != intent.ConverterExecutableSha256 ||
+            attempt.TerminalRule != TerminalRule ||
+            attempt.OperationId != ComputeOperationId(
+                intent.ModelSourceLockSha256,
+                intent.TokenizerSourceLockSha256,
+                attempt.ConverterVersion,
+                intent.ConverterExecutableSha256))
         {
             throw new TinyRustLmException("converter-attempt-contract");
         }
+        return attempt;
+    }
+
+    private static string VerifyDurableRejection(TinyRustLmCompositionConversionIntent intent)
+    {
+        var attempt = ReadAndValidateAttempt(intent);
+        var bytes = ReadBoundedRegularFile(
+            Path.Combine(intent.OutputRoot, RejectionFileName),
+            MaximumReceiptBytes,
+            "converter-rejection-file");
+        var rejection = Deserialize<NativeRejectionReceipt>(bytes, "converter-rejection-json");
+        if (rejection.Schema != RejectionSchema ||
+            rejection.Status != "rejected" ||
+            rejection.ProfileId != CompositionProfileId ||
+            rejection.ProfileSha256 != CompositionProfileSha256 ||
+            rejection.OperationId != attempt.OperationId ||
+            !IsErrorCode(rejection.ErrorCode) ||
+            rejection.SafeNoOp ||
+            rejection.Retryable)
+        {
+            throw new TinyRustLmException("converter-rejection-contract");
+        }
+        return rejection.ErrorCode;
     }
 
     private static void ValidateComponentReceipt(
@@ -508,30 +718,61 @@ public sealed partial class TinyRustLmConversionTool
         }
     }
 
-    private static void ValidateInventory(string outputRoot)
+    private static void ValidatePassInventory(string outputRoot)
     {
-        if (!Directory.Exists(outputRoot) || File.Exists(Path.Combine(outputRoot, RejectionFileName)))
+        var observed = ReadBoundedOutputInventory(outputRoot);
+        if (observed is null || observed.Contains(RejectionFileName))
         {
             throw new TinyRustLmException("converter-output-inventory");
         }
         var expected = ArtifactExpectations.Select(value => value.FileName)
             .Concat(EvidenceFileNames)
             .ToHashSet(StringComparer.Ordinal);
-        var observed = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var path in Directory.EnumerateFileSystemEntries(outputRoot))
-        {
-            var attributes = File.GetAttributes(path);
-            if ((attributes & (FileAttributes.Directory | FileAttributes.ReparsePoint)) != 0 ||
-                !observed.Add(Path.GetFileName(path)))
-            {
-                throw new TinyRustLmException("converter-output-inventory");
-            }
-        }
         if (!observed.SetEquals(expected))
         {
             throw new TinyRustLmException("converter-output-inventory");
         }
     }
+
+    private static HashSet<string>? ReadBoundedOutputInventory(string outputRoot)
+    {
+        try
+        {
+            if (File.Exists(outputRoot))
+            {
+                throw new TinyRustLmException("converter-output-inventory");
+            }
+            if (!Directory.Exists(outputRoot))
+            {
+                return null;
+            }
+            RejectReparsePoint(outputRoot, "converter-output-inventory");
+            var observed = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var entry in Directory.EnumerateFileSystemEntries(outputRoot))
+            {
+                if (observed.Count >= MaximumOutputFiles)
+                {
+                    throw new TinyRustLmException("converter-output-inventory");
+                }
+                var attributes = File.GetAttributes(entry);
+                var name = Path.GetFileName(entry);
+                if (IsInvalidOutputEntry(attributes) ||
+                    string.IsNullOrEmpty(name) ||
+                    !observed.Add(name))
+                {
+                    throw new TinyRustLmException("converter-output-inventory");
+                }
+            }
+            return observed;
+        }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+        {
+            throw new TinyRustLmException("converter-output-inventory");
+        }
+    }
+
+    internal static bool IsInvalidOutputEntry(FileAttributes attributes) =>
+        (attributes & (FileAttributes.Directory | FileAttributes.ReparsePoint)) != 0;
 
     private static string ComputeOperationId(
         string modelLockSha256,
@@ -638,6 +879,23 @@ public sealed partial class TinyRustLmConversionTool
         }
     }
 
+    private static Process StartProcess(ProcessStartInfo startInfo)
+    {
+        try
+        {
+            return Process.Start(startInfo)
+                ?? throw new TinyRustLmException("converter-process-start");
+        }
+        catch (TinyRustLmException)
+        {
+            throw;
+        }
+        catch (Exception error) when (error is Win32Exception or InvalidOperationException)
+        {
+            throw new TinyRustLmException("converter-process-start");
+        }
+    }
+
     private static async Task DrainAfterTermination(params Task<byte[]>[] tasks)
     {
         try
@@ -662,6 +920,125 @@ public sealed partial class TinyRustLmConversionTool
         }
         var match = FailureLine().Match(text);
         return match.Success ? match.Groups[1].Value : "converter-process-failed";
+    }
+
+    private void ValidateIntentForLaunch(TinyRustLmCompositionConversionIntent intent)
+    {
+        ValidateCompositionIntent(intent);
+        if (!PathEquals(intent.ConverterExecutablePath, _toolPath) ||
+            intent.MaximumDurationMilliseconds !=
+                checked((long)_policy.MaximumDuration.TotalMilliseconds) ||
+            intent.MaximumSummaryBytes != _policy.MaximumSummaryBytes ||
+            intent.MaximumErrorBytes != _policy.MaximumErrorBytes)
+        {
+            throw new TinyRustLmException("converter-intent-owner");
+        }
+
+        var modelLock = RequireExistingRegularFile(
+            intent.ModelSourceLockPath,
+            nameof(intent.ModelSourceLockPath));
+        var modelDirectory = RequireExistingDirectory(
+            intent.ModelSourceDirectory,
+            nameof(intent.ModelSourceDirectory));
+        var tokenizerLock = RequireExistingRegularFile(
+            intent.TokenizerSourceLockPath,
+            nameof(intent.TokenizerSourceLockPath));
+        var tokenizerDirectory = RequireExistingDirectory(
+            intent.TokenizerSourceDirectory,
+            nameof(intent.TokenizerSourceDirectory));
+        var converter = RequireExistingRegularFile(
+            intent.ConverterExecutablePath,
+            nameof(intent.ConverterExecutablePath));
+        var outputRoot = RequireCreateOnlyOutputRoot(intent.OutputRoot, nameof(intent.OutputRoot));
+        if (!PathEquals(modelLock, intent.ModelSourceLockPath) ||
+            !PathEquals(modelDirectory, intent.ModelSourceDirectory) ||
+            !PathEquals(tokenizerLock, intent.TokenizerSourceLockPath) ||
+            !PathEquals(tokenizerDirectory, intent.TokenizerSourceDirectory) ||
+            !PathEquals(converter, intent.ConverterExecutablePath) ||
+            !PathEquals(outputRoot, intent.OutputRoot))
+        {
+            throw new TinyRustLmException("converter-intent-path-drift");
+        }
+        ValidateTreeRelationships(modelDirectory, tokenizerDirectory, outputRoot);
+        if (!FileHashEquals(modelLock, intent.ModelSourceLockSha256) ||
+            !FileHashEquals(tokenizerLock, intent.TokenizerSourceLockSha256) ||
+            !FileHashEquals(converter, intent.ConverterExecutableSha256))
+        {
+            throw new TinyRustLmException("converter-intent-file-drift");
+        }
+    }
+
+    private static string RequireCanonicalPath(string value, bool trimEndingSeparator)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value.Length > 32_767 ||
+            value.IndexOf('\0', StringComparison.Ordinal) >= 0)
+        {
+            throw new TinyRustLmException("converter-intent-path");
+        }
+        try
+        {
+            var normalized = Path.GetFullPath(value);
+            if (trimEndingSeparator)
+            {
+                normalized = Path.TrimEndingDirectorySeparator(normalized);
+            }
+            if (!string.Equals(value, normalized, StringComparison.Ordinal))
+            {
+                throw new TinyRustLmException("converter-intent-path");
+            }
+            return normalized;
+        }
+        catch (Exception error) when (error is ArgumentException or NotSupportedException)
+        {
+            throw new TinyRustLmException("converter-intent-path");
+        }
+    }
+
+    private static void ValidateTreeRelationships(
+        string modelDirectory,
+        string tokenizerDirectory,
+        string outputRoot)
+    {
+        if (PathsOverlap(modelDirectory, tokenizerDirectory) ||
+            PathsOverlap(modelDirectory, outputRoot) ||
+            PathsOverlap(tokenizerDirectory, outputRoot))
+        {
+            throw new TinyRustLmException("converter-intent-tree-overlap");
+        }
+    }
+
+    private static bool PathsOverlap(string left, string right) =>
+        IsSameOrDescendant(left, right) || IsSameOrDescendant(right, left);
+
+    private static bool IsSameOrDescendant(string candidate, string root)
+    {
+        if (PathEquals(candidate, root))
+        {
+            return true;
+        }
+        var rooted = Path.EndsInDirectorySeparator(root)
+            ? root
+            : root + Path.DirectorySeparatorChar;
+        return candidate.StartsWith(rooted, PathComparison());
+    }
+
+    private static bool PathEquals(string left, string right) =>
+        string.Equals(left, right, PathComparison());
+
+    private static StringComparison PathComparison() => OperatingSystem.IsWindows()
+        ? StringComparison.OrdinalIgnoreCase
+        : StringComparison.Ordinal;
+
+    private static bool FileHashEquals(string path, string expected)
+    {
+        try
+        {
+            return Sha256File(path) == expected;
+        }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+        {
+            return false;
+        }
     }
 
     private static string RequireExistingRegularFile(string value, string argumentName)
@@ -820,6 +1197,10 @@ public sealed partial class TinyRustLmConversionTool
         value is { Length: >= 1 and <= 128 } && value.All(character =>
             char.IsAsciiLetterOrDigit(character) || character is '.' or '_' or '-' or '/' or ':');
 
+    private static bool IsErrorCode(string? value) =>
+        value is { Length: >= 1 and <= 128 } && value.All(character =>
+            character is (>= 'a' and <= 'z') or (>= '0' and <= '9') or '-');
+
     private static string RuntimeIdentifier()
     {
         if (!Environment.Is64BitProcess)
@@ -960,6 +1341,16 @@ public sealed partial class TinyRustLmConversionTool
         string ConverterVersion,
         string ConverterExecutableSha256,
         string TerminalRule);
+
+    private sealed record NativeRejectionReceipt(
+        string Schema,
+        string Status,
+        string ProfileId,
+        string ProfileSha256,
+        string OperationId,
+        string ErrorCode,
+        bool SafeNoOp,
+        bool Retryable);
 
     private sealed record ArtifactExpectation(
         uint Ordinal,

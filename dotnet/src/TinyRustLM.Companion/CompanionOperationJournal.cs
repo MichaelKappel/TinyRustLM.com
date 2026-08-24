@@ -9,6 +9,7 @@ public sealed class CompanionOperationJournal
 {
     private const string MarkerFileName = ".tinyrustlm-companion-root";
     private const string OperationsDirectoryName = "operations";
+    private const string SourceConversionIntentFileName = "source-conversion.intent.json";
     private const int MaximumRecordBytes = 65_536;
     private static readonly ConcurrentDictionary<string, SemaphoreSlim> InProcessLocks =
         new(StringComparer.OrdinalIgnoreCase);
@@ -87,6 +88,7 @@ public sealed class CompanionOperationJournal
                 0,
                 null,
                 null,
+                null,
                 null);
             Directory.CreateDirectory(Path.Combine(stagingDirectory, "history"));
             WriteCreateOnly(Path.Combine(stagingDirectory, "request.json"), requestBytes);
@@ -123,7 +125,7 @@ public sealed class CompanionOperationJournal
         CompanionAcquireRequest request;
         try
         {
-            RejectDuplicateJsonProperties(bytes, "journal-request-json");
+            CompanionStrictJson.RejectDuplicateProperties(bytes, "journal-request-json");
             request = JsonSerializer.Deserialize<CompanionAcquireRequest>(bytes, JsonOptions)
                 ?? throw new CompanionContractException("journal-request-json");
         }
@@ -150,6 +152,83 @@ public sealed class CompanionOperationJournal
         return normalized;
     }
 
+    public CompanionPersistedSourceConversionIntent PersistSourceConversionIntent(
+        CompanionSourceConversionIntent intent)
+    {
+        CompanionSourceConversionIntentCodec.Validate(intent);
+        RequireOperationId(intent.OperationId);
+        var gate = InProcessLocks.GetOrAdd(
+            intent.OperationId,
+            static _ => new SemaphoreSlim(1, 1));
+        if (!gate.Wait(0))
+        {
+            throw new CompanionContractException("journal-operation-busy");
+        }
+
+        try
+        {
+            var directory = OperationDirectory(intent.OperationId);
+            using var processLock = AcquireProcessLock(Path.Combine(directory, "operation.lock"));
+            var current = ReadRecord(Path.Combine(directory, "current.json"), intent.OperationId);
+            if (current.State != CompanionOperationState.AcquiringSource ||
+                current.Branch != CompanionAcquisitionBranch.Source ||
+                current.SourceConversionIntentSha256 is not null ||
+                current.Artifacts is not null ||
+                current.ErrorCode is not null ||
+                intent.RequestSha256 != current.RequestSha256)
+            {
+                throw new CompanionContractException("journal-source-conversion-intent-state");
+            }
+
+            var canonical = CompanionSourceConversionIntentCodec.Serialize(intent);
+            var path = Path.Combine(directory, SourceConversionIntentFileName);
+            if (!File.Exists(path))
+            {
+                try
+                {
+                    WriteCreateOnly(path, canonical);
+                }
+                catch (IOException) when (File.Exists(path))
+                {
+                }
+            }
+            var observed = ReadBoundedRegularFile(
+                path,
+                "journal-source-conversion-intent-file",
+                "journal-source-conversion-intent-read");
+            if (!observed.AsSpan().SequenceEqual(canonical))
+            {
+                throw new CompanionContractException("journal-source-conversion-intent-conflict");
+            }
+            var parsed = CompanionSourceConversionIntentCodec.DeserializeCanonical(observed);
+            return new CompanionPersistedSourceConversionIntent(parsed, Sha256(observed));
+        }
+        finally
+        {
+            gate.Release();
+        }
+    }
+
+    public CompanionPersistedSourceConversionIntent ReadSourceConversionIntent(string operationId)
+    {
+        RequireOperationId(operationId);
+        var current = Read(operationId);
+        var bytes = ReadBoundedRegularFile(
+            Path.Combine(OperationDirectory(operationId), SourceConversionIntentFileName),
+            "journal-source-conversion-intent-file",
+            "journal-source-conversion-intent-read");
+        var intent = CompanionSourceConversionIntentCodec.DeserializeCanonical(bytes);
+        var digest = Sha256(bytes);
+        if (intent.OperationId != operationId ||
+            intent.RequestSha256 != current.RequestSha256 ||
+            current.SourceConversionIntentSha256 is not null &&
+                current.SourceConversionIntentSha256 != digest)
+        {
+            throw new CompanionContractException("journal-source-conversion-intent-identity");
+        }
+        return new CompanionPersistedSourceConversionIntent(intent, digest);
+    }
+
     public CompanionOperationRecord Advance(
         string operationId,
         CompanionOperationState nextState,
@@ -157,7 +236,8 @@ public sealed class CompanionOperationJournal
         ulong completedBytes = 0,
         ulong? totalBytes = null,
         CompanionArtifactSet? artifacts = null,
-        string? errorCode = null)
+        string? errorCode = null,
+        string? sourceConversionIntentSha256 = null)
     {
         RequireOperationId(operationId);
         var gate = InProcessLocks.GetOrAdd(operationId, static _ => new SemaphoreSlim(1, 1));
@@ -172,7 +252,19 @@ public sealed class CompanionOperationJournal
             using var processLock = AcquireProcessLock(Path.Combine(directory, "operation.lock"));
             var current = ReadRecord(Path.Combine(directory, "current.json"), operationId);
             ValidateTransition(current.State, nextState);
-            ValidateRecordFields(nextState, branch, completedBytes, totalBytes, artifacts, errorCode);
+            var intentSha256 = ResolveSourceConversionIntentSha256(
+                current,
+                nextState,
+                branch,
+                sourceConversionIntentSha256);
+            ValidateRecordFields(
+                nextState,
+                branch,
+                completedBytes,
+                totalBytes,
+                artifacts,
+                errorCode,
+                intentSha256);
             var next = current with
             {
                 Sequence = checked(current.Sequence + 1),
@@ -182,7 +274,8 @@ public sealed class CompanionOperationJournal
                 CompletedBytes = completedBytes,
                 TotalBytes = totalBytes,
                 Artifacts = artifacts,
-                ErrorCode = errorCode
+                ErrorCode = errorCode,
+                SourceConversionIntentSha256 = intentSha256
             };
             var bytes = Serialize(next);
             var historyPath = Path.Combine(directory, "history", SequenceFile(next.Sequence));
@@ -225,13 +318,47 @@ public sealed class CompanionOperationJournal
         }
     }
 
+    private string? ResolveSourceConversionIntentSha256(
+        CompanionOperationRecord current,
+        CompanionOperationState nextState,
+        CompanionAcquisitionBranch branch,
+        string? supplied)
+    {
+        if (current.SourceConversionIntentSha256 is not null)
+        {
+            if (supplied is not null && supplied != current.SourceConversionIntentSha256)
+            {
+                throw new CompanionContractException("journal-source-conversion-intent-immutable");
+            }
+            return current.SourceConversionIntentSha256;
+        }
+        if (supplied is null)
+        {
+            return null;
+        }
+        CompanionContract.RequireDigest(supplied, "journal-source-conversion-intent-digest");
+        if (current.State != CompanionOperationState.AcquiringSource ||
+            nextState != CompanionOperationState.Converting ||
+            branch != CompanionAcquisitionBranch.Source)
+        {
+            throw new CompanionContractException("journal-source-conversion-intent-transition");
+        }
+        var persisted = ReadSourceConversionIntent(current.OperationId);
+        if (persisted.Sha256 != supplied)
+        {
+            throw new CompanionContractException("journal-source-conversion-intent-identity");
+        }
+        return supplied;
+    }
+
     private static void ValidateRecordFields(
         CompanionOperationState state,
         CompanionAcquisitionBranch branch,
         ulong completedBytes,
         ulong? totalBytes,
         CompanionArtifactSet? artifacts,
-        string? errorCode)
+        string? errorCode,
+        string? sourceConversionIntentSha256)
     {
         if (totalBytes is not null && (totalBytes == 0 || completedBytes > totalBytes))
         {
@@ -262,6 +389,29 @@ public sealed class CompanionOperationJournal
         {
             throw new CompanionContractException("journal-unexpected-error");
         }
+
+        if (sourceConversionIntentSha256 is not null)
+        {
+            CompanionContract.RequireDigest(
+                sourceConversionIntentSha256,
+                "journal-source-conversion-intent-digest");
+            if (branch != CompanionAcquisitionBranch.Source ||
+                state is not (CompanionOperationState.Converting or
+                    CompanionOperationState.VerifyingComposition or
+                    CompanionOperationState.Available or
+                    CompanionOperationState.Cancelled or
+                    CompanionOperationState.Rejected))
+            {
+                throw new CompanionContractException("journal-source-conversion-intent-fields");
+            }
+        }
+        else if (branch == CompanionAcquisitionBranch.Source &&
+            state is CompanionOperationState.Converting or
+                CompanionOperationState.VerifyingComposition or
+                CompanionOperationState.Available)
+        {
+            throw new CompanionContractException("journal-source-conversion-intent-required");
+        }
     }
 
     private CompanionOperationRecord ReadRecord(string path, string operationId)
@@ -274,7 +424,7 @@ public sealed class CompanionOperationJournal
         CompanionOperationRecord record;
         try
         {
-            RejectDuplicateJsonProperties(bytes, "journal-record-json");
+            CompanionStrictJson.RejectDuplicateProperties(bytes, "journal-record-json");
             record = JsonSerializer.Deserialize<CompanionOperationRecord>(bytes, JsonOptions)
                 ?? throw new CompanionContractException("journal-record-json");
         }
@@ -283,8 +433,23 @@ public sealed class CompanionOperationJournal
             throw new CompanionContractException("journal-record-json");
         }
         if (record.Schema != CompanionContract.OperationRecordSchema ||
-            record.OperationId != operationId ||
-            record.RequestSha256.Length != 64)
+            record.OperationId != operationId)
+        {
+            throw new CompanionContractException("journal-record-contract");
+        }
+        try
+        {
+            CompanionContract.RequireDigest(record.RequestSha256, "journal-record-contract");
+            ValidateRecordFields(
+                record.State,
+                record.Branch,
+                record.CompletedBytes,
+                record.TotalBytes,
+                record.Artifacts,
+                record.ErrorCode,
+                record.SourceConversionIntentSha256);
+        }
+        catch (CompanionContractException)
         {
             throw new CompanionContractException("journal-record-contract");
         }
@@ -327,51 +492,6 @@ public sealed class CompanionOperationJournal
         catch (IOException)
         {
             throw new CompanionContractException(ioCode);
-        }
-    }
-
-    private static void RejectDuplicateJsonProperties(byte[] bytes, string code)
-    {
-        try
-        {
-            var reader = new Utf8JsonReader(bytes, new JsonReaderOptions
-            {
-                AllowTrailingCommas = false,
-                CommentHandling = JsonCommentHandling.Disallow,
-                MaxDepth = 64
-            });
-            var objects = new Stack<HashSet<string>>();
-            while (reader.Read())
-            {
-                if (reader.TokenType == JsonTokenType.StartObject)
-                {
-                    objects.Push(new HashSet<string>(StringComparer.Ordinal));
-                }
-                else if (reader.TokenType == JsonTokenType.PropertyName)
-                {
-                    var property = reader.GetString();
-                    if (objects.Count == 0 || property is null || !objects.Peek().Add(property))
-                    {
-                        throw new CompanionContractException(code);
-                    }
-                }
-                else if (reader.TokenType == JsonTokenType.EndObject)
-                {
-                    if (objects.Count == 0)
-                    {
-                        throw new CompanionContractException(code);
-                    }
-                    objects.Pop();
-                }
-            }
-            if (objects.Count != 0)
-            {
-                throw new CompanionContractException(code);
-            }
-        }
-        catch (JsonException)
-        {
-            throw new CompanionContractException(code);
         }
     }
 

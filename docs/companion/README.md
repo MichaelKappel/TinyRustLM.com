@@ -45,7 +45,7 @@ verified identities through `VerifyingComposition`.
 
 The private, nonpackable `TinyRustLM.Companion` solution component now owns the
 closed `tinyrustlm.companion.acquire.v1` request and
-`tinyrustlm.companion.operation.v1` record contracts. A request binds one
+`tinyrustlm.companion.operation.v2` record contracts. A request binds one
 public repository, immutable 40-hex revision, model and tokenizer source locks,
 composition profile, explicit source-acquisition consent, a positive source
 byte ceiling, and no more than two ordered HTTPS peers. Credentials, mutable
@@ -59,20 +59,51 @@ machine from `Queued` through peer or source work to terminal `Available`,
 `Cancelled`, or `Rejected`. `Available` requires exact positive records for
 ACG2, SLM2, Tokenizer2, Template2, Sampling2, and Prompt2.
 
-The journal now reopens and verifies each immutable acquisition request before
-source conversion. The source coordinator binds the journaled model-lock,
-tokenizer-lock, and composition-profile hashes to one create-only converter
-process; journals native rejection or cancellation without deleting evidence;
-and advances through `Converting`, `VerifyingComposition`, and `Available` only
-after complete verification. Its deterministic executable fixture is test
-evidence only and cannot satisfy a real-model gate.
+Before source conversion, the coordinator creates one canonical private
+`tinyrustlm.companion.source-conversion-intent.v1` envelope at
+`source-conversion.intent.json`. It binds the operation and immutable request
+to normalized source-lock paths and hashes, source directories, conversion
+profile, absent output root, exact converter path and executable hash, resource
+limits, and terminal rule. The file is create-only; identical bytes may be
+observed idempotently, changed bytes fail closed, and its SHA-256 is required by
+source `Converting`, `VerifyingComposition`, and `Available` journal records.
+The v1 operation-record reader is deleted and no migration exists.
+
+The live owner revalidates every intent input immediately before process
+creation. It preserves native rejection or caller cancellation without deleting
+evidence and advances through `Converting`, `VerifyingComposition`, and
+`Available` only after complete verification. Durable composition facts are
+separate from stdout hash and elapsed-time observations, so process-loss
+recovery never fabricates live evidence.
+
+`ReconcileTerminal` accepts only an intent-bound source operation in
+`Converting` or `VerifyingComposition`. It launches, adopts, retries, and kills
+nothing. An absent or nonterminal bounded root remains pending with no journal
+write. A strict native rejection becomes `Rejected`. A complete pass is
+reconstructed by freshly verifying the exact ten-file inventory, attempt and
+receipt lineage, all six streamed artifact hashes, component receipts, source,
+tool, profile, operation, graph, durability, resource, and nonclaim fields,
+then advances once to `Available`. Invalid or contradictory terminal evidence
+becomes the bounded `companion-conversion-terminal-invalid` rejection while all
+bytes remain preserved. `Available`, `Cancelled`, and `Rejected` cannot be
+overwritten.
+
+After owned-process cancellation, a valid durable pass wins, a valid native
+rejection wins, and no terminal evidence becomes `Cancelled`. Known live
+protocol violations such as timeout, output overflow, unexpected stderr,
+executable drift, or nonzero exit are rejected directly and cannot be laundered
+by later reconciliation. The deterministic executable fixture proves these
+contracts only; it cannot satisfy a real-model gate.
 
 This foundation is not yet a companion release. It does not listen on loopback,
 discover or fetch peers, download model source, recover a completed conversion
-after process loss, stream a composition to the browser, install a service, or
-expose an installation artifact. No real source has been passed through the
-coordinator. The deep acquisition gate remains explicitly unavailable until
-those production owners and their registered evidence exist.
+from an absent or nonterminal root, stream a composition to the browser, install
+a service, or expose an installation artifact. A pending root has no
+authenticated orphan-process ownership or safe relaunch protocol yet, so it
+remains visibly pending rather than guessed, adopted, or retried. No real source
+has been passed through the coordinator. The deep acquisition gate remains
+explicitly unavailable until those production owners and their registered
+evidence exist.
 
 ## Browser Boundary
 

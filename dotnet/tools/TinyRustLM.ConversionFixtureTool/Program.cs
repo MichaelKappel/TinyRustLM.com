@@ -54,6 +54,45 @@ var operationId = OperationId(
     tokenizerLockSha256,
     converterVersion,
     executableSha256);
+WriteEvidence(
+    outputRoot,
+    "composition.attempt.json",
+    new
+    {
+        schema = "tinyrustlm.qwen3_composition_attempt.v1",
+        status = "started",
+        profileId,
+        profileSha256,
+        operationId,
+        modelLockSha256,
+        tokenizerLockSha256,
+        converterVersion,
+        converterExecutableSha256 = executableSha256,
+        terminalRule = "existing-output-root-is-never-resumed"
+    });
+if (scenario is "terminal-rejection" or "late-rejection")
+{
+    WriteEvidence(
+        outputRoot,
+        "composition.rejection.json",
+        new
+        {
+            schema = "tinyrustlm.qwen3_composition_rejection.v1",
+            status = "rejected",
+            profileId,
+            profileSha256,
+            operationId,
+            errorCode = "qwen3-source-hash-mismatch",
+            safeNoOp = false,
+            retryable = false
+        });
+    if (scenario == "late-rejection")
+    {
+        await Task.Delay(TimeSpan.FromMinutes(1));
+    }
+    Console.Error.WriteLine("TinyRustLM conversion failed: qwen3-source-hash-mismatch");
+    return 1;
+}
 
 var artifactMetadata = new[]
 {
@@ -88,22 +127,6 @@ var tokenizerReceipt = WriteEvidence(
     outputRoot,
     "tokenizer.tokenizer2.conversion-receipt.json",
     new { schema = "fixture.tokenizer-receipt", status = "pass" });
-WriteEvidence(
-    outputRoot,
-    "composition.attempt.json",
-    new
-    {
-        schema = "tinyrustlm.qwen3_composition_attempt.v1",
-        status = "started",
-        profileId,
-        profileSha256,
-        operationId,
-        modelLockSha256,
-        tokenizerLockSha256,
-        converterVersion,
-        converterExecutableSha256 = executableSha256,
-        terminalRule = "existing-output-root-is-never-resumed"
-    });
 
 var graphIdentitySha256 = Sha256Text("fixture-graph-identity");
 var receiptArtifacts = artifacts.Select(value => new
@@ -188,6 +211,10 @@ var terminalReceipt = new
 };
 var terminalReceiptPath = Path.Combine(outputRoot, "composition.conversion-receipt.json");
 WriteEvidence(outputRoot, "composition.conversion-receipt.json", terminalReceipt);
+if (scenario == "late-pass")
+{
+    await Task.Delay(TimeSpan.FromMinutes(1));
+}
 if (scenario == "duplicate-receipt")
 {
     var text = File.ReadAllText(terminalReceiptPath).Replace(

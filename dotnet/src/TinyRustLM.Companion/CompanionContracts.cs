@@ -8,7 +8,9 @@ namespace TinyRustLM.Companion;
 public static partial class CompanionContract
 {
     public const string AcquisitionRequestSchema = "tinyrustlm.companion.acquire.v1";
-    public const string OperationRecordSchema = "tinyrustlm.companion.operation.v1";
+    public const string OperationRecordSchema = "tinyrustlm.companion.operation.v2";
+    public const string SourceConversionIntentSchema =
+        "tinyrustlm.companion.source-conversion-intent.v1";
     public const string OwnedRootMarker = "tinyrustlm.companion.owned-root.v1\n";
     public const int MaximumPeerCandidates = 2;
     public const ulong MaximumSourceBytes = 17_179_869_184;
@@ -248,7 +250,8 @@ public sealed record CompanionOperationRecord(
     ulong CompletedBytes,
     ulong? TotalBytes,
     CompanionArtifactSet? Artifacts,
-    string? ErrorCode);
+    string? ErrorCode,
+    string? SourceConversionIntentSha256);
 
 public sealed class CompanionContractException : Exception
 {

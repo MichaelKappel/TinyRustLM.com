@@ -24,10 +24,14 @@ process execution, model-quality claims, or a released installer.
 
 **Observed local fact**: the nonpackable `TinyRustLM.Companion` component owns
 the strict `tinyrustlm.companion.acquire.v1` request, the strict
-`tinyrustlm.companion.operation.v1` record, an owned create-only journal, and a
-source coordinator that invokes only the complete `qwen3-composition`
-transaction. No loopback listener or browser capability implementation exists.
-No current route table or port is release authority.
+`tinyrustlm.companion.operation.v2` record, the private create-only
+`tinyrustlm.companion.source-conversion-intent.v1` envelope, an owned
+create-only journal, and a source coordinator that invokes only the complete
+`qwen3-composition` transaction. The coordinator can independently reconcile a
+strict terminal pass or rejection from the exact bound intent after process
+loss, but it does not infer, adopt, relaunch, or kill work for an absent or
+nonterminal root. No loopback listener or browser capability implementation
+exists. No current route table or port is release authority.
 
 ## Decision
 
@@ -111,10 +115,13 @@ backend.
 
 ## Authoritative Evidence
 
-**Observed local fact**: the current managed solution passes 116 tests: 60
-Core tests, 38 package-boundary tests, and 18 Companion tests. These tests prove
-strict complete-conversion orchestration, immutable-request tamper rejection,
-state transitions, process-tree cancellation, and fixture evidence retention.
+**Observed local fact**: the current managed solution passes 163 tests: 80
+Core tests, 38 package-boundary tests, and 45 Companion tests. These tests prove
+strict complete-conversion orchestration, immutable-request and intent tamper
+rejection, operation-v2 hash invariants, terminal pass and rejection
+reconciliation, pending-root immutability, process-tree cancellation races,
+pre-cancel nonlaunch, typed process-start failure, live-violation
+non-laundering, and fixture evidence retention.
 
 The exact complete conversion profile is
 `tinyrustlm.qwen3-complete-composition-conversion/1` at SHA-256
@@ -209,9 +216,10 @@ Windows firewall prompts, endpoint security products, enterprise proxies,
 Linux sandboxing, IPv6 availability, sleep and resume, port collision, browser
 restart, Companion restart, and OS restart need physical evidence.
 
-The source-acquisition owner, peer-discovery authority, and exact restart
-recovery algorithm remain separate implementation gates. MemoryEndpoints is
-unauthorized and disconnected.
+The source-acquisition owner, peer-discovery authority, and authenticated
+process-ownership protocol for an absent or nonterminal conversion root remain
+separate implementation gates. MemoryEndpoints is unauthorized and
+disconnected.
 
 ## Acceptance Tests
 

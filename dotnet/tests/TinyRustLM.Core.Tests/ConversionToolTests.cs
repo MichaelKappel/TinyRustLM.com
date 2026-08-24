@@ -10,26 +10,32 @@ public sealed class ConversionToolTests
     public async Task CompleteCompositionVerifiesSummaryReceiptLineageAndAllSixArtifacts()
     {
         using var fixture = new ConversionFixture("pass");
-        var result = await fixture.Tool().ConvertCompositionAsync(fixture.Request());
+        var tool = fixture.Tool();
+        var intent = tool.CreateCompositionIntent(fixture.Request());
+        var result = await tool.ConvertCompositionAsync(intent);
+        var composition = result.Composition;
 
-        Assert.Equal("tinyrustlm.qwen3_composition_conversion_cli_summary.v1", result.Schema);
-        Assert.StartsWith("qwen3-composition-", result.OperationId, StringComparison.Ordinal);
-        Assert.Equal(fixture.OutputRoot, result.OutputRoot);
+        Assert.Equal(TinyRustLmConversionTool.VerifiedCompositionSchema, composition.Schema);
+        Assert.StartsWith("qwen3-composition-", composition.OperationId, StringComparison.Ordinal);
+        Assert.Equal(fixture.OutputRoot, composition.OutputRoot);
         Assert.Equal(
             Path.Combine(fixture.OutputRoot, "composition.conversion-receipt.json"),
-            result.ReceiptPath);
-        Assert.Equal(64, result.ReceiptSha256.Length);
-        Assert.Equal(64, result.SummarySha256.Length);
-        Assert.Equal(64, result.GraphIdentitySha256.Length);
-        Assert.Equal(Sha256File(fixture.ModelSourceLockPath), result.ModelSourceLockSha256);
-        Assert.Equal(Sha256File(fixture.TokenizerSourceLockPath), result.TokenizerSourceLockSha256);
-        Assert.Equal("fixture-1", result.ConverterVersion);
-        Assert.Equal(64, result.ConverterExecutableSha256.Length);
+            composition.ReceiptPath);
+        Assert.Equal(64, composition.ReceiptSha256.Length);
+        Assert.Equal(TinyRustLmConversionTool.LiveObservationSchema, result.Observation.Schema);
+        Assert.Equal(64, result.Observation.SummarySha256.Length);
+        Assert.Equal(64, composition.GraphIdentitySha256.Length);
+        Assert.Equal(Sha256File(fixture.ModelSourceLockPath), composition.ModelSourceLockSha256);
+        Assert.Equal(
+            Sha256File(fixture.TokenizerSourceLockPath),
+            composition.TokenizerSourceLockSha256);
+        Assert.Equal("fixture-1", composition.ConverterVersion);
+        Assert.Equal(64, composition.ConverterExecutableSha256.Length);
         Assert.Equal(
             "source-native-browser-numerical-parity-untouched-quality-and-product-chat",
-            result.RequiredNextGate);
+            composition.RequiredNextGate);
 
-        var artifacts = result.Artifacts.InCanonicalOrder();
+        var artifacts = composition.Artifacts.InCanonicalOrder();
         Assert.Equal(6, artifacts.Count);
         Assert.Equal(
             ["slm2", "tokenizer2", "template2", "sampling2", "prompt2", "acg2"],
@@ -56,13 +62,14 @@ public sealed class ConversionToolTests
     public async Task ConverterPreservesOnlyExactBoundedFailureCode()
     {
         using var fixture = new ConversionFixture("error");
+        var tool = fixture.Tool();
         var error = await Assert.ThrowsAsync<TinyRustLmException>(() =>
-            fixture.Tool().ConvertCompositionAsync(fixture.Request()));
+            tool.ConvertCompositionAsync(tool.CreateCompositionIntent(fixture.Request())));
         Assert.Equal("qwen3-source-hash-mismatch", error.Code);
 
         fixture.SetScenario("malformed-error");
         error = await Assert.ThrowsAsync<TinyRustLmException>(() =>
-            fixture.Tool().ConvertCompositionAsync(fixture.Request()));
+            tool.ConvertCompositionAsync(tool.CreateCompositionIntent(fixture.Request())));
         Assert.Equal("converter-process-failed", error.Code);
         Assert.DoesNotContain("secret", error.Message, StringComparison.OrdinalIgnoreCase);
     }
@@ -84,8 +91,9 @@ public sealed class ConversionToolTests
         string expectedCode)
     {
         using var fixture = new ConversionFixture(scenario);
+        var tool = fixture.Tool();
         var error = await Assert.ThrowsAsync<TinyRustLmException>(() =>
-            fixture.Tool().ConvertCompositionAsync(fixture.Request()));
+            tool.ConvertCompositionAsync(tool.CreateCompositionIntent(fixture.Request())));
         Assert.Equal(expectedCode, error.Code);
     }
 
@@ -94,14 +102,16 @@ public sealed class ConversionToolTests
     {
         using var fixture = new ConversionFixture("oversized");
         var policy = new TinyRustLmConversionPolicy(TimeSpan.FromSeconds(10), 1024, 1024);
+        var tool = fixture.Tool(policy);
         var error = await Assert.ThrowsAsync<TinyRustLmException>(() =>
-            fixture.Tool(policy).ConvertCompositionAsync(fixture.Request()));
+            tool.ConvertCompositionAsync(tool.CreateCompositionIntent(fixture.Request())));
         Assert.Equal("converter-output-limit", error.Code);
 
         fixture.SetScenario("hang");
         policy = new TinyRustLmConversionPolicy(TimeSpan.FromMilliseconds(100), 1024, 1024);
+        tool = fixture.Tool(policy);
         error = await Assert.ThrowsAsync<TinyRustLmException>(() =>
-            fixture.Tool(policy).ConvertCompositionAsync(fixture.Request()));
+            tool.ConvertCompositionAsync(tool.CreateCompositionIntent(fixture.Request())));
         Assert.Equal("converter-timeout", error.Code);
         Assert.Equal(
             "preserved\n",
@@ -112,14 +122,16 @@ public sealed class ConversionToolTests
     public async Task ConverterHonorsCancellationPreservesEvidenceAndNeverResumesTerminalRoot()
     {
         using var fixture = new ConversionFixture("hang");
+        var tool = fixture.Tool();
+        var intent = tool.CreateCompositionIntent(fixture.Request());
         using var cancellation = new CancellationTokenSource(TimeSpan.FromMilliseconds(100));
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
-            fixture.Tool().ConvertCompositionAsync(fixture.Request(), cancellation.Token));
+            tool.ConvertCompositionAsync(intent, cancellation.Token));
         Assert.True(Directory.Exists(fixture.OutputRoot));
         Assert.True(File.Exists(Path.Combine(fixture.OutputRoot, "composition.attempt.json")));
 
         await Assert.ThrowsAsync<IOException>(() =>
-            fixture.Tool().ConvertCompositionAsync(fixture.Request()));
+            tool.ConvertCompositionAsync(intent));
     }
 
     [Fact]
@@ -133,13 +145,21 @@ public sealed class ConversionToolTests
         Assert.Contains(
             typeof(TinyRustLmConversionTool).GetMethods(),
             method => method.Name == nameof(TinyRustLmConversionTool.ConvertCompositionAsync));
+        Assert.Contains(
+            typeof(TinyRustLmConversionTool).GetMethods(),
+            method => method.Name == nameof(TinyRustLmConversionTool.CreateCompositionIntent));
+        Assert.DoesNotContain(
+            typeof(TinyRustLmConversionTool).GetMethods(),
+            method => method.Name == nameof(TinyRustLmConversionTool.ConvertCompositionAsync) &&
+                method.GetParameters()[0].ParameterType ==
+                    typeof(TinyRustLmCompositionConversionRequest));
     }
 
     [Theory]
     [InlineData("model")]
     [InlineData("tokenizer")]
     [InlineData("profile")]
-    public async Task ConverterRejectsRequestIdentityDriftBeforeStartingProcess(string identity)
+    public void ConverterRejectsRequestIdentityDriftBeforeStartingProcess(string identity)
     {
         using var fixture = new ConversionFixture("pass");
         var request = fixture.Request();
@@ -150,13 +170,243 @@ public sealed class ConversionToolTests
             "profile" => request with { CompositionProfileSha256 = new string('0', 64) },
             _ => throw new InvalidOperationException()
         };
-        var error = await Assert.ThrowsAsync<TinyRustLmException>(() =>
-            fixture.Tool().ConvertCompositionAsync(request));
+        var error = Assert.Throws<TinyRustLmException>(() =>
+            fixture.Tool().CreateCompositionIntent(request));
         Assert.Equal($"converter-{identity}-source-lock-identity".Replace(
             "profile-source-lock",
             "composition-profile",
             StringComparison.Ordinal), error.Code);
         Assert.False(Directory.Exists(fixture.OutputRoot));
+    }
+
+    [Fact]
+    public void IntentCanonicalizesAndBindsEveryLaunchInputBeforeOutput()
+    {
+        using var fixture = new ConversionFixture("pass");
+        var policy = new TinyRustLmConversionPolicy(TimeSpan.FromMinutes(17), 32_768, 2_048);
+        var tool = fixture.Tool(policy);
+
+        var intent = tool.CreateCompositionIntent(fixture.Request());
+
+        Assert.Equal(TinyRustLmConversionTool.CompositionIntentSchema, intent.Schema);
+        Assert.Equal(Path.GetFullPath(fixture.ModelSourceLockPath), intent.ModelSourceLockPath);
+        Assert.Equal(Path.GetFullPath(fixture.ModelSourceDirectory), intent.ModelSourceDirectory);
+        Assert.Equal(
+            Path.GetFullPath(fixture.TokenizerSourceLockPath),
+            intent.TokenizerSourceLockPath);
+        Assert.Equal(
+            Path.GetFullPath(fixture.TokenizerSourceDirectory),
+            intent.TokenizerSourceDirectory);
+        Assert.Equal(Path.GetFullPath(fixture.OutputRoot), intent.OutputRoot);
+        Assert.Equal(Sha256File(fixture.ModelSourceLockPath), intent.ModelSourceLockSha256);
+        Assert.Equal(
+            Sha256File(fixture.TokenizerSourceLockPath),
+            intent.TokenizerSourceLockSha256);
+        Assert.Equal(TinyRustLmConversionTool.CompositionProfileSha256,
+            intent.CompositionProfileSha256);
+        Assert.Equal(64, intent.ConverterExecutableSha256.Length);
+        Assert.Equal(17 * 60 * 1000, intent.MaximumDurationMilliseconds);
+        Assert.Equal(32_768, intent.MaximumSummaryBytes);
+        Assert.Equal(2_048, intent.MaximumErrorBytes);
+        Assert.Equal("existing-output-root-is-never-resumed", intent.TerminalRule);
+        Assert.False(Directory.Exists(fixture.OutputRoot));
+    }
+
+    [Fact]
+    public async Task LaunchRejectsSourceDriftAgainstPersistableIntentBeforeOutput()
+    {
+        using var fixture = new ConversionFixture("pass");
+        var tool = fixture.Tool();
+        var intent = tool.CreateCompositionIntent(fixture.Request());
+        File.WriteAllText(fixture.ModelSourceLockPath, "changed-after-intent");
+
+        var error = await Assert.ThrowsAsync<TinyRustLmException>(() =>
+            tool.ConvertCompositionAsync(intent));
+
+        Assert.Equal("converter-intent-file-drift", error.Code);
+        Assert.False(Directory.Exists(fixture.OutputRoot));
+    }
+
+    [Fact]
+    public async Task TerminalInspectorReconstructsDurablePassWithoutLiveObservations()
+    {
+        using var fixture = new ConversionFixture("pass");
+        var tool = fixture.Tool();
+        var intent = tool.CreateCompositionIntent(fixture.Request());
+        var live = await tool.ConvertCompositionAsync(intent);
+
+        var inspection = TinyRustLmConversionTool.InspectCompositionTerminal(intent);
+
+        Assert.Equal(TinyRustLmCompositionTerminalStatus.Pass, inspection.Status);
+        Assert.Null(inspection.ErrorCode);
+        Assert.Equal(live.Composition, inspection.Composition);
+    }
+
+    [Fact]
+    public void TerminalInspectorTreatsAbsentAndBoundedPartialRootsAsPending()
+    {
+        using var fixture = new ConversionFixture("pass");
+        var tool = fixture.Tool();
+        var intent = tool.CreateCompositionIntent(fixture.Request());
+
+        var absent = TinyRustLmConversionTool.InspectCompositionTerminal(intent);
+        Assert.Equal(TinyRustLmCompositionTerminalStatus.Pending, absent.Status);
+        Assert.Null(absent.Composition);
+        Assert.Null(absent.ErrorCode);
+
+        Directory.CreateDirectory(fixture.OutputRoot);
+        File.WriteAllText(
+            Path.Combine(fixture.OutputRoot, "composition.attempt.json"),
+            "incomplete\n");
+        var partial = TinyRustLmConversionTool.InspectCompositionTerminal(intent);
+        Assert.Equal(TinyRustLmCompositionTerminalStatus.Pending, partial.Status);
+        Assert.Null(partial.Composition);
+        Assert.Null(partial.ErrorCode);
+    }
+
+    [Fact]
+    public async Task TerminalInspectorVerifiesNativeRejectionAndAttemptLineage()
+    {
+        using var fixture = new ConversionFixture("terminal-rejection");
+        var tool = fixture.Tool();
+        var intent = tool.CreateCompositionIntent(fixture.Request());
+        var failure = await Assert.ThrowsAsync<TinyRustLmException>(() =>
+            tool.ConvertCompositionAsync(intent));
+        Assert.Equal("qwen3-source-hash-mismatch", failure.Code);
+
+        var inspection = TinyRustLmConversionTool.InspectCompositionTerminal(intent);
+
+        Assert.Equal(TinyRustLmCompositionTerminalStatus.Rejected, inspection.Status);
+        Assert.Equal("qwen3-source-hash-mismatch", inspection.ErrorCode);
+        Assert.Null(inspection.Composition);
+    }
+
+    [Theory]
+    [InlineData("malformed-rejection", "converter-rejection-json")]
+    [InlineData("unknown-rejection", "converter-rejection-json")]
+    [InlineData("safe-no-op", "converter-rejection-contract")]
+    [InlineData("rejection-operation", "converter-rejection-contract")]
+    [InlineData("attempt-source", "converter-attempt-contract")]
+    [InlineData("attempt-converter", "converter-attempt-contract")]
+    [InlineData("nested-directory", "converter-output-inventory")]
+    public async Task TerminalInspectorRejectsTamperedNativeRejection(
+        string fault,
+        string expectedCode)
+    {
+        using var fixture = new ConversionFixture("terminal-rejection");
+        var tool = fixture.Tool();
+        var intent = tool.CreateCompositionIntent(fixture.Request());
+        await Assert.ThrowsAsync<TinyRustLmException>(() =>
+            tool.ConvertCompositionAsync(intent));
+        var rejection = Path.Combine(fixture.OutputRoot, "composition.rejection.json");
+        var attempt = Path.Combine(fixture.OutputRoot, "composition.attempt.json");
+        switch (fault)
+        {
+            case "malformed-rejection":
+                File.WriteAllText(rejection, "{\n");
+                break;
+            case "unknown-rejection":
+                AddUnknownProperty(rejection);
+                break;
+            case "safe-no-op":
+                ReplaceFirst(rejection, "\"safeNoOp\":false", "\"safeNoOp\":true");
+                break;
+            case "rejection-operation":
+                ReplaceFirst(
+                    rejection,
+                    ReadStringProperty(rejection, "operationId"),
+                    $"qwen3-composition-{new string('0', 64)}");
+                break;
+            case "attempt-source":
+                ReplaceFirst(attempt, intent.ModelSourceLockSha256, new string('0', 64));
+                break;
+            case "attempt-converter":
+                ReplaceFirst(attempt, intent.ConverterExecutableSha256, new string('0', 64));
+                break;
+            case "nested-directory":
+                Directory.CreateDirectory(Path.Combine(fixture.OutputRoot, "nested"));
+                break;
+            default:
+                throw new InvalidOperationException(fault);
+        }
+
+        var error = Assert.Throws<TinyRustLmException>(() =>
+            TinyRustLmConversionTool.InspectCompositionTerminal(intent));
+
+        Assert.Equal(expectedCode, error.Code);
+    }
+
+    [Fact]
+    public async Task TerminalInspectorRejectsPassAndRejectionCollision()
+    {
+        using var fixture = new ConversionFixture("pass");
+        var tool = fixture.Tool();
+        var intent = tool.CreateCompositionIntent(fixture.Request());
+        await tool.ConvertCompositionAsync(intent);
+        File.WriteAllText(
+            Path.Combine(fixture.OutputRoot, "composition.rejection.json"),
+            "{}\n");
+
+        var error = Assert.Throws<TinyRustLmException>(() =>
+            TinyRustLmConversionTool.InspectCompositionTerminal(intent));
+
+        Assert.Equal("converter-terminal-collision", error.Code);
+    }
+
+    [Fact]
+    public void TerminalInspectorRejectsAnOutputPathThatIsAFile()
+    {
+        using var fixture = new ConversionFixture("pass");
+        var tool = fixture.Tool();
+        var intent = tool.CreateCompositionIntent(fixture.Request());
+        File.WriteAllText(fixture.OutputRoot, "not-a-directory");
+
+        var error = Assert.Throws<TinyRustLmException>(() =>
+            TinyRustLmConversionTool.InspectCompositionTerminal(intent));
+
+        Assert.Equal("converter-output-inventory", error.Code);
+        Assert.Equal("not-a-directory", File.ReadAllText(fixture.OutputRoot));
+    }
+
+    [Fact]
+    public void IntentContractRejectsNoncanonicalOverlapAndFractionalPolicy()
+    {
+        using var fixture = new ConversionFixture("pass");
+        var tool = fixture.Tool();
+        var intent = tool.CreateCompositionIntent(fixture.Request());
+
+        var relative = intent with { OutputRoot = "relative-output" };
+        var error = Assert.Throws<TinyRustLmException>(() =>
+            TinyRustLmConversionTool.ValidateCompositionIntent(relative));
+        Assert.Equal("converter-intent-path", error.Code);
+
+        var overlapping = intent with { OutputRoot = intent.ModelSourceDirectory };
+        error = Assert.Throws<TinyRustLmException>(() =>
+            TinyRustLmConversionTool.ValidateCompositionIntent(overlapping));
+        Assert.Equal("converter-intent-tree-overlap", error.Code);
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => new TinyRustLmConversionTool(
+            intent.ConverterExecutablePath,
+            new TinyRustLmConversionPolicy(
+                TimeSpan.FromTicks(TimeSpan.TicksPerMillisecond + 1),
+                1024,
+                1024)));
+        Assert.False(Directory.Exists(fixture.OutputRoot));
+    }
+
+    [Theory]
+    [InlineData((int)FileAttributes.Normal, false)]
+    [InlineData((int)FileAttributes.ReadOnly, false)]
+    [InlineData((int)FileAttributes.Directory, true)]
+    [InlineData((int)FileAttributes.ReparsePoint, true)]
+    [InlineData((int)(FileAttributes.Directory | FileAttributes.ReparsePoint), true)]
+    public void OutputInventoryPolicyRejectsDirectoriesAndReparseEntries(
+        int rawAttributes,
+        bool expectedInvalid)
+    {
+        Assert.Equal(
+            expectedInvalid,
+            TinyRustLmConversionTool.IsInvalidOutputEntry((FileAttributes)rawAttributes));
     }
 
     private sealed class ConversionFixture : IDisposable
@@ -253,5 +503,28 @@ public sealed class ConversionToolTests
     {
         using var stream = File.OpenRead(path);
         return Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant();
+    }
+
+    private static void ReplaceFirst(string path, string expected, string replacement)
+    {
+        var text = File.ReadAllText(path);
+        var index = text.IndexOf(expected, StringComparison.Ordinal);
+        Assert.True(index >= 0);
+        File.WriteAllText(
+            path,
+            text[..index] + replacement + text[(index + expected.Length)..]);
+    }
+
+    private static void AddUnknownProperty(string path)
+    {
+        var text = File.ReadAllText(path).TrimEnd('\r', '\n');
+        File.WriteAllText(path, $"{text[..^1]},\"unknown\":true}}\n");
+    }
+
+    private static string ReadStringProperty(string path, string name)
+    {
+        using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllBytes(path));
+        return document.RootElement.GetProperty(name).GetString()
+            ?? throw new InvalidOperationException(name);
     }
 }
