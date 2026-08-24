@@ -1,20 +1,22 @@
 use std::io::{Read, Seek, SeekFrom};
 
 use sha2::{Digest, Sha256};
-use tinyrustlm_prompt2::{Prompt2Runtime, PROMPT2_ARTIFACT_SHA256, PROMPT2_FORMAT_PROFILE_SHA256};
+use tinyrustlm_prompt2::{
+    Prompt2Artifact, Prompt2Runtime, PROMPT2_ARTIFACT_SHA256, PROMPT2_FORMAT_PROFILE_SHA256,
+};
 use tinyrustlm_sampling2::{SAMPLING2_ARTIFACT_SHA256, SAMPLING2_FORMAT_PROFILE_SHA256};
 use tinyrustlm_slm2::{
-    validate_model, ValidatedModel, ValidationPolicy, SLM2_FORMAT_PROFILE_SHA256,
+    validate_model, ModelSpec, ValidatedModel, ValidationPolicy, SLM2_FORMAT_PROFILE_SHA256,
 };
 use tinyrustlm_template2::{QWEN3_TEMPLATE2_ARTIFACT_SHA256, TEMPLATE2_FORMAT_PROFILE_SHA256};
-use tinyrustlm_tokenizer2::TOKENIZER2_FORMAT_PROFILE_SHA256;
+use tinyrustlm_tokenizer2::{
+    QWEN3_TOKENIZER2_ARTIFACT_BYTES, QWEN3_TOKENIZER2_ARTIFACT_SHA256,
+    TOKENIZER2_FORMAT_PROFILE_SHA256,
+};
 
 use crate::format::{
     Acg2Error, Acg2Graph, Acg2Identity, Acg2Member, MemberRole, STREAM_HASH_BUFFER_BYTES,
 };
-
-const TOKENIZER_ARTIFACT_SHA256: &str =
-    "cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b";
 
 /// One owned random-access member source.
 pub trait Acg2Read: Read + Seek {}
@@ -205,6 +207,10 @@ where
     validate_prompt_bound_graph(&graph)?;
     let prompt_runtime = Prompt2Runtime::from_artifacts(&prompt, &tokenizer, &template, &sampling)
         .map_err(|_| Acg2Error::new("acg2-dependency"))?;
+    let prompt_artifact = prompt_runtime.prompt2_artifact();
+    if !model_spec_matches_prompt(model.spec(), &prompt_artifact) {
+        return Err(Acg2Error::new("acg2-dependency"));
+    }
     let model_tensor_count =
         u32::try_from(model.tensors().len()).map_err(|_| Acg2Error::new("acg2-arithmetic"))?;
     let model_artifact_bytes = graph.member(MemberRole::Model).artifact_bytes();
@@ -232,6 +238,11 @@ where
     })
 }
 
+fn model_spec_matches_prompt(spec: &ModelSpec, prompt: &Prompt2Artifact) -> bool {
+    spec.vocabulary_size == prompt.model_vocabulary_size()
+        && spec.context_length == prompt.maximum_context_tokens()
+}
+
 fn validate_owner_profiles() -> Result<(), Acg2Error> {
     let expected = [
         (MemberRole::Model, SLM2_FORMAT_PROFILE_SHA256),
@@ -251,7 +262,7 @@ fn validate_owner_profiles() -> Result<(), Acg2Error> {
 
 fn validate_prompt_bound_graph(graph: &Acg2Graph) -> Result<(), Acg2Error> {
     let expected = [
-        (MemberRole::Tokenizer, TOKENIZER_ARTIFACT_SHA256),
+        (MemberRole::Tokenizer, QWEN3_TOKENIZER2_ARTIFACT_SHA256),
         (MemberRole::Template, QWEN3_TEMPLATE2_ARTIFACT_SHA256),
         (MemberRole::Sampling, SAMPLING2_ARTIFACT_SHA256),
         (MemberRole::Prompt, PROMPT2_ARTIFACT_SHA256),
@@ -260,6 +271,9 @@ fn validate_prompt_bound_graph(graph: &Acg2Graph) -> Result<(), Acg2Error> {
         if hex_lower(&graph.member(role).artifact_sha256()) != digest {
             return Err(Acg2Error::new("acg2-dependency"));
         }
+    }
+    if graph.member(MemberRole::Tokenizer).artifact_bytes() != QWEN3_TOKENIZER2_ARTIFACT_BYTES {
+        return Err(Acg2Error::new("acg2-dependency"));
     }
     Ok(())
 }
@@ -315,6 +329,51 @@ fn hex_lower(bytes: &[u8]) -> String {
         output.push(char::from(HEX[(byte & 0x0f) as usize]));
     }
     output
+}
+
+#[cfg(test)]
+mod model_prompt_tests {
+    use tinyrustlm_prompt2::{write_prompt2, Prompt2Artifact, Prompt2Policy};
+    use tinyrustlm_slm2::{ArtifactClass, ModelSpec};
+
+    use super::model_spec_matches_prompt;
+
+    #[test]
+    fn model_vocabulary_and_context_must_both_match_prompt2() {
+        let mut bytes = Vec::new();
+        write_prompt2(&mut bytes).expect("Prompt2 writer");
+        let prompt = Prompt2Artifact::from_bytes(&bytes, Prompt2Policy::exact_profile_limits())
+            .expect("Prompt2 parser");
+        let exact = exact_spec();
+        assert!(model_spec_matches_prompt(&exact, &prompt));
+
+        let mut vocabulary_drift = exact.clone();
+        vocabulary_drift.vocabulary_size -= 1;
+        assert!(!model_spec_matches_prompt(&vocabulary_drift, &prompt));
+
+        let mut context_drift = exact;
+        context_drift.context_length -= 1;
+        assert!(!model_spec_matches_prompt(&context_drift, &prompt));
+    }
+
+    fn exact_spec() -> ModelSpec {
+        ModelSpec {
+            artifact_class: ArtifactClass::BaseModel,
+            vocabulary_size: 151_936,
+            context_length: 40_960,
+            embedding_size: 1_024,
+            feed_forward_size: 3_072,
+            layer_count: 28,
+            head_count: 16,
+            kv_head_count: 8,
+            head_dimension: 128,
+            rope_theta: 1_000_000.0,
+            normalization_epsilon: 0.000_001,
+            tied_embeddings: true,
+            qkv_bias: false,
+            qk_normalization: true,
+        }
+    }
 }
 
 #[cfg(test)]

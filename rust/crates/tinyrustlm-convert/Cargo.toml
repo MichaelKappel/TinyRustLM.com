@@ -12,7 +12,11 @@ serde.workspace = true
 serde_json.workspace = true
 sha2.workspace = true
 tinyrustlm-durability = { path = "../tinyrustlm-durability" }
+tinyrustlm-composition2 = { path = "../tinyrustlm-composition2" }
+tinyrustlm-prompt2 = { path = "../tinyrustlm-prompt2" }
+tinyrustlm-sampling2 = { path = "../tinyrustlm-sampling2" }
 tinyrustlm-slm2 = { path = "../tinyrustlm-slm2" }
+tinyrustlm-template2 = { path = "../tinyrustlm-template2" }
 tinyrustlm-tokenizer2 = { path = "../tinyrustlm-tokenizer2" }
 
 [lints]

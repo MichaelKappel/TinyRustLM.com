@@ -33,6 +33,12 @@ Template2, Sampling2, Prompt2, ACG2, fixed-piece admission, and runtime
 semantics. The companion transports bounded typed operations and never repairs,
 relabels, repacks, or partially activates an artifact.
 
+The Rust executable now implements one exact complete command,
+`tinyrustlm-convert qwen3-composition`, that creates and independently verifies
+the six required artifacts under one terminal receipt. Companion integration is
+still pending: the current private operation kernel does not invoke that
+command, and therefore cannot report `Available` from conversion.
+
 ## Implemented Foundation
 
 The private, nonpackable `TinyRustLM.Companion` solution component now owns the

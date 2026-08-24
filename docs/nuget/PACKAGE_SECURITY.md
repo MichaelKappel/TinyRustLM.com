@@ -83,6 +83,12 @@ cancellation, rejects reparse inputs, validates exact summaries, and rehashes
 promoted SLM2 or Tokenizer2 output. Structural conversion is not model-quality
 or browser evidence.
 
+The Rust executable's complete `qwen3-composition` command is implemented but
+not yet exposed by this managed wrapper. Until the wrapper validates its output
+root, six artifacts, component receipts, terminal receipt, graph identity, and
+nonzero failure semantics, managed conversion cannot claim a complete
+composition.
+
 ## Public API Baselines
 
 Each package has one sorted checked-in baseline under `eng/public-api`. The

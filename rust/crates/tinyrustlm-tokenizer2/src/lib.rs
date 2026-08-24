@@ -6,6 +6,7 @@ mod runtime;
 
 pub use format::{
     write_tokenizer, MergeDefinition, TokenDefinition, Tokenizer2Error, TokenizerIdentity,
-    TokenizerSpec, TOKENIZER2_FORMAT_PROFILE_ID, TOKENIZER2_FORMAT_PROFILE_SHA256,
+    TokenizerSpec, QWEN3_TOKENIZER2_ARTIFACT_BYTES, QWEN3_TOKENIZER2_ARTIFACT_SHA256,
+    TOKENIZER2_FORMAT_PROFILE_ID, TOKENIZER2_FORMAT_PROFILE_SHA256,
 };
 pub use runtime::{DecodeMode, Tokenizer2, TokenizerPolicy};

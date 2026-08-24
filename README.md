@@ -28,14 +28,17 @@ The following evidence is complete for its exact bound bytes:
   fixture;
 - the full Qwen3 Tokenizer2 native and two-profile Chromium-WASM parity gate;
 - exact publisher-source-to-native Template2 rendering parity for the frozen
-  supported Qwen3 branch; and
+  supported Qwen3 branch;
+- the complete create-only Qwen3 six-artifact composition conversion
+  transaction and cross-contract rejection tests, without a real-source run;
+  and
 - the current fifteen-symbol native ABI and canonical managed SDK surface.
 
-These results do not prove a real production model, model quality, Template2
-browser composition, seeded sampling parity, production acquisition, a public
-peer, a deployed browser conversation, or package publication. The next model
-path must close deterministic Sampling2 plus Template2/Tokenizer2 native and
-real-Chromium composition conformance before real-model promotion.
+These results do not prove a real production model, model quality, a complete
+real-source conversion, production acquisition, a public peer, a deployed
+browser conversation, or package publication. The next path must integrate the
+complete transaction into the private companion, then prove exact
+source/native/browser numerical parity and untouched quality before promotion.
 
 Campaign counters remain:
 
@@ -72,6 +75,12 @@ Template2, Sampling2, and Prompt2 artifact. Every member has an exact content
 identity and profile. Rust validates all members and their cross-contract
 invariants before fail-atomic activation. JavaScript and .NET do not repair,
 reinterpret, partially activate, or provide fallback members.
+
+`tinyrustlm-convert qwen3-composition` is the sole complete conversion command.
+Its Qwen3 model and Tokenizer2 operations are internal exact compiler
+primitives; an individual component receipt is not composition availability.
+The private managed wrapper and companion have not yet adopted this complete
+command, and no real complete-command pass is claimed.
 
 The production source target remains the immutable `Qwen/Qwen3-0.6B` revision
 recorded in the architecture contracts. Source selection is not quality

@@ -10,6 +10,11 @@ pub const TOKENIZER2_FORMAT_PROFILE_ID: &str = "org.minimodel.tokenizer2/2.0";
 /// SHA-256 of the exact checked-in Tokenizer2 profile bytes.
 pub const TOKENIZER2_FORMAT_PROFILE_SHA256: &str =
     "628427bf6e7f8d34ed14b331a5c636606aee9d5ef45a36a3cadc13338669b8de";
+/// Exact byte length of the sole Qwen3 Tokenizer2 artifact bound by Prompt2.
+pub const QWEN3_TOKENIZER2_ARTIFACT_BYTES: u64 = 7_038_773;
+/// SHA-256 of the sole Qwen3 Tokenizer2 artifact bound by Prompt2.
+pub const QWEN3_TOKENIZER2_ARTIFACT_SHA256: &str =
+    "cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b";
 
 pub(crate) const PROFILE_BYTES: &[u8] =
     include_bytes!("../../../../contracts/vnext/tokenizer2-format-profile.v1.json");

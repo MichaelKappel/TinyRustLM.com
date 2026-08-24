@@ -692,8 +692,12 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
+ "tinyrustlm-composition2",
  "tinyrustlm-durability",
+ "tinyrustlm-prompt2",
+ "tinyrustlm-sampling2",
  "tinyrustlm-slm2",
+ "tinyrustlm-template2",
  "tinyrustlm-tokenizer2",
 ]
 

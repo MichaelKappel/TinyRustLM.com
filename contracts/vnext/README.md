@@ -104,8 +104,8 @@ product model. See the immutable before-output decision in
 implementation record in
 `docs/architecture/qwen3-slm2-converter-implementation.md`.
 
-`qwen3-composition-conversion-profile.v1.json` freezes the sole complete
-source-to-composition transaction before its Rust implementation or any
+`qwen3-composition-conversion-profile.v1.json` froze the sole complete
+source-to-composition transaction before its Rust implementation and every
 complete output. It is 7,978 bytes at SHA-256
 `2f95f79783ec6cd12160d51f9697c5c77aab2e6cd46afeb5140fdb513e5d8158`.
 It binds related exact model and tokenizer source locks, the exact
@@ -114,12 +114,17 @@ Sampling2/Prompt2/ACG2 artifacts, bounded one-at-a-time dependency resolution,
 create-only terminal pass or rejection evidence, and explicit nonclaims for
 quality, runtime, browser, P2P, and publication.
 
-The component converter commands remain private exact compiler primitives;
-only `tinyrustlm-convert qwen3-composition` can establish the complete
-conversion boundary consumed by the product. This registration creates no
-complete composition bytes, receipt, runtime output, browser result, or
-campaign credit. See
-`docs/architecture/2026-08-24-complete-qwen3-composition-conversion-preregistration.md`.
+The Rust transaction is now implemented. It creates and independently verifies
+all six artifacts, exact cross-member vocabulary/context relationships, bounded
+resource preflight, component receipts, and mutually exclusive terminal
+evidence. The component converter commands remain private exact compiler
+primitives; only `tinyrustlm-convert qwen3-composition` can establish the
+complete conversion boundary consumed by the product. No complete command has
+yet run against real model source. See the immutable output-free registration
+in
+`docs/architecture/2026-08-24-complete-qwen3-composition-conversion-preregistration.md`
+and the implementation record in
+`docs/architecture/2026-08-24-complete-qwen3-composition-conversion-implementation.md`.
 
 ## Tokenizer2 Format Checkpoint
 

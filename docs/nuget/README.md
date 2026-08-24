@@ -29,7 +29,9 @@ transaction:
 - `TinyRustLM.Conversion` is private local-feed tooling around the exact
   `tinyrustlm-convert` executable. It owns bounded local Qwen3 Safetensors to
   mixed-Q8 SLM2 and Qwen tokenizer to Tokenizer2 process transactions. It is
-  not eligible for the public publish allowlist.
+  not eligible for the public publish allowlist. The Rust executable now also
+  owns the registered complete six-artifact command, but this managed wrapper
+  has not yet adopted it and cannot claim complete composition conversion.
 
 There is no local memory facade package, branded alias package family, or
 parallel package graph.

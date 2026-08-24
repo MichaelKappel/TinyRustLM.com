@@ -106,6 +106,11 @@ Tokenizer2. The wrapper enforces create-only outputs, bounded stdout/stderr,
 duration and cancellation limits, exact structured summaries, expected output
 and receipt existence, and streamed output-hash revalidation.
 
+The Rust executable now implements the separately registered
+`qwen3-composition` transaction over all six artifacts. The managed wrapper has
+not yet adopted that command at this checkpoint. Component conversion through
+the wrapper is therefore not complete composition availability.
+
 Conversion is structural and provenance evidence. It is not model quality,
 native inference, browser WASM parity, browser conversation, P2P availability,
 or publication evidence.
