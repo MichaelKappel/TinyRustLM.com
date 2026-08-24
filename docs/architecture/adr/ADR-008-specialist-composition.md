@@ -2,8 +2,8 @@
 
 ## Status
 
-Accepted as the target architecture. Existing ACG1 activation is an
-implementation input, not proof that any specialist improves product quality.
+Accepted as the target architecture. The initial exact ACG2 champion graph is
+governed by ADR-019. No specialist is promoted by this general decision.
 
 ## Decision Date
 
@@ -83,11 +83,12 @@ user instruction, treat untrusted memory as authority, or silently combine
 outputs. A specialist failure produces one visible typed transition and one
 coherent champion response path.
 
-The existing ACG1 implementation supplies useful atomic-activation evidence.
-The vNext ACG1 admission profile accepts only SLM2 base and vNext adapter
-identities. SLM1 fixtures and mutable adapter application are deleted from the
-production path after the SLM2 composition gate passes; no dual runtime mode
-or migration parser remains.
+The initial ACG2 profile binds exactly one complete SLM2 champion, Tokenizer2,
+Template2, Sampling2, and Prompt2. It contains no adapter or router extension
+surface. A future trained low-rank profile requires a separate exact ADR,
+portable kernels, independent vectors, sealed task evidence, and clean
+replacement of any affected current contract. No old composition reader,
+dual runtime mode, compatibility layer, or migration parser is retained.
 
 ## Alternatives
 
@@ -106,12 +107,12 @@ or migration parser remains.
 
 ## Authoritative Evidence
 
-- **Observed local fact**: the Rust runtime and packer implement immutable,
-  SHA-256-bound ACG1 graph validation and atomic activation for a loaded base
-  plus low-rank overlays.
-- **Observed local fact**: the repository contains trained-source low-rank
-  intake, adapter packing, deterministic router experiments, and tests, but no
-  evidence yet qualifies a twenty-model product portfolio.
+- **Observed local fact**: obsolete composition tooling and mutable adapter
+  paths remain confirmed release blockers until the registered clean cut
+  deletes them.
+- **Observed local fact**: research intake and experiments discuss low-rank
+  adapters and deterministic routing, but no evidence qualifies a specialist
+  composition for production.
 - **Sourced public fact**: LoRA defines frozen base weights plus trained
   low-rank updates in https://arxiv.org/abs/2106.09685.
 - **Sourced public fact**: DoRA decomposes weight magnitude and direction and
@@ -153,9 +154,10 @@ physical bytes actually avoided in the target store.
 
 ## Compatibility Impact
 
-The vNext production path accepts complete SLM2 artifacts and the exact vNext
-ACG1 profile only. It does not accept SLM1 models, legacy mutable adapter
-routes, arbitrary layer bundles, or approximate composition identities.
+The prelaunch production path accepts complete SLM2 artifacts through the
+exact ACG2 profile selected by ADR-019. It does not accept old composition
+formats, mutable adapter routes, arbitrary layer bundles, or approximate
+composition identities.
 
 Standalone specialists remain portable without a base. Adapter specialists
 declare exact base availability as a hard prerequisite and fail to the
@@ -181,7 +183,7 @@ deleted from shipping code.
 
 ## Acceptance Tests
 
-1. ACG1 parsing rejects wrong base bytes/hash/class, duplicate or reordered
+1. ACG2 parsing rejects wrong member bytes/hash/class, duplicate or reordered
    members, unknown flags, unsafe dimensions, non-finite values, trailing
    bytes, and composition-hash mismatch.
 2. Candidate validation failure preserves the active graph, model, KV state,

@@ -89,6 +89,11 @@ const records = [
     "tinyrustlm.weight-q8-row-symmetric-f32-scale/1",
     "[-127, 127]",
     "Fused multiply-add is forbidden"
+  ]],
+  ["ADR-019-acg2-champion-format.md", [
+    "org.minimodel.acg2/2.0",
+    "exactly 896 bytes",
+    "one transactional activation"
   ]]
 ];
 
@@ -96,7 +101,7 @@ function read(name) {
   return fs.readFileSync(path.join(adrDirectory, name), "utf8");
 }
 
-test("contains the complete accepted ADR-001 through ADR-018 inventory", () => {
+test("contains the complete accepted ADR-001 through ADR-019 inventory", () => {
   const actual = fs.readdirSync(adrDirectory)
     .filter((name) => /^ADR-\d{3}-.+\.md$/u.test(name))
     .sort();
