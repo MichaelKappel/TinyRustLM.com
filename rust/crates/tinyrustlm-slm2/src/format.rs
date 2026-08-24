@@ -11,6 +11,7 @@ const MAGIC: [u8; 8] = *b"SLM2\r\n\x1a\n";
 const FORMAT_ID: [u8; 16] = *b"minimodel.slm2\0\0";
 const HEADER_BYTES: usize = 224;
 const SECTION_ALIGNMENT: u64 = 64;
+const QUANT_RECORD_BYTES: usize = 128;
 const TENSOR_RECORD_BYTES: usize = 192;
 const FORMAT_MAXIMUM_FILE_BYTES: u64 = 9_007_199_254_740_991;
 const DEFAULT_MAXIMUM_FILE_BYTES: u64 = 68_719_476_736;
@@ -19,8 +20,8 @@ const MAXIMUM_STRING_TABLE_BYTES: u64 = 16_777_216;
 const MAXIMUM_STRINGS: u32 = 262_144;
 const MAXIMUM_TENSORS: u32 = 262_144;
 const STREAM_BUFFER_BYTES: usize = 1_048_576;
-const TENSOR_LAYOUT_DOMAIN: &[u8] = b"tinyrustlm.slm2.tensor-layout.v1\0";
-const TENSOR_PAYLOAD_DOMAIN: &[u8] = b"tinyrustlm.slm2.tensor-payload.v1\0";
+const TENSOR_LAYOUT_DOMAIN: &[u8] = b"tinyrustlm.slm2.tensor-layout.mixed-q8-row.v1\0";
+const TENSOR_PAYLOAD_DOMAIN: &[u8] = b"tinyrustlm.slm2.tensor-payload.mixed-q8-row.v1\0";
 const SCHEMA: &str = "org.minimodel.slm/2.0";
 const ACTIVATION_PROFILE: &str = "tinyrustlm.silu-gated/1";
 const ARCHITECTURE_PROFILE: &str = "tinyrustlm.decoder-transformer/1";
@@ -29,9 +30,145 @@ const NORMALIZATION_PROFILE: &str = "tinyrustlm.rmsnorm/1";
 const POSITION_PROFILE: &str = "tinyrustlm.rope/1";
 const KV_PROFILE: &str = "tinyrustlm.kv-f32/1";
 const MINIMUM_RUNTIME: &str = "tinyrustlm.runtime/2.0";
-const OPERATOR_PROFILE: &str = "tinyrustlm.decoder-f32/1";
-const TENSOR_PROFILE: &str = "tinyrustlm.tensor-f32/1";
-const TENSOR_ROLE_PROFILE: &str = "tinyrustlm.decoder-f32-tensor-roles/1";
+const OPERATOR_PROFILE: &str = "tinyrustlm.decoder-q8-row-symmetric-f32-accumulate/1";
+const TENSOR_PROFILE: &str = "tinyrustlm.tensor-mixed-q8-row-f32/1";
+const TENSOR_ROLE_PROFILE: &str = "tinyrustlm.decoder-matrix-q8-normalization-bias-f32-roles/1";
+const WEIGHT_PROFILE: &str = "tinyrustlm.weight-q8-row-symmetric-f32-scale/1";
+const QUANTIZER_PROFILE: &str = "tinyrustlm.quantize-q8-row-symmetric-f32/1";
+const SCALAR_KERNEL_PROFILE: &str = "tinyrustlm.matmul-q8-row-f32-scalar/1";
+
+/// Exact stored scalar encoding admitted by the current SLM2 profile.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(u16)]
+pub enum ElementType {
+    /// Finite little-endian IEEE-754 binary32.
+    F32 = 1,
+    /// Outer-row symmetric signed int8 with one binary32 scale per row.
+    Q8RowSymmetric = 2,
+}
+
+impl ElementType {
+    fn from_u16(value: u16) -> Result<Self, Slm2Error> {
+        match value {
+            1 => Ok(Self::F32),
+            2 => Ok(Self::Q8RowSymmetric),
+            _ => Err(Slm2Error::new("slm2-invalid-tensor-encoding")),
+        }
+    }
+}
+
+fn q8_scale_from_maximum(maximum: f32) -> Result<f32, Slm2Error> {
+    let scale = if maximum == 0.0 {
+        1.0_f32
+    } else {
+        maximum / 127.0_f32
+    };
+    if !scale.is_finite() || scale <= 0.0 || scale.to_bits() == (-0.0_f32).to_bits() {
+        return Err(Slm2Error::new("slm2-invalid-q8-scale"));
+    }
+    Ok(scale)
+}
+
+fn quantize_q8_value(value: f32, scale: f32) -> Result<i8, Slm2Error> {
+    if !value.is_finite() {
+        return Err(Slm2Error::new("slm2-nonfinite-f32"));
+    }
+    let code = (value / scale).round().clamp(-127.0, 127.0) as i8;
+    if code == i8::MIN {
+        return Err(Slm2Error::new("slm2-invalid-q8-code"));
+    }
+    Ok(code)
+}
+
+/// Quantizes one nonempty finite F32 row with the exact registered Q8 rule.
+pub fn quantize_q8_row_symmetric_f32(values: &[f32]) -> Result<(f32, Vec<i8>), Slm2Error> {
+    if values.is_empty() {
+        return Err(Slm2Error::new("slm2-invalid-q8-source"));
+    }
+    let mut maximum = 0.0_f32;
+    for value in values {
+        if !value.is_finite() {
+            return Err(Slm2Error::new("slm2-nonfinite-f32"));
+        }
+        maximum = maximum.max(value.abs());
+    }
+    let scale = q8_scale_from_maximum(maximum)?;
+    let codes = values
+        .iter()
+        .map(|value| quantize_q8_value(*value, scale))
+        .collect::<Result<Vec<_>, _>>()?;
+    if codes.iter().all(|code| *code == 0) && scale.to_bits() != 1.0_f32.to_bits() {
+        return Err(Slm2Error::new("slm2-invalid-q8-scale"));
+    }
+    Ok((scale, codes))
+}
+
+/// Executes the exact ordered, binary32, no-FMA Q8 row-matrix kernel.
+pub fn q8_row_symmetric_f32_matvec(
+    payload: &[u8],
+    rows: usize,
+    columns: usize,
+    input: &[f32],
+) -> Result<Vec<f32>, Slm2Error> {
+    let row_bytes = columns
+        .checked_add(4)
+        .ok_or_else(|| Slm2Error::new("slm2-q8-matvec-shape"))?;
+    let expected = rows
+        .checked_mul(row_bytes)
+        .ok_or_else(|| Slm2Error::new("slm2-q8-matvec-shape"))?;
+    if rows == 0 || columns == 0 || input.len() != columns || payload.len() != expected {
+        return Err(Slm2Error::new("slm2-q8-matvec-shape"));
+    }
+    if input.iter().any(|value| !value.is_finite()) {
+        return Err(Slm2Error::new("slm2-runtime-nonfinite"));
+    }
+    let mut output = Vec::new();
+    output
+        .try_reserve_exact(rows)
+        .map_err(|_| Slm2Error::new("slm2-allocation"))?;
+    for row in 0..rows {
+        let start = row
+            .checked_mul(row_bytes)
+            .ok_or_else(|| Slm2Error::new("slm2-q8-matvec-shape"))?;
+        let scale = f32::from_le_bytes(
+            payload[start..start + 4]
+                .try_into()
+                .map_err(|_| Slm2Error::new("slm2-invalid-q8-payload"))?,
+        );
+        if !scale.is_finite() || scale <= 0.0 {
+            return Err(Slm2Error::new("slm2-invalid-q8-payload"));
+        }
+        let mut sum = 0.0_f32;
+        for (column, input_value) in input.iter().enumerate() {
+            let code = payload[start + 4 + column] as i8;
+            if code == i8::MIN {
+                return Err(Slm2Error::new("slm2-invalid-q8-payload"));
+            }
+            let dequantized = scale * f32::from(code);
+            let term = *input_value * dequantized;
+            sum += term;
+        }
+        if !sum.is_finite() {
+            return Err(Slm2Error::new("slm2-runtime-nonfinite"));
+        }
+        output.push(sum);
+    }
+    Ok(output)
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct TensorStorage {
+    element_type: ElementType,
+    quant_profile_index: u16,
+    stored_bytes: u64,
+    block_elements: u32,
+    block_bytes: u32,
+    scale_type: u16,
+    zero_point_type: u16,
+    packing_order: u16,
+    accumulator_type: u16,
+    tail_rule: u16,
+}
 
 /// A model role admitted by the exact SLM2 2.0 profile.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -61,7 +198,7 @@ impl ArtifactClass {
     }
 }
 
-/// Closed architecture metadata for the SLM2 2.0 F32 reference profile.
+/// Closed architecture metadata for the sole SLM2 2.0 mixed-weight profile.
 #[derive(Clone, Debug, PartialEq)]
 pub struct ModelSpec {
     /// The exact model role.
@@ -132,7 +269,7 @@ impl ModelSpec {
     }
 }
 
-/// Canonical semantics for one dense F32 tensor.
+/// Canonical semantics for one tensor in the closed model registry.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TensorSpec {
     semantic_role: String,
@@ -243,10 +380,55 @@ impl TensorSpec {
         })
     }
 
-    fn expected_payload_bytes(&self) -> Result<u64, Slm2Error> {
+    fn expected_source_bytes(&self) -> Result<u64, Slm2Error> {
         self.logical_elements()?
             .checked_mul(4)
             .ok_or_else(|| Slm2Error::new("slm2-invalid-tensor"))
+    }
+
+    fn storage(&self) -> Result<TensorStorage, Slm2Error> {
+        if is_q8_role(&self.semantic_role) {
+            if self.rank != 2 {
+                return Err(Slm2Error::new("slm2-invalid-tensor-encoding"));
+            }
+            let rows = self.shape[0];
+            let columns = self.shape[1];
+            let block_elements = u32::try_from(columns)
+                .map_err(|_| Slm2Error::new("slm2-invalid-tensor-encoding"))?;
+            let block_bytes = block_elements
+                .checked_add(4)
+                .ok_or_else(|| Slm2Error::new("slm2-invalid-tensor-encoding"))?;
+            let stored_bytes = rows
+                .checked_mul(u64::from(block_bytes))
+                .ok_or_else(|| Slm2Error::new("slm2-invalid-tensor-encoding"))?;
+            Ok(TensorStorage {
+                element_type: ElementType::Q8RowSymmetric,
+                quant_profile_index: 0,
+                stored_bytes,
+                block_elements,
+                block_bytes,
+                scale_type: 1,
+                zero_point_type: 0,
+                packing_order: 1,
+                accumulator_type: 1,
+                tail_rule: 1,
+            })
+        } else if is_f32_role(&self.semantic_role) {
+            Ok(TensorStorage {
+                element_type: ElementType::F32,
+                quant_profile_index: u16::MAX,
+                stored_bytes: self.expected_source_bytes()?,
+                block_elements: 0,
+                block_bytes: 0,
+                scale_type: 0,
+                zero_point_type: 0,
+                packing_order: 0,
+                accumulator_type: 0,
+                tail_rule: 0,
+            })
+        } else {
+            Err(Slm2Error::new("slm2-invalid-tensor-registry"))
+        }
     }
 }
 
@@ -257,7 +439,10 @@ pub struct TensorInput<R> {
 }
 
 impl<R> TensorInput<R> {
-    /// Creates an input whose reader contains only this tensor's F32 payload.
+    /// Creates an input whose reader contains this tensor's finite F32 source values.
+    ///
+    /// The writer derives the sole stored encoding from the exact semantic role;
+    /// callers cannot select an alternate format or quantization profile.
     pub const fn new(spec: TensorSpec, reader: R) -> Self {
         Self { spec, reader }
     }
@@ -556,9 +741,19 @@ pub struct ValidatedTensor {
     rank: u8,
     shape: [u64; 8],
     logical_elements: u64,
+    element_type: ElementType,
+    quant_profile_index: u16,
+    stored_bytes: u64,
     payload_offset: u64,
     payload_length: u64,
     payload_alignment: u32,
+    block_elements: u32,
+    block_bytes: u32,
+    scale_type: u16,
+    zero_point_type: u16,
+    packing_order: u16,
+    accumulator_type: u16,
+    tail_rule: u16,
     payload_sha256: [u8; 32],
 }
 
@@ -598,6 +793,21 @@ impl ValidatedTensor {
         self.logical_elements
     }
 
+    /// Returns the exact on-disk element encoding.
+    pub const fn element_type(&self) -> ElementType {
+        self.element_type
+    }
+
+    /// Returns zero for Q8-row tensors and `u16::MAX` for F32 tensors.
+    pub const fn quant_profile_index(&self) -> u16 {
+        self.quant_profile_index
+    }
+
+    /// Returns the exact stored byte count before payload placement.
+    pub const fn stored_bytes(&self) -> u64 {
+        self.stored_bytes
+    }
+
     /// Returns the absolute file offset of payload bytes.
     pub const fn payload_offset(&self) -> u64 {
         self.payload_offset
@@ -611,6 +821,41 @@ impl ValidatedTensor {
     /// Returns the required payload alignment.
     pub const fn payload_alignment(&self) -> u32 {
         self.payload_alignment
+    }
+
+    /// Returns logical elements in one Q8 row block, or zero for F32.
+    pub const fn block_elements(&self) -> u32 {
+        self.block_elements
+    }
+
+    /// Returns bytes in one Q8 row block, or zero for F32.
+    pub const fn block_bytes(&self) -> u32 {
+        self.block_bytes
+    }
+
+    /// Returns the exact scale encoding enum.
+    pub const fn scale_type(&self) -> u16 {
+        self.scale_type
+    }
+
+    /// Returns the exact zero-point encoding enum.
+    pub const fn zero_point_type(&self) -> u16 {
+        self.zero_point_type
+    }
+
+    /// Returns the exact payload packing-order enum.
+    pub const fn packing_order(&self) -> u16 {
+        self.packing_order
+    }
+
+    /// Returns the exact accumulator enum.
+    pub const fn accumulator_type(&self) -> u16 {
+        self.accumulator_type
+    }
+
+    /// Returns the exact tail-rule enum.
+    pub const fn tail_rule(&self) -> u16 {
+        self.tail_rule
     }
 
     /// Returns the domain-separated tensor payload SHA-256.
@@ -653,11 +898,13 @@ impl ValidatedModel {
 #[derive(Clone)]
 struct PreparedTensor {
     spec: TensorSpec,
+    storage: TensorStorage,
     source_index: usize,
     logical_elements: u64,
     payload_length: u64,
     payload_relative_offset: u64,
     payload_hash: [u8; 32],
+    source_hash: [u8; 32],
     role_string_id: u32,
     name_string_id: u32,
 }
@@ -672,6 +919,7 @@ struct Header {
     manifest_length: u64,
     string_table_offset: u64,
     string_table_length: u64,
+    quant_table_offset: u64,
     tensor_table_offset: u64,
     tensor_count: u32,
     payload_offset: u64,
@@ -717,6 +965,14 @@ where
     validate_writer_uniqueness(tensors, &order)?;
 
     let mut string_set = BTreeSet::new();
+    for profile in [
+        WEIGHT_PROFILE,
+        QUANTIZER_PROFILE,
+        SCALAR_KERNEL_PROFILE,
+        TENSOR_ROLE_PROFILE,
+    ] {
+        string_set.insert(profile.to_owned());
+    }
     for index in &order {
         string_set.insert(tensors[*index].spec.semantic_role.clone());
         string_set.insert(tensors[*index].spec.canonical_name.clone());
@@ -742,14 +998,19 @@ where
     }
     let manifest_sha256 = sha256(&manifest);
     let string_table = encode_string_table(&strings)?;
+    let quant_table = encode_quantization_record(&string_ids)?;
 
     let manifest_offset = align_up(HEADER_BYTES as u64, SECTION_ALIGNMENT)?;
     let string_table_offset = align_up(
         checked_end(manifest_offset, manifest.len() as u64)?,
         SECTION_ALIGNMENT,
     )?;
-    let tensor_table_offset = align_up(
+    let quant_table_offset = align_up(
         checked_end(string_table_offset, string_table.len() as u64)?,
+        SECTION_ALIGNMENT,
+    )?;
+    let tensor_table_offset = align_up(
+        checked_end(quant_table_offset, quant_table.len() as u64)?,
         SECTION_ALIGNMENT,
     )?;
     let tensor_table_length = (tensors.len() as u64)
@@ -765,22 +1026,25 @@ where
     let mut buffer = vec![0_u8; STREAM_BUFFER_BYTES];
     for index in &order {
         let input = &mut tensors[*index];
-        let payload_length = source_length(&mut input.reader)?;
-        let expected = input.spec.expected_payload_bytes()?;
-        if payload_length != expected {
+        let source_bytes = source_length(&mut input.reader)?;
+        let expected_source_bytes = input.spec.expected_source_bytes()?;
+        if source_bytes != expected_source_bytes {
             return Err(Slm2Error::new("slm2-tensor-size-mismatch"));
         }
         let logical_elements = input.spec.logical_elements()?;
+        let storage = input.spec.storage()?;
+        let payload_length = storage.stored_bytes;
         let absolute_offset = align_up(absolute_cursor, u64::from(input.spec.payload_alignment))?;
         let next_cursor = checked_end(absolute_offset, payload_length)?;
         if next_cursor > DEFAULT_MAXIMUM_FILE_BYTES {
             return Err(Slm2Error::new("slm2-file-size-limit"));
         }
-        let payload_hash = scan_tensor_source(
+        let (payload_hash, source_hash) = scan_tensor_source(
             &mut input.reader,
             spec.artifact_class,
             &input.spec,
-            payload_length,
+            source_bytes,
+            storage,
             &mut buffer,
         )?;
         let payload_relative_offset = absolute_offset
@@ -789,11 +1053,13 @@ where
         absolute_cursor = next_cursor;
         prepared.push(PreparedTensor {
             spec: input.spec.clone(),
+            storage,
             source_index: *index,
             logical_elements,
             payload_length,
             payload_relative_offset,
             payload_hash,
+            source_hash,
             role_string_id: *string_ids
                 .get(input.spec.semantic_role.as_str())
                 .ok_or_else(|| Slm2Error::new("slm2-invalid-string-table"))?,
@@ -814,6 +1080,7 @@ where
         manifest_length: manifest.len() as u64,
         string_table_offset,
         string_table_length: string_table.len() as u64,
+        quant_table_offset,
         tensor_table_offset,
         tensor_count: u32::try_from(prepared.len())
             .map_err(|_| Slm2Error::new("slm2-invalid-tensor-count"))?,
@@ -831,6 +1098,8 @@ where
     output.write_all(&manifest)?;
     output.write_zeros_to(string_table_offset)?;
     output.write_all(&string_table)?;
+    output.write_zeros_to(quant_table_offset)?;
+    output.write_all(&quant_table)?;
     output.write_zeros_to(tensor_table_offset)?;
     output.write_all(&tensor_table)?;
     output.write_zeros_to(payload_offset)?;
@@ -840,18 +1109,19 @@ where
         output.write_zeros_to(absolute_offset)?;
         let input = &mut tensors[tensor.source_index];
         let current_length = source_length(&mut input.reader)?;
-        if current_length != tensor.payload_length {
+        if current_length != tensor.spec.expected_source_bytes()? {
             return Err(Slm2Error::new("slm2-source-drift"));
         }
-        let copied_hash = copy_tensor_source(
+        let (copied_hash, copied_source_hash) = copy_tensor_source(
             &mut input.reader,
             &mut output,
             spec.artifact_class,
             &tensor.spec,
-            tensor.payload_length,
+            current_length,
+            tensor.storage,
             &mut buffer,
         )?;
-        if copied_hash != tensor.payload_hash {
+        if copied_hash != tensor.payload_hash || copied_source_hash != tensor.source_hash {
             return Err(Slm2Error::new("slm2-source-drift"));
         }
     }
@@ -902,6 +1172,9 @@ where
     let mut string_bytes = vec![0_u8; string_length];
     read_exact_at(source, header.string_table_offset, &mut string_bytes)?;
     let strings = decode_string_table(&string_bytes)?;
+    let mut quantization_bytes = [0_u8; QUANT_RECORD_BYTES];
+    read_exact_at(source, header.quant_table_offset, &mut quantization_bytes)?;
+    decode_quantization_record(&quantization_bytes, &strings)?;
 
     let mut tensors = Vec::with_capacity(header.tensor_count as usize);
     for index in 0..header.tensor_count {
@@ -943,6 +1216,7 @@ where
             source,
             spec.artifact_class,
             &spec_for_hash,
+            validated_tensor_storage(tensor),
             tensor.payload_offset,
             tensor.payload_length,
             &mut buffer,
@@ -1328,6 +1602,81 @@ fn decode_string_table(bytes: &[u8]) -> Result<Vec<Arc<str>>, Slm2Error> {
     Ok(strings)
 }
 
+fn encode_quantization_record(
+    string_ids: &BTreeMap<&str, u32>,
+) -> Result<[u8; QUANT_RECORD_BYTES], Slm2Error> {
+    let mut bytes = [0_u8; QUANT_RECORD_BYTES];
+    put_u16(&mut bytes, 0, 1)?;
+    for (offset, profile) in [
+        (4, WEIGHT_PROFILE),
+        (8, QUANTIZER_PROFILE),
+        (12, SCALAR_KERNEL_PROFILE),
+        (16, TENSOR_ROLE_PROFILE),
+    ] {
+        put_u32(
+            &mut bytes,
+            offset,
+            *string_ids
+                .get(profile)
+                .ok_or_else(|| Slm2Error::new("slm2-invalid-quantization"))?,
+        )?;
+    }
+    put_u16(&mut bytes, 20, ElementType::F32 as u16)?;
+    put_u16(&mut bytes, 22, ElementType::Q8RowSymmetric as u16)?;
+    put_u16(&mut bytes, 24, 8)?;
+    put_u16(&mut bytes, 26, 1)?;
+    put_i16(&mut bytes, 28, -127)?;
+    put_i16(&mut bytes, 30, 127)?;
+    put_u16(&mut bytes, 32, 1)?;
+    put_u16(&mut bytes, 36, 1)?;
+    put_u16(&mut bytes, 38, 1)?;
+    put_u16(&mut bytes, 40, 1)?;
+    put_u16(&mut bytes, 42, 1)?;
+    put_u32(&mut bytes, 48, 127.0_f32.to_bits())?;
+    put_u32(&mut bytes, 52, 1.0_f32.to_bits())?;
+    Ok(bytes)
+}
+
+fn decode_quantization_record(
+    bytes: &[u8; QUANT_RECORD_BYTES],
+    strings: &[Arc<str>],
+) -> Result<(), Slm2Error> {
+    if read_u16(bytes, 0)? != 1
+        || read_u16(bytes, 2)? != 0
+        || read_u16(bytes, 20)? != ElementType::F32 as u16
+        || read_u16(bytes, 22)? != ElementType::Q8RowSymmetric as u16
+        || read_u16(bytes, 24)? != 8
+        || read_u16(bytes, 26)? != 1
+        || read_i16(bytes, 28)? != -127
+        || read_i16(bytes, 30)? != 127
+        || read_u16(bytes, 32)? != 1
+        || read_u16(bytes, 34)? != 0
+        || read_u16(bytes, 36)? != 1
+        || read_u16(bytes, 38)? != 1
+        || read_u16(bytes, 40)? != 1
+        || read_u16(bytes, 42)? != 1
+        || read_u16(bytes, 44)? != 0
+        || read_u16(bytes, 46)? != 0
+        || read_u32(bytes, 48)? != 127.0_f32.to_bits()
+        || read_u32(bytes, 52)? != 1.0_f32.to_bits()
+        || bytes[56..].iter().any(|byte| *byte != 0)
+    {
+        return Err(Slm2Error::new("slm2-invalid-quantization"));
+    }
+    for (offset, expected) in [
+        (4, WEIGHT_PROFILE),
+        (8, QUANTIZER_PROFILE),
+        (12, SCALAR_KERNEL_PROFILE),
+        (16, TENSOR_ROLE_PROFILE),
+    ] {
+        let id = read_u32(bytes, offset)?;
+        if strings.get(id as usize).map(AsRef::as_ref) != Some(expected) {
+            return Err(Slm2Error::new("slm2-invalid-quantization"));
+        }
+    }
+    Ok(())
+}
+
 fn encode_tensor_table(tensors: &[PreparedTensor]) -> Result<Vec<u8>, Slm2Error> {
     let length = tensors
         .len()
@@ -1339,8 +1688,8 @@ fn encode_tensor_table(tensors: &[PreparedTensor]) -> Result<Vec<u8>, Slm2Error>
         let record = &mut output[start..start + TENSOR_RECORD_BYTES];
         put_u16(record, 0, 1)?;
         record[2] = tensor.spec.rank;
-        put_u16(record, 4, 1)?;
-        put_u16(record, 6, u16::MAX)?;
+        put_u16(record, 4, tensor.storage.element_type as u16)?;
+        put_u16(record, 6, tensor.storage.quant_profile_index)?;
         put_u32(record, 8, tensor.role_string_id)?;
         put_u32(record, 12, tensor.name_string_id)?;
         put_i32(record, 16, tensor.spec.layer)?;
@@ -1350,10 +1699,17 @@ fn encode_tensor_table(tensors: &[PreparedTensor]) -> Result<Vec<u8>, Slm2Error>
             put_u64(record, 32 + dimension_index * 8, *dimension)?;
         }
         put_u64(record, 96, tensor.logical_elements)?;
-        put_u64(record, 104, tensor.payload_length)?;
+        put_u64(record, 104, tensor.storage.stored_bytes)?;
         put_u64(record, 112, tensor.payload_relative_offset)?;
         put_u64(record, 120, tensor.payload_length)?;
         put_u32(record, 128, tensor.spec.payload_alignment)?;
+        put_u32(record, 132, tensor.storage.block_elements)?;
+        put_u32(record, 136, tensor.storage.block_bytes)?;
+        put_u16(record, 140, tensor.storage.scale_type)?;
+        put_u16(record, 142, tensor.storage.zero_point_type)?;
+        put_u16(record, 144, tensor.storage.packing_order)?;
+        put_u16(record, 146, tensor.storage.accumulator_type)?;
+        put_u16(record, 148, tensor.storage.tail_rule)?;
         record[160..192].copy_from_slice(&tensor.payload_hash);
     }
     Ok(output)
@@ -1366,10 +1722,10 @@ fn decode_tensor_record(
 ) -> Result<ValidatedTensor, Slm2Error> {
     if read_u16(record, 0)? != 1
         || record[3] != 0
-        || read_u16(record, 4)? != 1
-        || read_u16(record, 6)? != u16::MAX
         || read_u32(record, 28)? != 0
-        || record[132..160].iter().any(|byte| *byte != 0)
+        || read_u16(record, 150)? != 0
+        || read_u32(record, 152)? != 0
+        || read_u32(record, 156)? != 0
     {
         return Err(Slm2Error::new("slm2-invalid-tensor"));
     }
@@ -1406,12 +1762,25 @@ fn decode_tensor_record(
     };
     spec.validate()?;
     let logical_elements = spec.logical_elements()?;
+    let expected_storage = spec.storage()?;
+    let element_type = ElementType::from_u16(read_u16(record, 4)?)?;
+    let quant_profile_index = read_u16(record, 6)?;
+    let stored_bytes = read_u64(record, 104)?;
     let payload_length = read_u64(record, 120)?;
     if read_u64(record, 96)? != logical_elements
-        || read_u64(record, 104)? != payload_length
-        || payload_length != spec.expected_payload_bytes()?
+        || stored_bytes != payload_length
+        || element_type != expected_storage.element_type
+        || quant_profile_index != expected_storage.quant_profile_index
+        || stored_bytes != expected_storage.stored_bytes
+        || read_u32(record, 132)? != expected_storage.block_elements
+        || read_u32(record, 136)? != expected_storage.block_bytes
+        || read_u16(record, 140)? != expected_storage.scale_type
+        || read_u16(record, 142)? != expected_storage.zero_point_type
+        || read_u16(record, 144)? != expected_storage.packing_order
+        || read_u16(record, 146)? != expected_storage.accumulator_type
+        || read_u16(record, 148)? != expected_storage.tail_rule
     {
-        return Err(Slm2Error::new("slm2-tensor-size-mismatch"));
+        return Err(Slm2Error::new("slm2-invalid-tensor-encoding"));
     }
     let payload_offset = payload_base
         .checked_add(read_u64(record, 112)?)
@@ -1431,9 +1800,19 @@ fn decode_tensor_record(
         rank,
         shape,
         logical_elements,
+        element_type,
+        quant_profile_index,
+        stored_bytes,
         payload_offset,
         payload_length,
         payload_alignment: spec.payload_alignment,
+        block_elements: expected_storage.block_elements,
+        block_bytes: expected_storage.block_bytes,
+        scale_type: expected_storage.scale_type,
+        zero_point_type: expected_storage.zero_point_type,
+        packing_order: expected_storage.packing_order,
+        accumulator_type: expected_storage.accumulator_type,
+        tail_rule: expected_storage.tail_rule,
         payload_sha256,
     })
 }
@@ -1452,6 +1831,9 @@ fn encode_header(header: Header) -> Result<[u8; HEADER_BYTES], Slm2Error> {
     put_u64(&mut bytes, 56, header.manifest_length)?;
     put_u64(&mut bytes, 64, header.string_table_offset)?;
     put_u64(&mut bytes, 72, header.string_table_length)?;
+    put_u64(&mut bytes, 80, header.quant_table_offset)?;
+    put_u32(&mut bytes, 88, 1)?;
+    put_u32(&mut bytes, 92, QUANT_RECORD_BYTES as u32)?;
     put_u64(&mut bytes, 96, header.tensor_table_offset)?;
     put_u32(&mut bytes, 104, header.tensor_count)?;
     put_u32(&mut bytes, 108, TENSOR_RECORD_BYTES as u32)?;
@@ -1491,19 +1873,24 @@ fn decode_header(
     {
         return Err(Slm2Error::new("slm2-file-size-mismatch"));
     }
-    if bytes[80..96].iter().any(|byte| *byte != 0) || bytes[112..144].iter().any(|byte| *byte != 0)
-    {
+    if bytes[112..144].iter().any(|byte| *byte != 0) {
         return Err(Slm2Error::new("slm2-unsupported-table"));
     }
     let manifest_offset = read_u64(bytes, 48)?;
     let manifest_length = read_u64(bytes, 56)?;
     let string_table_offset = read_u64(bytes, 64)?;
     let string_table_length = read_u64(bytes, 72)?;
+    let quant_table_offset = read_u64(bytes, 80)?;
+    let quant_count = read_u32(bytes, 88)?;
+    let quant_record_size = read_u32(bytes, 92)?;
     let tensor_table_offset = read_u64(bytes, 96)?;
     let tensor_count = read_u32(bytes, 104)?;
     let tensor_record_size = read_u32(bytes, 108)?;
     let payload_offset = read_u64(bytes, 144)?;
     let payload_length = read_u64(bytes, 152)?;
+    if quant_count != 1 || quant_record_size != QUANT_RECORD_BYTES as u32 {
+        return Err(Slm2Error::new("slm2-invalid-quantization"));
+    }
     if manifest_length == 0
         || manifest_length > MAXIMUM_MANIFEST_BYTES
         || string_table_length == 0
@@ -1520,11 +1907,15 @@ fn decode_header(
         checked_end(manifest_offset, manifest_length)?,
         SECTION_ALIGNMENT,
     )?;
+    let expected_quant_offset = align_up(
+        checked_end(string_table_offset, string_table_length)?,
+        SECTION_ALIGNMENT,
+    )?;
     let tensor_table_length = u64::from(tensor_count)
         .checked_mul(TENSOR_RECORD_BYTES as u64)
         .ok_or_else(|| Slm2Error::new("slm2-offset-overflow"))?;
     let expected_tensor_offset = align_up(
-        checked_end(string_table_offset, string_table_length)?,
+        checked_end(quant_table_offset, QUANT_RECORD_BYTES as u64)?,
         SECTION_ALIGNMENT,
     )?;
     let expected_payload_offset = align_up(
@@ -1533,6 +1924,7 @@ fn decode_header(
     )?;
     if manifest_offset != expected_manifest_offset
         || string_table_offset != expected_string_offset
+        || quant_table_offset != expected_quant_offset
         || tensor_table_offset != expected_tensor_offset
         || payload_offset != expected_payload_offset
         || payload_length == 0
@@ -1547,6 +1939,7 @@ fn decode_header(
         manifest_length,
         string_table_offset,
         string_table_length,
+        quant_table_offset,
         tensor_table_offset,
         tensor_count,
         payload_offset,
@@ -1574,6 +1967,12 @@ fn validate_section_padding<R: Read + Seek>(
     validate_zero_range(
         source,
         checked_end(header.string_table_offset, header.string_table_length)?,
+        header.quant_table_offset,
+        &mut buffer,
+    )?;
+    validate_zero_range(
+        source,
+        checked_end(header.quant_table_offset, QUANT_RECORD_BYTES as u64)?,
         header.tensor_table_offset,
         &mut buffer,
     )?;
@@ -1646,6 +2045,21 @@ fn validated_tensor_spec(tensor: &ValidatedTensor) -> Result<TensorSpec, Slm2Err
     )
 }
 
+fn validated_tensor_storage(tensor: &ValidatedTensor) -> TensorStorage {
+    TensorStorage {
+        element_type: tensor.element_type,
+        quant_profile_index: tensor.quant_profile_index,
+        stored_bytes: tensor.stored_bytes,
+        block_elements: tensor.block_elements,
+        block_bytes: tensor.block_bytes,
+        scale_type: tensor.scale_type,
+        zero_point_type: tensor.zero_point_type,
+        packing_order: tensor.packing_order,
+        accumulator_type: tensor.accumulator_type,
+        tail_rule: tensor.tail_rule,
+    }
+}
+
 fn hash_tensor_layout(
     artifact_class: ArtifactClass,
     tensors: &[&TensorSpec],
@@ -1659,18 +2073,7 @@ fn hash_tensor_layout(
             .to_le_bytes(),
     );
     for tensor in tensors {
-        update_identifier(&mut hasher, &tensor.semantic_role)?;
-        update_identifier(&mut hasher, &tensor.canonical_name)?;
-        hasher.update(tensor.layer.to_le_bytes());
-        hasher.update(tensor.subindex_0.to_le_bytes());
-        hasher.update(tensor.subindex_1.to_le_bytes());
-        hasher.update(u32::from(tensor.rank).to_le_bytes());
-        for dimension in tensor.shape {
-            hasher.update(dimension.to_le_bytes());
-        }
-        hasher.update(1_u16.to_le_bytes());
-        hasher.update(u16::MAX.to_le_bytes());
-        hasher.update(tensor.payload_alignment.to_le_bytes());
+        update_tensor_descriptor(&mut hasher, tensor, tensor.storage()?)?;
     }
     Ok(hasher.finalize().into())
 }
@@ -1678,13 +2081,24 @@ fn hash_tensor_layout(
 fn tensor_payload_hasher(
     artifact_class: ArtifactClass,
     spec: &TensorSpec,
+    storage: TensorStorage,
     payload_length: u64,
 ) -> Result<Sha256, Slm2Error> {
     let mut hasher = Sha256::new();
     hasher.update(TENSOR_PAYLOAD_DOMAIN);
     hasher.update((artifact_class as u16).to_le_bytes());
-    update_identifier(&mut hasher, &spec.semantic_role)?;
-    update_identifier(&mut hasher, &spec.canonical_name)?;
+    update_tensor_descriptor(&mut hasher, spec, storage)?;
+    hasher.update(payload_length.to_le_bytes());
+    Ok(hasher)
+}
+
+fn update_tensor_descriptor(
+    hasher: &mut Sha256,
+    spec: &TensorSpec,
+    storage: TensorStorage,
+) -> Result<(), Slm2Error> {
+    update_identifier(hasher, &spec.semantic_role)?;
+    update_identifier(hasher, &spec.canonical_name)?;
     hasher.update(spec.layer.to_le_bytes());
     hasher.update(spec.subindex_0.to_le_bytes());
     hasher.update(spec.subindex_1.to_le_bytes());
@@ -1692,11 +2106,23 @@ fn tensor_payload_hasher(
     for dimension in spec.shape {
         hasher.update(dimension.to_le_bytes());
     }
-    hasher.update(1_u16.to_le_bytes());
-    hasher.update(u16::MAX.to_le_bytes());
     hasher.update(spec.logical_elements()?.to_le_bytes());
-    hasher.update(payload_length.to_le_bytes());
-    Ok(hasher)
+    hasher.update((storage.element_type as u16).to_le_bytes());
+    hasher.update(storage.quant_profile_index.to_le_bytes());
+    hasher.update(storage.stored_bytes.to_le_bytes());
+    hasher.update(spec.payload_alignment.to_le_bytes());
+    hasher.update(storage.block_elements.to_le_bytes());
+    hasher.update(storage.block_bytes.to_le_bytes());
+    hasher.update(storage.scale_type.to_le_bytes());
+    hasher.update(storage.zero_point_type.to_le_bytes());
+    hasher.update(storage.packing_order.to_le_bytes());
+    hasher.update(storage.accumulator_type.to_le_bytes());
+    hasher.update(storage.tail_rule.to_le_bytes());
+    hasher.update([0_u8]);
+    hasher.update(0_u16.to_le_bytes());
+    hasher.update(0_u32.to_le_bytes());
+    hasher.update(0_u32.to_le_bytes());
+    Ok(())
 }
 
 fn update_identifier(hasher: &mut Sha256, value: &str) -> Result<(), Slm2Error> {
@@ -1713,18 +2139,19 @@ fn scan_tensor_source<R: Read + Seek>(
     reader: &mut R,
     artifact_class: ArtifactClass,
     spec: &TensorSpec,
-    payload_length: u64,
+    source_length: u64,
+    storage: TensorStorage,
     buffer: &mut [u8],
-) -> Result<[u8; 32], Slm2Error> {
-    reader
-        .seek(SeekFrom::Start(0))
-        .map_err(|_| Slm2Error::new("slm2-io"))?;
-    let mut hasher = tensor_payload_hasher(artifact_class, spec, payload_length)?;
-    stream_tensor_bytes(reader, payload_length, buffer, |chunk| {
-        hasher.update(chunk);
-        Ok(())
-    })?;
-    Ok(hasher.finalize().into())
+) -> Result<([u8; 32], [u8; 32]), Slm2Error> {
+    process_tensor_source(
+        reader,
+        artifact_class,
+        spec,
+        source_length,
+        storage,
+        buffer,
+        |_| Ok(()),
+    )
 }
 
 fn copy_tensor_source<R: Read + Seek, W: Write>(
@@ -1732,24 +2159,26 @@ fn copy_tensor_source<R: Read + Seek, W: Write>(
     output: &mut HashedOutput<'_, W>,
     artifact_class: ArtifactClass,
     spec: &TensorSpec,
-    payload_length: u64,
+    source_length: u64,
+    storage: TensorStorage,
     buffer: &mut [u8],
-) -> Result<[u8; 32], Slm2Error> {
-    reader
-        .seek(SeekFrom::Start(0))
-        .map_err(|_| Slm2Error::new("slm2-io"))?;
-    let mut hasher = tensor_payload_hasher(artifact_class, spec, payload_length)?;
-    stream_tensor_bytes(reader, payload_length, buffer, |chunk| {
-        hasher.update(chunk);
-        output.write_all(chunk)
-    })?;
-    Ok(hasher.finalize().into())
+) -> Result<([u8; 32], [u8; 32]), Slm2Error> {
+    process_tensor_source(
+        reader,
+        artifact_class,
+        spec,
+        source_length,
+        storage,
+        buffer,
+        |chunk| output.write_all(chunk),
+    )
 }
 
 fn scan_tensor_at<R: Read + Seek>(
     source: &mut R,
     artifact_class: ArtifactClass,
     spec: &TensorSpec,
+    storage: TensorStorage,
     offset: u64,
     payload_length: u64,
     buffer: &mut [u8],
@@ -1757,15 +2186,73 @@ fn scan_tensor_at<R: Read + Seek>(
     source
         .seek(SeekFrom::Start(offset))
         .map_err(|_| Slm2Error::new("slm2-io"))?;
-    let mut hasher = tensor_payload_hasher(artifact_class, spec, payload_length)?;
-    stream_tensor_bytes(source, payload_length, buffer, |chunk| {
-        hasher.update(chunk);
-        Ok(())
-    })?;
+    let mut hasher = tensor_payload_hasher(artifact_class, spec, storage, payload_length)?;
+    match storage.element_type {
+        ElementType::F32 => stream_f32_bytes(source, payload_length, buffer, |chunk| {
+            hasher.update(chunk);
+            Ok(())
+        })?,
+        ElementType::Q8RowSymmetric => {
+            validate_q8_payload(source, spec, storage, buffer, |chunk| {
+                hasher.update(chunk);
+                Ok(())
+            })?;
+        }
+    }
     Ok(hasher.finalize().into())
 }
 
-fn stream_tensor_bytes<R, F>(
+fn process_tensor_source<R, F>(
+    reader: &mut R,
+    artifact_class: ArtifactClass,
+    spec: &TensorSpec,
+    source_length: u64,
+    storage: TensorStorage,
+    buffer: &mut [u8],
+    mut output_visitor: F,
+) -> Result<([u8; 32], [u8; 32]), Slm2Error>
+where
+    R: Read + Seek,
+    F: FnMut(&[u8]) -> Result<(), Slm2Error>,
+{
+    if source_length != spec.expected_source_bytes()? || storage != spec.storage()? {
+        return Err(Slm2Error::new("slm2-tensor-size-mismatch"));
+    }
+    let mut payload_hasher =
+        tensor_payload_hasher(artifact_class, spec, storage, storage.stored_bytes)?;
+    let mut source_hasher = Sha256::new();
+    match storage.element_type {
+        ElementType::F32 => {
+            reader
+                .seek(SeekFrom::Start(0))
+                .map_err(|_| Slm2Error::new("slm2-io"))?;
+            stream_f32_bytes(reader, source_length, buffer, |chunk| {
+                source_hasher.update(chunk);
+                payload_hasher.update(chunk);
+                output_visitor(chunk)
+            })?;
+        }
+        ElementType::Q8RowSymmetric => {
+            quantize_q8_source(
+                reader,
+                spec,
+                source_length,
+                buffer,
+                &mut source_hasher,
+                |chunk| {
+                    payload_hasher.update(chunk);
+                    output_visitor(chunk)
+                },
+            )?;
+        }
+    }
+    Ok((
+        payload_hasher.finalize().into(),
+        source_hasher.finalize().into(),
+    ))
+}
+
+fn stream_f32_bytes<R, F>(
     reader: &mut R,
     length: u64,
     buffer: &mut [u8],
@@ -1797,6 +2284,141 @@ where
         }
         visitor(&buffer[..count])?;
         remaining -= count as u64;
+    }
+    Ok(())
+}
+
+fn quantize_q8_source<R, F>(
+    reader: &mut R,
+    spec: &TensorSpec,
+    source_length: u64,
+    buffer: &mut [u8],
+    source_hasher: &mut Sha256,
+    mut visitor: F,
+) -> Result<(), Slm2Error>
+where
+    R: Read + Seek,
+    F: FnMut(&[u8]) -> Result<(), Slm2Error>,
+{
+    if spec.rank != 2
+        || buffer.is_empty()
+        || !buffer.len().is_multiple_of(4)
+        || source_length != spec.expected_source_bytes()?
+    {
+        return Err(Slm2Error::new("slm2-invalid-stream-buffer"));
+    }
+    let rows = spec.shape[0];
+    let columns = spec.shape[1];
+    let row_source_bytes = columns
+        .checked_mul(4)
+        .ok_or_else(|| Slm2Error::new("slm2-offset-overflow"))?;
+    let mut code_buffer = vec![0_u8; (buffer.len() / 4).max(1)];
+    for row in 0..rows {
+        let row_offset = row
+            .checked_mul(row_source_bytes)
+            .ok_or_else(|| Slm2Error::new("slm2-offset-overflow"))?;
+        reader
+            .seek(SeekFrom::Start(row_offset))
+            .map_err(|_| Slm2Error::new("slm2-io"))?;
+        let mut remaining = row_source_bytes;
+        let mut maximum = 0.0_f32;
+        while remaining > 0 {
+            let count = usize::try_from(remaining.min(buffer.len() as u64))
+                .map_err(|_| Slm2Error::new("slm2-offset-overflow"))?;
+            reader
+                .read_exact(&mut buffer[..count])
+                .map_err(|_| Slm2Error::new("slm2-io"))?;
+            source_hasher.update(&buffer[..count]);
+            for raw in buffer[..count].chunks_exact(4) {
+                let value = f32::from_le_bytes(
+                    raw.try_into()
+                        .map_err(|_| Slm2Error::new("slm2-invalid-f32"))?,
+                );
+                if !value.is_finite() {
+                    return Err(Slm2Error::new("slm2-nonfinite-f32"));
+                }
+                maximum = maximum.max(value.abs());
+            }
+            remaining -= count as u64;
+        }
+        let scale = q8_scale_from_maximum(maximum)?;
+        visitor(&scale.to_le_bytes())?;
+        reader
+            .seek(SeekFrom::Start(row_offset))
+            .map_err(|_| Slm2Error::new("slm2-io"))?;
+        let mut remaining = row_source_bytes;
+        while remaining > 0 {
+            let count = usize::try_from(remaining.min(buffer.len() as u64))
+                .map_err(|_| Slm2Error::new("slm2-offset-overflow"))?;
+            reader
+                .read_exact(&mut buffer[..count])
+                .map_err(|_| Slm2Error::new("slm2-io"))?;
+            let code_count = count / 4;
+            for (index, raw) in buffer[..count].chunks_exact(4).enumerate() {
+                let value = f32::from_le_bytes(
+                    raw.try_into()
+                        .map_err(|_| Slm2Error::new("slm2-invalid-f32"))?,
+                );
+                let code = quantize_q8_value(value, scale)?;
+                code_buffer[index] = code as u8;
+            }
+            visitor(&code_buffer[..code_count])?;
+            remaining -= count as u64;
+        }
+    }
+    Ok(())
+}
+
+fn validate_q8_payload<R, F>(
+    reader: &mut R,
+    spec: &TensorSpec,
+    storage: TensorStorage,
+    buffer: &mut [u8],
+    mut visitor: F,
+) -> Result<(), Slm2Error>
+where
+    R: Read,
+    F: FnMut(&[u8]) -> Result<(), Slm2Error>,
+{
+    if spec.rank != 2 || storage != spec.storage()? || buffer.is_empty() {
+        return Err(Slm2Error::new("slm2-invalid-q8-payload"));
+    }
+    let rows = spec.shape[0];
+    let columns = spec.shape[1];
+    let mut codes = vec![
+        0_u8;
+        buffer
+            .len()
+            .min(usize::try_from(columns).unwrap_or(usize::MAX).max(1),)
+    ];
+    for _ in 0..rows {
+        let mut scale_bytes = [0_u8; 4];
+        reader
+            .read_exact(&mut scale_bytes)
+            .map_err(|_| Slm2Error::new("slm2-io"))?;
+        let scale = f32::from_le_bytes(scale_bytes);
+        if !scale.is_finite() || scale <= 0.0 || scale.to_bits() == (-0.0_f32).to_bits() {
+            return Err(Slm2Error::new("slm2-invalid-q8-payload"));
+        }
+        visitor(&scale_bytes)?;
+        let mut remaining = columns;
+        let mut all_zero = true;
+        while remaining > 0 {
+            let count = usize::try_from(remaining.min(codes.len() as u64))
+                .map_err(|_| Slm2Error::new("slm2-offset-overflow"))?;
+            reader
+                .read_exact(&mut codes[..count])
+                .map_err(|_| Slm2Error::new("slm2-io"))?;
+            if codes[..count].contains(&(i8::MIN as u8)) {
+                return Err(Slm2Error::new("slm2-invalid-q8-payload"));
+            }
+            all_zero &= codes[..count].iter().all(|byte| *byte == 0);
+            visitor(&codes[..count])?;
+            remaining -= count as u64;
+        }
+        if all_zero && u32::from_le_bytes(scale_bytes) != 1.0_f32.to_bits() {
+            return Err(Slm2Error::new("slm2-invalid-q8-payload"));
+        }
     }
     Ok(())
 }
@@ -1891,6 +2513,35 @@ fn valid_tensor_alignment(value: u32) -> bool {
     (64..=4096).contains(&value) && value.is_power_of_two()
 }
 
+fn is_q8_role(role: &str) -> bool {
+    matches!(
+        role,
+        "model.token-embedding.weight"
+            | "model.output-projection.weight"
+            | "layer.attention.query-projection.weight"
+            | "layer.attention.key-projection.weight"
+            | "layer.attention.value-projection.weight"
+            | "layer.attention.output-projection.weight"
+            | "layer.feed-forward.gate-projection.weight"
+            | "layer.feed-forward.down-projection.weight"
+            | "layer.feed-forward.up-projection.weight"
+    )
+}
+
+fn is_f32_role(role: &str) -> bool {
+    matches!(
+        role,
+        "model.final-normalization.weight"
+            | "layer.attention-normalization.weight"
+            | "layer.feed-forward-normalization.weight"
+            | "layer.attention.query-normalization.weight"
+            | "layer.attention.key-normalization.weight"
+            | "layer.attention.query-projection.bias"
+            | "layer.attention.key-projection.bias"
+            | "layer.attention.value-projection.bias"
+    )
+}
+
 fn is_machine_identifier(value: &str) -> bool {
     let bytes = value.as_bytes();
     if bytes.is_empty()
@@ -1968,6 +2619,10 @@ fn put_u16(output: &mut [u8], offset: usize, value: u16) -> Result<(), Slm2Error
     put_bytes(output, offset, &value.to_le_bytes())
 }
 
+fn put_i16(output: &mut [u8], offset: usize, value: i16) -> Result<(), Slm2Error> {
+    put_bytes(output, offset, &value.to_le_bytes())
+}
+
 fn put_u32(output: &mut [u8], offset: usize, value: u32) -> Result<(), Slm2Error> {
     put_bytes(output, offset, &value.to_le_bytes())
 }
@@ -1993,6 +2648,10 @@ fn put_bytes(output: &mut [u8], offset: usize, value: &[u8]) -> Result<(), Slm2E
 
 fn read_u16(input: &[u8], offset: usize) -> Result<u16, Slm2Error> {
     Ok(u16::from_le_bytes(read_array(input, offset)?))
+}
+
+fn read_i16(input: &[u8], offset: usize) -> Result<i16, Slm2Error> {
+    Ok(i16::from_le_bytes(read_array(input, offset)?))
 }
 
 fn read_u32(input: &[u8], offset: usize) -> Result<u32, Slm2Error> {
@@ -2183,8 +2842,7 @@ mod tests {
 
         let mut duplicate = reference_tensors();
         let duplicate_spec = duplicate[0].spec.clone();
-        let duplicate_values =
-            vec![0_u8; duplicate_spec.expected_payload_bytes().unwrap() as usize];
+        let duplicate_values = vec![0_u8; duplicate_spec.expected_source_bytes().unwrap() as usize];
         duplicate.push(TensorInput::new(
             duplicate_spec,
             Cursor::new(duplicate_values),

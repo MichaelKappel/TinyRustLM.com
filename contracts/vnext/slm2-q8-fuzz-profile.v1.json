@@ -1,12 +1,14 @@
 {
-  "schema": "tinyrustlm.vnext.slm2-fuzz-profile.v1",
-  "profileId": "tinyrustlm.vnext.slm2-fuzz.v1",
+  "schema": "tinyrustlm.slm2-q8-fuzz-profile.v1",
+  "profileId": "tinyrustlm.slm2-q8-fuzz/1",
   "version": 1,
-  "status": "development-unpromoted",
+  "status": "implemented-unpromoted",
   "formatProfileId": "org.minimodel.slm2/2.0",
-  "formatProfileSha256": "387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625",
+  "formatProfileSha256": "5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8",
+  "weightProfileId": "tinyrustlm.weight-q8-row-symmetric-f32-scale/1",
+  "weightProfileSha256": "7e931fd23fa8f6a90c53e4c14c5630eef8ce87e0f0902acd5a5e2df03c60733a",
   "input": {
-    "kind": "raw-complete-slm2-artifact-bytes",
+    "kind": "raw-complete-mixed-q8-slm2-artifact-bytes",
     "maximumBytes": 1048576,
     "emptyInput": "parser-rejection",
     "oversizedInput": "harness-rejection-before-parser"
@@ -25,6 +27,7 @@
       "piece-manifest-sha256-equals-model-identity",
       "tensor-count-within-policy",
       "tensor-registry-matches-public-required-registry",
+      "mixed-q8-f32-role-partition-is-exact",
       "all-payload-ranges-within-input"
     ],
     "rejectedArtifactChecks": [
@@ -48,10 +51,13 @@
     "slm2-invalid-metadata",
     "slm2-invalid-model-metadata",
     "slm2-invalid-payload-layout",
+    "slm2-invalid-q8-payload",
+    "slm2-invalid-quantization",
     "slm2-invalid-section",
     "slm2-invalid-section-layout",
     "slm2-invalid-string-table",
     "slm2-invalid-tensor",
+    "slm2-invalid-tensor-encoding",
     "slm2-invalid-tensor-order",
     "slm2-invalid-tensor-registry",
     "slm2-io",
@@ -69,21 +75,13 @@
     "slm2-unsupported-version"
   ],
   "seedClasses": [
-    "canonical-valid-vector",
-    "legacy-or-truncated-envelope",
-    "header-identity-and-version-mutation",
-    "section-layout-and-padding-mutation",
-    "noncanonical-metadata",
-    "string-table-mutation",
-    "tensor-table-mutation",
-    "tensor-registry-mutation",
-    "layout-identity-mutation",
-    "payload-layout-mutation",
-    "payload-finiteness-and-identity-mutation",
-    "trailing-byte-mutation"
+    "canonical-valid-mixed-q8-vector",
+    "truncated-envelope",
+    "slm1-envelope",
+    "registered-q8-hostile-mutation"
   ],
   "stableReplay": {
-    "manifestSchema": "tinyrustlm.vnext.slm2_fuzz_corpus.v1",
+    "manifestSchema": "tinyrustlm.slm2-q8-fuzz-corpus.v1",
     "manifestStatus": "frozen",
     "exactSeedSetRequired": true,
     "seedSymlinksAllowed": false,
@@ -96,6 +94,10 @@
     "parser-output-repair",
     "best-of-n-parser-selection",
     "activation-of-fuzzed-artifacts",
+    "second-production-encoding",
+    "legacy-reader",
+    "compatibility-alias",
+    "runtime-repacking",
     "network-access",
     "model-byte-publication",
     "fuzz-result-as-production-qualification"

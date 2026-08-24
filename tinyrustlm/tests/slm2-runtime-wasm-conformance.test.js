@@ -18,7 +18,7 @@ const crateSourcePath = path.join(
 );
 const vectorPath = path.join(
   repositoryRoot,
-  "contracts/vnext/slm2-runtime-vectors.v1.json"
+  "contracts/vnext/slm2-runtime-q8-vectors.v1.json"
 );
 const wasmPath = path.join(
   resolveCargoTargetRoot(repositoryRoot, process.env.CARGO_TARGET_DIR),

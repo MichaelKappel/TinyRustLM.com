@@ -1,0 +1,846 @@
+{
+  "schema": "tinyrustlm.slm2-q8-weight-vectors.v1",
+  "formatProfile": {
+    "path": "contracts/vnext/slm2-format-profile.v1.json",
+    "byteLength": 21924,
+    "sha256": "5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8"
+  },
+  "weightProfile": {
+    "path": "contracts/vnext/slm2-q8-weight-profile.v1.json",
+    "byteLength": 9900,
+    "sha256": "7e931fd23fa8f6a90c53e4c14c5630eef8ce87e0f0902acd5a5e2df03c60733a",
+    "profileId": "tinyrustlm.weight-q8-row-symmetric-f32-scale/1"
+  },
+  "oracle": {
+    "path": "tinyrustlm/tools/slm2-q8-reference.js",
+    "byteLength": 55909,
+    "sha256": "964dcd94d02e9b5927b01ba31ba38dbb42368b6414d8898a7c90e1f71c6bc49f",
+    "invokesRust": false,
+    "invokesSubprocess": false,
+    "usesNetwork": false
+  },
+  "canonical": {
+    "id": "base-model-required-mixed-q8-row-f32-registry",
+    "artifactHex": "534c4d320d0a1a0a6d696e696d6f64656c2e736c6d320000e000000002000000040302010100000000220000000000000001000000000000610300000000000080040000000000006406000000000000000b0000000000000100000080000000800b00000000000011000000c000000000000000000000000000000000000000000000000000000000000000000000004018000000000000c009000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a664626f6479b368716b765f62696173f56a686561645f636f756e74026b6c617965725f636f756e74016d6b765f686561645f636f756e74016e636f6e746578745f6c656e67746818806e656d62656464696e675f73697a65086e686561645f64696d656e73696f6e086f726f70655f74686574615f626974731a461c40006f746965645f656d62656464696e6773f46f766f636162756c6172795f73697a65182070706f736974696f6e5f70726f66696c657174696e79727573746c6d2e726f70652f3170716b5f6e6f726d616c697a6174696f6ef571617474656e74696f6e5f70726f66696c657774696e79727573746c6d2e63617573616c2d6771612f3171666565645f666f72776172645f73697a65107261637469766174696f6e5f70726f66696c657774696e79727573746c6d2e73696c752d67617465642f31746172636869746563747572655f70726f66696c65782074696e79727573746c6d2e6465636f6465722d7472616e73666f726d65722f317474656e736f725f6c61796f75745f73686132353658207652a55ae0b2e93e7ffa00704962131f7ed5aac4a880f83a4cc6d4c7a0f9cb84756e6f726d616c697a6174696f6e5f70726f66696c657474696e79727573746c6d2e726d736e6f726d2f31781a6e6f726d616c697a6174696f6e5f657073696c6f6e5f626974731a3727c5ac66736368656d61756f72672e6d696e696d6f64656c2e736c6d2f322e306a657874656e73696f6e73806c646570656e64656e63696573806c726571756972656d656e7473a56a6b765f70726f66696c657374696e79727573746c6d2e6b762d6633322f316e74656e736f725f70726f66696c65782474696e79727573746c6d2e74656e736f722d6d697865642d71382d726f772d6633322f316f6d696e696d756d5f72756e74696d657674696e79727573746c6d2e72756e74696d652f322e30706f70657261746f725f70726f66696c65783474696e79727573746c6d2e6465636f6465722d71382d726f772d73796d6d65747269632d6633322d616363756d756c6174652f317374656e736f725f726f6c655f70726f66696c65783b74696e79727573746c6d2e6465636f6465722d6d61747269782d71382d6e6f726d616c697a6174696f6e2d626961732d6633322d726f6c65732f316e61727469666163745f636c617373010000000000000000000000000000000000000000000000000000000000000023000000cc05000000000000240000004c0000006f00000094000000bc000000e60000000b01000032010000570100007e010000a5010000ce010000f70100001e0200003e0200006b0200009c020000c8020000f6020000270300005a03000088030000b8030000e6030000160400004604000078040000aa040000da040000f8040000140500004f050000740500009e050000cc0500006c617965722e617474656e74696f6e2d6e6f726d616c697a6174696f6e2e7765696768746c617965722e617474656e74696f6e2e6b65792d6e6f726d616c697a6174696f6e2e7765696768746c617965722e617474656e74696f6e2e6b65792d70726f6a656374696f6e2e626961736c617965722e617474656e74696f6e2e6b65792d70726f6a656374696f6e2e7765696768746c617965722e617474656e74696f6e2e6f75747075742d70726f6a656374696f6e2e7765696768746c617965722e617474656e74696f6e2e71756572792d6e6f726d616c697a6174696f6e2e7765696768746c617965722e617474656e74696f6e2e71756572792d70726f6a656374696f6e2e626961736c617965722e617474656e74696f6e2e71756572792d70726f6a656374696f6e2e7765696768746c617965722e617474656e74696f6e2e76616c75652d70726f6a656374696f6e2e626961736c617965722e617474656e74696f6e2e76616c75652d70726f6a656374696f6e2e7765696768746c617965722e666565642d666f72776172642d6e6f726d616c697a6174696f6e2e7765696768746c617965722e666565642d666f72776172642e646f776e2d70726f6a656374696f6e2e7765696768746c617965722e666565642d666f72776172642e676174652d70726f6a656374696f6e2e7765696768746c617965722e666565642d666f72776172642e75702d70726f6a656374696f6e2e7765696768746d6f64656c2e66696e616c2d6e6f726d616c697a6174696f6e2e7765696768746d6f64656c2e6c61796572732e302e617474656e74696f6e2d6e6f726d616c697a6174696f6e2e7765696768746d6f64656c2e6c61796572732e302e617474656e74696f6e2e6b65792d6e6f726d616c697a6174696f6e2e7765696768746d6f64656c2e6c61796572732e302e617474656e74696f6e2e6b65792d70726f6a656374696f6e2e626961736d6f64656c2e6c61796572732e302e617474656e74696f6e2e6b65792d70726f6a656374696f6e2e7765696768746d6f64656c2e6c61796572732e302e617474656e74696f6e2e6f75747075742d70726f6a656374696f6e2e7765696768746d6f64656c2e6c61796572732e302e617474656e74696f6e2e71756572792d6e6f726d616c697a6174696f6e2e7765696768746d6f64656c2e6c61796572732e302e617474656e74696f6e2e71756572792d70726f6a656374696f6e2e626961736d6f64656c2e6c61796572732e302e617474656e74696f6e2e71756572792d70726f6a656374696f6e2e7765696768746d6f64656c2e6c61796572732e302e617474656e74696f6e2e76616c75652d70726f6a656374696f6e2e626961736d6f64656c2e6c61796572732e302e617474656e74696f6e2e76616c75652d70726f6a656374696f6e2e7765696768746d6f64656c2e6c61796572732e302e666565642d666f72776172642d6e6f726d616c697a6174696f6e2e7765696768746d6f64656c2e6c61796572732e302e666565642d666f72776172642e646f776e2d70726f6a656374696f6e2e7765696768746d6f64656c2e6c61796572732e302e666565642d666f72776172642e676174652d70726f6a656374696f6e2e7765696768746d6f64656c2e6c61796572732e302e666565642d666f72776172642e75702d70726f6a656374696f6e2e7765696768746d6f64656c2e6f75747075742d70726f6a656374696f6e2e7765696768746d6f64656c2e746f6b656e2d656d62656464696e672e77656967687474696e79727573746c6d2e6465636f6465722d6d61747269782d71382d6e6f726d616c697a6174696f6e2d626961732d6633322d726f6c65732f3174696e79727573746c6d2e6d61746d756c2d71382d726f772d6633322d7363616c61722f3174696e79727573746c6d2e7175616e74697a652d71382d726f772d73796d6d65747269632d6633322f3174696e79727573746c6d2e7765696768742d71382d726f772d73796d6d65747269632d6633322d7363616c652f3100000000000000000000000000000000000000000000000000000000010000002200000021000000200000001f000000010002000800010081ff7f00010000000100010001000100000000000000fe420000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010001000100ffff000000000f00000000000000ffffffffffffffff00000000080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000800000000000000200000000000000000000000000000002000000000000000400000000000000000000000000000000000000000000000000000000000000078d1b219d635fd9805b8f91eb6b9d6ba11a04809fe20d50de4827390a164da04010001000100ffff010000001000000000000000ffffffffffffffff0000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000080000000000000020000000000000004000000000000000200000000000000040000000000000000000000000000000000000000000000000000000000000009a2f532a3b1ddf30cc1b6a409be11ac8928c63d117d78a0e54ee7513f68b8c57010001000100ffff020000001100000000000000ffffffffffffffff000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000000000002000000000000000800000000000000020000000000000004000000000000000000000000000000000000000000000000000000000000000fb618aea92926d6028481cddafe9e6f098cbf62dd1bb74eba17b4f6c99ca6de80100020002000000030000001200000000000000ffffffffffffffff000000000800000000000000080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040000000000000006000000000000000c000000000000000600000000000000040000000080000000c00000001000000010001000100000000000000000000005ebce58df647d4c804a17d974de2afb332f3a2086c2b97a194c94223403add8a0100020002000000040000001300000000000000ffffffffffffffff00000000080000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000000000000a0000000000000004001000000000000a0000000000000004000000010000000140000000100000001000100010000000000000000000000cf9aa23dc7d915894772ba8b5586b1821c6ecfe9feaea7b9fcc9eb852922c153010001000100ffff050000001400000000000000ffffffffffffffff000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000000000002000000000000000000200000000000020000000000000004000000000000000000000000000000000000000000000000000000000000000fb50bc032ea5b781adb5c05d666314a587c12b1b27d8f1e22d121e7077635447010001000100ffff060000001500000000000000ffffffffffffffff00000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000400000000000000040020000000000004000000000000000400000000000000000000000000000000000000000000000000000000000000075b481704864925e74d3068ecb71ecae1504bb59924940dd50ec3ff4f12fdf450100020002000000070000001600000000000000ffffffffffffffff00000000100000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000000000000c0000000000000008002000000000000c00000000000000040000000080000000c00000001000000010001000100000000000000000000007e1545ef9954907522600a4a0a23d45d0ad16f8c685f3db7b226c4c220cfaffe010001000100ffff080000001700000000000000ffffffffffffffff0000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000080000000000000020000000000000004003000000000000200000000000000040000000000000000000000000000000000000000000000000000000000000006a1eedb663c9b66cdf4641f5fd1821ec3ce3d8271ee275b8e7a9d39c4dc31c2c0100020002000000090000001800000000000000ffffffffffffffff0000000008000000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000400000000000000060000000000000008003000000000000600000000000000040000000080000000c00000001000000010001000100000000000000000000005c8b68c7f502c11bdffbb86377bc12afe53ac51d96276228418867531541bc1d010001000100ffff0a0000001900000000000000ffffffffffffffff00000000080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000800000000000000200000000000000000040000000000002000000000000000400000000000000000000000000000000000000000000000000000000000000068f4ea37739f56da48bd45b06355005627392eb78f5c298f78d27f73221eb1c301000200020000000b0000001a00000000000000ffffffffffffffff00000000080000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000000000000a0000000000000004004000000000000a00000000000000040000000100000001400000001000000010001000100000000000000000000007aadf79355c6ea1e16eca1ae92a28f8bed1ba69a983519d08c2811ce9ee67d6901000200020000000c0000001b00000000000000ffffffffffffffff00000000100000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000000000000c0000000000000000005000000000000c00000000000000040000000080000000c00000001000000010001000100000000000000000000008dc28f5dd98bbd751207e2f003b45e7000151053fecc5c39f4f03bc8872197f201000200020000000d0000001c00000000000000ffffffffffffffff00000000100000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000000000000c000000000000000c005000000000000c00000000000000040000000080000000c00000001000000010001000100000000000000000000001d4b9b3171d4559a483c1857f6d04dd3c945fb0714982dee8cbb4068ff113644010001000100ffff0e0000000e000000ffffffffffffffffffffffff00000000080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000800000000000000200000000000000080060000000000002000000000000000400000000000000000000000000000000000000000000000000000000000000018a8d538e5ca14f722a349dbeab0187be7582436766700b577288680fbea4b2401000200020000001d0000001d000000ffffffffffffffffffffffff000000002000000000000000080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000008001000000000000c006000000000000800100000000000040000000080000000c00000001000000010001000100000000000000000000000e4de3700238d77161df9d6facdb7f6e4dce408a80ac66d259c079f4821b6ccd01000200020000001e0000001e000000ffffffffffffffffffffffff0000000020000000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000080010000000000004008000000000000800100000000000040000000080000000c0000000100000001000100010000000000000000000000730572cc1bbf886f1a366ba4b35dd5c7c43117b4a7defff6bd774390c6c49bd50020803f0024803f0028803f002c803f0030803f0034803f0038803f003c803f00000000000000000000000000000000000000000000000000000000000000000040803f0044803f0048803f004c803f0050803f0054803f0058803f005c803f0000000000000000000000000000000000000000000000000000000000000000ec51b83ccdcccc3cae47e13c8fc2f53cb81e053d295c0f3d9a99193dec51b83c00000000000000000000000000000000000000000000000000000000000000006532993b8d758978867c837f8542a13b748b77877a847d81a552a93b8c768979867c837fc662b13b758a78877b847e81e672b93b8b778879857c827f0683c13b768978867b847e812693c93b8a77877a857c827f47a3d13b768879867b837e8100000000000000000000000000000000000000000000000000000000000000002693c93b6c936e90718e748b768979867b847e8147a3d13b936e91708e738c758a78877a857d827f67b3d93b6d91708f728d748a778879867b837e8187c3e13b926f90718d748b768978877a847d827fa7d3e93b6f90718e738c758a77887a857c837e81c8e3f13b91708f728d748b778879867b847d827fe8f3f93b708f728d748b768978877a857c837e810402013c90718e738c758a778879867b847d827f000000000000000000000000000000000000000000000000000000000000000000c0803f00c4803f00c8803f00cc803f00d0803f00d4803f00d8803f00dc803f00000000000000000000000000000000000000000000000000000000000000000000803db81e853d713d8a3d295c8f3de17a943d9a99993d52b89e3d0000803db81e853d713d8a3d295c8f3de17a943d9a99993d52b89e3d0000803db81e853d341a0d3c877a867b847d827f4522113c79867b857c837e81552a153c877a857c847d827f6532193c79867b847c837e81753a1d3c877a857c837d827f8542213c79867b847d837e81954a253c867a857c837d827fa552293c7a867b847d837e81b55a2d3c867b857c837e827fc662313c7a857b847d827e81d66a353c867b857c837e827fe672393c7a857c847d827e81f67a3d3c867b847c837e827f0683413c7a857c847d827e81168b453c867b847c837e827f2693493c7b857c847d827e81c3f5a83d7b14ae3d3333b33dec51b83da470bd3d5c8fc23d14aec73dc3f5a83d0000000000000000000000000000000000000000000000000000000000000000b55a2d3c867b857c837e827fc662313c7a857b847d827e81d66a353c867b857c837e827fe672393c7a857c847d827e81f67a3d3c867b847c837e827f0683413c7a857c847d827e81168b453c867b847c837e827f2693493c7b857c847d827e8100000000000000000000000000000000000000000000000000000000000000000060813f0064813f0068813f006c813f0070813f0074813f0078813f007c813f000000000000000000000000000000000000000000000000000000000000000057ab553c8a7789788879867a857b847d837e827f67b3593c7689778879877a867b857c837d827e8177bb5d3c8a7789788779867a857c847d837e827f87c3613c7689788879877a867b847c837d827e8197cb653c897788788779867b857c847d837e827fa7d3693c7789788879867a857b847c837d827e81b7db6d3c89778879877a867b857c847d837e827fc8e3713c7788788779867a857b847c837d827e81000000000000000000000000000000000000000000000000000000000000000077bb5d3c7b847c837d827e8187c3613c857c847d837e827f97cb653c7b847c837d827e81a7d3693c857c847d837e827fb7db6d3c7b847c837d827e81c8e3713c857c847d837e827fd8eb753c7b847c837d827e81e8f3793c857c847d837e827ff8fb7d3c7b847c837d827e810402813c847c837d827e817f0c06833c7c847d837e827f81140a853c847c837d827e817f1c0e873c7c847d837e827f812412893c847c837d827e817f2c168b3c7c847d837e827f81341a8d3c847c837d827e817fb7db6d3c857c847d837e827fc8e3713c7b847c837d827e81d8eb753c857c847d837e827fe8f3793c7b847c837d827e81f8fb7d3c857c847d837e827f0402813c7c847d837e827f810c06833c847c837d827e817f140a853c7c847d837e827f811c0e873c847c837d827e817f2412893c7c847d837e827f812c168b3c847c837d827e817f341a8d3c7c847d837e827f813c1e8f3c847c837d827e817f4522913c7c847d837e827f814d26933c847c837d827e817f552a953c7c847d837e827f8100e0813f00e4813f00e8813f00ec813f00f0813f00f4813f00f8813f00fc813f00000000000000000000000000000000000000000000000000000000000000001c0e873c847c837d827e817f2412893c7c847d837e827f812c168b3c847c837d827e817f341a8d3c7c847d837e827f813c1e8f3c847c837d827e817f4522913c7c847d837e827f814d26933c847c837d827e817f552a953c7c847d837e827f815d2e973c847c837d827e817f6532993c7c847d837e827f816d369b3c847d837d827e817f753a9d3c7c837d837e827f817d3e9f3c847d837d827e817f8542a13c7c837d837e827f818d46a33c847d837d827e817f954aa53c7c837d837e827f819d4ea73c847d837d827e817fa552a93c7c837d837e827f81ad56ab3c847d837e827e817fb55aad3c7c837d827e827f81bd5eaf3c847d837e827e817fc662b13c7c837d827e827f81ce66b33c837d837e827e817fd66ab53c7d837d827e827f81de6eb73c837d837e827e817fe672b93c7d837d827e827f81ee76bb3c837d837e827e817ff67abd3c7d837d827e827f81fe7ebf3c837d837e827e817f0683c13c7d837d827e827f810e87c33c837d837e827e817f168bc53c7d837d827e827f810000803f00000000000000000000803f7f01ff8140c020e04d26933c7c847d837e827f81552a953c847c837d827e817f5d2e973c7c847d837e827f816532993c847c837d827e817f6d369b3c7c837d837e827f81753a9d3c847d837d827e817f7d3e9f3c7c837d837e827f818542a13c847d837d827e817f8d46a33c7c837d837e827f81954aa53c847d837d827e817f9d4ea73c7c837d837e827f81a552a93c847d837d827e817fad56ab3c7c837d827e827f81b55aad3c847d837e827e817fbd5eaf3c7c837d827e827f81c662b13c847d837e827e817fce66b33c7d837d827e827f81d66ab53c837d837e827e817fde6eb73c7d837d827e827f81e672b93c837d837e827e817fee76bb3c7d837d827e827f81f67abd3c837d837e827e817ffe7ebf3c7d837d827e827f810683c13c837d837e827e817f0e87c33c7d837d827e827f81168bc53c837d837e827e817f1e8fc73c7d837d827e827f812693c93c837d837e827e817f2e97cb3c7d837d827e827f81369bcd3c837d837e827e817f",
+    "artifactByteLength": 8704,
+    "artifactSha256": "4383b112797b99232561b67bdc752d8ea0e62e90e24f8b94fd629c563e2d1502",
+    "manifestSha256": "5038814de3d806b46d7cbf39705b7211661549f8158d5a17f20c0fe06bdf0100",
+    "tensorLayoutSha256": "7652a55ae0b2e93e7ffa00704962131f7ed5aac4a880f83a4cc6d4c7a0f9cb84",
+    "modelSpec": {
+      "artifactClass": 1,
+      "vocabularySize": 32,
+      "contextLength": 128,
+      "embeddingSize": 8,
+      "feedForwardSize": 16,
+      "layerCount": 1,
+      "headCount": 2,
+      "kvHeadCount": 1,
+      "headDimension": 8,
+      "ropeTheta": 10000,
+      "normalizationEpsilon": 0.000009999999747378752,
+      "tiedEmbeddings": false,
+      "qkvBias": true,
+      "qkNormalization": true,
+      "queryWidth": 16,
+      "kvWidth": 8
+    },
+    "header": {
+      "artifactClass": 1,
+      "fileSize": 8704,
+      "manifestOffset": 256,
+      "manifestLength": 865,
+      "stringTableOffset": 1152,
+      "stringTableLength": 1636,
+      "quantTableOffset": 2816,
+      "quantCount": 1,
+      "quantRecordBytes": 128,
+      "tensorTableOffset": 2944,
+      "tensorCount": 17,
+      "tensorRecordBytes": 192,
+      "payloadOffset": 6208,
+      "payloadLength": 2496
+    },
+    "strings": [
+      "layer.attention-normalization.weight",
+      "layer.attention.key-normalization.weight",
+      "layer.attention.key-projection.bias",
+      "layer.attention.key-projection.weight",
+      "layer.attention.output-projection.weight",
+      "layer.attention.query-normalization.weight",
+      "layer.attention.query-projection.bias",
+      "layer.attention.query-projection.weight",
+      "layer.attention.value-projection.bias",
+      "layer.attention.value-projection.weight",
+      "layer.feed-forward-normalization.weight",
+      "layer.feed-forward.down-projection.weight",
+      "layer.feed-forward.gate-projection.weight",
+      "layer.feed-forward.up-projection.weight",
+      "model.final-normalization.weight",
+      "model.layers.0.attention-normalization.weight",
+      "model.layers.0.attention.key-normalization.weight",
+      "model.layers.0.attention.key-projection.bias",
+      "model.layers.0.attention.key-projection.weight",
+      "model.layers.0.attention.output-projection.weight",
+      "model.layers.0.attention.query-normalization.weight",
+      "model.layers.0.attention.query-projection.bias",
+      "model.layers.0.attention.query-projection.weight",
+      "model.layers.0.attention.value-projection.bias",
+      "model.layers.0.attention.value-projection.weight",
+      "model.layers.0.feed-forward-normalization.weight",
+      "model.layers.0.feed-forward.down-projection.weight",
+      "model.layers.0.feed-forward.gate-projection.weight",
+      "model.layers.0.feed-forward.up-projection.weight",
+      "model.output-projection.weight",
+      "model.token-embedding.weight",
+      "tinyrustlm.decoder-matrix-q8-normalization-bias-f32-roles/1",
+      "tinyrustlm.matmul-q8-row-f32-scalar/1",
+      "tinyrustlm.quantize-q8-row-symmetric-f32/1",
+      "tinyrustlm.weight-q8-row-symmetric-f32-scale/1"
+    ],
+    "quantRecordHex": "010000002200000021000000200000001f000000010002000800010081ff7f00010000000100010001000100000000000000fe420000803f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "tensors": [
+      {
+        "semanticRole": "layer.attention-normalization.weight",
+        "canonicalName": "model.layers.0.attention-normalization.weight",
+        "layer": 0,
+        "shape": [
+          8
+        ],
+        "logicalElements": 8,
+        "elementType": 1,
+        "quantProfileIndex": 65535,
+        "storedBytes": 32,
+        "payloadRelativeOffset": 0,
+        "payloadLength": 32,
+        "payloadAlignment": 64,
+        "blockElements": 0,
+        "blockBytes": 0,
+        "scaleType": 0,
+        "zeroPointType": 0,
+        "packingOrder": 0,
+        "accumulatorType": 0,
+        "tailRule": 0,
+        "sourceF32Sha256": "88de6aa8e430521407dff8284c79fea37ae1010c7c08e16a8fade8e8a90714ad",
+        "payloadSha256": "78d1b219d635fd9805b8f91eb6b9d6ba11a04809fe20d50de4827390a164da04"
+      },
+      {
+        "semanticRole": "layer.attention.key-normalization.weight",
+        "canonicalName": "model.layers.0.attention.key-normalization.weight",
+        "layer": 0,
+        "shape": [
+          8
+        ],
+        "logicalElements": 8,
+        "elementType": 1,
+        "quantProfileIndex": 65535,
+        "storedBytes": 32,
+        "payloadRelativeOffset": 64,
+        "payloadLength": 32,
+        "payloadAlignment": 64,
+        "blockElements": 0,
+        "blockBytes": 0,
+        "scaleType": 0,
+        "zeroPointType": 0,
+        "packingOrder": 0,
+        "accumulatorType": 0,
+        "tailRule": 0,
+        "sourceF32Sha256": "34b90e134da70e759da80d991a1a615aa4331697e24007536d8d034ddfdcad5c",
+        "payloadSha256": "9a2f532a3b1ddf30cc1b6a409be11ac8928c63d117d78a0e54ee7513f68b8c57"
+      },
+      {
+        "semanticRole": "layer.attention.key-projection.bias",
+        "canonicalName": "model.layers.0.attention.key-projection.bias",
+        "layer": 0,
+        "shape": [
+          8
+        ],
+        "logicalElements": 8,
+        "elementType": 1,
+        "quantProfileIndex": 65535,
+        "storedBytes": 32,
+        "payloadRelativeOffset": 128,
+        "payloadLength": 32,
+        "payloadAlignment": 64,
+        "blockElements": 0,
+        "blockBytes": 0,
+        "scaleType": 0,
+        "zeroPointType": 0,
+        "packingOrder": 0,
+        "accumulatorType": 0,
+        "tailRule": 0,
+        "sourceF32Sha256": "59bd41e8ab1c1b05bbd9d1872bfbe8ee171451b956bea523962dee66759653a4",
+        "payloadSha256": "fb618aea92926d6028481cddafe9e6f098cbf62dd1bb74eba17b4f6c99ca6de8"
+      },
+      {
+        "semanticRole": "layer.attention.key-projection.weight",
+        "canonicalName": "model.layers.0.attention.key-projection.weight",
+        "layer": 0,
+        "shape": [
+          8,
+          8
+        ],
+        "logicalElements": 64,
+        "elementType": 2,
+        "quantProfileIndex": 0,
+        "storedBytes": 96,
+        "payloadRelativeOffset": 192,
+        "payloadLength": 96,
+        "payloadAlignment": 64,
+        "blockElements": 8,
+        "blockBytes": 12,
+        "scaleType": 1,
+        "zeroPointType": 0,
+        "packingOrder": 1,
+        "accumulatorType": 1,
+        "tailRule": 1,
+        "sourceF32Sha256": "4ddd21449ecc83adb19b662756e51889012f9e80a635ac7568b17a9a7054f409",
+        "payloadSha256": "5ebce58df647d4c804a17d974de2afb332f3a2086c2b97a194c94223403add8a"
+      },
+      {
+        "semanticRole": "layer.attention.output-projection.weight",
+        "canonicalName": "model.layers.0.attention.output-projection.weight",
+        "layer": 0,
+        "shape": [
+          8,
+          16
+        ],
+        "logicalElements": 128,
+        "elementType": 2,
+        "quantProfileIndex": 0,
+        "storedBytes": 160,
+        "payloadRelativeOffset": 320,
+        "payloadLength": 160,
+        "payloadAlignment": 64,
+        "blockElements": 16,
+        "blockBytes": 20,
+        "scaleType": 1,
+        "zeroPointType": 0,
+        "packingOrder": 1,
+        "accumulatorType": 1,
+        "tailRule": 1,
+        "sourceF32Sha256": "85bcf374b72b5901fead7a5f66e8026df7153e157b96cf2a5f7e3bd16ebebac0",
+        "payloadSha256": "cf9aa23dc7d915894772ba8b5586b1821c6ecfe9feaea7b9fcc9eb852922c153"
+      },
+      {
+        "semanticRole": "layer.attention.query-normalization.weight",
+        "canonicalName": "model.layers.0.attention.query-normalization.weight",
+        "layer": 0,
+        "shape": [
+          8
+        ],
+        "logicalElements": 8,
+        "elementType": 1,
+        "quantProfileIndex": 65535,
+        "storedBytes": 32,
+        "payloadRelativeOffset": 512,
+        "payloadLength": 32,
+        "payloadAlignment": 64,
+        "blockElements": 0,
+        "blockBytes": 0,
+        "scaleType": 0,
+        "zeroPointType": 0,
+        "packingOrder": 0,
+        "accumulatorType": 0,
+        "tailRule": 0,
+        "sourceF32Sha256": "7c48543dba334b476d1043192699a54d684e6f47c35f2e84ff6318e9fbd5304c",
+        "payloadSha256": "fb50bc032ea5b781adb5c05d666314a587c12b1b27d8f1e22d121e7077635447"
+      },
+      {
+        "semanticRole": "layer.attention.query-projection.bias",
+        "canonicalName": "model.layers.0.attention.query-projection.bias",
+        "layer": 0,
+        "shape": [
+          16
+        ],
+        "logicalElements": 16,
+        "elementType": 1,
+        "quantProfileIndex": 65535,
+        "storedBytes": 64,
+        "payloadRelativeOffset": 576,
+        "payloadLength": 64,
+        "payloadAlignment": 64,
+        "blockElements": 0,
+        "blockBytes": 0,
+        "scaleType": 0,
+        "zeroPointType": 0,
+        "packingOrder": 0,
+        "accumulatorType": 0,
+        "tailRule": 0,
+        "sourceF32Sha256": "2cb5d3cb5358e53c7b9cf51cd51ef9970741ca027126f008e45939f5df755be8",
+        "payloadSha256": "75b481704864925e74d3068ecb71ecae1504bb59924940dd50ec3ff4f12fdf45"
+      },
+      {
+        "semanticRole": "layer.attention.query-projection.weight",
+        "canonicalName": "model.layers.0.attention.query-projection.weight",
+        "layer": 0,
+        "shape": [
+          16,
+          8
+        ],
+        "logicalElements": 128,
+        "elementType": 2,
+        "quantProfileIndex": 0,
+        "storedBytes": 192,
+        "payloadRelativeOffset": 640,
+        "payloadLength": 192,
+        "payloadAlignment": 64,
+        "blockElements": 8,
+        "blockBytes": 12,
+        "scaleType": 1,
+        "zeroPointType": 0,
+        "packingOrder": 1,
+        "accumulatorType": 1,
+        "tailRule": 1,
+        "sourceF32Sha256": "efc5c0a47a9869b8c76084c3c40bdecbc7200bb20d1e969a2eb32476e4c589df",
+        "payloadSha256": "7e1545ef9954907522600a4a0a23d45d0ad16f8c685f3db7b226c4c220cfaffe"
+      },
+      {
+        "semanticRole": "layer.attention.value-projection.bias",
+        "canonicalName": "model.layers.0.attention.value-projection.bias",
+        "layer": 0,
+        "shape": [
+          8
+        ],
+        "logicalElements": 8,
+        "elementType": 1,
+        "quantProfileIndex": 65535,
+        "storedBytes": 32,
+        "payloadRelativeOffset": 832,
+        "payloadLength": 32,
+        "payloadAlignment": 64,
+        "blockElements": 0,
+        "blockBytes": 0,
+        "scaleType": 0,
+        "zeroPointType": 0,
+        "packingOrder": 0,
+        "accumulatorType": 0,
+        "tailRule": 0,
+        "sourceF32Sha256": "ecd6472a4fa48d702b1a95b890c81c7445f41fd704f86e03974bb2d2c5d4680e",
+        "payloadSha256": "6a1eedb663c9b66cdf4641f5fd1821ec3ce3d8271ee275b8e7a9d39c4dc31c2c"
+      },
+      {
+        "semanticRole": "layer.attention.value-projection.weight",
+        "canonicalName": "model.layers.0.attention.value-projection.weight",
+        "layer": 0,
+        "shape": [
+          8,
+          8
+        ],
+        "logicalElements": 64,
+        "elementType": 2,
+        "quantProfileIndex": 0,
+        "storedBytes": 96,
+        "payloadRelativeOffset": 896,
+        "payloadLength": 96,
+        "payloadAlignment": 64,
+        "blockElements": 8,
+        "blockBytes": 12,
+        "scaleType": 1,
+        "zeroPointType": 0,
+        "packingOrder": 1,
+        "accumulatorType": 1,
+        "tailRule": 1,
+        "sourceF32Sha256": "ba6114c71cf3dacb9eeebfbbd51126a273374c5e8bc6cc7530621136371a6d9c",
+        "payloadSha256": "5c8b68c7f502c11bdffbb86377bc12afe53ac51d96276228418867531541bc1d"
+      },
+      {
+        "semanticRole": "layer.feed-forward-normalization.weight",
+        "canonicalName": "model.layers.0.feed-forward-normalization.weight",
+        "layer": 0,
+        "shape": [
+          8
+        ],
+        "logicalElements": 8,
+        "elementType": 1,
+        "quantProfileIndex": 65535,
+        "storedBytes": 32,
+        "payloadRelativeOffset": 1024,
+        "payloadLength": 32,
+        "payloadAlignment": 64,
+        "blockElements": 0,
+        "blockBytes": 0,
+        "scaleType": 0,
+        "zeroPointType": 0,
+        "packingOrder": 0,
+        "accumulatorType": 0,
+        "tailRule": 0,
+        "sourceF32Sha256": "612eea5585058c86d0cd243ceb2b8b1a1c911ca949f303d5db2eb670569e56cd",
+        "payloadSha256": "68f4ea37739f56da48bd45b06355005627392eb78f5c298f78d27f73221eb1c3"
+      },
+      {
+        "semanticRole": "layer.feed-forward.down-projection.weight",
+        "canonicalName": "model.layers.0.feed-forward.down-projection.weight",
+        "layer": 0,
+        "shape": [
+          8,
+          16
+        ],
+        "logicalElements": 128,
+        "elementType": 2,
+        "quantProfileIndex": 0,
+        "storedBytes": 160,
+        "payloadRelativeOffset": 1088,
+        "payloadLength": 160,
+        "payloadAlignment": 64,
+        "blockElements": 16,
+        "blockBytes": 20,
+        "scaleType": 1,
+        "zeroPointType": 0,
+        "packingOrder": 1,
+        "accumulatorType": 1,
+        "tailRule": 1,
+        "sourceF32Sha256": "c267c57809897ba59d2ac1c6a8883e1596ae3fbf433047c2dd0f81756a99d618",
+        "payloadSha256": "7aadf79355c6ea1e16eca1ae92a28f8bed1ba69a983519d08c2811ce9ee67d69"
+      },
+      {
+        "semanticRole": "layer.feed-forward.gate-projection.weight",
+        "canonicalName": "model.layers.0.feed-forward.gate-projection.weight",
+        "layer": 0,
+        "shape": [
+          16,
+          8
+        ],
+        "logicalElements": 128,
+        "elementType": 2,
+        "quantProfileIndex": 0,
+        "storedBytes": 192,
+        "payloadRelativeOffset": 1280,
+        "payloadLength": 192,
+        "payloadAlignment": 64,
+        "blockElements": 8,
+        "blockBytes": 12,
+        "scaleType": 1,
+        "zeroPointType": 0,
+        "packingOrder": 1,
+        "accumulatorType": 1,
+        "tailRule": 1,
+        "sourceF32Sha256": "0d0ca3c5a1b6b47383b819a587dfe7328e1936550189fb43df636bceb2e93bec",
+        "payloadSha256": "8dc28f5dd98bbd751207e2f003b45e7000151053fecc5c39f4f03bc8872197f2"
+      },
+      {
+        "semanticRole": "layer.feed-forward.up-projection.weight",
+        "canonicalName": "model.layers.0.feed-forward.up-projection.weight",
+        "layer": 0,
+        "shape": [
+          16,
+          8
+        ],
+        "logicalElements": 128,
+        "elementType": 2,
+        "quantProfileIndex": 0,
+        "storedBytes": 192,
+        "payloadRelativeOffset": 1472,
+        "payloadLength": 192,
+        "payloadAlignment": 64,
+        "blockElements": 8,
+        "blockBytes": 12,
+        "scaleType": 1,
+        "zeroPointType": 0,
+        "packingOrder": 1,
+        "accumulatorType": 1,
+        "tailRule": 1,
+        "sourceF32Sha256": "d300ee8c1d2f4a813af483df2a5b70464f15a9559e16079598c74e85868a3c63",
+        "payloadSha256": "1d4b9b3171d4559a483c1857f6d04dd3c945fb0714982dee8cbb4068ff113644"
+      },
+      {
+        "semanticRole": "model.final-normalization.weight",
+        "canonicalName": "model.final-normalization.weight",
+        "layer": -1,
+        "shape": [
+          8
+        ],
+        "logicalElements": 8,
+        "elementType": 1,
+        "quantProfileIndex": 65535,
+        "storedBytes": 32,
+        "payloadRelativeOffset": 1664,
+        "payloadLength": 32,
+        "payloadAlignment": 64,
+        "blockElements": 0,
+        "blockBytes": 0,
+        "scaleType": 0,
+        "zeroPointType": 0,
+        "packingOrder": 0,
+        "accumulatorType": 0,
+        "tailRule": 0,
+        "sourceF32Sha256": "584b484eb9d1a068205fde2a9eb573985210356ebe2c22ff9f3433495ecb5bd7",
+        "payloadSha256": "18a8d538e5ca14f722a349dbeab0187be7582436766700b577288680fbea4b24"
+      },
+      {
+        "semanticRole": "model.output-projection.weight",
+        "canonicalName": "model.output-projection.weight",
+        "layer": -1,
+        "shape": [
+          32,
+          8
+        ],
+        "logicalElements": 256,
+        "elementType": 2,
+        "quantProfileIndex": 0,
+        "storedBytes": 384,
+        "payloadRelativeOffset": 1728,
+        "payloadLength": 384,
+        "payloadAlignment": 64,
+        "blockElements": 8,
+        "blockBytes": 12,
+        "scaleType": 1,
+        "zeroPointType": 0,
+        "packingOrder": 1,
+        "accumulatorType": 1,
+        "tailRule": 1,
+        "sourceF32Sha256": "75fac5c864e175a40cc5cda8c6f9e9b86b3f9aa2ca88cefcabb6dbbf88d88fb4",
+        "payloadSha256": "0e4de3700238d77161df9d6facdb7f6e4dce408a80ac66d259c079f4821b6ccd"
+      },
+      {
+        "semanticRole": "model.token-embedding.weight",
+        "canonicalName": "model.token-embedding.weight",
+        "layer": -1,
+        "shape": [
+          32,
+          8
+        ],
+        "logicalElements": 256,
+        "elementType": 2,
+        "quantProfileIndex": 0,
+        "storedBytes": 384,
+        "payloadRelativeOffset": 2112,
+        "payloadLength": 384,
+        "payloadAlignment": 64,
+        "blockElements": 8,
+        "blockBytes": 12,
+        "scaleType": 1,
+        "zeroPointType": 0,
+        "packingOrder": 1,
+        "accumulatorType": 1,
+        "tailRule": 1,
+        "sourceF32Sha256": "66e10004f5696a94c67c23adf25fcffe6ebaf2919320976a46c71bb115870687",
+        "payloadSha256": "730572cc1bbf886f1a366ba4b35dd5c7c43117b4a7defff6bd774390c6c49bd5"
+      }
+    ],
+    "rowCases": [
+      {
+        "id": "positive-and-negative-zero",
+        "sourceF32Bits": [
+          0,
+          2147483648,
+          0,
+          2147483648
+        ],
+        "scaleF32Bits": 1065353216,
+        "codes": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "positive-and-negative-extrema",
+        "sourceF32Bits": [
+          1123942400,
+          3271426048,
+          1056964608,
+          3204448256
+        ],
+        "scaleF32Bits": 1065353216,
+        "codes": [
+          127,
+          -127,
+          1,
+          -1
+        ]
+      },
+      {
+        "id": "positive-half-tie",
+        "sourceF32Bits": [
+          1132331008,
+          1065353216,
+          0,
+          3279814656
+        ],
+        "scaleF32Bits": 1073741824,
+        "codes": [
+          127,
+          1,
+          0,
+          -127
+        ]
+      },
+      {
+        "id": "negative-half-tie",
+        "sourceF32Bits": [
+          1132331008,
+          3212836864,
+          0,
+          3279814656
+        ],
+        "scaleF32Bits": 1073741824,
+        "codes": [
+          127,
+          -1,
+          0,
+          -127
+        ]
+      },
+      {
+        "id": "just-below-and-above-half",
+        "sourceF32Bits": [
+          1123942400,
+          1056964607,
+          1056964609,
+          3204448255,
+          3204448257
+        ],
+        "scaleF32Bits": 1065353216,
+        "codes": [
+          127,
+          0,
+          1,
+          0,
+          -1
+        ]
+      },
+      {
+        "id": "rounded-scale-clamp",
+        "sourceF32Bits": [
+          2139095039,
+          4286578687,
+          1065353216,
+          3212836864
+        ],
+        "scaleF32Bits": 2080440836,
+        "codes": [
+          127,
+          -127,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "non-power-of-two-scale",
+        "sourceF32Bits": [
+          1077936128,
+          1065353216,
+          3221225472,
+          1036831949
+        ],
+        "scaleF32Bits": 1019314950,
+        "codes": [
+          127,
+          42,
+          -85,
+          4
+        ]
+      }
+    ],
+    "matvecCases": [
+      {
+        "id": "zero-row",
+        "rows": 1,
+        "columns": 4,
+        "sourceF32Bits": [
+          0,
+          2147483648,
+          0,
+          2147483648
+        ],
+        "inputF32Bits": [
+          1065353216,
+          3221225472,
+          1077936128,
+          3229614080
+        ],
+        "payloadHex": "0000803f00000000",
+        "outputF32Bits": [
+          0
+        ]
+      },
+      {
+        "id": "mixed-sign-row",
+        "rows": 1,
+        "columns": 4,
+        "sourceF32Bits": [
+          1077936128,
+          1065353216,
+          3221225472,
+          1036831949
+        ],
+        "inputF32Bits": [
+          1056964608,
+          3212836864,
+          1073741824,
+          3196059648
+        ],
+        "payloadHex": "0683c13c7f2aab04",
+        "outputF32Bits": [
+          3227649032
+        ]
+      },
+      {
+        "id": "multiple-rows",
+        "rows": 3,
+        "columns": 3,
+        "sourceF32Bits": [
+          1065353216,
+          1073741824,
+          1077936128,
+          3229614080,
+          1084227584,
+          3233808384,
+          1048576000,
+          3204448256,
+          1061158912
+        ],
+        "inputF32Bits": [
+          1073741824,
+          3212836864,
+          1056964608
+        ],
+        "payloadHex": "0683c13c2a557f0683413dab6a810683c13b2aab7f",
+        "outputF32Bits": [
+          1069349364,
+          3246411937,
+          1068482431
+        ]
+      },
+      {
+        "id": "finite-extreme-without-overflow",
+        "rows": 1,
+        "columns": 2,
+        "sourceF32Bits": [
+          1199562752,
+          3338657792
+        ],
+        "inputF32Bits": [
+          1056964608,
+          1048576000
+        ],
+        "payloadHex": "e4f100447fc0",
+        "outputF32Bits": [
+          1186948878
+        ]
+      }
+    ],
+    "mutations": [
+      {
+        "id": "wrong-magic",
+        "operation": "xor-byte",
+        "offset": 0,
+        "value": 1,
+        "expectedError": "slm2-invalid-magic"
+      },
+      {
+        "id": "quant-count-zero",
+        "operation": "set-u32",
+        "offset": 88,
+        "value": 0,
+        "expectedError": "slm2-invalid-quantization"
+      },
+      {
+        "id": "quant-record-reserved",
+        "operation": "set-u8",
+        "offset": 2872,
+        "value": 1,
+        "expectedError": "slm2-invalid-quantization"
+      },
+      {
+        "id": "quant-profile-string-id-range",
+        "operation": "set-u32",
+        "offset": 2820,
+        "value": 4294967295,
+        "expectedError": "slm2-invalid-quantization"
+      },
+      {
+        "id": "unknown-rounding-enum",
+        "operation": "set-u16",
+        "offset": 2858,
+        "value": 2,
+        "expectedError": "slm2-invalid-quantization"
+      },
+      {
+        "id": "q8-role-as-f32",
+        "operation": "set-u16",
+        "offset": 3524,
+        "value": 1,
+        "expectedError": "slm2-invalid-tensor-encoding"
+      },
+      {
+        "id": "f32-role-as-q8",
+        "operation": "set-u16",
+        "offset": 2948,
+        "value": 2,
+        "expectedError": "slm2-invalid-tensor-encoding"
+      },
+      {
+        "id": "q8-rank-one",
+        "operation": "set-u8",
+        "offset": 3522,
+        "value": 1,
+        "expectedError": "slm2-invalid-tensor"
+      },
+      {
+        "id": "q8-quant-index-none",
+        "operation": "set-u16",
+        "offset": 3526,
+        "value": 65535,
+        "expectedError": "slm2-invalid-tensor-encoding"
+      },
+      {
+        "id": "q8-block-elements-drift",
+        "operation": "set-u32",
+        "offset": 3652,
+        "value": 9,
+        "expectedError": "slm2-invalid-tensor-encoding"
+      },
+      {
+        "id": "q8-stored-bytes-drift",
+        "operation": "set-u32",
+        "offset": 3624,
+        "value": 97,
+        "expectedError": "slm2-invalid-tensor-encoding"
+      },
+      {
+        "id": "zero-row-negative-zero-scale",
+        "operation": "set-u32",
+        "offset": 8320,
+        "value": 2147483648,
+        "expectedError": "slm2-invalid-q8-payload"
+      },
+      {
+        "id": "negative-128-code",
+        "operation": "set-i8",
+        "offset": 8324,
+        "value": -128,
+        "expectedError": "slm2-invalid-q8-payload"
+      },
+      {
+        "id": "payload-hash-drift",
+        "operation": "xor-byte",
+        "offset": 6405,
+        "value": 1,
+        "expectedError": "slm2-payload-hash-drift"
+      },
+      {
+        "id": "layout-hash-drift",
+        "operation": "xor-byte",
+        "offset": 653,
+        "value": 1,
+        "expectedError": "slm2-layout-hash-drift"
+      },
+      {
+        "id": "nonzero-section-padding",
+        "operation": "set-u8",
+        "offset": 224,
+        "value": 1,
+        "expectedError": "slm2-nonzero-padding"
+      },
+      {
+        "id": "trailing-byte",
+        "operation": "append-byte",
+        "offset": 8704,
+        "value": 0,
+        "expectedError": "slm2-file-size-mismatch"
+      }
+    ]
+  }
+}

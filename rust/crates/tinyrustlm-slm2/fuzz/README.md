@@ -4,9 +4,11 @@ This nested Cargo workspace is the bounded raw-byte fuzz boundary for the
 unpromoted SLM2 parser. It never activates a model, accesses a network, writes
 an artifact, or treats fuzz success as model qualification.
 
-The exact profile is `contracts/vnext/slm2-fuzz-profile.v1.json`. The corpus is
-generated from the checked-in SLM2 vector and contains one admitted artifact
-plus single-fault hostile variants with exact parser error codes.
+The exact profile is `contracts/vnext/slm2-q8-fuzz-profile.v1.json`. The corpus
+is generated from the sole checked-in mixed-Q8 SLM2 vector and contains one
+admitted artifact, explicit truncated and SLM1 rejections, and every registered
+single-fault Q8 hostile mutation with its exact parser error code. There is no
+reader for the superseded dense-F32 corpus contract.
 
 Stable replay does not require libFuzzer:
 

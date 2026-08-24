@@ -19,19 +19,19 @@ pub const MAXIMUM_INPUT_BYTES: usize = 1_048_576;
 /// Largest tensor count admitted by the fuzz validation policy.
 pub const MAXIMUM_TENSORS: u32 = 4_096;
 /// Frozen SLM2 fuzz-profile identity.
-pub const SLM2_FUZZ_PROFILE_ID: &str = "tinyrustlm.vnext.slm2-fuzz.v1";
+pub const SLM2_FUZZ_PROFILE_ID: &str = "tinyrustlm.slm2-q8-fuzz/1";
 /// SHA-256 of the exact checked-in SLM2 fuzz profile.
 pub const SLM2_FUZZ_PROFILE_SHA256: &str =
-    "dc16fd2abf142e6a9c8a72bbfc3d998b980af486e094406d73933cae6732a487";
+    "27c4ca3a2c5b4642010f7ca854aa83c76dd10bbe7e114a78489958f3e1c2f0ce";
 /// Exact schema required for one stable corpus manifest.
-pub const CORPUS_MANIFEST_SCHEMA: &str = "tinyrustlm.vnext.slm2_fuzz_corpus.v1";
+pub const CORPUS_MANIFEST_SCHEMA: &str = "tinyrustlm.slm2-q8-fuzz-corpus.v1";
 /// Largest stable corpus manifest admitted before JSON parsing.
 pub const MAXIMUM_CORPUS_MANIFEST_BYTES: u64 = 131_072;
 /// Largest exact stable corpus membership admitted by replay.
 pub const MAXIMUM_CORPUS_ENTRIES: usize = 256;
 
 const SLM2_FUZZ_PROFILE_BYTES: &[u8] =
-    include_bytes!("../../../../../contracts/vnext/slm2-fuzz-profile.v1.json");
+    include_bytes!("../../../../../contracts/vnext/slm2-q8-fuzz-profile.v1.json");
 const ALLOWED_PARSER_ERROR_CODES: &[&str] = &[
     "slm2-file-size-limit",
     "slm2-file-size-mismatch",
@@ -45,10 +45,13 @@ const ALLOWED_PARSER_ERROR_CODES: &[&str] = &[
     "slm2-invalid-metadata",
     "slm2-invalid-model-metadata",
     "slm2-invalid-payload-layout",
+    "slm2-invalid-q8-payload",
+    "slm2-invalid-quantization",
     "slm2-invalid-section",
     "slm2-invalid-section-layout",
     "slm2-invalid-string-table",
     "slm2-invalid-tensor",
+    "slm2-invalid-tensor-encoding",
     "slm2-invalid-tensor-order",
     "slm2-invalid-tensor-registry",
     "slm2-io",
@@ -73,6 +76,7 @@ const ACCEPTED_ARTIFACT_CHECKS: &[&str] = &[
     "piece-manifest-sha256-equals-model-identity",
     "tensor-count-within-policy",
     "tensor-registry-matches-public-required-registry",
+    "mixed-q8-f32-role-partition-is-exact",
     "all-payload-ranges-within-input",
 ];
 const REJECTED_ARTIFACT_CHECKS: &[&str] = &[
@@ -83,18 +87,10 @@ const REJECTED_ARTIFACT_CHECKS: &[&str] = &[
     "no-network",
 ];
 const SEED_CLASSES: &[&str] = &[
-    "canonical-valid-vector",
-    "legacy-or-truncated-envelope",
-    "header-identity-and-version-mutation",
-    "section-layout-and-padding-mutation",
-    "noncanonical-metadata",
-    "string-table-mutation",
-    "tensor-table-mutation",
-    "tensor-registry-mutation",
-    "layout-identity-mutation",
-    "payload-layout-mutation",
-    "payload-finiteness-and-identity-mutation",
-    "trailing-byte-mutation",
+    "canonical-valid-mixed-q8-vector",
+    "truncated-envelope",
+    "slm1-envelope",
+    "registered-q8-hostile-mutation",
 ];
 const PROHIBITED_BEHAVIORS: &[&str] = &[
     "unbounded-input-forwarding",
@@ -102,6 +98,10 @@ const PROHIBITED_BEHAVIORS: &[&str] = &[
     "parser-output-repair",
     "best-of-n-parser-selection",
     "activation-of-fuzzed-artifacts",
+    "second-production-encoding",
+    "legacy-reader",
+    "compatibility-alias",
+    "runtime-repacking",
     "network-access",
     "model-byte-publication",
     "fuzz-result-as-production-qualification",
@@ -116,6 +116,8 @@ struct FuzzProfile {
     status: String,
     format_profile_id: String,
     format_profile_sha256: String,
+    weight_profile_id: String,
+    weight_profile_sha256: String,
     input: InputProfile,
     validation_policy: ValidationPolicyProfile,
     target: TargetProfile,
@@ -228,7 +230,7 @@ fn validate_frozen_profile() {
     assert_eq!(SLM2_FORMAT_PROFILE_ID, "org.minimodel.slm2/2.0");
     assert_eq!(
         SLM2_FORMAT_PROFILE_SHA256,
-        "387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625"
+        "5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8"
     );
     assert_eq!(
         hex_sha256(&sha256(SLM2_FUZZ_PROFILE_BYTES)),
@@ -237,14 +239,25 @@ fn validate_frozen_profile() {
 
     let profile: FuzzProfile = serde_json::from_slice(SLM2_FUZZ_PROFILE_BYTES)
         .expect("frozen SLM2 fuzz profile must have the exact typed shape");
-    assert_eq!(profile.schema, "tinyrustlm.vnext.slm2-fuzz-profile.v1");
+    assert_eq!(profile.schema, "tinyrustlm.slm2-q8-fuzz-profile.v1");
     assert_eq!(profile.profile_id, SLM2_FUZZ_PROFILE_ID);
     assert_eq!(profile.version, 1);
-    assert_eq!(profile.status, "development-unpromoted");
+    assert_eq!(profile.status, "implemented-unpromoted");
     assert_eq!(profile.format_profile_id, SLM2_FORMAT_PROFILE_ID);
     assert_eq!(profile.format_profile_sha256, SLM2_FORMAT_PROFILE_SHA256);
+    assert_eq!(
+        profile.weight_profile_id,
+        "tinyrustlm.weight-q8-row-symmetric-f32-scale/1"
+    );
+    assert_eq!(
+        profile.weight_profile_sha256,
+        "7e931fd23fa8f6a90c53e4c14c5630eef8ce87e0f0902acd5a5e2df03c60733a"
+    );
 
-    assert_eq!(profile.input.kind, "raw-complete-slm2-artifact-bytes");
+    assert_eq!(
+        profile.input.kind,
+        "raw-complete-mixed-q8-slm2-artifact-bytes"
+    );
     assert_eq!(profile.input.maximum_bytes, MAXIMUM_INPUT_BYTES);
     assert_eq!(profile.input.empty_input, "parser-rejection");
     assert_eq!(
@@ -379,11 +392,11 @@ mod tests {
     use super::*;
 
     const VECTOR_BYTES: &[u8] =
-        include_bytes!("../../../../../contracts/vnext/slm2-format-vectors.v1.json");
+        include_bytes!("../../../../../contracts/vnext/slm2-q8-weight-vectors.v1.json");
 
     fn vector_artifact() -> Vec<u8> {
         let document: serde_json::Value = serde_json::from_slice(VECTOR_BYTES).unwrap();
-        let hex = document["vectors"][0]["artifactHex"].as_str().unwrap();
+        let hex = document["canonical"]["artifactHex"].as_str().unwrap();
         hex.as_bytes()
             .chunks_exact(2)
             .map(|pair| {
@@ -399,7 +412,7 @@ mod tests {
         let bytes = vector_artifact();
         let report = exercise_bytes(&bytes);
         assert_eq!(report.verdict(), &ExerciseVerdict::Admitted);
-        assert_eq!(report.tensor_count(), Some(11));
+        assert_eq!(report.tensor_count(), Some(17));
         assert_eq!(report.input_sha256(), hex_sha256(&sha256(&bytes)));
     }
 

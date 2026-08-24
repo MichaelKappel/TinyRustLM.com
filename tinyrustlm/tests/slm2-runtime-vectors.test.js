@@ -8,7 +8,7 @@ const test = require("node:test");
 
 const { parseStrictJson } = require("../tools/strict-json.js");
 const {
-  formatVectorPath,
+  q8WeightVectorPath,
   renderRuntimeVectors,
   runtimeVectorPath
 } = require("../tools/slm2-runtime-reference.js");
@@ -29,32 +29,34 @@ function f32Sha256(values) {
   return sha256(bytes);
 }
 
-test("freezes independently generated SLM2 scalar runtime vectors", () => {
+test("freezes independently generated mixed-Q8 SLM2 scalar runtime vectors", () => {
   const generatorBytes = fs.readFileSync(generatorPath);
   const vectorBytes = fs.readFileSync(runtimeVectorPath);
   const vectors = parseStrictJson(vectorBytes);
-  assert.equal(generatorBytes.length, 16_511);
+  assert.equal(generatorBytes.length, 19_745);
   assert.equal(sha256(generatorBytes),
-    "df0b51548dce1a7174166479504a35fe6f5b256dd3168cae970ac8c1df7257b9");
-  assert.equal(vectorBytes.length, 48_369);
+    "8d76a559790d0d9996c9d17990d982c32e227ce767dbfef17a045181444d4f0e");
+  assert.equal(vectorBytes.length, 50_801);
   assert.equal(sha256(vectorBytes),
-    "c7a0fdaf1dd578928e6a438be308dad5a9e8cc10e2bbb6da4b2c5e10bebe71f1");
+    "c437ebb5e59c9059c49324d12d43e556493e62f5d6b2e857e369ca08674333a0");
   assert.deepEqual(vectorBytes, renderRuntimeVectors());
   assert.equal(vectors.oracle.sourceSha256, sha256(generatorBytes));
-  assert.equal(vectors.schema, "tinyrustlm.vnext.slm2-runtime-vectors.v1");
+  assert.equal(vectors.schema, "tinyrustlm.slm2-runtime-q8-vectors.v1");
 });
 
-test("binds vectors to the canonical format artifact and explicit f32 arithmetic", () => {
-  const formatVectors = parseStrictJson(fs.readFileSync(formatVectorPath));
+test("binds vectors to the sole mixed-Q8 artifact and ordered f32 arithmetic", () => {
+  const weightVectors = parseStrictJson(fs.readFileSync(q8WeightVectorPath));
   const vectors = parseStrictJson(fs.readFileSync(runtimeVectorPath));
-  const canonical = formatVectors.vectors.find((entry) =>
-    entry.id === vectors.sourceFormatVector.id);
-  assert.ok(canonical);
-  assert.equal(vectors.sourceFormatVector.artifactSha256, canonical.artifactSha256);
-  assert.equal(vectors.sourceFormatVector.artifactByteLength, canonical.artifactByteLength);
-  assert.equal(vectors.sourceFormatVector.formatProfileSha256, formatVectors.profileSha256);
+  const canonical = weightVectors.canonical;
+  assert.equal(canonical.id, vectors.sourceQ8WeightVector.id);
+  assert.equal(vectors.sourceQ8WeightVector.artifactSha256, canonical.artifactSha256);
+  assert.equal(vectors.sourceQ8WeightVector.artifactByteLength, canonical.artifactByteLength);
+  assert.equal(vectors.sourceQ8WeightVector.formatProfileSha256,
+    weightVectors.formatProfile.sha256);
+  assert.equal(vectors.sourceQ8WeightVector.weightProfileSha256,
+    weightVectors.weightProfile.sha256);
   assert.equal(vectors.arithmeticProfile,
-    "explicit-ieee754-f32-rounding-after-each-scalar-operation");
+    "tinyrustlm.runtime-q8-scalar-f32-ordered/1");
   assert.deepEqual(vectors.numericalTolerance, { absolute: 0.002, relative: 0.00002 });
 });
 
@@ -92,7 +94,7 @@ test("covers positions, exact KV growth, stages, logits, and generation state", 
       finalPosition: 4,
       id: "bounded-three-token-generation",
       maximumNewTokens: 3,
-      outputTokens: [31, 31, 31],
+      outputTokens: [30, 30, 30],
       promptTokens: [1],
       requiredMaximumPosition: 4,
       stopTokens: []
@@ -101,10 +103,10 @@ test("covers positions, exact KV growth, stages, logits, and generation state", 
       finalPosition: 2,
       id: "first-generated-token-is-stop",
       maximumNewTokens: 3,
-      outputTokens: [31],
+      outputTokens: [30],
       promptTokens: [1],
       requiredMaximumPosition: 4,
-      stopTokens: [31]
+      stopTokens: [30]
     }
   ]);
 });

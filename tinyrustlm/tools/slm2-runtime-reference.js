@@ -7,13 +7,13 @@ const path = require("node:path");
 const { parseStrictJson } = require("./strict-json.js");
 
 const repositoryRoot = path.resolve(__dirname, "../..");
-const formatVectorPath = path.join(
+const q8WeightVectorPath = path.join(
   repositoryRoot,
-  "contracts/vnext/slm2-format-vectors.v1.json"
+  "contracts/vnext/slm2-q8-weight-vectors.v1.json"
 );
 const runtimeVectorPath = path.join(
   repositoryRoot,
-  "contracts/vnext/slm2-runtime-vectors.v1.json"
+  "contracts/vnext/slm2-runtime-q8-vectors.v1.json"
 );
 
 const modelSpec = Object.freeze({
@@ -25,10 +25,10 @@ const modelSpec = Object.freeze({
   kvHeadCount: 1,
   layerCount: 1,
   normalizationEpsilonBits: "3727c5ac",
-  qkNormalization: false,
-  qkvBias: false,
+  qkNormalization: true,
+  qkvBias: true,
   ropeThetaBits: "461c4000",
-  tiedEmbeddings: true,
+  tiedEmbeddings: false,
   vocabularySize: 32
 });
 
@@ -76,14 +76,12 @@ function product(values) {
 }
 
 function loadCanonicalModel() {
-  const document = parseStrictJson(fs.readFileSync(formatVectorPath));
-  invariant(document.schema === "tinyrustlm.vnext.slm2-format-vectors.v1",
-    "unexpected format-vector schema");
-  invariant(Array.isArray(document.vectors) && document.vectors.length > 0,
-    "format-vector corpus is empty");
-  const vector = document.vectors.find((entry) =>
-    entry.id === "base-model-required-f32-tensor-registry");
-  invariant(vector !== undefined, "canonical base-model vector is absent");
+  const document = parseStrictJson(fs.readFileSync(q8WeightVectorPath));
+  invariant(document.schema === "tinyrustlm.slm2-q8-weight-vectors.v1",
+    "unexpected Q8 weight-vector schema");
+  const vector = document.canonical;
+  invariant(vector !== null && typeof vector === "object" && !Array.isArray(vector),
+    "canonical Q8 weight vector is absent");
   const artifact = Buffer.from(vector.artifactHex, "hex");
   invariant(artifact.length === vector.artifactByteLength,
     "canonical artifact byte length drifted");
@@ -94,19 +92,23 @@ function loadCanonicalModel() {
   for (const metadata of vector.tensors) {
     invariant(!tensors.has(tensorKey(metadata.canonicalName)),
       "duplicate canonical tensor name");
-    invariant(metadata.payloadLength === product(metadata.shape) * 4,
-      "tensor payload length does not match its shape");
+    const logicalElements = product(metadata.shape);
+    if (metadata.elementType === 1) {
+      invariant(metadata.payloadLength === logicalElements * 4,
+        "F32 tensor payload length does not match its shape");
+    } else {
+      invariant(metadata.elementType === 2 && metadata.shape.length === 2
+        && metadata.payloadLength === metadata.shape[0] * (metadata.shape[1] + 4),
+      "Q8 tensor payload length does not match its shape");
+    }
     const start = vector.header.payloadOffset + metadata.payloadRelativeOffset;
     const end = start + metadata.payloadLength;
     invariant(start >= vector.header.payloadOffset && end <= artifact.length,
       "tensor payload lies outside the artifact");
-    const values = [];
-    for (let offset = start; offset < end; offset += 4) {
-      values.push(finite(artifact.readFloatLE(offset)));
-    }
     tensors.set(tensorKey(metadata.canonicalName), {
+      bytes: Buffer.from(artifact.subarray(start, end)),
+      elementType: metadata.elementType,
       shape: [...metadata.shape],
-      values
     });
   }
   return { artifact, document, tensors, vector };
@@ -118,17 +120,37 @@ function requireTensor(model, name, shape) {
   invariant(tensor.shape.length === shape.length
     && tensor.shape.every((value, index) => value === shape[index]),
   `required tensor shape drifted: ${name}`);
-  return tensor.values;
+  return tensor;
 }
 
-function matrixVector(weights, rows, columns, input) {
-  invariant(weights.length === rows * columns && input.length === columns,
+function tensorElement(tensor, index) {
+  const logicalElements = product(tensor.shape);
+  invariant(Number.isInteger(index) && index >= 0 && index < logicalElements,
+    "tensor element lies outside its shape");
+  if (tensor.elementType === 1) {
+    return finite(tensor.bytes.readFloatLE(index * 4));
+  }
+  invariant(tensor.elementType === 2 && tensor.shape.length === 2,
+    "matrix tensor has an unsupported encoding");
+  const columns = tensor.shape[1];
+  const row = Math.floor(index / columns);
+  const column = index % columns;
+  const rowOffset = row * (columns + 4);
+  const scale = finite(tensor.bytes.readFloatLE(rowOffset));
+  const code = tensor.bytes.readInt8(rowOffset + 4 + column);
+  invariant(scale > 0 && code !== -128, "Q8 tensor payload is invalid");
+  return multiply(scale, code);
+}
+
+function matrixVector(tensor, rows, columns, input) {
+  invariant(tensor.shape.length === 2 && tensor.shape[0] === rows
+    && tensor.shape[1] === columns && input.length === columns,
     "matrix-vector shape mismatch");
   const output = new Array(rows);
   for (let row = 0; row < rows; row += 1) {
     let sum = 0;
     for (let column = 0; column < columns; column += 1) {
-      sum = add(sum, multiply(weights[row * columns + column], input[column]));
+      sum = add(sum, multiply(tensorElement(tensor, row * columns + column), input[column]));
     }
     output[row] = sum;
   }
@@ -136,13 +158,44 @@ function matrixVector(weights, rows, columns, input) {
 }
 
 function rmsNorm(input, weights, epsilon) {
-  invariant(input.length > 0 && weights.length === input.length,
+  invariant(input.length > 0 && weights.shape.length === 1
+    && weights.shape[0] === input.length,
     "RMS normalization shape mismatch");
   let sum = 0;
   for (const value of input) sum = add(sum, multiply(value, value));
   const mean = divide(sum, input.length);
   const scale = divide(1, finite(Math.sqrt(add(mean, epsilon))));
-  return input.map((value, index) => multiply(multiply(value, scale), weights[index]));
+  return input.map((value, index) =>
+    multiply(multiply(value, scale), tensorElement(weights, index)));
+}
+
+function addTensorVector(values, tensor) {
+  invariant(tensor.shape.length === 1 && tensor.shape[0] === values.length,
+    "bias shape mismatch");
+  return values.map((value, index) => add(value, tensorElement(tensor, index)));
+}
+
+function normalizeHeads(values, weights, headCount, headDimension, epsilon) {
+  invariant(values.length === headCount * headDimension
+    && weights.shape.length === 1 && weights.shape[0] === headDimension,
+  "head normalization shape mismatch");
+  const output = [...values];
+  for (let head = 0; head < headCount; head += 1) {
+    const start = head * headDimension;
+    let sum = finite(0);
+    for (let offset = 0; offset < headDimension; offset += 1) {
+      const value = values[start + offset];
+      sum = add(sum, multiply(value, value));
+    }
+    const scale = divide(1, finite(Math.sqrt(add(divide(sum, headDimension), epsilon))));
+    for (let offset = 0; offset < headDimension; offset += 1) {
+      output[start + offset] = multiply(
+        multiply(values[start + offset], scale),
+        tensorElement(weights, offset)
+      );
+    }
+  }
+  return output;
 }
 
 function applyRope(input, headCount, headDimension, position, theta) {
@@ -250,6 +303,8 @@ function createReference(model) {
   const kvWidth = spec.kvHeadCount * spec.headDimension;
   const embedding = requireTensor(model, "model.token-embedding.weight",
     [spec.vocabularySize, spec.embeddingSize]);
+  const outputProjection = requireTensor(model, "model.output-projection.weight",
+    [spec.vocabularySize, spec.embeddingSize]);
   const finalNorm = requireTensor(model, "model.final-normalization.weight",
     [spec.embeddingSize]);
   const caches = Array.from({ length: spec.layerCount }, () => ({ keys: [], values: [] }));
@@ -267,37 +322,51 @@ function createReference(model) {
     invariant(Number.isInteger(tokenId) && tokenId >= 0 && tokenId < spec.vocabularySize,
       "token lies outside the vocabulary");
     invariant(position < spec.contextLength, "sequence exceeds context length");
-    let hidden = embedding.slice(
-      tokenId * spec.embeddingSize,
-      (tokenId + 1) * spec.embeddingSize
-    );
+    let hidden = Array.from({ length: spec.embeddingSize }, (_, column) =>
+      tensorElement(embedding, tokenId * spec.embeddingSize + column));
     const trace = { embedding: encodeF32(hidden), layers: [] };
     for (let layer = 0; layer < spec.layerCount; layer += 1) {
       const prefix = `model.layers.${layer}`;
       const attentionNormalized = rmsNorm(hidden,
         requireTensor(model, `${prefix}.attention-normalization.weight`, [spec.embeddingSize]),
         spec.normalizationEpsilon);
-      const query = applyRope(matrixVector(
+      let query = matrixVector(
         requireTensor(model, `${prefix}.attention.query-projection.weight`,
           [queryWidth, spec.embeddingSize]),
         queryWidth,
         spec.embeddingSize,
         attentionNormalized
-      ), spec.headCount, spec.headDimension, position, spec.ropeTheta);
-      const key = applyRope(matrixVector(
+      );
+      let key = matrixVector(
         requireTensor(model, `${prefix}.attention.key-projection.weight`,
           [kvWidth, spec.embeddingSize]),
         kvWidth,
         spec.embeddingSize,
         attentionNormalized
-      ), spec.kvHeadCount, spec.headDimension, position, spec.ropeTheta);
-      const value = matrixVector(
+      );
+      let value = matrixVector(
         requireTensor(model, `${prefix}.attention.value-projection.weight`,
           [kvWidth, spec.embeddingSize]),
         kvWidth,
         spec.embeddingSize,
         attentionNormalized
       );
+      query = addTensorVector(query,
+        requireTensor(model, `${prefix}.attention.query-projection.bias`, [queryWidth]));
+      key = addTensorVector(key,
+        requireTensor(model, `${prefix}.attention.key-projection.bias`, [kvWidth]));
+      value = addTensorVector(value,
+        requireTensor(model, `${prefix}.attention.value-projection.bias`, [kvWidth]));
+      query = normalizeHeads(query,
+        requireTensor(model, `${prefix}.attention.query-normalization.weight`,
+          [spec.headDimension]),
+        spec.headCount, spec.headDimension, spec.normalizationEpsilon);
+      key = normalizeHeads(key,
+        requireTensor(model, `${prefix}.attention.key-normalization.weight`,
+          [spec.headDimension]),
+        spec.kvHeadCount, spec.headDimension, spec.normalizationEpsilon);
+      query = applyRope(query, spec.headCount, spec.headDimension, position, spec.ropeTheta);
+      key = applyRope(key, spec.kvHeadCount, spec.headDimension, position, spec.ropeTheta);
       caches[layer].keys.push(...key);
       caches[layer].values.push(...value);
       const attention = groupedQueryAttention(query, caches[layer], spec, position);
@@ -349,7 +418,7 @@ function createReference(model) {
       });
     }
     const finalNormalized = rmsNorm(hidden, finalNorm, spec.normalizationEpsilon);
-    const logits = matrixVector(embedding, spec.vocabularySize, spec.embeddingSize,
+    const logits = matrixVector(outputProjection, spec.vocabularySize, spec.embeddingSize,
       finalNormalized);
     position += 1;
     return {
@@ -407,7 +476,7 @@ function buildRuntimeVectorDocument() {
   const sourceBytes = fs.readFileSync(__filename);
   const firstDecision = sequenceCase(model, "decision-for-stop-case", [1]).steps[0].greedyToken;
   return {
-    arithmeticProfile: "explicit-ieee754-f32-rounding-after-each-scalar-operation",
+    arithmeticProfile: "tinyrustlm.runtime-q8-scalar-f32-ordered/1",
     modelSpec,
     numericalTolerance: {
       absolute: 0.002,
@@ -417,12 +486,13 @@ function buildRuntimeVectorDocument() {
       implementation: "tinyrustlm/tools/slm2-runtime-reference.js",
       sourceSha256: sha256(sourceBytes)
     },
-    schema: "tinyrustlm.vnext.slm2-runtime-vectors.v1",
-    sourceFormatVector: {
+    schema: "tinyrustlm.slm2-runtime-q8-vectors.v1",
+    sourceQ8WeightVector: {
       artifactByteLength: model.vector.artifactByteLength,
       artifactSha256: model.vector.artifactSha256,
-      formatProfileSha256: model.document.profileSha256,
-      id: model.vector.id
+      formatProfileSha256: model.document.formatProfile.sha256,
+      id: model.vector.id,
+      weightProfileSha256: model.document.weightProfile.sha256
     },
     sequences: [
       sequenceCase(model, "single-token-zero-position", [0]),
@@ -457,7 +527,7 @@ if (require.main === module) runCli();
 
 module.exports = {
   buildRuntimeVectorDocument,
-  formatVectorPath,
+  q8WeightVectorPath,
   renderRuntimeVectors,
   runtimeVectorPath
 };

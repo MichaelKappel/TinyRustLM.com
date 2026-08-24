@@ -1,197 +1,150 @@
-# SLM2 Format Implementation Checkpoint
+# SLM2 Mixed-Q8 Format Implementation Checkpoint
 
 ## Status
 
-This document records the current local implementation of the exact,
-development-only SLM2 2.0 dense-F32 model format on 2026-08-20. The checkpoint
-is structurally usable for continued converter and runtime development, but it
-is deliberately inactive and unpromoted.
+This document records the sole current TinyRustLM model-byte implementation on
+2026-08-24. TinyRustLM is one prelaunch product. SLM2, schema revisions, and
+profile numbers are exact technical identities, not a second product
+generation and not permission to retain an older executable path.
 
-It is not evidence of source-model conversion, a correct forward pass,
-browser/WASM loading, model quality, sustained sanitizer fuzzing, production
-admission, publication, catalog availability, or any live campaign count.
+The checkpoint implements and tests a closed mixed-Q8/F32 model container,
+streaming conversion, strict parsing, scalar arithmetic vectors, and bounded
+hostile replay. It remains inactive and unpromoted. It is not evidence of a
+qualified real model, source-framework parity, production browser loading,
+deployment, publication, public P2P reachability, MemoryEndpoints operation, or
+campaign progress.
 
 ## Exact Authorities
 
 | Authority | Exact identity |
 | --- | --- |
-| Format profile | `org.minimodel.slm2/2.0`; 19,303 bytes; SHA-256 `387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625` |
-| Vector document | 26,210 bytes; SHA-256 `18991615212a1e230f49032cc487664098667694c4817b954d69edd40af4e17e` |
-| Seed artifact | 8,448 bytes; SHA-256 `c010e2818c64713310699e9ad928d3b22cfeb004756ae8e03acaaee5897e613a` |
-| Seed manifest | SHA-256 `1aacc7e30dadf88c9e7d9c75d6bc21000ba86d174fbb0c441b6dad160d154f05` |
-| Seed tensor layout | SHA-256 `46f727ad637170f4dbe6247c40e0ede6bc48b13d82c31cbace05b42394d6d487` |
-| Seed Merkle root | `fb1d8382afdd5fcc325add765576eea5a802b2ef01a78dc3309c2c21e3afa474` |
-| Fuzz profile | `tinyrustlm.vnext.slm2-fuzz.v1`; 3,187 bytes; SHA-256 `dc16fd2abf142e6a9c8a72bbfc3d998b980af486e094406d73933cae6732a487` |
-| Corpus manifest | 10,040 bytes; SHA-256 `9b97aa1c7203c3dd573aeb570d4f8d75cc347df39cf405265518b386b51467ea` |
-| Fuzz dependency lock | 6,766 bytes; SHA-256 `9b6561a9894953d73d969c4976dd8b9f38eb7a80f34cbec62050041b12e12d88` |
+| Format profile | `org.minimodel.slm2/2.0`; 21,924 bytes; SHA-256 `5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8` |
+| Weight profile | `tinyrustlm.weight-q8-row-symmetric-f32-scale/1`; 9,900 bytes; SHA-256 `7e931fd23fa8f6a90c53e4c14c5630eef8ce87e0f0902acd5a5e2df03c60733a` |
+| Independent vectors | 42,623 bytes; SHA-256 `f81d30bd0646efa4a267ffed8c697c2b7a5c84a67ded9d498aa3ffb10007ca2d` |
+| Canonical artifact | 8,704 bytes; SHA-256 `4383b112797b99232561b67bdc752d8ea0e62e90e24f8b94fd629c563e2d1502` |
+| Fuzz profile | `tinyrustlm.slm2-q8-fuzz/1`; 3,314 bytes; SHA-256 `27c4ca3a2c5b4642010f7ca854aa83c76dd10bbe7e114a78489958f3e1c2f0ce` |
+| Corpus manifest | 7,737 bytes; SHA-256 `f3fa27a94b3e9b7e4004c041cec67adf31c9ab7f81a10daadbff8ffbabb65bc9` |
 
-The profile is normative. The vector and fuzz documents bind implementations
-to that profile; they do not expand it. Any material byte, field, semantic,
-limit, identity, or error-vocabulary change replaces the unpromoted contract
-and all affected vectors together. There is no version-range reader.
+The profiles are normative. The vector and fuzz documents bind independent
+implementations to those profiles and do not broaden them. A material field,
+arithmetic, role, limit, or identity change replaces the complete unpromoted
+contract and invalidates affected descendants. There is no version-range
+reader, compatibility alias, migration, negotiation, or fallback.
+
+## Sole Stored Encoding
+
+The closed tensor registry chooses storage from the exact semantic role:
+
+- every admitted rank-2 embedding or projection matrix uses row-wise Q8;
+- RMS normalization weights and optional QKV biases remain finite
+  little-endian binary32;
+- Q8 roles cannot be stored as F32, and F32 roles cannot be stored as Q8;
+- no dtype is inferred from a name, byte count, source metadata, or caller
+  preference.
+
+Each Q8 row stores one positive finite little-endian F32 scale followed by
+signed int8 codes in `[-127,127]`. Code `-128`, row padding, tensor tails,
+zero-points, and auxiliary tables are forbidden. A zero row has canonical scale
+`1.0f`. Quantization computes the finite binary32 row maximum, divides by
+`127.0f`, rounds normalized values half away from zero, and clamps to the exact
+code range. Scalar multiplication dequantizes each code with one binary32
+multiply, multiplies by the input in binary32, and accumulates left to right
+without an FMA contract.
+
+The 128-byte quantization record binds the storage, quantizer, scalar-kernel,
+and semantic-role profiles. Every reserved byte is zero. Tensor descriptors
+bind element type, quant-profile index, block width, row-byte width, scale type,
+packing order, accumulator type, and no-tail rule. Unknown or inconsistent
+values fail closed.
 
 ## Rust Boundary
 
-`rust/crates/tinyrustlm-slm2` is the sole current SLM2 binary implementation.
-It forbids unsafe Rust and exports only:
+`rust/crates/tinyrustlm-slm2` is the only current binary implementation. It
+forbids unsafe Rust and exports closed model/tensor specifications, a streaming
+writer, a bounded streaming validator, exact Q8 row arithmetic, and fixed piece
+and Merkle identities.
 
-- a closed `ModelSpec` for base or independently executable specialist models;
-- a public required-registry constructor for the exact conditional decoder
-  tensor set;
-- exact `TensorSpec` and seekable `TensorInput` values;
-- a sequential deterministic `write_model` operation;
-- a bounded streaming `validate_model` operation returning an inactive
-  `ValidatedModel` candidate;
-- fixed 4 MiB piece and domain-separated Merkle identities.
+The writer accepts finite seekable F32 source tensors because public model
+repositories publish source weights in higher precision. It does not store an
+F32 matrix alternative. For matrix roles it scans each row to derive the exact
+scale, seeks back, emits the scale and codes directly, and hashes both the raw
+source and stored payload. Norms and optional biases stream as F32. Source
+length and hash drift between validation and emission are fatal. The writer
+never builds a whole-model shadow and never repacks an already admitted SLM2
+artifact at runtime.
 
-The crate contains no SLM1 parser, SLM1 writer, migration reader, alias,
-fallback, model selector, network operation, signature authority, tokenizer,
-template executor, adapter loader, or activation route.
+The reader checks actual file size and policy before material allocation. It
+validates the exact envelope, section order, quantization record, canonical
+SLM-DCBOR-1 manifest, string table, descriptor order, role partition, layout
+hash, payload placement, zero padding, row scales, code range, zero-row
+canonicalization, payload hashes, source identities, and whole-artifact
+identity. Every proper canonical-artifact prefix rejects.
 
-### Writer
+Returning `ValidatedModel` proves only structural and cryptographic agreement.
+Activation remains a later fail-atomic gate bound to tokenizer, template,
+prompt, sampling, provenance, license, qualification, runtime, and release
+evidence.
 
-The writer requires an empty owned seekable destination. It validates and
-sorts descriptors, then requires the complete exact registry selected by layer
-count, tied embeddings, QKV bias, and Q/K normalization. It builds the
-canonical string table, recomputes the tensor layout identity, emits
-SLM-DCBOR-1 metadata, and derives every section and payload offset through
-checked arithmetic. It first scans each seekable tensor for exact length,
-finite F32 values, and framed payload identity, then scans it again while
-copying. A source that changes between passes fails rather than producing a
-mixed artifact. The destination is flushed before identity is returned.
+## Independent Vector
 
-### Reader
+`contracts/vnext/slm2-q8-weight-vectors.v1.json` is generated by the
+Node-builtins-only oracle `tinyrustlm/tools/slm2-q8-reference.js`. That oracle
+does not invoke Rust, Cargo, subprocesses, network services, or Rust-generated
+output. It independently writes and parses one complete 17-tensor artifact
+covering untied output projection, QKV biases, and Q/K normalization.
 
-The reader checks actual size and caller policy before material allocation. It
-then validates exact envelope identity/version, closed flags/tables, canonical
-derived section positions, zero padding, strict bounded SLM-DCBOR-1, the string
-table, all fixed tensor records, canonical descriptor order, layout identity,
-the exact conditional tensor registry, payload placement, finite F32 values,
-framed payload identities, and the whole artifact identity. Registry cardinality
-is rejected above the profile tensor ceiling before allocation. Tensor payloads
-and complete-file hashing use fixed buffers; the complete model is not
-allocated.
+The corpus freezes seven row cases, including positive and negative zero,
+positive and negative half ties, values around a half boundary, maximum finite
+binary32 values, and non-power-of-two scales. Four matrix-vector cases freeze
+ordered no-FMA output bits. Rust reproduces the full artifact byte for byte,
+every descriptor, every row case, every scalar output, every proper-prefix
+rejection, and all 17 registered hostile mutations.
 
-Returning `ValidatedModel` proves only that the exact bytes satisfy the exact
-format. Activation must remain a later fail-atomic gate bound to tokenizer,
-template, composition, provenance, license, qualification, runtime, and
-release evidence.
-
-## Cross-Implementation Vector
-
-`contracts/vnext/slm2-format-vectors.v1.json` contains one deliberately small
-base-model artifact with all 11 tensors required for one tied-embedding layer
-without QKV bias or Q/K normalization. The integration test derives that
-registry through the public API, constructs tensors in reverse order through
-the public writer, and requires byte-for-byte equality with the checked-in
-artifact. The public reader must reproduce every model, tensor, payload,
-layout, artifact, piece, and Merkle identity.
-
-`tinyrustlm/tests/slm2-format-vectors.test.js` is an independently written
-Node-core implementation. It imports no Rust parser or shared binary-format
-helper. It separately parses the 224-byte header, strict SLM-DCBOR-1 metadata,
-string table, 192-byte tensor records, finite payloads, framed tensor hashes,
-whole-artifact SHA-256, 4 MiB pieces, and the ADR-002 Merkle tree. Agreement is
-required on exact values, not only an accept/reject Boolean. It independently
-declares and derives all top-level and per-layer tensor roles, names,
-conditions, indices, and shapes, checks the profile registry byte-for-byte,
-tests all conditional families, and rejects a canonical manifest whose flags
-require tensors absent from the artifact.
-
-The vector declares five complete-artifact mutations with stable Rust and Node
-rejections: wrong magic, nonzero section padding, payload hash drift,
-non-finite F32, and a trailing byte. The independent DCBOR tests separately
-reject nonshortest integers, duplicate keys, indefinite forms, floating values,
-tags, trailing data, non-ASCII text, and non-text map keys.
+Registered Q8 hostile mutations cover quantization count and reserved fields,
+profile-string bounds, rounding enum, role/encoding swaps, rank, quant index,
+block width, stored size, negative-zero scale, forbidden `-128`, section
+padding, layout and payload hash drift, trailing data, and magic identity.
 
 ## Bounded Hostile Replay
 
-The raw-byte fuzz harness lives in the nested
-`rust/crates/tinyrustlm-slm2/fuzz` workspace. Inputs are capped at 1 MiB before
-parser entry and use a policy capped at 4,096 tensors. An admitted artifact
-must reproduce an independent complete SHA-256, bounded tensor ranges, and the
-piece manifest. It must also reproduce the public exact required registry.
-A rejection must use one exact profile-allowlisted parser code.
+The nested `rust/crates/tinyrustlm-slm2/fuzz` workspace forwards at most 1 MiB
+to the parser under a 4,096-tensor policy. Its exact profile is
+`contracts/vnext/slm2-q8-fuzz-profile.v1.json`. Startup hashes and deserializes
+that file through closed `deny_unknown_fields` Rust records and requires every
+profile identity, limit, check, error code, seed class, replay rule, and
+prohibition to match executable constants before parser entry.
 
-Harness startup hashes and then deserializes the complete fuzz profile through
-closed `deny_unknown_fields` Rust records exactly once. It requires the
-profile ID, version, status, linked format identity, input policy, validation
-policy, parser name, admission checks, rejection checks, complete ordered
-error vocabulary, seed classes, replay schema/status/limits, symlink rule,
-exact-membership rule, and prohibited behaviors to equal the executable
-constants. Stable replay imports its manifest byte and entry ceilings from
-that same library boundary. A source-only change to either the declarations or
-the executable constants therefore fails before a fuzzed artifact reaches the
-parser.
+The generated stable corpus contains 20 entries, one admitted, and 19 rejected:
+the canonical Q8 artifact, one truncated header, one explicit SLM1 envelope,
+and all registered Q8 hostile mutations. The 20 seed files total 156,900 bytes.
+Stable replay verifies exact membership, ordering, paths, sizes, hashes,
+verdicts, error codes, and admitted tensor count. Tests reject extra, missing,
+mutated, reordered, aliased, path-escaping, and oversized evidence.
 
-The generated corpus contains 27 unique seeds occupying 192,228 bytes:
+The focused harness includes two fuzz-library tests and five replay-command
+tests. The optional libFuzzer target still requires an operator-owned build
+root and `cargo-fuzz`. No claim is made that a sustained AddressSanitizer
+interval has run. A future crash must be preserved, minimized without changing
+semantics, converted to a deterministic regression, and retained as failed
+evidence until the general correction passes.
 
-- one canonical admission;
-- two legacy/truncated inputs;
-- envelope identity, version, class, flag, and reserved-table mutations;
-- section placement and zero-padding mutations;
-- indefinite DCBOR and header/manifest class conflict;
-- offset and non-ASCII string-table mutations;
-- tensor reserved, shape-count, duplicate-name, and alignment mutations;
-- a canonical manifest flag mutation requiring absent QKV bias tensors;
-- layout-hash and payload-relative-offset mutations;
-- nonzero payload padding, payload hash drift, non-finite F32, and trailing data.
+## Verification And Claims
 
-The generator owns the exact corpus directory, emits every seed and the
-manifest deterministically, and supports a read-only `--check` mode. Stable
-Rust replay rejects symlink/path escape, manifest drift, extra/missing seed,
-byte/hash drift, duplicate or noncanonical identity/order, and verdict drift.
-Direct replay regressions copy the frozen corpus into uniquely owned temporary
-directories and exercise those failures without modifying checked-in seeds.
-Current replay reports 27 entries, one admitted, and 26 rejected. Every proper
-prefix of the 8,448-byte seed also rejects under a deterministic Rust test.
+The maintained focused gates require:
 
-The first regeneration replay exposed two old vector-specific generator
-assumptions: a hardcoded string ID did not duplicate the new first tensor name,
-and payload offset `+16` was data rather than padding. Both failures were
-preserved in the private handoff. The corrected generator reads the actual
-first tensor name ID and derives the first payload gap from descriptor offsets;
-no expected parser verdict or parser behavior was weakened.
+- deterministic Node regeneration and source-identity pinning;
+- Rust byte-for-byte vector reproduction and every-prefix rejection;
+- all crate unit, integration, and documentation tests;
+- the exact stable fuzz replay;
+- canonical Rust formatting and all-target Clippy with warnings denied;
+- source scans that reject a second production encoding, compatibility surface,
+  runtime repacking, network use, output repair, and model-quality inflation.
 
-The optional libFuzzer target compiles with `libfuzzer-sys` 0.4.13. No claim is
-made that a sustained AddressSanitizer interval has run for this new target.
-Any future crash must be preserved, minimized without changing semantics,
-converted into a deterministic regression, and retained as failed evidence
-until the corrected parser and complete affected gates pass.
+Dense-F32 vector code, its generator, its corpus profile, and its runtime-vector
+contract are superseded executable paths and must not remain after this
+replacement is complete. Immutable source-control history retains their audit
+identity without granting support authority.
 
-## Current Verification
-
-The current focused local checkpoint passes:
-
-- 15 Rust unit tests and three public vector/hostile integration tests;
-- all 8,448 proper-prefix rejection checks inside the integration suite;
-- six independent Node profile/vector/registry/DCBOR tests;
-- one Node fuzz-profile/corpus/source-boundary test;
-- two fuzz-library tests and five replay-command tests, including exact replay
-  plus hostile manifest, membership, path, byte, and verdict drift;
-- exact 27-seed stable replay with one admission and 26 rejections;
-- warnings-denied Clippy and rustfmt for the production and fuzz workspaces;
-- compilation of the feature-enabled `raw_slm2` libFuzzer target.
-
-These are local deterministic conformance checks. They are not physical
-durability, another-RID execution, long-running fuzz, performance, converter,
-runtime, browser, or release evidence.
-
-## Remaining Gates
-
-1. Implement source-family converters with pinned source/tokenizer/template
-   receipts and deterministic SLM2 output.
-2. Implement the scalar F32 runtime oracle and exact forward-pass vectors.
-3. Prove bounded multi-gigabyte streaming, peak memory, and rejection latency.
-4. Add WASM and browser ingestion without copying complete model bytes.
-5. Run sustained sanitizer fuzzing and retain any minimized failures.
-6. Complete tokenizer2.0, template2.0, lora2.0, and acg2.0 byte contracts.
-7. Bind provenance, license, semantic qualification, browser, P2P, package,
-   physical-RID, release, deployment, and readback evidence.
-8. Delete the complete SLM1 production surface only after the incompatible
-   SLM2 path passes every cutover gate.
-
-Until those gates pass, SLM2 remains an inactive development format. Campaign
-counters remain 0/20 qualified models, 0/50 deletion-backed browser rounds,
-0/25 authorized live memory rounds, 0/40 outside-network lane proofs, and 0/20
-live catalog announcements.
+Campaign counters remain 0/20 qualified models, 0/50 deletion-backed browser
+rounds, 0/25 authorized live memory rounds, 0/40 outside-network lane proofs,
+and 0/20 live catalog announcements.

@@ -5,7 +5,7 @@ use std::error::Error;
 use std::fmt::{self, Display, Formatter};
 use std::io::Cursor;
 
-use tinyrustlm_slm2::{validate_model, ModelSpec, ValidatedModel, ValidationPolicy};
+use tinyrustlm_slm2::{validate_model, ElementType, ModelSpec, ValidatedModel, ValidationPolicy};
 
 const F32_BYTES: u64 = 4;
 const MAXIMUM_TENSORS: u32 = 262_144;
@@ -243,6 +243,7 @@ impl ScalarModel {
             .ok_or_else(|| ScalarRuntimeError::new("slm2-runtime-tensor-bounds"))?;
         Ok(TensorView {
             bytes,
+            element_type: descriptor.element_type(),
             shape: descriptor.shape(),
         })
     }
@@ -341,25 +342,75 @@ fn index_layer(model: &ValidatedModel, layer: i32) -> Result<LayerTensors, Scala
 #[derive(Clone, Copy)]
 struct TensorView<'a> {
     bytes: &'a [u8],
+    element_type: ElementType,
     shape: &'a [u64],
 }
 
 impl TensorView<'_> {
     fn element(&self, index: usize) -> Result<f32, ScalarRuntimeError> {
+        match self.element_type {
+            ElementType::F32 => self.f32_element(index),
+            ElementType::Q8RowSymmetric => self.q8_element(index),
+        }
+    }
+
+    fn f32_element(&self, index: usize) -> Result<f32, ScalarRuntimeError> {
         let start = index
             .checked_mul(4)
             .ok_or_else(|| ScalarRuntimeError::new("slm2-runtime-tensor-bounds"))?;
-        let end = start
+        read_f32(self.bytes, start)
+    }
+
+    fn q8_element(&self, index: usize) -> Result<f32, ScalarRuntimeError> {
+        if self.shape.len() != 2 {
+            return Err(ScalarRuntimeError::new("slm2-runtime-tensor-shape"));
+        }
+        let columns = checked_usize_u64(self.shape[1])?;
+        if columns == 0 {
+            return Err(ScalarRuntimeError::new("slm2-runtime-tensor-shape"));
+        }
+        let row = index / columns;
+        let column = index % columns;
+        if row >= checked_usize_u64(self.shape[0])? {
+            return Err(ScalarRuntimeError::new("slm2-runtime-tensor-bounds"));
+        }
+        let row_bytes = columns
             .checked_add(4)
             .ok_or_else(|| ScalarRuntimeError::new("slm2-runtime-tensor-bounds"))?;
-        let raw: [u8; 4] = self
+        let row_start = row
+            .checked_mul(row_bytes)
+            .ok_or_else(|| ScalarRuntimeError::new("slm2-runtime-tensor-bounds"))?;
+        let scale = read_f32(self.bytes, row_start)?;
+        let code = *self
             .bytes
-            .get(start..end)
+            .get(row_start + 4 + column)
             .ok_or_else(|| ScalarRuntimeError::new("slm2-runtime-tensor-bounds"))?
-            .try_into()
-            .map_err(|_| ScalarRuntimeError::new("slm2-runtime-tensor-bounds"))?;
-        Ok(f32::from_le_bytes(raw))
+            as i8;
+        if !scale.is_finite() || scale <= 0.0 || code == i8::MIN {
+            return Err(ScalarRuntimeError::new("slm2-runtime-q8-payload"));
+        }
+        let dequantized = scale * f32::from(code);
+        if !dequantized.is_finite() {
+            return Err(ScalarRuntimeError::new("slm2-runtime-nonfinite"));
+        }
+        Ok(dequantized)
     }
+}
+
+fn read_f32(bytes: &[u8], start: usize) -> Result<f32, ScalarRuntimeError> {
+    let end = start
+        .checked_add(4)
+        .ok_or_else(|| ScalarRuntimeError::new("slm2-runtime-tensor-bounds"))?;
+    let raw: [u8; 4] = bytes
+        .get(start..end)
+        .ok_or_else(|| ScalarRuntimeError::new("slm2-runtime-tensor-bounds"))?
+        .try_into()
+        .map_err(|_| ScalarRuntimeError::new("slm2-runtime-tensor-bounds"))?;
+    let value = f32::from_le_bytes(raw);
+    if !value.is_finite() {
+        return Err(ScalarRuntimeError::new("slm2-runtime-nonfinite"));
+    }
+    Ok(value)
 }
 
 #[derive(Clone, Debug)]
@@ -935,7 +986,10 @@ fn embedding_row(
     token_id: u32,
     output: &mut [f32],
 ) -> Result<(), ScalarRuntimeError> {
-    if tensor.shape.len() != 2 || tensor.shape[1] != output.len() as u64 {
+    if tensor.element_type != ElementType::Q8RowSymmetric
+        || tensor.shape.len() != 2
+        || tensor.shape[1] != output.len() as u64
+    {
         return Err(ScalarRuntimeError::new("slm2-runtime-tensor-shape"));
     }
     let token = checked_usize(token_id)?;
@@ -956,7 +1010,8 @@ fn matrix_vector(
     input: &[f32],
     output: &mut [f32],
 ) -> Result<(), ScalarRuntimeError> {
-    if tensor.shape.len() != 2
+    if tensor.element_type != ElementType::Q8RowSymmetric
+        || tensor.shape.len() != 2
         || tensor.shape[0] != output.len() as u64
         || tensor.shape[1] != input.len() as u64
     {
@@ -968,7 +1023,9 @@ fn matrix_vector(
             .ok_or_else(|| ScalarRuntimeError::new("slm2-runtime-tensor-bounds"))?;
         let mut sum = 0.0_f32;
         for (column, input_value) in input.iter().enumerate() {
-            sum += tensor.element(row_start + column)? * *input_value;
+            let weight = tensor.element(row_start + column)?;
+            let term = *input_value * weight;
+            sum += term;
         }
         if !sum.is_finite() {
             return Err(ScalarRuntimeError::new("slm2-runtime-nonfinite"));
@@ -984,7 +1041,11 @@ fn rms_norm(
     epsilon: f32,
     output: &mut [f32],
 ) -> Result<(), ScalarRuntimeError> {
-    if input.len() != output.len() || weight.shape != [input.len() as u64] || input.is_empty() {
+    if weight.element_type != ElementType::F32
+        || input.len() != output.len()
+        || weight.shape != [input.len() as u64]
+        || input.is_empty()
+    {
         return Err(ScalarRuntimeError::new("slm2-runtime-tensor-shape"));
     }
     let mut sum = 0.0_f32;
@@ -1010,10 +1071,11 @@ fn normalize_heads(
 ) -> Result<(), ScalarRuntimeError> {
     let head_count = checked_usize(head_count)?;
     let head_dimension = checked_usize(head_dimension)?;
-    if values.len()
-        != head_count
-            .checked_mul(head_dimension)
-            .ok_or_else(|| ScalarRuntimeError::new("slm2-runtime-tensor-shape"))?
+    if weight.element_type != ElementType::F32
+        || values.len()
+            != head_count
+                .checked_mul(head_dimension)
+                .ok_or_else(|| ScalarRuntimeError::new("slm2-runtime-tensor-shape"))?
         || weight.shape != [head_dimension as u64]
     {
         return Err(ScalarRuntimeError::new("slm2-runtime-tensor-shape"));
@@ -1152,7 +1214,7 @@ fn softmax(values: &mut [f32]) -> Result<(), ScalarRuntimeError> {
 }
 
 fn add_vector(values: &mut [f32], tensor: TensorView<'_>) -> Result<(), ScalarRuntimeError> {
-    if tensor.shape != [values.len() as u64] {
+    if tensor.element_type != ElementType::F32 || tensor.shape != [values.len() as u64] {
         return Err(ScalarRuntimeError::new("slm2-runtime-tensor-shape"));
     }
     for (index, value) in values.iter_mut().enumerate() {
@@ -1216,15 +1278,28 @@ fn checked_product_u64(left: u32, right: u32) -> Result<u64, ScalarRuntimeError>
 mod tests {
     use super::*;
 
-    const CANONICAL_MODEL: &[u8] =
-        include_bytes!("../../tinyrustlm-slm2/fuzz/corpus/raw_slm2/01-canonical-valid-vector.seed");
+    const Q8_WEIGHT_VECTORS: &str =
+        include_str!("../../../../contracts/vnext/slm2-q8-weight-vectors.v1.json");
+
+    fn canonical_model() -> Vec<u8> {
+        let document: serde_json::Value = serde_json::from_str(Q8_WEIGHT_VECTORS).unwrap();
+        let hex = document["canonical"]["artifactHex"].as_str().unwrap();
+        hex.as_bytes()
+            .chunks_exact(2)
+            .map(|pair| {
+                let high = char::from(pair[0]).to_digit(16).unwrap() as u8;
+                let low = char::from(pair[1]).to_digit(16).unwrap() as u8;
+                (high << 4) | low
+            })
+            .collect()
+    }
 
     fn policy(maximum_tokens: u32) -> RuntimePolicy {
         RuntimePolicy::new(1 << 20, maximum_tokens, 1 << 20, 1 << 20).unwrap()
     }
 
     fn session(maximum_tokens: u32) -> ScalarSession {
-        ScalarSession::from_bytes(CANONICAL_MODEL.to_vec(), policy(maximum_tokens)).unwrap()
+        ScalarSession::from_bytes(canonical_model(), policy(maximum_tokens)).unwrap()
     }
 
     #[test]
@@ -1234,7 +1309,7 @@ mod tests {
         assert_eq!(session.spec().head_count, 2);
         assert_eq!(session.spec().head_dimension, 8);
         assert_eq!(session.spec().kv_head_count, 1);
-        assert_eq!(session.memory_plan().model_bytes, 8_448);
+        assert_eq!(session.memory_plan().model_bytes, 8_704);
         assert_eq!(session.memory_plan().kv_bytes, 256);
         assert_eq!(session.position().unwrap(), 0);
     }
@@ -1270,12 +1345,12 @@ mod tests {
     #[test]
     fn rejects_insufficient_preflight_budgets() {
         let policy = RuntimePolicy::new(1 << 20, 4, 255, 1 << 20).unwrap();
-        let model = ScalarModel::from_bytes(CANONICAL_MODEL.to_vec(), policy).unwrap();
+        let model = ScalarModel::from_bytes(canonical_model(), policy).unwrap();
         let error = ScalarSession::new(model, policy).unwrap_err();
         assert_eq!(error.code(), "slm2-runtime-kv-budget");
 
         let policy = RuntimePolicy::new(1 << 20, 4, 1 << 20, 511).unwrap();
-        let model = ScalarModel::from_bytes(CANONICAL_MODEL.to_vec(), policy).unwrap();
+        let model = ScalarModel::from_bytes(canonical_model(), policy).unwrap();
         let error = ScalarSession::new(model, policy).unwrap_err();
         assert_eq!(error.code(), "slm2-runtime-scratch-budget");
     }

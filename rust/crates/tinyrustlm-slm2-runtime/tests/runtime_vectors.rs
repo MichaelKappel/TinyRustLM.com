@@ -5,10 +5,10 @@ use tinyrustlm_slm2_runtime::{
     select_greedy, RuntimePolicy, ScalarSession, ScalarTraceSink, ScalarTraceStage,
 };
 
-const CANONICAL_MODEL: &[u8] =
-    include_bytes!("../../tinyrustlm-slm2/fuzz/corpus/raw_slm2/01-canonical-valid-vector.seed");
+const Q8_WEIGHT_VECTORS: &str =
+    include_str!("../../../../contracts/vnext/slm2-q8-weight-vectors.v1.json");
 const RUNTIME_VECTORS: &str =
-    include_str!("../../../../contracts/vnext/slm2-runtime-vectors.v1.json");
+    include_str!("../../../../contracts/vnext/slm2-runtime-q8-vectors.v1.json");
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -18,7 +18,7 @@ struct RuntimeVectors {
     numerical_tolerance: NumericalTolerance,
     oracle: Oracle,
     schema: String,
-    source_format_vector: SourceFormatVector,
+    source_q8_weight_vector: SourceQ8WeightVector,
     sequences: Vec<Sequence>,
     generation_cases: Vec<GenerationCase>,
 }
@@ -57,11 +57,12 @@ struct Oracle {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct SourceFormatVector {
+struct SourceQ8WeightVector {
     artifact_byte_length: u64,
     artifact_sha256: String,
     format_profile_sha256: String,
     id: String,
+    weight_profile_sha256: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -144,6 +145,19 @@ fn vectors() -> RuntimeVectors {
     serde_json::from_str(RUNTIME_VECTORS).unwrap()
 }
 
+fn canonical_model() -> Vec<u8> {
+    let document: serde_json::Value = serde_json::from_str(Q8_WEIGHT_VECTORS).unwrap();
+    let hex = document["canonical"]["artifactHex"].as_str().unwrap();
+    hex.as_bytes()
+        .chunks_exact(2)
+        .map(|pair| {
+            let high = char::from(pair[0]).to_digit(16).unwrap() as u8;
+            let low = char::from(pair[1]).to_digit(16).unwrap() as u8;
+            (high << 4) | low
+        })
+        .collect()
+}
+
 fn close(actual: f32, expected: f32, tolerance: &NumericalTolerance) -> bool {
     let difference = (actual - expected).abs();
     let relative = tolerance.relative * actual.abs().max(expected.abs());
@@ -211,31 +225,35 @@ fn expected_trace(step: &Step) -> Vec<(ScalarTraceStage, &EncodedF32)> {
 #[test]
 fn canonical_model_metadata_is_bound_to_the_independent_contract() {
     let vectors = vectors();
-    let session = ScalarSession::from_bytes(CANONICAL_MODEL.to_vec(), policy(8)).unwrap();
+    let session = ScalarSession::from_bytes(canonical_model(), policy(8)).unwrap();
     let spec = session.spec();
 
-    assert_eq!(vectors.schema, "tinyrustlm.vnext.slm2-runtime-vectors.v1");
+    assert_eq!(vectors.schema, "tinyrustlm.slm2-runtime-q8-vectors.v1");
     assert_eq!(
         vectors.arithmetic_profile,
-        "explicit-ieee754-f32-rounding-after-each-scalar-operation"
+        "tinyrustlm.runtime-q8-scalar-f32-ordered/1"
     );
     assert_eq!(
         vectors.oracle.implementation,
         "tinyrustlm/tools/slm2-runtime-reference.js"
     );
     assert_eq!(vectors.oracle.source_sha256.len(), 64);
-    assert_eq!(vectors.source_format_vector.artifact_byte_length, 8_448);
+    assert_eq!(vectors.source_q8_weight_vector.artifact_byte_length, 8_704);
     assert_eq!(
-        vectors.source_format_vector.artifact_sha256,
-        "c010e2818c64713310699e9ad928d3b22cfeb004756ae8e03acaaee5897e613a"
+        vectors.source_q8_weight_vector.artifact_sha256,
+        "4383b112797b99232561b67bdc752d8ea0e62e90e24f8b94fd629c563e2d1502"
     );
     assert_eq!(
-        vectors.source_format_vector.format_profile_sha256,
-        "387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625"
+        vectors.source_q8_weight_vector.format_profile_sha256,
+        "5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8"
     );
     assert_eq!(
-        vectors.source_format_vector.id,
-        "base-model-required-f32-tensor-registry"
+        vectors.source_q8_weight_vector.id,
+        "base-model-required-mixed-q8-row-f32-registry"
+    );
+    assert_eq!(
+        vectors.source_q8_weight_vector.weight_profile_sha256,
+        "7e931fd23fa8f6a90c53e4c14c5630eef8ce87e0f0902acd5a5e2df03c60733a"
     );
     assert_eq!(vectors.model_spec.context_length, spec.context_length);
     assert_eq!(vectors.model_spec.embedding_size, spec.embedding_size);
@@ -264,7 +282,7 @@ fn scalar_runtime_matches_independent_logits_tokens_positions_and_kv_growth() {
     for sequence in &vectors.sequences {
         let maximum_tokens = u32::try_from(sequence.steps.len()).unwrap();
         let mut session =
-            ScalarSession::from_bytes(CANONICAL_MODEL.to_vec(), policy(maximum_tokens)).unwrap();
+            ScalarSession::from_bytes(canonical_model(), policy(maximum_tokens)).unwrap();
         assert_eq!(sequence.input_tokens.len(), sequence.steps.len());
         for (index, step) in sequence.steps.iter().enumerate() {
             assert_eq!(
@@ -332,11 +350,9 @@ fn scalar_runtime_matches_independent_logits_tokens_positions_and_kv_growth() {
 fn scalar_generation_matches_independent_bounded_and_stop_cases() {
     let vectors = vectors();
     for case in &vectors.generation_cases {
-        let mut session = ScalarSession::from_bytes(
-            CANONICAL_MODEL.to_vec(),
-            policy(case.required_maximum_position),
-        )
-        .unwrap();
+        let mut session =
+            ScalarSession::from_bytes(canonical_model(), policy(case.required_maximum_position))
+                .unwrap();
         let output = session
             .generate_greedy(
                 &case.prompt_tokens,

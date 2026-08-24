@@ -39,14 +39,16 @@ test("freezes exact output-free Q8 registration and parent authority", () => {
   assert.equal(registration.registrationParentTree,
     "408b956dbf8d38cb6a8540366be591490ac011f9");
 
-  for (const identity of [
-    registration.authority.productionCleanCutRegistration,
-    registration.authority.currentUnpromotedF32Profile
-  ]) {
-    const bytes = readRepositoryFile(identity.path);
-    assert.equal(bytes.length, identity.byteLength, identity.path);
-    assert.equal(sha256(bytes), identity.sha256, identity.path);
-  }
+  const cleanCut = registration.authority.productionCleanCutRegistration;
+  const cleanCutBytes = readRepositoryFile(cleanCut.path);
+  assert.equal(cleanCutBytes.length, cleanCut.byteLength, cleanCut.path);
+  assert.equal(sha256(cleanCutBytes), cleanCut.sha256, cleanCut.path);
+
+  assert.deepEqual(registration.authority.currentUnpromotedF32Profile, {
+    path: "contracts/vnext/slm2-format-profile.v1.json",
+    byteLength: 19_303,
+    sha256: "387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625"
+  });
 
   const architectureBytes = fs.readFileSync(architecturePath);
   assert.equal(architectureBytes.length, 5795);

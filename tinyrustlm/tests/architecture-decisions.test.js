@@ -84,6 +84,11 @@ const records = [
     "Prompt2 2.0",
     "rendered-token recomposition",
     "does not truncate"
+  ]],
+  ["ADR-018-slm2-q8-weight-profile.md", [
+    "tinyrustlm.weight-q8-row-symmetric-f32-scale/1",
+    "[-127, 127]",
+    "Fused multiply-add is forbidden"
   ]]
 ];
 
@@ -91,7 +96,7 @@ function read(name) {
   return fs.readFileSync(path.join(adrDirectory, name), "utf8");
 }
 
-test("contains the complete accepted ADR-001 through ADR-017 inventory", () => {
+test("contains the complete accepted ADR-001 through ADR-018 inventory", () => {
   const actual = fs.readdirSync(adrDirectory)
     .filter((name) => /^ADR-\d{3}-.+\.md$/u.test(name))
     .sort();
@@ -102,8 +107,9 @@ test("contains the complete accepted ADR-001 through ADR-017 inventory", () => {
   for (const [name] of records) {
     assert.match(index, new RegExp(`\\(${name.replaceAll(".", "\\.")}\\)`, "u"));
   }
-  assert.match(index, /SLM2 is incompatible with SLM1/u);
-  assert.match(index, /not include an SLM1 fallback, migration parser, dual writer, or alias/iu);
+  assert.match(index, /one prelaunch product and one production-bound model format/u);
+  assert.match(index,
+    /no old-format fallback, migration parser, dual\s+writer, generic quantization alias, or compatibility reader/iu);
 });
 
 for (const [name, invariants] of records) {

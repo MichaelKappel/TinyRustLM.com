@@ -8,7 +8,7 @@ const path = require("node:path");
 const test = require("node:test");
 
 const repositoryRoot = path.resolve(__dirname, "../..");
-const profilePath = path.join(repositoryRoot, "contracts/vnext/slm2-fuzz-profile.v1.json");
+const profilePath = path.join(repositoryRoot, "contracts/vnext/slm2-q8-fuzz-profile.v1.json");
 const manifestPath = path.join(
   repositoryRoot,
   "rust/crates/tinyrustlm-slm2/fuzz/corpus/raw_slm2/manifest.v1.json"
@@ -31,20 +31,22 @@ test("SLM2 fuzz profile, generated corpus, and source boundary are exact", () =>
     encoding: "utf8",
     windowsHide: true
   });
-  assert.deepEqual(JSON.parse(output), { status: "pass", entries: 27 });
+  assert.deepEqual(JSON.parse(output), { status: "pass", entries: 20 });
 
   const profileBytes = fs.readFileSync(profilePath);
   const profile = JSON.parse(profileBytes);
-  assert.equal(sha256(profileBytes), "dc16fd2abf142e6a9c8a72bbfc3d998b980af486e094406d73933cae6732a487");
-  assert.equal(profile.profileId, "tinyrustlm.vnext.slm2-fuzz.v1");
-  assert.equal(profile.status, "development-unpromoted");
+  assert.equal(sha256(profileBytes), "27c4ca3a2c5b4642010f7ca854aa83c76dd10bbe7e114a78489958f3e1c2f0ce");
+  assert.equal(profile.profileId, "tinyrustlm.slm2-q8-fuzz/1");
+  assert.equal(profile.status, "implemented-unpromoted");
   assert.equal(profile.formatProfileSha256,
-    "387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625");
+    "5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8");
+  assert.equal(profile.weightProfileSha256,
+    "7e931fd23fa8f6a90c53e4c14c5630eef8ce87e0f0902acd5a5e2df03c60733a");
   assert.equal(profile.input.maximumBytes, 1_048_576);
   assert.equal(profile.validationPolicy.maximumFileBytes, profile.input.maximumBytes);
   assert.equal(profile.validationPolicy.maximumTensors, 4_096);
   assert.equal(profile.stableReplay.manifestSchema,
-    "tinyrustlm.vnext.slm2_fuzz_corpus.v1");
+    "tinyrustlm.slm2-q8-fuzz-corpus.v1");
   assert.equal(profile.stableReplay.manifestMaximumBytes, 131_072);
   assert.equal(profile.stableReplay.maximumEntries, 256);
   assert.equal(profile.stableReplay.exactSeedSetRequired, true);
@@ -57,18 +59,21 @@ test("SLM2 fuzz profile, generated corpus, and source boundary are exact", () =>
   assert.ok(profile.target.acceptedArtifactChecks.includes(
     "tensor-registry-matches-public-required-registry"
   ));
-  assert.ok(profile.seedClasses.includes("tensor-registry-mutation"));
+  assert.ok(profile.seedClasses.includes("registered-q8-hostile-mutation"));
+  assert.ok(profile.prohibited.includes("legacy-reader"));
+  assert.ok(profile.prohibited.includes("runtime-repacking"));
   assert.ok(profile.prohibited.includes("activation-of-fuzzed-artifacts"));
   assert.ok(profile.prohibited.includes("fuzz-result-as-production-qualification"));
 
   const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
   assert.equal(manifest.formatProfileSha256, profile.formatProfileSha256);
-  assert.equal(manifest.sourceVectorId, "base-model-required-f32-tensor-registry");
+  assert.equal(manifest.weightProfileSha256, profile.weightProfileSha256);
+  assert.equal(manifest.sourceVectorId, "base-model-required-mixed-q8-row-f32-registry");
   assert.equal(manifest.sourceVectorArtifactSha256,
-    "c010e2818c64713310699e9ad928d3b22cfeb004756ae8e03acaaee5897e613a");
-  assert.equal(manifest.entries.length, 27);
+    "4383b112797b99232561b67bdc752d8ea0e62e90e24f8b94fd629c563e2d1502");
+  assert.equal(manifest.entries.length, 20);
   assert.equal(manifest.entries.filter((entry) => entry.verdict === "admit").length, 1);
-  assert.equal(manifest.entries.filter((entry) => entry.verdict === "reject").length, 26);
+  assert.equal(manifest.entries.filter((entry) => entry.verdict === "reject").length, 19);
   assert.deepEqual(manifest.entries.map((entry) => entry.id),
     [...manifest.entries].map((entry) => entry.id).sort());
   for (const entry of manifest.entries) {
@@ -79,11 +84,11 @@ test("SLM2 fuzz profile, generated corpus, and source boundary are exact", () =>
     assert.equal(entry.verdict === "admit", entry.errorCode === null, entry.id);
     assert.equal(entry.verdict === "admit", entry.tensorCount !== null, entry.id);
   }
-  const registrySeed = manifest.entries.find(
-    (entry) => entry.id === "21-tensor-registry-flag-mismatch"
+  const quantizationSeed = manifest.entries.find(
+    (entry) => entry.id === "10-quant-record-reserved"
   );
-  assert.equal(registrySeed.class, "tensor-registry-mutation");
-  assert.equal(registrySeed.errorCode, "slm2-invalid-tensor-registry");
+  assert.equal(quantizationSeed.class, "registered-q8-hostile-mutation");
+  assert.equal(quantizationSeed.errorCode, "slm2-invalid-quantization");
 
   for (const relative of [
     "src/lib.rs",
@@ -113,21 +118,23 @@ test("SLM2 fuzz profile, generated corpus, and source boundary are exact", () =>
 
   const implementationDocument = fs.readFileSync(implementationDocumentPath, "utf8");
   assert.match(implementationDocument,
-    /387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625/u);
+    /5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8/u);
   assert.match(implementationDocument,
-    /dc16fd2abf142e6a9c8a72bbfc3d998b980af486e094406d73933cae6732a487/u);
+    /27c4ca3a2c5b4642010f7ca854aa83c76dd10bbe7e114a78489958f3e1c2f0ce/u);
   assert.match(implementationDocument,
-    /9b97aa1c7203c3dd573aeb570d4f8d75cc347df39cf405265518b386b51467ea/u);
-  assert.match(implementationDocument, /27 entries, one admitted, and 26 rejected/u);
-  assert.match(implementationDocument, /canonical manifest flag mutation/u);
+    /4383b112797b99232561b67bdc752d8ea0e62e90e24f8b94fd629c563e2d1502/u);
+  assert.match(implementationDocument, /20 entries, one admitted, and 19 rejected/u);
+  assert.match(implementationDocument, /registered Q8 hostile mutations/u);
   assert.match(implementationDocument, /closed `deny_unknown_fields` Rust records/u);
-  assert.match(implementationDocument, /two fuzz-library tests and five replay-command tests/u);
+  assert.match(implementationDocument,
+    /two fuzz-library tests and five replay-command\s+tests/u);
   assert.match(implementationDocument, /inactive and unpromoted/u);
-  assert.match(implementationDocument, /No claim is\s+made that a sustained AddressSanitizer interval has run/u);
+  assert.match(implementationDocument,
+    /No claim is\s+made that a sustained AddressSanitizer\s+interval has run/u);
   assert.match(implementationDocument, /Campaign\s+counters remain 0\/20 qualified models/u);
 
   const contractReadme = fs.readFileSync(contractReadmePath, "utf8");
   assert.match(contractReadme, /## SLM2 Model Format Checkpoint/u);
-  assert.match(contractReadme, /27-seed stable corpus/u);
+  assert.match(contractReadme, /20-seed stable corpus/u);
   assert.match(contractReadme, /not a\s+long-running sanitizer result/u);
 });

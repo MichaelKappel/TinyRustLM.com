@@ -16,13 +16,16 @@ use tinyrustlm_slm2_fuzz::{
     MAXIMUM_INPUT_BYTES, SLM2_FUZZ_PROFILE_ID, SLM2_FUZZ_PROFILE_SHA256,
 };
 
-const CORPUS_ID: &str = "tinyrustlm.vnext.slm2-fuzz-corpus.v1";
+const CORPUS_ID: &str = "tinyrustlm.slm2-q8-fuzz-corpus/1";
 const FORMAT_PROFILE_ID: &str = "org.minimodel.slm2/2.0";
 const FORMAT_PROFILE_SHA256: &str =
-    "387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625";
-const SOURCE_VECTOR_ID: &str = "base-model-required-f32-tensor-registry";
+    "5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8";
+const WEIGHT_PROFILE_ID: &str = "tinyrustlm.weight-q8-row-symmetric-f32-scale/1";
+const WEIGHT_PROFILE_SHA256: &str =
+    "7e931fd23fa8f6a90c53e4c14c5630eef8ce87e0f0902acd5a5e2df03c60733a";
+const SOURCE_VECTOR_ID: &str = "base-model-required-mixed-q8-row-f32-registry";
 const SOURCE_VECTOR_ARTIFACT_SHA256: &str =
-    "c010e2818c64713310699e9ad928d3b22cfeb004756ae8e03acaaee5897e613a";
+    "4383b112797b99232561b67bdc752d8ea0e62e90e24f8b94fd629c563e2d1502";
 
 type DynError = Box<dyn Error>;
 
@@ -37,6 +40,8 @@ struct CorpusManifest {
     fuzz_profile_sha256: String,
     format_profile_id: String,
     format_profile_sha256: String,
+    weight_profile_id: String,
+    weight_profile_sha256: String,
     source_vector_id: String,
     source_vector_artifact_sha256: String,
     entries: Vec<CorpusEntry>,
@@ -177,7 +182,7 @@ fn validate_manifest_header(manifest: &CorpusManifest) -> Result<(), DynError> {
         (
             "generatorId",
             manifest.generator_id.as_str(),
-            "tinyrustlm.tools.generate-slm2-fuzz-corpus.v1",
+            "tinyrustlm.tools.generate-slm2-q8-fuzz-corpus/1",
         ),
         (
             "fuzzProfileId",
@@ -198,6 +203,16 @@ fn validate_manifest_header(manifest: &CorpusManifest) -> Result<(), DynError> {
             "formatProfileSha256",
             manifest.format_profile_sha256.as_str(),
             FORMAT_PROFILE_SHA256,
+        ),
+        (
+            "weightProfileId",
+            manifest.weight_profile_id.as_str(),
+            WEIGHT_PROFILE_ID,
+        ),
+        (
+            "weightProfileSha256",
+            manifest.weight_profile_sha256.as_str(),
+            WEIGHT_PROFILE_SHA256,
         ),
         (
             "sourceVectorId",
@@ -409,9 +424,9 @@ mod tests {
         let fixture = copy_frozen_corpus();
         let summary = replay_manifest(&fixture.manifest()).unwrap();
         assert_eq!(summary.schema, CORPUS_MANIFEST_SCHEMA);
-        assert_eq!(summary.entries, 27);
+        assert_eq!(summary.entries, 20);
         assert_eq!(summary.admitted, 1);
-        assert_eq!(summary.rejected, 26);
+        assert_eq!(summary.rejected, 19);
     }
 
     #[test]
@@ -421,7 +436,7 @@ mod tests {
         assert!(replay_error(&extra).contains("does not exactly match"));
 
         let missing = copy_frozen_corpus();
-        fs::remove_file(missing.0.join("02-legacy-slm1-short.seed")).unwrap();
+        fs::remove_file(missing.0.join("02-truncated-header.seed")).unwrap();
         assert!(replay_error(&missing).contains("does not exactly match"));
 
         let drifted = copy_frozen_corpus();

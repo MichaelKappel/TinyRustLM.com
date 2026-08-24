@@ -1,4 +1,4 @@
-# TinyRustLM vNext Contract Family
+# TinyRustLM Prelaunch Contract Family
 
 ## Authority
 
@@ -7,69 +7,57 @@ It freezes the nine top-level schema names, exact root and nested record
 fields, field kinds, enum values, limits, visibility, identity domains,
 redaction policy, and named semantic invariants.
 
-This registry is an incompatible clean-slate contract. It does not map, alias,
-upgrade, or fall back to any dated TinyRustLM schema. Existing records remain
-historical evidence outside the vNext DAG.
+This registry is a clean-slate technical contract for one prelaunch product.
+`vnext`, SLM2, and numbered schemas identify exact source or bytes; they do not
+name a second product generation. The current implementation does not map,
+alias, upgrade, or fall back to a superseded TinyRustLM schema. Prior records
+remain non-executable audit evidence.
 
 ## SLM2 Model Format Checkpoint
 
 The model-byte format is a separate exact binary contract referenced by the
 artifact family rather than another JSON schema in the nine-member registry.
-The current development-only profile is
-`slm2-format-profile.v1.json`, 19,303 bytes with SHA-256
-`387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625`.
-It admits only complete class-1 base models or class-2 specialist models with
-dense finite little-endian F32 tensors. Each artifact must contain the exact
-canonical decoder tensor registry selected by layer count, tied embeddings,
-QKV bias, and Q/K normalization; missing, additional, renamed, reshaped, or
-wrongly indexed tensors are fatal. Tokenizers, templates, adapters,
-composition graphs, provenance, licenses, qualification, signatures, and peer
-locations remain separate exact artifacts or receipts.
+The current profile is `slm2-format-profile.v1.json`, 21,924 bytes with SHA-256
+`5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8`.
+Its sole stored model encoding is defined by
+`slm2-q8-weight-profile.v1.json`, 9,900 bytes with SHA-256
+`7e931fd23fa8f6a90c53e4c14c5630eef8ce87e0f0902acd5a5e2df03c60733a`.
+Exact rank-2 embedding and projection roles use row-wise signed int8 codes and
+one finite F32 scale per row. Normalization and optional QKV-bias roles remain
+F32. The role partition, 128-byte quantization record, arithmetic, descriptor
+fields, section layout, hashes, and rejection vocabulary are closed.
 
-`slm2-format-vectors.v1.json` is the language-neutral byte contract. Its one
-seed artifact is exactly 8,448 bytes with 11 required tensors and SHA-256
-`c010e2818c64713310699e9ad928d3b22cfeb004756ae8e03acaaee5897e613a`.
-The public Rust writer reproduces those bytes from deliberately reversed
-tensor inputs; the streaming Rust reader, an independently written Node-core
-reader, and the Rust piece/Merkle implementation reproduce every declared
-identity. The Node implementation independently derives every conditional
-tensor role, name, layer, subindex, and shape and rejects a canonical manifest
-whose flags require absent tensors. Both readers reject the five frozen
-artifact mutations, and the independent Node SLM-DCBOR-1 parser also rejects
-nonshortest, duplicate, indefinite, tagged, floating, trailing, non-ASCII, and
-non-text-key forms.
+`slm2-q8-weight-vectors.v1.json` is the independent language-neutral byte
+contract. It is 42,623 bytes with SHA-256
+`f81d30bd0646efa4a267ffed8c697c2b7a5c84a67ded9d498aa3ffb10007ca2d`.
+Its 8,704-byte, 17-tensor canonical artifact has SHA-256
+`4383b112797b99232561b67bdc752d8ea0e62e90e24f8b94fd629c563e2d1502`.
+A Node-builtins-only oracle and unsafe-free Rust independently reproduce the
+artifact, seven quantization rows, four ordered scalar matrix-vector cases,
+every proper-prefix rejection, and 17 hostile mutations.
 
-The bounded raw parser-fuzz profile is
-`slm2-fuzz-profile.v1.json`, 3,187 bytes with SHA-256
-`dc16fd2abf142e6a9c8a72bbfc3d998b980af486e094406d73933cae6732a487`.
-Its 27-seed stable corpus contains one exact admission and 26 single-fault
-rejections across envelope, metadata, string, tensor, exact registry, layout,
-payload, and trailing-byte classes. The registry seed changes one canonical
-DCBOR Boolean so the manifest requires absent QKV biases. The harness
-deserializes the exact hashed profile into closed typed records and proves
-every executable limit, ordered error code, declared check, replay rule, and
-prohibited behavior agrees with its source contract before parser entry. Every
-admission is rechecked against the public required-registry API. The stable
-Rust replay consumes those shared limits and verifies the exact seed set,
-bytes, hashes, verdicts, error codes, and admitted tensor count; hostile tests
-reject membership, identity, ordering, path, byte, and verdict drift. The
-optional libFuzzer target compiles with
-`libfuzzer-sys` 0.4.13. This is deterministic local parser evidence, not a
-long-running sanitizer result, converter/runtime conformance result, model
-qualification, deployment, publication, or live campaign evidence. See
+The bounded raw parser-fuzz profile is `slm2-q8-fuzz-profile.v1.json`, 3,314
+bytes with SHA-256
+`27c4ca3a2c5b4642010f7ca854aa83c76dd10bbe7e114a78489958f3e1c2f0ce`.
+Its 20-seed stable corpus contains one exact admission, explicit truncated and
+SLM1 rejection envelopes, and every registered Q8 hostile mutation. The closed
+Rust harness and stable replay verify exact membership, hashes, verdicts,
+errors, resource limits, paths, and no-activation behavior. This is local
+parser evidence, not a long-running sanitizer result, model qualification,
+deployment, publication, or campaign evidence. See
 `docs/architecture/vnext-slm2-format-implementation.md`.
 
 ## SLM2 Scalar Runtime Conformance Checkpoint
 
-`slm2-runtime-vectors.v1.json` is a 48,369-byte language-neutral scalar
+`slm2-runtime-q8-vectors.v1.json` is a 50,801-byte language-neutral scalar
 execution contract with SHA-256
-`c7a0fdaf1dd578928e6a438be308dad5a9e8cc10e2bbb6da4b2c5e10bebe71f1`.
-An independent Node implementation performs explicit F32 rounding and freezes
-six forward steps, every operator boundary, final logits, token decisions,
-positions, KV growth, and two generation cases over the canonical public SLM2
-fixture. The unsafe-free Rust scalar runtime reproduces the contract natively.
-An import-free conformance-only WASM module calls that same Rust core and
-reproduces the vectors in Node and real Chromium without network requests.
+`c437ebb5e59c9059c49324d12d43e556493e62f5d6b2e857e369ca08674333a0`.
+An independent Node implementation executes directly from the canonical mixed
+Q8/F32 artifact and freezes six forward steps, every operator boundary, QKV
+biases, Q/K normalization, final logits, token decisions, positions, F32 KV
+growth, and two generation cases. The unsafe-free Rust scalar runtime reads the
+same Q8 rows directly without runtime repacking or an F32 weight shadow. The
+conformance-only WASM module calls that same Rust core.
 
 This is bounded canonical-fixture conformance. It does not establish a
 production model-transfer ABI, source-framework parity, tokenizer/template
