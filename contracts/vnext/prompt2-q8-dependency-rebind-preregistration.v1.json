@@ -1,0 +1,247 @@
+{
+  "schema": "tinyrustlm.prompt2-q8-dependency-rebind-preregistration.v1",
+  "profileId": "tinyrustlm.prompt2-q8-dependency-rebind-preregistration/1",
+  "status": "registered-output-free-before-prompt2-replacement",
+  "registeredAtUtc": "2026-08-24T11:51:57Z",
+  "registrationParentCommit": "14ebe90cc74238783927420c49e893507b829d21",
+  "registrationParentTree": "529fc818431ae176359c7d383b008b847017b78f",
+  "authority": {
+    "workspaceRoot": "E:/Source/.tinyrustlm-model-acquisition-recovered-20260819",
+    "branch": "codex/model-acquisition-v2",
+    "productLifecycle": "prelaunch-single-product",
+    "productGenerationCount": 1,
+    "secondProductGenerationExists": false,
+    "technicalIdentifiersAreProductGenerations": false,
+    "modelContainer": "SLM2-only",
+    "memoryEndpointsAuthorized": false,
+    "writeDriveDAllowed": false
+  },
+  "observedDefect": {
+    "detectedBeforeAcg2Output": true,
+    "defectClass": "stale-exact-dependency-identity",
+    "summary": "Prompt2 still binds the superseded dense-F32 SLM2 format profile and scalar-runtime vector after the sole SLM2 profile became mixed Q8-row plus F32 role data.",
+    "consequence": "The registered ACG2 five-member graph cannot satisfy Prompt2-to-SLM2 dependency closure and must not produce an artifact, vector, parser, writer, runtime, activation, or browser result.",
+    "hiddenRepairAllowed": false,
+    "retainOldPrompt2AsExecutableFallback": false,
+    "weakenAcg2CrossChecks": false,
+    "reuseInvalidatedAcg2Registration": false
+  },
+  "registeredInputSnapshot": {
+    "prompt2Profile": {
+      "path": "contracts/vnext/prompt2-format-profile.v1.json",
+      "byteLength": 19423,
+      "sha256": "b317ae0207522399e63125c57daf91d97432f95b26bd8fb71db746934ff05c8c",
+      "profileId": "org.minimodel.prompt2/2.0",
+      "boundSlm2FormatProfileSha256": "387c0ff4dd251da88192427b209efe941ddf9d0ff0a639352f0e5d3724b48625",
+      "boundSlm2ScalarRuntimeVectorSha256": "c7a0fdaf1dd578928e6a438be308dad5a9e8cc10e2bbb6da4b2c5e10bebe71f1"
+    },
+    "prompt2Vectors": {
+      "path": "contracts/vnext/prompt2-format-vectors.v1.json",
+      "byteLength": 347026,
+      "sha256": "9d3354785614ff60edc679b6fea6797164ffac368edaa9d3d50912b525048cc0",
+      "canonicalArtifactByteLength": 512,
+      "canonicalArtifactSha256": "d3a123f327e7c4c3eb53d642c4b8d98c39a0b30bac2cc1970922612ae502f142"
+    },
+    "prompt2NodeAuthority": {
+      "path": "tinyrustlm/tools/prompt2-reference.js",
+      "byteLength": 57959,
+      "sha256": "e993bde73b69422197e50b968869f19cfd9093cfc3aec4472205a67d47efdedd"
+    },
+    "prompt2RustFormat": {
+      "path": "rust/crates/tinyrustlm-prompt2/src/format.rs",
+      "byteLength": 16647,
+      "sha256": "c36f1fd4f737617a9717acda91ee97a16e967814c1fccbfcb0f5d94242b0737f"
+    },
+    "prompt2StandaloneLock": {
+      "path": "rust/crates/tinyrustlm-prompt2/Cargo.lock",
+      "byteLength": 5928,
+      "sha256": "48dca83e7e45403cc012835e593db612003ed49c5fd9024473f1f52a9af21b29"
+    }
+  },
+  "replacementDependencies": {
+    "slm2FormatProfile": {
+      "path": "contracts/vnext/slm2-format-profile.v1.json",
+      "byteLength": 21924,
+      "sha256": "5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8",
+      "profileId": "org.minimodel.slm2/2.0",
+      "status": "implemented-unpromoted"
+    },
+    "slm2Q8WeightProfile": {
+      "path": "contracts/vnext/slm2-q8-weight-profile.v1.json",
+      "byteLength": 9900,
+      "sha256": "7e931fd23fa8f6a90c53e4c14c5630eef8ce87e0f0902acd5a5e2df03c60733a",
+      "profileId": "tinyrustlm.weight-q8-row-symmetric-f32-scale/1"
+    },
+    "slm2RuntimeQ8Vectors": {
+      "path": "contracts/vnext/slm2-runtime-q8-vectors.v1.json",
+      "byteLength": 50801,
+      "sha256": "c437ebb5e59c9059c49324d12d43e556493e62f5d6b2e857e369ca08674333a0",
+      "canonicalArtifactByteLength": 8704,
+      "canonicalArtifactSha256": "4383b112797b99232561b67bdc752d8ea0e62e90e24f8b94fd629c563e2d1502"
+    }
+  },
+  "immutableDependencies": {
+    "tokenizer2": {
+      "profileSha256": "628427bf6e7f8d34ed14b331a5c636606aee9d5ef45a36a3cadc13338669b8de",
+      "artifactByteLength": 7038773,
+      "artifactSha256": "cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b",
+      "rerunSourceNativeOrBrowserEvidence": false
+    },
+    "template2": {
+      "profileSha256": "14ff1df8dd6760119ac36e719ab396fff8e71d0719c2e1c83118f58693ea7bfa",
+      "artifactByteLength": 1403,
+      "artifactSha256": "5300b0b43188a8c73ed62e7e4fbab6eff358ae0395166791852b072a8009c9c8",
+      "sourceTemplateSha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+      "rerunSourceNativeOrBrowserEvidence": false
+    },
+    "sampling2": {
+      "profileSha256": "ec65e8f1a54c1e4ca95ebda88bde091dad11337250e541bbda60e8cac311428d",
+      "artifactByteLength": 65800,
+      "artifactSha256": "9e02fcfbba169330a2ee1bf40cea015dc4067925e051f6ae5f197a5f880bfe89",
+      "weightTableSha256": "fce2345bd4ddc53f137ecc36a48afca02a73ebd3549acce942628e440429c677",
+      "rerunAcceptedEvidence": false
+    },
+    "sourceModelConfig": {
+      "byteLength": 726,
+      "sha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd"
+    }
+  },
+  "replacementContract": {
+    "soleProfileId": "org.minimodel.prompt2/2.0",
+    "profileIdMeaning": "technical-exact-format-identity-not-a-product-generation-or-compatibility-range",
+    "profilePathRemainsCanonical": "contracts/vnext/prompt2-format-profile.v1.json",
+    "vectorPathRemainsCanonical": "contracts/vnext/prompt2-format-vectors.v1.json",
+    "binaryLayoutChanges": false,
+    "artifactByteLength": 512,
+    "slm2FormatDigestOffset": 432,
+    "slm2RuntimeQ8VectorDigestOffset": 464,
+    "dependencyFieldRename": {
+      "from": "scalarRuntimeVectorSha256",
+      "to": "runtimeQ8VectorSha256",
+      "binaryOffsetChanges": false,
+      "purpose": "remove-stale-dense-f32-semantics-and-name-the-exact-mixed-q8-runtime-authority"
+    },
+    "newSlm2FormatProfileSha256": "5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8",
+    "newSlm2RuntimeQ8VectorSha256": "c437ebb5e59c9059c49324d12d43e556493e62f5d6b2e857e369ca08674333a0",
+    "tokenizerTemplateSamplingAndPromptAlgorithmsChange": false,
+    "requestResultAndLoadWireLayoutChanges": false,
+    "resourceCeilingChanges": false,
+    "stopTokenSeedAndSamplingSemanticsChange": false,
+    "replacementProfileSha256": "unknown-until-post-registration-generation",
+    "replacementArtifactSha256": "unknown-until-post-registration-generation",
+    "replacementVectorSha256": "unknown-until-post-registration-generation",
+    "replacementNodeSourceSha256": "unknown-until-post-registration-implementation"
+  },
+  "allowedImplementationChanges": [
+    "replace-the-two-SLM2-dependency-digests-in-the-canonical-Prompt2-profile",
+    "rename-the-stale-scalar-runtime-vector-field-to-runtime-Q8-vector-without-moving-bytes",
+    "replace-the-two-SLM2-dependency-constants-and-stale-labels-in-the-independent-Node-authority",
+    "regenerate-the-one-canonical-Prompt2-vector-document-create-only-after-removing-the-superseded-generated-document",
+    "replace-the-two-SLM2-dependency-constants-and-stale-labels-in-the-unsafe-free-Rust-format-implementation",
+    "update-exact-Prompt2-profile-artifact-vector-and-source-identities-in-tests-documentation-and-UAI-memory",
+    "add-positive-and-hostile-checks-that-the-two-current-Q8-identities-are-required",
+    "archive-the-prior-identities-as-non-executable-audit-history"
+  ],
+  "forbiddenImplementationChanges": {
+    "secondPromptComposer": false,
+    "oldPrompt2ReaderOrWriter": false,
+    "profileNegotiation": false,
+    "versionRange": false,
+    "aliasOrMigration": false,
+    "dependencyFallback": false,
+    "runtimeRepacking": false,
+    "denseF32ModelPath": false,
+    "responseRepair": false,
+    "retryOrBestOfN": false,
+    "testWeakening": false,
+    "tokenizer2EvidenceRerun": false,
+    "template2EvidenceRerun": false,
+    "sampling2EvidenceRerun": false,
+    "acg2OutputBeforeCorrectedRegistration": false
+  },
+  "invalidatedDescendants": {
+    "acg2ChampionRegistration": {
+      "path": "contracts/vnext/acg2-champion-format-preregistration.v1.json",
+      "byteLength": 11929,
+      "sha256": "afec4dccad2062728677b6987519ce2385a1bca3761fe8f0927ac80242d6403d",
+      "registrationCommit": "39feda199eea782ff32f9ffb2b93f7c1a1b21d33",
+      "effectiveStatus": "terminally-superseded-before-output",
+      "reason": "its-prompt-member-profile-hash-binds-the-pre-Q8-Prompt2-profile",
+      "artifactOutputCreated": false,
+      "vectorOutputCreated": false,
+      "implementationOutputCreated": false,
+      "browserOutputCreated": false,
+      "mayBeReused": false,
+      "historicalFilesRemainImmutable": true
+    },
+    "correctedAcg2Registration": {
+      "allowedOnlyAfterPrompt2ReplacementCommitIsRemoteExact": true,
+      "mustBindReplacementPrompt2ProfileSha256": true,
+      "mustUseNewTechnicalRegistrationIdentity": true,
+      "createsSecondProductGeneration": false
+    }
+  },
+  "executionOrder": [
+    "commit-this-output-free-registration-documentation-and-test",
+    "push-fetch-and-prove-local-tracking-FETCH_HEAD-and-remote-registration-commit-equality",
+    "replace-only-the-registered-Prompt2-dependency-boundary-and-exact-descendant-identities",
+    "run-independent-Node-generation-and-Prompt2-focused-verification",
+    "run-Rust-format-test-clippy-and-cross-language-Prompt2-verification",
+    "run-strict-JSON-ASCII-NUL-secret-diff-and-affected-contract-gates",
+    "commit-push-fetch-and-prove-the-replacement-Prompt2-commit-remote-exact",
+    "register-a-corrected-output-free-ACG2-identity-that-binds-the-new-Prompt2-profile",
+    "only-then-create-ACG2-output"
+  ],
+  "verificationGates": {
+    "registration": [
+      "exact-registration-and-document-identities",
+      "exact-parent-commit-and-tree",
+      "exact-old-Prompt2-input-snapshot",
+      "exact-current-mixed-Q8-authorities",
+      "exact-immutable-dependency-identities",
+      "exact-invalidated-ACG2-registration-identity",
+      "no-Prompt2-replacement-or-ACG2-output"
+    ],
+    "implementation": [
+      "independent-Node-canonical-artifact-and-vectors",
+      "Rust-byte-exact-artifact-reproduction",
+      "old-SLM2-digests-reject-with-stable-dependency-error",
+      "all-proper-prefixes-and-registered-hostile-cases-reject",
+      "load-request-result-and-composition-vectors-remain-exactly-behaviorally-closed",
+      "standalone-Cargo-lock-remains-exact",
+      "no-old-Prompt2-executable-path-or-second-composer",
+      "no-rerun-of-accepted-Tokenizer2-Template2-or-Sampling2-evidence"
+    ]
+  },
+  "registrationOutputBoundary": {
+    "prompt2ReplacementProfileGenerated": false,
+    "prompt2ReplacementArtifactGenerated": false,
+    "prompt2ReplacementVectorsGenerated": false,
+    "prompt2ReplacementRustOutputGenerated": false,
+    "acg2ArtifactGenerated": false,
+    "acg2VectorsGenerated": false,
+    "sourceConversionExecuted": false,
+    "modelInferenceExecuted": false,
+    "browserExecutionPerformed": false,
+    "publicationPerformed": false
+  },
+  "claimBoundary": {
+    "prompt2ReplacementImplemented": false,
+    "prompt2ReplacementVerified": false,
+    "acg2Implemented": false,
+    "realModelConverted": false,
+    "modelQualityVerified": false,
+    "browserChatVerified": false,
+    "p2pAvailabilityVerified": false,
+    "releaseAuthorized": false,
+    "deploymentVerified": false,
+    "campaignCreditAuthorized": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}
