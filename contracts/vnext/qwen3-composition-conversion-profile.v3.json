@@ -1,0 +1,244 @@
+{
+  "schema": "tinyrustlm.qwen3-composition-conversion-profile.v3",
+  "profileId": "tinyrustlm.qwen3-complete-composition-conversion/3",
+  "status": "registered-before-tied-output-correction-implementation-and-new-output",
+  "registeredAtUtc": "2026-08-25T07:45:05Z",
+  "registrationParentCommit": "b4545da32dd19a435aacab6f1792cd890a6e6f5e",
+  "registrationParentTree": "e94eced3b125b83b33e6e58cc61478dfbe2d6b40",
+  "authority": {
+    "productLifecycle": "prelaunch-single-product",
+    "productGenerationCount": 1,
+    "technicalVersionIsProductGeneration": false,
+    "workspaceRoot": "E:/Source/.tinyrustlm-model-acquisition-recovered-20260819",
+    "branch": "codex/model-acquisition-v2",
+    "transactionOwner": "rust/crates/tinyrustlm-convert",
+    "graphOwner": "rust/crates/tinyrustlm-composition2",
+    "modelOwner": "rust/crates/tinyrustlm-slm2",
+    "tokenizerOwner": "rust/crates/tinyrustlm-tokenizer2",
+    "templateOwner": "rust/crates/tinyrustlm-template2",
+    "samplingOwner": "rust/crates/tinyrustlm-sampling2",
+    "promptOwner": "rust/crates/tinyrustlm-prompt2",
+    "memoryEndpointsAuthorized": false,
+    "writeDriveDAllowed": false
+  },
+  "productBoundary": {
+    "productCount": 1,
+    "prelaunch": true,
+    "legacySupport": false,
+    "compatibilityReaders": false,
+    "migrationWriters": false,
+    "aliases": false,
+    "fallbacks": false,
+    "responseRepair": false,
+    "automaticRetry": false,
+    "bestOfN": false
+  },
+  "predecessorDisposition": {
+    "path": "contracts/vnext/qwen3-composition-conversion-profile.v2.json",
+    "profileId": "tinyrustlm.qwen3-complete-composition-conversion/2",
+    "sha256": "d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718",
+    "defect": "the-composition-bound-model-producer-profile-1-which-forbade-the-exact-locked-sources-byte-identical-redundant-tied-output",
+    "observedFailureProfileId": "tinyrustlm.qwen3-real-composition-execution/2",
+    "observedFailureResultSha256": "4b2c957943d91fe7023d5ab78d2582735d21196e93403c212a9b104204bc970c",
+    "status": "terminally-invalidated-after-native-source-rejection-before-real-composition-output",
+    "realCompositionOutputCreated": false,
+    "runtimeSupportRetained": false,
+    "compatibilityReaderRetained": false,
+    "migrationWritten": false,
+    "aliasRetained": false,
+    "fallbackRetained": false
+  },
+  "command": {
+    "executable": "tinyrustlm-convert",
+    "name": "qwen3-composition",
+    "arguments": [
+      "model-source-lock",
+      "model-source-directory",
+      "tokenizer-source-lock",
+      "tokenizer-source-directory",
+      "output-root"
+    ],
+    "outputRootMustBeAbsent": true,
+    "outputRootMustHaveExistingDirectNonReparseParent": true,
+    "sourceRootsMustBeExistingDirectNonReparseDirectories": true,
+    "sourceAndOutputTreesMustNotOverlap": true
+  },
+  "sourceRelationship": {
+    "modelLockSchema": "tinyrustlm.qwen3_source_lock.v1",
+    "tokenizerLockSchema": "tinyrustlm.qwen_tokenizer2_source_lock.v1",
+    "requiredEqualFields": [
+      "modelId",
+      "revision"
+    ],
+    "requiredArchitectureProfiles": {
+      "model": "tinyrustlm.qwen3-dense-gqa-qk-norm/1",
+      "tokenizer": "tinyrustlm.qwen3-tokenizer-source/1"
+    },
+    "requiredEqualFileRecords": [
+      "config.json",
+      "merges.txt",
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "vocab.json"
+    ],
+    "modelDirectoryInventoryOwner": "tinyrustlm.qwen3-safetensors-to-slm2-mixed-q8/2",
+    "modelDirectoryInventoryOwnerSha256": "fa2ce18f38129a6b106000d7802d1ea3995921e2b945ae5e52457908f548e7cf",
+    "tokenizerDirectoryInventoryOwner": "tinyrustlm.qwen-tokenizer-to-tokenizer2/1"
+  },
+  "exactModel": {
+    "architecture": "Qwen3ForCausalLM",
+    "artifactClass": "base-model-or-specialist-model",
+    "vocabularySize": 151936,
+    "contextLength": 40960,
+    "embeddingSize": 1024,
+    "feedForwardSize": 3072,
+    "layerCount": 28,
+    "headCount": 16,
+    "kvHeadCount": 8,
+    "headDimension": 128,
+    "ropeThetaBits": "0x49742400",
+    "normalizationEpsilonBits": "0x358637bd",
+    "tiedEmbeddings": true,
+    "qkvBias": false,
+    "qkNormalization": true,
+    "physicalSourceTensorCount": 311,
+    "logicalSlm2TensorCount": 310,
+    "physicalSourceParameterCount": 751632384,
+    "logicalSlm2ParameterCount": 596049920,
+    "redundantTiedOutputVerifiedAndNotEmitted": true,
+    "maximumSlm2Bytes": 2147483648,
+    "maximumTensorCount": 2048
+  },
+  "artifacts": [
+    {
+      "ordinal": 0,
+      "kind": "slm2",
+      "file": "model.slm2",
+      "formatProfileId": "org.minimodel.slm2/2.0",
+      "formatProfileSha256": "5ac819cb31a17a64bec0d5492962a4baf0bd2778f6213b87c85c0a04f3a738d8",
+      "producer": "tinyrustlm.qwen3-safetensors-to-slm2-mixed-q8/2",
+      "producerProfileSha256": "fa2ce18f38129a6b106000d7802d1ea3995921e2b945ae5e52457908f548e7cf"
+    },
+    {
+      "ordinal": 1,
+      "kind": "tokenizer2",
+      "file": "tokenizer.tokenizer2",
+      "formatProfileId": "org.minimodel.tokenizer2/2.0",
+      "formatProfileSha256": "628427bf6e7f8d34ed14b331a5c636606aee9d5ef45a36a3cadc13338669b8de",
+      "requiredBytes": 7038773,
+      "requiredSha256": "cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b",
+      "producer": "tinyrustlm.qwen-tokenizer-to-tokenizer2/1"
+    },
+    {
+      "ordinal": 2,
+      "kind": "template2",
+      "file": "template.template2",
+      "formatProfileId": "org.minimodel.template2/2.0",
+      "formatProfileSha256": "14ff1df8dd6760119ac36e719ab396fff8e71d0719c2e1c83118f58693ea7bfa",
+      "requiredSha256": "5300b0b43188a8c73ed62e7e4fbab6eff358ae0395166791852b072a8009c9c8",
+      "producer": "tinyrustlm-template2"
+    },
+    {
+      "ordinal": 3,
+      "kind": "sampling2",
+      "file": "sampling.sampling2",
+      "formatProfileId": "org.minimodel.sampling2/2.0",
+      "formatProfileSha256": "ec65e8f1a54c1e4ca95ebda88bde091dad11337250e541bbda60e8cac311428d",
+      "requiredBytes": 65800,
+      "requiredSha256": "9e02fcfbba169330a2ee1bf40cea015dc4067925e051f6ae5f197a5f880bfe89",
+      "producer": "tinyrustlm-sampling2"
+    },
+    {
+      "ordinal": 4,
+      "kind": "prompt2",
+      "file": "prompt.prompt2",
+      "formatProfileId": "org.minimodel.prompt2/2.0",
+      "formatProfileSha256": "f9eb4cbecfb52f5e2857216c999754da94021a5427a86732d33fe15efc0d062c",
+      "requiredBytes": 512,
+      "requiredSha256": "27aaed18b62930213a2395e398e68d18a90d4280e24c23d794e3e94352d7e1f3",
+      "producer": "tinyrustlm-prompt2"
+    },
+    {
+      "ordinal": 5,
+      "kind": "acg2",
+      "file": "composition.acg2",
+      "formatProfileId": "org.minimodel.acg2/2.0",
+      "formatProfileSha256": "944ed9b5b0ee2605ebb9ac13f2e5388c181bc857fdbfc082e62e9ae7b07c79be",
+      "requiredBytes": 896,
+      "producer": "tinyrustlm-composition2"
+    }
+  ],
+  "evidenceFiles": {
+    "attempt": "composition.attempt.json",
+    "modelReceipt": "model.slm2.conversion-receipt.json",
+    "tokenizerReceipt": "tokenizer.tokenizer2.conversion-receipt.json",
+    "terminalRejection": "composition.rejection.json",
+    "terminalPass": "composition.conversion-receipt.json",
+    "terminalFilesAreMutuallyExclusive": true,
+    "terminalFileIsWrittenLast": true
+  },
+  "modelReceiptContract": {
+    "schema": "tinyrustlm.qwen3_conversion_receipt.v2",
+    "physicalSourceTensorCount": 311,
+    "logicalOutputTensorCount": 310,
+    "requiresTiedOutputEqualityProof": true,
+    "unknownFields": "fatal-to-any-typed-consumer"
+  },
+  "transaction": {
+    "writeMode": "create-only",
+    "memberPublication": "same-directory-staging-file-sync-hard-link-create-only-remove-stage",
+    "directoryFlushBeforeVerification": true,
+    "independentVerification": [
+      "rehash-every-artifact",
+      "reparse-every-artifact-with-canonical-owner",
+      "compare-writer-and-parser-identities",
+      "validate-model-shape",
+      "validate-tokenizer-fixed-identity",
+      "validate-prompt-model-vocabulary-and-context",
+      "resolve-acg2-members-one-at-a-time",
+      "accept-complete-resource-plan",
+      "rehash-component-receipts"
+    ],
+    "successRule": "command-exits-zero-and-terminal-pass-receipt-exists-and-terminal-rejection-is-absent",
+    "failureRule": "preserve-root-and-write-create-only-terminal-rejection",
+    "resumeRule": "existing-output-root-is-terminal-and-never-resumed",
+    "cleanupOnFailure": false
+  },
+  "resourcePolicy": {
+    "memberHashBufferBytes": 1048576,
+    "maximumResidentDependencyBytes": 83886080,
+    "maximumReceiptBytes": 1048576,
+    "maximumSourceLockBytes": 1048576,
+    "maximumOutputFiles": 12
+  },
+  "receiptClaims": {
+    "structuralComposition": "verified",
+    "modelQuality": "not-assessed-by-converter",
+    "sourceFrameworkParity": "not-assessed-by-converter",
+    "nativeRuntime": "not-assessed-by-converter",
+    "browserWasm": "not-assessed-by-converter",
+    "browserChat": "not-assessed-by-converter",
+    "p2pAvailability": "not-assessed-by-converter",
+    "publication": "not-assessed-by-converter"
+  },
+  "requiredNextGate": "source-native-browser-numerical-parity-untouched-quality-and-product-chat",
+  "registrationOutputBoundary": {
+    "compositionTransactionCodeChanged": false,
+    "managedCompositionConsumerChanged": false,
+    "completeCompositionOutputCreated": false,
+    "terminalPassReceiptCreated": false,
+    "terminalRejectionReceiptCreated": false,
+    "realModelConversionRun": false,
+    "nativeRuntimeOutputObserved": false,
+    "browserOutputObserved": false,
+    "qualityOutputObserved": false,
+    "campaignCreditAuthorized": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}

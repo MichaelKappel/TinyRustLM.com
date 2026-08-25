@@ -95,15 +95,23 @@ converter registration. The unchanged base remains terminally rejected as a
 product model; this lock is source identity only. See
 `docs/architecture/2026-08-25-qwen3-0.6b-base-source-lock.md`.
 
-`qwen3-safetensors-conversion-profile.v1.json` froze the sole production-bound
-source-model conversion contract before converter code or Qwen3 SLM2 output
-changed. It is 14,419 bytes at SHA-256
+`qwen3-safetensors-conversion-profile.v2.json` is the output-free registration
+for the sole corrected source-model converter. It is 18,177 bytes at SHA-256
+`fa2ce18f38129a6b106000d7802d1ea3995921e2b945ae5e52457908f548e7cf`.
+It requires the exact tied Qwen3 source to contain 311 physical tensors while
+emitting 310 logical SLM2 tensors. The additional `lm_head.weight` must match
+`model.embed_tokens.weight` in dtype, shape, length, and every streamed source
+byte before output creation; it is recorded as physical source evidence and is
+not emitted as a duplicate runtime tensor. Receipt schema
+`tinyrustlm.qwen3_conversion_receipt.v2` separates physical and logical counts,
+parameters, inventories, and tied-payload identities.
+
+`qwen3-safetensors-conversion-profile.v1.json` remains immutable rejected
+history at 14,419 bytes and SHA-256
 `313069152daa70a2c2b5070f9d1350379a5800f647d5c3ac8d23a75ff9ead968`.
-It selects dense Qwen3 grouped-query attention with paired Q/K
-normalization, one exact nine-file source closure, strict single-file
-Safetensors validation, bounded BF16/F32 streaming, and exact mixed-Q8 SLM2
-output. Conversion publishes the independently reparsed model first and its
-content-addressed receipt last through create-only same-directory durability.
+Real execution `/2` established that its rule forbidding `lm_head.weight` was
+incompatible with the locked, byte-identical tied source. It created no model
+output and retains no future executable path.
 
 The implemented converter does not regenerate Tokenizer2 or Template2,
 promote model quality, run a runtime, or create campaign credit. It replaced
@@ -115,26 +123,33 @@ product model. See the immutable before-output decision in
 implementation record in
 `docs/architecture/qwen3-slm2-converter-implementation.md`.
 
-`qwen3-composition-conversion-profile.v2.json` is the registered sole complete
-source-to-composition transaction. It is 8,835 bytes at SHA-256
-`d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718`.
+`qwen3-composition-conversion-profile.v3.json` is the output-free registration
+for the sole corrected complete source-to-composition transaction. It is 9,764
+bytes at SHA-256
+`c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0`.
 It requires equal model and tokenizer source identity and revision, the exact
 compatible model and tokenizer architecture-profile pair, and equality of all
-five shared file records. It binds six ordered SLM2/Tokenizer2/Template2/
+five shared file records. It binds model producer
+`tinyrustlm.qwen3-safetensors-to-slm2-mixed-q8/2`, its exact profile hash, and
+model receipt schema `tinyrustlm.qwen3_conversion_receipt.v2`. It also binds six
+ordered SLM2/Tokenizer2/Template2/
 Sampling2/Prompt2/ACG2 artifacts, bounded one-at-a-time dependency resolution,
 create-only terminal pass or rejection evidence, and explicit nonclaims for
-quality, runtime, browser, P2P, and publication. Technical `/2` is a contract
+quality, runtime, browser, P2P, and publication. Technical `/3` is a contract
 identity, not a second product generation.
 
-The `/1` profile incorrectly required the semantically different model and
-tokenizer architecture-profile IDs to be equal. Preflight found the defect
-before any real complete-composition output. `/1` is terminally invalidated and
-will have no current reader, migration, alias, or fallback. See
-`docs/architecture/2026-08-25-qwen3-composition-source-relationship-correction-preregistration.md`.
+Composition profile `/2` remains immutable rejected history at 8,835 bytes and
+SHA-256
+`d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718`.
+It bound the defective model producer `/1`; execution reached the producer and
+strictly rejected before model or complete-composition output. Neither invalid
+producer identity will retain a current reader, selector, migration, alias, or
+fallback. See
+`docs/architecture/2026-08-25-qwen3-tied-output-profile-correction-preregistration.md`.
 
-The Rust transaction and managed companion boundary now consume only `/2`.
-They require the exact compatible profile pair and have no `/1` reader,
-version switch, migration, alias, or fallback. The complete transaction creates
+The next implementation change will clean-cut the Rust transaction and managed
+companion boundary to only the newly registered producer and composition
+profiles. The complete transaction creates
 and independently verifies
 all six artifacts, exact cross-member vocabulary/context relationships, bounded
 resource preflight, component receipts, and mutually exclusive terminal
