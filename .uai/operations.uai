@@ -1,5 +1,13 @@
-profile: runtime-mirust.operations.v125
-updated_utc: 2026-08-24T23:49:14Z
+profile: runtime-mirust.operations.v126
+updated_utc: 2026-08-25T00:13:55Z
+companion_installation_pairing_session_checkpoint_2026_08_24:
+  source: commit=66248fd95443b5cdeac5936502a33d4488fcc235; tree=a7ea0d31a2d0901f58994463f58825e717d7fa90; branch=codex/model-acquisition-v2; local_tracking_fetch_direct_remote_exact=true
+  authority: profile=tinyrustlm.companion.loopback-capability/2; registration_commit=912f8ebe1a2b774977eaf2ed298d8ac162d35fa0
+  architecture: path=docs/architecture/2026-08-24-companion-installation-pairing-session-state.md; bytes=12834; sha256=2669c904cfdaf457815e806c4368e3fda07c42d3dcd6242f401cc2059b224fe2
+  checks: managed=180/180; companion=62/62; core=80/80; package=38/38; browser_oracle=8/8; focused=59/59; release_warnings=0; format_change=0; frozen_goal=92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+  platform_truth: Windows ACL creation/reopen/drift is locally executed. Linux 0700/0600/statx-UID logic is compiled only and requires real linux-x64 and linux-arm64 execution before release.
+  deployment: prohibited; no deployable web bytes changed; complete Node remains 1150_pass_15_fail_1_skip
+  next_operation: Implement exact two-phase rotation and revocation state with fake monotonic time and races. Do not start Kestrel or browser work until that state is green.
 companion_loopback_codec_vectors_checkpoint_2026_08_24:
   source: commit=9eb7163ea4659d088b66a5143243c708dfe14bb3; tree=e226939116c0fbfb93c6cc341c4e9b1d2a564377; branch=codex/model-acquisition-v2; local_tracking_fetch_direct_remote_exact=true
   authority: profile=tinyrustlm.companion.loopback-capability/2; registration_commit=912f8ebe1a2b774977eaf2ed298d8ac162d35fa0
