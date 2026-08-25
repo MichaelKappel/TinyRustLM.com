@@ -84,6 +84,17 @@ claim, release, or campaign credit. See
 
 ## Qwen3 Model Conversion
 
+`qwen3-0.6b-base-source-lock.v1.json` is the sole current content authority for
+the reviewed upstream `Qwen/Qwen3-0.6B` base checkpoint at immutable revision
+`c1899de289a04d12100db370d81485cdf75e47ca`. It is 1,901 bytes at SHA-256
+`e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d`
+and binds one exact nine-file, 1,519,207,688-byte source closure without a
+machine-local path. Its five tokenizer-related members are byte-identical to
+the accepted Tokenizer2 source lock, and its selected base identities match the
+converter registration. The unchanged base remains terminally rejected as a
+product model; this lock is source identity only. See
+`docs/architecture/2026-08-25-qwen3-0.6b-base-source-lock.md`.
+
 `qwen3-safetensors-conversion-profile.v1.json` froze the sole production-bound
 source-model conversion contract before converter code or Qwen3 SLM2 output
 changed. It is 14,419 bytes at SHA-256
