@@ -4,7 +4,7 @@ const childProcess = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
-const [targetRoot, mode, ...argumentsList] = process.argv.slice(2);
+const [targetRoot, mode, inspectorSourcePath, ...argumentsList] = process.argv.slice(2);
 
 function target(relativePath) {
   return path.join(targetRoot, ...relativePath.split("/"));
@@ -16,12 +16,35 @@ function write(relativePath, bytes) {
   fs.writeFileSync(outputPath, bytes, { flag: "wx" });
 }
 
+if (mode !== "grandchild-marker") {
+  fs.copyFileSync(inspectorSourcePath, target("scratch-inspector.exe"),
+    fs.constants.COPYFILE_EXCL);
+}
+
 switch (mode) {
   case "success":
     process.stdout.write("fixture-stdout");
     process.stderr.write("fixture-stderr");
     write("artifact.bin", Buffer.from("custodied-build-output", "utf8"));
     break;
+  case "environment-junction": {
+    const cacheRoot = path.join(process.env.USERPROFILE, "AppData", "Local", "Microsoft",
+      "Windows", "INetCache");
+    const targetDirectory = path.join(cacheRoot, "IE");
+    fs.mkdirSync(targetDirectory, { recursive: true });
+    fs.writeFileSync(path.join(targetDirectory, "marker.bin"), "contained", { flag: "wx" });
+    fs.symlinkSync(targetDirectory, path.join(cacheRoot, "Content.IE5"), "junction");
+    write("artifact.bin", Buffer.from("custodied-build-output", "utf8"));
+    break;
+  }
+  case "environment-external-junction": {
+    const cacheRoot = path.join(process.env.USERPROFILE, "AppData", "Local", "Microsoft",
+      "Windows", "INetCache");
+    fs.mkdirSync(cacheRoot, { recursive: true });
+    fs.symlinkSync(targetRoot, path.join(cacheRoot, "Content.IE5"), "junction");
+    write("artifact.bin", Buffer.from("custodied-build-output", "utf8"));
+    break;
+  }
   case "nonzero":
     process.stderr.write("registered-build-failure");
     process.exitCode = 23;
@@ -49,7 +72,8 @@ switch (mode) {
   case "timeout-tree": {
     const markerPath = argumentsList[0];
     childProcess.spawn(process.execPath,
-      [__filename, targetRoot, "grandchild-marker", markerPath, argumentsList[1]], {
+      [__filename, targetRoot, "grandchild-marker", inspectorSourcePath, markerPath,
+        argumentsList[1]], {
         env: process.env,
         shell: false,
         stdio: "ignore",

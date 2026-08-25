@@ -4,6 +4,7 @@ members = [
     "rust/crates/tinyrustlm-archive",
     "rust/crates/tinyrustlm-memory",
     "rust/crates/tinyrustlm-memory-endpoints",
+    "rust/crates/tinyrustlm-build-custody",
     "rust/crates/tinyrustlm-durability",
     "rust/crates/tinyrustlm-evidence",
     "rust/crates/tinyrustlm-evidence-wasm",

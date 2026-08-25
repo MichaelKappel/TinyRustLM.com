@@ -6,25 +6,32 @@ const fs = require("node:fs");
 const path = require("node:path");
 const windowsMsvcEnvironment = require("./windows-x64-msvc-environment.js");
 
-const profileId = "tinyrustlm.source-controlled-build-custody/2";
-const profileByteLength = 7153;
+const profileId = "tinyrustlm.source-controlled-build-custody/3";
+const profileByteLength = 9786;
 const profileSha256 =
-  "7d8b82ac9bb7cab6d5373f60d3c8f78874e86e3540f788ac018e0f5f22d90916";
-const requestSchema = "tinyrustlm.build-custody-request.v2";
-const bindingSchema = "tinyrustlm.build-custody-binding.v2";
-const startSchema = "tinyrustlm.build-custody-start.v2";
-const processTerminalSchema = "tinyrustlm.build-custody-process-terminal.v2";
-const terminalSchema = "tinyrustlm.build-custody-terminal.v2";
-const summarySchema = "tinyrustlm.build-custody-summary.v2";
+  "0bdc4227b1c7576bd844be1c0891c2b60868ddfdf0626efc96506c36adb24626";
+const requestSchema = "tinyrustlm.build-custody-request.v3";
+const bindingSchema = "tinyrustlm.build-custody-binding.v3";
+const startSchema = "tinyrustlm.build-custody-start.v3";
+const processTerminalSchema = "tinyrustlm.build-custody-process-terminal.v3";
+const scratchInspectionProcessTerminalSchema =
+  "tinyrustlm.build-custody-scratch-inspection-process-terminal.v3";
+const terminalSchema = "tinyrustlm.build-custody-terminal.v3";
+const summarySchema = "tinyrustlm.build-custody-summary.v3";
 const maximumRequestBytes = 262144;
 const maximumBindingBytes = 1048576;
-const maximumTerminalBytes = 1048576;
+const maximumTerminalBytes = 4194304;
 const maximumEnvironmentRequestBytes = 262144;
 const maximumEnvironmentPrivateBindingBytes = 4194304;
 const maximumEnvironmentPublicLockBytes = 16777216;
 const maximumEnvironmentTerminalBytes = 1048576;
 const maximumEnvironmentValidationMilliseconds = 600000;
 const maximumEnvironmentValidationOutputBytes = 1048576;
+const maximumScratchInspectionRequestBytes = 262144;
+const maximumScratchInspectionObservationBytes = 1048576;
+const maximumScratchInspectionProcessTerminalBytes = 1048576;
+const maximumScratchInspectionDurationMilliseconds = 600000;
+const maximumScratchInspectionPathBytes = 16384;
 const maximumArguments = 128;
 const maximumArgumentBytes = 32768;
 const maximumEnvironmentEntries = 128;
@@ -37,6 +44,7 @@ const maximumTargetEntries = 131072;
 const maximumTargetBytes = 17179869184;
 const maximumEnvironmentScratchEntries = 131072;
 const maximumEnvironmentScratchBytes = 1073741824;
+const maximumEnvironmentScratchJunctions = 64;
 const maximumRequiredOutputs = 16;
 const hashBufferBytes = 1048576;
 const maximumTerminationOutputBytes = 65536;
@@ -46,6 +54,7 @@ const sha256Pattern = /^[a-f0-9]{64}$/u;
 const safeIdPattern = /^[A-Za-z0-9][A-Za-z0-9._/-]{0,159}$/u;
 const environmentNamePattern = /^[A-Za-z_][A-Za-z0-9_()]{0,63}$/u;
 const safeErrorPattern = /^[a-z0-9][a-z0-9-]{2,127}$/u;
+const scratchInspectionErrorPattern = /^scratch_inspection_[a-z0-9_]{2,120}$/u;
 const requiredWindowsSupplementNames = Object.freeze(["HOMEDRIVE", "HOMEPATH",
   "LOGONSERVER", "SYSTEMDRIVE", "SystemRoot", "TEMP", "USERDOMAIN", "USERNAME",
   "USERPROFILE", "WINDIR"]);
@@ -65,6 +74,18 @@ const environmentPublicLockSchema =
   "tinyrustlm.windows_x64_msvc_environment_public_lock.v1";
 const environmentTerminalSchema =
   "tinyrustlm.windows_x64_msvc_environment_terminal.v1";
+const scratchInspectionProfileId = "tinyrustlm.build-scratch-inspection/1";
+const scratchInspectionProfileByteLength = 3170;
+const scratchInspectionProfileSha256 =
+  "08a2c5cb57cff8b260972129efcdfbcd2e598b51a5d6660f3c11c83a0be05aef";
+const scratchInspectionRequestSchema =
+  "tinyrustlm.build-scratch-inspection-request.v1";
+const scratchInspectionObservationSchema =
+  "tinyrustlm.build-scratch-inspection-observation.v1";
+const scratchInspectionJunctionSchema =
+  "tinyrustlm.build-scratch-inspection-junction.v1";
+const scratchInspectionFailureSchema =
+  "tinyrustlm.build-scratch-inspection-failure.v1";
 
 function invariant(condition, code) {
   if (!condition) throw new Error(code);
@@ -189,8 +210,9 @@ function readCanonicalJson(filePath, maximumBytes, code) {
   return Object.freeze({ artifact, bytes, value });
 }
 
-function writeNewDurable(filePath, bytes, maximumBytes) {
-  invariant(Buffer.isBuffer(bytes) && bytes.length > 0 && bytes.length <= maximumBytes,
+function writeNewDurable(filePath, bytes, maximumBytes, allowEmpty = false) {
+  invariant(Buffer.isBuffer(bytes) && (allowEmpty || bytes.length > 0) &&
+    bytes.length <= maximumBytes,
     "build-custody-evidence-size");
   const descriptor = fs.openSync(filePath, "wx");
   try {
@@ -204,6 +226,7 @@ function writeNewDurable(filePath, bytes, maximumBytes) {
   } finally {
     fs.closeSync(descriptor);
   }
+  return Object.freeze({ byteLength: bytes.length, sha256: sha256(bytes) });
 }
 
 function writeCanonicalNew(filePath, value, maximumBytes) {
@@ -365,7 +388,8 @@ function validateEnvironmentEntries(entries, maximumEntries, code) {
 
 function validateRequestShape(request) {
   requireExactKeys(request, ["schema", "operationId", "profile", "source", "runtime",
-    "environmentAuthority", "command", "roots", "capture", "termination", "outputs"],
+    "environmentAuthority", "scratchInspection", "command", "roots", "capture",
+    "termination", "outputs"],
   "build-custody-request-fields");
   invariant(request.schema === requestSchema, "build-custody-request-schema");
   invariant(typeof request.operationId === "string" && safeIdPattern.test(request.operationId),
@@ -437,6 +461,37 @@ function validateRequestShape(request) {
   invariant(new Set(environmentPaths).size === environmentPaths.length,
     "build-custody-environment-path-distinct");
 
+  requireExactKeys(request.scratchInspection,
+    ["profile", "executableRelativePath", "operationId", "maximumDurationMilliseconds",
+      "maximumStdoutBytes"], "build-custody-scratch-inspection-fields");
+  requireExactKeys(request.scratchInspection.profile,
+    ["path", "byteLength", "sha256", "profileId"],
+    "build-custody-scratch-inspection-profile-fields");
+  requireCanonicalAbsolutePath(request.scratchInspection.profile.path,
+    "build-custody-scratch-inspection-profile-path");
+  invariant(request.scratchInspection.profile.byteLength ===
+    scratchInspectionProfileByteLength,
+  "build-custody-scratch-inspection-profile-length");
+  invariant(request.scratchInspection.profile.sha256 === scratchInspectionProfileSha256,
+    "build-custody-scratch-inspection-profile-hash");
+  invariant(request.scratchInspection.profile.profileId === scratchInspectionProfileId,
+    "build-custody-scratch-inspection-profile-id");
+  invariant(!environmentPaths.includes(request.scratchInspection.profile.path.toLowerCase()) &&
+    request.scratchInspection.profile.path.toLowerCase() !== request.profile.path.toLowerCase(),
+  "build-custody-scratch-inspection-profile-distinct");
+  requireSafeRelativePath(request.scratchInspection.executableRelativePath,
+    "build-custody-scratch-inspection-executable-path");
+  invariant(typeof request.scratchInspection.operationId === "string" &&
+    safeIdPattern.test(request.scratchInspection.operationId) &&
+    request.scratchInspection.operationId !== request.operationId,
+  "build-custody-scratch-inspection-operation-id");
+  requireSafeInteger(request.scratchInspection.maximumDurationMilliseconds, 1,
+    maximumScratchInspectionDurationMilliseconds,
+    "build-custody-scratch-inspection-duration");
+  invariant(request.scratchInspection.maximumStdoutBytes ===
+    maximumScratchInspectionObservationBytes,
+  "build-custody-scratch-inspection-stdout-bound");
+
   requireExactKeys(request.command, ["executablePath", "executableByteLength",
     "executableSha256", "arguments", "workingDirectory", "supplementalEnvironment"],
   "build-custody-command-fields");
@@ -488,7 +543,8 @@ function validateRequestShape(request) {
   requireSha256(request.termination.executableSha256, "build-custody-termination-hash");
 
   requireExactKeys(request.outputs, ["maximumEntryCount", "maximumAggregateBytes",
-    "maximumEnvironmentEntryCount", "maximumEnvironmentAggregateBytes", "required"],
+    "maximumEnvironmentEntryCount", "maximumEnvironmentAggregateBytes",
+    "maximumEnvironmentJunctionCount", "required"],
   "build-custody-output-fields");
   requireSafeInteger(request.outputs.maximumEntryCount, 1, maximumTargetEntries,
     "build-custody-output-count");
@@ -498,6 +554,8 @@ function validateRequestShape(request) {
     maximumEnvironmentScratchEntries, "build-custody-environment-output-count");
   requireSafeInteger(request.outputs.maximumEnvironmentAggregateBytes, 1,
     maximumEnvironmentScratchBytes, "build-custody-environment-output-bytes");
+  requireSafeInteger(request.outputs.maximumEnvironmentJunctionCount, 0,
+    maximumEnvironmentScratchJunctions, "build-custody-environment-junction-count");
   invariant(Array.isArray(request.outputs.required) && request.outputs.required.length > 0 &&
     request.outputs.required.length <= maximumRequiredOutputs,
   "build-custody-required-outputs");
@@ -514,20 +572,57 @@ function validateRequestShape(request) {
       "build-custody-required-output-order");
     previousOutput = entry.relativePath;
   }
+  const scratchOutputs = request.outputs.required.filter((entry) =>
+    entry.relativePath === request.scratchInspection.executableRelativePath);
+  invariant(scratchOutputs.length === 1 && scratchOutputs[0].kind === "pe-x64",
+    "build-custody-scratch-inspection-required-output");
 }
 
 function validateProfile(profileDocument) {
   invariant(profileDocument.artifact.byteLength === profileByteLength &&
     profileDocument.artifact.sha256 === profileSha256, "build-custody-profile-identity");
-  invariant(profileDocument.value.schema === "tinyrustlm.build-custody-profile.v2" &&
+  invariant(profileDocument.value.schema === "tinyrustlm.build-custody-profile.v3" &&
     profileDocument.value.profileId === profileId &&
     profileDocument.value.status === "current-prelaunch-only" &&
     profileDocument.value.platform === "win32" &&
     profileDocument.value.architecture === "x64" &&
     profileDocument.value.environmentAuthority.profileSha256 ===
       environmentProfileSha256 &&
-    profileDocument.value.environmentAuthority.ownerSha256 === environmentOwnerSha256,
+    profileDocument.value.environmentAuthority.ownerSha256 === environmentOwnerSha256 &&
+    profileDocument.value.scratchInspectionAuthority.profileSha256 ===
+      scratchInspectionProfileSha256 &&
+    profileDocument.value.scratchInspectionAuthority.profileByteLength ===
+      scratchInspectionProfileByteLength &&
+    profileDocument.value.scratchInspectionAuthority.profileId ===
+      scratchInspectionProfileId,
   "build-custody-profile-contract");
+}
+
+function validateScratchInspectionProfile(profileDocument) {
+  invariant(profileDocument.artifact.byteLength === scratchInspectionProfileByteLength &&
+    profileDocument.artifact.sha256 === scratchInspectionProfileSha256,
+  "build-custody-scratch-inspection-profile-identity");
+  const profile = profileDocument.value;
+  invariant(profile.schema === "tinyrustlm.build-scratch-inspector-profile.v1" &&
+    profile.profileId === scratchInspectionProfileId &&
+    profile.status === "current-prelaunch-only" && profile.platform === "win32" &&
+    profile.architecture === "x64" &&
+    profile.schemas.request === scratchInspectionRequestSchema &&
+    profile.schemas.observation === scratchInspectionObservationSchema &&
+    profile.schemas.junction === scratchInspectionJunctionSchema &&
+    profile.schemas.failure === scratchInspectionFailureSchema &&
+    profile.limits.maximumRequestBytes === maximumScratchInspectionRequestBytes &&
+    profile.limits.maximumObservationBytes === maximumScratchInspectionObservationBytes &&
+    profile.limits.maximumEntries === maximumEnvironmentScratchEntries &&
+    profile.limits.maximumAggregateBytes === maximumEnvironmentScratchBytes &&
+    profile.limits.maximumJunctions === maximumEnvironmentScratchJunctions &&
+    profile.junctionPolicy.acceptedTag === "0xa0000003" &&
+    profile.processPolicy.stderr === "empty" && profile.processPolicy.network === false &&
+    profile.processPolicy.childProcesses === false &&
+    profile.processPolicy.filesystemMutation === false &&
+    profile.authority.legacySupport === false && profile.authority.retry === false &&
+    profile.authority.fallback === false,
+  "build-custody-scratch-inspection-profile-contract");
 }
 
 function validateArtifact(pathValue, expectedLength, expectedSha256, code) {
@@ -856,6 +951,10 @@ function prepareRequest(requestPath, options = {}) {
   const profileDocument = readCanonicalJson(request.profile.path, profileByteLength,
     "build-custody-profile-json");
   validateProfile(profileDocument);
+  const scratchInspectionProfileDocument = readCanonicalJson(
+    request.scratchInspection.profile.path, scratchInspectionProfileByteLength,
+    "build-custody-scratch-inspection-profile-json");
+  validateScratchInspectionProfile(scratchInspectionProfileDocument);
 
   const repositoryRoot = inspectDirectDirectory(request.source.repositoryRoot,
     "build-custody-source-root");
@@ -870,6 +969,10 @@ function prepareRequest(requestPath, options = {}) {
     request.source.ownerSha256, "build-custody-owner-identity");
   const profileArtifact = validateArtifact(request.profile.path, request.profile.byteLength,
     request.profile.sha256, "build-custody-profile-identity");
+  const scratchInspectionProfileArtifact = validateArtifact(
+    request.scratchInspection.profile.path, request.scratchInspection.profile.byteLength,
+    request.scratchInspection.profile.sha256,
+    "build-custody-scratch-inspection-profile-identity");
   const terminationArtifact = validateArtifact(request.termination.executablePath,
     request.termination.executableByteLength, request.termination.executableSha256,
     "build-custody-termination-identity");
@@ -893,6 +996,10 @@ function prepareRequest(requestPath, options = {}) {
   const profileRelativePath = validateCommittedFile(repositoryRoot, gitPath,
     request.termination.executablePath, request.source.commit, request.profile.path,
     profileArtifact, "build-custody-profile-uncommitted");
+  const scratchInspectionProfileRelativePath = validateCommittedFile(repositoryRoot, gitPath,
+    request.termination.executablePath, request.source.commit,
+    request.scratchInspection.profile.path, scratchInspectionProfileArtifact,
+    "build-custody-scratch-inspection-profile-uncommitted");
   const environmentOwnerPath = inspectRegularFile(request.environmentAuthority.owner.path,
     maximumBindingBytes, false, "build-custody-environment-owner-file").path;
   invariant(environmentOwnerPath ===
@@ -969,6 +1076,7 @@ function prepareRequest(requestPath, options = {}) {
     request,
     requestDocument,
     profileDocument,
+    scratchInspectionProfileDocument,
     source: Object.freeze({
       repositoryRoot,
       gitPath,
@@ -978,6 +1086,8 @@ function prepareRequest(requestPath, options = {}) {
       ownerArtifact,
       profileRelativePath,
       profileArtifact,
+      scratchInspectionProfileRelativePath,
+      scratchInspectionProfileArtifact,
       environmentOwnerPath,
       environmentOwnerRelativePath,
       environmentOwnerArtifact,
@@ -1321,19 +1431,295 @@ function inspectTarget(prepared) {
   return Object.freeze({ ...inventory, required: Object.freeze(required) });
 }
 
-function inspectEnvironmentScratch(prepared) {
-  const request = prepared.request;
-  const root = inspectDirectDirectory(request.roots.environmentRoot,
-    "build-custody-environment-scratch-root-invalid");
-  const topLevel = fs.readdirSync(root, { withFileTypes: true })
-    .sort((left, right) => left.name < right.name ? -1 : left.name > right.name ? 1 : 0);
-  invariant(topLevel.length === 2 && topLevel[0].name === "home" &&
-    topLevel[0].isDirectory() && !topLevel[0].isSymbolicLink() &&
-    topLevel[1].name === "temp" && topLevel[1].isDirectory() &&
-    !topLevel[1].isSymbolicLink(), "build-custody-environment-scratch-layout");
-  return inspectBoundedTree(root, request.outputs.maximumEnvironmentEntryCount,
+function requireScratchRelativePath(value, code) {
+  invariant(typeof value === "string" && value.length > 0 && value.length <=
+    maximumScratchInspectionPathBytes && Buffer.byteLength(value, "utf8") === value.length &&
+    !path.isAbsolute(value) && !value.includes("\\") && !value.includes(":"), code);
+  const components = value.split("/");
+  invariant(components.length > 0 && components.length <= 128, code);
+  for (const component of components) {
+    invariant(component.length > 0 && component.length <= 255 && component !== "." &&
+      component !== ".." && component === component.trimEnd() && !component.endsWith(".") &&
+      !/[<>:"/\\|?*\u0000-\u001f]/u.test(component), code);
+  }
+  return value;
+}
+
+function scratchPathKey(value) {
+  return value.toLowerCase();
+}
+
+function scratchPathContains(parent, child) {
+  const parentKey = scratchPathKey(parent);
+  const childKey = scratchPathKey(child);
+  return childKey === parentKey || childKey.startsWith(`${parentKey}/`);
+}
+
+function parseCanonicalCompactJson(bytes, maximumBytes, code) {
+  invariant(Buffer.isBuffer(bytes) && bytes.length > 0 && bytes.length <= maximumBytes, code);
+  const text = bytes.toString("utf8");
+  invariant(Buffer.from(text, "utf8").equals(bytes), code);
+  let value;
+  try {
+    value = JSON.parse(text);
+  } catch {
+    throw new Error(code);
+  }
+  invariant(isPlainObject(value) && Buffer.from(JSON.stringify(value), "utf8").equals(bytes),
+    code);
+  return value;
+}
+
+function validateScratchInspectionFailure(bytes) {
+  const failure = parseCanonicalCompactJson(bytes, maximumScratchInspectionObservationBytes,
+    "build-custody-scratch-inspection-failure-json");
+  requireExactKeys(failure, ["errorCode", "schema", "status"],
+    "build-custody-scratch-inspection-failure-fields");
+  invariant(typeof failure.errorCode === "string" &&
+    scratchInspectionErrorPattern.test(failure.errorCode) &&
+    failure.schema === scratchInspectionFailureSchema && failure.status === "failed",
+  "build-custody-scratch-inspection-failure-contract");
+  return Object.freeze({ ...failure });
+}
+
+function validateScratchInspectionObservation(bytes, request) {
+  const observation = parseCanonicalCompactJson(bytes,
+    request.scratchInspection.maximumStdoutBytes,
+    "build-custody-scratch-inspection-observation-json");
+  requireExactKeys(observation, ["aggregateBytes", "directoryCount", "entryCount",
+    "fileCount", "inventorySha256", "junctionCount", "junctions", "operationId",
+    "profileId", "profileSha256", "rootIdentitySha256", "schema", "status"],
+  "build-custody-scratch-inspection-observation-fields");
+  requireSafeInteger(observation.aggregateBytes, 0,
     request.outputs.maximumEnvironmentAggregateBytes,
-    "build-custody-environment-scratch");
+    "build-custody-scratch-inspection-aggregate-bytes");
+  requireSafeInteger(observation.directoryCount, 0,
+    request.outputs.maximumEnvironmentEntryCount,
+    "build-custody-scratch-inspection-directory-count");
+  requireSafeInteger(observation.entryCount, 2,
+    request.outputs.maximumEnvironmentEntryCount,
+    "build-custody-scratch-inspection-entry-count");
+  requireSafeInteger(observation.fileCount, 0,
+    request.outputs.maximumEnvironmentEntryCount,
+    "build-custody-scratch-inspection-file-count");
+  requireSafeInteger(observation.junctionCount, 0,
+    request.outputs.maximumEnvironmentJunctionCount,
+    "build-custody-scratch-inspection-junction-count");
+  invariant(observation.directoryCount + observation.fileCount + observation.junctionCount ===
+    observation.entryCount, "build-custody-scratch-inspection-count-consistency");
+  requireSha256(observation.inventorySha256,
+    "build-custody-scratch-inspection-inventory-hash");
+  requireSha256(observation.rootIdentitySha256,
+    "build-custody-scratch-inspection-root-hash");
+  invariant(observation.operationId === request.scratchInspection.operationId &&
+    observation.profileId === scratchInspectionProfileId &&
+    observation.profileSha256 === scratchInspectionProfileSha256 &&
+    observation.schema === scratchInspectionObservationSchema && observation.status === "pass",
+  "build-custody-scratch-inspection-observation-contract");
+  invariant(Array.isArray(observation.junctions) &&
+    observation.junctions.length === observation.junctionCount,
+  "build-custody-scratch-inspection-junctions");
+
+  let previousPath = null;
+  const targetPaths = new Set();
+  const targetIdentities = new Set();
+  for (const junction of observation.junctions) {
+    requireExactKeys(junction, ["linkIdentitySha256", "relativePath",
+      "reparseDataSha256", "reparseTag", "schema", "targetIdentitySha256",
+      "targetRelativePath"], "build-custody-scratch-inspection-junction-fields");
+    requireSha256(junction.linkIdentitySha256,
+      "build-custody-scratch-inspection-junction-link-identity");
+    requireSha256(junction.reparseDataSha256,
+      "build-custody-scratch-inspection-junction-data-hash");
+    requireSha256(junction.targetIdentitySha256,
+      "build-custody-scratch-inspection-junction-target-identity");
+    requireScratchRelativePath(junction.relativePath,
+      "build-custody-scratch-inspection-junction-path");
+    requireScratchRelativePath(junction.targetRelativePath,
+      "build-custody-scratch-inspection-junction-target-path");
+    invariant(junction.reparseTag === "0xa0000003" &&
+      junction.schema === scratchInspectionJunctionSchema &&
+      junction.linkIdentitySha256 !== junction.targetIdentitySha256 &&
+      !scratchPathContains(junction.relativePath, junction.targetRelativePath) &&
+      !scratchPathContains(junction.targetRelativePath, junction.relativePath),
+    "build-custody-scratch-inspection-junction-contract");
+    const pathKey = scratchPathKey(junction.relativePath);
+    const targetKey = scratchPathKey(junction.targetRelativePath);
+    invariant(previousPath === null || previousPath < pathKey,
+      "build-custody-scratch-inspection-junction-order");
+    invariant(!targetPaths.has(targetKey) &&
+      !targetIdentities.has(junction.targetIdentitySha256),
+    "build-custody-scratch-inspection-junction-duplicate-target");
+    previousPath = pathKey;
+    targetPaths.add(targetKey);
+    targetIdentities.add(junction.targetIdentitySha256);
+  }
+  return Object.freeze(observation);
+}
+
+function scratchInspectionRequest(prepared) {
+  const request = prepared.request;
+  const value = {
+    maximumAggregateBytes: request.outputs.maximumEnvironmentAggregateBytes,
+    maximumEntryCount: request.outputs.maximumEnvironmentEntryCount,
+    maximumJunctionCount: request.outputs.maximumEnvironmentJunctionCount,
+    maximumPathBytes: maximumScratchInspectionPathBytes,
+    operationId: request.scratchInspection.operationId,
+    ownedRoot: request.roots.environmentRoot,
+    profileId: scratchInspectionProfileId,
+    profileSha256: scratchInspectionProfileSha256,
+    requiredRootEntries: [
+      { kind: "directory", name: "home" },
+      { kind: "directory", name: "temp" }
+    ],
+    schema: scratchInspectionRequestSchema
+  };
+  const bytes = Buffer.from(JSON.stringify(value), "utf8");
+  invariant(bytes.length > 0 && bytes.length <= maximumScratchInspectionRequestBytes,
+    "build-custody-scratch-inspection-request-size");
+  return Object.freeze({ bytes, value: Object.freeze(value) });
+}
+
+function boundedProcessBytes(value) {
+  if (value === null || value === undefined) return Buffer.alloc(0);
+  invariant(Buffer.isBuffer(value), "build-custody-scratch-inspection-process-stream");
+  return value.length <= maximumScratchInspectionObservationBytes + 1
+    ? value
+    : value.subarray(0, maximumScratchInspectionObservationBytes + 1);
+}
+
+function runScratchInspection(prepared, target, controlRoot, dependencies = {}) {
+  const request = prepared.request;
+  const required = target.required.find((entry) => entry.relativePath ===
+    request.scratchInspection.executableRelativePath);
+  invariant(required && required.kind === "pe-x64" && required.peMachine === "0x8664",
+    "build-custody-scratch-inspection-executable-output");
+  const executablePath = resolveRelative(request.roots.targetRoot, required.relativePath,
+    "build-custody-scratch-inspection-executable-path");
+  const executableBefore = validateArtifact(executablePath, required.byteLength,
+    required.sha256, "build-custody-scratch-inspection-executable-before");
+  invariant(inspectPeMachine(executablePath) === "0x8664",
+    "build-custody-scratch-inspection-executable-machine");
+
+  const inspectorRequest = scratchInspectionRequest(prepared);
+  const requestArtifact = writeNewDurable(safeChild(controlRoot,
+    "build.scratch-inspection.request.json",
+    "build-custody-scratch-inspection-request-path"), inspectorRequest.bytes,
+  maximumScratchInspectionRequestBytes);
+  const startedAtUtc = new Date().toISOString();
+  const spawnSync = dependencies.spawnScratchInspectorSync || childProcess.spawnSync;
+  let result;
+  try {
+    result = spawnSync(executablePath, [], {
+      cwd: request.roots.targetRoot,
+      encoding: "buffer",
+      env: detachedWorkerEnvironment(request.termination.executablePath),
+      input: inspectorRequest.bytes,
+      maxBuffer: request.scratchInspection.maximumStdoutBytes,
+      shell: false,
+      stdio: ["pipe", "pipe", "pipe"],
+      timeout: request.scratchInspection.maximumDurationMilliseconds,
+      windowsHide: true
+    });
+  } catch {
+    result = { error: { code: "SPAWN_THROW" }, signal: null, status: null,
+      stderr: Buffer.alloc(0), stdout: Buffer.alloc(0) };
+  }
+  const exitedAtUtc = new Date().toISOString();
+  const stdoutBytes = boundedProcessBytes(result.stdout);
+  const stderrBytes = boundedProcessBytes(result.stderr);
+  const stdoutArtifact = writeNewDurable(safeChild(controlRoot,
+    "build.scratch-inspection.stdout.bin", "build-custody-scratch-inspection-stdout-path"),
+  stdoutBytes, maximumScratchInspectionObservationBytes + 1, true);
+  const stderrArtifact = writeNewDurable(safeChild(controlRoot,
+    "build.scratch-inspection.stderr.bin", "build-custody-scratch-inspection-stderr-path"),
+  stderrBytes, maximumScratchInspectionObservationBytes + 1, true);
+  const processErrorCode = result.error
+    ? (result.error.code === "ETIMEDOUT"
+        ? "build-custody-scratch-inspection-timeout"
+        : result.error.code === "ENOBUFS"
+          ? "build-custody-scratch-inspection-overflow"
+          : "build-custody-scratch-inspection-spawn")
+    : null;
+  const processTerminal = {
+    schema: scratchInspectionProcessTerminalSchema,
+    operationId: request.operationId,
+    scratchOperationId: request.scratchInspection.operationId,
+    invocationOrdinal: 1,
+    invocationCountLimit: 1,
+    startedAtUtc,
+    exitedAtUtc,
+    exitCode: Number.isSafeInteger(result.status) ? result.status : null,
+    signal: typeof result.signal === "string" ? result.signal : null,
+    processErrorCode,
+    request: requestArtifact,
+    stdout: stdoutArtifact,
+    stderr: stderrArtifact,
+    retryAllowed: false
+  };
+  const processTerminalArtifact = writeCanonicalNew(safeChild(controlRoot,
+    "build.scratch-inspection.process-terminal.json",
+    "build-custody-scratch-inspection-process-terminal-path"), processTerminal,
+  maximumScratchInspectionProcessTerminalBytes);
+
+  let observation = null;
+  let helperFailure = null;
+  let status = "failed";
+  let code = processErrorCode;
+  if (!code && processTerminal.signal !== null) {
+    code = "build-custody-scratch-inspection-signal";
+  } else if (!code && stdoutBytes.length > request.scratchInspection.maximumStdoutBytes) {
+    code = "build-custody-scratch-inspection-overflow";
+  } else if (!code && stderrBytes.length !== 0) {
+    code = "build-custody-scratch-inspection-stderr";
+  } else if (!code && processTerminal.exitCode === 2) {
+    try {
+      helperFailure = validateScratchInspectionFailure(stdoutBytes);
+    } catch {
+      code = "build-custody-scratch-inspection-failure-invalid";
+    }
+    code = code || "build-custody-scratch-inspection-rejected";
+  } else if (!code && processTerminal.exitCode !== 0) {
+    code = "build-custody-scratch-inspection-nonzero";
+  } else if (!code) {
+    try {
+      observation = validateScratchInspectionObservation(stdoutBytes, request);
+      status = "pass";
+      code = "build-custody-scratch-inspection-pass";
+    } catch {
+      code = "build-custody-scratch-inspection-observation-invalid";
+    }
+  }
+
+  let executableAfter = null;
+  try {
+    executableAfter = validateArtifact(executablePath, required.byteLength, required.sha256,
+      "build-custody-scratch-inspection-executable-after");
+    invariant(executableAfter.byteLength === executableBefore.byteLength &&
+      executableAfter.sha256 === executableBefore.sha256 &&
+      inspectPeMachine(executablePath) === "0x8664",
+    "build-custody-scratch-inspection-executable-drift");
+  } catch {
+    status = "failed";
+    code = "build-custody-scratch-inspection-executable-drift";
+    executableAfter = null;
+  }
+
+  return Object.freeze({
+    status,
+    code,
+    invocationCount: 1,
+    executable: Object.freeze({ relativePath: required.relativePath,
+      before: executableBefore, after: executableAfter }),
+    request: requestArtifact,
+    processTerminal: Object.freeze({ artifact: processTerminalArtifact,
+      outcome: Object.freeze(processTerminal) }),
+    stdout: stdoutArtifact,
+    stderr: stderrArtifact,
+    observation,
+    helperFailure,
+    retryAllowed: false
+  });
 }
 
 function unchangedIdentities(prepared) {
@@ -1345,6 +1731,10 @@ function unchangedIdentities(prepared) {
     request.source.ownerSha256, "build-custody-owner-post-identity");
   const profile = validateArtifact(request.profile.path, request.profile.byteLength,
     request.profile.sha256, "build-custody-profile-post-identity");
+  const scratchInspectionProfile = validateArtifact(request.scratchInspection.profile.path,
+    request.scratchInspection.profile.byteLength,
+    request.scratchInspection.profile.sha256,
+    "build-custody-scratch-inspection-profile-post-identity");
   const environmentOwner = validateArtifact(request.environmentAuthority.owner.path,
     request.environmentAuthority.owner.byteLength,
     request.environmentAuthority.owner.sha256,
@@ -1370,7 +1760,8 @@ function unchangedIdentities(prepared) {
     request.source.branch && git(request.source.repositoryRoot, request.source.gitPath,
       request.termination.executablePath, ["status", "--porcelain=v1",
         "--untracked-files=all"]) === "", "build-custody-source-post-identity");
-  return Object.freeze({ sourceControl, owner, profile, environmentOwner,
+  return Object.freeze({ sourceControl, owner, profile, scratchInspectionProfile,
+    environmentOwner,
     environmentProfile, runtime, command, termination, sourceExact: true });
 }
 
@@ -1428,10 +1819,11 @@ async function runWorkerIsolated(requestPath, expectedRequestSha256, dependencie
   let startArtifact = null;
   let processResult = null;
   let target = null;
-  let environmentScratch = null;
+  let scratchInspection = null;
   let identities = null;
   let optionalDiagnostics = null;
   let environmentPostValidation = null;
+  let environmentPostScratchValidation = null;
   let status = "terminal-custody-failure";
   let code = "build-custody-worker-failure";
 
@@ -1452,6 +1844,10 @@ async function runWorkerIsolated(requestPath, expectedRequestSha256, dependencie
       sourceTree: request.source.tree,
       sourceControlSha256: request.source.gitSha256,
       ownerSha256: request.source.ownerSha256,
+      scratchInspectionProfileSha256: request.scratchInspection.profile.sha256,
+      scratchInspectionOperationId: request.scratchInspection.operationId,
+      scratchInspectionExecutableRelativePath:
+        request.scratchInspection.executableRelativePath,
       runtimeSha256: request.runtime.nodeSha256,
       commandSha256: request.command.executableSha256,
       terminationSha256: request.termination.executableSha256,
@@ -1466,6 +1862,7 @@ async function runWorkerIsolated(requestPath, expectedRequestSha256, dependencie
       targetRootObservedAbsent: !fs.existsSync(request.roots.targetRoot),
       environmentRootObservedAbsent: !fs.existsSync(request.roots.environmentRoot),
       launchCountLimit: 1,
+      scratchInspectionInvocationCountLimit: 1,
       retryAllowed: false,
       request
     };
@@ -1492,6 +1889,7 @@ async function runWorkerIsolated(requestPath, expectedRequestSha256, dependencie
       authorizedAtUtc: new Date().toISOString(),
       launchOrdinal: 1,
       launchCountLimit: 1,
+      scratchInspectionInvocationCountLimit: 1,
       retryAllowed: false,
       exitStatusMustPrecedeOptionalDiagnostics: true
     };
@@ -1529,12 +1927,32 @@ async function runWorkerIsolated(requestPath, expectedRequestSha256, dependencie
     }
     if (status === "pass") {
       try {
-        identities = unchangedIdentities(prepared);
         target = inspectTarget(prepared);
-        environmentScratch = inspectEnvironmentScratch(prepared);
+        scratchInspection = runScratchInspection(prepared, target, controlRoot, dependencies);
+        if (scratchInspection.status !== "pass") {
+          status = "terminal-custody-failure";
+          code = scratchInspection.code;
+        }
       } catch (error) {
         status = "terminal-custody-failure";
         code = safeErrorCode(error, "build-custody-post-exit-verification");
+      }
+    }
+    if (scratchInspection !== null) {
+      try {
+        environmentPostScratchValidation = revalidateEnvironmentAuthority(prepared);
+      } catch (error) {
+        environmentPostScratchValidation = null;
+        status = "terminal-custody-failure";
+        code = safeErrorCode(error, "build-custody-environment-post-scratch-inspection");
+      }
+    }
+    if (status === "pass") {
+      try {
+        identities = unchangedIdentities(prepared);
+      } catch (error) {
+        status = "terminal-custody-failure";
+        code = safeErrorCode(error, "build-custody-final-identities");
       }
     }
   } catch (error) {
@@ -1568,11 +1986,13 @@ async function runWorkerIsolated(requestPath, expectedRequestSha256, dependencie
       initial: environmentEvidence(prepared.environmentAuthority),
       preLaunch: processResult ? processResult.preLaunchEnvironment : null,
       postChild: environmentPostValidation,
-      postChildValidationRequiredForEveryProcessOutcome: true
+      postScratchInspection: environmentPostScratchValidation,
+      postChildValidationRequiredForEveryProcessOutcome: true,
+      postScratchInspectionValidationRequiredBeforePass: true
     },
     identities,
     target,
-    environmentScratch,
+    scratchInspection,
     retryAllowed: false,
     resumeAllowed: false,
     cleanupAllowed: false,
@@ -1629,7 +2049,10 @@ function readTerminalForRequest(requestPath) {
 function publicSummary(terminal) {
   const environmentAuthority = terminal.environmentAuthority || {};
   const environmentValidated = Boolean(environmentAuthority.initial &&
-    environmentAuthority.preLaunch && environmentAuthority.postChild);
+    environmentAuthority.preLaunch && environmentAuthority.postChild &&
+    environmentAuthority.postScratchInspection);
+  const scratchInspection = terminal.scratchInspection || null;
+  const scratchObservation = scratchInspection ? scratchInspection.observation : null;
   return {
     schema: summarySchema,
     operationId: terminal.operationId,
@@ -1641,12 +2064,21 @@ function publicSummary(terminal) {
     stdoutBytes: terminal.stdout ? terminal.stdout.byteLength : null,
     stderrBytes: terminal.stderr ? terminal.stderr.byteLength : null,
     requiredOutputCount: terminal.target ? terminal.target.required.length : 0,
-    environmentScratchEntryCount: terminal.environmentScratch
-      ? terminal.environmentScratch.entryCount
+    environmentScratchEntryCount: scratchObservation
+      ? scratchObservation.entryCount
       : null,
-    environmentScratchBytes: terminal.environmentScratch
-      ? terminal.environmentScratch.aggregateBytes
+    environmentScratchBytes: scratchObservation
+      ? scratchObservation.aggregateBytes
       : null,
+    environmentScratchJunctionCount: scratchObservation
+      ? scratchObservation.junctionCount
+      : null,
+    environmentScratchInventorySha256: scratchObservation
+      ? scratchObservation.inventorySha256
+      : null,
+    scratchInspectionInvoked: Boolean(scratchInspection &&
+      scratchInspection.invocationCount === 1),
+    scratchInspectionStatus: scratchInspection ? scratchInspection.status : null,
     environmentValidated,
     environmentPublicLockSha256: environmentAuthority.initial
       ? environmentAuthority.initial.publicLock.sha256
@@ -1750,7 +2182,7 @@ async function main(argv) {
 if (require.main === module) {
   main(process.argv.slice(2)).catch((error) => {
     process.stderr.write(canonicalJson({
-      schema: "tinyrustlm.build-custody-error.v2",
+      schema: "tinyrustlm.build-custody-error.v3",
       status: "error",
       code: safeErrorCode(error)
     }));
@@ -1773,6 +2205,7 @@ module.exports = Object.freeze({
   requestSchema,
   revalidateEnvironmentAuthority,
   runCapturedChild,
+  runScratchInspection,
   runWorker,
   runWorkerForTest,
   sha256File,

@@ -14,7 +14,11 @@ const repositoryRoot = path.resolve(__dirname, "..", "..");
 const templateOwnerPath = path.join(repositoryRoot, "tinyrustlm", "tools",
   "build-custody-owner.js");
 const templateProfilePath = path.join(repositoryRoot, "contracts", "vnext",
-  "build-custody-profile.v2.json");
+  "build-custody-profile.v3.json");
+const templateScratchInspectionProfilePath = path.join(repositoryRoot, "contracts", "vnext",
+  "build-scratch-inspector-profile.v1.json");
+const templateScratchInspectorPath = path.join(repositoryRoot, "target", "debug",
+  "tinyrustlm-build-scratch-inspect.exe");
 const templateEnvironmentOwnerPath = path.join(repositoryRoot, "tinyrustlm", "tools",
   "windows-x64-msvc-environment.js");
 const templateEnvironmentProfilePath = path.join(repositoryRoot, "contracts", "vnext",
@@ -23,9 +27,21 @@ const templateFixturePath = path.join(__dirname, "helpers",
   "build-custody-child-fixture.js");
 const templateOwner = require(templateOwnerPath);
 const isWindowsX64 = process.platform === "win32" && process.arch === "x64";
-const evidenceFileNames = [
+const baseEvidenceFileNames = [
   "build.binding.json",
   "build.process-terminal.json",
+  "build.start.json",
+  "build.stderr.bin",
+  "build.stdout.bin",
+  "build.terminal.json"
+];
+const completeEvidenceFileNames = [
+  "build.binding.json",
+  "build.process-terminal.json",
+  "build.scratch-inspection.process-terminal.json",
+  "build.scratch-inspection.request.json",
+  "build.scratch-inspection.stderr.bin",
+  "build.scratch-inspection.stdout.bin",
   "build.start.json",
   "build.stderr.bin",
   "build.stdout.bin",
@@ -36,6 +52,8 @@ let temporaryRoot;
 let sourceRoot;
 let copiedOwnerPath;
 let copiedProfilePath;
+let copiedScratchInspectionProfilePath;
+let copiedScratchInspectorPath;
 let copiedEnvironmentOwnerPath;
 let copiedEnvironmentProfilePath;
 let copiedFixturePath;
@@ -48,6 +66,8 @@ let taskkillArtifact;
 let nodeArtifact;
 let ownerArtifact;
 let profileArtifact;
+let scratchInspectionProfileArtifact;
+let scratchInspectorArtifact;
 let environmentOwnerArtifact;
 let environmentProfileArtifact;
 let sourceCommit;
@@ -91,6 +111,16 @@ function runGit(argumentsList) {
 function locateGit() {
   const wherePath = path.join(process.env.SystemRoot, "System32", "where.exe");
   const candidates = childProcess.execFileSync(wherePath, ["git.exe"], {
+    encoding: "utf8",
+    windowsHide: true
+  }).split(/\r?\n/u).filter(Boolean);
+  assert.ok(candidates.length > 0);
+  return path.resolve(candidates[0]);
+}
+
+function locateCargo() {
+  const wherePath = path.join(process.env.SystemRoot, "System32", "where.exe");
+  const candidates = childProcess.execFileSync(wherePath, ["cargo.exe"], {
     encoding: "utf8",
     windowsHide: true
   }).split(/\r?\n/u).filter(Boolean);
@@ -359,19 +389,23 @@ function createOperation(t, options = {}) {
   const mode = options.mode || "success";
   const commandPath = options.commandPath || process.execPath;
   const commandArtifact = options.commandArtifact || nodeArtifact;
-  const required = options.required || [{
+  const required = [...(options.required || [{
     relativePath: "artifact.bin",
     maximumByteLength: 1_048_576,
     kind: "regular-file"
-  }];
+  }]), {
+    relativePath: "scratch-inspector.exe",
+    maximumByteLength: scratchInspectorArtifact.byteLength,
+    kind: "pe-x64"
+  }].sort((left, right) => left.relativePath < right.relativePath ? -1 : 1);
   const request = {
-    schema: "tinyrustlm.build-custody-request.v2",
+    schema: "tinyrustlm.build-custody-request.v3",
     operationId: `build-custody-test/${String(operationOrdinal).padStart(3, "0")}`,
     profile: {
       path: copiedProfilePath,
       byteLength: profileArtifact.byteLength,
       sha256: profileArtifact.sha256,
-      profileId: "tinyrustlm.source-controlled-build-custody/2"
+      profileId: "tinyrustlm.source-controlled-build-custody/3"
     },
     source: {
       repositoryRoot: sourceRoot,
@@ -394,11 +428,24 @@ function createOperation(t, options = {}) {
       architecture: process.arch
     },
     environmentAuthority: environmentFixture.reference,
+    scratchInspection: {
+      profile: {
+        path: copiedScratchInspectionProfilePath,
+        byteLength: scratchInspectionProfileArtifact.byteLength,
+        sha256: scratchInspectionProfileArtifact.sha256,
+        profileId: "tinyrustlm.build-scratch-inspection/1"
+      },
+      executableRelativePath: "scratch-inspector.exe",
+      operationId: `build-custody-scratch/${String(operationOrdinal).padStart(3, "0")}`,
+      maximumDurationMilliseconds: 10_000,
+      maximumStdoutBytes: 1_048_576
+    },
     command: {
       executablePath: path.resolve(commandPath),
       executableByteLength: commandArtifact.byteLength,
       executableSha256: commandArtifact.sha256,
       arguments: options.arguments || [copiedFixturePath, targetRoot, mode,
+        copiedScratchInspectorPath,
         ...(options.fixtureArguments || [])],
       workingDirectory: sourceRoot,
       supplementalEnvironment: orderedEnvironment(windowsBaselineSupplement(
@@ -427,6 +474,10 @@ function createOperation(t, options = {}) {
       maximumEnvironmentEntryCount: options.maximumEnvironmentEntryCount || 64,
       maximumEnvironmentAggregateBytes:
         options.maximumEnvironmentAggregateBytes || 8_388_608,
+      maximumEnvironmentJunctionCount:
+        options.maximumEnvironmentJunctionCount === undefined
+          ? 16
+          : options.maximumEnvironmentJunctionCount,
       required
     }
   };
@@ -494,12 +545,25 @@ function collectProcess(child) {
 
 before(() => {
   if (!isWindowsX64) return;
+  childProcess.execFileSync(locateCargo(), ["build", "--manifest-path",
+    path.join(repositoryRoot, "Cargo.toml"), "-p", "tinyrustlm-build-custody", "--bin",
+    "tinyrustlm-build-scratch-inspect"], {
+    cwd: repositoryRoot,
+    env: process.env,
+    stdio: "ignore",
+    windowsHide: true
+  });
+  assert.ok(fs.statSync(templateScratchInspectorPath).isFile());
   temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-build-custody-"));
   sourceRoot = path.resolve(temporaryRoot, "source");
   copiedOwnerPath = path.resolve(sourceRoot, "tinyrustlm", "tools",
     "build-custody-owner.js");
   copiedProfilePath = path.resolve(sourceRoot, "contracts", "vnext",
-    "build-custody-profile.v2.json");
+    "build-custody-profile.v3.json");
+  copiedScratchInspectionProfilePath = path.resolve(sourceRoot, "contracts", "vnext",
+    "build-scratch-inspector-profile.v1.json");
+  copiedScratchInspectorPath = path.resolve(sourceRoot, "tinyrustlm", "tests", "helpers",
+    "scratch-inspector.exe");
   copiedEnvironmentOwnerPath = path.resolve(sourceRoot, "tinyrustlm", "tools",
     "windows-x64-msvc-environment.js");
   copiedEnvironmentProfilePath = path.resolve(sourceRoot, "contracts", "vnext",
@@ -507,11 +571,14 @@ before(() => {
   copiedFixturePath = path.resolve(sourceRoot, "tinyrustlm", "tests", "helpers",
     "build-custody-child-fixture.js");
   for (const filePath of [copiedOwnerPath, copiedProfilePath,
+    copiedScratchInspectionProfilePath, copiedScratchInspectorPath,
     copiedEnvironmentOwnerPath, copiedEnvironmentProfilePath, copiedFixturePath]) {
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
   }
   fs.copyFileSync(templateOwnerPath, copiedOwnerPath);
   fs.copyFileSync(templateProfilePath, copiedProfilePath);
+  fs.copyFileSync(templateScratchInspectionProfilePath, copiedScratchInspectionProfilePath);
+  fs.copyFileSync(templateScratchInspectorPath, copiedScratchInspectorPath);
   fs.copyFileSync(templateEnvironmentOwnerPath, copiedEnvironmentOwnerPath);
   fs.copyFileSync(templateEnvironmentProfilePath, copiedEnvironmentProfilePath);
   fs.copyFileSync(templateFixturePath, copiedFixturePath);
@@ -523,6 +590,8 @@ before(() => {
   nodeArtifact = artifact(process.execPath);
   ownerArtifact = artifact(copiedOwnerPath);
   profileArtifact = artifact(copiedProfilePath);
+  scratchInspectionProfileArtifact = artifact(copiedScratchInspectionProfilePath);
+  scratchInspectorArtifact = artifact(copiedScratchInspectorPath);
   environmentOwnerArtifact = artifactReference(copiedEnvironmentOwnerPath);
   environmentProfileArtifact = artifactReference(copiedEnvironmentProfilePath);
 
@@ -554,13 +623,13 @@ after(() => {
 
 test("freezes the sole prelaunch build-custody profile and owner identity", () => {
   const profileBytes = fs.readFileSync(templateProfilePath);
-  assert.equal(profileBytes.length, 7153);
+  assert.equal(profileBytes.length, 9786);
   assert.equal(sha256(profileBytes),
-    "7d8b82ac9bb7cab6d5373f60d3c8f78874e86e3540f788ac018e0f5f22d90916");
+    "0bdc4227b1c7576bd844be1c0891c2b60868ddfdf0626efc96506c36adb24626");
   assert.equal(templateOwner.profileByteLength, profileBytes.length);
   assert.equal(templateOwner.profileSha256, sha256(profileBytes));
   const profile = JSON.parse(profileBytes.toString("utf8"));
-  assert.equal(profile.profileId, "tinyrustlm.source-controlled-build-custody/2");
+  assert.equal(profile.profileId, "tinyrustlm.source-controlled-build-custody/3");
   assert.equal(profile.authority.legacySupport, false);
   assert.equal(profile.authority.retry, false);
   assert.equal(profile.processPolicy.workerEnvironment,
@@ -580,6 +649,11 @@ test("freezes the sole prelaunch build-custody profile and owner identity", () =
     "fresh-exact-source-bound-node-for-every-validation");
   assert.equal(profile.environmentAuthority.testValidationProcess,
     "explicit-in-process-test-only-never-campaign-evidence");
+  assert.equal(profile.environmentAuthority.postScratchInspectionValidationBeforePass, true);
+  assert.equal(profile.scratchInspectionAuthority.profileSha256,
+    "08a2c5cb57cff8b260972129efcdfbcd2e598b51a5d6660f3c11c83a0be05aef");
+  assert.equal(profile.scratchInspectionAuthority.invocationCount, 1);
+  assert.equal(profile.scratchInspectionAuthority.retry, false);
   assert.equal(profile.limits.maximumTargetEntries, 131072);
 });
 
@@ -594,6 +668,7 @@ test("rejects reordered, unknown, and noncanonical request material", {
     source: operation.request.source,
     runtime: operation.request.runtime,
     environmentAuthority: operation.request.environmentAuthority,
+    scratchInspection: operation.request.scratchInspection,
     command: operation.request.command,
     roots: operation.request.roots,
     capture: operation.request.capture,
@@ -685,7 +760,7 @@ test("rejects cross-bound environment evidence and authority-name overlap before
   assert.equal(fs.existsSync(operation.targetRoot), false);
 });
 
-test("captures zero exit before diagnostics and inventories one exact required output", {
+test("captures zero exit before diagnostics and inventories both required outputs", {
   skip: !isWindowsX64
 }, async (t) => {
   const operation = createOperation(t);
@@ -693,7 +768,7 @@ test("captures zero exit before diagnostics and inventories one exact required o
     operation.requestSha256);
   assert.equal(result.terminal.status, "pass");
   assert.equal(result.terminal.code, "build-custody-pass");
-  assert.deepEqual(controlFiles(operation), evidenceFileNames);
+  assert.deepEqual(controlFiles(operation), completeEvidenceFileNames);
   const processTerminal = readJson(path.join(operation.controlRoot,
     "build.process-terminal.json"));
   assert.equal(processTerminal.event, "exit");
@@ -707,12 +782,16 @@ test("captures zero exit before diagnostics and inventories one exact required o
     "msvc-environment-validation-pass");
   assert.equal(result.terminal.environmentAuthority.postChild.validationCode,
     "msvc-environment-validation-pass");
+  assert.equal(result.terminal.environmentAuthority.postScratchInspection.validationCode,
+    "msvc-environment-validation-pass");
   assert.equal(owner.publicSummary(result.terminal).environmentValidated, true);
   assert.equal(owner.publicSummary(result.terminal).environmentPublicLockSha256,
     operation.request.environmentAuthority.publicLock.sha256);
   assert.equal(result.terminal.identities.sourceControl.sha256, gitArtifact.sha256);
-  assert.equal(result.terminal.target.entryCount, 1);
-  assert.equal(result.terminal.target.fileCount, 1);
+  assert.equal(result.terminal.identities.scratchInspectionProfile.sha256,
+    scratchInspectionProfileArtifact.sha256);
+  assert.equal(result.terminal.target.entryCount, 2);
+  assert.equal(result.terminal.target.fileCount, 2);
   assert.equal(result.terminal.target.directoryCount, 0);
   assert.equal(result.terminal.target.required[0].sha256,
     sha256(Buffer.from("custodied-build-output", "utf8")));
@@ -733,14 +812,102 @@ test("captures zero exit before diagnostics and inventories one exact required o
   assert.equal(binding.combinedEnvironmentEntryCount,
     operation.environmentFixture.authorityNames.length +
       operation.request.command.supplementalEnvironment.length);
-  assert.deepEqual(result.terminal.environmentScratch, {
-    entryCount: 2,
-    fileCount: 0,
-    directoryCount: 2,
-    aggregateBytes: 0
-  });
+  assert.equal(result.terminal.target.required[1].relativePath, "scratch-inspector.exe");
+  assert.equal(result.terminal.target.required[1].sha256, scratchInspectorArtifact.sha256);
+  assert.equal(result.terminal.scratchInspection.status, "pass");
+  assert.equal(result.terminal.scratchInspection.invocationCount, 1);
+  assert.equal(result.terminal.scratchInspection.observation.entryCount, 2);
+  assert.equal(result.terminal.scratchInspection.observation.fileCount, 0);
+  assert.equal(result.terminal.scratchInspection.observation.directoryCount, 2);
+  assert.equal(result.terminal.scratchInspection.observation.aggregateBytes, 0);
+  assert.equal(result.terminal.scratchInspection.observation.junctionCount, 0);
+  assert.equal(result.terminal.scratchInspection.processTerminal.outcome.exitCode, 0);
+  assert.equal(fs.readFileSync(path.join(operation.controlRoot,
+    "build.scratch-inspection.stderr.bin")).length, 0);
   assert.equal(owner.publicSummary(result.terminal).environmentScratchEntryCount, 2);
   assert.equal(owner.publicSummary(result.terminal).environmentScratchBytes, 0);
+  assert.equal(owner.publicSummary(result.terminal).environmentScratchJunctionCount, 0);
+  assert.equal(owner.publicSummary(result.terminal).scratchInspectionInvoked, true);
+  assert.equal(owner.publicSummary(result.terminal).scratchInspectionStatus, "pass");
+});
+
+test("accepts one real same-root direct known-folder junction with exact evidence", {
+  skip: !isWindowsX64
+}, async (t) => {
+  const operation = createOperation(t, { mode: "environment-junction" });
+
+  const result = await owner.runWorkerForTest(operation.requestPath,
+    operation.requestSha256);
+
+  assert.equal(result.terminal.status, "pass");
+  assert.equal(result.terminal.scratchInspection.status, "pass");
+  const observation = result.terminal.scratchInspection.observation;
+  assert.equal(observation.junctionCount, 1);
+  assert.equal(observation.junctions[0].relativePath,
+    "home/AppData/Local/Microsoft/Windows/INetCache/Content.IE5");
+  assert.equal(observation.junctions[0].targetRelativePath,
+    "home/AppData/Local/Microsoft/Windows/INetCache/IE");
+  assert.equal(observation.junctions[0].reparseTag, "0xa0000003");
+  assert.equal(observation.aggregateBytes, Buffer.byteLength("contained"));
+  assert.deepEqual(controlFiles(operation), completeEvidenceFileNames);
+  assert.equal(readJson(path.join(operation.controlRoot,
+    "build.scratch-inspection.process-terminal.json")).exitCode, 0);
+});
+
+test("rejects one real external junction without retry repair or output adoption", {
+  skip: !isWindowsX64
+}, async (t) => {
+  const operation = createOperation(t, { mode: "environment-external-junction" });
+
+  const result = await owner.runWorkerForTest(operation.requestPath,
+    operation.requestSha256);
+
+  assert.equal(result.terminal.status, "terminal-custody-failure");
+  assert.equal(result.terminal.code, "build-custody-scratch-inspection-rejected");
+  assert.equal(result.terminal.scratchInspection.status, "failed");
+  assert.equal(result.terminal.scratchInspection.invocationCount, 1);
+  assert.equal(result.terminal.scratchInspection.processTerminal.outcome.exitCode, 2);
+  assert.equal(result.terminal.scratchInspection.helperFailure.errorCode,
+    "scratch_inspection_junction_external_target");
+  assert.equal(result.terminal.identities, null);
+  assert.equal(result.terminal.retryAllowed, false);
+  assert.deepEqual(controlFiles(operation), completeEvidenceFileNames);
+});
+
+test("rejects malformed inspector output and post-invocation executable mutation", {
+  skip: !isWindowsX64
+}, async (t) => {
+  const malformed = createOperation(t);
+  let malformedCalls = 0;
+  const malformedResult = await owner.runWorkerForTest(malformed.requestPath,
+    malformed.requestSha256, {
+      spawnScratchInspectorSync() {
+        malformedCalls += 1;
+        return { error: null, signal: null, status: 0, stderr: Buffer.alloc(0),
+          stdout: Buffer.from("{}", "utf8") };
+      }
+    });
+  assert.equal(malformedCalls, 1);
+  assert.equal(malformedResult.terminal.status, "terminal-custody-failure");
+  assert.equal(malformedResult.terminal.code,
+    "build-custody-scratch-inspection-observation-invalid");
+
+  const mutation = createOperation(t);
+  let mutationCalls = 0;
+  const mutationResult = await owner.runWorkerForTest(mutation.requestPath,
+    mutation.requestSha256, {
+      spawnScratchInspectorSync(executablePath, argumentsList, options) {
+        mutationCalls += 1;
+        const result = childProcess.spawnSync(executablePath, argumentsList, options);
+        fs.appendFileSync(executablePath, Buffer.from([0x00]));
+        return result;
+      }
+    });
+  assert.equal(mutationCalls, 1);
+  assert.equal(mutationResult.terminal.status, "terminal-custody-failure");
+  assert.equal(mutationResult.terminal.code,
+    "build-custody-scratch-inspection-executable-drift");
+  assert.equal(mutationResult.terminal.scratchInspection.executable.after, null);
 });
 
 test("preserves a nonzero child as a terminal build failure without output adoption", {
@@ -754,7 +921,7 @@ test("preserves a nonzero child as a terminal build failure without output adopt
   assert.equal(result.terminal.processTerminal.outcome.exitCode, 23);
   assert.equal(result.terminal.target, null);
   assert.equal(result.terminal.retryAllowed, false);
-  assert.deepEqual(controlFiles(operation), evidenceFileNames);
+  assert.deepEqual(controlFiles(operation), baseEvidenceFileNames);
 });
 
 test("detects stdout overflow even when final pipe state follows the exit event", {
@@ -882,7 +1049,7 @@ test("keeps zero exit durable when optional ExitTime-style diagnostics fail", {
   assert.equal(result.terminal.processTerminal.outcome.exitTimeMetadataQueried, false);
   assert.equal(result.terminal.optionalDiagnostics.collected, false);
   assert.equal(result.terminal.target, null);
-  assert.deepEqual(controlFiles(operation), evidenceFileNames);
+  assert.deepEqual(controlFiles(operation), baseEvidenceFileNames);
 });
 
 test("fails closed on a missing required output and on an entry-count overflow", {

@@ -306,30 +306,36 @@ synthetic gate passes 8/8 and its explicit installed Visual Studio 2022
 observation passes 1/1. It grants no build or model claim. See
 `docs/architecture/2026-08-25-deterministic-windows-x64-msvc-environment-authority.md`.
 
-`build-custody-profile.v2.json` is the sole current prelaunch Windows x64
-contract for future irreversible builds. It is 7,153 canonical bytes at
+`build-custody-profile.v3.json` is the sole current prelaunch Windows x64
+contract for future irreversible builds. It is 9,786 canonical bytes at
 SHA-256
-`7d8b82ac9bb7cab6d5373f60d3c8f78874e86e3540f788ac018e0f5f22d90916`.
-The clean replacement binds the exact environment owner, profile, request,
-private binding, public-safe lock, and terminal alongside clean source, Git,
-Node, command, termination helper, three absent sibling roots, bounded binary
-logs, and required outputs. Production validation regenerates the entire MSVC
-closure in a fresh exact Node process before root creation, immediately before
-child launch, and after every child outcome. The authority owns `PATH`, `LIB`,
-`LIBPATH`, and the Cargo target linker; the request supplies only a sorted,
-bounded, nonoverlapping supplement including a mandatory Windows baseline bound
-to an owned `home`/`temp` scratch root.
-Post-child environment drift has custody-failure precedence. The owner fsyncs
-the create-only child process-terminal record before optional metadata or
-output inspection, survives CLI-observer death, and permits no retry, resume,
-cleanup, adoption, compatibility, or fallback. Its Windows x64 gate passes
-17/17 tests, including a real installed Visual Studio closure and detached
-owner completion. The custody contract alone grants no conversion, structure,
-runtime, browser, quality, publication, or campaign claim; each attempt
-requires its own output-free registration. Profile `/1` and its implementation
-facts remain historical evidence for executions `/5` and `/6`; there is no
-current reader or compatibility path. See
-`docs/architecture/2026-08-25-environment-bound-build-custody-owner.md`.
+`0bdc4227b1c7576bd844be1c0891c2b60868ddfdf0626efc96506c36adb24626`.
+It retains exact source, Git, Node, command, taskkill, MSVC environment,
+three-root, stream, and required-output custody, then requires one generated
+x64 `tinyrustlm-build-scratch-inspect` output to inspect the environment root.
+The source-controlled Rust helper consumes one canonical bounded request,
+opens entries with Win32 no-follow semantics, reads reparse data through
+`FSCTL_GET_REPARSE_POINT`, performs two identical streamed inventories, and
+accepts only mount-point tag `0xa0000003` with one direct same-root directory
+target. It never traverses a link and rejects external, cross-volume, chained,
+cyclic, ancestor-related, dangling, file, symbolic-link, unknown-tag,
+duplicate-target, case-conflicting, malformed, over-limit, or drifted state.
+The exact root layout remains `home` plus `temp`.
+
+The owner writes the inspector request, raw stdout, raw empty stderr, and
+process terminal create-only; requires one exit `0` and one canonical passing
+observation; rechecks the generated executable; then revalidates source and
+environment identities after inspection. Its Windows x64 gate passes 20/20
+tests, while the Rust crate passes 13 debug tests, 2 optimized process tests,
+and warning-free Clippy. Coverage includes the real contained `Content.IE5`
+junction class that terminally rejected execution `/7`, plus external, chain,
+cycle, dangling, duplicate, malformed-output, executable-drift, process, and
+observer-death cases. Profiles `/1` and `/2` have no maintained bytes or reader
+and remain available only through immutable Git and attempt evidence. No
+compatibility, migration, alias, fallback, retry, repair, cleanup, resume, or
+output adoption exists. Custody alone grants no conversion, SLM2, runtime,
+browser, quality, publication, or campaign claim. See
+`docs/architecture/2026-08-25-junction-qualified-build-custody-owner.md`.
 
 `qwen3-real-composition-execution-preregistration.v5.json` binds the fifth
 immutable attempt to that custody owner, the terminal `/4` exit-capture

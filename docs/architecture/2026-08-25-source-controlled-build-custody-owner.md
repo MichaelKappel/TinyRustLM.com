@@ -3,11 +3,11 @@
 Date: 2026-08-25
 
 Status: historical implementation record for build-custody profile `/1`.
-Current source has cleanly replaced this authority with profile `/2`; no
+Current source has cleanly replaced both `/1` and `/2` with profile `/3`; no
 current reader, alias, migration, fallback, or compatibility path consumes
-profile `/1`. This document remains only to explain immutable executions `/5`
-and `/6`. See
-`2026-08-25-environment-bound-build-custody-owner.md` for current authority.
+either predecessor. This document remains only to explain immutable executions
+`/5` and `/6`. See
+`2026-08-25-junction-qualified-build-custody-owner.md` for current authority.
 
 ## Decision
 
@@ -24,7 +24,7 @@ The implementation is `tinyrustlm/tools/build-custody-owner.js`, 51,785 bytes
 at SHA-256
 `ed2e4d8dddee8914456aa52a59b18a2cc6febec3a9258b18df7868604af56ef9`.
 
-This is the only current prelaunch contract. It has no legacy reader,
+This was the only prelaunch contract at that historical checkpoint. It had no legacy reader,
 compatibility mode, migration, alias, fallback, retry, resume, cleanup,
 candidate adoption, or stale-output selection path.
 

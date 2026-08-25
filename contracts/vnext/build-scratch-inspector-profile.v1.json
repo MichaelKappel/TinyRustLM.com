@@ -1,0 +1,95 @@
+{
+  "schema": "tinyrustlm.build-scratch-inspector-profile.v1",
+  "profileId": "tinyrustlm.build-scratch-inspection/1",
+  "status": "current-prelaunch-only",
+  "platform": "win32",
+  "architecture": "x64",
+  "schemas": {
+    "request": "tinyrustlm.build-scratch-inspection-request.v1",
+    "observation": "tinyrustlm.build-scratch-inspection-observation.v1",
+    "junction": "tinyrustlm.build-scratch-inspection-junction.v1",
+    "failure": "tinyrustlm.build-scratch-inspection-failure.v1"
+  },
+  "limits": {
+    "maximumRequestBytes": 262144,
+    "maximumObservationBytes": 1048576,
+    "maximumEntries": 131072,
+    "maximumAggregateBytes": 1073741824,
+    "maximumJunctions": 64,
+    "maximumPathBytes": 16384,
+    "maximumPathComponents": 128,
+    "maximumComponentBytes": 255,
+    "maximumReparseBytes": 16384
+  },
+  "rootPolicy": {
+    "absoluteCanonicalUtf8AsciiPath": true,
+    "directNonReparseComponents": true,
+    "heldNoFollowRootIdentityPerInventory": true,
+    "directNoFollowEntryIdentityBeforeUse": true,
+    "prePostDirectoryIdentity": true,
+    "rootEntries": "request-bound-exact-sorted-name-and-direct-kind",
+    "doubleInventoryMustMatch": true,
+    "networkPaths": false,
+    "relativeDrivePaths": false
+  },
+  "entryPolicy": {
+    "directRegularFiles": true,
+    "directDirectories": true,
+    "otherDirectEntries": false,
+    "caseFoldCollisions": false,
+    "inventoryOrdering": "ascii-casefold-then-bytewise"
+  },
+  "junctionPolicy": {
+    "acceptedTag": "0xa0000003",
+    "acceptedClass": "windows-mount-point-reparse-tag-with-strict-same-root-direct-directory-target",
+    "linkTraversal": false,
+    "targetTraversalThroughReparse": false,
+    "strictRootDescendantTarget": true,
+    "linkTargetAncestorRelationship": false,
+    "duplicateTargetPath": false,
+    "duplicateTargetIdentity": false,
+    "externalTarget": false,
+    "crossVolumeTarget": false,
+    "chainedTarget": false,
+    "cyclicTarget": false,
+    "danglingTarget": false,
+    "fileTarget": false,
+    "symbolicLinkTag": false,
+    "unknownReparseTag": false,
+    "prePostDrift": false
+  },
+  "processPolicy": {
+    "stdin": "one-canonical-json-request",
+    "stdout": "one-canonical-json-observation-or-bounded-failure",
+    "stderr": "empty",
+    "network": false,
+    "childProcesses": false,
+    "filesystemMutation": false
+  },
+  "privacy": {
+    "absolutePathOutput": false,
+    "rawReparseTargetOutput": false,
+    "rawHostErrorOutput": false,
+    "relativePathOutput": true,
+    "hashedVolumeAndFileIdentityOutput": true
+  },
+  "authority": {
+    "productLifecycle": "prelaunch-single-product",
+    "legacySupport": false,
+    "compatibility": false,
+    "migration": false,
+    "fallback": false,
+    "retry": false,
+    "repair": false,
+    "bestOfN": false
+  },
+  "claimBoundary": {
+    "successfulObservation": "two-identical-bounded-no-follow-inventories-with-every-link-proven-by-win32-reparse-tag-and-direct-target-identity",
+    "successfulBuild": "not-assessed",
+    "modelConversion": "not-assessed",
+    "nativeRuntime": "not-assessed",
+    "browserWasm": "not-assessed",
+    "modelQuality": "not-assessed",
+    "campaignCredit": "not-authorized"
+  }
+}

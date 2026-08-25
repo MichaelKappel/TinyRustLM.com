@@ -2,13 +2,16 @@
 
 Date: 2026-08-25
 
-Status: current prelaunch implementation, fault-tested on Windows x64, not yet
-used by a new real Qwen3 composition execution
+Status: historical implementation record for build-custody profile `/2` and
+terminal execution `/7`. Current source has cleanly replaced this authority
+with profile `/3`; no current reader, alias, migration, fallback, or
+compatibility path consumes `/2`. See
+`2026-08-25-junction-qualified-build-custody-owner.md` for current authority.
 
 ## Decision
 
-TinyRustLM has one current source-controlled owner for irreversible Windows x64
-build attempts. Build custody now consumes the separately materialized,
+At this historical checkpoint TinyRustLM had one source-controlled owner for
+irreversible Windows x64 build attempts. Build custody consumed the separately materialized,
 content-bound MSVC environment authority instead of accepting a caller-defined
 full environment. This is a clean prelaunch replacement of build-custody
 profile `/1`, not a compatibility revision and not a second product version.
@@ -16,7 +19,7 @@ The deleted `/1` source bytes remain available only through Git and immutable
 attempt evidence. No current parser, selector, alias, migration, fallback,
 retry, repair, cleanup, resume, or candidate-adoption path accepts them.
 
-The sole current profile is
+The sole profile at this historical checkpoint was
 `contracts/vnext/build-custody-profile.v2.json`, 7,153 canonical LF bytes at
 SHA-256
 `7d8b82ac9bb7cab6d5373f60d3c8f78874e86e3540f788ac018e0f5f22d90916`.

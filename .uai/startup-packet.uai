@@ -1,15 +1,23 @@
-profile: runtime-mirust.startup-packet.v115
-updated_utc: 2026-08-25T16:57:26Z
+profile: runtime-mirust.startup-packet.v116
+updated_utc: 2026-08-25T18:05:51Z
+current_junction_qualified_build_custody_2026_08_25:
+  first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/build-custody-profile.v3.json`, `contracts/vnext/build-scratch-inspector-profile.v1.json`, and `docs/architecture/2026-08-25-junction-qualified-build-custody-owner.md` before build or composition work.
+  active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  active_branch: codex/model-acquisition-v2
+  protected_root: E:\Source\Rust\TinyRustLM.com remains untouched; never write `D:`.
+  checkpoint: local implementation complete; profile `/3`=`0bdc4227b1c7576bd844be1c0891c2b60868ddfdf0626efc96506c36adb24626`; inspector profile=`08a2c5cb57cff8b260972129efcdfbcd2e598b51a5d6660f3c11c83a0be05aef`; owner=`ae68f34b5a98d8f43aee8dd1b2733012a46d8d673e23f42567621b5c460c15e1`; Rust tests=13/13+2/2; Node custody=20/20; remote-exact pending
+  immediate_operation: Finish docs/UAI, run focused and workspace gates, commit/push/fresh-fetch, and prove exact branch equality. Then and only then create an output-free `/8` registration with wholly new absent names. Build the converter and generated scratch inspector in the one registered Rust child.
+  truth_boundary: `/3` is the sole current custody path; `/1`, `/2`, and `/7` are inert history. No new build, converter, SLM2, browser, quality, P2P, publication, deployment, MemoryEndpoints, or campaign evidence exists; counters remain zero.
 current_qwen3_execution_v7_contained_junction_custody_failure_2026_08_25:
   first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/qwen3-real-composition-execution-result.v7.json`, and `docs/architecture/2026-08-25-qwen3-real-composition-execution-v7-contained-junction-custody-failure.md` before build or composition work.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
   active_branch: codex/model-acquisition-v2
   protected_root: E:\Source\Rust\TinyRustLM.com remains untouched; never write `D:`.
   result: registration=`53998f553bf7b24111eadf35b9b4eaca41885c99`; result=`e37790ffb827fe7082e31cc6adecc8148839dd6ef757231165587c45dd35b444`; environment_materializations=1; rust_executes=1; child_exit=0; custody=`terminal-rust-custody-failure`; required_converter_observed=true; qualified_build=false
-  immediate_operation: Validate, commit, push, fresh-fetch, and prove this closure remote-exact. Then implement one clean-cut custody profile/owner with bounded same-root directory-junction classification, no link traversal, and complete hostile external/chain/cycle/dangling/race coverage. Delete the `/2` current reader in that replacement. Commit/push/fresh-verify before registering output-free `/8` with wholly new names.
+  immediate_operation: Preserve `/7` unchanged. Its clean `/3` replacement is the current checkpoint above; finish that source checkpoint before registering output-free `/8` with wholly new names.
   truth_boundary: Preserve every `/7` private artifact; never retry, clean, adopt, relabel, or continue `/7`. No managed build, converter invocation, SLM2, browser, quality, P2P, publication, deployment, MemoryEndpoints, or campaign evidence exists; counters remain zero.
-current_environment_bound_build_custody_2026_08_25:
-  first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/build-custody-profile.v2.json`, and `docs/architecture/2026-08-25-environment-bound-build-custody-owner.md` before build or composition work.
+historical_environment_bound_build_custody_2026_08_25:
+  first_read: Read `docs/architecture/2026-08-25-environment-bound-build-custody-owner.md` only when interpreting historical profile `/2` or terminal execution `/7`.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
   active_branch: codex/model-acquisition-v2
   checkpoint: commit=`80fea2be08900e98b914804f961ef3f807731379`; tree=`91ee172c050341c09a5a1f69833a42edc1b7ce79`; custody_profile=`7d8b82ac9bb7cab6d5373f60d3c8f78874e86e3540f788ac018e0f5f22d90916`; custody_owner=`2000ff2c355d744c9fb4e8d2cc4765858a10184f4b7cf60b6f61960daaa3d637`; pushed/fresh-remote exact=true

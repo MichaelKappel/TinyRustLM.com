@@ -673,6 +673,16 @@ name = "tinyrustlm-browser-harness"
 version = "0.1.8"
 
 [[package]]
+name = "tinyrustlm-build-custody"
+version = "0.1.8"
+dependencies = [
+ "serde",
+ "serde_json",
+ "sha2",
+ "windows-sys",
+]
+
+[[package]]
 name = "tinyrustlm-composition2"
 version = "0.1.8"
 dependencies = [
