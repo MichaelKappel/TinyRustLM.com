@@ -26,7 +26,7 @@ pub const QWEN3_CONVERSION_PROFILE_SHA256: &str =
 /// The exact source-lock schema consumed by this converter.
 pub const QWEN3_SOURCE_LOCK_SCHEMA: &str = "tinyrustlm.qwen3_source_lock.v1";
 
-const QWEN3_ARCHITECTURE_PROFILE_ID: &str = "tinyrustlm.qwen3-dense-gqa-qk-norm/1";
+pub(crate) const QWEN3_ARCHITECTURE_PROFILE_ID: &str = "tinyrustlm.qwen3-dense-gqa-qk-norm/1";
 const CONVERSION_RECEIPT_SCHEMA: &str = "tinyrustlm.qwen3_conversion_receipt.v1";
 const TENSOR_PROFILE_ID: &str = "tinyrustlm.tensor-mixed-q8-row-f32/1";
 const TENSOR_INVENTORY_HASH_DOMAIN: &[u8] = b"tinyrustlm.qwen3.source-tensor-inventory.v1\0";

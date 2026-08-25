@@ -47,8 +47,8 @@ The managed conversion intent freezes:
 All paths are normalized before publication. Source and tokenizer trees must be
 disjoint from each other and from the output tree. Digests are exact lowercase
 SHA-256 values. Policy values are bounded. The current complete-composition
-profile remains
-`2f95f79783ec6cd12160d51f9697c5c77aab2e6cd46afeb5140fdb513e5d8158`.
+profile is
+`d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718`.
 
 ## Canonical Private Intent
 

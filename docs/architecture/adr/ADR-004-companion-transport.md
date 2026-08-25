@@ -169,8 +169,8 @@ Each produced a general regression test before its scoped correction. None is
 campaign, model, browser, or release evidence.
 
 The exact complete conversion profile is
-`tinyrustlm.qwen3-complete-composition-conversion/1` at SHA-256
-`2f95f79783ec6cd12160d51f9697c5c77aab2e6cd46afeb5140fdb513e5d8158`.
+`tinyrustlm.qwen3-complete-composition-conversion/2` at SHA-256
+`d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718`.
 
 The architecture inventory test requires this ADR to remain accepted,
 decision-specific, and complete. The package and browser contract tests reject

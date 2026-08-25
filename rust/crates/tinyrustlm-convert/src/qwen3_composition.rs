@@ -35,13 +35,15 @@ use tinyrustlm_tokenizer2::{
     TOKENIZER2_FORMAT_PROFILE_ID, TOKENIZER2_FORMAT_PROFILE_SHA256,
 };
 
+use crate::qwen3::QWEN3_ARCHITECTURE_PROFILE_ID;
+use crate::qwen_tokenizer2::QWEN3_TOKENIZER_ARCHITECTURE_PROFILE_ID;
 use crate::{
     convert_locked_qwen3_source, convert_locked_qwen_tokenizer2_source, ConverterExecutionIdentity,
     QWEN3_SOURCE_LOCK_SCHEMA, QWEN_TOKENIZER2_SOURCE_LOCK_SCHEMA,
 };
 
 const PROFILE_BYTES: &[u8] =
-    include_bytes!("../../../../contracts/vnext/qwen3-composition-conversion-profile.v1.json");
+    include_bytes!("../../../../contracts/vnext/qwen3-composition-conversion-profile.v2.json");
 const ATTEMPT_SCHEMA: &str = "tinyrustlm.qwen3_composition_attempt.v1";
 const RECEIPT_SCHEMA: &str = "tinyrustlm.qwen3_composition_conversion_receipt.v1";
 const REJECTION_SCHEMA: &str = "tinyrustlm.qwen3_composition_rejection.v1";
@@ -65,11 +67,11 @@ const RECEIPT_FILE: &str = "composition.conversion-receipt.json";
 
 /// Exact complete-composition conversion profile identifier.
 pub const QWEN3_COMPOSITION_CONVERSION_PROFILE_ID: &str =
-    "tinyrustlm.qwen3-complete-composition-conversion/1";
+    "tinyrustlm.qwen3-complete-composition-conversion/2";
 
 /// SHA-256 of the exact complete-composition conversion profile bytes.
 pub const QWEN3_COMPOSITION_CONVERSION_PROFILE_SHA256: &str =
-    "2f95f79783ec6cd12160d51f9697c5c77aab2e6cd46afeb5140fdb513e5d8158";
+    "d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718";
 
 /// Stable public-safe complete-composition conversion failure.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -452,7 +454,7 @@ fn validate_source_relationship(
     .ok_or_else(|| {
         Qwen3CompositionConversionError::new("composition-tokenizer-source-lock-invalid")
     })?;
-    for field in ["modelId", "revision", "architectureProfileId"] {
+    for field in ["modelId", "revision"] {
         if require_string(&model, field, "composition-model-source-lock-invalid")?
             != require_string(
                 &tokenizer,
@@ -464,6 +466,26 @@ fn validate_source_relationship(
                 "composition-source-lock-mismatch",
             ));
         }
+    }
+    if require_string(
+        &model,
+        "architectureProfileId",
+        "composition-model-source-lock-invalid",
+    )? != QWEN3_ARCHITECTURE_PROFILE_ID
+    {
+        return Err(Qwen3CompositionConversionError::new(
+            "composition-model-source-lock-invalid",
+        ));
+    }
+    if require_string(
+        &tokenizer,
+        "architectureProfileId",
+        "composition-tokenizer-source-lock-invalid",
+    )? != QWEN3_TOKENIZER_ARCHITECTURE_PROFILE_ID
+    {
+        return Err(Qwen3CompositionConversionError::new(
+            "composition-tokenizer-source-lock-invalid",
+        ));
     }
     let model_files = model
         .get("files")
@@ -1445,7 +1467,7 @@ mod tests {
             "schema": QWEN3_SOURCE_LOCK_SCHEMA,
             "modelId": "Qwen/Qwen3-0.6B",
             "revision": "1111111111111111111111111111111111111111",
-            "architectureProfileId": "qwen3-dense-gqa-qk-norm",
+            "architectureProfileId": QWEN3_ARCHITECTURE_PROFILE_ID,
             "files": {
                 "config": shared("config.json"),
                 "generationConfig": shared("generation_config.json"),
@@ -1462,7 +1484,7 @@ mod tests {
             "schema": QWEN_TOKENIZER2_SOURCE_LOCK_SCHEMA,
             "modelId": "Qwen/Qwen3-0.6B",
             "revision": "1111111111111111111111111111111111111111",
-            "architectureProfileId": "qwen3-dense-gqa-qk-norm",
+            "architectureProfileId": QWEN3_TOKENIZER_ARCHITECTURE_PROFILE_ID,
             "files": {
                 "config": shared("config.json"),
                 "merges": shared("merges.txt"),
@@ -1486,6 +1508,109 @@ mod tests {
             operation_id(&relationship, &execution),
             operation_id(&relationship, &execution)
         );
+        fs::remove_dir_all(&root).expect("cleanup");
+    }
+
+    #[test]
+    fn accepted_checked_in_model_and_tokenizer_locks_form_one_relationship() {
+        let repository_root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../..");
+        let relationship = validate_source_relationship(
+            &repository_root.join("contracts/vnext/qwen3-0.6b-base-source-lock.v1.json"),
+            &repository_root.join("contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json"),
+        )
+        .expect("accepted source relationship");
+        assert_eq!(
+            relationship.model_lock_sha256,
+            "e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d"
+        );
+        assert_eq!(
+            relationship.tokenizer_lock_sha256,
+            "1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70"
+        );
+    }
+
+    #[test]
+    fn source_relationship_rejects_profile_identity_and_shared_source_drift() {
+        let root = test_root("source-relationship-drift");
+        fs::create_dir(&root).expect("root");
+        let model: Value = serde_json::from_slice(include_bytes!(
+            "../../../../contracts/vnext/qwen3-0.6b-base-source-lock.v1.json"
+        ))
+        .expect("model lock");
+        let tokenizer: Value = serde_json::from_slice(include_bytes!(
+            "../../../../contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json"
+        ))
+        .expect("tokenizer lock");
+        let assert_rejected =
+            |name: &str, model: &Value, tokenizer: &Value, expected: &'static str| {
+                let model_path = root.join(format!("{name}-model.json"));
+                let tokenizer_path = root.join(format!("{name}-tokenizer.json"));
+                fs::write(&model_path, serde_json::to_vec(model).expect("model JSON"))
+                    .expect("write model");
+                fs::write(
+                    &tokenizer_path,
+                    serde_json::to_vec(tokenizer).expect("tokenizer JSON"),
+                )
+                .expect("write tokenizer");
+                assert_eq!(
+                    validate_source_relationship(&model_path, &tokenizer_path)
+                        .expect_err("relationship must reject")
+                        .code(),
+                    expected,
+                    "{name}"
+                );
+            };
+
+        let mut wrong_model_profile = model.clone();
+        wrong_model_profile["architectureProfileId"] =
+            Value::String(QWEN3_TOKENIZER_ARCHITECTURE_PROFILE_ID.to_owned());
+        assert_rejected(
+            "wrong-model-profile",
+            &wrong_model_profile,
+            &tokenizer,
+            "composition-model-source-lock-invalid",
+        );
+
+        let mut wrong_tokenizer_profile = tokenizer.clone();
+        wrong_tokenizer_profile["architectureProfileId"] =
+            Value::String(QWEN3_ARCHITECTURE_PROFILE_ID.to_owned());
+        assert_rejected(
+            "wrong-tokenizer-profile",
+            &model,
+            &wrong_tokenizer_profile,
+            "composition-tokenizer-source-lock-invalid",
+        );
+
+        let mut wrong_model_id = tokenizer.clone();
+        wrong_model_id["modelId"] = Value::String("Qwen/another-model".to_owned());
+        assert_rejected(
+            "model-id-drift",
+            &model,
+            &wrong_model_id,
+            "composition-source-lock-mismatch",
+        );
+
+        let mut wrong_revision = tokenizer.clone();
+        wrong_revision["revision"] =
+            Value::String("1111111111111111111111111111111111111111".to_owned());
+        assert_rejected(
+            "revision-drift",
+            &model,
+            &wrong_revision,
+            "composition-source-lock-mismatch",
+        );
+
+        let mut wrong_shared_file = tokenizer.clone();
+        wrong_shared_file["files"]["config"]["sha256"] = Value::String(
+            "1111111111111111111111111111111111111111111111111111111111111111".to_owned(),
+        );
+        assert_rejected(
+            "shared-file-drift",
+            &model,
+            &wrong_shared_file,
+            "composition-source-lock-mismatch",
+        );
+
         fs::remove_dir_all(&root).expect("cleanup");
     }
 
@@ -1546,7 +1671,7 @@ mod tests {
             "schema": QWEN3_SOURCE_LOCK_SCHEMA,
             "modelId": "Qwen/Qwen3-0.6B",
             "revision": "1111111111111111111111111111111111111111",
-            "architectureProfileId": "qwen3-dense-gqa-qk-norm",
+            "architectureProfileId": QWEN3_ARCHITECTURE_PROFILE_ID,
             "files": {
                 "config": shared("config.json"),
                 "merges": shared("merges.txt"),
@@ -1559,7 +1684,7 @@ mod tests {
             "schema": QWEN_TOKENIZER2_SOURCE_LOCK_SCHEMA,
             "modelId": "Qwen/Qwen3-0.6B",
             "revision": "1111111111111111111111111111111111111111",
-            "architectureProfileId": "qwen3-dense-gqa-qk-norm",
+            "architectureProfileId": QWEN3_TOKENIZER_ARCHITECTURE_PROFILE_ID,
             "files": {
                 "config": shared("config.json"),
                 "merges": shared("merges.txt"),

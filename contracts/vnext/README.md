@@ -132,9 +132,10 @@ before any real complete-composition output. `/1` is terminally invalidated and
 will have no current reader, migration, alias, or fallback. See
 `docs/architecture/2026-08-25-qwen3-composition-source-relationship-correction-preregistration.md`.
 
-The predecessor Rust transaction is implemented, but its relationship check is
-not executable for real source and is being replaced by the registered `/2`
-clean cut. The complete transaction creates and independently verifies
+The Rust transaction and managed companion boundary now consume only `/2`.
+They require the exact compatible profile pair and have no `/1` reader,
+version switch, migration, alias, or fallback. The complete transaction creates
+and independently verifies
 all six artifacts, exact cross-member vocabulary/context relationships, bounded
 resource preflight, component receipts, and mutually exclusive terminal
 evidence. The component converter commands remain private exact compiler
@@ -147,7 +148,9 @@ run against real model source. See the immutable output-free registration in
 and the implementation record in
 `docs/architecture/2026-08-24-complete-qwen3-composition-conversion-implementation.md`,
 plus the managed integration record in
-`docs/architecture/2026-08-24-managed-complete-composition-source-integration.md`.
+`docs/architecture/2026-08-24-managed-complete-composition-source-integration.md`
+and the clean-cut correction record in
+`docs/architecture/2026-08-25-qwen3-composition-source-relationship-correction-implementation.md`.
 
 ## Tokenizer2 Format Checkpoint
 

@@ -4,14 +4,17 @@ Date: 2026-08-24
 
 ## Status
 
-`tinyrustlm-convert qwen3-composition` now implements the exact output-free
+`tinyrustlm-convert qwen3-composition` implements the sole current output-free
 registration in
-`contracts/vnext/qwen3-composition-conversion-profile.v1.json`. The profile is
-7,978 bytes at SHA-256
-`2f95f79783ec6cd12160d51f9697c5c77aab2e6cd46afeb5140fdb513e5d8158`
+`contracts/vnext/qwen3-composition-conversion-profile.v2.json`. The profile is
+8,835 bytes at SHA-256
+`d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718`
 and was committed and fresh-remote verified at
-`afc53619343a7d46acafa6558babe288c3bf342c` before this implementation
-checkpoint.
+`a7de8ececa877ab50c30e980fcf554c660068435` before the source-relationship
+correction. The original implementation checkpoint was based on `/1`; that
+profile was terminally invalidated before real output because it incorrectly
+required model and tokenizer architecture-profile IDs to be equal. No `/1`
+runtime support remains.
 
 This is the sole complete source-to-composition command for TinyRustLM's one
 prelaunch product. The exact `qwen3-safetensors` and `qwen-tokenizer2`

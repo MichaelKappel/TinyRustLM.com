@@ -27,7 +27,8 @@ pub const QWEN_TOKENIZER2_CONVERSION_PROFILE_ID: &str = "tinyrustlm.qwen-bytelev
 pub const QWEN_TOKENIZER2_CONVERSION_PROFILE_SHA256: &str =
     "f70465a08b41599fe59f41b850912d0d408f0ec67e84ebeb7591524d1b14e12b";
 
-const QWEN3_TOKENIZER_ARCHITECTURE_PROFILE_ID: &str = "tinyrustlm.qwen3-tokenizer-source/1";
+pub(crate) const QWEN3_TOKENIZER_ARCHITECTURE_PROFILE_ID: &str =
+    "tinyrustlm.qwen3-tokenizer-source/1";
 const CONVERSION_RECEIPT_SCHEMA: &str = "tinyrustlm.qwen_tokenizer2_conversion_receipt.v1";
 const SOURCE_LOCK_MAXIMUM_BYTES: u64 = 1_048_576;
 const CONFIG_MAXIMUM_BYTES: u64 = 1_048_576;
