@@ -299,9 +299,9 @@ environment, termination helper, absent sibling roots, bounded binary logs,
 and required outputs. It fsyncs the create-only child process-terminal record
 before optional metadata or output inspection, survives CLI-observer death,
 and permits no retry, resume, cleanup, adoption, compatibility, or fallback.
-Its real Windows fault gate passes 14 of 14 tests. This contract has not yet
-authorized a fifth real composition attempt and grants no conversion,
-structure, runtime, browser, quality, publication, or campaign claim. See
+Its real Windows fault gate passes 14 of 14 tests. The custody contract alone
+grants no conversion, structure, runtime, browser, quality, publication, or
+campaign claim; each attempt requires its own output-free registration. See
 `docs/architecture/2026-08-25-source-controlled-build-custody-owner.md`.
 
 `qwen3-real-composition-execution-preregistration.v5.json` binds the fifth
@@ -334,6 +334,25 @@ No registered logical name may be reused. A later attempt requires a new
 registration and wholly new names; remote history will not be rewritten to
 manufacture equality. See
 `docs/architecture/2026-08-25-qwen3-real-composition-execution-v5-source-anchor-invalidation.md`.
+
+`qwen3-real-composition-execution-preregistration.v6.json` registers that
+wholly new sixth immutable attempt from the exact remote `/5` closure. It is
+42,975 canonical LF bytes at SHA-256
+`c1c89b1e1739d45c52c43e706b566418947a354f089a546dd99624bfff40a7fd`.
+The profile binds parent commit
+`331b0a1917f92861b33b92ff09460d4426e3dd4f` and tree
+`38cdc49101d737bfd0a1cfe1ce5ce39d59018d1c`, all five terminal predecessors,
+the exact current converter and inspector source, direct toolchain binaries,
+six new absent roots, and three new absent create-only request filenames.
+Rust custody must pass before managed custody can exist; both must pass before
+the one controller and converter launch; and only a native candidate pass can
+authorize one read-only managed inspection. Existing roots, source drift,
+custody failure, build failure, controller failure, managed rejection, or
+ambiguous evidence closes `/6` without retry, repair, cleanup, adoption, or
+selection. Registration itself creates no private file, build, conversion,
+composition, runtime, browser, quality, publication, deployment, or campaign
+evidence. See
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration-v6.md`.
 
 ## Tokenizer2 Format Checkpoint
 

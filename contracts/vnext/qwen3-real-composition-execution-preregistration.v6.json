@@ -1,0 +1,1153 @@
+{
+  "schema": "tinyrustlm.qwen3-real-composition-execution-preregistration.v6",
+  "profileId": "tinyrustlm.qwen3-real-composition-execution/6",
+  "status": "registered-before-custodied-build-requests-roots-and-real-output",
+  "registeredAtUtc": "2026-08-25T13:00:12Z",
+  "registrationParentCommit": "331b0a1917f92861b33b92ff09460d4426e3dd4f",
+  "registrationParentTree": "38cdc49101d737bfd0a1cfe1ce5ce39d59018d1c",
+  "authority": {
+    "productLifecycle": "prelaunch-single-unversioned-product",
+    "productGenerationCount": 1,
+    "productV1Exists": false,
+    "productV2Exists": false,
+    "technicalVersionIsProductGeneration": false,
+    "branch": "codex/model-acquisition-v2",
+    "conversionOwner": "rust/crates/tinyrustlm-convert",
+    "buildCustodyOwner": "tinyrustlm/tools/build-custody-owner.js",
+    "executionControllerOwner": "tinyrustlm/tools/qwen3-composition-execution-controller.js",
+    "durableInspectorOwner": "dotnet/tools/TinyRustLM.CompositionInspector",
+    "largeAndPrivateEvidenceLocation": "outside-git-on-approved-local-drive",
+    "publicProfileContainsPrivatePaths": false,
+    "memoryEndpointsAuthorized": false,
+    "writeDriveDAllowed": false
+  },
+  "productBoundary": {
+    "productCount": 1,
+    "prelaunch": true,
+    "legacySupport": false,
+    "compatibilityReaders": false,
+    "migrationWriters": false,
+    "productVersionSelectors": false,
+    "aliases": false,
+    "fallbacks": false,
+    "temporaryAdapters": false,
+    "responseRepair": false,
+    "automaticRetry": false,
+    "manualRetryOfThisExecution": false,
+    "bestOfN": false,
+    "failedOutputCleanup": false,
+    "managedConversionLaunchAfterRustExecution": false
+  },
+  "predecessor": {
+    "profilePath": "contracts/vnext/qwen3-real-composition-execution-preregistration.v5.json",
+    "profileByteLength": 41928,
+    "profileSha256": "221afa82a71da22516dda142f90270a08205cdced9df6093108b0bacfaf88b55",
+    "resultPath": "contracts/vnext/qwen3-real-composition-execution-result.v5.json",
+    "resultByteLength": 4372,
+    "resultSha256": "06006e0533c1f1b02492aacb8aee675ac1c5dbd50d6c3f67441b58918bd0c798",
+    "terminalStatus": "terminal-prelaunch-failure",
+    "reasonCode": "registration-commit-no-longer-remote-tip-before-private-materialization",
+    "rootCauseEstablished": true,
+    "rustReleaseBuildAttempts": 0,
+    "rustReleaseBuildExitCodeVerified": false,
+    "managedInspectorBuildAttempts": 0,
+    "converterLaunches": 0,
+    "bindingCreated": false,
+    "outputCreated": false,
+    "managedInspectionInvoked": false,
+    "preservedCandidateObservation": null,
+    "existingRootCount": 0,
+    "neverCreatedLaterRootCount": 6,
+    "resumeAllowed": false,
+    "retryAllowed": false,
+    "cleanupAllowed": false,
+    "repairAllowed": false,
+    "relabelAllowed": false
+  },
+  "priorTerminalHistory": [
+    {
+      "profilePath": "contracts/vnext/qwen3-real-composition-execution-preregistration.v4.json",
+      "profileByteLength": 31580,
+      "profileSha256": "f3f549a108c4a3acb767b241f2d1ef6d2db737c67442f059e8e943dabb992275",
+      "resultPath": "contracts/vnext/qwen3-real-composition-execution-result.v4.json",
+      "resultByteLength": 5293,
+      "resultSha256": "c928b55cf9eb871c09b7f1e1aacf1983bf3a7e2fe6ca4697aa58c50648187a35",
+      "terminalStatus": "terminal-prelaunch-failure",
+      "reasonCode": "rust-build-exit-code-not-captured",
+      "rootCauseEstablished": true,
+      "rustReleaseBuildAttempts": 1,
+      "managedInspectorBuildAttempts": 0,
+      "converterLaunches": 0,
+      "bindingCreated": false,
+      "outputCreated": false,
+      "managedInspectionInvoked": false,
+      "preservedCandidateObservation": {
+        "byteLength": 852992,
+        "sha256": "cd24a738b327b89d03501205301e89321bbd3955be91dfb245d2219a8b9201d5",
+        "peMachine": "0x8664",
+        "acceptedAsSuccessfulBuild": false,
+        "adoptionAllowed": false
+      },
+      "resumeAllowed": false,
+      "retryAllowed": false,
+      "cleanupAllowed": false,
+      "repairAllowed": false,
+      "relabelAllowed": false
+    },
+    {
+      "profilePath": "contracts/vnext/qwen3-real-composition-execution-preregistration.v3.json",
+      "profileByteLength": 29275,
+      "profileSha256": "b07ccd2688d6352fd7614fc2302d7aac59c63e3e4fe2a5943da7c8aa6bd1ec19",
+      "resultPath": "contracts/vnext/qwen3-real-composition-execution-result.v3.json",
+      "resultByteLength": 8773,
+      "resultSha256": "2ae10fc8a76cced2e88d9b9c310af4eeb3ef436829f3f6a5ee8c551dfde6b2e4",
+      "terminalStatus": "terminal-native-rejection",
+      "reasonCode": "qwen-tokenizer2-output-path-invalid",
+      "rootCauseEstablished": true,
+      "rustReleaseBuildAttempts": 1,
+      "managedInspectorBuildAttempts": 1,
+      "converterLaunches": 1,
+      "bindingCreated": true,
+      "outputCreated": true,
+      "managedInspectionInvoked": false,
+      "partialModel": {
+        "byteLength": 598308416,
+        "sha256": "a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7",
+        "tensorCount": 310,
+        "completeCompositionCreated": false
+      },
+      "resumeAllowed": false,
+      "retryAllowed": false,
+      "cleanupAllowed": false,
+      "repairAllowed": false,
+      "relabelAllowed": false
+    },
+    {
+      "profilePath": "contracts/vnext/qwen3-real-composition-execution-preregistration.v2.json",
+      "profileByteLength": 27596,
+      "profileSha256": "cfc924334083d5623852511950d48486b2bbb80d3aa9d7e403c7d957b2f89a5f",
+      "resultPath": "contracts/vnext/qwen3-real-composition-execution-result.v2.json",
+      "resultByteLength": 8275,
+      "resultSha256": "4b2c957943d91fe7023d5ab78d2582735d21196e93403c212a9b104204bc970c",
+      "terminalStatus": "terminal-native-rejection",
+      "reasonCode": "qwen3-tensor-inventory-mismatch",
+      "rootCauseEstablished": true,
+      "rustReleaseBuildAttempts": 1,
+      "managedInspectorBuildAttempts": 1,
+      "converterLaunches": 1,
+      "bindingCreated": true,
+      "outputCreated": true,
+      "managedInspectionInvoked": false,
+      "resumeAllowed": false,
+      "retryAllowed": false,
+      "cleanupAllowed": false,
+      "repairAllowed": false,
+      "relabelAllowed": false
+    },
+    {
+      "profilePath": "contracts/vnext/qwen3-real-composition-execution-preregistration.v1.json",
+      "profileByteLength": 16006,
+      "profileSha256": "46a9da74eb6b811257d2cc3a433055d4859fb7bbdfeef22e1c6ee8c2bd978a6a",
+      "resultPath": "contracts/vnext/qwen3-real-composition-execution-result.v1.json",
+      "resultByteLength": 4076,
+      "resultSha256": "dd1d9c85b5bb8bf098641a156de06e59243d88530434d70c574dcdceedb7a1ce",
+      "terminalStatus": "terminal-prelaunch-failure",
+      "reasonCode": "private-binding-not-created-before-evidence-root-population",
+      "rootCauseEstablished": false,
+      "rustReleaseBuildAttempts": 1,
+      "managedInspectorBuildAttempts": 0,
+      "converterLaunches": 0,
+      "bindingCreated": false,
+      "outputCreated": false,
+      "managedInspectionInvoked": false,
+      "resumeAllowed": false,
+      "retryAllowed": false,
+      "cleanupAllowed": false,
+      "repairAllowed": false,
+      "relabelAllowed": false
+    }
+  ],
+  "sourceAnchor": {
+    "commit": "331b0a1917f92861b33b92ff09460d4426e3dd4f",
+    "tree": "38cdc49101d737bfd0a1cfe1ce5ce39d59018d1c",
+    "branch": "codex/model-acquisition-v2",
+    "cleanAtRegistration": true,
+    "trackingFetchHeadAndRemoteExactAtRegistration": true,
+    "allowedRegistrationCommitPaths": [
+      "contracts/vnext/README.md",
+      "contracts/vnext/qwen3-real-composition-execution-preregistration.v6.json",
+      "docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration-v6.md",
+      "tinyrustlm/tests/qwen3-real-composition-execution-preregistration-v6.test.js"
+    ],
+    "registrationCommitMustBeSingleParentDescendant": true,
+    "registrationCommitMustChangeOnlyAllowedPaths": true,
+    "registrationCommitMustBeFreshRemoteExactBeforeAnyPrivateRequestOrRoot": true,
+    "buildSourceCommitAndTreeCapturedAfterRegistration": true,
+    "rustAndManagedInputsMustEqualRegistrationCommit": true,
+    "sourceMayNotChangeBetweenEitherBuildAndCompositionExecution": true
+  },
+  "executionIdentity": {
+    "executionId": "qwen3-composition-c1899de-20260825-v6",
+    "modelId": "Qwen/Qwen3-0.6B",
+    "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+    "artifactClass": "base-model",
+    "baseProductDisposition": "terminally-rejected-as-product-model",
+    "permittedUse": "conversion-runtime-parity-and-derivative-ancestry-only",
+    "approvedPrivateParentIdentitySha256": "cef9afa6abde953f5dd49dce7419e2f561b4de22ad7bed68a7faaf387abae6a5",
+    "rustCustodyControlRootBasename": "qwen3-composition-rust-custody-331b0a1-20260825-v6",
+    "rustCustodyTargetRootBasename": "qwen3-composition-rust-build-331b0a1-20260825-v6",
+    "managedCustodyControlRootBasename": "qwen3-composition-managed-custody-331b0a1-20260825-v6",
+    "managedCustodyTargetRootBasename": "qwen3-composition-managed-build-331b0a1-20260825-v6",
+    "controllerEvidenceRootBasename": "qwen3-composition-execution-c1899de-20260825-v6",
+    "compositionOutputRootBasename": "qwen3-composition-c1899de-20260825-v6",
+    "rustCustodyRequestFileBasename": "rust-build-custody-request-331b0a1-20260825-v6.json",
+    "managedCustodyRequestFileBasename": "managed-build-custody-request-331b0a1-20260825-v6.json",
+    "compositionRequestFileBasename": "qwen3-composition-execution-request-c1899de-20260825-v6.json",
+    "rustCustodyControlRootObservedAbsentBeforeRegistration": true,
+    "rustCustodyTargetRootObservedAbsentBeforeRegistration": true,
+    "managedCustodyControlRootObservedAbsentBeforeRegistration": true,
+    "managedCustodyTargetRootObservedAbsentBeforeRegistration": true,
+    "controllerEvidenceRootObservedAbsentBeforeRegistration": true,
+    "compositionOutputRootObservedAbsentBeforeRegistration": true,
+    "rustCustodyRequestFileObservedAbsentBeforeRegistration": true,
+    "managedCustodyRequestFileObservedAbsentBeforeRegistration": true,
+    "compositionRequestFileObservedAbsentBeforeRegistration": true,
+    "rootParentIsExistingDirectNonReparseDirectory": true,
+    "rootsAreDirectSiblings": true,
+    "requestFilesAreDirectSiblingsOfRoots": true,
+    "logicalNamesArePublicSafe": true,
+    "absoluteLocalPathsArePrivate": true
+  },
+  "exactInputs": {
+    "modelSourceLock": {
+      "path": "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json",
+      "byteLength": 1901,
+      "sha256": "e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d",
+      "schema": "tinyrustlm.qwen3_source_lock.v1",
+      "architectureProfileId": "tinyrustlm.qwen3-dense-gqa-qk-norm/1",
+      "sourceDirectoryInventoryCount": 9,
+      "sourceDirectoryAggregateBytes": 1519207688
+    },
+    "tokenizerSourceLock": {
+      "path": "contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json",
+      "byteLength": 1108,
+      "sha256": "1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70",
+      "schema": "tinyrustlm.qwen_tokenizer2_source_lock.v1",
+      "architectureProfileId": "tinyrustlm.qwen3-tokenizer-source/1",
+      "sourceDirectoryInventoryCount": 5,
+      "acceptedArtifactSha256": "cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b"
+    },
+    "tokenizerConversionProfile": {
+      "path": "contracts/vnext/qwen-tokenizer2-conversion-profile.v2.json",
+      "byteLength": 8394,
+      "sha256": "97b381c73e7191f245ba132421a81bf015092b8550599413a6c81c6dae0afae4",
+      "profileId": "tinyrustlm.qwen-bytelevel-to-tokenizer2/2",
+      "receiptSchema": "tinyrustlm.qwen_tokenizer2_conversion_receipt.v2",
+      "requiredFileSuffix": ".tokenizer2",
+      "requiredCompositionFile": "tokenizer.tokenizer2",
+      "internalBinaryFormatId": "minimodel.tok2",
+      "internalBinaryFormatIdIsFileSuffix": false,
+      "predecessorProfileExecutable": false
+    },
+    "modelConversionProfile": {
+      "path": "contracts/vnext/qwen3-safetensors-conversion-profile.v2.json",
+      "byteLength": 18177,
+      "sha256": "fa2ce18f38129a6b106000d7802d1ea3995921e2b945ae5e52457908f548e7cf",
+      "profileId": "tinyrustlm.qwen3-safetensors-to-slm2-mixed-q8/2",
+      "receiptSchema": "tinyrustlm.qwen3_conversion_receipt.v2",
+      "physicalSourceTensorCount": 311,
+      "logicalOutputTensorCount": 310,
+      "redundantTiedOutputRequiresExactStreamedEquality": true,
+      "predecessorProfileExecutable": false
+    },
+    "compositionProfile": {
+      "path": "contracts/vnext/qwen3-composition-conversion-profile.v4.json",
+      "byteLength": 11421,
+      "sha256": "19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8",
+      "profileId": "tinyrustlm.qwen3-complete-composition-conversion/4",
+      "requiredModelConversionProfileId": "tinyrustlm.qwen3-safetensors-to-slm2-mixed-q8/2",
+      "requiredModelReceiptSchema": "tinyrustlm.qwen3_conversion_receipt.v2",
+      "requiredTokenizerConversionProfileId": "tinyrustlm.qwen-bytelevel-to-tokenizer2/2",
+      "requiredTokenizerReceiptSchema": "tinyrustlm.qwen_tokenizer2_conversion_receipt.v2",
+      "requiredTokenizerFile": "tokenizer.tokenizer2",
+      "requiredTokenizerFileSuffix": ".tokenizer2",
+      "obsoleteTokenizerFileSuffixAccepted": false,
+      "predecessorProfileExecutable": false
+    },
+    "sourceRelationship": {
+      "requiredEqualFields": [
+        "modelId",
+        "revision"
+      ],
+      "requiredArchitectureProfiles": {
+        "model": "tinyrustlm.qwen3-dense-gqa-qk-norm/1",
+        "tokenizer": "tinyrustlm.qwen3-tokenizer-source/1"
+      },
+      "requiredEqualFileRecords": [
+        "config.json",
+        "merges.txt",
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "vocab.json"
+      ],
+      "sourceRootsMustBeDistinct": true,
+      "sourceAndOwnedTreesMustNotOverlap": true
+    },
+    "immutableDependencyReuse": {
+      "tokenizer2RerunAllowed": false,
+      "template2RerunAllowed": false,
+      "canonicalOwnersMayReconstructBoundMembersInsideComposition": true,
+      "priorPrivateObservationMayBeOverwritten": false
+    }
+  },
+  "buildCustody": {
+    "profile": {
+      "path": "contracts/vnext/build-custody-profile.v1.json",
+      "byteLength": 3407,
+      "sha256": "589883f42c1e047dfa6e132c8c4937c05d23b936ae1a6f62fe41c91b672a82fa",
+      "profileId": "tinyrustlm.source-controlled-build-custody/1"
+    },
+    "owner": {
+      "path": "tinyrustlm/tools/build-custody-owner.js",
+      "byteLength": 51785,
+      "sha256": "ed2e4d8dddee8914456aa52a59b18a2cc6febec3a9258b18df7868604af56ef9"
+    },
+    "schemas": {
+      "request": "tinyrustlm.build-custody-request.v1",
+      "binding": "tinyrustlm.build-custody-binding.v1",
+      "start": "tinyrustlm.build-custody-start.v1",
+      "processTerminal": "tinyrustlm.build-custody-process-terminal.v1",
+      "terminal": "tinyrustlm.build-custody-terminal.v1",
+      "summary": "tinyrustlm.build-custody-summary.v1"
+    },
+    "sourceControlTool": {
+      "executableBasename": "git.exe",
+      "byteLength": 46920,
+      "sha256": "c470d205517c7a53ceca321df16a6e4549fcd52b576ab4d09536d36f26fda5a9",
+      "version": "2.55.0.windows.4",
+      "absolutePathCapturedOnlyInPrivateRequests": true
+    },
+    "runtime": {
+      "executableBasename": "node.exe",
+      "byteLength": 91380224,
+      "sha256": "63c259c81e5d472b5f11c8d506070130cb04a1ecf84b80377a34ed6ec9048088",
+      "version": "v24.14.0",
+      "platform": "win32",
+      "architecture": "x64",
+      "absolutePathCapturedOnlyInPrivateRequests": true
+    },
+    "terminationTool": {
+      "strategy": "windows-taskkill-tree-v1",
+      "executableBasename": "taskkill.exe",
+      "byteLength": 114688,
+      "sha256": "81e9649b317de9243bf7f34e436e86159ba267d86349fa47efdb71dde2fc7bc5",
+      "absolutePathCapturedOnlyInPrivateRequests": true
+    },
+    "requestCanonicalFieldsInOrder": [
+      "schema",
+      "operationId",
+      "profile",
+      "source",
+      "runtime",
+      "command",
+      "roots",
+      "capture",
+      "termination",
+      "outputs"
+    ],
+    "evidenceFiles": [
+      "build.binding.json",
+      "build.start.json",
+      "build.stdout.bin",
+      "build.stderr.bin",
+      "build.process-terminal.json",
+      "build.terminal.json"
+    ],
+    "processTerminalWrittenFromChildExitBeforeOptionalDiagnostics": true,
+    "processTerminalFsyncedBeforeOutputInventory": true,
+    "separateBoundedBinaryStreamsOpenedBeforeLaunch": true,
+    "exactRequestEnvironmentOnly": true,
+    "ambientEnvironmentClearedDuringProcessCreation": true,
+    "workerDetachedFromObserver": true,
+    "observerDeathDoesNotCancelOwner": true,
+    "rootWriteMode": "create-only",
+    "existingRootIsTerminal": true,
+    "retryCount": 0,
+    "resumeAllowed": false,
+    "cleanupAllowed": false,
+    "adoptionAllowed": false,
+    "selectionAllowed": false,
+    "terminalStatuses": [
+      "pass",
+      "terminal-build-failure",
+      "terminal-custody-failure"
+    ],
+    "operationOrder": [
+      "rust-build-custody",
+      "managed-build-custody-after-rust-pass",
+      "composition-controller-after-both-build-passes",
+      "managed-inspection-after-controller-candidate-pass",
+      "final-verification"
+    ]
+  },
+  "rustBuildCustody": {
+    "operationId": "qwen3-composition-v6-rust-build",
+    "requestFileBasename": "rust-build-custody-request-331b0a1-20260825-v6.json",
+    "requestLocation": "direct-child-file-of-private-parent-outside-git",
+    "requestWriteMode": "create-only",
+    "requestMaximumBytes": 262144,
+    "requestCanonicalJson": true,
+    "requestUtf8WithoutBomAndFinalLf": true,
+    "requestContainsAbsolutePrivatePaths": true,
+    "preflightBeforeEitherRootCreation": true,
+    "preflightIsReadOnly": true,
+    "executeInvocationCount": 1,
+    "observeMayReconnectWithoutRerun": true,
+    "command": {
+      "executableBasename": "cargo.exe",
+      "byteLength": 31347200,
+      "sha256": "122f18d28a63fa358f3db266abee1ff1d8aabf0ab7f2dd9ac38a38da99977ae5",
+      "directRegularNonReparseToolchainBinary": true,
+      "pathRustupProxyAccepted": false,
+      "arguments": [
+        "build",
+        "--locked",
+        "--release",
+        "-p",
+        "tinyrustlm-convert",
+        "--target",
+        "x86_64-pc-windows-msvc"
+      ],
+      "workingDirectory": "repository-root",
+      "environmentNamesInCanonicalOrder": [
+        "CARGO_HOME",
+        "CARGO_INCREMENTAL",
+        "CARGO_NET_OFFLINE",
+        "CARGO_TARGET_DIR",
+        "CARGO_TERM_COLOR",
+        "PATH",
+        "RUSTC",
+        "SystemRoot",
+        "TEMP",
+        "TMP",
+        "USERPROFILE"
+      ],
+      "publicConstantEnvironment": {
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_NET_OFFLINE": "true",
+        "CARGO_TERM_COLOR": "never"
+      },
+      "pathBearingEnvironmentValuesOnlyInPrivateRequest": true,
+      "targetDirectoryEnvironmentMustEqualRegisteredTargetRoot": true,
+      "tempAndTmpMustBeEqualChildrenOfRegisteredTargetRoot": true,
+      "rustcEnvironmentMustNameExactPinnedToolchainBinary": true
+    },
+    "capture": {
+      "maximumDurationMilliseconds": 7200000,
+      "maximumStdoutBytes": 16777216,
+      "maximumStderrBytes": 16777216
+    },
+    "outputs": {
+      "maximumEntryCount": 4096,
+      "maximumAggregateBytes": 1073741824,
+      "required": [
+        {
+          "relativePath": "x86_64-pc-windows-msvc/release/tinyrustlm-convert.exe",
+          "maximumByteLength": 16777216,
+          "kind": "pe-x64"
+        }
+      ]
+    },
+    "successRequiresCustodyTerminalPass": true,
+    "failureLeavesManagedRequestAndAllLaterRootsAbsent": true,
+    "terminalRootCannotBeReusedAsControllerEvidence": true
+  },
+  "rustToolchain": {
+    "cargo": {
+      "executableBasename": "cargo.exe",
+      "byteLength": 31347200,
+      "sha256": "122f18d28a63fa358f3db266abee1ff1d8aabf0ab7f2dd9ac38a38da99977ae5",
+      "release": "1.96.0",
+      "commitHash": "30a34c6821b57de0aaec83a901aca39f88f6778c",
+      "commitDate": "2026-05-25",
+      "host": "x86_64-pc-windows-msvc"
+    },
+    "rustc": {
+      "executableBasename": "rustc.exe",
+      "byteLength": 111104,
+      "sha256": "acb138286bbe20c6cf3ec39a7e0a68c3fab0cd949baa2912cf466514d0d531ab",
+      "release": "1.96.0",
+      "commitHash": "ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96",
+      "commitDate": "2026-05-25",
+      "host": "x86_64-pc-windows-msvc",
+      "llvmVersion": "22.1.2",
+      "rehashBeforeBuild": true,
+      "rehashAfterBuild": true,
+      "anyDriftIsTerminalCustodyFailure": true
+    },
+    "activeToolchain": "stable-x86_64-pc-windows-msvc",
+    "requiredInstalledTarget": "x86_64-pc-windows-msvc"
+  },
+  "managedBuildCustody": {
+    "operationId": "qwen3-composition-v6-managed-inspector-build",
+    "requestFileBasename": "managed-build-custody-request-331b0a1-20260825-v6.json",
+    "requestLocation": "direct-child-file-of-private-parent-outside-git",
+    "requestWriteMode": "create-only",
+    "requestMaximumBytes": 262144,
+    "requestCanonicalJson": true,
+    "requestUtf8WithoutBomAndFinalLf": true,
+    "requestContainsAbsolutePrivatePaths": true,
+    "materializedOnlyAfterRustCustodyPass": true,
+    "preflightBeforeEitherManagedRootCreation": true,
+    "preflightIsReadOnly": true,
+    "executeInvocationCount": 1,
+    "observeMayReconnectWithoutRerun": true,
+    "command": {
+      "executableBasename": "dotnet.exe",
+      "byteLength": 167208,
+      "sha256": "ab1b71fd3dd71062e074c9fab8312081a81b7f2b3e0327c48c4d249c8d1a3135",
+      "directRegularNonReparseHost": true,
+      "arguments": [
+        "build",
+        "dotnet/tools/TinyRustLM.CompositionInspector/TinyRustLM.CompositionInspector.csproj",
+        "--configuration",
+        "Release",
+        "--no-restore",
+        "--no-incremental",
+        "--output",
+        "private-absolute-managed-custody-target-root"
+      ],
+      "workingDirectory": "repository-root",
+      "environmentNamesInCanonicalOrder": [
+        "DOTNET_CLI_HOME",
+        "DOTNET_CLI_TELEMETRY_OPTOUT",
+        "DOTNET_CLI_UI_LANGUAGE",
+        "DOTNET_MULTILEVEL_LOOKUP",
+        "DOTNET_NOLOGO",
+        "DOTNET_ROOT",
+        "DOTNET_SKIP_FIRST_TIME_EXPERIENCE",
+        "MSBUILDDISABLENODEREUSE",
+        "NUGET_PACKAGES",
+        "NUGET_XMLDOC_MODE",
+        "PATH",
+        "SystemRoot",
+        "TEMP",
+        "TMP",
+        "USERPROFILE"
+      ],
+      "publicConstantEnvironment": {
+        "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+        "DOTNET_CLI_UI_LANGUAGE": "en-US",
+        "DOTNET_MULTILEVEL_LOOKUP": "0",
+        "DOTNET_NOLOGO": "1",
+        "DOTNET_SKIP_FIRST_TIME_EXPERIENCE": "1",
+        "MSBUILDDISABLENODEREUSE": "1",
+        "NUGET_XMLDOC_MODE": "skip"
+      },
+      "pathBearingEnvironmentValuesOnlyInPrivateRequest": true,
+      "outputArgumentMustEqualRegisteredTargetRoot": true,
+      "cliHomeTempAndTmpMustBeChildrenOfRegisteredTargetRoot": true
+    },
+    "capture": {
+      "maximumDurationMilliseconds": 7200000,
+      "maximumStdoutBytes": 16777216,
+      "maximumStderrBytes": 16777216
+    },
+    "outputs": {
+      "maximumEntryCount": 4096,
+      "maximumAggregateBytes": 536870912,
+      "required": [
+        {
+          "relativePath": "TinyRustLM.CompositionInspector.deps.json",
+          "maximumByteLength": 4194304,
+          "kind": "regular-file"
+        },
+        {
+          "relativePath": "TinyRustLM.CompositionInspector.dll",
+          "maximumByteLength": 16777216,
+          "kind": "regular-file"
+        },
+        {
+          "relativePath": "TinyRustLM.CompositionInspector.runtimeconfig.json",
+          "maximumByteLength": 1048576,
+          "kind": "regular-file"
+        },
+        {
+          "relativePath": "TinyRustLM.Conversion.dll",
+          "maximumByteLength": 67108864,
+          "kind": "regular-file"
+        }
+      ]
+    },
+    "restoreAllowed": false,
+    "networkAllowed": false,
+    "incrementalBuildAllowed": false,
+    "successRequiresCustodyTerminalPass": true,
+    "failureLeavesCompositionRequestAndAllLaterRootsAbsent": true,
+    "terminalRootCannotBeReusedAsControllerEvidence": true
+  },
+  "managedRuntime": {
+    "hostBasename": "dotnet.exe",
+    "hostByteLength": 167208,
+    "hostSha256": "ab1b71fd3dd71062e074c9fab8312081a81b7f2b3e0327c48c4d249c8d1a3135",
+    "sdkVersion": "10.0.400",
+    "sdkCommit": "14fbf8d527",
+    "msbuildVersion": "18.9.6+14fbf8d52",
+    "hostVersion": "10.0.11",
+    "hostCommit": "e2f47b0110",
+    "hostArchitecture": "x64",
+    "runtimeIdentifier": "win-x64",
+    "targetFramework": "net8.0",
+    "absolutePathCapturedOnlyInPrivateEvidence": true,
+    "rehashBeforeBuildAndInspection": true,
+    "rehashAfterBuildAndInspection": true,
+    "anyDriftIsTerminal": true
+  },
+  "sourceSentinels": [
+    {
+      "path": "Cargo.toml",
+      "byteLength": 1691,
+      "sha256": "4b6c44ada860997ad27476173e88227faf52a30783b35f33bd12beda3f79beb8"
+    },
+    {
+      "path": "Cargo.lock",
+      "byteLength": 25336,
+      "sha256": "8e8eabd73ac02275235576743a19b84bee0250ef4ce24986e4bcce7a3704c8a6"
+    },
+    {
+      "path": "contracts/vnext/build-custody-profile.v1.json",
+      "byteLength": 3407,
+      "sha256": "589883f42c1e047dfa6e132c8c4937c05d23b936ae1a6f62fe41c91b672a82fa"
+    },
+    {
+      "path": "tinyrustlm/tools/build-custody-owner.js",
+      "byteLength": 51785,
+      "sha256": "ed2e4d8dddee8914456aa52a59b18a2cc6febec3a9258b18df7868604af56ef9"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/Cargo.toml",
+      "byteLength": 782,
+      "sha256": "956e85dba61602eef94e4b33f522efeea935a99189778bb93a52764ab7a9d05e"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/main.rs",
+      "byteLength": 8749,
+      "sha256": "a1c5602ef776f032ca83000714900f89008d4b9a5377b7758c474dcea94124db"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/lib.rs",
+      "byteLength": 1038,
+      "sha256": "26d38df9c953443725797accfd76f8ccb50521f33e7b7a2ffe6e88cc904d5547"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/qwen3.rs",
+      "byteLength": 58400,
+      "sha256": "0de0a96edc5f2a1215c98a2d5dbe1d556be3ca21c21a2a1fcc0d2e0c08a91ebe"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/qwen3_composition.rs",
+      "byteLength": 66665,
+      "sha256": "05db5e5a256ea6580186c3786f01638b154619a8300a37c26ddeb5a1069fe82e"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/qwen_tokenizer2.rs",
+      "byteLength": 29407,
+      "sha256": "f263d7e2f8572d020e43a310042c2e8f5595e93512a0020527ae99d50074e7e2"
+    },
+    {
+      "path": "tinyrustlm/tools/qwen3-composition-execution-controller.js",
+      "byteLength": 33731,
+      "sha256": "c78b6f8d59f61299aab511365fe8a699f6cd0a7989f222b954229d1d7e0e3508"
+    },
+    {
+      "path": "dotnet/Directory.Build.props",
+      "byteLength": 2667,
+      "sha256": "6829f8afa45c8850d0f3f7486fa7249136aff0922a85ecf9cbe52ded400d7f39"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Conversion/TinyRustLM.Conversion.csproj",
+      "byteLength": 3189,
+      "sha256": "0b9b0f7fabb15850ae7abf839203c6c12b02a7301ed7cb88a30ea692bf842a4b"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Conversion/AssemblyInfo.cs",
+      "byteLength": 162,
+      "sha256": "ae68ad6b08f9e5c867f7af5f453589c3ff676ecfe2c000cdcd0f286049e1c0c6"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Conversion/TinyRustLmConversionTool.cs",
+      "byteLength": 53895,
+      "sha256": "f80f1158f021cc987720448e927536aae1fbfa5876430e6e0d3671beab0c4bf7"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Conversion/TinyRustLmCompositionInspectionCommand.cs",
+      "byteLength": 4315,
+      "sha256": "ed81944fd92fdb52ccc980af0969cda79393564b6217e8d8de0b23d84b16f031"
+    },
+    {
+      "path": "dotnet/tools/TinyRustLM.CompositionInspector/TinyRustLM.CompositionInspector.csproj",
+      "byteLength": 609,
+      "sha256": "20291d1c01805bc54886551e3b9208d17a4d9bad8dc470d388ec33d6eaf25823"
+    },
+    {
+      "path": "dotnet/tools/TinyRustLM.CompositionInspector/Program.cs",
+      "byteLength": 2513,
+      "sha256": "8f17d0ff130d8993493ad5f2415f4d2e30520aa7a7d2da3687ae0d17ef762e48"
+    }
+  ],
+  "controller": {
+    "path": "tinyrustlm/tools/qwen3-composition-execution-controller.js",
+    "byteLength": 33731,
+    "sha256": "c78b6f8d59f61299aab511365fe8a699f6cd0a7989f222b954229d1d7e0e3508",
+    "requestSchema": "tinyrustlm.qwen3-composition-execution-request.v1",
+    "bindingSchema": "tinyrustlm.qwen3-composition-execution-binding.v1",
+    "startSchema": "tinyrustlm.qwen3-composition-execution-start.v1",
+    "terminalSchema": "tinyrustlm.qwen3-composition-execution-terminal.v1",
+    "maximumRequestBytes": 65536,
+    "preflightBeforeEvidenceRoot": true,
+    "bindingFirst": true,
+    "startBeforeLaunch": true,
+    "ownedProcessOnly": true,
+    "converterLaunchCount": 1,
+    "separateBoundedRawStreams": true,
+    "postExitExecutableAndOutputHashing": true,
+    "createOnlyTerminal": true,
+    "resumePath": false,
+    "retryPath": false,
+    "cleanupPath": false,
+    "repairPath": false,
+    "bestOfNPath": false
+  },
+  "controllerRuntime": {
+    "executableBasename": "node.exe",
+    "byteLength": 91380224,
+    "sha256": "63c259c81e5d472b5f11c8d506070130cb04a1ecf84b80377a34ed6ec9048088",
+    "version": "v24.14.0",
+    "platform": "win32",
+    "architecture": "x64",
+    "absolutePathCapturedOnlyInPrivateRequest": true,
+    "rehashBeforePreflight": true,
+    "rehashAfterControllerExit": true
+  },
+  "privateCompositionRequest": {
+    "schema": "tinyrustlm.qwen3-composition-execution-request.v1",
+    "fileName": "qwen3-composition-execution-request-c1899de-20260825-v6.json",
+    "location": "direct-child-file-of-private-parent-outside-git",
+    "writeMode": "create-only",
+    "maximumBytes": 65536,
+    "encoding": "utf8-without-bom",
+    "canonicalJson": true,
+    "finalLf": true,
+    "containsAbsoluteLocalPaths": true,
+    "publicEvidence": false,
+    "materializedOnlyAfterBothBuildCustodyTerminalsPass": true,
+    "canonicalFieldsInOrder": [
+      "schema",
+      "executionId",
+      "registration",
+      "build",
+      "inputs",
+      "invocation"
+    ],
+    "registrationFields": [
+      "repositoryRoot",
+      "profilePath",
+      "profileByteLength",
+      "profileSha256",
+      "profileId",
+      "commit",
+      "tree",
+      "branch",
+      "controllerPath",
+      "controllerByteLength",
+      "controllerSha256",
+      "controllerRuntimePath",
+      "controllerRuntimeByteLength",
+      "controllerRuntimeSha256",
+      "controllerRuntimeVersion",
+      "controllerRuntimePlatform",
+      "controllerRuntimeArchitecture"
+    ],
+    "buildFields": [
+      "sourceCommit",
+      "sourceTree",
+      "stdoutPath",
+      "stdoutByteLength",
+      "stdoutSha256",
+      "stderrPath",
+      "stderrByteLength",
+      "stderrSha256",
+      "executablePath",
+      "executableByteLength",
+      "executableSha256",
+      "peMachine",
+      "command",
+      "environment",
+      "toolchain"
+    ],
+    "inputFields": [
+      "modelSourceLockPath",
+      "modelSourceLockSha256",
+      "modelSourceDirectory",
+      "tokenizerSourceLockPath",
+      "tokenizerSourceLockSha256",
+      "tokenizerSourceDirectory",
+      "compositionProfilePath",
+      "compositionProfileSha256"
+    ],
+    "invocationFields": [
+      "evidenceRoot",
+      "outputRoot",
+      "workingDirectory",
+      "arguments",
+      "maximumDurationMilliseconds",
+      "maximumStdoutBytes",
+      "maximumStderrBytes"
+    ],
+    "overwriteAllowed": false,
+    "deleteAllowed": false
+  },
+  "controllerExecution": {
+    "command": [
+      "exact-node-runtime",
+      "tinyrustlm/tools/qwen3-composition-execution-controller.js",
+      "execute",
+      "private-absolute-composition-request-path"
+    ],
+    "workingDirectory": "repository-root",
+    "maximumDurationMilliseconds": 43200000,
+    "maximumStdoutBytes": 65536,
+    "maximumStderrBytes": 4096,
+    "controllerStdoutMaximumBytes": 65536,
+    "controllerStderrMaximumBytes": 65536,
+    "controllerInvocationCount": 1,
+    "converterLaunchCount": 1,
+    "automaticRetry": false,
+    "manualRetryUnderThisRegistration": false,
+    "bestOfN": false,
+    "responseRepair": false,
+    "controllerAndConverterStreamsCapturedSeparately": true,
+    "rawStreamsArePrivateCreateOnlyEvidence": true,
+    "startRecordWrittenCreateOnlyBeforeConverterLaunch": true,
+    "outputRootMustRemainAbsentUntilConverterLaunch": true,
+    "terminalRule": "existing-owned-root-or-terminal-evidence-closes-this-registration",
+    "cleanupAfterFailure": false,
+    "unknownProcessAdoption": false,
+    "unknownProcessKill": false
+  },
+  "managedInspection": {
+    "intentSchema": "tinyrustlm.qwen3-composition-conversion-intent.v1",
+    "intentFileName": "managed-inspection.intent.json",
+    "intentLocation": "controller-evidence-root-outside-git",
+    "intentWriteMode": "create-only",
+    "intentMaximumBytes": 65536,
+    "intentEncoding": "utf8-without-bom",
+    "intentCanonicalJson": true,
+    "intentFinalLf": true,
+    "intentCreatedOnlyAfterControllerTerminal": true,
+    "intentFields": [
+      "schema",
+      "modelSourceLockPath",
+      "modelSourceLockSha256",
+      "modelSourceDirectory",
+      "tokenizerSourceLockPath",
+      "tokenizerSourceLockSha256",
+      "tokenizerSourceDirectory",
+      "compositionProfileSha256",
+      "outputRoot",
+      "converterExecutablePath",
+      "converterExecutableSha256",
+      "maximumDurationMilliseconds",
+      "maximumSummaryBytes",
+      "maximumErrorBytes",
+      "terminalRule"
+    ],
+    "command": [
+      "exact-dotnet-host",
+      "private-absolute-inspector-assembly-path",
+      "inspect",
+      "private-absolute-intent-path"
+    ],
+    "workingDirectory": "repository-root",
+    "maximumDurationMilliseconds": 300000,
+    "maximumStdoutBytes": 262144,
+    "maximumStderrBytes": 65536,
+    "invocationCount": 1,
+    "converterProcessApiAvailable": false,
+    "converterLaunchAllowed": false,
+    "stdoutAndStderrCapturedSeparately": true,
+    "rawStreamsArePrivateCreateOnlyEvidence": true,
+    "acceptedPassExitCode": 0,
+    "acceptedRejectedExitCode": 2,
+    "acceptedPendingExitCode": 3,
+    "typedErrorExitCode": 1,
+    "passStatus": "pass",
+    "rejectedStatus": "rejected",
+    "pendingStatus": "pending",
+    "operation": "read-only-no-converter-launch",
+    "automaticRetry": false,
+    "manualRetryUnderThisRegistration": false,
+    "outputRepairAllowed": false
+  },
+  "privateEvidenceFiles": {
+    "rustCustodyControl": [
+      "build.binding.json",
+      "build.start.json",
+      "build.stdout.bin",
+      "build.stderr.bin",
+      "build.process-terminal.json",
+      "build.terminal.json"
+    ],
+    "managedCustodyControl": [
+      "build.binding.json",
+      "build.start.json",
+      "build.stdout.bin",
+      "build.stderr.bin",
+      "build.process-terminal.json",
+      "build.terminal.json"
+    ],
+    "controllerEvidence": [
+      "controller.stdout.bin",
+      "controller.stderr.bin",
+      "execution.binding.json",
+      "execution.start.json",
+      "converter.stdout.bin",
+      "converter.stderr.bin",
+      "execution.terminal.json",
+      "managed-inspection.intent.json",
+      "managed-inspection.stdout.bin",
+      "managed-inspection.stderr.bin",
+      "execution.verification.json"
+    ],
+    "writeMode": "create-only",
+    "overwriteAllowed": false,
+    "deleteAllowed": false,
+    "rawEvidencePublished": false
+  },
+  "verificationRecord": {
+    "schema": "tinyrustlm.qwen3-composition-execution-verification.v2",
+    "fileName": "execution.verification.json",
+    "location": "controller-evidence-root-outside-git",
+    "writeMode": "create-only",
+    "maximumBytes": 1048576,
+    "encoding": "utf8-without-bom",
+    "canonicalJson": true,
+    "finalLf": true,
+    "containsAbsoluteLocalPaths": true,
+    "publicEvidence": false,
+    "createdAfterControllerTerminal": true,
+    "createdAfterManagedInspectionWhenControllerCandidatePass": true,
+    "allReferencedEvidenceRehashedBeforeRecord": true,
+    "canonicalFieldsInOrder": [
+      "schema",
+      "executionId",
+      "registration",
+      "buildCustody",
+      "controller",
+      "managedInspection",
+      "decision",
+      "claims"
+    ],
+    "registrationFields": [
+      "profilePath",
+      "profileByteLength",
+      "profileSha256",
+      "commit",
+      "tree",
+      "branch",
+      "remoteExact"
+    ],
+    "buildCustodyFields": [
+      "rustRequest",
+      "rustBinding",
+      "rustStart",
+      "rustProcessTerminal",
+      "rustTerminal",
+      "rustOutputInventory",
+      "rustcPreAndPostIdentity",
+      "managedRequest",
+      "managedBinding",
+      "managedStart",
+      "managedProcessTerminal",
+      "managedTerminal",
+      "managedOutputInventory",
+      "managedRuntimePreAndPostIdentity"
+    ],
+    "controllerFields": [
+      "invoked",
+      "exitCode",
+      "stdout",
+      "stderr",
+      "binding",
+      "start",
+      "converterStdout",
+      "converterStderr",
+      "terminal",
+      "outputInventory"
+    ],
+    "managedInspectionFields": [
+      "invoked",
+      "intent",
+      "exitCode",
+      "stdout",
+      "stderr",
+      "parsedStatus",
+      "operation",
+      "assemblyUnchanged",
+      "runtimeUnchanged"
+    ],
+    "decisionFields": [
+      "status",
+      "reasonCode",
+      "structuralCompositionVerified",
+      "retryAllowed",
+      "cleanupAllowed",
+      "repairAllowed"
+    ],
+    "claimFields": [
+      "sourceFrameworkParityVerified",
+      "nativeRuntimeVerified",
+      "browserWasmVerified",
+      "browserChatVerified",
+      "modelQualityVerified",
+      "p2pAvailabilityVerified",
+      "catalogAnnouncementVerified",
+      "packagePublicationVerified",
+      "siteDeploymentVerified",
+      "memoryEndpointsVerified",
+      "campaignCreditAuthorized"
+    ],
+    "allowedDecisionStatuses": [
+      "structural-pass",
+      "terminal-rust-build-failure",
+      "terminal-rust-custody-failure",
+      "terminal-managed-build-failure",
+      "terminal-managed-custody-failure",
+      "terminal-controller-failure",
+      "terminal-managed-rejection",
+      "terminal-ambiguous"
+    ],
+    "structuralPassRequiresExactRegisteredPassSet": true,
+    "allNonStructuralClaimsRemainFalse": true,
+    "retryAllowed": false,
+    "overwriteAllowed": false,
+    "deleteAllowed": false
+  },
+  "terminalDecision": {
+    "passRequires": [
+      "rust-custody-terminal-pass-with-zero-exit",
+      "rust-required-x64-pe-output-exact",
+      "rustc-pre-and-post-identities-equal-registration",
+      "managed-custody-terminal-pass-with-zero-exit",
+      "managed-required-output-set-exact",
+      "managed-runtime-pre-and-post-identities-equal-registration",
+      "exactly-one-controller-invocation",
+      "exactly-one-converter-process-launch",
+      "converter-exit-code-zero",
+      "converter-stderr-empty",
+      "bounded-strict-cli-summary",
+      "terminal-pass-receipt-present",
+      "terminal-rejection-absent",
+      "exact-ten-file-success-inventory",
+      "all-six-artifacts-rehashed",
+      "all-six-artifacts-reparsed-by-canonical-owners",
+      "exactly-one-managed-inspection-invocation",
+      "managed-inspection-exit-code-zero",
+      "managed-inspection-status-pass",
+      "managed-inspection-operation-read-only-no-converter-launch",
+      "converter-executable-post-exit-hash-equal",
+      "managed-runtime-and-assembly-post-exit-hashes-equal",
+      "all-private-terminal-and-verification-records-create-only"
+    ],
+    "custodyFailureRequires": [
+      "preserve-request-control-target-and-all-created-evidence",
+      "no-later-build-controller-converter-or-inspection-launch",
+      "new-attempt-requires-new-registration-and-all-new-roots"
+    ],
+    "controllerFailureRequires": [
+      "controller-terminal-process-failure",
+      "raw-controller-and-converter-streams-preserved",
+      "partial-output-preserved",
+      "managed-inspection-not-used-to-repair-or-retry",
+      "private-terminal-and-verification-records-create-only"
+    ],
+    "managedRejectionRequires": [
+      "controller-candidate-pass",
+      "managed-inspection-exit-code-two",
+      "managed-inspection-status-rejected",
+      "strict-native-rejection-present",
+      "strict-attempt-lineage-present",
+      "partial-output-preserved",
+      "private-terminal-and-verification-records-create-only"
+    ],
+    "ambiguousRequires": [
+      "all-builds-and-controller-candidate-pass-without-valid-mutually-exclusive-managed-pass-or-rejection"
+    ],
+    "ambiguousIsPass": false,
+    "ambiguousIsRetryAuthorization": false,
+    "eitherCustodyOrBuildFailureClosesRegistration": true,
+    "newAttemptRequiresNewRegistrationAndAllNewLogicalRoots": true,
+    "terminalEvidenceMayBeOverwritten": false,
+    "outputMayBeRepaired": false,
+    "outputMayBeDeleted": false
+  },
+  "claimBoundary": {
+    "realConversionAttemptRegistered": true,
+    "rustBuildCustodyCompleted": false,
+    "rustReleaseBuildCompleted": false,
+    "managedBuildCustodyCompleted": false,
+    "managedInspectorBuildCompleted": false,
+    "privateCustodyRequestCreated": false,
+    "privateCompositionRequestCreated": false,
+    "privateExecutionBindingCreated": false,
+    "realConverterInvoked": false,
+    "managedInspectionInvoked": false,
+    "structuralCompositionVerified": false,
+    "sourceFrameworkParityVerified": false,
+    "nativeRuntimeVerified": false,
+    "browserWasmVerified": false,
+    "browserChatVerified": false,
+    "modelQualityVerified": false,
+    "p2pAvailabilityVerified": false,
+    "catalogAnnouncementVerified": false,
+    "packagePublicationVerified": false,
+    "siteDeploymentVerified": false,
+    "memoryEndpointsVerified": false,
+    "campaignCreditAuthorized": false,
+    "requiredNextGateAfterStructuralPass": "source-native-browser-numerical-parity-untouched-quality-product-chat-and-complete-obsolete-path-deletion"
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  },
+  "registrationOutputBoundary": {
+    "rustCustodyRequestFileCreated": false,
+    "rustCustodyControlRootCreated": false,
+    "rustCustodyTargetRootCreated": false,
+    "rustBuildRun": false,
+    "managedCustodyRequestFileCreated": false,
+    "managedCustodyControlRootCreated": false,
+    "managedCustodyTargetRootCreated": false,
+    "managedBuildRun": false,
+    "compositionRequestFileCreated": false,
+    "controllerEvidenceRootCreated": false,
+    "compositionOutputRootCreated": false,
+    "privateExecutionBindingCreated": false,
+    "controllerProcessStarted": false,
+    "converterProcessStarted": false,
+    "managedInspectorProcessStarted": false,
+    "compositionArtifactCreated": false,
+    "terminalPassCreated": false,
+    "terminalRejectionCreated": false,
+    "managedVerificationCreated": false,
+    "nativeRuntimeOutputObserved": false,
+    "browserOutputObserved": false,
+    "qualityOutputObserved": false,
+    "p2pOutputObserved": false,
+    "publicationOutputObserved": false,
+    "campaignCreditAuthorized": false
+  }
+}
