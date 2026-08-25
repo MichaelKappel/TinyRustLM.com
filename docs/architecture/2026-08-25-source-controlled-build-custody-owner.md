@@ -165,8 +165,12 @@ A fifth composition attempt may be designed only after this owner, profile,
 tests, and record are committed, pushed, freshly fetched, and proven exact.
 That future registration must bind the resulting source commit/tree and exact
 owner bytes, bind execution `/4` as immutable predecessor evidence, and name
-five wholly new roots proven absent before registration. No `/4` root or
-candidate executable may be adopted.
+six wholly new roots proven absent before registration: separate custody
+control and target roots for the Rust build, separate custody control and
+target roots for the managed build, one controller-evidence root, and one
+composition-output root. A custody control root becomes immutable when its
+build terminal is written and therefore cannot double as later controller
+evidence. No `/4` root or candidate executable may be adopted.
 
 The future private request must then be materialized canonically outside Git,
 preflighted without creating roots, and executed once. A custody `pass` proves

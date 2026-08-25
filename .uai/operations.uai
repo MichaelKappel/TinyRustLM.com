@@ -1,11 +1,11 @@
-profile: runtime-mirust.operations.v141
-updated_utc: 2026-08-25T12:01:53Z
+profile: runtime-mirust.operations.v142
+updated_utc: 2026-08-25T12:11:21Z
 source_controlled_build_custody_owner_2026_08_25:
   identities: profile=contracts/vnext/build-custody-profile.v1.json,3407,589883f42c1e047dfa6e132c8c4937c05d23b936ae1a6f62fe41c91b672a82fa; owner=tinyrustlm/tools/build-custody-owner.js,51785,ed2e4d8dddee8914456aa52a59b18a2cc6febec3a9258b18df7868604af56ef9; platform=win32-x64; retry=0; resume=false; cleanup=false; adoption=false
   evidence: binding=create-only+fsync; start=create-only+fsync; stdout=separate-bounded-binary; stderr=separate-bounded-binary; process_terminal=exit-event+create-only+fsync+before-diagnostics; final=pass|terminal-build-failure|terminal-custody-failure; output_inspection=after-zero-exit-only
   isolation: source=clean-commit-tree-branch; git=exact-hash; node=exact-hash+version; command=exact-hash+args+cwd+environment; roots=absent-direct-siblings-outside-source; termination=exact-system-taskkill-tree; ambient=clear-during-process-create+finally-restore; worker_environment=SystemRoot-only
   gates: custody=14/14; qwen=141/141; release_cutover=5/5; syntax=pass; package_command=npm-run-test-build-custody
-  next: commit/push/fresh-fetch and prove exact owner/profile source; register `/5` output-free with five new absent roots; push/fresh-verify registration; only then materialize one private request and execute once
+  next: commit/push/fresh-fetch and prove exact owner/profile source; register `/5` output-free with six new absent direct-sibling roots (Rust custody control/target, managed custody control/target, controller evidence, composition output); push/fresh-verify registration; only then materialize private build requests and execute once per registered build
   claims: real_build=false; execution_v5_registered=false; roots_v5=0; conversion=false; complete_composition=false; runtime=false; browser=false; quality=false; p2p=false; publication=false; deployment=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
 qwen3_execution_v4_build_custody_failure_2026_08_25:
   registration: commit=8948baf1d21a73cde5781cf74a7c5020fd0b8cca; tree=6a25e28f45b9bf69d82782efb965a9c0da5dee76; profile_bytes=31580; profile_sha256=f3f549a108c4a3acb767b241f2d1ef6d2db737c67442f059e8e943dabb992275; remote_exact=true; roots_absent_before=true

@@ -1,10 +1,10 @@
-profile: runtime-mirust.file-handoff.v107
-updated_utc: 2026-08-25T12:01:53Z
+profile: runtime-mirust.file-handoff.v108
+updated_utc: 2026-08-25T12:11:21Z
 current_source_controlled_build_custody_owner_2026_08_25:
   first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/build-custody-profile.v1.json`, and `docs/architecture/2026-08-25-source-controlled-build-custody-owner.md` before any build or `/5` work.
   current_truth: Profile is 3,407 bytes/SHA256 `589883f42c1e047dfa6e132c8c4937c05d23b936ae1a6f62fe41c91b672a82fa`; owner is 51,785 bytes/SHA256 `ed2e4d8dddee8914456aa52a59b18a2cc6febec3a9258b18df7868604af56ef9`. It captures fsynced child exit before diagnostics, isolates exact Windows process environments, bounds streams/target traversal, verifies required hashes/PE after zero exit, survives observer death, and forbids retry/resume/cleanup/adoption.
   gates: Real Windows custody 14/14, Qwen 141/141, release cutover 5/5. The tests are mechanism evidence only; `/5` is not registered and no new private root exists.
-  exact_resume: Finish hygiene and memory checks, commit/push/fresh-fetch this exact mechanism, and record remote equality. Then preregister `/5` with five wholly new absent roots and immutable `/1` through `/4` predecessors. Push/fresh-verify that registration before materializing one private request and executing once through this owner.
+  exact_resume: Finish hygiene and memory checks, commit/push/fresh-fetch this exact mechanism, and record remote equality. Then preregister `/5` with six wholly new absent direct-sibling roots (Rust custody control/target, managed custody control/target, controller evidence, composition output) and immutable `/1` through `/4` predecessors. Push/fresh-verify that registration before materializing private requests and executing each registered build once through this owner.
   preservation: Never rerun or adopt `/4`; never rerun accepted Tokenizer2 Chromium evidence; never modify the protected sibling or write `D:`. No broader claim, MemoryEndpoints authority, or campaign credit.
 current_qwen3_execution_v4_build_custody_failure_2026_08_25:
   first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/qwen3-real-composition-execution-result.v4.json`, and `docs/architecture/2026-08-25-qwen3-real-composition-execution-v4-result-and-build-custody-defect.md` before any build or conversion work.
