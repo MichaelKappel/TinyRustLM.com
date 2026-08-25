@@ -224,6 +224,18 @@ The source is not declared defective; the source-tensor profile is. `/2` is
 closed and its partial output is preserved. See
 `docs/architecture/2026-08-25-qwen3-real-composition-execution-v2-result-and-tied-output-profile-defect.md`.
 
+`qwen3-real-composition-execution-preregistration.v3.json` is the output-free
+successor bound to both immutable failed attempts, corrected model conversion
+profile `/2`, complete-composition profile `/3`, exact current executable
+owners, and five new absent logical roots. It is 29,275 canonical bytes at
+SHA-256
+`b07ccd2688d6352fd7614fc2302d7aac59c63e3e4fe2a5943da7c8aa6bd1ec19`.
+It permits one offline Rust build, one offline managed-inspector build, one
+controller invocation, one converter launch, and at most one inspect-only
+managed decision after a native candidate pass. It creates no private root,
+output, structural result, broader claim, or campaign credit. See
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration-v3.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2
