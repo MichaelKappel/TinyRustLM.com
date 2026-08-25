@@ -38,13 +38,13 @@ function finalizedLedgerPath(context) {
   return writeFinalizedLedger(context);
 }
 
-test("source release ledger preserves history and one latest pending release", () => {
+test("source release ledger preserves complete publication history", () => {
   const result = parseReleaseLedger(fs.readFileSync(ledgerPath));
   assert.equal(result.ledger.site.siteId, "tinyrustlm.com");
   assert.equal(result.ledger.site.canonicalOrigin, "https://tinyrustlm.com");
   assert.equal(result.ledger.site.updatesPath, "/updates/");
   assert.equal(result.ledger.releases.length, 6);
-  assert.equal(result.ledger.publications.length, 5);
+  assert.equal(result.ledger.publications.length, 6);
   assert.equal(result.ledger.publications[0].releaseId, "tinyrustlm.com@0.1.0");
   assert.equal(result.ledger.publications[1].releaseId, "tinyrustlm.com@0.1.1");
   assert.equal(
@@ -59,15 +59,20 @@ test("source release ledger preserves history and one latest pending release", (
     result.ledger.publications[3].publicationId,
     "75d5f72656635eed58644b705acdf7c8fb18512fd2225f402563cf1756a2ea10"
   );
-  assert.equal(result.pendingRelease.releaseId, "tinyrustlm.com@0.3.0");
-  assert.equal(result.pendingRelease.version, "0.3.0");
-  assert.equal(result.pendingRelease.releaseDate, "2026-08-24");
+  assert.equal(result.pendingRelease, null);
   assert.deepEqual(result.ledger.publications[4], {
     publicationId: "aea1e08b74f6b7835473ffb482baeddd42c97346d0a08868a66574f1a5d089ce",
     releaseId: "tinyrustlm.com@0.2.1",
     publishedAt: "2026-08-08T23:47:22.420Z",
     sourceRevision: "e964a095ede1c077b36b6476af5ee85b087f52f8",
     sourceLedgerSha256: "b10ed6695c4b1f29f4b1272710c64aa37012b15576e019cfad556e2973adbcfc"
+  });
+  assert.deepEqual(result.ledger.publications[5], {
+    publicationId: "cc53b43f55557aa9808264776c73168a750600c7b53c4d6a6bc61815afa0e3b2",
+    releaseId: "tinyrustlm.com@0.3.0",
+    publishedAt: "2026-08-25T04:57:20.279Z",
+    sourceRevision: "dca8a3a2107d8f6992291a59ae3eb1f319b332f4",
+    sourceLedgerSha256: "6abb747cd2e50f684fbcf3c935e610660e8f41132d1da1ab782b7a1072cbd831"
   });
   assert.match(result.ledgerSha256, /^[a-f0-9]{64}$/);
 });
