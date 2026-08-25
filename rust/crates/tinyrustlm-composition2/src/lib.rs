@@ -4,7 +4,7 @@
 mod activation;
 mod format;
 mod resolution;
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(target_arch = "wasm32", feature = "wasm-conformance"))]
 mod wasm;
 
 pub use activation::{ActivationState, GenerationState, OperationIdentity, TranscriptState};

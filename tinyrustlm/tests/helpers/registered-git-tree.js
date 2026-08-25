@@ -84,6 +84,11 @@ function createRegisteredGitTree({ profilePath, requiredPaths, linkNodeModules =
   const registrationCommit = findRegistrationCommit(
     profilePath, profileBytes, profile.registrationParentCommit
   );
+  const registrationParentTree = gitText([
+    "rev-parse", "--verify", `${profile.registrationParentCommit}^{tree}`
+  ]);
+  invariant(COMMIT_PATTERN.test(registrationParentTree),
+    "registered profile parent tree is invalid");
 
   const ownedRoot = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-registered-tree-"));
   const treeRoot = path.join(ownedRoot, "repository");
@@ -112,6 +117,7 @@ function createRegisteredGitTree({ profilePath, requiredPaths, linkNodeModules =
     profile,
     registrationCommit,
     registrationParentCommit: profile.registrationParentCommit,
+    registrationParentTree,
     repositoryRoot: treeRoot,
     readFile(relativePath) {
       requireRelativePath(relativePath, "registered tree read path");

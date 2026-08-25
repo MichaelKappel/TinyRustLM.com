@@ -113,6 +113,17 @@ readbacks, and published-claim descendants point forward to the finalized
 release. No finalized content-addressed object points back to one of those
 descendants.
 
+The 2026-08-25 bound-input refresh re-reviewed one Merkle-level correction in
+both independent validators. The first parent above leaf hashes now has level
+one, matching the P2P piece-manifest domain contract; level zero is reserved for
+the leaves themselves. Domain separators, little-endian integer widths, piece
+indices, parent indices, odd-node carry behavior, and root framing are
+unchanged. A new independently computed two-piece conformance case requires
+both validators to accept the level-one root and reject the former level-zero
+root. The frozen registry, corpus, and generator bytes did not change. This
+correction neither broadens an accepted schema nor changes any release,
+campaign, or live-service claim.
+
 These later local facts close the named cross-runtime implementation gaps and
 the maintained release-entry-point cutover. Subsequent Gate D checkpoints also
 integrate one bounded archive authority and one module-issued protected
@@ -149,7 +160,7 @@ CI source performs the same replay for each declared RID and uploads its receipt
 separately from the package, but no completed hosted run or non-Windows native
 execution is claimed at this checkpoint.
 
-Reviewed at `2026-08-11T19:10:29Z`. The review is invalidated when any bound
+Reviewed at `2026-08-25T03:19:30Z`. The review is invalidated when any bound
 file changes, when the parser changes, or when a deferred proof obligation is
 reclassified without a new threat review.
 
@@ -159,10 +170,10 @@ reclassified without a new threat review.
 | --- | --- | ---: | --- |
 | Frozen registry | `contracts/vnext/contract-family.v1.json` | 40,674 | `dd1534f577f5468f94d4b3b4d7d8985751fd1ddc4a28a2ccee9f47462449bbf0` |
 | Language-neutral corpus | `contracts/vnext/contract-corpus.v1.json` | 195,068 | `2c86c7da67d419b140f5de8b9d297707a6e47245a338db6dd9bcca55de912044` |
-| Registry interpreter | `tinyrustlm/tools/vnext-contract-validator-registry.js` | 33,567 | `120927546862720fe2faafb7d0e0bc5520d110f20115b50f8f9cf2eba715e413` |
-| Independent validator | `tinyrustlm/tools/vnext-contract-validator-independent.js` | 46,820 | `758b42e3b5e25bfb5e58d6a06056b1760cc8527cdcc82ea90838f0330094412f` |
+| Registry interpreter | `tinyrustlm/tools/vnext-contract-validator-registry.js` | 33,567 | `a0f0db68f8854d7e40801180b82accec64568280f4bd6a65991fa0edf3bd9a3c` |
+| Independent validator | `tinyrustlm/tools/vnext-contract-validator-independent.js` | 46,820 | `b9fd26ee1d5f0080472f7d08f2959084b0a858766104f140918d5647cedab115` |
 | Corpus generator | `tinyrustlm/tools/vnext-contract-corpus-generator.js` | 24,303 | `835d3a65bd0cae9adc1618d2f40802390643d04d60a0d3287e01d3665860a986` |
-| Differential tests | `tinyrustlm/tests/vnext-contract-validator-conformance.test.js` | 10,585 | `78795d573153d56fd1fd4438e8e317d600d61bda477998ef592bf7b2fe28d9e5` |
+| Differential tests | `tinyrustlm/tests/vnext-contract-validator-conformance.test.js` | 12,513 | `ab5ffd0efaa67136bfb24081ea87ab50b04014f3739dc0b79f233bce7fe6a9a1` |
 
 Validator identities are
 `tinyrustlm.vnext.registry-schema-validator.v1` and

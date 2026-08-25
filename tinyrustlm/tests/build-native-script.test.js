@@ -10,21 +10,25 @@ const repositoryRoot = path.resolve(__dirname, "../..");
 const powerShellScript = path.join(repositoryRoot, "eng", "build-native.ps1");
 const shellScript = path.join(repositoryRoot, "eng", "build-native.sh");
 
-test("native build scripts copy from the Cargo target they invoke", () => {
+test("native build scripts copy from the explicit target-triple Cargo output", () => {
   const powerShell = fs.readFileSync(powerShellScript, "utf8");
   const shell = fs.readFileSync(shellScript, "utf8");
 
-  assert.match(powerShell, /\$TargetDir = Resolve-CargoTargetDirectory/u);
+  assert.match(powerShell, /\$targetDirectory = Resolve-CargoTargetDirectory/u);
   assert.match(powerShell,
-    /\$NativeSource = Join-Path \(Join-Path \$TargetDir \$ProfileDir\) \$NativeName/u);
+    /\$cargoArguments = @\("build", "-p", "tinyrustlm-native", "--target", \$targetTriple\)/u);
+  assert.match(powerShell,
+    /\$nativeSource = Join-Path \$targetDirectory "\$targetTriple\/\$profileDirectory\/\$nativeName"/u);
   assert.doesNotMatch(powerShell,
-    /\$TargetDir\s*=\s*Join-Path\s+\$RepoRoot\s+"target"/u);
+    /\$targetDirectory\s*=\s*Join-Path\s+\$RepoRoot\s+"target"/u);
   assert.match(shell,
-    /TARGET_DIR="\$\{CARGO_TARGET_DIR:-\$REPO_ROOT\/target\}"/u);
+    /target_dir="\$\{CARGO_TARGET_DIR:-\$repo_root\/target\}"/u);
   assert.match(shell,
-    /NATIVE_SOURCE="\$TARGET_DIR\/\$PROFILE_DIR\/\$NATIVE_NAME"/u);
+    /cargo_args=\(build -p tinyrustlm-native --target "\$target_triple"\)/u);
+  assert.match(shell,
+    /source_path="\$target_dir\/\$target_triple\/\$profile_dir\/\$native_name"/u);
   assert.doesNotMatch(shell,
-    /cp\s+"target\/\$PROFILE_DIR\/\$NATIVE_NAME"/u);
+    /cp\s+"target\/\$profile_dir\/\$native_name"/u);
 });
 
 if (process.platform === "win32") {

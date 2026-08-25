@@ -10,6 +10,10 @@ description = "Canonical ACG2 graph, bounded member resolution, and fail-atomic 
 [lib]
 crate-type = ["cdylib", "rlib"]
 
+[features]
+default = []
+wasm-conformance = []
+
 [dependencies]
 sha2.workspace = true
 tinyrustlm-prompt2 = { path = "../tinyrustlm-prompt2" }

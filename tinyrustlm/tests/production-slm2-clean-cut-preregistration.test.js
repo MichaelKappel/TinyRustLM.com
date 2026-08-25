@@ -2,24 +2,30 @@
 
 const assert = require("node:assert/strict");
 const crypto = require("node:crypto");
-const fs = require("node:fs");
-const path = require("node:path");
 const test = require("node:test");
 
-const repositoryRoot = path.resolve(__dirname, "../..");
-const profilePath = path.join(
-  repositoryRoot,
-  "contracts/vnext/production-slm2-clean-cut-preregistration.v1.json"
-);
-const profileBytes = fs.readFileSync(profilePath);
-const profile = JSON.parse(profileBytes.toString("utf8"));
+const profileRelativePath =
+  "contracts/vnext/production-slm2-clean-cut-preregistration.v1.json";
+const { createRegisteredGitTree } = require("./helpers/registered-git-tree.js");
+const registeredTree = createRegisteredGitTree({
+  profilePath: profileRelativePath,
+  requiredPaths: [
+    "Cargo.lock",
+    "Cargo.toml",
+    "docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md",
+    "docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md"
+  ]
+});
+test.after(() => registeredTree.dispose());
+const profileBytes = registeredTree.readFile(profileRelativePath);
+const profile = registeredTree.profile;
 
 function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
 }
 
 function readRepositoryFile(relativePath) {
-  return fs.readFileSync(path.join(repositoryRoot, ...relativePath.split("/")));
+  return registeredTree.readFile(relativePath);
 }
 
 test("binds the exact pre-cutover authority and immutable inputs", () => {
@@ -32,8 +38,14 @@ test("binds the exact pre-cutover authority and immutable inputs", () => {
     "registered-before-workspace-or-executable-cutover");
   assert.equal(profile.registrationParentCommit,
     "49e261cf76d3d7256d6a3d1b7663e36424b95763");
+  assert.equal(registeredTree.registrationCommit,
+    "87f77d97d67aab7daa652b105776d2ddd2bbe13e");
+  assert.equal(registeredTree.registrationParentCommit,
+    profile.registrationParentCommit);
   assert.equal(profile.registrationParentTree,
     "6e735f93409d28d6fbf92adf3f4f1092c9eabee4");
+  assert.equal(registeredTree.registrationParentTree,
+    profile.registrationParentTree);
   assert.equal(profile.authority.productLifecycle, "prelaunch-single-product");
   assert.equal(profile.authority.productGenerationCount, 1);
   assert.equal(profile.authority.secondProductGenerationExists, false);

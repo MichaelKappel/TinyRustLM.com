@@ -7,8 +7,41 @@ const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
 
-const { parseStrictJson } = require("../tools/strict-json.js");
-const { renderCorpus } = require("../tools/qwen-template2-parity-corpus.js");
+const { createRegisteredGitTree } = require("./helpers/registered-git-tree.js");
+const executionProfileRelativePath =
+  "contracts/vnext/qwen-template2-parity-preregistration.v1.json";
+const registeredTree = createRegisteredGitTree({
+  profilePath: executionProfileRelativePath,
+  requiredPaths: [
+    "Cargo.lock",
+    "Cargo.toml",
+    "contracts/vnext/qwen-template2-parity-cases.v1.json",
+    "contracts/vnext/qwen-template2-parity-verification-preregistration.v1.json",
+    "contracts/vnext/qwen3-0.6b-template2-source-lock.v1.json",
+    "contracts/vnext/template2-format-profile.v1.json",
+    "contracts/vnext/template2-source-oracle-environment-lock.v1.json",
+    "rust/crates/tinyrustlm-template2/Cargo.toml",
+    "rust/crates/tinyrustlm-template2/examples/qwen_template2_parity.rs",
+    "rust/crates/tinyrustlm-template2/src/format.rs",
+    "rust/crates/tinyrustlm-template2/src/lib.rs",
+    "rust/crates/tinyrustlm-template2/src/runtime.rs",
+    "tinyrustlm/tools/qwen-template2-parity-corpus.js",
+    "tinyrustlm/tools/qwen-template2-parity-observation.js",
+    "tinyrustlm/tools/qwen-template2-parity-verifier.js",
+    "tinyrustlm/tools/qwen-template2-source-oracle.py",
+    "tinyrustlm/tools/strict-json.js",
+    "tinyrustlm/tools/template2-reference.js",
+    "tinyrustlm/tools/template2-source-oracle-environment.js"
+  ]
+});
+test.after(() => registeredTree.dispose());
+
+const { parseStrictJson } = registeredTree.requireModule(
+  "tinyrustlm/tools/strict-json.js"
+);
+const { renderCorpus } = registeredTree.requireModule(
+  "tinyrustlm/tools/qwen-template2-parity-corpus.js"
+);
 const {
   Template2VerificationError,
   compareResultDocuments,
@@ -16,35 +49,38 @@ const {
   validateCorpus,
   validateExecutionProfile,
   validateVerificationProfile
-} = require("../tools/qwen-template2-parity-verifier.js");
+} = registeredTree.requireModule(
+  "tinyrustlm/tools/qwen-template2-parity-verifier.js"
+);
 
 const repositoryRoot = path.resolve(__dirname, "../..");
+const registeredRepositoryRoot = registeredTree.repositoryRoot;
 const executionProfilePath = path.join(
-  repositoryRoot,
-  "contracts/vnext/qwen-template2-parity-preregistration.v1.json"
+  registeredRepositoryRoot,
+  ...executionProfileRelativePath.split("/")
 );
 const verificationProfilePath = path.join(
-  repositoryRoot,
+  registeredRepositoryRoot,
   "contracts/vnext/qwen-template2-parity-verification-preregistration.v1.json"
 );
 const corpusPath = path.join(
-  repositoryRoot,
+  registeredRepositoryRoot,
   "contracts/vnext/qwen-template2-parity-cases.v1.json"
 );
 const oraclePath = path.join(
-  repositoryRoot,
+  registeredRepositoryRoot,
   "tinyrustlm/tools/qwen-template2-source-oracle.py"
 );
 const candidatePath = path.join(
-  repositoryRoot,
+  registeredRepositoryRoot,
   "rust/crates/tinyrustlm-template2/examples/qwen_template2_parity.rs"
 );
 const verifierPath = path.join(
-  repositoryRoot,
+  registeredRepositoryRoot,
   "tinyrustlm/tools/qwen-template2-parity-verifier.js"
 );
 const observationPath = path.join(
-  repositoryRoot,
+  registeredRepositoryRoot,
   "tinyrustlm/tools/qwen-template2-parity-observation.js"
 );
 const publicResultPath = path.join(
@@ -76,6 +112,10 @@ function clone(value) {
 }
 
 test("execution and verification preregistrations bind every implementation input", () => {
+  assert.equal(registeredTree.registrationCommit,
+    "2693cec9eeff6af991c78d42a0eb9c9fe5716f60");
+  assert.equal(registeredTree.registrationParentCommit,
+    "81a6d53844761d10c0eb1563b5420788c1772f8f");
   const execution = strictDocument(executionProfilePath);
   const verification = strictDocument(verificationProfilePath);
   assert.equal(execution.bytes.length, 6631);
@@ -173,7 +213,7 @@ test("malformed observer and verifier invocations fail before creating evidence"
     [verifierPath, "template2-verifier-arguments-invalid"]
   ]) {
     const result = childProcess.spawnSync(process.execPath, [script], {
-      cwd: repositoryRoot,
+      cwd: registeredRepositoryRoot,
       encoding: "utf8",
       windowsHide: true
     });
