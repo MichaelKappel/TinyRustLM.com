@@ -1,0 +1,291 @@
+{
+  "schema": "tinyrustlm.qwen3-real-composition-execution-result.v7",
+  "executionProfileId": "tinyrustlm.qwen3-real-composition-execution/7",
+  "executionId": "qwen3-composition-c1899de-20260825-v7",
+  "status": "terminal-rust-custody-failure",
+  "observedAtUtc": "2026-08-25T16:51:42.925Z",
+  "predecessor": {
+    "resultPath": "contracts/vnext/qwen3-real-composition-execution-result.v6.json",
+    "resultByteLength": 6644,
+    "resultSha256": "58d6ce16304d804d3a09cfd2c6544e8fa10b39080359040383df3f2ac68bb72c",
+    "status": "terminal-rust-build-failure",
+    "reused": false,
+    "modified": false
+  },
+  "registration": {
+    "profilePath": "contracts/vnext/qwen3-real-composition-execution-preregistration.v7.json",
+    "profileByteLength": 53432,
+    "profileSha256": "788f894c3e6116d3bd360386a4a1bbbe892d80f843cdf513e2ca7c781db293a1",
+    "commit": "53998f553bf7b24111eadf35b9b4eaca41885c99",
+    "tree": "a4641555f199b99064ee5b4efe8cf7aac752e8c2",
+    "branch": "codex/model-acquisition-v2",
+    "remoteExactBeforeEnvironmentRequest": true,
+    "remoteExactBeforeEnvironmentMaterialization": true,
+    "remoteExactBeforeRustRequest": true,
+    "remoteExactBeforeRustBuild": true
+  },
+  "windowsMsvcEnvironmentAuthority": {
+    "operationId": "qwen3-composition-v7-msvc-environment",
+    "request": {
+      "byteLength": 1546,
+      "sha256": "21b5012ec086922dd48020299325644a5c5671e3c8123442ffde46f414001b08",
+      "createOnly": true,
+      "privatePathPublished": false
+    },
+    "materialization": {
+      "invocationCount": 1,
+      "exitCode": 0,
+      "stdout": {
+        "byteLength": 958,
+        "sha256": "98bca1fe9d929be5be4a1fafb5b66b595f6346594b40f368511d25b7a217d314",
+        "canonicalPublicSummary": true
+      },
+      "stderr": {
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "published": false
+      },
+      "status": "pass",
+      "code": "msvc-environment-materialized"
+    },
+    "selected": {
+      "visualStudioProductLineVersion": "2022",
+      "visualStudioInstallationVersion": "17.14.37531.7",
+      "msvcToolsetVersion": "14.44.35207",
+      "windowsSdkVersion": "10.0.26100.0",
+      "targetTriple": "x86_64-pc-windows-msvc"
+    },
+    "evidence": {
+      "privateBinding": {
+        "byteLength": 9878,
+        "sha256": "8f3f6d0d1a8852cfb5dc6994f69eeefe6006de673710b0469393cd85387267ae",
+        "published": false
+      },
+      "publicLock": {
+        "byteLength": 157301,
+        "sha256": "8e16a82b73828fa2152feb75ba4d42a9045efd97f7421fba7c445c1af859552a"
+      },
+      "terminal": {
+        "byteLength": 2016,
+        "sha256": "03475d087fc4327f26fde4ae89f61e6b2c7cec58898bbdb4fc09bee9ace1521f",
+        "status": "pass",
+        "code": "msvc-environment-materialized"
+      }
+    },
+    "postMaterializationValidation": {
+      "status": "pass",
+      "code": "msvc-environment-validation-pass",
+      "evidenceUnchanged": true
+    },
+    "rustPreflightFreshProcessValidation": true,
+    "rustPreLaunchFreshProcessValidation": true,
+    "rustPostChildFreshProcessValidation": true,
+    "materializationRetryAllowed": false,
+    "cleanupAllowed": false,
+    "repairAllowed": false
+  },
+  "rustBuildCustody": {
+    "operationId": "qwen3-composition-v7-rust-build",
+    "request": {
+      "byteLength": 6367,
+      "sha256": "90cecbc1c9673f95cd1a8e0e6c722a399c9c004456bce3f4a0a83c7ccd765d8f",
+      "createOnly": true,
+      "privatePathPublished": false
+    },
+    "preflight": {
+      "invocationCount": 1,
+      "status": "ready",
+      "code": "build-custody-preflight-pass",
+      "requestSha256": "90cecbc1c9673f95cd1a8e0e6c722a399c9c004456bce3f4a0a83c7ccd765d8f",
+      "environmentPublicLockSha256": "8e16a82b73828fa2152feb75ba4d42a9045efd97f7421fba7c445c1af859552a",
+      "combinedEnvironmentSha256": "6b65e2be0ebc2ffefd7c4f76d01a6fb0b8b97a7f341d599732eee9857316a2ff",
+      "controlRootAbsent": true,
+      "targetRootAbsent": true,
+      "environmentRootAbsent": true
+    },
+    "execution": {
+      "invocationCount": 1,
+      "processStarted": true,
+      "processIdObserved": true,
+      "startedAtUtc": "2026-08-25T16:48:55.511Z",
+      "exitedAtUtc": "2026-08-25T16:49:20.499Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stdoutOverflow": false,
+      "stderrOverflow": false,
+      "spawnErrorCode": null,
+      "streamErrorCode": null,
+      "captureCloseCode": null
+    },
+    "evidence": {
+      "binding": {
+        "byteLength": 9800,
+        "sha256": "ff09d79f7388515bf8e9c70302f7ead4f31c958e1fdf26332e51ac5ca6536203"
+      },
+      "start": {
+        "byteLength": 651,
+        "sha256": "5a6c6b854ccf029cfc5b67b42fc138bd0e462b2e999ebef229a1c6bf906f6946"
+      },
+      "stdout": {
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "published": false
+      },
+      "stderr": {
+        "byteLength": 1874,
+        "sha256": "cfac0d70b33edfbf13f6a1be3204a1cc2cdb7b20d455b779f54dd55ab5f2d5cb",
+        "published": false
+      },
+      "processTerminal": {
+        "byteLength": 2256,
+        "sha256": "e2833f7ea870f2b828c040f4781ba5e4d5d7cd8269d3e20a92b83a37f11d9458"
+      },
+      "terminal": {
+        "byteLength": 10889,
+        "sha256": "f0a818869f3037d9fe51f5bf86bb22d0f9149ee5925bda72a1a0f946a0105e2c",
+        "status": "terminal-custody-failure",
+        "code": "build-custody-environment-scratch-reparse"
+      }
+    },
+    "environmentAuthorityConsistency": {
+      "initialPublicLockSha256": "8e16a82b73828fa2152feb75ba4d42a9045efd97f7421fba7c445c1af859552a",
+      "preLaunchPublicLockSha256": "8e16a82b73828fa2152feb75ba4d42a9045efd97f7421fba7c445c1af859552a",
+      "postChildPublicLockSha256": "8e16a82b73828fa2152feb75ba4d42a9045efd97f7421fba7c445c1af859552a",
+      "combinedEnvironmentSha256": "6b65e2be0ebc2ffefd7c4f76d01a6fb0b8b97a7f341d599732eee9857316a2ff",
+      "driftObserved": false
+    },
+    "targetInventory": {
+      "entryCount": 450,
+      "fileCount": 365,
+      "directoryCount": 85,
+      "aggregateFileBytes": 105686862,
+      "requiredOutput": {
+        "relativePath": "x86_64-pc-windows-msvc/release/tinyrustlm-convert.exe",
+        "byteLength": 852992,
+        "sha256": "f5712d2d4cc9f7fe61cbb3102c126cdd3bb7da3f7142edd5a95f9fa0c6b6bdf4",
+        "peMachine": "0x8664"
+      },
+      "preserved": true,
+      "adoptionAllowed": false
+    },
+    "environmentScratchObservation": {
+      "terminalInventoryCreated": false,
+      "readOnlyPostTerminalObservation": true,
+      "entryCount": 25,
+      "fileCount": 1,
+      "directoryCount": 23,
+      "aggregateFileBytes": 0,
+      "reparsePointCount": 1,
+      "reparse": {
+        "relativePath": "home/AppData/Local/Microsoft/Windows/INetCache/Content.IE5",
+        "targetKind": "absolute-directory-junction",
+        "targetInsideOwnedScratch": true,
+        "targetRelativePath": "home/AppData/Local/Microsoft/Windows/INetCache/IE",
+        "followedDuringObservation": false
+      },
+      "preserved": true
+    },
+    "rootCause": {
+      "code": "windows-inetcache-contained-junction-not-representable-by-current-scratch-contract",
+      "childBuildExitCodeZero": true,
+      "requiredX64ConverterObserved": true,
+      "environmentAuthorityDriftObserved": false,
+      "singleContainedWindowsKnownFolderJunctionObserved": true,
+      "externalReparseTargetObserved": false,
+      "sourceCodeDefectEstablished": false,
+      "converterBuildDefectEstablished": false,
+      "environmentAuthorityDefectEstablished": false,
+      "buildCustodyOwnerImplementationDefectEstablished": false,
+      "buildCustodyScratchContractDefectEstablished": true,
+      "rootCauseEstablished": true
+    },
+    "relevantBuildProcessesObservedAfterTerminal": 0,
+    "retryAllowed": false,
+    "resumeAllowed": false,
+    "cleanupAllowed": false,
+    "outputAdoptionAllowed": false
+  },
+  "laterOperationObservation": {
+    "managedCustodyRequestCreated": false,
+    "managedCustodyPreflightCount": 0,
+    "managedCustodyExecuteCount": 0,
+    "managedBuildAttemptCount": 0,
+    "compositionRequestCreated": false,
+    "controllerInvocationCount": 0,
+    "converterLaunchCount": 0,
+    "managedInspectionInvocationCount": 0,
+    "privateExecutionBindingCreated": false,
+    "compositionArtifactCreated": false,
+    "privateVerificationCreated": false
+  },
+  "rootObservation": {
+    "registeredLogicalNameCount": 15,
+    "environmentRequestCreated": true,
+    "environmentPrivateBindingCreated": true,
+    "environmentPublicLockCreated": true,
+    "environmentTerminalCreated": true,
+    "rustCustodyRequestCreated": true,
+    "rustCustodyControlRootCreated": true,
+    "rustCustodyTargetRootCreated": true,
+    "rustCustodyEnvironmentRootCreated": true,
+    "managedCustodyRequestCreated": false,
+    "managedCustodyControlRootCreated": false,
+    "managedCustodyTargetRootCreated": false,
+    "managedCustodyEnvironmentRootCreated": false,
+    "compositionRequestCreated": false,
+    "controllerEvidenceRootCreated": false,
+    "compositionOutputRootCreated": false,
+    "allCreatedPrivateMaterialPreserved": true
+  },
+  "decision": {
+    "status": "terminal-rust-custody-failure",
+    "reasonCode": "windows-inetcache-contained-junction-not-representable-by-current-scratch-contract",
+    "stage": "rust-build-custody-post-exit-verification",
+    "rootCauseEstablished": true,
+    "registrationClosed": true,
+    "retryUnderRegistrationAllowed": false,
+    "existingPrivateEvidenceMayBeDeleted": false,
+    "existingPrivateEvidenceMayBeOverwritten": false,
+    "existingTargetMayBeAdopted": false,
+    "laterOperationsAuthorized": false,
+    "newAttemptRequiresNewRegistrationAndAllNewLogicalNames": true,
+    "newAttemptRequiresExplicitBoundedInternalJunctionContract": true,
+    "blanketReparseAllowanceAccepted": false
+  },
+  "claimBoundary": {
+    "realConversionAttemptRegistered": true,
+    "msvcEnvironmentAuthorityMaterialized": true,
+    "privateCustodyRequestCreated": true,
+    "rustBuildCustodyCompleted": true,
+    "rustBuildAttempted": true,
+    "rustChildExitedZero": true,
+    "requiredConverterBuildOutputObserved": true,
+    "rustReleaseBuildQualified": false,
+    "managedBuildCustodyCompleted": false,
+    "managedInspectorBuildCompleted": false,
+    "privateCompositionRequestCreated": false,
+    "privateExecutionBindingCreated": false,
+    "realConverterInvoked": false,
+    "managedInspectionInvoked": false,
+    "structuralCompositionVerified": false,
+    "sourceFrameworkParityVerified": false,
+    "nativeRuntimeVerified": false,
+    "browserWasmVerified": false,
+    "browserChatVerified": false,
+    "modelQualityVerified": false,
+    "p2pAvailabilityVerified": false,
+    "catalogAnnouncementVerified": false,
+    "packagePublicationVerified": false,
+    "siteDeploymentVerified": false,
+    "memoryEndpointsVerified": false,
+    "campaignCreditAuthorized": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}

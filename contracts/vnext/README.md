@@ -427,6 +427,23 @@ runtime, browser, quality, P2P, publication, MemoryEndpoints, or campaign
 evidence. See
 `docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration-v7.md`.
 
+The one `/7` environment materialization passed and bound Visual Studio
+`17.14.37531.7`, MSVC `14.44.35207`, and Windows SDK `10.0.26100.0`. The one
+Rust custody child then exited `0` and produced the registered 852,992-byte x64
+converter, but custody closed as `terminal-rust-custody-failure`. Windows had
+created one `Content.IE5` directory junction whose target remained inside the
+owned scratch root; build-custody profile `/2` permits no reparse entry and
+therefore failed closed. The failed target is preserved and cannot be adopted.
+No managed request, composition request, controller, converter invocation, or
+SLM2 artifact exists. The bounded result is
+`qwen3-real-composition-execution-result.v7.json`, 11,166 canonical ASCII/LF
+bytes at SHA-256
+`e37790ffb827fe7082e31cc6adecc8148839dd6ef757231165587c45dd35b444`.
+Any later attempt requires a new profile that safely classifies bounded
+same-root directory junctions, a new registration, and all-new names. Broad
+reparse allowance, retry, cleanup, and output adoption remain prohibited. See
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-v7-contained-junction-custody-failure.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2
