@@ -21,6 +21,8 @@
     "test:qwen-tokenizer2-browser-wasm-preregistration": "node --test tests/qwen-tokenizer2-browser-wasm-preregistration.test.js",
     "test:qwen-template2-parity-preregistration": "node --test tests/qwen-template2-parity-preregistration.test.js",
     "test:build-custody": "node --test tests/build-custody-owner.test.js",
+    "test:windows-x64-msvc-environment": "node --test tests/windows-x64-msvc-environment.test.js",
+    "test:windows-x64-msvc-environment-observation": "powershell -NoProfile -Command \"$env:TINYRUSTLM_REAL_MSVC_ENVIRONMENT_OBSERVATION='1'; node --test tests/windows-x64-msvc-environment-observation.test.js\"",
     "test:prompt2-format-vectors": "node --test tests/prompt2-format-vectors.test.js",
     "generate:vnext-signature-rust-vectors": "node tools/vnext-signature-rust-vectors.js --write",
     "test:unit": "node tools/run-vnext-unit-test-gate.js all",

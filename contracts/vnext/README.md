@@ -291,6 +291,23 @@ requires a tested source-controlled build-custody owner plus wholly new roots.
 See
 `docs/architecture/2026-08-25-qwen3-real-composition-execution-v4-result-and-build-custody-defect.md`.
 
+`windows-x64-msvc-environment-profile.v1.json` is the sole prelaunch authority
+for discovering and binding the exact x64 MSVC/Windows SDK closure used by a
+future Rust build. It is 6,510 canonical bytes at SHA-256
+`76de6c5985c000dadedefa457286111af80ebd2deb6e6e3d8de246f6a0eed607`.
+The owner selects the highest complete eligible Visual Studio installation and
+SDK within request-declared bounds, inventories and hashes the complete direct
+tool/library roots, PE-checks seven required x64 tools, archive-checks every
+selected library, renders an explicit Cargo target linker plus exact
+`PATH`/`LIB`/`LIBPATH`, proves unique command resolution, and emits a private
+binding, public-safe lock, and terminal record create-only. Validation
+regenerates the complete current closure and requires byte-exact equality. Its
+synthetic gate passes 8/8 and its explicit installed Visual Studio 2022
+observation passes 1/1. It grants no build or model claim. The current custody
+owner is not yet environment-bound; that clean technical replacement must be
+committed and remotely verified before a new composition registration. See
+`docs/architecture/2026-08-25-deterministic-windows-x64-msvc-environment-authority.md`.
+
 `build-custody-profile.v1.json` is the sole prelaunch Windows x64 contract for
 future irreversible builds. It is 3,407 canonical bytes at SHA-256
 `589883f42c1e047dfa6e132c8c4937c05d23b936ae1a6f62fe41c91b672a82fa`.

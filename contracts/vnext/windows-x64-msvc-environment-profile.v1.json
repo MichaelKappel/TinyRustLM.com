@@ -1,0 +1,217 @@
+{
+  "schema": "tinyrustlm.windows_x64_msvc_environment_profile.v1",
+  "profileId": "tinyrustlm.windows-x64-msvc-environment/1",
+  "status": "current-prelaunch-only",
+  "platform": "win32",
+  "architecture": "x64",
+  "targetTriple": "x86_64-pc-windows-msvc",
+  "authority": {
+    "productLifecycle": "prelaunch-single-product",
+    "owner": "tinyrustlm/tools/windows-x64-msvc-environment.js",
+    "discovery": "exact-hashed-vswhere-json",
+    "instanceSelection": "highest-four-part-version-in-requested-product-line",
+    "toolsetSelection": "selected-instance-default-toolset-file",
+    "sdkSelection": "highest-complete-four-part-version-in-requested-range",
+    "linkerSelection": "explicit-cargo-target-linker-only",
+    "legacySupport": false,
+    "compatibility": false,
+    "migration": false,
+    "fallback": false,
+    "buildProbe": false,
+    "automaticRetry": false,
+    "outputRepair": false
+  },
+  "schemas": {
+    "request": "tinyrustlm.windows_x64_msvc_environment_request.v1",
+    "publicLockBasis": "tinyrustlm.windows_x64_msvc_environment_public_basis.v1",
+    "publicLock": "tinyrustlm.windows_x64_msvc_environment_public_lock.v1",
+    "privateBinding": "tinyrustlm.windows_x64_msvc_environment_private_binding.v1",
+    "terminal": "tinyrustlm.windows_x64_msvc_environment_terminal.v1",
+    "summary": "tinyrustlm.windows_x64_msvc_environment_summary.v1"
+  },
+  "limits": {
+    "maximumRequestBytes": 262144,
+    "maximumVswhereOutputBytes": 4194304,
+    "maximumPublicLockBytes": 16777216,
+    "maximumPrivateBindingBytes": 4194304,
+    "maximumTerminalBytes": 1048576,
+    "maximumInstances": 64,
+    "maximumInventoryMembersPerRoot": 4096,
+    "maximumInventoryAggregateBytesPerRoot": 4294967296,
+    "maximumSingleMemberBytes": 1073741824,
+    "hashBufferBytes": 1048576,
+    "maximumEnvironmentEntries": 64,
+    "maximumEnvironmentValueBytes": 32768,
+    "maximumPathBytes": 4096
+  },
+  "requestPolicy": {
+    "canonicalJson": true,
+    "utf8WithoutBom": true,
+    "finalLf": true,
+    "unknownFields": "reject",
+    "absoluteUppercaseLocalDrivePathsOnly": true,
+    "uncAndDeviceNamespacePathsAllowed": false,
+    "outputFilesMustBeDistinctAbsentDirectSiblings": true,
+    "outputWriteMode": "create-only",
+    "outputParentsMustBeExistingDirectNonReparseDirectories": true,
+    "prohibitedWriteRootsRequired": [
+      "D:\\"
+    ]
+  },
+  "discoveryPolicy": {
+    "component": "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+    "arguments": [
+      "-all",
+      "-products",
+      "*",
+      "-requires",
+      "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+      "-format",
+      "json",
+      "-utf8"
+    ],
+    "shell": false,
+    "networkAllowed": false,
+    "stderrMustBeEmpty": true,
+    "exitCode": 0,
+    "requiredInstanceState": {
+      "isComplete": true,
+      "isLaunchable": true,
+      "isPrerelease": false,
+      "isRebootRequired": false
+    },
+    "equalHighestVersionInstances": "reject-ambiguous"
+  },
+  "toolsetLayout": {
+    "defaultVersionFile": "VC/Auxiliary/Build/Microsoft.VCToolsVersion.default.txt",
+    "toolRoot": "VC/Tools/MSVC/{toolsetVersion}",
+    "hostTargetBin": "bin/Hostx64/x64",
+    "targetLib": "lib/x64",
+    "requiredTools": [
+      "cl.exe",
+      "dumpbin.exe",
+      "lib.exe",
+      "link.exe",
+      "ml64.exe"
+    ],
+    "requiredLibraries": [
+      "libcmt.lib",
+      "libvcruntime.lib",
+      "oldnames.lib",
+      "vcruntime.lib"
+    ]
+  },
+  "windowsSdkLayout": {
+    "versionRoots": [
+      "Include",
+      "Lib",
+      "bin"
+    ],
+    "requiredIncludeRoots": [
+      "shared",
+      "ucrt",
+      "um"
+    ],
+    "ucrtLib": "Lib/{sdkVersion}/ucrt/x64",
+    "umLib": "Lib/{sdkVersion}/um/x64",
+    "x64Bin": "bin/{sdkVersion}/x64",
+    "requiredTools": [
+      "mt.exe",
+      "rc.exe"
+    ],
+    "requiredUcrtLibraries": [
+      "libucrt.lib",
+      "ucrt.lib"
+    ],
+    "requiredUmLibraries": [
+      "advapi32.lib",
+      "bcrypt.lib",
+      "kernel32.lib",
+      "ntdll.lib",
+      "userenv.lib",
+      "ws2_32.lib"
+    ]
+  },
+  "inventoryPolicy": {
+    "toolDirectories": "all-direct-regular-files",
+    "libraryDirectories": "all-direct-lib-regular-files",
+    "caseInsensitiveDuplicateNames": "reject",
+    "symlinkOrReparseMember": "reject",
+    "libraryArchiveMagic": "!<arch>\\n",
+    "hashAlgorithm": "sha256",
+    "ordering": "unsigned-utf8-byte-order",
+    "closureHashDomain": "tinyrustlm.windows-x64-msvc-inventory.v1"
+  },
+  "environmentPolicy": {
+    "baseNamesInCanonicalOrder": [
+      "CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER",
+      "LIB",
+      "LIBPATH",
+      "PATH",
+      "Platform",
+      "UCRTVersion",
+      "UniversalCRTSdkDir",
+      "VCINSTALLDIR",
+      "VCToolsInstallDir",
+      "VCToolsVersion",
+      "VSCMD_ARG_HOST_ARCH",
+      "VSCMD_ARG_TGT_ARCH",
+      "WindowsSdkDir",
+      "WindowsSDKLibVersion",
+      "WindowsSDKVersion"
+    ],
+    "pathOrder": [
+      "msvc-hostx64-x64-bin",
+      "windows-sdk-x64-bin",
+      "system32"
+    ],
+    "libraryOrder": [
+      "msvc-x64-lib",
+      "windows-sdk-ucrt-x64-lib",
+      "windows-sdk-um-x64-lib"
+    ],
+    "explicitCargoTargetLinker": true,
+    "ambientDeveloperShell": false,
+    "inheritedPath": false,
+    "inheritedLib": false,
+    "inheritedLibPath": false,
+    "inheritedInclude": false,
+    "commandResolutionMustBeUnique": [
+      "cl.exe",
+      "lib.exe",
+      "link.exe",
+      "ml64.exe",
+      "mt.exe",
+      "rc.exe"
+    ]
+  },
+  "materializationPolicy": {
+    "renderCompletelyBeforeFirstWrite": true,
+    "privateBindingWrittenFirst": true,
+    "publicLockWrittenSecond": true,
+    "terminalWrittenLast": true,
+    "sameDirectoryTemporaryFile": true,
+    "fileFlushBeforePromotion": true,
+    "promotion": "create-only-same-volume-hard-link",
+    "finalReadbackBeforeStagingRemoval": true,
+    "directoryFlushClaimed": false,
+    "overwriteAllowed": false,
+    "partialMaterializationReusable": false,
+    "partialMaterializationCleanupAllowed": false,
+    "validationWrites": false
+  },
+  "claimBoundary": {
+    "materializedPass": "exact-toolchain-and-sdk-environment-observed-and-bound",
+    "rustBuild": "not-assessed",
+    "converter": "not-assessed",
+    "structuralComposition": "not-assessed",
+    "sourceFrameworkParity": "not-assessed",
+    "nativeRuntime": "not-assessed",
+    "browserWasm": "not-assessed",
+    "modelQuality": "not-assessed",
+    "p2p": "not-assessed",
+    "publication": "not-assessed",
+    "memoryEndpoints": "not-authorized",
+    "campaignCredit": "not-authorized"
+  }
+}
