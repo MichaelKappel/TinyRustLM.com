@@ -461,6 +461,36 @@ same-root directory junctions, a new registration, and all-new names. Broad
 reparse allowance, retry, cleanup, and output adoption remain prohibited. See
 `docs/architecture/2026-08-25-qwen3-real-composition-execution-v7-contained-junction-custody-failure.md`.
 
+`qwen3-real-composition-execution-preregistration.v8.json` registers one new
+output-free attempt against sole maintained build-custody profile `/3`. It is
+61,969 canonical ASCII/LF bytes at SHA-256
+`4a7e255c500ef87e3ddac4d7befb7331232167e7bcf47aae6cdabfbd752fec21`.
+It binds remote-exact parent commit
+`4d972b89b583c2b54847a8354d936bf432a1d438`, tree
+`11bde04b17f31b9289c22df3268c45f742f1253d`, all seven terminal
+predecessors, 25 committed source sentinels, exact external tools, the
+junction-qualified Win32 scratch inspector, the corrected two-package Cargo
+command, and the managed fixed-name helper staging boundary.
+
+The registration reserves 15 wholly new absent private names. Rust custody
+must produce and qualify both the scratch inspector and converter before the
+managed request can exist. Managed custody must produce four managed files
+plus a byte-identical staged x64 scratch inspector. Both builds require one
+create-only scratch request, bounded stdout, empty stderr, a durable process
+terminal, a strict double no-follow inventory, stable helper identity, and
+post-inspection environment validation. Only two custody passes permit one
+controller/converter launch and one read-only managed inspection.
+
+Final private verification uses the incompatible schema
+`tinyrustlm.qwen3-composition-execution-verification.v4`. It binds both
+scratch process graphs, observations, helper pre/post identities, staged-byte
+equality, and post-inspection environment validations. Historical
+verification `/3` remains inert and has no compatibility reader. Registration
+itself creates no private material and proves no build, conversion, SLM2,
+runtime, browser, quality, P2P, publication, MemoryEndpoints, or campaign
+evidence. See
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration-v8.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2
