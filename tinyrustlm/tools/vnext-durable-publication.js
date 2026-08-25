@@ -959,6 +959,7 @@ function createVnextDurablePublication(rootInput, configurationInput) {
   const receiptShaRoot = path.join(root, "durability", "sha256");
   let receiptIndex = new Map();
   let pendingTemporaryCount = 0;
+  const activationTickets = new WeakMap();
 
   function loadReceiptIndex() {
     const rebuilt = new Map();
@@ -1255,7 +1256,7 @@ function createVnextDurablePublication(rootInput, configurationInput) {
     }])[0];
   }
 
-  function activateBytes(relativePathInput, maximumBytes) {
+  function prepareActivation(relativePathInput, maximumBytes) {
     if (!Number.isSafeInteger(maximumBytes) || maximumBytes <= 0) {
       failEvidence(code("activation_input_invalid"), steps.read);
     }
@@ -1293,51 +1294,123 @@ function createVnextDurablePublication(rootInput, configurationInput) {
         sha256(firstReceiptReadback) !== selected.receiptSha256) {
       failEvidence(code("durability_receipt_readback_mismatch"), steps.read);
     }
-    const targetDirectory = directoryRelativePath(target.relativePath);
-    const receiptDirectory = directoryRelativePath(selected.receiptRelativePath);
-    const [targetDirectoryFlush, receiptDirectoryFlush] = flushDirectoryBatch([
+    const ticket = {};
+    Object.defineProperty(ticket, "bytes", {
+      enumerable: true,
+      get() {
+        return Buffer.from(firstTargetReadback);
+      }
+    });
+    activationTickets.set(ticket, Object.freeze({
+      maximumBytes,
+      receiptPath,
+      selected,
+      target
+    }));
+    return Object.freeze(ticket);
+  }
+
+  function activatePreparedMany(input) {
+    const tickets = dataArrayValues(
+      input,
+      durablePublicationProfile.batch.minimumEntries,
+      durablePublicationProfile.batch.maximumEntries,
+      code("activation_input_invalid"),
+      steps.read
+    );
+    const prepared = tickets.map((ticket) => {
+      const entry = activationTickets.get(ticket);
+      if (entry === undefined) {
+        failEvidence(code("activation_input_invalid"), steps.read);
+      }
+      return entry;
+    });
+    const relativePaths = prepared.map((entry) => entry.target.relativePath);
+    if (new Set(relativePaths).size !== relativePaths.length) {
+      failEvidence(code("activation_input_invalid"), steps.read);
+    }
+    const flushes = flushDirectoryBatch(prepared.flatMap((entry) => [
       {
-        bindingSha256: selected.receiptSha256,
-        relativeDirectory: targetDirectory,
+        bindingSha256: entry.selected.receiptSha256,
+        relativeDirectory: directoryRelativePath(entry.target.relativePath),
         stage: "restart-target"
       },
       {
-        bindingSha256: selected.receiptSha256,
-        relativeDirectory: receiptDirectory,
+        bindingSha256: entry.selected.receiptSha256,
+        relativeDirectory: directoryRelativePath(entry.selected.receiptRelativePath),
         stage: "restart-receipt"
       }
-    ]);
-    const finalReceiptReadback = boundedReadFile(
-      receiptPath,
-      durablePublicationProfile.limits.maximumReceiptBytes
+    ]));
+    const results = [];
+    for (let index = 0; index < prepared.length; index += 1) {
+      const entry = prepared[index];
+      const targetDirectoryFlush = flushes[index * 2];
+      const receiptDirectoryFlush = flushes[(index * 2) + 1];
+      const finalReceiptReadback = boundedReadFile(
+        entry.receiptPath,
+        durablePublicationProfile.limits.maximumReceiptBytes
+      );
+      if (!finalReceiptReadback.equals(entry.selected.bytes)) {
+        failEvidence(code("durability_receipt_readback_mismatch"), steps.read);
+      }
+      const finalTargetReadback = boundedReadFile(
+        entry.target.absolute,
+        entry.maximumBytes
+      );
+      if (finalTargetReadback.length !== entry.selected.receipt.targetByteCount ||
+          sha256(finalTargetReadback) !== entry.selected.receipt.targetSha256) {
+        failEvidence(code("target_readback_mismatch"), steps.read);
+      }
+      const receiptFile = freezeRecord({
+        bytes: entry.selected.bytes,
+        digest: entry.selected.receiptSha256,
+        directoryFlush: receiptDirectoryFlush,
+        disposition: "existing-byte-identical",
+        relativePath: entry.selected.receiptRelativePath
+      });
+      results.push(freezeRecord({
+        bytes: finalTargetReadback,
+        durability: buildResult({
+          receiptFile,
+          receiptSha256: entry.selected.receiptSha256,
+          targetDirectoryFlush,
+          targetDisposition: "restart-activated",
+          targetRelativePath: entry.target.relativePath,
+          targetSha256: entry.selected.receipt.targetSha256,
+          targetByteCount: entry.selected.receipt.targetByteCount
+        })
+      }));
+    }
+    return Object.freeze(results);
+  }
+
+  function activateMany(input) {
+    const values = dataArrayValues(
+      input,
+      durablePublicationProfile.batch.minimumEntries,
+      durablePublicationProfile.batch.maximumEntries,
+      code("activation_input_invalid"),
+      steps.read
     );
-    if (!finalReceiptReadback.equals(selected.bytes)) {
-      failEvidence(code("durability_receipt_readback_mismatch"), steps.read);
-    }
-    const finalTargetReadback = boundedReadFile(target.absolute, maximumBytes);
-    if (finalTargetReadback.length !== selected.receipt.targetByteCount ||
-        sha256(finalTargetReadback) !== selected.receipt.targetSha256) {
-      failEvidence(code("target_readback_mismatch"), steps.read);
-    }
-    const receiptFile = freezeRecord({
-      bytes: selected.bytes,
-      digest: selected.receiptSha256,
-      directoryFlush: receiptDirectoryFlush,
-      disposition: "existing-byte-identical",
-      relativePath: selected.receiptRelativePath
+    const tickets = values.map((entry) => {
+      const fields = ["maximumBytes", "relativePath"];
+      const normalized = dataObjectValues(
+        entry,
+        fields,
+        fields,
+        code("activation_input_invalid"),
+        steps.read
+      );
+      return prepareActivation(normalized.relativePath, normalized.maximumBytes);
     });
-    return freezeRecord({
-      bytes: finalTargetReadback,
-      durability: buildResult({
-        receiptFile,
-        receiptSha256: selected.receiptSha256,
-        targetDirectoryFlush,
-        targetDisposition: "restart-activated",
-        targetRelativePath: target.relativePath,
-        targetSha256: selected.receipt.targetSha256,
-        targetByteCount: selected.receipt.targetByteCount
-      })
-    });
+    return activatePreparedMany(tickets);
+  }
+
+  function activateBytes(relativePathInput, maximumBytes) {
+    return activateMany([{
+      maximumBytes,
+      relativePath: relativePathInput
+    }])[0];
   }
 
   function rebuild() {
@@ -1345,13 +1418,16 @@ function createVnextDurablePublication(rootInput, configurationInput) {
   }
 
   return Object.freeze({
+    activateMany,
     activateBytes,
+    activatePreparedMany,
     ensureDirectory: ensureDirectorySegments,
     flushOwnedDirectory,
     profileId: durablePublicationProfile.profileId,
     profileSha256: durablePublicationProfileSha256,
     publishBytes,
     publishMany,
+    prepareActivation,
     rebuild,
     startup: freezeRecord({
       ...initialIndex,

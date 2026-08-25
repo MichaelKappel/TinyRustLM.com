@@ -72,9 +72,12 @@ latest pointer crosses the result boundary.
 wires, rejects accessors and non-arrays, validates and canonicalizes every
 member, rejects duplicate subject IDs, and preflights both active-count and
 aggregate-byte capacity before any publication. It orders targets by subject
-ID, calls the shared durable publisher exactly once, and activates no subject
-in memory until every target and content-addressed durability receipt verifies.
-`put` delegates to `putMany` with a size-one array and adds no second path.
+ID and calls the shared durable publisher once for the genuinely new members.
+An all-existing replay instead double-readback verifies the exact active target
+and durability receipt, reuses that durability identity, invokes no helper, and
+does not advance the store generation. No new subject activates in memory until
+every new target and content-addressed durability receipt verifies. `put`
+delegates to `putMany` with a size-one array and adds no second path.
 
 The shared batch performs:
 

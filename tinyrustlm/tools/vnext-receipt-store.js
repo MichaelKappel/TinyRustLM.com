@@ -540,6 +540,8 @@ function createVnextReceiptStore(rootInput, options = {}) {
       quarantineCandidate
     );
     const candidates = new Map();
+    const preparedCandidates = [];
+    const preparedReceiptIds = new Set();
     let pendingTemporaryCount = 0;
     const prefixes = scanEntries(layout.shaRoot, storeProfile.limits.maximumDirectoryEntries);
     for (const prefixEntry of prefixes) {
@@ -582,10 +584,10 @@ function createVnextReceiptStore(rootInput, options = {}) {
           continue;
         }
         let validated;
-        let activation;
+        let activationTicket;
         try {
-          activation = fileOps.activateBytes(filePath, receiptMaximumBytes);
-          validated = validateVnextReceiptBytes(activation.bytes);
+          activationTicket = fileOps.prepareActivation(filePath, receiptMaximumBytes);
+          validated = validateVnextReceiptBytes(activationTicket.bytes);
         } catch (error) {
           const reasonCode = error?.code === "receipt_durability_receipt_missing"
             ? "durability_receipt_missing"
@@ -606,7 +608,7 @@ function createVnextReceiptStore(rootInput, options = {}) {
           if (result !== null) quarantines.push(result);
           continue;
         }
-        if (candidates.has(validated.receipt.receiptId)) {
+        if (preparedReceiptIds.has(validated.receipt.receiptId)) {
           const result = quarantineCandidate(
             filePath,
             "duplicate_receipt",
@@ -615,16 +617,47 @@ function createVnextReceiptStore(rootInput, options = {}) {
           if (result !== null) quarantines.push(result);
           continue;
         }
-        candidates.set(validated.receipt.receiptId, {
+        preparedReceiptIds.add(validated.receipt.receiptId);
+        preparedCandidates.push(Object.freeze({
+          activationTicket,
           receiptId: validated.receipt.receiptId,
-          durability: activation.durability,
           parentReceiptIds: collectParentReceiptIds(validated.receipt),
           relativePath: receiptRelativePath(validated.receipt.receiptId),
           validated
-        });
-        if (candidates.size > storeProfile.limits.maximumActiveReceipts) {
+        }));
+        if (preparedCandidates.length > storeProfile.limits.maximumActiveReceipts) {
           failEvidence("receipt_store_active_limit", "store-scan");
         }
+      }
+    }
+
+    for (let offset = 0; offset < preparedCandidates.length;
+      offset += storeProfile.batch.maximumEntries) {
+      const batch = preparedCandidates.slice(
+        offset,
+        offset + storeProfile.batch.maximumEntries
+      );
+      const activations = fileOps.activatePreparedMany(
+        batch.map((candidate) => candidate.activationTicket)
+      );
+      if (activations.length !== batch.length) {
+        failEvidence("receipt_store_rebuild_interference", "store-scan");
+      }
+      for (let index = 0; index < batch.length; index += 1) {
+        const prepared = batch[index];
+        const activation = activations[index];
+        const validated = validateVnextReceiptBytes(activation.bytes);
+        if (validated.receipt.receiptId !== prepared.receiptId ||
+            !validated.bytes.equals(prepared.validated.bytes)) {
+          failEvidence("receipt_store_rebuild_interference", "store-scan");
+        }
+        candidates.set(prepared.receiptId, {
+          receiptId: prepared.receiptId,
+          durability: activation.durability,
+          parentReceiptIds: prepared.parentReceiptIds,
+          relativePath: prepared.relativePath,
+          validated
+        });
       }
     }
 
@@ -835,6 +868,7 @@ function createVnextReceiptStore(rootInput, options = {}) {
       left.receiptId < right.receiptId ? -1 : left.receiptId > right.receiptId ? 1 : 0);
     const newReceiptCount = entries.reduce((count, entry) =>
       count + (active.has(entry.receiptId) ? 0 : 1), 0);
+    const newEntries = entries.filter((entry) => !active.has(entry.receiptId));
     if (active.size + newReceiptCount > storeProfile.limits.maximumActiveReceipts) {
       failEvidence("receipt_store_active_limit", "receipt-persist");
     }
@@ -890,9 +924,14 @@ function createVnextReceiptStore(rootInput, options = {}) {
       failEvidence("receipt_batch_cycle", "receipt-persist");
     }
 
-    function validateExternalParents() {
+    const existingEntries = entries.filter((entry) => active.has(entry.receiptId));
+    const activeInputs = new Set(externalParents);
+    for (const entry of existingEntries) activeInputs.add(entry.receiptId);
+
+    function validateActiveInputs() {
+      let validated;
       try {
-        validateActiveClosures([...externalParents].sort());
+        validated = validateActiveClosures([...activeInputs].sort());
       } catch (error) {
         throw new VnextEvidenceError(
           "receipt_active_parent_invalid",
@@ -900,15 +939,29 @@ function createVnextReceiptStore(rootInput, options = {}) {
           error?.code
         );
       }
+      for (const entry of existingEntries) {
+        if (!validated.get(entry.receiptId).bytes.equals(entry.bytes)) {
+          failEvidence("receipt_target_conflict", "receipt-persist");
+        }
+      }
     }
 
-    validateExternalParents();
-    const publications = fileOps.publishMany(entries.map((entry) => ({
-      bytes: entry.bytes,
-      maximumBytes: receiptMaximumBytes,
-      target: path.join(root, ...entry.relativePath.split("/"))
-    })));
     const publicationByPath = new Map();
+    for (const entry of existingEntries) {
+      const metadata = active.get(entry.receiptId);
+      publicationByPath.set(entry.relativePath, Object.freeze({
+        disposition: "existing-byte-identical",
+        durability: metadata.durability
+      }));
+    }
+    validateActiveInputs();
+    const publications = newEntries.length === 0 ? [] : fileOps.publishMany(
+      newEntries.map((entry) => ({
+        bytes: entry.bytes,
+        maximumBytes: receiptMaximumBytes,
+        target: path.join(root, ...entry.relativePath.split("/"))
+      }))
+    );
     for (const publication of publications) {
       const relativePath = publication?.durability?.targetRelativePath;
       if (typeof relativePath !== "string" || publicationByPath.has(relativePath)) {
@@ -922,7 +975,7 @@ function createVnextReceiptStore(rootInput, options = {}) {
     }
 
     try {
-      validateExternalParents();
+      validateActiveInputs();
     } catch (error) {
       try {
         rebuild();
@@ -962,9 +1015,11 @@ function createVnextReceiptStore(rootInput, options = {}) {
         validated: entry.validated
       }));
     }
-    operationCounter.publishedEntries += entries.length;
-    advanceProcessGeneration(observedProcessGeneration);
-    refreshSnapshot();
+    operationCounter.publishedEntries += newEntries.length;
+    if (newEntries.length > 0) {
+      advanceProcessGeneration(observedProcessGeneration);
+      refreshSnapshot();
+    }
     return immutableRecord(entries.map((entry) => {
       const publication = publicationByPath.get(entry.relativePath);
       return {

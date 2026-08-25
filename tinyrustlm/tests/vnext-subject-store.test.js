@@ -244,8 +244,27 @@ test("creates, reads, and byte-identically reuses every accepted subject class",
     assert.deepEqual(read.bytes, value.bytes);
     assert.equal(read.durability.durabilityReceiptSha256,
       created.durability.durabilityReceiptSha256);
-    assert.equal(store.put(value.bytes).disposition, "existing-byte-identical");
   }
+
+  const beforeReuse = store.operationCounts();
+  const originalSpawnSync = childProcess.spawnSync;
+  let reuseHelperCalls = 0;
+  t.mock.method(childProcess, "spawnSync", (...argumentsList) => {
+    reuseHelperCalls += 1;
+    return originalSpawnSync(...argumentsList);
+  });
+  for (const value of values) {
+    const reused = store.put(value.bytes);
+    assert.equal(reused.disposition, "existing-byte-identical");
+    assert.equal(reused.durability.durabilityReceiptSha256,
+      store.read(value.subjectId).durability.durabilityReceiptSha256);
+  }
+  assert.equal(reuseHelperCalls, 0);
+  const afterReuse = store.operationCounts();
+  assert.equal(afterReuse.publishedEntries, beforeReuse.publishedEntries);
+  assert.equal(afterReuse.snapshotRevision, beforeReuse.snapshotRevision);
+  assert.equal(afterReuse.putCalls, beforeReuse.putCalls + values.length);
+  assert.equal(afterReuse.putManyCalls, beforeReuse.putManyCalls + values.length);
 
   const rebuilt = store.rebuild();
   assert.deepEqual(rebuilt.activeSubjectIds,

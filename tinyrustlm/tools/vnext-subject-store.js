@@ -479,6 +479,8 @@ function createVnextSubjectStore(rootInput, options = {}) {
     scanUnknown(layout.subjects, new Set(["sha256"]));
 
     const candidates = new Map();
+    const preparedCandidates = [];
+    const preparedSubjectIds = new Set();
     let pendingTemporaryCount = 0;
     const prefixes = scan(layout.shaRoot,
       subjectStoreProfile.limits.maximumDirectoryEntries);
@@ -514,11 +516,14 @@ function createVnextSubjectStore(rootInput, options = {}) {
           quarantine(filePath, "unknown_entry");
           continue;
         }
-        let activation;
+        let activationTicket;
         let subject;
         try {
-          activation = fileOps.activateBytes(filePath, maximumSingleSubjectBytes);
-          subject = validateAcceptedSubjectBytes(activation.bytes);
+          activationTicket = fileOps.prepareActivation(
+            filePath,
+            maximumSingleSubjectBytes
+          );
+          subject = validateAcceptedSubjectBytes(activationTicket.bytes);
         } catch (error) {
           const reasonCode = error?.code === "subject_durability_receipt_missing"
             ? "durability_receipt_missing"
@@ -535,27 +540,59 @@ function createVnextSubjectStore(rootInput, options = {}) {
           quarantine(filePath, "path_identity_mismatch", subject.subjectId);
           continue;
         }
-        if (candidates.has(subject.subjectId)) {
+        if (preparedSubjectIds.has(subject.subjectId)) {
           quarantine(filePath, "duplicate_subject", subject.subjectId);
           continue;
         }
         const byteLength = subject.bytes.length;
-        candidates.set(subject.subjectId, Object.freeze({
+        preparedSubjectIds.add(subject.subjectId);
+        preparedCandidates.push(Object.freeze({
+          activationTicket,
           byteLength,
           canonicalContentSha256: subject.canonicalContentSha256,
-          durability: activation.durability,
           relativePath: subjectRelativePath(subject.subjectId),
           schema: subject.schema,
+          subjectId: subject.subjectId,
           validated: subject
         }));
         rebuiltTotalBytes += byteLength;
-        if (candidates.size > subjectStoreProfile.limits.maximumActiveSubjects) {
+        if (preparedCandidates.length > subjectStoreProfile.limits.maximumActiveSubjects) {
           failEvidence("subject_store_active_limit", "subject-store-scan");
         }
         if (!Number.isSafeInteger(rebuiltTotalBytes) ||
             rebuiltTotalBytes > subjectStoreProfile.limits.maximumTotalSubjectBytes) {
           failEvidence("subject_store_total_byte_limit", "subject-store-scan");
         }
+      }
+    }
+    for (let offset = 0; offset < preparedCandidates.length;
+      offset += subjectStoreProfile.batch.maximumEntries) {
+      const batch = preparedCandidates.slice(
+        offset,
+        offset + subjectStoreProfile.batch.maximumEntries
+      );
+      const activations = fileOps.activatePreparedMany(
+        batch.map((candidate) => candidate.activationTicket)
+      );
+      if (activations.length !== batch.length) {
+        failEvidence("subject_store_rebuild_interference", "subject-store-scan");
+      }
+      for (let index = 0; index < batch.length; index += 1) {
+        const prepared = batch[index];
+        const activation = activations[index];
+        const subject = validateAcceptedSubjectBytes(activation.bytes);
+        if (subject.subjectId !== prepared.subjectId ||
+            !subject.bytes.equals(prepared.validated.bytes)) {
+          failEvidence("subject_store_rebuild_interference", "subject-store-scan");
+        }
+        candidates.set(subject.subjectId, Object.freeze({
+          byteLength: prepared.byteLength,
+          canonicalContentSha256: prepared.canonicalContentSha256,
+          durability: activation.durability,
+          relativePath: prepared.relativePath,
+          schema: prepared.schema,
+          validated: subject
+        }));
       }
     }
     if (currentProcessGeneration() !== startingProcessGeneration) {
@@ -673,6 +710,7 @@ function createVnextSubjectStore(rootInput, options = {}) {
     const subjects = [...pending.values()].sort((left, right) =>
       left.subjectId < right.subjectId ? -1 : left.subjectId > right.subjectId ? 1 : 0);
     const newSubjects = subjects.filter((subject) => !active.has(subject.subjectId));
+    const existingSubjects = subjects.filter((subject) => active.has(subject.subjectId));
     if (active.size + newSubjects.length > subjectStoreProfile.limits.maximumActiveSubjects) {
       failEvidence("subject_store_active_limit", "subject-store-persist");
     }
@@ -682,12 +720,41 @@ function createVnextSubjectStore(rootInput, options = {}) {
       failEvidence("subject_store_total_byte_limit", "subject-store-persist");
     }
 
-    const publications = fileOps.publishMany(subjects.map((subject) => ({
-      bytes: subject.bytes,
-      maximumBytes: acceptedMaximumBytes.get(subject.schema),
-      target: path.join(root, ...subjectRelativePath(subject.subjectId).split("/"))
-    })));
+    function validateExistingSubjects() {
+      for (const subject of existingSubjects) {
+        const metadata = active.get(subject.subjectId);
+        if (!metadata.validated.bytes.equals(subject.bytes)) {
+          failEvidence("subject_target_conflict", "subject-store-persist");
+        }
+        const filePath = path.join(root, ...metadata.relativePath.split("/"));
+        try {
+          verifyActiveBytes(filePath, metadata);
+        } catch (error) {
+          throw new VnextEvidenceError(
+            "subject_active_read_failed",
+            "subject-store-persist",
+            error?.code
+          );
+        }
+      }
+    }
+
     const publicationByPath = new Map();
+    for (const subject of existingSubjects) {
+      const metadata = active.get(subject.subjectId);
+      publicationByPath.set(metadata.relativePath, Object.freeze({
+        disposition: "existing-byte-identical",
+        durability: metadata.durability
+      }));
+    }
+    validateExistingSubjects();
+    const publications = newSubjects.length === 0 ? [] : fileOps.publishMany(
+      newSubjects.map((subject) => ({
+        bytes: subject.bytes,
+        maximumBytes: acceptedMaximumBytes.get(subject.schema),
+        target: path.join(root, ...subjectRelativePath(subject.subjectId).split("/"))
+      }))
+    );
     for (const publication of publications) {
       const relativePath = publication?.durability?.targetRelativePath;
       if (typeof relativePath !== "string" || publicationByPath.has(relativePath)) {
@@ -699,6 +766,7 @@ function createVnextSubjectStore(rootInput, options = {}) {
       !publicationByPath.has(subjectRelativePath(subject.subjectId)))) {
       failEvidence("subject_batch_publication_invalid", "subject-store-persist");
     }
+    validateExistingSubjects();
 
     if (currentProcessGeneration() !== observedProcessGeneration) {
       try {
@@ -725,9 +793,11 @@ function createVnextSubjectStore(rootInput, options = {}) {
         validated: subject
       }));
     }
-    operationCounter.publishedEntries += subjects.length;
-    advanceProcessGeneration(observedProcessGeneration);
-    refreshSnapshot();
+    operationCounter.publishedEntries += newSubjects.length;
+    if (newSubjects.length > 0) {
+      advanceProcessGeneration(observedProcessGeneration);
+      refreshSnapshot();
+    }
     return immutableRecord(subjects.map((subject) => {
       const relativePath = subjectRelativePath(subject.subjectId);
       const publication = publicationByPath.get(relativePath);

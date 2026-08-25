@@ -272,6 +272,46 @@ test("performs fresh target and receipt flushes before restart activation", (t) 
   assert.equal(activated.durability.durabilityReceiptStatus, "verified");
 });
 
+test("batches prepared restart flushes before activating any target", (t) => {
+  const root = makeRoot(t);
+  const first = createVnextDurablePublication(root, configuration());
+  const values = ["batch restart target one", "batch restart target two"]
+    .map((value) => Buffer.from(value, "utf8"));
+  const paths = values.map(targetRelativePath);
+  const persisted = first.publishMany(values.map((bytes, index) => ({
+    bytes,
+    maximumBytes: 4096,
+    relativePath: paths[index]
+  })));
+  const restarted = createVnextDurablePublication(root, configuration());
+  const originalSpawnSync = childProcess.spawnSync;
+  const helperRequests = [];
+  t.mock.method(childProcess, "spawnSync", (...argumentsList) => {
+    helperRequests.push(parseStrictJson(argumentsList[2].input));
+    return originalSpawnSync(...argumentsList);
+  });
+
+  const activated = restarted.activateMany(paths.map((relativePath) => ({
+    maximumBytes: 4096,
+    relativePath
+  })));
+
+  assert.equal(helperRequests.length, 1);
+  assert.equal(helperRequests[0].requests.length, values.length * 2);
+  assert.equal(helperRequests[0].requests.filter((entry) =>
+    entry.operationId.includes(":restart-target:")).length, values.length);
+  assert.equal(helperRequests[0].requests.filter((entry) =>
+    entry.operationId.includes(":restart-receipt:")).length, values.length);
+  assert.deepEqual(activated.map((entry) => entry.bytes), values);
+  const persistedByPath = new Map(persisted.map((entry) => [
+    entry.targetRelativePath,
+    entry.durabilityReceiptSha256
+  ]));
+  assert.deepEqual(activated.map((entry) =>
+    entry.durability.durabilityReceiptSha256), paths.map((relativePath) =>
+    persistedByPath.get(relativePath)));
+});
+
 test("keeps a target inactive when its durability receipt is absent", (t) => {
   const root = makeRoot(t);
   const first = createVnextDurablePublication(root, configuration());

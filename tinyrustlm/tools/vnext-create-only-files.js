@@ -351,6 +351,14 @@ function createVnextCreateOnlyFiles(configurationInput) {
     return durable.activateBytes(relativePathForAbsolute(target), maximumBytes);
   }
 
+  function prepareActivation(target, maximumBytes) {
+    return durable.prepareActivation(relativePathForAbsolute(target), maximumBytes);
+  }
+
+  function activatePreparedMany(tickets) {
+    return durable.activatePreparedMany(tickets);
+  }
+
   function syncDirectory(directory, stage = "store-sync", bindingSha256 = null) {
     const relativeDirectory = relativePathForAbsolute(directory, true);
     const binding = bindingSha256 ?? crypto.createHash("sha256")
@@ -431,6 +439,7 @@ function createVnextCreateOnlyFiles(configurationInput) {
 
   return Object.freeze({
     activateBytes,
+    activatePreparedMany,
     assertNoLinkComponents,
     boundedDirectoryEntries,
     boundedReadFile,
@@ -441,6 +450,7 @@ function createVnextCreateOnlyFiles(configurationInput) {
     normalizeRoot,
     publishBytes,
     publishMany,
+    prepareActivation,
     quarantineEntry,
     rebuildDurabilityIndex: durable.rebuild,
     safeChild,

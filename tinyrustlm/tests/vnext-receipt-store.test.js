@@ -268,9 +268,24 @@ test("creates, reads, and idempotently reuses exact canonical receipt bytes", (t
   assert.equal(read.durability.durabilityReceiptSha256,
     created.durability.durabilityReceiptSha256);
 
+  const beforeReuse = store.operationCounts();
+  const originalSpawnSync = childProcess.spawnSync;
+  let reuseHelperCalls = 0;
+  t.mock.method(childProcess, "spawnSync", (...argumentsList) => {
+    reuseHelperCalls += 1;
+    return originalSpawnSync(...argumentsList);
+  });
   const reused = store.put(value.bytes);
   assert.equal(reused.disposition, "existing-byte-identical");
   assert.equal(reused.receiptId, created.receiptId);
+  assert.equal(reused.durability.durabilityReceiptSha256,
+    created.durability.durabilityReceiptSha256);
+  assert.equal(reuseHelperCalls, 0);
+  const afterReuse = store.operationCounts();
+  assert.equal(afterReuse.publishedEntries, beforeReuse.publishedEntries);
+  assert.equal(afterReuse.snapshotRevision, beforeReuse.snapshotRevision);
+  assert.equal(afterReuse.putCalls, beforeReuse.putCalls + 1);
+  assert.equal(afterReuse.putManyCalls, beforeReuse.putManyCalls + 1);
   assert.deepEqual(fs.readFileSync(physicalPath(root, created.receiptId)), value.bytes);
 });
 

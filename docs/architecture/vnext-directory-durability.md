@@ -296,9 +296,14 @@ Including that result would require either a self-hash cycle or an infinite
 receipt chain. The receipt file is therefore the explicit terminal persistence
 trust anchor. Restart does not trust existence alone: it performs fresh helper
 flushes of the target and receipt directories and exact readbacks before
-activation. [ADR-012](adr/ADR-012-durable-publication-bootstrap.md) freezes
-this bootstrap rule. Targets without matching current receipts and receipts
-without exact targets remain inactive.
+activation. Restart candidates are independently preflighted, then all valid
+target and receipt directories are flushed through bounded helper batches.
+Every member is reread and rehashed after the batch; no activation result is
+returned until the whole prepared batch verifies. This preserves fresh
+per-member durability proof without launching one helper process per member.
+[ADR-012](adr/ADR-012-durable-publication-bootstrap.md) freezes this bootstrap
+rule. Targets without matching current receipts and receipts without exact
+targets remain inactive.
 
 ## Verification
 
