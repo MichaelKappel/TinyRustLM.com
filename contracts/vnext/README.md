@@ -304,6 +304,22 @@ authorized a fifth real composition attempt and grants no conversion,
 structure, runtime, browser, quality, publication, or campaign claim. See
 `docs/architecture/2026-08-25-source-controlled-build-custody-owner.md`.
 
+`qwen3-real-composition-execution-preregistration.v5.json` binds the fifth
+immutable attempt to that custody owner, the terminal `/4` exit-capture
+failure, all earlier terminal history, exact current source and external tool
+identities, six wholly new absent direct-sibling roots, and three absent
+create-only private request filenames. It is 41,928 canonical bytes at
+SHA-256
+`221afa82a71da22516dda142f90270a08205cdced9df6093108b0bacfaf88b55`.
+Rust and managed builds each receive separate custody control and target
+roots; only custody `pass` permits the next operation. The registration binds
+the direct regular Cargo toolchain binary rather than the zero-length rustup
+proxy, exact Rustc, Node, Git, taskkill, .NET, bounded environments, required
+outputs, one controller and converter launch, and conditional read-only
+managed inspection. It creates no request, root, build, conversion, model,
+runtime, browser, quality, publication, deployment, or campaign evidence. See
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration-v5.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2
