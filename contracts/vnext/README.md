@@ -400,6 +400,33 @@ SHA-256
 preregister all-new names and an exact MSVC linker-complete environment. See
 `docs/architecture/2026-08-25-qwen3-real-composition-execution-v6-msvc-linker-environment-failure.md`.
 
+`qwen3-real-composition-execution-preregistration.v7.json` registers the
+seventh immutable attempt against the current environment-bound custody
+implementation. It is 53,432 canonical ASCII/LF bytes at SHA-256
+`788f894c3e6116d3bd360386a4a1bbbe892d80f843cdf513e2ca7c781db293a1`.
+The profile binds exact remote-equal parent commit
+`042891879d8883d3637d1ff550f181734da6e462`, tree
+`ca56d47dcb0e480bd3405e64590706659419142c`, all six terminal predecessors,
+20 committed source sentinels, exact Git/Node/taskkill/Cargo/Rustc/.NET/vswhere
+identities, current build-custody profile `/2`, and the exact Windows x64 MSVC
+environment authority. Profile `/1` remains inert history only and has no
+current reader or compatibility path.
+
+The registration reserves 15 new absent private names: one environment request
+and its three create-only outputs, two build requests, one composition request,
+separate Rust and managed control/target/environment roots, controller evidence,
+and composition output. One immutable linker-complete environment
+materialization is independently revalidated before roots, immediately before
+each child, and after every child result. Rust custody must pass before managed
+custody can exist; both must pass before the one controller/converter launch;
+only a candidate pass permits one read-only managed inspection. The
+registration commit must change only the four declared public paths and become
+fresh-remote exact before any private name is created. Registration itself
+creates no environment record, request, root, build, conversion, model,
+runtime, browser, quality, P2P, publication, MemoryEndpoints, or campaign
+evidence. See
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration-v7.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2
