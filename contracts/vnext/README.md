@@ -306,13 +306,18 @@ synthetic gate passes 8/8 and its explicit installed Visual Studio 2022
 observation passes 1/1. It grants no build or model claim. See
 `docs/architecture/2026-08-25-deterministic-windows-x64-msvc-environment-authority.md`.
 
-`build-custody-profile.v3.json` is the sole current prelaunch Windows x64
-contract for future irreversible builds. It is 9,786 canonical bytes at
+`build-custody-profile.v4.json` is the sole current prelaunch Windows x64
+contract for future irreversible builds. It is 10,274 canonical bytes at
 SHA-256
-`0bdc4227b1c7576bd844be1c0891c2b60868ddfdf0626efc96506c36adb24626`.
+`26b75c36911c14d744a764c19d8a40ec0c28762add5e6616501080120aad9b45`.
 It retains exact source, Git, Node, command, taskkill, MSVC environment,
 three-root, stream, and required-output custody, then requires one generated
 x64 `tinyrustlm-build-scratch-inspect` output to inspect the environment root.
+The request must bind `APPDATA` to `home/AppData/Roaming`, `LOCALAPPDATA` to
+`home/AppData/Local`, and both `TEMP` and `TMP` to `temp` under the absent owned
+environment root. The owner creates those exact direct directories before the
+child starts. Missing, reordered, overlapping, external, or mismatched values
+reject before a control, target, or environment root can be created.
 The source-controlled Rust helper consumes one canonical bounded request,
 opens entries with Win32 no-follow semantics, reads reparse data through
 `FSCTL_GET_REPARSE_POINT`, performs two identical streamed inventories, and
@@ -320,22 +325,28 @@ accepts only mount-point tag `0xa0000003` with one direct same-root directory
 target. It never traverses a link and rejects external, cross-volume, chained,
 cyclic, ancestor-related, dangling, file, symbolic-link, unknown-tag,
 duplicate-target, case-conflicting, malformed, over-limit, or drifted state.
-The exact root layout remains `home` plus `temp`.
+The exact direct root layout remains `home` plus `temp`; the deterministic
+prelaunch directory closure is `home`, `home/AppData`,
+`home/AppData/Local`, `home/AppData/Roaming`, and `temp`.
 
 The owner writes the inspector request, raw stdout, raw empty stderr, and
 process terminal create-only; requires one exit `0` and one canonical passing
 observation; rechecks the generated executable; then revalidates source and
-environment identities after inspection. Its Windows x64 gate passes 20/20
+environment identities after inspection. Its Windows x64 gate passes 21/21
 tests, while the Rust crate passes 13 debug tests, 2 optimized process tests,
 and warning-free Clippy. Coverage includes the real contained `Content.IE5`
 junction class that terminally rejected execution `/7`, plus external, chain,
 cycle, dangling, duplicate, malformed-output, executable-drift, process, and
-observer-death cases. Profiles `/1` and `/2` have no maintained bytes or reader
+observer-death cases. A separate 1/1 exact installed-SDK regression proves
+that missing `APPDATA` causes the observed `NETSDK1060/path1` failure, missing
+`LOCALAPPDATA` causes relative `NuGet/Migrations/1` state, and both exact owned
+bindings yield all five managed outputs without working-directory mutation.
+Profiles `/1`, `/2`, and `/3` have no maintained bytes or reader
 and remain available only through immutable Git and attempt evidence. No
 compatibility, migration, alias, fallback, retry, repair, cleanup, resume, or
 output adoption exists. Custody alone grants no conversion, SLM2, runtime,
 browser, quality, publication, or campaign claim. See
-`docs/architecture/2026-08-25-junction-qualified-build-custody-owner.md`.
+`docs/architecture/2026-08-25-owned-application-data-build-custody.md`.
 
 The managed composition-inspector project now has one explicit custody-only
 staging target. A registered managed build supplies the absolute path of the
@@ -343,7 +354,7 @@ scratch inspector from the preceding passing Rust custody target through
 `TinyRustLmCustodyScratchInspectorSource`; the child copies those exact bytes
 to fixed target-relative `tinyrustlm-build-scratch-inspect.exe`. The managed
 custody request must require that x64 PE beside the four .NET outputs, bind the
-source and staged identities, and pass profile `/3` scratch inspection before
+source and staged identities, and pass profile `/4` scratch inspection before
 composition can start. The project has no default source, alternate name,
 fallback, retry, repair, or linked-file path. See
 `docs/architecture/2026-08-25-qwen3-managed-custody-scratch-inspector-staging.md`.

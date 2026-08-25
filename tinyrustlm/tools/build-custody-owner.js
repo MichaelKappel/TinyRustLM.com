@@ -6,18 +6,18 @@ const fs = require("node:fs");
 const path = require("node:path");
 const windowsMsvcEnvironment = require("./windows-x64-msvc-environment.js");
 
-const profileId = "tinyrustlm.source-controlled-build-custody/3";
-const profileByteLength = 9786;
+const profileId = "tinyrustlm.source-controlled-build-custody/4";
+const profileByteLength = 10274;
 const profileSha256 =
-  "0bdc4227b1c7576bd844be1c0891c2b60868ddfdf0626efc96506c36adb24626";
-const requestSchema = "tinyrustlm.build-custody-request.v3";
-const bindingSchema = "tinyrustlm.build-custody-binding.v3";
-const startSchema = "tinyrustlm.build-custody-start.v3";
-const processTerminalSchema = "tinyrustlm.build-custody-process-terminal.v3";
+  "26b75c36911c14d744a764c19d8a40ec0c28762add5e6616501080120aad9b45";
+const requestSchema = "tinyrustlm.build-custody-request.v4";
+const bindingSchema = "tinyrustlm.build-custody-binding.v4";
+const startSchema = "tinyrustlm.build-custody-start.v4";
+const processTerminalSchema = "tinyrustlm.build-custody-process-terminal.v4";
 const scratchInspectionProcessTerminalSchema =
-  "tinyrustlm.build-custody-scratch-inspection-process-terminal.v3";
-const terminalSchema = "tinyrustlm.build-custody-terminal.v3";
-const summarySchema = "tinyrustlm.build-custody-summary.v3";
+  "tinyrustlm.build-custody-scratch-inspection-process-terminal.v4";
+const terminalSchema = "tinyrustlm.build-custody-terminal.v4";
+const summarySchema = "tinyrustlm.build-custody-summary.v4";
 const maximumRequestBytes = 262144;
 const maximumBindingBytes = 1048576;
 const maximumTerminalBytes = 4194304;
@@ -55,9 +55,11 @@ const safeIdPattern = /^[A-Za-z0-9][A-Za-z0-9._/-]{0,159}$/u;
 const environmentNamePattern = /^[A-Za-z_][A-Za-z0-9_()]{0,63}$/u;
 const safeErrorPattern = /^[a-z0-9][a-z0-9-]{2,127}$/u;
 const scratchInspectionErrorPattern = /^scratch_inspection_[a-z0-9_]{2,120}$/u;
-const requiredWindowsSupplementNames = Object.freeze(["HOMEDRIVE", "HOMEPATH",
-  "LOGONSERVER", "SYSTEMDRIVE", "SystemRoot", "TEMP", "USERDOMAIN", "USERNAME",
-  "USERPROFILE", "WINDIR"]);
+const requiredWindowsSupplementNames = Object.freeze(["APPDATA", "HOMEDRIVE",
+  "HOMEPATH", "LOCALAPPDATA", "LOGONSERVER", "SYSTEMDRIVE", "SystemRoot", "TEMP",
+  "TMP", "USERDOMAIN", "USERNAME", "USERPROFILE", "WINDIR"]);
+const requiredEnvironmentDirectories = Object.freeze(["home", "home/AppData",
+  "home/AppData/Local", "home/AppData/Roaming", "temp"]);
 const windowsWorkerEnvironmentNames = Object.freeze(["HOMEDRIVE", "HOMEPATH",
   "LOGONSERVER", "PATH", "SYSTEMDRIVE", "SystemRoot", "TEMP", "USERDOMAIN",
   "USERNAME", "USERPROFILE", "WINDIR"]);
@@ -550,7 +552,8 @@ function validateRequestShape(request) {
     "build-custody-output-count");
   requireSafeInteger(request.outputs.maximumAggregateBytes, 1, maximumTargetBytes,
     "build-custody-output-bytes");
-  requireSafeInteger(request.outputs.maximumEnvironmentEntryCount, 2,
+  requireSafeInteger(request.outputs.maximumEnvironmentEntryCount,
+    requiredEnvironmentDirectories.length,
     maximumEnvironmentScratchEntries, "build-custody-environment-output-count");
   requireSafeInteger(request.outputs.maximumEnvironmentAggregateBytes, 1,
     maximumEnvironmentScratchBytes, "build-custody-environment-output-bytes");
@@ -581,7 +584,7 @@ function validateRequestShape(request) {
 function validateProfile(profileDocument) {
   invariant(profileDocument.artifact.byteLength === profileByteLength &&
     profileDocument.artifact.sha256 === profileSha256, "build-custody-profile-identity");
-  invariant(profileDocument.value.schema === "tinyrustlm.build-custody-profile.v3" &&
+  invariant(profileDocument.value.schema === "tinyrustlm.build-custody-profile.v4" &&
     profileDocument.value.profileId === profileId &&
     profileDocument.value.status === "current-prelaunch-only" &&
     profileDocument.value.platform === "win32" &&
@@ -594,7 +597,18 @@ function validateProfile(profileDocument) {
     profileDocument.value.scratchInspectionAuthority.profileByteLength ===
       scratchInspectionProfileByteLength &&
     profileDocument.value.scratchInspectionAuthority.profileId ===
-      scratchInspectionProfileId,
+      scratchInspectionProfileId &&
+    canonicalJson(profileDocument.value.rootPolicy
+      .environmentRootDirectoriesBeforeChild) ===
+      canonicalJson(requiredEnvironmentDirectories) &&
+    canonicalJson(profileDocument.value.environmentPolicy.windowsBaselineSupplements) ===
+      canonicalJson(requiredWindowsSupplementNames) &&
+    profileDocument.value.environmentPolicy.applicationDataBindings.APPDATA ===
+      "exact-environment-root-home-appdata-roaming-child" &&
+    profileDocument.value.environmentPolicy.applicationDataBindings.LOCALAPPDATA ===
+      "exact-environment-root-home-appdata-local-child" &&
+    profileDocument.value.environmentPolicy.tempAndTmp ===
+      "same-exact-environment-root-temp-child",
   "build-custody-profile-contract");
 }
 
@@ -668,11 +682,22 @@ function combineBuildEnvironment(authorityEntries, supplementalEntries, systemRo
     "build-custody-system-drive-binding");
   const userProfile = requireCanonicalAbsolutePath(supplemental.get("USERPROFILE"),
     "build-custody-user-profile-binding");
+  const appData = requireCanonicalAbsolutePath(supplemental.get("APPDATA"),
+    "build-custody-appdata-binding");
+  const localAppData = requireCanonicalAbsolutePath(supplemental.get("LOCALAPPDATA"),
+    "build-custody-local-appdata-binding");
   const temp = requireCanonicalAbsolutePath(supplemental.get("TEMP"),
     "build-custody-temp-binding");
-  invariant(userProfile === path.resolve(environmentRoot, "home") &&
-    temp === path.resolve(environmentRoot, "temp"),
-  "build-custody-environment-scratch-binding");
+  const tmp = requireCanonicalAbsolutePath(supplemental.get("TMP"),
+    "build-custody-temp-binding");
+  invariant(userProfile === path.resolve(environmentRoot, "home"),
+    "build-custody-user-profile-binding");
+  invariant(appData === path.resolve(userProfile, "AppData", "Roaming"),
+    "build-custody-appdata-binding");
+  invariant(localAppData === path.resolve(userProfile, "AppData", "Local"),
+    "build-custody-local-appdata-binding");
+  invariant(temp === path.resolve(environmentRoot, "temp") && tmp === temp,
+    "build-custody-temp-binding");
   invariant(supplemental.get("HOMEDRIVE") === path.parse(userProfile).root.slice(0, 2),
     "build-custody-home-drive-binding");
   invariant(`${supplemental.get("HOMEDRIVE")}${supplemental.get("HOMEPATH")}`
@@ -1875,8 +1900,13 @@ async function runWorkerIsolated(requestPath, expectedRequestSha256, dependencie
     fs.mkdirSync(request.roots.environmentRoot, { recursive: false });
     inspectDirectDirectory(request.roots.environmentRoot,
       "build-custody-environment-root-created");
-    fs.mkdirSync(path.resolve(request.roots.environmentRoot, "home"), { recursive: false });
-    fs.mkdirSync(path.resolve(request.roots.environmentRoot, "temp"), { recursive: false });
+    for (const relativePath of requiredEnvironmentDirectories) {
+      const directoryPath = path.resolve(request.roots.environmentRoot,
+        ...relativePath.split("/"));
+      fs.mkdirSync(directoryPath, { recursive: false });
+      inspectDirectDirectory(directoryPath,
+        "build-custody-environment-directory-created");
+    }
     const start = {
       schema: startSchema,
       operationId: request.operationId,

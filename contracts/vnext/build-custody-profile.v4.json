@@ -1,6 +1,6 @@
 {
-  "schema": "tinyrustlm.build-custody-profile.v3",
-  "profileId": "tinyrustlm.source-controlled-build-custody/3",
+  "schema": "tinyrustlm.build-custody-profile.v4",
+  "profileId": "tinyrustlm.source-controlled-build-custody/4",
   "status": "current-prelaunch-only",
   "platform": "win32",
   "architecture": "x64",
@@ -21,13 +21,13 @@
     "staleOutputSelection": false
   },
   "schemas": {
-    "request": "tinyrustlm.build-custody-request.v3",
-    "binding": "tinyrustlm.build-custody-binding.v3",
-    "start": "tinyrustlm.build-custody-start.v3",
-    "processTerminal": "tinyrustlm.build-custody-process-terminal.v3",
-    "scratchInspectionProcessTerminal": "tinyrustlm.build-custody-scratch-inspection-process-terminal.v3",
-    "terminal": "tinyrustlm.build-custody-terminal.v3",
-    "summary": "tinyrustlm.build-custody-summary.v3"
+    "request": "tinyrustlm.build-custody-request.v4",
+    "binding": "tinyrustlm.build-custody-binding.v4",
+    "start": "tinyrustlm.build-custody-start.v4",
+    "processTerminal": "tinyrustlm.build-custody-process-terminal.v4",
+    "scratchInspectionProcessTerminal": "tinyrustlm.build-custody-scratch-inspection-process-terminal.v4",
+    "terminal": "tinyrustlm.build-custody-terminal.v4",
+    "summary": "tinyrustlm.build-custody-summary.v4"
   },
   "environmentAuthority": {
     "profilePath": "contracts/vnext/windows-x64-msvc-environment-profile.v1.json",
@@ -144,6 +144,13 @@
       "home",
       "temp"
     ],
+    "environmentRootDirectoriesBeforeChild": [
+      "home",
+      "home/AppData",
+      "home/AppData/Local",
+      "home/AppData/Roaming",
+      "temp"
+    ],
     "environmentRootPostBuild": "one-bounded-rust-win32-no-follow-double-inventory-with-strict-same-root-direct-directory-junctions",
     "environmentRequestAndOutputsMustBeOutsideSourceAndBuildRoots": true,
     "writeMode": "create-only",
@@ -156,20 +163,27 @@
     "combinedOrdering": "uppercase-name-ascending",
     "systemRoot": "required-supplement-equal-to-environment-authority-system-root",
     "windowsBaselineSupplements": [
+      "APPDATA",
       "HOMEDRIVE",
       "HOMEPATH",
+      "LOCALAPPDATA",
       "LOGONSERVER",
       "SYSTEMDRIVE",
       "SystemRoot",
       "TEMP",
+      "TMP",
       "USERDOMAIN",
       "USERNAME",
       "USERPROFILE",
       "WINDIR"
     ],
     "windowsBaselineValues": "request-bound-and-cross-validated",
+    "applicationDataBindings": {
+      "APPDATA": "exact-environment-root-home-appdata-roaming-child",
+      "LOCALAPPDATA": "exact-environment-root-home-appdata-local-child"
+    },
     "userProfile": "exact-environment-root-home-child",
-    "temp": "exact-environment-root-temp-child",
+    "tempAndTmp": "same-exact-environment-root-temp-child",
     "path": "authority-owned-no-supplement-override",
     "lib": "authority-owned-no-supplement-override",
     "libPath": "authority-owned-no-supplement-override",
@@ -183,7 +197,7 @@
     "stdout": "separate-bounded-binary-file",
     "stderr": "separate-bounded-binary-file",
     "environment": "validated-authority-plus-request-supplement-only",
-    "environmentLaunch": "explicit-authority-plus-request-bound-windows-baseline-no-global-process-environment-mutation",
+    "environmentLaunch": "explicit-authority-plus-request-bound-owned-application-data-and-windows-baseline-no-global-process-environment-mutation",
     "worker": "detached-same-owner-same-runtime",
     "workerEnvironment": "system-root-request-plus-fixed-windows-injected-name-allowlist",
     "workerAmbientValuesUsedByCustody": false,
@@ -199,7 +213,7 @@
     "terminal-build-failure",
     "terminal-custody-failure"
   ],
-  "successRule": "captured-exit-zero-and-no-signal-timeout-overflow-or-process-error-and-bounded-streams-closed-and-source-runtime-command-environment-unchanged-and-all-required-outputs-exact-and-one-passing-source-built-scratch-inspector-observation-with-empty-stderr-and-stable-executable-identity",
+  "successRule": "captured-exit-zero-and-no-signal-timeout-overflow-or-process-error-and-bounded-streams-closed-and-source-runtime-command-environment-unchanged-and-all-required-outputs-exact-and-exact-owned-appdata-localappdata-temp-tmp-bindings-and-one-passing-source-built-scratch-inspector-observation-with-empty-stderr-and-stable-executable-identity",
   "failureRule": "preserve-every-created-root-and-write-create-only-process-scratch-inspection-and-overall-terminal-evidence-with-no-retry-resume-cleanup-adoption-or-selection",
   "claimBoundary": {
     "successfulBuild": "only-pass-terminal-with-zero-build-process-exit-passing-post-child-environment-validation-and-passing-scratch-inspection",

@@ -14,7 +14,7 @@ const repositoryRoot = path.resolve(__dirname, "..", "..");
 const templateOwnerPath = path.join(repositoryRoot, "tinyrustlm", "tools",
   "build-custody-owner.js");
 const templateProfilePath = path.join(repositoryRoot, "contracts", "vnext",
-  "build-custody-profile.v3.json");
+  "build-custody-profile.v4.json");
 const templateScratchInspectionProfilePath = path.join(repositoryRoot, "contracts", "vnext",
   "build-scratch-inspector-profile.v1.json");
 const templateScratchInspectorPath = path.join(repositoryRoot, "target", "debug",
@@ -140,12 +140,15 @@ function windowsBaselineSupplement(systemRoot, environmentRoot, extra = {}) {
   const userProfile = path.resolve(environmentRoot, "home");
   const homeDrive = path.parse(userProfile).root.slice(0, 2);
   return {
+    APPDATA: path.resolve(userProfile, "AppData", "Roaming"),
     HOMEDRIVE: homeDrive,
     HOMEPATH: userProfile.slice(2),
+    LOCALAPPDATA: path.resolve(userProfile, "AppData", "Local"),
     LOGONSERVER: process.env.LOGONSERVER || "\\\\LOCALHOST",
     SYSTEMDRIVE: systemDrive,
     SystemRoot: resolvedSystemRoot,
     TEMP: path.resolve(environmentRoot, "temp"),
+    TMP: path.resolve(environmentRoot, "temp"),
     USERDOMAIN: process.env.USERDOMAIN || "LOCAL",
     USERNAME: process.env.USERNAME || "tinyrustlm",
     USERPROFILE: userProfile,
@@ -399,13 +402,13 @@ function createOperation(t, options = {}) {
     kind: "pe-x64"
   }].sort((left, right) => left.relativePath < right.relativePath ? -1 : 1);
   const request = {
-    schema: "tinyrustlm.build-custody-request.v3",
+    schema: "tinyrustlm.build-custody-request.v4",
     operationId: `build-custody-test/${String(operationOrdinal).padStart(3, "0")}`,
     profile: {
       path: copiedProfilePath,
       byteLength: profileArtifact.byteLength,
       sha256: profileArtifact.sha256,
-      profileId: "tinyrustlm.source-controlled-build-custody/3"
+      profileId: "tinyrustlm.source-controlled-build-custody/4"
     },
     source: {
       repositoryRoot: sourceRoot,
@@ -559,7 +562,7 @@ before(() => {
   copiedOwnerPath = path.resolve(sourceRoot, "tinyrustlm", "tools",
     "build-custody-owner.js");
   copiedProfilePath = path.resolve(sourceRoot, "contracts", "vnext",
-    "build-custody-profile.v3.json");
+    "build-custody-profile.v4.json");
   copiedScratchInspectionProfilePath = path.resolve(sourceRoot, "contracts", "vnext",
     "build-scratch-inspector-profile.v1.json");
   copiedScratchInspectorPath = path.resolve(sourceRoot, "tinyrustlm", "tests", "helpers",
@@ -622,20 +625,22 @@ after(() => {
 });
 
 test("freezes the sole prelaunch build-custody profile and owner identity", () => {
+  assert.equal(fs.existsSync(path.join(repositoryRoot, "contracts", "vnext",
+    "build-custody-profile.v3.json")), false);
   const profileBytes = fs.readFileSync(templateProfilePath);
-  assert.equal(profileBytes.length, 9786);
+  assert.equal(profileBytes.length, 10274);
   assert.equal(sha256(profileBytes),
-    "0bdc4227b1c7576bd844be1c0891c2b60868ddfdf0626efc96506c36adb24626");
+    "26b75c36911c14d744a764c19d8a40ec0c28762add5e6616501080120aad9b45");
   assert.equal(templateOwner.profileByteLength, profileBytes.length);
   assert.equal(templateOwner.profileSha256, sha256(profileBytes));
   const profile = JSON.parse(profileBytes.toString("utf8"));
-  assert.equal(profile.profileId, "tinyrustlm.source-controlled-build-custody/3");
+  assert.equal(profile.profileId, "tinyrustlm.source-controlled-build-custody/4");
   assert.equal(profile.authority.legacySupport, false);
   assert.equal(profile.authority.retry, false);
   assert.equal(profile.processPolicy.workerEnvironment,
     "system-root-request-plus-fixed-windows-injected-name-allowlist");
   assert.equal(profile.processPolicy.environmentLaunch,
-    "explicit-authority-plus-request-bound-windows-baseline-no-global-process-environment-mutation");
+    "explicit-authority-plus-request-bound-owned-application-data-and-windows-baseline-no-global-process-environment-mutation");
   assert.equal(profile.processPolicy.workerAmbientValuesUsedByCustody, false);
   assert.equal(profile.processPolicy.testOnlyInProcess,
     "explicitly-marked-redacted-and-never-campaign-evidence");
@@ -644,6 +649,12 @@ test("freezes the sole prelaunch build-custody profile and owner identity", () =
   assert.equal(profile.environmentAuthority.ownerSha256,
     "48b550da9fa0a81735467d2af6dc733fa5ba2df4e9f815e505c37b57bfdb4ebf");
   assert.equal(profile.environmentPolicy.callerFullEnvironmentAccepted, false);
+  assert.deepEqual(profile.environmentPolicy.applicationDataBindings, {
+    APPDATA: "exact-environment-root-home-appdata-roaming-child",
+    LOCALAPPDATA: "exact-environment-root-home-appdata-local-child"
+  });
+  assert.equal(profile.environmentPolicy.tempAndTmp,
+    "same-exact-environment-root-temp-child");
   assert.equal(profile.environmentAuthority.postChildValidationForEveryProcessOutcome, true);
   assert.equal(profile.environmentAuthority.productionValidationProcess,
     "fresh-exact-source-bound-node-for-every-validation");
@@ -679,6 +690,14 @@ test("rejects reordered, unknown, and noncanonical request material", {
     /build-custody-request-fields/u);
   assert.throws(() => owner.validateRequestShape({ ...operation.request, extra: true }),
     /build-custody-request-fields/u);
+  assert.throws(() => owner.validateRequestShape({ ...operation.request,
+    schema: "tinyrustlm.build-custody-request.v3" }),
+  /build-custody-request-schema/u);
+  assert.throws(() => owner.validateRequestShape({
+    ...operation.request,
+    profile: { ...operation.request.profile,
+      profileId: "tinyrustlm.source-controlled-build-custody/3" }
+  }), /build-custody-profile-id/u);
   const missingBaseline = {
     ...operation.request,
     command: {
@@ -689,6 +708,22 @@ test("rejects reordered, unknown, and noncanonical request material", {
   };
   assert.throws(() => owner.validateRequestShape(missingBaseline),
     /build-custody-windows-baseline-supplement/u);
+  for (const name of ["APPDATA", "LOCALAPPDATA", "TMP"]) {
+    const missing = {
+      ...operation.request,
+      command: {
+        ...operation.request.command,
+        supplementalEnvironment: operation.request.command.supplementalEnvironment
+          .filter((entry) => entry.name !== name)
+      }
+    };
+    assert.throws(() => owner.validateRequestShape(missing),
+      /build-custody-windows-baseline-supplement/u, name);
+  }
+  assert.throws(() => owner.validateRequestShape({
+    ...operation.request,
+    outputs: { ...operation.request.outputs, maximumEnvironmentEntryCount: 4 }
+  }), /build-custody-environment-output-count/u);
   const compactPath = path.join(operation.operationParent, "compact.json");
   fs.writeFileSync(compactPath, JSON.stringify(operation.request), { flag: "wx" });
   assert.throws(() => owner.prepareRequest(path.resolve(compactPath)),
@@ -717,6 +752,41 @@ test("preflight is read-only and binds exact source, Git, Node, command, and tas
   assert.equal(Object.keys(prepared.environment).includes(
     "CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER"), true);
   assert.equal(prepared.environment.SystemRoot, operation.environmentFixture.systemRoot);
+  assert.equal(prepared.environment.APPDATA, path.resolve(operation.environmentRoot,
+    "home", "AppData", "Roaming"));
+  assert.equal(prepared.environment.LOCALAPPDATA, path.resolve(operation.environmentRoot,
+    "home", "AppData", "Local"));
+  assert.equal(prepared.environment.TEMP,
+    path.resolve(operation.environmentRoot, "temp"));
+  assert.equal(prepared.environment.TMP, prepared.environment.TEMP);
+  assert.equal(fs.existsSync(operation.controlRoot), false);
+  assert.equal(fs.existsSync(operation.targetRoot), false);
+  assert.equal(fs.existsSync(operation.environmentRoot), false);
+});
+
+test("rejects application-data and temporary paths outside owned scratch before writing", {
+  skip: !isWindowsX64
+}, (t) => {
+  const operation = createOperation(t);
+  const cases = [
+    ["APPDATA", path.resolve(operation.operationParent, "foreign-roaming"),
+      /build-custody-appdata-binding/u],
+    ["LOCALAPPDATA", path.resolve(operation.operationParent, "foreign-local"),
+      /build-custody-local-appdata-binding/u],
+    ["TMP", path.resolve(operation.operationParent, "foreign-temp"),
+      /build-custody-temp-binding/u]
+  ];
+  for (const [name, value, expected] of cases) {
+    const supplementalEnvironment = operation.request.command.supplementalEnvironment
+      .map((entry) => entry.name === name ? { name, value } : entry);
+    const request = {
+      ...operation.request,
+      command: { ...operation.request.command, supplementalEnvironment }
+    };
+    const variant = writeRequestVariant(operation, `foreign-${name}.json`, request);
+    assert.throws(() => owner.prepareRequest(variant.requestPath,
+      { testOnlyInProcess: true }), expected, name);
+  }
   assert.equal(fs.existsSync(operation.controlRoot), false);
   assert.equal(fs.existsSync(operation.targetRoot), false);
   assert.equal(fs.existsSync(operation.environmentRoot), false);
@@ -816,15 +886,15 @@ test("captures zero exit before diagnostics and inventories both required output
   assert.equal(result.terminal.target.required[1].sha256, scratchInspectorArtifact.sha256);
   assert.equal(result.terminal.scratchInspection.status, "pass");
   assert.equal(result.terminal.scratchInspection.invocationCount, 1);
-  assert.equal(result.terminal.scratchInspection.observation.entryCount, 2);
+  assert.equal(result.terminal.scratchInspection.observation.entryCount, 5);
   assert.equal(result.terminal.scratchInspection.observation.fileCount, 0);
-  assert.equal(result.terminal.scratchInspection.observation.directoryCount, 2);
+  assert.equal(result.terminal.scratchInspection.observation.directoryCount, 5);
   assert.equal(result.terminal.scratchInspection.observation.aggregateBytes, 0);
   assert.equal(result.terminal.scratchInspection.observation.junctionCount, 0);
   assert.equal(result.terminal.scratchInspection.processTerminal.outcome.exitCode, 0);
   assert.equal(fs.readFileSync(path.join(operation.controlRoot,
     "build.scratch-inspection.stderr.bin")).length, 0);
-  assert.equal(owner.publicSummary(result.terminal).environmentScratchEntryCount, 2);
+  assert.equal(owner.publicSummary(result.terminal).environmentScratchEntryCount, 5);
   assert.equal(owner.publicSummary(result.terminal).environmentScratchBytes, 0);
   assert.equal(owner.publicSummary(result.terminal).environmentScratchJunctionCount, 0);
   assert.equal(owner.publicSummary(result.terminal).scratchInspectionInvoked, true);

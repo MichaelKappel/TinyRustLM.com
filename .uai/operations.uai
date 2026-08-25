@@ -1,5 +1,15 @@
-profile: runtime-mirust.operations.v154
-updated_utc: 2026-08-25T21:30:11Z
+profile: runtime-mirust.operations.v155
+updated_utc: 2026-08-25T22:41:30Z
+owned_application_data_build_custody_v4_2026_08_25:
+  state: current_profile=tinyrustlm.source-controlled-build-custody/4; predecessor_profile_current=false; appdata=owned-roaming; localappdata=owned-local; temp=owned-temp; tmp=owned-temp; precreated_directories=5; registered_operation=false; private_material=false
+  identities: profile=10274,26b75c36911c14d744a764c19d8a40ec0c28762add5e6616501080120aad9b45; owner=103310,4d0a86fccc7c798866a0c36538adb78bf73cb383f9d74e03d8794edf264040df; owner_test=56613,babf889f90bb7a1330b105b49440ca339ddba9f2b40ffaee93d4dd0f5bab5425; sdk_regression=7027,b3974a2bc25c68e5e8534b14b62a42c917764bd2df5fc880145c01652f3053d0; architecture=9396,4e6c86c1a869b4c61f923e9c040018a333d80444f5ef95b3139400dadcd215de
+  causal_observation: no_APPDATA=NETSDK1060-null-path1; APPDATA_only=success-relative-NuGet-migration; APPDATA_plus_LOCALAPPDATA=success-owned-local-migration; operation_v8_reinterpreted=false
+  verification: custody_owner=21/21; installed_sdk=1/1; combined=52/52; failures=0; skips=0
+  next: complete-clean-gates; commit-push-fresh-readback; separate-output-free-v9-registration; new-absent-names-only
+  claims: build_qualified=false; composition=false; slm2=false; parity=false; browser=false; quality=false; p2p=false; deployment=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
+owned_appdata_qwen3_slm2_clean_cut_research_2026_08_25:
+  artifact: docs/research-prompts/2026-08-25-twelve-disconnected-owned-appdata-qwen3-slm2-clean-cut-research-prompts.md; bytes=99193; lines=1600; words=12435; prompts=12; ascii=true; lf=true; sha256=f9ebd5a347277305b77a1299625249d3cbd10158f65ba148cc99377b11ad4f6e
+  authority: advisory-public-research-only; no-source-access; no-private-artifact-access; no-operation-authorization; no-claim-or-counter-credit
 qwen3_execution_v8_terminal_managed_build_failure_2026_08_25:
   state: registration_commit=2a0e175daee7bd2810eab74f5daeeb0c7eda0aa3; registration_tree=37fc4adb26bc8c40229a81a038dcc1b9021014f0; registration_remote_exact=true; registered_names=15; created_names=12; absent_names=3; environment_invocations=1; rust_custody_invocations=1; rust_custody_status=pass; managed_custody_invocations=1; managed_child_exit=1; managed_custody_status=terminal-build-failure; retry=false; root_cause_established=false
   identities: registration_profile=61969,4a7e255c500ef87e3ddac4d7befb7331232167e7bcf47aae6cdabfbd752fec21; result=16999,9caa23225dfa2b0e01f4bfd550c0a4cf178d4d7db2f301159f0e2b040dd94f40; test=16151,95ddfc8bedd4cbb1e2066967ba846fd18059c92a30ff3574791ba6ccf72938ca; architecture=11841,9fe5b89b362f33545b1071d94cba0d8518c15ef7ee27071e9061bea3f5738498
