@@ -188,6 +188,16 @@ logic; the executable is a thin internal friend and adds no public SDK surface.
 It rejects noncanonical or extended intent bytes and normalizes all output to
 portable UTF-8 LF.
 
+`qwen3-real-composition-execution-preregistration.v2.json` is the fresh,
+output-free successor registration. It is 27,596 canonical bytes at SHA-256
+`cfc924334083d5623852511950d48486b2bbb80d3aa9d7e403c7d957b2f89a5f`.
+It binds the closed `/1` result, remote-exact source parent, exact controller
+and Node runtime, one offline Rust build, one offline managed inspector build,
+five absent logical roots, one canonical private controller request, one
+converter launch, and at most one inspect-only managed decision. It creates no
+build, private root, model output, or structural claim. See
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration-v2.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2
