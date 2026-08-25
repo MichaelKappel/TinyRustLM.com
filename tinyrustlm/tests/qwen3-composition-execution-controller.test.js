@@ -11,6 +11,7 @@ const {
   bindingSchema,
   canonicalJson,
   inspectPeMachine,
+  requiredBuildCommand,
   requestSchema,
   runCapturedProcess,
   sha256File,
@@ -56,10 +57,7 @@ function fixtureRequest() {
       executableByteLength: 1,
       executableSha256: "1".repeat(64),
       peMachine: "0x8664",
-      command: [
-        "cargo", "build", "--locked", "--release", "-p", "tinyrustlm-convert",
-        "--target", "x86_64-pc-windows-msvc"
-      ],
+      command: [...requiredBuildCommand],
       environment: {
         CARGO_INCREMENTAL: "0",
         CARGO_NET_OFFLINE: "true",
@@ -94,6 +92,13 @@ test("exports one exact execution schema family", () => {
   assert.equal(bindingSchema, "tinyrustlm.qwen3-composition-execution-binding.v1");
   assert.equal(startSchema, "tinyrustlm.qwen3-composition-execution-start.v1");
   assert.equal(terminalSchema, "tinyrustlm.qwen3-composition-execution-terminal.v1");
+  assert.deepEqual(requiredBuildCommand, [
+    "cargo", "build", "--locked", "--release",
+    "-p", "tinyrustlm-build-custody",
+    "-p", "tinyrustlm-convert",
+    "--target", "x86_64-pc-windows-msvc"
+  ]);
+  assert.equal(Object.isFrozen(requiredBuildCommand), true);
 });
 
 test("accepts only the ordered, closed private request shape", () => {
@@ -108,6 +113,10 @@ test("accepts only the ordered, closed private request shape", () => {
   const extended = structuredClone(request);
   extended.retry = true;
   assert.throws(() => validateRequestShape(extended), /execution-request-fields/u);
+
+  const converterOnly = structuredClone(request);
+  converterOnly.build.command.splice(4, 2);
+  assert.throws(() => validateRequestShape(converterOnly), /execution-build-command/u);
 });
 
 test("writes create-only durable evidence and refuses overwrite", (context) => {

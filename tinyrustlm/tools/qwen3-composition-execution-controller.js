@@ -19,6 +19,12 @@ const hashBufferBytes = 1024 * 1024;
 const sha256Pattern = /^[a-f0-9]{64}$/u;
 const commitPattern = /^[a-f0-9]{40}$/u;
 const safeIdPattern = /^[A-Za-z0-9][A-Za-z0-9._/-]{0,159}$/u;
+const requiredBuildCommand = Object.freeze([
+  "cargo", "build", "--locked", "--release",
+  "-p", "tinyrustlm-build-custody",
+  "-p", "tinyrustlm-convert",
+  "--target", "x86_64-pc-windows-msvc"
+]);
 
 function invariant(condition, code) {
   if (!condition) throw new Error(code);
@@ -234,6 +240,9 @@ function validateRequestShape(request) {
     "stdoutByteLength", "stdoutSha256", "stderrPath", "stderrByteLength", "stderrSha256",
     "executablePath", "executableByteLength", "executableSha256", "peMachine", "command",
     "environment", "toolchain"], "execution-build-fields");
+  invariant(Array.isArray(request.build.command) &&
+    canonicalJson(request.build.command) === canonicalJson(requiredBuildCommand),
+  "execution-build-command");
   requireExactKeys(request.inputs, ["modelSourceLockPath", "modelSourceLockSha256",
     "modelSourceDirectory", "tokenizerSourceLockPath", "tokenizerSourceLockSha256",
     "tokenizerSourceDirectory", "compositionProfilePath", "compositionProfileSha256"],
@@ -313,11 +322,6 @@ function prepareExecution(requestPath) {
   invariant(request.build.sourceCommit === head && request.build.sourceTree === tree,
     "execution-build-source");
 
-  invariant(Array.isArray(request.build.command) && request.build.command.length === 8 &&
-    canonicalJson(request.build.command) === canonicalJson([
-      "cargo", "build", "--locked", "--release", "-p", "tinyrustlm-convert", "--target",
-      "x86_64-pc-windows-msvc"
-    ]), "execution-build-command");
   invariant(isPlainObject(request.build.environment), "execution-build-environment");
   invariant(isPlainObject(request.build.toolchain), "execution-build-toolchain");
   for (const field of ["stdoutByteLength", "stderrByteLength", "executableByteLength"]) {
@@ -766,6 +770,7 @@ module.exports = Object.freeze({
   execute,
   inspectPeMachine,
   prepareExecution,
+  requiredBuildCommand,
   requestSchema,
   runCapturedProcess,
   sha256File,
