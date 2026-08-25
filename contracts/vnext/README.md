@@ -261,6 +261,21 @@ this profile. Profile `/3` remains immutable rejected history and retains no
 executable reader, alias, migration, or fallback. See
 `docs/architecture/2026-08-25-qwen-tokenizer2-output-path-correction-preregistration.md`.
 
+`qwen3-real-composition-execution-preregistration.v4.json` is the wholly new,
+output-free successor bound to all three immutable terminal attempts,
+corrected model profile `/2`, sole Tokenizer2 producer `/2`, complete-
+composition profile `/4`, exact current executable owners, and five new absent
+logical roots. It is 31,580 canonical bytes at SHA-256
+`f3f549a108c4a3acb767b241f2d1ef6d2db737c67442f059e8e943dabb992275`.
+It permits one offline Rust build, one offline managed-inspector build, one
+controller invocation, one converter launch, and at most one inspect-only
+managed decision after a native candidate pass. Exact `.tokenizer2`, member
+`tokenizer.tokenizer2`, Tokenizer2 receipt v2, 311 physical source tensors,
+310 logical SLM2 tensors, and exact tied-output equality are mandatory. The
+registration creates no private root, output, structural result, broader
+claim, or campaign credit. See
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration-v4.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2
