@@ -1,5 +1,11 @@
-profile: runtime-mirust.operations.v133
-updated_utc: 2026-08-25T07:04:58Z
+profile: runtime-mirust.operations.v134
+updated_utc: 2026-08-25T07:39:36Z
+qwen3_execution_v2_tied_output_defect_checkpoint_2026_08_25:
+  source: registration=33f306673007ceaec96fdbdfb1106c6633605b64; result=7314338e1f078f41fff690f74bccf0c9beca0c07; branch=codex/model-acquisition-v2; result_remote_exact=true
+  result: status=terminal-native-rejection; bytes=8275; sha256=4b2c957943d91fe7023d5ab78d2582735d21196e93403c212a9b104204bc970c; private_verification_sha256=95cb01c7f989f25db62fae8719e4389fc75d00b26dcf6c80ca4a17ccb116ed20; rust_build=1/1-pass; managed_build=1/1-pass; controller=1/1; converter_launch=1/1; converter_exit=1; error=qwen3-tensor-inventory-mismatch; managed_inspection=not-invoked; retry=false; cleanup=false
+  root_cause: source_tensor_count=311; registered_count=310; extra=lm_head.weight; embedding_and_lm_head=BF16-[151936,1024]-311164928-bytes; equal_sha256=8f29acf519434862d95613b2b4f6b9d14933a5e4d16baebf8ac0b33b410acfb6; tie_word_embeddings=true; source_defect=false; profile_defect=true
+  resume: preserve all `/2` roots; preregister corrected exact 311-source/310-logical tied-output profile and corrected composition producer; implement general equality and mismatch tests; clean-cut old executable identities; commit/push/fresh-fetch; register new execution with all-new roots
+  claims: structural=false; runtime=false; browser=false; quality=false; p2p=false; publication=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
 qwen3_execution_v1_result_and_controller_checkpoint_2026_08_25:
   source: registration=823b03641984c395cab8e37f0fd28af6d6dcb6a5; implementation=37f37a0e86e0522eeff0ba1a3430f1863a084c62; runtime_binding=fc2eb6e482811dbeac1393423ed5c3febbe282e8; managed_inspector=b3f98d15262a23d2c876f16dec6414aec6b9ebb9; branch=codex/model-acquisition-v2; managed_inspector_remote_exact=true
   result: status=terminal-prelaunch-failure; result_bytes=4076; result_sha256=dd1d9c85b5bb8bf098641a156de06e59243d88530434d70c574dcdceedb7a1ce; build_attempts=1; build_exit=0; converter_launches=0; output_root=false; binding=false; root_cause=unknown; retry=false
