@@ -1,5 +1,14 @@
-profile: runtime-mirust.operations.v128
-updated_utc: 2026-08-25T04:16:14Z
+profile: runtime-mirust.operations.v129
+updated_utc: 2026-08-25T05:25:55Z
+tinyrustlm_web_release_0_3_0_checkpoint_2026_08_24:
+  source: tested_commit=dca8a3a2107d8f6992291a59ae3eb1f319b332f4; finalized_commit=5058012d2fbdfcf16edb75677d85e462b3962945; branch=codex/model-acquisition-v2; local_tracking_fetch_exact=true
+  gate: standard=1202/0/1-of-1203; duration_ms=359617.8745; release_run=d0f4fedab50db55b427a514f3242dab4bb0fabb80e524d8b397dc0d474bf2ce4; shards=10/10; release_tests=23/23; aggregate_bytes=3995; aggregate_sha256=b0fa4b267bdb8a406e4ccb4525e82e6c6423b4bd186c75ae64f8460890f1eb78; log_bytes=203584; log_sha256=677f504b9783ff6d76b2d623c0db2a4a6700b4909a8a4a5488f63bc6347f292c
+  publication: release=tinyrustlm.com@0.3.0; release_date=2026-08-24; published_at=2026-08-25T04:57:20.279Z; publication_id=cc53b43f55557aa9808264776c73168a750600c7b53c4d6a6bc61815afa0e3b2
+  deployment: report_sha256=a50f142f9c121233e9548a34a3917554409be998d3ce8c8746418738a4e52005; files=23/23-readback; retired_routes=5/5-absent; secret_findings=0; hosted_model_bytes=false; per_artifact_atomic=true; whole_site_atomic=false
+  ledger: finalized_bytes=8804; finalized_sha256=c1788f1f244e38f068b3df7639ba56eff8f30186c1167e9dee8f7f81e4de5955; source_candidate_byte_equal=true; append_only=true
+  focused: node=27/27; deployment_persistence_and_credential_tests=pass
+  claims: web_deployment=true; public_readback=true; package=false; real_model=false; quality=false; p2p=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
+  next_operation: Commit/push/fresh-fetch UAI, then continue the first real Qwen3 SLM2 source acquisition, complete conversion, native/WASM parity, P2P-or-convert acquisition, and untouched browser-local multi-turn chat slice.
 complete_release_root_gate_checkpoint_2026_08_24:
   source: commit=0343da897c335ca6177606b7563dd8a6e4fcb151; tree=3be0c1b50c5092e879cd74a6643e05cd70e79f74; branch=codex/model-acquisition-v2; local_tracking_fetch_direct_remote_exact=true
   preserved_failure: source=93b2a28777c2ee158085416b2f4caa1d19544ff8; tests=1203; pass=1201; fail=1; skip=1; log_bytes=212678; log_sha256=966de5334b947c7461081e225894bb102b0cfca10c74268fd82741a4db180903
