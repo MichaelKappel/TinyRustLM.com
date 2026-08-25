@@ -1,19 +1,19 @@
-profile: runtime-mirust.startup-packet.v113
-updated_utc: 2026-08-25T14:40:05Z
-current_windows_x64_msvc_environment_authority_2026_08_25:
-  first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/windows-x64-msvc-environment-profile.v1.json`, and its architecture record before build or composition work.
+profile: runtime-mirust.startup-packet.v114
+updated_utc: 2026-08-25T15:59:12Z
+current_environment_bound_build_custody_2026_08_25:
+  first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/build-custody-profile.v2.json`, and `docs/architecture/2026-08-25-environment-bound-build-custody-owner.md` before build or composition work.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
   active_branch: codex/model-acquisition-v2
-  checkpoint: commit=`4f7d580a2d4114fc14c6969860c66c51079954e4`; profile=`76de6c5985c000dadedefa457286111af80ebd2deb6e6e3d8de246f6a0eed607`; owner=`48b550da9fa0a81735467d2af6dc733fa5ba2df4e9f815e505c37b57bfdb4ebf`; pushed/fresh-remote exact=true
-  gates: synthetic=8/8; installed_observation=1/1; standard=1357/0/2-of-1359; current_custody_environment_bound=false
-  immediate_operation: Bind the exact environment private/public/terminal graph through the sole custody profile, canonical request, owner, detached worker, child process, and terminal evidence; add hostile and real-Windows tests; clean-cut any superseded executable route; commit/push/fresh-verify. Only then may an output-free `/7` registration use wholly new absent names.
-  truth_boundary: Preserve `/1` through `/6`; never write `D:` or modify the protected sibling. Environment authority is not build, conversion, composition, runtime, browser, quality, P2P, publication, MemoryEndpoints, or campaign evidence; counters remain zero.
-current_msvc_environment_research_handoff_2026_08_25:
+  checkpoint: commit=`80fea2be08900e98b914804f961ef3f807731379`; tree=`91ee172c050341c09a5a1f69833a42edc1b7ce79`; custody_profile=`7d8b82ac9bb7cab6d5373f60d3c8f78874e86e3540f788ac018e0f5f22d90916`; custody_owner=`2000ff2c355d744c9fb4e8d2cc4765858a10184f4b7cf60b6f61960daaa3d637`; pushed/fresh-remote exact=true
+  gates: custody=17/17; environment=8/8; installed_observation=1/1; historical_v5_v6=20/20; standard=1360/0/2-of-1362; current_custody_environment_bound=true
+  immediate_operation: Commit/push/fresh-remote-verify this UAI state. Then preregister `/7` output-free against the exact resulting source parent, immutable `/1` through `/6`, final authority identities, wholly new absent roots, and wholly new absent private request names. Push/fresh-verify before private material.
+  truth_boundary: Preserve `/1` through `/6`; never write `D:` or modify the protected sibling. No new real build, conversion, composition, runtime, browser, quality, P2P, publication, MemoryEndpoints, or campaign evidence exists; counters remain zero.
+historical_msvc_environment_research_handoff_2026_08_25:
   first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, terminal `/6` result/architecture, and the new twelve-prompt research handoff.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
   active_branch: codex/model-acquisition-v2
   checkpoints: closure=`7fac32b6c0d9a308883949ee94375bd6b7e77ed9`; research=`61950e9ee58af6dbcf35e90b8f3d985dce65b25d`; prompts_sha256=`5a7117b45f970f5c63e9978243536315a14c54194d3e189ed1ddc9bc9c3ef371`; each pushed/fresh-remote exact
-  immediate_operation: Preserve `/1` through `/6`. Implement and hostile-test the sole exact linker-complete x64 MSVC/Windows SDK environment materializer/validator, bind linker/tool/library identities, prohibit `D:` writes, and commit/push/fresh-verify before any output-free `/7` registration.
+  disposition: Advisory provenance only. Current implementation authority is the environment-bound custody checkpoint above.
   truth_boundary: Research is advisory and grants no private build, conversion, composition, runtime, browser, quality, P2P, publication, MemoryEndpoints, or campaign evidence; counters remain zero.
 current_qwen3_execution_v6_msvc_linker_environment_failure_2026_08_25:
   first_read: Read newest `workspace.uai`, `contracts/vnext/qwen3-real-composition-execution-result.v6.json`, its architecture record, `.uai/totem.uai`, and `.uai/taboo.uai` before material work.
@@ -21,7 +21,7 @@ current_qwen3_execution_v6_msvc_linker_environment_failure_2026_08_25:
   active_branch: codex/model-acquisition-v2
   protected_root: E:\Source\Rust\TinyRustLM.com remains untouched; never write `D:`.
   current_result: `/6` registration `701d770`, request SHA256 `57a41f877be767e55c34aeb05211761de658f53590d6cdcc6f4faa3237dec70c`, one preflight, and one build produced exact exit 101 because no registered PATH entry contained `link.exe`. Result SHA256 `58d6ce16304d804d3a09cfd2c6544e8fa10b39080359040383df3f2ac68bb72c` is terminal; preserve request, both Rust roots, six records, and 102-file target. All later operations are zero.
-  immediate_operation: Run complete closure gates, commit/push/fresh-verify. Then implement and hostile-test a sole exact linker-complete x64 MSVC/Windows SDK request materializer/validator, commit/push/fresh-verify it, and only then preregister `/7` output-free with all-new absent names.
+  immediate_operation: Preserve `/6` unchanged. After UAI remote equality, preregister `/7` output-free with all-new absent names.
   truth_boundary: Never retry, clean, adopt, repair, or extend `/6`. No successful build, conversion, output, broader claim, MemoryEndpoints authority, or campaign gate advanced; counters remain zero.
 current_qwen3_execution_v5_source_anchor_invalidation_2026_08_25:
   first_read: Read newest `workspace.uai`, `contracts/vnext/qwen3-real-composition-execution-result.v5.json`, its architecture record, `.uai/totem.uai`, and `.uai/taboo.uai` before material work.
@@ -31,14 +31,14 @@ current_qwen3_execution_v5_source_anchor_invalidation_2026_08_25:
   current_result: `/5` profile SHA256 `221afa82a71da22516dda142f90270a08205cdced9df6093108b0bacfaf88b55` bound registration commit `307b940`. Research commit `81631d0` advanced the remote before any private name existed, so result SHA256 `06006e0533c1f1b02492aacb8aee675ac1c5dbd50d6c3f67441b58918bd0c798` closes `/5` before preflight/build. All nine names remain absent and all material counts are zero.
   immediate_operation: Run complete closure gates, commit/push/fresh-verify. Then preregister `/6` against that exact current source with six new roots and three new request files, push/fresh-verify, and execute immediately before any other commit.
   truth_boundary: Do not rewind remote history, reuse `/5` names, or claim a material conversion. No build, output, broader claim, MemoryEndpoints authority, or campaign gate advanced; counters remain zero.
-current_source_controlled_build_custody_owner_2026_08_25:
-  first_read: Read newest `workspace.uai`, custody profile SHA256 `589883f42c1e047dfa6e132c8c4937c05d23b936ae1a6f62fe41c91b672a82fa`, owner architecture record, `.uai/totem.uai`, and `.uai/taboo.uai` before `/4` or `/5` material.
+historical_build_custody_profile_v1_2026_08_25:
+  first_read: Read only when auditing immutable executions `/5` or `/6`; use the current checkpoint above for future work.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
   active_branch: codex/model-acquisition-v2
   protected_root: E:\Source\Rust\TinyRustLM.com remains untouched; never write `D:`.
-  current_result: Source-controlled exit-first custody is implemented and passes real Windows 14/14, Qwen 141/141, and release cutover 5/5. Exact child environment, descendant kill, observer death, collisions, and missing optional metadata are covered. No real build has used it and `/5` is unregistered.
-  immediate_operation: Commit/push/fresh-remote-verify this mechanism. Then preregister `/5` output-free with wholly new absent roots; push/fresh-verify; execute once only through the exact owner.
-  truth_boundary: `/4` remains terminal. No `/5` root, request, build, converter, output, complete composition, runtime, browser, quality, P2P, publication, deployment, MemoryEndpoints, or campaign gate advanced; counters remain zero.
+  current_result: Profile `/1` source is deleted and no current reader, migration, alias, fallback, retry, cleanup, or adoption path accepts it.
+  immediate_operation: None; preserve historical facts only.
+  truth_boundary: Historical retention grants no build or product authority.
 current_qwen3_execution_v4_build_custody_failure_2026_08_25:
   first_read: Read newest `workspace.uai`, the `/4` result JSON, build-custody architecture record, `.uai/totem.uai`, and `.uai/taboo.uai` before older Qwen routes.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
