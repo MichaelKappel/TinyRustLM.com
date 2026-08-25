@@ -14,7 +14,7 @@ const {
 const siteRoot = path.resolve(__dirname, "..");
 const sourceLedgerPath = path.join(siteRoot, "release", "site-release-ledger.v1.json");
 const sourceRevision = "a".repeat(40);
-const publishedAt = "2026-08-08T23:15:30.000Z";
+const publishedAt = "2026-08-25T04:15:30.000Z";
 
 function temporaryDirectory(context, prefix) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), prefix));

@@ -45,9 +45,9 @@ test("local web release smoke proves the exact closure in real Chromium", {
     assert.equal(observation.consoleErrorCount, 0);
     assert.equal(observation.pageErrorCount, 0);
     assert.equal(observation.releaseState, "verified");
-    assert.equal(observation.releaseVersion, "0.2.1");
-    assert.equal(observation.releaseDate, "2026-08-08");
-    assert.match(observation.releasePublishedAt, /^2026-08-08T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+    assert.equal(observation.releaseVersion, "0.3.0");
+    assert.equal(observation.releaseDate, "2026-08-24");
+    assert.match(observation.releasePublishedAt, /^2026-08-25T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
     assert.equal(observation.releaseSurfaceContentOverflowPixels, 0);
     assert.equal(observation.releaseSurfaceViewportOverflowPixels, 0);
     assert.match(observation.screenshot.sha256, /^[0-9a-f]{64}$/);
@@ -56,7 +56,7 @@ test("local web release smoke proves the exact closure in real Chromium", {
   assert.equal(updates.length, 3);
   for (const observation of updates) {
     assert.equal(observation.surfaceKind, "release-history");
-    assert.equal(observation.releaseEntryCount, 5);
+    assert.equal(observation.releaseEntryCount, 6);
   }
   const companion = report.observations.filter(
     (observation) => observation.route === "companion"

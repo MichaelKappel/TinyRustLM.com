@@ -146,13 +146,35 @@ function requireOne(source, pattern, label) {
   invariant(matches.length === 1, `${label} is missing or duplicated`);
 }
 
-function stampCompanionPage(source, cssSha256, scriptSha256) {
+function stampCompanionPage(source, latest, cssSha256, scriptSha256) {
   const normalized = source.replace(/\r\n/gu, "\n");
+  const versionMetaPattern = /<meta name="application-version" content="[^"]+">/gu;
+  const dateMetaPattern = /<meta name="release-date" content="[^"]+">/gu;
+  const versionPattern = /data-release-version>[^<]+<\/span>/gu;
+  const datePattern = /data-release-date datetime="[^"]+">[^<]+<\/time>/gu;
   const cssPattern = /\.\.\/updates\/updates\.css\?v=sha256-[a-f0-9]{64}/gu;
   const scriptPattern = /\.\.\/app\/site-release\.js\?v=sha256-[a-f0-9]{64}/gu;
+  requireOne(normalized, versionMetaPattern, "Companion application version metadata");
+  requireOne(normalized, dateMetaPattern, "Companion release date metadata");
+  requireOne(normalized, versionPattern, "Companion visible release version");
+  requireOne(normalized, datePattern, "Companion visible release date");
   requireOne(normalized, cssPattern, "Companion updates stylesheet identity");
   requireOne(normalized, scriptPattern, "Companion release script identity");
   return normalized
+    .replace(
+      versionMetaPattern,
+      `<meta name="application-version" content="${escapeHtml(latest.version)}">`
+    )
+    .replace(
+      dateMetaPattern,
+      `<meta name="release-date" content="${escapeHtml(latest.releaseDate)}">`
+    )
+    .replace(versionPattern, `data-release-version>${escapeHtml(latest.version)}</span>`)
+    .replace(
+      datePattern,
+      `data-release-date datetime="${escapeHtml(latest.releaseDate)}">` +
+        `${escapeHtml(latest.releaseDate)}</time>`
+    )
     .replace(cssPattern, `../updates/updates.css?v=sha256-${cssSha256}`)
     .replace(scriptPattern, `../app/site-release.js?v=sha256-${scriptSha256}`);
 }
@@ -164,6 +186,7 @@ function expectedReleaseSurfaces(siteRoot) {
     ...updates,
     companionHtml: stampCompanionPage(
       fs.readFileSync(updates.locations.companionPath, "utf8"),
+      updates.ledger.releases.at(-1),
       updates.cssSha256,
       updates.scriptSha256
     )
@@ -181,7 +204,7 @@ function verifyReleaseSurfaces(siteRoot) {
   invariant(
     fs.readFileSync(updates.locations.companionPath, "utf8").replace(/\r\n/gu, "\n") ===
       updates.companionHtml,
-    "Companion page has stale release asset identities"
+    "Companion page has stale release metadata or asset identities"
   );
   const latest = updates.ledger.releases.at(-1);
   const appShell = fs.readFileSync(path.join(updates.locations.root, "app", "index.html"), "utf8");

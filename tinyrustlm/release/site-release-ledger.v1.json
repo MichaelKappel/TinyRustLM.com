@@ -126,6 +126,34 @@
           "summary": "Kept unpublished self-contained archives out of public availability claims until independent distribution evidence exists."
         }
       ]
+    },
+    {
+      "releaseId": "tinyrustlm.com@0.3.0",
+      "version": "0.3.0",
+      "releaseDate": "2026-08-24",
+      "summary": "Publishes the clean-slate SLM2 browser shell while keeping model acquisition local or direct P2P and withholding unavailable companion claims.",
+      "changes": [
+        {
+          "type": "changed",
+          "summary": "Changed Get model to prefer an exact verified peer and otherwise request reviewed local source acquisition and conversion through the companion."
+        },
+        {
+          "type": "removed",
+          "summary": "Removed TXT, PowerShell, request JSON, conversion-kit, share-kit, package URL, and install-command handoffs from the browser experience."
+        },
+        {
+          "type": "fixed",
+          "summary": "Replaced stale companion availability language with exact Public package pending and Deployment blocked states."
+        },
+        {
+          "type": "security",
+          "summary": "Kept prompts, responses, source tensors, model bytes, and composition bytes off TinyRustLM and related project servers."
+        },
+        {
+          "type": "documentation",
+          "summary": "Updated companion and browser-runtime guidance to distinguish implemented source from unavailable packages, deployment, and live proof."
+        }
+      ]
     }
   ],
   "publications": [

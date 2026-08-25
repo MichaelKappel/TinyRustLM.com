@@ -65,7 +65,7 @@ function fakeDocument() {
 test("browser release validator accepts only the exact bounded public schema", (context) => {
   const record = generatedRecord(context);
   assert.equal(validateReleaseRecord(record), record);
-  assert.equal(formatPublishedAt(record.publishedAt), "2026-08-08 23:15 UTC");
+  assert.equal(formatPublishedAt(record.publishedAt), "2026-08-25 04:15 UTC");
 
   const unknown = structuredClone(record);
   unknown.extra = true;
@@ -89,10 +89,10 @@ test("browser release renderer updates all visible facts without injecting marku
   const record = generatedRecord(context);
   const view = fakeDocument();
   applyReleaseRecord(view.document, record);
-  assert.equal(view.version[0].textContent, "0.2.1");
-  assert.equal(view.date[0].textContent, "2026-08-08");
-  assert.equal(view.date[0].dateTime, "2026-08-08");
-  assert.equal(view.published[0].textContent, "2026-08-08 23:15 UTC");
+  assert.equal(view.version[0].textContent, "0.3.0");
+  assert.equal(view.date[0].textContent, "2026-08-24");
+  assert.equal(view.date[0].dateTime, "2026-08-24");
+  assert.equal(view.published[0].textContent, "2026-08-25 04:15 UTC");
   assert.equal(view.published[0].dateTime, publishedAt);
   assert.equal(view.containers[0].dataset.releaseState, "verified");
 });
@@ -145,8 +145,8 @@ test("updates page is generated exactly from the release ledger and content-boun
     fs.copyFileSync(path.join(siteRoot, relativePath), destination);
   }
   const result = writeUpdatesPage(isolatedRoot);
-  assert.equal(result.ledger.releases.length, 5);
-  assert.match(result.html, /Version <span data-release-version>0\.2\.1<\/span>/);
+  assert.equal(result.ledger.releases.length, 6);
+  assert.match(result.html, /Version <span data-release-version>0\.3\.0<\/span>/);
   assert.match(result.html, /\.well-known\/site-release-history\.json/);
   assert.doesNotMatch(result.html, /<script>[^<]/);
   assert.equal(verifyUpdatesPage(isolatedRoot).html, result.html);
@@ -166,8 +166,18 @@ test("release-surface generation owns exact companion asset identities", (contex
     fs.mkdirSync(path.dirname(destination), { recursive: true });
     fs.copyFileSync(path.join(siteRoot, relativePath), destination);
   }
+  const companionPath = path.join(isolatedRoot, "companion", "index.html");
+  const staleCompanion = fs.readFileSync(companionPath, "utf8")
+    .replaceAll("0.3.0", "9.9.9")
+    .replaceAll("2026-08-24", "2099-09-09");
+  fs.writeFileSync(companionPath, staleCompanion, "utf8");
   const result = writeReleaseSurfaces(isolatedRoot);
   const companion = fs.readFileSync(result.locations.companionPath, "utf8");
+  assert.match(companion, /<meta name="application-version" content="0\.3\.0">/u);
+  assert.match(companion, /<meta name="release-date" content="2026-08-24">/u);
+  assert.match(companion, /data-release-version>0\.3\.0<\/span>/u);
+  assert.match(companion,
+    /data-release-date datetime="2026-08-24">2026-08-24<\/time>/u);
   assert.match(companion,
     new RegExp(`updates\\.css\\?v=sha256-${result.cssSha256}`, "u"));
   assert.match(companion,
@@ -207,13 +217,13 @@ test("release-surface generation rejects duplicate companion asset references be
 
 test("canonical app shell exposes the exact ledger version, dates, records, and updates route", () => {
   const html = fs.readFileSync(path.join(siteRoot, "app", "index.html"), "utf8");
-  assert.match(html, /<meta name="application-version" content="0\.2\.1">/);
-  assert.match(html, /<meta name="release-date" content="2026-08-08">/);
+  assert.match(html, /<meta name="application-version" content="0\.3\.0">/);
+  assert.match(html, /<meta name="release-date" content="2026-08-24">/);
   assert.match(html, /href="\/\.well-known\/site-release\.json"/);
   assert.match(html, /href="\/\.well-known\/site-release-history\.json"/);
   assert.match(html, /href="\/updates\/" aria-label="Updates and release history"/);
-  assert.match(html, /data-release-version>0\.2\.1<\/span>/);
-  assert.match(html, /data-release-date datetime="2026-08-08">2026-08-08<\/time>/);
+  assert.match(html, /data-release-version>0\.3\.0<\/span>/);
+  assert.match(html, /data-release-date datetime="2026-08-24">2026-08-24<\/time>/);
   assert.match(html, /data-release-published-at>Awaiting live verification<\/time>/);
   assert.match(html, /src="\.\/site-release\.js\?v=sha256-[a-f0-9]{64}"/);
 });
