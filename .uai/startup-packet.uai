@@ -1,12 +1,12 @@
-profile: runtime-mirust.startup-packet.v122
-updated_utc: 2026-08-25T22:41:30Z
+profile: runtime-mirust.startup-packet.v123
+updated_utc: 2026-08-25T23:12:40Z
 current_owned_application_data_build_custody_v4_2026_08_25:
   first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/build-custody-profile.v4.json`, and `docs/architecture/2026-08-25-owned-application-data-build-custody.md` before any build or model operation.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
   active_branch: codex/model-acquisition-v2
-  checkpoint: sole-custody-profile=/4; profile=10274/`26b75c36911c14d744a764c19d8a40ec0c28762add5e6616501080120aad9b45`; owner=103310/`4d0a86fccc7c798866a0c36538adb78bf73cb383f9d74e03d8794edf264040df`; architecture=9396/`4e6c86c1a869b4c61f923e9c040018a333d80444f5ef95b3139400dadcd215de`; APPDATA=owned-roaming; LOCALAPPDATA=owned-local; TEMP/TMP=owned-temp; focused=21/21+1/1; combined=52/52
+  checkpoint: implementation=`7eb4c02fde4fd7710a0abff41703566f60221664`/tree=`1f990bdbdbabba341a38310c55b5c3d52f5f24fa`,four-way-remote-exact; sole-custody-profile=/4; profile=10274/`26b75c36911c14d744a764c19d8a40ec0c28762add5e6616501080120aad9b45`; owner=103310/`4d0a86fccc7c798866a0c36538adb78bf73cb383f9d74e03d8794edf264040df`; architecture=9396/`4e6c86c1a869b4c61f923e9c040018a333d80444f5ef95b3139400dadcd215de`; APPDATA=owned-roaming; LOCALAPPDATA=owned-local; TEMP/TMP=owned-temp; focused=21/21+1/1; combined=52/52; standard=1414/0/2-of-1416; release=`dfea6f0678854e65e685edccc5fbaa4c809486478501345e3ae3521296e8731e`,23/23,3995/`6ff46548da9b46c6725d4e1216a1b8e503859fc7edf3f66d7d7364b9f40e4fd0`
   research_packet: `docs/research-prompts/2026-08-25-twelve-disconnected-owned-appdata-qwen3-slm2-clean-cut-research-prompts.md`, 99,193 bytes/SHA256 `f9ebd5a347277305b77a1299625249d3cbd10158f65ba148cc99377b11ad4f6e`, contains twelve standalone advisory assignments for agents without source access.
-  immediate_operation: Complete clean gates, commit/push/fresh-readback the custody `/4` clean cut and research packet, then create a separate output-free `/9` registration with wholly new absent names. Do not create `/9` private material first. Preserve `/8` and its three absent names; no broader claim or counter credit.
+  immediate_operation: Commit/push/fresh-readback this evidence-only UAI checkpoint, then create a separate output-free `/9` registration binding exact implementation `7eb4c02fde4fd7710a0abff41703566f60221664` and wholly new absent names. Do not create `/9` private material first. Preserve `/8` and its three absent names; no broader claim or counter credit.
 current_qwen3_execution_v8_terminal_managed_build_failure_2026_08_25:
   first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/qwen3-real-composition-execution-result.v8.json`, and `docs/architecture/2026-08-25-qwen3-real-composition-execution-v8-managed-build-failure.md` before further model work.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
