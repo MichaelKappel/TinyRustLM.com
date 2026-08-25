@@ -1,0 +1,456 @@
+{
+  "schema": "tinyrustlm.qwen3-real-composition-execution-preregistration.v1",
+  "profileId": "tinyrustlm.qwen3-real-composition-execution/1",
+  "status": "registered-before-release-build-private-binding-and-real-output",
+  "registeredAtUtc": "2026-08-25T06:26:50Z",
+  "registrationParentCommit": "104873f0e69d495eb05a56c2c4bcdf694daabc8e",
+  "registrationParentTree": "f77ca3dc5765d5f6b7394dc6eb0ebba766cc6ede",
+  "authority": {
+    "productLifecycle": "prelaunch-single-product",
+    "productGenerationCount": 1,
+    "technicalVersionIsProductGeneration": false,
+    "branch": "codex/model-acquisition-v2",
+    "conversionOwner": "rust/crates/tinyrustlm-convert",
+    "durableInspectorOwner": "dotnet/src/TinyRustLM.Conversion",
+    "largeAndPrivateEvidenceLocation": "outside-git-on-approved-local-drive",
+    "publicProfileContainsPrivatePaths": false,
+    "memoryEndpointsAuthorized": false,
+    "writeDriveDAllowed": false
+  },
+  "productBoundary": {
+    "productCount": 1,
+    "prelaunch": true,
+    "legacySupport": false,
+    "compatibilityReaders": false,
+    "migrationWriters": false,
+    "aliases": false,
+    "fallbacks": false,
+    "responseRepair": false,
+    "automaticRetry": false,
+    "manualRetryOfThisExecution": false,
+    "bestOfN": false,
+    "failedOutputCleanup": false
+  },
+  "sourceAnchor": {
+    "commit": "104873f0e69d495eb05a56c2c4bcdf694daabc8e",
+    "tree": "f77ca3dc5765d5f6b7394dc6eb0ebba766cc6ede",
+    "branch": "codex/model-acquisition-v2",
+    "cleanAtRegistration": true,
+    "trackingAndFetchHeadExactAtRegistration": true,
+    "allowedRegistrationCommitPaths": [
+      "contracts/vnext/README.md",
+      "contracts/vnext/qwen3-real-composition-execution-preregistration.v1.json",
+      "docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration.md",
+      "tinyrustlm/tests/qwen3-real-composition-execution-preregistration.test.js"
+    ],
+    "registrationCommitMustBeSingleParentDescendant": true,
+    "registrationCommitMustChangeOnlyAllowedPaths": true,
+    "registrationCommitMustBeFreshRemoteExactBeforeBuild": true,
+    "buildSourceCommitAndTreeCapturedAfterRegistration": true,
+    "cargoInputsMustEqualSourceAnchor": true
+  },
+  "executionIdentity": {
+    "executionId": "qwen3-composition-c1899de-20260825-v1",
+    "modelId": "Qwen/Qwen3-0.6B",
+    "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+    "artifactClass": "base-model",
+    "baseProductDisposition": "terminally-rejected-as-product-model",
+    "permittedUse": "conversion-runtime-parity-and-derivative-ancestry-only",
+    "buildRootBasename": "qwen3-composition-build-104873f-20260825-v1",
+    "privateEvidenceRootBasename": "qwen3-composition-execution-c1899de-20260825-v1",
+    "outputRootBasename": "qwen3-composition-c1899de-20260825-v1",
+    "buildRootObservedAbsentBeforeRegistration": true,
+    "privateEvidenceRootObservedAbsentBeforeRegistration": true,
+    "outputRootObservedAbsentBeforeRegistration": true,
+    "logicalRootNamesArePublicSafe": true,
+    "absoluteLocalPathsArePrivate": true
+  },
+  "exactInputs": {
+    "modelSourceLock": {
+      "path": "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json",
+      "byteLength": 1901,
+      "sha256": "e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d",
+      "schema": "tinyrustlm.qwen3_source_lock.v1",
+      "architectureProfileId": "tinyrustlm.qwen3-dense-gqa-qk-norm/1",
+      "sourceDirectoryInventoryCount": 9,
+      "sourceDirectoryAggregateBytes": 1519207688
+    },
+    "tokenizerSourceLock": {
+      "path": "contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json",
+      "byteLength": 1108,
+      "sha256": "1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70",
+      "schema": "tinyrustlm.qwen_tokenizer2_source_lock.v1",
+      "architectureProfileId": "tinyrustlm.qwen3-tokenizer-source/1",
+      "sourceDirectoryInventoryCount": 5,
+      "acceptedArtifactSha256": "cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b"
+    },
+    "compositionProfile": {
+      "path": "contracts/vnext/qwen3-composition-conversion-profile.v2.json",
+      "byteLength": 8835,
+      "sha256": "d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718",
+      "profileId": "tinyrustlm.qwen3-complete-composition-conversion/2",
+      "predecessorProfileExecutable": false
+    },
+    "sourceRelationship": {
+      "requiredEqualFields": [
+        "modelId",
+        "revision"
+      ],
+      "requiredArchitectureProfiles": {
+        "model": "tinyrustlm.qwen3-dense-gqa-qk-norm/1",
+        "tokenizer": "tinyrustlm.qwen3-tokenizer-source/1"
+      },
+      "requiredEqualFileRecords": [
+        "config.json",
+        "merges.txt",
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "vocab.json"
+      ],
+      "sourceRootsMustBeDistinct": true,
+      "sourceAndOutputTreesMustNotOverlap": true
+    },
+    "immutableDependencyReuse": {
+      "tokenizer2RerunAllowed": false,
+      "template2RerunAllowed": false,
+      "canonicalOwnersMayReconstructBoundMembersInsideComposition": true,
+      "priorPrivateObservationMayBeOverwritten": false
+    }
+  },
+  "build": {
+    "workingDirectory": "repository-root",
+    "command": [
+      "cargo",
+      "build",
+      "--locked",
+      "--release",
+      "-p",
+      "tinyrustlm-convert",
+      "--target",
+      "x86_64-pc-windows-msvc"
+    ],
+    "environment": {
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_NET_OFFLINE": "true",
+      "CARGO_TARGET_DIR": "private-absolute-build-root"
+    },
+    "environmentVariableNamesAreExact": true,
+    "targetRootMustBeAbsentBeforeBuild": true,
+    "targetRootParentMustBeExistingDirectNonReparseDirectory": true,
+    "buildAttemptLimit": 1,
+    "automaticBuildRetry": false,
+    "manualBuildRetryUnderThisRegistration": false,
+    "expectedExecutableRelativePath": "x86_64-pc-windows-msvc/release/tinyrustlm-convert.exe",
+    "expectedExecutableBasename": "tinyrustlm-convert.exe",
+    "expectedPackageVersion": "0.1.8",
+    "buildStdoutMaximumBytes": 16777216,
+    "buildStderrMaximumBytes": 16777216,
+    "buildLogsArePrivateCreateOnlyEvidence": true,
+    "successRequiresExitCodeZero": true,
+    "successRequiresExpectedExecutable": true,
+    "failureClosesBuildAttemptWithoutInvocation": true
+  },
+  "toolchain": {
+    "rustcRelease": "1.96.0",
+    "rustcCommitHash": "ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96",
+    "rustcCommitDate": "2026-05-25",
+    "rustcHost": "x86_64-pc-windows-msvc",
+    "llvmVersion": "22.1.2",
+    "cargoRelease": "1.96.0",
+    "cargoCommit": "30a34c682",
+    "cargoCommitDate": "2026-05-25",
+    "requiredInstalledTarget": "x86_64-pc-windows-msvc"
+  },
+  "buildSourceSentinels": [
+    {
+      "path": "Cargo.toml",
+      "byteLength": 1691,
+      "sha256": "4b6c44ada860997ad27476173e88227faf52a30783b35f33bd12beda3f79beb8"
+    },
+    {
+      "path": "Cargo.lock",
+      "byteLength": 25336,
+      "sha256": "8e8eabd73ac02275235576743a19b84bee0250ef4ce24986e4bcce7a3704c8a6"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/Cargo.toml",
+      "byteLength": 782,
+      "sha256": "956e85dba61602eef94e4b33f522efeea935a99189778bb93a52764ab7a9d05e"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/main.rs",
+      "byteLength": 8749,
+      "sha256": "a1c5602ef776f032ca83000714900f89008d4b9a5377b7758c474dcea94124db"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/lib.rs",
+      "byteLength": 991,
+      "sha256": "068f6fb6e516d7383132a08409f95f962d1b0e0a950c370f483b6f86b30fbe17"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/qwen3.rs",
+      "byteLength": 48408,
+      "sha256": "f760f3b00dcf3fe1374cd6d2d9926844620e5f39f88b26443363e65b491ccbb0"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/qwen3_composition.rs",
+      "byteLength": 64400,
+      "sha256": "1a99437b787d04c0aee1bc214e2aca5d0350f5b2ff97ef8db8ccf324ca1cc146"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/qwen_tokenizer2.rs",
+      "byteLength": 28317,
+      "sha256": "ff0b4c4478f218b387b1b59d93b13d36e9357bff8165992b2da62c37a30a7e8d"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Conversion/TinyRustLM.Conversion.csproj",
+      "byteLength": 3189,
+      "sha256": "0b9b0f7fabb15850ae7abf839203c6c12b02a7301ed7cb88a30ea692bf842a4b"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Conversion/TinyRustLmConversionTool.cs",
+      "byteLength": 53895,
+      "sha256": "b80fa9175b98428773f7b326249de11fda9ce5b745ec6f83fd9621187059f6e3"
+    }
+  ],
+  "futureExecutableCapture": {
+    "captureAfterSuccessfulBuild": true,
+    "captureBeforePrivateBinding": true,
+    "captureBeforeLaunch": true,
+    "mustBeExpectedPathUnderPrivateBuildRoot": true,
+    "mustBeDirectRegularNonReparseFile": true,
+    "peMachine": "x86_64",
+    "peMachineValue": "0x8664",
+    "streamHashAlgorithm": "sha256",
+    "streamHashBufferBytes": 1048576,
+    "captureFields": [
+      "absolutePath",
+      "byteLength",
+      "sha256",
+      "peMachine",
+      "sourceCommit",
+      "sourceTree",
+      "cargoLockSha256",
+      "buildCommand",
+      "toolchain"
+    ],
+    "rehashImmediatelyBeforeLaunch": true,
+    "rehashAfterProcessExit": true,
+    "anyDriftIsTerminal": true
+  },
+  "privateExecutionBinding": {
+    "schema": "tinyrustlm.qwen3-real-composition-private-binding.v1",
+    "fileName": "execution.binding.json",
+    "location": "private-evidence-root-outside-git",
+    "writeMode": "create-only",
+    "maximumBytes": 65536,
+    "encoding": "utf8-without-bom",
+    "canonicalJson": true,
+    "finalLf": true,
+    "containsAbsoluteLocalPaths": true,
+    "publicEvidence": false,
+    "creationAfterExecutableCapture": true,
+    "creationBeforeLaunch": true,
+    "canonicalFieldsInOrder": [
+      "schema",
+      "executionId",
+      "registration",
+      "sourceAnchor",
+      "build",
+      "inputs",
+      "invocation",
+      "preflight"
+    ],
+    "registrationFields": [
+      "profilePath",
+      "profileByteLength",
+      "profileSha256",
+      "registrationCommit",
+      "registrationTree",
+      "branch",
+      "remoteExact"
+    ],
+    "buildFields": [
+      "sourceCommit",
+      "sourceTree",
+      "workingDirectory",
+      "targetRoot",
+      "command",
+      "environment",
+      "stdoutPath",
+      "stdoutByteLength",
+      "stdoutSha256",
+      "stderrPath",
+      "stderrByteLength",
+      "stderrSha256",
+      "executablePath",
+      "executableByteLength",
+      "executableSha256",
+      "peMachine",
+      "toolchain"
+    ],
+    "inputFields": [
+      "modelSourceLockPath",
+      "modelSourceLockSha256",
+      "modelSourceDirectory",
+      "modelSourceInventory",
+      "tokenizerSourceLockPath",
+      "tokenizerSourceLockSha256",
+      "tokenizerSourceDirectory",
+      "tokenizerSourceInventory",
+      "compositionProfilePath",
+      "compositionProfileSha256"
+    ],
+    "invocationFields": [
+      "executablePath",
+      "arguments",
+      "workingDirectory",
+      "outputRoot",
+      "stdoutPath",
+      "stderrPath",
+      "maximumDurationMilliseconds",
+      "maximumStdoutBytes",
+      "maximumStderrBytes",
+      "launchCount",
+      "retryAllowed",
+      "terminalRule"
+    ],
+    "preflightFields": [
+      "observedAtUtc",
+      "sourceFilesExact",
+      "sourceRootsDirectNonReparse",
+      "sourceRootsDistinct",
+      "outputRootAbsent",
+      "outputParentDirectNonReparse",
+      "sourceOutputNonoverlap",
+      "evidenceFilesAbsent",
+      "executableExact",
+      "registrationRemoteExact"
+    ],
+    "existingFileRule": "accept-only-byte-identical-binding-before-any-launch",
+    "overwriteAllowed": false,
+    "deleteAllowed": false
+  },
+  "execution": {
+    "commandName": "qwen3-composition",
+    "argumentOrder": [
+      "model-source-lock",
+      "model-source-directory",
+      "tokenizer-source-lock",
+      "tokenizer-source-directory",
+      "output-root"
+    ],
+    "workingDirectory": "repository-root",
+    "maximumDurationMilliseconds": 43200000,
+    "maximumStdoutBytes": 65536,
+    "maximumStderrBytes": 4096,
+    "launchCount": 1,
+    "automaticRetry": false,
+    "manualRetryUnderThisRegistration": false,
+    "bestOfN": false,
+    "responseRepair": false,
+    "stdoutAndStderrCapturedSeparately": true,
+    "rawStreamsArePrivateCreateOnlyEvidence": true,
+    "rawStreamsAreHashed": true,
+    "processExitCodeCaptured": true,
+    "startRecordWrittenCreateOnlyBeforeLaunch": true,
+    "startRecordAfterBinding": true,
+    "outputRootMustRemainAbsentUntilLaunch": true,
+    "terminalRule": "existing-output-root-is-terminal-and-never-resumed",
+    "cleanupAfterFailure": false,
+    "unknownProcessAdoption": false,
+    "unknownProcessKill": false
+  },
+  "privateEvidenceFiles": {
+    "buildStdout": "build.stdout.bin",
+    "buildStderr": "build.stderr.bin",
+    "binding": "execution.binding.json",
+    "start": "execution.start.json",
+    "converterStdout": "converter.stdout.bin",
+    "converterStderr": "converter.stderr.bin",
+    "terminal": "execution.terminal.json",
+    "verification": "execution.verification.json",
+    "writeMode": "create-only",
+    "overwriteAllowed": false,
+    "deleteAllowed": false,
+    "rawEvidencePublished": false
+  },
+  "terminalDecision": {
+    "passRequires": [
+      "exactly-one-process-launch",
+      "process-exit-code-zero",
+      "stderr-empty",
+      "bounded-strict-cli-summary",
+      "terminal-pass-receipt-present",
+      "terminal-rejection-absent",
+      "exact-ten-file-success-inventory",
+      "all-six-artifacts-rehashed",
+      "all-six-artifacts-reparsed-by-canonical-owners",
+      "managed-durable-inspector-pass",
+      "converter-executable-post-exit-hash-equal",
+      "private-terminal-and-verification-records-create-only"
+    ],
+    "rejectionRequires": [
+      "terminal-pass-receipt-absent",
+      "strict-native-rejection-present",
+      "strict-attempt-lineage-present",
+      "managed-durable-inspector-rejected",
+      "partial-output-preserved",
+      "private-terminal-and-verification-records-create-only"
+    ],
+    "ambiguousRequires": [
+      "no-valid-mutually-exclusive-terminal-native-evidence"
+    ],
+    "ambiguousIsPass": false,
+    "ambiguousIsRetryAuthorization": false,
+    "buildFailureIsInvocation": false,
+    "buildFailureClosesRegistration": true,
+    "newAttemptRequiresNewRegistrationAndNewLogicalRoots": true,
+    "terminalEvidenceMayBeOverwritten": false,
+    "outputMayBeRepaired": false,
+    "outputMayBeDeleted": false
+  },
+  "claimBoundary": {
+    "realConversionAttemptRegistered": true,
+    "releaseBuildCompleted": false,
+    "privateExecutionBindingCreated": false,
+    "realConverterInvoked": false,
+    "structuralCompositionVerified": false,
+    "sourceFrameworkParityVerified": false,
+    "nativeRuntimeVerified": false,
+    "browserWasmVerified": false,
+    "browserChatVerified": false,
+    "modelQualityVerified": false,
+    "p2pAvailabilityVerified": false,
+    "catalogAnnouncementVerified": false,
+    "packagePublicationVerified": false,
+    "siteDeploymentVerified": false,
+    "memoryEndpointsVerified": false,
+    "campaignCreditAuthorized": false,
+    "requiredNextGateAfterStructuralPass": "source-native-browser-numerical-parity-untouched-quality-and-product-chat"
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  },
+  "registrationOutputBoundary": {
+    "cargoBuildRun": false,
+    "buildRootCreated": false,
+    "privateEvidenceRootCreated": false,
+    "privateExecutionBindingCreated": false,
+    "outputRootCreated": false,
+    "converterProcessStarted": false,
+    "compositionArtifactCreated": false,
+    "terminalPassCreated": false,
+    "terminalRejectionCreated": false,
+    "nativeRuntimeOutputObserved": false,
+    "browserOutputObserved": false,
+    "qualityOutputObserved": false,
+    "p2pOutputObserved": false,
+    "publicationOutputObserved": false,
+    "campaignCreditAuthorized": false
+  }
+}

@@ -152,6 +152,19 @@ plus the managed integration record in
 and the clean-cut correction record in
 `docs/architecture/2026-08-25-qwen3-composition-source-relationship-correction-implementation.md`.
 
+`qwen3-real-composition-execution-preregistration.v1.json` is the output-free
+registration for exactly one real Qwen3 complete-composition execution. It is
+16,006 bytes at SHA-256
+`46a9da74eb6b811257d2cc3a433055d4859fb7bbdfeef22e1c6ee8c2bd978a6a`.
+It binds the current remote-exact source anchor, exact model/tokenizer locks,
+corrected composition profile `/2`, offline Windows x64 release build,
+future executable capture, three absent public-safe logical roots, one private
+path-bearing intent, one converter launch, separate bounded stream custody,
+and mutually exclusive pass/rejection/ambiguous terminal rules. No private
+path or output enters Git. Registration is not conversion, runtime, browser,
+quality, P2P, publication, or campaign evidence. See
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2
