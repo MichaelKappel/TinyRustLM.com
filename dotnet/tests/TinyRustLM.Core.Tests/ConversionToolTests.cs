@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.Text.Json;
 using Xunit;
 
 namespace TinyRustLM.Tests;
@@ -240,6 +241,101 @@ public sealed class ConversionToolTests
         Assert.Equal(TinyRustLmCompositionTerminalStatus.Pass, inspection.Status);
         Assert.Null(inspection.ErrorCode);
         Assert.Equal(live.Composition, inspection.Composition);
+    }
+
+    [Fact]
+    public async Task ManagedInspectionCommandReturnsCanonicalReadOnlyPass()
+    {
+        using var fixture = new ConversionFixture("pass");
+        var tool = fixture.Tool();
+        var intent = tool.CreateCompositionIntent(fixture.Request());
+        var live = await tool.ConvertCompositionAsync(intent);
+        var intentBytes = TinyRustLmCompositionInspectionCommand.SerializeIntent(intent);
+
+        var result = TinyRustLmCompositionInspectionCommand.Execute(intentBytes);
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.Empty(result.Stderr);
+        using var document = JsonDocument.Parse(result.Stdout);
+        Assert.Equal(TinyRustLmCompositionInspectionCommand.ResultSchema,
+            document.RootElement.GetProperty("schema").GetString());
+        Assert.Equal("pass", document.RootElement.GetProperty("status").GetString());
+        Assert.Equal("read-only-no-converter-launch",
+            document.RootElement.GetProperty("operation").GetString());
+        Assert.Equal(live.Composition.OperationId,
+            document.RootElement.GetProperty("composition").GetProperty("operationId")
+                .GetString());
+        var resultText = System.Text.Encoding.UTF8.GetString(result.Stdout);
+        Assert.EndsWith("\n", resultText,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain('\r', resultText);
+    }
+
+    [Fact]
+    public void ManagedInspectionCommandReportsPendingWithoutLaunching()
+    {
+        using var fixture = new ConversionFixture("pass");
+        var intent = fixture.Tool().CreateCompositionIntent(fixture.Request());
+
+        var result = TinyRustLmCompositionInspectionCommand.Execute(
+            TinyRustLmCompositionInspectionCommand.SerializeIntent(intent));
+
+        Assert.Equal(3, result.ExitCode);
+        Assert.Empty(result.Stderr);
+        using var document = JsonDocument.Parse(result.Stdout);
+        Assert.Equal("pending", document.RootElement.GetProperty("status").GetString());
+        Assert.Equal(JsonValueKind.Null,
+            document.RootElement.GetProperty("composition").ValueKind);
+    }
+
+    [Fact]
+    public async Task ManagedInspectionCommandReportsVerifiedNativeRejection()
+    {
+        using var fixture = new ConversionFixture("terminal-rejection");
+        var tool = fixture.Tool();
+        var intent = tool.CreateCompositionIntent(fixture.Request());
+        var failure = await Assert.ThrowsAsync<TinyRustLmException>(() =>
+            tool.ConvertCompositionAsync(intent));
+        Assert.Equal("qwen3-source-hash-mismatch", failure.Code);
+
+        var result = TinyRustLmCompositionInspectionCommand.Execute(
+            TinyRustLmCompositionInspectionCommand.SerializeIntent(intent));
+
+        Assert.Equal(2, result.ExitCode);
+        Assert.Empty(result.Stderr);
+        using var document = JsonDocument.Parse(result.Stdout);
+        Assert.Equal("rejected", document.RootElement.GetProperty("status").GetString());
+        Assert.Equal("qwen3-source-hash-mismatch",
+            document.RootElement.GetProperty("errorCode").GetString());
+    }
+
+    [Fact]
+    public void ManagedInspectionCommandRejectsNoncanonicalOrExtendedIntent()
+    {
+        using var fixture = new ConversionFixture("pass");
+        var intent = fixture.Tool().CreateCompositionIntent(fixture.Request());
+        var canonical = TinyRustLmCompositionInspectionCommand.SerializeIntent(intent);
+        using var document = JsonDocument.Parse(canonical);
+        var compact = JsonSerializer.SerializeToUtf8Bytes(document.RootElement);
+
+        var noncanonical = TinyRustLmCompositionInspectionCommand.Execute(compact);
+        var extended = TinyRustLmCompositionInspectionCommand.Execute(
+            System.Text.Encoding.UTF8.GetBytes(
+                System.Text.Encoding.UTF8.GetString(canonical).Replace(
+                    "\n}",
+                    ",\n  \"unexpected\": true\n}",
+                    StringComparison.Ordinal)));
+
+        Assert.Equal(1, noncanonical.ExitCode);
+        Assert.Empty(noncanonical.Stdout);
+        Assert.Contains("managed-inspection-intent-canonical",
+            System.Text.Encoding.UTF8.GetString(noncanonical.Stderr),
+            StringComparison.Ordinal);
+        Assert.Equal(1, extended.ExitCode);
+        Assert.Empty(extended.Stdout);
+        Assert.Contains("managed-inspection-intent-json",
+            System.Text.Encoding.UTF8.GetString(extended.Stderr),
+            StringComparison.Ordinal);
     }
 
     [Fact]

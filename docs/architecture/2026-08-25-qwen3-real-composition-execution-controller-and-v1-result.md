@@ -89,6 +89,28 @@ verification evidence. Source-framework parity, native inference,
 browser-WASM inference, untouched quality, browser chat, P2P, catalog, and
 publication remain later gates.
 
+`dotnet/tools/TinyRustLM.CompositionInspector` is the sole command surface for
+that read-only managed inspection. It accepts exactly `inspect` plus one
+canonical absolute path to a bounded, direct, non-reparse intent file. The
+intent uses the existing immutable managed composition-intent schema. Unknown,
+duplicate, reordered, compacted, noncanonical, oversized, relative, changed,
+or unreadable input fails closed.
+
+The inspector calls only `ValidateCompositionIntent` and
+`InspectCompositionTerminal`; it contains no process-launch API and cannot
+invoke the Rust converter. Exit zero means a durable pass was independently
+rehashed and parsed. Exit two means a durable native rejection and attempt
+lineage were verified. Exit three means no mutually exclusive terminal result
+exists. Exit one is a bounded typed inspection failure. Stdout and stderr are
+mutually exclusive canonical UTF-8 LF JSON. Error output contains only a safe
+code and never a source, output, or credential path.
+
+The command implementation is internal to the conversion assembly and shared
+with the thin executable through an explicit friend-assembly boundary. This
+keeps serialization and verdict semantics under the same 43-test conversion
+corpus without adding a second public SDK API. The complete managed solution
+passes 207/207 tests and a warnings-as-errors Release build.
+
 ## Claim Boundary
 
 This checkpoint proves a preserved `/1` pre-launch failure and a tested

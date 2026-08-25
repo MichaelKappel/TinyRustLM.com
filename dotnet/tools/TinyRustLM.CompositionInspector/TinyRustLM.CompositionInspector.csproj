@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>TinyRustLM.CompositionInspector</AssemblyName>
+    <RootNamespace>TinyRustLM.CompositionInspector</RootNamespace>
+    <Title>TinyRustLM Read-Only Composition Inspector</Title>
+    <Description>Read-only command surface for independent durable inspection of one exact Qwen3 complete-composition output.</Description>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\TinyRustLM.Conversion\TinyRustLM.Conversion.csproj" />
+  </ItemGroup>
+</Project>

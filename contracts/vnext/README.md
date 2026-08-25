@@ -180,6 +180,14 @@ candidate pass still requires the independent managed durable inspector and
 does not establish runtime, browser, quality, P2P, publication, or campaign
 evidence.
 
+`TinyRustLM.CompositionInspector` is the sole inspect-only managed command for
+that second decision. It consumes one canonical private conversion intent,
+calls no converter process API, and emits mutually exclusive canonical pass,
+rejected, pending, or typed-error JSON. The conversion library owns the command
+logic; the executable is a thin internal friend and adds no public SDK surface.
+It rejects noncanonical or extended intent bytes and normalizes all output to
+portable UTF-8 LF.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2
