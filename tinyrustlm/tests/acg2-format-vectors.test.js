@@ -117,8 +117,6 @@ function buildWasm() {
     "wasm32-unknown-unknown",
     "--target-dir",
     targetRoot,
-    "--features",
-    "wasm-conformance",
     "--locked",
     "--offline"
   ], {

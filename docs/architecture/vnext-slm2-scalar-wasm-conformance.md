@@ -95,12 +95,6 @@ Output capacity is secured before token execution. Raw export attributes are
 the only locally allowed unsafe-code lint exception; no unsafe block, function,
 implementation, or trait exists.
 
-The independent ACG2 format-conformance ABI is feature-gated at its owning
-`tinyrustlm-composition2` crate. Its `wasm-conformance` feature is enabled only
-when building that format test module and is absent from the production runtime
-dependency graph. This prevents transitive conformance exports from silently
-broadening the exact SLM2 runtime module surface.
-
 Real-Chromium conformance must instantiate the exact release-target module,
 perform no network request, replay every vector, verify typed rejection and
 unchanged cache state after failure, close Chromium, and preserve the module,
