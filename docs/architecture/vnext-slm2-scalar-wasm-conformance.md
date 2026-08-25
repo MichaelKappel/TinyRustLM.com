@@ -95,6 +95,14 @@ Output capacity is secured before token execution. Raw export attributes are
 the only locally allowed unsafe-code lint exception; no unsafe block, function,
 implementation, or trait exists.
 
+Under output-free registration
+`tinyrustlm.acg2-wasm-export-ownership/1`, the independent ACG2
+format-conformance ABI is feature-gated at its owning
+`tinyrustlm-composition2` crate. Its `wasm-conformance` feature is enabled only
+when building that format test module and is absent from the canonical runtime
+dependency graph. This prevents transitive conformance exports from silently
+broadening the exact SLM2 runtime module surface.
+
 Real-Chromium conformance must instantiate the exact release-target module,
 perform no network request, replay every vector, verify typed rejection and
 unchanged cache state after failure, close Chromium, and preserve the module,
@@ -106,6 +114,16 @@ SHA-256 `98e0edaa0dd7572328aeef3eb11eaa62b747d6c5ef54d773c20864790a865270`.
 Node and real Chromium both replayed every registered vector with Playwright
 1.61.1 using Rust/Cargo 1.96.0. This is bounded development evidence for the
 embedded fixture, not a release receipt or a production-model browser claim.
+
+After export ownership registration, the 2026-08-25 local replay built a
+66,666-byte explicit-feature ACG2 module with SHA-256
+`d28c98d9625ebf645a164fa647f2efe7dfb793999b376b6345962453c04252c1`
+and a 193,997-byte default-feature SLM2 module with SHA-256
+`4675bb34ebea06bfa3b46e5c43b13cad395091f3b61bd1bdca1eaa6fdd9b1c3f`.
+Each module has exactly its registered eleven-function surface, no imports,
+and one memory export. Node and fresh Chromium replayed both vector families
+with zero requests. These hashes replace prior local module identities only;
+they remain development evidence and authorize no broader claim.
 
 ## Required Gates
 
