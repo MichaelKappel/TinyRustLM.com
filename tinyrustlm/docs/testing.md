@@ -66,6 +66,31 @@ operations, and unsafe final bytes fail closed. The synthetic complete-capacity
 case proves contract capacity only and cannot advance a live campaign counter.
 See `../../docs/architecture/vnext-campaign-release-surface.md`.
 
+## Registered Build Custody
+
+Before any irreversible registered Windows x64 build, run the source-controlled
+custody fault gate:
+
+```powershell
+npm --prefix tinyrustlm run test:build-custody
+```
+
+The gate creates a temporary committed Git source closure and fresh sibling
+control/target roots. Its real and injected child cases prove canonical
+preflight, exact source/Git/Node/command/taskkill binding, separate bounded raw
+logs, exit-before-diagnostics persistence, late overflow reconciliation,
+nonzero and spawn failure, real timeout descendant-tree termination, exact
+child environment, required-output hash and x64 PE checks, create-only root and
+terminal collisions, and completion after CLI-observer death.
+
+A green custody test proves only the mechanism. A material build requires a
+separate output-free registration bound to the exact committed owner and
+runtime, wholly new roots proven absent, one canonical private request outside
+Git, and one execution. Never use a successful fixture, historical candidate,
+Cargo log text, PE presence, or process disappearance as a successful-build
+claim. See
+`../../docs/architecture/2026-08-25-source-controlled-build-custody-owner.md`.
+
 ## Rust Gates
 
 Use artifact-light settings on a constrained disk:

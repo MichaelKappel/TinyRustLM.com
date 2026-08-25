@@ -1,5 +1,13 @@
-profile: runtime-mirust.startup-packet.v108
-updated_utc: 2026-08-25T11:25:43Z
+profile: runtime-mirust.startup-packet.v109
+updated_utc: 2026-08-25T12:01:53Z
+current_source_controlled_build_custody_owner_2026_08_25:
+  first_read: Read newest `workspace.uai`, custody profile SHA256 `589883f42c1e047dfa6e132c8c4937c05d23b936ae1a6f62fe41c91b672a82fa`, owner architecture record, `.uai/totem.uai`, and `.uai/taboo.uai` before `/4` or `/5` material.
+  active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  active_branch: codex/model-acquisition-v2
+  protected_root: E:\Source\Rust\TinyRustLM.com remains untouched; never write `D:`.
+  current_result: Source-controlled exit-first custody is implemented and passes real Windows 14/14, Qwen 141/141, and release cutover 5/5. Exact child environment, descendant kill, observer death, collisions, and missing optional metadata are covered. No real build has used it and `/5` is unregistered.
+  immediate_operation: Commit/push/fresh-remote-verify this mechanism. Then preregister `/5` output-free with wholly new absent roots; push/fresh-verify; execute once only through the exact owner.
+  truth_boundary: `/4` remains terminal. No `/5` root, request, build, converter, output, complete composition, runtime, browser, quality, P2P, publication, deployment, MemoryEndpoints, or campaign gate advanced; counters remain zero.
 current_qwen3_execution_v4_build_custody_failure_2026_08_25:
   first_read: Read newest `workspace.uai`, the `/4` result JSON, build-custody architecture record, `.uai/totem.uai`, and `.uai/taboo.uai` before older Qwen routes.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819

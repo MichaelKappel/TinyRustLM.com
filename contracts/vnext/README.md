@@ -291,6 +291,19 @@ requires a tested source-controlled build-custody owner plus wholly new roots.
 See
 `docs/architecture/2026-08-25-qwen3-real-composition-execution-v4-result-and-build-custody-defect.md`.
 
+`build-custody-profile.v1.json` is the sole prelaunch Windows x64 contract for
+future irreversible builds. It is 3,407 canonical bytes at SHA-256
+`589883f42c1e047dfa6e132c8c4937c05d23b936ae1a6f62fe41c91b672a82fa`.
+The source-controlled owner binds exact clean source, Git, Node, command,
+environment, termination helper, absent sibling roots, bounded binary logs,
+and required outputs. It fsyncs the create-only child process-terminal record
+before optional metadata or output inspection, survives CLI-observer death,
+and permits no retry, resume, cleanup, adoption, compatibility, or fallback.
+Its real Windows fault gate passes 14 of 14 tests. This contract has not yet
+authorized a fifth real composition attempt and grants no conversion,
+structure, runtime, browser, quality, publication, or campaign claim. See
+`docs/architecture/2026-08-25-source-controlled-build-custody-owner.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2

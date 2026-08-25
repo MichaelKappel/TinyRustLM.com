@@ -1,5 +1,11 @@
-profile: runtime-mirust.file-handoff.v106
-updated_utc: 2026-08-25T11:25:43Z
+profile: runtime-mirust.file-handoff.v107
+updated_utc: 2026-08-25T12:01:53Z
+current_source_controlled_build_custody_owner_2026_08_25:
+  first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/build-custody-profile.v1.json`, and `docs/architecture/2026-08-25-source-controlled-build-custody-owner.md` before any build or `/5` work.
+  current_truth: Profile is 3,407 bytes/SHA256 `589883f42c1e047dfa6e132c8c4937c05d23b936ae1a6f62fe41c91b672a82fa`; owner is 51,785 bytes/SHA256 `ed2e4d8dddee8914456aa52a59b18a2cc6febec3a9258b18df7868604af56ef9`. It captures fsynced child exit before diagnostics, isolates exact Windows process environments, bounds streams/target traversal, verifies required hashes/PE after zero exit, survives observer death, and forbids retry/resume/cleanup/adoption.
+  gates: Real Windows custody 14/14, Qwen 141/141, release cutover 5/5. The tests are mechanism evidence only; `/5` is not registered and no new private root exists.
+  exact_resume: Finish hygiene and memory checks, commit/push/fresh-fetch this exact mechanism, and record remote equality. Then preregister `/5` with five wholly new absent roots and immutable `/1` through `/4` predecessors. Push/fresh-verify that registration before materializing one private request and executing once through this owner.
+  preservation: Never rerun or adopt `/4`; never rerun accepted Tokenizer2 Chromium evidence; never modify the protected sibling or write `D:`. No broader claim, MemoryEndpoints authority, or campaign credit.
 current_qwen3_execution_v4_build_custody_failure_2026_08_25:
   first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/qwen3-real-composition-execution-result.v4.json`, and `docs/architecture/2026-08-25-qwen3-real-composition-execution-v4-result-and-build-custody-defect.md` before any build or conversion work.
   terminal_truth: `/4` registration `8948baf1d21a73cde5781cf74a7c5020fd0b8cca` was remote-exact and launched one Rust build. Its child exit code was not captured because optional `ExitTime` access failed first. Cargo `Finished` and the candidate PE do not prove success. Public result is 5,293 bytes at SHA256 `c928b55cf9eb871c09b7f1e1aacf1983bf3a7e2fe6ca4697aa58c50648187a35`.
