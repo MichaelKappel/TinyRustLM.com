@@ -95,22 +95,45 @@ executable drift, or nonzero exit are rejected directly and cannot be laundered
 by later reconciliation. The deterministic executable fixture proves these
 contracts only; it cannot satisfy a real-model gate.
 
-This foundation is not yet a companion release. It does not listen on loopback,
-discover or fetch peers, download model source, recover a completed conversion
-from an absent or nonterminal root, stream a composition to the browser, install
-a service, or expose an installation artifact. A pending root has no
-authenticated orphan-process ownership or safe relaunch protocol yet, so it
-remains visibly pending rather than guessed, adopted, or retried. No real source
-has been passed through the coordinator. The deep acquisition gate remains
-explicitly unavailable until those production owners and their registered
-evidence exist.
+The private solution now also contains the exact
+`tinyrustlm.companion.loopback-capability/3` Kestrel listener. It binds only
+numeric `127.0.0.1` on an operating-system-selected port, accepts HTTP/1.1
+only, closes every response, suppresses the Server header and logging, enforces
+the registered request and connection ceilings, and rejects unregistered
+Host, Origin, route, method, headers, framing, media type, body, capability,
+sequence, or operation identity. Pairing, status, rotation, replay recovery,
+and revocation cross real TCP in tests. Application errors are canonical and
+bounded; authenticated application errors are response-proven. Kestrel-owned
+malformed-line, framing, header, and global-body failures mutate no capability
+state and carry no CORS or session proof.
+
+The private `TinyRustLM.CompanionHost` executable accepts no arguments. It
+derives one `TinyRustLM.Companion` directory below the current user's local
+application-data root, refuses noninteractive or redirected output before any
+state creation, starts the exact listener, and only then displays one
+single-use `TRLC1` pairing code. It emits only closed public-safe startup codes
+on failure. This executable remains private and is not an installation or
+release artifact.
+
+This implementation is not yet a companion release. It does not provide a
+browser capability client, discover or fetch peers, download model source,
+recover a completed conversion from an absent or nonterminal root, dispatch
+operation routes, stream a composition to the browser, install a service, or
+expose an installation archive. A pending root has no authenticated
+orphan-process ownership or safe relaunch protocol yet, so it remains visibly
+pending rather than guessed, adopted, or retried. No real source has been
+passed through the coordinator. The deep acquisition gate remains explicitly
+unavailable until those production owners and their registered evidence exist.
 
 ## Browser Boundary
 
-The released companion must expose one closed loopback capability contract.
-Pairing requires explicit user action and binds the exact allowed web origin,
-ephemeral session, operation identity, and bounded route set. Unknown routes,
-fields, versions, identities, and operations fail closed.
+The browser must use the one closed loopback capability contract now owned by
+the private listener. Pairing requires explicit user action and binds the exact
+allowed web origin, ephemeral session, operation identity, and bounded route
+set. Unknown routes, fields, versions, identities, and operations fail closed.
+No deployable browser client exists yet; the current product must remain
+truthfully unavailable instead of probing, retaining a key, or selecting an
+alternate transport.
 
 The browser must never receive an instruction file in place of a model action.
 Selecting Get model performs verified P2P acquisition when available and
@@ -144,11 +167,12 @@ response, or an HTTP success does not satisfy the release gate.
 
 ## Current Claim Boundary
 
-No production companion artifact is published. No P2P lane has current outside
-proof. No real TinyRustLM model has qualified. MemoryEndpoints is unauthorized
-and disconnected. Campaign counters remain 0/20 models, 0/50 clean browser
-rounds, 0/25 live memory rounds, 0/40 externally proven lanes, and 0/20 catalog
-announcements.
+No production companion artifact is published. The private listener and host
+pass local real-TCP and managed gates only. No deployable browser client,
+operation transfer, P2P lane with current outside proof, or qualified real
+TinyRustLM model exists. MemoryEndpoints is unauthorized and disconnected.
+Campaign counters remain 0/20 models, 0/50 clean browser rounds, 0/25 live
+memory rounds, 0/40 externally proven lanes, and 0/20 catalog announcements.
 
 The authoritative next work is the clean SLM2 companion implementation and its
 complete browser-local vertical-slice evidence. This document must be updated

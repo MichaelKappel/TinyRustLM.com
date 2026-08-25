@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyRustLM.Companion", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyRustLM.Companion.Tests", "tests\TinyRustLM.Companion.Tests\TinyRustLM.Companion.Tests.csproj", "{89368899-40A1-467C-9FA5-BF28B35287E9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyRustLM.CompanionHost", "tools\TinyRustLM.CompanionHost\TinyRustLM.CompanionHost.csproj", "{5F9EA4D0-D59A-443D-85F1-ED63FF849B51}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -203,6 +205,18 @@ Global
 		{89368899-40A1-467C-9FA5-BF28B35287E9}.Release|x64.Build.0 = Release|Any CPU
 		{89368899-40A1-467C-9FA5-BF28B35287E9}.Release|x86.ActiveCfg = Release|Any CPU
 		{89368899-40A1-467C-9FA5-BF28B35287E9}.Release|x86.Build.0 = Release|Any CPU
+		{5F9EA4D0-D59A-443D-85F1-ED63FF849B51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F9EA4D0-D59A-443D-85F1-ED63FF849B51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F9EA4D0-D59A-443D-85F1-ED63FF849B51}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5F9EA4D0-D59A-443D-85F1-ED63FF849B51}.Debug|x64.Build.0 = Debug|Any CPU
+		{5F9EA4D0-D59A-443D-85F1-ED63FF849B51}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5F9EA4D0-D59A-443D-85F1-ED63FF849B51}.Debug|x86.Build.0 = Debug|Any CPU
+		{5F9EA4D0-D59A-443D-85F1-ED63FF849B51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F9EA4D0-D59A-443D-85F1-ED63FF849B51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F9EA4D0-D59A-443D-85F1-ED63FF849B51}.Release|x64.ActiveCfg = Release|Any CPU
+		{5F9EA4D0-D59A-443D-85F1-ED63FF849B51}.Release|x64.Build.0 = Release|Any CPU
+		{5F9EA4D0-D59A-443D-85F1-ED63FF849B51}.Release|x86.ActiveCfg = Release|Any CPU
+		{5F9EA4D0-D59A-443D-85F1-ED63FF849B51}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -221,5 +235,6 @@ Global
 		{178087F7-6FD6-499E-AB14-BD8F796D9F47} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
 		{74A59461-F696-4233-8FD3-BFFE1DA6BC70} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{89368899-40A1-467C-9FA5-BF28B35287E9} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{5F9EA4D0-D59A-443D-85F1-ED63FF849B51} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
 	EndGlobalSection
 EndGlobal

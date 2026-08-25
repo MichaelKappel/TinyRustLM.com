@@ -1136,6 +1136,8 @@ public sealed class CompanionSessionLease : IDisposable
 
     public ulong? NextSequence { get; }
 
+    internal bool IsRotationCommitReplay => _rotationReplay is not null;
+
     public CompanionProvenResponse MaterializeSessionStatus() =>
         ExecuteAuthenticated(
             () => CompanionLoopbackWire.EncodeSessionStatus(

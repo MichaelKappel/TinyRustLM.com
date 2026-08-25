@@ -5,12 +5,15 @@
 Accepted
 
 The protocol family, exact route schemas, limits, installation discovery,
-cryptographic transcripts, and pairing ceremony are preregistered by sole
-implementation authority `tinyrustlm.companion.loopback-capability/2`. Profile
-`/1` remains immutable non-executable registration history because its proof
-and key-derivation field order was not complete. The corrected profile still
-requires implementation and physical verification before a listener is
-released or exposed.
+cryptographic transcripts, pairing ceremony, and corrected HTTP semantics are
+preregistered by sole implementation authority
+`tinyrustlm.companion.loopback-capability/3`. Profile `/1` remains immutable
+non-executable registration history because its proof and key-derivation field
+order was incomplete. Profile `/2` remains immutable superseded design history
+after real Kestrel output exposed an invalid 204 `Content-Length` requirement
+and incomplete CORS exposure identities. The private `/3` listener and process
+host are implemented and locally verified; physical production-browser and
+release verification are still required before either is exposed.
 
 ## Decision Date
 
@@ -34,15 +37,20 @@ create-only journal, and a source coordinator that invokes only the complete
 `qwen3-composition` transaction. The coordinator can independently reconcile a
 strict terminal pass or rejection from the exact bound intent after process
 loss, but it does not infer, adopt, relaunch, or kill work for an absent or
-nonterminal root. No loopback listener or browser capability implementation
-exists. No current route table or port is release authority.
+nonterminal root. It now also owns the private exact IPv4 Kestrel listener,
+pairing, session status, rotation, revocation, and truthful unavailable
+operation responses. `TinyRustLM.CompanionHost` owns one argument-free,
+interactive process entry point and one private per-user installation root.
+No browser capability client or artifact-transfer dispatch exists.
+No current route table or port is release authority.
 
 ## Decision
 
-**Engineering decision**: the Companion will expose one closed HTTP/1.1
-capability protocol over explicit loopback listeners. IPv4 binds exactly
-`127.0.0.1`; an IPv6 listener, when enabled and tested, binds exactly `::1`.
-The process never binds a wildcard, LAN address, public address, or hostname.
+**Engineering decision**: the Companion exposes one closed HTTP/1.1 capability
+protocol over one numeric IPv4 loopback listener bound exactly to
+`127.0.0.1` on operating-system-selected port zero. The process never binds
+IPv6, `localhost`, a fixed port, a wildcard, LAN address, public address, or
+hostname.
 
 The listener accepts only an exact registered Host value for its active
 loopback endpoint and an exact registered `Origin` value for TinyRustLM.com.
@@ -61,12 +69,13 @@ key.
 
 The exact pairing, rotation, revocation, expiry, replay, CORS, Local Network
 Access, HTTP parser, and artifact-transfer semantics are frozen in
-`contracts/vnext/companion-loopback-capability-preregistration.v2.json`, which
-binds the first profile by immutable hash and closes its preimplementation
-ambiguities. The first listener binds only numeric IPv4 `127.0.0.1` on
-OS-selected port zero.
-IPv6, localhost names, a fixed port, port scanning, and alternate protocols are
-not part of this contract.
+`contracts/vnext/companion-loopback-capability-preregistration.v3.json`, 11,836
+bytes at SHA-256
+`a4f8574a6d35f8c66f537f8e4e2c7d659a239a6267d60c26210672db72929d28`.
+It adopts the closed `/2` cryptographic and route semantics and corrects only
+the registered HTTP ownership and browser-visible response-header gaps. IPv6,
+localhost names, a fixed port, port scanning, and alternate protocols are not
+part of this contract.
 
 The route table is closed and versioned. Unknown method, path, media type,
 schema, field, operation, state, sequence, artifact kind, range, or capability
@@ -131,13 +140,33 @@ backend.
 
 ## Authoritative Evidence
 
-**Observed local fact**: the current managed solution passes 163 tests: 80
-Core tests, 38 package-boundary tests, and 45 Companion tests. These tests prove
-strict complete-conversion orchestration, immutable-request and intent tamper
-rejection, operation-v2 hash invariants, terminal pass and rejection
-reconciliation, pending-root immutability, process-tree cancellation races,
-pre-cancel nonlaunch, typed process-start failure, live-violation
-non-laundering, and fixture evidence retention.
+**Observed local fact**: the current managed solution passes 203 tests: 80
+Core tests, 38 package-boundary tests, and 85 Companion tests. The Companion
+tests include real IPv4 TCP exchanges for exact bind, Host and Origin
+authority, CORS preflight, pairing, authenticated status, application errors,
+sequence replay, rotation lost-response replay, revocation, duplicate
+Content-Length, malformed framing, request-line, header-count, header-byte, and
+global-body parser limits. Release builds complete with zero warnings and zero
+errors, formatting requires no changes, and all 39 `/1`, `/2`, and `/3`
+registration tests pass.
+
+The private host accepts no arguments, derives one
+`TinyRustLM.Companion` directory below the current user's local application
+data root, and refuses redirected or noninteractive output before creating
+state. A captured launch returned only
+`tinyrustlm-companion-host-failed:interactive-output-required`, exit code 2,
+and left the previously absent root absent. A successful interactive host run
+has not yet been promoted as physical release evidence.
+
+Three bounded failures remain preserved outside Git: the RFC-valid leading-zero
+Content-Length overconstraint (6,098 bytes, SHA-256
+`c8745b95dd8f162ad9044aaa905735be2c32405a0fa40f8b48ec6a3e5e5a6c7f`),
+the accidental preflight exposure header (5,089 bytes, SHA-256
+`25ce5f560515d75a9cd64e10ad41004c4eb73b57d90235eaf099d4755469b4f2`),
+and application ownership of the global body-limit 413 (5,570 bytes, SHA-256
+`709ff032082548eaafb712a6d1e4314aa93aed8461d3a5772847964849965a64`).
+Each produced a general regression test before its scoped correction. None is
+campaign, model, browser, or release evidence.
 
 The exact complete conversion profile is
 `tinyrustlm.qwen3-complete-composition-conversion/1` at SHA-256
@@ -147,10 +176,12 @@ The architecture inventory test requires this ADR to remain accepted,
 decision-specific, and complete. The package and browser contract tests reject
 the removed instruction-download and public host paths.
 
-**Local verification required**: no current test proves an HTTP listener,
-browser pairing, CORS behavior, Private Network Access behavior, DNS-rebinding
-resistance, real source acquisition, real artifact streaming, installation,
-or public release. A deterministic converter fixture is not real-model proof.
+**Local verification required**: current tests prove the local listener and
+raw HTTP behavior, but do not prove a deployable browser client, browser Local
+Network Access permission, a physical interactive host ceremony, real source
+acquisition, operation dispatch, six-artifact streaming, browser admission, an
+installation archive, or public release. A deterministic converter fixture is
+not real-model proof.
 
 ## Threat Analysis
 
@@ -224,10 +255,12 @@ It is not left behind a feature flag.
 content and Private Network Access behavior must be observed against the
 selected numeric loopback origin from the production HTTPS site.
 
-The registered installation-discovery mechanism, selected port lifecycle,
-pairing ceremony, session lifetime, CORS header set, preflight behavior, fixed-
-chunk policy, response streaming primitive, and multi-user isolation require
-implementation and physical verification.
+The browser discovery and explicit-connect ceremony, current production
+headers, Local Network Access permission, fixed-chunk transfer, browser
+streaming and rehash, interactive host lifecycle, and multi-user isolation
+still require physical verification. The local listener's selected-port,
+pairing, session, rotation, revocation, CORS, and parser behavior are covered
+by deterministic real-TCP tests only.
 
 Windows firewall prompts, endpoint security products, enterprise proxies,
 Linux sandboxing, IPv6 availability, sleep and resume, port collision, browser
@@ -243,8 +276,8 @@ disconnected.
 1. Keep the exact route, schema, header, origin, proof, size, timeout,
    concurrency, and error registration immutable before comparative server
    output.
-2. Prove listeners bind only `127.0.0.1` and explicitly tested `::1`, never a
-   wildcard, LAN, public interface, or substituted hostname.
+2. Prove the listener binds only `127.0.0.1`, never IPv6, a wildcard, LAN,
+   public interface, or substituted hostname.
 3. Reject wrong or duplicate Host, Origin, method, route, media type, field,
    capability, operation, sequence, range, and framing.
 4. Prove pairing requires explicit user action and session keys expire,

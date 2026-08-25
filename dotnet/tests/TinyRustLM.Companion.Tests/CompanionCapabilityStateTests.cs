@@ -131,6 +131,45 @@ public sealed class CompanionCapabilityStateTests : IDisposable
     }
 
     [Fact]
+    public void ErrorBodiesAreClosedCanonicalAndBounded()
+    {
+        var error = new CompanionLoopbackError(
+            CompanionLoopbackWire.ErrorSchema,
+            "capability-invalid");
+        var canonical = CompanionLoopbackWire.EncodeError(error);
+        Assert.Equal(
+            $"{{\"schema\":\"{CompanionLoopbackWire.ErrorSchema}\",\"code\":\"capability-invalid\"}}",
+            System.Text.Encoding.UTF8.GetString(canonical));
+        Assert.Equal(error, CompanionLoopbackWire.DecodeError(canonical));
+        Assert.InRange(canonical.Length, 1, CompanionLoopbackWire.MaximumErrorResponseBytes);
+
+        var text = System.Text.Encoding.UTF8.GetString(canonical);
+        foreach (var invalid in new[]
+        {
+            $" {text}",
+            $"{text}\n",
+            $"{{\"code\":\"capability-invalid\",\"schema\":\"{CompanionLoopbackWire.ErrorSchema}\"}}",
+            text.Replace("\"code\"", "\"unknown\":true,\"code\"", StringComparison.Ordinal),
+            text.Replace("\"code\":", "\"code\":\"capability-invalid\",\"code\":", StringComparison.Ordinal),
+            text.Replace("tinyrustlm", "tin\\u0079rustlm", StringComparison.Ordinal)
+        })
+        {
+            AssertCode(
+                "json-invalid",
+                () => CompanionLoopbackWire.DecodeError(
+                    System.Text.Encoding.UTF8.GetBytes(invalid)));
+        }
+
+        AssertCode(
+            "contract-invalid",
+            () => CompanionLoopbackWire.EncodeError(error with { Code = "not-registered" }));
+        AssertCode(
+            "contract-invalid",
+            () => CompanionLoopbackWire.DecodeError(System.Text.Encoding.UTF8.GetBytes(
+                $"{{\"schema\":\"{CompanionLoopbackWire.ErrorSchema}\",\"code\":\"not-registered\"}}")));
+    }
+
+    [Fact]
     public void PairingIsProofBoundIdempotentAndSingleUse()
     {
         var clock = new ManualTimeProvider(new DateTimeOffset(2026, 8, 24, 12, 0, 0, TimeSpan.Zero));

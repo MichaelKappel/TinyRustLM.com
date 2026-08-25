@@ -28,6 +28,8 @@ public static class CompanionLoopbackWire
         "tinyrustlm.companion.loopback.revoke-request.v1";
     public const string RevokedResponseSchema =
         "tinyrustlm.companion.loopback.revoked.v1";
+    public const string ErrorSchema =
+        "tinyrustlm.companion.loopback.error.v1";
     public const int MaximumInstallationRecordBytes = 4_096;
     public const int MaximumPairingBeginRequestBytes = 2_048;
     public const int MaximumPairingBeginResponseBytes = 4_096;
@@ -40,6 +42,50 @@ public static class CompanionLoopbackWire
     public const int MaximumRotationCommittedBytes = 4_096;
     public const int MaximumRevokeRequestBytes = 1_024;
     public const int MaximumRevokedResponseBytes = 1_024;
+    public const int MaximumErrorResponseBytes = 256;
+
+    private static readonly HashSet<string> StableErrorCodes = new(StringComparer.Ordinal)
+    {
+        "request-malformed",
+        "request-line-too-large",
+        "request-headers-too-large",
+        "request-header-not-allowed",
+        "request-framing-invalid",
+        "request-body-too-large",
+        "request-body-timeout",
+        "host-invalid",
+        "origin-invalid",
+        "cors-preflight-invalid",
+        "route-not-found",
+        "method-not-allowed",
+        "media-type-invalid",
+        "json-invalid",
+        "contract-invalid",
+        "pairing-code-expired",
+        "pairing-claim-conflict",
+        "pairing-capacity",
+        "pairing-proof-invalid",
+        "pairing-consumed",
+        "capability-invalid",
+        "capability-expired",
+        "capability-idle-expired",
+        "capability-revoked",
+        "capability-replay",
+        "capability-sequence",
+        "session-request-in-flight",
+        "rotation-conflict",
+        "rotation-expired",
+        "rotation-proof-invalid",
+        "operation-not-found",
+        "operation-terminal",
+        "operation-not-available",
+        "artifact-role-invalid",
+        "artifact-chunk-invalid",
+        "artifact-identity-drift",
+        "resource-limit",
+        "companion-unavailable",
+        "internal-failure"
+    };
 
     private static readonly UTF8Encoding StrictUtf8 = new(
         encoderShouldEmitUTF8Identifier: false,
@@ -590,6 +636,34 @@ public static class CompanionLoopbackWire
         return response;
     }
 
+    public static byte[] EncodeError(CompanionLoopbackError error)
+    {
+        ValidateError(error);
+        return EncodeNetworkJson(
+            MaximumErrorResponseBytes,
+            writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("schema", error.Schema);
+                writer.WriteString("code", error.Code);
+                writer.WriteEndObject();
+            });
+    }
+
+    public static CompanionLoopbackError DecodeError(ReadOnlySpan<byte> bytes)
+    {
+        var properties = ParseNetworkObject(
+            bytes,
+            MaximumErrorResponseBytes,
+            ["schema", "code"]);
+        var error = new CompanionLoopbackError(
+            RequireString(properties[0]),
+            RequireString(properties[1]));
+        ValidateError(error);
+        RequireCanonical(bytes, EncodeError(error));
+        return error;
+    }
+
     private static void ValidateInstallationRecord(CompanionInstallationRecord record)
     {
         ArgumentNullException.ThrowIfNull(record);
@@ -797,6 +871,15 @@ public static class CompanionLoopbackWire
             throw new CompanionProtocolException("revoked-response-contract");
         }
         CompanionLoopbackProtocol.RequireHexIdentifier(response.RevocationId, 16, "revocation-id");
+    }
+
+    private static void ValidateError(CompanionLoopbackError error)
+    {
+        ArgumentNullException.ThrowIfNull(error);
+        if (error.Schema != ErrorSchema || !StableErrorCodes.Contains(error.Code))
+        {
+            throw new CompanionProtocolException("contract-invalid");
+        }
     }
 
     private static void RequireEpochPair(uint currentEpoch, uint nextEpoch)
@@ -1014,3 +1097,5 @@ public sealed record CompanionRevokedResponse(
     string Schema,
     string RevocationId,
     bool Revoked);
+
+public sealed record CompanionLoopbackError(string Schema, string Code);
