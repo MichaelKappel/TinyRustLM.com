@@ -6,6 +6,7 @@ mod qwen3;
 mod qwen3_composition;
 mod qwen_tokenizer;
 mod qwen_tokenizer2;
+mod receipt;
 
 pub use execution::{ConverterExecutionIdentity, ConverterExecutionIdentityError};
 pub use qwen3::{
@@ -22,3 +23,4 @@ pub use qwen_tokenizer2::{
     QwenTokenizer2ConversionResult, QWEN_TOKENIZER2_CONVERSION_PROFILE_ID,
     QWEN_TOKENIZER2_CONVERSION_PROFILE_SHA256, QWEN_TOKENIZER2_SOURCE_LOCK_SCHEMA,
 };
+pub use receipt::ReceiptIdentity;

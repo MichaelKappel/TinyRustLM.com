@@ -2,9 +2,15 @@
 
 Date: 2026-08-24
 
+Historical status: this records the predecessor composition implementation.
+The sole current profile is `/3`, bound to corrected model producer `/2`, as
+documented in `docs/architecture/qwen3-slm2-converter-implementation.md`. No
+predecessor executable selector, reader, migration, alias, or fallback remains.
+
 ## Status
 
-`tinyrustlm-convert qwen3-composition` implements the sole current output-free
+At this historical checkpoint, `tinyrustlm-convert qwen3-composition`
+implemented the output-free
 registration in
 `contracts/vnext/qwen3-composition-conversion-profile.v2.json`. The profile is
 8,835 bytes at SHA-256

@@ -18,6 +18,7 @@ use crate::execution::ConverterExecutionIdentity;
 use crate::qwen_tokenizer::{
     parse_qwen_tokenizer, ParsedQwenTokenizer, QwenTokenizerModelContract,
 };
+use crate::receipt::ReceiptIdentity;
 
 /// Exact source-lock schema for standalone Qwen Tokenizer2 conversion.
 pub const QWEN_TOKENIZER2_SOURCE_LOCK_SCHEMA: &str = "tinyrustlm.qwen_tokenizer2_source_lock.v1";
@@ -32,6 +33,7 @@ pub(crate) const QWEN3_TOKENIZER_ARCHITECTURE_PROFILE_ID: &str =
 const CONVERSION_RECEIPT_SCHEMA: &str = "tinyrustlm.qwen_tokenizer2_conversion_receipt.v1";
 const SOURCE_LOCK_MAXIMUM_BYTES: u64 = 1_048_576;
 const CONFIG_MAXIMUM_BYTES: u64 = 1_048_576;
+const RECEIPT_MAXIMUM_BYTES: u64 = 1_048_576;
 const TOKENIZER_MAXIMUM_BYTES: u64 = 64 * 1_048_576;
 const HASH_BUFFER_BYTES: usize = 1_048_576;
 const REQUIRED_SOURCE_FILES: [&str; 5] = [
@@ -75,6 +77,7 @@ pub struct QwenTokenizer2ConversionResult {
     tokenizer_path: PathBuf,
     receipt_path: PathBuf,
     tokenizer_identity: TokenizerIdentity,
+    receipt_identity: ReceiptIdentity,
 }
 
 impl QwenTokenizer2ConversionResult {
@@ -91,6 +94,11 @@ impl QwenTokenizer2ConversionResult {
     /// Returns the independently reparsed Tokenizer2 identity.
     pub const fn tokenizer_identity(&self) -> TokenizerIdentity {
         self.tokenizer_identity
+    }
+
+    /// Returns the exact identity of the promoted conversion receipt.
+    pub const fn receipt_identity(&self) -> ReceiptIdentity {
+        self.receipt_identity
     }
 }
 
@@ -368,6 +376,7 @@ pub fn convert_locked_qwen_tokenizer2_source(
         QwenTokenizer2ConversionError::new("qwen-tokenizer2-receipt-serialization-failed")
     })?;
     receipt_bytes.push(b'\n');
+    let receipt_identity = ReceiptIdentity::from_bytes(&receipt_bytes);
     write_create_only_synced(&outputs.receipt_stage, &receipt_bytes)?;
     promote_create_only(&outputs.receipt_stage, &outputs.receipt)?;
     flush_owned_directory(
@@ -376,11 +385,22 @@ pub fn convert_locked_qwen_tokenizer2_source(
         &format!("{operation_id}-receipt"),
     )
     .map_err(|_| QwenTokenizer2ConversionError::new("qwen-tokenizer2-directory-flush-failed"))?;
+    let observed_receipt = read_bounded_regular_file(
+        &outputs.receipt,
+        RECEIPT_MAXIMUM_BYTES,
+        "qwen-tokenizer2-output-validation-failed",
+    )?;
+    if observed_receipt != receipt_bytes {
+        return Err(QwenTokenizer2ConversionError::new(
+            "qwen-tokenizer2-output-validation-failed",
+        ));
+    }
 
     Ok(QwenTokenizer2ConversionResult {
         tokenizer_path: outputs.tokenizer,
         receipt_path: outputs.receipt,
         tokenizer_identity: written_identity,
+        receipt_identity,
     })
 }
 

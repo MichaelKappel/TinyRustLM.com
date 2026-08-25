@@ -133,11 +133,11 @@ public sealed partial class TinyRustLmConversionTool
         "tinyrustlm.composition-conversion-live-observation.v1";
 
     /// <summary>The registered complete-composition profile identifier.</summary>
-    public const string CompositionProfileId = "tinyrustlm.qwen3-complete-composition-conversion/2";
+    public const string CompositionProfileId = "tinyrustlm.qwen3-complete-composition-conversion/3";
 
     /// <summary>The SHA-256 of the exact registered complete-composition profile.</summary>
     public const string CompositionProfileSha256 =
-        "d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718";
+        "c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0";
 
     private const string SummarySchema = "tinyrustlm.qwen3_composition_conversion_cli_summary.v1";
     private const string ReceiptSchema = "tinyrustlm.qwen3_composition_conversion_receipt.v1";

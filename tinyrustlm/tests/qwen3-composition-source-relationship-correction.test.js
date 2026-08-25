@@ -8,7 +8,7 @@ const test = require("node:test");
 
 const repositoryRoot = path.resolve(__dirname, "../..");
 const paths = {
-  profile: "contracts/vnext/qwen3-composition-conversion-profile.v2.json",
+  profile: "contracts/vnext/qwen3-composition-conversion-profile.v3.json",
   modelLock: "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json",
   tokenizerLock: "contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json",
   rustModel: "rust/crates/tinyrustlm-convert/src/qwen3.rs",
@@ -36,23 +36,23 @@ test("all executable composition owners use only the corrected profile", () => {
     const source = read(owner).toString("utf8");
     assert.match(
       source,
-      /tinyrustlm\.qwen3-complete-composition-conversion\/2/u,
+      /tinyrustlm\.qwen3-complete-composition-conversion\/3/u,
       owner
     );
     assert.match(
       source,
-      /d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718/u,
+      /c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0/u,
       owner
     );
     assert.doesNotMatch(
       source,
-      /tinyrustlm\.qwen3-complete-composition-conversion\/1|2f95f79783ec6cd12160d51f9697c5c77aab2e6cd46afeb5140fdb513e5d8158/u,
+      /tinyrustlm\.qwen3-complete-composition-conversion\/[12]|2f95f79783ec6cd12160d51f9697c5c77aab2e6cd46afeb5140fdb513e5d8158|d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718/u,
       owner
     );
   }
   assert.match(
     read(paths.rustComposition).toString("utf8"),
-    /qwen3-composition-conversion-profile\.v2\.json/u
+    /qwen3-composition-conversion-profile\.v3\.json/u
   );
 });
 
@@ -64,7 +64,7 @@ test("the current profile and accepted locks declare one compatible pair", () =>
 
   assert.equal(
     sha256(profileBytes),
-    "d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718"
+    "c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0"
   );
   assert.deepEqual(profile.sourceRelationship.requiredEqualFields, [
     "modelId",

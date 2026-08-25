@@ -284,6 +284,10 @@ fn sha256(path: &Path) -> String {
     hex_lower(&Sha256::digest(fs::read(path).unwrap()))
 }
 
+fn sha256_bytes(bytes: &[u8]) -> String {
+    hex_lower(&Sha256::digest(bytes))
+}
+
 fn hex_lower(bytes: &[u8]) -> String {
     const HEX: &[u8; 16] = b"0123456789abcdef";
     let mut output = String::with_capacity(bytes.len() * 2);
@@ -325,7 +329,11 @@ fn deterministic_conversion_receipt_and_reparse_are_exact() {
         fs::read(first.tokenizer_path()).unwrap(),
         fs::read(second.tokenizer_path()).unwrap()
     );
-    let receipt: Value = serde_json::from_slice(&fs::read(first.receipt_path()).unwrap()).unwrap();
+    let receipt_bytes = fs::read(first.receipt_path()).unwrap();
+    let receipt_identity = first.receipt_identity();
+    assert_eq!(receipt_identity.byte_length(), receipt_bytes.len() as u64);
+    assert_eq!(receipt_identity.sha256_hex(), sha256_bytes(&receipt_bytes));
+    let receipt: Value = serde_json::from_slice(&receipt_bytes).unwrap();
     assert_eq!(receipt["status"], "pass");
     assert_eq!(
         receipt["tokenizerFormatProfileId"],

@@ -29,8 +29,10 @@ receipt and are not product availability.
 8. an absent output root under an existing direct non-reparse parent.
 
 The exact profile identity is
-`tinyrustlm.qwen3-complete-composition-conversion/2` with SHA-256
-`d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718`.
+`tinyrustlm.qwen3-complete-composition-conversion/3` with SHA-256
+`c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0`.
+It binds model producer `tinyrustlm.qwen3-safetensors-to-slm2-mixed-q8/2`
+and model receipt schema `tinyrustlm.qwen3_conversion_receipt.v2`.
 Model-lock, tokenizer-lock, or profile drift rejects before the process starts
 and before the output root exists.
 

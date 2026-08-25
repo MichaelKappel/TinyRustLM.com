@@ -1,20 +1,21 @@
 # Qwen3 SLM2 Converter Implementation
 
-Date: 2026-08-24
+Date: 2026-08-25
 
 ## Status
 
 `tinyrustlm-convert qwen3-safetensors` is the exact model-component compiler
 primitive for TinyRustLM's one prelaunch product. It implements the contract
 registered before output in
-`contracts/vnext/qwen3-safetensors-conversion-profile.v1.json`, whose SHA-256
-is `313069152daa70a2c2b5070f9d1350379a5800f647d5c3ac8d23a75ff9ead968`.
+`contracts/vnext/qwen3-safetensors-conversion-profile.v2.json`, whose SHA-256
+is `fa2ce18f38129a6b106000d7802d1ea3995921e2b945ae5e52457908f548e7cf`.
 
 The sole complete source-to-composition command is now
 `tinyrustlm-convert qwen3-composition`. It invokes this model primitive, the
 exact Tokenizer2 primitive, and the canonical fixed dependency and ACG2 owners
-under one create-only terminal receipt. See
-`docs/architecture/2026-08-24-complete-qwen3-composition-conversion-implementation.md`.
+under one create-only terminal receipt. Its sole current profile is
+`tinyrustlm.qwen3-complete-composition-conversion/3` at SHA-256
+`c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0`.
 
 This is not a product V2 or a compatibility path. SLM2 is the exact model-byte
 contract. The Qwen2/F32 model converter and its executable integration corpus
@@ -83,8 +84,30 @@ fields, permits only an optional string-to-string metadata map, and requires:
 - the exact closed Qwen3 tensor inventory and shape mapping.
 
 Qwen source names map to the canonical SLM2 roles, including
-`q_norm.weight` and `k_norm.weight`. Projection biases, `lm_head.weight` for
-tied embeddings, missing tensors, and surplus tensors are fatal.
+`q_norm.weight` and `k_norm.weight`. Projection biases, missing canonical
+tensors, and unrelated surplus tensors are fatal. A tied checkpoint must
+contain exactly one additional `lm_head.weight`; omitting it is also fatal.
+
+## Tied Output Proof
+
+The physical source inventory contains the canonical logical tensor registry
+plus one redundant tied output. Before constructing or validating any output
+path, the converter requires `lm_head.weight` and
+`model.embed_tokens.weight` to have exactly equal supported dtype, shape, and
+byte length. It then opens two read-only source handles, seeks to the two
+payload ranges, and compares every source byte through two fixed 1 MiB buffers.
+Both payload SHA-256 identities are computed during that same bounded pass.
+
+The comparison is over original source bytes, not expanded F32 values,
+quantized output, sampled blocks, or names alone. A missing tensor, wrong dtype,
+wrong shape, wrong length, or changed byte has a distinct bounded failure. An
+untied configuration and every unrelated additional tensor remain fatal.
+
+The tied output is source evidence, not a second runtime weight. The source
+receipt records 311 physical tensors and 751,632,384 physical parameters for
+the locked base, while SLM2 contains 310 logical tensors and 596,049,920
+logical parameters. Only `model.embed_tokens.weight` is emitted, once, as the
+canonical token embedding.
 
 ## Streaming Conversion
 
@@ -118,12 +141,22 @@ Successful conversion promotes exactly two final siblings:
 Both begin as create-new same-directory staging files. The model is synced,
 independently reparsed, source-rechecked, promoted without overwrite, and
 followed by a directory flush. The receipt is pretty UTF-8 JSON with one final
-LF; it is synced, promoted last, and followed by a second directory flush.
+LF; it is synced, promoted last, and followed by a second directory flush. The
+converter then rereads the promoted receipt as a bounded regular file, requires
+exact byte equality with the serialized bytes, and returns its byte length and
+SHA-256 as part of the conversion result. Complete composition rereads each
+model and tokenizer component receipt and rejects it unless its exact identity
+matches the identity returned by that component converter. A valid-looking
+receipt substituted between component conversion and composition is therefore
+fatal even when its schema and status fields still parse.
 
-The receipt binds converter version and executable hash, source-lock hash,
-every locked source file, source identity and license, dtype, tensor count,
-parameter count, domain-separated tensor-inventory hash, exact SLM2 format and
-weight profiles, artifact/manifest/layout identities, complete model spec, and
+Receipt schema `tinyrustlm.qwen3_conversion_receipt.v2` binds converter version
+and executable hash, source-lock hash, every locked source file, source identity
+and license, dtype, physical tensor count/parameter count/inventory hash,
+logical tensor count/parameter count/inventory hash, both tied tensor names,
+dtype, shape, element count, byte length, payload hashes, exact equality
+verdict, comparison method and buffer bound, exact SLM2 format and weight
+profiles, artifact/manifest/layout identities, complete model spec, and
 directory durability observation.
 
 Its claim is only `structural-and-byte-conversion-only`. Model quality,
@@ -134,20 +167,24 @@ never overwritten, and conversion is never automatically retried.
 
 ## Verification
 
-The model-component implementation checkpoint passed with warnings denied:
+The corrected implementation checkpoint passed with warnings denied:
 
-- one execution-identity unit test;
-- thirteen Qwen3 model-conversion integration tests;
+- nine converter and complete-composition unit tests;
+- fifteen Qwen3 model-conversion integration tests;
 - eight accepted Qwen Tokenizer2 integration tests;
 - Rust formatting and all-target Clippy;
-- twenty-two preregistration, clean-cut, and contract-registry Node tests.
+- thirty-five focused registration, clean-cut, source-lock, and preserved-result
+  Node tests; and
+- 207 managed Release tests with zero failures, skips, or warnings.
 
 The Qwen3 corpus covers deterministic repeated BF16 conversion, F32 source
 conversion, wide query width, Q/K normalization, role-exact Q8/F32 storage,
 receipt closure, complete independent reparse, all nine source-file hashes,
 closed directory inventory, duplicate config members, changed operator
 semantics, non-null disabled operators, surplus/missing/duplicate/wrong-shape
-tensors, mixed and unsupported dtypes, gaps, overlap, trailing payload,
+tensors, required exact BF16 and F32 tied output, missing/wrong-dtype/
+wrong-shape/wrong-length/changed-byte tied output, untied config, mixed and
+unsupported dtypes, gaps, overlap, trailing payload,
 nonfinite values, create-only output, source/output overlap, proper prefixes,
 and hostile complete-artifact mutation.
 
@@ -156,14 +193,16 @@ temporary roots. They are format and converter evidence, not product models.
 
 ## Claim Boundary And Next Gate
 
-No upstream or trained real model was downloaded, converted, run, qualified,
-published, or announced by this implementation checkpoint. The unchanged
-`Qwen/Qwen3-0.6B` source remains terminally rejected as a product model and may
-be used only as a numerical-parity ancestor.
+No real model conversion succeeded, ran, qualified, published, or announced by
+this implementation checkpoint. The prior exact source attempt remains a
+preserved terminal rejection under invalidated producer profile `/1`; it is not
+retried or relabeled. The unchanged `Qwen/Qwen3-0.6B` source remains terminally
+rejected as a product model and may be used only as a numerical-parity ancestor.
 
-The complete transaction now has one strict managed process owner and one
-private Companion source-branch coordinator. The next gate is restart-safe
-private transport, followed by exact source-framework versus native SLM2 versus
-browser-WASM numerical parity and untouched quality qualification of a
-genuinely trained derivative. MemoryEndpoints remains unauthorized and disconnected.
+The complete transaction has one strict managed process owner and one private
+Companion source-branch coordinator. The next gate is a wholly new preregistered
+one-shot conversion using all-new private roots, followed only on structural
+pass by exact source-framework versus native SLM2 versus browser-WASM numerical
+parity and untouched quality qualification. MemoryEndpoints remains
+unauthorized and disconnected.
 Campaign counters remain 0/20, 0/50, 0/25, 0/40, and 0/20.

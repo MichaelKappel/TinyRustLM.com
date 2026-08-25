@@ -17,28 +17,35 @@ use tinyrustlm_slm2::{
 };
 
 use crate::execution::ConverterExecutionIdentity;
+use crate::receipt::ReceiptIdentity;
 
 /// The sole current Qwen3 Safetensors to SLM2 conversion profile.
-pub const QWEN3_CONVERSION_PROFILE_ID: &str = "tinyrustlm.qwen3-safetensors-to-slm2-mixed-q8/1";
+pub const QWEN3_CONVERSION_PROFILE_ID: &str = "tinyrustlm.qwen3-safetensors-to-slm2-mixed-q8/2";
 /// The SHA-256 of the exact checked-in Qwen3 conversion profile bytes.
 pub const QWEN3_CONVERSION_PROFILE_SHA256: &str =
-    "313069152daa70a2c2b5070f9d1350379a5800f647d5c3ac8d23a75ff9ead968";
+    "fa2ce18f38129a6b106000d7802d1ea3995921e2b945ae5e52457908f548e7cf";
 /// The exact source-lock schema consumed by this converter.
 pub const QWEN3_SOURCE_LOCK_SCHEMA: &str = "tinyrustlm.qwen3_source_lock.v1";
 
 pub(crate) const QWEN3_ARCHITECTURE_PROFILE_ID: &str = "tinyrustlm.qwen3-dense-gqa-qk-norm/1";
-const CONVERSION_RECEIPT_SCHEMA: &str = "tinyrustlm.qwen3_conversion_receipt.v1";
+const CONVERSION_RECEIPT_SCHEMA: &str = "tinyrustlm.qwen3_conversion_receipt.v2";
 const TENSOR_PROFILE_ID: &str = "tinyrustlm.tensor-mixed-q8-row-f32/1";
-const TENSOR_INVENTORY_HASH_DOMAIN: &[u8] = b"tinyrustlm.qwen3.source-tensor-inventory.v1\0";
+const PHYSICAL_TENSOR_INVENTORY_HASH_DOMAIN: &[u8] =
+    b"tinyrustlm.qwen3.physical-source-tensor-inventory.v2\0";
+const LOGICAL_TENSOR_INVENTORY_HASH_DOMAIN: &[u8] =
+    b"tinyrustlm.qwen3.logical-output-tensor-inventory.v2\0";
+const CANONICAL_EMBEDDING_SOURCE_TENSOR: &str = "model.embed_tokens.weight";
+const REDUNDANT_TIED_OUTPUT_SOURCE_TENSOR: &str = "lm_head.weight";
 const SOURCE_LOCK_MAXIMUM_BYTES: u64 = 1_048_576;
 const CONFIG_MAXIMUM_BYTES: u64 = 1_048_576;
+const RECEIPT_MAXIMUM_BYTES: u64 = 1_048_576;
 const SAFETENSORS_HEADER_MAXIMUM_BYTES: u64 = 16 * 1_048_576;
 const HASH_BUFFER_BYTES: usize = 1_048_576;
 const TENSOR_PAYLOAD_ALIGNMENT: u32 = 64;
 const OUTPUT_MAXIMUM_BYTES: u64 = 68_719_476_736;
 const OUTPUT_MAXIMUM_TENSORS: u32 = 262_144;
 const PROFILE_BYTES: &[u8] =
-    include_bytes!("../../../../contracts/vnext/qwen3-safetensors-conversion-profile.v1.json");
+    include_bytes!("../../../../contracts/vnext/qwen3-safetensors-conversion-profile.v2.json");
 const REQUIRED_SOURCE_FILES: [&str; 9] = [
     "LICENSE",
     "README.md",
@@ -82,6 +89,7 @@ pub struct Qwen3ConversionResult {
     model_path: PathBuf,
     receipt_path: PathBuf,
     model_identity: ModelIdentity,
+    receipt_identity: ReceiptIdentity,
 }
 
 impl Qwen3ConversionResult {
@@ -98,6 +106,11 @@ impl Qwen3ConversionResult {
     /// Returns the independently validated SLM2 identity.
     pub const fn model_identity(&self) -> &ModelIdentity {
         &self.model_identity
+    }
+
+    /// Returns the exact identity of the promoted conversion receipt.
+    pub const fn receipt_identity(&self) -> ReceiptIdentity {
+        self.receipt_identity
     }
 }
 
@@ -314,8 +327,20 @@ struct InspectedSource {
     dtype: SourceDtype,
     data_offset: u64,
     tensors: BTreeMap<String, SourceTensor>,
-    parameter_count: u64,
-    tensor_inventory_sha256: String,
+    physical_parameter_count: u64,
+    logical_parameter_count: u64,
+    physical_tensor_inventory_sha256: String,
+    logical_tensor_inventory_sha256: String,
+    tied_output: TiedOutputProof,
+}
+
+struct TiedOutputProof {
+    dtype: SourceDtype,
+    shape: Vec<u64>,
+    element_count: u64,
+    byte_length: u64,
+    canonical_embedding_sha256: String,
+    redundant_output_sha256: String,
 }
 
 struct TensorReader {
@@ -480,9 +505,30 @@ struct SourceReceipt<'a> {
     source_model_sha256: &'a str,
     source_model_bytes: u64,
     source_dtype: &'static str,
-    tensor_count: usize,
-    parameter_count: u64,
-    tensor_inventory_sha256: &'a str,
+    physical_tensor_count: usize,
+    physical_parameter_count: u64,
+    physical_tensor_inventory_sha256: &'a str,
+    logical_tensor_count: usize,
+    logical_parameter_count: u64,
+    logical_tensor_inventory_sha256: &'a str,
+    tied_output: TiedOutputReceipt<'a>,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct TiedOutputReceipt<'a> {
+    canonical_embedding_source_tensor: &'static str,
+    redundant_output_source_tensor: &'static str,
+    source_dtype: &'static str,
+    shape: &'a [u64],
+    element_count_each: u64,
+    byte_length_each: u64,
+    canonical_embedding_sha256: &'a str,
+    redundant_output_sha256: &'a str,
+    payloads_byte_identical: bool,
+    comparison_method: &'static str,
+    comparison_buffer_bytes: usize,
+    logical_emission_count: u32,
 }
 
 #[derive(Serialize)]
@@ -622,9 +668,26 @@ pub fn convert_locked_qwen3_source(
             source_model_sha256: &lock.files.model.sha256,
             source_model_bytes: lock.files.model.byte_length,
             source_dtype: source.dtype.label(),
-            tensor_count: source.tensors.len(),
-            parameter_count: source.parameter_count,
-            tensor_inventory_sha256: &source.tensor_inventory_sha256,
+            physical_tensor_count: source.tensors.len(),
+            physical_parameter_count: source.physical_parameter_count,
+            physical_tensor_inventory_sha256: &source.physical_tensor_inventory_sha256,
+            logical_tensor_count: tensor_count,
+            logical_parameter_count: source.logical_parameter_count,
+            logical_tensor_inventory_sha256: &source.logical_tensor_inventory_sha256,
+            tied_output: TiedOutputReceipt {
+                canonical_embedding_source_tensor: CANONICAL_EMBEDDING_SOURCE_TENSOR,
+                redundant_output_source_tensor: REDUNDANT_TIED_OUTPUT_SOURCE_TENSOR,
+                source_dtype: source.tied_output.dtype.label(),
+                shape: &source.tied_output.shape,
+                element_count_each: source.tied_output.element_count,
+                byte_length_each: source.tied_output.byte_length,
+                canonical_embedding_sha256: &source.tied_output.canonical_embedding_sha256,
+                redundant_output_sha256: &source.tied_output.redundant_output_sha256,
+                payloads_byte_identical: true,
+                comparison_method: "seekable-streamed-source-byte-comparison",
+                comparison_buffer_bytes: HASH_BUFFER_BYTES,
+                logical_emission_count: 1,
+            },
         },
         model: ModelReceipt {
             path: outputs.model_name.clone(),
@@ -659,6 +722,7 @@ pub fn convert_locked_qwen3_source(
     let mut receipt_bytes = serde_json::to_vec_pretty(&receipt)
         .map_err(|_| Qwen3ConversionError::new("qwen3-receipt-serialization-failed"))?;
     receipt_bytes.push(b'\n');
+    let receipt_identity = ReceiptIdentity::from_bytes(&receipt_bytes);
     write_create_only_synced(&outputs.receipt_stage, &receipt_bytes)?;
     promote_create_only(&outputs.receipt_stage, &outputs.receipt)?;
     flush_owned_directory(
@@ -667,11 +731,20 @@ pub fn convert_locked_qwen3_source(
         &format!("{operation_id}-receipt"),
     )
     .map_err(|_| Qwen3ConversionError::new("qwen3-directory-flush-failed"))?;
+    let observed_receipt = read_bounded_regular_file(
+        &outputs.receipt,
+        RECEIPT_MAXIMUM_BYTES,
+        "qwen3-output-validation-failed",
+    )?;
+    if observed_receipt != receipt_bytes {
+        return Err(Qwen3ConversionError::new("qwen3-output-validation-failed"));
+    }
 
     Ok(Qwen3ConversionResult {
         model_path: outputs.model,
         receipt_path: outputs.receipt,
         model_identity: written_identity,
+        receipt_identity,
     })
 }
 
@@ -779,16 +852,22 @@ fn inspect_source(
         .map_err(|_| Qwen3ConversionError::new("qwen3-config-invalid"))?;
     let spec = model_spec_from_config(&config, &lock.artifact_class)?;
     let model_path = source.join("model.safetensors");
-    let (data_offset, tensors, dtype, parameter_count) =
+    let (data_offset, tensors, dtype, physical_parameter_count) =
         inspect_safetensors(&model_path, &config, &spec)?;
-    let tensor_inventory_sha256 = source_tensor_inventory_sha256(&tensors)?;
+    let physical_tensor_inventory_sha256 = physical_tensor_inventory_sha256(&tensors)?;
+    let (logical_parameter_count, logical_tensor_inventory_sha256) =
+        logical_tensor_evidence(&spec)?;
+    let tied_output = verify_tied_output_payload(&model_path, data_offset, &tensors)?;
     Ok(InspectedSource {
         spec,
         dtype,
         data_offset,
         tensors,
-        parameter_count,
-        tensor_inventory_sha256,
+        physical_parameter_count,
+        logical_parameter_count,
+        physical_tensor_inventory_sha256,
+        logical_tensor_inventory_sha256,
+        tied_output,
     })
 }
 
@@ -922,7 +1001,12 @@ fn inspect_safetensors(
             _ => return Err(Qwen3ConversionError::new("qwen3-source-dtype-unsupported")),
         };
         if dtype != expected_dtype {
-            return Err(Qwen3ConversionError::new("qwen3-source-dtype-unsupported"));
+            let code = if name == REDUNDANT_TIED_OUTPUT_SOURCE_TENSOR {
+                "qwen3-tied-output-dtype-mismatch"
+            } else {
+                "qwen3-source-dtype-unsupported"
+            };
+            return Err(Qwen3ConversionError::new(code));
         }
         if raw.shape.is_empty() || raw.shape.len() > 8 {
             return Err(Qwen3ConversionError::new("qwen3-safetensors-invalid"));
@@ -941,8 +1025,16 @@ fn inspect_safetensors(
             .checked_mul(dtype.source_bytes())
             .ok_or_else(|| Qwen3ConversionError::new("qwen3-safetensors-invalid"))?;
         let [start, end] = raw.data_offsets;
-        if start > end || end - start != expected_bytes {
+        if start > end {
             return Err(Qwen3ConversionError::new("qwen3-safetensors-invalid"));
+        }
+        if end - start != expected_bytes {
+            let code = if name == REDUNDANT_TIED_OUTPUT_SOURCE_TENSOR {
+                "qwen3-tied-output-length-mismatch"
+            } else {
+                "qwen3-safetensors-invalid"
+            };
+            return Err(Qwen3ConversionError::new(code));
         }
         parameter_count = parameter_count
             .checked_add(elements)
@@ -979,9 +1071,6 @@ fn validate_tensor_inventory(
 ) -> Result<(), Qwen3ConversionError> {
     let required = required_model_tensors(spec, TENSOR_PAYLOAD_ALIGNMENT)
         .map_err(|_| Qwen3ConversionError::new("qwen3-tensor-registry-invalid"))?;
-    if required.len() != source.len() {
-        return Err(Qwen3ConversionError::new("qwen3-tensor-inventory-mismatch"));
-    }
     let mut expected_names = BTreeSet::new();
     for target in &required {
         let source_name = source_name_for_target(target)?;
@@ -995,17 +1084,46 @@ fn validate_tensor_inventory(
             return Err(Qwen3ConversionError::new("qwen3-tensor-shape-mismatch"));
         }
     }
-    if expected_names != source.keys().cloned().collect() {
+    let source_names = source.keys().cloned().collect::<BTreeSet<_>>();
+    if !source.contains_key(REDUNDANT_TIED_OUTPUT_SOURCE_TENSOR) && source_names == expected_names {
+        return Err(Qwen3ConversionError::new("qwen3-tied-output-required"));
+    }
+    let mut expected_physical_names = expected_names;
+    if !expected_physical_names.insert(REDUNDANT_TIED_OUTPUT_SOURCE_TENSOR.to_owned()) {
+        return Err(Qwen3ConversionError::new("qwen3-tensor-registry-invalid"));
+    }
+    if expected_physical_names != source_names {
         return Err(Qwen3ConversionError::new("qwen3-tensor-inventory-mismatch"));
+    }
+    let embedding = source
+        .get(CANONICAL_EMBEDDING_SOURCE_TENSOR)
+        .ok_or_else(|| Qwen3ConversionError::new("qwen3-tensor-inventory-mismatch"))?;
+    let tied_output = source
+        .get(REDUNDANT_TIED_OUTPUT_SOURCE_TENSOR)
+        .ok_or_else(|| Qwen3ConversionError::new("qwen3-tied-output-required"))?;
+    if tied_output.dtype != embedding.dtype {
+        return Err(Qwen3ConversionError::new(
+            "qwen3-tied-output-dtype-mismatch",
+        ));
+    }
+    if tied_output.shape != embedding.shape {
+        return Err(Qwen3ConversionError::new(
+            "qwen3-tied-output-shape-mismatch",
+        ));
+    }
+    if tied_output.end - tied_output.start != embedding.end - embedding.start {
+        return Err(Qwen3ConversionError::new(
+            "qwen3-tied-output-length-mismatch",
+        ));
     }
     Ok(())
 }
 
-fn source_tensor_inventory_sha256(
+fn physical_tensor_inventory_sha256(
     tensors: &BTreeMap<String, SourceTensor>,
 ) -> Result<String, Qwen3ConversionError> {
     let mut hasher = Sha256::new();
-    hasher.update(TENSOR_INVENTORY_HASH_DOMAIN);
+    hasher.update(PHYSICAL_TENSOR_INVENTORY_HASH_DOMAIN);
     let tensor_count = u32::try_from(tensors.len())
         .map_err(|_| Qwen3ConversionError::new("qwen3-arithmetic-overflow"))?;
     hasher.update(tensor_count.to_le_bytes());
@@ -1022,6 +1140,108 @@ fn source_tensor_inventory_sha256(
         hasher.update(tensor.end.to_le_bytes());
     }
     Ok(hex_lower(&hasher.finalize()))
+}
+
+fn logical_tensor_evidence(spec: &ModelSpec) -> Result<(u64, String), Qwen3ConversionError> {
+    let tensors = required_model_tensors(spec, TENSOR_PAYLOAD_ALIGNMENT)
+        .map_err(|_| Qwen3ConversionError::new("qwen3-tensor-registry-invalid"))?;
+    let mut hasher = Sha256::new();
+    hasher.update(LOGICAL_TENSOR_INVENTORY_HASH_DOMAIN);
+    let tensor_count = u32::try_from(tensors.len())
+        .map_err(|_| Qwen3ConversionError::new("qwen3-arithmetic-overflow"))?;
+    hasher.update(tensor_count.to_le_bytes());
+    let mut parameter_count = 0_u64;
+    for tensor in tensors {
+        hash_bounded_bytes(&mut hasher, tensor.semantic_role().as_bytes())?;
+        hash_bounded_bytes(&mut hasher, tensor.canonical_name().as_bytes())?;
+        hasher.update(tensor.layer().to_le_bytes());
+        hasher.update(tensor.subindex_0().to_le_bytes());
+        hasher.update(tensor.subindex_1().to_le_bytes());
+        let rank = u32::try_from(tensor.shape().len())
+            .map_err(|_| Qwen3ConversionError::new("qwen3-arithmetic-overflow"))?;
+        hasher.update(rank.to_le_bytes());
+        let elements = tensor
+            .shape()
+            .iter()
+            .try_fold(1_u64, |product, dimension| product.checked_mul(*dimension));
+        for dimension in tensor.shape() {
+            hasher.update(dimension.to_le_bytes());
+        }
+        hasher.update(tensor.payload_alignment().to_le_bytes());
+        parameter_count = parameter_count
+            .checked_add(
+                elements.ok_or_else(|| Qwen3ConversionError::new("qwen3-arithmetic-overflow"))?,
+            )
+            .ok_or_else(|| Qwen3ConversionError::new("qwen3-arithmetic-overflow"))?;
+    }
+    Ok((parameter_count, hex_lower(&hasher.finalize())))
+}
+
+fn verify_tied_output_payload(
+    path: &Path,
+    data_offset: u64,
+    tensors: &BTreeMap<String, SourceTensor>,
+) -> Result<TiedOutputProof, Qwen3ConversionError> {
+    let embedding = tensors
+        .get(CANONICAL_EMBEDDING_SOURCE_TENSOR)
+        .ok_or_else(|| Qwen3ConversionError::new("qwen3-tensor-inventory-mismatch"))?;
+    let tied_output = tensors
+        .get(REDUNDANT_TIED_OUTPUT_SOURCE_TENSOR)
+        .ok_or_else(|| Qwen3ConversionError::new("qwen3-tied-output-required"))?;
+    let byte_length = embedding
+        .end
+        .checked_sub(embedding.start)
+        .ok_or_else(|| Qwen3ConversionError::new("qwen3-arithmetic-overflow"))?;
+    let element_count = byte_length
+        .checked_div(embedding.dtype.source_bytes())
+        .ok_or_else(|| Qwen3ConversionError::new("qwen3-arithmetic-overflow"))?;
+    let embedding_offset = data_offset
+        .checked_add(embedding.start)
+        .ok_or_else(|| Qwen3ConversionError::new("qwen3-arithmetic-overflow"))?;
+    let tied_output_offset = data_offset
+        .checked_add(tied_output.start)
+        .ok_or_else(|| Qwen3ConversionError::new("qwen3-arithmetic-overflow"))?;
+    let mut embedding_file =
+        File::open(path).map_err(|_| Qwen3ConversionError::new("qwen3-safetensors-invalid"))?;
+    let mut tied_output_file =
+        File::open(path).map_err(|_| Qwen3ConversionError::new("qwen3-safetensors-invalid"))?;
+    embedding_file
+        .seek(SeekFrom::Start(embedding_offset))
+        .map_err(|_| Qwen3ConversionError::new("qwen3-safetensors-invalid"))?;
+    tied_output_file
+        .seek(SeekFrom::Start(tied_output_offset))
+        .map_err(|_| Qwen3ConversionError::new("qwen3-safetensors-invalid"))?;
+    let mut embedding_buffer = vec![0_u8; HASH_BUFFER_BYTES];
+    let mut tied_output_buffer = vec![0_u8; HASH_BUFFER_BYTES];
+    let mut embedding_hasher = Sha256::new();
+    let mut tied_output_hasher = Sha256::new();
+    let mut remaining = byte_length;
+    while remaining != 0 {
+        let count = usize::try_from(remaining.min(HASH_BUFFER_BYTES as u64))
+            .map_err(|_| Qwen3ConversionError::new("qwen3-arithmetic-overflow"))?;
+        embedding_file
+            .read_exact(&mut embedding_buffer[..count])
+            .map_err(|_| Qwen3ConversionError::new("qwen3-safetensors-invalid"))?;
+        tied_output_file
+            .read_exact(&mut tied_output_buffer[..count])
+            .map_err(|_| Qwen3ConversionError::new("qwen3-safetensors-invalid"))?;
+        embedding_hasher.update(&embedding_buffer[..count]);
+        tied_output_hasher.update(&tied_output_buffer[..count]);
+        if embedding_buffer[..count] != tied_output_buffer[..count] {
+            return Err(Qwen3ConversionError::new(
+                "qwen3-tied-output-payload-mismatch",
+            ));
+        }
+        remaining -= count as u64;
+    }
+    Ok(TiedOutputProof {
+        dtype: embedding.dtype,
+        shape: embedding.shape.clone(),
+        element_count,
+        byte_length,
+        canonical_embedding_sha256: hex_lower(&embedding_hasher.finalize()),
+        redundant_output_sha256: hex_lower(&tied_output_hasher.finalize()),
+    })
 }
 
 fn hash_bounded_bytes(hasher: &mut Sha256, bytes: &[u8]) -> Result<(), Qwen3ConversionError> {

@@ -17,7 +17,7 @@ const tokenizerLockPath = path.join(
 );
 const converterProfilePath = path.join(
   repositoryRoot,
-  "contracts/vnext/qwen3-safetensors-conversion-profile.v1.json"
+  "contracts/vnext/qwen3-safetensors-conversion-profile.v2.json"
 );
 
 const lockBytes = fs.readFileSync(lockPath);

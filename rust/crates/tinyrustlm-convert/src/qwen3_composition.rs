@@ -39,11 +39,11 @@ use crate::qwen3::QWEN3_ARCHITECTURE_PROFILE_ID;
 use crate::qwen_tokenizer2::QWEN3_TOKENIZER_ARCHITECTURE_PROFILE_ID;
 use crate::{
     convert_locked_qwen3_source, convert_locked_qwen_tokenizer2_source, ConverterExecutionIdentity,
-    QWEN3_SOURCE_LOCK_SCHEMA, QWEN_TOKENIZER2_SOURCE_LOCK_SCHEMA,
+    ReceiptIdentity, QWEN3_SOURCE_LOCK_SCHEMA, QWEN_TOKENIZER2_SOURCE_LOCK_SCHEMA,
 };
 
 const PROFILE_BYTES: &[u8] =
-    include_bytes!("../../../../contracts/vnext/qwen3-composition-conversion-profile.v2.json");
+    include_bytes!("../../../../contracts/vnext/qwen3-composition-conversion-profile.v3.json");
 const ATTEMPT_SCHEMA: &str = "tinyrustlm.qwen3_composition_attempt.v1";
 const RECEIPT_SCHEMA: &str = "tinyrustlm.qwen3_composition_conversion_receipt.v1";
 const REJECTION_SCHEMA: &str = "tinyrustlm.qwen3_composition_rejection.v1";
@@ -67,11 +67,11 @@ const RECEIPT_FILE: &str = "composition.conversion-receipt.json";
 
 /// Exact complete-composition conversion profile identifier.
 pub const QWEN3_COMPOSITION_CONVERSION_PROFILE_ID: &str =
-    "tinyrustlm.qwen3-complete-composition-conversion/2";
+    "tinyrustlm.qwen3-complete-composition-conversion/3";
 
 /// SHA-256 of the exact complete-composition conversion profile bytes.
 pub const QWEN3_COMPOSITION_CONVERSION_PROFILE_SHA256: &str =
-    "d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718";
+    "c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0";
 
 /// Stable public-safe complete-composition conversion failure.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -307,11 +307,13 @@ fn run_started_transaction(
 
     let model_receipt = component_receipt(
         model_result.receipt_path(),
-        "tinyrustlm.qwen3_conversion_receipt.v1",
+        "tinyrustlm.qwen3_conversion_receipt.v2",
+        model_result.receipt_identity(),
     )?;
     let tokenizer_receipt = component_receipt(
         tokenizer_result.receipt_path(),
         "tinyrustlm.qwen_tokenizer2_conversion_receipt.v1",
+        tokenizer_result.receipt_identity(),
     )?;
     let artifacts = [
         model.artifact("slm2"),
@@ -953,6 +955,7 @@ impl ResourcePreflight for StrictPreflight {
 fn component_receipt(
     path: &Path,
     expected_schema: &str,
+    expected_identity: ReceiptIdentity,
 ) -> Result<ComponentReceipt, Qwen3CompositionConversionError> {
     let bytes = read_bounded_regular_file(
         path,
@@ -969,6 +972,12 @@ fn component_receipt(
             "composition-component-receipt-invalid",
         ));
     }
+    let observed_identity = ReceiptIdentity::from_bytes(&bytes);
+    if observed_identity != expected_identity {
+        return Err(Qwen3CompositionConversionError::new(
+            "composition-component-receipt-invalid",
+        ));
+    }
     let file = path
         .file_name()
         .and_then(|value| value.to_str())
@@ -978,8 +987,8 @@ fn component_receipt(
         .to_owned();
     Ok(ComponentReceipt {
         file,
-        byte_length: bytes.len() as u64,
-        sha256: sha256_bytes(&bytes),
+        byte_length: observed_identity.byte_length(),
+        sha256: observed_identity.sha256_hex(),
     })
 }
 
@@ -1527,6 +1536,32 @@ mod tests {
             relationship.tokenizer_lock_sha256,
             "1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70"
         );
+    }
+
+    #[test]
+    fn component_receipt_must_match_the_exact_producer_identity() {
+        let root = test_root("component-receipt-identity");
+        fs::create_dir(&root).expect("root");
+        let path = root.join("component-receipt.json");
+        let original = b"{\"schema\":\"receipt.test\",\"status\":\"pass\",\"value\":1}\n";
+        let changed = b"{\"schema\":\"receipt.test\",\"status\":\"pass\",\"value\":2}\n";
+        fs::write(&path, original).expect("write original receipt");
+        let identity = ReceiptIdentity::from_bytes(original);
+
+        let accepted = component_receipt(&path, "receipt.test", identity).expect("receipt");
+        assert_eq!(accepted.byte_length, identity.byte_length());
+        assert_eq!(accepted.sha256, identity.sha256_hex());
+
+        fs::write(&path, changed).expect("replace receipt bytes");
+        assert_eq!(
+            component_receipt(&path, "receipt.test", identity)
+                .err()
+                .expect("changed receipt bytes must fail")
+                .code(),
+            "composition-component-receipt-invalid"
+        );
+
+        fs::remove_dir_all(&root).expect("cleanup");
     }
 
     #[test]

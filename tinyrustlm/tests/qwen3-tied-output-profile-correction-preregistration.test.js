@@ -172,6 +172,45 @@ test("binds the sole composition to the corrected producer and receipt", () => {
   assert.equal(composition.modelReceiptContract.requiresTiedOutputEqualityProof, true);
 });
 
+test("all executable owners contain only the registered current identities", () => {
+  const owners = {
+    model: read("rust/crates/tinyrustlm-convert/src/qwen3.rs").toString("utf8"),
+    composition: read("rust/crates/tinyrustlm-convert/src/qwen3_composition.rs")
+      .toString("utf8"),
+    managed: read("dotnet/src/TinyRustLM.Conversion/TinyRustLmConversionTool.cs")
+      .toString("utf8"),
+    fixture: read("dotnet/tools/TinyRustLM.ConversionFixtureTool/Program.cs")
+      .toString("utf8")
+  };
+  assert.match(owners.model, /qwen3-safetensors-to-slm2-mixed-q8\/2/u);
+  assert.match(owners.model, /fa2ce18f38129a6b106000d7802d1ea3995921e2b945ae5e52457908f548e7cf/u);
+  assert.match(owners.model, /qwen3-safetensors-conversion-profile\.v2\.json/u);
+  assert.doesNotMatch(
+    owners.model,
+    /qwen3-safetensors-to-slm2-mixed-q8\/1|313069152daa70a2c2b5070f9d1350379a5800f647d5c3ac8d23a75ff9ead968|qwen3-safetensors-conversion-profile\.v1\.json/u
+  );
+  for (const [name, owner] of Object.entries({
+    composition: owners.composition,
+    managed: owners.managed,
+    fixture: owners.fixture
+  })) {
+    assert.match(owner, /qwen3-complete-composition-conversion\/3/u, name);
+    assert.match(
+      owner,
+      /c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0/u,
+      name
+    );
+    assert.doesNotMatch(
+      owner,
+      /qwen3-complete-composition-conversion\/[12]|d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718/u,
+      name
+    );
+  }
+  assert.match(owners.composition, /qwen3-composition-conversion-profile\.v3\.json/u);
+  assert.match(owners.composition, /tinyrustlm\.qwen3_conversion_receipt\.v2/u);
+  assert.doesNotMatch(owners.composition, /tinyrustlm\.qwen3_conversion_receipt\.v1/u);
+});
+
 test("retains the prelaunch no-legacy and no-claim boundary", () => {
   for (const profile of [source, composition]) {
     const text = JSON.stringify(profile);

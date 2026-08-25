@@ -1,5 +1,11 @@
 # Qwen3 Composition Source-Relationship Correction Implementation
 
+Historical status: this records the completed `/2` relationship correction.
+Profile `/2` was later invalidated because its model producer rejected the
+locked source's exact redundant tied output. The sole current implementation is
+documented in `docs/architecture/qwen3-slm2-converter-implementation.md`; no
+`/2` executable support remains.
+
 ## Result
 
 The complete Qwen3 composition transaction now consumes only technical profile

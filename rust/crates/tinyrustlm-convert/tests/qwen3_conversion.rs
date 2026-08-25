@@ -94,6 +94,13 @@ impl SourceDtype {
             Self::F32 => "F32",
         }
     }
+
+    const fn other(self) -> Self {
+        match self {
+            Self::Bf16 => Self::F32,
+            Self::F32 => Self::Bf16,
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -101,9 +108,14 @@ enum FixtureMutation {
     None,
     ExtraTensor,
     MissingTensor,
+    MissingTiedOutput,
     DuplicateTensor,
     WrongShape,
     MixedDtype,
+    TiedDtypeMismatch,
+    TiedShapeMismatch,
+    TiedLengthMismatch,
+    TiedPayloadMismatch,
     UnsupportedDtype,
     Nonfinite,
     Gap,
@@ -251,6 +263,7 @@ fn write_source_files(source: &Path, dtype: SourceDtype, mutation: FixtureMutati
     write_safetensors(source.join("model.safetensors"), dtype, mutation);
 }
 
+#[derive(Clone)]
 struct TensorFixture {
     shape: Vec<u64>,
     dtype_label: String,
@@ -267,6 +280,8 @@ fn write_safetensors(path: PathBuf, dtype: SourceDtype, mutation: FixtureMutatio
         let name = source_name(spec.semantic_role(), spec.layer());
         tensors.insert(name, tensor_fixture(spec.shape(), dtype, index, false));
     }
+    let embedding = tensors["model.embed_tokens.weight"].clone();
+    tensors.insert("lm_head.weight".to_owned(), embedding);
 
     match mutation {
         FixtureMutation::ExtraTensor => {
@@ -276,19 +291,45 @@ fn write_safetensors(path: PathBuf, dtype: SourceDtype, mutation: FixtureMutatio
             );
         }
         FixtureMutation::MissingTensor => {
-            let first = tensors.keys().next().cloned().unwrap();
-            tensors.remove(&first);
+            tensors.remove("model.norm.weight");
+        }
+        FixtureMutation::MissingTiedOutput => {
+            tensors.remove("lm_head.weight");
         }
         FixtureMutation::WrongShape => {
-            let first = tensors.keys().next().cloned().unwrap();
-            let mut shape = tensors[&first].shape.clone();
+            let name = "model.norm.weight";
+            let mut shape = tensors[name].shape.clone();
             shape[0] += 1;
-            tensors.insert(first, tensor_fixture(&shape, dtype, 0, false));
+            tensors.insert(name.to_owned(), tensor_fixture(&shape, dtype, 0, false));
         }
         FixtureMutation::MixedDtype => {
-            let first = tensors.keys().next().cloned().unwrap();
-            let shape = tensors[&first].shape.clone();
-            tensors.insert(first, tensor_fixture(&shape, SourceDtype::F32, 0, false));
+            let name = "model.norm.weight";
+            let shape = tensors[name].shape.clone();
+            tensors.insert(
+                name.to_owned(),
+                tensor_fixture(&shape, dtype.other(), 0, false),
+            );
+        }
+        FixtureMutation::TiedDtypeMismatch => {
+            let shape = tensors["lm_head.weight"].shape.clone();
+            tensors.insert(
+                "lm_head.weight".to_owned(),
+                tensor_fixture(&shape, dtype.other(), 0, false),
+            );
+        }
+        FixtureMutation::TiedShapeMismatch => {
+            let mut shape = tensors["lm_head.weight"].shape.clone();
+            shape[0] += 1;
+            tensors.insert(
+                "lm_head.weight".to_owned(),
+                tensor_fixture(&shape, dtype, 0, false),
+            );
+        }
+        FixtureMutation::TiedLengthMismatch => {
+            tensors.get_mut("lm_head.weight").unwrap().bytes.pop();
+        }
+        FixtureMutation::TiedPayloadMismatch => {
+            tensors.get_mut("lm_head.weight").unwrap().bytes[0] ^= 1;
         }
         FixtureMutation::UnsupportedDtype => {
             for tensor in tensors.values_mut() {
@@ -296,9 +337,9 @@ fn write_safetensors(path: PathBuf, dtype: SourceDtype, mutation: FixtureMutatio
             }
         }
         FixtureMutation::Nonfinite => {
-            let first = tensors.keys().next().cloned().unwrap();
-            let shape = tensors[&first].shape.clone();
-            tensors.insert(first, tensor_fixture(&shape, dtype, 0, true));
+            let name = "model.norm.weight";
+            let shape = tensors[name].shape.clone();
+            tensors.insert(name.to_owned(), tensor_fixture(&shape, dtype, 0, true));
         }
         FixtureMutation::None
         | FixtureMutation::DuplicateTensor
@@ -469,15 +510,27 @@ fn assert_no_complete_output(fixture: &Fixture) {
         .exists());
 }
 
+fn assert_no_output_path_was_created(fixture: &Fixture) {
+    assert_no_complete_output(fixture);
+    assert!(!fixture
+        .output
+        .with_file_name(".fixture.slm2.staging")
+        .exists());
+    assert!(!fixture
+        .output
+        .with_file_name(".fixture.slm2.conversion-receipt.json.staging")
+        .exists());
+}
+
 #[test]
 fn bf16_conversion_is_deterministic_mixed_q8_and_receipt_bound() {
     assert_eq!(
         QWEN3_CONVERSION_PROFILE_ID,
-        "tinyrustlm.qwen3-safetensors-to-slm2-mixed-q8/1"
+        "tinyrustlm.qwen3-safetensors-to-slm2-mixed-q8/2"
     );
     assert_eq!(
         QWEN3_CONVERSION_PROFILE_SHA256,
-        "313069152daa70a2c2b5070f9d1350379a5800f647d5c3ac8d23a75ff9ead968"
+        "fa2ce18f38129a6b106000d7802d1ea3995921e2b945ae5e52457908f548e7cf"
     );
     let fixture = Fixture::new(SourceDtype::Bf16, FixtureMutation::None);
     let first = fixture.convert().unwrap();
@@ -531,9 +584,12 @@ fn bf16_conversion_is_deterministic_mixed_q8_and_receipt_bound() {
     }
 
     let receipt_bytes = fs::read(first.receipt_path()).unwrap();
+    let receipt_identity = first.receipt_identity();
+    assert_eq!(receipt_identity.byte_length(), receipt_bytes.len() as u64);
+    assert_eq!(receipt_identity.sha256_hex(), sha256_bytes(&receipt_bytes));
     assert_eq!(receipt_bytes.last(), Some(&b'\n'));
     let receipt: Value = serde_json::from_slice(&receipt_bytes).unwrap();
-    assert_eq!(receipt["schema"], "tinyrustlm.qwen3_conversion_receipt.v1");
+    assert_eq!(receipt["schema"], "tinyrustlm.qwen3_conversion_receipt.v2");
     assert_eq!(receipt["status"], "pass");
     assert_eq!(receipt["converterProfileId"], QWEN3_CONVERSION_PROFILE_ID);
     assert_eq!(
@@ -543,14 +599,48 @@ fn bf16_conversion_is_deterministic_mixed_q8_and_receipt_bound() {
     assert_eq!(receipt["source"]["lockSha256"], sha256(&fixture.lock));
     assert_eq!(receipt["source"]["files"].as_object().unwrap().len(), 9);
     assert_eq!(receipt["source"]["sourceDtype"], "BF16");
-    assert_eq!(receipt["source"]["tensorCount"], 24);
+    assert_eq!(receipt["source"]["physicalTensorCount"], 25);
+    assert_eq!(receipt["source"]["logicalTensorCount"], 24);
+    assert!(receipt["source"].get("tensorCount").is_none());
+    assert!(receipt["source"].get("parameterCount").is_none());
+    assert!(receipt["source"].get("tensorInventorySha256").is_none());
     assert_eq!(
-        receipt["source"]["tensorInventorySha256"]
+        receipt["source"]["physicalParameterCount"]
+            .as_u64()
+            .unwrap(),
+        receipt["source"]["logicalParameterCount"].as_u64().unwrap() + 256
+    );
+    assert_eq!(
+        receipt["source"]["physicalTensorInventorySha256"]
             .as_str()
             .unwrap()
             .len(),
         64
     );
+    assert_eq!(
+        receipt["source"]["logicalTensorInventorySha256"]
+            .as_str()
+            .unwrap()
+            .len(),
+        64
+    );
+    let tied_output = &receipt["source"]["tiedOutput"];
+    assert_eq!(
+        tied_output["canonicalEmbeddingSourceTensor"],
+        "model.embed_tokens.weight"
+    );
+    assert_eq!(tied_output["redundantOutputSourceTensor"], "lm_head.weight");
+    assert_eq!(tied_output["sourceDtype"], "BF16");
+    assert_eq!(tied_output["shape"], json!([32, 8]));
+    assert_eq!(tied_output["elementCountEach"], 256);
+    assert_eq!(tied_output["byteLengthEach"], 512);
+    assert_eq!(
+        tied_output["canonicalEmbeddingSha256"],
+        tied_output["redundantOutputSha256"]
+    );
+    assert_eq!(tied_output["payloadsByteIdentical"], true);
+    assert_eq!(tied_output["comparisonBufferBytes"], 1_048_576);
+    assert_eq!(tied_output["logicalEmissionCount"], 1);
     assert_eq!(receipt["model"]["formatProfileId"], SLM2_FORMAT_PROFILE_ID);
     assert_eq!(
         receipt["model"]["formatProfileSha256"],
@@ -607,6 +697,14 @@ fn f32_source_converts_without_an_alternate_output_profile() {
     let result = fixture.convert().unwrap();
     let receipt: Value = serde_json::from_slice(&fs::read(result.receipt_path()).unwrap()).unwrap();
     assert_eq!(receipt["source"]["sourceDtype"], "F32");
+    assert_eq!(receipt["source"]["physicalTensorCount"], 25);
+    assert_eq!(receipt["source"]["logicalTensorCount"], 24);
+    assert_eq!(receipt["source"]["tiedOutput"]["sourceDtype"], "F32");
+    assert_eq!(receipt["source"]["tiedOutput"]["byteLengthEach"], 1024);
+    assert_eq!(
+        receipt["source"]["tiedOutput"]["canonicalEmbeddingSha256"],
+        receipt["source"]["tiedOutput"]["redundantOutputSha256"]
+    );
     assert_eq!(
         receipt["model"]["weightProfileId"],
         SLM2_Q8_WEIGHT_PROFILE_ID
@@ -725,6 +823,51 @@ fn tensor_inventory_and_shapes_are_exact() {
         );
         assert_no_complete_output(&fixture);
     }
+}
+
+#[test]
+fn tied_output_is_required_and_must_match_before_output_creation() {
+    for (mutation, expected) in [
+        (
+            FixtureMutation::MissingTiedOutput,
+            "qwen3-tied-output-required",
+        ),
+        (
+            FixtureMutation::TiedDtypeMismatch,
+            "qwen3-tied-output-dtype-mismatch",
+        ),
+        (
+            FixtureMutation::TiedShapeMismatch,
+            "qwen3-tied-output-shape-mismatch",
+        ),
+        (
+            FixtureMutation::TiedLengthMismatch,
+            "qwen3-tied-output-length-mismatch",
+        ),
+        (
+            FixtureMutation::TiedPayloadMismatch,
+            "qwen3-tied-output-payload-mismatch",
+        ),
+    ] {
+        let fixture = Fixture::new(SourceDtype::Bf16, mutation);
+        assert_eq!(
+            fixture.convert().unwrap_err().code(),
+            expected,
+            "{mutation:?}"
+        );
+        assert_no_output_path_was_created(&fixture);
+    }
+}
+
+#[test]
+fn untied_configuration_is_rejected_before_output_creation() {
+    let fixture = Fixture::new(SourceDtype::Bf16, FixtureMutation::None);
+    mutate_config(&fixture, "tie_word_embeddings", json!(false));
+    assert_eq!(
+        fixture.convert().unwrap_err().code(),
+        "qwen3-config-semantics-unsupported"
+    );
+    assert_no_output_path_was_created(&fixture);
 }
 
 #[test]
