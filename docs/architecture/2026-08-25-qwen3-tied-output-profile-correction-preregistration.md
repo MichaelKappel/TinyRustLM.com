@@ -1,8 +1,11 @@
 # Qwen3 Tied-Output Profile Correction Preregistration
 
-Date: 2026-08-25  
-Status: registered before implementation and before any new conversion output  
-Registration parent: `b4545da32dd19a435aacab6f1792cd890a6e6f5e`  
+Date: 2026-08-25
+
+Status: registered before implementation and before any new conversion output
+
+Registration parent: `b4545da32dd19a435aacab6f1792cd890a6e6f5e`
+
 Registration parent tree: `e94eced3b125b83b33e6e58cc61478dfbe2d6b40`
 
 ## Decision
