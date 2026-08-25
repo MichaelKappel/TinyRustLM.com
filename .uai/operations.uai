@@ -1,5 +1,13 @@
-profile: runtime-mirust.operations.v153
-updated_utc: 2026-08-25T20:23:53Z
+profile: runtime-mirust.operations.v154
+updated_utc: 2026-08-25T21:30:11Z
+qwen3_execution_v8_terminal_managed_build_failure_2026_08_25:
+  state: registration_commit=2a0e175daee7bd2810eab74f5daeeb0c7eda0aa3; registration_tree=37fc4adb26bc8c40229a81a038dcc1b9021014f0; registration_remote_exact=true; registered_names=15; created_names=12; absent_names=3; environment_invocations=1; rust_custody_invocations=1; rust_custody_status=pass; managed_custody_invocations=1; managed_child_exit=1; managed_custody_status=terminal-build-failure; retry=false; root_cause_established=false
+  identities: registration_profile=61969,4a7e255c500ef87e3ddac4d7befb7331232167e7bcf47aae6cdabfbd752fec21; result=16999,9caa23225dfa2b0e01f4bfd550c0a4cf178d4d7db2f301159f0e2b040dd94f40; test=16151,95ddfc8bedd4cbb1e2066967ba846fd18059c92a30ff3574791ba6ccf72938ca; architecture=11841,9fe5b89b362f33545b1071d94cba0d8518c15ef7ee27071e9061bea3f5738498
+  rust_outputs: scratch_inspector=240128,b038227799d03f322eb1b7ce55abe662b5ed1d481e37e282b186ecd545315c5c; converter=852992,c90d963752f92c7de10866d071a9086334d5b80160de8815a508df2ff0a8d48c; custody_qualified=true; adopt_into_later_execution=false
+  managed_failure: terminal_code=build-custody-child-nonzero; bounded_class=dotnet-assets-lock-read-failure; diagnostic=NETSDK1060; exception_parameter=path1; required_outputs=0; scratch_inspection_invocations=0; raw_evidence_preserved=true
+  worktree_side_effect: relative=NuGet/Migrations/1; bytes=0; sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; git_tracked=false; quarantined_outside_git=true; causal=false
+  next: validate+commit+push+fresh-verify immutable closure; then general isolated managed-build TDD and a sole clean contract correction; full clean gate; separate output-free `/9` registration with wholly new absent names
+  claims: environment_materialization=true; rust_custody_build=true; managed_build_attempt=true; managed_build_qualified=false; conversion=false; slm2=false; parity=false; browser=false; quality=false; p2p=false; publication=false; deployment=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
 managed_custody_scratch_inspector_staging_clean_gate_2026_08_25:
   state: implementation_complete=true; committed=true; pushed=true; remote_exact=true; implementation_commit=fe4c78c0eb8c82f79377791bf7262687d21a2993; implementation_tree=e4ddd18e2e034a0ef9b17674ace61f61548cfffd; clean_gate=pass; evidence_checkpoint_pending=true; execution_v8_registered=false; private_v8_names_created=0
   identities: project=dotnet/tools/TinyRustLM.CompositionInspector/TinyRustLM.CompositionInspector.csproj,1415,f34b58e31473913aaf8f2fd99b1220cf6af94c6c8f943db0a853da8f35b3eddc; test=tinyrustlm/tests/qwen3-managed-custody-scratch-inspector-staging.test.js,4538,ad1e280ccdcac51bc1af12fe54affc108703caba1cce4a4cd7c8e24cc429cda7; architecture=8808,79e9761a9400d9d9d4d5d13923b31b2abeccae82b7e6f5f388a51cee80c59060

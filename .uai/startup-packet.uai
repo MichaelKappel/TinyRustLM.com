@@ -1,5 +1,12 @@
-profile: runtime-mirust.startup-packet.v120
-updated_utc: 2026-08-25T20:23:53Z
+profile: runtime-mirust.startup-packet.v121
+updated_utc: 2026-08-25T21:30:11Z
+current_qwen3_execution_v8_terminal_managed_build_failure_2026_08_25:
+  first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/qwen3-real-composition-execution-result.v8.json`, and `docs/architecture/2026-08-25-qwen3-real-composition-execution-v8-managed-build-failure.md` before further model work.
+  active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  active_branch: codex/model-acquisition-v2
+  checkpoint: registration=`2a0e175daee7bd2810eab74f5daeeb0c7eda0aa3`/tree=`37fc4adb26bc8c40229a81a038dcc1b9021014f0`; result=16999/`9caa23225dfa2b0e01f4bfd550c0a4cf178d4d7db2f301159f0e2b040dd94f40`; environment=pass-once; rust-custody=pass-once; managed-custody=terminal-child-exit-1-once; root-cause-established=false; names=12-created/3-absent; worktree-marker=0/`e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`,privately-quarantined
+  immediate_operation: Validate and commit/push/fresh-fetch this immutable result/UAI checkpoint. Then create a generic isolated managed-build regression, identify the first causal divergence without rerunning `/8`, eliminate ambient mutable restore/package/worktree dependence, cleanly replace the sole contract if needed, pass the complete clean gate, and separately preregister output-free `/9` with wholly new absent names.
+  truth_boundary: `/8` is terminal and non-repeatable. It proves one qualified Rust custody build and one failed managed custody attempt only. It proves no managed output, conversion, SLM2, parity, native inference, browser chat, quality, P2P, publication, deployment, MemoryEndpoints operation, or campaign credit; counters remain zero.
 current_managed_custody_scratch_inspector_staging_clean_gate_2026_08_25:
   first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, and `docs/architecture/2026-08-25-qwen3-managed-custody-scratch-inspector-staging.md` before `/8` work.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819

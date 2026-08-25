@@ -491,6 +491,31 @@ runtime, browser, quality, P2P, publication, MemoryEndpoints, or campaign
 evidence. See
 `docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration-v8.md`.
 
+`qwen3-real-composition-execution-result.v8.json` closes execution `/8` as an
+immutable managed-build failure. It is 16,999 canonical ASCII/LF bytes at
+SHA-256
+`9caa23225dfa2b0e01f4bfd550c0a4cf178d4d7db2f301159f0e2b040dd94f40`.
+The exact environment materialization and Rust custody `/3` operation passed,
+qualifying one x64 scratch inspector and one x64 converter. The one managed
+custody child exited `1` with bounded .NET assets-lock diagnostic class
+`NETSDK1060`; it qualified no managed output and invoked no scratch inspector.
+The diagnostic does not establish whether restore state, the minimal child
+environment, project configuration, the SDK, or another boundary is causal.
+Root cause therefore remains explicitly unproven.
+
+The managed child also created one untracked zero-byte
+`NuGet/Migrations/1` marker inside the source worktree. Its bounded identity
+is retained in the result and its exact bytes are quarantined outside Git.
+That side effect is neither source nor evidence of a causal diagnosis.
+
+All 12 created private names and raw evidence remain preserved outside Git.
+The composition request, controller evidence root, and composition output root
+remain absent. `/8` cannot be retried, resumed, cleaned, repaired, adopted, or
+reinterpreted. A later attempt requires a general isolated regression, a
+root-cause correction, a clean replacement contract when needed, a new
+registration, and wholly new names. See
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-v8-managed-build-failure.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2

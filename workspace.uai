@@ -1,7 +1,16 @@
-profile: tinyrustlm.source-workspace.v423
+profile: tinyrustlm.source-workspace.v424
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-25T20:23:53Z
+updated_utc: 2026-08-25T21:30:11Z
+
+current_checkpoint_2026_08_25_qwen3_execution_v8_terminal_managed_build_failure:
+  registration: Output-free execution `/8` profile 61,969 bytes/SHA256 `4a7e255c500ef87e3ddac4d7befb7331232167e7bcf47aae6cdabfbd752fec21` is remote-exact at commit `2a0e175daee7bd2810eab74f5daeeb0c7eda0aa3`, tree `37fc4adb26bc8c40229a81a038dcc1b9021014f0`. All 15 registered names were absent before materialization. The exact source did not change during the one registered execution.
+  execution: The exact MSVC environment authority materialized once and passed. Rust custody `/3` ran once, exited zero, passed junction-aware scratch inspection, and qualified one 240,128-byte x64 scratch inspector plus one 852,992-byte x64 converter. Managed custody `/3` ran once, exited one, and terminally failed with `build-custody-child-nonzero`; no managed output, target inventory, scratch-inspector invocation, composition request, controller, converter launch, SLM2 output, or verification followed.
+  result: Canonical public result `contracts/vnext/qwen3-real-composition-execution-result.v8.json` is 16,999 bytes/SHA256 `9caa23225dfa2b0e01f4bfd550c0a4cf178d4d7db2f301159f0e2b040dd94f40`; its dedicated test is 16,151 bytes/SHA256 `95ddfc8bedd4cbb1e2066967ba846fd18059c92a30ff3574791ba6ccf72938ca`; architecture is 11,841 bytes/SHA256 `9fe5b89b362f33545b1071d94cba0d8518c15ef7ee27071e9061bea3f5738498`. The bounded diagnostic is `NETSDK1060` assets-lock read failure with exception parameter `path1`; root cause is explicitly unproven.
+  worktree_side_effect: During the managed child interval, .NET created untracked zero-byte `NuGet/Migrations/1`, SHA256 `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`. It is preserved in private quarantine outside Git, must never enter source control, and proves a side effect rather than a causal diagnosis.
+  closure: Exactly 12 of 15 registered names exist. The composition request, controller evidence root, and composition output root remain absent. Preserve all `/8` requests, roots, streams, terminals, binaries, and observations; never retry, resume, clean, overwrite, adopt, relabel, or create the three absent `/8` names.
+  exact_resume: First commit, push, fresh-fetch, and prove this immutable result/UAI checkpoint exact. Then reproduce the isolated managed assets failure through general TDD outside `/8`, distinguish immutable restore closure from missing child-environment state one variable at a time, eliminate source-worktree and ambient mutable package/`obj` dependence, and cleanly replace the sole managed build contract if defective. Run the complete clean gate before a separate output-free `/9` registration with wholly new absent names. No compatibility reader, alternate mode, fallback, retry, repair, ad hoc output adoption, or weakened test is allowed.
+  claim_boundary: `/8` proves one registered environment materialization, one qualified Rust custody build, and one terminal managed custody failure only. It proves no qualified managed build, conversion, SLM2 artifact, parity, native inference, browser chat, model quality, P2P, publication, deployment, MemoryEndpoints operation, or campaign credit. Counters remain exactly 0/20, 0/50, 0/25, 0/40, and 0/20.
 
 prelaunch_product_boundary:
   product: TinyRustLM is one unversioned prelaunch product; product V1 and product V2 do not exist.
