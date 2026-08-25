@@ -1,0 +1,282 @@
+{
+  "schema": "tinyrustlm.companion-loopback-capability-preregistration.v3",
+  "profileId": "tinyrustlm.companion.loopback-capability/3",
+  "status": "registered-after-preserved-kestrel-http-semantics-failure-before-corrected-listener-output",
+  "registeredAtUtc": "2026-08-25T01:46:46Z",
+  "registrationParentCommit": "667ec300f195a36fd80ce5e88a7b37ce678fe4bd",
+  "registrationParentTree": "a64526224134050f92f009c970cc22de311ef354",
+  "authority": {
+    "workspace": "sole-authorized-recovered-model-acquisition-worktree",
+    "branch": "codex/model-acquisition-v2",
+    "frozenGoalSha256": "92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0",
+    "productPhase": "prelaunch-single-product-clean-slate",
+    "legacySupportAllowed": false,
+    "compatibilityReaderAllowed": false,
+    "migrationAllowed": false,
+    "aliasAllowed": false,
+    "fallbackAllowed": false,
+    "responseRepairAllowed": false,
+    "fakeSuccessAllowed": false,
+    "memoryEndpointsAuthorized": false
+  },
+  "supersededRegistrations": [
+    {
+      "profileId": "tinyrustlm.companion.loopback-capability/1",
+      "path": "contracts/vnext/companion-loopback-capability-preregistration.v1.json",
+      "byteLength": 39311,
+      "sha256": "81e3f2f3795a51c0bce86e1aca66f6a7234608a3dd044cd7a9b1cbbf90c9ba77",
+      "retainedAsHistoricalEvidence": true,
+      "runtimeReaderRetained": false
+    },
+    {
+      "profileId": "tinyrustlm.companion.loopback-capability/2",
+      "path": "contracts/vnext/companion-loopback-capability-preregistration.v2.json",
+      "byteLength": 22681,
+      "sha256": "6ad07dda97ae50d8e6c3fc1a581e6742d2e18c66484a4a9864e1b3bc7a57ae81",
+      "retainedAsHistoricalEvidence": true,
+      "runtimeReaderRetained": false
+    }
+  ],
+  "baseProfileAdoption": {
+    "mode": "exact-content-addressed-design-input-not-runtime-profile-inheritance",
+    "v1AdoptedThroughV2": true,
+    "v2AdoptedExceptReplacementPointers": true,
+    "replacementPointers": [
+      "/preflightWire/contentLength",
+      "/preflightWire/responseHeaders/Content-Length",
+      "/httpErrorMap/applicationAndParserOwnership",
+      "/corsAndLocalNetwork/exposedResponseHeaders"
+    ],
+    "allOtherV1AndV2FieldsRemainRequired": true,
+    "resolutionRule": "use-the-v1-and-v2-composite-except-the-four-exact-replacement-pointers-then-require-every-v3-additive-section",
+    "runtimeReadsAnyRegistration": false,
+    "compatibilityReaderCreated": false,
+    "migrationCreated": false
+  },
+  "registeredSourceClosure": [
+    {
+      "path": "contracts/vnext/companion-loopback-capability-preregistration.v1.json",
+      "byteLength": 39311,
+      "sha256": "81e3f2f3795a51c0bce86e1aca66f6a7234608a3dd044cd7a9b1cbbf90c9ba77"
+    },
+    {
+      "path": "contracts/vnext/companion-loopback-capability-preregistration.v2.json",
+      "byteLength": 22681,
+      "sha256": "6ad07dda97ae50d8e6c3fc1a581e6742d2e18c66484a4a9864e1b3bc7a57ae81"
+    },
+    {
+      "path": "docs/architecture/2026-08-24-companion-loopback-capability-preregistration.md",
+      "byteLength": 23557,
+      "sha256": "0c6708baec6f1cdbf401b2da5d4fa35372acaf126389c04f36384b3f6d4bc242"
+    },
+    {
+      "path": "docs/architecture/2026-08-24-companion-loopback-capability-corrected-preregistration.md",
+      "byteLength": 13411,
+      "sha256": "b574af05032bd52f7b37ffc831e1661eb9625e88afcf629f7e24ffc648be28f4"
+    },
+    {
+      "path": "tinyrustlm/tests/companion-loopback-capability-preregistration.test.js",
+      "byteLength": 13951,
+      "sha256": "bc4983202dbb2cf492de9fec580834aa0076e6f1ad0f370f76a1b1f1c909668f"
+    },
+    {
+      "path": "tinyrustlm/tests/companion-loopback-capability-corrected-preregistration.test.js",
+      "byteLength": 11700,
+      "sha256": "4abad6362ddac7bee0f6cce0e0d8558c5c50b39258211bf191c19bc21f9e4f47"
+    }
+  ],
+  "preservedFailureObservation": {
+    "observedAtUtc": "2026-08-25T01:43:00Z",
+    "scope": "first-six-real-tcp-listener-tests",
+    "total": 6,
+    "passed": 5,
+    "failed": 1,
+    "skipped": 0,
+    "failedTest": "PreflightIsExactAndDoesNotConsumePairingAuthority",
+    "expectedByV2": "204-response-with-content-length-zero-header",
+    "observed": "kestrel-emitted-204-with-zero-body-and-omitted-content-length-header",
+    "externalPublicSafeLogByteLength": 6582,
+    "externalPublicSafeLogSha256": "fe861068499002c76d634ce0e436b1972ed83e57d298377d0681682a200972c7",
+    "logStoredInGit": false,
+    "listenerAccepted": false,
+    "testWeakened": false,
+    "failureOverwritten": false,
+    "campaignProgressCreated": false
+  },
+  "preflightWire": {
+    "status": 204,
+    "bodyBytes": 0,
+    "contentLengthHeaderPresent": false,
+    "contentTypeHeaderPresent": false,
+    "responseHeaders": {
+      "Access-Control-Allow-Origin": "https://tinyrustlm.com",
+      "Access-Control-Allow-Methods": "exact-requested-registered-method",
+      "Access-Control-Allow-Headers": "lowercase-sorted-exact-requested-allowed-header-set",
+      "Access-Control-Max-Age": "300",
+      "Vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "Cache-Control": "no-store",
+      "Pragma": "no-cache",
+      "X-Content-Type-Options": "nosniff",
+      "Connection": "close"
+    },
+    "allowCredentialsHeaderPresent": false,
+    "privateNetworkAccessHeaderPresent": false,
+    "sessionProofHeaderPresent": false,
+    "stateMutation": false,
+    "standardsReason": "rfc9110-section-8.6-forbids-content-length-in-204-response",
+    "kestrelBehavior": "framework-removes-content-length-from-204-response",
+    "browserAcceptance": "status-headers-and-zero-body-not-content-length-header"
+  },
+  "httpRejectionOwnership": {
+    "applicationOwned": {
+      "canonicalErrorBodyRequired": true,
+      "stableCodeRequired": true,
+      "statusMap": "exact-v2-httpErrorMap",
+      "validSessionErrorResponseProofRequired": true,
+      "unprovedErrorTrustedByBrowser": false
+    },
+    "kestrelParserOwned": {
+      "occursBeforeApplicationDispatch": true,
+      "canonicalApplicationErrorBodyRequired": false,
+      "corsHeadersRequired": false,
+      "sessionProofHeadersRequired": false,
+      "stateMutationAllowed": false,
+      "connectionCloseRequired": true,
+      "serverHeaderAllowed": false,
+      "rawInputReflectionAllowed": false,
+      "browserMapsTo": "companion-unavailable",
+      "classes": [
+        {
+          "class": "malformed-request-line-or-http1-framing",
+          "admittedStatus": 400
+        },
+        {
+          "class": "request-line-over-kestrel-limit",
+          "admittedStatus": 414
+        },
+        {
+          "class": "request-header-count-or-byte-limit",
+          "admittedStatus": 431
+        },
+        {
+          "class": "kestrel-global-request-body-limit",
+          "admittedStatus": 413
+        }
+      ]
+    },
+    "ownershipTestRule": "assert-exact-canonical-wire-for-application-owned-errors-and-assert-status-class-no-dispatch-no-state-no-proof-no-server-for-parser-owned-errors",
+    "parserResponseMaySatisfyCampaignEvidence": false
+  },
+  "corsExposedResponseHeaders": [
+    "content-length",
+    "content-type",
+    "x-tinyrustlm-session",
+    "x-tinyrustlm-epoch",
+    "x-tinyrustlm-sequence",
+    "x-tinyrustlm-content-sha256",
+    "x-tinyrustlm-response-metadata-sha256",
+    "x-tinyrustlm-response-proof",
+    "x-tinyrustlm-artifact-role",
+    "x-tinyrustlm-artifact-id",
+    "x-tinyrustlm-artifact-sha256",
+    "x-tinyrustlm-artifact-bytes",
+    "x-tinyrustlm-chunk-index",
+    "x-tinyrustlm-chunk-count",
+    "x-tinyrustlm-chunk-offset",
+    "x-tinyrustlm-chunk-bytes"
+  ],
+  "corsExposureReason": {
+    "responseMetadataHashWasRequiredByV2ButMissingFromV1ExposureList": true,
+    "artifactIdWasRequiredByV2ButMissingFromV1ExposureList": true,
+    "browserMustReadBothToVerifyArtifactMetadata": true,
+    "wildcardExposureAllowed": false,
+    "credentialsExposureAllowed": false
+  },
+  "implementationClosure": {
+    "newPathsAbsentAtRegistrationParent": [
+      "contracts/vnext/companion-loopback-capability-preregistration.v3.json",
+      "docs/architecture/2026-08-24-companion-loopback-http-semantics-correction-preregistration.md",
+      "tinyrustlm/tests/companion-loopback-capability-http-semantics-preregistration.test.js",
+      "dotnet/src/TinyRustLM.Companion/CompanionLoopbackServer.cs",
+      "dotnet/tools/TinyRustLM.CompanionHost/Program.cs",
+      "dotnet/tools/TinyRustLM.CompanionHost/TinyRustLM.CompanionHost.csproj",
+      "dotnet/tests/TinyRustLM.Companion.Tests/CompanionLoopbackServerTests.cs",
+      "tinyrustlm/app/companion-capability.js",
+      "tinyrustlm/tests/companion-capability.test.js"
+    ],
+    "modifiedPaths": [
+      "dotnet/src/TinyRustLM.Companion/CompanionCapabilityState.cs",
+      "dotnet/src/TinyRustLM.Companion/CompanionLoopbackWire.cs",
+      "dotnet/src/TinyRustLM.Companion/TinyRustLM.Companion.csproj",
+      "dotnet/tests/TinyRustLM.Companion.Tests/TinyRustLM.Companion.Tests.csproj",
+      "dotnet/TinyRustLM.sln",
+      "docs/architecture/adr/ADR-004-companion-transport.md",
+      "docs/companion/README.md"
+    ],
+    "deleteOnlyAtCompleteBrowserCutover": [
+      "tinyrustlm/app/companion-bridge.js",
+      "tinyrustlm/tests/companion-bridge.test.js"
+    ],
+    "fixedPortRetained": false,
+    "healthProbeRetained": false,
+    "bearerHeaderRetained": false,
+    "compatibilityAdapterRetained": false
+  },
+  "requiredTests": [
+    "preflight-204-omits-content-length-and-content-type",
+    "preflight-body-is-zero-bytes",
+    "preflight-headers-are-exact-and-state-free",
+    "normal-control-response-has-exact-content-length",
+    "application-owned-error-is-canonical-bounded-and-mapped",
+    "valid-session-application-error-is-response-proven",
+    "invalid-session-error-has-no-response-proof",
+    "kestrel-malformed-framing-rejects-before-dispatch",
+    "kestrel-request-line-limit-rejects-with-414-before-dispatch",
+    "kestrel-header-count-limit-rejects-with-431-before-dispatch",
+    "kestrel-header-byte-limit-rejects-with-431-before-dispatch",
+    "kestrel-global-body-limit-rejects-with-413-before-dispatch",
+    "parser-owned-rejection-has-no-server-header",
+    "parser-owned-rejection-has-no-session-proof",
+    "parser-owned-rejection-mutates-no-pairing-or-session-state",
+    "cors-exposes-response-metadata-sha256",
+    "cors-exposes-artifact-id",
+    "cors-does-not-expose-wildcard-or-credentials",
+    "real-tcp-pairing-session-rotation-replay-and-revocation-pass",
+    "campaign-counters-remain-zero"
+  ],
+  "primaryStandards": [
+    {
+      "title": "RFC 9110 HTTP Semantics Section 8.6 Content-Length",
+      "url": "https://www.rfc-editor.org/rfc/rfc9110.html#section-8.6",
+      "retrievedAtUtc": "2026-08-25T01:46:46Z",
+      "use": "204-responses-must-not-generate-content-length"
+    },
+    {
+      "title": "ASP.NET Core 8 Kestrel options",
+      "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/options?view=aspnetcore-8.0",
+      "retrievedAtUtc": "2026-08-25T01:46:46Z",
+      "use": "parser-and-resource-limit-ownership"
+    },
+    {
+      "title": "Fetch Standard CORS protocol and credentials",
+      "url": "https://fetch.spec.whatwg.org/#http-new-header-syntax",
+      "retrievedAtUtc": "2026-08-25T01:46:46Z",
+      "use": "explicit-readable-response-header-exposure"
+    }
+  ],
+  "registrationOutputBoundary": {
+    "registrationIsCorrectedListenerOutput": false,
+    "registrationIsBrowserProof": false,
+    "registrationIsModelEvidence": false,
+    "registrationIsDeploymentEvidence": false,
+    "registrationIsCampaignProgress": false,
+    "preservedFailureIsPassEvidence": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}
