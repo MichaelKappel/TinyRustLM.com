@@ -1,5 +1,12 @@
-profile: runtime-mirust.operations.v129
-updated_utc: 2026-08-25T05:25:55Z
+profile: runtime-mirust.operations.v130
+updated_utc: 2026-08-25T05:50:50Z
+qwen3_source_lock_and_composition_relationship_checkpoint_2026_08_25:
+  source: base_lock_commit=13a90b4dc07db2fc4c27b53f00ad9b9e69be8fae; correction_registration=a7de8ececa877ab50c30e980fcf554c660068435; implementation=255f2641269ca08e1d169713091c12b075e061f9; branch=codex/model-acquisition-v2; implementation_remote_exact=true
+  base_lock: path=contracts/vnext/qwen3-0.6b-base-source-lock.v1.json; bytes=1901; sha256=e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d; model=Qwen/Qwen3-0.6B; revision=c1899de289a04d12100db370d81485cdf75e47ca; files=9; aggregate_bytes=1519207688
+  correction: rejected_profile=tinyrustlm.qwen3-complete-composition-conversion/1; rejected_before_real_output=true; executable_profile=tinyrustlm.qwen3-complete-composition-conversion/2; profile_bytes=8835; profile_sha256=d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718; relationship=model-id-and-revision-equal+exact-distinct-profiles+five-shared-records-equal
+  checks: rust=29/29; clippy=pass; managed_release=85/85; affected_node=123/123; focused_correction=23/23; rustfmt_diff_ascii_nul_frozen_goal=pass
+  claims: real_conversion=false; runtime=false; browser=false; quality=false; p2p=false; publication=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
+  next_operation: Commit/push/fresh-fetch this UAI checkpoint; create and remote-verify one output-free zero-retry conversion-execution registration; only then build, hash, and invoke the exact release converter once without rerunning accepted Tokenizer2 or Template2 observations.
 tinyrustlm_web_release_0_3_0_checkpoint_2026_08_24:
   source: tested_commit=dca8a3a2107d8f6992291a59ae3eb1f319b332f4; finalized_commit=5058012d2fbdfcf16edb75677d85e462b3962945; branch=codex/model-acquisition-v2; local_tracking_fetch_exact=true
   gate: standard=1202/0/1-of-1203; duration_ms=359617.8745; release_run=d0f4fedab50db55b427a514f3242dab4bb0fabb80e524d8b397dc0d474bf2ce4; shards=10/10; release_tests=23/23; aggregate_bytes=3995; aggregate_sha256=b0fa4b267bdb8a406e4ccb4525e82e6c6423b4bd186c75ae64f8460890f1eb78; log_bytes=203584; log_sha256=677f504b9783ff6d76b2d623c0db2a4a6700b4909a8a4a5488f63bc6347f292c
