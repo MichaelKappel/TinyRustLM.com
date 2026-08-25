@@ -61,12 +61,12 @@ test("retired text and script handoffs cannot return to the chooser", () => {
   assert.doesNotMatch(html, /Share Metadata|share metadata|share-metadata/);
 });
 
-test("the browser routes companion acquisition to a truthful unavailable release", () => {
+test("the browser routes companion acquisition to a truthful pending release", () => {
   assert.match(html, /id="companionPackageLink"[^>]+href="\/companion\/"/);
   assert.match(html, /id="companionPackageLink"[^>]+target="_blank"[^>]+rel="noopener noreferrer"/);
   assert.match(companionPage, /sole TinyRustLM companion is being rebuilt around SLM2/);
-  assert.match(companionPage, /id="companionPackageStatus"[^>]*>Companion unavailable/);
-  assert.match(companionPage, /id="companionDeploymentStatus"[^>]*>Release gate open/);
+  assert.match(companionPage, /id="companionPackageStatus"[^>]*>Public package pending/);
+  assert.match(companionPage, /id="companionDeploymentStatus"[^>]*>Deployment blocked/);
   assert.doesNotMatch(companionPage, /www\.nuget\.org\/packages\//);
   assert.doesNotMatch(companionPage, /dotnet\s+(?:add\s+package|tool\s+install)/i);
   assert.match(
