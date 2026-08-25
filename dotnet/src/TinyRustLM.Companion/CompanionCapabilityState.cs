@@ -9,6 +9,7 @@ public sealed class CompanionCapabilityState : IDisposable
     public const int MaximumActiveSessions = 4;
     public const uint InitialKeyEpoch = 1;
     public const uint IdleTimeoutSeconds = 900;
+    internal const int MaximumSessionRecordsPerProcess = 4_096;
 
     private static readonly TimeSpan PairingCodeLifetime = TimeSpan.FromSeconds(300);
     private static readonly TimeSpan PendingPairingLifetime = TimeSpan.FromSeconds(30);
@@ -16,6 +17,8 @@ public sealed class CompanionCapabilityState : IDisposable
     private static readonly TimeSpan SessionAbsoluteLifetime = TimeSpan.FromSeconds(28_800);
     private static readonly TimeSpan SessionIdleLifetime = TimeSpan.FromSeconds(900);
     private static readonly TimeSpan KeyEpochLifetime = TimeSpan.FromSeconds(900);
+    private static readonly TimeSpan PendingRotationLifetime = TimeSpan.FromSeconds(120);
+    private static readonly TimeSpan RotationReplayLifetime = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan RateWindow = TimeSpan.FromMinutes(1);
     private static readonly TimeSpan TerminalSessionRetention = TimeSpan.FromMinutes(1);
 
@@ -25,6 +28,7 @@ public sealed class CompanionCapabilityState : IDisposable
     private readonly string _host;
     private readonly TimeProvider _timeProvider;
     private readonly ICompanionCryptographicRandom _random;
+    private readonly int _maximumSessionRecords;
     private readonly Dictionary<string, PendingPairing> _pending = new(StringComparer.Ordinal);
     private readonly Dictionary<string, PairingClaimTombstone> _claimTombstones =
         new(StringComparer.Ordinal);
@@ -55,6 +59,23 @@ public sealed class CompanionCapabilityState : IDisposable
         ushort port,
         TimeProvider timeProvider,
         ICompanionCryptographicRandom random)
+        : this(
+            installationId,
+            processInstanceId,
+            port,
+            timeProvider,
+            random,
+            MaximumSessionRecordsPerProcess)
+    {
+    }
+
+    internal CompanionCapabilityState(
+        string installationId,
+        string processInstanceId,
+        ushort port,
+        TimeProvider timeProvider,
+        ICompanionCryptographicRandom random,
+        int maximumSessionRecords)
     {
         CompanionLoopbackProtocol.RequireHexIdentifier(
             installationId,
@@ -68,11 +89,16 @@ public sealed class CompanionCapabilityState : IDisposable
         {
             throw new CompanionProtocolException("host-invalid");
         }
+        if (maximumSessionRecords < MaximumActiveSessions)
+        {
+            throw new ArgumentOutOfRangeException(nameof(maximumSessionRecords));
+        }
         _installationId = installationId;
         _processInstanceId = processInstanceId;
         _host = $"127.0.0.1:{port.ToString(CultureInfo.InvariantCulture)}";
         _timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
         _random = random ?? throw new ArgumentNullException(nameof(random));
+        _maximumSessionRecords = maximumSessionRecords;
     }
 
     public int PendingPairingCount
@@ -239,6 +265,10 @@ public sealed class CompanionCapabilityState : IDisposable
                 {
                     throw new CompanionProtocolException("pairing-capacity");
                 }
+                if (_sessions.Count >= _maximumSessionRecords)
+                {
+                    throw new CompanionProtocolException("resource-limit");
+                }
                 if (_sessions.ContainsKey(pending.Context.SessionId))
                 {
                     throw new CompanionProtocolException("pairing-claim-conflict");
@@ -266,7 +296,8 @@ public sealed class CompanionCapabilityState : IDisposable
                         pending.Context.SessionId,
                         sessionKey,
                         now,
-                        _timeProvider.GetUtcNow()));
+                        pending.Context.SessionExpiresAtUtc,
+                        FormatTimestamp(_timeProvider.GetUtcNow() + KeyEpochLifetime)));
                 keyTransferred = true;
                 foreach (var claimId in _pending.Keys)
                 {
@@ -321,8 +352,23 @@ public sealed class CompanionCapabilityState : IDisposable
             {
                 throw new CompanionProtocolException(session.TerminalCode);
             }
+            PruneRotation(session, now);
             if (context.KeyEpoch != session.KeyEpoch)
             {
+                if (context.KeyEpoch < session.KeyEpoch)
+                {
+                    var replay = session.RotationReplay;
+                    if (replay is not null && replay.Matches(request))
+                    {
+                        session.RequestRate.Take(_timeProvider, now, "resource-limit");
+                        return CompanionSessionLease.CreateRotationReplay(
+                            this,
+                            session,
+                            request,
+                            replay);
+                    }
+                    throw new CompanionProtocolException("capability-revoked");
+                }
                 throw new CompanionProtocolException("capability-invalid");
             }
 
@@ -359,10 +405,247 @@ public sealed class CompanionCapabilityState : IDisposable
             return new CompanionSessionLease(
                 this,
                 session,
-                context,
+                request,
                 key,
                 session.AcceptedSequence,
-                session.AcceptedSequence + 1);
+                session.AcceptedSequence < 1_000_000
+                    ? session.AcceptedSequence + 1
+                    : null,
+                rotationReplay: null,
+                ownsReservation: true);
+        }
+    }
+
+    internal CompanionRotationChallenge BeginRotation(
+        SessionState session,
+        CompanionRequestProofContext authenticationContext,
+        CompanionRotationBegin request)
+    {
+        var requestBytes = CompanionLoopbackWire.EncodeRotationBegin(request);
+        RequireAuthenticatedBody(
+            authenticationContext,
+            requestBytes,
+            "/tinyrustlm-companion/1/session/rotation/begin");
+        var requestSha256 = CompanionLoopbackProtocol.Sha256Hex(requestBytes);
+        lock (_gate)
+        {
+            RequireCurrentLease(session, authenticationContext);
+            var now = _timeProvider.GetTimestamp();
+            PruneRotation(session, now);
+            if (session.ExpiredRotation is { } expired &&
+                string.Equals(expired.RotationId, request.RotationId, StringComparison.Ordinal))
+            {
+                throw new CompanionProtocolException("rotation-expired");
+            }
+            if (session.PendingRotation is { } pending)
+            {
+                if (string.Equals(pending.RequestSha256, requestSha256, StringComparison.Ordinal))
+                {
+                    return pending.Challenge;
+                }
+                throw new CompanionProtocolException("rotation-conflict");
+            }
+            if (session.KeyEpoch >= 64)
+            {
+                throw new CompanionProtocolException("capability-expired");
+            }
+
+            var serverNonce = CompanionLoopbackProtocol.EncodeBase64Url(RandomBytes(32));
+            var challenge = new CompanionRotationChallenge(
+                CompanionLoopbackWire.RotationChallengeSchema,
+                request.RotationId,
+                request.BrowserNonce,
+                serverNonce,
+                session.KeyEpoch,
+                session.KeyEpoch + 1,
+                FormatTimestamp(_timeProvider.GetUtcNow() + PendingRotationLifetime));
+            _ = CompanionLoopbackWire.EncodeRotationChallenge(challenge);
+            var proofContext = RotationContext(session.SessionId, challenge);
+            session.PendingRotation = new PendingRotation(
+                requestSha256,
+                proofContext,
+                challenge,
+                now);
+            return challenge;
+        }
+    }
+
+    internal CompanionSessionStatus SessionStatus(
+        SessionState session,
+        CompanionRequestProofContext authenticationContext)
+    {
+        if (authenticationContext.Method != "GET" ||
+            authenticationContext.Path != "/tinyrustlm-companion/1/session" ||
+            authenticationContext.ContentLength != 0 ||
+            authenticationContext.ContentType.Length != 0 ||
+            authenticationContext.ContentSha256 != CompanionLoopbackProtocol.EmptySha256)
+        {
+            throw new CompanionProtocolException("contract-invalid");
+        }
+        lock (_gate)
+        {
+            RequireCurrentLease(session, authenticationContext);
+            var status = new CompanionSessionStatus(
+                CompanionLoopbackWire.SessionStatusSchema,
+                CompanionLoopbackProtocol.ProtocolId,
+                _installationId,
+                _processInstanceId,
+                session.SessionId,
+                session.KeyEpoch,
+                session.AcceptedSequence,
+                session.AcceptedSequence < 1_000_000
+                    ? session.AcceptedSequence + 1
+                    : null,
+                session.SessionExpiresAtUtc,
+                session.KeyExpiresAtUtc,
+                IdleTimeoutSeconds);
+            _ = CompanionLoopbackWire.EncodeSessionStatus(status);
+            return status;
+        }
+    }
+
+    internal CompanionProvenResponse CommitRotation(
+        SessionState session,
+        CompanionSessionAuthenticationRequest authentication,
+        CompanionRotationCommit request)
+    {
+        var requestBytes = CompanionLoopbackWire.EncodeRotationCommit(request);
+        RequireAuthenticatedBody(
+            authentication.Context,
+            requestBytes,
+            "/tinyrustlm-companion/1/session/rotation/commit");
+        var requestSha256 = CompanionLoopbackProtocol.Sha256Hex(requestBytes);
+        lock (_gate)
+        {
+            RequireCurrentLease(session, authentication.Context);
+            var now = _timeProvider.GetTimestamp();
+            PruneRotation(session, now);
+            if (session.ExpiredRotation is { } expired &&
+                string.Equals(expired.RotationId, request.RotationId, StringComparison.Ordinal))
+            {
+                throw new CompanionProtocolException("rotation-expired");
+            }
+            var pending = session.PendingRotation ??
+                throw new CompanionProtocolException("rotation-conflict");
+            if (!string.Equals(request.RotationId, pending.Context.RotationId, StringComparison.Ordinal) ||
+                !string.Equals(request.BrowserNonce, pending.Context.BrowserNonce, StringComparison.Ordinal) ||
+                !string.Equals(request.ServerNonce, pending.Context.ServerNonce, StringComparison.Ordinal) ||
+                request.CurrentEpoch != pending.Context.CurrentEpoch ||
+                request.NextEpoch != pending.Context.NextEpoch)
+            {
+                throw new CompanionProtocolException("rotation-conflict");
+            }
+
+            var newKey = CompanionLoopbackProtocol.DeriveRotatedSessionKey(
+                session.Key,
+                pending.Context);
+            var keyTransferred = false;
+            try
+            {
+                if (!CompanionLoopbackProtocol.VerifyRotationNewKeyProof(
+                        newKey,
+                        pending.Context,
+                        request.NewKeyProof))
+                {
+                    throw new CompanionProtocolException("rotation-proof-invalid");
+                }
+                var keyExpiresAtUtc = FormatTimestamp(
+                    _timeProvider.GetUtcNow() + KeyEpochLifetime);
+                var committed = new CompanionRotationCommitted(
+                    CompanionLoopbackWire.RotationCommittedSchema,
+                    request.RotationId,
+                    request.NextEpoch,
+                    keyExpiresAtUtc,
+                    CompanionLoopbackProtocol.ComputeRotationCompletionProof(
+                        newKey,
+                        pending.Context,
+                        requestSha256));
+                var responseBytes = CompanionLoopbackWire.EncodeRotationCommitted(committed);
+                var proven = ProveResponse(
+                    newKey,
+                    authentication.Context,
+                    200,
+                    "application/json",
+                    responseBytes,
+                    CompanionLoopbackProtocol.EmptySha256);
+                var replay = new RotationCommitReplay(
+                    authentication,
+                    requestSha256,
+                    proven.Copy(),
+                    now);
+
+                session.CommitRotation(
+                    newKey,
+                    request.NextEpoch,
+                    now,
+                    keyExpiresAtUtc,
+                    replay);
+                keyTransferred = true;
+                return proven;
+            }
+            finally
+            {
+                if (!keyTransferred)
+                {
+                    CryptographicOperations.ZeroMemory(newKey);
+                }
+            }
+        }
+    }
+
+    internal CompanionProvenResponse ReplayRotationCommit(
+        SessionState session,
+        CompanionRequestProofContext authenticationContext,
+        RotationCommitReplay replay,
+        CompanionRotationCommit request)
+    {
+        var requestBytes = CompanionLoopbackWire.EncodeRotationCommit(request);
+        RequireAuthenticatedBody(
+            authenticationContext,
+            requestBytes,
+            "/tinyrustlm-companion/1/session/rotation/commit");
+        var requestSha256 = CompanionLoopbackProtocol.Sha256Hex(requestBytes);
+        lock (_gate)
+        {
+            var now = _timeProvider.GetTimestamp();
+            PruneRotation(session, now);
+            if (!ReferenceEquals(session.RotationReplay, replay) ||
+                !string.Equals(replay.RequestSha256, requestSha256, StringComparison.Ordinal))
+            {
+                throw new CompanionProtocolException("capability-revoked");
+            }
+            return replay.Response.Copy();
+        }
+    }
+
+    internal CompanionProvenResponse Revoke(
+        SessionState session,
+        CompanionRequestProofContext authenticationContext,
+        ReadOnlySpan<byte> responseKey,
+        CompanionRevokeRequest request)
+    {
+        var requestBytes = CompanionLoopbackWire.EncodeRevokeRequest(request);
+        RequireAuthenticatedBody(
+            authenticationContext,
+            requestBytes,
+            "/tinyrustlm-companion/1/session/revoke");
+        lock (_gate)
+        {
+            RequireCurrentLease(session, authenticationContext);
+            var revoked = new CompanionRevokedResponse(
+                CompanionLoopbackWire.RevokedResponseSchema,
+                request.RevocationId,
+                true);
+            var responseBytes = CompanionLoopbackWire.EncodeRevokedResponse(revoked);
+            var proven = ProveResponse(
+                responseKey,
+                authenticationContext,
+                200,
+                "application/json",
+                responseBytes,
+                CompanionLoopbackProtocol.EmptySha256);
+            session.Terminate("capability-revoked", _timeProvider.GetTimestamp());
+            return proven;
         }
     }
 
@@ -451,6 +734,7 @@ public sealed class CompanionCapabilityState : IDisposable
             {
                 continue;
             }
+            PruneRotation(session, now);
             if (Elapsed(session.CreatedTimestamp, now) >= SessionAbsoluteLifetime)
             {
                 session.Terminate("capability-expired", now);
@@ -465,13 +749,110 @@ public sealed class CompanionCapabilityState : IDisposable
             }
         }
         foreach (var pair in _sessions
-                     .Where(pair => pair.Value.TerminalTimestamp is long terminal &&
+                     .Where(pair => pair.Value.TerminalCode != "capability-revoked" &&
+                         pair.Value.TerminalTimestamp is long terminal &&
                          Elapsed(terminal, now) >= TerminalSessionRetention)
                      .ToArray())
         {
             pair.Value.EraseKey();
             _sessions.Remove(pair.Key);
         }
+    }
+
+    private void PruneRotation(SessionState session, long now)
+    {
+        if (session.PendingRotation is { } pending &&
+            Elapsed(pending.CreatedTimestamp, now) >= PendingRotationLifetime)
+        {
+            session.ExpiredRotation = new ExpiredRotation(
+                pending.Context.RotationId,
+                now);
+            session.PendingRotation = null;
+        }
+        if (session.ExpiredRotation is { } expired &&
+            Elapsed(expired.CreatedTimestamp, now) >= PairingReplayLifetime)
+        {
+            session.ExpiredRotation = null;
+        }
+        if (session.RotationReplay is { } replay &&
+            Elapsed(replay.CreatedTimestamp, now) >= RotationReplayLifetime)
+        {
+            session.RotationReplay = null;
+        }
+    }
+
+    private void RequireCurrentLease(
+        SessionState session,
+        CompanionRequestProofContext authenticationContext)
+    {
+        RequireNotDisposed();
+        if (!_sessions.TryGetValue(session.SessionId, out var current) ||
+            !ReferenceEquals(current, session) ||
+            session.TerminalCode is not null ||
+            !session.InFlight ||
+            authenticationContext.SessionId != session.SessionId ||
+            authenticationContext.KeyEpoch != session.KeyEpoch)
+        {
+            throw new CompanionProtocolException("capability-invalid");
+        }
+    }
+
+    private static void RequireAuthenticatedBody(
+        CompanionRequestProofContext authenticationContext,
+        ReadOnlySpan<byte> body,
+        string path)
+    {
+        if (authenticationContext.Method != "POST" ||
+            authenticationContext.Path != path ||
+            authenticationContext.ContentType != "application/json" ||
+            authenticationContext.ContentLength != checked((ulong)body.Length) ||
+            authenticationContext.ContentSha256 != CompanionLoopbackProtocol.Sha256Hex(body))
+        {
+            throw new CompanionProtocolException("contract-invalid");
+        }
+    }
+
+    private CompanionRotationProofContext RotationContext(
+        string sessionId,
+        CompanionRotationChallenge challenge) =>
+        new(
+            _installationId,
+            _processInstanceId,
+            sessionId,
+            challenge.RotationId,
+            challenge.BrowserNonce,
+            challenge.ServerNonce,
+            challenge.CurrentEpoch,
+            challenge.NextEpoch,
+            _host,
+            CompanionLoopbackProtocol.ProductionOrigin);
+
+    private static CompanionProvenResponse ProveResponse(
+        ReadOnlySpan<byte> key,
+        CompanionRequestProofContext request,
+        int status,
+        string contentType,
+        ReadOnlySpan<byte> body,
+        string responseMetadataSha256)
+    {
+        var bodyBytes = body.ToArray();
+        var context = new CompanionResponseProofContext(
+            request.InstallationId,
+            request.ProcessInstanceId,
+            request.SessionId,
+            request.KeyEpoch,
+            request.Sequence,
+            request.Method,
+            request.Path,
+            status,
+            contentType,
+            checked((ulong)bodyBytes.Length),
+            responseMetadataSha256,
+            CompanionLoopbackProtocol.Sha256Hex(bodyBytes));
+        return new CompanionProvenResponse(
+            bodyBytes,
+            context,
+            CompanionLoopbackProtocol.ComputeResponseProof(key, context));
     }
 
     private void InvalidateCurrentPairing(long now, string code)
@@ -574,12 +955,14 @@ public sealed class CompanionCapabilityState : IDisposable
         string sessionId,
         byte[] key,
         long createdTimestamp,
-        DateTimeOffset createdAtUtc)
+        string sessionExpiresAtUtc,
+        string keyExpiresAtUtc)
     {
         internal string SessionId { get; } = sessionId;
-        internal byte[] Key { get; } = key;
+        internal byte[] Key { get; private set; } = key;
         internal long CreatedTimestamp { get; } = createdTimestamp;
-        internal DateTimeOffset CreatedAtUtc { get; } = createdAtUtc;
+        internal string SessionExpiresAtUtc { get; } = sessionExpiresAtUtc;
+        internal string KeyExpiresAtUtc { get; private set; } = keyExpiresAtUtc;
         internal long LastActivityTimestamp { get; set; } = createdTimestamp;
         internal long KeyEpochTimestamp { get; set; } = createdTimestamp;
         internal uint KeyEpoch { get; set; } = InitialKeyEpoch;
@@ -588,6 +971,28 @@ public sealed class CompanionCapabilityState : IDisposable
         internal SlidingWindowCounter RequestRate { get; } = new(600);
         internal string? TerminalCode { get; private set; }
         internal long? TerminalTimestamp { get; private set; }
+        internal PendingRotation? PendingRotation { get; set; }
+        internal ExpiredRotation? ExpiredRotation { get; set; }
+        internal RotationCommitReplay? RotationReplay { get; set; }
+
+        internal void CommitRotation(
+            byte[] newKey,
+            uint nextEpoch,
+            long timestamp,
+            string keyExpiresAtUtc,
+            RotationCommitReplay replay)
+        {
+            CryptographicOperations.ZeroMemory(Key);
+            Key = newKey;
+            KeyEpoch = nextEpoch;
+            KeyEpochTimestamp = timestamp;
+            LastActivityTimestamp = timestamp;
+            KeyExpiresAtUtc = keyExpiresAtUtc;
+            AcceptedSequence = 0;
+            PendingRotation = null;
+            ExpiredRotation = null;
+            RotationReplay = replay;
+        }
 
         internal void Terminate(string code, long timestamp)
         {
@@ -601,6 +1006,50 @@ public sealed class CompanionCapabilityState : IDisposable
         }
 
         internal void EraseKey() => CryptographicOperations.ZeroMemory(Key);
+    }
+
+    internal sealed record PendingRotation(
+        string RequestSha256,
+        CompanionRotationProofContext Context,
+        CompanionRotationChallenge Challenge,
+        long CreatedTimestamp);
+
+    internal sealed record ExpiredRotation(string RotationId, long CreatedTimestamp);
+
+    internal sealed record RotationCommitReplay(
+        CompanionSessionAuthenticationRequest Authentication,
+        string RequestSha256,
+        CompanionProvenResponse Response,
+        long CreatedTimestamp)
+    {
+        internal bool Matches(CompanionSessionAuthenticationRequest candidate) =>
+            Equals(Authentication.Context, candidate.Context) &&
+            FixedTimeProofEquals(Authentication.Proof, candidate.Proof);
+
+        private static bool FixedTimeProofEquals(string expected, string actual)
+        {
+            byte[] expectedBytes = [];
+            byte[] actualBytes = [];
+            try
+            {
+                expectedBytes = CompanionLoopbackProtocol.DecodeBase64Url32(
+                    expected,
+                    "rotation-replay-proof");
+                actualBytes = CompanionLoopbackProtocol.DecodeBase64Url32(
+                    actual,
+                    "rotation-replay-proof");
+                return CryptographicOperations.FixedTimeEquals(expectedBytes, actualBytes);
+            }
+            catch (CompanionProtocolException)
+            {
+                return false;
+            }
+            finally
+            {
+                CryptographicOperations.ZeroMemory(expectedBytes);
+                CryptographicOperations.ZeroMemory(actualBytes);
+            }
+        }
     }
 
     internal sealed class SlidingWindowCounter(int limit)
@@ -640,29 +1089,104 @@ public sealed class CompanionSessionLease : IDisposable
 {
     private readonly CompanionCapabilityState _owner;
     private readonly CompanionCapabilityState.SessionState _session;
-    private readonly CompanionRequestProofContext _requestContext;
+    private readonly CompanionSessionAuthenticationRequest _authentication;
     private readonly byte[] _key;
-    private int _finished;
+    private readonly CompanionCapabilityState.RotationCommitReplay? _rotationReplay;
+    private readonly bool _ownsReservation;
+    private readonly object _leaseGate = new();
+    private int _state;
+    private bool _disposeRequested;
 
     internal CompanionSessionLease(
         CompanionCapabilityState owner,
         CompanionCapabilityState.SessionState session,
-        CompanionRequestProofContext requestContext,
+        CompanionSessionAuthenticationRequest authentication,
         byte[] key,
         ulong acceptedSequence,
-        ulong nextSequence)
+        ulong? nextSequence,
+        CompanionCapabilityState.RotationCommitReplay? rotationReplay,
+        bool ownsReservation)
     {
         _owner = owner;
         _session = session;
-        _requestContext = requestContext;
+        _authentication = authentication;
         _key = key;
+        _rotationReplay = rotationReplay;
+        _ownsReservation = ownsReservation;
         AcceptedSequence = acceptedSequence;
         NextSequence = nextSequence;
     }
 
+    internal static CompanionSessionLease CreateRotationReplay(
+        CompanionCapabilityState owner,
+        CompanionCapabilityState.SessionState session,
+        CompanionSessionAuthenticationRequest authentication,
+        CompanionCapabilityState.RotationCommitReplay replay) =>
+        new(
+            owner,
+            session,
+            authentication,
+            [],
+            authentication.Context.Sequence,
+            null,
+            replay,
+            ownsReservation: false);
+
     public ulong AcceptedSequence { get; }
 
-    public ulong NextSequence { get; }
+    public ulong? NextSequence { get; }
+
+    public CompanionProvenResponse MaterializeSessionStatus() =>
+        ExecuteAuthenticated(
+            () => CompanionLoopbackWire.EncodeSessionStatus(
+                _owner.SessionStatus(_session, _authentication.Context)),
+            responseKey: _key);
+
+    public CompanionProvenResponse BeginRotationAndMaterializeResponse(
+        CompanionRotationBegin request) =>
+        ExecuteAuthenticated(
+            () => CompanionLoopbackWire.EncodeRotationChallenge(
+                _owner.BeginRotation(_session, _authentication.Context, request)),
+            responseKey: _key);
+
+    public CompanionProvenResponse CommitRotationAndMaterializeResponse(
+        CompanionRotationCommit request) =>
+        ExecuteSpecial(
+            () => _owner.CommitRotation(_session, _authentication, request));
+
+    public CompanionProvenResponse ReplayRotationCommit(
+        CompanionRotationCommit request)
+    {
+        if (_rotationReplay is null)
+        {
+            throw new CompanionProtocolException("capability-invalid");
+        }
+        Enter();
+        try
+        {
+            var response = _owner.ReplayRotationCommit(
+                _session,
+                _authentication.Context,
+                _rotationReplay,
+                request);
+            CompleteOperation();
+            return response;
+        }
+        catch
+        {
+            CompleteOperation();
+            throw;
+        }
+    }
+
+    public CompanionProvenResponse RevokeAndMaterializeResponse(
+        CompanionRevokeRequest request) =>
+        ExecuteSpecial(
+            () => _owner.Revoke(
+                _session,
+                _authentication.Context,
+                _key,
+                request));
 
     public CompanionProvenResponse MaterializeResponse(
         int status,
@@ -670,47 +1194,180 @@ public sealed class CompanionSessionLease : IDisposable
         ReadOnlySpan<byte> body,
         string responseMetadataSha256)
     {
-        if (Interlocked.Exchange(ref _finished, 1) != 0)
-        {
-            throw new CompanionProtocolException("session-response-already-materialized");
-        }
+        EnsureNormalLease();
+        Enter();
         try
         {
-            var bodyBytes = body.ToArray();
-            var context = new CompanionResponseProofContext(
-                _requestContext.InstallationId,
-                _requestContext.ProcessInstanceId,
-                _requestContext.SessionId,
-                _requestContext.KeyEpoch,
-                _requestContext.Sequence,
-                _requestContext.Method,
-                _requestContext.Path,
+            var response = Prove(
+                _key,
                 status,
                 contentType,
-                checked((ulong)bodyBytes.Length),
-                responseMetadataSha256,
-                CompanionLoopbackProtocol.Sha256Hex(bodyBytes));
-            var proof = CompanionLoopbackProtocol.ComputeResponseProof(_key, context);
-            return new CompanionProvenResponse(bodyBytes, context, proof);
+                body,
+                responseMetadataSha256);
+            CompleteOperation();
+            return response;
         }
-        finally
+        catch
         {
-            Finish();
+            Reopen();
+            throw;
         }
     }
 
     public void Dispose()
     {
-        if (Interlocked.Exchange(ref _finished, 1) == 0)
+        var finish = false;
+        lock (_leaseGate)
+        {
+            if (_state == 0)
+            {
+                _state = 2;
+                finish = true;
+            }
+            else if (_state == 1)
+            {
+                _disposeRequested = true;
+            }
+        }
+        if (finish)
         {
             Finish();
         }
     }
 
+    private CompanionProvenResponse ExecuteAuthenticated(
+        Func<byte[]> createBody,
+        ReadOnlySpan<byte> responseKey)
+    {
+        EnsureNormalLease();
+        Enter();
+        try
+        {
+            var body = createBody();
+            var response = Prove(
+                responseKey,
+                200,
+                "application/json",
+                body,
+                CompanionLoopbackProtocol.EmptySha256);
+            CompleteOperation();
+            return response;
+        }
+        catch
+        {
+            Reopen();
+            throw;
+        }
+    }
+
+    private CompanionProvenResponse ExecuteSpecial(Func<CompanionProvenResponse> operation)
+    {
+        EnsureNormalLease();
+        Enter();
+        try
+        {
+            var response = operation();
+            CompleteOperation();
+            return response;
+        }
+        catch
+        {
+            Reopen();
+            throw;
+        }
+    }
+
+    private CompanionProvenResponse Prove(
+        ReadOnlySpan<byte> responseKey,
+        int status,
+        string contentType,
+        ReadOnlySpan<byte> body,
+        string responseMetadataSha256)
+    {
+        var bodyBytes = body.ToArray();
+        var requestContext = _authentication.Context;
+        var context = new CompanionResponseProofContext(
+            requestContext.InstallationId,
+            requestContext.ProcessInstanceId,
+            requestContext.SessionId,
+            requestContext.KeyEpoch,
+            requestContext.Sequence,
+            requestContext.Method,
+            requestContext.Path,
+            status,
+            contentType,
+            checked((ulong)bodyBytes.Length),
+            responseMetadataSha256,
+            CompanionLoopbackProtocol.Sha256Hex(bodyBytes));
+        var proof = CompanionLoopbackProtocol.ComputeResponseProof(responseKey, context);
+        return new CompanionProvenResponse(bodyBytes, context, proof);
+    }
+
+    private void EnsureNormalLease()
+    {
+        if (_rotationReplay is not null)
+        {
+            throw new CompanionProtocolException("capability-revoked");
+        }
+    }
+
+    private void Enter()
+    {
+        lock (_leaseGate)
+        {
+            if (_state != 0 || _disposeRequested)
+            {
+                throw new CompanionProtocolException("session-response-already-materialized");
+            }
+            _state = 1;
+        }
+    }
+
+    private void Reopen()
+    {
+        var finish = false;
+        lock (_leaseGate)
+        {
+            if (_state != 1)
+            {
+                throw new InvalidOperationException("The session lease state is inconsistent.");
+            }
+            if (_disposeRequested)
+            {
+                _state = 2;
+                finish = true;
+            }
+            else
+            {
+                _state = 0;
+            }
+        }
+        if (finish)
+        {
+            Finish();
+        }
+    }
+
+    private void CompleteOperation()
+    {
+        lock (_leaseGate)
+        {
+            if (_state != 1)
+            {
+                throw new InvalidOperationException("The session lease state is inconsistent.");
+            }
+            _state = 2;
+        }
+        Finish();
+    }
+
     private void Finish()
     {
         CryptographicOperations.ZeroMemory(_key);
-        _owner.Release(_session);
+        if (_ownsReservation)
+        {
+            _owner.Release(_session);
+        }
     }
 }
 
@@ -733,4 +1390,7 @@ public sealed class CompanionProvenResponse
     public string Proof { get; }
 
     public byte[] CopyBody() => _body.ToArray();
+
+    internal CompanionProvenResponse Copy() =>
+        new(_body.ToArray(), Context, Proof);
 }

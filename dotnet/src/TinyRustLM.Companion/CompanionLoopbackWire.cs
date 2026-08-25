@@ -14,11 +14,32 @@ public static class CompanionLoopbackWire
         "tinyrustlm.companion.loopback.pairing-complete-request.v1";
     public const string PairingCompleteResponseSchema =
         "tinyrustlm.companion.loopback.pairing-complete-response.v1";
+    public const string SessionStatusSchema =
+        "tinyrustlm.companion.loopback.session-status.v1";
+    public const string RotationBeginSchema =
+        "tinyrustlm.companion.loopback.rotation-begin.v1";
+    public const string RotationChallengeSchema =
+        "tinyrustlm.companion.loopback.rotation-challenge.v1";
+    public const string RotationCommitSchema =
+        "tinyrustlm.companion.loopback.rotation-commit.v1";
+    public const string RotationCommittedSchema =
+        "tinyrustlm.companion.loopback.rotation-committed.v1";
+    public const string RevokeRequestSchema =
+        "tinyrustlm.companion.loopback.revoke-request.v1";
+    public const string RevokedResponseSchema =
+        "tinyrustlm.companion.loopback.revoked.v1";
     public const int MaximumInstallationRecordBytes = 4_096;
     public const int MaximumPairingBeginRequestBytes = 2_048;
     public const int MaximumPairingBeginResponseBytes = 4_096;
     public const int MaximumPairingCompleteRequestBytes = 4_096;
     public const int MaximumPairingCompleteResponseBytes = 4_096;
+    public const int MaximumSessionStatusBytes = 4_096;
+    public const int MaximumRotationBeginBytes = 2_048;
+    public const int MaximumRotationChallengeBytes = 4_096;
+    public const int MaximumRotationCommitBytes = 4_096;
+    public const int MaximumRotationCommittedBytes = 4_096;
+    public const int MaximumRevokeRequestBytes = 1_024;
+    public const int MaximumRevokedResponseBytes = 1_024;
 
     private static readonly UTF8Encoding StrictUtf8 = new(
         encoderShouldEmitUTF8Identifier: false,
@@ -290,6 +311,285 @@ public static class CompanionLoopbackWire
         return response;
     }
 
+    public static byte[] EncodeSessionStatus(CompanionSessionStatus status)
+    {
+        ValidateSessionStatus(status);
+        return EncodeNetworkJson(
+            MaximumSessionStatusBytes,
+            writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("schema", status.Schema);
+                writer.WriteString("protocolId", status.ProtocolId);
+                writer.WriteString("installationId", status.InstallationId);
+                writer.WriteString("processInstanceId", status.ProcessInstanceId);
+                writer.WriteString("sessionId", status.SessionId);
+                writer.WriteNumber("keyEpoch", status.KeyEpoch);
+                writer.WriteNumber("acceptedSequence", status.AcceptedSequence);
+                if (status.NextSequence is ulong nextSequence)
+                {
+                    writer.WriteNumber("nextSequence", nextSequence);
+                }
+                else
+                {
+                    writer.WriteNull("nextSequence");
+                }
+                writer.WriteString("sessionExpiresAtUtc", status.SessionExpiresAtUtc);
+                writer.WriteString("keyExpiresAtUtc", status.KeyExpiresAtUtc);
+                writer.WriteNumber("idleTimeoutSeconds", status.IdleTimeoutSeconds);
+                writer.WriteEndObject();
+            });
+    }
+
+    public static CompanionSessionStatus DecodeSessionStatus(ReadOnlySpan<byte> bytes)
+    {
+        var properties = ParseNetworkObject(
+            bytes,
+            MaximumSessionStatusBytes,
+            [
+                "schema",
+                "protocolId",
+                "installationId",
+                "processInstanceId",
+                "sessionId",
+                "keyEpoch",
+                "acceptedSequence",
+                "nextSequence",
+                "sessionExpiresAtUtc",
+                "keyExpiresAtUtc",
+                "idleTimeoutSeconds"
+            ]);
+        var status = new CompanionSessionStatus(
+            RequireString(properties[0]),
+            RequireString(properties[1]),
+            RequireString(properties[2]),
+            RequireString(properties[3]),
+            RequireString(properties[4]),
+            RequireUInt32(properties[5]),
+            RequireUInt64(properties[6]),
+            RequireNullableUInt64(properties[7]),
+            RequireString(properties[8]),
+            RequireString(properties[9]),
+            RequireUInt32(properties[10]));
+        ValidateSessionStatus(status);
+        RequireCanonical(bytes, EncodeSessionStatus(status));
+        return status;
+    }
+
+    public static byte[] EncodeRotationBegin(CompanionRotationBegin request)
+    {
+        ValidateRotationBegin(request);
+        return EncodeNetworkJson(
+            MaximumRotationBeginBytes,
+            writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("schema", request.Schema);
+                writer.WriteString("rotationId", request.RotationId);
+                writer.WriteString("browserNonce", request.BrowserNonce);
+                writer.WriteEndObject();
+            });
+    }
+
+    public static CompanionRotationBegin DecodeRotationBegin(ReadOnlySpan<byte> bytes)
+    {
+        var properties = ParseNetworkObject(
+            bytes,
+            MaximumRotationBeginBytes,
+            ["schema", "rotationId", "browserNonce"]);
+        var request = new CompanionRotationBegin(
+            RequireString(properties[0]),
+            RequireString(properties[1]),
+            RequireString(properties[2]));
+        ValidateRotationBegin(request);
+        RequireCanonical(bytes, EncodeRotationBegin(request));
+        return request;
+    }
+
+    public static byte[] EncodeRotationChallenge(CompanionRotationChallenge response)
+    {
+        ValidateRotationChallenge(response);
+        return EncodeNetworkJson(
+            MaximumRotationChallengeBytes,
+            writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("schema", response.Schema);
+                writer.WriteString("rotationId", response.RotationId);
+                writer.WriteString("browserNonce", response.BrowserNonce);
+                writer.WriteString("serverNonce", response.ServerNonce);
+                writer.WriteNumber("currentEpoch", response.CurrentEpoch);
+                writer.WriteNumber("nextEpoch", response.NextEpoch);
+                writer.WriteString("pendingExpiresAtUtc", response.PendingExpiresAtUtc);
+                writer.WriteEndObject();
+            });
+    }
+
+    public static CompanionRotationChallenge DecodeRotationChallenge(ReadOnlySpan<byte> bytes)
+    {
+        var properties = ParseNetworkObject(
+            bytes,
+            MaximumRotationChallengeBytes,
+            [
+                "schema",
+                "rotationId",
+                "browserNonce",
+                "serverNonce",
+                "currentEpoch",
+                "nextEpoch",
+                "pendingExpiresAtUtc"
+            ]);
+        var response = new CompanionRotationChallenge(
+            RequireString(properties[0]),
+            RequireString(properties[1]),
+            RequireString(properties[2]),
+            RequireString(properties[3]),
+            RequireUInt32(properties[4]),
+            RequireUInt32(properties[5]),
+            RequireString(properties[6]));
+        ValidateRotationChallenge(response);
+        RequireCanonical(bytes, EncodeRotationChallenge(response));
+        return response;
+    }
+
+    public static byte[] EncodeRotationCommit(CompanionRotationCommit request)
+    {
+        ValidateRotationCommit(request);
+        return EncodeNetworkJson(
+            MaximumRotationCommitBytes,
+            writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("schema", request.Schema);
+                writer.WriteString("rotationId", request.RotationId);
+                writer.WriteString("browserNonce", request.BrowserNonce);
+                writer.WriteString("serverNonce", request.ServerNonce);
+                writer.WriteNumber("currentEpoch", request.CurrentEpoch);
+                writer.WriteNumber("nextEpoch", request.NextEpoch);
+                writer.WriteString("newKeyProof", request.NewKeyProof);
+                writer.WriteEndObject();
+            });
+    }
+
+    public static CompanionRotationCommit DecodeRotationCommit(ReadOnlySpan<byte> bytes)
+    {
+        var properties = ParseNetworkObject(
+            bytes,
+            MaximumRotationCommitBytes,
+            [
+                "schema",
+                "rotationId",
+                "browserNonce",
+                "serverNonce",
+                "currentEpoch",
+                "nextEpoch",
+                "newKeyProof"
+            ]);
+        var request = new CompanionRotationCommit(
+            RequireString(properties[0]),
+            RequireString(properties[1]),
+            RequireString(properties[2]),
+            RequireString(properties[3]),
+            RequireUInt32(properties[4]),
+            RequireUInt32(properties[5]),
+            RequireString(properties[6]));
+        ValidateRotationCommit(request);
+        RequireCanonical(bytes, EncodeRotationCommit(request));
+        return request;
+    }
+
+    public static byte[] EncodeRotationCommitted(CompanionRotationCommitted response)
+    {
+        ValidateRotationCommitted(response);
+        return EncodeNetworkJson(
+            MaximumRotationCommittedBytes,
+            writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("schema", response.Schema);
+                writer.WriteString("rotationId", response.RotationId);
+                writer.WriteNumber("keyEpoch", response.KeyEpoch);
+                writer.WriteString("keyExpiresAtUtc", response.KeyExpiresAtUtc);
+                writer.WriteString("completionProof", response.CompletionProof);
+                writer.WriteEndObject();
+            });
+    }
+
+    public static CompanionRotationCommitted DecodeRotationCommitted(ReadOnlySpan<byte> bytes)
+    {
+        var properties = ParseNetworkObject(
+            bytes,
+            MaximumRotationCommittedBytes,
+            ["schema", "rotationId", "keyEpoch", "keyExpiresAtUtc", "completionProof"]);
+        var response = new CompanionRotationCommitted(
+            RequireString(properties[0]),
+            RequireString(properties[1]),
+            RequireUInt32(properties[2]),
+            RequireString(properties[3]),
+            RequireString(properties[4]));
+        ValidateRotationCommitted(response);
+        RequireCanonical(bytes, EncodeRotationCommitted(response));
+        return response;
+    }
+
+    public static byte[] EncodeRevokeRequest(CompanionRevokeRequest request)
+    {
+        ValidateRevokeRequest(request);
+        return EncodeNetworkJson(
+            MaximumRevokeRequestBytes,
+            writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("schema", request.Schema);
+                writer.WriteString("revocationId", request.RevocationId);
+                writer.WriteEndObject();
+            });
+    }
+
+    public static CompanionRevokeRequest DecodeRevokeRequest(ReadOnlySpan<byte> bytes)
+    {
+        var properties = ParseNetworkObject(
+            bytes,
+            MaximumRevokeRequestBytes,
+            ["schema", "revocationId"]);
+        var request = new CompanionRevokeRequest(
+            RequireString(properties[0]),
+            RequireString(properties[1]));
+        ValidateRevokeRequest(request);
+        RequireCanonical(bytes, EncodeRevokeRequest(request));
+        return request;
+    }
+
+    public static byte[] EncodeRevokedResponse(CompanionRevokedResponse response)
+    {
+        ValidateRevokedResponse(response);
+        return EncodeNetworkJson(
+            MaximumRevokedResponseBytes,
+            writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("schema", response.Schema);
+                writer.WriteString("revocationId", response.RevocationId);
+                writer.WriteBoolean("revoked", response.Revoked);
+                writer.WriteEndObject();
+            });
+    }
+
+    public static CompanionRevokedResponse DecodeRevokedResponse(ReadOnlySpan<byte> bytes)
+    {
+        var properties = ParseNetworkObject(
+            bytes,
+            MaximumRevokedResponseBytes,
+            ["schema", "revocationId", "revoked"]);
+        var response = new CompanionRevokedResponse(
+            RequireString(properties[0]),
+            RequireString(properties[1]),
+            RequireBoolean(properties[2]));
+        ValidateRevokedResponse(response);
+        RequireCanonical(bytes, EncodeRevokedResponse(response));
+        return response;
+    }
+
     private static void ValidateInstallationRecord(CompanionInstallationRecord record)
     {
         ArgumentNullException.ThrowIfNull(record);
@@ -385,6 +685,128 @@ public static class CompanionLoopbackWire
         RequireProof(response.CompletionProof, "pairing-completion-proof");
     }
 
+    private static void ValidateSessionStatus(CompanionSessionStatus status)
+    {
+        ArgumentNullException.ThrowIfNull(status);
+        if (status.Schema != SessionStatusSchema ||
+            status.ProtocolId != CompanionLoopbackProtocol.ProtocolId)
+        {
+            throw new CompanionProtocolException("session-status-schema");
+        }
+        CompanionLoopbackProtocol.RequireHexIdentifier(
+            status.InstallationId,
+            16,
+            "session-installation-id");
+        CompanionLoopbackProtocol.RequireHexIdentifier(
+            status.ProcessInstanceId,
+            16,
+            "session-process-id");
+        CompanionLoopbackProtocol.RequireHexIdentifier(status.SessionId, 16, "session-id");
+        var expectedNextSequence = status.AcceptedSequence < 1_000_000
+            ? status.AcceptedSequence + 1
+            : (ulong?)null;
+        if (status.KeyEpoch is 0 or > 64 ||
+            status.AcceptedSequence is 0 or > 1_000_000 ||
+            status.NextSequence != expectedNextSequence ||
+            status.IdleTimeoutSeconds != 900)
+        {
+            throw new CompanionProtocolException("session-status-contract");
+        }
+        CompanionLoopbackProtocol.RequireTimestamp(
+            status.SessionExpiresAtUtc,
+            "session-status-expiry");
+        CompanionLoopbackProtocol.RequireTimestamp(
+            status.KeyExpiresAtUtc,
+            "session-status-key-expiry");
+    }
+
+    private static void ValidateRotationBegin(CompanionRotationBegin request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        if (request.Schema != RotationBeginSchema)
+        {
+            throw new CompanionProtocolException("rotation-begin-schema");
+        }
+        CompanionLoopbackProtocol.RequireHexIdentifier(request.RotationId, 16, "rotation-id");
+        CompanionLoopbackProtocol.RequireNonce(request.BrowserNonce, "rotation-browser-nonce");
+    }
+
+    private static void ValidateRotationChallenge(CompanionRotationChallenge response)
+    {
+        ArgumentNullException.ThrowIfNull(response);
+        if (response.Schema != RotationChallengeSchema)
+        {
+            throw new CompanionProtocolException("rotation-challenge-schema");
+        }
+        CompanionLoopbackProtocol.RequireHexIdentifier(response.RotationId, 16, "rotation-id");
+        CompanionLoopbackProtocol.RequireNonce(response.BrowserNonce, "rotation-browser-nonce");
+        CompanionLoopbackProtocol.RequireNonce(response.ServerNonce, "rotation-server-nonce");
+        RequireEpochPair(response.CurrentEpoch, response.NextEpoch);
+        CompanionLoopbackProtocol.RequireTimestamp(
+            response.PendingExpiresAtUtc,
+            "rotation-pending-expiry");
+    }
+
+    private static void ValidateRotationCommit(CompanionRotationCommit request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        if (request.Schema != RotationCommitSchema)
+        {
+            throw new CompanionProtocolException("rotation-commit-schema");
+        }
+        CompanionLoopbackProtocol.RequireHexIdentifier(request.RotationId, 16, "rotation-id");
+        CompanionLoopbackProtocol.RequireNonce(request.BrowserNonce, "rotation-browser-nonce");
+        CompanionLoopbackProtocol.RequireNonce(request.ServerNonce, "rotation-server-nonce");
+        RequireEpochPair(request.CurrentEpoch, request.NextEpoch);
+        RequireProof(request.NewKeyProof, "rotation-new-key-proof");
+    }
+
+    private static void ValidateRotationCommitted(CompanionRotationCommitted response)
+    {
+        ArgumentNullException.ThrowIfNull(response);
+        if (response.Schema != RotationCommittedSchema)
+        {
+            throw new CompanionProtocolException("rotation-committed-schema");
+        }
+        CompanionLoopbackProtocol.RequireHexIdentifier(response.RotationId, 16, "rotation-id");
+        if (response.KeyEpoch is 0 or > 64)
+        {
+            throw new CompanionProtocolException("rotation-committed-epoch");
+        }
+        CompanionLoopbackProtocol.RequireTimestamp(
+            response.KeyExpiresAtUtc,
+            "rotation-key-expiry");
+        RequireProof(response.CompletionProof, "rotation-completion-proof");
+    }
+
+    private static void ValidateRevokeRequest(CompanionRevokeRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        if (request.Schema != RevokeRequestSchema)
+        {
+            throw new CompanionProtocolException("revoke-request-schema");
+        }
+        CompanionLoopbackProtocol.RequireHexIdentifier(request.RevocationId, 16, "revocation-id");
+    }
+
+    private static void ValidateRevokedResponse(CompanionRevokedResponse response)
+    {
+        ArgumentNullException.ThrowIfNull(response);
+        if (response.Schema != RevokedResponseSchema || !response.Revoked)
+        {
+            throw new CompanionProtocolException("revoked-response-contract");
+        }
+        CompanionLoopbackProtocol.RequireHexIdentifier(response.RevocationId, 16, "revocation-id");
+    }
+
+    private static void RequireEpochPair(uint currentEpoch, uint nextEpoch)
+    {
+        if (currentEpoch is 0 or >= 64 || nextEpoch != currentEpoch + 1)
+        {
+            throw new CompanionProtocolException("rotation-epoch-order");
+        }
+    }
+
     private static byte[] EncodeNetworkJson(int maximumBytes, Action<Utf8JsonWriter> write)
     {
         using var stream = new MemoryStream(capacity: 512);
@@ -464,6 +886,30 @@ public static class CompanionLoopbackWire
         return result;
     }
 
+    private static ulong RequireUInt64(JsonElement value)
+    {
+        if (value.ValueKind != JsonValueKind.Number ||
+            !value.TryGetUInt64(out var result))
+        {
+            throw new CompanionProtocolException("json-invalid");
+        }
+        return result;
+    }
+
+    private static ulong? RequireNullableUInt64(JsonElement value) =>
+        value.ValueKind == JsonValueKind.Null
+            ? null
+            : RequireUInt64(value);
+
+    private static bool RequireBoolean(JsonElement value)
+    {
+        if (value.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
+        {
+            throw new CompanionProtocolException("json-invalid");
+        }
+        return value.GetBoolean();
+    }
+
     private static void RequireCanonical(ReadOnlySpan<byte> actual, ReadOnlySpan<byte> canonical)
     {
         if (!actual.SequenceEqual(canonical))
@@ -518,3 +964,53 @@ public sealed record CompanionPairingCompleteResponse(
     string SessionExpiresAtUtc,
     uint IdleTimeoutSeconds,
     string CompletionProof);
+
+public sealed record CompanionSessionStatus(
+    string Schema,
+    string ProtocolId,
+    string InstallationId,
+    string ProcessInstanceId,
+    string SessionId,
+    uint KeyEpoch,
+    ulong AcceptedSequence,
+    ulong? NextSequence,
+    string SessionExpiresAtUtc,
+    string KeyExpiresAtUtc,
+    uint IdleTimeoutSeconds);
+
+public sealed record CompanionRotationBegin(
+    string Schema,
+    string RotationId,
+    string BrowserNonce);
+
+public sealed record CompanionRotationChallenge(
+    string Schema,
+    string RotationId,
+    string BrowserNonce,
+    string ServerNonce,
+    uint CurrentEpoch,
+    uint NextEpoch,
+    string PendingExpiresAtUtc);
+
+public sealed record CompanionRotationCommit(
+    string Schema,
+    string RotationId,
+    string BrowserNonce,
+    string ServerNonce,
+    uint CurrentEpoch,
+    uint NextEpoch,
+    string NewKeyProof);
+
+public sealed record CompanionRotationCommitted(
+    string Schema,
+    string RotationId,
+    uint KeyEpoch,
+    string KeyExpiresAtUtc,
+    string CompletionProof);
+
+public sealed record CompanionRevokeRequest(string Schema, string RevocationId);
+
+public sealed record CompanionRevokedResponse(
+    string Schema,
+    string RevocationId,
+    bool Revoked);

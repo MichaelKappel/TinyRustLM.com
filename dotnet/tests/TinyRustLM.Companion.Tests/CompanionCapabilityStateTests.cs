@@ -338,7 +338,7 @@ public sealed class CompanionCapabilityStateTests : IDisposable
         var firstRequest = SessionRequest(fixture, 1);
         using var first = state.Authenticate(firstRequest);
         Assert.Equal<ulong>(1, first.AcceptedSequence);
-        Assert.Equal<ulong>(2, first.NextSequence);
+        Assert.Equal<ulong?>(2, first.NextSequence);
 
         var secondRequest = SessionRequest(fixture, 2);
         AssertCode("session-request-in-flight", () => state.Authenticate(secondRequest));
