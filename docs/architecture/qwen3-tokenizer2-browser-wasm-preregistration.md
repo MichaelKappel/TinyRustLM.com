@@ -43,6 +43,45 @@ The committed bounded result is
 and is byte-identical to the create-only verifier result. The two raw run
 documents remain immutable outside Git under their registered identities.
 
+## 2026-08-24 Descendant Revalidation
+
+The completed gate was revalidated from descendant source revision
+`84fe6c2078851dbfef95f0fde64f22d17ef39a12` without invoking either the
+registered runner or verifier again and without creating comparative output.
+The focused current-source suite passed 35 of 35 tests. Its 5,856-byte external
+log has SHA-256
+`32e57baaa16e0bd97d898e85dbf7cdcef664725e09713856fdf4aaabb21eefe9`.
+Those tests revalidated the exact source closure, external WASM identity,
+preregistrations, bounded public result, import-free module surface, miniature
+Node boundary, and owned-profile Chromium boundary.
+
+Direct inspection of the accepted full artifact independently reconfirmed:
+
+- 7,038,773 exact bytes at SHA-256
+  `cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b`;
+- the exact `TOK2` magic, `minimodel.tok2` format ID, 192-byte header,
+  technical format 2.0, and `0x01020304` byte-order marker;
+- header file size 7,038,773, 151,669 total tokens, 151,643 base tokens,
+  26 added tokens, 151,387 merges, and 128 maximum token bytes;
+- absent BOS/UNK IDs, EOS ID 151,645, padding ID 151,643, and all 48 reserved
+  header bytes zero.
+
+The private output root still contains exactly the two registered raw runs and
+the one verifier result, with no failure file or extra member. Their SHA-256
+identities remain, in order,
+`0ed18293784438035b06d99e8709c382ccef1a775c70f00d624a3964d3c92905`,
+`fb493d2e251c8efa6e12d73664aa319ad4901235fa46edf5b00fc4b43806e920`,
+and `f828190b2ff5d3c1e794cb50f3b0dd8c41367ed09fca758eeb513fb1ec2c964e`.
+The external verifier result remains byte-identical to the committed bounded
+result. The registered profile parent exists as an empty, non-reparse
+directory.
+
+This audit found no material identity drift. The original registration remains
+complete and immutable. It must not be rerun or replaced merely because later
+unrelated source commits exist. Current work consumes this accepted Tokenizer2
+identity while resolving the remaining release gates and completing one real
+SLM2 composition, native/WASM inference path, and browser-local conversation.
+
 ## Exact Authorities
 
 | Authority | Exact identity |
