@@ -1,5 +1,13 @@
-profile: runtime-mirust.startup-packet.v112
-updated_utc: 2026-08-25T13:42:23Z
+profile: runtime-mirust.startup-packet.v113
+updated_utc: 2026-08-25T14:40:05Z
+current_windows_x64_msvc_environment_authority_2026_08_25:
+  first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/windows-x64-msvc-environment-profile.v1.json`, and its architecture record before build or composition work.
+  active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  active_branch: codex/model-acquisition-v2
+  checkpoint: commit=`4f7d580a2d4114fc14c6969860c66c51079954e4`; profile=`76de6c5985c000dadedefa457286111af80ebd2deb6e6e3d8de246f6a0eed607`; owner=`48b550da9fa0a81735467d2af6dc733fa5ba2df4e9f815e505c37b57bfdb4ebf`; pushed/fresh-remote exact=true
+  gates: synthetic=8/8; installed_observation=1/1; standard=1357/0/2-of-1359; current_custody_environment_bound=false
+  immediate_operation: Bind the exact environment private/public/terminal graph through the sole custody profile, canonical request, owner, detached worker, child process, and terminal evidence; add hostile and real-Windows tests; clean-cut any superseded executable route; commit/push/fresh-verify. Only then may an output-free `/7` registration use wholly new absent names.
+  truth_boundary: Preserve `/1` through `/6`; never write `D:` or modify the protected sibling. Environment authority is not build, conversion, composition, runtime, browser, quality, P2P, publication, MemoryEndpoints, or campaign evidence; counters remain zero.
 current_msvc_environment_research_handoff_2026_08_25:
   first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, terminal `/6` result/architecture, and the new twelve-prompt research handoff.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819

@@ -1,7 +1,7 @@
-profile: tinyrustlm.source-workspace.v415
+profile: tinyrustlm.source-workspace.v416
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-25T13:42:23Z
+updated_utc: 2026-08-25T14:40:05Z
 
 prelaunch_product_boundary:
   product: TinyRustLM is one unversioned prelaunch product; product V1 and product V2 do not exist.
@@ -9,6 +9,14 @@ prelaunch_product_boundary:
   clean_cut: Every replacement must become the sole maintained path and delete its complete superseded executable closure in the same fully tested cutover. Excluding old source from a default build is insufficient when any maintained caller, package, test helper, documentation, marketing, or site asset can still reach it.
   release_gate: No publication or deployment while compatibility behavior, product-version selection, fallback, repair, temporary patches, TODO debt, stale documentation, weakened tests, known defects, or registered obsolete executable paths remain in the released closure.
   history: Preserve immutable receipts and raw failures as inert evidence; never turn historical preservation into executable legacy support.
+
+current_checkpoint_2026_08_25_deterministic_windows_x64_msvc_environment_authority:
+  source_control: Commit `4f7d580a2d4114fc14c6969860c66c51079954e4` is pushed and independently exact across local HEAD, tracking, fresh FETCH_HEAD, and the direct remote branch advertisement. The worktree was clean after verification.
+  authority: `contracts/vnext/windows-x64-msvc-environment-profile.v1.json` is 6,510 canonical ASCII/LF bytes at SHA256 `76de6c5985c000dadedefa457286111af80ebd2deb6e6e3d8de246f6a0eed607`. `tinyrustlm/tools/windows-x64-msvc-environment.js` is 54,052 ASCII/LF bytes at SHA256 `48b550da9fa0a81735467d2af6dc733fa5ba2df4e9f815e505c37b57bfdb4ebf`.
+  behavior: The owner accepts one strict canonical request, invokes `vswhere` with exact arguments, selects the highest complete eligible Visual Studio installation and Windows SDK, verifies seven required PE-x64 tools and every selected COFF library, inventories and hashes complete direct tool/library roots, renders exact Cargo linker plus `PATH`/`LIB`/`LIBPATH`, proves unique command resolution, and emits create-only private binding, public-safe lock, and terminal records. Read-only validation regenerates the complete current closure and requires byte-exact equality. Public records contain domain-separated identities rather than private paths. Directory flush is not claimed.
+  verification: Hostile synthetic tests pass 8/8. The explicit installed Visual Studio 2022 observation passes 1/1, revalidates its exact closure, exposes no private path publicly, and removes its owned temporary root. The complete standard partition passes 1,357, fails 0, and has two declared opt-in skips across 1,359 tests in 382,368.2876 ms.
+  exact_resume: Integrate this exact environment authority into the sole build-custody profile, request, owner, detached worker, build-child environment, and terminal evidence. Add hostile cross-binding, drift, collision, interruption, and real-Windows tests; delete any superseded executable custody path in the same green cutover; commit, push, fresh-fetch, and prove remote equality. Only after that integration is remote-exact may an output-free `/7` registration bind wholly new absent names.
+  claim_boundary: This checkpoint proves environment discovery, closure binding, deterministic materialization, and revalidation only. The current build-custody owner is not yet environment-bound. It proves no Rust build, conversion, complete composition, source parity, native runtime, browser chat, quality, P2P, package, publication, deployment, MemoryEndpoints, or campaign evidence. Preserve `/1` through `/6`; MemoryEndpoints remains unauthorized and counters remain exactly 0/20, 0/50, 0/25, 0/40, and 0/20.
 
 current_checkpoint_2026_08_25_msvc_environment_research_handoff:
   source_control: `/6` closure commit `7fac32b6c0d9a308883949ee94375bd6b7e77ed9` and research commit `61950e9ee58af6dbcf35e90b8f3d985dce65b25d` are each pushed, fresh-fetched, and exact across local, tracking, FETCH_HEAD, and direct remote; worktree was clean after each checkpoint.
