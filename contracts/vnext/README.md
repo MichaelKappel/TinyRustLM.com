@@ -198,6 +198,17 @@ converter launch, and at most one inspect-only managed decision. It creates no
 build, private root, model output, or structural claim. See
 `docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration-v2.md`.
 
+Execution `/2` then performed both builds and the sole authorized converter
+launch. It ended in the preserved typed rejection
+`qwen3-tensor-inventory-mismatch` because the locked checkpoint contains the
+310 logical tensors plus a byte-identical redundant `lm_head.weight`, while
+the registered source profile forbids that member for tied embeddings. The
+8,275-byte minimized result has SHA-256
+`4b2c957943d91fe7023d5ab78d2582735d21196e93403c212a9b104204bc970c`.
+The source is not declared defective; the source-tensor profile is. `/2` is
+closed and its partial output is preserved. See
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-v2-result-and-tied-output-profile-defect.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2

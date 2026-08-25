@@ -1,0 +1,230 @@
+{
+  "schema": "tinyrustlm.qwen3-real-composition-execution-result.v2",
+  "executionProfileId": "tinyrustlm.qwen3-real-composition-execution/2",
+  "executionId": "qwen3-composition-c1899de-20260825-v2",
+  "status": "terminal-native-rejection",
+  "observedAtUtc": "2026-08-25T07:36:11Z",
+  "predecessor": {
+    "resultPath": "contracts/vnext/qwen3-real-composition-execution-result.v1.json",
+    "resultByteLength": 4076,
+    "resultSha256": "dd1d9c85b5bb8bf098641a156de06e59243d88530434d70c574dcdceedb7a1ce",
+    "status": "terminal-prelaunch-failure",
+    "reused": false,
+    "modified": false
+  },
+  "registration": {
+    "profilePath": "contracts/vnext/qwen3-real-composition-execution-preregistration.v2.json",
+    "profileByteLength": 27596,
+    "profileSha256": "cfc924334083d5623852511950d48486b2bbb80d3aa9d7e403c7d957b2f89a5f",
+    "commit": "33f306673007ceaec96fdbdfb1106c6633605b64",
+    "tree": "ab6b7c63d4f82666f0ffe1462cdecb382f1e2da1",
+    "branch": "codex/model-acquisition-v2",
+    "remoteExactBeforeBuildAndExecution": true
+  },
+  "builds": {
+    "rust": {
+      "attemptCount": 1,
+      "startedAtUtc": "2026-08-25T07:24:37.8268787Z",
+      "finishedAtUtc": "2026-08-25T07:24:59.5230213Z",
+      "exitCode": 0,
+      "sourceCommit": "33f306673007ceaec96fdbdfb1106c6633605b64",
+      "sourceTree": "ab6b7c63d4f82666f0ffe1462cdecb382f1e2da1",
+      "stdout": {
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "byteLength": 1874,
+        "sha256": "fdb41614b74b7a71b12ae5ef0b290980a5c2b0ee4395568aabee39546f3ae343"
+      },
+      "executable": {
+        "fileName": "tinyrustlm-convert.exe",
+        "byteLength": 836096,
+        "sha256": "c14b03a67bc1c8775b8c60816b3faf52b0842ebf7c76c690b368fb59c2064ba4",
+        "peMachine": "0x8664",
+        "unchangedAfterExecution": true
+      }
+    },
+    "managedInspector": {
+      "attemptCount": 1,
+      "startedAtUtc": "2026-08-25T07:25:33.2455892Z",
+      "finishedAtUtc": "2026-08-25T07:25:38.2555346Z",
+      "exitCode": 0,
+      "stdout": {
+        "byteLength": 646,
+        "sha256": "ba126abba1bb43af5f75bc9fa8a2c269b440a1d108c5cc1ce3df9daefcefdfc1"
+      },
+      "stderr": {
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "assembly": {
+        "fileName": "TinyRustLM.CompositionInspector.dll",
+        "byteLength": 7680,
+        "sha256": "41f16a303223b6effab8dbeb6b99432f97d99feabe25f60e9e58196acfce90f5"
+      },
+      "runtime": {
+        "fileName": "dotnet.exe",
+        "byteLength": 167208,
+        "sha256": "ab1b71fd3dd71062e074c9fab8312081a81b7f2b3e0327c48c4d249c8d1a3135",
+        "sdkVersion": "10.0.400",
+        "hostVersion": "10.0.11",
+        "runtimeIdentifier": "win-x64"
+      }
+    }
+  },
+  "controlObservation": {
+    "logicalRoot": "qwen3-composition-control-c1899de-20260825-v2",
+    "request": {
+      "byteLength": 5026,
+      "sha256": "1bdf14b5e6aaf6fb776e91d7c7e8688ed1b35a25df35fbaf9b7e7e8136a5fa02"
+    },
+    "controllerStdout": {
+      "byteLength": 331,
+      "sha256": "671afcd3f30555db4ebb5d378edc7a8d569d34249b1f168dc128b031046321f8"
+    },
+    "controllerStderr": {
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "executionObservation": {
+    "privateEvidenceLogicalRoot": "qwen3-composition-execution-c1899de-20260825-v2",
+    "outputLogicalRoot": "qwen3-composition-c1899de-20260825-v2",
+    "controllerInvocationCount": 1,
+    "controllerExitCode": 0,
+    "converterLaunchCount": 1,
+    "converterProcess": {
+      "startedAtUtc": "2026-08-25T07:31:17.167Z",
+      "finishedAtUtc": "2026-08-25T07:31:21.527Z",
+      "durationMilliseconds": 4360,
+      "started": true,
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "killedForOverflow": false,
+      "spawnCode": null
+    },
+    "binding": {
+      "byteLength": 8575,
+      "sha256": "b30fb8a7a1768c1d022b7ad32b4c1f152228f4be9ec4504f25426c0f1831aa6f"
+    },
+    "start": {
+      "byteLength": 458,
+      "sha256": "b4560cb003529a5d9b93c07a663cf170e42ce99e5a743fada05ea87e20f0413d"
+    },
+    "converterStdout": {
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "converterStderr": {
+      "byteLength": 62,
+      "sha256": "f51daef5da930c335ac00c5368e2edd55be771c484ada0ea002c92e34a2572a7"
+    },
+    "terminal": {
+      "status": "terminal-process-failure",
+      "byteLength": 1838,
+      "sha256": "b346b5882931e9d74c9b65faee5915e5361d76dcd6f7f727d0205b12e14f19ed"
+    },
+    "managedInspectionInvoked": false,
+    "managedIntentCreated": false,
+    "managedStdoutCreated": false,
+    "managedStderrCreated": false,
+    "verification": {
+      "decision": "terminal-controller-failure",
+      "byteLength": 9512,
+      "sha256": "95cb01c7f989f25db62fae8719e4389fc75d00b26dcf6c80ca4a17ccb116ed20"
+    }
+  },
+  "nativeRejection": {
+    "errorCode": "qwen3-tensor-inventory-mismatch",
+    "safeNoOp": false,
+    "retryable": false,
+    "operationId": "qwen3-composition-0da8c0a18643b5415bc66f938888be7b6c75376090e0b5a989871c0e766d4b64",
+    "attempt": {
+      "file": "composition.attempt.json",
+      "byteLength": 711,
+      "sha256": "eab051c0de7ad3813002d9edc0c681f10e3e8e04f474ff9c12d555f380e28be1"
+    },
+    "rejection": {
+      "file": "composition.rejection.json",
+      "byteLength": 436,
+      "sha256": "d74dfc852d9768a5fea6a9f0606ec246d571617c00129d765fa1ebddae699109"
+    },
+    "partialOutputPreserved": true
+  },
+  "rootCauseObservation": {
+    "sourceModelSha256": "f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b",
+    "safetensorsHeaderByteLength": 35552,
+    "observedSourceTensorCount": 311,
+    "registeredExpectedTensorCount": 310,
+    "missingExpectedTensorNames": [],
+    "additionalTensorNames": [
+      "lm_head.weight"
+    ],
+    "embeddingTensor": {
+      "name": "model.embed_tokens.weight",
+      "dtype": "BF16",
+      "shape": [
+        151936,
+        1024
+      ],
+      "byteLength": 311164928,
+      "sha256": "8f29acf519434862d95613b2b4f6b9d14933a5e4d16baebf8ac0b33b410acfb6"
+    },
+    "tiedOutputTensor": {
+      "name": "lm_head.weight",
+      "dtype": "BF16",
+      "shape": [
+        151936,
+        1024
+      ],
+      "byteLength": 311164928,
+      "sha256": "8f29acf519434862d95613b2b4f6b9d14933a5e4d16baebf8ac0b33b410acfb6"
+    },
+    "tiedPayloadsByteIdentical": true,
+    "registeredRule": "forbidden-when-tie_word_embeddings-is-true",
+    "diagnosis": "registered-source-tensor-contract-does-not-match-the-immutable-locked-checkpoint",
+    "sourceDefectEstablished": false,
+    "profileDefectEstablished": true
+  },
+  "decision": {
+    "registrationClosed": true,
+    "retryUnderRegistrationAllowed": false,
+    "existingPrivateEvidenceMayBeDeleted": false,
+    "existingPrivateEvidenceMayBeOverwritten": false,
+    "partialOutputMayBeCleaned": false,
+    "outputMayBeRepaired": false,
+    "managedInspectionMayBeUsedToLaunderControllerFailure": false,
+    "newAttemptRequiresCorrectedSourceTensorProfile": true,
+    "newAttemptRequiresGeneralRegressionTests": true,
+    "newAttemptRequiresNewRegistrationAndAllNewLogicalRoots": true
+  },
+  "claimBoundary": {
+    "rustReleaseBuildCompleted": true,
+    "managedInspectorBuildCompleted": true,
+    "privateExecutionBindingCreated": true,
+    "realConverterInvoked": true,
+    "strictNativeRejectionObserved": true,
+    "managedInspectionInvoked": false,
+    "structuralCompositionVerified": false,
+    "sourceFrameworkParityVerified": false,
+    "nativeRuntimeVerified": false,
+    "browserWasmVerified": false,
+    "browserChatVerified": false,
+    "modelQualityVerified": false,
+    "p2pAvailabilityVerified": false,
+    "catalogAnnouncementVerified": false,
+    "packagePublicationVerified": false,
+    "siteDeploymentVerified": false,
+    "memoryEndpointsVerified": false,
+    "campaignCreditAuthorized": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}
