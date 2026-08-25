@@ -1,0 +1,246 @@
+{
+  "schema": "tinyrustlm.acg2-wasm-export-ownership-preregistration.v1",
+  "profileId": "tinyrustlm.acg2-wasm-export-ownership/1",
+  "status": "registered-before-implementation-output",
+  "registeredAtUtc": "2026-08-25T03:26:20Z",
+  "registrationParentCommit": "8c45d6855984e132f4e3404251a6194b514456cb",
+  "registrationParentTree": "cc29e028429f8a6082e565259c28ba2afad85a33",
+  "authority": {
+    "productLifecycle": "prelaunch-single-product",
+    "technicalIdentityIsProductGeneration": false,
+    "frozenEnterpriseGoal": {
+      "path": "docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md",
+      "sha256": "92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0"
+    },
+    "productionGoal": {
+      "path": "docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md",
+      "sha256": "115ae434bf9dee0b4f27767f126d951989c5ec684241e2e3a6238de094e65d33"
+    },
+    "memoryEndpointsAuthorized": false,
+    "writeDriveDAllowed": false
+  },
+  "defect": {
+    "code": "acg2-conformance-export-ownership-leak",
+    "cause": "target_arch-only compilation exports the ACG2 test ABI through every transitive wasm32 consumer of tinyrustlm-composition2",
+    "observedIn": "tinyrustlm-slm2-runtime-wasm-conformance",
+    "expectedSlm2FunctionExportCount": 11,
+    "observedFunctionExportCount": 22,
+    "unexpectedExportPrefix": "trlm_acg2_conformance_",
+    "formatSemanticsChanged": false,
+    "runtimeArithmeticChanged": false,
+    "modelBytesObserved": false
+  },
+  "priorDevelopmentObservation": {
+    "commit": "db7cc1c03b09b89a5fff7f127f0bd437c0d33d17",
+    "tree": "1fbd5a155fdce6a57d0e785192ecfbc1aa73cfb2",
+    "featureGateBuiltBeforeThisRegistration": true,
+    "acceptedAsImplementationEvidence": false,
+    "acceptedAsReleaseEvidence": false,
+    "acceptedAsCampaignEvidence": false,
+    "requiredDisposition": "preserve-in-git-history-and-reimplement-only-after-this-registration"
+  },
+  "registeredBaseline": [
+    {
+      "path": "Cargo.toml",
+      "byteLength": 1691,
+      "sha256": "4b6c44ada860997ad27476173e88227faf52a30783b35f33bd12beda3f79beb8"
+    },
+    {
+      "path": "Cargo.lock",
+      "byteLength": 25336,
+      "sha256": "8e8eabd73ac02275235576743a19b84bee0250ef4ce24986e4bcce7a3704c8a6"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-composition2/Cargo.toml",
+      "byteLength": 703,
+      "sha256": "53c6632c32706e4df30a807b1d8de881c4ce0d5fac7d46c974dfe97308c20f83"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-composition2/src/lib.rs",
+      "byteLength": 589,
+      "sha256": "74c0cdaae0e3df01d035eaf793e7f80ca3911c3cfab1fd31af9a6d8dc5c2dca7"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-composition2/src/wasm.rs",
+      "byteLength": 7436,
+      "sha256": "20f86cfaea8fb9549a138ea11665aa9bad4162e57e239ce4ffebb130ab086401"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-runtime/Cargo.toml",
+      "byteLength": 597,
+      "sha256": "103b83d3fd6a7561c8a6dde054e5eb8b4fbf1644767fe09d6a8ea3f414bebcfb"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-slm2-runtime-wasm-conformance/Cargo.toml",
+      "byteLength": 412,
+      "sha256": "06e0909ee59cd0b29a537b3ef767b9aada32e0d4a500bcdafc1f1ee8cedd33f4"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-slm2-runtime-wasm-conformance/src/lib.rs",
+      "byteLength": 7981,
+      "sha256": "b30b8d0b3e75e1b29776199c38fed349ace69673c226663a47e7b5d199789944"
+    },
+    {
+      "path": "tinyrustlm/tests/acg2-format-vectors.test.js",
+      "byteLength": 17854,
+      "sha256": "740cd22508fd63087a3443d928f983c6de517fb419fa8696814b4ed4046aa227"
+    },
+    {
+      "path": "tinyrustlm/tests/slm2-runtime-wasm-conformance.test.js",
+      "byteLength": 9793,
+      "sha256": "1ed36cbdbc025253a3e6ce2828c0c66afda17396454227cb16671c5d9cd3b906"
+    }
+  ],
+  "ownership": {
+    "compositionFeature": "wasm-conformance",
+    "defaultFeatures": [],
+    "acg2ModuleCondition": "all(target_arch = wasm32, feature = wasm-conformance)",
+    "acg2TestEnablesFeatureExplicitly": true,
+    "runtimeDependencyEnablesFeature": false,
+    "slm2ConformanceBuildEnablesFeature": false,
+    "featureNegotiationAllowed": false,
+    "runtimeDetectionAllowed": false,
+    "combinedConformanceAbiAllowed": false
+  },
+  "acg2WasmSurface": {
+    "crate": "tinyrustlm-composition2",
+    "maximumModuleBytes": 2097152,
+    "requiredImports": [],
+    "requiredMemoryExports": [
+      "memory"
+    ],
+    "requiredFunctionExports": [
+      "trlm_acg2_conformance_abi_version",
+      "trlm_acg2_conformance_clear",
+      "trlm_acg2_conformance_error_len",
+      "trlm_acg2_conformance_error_ptr",
+      "trlm_acg2_conformance_generate",
+      "trlm_acg2_conformance_input_capacity",
+      "trlm_acg2_conformance_input_ptr",
+      "trlm_acg2_conformance_output_len",
+      "trlm_acg2_conformance_output_ptr",
+      "trlm_acg2_conformance_parse",
+      "trlm_acg2_conformance_profile"
+    ],
+    "unknownFunctionExportsReject": true,
+    "nodeVectorReplayRequired": true,
+    "freshChromiumVectorReplayRequired": true,
+    "networkRequestCount": 0
+  },
+  "slm2WasmSurface": {
+    "crate": "tinyrustlm-slm2-runtime-wasm-conformance",
+    "maximumModuleBytes": 1048576,
+    "requiredImports": [],
+    "requiredMemoryExports": [
+      "memory"
+    ],
+    "requiredFunctionExports": [
+      "trlm_slm2_conformance_abi_version",
+      "trlm_slm2_conformance_clear",
+      "trlm_slm2_conformance_error_len",
+      "trlm_slm2_conformance_error_ptr",
+      "trlm_slm2_conformance_forward",
+      "trlm_slm2_conformance_greedy_token",
+      "trlm_slm2_conformance_kv_bytes",
+      "trlm_slm2_conformance_logits_len",
+      "trlm_slm2_conformance_logits_ptr",
+      "trlm_slm2_conformance_position",
+      "trlm_slm2_conformance_reset"
+    ],
+    "unknownFunctionExportsReject": true,
+    "nodeVectorReplayRequired": true,
+    "freshChromiumVectorReplayRequired": true,
+    "networkRequestCount": 0
+  },
+  "implementation": {
+    "allowedPaths": [
+      "rust/crates/tinyrustlm-composition2/Cargo.toml",
+      "rust/crates/tinyrustlm-composition2/src/lib.rs",
+      "tinyrustlm/tests/acg2-format-vectors.test.js",
+      "docs/architecture/vnext-slm2-scalar-wasm-conformance.md"
+    ],
+    "cargoLocked": true,
+    "cargoOffline": true,
+    "wasmTarget": "wasm32-unknown-unknown",
+    "releaseProfile": true,
+    "separateTargetRootsRequired": true,
+    "unsafeBlocksAllowed": false,
+    "testWeakeningAllowed": false
+  },
+  "invalidation": {
+    "acg2FormatProfileInvalidated": false,
+    "acg2FormatVectorsInvalidated": false,
+    "acg2ParserWriterSemanticsInvalidated": false,
+    "acg2PriorWasmModuleIdentityInvalidated": true,
+    "acg2PriorNodeBrowserReplayInvalidated": true,
+    "slm2PriorWasmModuleIdentityInvalidated": true,
+    "slm2PriorNodeBrowserReplayInvalidated": true,
+    "tokenizer2EvidenceInvalidated": false,
+    "template2EvidenceInvalidated": false,
+    "sampling2EvidenceInvalidated": false,
+    "prompt2EvidenceInvalidated": false,
+    "realModelEvidenceInvalidated": false
+  },
+  "acceptance": {
+    "registeredBaselineReconstructsFromGit": true,
+    "registrationParentTreeMatchesGit": true,
+    "defaultCompositionBuildExportsNoAcg2TestAbi": true,
+    "explicitAcg2BuildExportsExactSurface": true,
+    "slm2BuildExportsExactSurface": true,
+    "bothModulesImportFree": true,
+    "bothModulesBounded": true,
+    "bothNodeReplaysPass": true,
+    "bothFreshChromiumReplaysPass": true,
+    "bothChromiumReplaysUseZeroNetwork": true,
+    "rustfmtPasses": true,
+    "warningsDeniedClippyPasses": true,
+    "completeSerialNodeInventoryRequired": true
+  },
+  "prohibitions": {
+    "legacyAbi": false,
+    "compatibilityAlias": false,
+    "migration": false,
+    "fallback": false,
+    "combinedAbi": false,
+    "defaultEnabledConformanceFeature": false,
+    "unknownExport": false,
+    "network": false,
+    "retry": false,
+    "repair": false,
+    "bestOfN": false,
+    "expectedAnswerInjection": false,
+    "fixtureAsModelQuality": false,
+    "testWeakening": false
+  },
+  "registrationOutputBoundary": {
+    "implementationChanged": false,
+    "wasmBuilt": false,
+    "browserLaunched": false,
+    "persistentEvidenceCreated": false,
+    "modelBytesCreated": false,
+    "releaseAuthorized": false,
+    "deploymentAuthorized": false,
+    "campaignCreditAuthorized": false
+  },
+  "claimBoundary": {
+    "exportOwnershipRegistered": true,
+    "exportOwnershipImplemented": false,
+    "acg2WasmVerified": false,
+    "slm2WasmVerified": false,
+    "realModelLoaded": false,
+    "modelQualityVerified": false,
+    "browserChatVerified": false,
+    "p2pAvailabilityVerified": false,
+    "releaseAuthorized": false,
+    "siteDeployed": false,
+    "memoryEndpointsOperationPerformed": false,
+    "campaignCreditAuthorized": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}

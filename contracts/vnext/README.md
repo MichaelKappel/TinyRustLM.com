@@ -387,6 +387,16 @@ clears KV and generation state while preserving the transcript. An import-free
 WASM conformance ABI replays the corpus in Node WebAssembly and fresh Chromium
 with zero network.
 
+`acg2-wasm-export-ownership-preregistration.v1.json` is the output-free
+registration for isolating that eleven-function test ABI from transitive SLM2
+WASM consumers. It is 8,994 bytes with SHA-256
+`a14a74778ac366a8b7a051dac005e074caa610aa786dce3e93267be96aa33057`.
+The registered implementation uses one default-disabled compile-time feature,
+separate Cargo roots, and exact disjoint export sets; it provides no runtime
+negotiation or combined ABI. Earlier feature-gate builds at `db7cc1c` are
+preserved as non-evidence development history. No implementation output exists
+under this registration yet.
+
 This remains technical format evidence. No real model has been converted,
 qualified, or executed through the product browser path. The standalone crate
 is an exact-lock staging boundary while registered root evidence stays
