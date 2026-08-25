@@ -1,5 +1,12 @@
-profile: runtime-mirust.operations.v138
-updated_utc: 2026-08-25T10:20:00Z
+profile: runtime-mirust.operations.v139
+updated_utc: 2026-08-25T10:35:00Z
+qwen_tokenizer2_output_path_clean_cut_implementation_2026_08_25:
+  parent: commit=c5f60e958872e125f52c9a5355eb7fdd4977b367; remote_exact=true; preserved_execution=/3; retry=false; reuse=false
+  identities: tokenizer_profile=/2,8394,97b381c73e7191f245ba132421a81bf015092b8550599413a6c81c6dae0afae4; composition_profile=/4,11421,19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8; suffix=.tokenizer2; member=tokenizer.tokenizer2; receipt_schema=tinyrustlm.qwen_tokenizer2_conversion_receipt.v2
+  implementation: rust_writer=current-only; rust_composition=current-only; managed_conversion=current-only; fixture=current-only; sample=current-only; obsolete_profile=false; obsolete_suffix=false; selector=false; alias=false; migration=false; fallback=false; retry=false
+  gates: rust_converter=34/34; rust_workspace=pass; clippy_warnings_denied=pass; node_affected=167/167; managed_build=0-warnings/0-errors; managed_tests=207/207/0-skipped; architecture=docs/architecture/2026-08-25-qwen-tokenizer2-output-path-correction-implementation.md,6281,14addb0b2e9508dce508455780bd067886d4a7fcfd5a1ebbcc7fad95a1fddf39
+  resume: finish hygiene+memory gates; commit/push/fresh-remote-verify; record exact implementation commit/tree; preregister new one-shot execution with all-new roots before build or output
+  claims: new_real_output=false; complete_composition=false; runtime=false; browser=false; quality=false; p2p=false; publication=false; deployment=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
 qwen3_execution_v3_tokenizer_path_rejection_and_clean_cut_registration_2026_08_25:
   source: preregistration=43a29e8e1ba7a3296be18425a5fc077fb13617fe; tree=5a4370411f340782323cec2a3ac8afd61035982c; remote_exact_before_build=true; rust_builds=1; managed_builds=1; controller_invocations=1; converter_launches=1; retries=0
   terminal: converter_exit=1; duration_ms=114005; error=qwen-tokenizer2-output-path-invalid; controller_terminal_sha256=e7e9e23a78f03288f3497bd27a62a18e8bf719761f38a9d3c9d421fed1681e23; managed_inspection=false; private_verification_bytes=9865; private_verification_sha256=88df285e0f64caac6c468512936ba1e269521287d85a95fbea8e79335c80eb48

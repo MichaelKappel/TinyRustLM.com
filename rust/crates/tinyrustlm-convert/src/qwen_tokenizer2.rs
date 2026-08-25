@@ -23,14 +23,19 @@ use crate::receipt::ReceiptIdentity;
 /// Exact source-lock schema for standalone Qwen Tokenizer2 conversion.
 pub const QWEN_TOKENIZER2_SOURCE_LOCK_SCHEMA: &str = "tinyrustlm.qwen_tokenizer2_source_lock.v1";
 /// Exact standalone Qwen-to-Tokenizer2 conversion profile identifier.
-pub const QWEN_TOKENIZER2_CONVERSION_PROFILE_ID: &str = "tinyrustlm.qwen-bytelevel-to-tokenizer2/1";
+pub const QWEN_TOKENIZER2_CONVERSION_PROFILE_ID: &str = "tinyrustlm.qwen-bytelevel-to-tokenizer2/2";
 /// SHA-256 of the exact checked-in standalone tokenizer conversion profile.
 pub const QWEN_TOKENIZER2_CONVERSION_PROFILE_SHA256: &str =
-    "f70465a08b41599fe59f41b850912d0d408f0ec67e84ebeb7591524d1b14e12b";
+    "97b381c73e7191f245ba132421a81bf015092b8550599413a6c81c6dae0afae4";
 
 pub(crate) const QWEN3_TOKENIZER_ARCHITECTURE_PROFILE_ID: &str =
     "tinyrustlm.qwen3-tokenizer-source/1";
-const CONVERSION_RECEIPT_SCHEMA: &str = "tinyrustlm.qwen_tokenizer2_conversion_receipt.v1";
+pub(crate) const QWEN_TOKENIZER2_FILE_EXTENSION: &str = "tokenizer2";
+pub(crate) const QWEN_TOKENIZER2_COMPOSITION_FILE: &str = "tokenizer.tokenizer2";
+pub(crate) const QWEN_TOKENIZER2_COMPOSITION_RECEIPT_FILE: &str =
+    "tokenizer.tokenizer2.conversion-receipt.json";
+pub(crate) const QWEN_TOKENIZER2_CONVERSION_RECEIPT_SCHEMA: &str =
+    "tinyrustlm.qwen_tokenizer2_conversion_receipt.v2";
 const SOURCE_LOCK_MAXIMUM_BYTES: u64 = 1_048_576;
 const CONFIG_MAXIMUM_BYTES: u64 = 1_048_576;
 const RECEIPT_MAXIMUM_BYTES: u64 = 1_048_576;
@@ -44,7 +49,7 @@ const REQUIRED_SOURCE_FILES: [&str; 5] = [
     "vocab.json",
 ];
 const PROFILE_BYTES: &[u8] =
-    include_bytes!("../../../../contracts/vnext/qwen-tokenizer2-conversion-profile.v1.json");
+    include_bytes!("../../../../contracts/vnext/qwen-tokenizer2-conversion-profile.v2.json");
 
 /// Stable public-safe failure from standalone Qwen Tokenizer2 conversion.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -325,7 +330,7 @@ pub fn convert_locked_qwen_tokenizer2_source(
             QwenTokenizer2ConversionError::new("qwen-tokenizer2-directory-flush-failed")
         })?;
     let receipt = ConversionReceipt {
-        schema: CONVERSION_RECEIPT_SCHEMA,
+        schema: QWEN_TOKENIZER2_CONVERSION_RECEIPT_SCHEMA,
         status: "pass",
         converter_profile_id: QWEN_TOKENIZER2_CONVERSION_PROFILE_ID,
         converter_profile_sha256: QWEN_TOKENIZER2_CONVERSION_PROFILE_SHA256,
@@ -615,7 +620,8 @@ struct OutputPaths {
 impl OutputPaths {
     fn new(tokenizer: &Path) -> Result<Self, QwenTokenizer2ConversionError> {
         if !tokenizer.is_absolute()
-            || tokenizer.extension().and_then(|value| value.to_str()) != Some("tok2")
+            || tokenizer.extension().and_then(|value| value.to_str())
+                != Some(QWEN_TOKENIZER2_FILE_EXTENSION)
         {
             return Err(QwenTokenizer2ConversionError::new(
                 "qwen-tokenizer2-output-path-invalid",

@@ -256,9 +256,9 @@ composition registration. It is 11,421 canonical bytes at SHA-256
 It retains corrected model producer `/2` and binds only Tokenizer2 producer
 `tinyrustlm.qwen-bytelevel-to-tokenizer2/2`, its exact profile hash, receipt
 schema `tinyrustlm.qwen_tokenizer2_conversion_receipt.v2`, and the sole
-`.tokenizer2` member name. Profile `/3` remains immutable rejected history and
-will retain no executable reader, alias, migration, or fallback after the
-registered implementation cutover. See
+`.tokenizer2` member name. Rust and managed conversion owners now consume only
+this profile. Profile `/3` remains immutable rejected history and retains no
+executable reader, alias, migration, or fallback. See
 `docs/architecture/2026-08-25-qwen-tokenizer2-output-path-correction-preregistration.md`.
 
 ## Tokenizer2 Format Checkpoint
@@ -298,8 +298,11 @@ It accepts only an absolute new `.tokenizer2` file under an existing direct
 non-reparse parent, rejects `.tok2`, and binds receipt schema
 `tinyrustlm.qwen_tokenizer2_conversion_receipt.v2`. The binary header format
 identifier `minimodel.tok2` remains unchanged and is explicitly not a file
-suffix. This registration has not yet changed implementation or created new
-output.
+suffix. The current Rust writer accepts only `.tokenizer2`, emits receipt v2,
+and shares the exact composition member and receipt names with the composition
+owner. The managed conversion owner and fixture consume only composition `/4`.
+This implementation change created no new conversion output. See
+`docs/architecture/2026-08-25-qwen-tokenizer2-output-path-correction-implementation.md`.
 
 The exact five-file `Qwen/Qwen3-0.6B` source closure is bound by
 `qwen3-0.6b-tokenizer2-source-lock.v1.json`, 1,108 bytes with SHA-256

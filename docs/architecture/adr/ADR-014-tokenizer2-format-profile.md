@@ -299,9 +299,12 @@ executable product contract.
 ## Clean Deletion Impact
 
 The old converter behavior that copied `tokenizer.json` and labeled it
-Tokenizer2 has been deleted. The converter now emits canonical `.tok2` bytes,
-reparses them before promotion, and records raw publisher Jinja only as
-unpromoted source evidence rather than falsely labeling it Template2.
+Tokenizer2 has been deleted. The converter now emits canonical `.tokenizer2`
+files, reparses them before promotion, and records raw publisher Jinja only as
+unpromoted source evidence rather than falsely labeling it Template2. The
+internal `minimodel.tok2` header identifier names the binary format; it is not
+an accepted filename suffix. `.tok2` paths reject without an alias, migration,
+or compatibility branch.
 
 Any runtime tokenizer JSON parser, dynamically supplied regex, script-based
 tokenization, duplicate tokenizer section, or SLM1 tokenizer reader in the

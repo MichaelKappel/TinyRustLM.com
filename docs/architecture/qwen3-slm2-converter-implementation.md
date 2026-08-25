@@ -14,8 +14,15 @@ The sole complete source-to-composition command is now
 `tinyrustlm-convert qwen3-composition`. It invokes this model primitive, the
 exact Tokenizer2 primitive, and the canonical fixed dependency and ACG2 owners
 under one create-only terminal receipt. Its sole current profile is
-`tinyrustlm.qwen3-complete-composition-conversion/3` at SHA-256
-`c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0`.
+`tinyrustlm.qwen3-complete-composition-conversion/4` at SHA-256
+`19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8`.
+It binds only Tokenizer2 producer
+`tinyrustlm.qwen-bytelevel-to-tokenizer2/2`, profile SHA-256
+`97b381c73e7191f245ba132421a81bf015092b8550599413a6c81c6dae0afae4`,
+receipt schema `tinyrustlm.qwen_tokenizer2_conversion_receipt.v2`, and member
+`tokenizer.tokenizer2`. The obsolete `.tok2` filename suffix is rejected and
+has no alias or compatibility path. The internal binary format identifier
+`minimodel.tok2` is unchanged and is not a pathname contract.
 
 This is not a product V2 or a compatibility path. SLM2 is the exact model-byte
 contract. The Qwen2/F32 model converter and its executable integration corpus

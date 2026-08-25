@@ -194,19 +194,19 @@ test("all executable owners contain only the registered current identities", () 
     managed: owners.managed,
     fixture: owners.fixture
   })) {
-    assert.match(owner, /qwen3-complete-composition-conversion\/3/u, name);
+    assert.match(owner, /qwen3-complete-composition-conversion\/4/u, name);
     assert.match(
       owner,
-      /c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0/u,
+      /19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8/u,
       name
     );
     assert.doesNotMatch(
       owner,
-      /qwen3-complete-composition-conversion\/[12]|d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718/u,
+      /qwen3-complete-composition-conversion\/[123]|d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718|c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0/u,
       name
     );
   }
-  assert.match(owners.composition, /qwen3-composition-conversion-profile\.v3\.json/u);
+  assert.match(owners.composition, /qwen3-composition-conversion-profile\.v4\.json/u);
   assert.match(owners.composition, /tinyrustlm\.qwen3_conversion_receipt\.v2/u);
   assert.doesNotMatch(owners.composition, /tinyrustlm\.qwen3_conversion_receipt\.v1/u);
 });

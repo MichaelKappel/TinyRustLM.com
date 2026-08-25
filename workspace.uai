@@ -1,7 +1,15 @@
-profile: tinyrustlm.source-workspace.v407
+profile: tinyrustlm.source-workspace.v408
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-25T10:20:00Z
+updated_utc: 2026-08-25T10:35:00Z
+
+current_checkpoint_2026_08_25_qwen_tokenizer2_output_path_clean_cut_implementation:
+  source_boundary: Coherent implementation is based on remote-exact result/registration commit `c5f60e958872e125f52c9a5355eb7fdd4977b367`. That parent preserves terminal execution `/3`, public result SHA256 `2ae10fc8a76cced2e88d9b9c310af4eeb3ef436829f3f6a5ee8c551dfde6b2e4`, and all private roots without retry, cleanup, repair, relabeling, or managed inspection.
+  implementation: Rust now embeds only Tokenizer2 producer `/2` SHA256 `97b381c73e7191f245ba132421a81bf015092b8550599413a6c81c6dae0afae4` and composition `/4` SHA256 `19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8`. One shared owner defines exact `.tokenizer2`, `tokenizer.tokenizer2`, `tokenizer.tokenizer2.conversion-receipt.json`, and receipt schema `tinyrustlm.qwen_tokenizer2_conversion_receipt.v2`. `.tok2`, missing, uppercase, doubled, unrelated, and relative output paths reject without output. Internal binary ID `minimodel.tok2` remains unchanged and is not suffix authority.
+  managed_cut: `TinyRustLmConversionTool`, deterministic fixture, and console sample consume only composition `/4` and the `.tokenizer2` artifact name. No predecessor profile, receipt-v1, selector, alias, compatibility reader, migration, fallback, repair, or retry path remains in executable conversion owners.
+  verification: Rust converter 34/34, full Rust workspace zero failures, warnings-denied converter Clippy, affected Qwen/ADR/contract/evidence/release-cutover Node 167/167, managed solution build zero warnings/errors, and managed Package/Core/Companion 207/207 all pass. `git diff --check`, source-memory, frozen-goal, and final identity gates remain required before commit.
+  architecture: `docs/architecture/2026-08-25-qwen-tokenizer2-output-path-correction-implementation.md` is 6,281 bytes at SHA256 `14addb0b2e9508dce508455780bd067886d4a7fcfd5a1ebbcc7fad95a1fddf39`.
+  exact_resume: Finish final hygiene and memory tests, commit/push this coherent clean cut, fresh-fetch, and prove local HEAD, tracking, FETCH_HEAD, and actual remote equality. Then checkpoint that exact implementation identity and preregister one wholly new one-shot composition execution before any new root, build, or output. Do not reuse `/3` or its partial SLM2. No new complete composition/runtime/browser/quality/P2P/publication/deployment/MemoryEndpoints claim; counters remain 0/20, 0/50, 0/25, 0/40, and 0/20.
 
 current_checkpoint_2026_08_25_qwen3_execution_v3_tokenizer_path_rejection_and_clean_cut_registration:
   registered_source: Qwen execution `/3` registration commit `43a29e8e1ba7a3296be18425a5fc077fb13617fe`, tree `5a4370411f340782323cec2a3ac8afd61035982c`, was pushed and fresh-remote exact before either registered build, private binding, output-root creation, or execution.

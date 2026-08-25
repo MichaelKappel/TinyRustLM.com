@@ -1,5 +1,11 @@
-profile: runtime-mirust.architecture.v151
-updated_utc: 2026-08-25T10:20:00Z
+profile: runtime-mirust.architecture.v152
+updated_utc: 2026-08-25T10:35:00Z
+current_qwen_tokenizer2_output_path_clean_cut_implementation_2026_08_25:
+  authority: The sole executable filesystem contract is Tokenizer2 producer `/2`, composition `/4`, exact lowercase `.tokenizer2`, member `tokenizer.tokenizer2`, component receipt `tokenizer.tokenizer2.conversion-receipt.json`, and receipt schema v2. Internal `minimodel.tok2` remains binary metadata, never pathname authority.
+  ownership: The Rust tokenizer owner defines all tokenizer path and receipt constants; composition imports them. Managed conversion and its deterministic fixture bind only composition `/4`. The sample names the current artifact. Historical IDs remain source evidence only and have no reader, selector, alias, migration, fallback, repair, or retry.
+  behavior: `.tok2`, missing, uppercase, doubled, unrelated, and relative output paths reject with `qwen-tokenizer2-output-path-invalid` and no artifact or receipt. Successful output remains create-only, independently reparsed, receipt-bound, directory-flushed, and reread.
+  evidence: Architecture path is `docs/architecture/2026-08-25-qwen-tokenizer2-output-path-correction-implementation.md`, 6,281 bytes, SHA256 `14addb0b2e9508dce508455780bd067886d4a7fcfd5a1ebbcc7fad95a1fddf39`; Rust 34/34 plus full workspace and Clippy; Node 167/167; managed build zero warnings/errors and tests 207/207.
+  next: Commit/push/fresh-fetch this clean cut, then preregister a wholly new one-shot execution against the exact remote source before creating roots, builds, or output. Preserve `/3`; no broader claim or counter advances.
 current_qwen_tokenizer2_filesystem_contract_clean_cut_2026_08_25:
   observed_defect: Qwen composition execution `/3` proved corrected model conversion, then rejected because composition owns `tokenizer.tokenizer2` while historical standalone producer `/1` required `.tok2`. The failure is immutable and cannot be retried or repaired.
   sole_design: The current filesystem artifact suffix is exactly `.tokenizer2`; the composition member is exactly `tokenizer.tokenizer2`; receipt schema is `tinyrustlm.qwen_tokenizer2_conversion_receipt.v2`; producer profile is `tinyrustlm.qwen-bytelevel-to-tokenizer2/2`; composition is `tinyrustlm.qwen3-complete-composition-conversion/4`. Internal binary profile ID `minimodel.tok2` remains unchanged and is not pathname authority.

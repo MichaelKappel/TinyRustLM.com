@@ -1,5 +1,13 @@
-profile: runtime-mirust.startup-packet.v106
-updated_utc: 2026-08-25T10:20:00Z
+profile: runtime-mirust.startup-packet.v107
+updated_utc: 2026-08-25T10:35:00Z
+current_qwen_tokenizer2_output_path_clean_cut_implementation_2026_08_25:
+  first_read: Read newest `workspace.uai` and `docs/architecture/2026-08-25-qwen-tokenizer2-output-path-correction-implementation.md` before older Qwen routes.
+  active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  active_branch: codex/model-acquisition-v2
+  protected_root: E:\Source\Rust\TinyRustLM.com remains untouched; never write `D:`.
+  current_result: Sole executable conversion identities are Tokenizer2 `/2` and composition `/4`; sole suffix is `.tokenizer2`; receipt is v2. Rust 34/34 plus full workspace and Clippy, Node 167/167, managed build zero warnings/errors, managed 207/207 pass.
+  immediate_operation: Finish hygiene/UAI gates; commit/push/fresh-remote-verify. Then record exact source identity and preregister a wholly new one-shot execution before any root, build, or output.
+  truth_boundary: Preserve `/3` and its partial SLM2 as structural-byte evidence only. No new real output, complete composition, runtime, browser, quality, P2P, publication, deployment, MemoryEndpoints, or campaign gate advanced; counters remain zero.
 current_qwen3_execution_v3_tokenizer_path_handoff_2026_08_25:
   first_read: Read newest `workspace.uai`, the `/3` public result, corrected Tokenizer2 `/2` profile, composition `/4` profile, and their two 2026-08-25 architecture records before older Qwen routes.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819

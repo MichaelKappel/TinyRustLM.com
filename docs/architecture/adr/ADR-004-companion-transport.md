@@ -169,11 +169,14 @@ Each produced a general regression test before its scoped correction. None is
 campaign, model, browser, or release evidence.
 
 The exact complete conversion profile is
-`tinyrustlm.qwen3-complete-composition-conversion/3` at SHA-256
-`c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0`.
+`tinyrustlm.qwen3-complete-composition-conversion/4` at SHA-256
+`19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8`.
 It binds only model producer `tinyrustlm.qwen3-safetensors-to-slm2-mixed-q8/2`
-and model receipt schema `tinyrustlm.qwen3_conversion_receipt.v2`; no prior
-producer or composition identity is accepted by the transport owner.
+and model receipt schema `tinyrustlm.qwen3_conversion_receipt.v2`, plus
+Tokenizer2 producer `tinyrustlm.qwen-bytelevel-to-tokenizer2/2` and tokenizer
+receipt schema `tinyrustlm.qwen_tokenizer2_conversion_receipt.v2`; no prior
+producer, filename suffix, receipt, or composition identity is accepted by the
+transport owner.
 
 The architecture inventory test requires this ADR to remain accepted,
 decision-specific, and complete. The package and browser contract tests reject

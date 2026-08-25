@@ -2,8 +2,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
-const string profileId = "tinyrustlm.qwen3-complete-composition-conversion/3";
-const string profileSha256 = "c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0";
+const string profileId = "tinyrustlm.qwen3-complete-composition-conversion/4";
+const string profileSha256 = "19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8";
 const string nextGate = "source-native-browser-numerical-parity-untouched-quality-and-product-chat";
 const string converterVersion = "fixture-1";
 

@@ -36,14 +36,17 @@ use tinyrustlm_tokenizer2::{
 };
 
 use crate::qwen3::QWEN3_ARCHITECTURE_PROFILE_ID;
-use crate::qwen_tokenizer2::QWEN3_TOKENIZER_ARCHITECTURE_PROFILE_ID;
+use crate::qwen_tokenizer2::{
+    QWEN3_TOKENIZER_ARCHITECTURE_PROFILE_ID, QWEN_TOKENIZER2_COMPOSITION_FILE,
+    QWEN_TOKENIZER2_COMPOSITION_RECEIPT_FILE, QWEN_TOKENIZER2_CONVERSION_RECEIPT_SCHEMA,
+};
 use crate::{
     convert_locked_qwen3_source, convert_locked_qwen_tokenizer2_source, ConverterExecutionIdentity,
     ReceiptIdentity, QWEN3_SOURCE_LOCK_SCHEMA, QWEN_TOKENIZER2_SOURCE_LOCK_SCHEMA,
 };
 
 const PROFILE_BYTES: &[u8] =
-    include_bytes!("../../../../contracts/vnext/qwen3-composition-conversion-profile.v3.json");
+    include_bytes!("../../../../contracts/vnext/qwen3-composition-conversion-profile.v4.json");
 const ATTEMPT_SCHEMA: &str = "tinyrustlm.qwen3_composition_attempt.v1";
 const RECEIPT_SCHEMA: &str = "tinyrustlm.qwen3_composition_conversion_receipt.v1";
 const REJECTION_SCHEMA: &str = "tinyrustlm.qwen3_composition_rejection.v1";
@@ -56,7 +59,7 @@ const RESIDENT_DEPENDENCY_MAXIMUM_BYTES: u64 = 83_886_080;
 const STREAM_HASH_BUFFER_BYTES: u64 = 1_048_576;
 
 const MODEL_FILE: &str = "model.slm2";
-const TOKENIZER_FILE: &str = "tokenizer.tokenizer2";
+const TOKENIZER_FILE: &str = QWEN_TOKENIZER2_COMPOSITION_FILE;
 const TEMPLATE_FILE: &str = "template.template2";
 const SAMPLING_FILE: &str = "sampling.sampling2";
 const PROMPT_FILE: &str = "prompt.prompt2";
@@ -67,11 +70,11 @@ const RECEIPT_FILE: &str = "composition.conversion-receipt.json";
 
 /// Exact complete-composition conversion profile identifier.
 pub const QWEN3_COMPOSITION_CONVERSION_PROFILE_ID: &str =
-    "tinyrustlm.qwen3-complete-composition-conversion/3";
+    "tinyrustlm.qwen3-complete-composition-conversion/4";
 
 /// SHA-256 of the exact complete-composition conversion profile bytes.
 pub const QWEN3_COMPOSITION_CONVERSION_PROFILE_SHA256: &str =
-    "c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0";
+    "19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8";
 
 /// Stable public-safe complete-composition conversion failure.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -312,7 +315,7 @@ fn run_started_transaction(
     )?;
     let tokenizer_receipt = component_receipt(
         tokenizer_result.receipt_path(),
-        "tinyrustlm.qwen_tokenizer2_conversion_receipt.v1",
+        QWEN_TOKENIZER2_CONVERSION_RECEIPT_SCHEMA,
         tokenizer_result.receipt_identity(),
     )?;
     let artifacts = [
@@ -1001,7 +1004,7 @@ fn validate_output_inventory(
         MODEL_FILE.to_owned(),
         "model.slm2.conversion-receipt.json".to_owned(),
         TOKENIZER_FILE.to_owned(),
-        "tokenizer.tokenizer2.conversion-receipt.json".to_owned(),
+        QWEN_TOKENIZER2_COMPOSITION_RECEIPT_FILE.to_owned(),
         TEMPLATE_FILE.to_owned(),
         SAMPLING_FILE.to_owned(),
         PROMPT_FILE.to_owned(),
@@ -1454,6 +1457,21 @@ mod tests {
     #[test]
     fn profile_identity_and_exact_model_shape_are_closed() {
         validate_profile().expect("profile");
+        assert_eq!(TOKENIZER_FILE, "tokenizer.tokenizer2");
+        assert_eq!(
+            Path::new(TOKENIZER_FILE)
+                .extension()
+                .and_then(|value| value.to_str()),
+            Some(crate::qwen_tokenizer2::QWEN_TOKENIZER2_FILE_EXTENSION)
+        );
+        assert_eq!(
+            QWEN_TOKENIZER2_COMPOSITION_RECEIPT_FILE,
+            "tokenizer.tokenizer2.conversion-receipt.json"
+        );
+        assert_eq!(
+            QWEN_TOKENIZER2_CONVERSION_RECEIPT_SCHEMA,
+            "tinyrustlm.qwen_tokenizer2_conversion_receipt.v2"
+        );
         let exact = exact_spec(ArtifactClass::BaseModel);
         assert!(exact_model_spec(&exact));
         let mut wrong = exact.clone();

@@ -3,7 +3,7 @@ using TinyRustLM;
 if (args.Length != 8)
 {
     Console.Error.WriteLine(
-        "Usage: TinyRustLM.ConsoleSample <model.slm2> <tokenizer.tok2> <template.tpl2> " +
+        "Usage: TinyRustLM.ConsoleSample <model.slm2> <tokenizer.tokenizer2> <template.tpl2> " +
         "<sampling.sampling2> <prompt.prompt2> <composition.acg2> <request.prompt2-wire> " +
         "<operation-id-hex>");
     return 2;

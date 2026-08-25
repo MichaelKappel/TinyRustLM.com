@@ -59,7 +59,7 @@ impl Fixture {
         write_source(&source);
         let lock = root.path().join("source-lock.json");
         write_lock(&source, &lock);
-        let output = output_directory.join("fixture.tok2");
+        let output = output_directory.join("fixture.tokenizer2");
         Self {
             _root: root,
             source,
@@ -302,11 +302,11 @@ fn hex_lower(bytes: &[u8]) -> String {
 fn deterministic_conversion_receipt_and_reparse_are_exact() {
     assert_eq!(
         QWEN_TOKENIZER2_CONVERSION_PROFILE_ID,
-        "tinyrustlm.qwen-bytelevel-to-tokenizer2/1"
+        "tinyrustlm.qwen-bytelevel-to-tokenizer2/2"
     );
     assert_eq!(
         QWEN_TOKENIZER2_CONVERSION_PROFILE_SHA256,
-        "f70465a08b41599fe59f41b850912d0d408f0ec67e84ebeb7591524d1b14e12b"
+        "97b381c73e7191f245ba132421a81bf015092b8550599413a6c81c6dae0afae4"
     );
     let fixture = Fixture::new();
     let first = convert_locked_qwen_tokenizer2_source(
@@ -316,7 +316,7 @@ fn deterministic_conversion_receipt_and_reparse_are_exact() {
         &Fixture::execution(),
     )
     .unwrap();
-    let second_output = fixture.output.with_file_name("fixture-second.tok2");
+    let second_output = fixture.output.with_file_name("fixture-second.tokenizer2");
     let second = convert_locked_qwen_tokenizer2_source(
         &fixture.lock,
         &fixture.source,
@@ -334,7 +334,20 @@ fn deterministic_conversion_receipt_and_reparse_are_exact() {
     assert_eq!(receipt_identity.byte_length(), receipt_bytes.len() as u64);
     assert_eq!(receipt_identity.sha256_hex(), sha256_bytes(&receipt_bytes));
     let receipt: Value = serde_json::from_slice(&receipt_bytes).unwrap();
+    assert_eq!(
+        receipt["schema"],
+        "tinyrustlm.qwen_tokenizer2_conversion_receipt.v2"
+    );
     assert_eq!(receipt["status"], "pass");
+    assert_eq!(
+        receipt["converterProfileId"],
+        QWEN_TOKENIZER2_CONVERSION_PROFILE_ID
+    );
+    assert_eq!(
+        receipt["converterProfileSha256"],
+        QWEN_TOKENIZER2_CONVERSION_PROFILE_SHA256
+    );
+    assert_eq!(receipt["artifact"]["path"], "fixture.tokenizer2");
     assert_eq!(
         receipt["tokenizerFormatProfileId"],
         TOKENIZER2_FORMAT_PROFILE_ID
@@ -363,6 +376,52 @@ fn deterministic_conversion_receipt_and_reparse_are_exact() {
     let mut encoded = Vec::new();
     tokenizer.encode("ab<|im_end|>", &mut encoded).unwrap();
     assert_eq!(encoded, vec![256, 258]);
+}
+
+#[test]
+fn obsolete_and_inexact_suffixes_are_rejected_without_output() {
+    let fixture = Fixture::new();
+    let output_directory = fixture.output.parent().unwrap();
+    for name in [
+        "fixture.tok2",
+        "fixture",
+        "fixture.TOKENIZER2",
+        "fixture.tokenizer2.extra",
+    ] {
+        let output = output_directory.join(name);
+        let error = convert_locked_qwen_tokenizer2_source(
+            &fixture.lock,
+            &fixture.source,
+            &output,
+            &Fixture::execution(),
+        )
+        .unwrap_err();
+        assert_eq!(
+            error.code(),
+            "qwen-tokenizer2-output-path-invalid",
+            "{name}"
+        );
+        assert!(!output.exists(), "{name}");
+        assert!(!output
+            .with_file_name(format!("{name}.conversion-receipt.json"))
+            .exists());
+    }
+    assert_eq!(fs::read_dir(output_directory).unwrap().count(), 0);
+}
+
+#[test]
+fn relative_dot_tokenizer2_output_is_rejected_without_output() {
+    let fixture = Fixture::new();
+    let relative = Path::new("fixture.tokenizer2");
+    let error = convert_locked_qwen_tokenizer2_source(
+        &fixture.lock,
+        &fixture.source,
+        relative,
+        &Fixture::execution(),
+    )
+    .unwrap_err();
+    assert_eq!(error.code(), "qwen-tokenizer2-output-path-invalid");
+    assert!(!relative.exists());
 }
 
 #[test]

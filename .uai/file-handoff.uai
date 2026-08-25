@@ -1,5 +1,10 @@
-profile: runtime-mirust.file-handoff.v104
-updated_utc: 2026-08-25T10:20:00Z
+profile: runtime-mirust.file-handoff.v105
+updated_utc: 2026-08-25T10:35:00Z
+current_qwen_tokenizer2_output_path_clean_cut_implementation_2026_08_25:
+  first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, and `docs/architecture/2026-08-25-qwen-tokenizer2-output-path-correction-implementation.md` first.
+  current_truth: Current Rust and managed owners have one clean filesystem path: Tokenizer2 `/2`, composition `/4`, `.tokenizer2`, `tokenizer.tokenizer2`, and receipt v2. All predecessor executable IDs, accepted `.tok2`, selectors, aliases, migrations, fallbacks, repair, and retry are absent. Internal `minimodel.tok2` is unchanged format metadata.
+  gates: Rust converter 34/34, full Rust workspace pass, warnings-denied Clippy pass, affected Node 167/167, managed solution zero warnings/errors and 207/207 tests. Architecture is 6,281 bytes/SHA256 `14addb0b2e9508dce508455780bd067886d4a7fcfd5a1ebbcc7fad95a1fddf39`.
+  exact_resume: Finish final hygiene and UAI tests, commit/push/fresh-remote-verify this implementation, then record its exact identity and create a separate output-free execution registration with wholly new roots. Build and execute only after that registration is remote-exact. Preserve `/3` and advance no broader claim or campaign counter.
 current_qwen3_execution_v3_tokenizer_path_rejection_and_clean_cut_registration_2026_08_25:
   authority: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/qwen3-real-composition-execution-result.v3.json`, `contracts/vnext/qwen-tokenizer2-conversion-profile.v2.json`, `contracts/vnext/qwen3-composition-conversion-profile.v4.json`, and their two 2026-08-25 architecture records first.
   terminal_truth: Remote-exact `/3` preregistration `43a29e8e1ba7a3296be18425a5fc077fb13617fe` built both owners once and launched the converter once. It rejected with `qwen-tokenizer2-output-path-invalid`; managed inspection did not run. Preserve every private root and partial member forever. Public result is 8,773 bytes at SHA256 `2ae10fc8a76cced2e88d9b9c310af4eeb3ef436829f3f6a5ee8c551dfde6b2e4`.
