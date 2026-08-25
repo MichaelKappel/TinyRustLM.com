@@ -199,18 +199,42 @@ and environment drift, bounded streams, timeout/tree kill, spawn failure,
 missing and malformed outputs, exact PE checks, collision refusal, explicit
 environment isolation, and detached owner completion after observer death.
 
+The complete clean-source wrapper ran from remote-exact source commit
+`7a70834120238ff6bf3ce32439b4064ea9223230`, tree
+`9781960efc6ca48eb5d335c764682e6957a6cb45`. Its serialized standard
+partition completed 1,386 tests: 1,384 passed, zero failed, and exactly two
+declared skips. The skips are the external generated-package-input lane and
+the opt-in observation of an installed Visual Studio instance; neither grants
+package, toolchain, build, or release evidence. Duration was 430,076.0838 ms.
+
+The same wrapper then completed all ten serial release-surface shards with
+23/23 tests passing. Run identity
+`6441867358a44736261f1b0e20a651520b405a249566b5a1f198c0ef3c80f1b2`
+has a 3,995-byte aggregate receipt at SHA256
+`f727cb46b1afe71ecec900385b6a194b17b8d59d4819d7a46b6a2118e0d03ea0`.
+The aggregate binds the exact source commit and tree, profile, partition,
+runner, test file, Node executable and version, environment, implementation
+closure, tool identities, ten shard receipts, 23 tests, and `pass` verdict.
+All logs and receipts remain outside source control in immutable private
+evidence storage.
+
 These are mechanism tests. Test-only in-process dependency injection remains
 marked and cannot authorize campaign evidence.
 
 ## Next Attempt
 
-Before execution `/8`, this complete cut must be committed, pushed, freshly
-fetched, and proven identical across local `HEAD`, tracking ref, `FETCH_HEAD`,
-and direct remote ref. `/8` must be a new output-free preregistration with
-wholly new absent private request, control, target, environment, managed,
-composition, evidence, and output names. Its Rust command must build both the
-converter and `tinyrustlm-build-scratch-inspect` in its one custody child. No
-request or root may exist before remote-exact preregistration.
+The implementation cut is committed and exact across local `HEAD`, tracking,
+and the direct remote ref at
+`7a70834120238ff6bf3ce32439b4064ea9223230`; the complete clean-source gate
+above passed from that exact revision. Commit, push, freshly fetch, and prove
+the documentation/UAI evidence checkpoint exact before proceeding.
+
+Execution `/8` must then begin with a new output-free preregistration that
+binds the exact descendant source revision and wholly new absent private
+request, control, target, environment, managed, composition, evidence, and
+output names. Its Rust command must build both the converter and
+`tinyrustlm-build-scratch-inspect` in its one custody child. No `/8` request or
+root may exist before that registration is remote exact.
 
 ## Claim Boundary
 
