@@ -1,5 +1,12 @@
-profile: runtime-mirust.operations.v134
-updated_utc: 2026-08-25T07:39:36Z
+profile: runtime-mirust.operations.v135
+updated_utc: 2026-08-25T07:50:08Z
+qwen3_tied_output_profile_correction_registration_2026_08_25:
+  source: registration=dfb5dfa333390193aacc2dbf50ab2ebe82b89919; remote_exact_descendant=17d96a07d05a6735adc834112d5f7eb60b37914a; branch=codex/model-acquisition-v2
+  profiles: source=/2,18177,fa2ce18f38129a6b106000d7802d1ea3995921e2b945ae5e52457908f548e7cf; composition=/3,9764,c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0; receipt=tinyrustlm.qwen3_conversion_receipt.v2
+  rule: physical_source_tensors=311; logical_slm2_tensors=310; tied_output=required-exact-dtype-shape-length-streamed-payload-equality-before-output; other_extra=fatal; duplicate_emission=false
+  checks: focused=34/34; json=pass; diff=pass; frozen_goal=pass; implementation_changed=false; output_created=false
+  resume: clean-cut Rust and managed owners to only new identities; add full positive/negative regressions and receipt evidence; green gates; commit/push/fresh-fetch; then register all-new one-shot roots
+  claims: structural=false; runtime=false; browser=false; quality=false; p2p=false; publication=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
 qwen3_execution_v2_tied_output_defect_checkpoint_2026_08_25:
   source: registration=33f306673007ceaec96fdbdfb1106c6633605b64; result=7314338e1f078f41fff690f74bccf0c9beca0c07; branch=codex/model-acquisition-v2; result_remote_exact=true
   result: status=terminal-native-rejection; bytes=8275; sha256=4b2c957943d91fe7023d5ab78d2582735d21196e93403c212a9b104204bc970c; private_verification_sha256=95cb01c7f989f25db62fae8719e4389fc75d00b26dcf6c80ca4a17ccb116ed20; rust_build=1/1-pass; managed_build=1/1-pass; controller=1/1; converter_launch=1/1; converter_exit=1; error=qwen3-tensor-inventory-mismatch; managed_inspection=not-invoked; retry=false; cleanup=false

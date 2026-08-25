@@ -1,7 +1,15 @@
-profile: tinyrustlm.source-workspace.v403
+profile: tinyrustlm.source-workspace.v404
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-25T07:39:36Z
+updated_utc: 2026-08-25T07:50:08Z
+
+current_checkpoint_2026_08_25_qwen3_tied_output_profile_correction_registration:
+  source_control: Output-free registration commit `dfb5dfa333390193aacc2dbf50ab2ebe82b89919` plus formatting descendant `17d96a07d05a6735adc834112d5f7eb60b37914a` are pushed and fresh-fetch exact on `codex/model-acquisition-v2`; `17d96a0` is equal across local HEAD, tracking, FETCH_HEAD, and actual remote. The protected tree and `D:` were not modified.
+  source_profile: `qwen3-safetensors-conversion-profile.v2.json` is 18,177 bytes at SHA256 `fa2ce18f38129a6b106000d7802d1ea3995921e2b945ae5e52457908f548e7cf`. It requires tied config, exactly 311 physical source tensors, exactly 310 logical SLM2 tensors, exact streamed dtype/shape/length/payload equality between `lm_head.weight` and `model.embed_tokens.weight`, no unrelated extra, no duplicate logical emission, and receipt schema `tinyrustlm.qwen3_conversion_receipt.v2`.
+  composition_profile: `qwen3-composition-conversion-profile.v3.json` is 9,764 bytes at SHA256 `c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0`. It binds only model producer `/2`, its exact profile hash, the v2 model receipt, and the existing exact compatible tokenizer/artifact graph.
+  evidence: Architecture record is 8,117 bytes at SHA256 `dab7c1ff1c686700f4c3b18c80e8cc91054bf0e310f3b4438a24377f47f66dc1`; focused historical, registration, source-lock, and preserved-result tests pass 34/34; frozen goal hash remains exact; diff and JSON checks pass.
+  exact_resume: Implement one clean-cut Rust source converter and composition owner, then the sole managed typed consumer, against only the new identities. Add exact-positive BF16/F32 tied fixtures and missing/dtype/shape/length/payload/unrelated-extra/untied negatives; stream equality before output creation; emit and validate distinct physical/logical receipt evidence. Delete old executable identity support in the same green change. Then commit/push/fresh-fetch before any new execution registration or output.
+  claim_boundary: The registrations created no converter implementation change, model bytes, conversion receipt, composition output, runtime/browser/quality/P2P/publication/MemoryEndpoints evidence, or campaign credit. `/2` execution roots remain immutable; counters remain 0/20, 0/50, 0/25, 0/40, 0/20.
 
 current_checkpoint_2026_08_25_qwen3_execution_v2_tied_output_profile_defect:
   source_control: Execution registration commit `33f306673007ceaec96fdbdfb1106c6633605b64` and minimized result commit `7314338e1f078f41fff690f74bccf0c9beca0c07` are pushed and fresh-fetch exact on `codex/model-acquisition-v2`; `7314338` is equal across local HEAD, tracking, FETCH_HEAD, and actual remote. Protected `E:\Source\Rust\TinyRustLM.com` and `D:` were not modified.
