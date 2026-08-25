@@ -1,11 +1,23 @@
-profile: runtime-mirust.long-term-memory-ledger.v354
-updated_utc: 2026-08-25T00:13:55Z
+profile: runtime-mirust.long-term-memory-ledger.v355
+updated_utc: 2026-08-25T01:20:47Z
 storage_mode: hybrid
 ledger_rule:
   pointer_only_not_context_free: true
   summary_policy: Routing-only, one sentence, 35 words maximum, no durable body memory.
   allowed_statuses: current, retired, superseded, quarantined
 records:
+  - stable_id: tinyrustlm_companion_rotation_revocation_2026_08_24_current
+    memory_domain: tinyrustlm.companion.rotation_revocation
+    pointer_type: architecture_report
+    path: docs/architecture/2026-08-24-companion-rotation-revocation-state.md
+    target_location: docs/architecture/2026-08-24-companion-rotation-revocation-state.md
+    label: Companion Rotation And Revocation State
+    summary: Routes canonical status, two-phase key rotation, exact lost-commit replay, response-before-erasure revocation, bounded process tombstones, current tests, nonclaims, and the strict Kestrel next step.
+    pointer_status: current
+    authority: corrected profile /2 rotation and revocation implementation
+    source_authority: implementation commit 6537c6070ecd109c65791493864d8bd90ac8971d
+    sha256: 821cfc368088d1ad8eb7f8410e0d40b9469dd2b00f289567bf10662623327542
+    bytes: 15746
   - stable_id: tinyrustlm_companion_installation_pairing_session_2026_08_24_current
     memory_domain: tinyrustlm.companion.installation_pairing_session
     pointer_type: architecture_report

@@ -1,5 +1,13 @@
-profile: runtime-mirust.operations.v126
-updated_utc: 2026-08-25T00:13:55Z
+profile: runtime-mirust.operations.v127
+updated_utc: 2026-08-25T01:20:47Z
+companion_rotation_revocation_checkpoint_2026_08_24:
+  source: commit=6537c6070ecd109c65791493864d8bd90ac8971d; tree=fc988afd8d9c21d13ca6a90b6abe7194e13afc6e; branch=codex/model-acquisition-v2; local_tracking_fetch_direct_remote_exact=true
+  authority: profile=tinyrustlm.companion.loopback-capability/2; registration_commit=912f8ebe1a2b774977eaf2ed298d8ac162d35fa0
+  architecture: path=docs/architecture/2026-08-24-companion-rotation-revocation-state.md; bytes=15746; sha256=821cfc368088d1ad8eb7f8410e0d40b9469dd2b00f289567bf10662623327542
+  checks: managed=189/189-zero-skips; companion=71/71; core=80/80; package=38/38; browser_oracle=8/8; focused=59/59; release_warnings=0; format_change=0; frozen_goal=92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+  complete_node: tests=1189; pass=1173; fail=15; skip=1; private_log_bytes=275220; private_log_sha256=0a65f69297247eae1ab4a97842c0055499469602c31fd9ddbb7d06afa50e7d74; deployment=prohibited
+  output: listener=false; browser_request=false; transfer=false; model=false; deployment=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
+  next_operation: Implement strict ASP.NET Core 8 Kestrel HTTP/1.1 numeric-loopback listener and raw-socket rejection before connecting the memory-only browser client.
 companion_installation_pairing_session_checkpoint_2026_08_24:
   source: commit=66248fd95443b5cdeac5936502a33d4488fcc235; tree=a7ea0d31a2d0901f58994463f58825e717d7fa90; branch=codex/model-acquisition-v2; local_tracking_fetch_direct_remote_exact=true
   authority: profile=tinyrustlm.companion.loopback-capability/2; registration_commit=912f8ebe1a2b774977eaf2ed298d8ac162d35fa0
