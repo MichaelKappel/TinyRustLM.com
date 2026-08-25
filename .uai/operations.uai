@@ -1,5 +1,12 @@
-profile: runtime-mirust.operations.v152
-updated_utc: 2026-08-25T19:41:56Z
+profile: runtime-mirust.operations.v153
+updated_utc: 2026-08-25T20:23:53Z
+managed_custody_scratch_inspector_staging_clean_gate_2026_08_25:
+  state: implementation_complete=true; committed=true; pushed=true; remote_exact=true; implementation_commit=fe4c78c0eb8c82f79377791bf7262687d21a2993; implementation_tree=e4ddd18e2e034a0ef9b17674ace61f61548cfffd; clean_gate=pass; evidence_checkpoint_pending=true; execution_v8_registered=false; private_v8_names_created=0
+  identities: project=dotnet/tools/TinyRustLM.CompositionInspector/TinyRustLM.CompositionInspector.csproj,1415,f34b58e31473913aaf8f2fd99b1220cf6af94c6c8f943db0a853da8f35b3eddc; test=tinyrustlm/tests/qwen3-managed-custody-scratch-inspector-staging.test.js,4538,ad1e280ccdcac51bc1af12fe54affc108703caba1cce4a4cd7c8e24cc429cda7; architecture=8808,79e9761a9400d9d9d4d5d13923b31b2abeccae82b7e6f5f388a51cee80c59060
+  contract: property=TinyRustLmCustodyScratchInspectorSource; source=absolute+existing+explicit; output=tinyrustlm-build-scratch-inspect.exe; hardlink=false; symlink=false; discovery=false; alternate=false; fallback=false
+  gates: staging=3/3; custody_controller_staging=29/29; managed_build=0-warnings/0-errors; managed_tests=207/207; clean_standard=1387-pass/0-fail/2-explicit-skip/1389-total/430990.3494-ms; release_surface=23/23; release_run=5fa8c5c4d8ea79aeb52de38d4e607bb172ea59765d75ea21523fd42c48533bbf; aggregate=3995/cd4942f814d46452370a24c5ffe3c01ce85dcb1734856cdb3a3d8bef5edd7db8; maintained_verify=pass; independent_hash=pass; release_stderr_nonempty=0
+  next: commit+push+fresh-verify bounded architecture/UAI checkpoint; then select all-new absent names and preregister output-free `/8` against the exact new parent
+  claims: staging_mechanism=true; registered_build=false; conversion=false; slm2=false; parity=false; browser=false; quality=false; p2p=false; publication=false; deployment=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
 qwen3_execution_v8_controller_build_command_clean_cut_2026_08_25:
   state: implementation_complete=true; committed=true; pushed=true; remote_exact=true; implementation_commit=e48bb15445b62e951e56aa17c9c045df2e748bd4; implementation_tree=9099c150a9ef21bc9cf1124125b149caecef3ad4; clean_gate=pass; execution_v8_registered=false; private_v8_names_created=0
   identities: controller=tinyrustlm/tools/qwen3-composition-execution-controller.js,33811,c26633570f00155454842f56d23c27944b57091cd7f492c4f0bdde6386b3fdf6; test=7780,9e9324ae3aa95d929bcdeab8d9ff7a88675b77b28a3f54bd9cd63368e237bc54; architecture=7381,3ac51645029fbd6ef9a4ffc02fbab18edb7d98892fd9bb36818c4a6d53762964

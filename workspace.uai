@@ -1,7 +1,7 @@
-profile: tinyrustlm.source-workspace.v422
+profile: tinyrustlm.source-workspace.v423
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-25T19:41:56Z
+updated_utc: 2026-08-25T20:23:53Z
 
 prelaunch_product_boundary:
   product: TinyRustLM is one unversioned prelaunch product; product V1 and product V2 do not exist.
@@ -9,6 +9,13 @@ prelaunch_product_boundary:
   clean_cut: Every replacement must become the sole maintained path and delete its complete superseded executable closure in the same fully tested cutover. Excluding old source from a default build is insufficient when any maintained caller, package, test helper, documentation, marketing, or site asset can still reach it.
   release_gate: No publication or deployment while compatibility behavior, product-version selection, fallback, repair, temporary patches, TODO debt, stale documentation, weakened tests, known defects, or registered obsolete executable paths remain in the released closure.
   history: Preserve immutable receipts and raw failures as inert evidence; never turn historical preservation into executable legacy support.
+
+current_checkpoint_2026_08_25_managed_custody_scratch_inspector_staging_clean_gate:
+  implementation: The managed composition-inspector build now has one closed `AfterTargets=Build` staging boundary activated only by absolute existing `TinyRustLmCustodyScratchInspectorSource`. It copies exact bytes without hardlinks or symbolic links to fixed output `tinyrustlm-build-scratch-inspect.exe`; there is no discovery, alternate destination, compatibility property, fallback, retry, repair, or post-build adoption route. This makes a managed custody `/3` request representable without weakening the current scratch-inspection contract.
+  authority: Implementation commit `fe4c78c0eb8c82f79377791bf7262687d21a2993`, tree `e4ddd18e2e034a0ef9b17674ace61f61548cfffd`, is pushed, freshly fetched, and exact across local HEAD, tracking, FETCH_HEAD, and direct remote. Project is 1,415 bytes/SHA256 `f34b58e31473913aaf8f2fd99b1220cf6af94c6c8f943db0a853da8f35b3eddc`; dedicated test is 4,538 bytes/SHA256 `ad1e280ccdcac51bc1af12fe54affc108703caba1cce4a4cd7c8e24cc429cda7`; updated architecture is 8,808 bytes/SHA256 `79e9761a9400d9d9d4d5d13923b31b2abeccae82b7e6f5f388a51cee80c59060`.
+  verification: Dedicated staging passes 3/3; combined custody/controller/staging passes 29/29; serialized managed release build has zero warnings/errors; managed tests pass 207/207. At exact clean implementation source, standard passes 1,387, fails zero, and has exactly two declared skips across 1,389 tests in 430,990.3494 ms. Release run `5fa8c5c4d8ea79aeb52de38d4e607bb172ea59765d75ea21523fd42c48533bbf` passes 23/23 across ten serial shards; maintained verification and independent hashing reproduce the canonical 3,995-byte aggregate SHA256 `cd4942f814d46452370a24c5ffe3c01ce85dcb1734856cdb3a3d8bef5edd7db8`; all release stderr streams are empty.
+  exact_resume: Commit, push, fresh-fetch, and prove this bounded architecture/UAI checkpoint exact across local HEAD, tracking, FETCH_HEAD, and direct remote. Then choose wholly new absent private names and create one separate output-free `/8` registration against that exact new parent, custody `/3`, both Rust outputs, managed helper staging, every terminal predecessor, and the closed final-verification design. Create no `/8` private request, root, stream, build, or output before registration is remote exact.
+  claim_boundary: This is mechanism and clean-gate evidence only. No `/8` material exists; no registered build, qualified converter, conversion, SLM2 artifact, parity, native inference, browser chat, quality, P2P, publication, deployment, MemoryEndpoints operation, or campaign credit exists. Counters remain exactly 0/20, 0/50, 0/25, 0/40, and 0/20.
 
 current_checkpoint_2026_08_25_qwen3_execution_v8_controller_build_command_clean_cut:
   implementation: The sole maintained composition controller now exports and accepts exactly `cargo build --locked --release -p tinyrustlm-build-custody -p tinyrustlm-convert --target x86_64-pc-windows-msvc`. Closed request validation rejects the converter-only predecessor and every reordered, extended, or substituted command before source or evidence inspection. No selector, alias, compatibility command, fallback, retry, repair, or adoption path exists.

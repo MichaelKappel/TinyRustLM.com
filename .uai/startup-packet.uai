@@ -1,5 +1,12 @@
-profile: runtime-mirust.startup-packet.v119
-updated_utc: 2026-08-25T19:41:56Z
+profile: runtime-mirust.startup-packet.v120
+updated_utc: 2026-08-25T20:23:53Z
+current_managed_custody_scratch_inspector_staging_clean_gate_2026_08_25:
+  first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, and `docs/architecture/2026-08-25-qwen3-managed-custody-scratch-inspector-staging.md` before `/8` work.
+  active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  active_branch: codex/model-acquisition-v2
+  checkpoint: implementation=`fe4c78c0eb8c82f79377791bf7262687d21a2993`/tree=`e4ddd18e2e034a0ef9b17674ace61f61548cfffd`,four-way-remote-exact; project=1415/f34b58e31473913aaf8f2fd99b1220cf6af94c6c8f943db0a853da8f35b3eddc; test=4538/ad1e280ccdcac51bc1af12fe54affc108703caba1cce4a4cd7c8e24cc429cda7; architecture=8808/79e9761a9400d9d9d4d5d13923b31b2abeccae82b7e6f5f388a51cee80c59060; standard=1387/0/2 of 1389; release=`5fa8c5c4d8ea79aeb52de38d4e607bb172ea59765d75ea21523fd42c48533bbf`,23/23,aggregate=`cd4942f814d46452370a24c5ffe3c01ce85dcb1734856cdb3a3d8bef5edd7db8`
+  immediate_operation: Commit/push/fresh-fetch this bounded architecture/UAI record and prove exact branch equality. Then choose wholly new absent private names and create a separate output-free `/8` registration against that exact new parent; create no private `/8` material before registration is remote exact.
+  truth_boundary: This proves a clean-gated staging mechanism only. No `/8` request/root/output, qualified build, conversion, SLM2, browser, quality, P2P, publication, deployment, MemoryEndpoints, or campaign evidence exists; counters remain zero.
 current_qwen3_execution_v8_controller_build_command_clean_cut_2026_08_25:
   first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, and `docs/architecture/2026-08-25-qwen3-execution-v8-controller-build-command-clean-cut.md` before `/8` work.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
