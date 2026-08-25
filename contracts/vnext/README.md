@@ -527,6 +527,31 @@ root-cause correction, a clean replacement contract when needed, a new
 registration, and wholly new names. See
 `docs/architecture/2026-08-25-qwen3-real-composition-execution-v8-managed-build-failure.md`.
 
+`qwen3-real-composition-execution-preregistration.v9.json` registers one new
+output-free attempt against sole maintained build-custody profile `/4`. It is
+64,780 canonical UTF-8/LF bytes at SHA-256
+`48982b6d0ed1a996bdd97cfcf14692c068c2ac26b1ade42d76acf1e7ba7ce8c2`.
+It binds remote-exact parent commit
+`157b96bd949b0d62ca3478eb29e57da3d11a7430`, tree
+`1145eed94206b7775f16ef2282954d510674fb43`, immutable execution `/8` and
+all seven earlier terminal results, 25 current source sentinels, exact external
+tools, and 15 wholly new private names observed absent before registration.
+
+Custody `/4` binds `APPDATA`, `LOCALAPPDATA`, `TEMP`, and `TMP` to exact owned
+children of each new environment root and validates those bindings plus the
+prelaunch directory inventory before roots, before launch, after every child,
+and after scratch inspection. Rust custody and managed custody may each launch
+one child and one qualified scratch inspection. Only both exact custody passes
+permit one controller/converter launch and one read-only managed inspection.
+
+Final private verification uses incompatible schema
+`tinyrustlm.qwen3-composition-execution-verification.v5` and requires both
+owned application-data closures. Registration creates no private file, root,
+build, model, or terminal result; proves no conversion, runtime, browser,
+quality, P2P, publication, or MemoryEndpoints claim; and advances no campaign
+counter. See
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration-v9.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2
