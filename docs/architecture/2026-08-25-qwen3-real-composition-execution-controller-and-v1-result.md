@@ -50,7 +50,8 @@ remains the independent durable inspector.
 Before any evidence root is created, the controller requires:
 
 1. canonical, bounded, path-bearing private request bytes;
-2. exact profile and controller file identities;
+2. exact profile, controller file, and Node executable identities, including
+   Node version, platform, and process architecture;
 3. clean local, tracking, and `FETCH_HEAD` commit equality;
 4. exact build logs, executable size/hash, and PE machine;
 5. streamed validation of every model and tokenizer source member against its
@@ -95,4 +96,3 @@ controller implementation. It does not prove a real conversion, valid
 composition, runtime output, browser output, useful model, peer availability,
 catalog announcement, deployment, MemoryEndpoints continuity, or campaign
 credit. Counters remain 0/20, 0/50, 0/25, 0/40, and 0/20.
-

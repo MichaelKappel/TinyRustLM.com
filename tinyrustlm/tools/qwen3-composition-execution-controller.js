@@ -226,7 +226,10 @@ function validateRequestShape(request) {
     "execution-id");
   requireExactKeys(request.registration, ["repositoryRoot", "profilePath", "profileByteLength",
     "profileSha256", "profileId", "commit", "tree", "branch", "controllerPath",
-    "controllerByteLength", "controllerSha256"], "execution-registration-fields");
+    "controllerByteLength", "controllerSha256", "controllerRuntimePath",
+    "controllerRuntimeByteLength", "controllerRuntimeSha256", "controllerRuntimeVersion",
+    "controllerRuntimePlatform", "controllerRuntimeArchitecture"],
+  "execution-registration-fields");
   requireExactKeys(request.build, ["sourceCommit", "sourceTree", "stdoutPath",
     "stdoutByteLength", "stdoutSha256", "stderrPath", "stderrByteLength", "stderrSha256",
     "executablePath", "executableByteLength", "executableSha256", "peMachine", "command",
@@ -255,14 +258,20 @@ function prepareExecution(requestPath) {
     request.registration.profilePath, "execution-profile-path");
   const controllerPath = requireCanonicalAbsolutePath(
     request.registration.controllerPath, "execution-controller-path");
+  const controllerRuntimePath = requireCanonicalAbsolutePath(
+    request.registration.controllerRuntimePath, "execution-controller-runtime-path");
   invariant(profilePath.startsWith(`${repositoryRoot}${path.sep}`), "execution-profile-location");
   invariant(controllerPath === path.resolve(__filename), "execution-controller-location");
   invariant(Number.isSafeInteger(request.registration.profileByteLength) &&
     request.registration.profileByteLength > 0, "execution-profile-size");
   invariant(Number.isSafeInteger(request.registration.controllerByteLength) &&
     request.registration.controllerByteLength > 0, "execution-controller-size");
+  invariant(Number.isSafeInteger(request.registration.controllerRuntimeByteLength) &&
+    request.registration.controllerRuntimeByteLength > 0, "execution-controller-runtime-size");
   requireSha256(request.registration.profileSha256, "execution-profile-hash");
   requireSha256(request.registration.controllerSha256, "execution-controller-hash");
+  requireSha256(request.registration.controllerRuntimeSha256,
+    "execution-controller-runtime-hash");
   requireCommit(request.registration.commit, "execution-registration-commit");
   requireCommit(request.registration.tree, "execution-registration-tree");
   invariant(typeof request.registration.profileId === "string" &&
@@ -279,6 +288,17 @@ function prepareExecution(requestPath) {
   "execution-profile-binding");
   requireExpectedArtifact(controllerPath, request.registration.controllerByteLength,
     request.registration.controllerSha256, false, "execution-controller-identity");
+  invariant(controllerRuntimePath === path.resolve(process.execPath),
+    "execution-controller-runtime-location");
+  requireExpectedArtifact(controllerRuntimePath,
+    request.registration.controllerRuntimeByteLength,
+    request.registration.controllerRuntimeSha256,
+    false,
+    "execution-controller-runtime-identity");
+  invariant(request.registration.controllerRuntimeVersion === process.version &&
+    request.registration.controllerRuntimePlatform === process.platform &&
+    request.registration.controllerRuntimeArchitecture === process.arch,
+  "execution-controller-runtime-environment");
 
   const head = git(repositoryRoot, ["rev-parse", "HEAD"]);
   const tree = git(repositoryRoot, ["rev-parse", "HEAD^{tree}"]);
@@ -393,7 +413,13 @@ function prepareExecution(requestPath) {
       fetchHead,
       controllerPath,
       controllerByteLength: request.registration.controllerByteLength,
-      controllerSha256: request.registration.controllerSha256
+      controllerSha256: request.registration.controllerSha256,
+      controllerRuntimePath,
+      controllerRuntimeByteLength: request.registration.controllerRuntimeByteLength,
+      controllerRuntimeSha256: request.registration.controllerRuntimeSha256,
+      controllerRuntimeVersion: request.registration.controllerRuntimeVersion,
+      controllerRuntimePlatform: request.registration.controllerRuntimePlatform,
+      controllerRuntimeArchitecture: request.registration.controllerRuntimeArchitecture
     },
     build: {
       sourceCommit: request.build.sourceCommit,

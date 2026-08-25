@@ -35,7 +35,13 @@ function fixtureRequest() {
       branch: "codex/model-acquisition-v2",
       controllerPath: "/repo/controller.js",
       controllerByteLength: 1,
-      controllerSha256: "d".repeat(64)
+      controllerSha256: "d".repeat(64),
+      controllerRuntimePath: "/runtime/node.exe",
+      controllerRuntimeByteLength: 1,
+      controllerRuntimeSha256: "e".repeat(64),
+      controllerRuntimeVersion: "v24.0.0",
+      controllerRuntimePlatform: "win32",
+      controllerRuntimeArchitecture: "x64"
     },
     build: {
       sourceCommit: "b".repeat(40),
