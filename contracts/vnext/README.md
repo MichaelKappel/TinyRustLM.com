@@ -115,17 +115,26 @@ product model. See the immutable before-output decision in
 implementation record in
 `docs/architecture/qwen3-slm2-converter-implementation.md`.
 
-`qwen3-composition-conversion-profile.v1.json` froze the sole complete
-source-to-composition transaction before its Rust implementation and every
-complete output. It is 7,978 bytes at SHA-256
-`2f95f79783ec6cd12160d51f9697c5c77aab2e6cd46afeb5140fdb513e5d8158`.
-It binds related exact model and tokenizer source locks, the exact
-Qwen3-0.6B architecture relationship, six ordered SLM2/Tokenizer2/Template2/
+`qwen3-composition-conversion-profile.v2.json` is the registered sole complete
+source-to-composition transaction. It is 8,835 bytes at SHA-256
+`d6124b6acd174dc6188ca5d7b5a2d334fb33d00f7ef0364b56d9921051121718`.
+It requires equal model and tokenizer source identity and revision, the exact
+compatible model and tokenizer architecture-profile pair, and equality of all
+five shared file records. It binds six ordered SLM2/Tokenizer2/Template2/
 Sampling2/Prompt2/ACG2 artifacts, bounded one-at-a-time dependency resolution,
 create-only terminal pass or rejection evidence, and explicit nonclaims for
-quality, runtime, browser, P2P, and publication.
+quality, runtime, browser, P2P, and publication. Technical `/2` is a contract
+identity, not a second product generation.
 
-The Rust transaction is now implemented. It creates and independently verifies
+The `/1` profile incorrectly required the semantically different model and
+tokenizer architecture-profile IDs to be equal. Preflight found the defect
+before any real complete-composition output. `/1` is terminally invalidated and
+will have no current reader, migration, alias, or fallback. See
+`docs/architecture/2026-08-25-qwen3-composition-source-relationship-correction-preregistration.md`.
+
+The predecessor Rust transaction is implemented, but its relationship check is
+not executable for real source and is being replaced by the registered `/2`
+clean cut. The complete transaction creates and independently verifies
 all six artifacts, exact cross-member vocabulary/context relationships, bounded
 resource preflight, component receipts, and mutually exclusive terminal
 evidence. The component converter commands remain private exact compiler
