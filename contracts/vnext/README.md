@@ -276,6 +276,21 @@ registration creates no private root, output, structural result, broader
 claim, or campaign credit. See
 `docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration-v4.md`.
 
+Execution `/4` then launched its registered Rust build once, but the external
+observer attempted to read unavailable process-exit-time metadata before it
+captured the child exit code. Cargo's final text and a preserved 852,992-byte
+x64 PE candidate at SHA-256
+`cd24a738b327b89d03501205301e89321bbd3955be91dfb245d2219a8b9201d5`
+are indirect observations and do not satisfy the exact zero-exit-code gate.
+The 5,293-byte public result at SHA-256
+`c928b55cf9eb871c09b7f1e1aacf1983bf3a7e2fe6ca4697aa58c50648187a35`
+therefore closes `/4` as `terminal-prelaunch-failure`. Its control and Rust
+build roots are preserved; no managed build, request, controller, converter,
+evidence root, output root, or managed inspection occurred. A new attempt
+requires a tested source-controlled build-custody owner plus wholly new roots.
+See
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-v4-result-and-build-custody-defect.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2

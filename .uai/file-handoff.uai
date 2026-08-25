@@ -1,5 +1,11 @@
-profile: runtime-mirust.file-handoff.v105
-updated_utc: 2026-08-25T10:35:00Z
+profile: runtime-mirust.file-handoff.v106
+updated_utc: 2026-08-25T11:25:43Z
+current_qwen3_execution_v4_build_custody_failure_2026_08_25:
+  first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/qwen3-real-composition-execution-result.v4.json`, and `docs/architecture/2026-08-25-qwen3-real-composition-execution-v4-result-and-build-custody-defect.md` before any build or conversion work.
+  terminal_truth: `/4` registration `8948baf1d21a73cde5781cf74a7c5020fd0b8cca` was remote-exact and launched one Rust build. Its child exit code was not captured because optional `ExitTime` access failed first. Cargo `Finished` and the candidate PE do not prove success. Public result is 5,293 bytes at SHA256 `c928b55cf9eb871c09b7f1e1aacf1983bf3a7e2fe6ca4697aa58c50648187a35`.
+  preservation: Preserve `/4` control/build roots and raw logs forever. Never create its absent managed-build/evidence/output roots; never retry, resume, delete, repair, adopt, relabel, or infer build success. Converter/controller/managed counts remain zero.
+  exact_resume: Validate and commit/push/fresh-verify this result checkpoint. Implement a source-controlled build-custody owner with deterministic fake-child/fault tests and durable exit-first terminal records; commit/push/fresh-verify it. Then preregister `/5` output-free with wholly new absent roots before any build. Do not rerun accepted Tokenizer2 Chromium evidence.
+  truth_boundary: No successful build, conversion, complete composition, runtime, browser, quality, P2P, publication, deployment, MemoryEndpoints, or campaign proof; counters remain zero.
 current_qwen_tokenizer2_output_path_clean_cut_implementation_2026_08_25:
   first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, and `docs/architecture/2026-08-25-qwen-tokenizer2-output-path-correction-implementation.md` first.
   current_truth: Current Rust and managed owners have one clean filesystem path: Tokenizer2 `/2`, composition `/4`, `.tokenizer2`, `tokenizer.tokenizer2`, and receipt v2. All predecessor executable IDs, accepted `.tok2`, selectors, aliases, migrations, fallbacks, repair, and retry are absent. Internal `minimodel.tok2` is unchanged format metadata.

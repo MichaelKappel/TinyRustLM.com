@@ -1,5 +1,13 @@
-profile: runtime-mirust.startup-packet.v107
-updated_utc: 2026-08-25T10:35:00Z
+profile: runtime-mirust.startup-packet.v108
+updated_utc: 2026-08-25T11:25:43Z
+current_qwen3_execution_v4_build_custody_failure_2026_08_25:
+  first_read: Read newest `workspace.uai`, the `/4` result JSON, build-custody architecture record, `.uai/totem.uai`, and `.uai/taboo.uai` before older Qwen routes.
+  active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  active_branch: codex/model-acquisition-v2
+  protected_root: E:\Source\Rust\TinyRustLM.com remains untouched; never write `D:`.
+  current_result: `/4` is terminal because child exit status was not captured. Preserve its two existing roots; never create the later three. Cargo text and candidate PE are indirect only. Public result is 5,293 bytes/SHA256 `c928b55cf9eb871c09b7f1e1aacf1983bf3a7e2fe6ca4697aa58c50648187a35`.
+  immediate_operation: Validate and commit/push/fresh-verify `/4`; implement and hostile-test one source-controlled exit-first build-custody owner; commit/push/fresh-verify it; preregister `/5` output-free with wholly new absent roots; execute only after remote equality.
+  truth_boundary: No successful build, conversion, complete composition, runtime, browser, quality, P2P, publication, deployment, MemoryEndpoints, or campaign gate advanced; counters remain zero.
 current_qwen_tokenizer2_output_path_clean_cut_implementation_2026_08_25:
   first_read: Read newest `workspace.uai` and `docs/architecture/2026-08-25-qwen-tokenizer2-output-path-correction-implementation.md` before older Qwen routes.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819

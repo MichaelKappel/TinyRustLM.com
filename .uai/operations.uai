@@ -1,5 +1,13 @@
-profile: runtime-mirust.operations.v139
-updated_utc: 2026-08-25T10:35:00Z
+profile: runtime-mirust.operations.v140
+updated_utc: 2026-08-25T11:25:43Z
+qwen3_execution_v4_build_custody_failure_2026_08_25:
+  registration: commit=8948baf1d21a73cde5781cf74a7c5020fd0b8cca; tree=6a25e28f45b9bf69d82782efb965a9c0da5dee76; profile_bytes=31580; profile_sha256=f3f549a108c4a3acb767b241f2d1ef6d2db737c67442f059e8e943dabb992275; remote_exact=true; roots_absent_before=true
+  build: rust_launches=1; child_exit_code=unknown; reason=rust-build-exit-code-not-captured; stdout_bytes=0; stdout_sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; stderr_bytes=1874; stderr_sha256=edf2073ffe971fea9394d06c99c7fc201f34515aad85b3d2c41ae9a097a9fdae
+  indirect: cargo_finished=true; candidate_bytes=852992; candidate_sha256=cd24a738b327b89d03501205301e89321bbd3955be91dfb245d2219a8b9201d5; candidate_pe=x64; accepted_build=false
+  boundary: control_root=preserve; rust_build_root=preserve; managed_build_root=never-created; evidence_root=never-created; output_root=never-created; managed_builds=0; request_bindings=0; controller_invocations=0; converter_launches=0; managed_inspections=0; outputs=0; retry=false; resume=false; cleanup=false; adoption=false
+  result: path=contracts/vnext/qwen3-real-composition-execution-result.v4.json; bytes=5293; sha256=c928b55cf9eb871c09b7f1e1aacf1983bf3a7e2fe6ca4697aa58c50648187a35; status=terminal-prelaunch-failure
+  resume: commit/push/fresh-verify result; implement+fault-test one source-controlled custody owner; commit/push/fresh-verify owner; preregister `/5` output-free with wholly new absent roots; execute only after remote exact
+  claims: successful_build=false; conversion=false; complete_composition=false; runtime=false; browser=false; quality=false; p2p=false; publication=false; deployment=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
 qwen_tokenizer2_output_path_clean_cut_implementation_2026_08_25:
   parent: commit=c5f60e958872e125f52c9a5355eb7fdd4977b367; remote_exact=true; preserved_execution=/3; retry=false; reuse=false
   identities: tokenizer_profile=/2,8394,97b381c73e7191f245ba132421a81bf015092b8550599413a6c81c6dae0afae4; composition_profile=/4,11421,19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8; suffix=.tokenizer2; member=tokenizer.tokenizer2; receipt_schema=tinyrustlm.qwen_tokenizer2_conversion_receipt.v2
