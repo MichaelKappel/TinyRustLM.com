@@ -354,6 +354,25 @@ composition, runtime, browser, quality, publication, deployment, or campaign
 evidence. See
 `docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration-v6.md`.
 
+The one `/6` Rust custody execution reached an immutable
+`terminal-build-failure`. Its exact child exit code is `101`; bounded stderr
+is 1,402 private bytes at SHA-256
+`1e088c4cd8c16d71ecec3d73b0db8b93d9afdd3df75a61eaea3fbc19615d38bc`.
+The registered command `PATH` had 35 entries but zero parent containing
+`link.exe`, while an installed MSVC x64 linker was observed outside that
+environment. This establishes a private request-environment defect, not a
+source, converter, or custody-owner defect. The create-only request, both Rust
+custody roots, six evidence records, and 102-file partial target remain
+preserved; no managed request/root/build, composition request/root,
+controller, converter, managed inspection, or composition artifact exists.
+The public result is
+`qwen3-real-composition-execution-result.v6.json`, 6,644 canonical bytes at
+SHA-256
+`58d6ce16304d804d3a09cfd2c6544e8fa10b39080359040383df3f2ac68bb72c`.
+`/6` cannot be retried, cleaned, repaired, or adopted. A later attempt must
+preregister all-new names and an exact MSVC linker-complete environment. See
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-v6-msvc-linker-environment-failure.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2

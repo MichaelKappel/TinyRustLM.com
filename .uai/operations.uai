@@ -1,5 +1,13 @@
-profile: runtime-mirust.operations.v143
-updated_utc: 2026-08-25T12:53:47Z
+profile: runtime-mirust.operations.v144
+updated_utc: 2026-08-25T13:21:07Z
+qwen3_execution_v6_msvc_linker_environment_failure_2026_08_25:
+  registration: commit=701d770c0ff1f1ca5fa573610f9fb532dd6af793; tree=e756ffaddb9fa76e256f6bc83e9b025bcd5561c3; profile_bytes=42975; profile_sha256=c1c89b1e1739d45c52c43e706b566418947a354f089a546dd99624bfff40a7fd; remote_exact_before_private=true; names_absent=9/9
+  rust: request_bytes=5569; request_sha256=57a41f877be767e55c34aeb05211761de658f53590d6cdcc6f4faa3237dec70c; preflight=1/1-pass; execute=1/1; process_started=true; exit=101; terminal=terminal-build-failure; code=build-custody-child-nonzero; stdout=0/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; stderr=1402/1e088c4cd8c16d71ecec3d73b0db8b93d9afdd3df75a61eaea3fbc19615d38bc
+  root_cause: code=msvc-linker-not-found-in-registered-command-environment; path_entries=35; linker_parents=0; installed_x64_linker_outside_registered_path=true; source_defect=false; converter_defect=false; custody_owner_defect=false; request_environment_defect=true
+  preservation: rust_request=true; rust_control=true; rust_target=true; target_files=102; target_bytes=10527012; managed_request=false; managed_roots=0; composition_request=false; controller=0; converter=0; inspection=0; output=false; retry=false; cleanup=false; adoption=false
+  result: path=contracts/vnext/qwen3-real-composition-execution-result.v6.json; bytes=6644; sha256=58d6ce16304d804d3a09cfd2c6544e8fa10b39080359040383df3f2ac68bb72c; focused_tests=8/8
+  resume: commit/push/fresh-verify closure; implement+hostile-test exact linker-complete x64 MSVC/SDK request materializer; push/fresh-verify; register `/7` output-free with all-new absent names before any private material
+  claims: registered=true; build_attempted=true; build_pass=false; conversion=false; complete_composition=false; runtime=false; browser=false; quality=false; p2p=false; publication=false; deployment=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
 qwen3_execution_v5_source_anchor_invalidation_2026_08_25:
   registration: commit=307b94009342e76974ccdc19e56a9e1f7f9788d1; tree=76a73ebf4ea34adf72617f95033e56f611b5a8da; profile_bytes=41928; profile_sha256=221afa82a71da22516dda142f90270a08205cdced9df6093108b0bacfaf88b55; remote_exact_before_private=true
   invalidation: observed_current_commit=81631d0b5bd2f23c5defc17e7027884bdce0be86; observed_current_tree=e82a38ba1ff708eef30058da69619b7e5b5f43f4; registration_is_ancestor=true; registration_is_remote_tip=false; changed_paths=1; changed_executable_sentinels=0; reason=registration-commit-no-longer-remote-tip-before-private-materialization

@@ -1,5 +1,13 @@
-profile: runtime-mirust.startup-packet.v110
-updated_utc: 2026-08-25T12:53:47Z
+profile: runtime-mirust.startup-packet.v111
+updated_utc: 2026-08-25T13:21:07Z
+current_qwen3_execution_v6_msvc_linker_environment_failure_2026_08_25:
+  first_read: Read newest `workspace.uai`, `contracts/vnext/qwen3-real-composition-execution-result.v6.json`, its architecture record, `.uai/totem.uai`, and `.uai/taboo.uai` before material work.
+  active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  active_branch: codex/model-acquisition-v2
+  protected_root: E:\Source\Rust\TinyRustLM.com remains untouched; never write `D:`.
+  current_result: `/6` registration `701d770`, request SHA256 `57a41f877be767e55c34aeb05211761de658f53590d6cdcc6f4faa3237dec70c`, one preflight, and one build produced exact exit 101 because no registered PATH entry contained `link.exe`. Result SHA256 `58d6ce16304d804d3a09cfd2c6544e8fa10b39080359040383df3f2ac68bb72c` is terminal; preserve request, both Rust roots, six records, and 102-file target. All later operations are zero.
+  immediate_operation: Run complete closure gates, commit/push/fresh-verify. Then implement and hostile-test a sole exact linker-complete x64 MSVC/Windows SDK request materializer/validator, commit/push/fresh-verify it, and only then preregister `/7` output-free with all-new absent names.
+  truth_boundary: Never retry, clean, adopt, repair, or extend `/6`. No successful build, conversion, output, broader claim, MemoryEndpoints authority, or campaign gate advanced; counters remain zero.
 current_qwen3_execution_v5_source_anchor_invalidation_2026_08_25:
   first_read: Read newest `workspace.uai`, `contracts/vnext/qwen3-real-composition-execution-result.v5.json`, its architecture record, `.uai/totem.uai`, and `.uai/taboo.uai` before material work.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819

@@ -1,7 +1,7 @@
-profile: tinyrustlm.source-workspace.v413
+profile: tinyrustlm.source-workspace.v414
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-25T12:53:47Z
+updated_utc: 2026-08-25T13:21:07Z
 
 prelaunch_product_boundary:
   product: TinyRustLM is one unversioned prelaunch product; product V1 and product V2 do not exist.
@@ -9,6 +9,14 @@ prelaunch_product_boundary:
   clean_cut: Every replacement must become the sole maintained path and delete its complete superseded executable closure in the same fully tested cutover. Excluding old source from a default build is insufficient when any maintained caller, package, test helper, documentation, marketing, or site asset can still reach it.
   release_gate: No publication or deployment while compatibility behavior, product-version selection, fallback, repair, temporary patches, TODO debt, stale documentation, weakened tests, known defects, or registered obsolete executable paths remain in the released closure.
   history: Preserve immutable receipts and raw failures as inert evidence; never turn historical preservation into executable legacy support.
+
+current_checkpoint_2026_08_25_qwen3_execution_v6_msvc_linker_environment_failure:
+  registration: Execution `/6` profile `contracts/vnext/qwen3-real-composition-execution-preregistration.v6.json` is 42,975 canonical bytes at SHA256 `c1c89b1e1739d45c52c43e706b566418947a354f089a546dd99624bfff40a7fd`. Its four-path commit `701d770c0ff1f1ca5fa573610f9fb532dd6af793`, tree `e756ffaddb9fa76e256f6bc83e9b025bcd5561c3`, was exact across local, tracking, fresh FETCH_HEAD, and direct remote before all nine private names were reconfirmed absent.
+  terminal_truth: One 5,569-byte create-only Rust custody request at SHA256 `57a41f877be767e55c34aeb05211761de658f53590d6cdcc6f4faa3237dec70c` passed one read-only preflight and launched once. The custody owner durably captured exact exit code 101 and terminal `build-custody-child-nonzero`; raw stderr is 1,402 private bytes at SHA256 `1e088c4cd8c16d71ecec3d73b0db8b93d9afdd3df75a61eaea3fbc19615d38bc`. Result is `terminal-rust-build-failure` because the registered 35-entry command PATH contained zero parent with `link.exe` while an installed MSVC x64 linker existed outside that environment.
+  preservation: Preserve the create-only request, both Rust custody roots, six evidence records, and the 102-file/10,527,012-byte partial target forever. No managed request/root/build, composition request/root, controller, converter, managed inspection, composition artifact, or private execution verification exists. Never retry, resume, clean, overwrite, repair, relabel, or adopt `/6` material.
+  public_result: `contracts/vnext/qwen3-real-composition-execution-result.v6.json` is 6,644 canonical bytes at SHA256 `58d6ce16304d804d3a09cfd2c6544e8fa10b39080359040383df3f2ac68bb72c`; architecture is `docs/architecture/2026-08-25-qwen3-real-composition-execution-v6-msvc-linker-environment-failure.md`; focused tests pass 8/8.
+  exact_resume: Run full Qwen/custody/clean-cut/UAI/hygiene gates, commit/push/fresh-verify this closure, then implement and hostile-test one source-controlled linker-complete request materializer/validator. It must pin exact x64 MSVC linker and Windows SDK tool/library identities, prove the registered environment resolves only those tools, prohibit `D:` writes, and remain clean-slate. Commit/push/fresh-verify that correction before an output-free `/7` registration with wholly new absent roots and request names.
+  claim_boundary: `/6` proves one honest registered Rust build failure and corrected exit custody only. It proves no successful build, conversion, complete composition, source parity, native runtime, browser WASM/chat, quality, P2P, package, publication, deployment, MemoryEndpoints, or campaign evidence. MemoryEndpoints remains unauthorized; counters remain exactly 0/20, 0/50, 0/25, 0/40, and 0/20.
 
 current_prelaunch_cleanup_audit_2026_08_25:
   status: open-hard-release-blocker; the repository is not yet entitled to claim complete clean-slate cutover.

@@ -1,0 +1,183 @@
+{
+  "schema": "tinyrustlm.qwen3-real-composition-execution-result.v6",
+  "executionProfileId": "tinyrustlm.qwen3-real-composition-execution/6",
+  "executionId": "qwen3-composition-c1899de-20260825-v6",
+  "status": "terminal-rust-build-failure",
+  "observedAtUtc": "2026-08-25T13:16:08.472Z",
+  "predecessor": {
+    "resultPath": "contracts/vnext/qwen3-real-composition-execution-result.v5.json",
+    "resultByteLength": 4372,
+    "resultSha256": "06006e0533c1f1b02492aacb8aee675ac1c5dbd50d6c3f67441b58918bd0c798",
+    "status": "terminal-prelaunch-failure",
+    "reused": false,
+    "modified": false
+  },
+  "registration": {
+    "profilePath": "contracts/vnext/qwen3-real-composition-execution-preregistration.v6.json",
+    "profileByteLength": 42975,
+    "profileSha256": "c1c89b1e1739d45c52c43e706b566418947a354f089a546dd99624bfff40a7fd",
+    "commit": "701d770c0ff1f1ca5fa573610f9fb532dd6af793",
+    "tree": "e756ffaddb9fa76e256f6bc83e9b025bcd5561c3",
+    "branch": "codex/model-acquisition-v2",
+    "remoteExactBeforePrivateRequest": true,
+    "remoteExactBeforeRustBuild": true
+  },
+  "rustBuildCustody": {
+    "operationId": "qwen3-composition-v6-rust-build",
+    "request": {
+      "byteLength": 5569,
+      "sha256": "57a41f877be767e55c34aeb05211761de658f53590d6cdcc6f4faa3237dec70c",
+      "createOnly": true,
+      "privatePathPublished": false
+    },
+    "preflight": {
+      "invocationCount": 1,
+      "status": "ready",
+      "code": "build-custody-preflight-pass",
+      "controlRootAbsent": true,
+      "targetRootAbsent": true
+    },
+    "execution": {
+      "invocationCount": 1,
+      "processStarted": true,
+      "processIdObserved": true,
+      "startedAtUtc": "2026-08-25T13:16:07.313Z",
+      "exitedAtUtc": "2026-08-25T13:16:08.472Z",
+      "exitCode": 101,
+      "signal": null,
+      "timedOut": false,
+      "stdoutOverflow": false,
+      "stderrOverflow": false,
+      "spawnErrorCode": null,
+      "streamErrorCode": null,
+      "captureCloseCode": null
+    },
+    "evidence": {
+      "binding": {
+        "byteLength": 6826,
+        "sha256": "1de2fbaf23cdec6f5568c440f332048ca122adefc40cd61f85e0fc940700a9de"
+      },
+      "start": {
+        "byteLength": 451,
+        "sha256": "d84639b1d6e51ddaa1b40798b07b7c1331ea74ce49eafb47a9bbee466e6b3e2f"
+      },
+      "stdout": {
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "published": false
+      },
+      "stderr": {
+        "byteLength": 1402,
+        "sha256": "1e088c4cd8c16d71ecec3d73b0db8b93d9afdd3df75a61eaea3fbc19615d38bc",
+        "published": false
+      },
+      "processTerminal": {
+        "byteLength": 616,
+        "sha256": "6eceed61aebef41285271356b957f4185d4fa4e732580b69a27c15530a51750f"
+      },
+      "terminal": {
+        "byteLength": 2209,
+        "sha256": "0f332516a5a0637021314247cb35dc1c0d4b5c19c3f49d0c5e2ce42baf667c8a",
+        "status": "terminal-build-failure",
+        "code": "build-custody-child-nonzero"
+      }
+    },
+    "targetInventory": {
+      "fileCount": 102,
+      "directoryCount": 85,
+      "aggregateFileBytes": 10527012,
+      "reparsePointCount": 0,
+      "requiredOutputCount": 0,
+      "preserved": true,
+      "adoptionAllowed": false
+    },
+    "rootCause": {
+      "code": "msvc-linker-not-found-in-registered-command-environment",
+      "registeredPathEntryCount": 35,
+      "registeredPathLinkerParentCount": 0,
+      "installedMsvcX64LinkerObservedOutsideRegisteredPath": true,
+      "sourceCodeDefectEstablished": false,
+      "converterDefectEstablished": false,
+      "custodyOwnerDefectEstablished": false,
+      "privateRequestEnvironmentDefectEstablished": true,
+      "rootCauseEstablished": true
+    },
+    "relevantBuildProcessesObservedAfterTerminal": 0,
+    "retryAllowed": false,
+    "resumeAllowed": false,
+    "cleanupAllowed": false,
+    "outputAdoptionAllowed": false
+  },
+  "laterOperationObservation": {
+    "managedCustodyRequestCreated": false,
+    "managedCustodyPreflightCount": 0,
+    "managedCustodyExecuteCount": 0,
+    "managedBuildAttemptCount": 0,
+    "compositionRequestCreated": false,
+    "controllerInvocationCount": 0,
+    "converterLaunchCount": 0,
+    "managedInspectionInvocationCount": 0,
+    "privateExecutionBindingCreated": false,
+    "compositionArtifactCreated": false,
+    "privateVerificationCreated": false
+  },
+  "rootObservation": {
+    "registeredLogicalNameCount": 9,
+    "rustCustodyRequestCreated": true,
+    "rustCustodyControlRootCreated": true,
+    "rustCustodyTargetRootCreated": true,
+    "managedCustodyRequestCreated": false,
+    "managedCustodyControlRootCreated": false,
+    "managedCustodyTargetRootCreated": false,
+    "compositionRequestCreated": false,
+    "controllerEvidenceRootCreated": false,
+    "compositionOutputRootCreated": false,
+    "allCreatedPrivateMaterialPreserved": true
+  },
+  "decision": {
+    "status": "terminal-rust-build-failure",
+    "reasonCode": "msvc-linker-not-found-in-registered-command-environment",
+    "stage": "rust-build-custody",
+    "rootCauseEstablished": true,
+    "registrationClosed": true,
+    "retryUnderRegistrationAllowed": false,
+    "existingPrivateEvidenceMayBeDeleted": false,
+    "existingPrivateEvidenceMayBeOverwritten": false,
+    "existingTargetMayBeAdopted": false,
+    "laterOperationsAuthorized": false,
+    "newAttemptRequiresNewRegistrationAndAllNewLogicalNames": true,
+    "newAttemptRequiresExactMsvcLinkerEnvironmentBinding": true
+  },
+  "claimBoundary": {
+    "realConversionAttemptRegistered": true,
+    "privateCustodyRequestCreated": true,
+    "rustBuildCustodyCompleted": true,
+    "rustBuildAttempted": true,
+    "rustReleaseBuildCompleted": false,
+    "managedBuildCustodyCompleted": false,
+    "managedInspectorBuildCompleted": false,
+    "privateCompositionRequestCreated": false,
+    "privateExecutionBindingCreated": false,
+    "realConverterInvoked": false,
+    "managedInspectionInvoked": false,
+    "structuralCompositionVerified": false,
+    "sourceFrameworkParityVerified": false,
+    "nativeRuntimeVerified": false,
+    "browserWasmVerified": false,
+    "browserChatVerified": false,
+    "modelQualityVerified": false,
+    "p2pAvailabilityVerified": false,
+    "catalogAnnouncementVerified": false,
+    "packagePublicationVerified": false,
+    "siteDeploymentVerified": false,
+    "memoryEndpointsVerified": false,
+    "campaignCreditAuthorized": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}

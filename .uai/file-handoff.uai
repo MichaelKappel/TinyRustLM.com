@@ -1,5 +1,11 @@
-profile: runtime-mirust.file-handoff.v109
-updated_utc: 2026-08-25T12:53:47Z
+profile: runtime-mirust.file-handoff.v110
+updated_utc: 2026-08-25T13:21:07Z
+current_qwen3_execution_v6_msvc_linker_environment_failure_2026_08_25:
+  first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/qwen3-real-composition-execution-result.v6.json`, and `docs/architecture/2026-08-25-qwen3-real-composition-execution-v6-msvc-linker-environment-failure.md` before any build or composition work.
+  terminal_truth: `/6` registration `701d770c0ff1f1ca5fa573610f9fb532dd6af793` was fresh-remote exact. Request SHA256 `57a41f877be767e55c34aeb05211761de658f53590d6cdcc6f4faa3237dec70c` passed one preflight and executed once. Custody durably captured exit 101; registered PATH had no linker parent. Public result is 6,644 bytes/SHA256 `58d6ce16304d804d3a09cfd2c6544e8fa10b39080359040383df3f2ac68bb72c`; focused tests pass 8/8.
+  preservation: Preserve the request, both Rust roots, all six custody records, and 102-file partial target. Managed request/roots/build, composition request/roots, controller, converter, inspection, and output never existed. Never retry, clean, repair, overwrite, relabel, or adopt `/6`.
+  exact_resume: Finish complete gates and commit/push/fresh-verify this closure. Then implement and hostile-test one source-controlled exact MSVC x64/Windows SDK environment materializer that binds linker/tool/library identities and forbids `D:` writes. Commit/push/fresh-verify it before preregistering `/7` with all-new absent roots and request names.
+  truth_boundary: One failed build is not conversion, complete composition, runtime, browser, quality, P2P, publication, deployment, MemoryEndpoints, or campaign proof; counters remain zero.
 current_qwen3_execution_v5_source_anchor_invalidation_2026_08_25:
   first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/qwen3-real-composition-execution-result.v5.json`, and `docs/architecture/2026-08-25-qwen3-real-composition-execution-v5-source-anchor-invalidation.md` before any build or composition work.
   terminal_truth: `/5` registration commit `307b94009342e76974ccdc19e56a9e1f7f9788d1` was pushed/fresh-remote exact before private material. One later research commit advanced the actual branch to `81631d0b5bd2f23c5defc17e7027884bdce0be86`, so exact registration-commit binding failed before the Rust request. Public result is 4,372 bytes/SHA256 `06006e0533c1f1b02492aacb8aee675ac1c5dbd50d6c3f67441b58918bd0c798` and focused tests pass 7/7.

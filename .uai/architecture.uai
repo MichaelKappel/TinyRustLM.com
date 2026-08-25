@@ -1,5 +1,11 @@
-profile: runtime-mirust.architecture.v155
-updated_utc: 2026-08-25T12:53:47Z
+profile: runtime-mirust.architecture.v156
+updated_utc: 2026-08-25T13:21:07Z
+current_qwen3_execution_v6_msvc_linker_environment_failure_2026_08_25:
+  authority: `/6` bound source commit `701d770c0ff1f1ca5fa573610f9fb532dd6af793`, tree `e756ffaddb9fa76e256f6bc83e9b025bcd5561c3`, sole custody owner, exact direct Cargo/Rustc, and one canonical private environment before one build.
+  state_machine: remote-exact-registration -> nine-names-absent -> create-only-request -> read-only-preflight-pass -> create-only-control+target -> one-cargo-child -> fsynced-exit-101 -> terminal-build-failure -> all-later-states-closed.
+  root_cause: Registered PATH had 35 entries and zero linker parent; installed MSVC x64 linker was outside it. This establishes private request environment incompleteness, not source/converter/custody-owner failure. Public result is 6,644 bytes/SHA256 `58d6ce16304d804d3a09cfd2c6544e8fa10b39080359040383df3f2ac68bb72c`.
+  preservation: Request, both Rust roots, six evidence records, and 102-file target are immutable. Managed and composition states were never entered. No retry, cleanup, overwrite, adoption, relabel, or later `/6` name is legal.
+  next: Implement one source-controlled linker-complete x64 MSVC/SDK request materializer and hostile verifier that binds exact tool/library identities and rejects `D:` writes. Commit/push/fresh-verify before output-free `/7` with all-new names. No compatibility, fallback, repair, debt, broader claim, MemoryEndpoints authority, or counter credit.
 current_qwen3_execution_v5_source_anchor_invalidation_2026_08_25:
   authority: `/5` requires both custodied builds and the controller to bind exact registration commit `307b94009342e76974ccdc19e56a9e1f7f9788d1`, tree `76a73ebf4ea34adf72617f95033e56f611b5a8da`; equality is semantic evidence, not an executable-sentinel approximation.
   observed_transition: The remote advanced through one research path to commit `81631d0b5bd2f23c5defc17e7027884bdce0be86`, tree `e82a38ba1ff708eef30058da69619b7e5b5f43f4`, before the first private request. The registration commit remained an ancestor but ceased to be the actual remote tip, which is terminal by design.
