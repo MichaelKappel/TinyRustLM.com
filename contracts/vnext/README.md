@@ -337,6 +337,17 @@ output adoption exists. Custody alone grants no conversion, SLM2, runtime,
 browser, quality, publication, or campaign claim. See
 `docs/architecture/2026-08-25-junction-qualified-build-custody-owner.md`.
 
+The managed composition-inspector project now has one explicit custody-only
+staging target. A registered managed build supplies the absolute path of the
+scratch inspector from the preceding passing Rust custody target through
+`TinyRustLmCustodyScratchInspectorSource`; the child copies those exact bytes
+to fixed target-relative `tinyrustlm-build-scratch-inspect.exe`. The managed
+custody request must require that x64 PE beside the four .NET outputs, bind the
+source and staged identities, and pass profile `/3` scratch inspection before
+composition can start. The project has no default source, alternate name,
+fallback, retry, repair, or linked-file path. See
+`docs/architecture/2026-08-25-qwen3-managed-custody-scratch-inspector-staging.md`.
+
 `qwen3-real-composition-execution-preregistration.v5.json` binds the fifth
 immutable attempt to that custody owner, the terminal `/4` exit-capture
 failure, all earlier terminal history, exact current source and external tool

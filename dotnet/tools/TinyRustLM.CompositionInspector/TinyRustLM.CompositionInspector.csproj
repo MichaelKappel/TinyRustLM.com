@@ -10,4 +10,17 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\TinyRustLM.Conversion\TinyRustLM.Conversion.csproj" />
   </ItemGroup>
+  <Target Name="StageTinyRustLmCustodyScratchInspector"
+          AfterTargets="Build"
+          Condition="'$(TinyRustLmCustodyScratchInspectorSource)' != ''">
+    <Error Condition="$([System.IO.Path]::IsPathFullyQualified('$(TinyRustLmCustodyScratchInspectorSource)')) != 'True'"
+           Text="TinyRustLmCustodyScratchInspectorSource must be an absolute path." />
+    <Error Condition="!Exists('$(TinyRustLmCustodyScratchInspectorSource)')"
+           Text="TinyRustLmCustodyScratchInspectorSource does not exist." />
+    <Copy SourceFiles="$(TinyRustLmCustodyScratchInspectorSource)"
+          DestinationFiles="$(TargetDir)tinyrustlm-build-scratch-inspect.exe"
+          SkipUnchangedFiles="false"
+          UseHardlinksIfPossible="false"
+          UseSymboliclinksIfPossible="false" />
+  </Target>
 </Project>

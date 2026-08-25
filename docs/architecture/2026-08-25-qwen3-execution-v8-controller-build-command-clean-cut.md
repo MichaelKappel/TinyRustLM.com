@@ -156,7 +156,9 @@ execution `/8` may be preregistered output-free. The preregistration must bind:
   executable relative path;
 - this exact controller and command vector;
 - one Rust custody operation requiring both x64 outputs;
-- one managed custody operation;
+- one managed custody operation that stages the qualified Rust scratch
+  inspector through the sole explicit MSBuild property, requires the staged
+  x64 PE beside the four managed outputs, and passes custody `/3`;
 - the immutable MSVC environment authority;
 - all terminal execution `/1` through `/7` evidence;
 - wholly new private names observed absent before registration;
@@ -164,6 +166,11 @@ execution `/8` may be preregistered output-free. The preregistration must bind:
 
 No `/8` private request, root, build, or output may exist before the
 separate registration commit is itself remote exact.
+
+The managed staging prerequisite is specified in
+`docs/architecture/2026-08-25-qwen3-managed-custody-scratch-inspector-staging.md`.
+It must receive its own complete clean gate and remote-exact checkpoint before
+the registration parent is selected.
 
 ## Claim Boundary
 
