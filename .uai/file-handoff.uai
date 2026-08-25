@@ -1,5 +1,11 @@
-profile: runtime-mirust.file-handoff.v103
-updated_utc: 2026-08-24T07:19:26Z
+profile: runtime-mirust.file-handoff.v104
+updated_utc: 2026-08-25T10:20:00Z
+current_qwen3_execution_v3_tokenizer_path_rejection_and_clean_cut_registration_2026_08_25:
+  authority: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/qwen3-real-composition-execution-result.v3.json`, `contracts/vnext/qwen-tokenizer2-conversion-profile.v2.json`, `contracts/vnext/qwen3-composition-conversion-profile.v4.json`, and their two 2026-08-25 architecture records first.
+  terminal_truth: Remote-exact `/3` preregistration `43a29e8e1ba7a3296be18425a5fc077fb13617fe` built both owners once and launched the converter once. It rejected with `qwen-tokenizer2-output-path-invalid`; managed inspection did not run. Preserve every private root and partial member forever. Public result is 8,773 bytes at SHA256 `2ae10fc8a76cced2e88d9b9c310af4eeb3ef436829f3f6a5ee8c551dfde6b2e4`.
+  partial_truth: Preserved 598,308,416-byte SLM2 SHA256 `a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7` proves only corrected 311-physical/310-logical structural-byte conversion. It is not a complete composition or product model.
+  registered_fix: Tokenizer2 `/2` is 8,394 bytes at SHA256 `97b381c73e7191f245ba132421a81bf015092b8550599413a6c81c6dae0afae4`; composition `/4` is 11,421 bytes at SHA256 `19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8`. They require sole `.tokenizer2`, receipt v2, no `.tok2` filename support, and no predecessor executable identities.
+  exact_resume: First finish tests and commit/push/fresh-remote verification of this output-free checkpoint. Then implement the exact registered clean cut, run complete affected gates, commit/push/fresh-verify, and only then create a new output-free execution registration with wholly new roots. No MemoryEndpoints authority or campaign credit.
 current_production_slm2_clean_cut_preregistration_2026_08_24:
   authority: Output-free machine profile `contracts/vnext/production-slm2-clean-cut-preregistration.v1.json` is 16,398 bytes at SHA256 `dc0213a34b63cf392c99e929bf0380d36698bce0ec995f5572aac2e8e287444a`; detailed plan is `docs/architecture/2026-08-24-production-slm2-clean-cut-preregistration.md`. It binds parent `49e261cf76d3d7256d6a3d1b7663e36424b95763` and tree `6e735f93409d28d6fbf92adf3f4f1092c9eabee4` before root Cargo or production executable changes.
   current_truth: One prelaunch product only. Technical `*2` identities do not create product V2 or compatibility. Root Cargo may now be deliberately replaced. Accepted Tokenizer2 and Template2 observations remain immutable for exact bytes and must not be rerun.

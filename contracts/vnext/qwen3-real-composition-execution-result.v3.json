@@ -1,0 +1,234 @@
+{
+  "schema": "tinyrustlm.qwen3-real-composition-execution-result.v3",
+  "executionProfileId": "tinyrustlm.qwen3-real-composition-execution/3",
+  "executionId": "qwen3-composition-c1899de-20260825-v3",
+  "status": "terminal-native-rejection",
+  "observedAtUtc": "2026-08-25T10:07:01Z",
+  "predecessor": {
+    "resultPath": "contracts/vnext/qwen3-real-composition-execution-result.v2.json",
+    "resultByteLength": 8275,
+    "resultSha256": "4b2c957943d91fe7023d5ab78d2582735d21196e93403c212a9b104204bc970c",
+    "status": "terminal-native-rejection",
+    "reused": false,
+    "modified": false
+  },
+  "registration": {
+    "profilePath": "contracts/vnext/qwen3-real-composition-execution-preregistration.v3.json",
+    "profileByteLength": 29275,
+    "profileSha256": "b07ccd2688d6352fd7614fc2302d7aac59c63e3e4fe2a5943da7c8aa6bd1ec19",
+    "commit": "43a29e8e1ba7a3296be18425a5fc077fb13617fe",
+    "tree": "5a4370411f340782323cec2a3ac8afd61035982c",
+    "branch": "codex/model-acquisition-v2",
+    "remoteExactBeforeBuildAndExecution": true
+  },
+  "builds": {
+    "rust": {
+      "attemptCount": 1,
+      "startedAtUtc": "2026-08-25T09:55:34.686Z",
+      "finishedAtUtc": "2026-08-25T09:55:57.706Z",
+      "exitCode": 0,
+      "sourceCommit": "43a29e8e1ba7a3296be18425a5fc077fb13617fe",
+      "sourceTree": "5a4370411f340782323cec2a3ac8afd61035982c",
+      "stdout": {
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "byteLength": 1874,
+        "sha256": "2171fdc140c22849b695aa1b9401d1b7980be7d371fbfae6dc290076f6e38b6c"
+      },
+      "executable": {
+        "fileName": "tinyrustlm-convert.exe",
+        "byteLength": 846336,
+        "sha256": "0420e38d0a2832b7fdcc39064343a6d4529a7d2d49679c1e96e15b4ba7ee401c",
+        "peMachine": "0x8664",
+        "unchangedAfterExecution": true
+      }
+    },
+    "managedInspector": {
+      "attemptCount": 1,
+      "startedAtUtc": "2026-08-25T09:55:57.721Z",
+      "finishedAtUtc": "2026-08-25T09:56:02.914Z",
+      "exitCode": 0,
+      "stdout": {
+        "byteLength": 646,
+        "sha256": "72ca257f06842f0af1bc60a7d51b831ca16d148fa51b5d18b0e3d75d500528fd"
+      },
+      "stderr": {
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "outputFileCount": 18,
+      "assembly": {
+        "fileName": "TinyRustLM.CompositionInspector.dll",
+        "byteLength": 7680,
+        "sha256": "b44af7c3c18df1f905b2f2705c52b63cdccc04a41d109be3e5b0f0bdf5d8c887"
+      },
+      "runtime": {
+        "fileName": "dotnet.exe",
+        "byteLength": 167208,
+        "sha256": "ab1b71fd3dd71062e074c9fab8312081a81b7f2b3e0327c48c4d249c8d1a3135",
+        "sdkVersion": "10.0.400",
+        "hostVersion": "10.0.11",
+        "runtimeIdentifier": "win-x64"
+      }
+    }
+  },
+  "controlObservation": {
+    "logicalRoot": "qwen3-composition-control-c1899de-20260825-v3",
+    "request": {
+      "byteLength": 5026,
+      "sha256": "7ed907b16792a846d932a26b7631dcb930d36cdba4bf773516be667be3902247"
+    },
+    "controllerStdout": {
+      "byteLength": 331,
+      "sha256": "e4348f381107335bb40b5362f4d751ca9cd26e4844968898ddde9a331558fc2d"
+    },
+    "controllerStderr": {
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "executionObservation": {
+    "privateEvidenceLogicalRoot": "qwen3-composition-execution-c1899de-20260825-v3",
+    "outputLogicalRoot": "qwen3-composition-c1899de-20260825-v3",
+    "controllerInvocationCount": 1,
+    "controllerExitCode": 0,
+    "converterLaunchCount": 1,
+    "converterProcess": {
+      "startedAtUtc": "2026-08-25T10:03:25.479Z",
+      "finishedAtUtc": "2026-08-25T10:05:19.484Z",
+      "durationMilliseconds": 114005,
+      "started": true,
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "killedForOverflow": false,
+      "spawnCode": null
+    },
+    "binding": {
+      "byteLength": 8575,
+      "sha256": "315bcce5e1d83c4c797d4dc399028fda85305ce97b1a12faabeda0956789115e"
+    },
+    "start": {
+      "byteLength": 458,
+      "sha256": "32a0adea60a8e63821be35a51a745ce0ca515e3ffd049d532ee3f134797e7a48"
+    },
+    "converterStdout": {
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "converterStderr": {
+      "byteLength": 66,
+      "sha256": "1f1c610e2391de0d8febcd0e274b0c375f680e8600fd77e5c3397d66eef40267"
+    },
+    "terminal": {
+      "status": "terminal-process-failure",
+      "byteLength": 2169,
+      "sha256": "e7e9e23a78f03288f3497bd27a62a18e8bf719761f38a9d3c9d421fed1681e23"
+    },
+    "managedInspectionInvoked": false,
+    "managedIntentCreated": false,
+    "managedStdoutCreated": false,
+    "managedStderrCreated": false,
+    "verification": {
+      "decision": "terminal-controller-failure",
+      "byteLength": 9865,
+      "sha256": "88df285e0f64caac6c468512936ba1e269521287d85a95fbea8e79335c80eb48"
+    }
+  },
+  "nativeRejection": {
+    "errorCode": "qwen-tokenizer2-output-path-invalid",
+    "safeNoOp": false,
+    "retryable": false,
+    "operationId": "qwen3-composition-e0fb0b915def0223d5adf8649b3e2ecf3e137d2d969c3741f7a407e0a21ffcff",
+    "attempt": {
+      "file": "composition.attempt.json",
+      "byteLength": 711,
+      "sha256": "231bad95120be468a2c916aad448df84e82ee718c856daf198bd4e86a652c0f5"
+    },
+    "rejection": {
+      "file": "composition.rejection.json",
+      "byteLength": 440,
+      "sha256": "c66c177ef7ef92358835bff8eb3d488cc316f46bfad8366510c7c52f3a9226d5"
+    },
+    "partialOutputPreserved": true
+  },
+  "partialModelConversion": {
+    "status": "structural-and-byte-conversion-only",
+    "modelFile": {
+      "file": "model.slm2",
+      "byteLength": 598308416,
+      "sha256": "a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7",
+      "tensorCount": 310
+    },
+    "modelReceipt": {
+      "file": "model.slm2.conversion-receipt.json",
+      "byteLength": 5554,
+      "sha256": "c777557de810497bde4b57f048670971ed1210e62ea5d1eff690eb26401fa2ea",
+      "schema": "tinyrustlm.qwen3_conversion_receipt.v2",
+      "producerProfileId": "tinyrustlm.qwen3-safetensors-to-slm2-mixed-q8/2"
+    },
+    "physicalSourceTensorCount": 311,
+    "logicalOutputTensorCount": 310,
+    "tiedOutputPayloadsByteIdentical": true,
+    "completeCompositionCreated": false,
+    "runtimeActivated": false,
+    "productQualified": false
+  },
+  "rootCauseObservation": {
+    "compositionTokenizerFile": "tokenizer.tokenizer2",
+    "standaloneTokenizerWriterRequiredSuffix": ".tok2",
+    "standaloneTokenizerProfileTransaction": "absolute-new-tok2-file",
+    "diagnosis": "suffix-contract-divergence-between-composition-and-standalone-tokenizer-writer",
+    "compositionProfileDefectEstablished": false,
+    "sourceDefectEstablished": false,
+    "modelConverterDefectEstablished": false,
+    "tokenizerOutputContractDefectEstablished": true,
+    "requiredSoleSuffix": ".tokenizer2",
+    "obsoleteSuffixMayRemainExecutable": false,
+    "correctedTokenizerProfileRequired": true,
+    "correctedCompositionProfileRequired": true
+  },
+  "decision": {
+    "registrationClosed": true,
+    "retryUnderRegistrationAllowed": false,
+    "existingPrivateEvidenceMayBeDeleted": false,
+    "existingPrivateEvidenceMayBeOverwritten": false,
+    "partialOutputMayBeCleaned": false,
+    "outputMayBeRepaired": false,
+    "managedInspectionMayBeUsedToLaunderControllerFailure": false,
+    "newAttemptRequiresCorrectedTokenizerOutputProfile": true,
+    "newAttemptRequiresCorrectedCompositionProfile": true,
+    "newAttemptRequiresGeneralRegressionTests": true,
+    "newAttemptRequiresNewRegistrationAndAllNewLogicalRoots": true
+  },
+  "claimBoundary": {
+    "rustReleaseBuildCompleted": true,
+    "managedInspectorBuildCompleted": true,
+    "privateExecutionBindingCreated": true,
+    "realConverterInvoked": true,
+    "partialModelStructuralConversionCompleted": true,
+    "strictNativeRejectionObserved": true,
+    "managedInspectionInvoked": false,
+    "structuralCompositionVerified": false,
+    "sourceFrameworkParityVerified": false,
+    "nativeRuntimeVerified": false,
+    "browserWasmVerified": false,
+    "browserChatVerified": false,
+    "modelQualityVerified": false,
+    "p2pAvailabilityVerified": false,
+    "catalogAnnouncementVerified": false,
+    "packagePublicationVerified": false,
+    "siteDeploymentVerified": false,
+    "memoryEndpointsVerified": false,
+    "campaignCreditAuthorized": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}

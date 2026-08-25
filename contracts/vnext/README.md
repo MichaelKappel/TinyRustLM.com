@@ -147,18 +147,18 @@ producer identity will retain a current reader, selector, migration, alias, or
 fallback. See
 `docs/architecture/2026-08-25-qwen3-tied-output-profile-correction-preregistration.md`.
 
-The next implementation change will clean-cut the Rust transaction and managed
-companion boundary to only the newly registered producer and composition
-profiles. The complete transaction creates
-and independently verifies
+The Rust transaction and managed companion boundary now consume only corrected
+model producer `/2` and composition profile `/3`. The complete transaction is
+designed to create and independently verify
 all six artifacts, exact cross-member vocabulary/context relationships, bounded
 resource preflight, component receipts, and mutually exclusive terminal
 evidence. The component converter commands remain private exact compiler
 primitives; only `tinyrustlm-convert qwen3-composition` can establish the
 complete conversion boundary consumed by the product. The private managed
-wrapper and Companion source branch now consume only that boundary and require
-all six rehashed identities before availability. No complete command has yet
-run against real model source. See the immutable output-free registration in
+wrapper and Companion source branch consume only that boundary and require all
+six rehashed identities before availability. Real execution `/3` reached this
+transaction and exposed the Tokenizer2 file-suffix defect recorded below. See
+the immutable output-free registration in
 `docs/architecture/2026-08-24-complete-qwen3-composition-conversion-preregistration.md`
 and the implementation record in
 `docs/architecture/2026-08-24-complete-qwen3-composition-conversion-implementation.md`,
@@ -236,6 +236,31 @@ managed decision after a native candidate pass. It creates no private root,
 output, structural result, broader claim, or campaign credit. See
 `docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration-v3.md`.
 
+Execution `/3` completed both registered builds and launched the converter
+exactly once. Corrected model conversion succeeded and produced a preserved
+598,308,416-byte, 310-tensor SLM2 artifact at SHA-256
+`a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7`.
+The complete transaction then rejected with
+`qwen-tokenizer2-output-path-invalid`: composition required
+`tokenizer.tokenizer2`, while the standalone Tokenizer2 writer required the
+obsolete `.tok2` suffix. Managed inspection did not run. The 8,773-byte public
+result has SHA-256
+`2ae10fc8a76cced2e88d9b9c310af4eeb3ef436829f3f6a5ee8c551dfde6b2e4`.
+All private evidence and partial output are immutable; `/3` cannot be retried,
+cleaned, repaired, or relabeled. See
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-v3-result-and-tokenizer-path-defect.md`.
+
+`qwen3-composition-conversion-profile.v4.json` is the output-free corrected
+composition registration. It is 11,421 canonical bytes at SHA-256
+`19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8`.
+It retains corrected model producer `/2` and binds only Tokenizer2 producer
+`tinyrustlm.qwen-bytelevel-to-tokenizer2/2`, its exact profile hash, receipt
+schema `tinyrustlm.qwen_tokenizer2_conversion_receipt.v2`, and the sole
+`.tokenizer2` member name. Profile `/3` remains immutable rejected history and
+will retain no executable reader, alias, migration, or fallback after the
+registered implementation cutover. See
+`docs/architecture/2026-08-25-qwen-tokenizer2-output-path-correction-preregistration.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2
@@ -258,9 +283,24 @@ four decodings, 13 single-fault mutations, and rejection of every proper
 artifact prefix. The Node oracle invokes no Rust, subprocess, or network
 operation.
 
-`qwen-tokenizer2-conversion-profile.v1.json` is the sole exact source-to-
-Tokenizer2 conversion profile. It is 3,501 bytes with SHA-256
+`qwen-tokenizer2-conversion-profile.v1.json` is immutable rejected source-to-
+Tokenizer2 history. It is 3,501 bytes with SHA-256
 `f70465a08b41599fe59f41b850912d0d408f0ec67e84ebeb7591524d1b14e12b`.
+Execution `/3` established that its `absolute-new-tok2-file` rule is
+incompatible with the sole complete-composition member
+`tokenizer.tokenizer2`. It will retain no executable writer, compatibility
+suffix, alias, migration, or fallback after the registered cutover.
+
+`qwen-tokenizer2-conversion-profile.v2.json` is the output-free corrected
+producer registration. It is 8,394 canonical bytes at SHA-256
+`97b381c73e7191f245ba132421a81bf015092b8550599413a6c81c6dae0afae4`.
+It accepts only an absolute new `.tokenizer2` file under an existing direct
+non-reparse parent, rejects `.tok2`, and binds receipt schema
+`tinyrustlm.qwen_tokenizer2_conversion_receipt.v2`. The binary header format
+identifier `minimodel.tok2` remains unchanged and is explicitly not a file
+suffix. This registration has not yet changed implementation or created new
+output.
+
 The exact five-file `Qwen/Qwen3-0.6B` source closure is bound by
 `qwen3-0.6b-tokenizer2-source-lock.v1.json`, 1,108 bytes with SHA-256
 `1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70`.

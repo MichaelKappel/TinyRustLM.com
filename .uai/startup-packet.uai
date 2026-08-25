@@ -1,5 +1,13 @@
-profile: runtime-mirust.startup-packet.v105
-updated_utc: 2026-08-25T09:39:08Z
+profile: runtime-mirust.startup-packet.v106
+updated_utc: 2026-08-25T10:20:00Z
+current_qwen3_execution_v3_tokenizer_path_handoff_2026_08_25:
+  first_read: Read newest `workspace.uai`, the `/3` public result, corrected Tokenizer2 `/2` profile, composition `/4` profile, and their two 2026-08-25 architecture records before older Qwen routes.
+  active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  active_branch: codex/model-acquisition-v2
+  protected_root: E:\Source\Rust\TinyRustLM.com must remain untouched; never write `D:`.
+  terminal_truth: Execution `/3` built once per registered owner and launched once, then rejected with `qwen-tokenizer2-output-path-invalid`; managed inspection did not run. Result SHA256 is `2ae10fc8a76cced2e88d9b9c310af4eeb3ef436829f3f6a5ee8c551dfde6b2e4`. Preserve all roots and partial output without retry or repair.
+  immediate_operation: Commit/push/fresh-remote-verify this bounded result and output-free registration. Implement sole `.tokenizer2` and v2 receipt/composition identities with no `.tok2` executable path, then run affected gates and commit/push/fresh-verify before any new execution registration.
+  truth_boundary: Partial SLM2 SHA256 `a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7` is structural-byte conversion only. No complete composition, runtime, browser, quality, P2P, publication, deployment, MemoryEndpoints, or campaign gate advanced; counters remain zero.
 current_release_surface_restart_activation_handoff_2026_08_25:
   first_read: Read the newest top-level checkpoint in `workspace.uai`, then `docs/architecture/2026-08-25-release-surface-restart-activation-batching.md` and `docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md` before older routes.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819

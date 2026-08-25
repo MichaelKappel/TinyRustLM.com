@@ -1,5 +1,12 @@
-profile: runtime-mirust.operations.v137
-updated_utc: 2026-08-25T09:39:08Z
+profile: runtime-mirust.operations.v138
+updated_utc: 2026-08-25T10:20:00Z
+qwen3_execution_v3_tokenizer_path_rejection_and_clean_cut_registration_2026_08_25:
+  source: preregistration=43a29e8e1ba7a3296be18425a5fc077fb13617fe; tree=5a4370411f340782323cec2a3ac8afd61035982c; remote_exact_before_build=true; rust_builds=1; managed_builds=1; controller_invocations=1; converter_launches=1; retries=0
+  terminal: converter_exit=1; duration_ms=114005; error=qwen-tokenizer2-output-path-invalid; controller_terminal_sha256=e7e9e23a78f03288f3497bd27a62a18e8bf719761f38a9d3c9d421fed1681e23; managed_inspection=false; private_verification_bytes=9865; private_verification_sha256=88df285e0f64caac6c468512936ba1e269521287d85a95fbea8e79335c80eb48
+  partial: model_bytes=598308416; model_sha256=a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7; tensors=310; model_receipt_sha256=c777557de810497bde4b57f048670971ed1210e62ea5d1eff690eb26401fa2ea; claim=structural-byte-conversion-only
+  public: result=contracts/vnext/qwen3-real-composition-execution-result.v3.json,8773,2ae10fc8a76cced2e88d9b9c310af4eeb3ef436829f3f6a5ee8c551dfde6b2e4; tokenizer_profile=/2,8394,97b381c73e7191f245ba132421a81bf015092b8550599413a6c81c6dae0afae4; composition_profile=/4,11421,19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8
+  resume: commit/push/fresh-remote-verify output-free result and registration; implement sole .tokenizer2 writer+receipt+composition+managed identities; remove executable predecessor identities; run regressions; commit/push/fresh-verify; preregister one new execution with all-new roots
+  claims: complete_composition=false; runtime=false; browser=false; quality=false; p2p=false; publication=false; deployment=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
 release_surface_restart_activation_batching_checkpoint_2026_08_25:
   source: implementation=ed6b2bfa4710a5c2a27716c6fe54803e7c8ea55b; tree=94206c1acc07ec1ef76c0efd38b3cf41c6f75a76; branch=codex/model-acquisition-v2; local_tracking_fetch_exact=true
   preserved_failure: run=b8851fe74916282f3fb9d74530788e5153b87b0c1f05375f93a109908082ef28; pass_shards=1-7; failed_shard=8; case=complete-generated-byte-readback; observed_ms=183945.9794; fixed_limit_ms=180000; retry=false; threshold_change=false; aggregate=false

@@ -1,5 +1,11 @@
-profile: runtime-mirust.architecture.v150
-updated_utc: 2026-08-25T01:20:47Z
+profile: runtime-mirust.architecture.v151
+updated_utc: 2026-08-25T10:20:00Z
+current_qwen_tokenizer2_filesystem_contract_clean_cut_2026_08_25:
+  observed_defect: Qwen composition execution `/3` proved corrected model conversion, then rejected because composition owns `tokenizer.tokenizer2` while historical standalone producer `/1` required `.tok2`. The failure is immutable and cannot be retried or repaired.
+  sole_design: The current filesystem artifact suffix is exactly `.tokenizer2`; the composition member is exactly `tokenizer.tokenizer2`; receipt schema is `tinyrustlm.qwen_tokenizer2_conversion_receipt.v2`; producer profile is `tinyrustlm.qwen-bytelevel-to-tokenizer2/2`; composition is `tinyrustlm.qwen3-complete-composition-conversion/4`. Internal binary profile ID `minimodel.tok2` remains unchanged and is not pathname authority.
+  clean_cut: Historical profile IDs and `.tok2` filename handling remain immutable evidence only and must be absent from executable Rust and managed consumers after implementation. There is no selector, dual suffix, reader, migration, alias, fallback, repair, or retry path.
+  evidence: Result SHA256 `2ae10fc8a76cced2e88d9b9c310af4eeb3ef436829f3f6a5ee8c551dfde6b2e4`; Tokenizer2 `/2` SHA256 `97b381c73e7191f245ba132421a81bf015092b8550599413a6c81c6dae0afae4`; composition `/4` SHA256 `19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8`. All are output-free source registration/result records until the implementation commit.
+  next: Commit/push/fresh-fetch this checkpoint, implement and test the sole design, commit/push/fresh-fetch that implementation, then preregister a new one-shot composition execution with wholly new roots. No broader claim or counter advances.
 current_companion_rotation_revocation_state_2026_08_24:
   authority: Remote-exact commit `6537c6070ecd109c65791493864d8bd90ac8971d`, tree `fc988afd8d9c21d13ca6a90b6abe7194e13afc6e`, implements status, rotation, exact old-commit replay, and revocation under sole corrected profile `/2`; it does not revise registration authority or read profile JSON at runtime.
   state: One 120-second pending rotation is exact-body idempotent and conflicts otherwise. Old-key authentication plus candidate-new-key proof advances at most through epoch 64, resets sequence/key age, preserves absolute expiry, and retains a 30-second exact-response replay only. Revocation proves its response before erasure. Process-lifetime revoked tombstones remain bounded by fail-closed 4,096-record admission.
