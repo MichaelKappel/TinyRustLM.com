@@ -1,5 +1,15 @@
-profile: runtime-mirust.operations.v127
-updated_utc: 2026-08-25T01:20:47Z
+profile: runtime-mirust.operations.v128
+updated_utc: 2026-08-25T04:16:14Z
+complete_release_root_gate_checkpoint_2026_08_24:
+  source: commit=0343da897c335ca6177606b7563dd8a6e4fcb151; tree=3be0c1b50c5092e879cd74a6643e05cd70e79f74; branch=codex/model-acquisition-v2; local_tracking_fetch_direct_remote_exact=true
+  preserved_failure: source=93b2a28777c2ee158085416b2f4caa1d19544ff8; tests=1203; pass=1201; fail=1; skip=1; log_bytes=212678; log_sha256=966de5334b947c7461081e225894bb102b0cfca10c74268fd82741a4db180903
+  standard: tests=1203; pass=1202; fail=0; skip=1; cancelled=0; todo=0; duration_ms=358766.5736
+  release_surface: run_id=f4006a6662ae617bfffb990c7ea28ce125a3e41944505def76b811ea0c2d0b25; shards=10/10; tests=23/23; aggregate_bytes=3995; aggregate_sha256=8b9894164b115eeb3ca2c10fc6faf108f2605a1aecde72b961f0b919a958c28d
+  log: bytes=203658; sha256=8620e877365c545b0a5f7d0f618196b37e6ad72efa189aa5ba0754fb0c80db98; location=external_private_evidence
+  package_skip: current generated NuGet package inputs are absent; no package evidence or publication authority
+  product: one_prelaunch_product=true; product_v2=false; legacy=false; compatibility=false; debt=false
+  claims: deployment=false; public_readback=false; real_model=false; quality=false; p2p=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
+  next_operation: Commit/push/fresh-fetch UAI, then inspect and execute the canonical authorized web publication/readback workflow for changed web bytes before resuming the first real Qwen3 complete-composition vertical slice.
 companion_rotation_revocation_checkpoint_2026_08_24:
   source: commit=6537c6070ecd109c65791493864d8bd90ac8971d; tree=fc988afd8d9c21d13ca6a90b6abe7194e13afc6e; branch=codex/model-acquisition-v2; local_tracking_fetch_direct_remote_exact=true
   authority: profile=tinyrustlm.companion.loopback-capability/2; registration_commit=912f8ebe1a2b774977eaf2ed298d8ac162d35fa0
