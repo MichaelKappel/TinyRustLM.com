@@ -2,8 +2,12 @@
 
 Date: 2026-08-25
 
-Status: implemented and fault-tested; not yet used to authorize a fifth real
-Qwen3 composition attempt
+Status: historical implementation record for build-custody profile `/1`.
+Current source has cleanly replaced this authority with profile `/2`; no
+current reader, alias, migration, fallback, or compatibility path consumes
+profile `/1`. This document remains only to explain immutable executions `/5`
+and `/6`. See
+`2026-08-25-environment-bound-build-custody-owner.md` for current authority.
 
 ## Decision
 

@@ -76,12 +76,24 @@ npm --prefix tinyrustlm run test:build-custody
 ```
 
 The gate creates a temporary committed Git source closure and fresh sibling
-control/target roots. Its real and injected child cases prove canonical
-preflight, exact source/Git/Node/command/taskkill binding, separate bounded raw
-logs, exit-before-diagnostics persistence, late overflow reconciliation,
-nonzero and spawn failure, real timeout descendant-tree termination, exact
-child environment, required-output hash and x64 PE checks, create-only root and
-terminal collisions, and completion after CLI-observer death.
+control, target, and environment-scratch roots. It binds the exact six-member
+MSVC environment evidence closure and proves full current-closure regeneration
+in fresh exact Node processes before root creation, immediately before child
+launch, and after every child outcome. The authority owns `PATH`, `LIB`,
+`LIBPATH`, and the Cargo target linker; the request may add only sorted,
+bounded, nonoverlapping supplemental values and must include the ten Windows
+baseline values, with `USERPROFILE` and `TEMP` confined to the owned scratch
+root. Real and injected child cases prove canonical
+preflight, exact source/Git/Node/command/taskkill binding, environment cross-
+binding and drift precedence, separate bounded raw logs, exit-before-
+diagnostics persistence, late overflow reconciliation, nonzero and spawn
+failure, real timeout descendant-tree termination, no caller-environment
+inheritance, required-output hash and x64 PE checks, bounded non-reparse target
+and scratch inventories, create-only root and terminal collisions, a real
+installed Visual Studio closure, and completion after CLI-observer death. The
+focused Windows x64 gate contains 17 tests. Synthetic in-process environment
+validation is explicitly test-only, redacted, and cannot become campaign
+evidence.
 
 A green custody test proves only the mechanism. A material build requires a
 separate output-free registration bound to the exact committed owner and
@@ -89,7 +101,7 @@ runtime, wholly new roots proven absent, one canonical private request outside
 Git, and one execution. Never use a successful fixture, historical candidate,
 Cargo log text, PE presence, or process disappearance as a successful-build
 claim. See
-`../../docs/architecture/2026-08-25-source-controlled-build-custody-owner.md`.
+`../../docs/architecture/2026-08-25-environment-bound-build-custody-owner.md`.
 
 ## Rust Gates
 

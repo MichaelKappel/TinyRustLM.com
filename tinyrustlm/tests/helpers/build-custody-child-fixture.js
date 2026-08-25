@@ -30,8 +30,13 @@ switch (mode) {
     process.stdout.write(Buffer.alloc(Number(argumentsList[0]), 0x61));
     break;
   case "environment":
+    {
+      const entries = Object.entries(process.env)
+        .sort(([left], [right]) => left < right ? -1 : left > right ? 1 : 0);
     write("environment.json", Buffer.from(
-      `${JSON.stringify(Object.keys(process.env).sort())}\n`, "utf8"));
+      `${JSON.stringify({ names: entries.map(([name]) => name),
+        values: Object.fromEntries(entries) })}\n`, "utf8"));
+    }
     break;
   case "copy-pe":
     fs.copyFileSync(argumentsList[0], target("artifact.exe"), fs.constants.COPYFILE_EXCL);

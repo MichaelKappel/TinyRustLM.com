@@ -303,23 +303,33 @@ selected library, renders an explicit Cargo target linker plus exact
 binding, public-safe lock, and terminal record create-only. Validation
 regenerates the complete current closure and requires byte-exact equality. Its
 synthetic gate passes 8/8 and its explicit installed Visual Studio 2022
-observation passes 1/1. It grants no build or model claim. The current custody
-owner is not yet environment-bound; that clean technical replacement must be
-committed and remotely verified before a new composition registration. See
+observation passes 1/1. It grants no build or model claim. See
 `docs/architecture/2026-08-25-deterministic-windows-x64-msvc-environment-authority.md`.
 
-`build-custody-profile.v1.json` is the sole prelaunch Windows x64 contract for
-future irreversible builds. It is 3,407 canonical bytes at SHA-256
-`589883f42c1e047dfa6e132c8c4937c05d23b936ae1a6f62fe41c91b672a82fa`.
-The source-controlled owner binds exact clean source, Git, Node, command,
-environment, termination helper, absent sibling roots, bounded binary logs,
-and required outputs. It fsyncs the create-only child process-terminal record
-before optional metadata or output inspection, survives CLI-observer death,
-and permits no retry, resume, cleanup, adoption, compatibility, or fallback.
-Its real Windows fault gate passes 14 of 14 tests. The custody contract alone
-grants no conversion, structure, runtime, browser, quality, publication, or
-campaign claim; each attempt requires its own output-free registration. See
-`docs/architecture/2026-08-25-source-controlled-build-custody-owner.md`.
+`build-custody-profile.v2.json` is the sole current prelaunch Windows x64
+contract for future irreversible builds. It is 7,153 canonical bytes at
+SHA-256
+`7d8b82ac9bb7cab6d5373f60d3c8f78874e86e3540f788ac018e0f5f22d90916`.
+The clean replacement binds the exact environment owner, profile, request,
+private binding, public-safe lock, and terminal alongside clean source, Git,
+Node, command, termination helper, three absent sibling roots, bounded binary
+logs, and required outputs. Production validation regenerates the entire MSVC
+closure in a fresh exact Node process before root creation, immediately before
+child launch, and after every child outcome. The authority owns `PATH`, `LIB`,
+`LIBPATH`, and the Cargo target linker; the request supplies only a sorted,
+bounded, nonoverlapping supplement including a mandatory Windows baseline bound
+to an owned `home`/`temp` scratch root.
+Post-child environment drift has custody-failure precedence. The owner fsyncs
+the create-only child process-terminal record before optional metadata or
+output inspection, survives CLI-observer death, and permits no retry, resume,
+cleanup, adoption, compatibility, or fallback. Its Windows x64 gate passes
+17/17 tests, including a real installed Visual Studio closure and detached
+owner completion. The custody contract alone grants no conversion, structure,
+runtime, browser, quality, publication, or campaign claim; each attempt
+requires its own output-free registration. Profile `/1` and its implementation
+facts remain historical evidence for executions `/5` and `/6`; there is no
+current reader or compatibility path. See
+`docs/architecture/2026-08-25-environment-bound-build-custody-owner.md`.
 
 `qwen3-real-composition-execution-preregistration.v5.json` binds the fifth
 immutable attempt to that custody owner, the terminal `/4` exit-capture
