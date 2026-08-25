@@ -1,5 +1,10 @@
-profile: runtime-mirust.operations.v144
-updated_utc: 2026-08-25T13:21:07Z
+profile: runtime-mirust.operations.v145
+updated_utc: 2026-08-25T13:42:23Z
+msvc_environment_research_handoff_2026_08_25:
+  closure: commit=7fac32b6c0d9a308883949ee94375bd6b7e77ed9; pushed=true; fresh_remote_exact=true; terminal_predecessors=/1-/6
+  prompts: commit=61950e9ee58af6dbcf35e90b8f3d985dce65b25d; path=docs/research-prompts/2026-08-25-twelve-disconnected-msvc-environment-qwen3-composition-closure-research-prompts.md; bytes=109637; lines=1752; words=13807; sha256=5a7117b45f970f5c63e9978243536315a14c54194d3e189ed1ddc9bc9c3ef371; count=12; standalone=12/12; pushed=true; fresh_remote_exact=true
+  next: implement+hostile-test exact x64 MSVC/SDK environment materializer; commit+push+fresh-verify; only then preregister output-free `/7` with wholly new absent names
+  claims: advisory_only=true; build=false; conversion=false; composition=false; parity=false; browser=false; quality=false; p2p=false; publication=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
 qwen3_execution_v6_msvc_linker_environment_failure_2026_08_25:
   registration: commit=701d770c0ff1f1ca5fa573610f9fb532dd6af793; tree=e756ffaddb9fa76e256f6bc83e9b025bcd5561c3; profile_bytes=42975; profile_sha256=c1c89b1e1739d45c52c43e706b566418947a354f089a546dd99624bfff40a7fd; remote_exact_before_private=true; names_absent=9/9
   rust: request_bytes=5569; request_sha256=57a41f877be767e55c34aeb05211761de658f53590d6cdcc6f4faa3237dec70c; preflight=1/1-pass; execute=1/1; process_started=true; exit=101; terminal=terminal-build-failure; code=build-custody-child-nonzero; stdout=0/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; stderr=1402/1e088c4cd8c16d71ecec3d73b0db8b93d9afdd3df75a61eaea3fbc19615d38bc

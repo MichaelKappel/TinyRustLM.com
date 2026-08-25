@@ -1,7 +1,7 @@
-profile: tinyrustlm.source-workspace.v414
+profile: tinyrustlm.source-workspace.v415
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-25T13:21:07Z
+updated_utc: 2026-08-25T13:42:23Z
 
 prelaunch_product_boundary:
   product: TinyRustLM is one unversioned prelaunch product; product V1 and product V2 do not exist.
@@ -9,6 +9,12 @@ prelaunch_product_boundary:
   clean_cut: Every replacement must become the sole maintained path and delete its complete superseded executable closure in the same fully tested cutover. Excluding old source from a default build is insufficient when any maintained caller, package, test helper, documentation, marketing, or site asset can still reach it.
   release_gate: No publication or deployment while compatibility behavior, product-version selection, fallback, repair, temporary patches, TODO debt, stale documentation, weakened tests, known defects, or registered obsolete executable paths remain in the released closure.
   history: Preserve immutable receipts and raw failures as inert evidence; never turn historical preservation into executable legacy support.
+
+current_checkpoint_2026_08_25_msvc_environment_research_handoff:
+  source_control: `/6` closure commit `7fac32b6c0d9a308883949ee94375bd6b7e77ed9` and research commit `61950e9ee58af6dbcf35e90b8f3d985dce65b25d` are each pushed, fresh-fetched, and exact across local, tracking, FETCH_HEAD, and direct remote; worktree was clean after each checkpoint.
+  research_handoff: `docs/research-prompts/2026-08-25-twelve-disconnected-msvc-environment-qwen3-composition-closure-research-prompts.md` is 109,637 ASCII/LF bytes, 1,752 lines, 13,807 words, and SHA256 `5a7117b45f970f5c63e9978243536315a14c54194d3e189ed1ddc9bc9c3ef371`. Its twelve standalone assignments cover exact MSVC/SDK discovery, link closure, Cargo/rustc invocation, materializer architecture, hostile tests, reproducibility, linker policy, new output-free registration, Job Object custody, managed inspection, six-member composition/parity, and browser/P2P/release closure.
+  authority: Reports returned from these prompts are advisory intake only. They cannot alter terminal `/1` through `/6`, satisfy a private build or composition gate, authorize MemoryEndpoints, or advance campaign counters.
+  exact_resume: Implement and hostile-test one source-controlled linker-complete x64 MSVC/Windows SDK environment materializer/validator. Bind exact linker/tool/library identities, prove the future command environment resolves only the pinned tool closure, prohibit `D:` writes, and keep one clean prelaunch path. Commit/push/fresh-verify the correction before preregistering `/7` output-free with wholly new absent roots and request names.
 
 current_checkpoint_2026_08_25_qwen3_execution_v6_msvc_linker_environment_failure:
   registration: Execution `/6` profile `contracts/vnext/qwen3-real-composition-execution-preregistration.v6.json` is 42,975 canonical bytes at SHA256 `c1c89b1e1739d45c52c43e706b566418947a354f089a546dd99624bfff40a7fd`. Its four-path commit `701d770c0ff1f1ca5fa573610f9fb532dd6af793`, tree `e756ffaddb9fa76e256f6bc83e9b025bcd5561c3`, was exact across local, tracking, fresh FETCH_HEAD, and direct remote before all nine private names were reconfirmed absent.

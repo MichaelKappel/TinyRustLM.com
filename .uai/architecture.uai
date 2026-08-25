@@ -1,5 +1,10 @@
-profile: runtime-mirust.architecture.v156
-updated_utc: 2026-08-25T13:21:07Z
+profile: runtime-mirust.architecture.v157
+updated_utc: 2026-08-25T13:42:23Z
+current_msvc_environment_research_handoff_2026_08_25:
+  authority: Closure commit `7fac32b6c0d9a308883949ee94375bd6b7e77ed9` and research commit `61950e9ee58af6dbcf35e90b8f3d985dce65b25d` are pushed and fresh-remote exact. Twelve standalone assignments are bound by SHA256 `5a7117b45f970f5c63e9978243536315a14c54194d3e189ed1ddc9bc9c3ef371`.
+  correction_boundary: The next architecture is one source-controlled deterministic x64 MSVC/Windows SDK discovery, identity lock, complete ordered child environment, command-resolution proof, drift validator, and hostile test closure. It must replace any ad hoc environment setup rather than adding a fallback.
+  state_machine: terminal-/6 -> advisory-research-handoff -> source-controlled-correction -> complete-tests -> commit+push+fresh-remote-proof -> output-free-/7-registration -> wholly-new-private-material. No transition may retry or adopt `/6`.
+  claims: The handoff creates no build, composition, parity, browser, P2P, release, MemoryEndpoints, or campaign evidence.
 current_qwen3_execution_v6_msvc_linker_environment_failure_2026_08_25:
   authority: `/6` bound source commit `701d770c0ff1f1ca5fa573610f9fb532dd6af793`, tree `e756ffaddb9fa76e256f6bc83e9b025bcd5561c3`, sole custody owner, exact direct Cargo/Rustc, and one canonical private environment before one build.
   state_machine: remote-exact-registration -> nine-names-absent -> create-only-request -> read-only-preflight-pass -> create-only-control+target -> one-cargo-child -> fsynced-exit-101 -> terminal-build-failure -> all-later-states-closed.

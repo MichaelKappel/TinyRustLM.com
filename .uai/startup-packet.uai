@@ -1,5 +1,12 @@
-profile: runtime-mirust.startup-packet.v111
-updated_utc: 2026-08-25T13:21:07Z
+profile: runtime-mirust.startup-packet.v112
+updated_utc: 2026-08-25T13:42:23Z
+current_msvc_environment_research_handoff_2026_08_25:
+  first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, terminal `/6` result/architecture, and the new twelve-prompt research handoff.
+  active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  active_branch: codex/model-acquisition-v2
+  checkpoints: closure=`7fac32b6c0d9a308883949ee94375bd6b7e77ed9`; research=`61950e9ee58af6dbcf35e90b8f3d985dce65b25d`; prompts_sha256=`5a7117b45f970f5c63e9978243536315a14c54194d3e189ed1ddc9bc9c3ef371`; each pushed/fresh-remote exact
+  immediate_operation: Preserve `/1` through `/6`. Implement and hostile-test the sole exact linker-complete x64 MSVC/Windows SDK environment materializer/validator, bind linker/tool/library identities, prohibit `D:` writes, and commit/push/fresh-verify before any output-free `/7` registration.
+  truth_boundary: Research is advisory and grants no private build, conversion, composition, runtime, browser, quality, P2P, publication, MemoryEndpoints, or campaign evidence; counters remain zero.
 current_qwen3_execution_v6_msvc_linker_environment_failure_2026_08_25:
   first_read: Read newest `workspace.uai`, `contracts/vnext/qwen3-real-composition-execution-result.v6.json`, its architecture record, `.uai/totem.uai`, and `.uai/taboo.uai` before material work.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
