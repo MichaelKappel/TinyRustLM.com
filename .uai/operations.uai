@@ -1,5 +1,13 @@
-profile: runtime-mirust.operations.v135
-updated_utc: 2026-08-25T07:50:08Z
+profile: runtime-mirust.operations.v136
+updated_utc: 2026-08-25T09:17:22Z
+release_surface_restart_activation_batching_checkpoint_2026_08_25:
+  source: implementation=ed6b2bfa4710a5c2a27716c6fe54803e7c8ea55b; tree=94206c1acc07ec1ef76c0efd38b3cf41c6f75a76; branch=codex/model-acquisition-v2; local_tracking_fetch_exact=true
+  preserved_failure: run=b8851fe74916282f3fb9d74530788e5153b87b0c1f05375f93a109908082ef28; pass_shards=1-7; failed_shard=8; case=complete-generated-byte-readback; observed_ms=183945.9794; fixed_limit_ms=180000; retry=false; threshold_change=false; aggregate=false
+  correction: restart=independent-preflight+opaque-ticket+bounded-batched-target-and-receipt-flush+postbatch-exact-readback-before-result; store_batch_max=1024; exact_active_replay=fresh-double-readback+same-durability+no-helper+no-temp+no-generation-or-snapshot-advance; partial_activation=false
+  architecture: path=docs/architecture/2026-08-25-release-surface-restart-activation-batching.md; bytes=4334; sha256=35f78864ed70aff315b76e625b4fc736cb9b6d5387a77e102f0a2cb4d651bef1
+  checks: stores=61/61; adjacent_campaign=48/48; syntax=4/4; standard=1260-pass/0-fail/1-explicit-skip/1261-total; standard_duration_ms=353248.5833; focused_capacity_case=103682.2579ms-pass; full_clean_release_surface=pending
+  claims: model=false; structural_conversion=false; runtime=false; browser=false; quality=false; p2p=false; publication=false; deployment=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
+  resume: commit/push/fresh-fetch UAI; run ten release-surface shards from this exact clean source in a new private root; independently verify only a complete aggregate; then preregister Qwen execution /3 with all-new roots before one build and one conversion execution
 qwen3_tied_output_profile_correction_registration_2026_08_25:
   source: registration=dfb5dfa333390193aacc2dbf50ab2ebe82b89919; remote_exact_descendant=17d96a07d05a6735adc834112d5f7eb60b37914a; branch=codex/model-acquisition-v2
   profiles: source=/2,18177,fa2ce18f38129a6b106000d7802d1ea3995921e2b945ae5e52457908f548e7cf; composition=/3,9764,c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0; receipt=tinyrustlm.qwen3_conversion_receipt.v2

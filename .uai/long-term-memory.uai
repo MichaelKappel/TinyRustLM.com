@@ -1,11 +1,29 @@
-profile: runtime-mirust.long-term-memory-ledger.v355
-updated_utc: 2026-08-25T01:20:47Z
+profile: runtime-mirust.long-term-memory-ledger.v356
+updated_utc: 2026-08-25T09:17:22Z
 storage_mode: hybrid
 ledger_rule:
   pointer_only_not_context_free: true
   summary_policy: Routing-only, one sentence, 35 words maximum, no durable body memory.
   allowed_statuses: current, retired, superseded, quarantined
 records:
+  - stable_id: tinyrustlm_release_surface_restart_activation_batching_2026_08_25_current
+    memory_domain: tinyrustlm.release_surface.restart_activation_batching
+    pointer_type: architecture_report
+    path: docs/architecture/2026-08-25-release-surface-restart-activation-batching.md
+    target_location: docs/architecture/2026-08-25-release-surface-restart-activation-batching.md
+    label: Release-Surface Restart Activation Batching
+    summary: Routes the preserved release timeout, bounded batched restart activation, exact no-helper replay, focused and standard verification, claim boundary, and required fresh clean-source release rerun.
+    pointer_status: current
+    authority: remote-exact failure-driven durability implementation
+    source_authority: implementation commit ed6b2bfa4710a5c2a27716c6fe54803e7c8ea55b
+    source_identity: tree 94206c1acc07ec1ef76c0efd38b3cf41c6f75a76
+    review_status: standard_green_full_release_surface_pending
+    quarantine_status: none
+    review_evidence: stores 61/61; adjacent campaign 48/48; standard 1260/0/1 of 1261; focused capacity case 103682.2579 ms
+    contextual_trigger: Read before durability, receipt-store, subject-store, campaign release-surface, site materialization, or Qwen execution source-identity work.
+    checksum_hash: sha256:35f78864ed70aff315b76e625b4fc736cb9b6d5387a77e102f0a2cb4d651bef1
+    sha256: 35f78864ed70aff315b76e625b4fc736cb9b6d5387a77e102f0a2cb4d651bef1
+    bytes: 4334
   - stable_id: tinyrustlm_companion_rotation_revocation_2026_08_24_current
     memory_domain: tinyrustlm.companion.rotation_revocation
     pointer_type: architecture_report

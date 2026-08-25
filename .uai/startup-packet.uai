@@ -1,5 +1,14 @@
-profile: runtime-mirust.startup-packet.v103
-updated_utc: 2026-08-21T05:12:41Z
+profile: runtime-mirust.startup-packet.v104
+updated_utc: 2026-08-25T09:17:22Z
+current_release_surface_restart_activation_handoff_2026_08_25:
+  first_read: Read the newest top-level checkpoint in `workspace.uai`, then `docs/architecture/2026-08-25-release-surface-restart-activation-batching.md` and `docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md` before older routes.
+  active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  active_branch: codex/model-acquisition-v2
+  protected_root: E:\Source\Rust\TinyRustLM.com must remain untouched.
+  implementation_head: ed6b2bfa4710a5c2a27716c6fe54803e7c8ea55b is pushed and fresh-fetch exact before this UAI handoff edit.
+  current_result: Batched restart activation and exact no-helper active replay pass focused and complete standard tests; the prior clean release run remains a preserved shard-8 timeout and no current full release-surface pass exists.
+  immediate_operation: Commit/push/fresh-fetch this memory, create a fresh private evidence root, run and independently verify the ten-shard release surface, then preregister Qwen execution `/3` with all-new roots before any conversion output.
+  truth_boundary: No model, runtime, browser, quality, P2P, publication, deployment, MemoryEndpoints, or campaign gate advanced; counters remain zero.
 current_slm2_scalar_wasm_handoff_2026_08_20:
   first_read: Read the newest top-level checkpoint in `workspace.uai`, then `docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md` and `wiki/runtime-mirust/reports/tinyrustlm-slm2-scalar-wasm-conformance-memory-2026-08-20.md`, before following older startup routes.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
