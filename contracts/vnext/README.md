@@ -152,7 +152,7 @@ plus the managed integration record in
 and the clean-cut correction record in
 `docs/architecture/2026-08-25-qwen3-composition-source-relationship-correction-implementation.md`.
 
-`qwen3-real-composition-execution-preregistration.v1.json` is the output-free
+`qwen3-real-composition-execution-preregistration.v1.json` was the output-free
 registration for exactly one real Qwen3 complete-composition execution. It is
 16,006 bytes at SHA-256
 `46a9da74eb6b811257d2cc3a433055d4859fb7bbdfeef22e1c6ee8c2bd978a6a`.
@@ -160,10 +160,25 @@ It binds the current remote-exact source anchor, exact model/tokenizer locks,
 corrected composition profile `/2`, offline Windows x64 release build,
 future executable capture, three absent public-safe logical roots, one private
 path-bearing intent, one converter launch, separate bounded stream custody,
-and mutually exclusive pass/rejection/ambiguous terminal rules. No private
-path or output enters Git. Registration is not conversion, runtime, browser,
-quality, P2P, publication, or campaign evidence. See
-`docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration.md`.
+and mutually exclusive pass/rejection/ambiguous terminal rules. Its build
+succeeded, but private evidence-root population stopped before the binding;
+no converter process or output root exists. Registration `/1` is closed and
+will not be retried, repaired, cleaned, overwritten, or relabeled.
+`qwen3-real-composition-execution-result.v1.json`, 4,076 bytes at SHA-256
+`dd1d9c85b5bb8bf098641a156de06e59243d88530434d70c574dcdceedb7a1ce`,
+records that bounded pre-launch result. No private path or raw output enters
+Git. See
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration.md`
+and
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-controller-and-v1-result.md`.
+
+The tested `qwen3-composition-execution-controller.js` now owns the private
+evidence envelope for a newly registered attempt. It validates every expensive
+input before creating the evidence root, writes the immutable binding first,
+then authorizes and captures exactly one bounded child process. A controller
+candidate pass still requires the independent managed durable inspector and
+does not establish runtime, browser, quality, P2P, publication, or campaign
+evidence.
 
 ## Tokenizer2 Format Checkpoint
 

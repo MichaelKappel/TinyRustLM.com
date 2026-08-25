@@ -1,0 +1,116 @@
+{
+  "schema": "tinyrustlm.qwen3-real-composition-execution-result.v1",
+  "executionProfileId": "tinyrustlm.qwen3-real-composition-execution/1",
+  "executionId": "qwen3-composition-c1899de-20260825-v1",
+  "status": "terminal-prelaunch-failure",
+  "observedAtUtc": "2026-08-25T06:43:31Z",
+  "registration": {
+    "profilePath": "contracts/vnext/qwen3-real-composition-execution-preregistration.v1.json",
+    "profileByteLength": 16006,
+    "profileSha256": "46a9da74eb6b811257d2cc3a433055d4859fb7bbdfeef22e1c6ee8c2bd978a6a",
+    "commit": "823b03641984c395cab8e37f0fd28af6d6dcb6a5",
+    "tree": "eb3ad026baf1aa439300dc04af28902c66be2378",
+    "branch": "codex/model-acquisition-v2",
+    "remoteExactBeforeBuild": true
+  },
+  "build": {
+    "attemptCount": 1,
+    "startedAtUtc": "2026-08-25T06:34:45.2079688Z",
+    "finishedAtUtc": "2026-08-25T06:35:09.1682019Z",
+    "exitCode": 0,
+    "sourceCommit": "823b03641984c395cab8e37f0fd28af6d6dcb6a5",
+    "sourceTree": "eb3ad026baf1aa439300dc04af28902c66be2378",
+    "command": [
+      "cargo",
+      "build",
+      "--locked",
+      "--release",
+      "-p",
+      "tinyrustlm-convert",
+      "--target",
+      "x86_64-pc-windows-msvc"
+    ],
+    "stdout": {
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "byteLength": 1874,
+      "sha256": "1213b18ef1c3159943ddbb64ecebf00d009697cce8ce1b81db3fa59d0adcfdcb"
+    },
+    "executable": {
+      "fileName": "tinyrustlm-convert.exe",
+      "byteLength": 836096,
+      "sha256": "5bb266e1b2a722b34845e09cb86fbcb353c8c9f6325f6738df7745b3c31a96e5",
+      "peMachine": "0x8664"
+    }
+  },
+  "privateEvidenceObservation": {
+    "logicalRoot": "qwen3-composition-execution-c1899de-20260825-v1",
+    "rootExists": true,
+    "inventory": [
+      {
+        "file": "build.stderr.bin",
+        "byteLength": 1874,
+        "sha256": "1213b18ef1c3159943ddbb64ecebf00d009697cce8ce1b81db3fa59d0adcfdcb"
+      },
+      {
+        "file": "build.stdout.bin",
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "bindingExists": false,
+    "startRecordExists": false,
+    "converterStdoutExists": false,
+    "converterStderrExists": false,
+    "terminalRecordExists": false,
+    "managedVerificationExists": false
+  },
+  "executionObservation": {
+    "outputLogicalRoot": "qwen3-composition-c1899de-20260825-v1",
+    "outputRootExists": false,
+    "converterLaunchCount": 0,
+    "converterProcessStarted": false,
+    "compositionArtifactCreated": false,
+    "terminalPassCreated": false,
+    "terminalRejectionCreated": false,
+    "managedDurableInspectionRun": false
+  },
+  "decision": {
+    "code": "private-binding-not-created-before-evidence-root-population",
+    "rootCauseEstablished": false,
+    "buildEvidenceReusableAsHistoricalEvidence": true,
+    "registrationClosed": true,
+    "retryUnderRegistrationAllowed": false,
+    "existingPrivateEvidenceMayBeDeleted": false,
+    "existingPrivateEvidenceMayBeOverwritten": false,
+    "existingPrivateEvidenceMayBeRelabeledAsPass": false,
+    "newAttemptRequiresNewRegistration": true,
+    "newAttemptRequiresNewBuildEvidenceAndOutputRoots": true
+  },
+  "claimBoundary": {
+    "releaseBuildCompleted": true,
+    "privateExecutionBindingCreated": false,
+    "realConverterInvoked": false,
+    "structuralCompositionVerified": false,
+    "sourceFrameworkParityVerified": false,
+    "nativeRuntimeVerified": false,
+    "browserWasmVerified": false,
+    "browserChatVerified": false,
+    "modelQualityVerified": false,
+    "p2pAvailabilityVerified": false,
+    "catalogAnnouncementVerified": false,
+    "packagePublicationVerified": false,
+    "siteDeploymentVerified": false,
+    "memoryEndpointsVerified": false,
+    "campaignCreditAuthorized": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}
