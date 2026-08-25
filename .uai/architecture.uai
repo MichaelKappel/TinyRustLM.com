@@ -1,5 +1,11 @@
-profile: runtime-mirust.architecture.v154
-updated_utc: 2026-08-25T12:01:53Z
+profile: runtime-mirust.architecture.v155
+updated_utc: 2026-08-25T12:53:47Z
+current_qwen3_execution_v5_source_anchor_invalidation_2026_08_25:
+  authority: `/5` requires both custodied builds and the controller to bind exact registration commit `307b94009342e76974ccdc19e56a9e1f7f9788d1`, tree `76a73ebf4ea34adf72617f95033e56f611b5a8da`; equality is semantic evidence, not an executable-sentinel approximation.
+  observed_transition: The remote advanced through one research path to commit `81631d0b5bd2f23c5defc17e7027884bdce0be86`, tree `e82a38ba1ff708eef30058da69619b7e5b5f43f4`, before the first private request. The registration commit remained an ancestor but ceased to be the actual remote tip, which is terminal by design.
+  state_machine: remote-exact-registration -> no-private-material -> source-anchor-revalidation-fail -> immutable-public-terminal. Rust/managed preflight, custody, build, controller, converter, inspection, binding, and output states were never entered.
+  preservation: Result `qwen3-real-composition-execution-result.v5.json` is 4,372 bytes/SHA256 `06006e0533c1f1b02492aacb8aee675ac1c5dbd50d6c3f67441b58918bd0c798`. Burn all nine `/5` names despite absence. Never rewind remote, emulate a remote, weaken identity, retry, or invent private evidence.
+  next: After closure is remote-exact, create `/6` as a new output-free registration with wholly new names and execute it before any intervening source commit through the sole custody owner. No compatibility, fallback, repair, debt, broader claim, MemoryEndpoints authority, or counter credit.
 current_source_controlled_build_custody_implementation_2026_08_25:
   authority: Sole current Windows x64 profile SHA256 `589883f42c1e047dfa6e132c8c4937c05d23b936ae1a6f62fe41c91b672a82fa`; owner SHA256 `ed2e4d8dddee8914456aa52a59b18a2cc6febec3a9258b18df7868604af56ef9`; architecture `docs/architecture/2026-08-25-source-controlled-build-custody-owner.md`. No alternate wrapper, compatibility reader, migration, retry, fallback, or output adoption exists.
   state_machine: canonical+exact preflight -> absent control root -> fsynced binding -> absent target root -> fsynced start -> bounded stdout/stderr open -> exactly one child -> immediate fsynced process terminal on exit -> stream close/final state reconciliation -> optional diagnostics -> immutable identity and bounded target verification -> one create-only overall terminal.

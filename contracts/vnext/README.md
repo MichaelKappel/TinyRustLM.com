@@ -320,6 +320,21 @@ managed inspection. It creates no request, root, build, conversion, model,
 runtime, browser, quality, publication, deployment, or campaign evidence. See
 `docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration-v5.md`.
 
+Before `/5` created any private request or root, the remote branch advanced
+from its exact registration commit by one research-document commit. The
+registration requires both builds and the controller to bind the exact
+registration commit and tree, so the otherwise non-executable change still
+closes `/5` as `terminal-prelaunch-failure`. The bounded public result records
+zero preflights, builds, controller calls, converter launches, inspections,
+private roots, or outputs. It is
+`qwen3-real-composition-execution-result.v5.json`, 4,372 canonical bytes at
+SHA-256
+`06006e0533c1f1b02492aacb8aee675ac1c5dbd50d6c3f67441b58918bd0c798`.
+No registered logical name may be reused. A later attempt requires a new
+registration and wholly new names; remote history will not be rewritten to
+manufacture equality. See
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-v5-source-anchor-invalidation.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2

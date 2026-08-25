@@ -1,7 +1,7 @@
-profile: tinyrustlm.source-workspace.v412
+profile: tinyrustlm.source-workspace.v413
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-25T12:14:23Z
+updated_utc: 2026-08-25T12:53:47Z
 
 prelaunch_product_boundary:
   product: TinyRustLM is one unversioned prelaunch product; product V1 and product V2 do not exist.
@@ -15,6 +15,14 @@ current_prelaunch_cleanup_audit_2026_08_25:
   observed: All six paths registered under `production-slm2-clean-cut-preregistration.v1.json` for complete deletion still exist, totaling 76 tracked files. Current maintained code still includes ACG1/`.acg1` browser and dogfood admission and direct `tinyrustlm-slm-pack` smoke and qualification callers.
   boundary: Root Cargo exclusion quarantines some superseded source but does not complete cleanup. Negative rejection tests and immutable historical receipts may retain old tokens as non-executable evidence; maintained runtime, converter, browser, campaign, package, documentation, and release paths may not.
   required_cutover: Complete and prove each sole SLM2 replacement, repoint all maintained callers, delete the six registered paths and every remaining executable old-format reference, regenerate affected evidence, run the complete source/package/browser/release gates, update all affected documentation and marketing, then publish only after independent readback. No compatibility bridge or interim release is allowed.
+
+current_checkpoint_2026_08_25_qwen3_execution_v5_source_anchor_invalidation:
+  registration: Execution `/5` profile `contracts/vnext/qwen3-real-composition-execution-preregistration.v5.json` is 41,928 canonical bytes at SHA256 `221afa82a71da22516dda142f90270a08205cdced9df6093108b0bacfaf88b55`. Registration commit `307b94009342e76974ccdc19e56a9e1f7f9788d1`, tree `76a73ebf4ea34adf72617f95033e56f611b5a8da`, was pushed and fresh-remote exact before any private material.
+  terminal_truth: Before the Rust custody request was created, the branch advanced to remote-exact research commit `81631d0b5bd2f23c5defc17e7027884bdce0be86`, tree `e82a38ba1ff708eef30058da69619b7e5b5f43f4`. The registration requires both builds and the controller to bind the exact registration commit/tree, so `/5` closed as `terminal-prelaunch-failure` with reason `registration-commit-no-longer-remote-tip-before-private-materialization`. No remote rewind or identity weakening is allowed.
+  material_boundary: All six registered roots and all three registered request files remained absent. Rust/managed preflights, custody executions, builds, controller calls, converter launches, managed inspections, bindings, artifacts, passes, and rejections are all zero. The nine unused `/5` logical names are burned and may not be reused; no private cleanup exists or is required.
+  public_result: `contracts/vnext/qwen3-real-composition-execution-result.v5.json` is 4,372 canonical bytes at SHA256 `06006e0533c1f1b02492aacb8aee675ac1c5dbd50d6c3f67441b58918bd0c798`; architecture is `docs/architecture/2026-08-25-qwen3-real-composition-execution-v5-source-anchor-invalidation.md`. Focused result tests pass 7/7.
+  exact_resume: Finish all Qwen/custody/clean-cut/UAI/hygiene gates, commit/push/fresh-verify this closure, then create a wholly new output-free `/6` registration against that current remote-exact parent with six new absent roots and three new absent request filenames. Push/fresh-verify `/6`, then materialize and execute immediately with no intervening source commit. Preserve `/1` through `/5`; do not rerun Tokenizer2 Chromium.
+  claim_boundary: `/5` proves registration and honest pre-materialization closure only. It proves no successful build, conversion, complete composition, source parity, native runtime, browser WASM/chat, quality, P2P, package, publication, deployment, MemoryEndpoints, or campaign evidence. MemoryEndpoints remains unauthorized and counters remain exactly 0/20, 0/50, 0/25, 0/40, and 0/20.
 
 current_checkpoint_2026_08_25_source_controlled_build_custody_owner:
   implementation: The sole current prelaunch Windows x64 build-custody profile is `contracts/vnext/build-custody-profile.v1.json`, 3,407 canonical LF bytes at SHA256 `589883f42c1e047dfa6e132c8c4937c05d23b936ae1a6f62fe41c91b672a82fa`. Its owner is `tinyrustlm/tools/build-custody-owner.js`, 51,785 bytes at SHA256 `ed2e4d8dddee8914456aa52a59b18a2cc6febec3a9258b18df7868604af56ef9`. It binds exact clean source commit/tree/branch, hashed Git, committed owner/profile, Node runtime, command, arguments, working directory, exact environment, absent sibling roots, bounded streams, exact taskkill tree termination, target entry/byte limits, and required outputs.

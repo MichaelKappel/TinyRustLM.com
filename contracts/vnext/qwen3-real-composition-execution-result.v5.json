@@ -1,0 +1,109 @@
+{
+  "schema": "tinyrustlm.qwen3-real-composition-execution-result.v5",
+  "executionProfileId": "tinyrustlm.qwen3-real-composition-execution/5",
+  "executionId": "qwen3-composition-c1899de-20260825-v5",
+  "status": "terminal-prelaunch-failure",
+  "observedAtUtc": "2026-08-25T12:51:22Z",
+  "predecessor": {
+    "resultPath": "contracts/vnext/qwen3-real-composition-execution-result.v4.json",
+    "resultByteLength": 5293,
+    "resultSha256": "c928b55cf9eb871c09b7f1e1aacf1983bf3a7e2fe6ca4697aa58c50648187a35",
+    "status": "terminal-prelaunch-failure",
+    "reused": false,
+    "modified": false
+  },
+  "registration": {
+    "profilePath": "contracts/vnext/qwen3-real-composition-execution-preregistration.v5.json",
+    "profileByteLength": 41928,
+    "profileSha256": "221afa82a71da22516dda142f90270a08205cdced9df6093108b0bacfaf88b55",
+    "commit": "307b94009342e76974ccdc19e56a9e1f7f9788d1",
+    "tree": "76a73ebf4ea34adf72617f95033e56f611b5a8da",
+    "branch": "codex/model-acquisition-v2",
+    "remoteExactBeforeAnyPrivateMaterial": true
+  },
+  "sourceControlObservation": {
+    "currentCommit": "81631d0b5bd2f23c5defc17e7027884bdce0be86",
+    "currentTree": "e82a38ba1ff708eef30058da69619b7e5b5f43f4",
+    "currentRemoteExact": true,
+    "registrationCommitIsAncestorOfCurrent": true,
+    "registrationCommitIsCurrentRemoteTip": false,
+    "changedPathCountAfterRegistration": 1,
+    "changedPathsAfterRegistration": [
+      "docs/research-prompts/2026-08-25-twelve-disconnected-post-composition-first-model-clean-cut-research-prompts.md"
+    ],
+    "changedExecutableSentinelCount": 0,
+    "exactRegistrationCommitStillRequired": true,
+    "remoteRewindAllowed": false
+  },
+  "privateMaterialObservation": {
+    "registeredLogicalNameCount": 9,
+    "existingRegisteredLogicalNameCount": 0,
+    "rustCustodyRequestCreated": false,
+    "rustCustodyControlRootCreated": false,
+    "rustCustodyTargetRootCreated": false,
+    "managedCustodyRequestCreated": false,
+    "managedCustodyControlRootCreated": false,
+    "managedCustodyTargetRootCreated": false,
+    "compositionRequestCreated": false,
+    "controllerEvidenceRootCreated": false,
+    "compositionOutputRootCreated": false
+  },
+  "executionObservation": {
+    "rustCustodyPreflightCount": 0,
+    "rustCustodyExecuteCount": 0,
+    "rustBuildAttemptCount": 0,
+    "managedCustodyPreflightCount": 0,
+    "managedCustodyExecuteCount": 0,
+    "managedBuildAttemptCount": 0,
+    "controllerInvocationCount": 0,
+    "converterLaunchCount": 0,
+    "managedInspectionInvocationCount": 0,
+    "privateExecutionBindingCreated": false,
+    "compositionArtifactCreated": false,
+    "terminalPassCreated": false,
+    "terminalRejectionCreated": false
+  },
+  "decision": {
+    "code": "registration-commit-no-longer-remote-tip-before-private-materialization",
+    "stage": "source-anchor-revalidation-before-rust-custody-request",
+    "rootCauseEstablished": true,
+    "registrationClosed": true,
+    "retryUnderRegistrationAllowed": false,
+    "remoteHistoryRewriteAllowed": false,
+    "registeredLogicalNamesMayBeReused": false,
+    "privateCleanupRequired": false,
+    "privateEvidenceMayBeInvented": false,
+    "newAttemptRequiresNewRegistrationAndAllNewLogicalNames": true
+  },
+  "claimBoundary": {
+    "realConversionAttemptRegistered": true,
+    "privateCustodyRequestCreated": false,
+    "rustBuildCustodyCompleted": false,
+    "rustReleaseBuildCompleted": false,
+    "managedBuildCustodyCompleted": false,
+    "managedInspectorBuildCompleted": false,
+    "privateCompositionRequestCreated": false,
+    "privateExecutionBindingCreated": false,
+    "realConverterInvoked": false,
+    "managedInspectionInvoked": false,
+    "structuralCompositionVerified": false,
+    "sourceFrameworkParityVerified": false,
+    "nativeRuntimeVerified": false,
+    "browserWasmVerified": false,
+    "browserChatVerified": false,
+    "modelQualityVerified": false,
+    "p2pAvailabilityVerified": false,
+    "catalogAnnouncementVerified": false,
+    "packagePublicationVerified": false,
+    "siteDeploymentVerified": false,
+    "memoryEndpointsVerified": false,
+    "campaignCreditAuthorized": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}

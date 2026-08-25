@@ -1,12 +1,19 @@
-profile: runtime-mirust.operations.v142
-updated_utc: 2026-08-25T12:11:21Z
+profile: runtime-mirust.operations.v143
+updated_utc: 2026-08-25T12:53:47Z
+qwen3_execution_v5_source_anchor_invalidation_2026_08_25:
+  registration: commit=307b94009342e76974ccdc19e56a9e1f7f9788d1; tree=76a73ebf4ea34adf72617f95033e56f611b5a8da; profile_bytes=41928; profile_sha256=221afa82a71da22516dda142f90270a08205cdced9df6093108b0bacfaf88b55; remote_exact_before_private=true
+  invalidation: observed_current_commit=81631d0b5bd2f23c5defc17e7027884bdce0be86; observed_current_tree=e82a38ba1ff708eef30058da69619b7e5b5f43f4; registration_is_ancestor=true; registration_is_remote_tip=false; changed_paths=1; changed_executable_sentinels=0; reason=registration-commit-no-longer-remote-tip-before-private-materialization
+  material: registered_names=9; existing_names=0; rust_preflights=0; rust_builds=0; managed_preflights=0; managed_builds=0; controller_invocations=0; converter_launches=0; managed_inspections=0; bindings=0; outputs=0
+  result: path=contracts/vnext/qwen3-real-composition-execution-result.v5.json; bytes=4372; sha256=06006e0533c1f1b02492aacb8aee675ac1c5dbd50d6c3f67441b58918bd0c798; status=terminal-prelaunch-failure; focused_tests=7/7
+  resume: run complete affected gates; commit/push/fresh-verify closure; preregister `/6` with six new roots and three new request filenames; push/fresh-verify; execute immediately with no intervening commit
+  claims: registered=true; attempted=false; build=false; conversion=false; complete_composition=false; runtime=false; browser=false; quality=false; p2p=false; publication=false; deployment=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
 source_controlled_build_custody_owner_2026_08_25:
   identities: profile=contracts/vnext/build-custody-profile.v1.json,3407,589883f42c1e047dfa6e132c8c4937c05d23b936ae1a6f62fe41c91b672a82fa; owner=tinyrustlm/tools/build-custody-owner.js,51785,ed2e4d8dddee8914456aa52a59b18a2cc6febec3a9258b18df7868604af56ef9; platform=win32-x64; retry=0; resume=false; cleanup=false; adoption=false
   evidence: binding=create-only+fsync; start=create-only+fsync; stdout=separate-bounded-binary; stderr=separate-bounded-binary; process_terminal=exit-event+create-only+fsync+before-diagnostics; final=pass|terminal-build-failure|terminal-custody-failure; output_inspection=after-zero-exit-only
   isolation: source=clean-commit-tree-branch; git=exact-hash; node=exact-hash+version; command=exact-hash+args+cwd+environment; roots=absent-direct-siblings-outside-source; termination=exact-system-taskkill-tree; ambient=clear-during-process-create+finally-restore; worker_environment=SystemRoot-only
   gates: custody=14/14; qwen=141/141; release_cutover=5/5; syntax=pass; package_command=npm-run-test-build-custody
-  next: commit/push/fresh-fetch and prove exact owner/profile source; register `/5` output-free with six new absent direct-sibling roots (Rust custody control/target, managed custody control/target, controller evidence, composition output); push/fresh-verify registration; only then materialize private build requests and execute once per registered build
-  claims: real_build=false; execution_v5_registered=false; roots_v5=0; conversion=false; complete_composition=false; runtime=false; browser=false; quality=false; p2p=false; publication=false; deployment=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
+  next: preserve closed `/5`; after its result is remote-exact, register `/6` output-free with six new absent direct-sibling roots and three new request filenames; push/fresh-verify registration; only then materialize private build requests and execute once per registered build
+  claims: real_build=false; execution_v5_registered=true; execution_v5_attempted=false; roots_v5=0; conversion=false; complete_composition=false; runtime=false; browser=false; quality=false; p2p=false; publication=false; deployment=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
 qwen3_execution_v4_build_custody_failure_2026_08_25:
   registration: commit=8948baf1d21a73cde5781cf74a7c5020fd0b8cca; tree=6a25e28f45b9bf69d82782efb965a9c0da5dee76; profile_bytes=31580; profile_sha256=f3f549a108c4a3acb767b241f2d1ef6d2db737c67442f059e8e943dabb992275; remote_exact=true; roots_absent_before=true
   build: rust_launches=1; child_exit_code=unknown; reason=rust-build-exit-code-not-captured; stdout_bytes=0; stdout_sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; stderr_bytes=1874; stderr_sha256=edf2073ffe971fea9394d06c99c7fc201f34515aad85b3d2c41ae9a097a9fdae
