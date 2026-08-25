@@ -1,5 +1,5 @@
-profile: runtime-mirust.long-term-memory-ledger.v356
-updated_utc: 2026-08-25T09:17:22Z
+profile: runtime-mirust.long-term-memory-ledger.v357
+updated_utc: 2026-08-25T09:39:08Z
 storage_mode: hybrid
 ledger_rule:
   pointer_only_not_context_free: true
@@ -12,18 +12,18 @@ records:
     path: docs/architecture/2026-08-25-release-surface-restart-activation-batching.md
     target_location: docs/architecture/2026-08-25-release-surface-restart-activation-batching.md
     label: Release-Surface Restart Activation Batching
-    summary: Routes the preserved release timeout, bounded batched restart activation, exact no-helper replay, focused and standard verification, claim boundary, and required fresh clean-source release rerun.
+    summary: Routes the preserved release timeout, bounded restart activation, exact no-helper replay, complete standard gate, independently verified clean release surface, and Qwen execution preregistration boundary.
     pointer_status: current
-    authority: remote-exact failure-driven durability implementation
-    source_authority: implementation commit ed6b2bfa4710a5c2a27716c6fe54803e7c8ea55b
-    source_identity: tree 94206c1acc07ec1ef76c0efd38b3cf41c6f75a76
-    review_status: standard_green_full_release_surface_pending
+    authority: remote-exact implementation and independently verified clean-source release gate
+    source_authority: implementation ed6b2bfa4710a5c2a27716c6fe54803e7c8ea55b; clean release source 45ddff17cbfa14ff5343abbbdeb31dd846df805b
+    source_identity: implementation tree 94206c1acc07ec1ef76c0efd38b3cf41c6f75a76; clean tree 33ee6b9351e4b6b5e9c920edd0dd373872d7687e
+    review_status: clean_source_release_surface_verified
     quarantine_status: none
-    review_evidence: stores 61/61; adjacent campaign 48/48; standard 1260/0/1 of 1261; focused capacity case 103682.2579 ms
+    review_evidence: stores 61/61; adjacent campaign 48/48; standard 1260/0/1 of 1261; run 2325cab78fb411bea1cb1913e96e8a4018487eb702c790b29f73d696a1cf8f69; release 23/23; aggregate 7d1f71b72d4bb8bfa2c731ac3a7ba99405d7896aedc56ea84de0e28677ce6c2e
     contextual_trigger: Read before durability, receipt-store, subject-store, campaign release-surface, site materialization, or Qwen execution source-identity work.
-    checksum_hash: sha256:35f78864ed70aff315b76e625b4fc736cb9b6d5387a77e102f0a2cb4d651bef1
-    sha256: 35f78864ed70aff315b76e625b4fc736cb9b6d5387a77e102f0a2cb4d651bef1
-    bytes: 4334
+    checksum_hash: sha256:6fb4152ad7e4932fc72d16fb3304d6c626f0cbe4ebab8fa3b168280ad9cad4df
+    sha256: 6fb4152ad7e4932fc72d16fb3304d6c626f0cbe4ebab8fa3b168280ad9cad4df
+    bytes: 6071
   - stable_id: tinyrustlm_companion_rotation_revocation_2026_08_24_current
     memory_domain: tinyrustlm.companion.rotation_revocation
     pointer_type: architecture_report

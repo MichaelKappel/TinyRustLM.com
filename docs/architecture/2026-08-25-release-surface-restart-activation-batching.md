@@ -2,8 +2,8 @@
 
 Date: 2026-08-25
 
-Status: implemented and focused-regression verified; full clean-source release
-surface rerun remains required before this checkpoint can be called green.
+Status: implemented, complete-standard verified, and clean-source
+release-surface verified.
 
 ## Preserved Failure
 
@@ -72,8 +72,44 @@ Permanent regressions require:
 The durability, receipt-store, and subject-store suites pass 61 of 61 tests.
 The formerly failing complete-capacity publication scenario passed through the
 same inherited-pipe custody launcher in `103682.2579` milliseconds after all
-temporary diagnostics were removed. This is focused regression evidence, not
-the terminal clean-source release-surface gate.
+temporary diagnostics were removed. This focused regression preceded the
+separate terminal clean-source release-surface gate below.
+
+## Clean-Source Release-Surface Verification
+
+Implementation commit
+`ed6b2bfa4710a5c2a27716c6fe54803e7c8ea55b` and tree
+`94206c1acc07ec1ef76c0efd38b3cf41c6f75a76` passed the complete standard Node
+partition: 1,260 passed, zero failed, and one explicit absent-package-input
+case skipped across 1,261 tests in `353248.5833` milliseconds. The skip grants
+no package evidence.
+
+After the UAI handoff was committed and pushed, clean source commit
+`45ddff17cbfa14ff5343abbbdeb31dd846df805b` and tree
+`33ee6b9351e4b6b5e9c920edd0dd373872d7687e` ran the maintained release-surface
+command from a newly created private evidence root. Run
+`2325cab78fb411bea1cb1913e96e8a4018487eb702c790b29f73d696a1cf8f69` passed
+all ten serial shards and all 23 tests with zero failures, skips,
+cancellations, or todo results. The formerly failing complete-capacity case
+passed in `98211.8183` milliseconds against the unchanged `180000`
+millisecond limit.
+
+The canonical aggregate is 3,995 bytes with SHA256
+`7d1f71b72d4bb8bfa2c731ac3a7ba99405d7896aedc56ea84de0e28677ce6c2e`.
+It has schema
+`tinyrustlm.vnext.campaign_release_surface_gate_aggregate.v1`, names the exact
+run ID above, and contains exactly ten shard members with exactly one receipt
+per shard. The maintained independent verifier exited zero and reproduced the
+same aggregate length, hash, schema, run ID, member count, and 23-test pass
+verdict.
+
+The execution stdout is 9,282 bytes at SHA256
+`34be12a77456c755fa59a4d708ed86ca399bbd4f4e29a3ceddb7dacb8b575950`.
+Verifier stdout is 914 bytes at SHA256
+`74732d89bee3cf728f09360fa99a6a01ed3501c6416b62ea4011735018875cea`.
+Both stderr captures are empty and therefore have SHA256
+`e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`.
+The private evidence and operator roots remain outside Git.
 
 ## Invalidation And Claim Boundary
 
