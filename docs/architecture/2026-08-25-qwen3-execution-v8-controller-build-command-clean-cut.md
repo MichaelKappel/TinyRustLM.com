@@ -1,7 +1,7 @@
 # Qwen3 Execution V8 Controller Build Command Clean Cut
 
 Date: 2026-08-25
-Status: implemented prerequisite; output-free execution registration still absent
+Status: implemented, remote-exact, and clean-gated prerequisite; output-free execution registration still absent
 
 ## Decision
 
@@ -99,6 +99,23 @@ The controller unit gate passes 7/7. It proves:
 - overflow terminates the owned child;
 - the current executable machine is x64 on the Windows host.
 
+The complete clean-source standard partition ran from remote-exact commit
+`e48bb15445b62e951e56aa17c9c045df2e748bd4`, tree
+`9099c150a9ef21bc9cf1124125b149caecef3ad4`. It completed 1,386 tests:
+1,384 passed, zero failed, and exactly two declared skips. The skips remain the
+external generated-package-input lane and the opt-in observation of an
+installed Visual Studio instance. Duration was 419,382.1737 ms.
+
+The same clean wrapper completed all ten serial release-surface shards with
+23/23 tests passing. Run identity
+`5980011fa62049fc9fbdbc19b74040833946caa9195f168bbdf2bccddb76a073`
+has a 3,995-byte aggregate receipt at SHA256
+`4f2cdcdff90f6da8c948e25889198e79915f07057163396809313789f5986997`.
+The maintained verifier reopened the complete receipt set and reproduced the
+same run, byte count, hash, test count, and pass verdict. An independent
+filesystem hash reproduced the aggregate hash. All raw logs and receipts
+remain outside source control in private evidence storage.
+
 The exact command was also executed once as a test-only build in a fresh
 external target root outside Git and outside every registered execution name.
 It completed successfully and produced:
@@ -114,21 +131,24 @@ execution `/8`. They must never be copied into an `/8` root.
 
 ## Source Identities
 
-At this uncommitted checkpoint:
+At remote-exact implementation checkpoint
+`e48bb15445b62e951e56aa17c9c045df2e748bd4`, tree
+`9099c150a9ef21bc9cf1124125b149caecef3ad4`:
 
 - controller: 33,811 bytes, SHA256
   `c26633570f00155454842f56d23c27944b57091cd7f492c4f0bdde6386b3fdf6`;
 - controller test: 7,780 bytes, SHA256
   `9e9324ae3aa95d929bcdeab8d9ff7a88675b77b28a3f54bd9cd63368e237bc54`.
 
-These identities become usable registration inputs only after this complete
-source and UAI checkpoint is committed, pushed, freshly fetched, and exact
-across local HEAD, tracking, FETCH_HEAD, and the direct remote branch.
+The implementation checkpoint is exact across local HEAD, tracking,
+`FETCH_HEAD`, and the direct remote branch. The bounded clean-gate
+documentation and UAI update must receive its own remote-exact checkpoint
+before registration uses the implementation identities.
 
 ## Next Gate
 
-After remote equality is proven, execution `/8` may be preregistered
-output-free. The preregistration must bind:
+After this bounded clean-gate documentation and UAI update is remote exact,
+execution `/8` may be preregistered output-free. The preregistration must bind:
 
 - the exact new source commit and tree;
 - current build-custody profile `/3` and owner;
