@@ -104,9 +104,9 @@
     },
     "soleExecutionOwner": {
       "path": "tinyrustlm/tools/qwen3-numerical-execution-owner.js",
-      "byteLength": 50780,
-      "sha256": "394a80512ca93b9361b52997b13acf8d4a581890fb4e591bbf4957d749acef8a",
-      "profileId": "tinyrustlm.qwen3-numerical-execution-owner/1",
+      "byteLength": 53264,
+      "sha256": "b20def54d58116d7918d0b4018b4282c6975a5298859d6b30d47e1f17eb7aa9f",
+      "profileId": "tinyrustlm.qwen3-numerical-execution-owner/2",
       "stageOrder": [
         "publisher-source",
         "slm2-reconstructed",
@@ -397,7 +397,7 @@
       "sole-owner-invokes-source-reconstructed-scalar-and-read-only-verifier-at-most-once-in-order",
       "preserve-terminal-result-without-retry-overwrite-repair-or-tolerance-change"
     ],
-    "soleOwnerStatus": "implemented-hostile-process-fixtures-pass-not-registered-not-run",
+    "soleOwnerStatus": "v2-clean-cut-focused-gate-pass-not-registered-not-run",
     "processCardinalityAuthority": "sole-execution-owner",
     "sourceOutput": "create-only-preserve-partial-on-failure",
     "reconstructedOutput": "create-only-preserve-partial-on-failure",

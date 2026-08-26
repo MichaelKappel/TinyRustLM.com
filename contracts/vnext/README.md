@@ -783,11 +783,9 @@ no source-framework parity, native inference, browser execution, quality,
 release, or campaign claim. See
 `docs/architecture/2026-08-26-scalar-numerical-probe.md`.
 
-`qwen3-numerical-differential-execution-preregistration.v1.json` is the sole
-output-free registration for comparing the pinned publisher source, an
-independent mixed-Q8 reconstructed-weight executor, and the Rust scalar
-converted-byte runtime before one read-only first-divergence verification. It
-is 24,467 canonical bytes at SHA-256
+`qwen3-numerical-differential-execution-preregistration.v1.json` is immutable
+historical evidence for the closed first numerical operation. It is 24,467
+canonical bytes at SHA-256
 `469e003e6f50cb3e4bb0574e2bd72c5836edb938eea0345ca1a23b4bfc9906a1` and
 binds the exact remote memory parent, eleven source-controlled artifacts, five
 local executable identities without paths, three token-only cases totaling
@@ -795,12 +793,20 @@ seven steps, exact trace/KV/scratch budgets, two proof arrows, fixed pre-output
 thresholds, six absent future names, one ordered owner, and immutable terminal
 rules.
 
-The registration creates no private request, root, trace, process, or verdict.
-It must be committed, pushed, freshly fetched, and direct-remote exact before
-one private owner request can be materialized and invoked. A later failure
-cannot be retried, repaired, overwritten, deleted, adopted, or made to pass by
-changing thresholds. See
+Its operation is now terminal failure and the v1 registration is not accepted
+by the sole active execution owner. It remains readable as inert evidence; no
+shipping compatibility reader or translator exists. See
 `docs/architecture/2026-08-26-qwen3-numerical-differential-execution-preregistration.md`.
+
+The sole active owner now requires request, preregistration, and owner-contract
+technical schemas v2 plus source-request schema v2 and the complete corrected
+offline source-framework closure. The future active path is
+`qwen3-numerical-differential-execution-preregistration.v2.json`, but that file
+is deliberately absent at this implementation checkpoint. It may be authored
+only after the corrected owner passes the canonical clean gate, is committed
+and pushed, and has fresh four-way remote equality. No successor private
+request, root, trace, or process is authorized yet. See
+`docs/architecture/2026-08-26-qwen3-numerical-successor-owner-clean-cut.md`.
 
 `qwen3-numerical-differential-execution-result.v1.json` closes that registered
 operation as an independently verified terminal source-process failure. The

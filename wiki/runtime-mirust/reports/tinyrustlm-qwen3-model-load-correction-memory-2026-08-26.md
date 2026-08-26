@@ -133,13 +133,53 @@ Current source-controlled identities at correction commit:
   SHA-256
   `e045782d3e0fa3b5b8d28c32209ca35abbc8ed27849417de08d717f46e27c0c6`;
 - differential profile:
-  `contracts/vnext/qwen3-numerical-differential-profile.v1.json`, 17,166
+  `contracts/vnext/qwen3-numerical-differential-profile.v1.json`, 17,155
   bytes, SHA-256
-  `c3856e8ba6116379ba4f1783231c39cfa7e1e150406f96c56c24ae4162c91bfb`.
+  `af3b7562a4429d744bee9d1cb9a3f8b927f7f04b4d54ffc517edf14cce9b8bc8`.
 
 The profile file name and schema remain `.v1` because that profile schema did
 not change. Its content identity binds the current technical `/2` environment,
 source request, and source owner. This is not dual interpretation.
+
+## Successor Owner Clean Cut
+
+After the correction checkpoint was remote-exact, the sole numerical
+execution owner was replaced before any successor registration or private
+materialization. Its current source-controlled identity is:
+
+- `tinyrustlm/tools/qwen3-numerical-execution-owner.js`, 53,264 bytes,
+  SHA-256
+  `b20def54d58116d7918d0b4018b4282c6975a5298859d6b30d47e1f17eb7aa9f`;
+- owner technical profile
+  `tinyrustlm.qwen3-numerical-execution-owner/2`;
+- execution request schema
+  `tinyrustlm.qwen3_numerical_execution_request.v2`;
+- preregistration schema
+  `tinyrustlm.qwen3_numerical_differential_execution_preregistration.v2`;
+- owner contract schema
+  `tinyrustlm.qwen3_numerical_execution_owner_contract.v2`; and
+- sole future registration path
+  `contracts/vnext/qwen3-numerical-differential-execution-preregistration.v2.json`.
+
+The future registration file is intentionally absent at this checkpoint. The
+active owner rejects former v1 request, registration, owner-contract, and
+source-template semantics rather than translating them. The historical v1
+registration remains byte-exact evidence and is tested without entering the
+active validator.
+
+Before it can derive any private child request, the owner now requires the
+complete source framework: Python, PyTorch, Transformers, Safetensors,
+Tokenizers, NumPy, Accelerate, and psutil at their exact pinned versions. It
+also requires CPU float32 eager attention, deterministic operation, one
+intra-operation thread, one inter-operation thread, local files only, and no
+network. Focused red-to-green tests reject a missing Accelerate field, a
+changed psutil version, enabled network access, and every former active
+schema.
+
+Architecture authority is
+`docs/architecture/2026-08-26-qwen3-numerical-successor-owner-clean-cut.md`.
+This is implementation evidence only. No successor identity has been
+registered or consumed and no source trace or numerical arrow exists.
 
 ## Model-Load Diagnostics
 
@@ -227,11 +267,12 @@ Campaign counters remain exactly `0/20`, `0/50`, `0/25`, `0/40`, and `0/20`.
 
 ## Exact Resume Sequence
 
-1. Commit this durable memory and all hot `.uai` deep links as one memory-only
-   checkpoint. Push, fetch, and prove local HEAD/tracking/`FETCH_HEAD`/direct
-   remote equality.
-2. Create one separate output-free successor preregistration. Bind that exact
-   post-memory commit/tree, frozen goals, the report-review chain, source lock,
+1. Finish the successor-owner canonical gate, commit/push it, and prove fresh
+   four-way remote equality. Then commit this updated durable memory and every
+   hot `.uai` deep link as one separate checkpoint and repeat the equality
+   proof.
+2. Create one separate output-free v2 successor preregistration. Bind that
+   exact post-memory commit/tree, frozen goals, the report-review chain, source lock,
    immutable `/12` composition, current environment, source owner,
    reconstructed owner, scalar probe, verifier, profiles, exact token-only
    cases, comparison thresholds, resource bounds, zero retry, and terminal

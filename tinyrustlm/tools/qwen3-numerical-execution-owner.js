@@ -5,11 +5,16 @@ const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 
-const REQUEST_SCHEMA = "tinyrustlm.qwen3_numerical_execution_request.v1";
+const REQUEST_SCHEMA = "tinyrustlm.qwen3_numerical_execution_request.v2";
 const REGISTRATION_SCHEMA =
-  "tinyrustlm.qwen3_numerical_differential_execution_preregistration.v1";
+  "tinyrustlm.qwen3_numerical_differential_execution_preregistration.v2";
 const OWNER_CONTRACT_SCHEMA =
-  "tinyrustlm.qwen3_numerical_execution_owner_contract.v1";
+  "tinyrustlm.qwen3_numerical_execution_owner_contract.v2";
+const SOURCE_REQUEST_SCHEMA = "tinyrustlm.qwen3_numerical_source_request.v2";
+const RECONSTRUCTED_REQUEST_SCHEMA = "tinyrustlm.qwen3_slm2_reconstructed_request.v1";
+const SCALAR_REQUEST_SCHEMA = "tinyrustlm.scalar-numerical-probe-request.v1";
+const VERIFICATION_REQUEST_SCHEMA =
+  "tinyrustlm.qwen3_numerical_trace_verification_request.v1";
 const PROCESS_TERMINAL_SCHEMA =
   "tinyrustlm.qwen3_numerical_execution_process_terminal.v1";
 const OWNER_TERMINAL_SCHEMA =
@@ -17,7 +22,7 @@ const OWNER_TERMINAL_SCHEMA =
 const VERIFIER_RECEIPT_SCHEMA =
   "tinyrustlm.qwen3_numerical_trace_verification_receipt.v1";
 const REGISTRATION_RELATIVE_PATH =
-  "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v1.json";
+  "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v2.json";
 const MAXIMUM_REQUEST_BYTES = 1024 * 1024;
 const MAXIMUM_REGISTRATION_BYTES = 4 * 1024 * 1024;
 const MAXIMUM_SOURCE_CONTROLLED_FILE_BYTES = 64 * 1024 * 1024;
@@ -300,6 +305,42 @@ function validateProcessPolicy(policy) {
     && policy.continueAfterFailedStage === false, "numerical-execution-process-policy");
 }
 
+function validateSourceTemplate(template) {
+  exactKeys(template, ["schema", "sourceLock", "framework", "policy"],
+    "numerical-execution-source-template");
+  invariant(template.schema === SOURCE_REQUEST_SCHEMA,
+    "numerical-execution-source-template");
+  artifactReference(template.sourceLock, "numerical-execution-source-lock");
+  const framework = exactKeys(template.framework, ["accelerateVersion",
+    "attentionImplementation", "deterministicAlgorithms", "device", "dtype",
+    "environmentAuthority", "environmentLock", "interopThreads", "intraopThreads",
+    "localFilesOnly", "networkAllowed", "numpyVersion", "psutilVersion",
+    "pythonVersion", "safetensorsVersion", "tokenizersVersion", "torchVersion",
+    "transformersVersion"], "numerical-execution-source-framework");
+  artifactReference(framework.environmentAuthority,
+    "numerical-execution-source-framework");
+  artifactReference(framework.environmentLock,
+    "numerical-execution-source-framework");
+  invariant(framework.accelerateVersion === "1.14.0"
+    && framework.attentionImplementation === "eager"
+    && framework.deterministicAlgorithms === true
+    && framework.device === "cpu"
+    && framework.dtype === "float32"
+    && framework.interopThreads === 1
+    && framework.intraopThreads === 1
+    && framework.localFilesOnly === true
+    && framework.networkAllowed === false
+    && framework.numpyVersion === "2.2.5"
+    && framework.psutilVersion === "7.2.2"
+    && framework.pythonVersion === "3.12.10"
+    && framework.safetensorsVersion === "0.5.3"
+    && framework.tokenizersVersion === "0.21.1"
+    && framework.torchVersion === "2.7.0"
+    && framework.transformersVersion === "4.51.0",
+  "numerical-execution-source-framework");
+  invariant(isPlainObject(template.policy), "numerical-execution-source-template");
+}
+
 function validateOwnerContract(contract) {
   exactKeys(contract, ["schema", "operationId", "traceProfileId",
     "implementationArtifacts", "executables", "cases", "requests", "processPolicy",
@@ -351,8 +392,7 @@ function validateOwnerContract(contract) {
   }
   exactKeys(contract.requests, ["source", "reconstructed", "scalar", "verification"],
     "numerical-execution-request-templates");
-  exactKeys(contract.requests.source, ["schema", "sourceLock", "framework", "policy"],
-    "numerical-execution-source-template");
+  validateSourceTemplate(contract.requests.source);
   exactKeys(contract.requests.reconstructed,
     ["schema", "compositionResultSha256", "model", "implementation", "modelSpec", "policy"],
     "numerical-execution-reconstructed-template");
@@ -361,6 +401,12 @@ function validateOwnerContract(contract) {
     "numerical-execution-scalar-template");
   exactKeys(contract.requests.verification,
     ["schema", "differentialProfile", "comparison", "policy"],
+    "numerical-execution-verification-template");
+  invariant(contract.requests.reconstructed.schema === RECONSTRUCTED_REQUEST_SCHEMA,
+    "numerical-execution-reconstructed-template");
+  invariant(contract.requests.scalar.schema === SCALAR_REQUEST_SCHEMA,
+    "numerical-execution-scalar-template");
+  invariant(contract.requests.verification.schema === VERIFICATION_REQUEST_SCHEMA,
     "numerical-execution-verification-template");
   validateProcessPolicy(contract.processPolicy);
   exactKeys(contract.privateNames, ["ownerRequestFileBasename", "ownerEvidenceRootBasename",
@@ -415,7 +461,7 @@ function validateRegistration(value) {
     "outputBoundary", "claimBoundary", "campaignCounters"],
   "numerical-execution-registration-shape");
   invariant(value.schema === REGISTRATION_SCHEMA
-    && value.profileId === "tinyrustlm.qwen3-numerical-differential-execution/1"
+    && value.profileId === "tinyrustlm.qwen3-numerical-differential-execution/2"
     && value.status === "registered-before-private-request-roots-and-real-traces"
     && COMMIT_PATTERN.test(value.registrationParentCommit)
     && COMMIT_PATTERN.test(value.registrationParentTree),
@@ -1100,6 +1146,7 @@ module.exports = Object.freeze({
   REQUEST_SCHEMA,
   REGISTRATION_SCHEMA,
   OWNER_CONTRACT_SCHEMA,
+  SOURCE_REQUEST_SCHEMA,
   canonicalJsonBytes,
   childRequests,
   createProcessTerminal,

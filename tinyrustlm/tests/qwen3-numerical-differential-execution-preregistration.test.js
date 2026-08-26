@@ -7,8 +7,6 @@ const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
 
-const owner = require("../tools/qwen3-numerical-execution-owner.js");
-
 const repositoryRoot = path.resolve(__dirname, "../..");
 const registrationRelativePath =
   "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v1.json";
@@ -19,6 +17,17 @@ const registration = JSON.parse(registrationBytes.toString("utf8"));
 
 function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
+}
+
+function recursivelySorted(value) {
+  if (Array.isArray(value)) return value.map(recursivelySorted);
+  if (value === null || typeof value !== "object") return value;
+  return Object.fromEntries(Object.keys(value).sort()
+    .map((key) => [key, recursivelySorted(value[key])]));
+}
+
+function canonicalJsonBytes(value) {
+  return Buffer.from(`${JSON.stringify(recursivelySorted(value), null, 2)}\n`, "utf8");
 }
 
 function gitBytes(commit, relativePath) {
@@ -51,13 +60,13 @@ function tokenDigest(tokenIds) {
   return sha256(bytes);
 }
 
-test("freezes one canonical output-free numerical registration", () => {
+test("freezes the closed v1 output-free numerical registration as immutable history", () => {
   assert.equal(registrationBytes.length, 24467);
   assert.equal(sha256(registrationBytes),
     "469e003e6f50cb3e4bb0574e2bd72c5836edb938eea0345ca1a23b4bfc9906a1");
-  assert.deepEqual(registrationBytes, owner.canonicalJsonBytes(registration));
-  assert.equal(owner.validateRegistration(registration), registration);
-  assert.equal(registration.schema, owner.REGISTRATION_SCHEMA);
+  assert.deepEqual(registrationBytes, canonicalJsonBytes(registration));
+  assert.equal(registration.schema,
+    "tinyrustlm.qwen3_numerical_differential_execution_preregistration.v1");
   assert.equal(registration.status,
     "registered-before-private-request-roots-and-real-traces");
 });

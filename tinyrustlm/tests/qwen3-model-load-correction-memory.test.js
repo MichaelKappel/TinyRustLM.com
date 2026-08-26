@@ -9,9 +9,9 @@ const test = require("node:test");
 const repositoryRoot = path.resolve(__dirname, "../..");
 const memoryRelativePath =
   "wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md";
-const memoryLength = 12488;
+const memoryLength = 14490;
 const memorySha256 =
-  "f0807c06f84b074425acdde8a4d8f2640a5fd4f2483b6d50e7d551027c242739";
+  "5ef0cd89ab940fdbf3776186b593bdd0711f36638ab738e1f6c41f3689988bf2";
 const hotRoutes = [
   "workspace.uai",
   ".uai/index.uai",
@@ -50,6 +50,7 @@ test("durable model-load correction memory binds exact implementation evidence",
     "contracts/vnext/qwen3-model-load-diagnostic-result.v2.json",
     "contracts/vnext/qwen3-numerical-differential-profile.v1.json",
     "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json",
+    "tinyrustlm/tools/qwen3-numerical-execution-owner.js",
     "tinyrustlm/tools/qwen3-numerical-source-owner.py",
     "tinyrustlm/tools/qwen3-numerical-trace-verifier.js"
   ]) {

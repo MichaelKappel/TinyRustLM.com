@@ -34,7 +34,7 @@ function threshold() {
 }
 
 function ownerContract() {
-  const operationId = "qwen3-numerical-c1899de-test-20260826-v1";
+  const operationId = "qwen3-numerical-c1899de-test-20260826-v2";
   return {
     schema: owner.OWNER_CONTRACT_SCHEMA,
     operationId,
@@ -69,7 +69,34 @@ function ownerContract() {
         schema: "tinyrustlm.qwen3_numerical_source_request.v2",
         sourceLock: { relativePath: "contracts/vnext/source-lock.json", byteLength: 1,
           sha256: ZERO_SHA },
-        framework: { pythonVersion: "3.12.10" },
+        framework: {
+          accelerateVersion: "1.14.0",
+          attentionImplementation: "eager",
+          deterministicAlgorithms: true,
+          device: "cpu",
+          dtype: "float32",
+          environmentAuthority: {
+            relativePath: "tinyrustlm/tools/environment.py",
+            byteLength: 1,
+            sha256: ZERO_SHA
+          },
+          environmentLock: {
+            relativePath: "contracts/vnext/environment.json",
+            byteLength: 1,
+            sha256: ZERO_SHA
+          },
+          interopThreads: 1,
+          intraopThreads: 1,
+          localFilesOnly: true,
+          networkAllowed: false,
+          numpyVersion: "2.2.5",
+          psutilVersion: "7.2.2",
+          pythonVersion: "3.12.10",
+          safetensorsVersion: "0.5.3",
+          tokenizersVersion: "0.21.1",
+          torchVersion: "2.7.0",
+          transformersVersion: "4.51.0"
+        },
         policy: { maximumCases: 2 }
       },
       reconstructed: {
@@ -169,7 +196,7 @@ function ownerContract() {
 function registration() {
   return {
     schema: owner.REGISTRATION_SCHEMA,
-    profileId: "tinyrustlm.qwen3-numerical-differential-execution/1",
+    profileId: "tinyrustlm.qwen3-numerical-differential-execution/2",
     status: "registered-before-private-request-roots-and-real-traces",
     registeredAtUtc: "2026-08-26T12:00:00Z",
     registrationParentCommit: "1".repeat(40),
@@ -180,7 +207,7 @@ function registration() {
       parentCommit: "1".repeat(40),
       parentTree: "2".repeat(40),
       allowedRegistrationCommitPaths: [
-        "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v1.json"
+        "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v2.json"
       ],
       cleanAtRegistration: true,
       trackingFetchHeadAndRemoteExactAtRegistration: true
@@ -224,6 +251,50 @@ test("accepts the one clean owner contract and registration shape", () => {
     owner.OWNER_CONTRACT_SCHEMA);
   assert.equal(owner.validateRegistration(registration()).schema,
     owner.REGISTRATION_SCHEMA);
+});
+
+test("rejects the closed v1 owner, registration, request, and source-template semantics", () => {
+  assert.equal(owner.REGISTRATION_RELATIVE_PATH,
+    "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v2.json");
+  assert.equal(owner.REQUEST_SCHEMA, "tinyrustlm.qwen3_numerical_execution_request.v2");
+
+  const formerOwner = ownerContract();
+  formerOwner.schema = "tinyrustlm.qwen3_numerical_execution_owner_contract.v1";
+  assert.throws(() => owner.validateOwnerContract(formerOwner),
+    /numerical-execution-owner-contract/u);
+
+  const formerRegistration = registration();
+  formerRegistration.schema =
+    "tinyrustlm.qwen3_numerical_differential_execution_preregistration.v1";
+  assert.throws(() => owner.validateRegistration(formerRegistration),
+    /numerical-execution-registration-identity/u);
+
+  const formerProfile = registration();
+  formerProfile.profileId = "tinyrustlm.qwen3-numerical-differential-execution/1";
+  assert.throws(() => owner.validateRegistration(formerProfile),
+    /numerical-execution-registration-identity/u);
+
+  const formerSource = ownerContract();
+  formerSource.requests.source.schema = "tinyrustlm.qwen3_numerical_source_request.v1";
+  assert.throws(() => owner.validateOwnerContract(formerSource),
+    /numerical-execution-source-template/u);
+});
+
+test("requires the exact corrected source-framework closure", () => {
+  const missingAccelerate = ownerContract();
+  delete missingAccelerate.requests.source.framework.accelerateVersion;
+  assert.throws(() => owner.validateOwnerContract(missingAccelerate),
+    /numerical-execution-source-framework/u);
+
+  const wrongPsutil = ownerContract();
+  wrongPsutil.requests.source.framework.psutilVersion = "7.2.1";
+  assert.throws(() => owner.validateOwnerContract(wrongPsutil),
+    /numerical-execution-source-framework/u);
+
+  const networkEnabled = ownerContract();
+  networkEnabled.requests.source.framework.networkAllowed = true;
+  assert.throws(() => owner.validateOwnerContract(networkEnabled),
+    /numerical-execution-source-framework/u);
 });
 
 test("rejects token digest drift, retries, duplicate private names, and unknown fields", () => {
