@@ -843,9 +843,18 @@ test-first maintained correction. It independently checks the exact scalar
 child field set, owner/request/registration bindings, process and stream
 identities, inventories, absent output roots, empty scratch, immutable closure,
 and path-free claim boundary without importing the owner or any write,
-subprocess, or network API. Its fixture tests pass, but it has not yet been
-preregistered or invoked against the real evidence. See
-`docs/architecture/2026-08-26-qwen3-numerical-v2-source-terminal-verifier-correction.md`.
+subprocess, or network API. Its fixture tests pass. One real invocation remains
+pending. The output-free authority for that invocation is
+`qwen3-numerical-source-terminal-verification-preregistration.v1.json`, 10,440
+canonical bytes at SHA-256
+`afccb28dc8e4b67e3dff81beb44c74290e01f1c673c9e4a7f3c3989224468860`.
+It binds the exact immutable nine-file/13,143-byte owner closure, expected
+path-free finding, one absent private verification root, one invocation,
+bounded process capture, source-evidence before/after equality, and zero
+broader claims. See
+`docs/architecture/2026-08-26-qwen3-numerical-v2-source-terminal-verifier-correction.md`
+and
+`docs/architecture/2026-08-26-qwen3-numerical-source-terminal-verification-preregistration.md`.
 
 `qwen3-numerical-differential-execution-result.v1.json` closes that registered
 operation as an independently verified terminal source-process failure. The

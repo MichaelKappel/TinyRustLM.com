@@ -1,0 +1,280 @@
+{
+  "acceptance": {
+    "expectedFinding": {
+      "allowedClaim": "none",
+      "evidenceByteLength": 13143,
+      "evidenceFileCount": 9,
+      "launchCounts": {
+        "reconstructed": 0,
+        "scalar": 0,
+        "source": 1,
+        "verifier": 0
+      },
+      "materialOutputRootsAbsent": true,
+      "operationId": "qwen3-numerical-c1899de-4891e8a-20260826-v2",
+      "ownerReasonCode": "source-process-not-pass",
+      "ownerRequest": {
+        "byteLength": 1458,
+        "sha256": "f1c981a8514d1cdbe1752fdbcfb21bc9f5aa7c9ef3fb2ce9102800c336d238a4"
+      },
+      "ownerStatus": "terminal-failure",
+      "ownerTerminal": {
+        "byteLength": 2794,
+        "sha256": "38ba8b7e670098d16eb0faa1475d06944be49ec45d1e163588c300131d19bef2"
+      },
+      "prohibitedClaims": [
+        "optimized-native-parity",
+        "browser-wasm-parity",
+        "behavioral-quality",
+        "p2p-availability",
+        "site-release",
+        "campaign-progress"
+      ],
+      "registration": {
+        "byteLength": 24806,
+        "sha256": "27b0f98a4b00b0561b4e50d7bf6d31d257a91f02c3f33f6c5a8197c652529c77"
+      },
+      "schema": "tinyrustlm.qwen3_numerical_source_terminal_verification.v1",
+      "sourceSafeCode": "source-trace-environment-drift",
+      "sourceScratchEmpty": true,
+      "sourceStderr": {
+        "byteLength": 57,
+        "sha256": "641910ce6fcd22e490c8f323f88797c77a925e1f25dc33080707c2991d095da8"
+      },
+      "sourceStdout": {
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "sourceTerminal": {
+        "byteLength": 1405,
+        "sha256": "69f1b05802c007b99509c7a622e96ecb1f1949702a4df16e33b258b0c1b2ce5f"
+      },
+      "verificationStatus": "pass",
+      "verifier": {
+        "byteLength": 30633,
+        "sha256": "82c885cc6bf23caf7c767aa26b0c0d248770f0ca449e5787cbbd77458175fd13"
+      },
+      "writesPerformed": false
+    },
+    "expectedVerificationId": "5dfd09e2c0537459ce72cb5d5010a78b030507ea3eddca160aee498af43ba85d",
+    "failureIsTerminal": true,
+    "mismatchIsTerminal": true
+  },
+  "authority": {
+    "automaticRetry": false,
+    "bestOfN": false,
+    "compatibilityReader": false,
+    "evidenceRepair": false,
+    "fallbackRuntime": false,
+    "legacySupport": false,
+    "memoryEndpointsAuthorized": false,
+    "privatePathsPublished": false,
+    "responseRepair": false,
+    "sourceOwnerReplayAllowed": false
+  },
+  "campaignCounters": {
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "deletionBackedBrowserRounds": "0/50",
+    "liveCatalogAnnouncements": "0/20",
+    "qualifiedModels": "0/20"
+  },
+  "claimBoundary": {
+    "browserChatVerified": false,
+    "browserWasmVerified": false,
+    "campaignCreditAuthorized": false,
+    "modelQualityVerified": false,
+    "numericalParityVerified": false,
+    "optimizedNativeVerified": false,
+    "p2pAvailabilityVerified": false,
+    "siteDeploymentVerified": false,
+    "sourceTerminalFailureMayBeClaimedAfterExactPass": true
+  },
+  "profileId": "tinyrustlm.qwen3-numerical-source-terminal-verification/1",
+  "registeredAtUtc": "2026-08-26T20:40:16Z",
+  "registrationParentCommit": "0ca8375c332e26603091359868272054f18a29b7",
+  "registrationParentTree": "a6f50b3f8c12428489b2f4913f6e58094eb0acfd",
+  "schema": "tinyrustlm.qwen3_numerical_source_terminal_verification_preregistration.v1",
+  "sourceAnchor": {
+    "allowedRegistrationCommitPaths": [
+      "contracts/vnext/README.md",
+      "contracts/vnext/qwen3-numerical-source-terminal-verification-preregistration.v1.json",
+      "docs/architecture/2026-08-26-qwen3-numerical-source-terminal-verification-preregistration.md",
+      "tinyrustlm/tests/qwen3-numerical-source-terminal-verification-preregistration.test.js"
+    ],
+    "branch": "codex/model-acquisition-v2",
+    "cleanAtRegistration": true,
+    "parentCommit": "0ca8375c332e26603091359868272054f18a29b7",
+    "parentTree": "a6f50b3f8c12428489b2f4913f6e58094eb0acfd",
+    "trackingFetchHeadAndRemoteExactAtRegistration": true
+  },
+  "sourceOperation": {
+    "executionPreregistration": {
+      "byteLength": 24806,
+      "relativePath": "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v2.json",
+      "sha256": "27b0f98a4b00b0561b4e50d7bf6d31d257a91f02c3f33f6c5a8197c652529c77"
+    },
+    "launchCounts": {
+      "reconstructed": 0,
+      "scalar": 0,
+      "source": 1,
+      "verifier": 0
+    },
+    "materialOutputRootBasenames": [
+      "qwen3-numerical-c1899de-4891e8a-20260826-v2-source",
+      "qwen3-numerical-c1899de-4891e8a-20260826-v2-reconstructed",
+      "qwen3-numerical-c1899de-4891e8a-20260826-v2-scalar"
+    ],
+    "materialOutputRootsAbsent": true,
+    "operationId": "qwen3-numerical-c1899de-4891e8a-20260826-v2",
+    "outputAdoptionAllowed": false,
+    "ownerEvidenceByteLength": 13143,
+    "ownerEvidenceFileCount": 9,
+    "ownerEvidenceInventory": [
+      {
+        "byteLength": 2324,
+        "fileName": "binding.json",
+        "sha256": "7c75d48fb65163b9a0f9536aaf3f59da2b1592da6c5b97bc5eae3d0141e3ed0c"
+      },
+      {
+        "byteLength": 2794,
+        "fileName": "owner-terminal.json",
+        "sha256": "38ba8b7e670098d16eb0faa1475d06944be49ec45d1e163588c300131d19bef2"
+      },
+      {
+        "byteLength": 2491,
+        "fileName": "reconstructed.request.json",
+        "sha256": "a18bdb0e63e0b7cd9c2a3df51b0937de4d19d643f860203da0e5cfcbfe6a0447"
+      },
+      {
+        "byteLength": 1286,
+        "fileName": "scalar.request.json",
+        "sha256": "7afa78a6c7722759f154f44b9de7642b9b47a472951886349e27218a36e5fc56"
+      },
+      {
+        "byteLength": 1405,
+        "fileName": "source.process-terminal.json",
+        "sha256": "69f1b05802c007b99509c7a622e96ecb1f1949702a4df16e33b258b0c1b2ce5f"
+      },
+      {
+        "byteLength": 2432,
+        "fileName": "source.request.json",
+        "sha256": "3b13a4f550799cab96b009562c7f07cce3774768a8dc7d6fadd97a3231901321"
+      },
+      {
+        "byteLength": 57,
+        "fileName": "source.stderr.bin",
+        "sha256": "641910ce6fcd22e490c8f323f88797c77a925e1f25dc33080707c2991d095da8"
+      },
+      {
+        "byteLength": 0,
+        "fileName": "source.stdout.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "byteLength": 354,
+        "fileName": "start.json",
+        "sha256": "43aafa1ea656b0919c2fa75b38e6b2ae95bca0ad1c20d3a97c573d0a7b8b1188"
+      }
+    ],
+    "ownerEvidenceRootBasename": "qwen3-numerical-c1899de-4891e8a-20260826-v2-owner-evidence",
+    "ownerReasonCode": "source-process-not-pass",
+    "ownerRequest": {
+      "byteLength": 1458,
+      "fileName": "qwen3-numerical-c1899de-4891e8a-20260826-v2-owner-request.json",
+      "sha256": "f1c981a8514d1cdbe1752fdbcfb21bc9f5aa7c9ef3fb2ce9102800c336d238a4"
+    },
+    "ownerStatus": "terminal-failure",
+    "registrationSource": {
+      "branch": "codex/model-acquisition-v2",
+      "commit": "e6999eb44edfd3d76a71e0dc5c90f94912108e2a",
+      "fetchHeadExpected": true,
+      "remoteRef": "refs/remotes/origin/codex/model-acquisition-v2",
+      "trackingRef": "origin/codex/model-acquisition-v2",
+      "tree": "0ce6a8f3c0baeea2db78aa683d4f7e95d51d8f74"
+    },
+    "secondOwnerInvocationAllowed": false,
+    "sourceSafeCode": "source-trace-environment-drift",
+    "sourceScratchEmpty": true,
+    "sourceScratchRootBasename": "qwen3-numerical-c1899de-4891e8a-20260826-v2-source-scratch"
+  },
+  "status": "registered-after-owner-terminal-before-maintained-verifier-output",
+  "verification": {
+    "command": {
+      "arguments": [
+        "verify",
+        "registered-owner-request-path"
+      ],
+      "executableRole": "node",
+      "verifierRole": "source-terminal-verifier",
+      "workingDirectory": "registered-repository-root"
+    },
+    "implementationArtifacts": [
+      {
+        "byteLength": 30633,
+        "relativePath": "tinyrustlm/tools/qwen3-numerical-source-terminal-verifier.js",
+        "role": "source-terminal-verifier",
+        "sha256": "82c885cc6bf23caf7c767aa26b0c0d248770f0ca449e5787cbbd77458175fd13"
+      },
+      {
+        "byteLength": 13712,
+        "relativePath": "tinyrustlm/tests/qwen3-numerical-source-terminal-verifier.test.js",
+        "role": "source-terminal-verifier-test",
+        "sha256": "c31938a84354bebce189ed437cdb55811756356a372d3d99420e191f179fcc51"
+      },
+      {
+        "byteLength": 6164,
+        "relativePath": "docs/architecture/2026-08-26-qwen3-numerical-v2-source-terminal-verifier-correction.md",
+        "role": "source-terminal-verifier-decision",
+        "sha256": "c4551f9456175eb6d2d9b9fa91b5f0dd21df88a33979febb669d3ca5d9488691"
+      }
+    ],
+    "node": {
+      "basename": "node.exe",
+      "byteLength": 91380224,
+      "sha256": "63c259c81e5d472b5f11c8d506070130cb04a1ecf84b80377a34ed6ec9048088"
+    },
+    "operationId": "qwen3-numerical-c1899de-4891e8a-20260826-v2-terminal-verification-v1",
+    "output": {
+      "evidenceRootBasename": "qwen3-numerical-c1899de-4891e8a-20260826-v2-terminal-verification-v1",
+      "evidenceRootObservedAbsent": true,
+      "files": {
+        "processTerminal": "verifier.process-terminal.json",
+        "stderr": "verifier.stderr.bin",
+        "stdout": "verifier.stdout.bin"
+      },
+      "outputCreated": false,
+      "privatePathPublished": false
+    },
+    "processPolicy": {
+      "maximumDurationMilliseconds": 3600000,
+      "maximumStderrBytes": 1048576,
+      "maximumStdoutBytes": 1048576,
+      "networkAllowed": false,
+      "overwriteAllowed": false,
+      "repairAllowed": false,
+      "requiredInvocationCount": 1,
+      "retryAllowed": false,
+      "secondInvocationAllowed": false,
+      "timeoutRequiresProcessTreeTermination": true
+    },
+    "processTerminal": {
+      "canonicalJsonRequired": true,
+      "createOnly": true,
+      "schema": "tinyrustlm.qwen3_numerical_source_terminal_verifier_process_terminal.v1",
+      "writtenAfterProcessClose": true
+    },
+    "readOnlyProof": {
+      "compareFileContentAndMetadataBeforeAfter": true,
+      "compareInventoryBeforeAfter": true,
+      "materialOutputRootsMustRemainAbsent": true,
+      "sourceScratchMustRemainEmpty": true,
+      "verifierWritesToSourceEvidenceAllowed": false
+    },
+    "termination": {
+      "basename": "taskkill.exe",
+      "byteLength": 114688,
+      "sha256": "81e9649b317de9243bf7f34e436e86159ba267d86349fa47efdb71dde2fc7bc5"
+    }
+  }
+}
