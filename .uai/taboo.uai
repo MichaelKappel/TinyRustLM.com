@@ -1,5 +1,13 @@
-profile: runtime-mirust.taboo.v125
-updated_utc: 2026-08-26T14:03:58Z
+profile: runtime-mirust.taboo.v126
+updated_utc: 2026-08-26T15:39:31Z
+
+current_qwen3_model_load_correction_2026_08_26:
+  durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md, 12,488 bytes/SHA256 f0807c06f84b074425acdde8a4d8f2640a5fd4f2483b6d50e7d551027c242739 before any successor numerical work.
+  reviewed_reports: Read docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-synthesis-2026-08-26.md and docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-tdd-delta-2026-08-26.md; raw reports remain advisory.
+  current_contract: Sole active source request is tinyrustlm.qwen3_numerical_source_request.v2 and sole source owner is tinyrustlm.qwen3-publisher-source-trace/2 under exact environment /2. One bounded current model-load diagnostic passed; no source trace or numerical arrow passed.
+  checkpoint: Correction commit 9f7be857927819e7946537c2562ef9238c06d8ba/tree 3a99169346fac0ff77aa529f4bdbd975b04ff316 is pushed/four-way exact. Focused 48/48; clean standard 1,563/0/2 of 1,565; protected run 6f73ce1e2a9c5900f679ffd203900f4ba9de6b96f1dc7d214e032094cb9c7dd1 passed 23/23 with independently verified aggregate 3995/237d46a1f140a6310ad4891028d63501c0000101cc212d6b3e95992141e12667.
+  exact_resume: First commit/push/fresh-four-way-verify this memory-only checkpoint. Then create one wholly new output-free successor registration binding that exact commit/tree and all-new absent names before private materialization.
+  hard_boundary: Preserve the closed numerical terminal forever. No retry, legacy, compatibility, fallback, repair, numerical/browser/quality/P2P/release/deployment claim, or MemoryEndpoints authority; counters remain 0/20,0/50,0/25,0/40,0/20.
 
 qwen3_numerical_differential_taboo_2026_08_26:
   no_ad_hoc_real_run: Never invoke closed operation qwen3-numerical-c1899de-aece952-20260826-v1 again. Any successor requires a source fix, green remote-exact checkpoint, separate output-free registration, and wholly new identities before material execution.
