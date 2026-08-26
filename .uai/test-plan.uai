@@ -1,14 +1,14 @@
-profile: runtime-mirust.test-plan.v291
-updated_utc: 2026-08-26T09:47:03Z
+profile: runtime-mirust.test-plan.v292
+updated_utc: 2026-08-26T10:02:51Z
 
 scalar_numerical_probe_test_plan_2026_08_26:
-  current_green: Focused Rust tests passed 5/5; focused Node tests passed 5/5; clippy -D warnings and cargo fmt check passed. Maintained standard partition discovered 1,517 tests and completed 1,515 pass/0 fail/2 explicit skip in 458,310 ms. Release surface then correctly refused dirty source with release_gate_source_not_clean.
+  current_green: Focused Rust and Node tests passed 5/5 each; clippy and fmt pass. Standard discovered 1,517 and completed 1,515 pass/0 fail/2 skip. Commit 8b140ec is remote-exact. Clean run 8c483720 passed 23/23; verifier and independent hash agree on aggregate 3995,a0bb5bb78ad7d7b9c947eabc8eb47a8a42ebca43c391d05dfe558f83b3416e64.
   covered: Complete two-token fixture trace; canonical/unknown request rejection before output; model drift rejection before output; existing-root overwrite refusal with byte preservation; trace-budget failure with preserved partial root and absent probe.json.
   fixture_boundary: The 8,704-byte mixed-Q8 fixture is not a real model and cannot prove /12 numerical parity or earn model/browser/P2P/release/campaign credit.
   next_unit_layer: Test pinned source closure and package locks; source observation creation; reconstructed-weight observations; independent hash/shape/metric recomputation; first-divergence selection; malformed, stale, conflicting, partial, oversized, nonfinite, and identity-drift evidence; no-write verifier behavior.
   next_execution_gate: Before real bytes, preregister private case hashes, tensor classes, metrics, thresholds, escalation, resource/output bounds, process cardinality, and all-new absent roots. Any first material launch consumes its registered identity.
-  clean_checkpoint_next: Commit/push/fresh-four-way verify, then run the release-surface gate against clean exact source and independently verify its aggregate before beginning source-oracle implementation.
-  deep_evidence: wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md, 10,931 bytes/SHA256 782e4e212cabe2ee9522a2bf31291a4db5cca38febde5cda060fab84f99ccc64.
+  clean_checkpoint_next: Source-oracle, reconstructed-weight, and independent-verifier unit/hostile tests are next. No real output until their implementation is green and a separate output-free registration is remote-exact.
+  deep_evidence: wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md, 11,886 bytes/SHA256 2f5b59074e000f2f87b6e04b4150032581469fb4df0fae2a5ef4ad7f1ee52a01.
 current_qwen3_v12_structural_result_gate:
   memory: wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md; bytes=11584; sha256=2a1c2882b9368d0ebd45fe96b9689406d5fcbfd941b4b2a5b39868da5cb3e1cf
   dedicated: tinyrustlm/tests/qwen3-real-composition-execution-result-v12.test.js freezes 18,441 bytes/SHA256 0c3e84ad9ce6e22d9a164357c9a900d31825d0639f4f11077dab305f9cf3ef0e; canonical JSON; /11 binding; registration commit/tree; pre-write guard nonauthority; materializer/custody cardinality; converter/managed independence; ten-file/six-member closure; read-only reproduction; private-path/secret/claim/counter rejection.

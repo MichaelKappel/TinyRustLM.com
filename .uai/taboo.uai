@@ -1,5 +1,5 @@
-profile: runtime-mirust.taboo.v119
-updated_utc: 2026-08-26T09:47:03Z
+profile: runtime-mirust.taboo.v120
+updated_utc: 2026-08-26T10:02:51Z
 
 scalar_numerical_probe_taboo_2026_08_26:
   no_fixture_promotion: Never call the 8,704-byte fixture, five probe tests, valid trace pack, or completed probe.json numerical parity or useful-model evidence.
@@ -7,8 +7,8 @@ scalar_numerical_probe_taboo_2026_08_26:
   no_tolerance_search: Never compare only generated text, tune a global tolerance after seeing preferred output, average away systematic divergence, select the best seed, omit failed coordinates, or let one implementation rewrite another's evidence.
   no_semantic_duplication: Never add a second SLM2 reader, F32 weight shadow production path, fallback runtime, compatibility probe schema, migration, alias, retry, resume, cleanup-on-failure, response repair, or best-of-N.
   no_transitive_claim: Never infer source-to-WASM parity from source-to-scalar or scalar-to-native evidence. Never infer quality, browser execution, P2P, release, or campaign progress from a numerical pass.
-  no_dirty_release_claim: Never turn the 1,515/0/2 standard pass or expected release_gate_source_not_clean refusal into release evidence; commit, push, fresh-verify, and run the clean gate.
-  durable_boundary: Obey wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md at 10,931 bytes/SHA256 782e4e212cabe2ee9522a2bf31291a4db5cca38febde5cda060fab84f99ccc64.
+  no_release_inflation: Never turn the clean 23/23 release-surface pass into numerical parity, model quality, browser model execution, site deployment, P2P availability, or campaign credit.
+  durable_boundary: Obey wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md at 11,886 bytes/SHA256 2f5b59074e000f2f87b6e04b4150032581469fb4df0fae2a5ef4ad7f1ee52a01.
 current_qwen3_v12_structural_pass_prohibitions:
   - Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md, 11,584 bytes/SHA256 2a1c2882b9368d0ebd45fe96b9689406d5fcbfd941b4b2a5b39868da5cb3e1cf, before interpreting or extending these prohibitions.
   - Never rerun, resume, modify, delete, repair, relabel, overwrite, clean up, or adopt any /12 operation, output, receipt, or evidence byte.

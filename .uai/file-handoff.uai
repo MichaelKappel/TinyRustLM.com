@@ -1,13 +1,13 @@
-profile: runtime-mirust.file-handoff.v121
-updated_utc: 2026-08-26T09:47:03Z
+profile: runtime-mirust.file-handoff.v122
+updated_utc: 2026-08-26T10:02:51Z
 
 current_scalar_numerical_probe_handoff_2026_08_26:
   first_read: Read workspace.uai, contracts/vnext/scalar-numerical-probe-profile.v1.json, docs/architecture/2026-08-26-scalar-numerical-probe.md, and wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md before any continuation.
-  identities: profile=9660,34b1bd8f45dcd764b4b78850fa0a54b740ca143bde14a201a7c7f2ef0b46f000; architecture=6059,f0f2340a2da008db972575ea28ea24f5d267dbbc5b9654268466300f08e7c3ac; durable_memory=10931,782e4e212cabe2ee9522a2bf31291a4db5cca38febde5cda060fab84f99ccc64.
-  implementation_truth: Non-shipping scalar probe, strict request, streamed exact model validation, create-only bounded f32le stage packs, result-last semantics, typed failures, and partial-evidence preservation are implemented. Focused checks pass; full standard partition is 1,515 pass/0 fail/2 explicit skip; dirty release refusal is expected.
+  identities: profile=9660,34b1bd8f45dcd764b4b78850fa0a54b740ca143bde14a201a7c7f2ef0b46f000; architecture=6059,f0f2340a2da008db972575ea28ea24f5d267dbbc5b9654268466300f08e7c3ac; durable_memory=11886,2f5b59074e000f2f87b6e04b4150032581469fb4df0fae2a5ef4ad7f1ee52a01.
+  implementation_truth: Probe implementation is commit 8b140ec/tree a40150e, pushed/four-way exact. Focused checks pass; standard is 1,515/0/2; clean release run 8c483720 is 23/23 with independently verified aggregate 3995,a0bb5bb7.
   execution_truth: Tests use only the canonical 8,704-byte fixture. No /12 request is registered; no /12 probe or source-framework output exists; no numerical verifier decision exists.
   report_handoff: Durable memory deep-links the intake manifest, corrected synthesis, TDD delta, and intake memory. Use those reviewed nodes as advisory design input, not raw reports as evidence.
-  exact_resume: Commit/push/fresh-four-way verify this checkpoint, run and independently verify its clean release-surface evidence, then implement/pin source owner, reconstructed-weight arm, and independent verifier before output-free numerical preregistration.
+  exact_resume: Implement/pin the source-framework owner, reconstructed-weight diagnostic arm, and independent verifier with hostile tests; check in that coherent implementation before output-free numerical preregistration. Do not execute /12 yet.
   hard_boundary: Preserve /1-/12 and all partial future failures. No numerical/browser/quality/P2P/catalog/package/deployment/MemoryEndpoints claim; counters remain 0/20,0/50,0/25,0/40,0/20.
 current_qwen3_execution_v12_structural_pass_2026_08_26:
   first_read: Read newest workspace.uai, contracts/vnext/qwen3-real-composition-execution-result.v12.json, docs/architecture/2026-08-26-qwen3-real-composition-execution-v12-structural-pass.md, and wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md before any continuation.

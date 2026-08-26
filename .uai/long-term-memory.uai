@@ -1,11 +1,11 @@
-profile: runtime-mirust.long-term-memory-ledger.v367
-updated_utc: 2026-08-26T09:47:03Z
+profile: runtime-mirust.long-term-memory-ledger.v368
+updated_utc: 2026-08-26T10:02:51Z
 
 ledger_2026_08_26_scalar_numerical_probe_checkpoint:
-  durable_record: wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md, 10,931 bytes, SHA256 782e4e212cabe2ee9522a2bf31291a4db5cca38febde5cda060fab84f99ccc64.
+  durable_record: wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md, 11,886 bytes, SHA256 2f5b59074e000f2f87b6e04b4150032581469fb4df0fae2a5ef4ad7f1ee52a01.
   accepted_design: A non-shipping leaf probe consumes a strict canonical private request, verifies exact model bytes before output, calls the existing scalar traced path once per registered token, creates bounded f32le packs create-only, preserves partial failure evidence, and writes probe.json last. It adds no reader, sampler, fallback, retry, repair, or production dispatch.
   report_lineage: The durable record links the post-/10 intake manifest, corrected synthesis, TDD delta, and intake memory. Adopted conclusions are the three-arrow numerical proof, strict input-layer identity, preregistered tensor-class thresholds, first-divergence localization, and immutable failure custody.
-  verification_truth: Five Rust tests and five Node contract tests pass against the fixture; clippy and fmt pass. Full standard partition is 1,515 pass/0 fail/2 explicit skip; release surface correctly refused dirty source. Real Qwen3, source framework, quantization noninferiority, scalar parity, optimized kernels, and browser WASM remain unobserved.
+  verification_truth: Focused checks pass; full standard is 1,515/0/2. Commit 8b140ec/tree a40150e is pushed and fresh-four-way exact. Clean run 8c483720 passed 23/23; 3,995-byte aggregate a0bb5bb7 independently verifies. Real Qwen3, source framework, quantization noninferiority, scalar parity, optimized kernels, and browser WASM remain unobserved.
   next_durable_transition: Record a source-framework/probe/verifier implementation checkpoint, then separately register one all-new output-free numerical operation. Never turn this implementation ledger entry into execution evidence.
 current_qwen3_composition_v12_structural_pass_memory_2026_08_26:
   route: wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md

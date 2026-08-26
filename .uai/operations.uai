@@ -1,13 +1,13 @@
-profile: runtime-mirust.operations.v169
-updated_utc: 2026-08-26T09:47:03Z
+profile: runtime-mirust.operations.v170
+updated_utc: 2026-08-26T10:02:51Z
 
 scalar_numerical_probe_operations_2026_08_26:
   implemented_owner: tinyrustlm-numerical-probe is a non-shipping leaf owner for strict create-only private scalar traces. Public profile SHA256 is 34b1bd8f45dcd764b4b78850fa0a54b740ca143bde14a201a7c7f2ef0b46f000.
   pre_output_order: Validate canonical request, identities, paths, output absence, streamed model hash, complete SLM2 structure, and memory ceilings before root creation. After root creation preserve every partial failure; never overwrite, resume, clean, repair, or infer pass without probe.json.
   real_operation_rule: Do not run /12 from an ad hoc request. First implement and green-test the source owner, reconstructed-weight diagnostic, and independent verifier. Then register all-new absent request/output/evidence/process/terminal identities in a committed, pushed, fresh-remote-exact output-free registration.
   comparison_order: Observe BF16 source and reconstructed SLM2 separately, then Rust scalar, then independent verification with preregistered per-tensor-class metrics and first-divergence order. Optimized native and WASM are later separate operations.
-  checkpoint_gate: Standard partition passed 1,515/1,517 with 0 failures and 2 explicit skips; release_gate_source_not_clean is the expected dirty-source terminal. Commit and establish clean source before release-surface evidence.
-  durable_handoff: wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md, 10,931 bytes/SHA256 782e4e212cabe2ee9522a2bf31291a4db5cca38febde5cda060fab84f99ccc64.
+  checkpoint_gate: Commit 8b140ec is pushed/four-way exact. Standard passed 1,515/0/2. Clean run 8c483720 passed 23/23; aggregate-receipt.v1.json is 3,995 bytes/SHA256 a0bb5bb78ad7d7b9c947eabc8eb47a8a42ebca43c391d05dfe558f83b3416e64 and independently verifies.
+  durable_handoff: wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md, 11,886 bytes/SHA256 2f5b59074e000f2f87b6e04b4150032581469fb4df0fae2a5ef4ad7f1ee52a01.
 current_qwen3_execution_v12_terminal_operation:
   state: registration=remote-exact; environment=pass-once; rust-custody=pass-once; managed-custody=pass-once; owner-preflight=pass-once; converter=pass-one-launch; managed-inspector=pass-one-launch; final-verification=pass; read-only-verification=pass-once; terminal=structural-pass
   result: path=contracts/vnext/qwen3-real-composition-execution-result.v12.json; bytes=18441; sha256=0c3e84ad9ce6e22d9a164357c9a900d31825d0639f4f11077dab305f9cf3ef0e; reason=structural-composition-verified

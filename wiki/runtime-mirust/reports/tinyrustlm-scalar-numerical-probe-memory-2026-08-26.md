@@ -1,7 +1,7 @@
 # TinyRustLM Scalar Numerical Probe Memory
 
 Date: 2026-08-26
-Status: implementation checkpoint; full standard gate green; clean release gate pending; real-model execution not registered or performed
+Status: committed and remote-exact implementation checkpoint; full standard and clean release gates green; real-model execution not registered or performed
 
 ## Purpose
 
@@ -154,9 +154,31 @@ outside-Git evidence parent. Its standard partition completed in 458,310 ms:
 
 After the standard partition passed, the release-surface layer returned the
 expected typed refusal `release_gate_source_not_clean`. That is honest dirty
-worktree behavior, not a test failure and not release evidence. The source
-change must now be committed, pushed, and freshly verified before the clean
-release-surface gate is run against exact committed source.
+worktree behavior, not a test failure and not release evidence.
+
+The source checkpoint was then committed and pushed:
+
+- commit `8b140ec4e7861aa2ce0c1c7d838f79034e7dffae`
+- tree `a40150e4dea5bf32e8df6fab8195ad0e6ab61a80`
+- subject `Add bounded scalar numerical trace probe`
+- local `HEAD`, tracking ref, fresh `FETCH_HEAD`, and direct remote branch ref
+  all equaled the commit above
+- worktree was clean before the clean release operation
+
+Clean release-surface run
+`8c48372095b62df937d64a5eb994b278addf2e97cfa03a8848a7d0f827033622`
+then passed all 23 tests with zero failures, skips, retained failures, or
+incomplete shards. Its aggregate receipt is:
+
+- 3,995 bytes
+- SHA-256 `a0bb5bb78ad7d7b9c947eabc8eb47a8a42ebca43c391d05dfe558f83b3416e64`
+
+The maintained read-only verifier reopened the run and returned the same run
+ID, test count, verdict, aggregate length, and aggregate SHA-256. A separate
+filesystem SHA-256 calculation over `aggregate-receipt.v1.json` returned the
+same 3,995-byte identity. This is clean source/release-surface evidence for the
+implementation checkpoint only; it is not site deployment or numerical
+execution evidence.
 
 ## Report-Driven Numerical Proof Boundary
 

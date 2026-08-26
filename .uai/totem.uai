@@ -1,12 +1,12 @@
-profile: runtime-mirust.totem.v190
-updated_utc: 2026-08-26T09:47:03Z
+profile: runtime-mirust.totem.v191
+updated_utc: 2026-08-26T10:02:51Z
 
 scalar_numerical_proof_totem_2026_08_26:
   preserve_one_authority: Keep one shipping SLM2 scalar semantic authority. Evidence probes and source-framework owners stay non-shipping leaf tools and call or compare the authoritative path without creating fallback semantics.
   preserve_three_arrows: Prove BF16 source to reconstructed/dequantized SLM2, reconstructed SLM2 to Rust scalar, then accepted scalar to each optimized native and browser-WASM target. Bind each arrow independently and localize first divergence.
   preserve_create_only_evidence: Validate identities, exact model hash, SLM2 structure, resources, and output absence before creation; write bounded traces create-only; preserve partial failure bytes; write the result last; recompute facts independently.
   preserve_preregistration: Fix private case hashes, tensor classes, metrics, thresholds, escalation, bounds, identities, and process cardinality in a pushed remote-exact output-free registration before real output.
-  preserve_claim_truth: A fixture-tested probe and 1,515-test standard pass are implementation evidence only; release evidence requires clean exact source. Durable authority is wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md, 10,931 bytes/SHA256 782e4e212cabe2ee9522a2bf31291a4db5cca38febde5cda060fab84f99ccc64.
+  preserve_claim_truth: A fixture-tested probe, standard pass, and clean 23/23 release-surface pass remain implementation evidence only; they are not numerical or deployed-site evidence. Durable authority is wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md, 11,886 bytes/SHA256 2f5b59074e000f2f87b6e04b4150032581469fb4df0fae2a5ef4ad7f1ee52a01.
 current_qwen3_v12_structural_pass_discipline:
   - Treat contracts/vnext/qwen3-real-composition-execution-result.v12.json and wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md as the current exact handoff.
   - Preserve every /1 through /12 private and public terminal record; matching hashes never grant adoption authority.

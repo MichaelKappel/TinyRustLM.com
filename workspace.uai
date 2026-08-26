@@ -1,14 +1,14 @@
-profile: tinyrustlm.source-workspace.v439
+profile: tinyrustlm.source-workspace.v440
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-26T09:47:03Z
+updated_utc: 2026-08-26T10:02:51Z
 
 current_checkpoint_2026_08_26_scalar_numerical_probe:
-  status: A dedicated non-shipping tinyrustlm-numerical-probe now creates bounded create-only scalar stage traces through ScalarSession.forward_token_traced. Focused Rust and Node tests pass 5/5 each; clippy and fmt pass. The maintained standard gate discovered 1,517 tests and completed 1,515 pass/0 fail/2 explicit skip, then correctly refused dirty release evidence with release_gate_source_not_clean. The probe has not been invoked on /12 and is not numerical evidence.
+  status: Commit 8b140ec4e7861aa2ce0c1c7d838f79034e7dffae/tree a40150e4dea5bf32e8df6fab8195ad0e6ab61a80 adds the bounded non-shipping scalar probe and is pushed with fresh four-way remote equality. Standard gate is 1,515 pass/0 fail/2 explicit skip. Clean release run 8c48372095b62df937d64a5eb994b278addf2e97cfa03a8848a7d0f827033622 passed 23/23; its 3,995-byte aggregate SHA256 is a0bb5bb78ad7d7b9c947eabc8eb47a8a42ebca43c391d05dfe558f83b3416e64 and independently verifies. The probe has not been invoked on /12.
   exact_authority: contracts/vnext/scalar-numerical-probe-profile.v1.json is 9,660 bytes/SHA256 34b1bd8f45dcd764b4b78850fa0a54b740ca143bde14a201a7c7f2ef0b46f000. Architecture is docs/architecture/2026-08-26-scalar-numerical-probe.md, 6,059 bytes/SHA256 f0f2340a2da008db972575ea28ea24f5d267dbbc5b9654268466300f08e7c3ac.
-  durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md, 10,931 bytes/SHA256 782e4e212cabe2ee9522a2bf31291a4db5cca38febde5cda060fab84f99ccc64. It deep-links the reviewed report manifest, corrected synthesis, TDD delta, intake memory, and immutable /12 structural result.
+  durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md, 11,886 bytes/SHA256 2f5b59074e000f2f87b6e04b4150032581469fb4df0fae2a5ef4ad7f1ee52a01. It deep-links the reviewed report manifest, synthesis, TDD delta, intake memory, /12 result, source checkpoint, and clean gate.
   numerical_proof: Keep three independent arrows: BF16 source versus reconstructed/dequantized SLM2, reconstructed SLM2 versus Rust scalar, then accepted scalar versus each optimized native and browser-WASM implementation. No transitive inference and no final-text oracle.
-  exact_next: Commit, push, fresh-four-way verify, and run the clean release-surface gate for this green scalar-probe checkpoint. Then complete and test the pinned offline source-framework closure, source owner, reconstructed-weight arm, and independent verifier before output-free numerical preregistration.
+  exact_next: Complete and test the pinned offline source-framework closure, create-only source owner, reconstructed-weight diagnostic arm, and independent first-divergence verifier. Commit/push that implementation before a separate output-free numerical preregistration; do not run /12 yet.
   hard_boundary: The only probe success claim is private-scalar-traces-created-not-numerical-parity. No numerical, optimized-native, browser, quality, P2P, catalog, package, deployment, or MemoryEndpoints claim exists; counters remain 0/20,0/50,0/25,0/40,0/20.
 
 current_checkpoint_2026_08_26_qwen3_execution_v12_structural_pass:
