@@ -635,6 +635,34 @@ parity, runtime, browser, quality, P2P, publication, deployment,
 MemoryEndpoints, or campaign claim advances. See
 `docs/architecture/2026-08-26-qwen3-real-composition-execution-v10-receipt-contract-failure.md`.
 
+`qwen3-real-composition-execution-preregistration.v11.json` registers that
+wholly new output-free operation. It is 63,830 canonical UTF-8/LF bytes at
+SHA-256
+`b409a66f8e7298b5c357a64c6264d810673bf118e59f09b5db831bef51d2bdd0`.
+It binds report-informed remote-exact parent commit
+`1e9b7b049012005a408e1faa1c728e7eb5d82158`, tree
+`a9c2420fef84db6cfae5b1abf350b7389c0539c7`, corrected implementation commit
+`d766c6f1a5a3d0f5bfed5b38e48daf17397381dd`, clean gate commit
+`61461718507ffddadb1aefc12b5677de2c517406`, immutable execution `/10` and all
+nine earlier terminal results, five exact conversion inputs, 26 current
+source sentinels, and 15 wholly new private names observed absent before
+registration.
+
+The registration preserves one exact receipt meaning: durability belongs to
+the child operation `parent + "-members"` and has status `performed`. The
+former parent/`flushed` expectations remain rejecting fixtures rather than
+compatibility alternatives. Only the managed verifier source sentinel differs
+from `/10`; all other execution owners and sentinels remain exact.
+
+Registration creates no private file, root, build, model, process terminal,
+or verification. It proves no structural composition, numerical parity,
+browser execution, conversational quality, P2P availability, publication,
+deployment, MemoryEndpoints behavior, or campaign progress. Its commit must
+change exactly the profile, dedicated test, architecture record, and this
+index, then be pushed and freshly proved four-way remote exact before any
+private `/11` material exists. See
+`docs/architecture/2026-08-26-qwen3-real-composition-execution-preregistration-v11.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2
