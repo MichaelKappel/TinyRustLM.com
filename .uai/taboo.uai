@@ -1,7 +1,7 @@
-profile: runtime-mirust.taboo.v116
-updated_utc: 2026-08-26T08:23:33Z
+profile: runtime-mirust.taboo.v117
+updated_utc: 2026-08-26T09:02:03Z
 current_qwen3_v12_structural_pass_prohibitions:
-  - Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md, 9,858 bytes/SHA256 c6ea3b629d26758dc9fe73625ead20960afba4a48a77e4fe506196ecf089dec8, before interpreting or extending these prohibitions.
+  - Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md, 11,584 bytes/SHA256 2a1c2882b9368d0ebd45fe96b9689406d5fcbfd941b4b2a5b39868da5cb3e1cf, before interpreting or extending these prohibitions.
   - Never rerun, resume, modify, delete, repair, relabel, overwrite, clean up, or adopt any /12 operation, output, receipt, or evidence byte.
   - Never reinterpret matching /10 and /12 semantic-member hashes as permission to reuse failed /10 bytes or change its terminal result.
   - Never call /12 numerically correct, inferencing, browser-ready, useful, qualified, P2P-available, published, deployed, or campaign-complete from structural evidence.

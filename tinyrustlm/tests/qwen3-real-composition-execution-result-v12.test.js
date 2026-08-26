@@ -235,9 +235,9 @@ test("publishes no private path secret or inflated product claim", () => {
 });
 
 test("deep-links one checksum-bound durable memory route from every hot UAI surface", () => {
-  assert.equal(durableMemoryBytes.length, 9858);
+  assert.equal(durableMemoryBytes.length, 11584);
   assert.equal(sha256(durableMemoryBytes),
-    "c6ea3b629d26758dc9fe73625ead20960afba4a48a77e4fe506196ecf089dec8");
+    "2a1c2882b9368d0ebd45fe96b9689406d5fcbfd941b4b2a5b39868da5cb3e1cf");
   const memoryText = durableMemoryBytes.toString("utf8");
   for (const required of [
     "docs/report-intake/2026-08-26/post-v10-native-browser-release/MANIFEST.md",

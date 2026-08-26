@@ -64,6 +64,38 @@ passed 23/23. Its canonical 3,995-byte aggregate SHA-256
 `3daebca977a4752c81c2f771c665de59e1a47416669db91e3653f5152dfcdc0b`
 was reproduced by the maintained verifier and independent filesystem hashing.
 
+## Source-Controlled Result And Clean Gate
+
+The bounded `/12` result, dedicated regression, architecture record, contract
+index, durable memory, and 13-file hot UAI graph were committed together as
+`a7b873ebf09b84cad9db68fdcaa65241068ace9e`, tree
+`8ee773409c4b0351f5a8bd2aae6f7610297950b6`. The commit changed exactly 18
+source-controlled paths and was pushed to `codex/model-acquisition-v2`.
+
+Before that commit, the complete serialized dirty-source standard partition
+discovered 1,512 tests, passed 1,510, failed zero, and retained exactly two
+declared skips in 455,439.304 ms. The wrapper then refused release with exact
+code `release_gate_source_not_clean`. Its fresh private evidence root remained
+empty because refusal preceded evidence creation.
+
+After commit and push, a fresh fetch proved the same
+`a7b873ebf09b84cad9db68fdcaa65241068ace9e` across local `HEAD`, tracking,
+`FETCH_HEAD`, and the direct remote ref. The worktree was clean. A wholly new
+external evidence root then produced clean release-surface run
+`77c268d03947a006b0e9cc20162d35761894765ba39fb3392b334d18f1fdd2e5`.
+All ten serial shards passed 23/23 tests with zero failures and zero skips.
+The 42-file evidence closure contains one canonical 3,995-byte aggregate
+receipt at SHA-256
+`4e5ee9046f764e7a730dd5eb76bb34ce434ee4df4a331ef71bb3c13f99bd37d3`.
+The maintained verifier reproduced its run ID, test count, byte count, hash,
+and pass verdict. Independent filesystem hashing reproduced the same aggregate
+identity.
+
+This clean gate validates the source-controlled structural-result checkpoint.
+It does not convert release-surface test success into model release,
+deployment, browser execution, quality, P2P, catalog, package, or campaign
+evidence.
+
 ## Exact Operation Outcome
 
 One in-memory shape check rejected an incorrectly escaped representation of
