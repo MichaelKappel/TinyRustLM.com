@@ -783,6 +783,25 @@ no source-framework parity, native inference, browser execution, quality,
 release, or campaign claim. See
 `docs/architecture/2026-08-26-scalar-numerical-probe.md`.
 
+`qwen3-numerical-differential-execution-preregistration.v1.json` is the sole
+output-free registration for comparing the pinned publisher source, an
+independent mixed-Q8 reconstructed-weight executor, and the Rust scalar
+converted-byte runtime before one read-only first-divergence verification. It
+is 24,467 canonical bytes at SHA-256
+`469e003e6f50cb3e4bb0574e2bd72c5836edb938eea0345ca1a23b4bfc9906a1` and
+binds the exact remote memory parent, eleven source-controlled artifacts, five
+local executable identities without paths, three token-only cases totaling
+seven steps, exact trace/KV/scratch budgets, two proof arrows, fixed pre-output
+thresholds, six absent future names, one ordered owner, and immutable terminal
+rules.
+
+The registration creates no private request, root, trace, process, or verdict.
+It must be committed, pushed, freshly fetched, and direct-remote exact before
+one private owner request can be materialized and invoked. A later failure
+cannot be retried, repaired, overwritten, deleted, adopted, or made to pass by
+changing thresholds. See
+`docs/architecture/2026-08-26-qwen3-numerical-differential-execution-preregistration.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2
