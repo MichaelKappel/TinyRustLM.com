@@ -1,6 +1,6 @@
 # TinyRustLM Qwen3 Model-Load Correction Memory
 
-Updated: 2026-08-26T17:04:27Z
+Updated: 2026-08-26T17:29:39Z
 
 ## Resume Authority
 
@@ -225,8 +225,8 @@ There is no permissive old branch. The existing v1 registration remains inert
 historical evidence and is never passed to the active validator. The v2
 registration remains absent. Because the owner and differential-profile bytes
 changed, the clean gate for commit `b9b8202` remains historical evidence for
-that checkpoint only. It does not gate this correction; a wholly new clean
-source gate is required after commit/push/fresh remote equality.
+that checkpoint only. The correction was separately committed, pushed,
+freshly fetched, proved four-way exact, and clean-gated as recorded below.
 
 ## Model-Load Diagnostics
 
@@ -320,6 +320,40 @@ confusion with prior operations. This checkpoint proves no source trace,
 numerical parity, browser model execution, model quality, P2P availability,
 publication, deployment, or campaign progress.
 
+Registration semantic-closure checkpoint:
+
+- commit `787c7d3f4e23ff141514ba292667a852fd688580`;
+- tree `2512e6f409b9664700bfe1e49646d524b7715dab`;
+- local `HEAD`, tracking ref, freshly fetched `FETCH_HEAD`, and direct remote
+  branch ref were exact immediately after push;
+- the worktree was clean before and after the gate and maintained verifier;
+- frozen enterprise continuation authority remained exact at SHA-256
+  `92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0`;
+- direct owner suite: 16/16 pass with zero failure or skip;
+- eight-suite pinned-environment numerical/model-load/UAI check: 59/59 pass
+  with zero failure or skip;
+- canonical standard partition: 1,574 pass, zero fail, two explicit skip of
+  1,576;
+- protected release surface: 23/23 pass;
+- protected run ID:
+  `7e320cf108b751768a780083c7a8c59ec40b846508eaf8d4a4389e4c31d60bbb`;
+- aggregate: 3,995 bytes, SHA-256
+  `9be258173ae2e28c0e7bf754667c6f9c1ccba1ae2bf8c1aea930d9524949b3b7`;
+  and
+- one maintained read-only verification after gate termination independently
+  reproduced the run ID, 23-test count, aggregate length, digest, and `pass`
+  verdict.
+
+The standard count increased by the six new registration-contract tests; no
+other test file added or removed top-level cases from the preceding clean
+checkpoint. The external gate root is
+`qwen3-numerical-registration-closure-clean-gate-20260826-v3`. Its evidence is
+private and remains outside Git.
+
+This is the current source, contract, and release-control gate for the sole v2
+owner. It proves no source trace, numerical arrow, useful model, browser
+execution, P2P availability, publication, deployment, or campaign progress.
+
 ## Allowed And Prohibited Claims
 
 Allowed:
@@ -329,7 +363,8 @@ Allowed:
 - the exact isolation event and missing dependency closure were identified;
 - one clean-slate `/2` source request/owner/verifier contract is implemented;
 - the exact current environment and model-load diagnostic pass;
-- the correction is committed, pushed, remote exact, and clean gated.
+- the registration semantic closure is committed, pushed, remote exact, and
+  independently clean-gated.
 
 Still prohibited:
 
@@ -346,30 +381,26 @@ Campaign counters remain exactly `0/20`, `0/50`, `0/25`, `0/40`, and `0/20`.
 
 ## Exact Resume Sequence
 
-1. Commit the registration semantic-closure correction, updated owner/profile
-   identities, architecture, tests, durable memory, and every hot `.uai` deep
-   link. Push, fetch freshly, and prove local `HEAD`, tracking ref,
-   `FETCH_HEAD`, and direct remote branch equality.
-2. Run the maintained canonical clean gate from a wholly new external root,
-   invoke its read-only verifier once, and record the exact result in a second
-   committed/pushed/four-way-exact memory checkpoint.
-3. Create one separate output-free v2 successor preregistration. Bind that
+1. Commit this clean-gate memory checkpoint, architecture update, test lock,
+   and every hot `.uai` deep link. Push, fetch freshly, and prove local `HEAD`,
+   tracking ref, `FETCH_HEAD`, and direct remote branch equality.
+2. Create one separate output-free v2 successor preregistration. Bind that
    exact post-memory commit/tree, frozen goals, the report-review chain, source lock,
    immutable `/12` composition, current environment, source owner,
    reconstructed owner, scalar probe, verifier, profiles, exact token-only
    cases, comparison thresholds, resource bounds, zero retry, and terminal
    rules.
-4. Use wholly new logical and physical identities for registration, owner
+3. Use wholly new logical and physical identities for registration, owner
    request, evidence root, source scratch, source trace output, reconstructed
    output, scalar output, process records, terminal records, verification, and
    public result. Prove every future root absent without materializing it.
-5. Commit and push the output-free registration and prove fresh four-way remote
+4. Commit and push the output-free registration and prove fresh four-way remote
    equality before creating any private request or root.
-6. Invoke the sole owner at most once. Preserve any terminal result. A source
+5. Invoke the sole owner at most once. Preserve any terminal result. A source
    failure closes the successor and forbids later arms. Only a source pass may
    proceed to reconstructed, scalar, and read-only verification in registered
    order.
-7. On numerical pass only, continue through optimized-native and real-browser
+6. On numerical pass only, continue through optimized-native and real-browser
    WASM differential gates, declarative non-weight parity, exactly-once
    multi-turn browser chat, explicit qualified-P2P-or-local-conversion,
    sealed paired quality evaluation, synchronized documentation/release logs,

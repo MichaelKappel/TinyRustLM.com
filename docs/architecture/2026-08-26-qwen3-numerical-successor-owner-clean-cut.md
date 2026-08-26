@@ -1,9 +1,9 @@
 # Qwen3 Numerical Successor Owner Clean Cut
 
 Date: 2026-08-26
-Status: registration semantic closure implemented and focused gates green;
-current correction commit/push proof, a new canonical clean gate, durable-memory
-checkpoint, successor preregistration, and execution remain
+Status: registration semantic closure committed, pushed, four-way remote exact,
+and independently clean-gated; durable-memory checkpoint, successor
+preregistration, and execution remain
 
 ## Decision
 
@@ -161,32 +161,45 @@ freshly fetched, and four-way exact.
 
 ## Clean Implementation Checkpoint
 
-The implementation checkpoint is commit
-`b9b820299e463db3469b6cc5fc156b95aadc99eb`, tree
-`7d6ec9ef5639528b7e9188495670362ef6ae65f3`. Immediately after push and a
+The current implementation checkpoint is commit
+`787c7d3f4e23ff141514ba292667a852fd688580`, tree
+`2512e6f409b9664700bfe1e49646d524b7715dab`. Immediately after push and a
 fresh fetch, local `HEAD`, the tracking ref, `FETCH_HEAD`, and the direct
-remote branch ref were identical and the worktree was clean.
+remote branch ref were identical and the worktree was clean. The frozen
+enterprise continuation authority remained byte exact at SHA-256
+`92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0`.
 
 The wholly new external clean-gate root
-`qwen3-numerical-successor-owner-clean-gate-20260826-v1` produced:
+`qwen3-numerical-registration-closure-clean-gate-20260826-v3` produced:
 
-- canonical standard partition: 1,568 pass, zero fail, two explicit skip of
-  1,570;
+- canonical standard partition: 1,574 pass, zero fail, two explicit skip of
+  1,576;
 - protected release surface: 23/23 pass;
 - protected run ID
-  `9ef25fd42c90714285ca86a58d20174c2efc1a8a037e8f90c5ec314f0f04561f`;
+  `7e320cf108b751768a780083c7a8c59ec40b846508eaf8d4a4389e4c31d60bbb`;
 - aggregate: 3,995 bytes, SHA-256
-  `0514f83b28a210ac195456553774daccf48be8129dc60d9b6ed5681be2d0105a`;
+  `9be258173ae2e28c0e7bf754667c6f9c1ccba1ae2bf8c1aea930d9524949b3b7`;
   and
-- a second maintained read-only verification that reproduced the same run
-  ID, test count, aggregate length, digest, and `pass` verdict.
+- one maintained read-only verification after gate termination that
+  reproduced the same run ID, 23-test count, aggregate length, digest, and
+  `pass` verdict.
 
-The source remained clean at the exact commit and tree after both execution
-and verification. This is source, contract, and release-control evidence for
-that checkpoint; it does not cover the later registration semantic-closure
-correction. It also does not prove a source trace, either numerical arrow,
-model usefulness, browser model execution, P2P availability, publication,
-deployment, or any campaign counter.
+The standard count increased by the six new registration-contract tests; no
+other test file added or removed top-level cases between the preceding clean
+checkpoint and this one. The source remained clean at the exact commit and
+tree after gate execution and verification.
+
+The former implementation checkpoint at commit
+`b9b820299e463db3469b6cc5fc156b95aadc99eb`, tree
+`7d6ec9ef5639528b7e9188495670362ef6ae65f3`, and protected run
+`9ef25fd42c90714285ca86a58d20174c2efc1a8a037e8f90c5ec314f0f04561f`
+remain immutable historical evidence for the pre-closure owner. They are not
+the current gate and are not erased or reinterpreted.
+
+The current gate is source, contract, and release-control evidence only. It
+does not prove a source trace, either numerical arrow, model usefulness,
+browser model execution, P2P availability, publication, deployment, or any
+campaign counter.
 
 ## Claim Boundary
 

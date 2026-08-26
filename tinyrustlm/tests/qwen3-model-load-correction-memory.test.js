@@ -9,9 +9,9 @@ const test = require("node:test");
 const repositoryRoot = path.resolve(__dirname, "../..");
 const memoryRelativePath =
   "wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md";
-const memoryLength = 18988;
+const memoryLength = 20442;
 const memorySha256 =
-  "ad30c359eac53f54fc536350608c410a2fed846ead96f8d3741788659362c2bb";
+  "91764c9d5bde7d96e3d650396a1e882984b0b91baa0814c3b791f0d58321b4df";
 const hotRoutes = [
   "workspace.uai",
   ".uai/index.uai",
@@ -73,6 +73,14 @@ test("durable model-load correction memory binds exact implementation evidence",
     /e21c1c8459a64abbdf47d98c81ca4b5526e7b156ce9a72079c0f735d3515955d/u);
   assert.match(memory,
     /c04abffe412f5032b3c66d6ce00ece4d27a5d89f3ae6678e742cc56ce64f86fc/u);
+  assert.match(memory, /787c7d3f4e23ff141514ba292667a852fd688580/u);
+  assert.match(memory, /2512e6f409b9664700bfe1e49646d524b7715dab/u);
+  assert.match(memory,
+    /7e320cf108b751768a780083c7a8c59ec40b846508eaf8d4a4389e4c31d60bbb/u);
+  assert.match(memory,
+    /9be258173ae2e28c0e7bf754667c6f9c1ccba1ae2bf8c1aea930d9524949b3b7/u);
+  assert.match(memory,
+    /92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0/u);
 });
 
 test("every hot UAI route deep-links the correction and reviewed report memory", () => {
@@ -91,21 +99,19 @@ test("every hot UAI route deep-links the correction and reviewed report memory",
       relativePath);
     assert.match(value, /tinyrustlm\.qwen3-publisher-source-trace\/2/u,
       relativePath);
-    assert.match(value, /6f73ce1e2a9c5900f679ffd203900f4ba9de6b96f1dc7d214e032094cb9c7dd1/u,
-      relativePath);
-    assert.match(value, /b9b820299e463db3469b6cc5fc156b95aadc99eb/u,
-      relativePath);
-    assert.match(value,
-      /9ef25fd42c90714285ca86a58d20174c2efc1a8a037e8f90c5ec314f0f04561f/u,
-      relativePath);
-    assert.match(value,
-      /0514f83b28a210ac195456553774daccf48be8129dc60d9b6ed5681be2d0105a/u,
-      relativePath);
     assert.match(value,
       /e21c1c8459a64abbdf47d98c81ca4b5526e7b156ce9a72079c0f735d3515955d/u,
       relativePath);
     assert.match(value,
       /c04abffe412f5032b3c66d6ce00ece4d27a5d89f3ae6678e742cc56ce64f86fc/u,
+      relativePath);
+    assert.match(value, /787c7d3f4e23ff141514ba292667a852fd688580/u,
+      relativePath);
+    assert.match(value,
+      /7e320cf108b751768a780083c7a8c59ec40b846508eaf8d4a4389e4c31d60bbb/u,
+      relativePath);
+    assert.match(value,
+      /9be258173ae2e28c0e7bf754667c6f9c1ccba1ae2bf8c1aea930d9524949b3b7/u,
       relativePath);
     assert.match(value, /0\/20.*0\/50.*0\/25.*0\/40.*0\/20/u, relativePath);
     assert.match(value, /MemoryEndpoints/u, relativePath);
