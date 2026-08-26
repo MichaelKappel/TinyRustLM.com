@@ -209,3 +209,32 @@ publication, or campaign completion.
 
 MemoryEndpoints remains unauthorized and disconnected. Campaign counters
 remain exactly `0/20`, `0/50`, `0/25`, `0/40`, and `0/20`.
+
+## Clean Corrected-Source Gate
+
+The correction is committed at
+`d766c6f1a5a3d0f5bfed5b38e48daf17397381dd`, tree
+`ee23a9c96205e68c15790b1c6d98e7adbefc9b12`, and is exact across local
+`HEAD`, tracking, a fresh `FETCH_HEAD`, and the direct remote ref.
+
+The clean serialized standard partition discovered 1,471 tests, passed 1,469,
+failed zero, and retained exactly two declared skips in 464,573.2249 ms. A
+first clean release-surface attempt was retained after its final shard failed
+with `campaign_runner_operation_owned_root_missing`. The affected test passed
+unchanged in isolation and its exact three-test shard passed unchanged. That
+failed attempt remains failure evidence and was not overwritten, resumed, or
+converted into a pass.
+
+A wholly new evidence root produced release-surface run
+`e269baae59462488a86ff14fe6eb62cdc7c70a6ed0d6650cb553af5581584dc5`.
+All ten serial shards passed 23/23 tests with zero failures, zero skips, and
+ten empty stderr streams. Maintained verification and independent filesystem
+hashing reproduce one 3,995-byte aggregate receipt at SHA-256
+`31616a94669f19a9153edb960ab0f14794e3b78e86af967d10a6163e34484e6e`.
+The evidence root contains 42 bounded files.
+
+This proves the corrected source checkpoint and its release gate. It does not
+reinterpret `/10`, qualify the preserved candidate, or establish numerical,
+native, WASM, browser, conversation-quality, P2P, catalog, deployment, or
+MemoryEndpoints evidence. A successor still requires a separately committed,
+output-free registration and wholly new private identities.
