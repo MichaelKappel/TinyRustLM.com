@@ -1,5 +1,13 @@
-profile: runtime-mirust.taboo.v132
-updated_utc: 2026-08-26T19:45:08Z
+profile: runtime-mirust.taboo.v133
+updated_utc: 2026-08-26T20:29:58Z
+
+ecosystem_deployment_followthrough_taboo_2026_08_26:
+  durable_route: Read wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-followthrough-memory-2026-08-26.md, 10,346 bytes/SHA256 86376facad9df8f1d6c80a3e0110132a0e6e0822426667e89b63f1b737d9e2e9 before any ecosystem write or claim.
+  no_lmcomposer_replay: Never rerun, relabel, repair, overwrite, or adopt V1 terminal-failure lmcomposer-site-1.0.0-20260826-v1 or successful V2 lmcomposer-site-1.0.0-20260826-v2. Preserve both receipts and the independent V2 readback byte-exactly.
+  no_partial_mirust_release: Never treat the bounded MiRust repository as a complete WordPress deployment, copy mutable production into source as authority, publish only visible files, expose secrets/user content, or bypass database/content migration, rollback, manifest, and authorization requirements.
+  no_runtime_profile_substitution: Runtime's redirect contract is exact-current, but never use the known-misbound profile for a changed Runtime publication or borrow another site's credentials.
+  no_terminal_or_noop_replay: Never republish exact-current TinyRustLM.com or terminal sibling releases, invent a changed version, or call fresh readback a new deployment.
+  no_claim_inflation: Six exact public surfaces do not prove the full ecosystem deployed while MiRust is blocked, and prove no model qualification, numerical/browser parity, P2P, package, MemoryEndpoints, or campaign result.
 
 ecosystem_deployment_reconciliation_taboo_2026_08_26:
   durable_route: Read wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md, 11,752 bytes/SHA256 104c47929d011ce73228f9ea3f54db081c7e39bccfb4ae0d52248538b355842c before any deployment claim or write.

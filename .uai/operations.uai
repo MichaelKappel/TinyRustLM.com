@@ -1,5 +1,14 @@
-profile: runtime-mirust.operations.v182
-updated_utc: 2026-08-26T19:45:08Z
+profile: runtime-mirust.operations.v183
+updated_utc: 2026-08-26T20:29:58Z
+
+ecosystem_deployment_followthrough_operations_2026_08_26:
+  durable_route: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-followthrough-memory-2026-08-26.md, 10,346 bytes/SHA256 86376facad9df8f1d6c80a3e0110132a0e6e0822426667e89b63f1b737d9e2e9.
+  completed_publication: LMComposer V2 published one changed member and retained seven exact members, then passed six exact-file readbacks, three query-free redirects, required headers, and protected paths. Preserve success receipt acb4b813b7367dcc46c2e7d2225811c3433d7fff8cf5c971f472660b900f7bc0 and independent readback 9e8428a095c03065819d8c97664e8d624f6d8879f07b261142c590fa0f3b6b56.
+  preserved_failure: LMComposer V1 ended terminal-failure on query retention after publication. Never invoke it again, alter its 3,172-byte receipt d5ee65d583a705ff4c5aac1d2149e6e87234da658f0fac0de5388df93e4afd5a, or reinterpret its bytes.
+  verified_surfaces: Fresh checks leave TinyRustLM.com, TinyRustLM.MiRust.com, MiniModel.MiRust.com, MiniModel.org, LMComposer.com, and Runtime redirects exact. No already-terminal operation was replayed.
+  blocked_operations: Do not deploy MiRust until a sanitized complete WordPress plus database/content release closure, rollback, secrets split, manifest, and authorization exist. Do not use Runtime's misbound profile for a changed write.
+  finish_order: Validate this bounded memory change, commit/push it, freshly fetch, and prove canonical four-way equality. Then stop deployment work unless an external blocker changes; otherwise resume the output-free numerical preregistration.
+  prohibited: No synthetic release, partial WordPress upload, source-from-production adoption, cross-site credential use, terminal replay, MemoryEndpoints action, or counter increment.
 
 ecosystem_deployment_reconciliation_operations_2026_08_26:
   durable_route: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md, 11,752 bytes/SHA256 104c47929d011ce73228f9ea3f54db081c7e39bccfb4ae0d52248538b355842c.

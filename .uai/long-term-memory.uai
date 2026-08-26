@@ -1,5 +1,19 @@
-profile: runtime-mirust.long-term-memory-ledger.v380
-updated_utc: 2026-08-26T19:45:08Z
+profile: runtime-mirust.long-term-memory-ledger.v381
+updated_utc: 2026-08-26T20:29:58Z
+
+ledger_2026_08_26_ecosystem_deployment_followthrough:
+  durable_record:
+    path: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-followthrough-memory-2026-08-26.md
+    target_location: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-followthrough-memory-2026-08-26.md
+    byte_length: 10346
+    sha256: 86376facad9df8f1d6c80a3e0110132a0e6e0822426667e89b63f1b737d9e2e9
+    label: Required For Current TinyRustLM Ecosystem Deployment State
+    summary: Deep-links the prior reconciliation, LMComposer V1 immutable redirect failure, corrected V2 create-only publication and independent HTTPS readback, fresh six-surface exact matrix, MiRust production boundary, Runtime profile limitation, strict claim boundary, and exact resume.
+  lmcomposer_evidence: V1 receipt deploy/receipts/site-deployment-lmcomposer-1.0.0-20260826-v1.json is 3,172 bytes/SHA256 d5ee65d583a705ff4c5aac1d2149e6e87234da658f0fac0de5388df93e4afd5a and remains terminal-failure. V2 receipt is 3,176 bytes/SHA256 acb4b813b7367dcc46c2e7d2225811c3433d7fff8cf5c971f472660b900f7bc0; independent readback is 2,081 bytes/SHA256 9e8428a095c03065819d8c97664e8d624f6d8879f07b261142c590fa0f3b6b56. LMComposer commit 1652a1dff036cf88a1d95d06676edee576e2dc97/tree 1e49f87642fc501ccde539324013eef0131e9e27 is clean and four-way exact.
+  durable_truth: Six published/public surfaces are exact, including Runtime's redirect-only surface; MiRust remains deployment-blocked because a public-safe bounded source repository is not a complete mutable WordPress production closure. Runtime's current redirects pass, but its misbound profile cannot authorize a changed write.
+  next_durable_transition: Commit/push/fresh-four-way-verify this memory checkpoint. Resume deployment only with a sanitized complete MiRust closure or corrected Runtime profile plus an actual changed release; otherwise return to the planned output-free Qwen3 numerical successor preregistration.
+  contextual_trigger: Read before any TinyRustLM ecosystem deployment, LMComposer operation, MiRust source capture or release, Runtime write, public release claim, publication-log change, or campaign status update.
+  hard_boundary: Never replay either LMComposer operation or any earlier terminal publication. Counters remain 0/20,0/50,0/25,0/40,0/20 and MemoryEndpoints remains unauthorized.
 
 current_qwen3_model_load_correction_2026_08_26:
   durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md, 20,442 bytes/SHA256 91764c9d5bde7d96e3d650396a1e882984b0b91baa0814c3b791f0d58321b4df before any successor numerical work.

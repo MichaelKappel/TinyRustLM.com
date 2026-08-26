@@ -1,5 +1,13 @@
-profile: runtime-mirust.totem.v203
-updated_utc: 2026-08-26T19:45:08Z
+profile: runtime-mirust.totem.v204
+updated_utc: 2026-08-26T20:29:58Z
+
+ecosystem_deployment_followthrough_totem_2026_08_26:
+  durable_route: Preserve wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-followthrough-memory-2026-08-26.md at 10,346 bytes/SHA256 86376facad9df8f1d6c80a3e0110132a0e6e0822426667e89b63f1b737d9e2e9.
+  preserve_lmcomposer_history: Keep V1 terminal-failure and V2 published-and-readback-verified as separate immutable operations. Preserve V1 receipt d5ee65d583a705ff4c5aac1d2149e6e87234da658f0fac0de5388df93e4afd5a, V2 receipt acb4b813b7367dcc46c2e7d2225811c3433d7fff8cf5c971f472660b900f7bc0, and independent readback 9e8428a095c03065819d8c97664e8d624f6d8879f07b261142c590fa0f3b6b56.
+  preserve_exact_public_state: Six public surfaces are exact, with Runtime limited to its redirect contract. Exact-current terminal releases are evidence to retain, never operations to replay.
+  preserve_mirust_boundary: Reachability and authenticated inventory do not make the bounded MiRust source complete. Require sanitized WordPress files, database/content closure, secrets split, rollback, manifest, authorization, and independent readback before publication.
+  preserve_runtime_boundary: Runtime's current redirects pass; its known-misbound profile remains unusable for a future changed release until corrected and independently bound.
+  preserve_claims: Exact status remains six-published-surfaces-exact-runtime-redirect-exact-mirust-deployment-blocked. MemoryEndpoints stays unauthorized and all five campaign counters remain zero.
 
 ecosystem_deployment_reconciliation_totem_2026_08_26:
   durable_route: Preserve wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md at 11,752 bytes/SHA256 104c47929d011ce73228f9ea3f54db081c7e39bccfb4ae0d52248538b355842c.

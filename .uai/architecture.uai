@@ -1,5 +1,13 @@
-profile: runtime-mirust.architecture.v181
-updated_utc: 2026-08-26T19:45:08Z
+profile: runtime-mirust.architecture.v182
+updated_utc: 2026-08-26T20:29:58Z
+
+ecosystem_deployment_followthrough_architecture_2026_08_26:
+  durable_route: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-followthrough-memory-2026-08-26.md, 10,346 bytes/SHA256 86376facad9df8f1d6c80a3e0110132a0e6e0822426667e89b63f1b737d9e2e9.
+  publication_model: Each site owns an independent create-only publication state machine. Urgency does not authorize replay, synthetic versions, cross-site credentials, partial source closure, or conversion of exact-current readback into a new publication event.
+  lmcomposer_transition: V1 is preserved terminal-failure after query-bearing redirect mismatch. A source-level QSD correction and all-new V2 registration produced one successful publication, independent readback, and clean four-way exact source at 1652a1dff036cf88a1d95d06676edee576e2dc97/tree 1e49f87642fc501ccde539324013eef0131e9e27; no dual executable contract remains.
+  public_graph: Six surfaces are exact: five published static/product/documentation/catalog sites plus Runtime's redirect-only contract. TinyRustLM.com and the three earlier terminal sibling publications remained exact-current without replay.
+  unresolved_edges: MiRust requires sanitized complete WordPress files, database/content closure, secret/config separation, rollback, manifest, and publication authorization. Runtime requires a correctly bound Runtime-only profile before any future changed release; neither blocker can be bypassed by current reachability.
+  claim_boundary: Exact status is six-published-surfaces-exact-runtime-redirect-exact-mirust-deployment-blocked. Static release evidence proves no model, numerical, real-browser model, P2P, package, MemoryEndpoints, or campaign result.
 
 ecosystem_deployment_reconciliation_architecture_2026_08_26:
   durable_route: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md, 11,752 bytes/SHA256 104c47929d011ce73228f9ea3f54db081c7e39bccfb4ae0d52248538b355842c.

@@ -1,7 +1,16 @@
-profile: tinyrustlm.source-workspace.v452
+profile: tinyrustlm.source-workspace.v453
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-26T19:45:08Z
+updated_utc: 2026-08-26T20:29:58Z
+
+current_ecosystem_deployment_followthrough_2026_08_26:
+  durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-followthrough-memory-2026-08-26.md, 10,346 bytes/SHA256 86376facad9df8f1d6c80a3e0110132a0e6e0822426667e89b63f1b737d9e2e9 before any ecosystem deployment, publication, or claim work; it extends rather than replaces the prior reconciliation memory.
+  lmcomposer_terminal_history: V1 operation lmcomposer-site-1.0.0-20260826-v1 is immutable terminal-failure because Apache retained the smoke-test query on its redirect. Preserve deploy/receipts/site-deployment-lmcomposer-1.0.0-20260826-v1.json at 3,172 bytes/SHA256 d5ee65d583a705ff4c5aac1d2149e6e87234da658f0fac0de5388df93e4afd5a and never rerun, repair, relabel, or adopt it.
+  lmcomposer_publication: Corrected clean-slate V2 operation lmcomposer-site-1.0.0-20260826-v2 published only the changed .htaccess and passed exact HTTPS files, query-free redirects, headers, and protected paths. Its 3,176-byte receipt SHA256 acb4b813b7367dcc46c2e7d2225811c3433d7fff8cf5c971f472660b900f7bc0 is published-and-readback-verified; independent 2,081-byte readback SHA256 is 9e8428a095c03065819d8c97664e8d624f6d8879f07b261142c590fa0f3b6b56. LMComposer source is clean/pushed/four-way exact at 1652a1dff036cf88a1d95d06676edee576e2dc97/tree 1e49f87642fc501ccde539324013eef0131e9e27.
+  current_public_state: Fresh readback leaves TinyRustLM.com, TinyRustLM.MiRust.com, MiniModel.MiRust.com, MiniModel.org, LMComposer.com, and Runtime.MiRust.com's redirect contract exact. Existing terminal publications were not replayed, and TinyRustLM.com had no changed bytes or pending release.
+  final_decision: Exact status is six-published-surfaces-exact-runtime-redirect-exact-mirust-deployment-blocked. MiRust.com still lacks a sanitized complete WordPress source/database/content closure and authorized rollback-safe release transaction; Runtime is exact-current but its misbound profile blocks future changed writes.
+  exact_resume: Commit/push/fresh-four-way-verify this report and all nine UAI routes. Resume deployment only after one of the two external prerequisites changes; otherwise resume the planned output-free maintained Qwen3 source-terminal verifier preregistration without replaying any closed model or site operation.
+  hard_boundary: This proves bounded static publication/readback only. No model qualification, numerical parity, real-browser model execution, P2P availability, MemoryEndpoints authority, package publication, or campaign completion follows; counters remain 0/20,0/50,0/25,0/40,0/20.
 
 current_ecosystem_deployment_reconciliation_2026_08_26:
   durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md, 11,752 bytes/SHA256 104c47929d011ce73228f9ea3f54db081c7e39bccfb4ae0d52248538b355842c before any ecosystem publication or deployment work.

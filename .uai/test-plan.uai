@@ -1,5 +1,13 @@
-profile: runtime-mirust.test-plan.v304
-updated_utc: 2026-08-26T19:45:08Z
+profile: runtime-mirust.test-plan.v305
+updated_utc: 2026-08-26T20:29:58Z
+
+ecosystem_deployment_followthrough_test_plan_2026_08_26:
+  durable_route: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-followthrough-memory-2026-08-26.md is 10,346 bytes/SHA256 86376facad9df8f1d6c80a3e0110132a0e6e0822426667e89b63f1b737d9e2e9.
+  lmcomposer_v1_negative: Preserve the exact query-bearing redirect mismatch and terminal-failure receipt 3,172/d5ee65d583a705ff4c5aac1d2149e6e87234da658f0fac0de5388df93e4afd5a as the regression oracle; never replay it.
+  lmcomposer_v2_green: Final suite passes 20/20. V2 skipped seven exact members, published only .htaccess, and passed six exact public files, three query-free 301 redirects, required headers, and protected paths. Success receipt is 3,176/acb4b813b7367dcc46c2e7d2225811c3433d7fff8cf5c971f472660b900f7bc0; independent readback is 2,081/9e8428a095c03065819d8c97664e8d624f6d8879f07b261142c590fa0f3b6b56.
+  ecosystem_green: TinyRustLM.com ValidateOnly passes 23 artifacts and fresh HTTP observes 22 exact files/1,931,901 bytes plus five exact retired-path 404s. TinyRustLM.MiRust.com observes 22/555,030 and six route smokes; MiniModel.MiRust.com 31/297,292 and four; MiniModel.org 32/545,679 and five; Runtime verifies seven redirects and six destinations.
+  required_negative_state: MiRust production contains mutable WordPress files/content beyond the bounded source closure; this must remain a blocking negative until sanitized full closure, database/content migration, rollback, secrets split, manifest, authorization, and exact readback can all be proven. Runtime's profile misbinding remains a future-write blocker.
+  failure_rule: Any attempt to replay a terminal operation, accept partial MiRust source, synthesize a release, use mismatched credentials, or inflate claims fails the deployment gate.
 
 ecosystem_deployment_reconciliation_test_plan_2026_08_26:
   durable_route: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md is 11,752 bytes/SHA256 104c47929d011ce73228f9ea3f54db081c7e39bccfb4ae0d52248538b355842c.

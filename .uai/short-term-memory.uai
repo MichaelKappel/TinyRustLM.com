@@ -1,5 +1,13 @@
-profile: runtime-mirust.short-term-memory.v503
-updated_utc: 2026-08-26T19:45:08Z
+profile: runtime-mirust.short-term-memory.v504
+updated_utc: 2026-08-26T20:29:58Z
+
+current_ecosystem_deployment_followthrough_2026_08_26:
+  just_completed: LMComposer.com now has a real 1.0.0 create-only publication. The first V1 operation is preserved terminal-failure after its redirect retained a query; the corrected all-new V2 operation published only .htaccess and passed exact file, redirect, header, and protected-path checks plus independent readback. Source is clean/pushed/four-way exact at 1652a1dff036cf88a1d95d06676edee576e2dc97/tree 1e49f87642fc501ccde539324013eef0131e9e27.
+  deep_resume: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-followthrough-memory-2026-08-26.md is 10,346 bytes/SHA256 86376facad9df8f1d6c80a3e0110132a0e6e0822426667e89b63f1b737d9e2e9 and is deep-linked from .uai/long-term-memory.uai.
+  current_truth: Fresh ecosystem status is six-published-surfaces-exact-runtime-redirect-exact-mirust-deployment-blocked. TinyRustLM.com and all terminal sibling releases remain exact without replay; Runtime redirects remain exact-current; MiRust is reachable but cannot be safely released from the bounded repository snapshot.
+  evidence: LMComposer V1 receipt is 3,172/d5ee65d583a705ff4c5aac1d2149e6e87234da658f0fac0de5388df93e4afd5a. V2 success receipt is 3,176/acb4b813b7367dcc46c2e7d2225811c3433d7fff8cf5c971f472660b900f7bc0; independent readback is 2,081/9e8428a095c03065819d8c97664e8d624f6d8879f07b261142c590fa0f3b6b56.
+  immediate_work: Commit/push/fresh-four-way-verify the report and nine UAI routes. Further deployment waits for a complete sanitized MiRust production closure or a corrected Runtime-only profile plus changed release; absent that, return to the planned output-free maintained Qwen3 source-terminal verifier preregistration.
+  boundary: Do not rerun either LMComposer operation or any earlier terminal deployment. No model, browser-model, P2P, package, MemoryEndpoints, or campaign credit follows; counters stay 0/20,0/50,0/25,0/40,0/20.
 
 current_ecosystem_deployment_reconciliation_2026_08_26:
   just_completed: Corrected finalized-ledger ValidateOnly semantics without weakening pending-release materialization. A bounded read-only audit rechecked the full public ecosystem; no production write was eligible because current source changes zero deployment-manifest web members and the TinyRustLM.com ledger has no pending release.
