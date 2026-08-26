@@ -581,6 +581,34 @@ plus wholly new private names before another attempt. No runtime, browser,
 quality, P2P, publication, MemoryEndpoints, or campaign claim advances. See
 `docs/architecture/2026-08-25-qwen3-real-composition-execution-v9-terminal-ambiguous.md`.
 
+`qwen3-real-composition-execution-preregistration.v10.json` registers one new
+output-free operation through the sole maintained composition-verification
+owner. It is 61,465 canonical UTF-8/LF bytes at SHA-256
+`4256f69fb5df43564ce9c703c5b9b70351826b3d33fe9e54f91bfdc39ef64318`.
+It binds remote-exact parent commit
+`d8ab21cecccff7b1832f33e15226319e1cb54271`, tree
+`e60a6a97be889987b98429e1ec800ce9a82ee522`, the clean-gated owner
+implementation commit `a6a9a3354c1ef4fd34150829fe41e91fa3dbcf7f`, immutable execution `/9`
+and all eight earlier terminal results, 26 current source sentinels, exact
+external tools, and 15 wholly new private names observed absent before
+registration.
+
+The sole owner binding is
+`tinyrustlm.qwen3-composition-verification-owner/1`, with request schema
+`tinyrustlm.qwen3-composition-verification-request.v1` and final verification
+schema `tinyrustlm.qwen3-composition-execution-verification.v6`. One owner
+invocation may own exactly one converter and one read-only managed-inspector
+launch, construct native Windows child paths, capture both children through
+preopened create-only streams, write both process terminals, independently
+hash the exact ten-file composition, and create the final verification. Its
+read-only `verify` route launches no material child and writes no evidence.
+
+Registration creates no private file, root, build, model, process terminal, or
+verification; proves no conversion, runtime, browser, quality, P2P,
+publication, deployment, or MemoryEndpoints claim; and advances no campaign
+counter. It cannot reuse, retry, repair, clean, or adopt `/9`. See
+`docs/architecture/2026-08-26-qwen3-real-composition-execution-preregistration-v10.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2
