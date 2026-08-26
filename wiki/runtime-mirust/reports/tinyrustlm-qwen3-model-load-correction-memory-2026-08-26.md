@@ -178,8 +178,11 @@ schema.
 
 Architecture authority is
 `docs/architecture/2026-08-26-qwen3-numerical-successor-owner-clean-cut.md`.
-This is implementation evidence only. No successor identity has been
-registered or consumed and no source trace or numerical arrow exists.
+The direct owner/history gate passed 21/21 with zero failure or skip. The
+broader pinned-environment numerical and model-load suite passed 53/53 with
+zero failure or skip. This is implementation evidence only. No successor
+identity has been registered or consumed and no source trace or numerical
+arrow exists.
 
 ## Model-Load Diagnostics
 
@@ -241,6 +244,34 @@ The protected release-surface gate is a source/release-control test. It does
 not prove that a model is numerically correct, useful, browser-executed,
 available through P2P, published, or deployed.
 
+Successor-owner implementation checkpoint:
+
+- commit `b9b820299e463db3469b6cc5fc156b95aadc99eb`;
+- tree `7d6ec9ef5639528b7e9188495670362ef6ae65f3`;
+- local `HEAD`, tracking ref, freshly fetched `FETCH_HEAD`, and direct remote
+  branch ref were exact immediately after push;
+- the worktree was clean before and after the gate;
+- direct owner/history gate: 21/21 pass with zero failure or skip;
+- broader pinned-environment numerical/model-load suite: 53/53 pass with zero
+  failure or skip;
+- canonical standard partition: 1,568 pass, zero fail, two explicit skip of
+  1,570;
+- protected release surface: 23/23 pass;
+- protected run ID:
+  `9ef25fd42c90714285ca86a58d20174c2efc1a8a037e8f90c5ec314f0f04561f`;
+- aggregate: 3,995 bytes, SHA-256
+  `0514f83b28a210ac195456553774daccf48be8129dc60d9b6ed5681be2d0105a`;
+  and
+- the maintained read-only verifier independently reproduced the same run ID,
+  count, aggregate length, digest, and `pass` verdict.
+
+The external gate root is
+`qwen3-numerical-successor-owner-clean-gate-20260826-v1`. It contains private
+execution evidence outside Git; the basename is recorded only to prevent
+confusion with prior operations. This checkpoint proves no source trace,
+numerical parity, browser model execution, model quality, P2P availability,
+publication, deployment, or campaign progress.
+
 ## Allowed And Prohibited Claims
 
 Allowed:
@@ -267,10 +298,9 @@ Campaign counters remain exactly `0/20`, `0/50`, `0/25`, `0/40`, and `0/20`.
 
 ## Exact Resume Sequence
 
-1. Finish the successor-owner canonical gate, commit/push it, and prove fresh
-   four-way remote equality. Then commit this updated durable memory and every
-   hot `.uai` deep link as one separate checkpoint and repeat the equality
-   proof.
+1. Commit this updated durable memory and every hot `.uai` deep link as one
+   separate memory-only checkpoint. Push it, fetch freshly, and prove local
+   `HEAD`, tracking ref, `FETCH_HEAD`, and direct remote branch equality.
 2. Create one separate output-free v2 successor preregistration. Bind that
    exact post-memory commit/tree, frozen goals, the report-review chain, source lock,
    immutable `/12` composition, current environment, source owner,

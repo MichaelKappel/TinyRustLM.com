@@ -1,8 +1,9 @@
 # Qwen3 Numerical Successor Owner Clean Cut
 
 Date: 2026-08-26
-Status: implementation complete; focused gate green; canonical clean gate,
-commit/push proof, successor preregistration, and execution remain
+Status: implementation complete; focused and canonical clean gates green;
+implementation commit/push proof complete; durable-memory checkpoint,
+successor preregistration, and execution remain
 
 ## Decision
 
@@ -102,10 +103,36 @@ require:
 - byte-exact preservation of the historical v1 registration without active
   validation.
 
-The focused result is 21 passed, zero failed, and zero skipped. This result is
-implementation evidence only. The complete standard and protected clean gates
-must pass from committed source before a successor registration can bind this
-owner.
+The focused result is 21 passed, zero failed, and zero skipped. The broader
+pinned-environment numerical and model-load suite passed 53/53 with zero skip.
+
+## Clean Implementation Checkpoint
+
+The implementation checkpoint is commit
+`b9b820299e463db3469b6cc5fc156b95aadc99eb`, tree
+`7d6ec9ef5639528b7e9188495670362ef6ae65f3`. Immediately after push and a
+fresh fetch, local `HEAD`, the tracking ref, `FETCH_HEAD`, and the direct
+remote branch ref were identical and the worktree was clean.
+
+The wholly new external clean-gate root
+`qwen3-numerical-successor-owner-clean-gate-20260826-v1` produced:
+
+- canonical standard partition: 1,568 pass, zero fail, two explicit skip of
+  1,570;
+- protected release surface: 23/23 pass;
+- protected run ID
+  `9ef25fd42c90714285ca86a58d20174c2efc1a8a037e8f90c5ec314f0f04561f`;
+- aggregate: 3,995 bytes, SHA-256
+  `0514f83b28a210ac195456553774daccf48be8129dc60d9b6ed5681be2d0105a`;
+  and
+- a second maintained read-only verification that reproduced the same run
+  ID, test count, aggregate length, digest, and `pass` verdict.
+
+The source remained clean at the exact commit and tree after both execution
+and verification. This is source, contract, and release-control evidence. It
+does not prove a source trace, either numerical arrow, model usefulness,
+browser model execution, P2P availability, publication, deployment, or any
+campaign counter.
 
 ## Claim Boundary
 
