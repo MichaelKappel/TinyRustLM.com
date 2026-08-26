@@ -830,6 +830,23 @@ parent and proves the implementation/scalar commit trees are ancestors. Tests
 preserve the former permissive behavior only as a rejecting regression; there
 is no alternate reader or compatibility branch.
 
+`qwen3-numerical-c1899de-4891e8a-20260826-v2` has since reached immutable
+owner `terminal-failure` at its one source-process launch. The bounded child
+code is `source-trace-environment-drift`; reconstructed, scalar, and verifier
+launch counts are zero, material trace roots are absent, and no numerical
+claim exists. A first ad hoc read-only terminal verifier also failed because
+it incorrectly required `registrationSha256` inside the scalar child request.
+It wrote nothing and is not rerun.
+
+`tinyrustlm/tools/qwen3-numerical-source-terminal-verifier.js` is the
+test-first maintained correction. It independently checks the exact scalar
+child field set, owner/request/registration bindings, process and stream
+identities, inventories, absent output roots, empty scratch, immutable closure,
+and path-free claim boundary without importing the owner or any write,
+subprocess, or network API. Its fixture tests pass, but it has not yet been
+preregistered or invoked against the real evidence. See
+`docs/architecture/2026-08-26-qwen3-numerical-v2-source-terminal-verifier-correction.md`.
+
 `qwen3-numerical-differential-execution-result.v1.json` closes that registered
 operation as an independently verified terminal source-process failure. The
 sole owner launched the publisher source arm once; it exited 1 after 54,038 ms
