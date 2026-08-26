@@ -1,0 +1,249 @@
+{
+  "schema": "tinyrustlm.build-custody-request-materializer-profile.v1",
+  "profileId": "tinyrustlm.build-custody-request-materializer/1",
+  "status": "current-prelaunch-only",
+  "authority": {
+    "productLifecycle": "prelaunch-single-product",
+    "owner": "tinyrustlm/tools/build-custody-request-materializer.js",
+    "input": "canonical-private-materialization-intent",
+    "output": "tinyrustlm.build-custody-request.v4",
+    "outputValidator": "tinyrustlm/tools/build-custody-owner.js",
+    "legacySupport": false,
+    "compatibility": false,
+    "migration": false,
+    "fallback": false,
+    "retry": false,
+    "repair": false,
+    "unknownFieldTolerance": false,
+    "adHocTransformation": false
+  },
+  "schemas": {
+    "intent": "tinyrustlm.build-custody-request-materialization-intent.v1",
+    "request": "tinyrustlm.build-custody-request.v4",
+    "summary": "tinyrustlm.build-custody-request-materialization-summary.v1",
+    "error": "tinyrustlm.build-custody-request-materialization-error.v1"
+  },
+  "limits": {
+    "maximumIntentBytes": 262144,
+    "maximumRequestBytes": 262144,
+    "maximumArtifactBytes": 17179869184,
+    "maximumArguments": 128,
+    "maximumArgumentBytes": 32768,
+    "maximumSupplementalEnvironmentEntries": 128,
+    "maximumEnvironmentValueBytes": 65536,
+    "maximumRequiredOutputs": 128
+  },
+  "canonicalEncoding": {
+    "encoding": "UTF-8",
+    "byteOrderMark": false,
+    "lineEnding": "LF",
+    "finalLf": true,
+    "indentSpaces": 2,
+    "duplicateKeys": "reject-by-canonical-byte-mismatch",
+    "unknownFields": "reject",
+    "missingFields": "reject",
+    "reorderedFields": "reject",
+    "trailingBytes": "reject",
+    "null": "reject-unless-output-validator-explicitly-allows",
+    "numbers": "finite-safe-integers-only-where-numeric"
+  },
+  "intentFieldOrder": [
+    "schema",
+    "operationId",
+    "profile",
+    "source",
+    "runtime",
+    "environmentAuthority",
+    "scratchInspection",
+    "command",
+    "roots",
+    "capture",
+    "termination",
+    "outputs"
+  ],
+  "sourceIntent": {
+    "fieldOrder": [
+      "repositoryRoot",
+      "commit",
+      "tree",
+      "branch",
+      "git",
+      "owner"
+    ],
+    "artifactFieldOrder": [
+      "path",
+      "byteLength",
+      "sha256"
+    ],
+    "outputFieldOrder": [
+      "repositoryRoot",
+      "commit",
+      "tree",
+      "branch",
+      "gitPath",
+      "gitByteLength",
+      "gitSha256",
+      "ownerPath",
+      "ownerByteLength",
+      "ownerSha256"
+    ],
+    "mapping": {
+      "git.path": "gitPath",
+      "git.byteLength": "gitByteLength",
+      "git.sha256": "gitSha256",
+      "owner.path": "ownerPath",
+      "owner.byteLength": "ownerByteLength",
+      "owner.sha256": "ownerSha256"
+    },
+    "rootLevelArtifactFieldsAllowed": false
+  },
+  "runtimeIntent": {
+    "fieldOrder": [
+      "node",
+      "nodeVersion",
+      "platform",
+      "architecture"
+    ],
+    "artifactFieldOrder": [
+      "path",
+      "byteLength",
+      "sha256"
+    ],
+    "outputFieldOrder": [
+      "nodePath",
+      "nodeByteLength",
+      "nodeSha256",
+      "nodeVersion",
+      "platform",
+      "architecture"
+    ],
+    "mapping": {
+      "node.path": "nodePath",
+      "node.byteLength": "nodeByteLength",
+      "node.sha256": "nodeSha256"
+    }
+  },
+  "copiedClosedObjects": [
+    {
+      "name": "profile",
+      "fields": [
+        "path",
+        "byteLength",
+        "sha256",
+        "profileId"
+      ]
+    },
+    {
+      "name": "environmentAuthority",
+      "fields": [
+        "owner",
+        "profile",
+        "request",
+        "privateBinding",
+        "publicLock",
+        "terminal"
+      ]
+    },
+    {
+      "name": "scratchInspection",
+      "fields": [
+        "profile",
+        "executableRelativePath",
+        "operationId",
+        "maximumDurationMilliseconds",
+        "maximumStdoutBytes"
+      ]
+    },
+    {
+      "name": "command",
+      "fields": [
+        "executable",
+        "arguments",
+        "workingDirectory",
+        "supplementalEnvironment"
+      ]
+    },
+    {
+      "name": "roots",
+      "fields": [
+        "controlRoot",
+        "targetRoot",
+        "environmentRoot"
+      ]
+    },
+    {
+      "name": "capture",
+      "fields": [
+        "maximumDurationMilliseconds",
+        "maximumStdoutBytes",
+        "maximumStderrBytes"
+      ]
+    },
+    {
+      "name": "termination",
+      "fields": [
+        "strategy",
+        "executable"
+      ]
+    },
+    {
+      "name": "outputs",
+      "fields": [
+        "maximumEntryCount",
+        "maximumAggregateBytes",
+        "maximumEnvironmentEntryCount",
+        "maximumEnvironmentAggregateBytes",
+        "maximumEnvironmentJunctionCount",
+        "required"
+      ]
+    }
+  ],
+  "materialization": {
+    "pureNamedMappingBeforeWrite": true,
+    "inputObjectSpreads": false,
+    "outputObjectSpreads": false,
+    "recursiveStringReplacement": false,
+    "producerRequestValidatorRequiredBeforeWrite": true,
+    "outputPathFromIntent": false,
+    "outputPathFromDedicatedCliArgument": true,
+    "outputParentMustExist": true,
+    "outputParentMustBeDirectDirectory": true,
+    "outputParentReparseAllowed": false,
+    "outputMustBeAbsent": true,
+    "writeMode": "create-only",
+    "fileFlushRequired": true,
+    "stdoutContainsPrivatePath": false,
+    "stdoutContainsRequestBytes": false,
+    "summaryBindsIntentAndRequestHashes": true
+  },
+  "failurePolicy": {
+    "typedBoundedErrorOnly": true,
+    "partialRequestAccepted": false,
+    "existingRequestOverwritten": false,
+    "existingRequestRepaired": false,
+    "automaticRetry": false,
+    "bestOfN": false,
+    "campaignCreditAuthorized": false
+  },
+  "regressions": {
+    "execution11UnexpectedSourceByteLength": "reject",
+    "execution11UnexpectedSourceSha256": "reject",
+    "unknownNestedArtifactField": "reject",
+    "noncanonicalIntent": "reject",
+    "reorderedIntent": "reject",
+    "staleArtifactIdentity": "reject-by-custody-preflight",
+    "existingOutput": "reject-without-overwrite"
+  },
+  "claimBoundary": {
+    "requestBytesMaterialized": true,
+    "custodyPreflightPassed": false,
+    "custodyExecuted": false,
+    "buildPassed": false,
+    "modelConverted": false,
+    "modelQualified": false,
+    "browserVerified": false,
+    "published": false,
+    "memoryEndpointsAuthorized": false,
+    "campaignCreditAuthorized": false
+  }
+}

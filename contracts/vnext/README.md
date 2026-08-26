@@ -684,6 +684,21 @@ structural, parity, runtime, browser, quality, P2P, publication, deployment,
 MemoryEndpoints, or campaign claim advances. See
 `docs/architecture/2026-08-26-qwen3-real-composition-execution-v11-managed-preflight-rejection.md`.
 
+`build-custody-request-materializer-profile.v1.json` and
+`tinyrustlm/tools/build-custody-request-materializer.js` now define the sole
+current prelaunch route from one canonical private materialization intent to
+one canonical `tinyrustlm.build-custody-request.v4` file. Every input object is
+closed and ordered. Git, owner, runtime, command, and termination artifact
+identities are mapped through explicit named fields; object spread, recursive
+key replacement, permissive flattening, retry, repair, overwrite, and fallback
+are prohibited. The real custody request-shape validator runs before the one
+create-only flushed write. CLI output binds intent/request identities while
+excluding the private output path and correctly grants no custody-preflight,
+build, model, browser, publication, or campaign claim. The `/11` malformed
+source shape remains a permanent negative regression, not a compatibility
+input. See
+`docs/architecture/2026-08-26-build-custody-request-materializer-clean-cut.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2

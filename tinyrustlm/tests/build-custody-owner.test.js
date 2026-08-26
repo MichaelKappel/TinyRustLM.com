@@ -13,6 +13,8 @@ const { after, before, test } = require("node:test");
 const repositoryRoot = path.resolve(__dirname, "..", "..");
 const templateOwnerPath = path.join(repositoryRoot, "tinyrustlm", "tools",
   "build-custody-owner.js");
+const templateRequestMaterializerPath = path.join(repositoryRoot, "tinyrustlm", "tools",
+  "build-custody-request-materializer.js");
 const templateProfilePath = path.join(repositoryRoot, "contracts", "vnext",
   "build-custody-profile.v4.json");
 const templateScratchInspectionProfilePath = path.join(repositoryRoot, "contracts", "vnext",
@@ -26,6 +28,7 @@ const templateEnvironmentProfilePath = path.join(repositoryRoot, "contracts", "v
 const templateFixturePath = path.join(__dirname, "helpers",
   "build-custody-child-fixture.js");
 const templateOwner = require(templateOwnerPath);
+const requestMaterializer = require(templateRequestMaterializerPath);
 const isWindowsX64 = process.platform === "win32" && process.arch === "x64";
 const baseEvidenceFileNames = [
   "build.binding.json",
@@ -500,6 +503,68 @@ function createOperation(t, options = {}) {
   });
 }
 
+function requestToMaterializationIntent(request) {
+  return {
+    schema: requestMaterializer.intentSchema,
+    operationId: request.operationId,
+    profile: {
+      path: request.profile.path,
+      byteLength: request.profile.byteLength,
+      sha256: request.profile.sha256,
+      profileId: request.profile.profileId
+    },
+    source: {
+      repositoryRoot: request.source.repositoryRoot,
+      commit: request.source.commit,
+      tree: request.source.tree,
+      branch: request.source.branch,
+      git: {
+        path: request.source.gitPath,
+        byteLength: request.source.gitByteLength,
+        sha256: request.source.gitSha256
+      },
+      owner: {
+        path: request.source.ownerPath,
+        byteLength: request.source.ownerByteLength,
+        sha256: request.source.ownerSha256
+      }
+    },
+    runtime: {
+      node: {
+        path: request.runtime.nodePath,
+        byteLength: request.runtime.nodeByteLength,
+        sha256: request.runtime.nodeSha256
+      },
+      nodeVersion: request.runtime.nodeVersion,
+      platform: request.runtime.platform,
+      architecture: request.runtime.architecture
+    },
+    environmentAuthority: request.environmentAuthority,
+    scratchInspection: request.scratchInspection,
+    command: {
+      executable: {
+        path: request.command.executablePath,
+        byteLength: request.command.executableByteLength,
+        sha256: request.command.executableSha256
+      },
+      arguments: request.command.arguments,
+      workingDirectory: request.command.workingDirectory,
+      supplementalEnvironment: request.command.supplementalEnvironment
+    },
+    roots: request.roots,
+    capture: request.capture,
+    termination: {
+      strategy: request.termination.strategy,
+      executable: {
+        path: request.termination.executablePath,
+        byteLength: request.termination.executableByteLength,
+        sha256: request.termination.executableSha256
+      }
+    },
+    outputs: request.outputs
+  };
+}
+
 function writeRequestVariant(operation, name, request) {
   const requestPath = path.resolve(operation.operationParent, name);
   const requestBytes = Buffer.from(canonicalJson(request), "utf8");
@@ -759,6 +824,30 @@ test("preflight is read-only and binds exact source, Git, Node, command, and tas
   assert.equal(prepared.environment.TEMP,
     path.resolve(operation.environmentRoot, "temp"));
   assert.equal(prepared.environment.TMP, prepared.environment.TEMP);
+  assert.equal(fs.existsSync(operation.controlRoot), false);
+  assert.equal(fs.existsSync(operation.targetRoot), false);
+  assert.equal(fs.existsSync(operation.environmentRoot), false);
+});
+
+test("source-controlled materialization produces a byte-exact real-preflight request", {
+  skip: !isWindowsX64
+}, (t) => {
+  const operation = createOperation(t);
+  const intent = requestToMaterializationIntent(operation.request);
+  const intentPath = path.resolve(operation.operationParent, "materialization-intent.json");
+  const requestPath = path.resolve(operation.operationParent, "materialized-request.json");
+  writeNew(intentPath, Buffer.from(canonicalJson(intent), "utf8"));
+  const summary = requestMaterializer.materialize(intentPath, requestPath);
+  const requestBytes = fs.readFileSync(requestPath);
+  assert.deepEqual(JSON.parse(requestBytes.toString("utf8")), operation.request);
+  assert.equal(summary.request.byteLength, requestBytes.length);
+  assert.equal(summary.request.sha256, sha256(requestBytes));
+  assert.equal(summary.custodyPreflightPassed, false);
+
+  const prepared = owner.prepareRequest(requestPath, { testOnlyInProcess: true });
+  assert.equal(prepared.requestDocument.artifact.sha256, sha256(requestBytes));
+  assert.equal(prepared.environmentAuthority.validationCode,
+    "msvc-environment-validation-pass");
   assert.equal(fs.existsSync(operation.controlRoot), false);
   assert.equal(fs.existsSync(operation.targetRoot), false);
   assert.equal(fs.existsSync(operation.environmentRoot), false);
