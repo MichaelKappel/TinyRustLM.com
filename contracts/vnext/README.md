@@ -678,8 +678,9 @@ The managed preflight created no custody root and launched no process. No
 managed build, composition request, owner, converter, candidate, managed
 inspection, or final verification exists for `/11`. Preserve every created
 private byte without modification, replacement, retry, cleanup, or adoption.
-A source-controlled exact request materializer and generic regression are
-required before a wholly new output-free registration with all-new names. No
+A source-controlled exact request materializer and generic regression were
+then completed separately. They do not repair `/11`; a successor still
+requires a wholly new output-free registration and all-new names. No
 structural, parity, runtime, browser, quality, P2P, publication, deployment,
 MemoryEndpoints, or campaign claim advances. See
 `docs/architecture/2026-08-26-qwen3-real-composition-execution-v11-managed-preflight-rejection.md`.
@@ -698,6 +699,34 @@ build, model, browser, publication, or campaign claim. The `/11` malformed
 source shape remains a permanent negative regression, not a compatibility
 input. See
 `docs/architecture/2026-08-26-build-custody-request-materializer-clean-cut.md`.
+
+`qwen3-real-composition-execution-preregistration.v12.json` registers the
+first operation that is allowed to use that exact materializer. It is 73,049
+canonical UTF-8/LF bytes at SHA-256
+`de6211ec7077068bbe8dee751c2c65e158f9f4e21a632d5fcf7c4cd3f90966ee`.
+It binds remote-exact parent commit
+`908e73fa6ddeab65e2d556a3e49ba106fa4d1227`, tree
+`8637cf7c67d3a69baa8ae13648cbd1801fcf6bff`, materializer implementation
+`6471a526d1957bcdcf297ee5fbe02888f51b8062`, its clean gates and durable
+memory, the corrected receipt contract, terminal `/11`, and all ten earlier
+terminal results.
+
+The registration names 17 wholly new absent private members: eight roots,
+four environment files, two create-only build-custody materialization intents,
+two generated custody requests, and one composition-verification request. The
+Rust intent may be materialized only after environment-authority pass; the
+managed intent only after Rust-custody terminal pass. Each materializer role
+has one maximum invocation. Any materialization or later operation failure
+closes `/12` without retry, repair, deletion, replacement, or adoption.
+
+Registration creates none of those members and proves no build, composition,
+model, numerical parity, browser execution, conversation quality, P2P,
+publication, deployment, MemoryEndpoints behavior, or campaign progress. Its
+single-parent commit may change only this index, the profile, its dedicated
+test, and its architecture record. It must be pushed and freshly proved exact
+across local HEAD, tracking, `FETCH_HEAD`, and direct remote, with all 17 names
+still absent, before any `/12` private material is created. See
+`docs/architecture/2026-08-26-qwen3-real-composition-execution-preregistration-v12.md`.
 
 ## Tokenizer2 Format Checkpoint
 
