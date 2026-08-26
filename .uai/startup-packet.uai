@@ -1,5 +1,12 @@
-profile: runtime-mirust.startup-packet.v144
-updated_utc: 2026-08-26T17:29:39Z
+profile: runtime-mirust.startup-packet.v145
+updated_utc: 2026-08-26T21:03:07Z
+
+current_qwen3_source_terminal_verification_v1_startup:
+  read_first: workspace.uai; .uai/short-term-memory.uai; .uai/long-term-memory.uai; wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-verification-v1-memory-2026-08-26.md
+  memory_identity: 9317,136f57824298775a3d272d1bbf68ccdc501094fd662cb8b043f90f9e59cb4719
+  state: consumed terminal-ambiguous after one source-terminal-process-binding rejection and process-terminal-write-failed; no rerun and no pass
+  current_task: checkpoint closure, then TDD the normative two-field executable projection and remotely gate it before an all-new output-free verification registration
+  never: reuse the current root, rerun either operation, infer missing evidence, accept two shapes, claim parity/browser/quality/P2P/release/deployment, authorize MemoryEndpoints, or advance counters
 
 current_qwen3_model_load_correction_2026_08_26:
   durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md, 20,442 bytes/SHA256 91764c9d5bde7d96e3d650396a1e882984b0b91baa0814c3b791f0d58321b4df before any successor numerical work.

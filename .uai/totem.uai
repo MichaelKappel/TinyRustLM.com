@@ -1,5 +1,13 @@
-profile: runtime-mirust.totem.v204
-updated_utc: 2026-08-26T20:29:58Z
+profile: runtime-mirust.totem.v205
+updated_utc: 2026-08-26T21:03:07Z
+
+qwen3_source_terminal_verification_v1_totem_2026_08_26:
+  durable_route: Preserve wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-verification-v1-memory-2026-08-26.md at 9,317 bytes/SHA256 136f57824298775a3d272d1bbf68ccdc501094fd662cb8b043f90f9e59cb4719.
+  preserve_terminal_truth: V1 verification is terminal-ambiguous after exactly one source-terminal verifier invocation, typed source-terminal-process-binding, and process-terminal-write-failed. Preserve the 2,615-byte terminal closure and do not rerun the verifier.
+  preserve_contract_shape: Process-terminal executable identity is exactly byteLength plus sha256. Derive that projection from the registered basename/byteLength/sha256 object and reject every extra, missing, or changed field.
+  preserve_independence: Keep owner/request/registration, process, streams, inventory, roots, scratch, closure, privacy, and claim checks exact. Do not turn a narrow shape correction into trust of producer claims.
+  preserve_successor_order: TDD, gate, commit, push, fresh-four-way-verify, then separately preregister a wholly new absent output root before one corrected invocation.
+  preserve_claims: Public result e27bbbf2 is no pass. MemoryEndpoints remains unauthorized and all counters remain zero.
 
 ecosystem_deployment_followthrough_totem_2026_08_26:
   durable_route: Preserve wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-followthrough-memory-2026-08-26.md at 10,346 bytes/SHA256 86376facad9df8f1d6c80a3e0110132a0e6e0822426667e89b63f1b737d9e2e9.

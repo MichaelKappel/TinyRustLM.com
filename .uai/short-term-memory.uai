@@ -1,5 +1,12 @@
-profile: runtime-mirust.short-term-memory.v504
-updated_utc: 2026-08-26T20:29:58Z
+profile: runtime-mirust.short-term-memory.v505
+updated_utc: 2026-08-26T21:03:07Z
+
+current_qwen3_source_terminal_verification_v1_2026_08_26:
+  just_completed: One remote-exact output-free source-terminal verification was invoked exactly once and closed terminal-ambiguous after typed source-terminal-process-binding plus process-terminal-write-failed. The verifier was not rerun; a create-only late terminal records the missing exit-code and metadata-snapshot evidence rather than inventing it.
+  deep_resume: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-verification-v1-memory-2026-08-26.md, 9,317 bytes/SHA256 136f57824298775a3d272d1bbf68ccdc501094fd662cb8b043f90f9e59cb4719; it is indexed in .uai/long-term-memory.uai and deep-links the reviewed report intake and exact local evidence.
+  exact_evidence: Public result is 6,268/e27bbbf2e321bf79b6c7f9009427de191b492a9ab74537ba7751866e811076fa. Private verification closure is three files/2,684 bytes; terminal is 2,615/889c0826eb1b36aabb80ac612a2dbc0c29220ae225a61d63858b2f61f901ad2f. Source owner evidence remains exact at nine files/13,143 bytes.
+  immediate_work: Commit/push/fresh-four-way-verify the closure. TDD the two-field process-terminal executable identity, reject added/missing/wrong fields, correct only the expected projection, gate/push/verify, then preregister a wholly new absent verification root before one invocation.
+  boundary: Do not rerun either consumed operation or claim source-terminal verification pass. No parity, browser, quality, P2P, release, deployment, MemoryEndpoints, or counter progress.
 
 current_ecosystem_deployment_followthrough_2026_08_26:
   just_completed: LMComposer.com now has a real 1.0.0 create-only publication. The first V1 operation is preserved terminal-failure after its redirect retained a query; the corrected all-new V2 operation published only .htaccess and passed exact file, redirect, header, and protected-path checks plus independent readback. Source is clean/pushed/four-way exact at 1652a1dff036cf88a1d95d06676edee576e2dc97/tree 1e49f87642fc501ccde539324013eef0131e9e27.

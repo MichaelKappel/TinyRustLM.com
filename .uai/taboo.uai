@@ -1,5 +1,14 @@
-profile: runtime-mirust.taboo.v133
-updated_utc: 2026-08-26T20:29:58Z
+profile: runtime-mirust.taboo.v134
+updated_utc: 2026-08-26T21:03:07Z
+
+qwen3_source_terminal_verification_v1_taboo_2026_08_26:
+  durable_route: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-verification-v1-memory-2026-08-26.md, 9,317 bytes/SHA256 136f57824298775a3d272d1bbf68ccdc501094fd662cb8b043f90f9e59cb4719 before verifier correction or successor work.
+  terminal_truth: Status is terminal-ambiguous, never pass, after one typed verifier rejection and one terminal-writer failure.
+  no_replay: Never rerun, resume, repair, overwrite, delete, complete, adopt, relabel, or claim pass for verification qwen3-numerical-c1899de-4891e8a-20260826-v2-terminal-verification-v1 or its source operation.
+  no_reconstruction: Never infer the missing exit code, recreate the absent metadata snapshot, turn expected stdout into actual evidence, or edit the 2,615-byte terminal SHA256 889c0826eb1b36aabb80ac612a2dbc0c29220ae225a61d63858b2f61f901ad2f.
+  no_dual_shape: Never accept both two-field and three-field process-terminal executable identities, add basename to historical terminals, create a compatibility reader, or weaken closed unknown-field rejection.
+  no_premature_successor: Never create a successor request or root before corrected source is tested, committed, pushed, freshly four-way exact, and a separate output-free registration with a wholly new absent root is itself remote exact.
+  no_claim_inflation: Public result 6,268/e27bbbf2e321bf79b6c7f9009427de191b492a9ab74537ba7751866e811076fa proves no source-terminal pass, parity, browser, quality, P2P, release, deployment, MemoryEndpoints, or campaign progress.
 
 ecosystem_deployment_followthrough_taboo_2026_08_26:
   durable_route: Read wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-followthrough-memory-2026-08-26.md, 10,346 bytes/SHA256 86376facad9df8f1d6c80a3e0110132a0e6e0822426667e89b63f1b737d9e2e9 before any ecosystem write or claim.

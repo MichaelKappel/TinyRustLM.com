@@ -1,5 +1,16 @@
-profile: runtime-mirust.uai-index.v277
-updated_utc: 2026-08-26T20:29:58Z
+profile: runtime-mirust.uai-index.v278
+updated_utc: 2026-08-26T21:03:07Z
+
+current_qwen3_source_terminal_verification_v1_route:
+  status: terminal-ambiguous; consumed exactly once; correction pending
+  read_first: workspace.uai
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-verification-v1-memory-2026-08-26.md
+  durable_identity: 9317,136f57824298775a3d272d1bbf68ccdc501094fd662cb8b043f90f9e59cb4719
+  public_result: contracts/vnext/qwen3-numerical-source-terminal-verification-result.v1.json
+  public_identity: 6268,e27bbbf2e321bf79b6c7f9009427de191b492a9ab74537ba7751866e811076fa
+  architecture: docs/architecture/2026-08-26-qwen3-numerical-source-terminal-verification-terminal-ambiguous.md
+  next: test-first two-field executable projection; gate/push/fresh-verify; new output-free registration and absent root
+  boundary: no rerun, pass, parity, browser, quality, P2P, release, deployment, MemoryEndpoints, or counter credit
 
 current_ecosystem_deployment_followthrough_2026_08_26: Read wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-followthrough-memory-2026-08-26.md, 10,346 bytes/SHA256 86376facad9df8f1d6c80a3e0110132a0e6e0822426667e89b63f1b737d9e2e9 before ecosystem work. LMComposer V1 is preserved terminal-failure; V2 is published-and-readback-verified by receipt acb4b813b7367dcc46c2e7d2225811c3433d7fff8cf5c971f472660b900f7bc0 and independent readback 9e8428a095c03065819d8c97664e8d624f6d8879f07b261142c590fa0f3b6b56, with source four-way exact at 1652a1dff036cf88a1d95d06676edee576e2dc97. Fresh state is six-published-surfaces-exact-runtime-redirect-exact-mirust-deployment-blocked. MiRust needs a complete sanitized WordPress release closure; Runtime needs a corrected profile only before future changed writes. Never replay terminal operations or advance model, MemoryEndpoints, or campaign claims.
 

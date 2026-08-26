@@ -1,5 +1,13 @@
-profile: runtime-mirust.operations.v183
-updated_utc: 2026-08-26T20:29:58Z
+profile: runtime-mirust.operations.v184
+updated_utc: 2026-08-26T21:03:07Z
+
+qwen3_source_terminal_verification_v1_operations_2026_08_26:
+  closed_operation: qwen3-numerical-c1899de-4891e8a-20260826-v2-terminal-verification-v1; invocation_count=1; status=terminal-ambiguous; rerun=false; repair=false; overwrite=false; adoption=false
+  evidence: public=contracts/vnext/qwen3-numerical-source-terminal-verification-result.v1.json,6268,e27bbbf2e321bf79b6c7f9009427de191b492a9ab74537ba7751866e811076fa; private_files=3; private_bytes=2684; private_terminal=2615,889c0826eb1b36aabb80ac612a2dbc0c29220ae225a61d63858b2f61f901ad2f
+  required_sequence: validate-current-closure; commit; push; fresh-fetch; prove-local-tracking-fetchhead-direct-remote-equality; add-red-positive-and-negative-shape-tests; correct-two-field-projection; focused-and-maintained-gates; commit; push; fresh-four-way-verify; author-new-output-free-registration; prove-new-root-absent; push-and-verify-registration; invoke-once
+  forbidden_sequence: no current-root reuse; no verifier rerun; no historical process-terminal edit; no exit-code inference; no metadata reconstruction; no dual-shape acceptance; no compatibility/fallback/repair
+  durable_route: wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-verification-v1-memory-2026-08-26.md,9317,136f57824298775a3d272d1bbf68ccdc501094fd662cb8b043f90f9e59cb4719
+  claim_boundary: no source-terminal pass or broader evidence; MemoryEndpoints unauthorized; counters zero
 
 ecosystem_deployment_followthrough_operations_2026_08_26:
   durable_route: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-followthrough-memory-2026-08-26.md, 10,346 bytes/SHA256 86376facad9df8f1d6c80a3e0110132a0e6e0822426667e89b63f1b737d9e2e9.

@@ -1,5 +1,20 @@
-profile: runtime-mirust.long-term-memory-ledger.v381
-updated_utc: 2026-08-26T20:29:58Z
+profile: runtime-mirust.long-term-memory-ledger.v382
+updated_utc: 2026-08-26T21:03:07Z
+
+ledger_2026_08_26_qwen3_source_terminal_verification_v1:
+  durable_record:
+    path: wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-verification-v1-memory-2026-08-26.md
+    target_location: wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-verification-v1-memory-2026-08-26.md
+    byte_length: 9317
+    sha256: 136f57824298775a3d272d1bbf68ccdc501094fd662cb8b043f90f9e59cb4719
+    label: Required For Qwen3 Source-Terminal Verifier Correction And Successor Registration
+    summary: Deep-links reviewed report intake, predecessor numerical memory, exact registration, consumed one-shot verifier rejection, late terminal closure, root cause, claim boundary, fixtures, and all-new successor sequence.
+  immutable_truth: Operation qwen3-numerical-c1899de-4891e8a-20260826-v2-terminal-verification-v1 is terminal-ambiguous. One verifier invocation emitted source-terminal-process-binding; the initial terminal writer emitted process-terminal-write-failed; no rerun occurred and no verification pass exists.
+  evidence: Public result is 6,268/e27bbbf2e321bf79b6c7f9009427de191b492a9ab74537ba7751866e811076fa. Private closure is three files/2,684 bytes, including terminal 2,615/889c0826eb1b36aabb80ac612a2dbc0c29220ae225a61d63858b2f61f901ad2f. Source owner evidence remains nine files/13,143 bytes.
+  root_cause: Verifier compared registered three-field executable identity against normative two-field process-terminal identity; byteLength and sha256 match. Correct the expected projection under closed-shape tests, never by accepting two shapes or changing history.
+  next_durable_transition: Commit/push/fresh-verify this closure, implement and gate the test-first correction, push/fresh-verify it, then author a separate output-free successor registration with a wholly new absent root before one invocation.
+  contextual_trigger: Read before source-terminal verification, numerical-v2 evidence inspection, verifier process-binding changes, new verification preregistration, or any source-terminal pass claim.
+  hard_boundary: Never rerun or modify either consumed operation. MemoryEndpoints remains unauthorized; counters stay 0/20,0/50,0/25,0/40,0/20.
 
 ledger_2026_08_26_ecosystem_deployment_followthrough:
   durable_record:
@@ -53,6 +68,29 @@ ledger_rule:
   summary_policy: Routing-only, one sentence, 35 words maximum, no durable body memory.
   allowed_statuses: current, retired, superseded, quarantined
 records:
+  - stable_id: tinyrustlm_qwen3_source_terminal_verification_v1_terminal_ambiguous
+    memory_domain: tinyrustlm.model_acquisition.qwen3_source_terminal_verification
+    pointer_type: terminal_verification_memory
+    path: wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-verification-v1-memory-2026-08-26.md
+    target_location: wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-verification-v1-memory-2026-08-26.md
+    label: Qwen3 Source-Terminal Verification V1 Terminal Ambiguous
+    summary: Routes exact one-shot rejection, failed terminal writer, create-only closure, process-identity root cause, nonclaims, test-first correction, and all-new successor registration.
+    pointer_status: current
+    authority: locally observed source, private bounded evidence identities, and canonical public result
+    source_authority: preregistration commit 7685b91ea9ecbe884bee6603031e52a39f81a6ea; tree 1e9d60967396325f4d6be7bcf17f50c4c68c4dab
+    source_identity: frozen continuation goal sha256 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    reviewed_synthesis: docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-synthesis-2026-08-26.md
+    reviewed_tdd_delta: docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-tdd-delta-2026-08-26.md
+    review_status: terminal_ambiguous_root_cause_established_correction_pending
+    quarantine_status: consumed verification and source operation immutable; no rerun or adoption
+    review_evidence: public result sha256 e27bbbf2e321bf79b6c7f9009427de191b492a9ab74537ba7751866e811076fa; private terminal sha256 889c0826eb1b36aabb80ac612a2dbc0c29220ae225a61d63858b2f61f901ad2f
+    contextual_trigger: Read before verifier correction, source-terminal evidence interpretation, successor preregistration, or source-terminal verification claims.
+    checksum_hash: sha256:136f57824298775a3d272d1bbf68ccdc501094fd662cb8b043f90f9e59cb4719
+    sha256: 136f57824298775a3d272d1bbf68ccdc501094fd662cb8b043f90f9e59cb4719
+    bytes: 9317
+    last_reviewed_utc: 2026-08-26T21:03:07Z
+    owner_or_reviewer: TinyRustLM Agent
+    truth_boundary: Proves one terminal-ambiguous verification closure and root cause only; no source-terminal pass, parity, browser, quality, P2P, release, deployment, MemoryEndpoints, or campaign evidence.
   - stable_id: tinyrustlm_ecosystem_deployment_reconciliation_2026_08_26_current
     memory_domain: tinyrustlm.release.ecosystem_deployment_reconciliation
     pointer_type: deployment_reconciliation_memory

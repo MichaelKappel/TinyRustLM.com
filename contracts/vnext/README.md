@@ -856,6 +856,22 @@ broader claims. See
 and
 `docs/architecture/2026-08-26-qwen3-numerical-source-terminal-verification-preregistration.md`.
 
+`qwen3-numerical-source-terminal-verification-result.v1.json` closes that
+verification operation as `terminal-ambiguous`, not pass. The maintained
+verifier was invoked exactly once and emitted the typed rejection
+`source-terminal-process-binding`. Its original process-terminal writer then
+failed, so a 2,615-byte create-only late terminal closure preserves both
+failures without rerunning the verifier. The executable byte length and digest
+matched, but the verifier incorrectly compared the two-field process-terminal
+identity against the registered three-field identity that also contains a
+basename. The 6,268-byte public result has SHA-256
+`e27bbbf2e321bf79b6c7f9009427de191b492a9ab74537ba7751866e811076fa`.
+It establishes no source-terminal verification pass or broader claim. Its
+private root and all source-operation evidence remain immutable; a test-first
+correction and wholly new output-free verification registration are required.
+See
+`docs/architecture/2026-08-26-qwen3-numerical-source-terminal-verification-terminal-ambiguous.md`.
+
 `qwen3-numerical-differential-execution-result.v1.json` closes that registered
 operation as an independently verified terminal source-process failure. The
 sole owner launched the publisher source arm once; it exited 1 after 54,038 ms

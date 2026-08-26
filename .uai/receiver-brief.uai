@@ -1,5 +1,12 @@
-profile: runtime-mirust.receiver-brief.v55
-updated_utc: 2026-08-26T17:29:39Z
+profile: runtime-mirust.receiver-brief.v56
+updated_utc: 2026-08-26T21:03:07Z
+
+current_handoff_qwen3_source_terminal_verification_v1:
+  truth: Verification V1 is immutable terminal-ambiguous. One maintained verifier invocation emitted source-terminal-process-binding; the original process-terminal writer failed; one late create-only terminal closed ambiguity without rerun.
+  read: wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-verification-v1-memory-2026-08-26.md 9317/136f57824298775a3d272d1bbf68ccdc501094fd662cb8b043f90f9e59cb4719; public result contracts/vnext/qwen3-numerical-source-terminal-verification-result.v1.json 6268/e27bbbf2e321bf79b6c7f9009427de191b492a9ab74537ba7751866e811076fa
+  cause: Whole-object comparison incorrectly required registered basename in the exact two-field process-terminal executable identity; byteLength and sha256 match.
+  next: Finish closure validation and remote checkpoint, then TDD and gate only the expected identity projection, followed by a wholly new remote-exact output-free verification registration and absent root.
+  boundary: No rerun, repair, pass, parity, browser, quality, P2P, release, deployment, MemoryEndpoints, or campaign claim.
 
 current_qwen3_model_load_correction_2026_08_26:
   durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md, 20,442 bytes/SHA256 91764c9d5bde7d96e3d650396a1e882984b0b91baa0814c3b791f0d58321b4df before any successor numerical work.

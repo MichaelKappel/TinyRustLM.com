@@ -1,5 +1,13 @@
-profile: runtime-mirust.architecture.v182
-updated_utc: 2026-08-26T20:29:58Z
+profile: runtime-mirust.architecture.v183
+updated_utc: 2026-08-26T21:03:07Z
+
+qwen3_source_terminal_verification_v1_architecture_2026_08_26:
+  terminal_model: Verification V1 is consumed terminal-ambiguous, not pass. One child ran and rejected; its initial terminal writer failed; one later create-only closure records unknown exit code and absent metadata snapshot without rerun or reconstruction.
+  normative_executable_shape: Process-terminal executableBefore and executableAfter each contain exactly byteLength and sha256. Expected values are projected from the registered executable identity; basename remains registration metadata and is not a process-terminal field.
+  verifier_defect: Full-object comparison between three-field registration identity and two-field process identity caused source-terminal-process-binding even though byteLength and sha256 matched.
+  correction_boundary: Replace that equality with explicit closed two-field projection and keep every graph, process, stream, inventory, root, scratch, terminal, privacy, and claim invariant independent and fail-closed. Added basename must reject, not become an alternate accepted shape.
+  evidence_route: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-verification-v1-memory-2026-08-26.md 9317/136f57824298775a3d272d1bbf68ccdc501094fd662cb8b043f90f9e59cb4719 and public result 6268/e27bbbf2e321bf79b6c7f9009427de191b492a9ab74537ba7751866e811076fa.
+  successor_rule: Corrected source must be green, committed, pushed, and fresh-four-way exact before a separate output-free registration reserves one wholly new absent root and one invocation.
 
 ecosystem_deployment_followthrough_architecture_2026_08_26:
   durable_route: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-followthrough-memory-2026-08-26.md, 10,346 bytes/SHA256 86376facad9df8f1d6c80a3e0110132a0e6e0822426667e89b63f1b737d9e2e9.
