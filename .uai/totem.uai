@@ -1,5 +1,12 @@
-profile: runtime-mirust.totem.v205
-updated_utc: 2026-08-26T21:03:07Z
+profile: runtime-mirust.totem.v206
+updated_utc: 2026-08-26T22:20:40Z
+
+qwen3_source_terminal_process_identity_correction_totem_2026_08_26:
+  preserve_memory: wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-process-identity-correction-memory-2026-08-26.md at 9,313 bytes/SHA256 2f294466f779f23e3c1bc5c810ba693513c2b4a8be855163f3ee098a2fbaf18b.
+  preserve_contract: Exactly byteLength plus sha256 is valid in process terminals; added basename is invalid, and no dual reader exists.
+  preserve_gate: efc29dd6007401497e76fad3ec3036c23b092213/tree 03f88978b62cc300ab71b4ab9af5b2782ca6b880 is remote-exact; standard 1,615/0/3 of 1,618; protected ca3d14f36cf8c2469dcac44cac690ff952b364288de29a2a108971a7a93e3f74 is 23/23 at aggregate 3,995/f77821b7bfe51c6ab881494e0cc971716f83ab3f498b7fd7072fab6f7d6dd7d0.
+  preserve_sequence: Commit/push/fresh-verify memory, then create and remote-verify a wholly new output-free successor preregistration before one invocation.
+  preserve_boundary: V1 is immutable terminal-ambiguous; no numerical/browser/quality/P2P/release/deployment or MemoryEndpoints claim; counters 0/20,0/50,0/25,0/40,0/20.
 
 qwen3_source_terminal_verification_v1_totem_2026_08_26:
   durable_route: Preserve wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-verification-v1-memory-2026-08-26.md at 9,317 bytes/SHA256 136f57824298775a3d272d1bbf68ccdc501094fd662cb8b043f90f9e59cb4719.

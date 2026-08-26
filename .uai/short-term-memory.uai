@@ -1,5 +1,12 @@
-profile: runtime-mirust.short-term-memory.v506
-updated_utc: 2026-08-26T21:31:36Z
+profile: runtime-mirust.short-term-memory.v507
+updated_utc: 2026-08-26T22:20:40Z
+
+current_focus_2026_08_26_qwen3_source_terminal_process_identity_correction:
+  just_completed: The exact two-field process-terminal identity correction is clean-gated at remote-exact commit efc29dd6007401497e76fad3ec3036c23b092213/tree 03f88978b62cc300ab71b4ab9af5b2782ca6b880; standard passed 1,615/0/3 of 1,618.
+  deep_resume: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-process-identity-correction-memory-2026-08-26.md, 9,313 bytes/SHA256 2f294466f779f23e3c1bc5c810ba693513c2b4a8be855163f3ee098a2fbaf18b.
+  protected_gate: Run ca3d14f36cf8c2469dcac44cac690ff952b364288de29a2a108971a7a93e3f74 passed 23/23; maintained verification and independent hashing agree on aggregate 3,995/f77821b7bfe51c6ab881494e0cc971716f83ab3f498b7fd7072fab6f7d6dd7d0.
+  immediate_work: Commit/push/fresh-four-way-verify this memory checkpoint, then create and remotely verify a wholly new output-free successor preregistration before one corrected verifier invocation.
+  boundary: V1 remains immutable terminal-ambiguous and cannot be rerun or repaired. No numerical/browser/quality/P2P/release/deployment claim; MemoryEndpoints unauthorized; counters remain 0/20,0/50,0/25,0/40,0/20.
 
 current_qwen3_source_terminal_verification_v1_2026_08_26:
   just_completed: One remote-exact output-free source-terminal verification was invoked exactly once and closed terminal-ambiguous after typed source-terminal-process-binding plus process-terminal-write-failed. The verifier was not rerun; a create-only late terminal records the missing exit-code and metadata-snapshot evidence rather than inventing it.

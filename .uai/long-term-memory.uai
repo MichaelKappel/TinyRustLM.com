@@ -1,5 +1,20 @@
-profile: runtime-mirust.long-term-memory-ledger.v383
-updated_utc: 2026-08-26T21:31:36Z
+profile: runtime-mirust.long-term-memory-ledger.v384
+updated_utc: 2026-08-26T22:20:40Z
+
+ledger_2026_08_26_qwen3_source_terminal_process_identity_correction:
+  stable_id: tinyrustlm_qwen3_source_terminal_process_identity_correction
+  durable_record:
+    path: wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-process-identity-correction-memory-2026-08-26.md
+    target_location: wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-process-identity-correction-memory-2026-08-26.md
+    byte_length: 9313
+    sha256: 2f294466f779f23e3c1bc5c810ba693513c2b4a8be855163f3ee098a2fbaf18b
+    label: Required For Qwen3 Source-Terminal Successor Preregistration
+    summary: Binds the test-first exact process-identity projection, immutable V1 terminal history, clean remote-exact source checkpoint, complete standard gate, protected release-surface evidence, strict claim boundary, and all-new successor sequence.
+  source_checkpoint: Commit efc29dd6007401497e76fad3ec3036c23b092213/tree 03f88978b62cc300ab71b4ab9af5b2782ca6b880 is clean, pushed, freshly fetched, and four-way exact; standard passed 1,615/0/3 of 1,618.
+  protected_gate: Run ca3d14f36cf8c2469dcac44cac690ff952b364288de29a2a108971a7a93e3f74 passed 23/23; maintained verification and independent hashing agree on aggregate 3,995/f77821b7bfe51c6ab881494e0cc971716f83ab3f498b7fd7072fab6f7d6dd7d0.
+  next_durable_transition: Commit/push/fresh-four-way-verify this memory checkpoint, then author and remote-verify one wholly new output-free successor preregistration before creating private output.
+  contextual_trigger: Read before any source-terminal verifier execution, successor preregistration, process-identity interpretation, or source-terminal claim.
+  hard_boundary: V1 remains immutable terminal-ambiguous. No rerun, repair, compatibility, fallback, numerical/browser/quality/P2P/release/deployment claim, or MemoryEndpoints authority; counters remain 0/20,0/50,0/25,0/40,0/20.
 
 ledger_2026_08_26_qwen3_source_terminal_verification_v1:
   durable_record:

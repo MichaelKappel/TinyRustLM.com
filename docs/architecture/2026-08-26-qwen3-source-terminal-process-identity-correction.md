@@ -2,8 +2,8 @@
 
 Date: 2026-08-26
 
-Status: source corrected and affected tests green; clean remote-exact source
-gate and successor preregistration remain pending
+Status: source corrected, affected tests green, and clean remote-exact source
+gate passed; successor preregistration remains pending
 
 ## Preserved History
 
@@ -76,9 +76,9 @@ Before implementation, the focused file passed 2 and failed 7 tests. The
 ordinary valid case failed with `source-terminal-process-binding`, and the
 added-field case returned binding rather than the required shape verdict.
 
-After implementation, the focused file passes 9/9. The complete verification
-registration, immutable result, verifier, and durable-memory union passes
-27/27. The adjacent model-load, environment, differential-profile, and owner
+After implementation, the focused file passes 9/9. The verification,
+preregistration, immutable-result, durable-memory, and correction union passes
+31/31. The adjacent model-load, environment, differential-profile, and owner
 union passes 37, fails zero, and retains one pre-existing conditional
 pinned-Python skip across 38 tests.
 
@@ -88,6 +88,44 @@ Corrected source identities before the clean source checkpoint are:
 |---|---:|---|
 | `tinyrustlm/tools/qwen3-numerical-source-terminal-verifier.js` | 30,944 | `b074082a2385e2cde734b3e11832dfed56496afc2dd21645a18457b9cade8ee5` |
 | `tinyrustlm/tests/qwen3-numerical-source-terminal-verifier.test.js` | 15,891 | `cd8f6044e8f881f2a0fc8b6573131e8cfd2d6d494eef728bb748dd3a721c32ab` |
+
+## Clean Remote-Exact Gate
+
+The correction checkpoint is commit
+`efc29dd6007401497e76fad3ec3036c23b092213`, tree
+`03f88978b62cc300ab71b4ab9af5b2782ca6b880`. A fresh noninteractive fetch
+proved equality across local `HEAD`, the tracking ref, `FETCH_HEAD`, and the
+direct remote branch for both commit and tree. The worktree was clean before
+the release gate and remained clean afterward.
+
+The complete canonical standard partition ran into a new create-only external
+gate root identified publicly only as
+`source-terminal-process-identity-gate-20260826T220000Z`. It reported:
+
+| Outcome | Count |
+|---|---:|
+| Total | 1,618 |
+| Pass | 1,615 |
+| Fail | 0 |
+| Skip | 3 |
+
+The three skips are the existing explicit environment-dependent cases: absent
+external package input, conditional pinned-Python synthetic Qwen3 hooks, and
+opt-in installed Visual Studio 2022 x64 closure. None is a failure or a claim
+that the external dependency was exercised.
+
+The protected release-surface gate used run identity
+`ca3d14f36cf8c2469dcac44cac690ff952b364288de29a2a108971a7a93e3f74`.
+All ten serial shards passed, yielding 23/23 pass with zero fail, skip, cancel,
+or todo. Its canonical aggregate is 3,995 bytes at SHA-256
+`f77821b7bfe51c6ab881494e0cc971716f83ab3f498b7fd7072fab6f7d6dd7d0`.
+The maintained read-only release-surface verifier reproduced the run identity,
+counts, byte length, and digest. A separate file hash reproduced the aggregate
+digest, and all ten protected stderr streams were empty.
+
+This gate establishes the corrected source checkpoint only. It creates no
+successor verification registration and makes no new claim about the closed
+V1 evidence.
 
 ## Source And Execution Ordering
 
