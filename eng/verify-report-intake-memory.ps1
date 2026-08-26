@@ -13,7 +13,8 @@ param(
         'deeper-small-model-research',
         'turbovec-turboquant-and-handoff-audit',
         'colibri-specialist-portfolio',
-        'champion-specialist-submodel-research'
+        'champion-specialist-submodel-research',
+        'post-v10-native-browser-release'
     )
 )
 
@@ -442,7 +443,11 @@ $requiredRouteRefs = @(
     'docs/report-intake/2026-07-21/champion-specialist-submodel-research/MANIFEST.md',
     'docs/report-intake/2026-07-21/champion-specialist-submodel-research/tinyrustlm-champion-specialist-submodel-research-intake-synthesis-2026-07-21.md',
     'docs/report-intake/2026-07-21/champion-specialist-submodel-research/tinyrustlm-champion-specialist-submodel-research-tdd-delta-2026-07-21.md',
-    'wiki/runtime-mirust/reports/tinyrustlm-champion-specialist-submodel-research-intake-memory-2026-07-21.md'
+    'wiki/runtime-mirust/reports/tinyrustlm-champion-specialist-submodel-research-intake-memory-2026-07-21.md',
+    'docs/report-intake/2026-08-26/post-v10-native-browser-release/MANIFEST.md',
+    'docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-synthesis-2026-08-26.md',
+    'docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-tdd-delta-2026-08-26.md',
+    'wiki/runtime-mirust/reports/tinyrustlm-post-v10-native-browser-release-intake-memory-2026-08-26.md'
 )
 
 $hotMemoryFiles = @(
@@ -464,6 +469,35 @@ foreach ($relativePath in $hotMemoryFiles) {
 
     $text = Get-Content -LiteralPath $fullPath -Raw
     foreach ($requiredRef in $requiredRouteRefs) {
+        if (-not $text.Contains($requiredRef)) {
+            Add-Failure $failures "$relativePath does not route to $requiredRef"
+        }
+    }
+}
+
+$postV10RouteRefs = @(
+    'docs/report-intake/2026-08-26/post-v10-native-browser-release/MANIFEST.md',
+    'docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-synthesis-2026-08-26.md',
+    'docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-tdd-delta-2026-08-26.md',
+    'wiki/runtime-mirust/reports/tinyrustlm-post-v10-native-browser-release-intake-memory-2026-08-26.md'
+)
+$postV10AdditionalHotMemoryFiles = @(
+    'workspace.uai',
+    '.uai/architecture.uai',
+    '.uai/next-recursive-prompt.uai',
+    '.uai/totem.uai',
+    '.uai/taboo.uai',
+    '.uai/operations.uai'
+)
+foreach ($relativePath in $postV10AdditionalHotMemoryFiles) {
+    $fullPath = Join-Path $rootPath $relativePath
+    if (-not (Test-Path -LiteralPath $fullPath -PathType Leaf)) {
+        Add-Failure $failures "Missing post-/10 hot-memory file: $relativePath"
+        continue
+    }
+
+    $text = Get-Content -LiteralPath $fullPath -Raw
+    foreach ($requiredRef in $postV10RouteRefs) {
         if (-not $text.Contains($requiredRef)) {
             Add-Failure $failures "$relativePath does not route to $requiredRef"
         }
@@ -542,6 +576,78 @@ if (Test-Path -LiteralPath $championSpecialistMemoryPath -PathType Leaf) {
     )) {
         if (-not $longTermText.Contains($requiredText)) {
             Add-Failure $failures ".uai/long-term-memory.uai is missing champion-specialist intake pointer evidence: $requiredText"
+        }
+    }
+}
+
+$postV10MemoryPath = Join-Path $rootPath 'wiki/runtime-mirust/reports/tinyrustlm-post-v10-native-browser-release-intake-memory-2026-08-26.md'
+if (Test-Path -LiteralPath $postV10MemoryPath -PathType Leaf) {
+    $postV10MemoryHash = (Get-FileHash -LiteralPath $postV10MemoryPath -Algorithm SHA256).Hash.ToLowerInvariant()
+    $longTermText = Get-Content -LiteralPath $longTermPath -Raw
+    foreach ($requiredText in @(
+        'stable_id: tinyrustlm_post_v10_native_browser_release_intake_current',
+        "sha256: $postV10MemoryHash",
+        'truth_boundary:'
+    )) {
+        if (-not $longTermText.Contains($requiredText)) {
+            Add-Failure $failures ".uai/long-term-memory.uai is missing post-/10 intake pointer evidence: $requiredText"
+        }
+    }
+} else {
+    Add-Failure $failures 'Missing post-/10 native browser release durable memory.'
+}
+
+if ($rowsByBatch.ContainsKey('post-v10-native-browser-release')) {
+    $postV10Rows = @($rowsByBatch['post-v10-native-browser-release'] | Sort-Object File)
+    if ($postV10Rows.Count -ne 12) {
+        Add-Failure $failures "Post-/10 intake must contain exactly 12 reports: actual=$($postV10Rows.Count)"
+    }
+
+    [int64]$postV10ByteCount = 0
+    $postV10InventoryLines = New-Object System.Collections.Generic.List[string]
+    foreach ($row in $postV10Rows) {
+        if ($null -eq $row.Bytes) {
+            Add-Failure $failures "Post-/10 manifest row has no byte count: $($row.File)"
+            continue
+        }
+        $postV10ByteCount += $row.Bytes
+        [void]$postV10InventoryLines.Add("$($row.Sha256)  $($row.Bytes)  $($row.File)")
+    }
+    if ($postV10ByteCount -ne 907733) {
+        Add-Failure $failures "Post-/10 report byte total mismatch: expected=907733 actual=$postV10ByteCount"
+    }
+
+    $postV10InventoryText = ($postV10InventoryLines.ToArray() -join "`n") + "`n"
+    $postV10InventoryUtf8 = New-Object System.Text.UTF8Encoding($false)
+    $postV10InventoryBytes = $postV10InventoryUtf8.GetBytes($postV10InventoryText)
+    $postV10Sha256 = [System.Security.Cryptography.SHA256]::Create()
+    try {
+        $postV10InventoryHash = ([System.BitConverter]::ToString(
+            $postV10Sha256.ComputeHash($postV10InventoryBytes)
+        )).Replace('-', '').ToLowerInvariant()
+    } finally {
+        $postV10Sha256.Dispose()
+    }
+    if ($postV10InventoryHash -ne '4f065f1d6594e9bdbd3bfb9ccdaf8d7f9c63e8d9c2ea7ff59e79caba2ba63f4b') {
+        Add-Failure $failures "Post-/10 report inventory mismatch: $postV10InventoryHash"
+    }
+}
+
+$postV10SynthesisPath = Join-Path $rootPath 'docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-synthesis-2026-08-26.md'
+if (Test-Path -LiteralPath $postV10SynthesisPath -PathType Leaf) {
+    $postV10Synthesis = Get-Content -LiteralPath $postV10SynthesisPath -Raw
+    foreach ($requiredText in @(
+        'The Rust producer emitted',
+        '28 layers',
+        '16 query heads',
+        '8 key/value heads',
+        '151,936 model vocabulary capacity',
+        '151,669 tokenizer entries',
+        'Independent chunk digests do not equal one whole-file digest',
+        'one explicit deterministic decision'
+    )) {
+        if (-not $postV10Synthesis.Contains($requiredText)) {
+            Add-Failure $failures "Post-/10 synthesis is missing correction guardrail: $requiredText"
         }
     }
 }

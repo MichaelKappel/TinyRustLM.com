@@ -1,11 +1,34 @@
-profile: runtime-mirust.long-term-memory-ledger.v360
-updated_utc: 2026-08-26T02:18:04Z
+profile: runtime-mirust.long-term-memory-ledger.v361
+updated_utc: 2026-08-26T05:08:13Z
 storage_mode: hybrid
 ledger_rule:
   pointer_only_not_context_free: true
   summary_policy: Routing-only, one sentence, 35 words maximum, no durable body memory.
   allowed_statuses: current, retired, superseded, quarantined
 records:
+  - stable_id: tinyrustlm_post_v10_native_browser_release_intake_current
+    memory_domain: tinyrustlm.research_intake.post_v10_native_browser_release
+    pointer_type: reviewed_report_intake_memory
+    path: wiki/runtime-mirust/reports/tinyrustlm-post-v10-native-browser-release-intake-memory-2026-08-26.md
+    target_location: wiki/runtime-mirust/reports/tinyrustlm-post-v10-native-browser-release-intake-memory-2026-08-26.md
+    label: Post-/10 Native Browser Release Research Intake
+    summary: Routes twelve exact reports, corrected local facts, the source-to-browser proof chain, explicit acquisition and quality gates, strict nonclaims, and the wholly new successor-registration prerequisite.
+    pointer_status: current
+    authority: correction-aware synthesis of advisory research against local immutable evidence
+    source_authority: manifest sha256 1ac4c18cf017b14112663d2f05d8b06f5c381d3503aa9415b22866a442b3f6c0; report inventory sha256 4f065f1d6594e9bdbd3bfb9ccdaf8d7f9c63e8d9c2ea7ff59e79caba2ba63f4b
+    source_identity: synthesis sha256 bb538fa12ca2ea623732570d2ec175eb4287223d80c31c05c71b018c41e7b7a0; tdd delta sha256 298dad938ee508ca57aa0beede3e462a68ef82dafa8fa258181e4402b6c55cb2
+    reviewed_synthesis: docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-synthesis-2026-08-26.md
+    reviewed_tdd_delta: docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-tdd-delta-2026-08-26.md
+    review_status: incorporated_with_corrections_successor_registration_pending
+    quarantine_status: raw_report_claims_advisory_only
+    review_evidence: docs/report-intake/2026-08-26/post-v10-native-browser-release/MANIFEST.md
+    contextual_trigger: Read before receipt contracts, successor registration, composition inspection, native/WASM/browser execution, acquisition, quality, release, documentation, or deployment.
+    checksum_hash: sha256:f9e604aaf9f247f0773574d26ec024123c25512ecccd5feacc752ddb53f7bdd3
+    sha256: f9e604aaf9f247f0773574d26ec024123c25512ecccd5feacc752ddb53f7bdd3
+    bytes: 9545
+    last_reviewed_utc: 2026-08-26T05:08:13Z
+    owner_or_reviewer: TinyRustLM Agent
+    truth_boundary: Proves exact report preservation and reviewed planning only; no successor, composition, inference, browser, quality, P2P, publication, deployment, MemoryEndpoints, or campaign evidence.
   - stable_id: tinyrustlm_qwen3_composition_verification_owner_clean_cut_2026_08_26_current
     memory_domain: tinyrustlm.model_acquisition.qwen3_composition_verification_owner
     pointer_type: architecture_report

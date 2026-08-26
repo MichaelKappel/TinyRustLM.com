@@ -1,17 +1,164 @@
-profile: runtime-mirust.intake-outcome-ledger.v59
-updated_utc: 2026-08-09T00:53:15Z
+profile: runtime-mirust.intake-outcome-ledger.v60
+updated_utc: 2026-08-26T05:08:13Z
 active_scan:
   content_bucket: agent-file-handoff/Content/
   improvement_bucket: agent-file-handoff/Improvement/
   content_non_placeholder_files: 0
   improvement_non_placeholder_files: 0
-  result: both_active_intake_buckets_placeholder_only_enterprise_goal_active_outside_intake
-  latest_scan_utc: 2026-08-09T00:53:15Z
-  scan_authority: live top-level bucket scan; .gitkeep is the only allowed placeholder
+  result: both_authoritative_active_intake_buckets_placeholder_only_external_read_only_report_source_not_active_authority
+  latest_scan_utc: 2026-08-26T05:08:13Z
+  scan_authority: live canonical top-level bucket scan; .gitkeep is the only allowed placeholder; external source tree was read-only
 post_processing_scan:
   content_non_placeholder_files: 0
   improvement_non_placeholder_files: 0
-  result: six_remaining_sources_preserved_and_removed; authoritative_enterprise_vnext_goal_remains_active_through_goal_system_and_durable_memory
+  result: twelve_post_v10_reports_preserved_and_incorporated_with_corrections; authoritative_buckets_placeholder_only; external_source_untouched; enterprise_goal_active
+report_intake_2026_08_26_post_v10_native_browser_release:
+  source_bucket: E:\Source\Rust\TinyRustLM.com\agent-file-handoff\Improvement\
+  source_authority: read-only nonauthoritative report source; no files modified or removed there
+  docs_evidence_path: docs/report-intake/2026-08-26/post-v10-native-browser-release/
+  durable_manifest: docs/report-intake/2026-08-26/post-v10-native-browser-release/MANIFEST.md
+  durable_manifest_sha256: 1ac4c18cf017b14112663d2f05d8b06f5c381d3503aa9415b22866a442b3f6c0
+  durable_synthesis: docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-synthesis-2026-08-26.md
+  durable_synthesis_sha256: bb538fa12ca2ea623732570d2ec175eb4287223d80c31c05c71b018c41e7b7a0
+  durable_tdd_delta: docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-tdd-delta-2026-08-26.md
+  durable_tdd_delta_sha256: 298dad938ee508ca57aa0beede3e462a68ef82dafa8fa258181e4402b6c55cb2
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-post-v10-native-browser-release-intake-memory-2026-08-26.md
+  durable_memory_sha256: f9e604aaf9f247f0773574d26ec024123c25512ecccd5feacc752ddb53f7bdd3
+  source_count: 12
+  report_count: 12
+  incorporated_with_corrections_count: 12
+  durable_count: 12
+  missing_durable_copies: 0
+  report_byte_count: 907733
+  report_inventory_sha256: 4f065f1d6594e9bdbd3bfb9ccdaf8d7f9c63e8d9c2ea7ff59e79caba2ba63f4b
+  disposition: incorporated-with-corrections-and-byte-exact-preservation
+  processed_outcome: incorporated
+  actual_source_work: Preserved twelve reports byte-exactly; separated report assertions from local evidence; corrected the /10 producer/verifier attribution, Qwen3 architecture, vocabulary domains, scalar authority, browser hashing/copy/resource claims, and P2P terminology; converted consensus into a twelve-gate TDD route from successor registration through synchronized release.
+  hot_memory_update: Routes are present in workspace.uai, .uai/architecture.uai, .uai/next-recursive-prompt.uai, .uai/totem.uai, .uai/taboo.uai, .uai/index.uai, .uai/operations.uai, .uai/file-handoff.uai, .uai/short-term-memory.uai, .uai/report-synthesis.uai, .uai/test-plan.uai, .uai/long-term-memory.uai, and this ledger.
+  checks: Source-to-durable SHA-256 and byte count 12/12; raw report inventory reproduced; authoritative Content and Improvement non-placeholder counts 0/0; frozen goals unchanged; MemoryEndpoints unauthorized; campaign counters zero; no implementation, model, browser, P2P, publication, or deployment claim inferred.
+  blockers: Wholly new output-free successor registration and execution, six-member semantic pass, source/scalar/native/WASM numerical evidence, practical quality qualification, real-browser conversation, working P2P-or-convert acquisition, packages, credentials, deployments, and HTTPS readback remain open.
+  source_site_removal_or_keep_active_reason: The external read-only source was not modified. Entry field source_removed=true means the corresponding source path is absent from the authoritative worktree active intake; it does not claim deletion from E:\Source\Rust\TinyRustLM.com.
+entries_2026_08_26_post_v10_native_browser_release:
+  - source_path: agent-file-handoff/Improvement/Cross-Language Receipt Protocol Design.md
+    docs_evidence_path: docs/report-intake/2026-08-26/post-v10-native-browser-release/Cross-Language Receipt Protocol Design.md
+    category: receipt-contract-semantics
+    sha256: 99651ec3593d13da9ab3da3c716293b828bd1972c05422844f2b2a0a0d27ba7a
+    disposition: incorporated-with-corrections
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Informed operation-status separation, one fail-closed graph, independent recomputation, cross-language vectors, and immutable-history rules; corrected its false claim that Rust omitted the child suffix.
+    routing_summary: Use the reviewed sole-contract rules, not the report's producer attribution, invented BLAKE3 identity, or report-defined durability meanings.
+  - source_path: agent-file-handoff/Improvement/Cross Language Contract Generation Architecture.md
+    docs_evidence_path: docs/report-intake/2026-08-26/post-v10-native-browser-release/Cross Language Contract Generation Architecture.md
+    category: cross-language-contract-generation
+    sha256: fbfa8d9bb7e3e711ae0010ed9c9a7dd899358074ac4643458c0110571ef5f72d
+    disposition: incorporated-with-corrections
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Informed syntax-versus-semantics separation, deterministic vectors, differential/property/fuzz gates, stale-generation checks, and independent validators.
+    routing_summary: Evaluate the smallest auditable descriptor first; AWS Smithy and a proprietary compiler are unadopted advisory proposals, and the report's parent/flushed trait is wrong.
+  - source_path: agent-file-handoff/Improvement/Model Registration Architecture Research.md
+    docs_evidence_path: docs/report-intake/2026-08-26/post-v10-native-browser-release/Model Registration Architecture Research.md
+    category: one-shot-successor-registration
+    sha256: 79380fe6e27d9db5b64b8a1f5933e7a89b70247da2bbac7b57bec77e8e5ae38d
+    disposition: incorporated-with-corrections
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Informed all-new identity, remote-exact, absent-root, build-custody, sole-launch, terminal-classification, read-only-verifier, and public-minimization gates.
+    routing_summary: A wholly new output-free successor is required; the managed verifier's /10 rejection is terminal but its producer-drift attribution was incorrect.
+  - source_path: agent-file-handoff/Improvement/Qwen3 SLM2 Semantic Architecture.md
+    docs_evidence_path: docs/report-intake/2026-08-26/post-v10-native-browser-release/Qwen3 SLM2 Semantic Architecture.md
+    category: composition-semantic-inspection
+    sha256: 33811ff51d54e66acd44bf331d89bd7e983a9a8a15dd031a491e1347151ae2f2
+    disposition: incorporated-with-corrections
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Informed hostile-safe parsing, tensor-role and shape closure, quantization metadata, cross-member binding, adversarial corpus, and semantic-pass claim boundary.
+    routing_summary: Use the frozen local 28/16/8 Qwen3 oracle and private SLM2 contract; do not infer correctness, Q8 layout, or eligibility from /10 size.
+  - source_path: agent-file-handoff/Improvement/Qwen3 Reference Runtime Implementation Report.md
+    docs_evidence_path: docs/report-intake/2026-08-26/post-v10-native-browser-release/Qwen3 Reference Runtime Implementation Report.md
+    category: scalar-native-reference-runtime
+    sha256: bfa235b87e91794577ce746fcb569016656b40aeb0e7719b731eedb189f85cbc
+    disposition: incorporated-with-corrections
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Informed auditable Qwen3 equations, hand-checkable kernels, bounded KV/generation state, deterministic sampling, typed failures, resource formulas, and optimized-kernel admission.
+    routing_summary: Scalar native is a fallible converted-byte reference checked against pinned source semantics, not an unimpeachable upstream oracle or browser fallback.
+  - source_path: agent-file-handoff/Improvement/ML Numerical Forensics Validation.md
+    docs_evidence_path: docs/report-intake/2026-08-26/post-v10-native-browser-release/ML Numerical Forensics Validation.md
+    category: source-native-wasm-numerical-forensics
+    sha256: cd67b96a0fdf3f4a3685e5df4a0b04f0ffcc60c7a93e21d3f669e0b81af986d8
+    disposition: incorporated-with-corrections
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Informed hermetic source closure, layered capture points, privacy-preserving observations, first-divergence localization, quantization fault isolation, and tiered parity gates.
+    routing_summary: Use local Qwen3 8-KV-head authority and preregistered tensor-class bounds; report architecture values and thresholds have no local authority.
+  - source_path: agent-file-handoff/Improvement/SLM Behavioral Contract Specifications.md
+    docs_evidence_path: docs/report-intake/2026-08-26/post-v10-native-browser-release/SLM Behavioral Contract Specifications.md
+    category: tokenizer-template-sampling-prompt-closure
+    sha256: 1d354c700e968c9a232eca120eb63e9d34181fcce330e7a20fee862b542bd1c1
+    disposition: incorporated-with-corrections
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Informed declarative tokenizer/template/sampling/prompt design, special-token trust boundaries, Unicode vectors, authority-aware context assembly, and cross-runtime parity.
+    routing_summary: Keep 151,669 tokenizer entries distinct from 151,936 model vocabulary capacity; do not assume zero-copy, arbitrary Jinja, or bit-exact floating parity without proof.
+  - source_path: agent-file-handoff/Improvement/Browser WASM LLM Execution.md
+    docs_evidence_path: docs/report-intake/2026-08-26/post-v10-native-browser-release/Browser WASM LLM Execution.md
+    category: real-browser-wasm-resource-boundary
+    sha256: bf9cb2b02b86fe5e399b74ef80b8172af8d562e28dc65f989ef5368c04865f75
+    disposition: incorporated-with-corrections
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Informed complete peak-memory/copy accounting, worker ownership, bounded streaming load, cancellation/poisoning, isolation headers, real-browser metrics, and fault tests.
+    routing_summary: Treat Memory64 cost, 1.5-GiB fit, OPFS zero-copy, Q8_0, mandatory Relaxed SIMD, browser support, and performance numbers as unverified hypotheses.
+  - source_path: agent-file-handoff/Improvement/Browser-Local SLM Architecture Research.md
+    docs_evidence_path: docs/report-intake/2026-08-26/post-v10-native-browser-release/Browser-Local SLM Architecture Research.md
+    category: exactly-once-browser-conversation
+    sha256: 343ebc4e423b9ba5a06c0dedbd8903928105670d23e1f839516b7da9bb362555
+    disposition: incorporated-with-corrections
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Informed linked state machines, typed UI-worker identities, exactly-once event handling, raw-output custody, real cancellation, fresh-worker recovery, profile deletion, and race tests.
+    routing_summary: Deduplicate event identity rather than token text; reload or storage clearing is not fresh-profile proof, and late terminated-worker events are never authoritative.
+  - source_path: agent-file-handoff/Improvement/P2P Local AI Companion Architecture.md
+    docs_evidence_path: docs/report-intake/2026-08-26/post-v10-native-browser-release/P2P Local AI Companion Architecture.md
+    category: p2p-or-local-conversion-acquisition
+    sha256: 11a55fa3361841845d83e1128b40746594a07246dcf91816fcf478b970b46afb
+    disposition: incorporated-with-corrections
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Informed exact catalog/peer identity, resumable piece verification, explicit local conversion, secure loopback sessions, transactional activation, privacy, and hostile tests.
+    routing_summary: P2P-or-convert is one visible deterministic decision, not a fallback; no instruction-file download, project byte proxy, arbitrary path, or hidden alternate route.
+  - source_path: agent-file-handoff/Improvement/Qwen3-0.6B Evaluation Methodology.md
+    docs_evidence_path: docs/report-intake/2026-08-26/post-v10-native-browser-release/Qwen3-0.6B Evaluation Methodology.md
+    category: no-cheat-quality-and-noninferiority
+    sha256: f7631ac15db2c1d31434a8275aaf89c4e1fdd3efc9469e0a0281d1dbb0b21076
+    disposition: incorporated-with-corrections
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Informed source-first stop gates, behavior taxonomy, semantic invariants, metamorphic holdouts, layered evaluation, contamination control, paired noninferiority, and human audit.
+    routing_summary: Preregister local sample sizes and margins; do not import report ratios, repair output, choose lucky seeds, train on failures, or lower the gate.
+  - source_path: agent-file-handoff/Improvement/Model Release Evidence Architecture.md
+    docs_evidence_path: docs/report-intake/2026-08-26/post-v10-native-browser-release/Model Release Evidence Architecture.md
+    category: enterprise-release-evidence-and-documentation
+    sha256: 6b4514c56a779b3cb0fea10260207f687ab2d0dbf6e9428c52e6790a65589344
+    disposition: incorporated-with-corrections
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Informed phase invalidation, append-only receipts, committed-source release discipline, supply-chain gates, platform evidence classes, atomic site release, publication logs, and documentation drift checks.
+    routing_summary: Correct its Qwen2.5-like architecture and treat in-toto/SLSA/CycloneDX/signing choices as ADR inputs, not achieved conformance or release evidence.
 report_intake_2026_08_08_active_handoff_closure:
   source_bucket: E:\Source\.tinyrustlm-model-acquisition\agent-file-handoff\Improvement\
   docs_evidence_path: docs/report-intake/2026-08-08/active-handoff-closure/
