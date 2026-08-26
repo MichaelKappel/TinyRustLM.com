@@ -843,8 +843,8 @@ test-first maintained correction. It independently checks the exact scalar
 child field set, owner/request/registration bindings, process and stream
 identities, inventories, absent output roots, empty scratch, immutable closure,
 and path-free claim boundary without importing the owner or any write,
-subprocess, or network API. Its fixture tests pass. One real invocation remains
-pending. The output-free authority for that invocation is
+subprocess, or network API. Its fixture tests pass. The initial output-free
+authority was
 `qwen3-numerical-source-terminal-verification-preregistration.v1.json`, 10,440
 canonical bytes at SHA-256
 `afccb28dc8e4b67e3dff81beb44c74290e01f1c673c9e4a7f3c3989224468860`.
@@ -867,10 +867,25 @@ identity against the registered three-field identity that also contains a
 basename. The 6,268-byte public result has SHA-256
 `e27bbbf2e321bf79b6c7f9009427de191b492a9ab74537ba7751866e811076fa`.
 It establishes no source-terminal verification pass or broader claim. Its
-private root and all source-operation evidence remain immutable; a test-first
-correction and wholly new output-free verification registration are required.
+private root and all source-operation evidence remain immutable. The exact
+two-field process-identity projection is now corrected under positive and
+hostile tests, without accepting the former added-basename shape.
 See
 `docs/architecture/2026-08-26-qwen3-numerical-source-terminal-verification-terminal-ambiguous.md`.
+
+`qwen3-numerical-source-terminal-verification-preregistration.v2.json` is the
+sole current output-free authority for one corrected verification. It is
+12,217 canonical bytes at SHA-256
+`fc4a7500c427e56f3b178eeb4c48ebd0bd6754f5e513b1aef403da4a21d46ca4`.
+It binds remote-exact parent `bcda8324837c3c2956271251337a3f5b80d4d0ef`,
+the exact corrected verifier and tests, immutable V1 `terminal-ambiguous`
+history, unchanged nine-file/13,143-byte source-owner closure, one wholly new
+absent `-terminal-verification-v2` root, one bounded no-network invocation,
+create-only terminal custody, and zero broader claims. No private output or
+public result exists yet. The registration must be committed, pushed, freshly
+fetched, and proved four-way exact before its root is created or its verifier
+is invoked. See
+`docs/architecture/2026-08-26-qwen3-numerical-source-terminal-verification-v2-preregistration.md`.
 
 `qwen3-numerical-differential-execution-result.v1.json` closes that registered
 operation as an independently verified terminal source-process failure. The
