@@ -1,12 +1,12 @@
-profile: runtime-mirust.next-recursive-prompt.v105
-updated_utc: 2026-08-26T11:09:33Z
+profile: runtime-mirust.next-recursive-prompt.v106
+updated_utc: 2026-08-26T11:38:21Z
 
 next_recursive_goal_2026_08_26_qwen3_numerical_registration:
-  objective: Checkpoint the green source/reconstructed/scalar numerical laboratory, then preregister one wholly new exact /12 numerical operation without creating any real trace before remote equality.
-  current_checkpoint: Profile 15276/4f97304b, environment 29103/bdccfc27, architecture 10667/94a20842, and durable memory 12218/f6030318 are implemented. Pinned-interpreter focused gate is 10/10; full maintained gate and source checkpoint are pending.
+  objective: Preregister one wholly new exact /12 numerical operation over the remote-exact green source/reconstructed/scalar laboratory without creating any real trace before registration equality.
+  current_checkpoint: Profile 15276/4f97304b, environment 29103/bdccfc27, architecture 10667/94a20842, and durable memory 14080/5216bc12 are implemented. Commit ba85cdb/tree 191a98c is pushed/four-way exact; focused is 10/10, standard is 1,525/0/2 of 1,527, and clean release 21c18c3 is 23/23 with independently verified aggregate 3995/58ef8c02.
   proof_design: Register publisher-source CPU FP32 to reconstructed SLM2 and reconstructed SLM2 to Rust scalar as separate arrows, including exact cases/token IDs, per-arrow/per-stage thresholds, floors, top-k, limits, first-divergence order, and no-write verifier.
   execution_guard: Bind exact commit/tree and tool/profile/environment/source/model identities; choose wholly new absent request/output/evidence/process/terminal identities; commit/push/fresh-four-way-verify registration before any material launch.
-  durable_authority: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 12,218 bytes/SHA256 f60303183fddcfb375d363a152387b48212c7bbe6d2405a4618717a4d0cd1bf9.
+  durable_authority: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 14,080 bytes/SHA256 5216bc12be351eb3d4b8d1236078edb84f3263220629629168b8aa4e306cd67f.
   prohibited_claims: No real numerical, optimized-native, browser-WASM, quality, P2P, catalog, package, deployment, MemoryEndpoints, or campaign claim exists.
 
 next_recursive_goal_2026_08_26_scalar_numerical_proof:

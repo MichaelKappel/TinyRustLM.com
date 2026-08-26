@@ -1,12 +1,12 @@
-profile: runtime-mirust.totem.v192
-updated_utc: 2026-08-26T11:09:33Z
+profile: runtime-mirust.totem.v193
+updated_utc: 2026-08-26T11:38:21Z
 
 qwen3_numerical_differential_totem_2026_08_26:
   preserve_exact_environment: Bind 29 wheels, bootstrap closure, Python/base launcher, 26 distributions, and 17,535 non-cache runtime files. Revalidate before/after each Python owner and keep network/process operations denied.
   preserve_independent_arrows: Compare publisher source executed in CPU FP32 to independently reconstructed SLM2, then reconstructed SLM2 to Rust scalar. Later compare accepted scalar independently to each optimized native and browser-WASM target.
   preserve_create_only_evidence: Validate exact source/model/profile/environment, cases, limits, and output absence before creation; preserve partial failures; write terminal manifests last; verifier remains read-only.
   preserve_preregistration: Freeze cases, token IDs, thresholds, floors, top-k, limits, receipt bound, cardinality, terminal rules, and all-new absent roots in a pushed remote-exact output-free registration before real materialization.
-  preserve_claim_truth: Focused 10/10 and the environment lock are implementation evidence only. Durable authority is wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 12,218 bytes/SHA256 f60303183fddcfb375d363a152387b48212c7bbe6d2405a4618717a4d0cd1bf9.
+  preserve_claim_truth: Focused 10/10, standard 1,525/0/2, clean release 23/23, and the environment lock are implementation evidence only. Durable authority is wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 14,080 bytes/SHA256 5216bc12be351eb3d4b8d1236078edb84f3263220629629168b8aa4e306cd67f.
   preserve_clean_slate: Keep diagnostic arms non-shipping and remove superseded prelaunch code instead of adding compatibility, legacy, migration, fallback, retry, repair, or debt.
 
 scalar_numerical_proof_totem_2026_08_26:

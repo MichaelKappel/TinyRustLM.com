@@ -1,11 +1,11 @@
-profile: runtime-mirust.receiver-brief.v46
-updated_utc: 2026-08-26T11:09:33Z
+profile: runtime-mirust.receiver-brief.v47
+updated_utc: 2026-08-26T11:38:21Z
 
 current_qwen3_numerical_differential_brief_2026_08_26:
   first_read: Read workspace.uai and wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md before changing numerical work.
-  exact_identity: memory=12218,f60303183fddcfb375d363a152387b48212c7bbe6d2405a4618717a4d0cd1bf9; profile=15276,4f97304bf7875f226530bab4c8df8550db6b743aa949f53d89d43d47f2956d12; environment=29103,bdccfc277c66640ab958f382713cd75fbf497e6232b57b5025cd78868ec5a0e5; architecture=10667,94a208423e9820c01b33d79d4ff5ac4ba5dd6a189a72197aa84acc6e97b5865e.
-  current_truth: Source/reconstructed/scalar/verifier implementation is green 10/10 in the pinned environment. Full gate and source checkpoint are pending. /12 numerical registration/output/verdict do not exist.
-  exact_resume: Full gate, commit/push/fresh-verify, then separate output-free preregistration with exact thresholds and all-new absent roots. Do not run /12 ad hoc.
+  exact_identity: memory=14080,5216bc12be351eb3d4b8d1236078edb84f3263220629629168b8aa4e306cd67f; profile=15276,4f97304bf7875f226530bab4c8df8550db6b743aa949f53d89d43d47f2956d12; environment=29103,bdccfc277c66640ab958f382713cd75fbf497e6232b57b5025cd78868ec5a0e5; architecture=10667,94a208423e9820c01b33d79d4ff5ac4ba5dd6a189a72197aa84acc6e97b5865e.
+  current_truth: Source/reconstructed/scalar/verifier implementation is green at ba85cdb/tree 191a98c: focused 10/10, standard 1,525/0/2 of 1,527, clean release 21c18c3 23/23 with verified aggregate 3995/58ef8c02. /12 numerical registration/output/verdict do not exist.
+  exact_resume: Create a separate output-free preregistration over ba85cdb/tree 191a98c with exact thresholds and all-new absent roots; commit/push/fresh-verify it. Do not run /12 ad hoc.
   hard_boundary: No numerical/browser/quality/P2P/package/deployment/MemoryEndpoints/campaign claim.
 
 current_scalar_numerical_probe_brief_2026_08_26:

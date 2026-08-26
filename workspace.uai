@@ -1,14 +1,14 @@
-profile: tinyrustlm.source-workspace.v441
+profile: tinyrustlm.source-workspace.v442
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-26T11:09:33Z
+updated_utc: 2026-08-26T11:38:21Z
 
 current_checkpoint_2026_08_26_qwen3_numerical_differential_implementation:
-  status: The pinned offline environment, publisher-source owner, independent reconstructed-SLM2 arm, Rust scalar arm, and read-only first-divergence verifier are implemented. Exact pinned-interpreter focused gate is 10/10 pass with no skips. Full maintained source gate and source checkpoint are pending; no real numerical operation is registered or run.
+  status: The pinned offline environment, publisher-source owner, independent reconstructed-SLM2 arm, Rust scalar arm, and read-only first-divergence verifier are remote-exact at commit ba85cdbecf15e0010c3211f7a6713a1f359745c3/tree 191a98ce51dbf5ef54b5e5aa131a090c6bd3d7dd. Focused is 10/10; standard is 1,525 pass/0 fail/2 explicit skip of 1,527; clean release run 21c18c31588aab7ab50fe132298357c005ad4f67907ef301e591497d2ef25e36 is 23/23 with independently reproduced aggregate 3995/58ef8c02aea465e3ee71037f0446f8ae7a30d6640751184fe27dfb6460a0256c. No real numerical operation is registered or run.
   exact_authority: contracts/vnext/qwen3-numerical-differential-profile.v1.json is 15,276 bytes/SHA256 4f97304bf7875f226530bab4c8df8550db6b743aa949f53d89d43d47f2956d12. Environment lock is 29,103 bytes/SHA256 bdccfc277c66640ab958f382713cd75fbf497e6232b57b5025cd78868ec5a0e5. Architecture is docs/architecture/2026-08-26-qwen3-numerical-differential-laboratory.md, 10,667 bytes/SHA256 94a208423e9820c01b33d79d4ff5ac4ba5dd6a189a72197aa84acc6e97b5865e.
-  durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 12,218 bytes/SHA256 f60303183fddcfb375d363a152387b48212c7bbe6d2405a4618717a4d0cd1bf9. It deep-links the reviewed report manifest, corrected synthesis, TDD delta, scalar probe, /12 result, exact environment, implementations, fixtures, claim boundary, and resume order.
+  durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 14,080 bytes/SHA256 5216bc12be351eb3d4b8d1236078edb84f3263220629629168b8aa4e306cd67f. It deep-links the reviewed report manifest, corrected synthesis, TDD delta, scalar probe, /12 result, exact environment, implementations, fixtures, source checkpoint, maintained gates, claim boundary, and resume order.
   proof_graph: Arrow A is pinned publisher source weights executed in CPU FP32 to independently reconstructed SLM2 Q8 weights. Arrow B is reconstructed SLM2 to Rust scalar. Later arrows compare accepted scalar separately to every optimized native and browser-WASM implementation. No transitive inference or final-text oracle.
-  exact_next: Run the full maintained source gate, commit/push/fresh-four-way-verify this implementation, then create and remote-verify one separate output-free numerical registration with exact cases, thresholds, limits, cardinality, and wholly new absent roots. Do not execute /12 yet.
+  exact_next: Create and remote-verify one separate output-free numerical registration over exact parent ba85cdb/tree 191a98c with exact cases, thresholds, limits, cardinality, and wholly new absent roots. Do not execute /12 before that registration is pushed and fresh-four-way exact.
   hard_boundary: Implementation and fixture evidence prove no real numerical parity, optimized-native, browser, quality, P2P, catalog, package, deployment, or MemoryEndpoints result; counters remain 0/20,0/50,0/25,0/40,0/20.
 
 current_checkpoint_2026_08_26_scalar_numerical_probe:

@@ -1,12 +1,13 @@
-profile: runtime-mirust.architecture.v170
-updated_utc: 2026-08-26T11:09:33Z
+profile: runtime-mirust.architecture.v171
+updated_utc: 2026-08-26T11:38:21Z
 
 qwen3_numerical_differential_architecture_2026_08_26:
   proof_graph: Pinned publisher source weights execute in CPU FP32; an independent NumPy arm parses/reconstructs exact SLM2 mixed-Q8 rows; the canonical Rust scalar consumes packed SLM2 bytes. Compare source-to-reconstructed and reconstructed-to-scalar independently, then compare accepted scalar separately to each optimized native and browser-WASM target.
   environment: One 29-wheel/26-runtime-distribution lock binds 17,535 non-cache runtime files and is recomputed before and after each Python owner. Both owners deny network connection/resolution, URL requests, and child processes.
   trace_and_verifier: All arms emit the same 255 ordered f32le stages per token. The no-write verifier recomputes identities and metrics and reports first registered divergence by arrow/case/step/stage/layer/head/element/chunk.
   exact_authority: contracts/vnext/qwen3-numerical-differential-profile.v1.json 15276/4f97304bf7875f226530bab4c8df8550db6b743aa949f53d89d43d47f2956d12; docs/architecture/2026-08-26-qwen3-numerical-differential-laboratory.md 10667/94a208423e9820c01b33d79d4ff5ac4ba5dd6a189a72197aa84acc6e97b5865e.
-  deep_memory: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md 12218/f60303183fddcfb375d363a152387b48212c7bbe6d2405a4618717a4d0cd1bf9.
+  deep_memory: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md 14080/5216bc12be351eb3d4b8d1236078edb84f3263220629629168b8aa4e306cd67f.
+  checkpoint_gate: Implementation commit ba85cdb/tree 191a98c is pushed and four-way exact; standard is 1,525/0/2 of 1,527; clean release run 21c18c3 is 23/23 with independently reproduced aggregate 3995/58ef8c02.
   boundary: Implementation/fixtures only. No real traces or numerical, browser, quality, P2P, release, deployment, MemoryEndpoints, or campaign evidence.
 
 scalar_numerical_evidence_architecture_2026_08_26:

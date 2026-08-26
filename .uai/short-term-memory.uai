@@ -1,10 +1,10 @@
-profile: runtime-mirust.short-term-memory.v492
-updated_utc: 2026-08-26T11:09:33Z
+profile: runtime-mirust.short-term-memory.v493
+updated_utc: 2026-08-26T11:38:21Z
 
 current_focus_2026_08_26_qwen3_numerical_differential:
-  just_completed: Implemented exact offline environment lock, publisher-source CPU-FP32 owner, independent reconstructed-SLM2 Q8 owner, environment-bound manifests, and no-write first-divergence verifier. Pinned-interpreter focused gate is 10/10.
-  deep_resume: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md is 12,218 bytes/SHA256 f60303183fddcfb375d363a152387b48212c7bbe6d2405a4618717a4d0cd1bf9.
-  immediate_work: Run full maintained source gate; commit/push/fresh-four-way-verify this implementation. Then separately preregister exact /12 numerical cases and thresholds before any private trace.
+  just_completed: Implemented exact offline environment lock, publisher-source CPU-FP32 owner, independent reconstructed-SLM2 Q8 owner, environment-bound manifests, and no-write first-divergence verifier. Commit ba85cdb/tree 191a98c is pushed/four-way exact; focused is 10/10, standard is 1,525/0/2 of 1,527, and clean release 21c18c3 is 23/23 with independently verified aggregate 3995/58ef8c02.
+  deep_resume: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md is 14,080 bytes/SHA256 5216bc12be351eb3d4b8d1236078edb84f3263220629629168b8aa4e306cd67f.
+  immediate_work: Separately preregister exact /12 numerical cases and thresholds over ba85cdb/tree 191a98c before any private trace; commit/push/fresh-four-way-verify that registration first.
   report_use: Continue through reviewed manifest/synthesis/TDD nodes linked from durable memory; raw reports are advisory.
   claim_boundary: No real registration, real trace, numerical verdict, optimized/browser parity, quality, P2P, release, deployment, MemoryEndpoints, or counter progress.
 

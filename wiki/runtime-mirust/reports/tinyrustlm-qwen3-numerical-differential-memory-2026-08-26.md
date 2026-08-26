@@ -1,7 +1,7 @@
 # TinyRustLM Qwen3 Numerical Differential Memory
 
 Date: 2026-08-26
-Status: implementation, offline environment, and hostile fixtures complete; source checkpoint pending; real numerical operation not registered or run
+Status: implementation, offline environment, hostile fixtures, remote-exact source checkpoint, and maintained gates complete; real numerical operation not registered or run
 
 ## Resume Purpose
 
@@ -181,14 +181,50 @@ failures, zero skips, zero cancellations, and zero todo. It established:
 10. absence of evidence-writing, repair, or permissive selection in the
     verifier source.
 
-Python syntax compilation and JavaScript syntax checking also passed. A full
-maintained all-source gate has not yet been run for this dirty checkpoint, so
-no source checkpoint, clean release-surface receipt, package, site release, or
-deployment claim exists yet.
+Python syntax compilation and JavaScript syntax checking also passed.
 
 Fixtures prove implementation behavior only. They contain no real Qwen3-0.6B
 source output, `/12` execution, private conversation, expected answer,
 browser-WASM execution, or quality judgment.
+
+## Source Checkpoint And Maintained Gates
+
+The implementation, profile, exact environment lock, architecture, tests,
+durable memory route, and all 13 hot UAI routes were committed and pushed as:
+
+- commit `ba85cdbecf15e0010c3211f7a6713a1f359745c3`;
+- tree `191a98ce51dbf5ef54b5e5aa131a090c6bd3d7dd`;
+- subject `Add Qwen3 numerical differential laboratory`.
+
+Local `HEAD`, the tracking ref, a fresh `FETCH_HEAD`, and the direct remote
+branch ref all reproduced that commit exactly. The worktree was clean before
+the maintained gate began.
+
+The maintained standard partition then completed in 464,619.7978 ms:
+
+- 1,527 tests discovered;
+- 1,525 passed;
+- 0 failed;
+- 2 explicitly skipped by their own infrastructure-only contracts;
+- 0 cancelled; and
+- 0 todo.
+
+That run included the pinned Python synthetic Qwen3 and reconstructed-kernel
+test with no skip. The clean release-surface run
+`21c18c31588aab7ab50fe132298357c005ad4f67907ef301e591497d2ef25e36`
+then passed 23/23 tests across 10 serial shards with zero failures, skips,
+retained failures, or incomplete shards. Its aggregate receipt is 3,995 bytes
+at SHA-256
+`58ef8c02aea465e3ee71037f0446f8ae7a30d6640751184fe27dfb6460a0256c`.
+The maintained read-only verifier reopened the run and reproduced the run ID,
+test count, verdict, byte count, and digest. A separate filesystem SHA-256
+calculation over the regular, non-link aggregate file returned the same
+identity.
+
+These results establish a remote-exact green implementation checkpoint and a
+clean local release-surface gate only. They are not a real numerical run,
+package publication, production deployment, public HTTPS readback, model
+qualification, P2P proof, browser round, or campaign receipt.
 
 ## Exact Proof And Failure Semantics
 
@@ -214,22 +250,23 @@ adopted, or relabeled.
 
 ## Exact Resume Order
 
-1. Run the maintained all-source gate for this implementation and fix only
-   genuine failures without weakening contracts.
-2. Commit and push the green implementation, documentation, memory, and UAI
-   routes; freshly fetch and prove local HEAD, tracking ref, `FETCH_HEAD`, and
-   direct remote branch ref are exact.
-3. Create one wholly new output-free numerical registration. Bind the exact
+1. Use remote-exact implementation commit
+   `ba85cdbecf15e0010c3211f7a6713a1f359745c3` and tree
+   `191a98ce51dbf5ef54b5e5aa131a090c6bd3d7dd` as the sole green implementation
+   parent. Do not edit a bound implementation or profile while designing the
+   registration.
+2. Create one wholly new output-free numerical registration. Bind the exact
    source commit/tree, profile, environment, implementations, source lock,
    `/12` model, private token-case hashes, token IDs, per-arrow thresholds,
    floors, top-k, resource ceilings, terminal states, process cardinality,
    existing evidence parent, and all absent output roots.
-4. Commit, push, freshly fetch, and prove remote equality for that registration
-   before materializing any private registered output.
-5. Invoke each registered material owner at most once under one sole owner,
+3. Run focused registration tests, commit, push, freshly fetch, and prove local
+   `HEAD`, tracking ref, `FETCH_HEAD`, and direct remote equality before
+   materializing any private registered output.
+4. Invoke each registered material owner at most once under one sole owner,
    then invoke the read-only verifier once and preserve its terminal result.
 
-Do not run `/12` traces before step 4. Do not reuse any old private name or
+Do not run `/12` traces before step 3 is complete. Do not reuse any old private name or
 root. Do not invent thresholds from fixture results or from future real output.
 
 ## Hard Claim Boundary
@@ -239,8 +276,13 @@ At this memory checkpoint:
 - differential implementation: present;
 - exact offline environment lock: present and locally revalidated;
 - hostile and synthetic fixtures: passed;
-- full maintained source gate for this checkpoint: pending;
-- source checkpoint commit/push/fresh remote equality: pending;
+- full maintained source gate for this checkpoint: 1,525 passed, zero failed,
+  two explicit infrastructure-only skips out of 1,527;
+- clean release-surface gate: 23/23 pass with independently reproduced
+  3,995-byte aggregate SHA-256
+  `58ef8c02aea465e3ee71037f0446f8ae7a30d6640751184fe27dfb6460a0256c`;
+- source checkpoint commit/push/fresh remote equality: complete at
+  `ba85cdbecf15e0010c3211f7a6713a1f359745c3`;
 - output-free real numerical registration: absent;
 - publisher source trace on the real model: not performed;
 - reconstructed trace on `/12`: not performed;

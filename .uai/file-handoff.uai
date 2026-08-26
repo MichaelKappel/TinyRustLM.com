@@ -1,12 +1,12 @@
-profile: runtime-mirust.file-handoff.v123
-updated_utc: 2026-08-26T11:09:33Z
+profile: runtime-mirust.file-handoff.v124
+updated_utc: 2026-08-26T11:38:21Z
 
 current_qwen3_numerical_differential_handoff_2026_08_26:
   first_read: Read workspace.uai, wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, contracts/vnext/qwen3-numerical-differential-profile.v1.json, and docs/architecture/2026-08-26-qwen3-numerical-differential-laboratory.md before continuing numerical work.
-  identities: memory=12218,f60303183fddcfb375d363a152387b48212c7bbe6d2405a4618717a4d0cd1bf9; profile=15276,4f97304bf7875f226530bab4c8df8550db6b743aa949f53d89d43d47f2956d12; environment=29103,bdccfc277c66640ab958f382713cd75fbf497e6232b57b5025cd78868ec5a0e5; architecture=10667,94a208423e9820c01b33d79d4ff5ac4ba5dd6a189a72197aa84acc6e97b5865e.
-  current_truth: Exact pinned-interpreter focused gate is 10/10. Source, reconstructed, scalar, environment, and verifier implementations exist. Full gate/commit/push are pending. No output-free real registration or real trace exists.
+  identities: memory=14080,5216bc12be351eb3d4b8d1236078edb84f3263220629629168b8aa4e306cd67f; profile=15276,4f97304bf7875f226530bab4c8df8550db6b743aa949f53d89d43d47f2956d12; environment=29103,bdccfc277c66640ab958f382713cd75fbf497e6232b57b5025cd78868ec5a0e5; architecture=10667,94a208423e9820c01b33d79d4ff5ac4ba5dd6a189a72197aa84acc6e97b5865e.
+  current_truth: Exact pinned-interpreter focused gate is 10/10. Implementation commit ba85cdb/tree 191a98c is pushed/four-way exact; standard is 1,525/0/2 of 1,527; clean release 21c18c3 is 23/23 with verified aggregate 3995/58ef8c02. No output-free real registration or real trace exists.
   report_handoff: Durable memory routes through the report manifest, corrected synthesis, TDD delta, and prior scalar memory. Raw reports remain advisory.
-  exact_resume: Run maintained full gate, commit/push/fresh-verify implementation, then separately preregister exact /12 source/reconstructed/scalar traces and thresholds before any private materialization.
+  exact_resume: Separately preregister exact /12 source/reconstructed/scalar traces and thresholds over ba85cdb/tree 191a98c before any private materialization; commit/push/fresh-verify that registration first.
   hard_boundary: Never run /12 ad hoc or infer numerical/browser/quality/P2P/release/MemoryEndpoints/campaign status from fixtures.
 
 current_scalar_numerical_probe_handoff_2026_08_26:
