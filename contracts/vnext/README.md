@@ -663,6 +663,27 @@ index, then be pushed and freshly proved four-way remote exact before any
 private `/11` material exists. See
 `docs/architecture/2026-08-26-qwen3-real-composition-execution-preregistration-v11.md`.
 
+`qwen3-real-composition-execution-result.v11.json` closes execution `/11` as
+`terminal-managed-preflight-rejection` with reason
+`build-custody-source-fields`. It is 12,183 canonical ASCII/LF bytes at
+SHA-256
+`a154c68880205fe957ab12585e119d9492fadd2c1574746786208b055e67eccb`.
+The exact environment authority passed once and Rust custody `/4` passed one
+release build plus one bounded scratch inspection.
+The create-only managed request then failed its sole strict preflight because
+an ad hoc materialization step added unexpected source fields `byteLength` and
+`sha256` alongside the already-correct owner identity fields.
+
+The managed preflight created no custody root and launched no process. No
+managed build, composition request, owner, converter, candidate, managed
+inspection, or final verification exists for `/11`. Preserve every created
+private byte without modification, replacement, retry, cleanup, or adoption.
+A source-controlled exact request materializer and generic regression are
+required before a wholly new output-free registration with all-new names. No
+structural, parity, runtime, browser, quality, P2P, publication, deployment,
+MemoryEndpoints, or campaign claim advances. See
+`docs/architecture/2026-08-26-qwen3-real-composition-execution-v11-managed-preflight-rejection.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2

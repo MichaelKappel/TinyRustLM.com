@@ -1,11 +1,34 @@
-profile: runtime-mirust.long-term-memory-ledger.v361
-updated_utc: 2026-08-26T05:08:13Z
+profile: runtime-mirust.long-term-memory-ledger.v362
+updated_utc: 2026-08-26T06:03:38Z
 storage_mode: hybrid
 ledger_rule:
   pointer_only_not_context_free: true
   summary_policy: Routing-only, one sentence, 35 words maximum, no durable body memory.
   allowed_statuses: current, retired, superseded, quarantined
 records:
+  - stable_id: tinyrustlm_qwen3_execution_11_managed_preflight_failure_current
+    memory_domain: tinyrustlm.model_acquisition.qwen3_execution_11
+    pointer_type: terminal_execution_memory
+    path: wiki/runtime-mirust/reports/tinyrustlm-qwen3-execution-11-managed-preflight-failure-memory-2026-08-26.md
+    target_location: wiki/runtime-mirust/reports/tinyrustlm-qwen3-execution-11-managed-preflight-failure-memory-2026-08-26.md
+    label: Qwen3 Execution /11 Managed Preflight Failure
+    summary: Routes immutable execution /11, its strict managed-request rejection, preserved evidence, exact root cause, report links, nonclaims, and the source-controlled materializer prerequisite for a wholly new registration.
+    pointer_status: current
+    authority: canonical terminal result and locally observed one-shot execution evidence
+    source_authority: result sha256 a154c68880205fe957ab12585e119d9492fadd2c1574746786208b055e67eccb; registration commit 644878a51c84e8fa9673a24d2440f7701e3aa076
+    source_identity: execution qwen3-composition-c1899de-1e9b7b0-20260826-v11; registration tree c2118b4742d6e43501c429bd432fb77f32ac6830
+    reviewed_synthesis: docs/architecture/2026-08-26-qwen3-real-composition-execution-v11-managed-preflight-rejection.md
+    reviewed_tdd_delta: docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-tdd-delta-2026-08-26.md
+    review_status: terminal_preserved_request_materializer_correction_required
+    quarantine_status: all_private_execution_material_immutable_outside_git
+    review_evidence: contracts/vnext/qwen3-real-composition-execution-result.v11.json
+    contextual_trigger: Read before changing request materialization, authoring a successor registration, or performing any further Qwen3 composition execution.
+    checksum_hash: sha256:bd03903f3377f7a8a0ab19fa139af9ba40e2dc51dcff7c95d8ad1d7f8bbd1c3b
+    sha256: bd03903f3377f7a8a0ab19fa139af9ba40e2dc51dcff7c95d8ad1d7f8bbd1c3b
+    bytes: 3130
+    last_reviewed_utc: 2026-08-26T06:03:38Z
+    owner_or_reviewer: TinyRustLM Agent
+    truth_boundary: Proves one registration, environment pass, Rust custody pass, and managed preflight rejection only; no composition, model, browser, quality, P2P, release, deployment, MemoryEndpoints, or campaign evidence.
   - stable_id: tinyrustlm_post_v10_native_browser_release_intake_current
     memory_domain: tinyrustlm.research_intake.post_v10_native_browser_release
     pointer_type: reviewed_report_intake_memory
