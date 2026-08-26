@@ -1,6 +1,6 @@
 # TinyRustLM Qwen3 Model-Load Correction Memory
 
-Updated: 2026-08-26T15:39:31Z
+Updated: 2026-08-26T17:04:27Z
 
 ## Resume Authority
 
@@ -135,7 +135,7 @@ Current source-controlled identities at correction commit:
 - differential profile:
   `contracts/vnext/qwen3-numerical-differential-profile.v1.json`, 17,155
   bytes, SHA-256
-  `af3b7562a4429d744bee9d1cb9a3f8b927f7f04b4d54ffc517edf14cce9b8bc8`.
+  `c04abffe412f5032b3c66d6ce00ece4d27a5d89f3ae6678e742cc56ce64f86fc`.
 
 The profile file name and schema remain `.v1` because that profile schema did
 not change. Its content identity binds the current technical `/2` environment,
@@ -147,9 +147,9 @@ After the correction checkpoint was remote-exact, the sole numerical
 execution owner was replaced before any successor registration or private
 materialization. Its current source-controlled identity is:
 
-- `tinyrustlm/tools/qwen3-numerical-execution-owner.js`, 53,264 bytes,
+- `tinyrustlm/tools/qwen3-numerical-execution-owner.js`, 77,939 bytes,
   SHA-256
-  `b20def54d58116d7918d0b4018b4282c6975a5298859d6b30d47e1f17eb7aa9f`;
+  `e21c1c8459a64abbdf47d98c81ca4b5526e7b156ce9a72079c0f735d3515955d`;
 - owner technical profile
   `tinyrustlm.qwen3-numerical-execution-owner/2`;
 - execution request schema
@@ -178,11 +178,55 @@ schema.
 
 Architecture authority is
 `docs/architecture/2026-08-26-qwen3-numerical-successor-owner-clean-cut.md`.
-The direct owner/history gate passed 21/21 with zero failure or skip. The
-broader pinned-environment numerical and model-load suite passed 53/53 with
-zero failure or skip. This is implementation evidence only. No successor
-identity has been registered or consumed and no source trace or numerical
-arrow exists.
+The corrected owner suite passed 16/16 and the eight-suite pinned-environment
+numerical/model-load and UAI-memory check passed 59/59 with zero failure or
+skip. This is
+pre-commit implementation evidence only. No successor identity has been
+registered or consumed and no source trace or numerical arrow exists.
+
+## Registration Semantic Closure Correction
+
+An audit before authoring the successor registration found that the former v2
+owner checked the top-level key set but did not semantically validate the
+registration's authority, report lineage, implementation checkpoint,
+candidate, output boundary, claim boundary, or campaign counters. A document
+could therefore carry a valid nested owner contract while changing a zero
+counter, enabling legacy support, claiming browser proof, or drifting the
+model identity.
+
+Four mutation families were first observed failing because the old validator
+accepted them. The sole current validator now:
+
+- requires the exact prelaunch/no-legacy/no-fallback/no-retry/no-repair/no-
+  MemoryEndpoints authority;
+- requires all output and broader claims false before execution and all five
+  campaign counters at zero;
+- binds Qwen3-0.6B revision
+  `c1899de289a04d12100db370d81485cdf75e47ca`, exact `/12` `model.slm2`
+  bytes, Apache-2.0, source lock, composition result, reconstructed request,
+  scalar request, and named implementation artifacts as one graph;
+- requires the six reviewed architecture/report/memory lineage records, exact
+  implementation and scalar-build checkpoint shapes, a reproduced clean gate,
+  pre-output threshold provenance, canonical second-resolution UTC, and the
+  exact four-path future registration closure; and
+- during real request validation, recomputes report and implementation bytes
+  from the registered parent and proves the implementation and scalar-build
+  commit/tree pairs are ancestors of that parent.
+
+The nested contract is equally closed. It requires one exact operation-ID
+family, trace profile, three token-only cases, 11 role-to-path implementation
+artifacts, five executable basenames, source/reconstructed/scalar/verifier
+request policies, public Qwen3 geometry, proof-arrow thresholds, process
+limits, and 19-file evidence layout. The former behavior that accepted a
+different valid nested policy, case, role path, executable name, duration, or
+evidence filename is retained only as red-to-green rejection coverage.
+
+There is no permissive old branch. The existing v1 registration remains inert
+historical evidence and is never passed to the active validator. The v2
+registration remains absent. Because the owner and differential-profile bytes
+changed, the clean gate for commit `b9b8202` remains historical evidence for
+that checkpoint only. It does not gate this correction; a wholly new clean
+source gate is required after commit/push/fresh remote equality.
 
 ## Model-Load Diagnostics
 
@@ -265,6 +309,10 @@ Successor-owner implementation checkpoint:
 - the maintained read-only verifier independently reproduced the same run ID,
   count, aggregate length, digest, and `pass` verdict.
 
+That gate predates the registration semantic-closure correction and is not a
+current release gate for the changed owner/profile bytes. It remains immutable
+checkpoint evidence and must not be relabeled or discarded.
+
 The external gate root is
 `qwen3-numerical-successor-owner-clean-gate-20260826-v1`. It contains private
 execution evidence outside Git; the basename is recorded only to prevent
@@ -298,26 +346,30 @@ Campaign counters remain exactly `0/20`, `0/50`, `0/25`, `0/40`, and `0/20`.
 
 ## Exact Resume Sequence
 
-1. Commit this updated durable memory and every hot `.uai` deep link as one
-   separate memory-only checkpoint. Push it, fetch freshly, and prove local
-   `HEAD`, tracking ref, `FETCH_HEAD`, and direct remote branch equality.
-2. Create one separate output-free v2 successor preregistration. Bind that
+1. Commit the registration semantic-closure correction, updated owner/profile
+   identities, architecture, tests, durable memory, and every hot `.uai` deep
+   link. Push, fetch freshly, and prove local `HEAD`, tracking ref,
+   `FETCH_HEAD`, and direct remote branch equality.
+2. Run the maintained canonical clean gate from a wholly new external root,
+   invoke its read-only verifier once, and record the exact result in a second
+   committed/pushed/four-way-exact memory checkpoint.
+3. Create one separate output-free v2 successor preregistration. Bind that
    exact post-memory commit/tree, frozen goals, the report-review chain, source lock,
    immutable `/12` composition, current environment, source owner,
    reconstructed owner, scalar probe, verifier, profiles, exact token-only
    cases, comparison thresholds, resource bounds, zero retry, and terminal
    rules.
-3. Use wholly new logical and physical identities for registration, owner
+4. Use wholly new logical and physical identities for registration, owner
    request, evidence root, source scratch, source trace output, reconstructed
    output, scalar output, process records, terminal records, verification, and
    public result. Prove every future root absent without materializing it.
-4. Commit and push the output-free registration and prove fresh four-way remote
+5. Commit and push the output-free registration and prove fresh four-way remote
    equality before creating any private request or root.
-5. Invoke the sole owner at most once. Preserve any terminal result. A source
+6. Invoke the sole owner at most once. Preserve any terminal result. A source
    failure closes the successor and forbids later arms. Only a source pass may
    proceed to reconstructed, scalar, and read-only verification in registered
    order.
-6. On numerical pass only, continue through optimized-native and real-browser
+7. On numerical pass only, continue through optimized-native and real-browser
    WASM differential gates, declarative non-weight parity, exactly-once
    multi-turn browser chat, explicit qualified-P2P-or-local-conversion,
    sealed paired quality evaluation, synchronized documentation/release logs,

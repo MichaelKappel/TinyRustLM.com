@@ -808,6 +808,17 @@ and pushed, and has fresh four-way remote equality. No successor private
 request, root, trace, or process is authorized yet. See
 `docs/architecture/2026-08-26-qwen3-numerical-successor-owner-clean-cut.md`.
 
+The active v2 owner also treats every preregistration family as semantic
+authority rather than decorative metadata. It requires the exact clean-slate
+authority, zero counters, pre-execution output and claim boundaries, Qwen3
+candidate/source/composition cross-bindings, reviewed report lineage,
+implementation and scalar-build checkpoint shape, canonical UTC timestamp,
+and exact four-path registration closure. At execution it independently
+recomputes every report and implementation artifact from the registered
+parent and proves the implementation/scalar commit trees are ancestors. Tests
+preserve the former permissive behavior only as a rejecting regression; there
+is no alternate reader or compatibility branch.
+
 `qwen3-numerical-differential-execution-result.v1.json` closes that registered
 operation as an independently verified terminal source-process failure. The
 sole owner launched the publisher source arm once; it exited 1 after 54,038 ms

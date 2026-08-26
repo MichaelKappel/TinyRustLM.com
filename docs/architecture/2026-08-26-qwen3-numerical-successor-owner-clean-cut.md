@@ -1,9 +1,9 @@
 # Qwen3 Numerical Successor Owner Clean Cut
 
 Date: 2026-08-26
-Status: implementation complete; focused and canonical clean gates green;
-implementation commit/push proof complete; durable-memory checkpoint,
-successor preregistration, and execution remain
+Status: registration semantic closure implemented and focused gates green;
+current correction commit/push proof, a new canonical clean gate, durable-memory
+checkpoint, successor preregistration, and execution remain
 
 ## Decision
 
@@ -106,6 +106,59 @@ require:
 The focused result is 21 passed, zero failed, and zero skipped. The broader
 pinned-environment numerical and model-load suite passed 53/53 with zero skip.
 
+## Registration Semantic Closure
+
+The preregistration audit found a separate fail-closed defect before a v2
+registration existed. The owner validated the top-level key set, schema,
+profile, source-anchor shape, and nested owner contract, but did not validate
+the values under `authority`, `reportLineage`, `implementationCheckpoint`,
+`candidate`, `outputBoundary`, `claimBoundary`, or `campaignCounters`. A
+syntactically complete document could therefore mutate a zero counter to
+`20/20`, authorize legacy support, claim browser verification, or drift the
+candidate identity while still reaching request materialization.
+
+The correction was test-first. Four new mutation families were observed red
+against the former validator and now require rejection of:
+
+- any legacy, compatibility, migration, fallback, retry, response-repair,
+  best-of-N, MemoryEndpoints, post-output threshold-search, or private-path
+  authority;
+- any pre-execution output claim, broader numerical/browser/quality/P2P/site
+  claim, campaign credit, or nonzero campaign counter;
+- candidate model, revision, license, model bytes, source lock, composition
+  result, or owner-contract cross-member drift;
+- missing, unknown, or wrong-path report lineage, malformed or contradictory
+  implementation checkpoints, a non-reproduced release gate, scalar executable
+  drift, or permissive threshold provenance;
+- noncanonical or impossible UTC timestamps; and
+- any registration commit closure other than the exact four v2 paths.
+
+The same audit continued through the nested owner contract. The active owner
+also requires the exact three token-only cases, trace profile, operation-ID
+family, role-to-path map, executable basenames, source/reconstructed/scalar/
+verification resource policies, Qwen3 model geometry, reconstructed execution
+policy, both proof-arrow thresholds, process time and stream limits, and
+evidence-file layout. A valid-but-different nested policy can no longer survive
+preflight and consume a one-shot identity in a child process.
+
+The owner now binds the exact Qwen3-0.6B revision and `/12` model identity,
+requires the candidate model in both reconstructed and scalar request arms,
+requires one source-lock and composition-result identity throughout the graph,
+and binds environment and differential-profile references to the named
+implementation artifacts. During request validation it also recomputes every
+report-lineage and implementation artifact from the registered parent, proves
+the implementation and scalar-build commit/tree pairs, and requires both
+commits to be ancestors of the registered parent.
+
+The corrected owner suite passes 16/16. The eight-suite pinned-environment
+numerical/model-load and UAI-memory check passes 59/59 with zero failure or
+skip. These are
+pre-commit implementation results. The owner and differential-profile byte
+identities changed, so the clean release evidence below remains evidence for
+commit `b9b8202` only and cannot gate the current correction. A wholly new
+clean-source gate is mandatory after this correction is committed, pushed,
+freshly fetched, and four-way exact.
+
 ## Clean Implementation Checkpoint
 
 The implementation checkpoint is commit
@@ -129,10 +182,11 @@ The wholly new external clean-gate root
   ID, test count, aggregate length, digest, and `pass` verdict.
 
 The source remained clean at the exact commit and tree after both execution
-and verification. This is source, contract, and release-control evidence. It
-does not prove a source trace, either numerical arrow, model usefulness,
-browser model execution, P2P availability, publication, deployment, or any
-campaign counter.
+and verification. This is source, contract, and release-control evidence for
+that checkpoint; it does not cover the later registration semantic-closure
+correction. It also does not prove a source trace, either numerical arrow,
+model usefulness, browser model execution, P2P availability, publication,
+deployment, or any campaign counter.
 
 ## Claim Boundary
 

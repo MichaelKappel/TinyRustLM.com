@@ -37,7 +37,254 @@ const IDENTIFIER_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,159}$/u;
 const PROFILE_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._/-]{0,159}$/u;
 const ERROR_PATTERN = /^[a-z0-9][a-z0-9-]{2,127}$/u;
 const FILE_NAME_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,159}$/u;
+const CANONICAL_UTC_SECONDS_PATTERN =
+  /^\d{4}-(0[1-9]|1[0-2])-([0-2]\d|3[01])T([01]\d|2[0-3]):[0-5]\d:[0-5]\dZ$/u;
+const OPERATION_ID_PATTERN =
+  /^qwen3-numerical-c1899de-[a-f0-9]{7}-20260826-v2$/u;
 const STAGES = Object.freeze(["source", "reconstructed", "scalar", "verifier"]);
+const REGISTERED_TRACE_PROFILE_ID = "tinyrustlm.scalar-full-stage-f32le/1";
+const MODEL_BYTE_LENGTH = 598308416;
+const MODEL_SHA256 =
+  "a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7";
+const SOURCE_LOCK_BYTE_LENGTH = 1901;
+const SOURCE_LOCK_SHA256 =
+  "e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d";
+const COMPOSITION_RESULT_BYTE_LENGTH = 18441;
+const COMPOSITION_RESULT_SHA256 =
+  "0c3e84ad9ce6e22d9a164357c9a900d31825d0639f4f11077dab305f9cf3ef0e";
+const REGISTRATION_COMMIT_PATHS = Object.freeze([
+  "contracts/vnext/README.md",
+  REGISTRATION_RELATIVE_PATH,
+  "docs/architecture/2026-08-26-qwen3-numerical-differential-execution-preregistration-v2.md",
+  "tinyrustlm/tests/qwen3-numerical-differential-execution-preregistration-v2.test.js"
+]);
+const REPORT_LINEAGE_PATHS = Object.freeze({
+  architecture: "docs/architecture/2026-08-26-qwen3-numerical-successor-owner-clean-cut.md",
+  correctedSynthesis:
+    "docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-synthesis-2026-08-26.md",
+  durableModelLoadMemory:
+    "wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md",
+  durableNumericalMemory:
+    "wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md",
+  manifest: "docs/report-intake/2026-08-26/post-v10-native-browser-release/MANIFEST.md",
+  tddDelta:
+    "docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-tdd-delta-2026-08-26.md"
+});
+const REGISTRATION_AUTHORITY = Object.freeze({
+  automaticRetry: false,
+  bestOfN: false,
+  closedStructuralV12BytesMayBeModified: false,
+  closedStructuralV12BytesMayBeReadForThisDiagnostic: true,
+  compatibilityReader: false,
+  fallbackRuntime: false,
+  legacySupport: false,
+  memoryEndpointsAuthorized: false,
+  migrationWriter: false,
+  productLifecycle: "prelaunch-single-unversioned-product",
+  publicRegistrationContainsPrivatePaths: false,
+  responseRepair: false,
+  sourceFrameworkSemanticAuthority: true,
+  technicalVersionIsProductGeneration: false,
+  thresholdSearchAfterOutput: false
+});
+const REGISTRATION_OUTPUT_BOUNDARY = Object.freeze({
+  allSixRegisteredFutureNamesObservedAbsent: true,
+  evidenceParentObservedExistingDirectNonReparse: true,
+  ownerEvidenceRootCreated: false,
+  ownerRequestCreated: false,
+  privatePathPublished: false,
+  realProcessLaunched: false,
+  realTraceBytesCreated: false,
+  reconstructedOutputRootCreated: false,
+  scalarOutputRootCreated: false,
+  sourceOutputRootCreated: false,
+  sourceScratchRootCreated: false
+});
+const REGISTRATION_CLAIM_BOUNDARY = Object.freeze({
+  browserChatVerified: false,
+  browserWasmVerified: false,
+  campaignCreditAuthorized: false,
+  compositionStructuralPassBound: true,
+  modelQualityVerified: false,
+  optimizedNativeVerified: false,
+  p2pAvailabilityVerified: false,
+  reconstructedToScalarVerified: false,
+  registrationCommitMustBeRemoteExactBeforeMaterialization: true,
+  siteDeploymentVerified: false,
+  sourceToReconstructedVerified: false
+});
+const REGISTRATION_CAMPAIGN_COUNTERS = Object.freeze({
+  authorizedLiveMemoryRounds: "0/25",
+  currentOutsideNetworkLaneProofs: "0/40",
+  deletionBackedBrowserRounds: "0/50",
+  liveCatalogAnnouncements: "0/20",
+  qualifiedModels: "0/20"
+});
+const REGISTERED_CASES = Object.freeze([
+  Object.freeze({ id: "low-vocabulary-boundary", tokenIds: Object.freeze([0]),
+    tokenIdsLeU32Sha256:
+      "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119" }),
+  Object.freeze({ id: "repeated-kv-position", tokenIds: Object.freeze([17, 17]),
+    tokenIdsLeU32Sha256:
+      "4b14e0b40b16df41e99ddd15fadc5ec747b124ca81f1275f592b4b0035a72cbb" }),
+  Object.freeze({ id: "high-vocabulary-mixed-cache",
+    tokenIds: Object.freeze([151935, 151645, 220, 151935]),
+    tokenIdsLeU32Sha256:
+      "7faadaa663810490a9a4c083ef289a4e8d5b58473f766b85dea75c4285bfaaba" })
+]);
+const SOURCE_POLICY = Object.freeze({
+  maximumCases: 3,
+  maximumResultBytes: 1048576,
+  maximumSourceFileBytes: 1600000000,
+  maximumTokensPerCase: 4,
+  maximumTraceBytes: 14748160
+});
+const RECONSTRUCTED_MODEL_SPEC = Object.freeze({
+  contextLength: 40960,
+  embeddingSize: 1024,
+  feedForwardSize: 3072,
+  headCount: 16,
+  headDimension: 128,
+  kvHeadCount: 8,
+  kvWidth: 1024,
+  layerCount: 28,
+  logicalTensorCount: 310,
+  normalizationEpsilon: 0.000001,
+  qkNormalization: true,
+  qkvBias: false,
+  queryWidth: 2048,
+  ropeTheta: 1000000,
+  tiedEmbeddings: true,
+  vocabularySize: 151936
+});
+const RECONSTRUCTED_POLICY = Object.freeze({
+  maximumCases: 3,
+  maximumModelBytes: MODEL_BYTE_LENGTH,
+  maximumResultBytes: 1048576,
+  maximumTokensPerCase: 4,
+  maximumTraceBytes: 14748160
+});
+const SCALAR_POLICY = Object.freeze({
+  maximumCases: 3,
+  maximumKvBytes: 917504,
+  maximumModelBytes: MODEL_BYTE_LENGTH,
+  maximumScratchBytes: 673296,
+  maximumSequenceTokens: 4,
+  maximumTokensPerCase: 4,
+  maximumTraceBytes: 14748160
+});
+const VERIFICATION_POLICY = Object.freeze({
+  maximumCases: 3,
+  maximumManifestBytes: 4194304,
+  maximumReceiptBytes: 4194304,
+  maximumTokensPerCase: 4,
+  maximumTraceBytes: 14748160
+});
+const REGISTERED_COMPARISON = Object.freeze({
+  arrows: Object.freeze([
+    Object.freeze({
+      candidate: "reconstructed",
+      id: "source-to-reconstructed",
+      minimumTopKOverlap: 0.8,
+      reference: "source",
+      requireGreedyTokenIdentity: false,
+      thresholds: Object.freeze({
+        default: metricThreshold(1, 2, 0.08, 0.99, 0.05, 2147483647),
+        stages: Object.freeze({
+          "attention-normalized": metricThreshold(0.1, 1, 0.05, 0.998, 0.03,
+            2147483647),
+          "feed-forward-activated": metricThreshold(2, 3, 0.1, 0.98, 0.08,
+            2147483647),
+          "feed-forward-normalized": metricThreshold(0.1, 1, 0.05, 0.998, 0.03,
+            2147483647),
+          "final-normalized": metricThreshold(0.1, 1, 0.05, 0.998, 0.03, 2147483647),
+          logits: metricThreshold(1.5, 3, 0.08, 0.98, 0.1, 2147483647),
+          "token-embedding": metricThreshold(0.02, 1, 0.03, 0.999, 0.03, 2147483647)
+        })
+      })
+    }),
+    Object.freeze({
+      candidate: "scalar",
+      id: "reconstructed-to-scalar",
+      minimumTopKOverlap: 1,
+      reference: "reconstructed",
+      requireGreedyTokenIdentity: true,
+      thresholds: Object.freeze({
+        default: metricThreshold(0.02, 0.05, 0.002, 0.99999, 0.001, 1048576),
+        stages: Object.freeze({
+          "feed-forward-activated": metricThreshold(0.1, 0.1, 0.005, 0.999, 0.005,
+            4194304),
+          logits: metricThreshold(0.2, 0.1, 0.005, 0.999, 0.005, 4194304),
+          "post-attention-residual": metricThreshold(0.05, 0.08, 0.003, 0.9999,
+            0.002, 2097152),
+          "post-feed-forward-residual": metricThreshold(0.05, 0.08, 0.003, 0.9999,
+            0.002, 2097152),
+          "token-embedding": metricThreshold(0, 0, 0, 1, 0, 0)
+        })
+      })
+    })
+  ]),
+  chunkElements: 65536,
+  relativeFloor: 0.000001,
+  signFloor: 0.00001,
+  topK: 20
+});
+const PROCESS_POLICY = Object.freeze({
+  continueAfterFailedStage: false,
+  launchLimitPerStage: 1,
+  maximumDurationMilliseconds: Object.freeze({
+    reconstructed: 14400000,
+    scalar: 14400000,
+    source: 14400000,
+    verifier: 3600000
+  }),
+  maximumStderrBytes: 1048576,
+  maximumStdoutBytes: 1048576,
+  overwriteAllowed: false,
+  repairAllowed: false,
+  retryAllowed: false
+});
+const EVIDENCE_FILES = Object.freeze({
+  binding: "binding.json",
+  start: "start.json",
+  sourceRequest: "source.request.json",
+  sourceStdout: "source.stdout.bin",
+  sourceStderr: "source.stderr.bin",
+  sourceTerminal: "source.process-terminal.json",
+  reconstructedRequest: "reconstructed.request.json",
+  reconstructedStdout: "reconstructed.stdout.bin",
+  reconstructedStderr: "reconstructed.stderr.bin",
+  reconstructedTerminal: "reconstructed.process-terminal.json",
+  scalarRequest: "scalar.request.json",
+  scalarStdout: "scalar.stdout.bin",
+  scalarStderr: "scalar.stderr.bin",
+  scalarTerminal: "scalar.process-terminal.json",
+  verificationRequest: "verification.request.json",
+  verifierStdout: "verifier.stdout.bin",
+  verifierStderr: "verifier.stderr.bin",
+  verifierTerminal: "verifier.process-terminal.json",
+  ownerTerminal: "owner-terminal.json"
+});
+const IMPLEMENTATION_ARTIFACT_PATHS = Object.freeze({
+  "execution-owner": "tinyrustlm/tools/qwen3-numerical-execution-owner.js",
+  "differential-profile": "contracts/vnext/qwen3-numerical-differential-profile.v1.json",
+  "environment-authority": "tinyrustlm/tools/qwen3_numerical_environment_lock.py",
+  "environment-lock": "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json",
+  "source-owner": "tinyrustlm/tools/qwen3-numerical-source-owner.py",
+  "reconstructed-owner": "tinyrustlm/tools/qwen3-slm2-reconstructed-owner.py",
+  "scalar-source": "rust/crates/tinyrustlm-numerical-probe/src/main.rs",
+  "scalar-profile": "contracts/vnext/scalar-numerical-probe-profile.v1.json",
+  verifier: "tinyrustlm/tools/qwen3-numerical-trace-verifier.js",
+  "source-lock": "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json",
+  "composition-result": "contracts/vnext/qwen3-real-composition-execution-result.v12.json"
+});
+const EXECUTABLE_BASENAMES = Object.freeze({
+  git: "git.exe",
+  node: "node.exe",
+  python: "python.exe",
+  scalar: "tinyrustlm-numerical-probe.exe",
+  termination: "taskkill.exe"
+});
 
 class NumericalExecutionOwnerError extends Error {
   constructor(code) {
@@ -45,6 +292,13 @@ class NumericalExecutionOwnerError extends Error {
     this.name = "NumericalExecutionOwnerError";
     this.code = code;
   }
+}
+
+function metricThreshold(maximumAbsoluteError, maximumRelativeError,
+  maximumNormalizedRmse, minimumCosineSimilarity, maximumSignDisagreementRate,
+  maximumUlp) {
+  return Object.freeze({ maximumAbsoluteError, maximumRelativeError, maximumNormalizedRmse,
+    minimumCosineSimilarity, maximumSignDisagreementRate, maximumUlp });
 }
 
 function fail(code) {
@@ -65,6 +319,20 @@ function exactKeys(value, expected, code) {
   const actual = Object.keys(value).sort();
   const wanted = [...expected].sort();
   invariant(JSON.stringify(actual) === JSON.stringify(wanted), code);
+  return value;
+}
+
+function exactLiteralObject(value, expected, code) {
+  exactKeys(value, Object.keys(expected), code);
+  for (const [key, expectedValue] of Object.entries(expected)) {
+    invariant(value[key] === expectedValue, code);
+  }
+  return value;
+}
+
+function exactCanonicalValue(value, expected, code) {
+  invariant(JSON.stringify(recursivelySorted(value))
+    === JSON.stringify(recursivelySorted(expected)), code);
   return value;
 }
 
@@ -90,6 +358,13 @@ function validIdentifier(value) {
 function validProfileId(value) {
   return typeof value === "string" && PROFILE_ID_PATTERN.test(value)
     && !value.includes("//") && !value.endsWith("/");
+}
+
+function validCanonicalUtcSeconds(value) {
+  if (typeof value !== "string" || !CANONICAL_UTC_SECONDS_PATTERN.test(value)) return false;
+  const parsed = new Date(value);
+  return Number.isFinite(parsed.getTime())
+    && parsed.toISOString() === value.replace(/Z$/u, ".000Z");
 }
 
 function safeErrorCode(error, fallback = "numerical-execution-owner-internal") {
@@ -250,6 +525,30 @@ function artifactReference(value, code) {
   return value;
 }
 
+function publicArtifactReference(value, expectedPath, code) {
+  exactKeys(value, ["path", "byteLength", "sha256"], code);
+  requireRelativePath(value.path, code);
+  requireSafeInteger(value.byteLength, 1, MAXIMUM_SOURCE_CONTROLLED_FILE_BYTES, code);
+  invariant(validSha256(value.sha256) && value.path === expectedPath, code);
+  return value;
+}
+
+function sameArtifactIdentity(left, right) {
+  return left.byteLength === right.byteLength && left.sha256 === right.sha256;
+}
+
+function publicArtifactMatchesImplementation(publicArtifact, implementationArtifact) {
+  return publicArtifact.path === implementationArtifact.relativePath
+    && sameArtifactIdentity(publicArtifact, implementationArtifact);
+}
+
+function validateModelReference(value, code) {
+  exactKeys(value, ["fileName", "byteLength", "sha256"], code);
+  invariant(value.fileName === "model.slm2" && value.byteLength === MODEL_BYTE_LENGTH
+    && value.sha256 === MODEL_SHA256, code);
+  return value;
+}
+
 function executableReference(value, code) {
   exactKeys(value, ["basename", "byteLength", "sha256"], code);
   requireFileName(value.basename, code);
@@ -303,6 +602,7 @@ function validateProcessPolicy(policy) {
   invariant(policy.launchLimitPerStage === 1 && policy.retryAllowed === false
     && policy.overwriteAllowed === false && policy.repairAllowed === false
     && policy.continueAfterFailedStage === false, "numerical-execution-process-policy");
+  exactCanonicalValue(policy, PROCESS_POLICY, "numerical-execution-process-policy");
 }
 
 function validateSourceTemplate(template) {
@@ -338,7 +638,8 @@ function validateSourceTemplate(template) {
     && framework.torchVersion === "2.7.0"
     && framework.transformersVersion === "4.51.0",
   "numerical-execution-source-framework");
-  invariant(isPlainObject(template.policy), "numerical-execution-source-template");
+  exactCanonicalValue(template.policy, SOURCE_POLICY,
+    "numerical-execution-source-policy");
 }
 
 function validateOwnerContract(contract) {
@@ -346,8 +647,11 @@ function validateOwnerContract(contract) {
     "implementationArtifacts", "executables", "cases", "requests", "processPolicy",
     "privateNames", "evidenceFiles", "terminalPolicy"],
   "numerical-execution-owner-contract");
-  invariant(contract.schema === OWNER_CONTRACT_SCHEMA && validIdentifier(contract.operationId)
-    && validProfileId(contract.traceProfileId), "numerical-execution-owner-contract");
+  invariant(contract.schema === OWNER_CONTRACT_SCHEMA
+    && validIdentifier(contract.operationId) && OPERATION_ID_PATTERN.test(contract.operationId)
+    && validProfileId(contract.traceProfileId)
+    && contract.traceProfileId === REGISTERED_TRACE_PROFILE_ID,
+  "numerical-execution-owner-contract");
   invariant(Array.isArray(contract.implementationArtifacts)
     && contract.implementationArtifacts.length === 11,
   "numerical-execution-implementation-artifacts");
@@ -361,16 +665,20 @@ function validateOwnerContract(contract) {
     artifactReference({ relativePath: artifact.relativePath,
       byteLength: artifact.byteLength, sha256: artifact.sha256 },
     "numerical-execution-implementation-artifact");
+    invariant(artifact.relativePath === IMPLEMENTATION_ARTIFACT_PATHS[artifact.role],
+      "numerical-execution-implementation-artifact-path");
   }
-  const requiredRoles = ["execution-owner", "differential-profile", "environment-authority",
-    "environment-lock", "source-owner", "reconstructed-owner", "scalar-source",
-    "scalar-profile", "verifier", "source-lock", "composition-result"];
+  const requiredRoles = Object.keys(IMPLEMENTATION_ARTIFACT_PATHS);
   invariant(requiredRoles.every((role) => roles.has(role)),
     "numerical-execution-implementation-roles");
+  const artifactsByRole = new Map(contract.implementationArtifacts
+    .map((artifact) => [artifact.role, artifact]));
   exactKeys(contract.executables, ["git", "python", "node", "scalar", "termination"],
     "numerical-execution-executables");
   for (const role of Object.keys(contract.executables)) {
     executableReference(contract.executables[role], "numerical-execution-executable");
+    invariant(contract.executables[role].basename === EXECUTABLE_BASENAMES[role],
+      "numerical-execution-executable-basename");
   }
   invariant(Array.isArray(contract.cases) && contract.cases.length >= 1
     && contract.cases.length <= 32, "numerical-execution-cases");
@@ -390,6 +698,8 @@ function validateOwnerContract(contract) {
       === item.tokenIdsLeU32Sha256, "numerical-execution-case-digest");
     caseIds.add(item.id);
   }
+  exactCanonicalValue(contract.cases, REGISTERED_CASES,
+    "numerical-execution-registered-cases");
   exactKeys(contract.requests, ["source", "reconstructed", "scalar", "verification"],
     "numerical-execution-request-templates");
   validateSourceTemplate(contract.requests.source);
@@ -408,6 +718,59 @@ function validateOwnerContract(contract) {
     "numerical-execution-scalar-template");
   invariant(contract.requests.verification.schema === VERIFICATION_REQUEST_SCHEMA,
     "numerical-execution-verification-template");
+  validateModelReference(contract.requests.reconstructed.model,
+    "numerical-execution-reconstructed-model");
+  validateModelReference(contract.requests.scalar.model,
+    "numerical-execution-scalar-model");
+  const reconstructedImplementation = exactKeys(contract.requests.reconstructed.implementation,
+    ["blasThreads", "environmentAuthority", "environmentLock", "matrixChunkRows",
+      "networkAllowed", "numpyVersion", "pythonVersion"],
+  "numerical-execution-reconstructed-implementation");
+  artifactReference(reconstructedImplementation.environmentAuthority,
+    "numerical-execution-reconstructed-implementation");
+  artifactReference(reconstructedImplementation.environmentLock,
+    "numerical-execution-reconstructed-implementation");
+  invariant(reconstructedImplementation.blasThreads === 1
+    && reconstructedImplementation.matrixChunkRows === 256
+    && reconstructedImplementation.networkAllowed === false
+    && reconstructedImplementation.numpyVersion === "2.2.5"
+    && reconstructedImplementation.pythonVersion === "3.12.10",
+  "numerical-execution-reconstructed-implementation");
+  exactCanonicalValue(contract.requests.reconstructed.modelSpec, RECONSTRUCTED_MODEL_SPEC,
+    "numerical-execution-reconstructed-model-spec");
+  exactCanonicalValue(contract.requests.reconstructed.policy, RECONSTRUCTED_POLICY,
+    "numerical-execution-reconstructed-policy");
+  exactCanonicalValue(contract.requests.scalar.policy, SCALAR_POLICY,
+    "numerical-execution-scalar-policy");
+  exactCanonicalValue(contract.requests.verification.comparison, REGISTERED_COMPARISON,
+    "numerical-execution-verification-comparison");
+  exactCanonicalValue(contract.requests.verification.policy, VERIFICATION_POLICY,
+    "numerical-execution-verification-policy");
+  invariant(contract.requests.reconstructed.compositionResultSha256
+      === contract.requests.scalar.compositionResultSha256
+    && validSha256(contract.requests.reconstructed.compositionResultSha256),
+  "numerical-execution-composition-result-binding");
+  artifactReference(contract.requests.verification.differentialProfile,
+    "numerical-execution-differential-profile-binding");
+  const sameImplementationReference = (reference, role) => {
+    const artifact = artifactsByRole.get(role);
+    return reference.relativePath === artifact.relativePath
+      && sameArtifactIdentity(reference, artifact);
+  };
+  invariant(sameImplementationReference(contract.requests.source.sourceLock, "source-lock")
+    && sameImplementationReference(contract.requests.source.framework.environmentAuthority,
+      "environment-authority")
+    && sameImplementationReference(contract.requests.source.framework.environmentLock,
+      "environment-lock")
+    && sameImplementationReference(reconstructedImplementation.environmentAuthority,
+      "environment-authority")
+    && sameImplementationReference(reconstructedImplementation.environmentLock,
+      "environment-lock")
+    && sameImplementationReference(contract.requests.verification.differentialProfile,
+      "differential-profile")
+    && artifactsByRole.get("composition-result").sha256
+      === contract.requests.reconstructed.compositionResultSha256,
+  "numerical-execution-owner-contract-artifact-binding");
   validateProcessPolicy(contract.processPolicy);
   exactKeys(contract.privateNames, ["ownerRequestFileBasename", "ownerEvidenceRootBasename",
     "sourceScratchRootBasename", "sourceOutputRootBasename",
@@ -438,6 +801,8 @@ function validateOwnerContract(contract) {
   evidenceNames.forEach((name) => requireFileName(name, "numerical-execution-evidence-file"));
   invariant(new Set(evidenceNames.map((name) => name.toLowerCase())).size
     === evidenceNames.length, "numerical-execution-evidence-file-duplicate");
+  exactCanonicalValue(contract.evidenceFiles, EVIDENCE_FILES,
+    "numerical-execution-evidence-files");
   exactKeys(contract.terminalPolicy, ["successStatus", "rejectionStatus", "failureStatus",
     "ambiguousStatus", "secondInvocationAllowed", "partialOutputCleanupAllowed",
     "evidenceOverwriteAllowed", "thresholdChangeAfterLaunchAllowed"],
@@ -454,6 +819,138 @@ function validateOwnerContract(contract) {
   return contract;
 }
 
+function validateReportLineage(lineage) {
+  exactKeys(lineage, Object.keys(REPORT_LINEAGE_PATHS),
+    "numerical-execution-registration-report-lineage");
+  for (const [role, expectedPath] of Object.entries(REPORT_LINEAGE_PATHS)) {
+    publicArtifactReference(lineage[role], expectedPath,
+      "numerical-execution-registration-report-lineage");
+  }
+  invariant(new Set(Object.values(lineage).map((artifact) => artifact.path)).size
+    === Object.keys(REPORT_LINEAGE_PATHS).length,
+  "numerical-execution-registration-report-lineage");
+}
+
+function validateZeroFailureGate(value, code) {
+  exactKeys(value, ["failed", "passed", "skipped", "total"], code);
+  for (const key of ["failed", "passed", "skipped", "total"]) {
+    requireSafeInteger(value[key], 0, 1000000, code);
+  }
+  invariant(value.failed === 0 && value.skipped === 0 && value.passed >= 1
+    && value.total === value.passed, code);
+}
+
+function validateImplementationCheckpoint(checkpoint, registration, contract) {
+  exactKeys(checkpoint, ["cleanRelease", "focusedGate", "implementationCommit",
+    "implementationTree", "memoryCheckpointCommit", "memoryCheckpointTree", "scalarBuild",
+    "standardGate", "thresholdBasis"],
+  "numerical-execution-registration-implementation-checkpoint");
+  invariant(COMMIT_PATTERN.test(checkpoint.implementationCommit)
+    && COMMIT_PATTERN.test(checkpoint.implementationTree)
+    && checkpoint.memoryCheckpointCommit === registration.registrationParentCommit
+    && checkpoint.memoryCheckpointTree === registration.registrationParentTree,
+  "numerical-execution-registration-implementation-checkpoint");
+
+  exactKeys(checkpoint.cleanRelease, ["aggregateByteLength", "aggregateSha256", "failed",
+    "passed", "runId", "skipped", "total", "verifierReproduced"],
+  "numerical-execution-registration-clean-release");
+  requireSafeInteger(checkpoint.cleanRelease.aggregateByteLength, 1,
+    MAXIMUM_EVIDENCE_JSON_BYTES, "numerical-execution-registration-clean-release");
+  for (const key of ["failed", "passed", "skipped", "total"]) {
+    requireSafeInteger(checkpoint.cleanRelease[key], 0, 1000000,
+      "numerical-execution-registration-clean-release");
+  }
+  invariant(validSha256(checkpoint.cleanRelease.aggregateSha256)
+    && validSha256(checkpoint.cleanRelease.runId)
+    && checkpoint.cleanRelease.failed === 0
+    && checkpoint.cleanRelease.skipped === 0
+    && checkpoint.cleanRelease.passed >= 1
+    && checkpoint.cleanRelease.total === checkpoint.cleanRelease.passed
+    && checkpoint.cleanRelease.verifierReproduced === true,
+  "numerical-execution-registration-clean-release");
+  validateZeroFailureGate(checkpoint.focusedGate,
+    "numerical-execution-registration-focused-gate");
+
+  exactKeys(checkpoint.standardGate, ["declaredInfrastructureOnlySkips", "failed", "passed",
+    "total"], "numerical-execution-registration-standard-gate");
+  for (const key of ["declaredInfrastructureOnlySkips", "failed", "passed", "total"]) {
+    requireSafeInteger(checkpoint.standardGate[key], 0, 1000000,
+      "numerical-execution-registration-standard-gate");
+  }
+  invariant(checkpoint.standardGate.declaredInfrastructureOnlySkips === 2
+    && checkpoint.standardGate.failed === 0
+    && checkpoint.standardGate.passed >= 1
+    && checkpoint.standardGate.total === checkpoint.standardGate.passed + 2,
+  "numerical-execution-registration-standard-gate");
+
+  const scalarBuild = exactKeys(checkpoint.scalarBuild, ["cargoVersion", "crate",
+    "executable", "host", "locked", "offline", "profile", "rustcVersion", "sourceCommit",
+    "sourceTree"], "numerical-execution-registration-scalar-build");
+  executableReference(scalarBuild.executable,
+    "numerical-execution-registration-scalar-build");
+  invariant(scalarBuild.cargoVersion === "cargo 1.96.0 (30a34c682 2026-05-25)"
+    && scalarBuild.crate === "tinyrustlm-numerical-probe"
+    && scalarBuild.host === "x86_64-pc-windows-msvc"
+    && scalarBuild.locked === true && scalarBuild.offline === true
+    && scalarBuild.profile === "release"
+    && scalarBuild.rustcVersion === "rustc 1.96.0 (ac68faa20 2026-05-25)"
+    && COMMIT_PATTERN.test(scalarBuild.sourceCommit)
+    && COMMIT_PATTERN.test(scalarBuild.sourceTree)
+    && scalarBuild.executable.basename === contract.executables.scalar.basename
+    && sameArtifactIdentity(scalarBuild.executable, contract.executables.scalar),
+  "numerical-execution-registration-scalar-build");
+
+  exactLiteralObject(checkpoint.thresholdBasis, {
+    chosenBeforeRealTraceOutput: true,
+    futureOutputUsedToChooseOrLoosen: false,
+    reconstructedToScalar:
+      "same-converted-byte-runtime-contract-with-exact-embedding-and-tighter-aggregate-margins",
+    sourceToReconstructed:
+      "quantization-noninferiority-diagnostic-with-bounded-coordinate-and-tighter-directional-margins",
+    thresholdFailureIsTerminal: true,
+    thresholdsAreEngineeringAcceptanceMarginsNotObservedResults: true
+  }, "numerical-execution-registration-threshold-basis");
+}
+
+function validateCandidate(candidate, contract) {
+  exactKeys(candidate, ["compositionClaim", "compositionResult", "licenseSpdx", "modelId",
+    "modelSlm2", "numericalClaim", "qualityClaim", "revision",
+    "sourceClosureRehashedBeforeRegistration", "sourceLock"],
+  "numerical-execution-registration-candidate");
+  exactKeys(candidate.modelSlm2, ["byteLength", "sha256"],
+    "numerical-execution-registration-candidate-model");
+  invariant(candidate.compositionClaim === "structural-pass-only"
+    && candidate.licenseSpdx === "Apache-2.0"
+    && candidate.modelId === "Qwen/Qwen3-0.6B"
+    && candidate.modelSlm2.byteLength === MODEL_BYTE_LENGTH
+    && candidate.modelSlm2.sha256 === MODEL_SHA256
+    && candidate.numericalClaim === "unproven"
+    && candidate.qualityClaim === "unproven"
+    && candidate.revision === "c1899de289a04d12100db370d81485cdf75e47ca"
+    && candidate.sourceClosureRehashedBeforeRegistration === true,
+  "numerical-execution-registration-candidate");
+  publicArtifactReference(candidate.compositionResult,
+    "contracts/vnext/qwen3-real-composition-execution-result.v12.json",
+  "numerical-execution-registration-candidate-composition");
+  publicArtifactReference(candidate.sourceLock,
+    "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json",
+  "numerical-execution-registration-candidate-source-lock");
+  const artifacts = new Map(contract.implementationArtifacts
+    .map((artifact) => [artifact.role, artifact]));
+  invariant(publicArtifactMatchesImplementation(candidate.compositionResult,
+    artifacts.get("composition-result"))
+    && publicArtifactMatchesImplementation(candidate.sourceLock, artifacts.get("source-lock"))
+    && candidate.compositionResult.byteLength === COMPOSITION_RESULT_BYTE_LENGTH
+    && candidate.compositionResult.sha256 === COMPOSITION_RESULT_SHA256
+    && candidate.sourceLock.byteLength === SOURCE_LOCK_BYTE_LENGTH
+    && candidate.sourceLock.sha256 === SOURCE_LOCK_SHA256
+    && candidate.modelSlm2.byteLength === contract.requests.reconstructed.model.byteLength
+    && candidate.modelSlm2.sha256 === contract.requests.reconstructed.model.sha256
+    && candidate.modelSlm2.byteLength === contract.requests.scalar.model.byteLength
+    && candidate.modelSlm2.sha256 === contract.requests.scalar.model.sha256,
+  "numerical-execution-registration-candidate-binding");
+}
+
 function validateRegistration(value) {
   exactKeys(value, ["schema", "profileId", "status", "registeredAtUtc",
     "registrationParentCommit", "registrationParentTree", "authority", "sourceAnchor",
@@ -463,22 +960,25 @@ function validateRegistration(value) {
   invariant(value.schema === REGISTRATION_SCHEMA
     && value.profileId === "tinyrustlm.qwen3-numerical-differential-execution/2"
     && value.status === "registered-before-private-request-roots-and-real-traces"
+    && validCanonicalUtcSeconds(value.registeredAtUtc)
     && COMMIT_PATTERN.test(value.registrationParentCommit)
     && COMMIT_PATTERN.test(value.registrationParentTree),
   "numerical-execution-registration-identity");
+  exactLiteralObject(value.authority, REGISTRATION_AUTHORITY,
+    "numerical-execution-registration-authority");
   exactKeys(value.sourceAnchor, ["branch", "parentCommit", "parentTree",
     "allowedRegistrationCommitPaths", "cleanAtRegistration",
     "trackingFetchHeadAndRemoteExactAtRegistration"],
-  "numerical-execution-source-anchor");
+  "numerical-execution-registration-source-anchor");
   invariant(value.sourceAnchor.branch === "codex/model-acquisition-v2"
     && value.sourceAnchor.parentCommit === value.registrationParentCommit
     && value.sourceAnchor.parentTree === value.registrationParentTree
     && Array.isArray(value.sourceAnchor.allowedRegistrationCommitPaths)
-    && value.sourceAnchor.allowedRegistrationCommitPaths.length >= 1
-    && value.sourceAnchor.allowedRegistrationCommitPaths.length <= 16
+    && JSON.stringify(value.sourceAnchor.allowedRegistrationCommitPaths)
+      === JSON.stringify(REGISTRATION_COMMIT_PATHS)
     && value.sourceAnchor.allowedRegistrationCommitPaths.every((relativePath) => {
       try {
-        requireRelativePath(relativePath, "numerical-execution-source-anchor");
+        requireRelativePath(relativePath, "numerical-execution-registration-source-anchor");
         return true;
       } catch {
         return false;
@@ -488,8 +988,17 @@ function validateRegistration(value) {
       === value.sourceAnchor.allowedRegistrationCommitPaths.length
     && value.sourceAnchor.cleanAtRegistration === true
     && value.sourceAnchor.trackingFetchHeadAndRemoteExactAtRegistration === true,
-  "numerical-execution-source-anchor");
-  validateOwnerContract(value.ownerContract);
+  "numerical-execution-registration-source-anchor");
+  const contract = validateOwnerContract(value.ownerContract);
+  validateReportLineage(value.reportLineage);
+  validateImplementationCheckpoint(value.implementationCheckpoint, value, contract);
+  validateCandidate(value.candidate, contract);
+  exactLiteralObject(value.outputBoundary, REGISTRATION_OUTPUT_BOUNDARY,
+    "numerical-execution-registration-output-boundary");
+  exactLiteralObject(value.claimBoundary, REGISTRATION_CLAIM_BOUNDARY,
+    "numerical-execution-registration-claim-boundary");
+  exactLiteralObject(value.campaignCounters, REGISTRATION_CAMPAIGN_COUNTERS,
+    "numerical-execution-registration-campaign-counters");
   return value;
 }
 
@@ -584,19 +1093,40 @@ function verifySourceState(state) {
     && crypto.createHash("sha256").update(registrationAtCommit).digest("hex")
       === state.registrationIdentity.sha256, "numerical-execution-registration-commit-drift");
 
+  const verifyParentArtifact = (relativePath, expected, code) => {
+    const bytes = gitBytes(gitPath, repositoryRoot, registration.registrationParentCommit,
+      relativePath);
+    invariant(bytes.length === expected.byteLength
+      && crypto.createHash("sha256").update(bytes).digest("hex") === expected.sha256, code);
+    const currentPath = path.resolve(repositoryRoot, ...relativePath.split("/"));
+    const observed = sha256File(currentPath, MAXIMUM_SOURCE_CONTROLLED_FILE_BYTES, false);
+    invariant(observed.byteLength === expected.byteLength
+      && observed.sha256 === expected.sha256, code);
+    return currentPath;
+  };
   const artifacts = new Map();
   for (const artifact of registration.ownerContract.implementationArtifacts) {
-    const bytes = gitBytes(gitPath, repositoryRoot, registration.registrationParentCommit,
-      artifact.relativePath);
-    invariant(bytes.length === artifact.byteLength
-      && crypto.createHash("sha256").update(bytes).digest("hex") === artifact.sha256,
-    "numerical-execution-parent-artifact-drift");
-    const currentPath = path.resolve(repositoryRoot, ...artifact.relativePath.split("/"));
-    const observed = sha256File(currentPath, MAXIMUM_SOURCE_CONTROLLED_FILE_BYTES, false);
-    invariant(observed.byteLength === artifact.byteLength && observed.sha256 === artifact.sha256,
-      "numerical-execution-current-artifact-drift");
+    const currentPath = verifyParentArtifact(artifact.relativePath, artifact,
+      "numerical-execution-implementation-artifact-drift");
     artifacts.set(artifact.role, Object.freeze({ ...artifact, path: currentPath }));
   }
+  for (const lineageArtifact of Object.values(registration.reportLineage)) {
+    verifyParentArtifact(lineageArtifact.path, lineageArtifact,
+      "numerical-execution-report-lineage-drift");
+  }
+  const checkpoint = registration.implementationCheckpoint;
+  invariant(git(gitPath, repositoryRoot,
+    ["rev-parse", `${checkpoint.implementationCommit}^{tree}`])
+      === checkpoint.implementationTree,
+  "numerical-execution-implementation-checkpoint-tree");
+  git(gitPath, repositoryRoot, ["merge-base", "--is-ancestor",
+    checkpoint.implementationCommit, registration.registrationParentCommit]);
+  invariant(git(gitPath, repositoryRoot,
+    ["rev-parse", `${checkpoint.scalarBuild.sourceCommit}^{tree}`])
+      === checkpoint.scalarBuild.sourceTree,
+  "numerical-execution-scalar-build-tree");
+  git(gitPath, repositoryRoot, ["merge-base", "--is-ancestor",
+    checkpoint.scalarBuild.sourceCommit, registration.registrationParentCommit]);
   return artifacts;
 }
 

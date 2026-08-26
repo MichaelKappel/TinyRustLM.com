@@ -11,6 +11,15 @@ const owner = require("../tools/qwen3-numerical-execution-owner.js");
 
 const ZERO_SHA = "0".repeat(64);
 const TRACE_PROFILE_ID = "tinyrustlm.scalar-full-stage-f32le/1";
+const MODEL_BYTE_LENGTH = 598308416;
+const MODEL_SHA256 =
+  "a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7";
+const SOURCE_LOCK_BYTE_LENGTH = 1901;
+const SOURCE_LOCK_SHA256 =
+  "e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d";
+const COMPOSITION_RESULT_BYTE_LENGTH = 18441;
+const COMPOSITION_RESULT_SHA256 =
+  "0c3e84ad9ce6e22d9a164357c9a900d31825d0639f4f11077dab305f9cf3ef0e";
 
 function tokenDigest(tokenIds) {
   const bytes = Buffer.alloc(tokenIds.length * 4);
@@ -19,56 +28,126 @@ function tokenDigest(tokenIds) {
 }
 
 function artifact(role, relativePath) {
+  if (role === "source-lock") {
+    return { role, relativePath, byteLength: SOURCE_LOCK_BYTE_LENGTH,
+      sha256: SOURCE_LOCK_SHA256 };
+  }
+  if (role === "composition-result") {
+    return { role, relativePath, byteLength: COMPOSITION_RESULT_BYTE_LENGTH,
+      sha256: COMPOSITION_RESULT_SHA256 };
+  }
   return { role, relativePath, byteLength: 1, sha256: ZERO_SHA };
 }
 
-function threshold() {
+function publicArtifact(relativePath) {
+  return { path: relativePath, byteLength: 1, sha256: ZERO_SHA };
+}
+
+function metricThreshold(maximumAbsoluteError, maximumRelativeError,
+  maximumNormalizedRmse, minimumCosineSimilarity, maximumSignDisagreementRate,
+  maximumUlp) {
+  return { maximumAbsoluteError, maximumRelativeError, maximumNormalizedRmse,
+    minimumCosineSimilarity, maximumSignDisagreementRate, maximumUlp };
+}
+
+function registeredComparison() {
   return {
-    maximumAbsoluteError: 0,
-    maximumRelativeError: 0,
-    maximumNormalizedRmse: 0,
-    minimumCosineSimilarity: 1,
-    maximumSignDisagreementRate: 0,
-    maximumUlp: 0
+    chunkElements: 65536,
+    relativeFloor: 0.000001,
+    signFloor: 0.00001,
+    topK: 20,
+    arrows: [
+      {
+        id: "source-to-reconstructed",
+        reference: "source",
+        candidate: "reconstructed",
+        requireGreedyTokenIdentity: false,
+        minimumTopKOverlap: 0.8,
+        thresholds: {
+          default: metricThreshold(1, 2, 0.08, 0.99, 0.05, 2147483647),
+          stages: {
+            "attention-normalized": metricThreshold(0.1, 1, 0.05, 0.998, 0.03,
+              2147483647),
+            "feed-forward-activated": metricThreshold(2, 3, 0.1, 0.98, 0.08,
+              2147483647),
+            "feed-forward-normalized": metricThreshold(0.1, 1, 0.05, 0.998, 0.03,
+              2147483647),
+            "final-normalized": metricThreshold(0.1, 1, 0.05, 0.998, 0.03,
+              2147483647),
+            logits: metricThreshold(1.5, 3, 0.08, 0.98, 0.1, 2147483647),
+            "token-embedding": metricThreshold(0.02, 1, 0.03, 0.999, 0.03,
+              2147483647)
+          }
+        }
+      },
+      {
+        id: "reconstructed-to-scalar",
+        reference: "reconstructed",
+        candidate: "scalar",
+        requireGreedyTokenIdentity: true,
+        minimumTopKOverlap: 1,
+        thresholds: {
+          default: metricThreshold(0.02, 0.05, 0.002, 0.99999, 0.001, 1048576),
+          stages: {
+            "feed-forward-activated": metricThreshold(0.1, 0.1, 0.005, 0.999, 0.005,
+              4194304),
+            logits: metricThreshold(0.2, 0.1, 0.005, 0.999, 0.005, 4194304),
+            "post-attention-residual": metricThreshold(0.05, 0.08, 0.003, 0.9999,
+              0.002, 2097152),
+            "post-feed-forward-residual": metricThreshold(0.05, 0.08, 0.003, 0.9999,
+              0.002, 2097152),
+            "token-embedding": metricThreshold(0, 0, 0, 1, 0, 0)
+          }
+        }
+      }
+    ]
   };
 }
 
 function ownerContract() {
-  const operationId = "qwen3-numerical-c1899de-test-20260826-v2";
+  const operationId = "qwen3-numerical-c1899de-abcdef0-20260826-v2";
   return {
     schema: owner.OWNER_CONTRACT_SCHEMA,
     operationId,
     traceProfileId: TRACE_PROFILE_ID,
     implementationArtifacts: [
       artifact("execution-owner", "tinyrustlm/tools/qwen3-numerical-execution-owner.js"),
-      artifact("differential-profile", "contracts/vnext/differential.json"),
-      artifact("environment-authority", "tinyrustlm/tools/environment.py"),
-      artifact("environment-lock", "contracts/vnext/environment.json"),
-      artifact("source-owner", "tinyrustlm/tools/source.py"),
-      artifact("reconstructed-owner", "tinyrustlm/tools/reconstructed.py"),
-      artifact("scalar-source", "rust/crates/probe/src/main.rs"),
-      artifact("scalar-profile", "contracts/vnext/scalar.json"),
-      artifact("verifier", "tinyrustlm/tools/verifier.js"),
-      artifact("source-lock", "contracts/vnext/source-lock.json"),
-      artifact("composition-result", "contracts/vnext/composition-result.json")
+      artifact("differential-profile",
+        "contracts/vnext/qwen3-numerical-differential-profile.v1.json"),
+      artifact("environment-authority",
+        "tinyrustlm/tools/qwen3_numerical_environment_lock.py"),
+      artifact("environment-lock",
+        "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json"),
+      artifact("source-owner", "tinyrustlm/tools/qwen3-numerical-source-owner.py"),
+      artifact("reconstructed-owner", "tinyrustlm/tools/qwen3-slm2-reconstructed-owner.py"),
+      artifact("scalar-source", "rust/crates/tinyrustlm-numerical-probe/src/main.rs"),
+      artifact("scalar-profile", "contracts/vnext/scalar-numerical-probe-profile.v1.json"),
+      artifact("verifier", "tinyrustlm/tools/qwen3-numerical-trace-verifier.js"),
+      artifact("source-lock", "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json"),
+      artifact("composition-result",
+        "contracts/vnext/qwen3-real-composition-execution-result.v12.json")
     ],
     executables: {
       git: { basename: "git.exe", byteLength: 1, sha256: ZERO_SHA },
       python: { basename: "python.exe", byteLength: 1, sha256: ZERO_SHA },
       node: { basename: "node.exe", byteLength: 1, sha256: ZERO_SHA },
-      scalar: { basename: "scalar.exe", byteLength: 1, sha256: ZERO_SHA },
+      scalar: { basename: "tinyrustlm-numerical-probe.exe", byteLength: 1,
+        sha256: ZERO_SHA },
       termination: { basename: "taskkill.exe", byteLength: 1, sha256: ZERO_SHA }
     },
     cases: [
-      { id: "single-low-token", tokenIds: [3], tokenIdsLeU32Sha256: tokenDigest([3]) },
-      { id: "repeated-cache-token", tokenIds: [17, 17],
-        tokenIdsLeU32Sha256: tokenDigest([17, 17]) }
+      { id: "low-vocabulary-boundary", tokenIds: [0],
+        tokenIdsLeU32Sha256: tokenDigest([0]) },
+      { id: "repeated-kv-position", tokenIds: [17, 17],
+        tokenIdsLeU32Sha256: tokenDigest([17, 17]) },
+      { id: "high-vocabulary-mixed-cache", tokenIds: [151935, 151645, 220, 151935],
+        tokenIdsLeU32Sha256: tokenDigest([151935, 151645, 220, 151935]) }
     ],
     requests: {
       source: {
         schema: "tinyrustlm.qwen3_numerical_source_request.v2",
-        sourceLock: { relativePath: "contracts/vnext/source-lock.json", byteLength: 1,
-          sha256: ZERO_SHA },
+        sourceLock: { relativePath: "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json",
+          byteLength: SOURCE_LOCK_BYTE_LENGTH, sha256: SOURCE_LOCK_SHA256 },
         framework: {
           accelerateVersion: "1.14.0",
           attentionImplementation: "eager",
@@ -76,12 +155,12 @@ function ownerContract() {
           device: "cpu",
           dtype: "float32",
           environmentAuthority: {
-            relativePath: "tinyrustlm/tools/environment.py",
+            relativePath: "tinyrustlm/tools/qwen3_numerical_environment_lock.py",
             byteLength: 1,
             sha256: ZERO_SHA
           },
           environmentLock: {
-            relativePath: "contracts/vnext/environment.json",
+            relativePath: "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json",
             byteLength: 1,
             sha256: ZERO_SHA
           },
@@ -97,54 +176,103 @@ function ownerContract() {
           torchVersion: "2.7.0",
           transformersVersion: "4.51.0"
         },
-        policy: { maximumCases: 2 }
+        policy: {
+          maximumCases: 3,
+          maximumResultBytes: 1048576,
+          maximumSourceFileBytes: 1600000000,
+          maximumTokensPerCase: 4,
+          maximumTraceBytes: 14748160
+        }
       },
       reconstructed: {
         schema: "tinyrustlm.qwen3_slm2_reconstructed_request.v1",
-        compositionResultSha256: ZERO_SHA,
-        model: { fileName: "model.slm2", byteLength: 1, sha256: ZERO_SHA },
-        implementation: { pythonVersion: "3.12.10" },
-        modelSpec: { layerCount: 28 },
-        policy: { maximumCases: 2 }
+        compositionResultSha256: COMPOSITION_RESULT_SHA256,
+        model: { fileName: "model.slm2", byteLength: MODEL_BYTE_LENGTH,
+          sha256: MODEL_SHA256 },
+        implementation: {
+          blasThreads: 1,
+          environmentAuthority: {
+            relativePath: "tinyrustlm/tools/qwen3_numerical_environment_lock.py",
+            byteLength: 1,
+            sha256: ZERO_SHA
+          },
+          environmentLock: {
+            relativePath: "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json",
+            byteLength: 1,
+            sha256: ZERO_SHA
+          },
+          matrixChunkRows: 256,
+          networkAllowed: false,
+          numpyVersion: "2.2.5",
+          pythonVersion: "3.12.10"
+        },
+        modelSpec: {
+          contextLength: 40960,
+          embeddingSize: 1024,
+          feedForwardSize: 3072,
+          headCount: 16,
+          headDimension: 128,
+          kvHeadCount: 8,
+          kvWidth: 1024,
+          layerCount: 28,
+          logicalTensorCount: 310,
+          normalizationEpsilon: 0.000001,
+          qkNormalization: true,
+          qkvBias: false,
+          queryWidth: 2048,
+          ropeTheta: 1000000,
+          tiedEmbeddings: true,
+          vocabularySize: 151936
+        },
+        policy: {
+          maximumCases: 3,
+          maximumModelBytes: MODEL_BYTE_LENGTH,
+          maximumResultBytes: 1048576,
+          maximumTokensPerCase: 4,
+          maximumTraceBytes: 14748160
+        }
       },
       scalar: {
         schema: "tinyrustlm.scalar-numerical-probe-request.v1",
-        compositionResultSha256: ZERO_SHA,
-        model: { fileName: "model.slm2", byteLength: 1, sha256: ZERO_SHA },
-        policy: { maximumCases: 2 }
+        compositionResultSha256: COMPOSITION_RESULT_SHA256,
+        model: { fileName: "model.slm2", byteLength: MODEL_BYTE_LENGTH,
+          sha256: MODEL_SHA256 },
+        policy: {
+          maximumCases: 3,
+          maximumKvBytes: 917504,
+          maximumModelBytes: MODEL_BYTE_LENGTH,
+          maximumScratchBytes: 673296,
+          maximumSequenceTokens: 4,
+          maximumTokensPerCase: 4,
+          maximumTraceBytes: 14748160
+        }
       },
       verification: {
         schema: "tinyrustlm.qwen3_numerical_trace_verification_request.v1",
-        differentialProfile: { relativePath: "contracts/vnext/differential.json",
-          byteLength: 1, sha256: ZERO_SHA },
-        comparison: {
-          chunkElements: 1024,
-          relativeFloor: 1e-6,
-          signFloor: 1e-6,
-          topK: 10,
-          arrows: [
-            { id: "source-to-reconstructed", reference: "source",
-              candidate: "reconstructed", requireGreedyTokenIdentity: false,
-              minimumTopKOverlap: 0.5,
-              thresholds: { default: threshold(), stages: {} } },
-            { id: "reconstructed-to-scalar", reference: "reconstructed",
-              candidate: "scalar", requireGreedyTokenIdentity: true,
-              minimumTopKOverlap: 1,
-              thresholds: { default: threshold(), stages: {} } }
-          ]
+        differentialProfile: {
+          relativePath: "contracts/vnext/qwen3-numerical-differential-profile.v1.json",
+          byteLength: 1,
+          sha256: ZERO_SHA
         },
-        policy: { maximumCases: 2 }
+        comparison: registeredComparison(),
+        policy: {
+          maximumCases: 3,
+          maximumManifestBytes: 4194304,
+          maximumReceiptBytes: 4194304,
+          maximumTokensPerCase: 4,
+          maximumTraceBytes: 14748160
+        },
       }
     },
     processPolicy: {
       maximumDurationMilliseconds: {
-        source: 1000,
-        reconstructed: 1000,
-        scalar: 1000,
-        verifier: 1000
+        source: 14400000,
+        reconstructed: 14400000,
+        scalar: 14400000,
+        verifier: 3600000
       },
-      maximumStdoutBytes: 4096,
-      maximumStderrBytes: 4096,
+      maximumStdoutBytes: 1048576,
+      maximumStderrBytes: 1048576,
       launchLimitPerStage: 1,
       retryAllowed: false,
       overwriteAllowed: false,
@@ -194,6 +322,7 @@ function ownerContract() {
 }
 
 function registration() {
+  const contract = ownerContract();
   return {
     schema: owner.REGISTRATION_SCHEMA,
     profileId: "tinyrustlm.qwen3-numerical-differential-execution/2",
@@ -201,24 +330,149 @@ function registration() {
     registeredAtUtc: "2026-08-26T12:00:00Z",
     registrationParentCommit: "1".repeat(40),
     registrationParentTree: "2".repeat(40),
-    authority: {},
+    authority: {
+      automaticRetry: false,
+      bestOfN: false,
+      closedStructuralV12BytesMayBeModified: false,
+      closedStructuralV12BytesMayBeReadForThisDiagnostic: true,
+      compatibilityReader: false,
+      fallbackRuntime: false,
+      legacySupport: false,
+      memoryEndpointsAuthorized: false,
+      migrationWriter: false,
+      productLifecycle: "prelaunch-single-unversioned-product",
+      publicRegistrationContainsPrivatePaths: false,
+      responseRepair: false,
+      sourceFrameworkSemanticAuthority: true,
+      technicalVersionIsProductGeneration: false,
+      thresholdSearchAfterOutput: false
+    },
     sourceAnchor: {
       branch: "codex/model-acquisition-v2",
       parentCommit: "1".repeat(40),
       parentTree: "2".repeat(40),
       allowedRegistrationCommitPaths: [
-        "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v2.json"
+        "contracts/vnext/README.md",
+        "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v2.json",
+        "docs/architecture/2026-08-26-qwen3-numerical-differential-execution-preregistration-v2.md",
+        "tinyrustlm/tests/qwen3-numerical-differential-execution-preregistration-v2.test.js"
       ],
       cleanAtRegistration: true,
       trackingFetchHeadAndRemoteExactAtRegistration: true
     },
-    reportLineage: {},
-    implementationCheckpoint: {},
-    candidate: {},
-    ownerContract: ownerContract(),
-    outputBoundary: {},
-    claimBoundary: {},
-    campaignCounters: {}
+    reportLineage: {
+      architecture: publicArtifact(
+        "docs/architecture/2026-08-26-qwen3-numerical-successor-owner-clean-cut.md"),
+      correctedSynthesis: publicArtifact(
+        "docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-synthesis-2026-08-26.md"),
+      durableModelLoadMemory: publicArtifact(
+        "wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md"),
+      durableNumericalMemory: publicArtifact(
+        "wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md"),
+      manifest: publicArtifact(
+        "docs/report-intake/2026-08-26/post-v10-native-browser-release/MANIFEST.md"),
+      tddDelta: publicArtifact(
+        "docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-tdd-delta-2026-08-26.md")
+    },
+    implementationCheckpoint: {
+      cleanRelease: {
+        aggregateByteLength: 3995,
+        aggregateSha256: ZERO_SHA,
+        failed: 0,
+        passed: 23,
+        runId: ZERO_SHA,
+        skipped: 0,
+        total: 23,
+        verifierReproduced: true
+      },
+      focusedGate: { failed: 0, passed: 21, skipped: 0, total: 21 },
+      implementationCommit: "3".repeat(40),
+      implementationTree: "4".repeat(40),
+      memoryCheckpointCommit: "1".repeat(40),
+      memoryCheckpointTree: "2".repeat(40),
+      scalarBuild: {
+        cargoVersion: "cargo 1.96.0 (30a34c682 2026-05-25)",
+        crate: "tinyrustlm-numerical-probe",
+        executable: { ...contract.executables.scalar },
+        host: "x86_64-pc-windows-msvc",
+        locked: true,
+        offline: true,
+        profile: "release",
+        rustcVersion: "rustc 1.96.0 (ac68faa20 2026-05-25)",
+        sourceCommit: "5".repeat(40),
+        sourceTree: "6".repeat(40)
+      },
+      standardGate: {
+        declaredInfrastructureOnlySkips: 2,
+        failed: 0,
+        passed: 1568,
+        total: 1570
+      },
+      thresholdBasis: {
+        chosenBeforeRealTraceOutput: true,
+        futureOutputUsedToChooseOrLoosen: false,
+        reconstructedToScalar:
+          "same-converted-byte-runtime-contract-with-exact-embedding-and-tighter-aggregate-margins",
+        sourceToReconstructed:
+          "quantization-noninferiority-diagnostic-with-bounded-coordinate-and-tighter-directional-margins",
+        thresholdFailureIsTerminal: true,
+        thresholdsAreEngineeringAcceptanceMarginsNotObservedResults: true
+      }
+    },
+    candidate: {
+      compositionClaim: "structural-pass-only",
+      compositionResult: {
+        path: "contracts/vnext/qwen3-real-composition-execution-result.v12.json",
+        byteLength: COMPOSITION_RESULT_BYTE_LENGTH,
+        sha256: COMPOSITION_RESULT_SHA256
+      },
+      licenseSpdx: "Apache-2.0",
+      modelId: "Qwen/Qwen3-0.6B",
+      modelSlm2: { byteLength: MODEL_BYTE_LENGTH, sha256: MODEL_SHA256 },
+      numericalClaim: "unproven",
+      qualityClaim: "unproven",
+      revision: "c1899de289a04d12100db370d81485cdf75e47ca",
+      sourceClosureRehashedBeforeRegistration: true,
+      sourceLock: {
+        path: "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json",
+        byteLength: SOURCE_LOCK_BYTE_LENGTH,
+        sha256: SOURCE_LOCK_SHA256
+      }
+    },
+    ownerContract: contract,
+    outputBoundary: {
+      allSixRegisteredFutureNamesObservedAbsent: true,
+      evidenceParentObservedExistingDirectNonReparse: true,
+      ownerEvidenceRootCreated: false,
+      ownerRequestCreated: false,
+      privatePathPublished: false,
+      realProcessLaunched: false,
+      realTraceBytesCreated: false,
+      reconstructedOutputRootCreated: false,
+      scalarOutputRootCreated: false,
+      sourceOutputRootCreated: false,
+      sourceScratchRootCreated: false
+    },
+    claimBoundary: {
+      browserChatVerified: false,
+      browserWasmVerified: false,
+      campaignCreditAuthorized: false,
+      compositionStructuralPassBound: true,
+      modelQualityVerified: false,
+      optimizedNativeVerified: false,
+      p2pAvailabilityVerified: false,
+      reconstructedToScalarVerified: false,
+      registrationCommitMustBeRemoteExactBeforeMaterialization: true,
+      siteDeploymentVerified: false,
+      sourceToReconstructedVerified: false
+    },
+    campaignCounters: {
+      authorizedLiveMemoryRounds: "0/25",
+      currentOutsideNetworkLaneProofs: "0/40",
+      deletionBackedBrowserRounds: "0/50",
+      liveCatalogAnnouncements: "0/20",
+      qualifiedModels: "0/20"
+    }
   };
 }
 
@@ -251,6 +505,161 @@ test("accepts the one clean owner contract and registration shape", () => {
     owner.OWNER_CONTRACT_SCHEMA);
   assert.equal(owner.validateRegistration(registration()).schema,
     owner.REGISTRATION_SCHEMA);
+});
+
+test("rejects authority, claim, output, and campaign-counter drift", () => {
+  const mutations = [
+    ["authority", (value) => { value.authority.legacySupport = true; }],
+    ["claim", (value) => { value.claimBoundary.browserWasmVerified = true; }],
+    ["output", (value) => { value.outputBoundary.realProcessLaunched = true; }],
+    ["counter", (value) => { value.campaignCounters.qualifiedModels = "20/20"; }]
+  ];
+  for (const [name, mutate] of mutations) {
+    const value = registration();
+    mutate(value);
+    assert.throws(() => owner.validateRegistration(value),
+      /numerical-execution-registration/u, name);
+  }
+});
+
+test("rejects candidate identity and cross-member binding drift", () => {
+  const mutations = [
+    ["model", (value) => { value.candidate.modelId = "Other/model"; }],
+    ["revision", (value) => { value.candidate.revision = "f".repeat(40); }],
+    ["model bytes", (value) => { value.candidate.modelSlm2.sha256 = "f".repeat(64); }],
+    ["composition", (value) => {
+      value.candidate.compositionResult.sha256 = "f".repeat(64);
+    }],
+    ["source lock", (value) => { value.candidate.sourceLock.sha256 = "f".repeat(64); }]
+  ];
+  for (const [name, mutate] of mutations) {
+    const value = registration();
+    mutate(value);
+    assert.throws(() => owner.validateRegistration(value),
+      /numerical-execution-registration/u, name);
+  }
+});
+
+test("rejects report-lineage and implementation-checkpoint drift", () => {
+  const mutations = [
+    ["lineage missing", (value) => { delete value.reportLineage.manifest; }],
+    ["lineage path", (value) => {
+      value.reportLineage.architecture.path = "docs/architecture/other.md";
+    }],
+    ["implementation commit", (value) => {
+      value.implementationCheckpoint.implementationCommit = "not-a-commit";
+    }],
+    ["memory parent", (value) => {
+      value.implementationCheckpoint.memoryCheckpointCommit = "f".repeat(40);
+    }],
+    ["gate failure", (value) => { value.implementationCheckpoint.cleanRelease.failed = 1; }],
+    ["verifier", (value) => {
+      value.implementationCheckpoint.cleanRelease.verifierReproduced = false;
+    }],
+    ["scalar", (value) => {
+      value.implementationCheckpoint.scalarBuild.executable.sha256 = "f".repeat(64);
+    }],
+    ["threshold", (value) => {
+      value.implementationCheckpoint.thresholdBasis.futureOutputUsedToChooseOrLoosen = true;
+    }]
+  ];
+  for (const [name, mutate] of mutations) {
+    const value = registration();
+    mutate(value);
+    assert.throws(() => owner.validateRegistration(value),
+      /numerical-execution-registration/u, name);
+  }
+});
+
+test("rejects noncanonical time and any registration path closure drift", () => {
+  const invalidTimes = [
+    "2026-08-26T12:00:00.000Z",
+    "2026-08-26T12:00:00+00:00",
+    "2026-02-30T12:00:00Z",
+    "not-a-time"
+  ];
+  for (const registeredAtUtc of invalidTimes) {
+    const value = registration();
+    value.registeredAtUtc = registeredAtUtc;
+    assert.throws(() => owner.validateRegistration(value),
+      /numerical-execution-registration/u, registeredAtUtc);
+  }
+
+  const formerPath = registration();
+  formerPath.sourceAnchor.allowedRegistrationCommitPaths[1] =
+    "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v1.json";
+  assert.throws(() => owner.validateRegistration(formerPath),
+    /numerical-execution-registration/u);
+
+  const missingPath = registration();
+  missingPath.sourceAnchor.allowedRegistrationCommitPaths.pop();
+  assert.throws(() => owner.validateRegistration(missingPath),
+    /numerical-execution-registration/u);
+});
+
+test("rejects nested request, case, process, and evidence-layout drift", () => {
+  const mutations = [
+    ["source policy", (value) => {
+      value.ownerContract.requests.source.policy.maximumCases = 32;
+    }],
+    ["model spec", (value) => {
+      value.ownerContract.requests.reconstructed.modelSpec.layerCount = 27;
+    }],
+    ["comparison", (value) => {
+      value.ownerContract.requests.verification.comparison.topK = 1024;
+    }],
+    ["duration", (value) => {
+      value.ownerContract.processPolicy.maximumDurationMilliseconds.source = 1;
+    }],
+    ["case", (value) => {
+      value.ownerContract.cases[0].tokenIds = [4];
+      value.ownerContract.cases[0].tokenIdsLeU32Sha256 = tokenDigest([4]);
+    }],
+    ["evidence", (value) => {
+      value.ownerContract.evidenceFiles.binding = "other-binding.json";
+    }]
+  ];
+  for (const [name, mutate] of mutations) {
+    const value = registration();
+    mutate(value);
+    assert.throws(() => owner.validateRegistration(value),
+      /numerical-execution/u, name);
+  }
+});
+
+test("rejects operation, trace, implementation-role, and executable drift", () => {
+  const mutations = [
+    ["operation", (value) => {
+      const operationId = "different-valid-operation";
+      value.ownerContract.operationId = operationId;
+      value.ownerContract.privateNames = {
+        ownerRequestFileBasename: `${operationId}-owner-request.json`,
+        ownerEvidenceRootBasename: `${operationId}-owner-evidence`,
+        sourceScratchRootBasename: `${operationId}-source-scratch`,
+        sourceOutputRootBasename: `${operationId}-source`,
+        reconstructedOutputRootBasename: `${operationId}-reconstructed`,
+        scalarOutputRootBasename: `${operationId}-scalar`
+      };
+    }],
+    ["trace profile", (value) => {
+      value.ownerContract.traceProfileId = "other.valid-profile/1";
+    }],
+    ["implementation path", (value) => {
+      value.ownerContract.implementationArtifacts.find(
+        (artifactValue) => artifactValue.role === "source-owner").relativePath =
+          "tinyrustlm/tools/other-source.py";
+    }],
+    ["executable", (value) => {
+      value.ownerContract.executables.scalar.basename = "other.exe";
+      value.implementationCheckpoint.scalarBuild.executable.basename = "other.exe";
+    }]
+  ];
+  for (const [name, mutate] of mutations) {
+    const value = registration();
+    mutate(value);
+    assert.throws(() => owner.validateRegistration(value),
+      /numerical-execution/u, name);
+  }
 });
 
 test("rejects the closed v1 owner, registration, request, and source-template semantics", () => {
@@ -349,8 +758,9 @@ test("derives all child requests from one registration without prompt or answer 
   };
   const requests = owner.childRequests(state, paths);
   assert.deepEqual(requests.source.cases, [
-    { id: "single-low-token", tokenIds: [3] },
-    { id: "repeated-cache-token", tokenIds: [17, 17] }
+    { id: "low-vocabulary-boundary", tokenIds: [0] },
+    { id: "repeated-kv-position", tokenIds: [17, 17] },
+    { id: "high-vocabulary-mixed-cache", tokenIds: [151935, 151645, 220, 151935] }
   ]);
   assert.equal(requests.source.registrationSha256, "a".repeat(64));
   assert.equal(requests.reconstructed.compositionRoot, "E:\\composition");

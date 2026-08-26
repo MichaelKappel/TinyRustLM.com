@@ -104,8 +104,8 @@
     },
     "soleExecutionOwner": {
       "path": "tinyrustlm/tools/qwen3-numerical-execution-owner.js",
-      "byteLength": 53264,
-      "sha256": "b20def54d58116d7918d0b4018b4282c6975a5298859d6b30d47e1f17eb7aa9f",
+      "byteLength": 77939,
+      "sha256": "e21c1c8459a64abbdf47d98c81ca4b5526e7b156ce9a72079c0f735d3515955d",
       "profileId": "tinyrustlm.qwen3-numerical-execution-owner/2",
       "stageOrder": [
         "publisher-source",

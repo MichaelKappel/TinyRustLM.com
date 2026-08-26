@@ -9,9 +9,9 @@ const test = require("node:test");
 const repositoryRoot = path.resolve(__dirname, "../..");
 const memoryRelativePath =
   "wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md";
-const memoryLength = 15970;
+const memoryLength = 18988;
 const memorySha256 =
-  "29a60092e9e10c9edcfb215ae87b95a10331470c2c5616ccec110dbd6d360569";
+  "ad30c359eac53f54fc536350608c410a2fed846ead96f8d3741788659362c2bb";
 const hotRoutes = [
   "workspace.uai",
   ".uai/index.uai",
@@ -69,6 +69,10 @@ test("durable model-load correction memory binds exact implementation evidence",
     /9ef25fd42c90714285ca86a58d20174c2efc1a8a037e8f90c5ec314f0f04561f/u);
   assert.match(memory,
     /0514f83b28a210ac195456553774daccf48be8129dc60d9b6ed5681be2d0105a/u);
+  assert.match(memory,
+    /e21c1c8459a64abbdf47d98c81ca4b5526e7b156ce9a72079c0f735d3515955d/u);
+  assert.match(memory,
+    /c04abffe412f5032b3c66d6ce00ece4d27a5d89f3ae6678e742cc56ce64f86fc/u);
 });
 
 test("every hot UAI route deep-links the correction and reviewed report memory", () => {
@@ -96,6 +100,12 @@ test("every hot UAI route deep-links the correction and reviewed report memory",
       relativePath);
     assert.match(value,
       /0514f83b28a210ac195456553774daccf48be8129dc60d9b6ed5681be2d0105a/u,
+      relativePath);
+    assert.match(value,
+      /e21c1c8459a64abbdf47d98c81ca4b5526e7b156ce9a72079c0f735d3515955d/u,
+      relativePath);
+    assert.match(value,
+      /c04abffe412f5032b3c66d6ce00ece4d27a5d89f3ae6678e742cc56ce64f86fc/u,
       relativePath);
     assert.match(value, /0\/20.*0\/50.*0\/25.*0\/40.*0\/20/u, relativePath);
     assert.match(value, /MemoryEndpoints/u, relativePath);
