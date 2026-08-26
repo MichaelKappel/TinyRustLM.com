@@ -887,6 +887,22 @@ fetched, and proved four-way exact before its root is created or its verifier
 is invoked. See
 `docs/architecture/2026-08-26-qwen3-numerical-source-terminal-verification-v2-preregistration.md`.
 
+`qwen3-numerical-source-terminal-verification-result.v2.json` closes that V2
+operation as `pass`. The corrected verifier was invoked exactly once, exited
+0, emitted the exact 1,766-byte preregistered finding, and produced empty
+stderr. Its create-only 3,555-byte process terminal binds unchanged executable,
+registration, owner request, source-evidence content/inventory/metadata,
+scratch, material-root, and worktree state. An independent read-only closure
+audit reproduced the canonical stdout and terminal, three-file/5,321-byte
+private inventory, verification ID, and current metadata digests. The public
+result is 7,739 bytes at SHA-256
+`0261525e59aefe4c19e4a3d5ec2afc5e59b26c0ef718c9ddaf2761757c8cc4fe`.
+It permits only the bounded statement that the preserved source-terminal
+failure was independently verified. It proves no numerical parity or broader
+model, browser, quality, P2P, package, site, deployment, MemoryEndpoints, or
+campaign claim. See
+`docs/architecture/2026-08-26-qwen3-numerical-source-terminal-verification-v2-pass.md`.
+
 `qwen3-numerical-differential-execution-result.v1.json` closes that registered
 operation as an independently verified terminal source-process failure. The
 sole owner launched the publisher source arm once; it exited 1 after 54,038 ms

@@ -1,0 +1,197 @@
+{
+  "schema": "tinyrustlm.qwen3-numerical-source-terminal-verification-result.v2",
+  "profileId": "tinyrustlm.qwen3-numerical-source-terminal-verification/2",
+  "operationId": "qwen3-numerical-c1899de-4891e8a-20260826-v2-terminal-verification-v2",
+  "sourceOperationId": "qwen3-numerical-c1899de-4891e8a-20260826-v2",
+  "status": "pass",
+  "reasonCode": "registered-expected-finding-established",
+  "recordedAtUtc": "2026-08-26T22:45:29.4488897Z",
+  "registration": {
+    "branch": "codex/model-acquisition-v2",
+    "commit": "747fc88662a379bdb7203269f13dcecdc99f5267",
+    "localTrackingFetchHeadAndRemoteExactBeforeExecution": true,
+    "outputRootObservedAbsentAtPreflight": true,
+    "outputRootObservedAbsentBeforeRegistration": true,
+    "profileByteLength": 12217,
+    "profilePath": "contracts/vnext/qwen3-numerical-source-terminal-verification-preregistration.v2.json",
+    "profileSha256": "fc4a7500c427e56f3b178eeb4c48ebd0bd6754f5e513b1aef403da4a21d46ca4",
+    "sourceCleanBeforeExecution": true,
+    "tree": "402990bb00f5a0adcc7424b3d0cd307ac4e236e7"
+  },
+  "predecessorVerification": {
+    "invocationCount": 1,
+    "operationId": "qwen3-numerical-c1899de-4891e8a-20260826-v2-terminal-verification-v1",
+    "publicResult": {
+      "byteLength": 6268,
+      "profilePath": "contracts/vnext/qwen3-numerical-source-terminal-verification-result.v1.json",
+      "sha256": "e27bbbf2e321bf79b6c7f9009427de191b492a9ab74537ba7751866e811076fa"
+    },
+    "reasonCode": "verifier-rejected-and-process-terminal-writer-failed",
+    "repairAllowed": false,
+    "replayAllowed": false,
+    "status": "terminal-ambiguous"
+  },
+  "correctedContract": {
+    "compatibilityReaderAllowed": false,
+    "formerAddedBasenameShapeAccepted": false,
+    "implementationCommit": "efc29dd6007401497e76fad3ec3036c23b092213",
+    "implementationTree": "03f88978b62cc300ab71b4ab9af5b2782ca6b880",
+    "processTerminalExecutableFields": [
+      "byteLength",
+      "sha256"
+    ],
+    "registeredExecutableFields": [
+      "basename",
+      "byteLength",
+      "sha256"
+    ],
+    "verifier": {
+      "byteLength": 30944,
+      "sha256": "b074082a2385e2cde734b3e11832dfed56496afc2dd21645a18457b9cade8ee5"
+    }
+  },
+  "sourceOperation": {
+    "evidenceAggregateByteLength": 13143,
+    "evidenceFileCount": 9,
+    "failedOutputAdoptionAllowed": false,
+    "launchCounts": {
+      "reconstructed": 0,
+      "scalar": 0,
+      "source": 1,
+      "verifier": 0
+    },
+    "materialOutputRootsAbsentAfterVerification": true,
+    "ownerReasonCode": "source-process-not-pass",
+    "ownerRequest": {
+      "byteLength": 1458,
+      "privatePathPublished": false,
+      "sha256": "f1c981a8514d1cdbe1752fdbcfb21bc9f5aa7c9ef3fb2ce9102800c336d238a4"
+    },
+    "ownerStatus": "terminal-failure",
+    "ownerTerminal": {
+      "byteLength": 2794,
+      "sha256": "38ba8b7e670098d16eb0faa1475d06944be49ec45d1e163588c300131d19bef2"
+    },
+    "registration": {
+      "profileByteLength": 24806,
+      "profilePath": "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v2.json",
+      "profileSha256": "27b0f98a4b00b0561b4e50d7bf6d31d257a91f02c3f33f6c5a8197c652529c77"
+    },
+    "secondOwnerInvocationAllowed": false,
+    "sourceProcessSafeCode": "source-trace-environment-drift",
+    "sourceScratchExistsAndIsEmpty": true
+  },
+  "privateVerificationEvidence": {
+    "aggregateByteLength": 5321,
+    "fileCount": 3,
+    "privatePathPublished": false,
+    "processTerminal": {
+      "byteLength": 3555,
+      "createOnly": true,
+      "reasonCode": "registered-expected-finding-established",
+      "sha256": "eed9f38b0787ab67bb1b266d176af4cb56b0e3a4c365a66f88e3e3a08cedb3f9",
+      "status": "pass"
+    },
+    "stderr": {
+      "byteLength": 0,
+      "rawPublished": false,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "byteLength": 1766,
+      "rawPublished": false,
+      "sha256": "6cb27c8ab284acf053e3d0872c66a39b1902549f36a9b587d4e846000b62a90d"
+    }
+  },
+  "verifierExecution": {
+    "argumentsSha256": "05823a5fae24465ff47a0ad242ef7a0a28116e3a11522ceddfb08b9aa4a99d15",
+    "durationMilliseconds": 90,
+    "executableUnchanged": true,
+    "exitCode": 0,
+    "expectedVerificationId": "ac4a8b4495c0df1416dd7d7e367644e472d193521c68de63f422cda530d69a29",
+    "killedForOverflow": false,
+    "observedInvocationCount": 1,
+    "processClosedObserved": true,
+    "processStarted": true,
+    "requiredInvocationCount": 1,
+    "retryAllowed": false,
+    "secondInvocationAllowed": false,
+    "terminationRequested": false,
+    "timedOut": false,
+    "verificationId": "ac4a8b4495c0df1416dd7d7e367644e472d193521c68de63f422cda530d69a29",
+    "verificationPass": true,
+    "verifier": {
+      "byteLength": 30944,
+      "sha256": "b074082a2385e2cde734b3e11832dfed56496afc2dd21645a18457b9cade8ee5"
+    }
+  },
+  "readOnlyProof": {
+    "fullPreregisteredReadOnlyProofEstablished": true,
+    "implementationArtifactsUnchanged": true,
+    "materialOutputRootsAbsentAfterInvocation": true,
+    "ownerRequestMetadataAfterSha256": "3046553209988745f987561caa78268960d5555d74b83613bd710b867f61b412",
+    "ownerRequestMetadataBeforeSha256": "3046553209988745f987561caa78268960d5555d74b83613bd710b867f61b412",
+    "ownerRequestMetadataUnchanged": true,
+    "sourceEvidenceAggregateByteLength": 13143,
+    "sourceEvidenceContentInventoryAndMetadataUnchanged": true,
+    "sourceEvidenceFileCount": 9,
+    "sourceEvidenceMetadataAfterSha256": "4936c9faa5f3f6bd22a8dab26f02bcea96ecf3a52f193876f30db1b17a77fdee",
+    "sourceEvidenceMetadataBeforeSha256": "4936c9faa5f3f6bd22a8dab26f02bcea96ecf3a52f193876f30db1b17a77fdee",
+    "sourceScratchEmptyAfterInvocation": true,
+    "verifierWritesToSourceEvidenceObserved": false,
+    "worktreeCleanAfterInvocation": true
+  },
+  "independentClosureAudit": {
+    "canonicalProcessTerminalVerified": true,
+    "canonicalVerifierStdoutVerified": true,
+    "currentOwnerRequestMetadataMatchesTerminalAfter": true,
+    "currentSourceEvidenceMetadataMatchesTerminalAfter": true,
+    "performedAfterTerminal": true,
+    "privateAggregateByteLength": 5321,
+    "privateFileCount": 3,
+    "registeredFindingEqualityVerified": true,
+    "writesPerformed": false
+  },
+  "decision": {
+    "allowedClaim": "source-terminal-failure-independently-verified",
+    "nextRequiredGate": "new-output-free-source-to-reconstructed-numerical-parity-registration",
+    "operationClosed": true,
+    "reasonCode": "registered-expected-finding-established",
+    "registeredExpectedFindingEstablished": true,
+    "sourceTerminalFailureIndependentlyVerified": true,
+    "status": "pass"
+  },
+  "claimBoundary": {
+    "behavioralQualityVerified": false,
+    "browserChatVerified": false,
+    "browserWasmParityVerified": false,
+    "campaignCreditAuthorized": false,
+    "catalogAnnouncementVerified": false,
+    "memoryEndpointsVerified": false,
+    "modelQualityVerified": false,
+    "numericalParityVerified": false,
+    "optimizedNativeParityVerified": false,
+    "p2pAvailabilityVerified": false,
+    "packagePublicationVerified": false,
+    "siteDeploymentVerified": false,
+    "sourceTerminalFailureIndependentlyVerified": true
+  },
+  "terminality": {
+    "adoptionAllowed": false,
+    "existingPrivateBytesImmutable": true,
+    "operationClosed": true,
+    "overwriteAllowed": false,
+    "repairAllowed": false,
+    "retryAllowed": false,
+    "secondInvocationAllowed": false,
+    "sourceOwnerReplayAllowed": false,
+    "v1ModificationAllowed": false
+  },
+  "campaignCounters": {
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "deletionBackedBrowserRounds": "0/50",
+    "liveCatalogAnnouncements": "0/20",
+    "qualifiedModels": "0/20"
+  }
+}
