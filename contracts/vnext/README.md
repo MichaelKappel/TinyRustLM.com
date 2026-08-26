@@ -800,12 +800,23 @@ shipping compatibility reader or translator exists. See
 
 The sole active owner now requires request, preregistration, and owner-contract
 technical schemas v2 plus source-request schema v2 and the complete corrected
-offline source-framework closure. The future active path is
-`qwen3-numerical-differential-execution-preregistration.v2.json`, but that file
-is deliberately absent at this implementation checkpoint. It may be authored
-only after the corrected owner passes the canonical clean gate, is committed
-and pushed, and has fresh four-way remote equality. No successor private
-request, root, trace, or process is authorized yet. See
+offline source-framework closure.
+`qwen3-numerical-differential-execution-preregistration.v2.json` is the one
+output-free successor registration. It is 24,806 canonical bytes at SHA-256
+`27b0f98a4b00b0561b4e50d7bf6d31d257a91f02c3f33f6c5a8197c652529c77`
+and binds parent commit `4891e8aa15523430e2050c8370baed593d7a19d9`, tree
+`c0a2e869ef2ab00abe339b1701764a64547a7c7a`, the independently reproduced
+1,574/0/2 standard and 23/0/0 protected clean gates, the rehashed pinned source
+closure, eleven implementation artifacts, five executable identities, three
+token-only cases, two pre-output proof arrows, six absent logical names, and
+immutable terminal rules. It contains no private path and created no request,
+root, trace, process, or verdict.
+
+The registration source must be committed through its exact four-path closure,
+pushed, freshly fetched, and four-way remote exact before any successor private
+material is authorized. See
+`docs/architecture/2026-08-26-qwen3-numerical-differential-execution-preregistration-v2.md`
+and
 `docs/architecture/2026-08-26-qwen3-numerical-successor-owner-clean-cut.md`.
 
 The active v2 owner also treats every preregistration family as semantic
