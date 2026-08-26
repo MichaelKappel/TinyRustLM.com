@@ -1,12 +1,12 @@
-profile: runtime-mirust.short-term-memory.v502
-updated_utc: 2026-08-26T19:27:16Z
+profile: runtime-mirust.short-term-memory.v503
+updated_utc: 2026-08-26T19:45:08Z
 
 current_ecosystem_deployment_reconciliation_2026_08_26:
   just_completed: Corrected finalized-ledger ValidateOnly semantics without weakening pending-release materialization. A bounded read-only audit rechecked the full public ecosystem; no production write was eligible because current source changes zero deployment-manifest web members and the TinyRustLM.com ledger has no pending release.
-  deep_resume: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md is 10,772 bytes/SHA256 ac81d330b0c3522c2661d06569e7047e950116d0a3e6417463ae4d036144dade and is indexed in .uai/long-term-memory.uai.
+  deep_resume: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md is 11,752 bytes/SHA256 104c47929d011ce73228f9ea3f54db081c7e39bccfb4ae0d52248538b355842c and is indexed in .uai/long-term-memory.uai.
   current_truth: TinyRustLM.com 0.3.0 and the three terminal documentation/catalog sites match immutable public bytes; Runtime redirects match their receipt. LMComposer remains source/live-drifted without a publication receipt, Runtime writes remain forbidden under its misbound profile, and MiRust lacks a complete deployable snapshot.
-  verification: Focused 11/11, deployment suite pass, UI 79/79, real local Chromium 12-observation pass, complete standard 1,591/0/3 of 1,594, and corrected private public readback 68,813/SHA256 110f730825719dad2ffe95cda9e8740a1e7e6e485577755111fae11dbe380d31.
-  immediate_work: Commit/push/fresh-four-way-verify the correction and memory, run the protected 23-test release-surface gate from clean source, record exact evidence, then resume the output-free Qwen3 numerical successor preregistration.
+  verification: Focused 11/11, deployment suite pass, UI 79/79, real local Chromium 12-observation pass, complete standard 1,591/0/3 of 1,594, and corrected private public readback 68,813/SHA256 110f730825719dad2ffe95cda9e8740a1e7e6e485577755111fae11dbe380d31. Commit feed5078ed5c4fc6b82d0498fac7139a13aaeb3e/tree 64b7cc2c89aeb15cc2d230db59479dd540206c5b is pushed/four-way exact; clean protected run cbffb6386bfbc8a437cb3b595d9c4c76c4c96f1f93967246a416cea57a77045c passes 23/23 with independently verified aggregate 3995/0e11adab139e216bb86c262a7aa40c3570cff6563e2305e15b4dc13bb0ef26b1.
+  immediate_work: Commit/push/fresh-four-way-verify this final memory-only checkpoint, then resume the output-free Qwen3 numerical successor preregistration. Do not rerun the protected gate to create duplicate evidence.
   boundary: Do not replay terminal deployments, invent a release, write through a misbound or incomplete sibling profile, or claim deployment/model/browser/P2P/MemoryEndpoints/campaign progress; counters stay 0/20,0/50,0/25,0/40,0/20.
 
 current_qwen3_model_load_correction_2026_08_26:

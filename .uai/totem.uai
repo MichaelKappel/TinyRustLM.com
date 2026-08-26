@@ -1,11 +1,12 @@
-profile: runtime-mirust.totem.v202
-updated_utc: 2026-08-26T19:27:16Z
+profile: runtime-mirust.totem.v203
+updated_utc: 2026-08-26T19:45:08Z
 
 ecosystem_deployment_reconciliation_totem_2026_08_26:
-  durable_route: Preserve wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md at 10,772 bytes/SHA256 ac81d330b0c3522c2661d06569e7047e950116d0a3e6417463ae4d036144dade.
+  durable_route: Preserve wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md at 11,752 bytes/SHA256 104c47929d011ce73228f9ea3f54db081c7e39bccfb4ae0d52248538b355842c.
   preserve_truthful_publication: Publish only a changed, authorized, pending, completely green closure. Exact-current public bytes are successful reconciliation but are not a new deployment.
   preserve_terminal_history: Never replay TinyRustLM.com 0.3.0 or the terminal documentation/catalog operations, and never invent a release merely to satisfy urgency.
   preserve_site_ownership: Runtime's misbound profile, MiRust's incomplete snapshot, and LMComposer's missing authorized publication receipt stay visible blockers until each owning surface closes its own proof chain.
+  preserve_clean_gate: Keep implementation commit feed5078ed5c4fc6b82d0498fac7139a13aaeb3e and protected run cbffb6386bfbc8a437cb3b595d9c4c76c4c96f1f93967246a416cea57a77045c immutable; do not rerun them to manufacture publication evidence.
   preserve_claims: Readback and tests advance no model, browser, P2P, MemoryEndpoints, or campaign claim; counters remain 0/20,0/50,0/25,0/40,0/20.
 
 current_qwen3_model_load_correction_2026_08_26:

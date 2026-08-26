@@ -1,12 +1,12 @@
-profile: runtime-mirust.test-plan.v303
-updated_utc: 2026-08-26T19:27:16Z
+profile: runtime-mirust.test-plan.v304
+updated_utc: 2026-08-26T19:45:08Z
 
 ecosystem_deployment_reconciliation_test_plan_2026_08_26:
-  durable_route: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md is 10,772 bytes/SHA256 ac81d330b0c3522c2661d06569e7047e950116d0a3e6417463ae4d036144dade.
+  durable_route: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md is 11,752 bytes/SHA256 104c47929d011ce73228f9ea3f54db081c7e39bccfb4ae0d52248538b355842c.
   local_green: Finalized-ledger ValidateOnly validates 23/23 artifacts; focused contract/deploy tests pass 11/11; deployment suite passes; UI passes 79/79; real local Chromium smoke passes 12 observations; complete standard passes 1,591/0/3 of 1,594.
   public_green: Corrected private readback 68,813/SHA256 110f730825719dad2ffe95cda9e8740a1e7e6e485577755111fae11dbe380d31 records exact TinyRustLM.com and terminal documentation/catalog bytes plus Runtime redirect equality.
   required_negative_state: Preserve zero web-member intersection, finalized ledger with no pending release, LMComposer source/live mismatch, Runtime misbinding, MiRust incomplete snapshot, and zero campaign counters as acceptance facts rather than bypass targets.
-  clean_source_gate: After commit/push/fresh equality, run the protected 23-test release-surface suite into a wholly new external evidence root and independently verify its aggregate. A pass proves release controls, not a deployment.
+  clean_source_gate: Commit feed5078ed5c4fc6b82d0498fac7139a13aaeb3e/tree 64b7cc2c89aeb15cc2d230db59479dd540206c5b is pushed/four-way exact. Protected run cbffb6386bfbc8a437cb3b595d9c4c76c4c96f1f93967246a416cea57a77045c passed 23/23 in a new external root; maintained read-only verification reproduced aggregate 3995/0e11adab139e216bb86c262a7aa40c3570cff6563e2305e15b4dc13bb0ef26b1. This proves release controls, not a deployment.
   failure_rule: Any changed byte, ledger drift, credential mismatch, readback mismatch, unexpected network route, dirty source, or protected-gate failure blocks publication and cannot be repaired by replaying an old terminal operation.
 
 current_qwen3_model_load_correction_2026_08_26:

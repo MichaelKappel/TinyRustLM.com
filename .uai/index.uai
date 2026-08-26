@@ -1,7 +1,7 @@
-profile: runtime-mirust.uai-index.v275
-updated_utc: 2026-08-26T19:27:16Z
+profile: runtime-mirust.uai-index.v276
+updated_utc: 2026-08-26T19:45:08Z
 
-current_ecosystem_deployment_reconciliation_2026_08_26: Read wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md, 10,772 bytes/SHA256 ac81d330b0c3522c2661d06569e7047e950116d0a3e6417463ae4d036144dade before deployment work. TinyRustLM.com and three terminal documentation/catalog publications are exact-current; Runtime redirects pass readback; source has no web delta or pending release, so no write occurred. LMComposer needs a separately authorized publication; Runtime is misbound and MiRust incomplete. Commit/push/fresh-verify, run the clean protected gate, then resume output-free numerical preregistration. No broader claim or counter credit.
+current_ecosystem_deployment_reconciliation_2026_08_26: Read wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md, 11,752 bytes/SHA256 104c47929d011ce73228f9ea3f54db081c7e39bccfb4ae0d52248538b355842c before deployment work. TinyRustLM.com and three terminal documentation/catalog publications are exact-current; Runtime redirects pass readback; source has no web delta or pending release, so no write occurred. LMComposer needs a separately authorized publication; Runtime is misbound and MiRust incomplete. Correction commit feed5078ed5c4fc6b82d0498fac7139a13aaeb3e/tree 64b7cc2c89aeb15cc2d230db59479dd540206c5b is pushed/four-way exact; protected run cbffb6386bfbc8a437cb3b595d9c4c76c4c96f1f93967246a416cea57a77045c passes 23/23 with independently verified aggregate 3995/0e11adab139e216bb86c262a7aa40c3570cff6563e2305e15b4dc13bb0ef26b1. Commit/push/fresh-verify this memory checkpoint, then resume output-free numerical preregistration. No broader claim or counter credit.
 
 current_qwen3_model_load_correction_2026_08_26:
   durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md, 20,442 bytes/SHA256 91764c9d5bde7d96e3d650396a1e882984b0b91baa0814c3b791f0d58321b4df before any successor numerical work.

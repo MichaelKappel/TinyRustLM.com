@@ -1,12 +1,13 @@
-profile: runtime-mirust.operations.v181
-updated_utc: 2026-08-26T19:27:16Z
+profile: runtime-mirust.operations.v182
+updated_utc: 2026-08-26T19:45:08Z
 
 ecosystem_deployment_reconciliation_operations_2026_08_26:
-  durable_route: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md, 10,772 bytes/SHA256 ac81d330b0c3522c2661d06569e7047e950116d0a3e6417463ae4d036144dade.
+  durable_route: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md, 11,752 bytes/SHA256 104c47929d011ce73228f9ea3f54db081c7e39bccfb4ae0d52248538b355842c.
   decision: The operational result is ecosystem-reconciled-with-external-blockers. TinyRustLM.com has zero production-byte delta and no pending release; all already-terminal site operations remain immutable and were not replayed.
   verified_surfaces: Exact public readback passes for TinyRustLM.com 0.3.0, TinyRustLM.MiRust.com 1.7.0, MiniModel.MiRust.com 1.0.0, MiniModel.org 1.0.0, and Runtime.MiRust.com's redirect contract. MiRust.com reachability is observation only.
   blocked_writes: Do not use Runtime's misbound profile or MiRust's incomplete snapshot. LMComposer requires a separate authorized create-only publication from exact clean source plus immutable HTTPS readback evidence.
-  finish_order: Commit and push the validator/memory change; fresh-fetch and prove four-way equality; run the protected release gate from the clean commit; preserve evidence; then resume output-free numerical preregistration.
+  clean_checkpoint: Validator/memory commit feed5078ed5c4fc6b82d0498fac7139a13aaeb3e/tree 64b7cc2c89aeb15cc2d230db59479dd540206c5b is pushed/four-way exact. Protected run cbffb6386bfbc8a437cb3b595d9c4c76c4c96f1f93967246a416cea57a77045c passes 23/23; the read-only verifier reproduces aggregate 3995/0e11adab139e216bb86c262a7aa40c3570cff6563e2305e15b4dc13bb0ef26b1.
+  finish_order: Commit/push/fresh-four-way-verify this memory-only record, preserve the protected evidence without replay, then resume output-free numerical preregistration.
   prohibited: No replay, invented version, uncommitted deployment, sibling-repository mutation, MemoryEndpoints action, or campaign-counter increment.
 
 current_qwen3_model_load_correction_2026_08_26:

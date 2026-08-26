@@ -1,12 +1,13 @@
-profile: runtime-mirust.architecture.v180
-updated_utc: 2026-08-26T19:27:16Z
+profile: runtime-mirust.architecture.v181
+updated_utc: 2026-08-26T19:45:08Z
 
 ecosystem_deployment_reconciliation_architecture_2026_08_26:
-  durable_route: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md, 10,772 bytes/SHA256 ac81d330b0c3522c2661d06569e7047e950116d0a3e6417463ae4d036144dade.
+  durable_route: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md, 11,752 bytes/SHA256 104c47929d011ce73228f9ea3f54db081c7e39bccfb4ae0d52248538b355842c.
   release_state_model: A finalized ledger materializes only its already-bound release state; a pending ledger requires a new source revision and publication instant. The two paths share validation but never share or synthesize publication identity.
   deployment_identity: Publication requires changed authorized bytes, a pending immutable release closure, a clean exact source revision, bounded credentials, deployment, and exact HTTPS readback. Current reachability or matching bytes do not create a new publication event.
   ecosystem_boundaries: Canonical TinyRustLM.com owns its 23-artifact release closure. Terminal documentation/catalog receipts and Runtime redirect evidence remain immutable sibling authority. MiRust and LMComposer require their own complete source, authorization, and create-only receipt chains.
   current_decision: Zero current production-web delta plus no pending ledger means no TinyRustLM.com write. Runtime's misbound profile and MiRust's incomplete snapshot prohibit writes; LMComposer's unpublished source/live drift remains an external blocker.
+  source_checkpoint: Implementation commit feed5078ed5c4fc6b82d0498fac7139a13aaeb3e/tree 64b7cc2c89aeb15cc2d230db59479dd540206c5b is pushed/four-way exact. Protected run cbffb6386bfbc8a437cb3b595d9c4c76c4c96f1f93967246a416cea57a77045c passes 23/23 with independently verified aggregate 3995/0e11adab139e216bb86c262a7aa40c3570cff6563e2305e15b4dc13bb0ef26b1.
   claim_boundary: Release validation and public readback prove neither new deployment nor model, numerical, browser-model, P2P, package, MemoryEndpoints, or campaign status.
 
 current_qwen3_model_load_correction_2026_08_26:

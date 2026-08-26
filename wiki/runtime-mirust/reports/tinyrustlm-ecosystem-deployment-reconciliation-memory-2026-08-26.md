@@ -209,13 +209,34 @@ boundary remains visible. A future full-ecosystem publication claim requires:
    readback receipt; and
 4. a real changed pending release for any already-current site.
 
+## Clean Source Checkpoint
+
+The finalized-ledger validation correction and initial reconciliation memory
+were committed at
+`feed5078ed5c4fc6b82d0498fac7139a13aaeb3e`, tree
+`64b7cc2c89aeb15cc2d230db59479dd540206c5b`, and pushed to
+`origin/codex/model-acquisition-v2`. Local `HEAD`, the tracking ref, a fresh
+`FETCH_HEAD`, and the direct remote ref all returned that exact commit; the
+worktree was clean.
+
+From that clean exact source, protected release-surface run
+`cbffb6386bfbc8a437cb3b595d9c4c76c4c96f1f93967246a416cea57a77045c`
+completed ten serial shards and passed 23 of 23 tests with no failure or skip.
+Its canonical aggregate is 3,995 bytes at SHA-256
+`0e11adab139e216bb86c262a7aa40c3570cff6563e2305e15b4dc13bb0ef26b1`.
+The maintained read-only verifier independently reproduced the same run ID,
+test count, byte count, digest, and pass verdict once.
+
+This protected gate validates release controls and their fail-closed negative
+paths. It did not execute a production deployment and does not alter the
+public-state classification above.
+
 ## Exact Resume
 
-Commit and push the finalized-ledger validation correction plus this bounded
-memory checkpoint. Freshly fetch and prove local HEAD, tracking ref,
-`FETCH_HEAD`, and direct remote ref equality. Then run the protected 23-test
-release-surface gate from that clean commit and preserve its bounded evidence.
-Do not publish a site merely to manufacture activity.
+Commit and push this final memory-only checkpoint, freshly fetch, and prove
+local HEAD, tracking ref, `FETCH_HEAD`, and direct remote ref equality. Do not
+rerun the protected gate merely because its bounded result is now recorded,
+and do not publish a site merely to manufacture activity.
 
 After the source checkpoint is remote exact, resume the already planned
 output-free Qwen3 numerical successor preregistration. Site reconciliation
