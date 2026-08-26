@@ -788,6 +788,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "tinyrustlm-numerical-probe"
+version = "0.1.8"
+dependencies = [
+ "serde",
+ "serde_json",
+ "sha2",
+ "tinyrustlm-runtime",
+]
+
+[[package]]
 name = "tinyrustlm-p2p"
 version = "0.1.8"
 dependencies = [

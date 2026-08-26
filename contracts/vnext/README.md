@@ -767,6 +767,22 @@ See
 and durable resume memory
 `wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md`.
 
+`scalar-numerical-probe-profile.v1.json` defines the dedicated non-shipping
+Rust scalar trace probe that follows the `/12` structural checkpoint. One
+strict private request binds the structural-result SHA-256, exact
+`model.slm2`, absent create-only output, resource ceilings, and token-ID cases.
+The owner verifies model length and streamed SHA-256, validates and preflights
+the complete SLM2 model, then writes one bounded `f32le` trace pack per token
+through `ScalarSession::forward_token_traced`. Every stage and pack is hashed;
+`probe.json` is synchronized and written last. Partial output is preserved and
+never resumed, repaired, overwritten, or relabeled.
+
+Five tests pass against the canonical 8,704-byte mixed-Q8 fixture. The real
+598,308,416-byte `/12` model has not been probed, and the profile establishes
+no source-framework parity, native inference, browser execution, quality,
+release, or campaign claim. See
+`docs/architecture/2026-08-26-scalar-numerical-probe.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2

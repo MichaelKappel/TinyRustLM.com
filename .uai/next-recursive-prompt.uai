@@ -1,5 +1,14 @@
-profile: runtime-mirust.next-recursive-prompt.v101
-updated_utc: 2026-08-26T09:02:03Z
+profile: runtime-mirust.next-recursive-prompt.v103
+updated_utc: 2026-08-26T09:47:03Z
+
+next_recursive_goal_2026_08_26_scalar_numerical_proof:
+  objective: Deliver a clean, independently verifiable source-framework-to-Rust-scalar numerical gate for the immutable /12 Qwen3 composition without executing real-model observations until an output-free registration is remote-exact.
+  first_checkpoint: The maintained standard partition is green at 1,515/0/2 and dirty release refusal is preserved. Commit, push, prove fresh local/head/tracking/FETCH_HEAD/direct-remote equality, run the clean release-surface gate, and independently verify its aggregate.
+  implementation: Pin an offline Python 3.12/PyTorch/Transformers/Safetensors/Tokenizers/NumPy closure by exact package identity; implement a bounded create-only source owner, reconstructed/dequantized SLM2 arm, and an independent no-write verifier; add malformed/stale/conflict/partial/nonfinite/oversize/identity-drift tests and first-divergence vectors.
+  proof_design: Preregister the BF16-source-to-reconstructed and reconstructed-to-Rust-scalar arrows separately, including source/composition/profile identities, private case hashes, stage schemas, tensor-class metrics, thresholds, escalation rules, hard resource/output bounds, terminal classifications, and process cardinality.
+  execution_guard: Choose all-new request, source, scalar, verifier, evidence, process, and terminal identities; prove every future root absent; commit/push/fresh-fetch the registration; then launch each registered material owner no more than its cardinality and preserve every outcome immutably.
+  authority: Start from wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md, 10,931 bytes/SHA256 782e4e212cabe2ee9522a2bf31291a4db5cca38febde5cda060fab84f99ccc64, which deep-links the reviewed report intake.
+  prohibited_claims: Do not claim /12 numerical parity, optimized-native, browser-WASM, conversation quality, P2P, catalog, package, deployment, MemoryEndpoints, or campaign progress until each exact later gate has live evidence.
 next_goal_qwen3_v12_structural_checkpoint_then_numerical_parity:
   objective: Commit, push, and fresh-verify the final /12 evidence-memory update, then design and preregister the exact source-framework-to-scalar-native numerical-parity operation for the same immutable ten-file composition.
   read_first: workspace.uai; .uai/totem.uai; .uai/taboo.uai; contracts/vnext/qwen3-real-composition-execution-result.v12.json; docs/architecture/2026-08-26-qwen3-real-composition-execution-v12-structural-pass.md; wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md

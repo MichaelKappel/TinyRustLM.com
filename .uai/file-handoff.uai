@@ -1,5 +1,14 @@
-profile: runtime-mirust.file-handoff.v119
-updated_utc: 2026-08-26T09:02:03Z
+profile: runtime-mirust.file-handoff.v121
+updated_utc: 2026-08-26T09:47:03Z
+
+current_scalar_numerical_probe_handoff_2026_08_26:
+  first_read: Read workspace.uai, contracts/vnext/scalar-numerical-probe-profile.v1.json, docs/architecture/2026-08-26-scalar-numerical-probe.md, and wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md before any continuation.
+  identities: profile=9660,34b1bd8f45dcd764b4b78850fa0a54b740ca143bde14a201a7c7f2ef0b46f000; architecture=6059,f0f2340a2da008db972575ea28ea24f5d267dbbc5b9654268466300f08e7c3ac; durable_memory=10931,782e4e212cabe2ee9522a2bf31291a4db5cca38febde5cda060fab84f99ccc64.
+  implementation_truth: Non-shipping scalar probe, strict request, streamed exact model validation, create-only bounded f32le stage packs, result-last semantics, typed failures, and partial-evidence preservation are implemented. Focused checks pass; full standard partition is 1,515 pass/0 fail/2 explicit skip; dirty release refusal is expected.
+  execution_truth: Tests use only the canonical 8,704-byte fixture. No /12 request is registered; no /12 probe or source-framework output exists; no numerical verifier decision exists.
+  report_handoff: Durable memory deep-links the intake manifest, corrected synthesis, TDD delta, and intake memory. Use those reviewed nodes as advisory design input, not raw reports as evidence.
+  exact_resume: Commit/push/fresh-four-way verify this checkpoint, run and independently verify its clean release-surface evidence, then implement/pin source owner, reconstructed-weight arm, and independent verifier before output-free numerical preregistration.
+  hard_boundary: Preserve /1-/12 and all partial future failures. No numerical/browser/quality/P2P/catalog/package/deployment/MemoryEndpoints claim; counters remain 0/20,0/50,0/25,0/40,0/20.
 current_qwen3_execution_v12_structural_pass_2026_08_26:
   first_read: Read newest workspace.uai, contracts/vnext/qwen3-real-composition-execution-result.v12.json, docs/architecture/2026-08-26-qwen3-real-composition-execution-v12-structural-pass.md, and wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md before any continuation.
   identities: result=18441,0c3e84ad9ce6e22d9a164357c9a900d31825d0639f4f11077dab305f9cf3ef0e; architecture=8484,3ea6e8d9e411e217f9c70c3d7ecae9cba109331fa4764ab77d0f7005576d3d12; durable_memory=11584,2a1c2882b9368d0ebd45fe96b9689406d5fcbfd941b4b2a5b39868da5cb3e1cf; registration_commit=b0eac91f8a227c524c9a1fa58c9f2fb3ea70d4e3; registration_tree=157eb5564733f9c6b39eb48922ed48cdf4573318

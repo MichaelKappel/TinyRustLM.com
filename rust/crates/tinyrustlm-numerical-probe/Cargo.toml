@@ -1,0 +1,17 @@
+[package]
+name = "tinyrustlm-numerical-probe"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Create-only private scalar trace probe for preregistered SLM2 numerical conformance."
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+tinyrustlm-runtime = { path = "../tinyrustlm-runtime" }
+
+[lints]
+workspace = true

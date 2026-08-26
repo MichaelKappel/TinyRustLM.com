@@ -1,0 +1,274 @@
+{
+  "schema": "tinyrustlm.scalar-numerical-probe-profile.v1",
+  "profileId": "tinyrustlm.scalar-numerical-probe/1",
+  "status": "implemented-unpromoted-fixture-verified-real-model-unexecuted",
+  "authority": {
+    "productLifecycle": "prelaunch-single-unversioned-product",
+    "technicalVersionIsProductGeneration": false,
+    "shippingRuntime": false,
+    "numericalProbeOnly": true,
+    "sourceFrameworkAuthority": false,
+    "numericalParityAuthority": false,
+    "qualityAuthority": false,
+    "browserAuthority": false,
+    "memoryEndpointsAuthorized": false
+  },
+  "implementation": {
+    "workspaceManifest": {
+      "path": "Cargo.toml",
+      "byteLength": 1781,
+      "sha256": "feafc2c9622d58dd84aacb320466e098c340fdde8f411e69f64d9c0a1937915e"
+    },
+    "workspaceLock": {
+      "path": "Cargo.lock",
+      "byteLength": 25613,
+      "sha256": "b0063b5a406ccfb462f64a76a20295d8c0e411c71791a3e19f42a45074d951bd"
+    },
+    "crateManifest": {
+      "path": "rust/crates/tinyrustlm-numerical-probe/Cargo.toml",
+      "byteLength": 446,
+      "sha256": "ec1a57603862296427c5be71d196b1a45af358f4bf87eb165f9d279dc224a125"
+    },
+    "owner": {
+      "path": "rust/crates/tinyrustlm-numerical-probe/src/main.rs",
+      "byteLength": 32262,
+      "sha256": "6a0b8ba79f885af82fcf04a9f6657acb30ce384abe53f31ab125ca9b286f3446"
+    },
+    "crate": "tinyrustlm-numerical-probe",
+    "unsafeCode": false,
+    "runtimeDependency": "tinyrustlm-runtime",
+    "traceSource": "ScalarSession.forward_token_traced",
+    "modelLoad": "one-owned-validated-SLM2-byte-vector-without-F32-shadow",
+    "outputWriteMode": "create-only",
+    "automaticRetry": false,
+    "manualRetryUnderOneRequest": false,
+    "bestOfN": false,
+    "responseRepair": false,
+    "fallbackRuntime": false
+  },
+  "input": {
+    "schema": "tinyrustlm.scalar-numerical-probe-request.v1",
+    "encoding": "canonical-pretty-UTF8-JSON-one-final-LF",
+    "maximumBytes": 1048576,
+    "unknownFields": "fatal",
+    "duplicateFields": "fatal-through-canonical-byte-mismatch",
+    "explicitNull": "fatal",
+    "fieldsInOrder": [
+      "schema",
+      "operationId",
+      "compositionResultSha256",
+      "compositionRoot",
+      "model",
+      "evidenceParent",
+      "outputRoot",
+      "traceProfileId",
+      "policy",
+      "cases"
+    ],
+    "operationId": {
+      "minimumBytes": 1,
+      "maximumBytes": 160,
+      "alphabet": "lowercase-ascii-alphanumeric-and-internal-hyphen",
+      "leadingOrTrailingHyphen": "fatal"
+    },
+    "compositionResultSha256": "lowercase-hex-64",
+    "compositionRoot": "absolute-existing-direct-non-symlink-directory",
+    "model": {
+      "fieldsInOrder": [
+        "fileName",
+        "byteLength",
+        "sha256"
+      ],
+      "fileName": "model.slm2",
+      "byteLength": "positive-u64-no-greater-than-policy-maximumModelBytes",
+      "sha256": "lowercase-hex-64",
+      "pathRule": "direct-regular-member-of-canonical-composition-root",
+      "verification": "metadata-length-streamed-SHA256-then-independent-SLM2-validation"
+    },
+    "evidenceParent": "absolute-existing-direct-non-symlink-directory",
+    "outputRoot": "absent-direct-child-named-operationId-plus-scalar",
+    "traceProfileId": "tinyrustlm.scalar-full-stage-f32le/1",
+    "policy": {
+      "fieldsInOrder": [
+        "maximumModelBytes",
+        "maximumSequenceTokens",
+        "maximumKvBytes",
+        "maximumScratchBytes",
+        "maximumTraceBytes",
+        "maximumCases",
+        "maximumTokensPerCase"
+      ],
+      "allLimits": "mandatory-positive-checked-integers",
+      "maximumCasesCeiling": 32,
+      "maximumTokensPerCaseCeiling": 256,
+      "maximumTokensPerCaseNoGreaterThanMaximumSequenceTokens": true
+    },
+    "cases": {
+      "minimumCount": 1,
+      "caseIds": "unique-lowercase-ascii-alphanumeric-and-internal-hyphen",
+      "tokenIds": "nonempty-u32-array-bounded-by-both-token-and-sequence-limits",
+      "rawText": false,
+      "expectedAnswers": false
+    }
+  },
+  "execution": {
+    "validationBeforeOutputCreation": [
+      "request-file-type-and-byte-limit",
+      "strict-deserialization-and-canonical-byte-equality",
+      "profiles-identities-policies-and-case-closure",
+      "composition-model-and-output-path-boundaries",
+      "output-root-absence",
+      "model-byte-length-and-streamed-SHA256",
+      "complete-SLM2-validation-and-runtime-memory-preflight"
+    ],
+    "caseIsolation": "ScalarSession-reset-before-each-case",
+    "tokenExecution": "one-forward_token_traced-call-per-registered-token",
+    "cacheFailureSemantics": "runtime-transactional-rollback",
+    "selection": "finite-greedy-lowest-token-id-tie-break-only",
+    "sampling": false,
+    "hiddenGeneration": false,
+    "traceFiles": "one-create-only-f32le-pack-per-case-step",
+    "resultFile": "probe.json-created-last",
+    "resultPresenceMeans": "probe-completed-with-all-trace-files-synced",
+    "resultAbsenceMeans": "incomplete-or-failed-probe-never-infer-pass",
+    "partialOutput": "preserve-for-terminal-failure-forensics",
+    "overwrite": false,
+    "cleanupOnFailure": false
+  },
+  "trace": {
+    "profileId": "tinyrustlm.scalar-full-stage-f32le/1",
+    "elementEncoding": "IEEE754-binary32-little-endian",
+    "nonfinite": "fatal",
+    "stageOrder": [
+      "token-embedding",
+      "for-each-layer-attention-normalized",
+      "for-each-layer-query-after-rope",
+      "for-each-layer-key-after-rope",
+      "for-each-layer-value",
+      "for-each-layer-attention",
+      "for-each-layer-post-attention-residual",
+      "for-each-layer-feed-forward-normalized",
+      "for-each-layer-feed-forward-activated",
+      "for-each-layer-post-feed-forward-residual",
+      "final-normalized",
+      "logits"
+    ],
+    "stageCountFormula": "3-plus-9-times-layerCount",
+    "perStageRecord": [
+      "stage",
+      "layer",
+      "offsetBytes",
+      "elementCount",
+      "byteLength",
+      "f32leSha256"
+    ],
+    "perPackIdentity": "byteLength-and-SHA256",
+    "wholeOperationBudget": "policy.maximumTraceBytes",
+    "writeFailurePropagation": "sink-records-first-typed-error-and-owner-fails-after-forward",
+    "traceDataPublic": false
+  },
+  "output": {
+    "schema": "tinyrustlm.scalar-numerical-probe-result.v1",
+    "encoding": "canonical-pretty-UTF8-JSON-one-final-LF",
+    "status": "completed",
+    "claim": "private-scalar-traces-created-not-numerical-parity",
+    "binds": [
+      "request-byte-length-and-SHA256",
+      "composition-result-SHA256",
+      "trace-profile",
+      "model-name-length-and-SHA256",
+      "complete-model-specification",
+      "resource-policy-and-activated-memory-plan",
+      "case-ID-token-count-and-token-ID-stream-SHA256",
+      "positions-KV-growth-greedy-token-and-every-trace-pack",
+      "every-stage-offset-length-and-SHA256"
+    ],
+    "fileDurability": "every-trace-and-result-file-flushed-and-sync_all-successful",
+    "directoryDurabilityClaimed": false,
+    "requiredNextGate": "independent-source-and-scalar-trace-verification"
+  },
+  "typedFailures": [
+    "scalar-probe-arguments",
+    "scalar-probe-request-file",
+    "scalar-probe-request-size",
+    "scalar-probe-request-read",
+    "scalar-probe-request-json",
+    "scalar-probe-request-canonical",
+    "scalar-probe-request-profile",
+    "scalar-probe-operation-id",
+    "scalar-probe-model-identity",
+    "scalar-probe-case-count",
+    "scalar-probe-case-id",
+    "scalar-probe-case-tokens",
+    "scalar-probe-policy",
+    "scalar-probe-sha256",
+    "scalar-probe-path",
+    "scalar-probe-directory",
+    "scalar-probe-model-file",
+    "scalar-probe-model-path",
+    "scalar-probe-output-path",
+    "scalar-probe-output-exists",
+    "scalar-probe-model-drift",
+    "scalar-probe-model-read",
+    "scalar-probe-output-create",
+    "scalar-probe-trace-create",
+    "scalar-probe-trace-write",
+    "scalar-probe-trace-flush",
+    "scalar-probe-trace-sync",
+    "scalar-probe-trace-budget",
+    "scalar-probe-trace-overflow",
+    "scalar-probe-trace-shape",
+    "scalar-probe-nonfinite",
+    "scalar-probe-result-create",
+    "scalar-probe-result-write",
+    "scalar-probe-result-flush",
+    "scalar-probe-result-sync"
+  ],
+  "fixtureVerification": {
+    "artifactClass": "canonical-8704-byte-mixed-Q8-test-fixture",
+    "testsPassed": 5,
+    "testsFailed": 0,
+    "covers": [
+      "complete-two-token-trace-and-manifest",
+      "noncanonical-and-unknown-request-rejection-before-output",
+      "model-drift-rejection-before-output",
+      "existing-output-rejection-with-byte-preservation",
+      "registered-trace-budget-failure-with-partial-evidence-preservation"
+    ],
+    "realQwen3Executed": false,
+    "fixtureCountsAsRealModel": false
+  },
+  "cleanCut": {
+    "legacyProbeReader": false,
+    "alternateRequestSchema": false,
+    "schemaAlias": false,
+    "migration": false,
+    "fallbackRuntime": false,
+    "runtimeRepacking": false,
+    "F32WeightShadow": false,
+    "responseRepair": false,
+    "retry": false,
+    "bestOfN": false,
+    "fixturePromotion": false
+  },
+  "claimBoundary": {
+    "probeImplementationExists": true,
+    "canonicalFixtureVerified": true,
+    "realQwen3ProbeExecuted": false,
+    "sourceFrameworkObserved": false,
+    "sourceToQuantizedParityVerified": false,
+    "scalarRuntimeParityVerified": false,
+    "optimizedNativeVerified": false,
+    "browserWasmVerified": false,
+    "modelQualityVerified": false,
+    "releaseAuthorized": false,
+    "campaignCreditAuthorized": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}

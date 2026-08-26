@@ -1,5 +1,13 @@
-profile: runtime-mirust.startup-packet.v131
-updated_utc: 2026-08-26T09:02:03Z
+profile: runtime-mirust.startup-packet.v133
+updated_utc: 2026-08-26T09:47:03Z
+
+start_here_2026_08_26_scalar_numerical_probe:
+  read_order: workspace.uai -> wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md -> contracts/vnext/scalar-numerical-probe-profile.v1.json -> docs/architecture/2026-08-26-scalar-numerical-probe.md -> reviewed intake synthesis and TDD delta linked by durable memory.
+  present_state: Probe implementation and fixture tests exist. Full standard partition is green at 1,515 pass/0 fail/2 explicit skip; release surface honestly refused dirty source. Checkpoint commit/push/fresh verification and clean release evidence are the immediate boundary. No /12 numerical request or output exists.
+  next_build: Add the pinned offline source-framework owner, reconstructed/dequantized diagnostic path, and independent first-divergence verifier with negative tests. Preserve one scalar semantic authority and keep all evidence tools non-shipping.
+  next_operation: Only after source is green, commit an output-free registration that binds exact code/tree, source packages, /12 composition, private case hashes, metrics/thresholds, hard bounds, process cardinality, and all-new absent roots; then execute each owner once.
+  durable_identity: 10,931 bytes/SHA256 782e4e212cabe2ee9522a2bf31291a4db5cca38febde5cda060fab84f99ccc64.
+  counters: 0/20 qualified, 0/50 browser rounds, 0/25 authorized memory rounds, 0/40 outside lane proofs, 0/20 catalog announcements.
 current_start_2026_08_26_qwen3_v12_structural_pass:
   workspace: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
   branch: codex/model-acquisition-v2

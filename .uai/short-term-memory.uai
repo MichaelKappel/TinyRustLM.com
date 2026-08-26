@@ -1,5 +1,12 @@
-profile: runtime-mirust.short-term-memory.v488
-updated_utc: 2026-08-26T09:02:03Z
+profile: runtime-mirust.short-term-memory.v490
+updated_utc: 2026-08-26T09:47:03Z
+
+current_focus_2026_08_26_scalar_numerical_probe:
+  just_completed: Implemented tinyrustlm-numerical-probe and its strict profile, design, README registration, Node contract, and durable memory. Focused checks pass; the maintained standard partition is 1,515 pass/0 fail/2 explicit skip. Dirty release refusal release_gate_source_not_clean is expected and preserved. This is fixture-only implementation evidence.
+  deep_resume: wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md is 10,931 bytes/SHA256 782e4e212cabe2ee9522a2bf31291a4db5cca38febde5cda060fab84f99ccc64. Read it before changing numerical evidence code.
+  immediate_work: Commit, push, fresh-four-way verify, and run the clean release-surface gate for this coherent checkpoint. Then implement the pinned offline source owner, reconstructed-weight arm, and independent verifier; do not execute /12 before output-free preregistration.
+  report_use: Continue from the reviewed synthesis and TDD delta linked by durable memory. Do not re-promote raw report assertions or broaden scope into browser, P2P, release, or MemoryEndpoints work.
+  claim_boundary: /12 remains structural-pass only. Probe execution, source observations, numerical parity, model quality, browser execution, P2P, and release remain unproven; campaign counters stay zero.
 active_qwen3_v12_structural_pass_checkpoint:
   now: Public /12 structural result checkpoint a7b873ebf09b84cad9db68fdcaa65241068ace9e is committed, pushed, remote exact, and clean-release gated. Durable memory now includes its exact source-control and clean-gate evidence.
   read_first: workspace.uai; contracts/vnext/qwen3-real-composition-execution-result.v12.json; wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md
