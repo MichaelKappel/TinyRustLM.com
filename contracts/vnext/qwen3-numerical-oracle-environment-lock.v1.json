@@ -1,0 +1,842 @@
+{
+  "authority": {
+    "browserProof": false,
+    "claim": "exact-observed-offline-closure-not-original-installation-receipt",
+    "modelExecution": false,
+    "numericalParity": false,
+    "qualityQualification": false,
+    "shippingRuntime": false
+  },
+  "bootstrapEnvironment": {
+    "closure": {
+      "byteLength": 7865313,
+      "closureSha256": "fba473d6da6254419fda06deb33794292169c7d8372b480c6a9b1c909c2ca659",
+      "exclusions": [
+        "__pycache__-directories",
+        "pyc-files"
+      ],
+      "fileCount": 170
+    },
+    "distributions": [
+      {
+        "distInfo": "Lib/site-packages/distlib-0.3.9.dist-info",
+        "metadata": {
+          "byteLength": 5246,
+          "sha256": "19f6f0034820d90cc9da85b1960f8e1f23c6d50ff058cd8dcc4b5683e11fc437"
+        },
+        "name": "distlib",
+        "record": {
+          "byteLength": 2025,
+          "sha256": "e8c209b33931356876a38fd63e6e59e43b4c6d43b5b46d53b3c56b74fa5e4452"
+        },
+        "recordedByteLength": 1157438,
+        "recordedClosureSha256": "cfe895399808ea555de66a0ace8e6f3ef84fbd8a8a09dc2cbaca2acfa6607737",
+        "recordedFileCount": 25,
+        "version": "0.3.9"
+      },
+      {
+        "distInfo": "Lib/site-packages/filelock-3.18.0.dist-info",
+        "metadata": {
+          "byteLength": 2897,
+          "sha256": "6ccceb64c205cad21b820fd668ba261fbf62ffb284c7c6a15f42090716f1d7f2"
+        },
+        "name": "filelock",
+        "record": {
+          "byteLength": 1252,
+          "sha256": "a90f9926ef54658025978e45363e403b4000829ba8c596d442a06ea0d307b5cc"
+        },
+        "recordedByteLength": 42219,
+        "recordedClosureSha256": "682db3007d0e3345da85ef97cb19b0db4b1632a7b6dd4ca7c0d9e3781d45a940",
+        "recordedFileCount": 15,
+        "version": "3.18.0"
+      },
+      {
+        "distInfo": "Lib/site-packages/platformdirs-4.3.8.dist-info",
+        "metadata": {
+          "byteLength": 12831,
+          "sha256": "1168c7cab15fd6a6aeaf7aabb9e5d69531e67fef6c3f544e02266cb9a63d8d00"
+        },
+        "name": "platformdirs",
+        "record": {
+          "byteLength": 1233,
+          "sha256": "e89693c886aea15340fddb4785f03a519b015715d41c1835e51a826a5c0da8b7"
+        },
+        "recordedByteLength": 83326,
+        "recordedClosureSha256": "e6b0f1cf2e048c0875d80f5420ef6644a61ca2f5647987ab32709d1700d4a42c",
+        "recordedFileCount": 14,
+        "version": "4.3.8"
+      },
+      {
+        "distInfo": "Lib/site-packages/virtualenv-20.31.2.dist-info",
+        "metadata": {
+          "byteLength": 4513,
+          "sha256": "f73d03f27de7e0728a088a90b227d17c761dba26b1f1d7e214be84149f9a2be9"
+        },
+        "name": "virtualenv",
+        "record": {
+          "byteLength": 10754,
+          "sha256": "3b109dffc8b5acdc2754954634f39ec2a39a5f2b843d448fde0f791bd5d42235"
+        },
+        "recordedByteLength": 6567066,
+        "recordedClosureSha256": "0aee3c67302690cf425021250da2901e0facd5c2a433c2a2e5f82ca38971762b",
+        "recordedFileCount": 112,
+        "version": "20.31.2"
+      }
+    ]
+  },
+  "execution": {
+    "bytecodeWrites": false,
+    "childProcessAllowed": false,
+    "isolatedMode": true,
+    "networkAllowed": false,
+    "packageMutationAllowed": false,
+    "runtimeEnvironmentRevalidation": "before-and-after-each-owner"
+  },
+  "profileId": "tinyrustlm.qwen3-numerical-oracle-python-win-x64/1",
+  "runtimeEnvironment": {
+    "baseInterpreter": {
+      "basename": "python.exe",
+      "byteLength": 104952,
+      "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a"
+    },
+    "closure": {
+      "byteLength": 1378685662,
+      "closureSha256": "90bbf5f9da3c92e689030d84bb45efa9054b494ea7851b1185aeca8f4af83b10",
+      "exclusions": [
+        "__pycache__-directories",
+        "pyc-files"
+      ],
+      "fileCount": 17535
+    },
+    "distributions": [
+      {
+        "distInfo": "Lib/site-packages/certifi-2025.4.26.dist-info",
+        "metadata": {
+          "byteLength": 2473,
+          "sha256": "4354831646392ce4002660e5b59cf6c14dd54efd4a8795feae3188e0a88f1cd3"
+        },
+        "name": "certifi",
+        "record": {
+          "byteLength": 1115,
+          "sha256": "c29ac71dcf46b15ce6fb6fec1bb8986b3cf146268111dfe2f665e70f1b2ee822"
+        },
+        "recordedByteLength": 292099,
+        "recordedClosureSha256": "130d64dd404cef98132c473e73cba8b096e042a5928c0f7d78f97fe6e4c3d766",
+        "recordedFileCount": 11,
+        "version": "2025.4.26"
+      },
+      {
+        "distInfo": "Lib/site-packages/charset_normalizer-3.4.2.dist-info",
+        "metadata": {
+          "byteLength": 36474,
+          "sha256": "5a778d37297d42fb11658ccad457840ba5b06a0e22205a130287af3e0a591536"
+        },
+        "name": "charset-normalizer",
+        "record": {
+          "byteLength": 2874,
+          "sha256": "c17e22c01e1e2aae6d0c428d81ed6931823b11c19f173cf181ae70caded779a6"
+        },
+        "recordedByteLength": 427356,
+        "recordedClosureSha256": "014ce672f61da82915fe9d20f82c5b385029523589917ab94c708ae4d4a4c669",
+        "recordedFileCount": 23,
+        "version": "3.4.2"
+      },
+      {
+        "distInfo": "Lib/site-packages/colorama-0.4.6.dist-info",
+        "metadata": {
+          "byteLength": 17158,
+          "sha256": "7baed29eb50c3b29bdb33ff84e3177bf1bc05784f7685ecdcaa4471c7dd810cc"
+        },
+        "name": "colorama",
+        "record": {
+          "byteLength": 2263,
+          "sha256": "b1e5530843f84c999abd1315d78c5ca92d0801991f1ea9b67f4faae44ad2c24d"
+        },
+        "recordedByteLength": 76301,
+        "recordedClosureSha256": "343c3aee9036af019c6fa1f4b10ebec736b30d3b769c6b13c36a78e9f6f903db",
+        "recordedFileCount": 18,
+        "version": "0.4.6"
+      },
+      {
+        "distInfo": "Lib/site-packages/filelock-3.18.0.dist-info",
+        "metadata": {
+          "byteLength": 2897,
+          "sha256": "6ccceb64c205cad21b820fd668ba261fbf62ffb284c7c6a15f42090716f1d7f2"
+        },
+        "name": "filelock",
+        "record": {
+          "byteLength": 1676,
+          "sha256": "a27d6704d3330223d1d179b09a4135ef0634223ac15d412c96fb10b812e4ecc1"
+        },
+        "recordedByteLength": 42219,
+        "recordedClosureSha256": "682db3007d0e3345da85ef97cb19b0db4b1632a7b6dd4ca7c0d9e3781d45a940",
+        "recordedFileCount": 15,
+        "version": "3.18.0"
+      },
+      {
+        "distInfo": "Lib/site-packages/fsspec-2025.3.2.dist-info",
+        "metadata": {
+          "byteLength": 11697,
+          "sha256": "e31d9430c8f35504e1eacbe305e9b5c8aa5f093b83a86f9b49459989644214f8"
+        },
+        "name": "fsspec",
+        "record": {
+          "byteLength": 8119,
+          "sha256": "1ace0153c94326d7adc289b30a5aac2f3fcb5aadc2ce45d53286c6473190403a"
+        },
+        "recordedByteLength": 705816,
+        "recordedClosureSha256": "1489063c33447c2ace75b4f3abae63d439941824eebd7aaccbeb46bcd5fcefca",
+        "recordedFileCount": 60,
+        "version": "2025.3.2"
+      },
+      {
+        "distInfo": "Lib/site-packages/huggingface_hub-0.30.2.dist-info",
+        "metadata": {
+          "byteLength": 13551,
+          "sha256": "108629785c047a774d9859ec1342d5668145bf4b7547306105a523c5ce0e2aea"
+        },
+        "name": "huggingface-hub",
+        "record": {
+          "byteLength": 23127,
+          "sha256": "68ebcd3cef5f495e3442e1e1142e9429c1a333ff41ab57381798d32fa0cb83bd"
+        },
+        "recordedByteLength": 2026921,
+        "recordedClosureSha256": "92cf01b535bfb75ef5c9aa6d32b816feac55ddc7d1be5c65936765f933923de8",
+        "recordedFileCount": 137,
+        "version": "0.30.2"
+      },
+      {
+        "distInfo": "Lib/site-packages/idna-3.10.dist-info",
+        "metadata": {
+          "byteLength": 10158,
+          "sha256": "5114796720df4353c2106864628a23a9f8b645ad2d6aedbefa58701b85d27e32"
+        },
+        "name": "idna",
+        "record": {
+          "byteLength": 1468,
+          "sha256": "365d8a54e74ca9c37f8de19d6a4865db183f2a3e901f795cd84dd79b1577470c"
+        },
+        "recordedByteLength": 349143,
+        "recordedClosureSha256": "0428967fd7f6505c4d2e59ae962d21ae24251f85abbfee8e8f4d8f9162c90280",
+        "recordedFileCount": 14,
+        "version": "3.10"
+      },
+      {
+        "distInfo": "Lib/site-packages/jinja2-3.1.6.dist-info",
+        "metadata": {
+          "byteLength": 2871,
+          "sha256": "68c5548fb67c4132a13898d9b31ec50c6bea2abdd915d921f214355c3a6499c8"
+        },
+        "name": "jinja2",
+        "record": {
+          "byteLength": 3706,
+          "sha256": "da15deb8d05491bab5298a2eefddb92f0672127b29eb017f771010798716639f"
+        },
+        "recordedByteLength": 494556,
+        "recordedClosureSha256": "410a54f9ba8f6e0b0627d9512522bbad091f4698b6bacb4db87eea7924ec04e1",
+        "recordedFileCount": 32,
+        "version": "3.1.6"
+      },
+      {
+        "distInfo": "Lib/site-packages/MarkupSafe-3.0.2.dist-info",
+        "metadata": {
+          "byteLength": 4067,
+          "sha256": "9e1a1a6e3ba9046e358ff2713c2277ca582b67a171f2830215b88b17d29a7ea7"
+        },
+        "name": "markupsafe",
+        "record": {
+          "byteLength": 1186,
+          "sha256": "6e1aa2d1d2a1d7d80066cd3532a8d41b555831c0e07188295272b3d0b85c1566"
+        },
+        "recordedByteLength": 37220,
+        "recordedClosureSha256": "2c81d88b56c96a145b771badab3ec0809c34aa53efbcc6d209855532686db34d",
+        "recordedFileCount": 12,
+        "version": "3.0.2"
+      },
+      {
+        "distInfo": "Lib/site-packages/mpmath-1.3.0.dist-info",
+        "metadata": {
+          "byteLength": 8630,
+          "sha256": "44b66ea444b9c0d19ae94815d356bf047ae6b680c19268b5c265687cd6a81406"
+        },
+        "name": "mpmath",
+        "record": {
+          "byteLength": 12773,
+          "sha256": "631ffb63282ac4c1792216f2b0f26f6fd4f3ae58410436a6a7118eeaf62b951a"
+        },
+        "recordedByteLength": 1942524,
+        "recordedClosureSha256": "3067e5a11a2ef590e0a509706df2c757dd3d971b7e5f45e238e6ee344c43b007",
+        "recordedFileCount": 93,
+        "version": "1.3.0"
+      },
+      {
+        "distInfo": "Lib/site-packages/networkx-3.4.2.dist-info",
+        "metadata": {
+          "byteLength": 6349,
+          "sha256": "2e5265dda876ef3c44fefa9e9553499bc564c89a16c95e38bdaf9babc556d1d7"
+        },
+        "name": "networkx",
+        "record": {
+          "byteLength": 99355,
+          "sha256": "4f8880a6127d30126f46499d74a7e487cb56fd1b68b2deab164702a0bcdac860"
+        },
+        "recordedByteLength": 6368829,
+        "recordedClosureSha256": "bf0e42d57004707a2be36779ebfdb11bed03ee9e824b5924e898cd7f4ebb8d08",
+        "recordedFileCount": 583,
+        "version": "3.4.2"
+      },
+      {
+        "distInfo": "Lib/site-packages/numpy-2.2.5.dist-info",
+        "metadata": {
+          "byteLength": 60844,
+          "sha256": "1d4915f3bbcdecca1f232ae069f0e8be0dc88f0b552a00f08e2b863c10ba8c12"
+        },
+        "name": "numpy",
+        "record": {
+          "byteLength": 108709,
+          "sha256": "1ed23a536576225a3aa1e0fd26a80a2743b7481008be2f774db0a2b95b0a8454"
+        },
+        "recordedByteLength": 42648971,
+        "recordedClosureSha256": "5448268e04bb3eb47a400d9454abdaf2ecee8e032a98a630838448e99ff3667b",
+        "recordedFileCount": 899,
+        "version": "2.2.5"
+      },
+      {
+        "distInfo": "Lib/site-packages/packaging-25.0.dist-info",
+        "metadata": {
+          "byteLength": 3281,
+          "sha256": "5b611a609c38fefc3d616bf45d20aec98fb7d53f245daca9e2c30fc85c7ac282"
+        },
+        "name": "packaging",
+        "record": {
+          "byteLength": 2881,
+          "sha256": "8d0e80b6205e57c6838b4f2cf362af7c1fa022ff75f87eaa02816bc7d3bf66a0"
+        },
+        "recordedByteLength": 236488,
+        "recordedClosureSha256": "b109cfcc91935db85b33bb3ba3d8da28ca52a09a490a58a91c5704552ea69f81",
+        "recordedFileCount": 24,
+        "version": "25.0"
+      },
+      {
+        "distInfo": "Lib/site-packages/pip-25.0.1.dist-info",
+        "metadata": {
+          "byteLength": 3677,
+          "sha256": "4fa7318cf30f979db7cec45c12cbbc2b4f88a15f12eefbf59a6291d0a03af926"
+        },
+        "name": "pip",
+        "record": {
+          "byteLength": 65740,
+          "sha256": "9afc21499039cc727696fe9a2c12590c5916411777d0f9e2f178237eb0d7b1ce"
+        },
+        "recordedByteLength": 6043987,
+        "recordedClosureSha256": "b319de54073daa4e939f99e8f1f3a1a80db40eda185a6466aed9aa545d1d8024",
+        "recordedFileCount": 442,
+        "version": "25.0.1"
+      },
+      {
+        "distInfo": "Lib/site-packages/PyYAML-6.0.2.dist-info",
+        "metadata": {
+          "byteLength": 2106,
+          "sha256": "f65c17a933ab5cfb6cfa32362e8e54c2e680628d21891034059aa3721d168c09"
+        },
+        "name": "pyyaml",
+        "record": {
+          "byteLength": 2771,
+          "sha256": "390efe7557474d76511a782f222943ac7f6ca6cca229225fe8afb2271ef22311"
+        },
+        "recordedByteLength": 485912,
+        "recordedClosureSha256": "b84264e8e276f822c6c6780d3a3eeb07c33a6c46427923f99b12bb46e172ebe0",
+        "recordedFileCount": 25,
+        "version": "6.0.2"
+      },
+      {
+        "distInfo": "Lib/site-packages/regex-2024.11.6.dist-info",
+        "metadata": {
+          "byteLength": 41547,
+          "sha256": "ce4e01d70f31bcf5049a3591cda09f5a5d4f140d516247b7ce631ef48c1044a5"
+        },
+        "name": "regex",
+        "record": {
+          "byteLength": 1170,
+          "sha256": "6eae0a4956065e60afd92278576fbd94041f02d9f7b504c0c1e0a87472e58649"
+        },
+        "recordedByteLength": 1179894,
+        "recordedClosureSha256": "60a13224db8d222c46cecd68d1d01cec0591802a6a352a72d2e7317cd2329f79",
+        "recordedFileCount": 11,
+        "version": "2024.11.6"
+      },
+      {
+        "distInfo": "Lib/site-packages/requests-2.32.3.dist-info",
+        "metadata": {
+          "byteLength": 4610,
+          "sha256": "658ee8454c1e2e76fb8c2127116f61156b3b22941b3559c00389dca70038581a"
+        },
+        "name": "requests",
+        "record": {
+          "byteLength": 2851,
+          "sha256": "6b631b7d4b7bf9c138f498e997517a070311fcc3af7214b47332968201719d31"
+        },
+        "recordedByteLength": 203319,
+        "recordedClosureSha256": "b7c5f61d210e0a311c44f38bdaa297e479898e1817a548cd064fb407a8b7106c",
+        "recordedFileCount": 24,
+        "version": "2.32.3"
+      },
+      {
+        "distInfo": "Lib/site-packages/safetensors-0.5.3.dist-info",
+        "metadata": {
+          "byteLength": 3883,
+          "sha256": "7f1ab4ef80b13057294d9176fe642edaf90306f1985a94133e57ce74528a7f22"
+        },
+        "name": "safetensors",
+        "record": {
+          "byteLength": 1556,
+          "sha256": "4aa51624c2fb8769d18612ff2ac7d156539ff8935997376479ca91095eea3e4a"
+        },
+        "recordedByteLength": 735419,
+        "recordedClosureSha256": "e1a64b683e61ddd3d1ff0cf76c12386e54f7b18e1ce3cca2aaf88c18d01bf9d8",
+        "recordedFileCount": 14,
+        "version": "0.5.3"
+      },
+      {
+        "distInfo": "Lib/site-packages/setuptools-80.3.1.dist-info",
+        "metadata": {
+          "byteLength": 6528,
+          "sha256": "a97a72f6d501830d42e19547194fdf59288ef6999fdc67fb51aed05de6400f60"
+        },
+        "name": "setuptools",
+        "record": {
+          "byteLength": 75198,
+          "sha256": "c218e02d80fbf7800b5b9bbd820ce395dbcf7fb99e872a0060cf235620271c07"
+        },
+        "recordedByteLength": 4093557,
+        "recordedClosureSha256": "625a1d0a3f0502e07b397d3276cf0efe267ce9580ebced77d00972e3c8a9d455",
+        "recordedFileCount": 511,
+        "version": "80.3.1"
+      },
+      {
+        "distInfo": "Lib/site-packages/sympy-1.14.0.dist-info",
+        "metadata": {
+          "byteLength": 12816,
+          "sha256": "b756c2fbfd5be05ac5bdb0ebca61f55618f30f633ed92d88a5687429313a7595"
+        },
+        "name": "sympy",
+        "record": {
+          "byteLength": 245678,
+          "sha256": "f292eda9905213bd137bdbb06a7b5542e547ea65fe1ba9717f2bb3d065e38bfc"
+        },
+        "recordedByteLength": 26804916,
+        "recordedClosureSha256": "079bd6a04e08e76c9b725657ac9bb252e1984e4ab99e3046001e80f77d799173",
+        "recordedFileCount": 1572,
+        "version": "1.14.0"
+      },
+      {
+        "distInfo": "Lib/site-packages/tokenizers-0.21.1.dist-info",
+        "metadata": {
+          "byteLength": 6944,
+          "sha256": "b860fb1afcf9fc752de774c4390baa7cf57783fc701712ecb48f5b3707455937"
+        },
+        "name": "tokenizers",
+        "record": {
+          "byteLength": 3781,
+          "sha256": "4bc9ee1cd10e375f8f773ca7d9cb4400e9b6bb501ceff91b3d27a733be5336e0"
+        },
+        "recordedByteLength": 7031292,
+        "recordedClosureSha256": "7a1523c5bd17a73d255456be799138745d0c2bf383588d17e3204d61dc63bf99",
+        "recordedFileCount": 29,
+        "version": "0.21.1"
+      },
+      {
+        "distInfo": "Lib/site-packages/torch-2.7.0.dist-info",
+        "metadata": {
+          "byteLength": 29546,
+          "sha256": "d8ea5f11979b3df2ee47c21a0f3e3a417e633203e633b9fda3606286dc1a3085"
+        },
+        "name": "torch",
+        "record": {
+          "byteLength": 1308883,
+          "sha256": "784bc57edd363c954ff5761f3e6a5591442c24a28d8008e99c370244d47bd1c3"
+        },
+        "recordedByteLength": 1205195879,
+        "recordedClosureSha256": "53c90fd42a16d4600380c1f111090556c34afdbf89ce6b08c13de9ea03eab909",
+        "recordedFileCount": 10993,
+        "version": "2.7.0"
+      },
+      {
+        "distInfo": "Lib/site-packages/tqdm-4.67.1.dist-info",
+        "metadata": {
+          "byteLength": 57675,
+          "sha256": "688a1632df525a198fec52dcfefb1246d31eacee9c035aacac2d7eaf8d8ff669"
+        },
+        "name": "tqdm",
+        "record": {
+          "byteLength": 4746,
+          "sha256": "1bd4aaa1c3777b00b764fc352fa4de13d61231f7a4ad6bf4ced237c51437720f"
+        },
+        "recordedByteLength": 331304,
+        "recordedClosureSha256": "b9a557c8a9fba0abb860c128e218000c76f4db110a080e6f2489dc077013f89d",
+        "recordedFileCount": 42,
+        "version": "4.67.1"
+      },
+      {
+        "distInfo": "Lib/site-packages/transformers-4.51.0.dist-info",
+        "metadata": {
+          "byteLength": 38554,
+          "sha256": "7c3d7912181080fbad00bc19d0848048249e1ad1b9d2ccec80f3a86e17a8de0e"
+        },
+        "name": "transformers",
+        "record": {
+          "byteLength": 335989,
+          "sha256": "4701d6802b17de8bcc853f8a6a8362beab1e9e987020df5dc48a21f3f38c03de"
+        },
+        "recordedByteLength": 46279990,
+        "recordedClosureSha256": "7e3efe95d2dfa6d0d4a6dd4e3d434a4d94de2c01f9cb890616cab9b59c3d5ac6",
+        "recordedFileCount": 1828,
+        "version": "4.51.0"
+      },
+      {
+        "distInfo": "Lib/site-packages/typing_extensions-4.13.2.dist-info",
+        "metadata": {
+          "byteLength": 2994,
+          "sha256": "dd0df3cfb89b931f234c2704422e2dc3d911511430bb2ddfdff63b59ced3e8b3"
+        },
+        "name": "typing-extensions",
+        "record": {
+          "byteLength": 679,
+          "sha256": "1f426bb12a0cb3a8196da98ad30854370533e453c47edb2c505cbad5c1ad7177"
+        },
+        "recordedByteLength": 189670,
+        "recordedClosureSha256": "9f9f659306fb57da6cdf9da1269d887ea79ff771b7e97cd83ffff35a6b480580",
+        "recordedFileCount": 6,
+        "version": "4.13.2"
+      },
+      {
+        "distInfo": "Lib/site-packages/urllib3-2.4.0.dist-info",
+        "metadata": {
+          "byteLength": 6461,
+          "sha256": "e41561069c7970dd7135f51efac43406f05b31f684b10d3d2c3abdad2413658a"
+        },
+        "name": "urllib3",
+        "record": {
+          "byteLength": 5615,
+          "sha256": "259b3fadcb1c874ec5d42f291501df52dc874e60f9dc15f2d7827c60b34df01a"
+        },
+        "recordedByteLength": 415585,
+        "recordedClosureSha256": "279ea4f30c6e1d9406eddb1ed1c97d93a76a206f5bfa8dd48becbc1814474b82",
+        "recordedFileCount": 43,
+        "version": "2.4.0"
+      }
+    ],
+    "launcher": {
+      "byteLength": 104952,
+      "relativePath": "Scripts/python.exe",
+      "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a"
+    },
+    "platform": "win-x64",
+    "pythonImplementation": "CPython",
+    "pythonVersion": "3.12.10",
+    "pyvenvConfig": {
+      "byteLength": 339,
+      "includeSystemSitePackages": false,
+      "sha256": "1a4cc5aef1c229fabc8b0eb0ca4e78d7c0127ca5b99ca232e13a1454a3c3c888"
+    }
+  },
+  "schema": "tinyrustlm.qwen3_numerical_environment_lock.v1",
+  "wheelhouse": {
+    "byteLength": 258399469,
+    "closureSha256": "970c626fc754bdf160a0fa545df50c2daac708f72e66efe38909f48b5e356b49",
+    "wheelCount": 29,
+    "wheels": [
+      {
+        "byteLength": 15601,
+        "fileName": "MarkupSafe-3.0.2-cp312-cp312-win_amd64.whl",
+        "name": "markupsafe",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "8e06879fc22a25ca47312fbe7c8264eb0b662f6db27cb2d3bbbc74b1df4b9b87",
+        "version": "3.0.2"
+      },
+      {
+        "byteLength": 156338,
+        "fileName": "PyYAML-6.0.2-cp312-cp312-win_amd64.whl",
+        "name": "pyyaml",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "7e7401d0de89a9a855c839bc697c079a4af81cf878373abd7dc625847d25cbd8",
+        "version": "6.0.2"
+      },
+      {
+        "byteLength": 159618,
+        "fileName": "certifi-2025.4.26-py3-none-any.whl",
+        "name": "certifi",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "30350364dfe371162649852c63336a15c70c6510c2ad5015b21c2345311805f3",
+        "version": "2025.4.26"
+      },
+      {
+        "byteLength": 105776,
+        "fileName": "charset_normalizer-3.4.2-cp312-cp312-win_amd64.whl",
+        "name": "charset-normalizer",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "5a9979887252a82fefd3d3ed2a8e3b937a7a809f65dcb1e068b090e165bbe99e",
+        "version": "3.4.2"
+      },
+      {
+        "byteLength": 25335,
+        "fileName": "colorama-0.4.6-py2.py3-none-any.whl",
+        "name": "colorama",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6",
+        "version": "0.4.6"
+      },
+      {
+        "byteLength": 468973,
+        "fileName": "distlib-0.3.9-py2.py3-none-any.whl",
+        "name": "distlib",
+        "roles": [
+          "bootstrap"
+        ],
+        "sha256": "47f8c22fd27c27e25a65601af709b38e4f0a45ea4fc2e710f65755fa8caaaf87",
+        "version": "0.3.9"
+      },
+      {
+        "byteLength": 16215,
+        "fileName": "filelock-3.18.0-py3-none-any.whl",
+        "name": "filelock",
+        "roles": [
+          "bootstrap",
+          "runtime"
+        ],
+        "sha256": "c401f4f8377c4464e6db25fff06205fd89bdd83b65eb0488ed1b160f780e21de",
+        "version": "3.18.0"
+      },
+      {
+        "byteLength": 194435,
+        "fileName": "fsspec-2025.3.2-py3-none-any.whl",
+        "name": "fsspec",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "2daf8dc3d1dfa65b6aa37748d112773a7a08416f6c70d96b264c96476ecaf711",
+        "version": "2025.3.2"
+      },
+      {
+        "byteLength": 481433,
+        "fileName": "huggingface_hub-0.30.2-py3-none-any.whl",
+        "name": "huggingface-hub",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "68ff05969927058cfa41df4f2155d4bb48f5f54f719dd0390103eefa9b191e28",
+        "version": "0.30.2"
+      },
+      {
+        "byteLength": 70442,
+        "fileName": "idna-3.10-py3-none-any.whl",
+        "name": "idna",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3",
+        "version": "3.10"
+      },
+      {
+        "byteLength": 134899,
+        "fileName": "jinja2-3.1.6-py3-none-any.whl",
+        "name": "jinja2",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67",
+        "version": "3.1.6"
+      },
+      {
+        "byteLength": 536198,
+        "fileName": "mpmath-1.3.0-py3-none-any.whl",
+        "name": "mpmath",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "a0b2b9fe80bbcd81a6647ff13108738cfb482d481d826cc0e02f5b35e5c88d2c",
+        "version": "1.3.0"
+      },
+      {
+        "byteLength": 1723263,
+        "fileName": "networkx-3.4.2-py3-none-any.whl",
+        "name": "networkx",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "df5d4365b724cf81b8c6a7312509d0c22386097011ad1abe274afd5e9d3bbc5f",
+        "version": "3.4.2"
+      },
+      {
+        "byteLength": 12645715,
+        "fileName": "numpy-2.2.5-cp312-cp312-win_amd64.whl",
+        "name": "numpy",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "ced69262a8278547e63409b2653b372bf4baff0870c57efa76c5703fd6543282",
+        "version": "2.2.5"
+      },
+      {
+        "byteLength": 66469,
+        "fileName": "packaging-25.0-py3-none-any.whl",
+        "name": "packaging",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "29572ef2b1f17581046b3a2227d5c611fb25ec70ca1ba8554b24b0e69331a484",
+        "version": "25.0"
+      },
+      {
+        "byteLength": 1841526,
+        "fileName": "pip-25.0.1-py3-none-any.whl",
+        "name": "pip",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "c46efd13b6aa8279f33f2864459c8ce587ea6a1a59ee20de055868d8f7688f7f",
+        "version": "25.0.1"
+      },
+      {
+        "byteLength": 18567,
+        "fileName": "platformdirs-4.3.8-py3-none-any.whl",
+        "name": "platformdirs",
+        "roles": [
+          "bootstrap"
+        ],
+        "sha256": "ff7059bb7eb1179e2685604f4aaf157cfd9535242bd23742eadc3c13542139b4",
+        "version": "4.3.8"
+      },
+      {
+        "byteLength": 273567,
+        "fileName": "regex-2024.11.6-cp312-cp312-win_amd64.whl",
+        "name": "regex",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "a93c194e2df18f7d264092dc8539b8ffb86b45b899ab976aa15d48214138e81b",
+        "version": "2024.11.6"
+      },
+      {
+        "byteLength": 64928,
+        "fileName": "requests-2.32.3-py3-none-any.whl",
+        "name": "requests",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "70761cfe03c773ceb22aa2f671b4757976145175cdfca038c02654d061d6dcc6",
+        "version": "2.32.3"
+      },
+      {
+        "byteLength": 308878,
+        "fileName": "safetensors-0.5.3-cp38-abi3-win_amd64.whl",
+        "name": "safetensors",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "836cbbc320b47e80acd40e44c8682db0e8ad7123209f69b093def21ec7cafd11",
+        "version": "0.5.3"
+      },
+      {
+        "byteLength": 1201172,
+        "fileName": "setuptools-80.3.1-py3-none-any.whl",
+        "name": "setuptools",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "ea8e00d7992054c4c592aeb892f6ad51fe1b4d90cc6947cc45c45717c40ec537",
+        "version": "80.3.1"
+      },
+      {
+        "byteLength": 6299353,
+        "fileName": "sympy-1.14.0-py3-none-any.whl",
+        "name": "sympy",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "e091cc3e99d2141a0ba2847328f5479b05d94a6635cb96148ccb3f34671bd8f5",
+        "version": "1.14.0"
+      },
+      {
+        "byteLength": 2435481,
+        "fileName": "tokenizers-0.21.1-cp39-abi3-win_amd64.whl",
+        "name": "tokenizers",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "0f0dcbcc9f6e13e675a66d7a5f2f225a736745ce484c1a4e07476a89ccdad382",
+        "version": "0.21.1"
+      },
+      {
+        "byteLength": 212482262,
+        "fileName": "torch-2.7.0-cp312-cp312-win_amd64.whl",
+        "name": "torch",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "f56d4b2510934e072bab3ab8987e00e60e1262fb238176168f5e0c43a1320c6d",
+        "version": "2.7.0"
+      },
+      {
+        "byteLength": 78540,
+        "fileName": "tqdm-4.67.1-py3-none-any.whl",
+        "name": "tqdm",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "26445eca388f82e72884e0d580d5464cd801a3ea01e63e5601bdff9ba6a48de2",
+        "version": "4.67.1"
+      },
+      {
+        "byteLength": 10362017,
+        "fileName": "transformers-4.51.0-py3-none-any.whl",
+        "name": "transformers",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "2e6baa476735ab8adccbaee6961525a0d1ce8c21d49293af30ef5ee4b082f64d",
+        "version": "4.51.0"
+      },
+      {
+        "byteLength": 45806,
+        "fileName": "typing_extensions-4.13.2-py3-none-any.whl",
+        "name": "typing-extensions",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "a439e7c04b49fec3e5d3e2beaa21755cadbbdc391694e28ccdd36ca4a1408f8c",
+        "version": "4.13.2"
+      },
+      {
+        "byteLength": 128680,
+        "fileName": "urllib3-2.4.0-py3-none-any.whl",
+        "name": "urllib3",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "4e16665048960a0900c702d4a66415956a584919c03361cac9f1df5c5dd7e813",
+        "version": "2.4.0"
+      },
+      {
+        "byteLength": 6057982,
+        "fileName": "virtualenv-20.31.2-py3-none-any.whl",
+        "name": "virtualenv",
+        "roles": [
+          "bootstrap"
+        ],
+        "sha256": "36efd0d9650ee985f0cad72065001e66d49a6f24eb44d98980f630686243cf11",
+        "version": "20.31.2"
+      }
+    ]
+  }
+}

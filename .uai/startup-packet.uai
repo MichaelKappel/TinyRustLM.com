@@ -1,5 +1,12 @@
-profile: runtime-mirust.startup-packet.v134
-updated_utc: 2026-08-26T10:02:51Z
+profile: runtime-mirust.startup-packet.v135
+updated_utc: 2026-08-26T11:09:33Z
+
+start_here_2026_08_26_qwen3_numerical_differential:
+  read_order: workspace.uai -> wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md -> contracts/vnext/qwen3-numerical-differential-profile.v1.json -> docs/architecture/2026-08-26-qwen3-numerical-differential-laboratory.md -> reviewed report synthesis/TDD linked by memory.
+  present_state: Exact environment and three numerical arms plus read-only verifier are implemented; pinned-interpreter focused gate is 10/10. Full source gate/commit/push are pending. No real numerical operation is registered or run.
+  next_build: Finish source checkpoint only. Then create one separate output-free registration binding exact /12, source, cases, metrics, thresholds, limits, cardinality, and all-new absent roots.
+  durable_identity: 12,218 bytes/SHA256 f60303183fddcfb375d363a152387b48212c7bbe6d2405a4618717a4d0cd1bf9.
+  counters: 0/20 qualified, 0/50 browser rounds, 0/25 authorized memory rounds, 0/40 outside lane proofs, 0/20 catalog announcements.
 
 start_here_2026_08_26_scalar_numerical_probe:
   read_order: workspace.uai -> wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md -> contracts/vnext/scalar-numerical-probe-profile.v1.json -> docs/architecture/2026-08-26-scalar-numerical-probe.md -> reviewed intake synthesis and TDD delta linked by durable memory.

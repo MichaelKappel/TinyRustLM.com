@@ -1,5 +1,12 @@
-profile: runtime-mirust.long-term-memory-ledger.v368
-updated_utc: 2026-08-26T10:02:51Z
+profile: runtime-mirust.long-term-memory-ledger.v369
+updated_utc: 2026-08-26T11:09:33Z
+
+ledger_2026_08_26_qwen3_numerical_differential_implementation:
+  durable_record: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 12,218 bytes, SHA256 f60303183fddcfb375d363a152387b48212c7bbe6d2405a4618717a4d0cd1bf9.
+  accepted_design: Preserve two independent current arrows, publisher-source CPU FP32 to independently reconstructed SLM2 mixed-Q8 and reconstructed SLM2 to Rust scalar, before any optimized-native or browser-WASM arrow. Bind exact environment and 255-stage traces; verifier is read-only and first-divergence authoritative.
+  implementation_truth: Exact environment lock plus source/reconstructed/verifier owners are present; pinned-interpreter focused gate is 10/10. This is fixture evidence only. Full maintained gate and source checkpoint remain pending; no real registration or output exists.
+  report_lineage: Durable record deep-links the exact 12-report manifest, corrected synthesis, TDD delta, intake memory, scalar probe memory, and immutable /12 structure.
+  next_durable_transition: Green full gate and source-control checkpoint first; then one separately committed/pushed/fresh-remote-exact output-free numerical registration. Never convert this ledger entry into execution evidence.
 
 ledger_2026_08_26_scalar_numerical_probe_checkpoint:
   durable_record: wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md, 11,886 bytes, SHA256 2f5b59074e000f2f87b6e04b4150032581469fb4df0fae2a5ef4ad7f1ee52a01.

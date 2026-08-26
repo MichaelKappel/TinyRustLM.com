@@ -1,9 +1,17 @@
-profile: runtime-mirust.totem.v191
-updated_utc: 2026-08-26T10:02:51Z
+profile: runtime-mirust.totem.v192
+updated_utc: 2026-08-26T11:09:33Z
+
+qwen3_numerical_differential_totem_2026_08_26:
+  preserve_exact_environment: Bind 29 wheels, bootstrap closure, Python/base launcher, 26 distributions, and 17,535 non-cache runtime files. Revalidate before/after each Python owner and keep network/process operations denied.
+  preserve_independent_arrows: Compare publisher source executed in CPU FP32 to independently reconstructed SLM2, then reconstructed SLM2 to Rust scalar. Later compare accepted scalar independently to each optimized native and browser-WASM target.
+  preserve_create_only_evidence: Validate exact source/model/profile/environment, cases, limits, and output absence before creation; preserve partial failures; write terminal manifests last; verifier remains read-only.
+  preserve_preregistration: Freeze cases, token IDs, thresholds, floors, top-k, limits, receipt bound, cardinality, terminal rules, and all-new absent roots in a pushed remote-exact output-free registration before real materialization.
+  preserve_claim_truth: Focused 10/10 and the environment lock are implementation evidence only. Durable authority is wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 12,218 bytes/SHA256 f60303183fddcfb375d363a152387b48212c7bbe6d2405a4618717a4d0cd1bf9.
+  preserve_clean_slate: Keep diagnostic arms non-shipping and remove superseded prelaunch code instead of adding compatibility, legacy, migration, fallback, retry, repair, or debt.
 
 scalar_numerical_proof_totem_2026_08_26:
   preserve_one_authority: Keep one shipping SLM2 scalar semantic authority. Evidence probes and source-framework owners stay non-shipping leaf tools and call or compare the authoritative path without creating fallback semantics.
-  preserve_three_arrows: Prove BF16 source to reconstructed/dequantized SLM2, reconstructed SLM2 to Rust scalar, then accepted scalar to each optimized native and browser-WASM target. Bind each arrow independently and localize first divergence.
+  preserve_three_arrows: Prove publisher source executed in CPU FP32 to reconstructed/dequantized SLM2, reconstructed SLM2 to Rust scalar, then accepted scalar to each optimized native and browser-WASM target. Bind each arrow independently and localize first divergence.
   preserve_create_only_evidence: Validate identities, exact model hash, SLM2 structure, resources, and output absence before creation; write bounded traces create-only; preserve partial failure bytes; write the result last; recompute facts independently.
   preserve_preregistration: Fix private case hashes, tensor classes, metrics, thresholds, escalation, bounds, identities, and process cardinality in a pushed remote-exact output-free registration before real output.
   preserve_claim_truth: A fixture-tested probe, standard pass, and clean 23/23 release-surface pass remain implementation evidence only; they are not numerical or deployed-site evidence. Durable authority is wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md, 11,886 bytes/SHA256 2f5b59074e000f2f87b6e04b4150032581469fb4df0fae2a5ef4ad7f1ee52a01.

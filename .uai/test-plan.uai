@@ -1,5 +1,13 @@
-profile: runtime-mirust.test-plan.v292
-updated_utc: 2026-08-26T10:02:51Z
+profile: runtime-mirust.test-plan.v293
+updated_utc: 2026-08-26T11:09:33Z
+
+qwen3_numerical_differential_test_plan_2026_08_26:
+  current_green: Exact pinned-interpreter focused gate passed 10/10 with no skips. Python compile and JavaScript syntax checks pass. Environment write/check/runtime-revalidation all reproduced lock 29103/bdccfc277c66640ab958f382713cd75fbf497e6232b57b5025cd78868ec5a0e5.
+  covered: Content identities; strict environment; synthetic Qwen3 hook topology; NumPy RMSNorm/RoPE/GQA; complete 255-stage equal traces; first divergence on both arrows; cross-arm environment drift; trace drift; unknown fields; no verifier writes/permissive selection.
+  fixture_boundary: No fixture executes Qwen3-0.6B source or /12. Fixtures cannot prove real numerical parity, useful inference, browser behavior, P2P, release, or counter credit.
+  immediate_gate: Run maintained full source gate and checkpoint remotely. Then preregister exact real cases/token IDs, source and /12 identities, per-arrow/stage thresholds, floors, top-k, limits, receipt bound, cardinality, terminal rules, and wholly new absent roots.
+  failure_rule: Preserve every future partial or failed output. No retry, resume, cleanup, repair, overwrite, tolerance loosening, or adoption.
+  deep_evidence: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 12,218 bytes/SHA256 f60303183fddcfb375d363a152387b48212c7bbe6d2405a4618717a4d0cd1bf9.
 
 scalar_numerical_probe_test_plan_2026_08_26:
   current_green: Focused Rust and Node tests passed 5/5 each; clippy and fmt pass. Standard discovered 1,517 and completed 1,515 pass/0 fail/2 skip. Commit 8b140ec is remote-exact. Clean run 8c483720 passed 23/23; verifier and independent hash agree on aggregate 3995,a0bb5bb78ad7d7b9c947eabc8eb47a8a42ebca43c391d05dfe558f83b3416e64.

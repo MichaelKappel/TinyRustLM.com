@@ -1,5 +1,11 @@
-profile: runtime-mirust.uai-index.v264
-updated_utc: 2026-08-26T10:02:51Z
+profile: runtime-mirust.uai-index.v265
+updated_utc: 2026-08-26T11:09:33Z
+
+current_qwen3_numerical_differential_memory_2026_08_26:
+  durable_entry: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md is 12,218 bytes/SHA256 f60303183fddcfb375d363a152387b48212c7bbe6d2405a4618717a4d0cd1bf9.
+  contract_entry: contracts/vnext/qwen3-numerical-differential-profile.v1.json is 15,276 bytes/SHA256 4f97304bf7875f226530bab4c8df8550db6b743aa949f53d89d43d47f2956d12; environment lock is 29,103 bytes/SHA256 bdccfc277c66640ab958f382713cd75fbf497e6232b57b5025cd78868ec5a0e5.
+  design_entry: docs/architecture/2026-08-26-qwen3-numerical-differential-laboratory.md is 10,667 bytes/SHA256 94a208423e9820c01b33d79d4ff5ac4ba5dd6a189a72197aa84acc6e97b5865e.
+  resume_entry: Focused pinned-environment gate is 10/10. Run full gate and source-control checkpoint next, then make a separate remote-exact output-free registration. /12 numerical execution remains unregistered/unperformed; all broader claims and counters stay unchanged.
 
 current_scalar_numerical_probe_memory_2026_08_26:
   durable_entry: wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md is 11,886 bytes/SHA256 2f5b59074e000f2f87b6e04b4150032581469fb4df0fae2a5ef4ad7f1ee52a01.

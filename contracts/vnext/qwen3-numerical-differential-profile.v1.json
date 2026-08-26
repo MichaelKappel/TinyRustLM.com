@@ -1,0 +1,400 @@
+{
+  "schema": "tinyrustlm.qwen3_numerical_differential_profile.v1",
+  "profileId": "tinyrustlm.qwen3-source-reconstructed-scalar-differential/1",
+  "status": "implementation-and-offline-environment-locked-real-operation-unregistered",
+  "authority": {
+    "productLifecycle": "prelaunch-single-unversioned-product",
+    "technicalVersionIsProductGeneration": false,
+    "shippingRuntime": false,
+    "diagnosticOnly": true,
+    "sourceFrameworkIsPublisherSemanticAuthority": true,
+    "reconstructedArmIsQuantizationDiagnosticAuthority": true,
+    "rustScalarIsConvertedByteReference": true,
+    "verifierMayRewriteEvidence": false,
+    "automaticRetry": false,
+    "manualRetryWithinOneRegistration": false,
+    "bestOfN": false,
+    "responseRepair": false,
+    "fallbackRuntime": false,
+    "memoryEndpointsAuthorized": false
+  },
+  "reportLineage": {
+    "manifest": {
+      "path": "docs/report-intake/2026-08-26/post-v10-native-browser-release/MANIFEST.md",
+      "byteLength": 6217,
+      "sha256": "1ac4c18cf017b14112663d2f05d8b06f5c381d3503aa9415b22866a442b3f6c0"
+    },
+    "correctedSynthesis": {
+      "path": "docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-synthesis-2026-08-26.md",
+      "byteLength": 22182,
+      "sha256": "bb538fa12ca2ea623732570d2ec175eb4287223d80c31c05c71b018c41e7b7a0"
+    },
+    "tddDelta": {
+      "path": "docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-tdd-delta-2026-08-26.md",
+      "byteLength": 19012,
+      "sha256": "298dad938ee508ca57aa0beede3e462a68ef82dafa8fa258181e4402b6c55cb2"
+    },
+    "durableIntakeMemory": {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-post-v10-native-browser-release-intake-memory-2026-08-26.md",
+      "byteLength": 9545,
+      "sha256": "f9e604aaf9f247f0773574d26ec024123c25512ecccd5feacc752ddb53f7bdd3"
+    },
+    "scalarProbeMemory": {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md",
+      "byteLength": 11886,
+      "sha256": "2f5b59074e000f2f87b6e04b4150032581469fb4df0fae2a5ef4ad7f1ee52a01"
+    },
+    "adoptionRule": "corrected-synthesis-and-tdd-delta-control-when-a-raw-report-conflicts-with-frozen-local-authority"
+  },
+  "candidate": {
+    "modelId": "Qwen/Qwen3-0.6B",
+    "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+    "sourceLock": {
+      "path": "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json",
+      "byteLength": 1901,
+      "sha256": "e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d"
+    },
+    "compositionResult": {
+      "path": "contracts/vnext/qwen3-real-composition-execution-result.v12.json",
+      "byteLength": 18441,
+      "sha256": "0c3e84ad9ce6e22d9a164357c9a900d31825d0639f4f11077dab305f9cf3ef0e"
+    },
+    "modelSlm2": {
+      "byteLength": 598308416,
+      "sha256": "a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7"
+    },
+    "compositionClaim": "structural-pass-only",
+    "numericalClaim": "unproven",
+    "browserClaim": "unproven",
+    "qualityClaim": "unproven"
+  },
+  "modelSpec": {
+    "vocabularySize": 151936,
+    "contextLength": 40960,
+    "embeddingSize": 1024,
+    "feedForwardSize": 3072,
+    "layerCount": 28,
+    "headCount": 16,
+    "kvHeadCount": 8,
+    "headDimension": 128,
+    "ropeTheta": 1000000,
+    "normalizationEpsilon": 0.000001,
+    "tiedEmbeddings": true,
+    "qkvBias": false,
+    "qkNormalization": true,
+    "queryWidth": 2048,
+    "kvWidth": 1024,
+    "logicalTensorCount": 310
+  },
+  "implementations": {
+    "environmentAuthority": {
+      "path": "tinyrustlm/tools/qwen3_numerical_environment_lock.py",
+      "byteLength": 25450,
+      "sha256": "638c300c41f5a3b06c6ccc70122babd9bbbd489b7c5aa12f3850b891165f3635",
+      "profileId": "tinyrustlm.qwen3-numerical-oracle-python-win-x64/1",
+      "runtimeVerification": "exact-installed-non-cache-file-closure-before-and-after-each-python-owner"
+    },
+    "publisherSourceOwner": {
+      "path": "tinyrustlm/tools/qwen3-numerical-source-owner.py",
+      "byteLength": 39852,
+      "sha256": "43b3b8d40a27c9cb983248e4d0f2490757a2f4952ac7322df43c3c7f3018984e",
+      "profileId": "tinyrustlm.qwen3-publisher-source-trace/1",
+      "framework": "Transformers-Qwen3ForCausalLM-CPU-FP32-eager",
+      "networkAllowed": false,
+      "promptTextAccepted": false,
+      "modelDownloadAllowed": false,
+      "outputMode": "private-create-only"
+    },
+    "reconstructedOwner": {
+      "path": "tinyrustlm/tools/qwen3-slm2-reconstructed-owner.py",
+      "byteLength": 60272,
+      "sha256": "dda9f2f9dbd9c49647043ac6649695800ad584bd10cae4f277f3772897642825",
+      "profileId": "tinyrustlm.qwen3-slm2-reconstructed-trace/1",
+      "parser": "independent-read-only-SLM2-Q8-registry-and-payload-parser",
+      "matrixExecution": "bounded-row-chunk-F32-reconstruction",
+      "wholeModelF32Shadow": false,
+      "outputMode": "private-create-only"
+    },
+    "rustScalarOwner": {
+      "path": "rust/crates/tinyrustlm-numerical-probe/src/main.rs",
+      "byteLength": 32262,
+      "sha256": "6a0b8ba79f885af82fcf04a9f6657acb30ce384abe53f31ab125ca9b286f3446",
+      "profilePath": "contracts/vnext/scalar-numerical-probe-profile.v1.json",
+      "profileId": "tinyrustlm.scalar-numerical-probe/1",
+      "outputMode": "private-create-only"
+    },
+    "independentVerifier": {
+      "path": "tinyrustlm/tools/qwen3-numerical-trace-verifier.js",
+      "byteLength": 46911,
+      "sha256": "2e6fb463cf9846844d509dfe790b623d689d09306ea4cd15748808c0240d14c5",
+      "language": "JavaScript-Node",
+      "writesPerformed": false,
+      "verdictSelection": "first-registered-divergence-in-case-step-stage-element-order",
+      "majorityVote": false,
+      "toleranceSearch": false
+    }
+  },
+  "environment": {
+    "lock": {
+      "path": "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json",
+      "byteLength": 29103,
+      "sha256": "bdccfc277c66640ab958f382713cd75fbf497e6232b57b5025cd78868ec5a0e5",
+      "profileId": "tinyrustlm.qwen3-numerical-oracle-python-win-x64/1",
+      "runtimeClosureSha256": "90bbf5f9da3c92e689030d84bb45efa9054b494ea7851b1185aeca8f4af83b10"
+    },
+    "offlineClosure": {
+      "wheelCount": 29,
+      "wheelByteLength": 258399469,
+      "wheelClosureSha256": "970c626fc754bdf160a0fa545df50c2daac708f72e66efe38909f48b5e356b49",
+      "bootstrapDistributionCount": 4,
+      "bootstrapFileCount": 170,
+      "bootstrapClosureSha256": "fba473d6da6254419fda06deb33794292169c7d8372b480c6a9b1c909c2ca659",
+      "runtimeDistributionCount": 26,
+      "runtimeFileCount": 17535,
+      "runtimeByteLength": 1378685662,
+      "runtimeClosureSha256": "90bbf5f9da3c92e689030d84bb45efa9054b494ea7851b1185aeca8f4af83b10",
+      "claim": "exact-observed-offline-closure-not-original-installation-or-execution-evidence"
+    },
+    "sourceFramework": {
+      "platform": "win-x64",
+      "pythonVersion": "3.12.10",
+      "torchVersion": "2.7.0",
+      "transformersVersion": "4.51.0",
+      "safetensorsVersion": "0.5.3",
+      "tokenizersVersion": "0.21.1",
+      "numpyVersion": "2.2.5",
+      "device": "cpu",
+      "dtype": "float32",
+      "attentionImplementation": "eager",
+      "intraopThreads": 1,
+      "interopThreads": 1,
+      "deterministicAlgorithms": true,
+      "localFilesOnly": true,
+      "networkAllowed": false,
+      "exactWheelAndInstalledClosure": "locked-and-owner-revalidated-before-and-after"
+    },
+    "reconstructed": {
+      "platform": "win-x64",
+      "pythonVersion": "3.12.10",
+      "numpyVersion": "2.2.5",
+      "blasThreads": 1,
+      "networkAllowed": false,
+      "exactWheelAndInstalledClosure": "locked-and-owner-revalidated-before-and-after"
+    }
+  },
+  "requests": {
+    "source": {
+      "schema": "tinyrustlm.qwen3_numerical_source_request.v1",
+      "canonicalEncoding": "recursively-key-sorted-pretty-UTF8-JSON-one-final-LF",
+      "unknownFields": "fatal",
+      "duplicateFields": "fatal-through-canonical-byte-mismatch",
+      "promptText": "forbidden",
+      "expectedAnswers": "forbidden"
+    },
+    "reconstructed": {
+      "schema": "tinyrustlm.qwen3_slm2_reconstructed_request.v1",
+      "canonicalEncoding": "recursively-key-sorted-pretty-UTF8-JSON-one-final-LF",
+      "unknownFields": "fatal",
+      "duplicateFields": "fatal-through-canonical-byte-mismatch",
+      "promptText": "forbidden",
+      "expectedAnswers": "forbidden"
+    },
+    "verification": {
+      "schema": "tinyrustlm.qwen3_numerical_trace_verification_request.v1",
+      "canonicalEncoding": "recursively-key-sorted-pretty-UTF8-JSON-one-final-LF",
+      "unknownFields": "fatal",
+      "duplicateFields": "fatal-through-canonical-byte-mismatch",
+      "outputPath": "none-stdout-only",
+      "writesPerformed": false
+    }
+  },
+  "trace": {
+    "profileId": "tinyrustlm.scalar-full-stage-f32le/1",
+    "fileEncoding": "concatenated-IEEE754-binary32-little-endian-stage-regions",
+    "nonfinite": "fatal",
+    "stageCountFormula": "3-plus-9-times-layerCount",
+    "selectedModelStageCountPerToken": 255,
+    "stageOrder": [
+      {
+        "stage": "token-embedding",
+        "scope": "model",
+        "elementCountFormula": "embeddingSize"
+      },
+      {
+        "stage": "attention-normalized",
+        "scope": "each-layer",
+        "elementCountFormula": "embeddingSize"
+      },
+      {
+        "stage": "query-after-rope",
+        "scope": "each-layer",
+        "elementCountFormula": "headCount-times-headDimension"
+      },
+      {
+        "stage": "key-after-rope",
+        "scope": "each-layer",
+        "elementCountFormula": "kvHeadCount-times-headDimension"
+      },
+      {
+        "stage": "value",
+        "scope": "each-layer",
+        "elementCountFormula": "kvHeadCount-times-headDimension"
+      },
+      {
+        "stage": "attention",
+        "scope": "each-layer",
+        "elementCountFormula": "headCount-times-headDimension"
+      },
+      {
+        "stage": "post-attention-residual",
+        "scope": "each-layer",
+        "elementCountFormula": "embeddingSize"
+      },
+      {
+        "stage": "feed-forward-normalized",
+        "scope": "each-layer",
+        "elementCountFormula": "embeddingSize"
+      },
+      {
+        "stage": "feed-forward-activated",
+        "scope": "each-layer",
+        "elementCountFormula": "feedForwardSize"
+      },
+      {
+        "stage": "post-feed-forward-residual",
+        "scope": "each-layer",
+        "elementCountFormula": "embeddingSize"
+      },
+      {
+        "stage": "final-normalized",
+        "scope": "model",
+        "elementCountFormula": "embeddingSize"
+      },
+      {
+        "stage": "logits",
+        "scope": "model",
+        "elementCountFormula": "vocabularySize"
+      }
+    ],
+    "rawTensorLocation": "private-external-evidence-only",
+    "publicRawTensorDisclosure": false
+  },
+  "proofArrows": [
+    {
+      "id": "source-to-reconstructed",
+      "reference": "publisher-source-framework",
+      "candidate": "slm2-reconstructed-weight-diagnostic",
+      "diagnoses": "source-to-Q8-conversion-and-quantization-difference",
+      "transitiveInferenceAllowed": false
+    },
+    {
+      "id": "reconstructed-to-scalar",
+      "reference": "slm2-reconstructed-weight-diagnostic",
+      "candidate": "rust-scalar-converted-byte-runtime",
+      "diagnoses": "packed-Q8-interpretation-and-runtime-mathematics-difference",
+      "transitiveInferenceAllowed": false
+    }
+  ],
+  "metrics": {
+    "coordinate": [
+      "maximum-absolute-error",
+      "maximum-relative-error-with-registered-floor",
+      "maximum-f32-ULP-distance"
+    ],
+    "aggregate": [
+      "normalized-RMSE-with-registered-floor",
+      "cosine-similarity",
+      "sign-disagreement-rate-above-registered-floor"
+    ],
+    "logits": [
+      "stable-value-descending-token-id-ascending-top-k-overlap",
+      "lowest-token-id-greedy-tie-identity"
+    ],
+    "chunking": "fixed-positive-element-count-bound-before-output",
+    "firstDivergenceOrder": [
+      "proof-arrow",
+      "case-order",
+      "token-step",
+      "trace-stage",
+      "layer",
+      "element",
+      "chunk"
+    ],
+    "headLocalization": "element-index-divided-by-headDimension-for-query-key-value-and-attention-stages"
+  },
+  "thresholdRegistration": {
+    "requiredBeforeAnyRealTraceOutput": true,
+    "perProofArrow": true,
+    "defaultAndPerStageOverrides": true,
+    "requiredFields": [
+      "maximumAbsoluteError",
+      "maximumRelativeError",
+      "maximumNormalizedRmse",
+      "minimumCosineSimilarity",
+      "maximumSignDisagreementRate",
+      "maximumUlp"
+    ],
+    "relativeFloor": "positive-finite-registered-value",
+    "signFloor": "nonnegative-finite-registered-value",
+    "topK": "positive-registered-integer-no-greater-than-1024",
+    "thresholdSearchAfterOutput": "fatal-owner-defect",
+    "looseningAfterOutput": "forbidden-new-registration-required",
+    "bestSeedSelection": false
+  },
+  "execution": {
+    "currentRealExecutionStatus": "not-registered-not-run",
+    "requiredOrdering": [
+      "finish-implementation-and-hostile-fixture-tests",
+      "build-and-lock-offline-python-wheel-and-installed-closure",
+      "commit-push-and-fresh-remote-verify-implementation",
+      "create-output-free-registration-with-exact-token-cases-thresholds-and-absent-private-roots",
+      "commit-push-and-fresh-remote-verify-registration",
+      "prove-all-registered-output-roots-absent",
+      "invoke-source-owner-once",
+      "invoke-reconstructed-owner-once",
+      "invoke-rust-scalar-owner-once",
+      "invoke-read-only-verifier-once",
+      "preserve-terminal-result-without-retry-overwrite-repair-or-tolerance-change"
+    ],
+    "sourceOutput": "create-only-preserve-partial-on-failure",
+    "reconstructedOutput": "create-only-preserve-partial-on-failure",
+    "scalarOutput": "create-only-preserve-partial-on-failure",
+    "verifierOutput": "stdout-only-no-write",
+    "closedV12StructuralBytesMayBeRead": true,
+    "closedV12StructuralBytesMayBeModified": false,
+    "closedV12StructuralBytesMayBePromotedFromThisGateAlone": false
+  },
+  "fixtureBoundary": {
+    "fixtureMayExerciseSchemasStagesMetricsAndFirstDivergence": true,
+    "syntheticPublisherQwen3HookTopologyVerified": true,
+    "syntheticReconstructedRmsNormRopeAndGqaVerified": true,
+    "crossArmEnvironmentDriftRejected": true,
+    "fixtureCountsAsRealModel": false,
+    "fixtureCountsAsNumericalParity": false,
+    "fixtureCountsAsBrowserProof": false,
+    "fixtureCountsAsQuality": false
+  },
+  "claimBoundary": {
+    "implementationExists": true,
+    "hostileFixtureVerified": true,
+    "offlineEnvironmentLocked": true,
+    "realOperationRegistered": false,
+    "publisherSourceTraceExecuted": false,
+    "reconstructedTraceExecuted": false,
+    "rustScalarTraceExecuted": false,
+    "sourceToReconstructedPassed": false,
+    "reconstructedToScalarPassed": false,
+    "optimizedNativePassed": false,
+    "browserWasmPassed": false,
+    "behavioralQualityPassed": false,
+    "p2pAvailable": false,
+    "siteReleased": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}

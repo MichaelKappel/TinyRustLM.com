@@ -1,13 +1,21 @@
-profile: tinyrustlm.source-workspace.v440
+profile: tinyrustlm.source-workspace.v441
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-26T10:02:51Z
+updated_utc: 2026-08-26T11:09:33Z
+
+current_checkpoint_2026_08_26_qwen3_numerical_differential_implementation:
+  status: The pinned offline environment, publisher-source owner, independent reconstructed-SLM2 arm, Rust scalar arm, and read-only first-divergence verifier are implemented. Exact pinned-interpreter focused gate is 10/10 pass with no skips. Full maintained source gate and source checkpoint are pending; no real numerical operation is registered or run.
+  exact_authority: contracts/vnext/qwen3-numerical-differential-profile.v1.json is 15,276 bytes/SHA256 4f97304bf7875f226530bab4c8df8550db6b743aa949f53d89d43d47f2956d12. Environment lock is 29,103 bytes/SHA256 bdccfc277c66640ab958f382713cd75fbf497e6232b57b5025cd78868ec5a0e5. Architecture is docs/architecture/2026-08-26-qwen3-numerical-differential-laboratory.md, 10,667 bytes/SHA256 94a208423e9820c01b33d79d4ff5ac4ba5dd6a189a72197aa84acc6e97b5865e.
+  durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 12,218 bytes/SHA256 f60303183fddcfb375d363a152387b48212c7bbe6d2405a4618717a4d0cd1bf9. It deep-links the reviewed report manifest, corrected synthesis, TDD delta, scalar probe, /12 result, exact environment, implementations, fixtures, claim boundary, and resume order.
+  proof_graph: Arrow A is pinned publisher source weights executed in CPU FP32 to independently reconstructed SLM2 Q8 weights. Arrow B is reconstructed SLM2 to Rust scalar. Later arrows compare accepted scalar separately to every optimized native and browser-WASM implementation. No transitive inference or final-text oracle.
+  exact_next: Run the full maintained source gate, commit/push/fresh-four-way-verify this implementation, then create and remote-verify one separate output-free numerical registration with exact cases, thresholds, limits, cardinality, and wholly new absent roots. Do not execute /12 yet.
+  hard_boundary: Implementation and fixture evidence prove no real numerical parity, optimized-native, browser, quality, P2P, catalog, package, deployment, or MemoryEndpoints result; counters remain 0/20,0/50,0/25,0/40,0/20.
 
 current_checkpoint_2026_08_26_scalar_numerical_probe:
   status: Commit 8b140ec4e7861aa2ce0c1c7d838f79034e7dffae/tree a40150e4dea5bf32e8df6fab8195ad0e6ab61a80 adds the bounded non-shipping scalar probe and is pushed with fresh four-way remote equality. Standard gate is 1,515 pass/0 fail/2 explicit skip. Clean release run 8c48372095b62df937d64a5eb994b278addf2e97cfa03a8848a7d0f827033622 passed 23/23; its 3,995-byte aggregate SHA256 is a0bb5bb78ad7d7b9c947eabc8eb47a8a42ebca43c391d05dfe558f83b3416e64 and independently verifies. The probe has not been invoked on /12.
   exact_authority: contracts/vnext/scalar-numerical-probe-profile.v1.json is 9,660 bytes/SHA256 34b1bd8f45dcd764b4b78850fa0a54b740ca143bde14a201a7c7f2ef0b46f000. Architecture is docs/architecture/2026-08-26-scalar-numerical-probe.md, 6,059 bytes/SHA256 f0f2340a2da008db972575ea28ea24f5d267dbbc5b9654268466300f08e7c3ac.
   durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md, 11,886 bytes/SHA256 2f5b59074e000f2f87b6e04b4150032581469fb4df0fae2a5ef4ad7f1ee52a01. It deep-links the reviewed report manifest, synthesis, TDD delta, intake memory, /12 result, source checkpoint, and clean gate.
-  numerical_proof: Keep three independent arrows: BF16 source versus reconstructed/dequantized SLM2, reconstructed SLM2 versus Rust scalar, then accepted scalar versus each optimized native and browser-WASM implementation. No transitive inference and no final-text oracle.
+  numerical_proof: Keep three independent arrows: publisher source weights executed in pinned CPU FP32 versus reconstructed/dequantized SLM2, reconstructed SLM2 versus Rust scalar, then accepted scalar versus each optimized native and browser-WASM implementation. No transitive inference and no final-text oracle.
   exact_next: Complete and test the pinned offline source-framework closure, create-only source owner, reconstructed-weight diagnostic arm, and independent first-divergence verifier. Commit/push that implementation before a separate output-free numerical preregistration; do not run /12 yet.
   hard_boundary: The only probe success claim is private-scalar-traces-created-not-numerical-parity. No numerical, optimized-native, browser, quality, P2P, catalog, package, deployment, or MemoryEndpoints claim exists; counters remain 0/20,0/50,0/25,0/40,0/20.
 

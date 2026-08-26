@@ -1,5 +1,12 @@
-profile: runtime-mirust.short-term-memory.v491
-updated_utc: 2026-08-26T10:02:51Z
+profile: runtime-mirust.short-term-memory.v492
+updated_utc: 2026-08-26T11:09:33Z
+
+current_focus_2026_08_26_qwen3_numerical_differential:
+  just_completed: Implemented exact offline environment lock, publisher-source CPU-FP32 owner, independent reconstructed-SLM2 Q8 owner, environment-bound manifests, and no-write first-divergence verifier. Pinned-interpreter focused gate is 10/10.
+  deep_resume: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md is 12,218 bytes/SHA256 f60303183fddcfb375d363a152387b48212c7bbe6d2405a4618717a4d0cd1bf9.
+  immediate_work: Run full maintained source gate; commit/push/fresh-four-way-verify this implementation. Then separately preregister exact /12 numerical cases and thresholds before any private trace.
+  report_use: Continue through reviewed manifest/synthesis/TDD nodes linked from durable memory; raw reports are advisory.
+  claim_boundary: No real registration, real trace, numerical verdict, optimized/browser parity, quality, P2P, release, deployment, MemoryEndpoints, or counter progress.
 
 current_focus_2026_08_26_scalar_numerical_probe:
   just_completed: Probe commit 8b140ec/tree a40150e is pushed and four-way remote-exact. Focused checks pass; standard is 1,515/0/2; clean release run 8c483720 passed 23/23 with independently verified 3,995-byte aggregate a0bb5bb7. This is implementation/release-surface evidence, not numerical evidence.

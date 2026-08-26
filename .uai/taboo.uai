@@ -1,5 +1,13 @@
-profile: runtime-mirust.taboo.v120
-updated_utc: 2026-08-26T10:02:51Z
+profile: runtime-mirust.taboo.v121
+updated_utc: 2026-08-26T11:09:33Z
+
+qwen3_numerical_differential_taboo_2026_08_26:
+  no_ad_hoc_real_run: Never execute the real source model, reconstructed /12, Rust scalar /12, or differential verifier before one separate output-free registration is committed, pushed, freshly fetched, and direct-remote exact with all future roots absent.
+  no_environment_substitution: Never accept package version strings alone, a different interpreter, unlocked wheel, drifted installed file, network-enabled import, child process, or mismatched source/reconstructed environment.
+  no_metric_search: Never tune thresholds after output, choose the friendliest coordinate/seed, compare final text alone, average away a systematic first divergence, repair evidence, or let one arm rewrite another.
+  no_fallback_or_legacy: Never ship either Python arm, add a second format reader, preserve a stale proof contract, create compatibility aliases/migrations/shims, or fall back from optimized execution to diagnostics.
+  no_claim_inflation: Focused 10/10 fixtures and exact environment lock are implementation evidence only. They prove no real numerical parity, browser, quality, P2P, package, deployment, MemoryEndpoints, or campaign result.
+  durable_boundary: Obey wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md at 12,218 bytes/SHA256 f60303183fddcfb375d363a152387b48212c7bbe6d2405a4618717a4d0cd1bf9.
 
 scalar_numerical_probe_taboo_2026_08_26:
   no_fixture_promotion: Never call the 8,704-byte fixture, five probe tests, valid trace pack, or completed probe.json numerical parity or useful-model evidence.

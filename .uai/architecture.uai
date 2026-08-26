@@ -1,10 +1,18 @@
-profile: runtime-mirust.architecture.v169
-updated_utc: 2026-08-26T10:02:51Z
+profile: runtime-mirust.architecture.v170
+updated_utc: 2026-08-26T11:09:33Z
+
+qwen3_numerical_differential_architecture_2026_08_26:
+  proof_graph: Pinned publisher source weights execute in CPU FP32; an independent NumPy arm parses/reconstructs exact SLM2 mixed-Q8 rows; the canonical Rust scalar consumes packed SLM2 bytes. Compare source-to-reconstructed and reconstructed-to-scalar independently, then compare accepted scalar separately to each optimized native and browser-WASM target.
+  environment: One 29-wheel/26-runtime-distribution lock binds 17,535 non-cache runtime files and is recomputed before and after each Python owner. Both owners deny network connection/resolution, URL requests, and child processes.
+  trace_and_verifier: All arms emit the same 255 ordered f32le stages per token. The no-write verifier recomputes identities and metrics and reports first registered divergence by arrow/case/step/stage/layer/head/element/chunk.
+  exact_authority: contracts/vnext/qwen3-numerical-differential-profile.v1.json 15276/4f97304bf7875f226530bab4c8df8550db6b743aa949f53d89d43d47f2956d12; docs/architecture/2026-08-26-qwen3-numerical-differential-laboratory.md 10667/94a208423e9820c01b33d79d4ff5ac4ba5dd6a189a72197aa84acc6e97b5865e.
+  deep_memory: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md 12218/f60303183fddcfb375d363a152387b48212c7bbe6d2405a4618717a4d0cd1bf9.
+  boundary: Implementation/fixtures only. No real traces or numerical, browser, quality, P2P, release, deployment, MemoryEndpoints, or campaign evidence.
 
 scalar_numerical_evidence_architecture_2026_08_26:
   leaf_probe: tinyrustlm-numerical-probe calls the canonical scalar runtime's forward_token_traced API and writes private bounded f32le stage packs. It is deliberately outside shipping dispatch and introduces no alternate SLM2 semantics, F32 weight shadow, sampler, compatibility path, or fallback.
   trace_shape: For every registered token, capture token embedding; nine ordered stages per layer; final normalized state; and logits. Stage count is 3 + 9 * layer_count. Every stage and pack is length/SHA256-bound; nonfinite values and budget exhaustion fail closed.
-  proof_graph: Arrow A is pinned BF16 source framework to reconstructed/dequantized SLM2 and measures conversion/quantization. Arrow B is reconstructed SLM2 framework to Rust scalar and measures byte interpretation/runtime mathematics. Arrow C is accepted Rust scalar to each optimized native and browser-WASM implementation. No arrow inherits another arrow's evidence.
+  proof_graph: Arrow A is pinned publisher source weights executed in CPU FP32 to reconstructed/dequantized SLM2 and measures conversion/quantization. Arrow B is reconstructed SLM2 framework to Rust scalar and measures byte interpretation/runtime mathematics. Arrow C is accepted Rust scalar to each optimized native and browser-WASM implementation. No arrow inherits another arrow's evidence.
   semantic_inputs: Bind source lock, six-member composition, tokenizer, template, prompt, sampling, rendered bytes, token IDs, positions, seeds when applicable, and stop policy before comparing tensors. Framing defects must not be hidden as numerical tolerances.
   deep_design: docs/architecture/2026-08-26-scalar-numerical-probe.md and wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md, 11,886-byte memory SHA256 2f5b59074e000f2f87b6e04b4150032581469fb4df0fae2a5ef4ad7f1ee52a01.
 current_qwen3_v12_structural_architecture:

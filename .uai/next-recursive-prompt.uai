@@ -1,11 +1,19 @@
-profile: runtime-mirust.next-recursive-prompt.v104
-updated_utc: 2026-08-26T10:02:51Z
+profile: runtime-mirust.next-recursive-prompt.v105
+updated_utc: 2026-08-26T11:09:33Z
+
+next_recursive_goal_2026_08_26_qwen3_numerical_registration:
+  objective: Checkpoint the green source/reconstructed/scalar numerical laboratory, then preregister one wholly new exact /12 numerical operation without creating any real trace before remote equality.
+  current_checkpoint: Profile 15276/4f97304b, environment 29103/bdccfc27, architecture 10667/94a20842, and durable memory 12218/f6030318 are implemented. Pinned-interpreter focused gate is 10/10; full maintained gate and source checkpoint are pending.
+  proof_design: Register publisher-source CPU FP32 to reconstructed SLM2 and reconstructed SLM2 to Rust scalar as separate arrows, including exact cases/token IDs, per-arrow/per-stage thresholds, floors, top-k, limits, first-divergence order, and no-write verifier.
+  execution_guard: Bind exact commit/tree and tool/profile/environment/source/model identities; choose wholly new absent request/output/evidence/process/terminal identities; commit/push/fresh-four-way-verify registration before any material launch.
+  durable_authority: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 12,218 bytes/SHA256 f60303183fddcfb375d363a152387b48212c7bbe6d2405a4618717a4d0cd1bf9.
+  prohibited_claims: No real numerical, optimized-native, browser-WASM, quality, P2P, catalog, package, deployment, MemoryEndpoints, or campaign claim exists.
 
 next_recursive_goal_2026_08_26_scalar_numerical_proof:
   objective: Deliver a clean, independently verifiable source-framework-to-Rust-scalar numerical gate for the immutable /12 Qwen3 composition without executing real-model observations until an output-free registration is remote-exact.
   first_checkpoint: Complete. Commit 8b140ec/tree a40150e is pushed/four-way exact; standard is 1,515/0/2; clean run 8c483720 passed 23/23 and independently verifies aggregate 3995,a0bb5bb78ad7d7b9c947eabc8eb47a8a42ebca43c391d05dfe558f83b3416e64.
   implementation: Pin an offline Python 3.12/PyTorch/Transformers/Safetensors/Tokenizers/NumPy closure by exact package identity; implement a bounded create-only source owner, reconstructed/dequantized SLM2 arm, and an independent no-write verifier; add malformed/stale/conflict/partial/nonfinite/oversize/identity-drift tests and first-divergence vectors.
-  proof_design: Preregister the BF16-source-to-reconstructed and reconstructed-to-Rust-scalar arrows separately, including source/composition/profile identities, private case hashes, stage schemas, tensor-class metrics, thresholds, escalation rules, hard resource/output bounds, terminal classifications, and process cardinality.
+  proof_design: Preregister the publisher-source-CPU-FP32-to-reconstructed and reconstructed-to-Rust-scalar arrows separately, including source/composition/profile identities, private case hashes, stage schemas, tensor-class metrics, thresholds, escalation rules, hard resource/output bounds, terminal classifications, and process cardinality.
   execution_guard: Choose all-new request, source, scalar, verifier, evidence, process, and terminal identities; prove every future root absent; commit/push/fresh-fetch the registration; then launch each registered material owner no more than its cardinality and preserve every outcome immutably.
   authority: Start from wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md, 11,886 bytes/SHA256 2f5b59074e000f2f87b6e04b4150032581469fb4df0fae2a5ef4ad7f1ee52a01, which deep-links the reviewed report intake.
   prohibited_claims: Do not claim /12 numerical parity, optimized-native, browser-WASM, conversation quality, P2P, catalog, package, deployment, MemoryEndpoints, or campaign progress until each exact later gate has live evidence.
