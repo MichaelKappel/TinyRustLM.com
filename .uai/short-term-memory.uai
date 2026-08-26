@@ -1,10 +1,10 @@
-profile: runtime-mirust.short-term-memory.v495
-updated_utc: 2026-08-26T13:28:30Z
+profile: runtime-mirust.short-term-memory.v496
+updated_utc: 2026-08-26T14:03:58Z
 
 current_focus_2026_08_26_qwen3_numerical_execution_terminal:
-  just_completed: Registration 469e003e at commit 1fbc78e/tree 543abd5 passed standard 1,541/0/2 and protected 23/23 with aggregate 3995/b11124b2, was pushed/four-way exact, and produced one audited request. The sole owner launched source once; source exited 1 after 54,038 ms with safe code source-trace-model-load. Later launch counts and output-root count are zero. Nine private files/13,071 bytes were independently rehashed.
-  deep_resume: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md is 7,589 bytes/SHA256 2058578314ae6fe5b7eea3d39977d0d86e4cbc60df74909a702d980ccc8e8224.
-  immediate_work: Commit/push the bounded result and memory. Then create a bounded generic model-load diagnostic, reproduce outside the closed operation, add a failing regression and counterexamples, make one narrow clean-slate fix, gate/push/fresh-verify, and preregister wholly new identities.
+  just_completed: Registration 469e003e at commit 1fbc78e/tree 543abd5 passed its pre-execution gates and produced one audited request. The sole owner launched source once; source exited 1 after 54,038 ms with safe code source-trace-model-load. Later launch counts and output-root count are zero. Nine private files/13,071 bytes were independently rehashed. Terminal checkpoint 3cc7cea068ced16a4cc57e28c54e681fe497d630/tree 41bedbf06dd093f9d601f314e233327972d661ad is pushed/four-way exact; focused 34/34, clean standard 1,549/0/2 of 1,551, protected 23/23, aggregate 3995/aa5af8f29571218caec43911f6afbed704335744e2c702370798af7b55a75d23 independently verified.
+  deep_resume: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md is 9,040 bytes/SHA256 51bac356333e23998d61bfce3d88c61e64ada1d8667dac928824f76f371985c1.
+  immediate_work: Create a bounded generic model-load diagnostic, reproduce outside the closed operation, add a failing regression and counterexamples, make one narrow clean-slate fix, gate/push/fresh-verify, and preregister wholly new identities.
   report_use: The terminal memory deep-links the reviewed manifest/synthesis/TDD and predecessor numerical memory; raw reports remain advisory.
   claim_boundary: Closed failure only. No retry, source trace, numerical parity, optimized/browser parity, quality, P2P, release, deployment, MemoryEndpoints, or counter progress.
 

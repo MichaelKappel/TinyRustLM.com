@@ -1,5 +1,5 @@
-profile: runtime-mirust.taboo.v124
-updated_utc: 2026-08-26T13:28:30Z
+profile: runtime-mirust.taboo.v125
+updated_utc: 2026-08-26T14:03:58Z
 
 qwen3_numerical_differential_taboo_2026_08_26:
   no_ad_hoc_real_run: Never invoke closed operation qwen3-numerical-c1899de-aece952-20260826-v1 again. Any successor requires a source fix, green remote-exact checkpoint, separate output-free registration, and wholly new identities before material execution.
@@ -9,7 +9,7 @@ qwen3_numerical_differential_taboo_2026_08_26:
   no_fallback_or_legacy: Never ship either Python arm, add a second format reader, preserve a stale proof contract, create compatibility aliases/migrations/shims, or fall back from optimized execution to diagnostics.
   no_failure_erasure: Never retry, resume, delete, clean, overwrite, repair, change thresholds, adopt bytes, or relabel the source-trace-model-load terminal failure. Do not guess root cause from the bounded code.
   no_claim_inflation: One source launch and independently verified terminal failure prove no completed trace, numerical parity, browser, quality, P2P, package, deployment, MemoryEndpoints, or campaign result.
-  durable_boundary: Obey wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md at 7,589 bytes/SHA256 2058578314ae6fe5b7eea3d39977d0d86e4cbc60df74909a702d980ccc8e8224.
+  durable_boundary: Obey wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md at 9,040 bytes/SHA256 51bac356333e23998d61bfce3d88c61e64ada1d8667dac928824f76f371985c1. Terminal checkpoint 3cc7cea068ced16a4cc57e28c54e681fe497d630/tree 41bedbf06dd093f9d601f314e233327972d661ad is pushed/four-way exact; focused 34/34, clean standard 1,549/0/2 of 1,551, protected 23/23, aggregate 3995/aa5af8f29571218caec43911f6afbed704335744e2c702370798af7b55a75d23 independently verified.
 
 scalar_numerical_probe_taboo_2026_08_26:
   no_fixture_promotion: Never call the 8,704-byte fixture, five probe tests, valid trace pack, or completed probe.json numerical parity or useful-model evidence.

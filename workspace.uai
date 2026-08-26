@@ -1,12 +1,13 @@
-profile: tinyrustlm.source-workspace.v444
+profile: tinyrustlm.source-workspace.v445
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-26T13:28:30Z
+updated_utc: 2026-08-26T14:03:58Z
 
 current_checkpoint_2026_08_26_qwen3_numerical_execution_terminal:
   status: Output-free registration 469e003e was committed/pushed/four-way exact at 1fbc78e/tree 543abd5 after standard 1,541 pass/0 fail/2 explicit skip of 1,543 and protected release 23/23 with verified aggregate 3995/b11124b2. One canonical private request was audited and the sole owner was invoked exactly once. The source arm exited 1 after 54,038 ms with safe code source-trace-model-load; reconstructed/scalar/verifier launches are zero. Operation qwen3-numerical-c1899de-aece952-20260826-v1 is immutable terminal-failure and cannot be invoked again.
   exact_authority: contracts/vnext/qwen3-numerical-differential-execution-result.v1.json is 9,163 bytes/SHA256 a751ef6f6b436f84a18a02483b718cf90efdb872d5546cb0ee70ae0ec8fbaa2d. Owner terminal is private 2,794 bytes/SHA256 4e15242ba7c7fe98ca5dc278769029fdf41722c8e90398e2b894d6bef6e193ad; its nine-file/13,071-byte closure was independently rehashed.
-  durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md, 7,589 bytes/SHA256 2058578314ae6fe5b7eea3d39977d0d86e4cbc60df74909a702d980ccc8e8224. It deep-links the reviewed reports and predecessor numerical memory and records exact registration, request, execution, verification, closure, claim, and resume rules.
+  durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md, 9,040 bytes/SHA256 51bac356333e23998d61bfce3d88c61e64ada1d8667dac928824f76f371985c1. It deep-links the reviewed reports and predecessor numerical memory and records exact registration, request, execution, verification, closure, claim, gate, and resume rules.
+  source_checkpoint: Terminal checkpoint 3cc7cea068ced16a4cc57e28c54e681fe497d630/tree 41bedbf06dd093f9d601f314e233327972d661ad is pushed/four-way exact. Focused is 34/34; clean standard is 1,549/0/2 of 1,551; protected is 23/23 with independently verified aggregate 3995/aa5af8f29571218caec43911f6afbed704335744e2c702370798af7b55a75d23.
   proof_graph: Arrow A and Arrow B remain the required design, but neither was completed. No transitive parity inference or final-text oracle is allowed.
   exact_next: Preserve every private byte. Add a bounded generic model-load diagnostic, reproduce source-trace-model-load outside the closed operation, write the minimal failing regression and counterexamples, make one clean-slate correction, gate/commit/push/fresh-verify it, then preregister a wholly new operation and names.
   hard_boundary: No retry, resume, cleanup, overwrite, repair, threshold change, or adoption. No numerical parity, optimized-native, browser, quality, P2P, catalog, package, deployment, or MemoryEndpoints result; counters remain 0/20,0/50,0/25,0/40,0/20.

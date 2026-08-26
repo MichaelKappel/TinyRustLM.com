@@ -140,6 +140,32 @@ The operation is closed forever:
 Matching future bytes would not authorize adoption. A successor must use a
 new registration and wholly new logical identities.
 
+## Source Control And Full Gate Checkpoint
+
+The bounded terminal result, architecture note, focused regression, durable
+memory, and 13 hot UAI routes were committed and pushed at
+`3cc7cea068ced16a4cc57e28c54e681fe497d630`, tree
+`41bedbf06dd093f9d601f314e233327972d661ad`. Local `HEAD`, the tracking ref,
+a fresh `FETCH_HEAD`, and direct remote-ref readback were exact at that commit.
+
+The focused numerical contract selection passed 34 of 34 tests with the pinned
+Python oracle and no skips. From the exact clean commit, the complete standard
+partition discovered 1,551 tests, passed 1,549, failed zero, and retained
+exactly two declared skips in 468,561.2906 ms. Protected release-surface run
+`a82bd651d7cdd3263146bc378c86c16f5228279b0b3ad029c173f5766c26ad72`
+then passed 23 of 23 tests across ten serial shards. Its canonical aggregate is
+3,995 bytes at SHA-256
+`aa5af8f29571218caec43911f6afbed704335744e2c702370798af7b55a75d23`.
+The maintained read-only verifier and independent filesystem hashing both
+reproduced that identity. The private gate closure contains 42 bounded files
+totaling 40,274 bytes and remains outside Git.
+
+This source-control and gate checkpoint proves only the public terminal record
+and repository release-surface behavior at that exact source commit. It does
+not turn the terminal source-load failure into numerical evidence, authorize a
+second owner invocation, deploy a site or package, or advance any campaign
+counter.
+
 ## Next Exact Work
 
 1. Preserve the private terminal closure and this bounded public result.

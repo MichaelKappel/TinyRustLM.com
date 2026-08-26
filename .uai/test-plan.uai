@@ -1,12 +1,12 @@
-profile: runtime-mirust.test-plan.v296
-updated_utc: 2026-08-26T13:28:30Z
+profile: runtime-mirust.test-plan.v297
+updated_utc: 2026-08-26T14:03:58Z
 
 qwen3_numerical_execution_terminal_test_plan_2026_08_26:
-  current_green: Registration commit 1fbc78e/tree 543abd5 passed standard 1,541/0/2 and protected 23/23 with verified aggregate 3995/b11124b2 before execution. Request audit passed over 11 artifacts, five executables, nine source files, the /12 model, remote state, and absent future roots.
+  current_green: Registration commit 1fbc78e/tree 543abd5 passed standard 1,541/0/2 and protected 23/23 with verified aggregate 3995/b11124b2 before execution. Request audit passed over 11 artifacts, five executables, nine source files, the /12 model, remote state, and absent future roots. Terminal checkpoint 3cc7cea068ced16a4cc57e28c54e681fe497d630/tree 41bedbf06dd093f9d601f314e233327972d661ad is pushed/four-way exact; focused 34/34, clean standard 1,549/0/2 of 1,551, protected 23/23, aggregate 3995/aa5af8f29571218caec43911f6afbed704335744e2c702370798af7b55a75d23 independently verified.
   observed_failure: Sole owner count 1; source count 1; later counts 0. Source exited 1 with safe code source-trace-model-load after 54,038 ms. Independent read-only audit rehashed nine files/13,071 bytes and verified no output root.
   immediate_gate: Add a bounded model-load diagnostic test that exposes safe exception class/stage only. Reproduce outside the closed operation, start with a generic failing regression and counterexamples, correct one root cause, run focused/full gates, commit/push/fresh-verify, then preregister wholly new names.
   failure_rule: Closed operation is immutable. No second invocation, retry, resume, cleanup, repair, overwrite, tolerance loosening, or adoption.
-  deep_evidence: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md, 7,589 bytes/SHA256 2058578314ae6fe5b7eea3d39977d0d86e4cbc60df74909a702d980ccc8e8224.
+  deep_evidence: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md, 9,040 bytes/SHA256 51bac356333e23998d61bfce3d88c61e64ada1d8667dac928824f76f371985c1.
 
 scalar_numerical_probe_test_plan_2026_08_26:
   current_green: Focused Rust and Node tests passed 5/5 each; clippy and fmt pass. Standard discovered 1,517 and completed 1,515 pass/0 fail/2 skip. Commit 8b140ec is remote-exact. Clean run 8c483720 passed 23/23; verifier and independent hash agree on aggregate 3995,a0bb5bb78ad7d7b9c947eabc8eb47a8a42ebca43c391d05dfe558f83b3416e64.

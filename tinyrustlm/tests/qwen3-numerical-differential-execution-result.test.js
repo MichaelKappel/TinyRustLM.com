@@ -278,12 +278,15 @@ test("keeps exact claim and privacy boundaries with zero campaign counters", () 
 });
 
 test("deep-links checksum-bound terminal memory from every hot UAI surface", () => {
-  assert.equal(memoryBytes.length, 7589);
+  assert.equal(memoryBytes.length, 9040);
   assert.equal(sha256(memoryBytes),
-    "2058578314ae6fe5b7eea3d39977d0d86e4cbc60df74909a702d980ccc8e8224");
+    "51bac356333e23998d61bfce3d88c61e64ada1d8667dac928824f76f371985c1");
   const memoryText = memoryBytes.toString("utf8");
   for (const required of [resultRelativePath, registrationRelativePath,
     "source-trace-model-load", "terminal-failure", "1fbc78e2257089896aef79266d66c23ce8e7b4ee",
+    "3cc7cea068ced16a4cc57e28c54e681fe497d630",
+    "a82bd651d7cdd3263146bc378c86c16f5228279b0b3ad029c173f5766c26ad72",
+    "aa5af8f29571218caec43911f6afbed704335744e2c702370798af7b55a75d23",
     "docs/report-intake/2026-08-26/post-v10-native-browser-release/MANIFEST.md"]) {
     assert.ok(memoryText.includes(required), required);
   }
@@ -305,7 +308,12 @@ test("deep-links checksum-bound terminal memory from every hot UAI surface", () 
     const uaiText = fs.readFileSync(path.join(repositoryRoot, relativePath), "utf8");
     assert.ok(uaiText.includes(memoryRelativePath), relativePath);
     assert.ok(uaiText.includes(
-      "2058578314ae6fe5b7eea3d39977d0d86e4cbc60df74909a702d980ccc8e8224"),
+      "51bac356333e23998d61bfce3d88c61e64ada1d8667dac928824f76f371985c1"),
+    relativePath);
+    assert.ok(uaiText.includes(
+      "3cc7cea068ced16a4cc57e28c54e681fe497d630"), relativePath);
+    assert.ok(uaiText.includes(
+      "aa5af8f29571218caec43911f6afbed704335744e2c702370798af7b55a75d23"),
     relativePath);
   }
 });

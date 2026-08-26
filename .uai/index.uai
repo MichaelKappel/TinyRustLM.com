@@ -1,10 +1,11 @@
-profile: runtime-mirust.uai-index.v268
-updated_utc: 2026-08-26T13:28:30Z
+profile: runtime-mirust.uai-index.v269
+updated_utc: 2026-08-26T14:03:58Z
 
 current_qwen3_numerical_execution_terminal_memory_2026_08_26:
-  durable_entry: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md is 7,589 bytes/SHA256 2058578314ae6fe5b7eea3d39977d0d86e4cbc60df74909a702d980ccc8e8224.
+  durable_entry: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md is 9,040 bytes/SHA256 51bac356333e23998d61bfce3d88c61e64ada1d8667dac928824f76f371985c1.
   result_entry: contracts/vnext/qwen3-numerical-differential-execution-result.v1.json is 9,163 bytes/SHA256 a751ef6f6b436f84a18a02483b718cf90efdb872d5546cb0ee70ae0ec8fbaa2d; predecessor design memory remains 17,399/5cf598b7.
   terminal_entry: Registration commit 1fbc78e/tree 543abd5 is four-way exact. The sole owner launched source once and no later arm; source exited 1 with safe code source-trace-model-load. The nine-file/13,071-byte private closure was independently rehashed. No output root exists and no retry is allowed.
+  source_checkpoint: Terminal checkpoint 3cc7cea068ced16a4cc57e28c54e681fe497d630/tree 41bedbf06dd093f9d601f314e233327972d661ad is pushed/four-way exact. Focused is 34/34; clean standard is 1,549/0/2 of 1,551; protected is 23/23 with independently verified aggregate 3995/aa5af8f29571218caec43911f6afbed704335744e2c702370798af7b55a75d23.
   resume_entry: Preserve the operation. Build a bounded generic model-load diagnostic, reproduce outside the closed operation, add a failing regression, fix narrowly, gate and push, then use wholly new preregistered identities. All broader claims and counters stay zero.
 
 current_scalar_numerical_probe_memory_2026_08_26:

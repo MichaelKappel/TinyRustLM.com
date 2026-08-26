@@ -1,10 +1,11 @@
-profile: runtime-mirust.receiver-brief.v49
-updated_utc: 2026-08-26T13:28:30Z
+profile: runtime-mirust.receiver-brief.v50
+updated_utc: 2026-08-26T14:03:58Z
 
 current_qwen3_numerical_execution_terminal_brief_2026_08_26:
   first_read: Read workspace.uai and wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md before changing numerical work.
-  exact_identity: memory=7589,2058578314ae6fe5b7eea3d39977d0d86e4cbc60df74909a702d980ccc8e8224; result=9163,a751ef6f6b436f84a18a02483b718cf90efdb872d5546cb0ee70ae0ec8fbaa2d; registration=24467,469e003e6f50cb3e4bb0574e2bd72c5836edb938eea0345ca1a23b4bfc9906a1.
+  exact_identity: memory=9040,51bac356333e23998d61bfce3d88c61e64ada1d8667dac928824f76f371985c1; result=9163,a751ef6f6b436f84a18a02483b718cf90efdb872d5546cb0ee70ae0ec8fbaa2d; registration=24467,469e003e6f50cb3e4bb0574e2bd72c5836edb938eea0345ca1a23b4bfc9906a1.
   current_truth: Registration 1fbc78e/tree 543abd5 is four-way exact. One owner/source launch ended terminal-failure with source-trace-model-load; zero later launches/output roots. Nine private files/13,071 bytes and the 2,794-byte terminal were independently rehashed.
+  source_checkpoint: Terminal checkpoint 3cc7cea068ced16a4cc57e28c54e681fe497d630/tree 41bedbf06dd093f9d601f314e233327972d661ad is pushed/four-way exact. Focused is 34/34; clean standard is 1,549/0/2 of 1,551; protected is 23/23 with independently verified aggregate 3995/aa5af8f29571218caec43911f6afbed704335744e2c702370798af7b55a75d23.
   exact_resume: Preserve all closed bytes. Diagnose model load under a new bounded diagnostic identity, add the failing regression first, fix narrowly, gate/push/fresh-verify, then create a new output-free registration with wholly new names.
   hard_boundary: Never invoke the closed owner again. No numerical/browser/quality/P2P/package/deployment/MemoryEndpoints/campaign claim.
 

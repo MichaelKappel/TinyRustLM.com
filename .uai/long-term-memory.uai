@@ -1,10 +1,11 @@
-profile: runtime-mirust.long-term-memory-ledger.v372
-updated_utc: 2026-08-26T13:28:30Z
+profile: runtime-mirust.long-term-memory-ledger.v373
+updated_utc: 2026-08-26T14:03:58Z
 
 ledger_2026_08_26_qwen3_numerical_execution_terminal:
-  durable_record: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md, 7,589 bytes, SHA256 2058578314ae6fe5b7eea3d39977d0d86e4cbc60df74909a702d980ccc8e8224.
+  durable_record: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md, 9,040 bytes, SHA256 51bac356333e23998d61bfce3d88c61e64ada1d8667dac928824f76f371985c1.
   result_record: contracts/vnext/qwen3-numerical-differential-execution-result.v1.json, 9,163 bytes, SHA256 a751ef6f6b436f84a18a02483b718cf90efdb872d5546cb0ee70ae0ec8fbaa2d.
   immutable_truth: Registration 1fbc78e/tree 543abd5 was gated and four-way exact. One request and one owner invocation produced one source launch, exit 1, safe code source-trace-model-load, and zero later launches. Independent read-only audit closed nine private files/13,071 bytes. No output root or numerical verdict exists.
+  source_checkpoint: Terminal checkpoint 3cc7cea068ced16a4cc57e28c54e681fe497d630/tree 41bedbf06dd093f9d601f314e233327972d661ad is pushed/four-way exact. Focused is 34/34; clean standard is 1,549/0/2 of 1,551; protected is 23/23 with independently verified aggregate 3995/aa5af8f29571218caec43911f6afbed704335744e2c702370798af7b55a75d23.
   report_lineage: Durable record deep-links the reviewed report manifest, synthesis, TDD delta, intake memory, predecessor numerical memory, and /12 structure.
   next_durable_transition: Preserve all closed bytes. Diagnose model load under a new bounded diagnostic identity, add a generic failing test, correct cleanly, gate/commit/push/fresh-verify, then preregister wholly new execution identities. Never invoke or mutate the closed operation.
 
