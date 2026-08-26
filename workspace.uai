@@ -1,7 +1,16 @@
-profile: tinyrustlm.source-workspace.v450
+profile: tinyrustlm.source-workspace.v451
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-26T17:29:39Z
+updated_utc: 2026-08-26T19:27:16Z
+
+current_ecosystem_deployment_reconciliation_2026_08_26:
+  durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md, 10,772 bytes/SHA256 ac81d330b0c3522c2661d06569e7047e950116d0a3e6417463ae4d036144dade before any ecosystem publication or deployment work.
+  current_public_state: TinyRustLM.com 0.3.0 and the terminal TinyRustLM.MiRust.com, MiniModel.MiRust.com, and MiniModel.org publications pass exact immutable public readback. Runtime.MiRust.com passes its seven-redirect/six-destination contract only. MiRust.com is reachable but lacks a complete deployable production snapshot.
+  no_write_decision: Current source and this correction change zero of the 21 production web members; the release ledger is finalized and has no pending publication. No production write was invoked because replaying terminal publications or inventing a version would create false evidence.
+  unresolved_surface: LMComposer.com live redirect capitalization and /version.json behavior differ from its unpublished source package, and no immutable publication receipt exists. It requires a separate authorized site-specific create-only publication and exact readback. Runtime's profile remains misbound and forbidden; MiRust remains incomplete.
+  observed_gates: Finalized-ledger ValidateOnly passes all 23 artifacts; focused tests pass 11/11; deployment suite passes; UI passes 79/79; local Chromium smoke passes 12 observations; standard serial partition passes 1,591/0/3 of 1,594. Corrected private public-readback receipt is 68,813 bytes/SHA256 110f730825719dad2ffe95cda9e8740a1e7e6e485577755111fae11dbe380d31.
+  exact_resume: Commit/push/fresh-four-way-verify this correction and memory checkpoint, then run the protected 23-test release-surface gate from the clean commit. After that, resume the planned output-free Qwen3 numerical successor preregistration; do not manufacture deployment activity.
+  hard_boundary: No new deployment or publication occurred. No model, numerical, browser-model, P2P, package, MemoryEndpoints, or campaign claim follows; counters remain 0/20,0/50,0/25,0/40,0/20.
 
 current_qwen3_model_load_correction_2026_08_26:
   durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md, 20,442 bytes/SHA256 91764c9d5bde7d96e3d650396a1e882984b0b91baa0814c3b791f0d58321b4df before any successor numerical work.

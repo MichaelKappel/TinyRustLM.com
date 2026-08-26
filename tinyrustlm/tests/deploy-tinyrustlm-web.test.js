@@ -155,4 +155,7 @@ test("deployment orchestrator requires fresh readback and immutable attempt evid
   );
   assert.match(source, /function Get-DeploymentCredentialProfile/);
   assert.match(source, /DtdProcessing = \[Xml\.DtdProcessing\]::Prohibit/);
+  assert.match(source, /validate \$releaseLedgerPath/);
+  assert.match(source, /materialize-finalized/);
+  assert.match(source, /pendingReleaseId/);
 });

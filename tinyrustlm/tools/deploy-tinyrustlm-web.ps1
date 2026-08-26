@@ -1882,18 +1882,38 @@ if ($ValidateOnly) {
         "tinyrustlm-web-validation-release-{0}" -f [Guid]::NewGuid().ToString("N")
     )
     try {
-        $validationPublishedAt = [DateTime]::UtcNow.ToString(
-            "yyyy-MM-ddTHH:mm:ss.fffZ",
-            [Globalization.CultureInfo]::InvariantCulture
+        $ledgerValidationOutput = @(
+            & node $releaseMaterializerPath validate $releaseLedgerPath
         )
-        $materializationOutput = @(
-            & node $releaseMaterializerPath `
-                materialize `
-                $releaseLedgerPath `
-                $validationReleaseRoot `
-                ("0" * 40) `
-                $validationPublishedAt
-        )
+        if ($LASTEXITCODE -ne 0 -or $ledgerValidationOutput.Count -ne 1) {
+            throw "TinyRustLM release ledger validation failed."
+        }
+        $ledgerValidation = $ledgerValidationOutput[0] | ConvertFrom-Json
+        if ([string]$ledgerValidation.status -ne "pass") {
+            throw "TinyRustLM release ledger did not pass."
+        }
+        if ([string]::IsNullOrEmpty([string]$ledgerValidation.pendingReleaseId)) {
+            $materializationOutput = @(
+                & node $releaseMaterializerPath `
+                    materialize-finalized `
+                    $releaseLedgerPath `
+                    $validationReleaseRoot
+            )
+        }
+        else {
+            $validationPublishedAt = [DateTime]::UtcNow.ToString(
+                "yyyy-MM-ddTHH:mm:ss.fffZ",
+                [Globalization.CultureInfo]::InvariantCulture
+            )
+            $materializationOutput = @(
+                & node $releaseMaterializerPath `
+                    materialize `
+                    $releaseLedgerPath `
+                    $validationReleaseRoot `
+                    ("0" * 40) `
+                    $validationPublishedAt
+            )
+        }
         if ($LASTEXITCODE -ne 0 -or $materializationOutput.Count -ne 1) {
             throw "TinyRustLM release metadata materialization failed."
         }

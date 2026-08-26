@@ -1,5 +1,13 @@
-profile: runtime-mirust.architecture.v179
-updated_utc: 2026-08-26T17:29:39Z
+profile: runtime-mirust.architecture.v180
+updated_utc: 2026-08-26T19:27:16Z
+
+ecosystem_deployment_reconciliation_architecture_2026_08_26:
+  durable_route: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md, 10,772 bytes/SHA256 ac81d330b0c3522c2661d06569e7047e950116d0a3e6417463ae4d036144dade.
+  release_state_model: A finalized ledger materializes only its already-bound release state; a pending ledger requires a new source revision and publication instant. The two paths share validation but never share or synthesize publication identity.
+  deployment_identity: Publication requires changed authorized bytes, a pending immutable release closure, a clean exact source revision, bounded credentials, deployment, and exact HTTPS readback. Current reachability or matching bytes do not create a new publication event.
+  ecosystem_boundaries: Canonical TinyRustLM.com owns its 23-artifact release closure. Terminal documentation/catalog receipts and Runtime redirect evidence remain immutable sibling authority. MiRust and LMComposer require their own complete source, authorization, and create-only receipt chains.
+  current_decision: Zero current production-web delta plus no pending ledger means no TinyRustLM.com write. Runtime's misbound profile and MiRust's incomplete snapshot prohibit writes; LMComposer's unpublished source/live drift remains an external blocker.
+  claim_boundary: Release validation and public readback prove neither new deployment nor model, numerical, browser-model, P2P, package, MemoryEndpoints, or campaign status.
 
 current_qwen3_model_load_correction_2026_08_26:
   durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md, 20,442 bytes/SHA256 91764c9d5bde7d96e3d650396a1e882984b0b91baa0814c3b791f0d58321b4df before any successor numerical work.

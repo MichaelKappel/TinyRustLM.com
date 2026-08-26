@@ -1,5 +1,12 @@
-profile: runtime-mirust.taboo.v130
-updated_utc: 2026-08-26T17:29:39Z
+profile: runtime-mirust.taboo.v131
+updated_utc: 2026-08-26T19:27:16Z
+
+ecosystem_deployment_reconciliation_taboo_2026_08_26:
+  durable_route: Read wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md, 10,772 bytes/SHA256 ac81d330b0c3522c2661d06569e7047e950116d0a3e6417463ae4d036144dade before any deployment claim or write.
+  no_fabricated_release: Do not invent 0.3.1, synthesize a pending release, republish unchanged bytes, or describe exact readback as a new deployment.
+  no_terminal_replay: Do not rerun or overwrite TinyRustLM.com 0.3.0, TinyRustLM.MiRust.com 1.7.0, MiniModel.MiRust.com 1.0.0, MiniModel.org 1.0.0, or the Runtime redirect operation.
+  no_unauthorized_sibling_write: Do not use Runtime's misbound profile, deploy MiRust from an incomplete snapshot, mutate recovery/sibling repositories, or publish LMComposer without its own clean exact source, authorization, and create-only receipt.
+  no_claim_inflation: Do not infer a new publication, model qualification, browser-local model pass, P2P availability, package release, MemoryEndpoints behavior, or campaign progress from local gates or reachability.
 
 current_qwen3_model_load_correction_2026_08_26:
   durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md, 20,442 bytes/SHA256 91764c9d5bde7d96e3d650396a1e882984b0b91baa0814c3b791f0d58321b4df before any successor numerical work.

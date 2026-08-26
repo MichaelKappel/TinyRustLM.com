@@ -1,5 +1,13 @@
-profile: runtime-mirust.short-term-memory.v501
-updated_utc: 2026-08-26T17:29:39Z
+profile: runtime-mirust.short-term-memory.v502
+updated_utc: 2026-08-26T19:27:16Z
+
+current_ecosystem_deployment_reconciliation_2026_08_26:
+  just_completed: Corrected finalized-ledger ValidateOnly semantics without weakening pending-release materialization. A bounded read-only audit rechecked the full public ecosystem; no production write was eligible because current source changes zero deployment-manifest web members and the TinyRustLM.com ledger has no pending release.
+  deep_resume: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md is 10,772 bytes/SHA256 ac81d330b0c3522c2661d06569e7047e950116d0a3e6417463ae4d036144dade and is indexed in .uai/long-term-memory.uai.
+  current_truth: TinyRustLM.com 0.3.0 and the three terminal documentation/catalog sites match immutable public bytes; Runtime redirects match their receipt. LMComposer remains source/live-drifted without a publication receipt, Runtime writes remain forbidden under its misbound profile, and MiRust lacks a complete deployable snapshot.
+  verification: Focused 11/11, deployment suite pass, UI 79/79, real local Chromium 12-observation pass, complete standard 1,591/0/3 of 1,594, and corrected private public readback 68,813/SHA256 110f730825719dad2ffe95cda9e8740a1e7e6e485577755111fae11dbe380d31.
+  immediate_work: Commit/push/fresh-four-way-verify the correction and memory, run the protected 23-test release-surface gate from clean source, record exact evidence, then resume the output-free Qwen3 numerical successor preregistration.
+  boundary: Do not replay terminal deployments, invent a release, write through a misbound or incomplete sibling profile, or claim deployment/model/browser/P2P/MemoryEndpoints/campaign progress; counters stay 0/20,0/50,0/25,0/40,0/20.
 
 current_qwen3_model_load_correction_2026_08_26:
   durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md, 20,442 bytes/SHA256 91764c9d5bde7d96e3d650396a1e882984b0b91baa0814c3b791f0d58321b4df before any successor numerical work.

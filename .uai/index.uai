@@ -1,5 +1,7 @@
-profile: runtime-mirust.uai-index.v274
-updated_utc: 2026-08-26T17:29:39Z
+profile: runtime-mirust.uai-index.v275
+updated_utc: 2026-08-26T19:27:16Z
+
+current_ecosystem_deployment_reconciliation_2026_08_26: Read wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md, 10,772 bytes/SHA256 ac81d330b0c3522c2661d06569e7047e950116d0a3e6417463ae4d036144dade before deployment work. TinyRustLM.com and three terminal documentation/catalog publications are exact-current; Runtime redirects pass readback; source has no web delta or pending release, so no write occurred. LMComposer needs a separately authorized publication; Runtime is misbound and MiRust incomplete. Commit/push/fresh-verify, run the clean protected gate, then resume output-free numerical preregistration. No broader claim or counter credit.
 
 current_qwen3_model_load_correction_2026_08_26:
   durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md, 20,442 bytes/SHA256 91764c9d5bde7d96e3d650396a1e882984b0b91baa0814c3b791f0d58321b4df before any successor numerical work.

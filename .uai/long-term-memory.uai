@@ -1,5 +1,5 @@
-profile: runtime-mirust.long-term-memory-ledger.v378
-updated_utc: 2026-08-26T17:29:39Z
+profile: runtime-mirust.long-term-memory-ledger.v379
+updated_utc: 2026-08-26T19:27:16Z
 
 current_qwen3_model_load_correction_2026_08_26:
   durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md, 20,442 bytes/SHA256 91764c9d5bde7d96e3d650396a1e882984b0b91baa0814c3b791f0d58321b4df before any successor numerical work.
@@ -39,6 +39,29 @@ ledger_rule:
   summary_policy: Routing-only, one sentence, 35 words maximum, no durable body memory.
   allowed_statuses: current, retired, superseded, quarantined
 records:
+  - stable_id: tinyrustlm_ecosystem_deployment_reconciliation_2026_08_26_current
+    memory_domain: tinyrustlm.release.ecosystem_deployment_reconciliation
+    pointer_type: deployment_reconciliation_memory
+    path: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md
+    target_location: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md
+    label: TinyRustLM Ecosystem Deployment Reconciliation
+    summary: Routes the exact ecosystem readback, finalized-ledger validation correction, no-op deployment decision, immutable publications, LMComposer drift, blocked sibling writes, and strict nonclaims.
+    pointer_status: current
+    authority: locally observed source validation and bounded public HTTPS readback
+    source_authority: canonical TinyRustLM source commit 23acdd7330dea53c8ab99f19293963edb3820ae7 before the focused correction
+    source_identity: frozen continuation goal sha256 92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0
+    reviewed_synthesis: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md
+    reviewed_tdd_delta: finalized-ledger CLI and deployment preflight tests in tinyrustlm/tests
+    review_status: ecosystem_reconciled_with_external_blockers
+    quarantine_status: terminal publications preserved; Runtime misbound; MiRust incomplete; LMComposer unpublished
+    review_evidence: private corrected public-readback receipt sha256 110f730825719dad2ffe95cda9e8740a1e7e6e485577755111fae11dbe380d31
+    contextual_trigger: Read before any TinyRustLM ecosystem publication, deployment, release claim, sibling-site write, or resumption after the 2026-08-26 urgent reconciliation.
+    checksum_hash: sha256:ac81d330b0c3522c2661d06569e7047e950116d0a3e6417463ae4d036144dade
+    sha256: ac81d330b0c3522c2661d06569e7047e950116d0a3e6417463ae4d036144dade
+    bytes: 10772
+    last_reviewed_utc: 2026-08-26T19:27:16Z
+    owner_or_reviewer: TinyRustLM Agent
+    truth_boundary: Proves bounded reconciliation, tests, and exact public readback only; no new deployment, model, browser-model, P2P, package, MemoryEndpoints, or campaign evidence.
   - stable_id: tinyrustlm_build_custody_request_materializer_current
     memory_domain: tinyrustlm.model_acquisition.build_custody_request_materializer
     pointer_type: implementation_checkpoint_memory

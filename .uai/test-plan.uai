@@ -1,5 +1,13 @@
-profile: runtime-mirust.test-plan.v302
-updated_utc: 2026-08-26T17:29:39Z
+profile: runtime-mirust.test-plan.v303
+updated_utc: 2026-08-26T19:27:16Z
+
+ecosystem_deployment_reconciliation_test_plan_2026_08_26:
+  durable_route: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md is 10,772 bytes/SHA256 ac81d330b0c3522c2661d06569e7047e950116d0a3e6417463ae4d036144dade.
+  local_green: Finalized-ledger ValidateOnly validates 23/23 artifacts; focused contract/deploy tests pass 11/11; deployment suite passes; UI passes 79/79; real local Chromium smoke passes 12 observations; complete standard passes 1,591/0/3 of 1,594.
+  public_green: Corrected private readback 68,813/SHA256 110f730825719dad2ffe95cda9e8740a1e7e6e485577755111fae11dbe380d31 records exact TinyRustLM.com and terminal documentation/catalog bytes plus Runtime redirect equality.
+  required_negative_state: Preserve zero web-member intersection, finalized ledger with no pending release, LMComposer source/live mismatch, Runtime misbinding, MiRust incomplete snapshot, and zero campaign counters as acceptance facts rather than bypass targets.
+  clean_source_gate: After commit/push/fresh equality, run the protected 23-test release-surface suite into a wholly new external evidence root and independently verify its aggregate. A pass proves release controls, not a deployment.
+  failure_rule: Any changed byte, ledger drift, credential mismatch, readback mismatch, unexpected network route, dirty source, or protected-gate failure blocks publication and cannot be repaired by replaying an old terminal operation.
 
 current_qwen3_model_load_correction_2026_08_26:
   durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md, 20,442 bytes/SHA256 91764c9d5bde7d96e3d650396a1e882984b0b91baa0814c3b791f0d58321b4df before any successor numerical work.

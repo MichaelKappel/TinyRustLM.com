@@ -605,6 +605,7 @@ function assertHistoryExtension(previous, next) {
 function usage() {
   return "Usage: site-release-contract.js validate <ledger> | " +
     "materialize <ledger> <output-root> <source-revision> <published-at> | " +
+    "materialize-finalized <ledger> <output-root> | " +
     "validate-public <ledger> <output-root> | " +
     "finalize <ledger> <public-output-root> <candidate-ledger-output>";
 }
@@ -627,6 +628,26 @@ function main(argv) {
       outputRoot: args[1],
       sourceRevision: args[2],
       publishedAt: args[3]
+    });
+    process.stdout.write(`${JSON.stringify({
+      schema: currentReleaseSchema,
+      status: "pass",
+      releaseId: result.current.releaseId,
+      version: result.current.version,
+      publicationId: result.current.publicationId,
+      ledgerSha256: result.ledgerSha256,
+      files: result.files.map(({ relativePath, byteCount, sha256 }) => ({
+        relativePath,
+        byteCount,
+        sha256
+      }))
+    })}\n`);
+    return;
+  }
+  if (command === "materialize-finalized" && args.length === 2) {
+    const result = materializeReleaseState({
+      ledgerPath: args[0],
+      outputRoot: args[1]
     });
     process.stdout.write(`${JSON.stringify({
       schema: currentReleaseSchema,

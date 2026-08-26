@@ -1,5 +1,13 @@
-profile: runtime-mirust.operations.v180
-updated_utc: 2026-08-26T17:29:39Z
+profile: runtime-mirust.operations.v181
+updated_utc: 2026-08-26T19:27:16Z
+
+ecosystem_deployment_reconciliation_operations_2026_08_26:
+  durable_route: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-reconciliation-memory-2026-08-26.md, 10,772 bytes/SHA256 ac81d330b0c3522c2661d06569e7047e950116d0a3e6417463ae4d036144dade.
+  decision: The operational result is ecosystem-reconciled-with-external-blockers. TinyRustLM.com has zero production-byte delta and no pending release; all already-terminal site operations remain immutable and were not replayed.
+  verified_surfaces: Exact public readback passes for TinyRustLM.com 0.3.0, TinyRustLM.MiRust.com 1.7.0, MiniModel.MiRust.com 1.0.0, MiniModel.org 1.0.0, and Runtime.MiRust.com's redirect contract. MiRust.com reachability is observation only.
+  blocked_writes: Do not use Runtime's misbound profile or MiRust's incomplete snapshot. LMComposer requires a separate authorized create-only publication from exact clean source plus immutable HTTPS readback evidence.
+  finish_order: Commit and push the validator/memory change; fresh-fetch and prove four-way equality; run the protected release gate from the clean commit; preserve evidence; then resume output-free numerical preregistration.
+  prohibited: No replay, invented version, uncommitted deployment, sibling-repository mutation, MemoryEndpoints action, or campaign-counter increment.
 
 current_qwen3_model_load_correction_2026_08_26:
   durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md, 20,442 bytes/SHA256 91764c9d5bde7d96e3d650396a1e882984b0b91baa0814c3b791f0d58321b4df before any successor numerical work.

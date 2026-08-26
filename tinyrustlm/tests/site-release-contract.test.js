@@ -1,9 +1,12 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const childProcess = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
+
+const contractCliPath = path.resolve(__dirname, "..", "tools", "site-release-contract.js");
 
 const {
   assertHistoryExtension,
@@ -99,6 +102,37 @@ test("materializes exact current records from a finalized ledger", (context) => 
     }),
     /does not accept candidate publication identity/
   );
+});
+
+test("CLI materializes only finalized release state without a synthetic publication", (context) => {
+  const outputRoot = withTemporaryDirectory(context);
+  const result = childProcess.spawnSync(process.execPath, [
+    contractCliPath,
+    "materialize-finalized",
+    ledgerPath,
+    outputRoot
+  ], { encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stderr, "");
+  const summary = JSON.parse(result.stdout);
+  assert.equal(summary.status, "pass");
+  assert.equal(summary.version, "0.3.0");
+  assert.equal(
+    summary.publicationId,
+    "cc53b43f55557aa9808264776c73168a750600c7b53c4d6a6bc61815afa0e3b2"
+  );
+  validatePublicReleaseFiles({ ledgerPath, outputRoot });
+
+  const pendingOutputRoot = path.join(withTemporaryDirectory(context), "pending");
+  const rejected = childProcess.spawnSync(process.execPath, [
+    contractCliPath,
+    "materialize-finalized",
+    pendingLedgerPath(context),
+    pendingOutputRoot
+  ], { encoding: "utf8" });
+  assert.equal(rejected.status, 1);
+  assert.equal(rejected.stdout, "");
+  assert.equal(rejected.stderr, "Site release contract validation failed\n");
 });
 
 test("materializes canonical current and history records bound to one clean source revision", (context) => {
