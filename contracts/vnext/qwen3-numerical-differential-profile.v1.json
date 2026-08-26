@@ -1,7 +1,7 @@
 {
   "schema": "tinyrustlm.qwen3_numerical_differential_profile.v1",
   "profileId": "tinyrustlm.qwen3-source-reconstructed-scalar-differential/1",
-  "status": "implementation-and-offline-environment-locked-real-operation-unregistered",
+  "status": "implementation-corrected-environment-and-model-load-diagnostic-locked-real-operation-unregistered",
   "authority": {
     "productLifecycle": "prelaunch-single-unversioned-product",
     "technicalVersionIsProductGeneration": false,
@@ -68,6 +68,14 @@
     "browserClaim": "unproven",
     "qualityClaim": "unproven"
   },
+  "diagnostics": {
+    "modelLoad": {
+      "path": "contracts/vnext/qwen3-model-load-diagnostic-result.v2.json",
+      "byteLength": 2919,
+      "sha256": "815dc5e38a431c9ccb578dacc2452ae54e193e41747b4507752d99b4a86c036a",
+      "claim": "pinned-local-model-load-and-one-ipv6-loopback-capability-bind-only"
+    }
+  },
   "modelSpec": {
     "vocabularySize": 151936,
     "contextLength": 40960,
@@ -89,9 +97,9 @@
   "implementations": {
     "environmentAuthority": {
       "path": "tinyrustlm/tools/qwen3_numerical_environment_lock.py",
-      "byteLength": 25450,
-      "sha256": "638c300c41f5a3b06c6ccc70122babd9bbbd489b7c5aa12f3850b891165f3635",
-      "profileId": "tinyrustlm.qwen3-numerical-oracle-python-win-x64/1",
+      "byteLength": 25501,
+      "sha256": "64ae1891699187c3441e4327cce738f20d1cd7abf69a2fb1e54488a0d239f7be",
+      "profileId": "tinyrustlm.qwen3-numerical-oracle-python-win-x64/2",
       "runtimeVerification": "exact-installed-non-cache-file-closure-before-and-after-each-python-owner"
     },
     "soleExecutionOwner": {
@@ -113,11 +121,26 @@
     },
     "publisherSourceOwner": {
       "path": "tinyrustlm/tools/qwen3-numerical-source-owner.py",
-      "byteLength": 39852,
-      "sha256": "43b3b8d40a27c9cb983248e4d0f2490757a2f4952ac7322df43c3c7f3018984e",
-      "profileId": "tinyrustlm.qwen3-publisher-source-trace/1",
+      "byteLength": 50858,
+      "sha256": "86ad60c3fa2a409b1e138a185ffaa1da7a7ff3b529eebada1cc83a4b7884c129",
+      "profileId": "tinyrustlm.qwen3-publisher-source-trace/2",
       "framework": "Transformers-Qwen3ForCausalLM-CPU-FP32-eager",
+      "localCapabilityProbe": {
+        "event": "socket.bind",
+        "addressFamily": "AF_INET6",
+        "socketType": "SOCK_STREAM",
+        "protocol": 0,
+        "host": "::1",
+        "port": 0,
+        "callerModule": "urllib3.util.connection",
+        "callerFunction": "_has_ipv6",
+        "maximumCount": 1,
+        "connectAllowed": false,
+        "listenAllowed": false,
+        "externalCommunication": false
+      },
       "networkAllowed": false,
+      "remoteCodeAllowed": false,
       "promptTextAccepted": false,
       "modelDownloadAllowed": false,
       "outputMode": "private-create-only"
@@ -142,8 +165,8 @@
     },
     "independentVerifier": {
       "path": "tinyrustlm/tools/qwen3-numerical-trace-verifier.js",
-      "byteLength": 46911,
-      "sha256": "2e6fb463cf9846844d509dfe790b623d689d09306ea4cd15748808c0240d14c5",
+      "byteLength": 47068,
+      "sha256": "e045782d3e0fa3b5b8d28c32209ca35abbc8ed27849417de08d717f46e27c0c6",
       "language": "JavaScript-Node",
       "writesPerformed": false,
       "verdictSelection": "first-registered-divergence-in-case-step-stage-element-order",
@@ -154,27 +177,29 @@
   "environment": {
     "lock": {
       "path": "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json",
-      "byteLength": 29103,
-      "sha256": "bdccfc277c66640ab958f382713cd75fbf497e6232b57b5025cd78868ec5a0e5",
-      "profileId": "tinyrustlm.qwen3-numerical-oracle-python-win-x64/1",
-      "runtimeClosureSha256": "90bbf5f9da3c92e689030d84bb45efa9054b494ea7851b1185aeca8f4af83b10"
+      "byteLength": 30920,
+      "sha256": "4102fddd538a5a14d52c543a28a856dc61e95e978d2085b58f449f3be5250ae2",
+      "profileId": "tinyrustlm.qwen3-numerical-oracle-python-win-x64/2",
+      "runtimeClosureSha256": "fd6b647255c2d4c1294100946fce3c71abfd306ba5b173534ca5fe3b9c2933d4"
     },
     "offlineClosure": {
-      "wheelCount": 29,
-      "wheelByteLength": 258399469,
-      "wheelClosureSha256": "970c626fc754bdf160a0fa545df50c2daac708f72e66efe38909f48b5e356b49",
+      "wheelCount": 31,
+      "wheelByteLength": 258926452,
+      "wheelClosureSha256": "b13ee2929e033b4126584fdaf788efd892ab5e48812748793708fa9914f88b2b",
       "bootstrapDistributionCount": 4,
       "bootstrapFileCount": 170,
       "bootstrapClosureSha256": "fba473d6da6254419fda06deb33794292169c7d8372b480c6a9b1c909c2ca659",
-      "runtimeDistributionCount": 26,
-      "runtimeFileCount": 17535,
-      "runtimeByteLength": 1378685662,
-      "runtimeClosureSha256": "90bbf5f9da3c92e689030d84bb45efa9054b494ea7851b1185aeca8f4af83b10",
+      "runtimeDistributionCount": 28,
+      "runtimeFileCount": 17650,
+      "runtimeByteLength": 1381216858,
+      "runtimeClosureSha256": "fd6b647255c2d4c1294100946fce3c71abfd306ba5b173534ca5fe3b9c2933d4",
       "claim": "exact-observed-offline-closure-not-original-installation-or-execution-evidence"
     },
     "sourceFramework": {
       "platform": "win-x64",
       "pythonVersion": "3.12.10",
+      "accelerateVersion": "1.14.0",
+      "psutilVersion": "7.2.2",
       "torchVersion": "2.7.0",
       "transformersVersion": "4.51.0",
       "safetensorsVersion": "0.5.3",
@@ -201,7 +226,7 @@
   },
   "requests": {
     "source": {
-      "schema": "tinyrustlm.qwen3_numerical_source_request.v1",
+      "schema": "tinyrustlm.qwen3_numerical_source_request.v2",
       "canonicalEncoding": "recursively-key-sorted-pretty-UTF8-JSON-one-final-LF",
       "unknownFields": "fatal",
       "duplicateFields": "fatal-through-canonical-byte-mismatch",
@@ -387,6 +412,8 @@
     "syntheticPublisherQwen3HookTopologyVerified": true,
     "syntheticReconstructedRmsNormRopeAndGqaVerified": true,
     "crossArmEnvironmentDriftRejected": true,
+    "pinnedSourceModelLoadDiagnosticPassed": true,
+    "modelLoadDiagnosticCountsAsSourceTrace": false,
     "fixtureCountsAsRealModel": false,
     "fixtureCountsAsNumericalParity": false,
     "fixtureCountsAsBrowserProof": false,
@@ -397,6 +424,7 @@
     "hostileFixtureVerified": true,
     "offlineEnvironmentLocked": true,
     "realOperationRegistered": false,
+    "publisherSourceModelLoadPassed": true,
     "publisherSourceTraceExecuted": false,
     "reconstructedTraceExecuted": false,
     "rustScalarTraceExecuted": false,

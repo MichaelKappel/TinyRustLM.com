@@ -173,10 +173,12 @@ function genericManifest(kind, trace) {
   const implementation = kind === "source"
     ? {
       kind: "publisher-source-framework",
-      profileId: "tinyrustlm.qwen3-publisher-source-trace/1",
+      profileId: "tinyrustlm.qwen3-publisher-source-trace/2",
       pythonVersion: "3.12.10",
       packages: {
+        accelerate: "1.14.0",
         numpy: "2.2.5",
+        psutil: "7.2.2",
         safetensors: "0.5.3",
         tokenizers: "0.21.1",
         torch: "2.7.0",
@@ -426,12 +428,12 @@ test("binds every implementation and durable report-memory deep link by content"
     canonicalJsonBytes(environmentDocument, true).toString("utf8"));
   assert.deepEqual(profile.environment.lock, {
     ...identity(profile.environment.lock.path),
-    profileId: "tinyrustlm.qwen3-numerical-oracle-python-win-x64/1",
+    profileId: "tinyrustlm.qwen3-numerical-oracle-python-win-x64/2",
     runtimeClosureSha256: environmentDocument.runtimeEnvironment.closure.closureSha256
   });
-  assert.equal(environmentDocument.wheelhouse.wheelCount, 29);
+  assert.equal(environmentDocument.wheelhouse.wheelCount, 31);
   assert.equal(environmentDocument.bootstrapEnvironment.distributions.length, 4);
-  assert.equal(environmentDocument.runtimeEnvironment.distributions.length, 26);
+  assert.equal(environmentDocument.runtimeEnvironment.distributions.length, 28);
 });
 
 test("both private owners expose bounded dependency-free self-tests", () => {

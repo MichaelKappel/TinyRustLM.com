@@ -16,13 +16,14 @@ import math
 import os
 from pathlib import Path
 import re
+import socket
 import sys
 from typing import Any, Callable
 
 
-REQUEST_SCHEMA = "tinyrustlm.qwen3_numerical_source_request.v1"
+REQUEST_SCHEMA = "tinyrustlm.qwen3_numerical_source_request.v2"
 RESULT_SCHEMA = "tinyrustlm.numerical_trace_bundle.v1"
-IMPLEMENTATION_ID = "tinyrustlm.qwen3-publisher-source-trace/1"
+IMPLEMENTATION_ID = "tinyrustlm.qwen3-publisher-source-trace/2"
 TRACE_PROFILE_ID = "tinyrustlm.scalar-full-stage-f32le/1"
 SOURCE_LOCK_SCHEMA = "tinyrustlm.qwen3_source_lock.v1"
 SOURCE_LOCK_PATH = "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json"
@@ -33,6 +34,7 @@ MAXIMUM_JSON_BYTES = 32 * 1024 * 1024
 HASH_BUFFER_BYTES = 1024 * 1024
 MAXIMUM_CASES = 32
 MAXIMUM_TOKENS_PER_CASE = 256
+DIAGNOSTIC_MAXIMUM_SOURCE_FILE_BYTES = 1_600_000_000
 IDENTIFIER = re.compile(r"^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$")
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 ENVIRONMENT_LOCK_RELATIVE_PATH = (
@@ -58,6 +60,16 @@ EXPECTED_MODEL_SPEC = {
     "tiedEmbeddings": True,
     "qkvBias": False,
     "qkNormalization": True,
+}
+EXPECTED_PYTHON_VERSION = "3.12.10"
+EXPECTED_PACKAGE_VERSIONS = {
+    "accelerate": "1.14.0",
+    "psutil": "7.2.2",
+    "torch": "2.7.0",
+    "transformers": "4.51.0",
+    "safetensors": "0.5.3",
+    "tokenizers": "0.21.1",
+    "numpy": "2.2.5",
 }
 
 
@@ -154,6 +166,24 @@ def verify_environment(framework: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def verify_current_environment() -> dict[str, Any]:
+    repository_root = Path(__file__).resolve(strict=True).parents[2]
+    authority_path = repository_root / ENVIRONMENT_AUTHORITY_RELATIVE_PATH
+    lock_path = repository_root / ENVIRONMENT_LOCK_RELATIVE_PATH
+    authority = content_identity(
+        authority_path, MAXIMUM_JSON_BYTES, "source-trace-environment-authority"
+    )
+    lock = content_identity(
+        lock_path, MAXIMUM_JSON_BYTES, "source-trace-environment-lock"
+    )
+    return verify_environment(
+        {
+            "environmentAuthority": authority,
+            "environmentLock": lock,
+        }
+    )
+
+
 def read_strict_json(path: Path, maximum_bytes: int, code: str) -> tuple[dict[str, Any], bytes]:
     size = regular_file(path, maximum_bytes, code)
     if size == 0:
@@ -242,16 +272,96 @@ def token_digest(token_ids: list[int]) -> str:
     return digest.hexdigest()
 
 
-def audit_hook(event: str, _arguments: tuple[Any, ...]) -> None:
+class IsolationPolicy:
+    """Deny communication while admitting one pinned local capability probe."""
+
+    maximum_loopback_capability_binds = 1
     denied_prefixes = ("subprocess.",)
-    denied_events = {
-        "os.system", "os.posix_spawn", "os.spawn", "pty.spawn",
-        "socket.bind", "socket.connect", "socket.connect_ex", "socket.getaddrinfo",
-        "socket.gethostbyaddr", "socket.gethostbyname", "urllib.Request",
-        "http.client.connect",
-    }
-    if event in denied_events or event.startswith(denied_prefixes):
-        fail("source-trace-isolation-violation")
+    denied_events = frozenset(
+        {
+            "http.client.connect",
+            "os.posix_spawn",
+            "os.spawn",
+            "os.system",
+            "pty.spawn",
+            "socket.bind",
+            "socket.connect",
+            "socket.connect_ex",
+            "socket.getaddrinfo",
+            "socket.gethostbyaddr",
+            "socket.gethostbyname",
+            "socket.getnameinfo",
+            "socket.getservbyname",
+            "socket.getservbyport",
+            "socket.listen",
+            "socket.sendmsg",
+            "socket.sendto",
+            "urllib.Request",
+        }
+    )
+
+    def __init__(self) -> None:
+        self.loopback_capability_bind_count = 0
+
+    @staticmethod
+    def _is_exact_loopback_capability_bind(
+        arguments: tuple[Any, ...], caller_module: Any, caller_function: Any
+    ) -> bool:
+        if (
+            len(arguments) != 2
+            or caller_module != "urllib3.util.connection"
+            or caller_function != "_has_ipv6"
+        ):
+            return False
+        source_socket, address = arguments
+        try:
+            return (
+                isinstance(source_socket, socket.socket)
+                and int(source_socket.family) == int(socket.AF_INET6)
+                and int(source_socket.type) == int(socket.SOCK_STREAM)
+                and source_socket.proto == 0
+                and isinstance(address, tuple)
+                and len(address) == 2
+                and address[0] == "::1"
+                and type(address[1]) is int
+                and address[1] == 0
+            )
+        except (AttributeError, OSError, TypeError, ValueError):
+            return False
+
+    def evaluate(
+        self,
+        event: str,
+        arguments: tuple[Any, ...],
+        caller_module: Any,
+        caller_function: Any,
+    ) -> None:
+        if event == "socket.bind":
+            if (
+                self.loopback_capability_bind_count
+                < self.maximum_loopback_capability_binds
+                and self._is_exact_loopback_capability_bind(
+                    arguments, caller_module, caller_function
+                )
+            ):
+                self.loopback_capability_bind_count += 1
+                return
+            fail("source-trace-isolation-violation")
+        if event in self.denied_events or event.startswith(self.denied_prefixes):
+            fail("source-trace-isolation-violation")
+
+    def audit(self, event: str, arguments: tuple[Any, ...]) -> None:
+        if event != "socket.bind":
+            self.evaluate(event, arguments, None, None)
+            return
+        try:
+            caller = sys._getframe(1)  # pylint: disable=protected-access
+            caller_module = caller.f_globals.get("__name__")
+            caller_function = caller.f_code.co_name
+        except (AttributeError, ValueError):
+            caller_module = None
+            caller_function = None
+        self.evaluate(event, arguments, caller_module, caller_function)
 
 
 def validate_request(request_path: Path) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -307,6 +417,8 @@ def validate_request(request_path: Path) -> tuple[dict[str, Any], dict[str, Any]
             "environmentAuthority",
             "environmentLock",
             "pythonVersion",
+            "accelerateVersion",
+            "psutilVersion",
             "torchVersion",
             "transformersVersion",
             "safetensorsVersion",
@@ -344,12 +456,14 @@ def validate_request(request_path: Path) -> tuple[dict[str, Any], dict[str, Any]
         or isinstance(environment_lock["byteLength"], bool)
         or not 1 <= environment_lock["byteLength"] <= MAXIMUM_JSON_BYTES
         or not valid_sha256(environment_lock["sha256"])
-        or framework["pythonVersion"] != "3.12.10"
-        or framework["torchVersion"] != "2.7.0"
-        or framework["transformersVersion"] != "4.51.0"
-        or framework["safetensorsVersion"] != "0.5.3"
-        or framework["tokenizersVersion"] != "0.21.1"
-        or framework["numpyVersion"] != "2.2.5"
+        or framework["pythonVersion"] != EXPECTED_PYTHON_VERSION
+        or framework["accelerateVersion"] != EXPECTED_PACKAGE_VERSIONS["accelerate"]
+        or framework["psutilVersion"] != EXPECTED_PACKAGE_VERSIONS["psutil"]
+        or framework["torchVersion"] != EXPECTED_PACKAGE_VERSIONS["torch"]
+        or framework["transformersVersion"] != EXPECTED_PACKAGE_VERSIONS["transformers"]
+        or framework["safetensorsVersion"] != EXPECTED_PACKAGE_VERSIONS["safetensors"]
+        or framework["tokenizersVersion"] != EXPECTED_PACKAGE_VERSIONS["tokenizers"]
+        or framework["numpyVersion"] != EXPECTED_PACKAGE_VERSIONS["numpy"]
         or framework["device"] != "cpu"
         or framework["dtype"] != "float32"
         or framework["attentionImplementation"] != "eager"
@@ -726,42 +840,38 @@ def write_trace(path: Path, records: list[tuple[str, int | None, Any]], maximum:
 
 
 def package_versions() -> dict[str, str]:
-    names = ("torch", "transformers", "safetensors", "tokenizers", "numpy")
+    names = ("accelerate", "psutil", "torch", "transformers", "safetensors", "tokenizers", "numpy")
     try:
         return {name: importlib.metadata.version(name) for name in names}
     except importlib.metadata.PackageNotFoundError:
         fail("source-trace-environment")
 
 
-def execute(request_path: Path) -> dict[str, Any]:
-    request, state = validate_request(request_path)
-    environment_before = verify_environment(request["framework"])
-    identities_before = validate_source(
-        state["sourceLockPath"],
-        state["sourceDirectory"],
-        request["policy"]["maximumSourceFileBytes"],
-    )
-    validate_config(state["sourceDirectory"])
+def verify_pinned_package_versions() -> dict[str, str]:
     versions = package_versions()
-    expected_versions = {
-        "torch": request["framework"]["torchVersion"],
-        "transformers": request["framework"]["transformersVersion"],
-        "safetensors": request["framework"]["safetensorsVersion"],
-        "tokenizers": request["framework"]["tokenizersVersion"],
-        "numpy": request["framework"]["numpyVersion"],
-    }
-    if versions != expected_versions or f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}" != request["framework"]["pythonVersion"]:
+    observed_python = (
+        f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+    )
+    if versions != EXPECTED_PACKAGE_VERSIONS or observed_python != EXPECTED_PYTHON_VERSION:
         fail("source-trace-environment")
+    return versions
 
-    os.environ["HF_HOME"] = str(state["scratchRoot"])
+
+def load_pinned_framework_model(
+    source_directory: Path, scratch_root: Path
+) -> tuple[Any, Any, Any, IsolationPolicy]:
+    os.environ["HF_HOME"] = str(scratch_root)
     os.environ["HF_HUB_OFFLINE"] = "1"
     os.environ["TRANSFORMERS_OFFLINE"] = "1"
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
-    sys.addaudithook(audit_hook)
+    isolation_policy = IsolationPolicy()
+    sys.addaudithook(isolation_policy.audit)
     try:
         import torch  # pylint: disable=import-outside-toplevel
         from transformers import Qwen3ForCausalLM  # pylint: disable=import-outside-toplevel
         from transformers.models.qwen3 import modeling_qwen3  # pylint: disable=import-outside-toplevel
+    except SourceOwnerFailure:
+        raise
     except Exception:
         fail("source-trace-environment")
 
@@ -773,16 +883,25 @@ def execute(request_path: Path) -> dict[str, Any]:
 
     try:
         model = Qwen3ForCausalLM.from_pretrained(
-            state["sourceDirectory"],
+            source_directory,
             local_files_only=True,
+            trust_remote_code=False,
             torch_dtype=torch.float32,
             attn_implementation="eager",
         )
         model.eval()
         model.requires_grad_(False)
         model.to(device="cpu", dtype=torch.float32)
+    except SourceOwnerFailure:
+        raise
     except Exception:
         fail("source-trace-model-load")
+    if isolation_policy.loopback_capability_bind_count != 1:
+        fail("source-trace-isolation-capability-probe")
+    return torch, modeling_qwen3, model, isolation_policy
+
+
+def validate_loaded_model(model: Any) -> dict[str, Any]:
     config = model.config
     observed_spec = {
         "vocabularySize": config.vocab_size,
@@ -801,6 +920,35 @@ def execute(request_path: Path) -> dict[str, Any]:
     }
     if observed_spec != EXPECTED_MODEL_SPEC or config._attn_implementation != "eager":
         fail("source-trace-model-spec")
+    return observed_spec
+
+
+def execute(request_path: Path) -> dict[str, Any]:
+    request, state = validate_request(request_path)
+    environment_before = verify_environment(request["framework"])
+    identities_before = validate_source(
+        state["sourceLockPath"],
+        state["sourceDirectory"],
+        request["policy"]["maximumSourceFileBytes"],
+    )
+    validate_config(state["sourceDirectory"])
+    versions = verify_pinned_package_versions()
+    expected_versions = {
+        "accelerate": request["framework"]["accelerateVersion"],
+        "psutil": request["framework"]["psutilVersion"],
+        "torch": request["framework"]["torchVersion"],
+        "transformers": request["framework"]["transformersVersion"],
+        "safetensors": request["framework"]["safetensorsVersion"],
+        "tokenizers": request["framework"]["tokenizersVersion"],
+        "numpy": request["framework"]["numpyVersion"],
+    }
+    if versions != expected_versions or EXPECTED_PYTHON_VERSION != request["framework"]["pythonVersion"]:
+        fail("source-trace-environment")
+
+    torch, modeling_qwen3, model, _isolation_policy = load_pinned_framework_model(
+        state["sourceDirectory"], state["scratchRoot"]
+    )
+    observed_spec = validate_loaded_model(model)
 
     capture = FrameworkCapture(torch, model, modeling_qwen3)
     output_root = state["outputRoot"]
@@ -947,6 +1095,140 @@ def self_test() -> None:
         fail("source-trace-self-test")
 
 
+def isolation_self_test() -> None:
+    def expect_denied(
+        policy: IsolationPolicy,
+        event: str,
+        arguments: tuple[Any, ...],
+        caller_module: str,
+        caller_function: str,
+    ) -> None:
+        try:
+            policy.evaluate(event, arguments, caller_module, caller_function)
+        except SourceOwnerFailure as error:
+            if str(error) == "source-trace-isolation-violation":
+                return
+        fail("source-trace-isolation-self-test")
+
+    sockets: list[socket.socket] = []
+    try:
+        ipv6_stream = socket.socket(socket.AF_INET6, socket.SOCK_STREAM, 0)
+        ipv4_stream = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+        ipv6_datagram = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM, 0)
+        ipv6_tcp = socket.socket(socket.AF_INET6, socket.SOCK_STREAM, socket.IPPROTO_TCP)
+        sockets.extend((ipv6_stream, ipv4_stream, ipv6_datagram, ipv6_tcp))
+
+        exact_arguments = (ipv6_stream, ("::1", 0))
+        policy = IsolationPolicy()
+        policy.evaluate(
+            "socket.bind",
+            exact_arguments,
+            "urllib3.util.connection",
+            "_has_ipv6",
+        )
+        if policy.loopback_capability_bind_count != 1:
+            fail("source-trace-isolation-self-test")
+        expect_denied(
+            policy,
+            "socket.bind",
+            exact_arguments,
+            "urllib3.util.connection",
+            "_has_ipv6",
+        )
+
+        invalid_binds = (
+            ((ipv4_stream, ("::1", 0)), "urllib3.util.connection", "_has_ipv6"),
+            ((ipv6_datagram, ("::1", 0)), "urllib3.util.connection", "_has_ipv6"),
+            ((ipv6_tcp, ("::1", 0)), "urllib3.util.connection", "_has_ipv6"),
+            ((ipv6_stream, ("127.0.0.1", 0)), "urllib3.util.connection", "_has_ipv6"),
+            ((ipv6_stream, ("::1", 1)), "urllib3.util.connection", "_has_ipv6"),
+            ((ipv6_stream, ("::1", 0)), "unexpected.module", "_has_ipv6"),
+            ((ipv6_stream, ("::1", 0)), "urllib3.util.connection", "unexpected"),
+        )
+        for arguments, caller_module, caller_function in invalid_binds:
+            candidate = IsolationPolicy()
+            expect_denied(
+                candidate,
+                "socket.bind",
+                arguments,
+                caller_module,
+                caller_function,
+            )
+            if candidate.loopback_capability_bind_count != 0:
+                fail("source-trace-isolation-self-test")
+
+        for event in (
+            "socket.connect",
+            "socket.getaddrinfo",
+            "socket.listen",
+            "socket.sendto",
+            "subprocess.Popen",
+        ):
+            expect_denied(IsolationPolicy(), event, (), "self-test", "self-test")
+        IsolationPolicy().evaluate("open", (), "self-test", "self-test")
+
+        installed_policy = IsolationPolicy()
+        sys.addaudithook(installed_policy.audit)
+        sys._getframe()  # pylint: disable=protected-access
+        if installed_policy.loopback_capability_bind_count != 0:
+            fail("source-trace-isolation-self-test")
+    except OSError:
+        fail("source-trace-isolation-self-test")
+    finally:
+        for source_socket in sockets:
+            source_socket.close()
+
+
+def model_load_isolation_diagnostic(
+    source_value: str, scratch_value: str
+) -> dict[str, Any]:
+    source_directory = direct_directory(
+        ascii_absolute_path(source_value, "source-trace-source-directory"),
+        "source-trace-source-directory",
+    )
+    scratch_root = direct_directory(
+        ascii_absolute_path(scratch_value, "source-trace-scratch-root"),
+        "source-trace-scratch-root",
+    )
+    try:
+        if source_directory == scratch_root or any(scratch_root.iterdir()):
+            fail("source-trace-scratch-not-empty")
+    except OSError:
+        fail("source-trace-scratch-root")
+
+    repository_root = Path(__file__).resolve(strict=True).parents[2]
+    source_lock_path = repository_root.joinpath(*SOURCE_LOCK_PATH.split("/"))
+    identities = validate_source(
+        source_lock_path,
+        source_directory,
+        DIAGNOSTIC_MAXIMUM_SOURCE_FILE_BYTES,
+    )
+    validate_config(source_directory)
+    environment = verify_current_environment()
+    versions = verify_pinned_package_versions()
+    _torch, _modeling_qwen3, model, isolation_policy = load_pinned_framework_model(
+        source_directory, scratch_root
+    )
+    observed_spec = validate_loaded_model(model)
+    del model
+    return {
+        "status": "pass",
+        "claim": "pinned-local-model-load-and-one-ipv6-loopback-capability-bind-only",
+        "modelId": MODEL_ID,
+        "revision": REVISION,
+        "sourceFileCount": len(identities),
+        "sourceByteLength": sum(value["byteLength"] for value in identities.values()),
+        "pythonVersion": EXPECTED_PYTHON_VERSION,
+        "packageVersions": versions,
+        "environmentProfileId": environment["lock"]["profileId"],
+        "environmentLockSha256": environment["lock"]["sha256"],
+        "runtimeClosureSha256": environment["lock"]["runtimeClosureSha256"],
+        "modelSpec": observed_spec,
+        "capabilityProbeCount": isolation_policy.loopback_capability_bind_count,
+        "traceOutputCreated": False,
+    }
+
+
 def framework_self_test() -> None:
     for variable in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
         os.environ[variable] = "1"
@@ -954,17 +1236,13 @@ def framework_self_test() -> None:
     os.environ["TRANSFORMERS_OFFLINE"] = "1"
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
     if (
-        f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}" != "3.12.10"
-        or package_versions() != {
-            "torch": "2.7.0",
-            "transformers": "4.51.0",
-            "safetensors": "0.5.3",
-            "tokenizers": "0.21.1",
-            "numpy": "2.2.5",
-        }
+        f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+        != EXPECTED_PYTHON_VERSION
+        or package_versions() != EXPECTED_PACKAGE_VERSIONS
     ):
         fail("source-trace-framework-self-test-environment")
-    sys.addaudithook(audit_hook)
+    isolation_policy = IsolationPolicy()
+    sys.addaudithook(isolation_policy.audit)
     try:
         import torch  # pylint: disable=import-outside-toplevel
         from transformers import (  # pylint: disable=import-outside-toplevel
@@ -972,8 +1250,12 @@ def framework_self_test() -> None:
             Qwen3ForCausalLM,
         )
         from transformers.models.qwen3 import modeling_qwen3  # pylint: disable=import-outside-toplevel
+    except SourceOwnerFailure:
+        raise
     except Exception:
         fail("source-trace-framework-self-test-environment")
+    if isolation_policy.loopback_capability_bind_count != 1:
+        fail("source-trace-framework-self-test-isolation")
     torch.manual_seed(7)
     torch.set_num_threads(1)
     torch.set_num_interop_threads(1)
@@ -1033,6 +1315,18 @@ def main(arguments: list[str]) -> None:
     if arguments == ["--self-test"]:
         self_test()
         print(json.dumps({"status": "pass", "claim": "source-owner-stdlib-self-test-only"}))
+        return
+    if arguments == ["--isolation-self-test"]:
+        isolation_self_test()
+        print(json.dumps({"status": "pass", "claim": "one-ipv6-loopback-capability-bind-only"}))
+        return
+    if len(arguments) == 3 and arguments[0] == "--model-load-isolation-diagnostic":
+        print(
+            json.dumps(
+                model_load_isolation_diagnostic(arguments[1], arguments[2]),
+                sort_keys=True,
+            )
+        )
         return
     if arguments == ["--framework-self-test"]:
         framework_self_test()

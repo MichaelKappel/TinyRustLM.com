@@ -313,7 +313,7 @@ function validateEnvironmentBinding(value, code) {
       === "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json"
     && Number.isSafeInteger(value.lock.byteLength) && value.lock.byteLength > 0
     && validDigest(value.lock.sha256)
-    && value.lock.profileId === "tinyrustlm.qwen3-numerical-oracle-python-win-x64/1"
+    && value.lock.profileId === "tinyrustlm.qwen3-numerical-oracle-python-win-x64/2"
     && validDigest(value.lock.runtimeClosureSha256), code);
 }
 
@@ -327,11 +327,14 @@ function validateGenericRole(kind, document) {
       "attentionImplementation", "threads", "environment"
     ], code);
     exactKeys(document.implementation.packages,
-      ["torch", "transformers", "safetensors", "tokenizers", "numpy"], code);
+      ["accelerate", "psutil", "torch", "transformers", "safetensors", "tokenizers", "numpy"],
+      code);
     validateEnvironmentBinding(document.implementation.environment, code);
     invariant(document.implementation.kind === "publisher-source-framework"
-      && document.implementation.profileId === "tinyrustlm.qwen3-publisher-source-trace/1"
+      && document.implementation.profileId === "tinyrustlm.qwen3-publisher-source-trace/2"
       && document.implementation.pythonVersion === "3.12.10"
+      && document.implementation.packages.accelerate === "1.14.0"
+      && document.implementation.packages.psutil === "7.2.2"
       && document.implementation.packages.torch === "2.7.0"
       && document.implementation.packages.transformers === "4.51.0"
       && document.implementation.packages.safetensors === "0.5.3"

@@ -22,7 +22,7 @@ import zipfile
 
 
 SCHEMA = "tinyrustlm.qwen3_numerical_environment_lock.v1"
-PROFILE_ID = "tinyrustlm.qwen3-numerical-oracle-python-win-x64/1"
+PROFILE_ID = "tinyrustlm.qwen3-numerical-oracle-python-win-x64/2"
 OUTPUT_RELATIVE_PATH = Path(
     "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json"
 )
@@ -38,6 +38,7 @@ WHEEL_HASH_RE = re.compile(r"^sha256=([A-Za-z0-9_-]{43})$")
 
 
 RUNTIME_DISTRIBUTIONS = {
+    "accelerate": "1.14.0",
     "certifi": "2025.4.26",
     "charset-normalizer": "3.4.2",
     "colorama": "0.4.6",
@@ -52,6 +53,7 @@ RUNTIME_DISTRIBUTIONS = {
     "numpy": "2.2.5",
     "packaging": "25.0",
     "pip": "25.0.1",
+    "psutil": "7.2.2",
     "pyyaml": "6.0.2",
     "regex": "2024.11.6",
     "requests": "2.32.3",

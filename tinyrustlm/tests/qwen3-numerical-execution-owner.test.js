@@ -66,7 +66,7 @@ function ownerContract() {
     ],
     requests: {
       source: {
-        schema: "tinyrustlm.qwen3_numerical_source_request.v1",
+        schema: "tinyrustlm.qwen3_numerical_source_request.v2",
         sourceLock: { relativePath: "contracts/vnext/source-lock.json", byteLength: 1,
           sha256: ZERO_SHA },
         framework: { pythonVersion: "3.12.10" },

@@ -92,7 +92,7 @@
     "packageMutationAllowed": false,
     "runtimeEnvironmentRevalidation": "before-and-after-each-owner"
   },
-  "profileId": "tinyrustlm.qwen3-numerical-oracle-python-win-x64/1",
+  "profileId": "tinyrustlm.qwen3-numerical-oracle-python-win-x64/2",
   "runtimeEnvironment": {
     "baseInterpreter": {
       "basename": "python.exe",
@@ -100,15 +100,31 @@
       "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a"
     },
     "closure": {
-      "byteLength": 1378685662,
-      "closureSha256": "90bbf5f9da3c92e689030d84bb45efa9054b494ea7851b1185aeca8f4af83b10",
+      "byteLength": 1381216858,
+      "closureSha256": "fd6b647255c2d4c1294100946fce3c71abfd306ba5b173534ca5fe3b9c2933d4",
       "exclusions": [
         "__pycache__-directories",
         "pyc-files"
       ],
-      "fileCount": 17535
+      "fileCount": 17650
     },
     "distributions": [
+      {
+        "distInfo": "Lib/site-packages/accelerate-1.14.0.dist-info",
+        "metadata": {
+          "byteLength": 19552,
+          "sha256": "ed1c0dd9cca2d1449bbae7d641208431f5fccc7d5e06e20bec802c1d81340f6c"
+        },
+        "name": "accelerate",
+        "record": {
+          "byteLength": 14385,
+          "sha256": "5020e85a499bf12ddbc9b6c851d191db6a2f8a5351cb43af28d2be91ca4a64e6"
+        },
+        "recordedByteLength": 2065254,
+        "recordedClosureSha256": "5b6f1a81b6534f4194b7d1f0e29a64b70dee98aaba41dc999d501eab1461765f",
+        "recordedFileCount": 96,
+        "version": "1.14.0"
+      },
       {
         "distInfo": "Lib/site-packages/certifi-2025.4.26.dist-info",
         "metadata": {
@@ -134,10 +150,10 @@
         "name": "charset-normalizer",
         "record": {
           "byteLength": 2874,
-          "sha256": "c17e22c01e1e2aae6d0c428d81ed6931823b11c19f173cf181ae70caded779a6"
+          "sha256": "37696850e6e6f101f5dd90580be2e2b5ed40ca3614afc358a4619389aa107405"
         },
         "recordedByteLength": 427356,
-        "recordedClosureSha256": "014ce672f61da82915fe9d20f82c5b385029523589917ab94c708ae4d4a4c669",
+        "recordedClosureSha256": "d78ff19e7e7ca939262f6e79fd46c12730a7fd37a4ec5955db0a34279d53b042",
         "recordedFileCount": 23,
         "version": "3.4.2"
       },
@@ -198,10 +214,10 @@
         "name": "huggingface-hub",
         "record": {
           "byteLength": 23127,
-          "sha256": "68ebcd3cef5f495e3442e1e1142e9429c1a333ff41ab57381798d32fa0cb83bd"
+          "sha256": "0949e9131214e544268aee2df2dbb229505a629d28e60bfbdbc4fe854fcb3c4f"
         },
         "recordedByteLength": 2026921,
-        "recordedClosureSha256": "92cf01b535bfb75ef5c9aa6d32b816feac55ddc7d1be5c65936765f933923de8",
+        "recordedClosureSha256": "796bf6d51e096b3acb88250adc94d084b23baa2beb28217071a48391c8a78753",
         "recordedFileCount": 137,
         "version": "0.30.2"
       },
@@ -294,10 +310,10 @@
         "name": "numpy",
         "record": {
           "byteLength": 108709,
-          "sha256": "1ed23a536576225a3aa1e0fd26a80a2743b7481008be2f774db0a2b95b0a8454"
+          "sha256": "ab0389f7c60ad3eeb8d34aeb869980f180dfded56f5d5dbb2b8e166736fa5e68"
         },
         "recordedByteLength": 42648971,
-        "recordedClosureSha256": "5448268e04bb3eb47a400d9454abdaf2ecee8e032a98a630838448e99ff3667b",
+        "recordedClosureSha256": "658408f821bfe12767fcb9cdeac4ad83c5a9a1e2ba2d7b4285698adf99cc1114",
         "recordedFileCount": 899,
         "version": "2.2.5"
       },
@@ -326,12 +342,28 @@
         "name": "pip",
         "record": {
           "byteLength": 65740,
-          "sha256": "9afc21499039cc727696fe9a2c12590c5916411777d0f9e2f178237eb0d7b1ce"
+          "sha256": "cd16c92f198379b5702cd9f1bed89778c4ffecfa5ca953db102abf61cddb8744"
         },
-        "recordedByteLength": 6043987,
-        "recordedClosureSha256": "b319de54073daa4e939f99e8f1f3a1a80db40eda185a6466aed9aa545d1d8024",
+        "recordedByteLength": 6043831,
+        "recordedClosureSha256": "4789ff1623eb271c80e665a5136a3d1491bc3ad5fd460f28f60266de20f3f87d",
         "recordedFileCount": 442,
         "version": "25.0.1"
+      },
+      {
+        "distInfo": "Lib/site-packages/psutil-7.2.2.dist-info",
+        "metadata": {
+          "byteLength": 22729,
+          "sha256": "a263a40220d921d9cb963fc636d34f817aa2eb72c2696e3e3465d088cdb1976b"
+        },
+        "name": "psutil",
+        "record": {
+          "byteLength": 1875,
+          "sha256": "55fd2f55e72c18fd0017a0a033af4661d0227e339c5d772a40a29375e6f740d7"
+        },
+        "recordedByteLength": 449838,
+        "recordedClosureSha256": "38dfd9f7d9108a7e55f8125bd1b427cd687c73cdbe6aa55dfb252095cd256532",
+        "recordedFileCount": 17,
+        "version": "7.2.2"
       },
       {
         "distInfo": "Lib/site-packages/PyYAML-6.0.2.dist-info",
@@ -422,10 +454,10 @@
         "name": "sympy",
         "record": {
           "byteLength": 245678,
-          "sha256": "f292eda9905213bd137bdbb06a7b5542e547ea65fe1ba9717f2bb3d065e38bfc"
+          "sha256": "35a417607d5ce99a087c7fd86e260070a1b605d78f0fac47031a0213d9a68ce0"
         },
         "recordedByteLength": 26804916,
-        "recordedClosureSha256": "079bd6a04e08e76c9b725657ac9bb252e1984e4ab99e3046001e80f77d799173",
+        "recordedClosureSha256": "b27f9678f54490c8315e02ac331284016aa0ad5b84d2b76238f492feaa0303ba",
         "recordedFileCount": 1572,
         "version": "1.14.0"
       },
@@ -454,10 +486,10 @@
         "name": "torch",
         "record": {
           "byteLength": 1308883,
-          "sha256": "784bc57edd363c954ff5761f3e6a5591442c24a28d8008e99c370244d47bd1c3"
+          "sha256": "3ac68b91ed0523ff7504f8c5835f1297b18bfe17fb433b0aa99015a6ec046025"
         },
         "recordedByteLength": 1205195879,
-        "recordedClosureSha256": "53c90fd42a16d4600380c1f111090556c34afdbf89ce6b08c13de9ea03eab909",
+        "recordedClosureSha256": "a42f7aeea9b585f945c28d7d80b97b14c5061b82d637e05698cda34c98683bdf",
         "recordedFileCount": 10993,
         "version": "2.7.0"
       },
@@ -470,10 +502,10 @@
         "name": "tqdm",
         "record": {
           "byteLength": 4746,
-          "sha256": "1bd4aaa1c3777b00b764fc352fa4de13d61231f7a4ad6bf4ced237c51437720f"
+          "sha256": "28808a875f28c9a66e5ba4dc816a94e986486de7658a3d5c167c6b4176365c77"
         },
         "recordedByteLength": 331304,
-        "recordedClosureSha256": "b9a557c8a9fba0abb860c128e218000c76f4db110a080e6f2489dc077013f89d",
+        "recordedClosureSha256": "cfcefb4054b34ad0c3de971f7cebaeaf0fbe668883de49852df6fafc69ae479b",
         "recordedFileCount": 42,
         "version": "4.67.1"
       },
@@ -486,10 +518,10 @@
         "name": "transformers",
         "record": {
           "byteLength": 335989,
-          "sha256": "4701d6802b17de8bcc853f8a6a8362beab1e9e987020df5dc48a21f3f38c03de"
+          "sha256": "f3a9ca7a82205f80277147b565e8c85f68fb0d461d318d45ed85b038e6bb99f3"
         },
         "recordedByteLength": 46279990,
-        "recordedClosureSha256": "7e3efe95d2dfa6d0d4a6dd4e3d434a4d94de2c01f9cb890616cab9b59c3d5ac6",
+        "recordedClosureSha256": "3c435d287a6e3258bbdc7e0515ee64a4a58e20f981f8dd057f6f12ac4b523a56",
         "recordedFileCount": 1828,
         "version": "4.51.0"
       },
@@ -542,9 +574,9 @@
   },
   "schema": "tinyrustlm.qwen3_numerical_environment_lock.v1",
   "wheelhouse": {
-    "byteLength": 258399469,
-    "closureSha256": "970c626fc754bdf160a0fa545df50c2daac708f72e66efe38909f48b5e356b49",
-    "wheelCount": 29,
+    "byteLength": 258926452,
+    "closureSha256": "b13ee2929e033b4126584fdaf788efd892ab5e48812748793708fa9914f88b2b",
+    "wheelCount": 31,
     "wheels": [
       {
         "byteLength": 15601,
@@ -565,6 +597,16 @@
         ],
         "sha256": "7e7401d0de89a9a855c839bc697c079a4af81cf878373abd7dc625847d25cbd8",
         "version": "6.0.2"
+      },
+      {
+        "byteLength": 389246,
+        "fileName": "accelerate-1.14.0-py3-none-any.whl",
+        "name": "accelerate",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "e94390c2863b873be18f623f9df48a0d8fe5eff13ea7f1a00092b0a7904888c6",
+        "version": "1.14.0"
       },
       {
         "byteLength": 159618,
@@ -716,6 +758,16 @@
         ],
         "sha256": "ff7059bb7eb1179e2685604f4aaf157cfd9535242bd23742eadc3c13542139b4",
         "version": "4.3.8"
+      },
+      {
+        "byteLength": 137737,
+        "fileName": "psutil-7.2.2-cp37-abi3-win_amd64.whl",
+        "name": "psutil",
+        "roles": [
+          "runtime"
+        ],
+        "sha256": "eb7e81434c8d223ec4a219b5fc1c47d0417b12be7ea866e24fb5ad6e84b3d988",
+        "version": "7.2.2"
       },
       {
         "byteLength": 273567,
