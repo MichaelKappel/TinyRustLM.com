@@ -609,6 +609,32 @@ publication, deployment, or MemoryEndpoints claim; and advances no campaign
 counter. It cannot reuse, retry, repair, clean, or adopt `/9`. See
 `docs/architecture/2026-08-26-qwen3-real-composition-execution-preregistration-v10.md`.
 
+`qwen3-real-composition-execution-result.v10.json` closes execution `/10` as
+`terminal-failure`. It is 18,447 canonical ASCII/LF bytes at SHA-256
+`6978a4f9f886c9a85e3d42aeab6b7a2b99ed5e3928e188de7536a122245b6d03`.
+The exact environment authority, Rust custody `/4`, managed custody `/4`,
+sole owner preflight, and one converter launch passed. The converter produced
+an exact ten-file private candidate including a 598,308,416-byte `model.slm2`
+at SHA-256
+`a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7`.
+
+The sole managed inspection exited one with typed
+`converter-receipt-contract`. The Rust producer recorded the flushed-members
+child operation as `parent + "-members"` with status `performed`; the
+registration-time managed verifier incorrectly required the parent operation
+ID and status `flushed`. Final verification `/6` is 7,775 bytes at SHA-256
+`798d986531769156455f2e40398803b92777d45695d2b66b0bb1bd2205c423a5`
+and one read-only verification reproduced its exact terminal decision.
+
+The managed verifier now cleanly requires the producer's sole exact semantics,
+with negative fixtures for both former assumptions. That correction does not
+repair or qualify `/10`. Preserve every `/10` private byte and logical name
+without retry, cleanup, overwrite, repair, or adoption. A later operation
+requires a new remote-exact registration and wholly new names. No structural,
+parity, runtime, browser, quality, P2P, publication, deployment,
+MemoryEndpoints, or campaign claim advances. See
+`docs/architecture/2026-08-26-qwen3-real-composition-execution-v10-receipt-contract-failure.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2

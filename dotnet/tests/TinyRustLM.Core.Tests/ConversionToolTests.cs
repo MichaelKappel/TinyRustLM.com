@@ -79,6 +79,8 @@ public sealed class ConversionToolTests
     [InlineData("hash-mismatch", "converter-artifact-identity")]
     [InlineData("receipt-hash-mismatch", "converter-receipt-artifacts")]
     [InlineData("source-hash-mismatch", "converter-receipt-contract")]
+    [InlineData("durability-operation", "converter-receipt-contract")]
+    [InlineData("durability-status", "converter-receipt-contract")]
     [InlineData("malformed-json", "converter-summary-json")]
     [InlineData("duplicate-summary", "converter-summary-json")]
     [InlineData("unknown-summary", "converter-summary-json")]

@@ -149,6 +149,8 @@ public sealed partial class TinyRustLmConversionTool
     private const string AttemptFileName = "composition.attempt.json";
     private const string RejectionFileName = "composition.rejection.json";
     private const string TerminalRule = "existing-output-root-is-never-resumed";
+    private const string MembersDurabilityOperationSuffix = "-members";
+    private const string PerformedDurabilityStatus = "performed";
     private const int HashBufferBytes = 1_048_576;
     private const int MaximumReceiptBytes = 1_048_576;
     private const int MaximumOutputFiles = 12;
@@ -590,12 +592,13 @@ public sealed partial class TinyRustLmConversionTool
             receipt.ResourcePlan.ModelTensorCount is 0 or > 2_048 ||
             receipt.ResourcePlan.StreamHashBufferBytes != HashBufferBytes ||
             receipt.Durability is null ||
-            receipt.Durability.OperationId != receipt.OperationId ||
+            receipt.Durability.OperationId !=
+                $"{receipt.OperationId}{MembersDurabilityOperationSuffix}" ||
             !IsDigest(receipt.Durability.DirectoryIdentitySha256) ||
             !IsSafeIdentifier(receipt.Durability.Method) ||
             !IsSafeIdentifier(receipt.Durability.OperatingSystem) ||
             !IsSafeIdentifier(receipt.Durability.Architecture) ||
-            receipt.Durability.Status != "flushed" ||
+            receipt.Durability.Status != PerformedDurabilityStatus ||
             receipt.StructuralCompositionStatus != "verified" ||
             receipt.ModelQualityStatus != "not-assessed-by-converter" ||
             receipt.SourceFrameworkParityStatus != "not-assessed-by-converter" ||

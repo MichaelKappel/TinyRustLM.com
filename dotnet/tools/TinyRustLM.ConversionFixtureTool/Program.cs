@@ -192,12 +192,14 @@ var terminalReceipt = new
     },
     durability = new
     {
-        operationId,
+        operationId = scenario == "durability-operation"
+            ? operationId
+            : $"{operationId}-members",
         directoryIdentitySha256 = Sha256Text("fixture-directory"),
         method = "fixture-fsync",
         operatingSystem = "fixture",
         architecture = "x64",
-        status = "flushed"
+        status = scenario == "durability-status" ? "flushed" : "performed"
     },
     structuralCompositionStatus = "verified",
     modelQualityStatus = "not-assessed-by-converter",

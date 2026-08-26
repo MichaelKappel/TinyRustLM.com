@@ -1,0 +1,510 @@
+{
+  "schema": "tinyrustlm.qwen3-real-composition-execution-result.v10",
+  "executionProfileId": "tinyrustlm.qwen3-real-composition-execution/10",
+  "executionId": "qwen3-composition-c1899de-d8ab21c-20260826-v10",
+  "status": "terminal-failure",
+  "observedAtUtc": "2026-08-26T03:21:27.163Z",
+  "predecessor": {
+    "resultPath": "contracts/vnext/qwen3-real-composition-execution-result.v9.json",
+    "resultByteLength": 16578,
+    "resultSha256": "e22ec93b089beb814ee88ba4221213e5eb73920f81fd74f5ce5eec547eab9414",
+    "status": "terminal-ambiguous",
+    "reused": false,
+    "modified": false
+  },
+  "registration": {
+    "profilePath": "contracts/vnext/qwen3-real-composition-execution-preregistration.v10.json",
+    "profileByteLength": 61465,
+    "profileSha256": "4256f69fb5df43564ce9c703c5b9b70351826b3d33fe9e54f91bfdc39ef64318",
+    "commit": "eb14e731b889dfdd979cc56106840783c29f2a48",
+    "tree": "85f48182af8918c0aab6bc3092d6d0d35d08a37a",
+    "branch": "codex/model-acquisition-v2",
+    "ownerProfileId": "tinyrustlm.qwen3-composition-verification-owner/1",
+    "ownerProfileByteLength": 4388,
+    "ownerProfileSha256": "5f7a9a25350041069f1ba6cf417f4ed0f75c6d1d96ddbbdabae3b11718247cf8",
+    "ownerByteLength": 81019,
+    "ownerSha256": "3a3894bf7a9a59b08b72e71a6d87e6f817c6e51fa1b67b2f6a60a9d70fe01c85",
+    "remoteExactBeforeEnvironmentMaterialization": true,
+    "remoteExactBeforeRustCustody": true,
+    "remoteExactBeforeManagedCustody": true,
+    "remoteExactBeforeOwnerRequest": true,
+    "remoteExactBeforeOwnerPreflight": true,
+    "remoteExactBeforeOwnerExecution": true,
+    "remoteExactBeforeReadOnlyVerification": true,
+    "sourceChangedDuringExecution": false
+  },
+  "windowsMsvcEnvironmentAuthority": {
+    "operationId": "qwen3-composition-v10-msvc-environment",
+    "request": {
+      "byteLength": 1550,
+      "sha256": "243d469ac363aa46330f1fa197f0ea3eb9815111dbfad1682958a06646d94eb7",
+      "createOnly": true,
+      "privatePathPublished": false
+    },
+    "materialization": {
+      "ownerInvocationCount": 1,
+      "processExitCode": 0,
+      "status": "pass",
+      "code": "msvc-environment-materialized",
+      "rawProcessOutputPublished": false
+    },
+    "selected": {
+      "visualStudioProductLineVersion": "2022",
+      "visualStudioInstallationVersion": "17.14.37531.7",
+      "msvcToolsetVersion": "14.44.35207",
+      "windowsSdkVersion": "10.0.26100.0",
+      "targetTriple": "x86_64-pc-windows-msvc"
+    },
+    "evidence": {
+      "privateBinding": {
+        "byteLength": 9879,
+        "sha256": "ba55cd89830413273ea9d278f2eb53b420b84c3a290b66fdef099ec9e7c5c190",
+        "published": false
+      },
+      "publicLock": {
+        "byteLength": 157303,
+        "sha256": "c4cd7b3980ef15b4c0d63fd76a3878f28521dff4d2c6e03aa1982db3e6240437"
+      },
+      "terminal": {
+        "byteLength": 2017,
+        "sha256": "3dace51d0e37cfa163e5c920c9ec1a3666ef81545c8ddb53a775ccf4dad254f6",
+        "status": "pass",
+        "code": "msvc-environment-materialized"
+      }
+    },
+    "ownedApplicationDataRequired": true,
+    "retryAllowed": false,
+    "cleanupAllowed": false,
+    "repairAllowed": false
+  },
+  "rustBuildCustody": {
+    "operationId": "qwen3-composition-v10-rust-build",
+    "profileId": "tinyrustlm.source-controlled-build-custody/4",
+    "request": {
+      "schema": "tinyrustlm.build-custody-request.v4",
+      "byteLength": 7605,
+      "sha256": "7de724df0bf72e447e57dcd6676b0f652ef4b2a667d71d32e824f78adab5bd86",
+      "createOnly": true,
+      "privatePathPublished": false
+    },
+    "execution": {
+      "invocationCount": 1,
+      "processStarted": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "stdoutOverflow": false,
+      "stderrOverflow": false
+    },
+    "terminal": {
+      "byteLength": 16431,
+      "sha256": "5109c1aeef681da3766678ec9c3aa48f6711e31a87d3cda1713fa26135f192fa",
+      "status": "pass",
+      "code": "build-custody-pass"
+    },
+    "summary": {
+      "schema": "tinyrustlm.build-custody-summary.v4",
+      "byteLength": 788,
+      "sha256": "a9f70565e0d4cc5e9d27a05bc15cc5ad26a2ee22ef5c4c7f60fb01da35b165dd",
+      "canonicalObservationMatched": true,
+      "privatePathPublished": false
+    },
+    "targetInventory": {
+      "entryCount": 487,
+      "fileCount": 398,
+      "directoryCount": 89,
+      "aggregateBytes": 126921341,
+      "requiredOutputs": [
+        {
+          "relativePath": "x86_64-pc-windows-msvc/release/tinyrustlm-build-scratch-inspect.exe",
+          "byteLength": 240128,
+          "sha256": "c27d42943b288d841c3457cee15549744eb73a2b049f657a425beed0579720a6",
+          "peMachine": "0x8664"
+        },
+        {
+          "relativePath": "x86_64-pc-windows-msvc/release/tinyrustlm-convert.exe",
+          "byteLength": 852992,
+          "sha256": "0072dc9fa4e3c7361ee86a77fae16401fe298d274262f24a05e829c14f58c45b",
+          "peMachine": "0x8664"
+        }
+      ]
+    },
+    "scratchInspection": {
+      "invocationCount": 1,
+      "status": "pass",
+      "entryCount": 24,
+      "fileCount": 1,
+      "directoryCount": 22,
+      "junctionCount": 1,
+      "inventorySha256": "b1177bc466d66139f62aa3075867de24a02d6c40cafc6a857abfeeb652c771e3",
+      "helperIdentityStable": true,
+      "containedSameRootJunctionAccepted": true,
+      "externalJunctionAccepted": false,
+      "stderrEmpty": true
+    },
+    "custodyQualified": true,
+    "retryAllowed": false,
+    "resumeAllowed": false,
+    "cleanupAllowed": false,
+    "outputAdoptionAllowed": false
+  },
+  "managedBuildCustody": {
+    "operationId": "qwen3-composition-v10-managed-inspector-build",
+    "profileId": "tinyrustlm.source-controlled-build-custody/4",
+    "request": {
+      "schema": "tinyrustlm.build-custody-request.v4",
+      "byteLength": 8636,
+      "sha256": "36797059a683ba6354746b5f4dbb37471615f6072a01f22d1fcefc6a8c2f178f",
+      "createOnly": true,
+      "privatePathPublished": false
+    },
+    "execution": {
+      "invocationCount": 1,
+      "processStarted": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "stdoutOverflow": false,
+      "stderrOverflow": false
+    },
+    "terminal": {
+      "byteLength": 16546,
+      "sha256": "eda8613621c3208326f81c58d4ff0f2528a14e220085f48b1fec5812e4fd4285",
+      "status": "pass",
+      "code": "build-custody-pass"
+    },
+    "summary": {
+      "schema": "tinyrustlm.build-custody-summary.v4",
+      "byteLength": 801,
+      "sha256": "ef8bd3909e75d7b1c3b3a62ddeb3aab0ca57bbd47144a9cebefca4985ca5a584",
+      "canonicalObservationMatched": true,
+      "privatePathPublished": false
+    },
+    "targetInventory": {
+      "entryCount": 19,
+      "fileCount": 19,
+      "directoryCount": 0,
+      "aggregateBytes": 2022376,
+      "requiredOutputs": [
+        {
+          "relativePath": "TinyRustLM.CompositionInspector.deps.json",
+          "byteLength": 1738,
+          "sha256": "4de7c7d95e4dfc3f04d68f31ae5aa49cc2ebd3ff966cd05b4018d375269d1366"
+        },
+        {
+          "relativePath": "TinyRustLM.CompositionInspector.dll",
+          "byteLength": 7168,
+          "sha256": "1af34f574619141c20c7e811bc18c1039ef41a1c6d46e7a88702ffd639872fe8"
+        },
+        {
+          "relativePath": "TinyRustLM.CompositionInspector.runtimeconfig.json",
+          "byteLength": 340,
+          "sha256": "28329cf08f6505e73806b17558b187c02f0c1c516fe47ebfb7a013d082aaa306"
+        },
+        {
+          "relativePath": "TinyRustLM.Conversion.dll",
+          "byteLength": 109056,
+          "sha256": "8cdfd9b0cd757e1e028080c817bc275b6c17b9dfcce224b5bf0894fa6b6f41ae"
+        },
+        {
+          "relativePath": "tinyrustlm-build-scratch-inspect.exe",
+          "byteLength": 240128,
+          "sha256": "c27d42943b288d841c3457cee15549744eb73a2b049f657a425beed0579720a6",
+          "peMachine": "0x8664"
+        }
+      ]
+    },
+    "scratchInspection": {
+      "invocationCount": 1,
+      "status": "pass",
+      "entryCount": 17,
+      "fileCount": 6,
+      "directoryCount": 11,
+      "junctionCount": 0,
+      "inventorySha256": "df41eb1e985b848b5645d225609989667683c5822be00c652a38a8eee0fd0433",
+      "helperIdentityStable": true,
+      "stagedHelperEqualsQualifiedRustOutput": true,
+      "stderrEmpty": true
+    },
+    "custodyQualified": true,
+    "retryAllowed": false,
+    "resumeAllowed": false,
+    "cleanupAllowed": false,
+    "outputAdoptionAllowed": false
+  },
+  "ownerExecution": {
+    "request": {
+      "schema": "tinyrustlm.qwen3-composition-verification-request.v1",
+      "byteLength": 11608,
+      "sha256": "39b999970481e526c39e410a904e7c65cfb5f6a8a8cf22decfb904a00a0b50ec",
+      "createOnly": true,
+      "privatePathPublished": false
+    },
+    "preflight": {
+      "invocationCount": 1,
+      "status": "pass",
+      "evidenceRootAbsent": true,
+      "outputRootAbsent": true
+    },
+    "executionInvocationCount": 1,
+    "converterLaunchCount": 1,
+    "managedInspectionLaunchCount": 1,
+    "automaticRetry": false,
+    "manualRetryUnderRegistration": false,
+    "bestOfN": false,
+    "responseRepair": false,
+    "evidenceOverwriteAllowed": false,
+    "outputCleanupAllowed": false,
+    "outputRepairAllowed": false,
+    "outputAdoptionAllowed": false
+  },
+  "converter": {
+    "pass": true,
+    "reasonCode": "converter-candidate-pass",
+    "processStarted": true,
+    "exitCode": 0,
+    "timedOut": false,
+    "stdout": {
+      "byteLength": 1630,
+      "sha256": "2c8131842cb0b71433c17a77b460a71a8d123c488c59c2b4b9fa85d6ac9930f6",
+      "published": false
+    },
+    "stderr": {
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "published": false
+    },
+    "processTerminal": {
+      "byteLength": 1509,
+      "sha256": "7ff2207c47e8af479da38f52293df990a25f19f8fe9d9a9d1eb303e199d0875f"
+    },
+    "summary": {
+      "operationId": "qwen3-composition-8a11986330b1a1829e93b5ba3b74ea28882a5e844febb12a7b1ff15b3a4de3d0",
+      "graphIdentitySha256": "47e8201eabbe5d73ba5ab733f3abad89c9c5783bfbab5b1cf5b4bdf02abc7ca2",
+      "receiptFile": "composition.conversion-receipt.json"
+    },
+    "outputCandidate": {
+      "created": true,
+      "successInventoryCount": 10,
+      "aggregateArtifactBytes": 605429565,
+      "structurallyQualified": false,
+      "releasable": false,
+      "adoptionAllowed": false,
+      "privatePathPublished": false,
+      "inventory": [
+        {
+          "file": "composition.acg2",
+          "byteLength": 896,
+          "sha256": "af154f02efdcaf24b8512bf9a8a21d37d5304dda98cbc347f07fbaf4425cbf94"
+        },
+        {
+          "file": "composition.attempt.json",
+          "byteLength": 711,
+          "sha256": "a74c5ef3f75a2c6fdd6568090d139cc8a629ee8d18d864febaaf7cd19028a1b9"
+        },
+        {
+          "file": "composition.conversion-receipt.json",
+          "byteLength": 4617,
+          "sha256": "b5efcc1767bbfe57c3444b4bd9112bee9cb2843e036fbb978bf77df2fe92b933"
+        },
+        {
+          "file": "model.slm2",
+          "byteLength": 598308416,
+          "sha256": "a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7"
+        },
+        {
+          "file": "model.slm2.conversion-receipt.json",
+          "byteLength": 5554,
+          "sha256": "9c67056542daab3790d1bd9c9b649c8024650960231bdf32a26cf52361fdf1fe"
+        },
+        {
+          "file": "prompt.prompt2",
+          "byteLength": 512,
+          "sha256": "27aaed18b62930213a2395e398e68d18a90d4280e24c23d794e3e94352d7e1f3"
+        },
+        {
+          "file": "sampling.sampling2",
+          "byteLength": 65800,
+          "sha256": "9e02fcfbba169330a2ee1bf40cea015dc4067925e051f6ae5f197a5f880bfe89"
+        },
+        {
+          "file": "template.template2",
+          "byteLength": 1403,
+          "sha256": "5300b0b43188a8c73ed62e7e4fbab6eff358ae0395166791852b072a8009c9c8"
+        },
+        {
+          "file": "tokenizer.tokenizer2",
+          "byteLength": 7038773,
+          "sha256": "cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b"
+        },
+        {
+          "file": "tokenizer.tokenizer2.conversion-receipt.json",
+          "byteLength": 2883,
+          "sha256": "c17235416ca903466aba09eb48fe6f7dfd5c1f8911d6227bb03f532a0f971728"
+        }
+      ]
+    }
+  },
+  "managedInspection": {
+    "invocationCount": 1,
+    "processStarted": true,
+    "exitCode": 1,
+    "timedOut": false,
+    "stdoutOverflow": false,
+    "stderrOverflow": false,
+    "intent": {
+      "byteLength": 1387,
+      "sha256": "ecbd303fcc94ddf138c0609043a0887b212a174100f891ab48b7c57b84ee38ff",
+      "canonicalIntentBytes": true,
+      "createdByOwner": true,
+      "privatePathPublished": false
+    },
+    "stdout": {
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "published": false
+    },
+    "stderr": {
+      "byteLength": 136,
+      "sha256": "206d2a437e3b5de059ed15e64086699c86decfa054281ce3007b16eb2a7ca429",
+      "published": false
+    },
+    "processTerminal": {
+      "byteLength": 1523,
+      "sha256": "def967a2028ed234e02a3833c71175bcc217a7159b8a40406f63fc98f342745e"
+    },
+    "typedError": {
+      "schema": "tinyrustlm.qwen3-composition-managed-inspection-error.v1",
+      "status": "error",
+      "code": "converter-receipt-contract"
+    },
+    "runtime": {
+      "version": "10.0.11",
+      "byteLength": 167208,
+      "sha256": "ab1b71fd3dd71062e074c9fab8312081a81b7f2b3e0327c48c4d249c8d1a3135",
+      "unchanged": true
+    },
+    "assembly": {
+      "byteLength": 7168,
+      "sha256": "1af34f574619141c20c7e811bc18c1039ef41a1c6d46e7a88702ffd639872fe8",
+      "unchanged": true
+    },
+    "automaticRetry": false,
+    "manualRetryUnderRegistration": false,
+    "outputRepairAllowed": false
+  },
+  "receiptContractDefect": {
+    "rootCauseEstablished": true,
+    "reasonCode": "managed-verifier-durability-contract-drift",
+    "producerObservation": {
+      "compositionReceiptSchema": "tinyrustlm.qwen3_composition_conversion_receipt.v1",
+      "operationId": "qwen3-composition-8a11986330b1a1829e93b5ba3b74ea28882a5e844febb12a7b1ff15b3a4de3d0",
+      "durabilityOperationId": "qwen3-composition-8a11986330b1a1829e93b5ba3b74ea28882a5e844febb12a7b1ff15b3a4de3d0-members",
+      "durabilityStatus": "performed",
+      "structuralCompositionStatus": "verified"
+    },
+    "registeredProducerSources": [
+      {
+        "path": "rust/crates/tinyrustlm-convert/src/qwen3_composition.rs",
+        "byteLength": 66665,
+        "sha256": "05db5e5a256ea6580186c3786f01638b154619a8300a37c26ddeb5a1069fe82e"
+      },
+      {
+        "path": "rust/crates/tinyrustlm-durability/src/lib.rs",
+        "byteLength": 20168,
+        "sha256": "5a1d261bdabb42a3f515654ce07ecb19d652263186d1b80af44569b0fea651d7"
+      }
+    ],
+    "registeredManagedVerifierSource": {
+      "path": "dotnet/src/TinyRustLM.Conversion/TinyRustLmConversionTool.cs",
+      "byteLength": 53895,
+      "sha256": "f80f1158f021cc987720448e927536aae1fbfa5876430e6e0d3671beab0c4bf7",
+      "requiredDurabilityOperationId": "parent-operation-id",
+      "requiredDurabilityStatus": "flushed"
+    },
+    "authoritativeProducerContract": {
+      "durabilityOperationId": "parent-operation-id-plus-members-suffix",
+      "durabilityStatus": "performed",
+      "membersSuffix": "-members"
+    },
+    "candidateInspectedAsPass": false,
+    "retryUnderRegistrationAllowed": false
+  },
+  "privateVerification": {
+    "schema": "tinyrustlm.qwen3-composition-execution-verification.v6",
+    "byteLength": 7775,
+    "sha256": "798d986531769156455f2e40398803b92777d45695d2b66b0bb1bd2205c423a5",
+    "status": "terminal-failure",
+    "reasonCode": "managed-inspection-process-not-pass",
+    "evidenceFileCountBeforeVerification": 9,
+    "finalEvidenceFileCount": 10,
+    "outputFileCount": 10,
+    "structuralCompositionVerified": false,
+    "candidateBytesMayAdvanceToNumericalParity": false,
+    "readOnlyVerificationInvocationCount": 1,
+    "readOnlyVerificationReproducedExactDecision": true,
+    "readOnlyVerificationLaunchedMaterialProcess": false,
+    "readOnlyVerificationWroteEvidence": false,
+    "privatePathPublished": false
+  },
+  "failureDrivenCorrection": {
+    "appliedOnlyAfterTerminalFailure": true,
+    "producerChanged": false,
+    "managedVerifierRequiresParentPlusMembersSuffix": true,
+    "managedVerifierRequiresPerformedStatus": true,
+    "fixturePassShapeMatchesProducer": true,
+    "wrongParentOperationIdNegativeFixtureAdded": true,
+    "wrongFlushedStatusNegativeFixtureAdded": true,
+    "compatibilityAcceptanceAdded": false,
+    "fallbackAdded": false,
+    "resultRepairsExecution": false,
+    "newRegistrationRequired": true,
+    "whollyNewPrivateNamesRequired": true
+  },
+  "decision": {
+    "status": "terminal-failure",
+    "reasonCode": "managed-inspection-process-not-pass",
+    "registrationClosed": true,
+    "structuralCompositionVerified": false,
+    "candidateBytesMayAdvanceToNumericalParity": false,
+    "candidateBytesMayBeReleased": false,
+    "retryUnderRegistrationAllowed": false,
+    "existingPrivateEvidenceMayBeDeleted": false,
+    "existingPrivateEvidenceMayBeOverwritten": false,
+    "existingOutputMayBeRepaired": false,
+    "existingOutputMayBeAdopted": false,
+    "newAttemptRequiresNewRegistrationAndAllNewLogicalNames": true
+  },
+  "claimBoundary": {
+    "realConversionAttemptRegistered": true,
+    "msvcEnvironmentAuthorityMaterialized": true,
+    "rustBuildCustodyCompleted": true,
+    "rustScratchInspectionPassed": true,
+    "managedBuildCustodyCompleted": true,
+    "managedScratchInspectionPassed": true,
+    "compositionOwnerInvoked": true,
+    "realConverterInvoked": true,
+    "converterExitedZero": true,
+    "compositionCandidateCreated": true,
+    "managedInspectionInvoked": true,
+    "finalVerificationCreated": true,
+    "readOnlyVerificationReproduced": true,
+    "structuralCompositionVerified": false,
+    "sourceFrameworkParityVerified": false,
+    "nativeRuntimeVerified": false,
+    "browserWasmVerified": false,
+    "browserChatVerified": false,
+    "modelQualityVerified": false,
+    "p2pAvailabilityVerified": false,
+    "catalogAnnouncementVerified": false,
+    "packagePublicationVerified": false,
+    "siteDeploymentVerified": false,
+    "memoryEndpointsVerified": false,
+    "campaignCreditAuthorized": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}
