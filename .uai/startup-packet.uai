@@ -1,11 +1,11 @@
-profile: runtime-mirust.startup-packet.v136
-updated_utc: 2026-08-26T11:38:21Z
+profile: runtime-mirust.startup-packet.v137
+updated_utc: 2026-08-26T12:26:14Z
 
 start_here_2026_08_26_qwen3_numerical_differential:
   read_order: workspace.uai -> wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md -> contracts/vnext/qwen3-numerical-differential-profile.v1.json -> docs/architecture/2026-08-26-qwen3-numerical-differential-laboratory.md -> reviewed report synthesis/TDD linked by memory.
-  present_state: Exact environment and three numerical arms plus read-only verifier are remote-exact at ba85cdb/tree 191a98c; focused is 10/10, standard is 1,525/0/2 of 1,527, and clean release 21c18c3 is 23/23 with verified aggregate 3995/58ef8c02. No real numerical operation is registered or run.
-  next_build: Create one separate output-free registration binding exact ba85cdb/tree 191a98c, /12, source, cases, metrics, thresholds, limits, cardinality, and all-new absent roots; remote-verify it before output.
-  durable_identity: 14,080 bytes/SHA256 5216bc12be351eb3d4b8d1236078edb84f3263220629629168b8aa4e306cd67f.
+  present_state: Exact environment, three numerical arms, sole execution owner, and read-only verifier are remote-exact at 77a1c45/tree b077d25; focused is 18/18, standard is 1,533/0/2 of 1,535, and clean release 2924e05 is 23/23 with verified aggregate 3995/da8d2b7c. No real numerical operation is registered or run.
+  next_build: Commit/push/fresh-verify this memory packet, then create one separate output-free registration binding that exact parent, /12, source, cases, metrics, thresholds, exact executables, limits, cardinality, and all-new absent roots.
+  durable_identity: 17,399 bytes/SHA256 5cf598b71d6983996bcba3cb6112e0b4072930a8852637896be9a9b10952cf05.
   counters: 0/20 qualified, 0/50 browser rounds, 0/25 authorized memory rounds, 0/40 outside lane proofs, 0/20 catalog announcements.
 
 start_here_2026_08_26_scalar_numerical_probe:

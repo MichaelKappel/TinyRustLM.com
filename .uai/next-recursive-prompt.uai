@@ -1,12 +1,12 @@
-profile: runtime-mirust.next-recursive-prompt.v106
-updated_utc: 2026-08-26T11:38:21Z
+profile: runtime-mirust.next-recursive-prompt.v107
+updated_utc: 2026-08-26T12:26:14Z
 
 next_recursive_goal_2026_08_26_qwen3_numerical_registration:
   objective: Preregister one wholly new exact /12 numerical operation over the remote-exact green source/reconstructed/scalar laboratory without creating any real trace before registration equality.
-  current_checkpoint: Profile 15276/4f97304b, environment 29103/bdccfc27, architecture 10667/94a20842, and durable memory 14080/5216bc12 are implemented. Commit ba85cdb/tree 191a98c is pushed/four-way exact; focused is 10/10, standard is 1,525/0/2 of 1,527, and clean release 21c18c3 is 23/23 with independently verified aggregate 3995/58ef8c02.
+  current_checkpoint: Profile 16139/2a12f5f4, environment 29103/bdccfc27, architecture 13424/dd72f897, and durable memory 17399/5cf598b7 are implemented. Sole-owner commit 77a1c45/tree b077d25 is pushed/four-way exact; focused is 18/18, standard is 1,533/0/2 of 1,535, and clean release 2924e05 is 23/23 with independently verified aggregate 3995/da8d2b7c.
   proof_design: Register publisher-source CPU FP32 to reconstructed SLM2 and reconstructed SLM2 to Rust scalar as separate arrows, including exact cases/token IDs, per-arrow/per-stage thresholds, floors, top-k, limits, first-divergence order, and no-write verifier.
-  execution_guard: Bind exact commit/tree and tool/profile/environment/source/model identities; choose wholly new absent request/output/evidence/process/terminal identities; commit/push/fresh-four-way-verify registration before any material launch.
-  durable_authority: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 14,080 bytes/SHA256 5216bc12be351eb3d4b8d1236078edb84f3263220629629168b8aa4e306cd67f.
+  execution_guard: First commit/push/fresh-verify this memory checkpoint. Then bind its exact commit/tree and tool/profile/environment/source/model/executable identities; choose wholly new absent request/output/evidence/process/terminal identities; commit/push/fresh-four-way-verify registration before any material launch.
+  durable_authority: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 17,399 bytes/SHA256 5cf598b71d6983996bcba3cb6112e0b4072930a8852637896be9a9b10952cf05.
   prohibited_claims: No real numerical, optimized-native, browser-WASM, quality, P2P, catalog, package, deployment, MemoryEndpoints, or campaign claim exists.
 
 next_recursive_goal_2026_08_26_scalar_numerical_proof:

@@ -1,13 +1,13 @@
-profile: runtime-mirust.test-plan.v294
-updated_utc: 2026-08-26T11:38:21Z
+profile: runtime-mirust.test-plan.v295
+updated_utc: 2026-08-26T12:26:14Z
 
 qwen3_numerical_differential_test_plan_2026_08_26:
-  current_green: Exact pinned-interpreter focused gate passed 10/10 with no skips. Python compile and JavaScript syntax checks pass. Environment write/check/runtime-revalidation reproduced lock 29103/bdccfc27. Implementation ba85cdb/tree 191a98c is remote-exact; standard is 1,525/0/2 of 1,527; clean release 21c18c3 is 23/23 with independently reproduced aggregate 3995/58ef8c02.
-  covered: Content identities; strict environment; synthetic Qwen3 hook topology; NumPy RMSNorm/RoPE/GQA; complete 255-stage equal traces; first divergence on both arrows; cross-arm environment drift; trace drift; unknown fields; no verifier writes/permissive selection.
+  current_green: Exact pinned-interpreter focused gate passed 18/18 with no skips. Syntax and environment checks pass. Sole-owner implementation 77a1c45/tree b077d25 is remote-exact; standard is 1,533/0/2 of 1,535; clean release 2924e05 is 23/23 with independently reproduced aggregate 3995/da8d2b7c.
+  covered: Content identities; strict environment; synthetic Qwen3 and NumPy kernels; complete 255-stage traces; both first-divergence arrows; drift rejection; no verifier writes; exact owner contract; child-request derivation; create-only bounded streams; stderr/overflow/timeout rejection; one-launch terminals.
   fixture_boundary: No fixture executes Qwen3-0.6B source or /12. Fixtures cannot prove real numerical parity, useful inference, browser behavior, P2P, release, or counter credit.
-  immediate_gate: Preregister exact real cases/token IDs, ba85cdb/tree 191a98c, source and /12 identities, per-arrow/stage thresholds, floors, top-k, limits, receipt bound, cardinality, terminal rules, and wholly new absent roots; remote-verify before output.
+  immediate_gate: Commit/push/fresh-verify this memory checkpoint, then preregister exact real cases/token IDs, that resulting parent, source and /12 identities, exact executables, per-arrow/stage thresholds, floors, top-k, limits, cardinality, terminal rules, and wholly new absent roots.
   failure_rule: Preserve every future partial or failed output. No retry, resume, cleanup, repair, overwrite, tolerance loosening, or adoption.
-  deep_evidence: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 14,080 bytes/SHA256 5216bc12be351eb3d4b8d1236078edb84f3263220629629168b8aa4e306cd67f.
+  deep_evidence: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 17,399 bytes/SHA256 5cf598b71d6983996bcba3cb6112e0b4072930a8852637896be9a9b10952cf05.
 
 scalar_numerical_probe_test_plan_2026_08_26:
   current_green: Focused Rust and Node tests passed 5/5 each; clippy and fmt pass. Standard discovered 1,517 and completed 1,515 pass/0 fail/2 skip. Commit 8b140ec is remote-exact. Clean run 8c483720 passed 23/23; verifier and independent hash agree on aggregate 3995,a0bb5bb78ad7d7b9c947eabc8eb47a8a42ebca43c391d05dfe558f83b3416e64.

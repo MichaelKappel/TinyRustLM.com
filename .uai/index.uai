@@ -1,11 +1,11 @@
-profile: runtime-mirust.uai-index.v266
-updated_utc: 2026-08-26T11:38:21Z
+profile: runtime-mirust.uai-index.v267
+updated_utc: 2026-08-26T12:26:14Z
 
 current_qwen3_numerical_differential_memory_2026_08_26:
-  durable_entry: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md is 14,080 bytes/SHA256 5216bc12be351eb3d4b8d1236078edb84f3263220629629168b8aa4e306cd67f.
-  contract_entry: contracts/vnext/qwen3-numerical-differential-profile.v1.json is 15,276 bytes/SHA256 4f97304bf7875f226530bab4c8df8550db6b743aa949f53d89d43d47f2956d12; environment lock is 29,103 bytes/SHA256 bdccfc277c66640ab958f382713cd75fbf497e6232b57b5025cd78868ec5a0e5.
-  design_entry: docs/architecture/2026-08-26-qwen3-numerical-differential-laboratory.md is 10,667 bytes/SHA256 94a208423e9820c01b33d79d4ff5ac4ba5dd6a189a72197aa84acc6e97b5865e.
-  resume_entry: Focused is 10/10; implementation ba85cdb/tree 191a98c is remote-exact; standard is 1,525/0/2 of 1,527; clean release 21c18c3 is 23/23 with verified aggregate 3995/58ef8c02. Make a separate remote-exact output-free registration next. /12 numerical execution remains unregistered/unperformed; all broader claims and counters stay unchanged.
+  durable_entry: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md is 17,399 bytes/SHA256 5cf598b71d6983996bcba3cb6112e0b4072930a8852637896be9a9b10952cf05.
+  contract_entry: contracts/vnext/qwen3-numerical-differential-profile.v1.json is 16,139 bytes/SHA256 2a12f5f46bba56101c24028b14bccb0700fe66d3113b696c12553a49b74dd3e8; environment lock is 29,103 bytes/SHA256 bdccfc277c66640ab958f382713cd75fbf497e6232b57b5025cd78868ec5a0e5.
+  design_entry: docs/architecture/2026-08-26-qwen3-numerical-differential-laboratory.md is 13,424 bytes/SHA256 dd72f8974aee4374d39da436f3bb135e0a76d20dd7660674968d587da77ac823.
+  resume_entry: Focused is 18/18; sole-owner implementation 77a1c45/tree b077d25 is remote-exact; standard is 1,533/0/2 of 1,535; clean release 2924e05 is 23/23 with verified aggregate 3995/da8d2b7c. Commit this memory checkpoint, then make a separate remote-exact output-free registration. /12 numerical execution remains unregistered/unperformed; all broader claims and counters stay unchanged.
 
 current_scalar_numerical_probe_memory_2026_08_26:
   durable_entry: wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md is 11,886 bytes/SHA256 2f5b59074e000f2f87b6e04b4150032581469fb4df0fae2a5ef4ad7f1ee52a01.

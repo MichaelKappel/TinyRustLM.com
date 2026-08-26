@@ -1,7 +1,7 @@
 # TinyRustLM Qwen3 Numerical Differential Memory
 
 Date: 2026-08-26
-Status: implementation, offline environment, hostile fixtures, remote-exact source checkpoint, and maintained gates complete; real numerical operation not registered or run
+Status: implementation, sole execution custody, offline environment, hostile fixtures, remote-exact source checkpoint, and maintained gates complete; real numerical operation not registered or run
 
 ## Resume Purpose
 
@@ -75,21 +75,21 @@ may never modify, rerun, adopt, relabel, or promote `/12` from structure alone.
 The differential profile is:
 
 - `contracts/vnext/qwen3-numerical-differential-profile.v1.json`
-- 15,276 bytes
+- 16,139 bytes
 - SHA-256
-  `4f97304bf7875f226530bab4c8df8550db6b743aa949f53d89d43d47f2956d12`
+  `2a12f5f46bba56101c24028b14bccb0700fe66d3113b696c12553a49b74dd3e8`
 
 The detailed architecture is:
 
 - `docs/architecture/2026-08-26-qwen3-numerical-differential-laboratory.md`
-- 10,667 bytes
+- 13,424 bytes
 - SHA-256
-  `94a208423e9820c01b33d79d4ff5ac4ba5dd6a189a72197aa84acc6e97b5865e`
+  `dd72f8974aee4374d39da436f3bb135e0a76d20dd7660674968d587da77ac823`
 
 The profile binds the reports, candidate, exact 28-layer Qwen3 shape, three
-implementations, offline environment, trace stages, proof arrows, metrics,
-threshold preregistration, execution order, claim boundary, and unchanged zero
-counters.
+numerical arms, one sole execution owner, the read-only verifier, offline
+environment, trace stages, proof arrows, metrics, threshold preregistration,
+execution order, claim boundary, and unchanged zero counters.
 
 ## Implemented Programs
 
@@ -99,6 +99,10 @@ The following source identities are frozen by the profile:
   `tinyrustlm/tools/qwen3_numerical_environment_lock.py`, 25,450 bytes,
   SHA-256
   `638c300c41f5a3b06c6ccc70122babd9bbbd489b7c5aa12f3850b891165f3635`;
+- sole execution owner:
+  `tinyrustlm/tools/qwen3-numerical-execution-owner.js`, 50,780 bytes,
+  SHA-256
+  `394a80512ca93b9361b52997b13acf8d4a581890fb4e591bbf4957d749acef8a`;
 - publisher source owner:
   `tinyrustlm/tools/qwen3-numerical-source-owner.py`, 39,852 bytes,
   SHA-256
@@ -115,6 +119,18 @@ The following source identities are frozen by the profile:
   `rust/crates/tinyrustlm-numerical-probe/src/main.rs`, 32,262 bytes,
   SHA-256
   `6a0b8ba79f885af82fcf04a9f6657acb30ce384abe53f31ab125ca9b286f3446`.
+
+The sole execution owner closes the process-custody gap identified during
+registration design. It validates the clean remote-exact registration source,
+parent tree, registration-only diff, all committed implementation identities,
+and the exact Git, Python, Node, scalar, and process-termination executable
+bytes. It derives all four child requests from the registration, creates only
+operation-derived absent private roots, captures bounded create-only streams,
+launches source, reconstructed, scalar, and verifier at most once in that
+order, and stops before every later stage after a failure. One process terminal
+is written per launch and one owner terminal closes pass, rejection, failure,
+or ambiguity. It has no retry, cleanup, overwrite, repair, threshold-change,
+failed-output adoption, or second-invocation route.
 
 The source owner uses pinned Transformers `Qwen3ForCausalLM`, original source
 weights cast to CPU float32, eager attention, deterministic algorithms, and
@@ -164,7 +180,7 @@ paths or URLs are not accepted.
 
 ## Focused Verification
 
-The exact pinned-interpreter focused invocation completed 10/10 tests, zero
+The exact pinned-interpreter focused invocation completed 18/18 tests, zero
 failures, zero skips, zero cancellations, and zero todo. It established:
 
 1. profile, report, source-lock, environment-lock, and tool content identity;
@@ -179,7 +195,15 @@ failures, zero skips, zero cancellations, and zero todo. It established:
 8. rejection of syntactically valid cross-arm environment drift;
 9. rejection of modified trace bytes and unknown request fields; and
 10. absence of evidence-writing, repair, or permissive selection in the
-    verifier source.
+    verifier source;
+11. exact sole-owner contract and operation-derived private names;
+12. exact token-case digest validation and child-request derivation;
+13. rejection of retry, cleanup, unknown-field, and duplicate-name drift;
+14. create-only bounded stream capture without overwrite;
+15. rejection of nonempty stderr and raw-stream overflow;
+16. bounded process-tree timeout termination;
+17. executable-before/after and argument-hash process terminals; and
+18. one-launch immutable closure fields.
 
 Python syntax compilation and JavaScript syntax checking also passed.
 
@@ -189,8 +213,9 @@ browser-WASM execution, or quality judgment.
 
 ## Source Checkpoint And Maintained Gates
 
-The implementation, profile, exact environment lock, architecture, tests,
-durable memory route, and all 13 hot UAI routes were committed and pushed as:
+The initial numerical implementation, profile, exact environment lock,
+architecture, tests, durable memory route, and all 13 hot UAI routes were
+committed and pushed as:
 
 - commit `ba85cdbecf15e0010c3211f7a6713a1f359745c3`;
 - tree `191a98ce51dbf5ef54b5e5aa131a090c6bd3d7dd`;
@@ -226,6 +251,38 @@ clean local release-surface gate only. They are not a real numerical run,
 package publication, production deployment, public HTTPS readback, model
 qualification, P2P proof, browser round, or campaign receipt.
 
+The report-driven sole execution owner, hostile process fixtures, updated
+profile, and updated architecture were then committed and pushed as:
+
+- commit `77a1c45d376033ee5cb4ccba4bb71df3fd72714b`;
+- tree `b077d2591009a10c712560008c898609e192d7e1`;
+- subject `Add Qwen3 numerical execution custody`.
+
+Local `HEAD`, tracking, fresh `FETCH_HEAD`, and the direct remote branch all
+reproduced `77a1c45d376033ee5cb4ccba4bb71df3fd72714b`. The full maintained gate on
+that exact clean checkpoint completed in 463,999.0609 ms:
+
+- 1,535 tests discovered;
+- 1,533 passed;
+- 0 failed;
+- 2 explicit infrastructure-only skips;
+- 0 cancelled; and
+- 0 todo.
+
+The clean release-surface run
+`2924e050a23e6a464933507c39b081335a68cefedacdfbe65a2ea54dd94126ac`
+passed 23/23 tests across 10 serial shards with no failure, skip, retained
+failure, or incomplete shard. Its regular, non-link aggregate receipt is 3,995
+bytes at SHA-256
+`da8d2b7c9dec146a2f9f3e146d5f492c3e7c58ddfb5b7d6a5853bbd6c115a8ee`.
+The maintained read-only verifier reproduced the same run ID, count, verdict,
+length, and digest, and a separate filesystem SHA-256 calculation matched.
+
+These custody gates remain source and fixture evidence only. They did not
+materialize a numerical owner request, private output root, real trace,
+verifier receipt, model-quality decision, browser result, publication, or
+campaign evidence.
+
 ## Exact Proof And Failure Semantics
 
 The source-to-reconstructed arrow isolates conversion and quantization
@@ -250,21 +307,26 @@ adopted, or relabeled.
 
 ## Exact Resume Order
 
-1. Use remote-exact implementation commit
-   `ba85cdbecf15e0010c3211f7a6713a1f359745c3` and tree
-   `191a98ce51dbf5ef54b5e5aa131a090c6bd3d7dd` as the sole green implementation
-   parent. Do not edit a bound implementation or profile while designing the
+1. Preserve remote-exact sole-owner implementation commit
+   `77a1c45d376033ee5cb4ccba4bb71df3fd72714b` and tree
+   `b077d2591009a10c712560008c898609e192d7e1` as the green implementation
+   ancestor. Do not edit a bound implementation or profile while designing the
    registration.
-2. Create one wholly new output-free numerical registration. Bind the exact
+2. Commit, push, freshly fetch, and direct-remote verify this durable-memory
+   and 13-UAI checkpoint. Use that resulting exact commit and tree as the
+   registration parent.
+3. Create one wholly new output-free numerical registration. Bind the exact
    source commit/tree, profile, environment, implementations, source lock,
    `/12` model, private token-case hashes, token IDs, per-arrow thresholds,
    floors, top-k, resource ceilings, terminal states, process cardinality,
-   existing evidence parent, and all absent output roots.
-3. Run focused registration tests, commit, push, freshly fetch, and prove local
+   existing evidence parent, exact executable bytes, and all absent output
+   roots.
+4. Run focused registration tests, commit, push, freshly fetch, and prove local
    `HEAD`, tracking ref, `FETCH_HEAD`, and direct remote equality before
    materializing any private registered output.
-4. Invoke each registered material owner at most once under one sole owner,
-   then invoke the read-only verifier once and preserve its terminal result.
+5. Materialize one registered private owner request and invoke the sole owner
+   once. It may invoke source, reconstructed, scalar, and the read-only verifier
+   at most once in the registered order. Preserve its terminal result.
 
 Do not run `/12` traces before step 3 is complete. Do not reuse any old private name or
 root. Do not invent thresholds from fixture results or from future real output.
@@ -276,13 +338,14 @@ At this memory checkpoint:
 - differential implementation: present;
 - exact offline environment lock: present and locally revalidated;
 - hostile and synthetic fixtures: passed;
-- full maintained source gate for this checkpoint: 1,525 passed, zero failed,
-  two explicit infrastructure-only skips out of 1,527;
+- sole execution custody: implemented and hostile process fixtures passed;
+- full maintained source gate for the custody checkpoint: 1,533 passed, zero
+  failed, two explicit infrastructure-only skips out of 1,535;
 - clean release-surface gate: 23/23 pass with independently reproduced
   3,995-byte aggregate SHA-256
-  `58ef8c02aea465e3ee71037f0446f8ae7a30d6640751184fe27dfb6460a0256c`;
+  `da8d2b7c9dec146a2f9f3e146d5f492c3e7c58ddfb5b7d6a5853bbd6c115a8ee`;
 - source checkpoint commit/push/fresh remote equality: complete at
-  `ba85cdbecf15e0010c3211f7a6713a1f359745c3`;
+  `77a1c45d376033ee5cb4ccba4bb71df3fd72714b`;
 - output-free real numerical registration: absent;
 - publisher source trace on the real model: not performed;
 - reconstructed trace on `/12`: not performed;
