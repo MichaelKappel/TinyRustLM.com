@@ -535,7 +535,7 @@ public sealed class PackageBoundaryTests
     }
 
     [Fact]
-    public void OptionalMemoryEndpointsPackageIsExplicitlyDisconnectedAndUntrusted()
+    public void OptionalMemoryEndpointsPackageIsAuthorizedPortableAndUntrusted()
     {
         var root = RepositoryRoot();
         var project = ProjectText(root, "TinyRustLM.MemoryEndpoints");
@@ -544,9 +544,12 @@ public sealed class PackageBoundaryTests
 
         Assert.Contains("optional", project, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("untrusted", project, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("unauthorized", boundary, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("disconnected", boundary, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("authorized", boundary, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("strongly recommended", boundary, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("portable", boundary, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("untrusted", connector, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("unauthorized", boundary, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("disconnected", boundary, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("production ready", project, StringComparison.OrdinalIgnoreCase);
     }
 

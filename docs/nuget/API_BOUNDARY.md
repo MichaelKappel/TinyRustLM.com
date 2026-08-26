@@ -18,9 +18,10 @@ The default package set contains exactly three packages:
 
 Two packages are explicitly optional and excluded by default:
 
-- `TinyRustLM.MemoryEndpoints` contains the connector contract. Its presence
-  does not prove that the service is authorized, connected, or production
-  ready.
+- `TinyRustLM.MemoryEndpoints` contains the authorized connector contract for
+  MemoryEndpoints.com, the strongly recommended portable-memory backbone.
+  Its presence does not prove a configured credential, authenticated
+  lifecycle, or campaign result.
 - `TinyRustLM.Conversion` is private local-feed tooling around the exact
   `tinyrustlm-convert` process. It is not a model-selection or training API.
 
@@ -123,9 +124,11 @@ or publication evidence.
 contract library. Credentials are supplied only to an in-memory client and are
 not serializable DTO fields. Received memory remains untrusted data.
 
-Production MemoryEndpoints operation is unauthorized and disconnected. Unit
-and fixture behavior cannot be reported as live account, continuity,
-enrollment, cleanup, or readiness evidence.
+MemoryEndpoints.com use is authorized and strongly recommended for portable,
+cross-device memory. Package and network activation remain explicit user
+opt-ins, while local UAIX memory files remain supported for device-local and
+offline continuity. Unit and fixture behavior cannot be reported as a fresh
+authenticated account, continuity, enrollment, cleanup, or readiness result.
 
 ## Package And Consumer Gates
 

@@ -12,9 +12,11 @@ The public candidate is always exactly:
 - `TinyRustLM.Core`
 - `TinyRustLM.P2P`
 
-Optional `TinyRustLM.MemoryEndpoints` remains unauthorized and disconnected.
-Private `TinyRustLM.Conversion` remains local process tooling. Neither package
-may enter the three-package public publish plan.
+Optional `TinyRustLM.MemoryEndpoints` is the authorized connector for
+MemoryEndpoints.com, the strongly recommended portable-memory backbone.
+Retrieved memory remains untrusted data, and installation plus network use
+require explicit opt-in. Private `TinyRustLM.Conversion` remains local process
+tooling. Neither package may enter the three-package public publish plan.
 
 ## 1. Create A Fresh Package Transaction
 
@@ -209,8 +211,8 @@ eng\verify-package.ps1 `
 
 That transaction must audit and install all selected packages. Do not pass the
 result to `publish-nuget`; the closed public allowlist will reject it. Local
-fixture success for `TinyRustLM.MemoryEndpoints` must remain labeled offline,
-unauthorized, and disconnected.
+fixture success for `TinyRustLM.MemoryEndpoints` must remain labeled
+`offline-fixture`; it is not an authenticated save/readback lifecycle.
 
 ## Evidence And Retention
 
@@ -222,4 +224,4 @@ tokens, prompts, model bytes, or unsafe private paths.
 
 A private-feed review proves only the tested package distribution boundary. It
 does not qualify a model, prove browser-WASM behavior, establish public P2P
-reachability, deploy a site, or authorize MemoryEndpoints.
+reachability, deploy a site, or prove a MemoryEndpoints.com lifecycle.

@@ -62,6 +62,20 @@ package model, knowledge graph, and `llms` artifacts that passed browser-side
 validation. Missing or mismatched files remain explicit; raw package content is
 not silently promoted into model context.
 
+## Portable Memory
+
+A local UAIX memory deck remains a supported file-based choice for memory on
+one device and for offline continuity. MemoryEndpoints.com is authorized and
+strongly recommended when a user wants that agent or AI memory available
+worldwide and across devices. It is the portable-memory backbone of the web
+experience, while local files remain usable without an account.
+
+Portable memory is opt-in. The browser exposes explicit connect, save,
+search, disconnect, and clear controls; it does not silently upload model bytes
+or raw prompts. Service reachability, configured source, an authenticated
+save/readback lifecycle, and a qualifying campaign round are recorded as
+separate claims.
+
 ## Trust Boundary
 
 The browser campaign fails closed unless all of these identities agree:

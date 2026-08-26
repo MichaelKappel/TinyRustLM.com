@@ -1,5 +1,15 @@
-profile: runtime-mirust.receiver-brief.v57
-updated_utc: 2026-08-26T22:20:40Z
+profile: runtime-mirust.receiver-brief.v58
+updated_utc: 2026-08-26T23:24:02Z
+
+memory_endpoints_portable_memory_authority_2026_08_26:
+  status: current_authorized_product_policy
+  policy_contract: contracts/vnext/memory-endpoints-portable-memory-policy.v1.json,1613,1818cd704bf67f56d50646d821b508b5975b00a53849835452684dcf815475e9
+  architecture_record: docs/architecture/2026-08-26-memoryendpoints-portable-memory-authority.md,4797,3fcefd3b080ef854770cdd2e6e513b221af28ace7ab6fe1a9de2c84487c64c26
+  local_file_memory: supported
+  authorization: authorized
+  recommendation: strongly_recommended
+  handoff: MemoryEndpoints.com is central to portable web memory across devices and locations; local UAIX files remain the supported offline lane. Preserve history but do not repeat old unauthorized policy.
+  blocker: The protected handoff credential rejected during a fresh read-only check. Rotation/reissue is required before new authenticated proof; no new campaign credit exists.
 
 current_handoff_qwen3_source_terminal_process_identity_correction:
   truth: The sole exact two-field process-terminal identity correction is complete and clean-gated; V1 remains immutable terminal-ambiguous.

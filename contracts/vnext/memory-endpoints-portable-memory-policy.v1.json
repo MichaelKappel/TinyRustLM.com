@@ -1,0 +1,49 @@
+{
+  "schema": "tinyrustlm.memory_endpoints_portable_memory_policy.v1",
+  "status": "current",
+  "effectiveUtc": "2026-08-26T23:24:02Z",
+  "authority": {
+    "decision": "superseding_product_policy",
+    "source": "explicit_project-owner_correction",
+    "architectureRecord": "docs/architecture/2026-08-26-memoryendpoints-portable-memory-authority.md"
+  },
+  "localFile": {
+    "supported": true,
+    "offlineCapable": true,
+    "deviceLocal": true,
+    "requiredForPortableUse": false
+  },
+  "memoryEndpoints": {
+    "authorization": "authorized",
+    "recommendation": "strongly_recommended",
+    "serviceOrigin": "https://memoryendpoints.com",
+    "productRole": "portable_web_memory_backbone",
+    "crossDeviceContinuity": true,
+    "worldwideAccess": true,
+    "replacesLocalFileSupport": false
+  },
+  "userControl": {
+    "explicitOptInRequired": true,
+    "silentUploadAllowed": false,
+    "localOnlyChoiceAllowed": true,
+    "disconnectAndClearControlsRequired": true
+  },
+  "privacy": {
+    "modelUploadAllowed": false,
+    "automaticRawPromptUploadAllowed": false,
+    "credentialInUrlAllowed": false,
+    "credentialInRepositoryAllowed": false,
+    "memoryRecordsRequireBoundedTypedContracts": true
+  },
+  "claimBoundary": {
+    "reachabilityIsLifecycleProof": false,
+    "configuredCodeIsLifecycleProof": false,
+    "authenticatedSaveSearchRestoreRequiresFreshReadback": true,
+    "campaignCreditRequiresFreshReceipt": true
+  },
+  "history": {
+    "preserveImmutableEarlierEvidence": true,
+    "earlierExclusionIsCurrentPolicy": false,
+    "runtimeTranslationOfHistoricalRecordsRequired": false
+  }
+}

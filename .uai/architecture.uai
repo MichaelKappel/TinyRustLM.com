@@ -1,5 +1,16 @@
-profile: runtime-mirust.architecture.v184
-updated_utc: 2026-08-26T22:20:40Z
+profile: runtime-mirust.architecture.v185
+updated_utc: 2026-08-26T23:24:02Z
+
+memory_endpoints_portable_memory_authority_2026_08_26:
+  status: current_authorized_product_policy
+  policy_contract: contracts/vnext/memory-endpoints-portable-memory-policy.v1.json,1613,1818cd704bf67f56d50646d821b508b5975b00a53849835452684dcf815475e9
+  architecture_record: docs/architecture/2026-08-26-memoryendpoints-portable-memory-authority.md,4797,3fcefd3b080ef854770cdd2e6e513b221af28ace7ab6fe1a9de2c84487c64c26
+  local_file_memory: supported
+  authorization: authorized
+  recommendation: strongly_recommended
+  two_lane_architecture: Local UAIX files provide device-local/offline continuity. MemoryEndpoints.com provides the central portable web-memory lane across devices and locations; it augments rather than replaces files.
+  trust_boundary: Explicit opt-in, typed bounded records, source labels, current-turn precedence, no credential persistence in public/browser artifacts, and no silent raw prompt or model upload.
+  proof_boundary: Reachability, source wiring, authenticated lifecycle, and campaign acceptance are four distinct gates.
 
 qwen3_source_terminal_process_identity_correction_architecture_2026_08_26:
   sole_contract: Process-terminal executable identity is exactly byteLength plus sha256, independently closed-shape parsed before comparison to the same projection from the registered Python artifact; the former added-basename shape rejects.

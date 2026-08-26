@@ -49,9 +49,12 @@ Campaign counters remain:
 - current outside-network lane proofs: `0/40`; and
 - live catalog announcements: `0/20`.
 
-MemoryEndpoints is unauthorized and disconnected. Its optional contract code
-and fixtures are not evidence of a live account, enrollment, continuity,
-cleanup, or production service.
+Local UAIX memory files remain supported for device-local and offline use.
+MemoryEndpoints.com is authorized and strongly recommended as TinyRustLM's
+portable web-memory backbone for continuity across devices and locations.
+Public reachability and configured connector code are not substitutes for a
+fresh authenticated save, search, restore, cleanup, and readback receipt, so
+the live campaign counter remains unchanged.
 
 ## Sole Architecture
 
@@ -194,7 +197,9 @@ The default public package transaction contains exactly:
 
 Two packages are excluded by default:
 
-- `TinyRustLM.MemoryEndpoints` is an optional disconnected connector contract.
+- `TinyRustLM.MemoryEndpoints` is the authorized connector contract for the
+  strongly recommended portable-memory lane. It remains an explicit package
+  opt-in so applications control credentials and network capability.
 - `TinyRustLM.Conversion` is private local tooling for the exact
   `tinyrustlm-convert` process.
 
@@ -213,8 +218,8 @@ directory:
 eng\verify-package.ps1 -PackageOutput artifacts\packages-current
 ```
 
-Include the disconnected optional connector or private converter only when the
-specific audit requires them:
+Include the authorized portable-memory connector or private converter only
+when the specific audit requires them:
 
 ```powershell
 eng\verify-package.ps1 `

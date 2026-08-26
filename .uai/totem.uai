@@ -1,5 +1,16 @@
-profile: runtime-mirust.totem.v206
-updated_utc: 2026-08-26T22:20:40Z
+profile: runtime-mirust.totem.v207
+updated_utc: 2026-08-26T23:24:02Z
+
+memory_endpoints_portable_memory_authority_2026_08_26:
+  status: current_authorized_product_policy
+  policy_contract: contracts/vnext/memory-endpoints-portable-memory-policy.v1.json,1613,1818cd704bf67f56d50646d821b508b5975b00a53849835452684dcf815475e9
+  architecture_record: docs/architecture/2026-08-26-memoryendpoints-portable-memory-authority.md,4797,3fcefd3b080ef854770cdd2e6e513b221af28ace7ab6fe1a9de2c84487c64c26
+  local_file_memory: supported
+  authorization: authorized
+  recommendation: strongly_recommended
+  product_role: Preserve MemoryEndpoints.com as the portable web-memory backbone for cross-device and worldwide continuity while preserving local UAIX files for device-local and offline use.
+  evidence_boundary: Reachability and configured source are not a fresh authenticated lifecycle or campaign receipt; 0/25 remains until exact current live evidence exists.
+  supersession: Earlier immutable no-MemoryEndpoints operation boundaries remain historical facts but cannot govern current authorization or product positioning.
 
 qwen3_source_terminal_process_identity_correction_totem_2026_08_26:
   preserve_memory: wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-process-identity-correction-memory-2026-08-26.md at 9,313 bytes/SHA256 2f294466f779f23e3c1bc5c810ba693513c2b4a8be855163f3ee098a2fbaf18b.

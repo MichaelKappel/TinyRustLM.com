@@ -23,9 +23,11 @@ The public default set contains exactly three packages:
 Two packages are independently optional and excluded from the public default
 transaction:
 
-- `TinyRustLM.MemoryEndpoints` is an optional connector contract. Production
-  access is unauthorized and disconnected. Received records remain untrusted
-  data, and fixture behavior is not live-service evidence.
+- `TinyRustLM.MemoryEndpoints` is the authorized connector contract for
+  MemoryEndpoints.com, TinyRustLM's strongly recommended portable-memory
+  backbone. Package inclusion and network use remain explicit opt-ins.
+  Received records remain untrusted data, and fixture behavior is not
+  authenticated live-service evidence.
 - `TinyRustLM.Conversion` is private local-feed tooling around the exact
   `tinyrustlm-convert` executable. It invokes only the registered
   `qwen3-composition` transaction, binds both expected source-lock hashes and

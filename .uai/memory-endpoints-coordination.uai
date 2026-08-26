@@ -1,11 +1,23 @@
-profile: tinyrustlm.memory-endpoints-coordination.v22
-updated_utc: 2026-07-13T03:00:48Z
+profile: tinyrustlm.memory-endpoints-coordination.v23
+updated_utc: 2026-08-26T23:24:02Z
 purpose: Durable public-safe routing instructions for reaching MemoryEndpoints coordinators and project agents from the TinyRustLM workspace.
+
+memory_endpoints_portable_memory_authority_2026_08_26:
+  status: current_authorized_product_policy
+  policy_contract: contracts/vnext/memory-endpoints-portable-memory-policy.v1.json,1613,1818cd704bf67f56d50646d821b508b5975b00a53849835452684dcf815475e9
+  architecture_record: docs/architecture/2026-08-26-memoryendpoints-portable-memory-authority.md,4797,3fcefd3b080ef854770cdd2e6e513b221af28ace7ab6fe1a9de2c84487c64c26
+  local_file_memory: supported
+  authorization: authorized
+  recommendation: strongly_recommended
+  product_role: MemoryEndpoints.com is TinyRustLM's portable web-memory backbone for memory usable across devices and locations; a local UAIX file remains the offline and device-local lane.
+  user_boundary: Explicit opt-in, bounded typed records, provenance labels, session-safe credentials, disconnect/clear controls, and no silent prompt or model upload are mandatory.
+  current_verification: Service and TinyRustLM public roots returned HTTP 200 on 2026-08-26; the public connector advertised live browser CORS. The protected handoff credential returned redacted 401 in both supported header modes, so rotate or reissue authority before a new authenticated lifecycle.
+  campaign_boundary: Authorization and preserved earlier production evidence do not advance the current 0/25 campaign without a fresh preregistered save/readback/restore/cleanup receipt.
 identity:
   agent_id: tinyrustlm-agent
   display_name: TinyRustLM Agent
-  canonical_repo: E:/Source/Rust/TinyRustLM.com
-  product_goal: Optional browser-accessible short-term and long-term memory for TinyRustLM clients.
+  canonical_repo: E:/Source/.tinyrustlm-model-acquisition-recovered-20260819
+  product_goal: Strongly recommended portable short-term and long-term memory for TinyRustLM clients, with local UAIX file continuity retained.
 service:
   base_url: https://memoryendpoints.com
   api_base: https://memoryendpoints.com/api/matm

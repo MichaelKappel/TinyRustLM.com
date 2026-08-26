@@ -1,5 +1,15 @@
-profile: runtime-mirust.operations.v185
-updated_utc: 2026-08-26T22:20:40Z
+profile: runtime-mirust.operations.v186
+updated_utc: 2026-08-26T23:24:02Z
+
+memory_endpoints_portable_memory_authority_2026_08_26:
+  status: current_authorized_product_policy
+  policy_contract: contracts/vnext/memory-endpoints-portable-memory-policy.v1.json,1613,1818cd704bf67f56d50646d821b508b5975b00a53849835452684dcf815475e9
+  architecture_record: docs/architecture/2026-08-26-memoryendpoints-portable-memory-authority.md,4797,3fcefd3b080ef854770cdd2e6e513b221af28ace7ab6fe1a9de2c84487c64c26
+  local_file_memory: supported
+  authorization: authorized
+  recommendation: strongly_recommended
+  current_operation: Keep the already-wired local-file and MemoryEndpoints product lanes. Rotate/reissue the rejected protected credential before any fresh authenticated lifecycle; then preregister save/readback/search/restore/cleanup with no silent retry.
+  claim_boundary: Service/TinyRustLM roots are reachable and browser CORS is live; no new authenticated lifecycle or 0/25 campaign round is claimed.
 
 qwen3_source_terminal_process_identity_correction_operations_2026_08_26:
   completed_source_operation: correction commit efc29dd6007401497e76fad3ec3036c23b092213/tree 03f88978b62cc300ab71b4ab9af5b2782ca6b880; pushed/fresh-four-way-exact; standard 1,615/0/3 of 1,618

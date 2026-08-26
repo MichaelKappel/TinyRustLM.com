@@ -1,5 +1,16 @@
-profile: runtime-mirust.taboo.v135
-updated_utc: 2026-08-26T22:20:40Z
+profile: runtime-mirust.taboo.v136
+updated_utc: 2026-08-26T23:24:02Z
+
+memory_endpoints_portable_memory_authority_2026_08_26:
+  status: current_authorized_product_policy
+  policy_contract: contracts/vnext/memory-endpoints-portable-memory-policy.v1.json,1613,1818cd704bf67f56d50646d821b508b5975b00a53849835452684dcf815475e9
+  architecture_record: docs/architecture/2026-08-26-memoryendpoints-portable-memory-authority.md,4797,3fcefd3b080ef854770cdd2e6e513b221af28ace7ab6fe1a9de2c84487c64c26
+  local_file_memory: supported
+  authorization: authorized
+  recommendation: strongly_recommended
+  no_policy_regression: Never describe MemoryEndpoints.com as unauthorized, disconnected, or outside TinyRustLM's current product. Never describe local UAIX file memory as unavailable or obsolete.
+  no_claim_collapse: Never call reachability or configured code a live save/readback lifecycle, reuse stale credentials, silently upload memory, expose credentials, or advance 0/25 without an exact fresh receipt.
+  history_rule: Never rewrite immutable historical evidence; current authority supersedes old exclusion language prospectively.
 
 qwen3_source_terminal_process_identity_correction_taboo_2026_08_26:
   durable_route: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-process-identity-correction-memory-2026-08-26.md, 9,313 bytes/SHA256 2f294466f779f23e3c1bc5c810ba693513c2b4a8be855163f3ee098a2fbaf18b before successor work.
