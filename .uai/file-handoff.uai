@@ -1,5 +1,12 @@
-profile: runtime-mirust.file-handoff.v117
-updated_utc: 2026-08-26T07:03:10Z
+profile: runtime-mirust.file-handoff.v118
+updated_utc: 2026-08-26T08:23:33Z
+current_qwen3_execution_v12_structural_pass_2026_08_26:
+  first_read: Read newest workspace.uai, contracts/vnext/qwen3-real-composition-execution-result.v12.json, docs/architecture/2026-08-26-qwen3-real-composition-execution-v12-structural-pass.md, and wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md before any continuation.
+  identities: result=18441,0c3e84ad9ce6e22d9a164357c9a900d31825d0639f4f11077dab305f9cf3ef0e; architecture=8484,3ea6e8d9e411e217f9c70c3d7ecae9cba109331fa4764ab77d0f7005576d3d12; durable_memory=9858,c6ea3b629d26758dc9fe73625ead20960afba4a48a77e4fe506196ecf089dec8; registration_commit=b0eac91f8a227c524c9a1fa58c9f2fb3ea70d4e3; registration_tree=157eb5564733f9c6b39eb48922ed48cdf4573318
+  terminal_truth: /12 is immutable structural-pass. Environment and both custodies passed; converter and independent managed inspector each launched once and passed; final verification and one read-only reproduction passed. Exact composition is ten files/605429565 bytes with six semantic members.
+  reports: Durable memory deep-links the post-/10 report manifest, corrected synthesis, TDD delta, and intake memory. Use reviewed conclusions as design input only.
+  exact_resume: Finish gates; commit/push/fresh-four-way-verify this bounded checkpoint; run a new clean release surface; independently verify it; update memory. Then preregister source-framework/scalar-native parity against exact /12 bytes before private numerical material.
+  hard_boundary: Preserve /1-/12; no numerical/browser/quality/P2P/catalog/package/deployment/MemoryEndpoints claim; counters remain 0/20,0/50,0/25,0/40,0/20.
 current_build_custody_request_materializer_clean_gate_2026_08_26:
   first_read: Read newest `workspace.uai`, `wiki/runtime-mirust/reports/tinyrustlm-build-custody-request-materializer-memory-2026-08-26.md`, and `docs/architecture/2026-08-26-build-custody-request-materializer-clean-cut.md` before request materialization, successor registration, or Qwen3 execution.
   authority: Profile is 6,327 bytes/SHA256 `450e1300eb80fe15bcb058713a16fd517a7f4206a4ef420995ac0ea4f4cae041`; tool is 14,781 bytes/SHA256 `cfdcf78000a9a60158c1fe4a227a8ebea4a1a2e99d71484a57b045bc9dff10b1`; implementation `6471a526d1957bcdcf297ee5fbe02888f51b8062`, tree `233bede47f1feb4e40c6c2514695d26007e74e8d`, is four-way remote exact. Durable memory is 6,649 bytes/SHA256 `dfe58d56aa773afc6b6d89aeaca96e84f7d916af4509cf9fd555b91d4350cda0`.

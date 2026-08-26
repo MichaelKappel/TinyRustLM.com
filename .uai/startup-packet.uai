@@ -1,5 +1,15 @@
-profile: runtime-mirust.startup-packet.v129
-updated_utc: 2026-08-26T07:03:10Z
+profile: runtime-mirust.startup-packet.v130
+updated_utc: 2026-08-26T08:23:33Z
+current_start_2026_08_26_qwen3_v12_structural_pass:
+  workspace: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  branch: codex/model-acquisition-v2
+  never_touch: E:\Source\Rust\TinyRustLM.com; D:
+  first_reads: workspace.uai; .uai/totem.uai; .uai/taboo.uai; contracts/vnext/qwen3-real-composition-execution-result.v12.json; wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md
+  state: /12 closed structural-pass; exact output ten files/605429565 bytes; six semantic members; no numerical or product release claim.
+  immediate: Finish gates for the bounded result/memory/UAI checkpoint, commit/push/fresh-four-way-verify, run clean release surface under a new external root, retain evidence, update memory.
+  next_major: Preregister source-framework/scalar-native numerical parity for exact /12 bytes. Never rerun conversion or materialize numerical evidence before registration.
+  reports: Follow deep links from durable /12 memory into reviewed post-/10 manifest/synthesis/TDD/memory. Reports advise; local executable evidence decides.
+  authority: one prelaunch product; no legacy/debt/fallback/retry/repair/best-of-N; MemoryEndpoints unauthorized; counters zero.
 current_build_custody_request_materializer_clean_gate_2026_08_26:
   first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `wiki/runtime-mirust/reports/tinyrustlm-build-custody-request-materializer-memory-2026-08-26.md`, and `docs/architecture/2026-08-26-build-custody-request-materializer-clean-cut.md` before any request materialization or successor registration.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819

@@ -1,5 +1,12 @@
-profile: runtime-mirust.long-term-memory-ledger.v363
-updated_utc: 2026-08-26T07:03:10Z
+profile: runtime-mirust.long-term-memory-ledger.v364
+updated_utc: 2026-08-26T08:23:33Z
+current_qwen3_composition_v12_structural_pass_memory_2026_08_26:
+  route: wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md
+  identity: bytes=9858; sha256=c6ea3b629d26758dc9fe73625ead20960afba4a48a77e4fe506196ecf089dec8
+  authority: Canonical result is contracts/vnext/qwen3-real-composition-execution-result.v12.json 18441/0c3e84ad9ce6e22d9a164357c9a900d31825d0639f4f11077dab305f9cf3ef0e; architecture is docs/architecture/2026-08-26-qwen3-real-composition-execution-v12-structural-pass.md 8484/3ea6e8d9e411e217f9c70c3d7ecae9cba109331fa4764ab77d0f7005576d3d12.
+  deep_links: The page routes to the post-/10 report manifest, corrected synthesis, TDD delta, durable intake memory, exact registration, result, composition inventory, claim boundary, and next source-framework/scalar-native gate. Raw reports stay advisory.
+  preservation: /12 and every predecessor are immutable; no retry, modification, deletion, repair, adoption, legacy path, or claim inflation.
+  next: Commit/push/fresh-verify and clean-gate this bounded checkpoint, then preregister numerical parity for the exact /12 composition.
 storage_mode: hybrid
 ledger_rule:
   pointer_only_not_context_free: true

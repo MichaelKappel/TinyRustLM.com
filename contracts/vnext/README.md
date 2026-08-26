@@ -728,6 +728,45 @@ across local HEAD, tracking, `FETCH_HEAD`, and direct remote, with all 17 names
 still absent, before any `/12` private material is created. See
 `docs/architecture/2026-08-26-qwen3-real-composition-execution-preregistration-v12.md`.
 
+`qwen3-real-composition-execution-result.v12.json` closes execution `/12` as
+`structural-pass` with reason `structural-composition-verified`. It is 18,441
+canonical ASCII/LF bytes at SHA-256
+`0c3e84ad9ce6e22d9a164357c9a900d31825d0639f4f11077dab305f9cf3ef0e`.
+The remote-exact registration, Windows x64 MSVC environment authority, Rust
+custody, managed custody, converter, independent managed inspection, final
+verification, and read-only verification each ran only within their registered
+cardinality. Both custody operations passed. The converter and independent
+managed inspector each launched once and exited zero. The read-only verifier
+then reproduced the exact final structural decision without launching a
+material process or writing evidence.
+
+The newly materialized output contains exactly ten files totaling 605,429,565
+bytes and exactly six semantic members: `model.slm2`,
+`tokenizer.tokenizer2`, `template.template2`, `sampling.sampling2`,
+`prompt.prompt2`, and `composition.acg2`. Their exact hashes are bound in the
+result and independently recomputed private verification. Matching semantic
+member hashes from failed execution `/10` are deterministic-output evidence,
+not adoption authority; `/12` produced and verified its own bytes under wholly
+new registered identities, while every `/10` byte remains immutable failed
+history.
+
+The result retains one pre-write request-shape guard observation without
+mislabeling it as an operation attempt. It occurred entirely in memory before
+any registered path was opened or any registered owner was invoked. The exact
+registered request was subsequently written create-only once and executed
+once. No private record was repaired, replaced, deleted, retried, or adopted.
+
+This is a structural composition pass only. The candidate may advance to a
+separately preregistered source-framework and scalar-native numerical-parity
+phase, but it may not be released. No source-framework parity, native
+inference, optimized-native parity, browser-WASM execution, browser chat,
+model quality, P2P availability, catalog announcement, package publication,
+site deployment, MemoryEndpoints behavior, or campaign credit is established.
+See
+`docs/architecture/2026-08-26-qwen3-real-composition-execution-v12-structural-pass.md`
+and durable resume memory
+`wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2

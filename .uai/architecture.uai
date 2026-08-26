@@ -1,5 +1,12 @@
-profile: runtime-mirust.architecture.v164
-updated_utc: 2026-08-26T07:03:10Z
+profile: runtime-mirust.architecture.v165
+updated_utc: 2026-08-26T08:23:33Z
+current_qwen3_v12_structural_architecture:
+  authority: docs/architecture/2026-08-26-qwen3-real-composition-execution-v12-structural-pass.md; durable=wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md
+  composition: One immutable graph closes model.slm2, tokenizer.tokenizer2, template.template2, sampling.sampling2, prompt.prompt2, and composition.acg2 plus four operation records. Exact member names, sizes, hashes, source locks, profile identities, operation graph, and receipts are structural authority.
+  independence: Converter production and managed graph inspection are separate processes/builds. Final verification and one later read-only verification recompute evidence/output identities. No producer digest is sufficient by claim alone.
+  clean_slate: One current prelaunch SLM2 route only. Historical results remain interpretable as immutable records, not executable compatibility paths.
+  proof_chain: pinned-source-framework -> scalar-native-converted-byte authority -> optimized-native differential -> real-browser-WASM differential -> exactly-once browser chat -> sealed quality qualification -> explicit P2P-or-local-conversion acquisition -> package/site release and HTTPS readback.
+  boundary: /12 completes only composition structure. Numerical, runtime, browser, quality, network, release, and deployment stages remain independently gated.
 current_build_custody_request_materializer_architecture_2026_08_26:
   authority: Read `docs/architecture/2026-08-26-build-custody-request-materializer-clean-cut.md` and checksum-bound memory `wiki/runtime-mirust/reports/tinyrustlm-build-custody-request-materializer-memory-2026-08-26.md`, 6,649 bytes/SHA256 `dfe58d56aa773afc6b6d89aeaca96e84f7d916af4509cf9fd555b91d4350cda0`. Sole profile is 6,327/SHA256 `450e1300eb80fe15bcb058713a16fd517a7f4206a4ef420995ac0ea4f4cae041`; sole tool is 14,781/SHA256 `cfdcf78000a9a60158c1fe4a227a8ebea4a1a2e99d71484a57b045bc9dff10b1`; exact remote implementation is `6471a526d1957bcdcf297ee5fbe02888f51b8062`, tree `233bede47f1feb4e40c6c2514695d26007e74e8d`.
   contract: One canonical private intent uses exact ordered/closed nested objects. One newly constructed request uses explicit role-specific maps and must pass the real custody owner's shape validator before canonical create-only output. Generic flattening, inferred keys, spread-copy, permissive unknowns, translation, compatibility, fallback, retry, repair, and adoption are absent.

@@ -1,5 +1,12 @@
-profile: runtime-mirust.short-term-memory.v486
-updated_utc: 2026-08-26T07:03:10Z
+profile: runtime-mirust.short-term-memory.v487
+updated_utc: 2026-08-26T08:23:33Z
+active_qwen3_v12_structural_pass_checkpoint:
+  now: Public /12 result, architecture, dedicated regression, contract-index entry, durable memory, and distributed UAI route are being closed as one coherent source-control checkpoint.
+  read_first: workspace.uai; contracts/vnext/qwen3-real-composition-execution-result.v12.json; wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md
+  proven: registration remote exact; environment pass; Rust custody pass; managed custody pass; converter pass once; independent managed structural pass once; final verification pass; one read-only exact reproduction; ten files/605429565 bytes; six semantic members.
+  unproven: source-framework parity; scalar-native inference; optimized-native parity; browser WASM; browser chat; quality; P2P; catalog; package; deployment; MemoryEndpoints; campaign credit.
+  immediate: Run focused/affected/memory/hygiene and complete dirty-source gates, commit and push, fresh-fetch/four-way verify, run clean release surface, then update memory with exact checkpoint evidence.
+  after: Preregister one separate numerical-parity operation for the immutable /12 composition. Do not rerun conversion.
 current_state:
   - >-
     2026-08-26 CURRENT build-custody request materializer clean gate: sole profile `contracts/vnext/build-custody-request-materializer-profile.v1.json` is 6,327 bytes/SHA256 `450e1300eb80fe15bcb058713a16fd517a7f4206a4ef420995ac0ea4f4cae041`; sole tool `tinyrustlm/tools/build-custody-request-materializer.js` is 14,781 bytes/SHA256 `cfdcf78000a9a60158c1fe4a227a8ebea4a1a2e99d71484a57b045bc9dff10b1`. Commit `6471a526d1957bcdcf297ee5fbe02888f51b8062`, tree `233bede47f1feb4e40c6c2514695d26007e74e8d`, is pushed/four-way exact. Explicit named maps create one exact closed custody request; real owner shape validation, canonical UTF-8/LF, create-only write, and file flush are mandatory; no generic flattening, key rewriting, compatibility, fallback, retry, repair, or adoption exists. `/11` malformed extra fields remain a negative. Focused 8/8 and 22/22 pass; clean standard is 1,493/0/2 of 1,495; clean release run `df84111d709bbcc4159a651e1995e06f9f37cc3af41ac866b5b3d8127004b6d0` is 23/23 with independently reproduced 3,995-byte aggregate SHA256 `a1fdfdde067c3292327277b4976e8f04098e869edfe25c2c469388fdf09399c1`. Read durable memory `wiki/runtime-mirust/reports/tinyrustlm-build-custody-request-materializer-memory-2026-08-26.md`, 6,649/SHA256 `dfe58d56aa773afc6b6d89aeaca96e84f7d916af4509cf9fd555b91d4350cda0`. Next commit/push/fresh-verify this memory checkpoint, then author a wholly new output-free successor registration before any private material. No broader claim; MemoryEndpoints unauthorized; counters zero.

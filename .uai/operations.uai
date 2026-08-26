@@ -1,5 +1,13 @@
-profile: runtime-mirust.operations.v165
-updated_utc: 2026-08-26T07:03:10Z
+profile: runtime-mirust.operations.v166
+updated_utc: 2026-08-26T08:23:33Z
+current_qwen3_execution_v12_terminal_operation:
+  state: registration=remote-exact; environment=pass-once; rust-custody=pass-once; managed-custody=pass-once; owner-preflight=pass-once; converter=pass-one-launch; managed-inspector=pass-one-launch; final-verification=pass; read-only-verification=pass-once; terminal=structural-pass
+  result: path=contracts/vnext/qwen3-real-composition-execution-result.v12.json; bytes=18441; sha256=0c3e84ad9ce6e22d9a164357c9a900d31825d0639f4f11077dab305f9cf3ef0e; reason=structural-composition-verified
+  output: files=10; bytes=605429565; semantic_members=6; private_output_preserved=true; predecessor_bytes_adopted=false
+  memory: wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md; bytes=9858; sha256=c6ea3b629d26758dc9fe73625ead20960afba4a48a77e4fe506196ecf089dec8
+  terminal_rules: retry=false; resume_conversion=false; modify=false; delete=false; repair=false; adopt=false; reinterpret=false
+  next: close-source-checkpoint; push; fresh-four-way-verify; clean-release-surface; preserve-evidence; preregister-source-framework-scalar-native-parity
+  claims: structural_composition=true; source_parity=false; scalar_native=false; optimized_native=false; wasm=false; browser_chat=false; quality=false; p2p=false; catalog=false; package=false; deployment=false; memoryendpoints=unauthorized; counters=0/20,0/50,0/25,0/40,0/20
 build_custody_request_materializer_clean_gate_2026_08_26:
   state: current-materializer=sole; intent-schema=tinyrustlm.build-custody-request-materialization-intent.v1; output-schema=tinyrustlm.build-custody-request.v4; explicit-maps=true; real-owner-shape-validation=true; canonical-utf8-lf=true; create-only=true; file-fsync=true; generic-flattening=false; recursive-key-replacement=false; compatibility=false; fallback=false; retry=false; repair=false; adoption=false
   identities: profile=6327,450e1300eb80fe15bcb058713a16fd517a7f4206a4ef420995ac0ea4f4cae041; tool=14781,cfdcf78000a9a60158c1fe4a227a8ebea4a1a2e99d71484a57b045bc9dff10b1; implementation_commit=6471a526d1957bcdcf297ee5fbe02888f51b8062; implementation_tree=233bede47f1feb4e40c6c2514695d26007e74e8d; remote_exact=true; memory=6649,dfe58d56aa773afc6b6d89aeaca96e84f7d916af4509cf9fd555b91d4350cda0
