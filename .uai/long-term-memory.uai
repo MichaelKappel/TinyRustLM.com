@@ -1,11 +1,32 @@
-profile: runtime-mirust.long-term-memory-ledger.v357
-updated_utc: 2026-08-25T09:39:08Z
+profile: runtime-mirust.long-term-memory-ledger.v358
+updated_utc: 2026-08-26T00:30:36Z
 storage_mode: hybrid
 ledger_rule:
   pointer_only_not_context_free: true
   summary_policy: Routing-only, one sentence, 35 words maximum, no durable body memory.
   allowed_statuses: current, retired, superseded, quarantined
 records:
+  - stable_id: tinyrustlm_qwen3_real_composition_execution_v9_terminal_ambiguous_2026_08_25_current
+    memory_domain: tinyrustlm.model_acquisition.qwen3_real_composition_execution_v9
+    pointer_type: architecture_report
+    path: docs/architecture/2026-08-25-qwen3-real-composition-execution-v9-terminal-ambiguous.md
+    target_location: docs/architecture/2026-08-25-qwen3-real-composition-execution-v9-terminal-ambiguous.md
+    label: Qwen3 Real Composition Execution /9 Terminal Ambiguous Result
+    summary: Routes the immutable /9 build and conversion passes, preserved private 598 MB candidate identity, two terminal evidence defects, strict nonclaims, and required source-owned orchestration correction.
+    pointer_status: current
+    authority: canonical public result bound to immutable private terminal verification
+    source_authority: public result sha256 e22ec93b089beb814ee88ba4221213e5eb73920f81fd74f5ce5eec547eab9414; private verification sha256 55bc8d97dc4f7e11cc6ec83723f2724e6bfe8654bf0b0ab61af7b92593ce3471
+    source_identity: candidate model.slm2 sha256 a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7; candidate bytes 598308416
+    review_status: terminal_ambiguous_no_retry_no_adoption
+    quarantine_status: preserved_private_candidate_not_qualified
+    review_evidence: contracts/vnext/qwen3-real-composition-execution-result.v9.json
+    contextual_trigger: Read before Qwen3 composition, managed inspection, SLM2 structural qualification, real-model runtime, browser, quality, acquisition, or release work.
+    checksum_hash: sha256:767ffebd34ce13176bf35c5c01f0bc31f4b0c5e0d20aef6a5efbbff212dab112
+    sha256: 767ffebd34ce13176bf35c5c01f0bc31f4b0c5e0d20aef6a5efbbff212dab112
+    bytes: 6495
+    last_reviewed_utc: 2026-08-26T00:30:36Z
+    owner_or_reviewer: TinyRustLM Agent
+    truth_boundary: Proves only the exact /9 terminal history; the private candidate is not structurally qualified, adopted, releasable, published, browser-proven, quality-proven, or campaign-countable.
   - stable_id: tinyrustlm_release_surface_restart_activation_batching_2026_08_25_current
     memory_domain: tinyrustlm.release_surface.restart_activation_batching
     pointer_type: architecture_report

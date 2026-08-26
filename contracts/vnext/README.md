@@ -552,6 +552,25 @@ quality, P2P, publication, or MemoryEndpoints claim; and advances no campaign
 counter. See
 `docs/architecture/2026-08-25-qwen3-real-composition-execution-preregistration-v9.md`.
 
+`qwen3-real-composition-execution-result.v9.json` closes execution `/9` as
+`terminal-ambiguous`. It is 16,578 canonical ASCII/LF bytes at SHA-256
+`e22ec93b089beb814ee88ba4221213e5eb73920f81fd74f5ce5eec547eab9414`.
+The exact environment authority, Rust custody `/4`, managed custody `/4`, and
+single converter launch all passed. The converter created an exact ten-file
+private candidate including a 598,308,416-byte `model.slm2` at SHA-256
+`a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7`.
+
+That candidate is not structurally qualified or releasable. The registered
+outer controller stdout/stderr files were not captured, and the sole managed
+inspection invocation received a fully qualified but noncanonical Windows
+path, producing typed error `managed-inspection-intent-path` before inspecting
+the durable composition. Neither defect permits retry or reconstructed
+evidence. Private verification `/5` closes the registration, preserves all
+created bytes, and requires one source-controlled end-to-end inspection owner
+plus wholly new private names before another attempt. No runtime, browser,
+quality, P2P, publication, MemoryEndpoints, or campaign claim advances. See
+`docs/architecture/2026-08-25-qwen3-real-composition-execution-v9-terminal-ambiguous.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2

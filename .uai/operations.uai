@@ -1,5 +1,13 @@
-profile: runtime-mirust.operations.v156
-updated_utc: 2026-08-25T23:12:40Z
+profile: runtime-mirust.operations.v157
+updated_utc: 2026-08-26T00:55:00Z
+qwen3_execution_v9_terminal_ambiguous_2026_08_25:
+  state: registration=a5ebdb4c154c743a7871fad81b13094b220a2667; tree=63f9f68d411abd5f32d7ffdf5a7a94140367cd51; registered_names=15; created_names=15; environment=1-pass; rust_custody=1-pass; managed_custody=1-pass; controller=1-exit-0; converter=1-exit-0; managed_inspection=1-exit-1; verification=terminal-ambiguous; retry=false
+  candidate: files=10; aggregate_bytes=605429565; model_slm2=598308416,a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7; tokenizer2=7038773,cbbf907ed95150c4db920c36cee9ab13eca2a3c6d2dcffb6bf5d7ac5b95b8f7b; structurally_qualified=false; releasable=false; adoptable=false
+  defects: controller_outer_stdout_present=false; controller_outer_stderr_present=false; reconstructed=false; managed_inspection_error=managed-inspection-intent-path; path_fully_qualified=true; path_windows_canonical=false; output_inspected=false; root_causes_established=true
+  evidence: private_verification=42323,55bc8d97dc4f7e11cc6ec83723f2724e6bfe8654bf0b0ab61af7b92593ce3471; public_result=16578,e22ec93b089beb814ee88ba4221213e5eb73920f81fd74f5ce5eec547eab9414; all_private_preserved=true; raw_private_published=false
+  verification: dedicated=11/11; affected=33/33; release_cutover=5/5; memory=9/9; standard=1436/0/2-of-1438; standard_duration_ms=476074.0105; release_surface=not-run-dirty-source-guard; wrapper_error=release_gate_source_not_clean
+  next: commit+push+fresh-verify-result; clean-release-surface+independent-verify; implement-one-source-owned-end-to-end-inspection-verification-owner; canonicalize-child-paths; create-only-open-all-outer-streams-before-launch; durable-process-terminal; output-free-v10-registration; wholly-new-names
+  claims: structural_composition=false; parity=false; browser=false; quality=false; p2p=false; publication=false; deployment=false; memory_endpoints=false; counters=0/20,0/50,0/25,0/40,0/20
 owned_application_data_build_custody_v4_2026_08_25:
   state: current_profile=tinyrustlm.source-controlled-build-custody/4; predecessor_profile_current=false; appdata=owned-roaming; localappdata=owned-local; temp=owned-temp; tmp=owned-temp; precreated_directories=5; registered_operation=false; private_material=false
   identities: profile=10274,26b75c36911c14d744a764c19d8a40ec0c28762add5e6616501080120aad9b45; owner=103310,4d0a86fccc7c798866a0c36538adb78bf73cb383f9d74e03d8794edf264040df; owner_test=56613,babf889f90bb7a1330b105b49440ca339ddba9f2b40ffaee93d4dd0f5bab5425; sdk_regression=7027,b3974a2bc25c68e5e8534b14b62a42c917764bd2df5fc880145c01652f3053d0; architecture=9396,4e6c86c1a869b4c61f923e9c040018a333d80444f5ef95b3139400dadcd215de

@@ -1,5 +1,15 @@
-profile: runtime-mirust.startup-packet.v123
-updated_utc: 2026-08-25T23:12:40Z
+profile: runtime-mirust.startup-packet.v124
+updated_utc: 2026-08-26T00:55:00Z
+current_qwen3_execution_v9_terminal_ambiguous_2026_08_25:
+  first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/qwen3-real-composition-execution-result.v9.json`, and `docs/architecture/2026-08-25-qwen3-real-composition-execution-v9-terminal-ambiguous.md` before further model work.
+  active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  active_branch: codex/model-acquisition-v2
+  protected_root: E:\Source\Rust\TinyRustLM.com remains untouched; never write `D:`.
+  checkpoint: registration=`a5ebdb4c154c743a7871fad81b13094b220a2667`/tree=`63f9f68d411abd5f32d7ffdf5a7a94140367cd51`; result=16578/`e22ec93b089beb814ee88ba4221213e5eb73920f81fd74f5ce5eec547eab9414`; private-verification=42323/`55bc8d97dc4f7e11cc6ec83723f2724e6bfe8654bf0b0ab61af7b92593ce3471`; environment=pass; rust-custody=pass; managed-custody=pass; converter=one-zero-exit; candidate-model=598308416/`a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7`; managed-inspection=one-exit-1; status=terminal-ambiguous
+  terminal_defects: Registered controller outer streams are absent and cannot be fabricated. Managed inspector received a noncanonical Windows path argument and returned `managed-inspection-intent-path` before inspecting output. `/9` is closed and nonretryable; preserve every private byte.
+  verification: Dedicated result 11/11, affected `/8`+`/9` 33/33, release-cutover 5/5, filtered memory 9/9, and complete standard 1,436/0/2 of 1,438 pass. The release surface did not run because the wrapper correctly rejected the dirty worktree.
+  immediate_operation: Commit/push/fresh-verify the bounded `/9` result, run and independently verify the release surface from that exact clean source, then implement one source-controlled end-to-end inspection/verification owner with canonical child paths, preopened create-only outer streams, bounded raw capture, durable process terminal, independent rehash, and create-only final verification. Fully test it before a separate output-free `/10` registration with wholly new absent names.
+  truth_boundary: The candidate is not structurally qualified, releasable, or adoptable. No parity, browser, quality, P2P, publication, deployment, MemoryEndpoints, or campaign evidence exists; counters remain zero.
 current_owned_application_data_build_custody_v4_2026_08_25:
   first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/build-custody-profile.v4.json`, and `docs/architecture/2026-08-25-owned-application-data-build-custody.md` before any build or model operation.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
