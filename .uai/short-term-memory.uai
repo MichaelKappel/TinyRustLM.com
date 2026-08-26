@@ -1,11 +1,12 @@
-profile: runtime-mirust.short-term-memory.v505
-updated_utc: 2026-08-26T21:03:07Z
+profile: runtime-mirust.short-term-memory.v506
+updated_utc: 2026-08-26T21:31:36Z
 
 current_qwen3_source_terminal_verification_v1_2026_08_26:
   just_completed: One remote-exact output-free source-terminal verification was invoked exactly once and closed terminal-ambiguous after typed source-terminal-process-binding plus process-terminal-write-failed. The verifier was not rerun; a create-only late terminal records the missing exit-code and metadata-snapshot evidence rather than inventing it.
   deep_resume: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-verification-v1-memory-2026-08-26.md, 9,317 bytes/SHA256 136f57824298775a3d272d1bbf68ccdc501094fd662cb8b043f90f9e59cb4719; it is indexed in .uai/long-term-memory.uai and deep-links the reviewed report intake and exact local evidence.
   exact_evidence: Public result is 6,268/e27bbbf2e321bf79b6c7f9009427de191b492a9ab74537ba7751866e811076fa. Private verification closure is three files/2,684 bytes; terminal is 2,615/889c0826eb1b36aabb80ac612a2dbc0c29220ae225a61d63858b2f61f901ad2f. Source owner evidence remains exact at nine files/13,143 bytes.
-  immediate_work: Commit/push/fresh-four-way-verify the closure. TDD the two-field process-terminal executable identity, reject added/missing/wrong fields, correct only the expected projection, gate/push/verify, then preregister a wholly new absent verification root before one invocation.
+  checkpoint: Closure aed7c62/tree 173d4c1 is pushed/four-way exact. Standard is 1,609/0/3 of 1,612. Clean protected run 882bb60fe21601bde54907a37667efe07b88e6673943bdd00d38385c14b130ce is 23/23 with maintained and independent agreement on 3,995-byte aggregate e3d6495c12307ba41b832e28c79c5e53f54f8376e5fca0b658403ce432c2effe.
+  immediate_work: Commit/push/fresh-four-way-verify this gate-memory update. TDD the two-field process-terminal executable identity, reject added/missing/wrong fields, correct only the expected projection, gate/push/verify, then preregister a wholly new absent verification root before one invocation.
   boundary: Do not rerun either consumed operation or claim source-terminal verification pass. No parity, browser, quality, P2P, release, deployment, MemoryEndpoints, or counter progress.
 
 current_ecosystem_deployment_followthrough_2026_08_26:

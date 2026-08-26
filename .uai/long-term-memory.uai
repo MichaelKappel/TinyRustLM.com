@@ -1,5 +1,5 @@
-profile: runtime-mirust.long-term-memory-ledger.v382
-updated_utc: 2026-08-26T21:03:07Z
+profile: runtime-mirust.long-term-memory-ledger.v383
+updated_utc: 2026-08-26T21:31:36Z
 
 ledger_2026_08_26_qwen3_source_terminal_verification_v1:
   durable_record:
@@ -12,7 +12,8 @@ ledger_2026_08_26_qwen3_source_terminal_verification_v1:
   immutable_truth: Operation qwen3-numerical-c1899de-4891e8a-20260826-v2-terminal-verification-v1 is terminal-ambiguous. One verifier invocation emitted source-terminal-process-binding; the initial terminal writer emitted process-terminal-write-failed; no rerun occurred and no verification pass exists.
   evidence: Public result is 6,268/e27bbbf2e321bf79b6c7f9009427de191b492a9ab74537ba7751866e811076fa. Private closure is three files/2,684 bytes, including terminal 2,615/889c0826eb1b36aabb80ac612a2dbc0c29220ae225a61d63858b2f61f901ad2f. Source owner evidence remains nine files/13,143 bytes.
   root_cause: Verifier compared registered three-field executable identity against normative two-field process-terminal identity; byteLength and sha256 match. Correct the expected projection under closed-shape tests, never by accepting two shapes or changing history.
-  next_durable_transition: Commit/push/fresh-verify this closure, implement and gate the test-first correction, push/fresh-verify it, then author a separate output-free successor registration with a wholly new absent root before one invocation.
+  source_checkpoint: Closure commit aed7c62a9c668267a8401da8f01c499c2f339568/tree 173d4c1c21e0abe40426f563809d726a3c8f7880 is pushed/four-way exact. Standard passed 1,609/0/3 of 1,612. Clean protected run 882bb60fe21601bde54907a37667efe07b88e6673943bdd00d38385c14b130ce passed 23/23; maintained and independent verification agree on aggregate 3,995/e3d6495c12307ba41b832e28c79c5e53f54f8376e5fca0b658403ce432c2effe.
+  next_durable_transition: Commit/push/fresh-verify this gate-memory checkpoint, implement and gate the test-first correction, push/fresh-verify it, then author a separate output-free successor registration with a wholly new absent root before one invocation.
   contextual_trigger: Read before source-terminal verification, numerical-v2 evidence inspection, verifier process-binding changes, new verification preregistration, or any source-terminal pass claim.
   hard_boundary: Never rerun or modify either consumed operation. MemoryEndpoints remains unauthorized; counters stay 0/20,0/50,0/25,0/40,0/20.
 

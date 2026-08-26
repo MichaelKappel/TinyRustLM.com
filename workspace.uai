@@ -1,14 +1,15 @@
-profile: tinyrustlm.source-workspace.v454
+profile: tinyrustlm.source-workspace.v455
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-26T21:03:07Z
+updated_utc: 2026-08-26T21:31:36Z
 
 current_qwen3_source_terminal_verification_v1_terminal_ambiguous_2026_08_26:
   durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-verification-v1-memory-2026-08-26.md, 9,317 bytes/SHA256 136f57824298775a3d272d1bbf68ccdc501094fd662cb8b043f90f9e59cb4719 before any numerical terminal verification, verifier correction, or successor registration; .uai/long-term-memory.uai is the durable pointer authority.
   terminal_truth: Operation qwen3-numerical-c1899de-4891e8a-20260826-v2-terminal-verification-v1 is immutable terminal-ambiguous, reason verifier-rejected-and-process-terminal-writer-failed. The maintained verifier ran exactly once, emitted typed source-terminal-process-binding, and was not rerun; the original terminal writer failed and a later create-only 2,615-byte closure records no pass.
   public_authority: contracts/vnext/qwen3-numerical-source-terminal-verification-result.v1.json is 6,268 bytes/SHA256 e27bbbf2e321bf79b6c7f9009427de191b492a9ab74537ba7751866e811076fa. The private verification closure is exactly three files/2,684 bytes; the predecessor owner evidence remains nine files/13,143 bytes and exact after invocation.
   root_cause: The registered Python identity has basename, byteLength, and sha256; the normative process-terminal identity has byteLength and sha256. Those two meaningful fields match, but the verifier incorrectly required whole-object equality. Full metadata-before/after proof is not established because the original snapshot was not retained.
-  exact_resume: Commit/push/fresh-four-way-verify this terminal checkpoint. Then add positive and hostile fixtures for the sole two-field process-terminal shape, correct the expected identity projection, gate/commit/push/fresh-verify, and create a wholly new output-free verification registration and absent root before one corrected invocation.
+  source_checkpoint: Closure commit aed7c62a9c668267a8401da8f01c499c2f339568/tree 173d4c1c21e0abe40426f563809d726a3c8f7880 is clean, pushed, and four-way exact. Dirty-source standard passed 1,609/0/3 of 1,612 and correctly refused release. Clean protected run 882bb60fe21601bde54907a37667efe07b88e6673943bdd00d38385c14b130ce passed 23/23; maintained verification and independent hashing reproduce aggregate 3,995/e3d6495c12307ba41b832e28c79c5e53f54f8376e5fca0b658403ce432c2effe.
+  exact_resume: Commit/push/fresh-four-way-verify this gate-memory checkpoint. Then add positive and hostile fixtures for the sole two-field process-terminal shape, correct the expected identity projection, gate/commit/push/fresh-verify, and create a wholly new output-free verification registration and absent root before one corrected invocation.
   hard_boundary: Never rerun, repair, overwrite, complete, adopt, relabel, or claim pass for this verification or its source operation. No source-terminal independent verification, numerical parity, optimized/browser parity, chat, quality, P2P, release, deployment, MemoryEndpoints, or campaign credit; counters remain 0/20,0/50,0/25,0/40,0/20.
 
 current_ecosystem_deployment_followthrough_2026_08_26:
