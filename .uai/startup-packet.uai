@@ -1,5 +1,14 @@
-profile: runtime-mirust.startup-packet.v125
-updated_utc: 2026-08-26T00:59:26Z
+profile: runtime-mirust.startup-packet.v126
+updated_utc: 2026-08-26T01:57:03Z
+current_qwen3_composition_verification_owner_clean_cut_2026_08_26:
+  first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `docs/architecture/2026-08-26-qwen3-composition-verification-owner-clean-cut.md`, and the immutable `/9` result before further model work.
+  active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  active_branch: codex/model-acquisition-v2
+  protected_root: E:\Source\Rust\TinyRustLM.com remains untouched; never write `D:`.
+  checkpoint: sole-owner=81019/`3a3894bf7a9a59b08b72e71a6d87e6f817c6e51fa1b67b2f6a60a9d70fe01c85`; profile=4388/`5f7a9a25350041069f1ba6cf417f4ed0f75c6d1d96ddbbdabae3b11718247cf8`; architecture=12827/`32c44f7b0b86d46dce3ec7e6beed63b0e6210f29b34860c64d34b45fae2f0e43`; predecessor-controller=absent; focused=22/22+44/44; standard=1446/0/2-of-1448; clean-release=pending-after-clean-commit
+  research_packet: `docs/research-prompts/2026-08-25-twelve-disconnected-first-production-slm2-completion-research-prompts.md`, 80,891 ASCII/LF bytes, 1,365 lines, 10,086 words, SHA256 `f8e4035a3de802013d76232933b73acb9e97a80fa286e1046fc43c1177eb9831`, contains twelve standalone advisory assignments for agents without source or private access.
+  immediate_operation: Finish hygiene, commit/push/fresh-remote-verify the sole owner, run one new external-root clean release-surface gate and independently verify it, preserve an evidence-only checkpoint, then preregister `/10` output-free with wholly new absent names. Create no `/10` private material first.
+  truth_boundary: Preserve `/9` without retry or adoption. Mechanism tests and research prose prove no complete composition, parity, browser chat, quality, P2P, publication, deployment, MemoryEndpoints, or campaign credit; counters remain zero.
 current_qwen3_execution_v9_terminal_ambiguous_2026_08_25:
   first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/qwen3-real-composition-execution-result.v9.json`, and `docs/architecture/2026-08-25-qwen3-real-composition-execution-v9-terminal-ambiguous.md` before further model work.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819

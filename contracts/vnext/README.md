@@ -187,13 +187,23 @@ Git. See
 and
 `docs/architecture/2026-08-25-qwen3-real-composition-execution-controller-and-v1-result.md`.
 
-The tested `qwen3-composition-execution-controller.js` now owns the private
-evidence envelope for a newly registered attempt. It validates every expensive
-input before creating the evidence root, writes the immutable binding first,
-then authorizes and captures exactly one bounded child process. A controller
-candidate pass still requires the independent managed durable inspector and
-does not establish runtime, browser, quality, P2P, publication, or campaign
-evidence.
+Registrations `/1` through `/9` preserve their exact historical controller
+bytes through immutable Git identities. That historical executable is absent
+from the maintained tree after terminal `/9` exposed split ownership of outer
+streams and the managed-inspector invocation.
+
+The sole maintained path is now
+`tinyrustlm/tools/qwen3-composition-verification-owner.js`, governed by
+`qwen3-composition-verification-owner-profile.v1.json`. One owner validates all
+inputs before root creation, writes the binding and start, opens both converter
+streams create-only before one converter launch, writes its process terminal,
+constructs a native-Windows canonical managed intent, opens both inspector
+streams before one read-only inspector launch, writes its process terminal,
+and creates final verification. Its separate `verify` command launches no
+child and independently rehashes every evidence edge and output identity.
+This mechanism alone establishes no conversion, runtime, browser, quality,
+P2P, publication, or campaign evidence. See
+`docs/architecture/2026-08-26-qwen3-composition-verification-owner-clean-cut.md`.
 
 `TinyRustLM.CompositionInspector` is the sole inspect-only managed command for
 that second decision. It consumes one canonical private conversion intent,

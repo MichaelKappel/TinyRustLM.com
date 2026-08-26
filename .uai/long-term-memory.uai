@@ -1,11 +1,23 @@
-profile: runtime-mirust.long-term-memory-ledger.v358
-updated_utc: 2026-08-26T00:30:36Z
+profile: runtime-mirust.long-term-memory-ledger.v359
+updated_utc: 2026-08-26T01:57:03Z
 storage_mode: hybrid
 ledger_rule:
   pointer_only_not_context_free: true
   summary_policy: Routing-only, one sentence, 35 words maximum, no durable body memory.
   allowed_statuses: current, retired, superseded, quarantined
 records:
+  - stable_id: tinyrustlm_qwen3_composition_verification_owner_clean_cut_2026_08_26_current
+    memory_domain: tinyrustlm.model_acquisition.qwen3_composition_verification_owner
+    pointer_type: architecture_report
+    path: docs/architecture/2026-08-26-qwen3-composition-verification-owner-clean-cut.md
+    target_location: docs/architecture/2026-08-26-qwen3-composition-verification-owner-clean-cut.md
+    label: Qwen3 Composition Verification Owner Clean Cut
+    summary: Routes the sole one-shot owner, exact evidence graph, deleted predecessor, tested terminal semantics, advisory research packet, pending clean release, and prerequisites for output-free execution /10.
+    pointer_status: current
+    authority: source-controlled mechanism and standard-test checkpoint pending clean release
+    source_authority: owner sha256 3a3894bf7a9a59b08b72e71a6d87e6f817c6e51fa1b67b2f6a60a9d70fe01c85; profile sha256 5f7a9a25350041069f1ba6cf417f4ed0f75c6d1d96ddbbdabae3b11718247cf8
+    source_identity: architecture sha256 32c44f7b0b86d46dce3ec7e6beed63b0e6210f29b34860c64d34b45fae2f0e43; research sha256 f8e4035a3de802013d76232933b73acb9e97a80fa286e1046fc43c1177eb9831
+    review_status: implemented_standard_green_clean_release_pending
   - stable_id: tinyrustlm_qwen3_real_composition_execution_v9_terminal_ambiguous_2026_08_25_current
     memory_domain: tinyrustlm.model_acquisition.qwen3_real_composition_execution_v9
     pointer_type: architecture_report

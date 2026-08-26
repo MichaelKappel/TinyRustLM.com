@@ -33,6 +33,10 @@ const mutableAttestationAlias = joinDash("final", "attestation.json");
 const mutableDashboardSnapshots = joinDash("dashboard", "snapshots");
 const mutableAttestationSnapshots = joinDash(
   "final", "attestation", "snapshots");
+const supersededCompositionOwner = joinDash(
+  "qwen3", "composition", "execution", "controller.js");
+const supersededCompositionOwnerTest = supersededCompositionOwner.replace(
+  /\.js$/u, ".test.js");
 
 const oldSchemaAndReceiptTokens = Object.freeze([
   joinDot("tinyrustlm", "dogfood_campaign_dashboard", "v9"),
@@ -110,12 +114,29 @@ test("superseded release files and mutable aliases are absent", () => {
     absolute("artifacts", "reports", "dogfood-campaign-evidence-2026-07-15",
       mutableDashboardSnapshots),
     absolute("artifacts", "reports", "dogfood-campaign-evidence-2026-07-15",
-      mutableAttestationSnapshots)
+      mutableAttestationSnapshots),
+    absolute("tinyrustlm", "tools", supersededCompositionOwner),
+    absolute("tinyrustlm", "tests", supersededCompositionOwnerTest)
   ];
   for (const removedPath of removedPaths) {
     assert.equal(fs.existsSync(removedPath), false,
       `superseded release path still exists: ${removedPath}`);
   }
+});
+
+test("the sole maintained Qwen3 composition owner includes final verification", () => {
+  const ownerPath = absolute("tinyrustlm", "tools",
+    "qwen3-composition-verification-owner.js");
+  const testPath = absolute("tinyrustlm", "tests",
+    "qwen3-composition-verification-owner.test.js");
+  assert.equal(fs.lstatSync(ownerPath).isFile(), true);
+  assert.equal(fs.lstatSync(testPath).isFile(), true);
+  const source = fs.readFileSync(ownerPath, "utf8");
+  assert.match(source,
+    /tinyrustlm\.qwen3-composition-execution-verification\.v6/u);
+  assert.match(source, /managed-inspection\.process-terminal\.json/u);
+  assert.match(source, /canonicalWindowsPath/u);
+  assert.doesNotMatch(source, /require\(.+qwen3-composition-execution-controller/u);
 });
 
 test("every detected source text file has one portable LF checkout policy", () => {
