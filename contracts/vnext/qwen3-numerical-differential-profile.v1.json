@@ -94,6 +94,23 @@
       "profileId": "tinyrustlm.qwen3-numerical-oracle-python-win-x64/1",
       "runtimeVerification": "exact-installed-non-cache-file-closure-before-and-after-each-python-owner"
     },
+    "soleExecutionOwner": {
+      "path": "tinyrustlm/tools/qwen3-numerical-execution-owner.js",
+      "byteLength": 50780,
+      "sha256": "394a80512ca93b9361b52997b13acf8d4a581890fb4e591bbf4957d749acef8a",
+      "profileId": "tinyrustlm.qwen3-numerical-execution-owner/1",
+      "stageOrder": [
+        "publisher-source",
+        "slm2-reconstructed",
+        "rust-scalar",
+        "read-only-verifier"
+      ],
+      "launchLimitPerStage": 1,
+      "laterStageAfterFailure": false,
+      "boundedRawStreams": true,
+      "processTreeTermination": "exact-registered-tool-plus-direct-kill",
+      "outputMode": "private-create-only-terminal-evidence"
+    },
     "publisherSourceOwner": {
       "path": "tinyrustlm/tools/qwen3-numerical-source-owner.py",
       "byteLength": 39852,
@@ -350,12 +367,13 @@
       "create-output-free-registration-with-exact-token-cases-thresholds-and-absent-private-roots",
       "commit-push-and-fresh-remote-verify-registration",
       "prove-all-registered-output-roots-absent",
-      "invoke-source-owner-once",
-      "invoke-reconstructed-owner-once",
-      "invoke-rust-scalar-owner-once",
-      "invoke-read-only-verifier-once",
+      "materialize-one-registered-private-sole-owner-request",
+      "invoke-sole-execution-owner-once",
+      "sole-owner-invokes-source-reconstructed-scalar-and-read-only-verifier-at-most-once-in-order",
       "preserve-terminal-result-without-retry-overwrite-repair-or-tolerance-change"
     ],
+    "soleOwnerStatus": "implemented-hostile-process-fixtures-pass-not-registered-not-run",
+    "processCardinalityAuthority": "sole-execution-owner",
     "sourceOutput": "create-only-preserve-partial-on-failure",
     "reconstructedOutput": "create-only-preserve-partial-on-failure",
     "scalarOutput": "create-only-preserve-partial-on-failure",

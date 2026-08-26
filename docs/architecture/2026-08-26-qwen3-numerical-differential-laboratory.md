@@ -17,8 +17,8 @@ legacy reader, compatibility contract, migration, alias, fallback runtime,
 hidden retry, response repair, best-of-N selection, or shipping dispatch path.
 
 The exact machine-readable authority is
-`contracts/vnext/qwen3-numerical-differential-profile.v1.json`, 15,276 bytes at
-SHA-256 `4f97304bf7875f226530bab4c8df8550db6b743aa949f53d89d43d47f2956d12`.
+`contracts/vnext/qwen3-numerical-differential-profile.v1.json`, 16,139 bytes at
+SHA-256 `2a12f5f46bba56101c24028b14bccb0700fe66d3113b696c12553a49b74dd3e8`.
 It binds the reviewed-report lineage, source lock, `/12` composition, model
 shape, implementations, environment closure, trace format, comparison arrows,
 metric families, claim boundary, and zero campaign counters.
@@ -133,6 +133,44 @@ pinned environment. That fixture exercises embedding, norms, Q/K RoPE capture,
 V and attention capture, MLP capture, residual capture, final norm, and logits.
 It is not a Qwen3-0.6B run.
 
+## Sole Execution Custody
+
+`tinyrustlm/tools/qwen3-numerical-execution-owner.js` is the only process
+allowed to consume a future numerical registration. Three independently
+create-only trace programs are not sufficient by themselves: without one
+owner, launch order, process cardinality, stream custody, timeout behavior,
+and overall terminal closure would be operator conventions rather than
+enforced invariants.
+
+The owner accepts one canonical private request and derives the source,
+reconstructed, scalar, and verification requests from the committed
+registration. It does not accept prompt text, expected answers, replacement
+thresholds, arbitrary child arguments, or output names. Every external root
+basename is deterministically derived from the operation ID. Before creating
+one byte it verifies the clean remote-exact registration source, the exact
+parent tree, the registration-only diff, every committed implementation, and
+the registered Git, Python, Node, scalar, and termination executable bytes.
+
+After proving every future root absent, the owner exclusively creates its
+evidence root and source scratch root. It launches the publisher source,
+reconstructed SLM2, Rust scalar, and read-only verifier in that order, at most
+once each. A failed stage prevents all later launches. Stdout and stderr are
+captured into bounded create-only files; stderr, overflow, timeout, stream
+failure, nonzero exit, signal, executable drift, or malformed verifier output
+cannot pass. Windows timeout and overflow handling use the exact registered
+`taskkill.exe` process-tree command plus direct kill, and both actions enter
+the process terminal record.
+
+Each observable child launch receives one immutable process-terminal record
+binding executable bytes before and after, arguments hash, raw-stream hashes,
+duration, exit, timeout, overflow, signal, and termination observation. One
+owner terminal then records exact launch counts and either `terminal-pass`,
+`terminal-rejected`, `terminal-failure`, or `terminal-ambiguous`. Partial
+roots and failed evidence are never deleted, repaired, overwritten, resumed,
+or adopted. The owner is implemented and hostile process fixtures pass, but
+no real request, evidence root, child process, or numerical trace has been
+registered or run.
+
 ## Independent Verification
 
 `tinyrustlm/tools/qwen3-numerical-trace-verifier.js` is read-only. Its source
@@ -166,7 +204,7 @@ aggregate error.
 
 ## Fixture Evidence And Limits
 
-The focused gate completed 10/10 tests with the exact pinned Python interpreter
+The focused gate completed 18/18 tests with the exact pinned Python interpreter
 and no skipped test in that invocation. It established:
 
 - report, profile, lock, source-lock, and implementation content bindings;
@@ -178,7 +216,13 @@ and no skipped test in that invocation. It established:
 - second-arrow localization only after the first arrow passes;
 - rejection of a syntactically valid cross-arm environment drift;
 - trace-byte drift and unknown request rejection; and
-- absence of a verifier evidence-write or permissive-selection path.
+- absence of a verifier evidence-write or permissive-selection path;
+- exact clean-slate owner-contract closure and token-case hashes;
+- deterministic derivation of all child requests from one registration;
+- rejection of retries, cleanup, unknown fields, and duplicate private names;
+- bounded create-only stream capture and no stream overwrite; and
+- terminal rejection of stderr, overflow, and timeout with one-launch
+  process evidence.
 
 These fixtures contain no real model execution, source-model output, `/12`
 trace, numerical-parity decision, browser execution, conversation, quality
@@ -189,7 +233,8 @@ judgment, P2P transfer, package publication, deployment, or campaign credit.
 No real owner may run yet. The next coherent change is one wholly new
 output-free numerical registration. It must bind the remote-exact source
 commit/tree containing this implementation; the profile and environment lock;
-all three executable identities; exact source and `/12` model identities;
+the sole owner, three material executors, read-only verifier, and exact Git,
+Python, Node, scalar, and termination executable identities; exact source and `/12` model identities;
 private case hashes and token IDs; per-arrow and per-stage thresholds; relative
 and sign floors; top-k; resource and receipt ceilings; existing evidence
 parent; all absent output roots; process cardinality; timeout; terminal-state
