@@ -1,12 +1,20 @@
-profile: runtime-mirust.startup-packet.v128
-updated_utc: 2026-08-26T06:03:38Z
+profile: runtime-mirust.startup-packet.v129
+updated_utc: 2026-08-26T07:03:10Z
+current_build_custody_request_materializer_clean_gate_2026_08_26:
+  first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `wiki/runtime-mirust/reports/tinyrustlm-build-custody-request-materializer-memory-2026-08-26.md`, and `docs/architecture/2026-08-26-build-custody-request-materializer-clean-cut.md` before any request materialization or successor registration.
+  active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  active_branch: codex/model-acquisition-v2
+  checkpoint: profile=6327/`450e1300eb80fe15bcb058713a16fd517a7f4206a4ef420995ac0ea4f4cae041`; tool=14781/`cfdcf78000a9a60158c1fe4a227a8ebea4a1a2e99d71484a57b045bc9dff10b1`; implementation=`6471a526d1957bcdcf297ee5fbe02888f51b8062`; tree=`233bede47f1feb4e40c6c2514695d26007e74e8d`; remote-exact=true; focused=8/8+22/22; clean-standard=1493/0/2-of-1495; clean-release=`df84111d709bbcc4159a651e1995e06f9f37cc3af41ac866b5b3d8127004b6d0`,23/23,3995/`a1fdfdde067c3292327277b4976e8f04098e869edfe25c2c469388fdf09399c1`.
+  durable_memory: `wiki/runtime-mirust/reports/tinyrustlm-build-custody-request-materializer-memory-2026-08-26.md`, 6,649 bytes/SHA256 `dfe58d56aa773afc6b6d89aeaca96e84f7d916af4509cf9fd555b91d4350cda0`.
+  exact_resume: Validate and commit this memory checkpoint, push, freshly fetch, and prove four-way remote equality. Then separately preregister a wholly new output-free successor against the exact resulting source and all current authorities before creating any private material. Preserve every terminal result.
+  nonclaims: No successor execution, build, composition, model, parity, browser, quality, P2P, publication, deployment, MemoryEndpoints, or counter evidence. MemoryEndpoints remains unauthorized; counters remain zero.
 current_qwen3_execution_v11_terminal_managed_preflight_rejection_2026_08_26:
   first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `contracts/vnext/qwen3-real-composition-execution-result.v11.json`, and `wiki/runtime-mirust/reports/tinyrustlm-qwen3-execution-11-managed-preflight-failure-memory-2026-08-26.md` before further model execution.
   active_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
   active_branch: codex/model-acquisition-v2
   terminal: `/11` is immutable `terminal-managed-preflight-rejection`, reason `build-custody-source-fields`; public result is 12,183 bytes/SHA256 `a154c68880205fe957ab12585e119d9492fadd2c1574746786208b055e67eccb`.
   evidence: Registration `644878a51c84e8fa9673a24d2440f7701e3aa076`/tree `c2118b4742d6e43501c429bd432fb77f32ac6830` was four-way exact; environment and Rust custody passed once; sole managed preflight rejected malformed exact source fields before roots/processes; no later operation exists.
-  exact_resume: Implement and test one source-controlled exact request materializer, preserve the malformed shape as a negative, delete the ad hoc route, green-gate, commit/push/fresh-verify, then separately preregister wholly new names. Never alter or reuse `/10` or `/11` material.
+  exact_resume: The sole exact materializer is complete at `6471a526d1957bcdcf297ee5fbe02888f51b8062`; preserve the malformed shape as a negative. Commit/push/fresh-verify the current memory checkpoint, then separately preregister wholly new names. Never alter or reuse `/10` or `/11` material.
   nonclaims: No composition, model, parity, browser, quality, P2P, publication, deployment, MemoryEndpoints, or counter evidence. MemoryEndpoints remains unauthorized; counters remain zero.
 current_qwen3_composition_verification_owner_clean_cut_2026_08_26:
   first_read: Read newest `workspace.uai`, `.uai/totem.uai`, `.uai/taboo.uai`, `docs/architecture/2026-08-26-qwen3-composition-verification-owner-clean-cut.md`, and the immutable `/9` result before further model work.

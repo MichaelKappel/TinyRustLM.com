@@ -1,25 +1,48 @@
-profile: runtime-mirust.long-term-memory-ledger.v362
-updated_utc: 2026-08-26T06:03:38Z
+profile: runtime-mirust.long-term-memory-ledger.v363
+updated_utc: 2026-08-26T07:03:10Z
 storage_mode: hybrid
 ledger_rule:
   pointer_only_not_context_free: true
   summary_policy: Routing-only, one sentence, 35 words maximum, no durable body memory.
   allowed_statuses: current, retired, superseded, quarantined
 records:
+  - stable_id: tinyrustlm_build_custody_request_materializer_current
+    memory_domain: tinyrustlm.model_acquisition.build_custody_request_materializer
+    pointer_type: implementation_checkpoint_memory
+    path: wiki/runtime-mirust/reports/tinyrustlm-build-custody-request-materializer-memory-2026-08-26.md
+    target_location: wiki/runtime-mirust/reports/tinyrustlm-build-custody-request-materializer-memory-2026-08-26.md
+    label: Build-Custody Request Materializer Clean Gate
+    summary: Routes the sole exact request materializer, preserved /11 negative, committed identities, clean gates, report-derived design links, strict nonclaims, and successor-registration prerequisite.
+    pointer_status: current
+    authority: committed implementation and locally observed clean verification evidence
+    source_authority: implementation commit 6471a526d1957bcdcf297ee5fbe02888f51b8062; tree 233bede47f1feb4e40c6c2514695d26007e74e8d
+    source_identity: profile sha256 450e1300eb80fe15bcb058713a16fd517a7f4206a4ef420995ac0ea4f4cae041; tool sha256 cfdcf78000a9a60158c1fe4a227a8ebea4a1a2e99d71484a57b045bc9dff10b1
+    reviewed_synthesis: docs/architecture/2026-08-26-build-custody-request-materializer-clean-cut.md
+    reviewed_tdd_delta: docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-tdd-delta-2026-08-26.md
+    review_status: current_clean_gated_materializer
+    quarantine_status: execution_11_and_all_private_evidence_remain_immutable_outside_git
+    review_evidence: clean release run df84111d709bbcc4159a651e1995e06f9f37cc3af41ac866b5b3d8127004b6d0
+    contextual_trigger: Read before materializing a custody request, authoring a successor registration, or performing any further Qwen3 composition execution.
+    checksum_hash: sha256:dfe58d56aa773afc6b6d89aeaca96e84f7d916af4509cf9fd555b91d4350cda0
+    sha256: dfe58d56aa773afc6b6d89aeaca96e84f7d916af4509cf9fd555b91d4350cda0
+    bytes: 6649
+    last_reviewed_utc: 2026-08-26T07:03:10Z
+    owner_or_reviewer: TinyRustLM Agent
+    truth_boundary: Proves one source-controlled request materialization mechanism and clean tests only; no successor execution, model, browser, quality, P2P, release, deployment, MemoryEndpoints, or campaign evidence.
   - stable_id: tinyrustlm_qwen3_execution_11_managed_preflight_failure_current
     memory_domain: tinyrustlm.model_acquisition.qwen3_execution_11
     pointer_type: terminal_execution_memory
     path: wiki/runtime-mirust/reports/tinyrustlm-qwen3-execution-11-managed-preflight-failure-memory-2026-08-26.md
     target_location: wiki/runtime-mirust/reports/tinyrustlm-qwen3-execution-11-managed-preflight-failure-memory-2026-08-26.md
     label: Qwen3 Execution /11 Managed Preflight Failure
-    summary: Routes immutable execution /11, its strict managed-request rejection, preserved evidence, exact root cause, report links, nonclaims, and the source-controlled materializer prerequisite for a wholly new registration.
+    summary: Routes immutable execution /11, its strict managed-request rejection, preserved evidence, exact root cause, nonclaims, and the completed materializer's separate durable checkpoint.
     pointer_status: current
     authority: canonical terminal result and locally observed one-shot execution evidence
     source_authority: result sha256 a154c68880205fe957ab12585e119d9492fadd2c1574746786208b055e67eccb; registration commit 644878a51c84e8fa9673a24d2440f7701e3aa076
     source_identity: execution qwen3-composition-c1899de-1e9b7b0-20260826-v11; registration tree c2118b4742d6e43501c429bd432fb77f32ac6830
     reviewed_synthesis: docs/architecture/2026-08-26-qwen3-real-composition-execution-v11-managed-preflight-rejection.md
     reviewed_tdd_delta: docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-tdd-delta-2026-08-26.md
-    review_status: terminal_preserved_request_materializer_correction_required
+    review_status: terminal_preserved_request_materializer_correction_completed_separately
     quarantine_status: all_private_execution_material_immutable_outside_git
     review_evidence: contracts/vnext/qwen3-real-composition-execution-result.v11.json
     contextual_trigger: Read before changing request materialization, authoring a successor registration, or performing any further Qwen3 composition execution.
