@@ -1,5 +1,5 @@
-profile: runtime-mirust.long-term-memory-ledger.v359
-updated_utc: 2026-08-26T01:57:03Z
+profile: runtime-mirust.long-term-memory-ledger.v360
+updated_utc: 2026-08-26T02:18:04Z
 storage_mode: hybrid
 ledger_rule:
   pointer_only_not_context_free: true
@@ -14,10 +14,10 @@ records:
     label: Qwen3 Composition Verification Owner Clean Cut
     summary: Routes the sole one-shot owner, exact evidence graph, deleted predecessor, tested terminal semantics, advisory research packet, pending clean release, and prerequisites for output-free execution /10.
     pointer_status: current
-    authority: source-controlled mechanism and standard-test checkpoint pending clean release
+    authority: clean-gated source-controlled mechanism and advisory research checkpoint
     source_authority: owner sha256 3a3894bf7a9a59b08b72e71a6d87e6f817c6e51fa1b67b2f6a60a9d70fe01c85; profile sha256 5f7a9a25350041069f1ba6cf417f4ed0f75c6d1d96ddbbdabae3b11718247cf8
     source_identity: architecture sha256 32c44f7b0b86d46dce3ec7e6beed63b0e6210f29b34860c64d34b45fae2f0e43; research sha256 f8e4035a3de802013d76232933b73acb9e97a80fa286e1046fc43c1177eb9831
-    review_status: implemented_standard_green_clean_release_pending
+    review_status: implemented_clean_release_green_evidence_checkpoint_pending_push
   - stable_id: tinyrustlm_qwen3_real_composition_execution_v9_terminal_ambiguous_2026_08_25_current
     memory_domain: tinyrustlm.model_acquisition.qwen3_real_composition_execution_v9
     pointer_type: architecture_report
