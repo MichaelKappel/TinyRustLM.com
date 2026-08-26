@@ -1,0 +1,245 @@
+{
+  "schema": "tinyrustlm.qwen3-numerical-differential-execution-result.v1",
+  "profileId": "tinyrustlm.qwen3-numerical-differential-execution/1",
+  "operationId": "qwen3-numerical-c1899de-aece952-20260826-v1",
+  "status": "terminal-source-process-failure",
+  "recordedAtUtc": "2026-08-26T13:28:30.968Z",
+  "registration": {
+    "profilePath": "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v1.json",
+    "profileByteLength": 24467,
+    "profileSha256": "469e003e6f50cb3e4bb0574e2bd72c5836edb938eea0345ca1a23b4bfc9906a1",
+    "parentCommit": "aece952422313fce4f55e04bf5f6a4d628d9c8a1",
+    "parentTree": "ecf22c16582e42336120809b95f4101a228bdddb",
+    "commit": "1fbc78e2257089896aef79266d66c23ce8e7b4ee",
+    "tree": "543abd5418d29d86a86a51d1dc2dcf2a0d033e0f",
+    "branch": "codex/model-acquisition-v2",
+    "changedOnlyFourRegisteredPaths": true,
+    "registrationFourWayRemoteExact": true,
+    "sourceChangedDuringExecution": false
+  },
+  "researchAuthority": {
+    "manifestPath": "docs/report-intake/2026-08-26/post-v10-native-browser-release/MANIFEST.md",
+    "synthesisPath": "docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-synthesis-2026-08-26.md",
+    "tddDeltaPath": "docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-tdd-delta-2026-08-26.md",
+    "durableMemoryPath": "wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md",
+    "durableMemoryByteLength": 17399,
+    "durableMemorySha256": "5cf598b71d6983996bcba3cb6112e0b4072930a8852637896be9a9b10952cf05",
+    "advisoryOnly": true,
+    "privateExecutionEvidence": false
+  },
+  "preExecutionGate": {
+    "standard": {
+      "testCount": 1543,
+      "passCount": 1541,
+      "failCount": 0,
+      "skipCount": 2,
+      "skipClass": "explicit-infrastructure-only"
+    },
+    "releaseSurface": {
+      "runId": "acf2755ba5363a1f2cb2085266d4d6fa32fae05625c70d97525f508fb732bcca",
+      "testCount": 23,
+      "passCount": 23,
+      "aggregateByteLength": 3995,
+      "aggregateSha256": "b11124b26e2a046b86e9f5a8f665da2af89011d9c4141fdad6af6f1cff3e5dbc",
+      "maintainedVerifierPassed": true,
+      "independentFileHashMatched": true
+    }
+  },
+  "operatorPreparationObservation": {
+    "preWriteArgumentQuotingFailureObserved": true,
+    "code": "powershell-native-argument-quoting",
+    "requestPathOpened": false,
+    "requestFileCreated": false,
+    "ownerInvoked": false,
+    "registeredInvocationConsumed": false,
+    "operationOutcomeAuthority": false,
+    "hidden": false
+  },
+  "ownerRequest": {
+    "schema": "tinyrustlm.qwen3_numerical_execution_request.v1",
+    "byteLength": 1458,
+    "sha256": "a7a55e245fbec19f01aebabc91239109290123c45132dfbd88723989e5672eeb",
+    "createOnly": true,
+    "readbackExact": true,
+    "privatePathPublished": false,
+    "independentAudit": {
+      "registrationArtifactCount": 11,
+      "executableCount": 5,
+      "sourceFileCount": 9,
+      "sourceAggregateByteLength": 1519207688,
+      "sourceAggregateSha256": "d74acac24de01424d9676a022293503d031df91c5bb80bad5ab354056143a947",
+      "futureRootCount": 5,
+      "allFutureRootsAbsent": true,
+      "directRemoteExact": true,
+      "closedModelByteLength": 598308416,
+      "closedModelSha256": "a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7"
+    }
+  },
+  "ownerExecution": {
+    "invocationCount": 1,
+    "sourceLaunchCount": 1,
+    "reconstructedLaunchCount": 0,
+    "scalarLaunchCount": 0,
+    "verifierLaunchCount": 0,
+    "automaticRetry": false,
+    "manualRetryUnderRegistration": false,
+    "bestOfN": false,
+    "responseRepair": false,
+    "evidenceOverwriteAllowed": false,
+    "partialOutputCleanupAllowed": false,
+    "failedOutputAdoptionAllowed": false,
+    "thresholdChangeAllowed": false
+  },
+  "sourceProcess": {
+    "processStarted": true,
+    "launchOrdinal": 1,
+    "launchCountLimit": 1,
+    "startedAtUtc": "2026-08-26T13:25:00.959Z",
+    "finishedAtUtc": "2026-08-26T13:25:54.997Z",
+    "durationMilliseconds": 54038,
+    "exitCode": 1,
+    "signal": null,
+    "timedOut": false,
+    "killedForOverflow": false,
+    "spawnCode": null,
+    "streamCode": null,
+    "terminationRequested": false,
+    "executableUnchanged": true,
+    "stdout": {
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "overflow": false,
+      "published": false
+    },
+    "stderr": {
+      "byteLength": 50,
+      "sha256": "d5a573885f9ffa22be8f9ef11429a4e1feadeeec3618adfff69542e4a51d2b2b",
+      "overflow": false,
+      "safeCode": "source-trace-model-load",
+      "rawPublished": false
+    },
+    "rootCauseEstablished": false
+  },
+  "privateEvidence": {
+    "ownerTerminal": {
+      "byteLength": 2794,
+      "sha256": "4e15242ba7c7fe98ca5dc278769029fdf41722c8e90398e2b894d6bef6e193ad",
+      "status": "terminal-failure",
+      "reasonCode": "source-process-not-pass"
+    },
+    "evidenceFileCount": 9,
+    "aggregateByteLength": 13071,
+    "inventory": [
+      {
+        "fileName": "binding.json",
+        "byteLength": 2324,
+        "sha256": "16dc53a7fb2ab7062fdfd3110ed01e41b3d122747999e87330551efda58db57d"
+      },
+      {
+        "fileName": "owner-terminal.json",
+        "byteLength": 2794,
+        "sha256": "4e15242ba7c7fe98ca5dc278769029fdf41722c8e90398e2b894d6bef6e193ad"
+      },
+      {
+        "fileName": "reconstructed.request.json",
+        "byteLength": 2491,
+        "sha256": "100083a4c1aa4100f9f262a6c2241ace9068e90bc647d1aa49574cb2732a7201"
+      },
+      {
+        "fileName": "scalar.request.json",
+        "byteLength": 1286,
+        "sha256": "a8a2b760385efc0f0da2f4cfabb7e4dd8ca999dbb556680848665bdadf996568"
+      },
+      {
+        "fileName": "source.process-terminal.json",
+        "byteLength": 1405,
+        "sha256": "8c91aedce87af3ddf80f39a71210e084fbab960c28ccd6909ae53105e1606012"
+      },
+      {
+        "fileName": "source.request.json",
+        "byteLength": 2367,
+        "sha256": "e6805242bbe1066c753466aaaf8f65637548cdd9e220632b820e00049a4e297c"
+      },
+      {
+        "fileName": "source.stderr.bin",
+        "byteLength": 50,
+        "sha256": "d5a573885f9ffa22be8f9ef11429a4e1feadeeec3618adfff69542e4a51d2b2b"
+      },
+      {
+        "fileName": "source.stdout.bin",
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "fileName": "start.json",
+        "byteLength": 354,
+        "sha256": "127f1d18792152b68d27305112c5e88179510c75f1a0c180e976804fa1b5bc63"
+      }
+    ],
+    "sourceScratchRootExistsAndIsEmpty": true,
+    "sourceOutputRootCreated": false,
+    "reconstructedOutputRootCreated": false,
+    "scalarOutputRootCreated": false,
+    "privatePathPublished": false,
+    "rawStreamPublished": false
+  },
+  "independentVerification": {
+    "invocationCount": 1,
+    "status": "terminal-failure-independently-verified",
+    "ownerTerminalCanonical": true,
+    "completeInventoryRehashed": true,
+    "requestRehashed": true,
+    "registrationRehashed": true,
+    "sourceProcessTerminalRecomputed": true,
+    "streamIdentitiesRecomputed": true,
+    "launchCountsRecomputed": true,
+    "outputRootStateRecomputed": true,
+    "wroteEvidence": false,
+    "launchedMaterialProcess": false
+  },
+  "decision": {
+    "status": "terminal-failure",
+    "reasonCode": "source-process-not-pass",
+    "operationClosed": true,
+    "numericalParityVerified": false,
+    "candidateBytesMayAdvanceToOptimizedNative": false,
+    "candidateBytesMayAdvanceToBrowserWasm": false,
+    "candidateBytesMayBeReleased": false,
+    "retryUnderRegistrationAllowed": false,
+    "existingPrivateEvidenceMayBeDeleted": false,
+    "existingPrivateEvidenceMayBeOverwritten": false,
+    "existingOutputMayBeRepaired": false,
+    "existingOutputMayBeAdoptedByAnotherOperation": false,
+    "nextRequiredGate": "preserve-failure-and-diagnose-source-model-load-before-new-registration"
+  },
+  "claimBoundary": {
+    "structuralCompositionPreviouslyVerified": true,
+    "numericalRegistrationRemoteExact": true,
+    "preExecutionGatesPassed": true,
+    "privateOwnerRequestCreated": true,
+    "privateOwnerRequestIndependentlyAudited": true,
+    "ownerInvoked": true,
+    "sourceFrameworkArmInvoked": true,
+    "terminalFailureIndependentlyVerified": true,
+    "sourceFrameworkTraceCompleted": false,
+    "sourceToReconstructedParityVerified": false,
+    "reconstructedToScalarParityVerified": false,
+    "optimizedNativeParityVerified": false,
+    "browserWasmParityVerified": false,
+    "browserChatVerified": false,
+    "modelQualityVerified": false,
+    "p2pAvailabilityVerified": false,
+    "catalogAnnouncementVerified": false,
+    "packagePublicationVerified": false,
+    "siteDeploymentVerified": false,
+    "memoryEndpointsVerified": false,
+    "campaignCreditAuthorized": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}

@@ -802,6 +802,19 @@ cannot be retried, repaired, overwritten, deleted, adopted, or made to pass by
 changing thresholds. See
 `docs/architecture/2026-08-26-qwen3-numerical-differential-execution-preregistration.md`.
 
+`qwen3-numerical-differential-execution-result.v1.json` closes that registered
+operation as an independently verified terminal source-process failure. The
+sole owner launched the publisher source arm once; it exited 1 after 54,038 ms
+with bounded safe code `source-trace-model-load`. Reconstructed, scalar, and
+verifier launch counts are zero, no trace output root exists, and the private
+evidence inventory is closed at nine files and 13,071 bytes. The 9,163-byte
+public result has SHA-256
+`a751ef6f6b436f84a18a02483b718cf90efdb872d5546cb0ee70ae0ec8fbaa2d`.
+It grants no numerical, browser, quality, release, P2P, MemoryEndpoints, or
+campaign claim. The operation cannot be retried, repaired, cleaned, adopted,
+or invoked again. See
+`docs/architecture/2026-08-26-qwen3-numerical-differential-execution-terminal.md`.
+
 ## Tokenizer2 Format Checkpoint
 
 `tokenizer2-format-profile.v1.json` is the sole development-only Tokenizer2

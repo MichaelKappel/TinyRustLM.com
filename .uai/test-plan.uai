@@ -1,13 +1,12 @@
-profile: runtime-mirust.test-plan.v295
-updated_utc: 2026-08-26T12:26:14Z
+profile: runtime-mirust.test-plan.v296
+updated_utc: 2026-08-26T13:28:30Z
 
-qwen3_numerical_differential_test_plan_2026_08_26:
-  current_green: Exact pinned-interpreter focused gate passed 18/18 with no skips. Syntax and environment checks pass. Sole-owner implementation 77a1c45/tree b077d25 is remote-exact; standard is 1,533/0/2 of 1,535; clean release 2924e05 is 23/23 with independently reproduced aggregate 3995/da8d2b7c.
-  covered: Content identities; strict environment; synthetic Qwen3 and NumPy kernels; complete 255-stage traces; both first-divergence arrows; drift rejection; no verifier writes; exact owner contract; child-request derivation; create-only bounded streams; stderr/overflow/timeout rejection; one-launch terminals.
-  fixture_boundary: No fixture executes Qwen3-0.6B source or /12. Fixtures cannot prove real numerical parity, useful inference, browser behavior, P2P, release, or counter credit.
-  immediate_gate: Commit/push/fresh-verify this memory checkpoint, then preregister exact real cases/token IDs, that resulting parent, source and /12 identities, exact executables, per-arrow/stage thresholds, floors, top-k, limits, cardinality, terminal rules, and wholly new absent roots.
-  failure_rule: Preserve every future partial or failed output. No retry, resume, cleanup, repair, overwrite, tolerance loosening, or adoption.
-  deep_evidence: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 17,399 bytes/SHA256 5cf598b71d6983996bcba3cb6112e0b4072930a8852637896be9a9b10952cf05.
+qwen3_numerical_execution_terminal_test_plan_2026_08_26:
+  current_green: Registration commit 1fbc78e/tree 543abd5 passed standard 1,541/0/2 and protected 23/23 with verified aggregate 3995/b11124b2 before execution. Request audit passed over 11 artifacts, five executables, nine source files, the /12 model, remote state, and absent future roots.
+  observed_failure: Sole owner count 1; source count 1; later counts 0. Source exited 1 with safe code source-trace-model-load after 54,038 ms. Independent read-only audit rehashed nine files/13,071 bytes and verified no output root.
+  immediate_gate: Add a bounded model-load diagnostic test that exposes safe exception class/stage only. Reproduce outside the closed operation, start with a generic failing regression and counterexamples, correct one root cause, run focused/full gates, commit/push/fresh-verify, then preregister wholly new names.
+  failure_rule: Closed operation is immutable. No second invocation, retry, resume, cleanup, repair, overwrite, tolerance loosening, or adoption.
+  deep_evidence: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md, 7,589 bytes/SHA256 2058578314ae6fe5b7eea3d39977d0d86e4cbc60df74909a702d980ccc8e8224.
 
 scalar_numerical_probe_test_plan_2026_08_26:
   current_green: Focused Rust and Node tests passed 5/5 each; clippy and fmt pass. Standard discovered 1,517 and completed 1,515 pass/0 fail/2 skip. Commit 8b140ec is remote-exact. Clean run 8c483720 passed 23/23; verifier and independent hash agree on aggregate 3995,a0bb5bb78ad7d7b9c947eabc8eb47a8a42ebca43c391d05dfe558f83b3416e64.

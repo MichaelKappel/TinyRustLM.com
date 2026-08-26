@@ -1,5 +1,5 @@
-profile: runtime-mirust.totem.v194
-updated_utc: 2026-08-26T12:26:14Z
+profile: runtime-mirust.totem.v195
+updated_utc: 2026-08-26T13:28:30Z
 
 qwen3_numerical_differential_totem_2026_08_26:
   preserve_exact_environment: Bind 29 wheels, bootstrap closure, Python/base launcher, 26 distributions, and 17,535 non-cache runtime files. Revalidate before/after each Python owner and keep network/process operations denied.
@@ -7,7 +7,8 @@ qwen3_numerical_differential_totem_2026_08_26:
   preserve_create_only_evidence: Validate exact source/model/profile/environment, cases, limits, and output absence before creation; preserve partial failures; write terminal manifests last; verifier remains read-only.
   preserve_preregistration: Freeze cases, token IDs, thresholds, floors, top-k, limits, receipt bound, cardinality, terminal rules, and all-new absent roots in a pushed remote-exact output-free registration before real materialization.
   preserve_sole_custody: Route every material arm and verifier launch through one exact registered owner. Bind Git/Python/Node/scalar/termination bytes, use one launch per stage, stop after failure, capture bounded streams, and preserve one terminal closure.
-  preserve_claim_truth: Focused 18/18, standard 1,533/0/2, clean release 23/23, and the environment/owner are implementation evidence only. Durable authority is wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 17,399 bytes/SHA256 5cf598b71d6983996bcba3cb6112e0b4072930a8852637896be9a9b10952cf05.
+  preserve_terminal_failure: Operation qwen3-numerical-c1899de-aece952-20260826-v1 is closed forever after one source launch exited 1 with source-trace-model-load. Preserve request, empty scratch, nine-file evidence, absent output roots, thresholds, and zero later launches. Never retry, mutate, clean, or adopt.
+  preserve_claim_truth: This is a real terminal failure, not parity. Durable authority is wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md, 7,589 bytes/SHA256 2058578314ae6fe5b7eea3d39977d0d86e4cbc60df74909a702d980ccc8e8224; public result is 9,163/a751ef6f.
   preserve_clean_slate: Keep diagnostic arms non-shipping and remove superseded prelaunch code instead of adding compatibility, legacy, migration, fallback, retry, repair, or debt.
 
 scalar_numerical_proof_totem_2026_08_26:

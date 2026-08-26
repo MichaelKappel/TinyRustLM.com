@@ -1,12 +1,12 @@
-profile: runtime-mirust.short-term-memory.v494
-updated_utc: 2026-08-26T12:26:14Z
+profile: runtime-mirust.short-term-memory.v495
+updated_utc: 2026-08-26T13:28:30Z
 
-current_focus_2026_08_26_qwen3_numerical_differential:
-  just_completed: Implemented exact offline environment, three numerical arms, no-write verifier, and one sole four-stage execution owner with exact executable custody and bounded terminals. Commit 77a1c45/tree b077d25 is pushed/four-way exact; focused is 18/18, standard is 1,533/0/2 of 1,535, and clean release 2924e05 is 23/23 with independently verified aggregate 3995/da8d2b7c.
-  deep_resume: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md is 17,399 bytes/SHA256 5cf598b71d6983996bcba3cb6112e0b4072930a8852637896be9a9b10952cf05.
-  immediate_work: Commit/push/fresh-verify this memory checkpoint, then separately preregister exact /12 numerical cases and thresholds over that resulting parent before any private trace.
-  report_use: Continue through reviewed manifest/synthesis/TDD nodes linked from durable memory; raw reports are advisory.
-  claim_boundary: No real registration, real trace, numerical verdict, optimized/browser parity, quality, P2P, release, deployment, MemoryEndpoints, or counter progress.
+current_focus_2026_08_26_qwen3_numerical_execution_terminal:
+  just_completed: Registration 469e003e at commit 1fbc78e/tree 543abd5 passed standard 1,541/0/2 and protected 23/23 with aggregate 3995/b11124b2, was pushed/four-way exact, and produced one audited request. The sole owner launched source once; source exited 1 after 54,038 ms with safe code source-trace-model-load. Later launch counts and output-root count are zero. Nine private files/13,071 bytes were independently rehashed.
+  deep_resume: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md is 7,589 bytes/SHA256 2058578314ae6fe5b7eea3d39977d0d86e4cbc60df74909a702d980ccc8e8224.
+  immediate_work: Commit/push the bounded result and memory. Then create a bounded generic model-load diagnostic, reproduce outside the closed operation, add a failing regression and counterexamples, make one narrow clean-slate fix, gate/push/fresh-verify, and preregister wholly new identities.
+  report_use: The terminal memory deep-links the reviewed manifest/synthesis/TDD and predecessor numerical memory; raw reports remain advisory.
+  claim_boundary: Closed failure only. No retry, source trace, numerical parity, optimized/browser parity, quality, P2P, release, deployment, MemoryEndpoints, or counter progress.
 
 current_focus_2026_08_26_scalar_numerical_probe:
   just_completed: Probe commit 8b140ec/tree a40150e is pushed and four-way remote-exact. Focused checks pass; standard is 1,515/0/2; clean release run 8c483720 passed 23/23 with independently verified 3,995-byte aggregate a0bb5bb7. This is implementation/release-surface evidence, not numerical evidence.

@@ -1,12 +1,12 @@
-profile: runtime-mirust.receiver-brief.v48
-updated_utc: 2026-08-26T12:26:14Z
+profile: runtime-mirust.receiver-brief.v49
+updated_utc: 2026-08-26T13:28:30Z
 
-current_qwen3_numerical_differential_brief_2026_08_26:
-  first_read: Read workspace.uai and wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md before changing numerical work.
-  exact_identity: memory=17399,5cf598b71d6983996bcba3cb6112e0b4072930a8852637896be9a9b10952cf05; profile=16139,2a12f5f46bba56101c24028b14bccb0700fe66d3113b696c12553a49b74dd3e8; environment=29103,bdccfc277c66640ab958f382713cd75fbf497e6232b57b5025cd78868ec5a0e5; architecture=13424,dd72f8974aee4374d39da436f3bb135e0a76d20dd7660674968d587da77ac823.
-  current_truth: Source/reconstructed/scalar/verifier plus sole execution custody are green at 77a1c45/tree b077d25: focused 18/18, standard 1,533/0/2 of 1,535, clean release 2924e05 23/23 with verified aggregate 3995/da8d2b7c. /12 numerical registration/output/verdict do not exist.
-  exact_resume: Commit/push/fresh-verify this memory checkpoint, then create a separate output-free preregistration over that exact parent with thresholds, exact executables, and all-new absent roots. Do not run /12 ad hoc.
-  hard_boundary: No numerical/browser/quality/P2P/package/deployment/MemoryEndpoints/campaign claim.
+current_qwen3_numerical_execution_terminal_brief_2026_08_26:
+  first_read: Read workspace.uai and wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md before changing numerical work.
+  exact_identity: memory=7589,2058578314ae6fe5b7eea3d39977d0d86e4cbc60df74909a702d980ccc8e8224; result=9163,a751ef6f6b436f84a18a02483b718cf90efdb872d5546cb0ee70ae0ec8fbaa2d; registration=24467,469e003e6f50cb3e4bb0574e2bd72c5836edb938eea0345ca1a23b4bfc9906a1.
+  current_truth: Registration 1fbc78e/tree 543abd5 is four-way exact. One owner/source launch ended terminal-failure with source-trace-model-load; zero later launches/output roots. Nine private files/13,071 bytes and the 2,794-byte terminal were independently rehashed.
+  exact_resume: Preserve all closed bytes. Diagnose model load under a new bounded diagnostic identity, add the failing regression first, fix narrowly, gate/push/fresh-verify, then create a new output-free registration with wholly new names.
+  hard_boundary: Never invoke the closed owner again. No numerical/browser/quality/P2P/package/deployment/MemoryEndpoints/campaign claim.
 
 current_scalar_numerical_probe_brief_2026_08_26:
   first_read: Read workspace.uai, contracts/vnext/scalar-numerical-probe-profile.v1.json, docs/architecture/2026-08-26-scalar-numerical-probe.md, and wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md before continuing.

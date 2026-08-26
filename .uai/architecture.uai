@@ -1,5 +1,5 @@
-profile: runtime-mirust.architecture.v172
-updated_utc: 2026-08-26T12:26:14Z
+profile: runtime-mirust.architecture.v173
+updated_utc: 2026-08-26T13:28:30Z
 
 qwen3_numerical_differential_architecture_2026_08_26:
   proof_graph: Pinned publisher source weights execute in CPU FP32; an independent NumPy arm parses/reconstructs exact SLM2 mixed-Q8 rows; the canonical Rust scalar consumes packed SLM2 bytes. Compare source-to-reconstructed and reconstructed-to-scalar independently, then compare accepted scalar separately to each optimized native and browser-WASM target.
@@ -7,9 +7,10 @@ qwen3_numerical_differential_architecture_2026_08_26:
   trace_and_verifier: All arms emit the same 255 ordered f32le stages per token. The no-write verifier recomputes identities and metrics and reports first registered divergence by arrow/case/step/stage/layer/head/element/chunk.
   sole_custody: One source-controlled owner validates remote-exact source and exact Git/Python/Node/scalar/termination bytes, derives every child request, launches source/reconstructed/scalar/verifier at most once in order, captures bounded streams, and closes one immutable terminal result.
   exact_authority: contracts/vnext/qwen3-numerical-differential-profile.v1.json 16139/2a12f5f46bba56101c24028b14bccb0700fe66d3113b696c12553a49b74dd3e8; docs/architecture/2026-08-26-qwen3-numerical-differential-laboratory.md 13424/dd72f8974aee4374d39da436f3bb135e0a76d20dd7660674968d587da77ac823.
-  deep_memory: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md 17399/5cf598b71d6983996bcba3cb6112e0b4072930a8852637896be9a9b10952cf05.
-  checkpoint_gate: Sole-owner implementation commit 77a1c45/tree b077d25 is pushed and four-way exact; focused is 18/18, standard is 1,533/0/2 of 1,535; clean release run 2924e05 is 23/23 with independently reproduced aggregate 3995/da8d2b7c.
-  boundary: Implementation/fixtures only. No real traces or numerical, browser, quality, P2P, release, deployment, MemoryEndpoints, or campaign evidence.
+  deep_memory: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md 7589/2058578314ae6fe5b7eea3d39977d0d86e4cbc60df74909a702d980ccc8e8224; predecessor design memory remains 17399/5cf598b7.
+  checkpoint_gate: Registration commit 1fbc78e/tree 543abd5 is pushed/four-way exact; standard is 1,541/0/2 of 1,543; protected release is 23/23 with aggregate 3995/b11124b2.
+  terminal_boundary: Sole owner launched source once; source exited 1 with source-trace-model-load; later arms stayed unlaunched and output roots absent. Nine-file/13,071-byte private evidence was independently rehashed. No retry or mutation is allowed.
+  boundary: Real terminal failure only. No completed trace or numerical, browser, quality, P2P, release, deployment, MemoryEndpoints, or campaign evidence.
 
 scalar_numerical_evidence_architecture_2026_08_26:
   leaf_probe: tinyrustlm-numerical-probe calls the canonical scalar runtime's forward_token_traced API and writes private bounded f32le stage packs. It is deliberately outside shipping dispatch and introduces no alternate SLM2 semantics, F32 weight shadow, sampler, compatibility path, or fallback.

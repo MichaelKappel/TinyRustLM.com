@@ -1,14 +1,14 @@
-profile: runtime-mirust.operations.v173
-updated_utc: 2026-08-26T12:26:14Z
+profile: runtime-mirust.operations.v174
+updated_utc: 2026-08-26T13:28:30Z
 
-qwen3_numerical_differential_operations_2026_08_26:
-  implemented: Exact profile, 29-wheel/26-distribution environment lock, publisher source owner, independent reconstructed-SLM2 owner, Rust scalar owner, sole execution owner, and no-write verifier are present. Focused pinned-interpreter gate is 18/18.
-  owner_order: Implemented sole owner validates remote-exact registration and exact executables plus absent roots; invokes source once, reconstructed once, scalar once, then verifier once. Every material failure closes the operation; no retry, resume, cleanup, adoption, overwrite, or repair.
-  comparison_order: Source CPU FP32 to reconstructed SLM2 diagnoses conversion/quantization; reconstructed SLM2 to Rust scalar diagnoses packed-byte/runtime math. Optimized native and browser-WASM are later separate gates.
-  checkpoint_gate: Implementation 77a1c45/tree b077d25 is pushed/four-way exact; standard is 1,533/0/2 of 1,535; clean release 2924e05 is 23/23 with independently verified aggregate 3995/da8d2b7c.
-  current_action: Commit/push/fresh-verify this memory checkpoint, then create a separate output-free registration over that exact parent. Only after registration equality may the sole owner run. No /12 trace may be created yet.
-  durable_handoff: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 17,399 bytes/SHA256 5cf598b71d6983996bcba3cb6112e0b4072930a8852637896be9a9b10952cf05.
-  boundary: No broader result, MemoryEndpoints authority, or campaign credit.
+qwen3_numerical_execution_terminal_operations_2026_08_26:
+  completed: Registration 1fbc78e/tree 543abd5 was gated, pushed, and four-way exact. One 1,458-byte request was created/audited; one owner and one source process ran. Source exited 1 with source-trace-model-load. Reconstructed/scalar/verifier were not launched. Independent audit closed nine files/13,071 bytes and no output roots.
+  immutable_order: Do not invoke the owner again. Do not retry, resume, delete, clean, overwrite, repair, change thresholds, or adopt any private identity or byte.
+  comparison_order: Source-to-reconstructed and reconstructed-to-scalar remain required but unproven. Optimized native and browser-WASM remain later separate gates.
+  checkpoint_gate: Standard 1,541/0/2 of 1,543 and protected 23/23 with verified aggregate 3995/b11124b2 preceded execution. Public result is 9163/a751ef6f.
+  current_action: Preserve failure; implement a bounded generic model-load diagnostic; reproduce under a new diagnostic identity; add a failing regression; fix narrowly; gate/commit/push/fresh-verify; then preregister wholly new names.
+  durable_handoff: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md, 7,589 bytes/SHA256 2058578314ae6fe5b7eea3d39977d0d86e4cbc60df74909a702d980ccc8e8224.
+  boundary: Terminal failure only; no numerical pass, broader product result, MemoryEndpoints authority, or campaign credit.
 
 scalar_numerical_probe_operations_2026_08_26:
   implemented_owner: tinyrustlm-numerical-probe is a non-shipping leaf owner for strict create-only private scalar traces. Public profile SHA256 is 34b1bd8f45dcd764b4b78850fa0a54b740ca143bde14a201a7c7f2ef0b46f000.

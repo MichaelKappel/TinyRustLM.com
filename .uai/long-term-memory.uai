@@ -1,12 +1,12 @@
-profile: runtime-mirust.long-term-memory-ledger.v371
-updated_utc: 2026-08-26T12:26:14Z
+profile: runtime-mirust.long-term-memory-ledger.v372
+updated_utc: 2026-08-26T13:28:30Z
 
-ledger_2026_08_26_qwen3_numerical_differential_implementation:
-  durable_record: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 17,399 bytes, SHA256 5cf598b71d6983996bcba3cb6112e0b4072930a8852637896be9a9b10952cf05.
-  accepted_design: Preserve two independent current arrows, publisher-source CPU FP32 to independently reconstructed SLM2 mixed-Q8 and reconstructed SLM2 to Rust scalar, before any optimized-native or browser-WASM arrow. Bind exact environment and 255-stage traces; verifier is read-only and first-divergence authoritative.
-  implementation_truth: Exact environment, three arms, sole execution owner, and read-only verifier are present; focused gate is 18/18. Commit 77a1c45/tree b077d25 is pushed/four-way exact; standard is 1,533/0/2 of 1,535 and clean release 2924e05 is 23/23 with independently reproduced aggregate 3995/da8d2b7c. This remains implementation evidence only; no real registration or output exists.
-  report_lineage: Durable record deep-links the exact 12-report manifest, corrected synthesis, TDD delta, intake memory, scalar probe memory, and immutable /12 structure.
-  next_durable_transition: Commit/push/fresh-verify this ledger checkpoint, then create one separately committed/pushed/fresh-remote-exact output-free numerical registration over that exact parent. Never convert this ledger entry into execution evidence.
+ledger_2026_08_26_qwen3_numerical_execution_terminal:
+  durable_record: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md, 7,589 bytes, SHA256 2058578314ae6fe5b7eea3d39977d0d86e4cbc60df74909a702d980ccc8e8224.
+  result_record: contracts/vnext/qwen3-numerical-differential-execution-result.v1.json, 9,163 bytes, SHA256 a751ef6f6b436f84a18a02483b718cf90efdb872d5546cb0ee70ae0ec8fbaa2d.
+  immutable_truth: Registration 1fbc78e/tree 543abd5 was gated and four-way exact. One request and one owner invocation produced one source launch, exit 1, safe code source-trace-model-load, and zero later launches. Independent read-only audit closed nine private files/13,071 bytes. No output root or numerical verdict exists.
+  report_lineage: Durable record deep-links the reviewed report manifest, synthesis, TDD delta, intake memory, predecessor numerical memory, and /12 structure.
+  next_durable_transition: Preserve all closed bytes. Diagnose model load under a new bounded diagnostic identity, add a generic failing test, correct cleanly, gate/commit/push/fresh-verify, then preregister wholly new execution identities. Never invoke or mutate the closed operation.
 
 ledger_2026_08_26_scalar_numerical_probe_checkpoint:
   durable_record: wiki/runtime-mirust/reports/tinyrustlm-scalar-numerical-probe-memory-2026-08-26.md, 11,886 bytes, SHA256 2f5b59074e000f2f87b6e04b4150032581469fb4df0fae2a5ef4ad7f1ee52a01.

@@ -1,13 +1,13 @@
-profile: runtime-mirust.next-recursive-prompt.v107
-updated_utc: 2026-08-26T12:26:14Z
+profile: runtime-mirust.next-recursive-prompt.v108
+updated_utc: 2026-08-26T13:28:30Z
 
-next_recursive_goal_2026_08_26_qwen3_numerical_registration:
-  objective: Preregister one wholly new exact /12 numerical operation over the remote-exact green source/reconstructed/scalar laboratory without creating any real trace before registration equality.
-  current_checkpoint: Profile 16139/2a12f5f4, environment 29103/bdccfc27, architecture 13424/dd72f897, and durable memory 17399/5cf598b7 are implemented. Sole-owner commit 77a1c45/tree b077d25 is pushed/four-way exact; focused is 18/18, standard is 1,533/0/2 of 1,535, and clean release 2924e05 is 23/23 with independently verified aggregate 3995/da8d2b7c.
-  proof_design: Register publisher-source CPU FP32 to reconstructed SLM2 and reconstructed SLM2 to Rust scalar as separate arrows, including exact cases/token IDs, per-arrow/per-stage thresholds, floors, top-k, limits, first-divergence order, and no-write verifier.
-  execution_guard: First commit/push/fresh-verify this memory checkpoint. Then bind its exact commit/tree and tool/profile/environment/source/model/executable identities; choose wholly new absent request/output/evidence/process/terminal identities; commit/push/fresh-four-way-verify registration before any material launch.
-  durable_authority: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md, 17,399 bytes/SHA256 5cf598b71d6983996bcba3cb6112e0b4072930a8852637896be9a9b10952cf05.
-  prohibited_claims: No real numerical, optimized-native, browser-WASM, quality, P2P, catalog, package, deployment, MemoryEndpoints, or campaign claim exists.
+next_recursive_goal_2026_08_26_qwen3_source_model_load_correction:
+  objective: Preserve the immutable first numerical terminal failure, diagnose source-trace-model-load with a bounded generic reproducer, add a minimal failing regression and counterexamples, make one clean-slate source-owned correction, and prepare a wholly new preregistered numerical operation.
+  current_checkpoint: Registration 24467/469e003e at commit 1fbc78e/tree 543abd5 is four-way exact; standard 1,541/0/2 and protected 23/23 passed. One owner/source launch ended exit 1; zero later launches/output roots. Public result is 9163/a751ef6f; nine private files/13,071 bytes were independently rehashed.
+  proof_design: The diagnostic may reveal bounded stage and exception class only. It must not mutate the closed evidence, retry the owner, expose paths, change thresholds, or blame a cause before reproduction. Preserve source-to-reconstructed and reconstructed-to-scalar as separate future arrows.
+  execution_guard: Commit/push/fresh-verify the terminal record first. Reproduce under a distinct diagnostic identity, drive a failing generic test, correct one root cause with no fallback/legacy path, pass maintained gates, commit/push/fresh-verify, then create all-new registration/request/evidence/scratch/output identities.
+  durable_authority: wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md, 7,589 bytes/SHA256 2058578314ae6fe5b7eea3d39977d0d86e4cbc60df74909a702d980ccc8e8224.
+  prohibited_claims: No source trace, numerical, optimized-native, browser-WASM, quality, P2P, catalog, package, deployment, MemoryEndpoints, or campaign pass exists.
 
 next_recursive_goal_2026_08_26_scalar_numerical_proof:
   objective: Deliver a clean, independently verifiable source-framework-to-Rust-scalar numerical gate for the immutable /12 Qwen3 composition without executing real-model observations until an output-free registration is remote-exact.
