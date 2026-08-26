@@ -213,7 +213,10 @@ function fixture(t) {
   const sourceArguments = [path.join(repositoryRoot,
     "tinyrustlm", "tools", "qwen3-numerical-source-owner.py"),
   path.join(paths.ownerEvidenceRoot, files.sourceRequest)];
-  const sourceExecutable = expectedExecutables.python;
+  const sourceExecutable = {
+    byteLength: expectedExecutables.python.byteLength,
+    sha256: expectedExecutables.python.sha256
+  };
   writeCanonical(path.join(paths.ownerEvidenceRoot, files.sourceTerminal),
     owner.createProcessTerminal(operationId, "source", sourceExecutable,
       sourceExecutable, sourceArguments, outcome));
@@ -263,6 +266,48 @@ test("verifies one source-stage terminal failure without writing evidence", (t) 
   assert.equal(result.sourceSafeCode, safeSourceCode);
   assert.equal(result.writesPerformed, false);
   assert.equal(result.allowedClaim, "none");
+});
+
+test("requires the exact two-field process executable identity shape", (t) => {
+  const extra = fixture(t);
+  const extraTerminal = JSON.parse(fs.readFileSync(extra.sourceTerminalPath, "utf8"));
+  extraTerminal.executableBefore.basename = "python.exe";
+  replaceCanonical(extra.sourceTerminalPath, extraTerminal);
+  assert.throws(() => verifier.verify(extra.requestPath),
+    (error) => error.code === "source-terminal-process-shape");
+
+  const missing = fixture(t);
+  const missingTerminal = JSON.parse(fs.readFileSync(missing.sourceTerminalPath, "utf8"));
+  delete missingTerminal.executableAfter.sha256;
+  replaceCanonical(missing.sourceTerminalPath, missingTerminal);
+  assert.throws(() => verifier.verify(missing.requestPath),
+    (error) => error.code === "source-terminal-process-shape");
+});
+
+test("rejects wrong or changed process executable identities", (t) => {
+  const wrongLength = fixture(t);
+  const wrongLengthTerminal = JSON.parse(
+    fs.readFileSync(wrongLength.sourceTerminalPath, "utf8"));
+  wrongLengthTerminal.executableBefore.byteLength += 1;
+  replaceCanonical(wrongLength.sourceTerminalPath, wrongLengthTerminal);
+  assert.throws(() => verifier.verify(wrongLength.requestPath),
+    (error) => error.code === "source-terminal-process-binding");
+
+  const wrongDigest = fixture(t);
+  const wrongDigestTerminal = JSON.parse(
+    fs.readFileSync(wrongDigest.sourceTerminalPath, "utf8"));
+  wrongDigestTerminal.executableAfter.sha256 = "0".repeat(64);
+  replaceCanonical(wrongDigest.sourceTerminalPath, wrongDigestTerminal);
+  assert.throws(() => verifier.verify(wrongDigest.requestPath),
+    (error) => error.code === "source-terminal-process-binding");
+
+  const changed = fixture(t);
+  const changedTerminal = JSON.parse(fs.readFileSync(changed.sourceTerminalPath, "utf8"));
+  changedTerminal.executableAfter.sha256 = "f".repeat(64);
+  changedTerminal.executableUnchanged = false;
+  replaceCanonical(changed.sourceTerminalPath, changedTerminal);
+  assert.throws(() => verifier.verify(changed.requestPath),
+    (error) => error.code === "source-terminal-process-binding");
 });
 
 test("accepts the exact scalar request without inventing registrationSha256", (t) => {

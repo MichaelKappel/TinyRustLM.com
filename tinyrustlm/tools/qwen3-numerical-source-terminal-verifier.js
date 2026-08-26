@@ -507,13 +507,21 @@ function verify(requestPath) {
     ...sourceArtifact[0].relativePath.split("/")), evidence(names.sourceRequest)];
   const argumentsSha256 = sha256(canonicalJsonBytes(sourceArguments));
   const pythonIdentity = state.contract.executables.python;
+  const pythonProcessIdentity = {
+    byteLength: pythonIdentity.byteLength,
+    sha256: pythonIdentity.sha256
+  };
+  artifactReference(sourceTerminal.executableBefore,
+    "source-terminal-process-shape");
+  artifactReference(sourceTerminal.executableAfter,
+    "source-terminal-process-shape");
   invariant(sourceTerminal.schema === PROCESS_TERMINAL_SCHEMA
     && sourceTerminal.operationId === state.contract.operationId
     && sourceTerminal.stage === "source" && sourceTerminal.launchOrdinal === 1
     && sourceTerminal.launchCountLimit === 1
     && sourceTerminal.argumentsSha256 === argumentsSha256
-    && sameValue(sourceTerminal.executableBefore, pythonIdentity)
-    && sameValue(sourceTerminal.executableAfter, pythonIdentity)
+    && sameValue(sourceTerminal.executableBefore, pythonProcessIdentity)
+    && sameValue(sourceTerminal.executableAfter, pythonProcessIdentity)
     && sourceTerminal.executableUnchanged === true
     && sourceTerminal.retryAllowed === false && sourceTerminal.overwriteAllowed === false
     && sourceTerminal.repairAllowed === false,
