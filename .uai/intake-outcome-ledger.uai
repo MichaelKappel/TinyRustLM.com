@@ -1,17 +1,137 @@
-profile: runtime-mirust.intake-outcome-ledger.v60
-updated_utc: 2026-08-26T05:08:13Z
+profile: runtime-mirust.intake-outcome-ledger.v61
+updated_utc: 2026-08-27T22:01:48Z
 active_scan:
   content_bucket: agent-file-handoff/Content/
   improvement_bucket: agent-file-handoff/Improvement/
   content_non_placeholder_files: 0
   improvement_non_placeholder_files: 0
   result: both_authoritative_active_intake_buckets_placeholder_only_external_read_only_report_source_not_active_authority
-  latest_scan_utc: 2026-08-26T05:08:13Z
+  latest_scan_utc: 2026-08-27T22:01:48Z
   scan_authority: live canonical top-level bucket scan; .gitkeep is the only allowed placeholder; external source tree was read-only
 post_processing_scan:
   content_non_placeholder_files: 0
   improvement_non_placeholder_files: 0
-  result: twelve_post_v10_reports_preserved_and_incorporated_with_corrections; authoritative_buckets_placeholder_only; external_source_untouched; enterprise_goal_active
+  result: twelve_ontological_machine_intelligence_reports_preserved_and_incorporated_with_corrections; authoritative_buckets_placeholder_only; external_source_untouched; enterprise_goal_active
+report_intake_2026_08_27_ontological_machine_intelligence:
+  source_authority: external read-only nonauthoritative report source; no report claimed private repository access
+  docs_evidence_path: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/
+  durable_manifest: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md
+  canonical_inventory_sha256: 622aeee51b3a687d573880b0474d395e2ee44db674e91eca65441c7a7c2c3ede
+  source_count: 12
+  source_bytes: 993406
+  durable_synthesis: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md
+  durable_synthesis_sha256: f088512c8c38161ab29d5a4f1c5eee4e03a9f9e5547495a3736c7545d988bf5b
+  durable_tdd_delta: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md
+  durable_tdd_delta_sha256: e75e7630c7f05aac1d1f360ff597ad91d81c628570eb602fb40b15e8c0dd1bfb
+  adopted: authority separation; typed append-only evidence; immutable externally gated promotion; bounded untrusted user-owned memory; measured telemetry
+  research_only: neural fields; Koopman; HDC/VSA; morphogenesis; phenomenology; heterogeneous substrates; runtime self-modification
+  rejected: latent control protocols; self-certification; compatibility; simulated evidence; single-boolean promotion; report-derived product claims
+  durable_memory: wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md,9166,f4a890676be9cb086e8b65cb063a345cc4a98e0be65a0a9a006b53365238a158
+  durable_manifest_sha256: 08141cb2310fc6588be5821f5b193b15d419360646f34dfda5f92de879db81b5
+  report_count: 12
+  incorporated_with_corrections_count: 12
+  durable_count: 12
+  missing_durable_copies: 0
+  disposition: incorporated-with-corrections-and-byte-exact-preservation
+  processed_outcome: incorporated
+  source_site_removal_or_keep_active_reason: The external read-only source was not modified. Entry field source_removed=true means the corresponding source path is absent from the authoritative worktree active intake; it does not claim deletion from E:\Source\Rust\TinyRustLM.com.
+entries_2026_08_27_ontological_machine_intelligence:
+  - source_path: agent-file-handoff/Improvement/Autonomous Scientific Discovery Analysis.md
+    docs_evidence_path: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/Autonomous Scientific Discovery Analysis.md
+    category: scientific-claim-lifecycle
+    sha256: 20143841af9f4da91871086ec5a2801bd1759fedc5f42f64e72ea89aff21c1f6
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted typed claims, falsification, provenance, and external promotion gates; retained autonomous discovery machinery as research-only.
+  - source_path: agent-file-handoff/Improvement/Cognitive Liberty Machine Architecture.md
+    docs_evidence_path: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/Cognitive Liberty Machine Architecture.md
+    category: user-sovereignty-and-action-authority
+    sha256: fecd5fc7f75c3f4704d9e7c21a71ccada7cb2e3f206affd2d3fbf0ec0bd847ee
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted explicit user authority, portable memory, revocation, and boundary separation; rejected speculative identity claims.
+  - source_path: agent-file-handoff/Improvement/Continuous Neural Fields Spatial Ontology.md
+    docs_evidence_path: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/Continuous Neural Fields Spatial Ontology.md
+    category: continuous-spatial-world-models
+    sha256: 40c8fa305c3f7ec97bf74a10db4aee7d129e26ecc8aae773267360f0d109a459
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Preserved as a separately gated research hypothesis; no production neural-field architecture was adopted.
+  - source_path: agent-file-handoff/Improvement/Emergent Machine Language Protocols.md
+    docs_evidence_path: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/Emergent Machine Language Protocols.md
+    category: machine-native-communication
+    sha256: 42e55580bc71fab3075f73864f949da9cdc0bb85b3e202c9212185f602bfa26f
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted protocol drift detection and explicit capability negotiation; rejected latent vectors as a product wire protocol.
+  - source_path: agent-file-handoff/Improvement/Executable Epistemology Monograph Research.md
+    docs_evidence_path: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/Executable Epistemology Monograph Research.md
+    category: executable-claims-and-falsification
+    sha256: d29d0990dc7c8079713b01e0a72d3ca112afba3a345e83ef5bb538dcdffb64ee
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted typed claims, counterexamples, append-only transitions, and independent evidence recomputation.
+  - source_path: agent-file-handoff/Improvement/Hyperdimensional Ontological Machine Intelligence.md
+    docs_evidence_path: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/Hyperdimensional Ontological Machine Intelligence.md
+    category: vsa-hdc-representation
+    sha256: 613dcaefb7141f51ddf7d9fe8e816086b2c38fb1c4cf294ea43464b924724308
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Preserved HDC and VSA as isolated representation experiments requiring measured quality and resource evidence.
+  - source_path: agent-file-handoff/Improvement/Koopman and Neural Fields Research.md
+    docs_evidence_path: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/Koopman and Neural Fields Research.md
+    category: spectral-dynamics-and-neural-fields
+    sha256: 5ad69d213cb90f54b2a512059217d15d572d043058919bf9ae8e9114b9f446b7
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted independent adequacy dimensions; retained Koopman and neural-field stacks as research-only.
+  - source_path: agent-file-handoff/Improvement/Latent Operators Monograph Research.md
+    docs_evidence_path: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/Latent Operators Monograph Research.md
+    category: typed-latent-transformations
+    sha256: 153ad778f4f0abda1d2aee0b02f6c1dfeed709ca75dda3a6a390eed84733c8a0
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted typed domains and multidimensional promotion gates; rejected an opaque latent-operator control plane.
+  - source_path: agent-file-handoff/Improvement/Machine Intelligence Physical Substrates.md
+    docs_evidence_path: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/Machine Intelligence Physical Substrates.md
+    category: substrate-aware-computation
+    sha256: 00fc0e69da30f42b3f21383c10a7b9c2179a2da343a66e584945e49741744a3c
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted measured resource truth; retained heterogeneous substrate routing as research-only.
+  - source_path: agent-file-handoff/Improvement/Machine Phenomenological Research Plan.md
+    docs_evidence_path: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/Machine Phenomenological Research Plan.md
+    category: causal-self-report-and-phenomenology
+    sha256: 1808069d82f8b84d1c03e9c28435bcb9815f4b0ae26e56c37e696205708bfea9
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted telemetry-grounded status; retained subjectivity and phenomenology claims as research-only.
+  - source_path: agent-file-handoff/Improvement/Morphogenetic Machine Intelligence Research.md
+    docs_evidence_path: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/Morphogenetic Machine Intelligence Research.md
+    category: self-organizing-distributed-computation
+    sha256: 20412c146e1bd97d6bc21731afd53e441067e1592152d9c15b94aba7123c7abe
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted measurable fault-recovery experiments; retained morphogenetic runtimes as research-only.
+  - source_path: agent-file-handoff/Improvement/Self-Modifying Machine Intelligence Research.md
+    docs_evidence_path: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/Self-Modifying Machine Intelligence Research.md
+    category: candidate-improvement-and-lineage
+    sha256: 46e2524eafe555e30d3f274fac9d737025962e04a0a859fcbcb5ac53d4827a66
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted immutable shadow candidates and external promotion; rejected runtime self-modification and self-certification.
 report_intake_2026_08_26_post_v10_native_browser_release:
   source_bucket: E:\Source\Rust\TinyRustLM.com\agent-file-handoff\Improvement\
   source_authority: read-only nonauthoritative report source; no files modified or removed there

@@ -1,7 +1,19 @@
-profile: tinyrustlm.source-workspace.v457
+profile: tinyrustlm.source-workspace.v458
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-26T23:24:02Z
+updated_utc: 2026-08-27T22:01:48Z
+
+current_enterprise_clean_slate_intake_and_memory_submit_2026_08_27:
+  status: implementation_and_local_verification_complete_clean_remote_gate_pending
+  durable_memory: wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md,9166,f4a890676be9cb086e8b65cb063a345cc4a98e0be65a0a9a006b53365238a158
+  routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md
+  research_intake: Twelve raw advisory reports are byte-exact under docs/report-intake/2026-08-27/ontological-machine-intelligence-research/ at canonical inventory SHA256 622aeee51b3a687d573880b0474d395e2ee44db674e91eca65441c7a7c2c3ede. Use the corrected synthesis f088512c8c38161ab29d5a4f1c5eee4e03a9f9e5547495a3736c7545d988bf5 and TDD delta e75e7630c7f05aac1d1f360ff597ad91d81c628570eb602fb40b15e8c0dd1bfb; raw reports are not repository or product evidence.
+  research_prompts: The twelve standalone enterprise clean-slate prompts are docs/research-prompts/2026-08-27-twelve-disconnected-enterprise-clean-slate-strategy-research-prompts.md,76583,659c49aa6230c0d9c7d3f2bbec9004295b8b2eb161ba716ac5ecfbf49ae9d465, committed at a20fe47d7eecda4b30bda785d1b58f41bdea825e.
+  exact_submit_contract: One 16-field MemoryEndpoints submit record uses actorAgentId and summary, never submit aliases agentId or safeSummary. Technical identities are memory_record.v1, outbox_entry.v2, local_receipt.v2, digest.v2, and idempotency prefix tinyrustlm-memory-v2-. Cross-language digest is ffa9fb1d3b729902d8a62621ce08d627b7042aaad89f5d8ca51a6257f3e305aa.
+  verification: Rust 27/27, browser MemoryEndpoints 30/30, .NET MemoryEndpoints 33/33, Core 86/86, Package 40/40, UI 79/79, and canonical standard 1642/0/3 of 1645 pass. The wrapper correctly stopped at release_gate_source_not_clean; a clean pushed remote-exact release-surface run is still required.
+  active_p0: The shipping browser, admission, browser harness, qualification, P2P smoke, release inputs, tests, and docs still consume SLM1/ACG1. Complete the frozen SLM2 product-consumer replacement, then delete rust/crates/tinyrustlm-slm, tinyrustlm/runtime, tinyrustlm/tools/slm_pack, and every executable ACG1 path in the same verified major change.
+  authority: One prelaunch product only. No product V2, legacy support, compatibility reader, migration, alias, dual serializer, fallback, temporary path, deferred cleanup, test weakening, or debt. MemoryEndpoints is authorized and recommended; local UAIX remains supported. No live lifecycle proof or counter increment exists.
+  counters: 0/20 qualified, 0/50 browser, 0/25 live memory, 0/40 outside P2P lanes, 0/20 announcements
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy

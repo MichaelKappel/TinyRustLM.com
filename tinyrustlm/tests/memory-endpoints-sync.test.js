@@ -10,8 +10,7 @@ function payload() {
   return {
     workspaceId: "workspace-demo",
     actorAgentId: "tinyrustlm-agent",
-    agentId: "tinyrustlm-agent",
-    kind: "tinyrustlm.memory_endpoints.memory_record.v0",
+    kind: "tinyrustlm.memory_endpoints.memory_record.v1",
     version: 1,
     scope: "project",
     scopeId: "tinyrustlm.com",
@@ -19,7 +18,6 @@ function payload() {
     subject: "Durable sync design",
     title: "Durable sync design",
     summary: "Public-safe durable memory for the offline synchronization contract.",
-    safeSummary: "Public-safe durable memory for the offline synchronization contract.",
     source: "TinyRustLM MemoryEndpoints connector",
     confidence: 0.8,
     uaiReferences: [
@@ -134,10 +132,17 @@ test("equal logical payloads share the Rust and .NET fingerprint", async () => {
   assert.equal(first.payloadSha256, second.payloadSha256);
   assert.equal(
     first.payloadSha256,
-    "34de45661611662069fde208795ad26b5ec1d879f11f36f5bda32390d47eb2eb"
+    "ffa9fb1d3b729902d8a62621ce08d627b7042aaad89f5d8ca51a6257f3e305aa"
   );
   assert.equal(first.idempotencyKey, second.idempotencyKey);
+  assert.match(first.idempotencyKey, /^tinyrustlm-memory-v2-/);
+  assert.equal(first.version, 2);
+  assert.equal(first.localReceipt.version, 2);
   assert.deepEqual(first.payload, second.payload);
+  assert.equal(Object.hasOwn(first.payload, "actorAgentId"), true);
+  assert.equal(Object.hasOwn(first.payload, "summary"), true);
+  assert.equal(Object.hasOwn(first.payload, "agentId"), false);
+  assert.equal(Object.hasOwn(first.payload, "safeSummary"), false);
   assert.equal(first.state, "saved_locally");
   assert.equal(first.localReceipt.eventId, first.eventId);
 });
@@ -209,8 +214,15 @@ test("persisted rows reject credential fields and payload mutation", async () =>
 
   const mutated = structuredClone(entry);
   mutated.payload.summary += " changed";
-  mutated.payload.safeSummary += " changed";
   await assert.rejects(sync.validateOutboxEntry(mutated), /fingerprint mismatch/i);
+
+  const withRetiredAgentAlias = structuredClone(entry);
+  withRetiredAgentAlias.payload.agentId = withRetiredAgentAlias.payload.actorAgentId;
+  await assert.rejects(sync.validateOutboxEntry(withRetiredAgentAlias), /unknown field/i);
+
+  const withRetiredSummaryAlias = structuredClone(entry);
+  withRetiredSummaryAlias.payload.safeSummary = withRetiredSummaryAlias.payload.summary;
+  await assert.rejects(sync.validateOutboxEntry(withRetiredSummaryAlias), /unknown field/i);
 });
 
 test("Web Locks elect one sender and BroadcastChannel refreshes the follower", async () => {

@@ -1,5 +1,14 @@
-profile: runtime-mirust.next-recursive-prompt.v115
-updated_utc: 2026-08-26T23:24:02Z
+profile: runtime-mirust.next-recursive-prompt.v116
+updated_utc: 2026-08-27T22:01:48Z
+
+next_recursive_goal_2026_08_27_slm2_product_consumer_clean_cut:
+  intake_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md
+  objective: Starting from the newest remote-exact MemoryEndpoints submit-contract checkpoint, execute the frozen preregistered SLM2-only product-consumer replacement across native runtime, WASM, browser worker and admission, acquisition, qualification, P2P, companion, .NET, package, release, fixtures, tests, and current documentation, then delete every active SLM1/ACG1 executable path in the same coherent major change.
+  first_read: workspace.uai; .uai/totem.uai; .uai/taboo.uai; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md; contracts/vnext/production-slm2-clean-cut-preregistration.v1.json; docs/architecture/2026-08-24-production-slm2-clean-cut-preregistration.md.
+  red_first: Add exact tests that reject current SLM1 magic, ACG1 admission, old WASM manifests, old packer invocation, stale fixture identities, superseded workspace membership, and current documentation or release references before deleting implementation.
+  implementation: Establish one exact SLM2 contract and composition identity at every consumer. Delete rust/crates/tinyrustlm-slm, tinyrustlm/runtime, tinyrustlm/tools/slm_pack, executable ACG1 tooling/tests/manifest, and all stale current references only after replacement consumers are proven together.
+  gates: Focused Rust/Node/.NET, warnings-denied Clippy, complete standard, UI, real Chromium, package-consumer, source inventory, documentation, secret/path, and a fresh clean protected release-surface gate. Commit each coherent green major change, push, fresh-fetch, and prove local/tracking/FETCH_HEAD/direct-remote equality.
+  exclusions: One prelaunch product only. No product V2, compatibility, legacy reader, migration, alias, fallback, dual implementation, fixture promotion, response repair, deferred cleanup, debt, stale documentation, package publication, or deployment before closure. MemoryEndpoints live proof and campaign counters remain zero.
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy

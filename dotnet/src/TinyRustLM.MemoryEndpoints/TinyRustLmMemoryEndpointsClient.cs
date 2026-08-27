@@ -486,7 +486,7 @@ public sealed class TinyRustLmMemoryEndpointsClient
                 "A prepared MemoryEndpoints entry must be in sending state before transport.");
         }
         if (entry.Payload.WorkspaceId != _options.WorkspaceId ||
-            entry.Payload.AgentId != _options.AgentId)
+            entry.Payload.ActorAgentId != _options.AgentId)
         {
             throw new InvalidOperationException(
                 "Prepared MemoryEndpoints entry does not belong to this client identity.");

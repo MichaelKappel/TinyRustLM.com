@@ -1,5 +1,14 @@
-profile: runtime-mirust.short-term-memory.v508
-updated_utc: 2026-08-26T23:24:02Z
+profile: runtime-mirust.short-term-memory.v509
+updated_utc: 2026-08-27T22:01:48Z
+
+current_focus_2026_08_27_enterprise_clean_slate_memory_submit:
+  intake_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md
+  just_completed: Twelve enterprise clean-slate prompts are checked in at a20fe47d7eecda4b30bda785d1b58f41bdea825e. Twelve returned advisory reports are preserved at inventory 622aeee51b3a687d573880b0474d395e2ee44db674e91eca65441c7a7c2c3ede and synthesized into a production-bounded strategy and TDD delta.
+  deep_resume: Read wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md,9166,f4a890676be9cb086e8b65cb063a345cc4a98e0be65a0a9a006b53365238a158.
+  contract: The cross-language MemoryEndpoints submit surface now has one closed 16-field shape, technical outbox/local-receipt/digest v2 identities, no aliases or migration, and shared digest ffa9fb1d3b729902d8a62621ce08d627b7042aaad89f5d8ca51a6257f3e305aa.
+  verification: Rust 27/27; browser MemoryEndpoints 30/30; .NET MemoryEndpoints 33/33; Core 86/86; Package 40/40; UI 79/79; standard 1642/0/3 of 1645. Release wrapper correctly stopped on dirty source.
+  immediate_work: Finish UAI, commit, push, fresh-four-way-verify, then run a clean protected release-surface gate. Continue the complete SLM2 consumer replacement and delete superseded SLM1/ACG1 executable code.
+  boundary: Do not call the zero-debt goal complete, publish, deploy, or increment counters while active SLM1 consumers and unproven live MemoryEndpoints behavior remain.
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy

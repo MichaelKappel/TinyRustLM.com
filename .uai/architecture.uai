@@ -1,5 +1,14 @@
-profile: runtime-mirust.architecture.v185
-updated_utc: 2026-08-26T23:24:02Z
+profile: runtime-mirust.architecture.v186
+updated_utc: 2026-08-27T22:01:48Z
+
+enterprise_clean_slate_memory_submit_architecture_2026_08_27:
+  intake_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md
+  decision: One closed 16-field MemoryEndpoints submit payload is owned identically by Rust, .NET, browser JavaScript, scripts, and the relay fixture. The sole canonical digest is ffa9fb1d3b729902d8a62621ce08d627b7042aaad89f5d8ca51a6257f3e305aa.
+  technical_identity: memory_record.v1 remains the record schema; outbox_entry.v2, local_receipt.v2, submit digest v2, idempotency tinyrustlm-memory-v2-, and a fresh browser database make the incompatible persistence cut explicit.
+  closed_boundary: Submit agentId and safeSummary are absent. Unknown properties reject. There is no migration, alias, old database reader, dual serializer, repair, or fallback. Distinct registration/search/meeting contracts must come from an advertised service schema rather than inferred aliases.
+  research_architecture: Adopt explicit authority classes, typed append-only evidence, immutable candidate promotion, untrusted user-owned memory, and measured telemetry. Keep neural fields, Koopman, HDC, morphogenesis, phenomenology, heterogeneous substrates, and self-modification behind separate shadow experiments.
+  current_defect: The active browser/product graph still consumes SLM1/ACG1. The registered next architecture replaces all consumers with one exact SLM2 path and deletes superseded executable source and workspace membership together.
+  claim_boundary: Local green tests do not prove live service behavior or a clean release. No deployment or counter progress.
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy

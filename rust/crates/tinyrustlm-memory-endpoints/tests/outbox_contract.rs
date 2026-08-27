@@ -50,9 +50,12 @@ fn equal_logical_payloads_have_one_fingerprint_and_retry_identity() {
     assert_eq!(first.payload_sha256, second.payload_sha256);
     assert_eq!(
         first.payload_sha256,
-        "34de45661611662069fde208795ad26b5ec1d879f11f36f5bda32390d47eb2eb"
+        "ffa9fb1d3b729902d8a62621ce08d627b7042aaad89f5d8ca51a6257f3e305aa"
     );
     assert_eq!(first.idempotency_key, second.idempotency_key);
+    assert!(first.idempotency_key.starts_with("tinyrustlm-memory-v2-"));
+    assert_eq!(first.version, 2);
+    assert_eq!(first.local_receipt.version, 2);
     assert_eq!(first.payload, second.payload);
     assert_eq!(first.state, MemoryEndpointsOutboxState::SavedLocally);
     assert_eq!(first.local_receipt.event_id, first.event_id);
@@ -136,11 +139,24 @@ fn persisted_rows_reject_credentials_and_payload_mutation() {
     assert!(!json.to_ascii_lowercase().contains("bearertoken"));
     assert!(!json.to_ascii_lowercase().contains("authorization"));
     assert!(!json.to_ascii_lowercase().contains("workspacekey"));
+    assert!(json.contains("\"actorAgentId\""));
+    assert!(json.contains("\"summary\""));
+    assert!(!json.contains("\"agentId\""));
+    assert!(!json.contains("\"safeSummary\""));
     assert_eq!(deserialize_outbox_entry_text(&json).unwrap(), entry);
 
     let mut with_credential: serde_json::Value = serde_json::from_str(&json).unwrap();
     with_credential["workspaceKey"] = serde_json::json!("must-not-persist");
     assert!(deserialize_outbox_entry_text(&with_credential.to_string()).is_err());
+
+    let mut with_retired_agent_alias: serde_json::Value = serde_json::from_str(&json).unwrap();
+    with_retired_agent_alias["payload"]["agentId"] = serde_json::json!("tinyrustlm-agent");
+    assert!(deserialize_outbox_entry_text(&with_retired_agent_alias.to_string()).is_err());
+
+    let mut with_retired_summary_alias: serde_json::Value = serde_json::from_str(&json).unwrap();
+    with_retired_summary_alias["payload"]["safeSummary"] =
+        serde_json::json!("Public-safe durable memory for the offline synchronization contract.");
+    assert!(deserialize_outbox_entry_text(&with_retired_summary_alias.to_string()).is_err());
 
     let mut mutated = entry.clone();
     mutated.payload.summary.push_str(" changed");

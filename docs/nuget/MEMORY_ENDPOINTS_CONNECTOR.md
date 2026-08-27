@@ -36,7 +36,8 @@ TinyRustLM.com exposes MemoryEndpoints as an opt-in hosted memory layer in Advan
 
 - The browser persists only `enabled`, base URL, workspace ID, agent ID, non-secret auth-header mode, and non-secret hosted search tier.
 - The workspace key is never written to `localStorage`; it stays in the current page session and is sent only as the selected workspace-key auth header.
-- Save Short-Term and Save Long-Term send public-safe summaries to `/api/matm/memory-events/submit` using the public MemoryEndpoints event contract: `workspaceId`, `actorAgentId`, `summary`, `scope=project`, `scopeId=tinyrustlm.com`, `memoryType=status|handoff`, source, confidence, tags, and durable references.
+- Save Short-Term and Save Long-Term send public-safe summaries to `/api/matm/memory-events/submit` using one closed event shape: `workspaceId`, `actorAgentId`, `kind`, `version`, `scope`, `scopeId`, `memoryType`, `subject`, `title`, `summary`, `source`, `confidence`, `uaiReferences`, `tags`, `tinyrustlmMemoryTier`, and optional `sourceSha256`. The fixed scope is `project`, the fixed scope ID is `tinyrustlm.com`, and `memoryType` is `status` or `handoff`.
+- The memory-event shape rejects unknown members. Retired aliases such as `agentId` and `safeSummary` are not emitted or accepted; those names remain valid only in separate agent-registration, meeting-message, or internal TinyRustLM record contracts where they have their own documented semantics.
 - Search sends an authenticated bounded GET query to `/api/matm/search` with TinyRustLM project-scope filters and optional tier filters: `memory_type=status` for short-term memory or `memory_type=handoff` for long-term memory.
 - Search renders visible hosted snippets before generation can use them.
 - Generation only includes hosted memory that is already visible in the hosted search preview.
@@ -53,6 +54,7 @@ TinyRustLM uses a credential-free IndexedDB outbox for opt-in hosted-memory writ
 - A workspace-scoped Web Lock elects one sending tab. Other tabs remain followers and refresh from a body-free BroadcastChannel completion notice.
 - Reconnect always pulls authoritative revisions before pushing queued work. A write becomes `synchronized` only after a matching durable receipt proves the expected logical memory and public-safe body hash.
 - Corrupt local rows are hash-quarantined and are not sent.
+- The current technical identities are `memory_record.v1`, `outbox_entry.v2`, `local_receipt.v2`, submit-payload digest domain `v2`, and idempotency prefix `tinyrustlm-memory-v2`. Browser persistence uses a fresh `tinyrustlm-memory-endpoints` database. Earlier prelaunch rows have no reader, alias, migration, or fallback path and must not be relabeled as current evidence.
 
 The shared Rust, .NET, and browser local engine also defines exact-parent revisions, explicit sibling conflicts, normalized-body deduplication, tombstones, device epochs and revocation, stale-index reporting, monotonic checkpoints, and conservative compaction. The deployed hosted v1 adapter uses one exact parent and a server-assigned revision ID; it records stale-parent, tombstone, and device decisions explicitly instead of silently applying last-write-wins. Hard forget returns a durable rejected receipt because the advertised retention policy does not support it.
 

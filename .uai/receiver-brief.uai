@@ -1,5 +1,13 @@
-profile: runtime-mirust.receiver-brief.v58
-updated_utc: 2026-08-26T23:24:02Z
+profile: runtime-mirust.receiver-brief.v59
+updated_utc: 2026-08-27T22:01:48Z
+
+current_handoff_enterprise_clean_slate_memory_submit_2026_08_27:
+  intake_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md
+  read: wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md 9166/f4a890676be9cb086e8b65cb063a345cc4a98e0be65a0a9a006b53365238a158.
+  truth: Twelve reports are preserved and bounded; one exact MemoryEndpoints submit payload is implemented across maintained languages; focused and standard local gates pass; release proof remains pending because source is not yet committed.
+  contract: Exact submit digest ffa9fb1d3b729902d8a62621ce08d627b7042aaad89f5d8ca51a6257f3e305aa. No submit agentId/safeSummary aliases, unknown-field acceptance, migration, old DB reader, dual serializer, or fallback.
+  next: Commit/push/fresh-four-way-verify, run the clean protected gate, then replace all current SLM1/ACG1 consumers with SLM2 and delete superseded executable trees.
+  boundary: One prelaunch product, no product V2 or legacy support. MemoryEndpoints authorized and local UAIX supported; live lifecycle and all campaign counters remain zero.
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy

@@ -1,5 +1,15 @@
-profile: runtime-mirust.uai-index.v280
-updated_utc: 2026-08-26T23:24:02Z
+profile: runtime-mirust.uai-index.v281
+updated_utc: 2026-08-27T22:01:48Z
+
+current_enterprise_clean_slate_memory_submit_route_2026_08_27:
+  status: local implementation green; commit, remote equality, and clean protected gate pending
+  intake_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md
+  durable_memory: wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md,9166,f4a890676be9cb086e8b65cb063a345cc4a98e0be65a0a9a006b53365238a158
+  intake: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; inventory=622aeee51b3a687d573880b0474d395e2ee44db674e91eca65441c7a7c2c3ede
+  architecture: docs/architecture/2026-08-27-memory-endpoints-submit-contract-clean-cut.md,7733,000c90df53ec1fa572dfcef30042b041f099afd79d09fed4ae97436c157510b7
+  exact_contract: closed 16-field submit; digest=ffa9fb1d3b729902d8a62621ce08d627b7042aaad89f5d8ca51a6257f3e305aa; no aliases or migration
+  next: clean remote checkpoint and release gate, then frozen complete SLM2 consumer replacement and SLM1/ACG1 executable deletion
+  boundary: research and loopback are not live proof; no deployment or counter progress
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy

@@ -53,11 +53,13 @@ public sealed class MemoryEndpointsClientTests
         Assert.StartsWith("tinyrustlm-agent-", request.IdempotencyKey, StringComparison.Ordinal);
         Assert.Contains("\"workspaceId\":\"workspace-demo\"", request.Content, StringComparison.Ordinal);
         Assert.Contains("\"actorAgentId\":\"tinyrustlm-agent\"", request.Content, StringComparison.Ordinal);
-        Assert.Contains("\"agentId\":\"tinyrustlm-agent\"", request.Content, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"agentId\"", request.Content, StringComparison.Ordinal);
+        Assert.Contains("\"kind\":\"tinyrustlm.memory_endpoints.memory_record.v1\"", request.Content, StringComparison.Ordinal);
         Assert.Contains("\"scope\":\"project\"", request.Content, StringComparison.Ordinal);
         Assert.Contains("\"scopeId\":\"tinyrustlm.com\"", request.Content, StringComparison.Ordinal);
         Assert.Contains("\"memoryType\":\"status\"", request.Content, StringComparison.Ordinal);
         Assert.Contains("\"summary\":\"Short-term memory records the optional MemoryEndpoints connector implementation.\"", request.Content, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"safeSummary\"", request.Content, StringComparison.Ordinal);
         Assert.Contains("\"tinyrustlmMemoryTier\":\"short_term\"", request.Content, StringComparison.Ordinal);
         Assert.Contains("\"uaiReferences\":[\".uai/short-term-memory.uai\"]", request.Content, StringComparison.Ordinal);
         Assert.DoesNotContain("secret-token-value", request.Content, StringComparison.Ordinal);

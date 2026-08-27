@@ -7344,8 +7344,7 @@
     return {
       workspaceId: state.memoryEndpoints.workspaceId,
       actorAgentId: state.memoryEndpoints.agentId,
-      agentId: state.memoryEndpoints.agentId,
-      kind: "tinyrustlm.memory_endpoints.memory_record.v0",
+      kind: "tinyrustlm.memory_endpoints.memory_record.v1",
       version: 1,
       scope: memoryEndpointsTinyRustLmScope,
       scopeId: memoryEndpointsTinyRustLmScopeId,
@@ -7353,7 +7352,6 @@
       subject: title,
       title,
       summary: safeSummary,
-      safeSummary,
       source: memoryEndpointsConnectorSource,
       confidence: 0.8,
       uaiReferences: memoryEndpointsUaiReferences(memoryTier),

@@ -215,8 +215,7 @@ const summary = `Public-safe TinyRustLM ${tier} hosted memory probe ${markerText
 console.log(JSON.stringify({
   workspaceId,
   actorAgentId: agentId,
-  agentId,
-  kind: "tinyrustlm.memory_endpoints.memory_record.v0",
+  kind: "tinyrustlm.memory_endpoints.memory_record.v1",
   version: 1,
   scope,
   scopeId,
@@ -224,7 +223,6 @@ console.log(JSON.stringify({
   subject: title,
   title,
   summary,
-  safeSummary: summary,
   source: "eng/verify-memory-endpoints-live.sh",
   confidence: 0.8,
   uaiReferences: [ref, "docs/nuget/MEMORY_ENDPOINTS_CONNECTOR.md"],

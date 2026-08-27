@@ -1,5 +1,14 @@
-profile: runtime-mirust.test-plan.v305
-updated_utc: 2026-08-26T20:29:58Z
+profile: runtime-mirust.test-plan.v306
+updated_utc: 2026-08-27T22:01:48Z
+
+enterprise_clean_slate_memory_submit_test_plan_2026_08_27:
+  durable_route: wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md is 9,166 bytes/SHA256 f4a890676be9cb086e8b65cb063a345cc4a98e0be65a0a9a006b53365238a158.
+  intake_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md
+  contract_green: Exact submit keys and shared digest ffa9fb1d3b729902d8a62621ce08d627b7042aaad89f5d8ca51a6257f3e305aa are covered in Rust 27/27, browser 30/30, and .NET 33/33. Closed unknown-field and removed-alias cases must remain red.
+  broader_green: Core 86/86, Package 40/40, UI 79/79, solution build warnings-as-errors, formatting, script parsers, JS syntax, loopback relay verification, and standard 1642/0/3 of 1645 pass.
+  required_negative_state: The maintained wrapper returned release_gate_source_not_clean and therefore created no release authorization. Loopback is not live MemoryEndpoints evidence. SLM1/ACG1 current consumers remain a package and deployment blocker.
+  slm2_next_gate: Add current-product stale-reference tests, replace every SLM1/ACG1 consumer with one exact SLM2 path, delete all superseded executable trees and membership, then pass focused, complete standard, UI, real browser, package-consumer, docs, inventory, and fresh clean protected gates.
+  failure_rule: Any alias, unknown-field acceptance, migration, old DB reader, dual serializer, SLM1 executable reference, dirty source, remote mismatch, stale docs, live-evidence inflation, or weakened test fails the release gate.
 
 ecosystem_deployment_followthrough_test_plan_2026_08_26:
   durable_route: wiki/runtime-mirust/reports/tinyrustlm-ecosystem-deployment-followthrough-memory-2026-08-26.md is 10,346 bytes/SHA256 86376facad9df8f1d6c80a3e0110132a0e6e0822426667e89b63f1b737d9e2e9.

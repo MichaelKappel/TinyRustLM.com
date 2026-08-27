@@ -1,5 +1,14 @@
-profile: runtime-mirust.operations.v186
-updated_utc: 2026-08-26T23:24:02Z
+profile: runtime-mirust.operations.v187
+updated_utc: 2026-08-27T22:01:48Z
+
+enterprise_clean_slate_memory_submit_operations_2026_08_27:
+  intake_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md
+  current_operation: Complete durable UAI, inspect the bounded diff, commit the intake and strict submit-contract change, push immediately, fresh-fetch, and prove local HEAD, tracking, FETCH_HEAD, and direct remote equality.
+  post_commit_gate: Run a new external-root protected release-surface gate from the exact clean remote source. Do not edit source after the gate and then reuse its result for changed bytes.
+  verified_local: Rust=27/27; browser-memory=30/30; dotnet-memory=33/33; Core=86/86; Package=40/40; UI=79/79; standard=1642/0/3/1645; build-and-format=green; loopback-relay=green.
+  pending: clean release-surface gate; advertised external MemoryEndpoints schemas and authenticated lifecycle; complete SLM2-only product-consumer replacement and SLM1/ACG1 deletion.
+  next_operation: After the clean checkpoint, use the frozen production SLM2 preregistration to drive red tests, coordinated replacement, deletion, full gates, commit, push, remote equality, and only then publication evaluation.
+  boundary: Never deploy this mixed architecture, infer live proof, add compatibility or migration, or call research a product result. Counters remain 0/20,0/50,0/25,0/40,0/20.
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy

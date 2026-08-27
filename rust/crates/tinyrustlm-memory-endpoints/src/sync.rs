@@ -8,15 +8,15 @@ use sha2::{Digest, Sha256};
 use std::fmt::{Display, Formatter};
 
 /// Stable persisted outbox-entry schema kind.
-pub const MEMORY_ENDPOINTS_OUTBOX_ENTRY_KIND: &str = "tinyrustlm.memory_endpoints.outbox_entry.v1";
+pub const MEMORY_ENDPOINTS_OUTBOX_ENTRY_KIND: &str = "tinyrustlm.memory_endpoints.outbox_entry.v2";
 /// Stable local-commit receipt schema kind.
 pub const MEMORY_ENDPOINTS_LOCAL_RECEIPT_KIND: &str =
-    "tinyrustlm.memory_endpoints.local_receipt.v1";
+    "tinyrustlm.memory_endpoints.local_receipt.v2";
 /// Stable authoritative hosted receipt schema kind.
 pub const MEMORY_ENDPOINTS_AUTHORITATIVE_RECEIPT_KIND: &str =
     "tinyrustlm.memory_endpoints.authoritative_receipt.v1";
 
-const PAYLOAD_DIGEST_DOMAIN: &str = "tinyrustlm.memory_endpoints.submit_payload.digest.v1";
+const PAYLOAD_DIGEST_DOMAIN: &str = "tinyrustlm.memory_endpoints.submit_payload.digest.v2";
 const MAX_EVENT_ID_CHARS: usize = 64;
 const MAX_DEVICE_ID_CHARS: usize = 96;
 const MAX_REMOTE_ID_CHARS: usize = 128;
@@ -339,7 +339,7 @@ pub fn prepare_outbox_entry(
     let idempotency_key = idempotency_key(event_id, &payload_sha256)?;
     let local_receipt = MemoryEndpointsLocalReceipt {
         kind: MEMORY_ENDPOINTS_LOCAL_RECEIPT_KIND.to_string(),
-        version: 1,
+        version: 2,
         event_id: event_id.to_string(),
         payload_sha256: payload_sha256.clone(),
         device_id: device_id.to_string(),
@@ -348,7 +348,7 @@ pub fn prepare_outbox_entry(
 
     Ok(MemoryEndpointsOutboxEntry {
         kind: MEMORY_ENDPOINTS_OUTBOX_ENTRY_KIND.to_string(),
-        version: 1,
+        version: 2,
         event_id: event_id.to_string(),
         device_id: device_id.to_string(),
         idempotency_key,
@@ -380,7 +380,6 @@ pub fn memory_endpoints_payload_sha256(
     append_string(&mut material, "domain", PAYLOAD_DIGEST_DOMAIN);
     append_string(&mut material, "workspace_id", &payload.workspace_id);
     append_string(&mut material, "actor_agent_id", &payload.actor_agent_id);
-    append_string(&mut material, "agent_id", &payload.agent_id);
     append_string(&mut material, "kind", &payload.kind);
     append_u64(&mut material, "version", u64::from(payload.version));
     append_string(&mut material, "scope", &payload.scope);
@@ -389,7 +388,6 @@ pub fn memory_endpoints_payload_sha256(
     append_string(&mut material, "subject", &payload.subject);
     append_string(&mut material, "title", &payload.title);
     append_string(&mut material, "summary", &payload.summary);
-    append_string(&mut material, "safe_summary", &payload.safe_summary);
     append_string(&mut material, "source", &payload.source);
     append_u64(
         &mut material,
@@ -417,7 +415,7 @@ pub fn memory_endpoints_payload_sha256(
 pub fn validate_outbox_entry(
     entry: &MemoryEndpointsOutboxEntry,
 ) -> Result<(), MemoryEndpointsSyncError> {
-    if entry.kind != MEMORY_ENDPOINTS_OUTBOX_ENTRY_KIND || entry.version != 1 {
+    if entry.kind != MEMORY_ENDPOINTS_OUTBOX_ENTRY_KIND || entry.version != 2 {
         return Err(MemoryEndpointsSyncError::Invalid(
             "unsupported outbox kind or version".to_string(),
         ));
@@ -554,9 +552,9 @@ fn validate_submit_payload(
         version: payload.version,
         scope: tier,
         workspace_id: payload.workspace_id.clone(),
-        agent_id: payload.agent_id.clone(),
+        agent_id: payload.actor_agent_id.clone(),
         title: payload.title.clone(),
-        safe_summary: payload.safe_summary.clone(),
+        safe_summary: payload.summary.clone(),
         uai_references: payload.uai_references.clone(),
         tags: payload.tags.clone(),
         source_sha256: payload.source_sha256.clone(),
@@ -568,15 +566,13 @@ fn validate_submit_payload(
         ));
     }
     if payload.kind != MEMORY_ENDPOINTS_MEMORY_RECORD_KIND
-        || payload.actor_agent_id != payload.agent_id
         || payload.scope != MEMORY_ENDPOINTS_TINYRUSTLM_SCOPE
         || payload.scope_id != MEMORY_ENDPOINTS_TINYRUSTLM_SCOPE_ID
         || payload.memory_type != tier.memory_type()
         || payload.subject != payload.title
-        || payload.summary != payload.safe_summary
     {
         return Err(MemoryEndpointsSyncError::Invalid(
-            "submit payload duplicated fields are inconsistent".to_string(),
+            "submit payload contract fields are inconsistent".to_string(),
         ));
     }
     if payload.source.trim().is_empty()
@@ -597,7 +593,7 @@ fn validate_local_receipt(
 ) -> Result<(), MemoryEndpointsSyncError> {
     let receipt = &entry.local_receipt;
     if receipt.kind != MEMORY_ENDPOINTS_LOCAL_RECEIPT_KIND
-        || receipt.version != 1
+        || receipt.version != 2
         || receipt.event_id != entry.event_id
         || receipt.payload_sha256 != entry.payload_sha256
         || receipt.device_id != entry.device_id
@@ -694,7 +690,7 @@ fn idempotency_key(
         ));
     }
     Ok(format!(
-        "tinyrustlm-memory-v1-{event_id}-{}",
+        "tinyrustlm-memory-v2-{event_id}-{}",
         &payload_sha256[..24]
     ))
 }

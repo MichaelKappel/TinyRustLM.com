@@ -79,7 +79,7 @@ pub const MEMORY_ENDPOINTS_CONNECTOR_POLICY_KIND: &str =
     "tinyrustlm.memory_endpoints.connector_policy.v0";
 /// Stable memory record schema kind.
 pub const MEMORY_ENDPOINTS_MEMORY_RECORD_KIND: &str =
-    "tinyrustlm.memory_endpoints.memory_record.v0";
+    "tinyrustlm.memory_endpoints.memory_record.v1";
 /// Stable validation report schema kind.
 pub const MEMORY_ENDPOINTS_VALIDATION_KIND: &str = "tinyrustlm.memory_endpoints.validation.v0";
 /// Public-safe source label shared by Rust, .NET, and browser connector payloads.
@@ -209,14 +209,12 @@ pub struct MemoryEndpointsMemoryRecord {
 
 /// Public MemoryEndpoints memory-event submit payload derived from a TinyRustLM memory record.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub struct MemoryEndpointsSubmitPayload {
     /// MemoryEndpoints workspace id.
     pub workspace_id: String,
     /// Agent id that authored the public-safe memory event.
     pub actor_agent_id: String,
-    /// Compatibility agent id for older connector implementations.
-    pub agent_id: String,
     /// Stable TinyRustLM memory record kind.
     pub kind: String,
     /// Stable TinyRustLM memory record version.
@@ -233,8 +231,6 @@ pub struct MemoryEndpointsSubmitPayload {
     pub title: String,
     /// Public-safe summary required by MemoryEndpoints.
     pub summary: String,
-    /// Compatibility summary for older TinyRustLM clients.
-    pub safe_summary: String,
     /// Public-safe source label.
     pub source: String,
     /// Confidence from 0.0 to 1.0.
@@ -270,7 +266,6 @@ impl MemoryEndpointsMemoryRecord {
         MemoryEndpointsSubmitPayload {
             workspace_id: self.workspace_id.clone(),
             actor_agent_id: self.agent_id.clone(),
-            agent_id: self.agent_id.clone(),
             kind: self.kind.clone(),
             version: self.version,
             scope: MEMORY_ENDPOINTS_TINYRUSTLM_SCOPE.to_string(),
@@ -279,7 +274,6 @@ impl MemoryEndpointsMemoryRecord {
             subject: self.title.clone(),
             title: self.title.clone(),
             summary: self.safe_summary.clone(),
-            safe_summary: self.safe_summary.clone(),
             source: MEMORY_ENDPOINTS_CONNECTOR_SOURCE.to_string(),
             confidence: 0.8,
             uai_references: self.uai_references.clone(),

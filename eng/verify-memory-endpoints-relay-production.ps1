@@ -319,8 +319,7 @@ try {
     $shortSave = Invoke-RelayWebRequest -Method POST -Path "/api/matm/memory-events/submit" -IdempotencyPrefix "tinyrustlm-production-relay-short" -Payload @{
         workspaceId = $WorkspaceId
         actorAgentId = $AgentId
-        agentId = $AgentId
-        kind = "tinyrustlm.memory_endpoints.production_relay_record.v0"
+        kind = "tinyrustlm.memory_endpoints.memory_record.v1"
         version = 1
         scope = $Scope
         scopeId = $ScopeId
@@ -328,7 +327,6 @@ try {
         subject = "TinyRustLM production relay short-term verifier"
         title = "TinyRustLM production relay short-term verifier"
         summary = "Public-safe TinyRustLM production relay short-term memory probe $shortMarker."
-        safeSummary = "Public-safe TinyRustLM production relay short-term memory probe $shortMarker."
         source = "eng/verify-memory-endpoints-relay-production.ps1"
         confidence = 0.8
         uaiReferences = @(".uai/short-term-memory.uai", "docs/nuget/MEMORY_ENDPOINTS_CONNECTOR.md")
@@ -341,8 +339,7 @@ try {
     $longSave = Invoke-RelayWebRequest -Method POST -Path "/api/matm/memory-events/submit" -IdempotencyPrefix "tinyrustlm-production-relay-long" -Payload @{
         workspaceId = $WorkspaceId
         actorAgentId = $AgentId
-        agentId = $AgentId
-        kind = "tinyrustlm.memory_endpoints.production_relay_record.v0"
+        kind = "tinyrustlm.memory_endpoints.memory_record.v1"
         version = 1
         scope = $Scope
         scopeId = $ScopeId
@@ -350,7 +347,6 @@ try {
         subject = "TinyRustLM production relay long-term verifier"
         title = "TinyRustLM production relay long-term verifier"
         summary = "Public-safe TinyRustLM production relay long-term memory probe $longMarker."
-        safeSummary = "Public-safe TinyRustLM production relay long-term memory probe $longMarker."
         source = "eng/verify-memory-endpoints-relay-production.ps1"
         confidence = 0.8
         uaiReferences = @(".uai/long-term-memory.uai", "docs/nuget/MEMORY_ENDPOINTS_CONNECTOR.md")

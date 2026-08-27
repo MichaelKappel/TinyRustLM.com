@@ -66,7 +66,6 @@ public sealed record MemoryEndpointsAuthoritativeReceipt(
 public sealed record MemoryEndpointsSubmitPayload(
     string WorkspaceId,
     string ActorAgentId,
-    string AgentId,
     string Kind,
     uint Version,
     string Scope,
@@ -75,7 +74,6 @@ public sealed record MemoryEndpointsSubmitPayload(
     string Subject,
     string Title,
     string Summary,
-    string SafeSummary,
     string Source,
     double Confidence,
     IReadOnlyList<string> UaiReferences,
@@ -88,7 +86,6 @@ public sealed record MemoryEndpointsSubmitPayload(
         other is not null &&
         WorkspaceId == other.WorkspaceId &&
         ActorAgentId == other.ActorAgentId &&
-        AgentId == other.AgentId &&
         Kind == other.Kind &&
         Version == other.Version &&
         Scope == other.Scope &&
@@ -97,7 +94,6 @@ public sealed record MemoryEndpointsSubmitPayload(
         Subject == other.Subject &&
         Title == other.Title &&
         Summary == other.Summary &&
-        SafeSummary == other.SafeSummary &&
         Source == other.Source &&
         Confidence.Equals(other.Confidence) &&
         UaiReferences.SequenceEqual(other.UaiReferences, StringComparer.Ordinal) &&
@@ -111,7 +107,6 @@ public sealed record MemoryEndpointsSubmitPayload(
         var hash = new HashCode();
         hash.Add(WorkspaceId, StringComparer.Ordinal);
         hash.Add(ActorAgentId, StringComparer.Ordinal);
-        hash.Add(AgentId, StringComparer.Ordinal);
         hash.Add(Kind, StringComparer.Ordinal);
         hash.Add(Version);
         hash.Add(Scope, StringComparer.Ordinal);
@@ -120,7 +115,6 @@ public sealed record MemoryEndpointsSubmitPayload(
         hash.Add(Subject, StringComparer.Ordinal);
         hash.Add(Title, StringComparer.Ordinal);
         hash.Add(Summary, StringComparer.Ordinal);
-        hash.Add(SafeSummary, StringComparer.Ordinal);
         hash.Add(Source, StringComparer.Ordinal);
         hash.Add(Confidence);
         foreach (var reference in UaiReferences)
@@ -300,21 +294,21 @@ public sealed record MemoryEndpointsOutboxEntry(
 public static class MemoryEndpointsSyncContract
 {
     /// <summary>Stable persisted outbox-entry schema kind.</summary>
-    public const string OutboxEntryKind = "tinyrustlm.memory_endpoints.outbox_entry.v1";
+    public const string OutboxEntryKind = "tinyrustlm.memory_endpoints.outbox_entry.v2";
 
     /// <summary>Stable local-commit receipt schema kind.</summary>
-    public const string LocalReceiptKind = "tinyrustlm.memory_endpoints.local_receipt.v1";
+    public const string LocalReceiptKind = "tinyrustlm.memory_endpoints.local_receipt.v2";
 
     /// <summary>Stable authoritative hosted receipt schema kind.</summary>
     public const string AuthoritativeReceiptKind = "tinyrustlm.memory_endpoints.authoritative_receipt.v1";
 
     /// <summary>Stable public memory-record schema kind.</summary>
-    public const string MemoryRecordKind = "tinyrustlm.memory_endpoints.memory_record.v0";
+    public const string MemoryRecordKind = "tinyrustlm.memory_endpoints.memory_record.v1";
 
     /// <summary>Public-safe source label shared by Rust, .NET, and browser payloads.</summary>
     public const string ConnectorSource = "TinyRustLM MemoryEndpoints connector";
 
-    private const string PayloadDigestDomain = "tinyrustlm.memory_endpoints.submit_payload.digest.v1";
+    private const string PayloadDigestDomain = "tinyrustlm.memory_endpoints.submit_payload.digest.v2";
     private static readonly JsonSerializerOptions PersistedJsonOptions = CreatePersistedJsonOptions();
 
     /// <summary>Creates a deterministic, credential-free outbox entry and local receipt.</summary>
@@ -342,7 +336,7 @@ public static class MemoryEndpointsSyncContract
         var idempotencyKey = CreateIdempotencyKey(eventId, payloadSha256);
         return new MemoryEndpointsOutboxEntry(
             OutboxEntryKind,
-            1,
+            2,
             eventId,
             deviceId,
             idempotencyKey,
@@ -353,7 +347,7 @@ public static class MemoryEndpointsSyncContract
             MemoryEndpointsRetryState.Empty,
             new MemoryEndpointsLocalReceipt(
                 LocalReceiptKind,
-                1,
+                2,
                 eventId,
                 payloadSha256,
                 deviceId,
@@ -385,7 +379,6 @@ public static class MemoryEndpointsSyncContract
         return new MemoryEndpointsSubmitPayload(
             workspaceId,
             agentId,
-            agentId,
             MemoryRecordKind,
             1,
             "project",
@@ -393,7 +386,6 @@ public static class MemoryEndpointsSyncContract
             memoryType,
             record.Title,
             record.Title,
-            record.SafeSummary,
             record.SafeSummary,
             ConnectorSource,
             0.8,
@@ -419,7 +411,6 @@ public static class MemoryEndpointsSyncContract
         AppendString(material, "domain", PayloadDigestDomain);
         AppendString(material, "workspace_id", payload.WorkspaceId);
         AppendString(material, "actor_agent_id", payload.ActorAgentId);
-        AppendString(material, "agent_id", payload.AgentId);
         AppendString(material, "kind", payload.Kind);
         AppendUnsigned(material, "version", payload.Version);
         AppendString(material, "scope", payload.Scope);
@@ -428,7 +419,6 @@ public static class MemoryEndpointsSyncContract
         AppendString(material, "subject", payload.Subject);
         AppendString(material, "title", payload.Title);
         AppendString(material, "summary", payload.Summary);
-        AppendString(material, "safe_summary", payload.SafeSummary);
         AppendString(material, "source", payload.Source);
         AppendUnsigned(material, "confidence_micros", ConfidenceMicros(payload.Confidence));
         AppendArray(material, "uai_references", payload.UaiReferences);
@@ -452,7 +442,7 @@ public static class MemoryEndpointsSyncContract
     public static void ValidateOutboxEntry(MemoryEndpointsOutboxEntry entry)
     {
         ArgumentNullException.ThrowIfNull(entry);
-        if (entry.Kind != OutboxEntryKind || entry.Version != 1)
+        if (entry.Kind != OutboxEntryKind || entry.Version != 2)
         {
             throw new InvalidOperationException("Unsupported MemoryEndpoints outbox kind or version.");
         }
@@ -473,7 +463,7 @@ public static class MemoryEndpointsSyncContract
             throw new InvalidOperationException("MemoryEndpoints outbox scope does not match payload tier.");
         }
         if (entry.LocalReceipt.Kind != LocalReceiptKind ||
-            entry.LocalReceipt.Version != 1 ||
+            entry.LocalReceipt.Version != 2 ||
             entry.LocalReceipt.EventId != entry.EventId ||
             entry.LocalReceipt.PayloadSha256 != entry.PayloadSha256 ||
             entry.LocalReceipt.DeviceId != entry.DeviceId ||
@@ -613,24 +603,22 @@ public static class MemoryEndpointsSyncContract
     private static void ValidateSubmitPayload(MemoryEndpointsSubmitPayload payload)
     {
         ValidateIdentifier("workspace ID", payload.WorkspaceId, 128);
-        ValidateIdentifier("agent ID", payload.AgentId, 96);
-        if (payload.ActorAgentId != payload.AgentId ||
-            payload.Kind != MemoryRecordKind ||
+        ValidateIdentifier("actor agent ID", payload.ActorAgentId, 96);
+        if (payload.Kind != MemoryRecordKind ||
             payload.Version != 1 ||
             payload.Scope != "project" ||
             payload.ScopeId != "tinyrustlm.com" ||
             payload.MemoryType != (payload.TinyrustlmMemoryTier == "long_term" ? "handoff" : "status") ||
             payload.TinyrustlmMemoryTier is not ("short_term" or "long_term") ||
             payload.Subject != payload.Title ||
-            payload.Summary != payload.SafeSummary ||
             payload.Source != ConnectorSource)
         {
-            throw new InvalidOperationException("MemoryEndpoints submit payload duplicated fields are inconsistent.");
+            throw new InvalidOperationException("MemoryEndpoints submit payload contract fields are inconsistent.");
         }
         ValidateMemoryRecord(new TinyRustLmMemoryEndpointRecord(
             payload.TinyrustlmMemoryTier,
             payload.Title,
-            payload.SafeSummary,
+            payload.Summary,
             payload.UaiReferences,
             payload.Tags,
             payload.SourceSha256));
@@ -680,7 +668,7 @@ public static class MemoryEndpointsSyncContract
         {
             throw new InvalidOperationException("MemoryEndpoints payload fingerprint is invalid.");
         }
-        return $"tinyrustlm-memory-v1-{eventId}-{payloadSha256[..24]}";
+        return $"tinyrustlm-memory-v2-{eventId}-{payloadSha256[..24]}";
     }
 
     private static IReadOnlyList<string> NormalizeSet(IEnumerable<string> values)

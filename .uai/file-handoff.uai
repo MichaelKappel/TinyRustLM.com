@@ -1,5 +1,13 @@
-profile: runtime-mirust.file-handoff.v132
-updated_utc: 2026-08-26T17:29:39Z
+profile: runtime-mirust.file-handoff.v133
+updated_utc: 2026-08-27T22:01:48Z
+
+current_enterprise_clean_slate_handoff_2026_08_27:
+  intake_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md
+  prompts: docs/research-prompts/2026-08-27-twelve-disconnected-enterprise-clean-slate-strategy-research-prompts.md,76583,659c49aa6230c0d9c7d3f2bbec9004295b8b2eb161ba716ac5ecfbf49ae9d465; commit a20fe47d7eecda4b30bda785d1b58f41bdea825e is pushed and verified.
+  intake: Twelve raw reports are preserved under docs/report-intake/2026-08-27/ontological-machine-intelligence-research/ at inventory 622aeee51b3a687d573880b0474d395e2ee44db674e91eca65441c7a7c2c3ede. Read the synthesis and TDD delta, not raw recommendations as authority.
+  durable_memory: wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md,9166,f4a890676be9cb086e8b65cb063a345cc4a98e0be65a0a9a006b53365238a158.
+  implementation: One exact 16-field MemoryEndpoints submit contract with digest ffa9fb1d3b729902d8a62621ce08d627b7042aaad89f5d8ca51a6257f3e305aa is locally green across Rust, .NET, browser, scripts, and fixture; clean committed release gate pending.
+  next: Commit/push/fresh-four-way-verify, clean protected gate, then full SLM2 consumer replacement and SLM1/ACG1 executable deletion. No deployment or counter progress.
 
 current_qwen3_model_load_correction_2026_08_26:
   durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md, 20,442 bytes/SHA256 91764c9d5bde7d96e3d650396a1e882984b0b91baa0814c3b791f0d58321b4df before any successor numerical work.

@@ -18,12 +18,12 @@
     throw new Error("TinyRustLM distributed-sync v1 transport must load before memory sync");
   }
 
-  const OUTBOX_ENTRY_KIND = "tinyrustlm.memory_endpoints.outbox_entry.v1";
-  const LOCAL_RECEIPT_KIND = "tinyrustlm.memory_endpoints.local_receipt.v1";
+  const OUTBOX_ENTRY_KIND = "tinyrustlm.memory_endpoints.outbox_entry.v2";
+  const LOCAL_RECEIPT_KIND = "tinyrustlm.memory_endpoints.local_receipt.v2";
   const AUTHORITATIVE_RECEIPT_KIND = "tinyrustlm.memory_endpoints.authoritative_receipt.v1";
   const CHECKPOINT_KIND = "tinyrustlm.memory_endpoints.checkpoint.v1";
   const REMOTE_HEAD_KIND = "tinyrustlm.memory_endpoints.remote_head.v1";
-  const MEMORY_RECORD_KIND = "tinyrustlm.memory_endpoints.memory_record.v0";
+  const MEMORY_RECORD_KIND = "tinyrustlm.memory_endpoints.memory_record.v1";
   const RETRIEVAL_RECEIPT_KIND = "tinyrustlm.memory_endpoints.retrieval_receipt.v1";
   const REVISION_MUTATION_KIND = "tinyrustlm.memory_endpoints.revision_mutation.v1";
   const REVISION_HEAD_KIND = "tinyrustlm.memory_endpoints.revision_head.v1";
@@ -34,9 +34,9 @@
   const DISTRIBUTED_SYNC_PROTOCOL_VERSION = 1;
   const DISTRIBUTED_SYNC_ROUTE_PREFIX = "/api/matm/sync/";
   const CONNECTOR_SOURCE = "TinyRustLM MemoryEndpoints connector";
-  const PAYLOAD_DIGEST_DOMAIN = "tinyrustlm.memory_endpoints.submit_payload.digest.v1";
-  const DATABASE_NAME = "tinyrustlm-memory-endpoints-v1";
-  const DATABASE_VERSION = 2;
+  const PAYLOAD_DIGEST_DOMAIN = "tinyrustlm.memory_endpoints.submit_payload.digest.v2";
+  const DATABASE_NAME = "tinyrustlm-memory-endpoints";
+  const DATABASE_VERSION = 1;
   const OUTBOX_STORE = "outbox";
   const QUARANTINE_STORE = "quarantine";
   const RECEIPT_STORE = "receipts";
@@ -72,8 +72,8 @@
   ]);
   const PENDING_STATES = new Set(["saved_locally", "queued", "sending", "retry_pending"]);
   const PAYLOAD_KEYS = new Set([
-    "workspaceId", "actorAgentId", "agentId", "kind", "version", "scope", "scopeId",
-    "memoryType", "subject", "title", "summary", "safeSummary", "source", "confidence",
+    "workspaceId", "actorAgentId", "kind", "version", "scope", "scopeId",
+    "memoryType", "subject", "title", "summary", "source", "confidence",
     "uaiReferences", "tags", "tinyrustlmMemoryTier", "sourceSha256"
   ]);
   const OUTBOX_KEYS = new Set([
@@ -1214,14 +1214,13 @@
 
   function normalizedPayload(payload) {
     assertExactKeys(payload, PAYLOAD_KEYS, [
-      "workspaceId", "actorAgentId", "agentId", "kind", "version", "scope", "scopeId",
-      "memoryType", "subject", "title", "summary", "safeSummary", "source", "confidence",
+      "workspaceId", "actorAgentId", "kind", "version", "scope", "scopeId",
+      "memoryType", "subject", "title", "summary", "source", "confidence",
       "uaiReferences", "tags", "tinyrustlmMemoryTier"
     ], "MemoryEndpoints payload");
     return {
       workspaceId: payload.workspaceId,
       actorAgentId: payload.actorAgentId,
-      agentId: payload.agentId,
       kind: payload.kind,
       version: payload.version,
       scope: payload.scope,
@@ -1230,7 +1229,6 @@
       subject: payload.subject,
       title: payload.title,
       summary: payload.summary,
-      safeSummary: payload.safeSummary,
       source: payload.source,
       confidence: payload.confidence,
       uaiReferences: normalizeSet(payload.uaiReferences, "uaiReferences"),
@@ -1243,14 +1241,13 @@
   function validateSubmitPayload(payload, requireNormalized = true) {
     const normalized = normalizedPayload(payload);
     validateIdentifier("workspaceId", normalized.workspaceId, 128);
-    validateIdentifier("agentId", normalized.agentId, 96);
+    validateIdentifier("actorAgentId", normalized.actorAgentId, 96);
     const expectedMemoryType = normalized.tinyrustlmMemoryTier === "long_term"
       ? "handoff"
       : normalized.tinyrustlmMemoryTier === "short_term"
         ? "status"
         : "";
     if (
-      normalized.actorAgentId !== normalized.agentId ||
       normalized.kind !== MEMORY_RECORD_KIND ||
       normalized.version !== 1 ||
       normalized.scope !== "project" ||
@@ -1258,13 +1255,12 @@
       !expectedMemoryType ||
       normalized.memoryType !== expectedMemoryType ||
       normalized.subject !== normalized.title ||
-      normalized.summary !== normalized.safeSummary ||
       normalized.source !== CONNECTOR_SOURCE
     ) {
-      throw new Error("MemoryEndpoints payload duplicated fields are inconsistent");
+      throw new Error("MemoryEndpoints payload contract fields are inconsistent");
     }
     validatePublicText("MemoryEndpoints title", normalized.title, 160);
-    validatePublicText("MemoryEndpoints summary", normalized.safeSummary);
+    validatePublicText("MemoryEndpoints summary", normalized.summary);
     validatePublicText("MemoryEndpoints source", normalized.source, 160);
     if (!Number.isFinite(normalized.confidence) || normalized.confidence < 0 || normalized.confidence > 1) {
       throw new Error("MemoryEndpoints confidence is invalid");
@@ -1334,7 +1330,6 @@
     appendString(parts, "domain", PAYLOAD_DIGEST_DOMAIN);
     appendString(parts, "workspace_id", normalized.workspaceId);
     appendString(parts, "actor_agent_id", normalized.actorAgentId);
-    appendString(parts, "agent_id", normalized.agentId);
     appendString(parts, "kind", normalized.kind);
     appendUnsigned(parts, "version", normalized.version);
     appendString(parts, "scope", normalized.scope);
@@ -1343,7 +1338,6 @@
     appendString(parts, "subject", normalized.subject);
     appendString(parts, "title", normalized.title);
     appendString(parts, "summary", normalized.summary);
-    appendString(parts, "safe_summary", normalized.safeSummary);
     appendString(parts, "source", normalized.source);
     appendUnsigned(parts, "confidence_micros", Math.round(normalized.confidence * 1_000_000));
     appendArray(parts, "uai_references", normalized.uaiReferences);
@@ -1363,7 +1357,7 @@
     if (!isSha256(payloadSha256)) {
       throw new Error("payload fingerprint is invalid");
     }
-    return `tinyrustlm-memory-v1-${eventId}-${payloadSha256.slice(0, 24)}`;
+    return `tinyrustlm-memory-v2-${eventId}-${payloadSha256.slice(0, 24)}`;
   }
 
   function requireUnixMilliseconds(label, value, allowZero = false) {
@@ -1382,7 +1376,7 @@
     const idempotencyKey = createIdempotencyKey(options.eventId, payloadSha256);
     return {
       kind: OUTBOX_ENTRY_KIND,
-      version: 1,
+      version: 2,
       eventId: options.eventId,
       deviceId: options.deviceId,
       idempotencyKey,
@@ -1398,7 +1392,7 @@
       },
       localReceipt: {
         kind: LOCAL_RECEIPT_KIND,
-        version: 1,
+        version: 2,
         eventId: options.eventId,
         payloadSha256,
         deviceId: options.deviceId,
@@ -1496,7 +1490,7 @@
   async function validateOutboxEntry(input) {
     assertExactKeys(input, OUTBOX_KEYS, OUTBOX_KEYS, "MemoryEndpoints outbox entry");
     const entry = clone(input);
-    if (entry.kind !== OUTBOX_ENTRY_KIND || entry.version !== 1) {
+    if (entry.kind !== OUTBOX_ENTRY_KIND || entry.version !== 2) {
       throw new Error("unsupported MemoryEndpoints outbox kind or version");
     }
     validateIdentifier("eventId", entry.eventId, 64);
@@ -1521,7 +1515,7 @@
     validateRetry(entry);
     assertExactKeys(entry.localReceipt, LOCAL_RECEIPT_KEYS, LOCAL_RECEIPT_KEYS, "MemoryEndpoints local receipt");
     if (
-      entry.localReceipt.kind !== LOCAL_RECEIPT_KIND || entry.localReceipt.version !== 1 ||
+      entry.localReceipt.kind !== LOCAL_RECEIPT_KIND || entry.localReceipt.version !== 2 ||
       entry.localReceipt.eventId !== entry.eventId ||
       entry.localReceipt.payloadSha256 !== entry.payloadSha256 ||
       entry.localReceipt.deviceId !== entry.deviceId ||

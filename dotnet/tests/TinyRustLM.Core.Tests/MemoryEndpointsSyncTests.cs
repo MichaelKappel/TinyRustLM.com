@@ -30,9 +30,12 @@ public sealed class MemoryEndpointsSyncTests
 
         Assert.Equal(first.PayloadSha256, second.PayloadSha256);
         Assert.Equal(
-            "34de45661611662069fde208795ad26b5ec1d879f11f36f5bda32390d47eb2eb",
+            "ffa9fb1d3b729902d8a62621ce08d627b7042aaad89f5d8ca51a6257f3e305aa",
             first.PayloadSha256);
         Assert.Equal(first.IdempotencyKey, second.IdempotencyKey);
+        Assert.StartsWith("tinyrustlm-memory-v2-", first.IdempotencyKey, StringComparison.Ordinal);
+        Assert.Equal(2U, first.Version);
+        Assert.Equal(2U, first.LocalReceipt.Version);
         Assert.Equal(MemoryEndpointsOutboxState.SavedLocally, first.State);
         Assert.Equal(first.EventId, first.LocalReceipt.EventId);
         Assert.Equal(first.PayloadSha256, first.LocalReceipt.PayloadSha256);
@@ -86,6 +89,10 @@ public sealed class MemoryEndpointsSyncTests
         Assert.DoesNotContain("bearerToken", json, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("authorization", json, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("workspaceKey", json, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("\"actorAgentId\"", json, StringComparison.Ordinal);
+        Assert.Contains("\"summary\"", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"agentId\"", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"safeSummary\"", json, StringComparison.Ordinal);
         Assert.Equal(entry, MemoryEndpointsSyncContract.DeserializeOutboxEntry(json));
 
         using var document = JsonDocument.Parse(json);
@@ -94,6 +101,20 @@ public sealed class MemoryEndpointsSyncTests
             .Append("\"workspaceKey\":\"must-not-persist\"");
         var withCredential = $"{{{string.Join(',', properties)}}}";
         Assert.Throws<JsonException>(() => MemoryEndpointsSyncContract.DeserializeOutboxEntry(withCredential));
+
+        var withRetiredAgentAlias = json.Replace(
+            "\"actorAgentId\":\"tinyrustlm-agent\",",
+            "\"actorAgentId\":\"tinyrustlm-agent\",\"agentId\":\"tinyrustlm-agent\",",
+            StringComparison.Ordinal);
+        Assert.Throws<JsonException>(() =>
+            MemoryEndpointsSyncContract.DeserializeOutboxEntry(withRetiredAgentAlias));
+
+        var withRetiredSummaryAlias = json.Replace(
+            "\"summary\":\"Public-safe durable memory for the offline synchronization contract.\",",
+            "\"summary\":\"Public-safe durable memory for the offline synchronization contract.\",\"safeSummary\":\"Public-safe durable memory for the offline synchronization contract.\",",
+            StringComparison.Ordinal);
+        Assert.Throws<JsonException>(() =>
+            MemoryEndpointsSyncContract.DeserializeOutboxEntry(withRetiredSummaryAlias));
 
         var mutated = entry with
         {

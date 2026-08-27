@@ -7,6 +7,18 @@ const DEFAULT_WORKSPACE_ID = "fixture-workspace-id";
 const DEFAULT_WORKSPACE_KEY = "fixture-workspace-key";
 const MAX_BODY_BYTES = 64 * 1024;
 const RELAY_PREFIX = "/api/memoryendpoints";
+const MEMORY_EVENT_KEYS = new Set([
+  "workspaceId", "actorAgentId", "kind", "version", "scope", "scopeId", "memoryType",
+  "subject", "title", "summary", "source", "confidence", "uaiReferences", "tags",
+  "tinyrustlmMemoryTier", "sourceSha256",
+]);
+
+function hasOnlyOwnKeys(value, allowed) {
+  return value !== null &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    Object.keys(value).every((key) => allowed.has(key));
+}
 
 function parsePort(value) {
   const port = Number.parseInt(String(value || ""), 10);
@@ -116,9 +128,15 @@ function createFixtureServer({ workspaceId, workspaceKey }) {
       if (path === `${RELAY_PREFIX}/api/matm/memory-events/submit` && request.method === "POST") {
         const payload = await readJsonBody(request);
         if (
+          !hasOnlyOwnKeys(payload, MEMORY_EVENT_KEYS) ||
           payload.workspaceId !== workspaceId ||
+          typeof payload.actorAgentId !== "string" ||
+          payload.kind !== "tinyrustlm.memory_endpoints.memory_record.v1" ||
+          payload.version !== 1 ||
+          payload.scope !== "project" ||
+          payload.scopeId !== "tinyrustlm.com" ||
           !["status", "handoff"].includes(payload.memoryType) ||
-          typeof payload.safeSummary !== "string"
+          typeof payload.summary !== "string"
         ) {
           sendJson(response, 400, { error: "invalid memory event" });
           return;

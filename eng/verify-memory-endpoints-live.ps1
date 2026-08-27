@@ -273,8 +273,7 @@ try {
     Invoke-MemoryPost -Path "/api/matm/memory-events/submit" -IdempotencyPrefix "tinyrustlm-live-short" -Payload @{
         workspaceId = $WorkspaceId
         actorAgentId = $AgentId
-        agentId = $AgentId
-        kind = "tinyrustlm.memory_endpoints.memory_record.v0"
+        kind = "tinyrustlm.memory_endpoints.memory_record.v1"
         version = 1
         scope = $Scope
         scopeId = $ScopeId
@@ -282,7 +281,6 @@ try {
         subject = "TinyRustLM live short-term memory verifier"
         title = "TinyRustLM live short-term memory verifier"
         summary = "Public-safe TinyRustLM short-term hosted memory probe $shortMarker."
-        safeSummary = "Public-safe TinyRustLM short-term hosted memory probe $shortMarker."
         source = "eng/verify-memory-endpoints-live.ps1"
         confidence = 0.8
         uaiReferences = @(".uai/short-term-memory.uai", "docs/nuget/MEMORY_ENDPOINTS_CONNECTOR.md")
@@ -293,8 +291,7 @@ try {
     Invoke-MemoryPost -Path "/api/matm/memory-events/submit" -IdempotencyPrefix "tinyrustlm-live-long" -Payload @{
         workspaceId = $WorkspaceId
         actorAgentId = $AgentId
-        agentId = $AgentId
-        kind = "tinyrustlm.memory_endpoints.memory_record.v0"
+        kind = "tinyrustlm.memory_endpoints.memory_record.v1"
         version = 1
         scope = $Scope
         scopeId = $ScopeId
@@ -302,7 +299,6 @@ try {
         subject = "TinyRustLM live long-term memory verifier"
         title = "TinyRustLM live long-term memory verifier"
         summary = "Public-safe TinyRustLM long-term hosted memory probe $longMarker."
-        safeSummary = "Public-safe TinyRustLM long-term hosted memory probe $longMarker."
         source = "eng/verify-memory-endpoints-live.ps1"
         confidence = 0.8
         uaiReferences = @(".uai/long-term-memory.uai", "docs/nuget/MEMORY_ENDPOINTS_CONNECTOR.md")

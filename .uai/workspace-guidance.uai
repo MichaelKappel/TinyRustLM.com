@@ -1,9 +1,10 @@
-profile: runtime-mirust.workspace-guidance.v138
-updated_utc: 2026-08-25T01:20:47Z
+profile: runtime-mirust.workspace-guidance.v139
+updated_utc: 2026-08-27T22:01:48Z
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
 active_branch: codex/model-acquisition-v2
 protected_checkout: E:\Source\Rust\TinyRustLM.com
 startup_rule: Read AGENTS.md, workspace.uai, and local .uai startup files before broad loading.
+active_enterprise_clean_slate_rule_2026_08_27: Read `wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md` before MemoryEndpoints serialization, model runtime, browser admission, package, release, or deployment work. TinyRustLM is one prelaunch product. Do not add legacy support, compatibility, migration, aliases, fallback, dual paths, deferred cleanup, debt, stale documentation, or product-V2 positioning. Complete the frozen SLM2 consumer replacement and delete all active SLM1/ACG1 executable paths before publication.
 active_companion_rotation_revocation_rule_2026_08_24: Read `docs/architecture/2026-08-24-companion-rotation-revocation-state.md` and the newest `workspace.uai` checkpoint before Companion session, listener, browser-client, projection, or transfer changes. Remote-exact implementation commit is `6537c6070ecd109c65791493864d8bd90ac8971d`; rotation/revocation is green. Implement strict numeric-loopback Kestrel and raw-socket rejection next, then the memory-only browser client. Preserve current complete-Node 1,173/15/1 blocker, unauthorized MemoryEndpoints, zero campaign counters, and all clean-slate prohibitions.
 active_companion_state_rule_2026_08_24: Read `docs/architecture/2026-08-24-companion-installation-pairing-session-state.md` and the newest `workspace.uai` checkpoint before Companion identity, pairing, session, rotation, revocation, listener, browser-client, or transfer changes. Remote-exact state commit is `66248fd95443b5cdeac5936502a33d4488fcc235`; implement rotation/revocation next and do not start listener output until that state gate is green. Preserve Linux-execution and full-Node blockers and zero campaign counters.
 active_recovery_checkout_rule_2026_08_24: All current TinyRustLM goal work, edits, commits, pushes, tests, and deployment preparation occur only in `E:\Source\.tinyrustlm-model-acquisition-recovered-20260819` on `codex/model-acquisition-v2`. Never modify the protected `E:\Source\Rust\TinyRustLM.com` checkout and never write `D:`. Reverify branch, frozen-goal hash, and current remote-exact checkpoint before work.
