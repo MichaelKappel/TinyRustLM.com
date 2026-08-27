@@ -77,6 +77,21 @@ test("binds the clean source parent and sole browser runtime owners", () => {
     compatibilityBehaviorAdded: false,
     campaignCreditAuthorized: false
   });
+  assert.deepEqual(profile.workerProtocolPrecisionClosure, {
+    registeredAtUtc: "2026-08-27T23:52:00Z",
+    stage: "output-free-result-and-payload-preflight-before-worker-source",
+    reasonCode: "browser-runtime-u64-json-number-is-not-lossless-in-javascript",
+    priorCurrentContract: {
+      commit: "ed531e251762b697e9195bcb4b7273a6505fab14",
+      byteLength: 25672,
+      sha256: "c74ce60ff99ba69ab49a266883b3838dfa463de96d9466194ca20485314b7941"
+    },
+    disposition: "encode-transcript-revision-as-two-unsigned32-state-fields-and-close-payload-types",
+    workerSourceExistedAtRegistration: false,
+    lossyJsonNumberAllowed: false,
+    compatibilityBehaviorAdded: false,
+    campaignCreditAuthorized: false
+  });
 });
 
 test("defines one worker-owned runtime with no direct UI authority", () => {
@@ -235,6 +250,12 @@ test("binds every mutation to one expected operation and one terminal output", (
   assert.equal(result.outputMayBeSelectedBestOfN, false);
   assert.equal(result.finishConsumesTerminalOutputExactlyOnce, true);
   assert.equal(result.secondFinishRejects, true);
+  assert.deepEqual(result.stateTranscriptRevisionEncoding, {
+    fields: ["transcriptRevisionLow", "transcriptRevisionHigh"],
+    eachFieldIsUnsigned32: true,
+    combinedJsonNumberAllowed: false,
+    combinedDecimalStringAllowed: false
+  });
 });
 
 test("closes worker ordering, binary ownership, and network authority", () => {
@@ -265,6 +286,11 @@ test("closes worker ordering, binary ownership, and network authority", () => {
   assert.equal(worker.wasmModuleSha256RequiredAndRecomputed, true);
   assert.deepEqual(worker.wasmModuleImportsAllowed, []);
   assert.equal(worker.wasmModuleMaximumMemoryBytes, 3 * 1024 * 1024 * 1024);
+  assert.equal(worker.payloadScalarRules.transcriptRevisionWords, "unsigned32");
+  assert.equal(worker.payloadScalarRules.artifactChunkBytes,
+    "transferable-array-buffer-1-to-4194304-bytes");
+  assert.equal(worker.payloadScalarRules.emptyPayload,
+    "plain-object-with-zero-own-keys");
   assert.deepEqual(worker.artifactKinds.map((entry) => entry.name), [
     "model",
     "tokenizer",

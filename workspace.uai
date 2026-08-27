@@ -1,7 +1,7 @@
-profile: tinyrustlm.source-workspace.v461
+profile: tinyrustlm.source-workspace.v462
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-27T23:46:34Z
+updated_utc: 2026-08-27T23:52:00Z
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy
@@ -16,13 +16,14 @@ memory_endpoints_portable_memory_authority_2026_08_26:
 
 current_browser_runtime_wasm_clean_cut_2026_08_27:
   status: raw_wasm_boundary_complete_worker_protocol_closed_output_free_worker_pending
-  machine_authority: contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json,25672,c74ce60ff99ba69ab49a266883b3838dfa463de96d9466194ca20485314b7941
-  architecture: docs/architecture/2026-08-27-browser-runtime-wasm-clean-cut-preregistration.md,14810,d69a007cd6a7e042a2054b714b4e29453261b226cded07f04e9ad19680357a03
+  machine_authority: contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json,27425,b453ac0b30dc3509d7c11731aedd58e6636f40ec0b2d1a81bba066160717f18c
+  architecture: docs/architecture/2026-08-27-browser-runtime-wasm-clean-cut-preregistration.md,15334,98aae98bbc457e4ed6f85d37560c4a1db19d04ab2de5ea44c56dea8e6b1cb763
   browser_status_doc: tinyrustlm/docs/browser-runtime.md,12196,b5d78e589a308976b7e30e8d343cc52951d79e89ff175e69df0188319a9828fc
   parent: commit cf56eb1a563c85acfc7257d128f5fe3b386da954, tree 00e364b0b1b71a458c749f16c720ca5bc3f4073f
   implementation: Commit 5c4f46c7af35bc6e892097cd4924ca58286efa8c is pushed, freshly fetched, and exact across local HEAD, tracking, FETCH_HEAD, and direct remote. It adds move-only model transfer, the production import-free raw WASM crate, explicit 3 GiB module maximum, closed nine-kind transfer boundary, bounded policy/result/error state, exact operation CAS, and terminal release.
   corrected_defects: Real-artifact preflight caught the impossible 65,536-byte Sampling2 cap against the canonical exact 65,800-byte profile and caught implicit replacement of caller operation authority with graph identity. Current source accepts exact Sampling2 65,800 and Prompt2 512 bytes, preserves operation identity on activation, and requires explicit operation advance before model switching. The original registration hash is preserved inside the corrected authority; no compatibility behavior exists.
   worker_protocol_registration: Before worker source, the contract preserves prior remote-exact commit 9b7f25a235315b1a97dfc54e47e133b3e8ea0eb1 and closes eleven commands, twelve events, exact payloads, seven artifact kinds, 4194304-byte chunks, bounded independent sequences, deterministic event IDs, module verification, and fatal-state rules. No generic invoke, separate finish, URL/path input, network authority, or whole-model JavaScript owner exists.
+  precision_registration: Before worker source, commit ed531e251762b697e9195bcb4b7273a6505fab14 exposed the prior contract identity and a precision preflight closed payload scalar types and replaced the state result's lossy combined u64 JSON transcript revision with exact low/high u32 fields. No number or string alias exists.
   verification: Rust composition/runtime/native/browser boundary tests pass 43 unit plus 11 integration/vector tests and all doc tests; clippy is warning-free. Node contract/raw ABI passes 16/16 without private access and 17/17 with the opt-in exact /12 six-member private root. The private gate stream-hashes every member, activates state active-idle, reports model 598308416, KV 917504, scratch 673296, observed WASM memory 629800960, releases, prints no path/content, and grants no browser-conversation, quality, or campaign credit.
   immediate_work: Implement and TDD tinyrustlm/app/model-runtime-worker.js as the sole module/runtime owner with the closed exactly-once protocol. Do not touch app.js until the worker boundary passes ordering, stale-identity, transferable ownership, cancellation, termination, and zero-network tests.
   boundary: This proves raw Node-WASM structural activation only. It is not real-browser execution, generation parity, model quality, browser chat, P2P, release, deployment, or campaign evidence. The superseded runtime remains a release blocker until complete replacement passes and is deleted without compatibility.

@@ -223,6 +223,14 @@ bounded unshared memory with a 3 GiB maximum. Network globals are disabled
 before message acceptance. No payload field can carry an arbitrary URL,
 filesystem path, command, template program, or executable extension.
 
+A final pre-source precision check rejected serialization of the full unsigned
+64-bit transcript revision as one JSON number. JavaScript cannot represent all
+such values exactly. The state result therefore carries exact
+`transcriptRevisionLow` and `transcriptRevisionHigh` unsigned 32-bit fields and
+forbids a combined JSON number or decimal-string alias. The same closure fixes
+every command payload scalar type, including unsigned limits and offsets,
+transferable buffers, closed artifact enums, and exact empty objects.
+
 ## Bounded Policy
 
 Runtime creation receives explicit model, sequence, KV, scratch, resolved

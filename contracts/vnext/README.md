@@ -1888,6 +1888,12 @@ invocation, arbitrary URL/path payloads, a separate finish command, and a
 whole-model JavaScript owner are forbidden. This is output-free design
 authority, not worker or browser evidence.
 
+The pre-source precision closure also replaces the state result's lossy JSON
+`u64` transcript revision with exact low/high unsigned 32-bit words and freezes
+every payload scalar type. No combined JSON-number or decimal-string alias is
+accepted. This is a clean correction before worker implementation, not a
+compatibility reader.
+
 The registry freezes design and is not itself implementation evidence. The
 separately identified SLM2 checkpoints prove bounded format conformance and
 canonical-fixture scalar native/browser-WASM conformance. They do not prove

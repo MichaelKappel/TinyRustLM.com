@@ -37,6 +37,21 @@
     "compatibilityBehaviorAdded": false,
     "campaignCreditAuthorized": false
   },
+  "workerProtocolPrecisionClosure": {
+    "registeredAtUtc": "2026-08-27T23:52:00Z",
+    "stage": "output-free-result-and-payload-preflight-before-worker-source",
+    "reasonCode": "browser-runtime-u64-json-number-is-not-lossless-in-javascript",
+    "priorCurrentContract": {
+      "commit": "ed531e251762b697e9195bcb4b7273a6505fab14",
+      "byteLength": 25672,
+      "sha256": "c74ce60ff99ba69ab49a266883b3838dfa463de96d9466194ca20485314b7941"
+    },
+    "disposition": "encode-transcript-revision-as-two-unsigned32-state-fields-and-close-payload-types",
+    "workerSourceExistedAtRegistration": false,
+    "lossyJsonNumberAllowed": false,
+    "compatibilityBehaviorAdded": false,
+    "campaignCreditAuthorized": false
+  },
   "registrationParentCommit": "cf56eb1a563c85acfc7257d128f5fe3b386da954",
   "registrationParentTree": "00e364b0b1b71a458c749f16c720ca5bc3f4073f",
   "authority": {
@@ -418,6 +433,15 @@
     "stepSchema": "tinyrustlm.browser_runtime_wasm.step/1",
     "outputSchema": "tinyrustlm.browser_runtime_wasm.output/1",
     "stateSchema": "tinyrustlm.browser_runtime_wasm.state/1",
+    "stateTranscriptRevisionEncoding": {
+      "fields": [
+        "transcriptRevisionLow",
+        "transcriptRevisionHigh"
+      ],
+      "eachFieldIsUnsigned32": true,
+      "combinedJsonNumberAllowed": false,
+      "combinedDecimalStringAllowed": false
+    },
     "outputTextIsRawCanonicalRuntimeDecode": true,
     "outputMayBeRepaired": false,
     "outputMayBeRetriedAutomatically": false,
@@ -515,6 +539,19 @@
     "wasmModuleSha256RequiredAndRecomputed": true,
     "wasmModuleImportsAllowed": [],
     "wasmModuleMaximumMemoryBytes": 3221225472,
+    "payloadScalarRules": {
+      "wasmBytes": "transferable-array-buffer-1-to-16777216-bytes",
+      "wasmSha256": "lowercase-hex-sha256",
+      "policyLimits": "positive-unsigned32-with-registered-hard-ceilings-and-aggregate-policy",
+      "transcriptRevisionWords": "unsigned32",
+      "artifactKind": "registered-seven-value-enum",
+      "artifactByteLength": "positive-unsigned32-with-kind-and-policy-limit",
+      "artifactOffset": "unsigned32-equal-to-next-contiguous-offset",
+      "artifactChunkBytes": "transferable-array-buffer-1-to-4194304-bytes",
+      "nextOperationId": "nonzero-lowercase-hex-sha256-distinct-from-current-operation",
+      "nextCompositionId": "lowercase-hex-sha256",
+      "emptyPayload": "plain-object-with-zero-own-keys"
+    },
     "artifactKinds": [
       {
         "name": "model",
