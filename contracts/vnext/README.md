@@ -1878,6 +1878,16 @@ activation are not product-browser, quality, release, deployment, publication,
 P2P, or campaign evidence. Deployment remains blocked until the worker/UI clean
 cut and deletion audit pass without a compatibility path.
 
+Before worker source, protocol preflight also closed an underspecified part of
+the original registration. The current contract records the prior remote-exact
+identity and now enumerates eleven commands, twelve events, every exact payload,
+seven streamed artifact kinds, 4 MiB transferred chunks, bounded independent
+command/event sequences, deterministic event IDs, terminal-step finish, module
+hash and memory verification, and fail-closed worker termination. Generic
+invocation, arbitrary URL/path payloads, a separate finish command, and a
+whole-model JavaScript owner are forbidden. This is output-free design
+authority, not worker or browser evidence.
+
 The registry freezes design and is not itself implementation evidence. The
 separately identified SLM2 checkpoints prove bounded format conformance and
 canonical-fixture scalar native/browser-WASM conformance. They do not prove

@@ -1,7 +1,7 @@
 {
   "schema": "tinyrustlm.browser-runtime-wasm-clean-cut-preregistration.v1",
   "profileId": "tinyrustlm.browser-runtime-wasm/1",
-  "status": "registered-before-implementation-corrected-during-real-artifact-preflight",
+  "status": "raw-wasm-implemented-worker-protocol-closed-before-worker-implementation",
   "registeredAtUtc": "2026-08-27T22:42:24Z",
   "correction": {
     "observedAtUtc": "2026-08-27T23:23:50Z",
@@ -19,6 +19,21 @@
       "priorPromptTransferMaximumBytes": 65536
     },
     "disposition": "replace-defective-current-contract-with-canonical-profile-sizes",
+    "compatibilityBehaviorAdded": false,
+    "campaignCreditAuthorized": false
+  },
+  "workerProtocolClosure": {
+    "registeredAtUtc": "2026-08-27T23:44:01Z",
+    "stage": "output-free-worker-protocol-preflight-before-worker-source",
+    "reasonCode": "browser-runtime-worker-command-event-vocabulary-underspecified",
+    "priorCurrentContract": {
+      "commit": "9b7f25a235315b1a97dfc54e47e133b3e8ea0eb1",
+      "byteLength": 18804,
+      "sha256": "a62cb50abe1ceb616a1d666f6a1364f953cf1b0134c82f38617a235369a128cb"
+    },
+    "disposition": "close-command-event-payload-sequence-and-failure-semantics",
+    "workerSourceExistedAtRegistration": false,
+    "genericInvokeCommandAllowed": false,
     "compatibilityBehaviorAdded": false,
     "campaignCreditAuthorized": false
   },
@@ -466,10 +481,24 @@
       "payload"
     ],
     "unknownFieldsAllowed": false,
+    "payloadMustBePlainObject": true,
     "idsAreLowercaseHexSha256": true,
+    "sequenceDomains": {
+      "command": {
+        "startsAt": 0,
+        "increment": 1,
+        "maximumAcceptedMessages": 65536
+      },
+      "event": {
+        "startsAt": 0,
+        "increment": 1,
+        "maximumEmittedMessages": 65536
+      }
+    },
     "sequenceStartsAtZero": true,
     "sequenceMustIncreaseByOne": true,
     "duplicateMessageRejected": true,
+    "commandMessageIdUniqueForWorkerLifetime": true,
     "outOfOrderMessageRejected": true,
     "staleWorkerRejected": true,
     "staleOperationRejected": true,
@@ -479,6 +508,248 @@
     "uiAssistantRenderCountPerCompletion": 1,
     "repeatedTokenTextIsNotDeduplicated": true,
     "binaryPayloadUsesTransferableArrayBuffer": true,
+    "maximumBinaryChunkBytes": 4194304,
+    "workerWipesAcceptedChunkAfterWasmCopy": true,
+    "workerRetainsWholeModelArrayBuffer": false,
+    "wasmModuleMaximumBytes": 16777216,
+    "wasmModuleSha256RequiredAndRecomputed": true,
+    "wasmModuleImportsAllowed": [],
+    "wasmModuleMaximumMemoryBytes": 3221225472,
+    "artifactKinds": [
+      {
+        "name": "model",
+        "transferCode": 3,
+        "lengthRule": "positive-and-at-most-policy-maximum-model-bytes"
+      },
+      {
+        "name": "tokenizer",
+        "transferCode": 4,
+        "lengthRule": "positive-and-at-most-67108864"
+      },
+      {
+        "name": "template",
+        "transferCode": 5,
+        "lengthRule": "positive-and-at-most-1048576"
+      },
+      {
+        "name": "sampling",
+        "transferCode": 6,
+        "lengthRule": "exactly-65800"
+      },
+      {
+        "name": "prompt",
+        "transferCode": 7,
+        "lengthRule": "exactly-512"
+      },
+      {
+        "name": "composition",
+        "transferCode": 8,
+        "lengthRule": "exactly-896"
+      },
+      {
+        "name": "prompt-request",
+        "transferCode": 9,
+        "lengthRule": "positive-and-at-most-policy-maximum-request-bytes"
+      }
+    ],
+    "commands": [
+      {
+        "kind": "initialize",
+        "payloadFields": [
+          "wasmBytes",
+          "wasmSha256",
+          "maximumModelBytes",
+          "maximumSequenceTokens",
+          "maximumKvBytes",
+          "maximumScratchBytes",
+          "maximumResolvedMemberBytes",
+          "maximumResidentDependencyBytes",
+          "maximumRequestBytes",
+          "maximumLinearMemoryBytes",
+          "transcriptRevisionLow",
+          "transcriptRevisionHigh"
+        ]
+      },
+      {
+        "kind": "artifact-begin",
+        "payloadFields": [
+          "artifactKind",
+          "byteLength"
+        ]
+      },
+      {
+        "kind": "artifact-chunk",
+        "payloadFields": [
+          "artifactKind",
+          "offset",
+          "bytes"
+        ]
+      },
+      {
+        "kind": "artifact-commit",
+        "payloadFields": [
+          "artifactKind"
+        ]
+      },
+      {
+        "kind": "activate",
+        "payloadFields": []
+      },
+      {
+        "kind": "advance-operation",
+        "payloadFields": [
+          "nextOperationId",
+          "nextCompositionId"
+        ]
+      },
+      {
+        "kind": "set-transcript",
+        "payloadFields": [
+          "revisionLow",
+          "revisionHigh"
+        ]
+      },
+      {
+        "kind": "begin-generation",
+        "payloadFields": []
+      },
+      {
+        "kind": "step-generation",
+        "payloadFields": []
+      },
+      {
+        "kind": "cancel-generation",
+        "payloadFields": []
+      },
+      {
+        "kind": "release",
+        "payloadFields": []
+      }
+    ],
+    "events": [
+      {
+        "kind": "runtime-ready",
+        "payloadFields": [
+          "commandMessageId",
+          "state"
+        ]
+      },
+      {
+        "kind": "artifact-transfer-begun",
+        "payloadFields": [
+          "commandMessageId",
+          "artifactKind",
+          "byteLength"
+        ]
+      },
+      {
+        "kind": "artifact-chunk-accepted",
+        "payloadFields": [
+          "commandMessageId",
+          "artifactKind",
+          "offset",
+          "byteLength",
+          "nextOffset"
+        ]
+      },
+      {
+        "kind": "artifact-transfer-committed",
+        "payloadFields": [
+          "commandMessageId",
+          "artifactKind",
+          "byteLength"
+        ]
+      },
+      {
+        "kind": "composition-active",
+        "payloadFields": [
+          "commandMessageId",
+          "state"
+        ]
+      },
+      {
+        "kind": "operation-advanced",
+        "payloadFields": [
+          "commandMessageId",
+          "state",
+          "pendingCompositionId"
+        ]
+      },
+      {
+        "kind": "transcript-updated",
+        "payloadFields": [
+          "commandMessageId",
+          "state"
+        ]
+      },
+      {
+        "kind": "generation-begun",
+        "payloadFields": [
+          "commandMessageId",
+          "state"
+        ]
+      },
+      {
+        "kind": "generation-step",
+        "payloadFields": [
+          "commandMessageId",
+          "step"
+        ]
+      },
+      {
+        "kind": "generation-complete",
+        "payloadFields": [
+          "commandMessageId",
+          "output"
+        ]
+      },
+      {
+        "kind": "runtime-released",
+        "payloadFields": [
+          "commandMessageId"
+        ]
+      },
+      {
+        "kind": "command-rejected",
+        "payloadFields": [
+          "commandMessageId",
+          "status",
+          "code",
+          "workerTerminated"
+        ]
+      }
+    ],
+    "genericInvokeCommandAllowed": false,
+    "expectedAndNextOperationTransfersAreWorkerInternal": true,
+    "terminalStepFinishesInsideWorker": true,
+    "separateFinishCommandAllowed": false,
+    "eventMessageId": {
+      "digest": "sha256",
+      "domain": "tinyrustlm.model-runtime-worker.event/1",
+      "separator": "newline",
+      "canonicalUtf8Fields": [
+        "domain",
+        "workerId",
+        "commandMessageId",
+        "eventSequenceDecimal",
+        "eventKind"
+      ]
+    },
+    "acceptedCommandConsumesSequenceBeforeSemanticExecution": true,
+    "acceptedBoundaryOrRuntimeRejectionEmitsOneCommandRejectedEvent": true,
+    "acceptedInternalFailureEmitsOneTerminalCommandRejectedEvent": true,
+    "invalidEnvelopeOrStaleIdentityTerminatesWithoutProtocolEvent": true,
+    "wasmTrapTerminatesWorkerAndInvalidatesKv": true,
+    "freshWorkerReverifiesEveryImmutableMember": true,
+    "networkGlobalsDisabledBeforeMessageAcceptance": [
+      "fetch",
+      "XMLHttpRequest",
+      "WebSocket",
+      "EventSource",
+      "WebTransport",
+      "RTCPeerConnection",
+      "importScripts"
+    ],
     "workerMayAccessNetwork": false,
     "workerMayReceiveArbitraryUrlOrPath": false
   },

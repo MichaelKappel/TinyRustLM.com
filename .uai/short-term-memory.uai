@@ -1,5 +1,5 @@
-profile: runtime-mirust.short-term-memory.v511
-updated_utc: 2026-08-27T23:38:13Z
+profile: runtime-mirust.short-term-memory.v512
+updated_utc: 2026-08-27T23:46:34Z
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy
@@ -12,12 +12,13 @@ memory_endpoints_portable_memory_authority_2026_08_26:
   supersession: Treat older unauthorized/disconnected directives as historical operation context, never current product policy.
 
 current_focus_2026_08_27_browser_runtime_wasm_clean_cut:
-  status: raw_wasm_boundary_green_and_remote_exact_worker_pending
-  machine_authority: contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json,18804,a62cb50abe1ceb616a1d666f6a1364f953cf1b0134c82f38617a235369a128cb
-  architecture: docs/architecture/2026-08-27-browser-runtime-wasm-clean-cut-preregistration.md,12329,dc5b8512635e3700c572bb8222c86cf32bc22245f25235c7793b49bf5eb591f2
-  browser_status_doc: tinyrustlm/docs/browser-runtime.md,11681,7308dc774927d45f690150a80eed55619296e7a54fa56800bd918af81cc8c128
+  status: raw_wasm_boundary_green_worker_protocol_closed_output_free_worker_pending
+  machine_authority: contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json,25672,c74ce60ff99ba69ab49a266883b3838dfa463de96d9466194ca20485314b7941
+  architecture: docs/architecture/2026-08-27-browser-runtime-wasm-clean-cut-preregistration.md,14810,d69a007cd6a7e042a2054b714b4e29453261b226cded07f04e9ad19680357a03
+  browser_status_doc: tinyrustlm/docs/browser-runtime.md,12196,b5d78e589a308976b7e30e8d343cc52951d79e89ff175e69df0188319a9828fc
   implementation: 5c4f46c7af35bc6e892097cd4924ca58286efa8c is pushed/fetched/four-way exact. Move-only runtime ownership and the import-free bounded raw WASM ABI are now current source.
   correction: Canonical Sampling2 is exactly 65800 bytes and Prompt2 exactly 512; activation preserves caller operation authority instead of replacing it with graph identity. Model switches require explicit operation compare-and-swap before activation. No compatibility behavior was added.
+  worker_protocol: Output-free preflight now freezes eleven commands, twelve events, exact payloads, seven streamed artifact kinds, maximum 4194304-byte chunks, independent 65536-message sequence domains, deterministic event IDs, terminal-step finish, module hash/import/memory checks, network lockout, and fatal-state handling. Generic invoke and whole-model JS ownership are forbidden.
   verification: Rust focused suites and doc tests pass; clippy -D warnings passes. Node is 16/16 without private material and 17/17 with the explicit /12 root, including all six stream hashes and real structural activation. Active memory plan is model 598308416, KV 917504, scratch 673296; observed WASM memory is 629800960 under 1610612736.
   immediate_work: TDD the closed dedicated worker protocol, then commit/push before any app.js replacement. The worker must own one module/runtime, accept no URL/path/network authority, detach transferred binary buffers, reject duplicate/out-of-order/stale messages, and emit one terminal completion.
   boundary: Node-WASM structural activation is not Chromium, conversation, parity, quality, P2P, release, deployment, or campaign proof. Old browser execution still blocks release and remains only until the complete worker/UI replacement is green and then deleted.

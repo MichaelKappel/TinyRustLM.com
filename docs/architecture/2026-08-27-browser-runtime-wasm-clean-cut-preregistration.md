@@ -2,9 +2,9 @@
 
 Date: 2026-08-27
 
-Status: raw WASM boundary implemented; worker/UI clean cut pending;
-transfer-size defect corrected during real-artifact preflight before worker
-implementation
+Status: raw WASM boundary implemented; worker protocol closed before worker
+source; worker/UI clean cut pending; transfer-size defect corrected during
+real-artifact preflight before worker implementation
 
 ## Registered Correction
 
@@ -181,6 +181,47 @@ healthy. A WASM trap, allocation failure, or forced worker termination discards
 the worker and all KV state. Recovery creates a fresh worker that reopens and
 reverifies every immutable member before activation. It does not continue from
 untrusted in-memory state.
+
+### Pre-Implementation Protocol Closure
+
+Worker preflight found that the first registration fixed the envelope and
+ordering invariants but did not enumerate command kinds, event kinds, or exact
+payload fields. Leaving those spaces open would permit a generic invocation
+surface and make unknown-field rejection untestable. Before any worker source
+existed, the current machine contract recorded the prior 18,804-byte contract
+at remote-exact commit `9b7f25a235315b1a97dfc54e47e133b3e8ea0eb1`
+and closed the missing vocabulary.
+
+The worker accepts exactly eleven commands: initialize, streamed artifact
+begin/chunk/commit, activate, explicit operation advance, transcript update,
+generation begin/step/cancel, and release. It emits exactly twelve event kinds,
+including one terminal generation completion and one bounded rejection form.
+There is no generic invoke command and no separate finish command; a terminal
+step is finished inside the sole worker so the UI cannot consume or render an
+output twice.
+
+Model and dependency artifacts cross as contiguous transferred chunks of at
+most 4 MiB. The worker copies each chunk directly into the one pending
+WASM-owned allocation, wipes the accepted worker-side chunk, and never retains
+a whole-model JavaScript buffer. The seven externally transferable artifact
+kinds map exactly to raw ABI codes 3 through 9. Expected and next operation
+identities are derived from validated envelope identities and staged internally
+by the worker.
+
+Command and event sequences are independent, start at zero, advance by one,
+and are capped at 65,536 messages per worker so duplicate tracking is bounded
+for the complete worker lifetime. Event IDs are deterministic SHA-256 values
+over a domain, worker ID, command message ID, event sequence, and event kind.
+A structurally valid command consumes its sequence before semantic execution;
+a bounded ABI rejection emits one rejection event. Invalid envelopes or stale
+identities terminate without a protocol event. Internal failure or a WASM trap
+invalidates the worker and KV state.
+
+Initialization accepts only a hash-bound module of at most 16 MiB, recomputes
+its SHA-256, requires zero imports and the exact export set, and verifies one
+bounded unshared memory with a 3 GiB maximum. Network globals are disabled
+before message acceptance. No payload field can carry an arbitrary URL,
+filesystem path, command, template program, or executable extension.
 
 ## Bounded Policy
 

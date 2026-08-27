@@ -1,5 +1,5 @@
-profile: runtime-mirust.totem.v209
-updated_utc: 2026-08-27T23:38:13Z
+profile: runtime-mirust.totem.v210
+updated_utc: 2026-08-27T23:46:34Z
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy
@@ -13,10 +13,11 @@ memory_endpoints_portable_memory_authority_2026_08_26:
   supersession: Earlier immutable no-MemoryEndpoints operation boundaries remain historical facts but cannot govern current authorization or product positioning.
 
 browser_runtime_wasm_boundary_totem_2026_08_27:
-  preserve_checkpoint: Commit 5c4f46c7af35bc6e892097cd4924ca58286efa8c is pushed/fresh-four-way exact. Preserve current machine authority contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json at 18804 bytes/SHA256 a62cb50abe1ceb616a1d666f6a1364f953cf1b0134c82f38617a235369a128cb.
+  preserve_checkpoint: Commit 5c4f46c7af35bc6e892097cd4924ca58286efa8c is pushed/fresh-four-way exact. Preserve current machine authority contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json at 25672 bytes/SHA256 c74ce60ff99ba69ab49a266883b3838dfa463de96d9466194ca20485314b7941.
   preserve_artifact_authority: Sampling2 is exactly 65800 bytes and Prompt2 exactly 512 bytes under their bound canonical profiles. Transfer limits must be derived from those authorities, never an adjacent power-of-two guess.
   preserve_identity_separation: Composition identity identifies immutable artifact closure; operation identity is caller-owned stale-work authority. Activation preserves operation identity. A model switch explicitly compare-and-swaps operation authority before activating its composition.
   preserve_ownership: One dedicated worker owns one import-free production WASM module and one canonical runtime. Model bytes move from the sole WASM transfer allocation into ScalarModel without a second unbounded owner; the UI owns neither model bytes, WASM, KV, nor output repair.
+  preserve_worker_protocol: The output-free worker authority closes eleven commands, twelve events, exact payloads, seven streamed artifact kinds, 4194304-byte chunks, bounded independent sequences, deterministic event IDs, terminal-step finish, module verification, and network lockout before worker source. Preserve prior contract identity as registered history, not a reader.
   preserve_evidence_boundary: The opt-in /12 Node gate proves exact private six-member stream hashes and structural WASM activation only. It proves no browser conversation, numerical parity, model quality, P2P, deployment, or campaign progress.
   preserve_next: Implement and test the closed exactly-once worker before changing app.js. Replace the complete browser path, then delete the superseded runtime and ACG1 path in the same green major change.
 

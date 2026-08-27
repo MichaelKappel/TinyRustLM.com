@@ -48,6 +48,14 @@ the worker is the sole runtime owner, the UI is command/presentation only,
 real Chromium evidence passes, and every superseded executable path is
 deleted without an alias, reader, shim, fallback, feature flag, or migration.
 
+The worker protocol is nevertheless closed before implementation. It permits
+only eleven exact commands and twelve exact event kinds, streams artifact bytes
+in contiguous transferred chunks no larger than 4 MiB, derives operation
+transfers internally, finishes terminal generation inside the worker, and
+provides no generic invocation, separate finish, URL, path, network, or
+whole-model JavaScript ownership surface. This registration is design
+authority only until the worker tests and real Chromium gates pass.
+
 ## Superseded Pre-Cutover Inventory
 
 The currently checked-in application still loads the superseded Rust/WASM ABI

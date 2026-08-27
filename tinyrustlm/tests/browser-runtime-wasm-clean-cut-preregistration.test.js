@@ -28,7 +28,7 @@ test("binds the clean source parent and sole browser runtime owners", () => {
   assert.equal(profile.schema,
     "tinyrustlm.browser-runtime-wasm-clean-cut-preregistration.v1");
   assert.equal(profile.status,
-    "registered-before-implementation-corrected-during-real-artifact-preflight");
+    "raw-wasm-implemented-worker-protocol-closed-before-worker-implementation");
   assert.equal(profile.registrationParentCommit,
     "cf56eb1a563c85acfc7257d128f5fe3b386da954");
   assert.equal(profile.registrationParentTree,
@@ -59,6 +59,21 @@ test("binds the clean source parent and sole browser runtime owners", () => {
       priorPromptTransferMaximumBytes: 65536
     },
     disposition: "replace-defective-current-contract-with-canonical-profile-sizes",
+    compatibilityBehaviorAdded: false,
+    campaignCreditAuthorized: false
+  });
+  assert.deepEqual(profile.workerProtocolClosure, {
+    registeredAtUtc: "2026-08-27T23:44:01Z",
+    stage: "output-free-worker-protocol-preflight-before-worker-source",
+    reasonCode: "browser-runtime-worker-command-event-vocabulary-underspecified",
+    priorCurrentContract: {
+      commit: "9b7f25a235315b1a97dfc54e47e133b3e8ea0eb1",
+      byteLength: 18804,
+      sha256: "a62cb50abe1ceb616a1d666f6a1364f953cf1b0134c82f38617a235369a128cb"
+    },
+    disposition: "close-command-event-payload-sequence-and-failure-semantics",
+    workerSourceExistedAtRegistration: false,
+    genericInvokeCommandAllowed: false,
     compatibilityBehaviorAdded: false,
     campaignCreditAuthorized: false
   });
@@ -239,6 +254,79 @@ test("closes worker ordering, binary ownership, and network authority", () => {
   assert.equal(worker.uiAssistantRenderCountPerCompletion, 1);
   assert.equal(worker.repeatedTokenTextIsNotDeduplicated, true);
   assert.equal(worker.binaryPayloadUsesTransferableArrayBuffer, true);
+  assert.deepEqual(worker.sequenceDomains, {
+    command: { startsAt: 0, increment: 1, maximumAcceptedMessages: 65536 },
+    event: { startsAt: 0, increment: 1, maximumEmittedMessages: 65536 }
+  });
+  assert.equal(worker.maximumBinaryChunkBytes, 4 * 1024 * 1024);
+  assert.equal(worker.workerWipesAcceptedChunkAfterWasmCopy, true);
+  assert.equal(worker.workerRetainsWholeModelArrayBuffer, false);
+  assert.equal(worker.wasmModuleMaximumBytes, 16 * 1024 * 1024);
+  assert.equal(worker.wasmModuleSha256RequiredAndRecomputed, true);
+  assert.deepEqual(worker.wasmModuleImportsAllowed, []);
+  assert.equal(worker.wasmModuleMaximumMemoryBytes, 3 * 1024 * 1024 * 1024);
+  assert.deepEqual(worker.artifactKinds.map((entry) => entry.name), [
+    "model",
+    "tokenizer",
+    "template",
+    "sampling",
+    "prompt",
+    "composition",
+    "prompt-request"
+  ]);
+  assert.deepEqual(worker.artifactKinds.map((entry) => entry.transferCode),
+    [3, 4, 5, 6, 7, 8, 9]);
+  assert.deepEqual(worker.commands.map((entry) => entry.kind), [
+    "initialize",
+    "artifact-begin",
+    "artifact-chunk",
+    "artifact-commit",
+    "activate",
+    "advance-operation",
+    "set-transcript",
+    "begin-generation",
+    "step-generation",
+    "cancel-generation",
+    "release"
+  ]);
+  assert.deepEqual(worker.events.map((entry) => entry.kind), [
+    "runtime-ready",
+    "artifact-transfer-begun",
+    "artifact-chunk-accepted",
+    "artifact-transfer-committed",
+    "composition-active",
+    "operation-advanced",
+    "transcript-updated",
+    "generation-begun",
+    "generation-step",
+    "generation-complete",
+    "runtime-released",
+    "command-rejected"
+  ]);
+  assert.equal(worker.genericInvokeCommandAllowed, false);
+  assert.equal(worker.expectedAndNextOperationTransfersAreWorkerInternal, true);
+  assert.equal(worker.terminalStepFinishesInsideWorker, true);
+  assert.equal(worker.separateFinishCommandAllowed, false);
+  assert.deepEqual(worker.eventMessageId.canonicalUtf8Fields, [
+    "domain",
+    "workerId",
+    "commandMessageId",
+    "eventSequenceDecimal",
+    "eventKind"
+  ]);
+  assert.equal(worker.invalidEnvelopeOrStaleIdentityTerminatesWithoutProtocolEvent,
+    true);
+  assert.equal(worker.wasmTrapTerminatesWorkerAndInvalidatesKv, true);
+  assert.equal(worker.freshWorkerReverifiesEveryImmutableMember, true);
+  assert.deepEqual(worker.networkGlobalsDisabledBeforeMessageAcceptance, [
+    "fetch",
+    "XMLHttpRequest",
+    "WebSocket",
+    "EventSource",
+    "WebTransport",
+    "RTCPeerConnection",
+    "importScripts"
+  ]);
   assert.equal(worker.workerMayAccessNetwork, false);
   assert.equal(worker.workerMayReceiveArbitraryUrlOrPath, false);
 });
