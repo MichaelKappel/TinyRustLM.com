@@ -1,16 +1,30 @@
-profile: tinyrustlm.source-workspace.v459
+profile: tinyrustlm.source-workspace.v460
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-27T22:42:24Z
+updated_utc: 2026-08-27T23:38:13Z
+
+memory_endpoints_portable_memory_authority_2026_08_26:
+  status: current_authorized_product_policy
+  policy_contract: contracts/vnext/memory-endpoints-portable-memory-policy.v1.json,1613,1818cd704bf67f56d50646d821b508b5975b00a53849835452684dcf815475e9
+  architecture_record: docs/architecture/2026-08-26-memoryendpoints-portable-memory-authority.md,4797,3fcefd3b080ef854770cdd2e6e513b221af28ace7ab6fe1a9de2c84487c64c26
+  local_file_memory: supported
+  authorization: authorized
+  recommendation: strongly_recommended
+  product_role: MemoryEndpoints.com is the portable web-memory backbone for cross-device and worldwide continuity; local UAIX files remain supported for device-local and offline use.
+  claim_boundary: Public reachability, configured integration, authenticated lifecycle proof, and 0/25 campaign credit are separate. The current protected handoff credential rejected on fresh read-only verification, so no new live round is claimed.
+  history_rule: This current owner correction supersedes active unauthorized/disconnected policy language. Preserve older immutable operation evidence; an old no-MemoryEndpoints claim is not current product policy.
 
 current_browser_runtime_wasm_clean_cut_2026_08_27:
-  status: preregistered_before_implementation
-  machine_authority: contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json,15879,be26574af30dbf587d1d9b32e0926e8f01aa329f3a346a817b61a3c2914765f8
-  architecture: docs/architecture/2026-08-27-browser-runtime-wasm-clean-cut-preregistration.md,9531,7d14fe408da76f5d7012951b39477cd14eb1a06e6f285bc0bc23462351320fa7
+  status: raw_wasm_boundary_and_real_private_structural_activation_complete_worker_pending
+  machine_authority: contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json,18804,a62cb50abe1ceb616a1d666f6a1364f953cf1b0134c82f38617a235369a128cb
+  architecture: docs/architecture/2026-08-27-browser-runtime-wasm-clean-cut-preregistration.md,12329,dc5b8512635e3700c572bb8222c86cf32bc22245f25235c7793b49bf5eb591f2
+  browser_status_doc: tinyrustlm/docs/browser-runtime.md,11681,7308dc774927d45f690150a80eed55619296e7a54fa56800bd918af81cc8c128
   parent: commit cf56eb1a563c85acfc7257d128f5fe3b386da954, tree 00e364b0b1b71a458c749f16c720ca5bc3f4073f
-  decision: One dedicated worker owns one production WASM instance over the canonical SLM2 runtime. Artifact transfer is bounded and move-only, every mutation binds an exact operation identity, ACG2 activation is transactional, finish yields one raw output, and the UI has no direct WASM or model-byte authority.
-  immediate_work: Commit, push, and freshly verify this output-free preregistration. Then TDD owned-model resolver transfer and the production tinyrustlm-browser-runtime-wasm crate before adding the worker or changing the UI.
-  boundary: Registration is design authority only. It creates no WASM, browser, numerical, quality, deployment, or campaign evidence. The old runtime remains active until the complete replacement passes and is then deleted without compatibility.
+  implementation: Commit 5c4f46c7af35bc6e892097cd4924ca58286efa8c is pushed, freshly fetched, and exact across local HEAD, tracking, FETCH_HEAD, and direct remote. It adds move-only model transfer, the production import-free raw WASM crate, explicit 3 GiB module maximum, closed nine-kind transfer boundary, bounded policy/result/error state, exact operation CAS, and terminal release.
+  corrected_defects: Real-artifact preflight caught the impossible 65,536-byte Sampling2 cap against the canonical exact 65,800-byte profile and caught implicit replacement of caller operation authority with graph identity. Current source accepts exact Sampling2 65,800 and Prompt2 512 bytes, preserves operation identity on activation, and requires explicit operation advance before model switching. The original registration hash is preserved inside the corrected authority; no compatibility behavior exists.
+  verification: Rust composition/runtime/native/browser boundary tests pass 43 unit plus 11 integration/vector tests and all doc tests; clippy is warning-free. Node contract/raw ABI passes 16/16 without private access and 17/17 with the opt-in exact /12 six-member private root. The private gate stream-hashes every member, activates state active-idle, reports model 598308416, KV 917504, scratch 673296, observed WASM memory 629800960, releases, prints no path/content, and grants no browser-conversation, quality, or campaign credit.
+  immediate_work: Implement and TDD tinyrustlm/app/model-runtime-worker.js as the sole module/runtime owner with the closed exactly-once protocol. Do not touch app.js until the worker boundary passes ordering, stale-identity, transferable ownership, cancellation, termination, and zero-network tests.
+  boundary: This proves raw Node-WASM structural activation only. It is not real-browser execution, generation parity, model quality, browser chat, P2P, release, deployment, or campaign evidence. The superseded runtime remains a release blocker until complete replacement passes and is deleted without compatibility.
 
 current_enterprise_clean_slate_intake_and_memory_submit_2026_08_27:
   status: implementation_and_local_verification_complete_clean_remote_gate_pending
@@ -23,17 +37,6 @@ current_enterprise_clean_slate_intake_and_memory_submit_2026_08_27:
   active_p0: The shipping browser, admission, browser harness, qualification, P2P smoke, release inputs, tests, and docs still consume SLM1/ACG1. Complete the frozen SLM2 product-consumer replacement, then delete rust/crates/tinyrustlm-slm, tinyrustlm/runtime, tinyrustlm/tools/slm_pack, and every executable ACG1 path in the same verified major change.
   authority: One prelaunch product only. No product V2, legacy support, compatibility reader, migration, alias, dual serializer, fallback, temporary path, deferred cleanup, test weakening, or debt. MemoryEndpoints is authorized and recommended; local UAIX remains supported. No live lifecycle proof or counter increment exists.
   counters: 0/20 qualified, 0/50 browser, 0/25 live memory, 0/40 outside P2P lanes, 0/20 announcements
-
-memory_endpoints_portable_memory_authority_2026_08_26:
-  status: current_authorized_product_policy
-  policy_contract: contracts/vnext/memory-endpoints-portable-memory-policy.v1.json,1613,1818cd704bf67f56d50646d821b508b5975b00a53849835452684dcf815475e9
-  architecture_record: docs/architecture/2026-08-26-memoryendpoints-portable-memory-authority.md,4797,3fcefd3b080ef854770cdd2e6e513b221af28ace7ab6fe1a9de2c84487c64c26
-  local_file_memory: supported
-  authorization: authorized
-  recommendation: strongly_recommended
-  product_role: MemoryEndpoints.com is the portable web-memory backbone for cross-device and worldwide continuity; local UAIX files remain supported for device-local and offline use.
-  claim_boundary: Public reachability, configured integration, authenticated lifecycle proof, and 0/25 campaign credit are separate. The current protected handoff credential rejected on fresh read-only verification, so no new live round is claimed.
-  history_rule: This current owner correction supersedes active unauthorized/disconnected policy language. Preserve older immutable operation evidence; an old no-MemoryEndpoints claim is not current product policy.
 
 current_qwen3_source_terminal_process_identity_correction_2026_08_26:
   durable_memory: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-process-identity-correction-memory-2026-08-26.md, 9,313 bytes/SHA256 2f294466f779f23e3c1bc5c810ba693513c2b4a8be855163f3ee098a2fbaf18b before successor source-terminal work; .uai/long-term-memory.uai is the durable pointer authority.

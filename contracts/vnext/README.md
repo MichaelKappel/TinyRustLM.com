@@ -1857,8 +1857,26 @@ exact operation binding, transactional ACG2 activation, raw exactly-once
 output, and complete deletion of the superseded browser runtime. The related
 architecture record is
 `docs/architecture/2026-08-27-browser-runtime-wasm-clean-cut-preregistration.md`.
-The registration is design authority only and creates no executable or browser
-evidence.
+Real-artifact preflight corrected the original 65,536-byte Sampling2/Prompt2
+transfer assumptions to the already canonical exact sizes: 65,800 bytes for
+Sampling2 and 512 bytes for Prompt2. The current contract preserves the prior
+registration identity as rejected history and contains no compatibility path.
+
+Remote-exact commit `5c4f46c7af35bc6e892097cd4924ca58286efa8c`
+implements the move-only ACG2 member ownership and raw WASM boundary. Focused
+Rust, clippy, public Node WebAssembly, and opt-in private structural activation
+tests pass. The import-free module enforces the exact 16-function application
+export allowlist, nine closed transfer kinds, operation/composition identity
+separation, bounded results, one moved model owner, exactly-once finish, and
+terminal release.
+
+That checkpoint creates executable local evidence for the raw boundary only.
+The worker does not yet exist, the UI still owns the superseded runtime path,
+real Chromium conversation evidence has not run, and SLM1/ACG1 executable
+surfaces have not been deleted. Node WebAssembly and private structural
+activation are not product-browser, quality, release, deployment, publication,
+P2P, or campaign evidence. Deployment remains blocked until the worker/UI clean
+cut and deletion audit pass without a compatibility path.
 
 The registry freezes design and is not itself implementation evidence. The
 separately identified SLM2 checkpoints prove bounded format conformance and

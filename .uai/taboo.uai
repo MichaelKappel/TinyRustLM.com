@@ -1,14 +1,5 @@
-profile: runtime-mirust.taboo.v137
-updated_utc: 2026-08-27T22:01:48Z
-
-enterprise_clean_slate_memory_submit_taboo_2026_08_27:
-  required_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md
-  no_report_as_proof: Never turn the twelve advisory reports, their recommendations, or speculative mechanisms into repository observations, performance claims, model quality, product architecture, or campaign credit.
-  no_submit_compatibility: Never emit or accept submit agentId or safeSummary, read an old outbox, migrate persisted entries, strip unknown fields, translate aliases, retain two serializers, or relabel old evidence. Separately advertised service contracts must be closed independently instead of guessed.
-  no_self_authority: Never allow model output, memory, latent state, adaptive code, or a research mechanism to promote itself, rewrite policy, certify quality, or override current user intent and external evidence.
-  no_slm1_release: Never package, deploy, or claim clean-slate completion while current SLM1/ACG1 executable consumers or superseded workspace members remain. Replace all consumers and delete the obsolete executable closure in one verified major change.
-  no_prelaunch_debt: Never add legacy support, compatibility, migration, aliases, fallback, temporary dual paths, deferred cleanup, weakened tests, stale documentation, or low-quality patches. Technical v2 identifiers are exact contract identities, not a product V2.
-  no_claim_inflation: Loopback relay proof and public reachability are not a live MemoryEndpoints lifecycle. Current counters remain 0/20,0/50,0/25,0/40,0/20.
+profile: runtime-mirust.taboo.v138
+updated_utc: 2026-08-27T23:38:13Z
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy
@@ -20,6 +11,22 @@ memory_endpoints_portable_memory_authority_2026_08_26:
   no_policy_regression: Never describe MemoryEndpoints.com as unauthorized, disconnected, or outside TinyRustLM's current product. Never describe local UAIX file memory as unavailable or obsolete.
   no_claim_collapse: Never call reachability or configured code a live save/readback lifecycle, reuse stale credentials, silently upload memory, expose credentials, or advance 0/25 without an exact fresh receipt.
   history_rule: Never rewrite immutable historical evidence; current authority supersedes old exclusion language prospectively.
+
+browser_runtime_wasm_boundary_prohibition_2026_08_27:
+  no_profile_guessing: Never restore the defective 65536-byte Sampling2 transfer cap, broaden Prompt2 to an arbitrary maximum, infer fixed artifact sizes from powers of two, or bypass the bound canonical format profiles.
+  no_identity_coupling: Never turn graph/composition identity into implicit operation authority. Never allow activation to advance operation identity. Model switching must explicitly compare-and-swap a distinct nonzero operation before activation, while worker messages independently bind operation and composition.
+  no_second_owner: Never clone, repack, shadow, or retain a second unbounded model allocation in WASM, JavaScript, or UI state. Never let app.js call WASM directly or own model/KV state.
+  no_claim_inflation: Never call the 17/17 opt-in Node gate real Chromium, browser chat, numerical parity, model quality, P2P, release, deployment, or campaign evidence. It is private structural activation only and counters remain 0/20,0/50,0/25,0/40,0/20.
+  no_dual_browser_path: Do not integrate the worker as an optional path, feature flag, fallback, adapter, or compatibility layer. Complete and verify the replacement, then delete the superseded browser runtime, ACG1 path, repair logic, assets, tests, and docs before release.
+
+enterprise_clean_slate_memory_submit_taboo_2026_08_27:
+  required_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md
+  no_report_as_proof: Never turn the twelve advisory reports, their recommendations, or speculative mechanisms into repository observations, performance claims, model quality, product architecture, or campaign credit.
+  no_submit_compatibility: Never emit or accept submit agentId or safeSummary, read an old outbox, migrate persisted entries, strip unknown fields, translate aliases, retain two serializers, or relabel old evidence. Separately advertised service contracts must be closed independently instead of guessed.
+  no_self_authority: Never allow model output, memory, latent state, adaptive code, or a research mechanism to promote itself, rewrite policy, certify quality, or override current user intent and external evidence.
+  no_slm1_release: Never package, deploy, or claim clean-slate completion while current SLM1/ACG1 executable consumers or superseded workspace members remain. Replace all consumers and delete the obsolete executable closure in one verified major change.
+  no_prelaunch_debt: Never add legacy support, compatibility, migration, aliases, fallback, temporary dual paths, deferred cleanup, weakened tests, stale documentation, or low-quality patches. Technical v2 identifiers are exact contract identities, not a product V2.
+  no_claim_inflation: Loopback relay proof and public reachability are not a live MemoryEndpoints lifecycle. Current counters remain 0/20,0/50,0/25,0/40,0/20.
 
 qwen3_source_terminal_process_identity_correction_taboo_2026_08_26:
   durable_route: Read wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-process-identity-correction-memory-2026-08-26.md, 9,313 bytes/SHA256 2f294466f779f23e3c1bc5c810ba693513c2b4a8be855163f3ee098a2fbaf18b before successor work.

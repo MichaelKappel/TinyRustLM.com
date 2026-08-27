@@ -1,23 +1,5 @@
-profile: runtime-mirust.short-term-memory.v510
-updated_utc: 2026-08-27T22:42:24Z
-
-current_focus_2026_08_27_browser_runtime_wasm_clean_cut:
-  status: preregistered_before_implementation
-  machine_authority: contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json,15879,be26574af30dbf587d1d9b32e0926e8f01aa329f3a346a817b61a3c2914765f8
-  architecture: docs/architecture/2026-08-27-browser-runtime-wasm-clean-cut-preregistration.md,9531,7d14fe408da76f5d7012951b39477cd14eb1a06e6f285bc0bc23462351320fa7
-  decision: The sole production browser path is one dedicated worker plus one production WASM instance over the canonical SLM2 conversation runtime. The UI cannot own model bytes or call WASM. Move-only bounded transfer prevents retaining a second unbounded model owner, operations fail stale before mutation, ACG2 activation is transactional, and raw output finishes exactly once.
-  verification: Focused preregistration test passes 10/10. Registration binds parent commit cf56eb1a563c85acfc7257d128f5fe3b386da954 and tree 00e364b0b1b71a458c749f16c720ca5bc3f4073f.
-  immediate_work: Commit/push/fresh-four-way-verify this registration, then change MemberResolver ownership under red tests and implement rust/crates/tinyrustlm-browser-runtime-wasm. Do not touch app.js until the worker boundary passes raw-WASM tests.
-  boundary: No executable, real browser, model, numerical, quality, P2P, release, deployment, or campaign claim follows. The superseded browser path remains a release blocker and must be deleted after its complete replacement passes.
-
-current_focus_2026_08_27_enterprise_clean_slate_memory_submit:
-  intake_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md
-  just_completed: Twelve enterprise clean-slate prompts are checked in at a20fe47d7eecda4b30bda785d1b58f41bdea825e. Twelve returned advisory reports are preserved at inventory 622aeee51b3a687d573880b0474d395e2ee44db674e91eca65441c7a7c2c3ede and synthesized into a production-bounded strategy and TDD delta.
-  deep_resume: Read wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md,9166,f4a890676be9cb086e8b65cb063a345cc4a98e0be65a0a9a006b53365238a158.
-  contract: The cross-language MemoryEndpoints submit surface now has one closed 16-field shape, technical outbox/local-receipt/digest v2 identities, no aliases or migration, and shared digest ffa9fb1d3b729902d8a62621ce08d627b7042aaad89f5d8ca51a6257f3e305aa.
-  verification: Rust 27/27; browser MemoryEndpoints 30/30; .NET MemoryEndpoints 33/33; Core 86/86; Package 40/40; UI 79/79; standard 1642/0/3 of 1645. Release wrapper correctly stopped on dirty source.
-  immediate_work: Finish UAI, commit, push, fresh-four-way-verify, then run a clean protected release-surface gate. Continue the complete SLM2 consumer replacement and delete superseded SLM1/ACG1 executable code.
-  boundary: Do not call the zero-debt goal complete, publish, deploy, or increment counters while active SLM1 consumers and unproven live MemoryEndpoints behavior remain.
+profile: runtime-mirust.short-term-memory.v511
+updated_utc: 2026-08-27T23:38:13Z
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy
@@ -28,6 +10,26 @@ memory_endpoints_portable_memory_authority_2026_08_26:
   recommendation: strongly_recommended
   current_truth: MemoryEndpoints.com is the portable web-memory backbone for cross-device/worldwide continuity; local UAIX files remain supported. Fresh public reachability passed, but the protected handoff credential rejected, so no new lifecycle or campaign credit is claimed.
   supersession: Treat older unauthorized/disconnected directives as historical operation context, never current product policy.
+
+current_focus_2026_08_27_browser_runtime_wasm_clean_cut:
+  status: raw_wasm_boundary_green_and_remote_exact_worker_pending
+  machine_authority: contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json,18804,a62cb50abe1ceb616a1d666f6a1364f953cf1b0134c82f38617a235369a128cb
+  architecture: docs/architecture/2026-08-27-browser-runtime-wasm-clean-cut-preregistration.md,12329,dc5b8512635e3700c572bb8222c86cf32bc22245f25235c7793b49bf5eb591f2
+  browser_status_doc: tinyrustlm/docs/browser-runtime.md,11681,7308dc774927d45f690150a80eed55619296e7a54fa56800bd918af81cc8c128
+  implementation: 5c4f46c7af35bc6e892097cd4924ca58286efa8c is pushed/fetched/four-way exact. Move-only runtime ownership and the import-free bounded raw WASM ABI are now current source.
+  correction: Canonical Sampling2 is exactly 65800 bytes and Prompt2 exactly 512; activation preserves caller operation authority instead of replacing it with graph identity. Model switches require explicit operation compare-and-swap before activation. No compatibility behavior was added.
+  verification: Rust focused suites and doc tests pass; clippy -D warnings passes. Node is 16/16 without private material and 17/17 with the explicit /12 root, including all six stream hashes and real structural activation. Active memory plan is model 598308416, KV 917504, scratch 673296; observed WASM memory is 629800960 under 1610612736.
+  immediate_work: TDD the closed dedicated worker protocol, then commit/push before any app.js replacement. The worker must own one module/runtime, accept no URL/path/network authority, detach transferred binary buffers, reject duplicate/out-of-order/stale messages, and emit one terminal completion.
+  boundary: Node-WASM structural activation is not Chromium, conversation, parity, quality, P2P, release, deployment, or campaign proof. Old browser execution still blocks release and remains only until the complete worker/UI replacement is green and then deleted.
+
+current_focus_2026_08_27_enterprise_clean_slate_memory_submit:
+  intake_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md
+  just_completed: Twelve enterprise clean-slate prompts are checked in at a20fe47d7eecda4b30bda785d1b58f41bdea825e. Twelve returned advisory reports are preserved at inventory 622aeee51b3a687d573880b0474d395e2ee44db674e91eca65441c7a7c2c3ede and synthesized into a production-bounded strategy and TDD delta.
+  deep_resume: Read wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md,9166,f4a890676be9cb086e8b65cb063a345cc4a98e0be65a0a9a006b53365238a158.
+  contract: The cross-language MemoryEndpoints submit surface now has one closed 16-field shape, technical outbox/local-receipt/digest v2 identities, no aliases or migration, and shared digest ffa9fb1d3b729902d8a62621ce08d627b7042aaad89f5d8ca51a6257f3e305aa.
+  verification: Rust 27/27; browser MemoryEndpoints 30/30; .NET MemoryEndpoints 33/33; Core 86/86; Package 40/40; UI 79/79; standard 1642/0/3 of 1645. Release wrapper correctly stopped on dirty source.
+  immediate_work: Finish UAI, commit, push, fresh-four-way-verify, then run a clean protected release-surface gate. Continue the complete SLM2 consumer replacement and delete superseded SLM1/ACG1 executable code.
+  boundary: Do not call the zero-debt goal complete, publish, deploy, or increment counters while active SLM1 consumers and unproven live MemoryEndpoints behavior remain.
 
 current_focus_2026_08_26_qwen3_source_terminal_process_identity_correction:
   just_completed: The exact two-field process-terminal identity correction is clean-gated at remote-exact commit efc29dd6007401497e76fad3ec3036c23b092213/tree 03f88978b62cc300ab71b4ab9af5b2782ca6b880; standard passed 1,615/0/3 of 1,618.

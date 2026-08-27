@@ -2,8 +2,9 @@
 
 Date: 2026-08-27
 
-Status: registered before implementation; transfer-size defect corrected during
-real-artifact preflight before worker implementation
+Status: raw WASM boundary implemented; worker/UI clean cut pending;
+transfer-size defect corrected during real-artifact preflight before worker
+implementation
 
 ## Registered Correction
 
@@ -17,6 +18,36 @@ The correction records the original registration commit, byte length, and
 SHA-256. It adds no compatibility behavior, fallback, campaign credit, or
 product claim. Git retains the rejected contract as evidence; the current tree
 contains only the corrected executable rule.
+
+## Current Implementation Checkpoint
+
+Remote-exact commit `5c4f46c7af35bc6e892097cd4924ca58286efa8c`
+implements the move-only ACG2 member ownership and raw browser-runtime WASM
+boundary. The module has zero imports, the exact 16 registered application
+function exports, and only the expected WebAssembly support exports. Its nine
+closed transfer kinds enforce exact lengths, one pending allocation, one
+committed value per kind, bounded results, stale-operation rejection,
+transactional activation, exactly-once finish, and terminal release.
+
+Successful model activation moves the transferred model allocation into the
+scalar runtime without retaining a staging clone. Activation preserves the
+caller-owned operation identity; composition identity never becomes mutation
+authority. A model switch must compare-and-swap to a distinct operation first
+and then activate under that operation.
+
+The focused Rust test set, clippy with warnings denied, public Node WebAssembly
+ABI tests, and an opt-in private six-member structural activation pass. The
+private check loads and hashes the exact members, activates them in the module,
+validates state and bounded memory planning, and releases the runtime. It emits
+no model content or private path.
+
+This checkpoint stops before the worker. Node WebAssembly and private
+structural activation are not real-browser execution, deterministic
+native/browser token parity, conversational quality, product UI integration,
+P2P proof, release, deployment, publication, or campaign evidence. The active
+browser still uses the superseded UI-thread runtime. Steps 5 through 9 below
+remain open, and no deployment is authorized until they pass and all old
+executable surfaces are deleted.
 
 ## Decision
 

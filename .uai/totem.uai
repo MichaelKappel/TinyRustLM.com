@@ -1,14 +1,5 @@
-profile: runtime-mirust.totem.v208
-updated_utc: 2026-08-27T22:01:48Z
-
-enterprise_clean_slate_memory_submit_totem_2026_08_27:
-  preserve_memory: wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md at 9,166 bytes/SHA256 f4a890676be9cb086e8b65cb063a345cc4a98e0be65a0a9a006b53365238a158.
-  preserve_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md
-  preserve_intake: Twelve advisory reports have inventory SHA256 622aeee51b3a687d573880b0474d395e2ee44db674e91eca65441c7a7c2c3ede; route implementation through synthesis f088512c8c38161ab29d5a4f1c5eee4e03a9f9e5547495a3736c7545d988bf5 and TDD delta e75e7630c7f05aac1d1f360ff597ad91d81c628570eb602fb40b15e8c0dd1bfb.
-  preserve_contract: MemoryEndpoints submit has one exact 16-field closed shape and digest ffa9fb1d3b729902d8a62621ce08d627b7042aaad89f5d8ca51a6257f3e305aa across Rust, .NET, browser, scripts, and fixture. Submit aliases agentId and safeSummary do not exist.
-  preserve_quality: Current focused and complete local gates are green, but the protected clean-source release gate remains pending until commit, push, fresh fetch, and four-way equality.
-  preserve_next: Finish the registered SLM2 consumer replacement and delete all active SLM1/ACG1 executable paths. Keep immutable evidence as history, never as supported behavior.
-  preserve_policy: One prelaunch product, no legacy, compatibility, migration, fallback, aliases, dual paths, deferred cleanup, debt, stale docs, or inflated evidence. MemoryEndpoints remains authorized and local UAIX supported; counters remain zero.
+profile: runtime-mirust.totem.v209
+updated_utc: 2026-08-27T23:38:13Z
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy
@@ -20,6 +11,23 @@ memory_endpoints_portable_memory_authority_2026_08_26:
   product_role: Preserve MemoryEndpoints.com as the portable web-memory backbone for cross-device and worldwide continuity while preserving local UAIX files for device-local and offline use.
   evidence_boundary: Reachability and configured source are not a fresh authenticated lifecycle or campaign receipt; 0/25 remains until exact current live evidence exists.
   supersession: Earlier immutable no-MemoryEndpoints operation boundaries remain historical facts but cannot govern current authorization or product positioning.
+
+browser_runtime_wasm_boundary_totem_2026_08_27:
+  preserve_checkpoint: Commit 5c4f46c7af35bc6e892097cd4924ca58286efa8c is pushed/fresh-four-way exact. Preserve current machine authority contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json at 18804 bytes/SHA256 a62cb50abe1ceb616a1d666f6a1364f953cf1b0134c82f38617a235369a128cb.
+  preserve_artifact_authority: Sampling2 is exactly 65800 bytes and Prompt2 exactly 512 bytes under their bound canonical profiles. Transfer limits must be derived from those authorities, never an adjacent power-of-two guess.
+  preserve_identity_separation: Composition identity identifies immutable artifact closure; operation identity is caller-owned stale-work authority. Activation preserves operation identity. A model switch explicitly compare-and-swaps operation authority before activating its composition.
+  preserve_ownership: One dedicated worker owns one import-free production WASM module and one canonical runtime. Model bytes move from the sole WASM transfer allocation into ScalarModel without a second unbounded owner; the UI owns neither model bytes, WASM, KV, nor output repair.
+  preserve_evidence_boundary: The opt-in /12 Node gate proves exact private six-member stream hashes and structural WASM activation only. It proves no browser conversation, numerical parity, model quality, P2P, deployment, or campaign progress.
+  preserve_next: Implement and test the closed exactly-once worker before changing app.js. Replace the complete browser path, then delete the superseded runtime and ACG1 path in the same green major change.
+
+enterprise_clean_slate_memory_submit_totem_2026_08_27:
+  preserve_memory: wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md at 9,166 bytes/SHA256 f4a890676be9cb086e8b65cb063a345cc4a98e0be65a0a9a006b53365238a158.
+  preserve_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md
+  preserve_intake: Twelve advisory reports have inventory SHA256 622aeee51b3a687d573880b0474d395e2ee44db674e91eca65441c7a7c2c3ede; route implementation through synthesis f088512c8c38161ab29d5a4f1c5eee4e03a9f9e5547495a3736c7545d988bf5 and TDD delta e75e7630c7f05aac1d1f360ff597ad91d81c628570eb602fb40b15e8c0dd1bfb.
+  preserve_contract: MemoryEndpoints submit has one exact 16-field closed shape and digest ffa9fb1d3b729902d8a62621ce08d627b7042aaad89f5d8ca51a6257f3e305aa across Rust, .NET, browser, scripts, and fixture. Submit aliases agentId and safeSummary do not exist.
+  preserve_quality: Current focused and complete local gates are green, but the protected clean-source release gate remains pending until commit, push, fresh fetch, and four-way equality.
+  preserve_next: Finish the registered SLM2 consumer replacement and delete all active SLM1/ACG1 executable paths. Keep immutable evidence as history, never as supported behavior.
+  preserve_policy: One prelaunch product, no legacy, compatibility, migration, fallback, aliases, dual paths, deferred cleanup, debt, stale docs, or inflated evidence. MemoryEndpoints remains authorized and local UAIX supported; counters remain zero.
 
 qwen3_source_terminal_process_identity_correction_totem_2026_08_26:
   preserve_memory: wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-process-identity-correction-memory-2026-08-26.md at 9,313 bytes/SHA256 2f294466f779f23e3c1bc5c810ba693513c2b4a8be855163f3ee098a2fbaf18b.

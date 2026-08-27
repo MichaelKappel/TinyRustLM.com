@@ -1,15 +1,59 @@
 # TinyRustLM Browser Runtime
 
-This document describes the maintained browser execution path. Statements are
-grouped as implemented facts, locally verified behavior, and gates that still
-require authorized external evidence.
+Status on 2026-08-27: **release blocked during the canonical runtime clean
+cut**. The raw SLM2/ACG2 Rust/WASM boundary exists and passes focused local
+tests, but the production worker, UI integration, real-browser conversation
+evidence, and deletion of the superseded runtime are not complete. The current
+site must not be described as using the canonical browser runtime until all of
+those conditions are satisfied in one tested replacement.
 
-## Implemented Runtime Path
+This document distinguishes the canonical replacement from the checked-in
+pre-cutover implementation that still has to be removed. Describing that old
+implementation is a deletion inventory, not a compatibility promise or a
+supported second path.
 
-The application loads the checked-in Rust/WASM runtime and accepts model bytes
-through the real browser file-selection control. JavaScript transfers bytes and
-coordinates UI state; Rust remains responsible for model validation and
-generation.
+## Canonical Replacement Status
+
+The canonical replacement is registered by
+`contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json` and
+implemented in part by `rust/crates/tinyrustlm-browser-runtime-wasm`. The local
+implementation checkpoint at remote-exact commit
+`5c4f46c7af35bc6e892097cd4924ca58286efa8c` establishes:
+
+- one import-free raw WASM module with an exact 16-function application export
+  allowlist;
+- one pending move-only transfer and one committed value per closed artifact
+  kind;
+- exact canonical Sampling2 and Prompt2 transfer sizes of 65,800 and 512
+  bytes;
+- transactional ACG2 activation with one model allocation moving into the
+  runtime and no retained second model owner;
+- caller-owned operation authority that remains distinct from composition
+  identity;
+- bounded state, step, output, and error results; and
+- terminal release that drops transfers, staged members, runtime, model,
+  prompt, and KV state.
+
+Focused Rust, clippy, Node WebAssembly, and opt-in private structural activation
+tests pass for this boundary. Node WebAssembly is not browser evidence, and the
+private activation proves structure and bounded ownership only. It does not
+prove generation quality, native/browser parity, a browser conversation,
+release, deployment, publication, P2P availability, or campaign credit.
+
+The clean cut remains incomplete because
+`tinyrustlm/app/model-runtime-worker.js` is not implemented, `app.js` still
+owns the pre-cutover runtime path, and the SLM1/ACG1 executable surfaces and
+packaged bytes are still present. Release and deployment remain blocked until
+the worker is the sole runtime owner, the UI is command/presentation only,
+real Chromium evidence passes, and every superseded executable path is
+deleted without an alias, reader, shim, fallback, feature flag, or migration.
+
+## Superseded Pre-Cutover Inventory
+
+The currently checked-in application still loads the superseded Rust/WASM ABI
+on the UI thread and accepts model bytes through the browser file-selection
+control. This code is not a maintained alternate runtime. It must be replaced
+and deleted as part of the clean cut.
 
 The interactive chooser uses one P2P-first acquisition state machine. A
 complete identity-matched peer offer is imported through an explicitly paired
@@ -64,7 +108,7 @@ The browser evidence runner requires exactly one GET for the configured graph
 URL. A missing, duplicate, redirected, cross-origin, or identity-drifting graph
 cannot produce a passing receipt.
 
-## Immutable Composition
+## Superseded ACG1 Campaign Inventory
 
 An ACG1 graph is metadata, not a second model artifact. Its campaign identity
 binds:
