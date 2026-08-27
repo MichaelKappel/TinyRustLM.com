@@ -1,0 +1,197 @@
+# Browser Runtime WASM Clean-Cut Preregistration
+
+Date: 2026-08-27
+
+Status: registered before the production browser runtime implementation
+
+## Decision
+
+The TinyRustLM browser will have one model-execution path: a dedicated worker
+owns one production WebAssembly instance compiled from the canonical SLM2
+conversation runtime. The UI sends typed commands and renders one terminal raw
+output. It does not own model bytes, call WebAssembly directly, implement
+tokenization or sampling, repair an answer, or retain the superseded runtime.
+
+The machine-readable authority is
+`contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json`. It
+binds parent commit `cf56eb1a563c85acfc7257d128f5fe3b386da954` and parent
+tree `00e364b0b1b71a458c749f16c720ca5bc3f4073f`. This registration creates
+no executable, artifact, browser observation, product claim, deployment, or
+campaign credit.
+
+## Why This Boundary Is Required
+
+The canonical Rust runtime already owns SLM2 parsing, ACG2 dependency closure,
+Tokenizer2, Template2, Sampling2, Prompt2, scalar execution, and transactional
+KV state. The active browser still loads the superseded WASM ABI on the UI
+thread, activates ACG1 metadata, and contains task-specific generation and
+output-cleanup branches. Preserving those paths beside a new worker would leave
+two runtime authorities and would make raw-output and cancellation claims
+unverifiable.
+
+The replacement is therefore a clean cut. The new Rust crate is
+`rust/crates/tinyrustlm-browser-runtime-wasm`; the sole worker is
+`tinyrustlm/app/model-runtime-worker.js`; and `app.js` becomes a command and
+presentation client. Once the replacement passes, the old runtime tree,
+direct UI-to-WASM calls, ACG1 admission, task-specific generation exports,
+repair logic, manifests, fixtures, and tests are deleted. No reader, alias,
+shim, fallback, feature flag, or migration path remains.
+
+## Ownership And Copy Discipline
+
+One worker owns one WASM module and one runtime. The module accepts binary
+artifacts through a move-only transfer protocol:
+
+1. `transfer_begin(kind, length)` creates one exact Rust-owned allocation and
+   returns its linear-memory pointer.
+2. JavaScript copies the already bounded chunk or artifact into that pointer.
+3. `transfer_commit(kind, pointer, length)` accepts only the exact pending
+   allocation. It moves the allocation into its closed staging slot without a
+   second copy.
+4. ACG2 activation validates every exact length, SHA-256, profile, dependency,
+   resource ceiling, and model shape before swapping the active runtime.
+5. On success, model allocation ownership moves into `ScalarModel`; staging
+   retains no second model. On failure, candidate staging is dropped and the
+   current runtime remains unchanged.
+
+Only one transfer may be pending. Each closed kind may be committed once until
+the command that consumes it. Pointer, kind, or length drift drops the pending
+allocation and returns a bounded error. Duplicate committed values never
+replace earlier bytes. Artifacts cannot be allocated until an explicit runtime
+policy has passed.
+
+The worker must release its JavaScript `ArrayBuffer` after commit and use
+transfer lists between threads. Streaming acquisition, durable storage, and
+incremental hashing remain worker responsibilities. This ABI does not pretend
+that browser storage reads are zero-copy. Real-browser evidence must measure
+every retained model-sized owner and peak process memory.
+
+## Closed Artifact Set
+
+Activation consumes exactly:
+
+- one 896-byte `org.minimodel.acg2/2.0` graph;
+- one SLM2 model;
+- one Tokenizer2 artifact;
+- one Template2 artifact;
+- one Sampling2 artifact; and
+- one Prompt2 artifact.
+
+No path, URL, alias, source name, or caller-provided compatibility statement is
+trusted by WASM. ACG2 binds five members by role, exact byte length, SHA-256,
+format profile, and dependency relationship. The canonical runtime reparses
+the model after ownership transfer and checks its identity against the
+prepared composition before activation.
+
+## Operation And Lifecycle Rules
+
+Every mutating runtime call consumes a 32-byte nonzero expected operation
+identity. Creating the runtime uses that identity as its initial authority.
+Activation, transcript changes, request start, generation steps, and output
+finish reject stale identities before mutation. Advancing an operation is a
+compare-and-swap requiring distinct expected and next identities.
+
+The only lifecycle is:
+
+```text
+uninitialized -> empty -> active-idle -> generating
+                                  ^          |
+                                  |          v
+                                  +-- terminal-output-ready
+```
+
+Activation may replace `active-idle` with another fully prepared composition.
+Any live state may be released. Release drops transfers, staged members,
+results, runtime, model, prompt state, and KV state; reuse requires a new
+worker and module instance. There is no implicit transition, automatic retry,
+or alternate runtime.
+
+`finish` consumes one terminal output exactly once. The result contains the
+raw canonical Runtime decode, exact token IDs, terminal Sampling2 status,
+composition identity, operation identity, and committed KV bytes. A second
+finish fails. Repeated token text is legitimate and is never deduplicated.
+
+## Worker Protocol
+
+Worker commands and events use the closed
+`tinyrustlm.model-runtime-worker/1` schema. Every message binds worker,
+operation, composition, conversation, turn, generation, message, and sequence
+identities plus an exact kind and bounded payload. Unknown fields, duplicate
+IDs, gaps, out-of-order events, old workers, old operations, old compositions,
+and old generations fail closed.
+
+Binary data crosses the UI/worker boundary only as transferred
+`ArrayBuffer`s. The worker receives no arbitrary URL, filesystem path, or
+command and performs no network access. Acquisition code resolves approved
+streams before handing bytes to the worker. One generation emits one ordered
+event stream and one completion. The UI renders that completion once.
+
+Cancellation is an actual Sampling2 transition when the worker remains
+healthy. A WASM trap, allocation failure, or forced worker termination discards
+the worker and all KV state. Recovery creates a fresh worker that reopens and
+reverifies every immutable member before activation. It does not continue from
+untrusted in-memory state.
+
+## Bounded Policy
+
+Runtime creation receives explicit model, sequence, KV, scratch, resolved
+member, resident dependency, request, and linear-memory ceilings. Every value
+must be positive and cannot change after creation. The machine profile records
+hard WASM32 ceilings; a product activation may choose smaller measured limits.
+
+The production build must declare an explicit WebAssembly maximum memory.
+Worker capability and quota preflight occurs before artifact transfer. The
+runtime verifies that its model, KV, scratch, logits, dependencies, result, and
+linear-memory plan fit the accepted policy. Increasing a browser timeout or
+blindly calling `memory.grow` is not an admission strategy.
+
+## Privacy And Output Integrity
+
+The worker has no network authority. Prompts and model bytes never go to a
+project origin. There is no telemetry, credential-bearing URL, artifact-
+supplied code, arbitrary template evaluator, command execution, or filesystem
+path interpretation in this boundary.
+
+Errors are stable bounded codes and contain neither prompts nor model bytes.
+Success JSON is private worker-local transport. Model output is not completed,
+trimmed into a better answer, normalized, retried, filtered, or selected from
+multiple generations. Presentation may escape unsafe markup without changing
+the underlying text evidence.
+
+## Test Order
+
+Implementation proceeds in this order:
+
+1. Add failing transfer, policy, stale-operation, lifecycle, and ownership
+   tests.
+2. Change ACG2 member resolution so an in-memory model allocation is moved
+   into the runtime after validation instead of copied into a second
+   unbounded allocation.
+3. Implement the raw WASM boundary and exact export allowlist.
+4. Build `wasm32-unknown-unknown` release bytes with an explicit maximum
+   memory and exercise hostile ABI calls from Node.
+5. Implement the worker state machine and race tests.
+6. Run real Chromium worker, cancellation, zero-network, transfer-detachment,
+   memory, and fresh-worker tests.
+7. Activate the exact private six-member composition and compare deterministic
+   native and browser token behavior only under separately registered
+   numerical evidence.
+8. Replace browser admission and UI generation completely.
+9. Delete every superseded executable path and run the final forbidden-token,
+   package, asset, documentation, and deployment audit.
+
+Focused tests do not authorize browser or product claims. Node is not browser
+evidence. A private structural composition is not a useful model. A successful
+WASM build is not a conversation, P2P observation, release, or deployment.
+
+## Completion Boundary
+
+This browser cut is complete only when the real production UI reaches the
+canonical runtime exclusively through the worker; a real Chromium profile
+activates an exact ACG2 composition, runs genuine multi-turn generation,
+cancels coherently, restarts through full reverification, renders each raw
+answer once, produces zero prohibited network traffic, and leaves no old
+runtime code or packaged bytes.
+
+Until then, no deployment is eligible and campaign counters remain
+`0/20`, `0/50`, `0/25`, `0/40`, and `0/20`.

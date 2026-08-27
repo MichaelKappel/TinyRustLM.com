@@ -1850,6 +1850,16 @@ Checked-in profiles and vectors contain public material only.
 
 ## Completion Boundary
 
+The production browser-runtime clean cut is separately preregistered in
+`browser-runtime-wasm-clean-cut-preregistration.v1.json`. It fixes one
+worker-owned WebAssembly runtime, a move-only bounded artifact-transfer ABI,
+exact operation binding, transactional ACG2 activation, raw exactly-once
+output, and complete deletion of the superseded browser runtime. The related
+architecture record is
+`docs/architecture/2026-08-27-browser-runtime-wasm-clean-cut-preregistration.md`.
+The registration is design authority only and creates no executable or browser
+evidence.
+
 The registry freezes design and is not itself implementation evidence. The
 separately identified SLM2 checkpoints prove bounded format conformance and
 canonical-fixture scalar native/browser-WASM conformance. They do not prove

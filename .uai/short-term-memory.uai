@@ -1,5 +1,14 @@
-profile: runtime-mirust.short-term-memory.v509
-updated_utc: 2026-08-27T22:01:48Z
+profile: runtime-mirust.short-term-memory.v510
+updated_utc: 2026-08-27T22:42:24Z
+
+current_focus_2026_08_27_browser_runtime_wasm_clean_cut:
+  status: preregistered_before_implementation
+  machine_authority: contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json,15879,be26574af30dbf587d1d9b32e0926e8f01aa329f3a346a817b61a3c2914765f8
+  architecture: docs/architecture/2026-08-27-browser-runtime-wasm-clean-cut-preregistration.md,9531,7d14fe408da76f5d7012951b39477cd14eb1a06e6f285bc0bc23462351320fa7
+  decision: The sole production browser path is one dedicated worker plus one production WASM instance over the canonical SLM2 conversation runtime. The UI cannot own model bytes or call WASM. Move-only bounded transfer prevents retaining a second unbounded model owner, operations fail stale before mutation, ACG2 activation is transactional, and raw output finishes exactly once.
+  verification: Focused preregistration test passes 10/10. Registration binds parent commit cf56eb1a563c85acfc7257d128f5fe3b386da954 and tree 00e364b0b1b71a458c749f16c720ca5bc3f4073f.
+  immediate_work: Commit/push/fresh-four-way-verify this registration, then change MemberResolver ownership under red tests and implement rust/crates/tinyrustlm-browser-runtime-wasm. Do not touch app.js until the worker boundary passes raw-WASM tests.
+  boundary: No executable, real browser, model, numerical, quality, P2P, release, deployment, or campaign claim follows. The superseded browser path remains a release blocker and must be deleted after its complete replacement passes.
 
 current_focus_2026_08_27_enterprise_clean_slate_memory_submit:
   intake_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md

@@ -1,0 +1,507 @@
+{
+  "schema": "tinyrustlm.browser-runtime-wasm-clean-cut-preregistration.v1",
+  "profileId": "tinyrustlm.browser-runtime-wasm/1",
+  "status": "registered-before-production-browser-runtime-implementation",
+  "registeredAtUtc": "2026-08-27T22:42:24Z",
+  "registrationParentCommit": "cf56eb1a563c85acfc7257d128f5fe3b386da954",
+  "registrationParentTree": "00e364b0b1b71a458c749f16c720ca5bc3f4073f",
+  "authority": {
+    "workspaceRoot": "E:/Source/.tinyrustlm-model-acquisition-recovered-20260819",
+    "branch": "codex/model-acquisition-v2",
+    "productLifecycle": "prelaunch-single-product",
+    "implementationPath": "rust/crates/tinyrustlm-browser-runtime-wasm",
+    "workerPath": "tinyrustlm/app/model-runtime-worker.js",
+    "uiPath": "tinyrustlm/app/app.js",
+    "canonicalRuntimePath": "rust/crates/tinyrustlm-runtime",
+    "canonicalCompositionPath": "rust/crates/tinyrustlm-composition2",
+    "cleanCutContract": {
+      "path": "contracts/vnext/production-slm2-clean-cut-preregistration.v1.json",
+      "byteLength": 16398,
+      "sha256": "dc0213a34b63cf392c99e929bf0380d36698bce0ec995f5572aac2e8e287444a"
+    },
+    "cleanCutArchitecture": {
+      "path": "docs/architecture/2026-08-24-production-slm2-clean-cut-preregistration.md",
+      "sha256": "349a48008a51eb91555e0f00fecd766d0679ef2fc1ca5e6289d93ce876f70bb1"
+    },
+    "memoryEndpointsAuthorized": true,
+    "memoryEndpointsIsRuntimeArtifactTransport": false,
+    "writeDriveDAllowed": false
+  },
+  "singleOwner": {
+    "moduleInstanceCountPerWorker": 1,
+    "runtimeInstanceCountPerModule": 1,
+    "workerOwnsModuleAndRuntime": true,
+    "uiMayCallWasmDirectly": false,
+    "uiMayOwnModelBytes": false,
+    "uiMayOwnKvState": false,
+    "uiMayRepairModelOutput": false,
+    "workerTerminationInvalidatesRuntimeAndKv": true,
+    "freshWorkerMustReverifyEveryMemberBeforeActivation": true
+  },
+  "artifactContract": {
+    "compositionProfile": "org.minimodel.acg2/2.0",
+    "compositionBytes": 896,
+    "requiredMembers": [
+      {
+        "transferKind": 3,
+        "role": "model",
+        "format": "slm2"
+      },
+      {
+        "transferKind": 4,
+        "role": "tokenizer",
+        "format": "tokenizer2"
+      },
+      {
+        "transferKind": 5,
+        "role": "template",
+        "format": "template2"
+      },
+      {
+        "transferKind": 6,
+        "role": "sampling",
+        "format": "sampling2"
+      },
+      {
+        "transferKind": 7,
+        "role": "prompt",
+        "format": "prompt2"
+      }
+    ],
+    "memberCount": 5,
+    "unknownMembersAllowed": false,
+    "duplicateMembersAllowed": false,
+    "pathOrUrlAuthorityInsideWasm": false,
+    "hashAndLengthVerifiedByCanonicalCompositionOwner": true,
+    "activationIsTransactional": true,
+    "failedActivationPreservesCurrentRuntime": true,
+    "failedActivationCandidateIsRetained": false
+  },
+  "transferProtocol": {
+    "strategy": "one-pending-allocation-and-one-committed-value-per-closed-kind",
+    "beginExport": "tinyrustlm_browser_runtime_transfer_begin",
+    "commitExport": "tinyrustlm_browser_runtime_transfer_commit",
+    "cancelExport": "tinyrustlm_browser_runtime_transfer_cancel",
+    "beginReturnsPointerIntoOwnedWasmAllocation": true,
+    "commitRequiresExactKindPointerAndLength": true,
+    "commitCopiesBytes": false,
+    "pendingTransferCountMaximum": 1,
+    "committedValueCountPerKindMaximum": 1,
+    "zeroLengthAllowed": false,
+    "pointerMismatchDropsPendingTransfer": true,
+    "kindMismatchDropsPendingTransfer": true,
+    "lengthMismatchDropsPendingTransfer": true,
+    "duplicateCommittedKindReplacesExisting": false,
+    "modelOwnershipMovesIntoCanonicalRuntime": true,
+    "modelTransferBytesRemainRetainedAfterSuccessfulActivation": false,
+    "unboundedSecondModelCopyAllowed": false,
+    "runtimeRepackingAllowed": false,
+    "javascriptModelBufferMustBeReleasedAfterCommit": true,
+    "workerMessageTransferListRequiredForBinaryChunks": true,
+    "transferKinds": [
+      {
+        "code": 1,
+        "name": "expected-operation",
+        "exactBytes": 32,
+        "consumedBy": [
+          "create",
+          "activate",
+          "advance-operation",
+          "set-transcript",
+          "begin-request",
+          "step",
+          "finish"
+        ]
+      },
+      {
+        "code": 2,
+        "name": "next-operation",
+        "exactBytes": 32,
+        "consumedBy": [
+          "advance-operation"
+        ]
+      },
+      {
+        "code": 3,
+        "name": "model",
+        "maximumBytesFromRuntimePolicy": "maximumModelBytes",
+        "consumedBy": [
+          "activate"
+        ]
+      },
+      {
+        "code": 4,
+        "name": "tokenizer",
+        "maximumBytes": 67108864,
+        "consumedBy": [
+          "activate"
+        ]
+      },
+      {
+        "code": 5,
+        "name": "template",
+        "maximumBytes": 1048576,
+        "consumedBy": [
+          "activate"
+        ]
+      },
+      {
+        "code": 6,
+        "name": "sampling",
+        "maximumBytes": 65536,
+        "consumedBy": [
+          "activate"
+        ]
+      },
+      {
+        "code": 7,
+        "name": "prompt",
+        "maximumBytes": 65536,
+        "consumedBy": [
+          "activate"
+        ]
+      },
+      {
+        "code": 8,
+        "name": "composition",
+        "exactBytes": 896,
+        "consumedBy": [
+          "activate"
+        ]
+      },
+      {
+        "code": 9,
+        "name": "prompt-request",
+        "maximumBytesFromRuntimePolicy": "maximumRequestBytes",
+        "consumedBy": [
+          "begin-request"
+        ]
+      }
+    ]
+  },
+  "runtimePolicy": {
+    "createExport": "tinyrustlm_browser_runtime_create",
+    "arguments": [
+      "maximumModelBytes",
+      "maximumSequenceTokens",
+      "maximumKvBytes",
+      "maximumScratchBytes",
+      "maximumResolvedMemberBytes",
+      "maximumResidentDependencyBytes",
+      "maximumRequestBytes",
+      "maximumLinearMemoryBytes",
+      "transcriptRevisionLow",
+      "transcriptRevisionHigh"
+    ],
+    "allByteArgumentsAreUnsigned32": true,
+    "transcriptRevisionIsUnsigned64FromLowHighWords": true,
+    "allLimitsMustBePositive": true,
+    "maximumModelBytesHardCeiling": 2147483648,
+    "maximumSequenceTokensHardCeiling": 40960,
+    "maximumKvBytesHardCeiling": 2147483648,
+    "maximumScratchBytesHardCeiling": 1073741824,
+    "maximumResolvedMemberBytesHardCeiling": 2281701376,
+    "maximumResidentDependencyBytesHardCeiling": 134217728,
+    "maximumRequestBytesHardCeiling": 16777216,
+    "maximumLinearMemoryBytesHardCeiling": 3221225472,
+    "policyCannotChangeAfterCreate": true,
+    "runtimeCannotBeCreatedTwiceWithoutRelease": true,
+    "artifactsCannotBeAllocatedBeforeCreate": true,
+    "resourcePreflightOccursBeforeRuntimeMutation": true,
+    "observedLinearMemoryMustNotExceedRegisteredMaximum": true
+  },
+  "exports": [
+    {
+      "name": "tinyrustlm_browser_runtime_abi_version",
+      "arguments": [],
+      "result": "u32-exactly-1"
+    },
+    {
+      "name": "tinyrustlm_browser_runtime_transfer_begin",
+      "arguments": [
+        "kind:u32",
+        "length:u32"
+      ],
+      "result": "pointer-or-zero"
+    },
+    {
+      "name": "tinyrustlm_browser_runtime_transfer_commit",
+      "arguments": [
+        "kind:u32",
+        "pointer:wasm32-pointer",
+        "length:u32"
+      ],
+      "result": "status:u32"
+    },
+    {
+      "name": "tinyrustlm_browser_runtime_transfer_cancel",
+      "arguments": [],
+      "result": "status:u32"
+    },
+    {
+      "name": "tinyrustlm_browser_runtime_create",
+      "arguments": "runtimePolicy.arguments",
+      "result": "status:u32"
+    },
+    {
+      "name": "tinyrustlm_browser_runtime_activate",
+      "arguments": [],
+      "result": "status:u32"
+    },
+    {
+      "name": "tinyrustlm_browser_runtime_advance_operation",
+      "arguments": [],
+      "result": "status:u32"
+    },
+    {
+      "name": "tinyrustlm_browser_runtime_set_transcript",
+      "arguments": [
+        "revisionLow:u32",
+        "revisionHigh:u32"
+      ],
+      "result": "status:u32"
+    },
+    {
+      "name": "tinyrustlm_browser_runtime_begin_request",
+      "arguments": [],
+      "result": "status:u32"
+    },
+    {
+      "name": "tinyrustlm_browser_runtime_step",
+      "arguments": [
+        "cancelled:u32-exactly-0-or-1"
+      ],
+      "result": "status:u32"
+    },
+    {
+      "name": "tinyrustlm_browser_runtime_finish",
+      "arguments": [],
+      "result": "status:u32"
+    },
+    {
+      "name": "tinyrustlm_browser_runtime_release",
+      "arguments": [],
+      "result": "status:u32"
+    },
+    {
+      "name": "tinyrustlm_browser_runtime_result_ptr",
+      "arguments": [],
+      "result": "immutable-pointer-until-next-mutating-call"
+    },
+    {
+      "name": "tinyrustlm_browser_runtime_result_len",
+      "arguments": [],
+      "result": "u32"
+    },
+    {
+      "name": "tinyrustlm_browser_runtime_error_ptr",
+      "arguments": [],
+      "result": "immutable-pointer-until-next-mutating-call"
+    },
+    {
+      "name": "tinyrustlm_browser_runtime_error_len",
+      "arguments": [],
+      "result": "u32"
+    }
+  ],
+  "statusCodes": [
+    {
+      "code": 0,
+      "name": "ok"
+    },
+    {
+      "code": 1,
+      "name": "boundary-rejected"
+    },
+    {
+      "code": 2,
+      "name": "runtime-rejected"
+    },
+    {
+      "code": 3,
+      "name": "internal-failure"
+    }
+  ],
+  "resultContract": {
+    "encoding": "utf-8-canonical-compact-json",
+    "maximumBytes": 16777216,
+    "unknownFieldsAllowed": false,
+    "successClearsError": true,
+    "failureClearsResult": true,
+    "stepSchema": "tinyrustlm.browser_runtime_wasm.step/1",
+    "outputSchema": "tinyrustlm.browser_runtime_wasm.output/1",
+    "stateSchema": "tinyrustlm.browser_runtime_wasm.state/1",
+    "outputTextIsRawCanonicalRuntimeDecode": true,
+    "outputMayBeRepaired": false,
+    "outputMayBeRetriedAutomatically": false,
+    "outputMayBeSelectedBestOfN": false,
+    "finishConsumesTerminalOutputExactlyOnce": true,
+    "secondFinishRejects": true
+  },
+  "operationRules": {
+    "everyMutatingRuntimeCallConsumesExpectedOperation": true,
+    "zeroOperationRejected": true,
+    "staleExpectedOperationRejectedBeforeMutation": true,
+    "expectedOperationNeverBecomesNextOperationImplicitly": true,
+    "advanceRequiresDistinctNonzeroNextOperation": true,
+    "failedAdvancePreservesCurrentOperation": true,
+    "stepCancellationIsOneCanonicalRuntimeTransition": true,
+    "cancellationNeverStartsReplacementGeneration": true,
+    "lateCompletionAuthority": "worker-rejects-by-worker-generation-and-operation-identity"
+  },
+  "lifecycle": {
+    "states": [
+      "uninitialized",
+      "empty",
+      "active-idle",
+      "generating",
+      "terminal-output-ready",
+      "released"
+    ],
+    "allowedTransitions": [
+      "uninitialized->empty:create",
+      "empty->active-idle:activate",
+      "active-idle->active-idle:activate",
+      "active-idle->generating:begin-request",
+      "generating->generating:step-active",
+      "generating->terminal-output-ready:step-terminal",
+      "terminal-output-ready->active-idle:finish",
+      "empty->released:release",
+      "active-idle->released:release",
+      "generating->released:release",
+      "terminal-output-ready->released:release"
+    ],
+    "implicitTransitionsAllowed": false,
+    "releaseDropsRuntimeTransfersResultsErrorsAndKv": true,
+    "releasedModuleRequiresWorkerReplacement": true
+  },
+  "workerProtocol": {
+    "schema": "tinyrustlm.model-runtime-worker/1",
+    "commandFields": [
+      "schema",
+      "workerId",
+      "operationId",
+      "compositionId",
+      "conversationId",
+      "turnId",
+      "generationId",
+      "messageId",
+      "sequence",
+      "kind",
+      "payload"
+    ],
+    "unknownFieldsAllowed": false,
+    "idsAreLowercaseHexSha256": true,
+    "sequenceStartsAtZero": true,
+    "sequenceMustIncreaseByOne": true,
+    "duplicateMessageRejected": true,
+    "outOfOrderMessageRejected": true,
+    "staleWorkerRejected": true,
+    "staleOperationRejected": true,
+    "staleCompositionRejected": true,
+    "staleGenerationRejected": true,
+    "completionCountPerGeneration": 1,
+    "uiAssistantRenderCountPerCompletion": 1,
+    "repeatedTokenTextIsNotDeduplicated": true,
+    "binaryPayloadUsesTransferableArrayBuffer": true,
+    "workerMayAccessNetwork": false,
+    "workerMayReceiveArbitraryUrlOrPath": false
+  },
+  "privacyAndSecurity": {
+    "projectOriginReceivesPrompt": false,
+    "projectOriginReceivesModelBytes": false,
+    "implicitTelemetry": false,
+    "credentialBearingUrls": false,
+    "artifactSuppliedExecutableCode": false,
+    "arbitraryJinja": false,
+    "arbitraryCommandExecution": false,
+    "arbitraryFilesystemPath": false,
+    "hostTrustsWasmClaimWithoutWorkerBinding": false,
+    "wasmTrustsHostHashWithoutCanonicalRecalculation": false,
+    "errorTextContainsPromptOrModelBytes": false,
+    "publicSafeErrorsAreStableBoundedCodes": true
+  },
+  "obsoleteBrowserClosure": {
+    "deleteAfterReplacement": [
+      "tinyrustlm/runtime",
+      "tinyrustlm/app direct calls to the superseded WASM ABI",
+      "ACG1 browser admission and activation",
+      "generate_two_sentence_text",
+      "generate_status_reason_json",
+      "runtime output cleanup and repair",
+      "old runtime WASM manifests and packaged assets",
+      "old browser smoke assertions and fixtures"
+    ],
+    "compatibilityReaderAllowed": false,
+    "compatibilityWriterAllowed": false,
+    "dualRuntimeAllowed": false,
+    "fallbackToSupersededRuntimeAllowed": false,
+    "featureFlagForSupersededRuntimeAllowed": false
+  },
+  "requiredTests": {
+    "rustBoundary": [
+      "all-transfer-kinds-positive",
+      "unknown-kind",
+      "zero-and-over-limit-length",
+      "pointer-kind-and-length-mismatch",
+      "duplicate-committed-kind",
+      "pending-cancel-and-release",
+      "policy-every-zero-and-hard-ceiling",
+      "stale-and-zero-operation",
+      "malformed-composition-preserves-current-runtime",
+      "failed-request-preserves-idle-runtime",
+      "step-cancel-and-finish-exactly-once",
+      "result-and-error-byte-bounds",
+      "release-drops-all-owned-state"
+    ],
+    "ownership": [
+      "in-memory-model-transfer-is-moved-not-cloned",
+      "successful-activation-drops-staged-model-owner",
+      "failed-activation-drops-candidate-model-owner",
+      "no-resolver-open-retains-model-after-validation",
+      "no-unbounded-second-model-copy"
+    ],
+    "rawWasm": [
+      "wasm32-release-build-with-explicit-maximum-memory",
+      "exact-export-allowlist",
+      "node-instantiation-and-hostile-abi",
+      "linear-memory-ceiling",
+      "result-pointer-lifetime"
+    ],
+    "realBrowser": [
+      "chromium-worker-instantiation",
+      "zero-worker-network-requests",
+      "transferable-buffer-detachment",
+      "worker-cancellation-and-termination",
+      "fresh-worker-reverification",
+      "exactly-once-event-ordering",
+      "measured-copy-and-memory-accounting"
+    ],
+    "integration": [
+      "exact-six-member-private-composition-activation",
+      "native-versus-browser-deterministic-token-parity",
+      "multiturn-kv-prefix-reuse",
+      "context-limit",
+      "model-switch-transactionality",
+      "fresh-profile-close-delete-and-secret-scan"
+    ]
+  },
+  "claimBoundary": {
+    "implementationCreatedByRegistration": false,
+    "wasmBuiltByRegistration": false,
+    "realModelActivatedByRegistration": false,
+    "browserExecutedByRegistration": false,
+    "numericalParityProvenByRegistration": false,
+    "modelQualityProvenByRegistration": false,
+    "browserChatProvenByRegistration": false,
+    "deploymentAuthorizedByRegistration": false,
+    "campaignCreditAuthorizedByRegistration": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}
