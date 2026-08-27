@@ -2,7 +2,21 @@
 
 Date: 2026-08-27
 
-Status: registered before the production browser runtime implementation
+Status: registered before implementation; transfer-size defect corrected during
+real-artifact preflight before worker implementation
+
+## Registered Correction
+
+The original registration capped Sampling2 and Prompt2 transfers at 65,536
+bytes. Real-artifact preflight exposed that this was internally inconsistent
+with the already registered canonical profiles: Sampling2 is exactly 65,800
+bytes and Prompt2 is exactly 512 bytes. The current machine contract replaces
+those two limits with the canonical exact sizes and binds both profile files.
+
+The correction records the original registration commit, byte length, and
+SHA-256. It adds no compatibility behavior, fallback, campaign credit, or
+product claim. Git retains the rejected contract as evidence; the current tree
+contains only the corrected executable rule.
 
 ## Decision
 
@@ -90,6 +104,11 @@ identity. Creating the runtime uses that identity as its initial authority.
 Activation, transcript changes, request start, generation steps, and output
 finish reject stale identities before mutation. Advancing an operation is a
 compare-and-swap requiring distinct expected and next identities.
+
+Composition identity never becomes operation authority. Successful activation
+preserves the current caller-owned operation identity. A model switch first
+advances that identity explicitly and then activates under the new identity;
+there is no implicit operation transition hidden inside artifact activation.
 
 The only lifecycle is:
 

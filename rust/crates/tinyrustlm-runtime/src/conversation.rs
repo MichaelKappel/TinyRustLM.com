@@ -1,16 +1,23 @@
 use std::error::Error;
 use std::fmt::{self, Display, Formatter};
-use std::io::{Read, SeekFrom};
-
 use tinyrustlm_composition2::{
     prepare_composition, Acg2Graph, Acg2Identity, Acg2Member, Acg2Policy, ActivationState,
-    MemberResolver, MemberRole, OperationIdentity, ResourcePlan, ResourcePreflight,
-    TranscriptState,
+    MemberResolver, OperationIdentity, ResourcePlan, ResourcePreflight, TranscriptState,
 };
 use tinyrustlm_prompt2::Prompt2Plan;
 use tinyrustlm_sampling2::GenerationStatus;
 
 use crate::scalar::{MemoryPlan, RuntimePolicy, ScalarModel, ScalarSession};
+
+/// Resolves composition members and transfers sole ownership of model bytes.
+///
+/// A file-backed host may read the exact model into a fresh allocation. An
+/// in-memory host such as the browser WASM boundary must move its already
+/// filled transfer allocation instead of cloning a model-sized buffer.
+pub trait RuntimeMemberResolver: MemberResolver {
+    /// Moves the exact model member bytes into the canonical runtime.
+    fn take_model(&mut self, identity: Acg2Member) -> Option<Vec<u8>>;
+}
 
 /// A stable public-safe failure from the canonical conversation runtime.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -292,7 +299,7 @@ impl ConversationRuntime {
     }
 
     /// Fully prepares and transactionally activates one exact ACG2 composition.
-    pub fn activate<R: MemberResolver>(
+    pub fn activate<R: RuntimeMemberResolver>(
         &mut self,
         graph_bytes: &[u8],
         resolver: &mut R,
@@ -301,13 +308,16 @@ impl ConversationRuntime {
         if self.generation.is_some() {
             return Err(RuntimeError::new("runtime-generation-pending"));
         }
+        if self.activation.operation() != expected_operation {
+            return Err(RuntimeError::new("acg2-stale-operation"));
+        }
         let graph = Acg2Graph::from_bytes(graph_bytes, Acg2Policy::exact_profile_limits())?;
         let mut preflight = PolicyPreflight {
             policy: self.policy,
         };
         let candidate = prepare_composition(graph, resolver, &mut preflight)?;
-        let model_member = graph.member(MemberRole::Model);
-        let model_bytes = read_exact_model_member(resolver, model_member)?;
+        let model_member = graph.member(tinyrustlm_composition2::MemberRole::Model);
+        let model_bytes = take_exact_model_member(resolver, model_member)?;
         let model = ScalarModel::from_bytes(model_bytes, self.policy.scalar)?;
         if model.artifact_sha256() != candidate.model().identity().artifact_sha256()
             || model.spec() != candidate.model().spec()
@@ -359,6 +369,9 @@ impl ConversationRuntime {
     ) -> Result<RuntimeState, RuntimeError> {
         if self.state != RuntimeState::ActiveIdle || self.generation.is_some() {
             return Err(RuntimeError::new("runtime-not-idle"));
+        }
+        if self.activation.operation() != expected_operation {
+            return Err(RuntimeError::new("acg2-stale-operation"));
         }
         if request_bytes.len() > self.policy.maximum_request_bytes {
             return Err(RuntimeError::new("runtime-request-limit"));
@@ -577,32 +590,14 @@ impl ResourcePreflight for PolicyPreflight {
     }
 }
 
-fn read_exact_model_member<R: MemberResolver>(
+fn take_exact_model_member<R: RuntimeMemberResolver>(
     resolver: &mut R,
     member: Acg2Member,
 ) -> Result<Vec<u8>, RuntimeError> {
-    let mut source = resolver
-        .open(MemberRole::Model, member)
+    let bytes = resolver
+        .take_model(member)
         .ok_or_else(|| RuntimeError::new("runtime-model-open"))?;
-    let observed = source
-        .seek(SeekFrom::End(0))
-        .map_err(|_| RuntimeError::new("runtime-model-length"))?;
-    if observed != member.artifact_bytes() {
-        return Err(RuntimeError::new("runtime-model-length"));
-    }
-    source
-        .seek(SeekFrom::Start(0))
-        .map_err(|_| RuntimeError::new("runtime-model-length"))?;
-    let length = checked_usize_u64(observed)?;
-    let mut bytes = Vec::new();
-    bytes
-        .try_reserve_exact(length)
-        .map_err(|_| RuntimeError::new("runtime-allocation"))?;
-    source
-        .take(observed)
-        .read_to_end(&mut bytes)
-        .map_err(|_| RuntimeError::new("runtime-model-read"))?;
-    if bytes.len() != length {
+    if u64::try_from(bytes.len()).ok() != Some(member.artifact_bytes()) {
         return Err(RuntimeError::new("runtime-model-length"));
     }
     Ok(bytes)
@@ -621,15 +616,11 @@ fn checked_usize(value: u32) -> Result<usize, RuntimeError> {
     usize::try_from(value).map_err(|_| RuntimeError::new("runtime-arithmetic"))
 }
 
-fn checked_usize_u64(value: u64) -> Result<usize, RuntimeError> {
-    usize::try_from(value).map_err(|_| RuntimeError::new("runtime-arithmetic"))
-}
-
 #[cfg(test)]
 mod tests {
     use std::io::Cursor;
 
-    use tinyrustlm_composition2::{Acg2Member, Acg2Read};
+    use tinyrustlm_composition2::{Acg2Member, Acg2Read, MemberRole};
 
     use super::*;
 
@@ -638,6 +629,28 @@ mod tests {
     impl MemberResolver for EmptyResolver {
         fn open(&mut self, _role: MemberRole, _identity: Acg2Member) -> Option<Box<dyn Acg2Read>> {
             Some(Box::new(Cursor::new(Vec::new())))
+        }
+    }
+
+    impl RuntimeMemberResolver for EmptyResolver {
+        fn take_model(&mut self, _identity: Acg2Member) -> Option<Vec<u8>> {
+            Some(Vec::new())
+        }
+    }
+
+    struct OwnedResolver {
+        model: Option<Vec<u8>>,
+    }
+
+    impl MemberResolver for OwnedResolver {
+        fn open(&mut self, _role: MemberRole, _identity: Acg2Member) -> Option<Box<dyn Acg2Read>> {
+            None
+        }
+    }
+
+    impl RuntimeMemberResolver for OwnedResolver {
+        fn take_model(&mut self, _identity: Acg2Member) -> Option<Vec<u8>> {
+            self.model.take()
         }
     }
 
@@ -671,8 +684,16 @@ mod tests {
     #[test]
     fn malformed_activation_and_request_leave_the_empty_runtime_unchanged() {
         let operation = OperationIdentity::new([7; 32]).unwrap();
+        let stale = OperationIdentity::new([8; 32]).unwrap();
         let transcript = TranscriptState::new(11);
         let mut runtime = ConversationRuntime::new(policy(), operation, transcript);
+        assert_eq!(
+            runtime
+                .activate(&[0; 896], &mut EmptyResolver, stale)
+                .unwrap_err()
+                .code(),
+            "acg2-stale-operation"
+        );
         assert_eq!(
             runtime
                 .activate(&[0; 896], &mut EmptyResolver, operation)
@@ -712,5 +733,35 @@ mod tests {
         assert_eq!(runtime.operation(), next);
         assert_eq!(runtime.transcript(), transcript);
         assert_eq!(runtime.state(), RuntimeState::Empty);
+    }
+
+    #[test]
+    fn owned_model_transfer_preserves_the_exact_allocation() {
+        let model = vec![7_u8; 4096];
+        let pointer = model.as_ptr();
+        let member =
+            Acg2Member::new(MemberRole::Model, model.len() as u64, [1; 32]).expect("model member");
+        let mut resolver = OwnedResolver { model: Some(model) };
+
+        let transferred =
+            take_exact_model_member(&mut resolver, member).expect("owned model transfer");
+
+        assert_eq!(transferred.as_ptr(), pointer);
+        assert!(resolver.model.is_none());
+    }
+
+    #[test]
+    fn owned_model_transfer_rejects_length_drift_after_consuming_candidate() {
+        let model = vec![7_u8; 4095];
+        let member = Acg2Member::new(MemberRole::Model, 4096, [1; 32]).expect("model member");
+        let mut resolver = OwnedResolver { model: Some(model) };
+
+        assert_eq!(
+            take_exact_model_member(&mut resolver, member)
+                .expect_err("length drift")
+                .code(),
+            "runtime-model-length"
+        );
+        assert!(resolver.model.is_none());
     }
 }

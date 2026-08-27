@@ -1,0 +1,21 @@
+[package]
+name = "tinyrustlm-browser-runtime-wasm"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Production raw WebAssembly boundary for the canonical SLM2 browser runtime."
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+tinyrustlm-composition2 = { path = "../tinyrustlm-composition2" }
+tinyrustlm-runtime = { path = "../tinyrustlm-runtime" }
+tinyrustlm-sampling2 = { path = "../tinyrustlm-sampling2" }
+
+[lints]
+workspace = true

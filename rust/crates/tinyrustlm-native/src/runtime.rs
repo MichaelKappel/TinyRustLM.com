@@ -8,8 +8,8 @@ use tinyrustlm_composition2::{
     TranscriptState,
 };
 use tinyrustlm_runtime::{
-    ConversationPolicy, ConversationRuntime, MemoryPlan, RuntimeOutput, RuntimePolicy,
-    RuntimeState, RuntimeStep,
+    ConversationPolicy, ConversationRuntime, MemoryPlan, RuntimeMemberResolver, RuntimeOutput,
+    RuntimePolicy, RuntimeState, RuntimeStep,
 };
 use tinyrustlm_sampling2::GenerationStatus;
 
@@ -444,5 +444,14 @@ impl MemberResolver for PathMemberResolver {
         open_regular_file(self.path(role))
             .ok()
             .map(|file| Box::new(file) as Box<dyn Acg2Read>)
+    }
+}
+
+impl RuntimeMemberResolver for PathMemberResolver {
+    fn take_model(&mut self, identity: Acg2Member) -> Option<Vec<u8>> {
+        if identity.role() != MemberRole::Model {
+            return None;
+        }
+        read_regular_file(self.path(MemberRole::Model), identity.artifact_bytes()).ok()
     }
 }

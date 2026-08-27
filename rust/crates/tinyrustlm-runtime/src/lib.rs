@@ -5,7 +5,8 @@ mod conversation;
 mod scalar;
 
 pub use conversation::{
-    ConversationPolicy, ConversationRuntime, RuntimeError, RuntimeOutput, RuntimeState, RuntimeStep,
+    ConversationPolicy, ConversationRuntime, RuntimeError, RuntimeMemberResolver, RuntimeOutput,
+    RuntimeState, RuntimeStep,
 };
 pub use scalar::{
     select_greedy, MemoryPlan, RuntimePolicy, ScalarModel, ScalarRuntimeError, ScalarSession,

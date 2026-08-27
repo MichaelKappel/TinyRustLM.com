@@ -1,8 +1,27 @@
 {
   "schema": "tinyrustlm.browser-runtime-wasm-clean-cut-preregistration.v1",
   "profileId": "tinyrustlm.browser-runtime-wasm/1",
-  "status": "registered-before-production-browser-runtime-implementation",
+  "status": "registered-before-implementation-corrected-during-real-artifact-preflight",
   "registeredAtUtc": "2026-08-27T22:42:24Z",
+  "correction": {
+    "observedAtUtc": "2026-08-27T23:23:50Z",
+    "stage": "raw-wasm-real-artifact-preflight-before-worker-implementation",
+    "reasonCode": "browser-runtime-sampling2-size-contract-mismatch",
+    "priorRegistration": {
+      "commit": "62095be274b316b290e78fc2163ab3235fd2a2ef",
+      "byteLength": 15879,
+      "sha256": "be26574af30dbf587d1d9b32e0926e8f01aa329f3a346a817b61a3c2914765f8"
+    },
+    "observedPublicFacts": {
+      "sampling2ProfileExactBytes": 65800,
+      "prompt2ProfileExactBytes": 512,
+      "priorSamplingTransferMaximumBytes": 65536,
+      "priorPromptTransferMaximumBytes": 65536
+    },
+    "disposition": "replace-defective-current-contract-with-canonical-profile-sizes",
+    "compatibilityBehaviorAdded": false,
+    "campaignCreditAuthorized": false
+  },
   "registrationParentCommit": "cf56eb1a563c85acfc7257d128f5fe3b386da954",
   "registrationParentTree": "00e364b0b1b71a458c749f16c720ca5bc3f4073f",
   "authority": {
@@ -23,6 +42,18 @@
       "path": "docs/architecture/2026-08-24-production-slm2-clean-cut-preregistration.md",
       "sha256": "349a48008a51eb91555e0f00fecd766d0679ef2fc1ca5e6289d93ce876f70bb1"
     },
+    "canonicalFormatAuthorities": [
+      {
+        "path": "contracts/vnext/sampling2-format-profile.v1.json",
+        "byteLength": 19333,
+        "sha256": "ec65e8f1a54c1e4ca95ebda88bde091dad11337250e541bbda60e8cac311428d"
+      },
+      {
+        "path": "contracts/vnext/prompt2-format-profile.v1.json",
+        "byteLength": 19421,
+        "sha256": "f9eb4cbecfb52f5e2857216c999754da94021a5427a86732d33fe15efc0d062c"
+      }
+    ],
     "memoryEndpointsAuthorized": true,
     "memoryEndpointsIsRuntimeArtifactTransport": false,
     "writeDriveDAllowed": false
@@ -148,7 +179,7 @@
       {
         "code": 6,
         "name": "sampling",
-        "maximumBytes": 65536,
+        "exactBytes": 65800,
         "consumedBy": [
           "activate"
         ]
@@ -156,7 +187,7 @@
       {
         "code": 7,
         "name": "prompt",
-        "maximumBytes": 65536,
+        "exactBytes": 512,
         "consumedBy": [
           "activate"
         ]
@@ -209,6 +240,47 @@
     "artifactsCannotBeAllocatedBeforeCreate": true,
     "resourcePreflightOccursBeforeRuntimeMutation": true,
     "observedLinearMemoryMustNotExceedRegisteredMaximum": true
+  },
+  "privateStructuralActivation": {
+    "optInEnvironmentVariable": "TINYRUSTLM_BROWSER_RUNTIME_PRIVATE_COMPOSITION_ROOT",
+    "publicResult": {
+      "path": "contracts/vnext/qwen3-real-composition-execution-result.v12.json",
+      "byteLength": 18441,
+      "sha256": "0c3e84ad9ce6e22d9a164357c9a900d31825d0639f4f11077dab305f9cf3ef0e"
+    },
+    "executionId": "qwen3-composition-c1899de-908e73f-20260826-v12",
+    "semanticMembers": [
+      "model.slm2",
+      "tokenizer.tokenizer2",
+      "template.template2",
+      "sampling.sampling2",
+      "prompt.prompt2",
+      "composition.acg2"
+    ],
+    "operationIdHex": "465e117a550be918a2e152e6e6d1f2dee202847c04c52a28c9d15918dfc3fef6",
+    "runtimePolicy": {
+      "maximumModelBytes": 598308416,
+      "maximumSequenceTokens": 4,
+      "maximumKvBytes": 917504,
+      "maximumScratchBytes": 1281040,
+      "maximumResolvedMemberBytes": 605414904,
+      "maximumResidentDependencyBytes": 7106488,
+      "maximumRequestBytes": 1048576,
+      "maximumLinearMemoryBytes": 1610612736,
+      "transcriptRevisionLow": 0,
+      "transcriptRevisionHigh": 0
+    },
+    "expectedRuntimeState": "active-idle",
+    "expectedMemoryPlan": {
+      "modelBytes": 598308416,
+      "kvBytes": 917504,
+      "scratchBytes": 673296
+    },
+    "privatePathMayEnterSourceOrOutput": false,
+    "privateBytesMayEnterSourceOrOutput": false,
+    "browserConversationVerified": false,
+    "modelQualityVerified": false,
+    "campaignCreditAuthorized": false
   },
   "exports": [
     {
@@ -343,6 +415,9 @@
     "zeroOperationRejected": true,
     "staleExpectedOperationRejectedBeforeMutation": true,
     "expectedOperationNeverBecomesNextOperationImplicitly": true,
+    "successfulActivationPreservesCurrentOperation": true,
+    "compositionIdentityIsNeverOperationAuthority": true,
+    "modelSwitchRequiresExplicitOperationAdvanceBeforeActivation": true,
     "advanceRequiresDistinctNonzeroNextOperation": true,
     "failedAdvancePreservesCurrentOperation": true,
     "stepCancellationIsOneCanonicalRuntimeTransition": true,

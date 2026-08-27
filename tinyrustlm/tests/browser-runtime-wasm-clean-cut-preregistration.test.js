@@ -28,7 +28,7 @@ test("binds the clean source parent and sole browser runtime owners", () => {
   assert.equal(profile.schema,
     "tinyrustlm.browser-runtime-wasm-clean-cut-preregistration.v1");
   assert.equal(profile.status,
-    "registered-before-production-browser-runtime-implementation");
+    "registered-before-implementation-corrected-during-real-artifact-preflight");
   assert.equal(profile.registrationParentCommit,
     "cf56eb1a563c85acfc7257d128f5fe3b386da954");
   assert.equal(profile.registrationParentTree,
@@ -42,6 +42,26 @@ test("binds the clean source parent and sole browser runtime owners", () => {
   assert.equal(profile.authority.uiPath, "tinyrustlm/app/app.js");
   readBoundFile(profile.authority.cleanCutContract);
   readBoundFile(profile.authority.cleanCutArchitecture);
+  profile.authority.canonicalFormatAuthorities.forEach(readBoundFile);
+  assert.deepEqual(profile.correction, {
+    observedAtUtc: "2026-08-27T23:23:50Z",
+    stage: "raw-wasm-real-artifact-preflight-before-worker-implementation",
+    reasonCode: "browser-runtime-sampling2-size-contract-mismatch",
+    priorRegistration: {
+      commit: "62095be274b316b290e78fc2163ab3235fd2a2ef",
+      byteLength: 15879,
+      sha256: "be26574af30dbf587d1d9b32e0926e8f01aa329f3a346a817b61a3c2914765f8"
+    },
+    observedPublicFacts: {
+      sampling2ProfileExactBytes: 65800,
+      prompt2ProfileExactBytes: 512,
+      priorSamplingTransferMaximumBytes: 65536,
+      priorPromptTransferMaximumBytes: 65536
+    },
+    disposition: "replace-defective-current-contract-with-canonical-profile-sizes",
+    compatibilityBehaviorAdded: false,
+    campaignCreditAuthorized: false
+  });
 });
 
 test("defines one worker-owned runtime with no direct UI authority", () => {
@@ -98,6 +118,10 @@ test("requires move-only bounded transfers without a second model owner", () => 
     32);
   assert.equal(kinds.find((entry) => entry.name === "composition").exactBytes,
     896);
+  assert.equal(kinds.find((entry) => entry.name === "sampling").exactBytes,
+    65800);
+  assert.equal(kinds.find((entry) => entry.name === "prompt").exactBytes,
+    512);
 });
 
 test("freezes a closed raw ABI and stable status classes", () => {
@@ -148,12 +172,42 @@ test("bounds every runtime resource before immutable policy creation", () => {
   assert.equal(policy.resourcePreflightOccursBeforeRuntimeMutation, true);
 });
 
+test("binds the opt-in private structural activation without granting product credit", () => {
+  const activation = profile.privateStructuralActivation;
+  readBoundFile(activation.publicResult);
+  assert.equal(activation.optInEnvironmentVariable,
+    "TINYRUSTLM_BROWSER_RUNTIME_PRIVATE_COMPOSITION_ROOT");
+  assert.deepEqual(activation.semanticMembers, [
+    "model.slm2",
+    "tokenizer.tokenizer2",
+    "template.template2",
+    "sampling.sampling2",
+    "prompt.prompt2",
+    "composition.acg2"
+  ]);
+  assert.match(activation.operationIdHex, /^[a-f0-9]{64}$/u);
+  assert.deepEqual(activation.expectedMemoryPlan, {
+    modelBytes: 598308416,
+    kvBytes: 917504,
+    scratchBytes: 673296
+  });
+  assert.equal(activation.privatePathMayEnterSourceOrOutput, false);
+  assert.equal(activation.privateBytesMayEnterSourceOrOutput, false);
+  assert.equal(activation.browserConversationVerified, false);
+  assert.equal(activation.modelQualityVerified, false);
+  assert.equal(activation.campaignCreditAuthorized, false);
+});
+
 test("binds every mutation to one expected operation and one terminal output", () => {
   const operations = profile.operationRules;
   assert.equal(operations.everyMutatingRuntimeCallConsumesExpectedOperation, true);
   assert.equal(operations.zeroOperationRejected, true);
   assert.equal(operations.staleExpectedOperationRejectedBeforeMutation, true);
   assert.equal(operations.expectedOperationNeverBecomesNextOperationImplicitly,
+    true);
+  assert.equal(operations.successfulActivationPreservesCurrentOperation, true);
+  assert.equal(operations.compositionIdentityIsNeverOperationAuthority, true);
+  assert.equal(operations.modelSwitchRequiresExplicitOperationAdvanceBeforeActivation,
     true);
   assert.equal(operations.advanceRequiresDistinctNonzeroNextOperation, true);
   assert.equal(operations.failedAdvancePreservesCurrentOperation, true);

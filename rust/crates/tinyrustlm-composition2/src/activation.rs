@@ -18,10 +18,6 @@ impl OperationIdentity {
     pub const fn bytes(self) -> [u8; 32] {
         self.0
     }
-
-    fn from_graph(identity: Acg2Identity) -> Self {
-        Self(identity.graph_identity_sha256)
-    }
 }
 
 /// Bounded generation state invalidated by a successful composition swap.
@@ -155,8 +151,10 @@ impl ActivationState {
     ///
     /// Every candidate validation and resource check has already succeeded. A
     /// stale identity returns before mutation. Success installs one graph,
-    /// clears incompatible KV and generation state, advances operation identity
-    /// to the graph identity, and preserves the visible transcript.
+    /// clears incompatible KV and generation state, and preserves the caller-
+    /// owned operation identity and visible transcript. A caller that needs to
+    /// invalidate older work must explicitly compare-and-swap its operation
+    /// identity before activation.
     pub fn activate(
         &mut self,
         candidate: PreparedComposition,
@@ -165,11 +163,9 @@ impl ActivationState {
         if expected_operation != self.operation {
             return Err(Acg2Error::new("acg2-stale-operation"));
         }
-        let next_operation = OperationIdentity::from_graph(candidate.graph().identity());
         self.active = Some(candidate);
         self.kv_cache_bytes = 0;
         self.generation.token_ids.clear();
-        self.operation = next_operation;
         Ok(())
     }
 }
@@ -242,7 +238,8 @@ mod tests {
         assert_eq!(state.kv_cache_bytes(), 0);
         assert!(state.generation().token_ids().is_empty());
         assert_eq!(state.transcript(), TranscriptState::new(12));
-        assert_eq!(
+        assert_eq!(state.operation(), current_operation);
+        assert_ne!(
             state.operation().bytes(),
             state.active_identity().unwrap().graph_identity_sha256
         );
