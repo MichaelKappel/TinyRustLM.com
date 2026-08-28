@@ -1,5 +1,13 @@
-profile: runtime-mirust.uai-index.v281
-updated_utc: 2026-08-27T22:01:48Z
+profile: runtime-mirust.uai-index.v282
+updated_utc: 2026-08-28T00:44:20Z
+
+current_omi_computational_architectures_intake_route_2026_08_27:
+  status: reviewed_and_durably_routed_no_product_adoption
+  intake_routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md,6721,70136b38c4815414684e23e1f857b267c237c57e72a91081ba0cd3212e44dc44
+  identity: 23 files/2419951 bytes/inventory b7b38621fb19353859b5a484ef4f15655990420797f1ec22a802b9f529c5b453
+  use: Authority/state/memory/evidence/tool/research architecture routing and current browser release resume.
+  boundary: Raw reports advise only; no new runtime, deployment, or campaign claim.
 
 current_enterprise_clean_slate_memory_submit_route_2026_08_27:
   status: local implementation green; commit, remote equality, and clean protected gate pending

@@ -1,5 +1,20 @@
-profile: runtime-mirust.long-term-memory-ledger.v386
-updated_utc: 2026-08-27T22:01:48Z
+profile: runtime-mirust.long-term-memory-ledger.v387
+updated_utc: 2026-08-28T00:44:20Z
+
+ledger_2026_08_27_omi_computational_architectures_intake:
+  stable_id: tinyrustlm_omi_computational_architectures_intake_current
+  intake_routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md
+  durable_record:
+    path: wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md
+    target_location: wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md
+    byte_length: 6721
+    sha256: 70136b38c4815414684e23e1f857b267c237c57e72a91081ba0cd3212e44dc44
+    label: Required Before OMI, Adaptive Memory, Observability, Tool Skill, Or Research Runtime Adoption
+    summary: Binds 23 byte-exact reports, report-specific corrections, accepted authority/state/provenance/replay principles, explicit architecture rejections, the current release-gate failures, and exact browser clean-cut resume.
+  intake_identity: raw=23,2419951,b7b38621fb19353859b5a484ef4f15655990420797f1ec22a802b9f529c5b453; manifest=8412,dc5b80176d819d98842457325bc8c9d15a4f3b69404bebf0448337245b889354; synthesis=25503,d506d76a0f21722f4e689c87fbd73b6ad684a80d932ee10afa80b8c4357f1922; tdd=11508,8c3532d75f515891f8f20176da4faff0fbed3180a79b5d089438e0cffb6e4c23
+  next_durable_transition: Validate, commit, push, and fresh-four-way-verify this memory; then resume the worker web-inventory/scalar-identity release fixes and sole SLM2 product clean cut.
+  contextual_trigger: Read before adding OMI architecture, adaptive sequence memory, observability, e-graphs, energy models, probabilistic execution, world models, topological state, hierarchical tools, or browser release changes informed by this intake.
+  hard_boundary: Raw reports advise only. No monolithic kernel, compatibility, alternate runtime, hidden fallback, self-modification, silent consolidation, physical control, deployment, or campaign credit.
 
 ledger_2026_08_27_enterprise_clean_slate_memory_submit:
   stable_id: tinyrustlm_enterprise_clean_slate_memory_submit_2026_08_27

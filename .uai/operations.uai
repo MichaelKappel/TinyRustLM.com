@@ -1,5 +1,13 @@
-profile: runtime-mirust.operations.v187
-updated_utc: 2026-08-27T22:01:48Z
+profile: runtime-mirust.operations.v188
+updated_utc: 2026-08-28T00:44:20Z
+
+omi_computational_architectures_intake_operations_2026_08_27:
+  routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md
+  completed: Twenty-three external reports were hash-verified, preserved, reviewed individually, synthesized, converted to a TDD delta, and routed to one durable wiki node.
+  current_operation: Validate report custody and UAI routing, commit/push the documentation checkpoint, commit/push the memory checkpoint, fresh-fetch, and prove local/tracking/FETCH_HEAD/direct-remote equality.
+  next_operation: Fix the exact worker deployment inventory and stale scalar source identity, then complete worker-only UI/ACG2 behavior and delete the superseded SLM1/ACG1 product closure.
+  deploy_rule: Current clean release gate is red at 1664 pass/9 fail/3 skip of 1676. Do not deploy until all affected tests pass from committed remote-exact source and docs/publication logs are synchronized.
+  boundary: Advisory research creates no product or campaign evidence.
 
 enterprise_clean_slate_memory_submit_operations_2026_08_27:
   intake_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md

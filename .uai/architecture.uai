@@ -1,5 +1,13 @@
-profile: runtime-mirust.architecture.v186
-updated_utc: 2026-08-27T22:01:48Z
+profile: runtime-mirust.architecture.v187
+updated_utc: 2026-08-28T00:44:20Z
+
+omi_computational_architectures_intake_2026_08_27:
+  routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md
+  adopted_architecture: Keep one SLM2/Rust/worker path. Add exact declared mutation scopes, typed epistemic and terminal state, explicit conflict/provenance, capability-separated actions, deterministic bounded replay, and private evidence within existing owners where they remove demonstrated complexity.
+  memory_architecture: Keep weights, adapters, KV, transcript, UAIX, retrieval, and MemoryEndpoints records as separate identities. Current-turn precedence and explicit conflict/supersession/tombstone rules apply; runtime memory never mutates weights.
+  research_boundary: E-graphs, energy models, sequence adaptation, topological/sheaf consistency, world models, and hierarchical skills require separate preregistered shadow experiments against simpler baselines after first release.
+  rejected_architecture: No monolithic OMI kernel, generic IR, language clones, new service topology, alternate model/runtime/provider, executable artifact program, hidden fallback, self-modification, silent consolidation, or physical control.
+  current_release_boundary: Exact worker web inventory and scalar source identity are red; worker-only UI integration and SLM1/ACG1 deletion remain mandatory before deployment.
 
 enterprise_clean_slate_memory_submit_architecture_2026_08_27:
   intake_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md

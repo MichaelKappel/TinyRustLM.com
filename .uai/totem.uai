@@ -1,5 +1,14 @@
-profile: runtime-mirust.totem.v212
-updated_utc: 2026-08-28T00:20:20Z
+profile: runtime-mirust.totem.v213
+updated_utc: 2026-08-28T00:44:20Z
+
+omi_computational_architectures_intake_totem_2026_08_27:
+  preserve_routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md
+  preserve_identity: 23 byte-exact reports/2419951 bytes/inventory b7b38621fb19353859b5a484ef4f15655990420797f1ec22a802b9f529c5b453; durable wiki 6721/70136b38c4815414684e23e1f857b267c237c57e72a91081ba0cd3212e44dc44.
+  preserve_authority: One current SLM2/Rust/worker path; typed bounded transitions; exact mutation scopes; explicit conflict/provenance; capability-separated action; deterministic replay; minimized evidence.
+  preserve_memory: Weights, adapters, KV, transcript, UAIX, retrieval, and MemoryEndpoints remain separate. Current user intent outranks stale memory, retrieved text is untrusted, and durable writes are explicit.
+  preserve_research_discipline: Advanced architectures remain isolated shadow experiments until they beat a simpler preregistered baseline under equal quality/resource accounting.
+  preserve_release_truth: Fix exact worker web inventory and scalar source identity, complete the worker-only UI clean cut, delete SLM1/ACG1 executable closure, and pass all gates before deployment.
+  preserve_policy: One prelaunch product; no legacy, compatibility, migration, fallback, dual path, hidden repair, self-modification, debt, stale docs, or inflated claims.
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy

@@ -1,5 +1,13 @@
-profile: runtime-mirust.short-term-memory.v514
-updated_utc: 2026-08-28T00:20:20Z
+profile: runtime-mirust.short-term-memory.v515
+updated_utc: 2026-08-28T00:44:20Z
+
+current_focus_2026_08_27_omi_computational_architectures_intake:
+  status: reviewed_and_durably_routed_browser_release_still_blocked
+  intake_routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md
+  deep_resume: Read wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md,6721,70136b38c4815414684e23e1f857b267c237c57e72a91081ba0cd3212e44dc44.
+  durable_decision: Improve the existing SLM2/worker/memory/evidence architecture with typed authority, declared mutation scopes, explicit conflicts, bounded replay, and evidence minimization. Keep speculative OMI systems behind isolated preregistered baseline experiments.
+  immediate_work: First commit/push intake and memory. Then fix exact worker web inventory and stale scalar source identity, complete worker-only UI integration, delete all superseded SLM1/ACG1 consumers, and rerun every affected release gate.
+  boundary: No new runtime, model, quality, browser-chat, MemoryEndpoints, P2P, publication, deployment, or campaign evidence was created.
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy

@@ -1,5 +1,13 @@
-profile: runtime-mirust.next-recursive-prompt.v116
-updated_utc: 2026-08-27T22:01:48Z
+profile: runtime-mirust.next-recursive-prompt.v117
+updated_utc: 2026-08-28T00:44:20Z
+
+next_recursive_goal_2026_08_27_post_intake_browser_release_closure:
+  intake_routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md
+  objective: Starting from committed/pushed intake memory, make the exact web deployment inventory include the dedicated worker, review and correct the intended scalar Cargo.toml identity, integrate acquisition/activation/generation/cancellation/rendering exclusively through the worker, prove real ACG2 multi-turn/restart/exactly-once behavior and parity, delete every superseded SLM1/ACG1 executable surface, and pass all release/deployment/documentation gates.
+  architecture_rule: Use typed closed operations, exact declared mutation scope, explicit conflict/provenance, bounded deterministic replay, and private evidence inside existing owners. Do not build a generic OMI system.
+  red_first: Preserve missing-worker-manifest and stale-scalar-identity failures; add exact asset/source identity tests and old-path rejecting tests before changing manifests or deleting source.
+  exclusions: No compatibility, migration, feature-flag dual path, alternate runtime/provider, hidden retry/repair/fallback, test-time learning, speculative service, deferred deletion, debt, stale docs, deployment from red tests, or report-derived claim.
+  completion: All affected tests pass from committed pushed remote-exact source; old executable closure is absent; docs/publication log match; deployment and HTTPS readback succeed. Campaign counters remain governed only by exact live receipts.
 
 next_recursive_goal_2026_08_27_slm2_product_consumer_clean_cut:
   intake_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md

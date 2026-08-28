@@ -1,5 +1,15 @@
-profile: runtime-mirust.test-plan.v306
-updated_utc: 2026-08-27T22:01:48Z
+profile: runtime-mirust.test-plan.v307
+updated_utc: 2026-08-28T00:44:20Z
+
+omi_computational_architectures_intake_test_plan_2026_08_27:
+  routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md
+  intake_gate: Verify 23 hashes, 2419951 bytes, inventory b7b38621fb19353859b5a484ef4f15655990420797f1ec22a802b9f529c5b453, exact synthesis/TDD/wiki identities, and routes in every relevant UAI owner.
+  release_gate: Preserve the 1676-test 1664/9/3 failure. Add the worker to the exact web inventory and update the intended scalar Cargo.toml identity only under red/green tests; never wildcard or ignore drift.
+  state_gate: Test operation parentage, declared mutation sets, terminality, stale worker events, cancellation races, model/KV invalidation, explicit contradiction state, and immutable failure evidence.
+  memory_gate: Test current-turn precedence, malicious retrieved instructions, conflict/supersession/tombstone behavior, explicit durable writes, reconnect conflicts, and zero runtime weight mutation.
+  evidence_gate: Test bounded replay identities, secret/path minimization, log/cardinality limits, cancellation/failure preservation, and independent recomputation.
+  research_gate: Require a preregistered simple baseline, negative controls, equal resources, immutable inputs, stop rules, and no shipping effect for every speculative architecture.
+  final_gate: Full Rust/Node/.NET/package/Chromium/UI/accessibility/privacy/docs/deployment/readback matrix from committed pushed remote-exact source before deployment.
 
 enterprise_clean_slate_memory_submit_test_plan_2026_08_27:
   durable_route: wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md is 9,166 bytes/SHA256 f4a890676be9cb086e8b65cb063a345cc4a98e0be65a0a9a006b53365238a158.

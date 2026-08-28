@@ -1,5 +1,12 @@
-profile: runtime-mirust.startup-packet.v148
-updated_utc: 2026-08-27T22:01:48Z
+profile: runtime-mirust.startup-packet.v149
+updated_utc: 2026-08-28T00:44:20Z
+
+current_start_2026_08_27_omi_computational_architectures_intake:
+  read_first: workspace.uai; .uai/totem.uai; .uai/taboo.uai; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md
+  routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md
+  state: 23 reports are byte-exact, reviewed, and bounded to architecture/test guidance. No speculative runtime was adopted. Current release gate remains red on exact worker web inventory and stale scalar source identity.
+  resume: Validate/commit/push/fresh-verify intake and UAI memory; fix those two release roots under tests; complete worker-only UI/ACG2 behavior; delete SLM1/ACG1 closure; run all gates before deployment.
+  never: Treat reports as proof, add an OMI framework, adaptive weights, hidden fallback, compatibility, debt, stale docs, or campaign credit.
 
 start_here_2026_08_27_enterprise_clean_slate_memory_submit:
   read_first: workspace.uai -> wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md 9166/f4a890676be9cb086e8b65cb063a345cc4a98e0be65a0a9a006b53365238a158 -> docs/architecture/2026-08-27-memory-endpoints-submit-contract-clean-cut.md 7733/000c90df53ec1fa572dfcef30042b041f099afd79d09fed4ae97436c157510b7.

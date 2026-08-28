@@ -738,6 +738,158 @@ public sealed class ReportIntakeMemoryTests
     }
 
     [Fact]
+    public void OmiComputationalArchitecturesIntakeIsImmutableReviewedAndDeepRouted()
+    {
+        var root = RepositoryRoot();
+        var batchDirectory = Path.Combine(
+            root,
+            "docs",
+            "report-intake",
+            "2026-08-27",
+            "omi-computational-architectures-research");
+        var manifestPath = Path.Combine(batchDirectory, "MANIFEST.md");
+        var synthesisPath = Path.Combine(
+            batchDirectory,
+            "tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md");
+        var tddPath = Path.Combine(
+            batchDirectory,
+            "tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md");
+        const string manifestRoute =
+            "docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md";
+        const string synthesisRoute =
+            "docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md";
+        const string tddRoute =
+            "docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md";
+        const string durableRoute =
+            "wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md";
+
+        var reports = ParseHashedManifest(manifestPath);
+        Assert.Equal(23, reports.Count);
+        Assert.All(reports, report => Assert.NotNull(report.Bytes));
+        Assert.Equal(2419951L, reports.Sum(report => report.Bytes!.Value));
+
+        var inventory = string.Concat(reports
+            .OrderBy(report => report.FileName, StringComparer.Ordinal)
+            .Select(report => $"{report.Sha256}  {report.Bytes!.Value}  {report.FileName}\n"));
+        var inventoryHash = Convert.ToHexString(
+            SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(inventory)))
+            .ToLowerInvariant();
+        Assert.Equal(
+            "b7b38621fb19353859b5a484ef4f15655990420797f1ec22a802b9f529c5b453",
+            inventoryHash);
+
+        Assert.Equal(
+            "dc5b80176d819d98842457325bc8c9d15a4f3b69404bebf0448337245b889354",
+            Sha256Hex(manifestPath));
+        Assert.Equal(
+            "d506d76a0f21722f4e689c87fbd73b6ad684a80d932ee10afa80b8c4357f1922",
+            Sha256Hex(synthesisPath));
+        Assert.Equal(
+            "8c3532d75f515891f8f20176da4faff0fbed3180a79b5d089438e0cffb6e4c23",
+            Sha256Hex(tddPath));
+
+        var durablePath = Path.Combine(
+            root,
+            durableRoute.Replace('/', Path.DirectorySeparatorChar));
+        Assert.Equal(
+            "70136b38c4815414684e23e1f857b267c237c57e72a91081ba0cd3212e44dc44",
+            Sha256Hex(durablePath));
+
+        var synthesis = File.ReadAllText(synthesisPath);
+        foreach (var required in new[]
+        {
+            "Product Architecture Decision",
+            "declared mutation sets",
+            "Natural-language text is payload data",
+            "Probabilistic Programming OMI Report",
+            "materially misroutes the acronym OMI",
+            "test-time weight updates",
+            "Prohibited And Deferred Architecture",
+            "Current Local Application",
+            "1,664 passing, nine failing, and three skipped"
+        })
+        {
+            Assert.Contains(required, synthesis, StringComparison.OrdinalIgnoreCase);
+        }
+
+        var tdd = File.ReadAllText(tddPath);
+        foreach (var required in new[]
+        {
+            "Gate 0: Intake Custody And Decision Separation",
+            "Gate 1: Release-Surface Exact Closure",
+            "Gate 2: Closed Operation And Declared Mutation Scope",
+            "Gate 3: Memory Provenance, Conflict, And Non-Adaptation",
+            "Gate 4: Replayable Private-By-Default Observability",
+            "Gate 5: Ambiguity, Planning, And Explicit Tool Authority",
+            "Gate 6: Research-Arm Admission",
+            "Gate 7: Documentation And UAI Drift",
+            "Gate 8: First-Model Release Recheck"
+        })
+        {
+            Assert.Contains(required, tdd, StringComparison.Ordinal);
+        }
+
+        foreach (var relativePath in new[]
+        {
+            "workspace.uai",
+            ".uai/architecture.uai",
+            ".uai/next-recursive-prompt.uai",
+            ".uai/totem.uai",
+            ".uai/taboo.uai",
+            ".uai/index.uai",
+            ".uai/operations.uai",
+            ".uai/file-handoff.uai",
+            ".uai/short-term-memory.uai",
+            ".uai/report-synthesis.uai",
+            ".uai/test-plan.uai",
+            ".uai/long-term-memory.uai",
+            ".uai/intake-outcome-ledger.uai",
+            ".uai/workspace-guidance.uai",
+            ".uai/startup-packet.uai",
+            ".uai/receiver-brief.uai"
+        })
+        {
+            var text = File.ReadAllText(Path.Combine(
+                root,
+                relativePath.Replace('/', Path.DirectorySeparatorChar)));
+            Assert.Contains(manifestRoute, text, StringComparison.Ordinal);
+            Assert.Contains(synthesisRoute, text, StringComparison.Ordinal);
+            Assert.Contains(tddRoute, text, StringComparison.Ordinal);
+            Assert.Contains(durableRoute, text, StringComparison.Ordinal);
+        }
+
+        var longTerm = File.ReadAllText(Path.Combine(root, ".uai", "long-term-memory.uai"));
+        Assert.Contains(
+            "stable_id: tinyrustlm_omi_computational_architectures_intake_current",
+            longTerm,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            $"sha256: {Sha256Hex(durablePath)}",
+            longTerm,
+            StringComparison.OrdinalIgnoreCase);
+
+        var ledger = File.ReadAllText(Path.Combine(root, ".uai", "intake-outcome-ledger.uai"));
+        foreach (var report in reports)
+        {
+            var sourcePath = $"agent-file-handoff/Improvement/{report.FileName}";
+            var durablePathForReport =
+                $"docs/report-intake/2026-08-27/omi-computational-architectures-research/{report.FileName}";
+            var block = FindLedgerEntry(ledger, sourcePath);
+            Assert.Contains(
+                $"docs_evidence_path: {durablePathForReport}",
+                block,
+                StringComparison.Ordinal);
+            Assert.Contains($"sha256: {report.Sha256}", block, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("processed_outcome: incorporated", block, StringComparison.Ordinal);
+            Assert.Contains("source_removed: true", block, StringComparison.Ordinal);
+            Assert.Contains(
+                "source_external_copy_retained_read_only: true",
+                block,
+                StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
     public void EarlierBleedingEdgePlanRetainsItsNoCheatBoundary()
     {
         var root = RepositoryRoot();

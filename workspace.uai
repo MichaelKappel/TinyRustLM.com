@@ -1,7 +1,17 @@
-profile: tinyrustlm.source-workspace.v463
+profile: tinyrustlm.source-workspace.v464
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-28T00:20:20Z
+updated_utc: 2026-08-28T00:44:20Z
+
+current_omi_computational_architectures_intake_2026_08_27:
+  status: twenty_three_reports_byte_exact_reviewed_and_durably_routed
+  intake_routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md
+  exact_identity: raw=23 files/2419951 bytes/inventory b7b38621fb19353859b5a484ef4f15655990420797f1ec22a802b9f529c5b453; manifest=8412,dc5b80176d819d98842457325bc8c9d15a4f3b69404bebf0448337245b889354; synthesis=25503,d506d76a0f21722f4e689c87fbd73b6ad684a80d932ee10afa80b8c4357f1922; tdd=11508,8c3532d75f515891f8f20176da4faff0fbed3180a79b5d089438e0cffb6e4c23; wiki=6721,70136b38c4815414684e23e1f857b267c237c57e72a91081ba0cd3212e44dc44
+  adopted: Closed typed transitions, declared mutation sets, explicit provenance/conflict, deterministic bounded replay, capability-separated action, private-by-default evidence, and preregistered simple baselines.
+  rejected: Monolithic OMI kernel, generic cognitive IR, multi-language semantic clones, new microservices, alternate model runtimes, executable artifact programs, hidden fallback, test-time weight updates, silent memory consolidation, and physical-control scope.
+  current_release_truth: Worker source is focused-green, but the clean release gate remains red because model-runtime-worker.js is absent from the exact web manifest and one scalar Cargo.toml identity is stale. Do not deploy.
+  exact_resume: Validate/commit/push this intake and UAI routing, then admit the worker and intended scalar source identity under tests, complete the worker-only UI clean cut, delete superseded SLM1/ACG1 executable surfaces, run all gates, and deploy only from committed remote-exact green source.
+  boundary: Advisory reports are not implementation or campaign evidence. MemoryEndpoints remains authorized and local UAIX supported; counters remain 0/20,0/50,0/25,0/40,0/20.
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy

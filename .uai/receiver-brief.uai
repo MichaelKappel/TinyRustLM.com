@@ -1,5 +1,12 @@
-profile: runtime-mirust.receiver-brief.v59
-updated_utc: 2026-08-27T22:01:48Z
+profile: runtime-mirust.receiver-brief.v60
+updated_utc: 2026-08-28T00:44:20Z
+
+current_handoff_omi_computational_architectures_intake_2026_08_27:
+  routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md
+  read_summary: Twenty-three reports are preserved and fully dispositioned. Adopt invariants, not speculative stacks. The wiki contains report-specific accepted/rejected decisions and exact resume.
+  current_blocker: Clean release gate is red because the dedicated worker is missing from exact web inventory and a scalar Cargo.toml identity is stale. UI clean cut and SLM1/ACG1 deletion remain incomplete.
+  next: Validate/commit/push/fresh-verify this memory, then fix the two exact release roots and continue the one-path browser clean cut.
+  boundary: No deployment or campaign evidence; no legacy/debt/fallback.
 
 current_handoff_enterprise_clean_slate_memory_submit_2026_08_27:
   intake_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md

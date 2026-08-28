@@ -1,5 +1,12 @@
-profile: runtime-mirust.file-handoff.v133
-updated_utc: 2026-08-27T22:01:48Z
+profile: runtime-mirust.file-handoff.v134
+updated_utc: 2026-08-28T00:44:20Z
+
+current_omi_computational_architectures_handoff_2026_08_27:
+  routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md
+  custody: Twenty-three external protected-source reports were copied byte-for-byte into authoritative durable intake; every length/hash matched; inventory is b7b38621fb19353859b5a484ef4f15655990420797f1ec22a802b9f529c5b453.
+  source_disposition: Authoritative Content and Improvement buckets remain placeholder-only. The protected nonauthoritative source remains untouched and retained read-only; no deletion is claimed there.
+  proof_of_use: Every report has a ledger entry, corrected disposition, synthesis section, TDD route, and one checksum-bearing wiki memory.
+  next: Validate, commit, push, and fresh-verify. Do not reread all raw files at startup; follow the wiki route and inspect raw reports only for a named research question.
 
 current_enterprise_clean_slate_handoff_2026_08_27:
   intake_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md

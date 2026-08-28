@@ -1,5 +1,15 @@
-profile: runtime-mirust.taboo.v141
-updated_utc: 2026-08-28T00:20:20Z
+profile: runtime-mirust.taboo.v142
+updated_utc: 2026-08-28T00:44:20Z
+
+omi_computational_architectures_intake_taboo_2026_08_27:
+  required_routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md
+  no_report_as_evidence: Never call the 23 advisory reports source inspection, implementation, determinism, privacy, performance, quality, browser, P2P, MemoryEndpoints, release, deployment, or campaign evidence.
+  no_architecture_pollution: Never add a monolithic OMI kernel, generic cognitive IR, multi-language semantic clone, speculative microservice, graph database, alternate model format/runtime/provider, executable artifact program, or physical-control subsystem from this intake.
+  no_adaptive_authority: Never permit model output, retrieved memory, test-time learning, fast weights, silent consolidation, probabilistic code, or self-modification to grant capability, rewrite policy, mutate shipping weights, certify success, or override current user intent.
+  no_hidden_rescue: Never add hidden retry, repair, best-of-N, deterministic-tool fallback, provider fallback, relay fallback, or compatibility path. Declared product tools are explicit; failures remain evidence.
+  no_claim_shortcut: Never infer bitwise determinism from Wasm, privacy from projections, infinite context from memory, equivalence from an e-graph, validity from low energy, or production readiness from demonstrative code.
+  no_release_bypass: Never wildcard the web manifest, ignore the stale scalar identity, deploy while the full gate is red, retain SLM1/ACG1 beside the worker, or let docs and publication logs lag behavior.
+  no_prelaunch_debt: No legacy support, migration, aliases, dual path, deferred deletion, weakened test, stale documentation, or low-quality patch.
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy

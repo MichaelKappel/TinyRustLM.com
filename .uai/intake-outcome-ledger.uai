@@ -1,17 +1,225 @@
-profile: runtime-mirust.intake-outcome-ledger.v61
-updated_utc: 2026-08-27T22:01:48Z
+profile: runtime-mirust.intake-outcome-ledger.v62
+updated_utc: 2026-08-28T00:44:20Z
 active_scan:
   content_bucket: agent-file-handoff/Content/
   improvement_bucket: agent-file-handoff/Improvement/
   content_non_placeholder_files: 0
   improvement_non_placeholder_files: 0
   result: both_authoritative_active_intake_buckets_placeholder_only_external_read_only_report_source_not_active_authority
-  latest_scan_utc: 2026-08-27T22:01:48Z
+  latest_scan_utc: 2026-08-28T00:44:20Z
   scan_authority: live canonical top-level bucket scan; .gitkeep is the only allowed placeholder; external source tree was read-only
 post_processing_scan:
   content_non_placeholder_files: 0
   improvement_non_placeholder_files: 0
-  result: twelve_ontological_machine_intelligence_reports_preserved_and_incorporated_with_corrections; authoritative_buckets_placeholder_only; external_source_untouched; enterprise_goal_active
+  result: twenty_three_omi_computational_architecture_reports_preserved_and_incorporated_with_corrections; authoritative_buckets_placeholder_only; external_source_untouched; enterprise_goal_active
+report_intake_2026_08_27_omi_computational_architectures:
+  source_authority: external read-only nonauthoritative report source; no report claimed private repository access
+  docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/
+  durable_manifest: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md
+  canonical_inventory_sha256: b7b38621fb19353859b5a484ef4f15655990420797f1ec22a802b9f529c5b453
+  source_count: 23
+  source_bytes: 2419951
+  durable_synthesis: docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md
+  durable_synthesis_sha256: d506d76a0f21722f4e689c87fbd73b6ad684a80d932ee10afa80b8c4357f1922
+  durable_tdd_delta: docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md
+  durable_tdd_delta_sha256: 8c3532d75f515891f8f20176da4faff0fbed3180a79b5d089438e0cffb6e4c23
+  adopted: typed transitions; declared mutation sets; capability separation; explicit conflict/provenance; deterministic bounded replay; private evidence; baseline-gated research
+  research_only: e-graphs; energy models; sequence-memory ablations; topological/sheaf validation; world models; hierarchical skills
+  rejected: monolithic OMI kernel; generic IR; language clones; microservices; alternate model runtimes; runtime self-modification; hidden fallback; silent memory consolidation; physical control
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md,6721,70136b38c4815414684e23e1f857b267c237c57e72a91081ba0cd3212e44dc44
+  durable_manifest_sha256: dc5b80176d819d98842457325bc8c9d15a4f3b69404bebf0448337245b889354
+  report_count: 23
+  incorporated_with_corrections_count: 23
+  durable_count: 23
+  missing_durable_copies: 0
+  disposition: incorporated-with-corrections-and-byte-exact-preservation
+  processed_outcome: incorporated
+  source_site_removal_or_keep_active_reason: The protected external source was not modified. Entry source_removed=true means the corresponding path is absent from authoritative active intake, not deleted from the protected checkout.
+entries_2026_08_27_omi_computational_architectures:
+  - source_path: agent-file-handoff/Improvement/Active Perception AI Systems.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Active Perception AI Systems.md
+    category: active-perception-systems
+    sha256: 38c0a506af24fccf5dfe4986f91ee976a163f00b4b3114692eee4246c754c2b2
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted bounded ambiguity/evidence seeking and consent; physical sensing remains research-only.
+  - source_path: agent-file-handoff/Improvement/Active Perception Monograph Plan.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Active Perception Monograph Plan.md
+    category: active-perception-program
+    sha256: a3ee2463e6cf562d9f79e2cb24f93707ccf9f168efbda542dc20e2bebbef3d0c
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted resource-aware stopping and curiosity-loop tests; broad research program deferred.
+  - source_path: agent-file-handoff/Improvement/Cognitive Compiler IR Portability.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Cognitive Compiler IR Portability.md
+    category: typed-cognitive-ir
+    sha256: 7af86426b22dd5250efe8780d7d1d87306e6bcc898a8734424846dd6c393ade5
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted typed effects/proof provenance; rejected a broad compiler and corrected Wasm determinism claims.
+  - source_path: agent-file-handoff/Improvement/Differentiable Digital Twins Monograph.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Differentiable Digital Twins Monograph.md
+    category: differentiable-digital-twins
+    sha256: e22a8ecb2082bc690d3364f46337a7a1872887dd5f1a6540ca9ffcd9fbdc48be
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted immutable parameter, drift, holdout, and rollback discipline; physical twins remain out of scope.
+  - source_path: agent-file-handoff/Improvement/Distributed Ontological State Research.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Distributed Ontological State Research.md
+    category: distributed-conflict-state
+    sha256: 9eb7f950368618b568af3348e5404ff98c6e34ba715344310700d21c6416ed11
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted explicit contradictions and causal identities; rejected a speculative replacement memory stack.
+  - source_path: agent-file-handoff/Improvement/Energy-Based Machine Intelligence Monograph.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Energy-Based Machine Intelligence Monograph.md
+    category: energy-based-intelligence
+    sha256: b8e5ced24aff7dc9711670594032e5c5499da45640512566b23f0302ceaf816a
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Retained bounded constraint-ranking as a future baseline-gated research arm only.
+  - source_path: agent-file-handoff/Improvement/Energy-Based Machine Intelligence Report.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Energy-Based Machine Intelligence Report.md
+    category: energy-based-implementation
+    sha256: ac68630aa9f3a68e916e990f08bb35e0dcef163b6b5c5b1f4b8fdcfc662f5b57
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted adversarial low-energy tests; rejected direct runtime adoption and production claims.
+  - source_path: agent-file-handoff/Improvement/Equality Saturation E-Graph Implementation.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Equality Saturation E-Graph Implementation.md
+    category: egraph-implementation
+    sha256: ba33d3542d6f9a0963485fc464bc07df7cb2f3587e2f9c48133d6a6fc0ea95b4
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Retained offline proof-carrying optimization research; supplied demonstrative code is not production source.
+  - source_path: agent-file-handoff/Improvement/Equality Saturation Research Monograph.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Equality Saturation Research Monograph.md
+    category: equality-saturation-research
+    sha256: 81430217784c4a2bda044dd1c60b408306eea0dd553a000839c452c178981a21
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted typed exact/approximate rewrite separation and resource ceilings; rejected a runtime service.
+  - source_path: agent-file-handoff/Improvement/Generative Control Trajectory Planning Part 2.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Generative Control Trajectory Planning Part 2.md
+    category: generative-control-validation
+    sha256: c76a3df46fe386cdfbf6dbaccda802b9f779211b4938a8dcafb37ab0550d1bf0
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted whole-plan feasibility and resource metamorphics; physical control remains out of scope.
+  - source_path: agent-file-handoff/Improvement/Generative Control Trajectory Planning.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Generative Control Trajectory Planning.md
+    category: generative-control-planning
+    sha256: 62426d823058c4d41c41a78128ab9c80183e6ba1d73a498a890af96180c3398a
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted current-state plan validation; rejected hidden repair, fallback, and robotics dependencies.
+  - source_path: agent-file-handoff/Improvement/Hierarchical Skill Intelligence Research.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Hierarchical Skill Intelligence Research.md
+    category: typed-hierarchical-skills
+    sha256: 5e329c267f589bbae86091789ec0a53afaff1acea02d701426028dc2efad3a8a
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Retained future typed tool fields; rejected plugin microservices and prose-based authorization.
+  - source_path: agent-file-handoff/Improvement/Local-First Machine Intelligence Architecture.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Local-First Machine Intelligence Architecture.md
+    category: local-first-architecture
+    sha256: f6f688d4e2bcca459c24d08f27677474d7791400ac7968f6860b5b7b8a76f3c1
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted ownership/privacy/capability rules; rejected alternate formats/runtimes, relay fallback, and federated mutation.
+  - source_path: agent-file-handoff/Improvement/Machine Intelligence Observability Research.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Machine Intelligence Observability Research.md
+    category: causal-observability
+    sha256: 277073f3346b6b131eb50865a30ad045ed951211a266db9770b34af6747d2088
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted typed causal private replayable evidence; rejected raw centralized telemetry and graph-database dependencies.
+  - source_path: agent-file-handoff/Improvement/Modular Causal World Models.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Modular Causal World Models.md
+    category: modular-causal-state
+    sha256: 4f5097b07408019a828e55046791fd1d728dc4862df017b0c1cd4d9788c666e7
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted exact declared mutation sets; rejected a neural world-model runtime.
+  - source_path: agent-file-handoff/Improvement/Neural Algorithmic Reasoning Research Part 2.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Neural Algorithmic Reasoning Research Part 2.md
+    category: algorithmic-reasoning-evaluation
+    sha256: 348efb7eee68e25a933be9ccb31ee51b7624064a7259b9c36c8910f056ee1dd8
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted size/structure OOD and intermediate invariant tests; deterministic algorithms remain explicit tools.
+  - source_path: agent-file-handoff/Improvement/Neural Algorithmic Reasoning Research.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Neural Algorithmic Reasoning Research.md
+    category: algorithmic-reasoning-training
+    sha256: e4f644ef87e19d905b928ece2dd9e20268125be0d16eb159a6854e0b612fea74
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Retained sealed specialist research methods; rejected hidden exact fallback kernels.
+  - source_path: agent-file-handoff/Improvement/OMI Kernel Architecture Research.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/OMI Kernel Architecture Research.md
+    category: omi-kernel
+    sha256: 9b1dd66d80267474bac0f11d8428d54778bb7d27280a269dbcfca386f5912e90
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted epistemic status, event identity, and capability denial; rejected a monolithic multi-language kernel.
+  - source_path: agent-file-handoff/Improvement/Probabilistic Programming OMI Report.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Probabilistic Programming OMI Report.md
+    category: probabilistic-programming
+    sha256: 18af644f3c8caad3484b15899cca7da57c453c1433b2f9f95afe03fcbbaa07ee
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Preserved RNG/calibration lessons; rejected the acronym-misrouted architecture and executable probabilistic artifacts.
+  - source_path: agent-file-handoff/Improvement/Sequence Intelligence Memory Engine.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Sequence Intelligence Memory Engine.md
+    category: adaptive-sequence-memory
+    sha256: e885b3c1c3b71a73df68f7c05d32cf3c6f297c63d1344604538290f438e595e7
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Adopted strict slow-weight/KV/transcript/durable-memory separation; rejected runtime weight updates and silent consolidation.
+  - source_path: agent-file-handoff/Improvement/Sequence Intelligence Research Strategy.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Sequence Intelligence Research Strategy.md
+    category: sequence-intelligence-program
+    sha256: bfddbb0652a70f0f7bcde415afb57a4af48b06dd72a1d5481b633dab383452d7
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Retained post-release preregistered ablations; rejected infinite-context and universal bitwise replay claims.
+  - source_path: agent-file-handoff/Improvement/Topological Machine Intelligence Research.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Topological Machine Intelligence Research.md
+    category: topological-intelligence
+    sha256: 03625eca89878c2443bf8ccfae1053897fe38df673d33ad543434cdc247baffa
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Retained conflict-localization as research only and required a simpler explicit provenance baseline.
+  - source_path: agent-file-handoff/Improvement/Topological Machine Intelligence Sheaves.md
+    docs_evidence_path: docs/report-intake/2026-08-27/omi-computational-architectures-research/Topological Machine Intelligence Sheaves.md
+    category: sheaf-state-consistency
+    sha256: fe3d9fd566b77deb3c00e8f441bba6cead5c8452f9bc4536abe05cf6b4816738
+    processed_outcome: incorporated
+    source_removed: true
+    source_external_copy_retained_read_only: true
+    proof_of_use: Retained local-to-global validation research; rejected current numerical-library, privacy, and performance claims.
 report_intake_2026_08_27_ontological_machine_intelligence:
   source_authority: external read-only nonauthoritative report source; no report claimed private repository access
   docs_evidence_path: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/
