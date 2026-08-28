@@ -58,14 +58,19 @@ public sealed class CompanionOperationJournal
         }
     }
 
-    public CompanionOperationRecord Create(CompanionAcquireRequest request)
+    public CompanionOperationRecord CreateOrRead(CompanionAcquireRequest request)
     {
         var normalized = CompanionContract.ValidateAndNormalize(request);
-        var operationId = CompanionContract.OperationId(normalized);
+        var requestBytes = CompanionLoopbackWire.EncodeAcquireRequest(normalized);
+        var operationId = Sha256(requestBytes);
         var finalDirectory = OperationDirectory(operationId);
-        if (Directory.Exists(finalDirectory) || File.Exists(finalDirectory))
+        if (File.Exists(finalDirectory))
         {
-            throw new CompanionContractException("journal-operation-exists");
+            throw new CompanionContractException("journal-operation-conflict");
+        }
+        if (Directory.Exists(finalDirectory))
+        {
+            return ReadExistingOperation(operationId, requestBytes);
         }
 
         var stagingDirectory = Path.Combine(
@@ -74,7 +79,6 @@ public sealed class CompanionOperationJournal
         Directory.CreateDirectory(stagingDirectory);
         try
         {
-            var requestBytes = Serialize(normalized);
             var now = Timestamp();
             var record = new CompanionOperationRecord(
                 CompanionContract.OperationRecordSchema,
@@ -95,14 +99,22 @@ public sealed class CompanionOperationJournal
             var recordBytes = Serialize(record);
             WriteCreateOnly(Path.Combine(stagingDirectory, "history", SequenceFile(0)), recordBytes);
             WriteCreateOnly(Path.Combine(stagingDirectory, "current.json"), recordBytes);
-            Directory.Move(stagingDirectory, finalDirectory);
-            return record;
+            try
+            {
+                Directory.Move(stagingDirectory, finalDirectory);
+                return record;
+            }
+            catch (IOException) when (Directory.Exists(finalDirectory))
+            {
+                DeleteOwnedStagingDirectory(stagingDirectory);
+                return ReadExistingOperation(operationId, requestBytes);
+            }
         }
         catch
         {
             if (Directory.Exists(stagingDirectory))
             {
-                Directory.Delete(stagingDirectory, recursive: true);
+                DeleteOwnedStagingDirectory(stagingDirectory);
             }
             throw;
         }
@@ -111,40 +123,29 @@ public sealed class CompanionOperationJournal
     public CompanionOperationRecord Read(string operationId)
     {
         RequireOperationId(operationId);
-        return ReadRecord(Path.Combine(OperationDirectory(operationId), "current.json"), operationId);
+        var directory = RequireOperationDirectory(operationId);
+        return ReadRecord(Path.Combine(directory, "current.json"), operationId);
     }
 
     public CompanionAcquireRequest ReadRequest(string operationId)
     {
         RequireOperationId(operationId);
-        var path = Path.Combine(OperationDirectory(operationId), "request.json");
+        var path = Path.Combine(RequireOperationDirectory(operationId), "request.json");
         var bytes = ReadBoundedRegularFile(
             path,
             "journal-request-file",
             "journal-request-file");
-        CompanionAcquireRequest request;
-        try
-        {
-            CompanionStrictJson.RejectDuplicateProperties(bytes, "journal-request-json");
-            request = JsonSerializer.Deserialize<CompanionAcquireRequest>(bytes, JsonOptions)
-                ?? throw new CompanionContractException("journal-request-json");
-        }
-        catch (JsonException)
-        {
-            throw new CompanionContractException("journal-request-json");
-        }
-
         CompanionAcquireRequest normalized;
         try
         {
-            normalized = CompanionContract.ValidateAndNormalize(request);
+            normalized = CompanionLoopbackWire.DecodeAcquireRequest(bytes);
         }
-        catch (CompanionContractException)
+        catch (CompanionProtocolException)
         {
-            throw new CompanionContractException("journal-request-contract");
+            throw new CompanionContractException("journal-request-json");
         }
         var current = Read(operationId);
-        if (CompanionContract.OperationId(normalized) != operationId ||
+        if (Sha256(bytes) != operationId ||
             Sha256(bytes) != current.RequestSha256)
         {
             throw new CompanionContractException("journal-request-identity");
@@ -360,7 +361,9 @@ public sealed class CompanionOperationJournal
         string? errorCode,
         string? sourceConversionIntentSha256)
     {
-        if (totalBytes is not null && (totalBytes == 0 || completedBytes > totalBytes))
+        if (completedBytes > CompanionContract.MaximumProgressBytes ||
+            totalBytes > CompanionContract.MaximumProgressBytes ||
+            totalBytes is ulong total && (total == 0 || completedBytes > total))
         {
             throw new CompanionContractException("journal-progress");
         }
@@ -453,6 +456,39 @@ public sealed class CompanionOperationJournal
         {
             throw new CompanionContractException("journal-record-contract");
         }
+        if (!bytes.AsSpan().SequenceEqual(Serialize(record)))
+        {
+            throw new CompanionContractException("journal-record-canonical");
+        }
+        return record;
+    }
+
+    private CompanionOperationRecord ReadExistingOperation(
+        string operationId,
+        ReadOnlySpan<byte> expectedRequest)
+    {
+        var directory = RequireOperationDirectory(operationId);
+        var request = ReadBoundedRegularFile(
+            Path.Combine(directory, "request.json"),
+            "journal-request-file",
+            "journal-request-file");
+        if (!request.AsSpan().SequenceEqual(expectedRequest) || Sha256(request) != operationId)
+        {
+            throw new CompanionContractException("journal-operation-conflict");
+        }
+        try
+        {
+            _ = CompanionLoopbackWire.DecodeAcquireRequest(request);
+        }
+        catch (CompanionProtocolException)
+        {
+            throw new CompanionContractException("journal-operation-conflict");
+        }
+        var record = ReadRecord(Path.Combine(directory, "current.json"), operationId);
+        if (record.RequestSha256 != operationId)
+        {
+            throw new CompanionContractException("journal-operation-conflict");
+        }
         return record;
     }
 
@@ -496,6 +532,29 @@ public sealed class CompanionOperationJournal
     }
 
     private string OperationDirectory(string operationId) => Path.Combine(_operationsRoot, operationId);
+
+    private string RequireOperationDirectory(string operationId)
+    {
+        var directory = OperationDirectory(operationId);
+        if (!Directory.Exists(directory) || File.Exists(directory) ||
+            (File.GetAttributes(directory) & FileAttributes.ReparsePoint) != 0)
+        {
+            throw new CompanionContractException("journal-operation-missing");
+        }
+        return directory;
+    }
+
+    private void DeleteOwnedStagingDirectory(string path)
+    {
+        var full = Path.GetFullPath(path);
+        if (!string.Equals(Path.GetDirectoryName(full), _operationsRoot, StringComparison.Ordinal) ||
+            !Path.GetFileName(full).StartsWith(".staging-", StringComparison.Ordinal) ||
+            (File.GetAttributes(full) & FileAttributes.ReparsePoint) != 0)
+        {
+            throw new CompanionContractException("journal-staging-ownership");
+        }
+        Directory.Delete(full, recursive: true);
+    }
 
     private string Timestamp() => _timeProvider.GetUtcNow().ToString("O");
 
@@ -593,8 +652,11 @@ public sealed class CompanionOperationJournal
         CompanionContract.RequireDigest(value, "journal-operation-id");
     }
 
-    private static bool IsErrorCode(string? value) => value is { Length: >= 1 and <= 128 } &&
-        value.All(character => character is (>= 'a' and <= 'z') or (>= '0' and <= '9') or '-');
+    private static bool IsErrorCode(string? value) =>
+        value is { Length: >= 3 and <= 64 } &&
+        value[0] is >= 'a' and <= 'z' &&
+        value.All(character => character is (>= 'a' and <= 'z') or
+            (>= '0' and <= '9') or '-');
 
     private static string SequenceFile(ulong sequence) => $"{sequence:D20}.json";
 

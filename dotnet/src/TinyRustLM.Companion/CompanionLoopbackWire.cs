@@ -30,6 +30,10 @@ public static class CompanionLoopbackWire
         "tinyrustlm.companion.loopback.revoked.v1";
     public const string ErrorSchema =
         "tinyrustlm.companion.loopback.error.v1";
+    public const string OperationProjectionSchema =
+        "tinyrustlm.companion.loopback.operation-projection.v1";
+    public const string CancelRequestSchema =
+        "tinyrustlm.companion.loopback.cancel-request.v1";
     public const int MaximumInstallationRecordBytes = 4_096;
     public const int MaximumPairingBeginRequestBytes = 2_048;
     public const int MaximumPairingBeginResponseBytes = 4_096;
@@ -43,6 +47,11 @@ public static class CompanionLoopbackWire
     public const int MaximumRevokeRequestBytes = 1_024;
     public const int MaximumRevokedResponseBytes = 1_024;
     public const int MaximumErrorResponseBytes = 256;
+    public const int MaximumAcquireRequestBytes = 65_536;
+    public const int MaximumOperationProjectionBytes = 65_536;
+    public const int MaximumCancelRequestBytes = 1_024;
+
+    private const ulong MaximumJsonSafeInteger = 9_007_199_254_740_991;
 
     private static readonly HashSet<string> StableErrorCodes = new(StringComparer.Ordinal)
     {
@@ -664,6 +673,200 @@ public static class CompanionLoopbackWire
         return error;
     }
 
+    public static byte[] EncodeAcquireRequest(CompanionAcquireRequest request)
+    {
+        var normalized = CompanionContract.ValidateAndNormalize(request);
+        return EncodeNetworkJson(
+            MaximumAcquireRequestBytes,
+            writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("schema", normalized.Schema);
+                writer.WriteString("modelId", normalized.ModelId);
+                writer.WriteString("sourceRepository", normalized.SourceRepository);
+                writer.WriteString("sourceRevision", normalized.SourceRevision);
+                writer.WriteString("modelSourceLockSha256", normalized.ModelSourceLockSha256);
+                writer.WriteString(
+                    "tokenizerSourceLockSha256",
+                    normalized.TokenizerSourceLockSha256);
+                writer.WriteString(
+                    "compositionProfileSha256",
+                    normalized.CompositionProfileSha256);
+                writer.WriteBoolean(
+                    "sourceAcquisitionApproved",
+                    normalized.SourceAcquisitionApproved);
+                writer.WriteNumber("maximumSourceBytes", normalized.MaximumSourceBytes);
+                writer.WriteStartArray("peerCandidates");
+                foreach (var candidate in normalized.PeerCandidates)
+                {
+                    writer.WriteStartObject();
+                    writer.WriteString("manifestUri", candidate.ManifestUri);
+                    writer.WriteString("manifestId", candidate.ManifestId);
+                    writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
+                writer.WriteEndObject();
+            });
+    }
+
+    public static CompanionAcquireRequest DecodeAcquireRequest(ReadOnlySpan<byte> bytes)
+    {
+        var properties = ParseNetworkObject(
+            bytes,
+            MaximumAcquireRequestBytes,
+            [
+                "schema",
+                "modelId",
+                "sourceRepository",
+                "sourceRevision",
+                "modelSourceLockSha256",
+                "tokenizerSourceLockSha256",
+                "compositionProfileSha256",
+                "sourceAcquisitionApproved",
+                "maximumSourceBytes",
+                "peerCandidates"
+            ]);
+        if (properties[9].ValueKind != JsonValueKind.Array)
+        {
+            throw new CompanionProtocolException("json-invalid");
+        }
+        var candidates = properties[9].EnumerateArray()
+            .Select(candidate =>
+            {
+                var values = ParseObject(candidate, ["manifestUri", "manifestId"]);
+                return new CompanionPeerCandidate(
+                    RequireString(values[0]),
+                    RequireString(values[1]));
+            })
+            .ToArray();
+        var request = new CompanionAcquireRequest(
+            RequireString(properties[0]),
+            RequireString(properties[1]),
+            RequireString(properties[2]),
+            RequireString(properties[3]),
+            RequireString(properties[4]),
+            RequireString(properties[5]),
+            RequireString(properties[6]),
+            RequireBoolean(properties[7]),
+            RequireUInt64(properties[8]),
+            candidates);
+        CompanionAcquireRequest normalized;
+        try
+        {
+            normalized = CompanionContract.ValidateAndNormalize(request);
+        }
+        catch (CompanionContractException)
+        {
+            throw new CompanionProtocolException("contract-invalid");
+        }
+        RequireCanonical(bytes, EncodeAcquireRequest(normalized));
+        return normalized;
+    }
+
+    public static byte[] EncodeOperationProjection(CompanionOperationProjection projection)
+    {
+        ValidateOperationProjection(projection);
+        return EncodeNetworkJson(
+            MaximumOperationProjectionBytes,
+            writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("schema", projection.Schema);
+                writer.WriteString("operationId", projection.OperationId);
+                writer.WriteNumber("sequence", projection.Sequence);
+                writer.WriteString("state", OperationStateName(projection.State));
+                writer.WriteString("branch", AcquisitionBranchName(projection.Branch));
+                writer.WriteNumber("completedBytes", projection.CompletedBytes);
+                if (projection.TotalBytes is ulong totalBytes)
+                {
+                    writer.WriteNumber("totalBytes", totalBytes);
+                }
+                else
+                {
+                    writer.WriteNull("totalBytes");
+                }
+                if (projection.Artifacts is null)
+                {
+                    writer.WriteNull("artifacts");
+                }
+                else
+                {
+                    WriteArtifactSet(writer, projection.Artifacts);
+                }
+                if (projection.ErrorCode is null)
+                {
+                    writer.WriteNull("errorCode");
+                }
+                else
+                {
+                    writer.WriteString("errorCode", projection.ErrorCode);
+                }
+                writer.WriteEndObject();
+            });
+    }
+
+    public static CompanionOperationProjection DecodeOperationProjection(
+        ReadOnlySpan<byte> bytes)
+    {
+        var properties = ParseNetworkObject(
+            bytes,
+            MaximumOperationProjectionBytes,
+            [
+                "schema",
+                "operationId",
+                "sequence",
+                "state",
+                "branch",
+                "completedBytes",
+                "totalBytes",
+                "artifacts",
+                "errorCode"
+            ]);
+        var projection = new CompanionOperationProjection(
+            RequireString(properties[0]),
+            RequireString(properties[1]),
+            RequireUInt64(properties[2]),
+            ParseOperationState(RequireString(properties[3])),
+            ParseAcquisitionBranch(RequireString(properties[4])),
+            RequireUInt64(properties[5]),
+            RequireNullableUInt64(properties[6]),
+            properties[7].ValueKind == JsonValueKind.Null
+                ? null
+                : ParseArtifactSet(properties[7]),
+            RequireNullableString(properties[8]));
+        ValidateOperationProjection(projection);
+        RequireCanonical(bytes, EncodeOperationProjection(projection));
+        return projection;
+    }
+
+    public static byte[] EncodeCancelRequest(CompanionCancelRequest request)
+    {
+        ValidateCancelRequest(request);
+        return EncodeNetworkJson(
+            MaximumCancelRequestBytes,
+            writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("schema", request.Schema);
+                writer.WriteString("cancellationId", request.CancellationId);
+                writer.WriteEndObject();
+            });
+    }
+
+    public static CompanionCancelRequest DecodeCancelRequest(ReadOnlySpan<byte> bytes)
+    {
+        var properties = ParseNetworkObject(
+            bytes,
+            MaximumCancelRequestBytes,
+            ["schema", "cancellationId"]);
+        var request = new CompanionCancelRequest(
+            RequireString(properties[0]),
+            RequireString(properties[1]));
+        ValidateCancelRequest(request);
+        RequireCanonical(bytes, EncodeCancelRequest(request));
+        return request;
+    }
+
     private static void ValidateInstallationRecord(CompanionInstallationRecord record)
     {
         ArgumentNullException.ThrowIfNull(record);
@@ -882,6 +1085,188 @@ public static class CompanionLoopbackWire
         }
     }
 
+    private static void ValidateOperationProjection(CompanionOperationProjection projection)
+    {
+        ArgumentNullException.ThrowIfNull(projection);
+        if (projection.Schema != OperationProjectionSchema)
+        {
+            throw new CompanionProtocolException("operation-projection-schema");
+        }
+        try
+        {
+            CompanionContract.RequireDigest(projection.OperationId, "operation-id");
+        }
+        catch (CompanionContractException)
+        {
+            throw new CompanionProtocolException("operation-id");
+        }
+        if (projection.Sequence > MaximumJsonSafeInteger)
+        {
+            throw new CompanionProtocolException("operation-sequence");
+        }
+        _ = OperationStateName(projection.State);
+        _ = AcquisitionBranchName(projection.Branch);
+        if (projection.CompletedBytes > CompanionContract.MaximumProgressBytes ||
+            projection.TotalBytes > CompanionContract.MaximumProgressBytes ||
+            projection.TotalBytes is ulong total &&
+                (total == 0 || projection.CompletedBytes > total))
+        {
+            throw new CompanionProtocolException("operation-progress");
+        }
+        if (projection.Artifacts is not null)
+        {
+            try
+            {
+                CompanionContract.ValidateArtifactSet(projection.Artifacts);
+            }
+            catch (CompanionContractException exception)
+            {
+                throw new CompanionProtocolException(exception.Code == "artifact-total"
+                    ? "operation-artifact-total"
+                    : $"operation-{exception.Code}");
+            }
+        }
+        if (projection.ErrorCode is not null && !IsWireErrorCode(projection.ErrorCode))
+        {
+            throw new CompanionProtocolException("operation-error-code");
+        }
+        if (projection.State == CompanionOperationState.Available)
+        {
+            if (projection.Artifacts is null ||
+                projection.Branch is not (CompanionAcquisitionBranch.Peer or
+                    CompanionAcquisitionBranch.Source) ||
+                projection.ErrorCode is not null)
+            {
+                throw new CompanionProtocolException("operation-available-fields");
+            }
+        }
+        else if (projection.Artifacts is not null)
+        {
+            throw new CompanionProtocolException("operation-artifacts-premature");
+        }
+        if ((projection.State == CompanionOperationState.Rejected) !=
+            (projection.ErrorCode is not null))
+        {
+            throw new CompanionProtocolException("operation-error-fields");
+        }
+    }
+
+    private static void ValidateCancelRequest(CompanionCancelRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        if (request.Schema != CancelRequestSchema)
+        {
+            throw new CompanionProtocolException("cancel-request-schema");
+        }
+        CompanionLoopbackProtocol.RequireHexIdentifier(
+            request.CancellationId,
+            16,
+            "cancellation-id");
+    }
+
+    private static void WriteArtifactSet(Utf8JsonWriter writer, CompanionArtifactSet artifacts)
+    {
+        writer.WriteStartObject("artifacts");
+        WriteArtifact(writer, "composition", artifacts.Composition);
+        WriteArtifact(writer, "model", artifacts.Model);
+        WriteArtifact(writer, "tokenizer", artifacts.Tokenizer);
+        WriteArtifact(writer, "template", artifacts.Template);
+        WriteArtifact(writer, "sampling", artifacts.Sampling);
+        WriteArtifact(writer, "prompt", artifacts.Prompt);
+        writer.WriteEndObject();
+    }
+
+    private static void WriteArtifact(
+        Utf8JsonWriter writer,
+        string role,
+        CompanionArtifact artifact)
+    {
+        writer.WriteStartObject(role);
+        writer.WriteString("kind", artifact.Kind);
+        writer.WriteString("artifactId", artifact.ArtifactId);
+        writer.WriteString("sha256", artifact.Sha256);
+        writer.WriteNumber("byteCount", artifact.ByteCount);
+        writer.WriteEndObject();
+    }
+
+    private static CompanionArtifactSet ParseArtifactSet(JsonElement value)
+    {
+        var roles = ParseObject(
+            value,
+            ["composition", "model", "tokenizer", "template", "sampling", "prompt"]);
+        return new CompanionArtifactSet(
+            ParseArtifact(roles[0]),
+            ParseArtifact(roles[1]),
+            ParseArtifact(roles[2]),
+            ParseArtifact(roles[3]),
+            ParseArtifact(roles[4]),
+            ParseArtifact(roles[5]));
+    }
+
+    private static CompanionArtifact ParseArtifact(JsonElement value)
+    {
+        var properties = ParseObject(value, ["kind", "artifactId", "sha256", "byteCount"]);
+        return new CompanionArtifact(
+            RequireString(properties[0]),
+            RequireString(properties[1]),
+            RequireString(properties[2]),
+            RequireUInt64(properties[3]));
+    }
+
+    private static string OperationStateName(CompanionOperationState value) => value switch
+    {
+        CompanionOperationState.Queued => "queued",
+        CompanionOperationState.CheckingPeers => "checking-peers",
+        CompanionOperationState.FetchingPeer => "fetching-peer",
+        CompanionOperationState.VerifyingPeer => "verifying-peer",
+        CompanionOperationState.AcquiringSource => "acquiring-source",
+        CompanionOperationState.Converting => "converting",
+        CompanionOperationState.VerifyingComposition => "verifying-composition",
+        CompanionOperationState.Available => "available",
+        CompanionOperationState.Cancelled => "cancelled",
+        CompanionOperationState.Rejected => "rejected",
+        _ => throw new CompanionProtocolException("operation-state")
+    };
+
+    private static CompanionOperationState ParseOperationState(string value) => value switch
+    {
+        "queued" => CompanionOperationState.Queued,
+        "checking-peers" => CompanionOperationState.CheckingPeers,
+        "fetching-peer" => CompanionOperationState.FetchingPeer,
+        "verifying-peer" => CompanionOperationState.VerifyingPeer,
+        "acquiring-source" => CompanionOperationState.AcquiringSource,
+        "converting" => CompanionOperationState.Converting,
+        "verifying-composition" => CompanionOperationState.VerifyingComposition,
+        "available" => CompanionOperationState.Available,
+        "cancelled" => CompanionOperationState.Cancelled,
+        "rejected" => CompanionOperationState.Rejected,
+        _ => throw new CompanionProtocolException("operation-state")
+    };
+
+    private static string AcquisitionBranchName(CompanionAcquisitionBranch value) => value switch
+    {
+        CompanionAcquisitionBranch.Undecided => "undecided",
+        CompanionAcquisitionBranch.Peer => "peer",
+        CompanionAcquisitionBranch.Source => "source",
+        CompanionAcquisitionBranch.None => "none",
+        _ => throw new CompanionProtocolException("operation-branch")
+    };
+
+    private static CompanionAcquisitionBranch ParseAcquisitionBranch(string value) => value switch
+    {
+        "undecided" => CompanionAcquisitionBranch.Undecided,
+        "peer" => CompanionAcquisitionBranch.Peer,
+        "source" => CompanionAcquisitionBranch.Source,
+        "none" => CompanionAcquisitionBranch.None,
+        _ => throw new CompanionProtocolException("operation-branch")
+    };
+
+    private static bool IsWireErrorCode(string value) =>
+        value.Length is >= 3 and <= 64 &&
+        value[0] is >= 'a' and <= 'z' &&
+        value.All(character => character is (>= 'a' and <= 'z') or
+            (>= '0' and <= '9') or '-');
+
     private static void RequireEpochPair(uint currentEpoch, uint nextEpoch)
     {
         if (currentEpoch is 0 or >= 64 || nextEpoch != currentEpoch + 1)
@@ -926,28 +1311,35 @@ public static class CompanionLoopbackWire
                 CommentHandling = JsonCommentHandling.Disallow,
                 MaxDepth = 16
             });
-            if (document.RootElement.ValueKind != JsonValueKind.Object)
-            {
-                throw new CompanionProtocolException("json-invalid");
-            }
-            var properties = document.RootElement.EnumerateObject().ToArray();
-            if (properties.Length != names.Count)
-            {
-                throw new CompanionProtocolException("json-invalid");
-            }
-            for (var index = 0; index < names.Count; index++)
-            {
-                if (!string.Equals(properties[index].Name, names[index], StringComparison.Ordinal))
-                {
-                    throw new CompanionProtocolException("json-invalid");
-                }
-            }
-            return properties.Select(property => property.Value.Clone()).ToArray();
+            return ParseObject(document.RootElement, names);
         }
         catch (JsonException)
         {
             throw new CompanionProtocolException("json-invalid");
         }
+    }
+
+    private static JsonElement[] ParseObject(
+        JsonElement value,
+        IReadOnlyList<string> names)
+    {
+        if (value.ValueKind != JsonValueKind.Object)
+        {
+            throw new CompanionProtocolException("json-invalid");
+        }
+        var properties = value.EnumerateObject().ToArray();
+        if (properties.Length != names.Count)
+        {
+            throw new CompanionProtocolException("json-invalid");
+        }
+        for (var index = 0; index < names.Count; index++)
+        {
+            if (!string.Equals(properties[index].Name, names[index], StringComparison.Ordinal))
+            {
+                throw new CompanionProtocolException("json-invalid");
+            }
+        }
+        return properties.Select(property => property.Value.Clone()).ToArray();
     }
 
     private static string RequireString(JsonElement value)
@@ -983,6 +1375,11 @@ public static class CompanionLoopbackWire
         value.ValueKind == JsonValueKind.Null
             ? null
             : RequireUInt64(value);
+
+    private static string? RequireNullableString(JsonElement value) =>
+        value.ValueKind == JsonValueKind.Null
+            ? null
+            : RequireString(value);
 
     private static bool RequireBoolean(JsonElement value)
     {

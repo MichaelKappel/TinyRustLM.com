@@ -159,7 +159,7 @@ public sealed class CompanionSourceConversionTests : IDisposable
         using var fixture = new ConversionFixture(_parent, "pass");
         var root = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(_parent, "owned"));
         var journal = new CompanionOperationJournal(root);
-        var created = journal.Create(fixture.AcquisitionRequest);
+        var created = journal.CreateOrRead(fixture.AcquisitionRequest);
         var coordinator = new CompanionSourceConversion(journal, fixture.Tool());
 
         var error = await Assert.ThrowsAsync<CompanionContractException>(() =>
@@ -480,7 +480,7 @@ public sealed class CompanionSourceConversionTests : IDisposable
         var root = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(fixture.Parent, "owned"));
         fixture.OwnedRoot = root;
         var journal = new CompanionOperationJournal(root);
-        var created = journal.Create(fixture.AcquisitionRequest);
+        var created = journal.CreateOrRead(fixture.AcquisitionRequest);
         journal.Advance(
             created.OperationId,
             CompanionOperationState.CheckingPeers,

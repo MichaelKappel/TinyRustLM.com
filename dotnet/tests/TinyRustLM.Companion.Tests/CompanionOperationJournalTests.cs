@@ -16,7 +16,7 @@ public sealed class CompanionOperationJournalTests : IDisposable
         Directory.CreateDirectory(_parent);
         var root = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(_parent, "owned"));
         var journal = new CompanionOperationJournal(root, new FrozenTimeProvider());
-        var created = journal.Create(CompanionContractTests.Request());
+        var created = journal.CreateOrRead(CompanionContractTests.Request());
         var checking = journal.Advance(
             created.OperationId,
             CompanionOperationState.CheckingPeers,
@@ -68,22 +68,40 @@ public sealed class CompanionOperationJournalTests : IDisposable
     }
 
     [Fact]
-    public void JournalRejectsDuplicateOperationAndInvalidTransition()
+    public void JournalRecoversDuplicateOperationAndRejectsInvalidTransition()
     {
         Directory.CreateDirectory(_parent);
         var root = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(_parent, "owned"));
         var journal = new CompanionOperationJournal(root);
-        var created = journal.Create(CompanionContractTests.Request());
-
-        var duplicate = Assert.Throws<CompanionContractException>(() =>
-            journal.Create(CompanionContractTests.Request()));
-        Assert.Equal("journal-operation-exists", duplicate.Code);
+        var created = journal.CreateOrRead(CompanionContractTests.Request());
+        Assert.Equal(
+            created,
+            new CompanionOperationJournal(root)
+                .CreateOrRead(CompanionContractTests.Request()));
         var transition = Assert.Throws<CompanionContractException>(() => journal.Advance(
             created.OperationId,
             CompanionOperationState.Available,
             CompanionAcquisitionBranch.Source,
             artifacts: CompanionContractTests.Artifacts()));
         Assert.Equal("journal-transition", transition.Code);
+    }
+
+    [Fact]
+    public async Task ConcurrentCreateOrReadElectsOneExactCommittedOperation()
+    {
+        Directory.CreateDirectory(_parent);
+        var root = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(_parent, "owned"));
+        var request = CompanionContractTests.Request();
+        var tasks = Enumerable.Range(0, 10)
+            .Select(_ => Task.Run(() =>
+                new CompanionOperationJournal(root).CreateOrRead(request)))
+            .ToArray();
+
+        var records = await Task.WhenAll(tasks);
+        Assert.All(records, record => Assert.Equal(records[0], record));
+        var operationRoot = Path.Combine(root, "operations", records[0].OperationId);
+        Assert.Single(Directory.GetFiles(Path.Combine(operationRoot, "history"), "*.json"));
+        Assert.Equal(records[0], new CompanionOperationJournal(root).Read(records[0].OperationId));
     }
 
     [Fact]
@@ -101,7 +119,7 @@ public sealed class CompanionOperationJournalTests : IDisposable
         Directory.CreateDirectory(_parent);
         var root = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(_parent, "owned"));
         var journal = new CompanionOperationJournal(root);
-        var created = journal.Create(CompanionContractTests.Request());
+        var created = journal.CreateOrRead(CompanionContractTests.Request());
         var requestPath = Path.Combine(root, "operations", created.OperationId, "request.json");
         var tampered = File.ReadAllText(requestPath).Replace(
             "qwen3-0.6b",
@@ -120,7 +138,7 @@ public sealed class CompanionOperationJournalTests : IDisposable
         Directory.CreateDirectory(_parent);
         var root = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(_parent, "owned"));
         var journal = new CompanionOperationJournal(root);
-        var created = journal.Create(CompanionContractTests.Request());
+        var created = journal.CreateOrRead(CompanionContractTests.Request());
         var requestPath = Path.Combine(root, "operations", created.OperationId, "request.json");
         var text = File.ReadAllText(requestPath).Replace(
             "\"modelId\":\"qwen3-0.6b\"",
@@ -239,7 +257,7 @@ public sealed class CompanionOperationJournalTests : IDisposable
         Directory.CreateDirectory(_parent);
         var root = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(_parent, "owned"));
         var journal = new CompanionOperationJournal(root);
-        var created = journal.Create(CompanionContractTests.Request());
+        var created = journal.CreateOrRead(CompanionContractTests.Request());
         var current = Path.Combine(root, "operations", created.OperationId, "current.json");
         var prior = File.ReadAllText(current).Replace(
             "tinyrustlm.companion.operation.v2",
@@ -254,12 +272,36 @@ public sealed class CompanionOperationJournalTests : IDisposable
     }
 
     [Fact]
+    public void JournalRejectsNoncanonicalCurrentRecordAndUnprojectableProgress()
+    {
+        Directory.CreateDirectory(_parent);
+        var root = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(_parent, "owned"));
+        var journal = new CompanionOperationJournal(root);
+        var created = journal.CreateOrRead(CompanionContractTests.Request());
+        var current = Path.Combine(root, "operations", created.OperationId, "current.json");
+        var original = File.ReadAllBytes(current);
+        File.WriteAllBytes(current, [(byte)' ', .. original]);
+
+        var canonical = Assert.Throws<CompanionContractException>(() =>
+            journal.Read(created.OperationId));
+        Assert.Equal("journal-record-canonical", canonical.Code);
+
+        File.WriteAllBytes(current, original);
+        var progress = Assert.Throws<CompanionContractException>(() => journal.Advance(
+            created.OperationId,
+            CompanionOperationState.CheckingPeers,
+            CompanionAcquisitionBranch.Undecided,
+            completedBytes: CompanionContract.MaximumProgressBytes + 1));
+        Assert.Equal("journal-progress", progress.Code);
+    }
+
+    [Fact]
     public void PeerBranchCannotAcquireASourceConversionIntentHash()
     {
         Directory.CreateDirectory(_parent);
         var root = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(_parent, "owned"));
         var journal = new CompanionOperationJournal(root);
-        var created = journal.Create(CompanionContractTests.Request());
+        var created = journal.CreateOrRead(CompanionContractTests.Request());
 
         var error = Assert.Throws<CompanionContractException>(() => journal.Advance(
             created.OperationId,
@@ -317,7 +359,7 @@ public sealed class CompanionOperationJournalTests : IDisposable
 
     private CompanionOperationRecord AdvanceToAcquiringSource(CompanionOperationJournal journal)
     {
-        var created = journal.Create(CompanionContractTests.Request());
+        var created = journal.CreateOrRead(CompanionContractTests.Request());
         journal.Advance(
             created.OperationId,
             CompanionOperationState.CheckingPeers,

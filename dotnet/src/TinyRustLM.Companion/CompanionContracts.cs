@@ -1,6 +1,4 @@
 using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace TinyRustLM.Companion;
@@ -14,6 +12,9 @@ public static partial class CompanionContract
     public const string OwnedRootMarker = "tinyrustlm.companion.owned-root.v1\n";
     public const int MaximumPeerCandidates = 2;
     public const ulong MaximumSourceBytes = 17_179_869_184;
+    public const ulong MaximumArtifactBytes = 68_719_476_736;
+    public const ulong MaximumCompositionBytes = 73_014_444_032;
+    public const ulong MaximumProgressBytes = MaximumSourceBytes * 5;
 
     public static CompanionAcquireRequest ValidateAndNormalize(CompanionAcquireRequest request)
     {
@@ -81,37 +82,8 @@ public static partial class CompanionContract
 
     public static string OperationId(CompanionAcquireRequest request)
     {
-        var normalized = ValidateAndNormalize(request);
-        using var stream = new MemoryStream();
-        using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions
-        {
-            Indented = false,
-            SkipValidation = false
-        }))
-        {
-            writer.WriteStartObject();
-            writer.WriteString("schema", normalized.Schema);
-            writer.WriteString("modelId", normalized.ModelId);
-            writer.WriteString("sourceRepository", normalized.SourceRepository);
-            writer.WriteString("sourceRevision", normalized.SourceRevision);
-            writer.WriteString("modelSourceLockSha256", normalized.ModelSourceLockSha256);
-            writer.WriteString("tokenizerSourceLockSha256", normalized.TokenizerSourceLockSha256);
-            writer.WriteString("compositionProfileSha256", normalized.CompositionProfileSha256);
-            writer.WriteBoolean("sourceAcquisitionApproved", normalized.SourceAcquisitionApproved);
-            writer.WriteNumber("maximumSourceBytes", normalized.MaximumSourceBytes);
-            writer.WriteStartArray("peerCandidates");
-            foreach (var candidate in normalized.PeerCandidates)
-            {
-                writer.WriteStartObject();
-                writer.WriteString("manifestUri", candidate.ManifestUri);
-                writer.WriteString("manifestId", candidate.ManifestId);
-                writer.WriteEndObject();
-            }
-            writer.WriteEndArray();
-            writer.WriteEndObject();
-        }
-
-        return Convert.ToHexString(SHA256.HashData(stream.ToArray())).ToLowerInvariant();
+        var bytes = CompanionLoopbackWire.EncodeAcquireRequest(request);
+        return Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
     }
 
     public static void ValidateArtifactSet(CompanionArtifactSet value)
@@ -123,11 +95,19 @@ public static partial class CompanionContract
         RequireArtifact(value.Template, "template2", "artifact-template");
         RequireArtifact(value.Sampling, "sampling2", "artifact-sampling");
         RequireArtifact(value.Prompt, "prompt2", "artifact-prompt");
+        var total = value.All.Aggregate(
+            0UL,
+            static (current, artifact) => checked(current + artifact.ByteCount));
+        if (total > MaximumCompositionBytes)
+        {
+            throw new CompanionContractException("artifact-total");
+        }
     }
 
     private static void RequireArtifact(CompanionArtifact value, string kind, string code)
     {
-        if (value is null || value.Kind != kind || value.ByteCount == 0)
+        if (value is null || value.Kind != kind ||
+            value.ByteCount is 0 or > MaximumArtifactBytes)
         {
             throw new CompanionContractException(code);
         }
@@ -236,7 +216,24 @@ public sealed record CompanionArtifactSet(
     CompanionArtifact Tokenizer,
     CompanionArtifact Template,
     CompanionArtifact Sampling,
-    CompanionArtifact Prompt);
+    CompanionArtifact Prompt)
+{
+    public IReadOnlyList<CompanionArtifact> All =>
+        [Composition, Model, Tokenizer, Template, Sampling, Prompt];
+}
+
+public sealed record CompanionOperationProjection(
+    string Schema,
+    string OperationId,
+    ulong Sequence,
+    CompanionOperationState State,
+    CompanionAcquisitionBranch Branch,
+    ulong CompletedBytes,
+    ulong? TotalBytes,
+    CompanionArtifactSet? Artifacts,
+    string? ErrorCode);
+
+public sealed record CompanionCancelRequest(string Schema, string CancellationId);
 
 public sealed record CompanionOperationRecord(
     string Schema,

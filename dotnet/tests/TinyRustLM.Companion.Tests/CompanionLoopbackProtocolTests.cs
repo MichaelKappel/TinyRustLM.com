@@ -219,6 +219,66 @@ public sealed class CompanionLoopbackProtocolTests
     }
 
     [Fact]
+    public void OperationWiresMatchIndependentCanonicalVectors()
+    {
+        var value = ReadVectors().GetProperty("operation");
+        var request = AcquireRequest(value.GetProperty("request"));
+        var requestBytes = CompanionLoopbackWire.EncodeAcquireRequest(request);
+        Assert.Equal(value.GetProperty("requestByteLength").GetInt32(), requestBytes.Length);
+        Assert.Equal(
+            value.GetProperty("requestSha256").GetString(),
+            CompanionLoopbackProtocol.Sha256Hex(requestBytes));
+        Assert.Equal(
+            value.GetProperty("operationId").GetString(),
+            CompanionContract.OperationId(request));
+        var decodedRequest = CompanionLoopbackWire.DecodeAcquireRequest(requestBytes);
+        Assert.Equal(request with { PeerCandidates = decodedRequest.PeerCandidates }, decodedRequest);
+        Assert.Equal(request.PeerCandidates, decodedRequest.PeerCandidates);
+
+        var projection = OperationProjection(value.GetProperty("projection"));
+        var projectionBytes = CompanionLoopbackWire.EncodeOperationProjection(projection);
+        Assert.Equal(
+            value.GetProperty("projectionByteLength").GetInt32(),
+            projectionBytes.Length);
+        Assert.Equal(
+            value.GetProperty("projectionSha256").GetString(),
+            CompanionLoopbackProtocol.Sha256Hex(projectionBytes));
+        Assert.Equal(
+            projection,
+            CompanionLoopbackWire.DecodeOperationProjection(projectionBytes));
+        Assert.Equal(
+            value.GetProperty("artifactByteTotal").GetUInt64(),
+            projection.Artifacts!.All.Aggregate(
+                0UL,
+                static (total, artifact) => checked(total + artifact.ByteCount)));
+
+        var cancelValue = value.GetProperty("cancelRequest");
+        var cancellation = new CompanionCancelRequest(
+            cancelValue.GetProperty("schema").GetString()!,
+            cancelValue.GetProperty("cancellationId").GetString()!);
+        var cancelBytes = CompanionLoopbackWire.EncodeCancelRequest(cancellation);
+        Assert.Equal(
+            value.GetProperty("cancelRequestByteLength").GetInt32(),
+            cancelBytes.Length);
+        Assert.Equal(
+            value.GetProperty("cancelRequestSha256").GetString(),
+            CompanionLoopbackProtocol.Sha256Hex(cancelBytes));
+        Assert.Equal(
+            cancellation,
+            CompanionLoopbackWire.DecodeCancelRequest(cancelBytes));
+
+        Assert.Throws<CompanionProtocolException>(() =>
+            CompanionLoopbackWire.DecodeAcquireRequest([.. requestBytes, (byte)' ']));
+        Assert.Throws<CompanionProtocolException>(() =>
+            CompanionLoopbackWire.DecodeOperationProjection(
+                Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(projectionBytes)
+                    .Replace(
+                        "\"sequence\":7",
+                        "\"sequence\":7,\"sequence\":7",
+                        StringComparison.Ordinal))));
+    }
+
+    [Fact]
     public void ProtocolRejectsInvalidHostPathTimestampAndBodyShape()
     {
         var vectors = ReadVectors();
@@ -295,6 +355,51 @@ public sealed class CompanionLoopbackProtocolTests
             value.GetProperty("sessionExpiresAtUtc").GetString()!,
             value.GetProperty("idleTimeoutSeconds").GetUInt32());
     }
+
+    private static CompanionAcquireRequest AcquireRequest(JsonElement value) => new(
+        value.GetProperty("schema").GetString()!,
+        value.GetProperty("modelId").GetString()!,
+        value.GetProperty("sourceRepository").GetString()!,
+        value.GetProperty("sourceRevision").GetString()!,
+        value.GetProperty("modelSourceLockSha256").GetString()!,
+        value.GetProperty("tokenizerSourceLockSha256").GetString()!,
+        value.GetProperty("compositionProfileSha256").GetString()!,
+        value.GetProperty("sourceAcquisitionApproved").GetBoolean(),
+        value.GetProperty("maximumSourceBytes").GetUInt64(),
+        value.GetProperty("peerCandidates").EnumerateArray()
+            .Select(candidate => new CompanionPeerCandidate(
+                candidate.GetProperty("manifestUri").GetString()!,
+                candidate.GetProperty("manifestId").GetString()!))
+            .ToArray());
+
+    private static CompanionOperationProjection OperationProjection(JsonElement value) => new(
+        value.GetProperty("schema").GetString()!,
+        value.GetProperty("operationId").GetString()!,
+        value.GetProperty("sequence").GetUInt64(),
+        Enum.Parse<CompanionOperationState>(
+            value.GetProperty("state").GetString()!.Replace("-", string.Empty),
+            ignoreCase: true),
+        Enum.Parse<CompanionAcquisitionBranch>(
+            value.GetProperty("branch").GetString()!,
+            ignoreCase: true),
+        value.GetProperty("completedBytes").GetUInt64(),
+        value.GetProperty("totalBytes").GetUInt64(),
+        Artifacts(value.GetProperty("artifacts")),
+        null);
+
+    private static CompanionArtifactSet Artifacts(JsonElement value) => new(
+        Artifact(value.GetProperty("composition")),
+        Artifact(value.GetProperty("model")),
+        Artifact(value.GetProperty("tokenizer")),
+        Artifact(value.GetProperty("template")),
+        Artifact(value.GetProperty("sampling")),
+        Artifact(value.GetProperty("prompt")));
+
+    private static CompanionArtifact Artifact(JsonElement value) => new(
+        value.GetProperty("kind").GetString()!,
+        value.GetProperty("artifactId").GetString()!,
+        value.GetProperty("sha256").GetString()!,
+        value.GetProperty("byteCount").GetUInt64());
 
     private static CompanionRequestProofContext RequestContext(JsonElement vectors)
     {

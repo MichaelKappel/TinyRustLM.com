@@ -57,6 +57,36 @@ public sealed class CompanionContractTests
         Assert.Equal("artifact-prompt", error.Code);
     }
 
+    [Fact]
+    public void ArtifactSetRejectsPerMemberAndAggregateResourceOverflow()
+    {
+        var memberOverflow = Artifacts() with
+        {
+            Model = Artifacts().Model with
+            {
+                ByteCount = CompanionContract.MaximumArtifactBytes + 1
+            }
+        };
+        var memberError = Assert.Throws<CompanionContractException>(() =>
+            CompanionContract.ValidateArtifactSet(memberOverflow));
+        Assert.Equal("artifact-model", memberError.Code);
+
+        var large = CompanionContract.MaximumCompositionBytes / 6 + 1;
+        var baseline = Artifacts();
+        var aggregateOverflow = baseline with
+        {
+            Composition = baseline.Composition with { ByteCount = large },
+            Model = baseline.Model with { ByteCount = large },
+            Tokenizer = baseline.Tokenizer with { ByteCount = large },
+            Template = baseline.Template with { ByteCount = large },
+            Sampling = baseline.Sampling with { ByteCount = large },
+            Prompt = baseline.Prompt with { ByteCount = large }
+        };
+        var aggregateError = Assert.Throws<CompanionContractException>(() =>
+            CompanionContract.ValidateArtifactSet(aggregateOverflow));
+        Assert.Equal("artifact-total", aggregateError.Code);
+    }
+
     internal static CompanionAcquireRequest Request(params CompanionPeerCandidate[] candidates) => new(
         CompanionContract.AcquisitionRequestSchema,
         "qwen3-0.6b",

@@ -414,6 +414,42 @@ test("browser WebCrypto implementation matches artifact and rotation vectors", a
   );
 });
 
+test("browser operation codecs match the independent canonical wire vector", async () => {
+  const operation = vectors.operation;
+  const requestOracle = Buffer.from(JSON.stringify(operation.request), "utf8");
+  assert.equal(requestOracle.length, operation.requestByteLength);
+  assert.equal(oracleSha256Hex(requestOracle), operation.requestSha256);
+  const requestBytes = capability.encodeAcquireRequest(operation.request);
+  assert.deepEqual(Buffer.from(requestBytes), requestOracle);
+  assert.equal(
+    await capability.computeOperationId(operation.request),
+    operation.operationId
+  );
+
+  const projectionOracle = Buffer.from(JSON.stringify(operation.projection), "utf8");
+  assert.equal(projectionOracle.length, operation.projectionByteLength);
+  assert.equal(oracleSha256Hex(projectionOracle), operation.projectionSha256);
+  const projectionBytes = capability.encodeOperationProjection(operation.projection);
+  assert.deepEqual(Buffer.from(projectionBytes), projectionOracle);
+  assert.deepEqual(
+    capability.decodeOperationProjection(projectionBytes),
+    capability.decodeOperationProjection(projectionOracle)
+  );
+  assert.equal(
+    Object.values(operation.projection.artifacts)
+      .reduce((total, artifact) => total + artifact.byteCount, 0),
+    operation.artifactByteTotal
+  );
+
+  const cancelOracle = Buffer.from(JSON.stringify(operation.cancelRequest), "utf8");
+  assert.equal(cancelOracle.length, operation.cancelRequestByteLength);
+  assert.equal(oracleSha256Hex(cancelOracle), operation.cancelRequestSha256);
+  assert.deepEqual(
+    Buffer.from(capability.encodeCancelRequest(operation.cancelRequest)),
+    cancelOracle
+  );
+});
+
 test("operation-specific verification rejects proof and metadata substitution", async () => {
   const secret = capability.hexToBytes(vectors.pairingSecretHex, "test-secret");
   const sessionKey = await capability.deriveSessionKey(secret, vectors.pairingContext);
