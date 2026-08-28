@@ -1,5 +1,15 @@
-profile: runtime-mirust.operations.v190
-updated_utc: 2026-08-28T05:06:11Z
+profile: runtime-mirust.operations.v191
+updated_utc: 2026-08-28T05:52:51Z
+
+checkpoint_2026_08_28_authenticated_companion_browser_client:
+  source: commit=ac32cd3592de4c13bba84ffc8c2e4aef3a4eafd7; tree=b399f413bb33caac92583ea828af9c1c61d833f8
+  remote_equality: Local HEAD and tree equal a freshly fetched origin branch commit and tree; the worktree was clean after push verification.
+  verification: Node standard=1684 pass/0 fail/3 intentional skips/1687 total, including the exact web release closure and real Chromium smoke; diff and staged-diff hygiene passed.
+  result: The strict memory-only browser Companion capability client and independent fake-Companion tests are now source-controlled under app ownership. Pairing, exact lost-response recovery, session sequencing, rotation recovery, revocation, deterministic six-member acquisition identity, cancellation, and fixed artifact chunks fail closed.
+  release_truth: The client is published in the source release inventory but is not loaded by the product UI. The obsolete CompanionBridge and one-file acquisition UI remain the current active blocker; this checkpoint is not deployment, acquisition, conversion, model, browser-chat, P2P, or campaign evidence.
+  next_gate: Implement matching .NET operation wire/service/artifact transport under cross-language vectors, then activate the sole client and delete CompanionBridge plus all one-file acquisition/sharing semantics in the same green clean cut.
+  deep_link: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md,20316,6e5a5b7cf7f3ad45008b14597a3616ee603da76cc500b69770de7280711785e4
+  campaign_truth: 0/20 qualified; 0/50 browser; 0/25 live memory; 0/40 outside lanes; 0/20 catalog.
 
 checkpoint_2026_08_28_slm2_runtime_clean_cut:
   source: commit=8433e691fd7d702992b5e91575466846e30cc05e; tree=acace5041db4aea856f9b5302bfce70037c1a73d
