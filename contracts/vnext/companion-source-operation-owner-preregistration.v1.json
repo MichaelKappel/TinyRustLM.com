@@ -1,0 +1,579 @@
+{
+  "schema": "tinyrustlm.companion-source-operation-owner-preregistration.v1",
+  "profileId": "tinyrustlm.companion.source-operation-owner/1",
+  "status": "registered-before-contract-replacement-worker-source-network-or-model-output",
+  "registeredAtUtc": "2026-08-28T06:54:14Z",
+  "registrationParentCommit": "884d6c3d90976ba867490a4c562262cd79d81bca",
+  "registrationParentTree": "7058042cc11f1943f63cf3a18d775c9a62a3808c",
+  "authority": {
+    "workspace": "sole-authorized-recovered-model-acquisition-worktree",
+    "branch": "codex/model-acquisition-v2",
+    "productPhase": "prelaunch-single-product-clean-slate",
+    "technicalSchemaVersionsAreProductGenerations": false,
+    "legacySupportAllowed": false,
+    "compatibilityReaderAllowed": false,
+    "migrationAllowed": false,
+    "aliasAllowed": false,
+    "fallbackAllowed": false,
+    "responseRepairAllowed": false,
+    "hiddenRetryAllowed": false,
+    "bestOfNAllowed": false,
+    "fakeSuccessAllowed": false,
+    "memoryEndpointsAuthorizedAndRecommended": true,
+    "memoryEndpointsLiveEvidencePresent": false
+  },
+  "registeredSourceClosure": [
+    {
+      "path": "dotnet/src/TinyRustLM.Companion/CompanionContracts.cs",
+      "byteLength": 9277,
+      "sha256": "e33d45d67b2b22c95490fc3cd1912fd06dee2ca4dc71f15bc44de2a2365a4570"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Companion/CompanionOperationJournal.cs",
+      "byteLength": 30085,
+      "sha256": "c5fd4900e8830809561c0cfac776157498bcf8bea604febac676abe4cdb7d80b"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Companion/CompanionOperationService.cs",
+      "byteLength": 6264,
+      "sha256": "b26be356e8dde326518e5ef6228b5c506da9b7f90df81f7927387020b0d3ce85"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Companion/CompanionSourceConversion.cs",
+      "byteLength": 15778,
+      "sha256": "f2a95b8d2aedafdc6901260966e309f573599a6e609c0953746a971576d258a1"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Companion/CompanionSourceConversionIntent.cs",
+      "byteLength": 5766,
+      "sha256": "7ad9da22f54b050ea3291f791db8cc52dcaae9021524d5291f4ccf6b45822f68"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Companion/CompanionArtifactTransfer.cs",
+      "byteLength": 21435,
+      "sha256": "ed9e9ba6be4737dfa485fd5b5e6b0718c30b3e9c5474a6c25fdff828be3bc94e"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Companion/CompanionLoopbackServer.cs",
+      "byteLength": 41818,
+      "sha256": "648b559a8179992e736a0ea51f123d96bf72bf56c194057fb035b37c7013d111"
+    },
+    {
+      "path": "dotnet/tools/TinyRustLM.CompanionHost/Program.cs",
+      "byteLength": 3208,
+      "sha256": "76be51d11fcccb204fb4ef02836a999ec0ea26b88be2f8535143bbfedb411bb2"
+    },
+    {
+      "path": "tinyrustlm/app/companion-capability.js",
+      "byteLength": 89128,
+      "sha256": "4630f14b1c2c127b7e6420f7f50cc8dada6b101e0c74e2d9c281c8d62ab33796"
+    },
+    {
+      "path": "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json",
+      "byteLength": 1901,
+      "sha256": "e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d"
+    },
+    {
+      "path": "contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json",
+      "byteLength": 1108,
+      "sha256": "1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70"
+    },
+    {
+      "path": "contracts/vnext/companion-loopback-capability-preregistration.v3.json",
+      "byteLength": 11836,
+      "sha256": "a4f8574a6d35f8c66f537f8e4e2c7d659a239a6267d60c26210672db72929d28"
+    }
+  ],
+  "preservedCurrentLimitations": {
+    "operationServiceConnectedToListener": false,
+    "operationExecutorExists": false,
+    "sourceAcquirerExists": false,
+    "sourceNetworkRequestMade": false,
+    "sourceCacheExists": false,
+    "operationWorkerExists": false,
+    "browserCapabilityModuleLoadedByProduct": false,
+    "sixMemberPeerImporterExists": false,
+    "existingP2pAdmissionArtifactClasses": [
+      "slm2-model",
+      "acg2-composition"
+    ],
+    "existingP2pApiSatisfiesSixMemberCompositionImport": false,
+    "existingPeerBranchMayBeExposedAsWorking": false
+  },
+  "cleanReplacement": {
+    "loopbackProfileId": "tinyrustlm.companion.loopback-capability/4",
+    "acquisitionRequestSchema": "tinyrustlm.companion.acquire.v2",
+    "operationRecordSchema": "tinyrustlm.companion.operation.v3",
+    "operationProjectionSchema": "tinyrustlm.companion.loopback.operation-projection.v2",
+    "executionIntentSchema": "tinyrustlm.companion.execution-intent.v1",
+    "sourceAcquisitionIntentSchema": "tinyrustlm.companion.source-acquisition-intent.v1",
+    "sourceAcquisitionReceiptSchema": "tinyrustlm.companion.source-acquisition-receipt.v1",
+    "workerTerminalSchema": "tinyrustlm.companion.worker-terminal.v1",
+    "oldRequestReaderRetained": false,
+    "oldOperationReaderRetained": false,
+    "oldProjectionReaderRetained": false,
+    "oldProfileRuntimeReaderRetained": false,
+    "migrationWritten": false,
+    "dualWriteAllowed": false,
+    "compatibilityAdapterAllowed": false,
+    "supersededBytesRetainedOnlyAsHistoricalSourceEvidence": true
+  },
+  "acquisitionRequest": {
+    "canonicalFieldsInOrder": [
+      "schema",
+      "attemptId",
+      "route",
+      "modelId",
+      "sourceRepository",
+      "sourceRevision",
+      "modelSourceLockSha256",
+      "tokenizerSourceLockSha256",
+      "compositionProfileSha256",
+      "sourceAcquisitionApproved",
+      "maximumSourceBytes"
+    ],
+    "attemptId": {
+      "encoding": "32-lowercase-hex-characters",
+      "generation": "browser-cryptographic-random-on-explicit-user-command",
+      "secret": false,
+      "sameAttemptLostResponse": "exact-request-replay-recovers-same-operation",
+      "explicitNewUserAttempt": "new-random-attempt-id-produces-new-operation",
+      "automaticAttemptGenerationByServer": false,
+      "automaticRetry": false
+    },
+    "route": "source",
+    "peerCandidatesPresent": false,
+    "sourceAcquisitionApprovedMustBeTrue": true,
+    "maximumSourceBytesUpperBound": 17179869184,
+    "operationId": "lowercase-sha256-of-exact-canonical-request-bytes",
+    "arbitraryUrlAccepted": false,
+    "arbitraryPathAccepted": false,
+    "arbitraryRepositorySupported": false,
+    "unknownBuiltInDescriptor": "contract-invalid"
+  },
+  "operationStateMachine": {
+    "states": [
+      "queued",
+      "acquiring-source",
+      "converting",
+      "verifying-composition",
+      "available",
+      "cancelled",
+      "rejected"
+    ],
+    "terminalStates": [
+      "available",
+      "cancelled",
+      "rejected"
+    ],
+    "allowedTransitions": [
+      "queued-to-acquiring-source",
+      "queued-to-cancelled",
+      "queued-to-rejected",
+      "acquiring-source-to-converting",
+      "acquiring-source-to-cancelled",
+      "acquiring-source-to-rejected",
+      "converting-to-verifying-composition",
+      "converting-to-available-after-recovered-pass-through-verifying-composition",
+      "converting-to-cancelled-after-owned-tree-stops-and-no-terminal-native-evidence",
+      "converting-to-rejected",
+      "verifying-composition-to-available",
+      "verifying-composition-to-cancelled-after-owned-tree-stops-and-no-terminal-native-evidence",
+      "verifying-composition-to-rejected"
+    ],
+    "removedStates": [
+      "checking-peers",
+      "fetching-peer",
+      "verifying-peer"
+    ],
+    "terminalMutationAllowed": false,
+    "stateRepairAllowed": false,
+    "phaseProgress": {
+      "fields": [
+        "phaseCompletedBytes",
+        "phaseTotalBytes"
+      ],
+      "meaning": "bytes-for-current-state-only-not-cross-phase-percentage",
+      "completedMayExceedTotal": false,
+      "unknownTotalIsNull": true,
+      "conversionProgressInvented": false
+    }
+  },
+  "operationRecord": {
+    "canonicalFieldsInOrder": [
+      "schema",
+      "operationId",
+      "requestSha256",
+      "sequence",
+      "state",
+      "route",
+      "createdAtUtc",
+      "updatedAtUtc",
+      "phaseCompletedBytes",
+      "phaseTotalBytes",
+      "artifacts",
+      "errorCode",
+      "executionIntentSha256",
+      "sourceAcquisitionIntentSha256",
+      "sourceAcquisitionReceiptSha256",
+      "sourceConversionIntentSha256"
+    ],
+    "history": "create-only-sequence-files-plus-validated-current-pointer",
+    "unknownFieldsAllowed": false,
+    "duplicateFieldsAllowed": false,
+    "timestamps": "utc-rfc3339-fixed-fraction-profile",
+    "errorCode": "public-safe-lowercase-hyphenated-bounded",
+    "privatePathAllowed": false,
+    "sourceUrlAllowed": false,
+    "terminalArtifactsAllowedOnlyForAvailable": true
+  },
+  "executionOwner": {
+    "process": "TinyRustLM.CompanionWorker",
+    "networkListener": false,
+    "interactiveOutput": false,
+    "acceptedArguments": [
+      "one-lowercase-sha256-operation-id"
+    ],
+    "stateRootResolution": "same-installed-current-user-root-as-companion-host",
+    "arbitraryStateRootArgumentAllowed": false,
+    "arbitraryCommandAllowed": false,
+    "arbitraryEnvironmentOverrideAllowed": false,
+    "workerExecutablePath": "exact-sibling-of-host-from-installed-manifest",
+    "workerExecutableHashBound": true,
+    "converterExecutableHashBound": true,
+    "operationLease": {
+      "path": "owned-operation-directory/operation.owner.lock",
+      "mode": "exclusive-open-held-for-worker-lifetime",
+      "evidence": false,
+      "purpose": "only-one-live-worker-can-own-one-operation",
+      "losingWorker": "exit-without-journal-or-output-mutation"
+    },
+    "hostLaunchRule": "launch-only-when-nonterminal-and-owner-lease-is-observably-unheld",
+    "workerStartRaceRule": "multiple-launch-race-is-contained-by-exclusive-owner-lease",
+    "maximumConcurrentWorkers": 1,
+    "listenerThreadRunsModelWork": false,
+    "workerStdoutMaximumBytes": 0,
+    "workerStderrMaximumBytes": 4096,
+    "workerPrivateErrorPublished": false
+  },
+  "conversionProcessContainment": {
+    "windows": "create-suspended-assign-to-kill-on-close-job-then-resume",
+    "linux": "dedicated-process-group-plus-parent-death-signal-before-exec",
+    "unsupportedPlatform": "reject-before-converter-launch",
+    "breakawayAllowed": false,
+    "workerExitMayLeaveConverterRunning": false,
+    "cancellation": "terminate-owned-tree-wait-then-inspect-terminal-evidence",
+    "timeout": "terminate-owned-tree-wait-then-preserve-rejection-evidence",
+    "knownLiveViolationMayBecomePass": false
+  },
+  "executionIntent": {
+    "fileName": "execution.intent.json",
+    "writeMode": "create-only-or-exact-byte-observation",
+    "maximumBytes": 65536,
+    "encoding": "utf8-without-bom-one-final-lf",
+    "canonicalJson": true,
+    "binds": [
+      "operation-id",
+      "request-sha256",
+      "attempt-id",
+      "installed-worker-sha256",
+      "installed-converter-sha256",
+      "built-in-source-descriptor-id",
+      "source-cache-logical-id",
+      "source-acquisition-root",
+      "materialized-lock-root",
+      "conversion-output-root",
+      "network-profile-id",
+      "resource-policy-id"
+    ],
+    "containsPrivatePaths": true,
+    "publicProjectionContainsIntent": false,
+    "overwriteAllowed": false,
+    "deleteAllowed": false
+  },
+  "builtInSourceDescriptor": {
+    "descriptorId": "tinyrustlm.source.qwen3-0.6b-c1899de/1",
+    "modelId": "qwen3-0.6b",
+    "repository": "Qwen/Qwen3-0.6B",
+    "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+    "modelSourceLockSha256": "e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d",
+    "tokenizerSourceLockSha256": "1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70",
+    "compositionProfileSha256": "c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0",
+    "fileCount": 9,
+    "aggregatePayloadBytes": 1519207688,
+    "licenseSpdx": "Apache-2.0",
+    "initialOrigin": "https://huggingface.co",
+    "pathTemplate": "/Qwen/Qwen3-0.6B/resolve/c1899de289a04d12100db370d81485cdf75e47ca/{percent-encoded-single-file-name}",
+    "embeddedSourceLocks": true,
+    "embeddedLockBytesMustMatchRegisteredHashes": true,
+    "ambientLatestRevisionAllowed": false,
+    "ambientLibraryCacheAllowed": false,
+    "credentialsAllowed": false
+  },
+  "sourceAcquisition": {
+    "cacheLayout": "owned-source-cache/source-lock-sha256/payload",
+    "operationStagingLayout": "owned-operation-directory/source-staging",
+    "lockMaterializationLayout": "owned-operation-directory/source-locks",
+    "sourceCacheActivation": "same-parent-create-only-rename-after-complete-reverification",
+    "sourceCacheReceipt": "canonical-create-only-outside-payload-directory",
+    "cacheHitRule": "rehash-exact-nine-file-direct-nonreparse-inventory-before-use",
+    "cacheMissRule": "one-exclusive-cache-writer",
+    "partialFileSuffix": ".partial",
+    "partialReuse": "same-source-identity-only-after-exact-length-bound",
+    "completedFileReuse": "only-after-length-and-full-sha256-reverification",
+    "bufferBytes": 1048576,
+    "automaticDecompression": false,
+    "acceptEncoding": "identity",
+    "cookies": false,
+    "authentication": false,
+    "automaticRedirect": false,
+    "maximumRedirects": 8,
+    "redirectRules": [
+      "https-only",
+      "no-userinfo",
+      "no-fragment",
+      "get-only",
+      "no-sensitive-header-forwarding",
+      "no-loopback-private-link-local-or-ip-literal-target",
+      "actual-connect-address-must-pass-public-address-policy"
+    ],
+    "initialResponse": "200-only",
+    "resumeResponse": "206-with-exact-content-range-start-end-and-total",
+    "serverIgnoredRange": "source-resume-unsupported-terminal-rejection",
+    "shortRead": "source-short-read-terminal-rejection",
+    "oversize": "source-size-overflow-terminal-rejection",
+    "hashMismatch": "source-hash-mismatch-terminal-rejection",
+    "networkRetryWithinWorker": false,
+    "alternateOriginRetry": false,
+    "partialEvidenceDeletedOnFailure": false,
+    "fileFlush": "flush-managed-and-intermediate-buffers-before-verification",
+    "directoryDurabilityClaim": "platform-specific-and-recorded-without-portable-overclaim",
+    "finalVerification": "exact-inventory-length-streamed-sha256-license-and-lock-closure"
+  },
+  "restartRecovery": [
+    {
+      "state": "queued",
+      "ownerLease": "unheld",
+      "action": "start-one-worker"
+    },
+    {
+      "state": "acquiring-source",
+      "ownerLease": "held",
+      "action": "observe-only"
+    },
+    {
+      "state": "acquiring-source",
+      "ownerLease": "unheld",
+      "action": "start-one-recovery-worker-after-exact-intent-and-staging-validation"
+    },
+    {
+      "state": "converting-or-verifying-composition",
+      "ownerLease": "held",
+      "action": "observe-only"
+    },
+    {
+      "state": "converting-or-verifying-composition",
+      "ownerLease": "unheld",
+      "terminalEvidence": "valid-pass-or-valid-rejection",
+      "action": "read-only-reconcile"
+    },
+    {
+      "state": "converting-or-verifying-composition",
+      "ownerLease": "unheld",
+      "terminalEvidence": "pending",
+      "action": "reject-operation-owner-lost-without-relaunch"
+    },
+    {
+      "state": "available-cancelled-or-rejected",
+      "action": "read-only-terminal"
+    }
+  ],
+  "cancellation": {
+    "intent": "existing-create-only-canonical-cancellation-intent",
+    "workerObservationMaximumMilliseconds": 250,
+    "hostWaitMaximumMilliseconds": 30000,
+    "liveSourceRequest": "abort-stream-and-flush-owned-partial-state",
+    "liveConverter": "terminate-contained-process-tree-and-wait",
+    "terminalNativePassWinsRace": true,
+    "terminalNativeRejectionWinsRace": true,
+    "noTerminalAfterContainedTreeStops": "cancelled",
+    "invalidTerminalEvidence": "rejected",
+    "hostWaitExpiry": "companion-unavailable-with-intent-still-authoritative",
+    "secondGenerationStarted": false
+  },
+  "peerBoundary": {
+    "peerRoutePresentInRequest": false,
+    "peerStatesPresentInRuntime": false,
+    "oneFileP2pApiAdapted": false,
+    "futurePeerImplementationMustAtomicallyImportSixMembers": true,
+    "futurePeerImplementationMustBindExactAcg2Graph": true,
+    "futurePeerImplementationRequiresSeparateOutputFreeReplacement": true,
+    "sourceRouteMayBeCalledP2pFirst": false,
+    "marketingMayClaimP2pAcquisition": false
+  },
+  "implementationClosure": {
+    "newPathsAbsentAtRegistrationParent": [
+      "contracts/vnext/companion-source-operation-owner-preregistration.v1.json",
+      "docs/architecture/2026-08-28-companion-source-operation-owner-preregistration.md",
+      "tinyrustlm/tests/companion-source-operation-owner-preregistration.test.js",
+      "dotnet/src/TinyRustLM.Companion/CompanionSourceAcquisition.cs",
+      "dotnet/src/TinyRustLM.Companion/CompanionSourceDescriptor.cs",
+      "dotnet/src/TinyRustLM.Companion/CompanionOperationExecutor.cs",
+      "dotnet/tools/TinyRustLM.CompanionWorker/Program.cs",
+      "dotnet/tools/TinyRustLM.CompanionWorker/TinyRustLM.CompanionWorker.csproj",
+      "dotnet/tests/TinyRustLM.Companion.Tests/CompanionSourceAcquisitionTests.cs",
+      "dotnet/tests/TinyRustLM.Companion.Tests/CompanionOperationExecutorTests.cs"
+    ],
+    "replacePaths": [
+      "dotnet/src/TinyRustLM.Companion/CompanionContracts.cs",
+      "dotnet/src/TinyRustLM.Companion/CompanionOperationJournal.cs",
+      "dotnet/src/TinyRustLM.Companion/CompanionOperationService.cs",
+      "dotnet/src/TinyRustLM.Companion/CompanionLoopbackWire.cs",
+      "dotnet/src/TinyRustLM.Companion/CompanionLoopbackProtocol.cs",
+      "dotnet/src/TinyRustLM.Companion/CompanionLoopbackServer.cs",
+      "dotnet/tools/TinyRustLM.CompanionHost/Program.cs",
+      "tinyrustlm/app/companion-capability.js",
+      "contracts/vnext/companion-loopback-capability-vectors.v1.json"
+    ],
+    "deleteSupersededExecutableSemantics": [
+      "tinyrustlm.companion.acquire.v1",
+      "tinyrustlm.companion.operation.v2",
+      "tinyrustlm.companion.loopback.operation-projection.v1",
+      "peer-branch-operation-states-without-six-member-import"
+    ],
+    "runtimeReadsPreregistration": false,
+    "runtimeReadsHistoricalSchemas": false
+  },
+  "requiredTests": [
+    "registration-reconstructs-every-parent-source-byte",
+    "all-new-output-paths-were-absent-at-parent",
+    "acquire-v1-operation-v2-and-projection-v1-have-no-executable-reader",
+    "attempt-id-is-required-canonical-and-bound-into-operation-id",
+    "exact-lost-response-request-recovers-one-operation",
+    "new-explicit-attempt-id-creates-a-distinct-operation",
+    "source-only-request-has-no-peer-candidate-or-peer-state",
+    "unknown-model-repository-revision-lock-or-profile-rejects-before-network",
+    "execution-intent-is-canonical-create-only-and-binds-installed-binary-hashes",
+    "only-one-worker-wins-ten-way-launch-race",
+    "losing-workers-write-nothing",
+    "listener-thread-never-runs-source-or-conversion-work",
+    "worker-rejects-arbitrary-arguments-paths-urls-and-environment-overrides",
+    "embedded-source-locks-match-registered-byte-identities",
+    "source-lock-parser-rejects-duplicate-unknown-malformed-oversized-and-path-unsafe-input",
+    "source-download-builds-only-the-pinned-built-in-url",
+    "manual-redirect-rejects-http-userinfo-fragment-ip-and-nonpublic-connect-address",
+    "download-stream-never-buffers-a-whole-model-file",
+    "initial-200-and-resume-206-content-range-are-exact",
+    "range-ignored-short-read-oversize-and-hash-drift-are-terminal",
+    "partial-state-is-preserved-and-never-promoted",
+    "complete-nine-file-cache-is-rehashed-before-every-use",
+    "source-restart-resumes-only-exact-partial-boundary",
+    "source-completion-materializes-exact-locks-and-starts-one-conversion",
+    "worker-process-loss-during-conversion-cannot-relaunch",
+    "valid-terminal-conversion-evidence-reconciles-after-host-restart",
+    "pending-conversion-with-dead-owner-rejects-without-adoption",
+    "windows-job-and-linux-parent-death-containment-have-platform-tests",
+    "cancel-stops-network-or-owned-process-tree-before-terminal-return",
+    "terminal-evidence-wins-cancellation-race",
+    "artifact-transfer-remains-unavailable-before-six-member-available-state",
+    "server-operation-routes-remain-operation-not-available-until-real-executor-is-wired",
+    "public-projections-errors-logs-and-tests-contain-no-private-path-or-signed-redirect-url",
+    "full-managed-node-browser-contract-format-secret-and-documentation-gates-pass",
+    "campaign-counters-remain-zero"
+  ],
+  "implementationOrder": [
+    "commit-push-and-fresh-verify-this-output-free-registration",
+    "replace-wire-types-codecs-vectors-and-journal-with-sole-v2-v3-v2-contract",
+    "implement-strict-built-in-source-descriptor-and-embedded-lock-materialization",
+    "implement-bounded-manual-redirect-streaming-source-acquisition",
+    "implement-worker-owner-lease-restart-and-cancellation-state-machine",
+    "implement-platform-contained-converter-launch",
+    "connect-source-conversion-and-terminal-reconciliation",
+    "wire-operation-routes-only-after-the-real-worker-gate-is-green",
+    "replace-browser-client-wire-and-delete-old-acquisition-ui-controller-in-one-cutover",
+    "run-real-pinned-source-acquisition-only-after-separate-output-registration",
+    "design-six-member-peer-import-as-a-later-clean-contract-replacement"
+  ],
+  "claimBoundary": {
+    "registrationMayClaim": [
+      "output-free-design-registration",
+      "parent-source-byte-closure",
+      "planned-clean-contract-replacement"
+    ],
+    "registrationMayNotClaim": [
+      "working-operation-executor",
+      "source-acquisition",
+      "source-cache",
+      "conversion",
+      "model-availability",
+      "browser-acquisition",
+      "browser-inference",
+      "model-quality",
+      "p2p-availability",
+      "deployment",
+      "publication",
+      "memoryendpoints-live-continuity",
+      "campaign-progress"
+    ]
+  },
+  "primarySources": [
+    {
+      "title": "Hugging Face Hub Download files from a specific revision",
+      "url": "https://huggingface.co/docs/huggingface_hub/main/guides/download",
+      "retrievedAtUtc": "2026-08-28T06:54:14Z",
+      "use": "full-commit-revision-pinning-and-file-download-semantics"
+    },
+    {
+      "title": "Git LFS pointer specification",
+      "url": "https://github.com/git-lfs/git-lfs/blob/main/docs/spec.md",
+      "retrievedAtUtc": "2026-08-28T06:54:14Z",
+      "use": "canonical-pointer-and-final-sha256-size-semantics"
+    },
+    {
+      "title": ".NET HttpClientHandler AllowAutoRedirect",
+      "url": "https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclienthandler.allowautoredirect?view=net-8.0",
+      "retrievedAtUtc": "2026-08-28T06:54:14Z",
+      "use": "manual-redirect-ownership"
+    },
+    {
+      "title": ".NET SocketsHttpHandler ConnectCallback",
+      "url": "https://learn.microsoft.com/en-us/dotnet/api/system.net.http.socketshttphandler.connectcallback?view=net-8.0",
+      "retrievedAtUtc": "2026-08-28T06:54:14Z",
+      "use": "actual-connect-address-policy"
+    },
+    {
+      "title": ".NET FileStream Flush",
+      "url": "https://learn.microsoft.com/en-us/dotnet/api/system.io.filestream.flush?view=net-8.0",
+      "retrievedAtUtc": "2026-08-28T06:54:14Z",
+      "use": "managed-and-intermediate-buffer-flush-semantics"
+    },
+    {
+      "title": "Windows Job Objects",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/procthread/job-objects",
+      "retrievedAtUtc": "2026-08-28T06:54:14Z",
+      "use": "process-tree-unit-ownership-and-kill-on-close"
+    }
+  ],
+  "registrationOutputBoundary": {
+    "runtimeContractChanged": false,
+    "workerBuilt": false,
+    "workerLaunched": false,
+    "listenerOperationRouteEnabled": false,
+    "networkRequestMade": false,
+    "sourceByteWritten": false,
+    "sourceCacheCreated": false,
+    "modelByteWritten": false,
+    "converterLaunched": false,
+    "browserClientLoaded": false,
+    "siteDeployed": false,
+    "memoryEndpointsContacted": false,
+    "campaignProgressCreated": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}
