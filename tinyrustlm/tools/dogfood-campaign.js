@@ -4,12 +4,18 @@ const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 
+const {
+  FILE_BYTES: compositionGraphBytes,
+  parseGraph: parseCompositionGraph
+} = require("./acg2-reference.js");
+
 const campaignSchema = "tinyrustlm.dogfood_campaign.v3";
 const reportSchema = "tinyrustlm.dogfood_campaign_report.v3";
 const requiredRunCount = 50;
 const requiredModelCount = 20;
 const requiredMemoryRunCount = 25;
-const maximumCompositionGraphBytes = 16 * 1024 * 1024;
+const compositionGraphFileName = "composition.acg2";
+const compositionMemberCount = 5;
 const currentConversationQualityScope =
   "assistant-quality-cognitive-liberty-conversation-gate";
 const currentConversationGovernanceProfile = "cognitive-liberty-conversation-v1";
@@ -281,20 +287,14 @@ function normalizedModel(model, applicationUrl) {
     model.compositionGraphPath,
     "compositionGraphPath"
   );
-  const compositionGraphFileName = path.basename(compositionGraphPath);
-  invariant(compositionGraphFileName.endsWith(".slm.acg1") &&
-    /^[A-Za-z0-9._-]+$/.test(compositionGraphFileName),
-  "compositionGraphPath must end in one route-safe .slm.acg1 file");
+  invariant(path.basename(compositionGraphPath) === compositionGraphFileName,
+    `compositionGraphPath must end in ${compositionGraphFileName}`);
   const compositionGraphByteCount = Number(model.compositionGraphByteCount);
-  invariant(Number.isSafeInteger(compositionGraphByteCount) &&
-    compositionGraphByteCount >= 512 &&
-    compositionGraphByteCount <= maximumCompositionGraphBytes &&
-    compositionGraphByteCount % 64 === 0,
-  "compositionGraphByteCount is invalid");
-  const compositionMemberCount = Number(model.compositionMemberCount);
-  invariant(Number.isSafeInteger(compositionMemberCount) &&
-    compositionMemberCount >= 0 && compositionMemberCount <= 64,
-  "compositionMemberCount is invalid");
+  invariant(compositionGraphByteCount === compositionGraphBytes,
+    "compositionGraphByteCount does not match the sole ACG2 profile");
+  const declaredCompositionMemberCount = Number(model.compositionMemberCount);
+  invariant(declaredCompositionMemberCount === compositionMemberCount,
+    "compositionMemberCount does not match the sole ACG2 profile");
   const sourceModelId = boundedText(model.sourceModelId, "sourceModelId", 3, 240);
   const sourceRevision = boundedText(model.sourceRevision, "sourceRevision", 40, 128);
   invariant(/^[a-fA-F0-9]{40,128}$/.test(sourceRevision), "sourceRevision must be immutable");
@@ -377,7 +377,7 @@ function normalizedModel(model, applicationUrl) {
       model.compositionPositionPolicySha256,
       "compositionPositionPolicySha256"
     ),
-    compositionMemberCount,
+    compositionMemberCount: declaredCompositionMemberCount,
     qualityClaim,
     sourceModelId,
     sourceRevision: sourceRevision.toLowerCase()
@@ -854,6 +854,21 @@ async function verifyModelEvidence(model) {
   const compositionGraphSha256 = await sha256File(model.compositionGraphPath);
   invariant(compositionGraphSha256 === model.compositionGraphSha256,
     `composition graph SHA-256 changed for ${model.modelId}`);
+  const compositionGraph = parseCompositionGraph(fs.readFileSync(model.compositionGraphPath));
+  invariant(compositionGraph.artifactBytes === model.compositionGraphByteCount &&
+    compositionGraph.artifactSha256 === model.compositionGraphSha256,
+  `composition graph artifact identity changed for ${model.modelId}`);
+  invariant(compositionGraph.graphIdentitySha256 === model.compositionActiveGraphSha256 &&
+    model.compositionId === `composition-sha256-${compositionGraph.graphIdentitySha256}`,
+  `composition graph identity changed for ${model.modelId}`);
+  invariant(compositionGraph.members.length === model.compositionMemberCount,
+    `composition graph member closure changed for ${model.modelId}`);
+  const modelMember = compositionGraph.members[0];
+  invariant(modelMember.role === "model" && modelMember.format === "slm2" &&
+    modelMember.artifactBytes === model.artifactByteCount &&
+    modelMember.artifactSha256 === model.artifactSha256 &&
+    model.compositionBaseModelId === `model-sha256-${modelMember.artifactSha256}`,
+  `composition graph model member changed for ${model.modelId}`);
   const manifestText = fs.readFileSync(model.manifestPath, "utf8");
   const sourceText = fs.readFileSync(model.sourceEvidencePath, "utf8");
   const qualityText = fs.readFileSync(model.qualityEvidencePath, "utf8");

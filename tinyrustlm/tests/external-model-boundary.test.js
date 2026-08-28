@@ -26,10 +26,15 @@ test("browser starts without a built-in product model or model-byte route", () =
 
   assert.match(app, /models:\s*Object\.create\(null\)/);
   assert.match(app, /const initialModels = paths\.models/);
-  assert.match(app, /choose a local or P2P \.slm/i);
+  assert.match(app, /choose a local or P2P composition/i);
+  assert.doesNotMatch(app, /choose a local or P2P \.slm/i);
   assert.match(
     html,
     /<option value="" selected disabled>Choose a local or P2P model<\/option>/
+  );
+  assert.match(
+    html,
+    /<input id="localModelFile" type="file" accept="\.slm2,\.tokenizer2,\.template2,\.sampling2,\.prompt2,\.acg2,[^"]+" multiple>/
   );
   for (const value of rejectedBuiltIns) {
     assert.doesNotMatch(app, new RegExp(value, "i"));

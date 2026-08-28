@@ -22,9 +22,9 @@ function Resolve-ServerExecutable {
     return (Resolve-Path -LiteralPath $server).Path
 }
 
-function Get-WasmUrl {
+function Get-BrowserRuntimeUrl {
     param([int]$CandidatePort)
-    return "http://127.0.0.1:$CandidatePort/runtime/tinyrustlm.wasm"
+    return "http://127.0.0.1:$CandidatePort/browser-runtime/tinyrustlm-browser-runtime.wasm"
 }
 
 function Test-LocalPortOpen {
@@ -50,7 +50,7 @@ function Test-TinyRustLMServer {
     param([int]$CandidatePort)
 
     $appUrl = Get-AppUrl $CandidatePort
-    $wasmUrl = Get-WasmUrl $CandidatePort
+    $wasmUrl = Get-BrowserRuntimeUrl $CandidatePort
 
     try {
         $page = Invoke-WebRequest -Uri $appUrl -Method Get -UseBasicParsing -TimeoutSec 2

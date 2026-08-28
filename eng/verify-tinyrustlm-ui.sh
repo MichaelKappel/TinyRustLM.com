@@ -110,10 +110,16 @@ trap cleanup EXIT
 trap 'fail "TinyRustLM UI verification failed at line $LINENO"' ERR
 mkdir -p "$EVIDENCE_ROOT"
 
-cargo run -p tinyrustlm-browser-harness -- "$ROOT"
+node "$REPO_ROOT/tinyrustlm/tools/browser-runtime-web-artifact.js" check
+node --test \
+  "$REPO_ROOT/tinyrustlm/tests/browser-runtime-web-artifact.test.js" \
+  "$REPO_ROOT/tinyrustlm/tests/model-runtime-worker.test.js" \
+  "$REPO_ROOT/tinyrustlm/tests/static-shell-parity.test.js"
 GATES[static_contract]="pass"
 node --check "$ROOT/app/app.js"
 node --check "$ROOT/app/companion-bridge.js"
+node --check "$ROOT/app/model-runtime-worker.js"
+node --check "$ROOT/app/model-runtime-client.js"
 GATES[javascript_syntax]="pass"
 
 if [[ "$RUN_BROWSER_SMOKE" == "1" || "$RUN_DEEP_ACQUISITION" == "1" ]]; then

@@ -115,13 +115,22 @@ function Wait-LoopbackServer {
 try {
     New-Item -ItemType Directory -Force -Path $evidenceRoot | Out-Null
 
-    Invoke-NativeGate "static_contract" "cargo" @(
-        "run", "-p", "tinyrustlm-browser-harness", "--", $Root
+    Invoke-NativeGate "static_contract_artifact" "node" @(
+        (Join-Path $RepoRoot "tinyrustlm/tools/browser-runtime-web-artifact.js"),
+        "check"
+    )
+    Invoke-NativeGate "static_contract_tests" "node" @(
+        "--test",
+        (Join-Path $RepoRoot "tinyrustlm/tests/browser-runtime-web-artifact.test.js"),
+        (Join-Path $RepoRoot "tinyrustlm/tests/model-runtime-worker.test.js"),
+        (Join-Path $RepoRoot "tinyrustlm/tests/static-shell-parity.test.js")
     )
     $gates.static_contract = "pass"
 
     Invoke-NativeGate "javascript_syntax_app" "node" @("--check", (Join-Path $Root "app/app.js"))
     Invoke-NativeGate "javascript_syntax_bridge" "node" @("--check", (Join-Path $Root "app/companion-bridge.js"))
+    Invoke-NativeGate "javascript_syntax_worker" "node" @("--check", (Join-Path $Root "app/model-runtime-worker.js"))
+    Invoke-NativeGate "javascript_syntax_client" "node" @("--check", (Join-Path $Root "app/model-runtime-client.js"))
     $gates.javascript_syntax = "pass"
 
     if ($RunBrowserSmoke -or $RunDeepAcquisition) {

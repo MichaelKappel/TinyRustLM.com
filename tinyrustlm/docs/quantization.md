@@ -1,29 +1,88 @@
 # Quantization
 
-## Purpose
+## Authority
 
-Quantization reduces model download size and memory pressure. The current implementation proves q8_0 and q4_0 with tiny fixture files and proves TinyLM-16M f32/q8_0/q4_0 smoke models, with direct q8_0 and q4_0 matvec dispatch.
+Quantization is an exact model-format and numerical contract, not a size label.
+The current compact profile is defined by:
 
-## Constraints
+- `contracts/vnext/slm2-q8-weight-profile.v1.json`
+- `contracts/vnext/slm2-q8-weight-profile-preregistration.v1.json`
+- `contracts/vnext/slm2-q8-weight-vectors.v1.json`
+- `docs/architecture/adr/ADR-006-quantization-profiles.md`
+- `rust/crates/tinyrustlm-slm2`
+- `rust/crates/tinyrustlm-slm2-runtime`
 
-The first runtime target remains f32 correctness. q8_0 and q4_0 support must preserve the f32 tiny and TinyLM-16M smoke behavior.
+## Current Profile
 
-## Data Structures
+TinyRustLM currently targets one explicit mixed-Q8 SLM2 profile. Selected
+rank-two matrix roles use signed row-symmetric 8-bit codes and F32 row scales.
+Profile-listed normalization, bias, and other precision-sensitive tensors
+remain F32. Tied output behavior is explicit.
 
-q8_0 stores signed 8-bit weights with f32 scales and keeps raw int8 rows for direct matvec. q4_0 stores signed 4-bit packed nibbles with f32 scales and keeps the packed bytes for direct matvec. The runtime no longer keeps full decoded f32 shadow copies for q8_0 or q4_0 tensors; embedding rows and norm vectors are dequantized into scratch only when needed. The tensor directory carries block size explicitly.
+The contract fixes:
 
-## Binary Formats
+- exactly which tensor roles are Q8 and which remain F32;
+- scale placement and bit representation;
+- signed code range and zero behavior;
+- row and tail rules;
+- tensor descriptor flags and quantization index;
+- dequantization formula and binary32 conversion points;
+- scalar multiplication and accumulation order;
+- descriptor, quantization-table, payload, and whole-artifact identities;
+- finite-value and overflow rejection.
 
-Each tensor directory entry declares dtype, payload offset, byte length, scale offset, and block size. q8_0 and q4_0 payload interpretation is selected from dtype. Quantized payloads and scale payloads are separately aligned.
+Runtime repacking, inferred encoding, per-device reinterpretation, and an F32
+shadow copy as a hidden semantic authority are forbidden.
 
-## Failure Cases
+## Correctness Chain
 
-Unsupported dtype, missing scales, invalid block sizes, row length mismatches, and tensor shape mismatches are fatal for the active quantized path.
+Quantized execution is promoted only through this chain:
 
-## Validation Rules
+1. deterministic conversion from the immutable source weights;
+2. independent structural validation of descriptors, scales, payloads, roles,
+   and hashes;
+3. hand-checkable quantized dot-product and matrix-vector vectors;
+4. source-framework and reconstructed-weight diagnostics;
+5. converted scalar-native layer and logits parity;
+6. optimized-native differential parity;
+7. browser-WASM differential parity;
+8. paired no-cheat behavioral noninferiority.
 
-The model loader validates dtype before dispatch. q4_0 rows require columns to divide into the entry block size. q8_0 rows require one scale per row. Matrix-vector operations dispatch by tensor dtype; q8_0 and q4_0 matrices use direct quantized matvec with f32 accumulation. Borrowed f32 tensor slices are available only for native f32 tensors; quantized tensors must be copied into caller-owned f32 buffers when a decoded reference path is required.
+Tolerance is preregistered by operation and tensor class. It is not widened
+after observing a preferred candidate. Attractive text is not a numerical
+oracle, and numerical parity is not conversational quality.
 
-## Future Expansion Path
+## Unsupported Claims
 
-Next quantization work should measure the scratch-row dequantization path across longer prompts, improve q8/q4 matvec tiling, and add larger quality-model evidence. Mixed precision for embeddings and output projection can be added only after baseline TinyLM-16M q8/q4 tests stay green.
+TinyRustLM does not currently claim Q4, Q5, one-bit, ternary, TurboQuant,
+TurboVec, vector quantization, sparse execution, quantized KV cache, or another
+compressed profile. Reported techniques remain research inputs until an exact
+profile, scalar oracle, converter, native/WASM implementation, equal-resource
+measurement, and untouched quality evidence all pass.
+
+Parameter count, artifact size, a parse pass, or a projected compression ratio
+does not prove memory use, speed, accuracy, or browser support.
+
+## Resource Accounting
+
+Measurements must separate:
+
+- immutable model bytes;
+- file and browser storage copies;
+- WASM linear memory;
+- Q8 scales and payloads;
+- F32 activations and temporary buffers;
+- logits and tokenizer tables;
+- KV cache by retained token;
+- worker-message copies;
+- browser/JIT/process overhead.
+
+Peak memory is measured on exact runtime, browser, operating system, and
+hardware identities. A roughly 598 MB model member is only a planning class and
+must never be reported as total runtime memory.
+
+## Change Policy
+
+An improved quantizer replaces the one unpromoted compressed profile only after
+new vectors and full dependent proof. Do not add profile negotiation,
+compatibility aliases, implicit fallback, or a second production quantizer.

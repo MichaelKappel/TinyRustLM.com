@@ -32,8 +32,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <NMakeBuildCommandLine>powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(ProjectDir)tools\vs\Build-TinyRustLM.ps1" -Configuration Debug</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(ProjectDir)tools\vs\Build-TinyRustLM.ps1" -Configuration Debug -Clean</NMakeReBuildCommandLine>
-    <NMakeCleanCommandLine>powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(ProjectDir)tools\vs\Build-TinyRustLM.ps1" -Configuration Debug -CleanOnly</NMakeCleanCommandLine>
-    <NMakeOutput>$(ProjectDir)tinyrustlm\runtime\tinyrustlm.wasm</NMakeOutput>
+    <NMakeCleanCommandLine>powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(ProjectDir)tools\vs\Build-TinyRustLM.ps1" -CleanOnly</NMakeCleanCommandLine>
+    <NMakeOutput>$(ProjectDir)tinyrustlm\browser-runtime\tinyrustlm-browser-runtime.wasm</NMakeOutput>
     <LocalDebuggerCommand>powershell.exe</LocalDebuggerCommand>
     <LocalDebuggerCommandArguments>-NoProfile -ExecutionPolicy Bypass -File "$(ProjectDir)tools\vs\Run-TinyRustLM.ps1"</LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
@@ -41,8 +41,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <NMakeBuildCommandLine>powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(ProjectDir)tools\vs\Build-TinyRustLM.ps1" -Configuration Release</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(ProjectDir)tools\vs\Build-TinyRustLM.ps1" -Configuration Release -Clean</NMakeReBuildCommandLine>
-    <NMakeCleanCommandLine>powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(ProjectDir)tools\vs\Build-TinyRustLM.ps1" -Configuration Release -CleanOnly</NMakeCleanCommandLine>
-    <NMakeOutput>$(ProjectDir)tinyrustlm\runtime\tinyrustlm.wasm</NMakeOutput>
+    <NMakeCleanCommandLine>powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(ProjectDir)tools\vs\Build-TinyRustLM.ps1" -CleanOnly</NMakeCleanCommandLine>
+    <NMakeOutput>$(ProjectDir)tinyrustlm\browser-runtime\tinyrustlm-browser-runtime.wasm</NMakeOutput>
     <LocalDebuggerCommand>powershell.exe</LocalDebuggerCommand>
     <LocalDebuggerCommandArguments>-NoProfile -ExecutionPolicy Bypass -File "$(ProjectDir)tools\vs\Run-TinyRustLM.ps1"</LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
@@ -52,22 +52,16 @@
     <None Include="Cargo.toml" />
     <None Include="README.md" />
     <None Include="workspace.uai" />
-    <None Include="tinyrustlm\README.md" />
-    <None Include="tinyrustlm\app\app.css" />
-    <None Include="tinyrustlm\app\app.js" />
-    <None Include="tinyrustlm\app\index.html" />
-    <None Include="tinyrustlm\runtime\Cargo.toml" />
-    <None Include="tinyrustlm\runtime\src\*.rs" />
-    <None Include="tinyrustlm\tools\slm_pack\Cargo.toml" />
-    <None Include="tinyrustlm\tools\slm_pack\src\*.rs" />
+    <None Include="tinyrustlm\app\*.css" />
+    <None Include="tinyrustlm\app\*.html" />
+    <None Include="tinyrustlm\app\*.js" />
+    <None Include="tinyrustlm\browser-runtime\*" />
+    <None Include="rust\crates\tinyrustlm-browser-runtime-wasm\Cargo.toml" />
+    <None Include="rust\crates\tinyrustlm-browser-runtime-wasm\src\*.rs" />
+    <None Include="rust\crates\tinyrustlm-runtime\Cargo.toml" />
+    <None Include="rust\crates\tinyrustlm-runtime\src\*.rs" />
     <None Include="tinyrustlm\tools\local_server\Cargo.toml" />
     <None Include="tinyrustlm\tools\local_server\src\*.rs" />
-    <None Include="tinyrustlm\tools\browser_harness\Cargo.toml" />
-    <None Include="tinyrustlm\tools\browser_harness\src\*.rs" />
-    <None Include="tinyrustlm\tools\static-server.js" />
-    <None Include="tinyrustlm\tools\browser-round-evidence.js" />
-    <None Include="tinyrustlm\tools\fresh-browser-conversation.js" />
-    <None Include="tinyrustlm\tools\run-browser-round.js" />
     <None Include="tools\vs\*.ps1" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

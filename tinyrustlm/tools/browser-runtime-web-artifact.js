@@ -19,7 +19,7 @@ const builtWasmPath = path.join(
 const publicWasmPath = path.join(
   repositoryRoot,
   "tinyrustlm",
-  "runtime",
+  "browser-runtime",
   "tinyrustlm-browser-runtime.wasm"
 );
 const publicManifestPath = `${publicWasmPath}.manifest.json`;
@@ -92,7 +92,8 @@ function buildManifest(bytes) {
     maximumMemoryBytes: loader.maximumMemoryBytes,
     imports,
     exports,
-    requiredNextGate: "worker-initialize-and-six-member-activation"
+    requiredNextGate:
+      "real-qwen3-native-wasm-parity-clean-profile-quality-and-companion-acquisition"
   });
 }
 

@@ -1,5 +1,17 @@
-profile: runtime-mirust.long-term-memory-ledger.v387
-updated_utc: 2026-08-28T00:44:20Z
+profile: runtime-mirust.long-term-memory-ledger.v388
+updated_utc: 2026-08-28T04:33:47Z
+
+ledger_2026_08_28_enterprise_intake_and_production_clean_cut:
+  stable_id: tinyrustlm_enterprise_intake_and_production_clean_cut_current
+  durable_record:
+    path: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
+    byte_length: 20316
+    sha256: 6e5a5b7cf7f3ad45008b14597a3616ee603da76cc500b69770de7280711785e4
+    label: Required Before TinyRustLM Architecture Runtime Acquisition Quality Memory P2P Or Release Work
+  stable_decisions: One six-member composition and Rust/worker path; independent evidence; scalar/native/WASM chain; P2P-first or local conversion; explicit memory authority; no legacy/debt; synchronized docs and deployment.
+  current_state: a129fa3b50df4278234d863b138e3a8e9c65c9c3 is committed/pushed green; current clean-cut deletion has 41/41 focused tests but remains uncommitted and not fully verified.
+  next_gate: Replace/delete the old browser companion bridge and one-file semantics, complete all enterprise gates, commit/push/fresh-verify, then deploy with HTTPS readback if green.
+  campaign_truth: 0/20 qualified; 0/50 browser; 0/25 live memory; 0/40 outside lanes; 0/20 catalog.
 
 ledger_2026_08_27_omi_computational_architectures_intake:
   stable_id: tinyrustlm_omi_computational_architectures_intake_current

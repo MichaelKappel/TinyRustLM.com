@@ -6,7 +6,7 @@
     <Description>Controlled local-feed process owner for the sole current complete tinyrustlm-convert transaction. It invokes only qwen3-composition for the exact Qwen3 mixed-Q8 SLM2, Tokenizer2, Template2, Sampling2, Prompt2, and ACG2 artifact set with expected model-lock, tokenizer-lock, and registered-profile identities; owns process-tree cancellation and bounded output; rejects reparse inputs; validates the exact ten-file terminal inventory, operation identity, attempt and pass receipts, component-receipt identities, and all six streamed artifact hashes; and exposes no component-success API.</Description>
     <IsPackable>$(TinyRustLmPackPrivateConversion)</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageTags>TinyRustLM;TinyRustLM.Conversion;TinyRustLM.com;UAIX;UAIX.org;browser-local;p2pLLM;p2pLLM.com;SLM2;.slm;Tokenizer2;Qwen3;AI;LLM;Rust;conversion;converter;tinyrustlm-convert;local-feed;controlled-package;private-sdk</PackageTags>
+    <PackageTags>TinyRustLM;TinyRustLM.Conversion;TinyRustLM.com;UAIX;UAIX.org;browser-local;p2pLLM;p2pLLM.com;SLM2;.slm2;Tokenizer2;Qwen3;AI;LLM;Rust;conversion;converter;tinyrustlm-convert;local-feed;controlled-package;private-sdk</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\TinyRustLM.Core\TinyRustLM.Core.csproj" />

@@ -1,341 +1,164 @@
 # TinyRustLM Browser Application
 
-TinyRustLM is a browser-local chat application backed by the Rust/WASM runtime.
-Model bytes are selected locally or obtained through an independently verified
-direct-peer workflow. The application origin is not a model-byte host and is
-not an inference service.
+TinyRustLM is a prelaunch browser-local chat application. Inference runs in a
+dedicated Web Worker through one Rust/WebAssembly runtime. Project sites serve
+the application and public metadata; they do not receive prompts, responses,
+source tensors, model members, or composition bytes.
 
-This repository is pre-release. There is one current evidence path and no
-compatibility path for retired browser assembly or ad hoc smoke modes.
+There is one product and one production runtime path. `SLM2`, `Tokenizer2`,
+`Template2`, `Sampling2`, `Prompt2`, and `ACG2` are technical format
+identities, not product generations. The repository contains no supported
+earlier runtime, artifact reader, migration, compatibility alias, response
+repair path, hidden retry, or best-of-N generation path.
 
 ## Current Architecture
 
 The maintained browser path consists of:
 
-- `app/`: the checked-in browser UI and JavaScript orchestration.
-- `runtime/`: the Rust runtime and WASM ABI.
-- `tools/local_server/`: the loopback static server used for local checks.
-- `tools/browser_harness/`: the no-crate Rust static-contract auditor.
-- `tools/dogfood-campaign.js`: strict 20-model and 50-round manifest validation.
-- `tools/fresh-browser-conversation.js`: physical-profile Playwright execution.
-- `tools/browser-round-evidence.js`: immutable browser receipt construction.
-- `tools/run-browser-round.js`: the operator entry point for one non-memory
-  campaign round.
-- `tools/vnext-receipt-store.js`: bounded create-only receipt DAG persistence.
-- `tools/vnext-campaign-runner.js`: the sole Rust-backed current projection
-  runner.
-- `tools/vnext-campaign-release-surface.js`: fresh projection-bound immutable
-  attestation and truthful operator status.
+- `app/app.js`: command, conversation, and presentation ownership;
+- `app/browser-model-admission.js`: strict canonical admission validation;
+- `app/prompt2-request.js`: bounded Prompt2 request encoding;
+- `app/model-runtime-client.js`: typed UI-to-worker client and sequence checks;
+- `app/model-runtime-worker.js`: sole model, tokenizer, KV-cache, and
+  generation owner;
+- `browser-runtime/tinyrustlm-browser-runtime.wasm`: checked-in deployable
+  worker runtime;
+- `rust/crates/tinyrustlm-runtime`: scalar host runtime and numerical
+  authority for converted bytes;
+- `rust/crates/tinyrustlm-browser-runtime-wasm`: sole browser ABI;
+- `tools/browser-runtime-web-artifact.js`: byte-exact WASM artifact verifier;
+- `tools/vnext-campaign-runner.js`: sole current campaign projection runner;
+  and
+- `tools/vnext-campaign-release-surface.js`: immutable attestation and release
+  preparation over a newly executed projection.
 
-The browser activates one immutable `.slm.acg1` composition graph for each
-qualified model. Campaign evidence binds both the graph bundle hash and the
-runtime-observed active graph identity. Mutable adapter plans and browser-side
-model assembly are not accepted campaign inputs.
+The registered clean-cut contract is
+`../contracts/vnext/production-slm2-clean-cut-preregistration.v1.json`.
+`tests/production-slm2-clean-cut.test.js` keeps every registered obsolete
+executable path absent and rejects superseded tokens in active source.
 
-## Model Acquisition
+## Local Composition Import
 
-The chooser exposes one `Get model` command. It first selects a complete,
-identity-matched MiniModel P2P offer with its composition graph. If no such
-offer is available, an explicitly paired canonical companion downloads the
-exact reviewed Hugging Face revision, resumes and hashes bounded source files,
-runs the packaged Rust converter and validator, creates a receipt-bound
-base-only `.acg1`, and streams both the `.slm` and graph into the current
-browser session. Rust/WASM validates and activates the pair before chat is
-enabled.
+The local picker accepts exactly one canonical composition admission record
+and the six exact members named by that record:
 
-Progress remains visible in the chooser. The browser does not generate or
-download conversion instructions, scripts, request files, import kits, share
-kits, or serving helpers. Browser-only users can still import an existing local
-`.slm`; the application never probes a desktop companion before explicit user
-consent. Project domains receive no prompts, responses, source tensors, model
-bytes, or composition bytes.
+1. `model.slm2`
+2. `tokenizer.tokenizer2`
+3. `template.template2`
+4. `sampling.sampling2`
+5. `prompt.prompt2`
+6. `composition.acg2`
 
-Acquisition proves identity and structural execution only. Semantic quality
-promotion remains a separate, content-addressed native and browser evidence
-gate.
+The browser rejects duplicate names, unknown files, missing members, changed
+lengths, changed SHA-256 identities, unsupported profiles, noncanonical JSON,
+and an admission bound to another worker artifact. The worker receives members
+as bounded transferable chunks, recomputes the composition, and activates it
+transactionally. Chat remains disabled until the worker reports the exact
+admitted graph identity.
 
-## Local Memory Package
+The admission record is evidence, not model content. Structural activation is
+not a conversational-quality claim.
 
-The local memory inspector renders a FileDeck-style summary of the exact
-required files, persona dimensions, evidence, exports, manifest overlay,
-package model, knowledge graph, and `llms` artifacts that passed browser-side
-validation. Missing or mismatched files remain explicit; raw package content is
-not silently promoted into model context.
+## P2P Or Local Conversion
 
-## Portable Memory
+The intended `Get model` command has one result: a verified composition ready
+for chat. It must import an exact currently qualified MiniModel peer
+composition when available; otherwise the explicitly paired companion must
+acquire a pinned reviewed public source, convert it locally, independently
+inspect it, and return all six members plus the canonical admission.
 
-A local UAIX memory deck remains a supported file-based choice for memory on
-one device and for offline continuity. MemoryEndpoints.com is authorized and
-strongly recommended when a user wants that agent or AI memory available
-worldwide and across devices. It is the portable-memory backbone of the web
-experience, while local files remain usable without an account.
+The browser never downloads instruction text, request JSON, shell scripts,
+PowerShell scripts, conversion kits, import kits, or serving helpers. It also
+does not probe a desktop companion before explicit pairing. The current
+browser fails closed if the companion returns anything short of the complete
+six-member contract; that branch is not release-ready until end-to-end
+companion evidence exists.
 
-Portable memory is opt-in. The browser exposes explicit connect, save,
-search, disconnect, and clear controls; it does not silently upload model bytes
-or raw prompts. Service reachability, configured source, an authenticated
-save/readback lifecycle, and a qualifying campaign round are recorded as
-separate claims.
+## Conversation Ownership
 
-## Trust Boundary
+The UI sends typed requests containing operation, composition, conversation,
+turn, generation, message, and sequence identities. The worker owns model
+bytes, tokenizer state, prompt assembly, sampling, KV state, and generation.
+The UI owns only command intent and rendering.
 
-The browser campaign fails closed unless all of these identities agree:
+Each assistant message has one authoritative render path. Raw returned text is
+rendered once without completion, rewriting, response repair, or retry
+selection. Cancellation targets the active generation. A terminal worker
+fault invalidates the loaded composition; a replacement worker must reopen and
+verify immutable members before another generation.
 
-- `.slm` SHA-256 and byte count.
-- `.slm` manifest evidence.
-- source-review evidence.
-- current native quality-evaluation evidence.
-- `.slm.acg1` SHA-256 and byte count.
-- base model ID.
-- composition ID.
-- active graph SHA-256.
-- route-policy ID.
-- KV-format ID.
-- position-policy SHA-256.
-- composition member count.
-- qualification receipt ID.
-- browser executable and Playwright versions.
-- exact campaign, model, round, viewport, and network configuration.
+## Memory
 
-The campaign manifest uses schema `tinyrustlm.dogfood_campaign.v3`. It rejects
-unknown fields, omitted controls, duplicate artifact hashes, credential-bearing
-URLs, cross-origin graph routes, weak quality claims, and schedules that do not
-provide all required viewport and restart coverage.
+A local UAIX memory deck remains supported for device-local and offline
+continuity. MemoryEndpoints.com is the authorized, strongly recommended
+portable-memory backbone when a user wants memory available worldwide and
+across devices.
+
+Portable memory is opt-in. Enrollment URLs and agent tokens are session-only
+by default. Retrieved memory remains provenance-labeled untrusted data and
+cannot supersede the current user turn. Configured code or service
+reachability does not count as a live continuity round.
+
+## Privacy And Network Boundary
+
+The browser application may contact only explicitly admitted static,
+catalog, direct-peer, loopback companion, or MemoryEndpoints origins for the
+operation the user requested. Project origins cannot receive model members,
+composition bytes, prompts, responses, credentials, or implicit telemetry.
+
+Public deployment contains the WASM runtime and application assets only.
+`deploy/web-deployment-manifest.v2.json` rejects model-member publication and
+retires stale public model routes.
 
 ## Local Development
 
 From the repository root:
 
 ```powershell
+.\tools\vs\Build-TinyRustLM.ps1 -Configuration Debug
 cargo run -p tinyrustlm-local-server -- .\tinyrustlm 8080
-cargo run -p tinyrustlm-browser-harness -- .\tinyrustlm
-cargo run -p tinyrustlm-browser-harness -- .\tinyrustlm --http http://127.0.0.1:8080/app/
 ```
 
-The JavaScript contract tests use the pinned Playwright dependency:
+Open `http://127.0.0.1:8080/app/`.
+
+The complete local quality gate is:
 
 ```powershell
-npm --prefix tinyrustlm ci
-npm --prefix tinyrustlm run test:unit -- <absolute-evidence-root>
-npm --prefix tinyrustlm run smoke:web-release-local -- <new-output-directory>
+.\tools\vs\Test-TinyRustLM.ps1
 ```
 
-`npm ci` is required only when `node_modules` has not already been restored.
-
-## Model Qualification
-
-The qualification runner accepts pinned source inventory entries and produces
-immutable phase receipts. Its required arguments are explicit:
+Add a real Chromium deployment smoke in a new evidence root with:
 
 ```powershell
-npm --prefix tinyrustlm run qualify:models -- `
-  --inventory <candidate-inventory.json> `
-  --source-root <external-model-root> `
-  --output-root <qualification-output-root> `
-  --evidence-root <evidence-root> `
-  --indices <comma-separated-candidate-indices>
+.\tools\vs\Test-TinyRustLM.ps1 -BrowserSmoke
 ```
 
-The current qualification path requires `q8_0`. A candidate is not qualified
-merely because conversion or structural validation succeeds. Current native
-conversation evidence must bind the same composition identities later observed
-in the browser.
-
-Large candidate and product model bytes belong outside source control. Small,
-deterministic fixtures may remain tracked only to prove format, parser, runtime,
-and failure behavior. A fixture receipt cannot satisfy a real-model campaign
-gate.
-
-## Campaign Manifest
-
-Each model entry in the v3 manifest contains exactly:
-
-```text
-modelId
-artifactPath
-manifestPath
-sourceEvidencePath
-qualityEvidencePath
-artifactSha256
-artifactByteCount
-manifestSha256
-sourceEvidenceSha256
-qualityEvidenceSha256
-qualificationReceiptId
-evalCasesSha256
-slmPackSha256
-evalBinarySha256
-chatTemplateKind
-chatTemplateSha256
-promptFormat
-systemPrompt
-systemPromptSha256
-contextLength
-evaluator
-evaluationSamplingProfile
-modelSamplingProfile
-samplingTemperature
-samplingTopK
-samplingTopP
-samplingRepetitionPenalty
-compositionGraphPath
-compositionGraphUrl
-compositionGraphSha256
-compositionGraphByteCount
-compositionBaseModelId
-compositionId
-compositionActiveGraphSha256
-compositionRoutePolicyId
-compositionKvFormatId
-compositionPositionPolicySha256
-compositionMemberCount
-qualityClaim
-sourceModelId
-sourceRevision
-```
-
-Each of the 50 round entries contains exactly:
-
-```text
-round
-modelId
-memoryContinuity
-prompts
-viewport
-reducedMotion
-allowedOrigins
-sampling
-```
-
-The schedule must use 20 distinct model artifact hashes, exercise every model in
-at least two clean restarts, designate exactly 25 live-memory rounds, and cover
-mobile, narrow-desktop, desktop, and reduced-motion configurations.
-
-Private prompts belong only in the private campaign manifest. Public-safe
-receipts contain hashes and bounded counts, not prompt text.
-
-## Run One Browser Round
-
-The non-memory operator command is:
+Focused browser-runtime checks:
 
 ```powershell
-npm --prefix tinyrustlm run run:browser-round -- `
-  <campaign.json> `
-  <round-number> `
-  <evidence-root> `
-  <owned-profile-parent> `
-  <public-result.json>
+npm --prefix tinyrustlm run test:model-runtime-worker
+npm --prefix tinyrustlm run test:model-runtime-worker-browser
+npm --prefix tinyrustlm run test:unit
 ```
 
-The runner:
+See `docs/testing.md`, `docs/browser-runtime.md`, and
+`../docs/architecture/vnext-campaign-runner.md` for the evidence boundaries.
 
-1. Reads a bounded, non-symlink campaign file.
-2. Validates the complete sealed v3 manifest and all referenced model files.
-3. Rejects rounds assigned to live MemoryEndpoints continuity.
-4. Creates a campaign-owned persistent Chromium profile.
-5. Imports the real `.slm` and campaign-derived admission sidecar through the
-   file picker.
-6. Verifies runtime activation of the exact composition graph and exact
-   prompt/sampling policy.
-7. Runs the scheduled two-to-six-turn conversation without output repair.
-8. Verifies one authoritative response renderer and completed assistant turns.
-9. Applies a deny-by-default origin policy.
-10. Scans the profile for UTF-8, UTF-16LE, and base64 secret representations.
-11. Closes Chromium, deletes the physical profile, and verifies deletion.
-12. Persists an immutable `tinyrustlm.browser-dogfood-round-v4` receipt.
-13. Writes a bounded public-safe job result.
+## Release Evidence
 
-Exit code `0` means a passing preserved receipt, `2` means a preserved failed
-round, and `1` means setup or execution could not produce the expected job
-result.
-
-## Browser Evidence
-
-A passing browser receipt requires:
-
-- a real passing native qualification parent;
-- exact model and composition identity agreement;
-- one GET for the configured application-origin `.slm.acg1` route;
-- no prompt upload to project hosts;
-- no project-hosted `.slm` request;
-- no unallowlisted loopback or third-party origin;
-- a complete secret scan with zero matches;
-- the expected user and assistant message counts;
-- exactly one authoritative response node;
-- a fresh owned profile before launch;
-- successful physical profile deletion.
-
-Failed attempts are immutable evidence. A retry writes another receipt and does
-not overwrite the failure.
-
-## Verification
-
-Fast browser and campaign checks:
+A release-surface run requires an existing absolute evidence parent supplied
+explicitly by the operator:
 
 ```powershell
-npm --prefix tinyrustlm run test:browser-contract
-node --test tinyrustlm/tests/dogfood-campaign.test.js tinyrustlm/tests/vnext-campaign-runner.test.js
-npm --prefix tinyrustlm run test:vnext-campaign-release-surface -- <absolute-evidence-root>
-npm --prefix tinyrustlm run verify:vnext-campaign-release-surface -- <absolute-evidence-root>
-node --test tinyrustlm/tests/archive-scan-helper-package.test.js
-node --test tinyrustlm/tests/archive-scan-client.test.js `
-  tinyrustlm/tests/public-evidence-secret-scan.test.js `
-  tinyrustlm/tests/web-release-secret-scan.test.js
+npm --prefix tinyrustlm run test:vnext-campaign-release-surface -- <evidence-root>
+npm --prefix tinyrustlm run verify:vnext-campaign-release-surface -- <evidence-root>
 ```
 
-The vNext runner command is a local verifier conformance gate. It snapshots
-every active campaign receipt and public subject twice, invokes the sole
-generated Rust campaign-evidence ABI, and preserves immutable operation and
-projection history. Its synthetic complete-capacity case is not a live
-campaign run and does not increment any campaign counter. See
-`docs/architecture/vnext-campaign-runner.md`.
+Synthetic fixtures prove contract behavior only. They do not prove a real
+model, native/browser numerical parity, assistant quality, P2P reachability,
+MemoryEndpoints continuity, package publication, or production deployment.
 
-Archive-bearing public evidence uses the explicit Rust
-`tinyrustlm-archive-scan` process boundary through one explicit absolute
-create-only helper package. It does not accept a direct executable path, call
-a system `tar`, extract members to disk, or accept a JavaScript parser
-fallback. The v4 scan receipt binds the scanner and client source closures,
-helper executable, package manifest and provenance, source/build/RID identity,
-compressed archive, decoded content manifest, and all three frozen archive
-profiles. See `docs/architecture/vnext-archive-admission.md`.
-
-The vNext release-surface gate runs that sole runner inside the attestation
-call, rejects stored projections and caller counters, scans final canonical
-attestation bytes before create-only persistence, and renders no `done` state.
-Its synthetic complete-capacity case remains prepublication conformance only.
-See `docs/architecture/vnext-campaign-release-surface.md`.
-
-Rust checks:
-
-```powershell
-$env:CARGO_INCREMENTAL = "0"
-$env:CARGO_PROFILE_TEST_DEBUG = "0"
-cargo test -p tinyrustlm-browser-harness
-cargo test -p tinyrustlm-runtime
-cargo test -p tinyrustlm-slm-pack
-```
-
-Use the lean Cargo environment when disk space is constrained.
-
-## Evidence Status
-
-Local tests prove contract behavior only. They do not prove:
-
-- 20 useful qualified model artifacts exist;
-- 50 real browser rounds passed;
-- 25 authorized live MemoryEndpoints continuity and cleanup rounds passed;
-- 40 lanes completed outside-network transfer proof;
-- 20 catalog announcements have authoritative readback;
-- physical `linux-arm64` execution occurred;
-- packages were published or consumed from a public registry;
-- public HTTPS release bytes match an authorized release.
-
-The release-surface operator status must report these as incomplete or
-externally blocked until corresponding validated receipts exist. No fixture,
-loopback probe, cross-compilation result, or self-asserted status can advance a
-live gate.
-
-## Related Documentation
-
-- `docs/browser-runtime.md`: browser runtime and evidence boundaries.
-- `docs/testing.md`: current test layers and claim limits.
-- `models/README.md`: fixture and external-model handling.
+Campaign counters remain `0/20` qualified models, `0/50` deletion-backed
+browser rounds, `0/25` authorized live memory rounds, `0/40` current
+outside-network lane proofs, and `0/20` live catalog announcements until exact
+authorized receipts exist.

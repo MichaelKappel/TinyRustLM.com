@@ -1203,7 +1203,8 @@ function normalizePrepareInput(rawInput, equalityCustody) {
     ...generatedPublicationFiles.map((entry) => entry.path)
   ];
   const modelPath = (entry) => entry.toLowerCase().includes("/models/") ||
-    /\.(?:acg1|acg2|gguf|safetensors|slm)$/u.test(entry.toLowerCase());
+    /\.(?:acg2|gguf|prompt2|safetensors|sampling2|slm|slm2|template2|tokenizer2)$/u
+      .test(entry.toLowerCase());
   const bootstraps = webAssets.filter((entry) => entry.role === "bootstrap");
   const workers = webAssets.filter((entry) => entry.role === "service-worker");
   const generatedByRole = new Map(generatedPublicationFiles.map((entry) =>

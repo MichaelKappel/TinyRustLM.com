@@ -1,5 +1,13 @@
-profile: runtime-mirust.receiver-brief.v60
-updated_utc: 2026-08-28T00:44:20Z
+profile: runtime-mirust.receiver-brief.v61
+updated_utc: 2026-08-28T04:33:47Z
+
+current_handoff_enterprise_intake_clean_cut_2026_08_28:
+  read_first: workspace.uai; .uai/totem.uai; .uai/taboo.uai; wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
+  identity: wiki=20316/6e5a5b7cf7f3ad45008b14597a3616ee603da76cc500b69770de7280711785e4; intake=344 files/18312842 bytes/23 manifests.
+  state: Committed/pushed worker milestone a129fa3b50df4278234d863b138e3a8e9c65c9c3 is green. Current clean-cut deletion is focused-green 41/41 but uncommitted and not full-matrix verified.
+  blocker: app.js and app/companion-bridge.js retain one-file/obsolete REST semantics. Replace with the sole scoped six-member companion protocol and delete old code; no compatibility lane.
+  next: Finish docs/tests/manifests, implement bridge clean cut, run every gate, commit/push/fresh-verify, then deploy/read back only if green.
+  truth: Reports advise only; MemoryEndpoints live evidence, real model proof, quality, outside P2P, deployment, and all campaign counters remain open/zero.
 
 current_handoff_omi_computational_architectures_intake_2026_08_27:
   routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md

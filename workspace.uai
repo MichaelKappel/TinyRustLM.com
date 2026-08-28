@@ -1,7 +1,18 @@
-profile: tinyrustlm.source-workspace.v464
+profile: tinyrustlm.source-workspace.v465
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-28T00:44:20Z
+updated_utc: 2026-08-28T04:33:47Z
+
+current_enterprise_intake_and_slm2_clean_cut_2026_08_28:
+  status: all_23_manifest_owned_intake_batches_reviewed_and_routed_clean_cut_in_progress
+  deep_link: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md,20316,6e5a5b7cf7f3ad45008b14597a3616ee603da76cc500b69770de7280711785e4
+  custody: docs/report-intake contains 344 files/18312842 bytes; report-level identity, disposition, and proof-of-use authority is .uai/intake-outcome-ledger.uai; 23/23 manifest routes resolve.
+  current_architecture: One exact six-member SLM2 composition, one Rust semantic runtime, scalar-native numerical authority, one worker-owned browser path, P2P-first exact qualified import or one pinned-source local conversion, and explicit local/MemoryEndpoints memory lanes.
+  current_source_truth: Committed pushed worker milestone a129fa3b50df4278234d863b138e3a8e9c65c9c3 is green. The current worktree deletes superseded SLM1/runtime/packer/harness/old-WASM paths and has 41/41 focused tests green; full enterprise verification, commit, push, and deployment remain pending.
+  current_blocker: Replace app.js one-file acquisition vocabulary and app/companion-bridge.js obsolete REST semantics with the sole six-member scoped companion protocol, then delete the old bridge. Do not preserve both.
+  stale_status_correction: Earlier entries naming missing worker web inventory or stale scalar Cargo identity as current blockers are historical and superseded by this entry.
+  campaign_counters: qualified_models=0/20; clean_browser_rounds=0/50; live_memory_rounds=0/25; outside_proven_lanes=0/40; catalog_announcements=0/20.
+  boundary: Reports advise only. No report, focused test, structural candidate, configured service, local probe, or package increments a live claim.
 
 current_omi_computational_architectures_intake_2026_08_27:
   status: twenty_three_reports_byte_exact_reviewed_and_durably_routed

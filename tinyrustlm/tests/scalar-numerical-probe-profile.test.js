@@ -1,6 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const childProcess = require("node:child_process");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -16,8 +17,35 @@ function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
 }
 
+function gitBytes(commit, relativePath) {
+  return childProcess.execFileSync("git", ["show", `${commit}:${relativePath}`], {
+    cwd: repositoryRoot,
+    encoding: "buffer",
+    maxBuffer: 64 * 1024 * 1024,
+    windowsHide: true
+  });
+}
+
+function profileRevisionCommit() {
+  const commits = childProcess.execFileSync("git", [
+    "log", "--all", "--format=%H", "--",
+    "contracts/vnext/scalar-numerical-probe-profile.v1.json"
+  ], {
+    cwd: repositoryRoot,
+    encoding: "utf8",
+    maxBuffer: 1024 * 1024,
+    windowsHide: true
+  }).trim().split(/\r?\n/u).filter(Boolean);
+  const matches = commits.filter((commit) =>
+    gitBytes(commit, "contracts/vnext/scalar-numerical-probe-profile.v1.json")
+      .equals(profileBytes));
+  assert.equal(matches.length, 1,
+    "profile must have exactly one immutable source revision");
+  return matches[0];
+}
+
 function assertIdentity(identity) {
-  const bytes = fs.readFileSync(path.join(repositoryRoot, identity.path));
+  const bytes = gitBytes(profileRevisionCommit(), identity.path);
   assert.equal(bytes.length, identity.byteLength, identity.path);
   assert.equal(sha256(bytes), identity.sha256, identity.path);
 }
@@ -87,8 +115,8 @@ test("keeps fixture evidence and every downstream claim in bounds", () => {
 });
 
 test("source contains the create-only synchronized traced execution path", () => {
-  const source = fs.readFileSync(path.join(repositoryRoot,
-    profile.implementation.owner.path), "utf8");
+  const source = gitBytes(profileRevisionCommit(),
+    profile.implementation.owner.path).toString("utf8");
   assert.match(source, /#!\[forbid\(unsafe_code\)\]/u);
   assert.match(source, /\.create_new\(true\)/u);
   assert.match(source, /forward_token_traced/u);

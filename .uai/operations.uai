@@ -1,5 +1,13 @@
-profile: runtime-mirust.operations.v188
-updated_utc: 2026-08-28T00:44:20Z
+profile: runtime-mirust.operations.v189
+updated_utc: 2026-08-28T04:33:47Z
+
+enterprise_intake_clean_cut_operations_2026_08_28:
+  deep_link: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md,20316,6e5a5b7cf7f3ad45008b14597a3616ee603da76cc500b69770de7280711785e4
+  completed: Audited 344 intake files/23 manifest batches; wrote one cross-batch strategy; committed/pushed worker milestone is green; current worktree deletes superseded runtime/packer/harness/WASM/qualification paths and focused tests pass 41/41.
+  current_operation: Finish documentation and drift tests, update exact runtime-manifest next gate, route UAI memory, then replace/delete the obsolete browser companion/acquisition bridge.
+  verification_order: syntax and format; Cargo metadata/build/test/clippy/doc locked offline; .NET/VS; full Node; package; real Chromium; responsive/accessibility/privacy; release surface; docs; commit/push/fetch equality; deploy/readback.
+  deployment_rule: Never deploy uncommitted or red source. Deploy each affected site only after all of its gates pass and update its publication log, docs, source identity, rollback, and HTTPS readback together.
+  current_truth: Earlier worker-manifest/scalar-identity failures are fixed. Full current clean-cut verification and companion integration remain open; no release or campaign claim yet.
 
 omi_computational_architectures_intake_operations_2026_08_27:
   routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md

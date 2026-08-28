@@ -1,5 +1,13 @@
-profile: runtime-mirust.next-recursive-prompt.v117
-updated_utc: 2026-08-28T00:44:20Z
+profile: runtime-mirust.next-recursive-prompt.v118
+updated_utc: 2026-08-28T04:33:47Z
+
+next_recursive_goal_2026_08_28_enterprise_clean_cut_release:
+  read_first: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md,20316,6e5a5b7cf7f3ad45008b14597a3616ee603da76cc500b69770de7280711785e4
+  objective: Finish the sole six-member SLM2 product path by replacing app.js one-file acquisition vocabulary and app/companion-bridge.js obsolete REST semantics with the current scoped companion protocol, deleting the old bridge, completing documentation and exact asset identities, passing the full enterprise matrix, committing/pushing/fresh-verifying, and deploying only from green remote-exact source with HTTPS readback.
+  red_first: Preserve old bridge and one-file vocabulary findings as tests; add exact protocol/member/manifest/doc drift tests before deletion; never make the fail-closed bridge look complete.
+  architecture: One Rust semantic runtime, scalar numerical oracle, one worker event path, exact P2P-qualified composition or one pinned-source conversion, explicit memory authority, independently recomputed receipts.
+  never: No compatibility, migration, alias, dual path, fallback, hidden retry/repair, alternate runtime, report-derived claim, deferred deletion, stale docs, deployment from red/uncommitted source, or counter inflation.
+  completion: Full Rust/.NET/Node/VS/package/Chromium/accessibility/privacy/docs/release/readback gates pass from committed pushed remote-exact source; publication log matches deployed bytes; campaign counters remain receipt-governed.
 
 next_recursive_goal_2026_08_27_post_intake_browser_release_closure:
   intake_routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md

@@ -11,7 +11,7 @@ const experimentManifest = path.join(repositoryRoot,
   "rust/experiments/tinyrustlm-vector-oracle/Cargo.toml");
 const productRoots = [
   "rust/crates",
-  "tinyrustlm/runtime",
+  "tinyrustlm/app",
   "tinyrustlm/tools"
 ].map((relativePath) => path.join(repositoryRoot, relativePath));
 const allowedResearchFiles = new Set([

@@ -16,6 +16,31 @@ function readJson(relativePath) {
   return JSON.parse(read(relativePath));
 }
 
+function currentMemoryAuthority(source, relativePath) {
+  const marker = "memory_endpoints_portable_memory_authority_2026_08_26:";
+  const markerIndex = source.indexOf(marker);
+  assert.notEqual(markerIndex, -1, `${relativePath} must route current memory authority`);
+
+  const historicalIndex = source.search(
+    /MemoryEndpoints.{0,120}(?:unauthorized|disconnected)|(?:unauthorized|disconnected).{0,120}MemoryEndpoints/is
+  );
+  if (historicalIndex !== -1) {
+    assert.ok(
+      markerIndex < historicalIndex,
+      `${relativePath} must route current MemoryEndpoints authority before history`
+    );
+  }
+
+  const lines = source.slice(markerIndex).split(/\r?\n/u);
+  const block = [lines[0]];
+  for (const line of lines.slice(1)) {
+    if (line && !line.startsWith("  ")) break;
+    block.push(line);
+  }
+  assert.ok(block.length > 1, `${relativePath} current memory authority must be bounded`);
+  return block.join("\n");
+}
+
 test("defines one current local-and-portable memory product policy", () => {
   const policy = readJson(
     "contracts/vnext/memory-endpoints-portable-memory-policy.v1.json"
@@ -56,14 +81,9 @@ test("keeps current authority routes ahead of immutable historical records", () 
     ".uai/receiver-brief.uai",
     ".uai/next-recursive-prompt.uai"
   ]) {
-    const currentWindow = read(relativePath).slice(0, 6000);
-    assert.match(
-      currentWindow,
-      /memory_endpoints_portable_memory_authority_2026_08_26/,
-      `${relativePath} must route the current MemoryEndpoints authority before history`
-    );
-    assert.match(currentWindow, /local_file_memory:\s+(?:supported|available)/);
-    assert.match(currentWindow, /recommendation:\s+strongly_recommended/);
+    const authority = currentMemoryAuthority(read(relativePath), relativePath);
+    assert.match(authority, /local_file_memory:\s+(?:supported|available)/);
+    assert.match(authority, /recommendation:\s+strongly_recommended/);
   }
 });
 

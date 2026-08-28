@@ -1,5 +1,14 @@
-profile: runtime-mirust.short-term-memory.v515
-updated_utc: 2026-08-28T00:44:20Z
+profile: runtime-mirust.short-term-memory.v516
+updated_utc: 2026-08-28T04:33:47Z
+
+current_focus_2026_08_28_enterprise_intake_and_clean_cut:
+  deep_resume: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md,20316,6e5a5b7cf7f3ad45008b14597a3616ee603da76cc500b69770de7280711785e4
+  intake: 344 files/18312842 bytes/23 manifest batches; report-level decisions are complete and raw reports need not be bulk-loaded at startup.
+  done: Worker-owned SLM2 milestone committed and pushed green; superseded runtime/packer/harness/old-WASM/old-quality surfaces deleted in current worktree; maintained runtime docs rewritten; focused suite 41/41.
+  now: Finish UAI routing and doc drift guard, update exact runtime manifest, replace/delete app.js and companion-bridge.js old one-file/REST acquisition path, then run full enterprise verification.
+  stale_correction: Missing worker web inventory and stale scalar Cargo identity are no longer current blockers.
+  never: No legacy, compatibility, migration, aliases, dual paths, fallback, repair, hidden retry, debt, stale docs, uncommitted deployment, or report-derived claim.
+  counters: 0/20 models; 0/50 browser; 0/25 live memory; 0/40 outside lanes; 0/20 announcements.
 
 current_focus_2026_08_27_omi_computational_architectures_intake:
   status: reviewed_and_durably_routed_browser_release_still_blocked

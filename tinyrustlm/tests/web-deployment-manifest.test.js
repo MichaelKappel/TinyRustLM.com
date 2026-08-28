@@ -49,8 +49,8 @@ test("web deployment manifest is the exact no-model publication closure", (conte
   assert.ok(paths.has("companion/index.html"));
   assert.ok(paths.has(".well-known/site-release.json"));
   assert.ok(paths.has(".well-known/site-release-history.json"));
-  assert.ok(paths.has("runtime/tinyrustlm-browser-runtime.wasm"));
-  assert.ok(paths.has("runtime/tinyrustlm-browser-runtime.wasm.manifest.json"));
+  assert.ok(paths.has("browser-runtime/tinyrustlm-browser-runtime.wasm"));
+  assert.ok(paths.has("browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json"));
   assert.equal(paths.has("runtime/tinyrustlm.wasm"), false);
   assert.equal(paths.has("runtime/tinyrustlm-simd.wasm"), false);
   assert.equal(Array.from(paths).some((entry) => /\.slm(?:\.|$)/i.test(entry)), false);

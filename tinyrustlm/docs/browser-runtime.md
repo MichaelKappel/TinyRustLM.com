@@ -1,305 +1,140 @@
 # TinyRustLM Browser Runtime
 
-Status on 2026-08-27: **release blocked during the canonical runtime clean
-cut**. The raw SLM2/ACG2 Rust/WASM boundary and the production worker exist and
-pass focused Rust, Node, and real Chromium boundary tests. UI integration,
-real-browser composition activation and conversation evidence, and deletion
-of the superseded runtime are not complete. The current site must not be
-described as using the canonical browser runtime until all of those conditions
-are satisfied in one tested replacement.
+Status on 2026-08-28: the browser UI uses the sole worker-owned SLM2 runtime,
+and the registered superseded runtime and packer roots are deleted. Focused
+Rust, Node, worker, and real Chromium fixture tests have passed. No real Qwen3
+composition, numerical parity result, model-quality decision, or campaign
+round is claimed by this structural checkpoint.
 
-This document distinguishes the canonical replacement from the checked-in
-pre-cutover implementation that still has to be removed. Describing that old
-implementation is a deletion inventory, not a compatibility promise or a
-supported second path.
+## Deployment Identity
 
-## Canonical Replacement Status
+The deployed runtime pair is:
 
-The canonical replacement is registered by
-`contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json` and
-implemented in part by `rust/crates/tinyrustlm-browser-runtime-wasm`. The local
-boundary checkpoint at remote-exact commit
-`5c4f46c7af35bc6e892097cd4924ca58286efa8c` and worker checkpoint at
-remote-exact commit `6ff375bc3ef4177ebcf0a3e3c1129e1d6902cb25`
-establish:
+- `browser-runtime/tinyrustlm-browser-runtime.wasm`
+- `browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json`
 
-- one import-free raw WASM module with an exact 16-function application export
-  allowlist;
-- one pending move-only transfer and one committed value per closed artifact
-  kind;
-- exact canonical Sampling2 and Prompt2 transfer sizes of 65,800 and 512
-  bytes;
-- transactional ACG2 activation with one model allocation moving into the
-  runtime and no retained second model owner;
-- caller-owned operation authority that remains distinct from composition
-  identity;
-- bounded state, step, output, and error results; and
-- terminal release that drops transfers, staged members, runtime, model,
-  prompt, and KV state;
-- one dedicated worker with an exact eleven-command and twelve-event protocol,
-  independent bounded sequences, deterministic event IDs, and no network or
-  arbitrary URL/path authority;
-- contiguous transferable artifact chunks no larger than 4 MiB, with accepted
-  worker-side chunks wiped after their one copy into WASM; and
-- exact low/high unsigned 32-bit transcript revision fields, avoiding lossy
-  JavaScript representation of a combined unsigned 64-bit value.
+The manifest binds the WASM byte count, SHA-256, source crate, build profile,
+worker protocol, memory ceiling, imports, and exact exports. App startup uses
+`app/browser-runtime-loader.js` to fetch both files, validate the manifest,
+hash the module, and reject identity drift before a worker is created.
 
-Focused Rust, clippy, Node WebAssembly, worker protocol, and Chromium tests pass
-for this boundary. The Chromium test creates and deletes two fresh persistent
-profiles and proves successful initialization/release, hash-rejected terminal
-initialization, transferable buffer detachment, terminal-event delivery before
-worker shutdown, and no unexpected network, console, or page errors. Browser
-WebAssembly compilation requires the narrow CSP capability
-`'wasm-unsafe-eval'`; plain JavaScript `'unsafe-eval'` is not required. This is
-worker-boundary evidence, not a composition activation or conversation.
+The UI never calls WASM directly. `app/model-runtime-client.js` creates
+`app/model-runtime-worker.js`, and the worker alone instantiates the verified
+module.
 
-The private structural activation proves structure and bounded ownership only.
-It does not prove generation quality, native/browser parity, a browser
-conversation, release, deployment, publication, P2P availability, or campaign
-credit.
+## Composition Admission
 
-The clean cut remains incomplete because `app.js` still owns the pre-cutover
-runtime path and the SLM1/ACG1 executable surfaces and packaged bytes are still
-present. Release and deployment remain blocked until the implemented worker is
-the sole runtime owner in the product UI, the UI is command/presentation only,
-real Chromium composition activation and conversation evidence pass, and every
-superseded executable path is deleted without an alias, reader, shim, fallback,
-feature flag, or migration.
+One activation consists of the exact fixed member set:
 
-The worker protocol was closed before implementation and now has matching
-executable tests. It permits only eleven exact commands and twelve exact event
-kinds, streams artifact bytes in contiguous transferred chunks no larger than
-4 MiB, derives operation transfers internally, finishes terminal generation
-inside the worker, and provides no generic invocation, separate finish, URL,
-path, network, or whole-model JavaScript ownership surface. A terminal event is
-posted before physical worker closure is scheduled on the next worker task so
-Chromium cannot discard the event through same-callback shutdown.
+| Role | File | Profile |
+| --- | --- | --- |
+| model | `model.slm2` | `org.minimodel.slm2/2.0` |
+| tokenizer | `tokenizer.tokenizer2` | `org.minimodel.tokenizer2/2.0` |
+| template | `template.template2` | `org.minimodel.template2/2.0` |
+| sampling | `sampling.sampling2` | `org.minimodel.sampling2/2.0` |
+| prompt | `prompt.prompt2` | `org.minimodel.prompt2/2.0` |
+| composition | `composition.acg2` | `org.minimodel.acg2/2.0` |
 
-## Superseded Pre-Cutover Inventory
+The canonical browser admission record binds all names, lengths, SHA-256
+identities, format profiles, ACG2 graph identity, member-table identity,
+resolved bytes, runtime artifact, resource policy, source evidence, structural
+evidence, numerical evidence, quality receipt, and default sampling profile.
+Unknown fields and noncanonical bytes are fatal.
 
-The currently checked-in application still loads the superseded Rust/WASM ABI
-on the UI thread and accepts model bytes through the browser file-selection
-control. This code is not a maintained alternate runtime. It must be replaced
-and deleted as part of the clean cut.
+The client streams contiguous chunks no larger than 4 MiB. The worker checks
+sequence and byte totals, transfers each member into WASM once, wipes accepted
+JavaScript chunks, and activates only after complete graph verification. A
+failed activation leaves no partially active composition.
 
-The interactive chooser uses one P2P-first acquisition state machine. A
-complete identity-matched peer offer is imported through an explicitly paired
-local companion. If no complete verified offer exists, protocol v2 sends an
-immutable source contract to that companion, which downloads approved files
-from the exact Hugging Face commit, verifies byte counts and SHA-256 digests,
-runs the packaged Rust conversion and validation commands, creates and
-reinspects a base-only composition graph, and streams both artifacts over the
-secured loopback bridge. The browser activates the graph before reporting
-`Ready`.
+## Worker Protocol
 
-The acquisition result is the running model, not a handoff file. README/TXT,
-request JSON, shell, PowerShell, conversion-kit, import-kit, share-kit, and
-serving-helper downloads are prohibited. The application origin does not host
-model or composition bytes, and the companion receives no prompts or
-responses.
+Every command and event binds protocol, operation, composition, and sequence
+identity. Generation additionally binds conversation, turn, generation, and
+message identity. Stale, duplicate, skipped, or cross-operation events are
+fatal to the affected operation.
 
-Local UAIX memory packages are reported through a FileDeck-style summary that
-keeps required-file counts, persona dimensions, evidence, exports, manifest
-overlay, package model, knowledge graph, and `llms` artifacts visible as
-separate validation facts. Package content enters the bounded context only
-after its own integrity and trust checks pass.
+The worker owns:
 
-Campaign execution adds a sealed composition layer:
+- the WASM instance and linear memory;
+- all six composition members during activation;
+- tokenizer, prompt, sampling, and model state;
+- transcript revision and conversation identity;
+- KV-cache state; and
+- generation and cancellation state.
 
-1. The campaign validator verifies the `.slm` and `.slm.acg1` paths, sizes, and
-   declared SHA-256 values.
-2. Native qualification evidence must bind the same graph bundle, composition
-   ID, and active graph SHA-256.
-3. The app imports the `.slm` through `#localModelFile`.
-4. The app retrieves the exact application-origin `.slm.acg1` URL.
-5. Rust activates the graph before the runtime reports `Ready`.
-6. The browser harness reads `#diagnostics` and requires exact identity
-   agreement.
-7. Conversation generation begins only after activation succeeds.
+The page owns:
 
-The runtime diagnostic contract used by campaign evidence includes:
+- user commands;
+- accessible status presentation;
+- the conversation message ledger; and
+- exactly-once rendering of returned raw assistant text.
 
-```text
-model_loaded
-composition_active
-active_composition_bundle_sha256
-active_composition_id
-active_composition_graph_sha256
-active_route_policy_id
-active_kv_format_id
-active_composition_member_count
-composition_activation_count
-```
+There is no generic worker invocation, URL fetch, filesystem path, network
+authority, or JavaScript inference path.
 
-The browser evidence runner requires exactly one GET for the configured graph
-URL. A missing, duplicate, redirected, cross-origin, or identity-drifting graph
-cannot produce a passing receipt.
+## Prompt And Generation
 
-## Superseded ACG1 Campaign Inventory
+`app/prompt2-request.js` emits one bounded Prompt2 request from completed
+conversation messages and the current user turn. The current user turn is
+last and authoritative. Retrieved memory remains labeled data.
 
-An ACG1 graph is metadata, not a second model artifact. Its campaign identity
-binds:
+The worker validates Prompt2, renders Template2, tokenizes with Tokenizer2,
+runs the canonical runtime, and samples with Sampling2. The page does not
+inject expected terms, finish partial output, select a better seed, or retry a
+failed answer. One terminal result contains token IDs, exact decoded text,
+termination reason, and the resulting runtime state.
 
-- the exact graph bundle bytes;
-- the base model content ID;
-- the composition content ID;
-- the active graph hash;
-- route policy;
-- KV-cache format;
-- position policy;
-- member count.
+## Cancellation And Faults
 
-The browser does not construct a model from mutable adapter lists, inferred
-sidecars, aliases, or a mutable plan. Any specialized behavior must already be
-represented by an immutable, qualified graph and be activated through the same
-runtime path evaluated natively.
+Cancellation targets one active generation ID. Cooperative cancellation is
+preferred; a terminal runtime or protocol fault causes client termination.
+Late messages from a terminated worker are never authoritative. A subsequent
+generation requires a fresh worker and complete composition revalidation.
 
-## Fresh Profile Lifecycle
+Allocation failure, context overflow, malformed artifacts, identity drift,
+nonfinite runtime state, WASM trap, sequence drift, and cancellation remain
+typed failures. A partial answer cannot become a successful completion.
 
-`fresh-browser-conversation.js` uses a Playwright persistent Chromium context
-with a campaign-owned profile directory. A page reload, incognito context, new
-tab, storage clear, or normal browser context is not equivalent.
+## Exactly-Once Rendering
 
-For each non-memory round the runner:
+The conversation ledger creates one pending assistant message per user turn.
+Only the matching generation may complete or fail that message. Raw output is
+stored on that message and rendered through the single conversation rendering
+path. Repeated token text is content, not a duplicate event; repeated terminal
+events are protocol failures.
 
-1. Creates a marked root below an operator-supplied profile parent.
-2. Creates a uniquely marked round profile.
-3. Verifies ownership, containment, and freshness.
-4. Launches Chromium against that profile.
-5. Closes the context after inspection or failure.
-6. Scans the profile while it still exists.
-7. Deletes the profile using the ownership-checked deletion path.
-8. Removes the owned root.
-9. Hashes the deletion receipt into browser evidence.
+## Verification
 
-The profile scanner is bounded to 20,000 files, 512 MiB total, and 64 MiB per
-file. Incomplete scanning is a failure. Known secret canaries are checked in
-UTF-8, UTF-16LE, and base64 forms. Public evidence records only bounded counts
-and hashes.
-
-## Conversation Assertions
-
-Each scheduled round has two to six private turns. The runner preserves the raw
-assistant text only long enough to compute the private conversation hash. It
-does not repair malformed text, choose a best retry, or append expected terms.
-
-For each turn it requires:
-
-- one new user message;
-- one new completed assistant message;
-- non-empty assistant text;
-- exactly one authoritative `#response` node;
-- the application generation state to return to idle.
-
-After the first turn, introductory content and starter cards must be hidden.
-At the end, document width must fit the viewport and the composer must remain
-inside the viewport.
-
-The public job result excludes prompt text, assistant text, local model paths,
-known secrets, and future unrecognized execution fields.
-
-## Network Policy
-
-The network analysis starts with the exact application origin and adds only the
-round's explicit `allowedOrigins`. Origin entries must be uncredentialed,
-origin-only HTTPS URLs, except that explicit loopback HTTP is accepted for
-local tests.
-
-A round fails for:
-
-- a prompt in a request URL or body to a project host;
-- a `.slm` request to a project host;
-- any unallowlisted loopback origin;
-- any unallowlisted remote origin;
-- credentials in a configured URL;
-- a graph URL outside the application origin.
-
-An `.slm.acg1` request is composition metadata and is not counted as a model
-byte request. Paths ending exactly in `.slm` are model-byte routes.
-
-The application origin is not an implicit allowance for MiniModel,
-MemoryEndpoints, UAIX, or another related domain. Every optional service origin
-must be present in that round's sealed allowlist.
-
-## Receipt Binding
-
-`browser-round-evidence.js` writes
-`tinyrustlm.browser-dogfood-round-v4`. A receipt binds:
-
-- campaign and round identities;
-- qualification receipt ID;
-- `.slm` hash;
-- graph bundle and active graph hashes;
-- composition ID;
-- manifest, source, and quality evidence hashes;
-- eval cases, converter, evaluator, and chat-template hashes;
-- prompt format, system-prompt hash, model sampling profile, and exact round
-  sampling controls;
-- the browser-observed admission identity and per-turn runtime diagnostics;
-- browser executable, browser version, and Playwright version;
-- application origin;
-- viewport and reduced-motion configuration;
-- raw conversation hash;
-- profile ownership and deletion hashes;
-- network and secret-scan counts;
-- pass or failure status.
-
-Only a real passing qualification receipt can be a parent. Fixture evidence is
-rejected before browser execution counts toward the campaign.
-
-## Operator Entry Point
-
-From the repository root:
+Focused checks:
 
 ```powershell
-npm --prefix tinyrustlm run run:browser-round -- `
-  <campaign.json> `
-  <round-number> `
-  <evidence-root> `
-  <owned-profile-parent> `
-  <public-result.json>
+npm --prefix tinyrustlm run test:model-runtime-worker
+npm --prefix tinyrustlm run test:model-runtime-worker-browser
+node --test tinyrustlm/tests/browser-runtime-web-artifact.test.js
+node --test tinyrustlm/tests/production-slm2-clean-cut.test.js
 ```
 
-The command refuses a round whose `memoryContinuity` field is true.
-MemoryEndpoints rounds require a separate authorized live executor because a
-local fixture cannot satisfy enrollment, continuity, revocation, or cleanup
-gates.
+The real Chromium worker test creates owned persistent profiles, executes the
+actual module, verifies transfer detachment and terminal event ordering,
+captures network and console failures, closes Chromium, and proves physical
+profile deletion. It remains fixture-scoped.
 
-## Local Verification
+The sole current campaign projection runner is documented in
+`../../docs/architecture/vnext-campaign-runner.md`. Its synthetic capacity
+tests are not browser dogfood rounds.
 
-```powershell
-npm --prefix tinyrustlm run test:browser-contract
-node --test tinyrustlm/tests/dogfood-campaign.test.js tinyrustlm/tests/vnext-campaign-runner.test.js
-npm --prefix tinyrustlm run test:vnext-campaign-release-surface -- <absolute-evidence-root>
-npm --prefix tinyrustlm run verify:vnext-campaign-release-surface -- <absolute-evidence-root>
-cargo run -p tinyrustlm-browser-harness -- .\tinyrustlm
-```
+## Remaining Promotion Gates
 
-Campaign projection uses only the Rust-backed vNext runner documented in
-`../../docs/architecture/vnext-campaign-runner.md`; there is no mutable or
-compatibility runner.
-Fresh final attestation and operator status use only the internal runner result
-through `../../docs/architecture/vnext-campaign-release-surface.md`; browser
-code cannot submit stored projection bytes or counters as release truth.
+The browser runtime cannot support a real-model claim until one immutable
+composition passes, in order:
 
-The JavaScript tests cover graph drift, missing graph requests, strict network
-allowlisting, secret encodings, hosted-memory refusal, profile evidence,
-failure preservation, and public-output minimization.
+1. independent six-member structural inspection;
+2. scalar-native numerical comparison with the pinned source framework;
+3. optimized-native differential comparison;
+4. browser-WASM differential comparison;
+5. contamination-controlled conversational qualification;
+6. clean-profile multi-turn browser acceptance; and
+7. committed release, deployment, and public HTTPS readback.
 
-The Rust browser harness audits checked-in static assets and may probe a
-loopback server. It does not launch the 50-round campaign and cannot satisfy a
-fresh-profile or live external gate.
-
-## External Gates
-
-The following remain unproven until current authorized receipts exist:
-
-- live MemoryEndpoints contract discovery and 25 cleanup-backed runs;
-- two outside-proven P2P lanes for each of 20 qualified artifacts;
-- catalog announcements and unauthenticated readback;
-- public HTTPS release hash readback;
-- physical `linux-arm64` execution;
-- package publication and downstream consumption.
-
-These conditions must appear as explicit blockers or incomplete counters. Local
-health, fixtures, emulation, and cross-compilation are supporting evidence only.
+P2P availability, MemoryEndpoints continuity, and campaign completion require
+their own authorized live receipts.

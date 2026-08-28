@@ -1,5 +1,16 @@
-profile: runtime-mirust.totem.v213
-updated_utc: 2026-08-28T00:44:20Z
+profile: runtime-mirust.totem.v214
+updated_utc: 2026-08-28T04:33:47Z
+
+enterprise_intake_clean_cut_totem_2026_08_28:
+  preserve_route: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md,20316,6e5a5b7cf7f3ad45008b14597a3616ee603da76cc500b69770de7280711785e4
+  preserve_product: One prelaunch TinyRustLM product and one exact six-member SLM2 composition; technical numeric suffixes are format identities, never product generations.
+  preserve_runtime: One Rust semantic authority, scalar-native numerical oracle, differential optimized/WASM implementations, and one worker owner for composition/tokenizer/KV/generation.
+  preserve_acquisition: Exact qualified direct-peer composition first, otherwise one pinned-source local companion conversion; the user action performs work and never downloads instructions.
+  preserve_memory: Local memory remains supported; MemoryEndpoints is authorized and strongly recommended for portable continuity; current user intent wins; retrieved memory is untrusted; writes/conflicts/deletion are explicit.
+  preserve_evidence: Independent recomputation, immutable failures, append-only receipts, typed terminal state, bounded replay, private raw evidence, and honest zero counters until live proof.
+  preserve_quality: Untouched outputs, sealed holdouts, no contamination, blinded human adjudication, source screening, quantization noninferiority, and honest rejection.
+  preserve_operations: Commit/push coherent green changes; deploy only after every affected gate; update robust docs, marketing, publication log, source identity, rollback, and HTTPS readback together.
+  preserve_clean_slate: Delete obsolete code and vocabulary when replaced; no legacy, compatibility, migration, dual path, fallback, repair, hidden retry, debt, or stale documentation.
 
 omi_computational_architectures_intake_totem_2026_08_27:
   preserve_routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md

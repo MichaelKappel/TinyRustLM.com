@@ -21,7 +21,6 @@ members = [
     "rust/crates/tinyrustlm-p2p",
     "rust/crates/tinyrustlm-native",
     "rust/crates/tinyrustlm-convert",
-    "tinyrustlm/tools/browser_harness",
     "tinyrustlm/tools/local_connect",
     "tinyrustlm/tools/local_server",
 ]

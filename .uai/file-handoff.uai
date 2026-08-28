@@ -1,5 +1,13 @@
-profile: runtime-mirust.file-handoff.v134
-updated_utc: 2026-08-28T00:44:20Z
+profile: runtime-mirust.file-handoff.v135
+updated_utc: 2026-08-28T04:33:47Z
+
+current_enterprise_intake_handoff_2026_08_28:
+  deep_resume: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md,20316,6e5a5b7cf7f3ad45008b14597a3616ee603da76cc500b69770de7280711785e4
+  custody: 344 authoritative intake files/18312842 bytes across 23 manifest-owned batches; all 23 manifest routes resolve; per-report hashes and dispositions remain in .uai/intake-outcome-ledger.uai.
+  source_buckets: Authoritative active Content and Improvement buckets are placeholder-only. Protected external source checkouts remain read-only and no deletion there is claimed.
+  resume: Finish clean documentation and exact manifest identities; replace and delete the obsolete browser acquisition bridge; run the full matrix; commit/push/fresh-verify; deploy only when all site gates and readback pass.
+  do_not_reload: Start from the deep wiki node and inspect a raw report only for a named source question or hash audit.
+  boundary: No report or handoff file is implementation, quality, live service, deployment, or campaign evidence.
 
 current_omi_computational_architectures_handoff_2026_08_27:
   routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md

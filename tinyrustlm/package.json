@@ -25,7 +25,7 @@
     "test:windows-x64-msvc-environment-observation": "powershell -NoProfile -Command \"$env:TINYRUSTLM_REAL_MSVC_ENVIRONMENT_OBSERVATION='1'; node --test tests/windows-x64-msvc-environment-observation.test.js\"",
     "test:prompt2-format-vectors": "node --test tests/prompt2-format-vectors.test.js",
     "generate:vnext-signature-rust-vectors": "node tools/vnext-signature-rust-vectors.js --write",
-    "test:unit": "node tools/run-vnext-unit-test-gate.js all",
+    "test:unit": "node tools/run-vnext-unit-test-gate.js standard",
     "test:vnext-authority-rust-vectors": "node --test tests/vnext-authority-rust-vectors.test.js",
     "test:vnext-campaign-projection-rust-vectors": "node --test tests/vnext-campaign-projection-rust-vectors.test.js",
     "test:vnext-campaign-evidence-wasm": "node --test tests/vnext-campaign-evidence-wasm.test.js",
@@ -49,8 +49,7 @@
     "verify:vnext-campaign-release-surface": "node tools/run-vnext-campaign-release-surface-gate.js verify",
     "smoke:web-release-local": "node tools/web-release-local-smoke.js",
     "test:browser-contract": "node --test tests/browser-model-admission.test.js tests/fresh-browser-conversation.test.js tests/browser-round-evidence.test.js tests/run-browser-round.test.js",
-    "run:browser-round": "node tools/run-browser-round.js",
-    "qualify:models": "node tools/model-qualification-runner.js"
+    "run:browser-round": "node tools/run-browser-round.js"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1"

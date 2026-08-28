@@ -1,5 +1,13 @@
-profile: runtime-mirust.startup-packet.v149
-updated_utc: 2026-08-28T00:44:20Z
+profile: runtime-mirust.startup-packet.v150
+updated_utc: 2026-08-28T04:33:47Z
+
+current_start_2026_08_28_enterprise_intake_clean_cut:
+  read_first: AGENTS.md; workspace.uai; .uai/totem.uai; .uai/taboo.uai; wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
+  exact_route: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md,20316,6e5a5b7cf7f3ad45008b14597a3616ee603da76cc500b69770de7280711785e4
+  source: Work only in E:\Source\.tinyrustlm-model-acquisition-recovered-20260819 on codex/model-acquisition-v2; never modify protected E:\Source\Rust\TinyRustLM.com and never write D:.
+  state: 23 intake batches are fully routed. a129fa3b50df4278234d863b138e3a8e9c65c9c3 is committed/pushed green. Current clean cut is focused-green 41/41 but uncommitted and not fully verified.
+  resume: Finish docs/UAI/manifest identities; replace and delete the obsolete browser companion acquisition bridge; run full gates; commit/push/fresh-verify; deploy and read back only if green.
+  boundary: Reports are advice, not product evidence. All campaign counters remain zero.
 
 current_start_2026_08_27_omi_computational_architectures_intake:
   read_first: workspace.uai; .uai/totem.uai; .uai/taboo.uai; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md

@@ -11,13 +11,13 @@
     },
     {
       "source": "source",
-      "local": "runtime/tinyrustlm-browser-runtime.wasm",
-      "remote": "runtime/tinyrustlm-browser-runtime.wasm"
+      "local": "browser-runtime/tinyrustlm-browser-runtime.wasm",
+      "remote": "browser-runtime/tinyrustlm-browser-runtime.wasm"
     },
     {
       "source": "source",
-      "local": "runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
-      "remote": "runtime/tinyrustlm-browser-runtime.wasm.manifest.json"
+      "local": "browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
+      "remote": "browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json"
     },
     {
       "source": "source",

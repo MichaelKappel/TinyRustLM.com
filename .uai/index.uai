@@ -1,5 +1,13 @@
-profile: runtime-mirust.uai-index.v282
-updated_utc: 2026-08-28T00:44:20Z
+profile: runtime-mirust.uai-index.v283
+updated_utc: 2026-08-28T04:33:47Z
+
+current_enterprise_intake_and_clean_cut_route_2026_08_28:
+  authority: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md,20316,6e5a5b7cf7f3ad45008b14597a3616ee603da76cc500b69770de7280711785e4
+  coverage: 23 manifest-owned batches; 344 files; 18312842 bytes; report-level routes and proof of use in .uai/intake-outcome-ledger.uai.
+  use_for: SLM2 composition, native/WASM runtime, browser worker, acquisition/companion, quality/distillation, memory/MemoryEndpoints, P2P, release, documentation, OMI, Colibri, TurboVec, or TurboQuant decisions.
+  current_state: Worker milestone committed/pushed green; superseded executable closure deleted in current worktree; focused 41/41 green; full verification and browser companion clean cut pending.
+  precedence: This route supersedes earlier hot status text that still names worker-manifest or scalar-identity failures as active.
+  boundary: Advisory intake is not product evidence and campaign counters remain zero.
 
 current_omi_computational_architectures_intake_route_2026_08_27:
   status: reviewed_and_durably_routed_no_product_adoption

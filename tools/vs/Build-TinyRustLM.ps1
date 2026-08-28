@@ -5,128 +5,79 @@ param(
     [switch]$Clean,
     [switch]$CleanOnly,
     [switch]$RunTests,
-    [switch]$RegenerateModels
+    [switch]$RefreshBrowserRuntime
 )
 
 $ErrorActionPreference = "Stop"
-$Root = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
+$Root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..\..")).Path
 
-function Resolve-CommandPath {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Name,
-        [string[]]$PreferredPaths = @()
-    )
-
-    foreach ($candidate in $PreferredPaths) {
-        if ($candidate -and (Test-Path -LiteralPath $candidate)) {
-            return (Resolve-Path -LiteralPath $candidate).Path
-        }
-    }
+function Resolve-RequiredCommand {
+    param([Parameter(Mandatory = $true)][string]$Name)
 
     $command = Get-Command $Name -ErrorAction SilentlyContinue
-    if ($null -ne $command) {
-        return $command.Source
+    if ($null -eq $command) {
+        throw "Required command '$Name' was not found."
     }
-
-    throw "Required command '$Name' was not found. Install Rust and Node, then reopen Visual Studio."
+    return $command.Source
 }
 
-$Cargo = Resolve-CommandPath "cargo.exe" @(
-    (Join-Path $env:USERPROFILE ".cargo\bin\cargo.exe"),
-    "C:\Users\AI\.cargo\bin\cargo.exe"
-)
-$Rustup = Resolve-CommandPath "rustup.exe" @(
-    (Join-Path $env:USERPROFILE ".cargo\bin\rustup.exe"),
-    "C:\Users\AI\.cargo\bin\rustup.exe"
-)
+function Invoke-Checked {
+    param(
+        [Parameter(Mandatory = $true)][string]$FilePath,
+        [Parameter(Mandatory = $true)][string[]]$Arguments,
+        [Parameter(Mandatory = $true)][string]$Description
+    )
+
+    & $FilePath @Arguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "$Description failed with exit code $LASTEXITCODE."
+    }
+}
+
+$Cargo = Resolve-RequiredCommand "cargo"
+$Node = Resolve-RequiredCommand "node"
+$Rustup = Resolve-RequiredCommand "rustup"
 
 Push-Location $Root
 try {
     if ($Clean -or $CleanOnly) {
-        & $Cargo clean
-        if ($LASTEXITCODE -ne 0) {
-            throw "cargo clean failed with exit code $LASTEXITCODE"
-        }
+        Invoke-Checked $Cargo @("clean") "Cargo clean"
         if ($CleanOnly) {
-            exit 0
+            return
         }
     }
 
-    $installedTargets = & $Rustup target list --installed
+    $installedTargets = @(& $Rustup target list --installed)
     if ($LASTEXITCODE -ne 0) {
-        throw "rustup target list failed with exit code $LASTEXITCODE"
+        throw "Unable to inspect installed Rust targets."
     }
     if ($installedTargets -notcontains "wasm32-unknown-unknown") {
-        & $Rustup target add wasm32-unknown-unknown
-        if ($LASTEXITCODE -ne 0) {
-            throw "rustup target add wasm32-unknown-unknown failed with exit code $LASTEXITCODE"
-        }
+        throw "The wasm32-unknown-unknown Rust target is required. Install it explicitly before building."
     }
 
-    & $Cargo build --workspace
-    if ($LASTEXITCODE -ne 0) {
-        throw "cargo build --workspace failed with exit code $LASTEXITCODE"
+    $buildArguments = @("build", "--workspace", "--locked", "--offline")
+    if ($Configuration -eq "Release") {
+        $buildArguments += "--release"
     }
+    Invoke-Checked $Cargo $buildArguments "Canonical Rust workspace build"
+
+    $artifactMode = if ($RefreshBrowserRuntime) { "write" } else { "check" }
+    Invoke-Checked $Node @(
+        "tinyrustlm/tools/browser-runtime-web-artifact.js",
+        $artifactMode
+    ) "Canonical browser runtime artifact $artifactMode"
 
     if ($RunTests) {
-        & $Cargo test --workspace
-        if ($LASTEXITCODE -ne 0) {
-            throw "cargo test --workspace failed with exit code $LASTEXITCODE"
-        }
+        Invoke-Checked $Cargo @(
+            "test", "--workspace", "--locked", "--offline"
+        ) "Canonical Rust workspace tests"
+        Invoke-Checked $Node @(
+            "tinyrustlm/tools/run-vnext-unit-test-gate.js",
+            "standard"
+        ) "Standard Node test gate"
     }
 
-    & $Cargo build -p tinyrustlm-runtime --release --target wasm32-unknown-unknown
-    if ($LASTEXITCODE -ne 0) {
-        throw "cargo wasm build failed with exit code $LASTEXITCODE"
-    }
-
-    Copy-Item -LiteralPath "target\wasm32-unknown-unknown\release\tinyrustlm_runtime.wasm" -Destination "tinyrustlm\runtime\tinyrustlm.wasm" -Force
-    & $Cargo run -p tinyrustlm-slm-pack -- runtime-wasm-manifest "tinyrustlm\runtime\tinyrustlm.wasm" "tinyrustlm\runtime\tinyrustlm.wasm.manifest"
-    if ($LASTEXITCODE -ne 0) {
-        throw "runtime WASM manifest generation failed with exit code $LASTEXITCODE"
-    }
-
-    & $Cargo build -p tinyrustlm-runtime --release --target wasm32-unknown-unknown --features wasm-simd
-    if ($LASTEXITCODE -ne 0) {
-        throw "cargo SIMD WASM build failed with exit code $LASTEXITCODE"
-    }
-
-    Copy-Item -LiteralPath "target\wasm32-unknown-unknown\release\tinyrustlm_runtime.wasm" -Destination "tinyrustlm\runtime\tinyrustlm-simd.wasm" -Force
-    & $Cargo run -p tinyrustlm-slm-pack -- runtime-wasm-manifest "tinyrustlm\runtime\tinyrustlm-simd.wasm" "tinyrustlm\runtime\tinyrustlm-simd.wasm.manifest"
-    if ($LASTEXITCODE -ne 0) {
-        throw "SIMD runtime WASM manifest generation failed with exit code $LASTEXITCODE"
-    }
-
-    $models = @(
-        @{ Path = "tinyrustlm\models\tiny-test-model.slm"; Mode = "tiny-fixture" },
-        @{ Path = "tinyrustlm\models\tiny-test-model-tied.slm"; Mode = "tiny-fixture-tied" },
-        @{ Path = "tinyrustlm\models\tiny-test-model-q8.slm"; Mode = "tiny-fixture-q8" },
-        @{ Path = "tinyrustlm\models\tiny-test-model-q4.slm"; Mode = "tiny-fixture-q4" },
-        @{ Path = "tinyrustlm\models\tiny-test-model-bpe.slm"; Mode = "tiny-fixture-bpe" },
-        @{ Path = "tinyrustlm\models\tinylm16-f32.slm"; Mode = "tinylm16-f32" },
-        @{ Path = "tinyrustlm\models\tinylm16-q8.slm"; Mode = "tinylm16-q8" },
-        @{ Path = "tinyrustlm\models\tinylm16-q4.slm"; Mode = "tinylm16-q4" }
-    )
-
-    foreach ($model in $models) {
-        if ($RegenerateModels -or -not (Test-Path -LiteralPath $model.Path)) {
-            & $Cargo run -p tinyrustlm-slm-pack -- $model.Path $model.Mode
-            if ($LASTEXITCODE -ne 0) {
-                throw "model pack failed for $($model.Path) with exit code $LASTEXITCODE"
-            }
-        }
-        $manifestPath = "$($model.Path).manifest"
-        if ($RegenerateModels -or -not (Test-Path -LiteralPath $manifestPath)) {
-            & $Cargo run -p tinyrustlm-slm-pack -- manifest $model.Path $manifestPath deterministic-smoke
-            if ($LASTEXITCODE -ne 0) {
-                throw "model manifest generation failed for $($model.Path) with exit code $LASTEXITCODE"
-            }
-        }
-    }
-
-    Write-Host "TinyRustLM $Configuration build complete."
-    Write-Host "Run from Visual Studio with Debug > Start Debugging, or open http://127.0.0.1:8080/app/ after starting the server."
+    Write-Host "TinyRustLM $Configuration build passed."
 }
 finally {
     Pop-Location

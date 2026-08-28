@@ -2,40 +2,61 @@
 
 Open `TinyRustLM.sln` from the repository root in Visual Studio 2022.
 
-Required local tools:
+Required tools:
 
-- Visual Studio 2022 with the Desktop development with C++ workload, for NMake project support.
-- Rust toolchain with `cargo` and `rustup`.
-- Node.js, used only for JavaScript execution smoke tools. Visual Studio F5, static app contract checks, and local route checks use no-crate Rust tools built by Cargo.
+- Visual Studio 2022 with Desktop development with C++ for NMake support;
+- the pinned Rust toolchain, Cargo, and rustup;
+- the installed `wasm32-unknown-unknown` Rust target; and
+- Node.js 24 or newer with the locked `tinyrustlm` dependencies restored.
 
-The solution contains one NMake project named `TinyRustLM`. Visual Studio does not compile Rust directly; it invokes the checked-in PowerShell scripts under `tools/vs/`, which call Cargo and the local static server.
+The solution has one NMake project. Visual Studio invokes the checked-in
+PowerShell owners under `tools/vs`; it does not maintain a second build graph.
 
 ## Build
 
-Use `Build > Build Solution`.
+`Build > Build Solution` runs:
 
-The build script:
+```powershell
+.\tools\vs\Build-TinyRustLM.ps1 -Configuration Debug
+```
 
-- Ensures the `wasm32-unknown-unknown` target is installed.
-- Runs `cargo build --workspace`.
-- Builds the release WASM runtime.
-- Copies `target/wasm32-unknown-unknown/release/tinyrustlm_runtime.wasm` to `tinyrustlm/runtime/tinyrustlm.wasm`.
-- Ensures the local `.slm` model artifacts and `.slm.manifest` provenance sidecars exist, including TinyLM-16M f32, q8_0, q4_0, the BPE fixture, and the tied-output fixture.
-- Keeps the generated WASM and local model files in the locations used by the static browser app and smoke tests.
+The script resolves tools from the current environment, requires the WASM
+target, builds the canonical Cargo workspace with `--locked --offline`, and
+checks the deployed browser WASM and manifest. It has no user-specific path,
+obsolete runtime copy, model-fixture generation, or alternate packer.
+
+Useful explicit modes:
+
+```powershell
+.\tools\vs\Build-TinyRustLM.ps1 -Configuration Release
+.\tools\vs\Build-TinyRustLM.ps1 -Configuration Debug -RunTests
+.\tools\vs\Build-TinyRustLM.ps1 -CleanOnly
+.\tools\vs\Build-TinyRustLM.ps1 -Configuration Release -RefreshBrowserRuntime
+```
+
+`-RefreshBrowserRuntime` intentionally rewrites the checked-in canonical WASM
+and manifest from the current source build. Review both files before commit.
 
 ## Run
 
-Use `Debug > Start Debugging` or press `F5`.
+Press `F5` or run:
 
-Visual Studio runs `tools/vs/Run-TinyRustLM.ps1`, which builds if needed, starts the Rust local static server, and opens:
+```powershell
+.\tools\vs\Run-TinyRustLM.ps1
+```
+
+The script builds unless `-NoBuild` is supplied, selects an unused loopback
+port, starts `tinyrustlm-local-server`, and opens:
 
 ```text
 http://127.0.0.1:8080/app/
 ```
 
-The run script checks whether the selected port is already serving TinyRustLM by loading `/app/` and probing `/runtime/tinyrustlm.wasm`. If that verified app is already running, F5 reuses it and opens the browser. If the port is occupied by another local service, the script checks the next ports and starts `target\debug\tinyrustlm-local-server.exe` on the first free loopback port.
+An existing server is reused only when both `/app/` and
+`/browser-runtime/tinyrustlm-browser-runtime.wasm` identify the current app.
+An unrelated process on the requested port is never reused.
 
-Useful run options:
+Options:
 
 ```powershell
 .\tools\vs\Run-TinyRustLM.ps1 -NoBuild
@@ -43,34 +64,24 @@ Useful run options:
 .\tools\vs\Run-TinyRustLM.ps1 -NoBrowser
 ```
 
-Stop debugging to stop the foreground server when the script starts one.
+Stop debugging to stop a server started by the foreground run script.
 
 ## Test
-
-From a PowerShell terminal at the repository root:
 
 ```powershell
 .\tools\vs\Test-TinyRustLM.ps1
 ```
 
-The default test path builds the workspace, runs Cargo tests, checks handwritten JavaScript syntax, runs the Rust mini browser harness over the static app contract, validates every local `.slm` artifact with the native packer admission gate, validates each `.slm.manifest` provenance sidecar, validates the BPE and tied-output fixture routes, validates the tiny raw-f32 trained-source fixture, converts it into f32, q8_0, and q4_0 `.slm` artifacts, gates each converted artifact for `runtime-smoke`, runs `tinyrustlm-eval` over the scoped fixture cases for each converted mode, gates each eval sidecar for fixture-scoped `assistant-quality`, generates a tied-output source fixture, validates `tied_output=true` without `output.weight`, converts the tied source into f32, q8_0, and q4_0 artifacts, gates each tied converted artifact for `runtime-smoke`, generates a BPE source fixture, validates `tokenizer=bpe-v1` plus token and merge metadata, converts the BPE source into q8_0, gates that converted artifact for `runtime-smoke`, and runs the WASM ABI smoke for invalid UTF-8 prompt bytes, null pointers, invalid lengths, and recovery generation.
+This runs the complete developer gate documented in
+`tinyrustlm/docs/testing.md`: canonical build, Rust workspace tests, standard
+Node tests, formatting, Clippy, Rust documentation, and browser-owner syntax.
 
-To include headless browser smoke for q8_0 and q4_0:
+Add a real Chromium static-release smoke with:
 
 ```powershell
 .\tools\vs\Test-TinyRustLM.ps1 -BrowserSmoke
 ```
 
-That browser path also runs the Rust mini browser harness against the loopback server, then runs loop, malformed local model, context-overflow, missing-model, endurance, benchmark-panel performance smoke, Step Token click-through smoke, and the desktop/mobile UI audit. Like the F5 runner, it reuses a verified TinyRustLM server or starts on the first free loopback port from the requested browser-smoke port.
-
-```powershell
-.\tools\vs\Test-TinyRustLM.ps1 -BrowserSmoke -BrowserSmokePort 8090 -PortSearchLimit 10
-```
-
-For a heavier repeated benchmark-panel check:
-
-```powershell
-.\tools\vs\Test-TinyRustLM.ps1 -PerformanceSoak -PerformanceSoakCycles 3 -PerformanceSoakTokens 4
-```
-
-`-PerformanceSoak` repeats multi-token q8_0 and q4_0 generation across cycles and checks deterministic output, prompt/generated counts, KV length, positive host-side token speed, scratch bytes, reset recovery, and local-only requests.
+Use `-BrowserEvidenceRoot <absent-absolute-path>` when the evidence location
+must be operator-controlled. The script refuses an existing root so an old run
+cannot be overwritten or mistaken for new evidence.

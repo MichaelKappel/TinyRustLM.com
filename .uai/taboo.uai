@@ -1,5 +1,15 @@
-profile: runtime-mirust.taboo.v142
-updated_utc: 2026-08-28T00:44:20Z
+profile: runtime-mirust.taboo.v143
+updated_utc: 2026-08-28T04:33:47Z
+
+enterprise_intake_clean_cut_taboo_2026_08_28:
+  required_route: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md,20316,6e5a5b7cf7f3ad45008b14597a3616ee603da76cc500b69770de7280711785e4
+  no_legacy: Never add or preserve SLM1, ACG1, one-file product models, obsolete runtimes/packers/harnesses, compatibility readers, migrations, aliases, shims, dual protocols, or deferred cleanup. Prelaunch has no compatibility population.
+  no_hidden_rescue: Never repair output, retry invisibly, choose best-of-N, use a provider/server/JavaScript fallback, translate obsolete receipts, weaken a verifier, or turn a failed operation into a pass.
+  no_report_authority: Never treat advisory reports, demonstrative code, popularity, model size, structural success, local probes, mocks, cross-compilation, or packages as stronger evidence.
+  no_architecture_pollution: No generic OMI kernel/IR, semantic clones, speculative services, alternate runtime, graph database, executable artifact program, runtime self-modification, silent consolidation, arbitrary model slicing, or physical-control scope.
+  no_acquisition_handoff: Never make a model action download TXT/README/JSON/PowerShell instructions, proxy model bytes through project sites, accept unqualified peers, or expose arbitrary commands/paths/URLs to the browser.
+  no_stale_release: Never deploy uncommitted/red source, let docs/marketing/publication logs lag behavior, claim readback without exact bytes, or increment campaign counters without live receipts.
+  current_deletion: Replace and delete app/companion-bridge.js and app.js one-file acquisition semantics; do not leave them beside the current six-member protocol.
 
 omi_computational_architectures_intake_taboo_2026_08_27:
   required_routes: docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md

@@ -4,7 +4,7 @@
     <Title>TinyRustLM p2pLLM Runtime SDK</Title>
     <Summary>Native-backed mixed-Q8 SLM2 inspection and bounded ACG2 conversation runtime for TinyRustLM.</Summary>
     <Description>Public TinyRustLM .NET SDK over the exact current 15-symbol native ABI. It validates the native contract, inspects mixed-Q8 SLM2 artifacts, fail-atomically activates five-member ACG2 compositions, executes canonical Prompt2 requests through Tokenizer2, Template2, and Sampling2, and exposes bounded state and raw terminal output. It contains no legacy model loader, compatibility API, diagnostics text, response repair, model authoring, training, routing, telemetry, or licensing internals.</Description>
-    <PackageTags>TinyRustLM;TinyRustLM.Core;TinyRustLM.com;UAIX;UAIX.org;browser-local;p2pLLM;p2pLLM.com;SLM2;.slm;ACG2;Prompt2;Tokenizer2;Template2;Sampling2;AI;LLM;Rust;native;runtime;model-validation;model-inspection;bounded-generation;protected-sdk</PackageTags>
+    <PackageTags>TinyRustLM;TinyRustLM.Core;TinyRustLM.com;UAIX;UAIX.org;browser-local;p2pLLM;p2pLLM.com;SLM2;.slm2;ACG2;Prompt2;Tokenizer2;Template2;Sampling2;AI;LLM;Rust;native;runtime;model-validation;model-inspection;bounded-generation;protected-sdk</PackageTags>
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>

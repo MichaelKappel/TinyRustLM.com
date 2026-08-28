@@ -368,7 +368,8 @@ test("the generated adapter preserves plan, currentness, projection, and result 
   );
 
   const unrelatedModule = fs.readFileSync(
-    path.join(repositoryRoot, "tinyrustlm/runtime/tinyrustlm.wasm")
+    path.join(repositoryRoot,
+      "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm")
   );
   await assert.rejects(
     adapter.instantiateCampaignEvidence(unrelatedModule),

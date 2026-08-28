@@ -120,6 +120,10 @@ function printReleaseResult(result) {
 
 async function main() {
   const [operation, rawEvidenceRoot, ...extra] = process.argv.slice(2);
+  if (operation === "standard" && rawEvidenceRoot === undefined && extra.length === 0) {
+    runStandardUnitTests();
+    return;
+  }
   if ((operation !== "all" && operation !== "release-surface") ||
       rawEvidenceRoot === undefined || extra.length !== 0) {
     fail("unit_gate_arguments_invalid");

@@ -1,7 +1,0 @@
-tinyrustlm_wasm_manifest_version=1
-runtime_kind=tinyrustlm-rust-wasm
-runtime_status=validated-local-runtime
-runtime_wasm_path=../runtime/tinyrustlm.wasm
-runtime_wasm_bytes=394551
-runtime_wasm_checksum=0x99e6362ca70c3831
-required_next_gate=instantiate-wasm-runtime

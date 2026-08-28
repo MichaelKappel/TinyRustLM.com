@@ -160,7 +160,14 @@ CI source performs the same replay for each declared RID and uploads its receipt
 separately from the package, but no completed hosted run or non-Windows native
 execution is claimed at this checkpoint.
 
-Reviewed at `2026-08-25T03:19:30Z`. The review is invalidated when any bound
+The 2026-08-28 clean-cut refresh removes the obsolete graph extension from
+both active validators and enumerates the sole SLM2 composition member
+extensions in the public-web exclusion rule. This changes no accepted release
+schema or campaign verdict: model and composition bytes remain forbidden from
+the project-site publication graph, while direct P2P and local composition
+storage remain separate evidence domains.
+
+Reviewed at `2026-08-28T04:07:47Z`. The review is invalidated when any bound
 file changes, when the parser changes, or when a deferred proof obligation is
 reclassified without a new threat review.
 
@@ -170,8 +177,8 @@ reclassified without a new threat review.
 | --- | --- | ---: | --- |
 | Frozen registry | `contracts/vnext/contract-family.v1.json` | 40,674 | `dd1534f577f5468f94d4b3b4d7d8985751fd1ddc4a28a2ccee9f47462449bbf0` |
 | Language-neutral corpus | `contracts/vnext/contract-corpus.v1.json` | 195,068 | `2c86c7da67d419b140f5de8b9d297707a6e47245a338db6dd9bcca55de912044` |
-| Registry interpreter | `tinyrustlm/tools/vnext-contract-validator-registry.js` | 33,567 | `a0f0db68f8854d7e40801180b82accec64568280f4bd6a65991fa0edf3bd9a3c` |
-| Independent validator | `tinyrustlm/tools/vnext-contract-validator-independent.js` | 46,820 | `b9fd26ee1d5f0080472f7d08f2959084b0a858766104f140918d5647cedab115` |
+| Registry interpreter | `tinyrustlm/tools/vnext-contract-validator-registry.js` | 33,613 | `e87043aa93a17b264004d6509d38e732454b676f548031bccfdaa13a2b24321c` |
+| Independent validator | `tinyrustlm/tools/vnext-contract-validator-independent.js` | 46,859 | `ada4ad6f82ab43cfb9790729719a98fa1869198cf42fde32e9554f20e4f4d7a5` |
 | Corpus generator | `tinyrustlm/tools/vnext-contract-corpus-generator.js` | 24,303 | `835d3a65bd0cae9adc1618d2f40802390643d04d60a0d3287e01d3665860a986` |
 | Differential tests | `tinyrustlm/tests/vnext-contract-validator-conformance.test.js` | 12,513 | `ab5ffd0efaa67136bfb24081ea87ab50b04014f3739dc0b79f233bce7fe6a9a1` |
 

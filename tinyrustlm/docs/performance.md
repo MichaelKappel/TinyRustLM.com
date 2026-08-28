@@ -1,33 +1,100 @@
-# Performance
+# Performance And Resource Evidence
 
-## Purpose
+## Principle
 
-Performance work keeps the browser runtime responsive while protecting correctness.
+Performance is a measured property of one exact model, composition, runtime,
+browser, workload, and machine. Correct scalar semantics come first. An
+optimized path is admitted only as a differential implementation of the same
+contract; it is never a hidden fallback or a second semantic authority.
 
-## Constraints
+## Required Measurements
 
-Correct f32 output comes before speed. The runtime must avoid uncontrolled per-token allocation and must keep memory usage visible in diagnostics.
+Every native or browser result binds the exact source commit/tree, composition
+identity, runtime binary or WASM hash, browser build, operating system,
+hardware, sampling profile, prompt-case hash, and measurement tool.
 
-## Data Structures
+Record at least:
 
-Diagnostics track model load time, prompt token count, generated token count, tokens per second, peak scratch arena usage, KV cache length, and active quantization mode. Quantized models keep q8_0/q4_0 payloads in native compact storage and use model-loaded scratch buffers for row/vector dequantization. Runtime generation also keeps pre-resolved tensor indices, a reusable logits buffer, allocation-free top-k diagnostics, fixed-buffer stochastic sampling, and a 64 KiB generated-result cap so prompt generation and single-token stepping do not allocate new scratch, vocab-sized logits, layer-name strings, diagnostic candidate vectors, sampling candidate vectors, or unbounded result buffers per token. The browser UI also measures host-side load and generation elapsed time.
+- cold and warm runtime initialization;
+- composition open and six-member verification time;
+- prefill tokens per second and first-token latency;
+- decode tokens per second;
+- generated token count and termination reason;
+- cancellation request-to-terminal latency;
+- worker replacement and immutable reopen time;
+- immutable model and member bytes;
+- peak WASM linear memory and JavaScript memory where observable;
+- process resident memory under a documented method;
+- transient activation, logits, tokenizer, and hashing buffers;
+- KV-cache bytes per retained token and maximum admitted tokens;
+- storage copy count and transferred bytes;
+- unexpected network request count.
 
-## Binary Formats
+Do not invent values for unavailable counters or combine predicted and observed
+figures in one field.
 
-The current TinyLM-16M f32 file is about 68 MB. The current TinyLM-16M q8_0 file is about 17 MB. The current TinyLM-16M q4_0 file is 10,657,728 bytes, inside the expected 9-15 MB range.
+## Memory Model
 
-## Failure Cases
+Peak browser memory is not model file size. Plan and measure:
 
-Context overflow, scratch arena exhaustion, output buffer overflow, non-finite softmax sums, and malformed quant blocks are correctness failures, not performance metrics.
+```text
+peak = immutable member storage
+     + active WASM linear memory
+     + model representation
+     + tokenizer/template/prompt state
+     + activation and dequantization scratch
+     + logits and sampling buffers
+     + KV cache
+     + worker message and stream buffers
+     + JavaScript and browser/JIT overhead
+```
 
-## Validation Rules
+KV-cache capacity is derived from layers, KV heads, head dimension, retained
+tokens, and element width. Checked arithmetic and the admission policy reject a
+request before an impossible allocation. Context overflow, allocation failure,
+nonfinite activation, and output-limit breach are typed correctness failures,
+not slow successful runs.
 
-Initial f32, q8_0, and q4_0 should not crash on a model configured for 512-token context. Browser diagnostics must render after load and generation. Unit tests assert generation scratch/logits pointer stability across prompt generation and repeated `generate_next_token` calls. Context-boundary tests assert that a prompt may fill every context slot except the first generated-token slot and that a full prompt context is rejected before generation. Output-buffer tests assert byte and BPE decode reject over-limit result text with `OutputBufferExceeded` and that full-generation failures clear stale generation state. Sampling tests assert seeded top-k/top-p behavior, reject top-k values beyond the fixed 1024-candidate cap, and prove the BPE fixture can use top_k 262 without a vocab-sized candidate allocation. The TinyLM-16M q8_0 and q4_0 browser smokes generated one token from prompt `hi`, reported 47,104 bytes of scratch usage after scratch-backed quantized row/vector dequantization, and rendered host-side token speed.
+## Copy Discipline
 
-The browser performance smoke runs multi-token q8_0 and q4_0 generation through the UI, then verifies prompt-token count, generated-token count, token-speed display, scratch-byte display, quantization mode, reset recovery, and local-only network requests. This is a benchmark-panel correctness check, not a trained-quality or production throughput claim.
+The browser streams each composition member to the worker in bounded
+contiguous transferable chunks. The top window does not retain model copies.
+The worker wipes consumed transfer buffers and owns active runtime state.
 
-The browser performance soak repeats that multi-token q8_0 and q4_0 path across cycles. Each cycle must produce deterministic output, positive host-side token speed, expected prompt/generated counts, expected KV cache length, nonzero scratch usage during generation, clean reset diagnostics, and local-only network requests. This is still a stability and instrumentation check, not a final quality benchmark.
+Claims such as zero-copy require measured proof across the complete storage,
+JavaScript, worker, and WASM path. File System Access, OPFS, IndexedDB,
+`ArrayBuffer`, structured clone, and WASM memory each have distinct copy and
+quota behavior; API names alone are not evidence.
 
-## Future Expansion Path
+## Optimization Gate
 
-Optimization can focus on q8/q4 matvec tiling, fewer scratch dequantization passes, fewer copies across the JS/WASM boundary, larger context support, larger BPE-aware fixed sampling buffers or model-loaded sampler scratch, and eventually optional WebGPU outside the first-version scope.
+For each proposed SIMD, threading, layout, cache, quantization, or retrieval
+optimization:
+
+1. preregister the exact changed operations and resource ceiling;
+2. preserve the scalar result and first-divergence capture points;
+3. run unit and adversarial kernel vectors;
+4. compare layers, logits, token ordering, and deterministic sequences;
+5. measure cold/warm latency, throughput, memory, and cancellation;
+6. run untouched behavioral noninferiority where model bytes or arithmetic
+   change;
+7. reject the candidate if a correctness or ordinary-helpfulness budget is
+   exceeded.
+
+No automatic dispatch fallback is allowed after an optimized kernel fails its
+admission or runtime invariant. Unsupported capability produces a truthful
+rejection.
+
+## Browser Evidence
+
+Node or a WASM harness is not browser proof. Chromium is the required first
+real-browser target. Firefox and WebKit remain unproven until separately run
+with exact versions and equivalent evidence.
+
+Browser tests cover constrained-memory admission, long prefill, repeated
+decode, context boundary, cancellation during hashing/prefill/decode, worker
+termination, fresh-worker reopen, tab lifecycle, storage loss, stale service
+worker, browser crash, and owned-profile deletion.
+
+Performance evidence permits no model-quality, P2P, deployment, or campaign
+claim by itself.

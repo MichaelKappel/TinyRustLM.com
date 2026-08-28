@@ -143,7 +143,7 @@
       ),
       requiredNextGate: requireText(
         source.requiredNextGate,
-        "worker-initialize-and-six-member-activation",
+        "real-qwen3-native-wasm-parity-clean-profile-quality-and-companion-acquisition",
         "browser-runtime-manifest-next-gate"
       )
     });

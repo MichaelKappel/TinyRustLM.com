@@ -1,45 +1,197 @@
-# TinyRustLM Architecture
+# Architecture
 
-## Purpose
+## Product Boundary
 
-TinyRustLM is a browser-local SLM runtime with a static UI, handwritten JavaScript bootstrap, no-crate Rust local server, no-crate Rust mini browser harness, Rust WASM runtime, and local `.slm` model files.
+TinyRustLM is one prelaunch browser-local assistant. The product has one
+current execution architecture. Names such as SLM2, Tokenizer2, Template2,
+Sampling2, Prompt2, and ACG2 are technical format identities, not product
+generations and not authorization for compatibility paths.
 
-## Constraints
+The browser site publishes application code, the import-free WebAssembly
+runtime, and public metadata. It does not host model bytes, receive prompts,
+run remote inference, or proxy source-model downloads. Model bytes are selected
+locally or, after the companion contract is completed and independently
+verified, transferred directly from a consenting peer or converted locally
+from an immutable public source revision.
 
-The runtime, local server, and mini browser harness use no third-party Rust crates, no JavaScript frameworks, no tokenizer libraries, no ML frameworks, and no remote inference APIs. Rust owns local static hosting, app-contract verification, model validation, adapter validation, tokenization, math, KV cache, sampling, and diagnostics. JavaScript only fetches local static files, copies model or adapter bytes into WASM memory, calls exports, and renders UI state such as provenance, diagnostics, benchmark values, adapter status, and the local conversation transcript.
+## Sole Composition
 
-## Data Structures
+An executable model is one exact six-member composition:
 
-The core data structures are `SlmHeader`, `TensorEntry`, typed tensor storage, pre-resolved top-level and per-layer tensor indices, `Tokenizer`, `TensorView`, `MutableTensorView`, `KvCache`, `SamplingConfig`, `Diagnostics`, and `Runtime`. The local server adds a small request-line parser, percent decoder, traversal-checked path resolver, and content-type mapper for static browser files. The Rust mini browser harness adds required DOM id checks, local-only marker scanning, model-route verification, adapter-route verification, selector-registry intake markers, line-based manifest validation, loopback URL parsing, and simple HTTP response validation. The packer adds `source.manifest` records and raw f32 tensor files as the trained-source input boundary before `.slm` conversion, including BPE token/merge records that serialize into `BPE1` tokenizer sections and explicit `tied_output=true` source layouts that omit `output.weight` and set the v1 flag during conversion. The packer also adds line-based parent compatibility reports, candidate lineage templates, direct-parameter blend, task-delta, and sparse task-delta operator receipts, raw, sparse, and low-rank f32 adapter-delta artifacts, adapter-fuse receipts, adapter-family receipts, candidate artifact manifests, multi-parent candidate manifests, promotion templates, multi-parent promotion templates, multi-parent selector admission records, runtime-smoke sidecars, selector admission records, promotion ledgers, population reviews, parent-pool recipes, sign-aware parent-pool merge receipts, selector registries with optional f32/q8_0/q4_0 adapter sidecar fields plus indexed adapter-family and receipt fields, and generated browser multi-parent bundles that bind admitted `.slm` parents to planned, operator-produced, adapter-packaged, adapter-fused, adapter-family-bound, manifest-bound, multi-parent-manifest-bound, proof-pending, evidence-passed, multi-parent-evidence-passed, history-chained, frontier-ranked, parent-pool-seeded, sign-merged, browser-routed, and registry-carried adapter-family candidates before selector loading. The browser app can read a local `models/selector.registry` file and replace its checked-in smoke list only with admitted `../models/*.slm` entries; it can also read optional local f32/q8_0/q4_0 `../models/*.adp1`, `../models/*.asp1`, or `../models/*.alr1` adapter routes and served `.adapter-family.receipt` handles from that registry while keeping adapter bytes opaque to JavaScript. The checked tiny f32/q8_0/q4_0 self-ADP1 sidecars remain the fallback local routes into Rust `apply_adapter_delta`. The native eval runner adds line-based eval cases and eval sidecars as the evidence boundary after runtime execution. The runtime keeps q8_0 raw rows plus scales and q4_0 packed nibbles plus block scales for direct matvec, dequantizes only requested rows or small vectors into model-loaded reusable scratch for embedding and norm paths, and re-quantizes compact rows or blocks when a validated ADP1, ASP1, or ALR1 package is applied. Model load resolves the tensor indices needed by generation once, including the tied-output flag fallback from `output.weight` to `tok_embeddings.weight`, so per-token forward passes do not format layer tensor names or scan the tensor directory by stable name. It also owns a reusable logits buffer so prompt generation and `generate_next_token` do not allocate scratch or vocab-sized logits per token. Decoding defaults to greedy for repeatable tests, while Rust also owns validated temperature, top-k, top-p, seeded PRNG sampling, and fixed candidate buffers capped at 1024 candidates so BPE vocabularies above byte-tokenizer size do not require a per-token heap vector. The first real-shaped target uses four layers, hidden size 512, eight heads, FFN size 2048, and context 512.
+| Order | Role | Canonical file | Format authority |
+| --- | --- | --- | --- |
+| 0 | model | `model.slm2` | `org.minimodel.slm2/2.0` |
+| 1 | tokenizer | `tokenizer.tokenizer2` | `org.minimodel.tokenizer2/2.0` |
+| 2 | template | `template.template2` | `org.minimodel.template2/2.0` |
+| 3 | sampling | `sampling.sampling2` | `org.minimodel.sampling2/2.0` |
+| 4 | prompt | `prompt.prompt2` | `org.minimodel.prompt2/2.0` |
+| 5 | composition | `composition.acg2` | `acg2.0` |
 
-Population review records expose the ranking objective vector as data: `fitness_objective_vector_*` fields define quality, frugality, and quantization-fit weights, and each ranked entry carries a `fitness_objective_vector_checksum` over its score vector before parent-pool recipes consume the review.
+The graph binds every member by role, exact byte length, and lowercase SHA-256.
+Paths, aliases, timestamps, mutable catalog names, and producer assertions are
+not artifact identity. Browser activation additionally requires one canonical
+browser admission document that binds the six artifacts, qualification
+evidence, the worker protocol, the exact WASM artifact, bounded runtime policy,
+and default sampling.
 
-Adapter-family routing extends the registry-carried sidecar bead: generated registries can keep the single-route fields for the first `ADP1` sidecar, add indexed fields for additional compatible local sidecars on the same admitted f32/q8_0/q4_0 entry, and carry a served adapter-family receipt path plus checksum. The browser fetches and checksum-verifies that receipt plus each served adapter manifest, matches each member against the selector metadata and shared base-quantization identity fields, and displays local adapter options only after the receipt and manifests match while Rust keeps package validation authority.
+Unknown fields, duplicate keys, omitted members, additional members, reordered
+members, aliases, changed bytes, unsupported profiles, and resource
+under-declaration reject before activation. The browser does not translate an
+older shape or infer a missing member.
 
-## Binary Formats
+Normative design records:
 
-The `.slm` model file is little-endian and starts with `SLM1`. It contains a fixed v1 header, tokenizer section, tensor directory, 64-byte-aligned tensor data, and aligned scale sections for quantized tensors. Model loading parses the tokenizer section and selects either the fixed byte tokenizer (`BTOK`) or the custom BPE tokenizer (`BPE1`) before generation. A v1 tied-output flag permits `output.weight` to be omitted only when logits can project through `tok_embeddings.weight`; the checked-in tied fixture keeps that contract artifact-backed.
+- `docs/architecture/adr/ADR-013-slm2-format-profile.md`
+- `docs/architecture/adr/ADR-014-tokenizer2-format-profile.md`
+- `docs/architecture/adr/ADR-015-template2-format-profile.md`
+- `docs/architecture/adr/ADR-016-sampling2-format-profile.md`
+- `docs/architecture/adr/ADR-017-prompt2-composition-profile.md`
+- `docs/architecture/adr/ADR-019-acg2-champion-format.md`
+- `docs/architecture/vnext-slm2-format-implementation.md`
+- `docs/architecture/vnext-tokenizer2-format-implementation.md`
 
-## Failure Cases
+## Component Ownership
 
-The runtime rejects null pointers, invalid lengths, invalid UTF-8, invalid magic, unsupported model versions, malformed headers, malformed tensor directories, missing tensors, shape mismatches, unsupported dtypes, context overflow, unloaded model calls, generation failures, and output overflow. The local server rejects unsupported methods, malformed request lines, invalid percent escapes, absolute paths, traversal paths, drive-qualified paths, and missing files. The Rust mini browser harness rejects missing UI contract markers, remote asset markers, missing model or manifest files, manifest quality overclaims, non-loopback HTTP URLs, wrong content types, and local route failures.
+Each semantic responsibility has one owner:
 
-## Validation Rules
+- `rust/crates/tinyrustlm-slm2`: SLM2 parsing, writing primitives, tensor
+  structure, and exact profile validation.
+- `rust/crates/tinyrustlm-tokenizer2`: Tokenizer2 parsing, encoding, and
+  decoding.
+- `rust/crates/tinyrustlm-template2`: bounded declarative chat rendering.
+- `rust/crates/tinyrustlm-sampling2`: deterministic greedy and seeded
+  stochastic sampling.
+- `rust/crates/tinyrustlm-prompt2`: authority-ordered prompt construction.
+- `rust/crates/tinyrustlm-composition2`: ACG2 parsing, identity binding, and
+  activation preflight.
+- `rust/crates/tinyrustlm-runtime`: host-facing conversation state and scalar
+  semantic authority.
+- `rust/crates/tinyrustlm-slm2-runtime`: converted tensor interpretation and
+  scalar numerical execution.
+- `rust/crates/tinyrustlm-browser-runtime-wasm`: the sole browser ABI over the
+  canonical runtime.
+- `rust/crates/tinyrustlm-native`: the sole native ABI.
+- `rust/crates/tinyrustlm-convert`: pinned-source conversion and bounded
+  conversion receipts.
+- `rust/crates/tinyrustlm-p2p`: composition-bound fixed-piece transport.
+- `dotnet/src/TinyRustLM.Core`: managed wrapper over the current native ABI.
+- `dotnet/src/TinyRustLM.Companion`: secure loopback capability and
+  six-artifact operation contracts.
+- `tinyrustlm/app/model-runtime-worker.js`: sole browser owner of WASM, model
+  transfer, activation, generation, cancellation, and runtime state.
+- `tinyrustlm/app/model-runtime-client.js`: typed top-window client for the
+  worker protocol.
+- `tinyrustlm/app/app.js`: user commands and exactly-once presentation only.
 
-Every raw pointer crossing the WASM boundary is checked before use. Every binary parser validates bounds before reading. Tensor shapes must match element counts. Header dimensions must be non-zero and attention heads times head dimension must equal hidden size.
+A second parser, tokenizer, runtime, event path, serializer, fallback backend,
+or response repair path is a defect. Source-control history is the rollback
+mechanism; runtime compatibility is not.
 
-Model admission is split into source validation, structural validation, parent compatibility for assembly work, candidate lineage binding, offline operator receipt validation, adapter artifact validation, adapter-fuse validation, runtime f32/q8_0/q4_0 adapter apply, browser adapter sidecar routing, registry-carried adapter-family receipt routing, candidate artifact binding, multi-parent candidate binding, candidate promotion binding, provenance validation, runtime-smoke sidecar binding, runtime eval evidence, selector admission, multi-parent selector admission, promotion ledger history, population review, parent-pool recipe, sign-merge candidate receipt, selector registry routing, generated browser bundle routing, and quality gating. Source validation accepts only line-declared raw f32 tensor files with safe paths, exact sizes, matching source checksums, expected shapes, finite bounded values, nonzero payloads, and tokenizer metadata that agrees with the declared model shape. Parent compatibility validates both `.slm` files first and passes the direct-parameter lane only when version, shape, tokenizer checksum, output-head contract, quantization, tensor count, parameter count, and tensor layout checksum match exactly. Candidate lineage then binds a planned candidate id, operator id, resource budget, parent fields, and compatibility report checksum before any operator can produce an artifact. The offline operator lane now includes weighted blend receipts, task-delta receipts, sparse task-delta receipts, and sign-aware parent-pool merge receipts: each verifies parent checksums, dequantizes compatible tensors as needed, writes a normal `.slm`, and records receipts that validators recompute before later gates. Sparse task-delta selection keeps the largest absolute target-minus-base deltas by parts-per-million keep rate, records selection metric and parameter counts, and leaves unselected entries at the base value. The adapter lane writes `ADP1` raw f32 task-delta packages, `ASP1` sparse f32 task-delta packages, and `ALR1` low-rank f32 task-delta packages from the same lineage and parent gates; sparse manifests record the same keep-rate and mask breadcrumb fields used by sparse task-delta receipts, and low-rank manifests record factor and residual fields for matrix deltas. Fuse validation currently consumes raw ADP1 packages, checks the adapter header and tensor directory against the base parent, writes a normal `.slm` candidate, and records an adapter-fuse receipt before candidate-manifest. Runtime adapter apply validates loaded-base identity, package and payload checksums, tokenizer checksum, tensor layout checksum, tensor directory metadata, finite deltas or factors, sparse indices or low-rank shapes, and fused values before mutating tensors, re-quantizing compact q8_0/q4_0 rows or blocks when needed, and clearing generation state. Browser adapter sidecar routing is the UI bead for checked tiny ADP1 routes and generated ADP1/ASP1/ALR1 routes: JavaScript filters a local `.adp1`, `.asp1`, or `.alr1` route, transfers bytes to WASM, and Rust remains the adapter validator. Registry-carried adapter-family receipt routing lets a generated selector registry attach local f32/q8_0/q4_0 `ADP1`, `ASP1`, or `ALR1` routes, sidecar manifest routes, labels, apply statuses, checksums, and one served receipt handle to an admitted entry; browser smoke then proves the UI fetches and verifies the receipt plus adapter manifests, loads the generated model, and applies the declared ADP1/ASP1/ALR1 stack without parsing adapter bytes. Candidate artifact manifests validate the produced `.slm`, bind it to the lineage checksum, require it to match the parent direct-parameter contract, and leave runtime/eval/promotion as the next gate. Multi-parent candidate manifests validate sign-merge output, bind the receipt checksum, parent-pool recipe checksum, relatedness summary, parent summaries, candidate `.slm` fields, and pending promotion route before runtime/eval/admission work. Promotion templates bind candidate manifest checksums, keep runtime-smoke and eval pending, and keep browser selector plus public-claim status closed until later sidecars prove promotion; the multi-parent promotion template also carries the sign-merge receipt checksum, parent-pool recipe checksum, review/ledger/admission checksums, parent count, and candidate `.slm` fields. Runtime-smoke sidecars bind provenance manifest checksum, `.slm` checksum, source kind, and model shape to local execution proof. Selector admission records accept only valid promotion, runtime-smoke, and passed converted-trained eval sidecars, then bind all evidence checksums plus `eval_case_evidence_checksum`, a normalized digest over the evaluated case rows. Multi-parent selector admission records accept only valid sign-merge promotion templates, runtime-smoke, provenance, and passed converted-trained eval sidecars, then bind the multi-parent evidence checksums plus the same eval-case digest. Promotion ledgers accept admitted records, carry that digest with the selector-facing evidence fields, reject duplicate candidate artifacts, and hash-chain the promotion history before selector or population review. Population reviews validate that ledger against the same admissions, rank candidates by quality, artifact frugality, and quantization fit, then route the frontier candidate toward selector registry and the remaining candidates toward a parent pool. Parent-pool recipes validate the review, require selected parents to share one direct-parameter contract, bind ranked roles plus seed weights normalized from population fitness, and write relatedness metric/scope/pair count/status, a shared relatedness checksum, and per-parent relatedness group fields before sign-aware merge work. Sign-merge candidates validate that recipe, use parent 0 as the frontier base, apply seed-weighted positive or negative delta consensus across the remaining parents, keep base values on ties, and record recipe, relatedness, ledger, review, admission, parent, sign-count, and candidate checksum fields for the multi-parent candidate manifest. Selector registries accept selector admission records and multi-parent admission records only when the candidate artifact path resolves under served `tinyrustlm/models/`, write `../models/*.slm` routes, carry `entry.N.eval_case_evidence_checksum`, and give the browser selector an optional admitted-model intake path. `browser-multi-parent-bundle` dogfoods that route by creating quantization-selected target TinyRustLM roots with served `multi-parent-sign-merge-f32`, `multi-parent-sign-merge-q8`, or `multi-parent-sign-merge-q4` model files, manifests, selector registry, generated self ADP1, family ADP1, sparse ASP1, and low-rank ALR1 sidecars, adapter manifests, adapter-family receipt, assembly receipt with the eval-case digest, and evidence files. Current deterministic TinyLM-16M-shaped artifacts can pass `runtime-smoke`, which proves local execution and diagnostics only. Converted-trained artifacts can also pass `runtime-smoke` after source conversion and `.slm` admission, including BPE source bundles whose tokenizer table is carried into the binary artifact. Assistant-quality claims require a converted-trained provenance manifest and a separate `honest-assistant-quality-v1` evaluation sidecar with matching model and manifest checksums, passed task evaluation, no-cheat pass, zero no-cheat failures, fixed and holdout cases, a numeric holdout seed, per-case origin, non-placeholder quality scope, zero failed cases, and an accepted quality decision; fixture-exact plumbing evidence is not enough for selector admission or product quality claims.
+## Browser Runtime
 
-Population review validation also recomputes the objective-vector contract and per-entry objective checksums from the ledger plus admissions, so objective weights and score vectors stay tied to the same reviewed evidence as frontier selection.
+The top window loads and verifies
+`browser-runtime/tinyrustlm-browser-runtime.wasm` against its canonical
+manifest, then transfers the module bytes to a dedicated worker. The worker
+locks network-capable globals before attaching the runtime and accepts only the
+closed command set defined by `tinyrustlm.model-runtime-worker/1`.
 
-Generated browser bundle roots now carry the app shell and WASM runtime alongside `models/` and `evidence/`, so file-backed browser smoke can serve the packer output directly.
+Activation streams all six artifacts in bounded contiguous chunks. The worker
+owns transferred bytes, validates exact operation and composition authority,
+commits the composition atomically, and exposes only typed bounded state. The
+top window never interprets model tensors, owns no KV cache, and cannot invoke
+an arbitrary WASM export.
 
-The Rust mini browser harness runs before heavy browser automation. Static mode checks the checked-in app tree, required local UI, manifest sidecars, selected model routes, WASM call markers, and local-only policy. Optional HTTP mode probes the Rust local server over loopback for app, CSS, JS, WASM, q8 model, and q8 manifest routes. Headless browser smoke still owns actual JavaScript execution, WASM loading, generation, transcript rendering, and UI interaction proof.
+Generation begins from one canonical Prompt2 request. Token IDs and decoded raw
+output remain the authoritative private result. Repeated token text is valid
+content and is not message duplication. Each generation has one message ID and
+one terminal result. Cancellation is a real runtime command; a protocol,
+identity, ABI, or transfer failure terminates the worker instead of retrying or
+falling back.
 
-Registry adapter-family route validation extends the single-sidecar route without changing the Rust runtime boundary: selector validation requires f32/q8_0/q4_0 entries, local `../models/*.adp1`, `../models/*.asp1`, or `../models/*.alr1` paths, paired manifests, apply status, checksums, non-duplicate adapter paths, a local `.adapter-family.receipt` handle, a receipt checksum, and matching family count; browser smoke proves the served receipt plus all served adapter manifests are fetched, the generated sparse ASP1 and low-rank ALR1 sidecar routes are displayed, the selected artifact checksum is checked before WASM transfer, and the declared stack is applied.
+See `tinyrustlm/docs/browser-runtime.md` and
+`docs/architecture/browser-runtime-verification.md` for the implemented
+boundary and its current proof limits.
 
-## Future Expansion Path
+## Memory
 
-The next modular lane now starts from proven static f32/q8_0/q4_0 ADP1 apply, runtime ASP1 sparse apply, runtime ALR1 low-rank apply, registry-carried f32/q8_0/q4_0 ADP1/ASP1/ALR1 adapter routes, file-backed generated f32/q8_0/q4_0 bundle roots, and a browser-verified receipt path rather than a single generated sidecar. Richer trained LoRA or compact adapter formats should plug into the same manifest, receipt, route, and smoke shape before becoming browser-visible.
+Local UAIX files remain supported for device-local and offline continuity.
+MemoryEndpoints.com is the authorized and strongly recommended portable-memory
+backbone for cross-device continuity. These are separate stores and evidence
+domains; raw conversation is not silently promoted into durable memory.
 
-Milestones continue from verified tiny fixtures, TinyLM-16M f32/q8_0/q4_0 smoke models, raw-f32 trained-source conversion including BPE source conversion and tied-output source conversion, artifact-backed tied-output validation, parent compatibility reports, candidate lineage templates, direct-parameter blend, task-delta, and sparse task-delta operator receipts, raw ADP1, sparse ASP1, and low-rank ALR1 adapter-delta artifacts, adapter-fuse candidate receipts, f32/q8_0/q4_0 ADP1/ASP1/ALR1 runtime adapter apply, checked browser f32/q8_0/q4_0 adapter sidecar routing, adapter-family receipts, candidate artifact manifests, multi-parent candidate manifests, promotion templates, multi-parent promotion templates, multi-parent selector admission records, runtime-smoke sidecars, selector admission records, promotion ledgers, population reviews, parent-pool recipes, sign-aware parent-pool merge receipts, selector registries, optional browser registry intake, generated browser-served multi-parent bundles, registry-carried ADP1/ASP1/ALR1 adapter families, and fixture-scoped eval execution into real trained weights, larger reviewed BPE tables, broader evaluation fixtures, trained LoRA-style adapters, broader offline assembly operators, and product-quality evidence review. TinyLM-64M and TinyLM-135M stay out of scope until the 16M path is correct.
+The current user turn outranks stale profile or retrieved memory. Retrieved and
+quoted natural language is untrusted data, never a capability, credential,
+schema, or instruction to the runtime. Browser credentials are session-only by
+default and are excluded from prompts, logs, screenshots, local persistence,
+and public receipts.
+
+Configured code or service reachability is not a live continuity receipt. The
+campaign remains at `0/25` until exact authorized create, reconnect, restore,
+replay-rejection, cleanup, and deletion evidence exists.
+
+## Acquisition And Companion Boundary
+
+The intended product route is deterministic:
+
+1. use an exact currently qualified composition from a verified consenting
+   peer when one is available;
+2. otherwise acquire the pinned public source and convert it locally;
+3. independently inspect all six members and the qualification binding;
+4. stream the admitted composition into the browser worker;
+5. activate only after every identity and bound agrees.
+
+A downloaded TXT, README, script, request file, or JSON handoff is not model
+acquisition. Project-hosted model bytes and remote inference are forbidden.
+
+The managed companion now defines a six-member
+`tinyrustlm.companion.operation.v2` artifact set and a cryptographic loopback
+capability protocol. The production browser bridge still requires a clean
+replacement before P2P or conversion can be released; its earlier one-file
+routes are not a supported alternate path and cannot produce browser
+activation. Until the current browser/server operation protocol is implemented
+and independently proven, manual selection of the six members plus their
+admission is the only browser activation route.
+
+## Evidence And Promotion
+
+Evidence is append-only and content-addressed. A producer records only what it
+observed. Independent validators recompute file type, length, digest, member
+closure, graph identity, path containment, and semantic invariants. Failed and
+obsolete receipts are immutable history and never become accepted input through
+translation or repair.
+
+The proof chain is intentionally separated:
+
+1. immutable source closure;
+2. deterministic conversion transaction;
+3. independent six-member structural and semantic inspection;
+4. source-framework to scalar-native numerical parity;
+5. optimized-native parity;
+6. real-browser WASM parity;
+7. no-cheat behavioral qualification;
+8. genuine clean-profile multi-turn browser chat;
+9. direct P2P or local-conversion acquisition proof;
+10. committed release, deployment, and HTTPS readback.
+
+Passing one stage proves no later stage. Current campaign counters remain
+`0/20` qualified models, `0/50` clean browser rounds, `0/25` live memory
+rounds, `0/40` externally proven P2P lanes, and `0/20` catalog announcements.
+
+## Clean-Slate Change Rule
+
+Before launch, a corrected contract replaces the sole implementation:
+
+1. preserve the raw failure;
+2. add a generic failing test and hostile counterexamples;
+3. define the exact replacement contract;
+4. update every producer and consumer coherently;
+5. delete superseded executable source, fixtures, tests, docs, assets, and
+   package symbols;
+6. run positive, negative, malformed, boundary, differential, and release
+   gates;
+7. commit and push the green change;
+8. deploy only when every affected release gate passes and public readback
+   matches the committed release.
+
+No compatibility reader, migration, alias, temporary branch, hidden retry,
+best-of-N selection, response completion, or deferred cleanup is permitted.

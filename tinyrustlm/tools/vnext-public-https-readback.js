@@ -608,7 +608,8 @@ function normalizeInput(rawInput) {
   const bootstraps = assets.filter((entry) => entry.role === "bootstrap");
   const workers = assets.filter((entry) => entry.role === "service-worker");
   const modelPath = (entry) => entry.toLowerCase().includes("/models/") ||
-    /\.(?:acg1|acg2|gguf|safetensors|slm)$/u.test(entry.toLowerCase());
+    /\.(?:acg2|gguf|prompt2|safetensors|sampling2|slm|slm2|template2|tokenizer2)$/u
+      .test(entry.toLowerCase());
   if (bootstraps.length !== 1 || bootstraps[0].path !== "/" ||
       bootstraps[0].contentType !== "text/html" ||
       bootstraps[0].cachePolicy !== "no-store" || workers.length > 1 ||

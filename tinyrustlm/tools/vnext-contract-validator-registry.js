@@ -601,7 +601,8 @@ function validateProof(value, checked) {
 function isWebModelBytePath(value) {
   const normalized = value.toLowerCase();
   return normalized.includes("/models/") ||
-    /\.(?:acg1|acg2|gguf|safetensors|slm)$/u.test(normalized);
+    /\.(?:acg2|gguf|prompt2|safetensors|sampling2|slm|slm2|template2|tokenizer2)$/u
+      .test(normalized);
 }
 
 function validateRelease(value, checked) {

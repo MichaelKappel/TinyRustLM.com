@@ -400,7 +400,7 @@ mod tests {
     #[test]
     fn reports_wasm_content_type() {
         assert_eq!(
-            content_type(Path::new("runtime/tinyrustlm.wasm")),
+            content_type(Path::new("browser-runtime/tinyrustlm-browser-runtime.wasm",)),
             "application/wasm"
         );
     }

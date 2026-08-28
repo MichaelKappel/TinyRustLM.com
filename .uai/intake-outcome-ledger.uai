@@ -1,5 +1,16 @@
-profile: runtime-mirust.intake-outcome-ledger.v62
-updated_utc: 2026-08-28T00:44:20Z
+profile: runtime-mirust.intake-outcome-ledger.v63
+updated_utc: 2026-08-28T04:33:47Z
+
+consolidated_enterprise_intake_memory_2026_08_28:
+  durable_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
+  durable_memory_bytes: 20316
+  durable_memory_sha256: 6e5a5b7cf7f3ad45008b14597a3616ee603da76cc500b69770de7280711785e4
+  coverage: docs/report-intake=344 files/18312842 bytes; manifest-owned batches=23; resolved manifest routes=23; missing manifest routes=0.
+  authority: Existing batch and entries sections remain the report-level hash, disposition, correction, and proof-of-use authority; this node is the cross-batch strategy and current-source route.
+  adopted: One exact SLM2 composition; independent verification; scalar-to-native-to-browser proof; worker ownership; exact P2P-or-convert acquisition; explicit memory authority; immutable evidence; synchronized source/docs/release/readback.
+  rejected: Legacy/compatibility/dual paths; alternate runtimes; hidden repair/retry/fallback; report-derived claims; speculative OMI services; self-modification; arbitrary model slicing; stale docs.
+  processed_outcome: incorporated_with_corrections_and_durable_cross_batch_routing
+  evidence_boundary: No intake report or synthesis creates implementation, model, browser, P2P, MemoryEndpoints, deployment, or campaign evidence.
 active_scan:
   content_bucket: agent-file-handoff/Content/
   improvement_bucket: agent-file-handoff/Improvement/

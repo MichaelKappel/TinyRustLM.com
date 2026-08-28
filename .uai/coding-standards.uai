@@ -1,5 +1,15 @@
-profile: runtime-mirust.coding-standards.v51
-updated_utc: 2026-07-13T03:42:44Z
+profile: runtime-mirust.coding-standards.v52
+updated_utc: 2026-08-28T04:33:47Z
+
+enterprise_clean_slate_coding_standard_2026_08_28:
+  deep_link: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md,20316,6e5a5b7cf7f3ad45008b14597a3616ee603da76cc500b69770de7280711785e4
+  one_path: Implement the sole current contract end to end. Never add compatibility, migration, alias, fallback, dual reader, response repair, hidden retry, or deferred deletion.
+  deletion: When a clean replacement is green, delete superseded source, build ownership, tests, artifacts, documentation, and protocol vocabulary in the same coherent change.
+  boundaries: Use bounded typed parsers, checked arithmetic, explicit ownership and cancellation, exhaustive terminal states, independently recomputed identities, and no arbitrary commands/paths/URLs at browser boundaries.
+  tests: Preserve failures first; add positive, negative, counterexample, mutation, differential, fuzz, race, cancellation, and resource-bound tests proportional to the boundary.
+  docs: Maintained architecture, format, runtime, user, operator, security/privacy, marketing, release-log, and troubleshooting documentation changes with behavior and is a release gate.
+  research: Adopt report invariants only after local source review and red-first tests. Advisory prose and demonstrative code never enter production by authority alone.
+  commits: Commit and push every coherent green major change; deploy only from committed pushed remote-exact source after every affected gate passes.
 rust:
   edition: 2021
   dependency_policy: No third-party Rust crates in TinyRustLM runtime or packer.

@@ -669,10 +669,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tinyrustlm-browser-harness"
-version = "0.1.8"
-
-[[package]]
 name = "tinyrustlm-browser-runtime-wasm"
 version = "0.1.8"
 dependencies = [

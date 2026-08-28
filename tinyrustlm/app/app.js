@@ -32,8 +32,8 @@
   }
 
   const paths = {
-    runtimeWasm: "../runtime/tinyrustlm-browser-runtime.wasm",
-    runtimeWasmManifest: "../runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
+    runtimeWasm: "../browser-runtime/tinyrustlm-browser-runtime.wasm",
+    runtimeWasmManifest: "../browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
     runtimeWorker: "./model-runtime-worker.js",
     registry: "../models/selector.registry",
     models: Object.create(null)
@@ -1259,7 +1259,7 @@
       return "The prompt is too large for this browser-local model. Try a shorter prompt.";
     }
     if (value.toLowerCase().includes("model")) {
-      return "The model could not be loaded. Try a smaller local model or check that the file is a valid .slm file.";
+      return "The composition could not be loaded. Check that all six admitted files are selected and unchanged.";
     }
     return "The local runtime could not finish that action. Advanced Mode has the raw technical detail.";
   }
@@ -1404,10 +1404,10 @@
     const friendlyModelName = hasLoadedModel
       ? selected
       : hasLocalCandidate
-        ? state.localModel.label || "Selected local .slm"
+        ? state.localModel.label || "Selected local composition"
         : isPublicLocalOnlyHost() && Object.keys(paths.models || {}).length > 0
-          ? "Choose a local or P2P .slm"
-          : "Choose a local .slm";
+          ? "Choose a local or P2P composition"
+          : "Choose a local composition";
     if (el.modelToolbarName) {
       el.modelToolbarName.textContent = friendlyModelName;
     }
@@ -1490,8 +1490,8 @@
     storageSet(uiStorageKeys.simpleSourceOption, nextOption);
     if (el.simpleDiscoveryStatus) {
       const messages = {
-        local: "Choose a trusted local .slm file. No network is needed.",
-        huggingface: "Search returns model cards. Rust conversion decides whether a source can become a runnable .slm.",
+        local: "Choose one trusted six-member local composition. No network is needed.",
+        huggingface: "Search returns model cards. Rust conversion decides whether a source can become a runnable composition.",
         p2p: "Use MiniModel manifests from a consenting peer. Rust fetches pieces, assembles, and revalidates before import."
       };
       el.simpleDiscoveryStatus.textContent = messages[nextOption];
@@ -2547,7 +2547,7 @@
     if (el.simpleHfP2pStatus) {
       el.simpleHfP2pStatus.textContent = enabled
         ? "P2P on. Get model prefers a complete verified peer and converts locally when none is available."
-        : "P2P off. New conversions create a private local .slm only; sharing can be added later.";
+        : "P2P off. New conversions create a private local composition only; sharing can be added later.";
     }
     if (el.simpleHfP2pWarning) {
       el.simpleHfP2pWarning.hidden = enabled;
@@ -2736,7 +2736,7 @@
       downloading: "Downloading the immutable source revision",
       reviewing: "Reviewing source structure, tokenizer, and license evidence",
       converting: "Converting the model locally",
-      validating: "Validating the assembled .slm receipt",
+      validating: "Validating the assembled composition receipt",
       available: "Verified model ready",
       resumable: errorCode
         ? `Paused safely; resume is available (${errorCode})`
@@ -3748,7 +3748,7 @@
         el.localModelFile.click();
         el.localModelFile.focus();
       }
-      setLocalModelStatus("Choose a trusted local .slm file", false);
+      setLocalModelStatus("Choose one trusted six-member local composition", false);
       return;
     }
     if (starter === "external") {
@@ -4739,7 +4739,7 @@
     if (state.messages.length === 0) {
       const item = document.createElement("li");
       item.className = "empty-message";
-      item.textContent = "No conversation yet. Messages appear only after a verified local .slm runs through Rust/WASM generation; use local import, P2P Import, or convert a model to create one.";
+      item.textContent = "No conversation yet. Messages appear only after a verified six-member composition runs in the isolated Rust/WASM worker.";
       el.conversation.append(item);
       if (el.response) {
         el.response.id = "response";
@@ -5289,7 +5289,7 @@
     if (requiresExplicitPublicSelection) {
       const placeholder = document.createElement("option");
       placeholder.value = "";
-      placeholder.textContent = "Choose a local or P2P .slm";
+      placeholder.textContent = "Choose a local or P2P composition";
       placeholder.disabled = true;
       placeholder.selected = true;
       el.modelSelect.append(placeholder);
@@ -5308,7 +5308,7 @@
       if (!requiresExplicitPublicSelection) {
         const option = document.createElement("option");
         option.value = "";
-        option.textContent = "Choose a local .slm file";
+        option.textContent = "Choose a local composition";
         option.disabled = true;
         option.selected = true;
         el.modelSelect.append(option);
@@ -5442,11 +5442,11 @@
   }
 
   function safeLocalModelName(name) {
-    const cleaned = String(name || "local-model.slm")
+    const cleaned = String(name || "local-model.slm2")
       .replace(/[\\/:*?"<>|]+/g, "_")
       .replace(/\s+/g, " ")
       .trim();
-    return (cleaned || "local-model.slm").slice(0, 96);
+    return (cleaned || "local-model.slm2").slice(0, 96);
   }
 
   function safeLocalPathLeaf(pathHint, fallback = "local-file") {
@@ -7454,21 +7454,21 @@
       return friendlyError(value);
     }
     if (lower.includes("selected")) {
-      return "Local file selected. Click Import Selected .slm to validate it.";
+      return "Composition files selected. Click Import Selected Composition to validate them.";
     }
     if (lower.includes("reading")) {
-      return "Reading local model file.";
+      return "Reading local composition members.";
     }
     if (lower.includes("choose")) {
-      return "Choose a trusted local .slm file from this computer.";
+      return "Choose the six admitted composition members from this computer.";
     }
     if (lower.includes("0x")) {
       return "Local model imported and verified. You can generate now.";
     }
     if (lower.includes("sha256")) {
-      return "Metadata selected. Choose the matching local .slm file, then import it.";
+      return "Metadata selected. Choose the matching local composition, then import it.";
     }
-    return value || "Waiting for a local model file.";
+    return value || "Waiting for a local composition.";
   }
 
   function setLocalModelStatus(text, isError) {
@@ -7725,7 +7725,7 @@
     }
     const artifactKind = catalogText(raw.artifact_kind || raw.kind).toLowerCase();
     if (artifactKind !== "slm") {
-      throw new Error(`Catalog entry ${modelId} was not an .slm artifact`);
+      throw new Error(`Catalog entry ${modelId} was not a recognized model artifact`);
     }
     const artifactByteCount = catalogInteger(raw.artifact_byte_count || raw.artifact_bytes);
     if (!artifactByteCount || artifactByteCount > localModelMaxBytes) {
@@ -8797,7 +8797,7 @@
       };
 
       addFact("Receipt", safeLocalPathLeaf(entry.receiptPath, `receipt-${index + 1}`));
-      addFact("Artifact", `${safeLocalPathLeaf(entry.artifactPath, "artifact.slm")} / ${formatByteCount(entry.artifactByteCount)} / ${entry.quantization}`);
+      addFact("Artifact", `${safeLocalPathLeaf(entry.artifactPath, "model.slm2")} / ${formatByteCount(entry.artifactByteCount)} / ${entry.quantization}`);
       addFact("Artifact SHA-256", shortSha256(entry.artifactSha256));
       addFact("Receipt SHA-256", shortSha256(entry.receiptSha256));
       if (entry.peerImport) {
@@ -9152,7 +9152,7 @@
     requireImportLedgerBool(object.rust_reverify_required_before_trust, `${label}.rust_reverify_required_before_trust`, true);
     const importGate = requireImportLedgerString(object.tinyrustlm_import_gate, `${label}.tinyrustlm_import_gate`, 160);
     if (!importGate.includes("user-selected-local-slm") && !importGate.includes("user-selected-local")) {
-      throw new Error(`${label}.tinyrustlm_import_gate must require a user-selected local .slm`);
+      throw new Error(`${label}.tinyrustlm_import_gate must require a user-selected local composition`);
     }
   }
 
@@ -9726,7 +9726,7 @@
         default_source_shape: contract.modelShape,
         default_quantization: contract.quantization,
         runtime_target: "TinyRustLM Rust/WASM browser-local runtime",
-        browser_import_rule: "The paired companion streams the receipt-verified local .slm into browser memory."
+        browser_import_rule: "The paired companion streams the receipt-verified local composition into browser memory."
       },
       local_conversion: {
         source_format: "safetensors",
@@ -10125,10 +10125,10 @@
         ? "P2P available"
         : view.hasPeerOffer
           ? "P2P proof ready; peer URL required"
-        : "Catalog match, local .slm needed";
+        : "Catalog match, local composition needed";
     }
     if (view.slmFiles.length) {
-      return "External .slm listed, verify locally";
+      return "External model artifact listed; a complete local composition is still required";
     }
     if (!hfCanStartConversion(view)) {
       return "No supported source listed";
@@ -10148,7 +10148,7 @@
         ? "MiniModel metadata lists a peer source; Rust must fetch, assemble, and reverify before import"
         : view.hasPeerOffer
           ? "MiniModel metadata has a peer-offer proof; enter a consenting peer URL before Rust fetches, assembles, and reverifies"
-        : "MiniModel metadata only; choose the matching local .slm before running"
+        : "MiniModel metadata only; choose the matching local composition before running"
       : hfCanStartConversion(view)
         ? hfPreferredSourceFormat(view) === "gguf"
           ? "model card only; GGUF source listed, Rust can convert F32/F16/BF16/Q2_K/Q3_K/Q4_0/Q4_1/Q4_K/Q5_0/Q5_1/Q5_K/Q6_K/Q8_0/Q8_1/Q8_K tensors after local review"
@@ -10156,7 +10156,7 @@
             ? "model card only; large source listed, so P2P reuse is preferred before local conversion"
             : hfSourceByteRisk(view) === "unknown"
               ? "model card only; source size unknown, so review before local conversion"
-              : "model card only; not runnable here until Rust conversion and local .slm verification"
+              : "model card only; not runnable here until Rust conversion and local composition verification"
         : "model card only; no .safetensors or reviewable .gguf source listed for the Rust converter";
     return `${view.downloads} / ${view.likes} / ${sourceState}`;
   }
@@ -10169,7 +10169,7 @@
       if (view.p2pMatch) {
         return `Hugging Face model card / ${view.downloads} / P2P source listed; Rust reverify required`;
       }
-      return `Hugging Face model card / ${view.downloads} / ${view.hasPeerOffer ? "P2P proof ready; consenting peer URL required" : "MiniModel metadata found; local .slm needed"}`;
+      return `Hugging Face model card / ${view.downloads} / ${view.hasPeerOffer ? "P2P proof ready; consenting peer URL required" : "MiniModel metadata found; local composition needed"}`;
     }
     if (!hfCanStartConversion(view)) {
       return `Hugging Face model card / ${view.downloads} / no supported .safetensors or reviewable .gguf source listed`;
@@ -10191,15 +10191,15 @@
       return "P2P available";
     }
     if (view.matches.length && state.p2pEnabled === false) {
-      return hfCanStartConversion(view) ? "Private conversion" : "Local .slm needed";
+      return hfCanStartConversion(view) ? "Private conversion" : "Local composition needed";
     }
     if (view.matches.length) {
       return view.hasPeerOffer
         ? "P2P proof ready"
-        : "Catalog match, local .slm needed";
+        : "Catalog match, local composition needed";
     }
     if (view.slmFiles.length) {
-      return "External .slm listed, verify locally";
+      return "External model artifact listed; verify a complete composition locally";
     }
     if (!hfCanStartConversion(view)) {
       return "No supported source listed";
@@ -10236,7 +10236,7 @@
     if (hfSourceByteRisk(view) === "unknown") {
       return "Source size is unavailable from metadata. Review the model card before local conversion; P2P reuse is preferred when a verified peer entry appears.";
     }
-    return "Get model asks the paired companion to download the pinned source revision, convert it, validate the .slm and activation graph, and load both into this browser.";
+    return "Get model asks the paired companion to download the pinned source revision, create and validate all six composition members, and activate them in this browser.";
   }
 
   function appendHfSlmFileNotes(actions, slmFiles, actionWord) {
@@ -10323,7 +10323,7 @@
       appendHfSlmFileNotes(actions, view.slmFiles, options.slmActionWord || "import");
       return;
     }
-    const noSlmText = options.noSlmText || "No compatible .slm is available to this app yet.";
+    const noSlmText = options.noSlmText || "No complete compatible composition is available to this app yet.";
     if (noSlmText) {
       actions.append(elementWithText("span", "model-result-meta", noSlmText));
     }
@@ -10537,10 +10537,10 @@
       parts.push(`${pluralCount(summary.peerUrlNeeded, "proof-ready match", "proof-ready matches")} ${summary.peerUrlNeeded === 1 ? "needs" : "need"} peer URL`);
     }
     if (summary.localSlmNeeded) {
-      parts.push(`${pluralCount(summary.localSlmNeeded, "metadata match", "metadata matches")} ${summary.localSlmNeeded === 1 ? "needs" : "need"} local .slm`);
+      parts.push(`${pluralCount(summary.localSlmNeeded, "metadata match", "metadata matches")} ${summary.localSlmNeeded === 1 ? "needs" : "need"} a local composition`);
     }
     if (summary.externalSlmListed) {
-      parts.push(`${pluralCount(summary.externalSlmListed, "external .slm listing")} ${summary.externalSlmListed === 1 ? "needs" : "need"} local review`);
+      parts.push(`${pluralCount(summary.externalSlmListed, "external model listing")} ${summary.externalSlmListed === 1 ? "needs" : "need"} local composition review`);
     }
     if (summary.conversionNeeded) {
       parts.push(`${pluralCount(summary.conversionNeeded, "model")} ${summary.conversionNeeded === 1 ? "needs" : "need"} Rust conversion`);
@@ -10602,7 +10602,7 @@
     if (counts.localSlmNeeded || counts.externalSlmListed) {
       appendFlowSummaryChip(
         chips,
-        "Local .slm",
+        "Local composition",
         pluralCount(counts.localSlmNeeded + counts.externalSlmListed, "metadata match", "metadata matches"),
         "local"
       );
@@ -10611,7 +10611,7 @@
       appendFlowSummaryChip(chips, "No Source", pluralCount(counts.noSupportedSource, "model"), "blocked");
     }
     if (state.p2pEnabled === false) {
-      appendFlowSummaryChip(chips, "P2P Off", "private .slm now; P2P later", "blocked");
+      appendFlowSummaryChip(chips, "P2P Off", "private composition now; P2P later", "blocked");
     }
     const note = elementWithText(
       "p",
@@ -10748,12 +10748,12 @@
     renderAcceptedHfResults(accepted);
     if (options.viableOnly) {
       setHfStatus(
-        `${accepted.length} of up to ${hfBrowseLimit} TinyRustLM-ready candidates from ${results.length} scanned ${options.sortLabel || "Hugging Face"} model cards; ${hfAvailabilitySummary(accepted)}; local .slm verification required`,
+        `${accepted.length} of up to ${hfBrowseLimit} TinyRustLM-ready candidates from ${results.length} scanned ${options.sortLabel || "Hugging Face"} model cards; ${hfAvailabilitySummary(accepted)}; local composition verification required`,
         false
       );
       return;
     }
-    setHfStatus(`${hfAvailabilitySummary(accepted)}; local .slm verification required`, false);
+    setHfStatus(`${hfAvailabilitySummary(accepted)}; local composition verification required`, false);
   }
 
   function renderSimpleHfResults(accepted) {
