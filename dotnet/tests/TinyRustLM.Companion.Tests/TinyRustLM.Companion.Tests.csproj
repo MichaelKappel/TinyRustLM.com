@@ -20,8 +20,11 @@
                       ReferenceOutputAssembly="false" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\contracts\vnext\companion-loopback-capability-vectors.v1.json"
-          Link="companion-loopback-capability-vectors.v1.json"
+    <None Include="..\..\..\contracts\vnext\companion-loopback-capability-vectors.v2.json"
+          Link="companion-loopback-capability-vectors.v2.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\contracts\vnext\qwen3-0.6b-base-source-lock.v1.json"
+          Link="qwen3-0.6b-base-source-lock.v1.json"
           CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

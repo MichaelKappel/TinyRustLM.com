@@ -19,10 +19,14 @@ public sealed class CompanionOperationServiceTests : IDisposable
                 var current = journal.Read(operationId);
                 if (current.State == CompanionOperationState.Queued)
                 {
-                    journal.Advance(
-                        operationId,
-                        CompanionOperationState.CheckingPeers,
-                        CompanionAcquisitionBranch.Undecided);
+                    var privateRoot = Path.Combine(_parent, "executor");
+                    _ = CompanionOperationTestEvidence.EnterAcquiringSource(
+                        journal,
+                        current,
+                        privateRoot,
+                        Path.Combine(privateRoot, "model-source"),
+                        Path.Combine(privateRoot, "tokenizer-source"),
+                        Path.Combine(privateRoot, "output"));
                 }
                 return Task.CompletedTask;
             });
@@ -36,7 +40,7 @@ public sealed class CompanionOperationServiceTests : IDisposable
         Assert.Equal(CompanionContract.OperationId(request), first.OperationId);
         Assert.Equal(first, replay);
         Assert.Equal(first, read);
-        Assert.Equal(CompanionOperationState.CheckingPeers, first.State);
+        Assert.Equal(CompanionOperationState.AcquiringSource, first.State);
         Assert.Equal(2, executor.EnsureStartedCount);
         Assert.All(executor.StartedOperationIds, value => Assert.Equal(first.OperationId, value));
         Assert.Equal(
@@ -58,7 +62,7 @@ public sealed class CompanionOperationServiceTests : IDisposable
                 journal.Advance(
                     operationId,
                     CompanionOperationState.Cancelled,
-                    CompanionAcquisitionBranch.None);
+                    CompanionAcquisitionRoute.Source);
                 return Task.CompletedTask;
             });
         var service = Service(journal, executor);
@@ -85,7 +89,7 @@ public sealed class CompanionOperationServiceTests : IDisposable
                 journal.Advance(
                     operationId,
                     CompanionOperationState.Rejected,
-                    CompanionAcquisitionBranch.None,
+                    CompanionAcquisitionRoute.Source,
                     errorCode: "source-rejected");
                 throw new IOException("private failure must not cross the service boundary");
             });
@@ -125,7 +129,7 @@ public sealed class CompanionOperationServiceTests : IDisposable
                 journal.Advance(
                     operationId,
                     CompanionOperationState.Cancelled,
-                    CompanionAcquisitionBranch.None);
+                    CompanionAcquisitionRoute.Source);
                 return Task.CompletedTask;
             });
         var service = Service(journal, executor);
@@ -136,13 +140,13 @@ public sealed class CompanionOperationServiceTests : IDisposable
 
         var secondRequest = CompanionContractTests.Request() with
         {
-            ModelId = "qwen3-late-terminal"
+            AttemptId = new string('1', 32)
         };
         var terminal = journal.CreateOrRead(secondRequest);
         journal.Advance(
             terminal.OperationId,
             CompanionOperationState.Rejected,
-            CompanionAcquisitionBranch.None,
+            CompanionAcquisitionRoute.Source,
             errorCode: "source-rejected");
         var late = await Assert.ThrowsAsync<CompanionProtocolException>(() =>
             service.CancelAndWaitAsync(terminal.OperationId, Cancel('f')));

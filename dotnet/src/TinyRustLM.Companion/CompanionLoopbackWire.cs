@@ -31,7 +31,7 @@ public static class CompanionLoopbackWire
     public const string ErrorSchema =
         "tinyrustlm.companion.loopback.error.v1";
     public const string OperationProjectionSchema =
-        "tinyrustlm.companion.loopback.operation-projection.v1";
+        "tinyrustlm.companion.loopback.operation-projection.v2";
     public const string CancelRequestSchema =
         "tinyrustlm.companion.loopback.cancel-request.v1";
     public const int MaximumInstallationRecordBytes = 4_096;
@@ -682,6 +682,8 @@ public static class CompanionLoopbackWire
             {
                 writer.WriteStartObject();
                 writer.WriteString("schema", normalized.Schema);
+                writer.WriteString("attemptId", normalized.AttemptId);
+                writer.WriteString("route", AcquisitionRouteName(normalized.Route));
                 writer.WriteString("modelId", normalized.ModelId);
                 writer.WriteString("sourceRepository", normalized.SourceRepository);
                 writer.WriteString("sourceRevision", normalized.SourceRevision);
@@ -696,15 +698,6 @@ public static class CompanionLoopbackWire
                     "sourceAcquisitionApproved",
                     normalized.SourceAcquisitionApproved);
                 writer.WriteNumber("maximumSourceBytes", normalized.MaximumSourceBytes);
-                writer.WriteStartArray("peerCandidates");
-                foreach (var candidate in normalized.PeerCandidates)
-                {
-                    writer.WriteStartObject();
-                    writer.WriteString("manifestUri", candidate.ManifestUri);
-                    writer.WriteString("manifestId", candidate.ManifestId);
-                    writer.WriteEndObject();
-                }
-                writer.WriteEndArray();
                 writer.WriteEndObject();
             });
     }
@@ -716,6 +709,8 @@ public static class CompanionLoopbackWire
             MaximumAcquireRequestBytes,
             [
                 "schema",
+                "attemptId",
+                "route",
                 "modelId",
                 "sourceRepository",
                 "sourceRevision",
@@ -723,33 +718,20 @@ public static class CompanionLoopbackWire
                 "tokenizerSourceLockSha256",
                 "compositionProfileSha256",
                 "sourceAcquisitionApproved",
-                "maximumSourceBytes",
-                "peerCandidates"
+                "maximumSourceBytes"
             ]);
-        if (properties[9].ValueKind != JsonValueKind.Array)
-        {
-            throw new CompanionProtocolException("json-invalid");
-        }
-        var candidates = properties[9].EnumerateArray()
-            .Select(candidate =>
-            {
-                var values = ParseObject(candidate, ["manifestUri", "manifestId"]);
-                return new CompanionPeerCandidate(
-                    RequireString(values[0]),
-                    RequireString(values[1]));
-            })
-            .ToArray();
         var request = new CompanionAcquireRequest(
             RequireString(properties[0]),
             RequireString(properties[1]),
-            RequireString(properties[2]),
+            ParseAcquisitionRoute(RequireString(properties[2])),
             RequireString(properties[3]),
             RequireString(properties[4]),
             RequireString(properties[5]),
             RequireString(properties[6]),
-            RequireBoolean(properties[7]),
-            RequireUInt64(properties[8]),
-            candidates);
+            RequireString(properties[7]),
+            RequireString(properties[8]),
+            RequireBoolean(properties[9]),
+            RequireUInt64(properties[10]));
         CompanionAcquireRequest normalized;
         try
         {
@@ -775,15 +757,15 @@ public static class CompanionLoopbackWire
                 writer.WriteString("operationId", projection.OperationId);
                 writer.WriteNumber("sequence", projection.Sequence);
                 writer.WriteString("state", OperationStateName(projection.State));
-                writer.WriteString("branch", AcquisitionBranchName(projection.Branch));
-                writer.WriteNumber("completedBytes", projection.CompletedBytes);
-                if (projection.TotalBytes is ulong totalBytes)
+                writer.WriteString("route", AcquisitionRouteName(projection.Route));
+                writer.WriteNumber("phaseCompletedBytes", projection.PhaseCompletedBytes);
+                if (projection.PhaseTotalBytes is ulong totalBytes)
                 {
-                    writer.WriteNumber("totalBytes", totalBytes);
+                    writer.WriteNumber("phaseTotalBytes", totalBytes);
                 }
                 else
                 {
-                    writer.WriteNull("totalBytes");
+                    writer.WriteNull("phaseTotalBytes");
                 }
                 if (projection.Artifacts is null)
                 {
@@ -816,9 +798,9 @@ public static class CompanionLoopbackWire
                 "operationId",
                 "sequence",
                 "state",
-                "branch",
-                "completedBytes",
-                "totalBytes",
+                "route",
+                "phaseCompletedBytes",
+                "phaseTotalBytes",
                 "artifacts",
                 "errorCode"
             ]);
@@ -827,7 +809,7 @@ public static class CompanionLoopbackWire
             RequireString(properties[1]),
             RequireUInt64(properties[2]),
             ParseOperationState(RequireString(properties[3])),
-            ParseAcquisitionBranch(RequireString(properties[4])),
+            ParseAcquisitionRoute(RequireString(properties[4])),
             RequireUInt64(properties[5]),
             RequireNullableUInt64(properties[6]),
             properties[7].ValueKind == JsonValueKind.Null
@@ -1105,11 +1087,11 @@ public static class CompanionLoopbackWire
             throw new CompanionProtocolException("operation-sequence");
         }
         _ = OperationStateName(projection.State);
-        _ = AcquisitionBranchName(projection.Branch);
-        if (projection.CompletedBytes > CompanionContract.MaximumProgressBytes ||
-            projection.TotalBytes > CompanionContract.MaximumProgressBytes ||
-            projection.TotalBytes is ulong total &&
-                (total == 0 || projection.CompletedBytes > total))
+        _ = AcquisitionRouteName(projection.Route);
+        if (projection.PhaseCompletedBytes > CompanionContract.MaximumProgressBytes ||
+            projection.PhaseTotalBytes > CompanionContract.MaximumProgressBytes ||
+            projection.PhaseTotalBytes is ulong total &&
+                (total == 0 || projection.PhaseCompletedBytes > total))
         {
             throw new CompanionProtocolException("operation-progress");
         }
@@ -1133,8 +1115,6 @@ public static class CompanionLoopbackWire
         if (projection.State == CompanionOperationState.Available)
         {
             if (projection.Artifacts is null ||
-                projection.Branch is not (CompanionAcquisitionBranch.Peer or
-                    CompanionAcquisitionBranch.Source) ||
                 projection.ErrorCode is not null)
             {
                 throw new CompanionProtocolException("operation-available-fields");
@@ -1216,9 +1196,6 @@ public static class CompanionLoopbackWire
     private static string OperationStateName(CompanionOperationState value) => value switch
     {
         CompanionOperationState.Queued => "queued",
-        CompanionOperationState.CheckingPeers => "checking-peers",
-        CompanionOperationState.FetchingPeer => "fetching-peer",
-        CompanionOperationState.VerifyingPeer => "verifying-peer",
         CompanionOperationState.AcquiringSource => "acquiring-source",
         CompanionOperationState.Converting => "converting",
         CompanionOperationState.VerifyingComposition => "verifying-composition",
@@ -1231,9 +1208,6 @@ public static class CompanionLoopbackWire
     private static CompanionOperationState ParseOperationState(string value) => value switch
     {
         "queued" => CompanionOperationState.Queued,
-        "checking-peers" => CompanionOperationState.CheckingPeers,
-        "fetching-peer" => CompanionOperationState.FetchingPeer,
-        "verifying-peer" => CompanionOperationState.VerifyingPeer,
         "acquiring-source" => CompanionOperationState.AcquiringSource,
         "converting" => CompanionOperationState.Converting,
         "verifying-composition" => CompanionOperationState.VerifyingComposition,
@@ -1243,22 +1217,16 @@ public static class CompanionLoopbackWire
         _ => throw new CompanionProtocolException("operation-state")
     };
 
-    private static string AcquisitionBranchName(CompanionAcquisitionBranch value) => value switch
+    private static string AcquisitionRouteName(CompanionAcquisitionRoute value) => value switch
     {
-        CompanionAcquisitionBranch.Undecided => "undecided",
-        CompanionAcquisitionBranch.Peer => "peer",
-        CompanionAcquisitionBranch.Source => "source",
-        CompanionAcquisitionBranch.None => "none",
-        _ => throw new CompanionProtocolException("operation-branch")
+        CompanionAcquisitionRoute.Source => "source",
+        _ => throw new CompanionProtocolException("operation-route")
     };
 
-    private static CompanionAcquisitionBranch ParseAcquisitionBranch(string value) => value switch
+    private static CompanionAcquisitionRoute ParseAcquisitionRoute(string value) => value switch
     {
-        "undecided" => CompanionAcquisitionBranch.Undecided,
-        "peer" => CompanionAcquisitionBranch.Peer,
-        "source" => CompanionAcquisitionBranch.Source,
-        "none" => CompanionAcquisitionBranch.None,
-        _ => throw new CompanionProtocolException("operation-branch")
+        "source" => CompanionAcquisitionRoute.Source,
+        _ => throw new CompanionProtocolException("operation-route")
     };
 
     private static bool IsWireErrorCode(string value) =>

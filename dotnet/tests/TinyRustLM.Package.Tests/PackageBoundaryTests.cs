@@ -137,7 +137,7 @@ public sealed class PackageBoundaryTests
             .Order(StringComparer.Ordinal)
             .ToArray();
         Assert.Equal(
-            new[] { "TinyRustLM.Abstractions", "TinyRustLM.Conversion", "TinyRustLM.P2P" },
+            new[] { "TinyRustLM.Abstractions", "TinyRustLM.Conversion" },
             companionReferences);
         var companionDocument = File.ReadAllText(Path.Combine(root, "docs/companion/README.md"));
         Assert.Contains("unavailable for installation", companionDocument, StringComparison.OrdinalIgnoreCase);
@@ -613,17 +613,35 @@ public sealed class PackageBoundaryTests
         }
 
         Assert.Contains("mixed-Q8 SLM2", validation, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm.companion.acquire.v1", companion, StringComparison.Ordinal);
-        Assert.Contains("tinyrustlm.companion.operation.v2", companion, StringComparison.Ordinal);
+        Assert.Contains("tinyrustlm.companion.acquire.v2", companion, StringComparison.Ordinal);
+        Assert.Contains("tinyrustlm.companion.operation.v3", companion, StringComparison.Ordinal);
+        Assert.Contains(
+            "tinyrustlm.companion.execution-intent.v1",
+            companion,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "tinyrustlm.companion.source-acquisition-intent.v1",
+            companion,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "tinyrustlm.companion.source-acquisition-receipt.v1",
+            companion,
+            StringComparison.Ordinal);
         Assert.Contains(
             "tinyrustlm.companion.source-conversion-intent.v1",
             companion,
             StringComparison.Ordinal);
         Assert.Contains("ReconcileTerminal", companion, StringComparison.Ordinal);
-        Assert.DoesNotContain(
+        foreach (var obsolete in new[]
+        {
+            "tinyrustlm.companion.acquire.v1",
             "tinyrustlm.companion.operation.v1",
-            companion,
-            StringComparison.Ordinal);
+            "tinyrustlm.companion.operation.v2",
+            "tinyrustlm.companion.loopback.operation-projection.v1"
+        })
+        {
+            Assert.DoesNotContain(obsolete, companion, StringComparison.Ordinal);
+        }
         Assert.Contains("Accepted", transportAdr, StringComparison.Ordinal);
         Assert.Contains("No current route table or port is release authority", transportAdr, StringComparison.Ordinal);
     }

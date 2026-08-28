@@ -131,7 +131,7 @@ replay-rejection, cleanup, and deletion evidence exists.
 
 ## Acquisition And Companion Boundary
 
-The intended product route is deterministic:
+The intended completed product route is deterministic:
 
 1. use an exact currently qualified composition from a verified consenting
    peer when one is available;
@@ -142,15 +142,24 @@ The intended product route is deterministic:
 
 A downloaded TXT, README, script, request file, or JSON handoff is not model
 acquisition. Project-hosted model bytes and remote inference are forbidden.
+The current implemented Companion operation is deliberately source-only until
+a complete six-member peer importer has its own verified identity and receipt
+authority. Unimplemented peer discovery is not represented by request fields,
+states, or optimistic status text.
 
-The managed companion now defines a six-member
-`tinyrustlm.companion.operation.v2` artifact set and a cryptographic loopback
-capability protocol. The production browser bridge still requires a clean
-replacement before P2P or conversion can be released; its earlier one-file
-routes are not a supported alternate path and cannot produce browser
-activation. Until the current browser/server operation protocol is implemented
-and independently proven, manual selection of the six members plus their
-admission is the only browser activation route.
+The managed companion now defines the exact source-only
+`tinyrustlm.companion.acquire.v2` request,
+`tinyrustlm.companion.operation.v3` journal record, six-member artifact set,
+and `tinyrustlm.companion.loopback-capability/4` cryptographic protocol. The
+source intent and receipt bind one canonical nine-file payload-inventory
+identity derived from the pinned lock; arbitrary digest-shaped acquisition
+claims reject. The matching browser codec independently admits the same exact
+Qwen3 source constants, is source-controlled but remains disconnected from the
+product UI, and the listener truthfully rejects operation routes until an
+exclusive source worker owns acquisition and conversion. Earlier one-file and
+peer-placeholder routes are not supported alternate paths. Until the complete
+operation owner is connected and independently proven, manual selection of all
+six admitted members remains the only browser activation route.
 
 ## Evidence And Promotion
 

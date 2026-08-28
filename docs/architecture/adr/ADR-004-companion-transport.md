@@ -4,16 +4,16 @@
 
 Accepted
 
-The protocol family, exact route schemas, limits, installation discovery,
-cryptographic transcripts, pairing ceremony, and corrected HTTP semantics are
-preregistered by sole implementation authority
-`tinyrustlm.companion.loopback-capability/3`. Profile `/1` remains immutable
-non-executable registration history because its proof and key-derivation field
-order was incomplete. Profile `/2` remains immutable superseded design history
-after real Kestrel output exposed an invalid 204 `Content-Length` requirement
-and incomplete CORS exposure identities. The private `/3` listener and process
-host are implemented and locally verified; physical production-browser and
-release verification are still required before either is exposed.
+The sole executable contract is
+`tinyrustlm.companion.loopback-capability/4`. It combines the closed loopback
+capability protocol with the source-only request, operation, projection, and
+evidence contracts preregistered by
+`tinyrustlm.companion.source-operation-owner/1` and its output-free composition
+profile correction. Profiles `/1`, `/2`, and `/3` remain immutable design and
+failure history with no runtime reader. The private `/4` listener and process
+host are implemented and locally verified; operation dispatch, physical
+production-browser proof, and release verification are still required before
+either is exposed.
 
 ## Decision Date
 
@@ -22,22 +22,32 @@ release verification are still required before either is exposed.
 ## Scope
 
 This decision governs the private user-owned Companion boundary used by
-TinyRustLM.com for verified direct-peer acquisition, reviewed source
-conversion, progress, cancellation, and complete composition transfer.
+TinyRustLM.com for reviewed source conversion, progress, cancellation, and
+complete composition transfer. Direct-peer import is an intended later route,
+but it is absent from the current request and state machine until a verified
+six-member importer owns its evidence.
 
 It does not authorize model-byte proxying through a project site, public P2P
 announcement, MemoryEndpoints access, arbitrary local file access, arbitrary
 process execution, model-quality claims, or a released installer.
 
 **Observed local fact**: the nonpackable `TinyRustLM.Companion` component owns
-the strict `tinyrustlm.companion.acquire.v1` request, the strict
-`tinyrustlm.companion.operation.v2` record, the private create-only
-`tinyrustlm.companion.source-conversion-intent.v1` envelope, an owned
-create-only journal, and a source coordinator that invokes only the complete
-`qwen3-composition` transaction. The coordinator can independently reconcile a
-strict terminal pass or rejection from the exact bound intent after process
-loss, but it does not infer, adopt, relaunch, or kill work for an absent or
-nonterminal root. It now also owns the private exact IPv4 Kestrel listener,
+the strict `tinyrustlm.companion.acquire.v2` request, the strict
+`tinyrustlm.companion.operation.v3` record, create-only execution, source
+acquisition intent, source acquisition receipt, and source conversion intent
+evidence, an owned create-only journal, and a source coordinator that invokes
+only the complete `qwen3-composition` transaction. The request admits only one
+exact Qwen3 source descriptor and one explicit attempt ID. Its cache, staging,
+model, tokenizer, lock, and conversion roots must be distinct and nonnested.
+Its source intent preregisters the canonical
+`tinyrustlm.source-payload-inventory.v1` identity, and its acquisition receipt
+must reproduce the exact nine-file inventory SHA-256
+`59e57ba08d4dc6e0914f6089f3321c073739ed60a506edd533068d8d0d2b2da9`;
+an arbitrary digest-shaped claim is not admitted.
+The coordinator can independently reconcile a strict terminal pass or
+rejection from the exact bound intent after process loss, but it does not
+infer, adopt, relaunch, or kill work for an absent or nonterminal root. It now
+also owns the private exact IPv4 Kestrel listener,
 pairing, session status, rotation, revocation, and truthful unavailable
 operation responses. `TinyRustLM.CompanionHost` owns one argument-free,
 interactive process entry point and one private per-user installation root.
@@ -71,15 +81,16 @@ content type, byte length, and SHA-256 of the exact body bytes. There is no
 bearer capability, cookie, Authorization header, URL secret, or durable browser
 key.
 
-The exact pairing, rotation, revocation, expiry, replay, CORS, Local Network
-Access, HTTP parser, and artifact-transfer semantics are frozen in
-`contracts/vnext/companion-loopback-capability-preregistration.v3.json`, 11,836
-bytes at SHA-256
-`a4f8574a6d35f8c66f537f8e4e2c7d659a239a6267d60c26210672db72929d28`.
-It adopts the closed `/2` cryptographic and route semantics and corrects only
-the registered HTTP ownership and browser-visible response-header gaps. IPv6,
-localhost names, a fixed port, port scanning, and alternate protocols are not
-part of this contract.
+The pairing, rotation, revocation, expiry, replay, CORS, Local Network Access,
+HTTP parser, and artifact-transfer primitives derive from the preserved `/3`
+registration. The sole current operation contract is frozen by
+`contracts/vnext/companion-source-operation-owner-preregistration.v1.json` and
+`contracts/vnext/companion-source-operation-owner-profile-identity-correction-preregistration.v1.json`.
+The current cross-language corpus is
+`contracts/vnext/companion-loopback-capability-vectors.v2.json`; the v1 corpus
+is retained only as historical evidence and is not copied into current test or
+package output. IPv6, localhost names, a fixed port, port scanning, and
+alternate protocols are not part of this contract.
 
 The route table is closed and versioned. Unknown method, path, media type,
 schema, field, operation, state, sequence, artifact kind, range, or capability
@@ -87,11 +98,17 @@ fails with one bounded public-safe error. There is no generic file route,
 directory route, proxy route, command route, environment route, diagnostics
 dump, or extension route.
 
-Acquisition is P2P-first only when the requested immutable composition has a
-currently eligible peer candidate and exact evidence. Otherwise, explicit
-source-acquisition consent permits the pinned public source and sole canonical
-converter path. A TXT, JSON, PowerShell, shell, README, conversion kit, or
-instruction download is never a model action.
+The current acquisition request is source-only and permits exactly the pinned
+public source and sole canonical converter path after explicit consent. It has
+no peer candidate, arbitrary URL, or arbitrary path. P2P-first selection can be
+added only by cleanly replacing this sole contract after a complete six-member
+peer importer and its proof authority pass their own gate. A TXT, JSON,
+PowerShell, shell, README, conversion kit, or instruction download is never a
+model action.
+
+The managed and browser request validators each own the exact same immutable
+repository, revision, source-lock, composition-profile, and source-byte
+constants. Browser syntax acceptance cannot widen the managed source authority.
 
 Artifact transfer streams only the six members of one journaled available
 composition. Each response binds operation ID, artifact kind, byte length, and
@@ -144,18 +161,32 @@ backend.
 
 ## Authoritative Evidence
 
-**Observed local fact**: the current managed solution passes 235 tests: 86
-Core tests, 41 package-boundary tests, and 108 Companion tests. The Companion
-tests include real IPv4 TCP exchanges for exact bind, Host and Origin
-authority, CORS preflight, pairing, authenticated status, application errors,
-sequence replay, rotation lost-response replay, revocation, duplicate
-Content-Length, malformed framing, request-line, header-count, header-byte, and
-global-body parser limits. They also cover exact operation-wire vectors,
-cross-root journal isolation, ten-way cancellation binding, terminal race
-precedence, complete member hashing, fixed-chunk assembly, concurrent reads,
-and final mutation rejection. Release builds complete with zero warnings and
-zero errors, formatting requires no changes, and all `/1`, `/2`, and `/3`
-registration tests pass.
+**Observed local fact**: the current managed solution passes 252 tests: 125
+Companion, 86 Core, and 41 package-boundary tests, with zero failures or skips.
+Its Release build completes with warnings treated as errors, reports zero
+warnings and errors, and has no formatting drift. The complete standard Node
+partition passes 1,702 tests, fails zero, and retains three declared skips
+across 1,705 tests. It includes the
+current registration, cross-language vector, browser contract, documentation,
+release-closure, and real Chromium smoke boundaries. Diff hygiene passes.
+
+The Companion tests include real IPv4 TCP exchanges for exact bind, Host and
+Origin authority, CORS preflight, pairing, authenticated status, application
+errors, sequence replay, rotation lost-response replay, revocation, duplicate
+Content-Length, malformed framing, request-line, header-count, header-byte,
+and global-body parser limits. They also cover request v2, operation v3,
+projection v2, vector v2, explicit attempt identity, source-only authority,
+private execution/source-evidence linkage, cross-root journal isolation,
+ancestor/descendant custody rejection, ten-way cancellation binding, terminal
+race precedence, reference-counted exact-key mutation-gate reclamation,
+bounded cancellation-gate wait, one-record current-cache recovery,
+pre-mutation current-cache repair,
+canonical source-inventory derivation and drift rejection,
+complete member hashing, fixed-chunk assembly, concurrent reads, and final
+mutation rejection.
+
+The detailed current checkpoint is
+`wiki/runtime-mirust/reports/tinyrustlm-companion-source-operation-contract-memory-2026-08-28.md`.
 
 The private host accepts no arguments, derives one
 `TinyRustLM.Companion` directory below the current user's local application

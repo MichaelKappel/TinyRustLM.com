@@ -8,7 +8,7 @@ namespace TinyRustLM.Companion;
 
 public static partial class CompanionLoopbackProtocol
 {
-    public const string ProtocolId = "tinyrustlm.companion.loopback-capability/2";
+    public const string ProtocolId = "tinyrustlm.companion.loopback-capability/4";
     public const string ProductionOrigin = "https://tinyrustlm.com";
     public const string PairingServerProofDomain =
         "TinyRustLM companion pairing server proof 1";
@@ -644,6 +644,10 @@ public static partial class CompanionLoopbackProtocol
         }
         CompanionContract.RequireContentId(metadata.ArtifactId, "artifact-id");
         RequireSha256(metadata.ArtifactSha256, "artifact-sha256");
+        if (metadata.ArtifactId != $"sha256:{metadata.ArtifactSha256}")
+        {
+            throw new CompanionProtocolException("artifact-id");
+        }
         if (metadata.ArtifactBytes is 0 or > 68_719_476_736 ||
             metadata.ChunkCount is 0 or > 16_384 ||
             metadata.ChunkIndex >= metadata.ChunkCount ||

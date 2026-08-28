@@ -53,7 +53,7 @@ public sealed class CompanionSourceConversion
         ArgumentNullException.ThrowIfNull(request);
         var current = _journal.Read(operationId);
         if (current.State != CompanionOperationState.AcquiringSource ||
-            current.Branch != CompanionAcquisitionBranch.Source ||
+            current.Route != CompanionAcquisitionRoute.Source ||
             current.Artifacts is not null ||
             current.ErrorCode is not null)
         {
@@ -66,9 +66,9 @@ public sealed class CompanionSourceConversion
             _journal.Advance(
                 operationId,
                 CompanionOperationState.Rejected,
-                CompanionAcquisitionBranch.Source,
-                current.CompletedBytes,
-                current.TotalBytes,
+                CompanionAcquisitionRoute.Source,
+                current.PhaseCompletedBytes,
+                current.PhaseTotalBytes,
                 errorCode: code);
             throw new CompanionContractException(code);
         }
@@ -77,6 +77,7 @@ public sealed class CompanionSourceConversion
         CompanionPersistedSourceConversionIntent persistedIntent;
         try
         {
+            var sourceReceipt = _journal.ReadSourceAcquisitionReceipt(operationId);
             conversionIntent = _tool.CreateCompositionIntent(
                 new TinyRustLmCompositionConversionRequest(
                     request.ModelSourceLockPath,
@@ -96,9 +97,10 @@ public sealed class CompanionSourceConversion
             current = _journal.Advance(
                 operationId,
                 CompanionOperationState.Converting,
-                CompanionAcquisitionBranch.Source,
-                current.CompletedBytes,
-                current.TotalBytes,
+                CompanionAcquisitionRoute.Source,
+                current.PhaseCompletedBytes,
+                current.PhaseTotalBytes,
+                sourceAcquisitionReceiptSha256: sourceReceipt.Sha256,
                 sourceConversionIntentSha256: persistedIntent.Sha256);
         }
         catch (TinyRustLmException error)
@@ -106,9 +108,9 @@ public sealed class CompanionSourceConversion
             _journal.Advance(
                 operationId,
                 CompanionOperationState.Rejected,
-                CompanionAcquisitionBranch.Source,
-                current.CompletedBytes,
-                current.TotalBytes,
+                CompanionAcquisitionRoute.Source,
+                current.PhaseCompletedBytes,
+                current.PhaseTotalBytes,
                 errorCode: error.Code);
             throw;
         }
@@ -117,9 +119,9 @@ public sealed class CompanionSourceConversion
             _journal.Advance(
                 operationId,
                 CompanionOperationState.Rejected,
-                CompanionAcquisitionBranch.Source,
-                current.CompletedBytes,
-                current.TotalBytes,
+                CompanionAcquisitionRoute.Source,
+                current.PhaseCompletedBytes,
+                current.PhaseTotalBytes,
                 errorCode: error.Code);
             throw;
         }
@@ -129,9 +131,9 @@ public sealed class CompanionSourceConversion
             _journal.Advance(
                 operationId,
                 CompanionOperationState.Rejected,
-                CompanionAcquisitionBranch.Source,
-                current.CompletedBytes,
-                current.TotalBytes,
+                CompanionAcquisitionRoute.Source,
+                current.PhaseCompletedBytes,
+                current.PhaseTotalBytes,
                 errorCode: code);
             throw new CompanionContractException(code);
         }
@@ -155,9 +157,9 @@ public sealed class CompanionSourceConversion
                 _journal.Advance(
                     operationId,
                     CompanionOperationState.Rejected,
-                    CompanionAcquisitionBranch.Source,
-                    current.CompletedBytes,
-                    current.TotalBytes,
+                    CompanionAcquisitionRoute.Source,
+                    current.PhaseCompletedBytes,
+                    current.PhaseTotalBytes,
                     errorCode: code);
                 throw new CompanionContractException(code);
             }
@@ -176,9 +178,9 @@ public sealed class CompanionSourceConversion
                 _journal.Advance(
                     operationId,
                     CompanionOperationState.Rejected,
-                    CompanionAcquisitionBranch.Source,
-                    current.CompletedBytes,
-                    current.TotalBytes,
+                    CompanionAcquisitionRoute.Source,
+                    current.PhaseCompletedBytes,
+                    current.PhaseTotalBytes,
                     errorCode: code);
                 throw new TinyRustLmException(code);
             }
@@ -186,9 +188,9 @@ public sealed class CompanionSourceConversion
             _journal.Advance(
                 operationId,
                 CompanionOperationState.Cancelled,
-                CompanionAcquisitionBranch.Source,
-                current.CompletedBytes,
-                current.TotalBytes);
+                CompanionAcquisitionRoute.Source,
+                current.PhaseCompletedBytes,
+                current.PhaseTotalBytes);
             throw;
         }
         catch (TinyRustLmException error)
@@ -196,9 +198,9 @@ public sealed class CompanionSourceConversion
             _journal.Advance(
                 operationId,
                 CompanionOperationState.Rejected,
-                CompanionAcquisitionBranch.Source,
-                current.CompletedBytes,
-                current.TotalBytes,
+                CompanionAcquisitionRoute.Source,
+                current.PhaseCompletedBytes,
+                current.PhaseTotalBytes,
                 errorCode: error.Code);
             throw;
         }
@@ -208,9 +210,9 @@ public sealed class CompanionSourceConversion
             _journal.Advance(
                 operationId,
                 CompanionOperationState.Rejected,
-                CompanionAcquisitionBranch.Source,
-                current.CompletedBytes,
-                current.TotalBytes,
+                CompanionAcquisitionRoute.Source,
+                current.PhaseCompletedBytes,
+                current.PhaseTotalBytes,
                 errorCode: code);
             throw new CompanionContractException(code);
         }
@@ -222,9 +224,9 @@ public sealed class CompanionSourceConversion
             _journal.Advance(
                 operationId,
                 CompanionOperationState.Rejected,
-                CompanionAcquisitionBranch.Source,
-                current.CompletedBytes,
-                current.TotalBytes,
+                CompanionAcquisitionRoute.Source,
+                current.PhaseCompletedBytes,
+                current.PhaseTotalBytes,
                 errorCode: code);
             throw new CompanionContractException(code);
         }
@@ -238,7 +240,7 @@ public sealed class CompanionSourceConversion
     public CompanionSourceConversionReconciliationResult ReconcileTerminal(string operationId)
     {
         var current = _journal.Read(operationId);
-        if (current.Branch != CompanionAcquisitionBranch.Source ||
+        if (current.Route != CompanionAcquisitionRoute.Source ||
             current.State is not (CompanionOperationState.Converting or
                 CompanionOperationState.VerifyingComposition) ||
             current.SourceConversionIntentSha256 is null ||
@@ -262,9 +264,9 @@ public sealed class CompanionSourceConversion
             var rejected = _journal.Advance(
                 operationId,
                 CompanionOperationState.Rejected,
-                CompanionAcquisitionBranch.Source,
-                current.CompletedBytes,
-                current.TotalBytes,
+                CompanionAcquisitionRoute.Source,
+                current.PhaseCompletedBytes,
+                current.PhaseTotalBytes,
                 errorCode: code);
             return new CompanionSourceConversionReconciliationResult(
                 CompanionSourceConversionReconciliationStatus.Rejected,
@@ -287,9 +289,9 @@ public sealed class CompanionSourceConversion
             var rejected = _journal.Advance(
                 operationId,
                 CompanionOperationState.Rejected,
-                CompanionAcquisitionBranch.Source,
-                current.CompletedBytes,
-                current.TotalBytes,
+                CompanionAcquisitionRoute.Source,
+                current.PhaseCompletedBytes,
+                current.PhaseTotalBytes,
                 errorCode: code);
             return new CompanionSourceConversionReconciliationResult(
                 CompanionSourceConversionReconciliationStatus.Rejected,
@@ -316,7 +318,7 @@ public sealed class CompanionSourceConversion
         TinyRustLmCompositionConversionObservation? liveObservation)
     {
         var current = _journal.Read(operationId);
-        if (current.Branch != CompanionAcquisitionBranch.Source ||
+        if (current.Route != CompanionAcquisitionRoute.Source ||
             current.State is not (CompanionOperationState.Converting or
                 CompanionOperationState.VerifyingComposition))
         {
@@ -330,9 +332,9 @@ public sealed class CompanionSourceConversion
             _journal.Advance(
                 operationId,
                 CompanionOperationState.Rejected,
-                CompanionAcquisitionBranch.Source,
-                current.CompletedBytes,
-                current.TotalBytes,
+                CompanionAcquisitionRoute.Source,
+                current.PhaseCompletedBytes,
+                current.PhaseTotalBytes,
                 errorCode: code);
             throw new CompanionContractException(code);
         }
@@ -352,9 +354,9 @@ public sealed class CompanionSourceConversion
             _journal.Advance(
                 operationId,
                 CompanionOperationState.Rejected,
-                CompanionAcquisitionBranch.Source,
-                current.CompletedBytes,
-                current.TotalBytes,
+                CompanionAcquisitionRoute.Source,
+                current.PhaseCompletedBytes,
+                current.PhaseTotalBytes,
                 errorCode: code);
             throw new CompanionContractException(code);
         }
@@ -364,14 +366,14 @@ public sealed class CompanionSourceConversion
             _journal.Advance(
                 operationId,
                 CompanionOperationState.VerifyingComposition,
-                CompanionAcquisitionBranch.Source,
+                CompanionAcquisitionRoute.Source,
                 totalBytes,
                 totalBytes);
         }
         var available = _journal.Advance(
             operationId,
             CompanionOperationState.Available,
-            CompanionAcquisitionBranch.Source,
+            CompanionAcquisitionRoute.Source,
             totalBytes,
             totalBytes,
             artifacts);

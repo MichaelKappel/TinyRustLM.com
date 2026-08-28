@@ -20,9 +20,11 @@ if (args[0] != "qwen3-composition")
 }
 
 var modelLock = args[1];
+var modelSourceDirectory = args[2];
 var tokenizerLock = args[3];
 var outputRoot = args[5];
-var scenario = File.ReadAllText(modelLock).Trim();
+var scenario = File.ReadAllText(
+    Path.Combine(modelSourceDirectory, ".tinyrustlm-conversion-fixture-scenario")).Trim();
 switch (scenario)
 {
     case "error":

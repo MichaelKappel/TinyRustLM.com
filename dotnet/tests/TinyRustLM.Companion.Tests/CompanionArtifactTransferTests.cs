@@ -112,7 +112,7 @@ public sealed class CompanionArtifactTransferTests : IDisposable
     }
 
     [Fact]
-    public async Task NonAvailableAndPeerOperationsRemainTruthfullyUnavailable()
+    public async Task NonAvailableOperationRemainsTruthfullyUnavailable()
     {
         using var fixture = new TransferFixture(_parent, "pass");
         var queued = fixture.CreateQueued();
@@ -121,11 +121,6 @@ public sealed class CompanionArtifactTransferTests : IDisposable
         var queuedError = await Assert.ThrowsAsync<CompanionProtocolException>(() =>
             transfer.ReadChunkAsync(queued.OperationId, "model", 0));
         Assert.Equal("operation-not-available", queuedError.Code);
-
-        var peer = fixture.CreateAvailablePeerOperation();
-        var peerError = await Assert.ThrowsAsync<CompanionProtocolException>(() =>
-            transfer.ReadChunkAsync(peer.OperationId, "model", 0));
-        Assert.Equal("operation-not-available", peerError.Code);
     }
 
     [Fact]
@@ -171,14 +166,33 @@ public sealed class CompanionArtifactTransferTests : IDisposable
             TokenizerSourceDirectory = Path.Combine(Parent, "tokenizer-source");
             Directory.CreateDirectory(ModelSourceDirectory);
             Directory.CreateDirectory(TokenizerSourceDirectory);
-            ModelSourceLockPath = Path.Combine(Parent, "model-source-lock.json");
-            TokenizerSourceLockPath = Path.Combine(Parent, "tokenizer-source-lock.json");
-            File.WriteAllText(ModelSourceLockPath, scenario);
-            File.WriteAllText(TokenizerSourceLockPath, "fixture-tokenizer-lock");
+            var materializedLocks = Path.Combine(Parent, "source-locks");
+            Directory.CreateDirectory(materializedLocks);
+            ModelSourceLockPath = Path.Combine(materializedLocks, "model-source-lock.json");
+            TokenizerSourceLockPath = Path.Combine(
+                materializedLocks,
+                "tokenizer-source-lock.json");
+            File.Copy(
+                Path.Combine(
+                    RepositoryRoot(),
+                    "contracts",
+                    "vnext",
+                    "qwen3-0.6b-base-source-lock.v1.json"),
+                ModelSourceLockPath);
+            File.Copy(
+                Path.Combine(
+                    RepositoryRoot(),
+                    "contracts",
+                    "vnext",
+                    "qwen3-0.6b-tokenizer2-source-lock.v1.json"),
+                TokenizerSourceLockPath);
+            File.WriteAllText(
+                Path.Combine(ModelSourceDirectory, ".tinyrustlm-conversion-fixture-scenario"),
+                scenario);
             OutputRoot = Path.Combine(Parent, "composition-output");
             var owned = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(Parent, "owned"));
             Journal = new CompanionOperationJournal(owned);
-            _request = Request($"qwen3-{Guid.NewGuid():N}", []);
+            _request = CompanionContractTests.Request();
         }
 
         internal string Parent { get; }
@@ -194,18 +208,34 @@ public sealed class CompanionArtifactTransferTests : IDisposable
         internal async Task<CompanionOperationRecord> CreateAvailableAsync()
         {
             var created = Journal.CreateOrRead(_request);
-            Journal.Advance(
-                created.OperationId,
-                CompanionOperationState.CheckingPeers,
-                CompanionAcquisitionBranch.Undecided);
-            Journal.Advance(
-                created.OperationId,
-                CompanionOperationState.AcquiringSource,
-                CompanionAcquisitionBranch.Source,
-                totalBytes: _request.MaximumSourceBytes);
+            var tool = new TinyRustLmConversionTool(FixtureToolPath());
+            var conversionIntent = tool.CreateCompositionIntent(
+                new TinyRustLmCompositionConversionRequest(
+                    ModelSourceLockPath,
+                    _request.ModelSourceLockSha256,
+                    ModelSourceDirectory,
+                    TokenizerSourceLockPath,
+                    _request.TokenizerSourceLockSha256,
+                    TokenizerSourceDirectory,
+                    _request.CompositionProfileSha256,
+                    OutputRoot));
+            var evidence = CompanionOperationTestEvidence.EnterAcquiringSource(
+                Journal,
+                created,
+                Parent,
+                ModelSourceDirectory,
+                TokenizerSourceDirectory,
+                OutputRoot,
+                conversionIntent.ConverterExecutableSha256);
+            _ = CompanionOperationTestEvidence.PersistSourceReceipt(
+                Journal,
+                created,
+                evidence,
+                ModelSourceDirectory,
+                TokenizerSourceDirectory);
             var conversion = new CompanionSourceConversion(
                 Journal,
-                new TinyRustLmConversionTool(FixtureToolPath()));
+                tool);
             var result = await conversion.RunAsync(
                 created.OperationId,
                 new CompanionSourceConversionRequest(
@@ -217,73 +247,12 @@ public sealed class CompanionArtifactTransferTests : IDisposable
             return result.Operation;
         }
 
-        internal CompanionOperationRecord CreateAvailablePeerOperation()
-        {
-            var request = Request(
-                $"peer-{Guid.NewGuid():N}",
-                [new CompanionPeerCandidate(
-                    "https://peer.example.test/manifests/exact",
-                    $"sha256:{new string('a', 64)}")]);
-            var created = Journal.CreateOrRead(request);
-            Journal.Advance(
-                created.OperationId,
-                CompanionOperationState.CheckingPeers,
-                CompanionAcquisitionBranch.Undecided);
-            Journal.Advance(
-                created.OperationId,
-                CompanionOperationState.FetchingPeer,
-                CompanionAcquisitionBranch.Peer,
-                totalBytes: 6);
-            Journal.Advance(
-                created.OperationId,
-                CompanionOperationState.VerifyingPeer,
-                CompanionAcquisitionBranch.Peer,
-                completedBytes: 6,
-                totalBytes: 6);
-            return Journal.Advance(
-                created.OperationId,
-                CompanionOperationState.Available,
-                CompanionAcquisitionBranch.Peer,
-                completedBytes: 6,
-                totalBytes: 6,
-                artifacts: ArtifactSet());
-        }
-
         public void Dispose()
         {
             if (Directory.Exists(Parent))
             {
                 Directory.Delete(Parent, recursive: true);
             }
-        }
-
-        private CompanionAcquireRequest Request(
-            string modelId,
-            IReadOnlyList<CompanionPeerCandidate> peers) =>
-            new(
-                CompanionContract.AcquisitionRequestSchema,
-                modelId,
-                "Qwen/Qwen3-0.6B",
-                new string('1', 40),
-                Sha256File(ModelSourceLockPath),
-                Sha256File(TokenizerSourceLockPath),
-                TinyRustLmConversionTool.CompositionProfileSha256,
-                SourceAcquisitionApproved: true,
-                MaximumSourceBytes: 4_000_000_000,
-                peers);
-
-        private static CompanionArtifactSet ArtifactSet()
-        {
-            var digest = new string('b', 64);
-            static CompanionArtifact Artifact(string kind, string digest) =>
-                new(kind, $"sha256:{digest}", digest, 1);
-            return new CompanionArtifactSet(
-                Artifact("acg2", digest),
-                Artifact("slm2", digest),
-                Artifact("tokenizer2", digest),
-                Artifact("template2", digest),
-                Artifact("sampling2", digest),
-                Artifact("prompt2", digest));
         }
 
         private static string FixtureToolPath()
@@ -319,10 +288,5 @@ public sealed class CompanionArtifactTransferTests : IDisposable
             throw new DirectoryNotFoundException("Cannot locate repository root.");
         }
 
-        private static string Sha256File(string path)
-        {
-            using var stream = File.OpenRead(path);
-            return Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant();
-        }
     }
 }

@@ -1,5 +1,16 @@
-profile: runtime-mirust.receiver-brief.v63
-updated_utc: 2026-08-28T06:41:57Z
+profile: runtime-mirust.receiver-brief.v67
+updated_utc: 2026-08-28T08:59:29Z
+
+checkpoint_2026_08_28_companion_source_operation_contract:
+  status: locally_green_coherent_change_commit_push_and_remote_equality_pending
+  implementation_memory: wiki/runtime-mirust/reports/tinyrustlm-companion-source-operation-contract-memory-2026-08-28.md,14694,4867d2270defe57e8bd495ab59e25a20b56897518f26ee0be51b4804a6a9126c
+  intake_authority: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md,20316,6e5a5b7cf7f3ad45008b14597a3616ee603da76cc500b69770de7280711785e4
+  result: The sole current Companion wire is loopback-capability/4 plus acquire.v2, operation.v3, and operation-projection.v2. It requires one explicit attempt, the exact pinned Qwen3 source and corrected composition profile /4, source-only route, private create-only execution/source evidence whose intent and receipt bind one canonical nine-file payload inventory, independent browser and managed enforcement of the same source constants, pairwise nonoverlapping custody roots, authoritative create-only history with current-cache lag bounded to one record and repaired under both locks before another append, reclaimed exact-key mutation gates, a bounded five-second cancellation mutation wait, monotonic terminal state, and exact six-member fixed-chunk transfer. Superseded request/operation/projection readers, arbitrary inventory digests, and fake peer states are absent from the current executable path.
+  verification: Managed Release solution 252/252 with Companion 125, Core 86, and package boundary 41; warnings as errors and format gate pass; focused browser/vector 19/19; standard Node partition 1702 pass, zero fail, three declared skips, 1705 total; diff hygiene passes.
+  release_truth: The listener still returns typed operation-not-available, no production operation executor or source-network owner exists, the browser client is not loaded by the product UI, and no real source, conversion, model, browser chat, P2P, deployment, publication, or live MemoryEndpoints evidence exists.
+  next_gate: Implement the preregistered exclusive restart-safe source operation owner, bounded pinned-source streaming, contained converter launch, and terminal six-member inspection before wiring listener routes or deleting the superseded UI bridge in one later green clean cut.
+  memory_policy: MemoryEndpoints is authorized and strongly recommended for portable continuity; configured or reachable state is not authenticated live lifecycle evidence.
+  campaign_truth: 0/20 qualified; 0/50 browser; 0/25 live memory; 0/40 outside lanes; 0/20 catalog.
 
 checkpoint_2026_08_28_companion_operation_and_artifact_boundary:
   source: artifact_transfer_commit=75caaa0b9d08972c510cd048f853cbba8bee375c; operation_service_commit=0eb97b69508e490111eb9c77b4b0888bbdd5513d; latest_tree=ef45e775ab535447f074b4a337af26b4d2411c95

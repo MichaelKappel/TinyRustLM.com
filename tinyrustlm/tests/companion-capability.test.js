@@ -272,14 +272,14 @@ class FakeCompanion {
     } else if (path === capability.ROUTES.operations && options.method === "POST") {
       const request = jsonBody(body);
       const operationId = await capability.computeOperationId(request);
-      this.operation = projection(operationId, "queued", "undecided");
+      this.operation = projection(operationId, "queued");
       result = { status: 200, body: capability.encodeOperationProjection(this.operation) };
     } else if (this.operation &&
         path === `${capability.ROUTES.operations}/${this.operation.operationId}`) {
       result = { status: 200, body: capability.encodeOperationProjection(this.operation) };
     } else if (this.operation &&
         path === `${capability.ROUTES.operations}/${this.operation.operationId}/cancel`) {
-      this.operation = projection(this.operation.operationId, "cancelled", "none", 1);
+      this.operation = projection(this.operation.operationId, "cancelled", 1);
       result = { status: 200, body: capability.encodeOperationProjection(this.operation) };
     } else if (this.operation && path.includes("/artifacts/model/chunks/0")) {
       const chunk = new Uint8Array([1, 2, 3, 4]);
@@ -397,15 +397,15 @@ class FakeCompanion {
   }
 }
 
-function projection(operationId, state, branch, sequence = 0) {
+function projection(operationId, state, sequence = 0) {
   return {
     schema: capability.SCHEMAS.operationProjection,
     operationId,
     sequence,
     state,
-    branch,
-    completedBytes: 0,
-    totalBytes: null,
+    route: "source",
+    phaseCompletedBytes: 0,
+    phaseTotalBytes: null,
     artifacts: null,
     errorCode: null
   };
@@ -430,15 +430,19 @@ function availableArtifacts(byteCount = 1) {
 function acquireRequest() {
   return {
     schema: capability.SCHEMAS.acquire,
+    attemptId: "01".repeat(16),
+    route: "source",
     modelId: "qwen3-0.6b",
     sourceRepository: "Qwen/Qwen3-0.6B",
     sourceRevision: "c1899de289a04d12100db370d81485cdf75e47ca",
-    modelSourceLockSha256: "7".repeat(64),
-    tokenizerSourceLockSha256: "8".repeat(64),
-    compositionProfileSha256: "9".repeat(64),
+    modelSourceLockSha256:
+      "e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d",
+    tokenizerSourceLockSha256:
+      "1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70",
+    compositionProfileSha256:
+      "19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8",
     sourceAcquisitionApproved: true,
-    maximumSourceBytes: 1024 * 1024 * 1024,
-    peerCandidates: []
+    maximumSourceBytes: 1519207688
   };
 }
 
@@ -525,7 +529,7 @@ test("deterministic operation API and fixed artifact chunk verify every identity
   const cancelled = await client.cancelOperation(created.operationId, "ab".repeat(16));
   assert.equal(cancelled.state, "cancelled");
 
-  fake.operation = projection(created.operationId, "available", "source", 2);
+  fake.operation = projection(created.operationId, "available", 2);
   const chunk = await client.getArtifactChunk(
     created.operationId,
     "model",
@@ -564,7 +568,7 @@ test("an ambiguous transport failure destroys the unsynchronized browser key", a
     error.code === "capability-invalid");
 });
 
-test("canonical acquisition rejects aliases, unknown fields, and unapproved empty routes", () => {
+test("canonical acquisition rejects aliases, unsupported routes, and unapproved source", () => {
   const request = acquireRequest();
   assert.deepEqual(jsonBody(capability.encodeAcquireRequest(request)), request);
   assert.throws(
@@ -576,26 +580,62 @@ test("canonical acquisition rejects aliases, unknown fields, and unapproved empt
       ...request,
       sourceAcquisitionApproved: false
     }),
-    (error) => error.code === "acquire-no-authorized-branch"
+    (error) => error.code === "acquire-source-approval"
   );
   assert.throws(
     () => capability.encodeAcquireRequest({
       ...request,
-      peerCandidates: [{
-        manifestUri: "https://127.0.0.1/model/manifest",
-        manifestId: `sha256:${"a".repeat(64)}`
-      }]
+      route: "peer"
     }),
-    (error) => error.code === "acquire-peer-uri"
+    (error) => error.code === "acquire-route"
   );
+  for (const mutation of [
+    { modelId: "qwen3-1.7b" },
+    { sourceRepository: "Qwen/Qwen3-1.7B" },
+    { sourceRevision: "1".repeat(40) },
+    { modelSourceLockSha256: "1".repeat(64) },
+    { tokenizerSourceLockSha256: "2".repeat(64) },
+    { compositionProfileSha256: "3".repeat(64) },
+    { maximumSourceBytes: request.maximumSourceBytes + 1 }
+  ]) {
+    assert.throws(
+      () => capability.encodeAcquireRequest({ ...request, ...mutation }),
+      (error) => error.code === "acquire-source-unsupported"
+    );
+  }
 });
 
 test("available projection enforces the aggregate six-member composition ceiling", () => {
-  const value = projection("f".repeat(64), "available", "source");
+  const value = projection("f".repeat(64), "available");
   value.artifacts = availableArtifacts(12 * 1024 * 1024 * 1024);
-  value.totalBytes = 72 * 1024 * 1024 * 1024;
+  value.phaseTotalBytes = 72 * 1024 * 1024 * 1024;
   assert.throws(
     () => capability.encodeOperationProjection(value),
     (error) => error.code === "operation-artifact-total"
+  );
+});
+
+test("artifact identities are exactly their prefixed content digests", async () => {
+  const value = projection("f".repeat(64), "available");
+  value.artifacts = availableArtifacts();
+  value.artifacts.model.artifactId = `sha256:${"f".repeat(64)}`;
+  assert.throws(
+    () => capability.encodeOperationProjection(value),
+    (error) => error.code === "operation-artifact-model"
+  );
+
+  await assert.rejects(
+    capability.computeArtifactMetadataSha256({
+      operationId: "1".repeat(64),
+      artifactRole: "model",
+      artifactId: `sha256:${"2".repeat(64)}`,
+      artifactSha256: "3".repeat(64),
+      artifactBytes: 4,
+      chunkIndex: 0,
+      chunkCount: 1,
+      chunkOffset: 0,
+      chunkBytes: 4
+    }),
+    (error) => error.code === "artifact-id"
   );
 });

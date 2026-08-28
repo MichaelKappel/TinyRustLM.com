@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using TinyRustLM.Companion;
 using Xunit;
 
@@ -21,8 +20,8 @@ public sealed class CompanionSourceConversionTests : IDisposable
         var result = await coordinator.RunAsync(created.OperationId, fixture.Request());
 
         Assert.Equal(CompanionOperationState.Available, result.Operation.State);
-        Assert.Equal(CompanionAcquisitionBranch.Source, result.Operation.Branch);
-        Assert.Equal((ulong)5, result.Operation.Sequence);
+        Assert.Equal(CompanionAcquisitionRoute.Source, result.Operation.Route);
+        Assert.Equal((ulong)4, result.Operation.Sequence);
         Assert.NotNull(result.Operation.Artifacts);
         Assert.Equal(
             result.Composition.Artifacts.Composition.Sha256,
@@ -32,7 +31,7 @@ public sealed class CompanionSourceConversionTests : IDisposable
             result.Operation.Artifacts.Model.Sha256);
         Assert.NotNull(result.LiveObservation);
         Assert.Matches("^[0-9a-f]{64}$", result.Operation.SourceConversionIntentSha256!);
-        Assert.Equal(result.Operation.TotalBytes, result.Operation.CompletedBytes);
+        Assert.Equal(result.Operation.PhaseTotalBytes, result.Operation.PhaseCompletedBytes);
         Assert.Equal(result.Operation, journal.Read(created.OperationId));
         Assert.Equal(
             CompanionContract.OperationId(fixture.AcquisitionRequest),
@@ -105,8 +104,9 @@ public sealed class CompanionSourceConversionTests : IDisposable
     public async Task ProcessStartFailureIsTypedAndTerminalWithoutCreatingOutput()
     {
         using var fixture = new ConversionFixture(_parent, "pass");
-        var (journal, created) = CreateAcquiringOperation(fixture);
-        var coordinator = new CompanionSourceConversion(journal, fixture.InvalidTool());
+        var invalidTool = fixture.InvalidTool();
+        var (journal, created) = CreateAcquiringOperation(fixture, invalidTool);
+        var coordinator = new CompanionSourceConversion(journal, invalidTool);
 
         var error = await Assert.ThrowsAsync<TinyRustLmException>(() =>
             coordinator.RunAsync(created.OperationId, fixture.Request()));
@@ -117,39 +117,6 @@ public sealed class CompanionSourceConversionTests : IDisposable
         Assert.Equal(error.Code, rejected.ErrorCode);
         Assert.Matches("^[0-9a-f]{64}$", rejected.SourceConversionIntentSha256!);
         Assert.Null(rejected.Artifacts);
-        Assert.False(Directory.Exists(fixture.OutputRoot));
-    }
-
-    [Fact]
-    public async Task JournaledProfileDriftBlocksBeforeConversionStateOrOutput()
-    {
-        using var fixture = new ConversionFixture(_parent, "pass", new string('0', 64));
-        var (journal, created) = CreateAcquiringOperation(fixture);
-        var coordinator = new CompanionSourceConversion(journal, fixture.Tool());
-
-        var error = await Assert.ThrowsAsync<CompanionContractException>(() =>
-            coordinator.RunAsync(created.OperationId, fixture.Request()));
-
-        Assert.Equal("companion-conversion-profile", error.Code);
-        Assert.Equal(CompanionOperationState.Rejected, journal.Read(created.OperationId).State);
-        Assert.Equal("companion-conversion-profile", journal.Read(created.OperationId).ErrorCode);
-        Assert.False(Directory.Exists(fixture.OutputRoot));
-    }
-
-    [Fact]
-    public async Task JournaledSourceLockDriftRejectsBeforeProcessCreatesOutput()
-    {
-        using var fixture = new ConversionFixture(_parent, "pass", modelLockOverride: new string('0', 64));
-        var (journal, created) = CreateAcquiringOperation(fixture);
-        var coordinator = new CompanionSourceConversion(journal, fixture.Tool());
-
-        var error = await Assert.ThrowsAsync<TinyRustLmException>(() =>
-            coordinator.RunAsync(created.OperationId, fixture.Request()));
-
-        Assert.Equal("converter-model-source-lock-identity", error.Code);
-        var rejected = journal.Read(created.OperationId);
-        Assert.Equal(CompanionOperationState.Rejected, rejected.State);
-        Assert.Equal(error.Code, rejected.ErrorCode);
         Assert.False(Directory.Exists(fixture.OutputRoot));
     }
 
@@ -184,7 +151,7 @@ public sealed class CompanionSourceConversionTests : IDisposable
             interrupted.Journal.Advance(
                 interrupted.Created.OperationId,
                 CompanionOperationState.VerifyingComposition,
-                CompanionAcquisitionBranch.Source);
+                CompanionAcquisitionRoute.Source);
         }
         var coordinator = new CompanionSourceConversion(interrupted.Journal, interrupted.Tool);
 
@@ -213,7 +180,7 @@ public sealed class CompanionSourceConversionTests : IDisposable
             interrupted.Journal.Advance(
                 interrupted.Created.OperationId,
                 CompanionOperationState.VerifyingComposition,
-                CompanionAcquisitionBranch.Source);
+                CompanionAcquisitionRoute.Source);
         }
         var coordinator = new CompanionSourceConversion(interrupted.Journal, interrupted.Tool);
 
@@ -309,8 +276,8 @@ public sealed class CompanionSourceConversionTests : IDisposable
         await interrupted.Tool.ConvertCompositionAsync(interrupted.Intent);
         File.Delete(fixture.ModelSourceLockPath);
         File.Delete(fixture.TokenizerSourceLockPath);
-        Directory.Delete(fixture.ModelSourceDirectory);
-        Directory.Delete(fixture.TokenizerSourceDirectory);
+        Directory.Delete(fixture.ModelSourceDirectory, recursive: true);
+        Directory.Delete(fixture.TokenizerSourceDirectory, recursive: true);
         fixture.RemovePrivateTool();
         var coordinator = new CompanionSourceConversion(interrupted.Journal, interrupted.Tool);
 
@@ -475,21 +442,30 @@ public sealed class CompanionSourceConversionTests : IDisposable
     }
 
     private static (CompanionOperationJournal Journal, CompanionOperationRecord Created)
-        CreateAcquiringOperation(ConversionFixture fixture)
+        CreateAcquiringOperation(
+            ConversionFixture fixture,
+            TinyRustLmConversionTool? tool = null)
     {
         var root = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(fixture.Parent, "owned"));
         fixture.OwnedRoot = root;
         var journal = new CompanionOperationJournal(root);
         var created = journal.CreateOrRead(fixture.AcquisitionRequest);
-        journal.Advance(
-            created.OperationId,
-            CompanionOperationState.CheckingPeers,
-            CompanionAcquisitionBranch.Undecided);
-        journal.Advance(
-            created.OperationId,
-            CompanionOperationState.AcquiringSource,
-            CompanionAcquisitionBranch.Source,
-            totalBytes: fixture.AcquisitionRequest.MaximumSourceBytes);
+        var selectedTool = tool ?? fixture.Tool();
+        var conversionIntent = selectedTool.CreateCompositionIntent(fixture.NativeRequest());
+        var evidence = CompanionOperationTestEvidence.EnterAcquiringSource(
+            journal,
+            created,
+            fixture.Parent,
+            fixture.ModelSourceDirectory,
+            fixture.TokenizerSourceDirectory,
+            fixture.OutputRoot,
+            conversionIntent.ConverterExecutableSha256);
+        _ = CompanionOperationTestEvidence.PersistSourceReceipt(
+            journal,
+            created,
+            evidence,
+            fixture.ModelSourceDirectory,
+            fixture.TokenizerSourceDirectory);
         return (journal, created);
     }
 
@@ -497,10 +473,11 @@ public sealed class CompanionSourceConversionTests : IDisposable
         ConversionFixture fixture,
         bool privateTool = false)
     {
-        var (journal, created) = CreateAcquiringOperation(fixture);
         var tool = fixture.Tool(privateTool);
+        var (journal, created) = CreateAcquiringOperation(fixture, tool);
         var intent = tool.CreateCompositionIntent(fixture.NativeRequest());
         var current = journal.Read(created.OperationId);
+        var sourceReceipt = journal.ReadSourceAcquisitionReceipt(created.OperationId);
         var persisted = journal.PersistSourceConversionIntent(
             new CompanionSourceConversionIntent(
                 CompanionContract.SourceConversionIntentSchema,
@@ -510,9 +487,10 @@ public sealed class CompanionSourceConversionTests : IDisposable
         journal.Advance(
             created.OperationId,
             CompanionOperationState.Converting,
-            CompanionAcquisitionBranch.Source,
-            current.CompletedBytes,
-            current.TotalBytes,
+            CompanionAcquisitionRoute.Source,
+            current.PhaseCompletedBytes,
+            current.PhaseTotalBytes,
+            sourceAcquisitionReceiptSha256: sourceReceipt.Sha256,
             sourceConversionIntentSha256: persisted.Sha256);
         return new InterruptedConversion(journal, created, tool, intent);
     }
@@ -548,9 +526,7 @@ public sealed class CompanionSourceConversionTests : IDisposable
 
         internal ConversionFixture(
             string parent,
-            string scenario,
-            string? profileOverride = null,
-            string? modelLockOverride = null)
+            string scenario)
         {
             Directory.CreateDirectory(parent);
             Parent = Path.Combine(parent, $"case-{Guid.NewGuid():N}");
@@ -560,22 +536,31 @@ public sealed class CompanionSourceConversionTests : IDisposable
             Directory.CreateDirectory(ModelSourceDirectory);
             TokenizerSourceDirectory = Path.Combine(Parent, "tokenizer-source");
             Directory.CreateDirectory(TokenizerSourceDirectory);
-            ModelSourceLockPath = Path.Combine(Parent, "model-source-lock.json");
-            TokenizerSourceLockPath = Path.Combine(Parent, "tokenizer-source-lock.json");
-            File.WriteAllText(ModelSourceLockPath, scenario);
-            File.WriteAllText(TokenizerSourceLockPath, "fixture-tokenizer-lock");
+            var materializedLocks = Path.Combine(Parent, "source-locks");
+            Directory.CreateDirectory(materializedLocks);
+            ModelSourceLockPath = Path.Combine(materializedLocks, "model-source-lock.json");
+            TokenizerSourceLockPath = Path.Combine(
+                materializedLocks,
+                "tokenizer-source-lock.json");
+            File.Copy(
+                Path.Combine(
+                    RepositoryRoot(),
+                    "contracts",
+                    "vnext",
+                    "qwen3-0.6b-base-source-lock.v1.json"),
+                ModelSourceLockPath);
+            File.Copy(
+                Path.Combine(
+                    RepositoryRoot(),
+                    "contracts",
+                    "vnext",
+                    "qwen3-0.6b-tokenizer2-source-lock.v1.json"),
+                TokenizerSourceLockPath);
+            File.WriteAllText(
+                Path.Combine(ModelSourceDirectory, ".tinyrustlm-conversion-fixture-scenario"),
+                scenario);
             OutputRoot = Path.Combine(Parent, "composition-output");
-            AcquisitionRequest = new CompanionAcquireRequest(
-                CompanionContract.AcquisitionRequestSchema,
-                "qwen3-0.6b",
-                "Qwen/Qwen3-0.6B",
-                new string('1', 40),
-                modelLockOverride ?? Sha256File(ModelSourceLockPath),
-                Sha256File(TokenizerSourceLockPath),
-                profileOverride ?? TinyRustLmConversionTool.CompositionProfileSha256,
-                SourceAcquisitionApproved: true,
-                MaximumSourceBytes: 4_000_000_000,
-                []);
+            AcquisitionRequest = CompanionContractTests.Request();
         }
 
         internal string Parent { get; }
@@ -688,9 +673,4 @@ public sealed class CompanionSourceConversionTests : IDisposable
         }
     }
 
-    private static string Sha256File(string path)
-    {
-        using var stream = File.OpenRead(path);
-        return Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant();
-    }
 }

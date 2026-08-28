@@ -537,8 +537,11 @@ public sealed class ConversionToolTests
             {
                 Directory.Delete(OutputRoot, recursive: true);
             }
-            File.WriteAllText(ModelSourceLockPath, scenario);
+            File.WriteAllText(ModelSourceLockPath, "fixture-model-lock");
             File.WriteAllText(TokenizerSourceLockPath, "fixture-tokenizer-lock");
+            File.WriteAllText(
+                Path.Combine(ModelSourceDirectory, ".tinyrustlm-conversion-fixture-scenario"),
+                scenario);
         }
 
         internal TinyRustLmCompositionConversionRequest Request() =>

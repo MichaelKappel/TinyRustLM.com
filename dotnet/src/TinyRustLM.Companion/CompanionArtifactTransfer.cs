@@ -150,16 +150,16 @@ public sealed class CompanionArtifactTransfer
         {
             throw Error("operation-not-available");
         }
-        if (record.Branch != CompanionAcquisitionBranch.Source)
+        if (record.Route != CompanionAcquisitionRoute.Source)
         {
             throw Error("operation-not-available");
         }
         if (record.Artifacts is null ||
             record.ErrorCode is not null ||
             record.SourceConversionIntentSha256 is null ||
-            record.TotalBytes is not ulong totalBytes ||
+            record.PhaseTotalBytes is not ulong totalBytes ||
             totalBytes == 0 ||
-            record.CompletedBytes != totalBytes)
+            record.PhaseCompletedBytes != totalBytes)
         {
             throw Error("artifact-identity-drift");
         }
@@ -320,7 +320,7 @@ public sealed class CompanionArtifactTransfer
         var total = pairs.Aggregate(
             0UL,
             static (current, pair) => checked(current + pair.Value.Identity.ByteCount));
-        if (operation.TotalBytes != total || operation.CompletedBytes != total)
+        if (operation.PhaseTotalBytes != total || operation.PhaseCompletedBytes != total)
         {
             throw Error("artifact-identity-drift");
         }

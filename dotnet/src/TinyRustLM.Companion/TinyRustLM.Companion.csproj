@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Title>TinyRustLM Local Companion</Title>
-    <Description>Private clean-slate coordinator for verified P2P-first SLM2 acquisition and reviewed local complete-composition conversion.</Description>
+    <Description>Private clean-slate coordinator for verified SLM2 acquisition and reviewed local complete-composition conversion.</Description>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
@@ -9,7 +9,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TinyRustLM.Abstractions\TinyRustLM.Abstractions.csproj" />
-    <ProjectReference Include="..\TinyRustLM.P2P\TinyRustLM.P2P.csproj" />
     <ProjectReference Include="..\TinyRustLM.Conversion\TinyRustLM.Conversion.csproj" />
   </ItemGroup>
 </Project>

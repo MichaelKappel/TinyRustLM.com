@@ -1,0 +1,166 @@
+{
+  "schema": "tinyrustlm.companion.loopback-capability-vectors.v2",
+  "profileId": "tinyrustlm.companion.loopback-capability/4",
+  "oracle": "independent-node-crypto-sha256-hmac-sha256-and-manual-rfc5869-single-block",
+  "testMaterialIsSecret": false,
+  "transcript": {
+    "fields": [
+      "alpha",
+      "",
+      "\u03b2",
+      "e\u0301"
+    ],
+    "hex": "00000005616c7068610000000000000002ceb20000000365cc81",
+    "sha256": "9096441aaa7dc1668abdb658d1604a4cd84b0cb4c5b2da4da3ef74029952421c"
+  },
+  "pairingSecretHex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+  "pairingContext": {
+    "installationId": "00112233445566778899aabbccddeeff",
+    "processInstanceId": "102132435465768798a9bacbdcedfe0f",
+    "claimId": "11223344556677889900aabbccddeeff",
+    "browserNonce": "ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8",
+    "serverNonce": "QEFCQ0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaW1xdXl8",
+    "sessionId": "ffeeddccbbaa00998877665544332211",
+    "keyEpoch": 1,
+    "host": "127.0.0.1:54321",
+    "origin": "https://tinyrustlm.com",
+    "sessionExpiresAtUtc": "2026-08-25T07:00:00Z",
+    "idleTimeoutSeconds": 900
+  },
+  "pairingExpected": {
+    "serverProof": "TygNAeC8KWaXIaqbwr_tOezJ1vJAyxGHT8k1o12KXv8",
+    "sessionSaltHex": "c6bb4214b574d986f0777db0fb456370b44e0a253256c746b5216564ae412d0e",
+    "sessionKeyHex": "bc767f8b89291b14bd2a6b5e3f08c14849d339afc7b1dad39a602145d074a38a",
+    "browserProof": "q4J3Ln3d6XJmokivrMDxggjvA0fsRRw4g4Gk-9kBnFU",
+    "completeRequestSha256": "03e45c98154916ded3948f9c1fe7ff9382f9b0ff838d48d245e0a36815722e73",
+    "completionProof": "TFdcQrBJgoXJYY_Wl8SE-oKhmdnto4n6j7ulksxLyaM"
+  },
+  "request": {
+    "sequence": 7,
+    "method": "GET",
+    "path": "/tinyrustlm-companion/1/session",
+    "contentType": "",
+    "contentLength": 0,
+    "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "proof": "66cY3J78DOpI1HfEkyMNh1iR1nXb81c8z_Uw8fhNYjA"
+  },
+  "response": {
+    "status": 200,
+    "contentType": "application/json",
+    "contentLength": 434,
+    "responseMetadataSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "contentSha256": "5762108ef1d8ed7cfbef1b2c532b78c2996bb5cddf0ada1342fb0e459cfbed8e",
+    "proof": "-OnvgcguhGmiyCTBc2CLJ-fIBDuYPUJt9PoRGBxDG6A",
+    "bodyUtf8": "{\"schema\":\"tinyrustlm.companion.loopback.session-status.v1\",\"protocolId\":\"tinyrustlm.companion.loopback-capability/4\",\"installationId\":\"00112233445566778899aabbccddeeff\",\"processInstanceId\":\"102132435465768798a9bacbdcedfe0f\",\"sessionId\":\"ffeeddccbbaa00998877665544332211\",\"keyEpoch\":1,\"acceptedSequence\":7,\"nextSequence\":8,\"sessionExpiresAtUtc\":\"2026-08-25T07:00:00Z\",\"keyExpiresAtUtc\":\"2026-08-24T23:15:00Z\",\"idleTimeoutSeconds\":900}"
+  },
+  "operation": {
+    "request": {
+      "schema": "tinyrustlm.companion.acquire.v2",
+      "attemptId": "0123456789abcdef0123456789abcdef",
+      "route": "source",
+      "modelId": "qwen3-0.6b",
+      "sourceRepository": "Qwen/Qwen3-0.6B",
+      "sourceRevision": "c1899de289a04d12100db370d81485cdf75e47ca",
+      "modelSourceLockSha256": "e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d",
+      "tokenizerSourceLockSha256": "1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70",
+      "compositionProfileSha256": "19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8",
+      "sourceAcquisitionApproved": true,
+      "maximumSourceBytes": 1519207688
+    },
+    "requestByteLength": 573,
+    "requestSha256": "7179ca79abd48d2e22a406301b66328b2163e9f6392786f097ef0d4ee61a26a1",
+    "operationId": "7179ca79abd48d2e22a406301b66328b2163e9f6392786f097ef0d4ee61a26a1",
+    "projection": {
+      "schema": "tinyrustlm.companion.loopback.operation-projection.v2",
+      "operationId": "7179ca79abd48d2e22a406301b66328b2163e9f6392786f097ef0d4ee61a26a1",
+      "sequence": 7,
+      "state": "available",
+      "route": "source",
+      "phaseCompletedBytes": 605377909,
+      "phaseTotalBytes": 605377909,
+      "artifacts": {
+        "composition": {
+          "kind": "acg2",
+          "artifactId": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+          "byteCount": 4096
+        },
+        "model": {
+          "kind": "slm2",
+          "artifactId": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+          "byteCount": 598308416
+        },
+        "tokenizer": {
+          "kind": "tokenizer2",
+          "artifactId": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+          "byteCount": 7038773
+        },
+        "template": {
+          "kind": "template2",
+          "artifactId": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+          "byteCount": 8192
+        },
+        "sampling": {
+          "kind": "sampling2",
+          "artifactId": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+          "byteCount": 2048
+        },
+        "prompt": {
+          "kind": "prompt2",
+          "artifactId": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+          "sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+          "byteCount": 16384
+        }
+      },
+      "errorCode": null
+    },
+    "projectionByteLength": 1557,
+    "projectionSha256": "086908111089a0236a539b80f0e3eff127b7028094ecc75da388b8ad95415092",
+    "artifactByteTotal": 605377909,
+    "cancelRequest": {
+      "schema": "tinyrustlm.companion.loopback.cancel-request.v1",
+      "cancellationId": "00112233445566778899aabbccddeeff"
+    },
+    "cancelRequestByteLength": 112,
+    "cancelRequestSha256": "e644dc62a2a2f18a5f21b9ad3318f399f6d3153f5a195d8cbe34fd673e15ccab"
+  },
+  "artifact": {
+    "operationId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "role": "model",
+    "artifactId": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "artifactSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "artifactBytes": 8388609,
+    "chunkIndex": 2,
+    "chunkCount": 3,
+    "chunkOffset": 8388608,
+    "chunkBytes": 1,
+    "metadataSha256": "c2bebb948779b17e741b11a623bbf724f02574786e4b097cdcf2ba0b8d14a671",
+    "chunkContentHex": "7f",
+    "chunkContentSha256": "620bfdaa346b088fb49998d92f19a7eaf6bfc2fb0aee015753966da1028cb731",
+    "responseSequence": 8,
+    "responsePath": "/tinyrustlm-companion/1/operations/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/artifacts/model/chunks/2",
+    "responseProof": "ioyq4zujuGA2U9MKP7ablmdo07MDvXG15ZMxOaSdEJY"
+  },
+  "rotationContext": {
+    "rotationId": "abcdef0123456789abcdef0123456789",
+    "browserNonce": "YGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn8",
+    "serverNonce": "gIGCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp8",
+    "currentEpoch": 1,
+    "nextEpoch": 2
+  },
+  "rotationExpected": {
+    "rotationSaltHex": "0f8c05e8df2746953211150d5a75f18f829a88e6809456bb8e13bfaaaed3d43c",
+    "rotatedSessionKeyHex": "5502270b47cf6701b1f5c214cf9cc16fda77d66ed59bb17fa569ab6531a169da",
+    "newKeyProof": "Jre5Elxal5aT3OYCd7Se7S-kT4SHsjaOWJF7k8BDGpw",
+    "commitRequestSha256": "f0d374148301cd1c8f3a6a06894790407d5f4e34d2a59474aba24f3f9bdc8487",
+    "completionProof": "7CtKghgAKF0lvIBIJMcYxVS3Oun1cXJw5EfMI10ipXw"
+  },
+  "installationRecord": {
+    "canonicalFileHex": "7b22736368656d61223a2274696e79727573746c6d2e636f6d70616e696f6e2e696e7374616c6c6174696f6e2e7631222c22696e7374616c6c6174696f6e4964223a223030313132323333343435353636373738383939616162626363646465656666227d0a",
+    "sha256": "5971f14282d0d3d220c51b886cf6a73f27bec59805bf751bd328324dd27981a5"
+  }
+}

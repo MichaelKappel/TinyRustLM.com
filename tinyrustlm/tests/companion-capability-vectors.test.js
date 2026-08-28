@@ -14,7 +14,7 @@ const vectors = JSON.parse(fs.readFileSync(
     "..",
     "contracts",
     "vnext",
-    "companion-loopback-capability-vectors.v1.json"
+    "companion-loopback-capability-vectors.v2.json"
   ),
   "utf8"
 ));
@@ -183,7 +183,7 @@ function rotationFields(domain) {
 test("vector corpus is bound to only the corrected capability profile", () => {
   assert.equal(
     vectors.schema,
-    "tinyrustlm.companion.loopback-capability-vectors.v1"
+    "tinyrustlm.companion.loopback-capability-vectors.v2"
   );
   assert.equal(vectors.profileId, capability.PROTOCOL_ID);
   assert.equal(vectors.testMaterialIsSecret, false);
@@ -471,7 +471,7 @@ test("operation-specific verification rejects proof and metadata substitution", 
   assert.equal(await capability.verifyRequestProof(
     sessionKey,
     requestContext(),
-    `${vectors.request.proof.slice(0, -1)}A`
+    `${vectors.request.proof[0] === "A" ? "B" : "A"}${vectors.request.proof.slice(1)}`
   ), false);
 
   const substitutedMetadata = {

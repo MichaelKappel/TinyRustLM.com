@@ -15,18 +15,22 @@ compatibility route, migration path, or fallback executable.
 ## Sole Responsibility
 
 The companion coordinates local operations that a browser cannot safely or
-portably own:
+portably own. The current implementation boundary is intentionally narrower
+than the eventual product:
 
-1. resolve one exact requested ACG2 composition identity;
-2. prefer a current consenting direct peer only when its identity and evidence
-   are valid;
-3. acquire the immutable reviewed upstream source when no eligible peer exists;
-4. invoke only the canonical `tinyrustlm-convert` executable;
-5. stream and verify source, piece, SLM2, and composition hashes;
-6. journal interruption-safe progress without exposing secrets or prompts;
-7. stream the verified artifacts to the browser for independent admission; and
-8. host user-approved fixed pieces without claiming public reachability from a
-   loopback or LAN probe.
+1. accept one explicit attempt for the exact built-in Qwen3 source closure;
+2. bind source acquisition, converter, worker, roots, and resource policies in
+   immutable private evidence before work advances;
+3. invoke only the canonical `tinyrustlm-convert` executable;
+4. journal interruption-safe progress without exposing secrets or prompts;
+5. independently reverify and stream all six composition members; and
+6. refuse operation availability unless every identity and evidence edge
+   closes.
+
+Direct-peer import remains a required product capability, but it has no field,
+state, or executable route in the current operation contract. It returns only
+after a complete six-member importer, peer proof, and receipt authority are
+implemented and verified. Hosting and public reachability are separate gates.
 
 Rust remains authoritative for model structure, conversion, Tokenizer2,
 Template2, Sampling2, Prompt2, ACG2, fixed-piece admission, and runtime
@@ -44,20 +48,34 @@ verified identities through `VerifyingComposition`.
 ## Implemented Foundation
 
 The private, nonpackable `TinyRustLM.Companion` solution component now owns the
-closed `tinyrustlm.companion.acquire.v1` request and
-`tinyrustlm.companion.operation.v2` record contracts. A request binds one
-public repository, immutable 40-hex revision, model and tokenizer source locks,
-composition profile, explicit source-acquisition consent, a positive source
-byte ceiling, and no more than two ordered HTTPS peers. Credentials, mutable
-revisions, IP literals, query strings, fragments, duplicates, unknown fields,
-and incomplete identities fail closed.
+closed `tinyrustlm.companion.acquire.v2` request and
+`tinyrustlm.companion.operation.v3` record contracts. A request binds a new
+32-lowercase-hex attempt ID, the sole `source` route, exact Qwen3 repository and
+immutable revision, model and tokenizer source locks, complete composition
+profile, explicit source-acquisition consent, and exact source byte ceiling.
+Only the built-in reviewed source descriptor is admitted. Arbitrary models,
+URLs, paths, peer candidates, mutable revisions, unknown fields, and incomplete
+identities fail before network or process work.
 
 Its create-only operation journal requires an explicit owned-root marker,
 persists immutable numbered history, replaces only the bounded current pointer,
-uses operation-root-scoped same-process and cross-process exclusion, and enforces the closed state
-machine from `Queued` through peer or source work to terminal `Available`,
-`Cancelled`, or `Rejected`. `Available` requires exact positive records for
+uses operation-root-scoped same-process and cross-process exclusion, and
+enforces the closed state machine from `Queued` through `AcquiringSource`, `Converting`, and
+`VerifyingComposition` to terminal `Available`, `Cancelled`, or `Rejected`.
+`Available` requires exact positive records for
 ACG2, SLM2, Tokenizer2, Template2, Sampling2, and Prompt2.
+
+Numbered create-only history is authoritative. The mutable `current.json`
+cache may lag by exactly one committed history record at the interrupted
+replace boundary; a larger lag, gap, rollback, foreign record, or contradictory
+transition rejects. Before appending another transition, a mutation holding
+both exclusion layers first repairs that one-record derived-cache lag, so a
+second interruption cannot accumulate an unrecoverable two-record gap.
+Same-process operation gates are exact-key,
+reference-counted leases removed after the final holder, while the create-only
+operation lock remains the cross-process boundary. Cancellation waits at most
+five seconds for an active same-operation mutation before returning the typed
+`journal-operation-busy` result.
 
 Cancellation has one separate create-only canonical intent. The same
 operation and cancellation ID replays exactly, a competing ID cannot replace
@@ -68,6 +86,22 @@ while work remains nonterminal is an internal failure, not successful
 cancellation. Identical operation IDs under distinct owned roots do not share
 an in-process lock domain.
 
+Before any source work, the coordinator creates canonical private
+`tinyrustlm.companion.execution-intent.v1` and
+`tinyrustlm.companion.source-acquisition-intent.v1` envelopes. They bind the
+attempt, request, installed worker and converter hashes, exact source
+descriptor and cache identity, separate nonoverlapping acquisition, cache,
+model, tokenizer, lock, staging, and output roots, network policy, redirect and
+buffer ceilings, resource policy, canonical payload-inventory schema, and
+expected payload-inventory SHA-256. A verified acquisition then creates one
+`tinyrustlm.companion.source-acquisition-receipt.v1` binding the same exact
+nine-file inventory identity, byte count, locks, intent lineage, and separate
+activated model and tokenizer roots. The sole inventory is canonical JSON
+`tinyrustlm.source-payload-inventory.v1`, sorted by ordinal path and containing
+only path, byte length, and SHA-256 for each locked file; its exact digest is
+`59e57ba08d4dc6e0914f6089f3321c073739ed60a506edd533068d8d0d2b2da9`.
+An arbitrary digest-shaped receipt is rejected.
+
 Before source conversion, the coordinator creates one canonical private
 `tinyrustlm.companion.source-conversion-intent.v1` envelope at
 `source-conversion.intent.json`. It binds the operation and immutable request
@@ -76,7 +110,7 @@ profile, absent output root, exact converter path and executable hash, resource
 limits, and terminal rule. The file is create-only; identical bytes may be
 observed idempotently, changed bytes fail closed, and its SHA-256 is required by
 source `Converting`, `VerifyingComposition`, and `Available` journal records.
-The v1 operation-record reader is deleted and no migration exists.
+No superseded operation-record reader or migration exists.
 
 The live owner revalidates every intent input immediately before process
 creation. It preserves native rejection or caller cancellation without deleting
@@ -105,7 +139,7 @@ by later reconciliation. The deterministic executable fixture proves these
 contracts only; it cannot satisfy a real-model gate.
 
 The private solution now also contains the exact
-`tinyrustlm.companion.loopback-capability/3` Kestrel listener. It binds only
+`tinyrustlm.companion.loopback-capability/4` Kestrel listener. It binds only
 numeric `127.0.0.1` on an operating-system-selected port, accepts HTTP/1.1
 only, closes every response, suppresses the Server header and logging, enforces
 the registered request and connection ceilings, and rejects unregistered
@@ -116,10 +150,13 @@ bounded; authenticated application errors are response-proven. Kestrel-owned
 malformed-line, framing, header, and global-body failures mutate no capability
 state and carry no CORS or session proof.
 
-The source-controlled browser capability client implements the matching
+The source-controlled browser capability client implements the matching `/4`
 memory-only pairing, exact lost-response recovery, authenticated sequencing,
-rotation, revocation, deterministic operation identity, projection,
-cancellation, and artifact-chunk verification contracts. It stores no
+rotation, revocation, attempt-bound deterministic operation identity,
+source-only projection, cancellation, and artifact-chunk verification
+contracts. The browser independently admits only the same exact built-in
+Qwen3 repository, revision, source-lock, composition-profile, and byte-ceiling
+values as the managed contract. It stores no
 pairing/session key and is included in web source inventory, but it is not
 loaded by the product UI.
 
@@ -131,8 +168,8 @@ terminal composition, closes all six journal/member/path identities, and
 serves fixed 4 MiB chunks. It hashes the complete member before transfer,
 checks every open and bounded read, rehashes after the final chunk, and emits
 only public metadata and bytes. Private paths never enter a response. Peer
-artifact resolution remains unavailable until a separately verified importer
-owns its path and receipt authority.
+artifact resolution remains absent until a separately verified six-member
+importer owns its path and receipt authority.
 
 The private `TinyRustLM.CompanionHost` executable accepts no arguments. It
 derives one `TinyRustLM.Companion` directory below the current user's local

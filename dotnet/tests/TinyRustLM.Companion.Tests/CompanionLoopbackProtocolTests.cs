@@ -129,6 +129,10 @@ public sealed class CompanionLoopbackProtocolTests
         var substitutedHash = CompanionLoopbackProtocol.ComputeArtifactMetadataSha256(
             metadata with { ArtifactRole = "template" });
         Assert.NotEqual(metadataSha256, substitutedHash);
+        var identityError = Assert.Throws<CompanionProtocolException>(() =>
+            CompanionLoopbackProtocol.ComputeArtifactMetadataSha256(
+                metadata with { ArtifactId = $"sha256:{new string('f', 64)}" }));
+        Assert.Equal("artifact-id", identityError.Code);
         Assert.False(CompanionLoopbackProtocol.VerifyResponseProof(
             sessionKey,
             artifactResponse with { ResponseMetadataSha256 = substitutedHash },
@@ -232,8 +236,7 @@ public sealed class CompanionLoopbackProtocolTests
             value.GetProperty("operationId").GetString(),
             CompanionContract.OperationId(request));
         var decodedRequest = CompanionLoopbackWire.DecodeAcquireRequest(requestBytes);
-        Assert.Equal(request with { PeerCandidates = decodedRequest.PeerCandidates }, decodedRequest);
-        Assert.Equal(request.PeerCandidates, decodedRequest.PeerCandidates);
+        Assert.Equal(request, decodedRequest);
 
         var projection = OperationProjection(value.GetProperty("projection"));
         var projectionBytes = CompanionLoopbackWire.EncodeOperationProjection(projection);
@@ -326,11 +329,11 @@ public sealed class CompanionLoopbackProtocolTests
     {
         var path = Path.Combine(
             AppContext.BaseDirectory,
-            "companion-loopback-capability-vectors.v1.json");
+            "companion-loopback-capability-vectors.v2.json");
         using var document = JsonDocument.Parse(File.ReadAllBytes(path));
         var root = document.RootElement.Clone();
         Assert.Equal(
-            "tinyrustlm.companion.loopback-capability-vectors.v1",
+            "tinyrustlm.companion.loopback-capability-vectors.v2",
             root.GetProperty("schema").GetString());
         Assert.Equal(
             CompanionLoopbackProtocol.ProtocolId,
@@ -358,6 +361,10 @@ public sealed class CompanionLoopbackProtocolTests
 
     private static CompanionAcquireRequest AcquireRequest(JsonElement value) => new(
         value.GetProperty("schema").GetString()!,
+        value.GetProperty("attemptId").GetString()!,
+        Enum.Parse<CompanionAcquisitionRoute>(
+            value.GetProperty("route").GetString()!,
+            ignoreCase: true),
         value.GetProperty("modelId").GetString()!,
         value.GetProperty("sourceRepository").GetString()!,
         value.GetProperty("sourceRevision").GetString()!,
@@ -365,12 +372,7 @@ public sealed class CompanionLoopbackProtocolTests
         value.GetProperty("tokenizerSourceLockSha256").GetString()!,
         value.GetProperty("compositionProfileSha256").GetString()!,
         value.GetProperty("sourceAcquisitionApproved").GetBoolean(),
-        value.GetProperty("maximumSourceBytes").GetUInt64(),
-        value.GetProperty("peerCandidates").EnumerateArray()
-            .Select(candidate => new CompanionPeerCandidate(
-                candidate.GetProperty("manifestUri").GetString()!,
-                candidate.GetProperty("manifestId").GetString()!))
-            .ToArray());
+        value.GetProperty("maximumSourceBytes").GetUInt64());
 
     private static CompanionOperationProjection OperationProjection(JsonElement value) => new(
         value.GetProperty("schema").GetString()!,
@@ -379,11 +381,11 @@ public sealed class CompanionLoopbackProtocolTests
         Enum.Parse<CompanionOperationState>(
             value.GetProperty("state").GetString()!.Replace("-", string.Empty),
             ignoreCase: true),
-        Enum.Parse<CompanionAcquisitionBranch>(
-            value.GetProperty("branch").GetString()!,
+        Enum.Parse<CompanionAcquisitionRoute>(
+            value.GetProperty("route").GetString()!,
             ignoreCase: true),
-        value.GetProperty("completedBytes").GetUInt64(),
-        value.GetProperty("totalBytes").GetUInt64(),
+        value.GetProperty("phaseCompletedBytes").GetUInt64(),
+        value.GetProperty("phaseTotalBytes").GetUInt64(),
         Artifacts(value.GetProperty("artifacts")),
         null);
 

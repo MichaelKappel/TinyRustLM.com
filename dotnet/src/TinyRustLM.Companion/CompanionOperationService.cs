@@ -158,9 +158,9 @@ public sealed class CompanionOperationService
             record.OperationId,
             record.Sequence,
             record.State,
-            record.Branch,
-            record.CompletedBytes,
-            record.TotalBytes,
+            record.Route,
+            record.PhaseCompletedBytes,
+            record.PhaseTotalBytes,
             record.Artifacts,
             record.ErrorCode);
         _ = CompanionLoopbackWire.EncodeOperationProjection(projection);

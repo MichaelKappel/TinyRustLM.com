@@ -7,7 +7,7 @@
 }(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  const PROTOCOL_ID = "tinyrustlm.companion.loopback-capability/2";
+  const PROTOCOL_ID = "tinyrustlm.companion.loopback-capability/4";
   const PRODUCTION_ORIGIN = "https://tinyrustlm.com";
   const INSTALLATION_SCHEMA = "tinyrustlm.companion.installation.v1";
   const EMPTY_SHA256 =
@@ -31,7 +31,6 @@
   const MAXIMUM_ARTIFACT_BYTES = 64 * 1024 * 1024 * 1024;
   const MAXIMUM_COMPOSITION_BYTES = 68 * 1024 * 1024 * 1024;
   const MAXIMUM_SOURCE_BYTES = 16 * 1024 * 1024 * 1024;
-  const MAXIMUM_PEER_CANDIDATES = 2;
   const MAXIMUM_RESPONSE_BYTES = MAXIMUM_ARTIFACT_CHUNK_BYTES;
   const DEFAULT_TIMEOUT_MILLISECONDS = 10000;
   const CHUNK_TIMEOUT_MILLISECONDS = 60000;
@@ -63,9 +62,9 @@
     revokeRequest: "tinyrustlm.companion.loopback.revoke-request.v1",
     revokedResponse: "tinyrustlm.companion.loopback.revoked.v1",
     error: "tinyrustlm.companion.loopback.error.v1",
-    acquire: "tinyrustlm.companion.acquire.v1",
+    acquire: "tinyrustlm.companion.acquire.v2",
     operationProjection:
-      "tinyrustlm.companion.loopback.operation-projection.v1",
+      "tinyrustlm.companion.loopback.operation-projection.v2",
     cancelRequest: "tinyrustlm.companion.loopback.cancel-request.v1"
   });
   const ARTIFACT_ROLES = Object.freeze([
@@ -78,9 +77,6 @@
   ]);
   const OPERATION_STATES = Object.freeze([
     "queued",
-    "checking-peers",
-    "fetching-peer",
-    "verifying-peer",
     "acquiring-source",
     "converting",
     "verifying-composition",
@@ -88,7 +84,19 @@
     "cancelled",
     "rejected"
   ]);
-  const OPERATION_BRANCHES = Object.freeze(["undecided", "peer", "source", "none"]);
+  const OPERATION_ROUTE = "source";
+  const SOURCE_DESCRIPTOR = Object.freeze({
+    modelId: "qwen3-0.6b",
+    sourceRepository: "Qwen/Qwen3-0.6B",
+    sourceRevision: "c1899de289a04d12100db370d81485cdf75e47ca",
+    modelSourceLockSha256:
+      "e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d",
+    tokenizerSourceLockSha256:
+      "1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70",
+    compositionProfileSha256:
+      "19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8",
+    maximumSourceBytes: 1519207688
+  });
   const DOMAINS = Object.freeze({
     pairingServerProof: "TinyRustLM companion pairing server proof 1",
     pairingBrowserProof: "TinyRustLM companion pairing browser proof 1",
@@ -638,6 +646,9 @@
       throw new CompanionCapabilityError("artifact-id");
     }
     requireSha256(metadata.artifactSha256, "artifact-sha256");
+    if (metadata.artifactId !== `sha256:${metadata.artifactSha256}`) {
+      throw new CompanionCapabilityError("artifact-id");
+    }
     for (const field of [
       "artifactBytes", "chunkIndex", "chunkCount", "chunkOffset", "chunkBytes"
     ]) {
@@ -1366,13 +1377,17 @@
 
   function normalizeAcquireRequest(value) {
     requireExactKeys(value, [
-      "schema", "modelId", "sourceRepository", "sourceRevision",
+      "schema", "attemptId", "route", "modelId", "sourceRepository", "sourceRevision",
       "modelSourceLockSha256", "tokenizerSourceLockSha256",
       "compositionProfileSha256", "sourceAcquisitionApproved",
-      "maximumSourceBytes", "peerCandidates"
+      "maximumSourceBytes"
     ], "acquire-request");
     if (value.schema !== SCHEMAS.acquire) {
       throw new CompanionCapabilityError("acquire-schema");
+    }
+    requireHexIdentifier(value.attemptId, 16, "acquire-attempt-id");
+    if (value.route !== OPERATION_ROUTE) {
+      throw new CompanionCapabilityError("acquire-route");
     }
     if (!/^[a-z0-9](?:[a-z0-9._-]{0,126}[a-z0-9])?$/u.test(
       requireString(value.modelId, "acquire-model-id", 128))) {
@@ -1391,28 +1406,18 @@
       MAXIMUM_SOURCE_BYTES) === 0) {
       throw new CompanionCapabilityError("acquire-source-size-limit");
     }
-    if (!Array.isArray(value.peerCandidates) ||
-        value.peerCandidates.length > MAXIMUM_PEER_CANDIDATES) {
-      throw new CompanionCapabilityError("acquire-peer-candidates");
+    if (value.sourceAcquisitionApproved !== true) {
+      throw new CompanionCapabilityError("acquire-source-approval");
     }
-    const identities = new Set();
-    const peerCandidates = value.peerCandidates.map((candidate) => {
-      requireExactKeys(candidate, ["manifestUri", "manifestId"],
-        "acquire-peer-candidate");
-      const manifestUri = normalizePeerManifestUri(candidate.manifestUri);
-      requireContentId(candidate.manifestId, "acquire-peer-manifest-id");
-      const identity = `${candidate.manifestId}\n${manifestUri}`;
-      if (identities.has(identity)) {
-        throw new CompanionCapabilityError("acquire-peer-duplicate");
+    for (const field of Object.keys(SOURCE_DESCRIPTOR)) {
+      if (value[field] !== SOURCE_DESCRIPTOR[field]) {
+        throw new CompanionCapabilityError("acquire-source-unsupported");
       }
-      identities.add(identity);
-      return Object.freeze({ manifestUri, manifestId: candidate.manifestId });
-    });
-    if (peerCandidates.length === 0 && value.sourceAcquisitionApproved !== true) {
-      throw new CompanionCapabilityError("acquire-no-authorized-branch");
     }
     return Object.freeze({
       schema: value.schema,
+      attemptId: value.attemptId,
+      route: value.route,
       modelId: value.modelId,
       sourceRepository: value.sourceRepository,
       sourceRevision: value.sourceRevision,
@@ -1420,34 +1425,8 @@
       tokenizerSourceLockSha256: value.tokenizerSourceLockSha256,
       compositionProfileSha256: value.compositionProfileSha256,
       sourceAcquisitionApproved: value.sourceAcquisitionApproved,
-      maximumSourceBytes: value.maximumSourceBytes,
-      peerCandidates: Object.freeze(peerCandidates)
+      maximumSourceBytes: value.maximumSourceBytes
     });
-  }
-
-  function normalizePeerManifestUri(value) {
-    const text = requireString(value, "acquire-peer-uri", 2048);
-    let url;
-    try {
-      url = new URL(text);
-    } catch (_error) {
-      throw new CompanionCapabilityError("acquire-peer-uri");
-    }
-    if (url.protocol !== "https:" || url.username || url.password || url.search ||
-        url.hash || url.pathname === "/" || url.pathname.endsWith("/") ||
-        isIpLiteral(url.hostname)) {
-      throw new CompanionCapabilityError("acquire-peer-uri");
-    }
-    const normalized = `${url.origin}${url.pathname}`;
-    if (normalized.length > 2048) {
-      throw new CompanionCapabilityError("acquire-peer-uri");
-    }
-    return normalized;
-  }
-
-  function isIpLiteral(hostname) {
-    return /^\[[0-9A-Fa-f:.]+\]$/u.test(hostname) ||
-      /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/u.test(hostname);
   }
 
   function requireContentId(value, code) {
@@ -1461,6 +1440,8 @@
     const request = normalizeAcquireRequest(value);
     return canonicalJsonBytes({
       schema: request.schema,
+      attemptId: request.attemptId,
+      route: request.route,
       modelId: request.modelId,
       sourceRepository: request.sourceRepository,
       sourceRevision: request.sourceRevision,
@@ -1468,11 +1449,7 @@
       tokenizerSourceLockSha256: request.tokenizerSourceLockSha256,
       compositionProfileSha256: request.compositionProfileSha256,
       sourceAcquisitionApproved: request.sourceAcquisitionApproved,
-      maximumSourceBytes: request.maximumSourceBytes,
-      peerCandidates: request.peerCandidates.map((candidate) => ({
-        manifestUri: candidate.manifestUri,
-        manifestId: candidate.manifestId
-      }))
+      maximumSourceBytes: request.maximumSourceBytes
     }, MAXIMUM_OPERATION_REQUEST_BYTES, "acquire-request-wire");
   }
 
@@ -1504,8 +1481,8 @@
 
   function validateOperationProjection(value) {
     requireExactKeys(value, [
-      "schema", "operationId", "sequence", "state", "branch",
-      "completedBytes", "totalBytes", "artifacts", "errorCode"
+      "schema", "operationId", "sequence", "state", "route",
+      "phaseCompletedBytes", "phaseTotalBytes", "artifacts", "errorCode"
     ], "operation-projection");
     if (value.schema !== SCHEMAS.operationProjection) {
       throw new CompanionCapabilityError("operation-projection-schema");
@@ -1515,15 +1492,16 @@
     if (!OPERATION_STATES.includes(value.state)) {
       throw new CompanionCapabilityError("operation-state");
     }
-    if (!OPERATION_BRANCHES.includes(value.branch)) {
-      throw new CompanionCapabilityError("operation-branch");
+    if (value.route !== OPERATION_ROUTE) {
+      throw new CompanionCapabilityError("operation-route");
     }
-    requireUInt(value.completedBytes, "operation-completed-bytes",
+    requireUInt(value.phaseCompletedBytes, "operation-phase-completed-bytes",
       MAXIMUM_SOURCE_BYTES * 5);
-    requireNullableUInt(value.totalBytes, "operation-total-bytes",
+    requireNullableUInt(value.phaseTotalBytes, "operation-phase-total-bytes",
       MAXIMUM_SOURCE_BYTES * 5);
-    if (value.totalBytes !== null &&
-        (value.totalBytes === 0 || value.completedBytes > value.totalBytes)) {
+    if (value.phaseTotalBytes !== null &&
+        (value.phaseTotalBytes === 0 ||
+          value.phaseCompletedBytes > value.phaseTotalBytes)) {
       throw new CompanionCapabilityError("operation-progress");
     }
     const artifacts = value.artifacts === null
@@ -1535,8 +1513,7 @@
       throw new CompanionCapabilityError("operation-error-code");
     }
     if (value.state === "available") {
-      if (artifacts === null || !["peer", "source"].includes(value.branch) ||
-          errorCode !== null) {
+      if (artifacts === null || errorCode !== null) {
         throw new CompanionCapabilityError("operation-available-fields");
       }
     } else if (artifacts !== null) {
@@ -1550,9 +1527,9 @@
       operationId: value.operationId,
       sequence: value.sequence,
       state: value.state,
-      branch: value.branch,
-      completedBytes: value.completedBytes,
-      totalBytes: value.totalBytes,
+      route: value.route,
+      phaseCompletedBytes: value.phaseCompletedBytes,
+      phaseTotalBytes: value.phaseTotalBytes,
       artifacts,
       errorCode
     });
@@ -1579,6 +1556,9 @@
       }
       requireContentId(artifact.artifactId, `operation-artifact-${role}`);
       requireSha256(artifact.sha256, `operation-artifact-${role}`);
+      if (artifact.artifactId !== `sha256:${artifact.sha256}`) {
+        throw new CompanionCapabilityError(`operation-artifact-${role}`);
+      }
       if (requireUInt(artifact.byteCount, `operation-artifact-${role}`,
         MAXIMUM_ARTIFACT_BYTES) === 0) {
         throw new CompanionCapabilityError(`operation-artifact-${role}`);
@@ -1612,9 +1592,9 @@
       operationId: projection.operationId,
       sequence: projection.sequence,
       state: projection.state,
-      branch: projection.branch,
-      completedBytes: projection.completedBytes,
-      totalBytes: projection.totalBytes,
+      route: projection.route,
+      phaseCompletedBytes: projection.phaseCompletedBytes,
+      phaseTotalBytes: projection.phaseTotalBytes,
       artifacts,
       errorCode: projection.errorCode
     }, MAXIMUM_OPERATION_PROJECTION_BYTES, "operation-projection-wire");
@@ -2469,6 +2449,7 @@
     SCHEMAS,
     ARTIFACT_ROLES,
     OPERATION_STATES,
+    SOURCE_DESCRIPTOR,
     DOMAINS,
     CompanionCapabilityError,
     CompanionCapabilityClient,
