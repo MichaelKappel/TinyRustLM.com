@@ -111,7 +111,11 @@ var artifactMetadata = new[]
 };
 var artifacts = artifactMetadata.Select(metadata =>
 {
-    var bytes = Encoding.ASCII.GetBytes($"fixture-{metadata.Kind}");
+    var bytes = scenario == "large-pass" && metadata.Kind == "slm2"
+        ? Enumerable.Range(0, 4_194_321)
+            .Select(static index => checked((byte)(index % 251)))
+            .ToArray()
+        : Encoding.ASCII.GetBytes($"fixture-{metadata.Kind}");
     File.WriteAllBytes(Path.Combine(outputRoot, metadata.File), bytes);
     return new ArtifactIdentity(
         metadata,
