@@ -716,6 +716,10 @@ fn join_u64(low: u32, high: u32) -> u64 {
     u64::from(low) | (u64::from(high) << 32)
 }
 
+fn split_u64(value: u64) -> (u32, u32) {
+    (value as u32, (value >> 32) as u32)
+}
+
 #[cfg(target_arch = "wasm32")]
 fn observed_linear_memory_bytes() -> u64 {
     (core::arch::wasm32::memory_size::<0>() as u64).saturating_mul(65_536)
@@ -741,7 +745,8 @@ struct StateReport {
     schema: &'static str,
     state: &'static str,
     operation_id: String,
-    transcript_revision: u64,
+    transcript_revision_low: u32,
+    transcript_revision_high: u32,
     active_composition: Option<IdentityReport>,
     committed_kv_bytes: u64,
     memory_plan: Option<MemoryPlanReport>,
@@ -756,11 +761,14 @@ impl StateReport {
             .as_ref()
             .ok_or_else(|| BoundaryFailure::boundary("browser-runtime-create-required"))?;
         let policy = require_policy(state.policy)?;
+        let (transcript_revision_low, transcript_revision_high) =
+            split_u64(runtime.transcript().revision());
         Ok(Self {
             schema: "tinyrustlm.browser_runtime_wasm.state/1",
             state: runtime_state_label(runtime.state()),
             operation_id: hex_lower(&runtime.operation().bytes()),
-            transcript_revision: runtime.transcript().revision(),
+            transcript_revision_low,
+            transcript_revision_high,
             active_composition: runtime.active_identity().map(IdentityReport::from),
             committed_kv_bytes: runtime.committed_kv_bytes(),
             memory_plan: runtime.memory_plan().map(MemoryPlanReport::from),
@@ -946,6 +954,30 @@ mod tests {
             )
             .expect("create runtime");
         state
+    }
+
+    #[test]
+    fn state_result_preserves_full_transcript_revision_as_two_words() {
+        let mut state = BoundaryState::default();
+        stage(&mut state, TransferKind::ExpectedOperation, &[7; 32]);
+        let result = state
+            .create(
+                1 << 20,
+                128,
+                1 << 20,
+                1 << 20,
+                2 << 20,
+                1 << 20,
+                1 << 20,
+                8 << 20,
+                0x89ab_cdef,
+                0xfedc_ba98,
+            )
+            .expect("create runtime");
+        let value: serde_json::Value = serde_json::from_slice(&result).expect("state JSON");
+        assert_eq!(value["transcriptRevisionLow"], 0x89ab_cdef_u32);
+        assert_eq!(value["transcriptRevisionHigh"], 0xfedc_ba98_u32);
+        assert!(value.get("transcriptRevision").is_none());
     }
 
     #[test]

@@ -220,7 +220,7 @@ function stageOperation(instance, marker) {
   transfer(instance, 1, Buffer.alloc(32, marker));
 }
 
-function createRuntime(instance) {
+function createRuntime(instance, transcriptRevisionLow = 11, transcriptRevisionHigh = 0) {
   stageOperation(instance, 7);
   assert.equal(instance.exports.tinyrustlm_browser_runtime_create(
     1_048_576,
@@ -231,8 +231,8 @@ function createRuntime(instance) {
     1_048_576,
     1_048_576,
     8_388_608,
-    11,
-    0
+    transcriptRevisionLow,
+    transcriptRevisionHigh
   ), 0);
 }
 
@@ -352,6 +352,16 @@ test("raw ABI stages all closed kinds once and drops identity-mismatched pending
   assert.equal(instance.exports.tinyrustlm_browser_runtime_release(), 0);
   assert.equal(resultBytes(instance).length, 0);
   assert.equal(errorCode(instance), "");
+});
+
+test("raw ABI preserves the full transcript revision as exact low and high words", async () => {
+  const { instance } = await WebAssembly.instantiate(buildWasm());
+  createRuntime(instance, 0x89abcdef, 0xfedcba98);
+  const state = JSON.parse(resultBytes(instance));
+  assert.equal(state.transcriptRevisionLow, 0x89abcdef);
+  assert.equal(state.transcriptRevisionHigh, 0xfedcba98);
+  assert.equal(Object.hasOwn(state, "transcriptRevision"), false);
+  assert.equal(instance.exports.tinyrustlm_browser_runtime_release(), 0);
 });
 
 test("raw ABI rejects stale operations before mutation and release is terminal", async () => {

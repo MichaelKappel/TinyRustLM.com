@@ -36,6 +36,8 @@
     "test:vnext-phase-invalidation-rust-vectors": "node --test tests/vnext-phase-invalidation-rust-vectors.test.js",
     "test:slm2-runtime-vectors": "node --test tests/slm2-runtime-vectors.test.js",
     "test:slm2-runtime-wasm-conformance": "node --test tests/slm2-runtime-wasm-conformance.test.js",
+    "test:model-runtime-worker": "node --test tests/model-runtime-worker.test.js",
+    "test:model-runtime-worker-browser": "node --test tests/model-runtime-worker-browser.test.js",
     "test:sampling2-format-vectors": "node --test tests/sampling2-format-vectors.test.js",
     "test:template2-format-vectors": "node --test tests/template2-format-vectors.test.js",
     "test:tokenizer2-format-vectors": "node --test tests/tokenizer2-format-vectors.test.js",
