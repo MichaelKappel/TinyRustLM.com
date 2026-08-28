@@ -1,7 +1,7 @@
 {
   "schema": "tinyrustlm.browser-runtime-wasm-clean-cut-preregistration.v1",
   "profileId": "tinyrustlm.browser-runtime-wasm/1",
-  "status": "raw-wasm-implemented-worker-protocol-closed-before-worker-implementation",
+  "status": "raw-wasm-and-worker-implemented-real-chromium-boundary-verified-ui-pending",
   "registeredAtUtc": "2026-08-27T22:42:24Z",
   "correction": {
     "observedAtUtc": "2026-08-27T23:23:50Z",
@@ -49,6 +49,73 @@
     "disposition": "encode-transcript-revision-as-two-unsigned32-state-fields-and-close-payload-types",
     "workerSourceExistedAtRegistration": false,
     "lossyJsonNumberAllowed": false,
+    "compatibilityBehaviorAdded": false,
+    "campaignCreditAuthorized": false
+  },
+  "workerImplementationEvidence": {
+    "observedAtUtc": "2026-08-28T00:20:20Z",
+    "stage": "worker-boundary-real-browser-closure-before-ui-integration",
+    "implementationCommit": "6ff375bc3ef4177ebcf0a3e3c1129e1d6902cb25",
+    "implementationTree": "1230988c18391d1cc0a3fa776a1d4b1443eb7ca1",
+    "boundFiles": [
+      {
+        "path": "tinyrustlm/app/model-runtime-worker.js",
+        "byteLength": 53789,
+        "sha256": "6647b2ffddcf92573dc0bbe3979babd952ffb7816f09c342dae9eaee0826d170"
+      },
+      {
+        "path": "tinyrustlm/tests/model-runtime-worker.test.js",
+        "byteLength": 27843,
+        "sha256": "6d77b822c529f79320db817e24b28e823acecd684ab02e2ee954dfffc93c59d8"
+      },
+      {
+        "path": "tinyrustlm/tests/model-runtime-worker-browser.test.js",
+        "byteLength": 15636,
+        "sha256": "5bd2d2914eb6385418a14e619fa9dfeff55ff87d4a5f93212c1e247524303ec9"
+      },
+      {
+        "path": "rust/crates/tinyrustlm-browser-runtime-wasm/src/boundary.rs",
+        "byteLength": 40114,
+        "sha256": "bd77ac135432e546d3c19e121b8da048b9392e57e0e30b8cf33cb8f7ece179e9"
+      }
+    ],
+    "focusedNodeTests": {
+      "command": "node --test tests/browser-runtime-wasm-clean-cut-preregistration.test.js tests/browser-runtime-wasm-raw-abi.test.js tests/model-runtime-worker.test.js tests/model-runtime-worker-browser.test.js",
+      "passed": 31,
+      "failed": 0
+    },
+    "focusedRustTests": {
+      "packages": [
+        "tinyrustlm-composition2",
+        "tinyrustlm-runtime",
+        "tinyrustlm-native",
+        "tinyrustlm-browser-runtime-wasm"
+      ],
+      "unitIntegrationAndVectorPassed": 46,
+      "docTestsFailed": 0,
+      "clippyWarnings": 0
+    },
+    "realBrowser": {
+      "engine": "chromium",
+      "playwrightVersion": "1.61.1",
+      "ownedFreshProfilesCreatedAndDeleted": 2,
+      "successfulInitializeReleaseLifetimes": 2,
+      "terminalInitializationRejectionsDelivered": 2,
+      "transferredWasmBuffersDetached": true,
+      "workerNetworkGlobalsDisabledBeforeMessageAcceptance": true,
+      "unexpectedRequests": 0,
+      "consoleErrors": 0,
+      "pageErrors": 0
+    },
+    "browserRequirements": {
+      "contentSecurityPolicyScriptCapability": "wasm-unsafe-eval",
+      "javascriptUnsafeEvalRequired": false,
+      "terminalEventDeliveryOrder": "post-terminal-event-then-close-on-next-worker-task",
+      "sameCallbackPostThenCloseAllowed": false,
+      "terminalWorkerCloseObserved": true
+    },
+    "uiIntegrationComplete": false,
+    "supersededBrowserPathDeleted": false,
     "compatibilityBehaviorAdded": false,
     "campaignCreditAuthorized": false
   },

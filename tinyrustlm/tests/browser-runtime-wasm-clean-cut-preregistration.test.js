@@ -28,7 +28,7 @@ test("binds the clean source parent and sole browser runtime owners", () => {
   assert.equal(profile.schema,
     "tinyrustlm.browser-runtime-wasm-clean-cut-preregistration.v1");
   assert.equal(profile.status,
-    "raw-wasm-implemented-worker-protocol-closed-before-worker-implementation");
+    "raw-wasm-and-worker-implemented-real-chromium-boundary-verified-ui-pending");
   assert.equal(profile.registrationParentCommit,
     "cf56eb1a563c85acfc7257d128f5fe3b386da954");
   assert.equal(profile.registrationParentTree,
@@ -92,6 +92,34 @@ test("binds the clean source parent and sole browser runtime owners", () => {
     compatibilityBehaviorAdded: false,
     campaignCreditAuthorized: false
   });
+  assert.equal(profile.workerImplementationEvidence.observedAtUtc,
+    "2026-08-28T00:20:20Z");
+  assert.equal(profile.workerImplementationEvidence.stage,
+    "worker-boundary-real-browser-closure-before-ui-integration");
+  assert.equal(profile.workerImplementationEvidence.implementationCommit,
+    "6ff375bc3ef4177ebcf0a3e3c1129e1d6902cb25");
+  assert.equal(profile.workerImplementationEvidence.implementationTree,
+    "1230988c18391d1cc0a3fa776a1d4b1443eb7ca1");
+  profile.workerImplementationEvidence.boundFiles.forEach(readBoundFile);
+  assert.deepEqual(profile.workerImplementationEvidence.focusedNodeTests, {
+    command: "node --test tests/browser-runtime-wasm-clean-cut-preregistration.test.js tests/browser-runtime-wasm-raw-abi.test.js tests/model-runtime-worker.test.js tests/model-runtime-worker-browser.test.js",
+    passed: 31,
+    failed: 0
+  });
+  assert.equal(profile.workerImplementationEvidence.realBrowser
+    .ownedFreshProfilesCreatedAndDeleted, 2);
+  assert.equal(profile.workerImplementationEvidence.realBrowser
+    .successfulInitializeReleaseLifetimes, 2);
+  assert.equal(profile.workerImplementationEvidence.realBrowser
+    .terminalInitializationRejectionsDelivered, 2);
+  assert.equal(profile.workerImplementationEvidence.browserRequirements
+    .contentSecurityPolicyScriptCapability, "wasm-unsafe-eval");
+  assert.equal(profile.workerImplementationEvidence.browserRequirements
+    .sameCallbackPostThenCloseAllowed, false);
+  assert.equal(profile.workerImplementationEvidence.uiIntegrationComplete, false);
+  assert.equal(profile.workerImplementationEvidence.supersededBrowserPathDeleted, false);
+  assert.equal(profile.workerImplementationEvidence.compatibilityBehaviorAdded, false);
+  assert.equal(profile.workerImplementationEvidence.campaignCreditAuthorized, false);
 });
 
 test("defines one worker-owned runtime with no direct UI authority", () => {

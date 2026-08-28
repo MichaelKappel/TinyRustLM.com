@@ -1,5 +1,5 @@
-profile: runtime-mirust.taboo.v140
-updated_utc: 2026-08-27T23:52:00Z
+profile: runtime-mirust.taboo.v141
+updated_utc: 2026-08-28T00:20:20Z
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy
@@ -18,7 +18,9 @@ browser_runtime_wasm_boundary_prohibition_2026_08_27:
   no_second_owner: Never clone, repack, shadow, or retain a second unbounded model allocation in WASM, JavaScript, or UI state. Never let app.js call WASM directly or own model/KV state.
   no_open_worker_surface: Never add a generic invoke command, arbitrary command/event kind, unknown payload field, separate finish command, URL/path input, network API, unbounded sequence/message set, noncontiguous chunk, chunk larger than 4194304 bytes, or whole-model JavaScript owner. Terminal generation finishes once inside the worker.
   no_revision_precision_loss: Never expose transcript revision as a combined JSON number, round it to JavaScript safe range, invent a decimal-string alias, or accept multiple forms. The exact state fields are transcriptRevisionLow and transcriptRevisionHigh u32.
-  no_claim_inflation: Never call the 17/17 opt-in Node gate real Chromium, browser chat, numerical parity, model quality, P2P, release, deployment, or campaign evidence. It is private structural activation only and counters remain 0/20,0/50,0/25,0/40,0/20.
+  no_terminal_event_loss: Never call close in the same callback that posts a terminal protocol event. Post the terminal event, schedule physical close on the next worker task, and retain the real Chromium regression for both successful release and terminal rejection.
+  no_csp_broadening: WebAssembly compilation requires CSP wasm-unsafe-eval. Never omit that capability and then weaken testing, and never substitute or add broad JavaScript unsafe-eval.
+  no_claim_inflation: Never call the two-profile Chromium worker-boundary gate browser chat, composition activation, numerical parity, model quality, P2P, release, deployment, or campaign evidence. The /12 private gate remains structural activation only and counters remain 0/20,0/50,0/25,0/40,0/20.
   no_dual_browser_path: Do not integrate the worker as an optional path, feature flag, fallback, adapter, or compatibility layer. Complete and verify the replacement, then delete the superseded browser runtime, ACG1 path, repair logic, assets, tests, and docs before release.
 
 enterprise_clean_slate_memory_submit_taboo_2026_08_27:

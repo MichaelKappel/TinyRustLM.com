@@ -1,11 +1,12 @@
 # TinyRustLM Browser Runtime
 
 Status on 2026-08-27: **release blocked during the canonical runtime clean
-cut**. The raw SLM2/ACG2 Rust/WASM boundary exists and passes focused local
-tests, but the production worker, UI integration, real-browser conversation
-evidence, and deletion of the superseded runtime are not complete. The current
-site must not be described as using the canonical browser runtime until all of
-those conditions are satisfied in one tested replacement.
+cut**. The raw SLM2/ACG2 Rust/WASM boundary and the production worker exist and
+pass focused Rust, Node, and real Chromium boundary tests. UI integration,
+real-browser composition activation and conversation evidence, and deletion
+of the superseded runtime are not complete. The current site must not be
+described as using the canonical browser runtime until all of those conditions
+are satisfied in one tested replacement.
 
 This document distinguishes the canonical replacement from the checked-in
 pre-cutover implementation that still has to be removed. Describing that old
@@ -17,8 +18,10 @@ supported second path.
 The canonical replacement is registered by
 `contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json` and
 implemented in part by `rust/crates/tinyrustlm-browser-runtime-wasm`. The local
-implementation checkpoint at remote-exact commit
-`5c4f46c7af35bc6e892097cd4924ca58286efa8c` establishes:
+boundary checkpoint at remote-exact commit
+`5c4f46c7af35bc6e892097cd4924ca58286efa8c` and worker checkpoint at
+remote-exact commit `6ff375bc3ef4177ebcf0a3e3c1129e1d6902cb25`
+establish:
 
 - one import-free raw WASM module with an exact 16-function application export
   allowlist;
@@ -32,29 +35,45 @@ implementation checkpoint at remote-exact commit
   identity;
 - bounded state, step, output, and error results; and
 - terminal release that drops transfers, staged members, runtime, model,
-  prompt, and KV state.
+  prompt, and KV state;
+- one dedicated worker with an exact eleven-command and twelve-event protocol,
+  independent bounded sequences, deterministic event IDs, and no network or
+  arbitrary URL/path authority;
+- contiguous transferable artifact chunks no larger than 4 MiB, with accepted
+  worker-side chunks wiped after their one copy into WASM; and
+- exact low/high unsigned 32-bit transcript revision fields, avoiding lossy
+  JavaScript representation of a combined unsigned 64-bit value.
 
-Focused Rust, clippy, Node WebAssembly, and opt-in private structural activation
-tests pass for this boundary. Node WebAssembly is not browser evidence, and the
-private activation proves structure and bounded ownership only. It does not
-prove generation quality, native/browser parity, a browser conversation,
-release, deployment, publication, P2P availability, or campaign credit.
+Focused Rust, clippy, Node WebAssembly, worker protocol, and Chromium tests pass
+for this boundary. The Chromium test creates and deletes two fresh persistent
+profiles and proves successful initialization/release, hash-rejected terminal
+initialization, transferable buffer detachment, terminal-event delivery before
+worker shutdown, and no unexpected network, console, or page errors. Browser
+WebAssembly compilation requires the narrow CSP capability
+`'wasm-unsafe-eval'`; plain JavaScript `'unsafe-eval'` is not required. This is
+worker-boundary evidence, not a composition activation or conversation.
 
-The clean cut remains incomplete because
-`tinyrustlm/app/model-runtime-worker.js` is not implemented, `app.js` still
-owns the pre-cutover runtime path, and the SLM1/ACG1 executable surfaces and
-packaged bytes are still present. Release and deployment remain blocked until
-the worker is the sole runtime owner, the UI is command/presentation only,
-real Chromium evidence passes, and every superseded executable path is
-deleted without an alias, reader, shim, fallback, feature flag, or migration.
+The private structural activation proves structure and bounded ownership only.
+It does not prove generation quality, native/browser parity, a browser
+conversation, release, deployment, publication, P2P availability, or campaign
+credit.
 
-The worker protocol is nevertheless closed before implementation. It permits
-only eleven exact commands and twelve exact event kinds, streams artifact bytes
-in contiguous transferred chunks no larger than 4 MiB, derives operation
-transfers internally, finishes terminal generation inside the worker, and
-provides no generic invocation, separate finish, URL, path, network, or
-whole-model JavaScript ownership surface. This registration is design
-authority only until the worker tests and real Chromium gates pass.
+The clean cut remains incomplete because `app.js` still owns the pre-cutover
+runtime path and the SLM1/ACG1 executable surfaces and packaged bytes are still
+present. Release and deployment remain blocked until the implemented worker is
+the sole runtime owner in the product UI, the UI is command/presentation only,
+real Chromium composition activation and conversation evidence pass, and every
+superseded executable path is deleted without an alias, reader, shim, fallback,
+feature flag, or migration.
+
+The worker protocol was closed before implementation and now has matching
+executable tests. It permits only eleven exact commands and twelve exact event
+kinds, streams artifact bytes in contiguous transferred chunks no larger than
+4 MiB, derives operation transfers internally, finishes terminal generation
+inside the worker, and provides no generic invocation, separate finish, URL,
+path, network, or whole-model JavaScript ownership surface. A terminal event is
+posted before physical worker closure is scheduled on the next worker task so
+Chromium cannot discard the event through same-callback shutdown.
 
 ## Superseded Pre-Cutover Inventory
 

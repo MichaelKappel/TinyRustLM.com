@@ -2,9 +2,10 @@
 
 Date: 2026-08-27
 
-Status: raw WASM boundary implemented; worker protocol closed before worker
-source; worker/UI clean cut pending; transfer-size defect corrected during
-real-artifact preflight before worker implementation
+Status: raw WASM boundary and dedicated worker implemented; real Chromium
+worker boundary verified; UI clean cut and superseded-path deletion pending;
+transfer-size defect corrected during real-artifact preflight before worker
+implementation
 
 ## Registered Correction
 
@@ -18,6 +19,47 @@ The correction records the original registration commit, byte length, and
 SHA-256. It adds no compatibility behavior, fallback, campaign credit, or
 product claim. Git retains the rejected contract as evidence; the current tree
 contains only the corrected executable rule.
+
+## Worker Implementation Checkpoint
+
+Remote-exact commit
+`6ff375bc3ef4177ebcf0a3e3c1129e1d6902cb25` implements the closed worker
+protocol in `tinyrustlm/app/model-runtime-worker.js`. The worker is the sole
+owner of one verified import-free WASM module and one canonical runtime. It
+accepts only the registered eleven commands, emits only the registered twelve
+events, enforces independent bounded command and event sequences, stages
+operation identities internally, and provides no generic invocation, URL,
+path, network, telemetry, or direct UI-to-WASM authority.
+
+Initialization recomputes the module SHA-256, parses the declared unshared
+memory limits, requires zero imports and the exact export set, and transfers
+the initialization buffer so the sender loses ownership. Artifact content is
+accepted only as contiguous transferred chunks of at most 4 MiB, copied into
+the one WASM-owned pending allocation, and wiped in worker-side JavaScript
+after the copy. The worker validates every state, step, output, identity, and
+memory-policy result before emitting it. Terminal generation is finished once
+inside the worker; repeated text remains unchanged.
+
+The real Chromium gate creates and later deletes two independently owned
+persistent profiles. In each profile it proves a successful initialize and
+release lifetime, a hash-rejected initialization lifetime, transferable WASM
+buffer detachment, terminal-event delivery before physical worker shutdown,
+zero unexpected requests, and zero console or page errors. The gate exposed
+two browser requirements that are now executable rules:
+
+- Content Security Policy must grant the narrow `wasm-unsafe-eval` script
+  capability for WebAssembly compilation. Plain JavaScript `unsafe-eval` is
+  neither required nor allowed by this boundary.
+- A terminal event must be posted before the worker schedules `close()` on the
+  next worker task. Posting and closing in the same callback can discard the
+  queued terminal event in Chromium.
+
+The focused JavaScript gate passes 31 of 31 tests. The focused Rust boundary,
+composition, runtime, and native suites pass 46 unit, integration, and vector
+tests plus doc tests, and clippy is warning-free. These results prove the
+worker boundary, not the product UI. `app.js` still uses the superseded
+execution path, and those executable files and assets have not yet been
+deleted.
 
 ## Current Implementation Checkpoint
 

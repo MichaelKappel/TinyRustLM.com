@@ -1,5 +1,5 @@
-profile: runtime-mirust.totem.v211
-updated_utc: 2026-08-27T23:52:00Z
+profile: runtime-mirust.totem.v212
+updated_utc: 2026-08-28T00:20:20Z
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy
@@ -13,14 +13,15 @@ memory_endpoints_portable_memory_authority_2026_08_26:
   supersession: Earlier immutable no-MemoryEndpoints operation boundaries remain historical facts but cannot govern current authorization or product positioning.
 
 browser_runtime_wasm_boundary_totem_2026_08_27:
-  preserve_checkpoint: Commit 5c4f46c7af35bc6e892097cd4924ca58286efa8c is pushed/fresh-four-way exact. Preserve current machine authority contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json at 27425 bytes/SHA256 b453ac0b30dc3509d7c11731aedd58e6636f40ec0b2d1a81bba066160717f18c.
+  preserve_checkpoint: Raw boundary commit 5c4f46c7af35bc6e892097cd4924ca58286efa8c and worker commit 6ff375bc3ef4177ebcf0a3e3c1129e1d6902cb25/tree 1230988c18391d1cc0a3fa776a1d4b1443eb7ca1 are pushed/remote exact. Preserve current machine authority contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json at 30058 bytes/SHA256 db6c31a0cc5862cdd8a351a740ec5db18bdec0764b1962373a29d623955eef97.
   preserve_artifact_authority: Sampling2 is exactly 65800 bytes and Prompt2 exactly 512 bytes under their bound canonical profiles. Transfer limits must be derived from those authorities, never an adjacent power-of-two guess.
   preserve_identity_separation: Composition identity identifies immutable artifact closure; operation identity is caller-owned stale-work authority. Activation preserves operation identity. A model switch explicitly compare-and-swaps operation authority before activating its composition.
   preserve_ownership: One dedicated worker owns one import-free production WASM module and one canonical runtime. Model bytes move from the sole WASM transfer allocation into ScalarModel without a second unbounded owner; the UI owns neither model bytes, WASM, KV, nor output repair.
-  preserve_worker_protocol: The output-free worker authority closes eleven commands, twelve events, exact payloads, seven streamed artifact kinds, 4194304-byte chunks, bounded independent sequences, deterministic event IDs, terminal-step finish, module verification, and network lockout before worker source. Preserve prior contract identity as registered history, not a reader.
+  preserve_worker_protocol: The output-free authority closed eleven commands, twelve events, exact payloads, seven streamed artifact kinds, 4194304-byte chunks, bounded independent sequences, deterministic event IDs, terminal-step finish, module verification, and network lockout before worker source; current source implements it. Preserve prior contract identity as registered history, not a reader.
   preserve_precision: State results represent the full transcript revision only as low/high unsigned32 words. Preserve exact payload scalar rules; never round a u64 through JavaScript JSON number semantics or add a decimal-string alias.
-  preserve_evidence_boundary: The opt-in /12 Node gate proves exact private six-member stream hashes and structural WASM activation only. It proves no browser conversation, numerical parity, model quality, P2P, deployment, or campaign progress.
-  preserve_next: Implement and test the closed exactly-once worker before changing app.js. Replace the complete browser path, then delete the superseded runtime and ACG1 path in the same green major change.
+  preserve_browser_semantics: Chromium compilation requires CSP wasm-unsafe-eval, never broad JavaScript unsafe-eval. A terminal event is posted before close is scheduled on the next worker task so same-callback shutdown cannot discard the event.
+  preserve_evidence_boundary: Focused 31/31 Node plus two-profile real Chromium proof establishes the worker boundary only. The opt-in /12 gate separately proves exact private structural activation. Neither proves product browser conversation, numerical parity, model quality, P2P, deployment, or campaign progress.
+  preserve_next: Replace app.js acquisition, activation, generation, cancellation, and rendering with the worker as the sole runtime owner. Prove real composition/chat/restart/parity behavior, then delete the superseded runtime and ACG1 path in the same green major change.
 
 enterprise_clean_slate_memory_submit_totem_2026_08_27:
   preserve_memory: wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md at 9,166 bytes/SHA256 f4a890676be9cb086e8b65cb063a345cc4a98e0be65a0a9a006b53365238a158.

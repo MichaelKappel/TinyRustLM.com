@@ -1,5 +1,5 @@
-profile: runtime-mirust.short-term-memory.v513
-updated_utc: 2026-08-27T23:52:00Z
+profile: runtime-mirust.short-term-memory.v514
+updated_utc: 2026-08-28T00:20:20Z
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy
@@ -12,17 +12,18 @@ memory_endpoints_portable_memory_authority_2026_08_26:
   supersession: Treat older unauthorized/disconnected directives as historical operation context, never current product policy.
 
 current_focus_2026_08_27_browser_runtime_wasm_clean_cut:
-  status: raw_wasm_boundary_green_worker_protocol_closed_output_free_worker_pending
-  machine_authority: contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json,27425,b453ac0b30dc3509d7c11731aedd58e6636f40ec0b2d1a81bba066160717f18c
-  architecture: docs/architecture/2026-08-27-browser-runtime-wasm-clean-cut-preregistration.md,15334,98aae98bbc457e4ed6f85d37560c4a1db19d04ab2de5ea44c56dea8e6b1cb763
-  browser_status_doc: tinyrustlm/docs/browser-runtime.md,12196,b5d78e589a308976b7e30e8d343cc52951d79e89ff175e69df0188319a9828fc
-  implementation: 5c4f46c7af35bc6e892097cd4924ca58286efa8c is pushed/fetched/four-way exact. Move-only runtime ownership and the import-free bounded raw WASM ABI are now current source.
+  status: raw_wasm_and_worker_green_real_chromium_boundary_verified_ui_cutover_pending
+  machine_authority: contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json,30058,db6c31a0cc5862cdd8a351a740ec5db18bdec0764b1962373a29d623955eef97
+  architecture: docs/architecture/2026-08-27-browser-runtime-wasm-clean-cut-preregistration.md,17739,e2901bf1d43d452e93409e4fc943246899a74b0cc86bcdea9252570895c3850b
+  browser_status_doc: tinyrustlm/docs/browser-runtime.md,13360,85522b8481a7fb47111de9243b472645af5c28b5224b8ab454bc64920ace319a
+  implementation: Raw boundary commit 5c4f46c7af35bc6e892097cd4924ca58286efa8c and worker commit 6ff375bc3ef4177ebcf0a3e3c1129e1d6902cb25/tree 1230988c18391d1cc0a3fa776a1d4b1443eb7ca1 are pushed and remote exact. Move-only runtime ownership, the bounded import-free raw WASM ABI, and the dedicated exactly-once worker are current source.
   correction: Canonical Sampling2 is exactly 65800 bytes and Prompt2 exactly 512; activation preserves caller operation authority instead of replacing it with graph identity. Model switches require explicit operation compare-and-swap before activation. No compatibility behavior was added.
-  worker_protocol: Output-free preflight now freezes eleven commands, twelve events, exact payloads, seven streamed artifact kinds, maximum 4194304-byte chunks, independent 65536-message sequence domains, deterministic event IDs, terminal-step finish, module hash/import/memory checks, network lockout, and fatal-state handling. Generic invoke and whole-model JS ownership are forbidden.
+  worker_protocol: The output-free registered eleven-command/twelve-event protocol is implemented with exact payloads, seven streamed artifact kinds, maximum 4194304-byte chunks, independent 65536-message sequence domains, deterministic event IDs, terminal-step finish, module hash/import/memory checks, network lockout, and fatal-state handling. Generic invoke and whole-model JS ownership are forbidden.
   precision_rule: Preserve full transcript revisions as transcriptRevisionLow plus transcriptRevisionHigh u32 in state results. Never combine them into a JSON number, decimal string alias, or rounded JavaScript value. Every worker payload scalar now has one exact registered type.
-  verification: Rust focused suites and doc tests pass; clippy -D warnings passes. Node is 16/16 without private material and 17/17 with the explicit /12 root, including all six stream hashes and real structural activation. Active memory plan is model 598308416, KV 917504, scratch 673296; observed WASM memory is 629800960 under 1610612736.
-  immediate_work: TDD the closed dedicated worker protocol, then commit/push before any app.js replacement. The worker must own one module/runtime, accept no URL/path/network authority, detach transferred binary buffers, reject duplicate/out-of-order/stale messages, and emit one terminal completion.
-  boundary: Node-WASM structural activation is not Chromium, conversation, parity, quality, P2P, release, deployment, or campaign proof. Old browser execution still blocks release and remains only until the complete worker/UI replacement is green and then deleted.
+  browser_requirements: Production CSP must allow wasm-unsafe-eval without allowing JavaScript unsafe-eval. Post terminal events before scheduling close on the next worker task; same-callback post plus close can discard the event in Chromium.
+  verification: Node focused gate passes 31/31. Rust focused suites pass 46 unit/integration/vector tests plus docs; fmt and clippy -D warnings pass. Two independent fresh Chromium profiles prove successful release and terminal rejection delivery, transferred-buffer detachment, worker closure, expected-only requests, clean console/page state, and profile deletion. Private /12 activation remains separate structural evidence.
+  immediate_work: Integrate app.js exclusively with the worker, prove real ACG2 activation/multi-turn/cancellation/restart/raw one-time rendering and parity, then delete the superseded runtime and SLM1/ACG1 surfaces in the same green replacement. Do not add a feature flag, fallback, shim, alias, or dual path.
+  boundary: Real Chromium worker-boundary proof is not product browser chat, parity, quality, P2P, release, deployment, or campaign proof. Deployment remains blocked and counters remain 0/20,0/50,0/25,0/40,0/20.
 
 current_focus_2026_08_27_enterprise_clean_slate_memory_submit:
   intake_routes: docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md; docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md; wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md

@@ -1,7 +1,7 @@
-profile: tinyrustlm.source-workspace.v462
+profile: tinyrustlm.source-workspace.v463
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-27T23:52:00Z
+updated_utc: 2026-08-28T00:20:20Z
 
 memory_endpoints_portable_memory_authority_2026_08_26:
   status: current_authorized_product_policy
@@ -15,18 +15,20 @@ memory_endpoints_portable_memory_authority_2026_08_26:
   history_rule: This current owner correction supersedes active unauthorized/disconnected policy language. Preserve older immutable operation evidence; an old no-MemoryEndpoints claim is not current product policy.
 
 current_browser_runtime_wasm_clean_cut_2026_08_27:
-  status: raw_wasm_boundary_complete_worker_protocol_closed_output_free_worker_pending
-  machine_authority: contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json,27425,b453ac0b30dc3509d7c11731aedd58e6636f40ec0b2d1a81bba066160717f18c
-  architecture: docs/architecture/2026-08-27-browser-runtime-wasm-clean-cut-preregistration.md,15334,98aae98bbc457e4ed6f85d37560c4a1db19d04ab2de5ea44c56dea8e6b1cb763
-  browser_status_doc: tinyrustlm/docs/browser-runtime.md,12196,b5d78e589a308976b7e30e8d343cc52951d79e89ff175e69df0188319a9828fc
+  status: raw_wasm_and_worker_implemented_real_chromium_boundary_green_ui_cutover_pending
+  machine_authority: contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json,30058,db6c31a0cc5862cdd8a351a740ec5db18bdec0764b1962373a29d623955eef97
+  architecture: docs/architecture/2026-08-27-browser-runtime-wasm-clean-cut-preregistration.md,17739,e2901bf1d43d452e93409e4fc943246899a74b0cc86bcdea9252570895c3850b
+  browser_status_doc: tinyrustlm/docs/browser-runtime.md,13360,85522b8481a7fb47111de9243b472645af5c28b5224b8ab454bc64920ace319a
   parent: commit cf56eb1a563c85acfc7257d128f5fe3b386da954, tree 00e364b0b1b71a458c749f16c720ca5bc3f4073f
-  implementation: Commit 5c4f46c7af35bc6e892097cd4924ca58286efa8c is pushed, freshly fetched, and exact across local HEAD, tracking, FETCH_HEAD, and direct remote. It adds move-only model transfer, the production import-free raw WASM crate, explicit 3 GiB module maximum, closed nine-kind transfer boundary, bounded policy/result/error state, exact operation CAS, and terminal release.
+  raw_boundary_implementation: Commit 5c4f46c7af35bc6e892097cd4924ca58286efa8c is pushed, freshly fetched, and exact across local HEAD, tracking, FETCH_HEAD, and direct remote. It adds move-only model transfer, the production import-free raw WASM crate, explicit 3 GiB module maximum, closed nine-kind transfer boundary, bounded policy/result/error state, exact operation CAS, and terminal release.
+  worker_implementation: Commit 6ff375bc3ef4177ebcf0a3e3c1129e1d6902cb25/tree 1230988c18391d1cc0a3fa776a1d4b1443eb7ca1 is pushed and exact across local HEAD, branch, tracking, and direct remote. The dedicated worker implements the closed eleven-command/twelve-event protocol, exact payload validation, bounded independent sequences, deterministic event IDs, one module/runtime owner, streamed transferable artifacts, raw output preservation, cancellation, terminal release, and network-global lockout.
   corrected_defects: Real-artifact preflight caught the impossible 65,536-byte Sampling2 cap against the canonical exact 65,800-byte profile and caught implicit replacement of caller operation authority with graph identity. Current source accepts exact Sampling2 65,800 and Prompt2 512 bytes, preserves operation identity on activation, and requires explicit operation advance before model switching. The original registration hash is preserved inside the corrected authority; no compatibility behavior exists.
   worker_protocol_registration: Before worker source, the contract preserves prior remote-exact commit 9b7f25a235315b1a97dfc54e47e133b3e8ea0eb1 and closes eleven commands, twelve events, exact payloads, seven artifact kinds, 4194304-byte chunks, bounded independent sequences, deterministic event IDs, module verification, and fatal-state rules. No generic invoke, separate finish, URL/path input, network authority, or whole-model JavaScript owner exists.
   precision_registration: Before worker source, commit ed531e251762b697e9195bcb4b7273a6505fab14 exposed the prior contract identity and a precision preflight closed payload scalar types and replaced the state result's lossy combined u64 JSON transcript revision with exact low/high u32 fields. No number or string alias exists.
-  verification: Rust composition/runtime/native/browser boundary tests pass 43 unit plus 11 integration/vector tests and all doc tests; clippy is warning-free. Node contract/raw ABI passes 16/16 without private access and 17/17 with the opt-in exact /12 six-member private root. The private gate stream-hashes every member, activates state active-idle, reports model 598308416, KV 917504, scratch 673296, observed WASM memory 629800960, releases, prints no path/content, and grants no browser-conversation, quality, or campaign credit.
-  immediate_work: Implement and TDD tinyrustlm/app/model-runtime-worker.js as the sole module/runtime owner with the closed exactly-once protocol. Do not touch app.js until the worker boundary passes ordering, stale-identity, transferable ownership, cancellation, termination, and zero-network tests.
-  boundary: This proves raw Node-WASM structural activation only. It is not real-browser execution, generation parity, model quality, browser chat, P2P, release, deployment, or campaign evidence. The superseded runtime remains a release blocker until complete replacement passes and is deleted without compatibility.
+  browser_findings: Chromium requires CSP script capability wasm-unsafe-eval for WebAssembly compilation; plain JavaScript unsafe-eval is neither required nor authorized. Terminal protocol events must be posted before physical close is scheduled on the next worker task because same-callback close can discard the queued event.
+  verification: Focused Node contract/raw ABI/worker/Chromium tests pass 31/31. Focused Rust composition/runtime/native/browser boundary suites pass 46 unit, integration, and vector tests plus doc tests; fmt and clippy -D warnings pass. Two independent owned Chromium profiles each prove successful initialize/release and terminal hash rejection, transferred-buffer detachment, worker shutdown, zero unexpected requests, zero console/page errors, and deletion-backed cleanup. The separate private gate remains structural activation only.
+  immediate_work: Replace browser acquisition, activation, generation, cancellation, and rendering with the implemented worker protocol; prove exact ACG2 activation, multi-turn generation, raw one-time rendering, cancellation, restart reverification, and native/browser parity; then delete every superseded SLM1/ACG1/runtime path, asset, test, and stale document before release.
+  boundary: This proves the dedicated worker boundary in real Chromium, not product UI integration, a browser conversation, generation parity, model quality, P2P, release, deployment, or campaign evidence. Do not deploy while app.js still owns the superseded path. Counters remain 0/20,0/50,0/25,0/40,0/20.
 
 current_enterprise_clean_slate_intake_and_memory_submit_2026_08_27:
   status: implementation_and_local_verification_complete_clean_remote_gate_pending
