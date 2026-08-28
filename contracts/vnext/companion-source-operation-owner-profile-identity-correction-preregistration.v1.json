@@ -1,0 +1,90 @@
+{
+  "schema": "tinyrustlm.companion-source-operation-owner-profile-identity-correction-preregistration.v1",
+  "correctionId": "tinyrustlm.companion.source-operation-owner-profile-identity-correction/1",
+  "registeredAtUtc": "2026-08-28T00:00:00.0000000Z",
+  "registrationParentCommit": "ac8b7a5ae728598b8d2bcb65d52969373f54cb28",
+  "registrationParentTree": "0ae1538a08fc61d47c4eb5b683aff49db9f4a105",
+  "status": "output-free-clean-replacement-preregistered",
+  "supersededRegistration": {
+    "path": "contracts/vnext/companion-source-operation-owner-preregistration.v1.json",
+    "byteLength": 24015,
+    "sha256": "33cce98e21b8b72317928f6d5b5906f328d5effce10f1323f34cd6193fd5e54c",
+    "terminalDisposition": "superseded-before-implementation-evidence",
+    "defect": "built-in-source-descriptor-bound-superseded-composition-profile-v3-sha256",
+    "runtimeReaderRetained": false,
+    "translationAllowed": false
+  },
+  "correctedAuthority": {
+    "compositionProfileId": "tinyrustlm.qwen3-complete-composition-conversion/4",
+    "compositionProfilePath": "contracts/vnext/qwen3-composition-conversion-profile.v4.json",
+    "compositionProfileByteLength": 11421,
+    "compositionProfileSha256": "19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8",
+    "supersededProfileSha256Rejected": "c30dcc162cb563f91bc3571fa165f910670f819c5134eed3ecf16a1d38ba85c0",
+    "acceptedProfileCount": 1,
+    "dualAcceptanceAllowed": false,
+    "fallbackAllowed": false,
+    "migrationAllowed": false,
+    "aliasAllowed": false
+  },
+  "unchangedSourceIdentity": {
+    "descriptorId": "tinyrustlm.source.qwen3-0.6b-c1899de/1",
+    "modelId": "qwen3-0.6b",
+    "repository": "Qwen/Qwen3-0.6B",
+    "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+    "modelSourceLockSha256": "e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d",
+    "tokenizerSourceLockSha256": "1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70",
+    "fileCount": 9,
+    "aggregatePayloadBytes": 1519207688
+  },
+  "registeredSourceClosure": [
+    {
+      "path": "contracts/vnext/qwen3-composition-conversion-profile.v4.json",
+      "byteLength": 11421,
+      "sha256": "19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Conversion/TinyRustLmConversionTool.cs",
+      "byteLength": 54104,
+      "sha256": "b95d484ca17032b10bc2c5640a4922219db198dbe30a3d968af9e2459e344d6c"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/qwen3_composition.rs",
+      "byteLength": 66665,
+      "sha256": "05db5e5a256ea6580186c3786f01638b154619a8300a37c26ddeb5a1069fe82e"
+    },
+    {
+      "path": "dotnet/tools/TinyRustLM.ConversionFixtureTool/Program.cs",
+      "byteLength": 11793,
+      "sha256": "855bfc80b672bf6e0931a0db45c2a562a8fda403d54bc435de5efc6db8850201"
+    }
+  ],
+  "implementationOrdering": {
+    "correctionCommitBeforeImplementationCommit": true,
+    "sourceDerivedReleaseBuildBeforeCorrectionCommitAllowed": false,
+    "privateExploratoryBuildIsReleaseEvidence": false,
+    "firstAllowedImplementationAction": "replace-the-sole-source-descriptor-constant-and-all-current-wire-vectors",
+    "obsoleteProfileExecutablePathRetained": false
+  },
+  "newPathsAbsentAtRegistrationParent": [
+    "contracts/vnext/companion-source-operation-owner-profile-identity-correction-preregistration.v1.json",
+    "docs/architecture/2026-08-28-companion-source-operation-owner-profile-identity-correction-preregistration.md",
+    "tinyrustlm/tests/companion-source-operation-owner-profile-identity-correction-preregistration.test.js"
+  ],
+  "registrationOutputBoundary": {
+    "networkRequestPerformed": false,
+    "sourceBytesAcquired": false,
+    "operationRootCreated": false,
+    "converterLaunched": false,
+    "compositionCreated": false,
+    "browserExecuted": false,
+    "siteDeployed": false,
+    "campaignCounterIncremented": false
+  },
+  "campaignCounters": {
+    "qualifiedModels": "0/20",
+    "deletionBackedBrowserRounds": "0/50",
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "liveCatalogAnnouncements": "0/20"
+  }
+}
