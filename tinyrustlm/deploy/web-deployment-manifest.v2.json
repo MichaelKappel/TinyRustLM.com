@@ -71,6 +71,16 @@
     },
     {
       "source": "source",
+      "local": "app/prompt2-request.js",
+      "remote": "app/prompt2-request.js"
+    },
+    {
+      "source": "source",
+      "local": "app/model-runtime-client.js",
+      "remote": "app/model-runtime-client.js"
+    },
+    {
+      "source": "source",
       "local": "app/model-runtime-worker.js",
       "remote": "app/model-runtime-worker.js"
     },

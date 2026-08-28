@@ -37,8 +37,10 @@ test("web deployment manifest is the exact no-model publication closure", (conte
     generatedRoot: materializedRelease(context)
   });
   const paths = new Set(result.files.map((file) => file.remote));
-  assert.equal(result.files.length, 24);
+  assert.equal(result.files.length, 26);
   assert.ok(paths.has("app/browser-model-admission.js"));
+  assert.ok(paths.has("app/prompt2-request.js"));
+  assert.ok(paths.has("app/model-runtime-client.js"));
   assert.ok(paths.has("app/model-runtime-worker.js"));
   assert.ok(paths.has("app/memory-endpoints-enrollment.js"));
   assert.ok(paths.has("app/site-release.js"));
