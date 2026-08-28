@@ -431,7 +431,7 @@
             <p id="modelHelperText" class="helper-text">Exact technical model names are shown here for local verification.</p>
 
             <label for="localModelFile">Qualified local model bundle</label>
-            <input id="localModelFile" type="file" accept=".slm,.browser-model-admission.json,.minimodel-receipt,application/octet-stream,application/json,text/plain" multiple>
+            <input id="localModelFile" type="file" accept=".slm2,.tokenizer2,.template2,.sampling2,.prompt2,.acg2,.browser-composition-admission.json,application/octet-stream,application/json" multiple>
             <button id="importLocalModelButton" class="secondary-action" type="button">Import Local Model</button>
             <p id="localModelState" class="inline-status">waiting</p>
 
@@ -691,7 +691,6 @@
 
         <div class="bottom-controls">
           <button id="resetButton" class="reset-defaults-button" type="button" disabled><svg><use href="#icon-reset"></use></svg><span>Reset to Defaults</span></button>
-          <button id="stepTokenButton" class="icon-button" type="button" disabled aria-label="Step one token"><svg><use href="#icon-code"></use></svg></button>
           <button id="clearChatButton" class="icon-button" type="button" disabled aria-label="Clear conversation"><svg><use href="#icon-chat"></use></svg></button>
           <button class="icon-button" type="button" aria-label="Help"><svg><use href="#icon-help"></use></svg></button>
         </div>
@@ -735,8 +734,11 @@
   <script src="./app/memory-endpoints-enrollment.js?v=sha256-b64824e762a70374d410c3cb171c3ae600fc90f3e84401f58a6a8d1ae0da43b1"></script>
   <script src="./app/memory-endpoints-distributed-sync-v1.js?v=sha256-b115f61694d9eb937b027d9c7da6d52722dbc0c936b313cf8a08f978f0b8545c"></script>
   <script src="./app/memory-endpoints-sync.js?v=sha256-a9aae17bec0113a4dcdfec5b6639ae49e9c1a912c68693827baaf7f198509a83"></script>
-  <script src="./app/browser-model-admission.js?v=sha256-9ccaa58d5476b707a4e13ec38a5edfe685f064e07390818ded935143150e0813"></script>
+  <script src="./app/browser-model-admission.js?v=sha256-87cdc059e71435f1572b3ad03fcce17701d5b73e83c3a6172e078a3349e5b683"></script>
+  <script src="./app/browser-runtime-loader.js?v=sha256-b96486e4385d5bdc8ab92fe923107992f00036a031bed5bbc7310c37436dc7b0"></script>
+  <script src="./app/prompt2-request.js?v=sha256-781b025f9b92664c5b4ee41698555b3a95efa0022754aba37632ffbe8d209405"></script>
+  <script src="./app/model-runtime-client.js?v=sha256-8e65d7abad5efcaf35549729de97b805bb336914285eef4ac937f9b132aab022"></script>
   <script src="./app/site-release.js?v=sha256-6f8715fa77ad1a4bcc0c42a9050c0467825acdb402afe96e1a963cc535aea6a9"></script>
-  <script src="./app/app.js?v=sha256-4d0be5f3664b918d96cd3b8c903981344b489c43a7452b0ba5aecf2ed8e24f9b"></script>
+  <script src="./app/app.js?v=sha256-8f3fc81b4d0ad3e191c9752ed208bee254446c1674e3c7e08b312f9ac06037e3"></script>
 </body>
 </html>

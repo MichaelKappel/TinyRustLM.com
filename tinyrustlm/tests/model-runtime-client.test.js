@@ -127,6 +127,7 @@ class FakeWorker {
       case "artifact-chunk": return "artifact-chunk-accepted";
       case "artifact-commit": return "artifact-transfer-committed";
       case "activate": return "composition-active";
+      case "advance-operation": return "operation-advanced";
       case "set-transcript": return "transcript-updated";
       case "begin-generation": return "generation-begun";
       case "cancel-generation": return "generation-complete";
@@ -179,6 +180,19 @@ class FakeWorker {
       }
       case "composition-active":
         return { commandMessageId, state: runtimeState(command, "active-idle") };
+      case "operation-advanced": {
+        const advancedCommand = {
+          ...command,
+          operationId: command.payload.nextOperationId
+        };
+        return {
+          commandMessageId,
+          state: runtimeState(advancedCommand, "active-idle"),
+          pendingCompositionId: command.payload.nextCompositionId === command.compositionId
+            ? null
+            : command.payload.nextCompositionId
+        };
+      }
       case "transcript-updated":
         return {
           commandMessageId,
@@ -350,6 +364,34 @@ test("top-window client preserves repeated raw output and completes one generati
     signal: null,
     onStep: null
   }), (error) => error.code === "model-runtime-client-generation-replay");
+});
+
+test("top-window client advances operation authority before one transactional model switch", async () => {
+  const fake = new FakeWorker({
+    mutateEvent(event, command) {
+      if (command.kind === "advance-operation") {
+        event.operationId = command.payload.nextOperationId;
+      }
+    }
+  });
+  const client = createClient(fake);
+  await initialize(client);
+  await activate(client);
+  const nextOperationId = id("next-operation");
+  const nextCompositionId = id("next-composition");
+  const advanced = await client.advanceOperation({
+    operationId: nextOperationId,
+    compositionId: nextCompositionId
+  });
+  assert.equal(advanced.pendingCompositionId, nextCompositionId);
+  assert.equal(advanced.state.activeComposition.graphIdentitySha256, id("composition"));
+  assert.equal(client.status, "ready");
+  assert.equal(client.operationId, nextOperationId);
+  assert.equal(client.compositionId, nextCompositionId);
+  const switched = await activate(client);
+  assert.equal(switched.activeComposition.graphIdentitySha256, nextCompositionId);
+  assert.equal(client.status, "active");
+  assert.equal(fake.commands.filter((command) => command.kind === "advance-operation").length, 1);
 });
 
 test("an already-aborted generation performs one real cancel command and no normal step", async () => {

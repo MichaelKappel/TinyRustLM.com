@@ -72,6 +72,9 @@
       "commandMessageId", "artifactKind", "byteLength"
     ]),
     "composition-active": Object.freeze(["commandMessageId", "state"]),
+    "operation-advanced": Object.freeze([
+      "commandMessageId", "state", "pendingCompositionId"
+    ]),
     "transcript-updated": Object.freeze(["commandMessageId", "state"]),
     "generation-begun": Object.freeze(["commandMessageId", "state"]),
     "generation-step": Object.freeze(["commandMessageId", "step"]),
@@ -87,6 +90,7 @@
     "artifact-chunk": Object.freeze(["artifact-chunk-accepted"]),
     "artifact-commit": Object.freeze(["artifact-transfer-committed"]),
     activate: Object.freeze(["composition-active"]),
+    "advance-operation": Object.freeze(["operation-advanced"]),
     "set-transcript": Object.freeze(["transcript-updated"]),
     "begin-generation": Object.freeze(["generation-begun"]),
     "step-generation": Object.freeze(["generation-step", "generation-complete"]),
@@ -602,6 +606,63 @@
       return event.payload.state;
     }
 
+    async advanceOperation(options) {
+      if (this.status !== "active" || this.activeGeneration !== null) {
+        fail("model-runtime-client-advance-state");
+      }
+      const source = requireExactObject(
+        options,
+        ["operationId", "compositionId"],
+        "model-runtime-client-advance"
+      );
+      const nextOperationId = requireId(
+        source.operationId,
+        "model-runtime-client-next-operation-id",
+        false
+      );
+      const nextCompositionId = requireId(
+        source.compositionId,
+        "model-runtime-client-next-composition-id",
+        false
+      );
+      if (nextOperationId === this.operationId) {
+        fail("model-runtime-client-next-operation-id");
+      }
+      const activeCompositionId = this.compositionId;
+      this.status = "advancing";
+      try {
+        const event = await this.send("advance-operation", {
+          nextOperationId,
+          nextCompositionId
+        }, this.controlIds);
+        validateState(
+          event.payload.state,
+          nextOperationId,
+          activeCompositionId,
+          true
+        );
+        const expectedPending = nextCompositionId === activeCompositionId
+          ? null
+          : nextCompositionId;
+        if (event.operationId !== nextOperationId ||
+            event.compositionId !== activeCompositionId ||
+            event.payload.pendingCompositionId !== expectedPending ||
+            event.payload.state.state !== "active-idle") {
+          fail("model-runtime-client-advance-state", { terminal: true });
+        }
+        this.operationId = nextOperationId;
+        this.compositionId = nextCompositionId;
+        this.status = expectedPending === null ? "active" : "ready";
+        return Object.freeze({
+          state: event.payload.state,
+          pendingCompositionId: expectedPending
+        });
+      } catch (error) {
+        this.failTerminal(error);
+        throw error;
+      }
+    }
+
     async generate(options) {
       if (this.status !== "active" || this.activeGeneration !== null) {
         fail("model-runtime-client-generation-state");
@@ -853,8 +914,12 @@
       }
       const event = requireExactObject(input, MESSAGE_FIELDS,
         "model-runtime-client-event-fields");
+      const expectedOperationId = pending.command.kind === "advance-operation" &&
+        event.kind === "operation-advanced"
+        ? pending.command.payload.nextOperationId
+        : pending.command.operationId;
       if (event.schema !== PROTOCOL_SCHEMA || event.workerId !== this.workerId ||
-          event.operationId !== pending.command.operationId ||
+          event.operationId !== expectedOperationId ||
           event.compositionId !== pending.command.compositionId ||
           event.conversationId !== pending.command.conversationId ||
           event.turnId !== pending.command.turnId ||

@@ -18,12 +18,23 @@
   if (!browserModelAdmissionApi) {
     throw new Error("TinyRustLM browser model admission module is unavailable");
   }
+  const browserRuntimeLoaderApi = window.TinyRustLMBrowserRuntimeLoader;
+  if (!browserRuntimeLoaderApi) {
+    throw new Error("TinyRustLM browser runtime loader is unavailable");
+  }
+  const prompt2RequestApi = window.TinyRustLMPrompt2Request;
+  if (!prompt2RequestApi) {
+    throw new Error("TinyRustLM Prompt2 request writer is unavailable");
+  }
+  const modelRuntimeClientApi = window.TinyRustLMModelRuntimeClient;
+  if (!modelRuntimeClientApi) {
+    throw new Error("TinyRustLM model runtime client is unavailable");
+  }
 
   const paths = {
-    wasm: "../runtime/tinyrustlm.wasm",
-    wasmManifest: "../runtime/tinyrustlm.wasm.manifest",
-    wasmSimd: "../runtime/tinyrustlm-simd.wasm",
-    wasmSimdManifest: "../runtime/tinyrustlm-simd.wasm.manifest",
+    runtimeWasm: "../runtime/tinyrustlm-browser-runtime.wasm",
+    runtimeWasmManifest: "../runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
+    runtimeWorker: "./model-runtime-worker.js",
     registry: "../models/selector.registry",
     models: Object.create(null)
   };
@@ -319,9 +330,17 @@
   const checksumMask = (1n << 64n) - 1n;
   const checksumPrime = 0x100000001b3n;
 
+  function isTypedContentId(value, prefix) {
+    return typeof value === "string" &&
+      value.startsWith(prefix) &&
+      /^[0-9a-f]{64}$/u.test(value.slice(prefix.length));
+  }
+
   const state = {
-    instance: null,
-    exports: null,
+    runtimeAsset: null,
+    runtimeClient: null,
+    runtimeState: null,
+    transcriptRevision: 0n,
     encoder: new TextEncoder(),
     decoder: new TextDecoder(),
     modelLoadMs: 0,
@@ -330,8 +349,7 @@
     lastInferenceHistoryTurns: 0,
     modelLoadSequence: 0,
     largeModelConsents: new Set(),
-    wasmMemoryInitialPages: 0,
-    runtimeVariant: "unselected",
+    runtimeVariant: "worker-owned-wasm",
     activeModelKey: "",
     activeComposition: null,
     modelLoaded: false,
@@ -361,7 +379,9 @@
       stopRequested: false,
       assistantMessageId: "",
       pendingAction: "",
-      sequence: 0
+      sequence: 0,
+      abortController: null,
+      rawOutput: null
     },
     runHistory: [],
     latestDiagnostics: null,
@@ -3444,112 +3464,17 @@
   }
 
   async function prepareCompanionConvertedModel(entry, status, sequence) {
-    const companion = state.companion;
-    const operationId = catalogText(status.operation_id);
-    const models = await companion.client.listModels();
-    const model = models.find((value) => catalogText(value.operation_id) === operationId);
-    if (!model || sequence !== companion.pollSequence) {
-      throw new Error("The completed conversion was absent from the companion model inventory");
-    }
-    const artifactByteCount = Number(model.artifact_byte_count);
-    const artifactSha256 = companionSha256(model.artifact_sha256, "Converted model");
-    const compositionByteCount = Number(model.composition_graph_byte_count);
-    const compositionSha256 = companionSha256(
-      model.composition_graph_sha256,
-      "Converted model composition"
+    if (sequence !== state.companion.pollSequence) return false;
+    setHfStatus(
+      `${entry.modelId} conversion completed, but no qualified six-member composition admission was returned`,
+      true
     );
-    const contract = hfSourceContract(entry.modelId);
-    const baseModelId = catalogText(model.base_model_id);
-    const compositionId = catalogText(model.composition_id);
-    const routePolicyId = catalogText(model.route_policy_id);
-    const kvFormatId = catalogText(model.kv_format_id);
-    const compositionMemberCount = Number(model.composition_member_count);
-    if (
-      !Number.isSafeInteger(artifactByteCount) || artifactByteCount <= 0 ||
-      !Number.isSafeInteger(compositionByteCount) || compositionByteCount <= 0 ||
-      companionSha256(status.artifact_sha256, "Conversion receipt") !== artifactSha256 ||
-      Number(status.artifact_byte_count) !== artifactByteCount ||
-      catalogText(model.acquisition_kind) !== "conversion" ||
-      !contract || catalogText(model.model_shape) !== contract.modelShape ||
-      !/^[0-9a-f]{40}$/.test(catalogText(model.source_revision)) ||
-      !isRegistryTypedContentId(baseModelId, "model-sha256-") ||
-      !isRegistryTypedContentId(compositionId, "composition-sha256-") ||
-      !isRegistryTypedContentId(routePolicyId, "route-sha256-") ||
-      !isRegistryTypedContentId(kvFormatId, "kv-format-sha256-") ||
-      compositionMemberCount !== 0
-    ) {
-      throw new Error("The converted model inventory disagreed with its completion receipt");
-    }
-    const catalogEntry = {
-      modelId: catalogText(model.model_id) || entry.modelId,
-      displayName: entry.modelId,
-      sourceModelId: entry.modelId,
-      sourceRevision: catalogText(model.source_revision),
-      artifactByteCount,
-      artifactSha256: `sha256:${artifactSha256}`,
-      modelShape: catalogText(model.model_shape),
-      quantization: catalogText(model.quantization),
-      tokenizer: catalogText(model.tokenizer),
-      contextLength: Number(model.context_length),
-      promptFormat: catalogText(model.prompt_format) || promptFormatRaw,
-      admissionStatus: "rust-conversion-receipt-validated",
-      qualityEvalStatus: "not-run",
-      qualityClaim: "not-claimed",
-      trainedQualityClaim: "not-claimed",
-      intendedUse: "user-requested-local-conversion",
-      requiredNextGate: "independent-conversation-quality-evaluation",
-      maxTokens: Math.min(512, Math.max(16, Number(model.context_length) - 1))
-    };
-    companion.models = models;
-    companion.activeEntry = catalogEntry;
-    state.localModel = {
-      label: `${entry.modelId} (locally converted)` ,
-      path: `companion:${operationId}`,
-      maxTokens: catalogEntry.maxTokens,
-      modelBytes: artifactByteCount,
-      artifactSha256: `sha256:${artifactSha256}`,
-      modelShape: catalogEntry.modelShape,
-      quantization: catalogEntry.quantization,
-      tokenizer: catalogEntry.tokenizer,
-      contextLength: catalogEntry.contextLength,
-      promptFormat: catalogEntry.promptFormat,
-      estimatedWasmMemoryBytes: Math.ceil(artifactByteCount * 1.3),
-      requiredDownloadConsent: false,
-      composition: {
-        companion: true,
-        bytes: compositionByteCount,
-        sha256: `sha256:${compositionSha256}`,
-        baseModelId,
-        compositionId,
-        activeGraphSha256: `sha256:${companionSha256(model.active_graph_sha256, "Active graph")}`,
-        routePolicyId,
-        kvFormatId,
-        positionPolicySha256: `sha256:${companionSha256(model.position_policy_sha256, "Position policy")}`,
-        memberCount: compositionMemberCount
-      },
-      companionImport: {
-        operationId,
-        acquisitionKind: "conversion",
-        catalogEntry,
-        artifactByteCount,
-        artifactSha256
-      }
-    };
-    paths.models = modelsWithLocalModel(paths.models);
-    renderModelOptions(paths.models, false, localModelKey);
-    setHfStatus(`${entry.modelId} converted and verified locally`, false);
-    setCompanionStatus("paired", "Converted model ready; loading into browser memory", false);
-    const loadResult = state.exports
-      ? await loadSelectedModelWithConsent()
-      : { loaded: false, outcome: "runtime-unavailable", error: "The browser runtime is not ready" };
-    if (loadResult.loaded) {
-      setLocalModelStatus(`${entry.modelId} loaded from the local companion`, false);
-    } else {
-      setLocalModelStatus(
-        `${entry.modelId} is converted and stored locally; browser load did not complete`,
-        loadResult.outcome === "failed"
-      );
-    }
+    setCompanionStatus(
+      "paired",
+      "Companion conversion cannot activate until it returns all six members and a canonical admission",
+      true
+    );
+    throw new Error("companion-six-member-composition-contract-unavailable");
   }
 
   async function getHfModel(entry) {
@@ -3565,93 +3490,17 @@
   }
 
   async function prepareCompanionModel(entry, status, sequence) {
-    const byteCount = Number(status.artifact_byte_count);
-    const artifactSha256 = companionSha256(status.artifact_sha256, "P2P import");
-    const expectedArtifactSha256 = companionSha256(entry.artifactSha256, "Catalog model");
-    if (
-      sequence !== state.companion.pollSequence ||
-      byteCount !== entry.artifactByteCount ||
-      artifactSha256 !== expectedArtifactSha256 ||
-      !entry.composition
-    ) {
-      throw new Error("Companion import identity did not match the selected catalog model");
-    }
-    state.localModel = {
-      label: `${entry.displayName} (${entry.modelId}, desktop companion)`,
-      path: `companion:${status.operation_id}`,
-      maxTokens: entry.maxTokens,
-      modelBytes: byteCount,
-      artifactSha256,
-      slmChecksum: entry.slmChecksum || "",
-      modelShape: entry.modelShape || "",
-      quantization: entry.quantization || "",
-      tokenizer: entry.tokenizer || "",
-      tokenizerChecksum: entry.tokenizerChecksum || "",
-      contextLength: catalogInteger(entry.contextLength) || 1024,
-      outputContract: entry.outputContract || "",
-      promptFormat: entry.promptFormat || promptFormatRaw,
-      estimatedWasmMemoryBytes: Math.ceil(byteCount * 1.3),
-      requiredDownloadConsent: true,
-      composition: entry.composition,
-      companionImport: {
-        operationId: status.operation_id,
-        acquisitionKind: "p2p",
-        catalogEntry: entry,
-        artifactByteCount: byteCount,
-        artifactSha256
-      }
-    };
-    paths.models = modelsWithLocalModel(paths.models);
-    renderModelOptions(paths.models, false, localModelKey);
-    setCatalogStatus(`${entry.displayName} verified by the desktop companion`, false);
-    setCompanionStatus("paired", "Verified model ready for browser loading", false);
-    let loadResult = {
-      loaded: false,
-      outcome: "runtime-unavailable",
-      error: "The browser runtime is not ready"
-    };
-    try {
-      if (state.exports) {
-        loadResult = await loadSelectedModelWithConsent();
-      }
-    } catch (error) {
-      loadResult = {
-        loaded: false,
-        outcome: "failed",
-        error: errorMessage(error)
-      };
-      setText(el.runtimeStatus, "Model load failed", true);
-      setText(el.modelState, "unexpected error", true);
-      setText(el.errorState, loadResult.error, true);
-    }
-    if (loadResult.loaded && sequence === state.companion.pollSequence) {
-      setLocalModelStatus(
-        `${entry.displayName} loaded from a receipt-verified companion import`,
-        false
-      );
-    } else if (
-      sequence === state.companion.pollSequence &&
-      (loadResult.outcome === "cancelled" || loadResult.outcome === "runtime-unavailable")
-    ) {
-      setLocalModelStatus(
-        `${entry.displayName} is stored in the companion but not loaded in browser memory`,
-        false
-      );
-      setCompanionStatus("paired", "Model stored in companion; choose it when ready to load", false);
-    } else if (sequence === state.companion.pollSequence) {
-      const detail = loadResult.error || "The browser runtime did not accept the verified model";
-      setLocalModelStatus(
-        `${entry.displayName} remains verified in the companion; browser load failed: ${friendlyError(detail)}`,
-        true
-      );
-      setCompanionStatus(
-        "paired",
-        `Browser load failed; the verified companion copy is available to retry: ${friendlyError(detail)}`,
-        true
-      );
-      appendConsole(`companion browser load failed: ${detail}`);
-      renderDiagnostics();
-    }
+    if (sequence !== state.companion.pollSequence) return false;
+    setCatalogStatus(
+      `${entry.displayName} import completed, but no qualified six-member composition admission was returned`,
+      true
+    );
+    setCompanionStatus(
+      "paired",
+      "Companion import cannot activate until it returns all six members and a canonical admission",
+      true
+    );
+    throw new Error("companion-six-member-composition-contract-unavailable");
   }
 
   async function cancelCompanionImport() {
@@ -4243,13 +4092,11 @@
     }
     if (el.simpleImportLocalModelButton) {
       el.simpleImportLocalModelButton.addEventListener("click", () => {
-        importLocalModelFile().catch((error) => {
+        importBrowserComposition().catch((error) => {
           const text = errorMessage(error);
           setLocalModelStatus(text, true);
           setText(el.errorState, text, true);
-          if (state.exports) {
-            setControls(state.modelLoaded, true);
-          }
+          setControls(state.modelLoaded, Object.keys(paths.models).length > 0);
         });
       });
     }
@@ -4791,331 +4638,44 @@
     });
   }
 
-  function memory() {
-    return new Uint8Array(state.exports.memory.buffer);
-  }
-
-  function readString(ptr, len) {
-    return state.decoder.decode(memory().slice(ptr, ptr + len));
-  }
-
-  function readLastResult() {
-    return readString(state.exports.last_result_ptr(), state.exports.last_result_len());
-  }
-
-  function readDiagnostics() {
-    return readString(state.exports.get_diagnostics_ptr(), state.exports.get_diagnostics_len());
-  }
-
-  // Parses runtime diagnostics after immutable composition activation.
-  function readDiagnosticsJson() {
-    try {
-      return JSON.parse(readDiagnostics());
-    } catch (_error) {
-      return null;
-    }
-  }
-
-  function allocCopy(bytes) {
-    const ptr = state.exports.alloc(bytes.length);
-    if (!ptr) {
-      throw new Error("WASM allocation failed");
-    }
-    memory().set(bytes, ptr);
-    return ptr;
-  }
-
-  function release(ptr, len) {
-    if (ptr) {
-      state.exports.dealloc(ptr, len);
-    }
-  }
-
-  function hasOwnedModelTransferAbi() {
-    return Boolean(
-      state.exports &&
-      typeof state.exports.alloc_model === "function" &&
-      typeof state.exports.dealloc_model === "function" &&
-      typeof state.exports.load_model_owned === "function"
-    );
-  }
-
-  function hasArtifactDigestAbi() {
-    return Boolean(
-      state.exports &&
-      typeof state.exports.begin_artifact_digest === "function" &&
-      typeof state.exports.update_artifact_digest === "function" &&
-      typeof state.exports.finish_artifact_digest === "function"
-    );
-  }
-
-  function allocateOwnedModelTransfer(byteCount) {
-    if (
-      !hasOwnedModelTransferAbi() ||
-      !Number.isSafeInteger(byteCount) ||
-      byteCount <= 0 ||
-      byteCount > ownedModelMaxBytes
-    ) {
-      throw new Error("Owned WASM model transfer is unavailable for this artifact");
-    }
-    const ptr = state.exports.alloc_model(byteCount) >>> 0;
-    if (!ptr) {
-      throw new Error("Owned WASM model allocation failed");
-    }
-    return { ptr, byteCount, consumed: false };
-  }
-
-  function discardOwnedModelTransfer(transfer) {
-    if (transfer && !transfer.consumed && transfer.ptr) {
-      state.exports.dealloc_model(transfer.ptr, transfer.byteCount);
-      transfer.consumed = true;
-    }
-  }
-
-  function ownedModelTransferFromBytes(bytes) {
-    const transfer = allocateOwnedModelTransfer(bytes.length);
-    transfer.mode = "owned-copy";
-    try {
-      memory().set(bytes, transfer.ptr);
-      return transfer;
-    } catch (error) {
-      discardOwnedModelTransfer(transfer);
-      throw error;
-    }
-  }
-
-  function consumeOwnedModelTransfer(transfer) {
-    if (!transfer || transfer.consumed) {
-      throw new Error("Owned WASM model transfer was already consumed");
-    }
-    transfer.consumed = true;
-    return state.exports.load_model_owned(transfer.ptr, transfer.byteCount);
-  }
-
-  async function fetchOwnedModelTransfer(model, route, label, loadId) {
-    const response = await fetch(route, localFetchOptions);
-    if (!response.ok) {
-      throw new Error(`Unable to fetch local ${label} (${response.status})`);
-    }
-    const declaredBytes = Number.isSafeInteger(model.modelBytes) ? model.modelBytes : 0;
-    const contentLengthText = response.headers.get("content-length") || "";
-    const contentLength = /^[1-9][0-9]*$/.test(contentLengthText)
-      ? Number.parseInt(contentLengthText, 10)
-      : 0;
-    const byteCount = declaredBytes || contentLength;
-    if (!Number.isSafeInteger(byteCount) || byteCount <= 0 || byteCount > ownedModelMaxBytes) {
-      throw new Error("Local model response did not declare a supported byte count");
-    }
-    if (declaredBytes && contentLength && declaredBytes !== contentLength) {
-      throw new Error("Selector model byte count did not match the response");
-    }
-    if (!response.body || typeof response.body.getReader !== "function") {
-      throw new Error("Streaming model transfer is not supported by this browser");
-    }
-
-    const transfer = allocateOwnedModelTransfer(byteCount);
-    transfer.mode = "owned-stream";
-    const reader = response.body.getReader();
-    let offset = 0;
-    try {
-      for (;;) {
-        if (loadId !== state.modelLoadSequence) {
-          throw new Error("Model load was superseded");
-        }
-        const { done, value } = await reader.read();
-        if (done) {
-          break;
-        }
-        if (!(value instanceof Uint8Array) || offset + value.length > byteCount) {
-          throw new Error("Local model response exceeded its declared byte count");
-        }
-        memory().set(value, transfer.ptr + offset);
-        offset += value.length;
-      }
-      if (offset !== byteCount) {
-        throw new Error("Local model response ended before its declared byte count");
-      }
-      return transfer;
-    } catch (error) {
-      try {
-        await reader.cancel();
-      } catch (_cancelError) {
-        // The transfer allocation is still deterministically released below.
-      }
-      discardOwnedModelTransfer(transfer);
-      throw error;
-    } finally {
-      reader.releaseLock();
-    }
-  }
-
-  async function fetchCompanionModelTransfer(model, loadId) {
-    const source = model && model.companionImport;
-    if (!source || !companionIsPaired()) {
-      throw new Error("Pair the desktop companion before loading this model");
-    }
-    const transfer = allocateOwnedModelTransfer(source.artifactByteCount);
-    transfer.mode = "owned-companion-stream";
-    const controller = new AbortController();
-    state.companion.streamAbort = controller;
-    state.companion.browserLoadBytes = 0;
-    let lastRenderedBytes = 0;
-    try {
-      await state.companion.client.streamModel(source.operationId, {
-        expectedByteCount: source.artifactByteCount,
-        expectedArtifactSha256: source.artifactSha256,
-        signal: controller.signal,
-        onChunk(chunk, offset) {
-          if (loadId !== state.modelLoadSequence) {
-            throw new Error("Model load was superseded");
-          }
-          memory().set(chunk, transfer.ptr + offset);
-          state.companion.browserLoadBytes = offset + chunk.byteLength;
-          if (
-            state.companion.browserLoadBytes - lastRenderedBytes >= 8 * 1024 * 1024 ||
-            state.companion.browserLoadBytes === source.artifactByteCount
-          ) {
-            lastRenderedBytes = state.companion.browserLoadBytes;
-            renderCompanionState();
-          }
-        }
-      });
-      return transfer;
-    } catch (error) {
-      discardOwnedModelTransfer(transfer);
-      throw error;
-    } finally {
-      state.companion.streamAbort = null;
-      state.companion.browserLoadBytes = 0;
-      renderCompanionState();
-    }
-  }
-
-  function requireArtifactDigestResult(result, expectedByteCount) {
-    if (
-      !result ||
-      result.artifact_byte_count !== expectedByteCount ||
-      !isCatalogSha256(result.artifact_sha256) ||
-      !isRegistryHex64(result.artifact_checksum)
-    ) {
-      throw new Error("Rust/WASM artifact digest result was invalid");
-    }
-    return {
-      byteLength: result.artifact_byte_count,
-      sha256: result.artifact_sha256.toLowerCase(),
-      checksum: result.artifact_checksum.toLowerCase()
-    };
-  }
-
-  async function localFileModelTransfer(model, loadId) {
-    const localFile = model && model.localFile;
-    const file = localFile && localFile.file;
-    if (
-      !file ||
-      !Number.isSafeInteger(file.size) ||
-      file.size <= 0 ||
-      file.size !== localFile.byteLength ||
-      file.size > ownedModelMaxBytes
-    ) {
-      throw new Error("Local model file identity changed before transfer");
-    }
-    if (!hasOwnedModelTransferAbi() || !hasArtifactDigestAbi()) {
-      throw new Error("Bounded local model transfer is unavailable in this runtime");
-    }
-    if (localModelTransferChunkBytes % peerShareChunkBytes !== 0) {
-      throw new Error("Local model transfer and peer piece sizes are incompatible");
-    }
-
-    const transfer = allocateOwnedModelTransfer(file.size);
-    transfer.mode = "owned-file-stream";
-    const chunks = [];
-    try {
-      const beginCode = state.exports.begin_artifact_digest(file.size);
-      if (beginCode !== 0) {
-        throw new Error(`Rust/WASM artifact digest start failed: ${readLastResult()}`);
-      }
-      for (let offset = 0; offset < file.size; offset += localModelTransferChunkBytes) {
-        if (loadId !== state.modelLoadSequence) {
-          throw new Error("Model load was superseded");
-        }
-        const end = Math.min(file.size, offset + localModelTransferChunkBytes);
-        const value = new Uint8Array(await file.slice(offset, end).arrayBuffer());
-        if (loadId !== state.modelLoadSequence) {
-          throw new Error("Model load was superseded");
-        }
-        if (value.length !== end - offset) {
-          throw new Error("Local model file slice ended before its declared byte count");
-        }
-        memory().set(value, transfer.ptr + offset);
-        const updateCode = state.exports.update_artifact_digest(transfer.ptr + offset, value.length);
-        if (updateCode !== 0) {
-          throw new Error(`Rust/WASM artifact digest update failed: ${readLastResult()}`);
-        }
-        for (let pieceOffset = 0; pieceOffset < value.length; pieceOffset += peerShareChunkBytes) {
-          const pieceEnd = Math.min(value.length, pieceOffset + peerShareChunkBytes);
-          const piece = value.subarray(pieceOffset, pieceEnd);
-          const pieceSha256 = await sha256Hex(piece);
-          if (loadId !== state.modelLoadSequence) {
-            throw new Error("Model load was superseded");
-          }
-          chunks.push({
-            index: chunks.length,
-            offset: offset + pieceOffset,
-            byte_count: piece.length,
-            sha256: pieceSha256
-          });
-        }
-      }
-      if (loadId !== state.modelLoadSequence) {
-        throw new Error("Model load was superseded");
-      }
-      const finishCode = state.exports.finish_artifact_digest();
-      if (finishCode !== 0) {
-        throw new Error(`Rust/WASM artifact digest finalization failed: ${readLastResult()}`);
-      }
-      let parsed;
-      try {
-        parsed = JSON.parse(readLastResult());
-      } catch (_error) {
-        throw new Error("Rust/WASM artifact digest result was not JSON");
-      }
-      const identity = requireArtifactDigestResult(parsed, file.size);
-      validateCatalogArtifactMatch(localFile.catalogEntry, localFile.name, identity.byteLength, identity.sha256);
-      validateLocalImportReceiptArtifact(localFile.importReceipt, identity.byteLength, identity.sha256);
-      const admissionArtifact = model.browserAdmission &&
-        model.browserAdmission.admission.artifact;
-      if (!admissionArtifact ||
-          identity.sha256.replace(/^sha256:/, "") !== admissionArtifact.sha256 ||
-          identity.byteLength !== admissionArtifact.byteCount) {
-        throw new Error("Local model bytes did not match the browser admission");
-      }
-      localFile.sha256 = identity.sha256;
-      localFile.checksum = identity.checksum;
-      localFile.chunks = chunks;
-      document.documentElement.dataset.localFileReadMode = "bounded-slice-v1";
-      return transfer;
-    } catch (error) {
-      discardOwnedModelTransfer(transfer);
-      throw error;
-    }
-  }
-
-  // Captures the static exported memory footprint before runtime init can grow it.
-  function wasmMemoryInitialPages() {
-    const pageBytes = 64 * 1024;
-    const byteLength = state.exports.memory.buffer.byteLength;
-    if (byteLength % pageBytes !== 0) {
-      throw new Error("WASM memory byte length was not page aligned");
-    }
-    return byteLength / pageBytes;
-  }
-
   function renderDiagnostics() {
-    const diagnostics = readDiagnostics();
-    el.diagnostics.textContent = diagnostics;
-    el.developer.textContent = diagnostics;
-    state.latestDiagnostics = latestDiagnosticsSnapshot();
-    renderBenchmark(diagnostics);
+    const runtimeState = state.runtimeState;
+    const rawOutput = state.generation.rawOutput;
+    const diagnostics = {
+      schema: "tinyrustlm.browser-worker-diagnostics/1",
+      runtime_variant: state.runtimeVariant,
+      worker_status: state.runtimeClient ? state.runtimeClient.status : "not-created",
+      operation_id: runtimeState ? runtimeState.operationId : null,
+      transcript_revision: state.transcriptRevision.toString(10),
+      composition_active: Boolean(runtimeState && runtimeState.activeComposition),
+      active_composition_graph_sha256: runtimeState && runtimeState.activeComposition
+        ? runtimeState.activeComposition.graphIdentitySha256
+        : null,
+      active_composition_member_table_sha256: runtimeState && runtimeState.activeComposition
+        ? runtimeState.activeComposition.memberTableSha256
+        : null,
+      model_bytes: runtimeState && runtimeState.memoryPlan
+        ? runtimeState.memoryPlan.modelBytes
+        : 0,
+      committed_kv_bytes: runtimeState ? runtimeState.committedKvBytes : 0,
+      peak_scratch_arena_usage: runtimeState && runtimeState.memoryPlan
+        ? runtimeState.memoryPlan.scratchBytes
+        : 0,
+      observed_linear_memory_bytes: runtimeState
+        ? runtimeState.observedLinearMemoryBytes
+        : 0,
+      maximum_linear_memory_bytes: runtimeState
+        ? runtimeState.maximumLinearMemoryBytes
+        : 0,
+      prompt_token_count: 0,
+      generated_token_count: rawOutput ? rawOutput.tokenIds.length : 0,
+      generation_status: rawOutput ? rawOutput.status.kind : null
+    };
+    const diagnosticsText = JSON.stringify(diagnostics, null, 2);
+    el.diagnostics.textContent = diagnosticsText;
+    el.developer.textContent = diagnosticsText;
+    state.latestDiagnostics = Object.freeze(diagnostics);
+    renderBenchmark(diagnosticsText);
   }
 
   function renderBenchmark(diagnosticsText) {
@@ -5489,24 +5049,6 @@
     return config;
   }
 
-  function applySamplingConfig() {
-    const config = readSamplingConfig();
-    if (typeof state.exports.set_sampling_config_v2 !== "function") {
-      throw new Error("WASM runtime does not expose model-bound repetition control");
-    }
-    const code = state.exports.set_sampling_config_v2(
-      config.temperature,
-      config.topK,
-      config.topP,
-      config.seed,
-      config.repetitionPenalty
-    );
-    if (code !== 0) {
-      throw new Error(readLastResult() || `sampling configuration failed (${code})`);
-    }
-    return config;
-  }
-
   function parseManifest(text) {
     const fields = Object.create(null);
     const lines = text.split(/\r?\n/);
@@ -5545,69 +5087,6 @@
       throw new Error(`${label} byte budget exceeded`);
     }
     return state.decoder.decode(bytes);
-  }
-
-  async function fetchAdmittedCompositionGraph(model, loadId) {
-    const composition = model && model.composition ? model.composition : null;
-    if (!composition) {
-      throw new Error("Model is not authorized by an admitted composition graph");
-    }
-    if (composition.companion === true) {
-      if (!companionIsPaired()) {
-        throw new Error("Pair the desktop companion before loading this composition");
-      }
-      if (
-        !Number.isSafeInteger(composition.bytes) ||
-        composition.bytes <= 0 ||
-        composition.bytes > selectorCompositionGraphByteBudget
-      ) {
-        throw new Error("Companion composition graph byte count was invalid");
-      }
-      const bytes = new Uint8Array(composition.bytes);
-      await state.companion.client.streamComposition(model.companionImport.operationId, {
-        expectedByteCount: composition.bytes,
-        expectedSha256: String(composition.sha256 || "").replace(/^sha256:/, ""),
-        signal: state.companion.streamAbort && state.companion.streamAbort.signal,
-        onChunk(chunk, offset) {
-          if (loadId !== state.modelLoadSequence) {
-            throw new Error("Model load was superseded");
-          }
-          bytes.set(chunk, offset);
-        }
-      });
-      const observedSha256 = await sha256Hex(bytes);
-      if (observedSha256 !== composition.sha256) {
-        throw new Error("Companion composition graph SHA-256 mismatch");
-      }
-      return bytes;
-    }
-    const response = await fetch(composition.path, localFetchOptions);
-    if (!response.ok) {
-      throw new Error(`Unable to fetch admitted composition graph (${response.status})`);
-    }
-    const contentLengthText = response.headers.get("content-length") || "";
-    if (
-      contentLengthText &&
-      (!/^[1-9][0-9]*$/.test(contentLengthText) ||
-        Number.parseInt(contentLengthText, 10) !== composition.bytes)
-    ) {
-      throw new Error("Admitted composition graph response byte count mismatch");
-    }
-    const bytes = new Uint8Array(await response.arrayBuffer());
-    if (loadId !== state.modelLoadSequence) {
-      throw new Error("Model load was superseded");
-    }
-    if (
-      bytes.length !== composition.bytes ||
-      bytes.length > selectorCompositionGraphByteBudget
-    ) {
-      throw new Error("Admitted composition graph byte count mismatch");
-    }
-    const observedSha256 = await sha256Hex(bytes);
-    if (observedSha256 !== composition.sha256) {
-      throw new Error("Admitted composition graph SHA-256 mismatch");
-    }
-    return bytes;
   }
 
   function manifestValue(fields, key) {
@@ -5755,6 +5234,9 @@
   function modelTrustTier(model) {
     if (!model) {
       return modelTrustTiers.experimental;
+    }
+    if (model.browserComposition && model.browserComposition.admission) {
+      return modelTrustTiers.quality;
     }
     if (hasDeclaredQualityEvidence(model)) {
       return modelTrustTiers.quality;
@@ -5948,7 +5430,7 @@
       }
       state.largeModelConsents.add(requestedModelKey);
     }
-    const loaded = await loadSelectedModel();
+    const loaded = await loadSelectedBrowserComposition();
     const detail = loaded || !el.errorState || el.errorState.textContent === "none"
       ? ""
       : String(el.errorState.textContent || "").trim();
@@ -7918,356 +7400,6 @@
     setMemoryEndpointsStatus("web memory off", false);
   }
 
-  function hostedMemoryContextText() {
-    return memoryEndpointsHostedContextActive()
-      ? state.memoryEndpoints.packedContext.context
-      : "";
-  }
-
-  function runtimeMemorySuffix() {
-    const suffixes = [];
-    if (state.lastInferenceHistoryTurns > 0) {
-      suffixes.push(`conversation_history_turns=${state.lastInferenceHistoryTurns}`);
-    }
-    if (state.localMemoryPackage && state.localMemoryPackage.valid) {
-      suffixes.push(`uaix_memory=${state.localMemoryPackage.setup}`);
-    }
-    if (
-      state.memoryEndpoints &&
-      memoryEndpointsHostedContextActive()
-    ) {
-      suffixes.push("memory_endpoints=hosted");
-    }
-    return suffixes.length ? `, ${suffixes.join(", ")}` : "";
-  }
-
-  function runtimePromptWithLocalMemory(promptText) {
-    const prompt = String(promptText || "");
-    const memory = state.localMemoryPackage;
-    const hostedContext = hostedMemoryContextText();
-    if ((!memory || !memory.valid || !memory.contextText) && !hostedContext) {
-      return prompt;
-    }
-    const sections = [];
-    if (memory && memory.valid && memory.contextText) {
-      sections.push([
-        "[UAIX memory context]",
-        `setup=${memory.setup}`,
-        "source=local user-selected .uai deck",
-        "boundary=local-only; no project-server memory upload; do not mutate source persona",
-        "",
-        trimTextToByteLimit(memory.contextText, localMemoryContextByteLimit)
-      ].join("\n"));
-    }
-    if (hostedContext) {
-      sections.push([
-        "[MemoryEndpoints hosted memory context]",
-        `agent=${state.memoryEndpoints.agentId || "tinyrustlm-agent"}`,
-        "source=MemoryEndpoints.com public-safe search results",
-        "boundary=opt-in hosted summaries only; never infer hidden secrets or upload .slm/model bytes",
-        "",
-        hostedContext
-      ].join("\n"));
-    }
-    const suffix = `\n[End TinyRustLM memory context]\n\n[User prompt]\n${prompt}`;
-    const combined = `${sections.join("\n\n")}${suffix}`;
-    if (state.encoder.encode(combined).length <= runtimePromptByteLimit) {
-      return combined;
-    }
-    if (hostedContext && memory && memory.valid && memory.contextText) {
-      const localOnly = `${sections[0]}${suffix}`;
-      if (state.encoder.encode(localOnly).length <= runtimePromptByteLimit) {
-        return localOnly;
-      }
-    }
-    return prompt;
-  }
-
-  function modelPromptFormat() {
-    const fields = state.modelManifest || {};
-    const value = String(fields.prompt_format || promptFormatRaw).trim() || promptFormatRaw;
-    if (!promptFormats.has(value)) {
-      throw new Error(`Model prompt format was unsupported: ${value}`);
-    }
-    return value;
-  }
-
-  function modelSystemPrompt() {
-    const fields = state.modelManifest || {};
-    return String(fields.system_prompt || "").trim();
-  }
-
-  function applyModelPromptFormat(promptText, promptFormat, systemPrompt, history) {
-    return conversationApi.formatInferencePrompt({
-      prompt: String(promptText || ""),
-      promptFormat,
-      systemPrompt,
-      history: Array.isArray(history) ? history : []
-    });
-  }
-
-  function currentModelContextLength() {
-    const manifestLength = Number(state.modelManifest && state.modelManifest.context_length);
-    if (Number.isSafeInteger(manifestLength) && manifestLength > 0) {
-      return manifestLength;
-    }
-    const selectedKey = state.activeModelKey || (el.modelSelect ? el.modelSelect.value : "");
-    const selectedModel = paths.models[selectedKey] || null;
-    const modelLength = Number(selectedModel && selectedModel.contextLength);
-    return Number.isSafeInteger(modelLength) && modelLength > 0 ? modelLength : 0;
-  }
-
-  function conversationHistoryPromptByteLimit() {
-    const contextLength = currentModelContextLength();
-    if (!contextLength) {
-      return runtimePromptByteLimit;
-    }
-    const requestedOutputTokens = Math.max(
-      1,
-      Math.min(512, Number.parseInt(el.maxTokens && el.maxTokens.value, 10) || 1)
-    );
-    const outputReserve = Math.min(
-      requestedOutputTokens,
-      Math.max(8, Math.floor(contextLength / 8))
-    );
-    return Math.max(
-      1,
-      Math.min(runtimePromptByteLimit, contextLength - outputReserve)
-    );
-  }
-
-  function runtimePromptForModel(promptText, options) {
-    const settings = options || {};
-    const promptWithMemory = runtimePromptWithLocalMemory(promptText);
-    const promptFormat = modelPromptFormat();
-    const systemPrompt = modelSystemPrompt();
-    let history = settings.includeHistory === false
-      ? []
-      : conversationApi.completedInferenceHistory(activeConversation());
-    let formatted = applyModelPromptFormat(promptWithMemory, promptFormat, systemPrompt, history);
-    const historyPromptByteLimit = conversationHistoryPromptByteLimit();
-    while (history.length && state.encoder.encode(formatted).length > historyPromptByteLimit) {
-      history = history.slice(2);
-      formatted = applyModelPromptFormat(promptWithMemory, promptFormat, systemPrompt, history);
-    }
-    if (settings.trackHistory !== false) {
-      state.lastInferenceHistoryTurns = history.length / 2;
-    }
-    return formatted;
-  }
-
-  function expectsJsonObjectPrompt(promptText) {
-    const lower = String(promptText || "").toLowerCase();
-    return lower.includes("json") &&
-      lower.includes("status") &&
-      lower.includes("reason") &&
-      (lower.includes("object") || lower.includes("{"));
-  }
-
-  function jsonFieldContext(promptText) {
-    const text = String(promptText || "").trim();
-    const requestIndex = text.toLowerCase().lastIndexOf("request:");
-    if (requestIndex >= 0) {
-      return text.slice(requestIndex + "request:".length).trim();
-    }
-    const parts = text.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean);
-    return parts.length ? parts[parts.length - 1] : text;
-  }
-
-  function statusReasonJsonFieldPrompt(promptText, key) {
-    const context = jsonFieldContext(promptText);
-    if (key === "status") {
-      return `Choose the best single lowercase status label from this list: local, private, review, peer, ready, error.\nAnswer with exactly one label and no other words.\nSituation: ${context}`;
-    }
-    return `Choose the best reason phrase from this list: ${jsonReasonPhraseOptions(context).join("; ")}.\nAnswer with exactly one phrase from the list.\nSituation: ${context}\nReason:`;
-  }
-
-  function jsonReasonPhraseOptions(contextText) {
-    const context = String(contextText || "");
-    const words = jsonReasonWords(context);
-    const options = [];
-    pushJsonReasonPhrase(options, words.slice(0, 8));
-    if (words.length > 5) {
-      pushJsonReasonPhrase(options, words.slice(0, 5));
-      pushJsonReasonPhrase(options, words.slice(-5));
-    }
-    if (!options.length) {
-      options.push("provided context");
-    }
-    return options;
-  }
-
-  function pushJsonReasonPhrase(options, words) {
-    if (!Array.isArray(words) || words.length < 2) {
-      return;
-    }
-    const phrase = words.join(" ");
-    if (!options.includes(phrase)) {
-      options.push(phrase);
-    }
-  }
-
-  function jsonReasonWords(contextText) {
-    const stopWords = new Set([
-      "the", "and", "for", "with", "this", "that", "from", "into", "where",
-      "return", "json", "key", "keys", "status", "reason", "case", "situation",
-      "answer", "choose", "best", "phrase", "list", "exactly", "single",
-      "lowercase", "label", "object", "short", "plain", "english", "describe",
-      "using", "words"
-    ]);
-    const words = [];
-    for (const word of String(contextText || "").toLowerCase().split(/[^a-z0-9]+/)) {
-      if (word.length < 3 || stopWords.has(word) || words.includes(word)) {
-        continue;
-      }
-      words.push(word);
-    }
-    return words;
-  }
-
-  function statusReasonJsonFieldBudget(key, maxTokens) {
-    const budget = key === "status" ? 8 : 18;
-    return Math.max(1, Math.min(budget, maxTokens));
-  }
-
-  function expectsTwoSentencePrompt(promptText) {
-    const lower = String(promptText || "").toLowerCase();
-    return /\b(?:two|2)(?:\s+[a-z0-9-]+){0,4}\s+sentences\b/.test(lower) &&
-      !/\bone\s+or\s+(?:two|2)(?:\s+[a-z0-9-]+){0,4}\s+sentences\b/.test(lower) &&
-      lower.includes("summarize");
-  }
-
-  function twoSentenceContext(promptText) {
-    const text = String(promptText || "").trim();
-    const parts = text.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean);
-    if (parts.length > 1) {
-      return parts[parts.length - 1];
-    }
-    const colonIndex = text.indexOf(":");
-    return colonIndex >= 0 ? text.slice(colonIndex + 1).trim() : text;
-  }
-
-  function twoSentenceFieldPrompt(promptText, slot) {
-    const pair = twoSentenceFieldPromptVariants(promptText)[0];
-    return slot === "first" ? pair.first : pair.second;
-  }
-
-  function twoSentenceFieldPromptVariants(promptText) {
-    const context = twoSentenceContext(promptText);
-    const first = `Summarize this text in one short complete factual sentence. Use only details from the text. Do not mention the request.\n\n${context}`;
-    return [
-      {
-        first: `State one concrete source fact in one short complete sentence. Do not mention private, privacy, provenance, inspection, evidence, or prompts staying private.\n\n${context}`,
-        second: `State one privacy or provenance source fact in one short complete sentence. Use only details that appear in the source.\n\n${context}`
-      },
-      {
-        first,
-        second: `Write one short complete factual sentence from the text about prompts staying private, local inference, provenance, or inspectable evidence. Do not mention the request.\n\n${context}`
-      },
-      {
-        first,
-        second: `Use one short factual sentence about prompt privacy, provenance, developer inspection, or inspectable evidence. Do not mention the task.\n\n${context}`
-      },
-      {
-        first,
-        second: `State one distinct source fact about prompt privacy, provenance, or developer inspection. Start with Prompts or Developers when those source details are present. Use one short factual sentence and do not mention the task.\n\n${context}`
-      },
-      {
-        first,
-        second: `Write one short complete factual sentence using only the privacy, provenance, developer-inspection, or evidence detail from the source text. Do not mention the request. Do not answer with category names only.\n\n${context}`
-      }
-    ];
-  }
-
-  function twoSentenceFieldBudget(maxTokens) {
-    const budget = Math.max(12, Math.floor(maxTokens / 2));
-    return Math.max(1, Math.min(budget, maxTokens));
-  }
-
-  function twoSentenceCompleteSentences(text) {
-    return String(text || "")
-      .replace(/\.slm/gi, "<SLM>")
-      .split(/[.!?]+/)
-      .map((part) => part.replace(/<SLM>/g, ".slm").trim())
-      .filter(Boolean);
-  }
-
-  function twoSentenceQualityWords(text) {
-    return String(text || "")
-      .toLowerCase()
-      .replace(/\.slm/g, " slm ")
-      .replace(/[^a-z0-9]+/g, " ")
-      .trim()
-      .split(/\s+/)
-      .filter((word) => word && !new Set(["a", "an", "and", "are", "as", "can", "for", "from", "in", "is", "it", "of", "or", "so", "that", "the", "this", "to", "with"]).has(word));
-  }
-
-  function twoSentenceLooksTooSimilar(first, second) {
-    const left = new Set(twoSentenceQualityWords(first));
-    const right = new Set(twoSentenceQualityWords(second));
-    const smaller = Math.min(left.size, right.size);
-    if (smaller < 5) {
-      return false;
-    }
-    let shared = 0;
-    for (const word of left) {
-      if (right.has(word)) {
-        shared += 1;
-      }
-    }
-    return shared / smaller >= 0.75;
-  }
-
-  function twoSentenceOutputLooksUsable(text, promptText) {
-    const normalized = String(text || "").toLowerCase().replace(/\s+/g, " ");
-    if (!text || [
-      "here's your",
-      "here is your",
-      "here's a concise",
-      "here is a concise",
-      "i've noticed",
-      "i have noticed",
-      "i'm sorry",
-      "sorry to hear",
-      "having trouble",
-      "one concrete source fact",
-      "source fact",
-      "one privacy or provenance",
-      "one short complete sentence",
-      "concise factual sentence",
-      "main subject and action",
-      "another sentence",
-      "yes that sentence",
-      "yes, that sentence",
-      "accurately describes",
-      "from the text",
-      "from this text",
-      "category names",
-      "privacy or provenance benefit"
-    ].some((needle) => normalized.includes(needle))) {
-      return false;
-    }
-    if (/\b(this matter pertains to|this matter is about|this text discusses|the text discusses|this text describes|the text describes|this article discusses|the article discusses|this article describes|the article describes|this note discusses|the note discusses|this note describes|the note describes|this text is about|the text is about)\b/i.test(text)) {
-      return false;
-    }
-    const source = twoSentenceContext(promptText).toLowerCase().replace(/\s+/g, " ");
-    if (
-      (source.includes("local") || source.includes("locally") || source.includes("browser-local") || source.includes("browser local") || source.includes(".slm")) &&
-      !source.includes("remote") &&
-      (normalized.includes("remote") || normalized.includes("remotely"))
-    ) {
-      return false;
-    }
-    const sentences = twoSentenceCompleteSentences(text);
-    if (sentences.length < 2) {
-      return false;
-    }
-    if (twoSentenceQualityWords(sentences[0]).length < 5 || twoSentenceQualityWords(sentences[1]).length < 5) {
-      return false;
-    }
-    return !twoSentenceLooksTooSimilar(sentences[0], sentences[1]);
-  }
-
   function shortSha256(sha256) {
     const text = normalizeCatalogSha256(sha256) || "";
     return text ? `${text.slice(0, 19)}...${text.slice(-8)}` : "sha256 unavailable";
@@ -8560,10 +7692,10 @@
     if (
       !route || !bytes || bytes > selectorCompositionGraphByteBudget ||
       !sha256 || !activeGraphSha256 || !positionPolicySha256 ||
-      !isRegistryTypedContentId(baseModelId, "model-sha256-") ||
-      !isRegistryTypedContentId(compositionId, "composition-sha256-") ||
-      !isRegistryTypedContentId(routePolicyId, "route-sha256-") ||
-      !isRegistryTypedContentId(kvFormatId, "kv-format-sha256-") ||
+      !isTypedContentId(baseModelId, "model-sha256-") ||
+      !isTypedContentId(compositionId, "composition-sha256-") ||
+      !isTypedContentId(routePolicyId, "route-sha256-") ||
+      !isTypedContentId(kvFormatId, "kv-format-sha256-") ||
       !Number.isSafeInteger(memberCount) || memberCount < 0 || memberCount > 64
     ) {
       throw new Error(`Catalog entry ${modelId} composition graph was incomplete or invalid`);
@@ -10319,517 +9451,129 @@
     return sha256Hex(state.encoder.encode(String(text || "")));
   }
 
-  function validateCatalogArtifactMatch(entry, name, byteLength, sha256) {
-    if (!entry) {
-      return;
+  function selectedBrowserCompositionFiles(input = el.localModelFile) {
+    const selected = input && input.files ? Array.from(input.files) : [];
+    const artifactNames = new Set(
+      browserModelAdmissionApi.artifactSpecs.map((artifact) => artifact.fileName)
+    );
+    const artifactsByName = new Map();
+    let admissionFile = null;
+    const unknown = [];
+    for (const file of selected) {
+      if (artifactNames.has(file.name)) {
+        if (artifactsByName.has(file.name)) {
+          throw new Error(`Duplicate composition member: ${file.name}`);
+        }
+        artifactsByName.set(file.name, file);
+      } else if (file.name.endsWith(".browser-composition-admission.json")) {
+        if (admissionFile !== null) {
+          throw new Error("Select exactly one browser composition admission");
+        }
+        admissionFile = file;
+      } else {
+        unknown.push(file.name || "unnamed file");
+      }
     }
-    if (byteLength !== entry.artifactByteCount) {
-      throw new Error("Catalog byte count mismatch");
+    if (unknown.length > 0) {
+      throw new Error(`Unsupported composition selection: ${unknown.join(", ")}`);
     }
-    if (sha256 !== entry.artifactSha256) {
-      throw new Error("Catalog SHA-256 mismatch");
-    }
-    if (!/\.slm$/i.test(name)) {
-      throw new Error("Catalog artifact must be a local .slm file");
-    }
+    return Object.freeze({ selected, artifactsByName, admissionFile });
   }
 
-  function localModelSelectedFiles() {
-    const files = Array.from(el.localModelFile && el.localModelFile.files ? el.localModelFile.files : []);
-    const slms = files.filter((file) => /\.slm$/i.test(safeLocalModelName(file.name)));
-    const receipts = files.filter((file) => /\.minimodel-receipt$/i.test(safeLocalModelName(file.name)));
-    const admissions = files.filter((file) =>
-      /\.browser-model-admission\.json$/i.test(safeLocalModelName(file.name)));
-    return {
-      files,
-      slms,
-      receipts,
-      admissions,
-      slm: slms.length === 1 ? slms[0] : null,
-      receipt: receipts.length === 1 ? receipts[0] : null,
-      admission: admissions.length === 1 ? admissions[0] : null
-    };
-  }
-
-  function localModelSelectionError(selectedFiles) {
-    if (selectedFiles.slms.length > 1) {
-      return "Choose exactly one local .slm file";
+  function browserCompositionSelectionError(selection) {
+    if (selection.selected.length === 0) {
+      return "";
     }
-    if (selectedFiles.receipts.length > 1) {
-      return "Choose at most one MiniModel receipt sidecar";
+    if (selection.admissionFile === null) {
+      return "Select the canonical browser composition admission";
     }
-    if (selectedFiles.admissions.length !== 1) {
-      return "Choose exactly one browser model admission sidecar";
-    }
-    if (selectedFiles.files.length > 0 && selectedFiles.slms.length === 0) {
-      return `${selectedFiles.files.length} file(s) selected / choose one .slm file`;
-    }
-    if (selectedFiles.files.length !==
-        selectedFiles.slms.length + selectedFiles.receipts.length +
-          selectedFiles.admissions.length) {
-      return "The local model bundle contains an unsupported file";
+    const missing = browserModelAdmissionApi.artifactSpecs
+      .map((artifact) => artifact.fileName)
+      .filter((fileName) => !selection.artifactsByName.has(fileName));
+    if (missing.length > 0 || selection.artifactsByName.size !== 6 ||
+        selection.selected.length !== 7) {
+      return missing.length > 0
+        ? `Select the complete six-member composition; missing ${missing.join(", ")}`
+        : "Select exactly six composition members and one admission";
     }
     return "";
   }
 
-  async function inspectBrowserModelAdmission(file, artifactName, artifactByteCount) {
-    if (!file || !Number.isFinite(file.size) || file.size <= 0 ||
-        file.size > browserModelAdmissionApi.maximumTextBytes) {
-      throw new Error("Browser model admission sidecar size was invalid");
+  function assertAdmissionRuntime(admission) {
+    const manifest = state.runtimeAsset && state.runtimeAsset.manifest;
+    if (!manifest) {
+      throw new Error("The verified browser runtime manifest is unavailable");
     }
-    const name = safeLocalModelName(file.name);
-    if (!/\.browser-model-admission\.json$/i.test(name)) {
-      throw new Error("Browser model admission sidecar name was invalid");
-    }
-    const admissionText = await file.text();
-    if (state.encoder.encode(admissionText).length > browserModelAdmissionApi.maximumTextBytes) {
-      throw new Error("Browser model admission sidecar exceeded its byte budget");
-    }
-    const admission = browserModelAdmissionApi.parseAdmissionText(
-      admissionText,
-      { applicationOrigin: window.location.origin }
-    );
-    if (admission.artifact.fileName !== artifactName ||
-        admission.artifact.byteCount !== artifactByteCount) {
-      throw new Error("Browser model admission artifact identity changed");
-    }
-    const systemPromptSha256 =
-      (await sha256Text(admission.runtime.systemPrompt)).replace(/^sha256:/, "");
-    if (systemPromptSha256 !== admission.runtime.systemPromptSha256) {
-      throw new Error("Browser model admission system prompt SHA-256 changed");
-    }
-    return Object.freeze({
-      fileName: name,
-      sha256: (await sha256Text(admissionText)).replace(/^sha256:/, ""),
-      admission
-    });
-  }
-
-  function requireMiniModelReceiptBool(fields, key, expected) {
-    const actual = requireManifestField(fields, key, "MiniModel import receipt");
-    if (actual !== "true" && actual !== "false") {
-      throw new Error(`MiniModel import receipt field ${key} was ${actual}`);
-    }
-    const parsed = actual === "true";
-    if (parsed !== expected) {
-      throw new Error(`MiniModel import receipt field ${key} was ${actual}`);
-    }
-    return parsed;
-  }
-
-  function requireMiniModelReceiptSha(fields, key) {
-    const value = normalizeCatalogSha256(requireManifestField(fields, key, "MiniModel import receipt"));
-    if (!value) {
-      throw new Error(`MiniModel import receipt field ${key} was invalid`);
-    }
-    return value;
-  }
-
-  function requireMiniModelReceiptOptionalBool(fields, key, expected) {
-    if (!Object.prototype.hasOwnProperty.call(fields, key)) {
-      return null;
-    }
-    return requireMiniModelReceiptBool(fields, key, expected);
-  }
-
-  function isMiniModelReceiptLeapYear(year) {
-    return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
-  }
-
-  function miniModelReceiptDaysInMonth(year, month) {
-    if ([1, 3, 5, 7, 8, 10, 12].includes(month)) {
-      return 31;
-    }
-    if ([4, 6, 9, 11].includes(month)) {
-      return 30;
-    }
-    if (month === 2) {
-      return isMiniModelReceiptLeapYear(year) ? 29 : 28;
-    }
-    return 0;
-  }
-
-  function isStrictMiniModelUtcTimestamp(value) {
-    const match = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})Z$/.exec(String(value || ""));
-    if (!match) {
-      return false;
-    }
-    const year = Number.parseInt(match[1], 10);
-    const month = Number.parseInt(match[2], 10);
-    const day = Number.parseInt(match[3], 10);
-    const hour = Number.parseInt(match[4], 10);
-    const minute = Number.parseInt(match[5], 10);
-    const second = Number.parseInt(match[6], 10);
-    return (
-      month >= 1 &&
-      month <= 12 &&
-      day >= 1 &&
-      day <= miniModelReceiptDaysInMonth(year, month) &&
-      hour >= 0 &&
-      hour <= 23 &&
-      minute >= 0 &&
-      minute <= 59 &&
-      second >= 0 &&
-      second <= 59
-    );
-  }
-
-  function requireMiniModelReceiptTimestamp(fields, key) {
-    const value = requireManifestField(fields, key, "MiniModel import receipt");
-    if (!isStrictMiniModelUtcTimestamp(value)) {
-      throw new Error(`MiniModel import receipt field ${key} was invalid`);
-    }
-    return value;
-  }
-
-  function requireMiniModelReceiptModelId(fields, key) {
-    const value = requireManifestField(fields, key, "MiniModel import receipt");
-    if (!/^[a-z0-9][a-z0-9._/-]{0,179}$/.test(value)) {
-      throw new Error(`MiniModel import receipt field ${key} was invalid`);
-    }
-    return value;
-  }
-
-  function requireMiniModelReceiptPrintable(fields, key, maxLength) {
-    const value = requireManifestField(fields, key, "MiniModel import receipt");
-    if (value.length > maxLength || /[\u0000-\u001f\u007f]/.test(value)) {
-      throw new Error(`MiniModel import receipt field ${key} was invalid`);
-    }
-    return value;
-  }
-
-  function requireMiniModelReceiptToken(fields, key) {
-    const value = requireMiniModelReceiptPrintable(fields, key, 96);
-    if (!/^[A-Za-z0-9._-]+$/.test(value)) {
-      throw new Error(`MiniModel import receipt field ${key} was invalid`);
-    }
-    return value;
-  }
-
-  function requireMiniModelReceiptPathHint(fields, key) {
-    const value = requireMiniModelReceiptPrintable(fields, key, 128);
-    if (
-      value !== value.trim() ||
-      value !== safeLocalModelName(value) ||
-      value.startsWith(".") ||
-      value.includes("..") ||
-      /[\\/:*?"<>|\u0000-\u001f\u007f]/.test(value)
-    ) {
-      throw new Error(`MiniModel import receipt field ${key} was invalid`);
-    }
-    return value;
-  }
-
-  function requireMiniModelReceiptOneOf(fields, key, allowedValues) {
-    const value = requireManifestField(fields, key, "MiniModel import receipt");
-    if (!allowedValues.includes(value)) {
-      throw new Error(`MiniModel import receipt field ${key} was ${value}`);
-    }
-    return value;
-  }
-
-  function requireMiniModelReceiptPeerBaseUrl(fields, key) {
-    try {
-      return normalizedPeerBaseUrl(requireManifestField(fields, key, "MiniModel import receipt"));
-    } catch (error) {
-      throw new Error(`MiniModel import receipt field ${key} was invalid: ${error.message || error}`);
+    if (admission.runtime.workerProtocol !== manifest.workerProtocol ||
+        admission.runtime.wasmByteCount !== manifest.byteCount ||
+        admission.runtime.wasmSha256 !== manifest.sha256 ||
+        admission.runtime.policy.maximumLinearMemoryBytes !== manifest.maximumMemoryBytes) {
+      throw new Error("The composition admission targets a different browser runtime");
     }
   }
 
-  function miniModelPeerReceiptRouteUrl(peerBaseUrl, route) {
-    return new URL(route, peerBaseUrl).href;
-  }
-
-  async function inspectLocalMiniModelImportReceipt(receiptFile, artifactName, artifactByteLength) {
-    if (!receiptFile) {
-      return null;
-    }
-    const receiptName = safeLocalModelName(receiptFile.name);
-    if (!/\.minimodel-receipt$/i.test(receiptName)) {
-      throw new Error("MiniModel receipt sidecar must use the .minimodel-receipt extension");
-    }
-    if (!Number.isFinite(receiptFile.size) || receiptFile.size <= 0 || receiptFile.size > receiptTextByteBudget) {
-      throw new Error("MiniModel receipt sidecar size was invalid");
-    }
-    const text = await receiptFile.text();
-    if (state.encoder.encode(text).length > receiptTextByteBudget) {
-      throw new Error("MiniModel receipt sidecar exceeded the receipt byte budget");
-    }
-    const fields = parseManifest(text);
-    requireManifestEqual(fields, "receipt.version", "0", "MiniModel import receipt");
-    requireManifestEqual(fields, "receipt.kind", "minimodel.import_receipt", "MiniModel import receipt");
-    const receiptCreatedUtc = requireMiniModelReceiptTimestamp(fields, "receipt.created_utc");
-    const manifestSha256 = requireMiniModelReceiptSha(fields, "manifest.sha256");
-    const modelId = requireMiniModelReceiptModelId(fields, "manifest.model_id");
-    requireManifestEqual(fields, "artifact.local_path_hint", artifactName, "MiniModel import receipt");
-    const receiptByteCount = catalogInteger(requireManifestField(fields, "artifact.byte_count", "MiniModel import receipt"));
-    if (receiptByteCount !== artifactByteLength) {
-      throw new Error("MiniModel import receipt artifact.byte_count mismatch");
-    }
-    const receiptArtifactSha256 = requireMiniModelReceiptSha(fields, "artifact.sha256");
-    requireManifestEqual(fields, "slm.validation_status", "passed", "MiniModel import receipt");
-    const slmModelShape = requireMiniModelReceiptPrintable(fields, "slm.model_shape", 512);
-    const quantization = requireMiniModelReceiptToken(fields, "slm.quantization");
-    const evidenceStatus = requireMiniModelReceiptToken(fields, "evidence.status");
-    requireManifestEqual(fields, "import.next_gate", miniModelImportReceiptNextGate, "MiniModel import receipt");
-    for (const key of [
-      "project_server_serves_model_bytes",
-      "project_server_runs_model_bytes",
-      "project_server_proxies_huggingface_bytes"
-    ]) {
-      requireMiniModelReceiptOptionalBool(fields, key, false);
-    }
-    const peerImport = Boolean(
-      fields["peer_import.transport"] ||
-      fields["peer_import.verification_status"] ||
-      fields["peer.base_url"] ||
-      fields["peer_piece_bytes_fetched"] ||
-      fields["artifact.assembled_from_peer_pieces"]
-    );
-    let peerBaseUrl = "unavailable";
-    let companionStateStatus = "unavailable";
-    let receiverValidationContractStatus = "unavailable";
-    let pieceCount = null;
-    if (peerImport) {
-      requireManifestEqual(fields, "peer_import.transport", "known-direct-http-peer-v0", "MiniModel import receipt");
-      requireManifestEqual(fields, "peer_import.verification_status", "passed", "MiniModel import receipt");
-      receiverValidationContractStatus = requireMiniModelReceiptOneOf(fields, "receiver_validation_contract.status", ["validated"]);
-      requireMiniModelReceiptBool(fields, "receiver_validation.check_peer_status_before_piece_fetch", true);
-      requireMiniModelReceiptBool(fields, "receiver_validation.preflight_fetches_piece_set_before_pieces", true);
-      requireMiniModelReceiptBool(fields, "receiver_validation.validate_advertised_companion_state_before_piece_fetch", true);
-      requireMiniModelReceiptBool(fields, "receiver_validation.import_receipt_required_before_browser_load", true);
-      requireMiniModelReceiptPathHint(fields, "peer_import.request_path_hint");
-      peerBaseUrl = requireMiniModelReceiptPeerBaseUrl(fields, "peer.base_url");
-      requireMiniModelReceiptPathHint(fields, "peer.piece_dir_path_hint");
-      requireManifestEqual(fields, "peer.piece_set_path_hint", peerPieceSetRoute, "MiniModel import receipt");
-      requireMiniModelReceiptSha(fields, "peer.piece_set_sha256");
-      const companionStateUrl = requireManifestField(fields, "peer.companion_state_url", "MiniModel import receipt");
-      const expectedCompanionStateUrl = miniModelPeerReceiptRouteUrl(peerBaseUrl, peerCompanionStateRoute);
-      if (companionStateUrl !== expectedCompanionStateUrl) {
-        throw new Error("MiniModel import receipt peer.companion_state_url mismatch");
-      }
-      companionStateStatus = requireMiniModelReceiptOneOf(fields, "peer.companion_state_status", ["validated", "not-advertised"]);
-      requireManifestEqual(fields, "chunks.mode", "fixed-size-merkle-v0", "MiniModel import receipt");
-      requireMiniModelReceiptSha(fields, "chunks.merkle_root_sha256");
-      pieceCount = catalogInteger(requireManifestField(fields, "chunks.count", "MiniModel import receipt"));
-      if (!pieceCount) {
-        throw new Error("MiniModel import receipt chunks.count was invalid");
-      }
-      requireMiniModelReceiptBool(fields, "peer_piece_set_metadata_fetched", true);
-      requireMiniModelReceiptBool(fields, "peer_companion_state_metadata_fetched", companionStateStatus === "validated");
-      requireMiniModelReceiptBool(fields, "peer_piece_bytes_fetched", true);
-      requireMiniModelReceiptBool(fields, "artifact.assembled_from_peer_pieces", true);
-      requireMiniModelReceiptBool(fields, "project_server_serves_model_bytes", false);
-      requireMiniModelReceiptBool(fields, "project_server_runs_model_bytes", false);
-      requireMiniModelReceiptBool(fields, "project_server_proxies_huggingface_bytes", false);
-    }
-    return {
-      fileName: receiptName,
-      receiptSha256: await sha256Text(text),
-      fields,
-      receiptCreatedUtc,
-      modelId,
-      manifestSha256,
-      artifactByteCount: receiptByteCount,
-      artifactSha256: receiptArtifactSha256,
-      slmModelShape,
-      quantization,
-      evidenceStatus,
-      nextGate: miniModelImportReceiptNextGate,
-      peerImport,
-      peerBaseUrl,
-      receiverValidationContractStatus,
-      companionStateStatus,
-      pieceCount
-    };
-  }
-
-  function validateLocalImportReceiptArtifact(receipt, artifactByteLength, artifactSha256) {
-    if (!receipt) {
-      return;
-    }
-    if (receipt.artifactByteCount !== artifactByteLength) {
-      throw new Error("MiniModel import receipt artifact.byte_count mismatch");
-    }
-    if (receipt.artifactSha256 !== artifactSha256) {
-      throw new Error("MiniModel import receipt artifact.sha256 mismatch");
-    }
-  }
-
-  function localImportReceiptSummary(receipt) {
-    if (!receipt) {
-      return "";
-    }
-    if (receipt.peerImport) {
-      return `MiniModel P2P receipt / ${receipt.companionStateStatus} / ${receipt.pieceCount || "unknown"} chunks`;
-    }
-    return "MiniModel import receipt";
-  }
-
-  function localImportReceiptProvenanceSnapshot(receipt) {
-    if (!receipt) {
-      return "";
-    }
-    const parts = [
-      localImportReceiptSummary(receipt),
-      `receipt ${receipt.receiptSha256}`,
-      `created ${receipt.receiptCreatedUtc}`
-    ];
-    if (receipt.peerImport) {
-      parts.push(
-        `receiver validation ${receipt.receiverValidationContractStatus}`,
-        `peer ${receipt.peerBaseUrl}`,
-        `companion ${receipt.companionStateStatus}`,
-        `${receipt.pieceCount || "unknown"} chunks`
-      );
-    } else {
-      parts.push(`manifest ${receipt.manifestSha256}`);
-    }
-    return parts.filter(Boolean).join(" / ");
-  }
-
-  function localImportReceiptReviewSummary(receipt) {
-    if (!receipt) {
-      return "";
-    }
-    return [
-      `receipt ${receipt.fileName}`,
-      `evidence ${receipt.evidenceStatus}`,
-      `manifest ${receipt.manifestSha256}`,
-      receipt.peerImport ? `receiver validation ${receipt.receiverValidationContractStatus}` : "",
-      `quantization ${receipt.quantization}`
-    ].filter(Boolean).join(" / ");
-  }
-
-  function localImportReceiptRouteSummary(receipt) {
-    if (!receipt) {
-      return "";
-    }
-    return receipt.peerImport
-      ? `receipt=${receipt.fileName} / receiver-validation=${receipt.receiverValidationContractStatus} / peer=${receipt.peerBaseUrl} / companion=minimodel.peer_companion_state.v0.json`
-      : `receipt=${receipt.fileName}`;
-  }
-
-  function localImportReceiptArtifactSummary(receipt, byteLength) {
-    if (!receipt) {
-      return "";
-    }
-    return `artifact=${receipt.artifactSha256} / bytes=${byteLength}`;
-  }
-
-  function localImportReceiptValidationSummary(receipt) {
-    if (!receipt) {
-      return "";
-    }
-    if (receipt.peerImport) {
-      return [
-        "receipt-chain-ready-for-browser-load",
-        `receiver validation ${receipt.receiverValidationContractStatus}`,
-        `peer ${receipt.peerBaseUrl}`,
-        `companion ${receipt.companionStateStatus}`,
-        `chunks ${receipt.pieceCount || "unknown"}`,
-        `artifact ${receipt.artifactSha256}`
-      ].join(" / ");
-    }
-    return `receipt-ready-for-browser-load / artifact ${receipt.artifactSha256}`;
-  }
-
-  function setLocalFileVerificationState(model, verified) {
-    if (model && model.localFile) {
-      model.localFile.verified = Boolean(verified);
-    }
-  }
-  async function importLocalModelFile() {
-    const selectedFiles = localModelSelectedFiles();
-    const selectionError = localModelSelectionError(selectedFiles);
+  async function inspectBrowserCompositionSelection(selection) {
+    const selectionError = browserCompositionSelectionError(selection);
     if (selectionError) {
       throw new Error(selectionError);
     }
-    const file = selectedFiles.slm;
-    if (!file) {
-      throw new Error("Choose a local .slm file");
+    if (!Number.isSafeInteger(selection.admissionFile.size) ||
+        selection.admissionFile.size < 2 ||
+        selection.admissionFile.size > browserModelAdmissionApi.maximumTextBytes) {
+      throw new Error("Browser composition admission size is invalid");
     }
-    const name = safeLocalModelName(file.name);
-    if (!/\.slm$/i.test(name)) {
-      throw new Error("Local model must use the .slm extension");
-    }
-    if (!Number.isFinite(file.size) || file.size <= 0) {
-      throw new Error("Local model file is empty");
-    }
-    if (file.size > localModelMaxBytes) {
-      throw new Error(`Local model exceeds ${formatByteCount(localModelMaxBytes)} browser limit`);
-    }
-    if (!state.exports) {
-      throw new Error("Rust/WASM runtime must be loaded before local model import");
-    }
-    setLocalModelStatus(`preparing bounded validation for ${name}`, false);
-    const receiptArtifactName = String(file.name || name);
-    const importReceipt = await inspectLocalMiniModelImportReceipt(selectedFiles.receipt, receiptArtifactName, file.size);
-    const browserAdmission = await inspectBrowserModelAdmission(
-      selectedFiles.admission,
-      receiptArtifactName,
-      file.size
-    );
-    const admitted = browserAdmission.admission;
-    const catalogEntry = state.selectedCatalogEntry;
-    const stagedModel = {
-      candidateId: admitted.modelId,
-      label: `${catalogEntry ? catalogEntry.displayName : admitted.modelId} (${importReceipt && importReceipt.peerImport ? "P2P receipt" : "qualified local bundle"})`,
-      path: `local-file:${name}`,
-      maxTokens: Math.min(1024, admitted.runtime.contextLength - 1),
-      modelBytes: admitted.artifact.byteCount,
-      artifactSha256: `sha256:${admitted.artifact.sha256}`,
-      contextLength: admitted.runtime.contextLength,
-      promptFormat: admitted.runtime.promptFormat,
-      repetitionPenalty: admitted.runtime.repetitionPenalty,
-      browserAdmission,
-      composition: {
-        path: admitted.composition.url,
-        bytes: admitted.composition.byteCount,
-        sha256: `sha256:${admitted.composition.sha256}`,
-        baseModelId: admitted.composition.baseModelId,
-        compositionId: admitted.composition.compositionId,
-        activeGraphSha256: `sha256:${admitted.composition.activeGraphSha256}`,
-        routePolicyId: admitted.composition.routePolicyId,
-        kvFormatId: admitted.composition.kvFormatId,
-        positionPolicySha256: `sha256:${admitted.composition.positionPolicySha256}`,
-        memberCount: admitted.composition.memberCount
-      },
-      localFile: {
-        file,
-        name,
-        byteLength: file.size,
-        checksum: "",
-        sha256: "",
-        chunks: null,
-        catalogEntry,
-        importReceipt,
-        browserAdmissionSha256: browserAdmission.sha256,
-        verified: false
-      }
-    };
-    const transferLoadId = state.modelLoadSequence + 1;
-    state.modelLoadSequence = transferLoadId;
-    stagedModel.localFile.pendingTransfer = await localFileModelTransfer(stagedModel, transferLoadId);
+    let admissionText;
     try {
-      state.localModel = stagedModel;
-      paths.models = modelsWithLocalModel(paths.models);
-      renderModelOptions(paths.models, false, localModelKey);
-      const receiptSummary = localImportReceiptSummary(importReceipt);
-      setLocalModelStatus(
-        `${name} / ${formatByteCount(file.size)} / ${stagedModel.localFile.sha256} / ${stagedModel.localFile.checksum}${receiptSummary ? ` / ${receiptSummary}` : ""} / Rust validation pending`,
-        false
-      );
-      setText(el.errorState, "none", false);
-      const loaded = await loadSelectedModel();
-      if (!loaded) {
-        throw new Error(el.errorState.textContent || "Local .slm failed Rust/WASM validation");
-      }
-    } catch (error) {
-      discardOwnedModelTransfer(stagedModel.localFile.pendingTransfer);
-      stagedModel.localFile.pendingTransfer = null;
-      throw error;
+      const bytes = new Uint8Array(await selection.admissionFile.arrayBuffer());
+      admissionText = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+      bytes.fill(0);
+    } catch (_) {
+      throw new Error("Browser composition admission is not canonical UTF-8");
     }
+    const admission = browserModelAdmissionApi.parseAdmissionText(admissionText);
+    assertAdmissionRuntime(admission);
+    const filesByRole = new Map();
+    for (const artifact of admission.artifacts) {
+      const file = selection.artifactsByName.get(artifact.fileName);
+      if (!file || file.name !== artifact.fileName || file.size !== artifact.byteCount) {
+        throw new Error(`${artifact.fileName} does not match the admission inventory`);
+      }
+      filesByRole.set(artifact.role, file);
+    }
+    return Object.freeze({
+      admission,
+      admissionSha256: (await sha256Text(admissionText)).replace(/^sha256:/u, ""),
+      admissionFileName: selection.admissionFile.name,
+      filesByRole
+    });
+  }
+
+  async function importBrowserComposition() {
+    const inspected = await inspectBrowserCompositionSelection(
+      selectedBrowserCompositionFiles()
+    );
+    const admission = inspected.admission;
+    const modelArtifact = admission.artifacts[0];
+    state.localModel = {
+      label: `${admission.modelId} (qualified local composition)`,
+      modelBytes: modelArtifact.byteCount,
+      contextLength: admission.runtime.policy.maximumSequenceTokens,
+      maxTokens: admission.runtime.defaultSampling.maximumNewTokens,
+      requiredDownloadConsent: false,
+      browserComposition: inspected
+    };
+    paths.models = Object.create(null);
+    paths.models[localModelKey] = state.localModel;
+    renderModelOptions(paths.models, false, localModelKey);
+    setLocalModelStatus(
+      `${admission.modelId} / six members / ${formatByteCount(admission.composition.resolvedMemberBytes)} / admission ${inspected.admissionSha256}`,
+      false
+    );
+    const loaded = await loadSelectedModelWithConsent();
+    if (!loaded.loaded) {
+      throw new Error(loaded.error || "The qualified composition did not activate");
+    }
+    return true;
   }
 
   function hfOrigin() {
@@ -12111,2324 +10855,75 @@
     }
   }
 
-  function isSafeRegistryModelPath(value) {
-    if (!value || !value.startsWith("../models/") || !value.endsWith(".slm")) {
-      return false;
-    }
-    if (value.includes("\\") || value.includes("://") || value.includes("//")) {
-      return false;
-    }
-    const rest = value.slice("../models/".length);
-    return rest.split("/").every((part) => part && part !== "." && part !== "..");
-  }
-
-  function isSafeEvidencePath(value) {
-    if (!value || !value.startsWith("../evidence/")) {
-      return false;
-    }
-    if (value.includes("\\") || value.includes("://") || value.includes("//")) {
-      return false;
-    }
-    const rest = value.slice("../evidence/".length);
-    return rest.split("/").every((part) => part && part !== "." && part !== "..");
-  }
-
-  function isSafeRegistrySourceManifestPath(candidateId, value) {
-    if (!isRegistrySlug(candidateId)) {
-      return false;
-    }
-    const expected = `../evidence/${candidateId}/converted-trained.source.manifest`;
-    if (value !== expected) {
-      return false;
-    }
-    return isSafeEvidencePath(value);
-  }
-
-  function isSafeRegistrySourceReviewPath(candidateId, value) {
-    if (!isRegistrySlug(candidateId)) {
-      return false;
-    }
-    const expected = `../evidence/${candidateId}/converted-trained.source.review`;
-    if (value !== expected) {
-      return false;
-    }
-    return isSafeEvidencePath(value);
-  }
-
-  function isSafeRegistrySourceValidationPath(candidateId, value) {
-    if (!isRegistrySlug(candidateId)) {
-      return false;
-    }
-    const expected = `../evidence/${candidateId}/converted-trained.source.validation`;
-    if (value !== expected) {
-      return false;
-    }
-    return isSafeEvidencePath(value);
-  }
-
-  function isSafeRegistryAdmissionPath(candidateId, value) {
-    if (!isRegistrySlug(candidateId)) {
-      return false;
-    }
-    const expected = `../evidence/${candidateId}/converted-trained.admission`;
-    if (value !== expected) {
-      return false;
-    }
-    return isSafeEvidencePath(value);
-  }
-
-  function isSafeRegistryEvalEvidencePath(candidateId, value) {
-    if (!isRegistrySlug(candidateId)) {
-      return false;
-    }
-    const expected = `../evidence/${candidateId}/converted-trained.eval`;
-    if (value !== expected) {
-      return false;
-    }
-    return isSafeEvidencePath(value);
-  }
-
-  function isSafeRegistryRuntimeSmokePath(candidateId, value) {
-    if (!isRegistrySlug(candidateId)) {
-      return false;
-    }
-    const expected = `../evidence/${candidateId}/converted-trained.runtime`;
-    if (value !== expected) {
-      return false;
-    }
-    return isSafeEvidencePath(value);
-  }
-
-  function isRegistryHex64(value) {
-    return /^0x[0-9a-fA-F]{16}$/.test(value || "");
-  }
-
-  function isRegistrySha256(value) {
-    return /^sha256:[0-9a-f]{64}$/.test(value || "");
-  }
-
-  function isRegistryTypedContentId(value, prefix) {
-    const text = String(value || "");
-    if (!text.startsWith(prefix)) {
-      return false;
-    }
-    const digest = text.slice(prefix.length);
-    return /^[0-9a-f]{64}$/.test(digest) && !/^0{64}$/.test(digest);
-  }
-
-  function isSourceModelSha(value) {
-    const text = String(value || "");
-    if (/^sha256:[0-9a-f]{64}$/i.test(text) || /^sha1:[0-9a-f]{40}$/i.test(text)) {
-      return true;
-    }
-    return /^[0-9a-f]{40}$/i.test(text) || /^[0-9a-f]{64}$/i.test(text);
-  }
-
-  function isRegistrySlug(value) {
-    return /^[A-Za-z0-9._-]{1,96}$/.test(value || "");
-  }
-
-  function rotateLeft64(value, bits) {
-    return ((value << bits) | (value >> (64n - bits))) & checksumMask;
-  }
-
-  function textChecksumHex(text) {
-    const bytes = state.encoder.encode(text);
-    return bytesChecksumHex(bytes);
-  }
-
-  function evalCaseEvidenceChecksum(fields) {
-    // Replays the Rust eval-case evidence digest over fetched sidecar case rows.
-    const caseCount = registryDecimalCount(fields.case_count);
-    if (caseCount === null) {
-      throw new Error("eval evidence case_count mismatch");
-    }
-    const lines = [];
-    for (const key of [
-      "fixed_case_count",
-      "holdout_case_count",
-      "holdout_seed",
-      "case_count",
-      "cases_passed",
-      "cases_failed"
-    ]) {
-      if (fields[key]) {
-        lines.push(`${key}=${fields[key]}`);
-      } else if (key === "case_count" || key === "cases_passed" || key === "cases_failed") {
-        lines.push(`${key}=${requireManifestField(fields, key, "eval evidence")}`);
-      }
-    }
-    for (let index = 0; index < caseCount; index += 1) {
-      const prefix = `case.${index}`;
-      for (const suffix of ["status", "expected", "actual", "error"]) {
-        const key = `${prefix}.${suffix}`;
-        lines.push(`${key}=${requireManifestField(fields, key, "eval evidence")}`);
-      }
-      for (const suffix of [
-        "prompt",
-        "origin",
-        "runtime_prompt",
-        "max_new_tokens",
-        "required_result",
-        "output_format",
-        "required_json_keys",
-        "quality_failures",
-        "diagnostics"
-      ]) {
-        const key = `${prefix}.${suffix}`;
-        if (fields[key]) {
-          lines.push(`${key}=${fields[key]}`);
-        }
-      }
-    }
-    return textChecksumHex(`${lines.join("\n")}\n`);
-  }
-
-  function bytesChecksumHex(bytes) {
-    let acc = 0x4d595df4d0f33173n;
-    for (let index = 0; index < bytes.length; index += 1) {
-      acc ^= BigInt(bytes[index]) + (BigInt(index) << 2n);
-      acc = (rotateLeft64(acc, 9n) * checksumPrime) & checksumMask;
-    }
-    return `0x${acc.toString(16).padStart(16, "0")}`;
-  }
-
-  function requireManifestField(fields, key, source) {
-    const value = fields[key];
-    if (!value) {
-      throw new Error(`Missing ${source || "receipt"} field ${key}`);
-    }
-    return value;
-  }
-
-  function requireManifestEqual(fields, key, expected, source) {
-    const actual = requireManifestField(fields, key, source ? source.toLowerCase() : undefined);
-    if (actual !== expected) {
-      throw new Error(`${source || "Receipt"} field ${key} was ${actual}`);
-    }
-  }
-
-  function requireManifestOneOf(fields, key, expectedValues, source) {
-    const actual = requireManifestField(fields, key, source ? source.toLowerCase() : undefined);
-    if (!expectedValues.includes(actual)) {
-      throw new Error(`${source || "Receipt"} field ${key} was ${actual}`);
-    }
-  }
-
-  // Validates 64-bit checksum text before using a manifest field as a route contract.
-  function requireHex64ManifestField(fields, key, source) {
-    const actual = requireManifestField(fields, key, source ? source.toLowerCase() : undefined);
-    if (!isRegistryHex64(actual)) {
-      throw new Error(`${source || "Receipt"} field ${key} was ${actual}`);
-    }
-    return actual;
-  }
-
-  function requireSourceModelShaManifestField(fields, key, source) {
-    const actual = requireManifestField(fields, key, source ? source.toLowerCase() : undefined);
-    if (!isSourceModelSha(actual)) {
-      throw new Error(`${source || "Receipt"} field ${key} was ${actual}`);
-    }
-    return actual;
-  }
-
-  function requireOptionalSourceReviewArtifact(fields, prefix) {
-    // Validates optional candidate-review artifact rows before showing them in provenance.
-    const status = fields[`${prefix}_artifact_status`];
-    if (!status) {
-      return null;
-    }
-    const kind = requireManifestField(fields, `${prefix}_artifact_kind`, "source review artifact");
-    const checksum = requireManifestField(fields, `${prefix}_artifact_checksum`, "source review artifact");
-    const bytesText = requireManifestField(fields, `${prefix}_artifact_bytes`, "source review artifact");
-    const detail = requireManifestField(fields, `${prefix}_artifact_detail`, "source review artifact");
-    if (status === "not-local") {
-      for (const [label, value] of [["kind", kind], ["checksum", checksum], ["bytes", bytesText], ["detail", detail]]) {
-        if (value !== "not-local") {
-          throw new Error(`source review artifact ${prefix} ${label} was ${value}`);
-        }
-      }
-      return { status, kind, checksum, bytesText, detail };
-    }
-    if (!/^[a-z0-9._-]+$/.test(status) || !/^[a-z0-9._-]+$/.test(kind)) {
-      throw new Error(`source review artifact ${prefix} identity was invalid`);
-    }
-    if (!isRegistryHex64(checksum)) {
-      throw new Error(`source review artifact ${prefix} checksum was ${checksum}`);
-    }
-    if (registryDecimalCount(bytesText) === null) {
-      throw new Error(`source review artifact ${prefix} bytes was ${bytesText}`);
-    }
-    if (!detail || detail.includes("\n") || detail.includes("\r")) {
-      throw new Error(`source review artifact ${prefix} detail was invalid`);
-    }
-    return { status, kind, checksum, bytesText, detail };
-  }
-
-  function requireSourceReviewTokenizerImport(fields) {
-    // Binds imported tokenizer rows to the fetched source-review sidecar.
-    const status = requireManifestField(fields, "source_tokenizer_import_status", "source review");
-    const tokenCountText = requireManifestField(fields, "source_tokenizer_import_token_count", "source review");
-    const mergeCountText = requireManifestField(fields, "source_tokenizer_import_merge_count", "source review");
-    const checksum = requireHex64ManifestField(fields, "source_tokenizer_import_checksum", "source review");
-    const tokenCount = registryDecimalIndex(tokenCountText);
-    const mergeCount = registryDecimalIndex(mergeCountText);
-    if (tokenCount === null || mergeCount === null) {
-      throw new Error(`source review tokenizer import counts were ${tokenCountText}/${mergeCountText}`);
-    }
-    if (status === "not-imported") {
-      if (tokenCount !== 0 || mergeCount !== 0 || checksum !== "0x0000000000000000") {
-        throw new Error("source review tokenizer import not-imported row had imported evidence");
-      }
-      return { status, tokenCount, mergeCount, checksum };
-    }
-    if (status !== "byte-fallback-bpe-compatible") {
-      throw new Error(`source review tokenizer import status was ${status}`);
-    }
-    if (tokenCount < 1 || mergeCount < 1 || checksum === "0x0000000000000000") {
-      throw new Error("source review tokenizer import compatible row was empty");
-    }
-    return { status, tokenCount, mergeCount, checksum };
-  }
-
-  function requireChecksumEqual(actual, expected, label) {
-    if (!isRegistryHex64(actual) || actual.toLowerCase() !== String(expected || "").toLowerCase()) {
-      throw new Error(`${label} checksum mismatch`);
-    }
-  }
-
-  // Maps a receipt operator kind to the exact schedule family fields the browser accepts.
-  function expectedEvolutionScheduleFamily(operatorKind) {
-    if (operatorKind === "seed-weighted-parent-pool-soup") {
-      return {
-        familyIndex: 1,
-        familyCommand: "soup-candidate",
-        familySelectionRule: "seed-weighted-direct-parameter-average",
-        familyOutputGate: "candidate-manifest-plus-runtime-smoke-plus-eval"
-      };
-    }
-    if (operatorKind === "sign-aware-parent-pool-merge") {
-      return {
-        familyIndex: 0,
-        familyCommand: "sign-merge-candidate",
-        familySelectionRule: "seed-weighted-delta-sign-consensus",
-        familyOutputGate: "candidate-manifest-plus-runtime-smoke-plus-eval"
-      };
-    }
-    return null;
-  }
-
-  // Reads selector genome routing fields before a registry entry can become selectable.
-  function registryGenomeEntry(fields, prefix) {
-    const genomeId = fields[`${prefix}.genome_id`];
-    const strategy = fields[`${prefix}.genome_strategy`];
-    const lineageStatus = fields[`${prefix}.genome_lineage_status`];
-    const lineageChecksum = fields[`${prefix}.genome_lineage_checksum`];
-    if (
-      !isRegistryHex64(genomeId) ||
-      strategy !== registryGenomeStrategy ||
-      lineageStatus !== registryGenomeLineageStatus ||
-      !isRegistryHex64(lineageChecksum)
-    ) {
-      return null;
-    }
-    return {
-      id: genomeId,
-      strategy,
-      lineageStatus,
-      lineageChecksum
-    };
-  }
-
-  // Reads selector species-fit fields that group candidates by browser-compatible traits.
-  function registrySpeciesEntry(fields, prefix) {
-    const speciesId = fields[`${prefix}.species_id`];
-    const strategy = fields[`${prefix}.species_strategy`];
-    const fitStatus = fields[`${prefix}.species_fit_status`];
-    const fitChecksum = fields[`${prefix}.species_fit_checksum`];
-    if (
-      !isRegistryHex64(speciesId) ||
-      strategy !== registrySpeciesStrategy ||
-      fitStatus !== registrySpeciesFitStatus ||
-      !isRegistryHex64(fitChecksum)
-    ) {
-      return null;
-    }
-    return {
-      id: speciesId,
-      strategy,
-      fitStatus,
-      fitChecksum
-    };
-  }
-
-  // Reads selector novelty sketches that preserve behavior variety across candidates.
-  function registryNoveltyEntry(fields, prefix) {
-    const noveltyId = fields[`${prefix}.novelty_id`];
-    const strategy = fields[`${prefix}.novelty_strategy`];
-    const status = fields[`${prefix}.novelty_status`];
-    const checksum = fields[`${prefix}.novelty_checksum`];
-    if (
-      !isRegistryHex64(noveltyId) ||
-      strategy !== registryNoveltyStrategy ||
-      status !== registryNoveltyStatus ||
-      !isRegistryHex64(checksum)
-    ) {
-      return null;
-    }
-    return {
-      id: noveltyId,
-      strategy,
-      status,
-      checksum
-    };
-  }
-
-  // Reads selector population review routes that connect candidates to population context.
-  function registryPopulationEntry(fields, prefix) {
-    const populationId = fields[`${prefix}.population_id`];
-    const strategy = fields[`${prefix}.population_strategy`];
-    const status = fields[`${prefix}.population_status`];
-    const checksum = fields[`${prefix}.population_checksum`];
-    if (
-      !isRegistryHex64(populationId) ||
-      strategy !== registryPopulationStrategy ||
-      status !== registryPopulationStatus ||
-      !isRegistryHex64(checksum)
-    ) {
-      return null;
-    }
-    return {
-      id: populationId,
-      strategy,
-      status,
-      checksum
-    };
-  }
-
-  // Reads selector mate-selection routes that bind parent-pool recipes to provenance.
-  function registryMateSelectionEntry(fields, prefix) {
-    const mateSelectionId = fields[`${prefix}.mate_selection_id`];
-    const strategy = fields[`${prefix}.mate_selection_strategy`];
-    const status = fields[`${prefix}.mate_selection_status`];
-    const parentCount = registryDecimalByteCount(fields[`${prefix}.mate_selection_parent_count`]);
-    const checksum = fields[`${prefix}.mate_selection_checksum`];
-    const isKnownStatus =
-      status === registryMateSelectionParentPoolStatus ||
-      status === registryMateSelectionAdmissionStatus;
-    if (
-      !isRegistryHex64(mateSelectionId) ||
-      strategy !== registryMateSelectionStrategy ||
-      !isKnownStatus ||
-      parentCount === null ||
-      !isRegistryHex64(checksum)
-    ) {
-      return null;
-    }
-    if (status === registryMateSelectionParentPoolStatus && parentCount < 2) {
-      return null;
-    }
-    if (status === registryMateSelectionAdmissionStatus && parentCount !== 1) {
-      return null;
-    }
-    return {
-      id: mateSelectionId,
-      strategy,
-      status,
-      parentCount,
-      checksum
-    };
-  }
-
-  // Reads copied operator receipt metadata and checks generated route kind agreement.
-  function registryOperatorReceiptEntry(fields, prefix, modelBytes, slmChecksum) {
-    const suffixes = [
-      "operator_receipt_status",
-      "operator_receipt_path",
-      "operator_receipt_checksum",
-      "operator_receipt_operator_id",
-      "operator_receipt_operator_kind",
-      "operator_receipt_candidate_slm_checksum",
-      "operator_receipt_candidate_artifact_bytes"
-    ];
-    const hasReceiptField = suffixes.some((suffix) => fields[`${prefix}.${suffix}`] !== undefined);
-    if (!hasReceiptField) {
-      return undefined;
-    }
-    const status = fields[`${prefix}.operator_receipt_status`];
-    const path = fields[`${prefix}.operator_receipt_path`];
-    const checksum = fields[`${prefix}.operator_receipt_checksum`];
-    const operatorId = fields[`${prefix}.operator_receipt_operator_id`];
-    const operatorKind = fields[`${prefix}.operator_receipt_operator_kind`];
-    const candidateSlmChecksum = fields[`${prefix}.operator_receipt_candidate_slm_checksum`];
-    const candidateArtifactBytes = registryDecimalByteCount(
-      fields[`${prefix}.operator_receipt_candidate_artifact_bytes`]
-    );
-    if (
-      status !== registryOperatorReceiptStatus ||
-      !path ||
-      !isRegistryHex64(checksum) ||
-      !operatorId ||
-      !operatorKind ||
-      candidateSlmChecksum !== slmChecksum ||
-      candidateArtifactBytes !== modelBytes
-    ) {
-      return null;
-    }
-    return {
-      status,
-      path,
-      checksum,
-      operatorId,
-      operatorKind,
-      candidateSlmChecksum,
-      candidateArtifactBytes
-    };
-  }
-
-  // Reads copied parent-pool schedule metadata and binds it to the accepted operator receipt.
-  function registryEvolutionScheduleEntry(fields, prefix, operatorReceipt) {
-    const suffixes = [
-      "evolution_recipe_version",
-      "evolution_recipe_strategy",
-      "evolution_recipe_status",
-      "evolution_selection_source",
-      "evolution_relatedness_contract_checksum",
-      "evolution_schedule_checksum_algorithm",
-      "evolution_schedule_checksum",
-      "scheduled_operator_family_index",
-      "scheduled_operator_family_kind",
-      "scheduled_operator_family_command",
-      "scheduled_operator_family_selection_rule",
-      "scheduled_operator_family_output_gate"
-    ];
-    const hasScheduleField = suffixes.some((suffix) => fields[`${prefix}.${suffix}`] !== undefined);
-    if (!hasScheduleField) {
-      return undefined;
-    }
-    if (!operatorReceipt) {
-      return null;
-    }
-    const recipeVersion = fields[`${prefix}.evolution_recipe_version`];
-    const recipeStrategy = fields[`${prefix}.evolution_recipe_strategy`];
-    const recipeStatus = fields[`${prefix}.evolution_recipe_status`];
-    const selectionSource = fields[`${prefix}.evolution_selection_source`];
-    const relatednessContractChecksum = fields[`${prefix}.evolution_relatedness_contract_checksum`];
-    const scheduleChecksumAlgorithm = fields[`${prefix}.evolution_schedule_checksum_algorithm`];
-    const scheduleChecksum = fields[`${prefix}.evolution_schedule_checksum`];
-    const familyIndex = registryDecimalIndex(fields[`${prefix}.scheduled_operator_family_index`]);
-    const familyKind = fields[`${prefix}.scheduled_operator_family_kind`];
-    const familyCommand = fields[`${prefix}.scheduled_operator_family_command`];
-    const familySelectionRule = fields[`${prefix}.scheduled_operator_family_selection_rule`];
-    const familyOutputGate = fields[`${prefix}.scheduled_operator_family_output_gate`];
-    const expectedFamily = expectedEvolutionScheduleFamily(operatorReceipt.operatorKind);
-    if (
-      recipeVersion !== registryEvolutionRecipeVersion ||
-      recipeStrategy !== registryEvolutionRecipeStrategy ||
-      recipeStatus !== registryEvolutionRecipeStatus ||
-      selectionSource !== registryEvolutionSelectionSource ||
-      !isRegistryHex64(relatednessContractChecksum) ||
-      scheduleChecksumAlgorithm !== registryEvolutionScheduleChecksumAlgorithm ||
-      !isRegistryHex64(scheduleChecksum) ||
-      familyIndex === null ||
-      !isRegistrySlug(familyKind) ||
-      !isRegistrySlug(familyCommand) ||
-      !isRegistrySlug(familySelectionRule) ||
-      !isRegistrySlug(familyOutputGate) ||
-      familyKind !== operatorReceipt.operatorKind ||
-      !expectedFamily ||
-      familyIndex !== expectedFamily.familyIndex ||
-      familyCommand !== expectedFamily.familyCommand ||
-      familySelectionRule !== expectedFamily.familySelectionRule ||
-      familyOutputGate !== expectedFamily.familyOutputGate
-    ) {
-      return null;
-    }
-    return {
-      recipeVersion,
-      recipeStrategy,
-      recipeStatus,
-      selectionSource,
-      relatednessContractChecksum,
-      scheduleChecksumAlgorithm,
-      scheduleChecksum,
-      familyIndex,
-      familyKind,
-      familyCommand,
-      familySelectionRule,
-      familyOutputGate
-    };
-  }
-
-  // Reads selector phenotype evidence that binds runtime and eval observations to provenance.
-  function registryPhenotypeEvidenceEntry(fields, prefix) {
-    const phenotypeEvidenceId = fields[`${prefix}.phenotype_evidence_id`];
-    const strategy = fields[`${prefix}.phenotype_evidence_strategy`];
-    const status = fields[`${prefix}.phenotype_evidence_status`];
-    const checksum = fields[`${prefix}.phenotype_evidence_checksum`];
-    if (
-      !isRegistryHex64(phenotypeEvidenceId) ||
-      strategy !== registryPhenotypeEvidenceStrategy ||
-      status !== registryPhenotypeEvidenceStatus ||
-      !isRegistryHex64(checksum)
-    ) {
-      return null;
-    }
-    return {
-      id: phenotypeEvidenceId,
-      strategy,
-      status,
-      checksum
-    };
-  }
-
-  // Reads selector heritable artifact metadata that binds served model identity to provenance.
-  function registryHeritableArtifactEntry(fields, prefix) {
-    const artifactId = fields[`${prefix}.heritable_artifact_id`];
-    const strategy = fields[`${prefix}.heritable_artifact_strategy`];
-    const status = fields[`${prefix}.heritable_artifact_status`];
-    const checksum = fields[`${prefix}.heritable_artifact_checksum`];
-    if (
-      !isRegistryHex64(artifactId) ||
-      strategy !== registryHeritableArtifactStrategy ||
-      status !== registryHeritableArtifactStatus ||
-      !isRegistryHex64(checksum)
-    ) {
-      return null;
-    }
-    return {
-      id: artifactId,
-      strategy,
-      status,
-      checksum
-    };
-  }
-
-  // Reads scoped eval facts as a compact fitness vector for selector provenance.
-  function registryEvalEvidenceEntry(fields, prefix, candidateId) {
-    const path = fields[`${prefix}.eval_path`] || "";
-    const checksum = fields[`${prefix}.eval_case_evidence_checksum`];
-    const manifestChecksum = fields[`${prefix}.eval_manifest_checksum`];
-    const casesPassed = registryDecimalByteCount(fields[`${prefix}.cases_passed`]);
-    const fitnessVectorStatus = fields[`${prefix}.fitness_vector_status`];
-    const fitnessVectorChecksum = fields[`${prefix}.fitness_vector_checksum`];
-    if (
-      (path && !isSafeRegistryEvalEvidencePath(candidateId, path)) ||
-      !isRegistryHex64(checksum) ||
-      !isRegistryHex64(manifestChecksum) ||
-      casesPassed === null ||
-      fitnessVectorStatus !== registryFitnessVectorStatus ||
-      !isRegistryHex64(fitnessVectorChecksum)
-    ) {
-      return null;
-    }
-    return {
-      path,
-      checksum,
-      manifestChecksum,
-      casesPassed,
-      fitnessVectorStatus,
-      fitnessVectorChecksum,
-      qualityScope: fields[`${prefix}.quality_scope`] || "",
-      qualityBoundary: fields[`${prefix}.quality_boundary`] || "",
-      evalDataset: fields[`${prefix}.eval_dataset`] || ""
-    };
-  }
-
-  function registryRuntimeSmokeEvidenceEntry(fields, prefix, candidateId) {
-    // Reads an optional converted-trained runtime-smoke sidecar route for browser verification.
-    const path = fields[`${prefix}.runtime_smoke_path`] || "";
-    const manifestChecksum = fields[`${prefix}.runtime_smoke_manifest_checksum`] || "";
-    if (
-      (path && !isSafeRegistryRuntimeSmokePath(candidateId, path)) ||
-      !isRegistryHex64(manifestChecksum)
-    ) {
-      return null;
-    }
-    return {
-      path,
-      manifestChecksum,
-      verified: false,
-      fields: null
-    };
-  }
-
-  function registrySourceManifestEntry(fields, prefix, candidateId) {
-    // Reads selector-carried source snapshot identity so browser fetches can bind to it.
-    const keys = [
-      "source_manifest_path",
-      "source_manifest_checksum",
-      "source_manifest_kind",
-      "source_manifest_status",
-      "source_manifest_source_kind",
-      "source_manifest_source_id",
-      "source_manifest_model_shape",
-      "source_review_kind",
-      "source_review_path",
-      "source_review_status",
-      "source_review_checksum",
-      "source_review_required_next_gate"
-    ];
-    const hasSourceManifest = keys.some((key) => fields[`${prefix}.${key}`]);
-    if (!hasSourceManifest) {
-      return undefined;
-    }
-    const path = fields[`${prefix}.source_manifest_path`] || "";
-    const checksum = fields[`${prefix}.source_manifest_checksum`] || "";
-    const kind = fields[`${prefix}.source_manifest_kind`] || "";
-    const status = fields[`${prefix}.source_manifest_status`] || "";
-    const sourceKind = fields[`${prefix}.source_manifest_source_kind`] || "";
-    const sourceId = fields[`${prefix}.source_manifest_source_id`] || "";
-    const modelShape = fields[`${prefix}.source_manifest_model_shape`] || "";
-    const reviewKeys = [
-      "source_review_kind",
-      "source_review_path",
-      "source_review_status",
-      "source_review_checksum",
-      "source_review_required_next_gate"
-    ];
-    const hasSourceReview = reviewKeys.some((key) => fields[`${prefix}.${key}`]);
-    let sourceReview = null;
-    if (hasSourceReview) {
-      const reviewKind = fields[`${prefix}.source_review_kind`] || "";
-      const reviewPath = fields[`${prefix}.source_review_path`] || "";
-      const reviewStatus = fields[`${prefix}.source_review_status`] || "";
-      const reviewChecksum = fields[`${prefix}.source_review_checksum`] || "";
-      const reviewRequiredNextGate =
-        fields[`${prefix}.source_review_required_next_gate`] || "";
-      if (
-        reviewKind !== registrySourceReviewKind ||
-        !isSafeRegistrySourceReviewPath(candidateId, reviewPath) ||
-        reviewStatus !== registrySourceReviewStatus ||
-        !isRegistryHex64(reviewChecksum) ||
-        reviewRequiredNextGate !== registrySourceReviewRequiredNextGate
-      ) {
-        return null;
-      }
-      sourceReview = {
-        kind: reviewKind,
-        path: reviewPath,
-        status: reviewStatus,
-        checksum: reviewChecksum,
-        requiredNextGate: reviewRequiredNextGate
-      };
-    }
-    if (
-      !isSafeRegistrySourceManifestPath(candidateId, path) ||
-      !isRegistryHex64(checksum) ||
-      kind !== registrySourceManifestKind ||
-      status !== registrySourceManifestStatus ||
-      !["trained-source-fixture", "trained-export"].includes(sourceKind) ||
-      !isRegistrySlug(sourceId) ||
-      !isRegistrySlug(modelShape)
-    ) {
-      return null;
-    }
-    return { path, checksum, kind, status, sourceKind, sourceId, modelShape, sourceReview };
-  }
-
-  function registrySourceValidationEntry(fields, prefix, candidateId) {
-    // Reads the converted-trained validate-source sidecar route when a registry entry exposes it.
-    const path = fields[`${prefix}.source_validation_path`] || "";
-    const checksum = fields[`${prefix}.source_validation_checksum`] || "";
-    if (!path && !checksum) {
-      return undefined;
-    }
-    if (!isSafeRegistrySourceValidationPath(candidateId, path) || !isRegistryHex64(checksum)) {
-      return null;
-    }
-    return {
-      path,
-      checksum,
-      verified: false,
-      fields: null
-    };
-  }
-
-  function registryAdmissionEvidenceEntry(fields, prefix, candidateId) {
-    // Reads the selector admission sidecar route when converted-trained entries expose it.
-    const path = fields[`${prefix}.admission_path`] || "";
-    const checksum = fields[`${prefix}.admission_checksum`] || "";
-    if (!path) {
-      return undefined;
-    }
-    if (!isSafeRegistryAdmissionPath(candidateId, path) || !isRegistryHex64(checksum)) {
-      return null;
-    }
-    return {
-      path,
-      checksum,
-      verified: false,
-      fields: null
-    };
-  }
-
-  function registryModelEntries(fields) {
-    if (!fields || fields.tinyrustlm_selector_registry_version !== "2") {
-      return null;
-    }
-    if (
-      fields.registry_status !== "admitted-records-only" ||
-      fields.required_next_gate !== selectorRegistryRequiredNextGate
-    ) {
-      return null;
-    }
-    const registryByteBudget = registrySelectorModelByteBudget(fields.selector_model_byte_budget);
-    if (registryByteBudget === null) {
-      return null;
-    }
-    if (
-      !registryExactByteBudget(
-        fields.selector_composition_graph_byte_budget,
-        selectorCompositionGraphByteBudget
-      )
-    ) {
-      return null;
-    }
-    if (!registryTextSidecarBudgets(fields)) {
-      return null;
-    }
-    const entryCount = Number.parseInt(fields.entry_count || "0", 10);
-    if (!Number.isInteger(entryCount) || entryCount < 1 || entryCount > 64) {
-      return null;
-    }
-    const models = Object.create(null);
-    for (let index = 0; index < entryCount; index += 1) {
-      const prefix = `entry.${index}`;
-      if (fields[`${prefix}.selector_status`] !== "admitted") {
-        return null;
-      }
-      const modelPath = fields[`${prefix}.model_path`];
-      if (!isSafeRegistryModelPath(modelPath)) {
-        return null;
-      }
-      const candidateId = fields[`${prefix}.candidate_id`];
-      if (!candidateId) {
-        return null;
-      }
-      if (models[candidateId]) {
-        return null;
-      }
-      const maxTokens = clampInteger(fields[`${prefix}.max_tokens`], 1, 512, 8);
-      const modelBytes = registryModelBytes(fields[`${prefix}.model_bytes`], registryByteBudget);
-      if (modelBytes === null) {
-        return null;
-      }
-      const modelShape = fields[`${prefix}.model_shape`] || "";
-      const contextTokenLimit = registryModelShapeContextTokenLimit(modelShape);
-      if (contextTokenLimit === null || contextTokenLimit < maxTokens) {
-        return null;
-      }
-      const tokenizerChecksum = fields[`${prefix}.tokenizer_checksum`] || "";
-      if (tokenizerChecksum && !isRegistryHex64(tokenizerChecksum)) {
-        return null;
-      }
-      const slmChecksum = fields[`${prefix}.slm_checksum`] || "";
-      if (!isRegistryHex64(slmChecksum)) {
-        return null;
-      }
-      const sourceManifest = registrySourceManifestEntry(fields, prefix, candidateId);
-      if (sourceManifest === null) {
-        return null;
-      }
-      const sourceValidation = registrySourceValidationEntry(fields, prefix, candidateId);
-      if (sourceValidation === null) {
-        return null;
-      }
-      const composition = registryCompositionEntry(fields, prefix, modelPath);
-      if (composition === null) {
-        return null;
-      }
-      if (registryEntryDeclaresMutableAssembly(fields, prefix)) {
-        return null;
-      }
-      const admissionEvidence = registryAdmissionEvidenceEntry(fields, prefix, candidateId);
-      if (admissionEvidence === null) {
-        return null;
-      }
-      const quantization = fields[`${prefix}.quantization`] || "";
-      const genome = registryGenomeEntry(fields, prefix);
-      if (!genome) {
-        return null;
-      }
-      const species = registrySpeciesEntry(fields, prefix);
-      if (!species) {
-        return null;
-      }
-      const novelty = registryNoveltyEntry(fields, prefix);
-      if (!novelty) {
-        return null;
-      }
-      const population = registryPopulationEntry(fields, prefix);
-      if (!population) {
-        return null;
-      }
-      const mateSelection = registryMateSelectionEntry(fields, prefix);
-      if (!mateSelection) {
-        return null;
-      }
-      const operatorReceipt = registryOperatorReceiptEntry(
-        fields,
-        prefix,
-        modelBytes,
-        slmChecksum
-      );
-      if (operatorReceipt === null) {
-        return null;
-      }
-      const evolutionSchedule = registryEvolutionScheduleEntry(fields, prefix, operatorReceipt);
-      if (evolutionSchedule === null) {
-        return null;
-      }
-      const phenotypeEvidence = registryPhenotypeEvidenceEntry(fields, prefix);
-      if (!phenotypeEvidence) {
-        return null;
-      }
-      const heritableArtifact = registryHeritableArtifactEntry(fields, prefix);
-      if (!heritableArtifact) {
-        return null;
-      }
-      const runtimeSmokeEvidence = registryRuntimeSmokeEvidenceEntry(fields, prefix, candidateId);
-      if (!runtimeSmokeEvidence) {
-        return null;
-      }
-      const evalEvidence = registryEvalEvidenceEntry(fields, prefix, candidateId);
-      if (!evalEvidence) {
-        return null;
-      }
-      models[candidateId] = {
-        candidateId,
-        label: fields[`${prefix}.display_name`] || candidateId,
-        path: modelPath,
-        modelBytes,
-        slmChecksum,
-        modelShape,
-        maxTokens,
-        contextTokenLimit,
-        tokenizerChecksum,
-        quantization,
-        composition,
-        genome,
-        species,
-        novelty,
-        population,
-        mateSelection,
-        operatorReceipt: operatorReceipt || null,
-        evolutionSchedule: evolutionSchedule || null,
-        phenotypeEvidence,
-        heritableArtifact,
-        admissionEvidence: admissionEvidence || null,
-        runtimeSmokeEvidence,
-        evalEvidence,
-        sourceManifest: sourceManifest || null,
-        sourceValidation: sourceValidation || null,
-      };
-    }
-    const defaultModelKey = registryDefaultModelKey(fields, models);
-    if (defaultModelKey === null) {
-      return null;
-    }
-    return { models, defaultModelKey };
-  }
-
-  function registrySelectorModelByteBudget(value) {
-    const byteBudget = registryDecimalByteCount(value);
-    if (byteBudget === null || byteBudget > selectorModelByteBudget) {
-      return null;
-    }
-    return byteBudget;
-  }
-
-  function registryEntryDeclaresMutableAssembly(fields, prefix) {
-    const forbiddenPrefixes = [
-      `${prefix}.adapter`,
-      `${prefix}.assembly`,
-      `${prefix}.module_plan`
-    ];
-    return Object.keys(fields).some((key) =>
-      forbiddenPrefixes.some((forbidden) => key.startsWith(forbidden))
-    );
-  }
-
-  function registryCompositionEntry(fields, prefix, modelPath) {
-    const path = fields[`${prefix}.composition_graph_path`] || "";
-    const bytes = registryDecimalByteCount(fields[`${prefix}.composition_graph_bytes`]);
-    const sha256 = fields[`${prefix}.composition_graph_sha256`] || "";
-    const baseModelId = fields[`${prefix}.composition_base_model_id`] || "";
-    const compositionId = fields[`${prefix}.composition_id`] || "";
-    const activeGraphSha256 = fields[`${prefix}.composition_active_graph_sha256`] || "";
-    const routePolicyId = fields[`${prefix}.composition_route_policy_id`] || "";
-    const kvFormatId = fields[`${prefix}.composition_kv_format_id`] || "";
-    const positionPolicySha256 =
-      fields[`${prefix}.composition_position_policy_sha256`] || "";
-    const memberCount = registryDecimalIndex(fields[`${prefix}.composition_member_count`]);
-    if (
-      path !== `${modelPath}.acg1` ||
-      bytes === null ||
-      bytes > selectorCompositionGraphByteBudget ||
-      !isRegistrySha256(sha256) ||
-      !isRegistryTypedContentId(baseModelId, "model-sha256-") ||
-      !isRegistryTypedContentId(compositionId, "composition-sha256-") ||
-      !isRegistrySha256(activeGraphSha256) ||
-      !isRegistryTypedContentId(routePolicyId, "route-sha256-") ||
-      !isRegistryTypedContentId(kvFormatId, "kv-format-sha256-") ||
-      !isRegistrySha256(positionPolicySha256) ||
-      memberCount === null ||
-      memberCount > 64
-    ) {
-      return null;
-    }
-    return {
-      path,
-      bytes,
-      sha256,
-      baseModelId,
-      compositionId,
-      activeGraphSha256,
-      routePolicyId,
-      kvFormatId,
-      positionPolicySha256,
-      memberCount
-    };
-  }
-
-  function registryTextSidecarBudgets(fields) {
-    return registryExactByteBudget(
-      fields.selector_registry_text_byte_budget,
-      selectorRegistryTextByteBudget
-    ) &&
-      registryExactByteBudget(fields.manifest_text_byte_budget, manifestTextByteBudget) &&
-      registryExactByteBudget(fields.receipt_text_byte_budget, receiptTextByteBudget) &&
-      registryExactByteBudget(fields.evidence_text_byte_budget, evidenceTextByteBudget);
-  }
-
-  function registryExactByteBudget(value, expected) {
-    const byteBudget = registryDecimalByteCount(value);
-    return byteBudget !== null && byteBudget === expected;
-  }
-
-  function registryModelBytes(value, byteBudget) {
-    const modelBytes = registryDecimalByteCount(value);
-    if (modelBytes === null || modelBytes > byteBudget) {
-      return null;
-    }
-    return modelBytes;
-  }
-
-  function runtimeWasmManifestBytes(value) {
-    const byteCount = registryDecimalByteCount(value);
-    if (byteCount === null || byteCount < 1) {
-      return null;
-    }
-    return byteCount;
-  }
-
-  function registryDecimalCount(value) {
-    // Accepts exact positive decimal registry fields without whitespace or leading zero drift.
-    if (!value) {
-      return null;
-    }
-    const count = Number.parseInt(value, 10);
-    if (
-      !Number.isSafeInteger(count) ||
-      String(count) !== value ||
-      count < 1
-    ) {
-      return null;
-    }
-    return count;
-  }
-
-  function registryDecimalIndex(value) {
-    // Accepts exact zero-based decimal indices for ordered schedule families.
-    if (!value) {
-      return null;
-    }
-    const index = Number.parseInt(value, 10);
-    if (
-      !Number.isSafeInteger(index) ||
-      String(index) !== value ||
-      index < 0
-    ) {
-      return null;
-    }
-    return index;
-  }
-
-  function registryDecimalByteCount(value) {
-    return registryDecimalCount(value);
-  }
-
-  function registryModelShapeContextTokenLimit(modelShape) {
-    const match = String(modelShape || "").match(/(?:^|,)(?:context|ctx)=(\d+)(?:,|$)/);
-    if (!match) {
-      return null;
-    }
-    const tokens = registryDecimalCount(match[1]);
-    if (tokens === null || tokens > selectorContextTokenLimit) {
-      return null;
-    }
-    return tokens;
-  }
-
-  function registryDefaultModelKey(fields, models) {
-    const keys = [
-      "selector_default_strategy",
-      "selector_default_candidate_id",
-      "selector_default_quantization"
-    ];
-    const hasDefault = keys.some((key) => fields[key]);
-    if (!hasDefault) {
-      return "";
-    }
-    if (fields.selector_default_strategy !== selectorDefaultStrategy) {
-      return null;
-    }
-    const candidateId = fields.selector_default_candidate_id;
-    const model = models[candidateId];
-    if (!model || fields.selector_default_quantization !== model.quantization) {
-      return null;
-    }
-    return candidateId;
-  }
-
-  // Loads the optional generated selector registry before the first model is chosen.
-  async function loadSelectorRegistry() {
-    if (isPublicLocalOnlyHost()) {
-      return;
-    }
-    try {
-      const text = await fetchTextWithinBudget(
-        paths.registry,
-        selectorRegistryTextByteBudget,
-        "selector registry",
-        true
-      );
-      if (text === null) {
-        return;
-      }
-      const fields = parseManifest(text);
-      const registry = registryModelEntries(fields);
-      if (!registry) {
-        restoreImportedModelOptions();
-        return;
-      }
-      paths.models = modelsWithLocalModel(registry.models);
-      state.selectorRegistry = fields;
-      state.selectorDefaultModelKey = registry.defaultModelKey || "";
-      renderModelOptions(paths.models, Boolean(state.selectorDefaultModelKey));
-    } catch (_error) {
-      restoreImportedModelOptions();
-    }
-  }
-
-  async function loadVerifiedRuntimeWasmVariant(wasmPath, manifestPath, allowMissing) {
-    const manifestText = await fetchTextWithinBudget(
-      manifestPath,
-      manifestTextByteBudget,
-      "WASM manifest",
-      allowMissing
-    );
-    if (manifestText === null) {
-      return null;
-    }
-    const fields = parseManifest(manifestText);
-    requireManifestEqual(fields, "tinyrustlm_wasm_manifest_version", "1", "WASM manifest");
-    requireManifestEqual(fields, "runtime_kind", runtimeWasmKind, "WASM manifest");
-    requireManifestEqual(fields, "runtime_status", runtimeWasmStatus, "WASM manifest");
-    requireManifestEqual(fields, "runtime_wasm_path", wasmPath, "WASM manifest");
-    requireManifestEqual(fields, "required_next_gate", runtimeWasmNextGate, "WASM manifest");
-    const expectedBytes = runtimeWasmManifestBytes(
-      requireManifestField(fields, "runtime_wasm_bytes", "WASM manifest")
-    );
-    if (expectedBytes === null) {
-      throw new Error("WASM manifest field runtime_wasm_bytes was invalid");
-    }
-    const expectedChecksum = requireManifestField(fields, "runtime_wasm_checksum", "WASM manifest");
-    const response = await fetch(wasmPath, localFetchOptions);
-    if (!response.ok) {
-      throw new Error(`Unable to fetch WASM runtime (${response.status})`);
-    }
-    const bytes = new Uint8Array(await response.arrayBuffer());
-    if (bytes.length !== expectedBytes) {
-      throw new Error("WASM runtime byte length mismatch");
-    }
-    requireChecksumEqual(bytesChecksumHex(bytes), expectedChecksum, "WASM runtime");
-    return bytes;
-  }
-
-  async function loadRuntimeWasmBytes() {
-    const simdBytes = await loadVerifiedRuntimeWasmVariant(
-      paths.wasmSimd,
-      paths.wasmSimdManifest,
-      true
-    );
-    if (simdBytes && WebAssembly.validate(simdBytes)) {
-      state.runtimeVariant = "simd128";
-      document.documentElement.dataset.runtimeVariant = state.runtimeVariant;
-      appendConsole("runtime_variant=simd128");
-      return simdBytes;
-    }
-    if (simdBytes) {
-      appendConsole("runtime_variant=scalar; simd128 unsupported by this browser");
-    }
-
-    const scalarBytes = await loadVerifiedRuntimeWasmVariant(
-      paths.wasm,
-      paths.wasmManifest,
-      false
-    );
-    if (!scalarBytes || !WebAssembly.validate(scalarBytes)) {
-      throw new Error("WASM runtime validation failed");
-    }
-    state.runtimeVariant = "scalar";
-    document.documentElement.dataset.runtimeVariant = state.runtimeVariant;
-    appendConsole("runtime_variant=scalar");
-    return scalarBytes;
-  }
-
-  // Renders manifest provenance and the selector evidence that was validated before model bytes.
+  // Renders only evidence bound by the active six-member admission.
   function renderProvenance(status, fields, isError) {
     setText(el.provenanceState, status, isError);
     const model = paths.models[state.activeModelKey] || null;
-    const sourceManifest = model && model.sourceManifest ? model.sourceManifest : null;
-    const sourceReview = sourceManifest && sourceManifest.sourceReview ? sourceManifest.sourceReview : null;
-    const sourceValidation = model && model.sourceValidation ? model.sourceValidation : null;
-    const genome = model && model.genome ? model.genome : null;
-    const species = model && model.species ? model.species : null;
-    const novelty = model && model.novelty ? model.novelty : null;
-    const population = model && model.population ? model.population : null;
-    const mateSelection = model && model.mateSelection ? model.mateSelection : null;
-    const operatorReceipt = model && model.operatorReceipt ? model.operatorReceipt : null;
-    const evolutionSchedule = model && model.evolutionSchedule ? model.evolutionSchedule : null;
-    const phenotypeEvidence = model && model.phenotypeEvidence ? model.phenotypeEvidence : null;
-    const heritableArtifact = model && model.heritableArtifact ? model.heritableArtifact : null;
-    const admissionEvidence = model && model.admissionEvidence ? model.admissionEvidence : null;
-    const evalEvidence = model && model.evalEvidence ? model.evalEvidence : null;
-    const conversationEvidence = model && model.conversationEvidence ? model.conversationEvidence : null;
-    el.provenanceSourceKind.textContent = manifestValue(fields, "source_kind");
-    el.provenanceSourceSnapshot.textContent = sourceManifest
-      ? sourceManifest.sourceKind
-      : manifestValue(fields, "source_snapshot");
-    el.provenanceSourceId.textContent = sourceManifest
-      ? sourceManifest.sourceId
-      : manifestValue(fields, "source_id");
-    el.provenanceSourceShape.textContent = sourceManifest
-      ? sourceManifest.modelShape
-      : manifestValue(fields, "model_shape");
-    el.provenanceSourceReview.textContent = sourceReview
-      ? [
-          sourceReview.status,
-          sourceReview.requiredNextGate,
-          sourceReview.checksum,
-          sourceReview.sourceModelId,
-          sourceReview.sourceModelSha
-        ].filter(Boolean).join(" / ")
-      : manifestValue(fields, "source_review");
-    el.provenanceSourceReviewRoutes.textContent = sourceReview
-      ? sourceReviewRouteSummary(sourceReview)
-      : manifestValue(fields, "source_review_routes");
-    el.provenanceSourceReviewArtifacts.textContent = sourceReview
-      ? sourceReviewArtifactSummary(sourceReview)
-      : manifestValue(fields, "source_review_artifacts");
-    el.provenanceSourceTokenizerImport.textContent = sourceReviewTokenizerImportSummary(sourceReview);
-    el.provenanceSourceValidation.textContent = sourceValidation
-      ? sourceValidationSummary(sourceValidation)
-      : manifestValue(fields, "source_validation");
-    el.provenanceAdmission.textContent = admissionEvidenceSummary(admissionEvidence, fields);
-    el.provenanceQualityClaim.textContent = provenanceQualityClaimText(fields, model, evalEvidence);
+    const source = model && model.browserComposition ? model.browserComposition : null;
+    const admission = source ? source.admission : null;
+    const qualification = admission ? admission.qualification : null;
+    const value = (key) => fields && fields[key] ? String(fields[key]) : "unavailable";
+    el.provenanceSourceKind.textContent = value("source_kind");
+    el.provenanceSourceSnapshot.textContent = value("source_snapshot");
+    el.provenanceSourceId.textContent = admission ? admission.modelId : value("source_id");
+    el.provenanceSourceShape.textContent = value("model_shape");
+    el.provenanceSourceReview.textContent = qualification
+      ? qualification.sourceEvidenceSha256
+      : value("source_review");
+    el.provenanceSourceReviewRoutes.textContent = value("source_review_routes");
+    el.provenanceSourceReviewArtifacts.textContent = qualification
+      ? `structural=${qualification.structuralEvidenceSha256} / numerical=${qualification.numericalEvidenceSha256}`
+      : value("source_review_artifacts");
+    el.provenanceSourceTokenizerImport.textContent = admission
+      ? admission.artifacts[1].sha256
+      : "unavailable";
+    el.provenanceSourceValidation.textContent = value("source_validation");
+    el.provenanceAdmission.textContent = admission
+      ? `${admission.schema} / ${source.admissionSha256}`
+      : value("admission_status");
+    el.provenanceQualityClaim.textContent = qualification
+      ? `${qualification.qualityClaim} / ${qualification.qualityScope}`
+      : value("quality_claim");
     applyModelTrustMetadata(el.provenanceQualityClaim, model);
-    el.provenanceTrainedClaim.textContent = provenanceTrainedClaimText(fields, model, evalEvidence);
-    el.provenanceGenome.textContent = genome ? genome.id : "unavailable";
-    el.provenanceSpecies.textContent = species
-      ? `${species.fitStatus} / ${species.id} / ${species.fitChecksum}`
-      : "unavailable";
-    el.provenanceNovelty.textContent = novelty
-      ? `${novelty.status} / ${novelty.id} / ${novelty.checksum}`
-      : "unavailable";
-    el.provenancePopulation.textContent = population
-      ? `${population.status} / ${population.id} / ${population.checksum}`
-      : "unavailable";
-    el.provenanceMateSelection.textContent = mateSelection
-      ? `${mateSelection.status} / ${mateSelection.parentCount} parents / ${mateSelection.id} / ${mateSelection.checksum}`
-      : "unavailable";
-    el.provenanceOperator.textContent = operatorReceipt
-      ? `${operatorReceipt.status} / ${operatorReceipt.operatorKind} / ${operatorReceipt.checksum}`
-      : "unavailable";
-    el.provenanceSchedule.textContent = evolutionSchedule
-      ? `${evolutionSchedule.recipeStatus} / family ${evolutionSchedule.familyIndex} / ${evolutionSchedule.familyCommand} / ${evolutionSchedule.familySelectionRule} / ${evolutionSchedule.familyOutputGate} / ${evolutionSchedule.scheduleChecksum}`
-      : "unavailable";
-    el.provenancePhenotype.textContent = phenotypeEvidence
-      ? `${phenotypeEvidence.status} / ${phenotypeEvidence.id} / ${phenotypeEvidence.checksum}`
-      : "unavailable";
-    el.provenanceArtifact.textContent = heritableArtifact
-      ? `${heritableArtifact.status} / ${heritableArtifact.id} / ${heritableArtifact.checksum}`
-      : "unavailable";
-    el.provenanceFitness.textContent = evalEvidence
-      ? `${evalEvidence.fitnessVectorStatus} / ${evalEvidence.fitnessVectorChecksum}`
-      : conversationEvidence && conversationEvidence.verified
-        ? `${conversationEvidence.strictEvalCasesPassed} of ${conversationEvidence.strictEvalCasesPassed + conversationEvidence.strictEvalCasesFailed} strict cases / not admitted`
-        : "unavailable";
-    el.provenanceEvalCases.textContent = evalEvidence
-      ? `${evalEvidence.casesPassed} passed`
-      : conversationEvidence && conversationEvidence.verified
-        ? `${conversationEvidence.turnsPassed} conversation turns passed / strict JSON limited`
-        : "unavailable";
-    el.provenanceEvalChecksum.textContent = evalEvidence
-      ? evalEvidence.checksum
-      : conversationEvidence && conversationEvidence.verified
-        ? conversationEvidence.manifestChecksum
-        : "unavailable";
-    el.provenanceChecksum.textContent = manifestValue(fields, "slm_checksum");
-    el.provenanceNextGate.textContent = provenanceNextGateText(fields, model, evalEvidence);
-  }
-
-  function sourceReviewRouteSummary(sourceReview) {
-    if (!sourceReview || !sourceReview.fields) {
-      return "unavailable";
+    el.provenanceTrainedClaim.textContent = qualification
+      ? qualification.receiptId
+      : value("trained_quality_claim");
+    for (const node of [
+      el.provenanceGenome,
+      el.provenanceSpecies,
+      el.provenanceNovelty,
+      el.provenancePopulation,
+      el.provenanceMateSelection,
+      el.provenanceOperator,
+      el.provenanceSchedule,
+      el.provenancePhenotype,
+      el.provenanceArtifact
+    ]) {
+      node.textContent = "not part of the active composition contract";
     }
-    return [
-      `license=${sourceReview.sourceLicenseRoute}`,
-      `prompt=${sourceReview.referencePromptRoute}`,
-      `reference=${sourceReview.referenceOutputChecksum}`,
-      `eval=${sourceReview.evalCasesRoute}`
-    ].join(" / ");
-  }
-
-  function sourceReviewArtifactSummary(sourceReview) {
-    if (!sourceReview || !sourceReview.artifacts) {
-      return "unavailable";
-    }
-    const parts = [];
-    for (const [label, artifact] of Object.entries(sourceReview.artifacts)) {
-      if (!artifact) {
-        continue;
-      }
-      if (artifact.status === "not-local") {
-        parts.push(`${label}=not-local`);
-      } else {
-        parts.push(`${label}=${artifact.status}@${artifact.checksum}`);
-      }
-    }
-    return parts.length > 0 ? parts.join(" / ") : "unavailable";
-  }
-
-  function sourceReviewTokenizerImportSummary(sourceReview) {
-    if (!sourceReview || !sourceReview.tokenizerImport) {
-      return "unavailable";
-    }
-    const tokenizerImport = sourceReview.tokenizerImport;
-    return [
-      tokenizerImport.status,
-      `tokens=${tokenizerImport.tokenCount}`,
-      `merges=${tokenizerImport.mergeCount}`,
-      tokenizerImport.checksum
-    ].join(" / ");
-  }
-
-  function sourceValidationSummary(sourceValidation) {
-    if (!sourceValidation || !sourceValidation.verified || !sourceValidation.fields) {
-      return "unavailable";
-    }
-    return [
-      sourceValidation.fields.source_validation_status,
-      sourceValidation.fields.required_next_gate,
-      sourceValidation.checksum
-    ].filter(Boolean).join(" / ");
-  }
-
-  function admissionEvidenceSummary(admissionEvidence, fields) {
-    if (!admissionEvidence || !admissionEvidence.verified || !admissionEvidence.fields) {
-      return manifestValue(fields, "admission_status");
-    }
-    return [
-      admissionEvidence.fields.admission_status,
-      admissionEvidence.fields.required_next_gate,
-      admissionEvidence.checksum
-    ].filter(Boolean).join(" / ");
+    el.provenanceFitness.textContent = qualification
+      ? qualification.qualityEvidenceSha256
+      : "unavailable";
+    el.provenanceEvalCases.textContent = qualification
+      ? qualification.evalCasesSha256
+      : "unavailable";
+    el.provenanceEvalChecksum.textContent = qualification
+      ? qualification.qualityEvidenceSha256
+      : "unavailable";
+    el.provenanceChecksum.textContent = admission
+      ? admission.artifacts[0].sha256
+      : value("slm_checksum");
+    el.provenanceNextGate.textContent = value("required_next_gate");
   }
 
   function clearBrowserAdmissionDiagnostics() {
     for (const key of [
       "activeBrowserAdmissionSha256",
-      "activeArtifactSha256",
-      "activeManifestSha256",
-      "activeQualityEvidenceSha256",
-      "activeQualificationReceiptId",
-      "activePromptFormat",
-      "activeSystemPromptSha256",
-      "activeModelSamplingProfile"
+      "activeCompositionGraphSha256",
+      "activeQualificationReceiptId"
     ]) {
       delete document.documentElement.dataset[key];
     }
-  }
-
-  async function loadModelManifest(model) {
-    if (model.companionImport) {
-      const entry = model.companionImport.catalogEntry;
-      const converted = model.companionImport.acquisitionKind === "conversion";
-      const fields = {
-        source_kind: converted
-          ? "huggingface-desktop-companion-conversion"
-          : "minimodel-desktop-companion-import",
-        source_id: entry.sourceModelId || entry.modelId,
-        source_snapshot: converted
-          ? `revision=${entry.sourceRevision || "unavailable"} / rust-receipt-revalidated-before-loopback-stream`
-          : "rust-receipt-revalidated-before-loopback-stream",
-        source_review: entry.admissionStatus || (converted ? "immutable-source-reviewed" : "catalog-metadata-only"),
-        source_review_routes: entry.manifestRoute || "",
-        source_review_artifacts: `artifact=${model.companionImport.artifactSha256} / bytes=${model.companionImport.artifactByteCount}`,
-        source_validation: converted
-          ? "conversion-preflight-receipt-and-composition-revalidated-before-browser-load"
-          : "peer-import-receipt-chain-validated-before-browser-load",
-        model_shape: entry.modelShape || "runtime-validated-by-wasm",
-        tokenizer: entry.tokenizer || "runtime-validated-by-wasm",
-        tokenizer_checksum: entry.tokenizerChecksum || "",
-        context_length: entry.contextLength || "",
-        output_contract: entry.outputContract || "",
-        prompt_format: entry.promptFormat || promptFormatRaw,
-        instruction_support: entry.instructionSupport || "not-declared",
-        chat_support: entry.chatSupport || "not-declared",
-        quality_eval_status: entry.qualityEvalStatus || "not-run",
-        intended_use: entry.intendedUse || "user-selected-peer-import",
-        quality_claim: entry.qualityClaim || "not-claimed",
-        trained_quality_claim: entry.trainedQualityClaim || "not-claimed",
-        admission_status: converted
-          ? "conversion-structure-and-receipt-validated-quality-unqualified"
-          : "peer-import-receipt-validated",
-        slm_checksum: entry.slmChecksum || "",
-        artifact_sha256: model.companionImport.artifactSha256,
-        artifact_bytes: String(model.companionImport.artifactByteCount),
-        required_next_gate: entry.requiredNextGate || "browser-runtime-validation"
-      };
-      state.modelManifest = fields;
-      renderProvenance("desktop companion", fields, false);
-      return;
-    }
-    if (model.localFile) {
-      const importReceipt = model.localFile.importReceipt || null;
-      const browserAdmission = model.browserAdmission;
-      if (!browserAdmission || !browserAdmission.admission) {
-        throw new Error("Local model lacks a validated browser admission");
-      }
-      const admission = browserAdmission.admission;
-      const fields = {
-        source_kind: importReceipt && importReceipt.peerImport
-          ? "minimodel-p2p-browser-admission"
-          : "qualified-local-browser-admission",
-        source_id: admission.modelId,
-        source_snapshot: `admission=${browserAdmission.sha256} / qualification=${admission.qualification.receiptId}`,
-        source_review: `source-evidence-sha256=${admission.qualification.sourceEvidenceSha256}`,
-        source_review_routes: importReceipt ? localImportReceiptRouteSummary(importReceipt) : "",
-        source_review_artifacts: `manifest-sha256=${admission.qualification.manifestSha256} / quality-evidence-sha256=${admission.qualification.qualityEvidenceSha256}`,
-        source_validation: importReceipt
-          ? localImportReceiptValidationSummary(importReceipt)
-          : "browser-admission-and-wasm-artifact-digest-validated",
-        model_shape: importReceipt && importReceipt.slmModelShape !== "unavailable"
-          ? importReceipt.slmModelShape
-          : "runtime-validated-by-wasm",
-        tokenizer: "runtime-validated-by-wasm",
-        tokenizer_checksum: "",
-        context_length: String(admission.runtime.contextLength),
-        output_contract: "runtime-validated-by-wasm",
-        prompt_format: admission.runtime.promptFormat,
-        system_prompt: admission.runtime.systemPrompt,
-        sampling_profile: admission.runtime.modelSamplingProfile,
-        sampling_temperature: String(admission.runtime.temperature),
-        sampling_top_k: String(admission.runtime.topK),
-        sampling_top_p: String(admission.runtime.topP),
-        sampling_repetition_penalty: String(admission.runtime.repetitionPenalty),
-        instruction_support: "qualification-receipt-bound",
-        chat_support: "qualification-receipt-bound",
-        quality_eval_status: "external-receipt-validation-required",
-        intended_use: "campaign-bound-local-browser-execution",
-        quality_claim: "external-qualification-receipt-required",
-        trained_quality_claim: "external-qualification-receipt-required",
-        admission_status: "runtime-admitted-local-bundle",
-        slm_checksum: model.localFile.checksum,
-        artifact_sha256: model.localFile.sha256,
-        artifact_bytes: String(model.localFile.byteLength),
-        required_next_gate: "validate-content-addressed-qualification-parent"
-      };
-      state.modelManifest = fields;
-      document.documentElement.dataset.activeBrowserAdmissionSha256 =
-        browserAdmission.sha256;
-      document.documentElement.dataset.activeArtifactSha256 =
-        admission.artifact.sha256;
-      document.documentElement.dataset.activeManifestSha256 =
-        admission.qualification.manifestSha256;
-      document.documentElement.dataset.activeQualityEvidenceSha256 =
-        admission.qualification.qualityEvidenceSha256;
-      document.documentElement.dataset.activeQualificationReceiptId =
-        admission.qualification.receiptId;
-      document.documentElement.dataset.activePromptFormat =
-        admission.runtime.promptFormat;
-      document.documentElement.dataset.activeSystemPromptSha256 =
-        admission.runtime.systemPromptSha256;
-      document.documentElement.dataset.activeModelSamplingProfile =
-        admission.runtime.modelSamplingProfile;
-      renderProvenance("qualified local bundle", fields, false);
-      return;
-    }
-    const manifestPath = `${model.path}.manifest`;
-    try {
-      const text = await fetchTextWithinBudget(
-        manifestPath,
-        manifestTextByteBudget,
-        ".slm manifest"
-      );
-      const fields = parseManifest(text);
-      state.modelManifest = fields;
-      renderProvenance("loaded", fields, false);
-    } catch (error) {
-      state.modelManifest = null;
-      renderProvenance(errorMessage(error), null, true);
-    }
-  }
-
-  async function loadSourceManifest(model) {
-    // Verifies reviewed trained-source evidence before converted model bytes are fetched.
-    if (!model.sourceManifest) {
-      return "source manifest unavailable";
-    }
-    model.sourceManifestVerified = false;
-    model.sourceManifestFields = null;
-    const text = await fetchTextWithinBudget(
-      model.sourceManifest.path,
-      evidenceTextByteBudget,
-      "source manifest"
-    );
-    requireChecksumEqual(textChecksumHex(text), model.sourceManifest.checksum, "source manifest");
-    const fields = parseManifest(text);
-    requireManifestEqual(fields, "tinyrustlm_trained_source_version", "1", "source manifest");
-    requireManifestEqual(fields, "model_family", "tinyrustlm", "source manifest");
-    requireManifestEqual(fields, "layout", registrySourceManifestLayout, "source manifest");
-    requireManifestEqual(fields, "source_dtype", "f32", "source manifest");
-    requireManifestField(fields, "source_kind", "source manifest");
-    requireManifestField(fields, "source_id", "source manifest");
-    requireManifestEqual(
-      fields,
-      "source_kind",
-      model.sourceManifest.sourceKind,
-      "source manifest identity"
-    );
-    requireManifestEqual(
-      fields,
-      "source_id",
-      model.sourceManifest.sourceId,
-      "source manifest identity"
-    );
-    requireManifestEqual(
-      fields,
-      "model_shape",
-      model.sourceManifest.modelShape,
-      "source manifest identity"
-    );
-    const sourceReviewKeys = [
-      "source_review_kind",
-      "source_review_status",
-      "source_review_checksum",
-      "source_review_required_next_gate"
-    ];
-    const manifestHasSourceReview = sourceReviewKeys.some((key) => fields[key]);
-    if (manifestHasSourceReview && !model.sourceManifest.sourceReview) {
-      throw new Error("source review identity missing from selector");
-    }
-    if (model.sourceManifest.sourceReview) {
-      requireManifestEqual(
-        fields,
-        "source_review_kind",
-        model.sourceManifest.sourceReview.kind,
-        "source review identity"
-      );
-      requireManifestEqual(
-        fields,
-        "source_review_status",
-        model.sourceManifest.sourceReview.status,
-        "source review identity"
-      );
-      requireManifestEqual(
-        fields,
-        "source_review_checksum",
-        model.sourceManifest.sourceReview.checksum,
-        "source review identity"
-      );
-      requireManifestEqual(
-        fields,
-        "source_review_required_next_gate",
-        model.sourceManifest.sourceReview.requiredNextGate,
-        "source review identity"
-      );
-    }
-    const tensorCount = registryDecimalCount(
-      requireManifestField(fields, "tensor_count", "source manifest")
-    );
-    if (tensorCount === null) {
-      throw new Error("source manifest tensor count mismatch");
-    }
-    model.sourceManifestFields = fields;
-    model.sourceManifestVerified = true;
-    return "source manifest verified";
-  }
-
-  async function loadSourceReviewEvidence(model) {
-    // Fetches the reviewed safetensors candidate report before model bytes are requested.
-    const sourceReview =
-      model.sourceManifest && model.sourceManifest.sourceReview
-        ? model.sourceManifest.sourceReview
-        : null;
-    if (!sourceReview) {
-      return "source review unavailable";
-    }
-    sourceReview.verified = false;
-    sourceReview.fields = null;
-    const text = await fetchTextWithinBudget(
-      sourceReview.path,
-      evidenceTextByteBudget,
-      "source review"
-    );
-    requireChecksumEqual(textChecksumHex(text), sourceReview.checksum, "source review");
-    const fields = parseManifest(text);
-    requireManifestEqual(
-      fields,
-      "tinyrustlm_safetensors_candidate_review_version",
-      "1",
-      "source review"
-    );
-    requireManifestEqual(
-      fields,
-      "review_layout",
-      "safetensors-real-trained-candidate-review-v1",
-      "source review"
-    );
-    requireManifestEqual(
-      fields,
-      "target_model_shape",
-      model.sourceManifest.modelShape,
-      "source review"
-    );
-    const sourceModelId = requireManifestField(fields, "source_model_id", "source review");
-    const sourceModelSha = requireSourceModelShaManifestField(
-      fields,
-      "source_model_sha",
-      "source review"
-    );
-    const sourceConfigChecksum = requireHex64ManifestField(fields, "source_config_checksum", "source review");
-    const sourceTokenizerChecksum = requireHex64ManifestField(fields, "source_tokenizer_checksum", "source review");
-    const sourceLicenseRoute = requireManifestField(fields, "source_license_route", "source review");
-    const referencePromptRoute = requireManifestField(fields, "reference_prompt_route", "source review");
-    const referenceOutputChecksum = requireHex64ManifestField(fields, "reference_output_checksum", "source review");
-    const evalCasesRoute = requireManifestField(fields, "eval_cases_route", "source review");
-    const artifacts = {
-      config: requireOptionalSourceReviewArtifact(fields, "source_config"),
-      tokenizer: requireOptionalSourceReviewArtifact(fields, "source_tokenizer"),
-      license: requireOptionalSourceReviewArtifact(fields, "source_license"),
-      prompt: requireOptionalSourceReviewArtifact(fields, "reference_prompt"),
-      eval: requireOptionalSourceReviewArtifact(fields, "eval_cases")
-    };
-    const tokenizerImport = requireSourceReviewTokenizerImport(fields);
-    if (artifacts.config && artifacts.config.status !== "not-local") {
-      requireChecksumEqual(artifacts.config.checksum, sourceConfigChecksum, "source config artifact");
-    }
-    if (artifacts.tokenizer && artifacts.tokenizer.status !== "not-local") {
-      requireChecksumEqual(artifacts.tokenizer.checksum, sourceTokenizerChecksum, "source tokenizer artifact");
-    }
-    requireManifestEqual(
-      fields,
-      "required_next_gate",
-      sourceReview.requiredNextGate,
-      "source review"
-    );
-    sourceReview.sourceModelId = sourceModelId;
-    sourceReview.sourceModelSha = sourceModelSha;
-    sourceReview.sourceConfigChecksum = sourceConfigChecksum;
-    sourceReview.sourceTokenizerChecksum = sourceTokenizerChecksum;
-    sourceReview.sourceLicenseRoute = sourceLicenseRoute;
-    sourceReview.referencePromptRoute = referencePromptRoute;
-    sourceReview.referenceOutputChecksum = referenceOutputChecksum;
-    sourceReview.evalCasesRoute = evalCasesRoute;
-    sourceReview.artifacts = artifacts;
-    sourceReview.tokenizerImport = tokenizerImport;
-    sourceReview.fields = fields;
-    sourceReview.verified = true;
-    return "source review verified";
-  }
-
-  async function loadSourceValidationEvidence(model) {
-    // Verifies the converted-trained validate-source gate before runtime smoke, eval, or model bytes.
-    const sourceValidation = model.sourceValidation;
-    if (!sourceValidation || !sourceValidation.path) {
-      return "source validation unavailable";
-    }
-    if (!model.sourceManifest || !model.sourceManifestVerified || !model.sourceManifestFields) {
-      throw new Error("source validation requires verified source manifest");
-    }
-    sourceValidation.verified = false;
-    sourceValidation.fields = null;
-    const text = await fetchTextWithinBudget(
-      sourceValidation.path,
-      evidenceTextByteBudget,
-      "source validation"
-    );
-    requireChecksumEqual(textChecksumHex(text), sourceValidation.checksum, "source validation");
-    const fields = parseManifest(text);
-    requireManifestEqual(
-      fields,
-      "tinyrustlm_source_validation_version",
-      "1",
-      "source validation"
-    );
-    requireManifestEqual(
-      fields,
-      "source_validation_gate",
-      registrySourceValidationGate,
-      "source validation"
-    );
-    requireManifestEqual(
-      fields,
-      "source_validation_status",
-      registrySourceValidationStatus,
-      "source validation"
-    );
-    requireManifestEqual(
-      fields,
-      "source_validation_decision",
-      registrySourceValidationDecision,
-      "source validation"
-    );
-    requireManifestEqual(
-      fields,
-      "source_manifest_path",
-      model.sourceManifest.path,
-      "source validation"
-    );
-    requireChecksumEqual(
-      requireManifestField(fields, "source_manifest_checksum", "source validation"),
-      model.sourceManifest.checksum,
-      "source validation source manifest"
-    );
-    requireManifestEqual(
-      fields,
-      "source_kind",
-      model.sourceManifest.sourceKind,
-      "source validation"
-    );
-    requireManifestEqual(
-      fields,
-      "source_id",
-      model.sourceManifest.sourceId,
-      "source validation"
-    );
-    requireManifestEqual(
-      fields,
-      "model_shape",
-      model.sourceManifest.modelShape,
-      "source validation"
-    );
-    requireManifestEqual(fields, "source_dtype", "f32", "source validation");
-    requireManifestEqual(
-      fields,
-      "tied_output",
-      requireManifestField(model.sourceManifestFields, "tied_output", "source manifest"),
-      "source validation"
-    );
-    requireManifestEqual(
-      fields,
-      "tensor_count",
-      requireManifestField(model.sourceManifestFields, "tensor_count", "source manifest"),
-      "source validation"
-    );
-    if (
-      registryDecimalCount(requireManifestField(fields, "tensor_count", "source validation")) ===
-      null
-    ) {
-      throw new Error("source validation tensor count mismatch");
-    }
-    if (model.sourceManifest.sourceReview) {
-      requireChecksumEqual(
-        requireManifestField(fields, "source_review_checksum", "source validation"),
-        model.sourceManifest.sourceReview.checksum,
-        "source validation source review"
-      );
-    }
-    requireManifestEqual(
-      fields,
-      "required_next_gate",
-      registrySourceValidationRequiredNextGate,
-      "source validation"
-    );
-    sourceValidation.fields = fields;
-    sourceValidation.verified = true;
-    return "source validation verified";
-  }
-
-  async function loadEvalEvidence(model) {
-    // Binds converted-trained provenance rows to the eval sidecar fetched by this browser load.
-    const evalEvidence = model.evalEvidence;
-    if (!evalEvidence || !evalEvidence.path) {
-      if (model.sourceManifest) {
-        throw new Error("converted-trained eval evidence route missing");
-      }
-      return "eval evidence unavailable";
-    }
-    evalEvidence.verified = false;
-    evalEvidence.fields = null;
-    const text = await fetchTextWithinBudget(
-      evalEvidence.path,
-      evidenceTextByteBudget,
-      "eval evidence"
-    );
-    requireChecksumEqual(textChecksumHex(text), evalEvidence.manifestChecksum, "eval evidence");
-    const fields = parseManifest(text);
-    requireManifestEqual(fields, "tinyrustlm_eval_manifest_version", "1", "eval evidence");
-    requireManifestEqual(fields, "gate", "assistant-quality", "eval evidence");
-    requireManifestEqual(fields, "eval_status", "pass", "eval evidence");
-    requireManifestEqual(fields, "task_eval_status", "pass", "eval evidence");
-    requireManifestEqual(fields, "cases_failed", "0", "eval evidence");
-    requireManifestEqual(fields, "cases_passed", String(evalEvidence.casesPassed), "eval evidence");
-    requireManifestEqual(fields, "quality_scope", evalEvidence.qualityScope, "eval evidence");
-    requireManifestEqual(fields, "quality_boundary", evalEvidence.qualityBoundary, "eval evidence");
-    requireManifestEqual(fields, "eval_dataset", evalEvidence.evalDataset, "eval evidence");
-    requireChecksumEqual(
-      requireManifestField(fields, "slm_checksum", "eval evidence"),
-      model.slmChecksum,
-      "eval evidence model"
-    );
-    requireManifestEqual(fields, "model_shape", model.modelShape, "eval evidence");
-    if (model.slmManifestChecksum) {
-      requireChecksumEqual(
-        requireManifestField(fields, "manifest_checksum", "eval evidence"),
-        model.slmManifestChecksum,
-        "eval evidence manifest"
-      );
-    }
-    if (model.promptFormat) {
-      requireManifestEqual(fields, "prompt_format", model.promptFormat, "eval evidence");
-    }
-    requireManifestEqual(
-      fields,
-      "quality_gate_policy",
-      "honest-assistant-quality-v1",
-      "eval evidence"
-    );
-    requireManifestEqual(fields, "quality_decision", "accepted-for-assistant-quality", "eval evidence");
-    requireManifestEqual(fields, "safety_review_status", "pass", "eval evidence");
-    requireManifestEqual(fields, "no_cheat_status", "pass", "eval evidence");
-    requireManifestEqual(fields, "no_cheat_failure_count", "0", "eval evidence");
-    for (const key of [
-      "quality_scope",
-      "evaluator",
-      "eval_dataset",
-      "eval_summary",
-      "quality_boundary"
-    ]) {
-      const value = requireManifestField(fields, key, "eval evidence");
-      if (
-        value.length < 8 ||
-        value === "pending" ||
-        value === "not-reviewed" ||
-        value === "not-provided"
-      ) {
-        throw new Error(`Eval evidence field ${key} did not contain reviewed evidence`);
-      }
-    }
-    for (const key of ["quality_scope", "quality_boundary", "eval_summary"]) {
-      const value = requireManifestField(fields, key, "eval evidence").toLowerCase();
-      if (
-        value.includes("fixture") ||
-        value.includes("plumbing") ||
-        value.includes("not-product-assistant-quality")
-      ) {
-        throw new Error(`Eval evidence field ${key} contained non-product evidence`);
-      }
-    }
-    requireCompositionEvidenceFields(fields, model, "eval evidence");
-    const caseCount = registryDecimalCount(requireManifestField(fields, "case_count", "eval evidence"));
-    const fixedCaseCount = registryDecimalCount(requireManifestField(fields, "fixed_case_count", "eval evidence"));
-    const holdoutCaseCount = registryDecimalCount(requireManifestField(fields, "holdout_case_count", "eval evidence"));
-    const holdoutSeed = registryDecimalCount(requireManifestField(fields, "holdout_seed", "eval evidence"));
-    if (
-      caseCount !== evalEvidence.casesPassed ||
-      !fixedCaseCount ||
-      !holdoutCaseCount ||
-      !holdoutSeed ||
-      fixedCaseCount + holdoutCaseCount !== caseCount
-    ) {
-      throw new Error("eval evidence fixed and holdout case counts were invalid");
-    }
-    let observedFixedCases = 0;
-    let observedHoldoutCases = 0;
-    for (let index = 0; index < caseCount; index += 1) {
-      requireManifestEqual(fields, `case.${index}.status`, "pass", "eval evidence");
-      const origin = requireManifestField(fields, `case.${index}.origin`, "eval evidence");
-      if (origin === "fixed") {
-        observedFixedCases += 1;
-      } else if (origin === "holdout") {
-        observedHoldoutCases += 1;
-      } else {
-        throw new Error(`eval evidence case ${index} origin was ${origin}`);
-      }
-      requireManifestField(fields, `case.${index}.prompt`, "eval evidence");
-      requireManifestField(fields, `case.${index}.runtime_prompt`, "eval evidence");
-      requireManifestField(fields, `case.${index}.raw_actual`, "eval evidence");
-      requireManifestField(fields, `case.${index}.actual`, "eval evidence");
-      requireManifestEqual(fields, `case.${index}.error`, "ok", "eval evidence");
-      requireManifestEqual(fields, `case.${index}.quality_failures`, "none", "eval evidence");
-      const diagnostics = requireManifestField(fields, `case.${index}.diagnostics`, "eval evidence");
-      if (
-        !diagnostics.includes('"model_loaded": true') ||
-        !diagnostics.includes('"last_error": "ok"') ||
-        !diagnostics.includes('"active_quantization_mode"')
-      ) {
-        throw new Error(`eval evidence case ${index} diagnostics were incomplete`);
-      }
-    }
-    if (observedFixedCases !== fixedCaseCount || observedHoldoutCases !== holdoutCaseCount) {
-      throw new Error("eval evidence case origins did not match fixed and holdout counts");
-    }
-    const sourceReview =
-      model.sourceManifest && model.sourceManifest.sourceReview
-        ? model.sourceManifest.sourceReview
-        : null;
-    if (sourceReview && sourceReview.verified) {
-      requireManifestEqual(
-        fields,
-        "eval_cases_route",
-        sourceReview.evalCasesRoute,
-        "eval evidence route"
-      );
-    }
-    requireChecksumEqual(evalCaseEvidenceChecksum(fields), evalEvidence.checksum, "eval case evidence");
-    evalEvidence.fields = fields;
-    evalEvidence.verified = true;
-    return "eval evidence verified";
-  }
-
-  // Fetches and verifies conversation evidence before any associated model bytes are requested.
-  async function loadConversationEvidence(model) {
-    const evidence = model && model.conversationEvidence ? model.conversationEvidence : null;
-    if (!evidence || !evidence.path) {
-      return "conversation evidence unavailable";
-    }
-    evidence.verified = false;
-    evidence.fields = null;
-    const text = await fetchTextWithinBudget(
-      evidence.path,
-      evidenceTextByteBudget,
-      "conversation evidence"
-    );
-    requireChecksumEqual(
-      textChecksumHex(text),
-      evidence.manifestChecksum,
-      "conversation evidence"
-    );
-    const fields = parseManifest(text);
-    requireManifestEqual(
-      fields,
-      "tinyrustlm_conversation_evidence_version",
-      "1",
-      "conversation evidence"
-    );
-    requireManifestEqual(fields, "evidence_status", "pass", "conversation evidence");
-    requireManifestEqual(
-      fields,
-      "evidence_scope",
-      evidence.qualityScope,
-      "conversation evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "quality_claim",
-      "coherent-multi-turn-conversation-evidence-not-full-assistant-quality",
-      "conversation evidence"
-    );
-    requireManifestEqual(fields, "source_identity", model.sourceIdentity, "conversation evidence");
-    requireManifestEqual(fields, "source_revision", model.sourceRevision, "conversation evidence");
-    requireManifestEqual(fields, "source_license", model.sourceLicense, "conversation evidence");
-    requireManifestEqual(
-      fields,
-      "source_license_path",
-      model.sourceLicensePath,
-      "conversation evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "source_license_sha256",
-      model.sourceLicenseSha256,
-      "conversation evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "modification_notice_path",
-      model.modificationNoticePath,
-      "conversation evidence"
-    );
-    requireManifestEqual(fields, "artifact_path", model.path, "conversation evidence");
-    requireManifestEqual(fields, "artifact_bytes", String(model.modelBytes), "conversation evidence");
-    requireManifestEqual(fields, "artifact_sha256", model.artifactSha256, "conversation evidence");
-    requireChecksumEqual(
-      requireManifestField(fields, "slm_checksum", "conversation evidence"),
-      model.slmChecksum,
-      "conversation evidence model"
-    );
-    requireManifestEqual(
-      fields,
-      "manifest_path",
-      `${model.path}.manifest`,
-      "conversation evidence"
-    );
-    requireChecksumEqual(
-      requireManifestField(fields, "manifest_checksum", "conversation evidence"),
-      model.slmManifestChecksum,
-      "conversation evidence manifest"
-    );
-    requireManifestEqual(fields, "model_shape", model.modelShape, "conversation evidence");
-    requireManifestEqual(fields, "quantization", model.quantization, "conversation evidence");
-    requireManifestEqual(fields, "prompt_format", model.promptFormat, "conversation evidence");
-    requireManifestEqual(fields, "model_transfer", "owned-stream", "conversation evidence");
-    requireManifestEqual(fields, "browser_load_status", "pass", "conversation evidence");
-    requireManifestEqual(
-      fields,
-      "browser_load_bytes",
-      String(model.modelBytes),
-      "conversation evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "browser_wasm_memory_bytes",
-      String(model.estimatedWasmMemoryBytes),
-      "conversation evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "conversation_turn_count",
-      String(evidence.turnsPassed),
-      "conversation evidence"
-    );
-    for (let index = 0; index < evidence.turnsPassed; index += 1) {
-      requireManifestField(fields, `turn.${index}.intent`, "conversation evidence");
-      requireManifestField(fields, `turn.${index}.response`, "conversation evidence");
-      requireManifestEqual(
-        fields,
-        `turn.${index}.output_transform`,
-        "none",
-        "conversation evidence"
-      );
-      requireManifestEqual(fields, `turn.${index}.status`, "pass", "conversation evidence");
-    }
-    requireManifestEqual(fields, "history_recall_status", "pass", "conversation evidence");
-    requireManifestEqual(fields, "response_duplication", "false", "conversation evidence");
-    requireManifestEqual(fields, "preference_reversal", "false", "conversation evidence");
-    requireManifestEqual(
-      fields,
-      "conversation_output_integrity_status",
-      "pass-real-wasm-output-no-substitution",
-      "conversation evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "no_prompt_specific_runtime_branches",
-      "true",
-      "conversation evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "no_canned_response_substitution",
-      "true",
-      "conversation evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "strict_eval_cases_passed",
-      String(evidence.strictEvalCasesPassed),
-      "conversation evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "strict_eval_cases_failed",
-      String(evidence.strictEvalCasesFailed),
-      "conversation evidence"
-    );
-    requireManifestEqual(fields, "strict_eval_status", "not-admitted", "conversation evidence");
-    requireManifestEqual(fields, "strict_eval_no_cheat_status", "fail", "conversation evidence");
-    requireManifestEqual(fields, "known_limitation", "strict-json", "conversation evidence");
-    requireManifestEqual(fields, "required_user_consent", "true", "conversation evidence");
-    requireManifestEqual(fields, "default_model_status", "not-promoted", "conversation evidence");
-    evidence.fields = fields;
-    evidence.verified = true;
-    return "conversation evidence verified";
-  }
-
-  function admissionArtifactMatchesModelPath(admissionArtifactPath, modelPath) {
-    // Compares local admission artifact paths with the served browser model route suffix.
-    if (!isSafeRegistryModelPath(modelPath)) {
-      return false;
-    }
-    const rest = modelPath.slice("../models/".length);
-    const normalized = String(admissionArtifactPath || "").replaceAll("\\", "/");
-    return normalized === `../models/${rest}` || normalized.endsWith(`tinyrustlm/models/${rest}`);
-  }
-
-  function requireCompositionEvidenceFields(fields, model, source) {
-    const composition = model && model.composition ? model.composition : null;
-    if (!composition) {
-      throw new Error(`${source} requires a selector composition graph`);
-    }
-    const graphFile = composition.path.split("/").pop();
-    if (!graphFile || graphFile.length > 255) {
-      throw new Error(`${source} composition graph path was invalid`);
-    }
-    requireManifestEqual(
-      fields,
-      "composition_graph_activation_status",
-      "activated-before-eval",
-      source
-    );
-    requireManifestEqual(fields, "composition_graph_file", graphFile, source);
-    requireManifestEqual(fields, "composition_graph_bytes", String(composition.bytes), source);
-    requireManifestEqual(fields, "composition_graph_sha256", composition.sha256, source);
-    requireManifestEqual(fields, "composition_base_model_id", composition.baseModelId, source);
-    requireManifestEqual(fields, "composition_id", composition.compositionId, source);
-    requireManifestEqual(
-      fields,
-      "composition_active_graph_sha256",
-      composition.activeGraphSha256,
-      source
-    );
-    requireManifestEqual(
-      fields,
-      "composition_route_policy_id",
-      composition.routePolicyId,
-      source
-    );
-    requireManifestEqual(fields, "composition_kv_format_id", composition.kvFormatId, source);
-    requireManifestEqual(
-      fields,
-      "composition_position_policy_sha256",
-      composition.positionPolicySha256,
-      source
-    );
-    requireManifestEqual(
-      fields,
-      "composition_member_count",
-      String(composition.memberCount),
-      source
-    );
-  }
-
-  async function loadAdmissionEvidence(model) {
-    // Verifies the selector admission record after all referenced evidence and before model bytes.
-    const admission = model.admissionEvidence;
-    if (!admission || !admission.path) {
-      return "admission evidence unavailable";
-    }
-    if (model.sourceValidation && !model.sourceValidation.verified) {
-      throw new Error("admission evidence requires verified source validation");
-    }
-    if (!model.runtimeSmokeEvidence || !model.runtimeSmokeEvidence.verified) {
-      throw new Error("admission evidence requires verified runtime smoke evidence");
-    }
-    if (!model.evalEvidence || !model.evalEvidence.verified) {
-      throw new Error("admission evidence requires verified eval evidence");
-    }
-    admission.verified = false;
-    admission.fields = null;
-    const text = await fetchTextWithinBudget(
-      admission.path,
-      evidenceTextByteBudget,
-      "admission evidence"
-    );
-    requireChecksumEqual(textChecksumHex(text), admission.checksum, "admission evidence");
-    const fields = parseManifest(text);
-    requireManifestEqual(
-      fields,
-      "tinyrustlm_selector_admission_version",
-      "2",
-      "admission evidence"
-    );
-    requireManifestEqual(fields, "selector_id", "browser-local-selector", "admission evidence");
-    requireManifestEqual(fields, "candidate_id", model.candidateId, "admission evidence");
-    requireManifestEqual(fields, "admission_path", admission.path, "admission evidence");
-    requireManifestEqual(
-      fields,
-      "admission_status",
-      registryAdmissionStatus,
-      "admission evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "promotion_status",
-      registryAdmissionPromotionStatus,
-      "admission evidence"
-    );
-    if (
-      !admissionArtifactMatchesModelPath(
-        requireManifestField(fields, "candidate_artifact_path", "admission evidence"),
-        model.path
-      )
-    ) {
-      throw new Error("admission evidence candidate artifact path mismatch");
-    }
-    requireManifestEqual(
-      fields,
-      "candidate_artifact_bytes",
-      String(model.modelBytes),
-      "admission evidence"
-    );
-    requireChecksumEqual(
-      requireManifestField(fields, "candidate_slm_checksum", "admission evidence"),
-      model.slmChecksum,
-      "admission evidence candidate"
-    );
-    requireManifestEqual(
-      fields,
-      "candidate_model_shape",
-      model.modelShape,
-      "admission evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "candidate_quantization",
-      model.quantization,
-      "admission evidence"
-    );
-    requireChecksumEqual(
-      requireManifestField(fields, "candidate_tokenizer_checksum", "admission evidence"),
-      model.tokenizerChecksum,
-      "admission evidence tokenizer"
-    );
-    if (model.sourceManifest) {
-      requireManifestEqual(
-        fields,
-        "source_manifest_path",
-        model.sourceManifest.path,
-        "admission evidence"
-      );
-      requireChecksumEqual(
-        requireManifestField(fields, "source_manifest_checksum", "admission evidence"),
-        model.sourceManifest.checksum,
-        "admission evidence source manifest"
-      );
-      if (model.sourceManifest.sourceReview) {
-        requireManifestEqual(
-          fields,
-          "source_review_path",
-          model.sourceManifest.sourceReview.path,
-          "admission evidence"
-        );
-        requireChecksumEqual(
-          requireManifestField(fields, "source_review_checksum", "admission evidence"),
-          model.sourceManifest.sourceReview.checksum,
-          "admission evidence source review"
-        );
-      }
-    }
-    if (model.sourceValidation) {
-      requireManifestEqual(
-        fields,
-        "source_validation_path",
-        model.sourceValidation.path,
-        "admission evidence"
-      );
-      requireChecksumEqual(
-        requireManifestField(fields, "source_validation_checksum", "admission evidence"),
-        model.sourceValidation.checksum,
-        "admission evidence source validation"
-      );
-    }
-    requireManifestEqual(
-      fields,
-      "runtime_smoke_path",
-      model.runtimeSmokeEvidence.path,
-      "admission evidence"
-    );
-    requireChecksumEqual(
-      requireManifestField(fields, "runtime_smoke_manifest_checksum", "admission evidence"),
-      model.runtimeSmokeEvidence.manifestChecksum,
-      "admission evidence runtime smoke"
-    );
-    requireManifestEqual(fields, "eval_path", model.evalEvidence.path, "admission evidence");
-    requireChecksumEqual(
-      requireManifestField(fields, "eval_manifest_checksum", "admission evidence"),
-      model.evalEvidence.manifestChecksum,
-      "admission evidence eval"
-    );
-    requireChecksumEqual(
-      requireManifestField(fields, "eval_case_evidence_checksum", "admission evidence"),
-      model.evalEvidence.checksum,
-      "admission evidence eval cases"
-    );
-    requireManifestEqual(
-      fields,
-      "runtime_smoke_status",
-      registryAdmissionRuntimeSmokeStatus,
-      "admission evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "eval_status",
-      registryAdmissionEvalStatus,
-      "admission evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "quality_gate",
-      registryAdmissionQualityGate,
-      "admission evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "quality_scope",
-      model.evalEvidence.qualityScope,
-      "admission evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "quality_boundary",
-      model.evalEvidence.qualityBoundary,
-      "admission evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "eval_dataset",
-      model.evalEvidence.evalDataset,
-      "admission evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "cases_passed",
-      String(model.evalEvidence.casesPassed),
-      "admission evidence"
-    );
-    requireManifestEqual(fields, "cases_failed", "0", "admission evidence");
-    requireManifestEqual(
-      fields,
-      "promotion_decision",
-      registryAdmissionPromotionDecision,
-      "admission evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "browser_selector_status",
-      registryAdmissionBrowserSelectorStatus,
-      "admission evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "public_claim_status",
-      registryAdmissionPublicClaimStatus,
-      "admission evidence"
-    );
-    requireManifestEqual(
-      fields,
-      "required_next_gate",
-      registryAdmissionRequiredNextGate,
-      "admission evidence"
-    );
-    requireCompositionEvidenceFields(fields, model, "admission evidence");
-    admission.fields = fields;
-    admission.verified = true;
-    return "admission evidence verified";
   }
 
   function setInteractive(enabled) {
@@ -14436,20 +10931,24 @@
   }
 
   function activeSelectorCompositionMatchesRuntime() {
-    const composition = state.activeComposition;
-    const diagnostics = state.exports ? readDiagnosticsJson() : null;
+    const model = paths.models[state.activeModelKey] || null;
+    const admission = model && model.browserComposition
+      ? model.browserComposition.admission
+      : null;
+    const runtimeState = state.runtimeState;
     return Boolean(
       state.modelLoaded &&
-      composition &&
-      diagnostics &&
-      diagnostics.model_loaded === true &&
-      diagnostics.composition_active === true &&
-      diagnostics.active_composition_bundle_sha256 === composition.sha256 &&
-      diagnostics.active_composition_id === composition.compositionId &&
-      diagnostics.active_composition_graph_sha256 === composition.activeGraphSha256 &&
-      diagnostics.active_route_policy_id === composition.routePolicyId &&
-      diagnostics.active_kv_format_id === composition.kvFormatId &&
-      diagnostics.active_composition_member_count === composition.memberCount
+      admission &&
+      state.runtimeClient &&
+      state.runtimeClient.status === "active" &&
+      runtimeState &&
+      runtimeState.state === "active-idle" &&
+      runtimeState.operationId === admission.operationId &&
+      runtimeState.activeComposition &&
+      runtimeState.activeComposition.graphIdentitySha256 ===
+        admission.composition.graphIdentitySha256 &&
+      runtimeState.activeComposition.memberTableSha256 ===
+        admission.composition.memberTableSha256
     );
   }
 
@@ -14458,68 +10957,63 @@
     state.controlsCanGenerate = generationEnabled;
     state.controlsCanSelectModel = Boolean(canSelectModel);
     el.generateButton.disabled = state.generation.inFlight ? false : !generationEnabled;
-    el.stepTokenButton.disabled = !generationEnabled || !state.hasContext;
     el.resetButton.disabled = !generationEnabled;
-    el.modelSelect.disabled = state.generation.inFlight || !canSelectModel || !state.exports;
+    el.modelSelect.disabled = state.generation.inFlight || !canSelectModel;
   }
 
   function setGenerationUi(status) {
-    const active = status === "waiting" || status === "generating" || status === "streaming";
+    const active = status === "waiting" || status === "generating";
     state.generation.inFlight = active;
     if (el.appShell) {
       el.appShell.dataset.generationState = active ? status : "idle";
     }
-    if (el.generateButton) {
-      el.generateButton.dataset.action = active ? "stop" : "send";
-      el.generateButton.setAttribute("aria-label", active ? "Stop response" : "Send message");
-      el.generateButton.title = active ? "Stop response" : "Send message";
-      el.generateButton.disabled = active ? false : !state.controlsCanGenerate;
-    }
-    if (el.sendIcon) {
-      el.sendIcon.hidden = active;
-    }
-    if (el.stopIcon) {
-      el.stopIcon.hidden = !active;
-    }
-    if (el.modelSelect) {
-      el.modelSelect.disabled = active || !state.controlsCanSelectModel || !state.exports;
-    }
+    el.generateButton.dataset.action = active ? "stop" : "send";
+    el.generateButton.setAttribute("aria-label", active ? "Stop response" : "Send message");
+    el.generateButton.title = active ? "Stop response" : "Send message";
+    el.generateButton.disabled = active ? false : !state.controlsCanGenerate;
+    if (el.sendIcon) el.sendIcon.hidden = active;
+    if (el.stopIcon) el.stopIcon.hidden = !active;
+    el.modelSelect.disabled = active || !state.controlsCanSelectModel;
     if (el.composerHint && !state.conversationPersistenceBlocked) {
       el.composerHint.textContent = active
-        ? (state.generation.stopRequested ? "Stopping after the current local operation" : "Generating locally")
+        ? (state.generation.stopRequested ? "Stopping local generation" : "Generating locally")
         : "Ready for a message";
     }
   }
 
   function requestGenerationStop() {
-    if (!state.generation.inFlight) {
-      return false;
-    }
+    if (!state.generation.inFlight) return false;
     state.generation.stopRequested = true;
-    setGenerationUi(el.appShell ? el.appShell.dataset.generationState : "streaming");
+    if (state.generation.abortController) state.generation.abortController.abort();
+    if (state.runtimeClient) state.runtimeClient.requestCancellation();
+    setGenerationUi("generating");
     return true;
   }
 
   function nextBrowserPaint() {
-    return new Promise((resolve) => window.requestAnimationFrame(() => resolve()));
+    return new Promise((resolve) => window.requestAnimationFrame(resolve));
   }
 
   function startGeneration(assistantMessageId) {
     state.generation.sequence += 1;
     state.generation.assistantMessageId = assistantMessageId;
     state.generation.stopRequested = false;
+    state.generation.abortController = new AbortController();
+    state.generation.rawOutput = null;
     setText(el.runtimeStatus, "Generating", false);
     setGenerationUi("waiting");
-    updateAssistantMessage(assistantMessageId, { status: "generating", text: "", errorCode: "" });
+    updateAssistantMessage(assistantMessageId, {
+      status: "generating",
+      text: "",
+      errorCode: ""
+    });
     setGenerationUi("generating");
     setControls(false, false);
     return state.generation.sequence;
   }
 
   function stopBeforeInference(assistantMessageId, sequence) {
-    if (!state.generation.stopRequested || sequence !== state.generation.sequence) {
-      return false;
-    }
+    if (!state.generation.stopRequested || sequence !== state.generation.sequence) return false;
     updateAssistantMessage(assistantMessageId, {
       status: "stopped",
       text: "",
@@ -14529,7 +11023,8 @@
     setGenerationUi("idle");
     state.generation.assistantMessageId = "";
     state.generation.stopRequested = false;
-    setControls(state.modelLoaded, Boolean(state.exports));
+    state.generation.abortController = null;
+    setControls(state.modelLoaded, Object.keys(paths.models).length > 0);
     runPendingGenerationAction();
     return true;
   }
@@ -14537,452 +11032,321 @@
   function runPendingGenerationAction() {
     const action = state.generation.pendingAction;
     state.generation.pendingAction = "";
-    if (action === "new-chat") {
-      window.requestAnimationFrame(startNewConversation);
-    }
+    if (action === "new-chat") window.requestAnimationFrame(startNewConversation);
   }
 
-  function rejectedGeneration(text) {
-    return /\b(?:rejected|quality gate|degenerate|output contract|unusable)\b/i.test(String(text || ""));
-  }
-
-  async function deliverGeneratedOutput(assistantMessageId, output, code, sequence) {
-    const text = String(output || "");
-    if (sequence !== state.generation.sequence) {
-      return;
-    }
-    if (code !== 0) {
-      const rejected = rejectedGeneration(text);
+  async function deliverGeneratedOutput(assistantMessageId, output, failure, sequence) {
+    if (sequence !== state.generation.sequence) return;
+    if (failure) {
+      const code = typeof failure.code === "string"
+        ? failure.code
+        : "model-runtime-client-generation-failed";
+      const rejected = Number.isInteger(failure.status) && failure.status > 0;
       updateAssistantMessage(assistantMessageId, {
         status: rejected ? "rejected" : "failed",
-        text,
-        errorCode: rejected ? "generation_rejected" : "generation_failed"
+        text: code,
+        errorCode: code
       });
       setText(el.runtimeStatus, rejected ? "Generation rejected" : "Generate failed", true);
-      renderSimpleError("", false);
-      setGenerationUi("idle");
-      state.generation.assistantMessageId = "";
-      state.generation.stopRequested = false;
-      setControls(state.modelLoaded, Boolean(state.exports));
-      runPendingGenerationAction();
-      return;
-    }
-
-    // WASM returns synchronously; progressive delivery reveals only that returned output.
-    updateAssistantMessage(assistantMessageId, { status: "streaming", text: "", errorCode: "" }, false);
-    setGenerationUi("streaming");
-    const characters = Array.from(text);
-    const chunkSize = Math.max(4, Math.ceil(characters.length / 24));
-    let delivered = "";
-    for (let index = 0; index < characters.length; index += chunkSize) {
-      if (state.generation.stopRequested || sequence !== state.generation.sequence) {
-        if (state.exports && typeof state.exports.reset_context === "function") {
-          state.exports.reset_context();
-        }
-        state.hasContext = false;
-        updateAssistantMessage(assistantMessageId, {
-          status: "stopped",
-          text: delivered,
-          errorCode: "stopped_by_user"
+      setText(el.errorState, code, true);
+    } else {
+      const cancelled = output.status.kind === "cancelled";
+      state.generation.rawOutput = output;
+      state.lastMeasuredTokens = output.tokenIds.length;
+      state.hasContext = !cancelled && output.committedKvBytes > 0;
+      if (state.runtimeState) {
+        state.runtimeState = Object.freeze({
+          ...state.runtimeState,
+          committedKvBytes: output.committedKvBytes
         });
-        setText(el.runtimeStatus, "Stopped", false);
-        setGenerationUi("idle");
-        state.generation.assistantMessageId = "";
-        state.generation.stopRequested = false;
-        setControls(state.modelLoaded, Boolean(state.exports));
-        runPendingGenerationAction();
-        return;
       }
-      delivered += characters.slice(index, index + chunkSize).join("");
-      updateAssistantMessage(assistantMessageId, { status: "streaming", text: delivered }, false);
-      await nextBrowserPaint();
+      updateAssistantMessage(assistantMessageId, {
+        status: cancelled ? "stopped" : "completed",
+        text: output.text,
+        errorCode: cancelled ? "stopped_by_user" : ""
+      });
+      setText(el.runtimeStatus, cancelled ? "Stopped" : "Ready", false);
+      setText(el.errorState, "none", false);
     }
-    updateAssistantMessage(assistantMessageId, { status: "completed", text, errorCode: "" });
-    setText(el.runtimeStatus, "Ready", false);
     setGenerationUi("idle");
     state.generation.assistantMessageId = "";
     state.generation.stopRequested = false;
-    setControls(state.modelLoaded, Boolean(state.exports));
+    state.generation.abortController = null;
+    setControls(state.modelLoaded, Object.keys(paths.models).length > 0);
+    renderDiagnostics();
     runPendingGenerationAction();
   }
 
-  function freeLoadedModelForSwitch(previousModelKey, selectedModel, wasModelLoaded) {
-    if (!state.exports || typeof state.exports.free_model !== "function" || !wasModelLoaded) {
-      return true;
+  async function ensureBrowserRuntimeAsset() {
+    if (state.runtimeAsset && state.runtimeAsset.wasmBytes instanceof ArrayBuffer &&
+        state.runtimeAsset.wasmBytes.byteLength > 0) {
+      return state.runtimeAsset;
     }
-    const code = state.exports.free_model();
-    const text = readLastResult() || `free_model returned ${code}`;
-    appendConsole(`free_model(${previousModelKey || "unknown"} -> ${selectedModel}) -> ${code}\n${text}`);
+    state.runtimeAsset = await browserRuntimeLoaderApi.load({
+      manifestUrl: paths.runtimeWasmManifest,
+      wasmUrl: paths.runtimeWasm,
+      fetchFunction: window.fetch.bind(window)
+    });
+    state.runtimeVariant = "worker-owned-wasm";
+    document.documentElement.dataset.runtimeVariant = state.runtimeVariant;
+    setText(el.wasmState, "verified", false);
     renderDiagnostics();
-    if (code !== 0) {
-      throw new Error(text);
-    }
-    state.activeComposition = null;
-    return true;
+    return state.runtimeAsset;
   }
 
-  function resetRuntimeBeforeComposition(selectedModel) {
-    if (!state.exports || typeof state.exports.reset_context !== "function") {
-      throw new Error("WASM runtime does not expose context reset");
+  function browserCompositionArtifacts(model, signal) {
+    const source = model && model.browserComposition;
+    if (!source || !source.admission || !(source.filesByRole instanceof Map)) {
+      throw new Error("The selected model is not a complete browser composition");
     }
-    const code = state.exports.reset_context();
-    const text = readLastResult() || `reset_context returned ${code}`;
-    appendConsole(`reset_context(${selectedModel}) -> ${code}\n${text}`);
-    renderDiagnostics();
-    if (code !== 0) {
-      throw new Error(text);
-    }
-    state.hasContext = false;
-    state.lastMeasuredTokens = 0;
-    return true;
+    return modelRuntimeClientApi.ACTIVATION_ROLES.map((role) => {
+      const file = source.filesByRole.get(role);
+      const artifact = source.admission.artifacts.find((entry) => entry.role === role);
+      if (!file || !artifact || file.name !== artifact.fileName ||
+          file.size !== artifact.byteCount) {
+        throw new Error(`The ${role} member no longer matches its admission`);
+      }
+      return {
+        role,
+        byteLength: file.size,
+        chunks: modelRuntimeClientApi.chunksFromBlob(
+          file,
+          modelRuntimeClientApi.MAXIMUM_BINARY_CHUNK_BYTES,
+          signal
+        )
+      };
+    });
   }
 
-  function activateAdmittedComposition(model, graphBytes) {
-    const composition = model && model.composition ? model.composition : null;
-    if (!composition || !(graphBytes instanceof Uint8Array)) {
-      throw new Error("Admitted composition graph was not available for activation");
+  function requireActivatedComposition(stateReport, admission) {
+    const active = stateReport && stateReport.activeComposition;
+    const compositionArtifact = admission.artifacts[5];
+    if (!active || stateReport.state !== "active-idle" ||
+        stateReport.operationId !== admission.operationId ||
+        active.graphIdentitySha256 !== admission.composition.graphIdentitySha256 ||
+        active.memberTableSha256 !== admission.composition.memberTableSha256 ||
+        active.artifactSha256 !== compositionArtifact.sha256 ||
+        active.artifactBytes !== compositionArtifact.byteCount) {
+      throw new Error("The worker activated a composition identity outside the admission");
     }
-    if (
-      !state.exports ||
-      typeof state.exports.validate_composition_graph !== "function" ||
-      typeof state.exports.activate_composition_graph !== "function"
-    ) {
-      throw new Error("WASM runtime does not expose immutable composition activation");
-    }
-    const digestBytes = hexToBytes(composition.sha256);
-    let graphPtr = 0;
-    let digestPtr = 0;
+    return stateReport;
+  }
+
+  async function activateBrowserComposition(model, loadId) {
+    const admission = model.browserComposition.admission;
+    assertAdmissionRuntime(admission);
+    let client = state.runtimeClient;
     try {
-      graphPtr = allocCopy(graphBytes);
-      digestPtr = allocCopy(digestBytes);
-      const validateCode = state.exports.validate_composition_graph(
-        graphPtr,
-        graphBytes.length,
-        digestPtr,
-        digestBytes.length
-      );
-      const validateText =
-        readLastResult() || `validate_composition_graph returned ${validateCode}`;
-      appendConsole(
-        `validate_composition_graph(${model.candidateId || model.label || model.path}) -> ${validateCode}\n${validateText}`
-      );
-      if (validateCode !== 0) {
-        throw new Error(validateText);
+      if (client && client.status === "active") {
+        if (client.operationId === admission.operationId &&
+            client.compositionId === admission.composition.graphIdentitySha256) {
+          return requireActivatedComposition(state.runtimeState, admission);
+        }
+        await client.advanceOperation({
+          operationId: admission.operationId,
+          compositionId: admission.composition.graphIdentitySha256
+        });
+      } else {
+        const runtimeAsset = await ensureBrowserRuntimeAsset();
+        if (loadId !== state.modelLoadSequence) {
+          throw new Error("Composition activation was superseded");
+        }
+        client = modelRuntimeClientApi.createBrowserClient(paths.runtimeWorker, 10 * 60 * 1000);
+        state.runtimeClient = client;
+        state.runtimeState = await client.initialize({
+          operationId: admission.operationId,
+          compositionId: admission.composition.graphIdentitySha256,
+          wasmBytes: runtimeAsset.wasmBytes,
+          wasmSha256: runtimeAsset.manifest.sha256,
+          policy: admission.runtime.policy,
+          transcriptRevision: state.transcriptRevision
+        });
       }
-      const activateCode = state.exports.activate_composition_graph(
-        graphPtr,
-        graphBytes.length,
-        digestPtr,
-        digestBytes.length
+      const transferController = new AbortController();
+      const stateReport = await client.activate(
+        browserCompositionArtifacts(model, transferController.signal),
+        (progress) => {
+          if (loadId !== state.modelLoadSequence) {
+            transferController.abort();
+            return;
+          }
+          const percent = Math.floor((progress.completedBytes / progress.totalBytes) * 100);
+          setText(el.modelState, `${progress.role} ${percent}%`, false);
+        }
       );
-      const activateText =
-        readLastResult() || `activate_composition_graph returned ${activateCode}`;
-      appendConsole(
-        `activate_composition_graph(${model.candidateId || model.label || model.path}) -> ${activateCode}\n${activateText}`
-      );
-      if (activateCode !== 0) {
-        throw new Error(activateText);
+      if (loadId !== state.modelLoadSequence) {
+        client.terminate("model-runtime-client-activation-superseded");
+        throw new Error("Composition activation was superseded");
       }
-    } finally {
-      release(digestPtr, digestBytes.length);
-      release(graphPtr, graphBytes.length);
+      return requireActivatedComposition(stateReport, admission);
+    } catch (error) {
+      if (client && client.status !== "terminated") {
+        client.terminate("model-runtime-client-activation-failed");
+      }
+      if (state.runtimeClient === client) {
+        state.runtimeClient = null;
+        state.runtimeState = null;
+      }
+      throw error;
     }
-    const diagnostics = readDiagnosticsJson();
-    if (
-      !diagnostics ||
-      diagnostics.model_loaded !== true ||
-      diagnostics.composition_active !== true ||
-      diagnostics.active_composition_bundle_sha256 !== composition.sha256 ||
-      diagnostics.active_composition_id !== composition.compositionId ||
-      diagnostics.active_composition_graph_sha256 !== composition.activeGraphSha256 ||
-      diagnostics.active_route_policy_id !== composition.routePolicyId ||
-      diagnostics.active_kv_format_id !== composition.kvFormatId ||
-      diagnostics.active_composition_member_count !== composition.memberCount
-    ) {
-      throw new Error("Activated composition diagnostics did not match the admission");
-    }
-    state.activeComposition = Object.freeze({ ...composition });
-    renderDiagnostics();
   }
 
-  async function loadSelectedModel() {
+  function browserCompositionProvenance(model) {
+    const admission = model.browserComposition.admission;
+    const quality = admission.qualification;
+    const modelArtifact = admission.artifacts[0];
+    return {
+      source_kind: "qualified-six-member-local-composition",
+      source_id: admission.modelId,
+      source_snapshot: `operation=${admission.operationId}`,
+      source_review: `source-evidence-sha256=${quality.sourceEvidenceSha256}`,
+      source_review_routes: "content-addressed admission; no path authority",
+      source_review_artifacts: `structural=${quality.structuralEvidenceSha256} / numerical=${quality.numericalEvidenceSha256}`,
+      source_validation: "worker-recomputed-six-member-activation",
+      model_shape: "slm2-composition-bound",
+      tokenizer: "tokenizer2-composition-bound",
+      quality_claim: quality.qualityClaim,
+      trained_quality_claim: quality.receiptId,
+      admission_status: "six-member-worker-activated",
+      slm_checksum: modelArtifact.sha256,
+      required_next_gate: "real-clean-profile-multi-turn-browser-round"
+    };
+  }
+
+  async function loadSelectedBrowserComposition() {
     const loadId = state.modelLoadSequence + 1;
     state.modelLoadSequence = loadId;
-    const selectedValue = el.modelSelect.value;
-    const selectedModel = paths.models[selectedValue]
-      ? selectedValue
-      : isPublicLocalOnlyHost() && !state.localModel
-        ? ""
-        : paths.models[localModelKey]
-          ? localModelKey
-          : Object.keys(paths.models)[0] || "";
-    if (!selectedModel) {
-      state.activeModelKey = "";
-      state.activeComposition = null;
+    const selectedModel = el.modelSelect.value;
+    const model = paths.models[selectedModel] || null;
+    clearBrowserAdmissionDiagnostics();
+    if (!model) {
       state.modelLoaded = false;
-      state.hasContext = false;
+      state.activeComposition = null;
+      state.activeModelKey = "";
       setInteractive(false);
-      renderProvenance("choose a local or P2P .slm", null, false);
-      setText(el.runtimeStatus, state.exports ? "Runtime ready" : "Booting", false);
-      setText(el.modelState, "choose a local or P2P .slm", false);
+      setText(el.runtimeStatus, "Runtime verified; choose a qualified composition", false);
+      setText(el.modelState, "choose six local members", false);
       setText(el.errorState, "none", false);
+      renderProvenance("choose a qualified SLM2 composition", null, false);
       renderDiagnostics();
-      setControls(false, Boolean(state.exports && Object.keys(paths.models).length > 0));
       return false;
     }
-    const model = paths.models[selectedModel];
-    const previousModelKey = state.activeModelKey;
-    const releaseLoadedModel = state.modelLoaded === true;
-    el.modelSelect.value = selectedModel;
-    const modelPath = model.path;
-    if (el.maxTokens && !el.maxTokens.dataset.userEdited && !el.maxTokens.dataset.presetApplied) {
-      el.maxTokens.value = el.maxTokens.value || String(model.maxTokens);
+    if (!model.browserComposition || !model.browserComposition.admission) {
+      setText(el.runtimeStatus, "Composition required", true);
+      setText(el.modelState, "unsupported model entry", true);
+      setText(el.errorState, "Only a qualified six-member SLM2 composition can run", true);
+      setControls(false, true);
+      return false;
     }
-    syncRangeControls();
-    state.activeModelKey = selectedModel;
-    if (state.memoryEndpoints.packedModelKey && state.memoryEndpoints.packedModelKey !== selectedModel) {
-      state.memoryEndpoints.packedContext = null;
-      state.memoryEndpoints.packedModelKey = "";
-      state.memoryEndpoints.retrievalReceipt = null;
-      state.memoryEndpoints.searchResults = state.memoryEndpoints.retrievalResults.map((result) => ({
-        ...result,
-        contextEligible: false
-      })).slice(0, memoryEndpointsMaxPreviewResults);
-    }
+    const admission = model.browserComposition.admission;
     state.modelLoaded = false;
-    state.activeComposition = null;
     state.hasContext = false;
     state.lastMeasuredTokens = 0;
-    document.documentElement.dataset.modelTransfer = "loading";
-    if (model.sourceManifest) {
-      model.sourceManifestVerified = false;
-      model.sourceManifestFields = null;
-      if (model.sourceManifest.sourceReview) {
-        model.sourceManifest.sourceReview.verified = false;
-        model.sourceManifest.sourceReview.fields = null;
-      }
-    }
-    if (model.sourceValidation) {
-      model.sourceValidation.verified = false;
-      model.sourceValidation.fields = null;
-    }
-    if (model.runtimeSmokeEvidence) {
-      model.runtimeSmokeEvidence.verified = false;
-      model.runtimeSmokeEvidence.fields = null;
-    }
-    if (model.evalEvidence) {
-      model.evalEvidence.verified = false;
-      model.evalEvidence.fields = null;
-    }
-    if (model.conversationEvidence) {
-      model.conversationEvidence.verified = false;
-      model.conversationEvidence.fields = null;
-    }
-    if (model.admissionEvidence) {
-      model.admissionEvidence.verified = false;
-      model.admissionEvidence.fields = null;
-    }
-    setLocalFileVerificationState(model, false);
+    state.generation.rawOutput = null;
     setInteractive(false);
-    el.response.textContent = "";
-    el.console.textContent = "";
-    if (releaseLoadedModel) {
-      freeLoadedModelForSwitch(previousModelKey, selectedModel, releaseLoadedModel);
-    }
-    state.modelManifest = null;
-    clearBrowserAdmissionDiagnostics();
-    renderProvenance("waiting for accepted model", null, false);
-    setText(el.runtimeStatus, "Loading local model");
-    setText(el.modelState, "loading");
+    setText(el.runtimeStatus, "Activating in isolated worker", false);
+    setText(el.modelState, "verifying composition", false);
+    setText(el.errorState, "none", false);
     const started = performance.now();
-    let modelTransfer = null;
-    let compositionGraphBytes = null;
     try {
-      if (model.companionImport) {
-        modelTransfer = await fetchCompanionModelTransfer(model, loadId);
-        compositionGraphBytes = await fetchAdmittedCompositionGraph(model, loadId);
-      } else if (model.localFile) {
-        modelTransfer = model.localFile.pendingTransfer || null;
-        model.localFile.pendingTransfer = null;
-        if (!modelTransfer || modelTransfer.consumed) {
-          throw new Error("Local import transfer was not available");
-        }
-        compositionGraphBytes = await fetchAdmittedCompositionGraph(model, loadId);
-      } else {
-        await loadSourceManifest(model);
-        await loadSourceReviewEvidence(model);
-        await loadSourceValidationEvidence(model);
-        await loadRuntimeSmokeEvidence(model);
-        await loadEvalEvidence(model);
-        await loadConversationEvidence(model);
-        await loadAdmissionEvidence(model);
-        compositionGraphBytes = await fetchAdmittedCompositionGraph(model, loadId);
-        modelTransfer = await fetchOwnedModelTransfer(
-        model,
-        modelPath,
-        ".slm model",
-        loadId
-      );
-      }
-    } catch (error) {
-      discardOwnedModelTransfer(modelTransfer);
-      if (loadId !== state.modelLoadSequence) {
-        return false;
-      }
+      state.runtimeState = await activateBrowserComposition(model, loadId);
       state.modelLoadMs = Math.round(performance.now() - started);
-      state.lastGenerateMs = 0;
+      state.activeModelKey = selectedModel;
+      state.activeComposition = Object.freeze({ ...admission.composition });
+      state.modelLoaded = true;
+      state.modelManifest = browserCompositionProvenance(model);
+      document.documentElement.dataset.activeModel = selectedModel;
+      document.documentElement.dataset.activeBrowserAdmissionSha256 =
+        model.browserComposition.admissionSha256;
+      document.documentElement.dataset.activeCompositionGraphSha256 =
+        admission.composition.graphIdentitySha256;
+      document.documentElement.dataset.activeQualificationReceiptId =
+        admission.qualification.receiptId;
+      setText(el.runtimeStatus, "Ready", false);
+      setText(el.modelState, `worker active (${state.modelLoadMs} ms)`, false);
+      setText(el.errorState, "none", false);
+      renderProvenance("qualified six-member composition", state.modelManifest, false);
+      setLocalModelStatus(`${admission.modelId} activated in the isolated worker`, false);
+      setControls(true, true);
+      renderDiagnostics();
+      return true;
+    } catch (error) {
+      if (loadId !== state.modelLoadSequence) return false;
+      state.modelLoadMs = Math.round(performance.now() - started);
       state.modelLoaded = false;
       state.activeComposition = null;
       state.hasContext = false;
-      state.lastMeasuredTokens = 0;
-      setText(el.modelState, "fetch error", true);
-      setText(el.runtimeStatus, "Model load failed", true);
-      setText(el.errorState, errorMessage(error), true);
-      renderProvenance("model not loaded", null, true);
-      setLocalFileVerificationState(model, false);
+      document.documentElement.dataset.activeModel = "";
+      const text = errorMessage(error);
+      setText(el.runtimeStatus, "Composition rejected", true);
+      setText(el.modelState, "activation failed", true);
+      setText(el.errorState, text, true);
+      renderProvenance("composition not active", null, true);
       setControls(false, true);
       renderDiagnostics();
       return false;
     }
-    if (loadId !== state.modelLoadSequence) {
-      discardOwnedModelTransfer(modelTransfer);
-      return false;
-    }
-    if (!modelTransfer) {
-      throw new Error("Admitted model transfer was not created");
-    }
-    document.documentElement.dataset.modelTransfer = modelTransfer.mode || "owned-transfer";
-    const loadCode = consumeOwnedModelTransfer(modelTransfer);
-    if (loadId !== state.modelLoadSequence) {
-      return false;
-    }
-    state.modelLoadMs = Math.round(performance.now() - started);
-    state.lastGenerateMs = 0;
-    state.modelLoaded = false;
-    state.activeComposition = null;
-    document.documentElement.dataset.activeModel = "";
-    state.hasContext = false;
-    state.lastMeasuredTokens = 0;
-    setText(
-      el.modelState,
-      loadCode === 0 ? "activating composition" : `error ${loadCode}`,
-      loadCode !== 0
-    );
-    setText(
-      el.runtimeStatus,
-      loadCode === 0 ? "Activating composition" : "Model rejected",
-      loadCode !== 0
-    );
-    setText(el.errorState, loadCode === 0 ? "none" : readLastResult(), loadCode !== 0);
-    if (loadCode === 0) {
-      try {
-        resetRuntimeBeforeComposition(selectedModel);
-        activateAdmittedComposition(model, compositionGraphBytes);
-      } catch (error) {
-        const text = errorMessage(error);
-        if (typeof state.exports.free_model === "function") {
-          state.exports.free_model();
-        }
-        state.modelLoaded = false;
-        state.activeComposition = null;
-        state.hasContext = false;
-        state.lastMeasuredTokens = 0;
-        setText(el.modelState, "composition activation rejected", true);
-        setText(el.runtimeStatus, "Model load failed", true);
-        setText(el.errorState, text, true);
-        renderProvenance("model not loaded", null, true);
-        setLocalFileVerificationState(model, false);
-        setControls(false, true);
-        renderDiagnostics();
-        return false;
-      }
-      state.modelLoaded = true;
-      document.documentElement.dataset.activeModel = selectedModel;
-      setText(el.modelState, `loaded (${state.modelLoadMs} ms)`, false);
-      setText(el.runtimeStatus, "Ready", false);
-      setText(el.errorState, "none", false);
-      if (model.localFile) {
-        const receiptSummary = localImportReceiptSummary(model.localFile.importReceipt);
-        setLocalModelStatus(
-          `${model.localFile.name} / ${formatByteCount(model.localFile.byteLength)} / ${model.localFile.sha256} / ${model.localFile.checksum}${receiptSummary ? ` / ${receiptSummary}` : ""} / loaded`,
-          false
-        );
-      }
-      renderProvenance("loading local manifest", null, false);
-      await loadModelManifest(model);
-      if (loadId !== state.modelLoadSequence) {
-        return false;
-      }
-    } else {
-      renderProvenance("model rejected", null, true);
-    }
-    setLocalFileVerificationState(model, loadCode === 0);
-    if (loadCode === 0 && state.memoryEndpoints.retrievalCandidates.length > 0) {
-      await refreshMemoryEndpointsPackedContext();
-      renderMemoryEndpointsSearchResults();
-    }
-    if (model.companionImport) {
-      setCompanionStatus(
-        "paired",
-        loadCode === 0
-          ? `${model.label} loaded from verified companion storage`
-          : `${model.label} was rejected by the browser runtime`,
-        loadCode !== 0
-      );
-    }
-    setControls(loadCode === 0, true);
-    renderDiagnostics();
-    return loadCode === 0;
   }
 
-  async function boot() {
-    try {
-      setText(el.runtimeStatus, "Loading runtime");
-      setInteractive(false);
-      const wasmBytes = await loadRuntimeWasmBytes();
-      state.instance = await WebAssembly.instantiate(wasmBytes, {});
-      state.exports = state.instance.instance.exports;
-      state.wasmMemoryInitialPages = wasmMemoryInitialPages();
-      const initCode = state.exports.init_runtime();
-      setText(el.wasmState, initCode === 0 ? "loaded" : `error ${initCode}`, initCode !== 0);
-      if (initCode !== 0) {
-        setText(el.runtimeStatus, "Runtime rejected", true);
-        setText(el.errorState, readLastResult(), true);
-        renderDiagnostics();
-        return;
+  function prompt2ConversationMessages(assistantMessageId) {
+    const conversation = activeConversation();
+    if (!conversation) throw new Error("The active conversation is unavailable");
+    const messages = [];
+    for (const message of conversation.messages) {
+      if (message.id === assistantMessageId) break;
+      if (message.role === "user" ||
+          (message.role === "assistant" && message.status === "completed")) {
+        messages.push({ role: message.role, content: message.text });
       }
-      restoreImportedModelOptions();
-      await loadSelectorRegistry();
-      await loadSelectedModel();
-    } catch (error) {
-      setText(el.runtimeStatus, "Boot failed", true);
-      setText(el.modelState, "boot error", true);
-      setText(el.errorState, errorMessage(error), true);
     }
+    if (messages.length === 0 || messages[messages.length - 1].role !== "user") {
+      throw new Error("Prompt2 context must end with the current user turn");
+    }
+    return Object.freeze(messages);
   }
 
-  el.form.addEventListener("submit", async function (event) {
+  function prompt2Sampling(admission) {
+    const ui = readSamplingConfig();
+    const defaults = admission.runtime.defaultSampling;
+    const temperatureMillionths = Math.round(ui.temperature * 1000000);
+    const greedy = temperatureMillionths === 0;
+    const maximumNewTokens = Math.min(
+      defaults.maximumNewTokens,
+      admission.runtime.policy.maximumSequenceTokens,
+      clampInteger(el.maxTokens.value, 1, 4096, defaults.maximumNewTokens)
+    );
+    el.maxTokens.value = String(maximumNewTokens);
+    syncRangeControls();
+    state.latestSampling = Object.freeze({
+      temperature: temperatureMillionths / 1000000,
+      topK: greedy ? 1 : ui.topK,
+      topP: greedy ? 1 : ui.topP,
+      seed: ui.seed,
+      repetitionPenalty: defaults.repetitionPenaltyMillionths / 1000000
+    });
+    return Object.freeze({
+      temperatureMillionths,
+      topK: greedy ? 1 : ui.topK,
+      topPMillionths: greedy ? 1000000 : Math.round(ui.topP * 1000000),
+      repetitionPenaltyMillionths: defaults.repetitionPenaltyMillionths,
+      repetitionWindow: defaults.repetitionWindow,
+      maximumNewTokens
+    });
+  }
+
+  async function submitBrowserConversation(event) {
     event.preventDefault();
     if (state.generation.inFlight) {
       requestGenerationStop();
       return;
     }
-    if (!state.exports) {
-      return;
-    }
     if (!activeSelectorCompositionMatchesRuntime()) {
       setText(el.runtimeStatus, "Composition required", true);
-      setText(
-        el.errorState,
-        "Generation requires the exact admitted selector composition",
-        true
-      );
-      setControls(false, Boolean(state.exports));
+      setText(el.errorState, "Activate one qualified six-member composition before chatting", true);
+      setControls(false, Object.keys(paths.models).length > 0);
       return;
     }
-    if (el.appShell && el.appShell.dataset.mode === "simple") {
-      syncSemanticControls(true);
-    }
+    if (el.appShell && el.appShell.dataset.mode === "simple") syncSemanticControls(true);
     const promptText = el.prompt.value;
     if (!promptText.trim()) {
       el.prompt.focus();
@@ -14998,346 +11362,129 @@
     const assistantMessage = beginConversationTurn(promptText);
     const generationSequence = startGeneration(assistantMessage.id);
     await nextBrowserPaint();
-    if (stopBeforeInference(assistantMessage.id, generationSequence)) {
-      return;
-    }
-    state.lastInferenceHistoryTurns = 0;
-    const calculatorRequest = calculatorApi.parseRequest(promptText);
-    if (calculatorRequest && typeof state.exports.calculate === "function") {
-      const expressionBytes = state.encoder.encode(calculatorRequest.expression);
-      let ptr = 0;
-      let code = 1;
-      let result = "";
-      const started = performance.now();
-      try {
-        ptr = allocCopy(expressionBytes);
-        code = state.exports.calculate(ptr, expressionBytes.length);
-        result = readLastResult();
-      } catch (error) {
-        result = errorMessage(error);
-      } finally {
-        if (ptr) {
-          release(ptr, expressionBytes.length);
-        }
-      }
-      const text = code === 0
-        ? calculatorApi.formatResponse(calculatorRequest.expression, result)
-        : result || "calculator failed";
-      state.lastGenerateMs = Math.round(performance.now() - started);
-      state.lastMeasuredTokens = 0;
-      const memorySuffix = runtimeMemorySuffix();
-      el.console.textContent = `calculate(route=${calculatorRequest.route}${memorySuffix}) -> ${code} in ${state.lastGenerateMs} ms\n${text}`;
-      setText(el.errorState, code === 0 ? "none" : text, code !== 0);
-      await deliverGeneratedOutput(assistantMessage.id, text, code, generationSequence);
-      renderDiagnostics();
-      captureRun(promptText, text, code !== 0);
-      return;
-    }
-    let runtimePromptText = "";
-    try {
-      runtimePromptText = runtimePromptForModel(promptText);
-    } catch (error) {
-      const text = errorMessage(error);
-      setText(el.errorState, text, true);
-      el.console.textContent = text;
-      await deliverGeneratedOutput(assistantMessage.id, text, 1, generationSequence);
-      renderDiagnostics();
-      captureRun(promptText, text, true);
-      return;
-    }
-    const bytes = state.encoder.encode(runtimePromptText);
-    // Keeps prompt transfer bytes inside the runtime input envelope.
-    if (bytes.length > runtimePromptByteLimit) {
-      const text = "prompt byte limit exceeded";
-      setText(el.errorState, text, true);
-      el.console.textContent = text;
-      await deliverGeneratedOutput(assistantMessage.id, text, 1, generationSequence);
-      renderDiagnostics();
-      captureRun(promptText, text, true);
-      return;
-    }
-    let ptr = 0;
-    try {
-      ptr = allocCopy(bytes);
-    } catch (error) {
-      const text = errorMessage(error);
-      setText(el.errorState, text, true);
-      el.console.textContent = text;
-      await deliverGeneratedOutput(assistantMessage.id, text, 1, generationSequence);
-      renderDiagnostics();
-      captureRun(promptText, text, true);
-      return;
-    }
-    const maxTokens = Math.max(1, Math.min(512, Number.parseInt(el.maxTokens.value, 10) || 1));
-    el.maxTokens.value = String(maxTokens);
-    syncRangeControls();
-    let sampling = null;
-    try {
-      sampling = applySamplingConfig();
-    } catch (error) {
-      release(ptr, bytes.length);
-      const text = errorMessage(error);
-      setText(el.errorState, text, true);
-      el.console.textContent = text;
-      await deliverGeneratedOutput(assistantMessage.id, text, 1, generationSequence);
-      renderDiagnostics();
-      captureRun(promptText, text, true);
-      return;
-    }
-    if (expectsTwoSentencePrompt(promptText) && typeof state.exports.generate_two_sentence_text === "function") {
-      release(ptr, bytes.length);
-      state.lastInferenceHistoryTurns = 0;
-      setControls(false, false);
-      setText(el.runtimeStatus, "Generating", false);
-      const started = performance.now();
-      let code = 0;
-      let text = "";
-      let firstBytes = null;
-      let secondBytes = null;
-      let firstPtr = 0;
-      let secondPtr = 0;
-      let variantIndex = 0;
-      try {
-        const variants = twoSentenceFieldPromptVariants(promptText);
-        for (let index = 0; index < variants.length; index += 1) {
-          variantIndex = index;
-          const firstPrompt = runtimePromptForModel(variants[index].first, {
-            includeHistory: false,
-            trackHistory: false
-          });
-          const secondPrompt = runtimePromptForModel(variants[index].second, {
-            includeHistory: false,
-            trackHistory: false
-          });
-          firstBytes = state.encoder.encode(firstPrompt);
-          secondBytes = state.encoder.encode(secondPrompt);
-          if (
-            firstBytes.length > runtimePromptByteLimit ||
-            secondBytes.length > runtimePromptByteLimit
-          ) {
-            throw new Error("two-sentence prompt byte limit exceeded");
-          }
-          firstPtr = allocCopy(firstBytes);
-          secondPtr = allocCopy(secondBytes);
-          code = state.exports.generate_two_sentence_text(
-            firstPtr,
-            firstBytes.length,
-            secondPtr,
-            secondBytes.length,
-            twoSentenceFieldBudget(maxTokens),
-            twoSentenceFieldBudget(maxTokens)
-          );
-          text = readLastResult();
-          release(firstPtr, firstBytes.length);
-          release(secondPtr, secondBytes.length);
-          firstPtr = 0;
-          secondPtr = 0;
-          firstBytes = null;
-          secondBytes = null;
-          if (code === 0 && twoSentenceOutputLooksUsable(text, promptText)) {
-            break;
-          }
-        }
-      } catch (error) {
-        code = 1;
-        text = errorMessage(error);
-      } finally {
-        if (firstPtr && firstBytes) {
-          release(firstPtr, firstBytes.length);
-        }
-        if (secondPtr && secondBytes) {
-          release(secondPtr, secondBytes.length);
-        }
-      }
-      state.lastGenerateMs = Math.round(performance.now() - started);
-      state.lastMeasuredTokens = 0;
-      state.latestSampling = sampling;
-      state.hasContext = false;
-      const memorySuffix = runtimeMemorySuffix();
-      el.console.textContent = `generate_two_sentence_text(variant=${variantIndex}, max_new_tokens=${maxTokens}, temperature=${sampling.temperature}, top_k=${sampling.topK}, top_p=${sampling.topP}, seed=${sampling.seed}${memorySuffix}) -> ${code} in ${state.lastGenerateMs} ms\n${text}`;
-      setText(el.errorState, code === 0 ? "none" : text, code !== 0);
-      await deliverGeneratedOutput(assistantMessage.id, text, code, generationSequence);
-      renderDiagnostics();
-      captureRun(promptText, text, code !== 0);
-      return;
-    }
-    if (expectsJsonObjectPrompt(promptText) && typeof state.exports.generate_status_reason_json === "function") {
-      release(ptr, bytes.length);
-      state.lastInferenceHistoryTurns = 0;
-      setControls(false, false);
-      setText(el.runtimeStatus, "Generating", false);
-      const started = performance.now();
-      let code = 0;
-      let text = "";
-      let statusBytes = null;
-      let reasonBytes = null;
-      let statusPtr = 0;
-      let reasonPtr = 0;
-      try {
-        const statusPrompt = runtimePromptForModel(statusReasonJsonFieldPrompt(promptText, "status"), {
-          includeHistory: false,
-          trackHistory: false
-        });
-        const reasonPrompt = runtimePromptForModel(statusReasonJsonFieldPrompt(promptText, "reason"), {
-          includeHistory: false,
-          trackHistory: false
-        });
-        statusBytes = state.encoder.encode(statusPrompt);
-        reasonBytes = state.encoder.encode(reasonPrompt);
-        if (
-          statusBytes.length > runtimePromptByteLimit ||
-          reasonBytes.length > runtimePromptByteLimit
-        ) {
-          throw new Error("structured JSON prompt byte limit exceeded");
-        }
-        statusPtr = allocCopy(statusBytes);
-        reasonPtr = allocCopy(reasonBytes);
-        code = state.exports.generate_status_reason_json(
-          statusPtr,
-          statusBytes.length,
-          reasonPtr,
-          reasonBytes.length,
-          statusReasonJsonFieldBudget("status", maxTokens),
-          statusReasonJsonFieldBudget("reason", maxTokens)
-        );
-        text = readLastResult();
-      } catch (error) {
-        code = 1;
-        text = errorMessage(error);
-      } finally {
-        if (statusPtr && statusBytes) {
-          release(statusPtr, statusBytes.length);
-        }
-        if (reasonPtr && reasonBytes) {
-          release(reasonPtr, reasonBytes.length);
-        }
-      }
-      state.lastGenerateMs = Math.round(performance.now() - started);
-      state.lastMeasuredTokens = 0;
-      state.latestSampling = sampling;
-      state.hasContext = false;
-      const memorySuffix = runtimeMemorySuffix();
-      el.console.textContent = `generate_status_reason_json(max_new_tokens=${maxTokens}, temperature=${sampling.temperature}, top_k=${sampling.topK}, top_p=${sampling.topP}, seed=${sampling.seed}${memorySuffix}) -> ${code} in ${state.lastGenerateMs} ms\n${text}`;
-      setText(el.errorState, code === 0 ? "none" : text, code !== 0);
-      await deliverGeneratedOutput(assistantMessage.id, text, code, generationSequence);
-      renderDiagnostics();
-      captureRun(promptText, text, code !== 0);
-      return;
-    }
-    setControls(false, false);
-    setText(el.runtimeStatus, "Generating", false);
+    if (stopBeforeInference(assistantMessage.id, generationSequence)) return;
+    const model = paths.models[state.activeModelKey];
+    const admission = model.browserComposition.admission;
+    const conversation = activeConversation();
     const started = performance.now();
-    let code = 1;
-    let text = "";
+    let output = null;
+    let failure = null;
     try {
-      code = state.exports.generate(ptr, bytes.length, maxTokens);
-      text = readLastResult();
+      if (state.transcriptRevision === ((1n << 64n) - 1n)) {
+        throw new Error("The browser transcript revision is exhausted");
+      }
+      state.transcriptRevision += 1n;
+      const conversationId = await modelRuntimeClientApi.identityFromText(
+        "tinyrustlm.browser-conversation/1",
+        conversation.id
+      );
+      const turnId = await modelRuntimeClientApi.identityFromText(
+        "tinyrustlm.browser-turn/1",
+        assistantMessage.turnId
+      );
+      const generationId = await modelRuntimeClientApi.identityFromText(
+        "tinyrustlm.browser-generation/1",
+        `${conversation.id}\n${assistantMessage.turnId}\n${assistantMessage.id}\n${generationSequence}`
+      );
+      state.runtimeState = await state.runtimeClient.setTranscript(
+        state.transcriptRevision,
+        conversationId
+      );
+      const requestBytes = prompt2RequestApi.encodeRequest({
+        messages: prompt2ConversationMessages(assistantMessage.id),
+        sampling: prompt2Sampling(admission),
+        seed: BigInt(state.latestSampling.seed)
+      });
+      output = await state.runtimeClient.generate({
+        conversationId,
+        turnId,
+        generationId,
+        promptRequest: requestBytes.buffer,
+        signal: state.generation.abortController.signal,
+        onStep(step) {
+          if (step.emittedTokenId !== null) state.lastMeasuredTokens += 1;
+        }
+      });
     } catch (error) {
-      text = errorMessage(error);
-    } finally {
-      release(ptr, bytes.length);
+      failure = error;
+      if (error && error.terminal === true) {
+        state.runtimeClient = null;
+        state.runtimeState = null;
+        state.modelLoaded = false;
+        state.activeComposition = null;
+        state.hasContext = false;
+      }
     }
     state.lastGenerateMs = Math.round(performance.now() - started);
-    state.lastMeasuredTokens = 0;
-    state.latestSampling = sampling;
-    state.hasContext = code === 0;
-    const memorySuffix = runtimeMemorySuffix();
-    el.console.textContent = `generate(max_new_tokens=${maxTokens}, temperature=${sampling.temperature}, top_k=${sampling.topK}, top_p=${sampling.topP}, seed=${sampling.seed}, repetition_penalty=${sampling.repetitionPenalty}${memorySuffix}) -> ${code} in ${state.lastGenerateMs} ms\n${text}`;
-    setText(el.errorState, code === 0 ? "none" : text, code !== 0);
-    await deliverGeneratedOutput(assistantMessage.id, text, code, generationSequence);
-    renderDiagnostics();
-    captureRun(promptText, text, code !== 0);
-  });
+    await deliverGeneratedOutput(assistantMessage.id, output, failure, generationSequence);
+    const resultText = output ? output.text : errorMessage(failure);
+    appendConsole(
+      `worker_generate(status=${output ? output.status.kind : "failed"}, tokens=${output ? output.tokenIds.length : 0}) in ${state.lastGenerateMs} ms`
+    );
+    captureRun(promptText, resultText, Boolean(failure));
+  }
 
-  el.stepTokenButton.addEventListener("click", function () {
-    if (!state.exports || !state.hasContext || !activeSelectorCompositionMatchesRuntime()) {
-      return;
-    }
-    let sampling = null;
+  async function boot() {
     try {
-      sampling = applySamplingConfig();
-    } catch (error) {
-      const text = errorMessage(error);
-      setText(el.errorState, text, true);
-      appendConsole(text);
-      renderDiagnostics();
-      setControls(true, true);
-      return;
-    }
-    setControls(false, false);
-    setText(el.runtimeStatus, "Generating", false);
-    const started = performance.now();
-    const code = state.exports.generate_next_token();
-    state.lastGenerateMs = Math.round(performance.now() - started);
-    const text = readLastResult();
-    const resultText = text || `generate_next_token failed (${code})`;
-    const consoleText = `generate_next_token(temperature=${sampling.temperature}, top_k=${sampling.topK}, top_p=${sampling.topP}, seed=${sampling.seed}, repetition_penalty=${sampling.repetitionPenalty}) -> ${code} in ${state.lastGenerateMs} ms\n${resultText}`;
-    state.lastMeasuredTokens = code === 0 ? 1 : 0;
-    state.hasContext = code === 0;
-    appendConsole(consoleText);
-    if (code === 0) {
+      setText(el.runtimeStatus, "Verifying browser runtime");
+      setInteractive(false);
+      await ensureBrowserRuntimeAsset();
+      paths.models = Object.create(null);
+      if (state.localModel) paths.models[localModelKey] = state.localModel;
+      renderModelOptions(paths.models, false);
+      setText(el.runtimeStatus, "Runtime verified; choose a qualified composition", false);
+      setText(el.modelState, "choose six local members", false);
       setText(el.errorState, "none", false);
-      setText(el.runtimeStatus, "Ready", false);
-      extendAssistantMessage(text);
-    } else {
-      setText(el.errorState, resultText, true);
-      setText(el.runtimeStatus, "Step token failed", true);
-      const conversation = activeConversation();
-      const latestAssistant = conversation ? conversationApi.latestAssistantMessage(conversation) : null;
-      if (latestAssistant) {
-        updateAssistantMessage(latestAssistant.id, {
-          status: "failed",
-          text: latestAssistant.text ? `${latestAssistant.text}\n\n${resultText}` : resultText,
-          errorCode: "step_token_failed"
-        });
-      }
+      setControls(false, Object.keys(paths.models).length > 0);
+      renderDiagnostics();
+    } catch (error) {
+      setText(el.runtimeStatus, "Boot failed", true);
+      setText(el.modelState, "boot error", true);
+      setText(el.errorState, errorMessage(error), true);
     }
-    renderDiagnostics();
-    captureRun(el.prompt ? el.prompt.value : "", resultText, code !== 0);
-    setControls(true, true);
-  });
+  }
+
+  el.form.addEventListener("submit", submitBrowserConversation);
 
   el.modelSelect.addEventListener("change", function () {
-    if (!state.exports) {
-      return;
-    }
     loadSelectedModelWithConsent().catch((error) => {
       setText(el.runtimeStatus, "Model load failed", true);
       setText(el.modelState, "unexpected error", true);
       setText(el.errorState, errorMessage(error), true);
-      setControls(false, Boolean(state.exports));
+      setControls(false, Object.keys(paths.models).length > 0);
     });
   });
 
   el.importLocalModelButton.addEventListener("click", function () {
-    importLocalModelFile().catch((error) => {
+    importBrowserComposition().catch((error) => {
       const text = errorMessage(error);
       setLocalModelStatus(text, true);
       setText(el.errorState, text, true);
-      if (state.exports) {
-        setControls(state.modelLoaded, true);
-      }
+      setControls(state.modelLoaded, Object.keys(paths.models).length > 0);
     });
   });
 
   el.localModelFile.addEventListener("change", function () {
-    const selectedFiles = localModelSelectedFiles();
-    const selectionError = localModelSelectionError(selectedFiles);
-    if (selectionError) {
-      setLocalModelStatus(selectionError, true);
-      return;
+    try {
+      const selection = selectedBrowserCompositionFiles();
+      const selectionError = browserCompositionSelectionError(selection);
+      if (selectionError) {
+        setLocalModelStatus(selectionError, true);
+        return;
+      }
+      if (selection.selected.length === 0) {
+        setLocalModelStatus("waiting", false);
+        return;
+      }
+      const totalBytes = Array.from(selection.artifactsByName.values())
+        .reduce((sum, file) => sum + file.size, 0);
+      setLocalModelStatus(
+        `Complete six-member composition selected / ${formatByteCount(totalBytes)}`,
+        false
+      );
+    } catch (error) {
+      setLocalModelStatus(errorMessage(error), true);
     }
-    const file = selectedFiles.slm;
-    if (!file) {
-      setLocalModelStatus("waiting", false);
-      return;
-    }
-    const name = safeLocalModelName(file.name);
-    const expected = state.selectedCatalogEntry
-      ? ` / expecting ${state.selectedCatalogEntry.displayName}`
-      : "";
-    const receipt = selectedFiles.receipt ? " / MiniModel receipt selected" : "";
-    setLocalModelStatus(`${name} / ${formatByteCount(file.size)} selected${receipt}${expected}`, false);
   });
 
   if (el.inspectLocalMemoryPackageButton) {
@@ -15679,15 +11826,13 @@
   }
 
   el.resetButton.addEventListener("click", function () {
-    if (state.exports) {
-      state.exports.reset_context();
-      state.lastGenerateMs = 0;
-      state.lastMeasuredTokens = 0;
-      state.hasContext = false;
-      el.console.textContent = "context reset";
-      renderDiagnostics();
-      setControls(true, true);
-    }
+    state.lastGenerateMs = 0;
+    state.lastMeasuredTokens = 0;
+    state.hasContext = false;
+    state.generation.rawOutput = null;
+    el.console.textContent = "Presentation context reset; the next request rebuilds Prompt2 context";
+    renderDiagnostics();
+    setControls(state.modelLoaded, true);
   });
 
   el.clearChatButton.addEventListener("click", function () {

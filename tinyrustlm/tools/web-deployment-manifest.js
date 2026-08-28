@@ -115,7 +115,7 @@ function expectedStaticPaths(siteRoot) {
   ).map((name) => `app/${name}`);
   const runtimeFiles = listRegularFiles(
     path.join(siteRoot, "runtime"),
-    (name) => /^tinyrustlm(?:-simd)?\.wasm(?:\.manifest)?$/u.test(name)
+    (name) => /^tinyrustlm-browser-runtime\.wasm(?:\.manifest\.json)?$/u.test(name)
   ).map((name) => `runtime/${name}`);
   const updateFiles = listRegularFiles(
     path.join(siteRoot, "updates"),
@@ -295,10 +295,8 @@ function validateWebDeploymentManifest(options = {}) {
     "app/browser-model-admission.js",
     "app/memory-endpoints-enrollment.js",
     "app/site-release.js",
-    "runtime/tinyrustlm.wasm",
-    "runtime/tinyrustlm-simd.wasm",
-    "runtime/tinyrustlm.wasm.manifest",
-    "runtime/tinyrustlm-simd.wasm.manifest",
+    "runtime/tinyrustlm-browser-runtime.wasm",
+    "runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
     "updates/updates.css",
     "companion/index.html",
     "updates/index.html",
@@ -326,10 +324,8 @@ function validateWebDeploymentManifest(options = {}) {
   );
   for (const dependency of [
     ...shellAssetPaths,
-    "runtime/tinyrustlm.wasm",
-    "runtime/tinyrustlm-simd.wasm",
-    "runtime/tinyrustlm.wasm.manifest",
-    "runtime/tinyrustlm-simd.wasm.manifest",
+    "runtime/tinyrustlm-browser-runtime.wasm",
+    "runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
     "updates/updates.css"
   ]) {
     invariant(

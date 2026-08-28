@@ -46,13 +46,15 @@ test("public site configuration returns 404 for every slm route", () => {
   assert.match(apacheRules, /RewriteRule \(\^\|\/\)\.\*\\\.slm\$ - \[R=404,L,NC\]/);
 });
 
-test("browser applies the admitted model repetition penalty through the WASM ABI", () => {
+test("browser binds the admitted Sampling2 repetition penalty into Prompt2", () => {
   const app = fs.readFileSync(appPath, "utf8");
 
-  assert.match(app, /repetitionPenalty:\s*admitted\.runtime\.repetitionPenalty/);
-  assert.match(app, /typeof state\.exports\.set_sampling_config_v2 !== "function"/);
+  assert.match(app, /const defaults = admission\.runtime\.defaultSampling/);
   assert.match(
     app,
-    /state\.exports\.set_sampling_config_v2\([\s\S]*?config\.repetitionPenalty/
+    /repetitionPenaltyMillionths:\s*defaults\.repetitionPenaltyMillionths/
   );
+  assert.match(app, /sampling:\s*prompt2Sampling\(admission\)/);
+  assert.doesNotMatch(app, /set_sampling_config_v2/);
+  assert.doesNotMatch(app, /state\.exports/);
 });

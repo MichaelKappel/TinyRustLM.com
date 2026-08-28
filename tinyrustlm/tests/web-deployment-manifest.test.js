@@ -37,8 +37,9 @@ test("web deployment manifest is the exact no-model publication closure", (conte
     generatedRoot: materializedRelease(context)
   });
   const paths = new Set(result.files.map((file) => file.remote));
-  assert.equal(result.files.length, 26);
+  assert.equal(result.files.length, 25);
   assert.ok(paths.has("app/browser-model-admission.js"));
+  assert.ok(paths.has("app/browser-runtime-loader.js"));
   assert.ok(paths.has("app/prompt2-request.js"));
   assert.ok(paths.has("app/model-runtime-client.js"));
   assert.ok(paths.has("app/model-runtime-worker.js"));
@@ -48,8 +49,10 @@ test("web deployment manifest is the exact no-model publication closure", (conte
   assert.ok(paths.has("companion/index.html"));
   assert.ok(paths.has(".well-known/site-release.json"));
   assert.ok(paths.has(".well-known/site-release-history.json"));
-  assert.ok(paths.has("runtime/tinyrustlm.wasm"));
-  assert.ok(paths.has("runtime/tinyrustlm-simd.wasm"));
+  assert.ok(paths.has("runtime/tinyrustlm-browser-runtime.wasm"));
+  assert.ok(paths.has("runtime/tinyrustlm-browser-runtime.wasm.manifest.json"));
+  assert.equal(paths.has("runtime/tinyrustlm.wasm"), false);
+  assert.equal(paths.has("runtime/tinyrustlm-simd.wasm"), false);
   assert.equal(Array.from(paths).some((entry) => /\.slm(?:\.|$)/i.test(entry)), false);
   assert.deepEqual(
     result.manifest.publish.slice(-5).map((entry) => entry.remote),

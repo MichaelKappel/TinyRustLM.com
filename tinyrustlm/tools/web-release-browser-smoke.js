@@ -317,7 +317,7 @@ async function runPageObservation(
     if (route.kind === "application") {
       await page.locator("#wasmState").waitFor({ state: "attached", timeout: 10_000 });
       await page.waitForFunction(
-        () => document.getElementById("wasmState")?.textContent?.trim() === "loaded",
+        () => document.getElementById("wasmState")?.textContent?.trim() === "verified",
         null,
         { timeout: 30_000 }
       );
@@ -374,6 +374,9 @@ async function runPageObservation(
       return {
         appShellPresent: Boolean(appShell),
         browserModelAdmissionPresent: Boolean(window.TinyRustLMBrowserModelAdmission),
+        browserRuntimeLoaderPresent: Boolean(window.TinyRustLMBrowserRuntimeLoader),
+        prompt2RequestPresent: Boolean(window.TinyRustLMPrompt2Request),
+        modelRuntimeClientPresent: Boolean(window.TinyRustLMModelRuntimeClient),
         memoryEnrollmentPresent: Boolean(window.TinyRustLMMemoryEndpointsEnrollment),
         runtimeVariant: document.documentElement.dataset.runtimeVariant || "",
         wasmState: document.getElementById("wasmState")?.textContent?.trim() || "",
@@ -466,8 +469,8 @@ async function runPageObservation(
           Object.freeze({ status: response.status, target: response.target })
         )
       ),
-      wasmState: boundedStateIdentity(state.wasmState, ["loaded"]),
-      runtimeVariant: boundedStateIdentity(state.runtimeVariant, ["scalar", "simd128"]),
+      wasmState: boundedStateIdentity(state.wasmState, ["verified"]),
+      runtimeVariant: boundedStateIdentity(state.runtimeVariant, ["worker-owned-wasm"]),
       modelLoadState: boundedStateIdentity(
         state.modelLoadState,
         ["No model imported"]
@@ -573,13 +576,17 @@ async function runPageObservation(
     if (route.kind === "application") {
       observationInvariant(state.appShellPresent, "app_shell_missing", diagnostic);
       observationInvariant(
-        state.browserModelAdmissionPresent && state.memoryEnrollmentPresent,
+        state.browserModelAdmissionPresent &&
+          state.browserRuntimeLoaderPresent &&
+          state.prompt2RequestPresent &&
+          state.modelRuntimeClientPresent &&
+          state.memoryEnrollmentPresent,
         "required_browser_module_missing",
         diagnostic
       );
-      observationInvariant(state.wasmState === "loaded", "wasm_not_loaded", diagnostic);
+      observationInvariant(state.wasmState === "verified", "wasm_not_verified", diagnostic);
       observationInvariant(
-        state.runtimeVariant === "simd128" || state.runtimeVariant === "scalar",
+        state.runtimeVariant === "worker-owned-wasm",
         "runtime_variant_invalid",
         diagnostic
       );

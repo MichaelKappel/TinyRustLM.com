@@ -22,8 +22,11 @@ test("canonical app shell deterministically generates the public root shell", ()
   const result = verifyShells(siteRoot);
   assert.match(result.appShell, /<main class="app-shell"/);
   const references = new Set(result.references.map((entry) => entry.reference));
-  assert.equal(result.references.length, 11);
+  assert.equal(result.references.length, 14);
   assert.ok(references.has("./browser-model-admission.js"));
+  assert.ok(references.has("./browser-runtime-loader.js"));
+  assert.ok(references.has("./prompt2-request.js"));
+  assert.ok(references.has("./model-runtime-client.js"));
   assert.ok(references.has("./memory-endpoints-enrollment.js"));
   assert.ok(references.has("./site-release.js"));
   assert.ok(references.has("./app.js"));
@@ -32,7 +35,7 @@ test("canonical app shell deterministically generates the public root shell", ()
   }
 });
 
-test("public and loopback release hosts require explicit local or P2P model admission", () => {
+test("public and loopback release hosts require the sole six-member worker admission path", () => {
   const source = fs.readFileSync(path.join(siteRoot, "app", "app.js"), "utf8");
   for (const host of [
     "127.0.0.1",
@@ -43,7 +46,14 @@ test("public and loopback release hosts require explicit local or P2P model admi
   ]) {
     assert.match(source, new RegExp(`"${host.replaceAll(".", "\\.")}"`));
   }
-  assert.match(source, /if \(isPublicLocalOnlyHost\(\)\) \{\s+return;\s+\}/);
+  assert.match(source, /models:\s*Object\.create\(null\)/);
+  assert.match(
+    source,
+    /if \(!isPublicLocalOnlyHost\(\)\) \{\s+Object\.assign\(result, modelsWithoutLocalModel\(models\)\);\s+\}/
+  );
+  assert.match(source, /activateBrowserComposition\(model, loadId\)/);
+  assert.doesNotMatch(source, /WebAssembly\.instantiate/);
+  assert.doesNotMatch(source, /tinyrustlm(?:-simd)?\.wasm/);
 });
 
 test("narrow desktop reserves a fixed empty-state composer", () => {
