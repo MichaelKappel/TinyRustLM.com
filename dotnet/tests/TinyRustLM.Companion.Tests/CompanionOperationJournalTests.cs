@@ -105,6 +105,43 @@ public sealed class CompanionOperationJournalTests : IDisposable
     }
 
     [Fact]
+    public async Task IdenticalOperationIdsInDistinctOwnedRootsDoNotShareMutationLocks()
+    {
+        Directory.CreateDirectory(_parent);
+        const int rootCount = 12;
+        var journals = Enumerable.Range(0, rootCount).Select(index =>
+        {
+            var root = CompanionOperationJournal.CreateOwnedRoot(
+                Path.Combine(_parent, $"owned-{index:D2}"));
+            return new CompanionOperationJournal(root);
+        }).ToArray();
+        var created = journals.Select(journal =>
+            journal.CreateOrRead(CompanionContractTests.Request())).ToArray();
+        Assert.Single(created.Select(value => value.OperationId).Distinct(StringComparer.Ordinal));
+        using var release = new ManualResetEventSlim(initialState: false);
+        var ready = 0;
+        var tasks = journals.Select((journal, index) => Task.Run(() =>
+        {
+            Interlocked.Increment(ref ready);
+            release.Wait();
+            return journal.Advance(
+                created[index].OperationId,
+                CompanionOperationState.CheckingPeers,
+                CompanionAcquisitionBranch.Undecided);
+        })).ToArray();
+        while (Volatile.Read(ref ready) != rootCount)
+        {
+            await Task.Delay(1);
+        }
+        release.Set();
+
+        var advanced = await Task.WhenAll(tasks);
+
+        Assert.All(advanced, value =>
+            Assert.Equal(CompanionOperationState.CheckingPeers, value.State));
+    }
+
+    [Fact]
     public void JournalRequiresAnExactOwnedRootMarker()
     {
         Directory.CreateDirectory(_parent);
@@ -341,6 +378,151 @@ public sealed class CompanionOperationJournalTests : IDisposable
             CompanionOperationState.VerifyingComposition,
             CompanionAcquisitionBranch.Source);
         Assert.Equal(persisted.Sha256, verifying.SourceConversionIntentSha256);
+    }
+
+    [Fact]
+    public void CancellationIntentIsCreateOnlyCanonicalAndExactlyIdempotent()
+    {
+        Directory.CreateDirectory(_parent);
+        var root = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(_parent, "owned"));
+        var journal = new CompanionOperationJournal(root);
+        var created = journal.CreateOrRead(CompanionContractTests.Request());
+        var request = new CompanionCancelRequest(
+            CompanionLoopbackWire.CancelRequestSchema,
+            new string('a', 32));
+
+        var first = journal.BindCancellationIntent(created.OperationId, request);
+        var replay = new CompanionOperationJournal(root)
+            .BindCancellationIntent(created.OperationId, request);
+        var read = journal.ReadCancellationIntent(created.OperationId);
+
+        Assert.True(first.WasCreated);
+        Assert.False(replay.WasCreated);
+        Assert.False(read.WasCreated);
+        Assert.Equal(first.Request, replay.Request);
+        Assert.Equal(first.Sha256, replay.Sha256);
+        Assert.Equal(first.Sha256, read.Sha256);
+        var path = Path.Combine(
+            root,
+            "operations",
+            created.OperationId,
+            "cancellation.intent.json");
+        Assert.Equal(CompanionLoopbackWire.EncodeCancelRequest(request), File.ReadAllBytes(path));
+
+        var conflict = Assert.Throws<CompanionContractException>(() =>
+            journal.BindCancellationIntent(
+                created.OperationId,
+                request with { CancellationId = new string('b', 32) }));
+        Assert.Equal("journal-operation-terminal", conflict.Code);
+        Assert.Equal(first.Sha256, Sha256(File.ReadAllBytes(path)));
+    }
+
+    [Fact]
+    public async Task ConcurrentExactCancellationBindsOneIntentAndNineReplays()
+    {
+        Directory.CreateDirectory(_parent);
+        var root = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(_parent, "owned"));
+        var journal = new CompanionOperationJournal(root);
+        var created = journal.CreateOrRead(CompanionContractTests.Request());
+        var request = new CompanionCancelRequest(
+            CompanionLoopbackWire.CancelRequestSchema,
+            new string('9', 32));
+
+        var results = await Task.WhenAll(Enumerable.Range(0, 10).Select(_ => Task.Run(() =>
+            new CompanionOperationJournal(root)
+                .BindCancellationIntent(created.OperationId, request))));
+
+        Assert.Single(results, value => value.WasCreated);
+        Assert.Equal(9, results.Count(value => !value.WasCreated));
+        Assert.All(results, value =>
+        {
+            Assert.Equal(request, value.Request);
+            Assert.Equal(results[0].Sha256, value.Sha256);
+        });
+    }
+
+    [Fact]
+    public void BoundCancellationReplaySurvivesTerminalRaceButNewIntentCannotReplaceIt()
+    {
+        Directory.CreateDirectory(_parent);
+        var root = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(_parent, "owned"));
+        var journal = new CompanionOperationJournal(root);
+        var created = journal.CreateOrRead(CompanionContractTests.Request());
+        var request = new CompanionCancelRequest(
+            CompanionLoopbackWire.CancelRequestSchema,
+            new string('c', 32));
+        var bound = journal.BindCancellationIntent(created.OperationId, request);
+        var cancelled = journal.Advance(
+            created.OperationId,
+            CompanionOperationState.Cancelled,
+            CompanionAcquisitionBranch.None);
+
+        var replay = journal.BindCancellationIntent(created.OperationId, request);
+        var conflict = Assert.Throws<CompanionContractException>(() =>
+            journal.BindCancellationIntent(
+                created.OperationId,
+                request with { CancellationId = new string('d', 32) }));
+
+        Assert.False(replay.WasCreated);
+        Assert.Equal(bound.Sha256, replay.Sha256);
+        Assert.Equal("journal-operation-terminal", conflict.Code);
+        Assert.Equal(cancelled, journal.Read(created.OperationId));
+    }
+
+    [Fact]
+    public void FirstCancellationAfterTerminalEvidenceIsRejectedWithoutCreatingAnIntent()
+    {
+        Directory.CreateDirectory(_parent);
+        var root = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(_parent, "owned"));
+        var journal = new CompanionOperationJournal(root);
+        var created = journal.CreateOrRead(CompanionContractTests.Request());
+        journal.Advance(
+            created.OperationId,
+            CompanionOperationState.Rejected,
+            CompanionAcquisitionBranch.None,
+            errorCode: "source-unavailable");
+
+        var error = Assert.Throws<CompanionContractException>(() =>
+            journal.BindCancellationIntent(
+                created.OperationId,
+                new CompanionCancelRequest(
+                    CompanionLoopbackWire.CancelRequestSchema,
+                    new string('e', 32))));
+
+        Assert.Equal("journal-operation-terminal", error.Code);
+        Assert.False(File.Exists(Path.Combine(
+            root,
+            "operations",
+            created.OperationId,
+            "cancellation.intent.json")));
+    }
+
+    [Fact]
+    public void CancellationIntentRejectsTamperInsteadOfRepairingOrReplacingIt()
+    {
+        Directory.CreateDirectory(_parent);
+        var root = CompanionOperationJournal.CreateOwnedRoot(Path.Combine(_parent, "owned"));
+        var journal = new CompanionOperationJournal(root);
+        var created = journal.CreateOrRead(CompanionContractTests.Request());
+        var request = new CompanionCancelRequest(
+            CompanionLoopbackWire.CancelRequestSchema,
+            new string('f', 32));
+        journal.BindCancellationIntent(created.OperationId, request);
+        var path = Path.Combine(
+            root,
+            "operations",
+            created.OperationId,
+            "cancellation.intent.json");
+        File.WriteAllBytes(path, [(byte)' ', .. File.ReadAllBytes(path)]);
+
+        var read = Assert.Throws<CompanionContractException>(() =>
+            journal.ReadCancellationIntent(created.OperationId));
+        var replay = Assert.Throws<CompanionContractException>(() =>
+            journal.BindCancellationIntent(created.OperationId, request));
+
+        Assert.Equal("journal-cancellation-intent-contract", read.Code);
+        Assert.Equal("journal-cancellation-intent-contract", replay.Code);
+        Assert.Equal((byte)' ', File.ReadAllBytes(path)[0]);
     }
 
     public void Dispose()

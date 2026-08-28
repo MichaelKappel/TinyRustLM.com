@@ -5,11 +5,17 @@ using System.Text.Json.Serialization;
 
 namespace TinyRustLM.Companion;
 
+public sealed record CompanionPersistedCancellationIntent(
+    CompanionCancelRequest Request,
+    string Sha256,
+    bool WasCreated);
+
 public sealed class CompanionOperationJournal
 {
     private const string MarkerFileName = ".tinyrustlm-companion-root";
     private const string OperationsDirectoryName = "operations";
     private const string SourceConversionIntentFileName = "source-conversion.intent.json";
+    private const string CancellationIntentFileName = "cancellation.intent.json";
     private const int MaximumRecordBytes = 65_536;
     private static readonly ConcurrentDictionary<string, SemaphoreSlim> InProcessLocks =
         new(StringComparer.OrdinalIgnoreCase);
@@ -159,7 +165,7 @@ public sealed class CompanionOperationJournal
         CompanionSourceConversionIntentCodec.Validate(intent);
         RequireOperationId(intent.OperationId);
         var gate = InProcessLocks.GetOrAdd(
-            intent.OperationId,
+            OperationDirectory(intent.OperationId),
             static _ => new SemaphoreSlim(1, 1));
         if (!gate.Wait(0))
         {
@@ -230,6 +236,81 @@ public sealed class CompanionOperationJournal
         return new CompanionPersistedSourceConversionIntent(intent, digest);
     }
 
+    public CompanionPersistedCancellationIntent BindCancellationIntent(
+        string operationId,
+        CompanionCancelRequest request)
+    {
+        RequireOperationId(operationId);
+        ArgumentNullException.ThrowIfNull(request);
+        byte[] canonical;
+        try
+        {
+            canonical = CompanionLoopbackWire.EncodeCancelRequest(request);
+        }
+        catch (CompanionProtocolException)
+        {
+            throw new CompanionContractException("journal-cancellation-intent-contract");
+        }
+
+        var gate = InProcessLocks.GetOrAdd(
+            OperationDirectory(operationId),
+            static _ => new SemaphoreSlim(1, 1));
+        gate.Wait();
+
+        try
+        {
+            var directory = RequireOperationDirectory(operationId);
+            using var processLock = AcquireProcessLock(Path.Combine(directory, "operation.lock"));
+            var current = ReadRecord(Path.Combine(directory, "current.json"), operationId);
+            var path = Path.Combine(directory, CancellationIntentFileName);
+            if (File.Exists(path))
+            {
+                var persisted = ReadCancellationIntentFile(path);
+                if (!persisted.Request.Equals(request) ||
+                    !persisted.Bytes.AsSpan().SequenceEqual(canonical))
+                {
+                    throw new CompanionContractException("journal-operation-terminal");
+                }
+                return new CompanionPersistedCancellationIntent(
+                    persisted.Request,
+                    Sha256(persisted.Bytes),
+                    WasCreated: false);
+            }
+            if (IsTerminal(current.State))
+            {
+                throw new CompanionContractException("journal-operation-terminal");
+            }
+
+            WriteCreateOnly(path, canonical);
+            var observed = ReadCancellationIntentFile(path);
+            if (!observed.Bytes.AsSpan().SequenceEqual(canonical) ||
+                !observed.Request.Equals(request))
+            {
+                throw new CompanionContractException("journal-cancellation-intent-conflict");
+            }
+            return new CompanionPersistedCancellationIntent(
+                observed.Request,
+                Sha256(observed.Bytes),
+                WasCreated: true);
+        }
+        finally
+        {
+            gate.Release();
+        }
+    }
+
+    public CompanionPersistedCancellationIntent ReadCancellationIntent(string operationId)
+    {
+        RequireOperationId(operationId);
+        var directory = RequireOperationDirectory(operationId);
+        var persisted = ReadCancellationIntentFile(
+            Path.Combine(directory, CancellationIntentFileName));
+        return new CompanionPersistedCancellationIntent(
+            persisted.Request,
+            Sha256(persisted.Bytes),
+            WasCreated: false);
+    }
+
     public CompanionOperationRecord Advance(
         string operationId,
         CompanionOperationState nextState,
@@ -241,7 +322,9 @@ public sealed class CompanionOperationJournal
         string? sourceConversionIntentSha256 = null)
     {
         RequireOperationId(operationId);
-        var gate = InProcessLocks.GetOrAdd(operationId, static _ => new SemaphoreSlim(1, 1));
+        var gate = InProcessLocks.GetOrAdd(
+            OperationDirectory(operationId),
+            static _ => new SemaphoreSlim(1, 1));
         if (!gate.Wait(0))
         {
             throw new CompanionContractException("journal-operation-busy");
@@ -318,6 +401,11 @@ public sealed class CompanionOperationJournal
             throw new CompanionContractException("journal-transition");
         }
     }
+
+    private static bool IsTerminal(CompanionOperationState state) =>
+        state is CompanionOperationState.Available or
+            CompanionOperationState.Cancelled or
+            CompanionOperationState.Rejected;
 
     private string? ResolveSourceConversionIntentSha256(
         CompanionOperationRecord current,
@@ -531,6 +619,24 @@ public sealed class CompanionOperationJournal
         }
     }
 
+    private static PersistedCancellationFile ReadCancellationIntentFile(string path)
+    {
+        var bytes = ReadBoundedRegularFile(
+            path,
+            "journal-cancellation-intent-file",
+            "journal-cancellation-intent-read");
+        try
+        {
+            return new PersistedCancellationFile(
+                CompanionLoopbackWire.DecodeCancelRequest(bytes),
+                bytes);
+        }
+        catch (CompanionProtocolException)
+        {
+            throw new CompanionContractException("journal-cancellation-intent-contract");
+        }
+    }
+
     private string OperationDirectory(string operationId) => Path.Combine(_operationsRoot, operationId);
 
     private string RequireOperationDirectory(string operationId)
@@ -672,4 +778,8 @@ public sealed class CompanionOperationJournal
         WriteIndented = false,
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.KebabCaseLower, allowIntegerValues: false) }
     };
+
+    private sealed record PersistedCancellationFile(
+        CompanionCancelRequest Request,
+        byte[] Bytes);
 }
