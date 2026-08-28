@@ -5,7 +5,7 @@ const { createHash, createHmac } = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
-const capability = require("../tools/companion-capability-webcrypto.js");
+const capability = require("../app/companion-capability.js");
 
 const vectors = JSON.parse(fs.readFileSync(
   path.join(
@@ -546,12 +546,12 @@ test("codec rejects malformed UTF-16, identifiers, paths, and body contracts", a
   );
 });
 
-test("primitive browser module performs no discovery, fetch, storage, or cross-tab work", () => {
+test("browser capability module performs no startup discovery, durable-secret, or cross-tab work", () => {
   const source = fs.readFileSync(
-    path.join(__dirname, "..", "tools", "companion-capability-webcrypto.js"),
+    path.join(__dirname, "..", "app", "companion-capability.js"),
     "utf8"
   );
-  assert.doesNotMatch(source, /\bfetch\s*\(/u);
   assert.doesNotMatch(source, /localStorage|sessionStorage|indexedDB|caches[.]|BroadcastChannel/u);
-  assert.equal(Object.hasOwn(capability, "CompanionCapabilityClient"), false);
+  assert.equal(typeof capability.CompanionCapabilityClient, "function");
+  assert.doesNotMatch(source, /43127|\/health|Authorization|Bearer/u);
 });

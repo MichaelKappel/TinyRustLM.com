@@ -36,6 +36,11 @@
     },
     {
       "source": "source",
+      "local": "app/companion-capability.js",
+      "remote": "app/companion-capability.js"
+    },
+    {
+      "source": "source",
       "local": "app/minimodel-announcement.js",
       "remote": "app/minimodel-announcement.js"
     },
