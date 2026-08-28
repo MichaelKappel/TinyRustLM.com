@@ -71,6 +71,11 @@
     },
     {
       "source": "source",
+      "local": "app/model-runtime-worker.js",
+      "remote": "app/model-runtime-worker.js"
+    },
+    {
+      "source": "source",
       "local": "app/site-release.js",
       "remote": "app/site-release.js"
     },

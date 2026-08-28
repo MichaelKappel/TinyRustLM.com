@@ -25,7 +25,7 @@ function assertIdentity(identity) {
 test("freezes the sole scalar numerical probe profile", () => {
   assert.equal(profileBytes.length, 9660);
   assert.equal(sha256(profileBytes),
-    "34b1bd8f45dcd764b4b78850fa0a54b740ca143bde14a201a7c7f2ef0b46f000");
+    "76dec02428acb91efbeedcaeabd5af516cad75abc2aae78c7bc283d3ff43147b");
   assert.equal(profileBytes.toString("utf8"), `${JSON.stringify(profile, null, 2)}\n`);
   assert.equal(profile.schema, "tinyrustlm.scalar-numerical-probe-profile.v1");
   assert.equal(profile.profileId, "tinyrustlm.scalar-numerical-probe/1");

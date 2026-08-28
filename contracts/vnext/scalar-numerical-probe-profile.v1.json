@@ -16,13 +16,13 @@
   "implementation": {
     "workspaceManifest": {
       "path": "Cargo.toml",
-      "byteLength": 1781,
-      "sha256": "feafc2c9622d58dd84aacb320466e098c340fdde8f411e69f64d9c0a1937915e"
+      "byteLength": 1832,
+      "sha256": "b4fa44e4168be2f6f1423a79f720dbcf326fc52d8b4b1f2f52c6f2a66d343d87"
     },
     "workspaceLock": {
       "path": "Cargo.lock",
-      "byteLength": 25613,
-      "sha256": "b0063b5a406ccfb462f64a76a20295d8c0e411c71791a3e19f42a45074d951bd"
+      "byteLength": 25805,
+      "sha256": "81911a2bf740bd4fb0099f75b080e69bf306e5831de87ae64d0f397c8f1f1867"
     },
     "crateManifest": {
       "path": "rust/crates/tinyrustlm-numerical-probe/Cargo.toml",
