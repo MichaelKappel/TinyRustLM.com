@@ -1,8 +1,9 @@
-profile: runtime-mirust.report-synthesis.v272
-updated_utc: 2026-08-28T08:59:29Z
+profile: runtime-mirust.report-synthesis.v273
+updated_utc: 2026-08-28T09:28:49Z
 
 checkpoint_2026_08_28_companion_source_operation_contract:
-  status: locally_green_coherent_change_commit_push_and_remote_equality_pending
+  status: remote_exact_green_checkpoint
+  source_control: Implementation commit 5a9c097e66a83ceb6ee71ebe36462981e311baf6, tree e3ebbec3c910b60e54280eff4d4643196b28b87f, is pushed and fresh-fetch exact across local HEAD, tracking, FETCH_HEAD, and the direct remote branch ref.
   implementation_memory: wiki/runtime-mirust/reports/tinyrustlm-companion-source-operation-contract-memory-2026-08-28.md,14694,4867d2270defe57e8bd495ab59e25a20b56897518f26ee0be51b4804a6a9126c
   intake_authority: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md,20316,6e5a5b7cf7f3ad45008b14597a3616ee603da76cc500b69770de7280711785e4
   result: The sole current Companion wire is loopback-capability/4 plus acquire.v2, operation.v3, and operation-projection.v2. It requires one explicit attempt, the exact pinned Qwen3 source and corrected composition profile /4, source-only route, private create-only execution/source evidence whose intent and receipt bind one canonical nine-file payload inventory, independent browser and managed enforcement of the same source constants, pairwise nonoverlapping custody roots, authoritative create-only history with current-cache lag bounded to one record and repaired under both locks before another append, reclaimed exact-key mutation gates, a bounded five-second cancellation mutation wait, monotonic terminal state, and exact six-member fixed-chunk transfer. Superseded request/operation/projection readers, arbitrary inventory digests, and fake peer states are absent from the current executable path.
