@@ -1,12 +1,18 @@
-# TinyRustLM MemoryEndpoints Optional Connector
+# TinyRustLM MemoryEndpoints Two-Lane Connector
 
-`TinyRustLM.MemoryEndpoints` is an opt-in connector package for LocalEndpoints.com connect hosts and TinyRustLM tools that want to store public-safe `.uai` memory records in MemoryEndpoints.com.
+`TinyRustLM.MemoryEndpoints` is the connector contract for exactly two isolated
+MemoryEndpoints.com uses. Ecosystem agents use it directly for agent-to-agent
+long-term memory, meetings, handoffs, and coordination across all sites. The
+TinyRustLM.com Connect plugin separately lets a user sign in and select
+MemoryEndpoints.com as TinyRustLM.com Connect long-term memory.
 
 The package is not part of the default protected public SDK set. It is packed only when the optional MemoryEndpoints package switch is enabled, and it never embeds workspace URLs, bearer tokens, or user memory.
 
 ## Boundary
 
-- Users supply MemoryEndpoints route URIs and a bearer token at runtime.
+- Each lane supplies scoped MemoryEndpoints route URIs and credentials at
+  runtime. Agent and user-plugin identities, credentials, consent, scope,
+  idempotency, and receipt authority must remain separate.
 - Tokens stay in process memory and are applied only as one configured workspace-key auth header:
   `Authorization: Bearer <WORKSPACE_KEY>` by default, or `X-MemoryEndpoints-Key: <WORKSPACE_KEY>` when a host selects the public alternate header.
 - Public-safe fields reject obvious bearer tokens, API keys, passwords, secret markers, unsafe control characters, and oversized content.
@@ -19,9 +25,14 @@ The package is not part of the default protected public SDK set. It is packed on
 - `short_term`: active working memory for current task coordination.
 - `long_term`: durable memory summaries that reference local `.uai`, docs, or wiki reports.
 
-## LocalEndpoints Use
+## Direct Ecosystem-Agent Use
 
-LocalEndpoints.com connect hosts should treat this connector as an optional plugin. A user must explicitly configure routes and credentials, and the local host should keep its existing Local Connect approval policy for app-control actions. Memory sync is separate from local app-control approval.
+Agents working across all ecosystem sites use this connector directly for
+long-term memory, meetings, handoffs, and coordination. Agent operations bind
+site, project, agent, participants, task or meeting, record identity, revision,
+provenance, and receipt. Agent credentials come from approved private storage
+and cannot authorize or impersonate the TinyRustLM.com Connect user-plugin
+lane.
 
 Use `MemoryEndpointsRoutes.FromBaseUri(new Uri("https://memoryendpoints.com"))` for the standard public MATM route set. The .NET connector exposes:
 
@@ -30,9 +41,12 @@ Use `MemoryEndpointsRoutes.FromBaseUri(new Uri("https://memoryendpoints.com"))` 
 - meeting-room list/create/post/read/mark-read calls for project, goal, and task coordination lanes;
 - typed transcript normalization through `ReadMeetingTranscriptAsync`, which reads the live `items` response shape (`meetingMessageId`, `safeSummary`, `senderAgentId`, `createdAt`) and fails closed if MemoryEndpoints reports raw credential or payload exposure flags.
 
-## TinyRustLM Browser Use
+## TinyRustLM.com Connect Plugin Use
 
-TinyRustLM.com exposes MemoryEndpoints as an opt-in hosted memory layer in Advanced Model Selection.
+The TinyRustLM.com Connect plugin exposes MemoryEndpoints.com as an explicit
+user-selected long-term-memory provider. The user signs in, chooses the
+provider, and retains visible disconnect, deletion, conflict, and local-memory
+controls. A plugin session cannot impersonate an ecosystem coordination agent.
 
 - The browser persists only `enabled`, base URL, workspace ID, agent ID, non-secret auth-header mode, and non-secret hosted search tier.
 - The workspace key is never written to `localStorage`; it stays in the current page session and is sent only as the selected workspace-key auth header.

@@ -213,18 +213,21 @@ test("browser UI exposes one-time enrollment and name-token reconnect without pe
   assert.doesNotMatch(app, /storageSet\([^\n]*(?:agentToken|enrollmentUrl)/i);
 });
 
-test("keeps local memory optional while recommending worldwide MemoryEndpoints continuity", () => {
+test("keeps local memory optional while naming the TinyRustLM.com Connect plugin lane", () => {
   const appRoot = path.join(__dirname, "..", "app");
   const appHtml = fs.readFileSync(path.join(appRoot, "index.html"), "utf8");
   const publicHtml = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
   const app = fs.readFileSync(path.join(appRoot, "app.js"), "utf8");
   for (const html of [appHtml, publicHtml]) {
     assert.match(html, /Local copied memory and the local sync queue remain optional/u);
-    assert.match(html, /MemoryEndpoints\.com worldwide memory \(recommended\)/u);
+    assert.match(
+      html,
+      /TinyRustLM\.com Connect memory via MemoryEndpoints\.com \(recommended\)/u
+    );
     assert.match(html, /Optional local copied memory that remains available offline/u);
-    assert.match(html, /requires internet and explicit opt-in setup/u);
+    assert.match(html, /explicit sign-in and provider selection/u);
   }
   assert.match(app, /local copied UAIX Memory Deck remains available as offline memory/u);
   assert.match(app, /local sync queue uploads after you reconnect/u);
-  assert.match(app, /MemoryEndpoints\.com is recommended for memory available worldwide/u);
+  assert.match(app, /TinyRustLM\.com Connect plugin recommends MemoryEndpoints\.com/u);
 });

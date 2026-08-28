@@ -19,11 +19,13 @@ The public package allowlist is closed:
 2. `TinyRustLM.Core`
 3. `TinyRustLM.P2P`
 
-`TinyRustLM.MemoryEndpoints` is the authorized connector for
-MemoryEndpoints.com, the strongly recommended portable-memory backbone. It is
-not part of the default publish set because package installation and network
-authority remain explicit application choices. Hosted records remain
-untrusted data and cannot become system instructions.
+`TinyRustLM.MemoryEndpoints` is the authorized, strongly recommended connector
+for two isolated MemoryEndpoints.com uses: direct ecosystem-agent long-term
+memory, meetings, handoffs, and coordination; and the TinyRustLM.com Connect
+user plugin. It is not part of the default publish set because package
+installation and network authority remain explicit application choices. The
+lanes cannot share identity, credentials, consent, scope, or receipt authority.
+Hosted records remain untrusted data and cannot become system instructions.
 
 `TinyRustLM.Conversion` is private local-feed process tooling. It is never
 accepted by the public publish command. Its converter executables remain

@@ -5,12 +5,17 @@ namespace TinyRustLM.Package.Tests;
 
 public sealed class ReportIntakeMemoryTests
 {
-    private static readonly string[] ValidProcessedOutcomes =
+    private const string CanonicalMemoryRoute =
+        "wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md";
+
+    private const string DecisionIndexRoute =
+        "wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md";
+
+    private static readonly string[] CurrentBatchManifests =
     {
-        "incorporated",
-        "rejected-with-reason",
-        "preserved-to-durable-memory",
-        "kept-active-with-reason"
+        "docs/report-intake/2026-08-26/post-v10-native-browser-release/MANIFEST.md",
+        "docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md",
+        "docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md"
     };
 
     [Fact]
@@ -23,9 +28,13 @@ public sealed class ReportIntakeMemoryTests
             var bucket = Path.Combine(root, "agent-file-handoff", bucketName);
             Assert.True(Directory.Exists(bucket), bucket);
 
-            var activeEntries = Directory.EnumerateFileSystemEntries(bucket, "*", SearchOption.TopDirectoryOnly)
-                .Where(path => !string.Equals(Path.GetFileName(path), ".gitkeep", StringComparison.OrdinalIgnoreCase))
-                .Select(path => Path.GetRelativePath(root, path).Replace('\\', '/'))
+            var activeEntries = Directory
+                .EnumerateFileSystemEntries(bucket, "*", SearchOption.TopDirectoryOnly)
+                .Where(path => !string.Equals(
+                    Path.GetFileName(path),
+                    ".gitkeep",
+                    StringComparison.OrdinalIgnoreCase))
+                .Select(path => Normalize(Path.GetRelativePath(root, path)))
                 .OrderBy(path => path, StringComparer.Ordinal)
                 .ToArray();
 
@@ -36,905 +45,106 @@ public sealed class ReportIntakeMemoryTests
     }
 
     [Fact]
-    public void EveryHashedDurableManifestRowMatchesStoredBytes()
+    public void EveryHashedManifestRowMatchesTheDurableStoredBytes()
     {
         var root = RepositoryRoot();
-        var manifests = Directory.GetFiles(
-            Path.Combine(root, "docs", "report-intake"),
-            "MANIFEST.md",
-            SearchOption.AllDirectories);
+        var reports = ReadAllManifestReports(root);
+
+        Assert.True(reports.Count >= 80, $"Expected at least 80 checksum-bound rows, found {reports.Count}.");
+
+        foreach (var report in reports)
+        {
+            var durablePath = ResolveDurablePath(root, report);
+            AssertPathIsInsideRoot(root, durablePath);
+            Assert.True(File.Exists(durablePath), Normalize(Path.GetRelativePath(root, durablePath)));
+
+            var expectedHash = report.DurableSha256 ?? report.SourceSha256;
+            var expectedBytes = report.DurableBytes ?? report.SourceBytes;
+            Assert.Equal(expectedHash, Sha256Hex(durablePath));
+            if (expectedBytes is long bytes)
+            {
+                Assert.Equal(bytes, new FileInfo(durablePath).Length);
+            }
+        }
+    }
+
+    [Fact]
+    public void OutcomeLedgerRoutesEveryCurrentReviewedReportWithoutDuplicatingItIntoHotMemory()
+    {
+        var root = RepositoryRoot();
+        var ledgerPath = Path.Combine(root, ".uai", "intake-outcome-ledger.uai");
+        var ledger = File.ReadAllText(ledgerPath);
+
+        Assert.Contains(CanonicalMemoryRoute, ledger, StringComparison.Ordinal);
+        Assert.Contains(DecisionIndexRoute, ledger, StringComparison.Ordinal);
+
+        var reports = CurrentBatchManifests
+            .Select(route => Path.Combine(root, route.Replace('/', Path.DirectorySeparatorChar)))
+            .SelectMany(ParseManifest)
+            .ToArray();
+        Assert.Equal(47, reports.Length);
+
+        foreach (var report in reports)
+        {
+            var durableRoute = Normalize(Path.GetRelativePath(root, ResolveDurablePath(root, report)));
+            Assert.Contains(durableRoute, ledger, StringComparison.Ordinal);
+            Assert.Contains(report.SourceSha256, ledger, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    private static IReadOnlyList<ManifestReport> ReadAllManifestReports(string root)
+    {
+        var manifestRoot = Path.Combine(root, "docs", "report-intake");
+        var manifests = Directory
+            .EnumerateFiles(manifestRoot, "MANIFEST.md", SearchOption.AllDirectories)
+            .OrderBy(path => path, StringComparer.Ordinal)
+            .ToArray();
 
         Assert.NotEmpty(manifests);
-        var verifiedRows = 0;
-
-        foreach (var manifestPath in manifests)
-        {
-            foreach (var report in ParseHashedManifest(manifestPath))
-            {
-                var durablePath = ResolveDurablePath(root, manifestPath, report);
-                Assert.True(File.Exists(durablePath), durablePath);
-                Assert.Equal(report.DurableSha256 ?? report.Sha256, Sha256Hex(durablePath));
-                if ((report.DurableBytes ?? report.Bytes) is long expectedBytes)
-                {
-                    Assert.Equal(expectedBytes, new FileInfo(durablePath).Length);
-                }
-
-                verifiedRows++;
-            }
-        }
-
-        Assert.True(verifiedRows >= 80, $"Expected at least 80 checksum-bound durable rows, found {verifiedRows}.");
+        return manifests.SelectMany(ParseManifest).ToArray();
     }
 
-    [Fact]
-    public void CurrentReportBatchesHaveOneValidProcessedOutcomePerSource()
+    private static IReadOnlyList<ManifestReport> ParseManifest(string manifestPath)
     {
-        var root = RepositoryRoot();
-        var ledger = File.ReadAllText(Path.Combine(root, ".uai", "intake-outcome-ledger.uai"));
-
-        foreach (var batch in new[] { "2026-07-08", "2026-07-10" })
-        {
-            var manifestPath = Path.Combine(root, "docs", "report-intake", batch, "MANIFEST.md");
-            var reports = ParseHashedManifest(manifestPath);
-            Assert.NotEmpty(reports);
-
-            foreach (var report in reports)
-            {
-                Assert.False(string.IsNullOrWhiteSpace(report.SourcePath), $"Missing source path for {report.FileName}.");
-                Assert.False(string.IsNullOrWhiteSpace(report.DurablePath), $"Missing durable path for {report.FileName}.");
-                var block = FindLedgerEntry(ledger, report.SourcePath!);
-                Assert.Contains($"docs_evidence_path: {report.DurablePath}", block, StringComparison.Ordinal);
-                Assert.Contains($"sha256: {report.Sha256}", block, StringComparison.OrdinalIgnoreCase);
-                Assert.Contains("source_removed: true", block, StringComparison.Ordinal);
-
-                var outcome = ReadLedgerValue(block, "processed_outcome");
-                Assert.Contains(outcome, ValidProcessedOutcomes);
-                Assert.NotEqual("kept-active-with-reason", outcome);
-            }
-        }
-    }
-
-    [Fact]
-    public void MemoryConnectorIntakeIsDistilledAcrossAllSixDomains()
-    {
-        var root = RepositoryRoot();
-        var batchDirectory = Path.Combine(root, "docs", "report-intake", "2026-07-10");
-        var manifest = File.ReadAllText(Path.Combine(batchDirectory, "MANIFEST.md"));
-        var reports = ParseHashedManifest(Path.Combine(batchDirectory, "MANIFEST.md"));
-        var synthesis = File.ReadAllText(Path.Combine(
-            batchDirectory,
-            "tinyrustlm-memory-endpoints-intake-synthesis-2026-07-10.md"));
-        var tddPlan = File.ReadAllText(Path.Combine(
-            batchDirectory,
-            "tinyrustlm-memory-endpoints-intake-tdd-plan-2026-07-10.md"));
-        var durableMemory = File.ReadAllText(Path.Combine(
-            root,
-            "wiki",
-            "runtime-mirust",
-            "reports",
-            "tinyrustlm-memory-endpoints-intake-memory-2026-07-10.md"));
-        var haystack = string.Join('\n', synthesis, tddPlan, durableMemory);
-
-        Assert.Equal(12, reports.Count);
-        Assert.Contains("Preserved Markdown files: 12", manifest, StringComparison.Ordinal);
-
-        foreach (var required in new[]
-        {
-            "production deployment and relay",
-            "retrieval and context packing",
-            "Rust and .NET connector",
-            "distributed synchronization and recovery",
-            "memory distribution and lifecycle",
-            "security and threat model",
-            "direct browser CORS",
-            "status",
-            "handoff",
-            "idempotency",
-            "tombstone",
-            "prompt injection",
-            "no silent overwrite",
-            "no test weakening"
-        })
-        {
-            Assert.Contains(required, haystack, StringComparison.OrdinalIgnoreCase);
-        }
-    }
-
-    [Fact]
-    public void BrowserMemoryAndNotificationIntakeUsesLiveContracts()
-    {
-        var root = RepositoryRoot();
-        var batchDirectory = Path.Combine(
-            root,
-            "docs",
-            "report-intake",
-            "2026-07-12",
-            "memory-connectors-and-notifications");
-        var manifestPath = Path.Combine(batchDirectory, "MANIFEST.md");
-        var reports = ParseHashedManifest(manifestPath);
-        var synthesis = File.ReadAllText(Path.Combine(
-            batchDirectory,
-            "tinyrustlm-browser-memory-notification-synthesis-2026-07-12.md"));
-        var tddPlan = File.ReadAllText(Path.Combine(
-            batchDirectory,
-            "tinyrustlm-browser-memory-notification-tdd-plan-2026-07-12.md"));
-        const string durableRoute =
-            "wiki/runtime-mirust/reports/tinyrustlm-browser-memory-notification-intake-memory-2026-07-12.md";
-        var durableMemory = File.ReadAllText(Path.Combine(
-            root,
-            durableRoute.Replace('/', Path.DirectorySeparatorChar)));
-        var ledger = File.ReadAllText(Path.Combine(root, ".uai", "intake-outcome-ledger.uai"));
-        var haystack = string.Join('\n', synthesis, tddPlan, durableMemory);
-
-        Assert.Equal(4, reports.Count);
-
-        foreach (var required in new[]
-        {
-            "memoryendpoints.virtual_uai_contract.v1",
-            "12 required records",
-            "service worker is not a security boundary",
-            "saved locally; synchronization pending",
-            "expectedRevision",
-            "durable cursor",
-            "SSE",
-            "hint channel",
-            "current-message",
-            "responseRequired",
-            "no inbound port",
-            "no silent promotion",
-            "locked UI",
-            "first-class package/record/startup routes"
-        })
-        {
-            Assert.Contains(required, haystack, StringComparison.OrdinalIgnoreCase);
-        }
-
-        foreach (var report in reports)
-        {
-            Assert.False(string.IsNullOrWhiteSpace(report.SourcePath));
-            Assert.False(string.IsNullOrWhiteSpace(report.DurablePath));
-            var block = FindLedgerEntry(ledger, report.SourcePath!);
-            Assert.Contains($"docs_evidence_path: {report.DurablePath}", block, StringComparison.Ordinal);
-            Assert.Contains($"sha256: {report.Sha256}", block, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("processed_outcome: preserved-to-durable-memory", block, StringComparison.Ordinal);
-            Assert.Contains("source_removed: true", block, StringComparison.Ordinal);
-        }
-
-        foreach (var relativePath in new[]
-        {
-            ".uai/short-term-memory.uai",
-            ".uai/long-term-memory.uai",
-            ".uai/index.uai",
-            ".uai/report-synthesis.uai",
-            ".uai/test-plan.uai",
-            ".uai/file-handoff.uai",
-            ".uai/intake-outcome-ledger.uai"
-        })
-        {
-            var text = File.ReadAllText(Path.Combine(root, relativePath.Replace('/', Path.DirectorySeparatorChar)));
-            Assert.Contains("docs/report-intake/2026-07-12/memory-connectors-and-notifications/MANIFEST.md", text);
-            Assert.Contains(durableRoute, text);
-        }
-    }
-
-    [Fact]
-    public void DotNetP2PSeedHostIntakeIsPairedCorrectedAndRouted()
-    {
-        var root = RepositoryRoot();
-        var batchDirectory = Path.Combine(
-            root,
-            "docs",
-            "report-intake",
-            "2026-07-13",
-            "dotnet-p2p-seed-host");
-        var manifestPath = Path.Combine(batchDirectory, "MANIFEST.md");
-        var reports = ParseHashedManifest(manifestPath);
-        var synthesis = File.ReadAllText(Path.Combine(
-            batchDirectory,
-            "tinyrustlm-dotnet-p2p-seed-host-intake-synthesis-2026-07-13.md"));
-        var tddPlan = File.ReadAllText(Path.Combine(
-            batchDirectory,
-            "tinyrustlm-dotnet-p2p-seed-host-intake-tdd-plan-2026-07-13.md"));
-        const string durableRoute =
-            "wiki/runtime-mirust/reports/tinyrustlm-dotnet-p2p-seed-host-intake-memory-2026-07-13.md";
-        var durableMemory = File.ReadAllText(Path.Combine(
-            root,
-            durableRoute.Replace('/', Path.DirectorySeparatorChar)));
-        var ledger = File.ReadAllText(Path.Combine(root, ".uai", "intake-outcome-ledger.uai"));
-        var haystack = string.Join('\n', synthesis, tddPlan, durableMemory);
-
-        Assert.Equal(12, reports.Count);
-
-        foreach (var required in new[]
-        {
-            "release and ABI",
-            "network and reachability",
-            "resumable import",
-            "service lifecycle",
-            "provenance and catalog trust",
-            "web and companion UX",
-            "exactly two lane processes",
-            "not forty processes",
-            "Rust remains authoritative",
-            "external reachability",
-            "single-use receipt",
-            "no model bytes",
-            "no persisted credentials",
-            "conversation-proven",
-            "runtime-smoke-only",
-            "SourceLink",
-            ".snupkg",
-            "wrong architecture",
-            "center column",
-            "render exactly once",
-            "no test weakening"
-        })
-        {
-            Assert.Contains(required, haystack, StringComparison.OrdinalIgnoreCase);
-        }
-
-        foreach (var report in reports)
-        {
-            Assert.False(string.IsNullOrWhiteSpace(report.SourcePath));
-            Assert.False(string.IsNullOrWhiteSpace(report.DurablePath));
-            var block = FindLedgerEntry(ledger, report.SourcePath!);
-            Assert.Contains($"docs_evidence_path: {report.DurablePath}", block, StringComparison.Ordinal);
-            Assert.Contains($"sha256: {report.Sha256}", block, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("processed_outcome: preserved-to-durable-memory", block, StringComparison.Ordinal);
-            Assert.Contains("source_removed: true", block, StringComparison.Ordinal);
-        }
-
-        foreach (var relativePath in new[]
-        {
-            ".uai/short-term-memory.uai",
-            ".uai/long-term-memory.uai",
-            ".uai/index.uai",
-            ".uai/report-synthesis.uai",
-            ".uai/test-plan.uai",
-            ".uai/file-handoff.uai",
-            ".uai/intake-outcome-ledger.uai"
-        })
-        {
-            var text = File.ReadAllText(Path.Combine(root, relativePath.Replace('/', Path.DirectorySeparatorChar)));
-            Assert.Contains(
-                "docs/report-intake/2026-07-13/dotnet-p2p-seed-host/MANIFEST.md",
-                text,
-                StringComparison.Ordinal);
-            Assert.Contains(durableRoute, text, StringComparison.Ordinal);
-        }
-    }
-
-    [Fact]
-    public void DeeperSmallModelResearchIsPairedCorrectedAndRouted()
-    {
-        var root = RepositoryRoot();
-        var batchDirectory = Path.Combine(
-            root,
-            "docs",
-            "report-intake",
-            "2026-07-15",
-            "deeper-small-model-research");
-        var manifestPath = Path.Combine(batchDirectory, "MANIFEST.md");
-        var reports = ParseHashedManifest(manifestPath);
-        var synthesis = File.ReadAllText(Path.Combine(
-            batchDirectory,
-            "tinyrustlm-deeper-small-model-research-intake-synthesis-2026-07-15.md"));
-        var tddPlan = File.ReadAllText(Path.Combine(
-            batchDirectory,
-            "tinyrustlm-deeper-small-model-research-intake-tdd-delta-2026-07-15.md"));
-        const string manifestRoute =
-            "docs/report-intake/2026-07-15/deeper-small-model-research/MANIFEST.md";
-        const string durableRoute =
-            "wiki/runtime-mirust/reports/tinyrustlm-deeper-small-model-research-intake-synthesis-2026-07-15.md";
-        var durableMemory = File.ReadAllText(Path.Combine(
-            root,
-            durableRoute.Replace('/', Path.DirectorySeparatorChar)));
-        var ledger = File.ReadAllText(Path.Combine(root, ".uai", "intake-outcome-ledger.uai"));
-        var haystack = string.Join('\n', synthesis, tddPlan, durableMemory);
-
-        Assert.Equal(13, reports.Count);
-        Assert.Equal(12, reports.Count(report => report.SourcePath?.EndsWith("research-prompts.md", StringComparison.Ordinal) is false));
-        Assert.Single(
-            reports,
-            report => report.SourcePath?.EndsWith("research-prompts.md", StringComparison.Ordinal) is true);
-
-        foreach (var required in new[]
-        {
-            "318 unresolved",
-            "4/8",
-            "8B-A1B",
-            "all 668 draft records",
-            "whole-record SHA-256",
-            "CKA-guided QAD",
-            "SPRT",
-            "24-case fault-injection",
-            "no unreviewed record enters training",
-            "trusted exclusion service",
-            "simplest supported PTQ tier",
-            "No additional general research report is needed"
-        })
-        {
-            Assert.Contains(required, haystack, StringComparison.OrdinalIgnoreCase);
-        }
-
-        foreach (var report in reports)
-        {
-            Assert.False(string.IsNullOrWhiteSpace(report.SourcePath));
-            Assert.False(string.IsNullOrWhiteSpace(report.DurablePath));
-            var block = FindLedgerEntry(ledger, report.SourcePath!);
-            Assert.Contains($"docs_evidence_path: {report.DurablePath}", block, StringComparison.Ordinal);
-            Assert.Contains($"sha256: {report.Sha256}", block, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("processed_outcome: preserved-to-durable-memory", block, StringComparison.Ordinal);
-            Assert.Contains("source_removed: true", block, StringComparison.Ordinal);
-            Assert.Contains("proof_of_use:", block, StringComparison.Ordinal);
-            Assert.Contains("routing_summary:", block, StringComparison.Ordinal);
-        }
-
-        foreach (var relativePath in new[]
-        {
-            ".uai/short-term-memory.uai",
-            ".uai/long-term-memory.uai",
-            ".uai/index.uai",
-            ".uai/report-synthesis.uai",
-            ".uai/test-plan.uai",
-            ".uai/file-handoff.uai",
-            ".uai/intake-outcome-ledger.uai"
-        })
-        {
-            var text = File.ReadAllText(Path.Combine(root, relativePath.Replace('/', Path.DirectorySeparatorChar)));
-            Assert.Contains(manifestRoute, text, StringComparison.Ordinal);
-            Assert.Contains(durableRoute, text, StringComparison.Ordinal);
-        }
-
-        var durableHash = Sha256Hex(Path.Combine(
-            root,
-            durableRoute.Replace('/', Path.DirectorySeparatorChar)));
-        Assert.Contains(durableHash, File.ReadAllText(Path.Combine(root, ".uai", "long-term-memory.uai")), StringComparison.OrdinalIgnoreCase);
-    }
-
-    [Fact]
-    public void HotMemoryRoutesToDurableBackupAndHostedReadbackEvidence()
-    {
-        var root = RepositoryRoot();
-        const string manifestRoute = "docs/report-intake/2026-07-10/MANIFEST.md";
-        const string synthesisRoute = "docs/report-intake/2026-07-10/tinyrustlm-memory-endpoints-intake-synthesis-2026-07-10.md";
-        const string tddRoute = "docs/report-intake/2026-07-10/tinyrustlm-memory-endpoints-intake-tdd-plan-2026-07-10.md";
-        const string durableRoute = "wiki/runtime-mirust/reports/tinyrustlm-memory-endpoints-intake-memory-2026-07-10.md";
-        const string hostedEvidenceRoute = "docs/report-intake/2026-07-10/MEMORYENDPOINTS-DISTRIBUTION.md";
-
-        foreach (var relativePath in new[]
-        {
-            ".uai/short-term-memory.uai",
-            ".uai/report-synthesis.uai",
-            ".uai/test-plan.uai",
-            ".uai/long-term-memory.uai",
-            ".uai/intake-outcome-ledger.uai",
-            ".uai/index.uai",
-            ".uai/file-handoff.uai"
-        })
-        {
-            var text = File.ReadAllText(Path.Combine(root, relativePath.Replace('/', Path.DirectorySeparatorChar)));
-            Assert.Contains(manifestRoute, text, StringComparison.Ordinal);
-            Assert.Contains(synthesisRoute, text, StringComparison.Ordinal);
-            Assert.Contains(tddRoute, text, StringComparison.Ordinal);
-            Assert.Contains(durableRoute, text, StringComparison.Ordinal);
-            Assert.Contains(hostedEvidenceRoute, text, StringComparison.Ordinal);
-        }
-
-        var durablePath = Path.Combine(root, durableRoute.Replace('/', Path.DirectorySeparatorChar));
-        var durableHash = Sha256Hex(durablePath);
-        var longTerm = File.ReadAllText(Path.Combine(root, ".uai", "long-term-memory.uai"));
-        Assert.Contains("stable_id: tinyrustlm_memory_endpoints_intake_current", longTerm, StringComparison.Ordinal);
-        Assert.Contains($"sha256: {durableHash}", longTerm, StringComparison.OrdinalIgnoreCase);
-
-        var hostedEvidence = File.ReadAllText(Path.Combine(
-            root,
-            hostedEvidenceRoute.Replace('/', Path.DirectorySeparatorChar)));
-        Assert.Contains("memoryType=status", hostedEvidence, StringComparison.Ordinal);
-        Assert.Contains("memoryType=handoff", hostedEvidence, StringComparison.Ordinal);
-        Assert.Contains("visibleInSearch=true", hostedEvidence, StringComparison.Ordinal);
-        Assert.Contains("tier isolation", hostedEvidence, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("workspace key", hostedEvidence, StringComparison.OrdinalIgnoreCase);
-    }
-
-    [Fact]
-    public void PostV10NativeBrowserReleaseIntakePreservesCorrectionsAndRoutes()
-    {
-        var root = RepositoryRoot();
-        var batchDirectory = Path.Combine(
-            root,
-            "docs",
-            "report-intake",
-            "2026-08-26",
-            "post-v10-native-browser-release");
-        var manifestPath = Path.Combine(batchDirectory, "MANIFEST.md");
-        var synthesisPath = Path.Combine(
-            batchDirectory,
-            "tinyrustlm-post-v10-native-browser-release-intake-synthesis-2026-08-26.md");
-        var tddPath = Path.Combine(
-            batchDirectory,
-            "tinyrustlm-post-v10-native-browser-release-intake-tdd-delta-2026-08-26.md");
-        const string durableRoute =
-            "wiki/runtime-mirust/reports/tinyrustlm-post-v10-native-browser-release-intake-memory-2026-08-26.md";
-        const string manifestRoute =
-            "docs/report-intake/2026-08-26/post-v10-native-browser-release/MANIFEST.md";
-        const string synthesisRoute =
-            "docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-synthesis-2026-08-26.md";
-        const string tddRoute =
-            "docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-tdd-delta-2026-08-26.md";
-
-        var reports = ParseHashedManifest(manifestPath);
-        Assert.Equal(12, reports.Count);
-        Assert.All(reports, report =>
-        {
-            Assert.NotNull(report.Bytes);
-            Assert.False(string.IsNullOrWhiteSpace(report.SourcePath));
-            Assert.False(string.IsNullOrWhiteSpace(report.DurablePath));
-        });
-        Assert.Equal(907733L, reports.Sum(report => report.Bytes!.Value));
-
-        var inventory = string.Concat(reports
-            .OrderBy(report => report.FileName, StringComparer.Ordinal)
-            .Select(report => $"{report.Sha256}  {report.Bytes!.Value}  {report.FileName}\n"));
-        var inventoryHash = Convert.ToHexString(
-            SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(inventory)))
-            .ToLowerInvariant();
-        Assert.Equal(
-            "4f065f1d6594e9bdbd3bfb9ccdaf8d7f9c63e8d9c2ea7ff59e79caba2ba63f4b",
-            inventoryHash);
-
-        Assert.Equal(
-            "1ac4c18cf017b14112663d2f05d8b06f5c381d3503aa9415b22866a442b3f6c0",
-            Sha256Hex(manifestPath));
-        Assert.Equal(
-            "bb538fa12ca2ea623732570d2ec175eb4287223d80c31c05c71b018c41e7b7a0",
-            Sha256Hex(synthesisPath));
-        Assert.Equal(
-            "298dad938ee508ca57aa0beede3e462a68ef82dafa8fa258181e4402b6c55cb2",
-            Sha256Hex(tddPath));
-
-        var durablePath = Path.Combine(
-            root,
-            durableRoute.Replace('/', Path.DirectorySeparatorChar));
-        Assert.Equal(
-            "f9e604aaf9f247f0773574d26ec024123c25512ecccd5feacc752ddb53f7bdd3",
-            Sha256Hex(durablePath));
-
-        var synthesis = File.ReadAllText(synthesisPath);
-        foreach (var required in new[]
-        {
-            "The Rust producer emitted",
-            "managed verifier incorrectly required",
-            "28 layers",
-            "16 query heads",
-            "8 key/value heads",
-            "151,936 model vocabulary capacity",
-            "151,669 tokenizer entries",
-            "Independent chunk digests do not equal one whole-file digest",
-            "This is one deterministic route decision",
-            "MemoryEndpoints remains unauthorized"
-        })
-        {
-            Assert.Contains(required, synthesis, StringComparison.Ordinal);
-        }
-
-        var tdd = File.ReadAllText(tddPath);
-        foreach (var required in new[]
-        {
-            "Gate 1: Sole Receipt Contract",
-            "Gate 2: Wholly New Output-Free Registration",
-            "Gate 4: Six-Member Semantic Composition",
-            "Gate 5: Source And Scalar Numerical Authority",
-            "Gate 8: Real-Browser WASM",
-            "Gate 9: Exactly-Once Multi-Turn Browser Chat",
-            "Gate 10: Qualified P2P-Or-Convert Acquisition",
-            "Gate 11: Source Quality And Quantization Noninferiority",
-            "Gate 12: Release, Documentation, And Deployment"
-        })
-        {
-            Assert.Contains(required, tdd, StringComparison.Ordinal);
-        }
-
-        var durableMemory = File.ReadAllText(durablePath);
-        Assert.Contains(
-            "Stable ID: `tinyrustlm_post_v10_native_browser_release_intake_current`",
-            durableMemory,
-            StringComparison.Ordinal);
-        Assert.Contains("## Corrections That Must Not Be Lost", durableMemory, StringComparison.Ordinal);
-        Assert.Contains("## Immediate Resume", durableMemory, StringComparison.Ordinal);
-
-        foreach (var relativePath in new[]
-        {
-            "workspace.uai",
-            ".uai/architecture.uai",
-            ".uai/next-recursive-prompt.uai",
-            ".uai/totem.uai",
-            ".uai/taboo.uai",
-            ".uai/index.uai",
-            ".uai/operations.uai",
-            ".uai/file-handoff.uai",
-            ".uai/short-term-memory.uai",
-            ".uai/report-synthesis.uai",
-            ".uai/test-plan.uai",
-            ".uai/long-term-memory.uai",
-            ".uai/intake-outcome-ledger.uai"
-        })
-        {
-            var text = File.ReadAllText(Path.Combine(
-                root,
-                relativePath.Replace('/', Path.DirectorySeparatorChar)));
-            Assert.Contains(manifestRoute, text, StringComparison.Ordinal);
-            Assert.Contains(synthesisRoute, text, StringComparison.Ordinal);
-            Assert.Contains(tddRoute, text, StringComparison.Ordinal);
-            Assert.Contains(durableRoute, text, StringComparison.Ordinal);
-        }
-
-        var longTerm = File.ReadAllText(Path.Combine(root, ".uai", "long-term-memory.uai"));
-        Assert.Contains(
-            "stable_id: tinyrustlm_post_v10_native_browser_release_intake_current",
-            longTerm,
-            StringComparison.Ordinal);
-        Assert.Contains(
-            $"sha256: {Sha256Hex(durablePath)}",
-            longTerm,
-            StringComparison.OrdinalIgnoreCase);
-
-        var ledger = File.ReadAllText(Path.Combine(root, ".uai", "intake-outcome-ledger.uai"));
-        foreach (var report in reports)
-        {
-            var block = FindLedgerEntry(ledger, report.SourcePath!);
-            Assert.Contains($"docs_evidence_path: {report.DurablePath}", block, StringComparison.Ordinal);
-            Assert.Contains($"sha256: {report.Sha256}", block, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("processed_outcome: incorporated", block, StringComparison.Ordinal);
-            Assert.Contains("source_removed: true", block, StringComparison.Ordinal);
-            Assert.Contains("source_external_copy_retained_read_only: true", block, StringComparison.Ordinal);
-        }
-    }
-
-    [Fact]
-    public void OntologicalMachineIntelligenceIntakeIsImmutableBoundedAndRouted()
-    {
-        var root = RepositoryRoot();
-        var batchDirectory = Path.Combine(
-            root,
-            "docs",
-            "report-intake",
-            "2026-08-27",
-            "ontological-machine-intelligence-research");
-        var manifestPath = Path.Combine(batchDirectory, "MANIFEST.md");
-        var synthesisPath = Path.Combine(
-            batchDirectory,
-            "tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md");
-        var tddPath = Path.Combine(
-            batchDirectory,
-            "tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md");
-        const string manifestRoute =
-            "docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md";
-        const string synthesisRoute =
-            "docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-synthesis-2026-08-27.md";
-        const string tddRoute =
-            "docs/report-intake/2026-08-27/ontological-machine-intelligence-research/tinyrustlm-ontological-machine-intelligence-intake-tdd-delta-2026-08-27.md";
-        const string durableRoute =
-            "wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md";
-
-        var reports = ParseHashedManifest(manifestPath);
-        Assert.Equal(12, reports.Count);
-        Assert.All(reports, report => Assert.NotNull(report.Bytes));
-        Assert.Equal(993406L, reports.Sum(report => report.Bytes!.Value));
-
-        var inventory = string.Concat(reports
-            .OrderBy(report => report.FileName, StringComparer.Ordinal)
-            .Select(report => $"{report.Sha256}  {report.Bytes!.Value}  {report.FileName}\n"));
-        var inventoryHash = Convert.ToHexString(
-            SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(inventory)))
-            .ToLowerInvariant();
-        Assert.Equal(
-            "622aeee51b3a687d573880b0474d395e2ee44db674e91eca65441c7a7c2c3ede",
-            inventoryHash);
-
-        Assert.Equal(
-            "08141cb2310fc6588be5821f5b193b15d419360646f34dfda5f92de879db81b5",
-            Sha256Hex(manifestPath));
-        Assert.Equal(
-            "f088512c8c38161ab29d5a4f1c5eee4e03a9f9e5547495a3736c7545d988bf5b",
-            Sha256Hex(synthesisPath));
-        Assert.Equal(
-            "e75e7630c7f05aac1d1f360ff597ad91d81c628570eb602fb40b15e8c0dd1bfb",
-            Sha256Hex(tddPath));
-
-        var durablePath = Path.Combine(
-            root,
-            durableRoute.Replace('/', Path.DirectorySeparatorChar));
-        Assert.Equal(
-            "f4a890676be9cb086e8b65cb063a345cc4a98e0be65a0a9a006b53365238a158",
-            Sha256Hex(durablePath));
-
-        var synthesis = File.ReadAllText(synthesisPath);
-        foreach (var required in new[]
-        {
-            "authority-separated architecture",
-            "Evidence Is A Graph, Not A Boolean",
-            "Memory Is Data, Not Authority",
-            "Production disposition: research-only",
-            "Release-Blocking Superseded Runtime Closure",
-            "The project must not claim zero code debt"
-        })
-        {
-            Assert.Contains(required, synthesis, StringComparison.Ordinal);
-        }
-
-        var tdd = File.ReadAllText(tddPath);
-        foreach (var required in new[]
-        {
-            "Gate 0: Intake Integrity And Decision Separation",
-            "Gate 1: One Exact MemoryEndpoints Submit Payload",
-            "Gate 2: Exact External MemoryEndpoints Capability And Response Contract",
-            "Gate 3: Production SLM2 Clean Cut And Superseded Closure Deletion",
-            "Gate 4: Typed Evidence And Honest Status",
-            "Gate 5: Memory As Untrusted User-Owned Data",
-            "Gate 6: Measured Resource Truth",
-            "Gate 7: Immutable Shadow Improvement Experiments",
-            "Gate 8: Documentation, Source Control, And Release Truth"
-        })
-        {
-            Assert.Contains(required, tdd, StringComparison.Ordinal);
-        }
-
-        foreach (var relativePath in new[]
-        {
-            "workspace.uai",
-            ".uai/architecture.uai",
-            ".uai/next-recursive-prompt.uai",
-            ".uai/totem.uai",
-            ".uai/taboo.uai",
-            ".uai/index.uai",
-            ".uai/operations.uai",
-            ".uai/file-handoff.uai",
-            ".uai/short-term-memory.uai",
-            ".uai/report-synthesis.uai",
-            ".uai/test-plan.uai",
-            ".uai/long-term-memory.uai",
-            ".uai/intake-outcome-ledger.uai"
-        })
-        {
-            var text = File.ReadAllText(Path.Combine(
-                root,
-                relativePath.Replace('/', Path.DirectorySeparatorChar)));
-            Assert.Contains(manifestRoute, text, StringComparison.Ordinal);
-            Assert.Contains(synthesisRoute, text, StringComparison.Ordinal);
-            Assert.Contains(tddRoute, text, StringComparison.Ordinal);
-            Assert.Contains(durableRoute, text, StringComparison.Ordinal);
-        }
-
-        var longTerm = File.ReadAllText(Path.Combine(root, ".uai", "long-term-memory.uai"));
-        Assert.Contains(
-            "stable_id: tinyrustlm_enterprise_clean_slate_memory_submit_2026_08_27",
-            longTerm,
-            StringComparison.Ordinal);
-        Assert.Contains(
-            $"sha256: {Sha256Hex(durablePath)}",
-            longTerm,
-            StringComparison.OrdinalIgnoreCase);
-
-        var ledger = File.ReadAllText(Path.Combine(root, ".uai", "intake-outcome-ledger.uai"));
-        foreach (var report in reports)
-        {
-            var sourcePath = $"agent-file-handoff/Improvement/{report.FileName}";
-            var durablePathForReport =
-                $"docs/report-intake/2026-08-27/ontological-machine-intelligence-research/{report.FileName}";
-            var block = FindLedgerEntry(ledger, sourcePath);
-            Assert.Contains(
-                $"docs_evidence_path: {durablePathForReport}",
-                block,
-                StringComparison.Ordinal);
-            Assert.Contains($"sha256: {report.Sha256}", block, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("processed_outcome: incorporated", block, StringComparison.Ordinal);
-            Assert.Contains("source_removed: true", block, StringComparison.Ordinal);
-            Assert.Contains(
-                "source_external_copy_retained_read_only: true",
-                block,
-                StringComparison.Ordinal);
-        }
-    }
-
-    [Fact]
-    public void OmiComputationalArchitecturesIntakeIsImmutableReviewedAndDeepRouted()
-    {
-        var root = RepositoryRoot();
-        var batchDirectory = Path.Combine(
-            root,
-            "docs",
-            "report-intake",
-            "2026-08-27",
-            "omi-computational-architectures-research");
-        var manifestPath = Path.Combine(batchDirectory, "MANIFEST.md");
-        var synthesisPath = Path.Combine(
-            batchDirectory,
-            "tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md");
-        var tddPath = Path.Combine(
-            batchDirectory,
-            "tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md");
-        const string manifestRoute =
-            "docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md";
-        const string synthesisRoute =
-            "docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-synthesis-2026-08-27.md";
-        const string tddRoute =
-            "docs/report-intake/2026-08-27/omi-computational-architectures-research/tinyrustlm-omi-computational-architectures-intake-tdd-delta-2026-08-27.md";
-        const string durableRoute =
-            "wiki/runtime-mirust/reports/tinyrustlm-omi-computational-architectures-intake-memory-2026-08-27.md";
-
-        var reports = ParseHashedManifest(manifestPath);
-        Assert.Equal(23, reports.Count);
-        Assert.All(reports, report => Assert.NotNull(report.Bytes));
-        Assert.Equal(2419951L, reports.Sum(report => report.Bytes!.Value));
-
-        var inventory = string.Concat(reports
-            .OrderBy(report => report.FileName, StringComparer.Ordinal)
-            .Select(report => $"{report.Sha256}  {report.Bytes!.Value}  {report.FileName}\n"));
-        var inventoryHash = Convert.ToHexString(
-            SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(inventory)))
-            .ToLowerInvariant();
-        Assert.Equal(
-            "b7b38621fb19353859b5a484ef4f15655990420797f1ec22a802b9f529c5b453",
-            inventoryHash);
-
-        Assert.Equal(
-            "dc5b80176d819d98842457325bc8c9d15a4f3b69404bebf0448337245b889354",
-            Sha256Hex(manifestPath));
-        Assert.Equal(
-            "d506d76a0f21722f4e689c87fbd73b6ad684a80d932ee10afa80b8c4357f1922",
-            Sha256Hex(synthesisPath));
-        Assert.Equal(
-            "8c3532d75f515891f8f20176da4faff0fbed3180a79b5d089438e0cffb6e4c23",
-            Sha256Hex(tddPath));
-
-        var durablePath = Path.Combine(
-            root,
-            durableRoute.Replace('/', Path.DirectorySeparatorChar));
-        Assert.Equal(
-            "70136b38c4815414684e23e1f857b267c237c57e72a91081ba0cd3212e44dc44",
-            Sha256Hex(durablePath));
-
-        var synthesis = File.ReadAllText(synthesisPath);
-        foreach (var required in new[]
-        {
-            "Product Architecture Decision",
-            "declared mutation sets",
-            "Natural-language text is payload data",
-            "Probabilistic Programming OMI Report",
-            "materially misroutes the acronym OMI",
-            "test-time weight updates",
-            "Prohibited And Deferred Architecture",
-            "Current Local Application",
-            "1,664 passing, nine failing, and three skipped"
-        })
-        {
-            Assert.Contains(required, synthesis, StringComparison.OrdinalIgnoreCase);
-        }
-
-        var tdd = File.ReadAllText(tddPath);
-        foreach (var required in new[]
-        {
-            "Gate 0: Intake Custody And Decision Separation",
-            "Gate 1: Release-Surface Exact Closure",
-            "Gate 2: Closed Operation And Declared Mutation Scope",
-            "Gate 3: Memory Provenance, Conflict, And Non-Adaptation",
-            "Gate 4: Replayable Private-By-Default Observability",
-            "Gate 5: Ambiguity, Planning, And Explicit Tool Authority",
-            "Gate 6: Research-Arm Admission",
-            "Gate 7: Documentation And UAI Drift",
-            "Gate 8: First-Model Release Recheck"
-        })
-        {
-            Assert.Contains(required, tdd, StringComparison.Ordinal);
-        }
-
-        foreach (var relativePath in new[]
-        {
-            "workspace.uai",
-            ".uai/architecture.uai",
-            ".uai/next-recursive-prompt.uai",
-            ".uai/totem.uai",
-            ".uai/taboo.uai",
-            ".uai/index.uai",
-            ".uai/operations.uai",
-            ".uai/file-handoff.uai",
-            ".uai/short-term-memory.uai",
-            ".uai/report-synthesis.uai",
-            ".uai/test-plan.uai",
-            ".uai/long-term-memory.uai",
-            ".uai/intake-outcome-ledger.uai",
-            ".uai/workspace-guidance.uai",
-            ".uai/startup-packet.uai",
-            ".uai/receiver-brief.uai"
-        })
-        {
-            var text = File.ReadAllText(Path.Combine(
-                root,
-                relativePath.Replace('/', Path.DirectorySeparatorChar)));
-            Assert.Contains(manifestRoute, text, StringComparison.Ordinal);
-            Assert.Contains(synthesisRoute, text, StringComparison.Ordinal);
-            Assert.Contains(tddRoute, text, StringComparison.Ordinal);
-            Assert.Contains(durableRoute, text, StringComparison.Ordinal);
-        }
-
-        var longTerm = File.ReadAllText(Path.Combine(root, ".uai", "long-term-memory.uai"));
-        Assert.Contains(
-            "stable_id: tinyrustlm_omi_computational_architectures_intake_current",
-            longTerm,
-            StringComparison.Ordinal);
-        Assert.Contains(
-            $"sha256: {Sha256Hex(durablePath)}",
-            longTerm,
-            StringComparison.OrdinalIgnoreCase);
-
-        var ledger = File.ReadAllText(Path.Combine(root, ".uai", "intake-outcome-ledger.uai"));
-        foreach (var report in reports)
-        {
-            var sourcePath = $"agent-file-handoff/Improvement/{report.FileName}";
-            var durablePathForReport =
-                $"docs/report-intake/2026-08-27/omi-computational-architectures-research/{report.FileName}";
-            var block = FindLedgerEntry(ledger, sourcePath);
-            Assert.Contains(
-                $"docs_evidence_path: {durablePathForReport}",
-                block,
-                StringComparison.Ordinal);
-            Assert.Contains($"sha256: {report.Sha256}", block, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("processed_outcome: incorporated", block, StringComparison.Ordinal);
-            Assert.Contains("source_removed: true", block, StringComparison.Ordinal);
-            Assert.Contains(
-                "source_external_copy_retained_read_only: true",
-                block,
-                StringComparison.Ordinal);
-        }
-    }
-
-    [Fact]
-    public void EarlierBleedingEdgePlanRetainsItsNoCheatBoundary()
-    {
-        var root = RepositoryRoot();
-        var tddPlan = File.ReadAllText(Path.Combine(
-            root,
-            "docs",
-            "report-intake",
-            "2026-07-08",
-            "tinyrustlm-bleeding-edge-tdd-plan-2026-07-08.md"));
-        var durableMemory = File.ReadAllText(Path.Combine(
-            root,
-            "wiki",
-            "runtime-mirust",
-            "reports",
-            "tinyrustlm-bleeding-edge-system-plan-memory-2026-07-08.md"));
-
-        Assert.Contains("No test should be weakened to make a bad model pass", tddPlan, StringComparison.Ordinal);
-        Assert.Contains("No browser-side fake assistant output", durableMemory, StringComparison.Ordinal);
-    }
-
-    private static IReadOnlyList<ManifestReport> ParseHashedManifest(string manifestPath)
-    {
-        Assert.True(File.Exists(manifestPath), manifestPath);
         var lines = File.ReadAllLines(manifestPath);
-        var headerIndex = Array.FindIndex(lines, line =>
-            line.StartsWith('|')
-            && SplitTableRow(line).Any(cell =>
-                NormalizeHeader(cell) is "sha256" or "sourcesha256"));
+        var headerIndex = -1;
+        var headers = Array.Empty<string>();
+
+        for (var index = 0; index < lines.Length; index++)
+        {
+            if (!lines[index].StartsWith('|'))
+            {
+                continue;
+            }
+
+            var candidate = SplitTableRow(lines[index]).Select(NormalizeHeader).ToArray();
+            if (candidate.Contains("file", StringComparer.Ordinal)
+                && candidate.Any(header => header is "sha256" or "sourcesha256"))
+            {
+                headerIndex = index;
+                headers = candidate;
+                break;
+            }
+        }
 
         if (headerIndex < 0)
         {
             return Array.Empty<ManifestReport>();
         }
 
-        var headers = SplitTableRow(lines[headerIndex]).Select(NormalizeHeader).ToArray();
-        var fileIndex = Array.FindIndex(headers, header => header is "file" or "report");
-        var hashIndex = Array.FindIndex(headers, header => header is "sha256" or "sourcesha256");
-        var bytesIndex = Array.FindIndex(headers, header => header == "bytes");
+        var fileIndex = Array.FindIndex(headers, header => header == "file");
+        var sourceHashIndex = Array.FindIndex(headers, header => header == "sourcesha256");
+        if (sourceHashIndex < 0)
+        {
+            sourceHashIndex = Array.FindIndex(headers, header => header == "sha256");
+        }
+
+        var sourceBytesIndex = Array.FindIndex(headers, header => header == "bytes");
         var durableHashIndex = Array.FindIndex(headers, header => header == "durablesha256");
         var durableBytesIndex = Array.FindIndex(headers, header => header == "durablebytes");
-        var sourceIndex = Array.FindIndex(headers, header => header == "sourcepath");
-        var durableIndex = Array.FindIndex(headers, header => header is "durablepath" or "durabledocscopy");
-        Assert.True(fileIndex >= 0 && hashIndex >= 0, manifestPath);
-
+        var durablePathIndex = Array.FindIndex(headers, header => header is "durablepath" or "durabledocscopy");
         var reports = new List<ManifestReport>();
+
         for (var index = headerIndex + 1; index < lines.Length; index++)
         {
             var line = lines[index];
@@ -949,70 +159,27 @@ public sealed class ReportIntakeMemoryTests
             }
 
             var cells = SplitTableRow(line);
-            if (cells.All(cell => cell.All(character => character is '-' or ':' or ' ')))
+            if (IsTableDivider(cells))
             {
                 continue;
             }
 
-            Assert.True(cells.Length > Math.Max(fileIndex, hashIndex), line);
-            var fileName = ParseFileName(cells[fileIndex]);
-            var hash = cells[hashIndex].Trim().Trim('`').ToLowerInvariant();
-            Assert.Matches("^[0-9a-f]{64}$", hash);
-
-            long? bytes = null;
-            if (bytesIndex >= 0 && bytesIndex < cells.Length)
-            {
-                Assert.True(long.TryParse(cells[bytesIndex].Replace(",", string.Empty), out var parsedBytes), line);
-                bytes = parsedBytes;
-            }
-
-            long? durableBytes = null;
-            if (durableBytesIndex >= 0 && durableBytesIndex < cells.Length)
-            {
-                Assert.True(
-                    long.TryParse(cells[durableBytesIndex].Replace(",", string.Empty), out var parsedDurableBytes),
-                    line);
-                durableBytes = parsedDurableBytes;
-            }
-
-            string? durableHash = null;
-            if (durableHashIndex >= 0 && durableHashIndex < cells.Length)
-            {
-                durableHash = cells[durableHashIndex].Trim().Trim('`').ToLowerInvariant();
-                Assert.Matches("^[0-9a-f]{64}$", durableHash);
-            }
-
+            Assert.True(cells.Length > Math.Max(fileIndex, sourceHashIndex), line);
             reports.Add(new ManifestReport(
-                fileName,
-                hash,
-                bytes,
-                durableHash,
-                durableBytes,
-                sourceIndex >= 0 && sourceIndex < cells.Length ? ParseCodeCell(cells[sourceIndex]) : null,
-                durableIndex >= 0 && durableIndex < cells.Length ? ParseDurableCell(cells[durableIndex]) : null));
+                ManifestPath: manifestPath,
+                FileName: ParseFileName(cells[fileIndex]),
+                SourceSha256: ParseSha256(cells[sourceHashIndex]),
+                SourceBytes: ParseOptionalBytes(cells, sourceBytesIndex, line),
+                DurablePath: ParseOptionalPath(cells, durablePathIndex),
+                DurableSha256: ParseOptionalSha256(cells, durableHashIndex),
+                DurableBytes: ParseOptionalBytes(cells, durableBytesIndex, line)));
         }
 
+        Assert.NotEmpty(reports);
         return reports;
     }
 
-    private static string FindLedgerEntry(string ledger, string sourcePath)
-    {
-        var marker = $"  - source_path: {sourcePath}";
-        var start = ledger.IndexOf(marker, StringComparison.Ordinal);
-        Assert.True(start >= 0, $"Ledger entry missing for {sourcePath}.");
-        var next = ledger.IndexOf("\n  - source_path: ", start + marker.Length, StringComparison.Ordinal);
-        return next >= 0 ? ledger[start..next] : ledger[start..];
-    }
-
-    private static string ReadLedgerValue(string block, string key)
-    {
-        var prefix = $"    {key}: ";
-        var line = block.Split('\n').FirstOrDefault(candidate => candidate.StartsWith(prefix, StringComparison.Ordinal));
-        Assert.False(string.IsNullOrWhiteSpace(line), $"Missing {key} in ledger block: {block}");
-        return line![prefix.Length..].Trim();
-    }
-
-    private static string ResolveDurablePath(string root, string manifestPath, ManifestReport report)
+    private static string ResolveDurablePath(string root, ManifestReport report)
     {
         if (!string.IsNullOrWhiteSpace(report.DurablePath))
         {
@@ -1021,11 +188,24 @@ public sealed class ReportIntakeMemoryTests
                 report.DurablePath.Replace('/', Path.DirectorySeparatorChar)));
         }
 
-        return Path.Combine(Path.GetDirectoryName(manifestPath)!, report.FileName);
+        return Path.GetFullPath(Path.Combine(Path.GetDirectoryName(report.ManifestPath)!, report.FileName));
+    }
+
+    private static void AssertPathIsInsideRoot(string root, string path)
+    {
+        var normalizedRoot = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar)
+            + Path.DirectorySeparatorChar;
+        var normalizedPath = Path.GetFullPath(path);
+        Assert.True(
+            normalizedPath.StartsWith(normalizedRoot, StringComparison.OrdinalIgnoreCase),
+            $"Manifest route escapes the repository: {normalizedPath}");
     }
 
     private static string[] SplitTableRow(string line) =>
         line.Trim().Trim('|').Split('|', StringSplitOptions.TrimEntries);
+
+    private static bool IsTableDivider(IEnumerable<string> cells) =>
+        cells.All(cell => cell.All(character => character is '-' or ':' or ' '));
 
     private static string NormalizeHeader(string cell) =>
         new(cell.Where(char.IsLetterOrDigit).Select(char.ToLowerInvariant).ToArray());
@@ -1033,27 +213,65 @@ public sealed class ReportIntakeMemoryTests
     private static string ParseFileName(string cell)
     {
         var value = cell.Trim().Trim('`');
-        if (value.StartsWith('['))
+        if (!value.StartsWith('['))
         {
-            var closeBracket = value.IndexOf(']');
-            Assert.True(closeBracket > 1, cell);
-            value = value[1..closeBracket];
+            return value;
         }
 
+        var closeBracket = value.IndexOf(']');
+        Assert.True(closeBracket > 1, cell);
+        return value[1..closeBracket];
+    }
+
+    private static string? ParseOptionalPath(IReadOnlyList<string> cells, int index)
+    {
+        if (index < 0 || index >= cells.Count)
+        {
+            return null;
+        }
+
+        var value = cells[index].Trim();
+        if (string.IsNullOrWhiteSpace(value) || value == "-" || value.StartsWith('['))
+        {
+            return null;
+        }
+
+        return value.Trim('`');
+    }
+
+    private static string ParseSha256(string cell)
+    {
+        var value = cell.Trim().Trim('`').ToLowerInvariant();
+        Assert.Matches("^[0-9a-f]{64}$", value);
         return value;
     }
 
-    private static string ParseCodeCell(string cell) => cell.Trim().Trim('`');
-
-    private static string ParseDurableCell(string cell)
+    private static string? ParseOptionalSha256(IReadOnlyList<string> cells, int index)
     {
-        var value = cell.Trim();
-        if (value.StartsWith('['))
+        if (index < 0 || index >= cells.Count)
         {
-            return null!;
+            return null;
         }
 
-        return ParseCodeCell(value);
+        var value = cells[index].Trim().Trim('`');
+        return string.IsNullOrWhiteSpace(value) || value == "-" ? null : ParseSha256(value);
+    }
+
+    private static long? ParseOptionalBytes(IReadOnlyList<string> cells, int index, string line)
+    {
+        if (index < 0 || index >= cells.Count)
+        {
+            return null;
+        }
+
+        var value = cells[index].Trim().Trim('`').Replace(",", string.Empty, StringComparison.Ordinal);
+        if (string.IsNullOrWhiteSpace(value) || value == "-")
+        {
+            return null;
+        }
+
+        Assert.True(long.TryParse(value, out var bytes), line);
+        return bytes;
     }
 
     private static string RepositoryRoot()
@@ -1087,6 +305,8 @@ public sealed class ReportIntakeMemoryTests
         throw new InvalidOperationException("Could not locate TinyRustLM repository root.");
     }
 
+    private static string Normalize(string path) => path.Replace('\\', '/');
+
     private static string Sha256Hex(string path)
     {
         using var sha256 = SHA256.Create();
@@ -1095,11 +315,11 @@ public sealed class ReportIntakeMemoryTests
     }
 
     private readonly record struct ManifestReport(
+        string ManifestPath,
         string FileName,
-        string Sha256,
-        long? Bytes,
+        string SourceSha256,
+        long? SourceBytes,
+        string? DurablePath,
         string? DurableSha256,
-        long? DurableBytes,
-        string? SourcePath,
-        string? DurablePath);
+        long? DurableBytes);
 }

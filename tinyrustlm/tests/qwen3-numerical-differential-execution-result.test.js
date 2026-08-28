@@ -277,7 +277,7 @@ test("keeps exact claim and privacy boundaries with zero campaign counters", () 
   }
 });
 
-test("deep-links checksum-bound terminal memory from every hot UAI surface", () => {
+test("routes checksum-bound terminal memory through one canonical UAI deep link", () => {
   assert.equal(memoryBytes.length, 9040);
   assert.equal(sha256(memoryBytes),
     "51bac356333e23998d61bfce3d88c61e64ada1d8667dac928824f76f371985c1");
@@ -290,6 +290,12 @@ test("deep-links checksum-bound terminal memory from every hot UAI surface", () 
     "docs/report-intake/2026-08-26/post-v10-native-browser-release/MANIFEST.md"]) {
     assert.ok(memoryText.includes(required), required);
   }
+  const canonicalRoute =
+    "wiki/runtime-mirust/reports/" +
+    "tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md";
+  const decisionRoute =
+    "wiki/runtime-mirust/reports/" +
+    "tinyrustlm-report-intake-decision-index-2026-08-28.md";
   for (const relativePath of [
     "workspace.uai",
     ".uai/index.uai",
@@ -306,14 +312,9 @@ test("deep-links checksum-bound terminal memory from every hot UAI surface", () 
     ".uai/file-handoff.uai"
   ]) {
     const uaiText = fs.readFileSync(path.join(repositoryRoot, relativePath), "utf8");
-    assert.ok(uaiText.includes(memoryRelativePath), relativePath);
-    assert.ok(uaiText.includes(
-      "51bac356333e23998d61bfce3d88c61e64ada1d8667dac928824f76f371985c1"),
-    relativePath);
-    assert.ok(uaiText.includes(
-      "3cc7cea068ced16a4cc57e28c54e681fe497d630"), relativePath);
-    assert.ok(uaiText.includes(
-      "aa5af8f29571218caec43911f6afbed704335744e2c702370798af7b55a75d23"),
-    relativePath);
+    assert.ok(uaiText.includes(canonicalRoute), relativePath);
+    assert.ok(uaiText.includes(decisionRoute), relativePath);
   }
+  const canonicalText = fs.readFileSync(path.join(repositoryRoot, canonicalRoute), "utf8");
+  assert.ok(canonicalText.includes(memoryRelativePath));
 });

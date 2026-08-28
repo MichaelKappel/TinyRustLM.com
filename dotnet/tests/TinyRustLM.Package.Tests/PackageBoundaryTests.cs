@@ -201,7 +201,7 @@ public sealed class PackageBoundaryTests
             ["TinyRustLM.Abstractions"] = "TinyRustLM SDK Abstractions",
             ["TinyRustLM.Core"] = "TinyRustLM p2pLLM Runtime SDK",
             ["TinyRustLM.P2P"] = "TinyRustLM p2pRuntime P2P SDK",
-            ["TinyRustLM.MemoryEndpoints"] = "TinyRustLM MemoryEndpoints Optional Connector",
+            ["TinyRustLM.MemoryEndpoints"] = "TinyRustLM MemoryEndpoints Two-Lane Connector",
             ["TinyRustLM.Conversion"] = "TinyRustLM SLM2 Conversion Process Owner"
         };
         var expectedTerms = new Dictionary<string, string[]>
@@ -209,7 +209,14 @@ public sealed class PackageBoundaryTests
             ["TinyRustLM.Abstractions"] = new[] { "SLM2", "ACG2", "Prompt2", "Tokenizer2", "Template2", "Sampling2" },
             ["TinyRustLM.Core"] = new[] { "15-symbol", "mixed-Q8", "SLM2", "ACG2", "raw terminal output" },
             ["TinyRustLM.P2P"] = new[] { "four-MiB", "fixed-piece", "create-only", "SLM2", "ACG2" },
-            ["TinyRustLM.MemoryEndpoints"] = new[] { "MemoryEndpoints", "optional", "untrusted", "credential" },
+            ["TinyRustLM.MemoryEndpoints"] = new[]
+            {
+                "MemoryEndpoints",
+                "ecosystem-agent coordination",
+                "TinyRustLM.com Connect user-memory plugin",
+                "untrusted",
+                "credential"
+            },
             ["TinyRustLM.Conversion"] = new[] { "tinyrustlm-convert", "Qwen3", "mixed-Q8", "Tokenizer2", "create-only" }
         };
 

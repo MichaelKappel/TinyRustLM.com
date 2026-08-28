@@ -1,5 +1,9 @@
-profile: runtime-mirust.intake-outcome-ledger.v70
+profile: tinyrustlm.intake-outcome-ledger.v71
 updated_utc: 2026-08-28T09:28:49Z
+
+current_canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
+current_report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+current_memory_policy: MemoryEndpoints.com has two separate authorized uses: direct ecosystem agent long-term memory/meetings/coordination, and the TinyRustLM.com Connect user plugin. Synchronized secret-safe prelaunch memory copies elsewhere are permitted; authorization is not live-operation evidence.
 
 checkpoint_2026_08_28_companion_source_operation_contract:
   status: remote_exact_green_checkpoint
@@ -416,7 +420,7 @@ report_intake_2026_08_26_post_v10_native_browser_release:
   processed_outcome: incorporated
   actual_source_work: Preserved twelve reports byte-exactly; separated report assertions from local evidence; corrected the /10 producer/verifier attribution, Qwen3 architecture, vocabulary domains, scalar authority, browser hashing/copy/resource claims, and P2P terminology; converted consensus into a twelve-gate TDD route from successor registration through synchronized release.
   hot_memory_update: Routes are present in workspace.uai, .uai/architecture.uai, .uai/next-recursive-prompt.uai, .uai/totem.uai, .uai/taboo.uai, .uai/index.uai, .uai/operations.uai, .uai/file-handoff.uai, .uai/short-term-memory.uai, .uai/report-synthesis.uai, .uai/test-plan.uai, .uai/long-term-memory.uai, and this ledger.
-  checks: Source-to-durable SHA-256 and byte count 12/12; raw report inventory reproduced; authoritative Content and Improvement non-placeholder counts 0/0; frozen goals unchanged; MemoryEndpoints unauthorized; campaign counters zero; no implementation, model, browser, P2P, publication, or deployment claim inferred.
+  checks: Source-to-durable SHA-256 and byte count 12/12; raw report inventory reproduced; authoritative Content and Improvement non-placeholder counts 0/0; frozen goals unchanged; no authenticated live MemoryEndpoints evidence existed at this checkpoint; campaign counters zero; no implementation, model, browser, P2P, publication, or deployment claim inferred.
   blockers: Wholly new output-free successor registration and execution, six-member semantic pass, source/scalar/native/WASM numerical evidence, practical quality qualification, real-browser conversation, working P2P-or-convert acquisition, packages, credentials, deployments, and HTTPS readback remain open.
   source_site_removal_or_keep_active_reason: The external read-only source was not modified. Entry field source_removed=true means the corresponding source path is absent from the authoritative worktree active intake; it does not claim deletion from E:\Source\Rust\TinyRustLM.com.
 entries_2026_08_26_post_v10_native_browser_release:

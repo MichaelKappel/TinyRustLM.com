@@ -234,7 +234,7 @@ test("publishes no private path secret or inflated product claim", () => {
   });
 });
 
-test("deep-links one checksum-bound durable memory route from every hot UAI surface", () => {
+test("routes one checksum-bound durable memory through canonical UAI memory", () => {
   assert.equal(durableMemoryBytes.length, 11584);
   assert.equal(sha256(durableMemoryBytes),
     "2a1c2882b9368d0ebd45fe96b9689406d5fcbfd941b4b2a5b39868da5cb3e1cf");
@@ -249,6 +249,12 @@ test("deep-links one checksum-bound durable memory route from every hot UAI surf
   }
   assert.match(memoryText,
     /source-framework\s+and\s+scalar-native\s+numerical\s+parity/u);
+  const canonicalRoute =
+    "wiki/runtime-mirust/reports/" +
+    "tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md";
+  const decisionRoute =
+    "wiki/runtime-mirust/reports/" +
+    "tinyrustlm-report-intake-decision-index-2026-08-28.md";
   for (const relativePath of [
     "workspace.uai",
     ".uai/index.uai",
@@ -265,6 +271,9 @@ test("deep-links one checksum-bound durable memory route from every hot UAI surf
     ".uai/file-handoff.uai"
   ]) {
     const uaiText = fs.readFileSync(path.join(repositoryRoot, relativePath), "utf8");
-    assert.ok(uaiText.includes(durableMemoryRelativePath), relativePath);
+    assert.ok(uaiText.includes(canonicalRoute), relativePath);
+    assert.ok(uaiText.includes(decisionRoute), relativePath);
   }
+  const canonicalText = fs.readFileSync(path.join(repositoryRoot, canonicalRoute), "utf8");
+  assert.ok(canonicalText.includes(durableMemoryRelativePath));
 });

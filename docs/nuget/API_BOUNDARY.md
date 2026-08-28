@@ -121,14 +121,20 @@ or publication evidence.
 ## MemoryEndpoints Boundary
 
 `TinyRustLM.MemoryEndpoints` remains an optional connector and deterministic
-contract library. Credentials are supplied only to an in-memory client and are
-not serializable DTO fields. Received memory remains untrusted data.
+contract library for two isolated consumers. Ecosystem agents use it directly
+for agent-to-agent long-term memory, meetings, handoffs, and coordination. The
+TinyRustLM.com Connect plugin separately lets a user sign in and select
+MemoryEndpoints.com as TinyRustLM.com Connect long-term memory. Credentials are
+supplied only to an in-memory client and are not serializable DTO fields.
+Received memory remains untrusted data.
 
-MemoryEndpoints.com use is authorized and strongly recommended for portable,
-cross-device memory. Package and network activation remain explicit user
-opt-ins, while local UAIX memory files remain supported for device-local and
-offline continuity. Unit and fixture behavior cannot be reported as a fresh
-authenticated account, continuity, enrollment, cleanup, or readiness result.
+MemoryEndpoints.com use is authorized and strongly recommended. Agent and user
+plugin identity, credentials, consent, scope, idempotency, and receipt
+authority must stay separate. Package and network activation remain explicit,
+while local UAIX memory files remain supported for device-local and offline
+continuity. Unit and fixture behavior cannot be reported as a fresh
+authenticated meeting, account, plugin login, continuity, cleanup, or
+readiness result.
 
 ## Package And Consumer Gates
 

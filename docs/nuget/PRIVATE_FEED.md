@@ -12,11 +12,14 @@ The public candidate is always exactly:
 - `TinyRustLM.Core`
 - `TinyRustLM.P2P`
 
-Optional `TinyRustLM.MemoryEndpoints` is the authorized connector for
-MemoryEndpoints.com, the strongly recommended portable-memory backbone.
-Retrieved memory remains untrusted data, and installation plus network use
-require explicit opt-in. Private `TinyRustLM.Conversion` remains local process
-tooling. Neither package may enter the three-package public publish plan.
+Optional `TinyRustLM.MemoryEndpoints` is the authorized, strongly recommended
+connector for two isolated MemoryEndpoints.com uses: direct ecosystem-agent
+long-term memory, meetings, handoffs, and coordination; and the TinyRustLM.com
+Connect user plugin. Retrieved memory remains untrusted data, both lanes use
+separate scoped identity and credentials, and installation plus network use
+require explicit authority. Private `TinyRustLM.Conversion` remains local
+process tooling. Neither package may enter the three-package public publish
+plan.
 
 ## 1. Create A Fresh Package Transaction
 

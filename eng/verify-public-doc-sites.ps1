@@ -21,7 +21,14 @@ if (Test-Path -LiteralPath $ReportOutput) {
 function Get-Sha256Text {
     param([string]$Text)
     $bytes = [Text.Encoding]::UTF8.GetBytes($Text)
-    return [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($bytes)).ToLowerInvariant()
+    $sha256 = [Security.Cryptography.SHA256]::Create()
+    try {
+        $hash = $sha256.ComputeHash($bytes)
+        return ([BitConverter]::ToString($hash)).Replace("-", "").ToLowerInvariant()
+    }
+    finally {
+        $sha256.Dispose()
+    }
 }
 
 function Get-FileSha256 {
@@ -32,7 +39,12 @@ function Get-FileSha256 {
 function Resolve-DefaultSiteRoot {
     param([string]$SiteName)
 
+    if ($SiteName -eq "TinyRustLM.com") {
+        return $RepoRoot
+    }
+
     $candidates = @(
+        (Join-Path $SourceRoot "Worktrees/source-checkin-recovery-20260819/$SiteName"),
         (Join-Path $SourceRoot "Rust/$SiteName"),
         (Join-Path $SourceRoot $SiteName)
     )
@@ -133,8 +145,8 @@ $forbiddenPatterns = @(
     [regex]::Escape($oldBrowserPrefix),
     'TinyRustLM\.Memory(?!Endpoints)',
     [regex]::Escape("tinyrustlm" + "-slm-pack"),
-    [regex]::Escape("." + $oldCompositionName.ToLowerInvariant()) + '(?:\b|`)',
-    '\b' + [regex]::Escape($oldCompositionName) + '\b',
+    ([regex]::Escape("." + $oldCompositionName.ToLowerInvariant()) + '(?:\b|`)'),
+    ('\b' + [regex]::Escape($oldCompositionName) + '\b'),
     '\bproduct\s+V2\b',
     'download(?:ing)?\s+(?:a\s+)?(?:conversion\s+)?(?:request|script|text\s+file)',
     'download(?:ing)?\s+(?:a\s+)?\.txt'
@@ -222,6 +234,9 @@ $report = [ordered]@{
     portable_memory_backbone_package = "TinyRustLM.MemoryEndpoints"
     portable_memory_service = "https://memoryendpoints.com"
     portable_memory_recommendation = "strongly-recommended"
+    memory_endpoints_uses = @("ecosystem-agent-coordination", "tinyrustlm-connect-user-plugin")
+    memory_endpoints_lane_isolation = "required"
+    prelaunch_redundant_memory = "allowed-if-synchronized"
     local_file_memory = "supported"
     private_package = "TinyRustLM.Conversion"
     current_model_format = "SLM2"
@@ -231,8 +246,8 @@ $report = [ordered]@{
     missing_site_count = $missingSites.Count
     check_count = $checks.Count
     failed_check_count = $failedChecks.Count
-    sites = @($sites)
-    checks = @($checks)
+    sites = $sites.ToArray()
+    checks = $checks.ToArray()
     secret_material_included = $false
     absolute_site_paths_included = $false
 }
@@ -241,7 +256,8 @@ $reportDirectory = Split-Path -Parent $ReportOutput
 New-Item -ItemType Directory -Path $reportDirectory -Force | Out-Null
 $temporaryPath = "$ReportOutput.tmp-$([Guid]::NewGuid().ToString('N'))"
 try {
-    $report | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $temporaryPath -Encoding utf8NoBOM
+    $json = $report | ConvertTo-Json -Depth 12
+    [IO.File]::WriteAllText($temporaryPath, $json, [Text.UTF8Encoding]::new($false))
     Move-Item -LiteralPath $temporaryPath -Destination $ReportOutput
 }
 finally {

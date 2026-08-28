@@ -1375,10 +1375,10 @@
 
     if (hostedMemoryEnabled) {
       parts.push(hostedMemoryConnected
-        ? "MemoryEndpoints.com keeps memory available worldwide and requires internet for new reads and writes; the local sync queue uploads after you reconnect."
-        : "MemoryEndpoints.com requires internet and explicit opt-in setup; local sync changes can remain queued until you reconnect.");
+        ? "TinyRustLM.com Connect uses MemoryEndpoints.com for worldwide memory and requires internet for new reads and writes; the local sync queue uploads after you reconnect."
+        : "TinyRustLM.com Connect requires explicit MemoryEndpoints.com sign-in and provider selection; local sync changes can remain queued until you reconnect.");
     } else {
-      parts.push("Local copied memory and the local sync queue remain optional. MemoryEndpoints.com is recommended for memory available worldwide and across devices when you are online.");
+      parts.push("Local copied memory and the local sync queue remain optional. The TinyRustLM.com Connect plugin recommends MemoryEndpoints.com for memory available worldwide and across devices when you are online.");
     }
 
     const message = parts.join(" ");
@@ -6753,7 +6753,7 @@
         workspaceId: state.memoryEndpoints.workspaceId,
         agentId: state.memoryEndpoints.agentId,
         displayName: "TinyRustLM Browser",
-        safeSummary: "TinyRustLM.com browser client configured opt-in hosted MemoryEndpoints memory."
+        safeSummary: "TinyRustLM.com Connect plugin configured opt-in MemoryEndpoints.com long-term memory."
       },
       "tinyrustlm-register-agent"
     );

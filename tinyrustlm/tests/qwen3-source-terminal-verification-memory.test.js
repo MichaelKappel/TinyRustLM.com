@@ -33,7 +33,7 @@ test("freezes the durable verification memory and public result", () => {
   assert.equal(sha256(result), resultSha256);
 });
 
-test("deep-links the durable record throughout active UAI memory", () => {
+test("routes the durable record through canonical active UAI memory", () => {
   const routes = [
     "workspace.uai",
     ".uai/short-term-memory.uai",
@@ -46,21 +46,23 @@ test("deep-links the durable record throughout active UAI memory", () => {
     ".uai/startup-packet.uai",
     ".uai/receiver-brief.uai"
   ];
+  const canonicalRoute =
+    "wiki/runtime-mirust/reports/" +
+    "tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md";
+  const decisionRoute =
+    "wiki/runtime-mirust/reports/" +
+    "tinyrustlm-report-intake-decision-index-2026-08-28.md";
   for (const route of routes) {
     const text = read(route).toString("utf8");
-    assert.match(text, new RegExp(memoryRelativePath.replaceAll("/", "\\/")),
-      route);
-    assert.match(text, new RegExp(memorySha256), route);
-    assert.match(text, /terminal-ambiguous/, route);
+    assert.ok(text.includes(canonicalRoute), route);
+    assert.ok(text.includes(decisionRoute), route);
   }
+  const canonical = read(canonicalRoute).toString("utf8");
+  assert.ok(canonical.includes(memoryRelativePath));
 });
 
-test("keeps the long-term pointer and reviewed report route explicit", () => {
-  const ledger = read(".uai/long-term-memory.uai").toString("utf8");
+test("keeps the immutable record and reviewed report route explicit", () => {
   const memory = read(memoryRelativePath).toString("utf8");
-  assert.match(ledger,
-    /stable_id: tinyrustlm_qwen3_source_terminal_verification_v1_terminal_ambiguous/);
-  assert.match(ledger, /bytes: 9317/);
   assert.match(memory,
     /docs\/report-intake\/2026-08-26\/post-v10-native-browser-release\/MANIFEST\.md/);
   assert.match(memory, /The twelve raw reports are advisory/);

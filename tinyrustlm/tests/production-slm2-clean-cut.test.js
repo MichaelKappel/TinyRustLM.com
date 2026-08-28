@@ -58,8 +58,8 @@ const enterpriseMemory = Object.freeze({
   relativePath:
     "wiki/runtime-mirust/reports/" +
     "tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md",
-  byteLength: 20316,
-  sha256: "6e5a5b7cf7f3ad45008b14597a3616ee603da76cc500b69770de7280711785e4",
+  byteLength: 22885,
+  sha256: "08ca32bf0bb8aeefc54921baf00f3ed55f3d9f977e00e9a8bc93095fe48093fd",
   owners: Object.freeze([
     "workspace.uai",
     ".uai/architecture.uai",
@@ -223,7 +223,7 @@ test("keeps maintained product documentation free of superseded runtime terms", 
   assert.deepEqual(offenders, []);
 });
 
-test("routes enterprise intake memory through every hot owner", () => {
+test("routes hot memory through the canonical enterprise and decision indexes", () => {
   const bytes = directFile(enterpriseMemory.relativePath);
   assert.equal(bytes.length, enterpriseMemory.byteLength);
   assert.equal(
@@ -233,7 +233,9 @@ test("routes enterprise intake memory through every hot owner", () => {
   for (const owner of enterpriseMemory.owners) {
     const source = directFile(owner).toString("utf8");
     assert.ok(source.includes(enterpriseMemory.relativePath), owner);
-    assert.ok(source.includes(enterpriseMemory.sha256), owner);
+    assert.ok(source.includes(
+      "wiki/runtime-mirust/reports/" +
+      "tinyrustlm-report-intake-decision-index-2026-08-28.md"), owner);
   }
 
   const manifestRoutes = Array.from(

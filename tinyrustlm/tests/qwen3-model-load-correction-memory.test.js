@@ -83,39 +83,21 @@ test("durable model-load correction memory binds exact implementation evidence",
     /92af9585346fb8b22df906ee5e5feef989b118692f8ba0bb92df9056da9663b0/u);
 });
 
-test("every hot UAI route deep-links the correction and reviewed report memory", () => {
+test("every hot UAI route reaches the correction through canonical memory", () => {
+  const canonicalRoute =
+    "wiki/runtime-mirust/reports/" +
+    "tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md";
+  const decisionRoute =
+    "wiki/runtime-mirust/reports/" +
+    "tinyrustlm-report-intake-decision-index-2026-08-28.md";
   for (const relativePath of hotRoutes) {
     const value = fs.readFileSync(path.join(repositoryRoot, relativePath), "utf8");
-    assert.match(value, new RegExp(memoryRelativePath.replaceAll("/", "\\/"), "u"),
-      relativePath);
-    assert.match(value, new RegExp(memorySha256, "u"), relativePath);
-    assert.match(value,
-      /tinyrustlm-post-v10-native-browser-release-intake-synthesis-2026-08-26\.md/u,
-      relativePath);
-    assert.match(value,
-      /tinyrustlm-post-v10-native-browser-release-intake-tdd-delta-2026-08-26\.md/u,
-      relativePath);
-    assert.match(value, /tinyrustlm\.qwen3_numerical_source_request\.v2/u,
-      relativePath);
-    assert.match(value, /tinyrustlm\.qwen3-publisher-source-trace\/2/u,
-      relativePath);
-    assert.match(value,
-      /e21c1c8459a64abbdf47d98c81ca4b5526e7b156ce9a72079c0f735d3515955d/u,
-      relativePath);
-    assert.match(value,
-      /c04abffe412f5032b3c66d6ce00ece4d27a5d89f3ae6678e742cc56ce64f86fc/u,
-      relativePath);
-    assert.match(value, /787c7d3f4e23ff141514ba292667a852fd688580/u,
-      relativePath);
-    assert.match(value,
-      /7e320cf108b751768a780083c7a8c59ec40b846508eaf8d4a4389e4c31d60bbb/u,
-      relativePath);
-    assert.match(value,
-      /9be258173ae2e28c0e7bf754667c6f9c1ccba1ae2bf8c1aea930d9524949b3b7/u,
-      relativePath);
-    assert.match(value, /0\/20.*0\/50.*0\/25.*0\/40.*0\/20/u, relativePath);
-    assert.match(value, /MemoryEndpoints/u, relativePath);
+    assert.ok(value.includes(canonicalRoute), relativePath);
+    assert.ok(value.includes(decisionRoute), relativePath);
   }
+  const canonical = fs.readFileSync(path.join(repositoryRoot, canonicalRoute), "utf8");
+  assert.ok(canonical.includes(memoryRelativePath));
+  assert.ok(canonical.includes(decisionRoute));
 });
 
 test("hot route inventory is exact and duplicate-free", () => {

@@ -306,7 +306,7 @@ def metadata_policy_violations(package_id, metadata):
         "TinyRustLM.Abstractions": "TinyRustLM SDK Abstractions",
         "TinyRustLM.Core": "TinyRustLM p2pLLM Runtime SDK",
         "TinyRustLM.P2P": "TinyRustLM p2pRuntime P2P SDK",
-        "TinyRustLM.MemoryEndpoints": "TinyRustLM MemoryEndpoints Optional Connector",
+        "TinyRustLM.MemoryEndpoints": "TinyRustLM MemoryEndpoints Two-Lane Connector",
         "TinyRustLM.Conversion": "TinyRustLM SLM2 Conversion Process Owner",
     }
     if metadata.get("title") != expected_titles.get(package_id):

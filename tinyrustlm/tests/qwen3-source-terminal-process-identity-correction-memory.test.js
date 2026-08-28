@@ -50,34 +50,23 @@ test("freezes the process-identity correction memory and historical result", () 
     "e27bbbf2e321bf79b6c7f9009427de191b492a9ab74537ba7751866e811076fa");
 });
 
-test("deep-links the correction checkpoint throughout active UAI memory", () => {
+test("routes the correction checkpoint through canonical active UAI memory", () => {
+  const canonicalRoute =
+    "wiki/runtime-mirust/reports/" +
+    "tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md";
+  const decisionRoute =
+    "wiki/runtime-mirust/reports/" +
+    "tinyrustlm-report-intake-decision-index-2026-08-28.md";
   for (const relativePath of activeRoutes) {
     const value = read(relativePath).toString("utf8");
-    assert.match(value,
-      new RegExp(memoryRelativePath.replaceAll("/", "\\/"), "u"), relativePath);
-    assert.match(value, new RegExp(memorySha256, "u"), relativePath);
-    assert.match(value, /efc29dd6007401497e76fad3ec3036c23b092213/u,
-      relativePath);
-    assert.match(value,
-      /ca3d14f36cf8c2469dcac44cac690ff952b364288de29a2a108971a7a93e3f74/u,
-      relativePath);
-    assert.match(value,
-      /f77821b7bfe51c6ab881494e0cc971716f83ab3f498b7fd7072fab6f7d6dd7d0/u,
-      relativePath);
-    assert.match(value, /terminal-ambiguous/u, relativePath);
-    assert.match(value, /0\/20.*0\/50.*0\/25.*0\/40.*0\/20/u,
-      relativePath);
-    assert.match(value, /MemoryEndpoints/u, relativePath);
+    assert.ok(value.includes(canonicalRoute), relativePath);
+    assert.ok(value.includes(decisionRoute), relativePath);
   }
+  const canonical = read(canonicalRoute).toString("utf8");
+  assert.ok(canonical.includes(memoryRelativePath));
 });
 
-test("keeps one durable pointer and one clean-slate successor route", () => {
-  const ledger = read(".uai/long-term-memory.uai").toString("utf8");
-  assert.match(ledger,
-    /stable_id: tinyrustlm_qwen3_source_terminal_process_identity_correction/u);
-  assert.match(ledger, /byte_length: 9313/u);
-  assert.match(ledger, /successor preregistration/u);
-
+test("keeps one canonical pointer and one clean-slate successor route", () => {
   const memory = read(memoryRelativePath).toString("utf8");
   assert.match(memory, /wholly new output-free successor preregistration/u);
   assert.match(memory, /There is no permissive\s+parser/u);

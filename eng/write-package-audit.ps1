@@ -414,7 +414,7 @@ function Get-MetadataPolicyViolations {
         "TinyRustLM.Abstractions" = "TinyRustLM SDK Abstractions"
         "TinyRustLM.Core" = "TinyRustLM p2pLLM Runtime SDK"
         "TinyRustLM.P2P" = "TinyRustLM p2pRuntime P2P SDK"
-        "TinyRustLM.MemoryEndpoints" = "TinyRustLM MemoryEndpoints Optional Connector"
+        "TinyRustLM.MemoryEndpoints" = "TinyRustLM MemoryEndpoints Two-Lane Connector"
         "TinyRustLM.Conversion" = "TinyRustLM SLM2 Conversion Process Owner"
     }
     $expectedTitle = $expectedTitles[$PackageId]

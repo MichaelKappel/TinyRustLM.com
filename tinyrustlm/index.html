@@ -118,7 +118,7 @@
     </aside>
 
     <section class="main-workspace grid" aria-label="Local AI chat workspace">
-      <div id="privacyBadge" class="privacy-badge" data-offline-ready="false" title="Load and verify a local or P2P model before disconnecting. Local copied memory and the local sync queue remain optional. MemoryEndpoints.com is recommended for memory available worldwide and across devices; it requires internet and explicit opt-in setup.">
+      <div id="privacyBadge" class="privacy-badge" data-offline-ready="false" title="Load and verify a local or P2P model before disconnecting. Local copied memory and the local sync queue remain optional. The TinyRustLM.com Connect plugin can use MemoryEndpoints.com for worldwide, cross-device long-term memory after explicit sign-in and provider selection.">
         <svg aria-hidden="true"><use href="#icon-shield"></use></svg>
         <span>Local browser inference &bull; No prompts sent to a server</span>
       </div>
@@ -177,7 +177,7 @@
           <input id="simpleLocalMemoryPackageFiles" type="file" accept=".uai,.json,text/plain,application/json" multiple>
           <button id="simpleInspectLocalMemoryPackageButton" class="secondary-action" type="button">Use Memory Deck</button>
           <p id="simpleLocalMemoryPackageStatus" class="inline-status">memory deck optional</p>
-          <button id="simpleMemoryEndpointsSettingsButton" class="secondary-action" type="button" title="MemoryEndpoints.com is the recommended optional way to keep memory available worldwide. Local copied memory and queued local sync remain available without automatic desktop access.">Web Memory Settings</button>
+          <button id="simpleMemoryEndpointsSettingsButton" class="secondary-action" type="button" title="Configure the TinyRustLM.com Connect plugin to use MemoryEndpoints.com for worldwide long-term memory. Local copied memory and queued local sync remain available.">Connect Memory</button>
           <p id="simpleMemoryEndpointsStatus" class="inline-status">web memory off</p>
         </div>
         <div id="simpleHfSourcePanel" class="source-panel" data-source-panel="huggingface" hidden>
@@ -456,9 +456,9 @@
           <div id="localMemoryPackageSummary" class="memory-deck-summary" hidden></div>
           <pre id="localMemoryPackageContextPreview" class="memory-deck-context-preview" aria-label="UAIX memory context preview"></pre>
 
-            <label class="toggle-row" for="memoryEndpointsEnabled" title="Recommended for worldwide, cross-device memory. It requires internet and explicit opt-in connector setup; TinyRustLM does not automatically contact or open a desktop app.">
+            <label class="toggle-row" for="memoryEndpointsEnabled" title="The TinyRustLM.com Connect user plugin can use MemoryEndpoints.com for worldwide, cross-device long-term memory after explicit sign-in and provider selection.">
               <input id="memoryEndpointsEnabled" type="checkbox">
-              <span>MemoryEndpoints.com worldwide memory (recommended)</span>
+              <span>TinyRustLM.com Connect memory via MemoryEndpoints.com (recommended)</span>
             </label>
             <label for="memoryEndpointsBaseUrl">MemoryEndpoints URL</label>
             <input id="memoryEndpointsBaseUrl" type="url" inputmode="url" spellcheck="false" placeholder="https://memoryendpoints.com">
@@ -739,6 +739,6 @@
   <script src="./app/prompt2-request.js?v=sha256-781b025f9b92664c5b4ee41698555b3a95efa0022754aba37632ffbe8d209405"></script>
   <script src="./app/model-runtime-client.js?v=sha256-8e65d7abad5efcaf35549729de97b805bb336914285eef4ac937f9b132aab022"></script>
   <script src="./app/site-release.js?v=sha256-6f8715fa77ad1a4bcc0c42a9050c0467825acdb402afe96e1a963cc535aea6a9"></script>
-  <script src="./app/app.js?v=sha256-0bcea55c6c92af51e596d758c1f8e0b484f674ddc669c983f1252fb460bf6fb0"></script>
+  <script src="./app/app.js?v=sha256-3b49f828211abc03b8ab78cbb3ef3f1c867f3981a7b5013328f0ae3cbac96f32"></script>
 </body>
 </html>

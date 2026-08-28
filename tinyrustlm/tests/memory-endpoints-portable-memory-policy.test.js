@@ -16,30 +16,10 @@ function readJson(relativePath) {
   return JSON.parse(read(relativePath));
 }
 
-function currentMemoryAuthority(source, relativePath) {
-  const marker = "memory_endpoints_portable_memory_authority_2026_08_26:";
-  const markerIndex = source.indexOf(marker);
-  assert.notEqual(markerIndex, -1, `${relativePath} must route current memory authority`);
-
-  const historicalIndex = source.search(
-    /MemoryEndpoints.{0,120}(?:unauthorized|disconnected)|(?:unauthorized|disconnected).{0,120}MemoryEndpoints/is
-  );
-  if (historicalIndex !== -1) {
-    assert.ok(
-      markerIndex < historicalIndex,
-      `${relativePath} must route current MemoryEndpoints authority before history`
-    );
-  }
-
-  const lines = source.slice(markerIndex).split(/\r?\n/u);
-  const block = [lines[0]];
-  for (const line of lines.slice(1)) {
-    if (line && !line.startsWith("  ")) break;
-    block.push(line);
-  }
-  assert.ok(block.length > 1, `${relativePath} current memory authority must be bounded`);
-  return block.join("\n");
-}
+const canonicalMemoryRoute =
+  "wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md";
+const decisionIndexRoute =
+  "wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md";
 
 test("defines one current local-and-portable memory product policy", () => {
   const policy = readJson(
@@ -54,7 +34,38 @@ test("defines one current local-and-portable memory product policy", () => {
   assert.equal(policy.memoryEndpoints.authorization, "authorized");
   assert.equal(policy.memoryEndpoints.recommendation, "strongly_recommended");
   assert.equal(policy.memoryEndpoints.serviceOrigin, "https://memoryendpoints.com");
-  assert.equal(policy.memoryEndpoints.productRole, "portable_web_memory_backbone");
+  assert.equal(
+    policy.memoryEndpoints.productRole,
+    "two_lane_agent_coordination_and_tinyrustlm_connect_memory"
+  );
+  assert.deepEqual(policy.memoryEndpoints.usesExactly, [
+    "ecosystem_agent_coordination",
+    "tinyrustlm_connect_user_plugin"
+  ]);
+  assert.equal(policy.memoryEndpoints.ecosystemAgentCoordination.directUse, true);
+  assert.equal(
+    policy.memoryEndpoints.ecosystemAgentCoordination.audience,
+    "agents_working_across_all_ecosystem_sites"
+  );
+  assert.deepEqual(
+    policy.memoryEndpoints.ecosystemAgentCoordination.capabilities,
+    ["agent_to_agent_long_term_memory", "meetings", "handoffs", "coordination"]
+  );
+  assert.equal(
+    policy.memoryEndpoints.tinyRustLmConnectUserPlugin.pluginName,
+    "TinyRustLM.com Connect"
+  );
+  assert.equal(
+    policy.memoryEndpoints.tinyRustLmConnectUserPlugin.userSignsInToMemoryEndpoints,
+    true
+  );
+  assert.equal(
+    policy.memoryEndpoints.tinyRustLmConnectUserPlugin.longTermMemoryProvider,
+    true
+  );
+  assert.equal(policy.memoryEndpoints.laneSeparation.sharedCredentialsAllowed, false);
+  assert.equal(policy.memoryEndpoints.laneSeparation.sharedIdentityOrConsentAllowed, false);
+  assert.equal(policy.memoryEndpoints.laneSeparation.sharedReceiptAuthorityAllowed, false);
   assert.equal(policy.localFile.supported, true);
   assert.equal(policy.localFile.offlineCapable, true);
   assert.equal(policy.userControl.explicitOptInRequired, true);
@@ -62,11 +73,14 @@ test("defines one current local-and-portable memory product policy", () => {
   assert.equal(policy.claimBoundary.reachabilityIsLifecycleProof, false);
   assert.equal(policy.claimBoundary.configuredCodeIsLifecycleProof, false);
   assert.equal(policy.claimBoundary.campaignCreditRequiresFreshReceipt, true);
+  assert.equal(policy.prelaunchRedundancy.additionalLongTermMemoryCopiesAllowed, true);
+  assert.equal(policy.prelaunchRedundancy.everyMaintainedCopyMustStayCurrent, true);
+  assert.equal(policy.prelaunchRedundancy.contradictoryCopiesAllowed, false);
   assert.equal(policy.history.preserveImmutableEarlierEvidence, true);
   assert.equal(policy.history.earlierExclusionIsCurrentPolicy, false);
 });
 
-test("keeps current authority routes ahead of immutable historical records", () => {
+test("keeps hot memory bounded and routed to the current two-lane authority", () => {
   for (const relativePath of [
     "workspace.uai",
     ".uai/totem.uai",
@@ -81,10 +95,22 @@ test("keeps current authority routes ahead of immutable historical records", () 
     ".uai/receiver-brief.uai",
     ".uai/next-recursive-prompt.uai"
   ]) {
-    const authority = currentMemoryAuthority(read(relativePath), relativePath);
-    assert.match(authority, /local_file_memory:\s+(?:supported|available)/);
-    assert.match(authority, /recommendation:\s+strongly_recommended/);
+    const source = read(relativePath);
+    assert.match(source, new RegExp(canonicalMemoryRoute.replaceAll(".", "\\.")));
+    assert.match(source, new RegExp(decisionIndexRoute.replaceAll(".", "\\.")));
+    assert.doesNotMatch(
+      source,
+      /MemoryEndpoints\s+(?:is|remains)\s+unauthori[sz]ed|MemoryEndpoints\s+unauthori[sz]ed/i
+    );
   }
+
+  const authority = read(
+    "docs/architecture/2026-08-26-memoryendpoints-portable-memory-authority.md"
+  );
+  assert.match(authority, /Direct ecosystem-agent coordination/);
+  assert.match(authority, /TinyRustLM\.com Connect user memory/);
+  assert.match(authority, /duplicated in current\s+`\.uai`, wiki/);
+  assert.match(authority, /do not share identity, credentials, consent, scopes/);
 });
 
 test("corrects the active research assignments without rewriting history", () => {
@@ -107,7 +133,7 @@ test("corrects the active research assignments without rewriting history", () =>
   );
 });
 
-test("documents the same choice in product and browser surfaces", () => {
+test("documents both uses and the user-plugin lane on product surfaces", () => {
   const rootReadme = read("README.md");
   const browserReadme = read("tinyrustlm/README.md");
   const browserHtml = read("tinyrustlm/app/index.html");
@@ -117,11 +143,16 @@ test("documents the same choice in product and browser surfaces", () => {
     assert.match(source, /local (?:UAIX )?memory (?:file|deck)/i);
     assert.match(source, /MemoryEndpoints\.com/);
     assert.match(source, /strongly recommended/i);
-    assert.match(source, /across devices|worldwide/i);
+    assert.match(source, /agent-to-agent long-term memory/i);
+    assert.match(source, /TinyRustLM\.com Connect plugin/i);
+    assert.match(source, /separate.*identity.*credentials.*consent.*scope.*receipts/is);
   }
   assert.doesNotMatch(rootReadme, /MemoryEndpoints is unauthorized and disconnected/);
-  assert.match(browserHtml, /MemoryEndpoints\.com worldwide memory \(recommended\)/);
-  assert.match(browserRuntime, /recommended for memory available worldwide and across devices/);
+  assert.match(
+    browserHtml,
+    /TinyRustLM\.com Connect memory via MemoryEndpoints\.com \(recommended\)/
+  );
+  assert.match(browserRuntime, /TinyRustLM\.com Connect plugin recommends MemoryEndpoints\.com/);
 });
 
 test("keeps current SDK and documentation-site claims aligned", () => {
@@ -136,6 +167,9 @@ test("keeps current SDK and documentation-site claims aligned", () => {
     assert.match(document, /MemoryEndpoints\.com/);
     assert.match(document, /authorized/i);
     assert.match(document, /strongly recommended/i);
+    assert.match(document, /ecosystem-agent|agent-to-agent/i);
+    assert.match(document, /TinyRustLM\.com\s+Connect/i);
+    assert.match(document, /separate|isolated/i);
     assert.match(document, /untrusted data/i);
     assert.doesNotMatch(
       document,
@@ -146,14 +180,18 @@ test("keeps current SDK and documentation-site claims aligned", () => {
   const project = read(
     "dotnet/src/TinyRustLM.MemoryEndpoints/TinyRustLM.MemoryEndpoints.csproj"
   );
-  assert.match(project, /strongly recommended portable-memory connector/i);
-  assert.match(project, /explicit user opt-in/i);
+  assert.match(project, /direct ecosystem-agent coordination/i);
+  assert.match(project, /TinyRustLM\.com Connect user-memory plugin/i);
+  assert.match(project, /user signs in and selects MemoryEndpoints\.com/i);
 
   for (const verifier of [
     read("eng/verify-public-doc-sites.ps1"),
     read("eng/verify-public-doc-sites.sh")
   ]) {
     assert.match(verifier, /portable_memory_backbone_package/);
+    assert.match(verifier, /ecosystem-agent-coordination/);
+    assert.match(verifier, /tinyrustlm-connect-user-plugin/);
+    assert.match(verifier, /allowed-if-synchronized/);
     assert.doesNotMatch(verifier, /optional_disconnected_package/);
   }
 });

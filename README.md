@@ -49,12 +49,24 @@ Campaign counters remain:
 - current outside-network lane proofs: `0/40`; and
 - live catalog announcements: `0/20`.
 
+MemoryEndpoints.com is authorized and strongly recommended for exactly two
+separate uses. Agents working across all ecosystem sites use it directly for
+agent-to-agent long-term memory, meetings, handoffs, and coordination.
+Separately, the TinyRustLM.com Connect plugin lets a user sign in to
+MemoryEndpoints.com and select it as TinyRustLM.com Connect long-term memory.
+The two lanes keep identity, credentials, consent, scope, and receipts
+separate.
+
 Local UAIX memory files remain supported for device-local and offline use.
-MemoryEndpoints.com is authorized and strongly recommended as TinyRustLM's
-portable web-memory backbone for continuity across devices and locations.
+Additional prelaunch memory copies are allowed for resilience when every copy
+stays current, credential-safe, provenance-labeled, and noncontradictory.
 Public reachability and configured connector code are not substitutes for a
-fresh authenticated save, search, restore, cleanup, and readback receipt, so
-the live campaign counter remains unchanged.
+fresh authenticated meeting or user-plugin lifecycle receipt, so the live
+campaign counter remains unchanged.
+
+Model acquisition is P2P-first, with explicit reviewed local conversion when
+no exact qualified peer composition is available. Project sites receive no prompts
+or model bytes.
 
 ## Sole Architecture
 
@@ -242,6 +254,11 @@ See:
 
 ## Publication
 
+Last published: no new public publication is claimed by this source change.
+Release date: not assigned until the complete release gate and public readback
+pass. Update: current source and documentation define the sole clean-slate
+product, SLM2 path, and two-lane MemoryEndpoints authority.
+
 Only a clean committed source revision may produce release evidence. Local
 HEAD, the configured upstream, a fresh `FETCH_HEAD`, and the actual remote
 branch must agree before a release transaction begins. Packages are immutable;
@@ -302,13 +319,20 @@ sole current architecture. No alias, migration, compatibility reader, fallback,
 temporary adapter, disabled old route, or known debt is retained for a product
 that has not launched.
 
-The authoritative execution goals are:
+Current operating authority is routed through:
 
-- `docs/architecture/2026-08-10-authoritative-enterprise-vnext-continuation-goal.md`;
-- `docs/architecture/2026-08-20-production-slm2-acquisition-browser-release-goal.md`;
-- `docs/architecture/2026-08-24-production-slm2-clean-cut-preregistration.md`;
-- `docs/architecture/qwen3-tokenizer2-browser-wasm-preregistration.md`; and
-- `docs/architecture/qwen3-template2-source-parity-preregistration.md`.
+- `.uai/totem.uai`, `.uai/taboo.uai`, and `workspace.uai`;
+- `contracts/vnext/memory-endpoints-portable-memory-policy.v1.json`;
+- `docs/architecture/2026-08-26-memoryendpoints-portable-memory-authority.md`;
+- `wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md`;
+  and
+- `wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md`.
+
+Dated preregistrations and research prompts preserve the policy and evidence
+boundaries under which they were written. They are immutable historical inputs,
+not current authorization or product architecture. In particular, their former
+MemoryEndpoints authorization wording is superseded by the current two-lane
+contract above; their absence of authenticated live evidence remains true.
 
 The project is complete only when one provenance-bound useful model passes
 untouched screening, deterministic SLM2 conversion, scalar-native and real-

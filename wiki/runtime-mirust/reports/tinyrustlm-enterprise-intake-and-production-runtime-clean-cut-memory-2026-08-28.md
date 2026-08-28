@@ -7,6 +7,12 @@ intake through 2026-08-27 and the production-runtime clean cut in progress on
 2026-08-28. It routes the detailed evidence instead of copying 18 MB of report
 prose into hot `.uai` memory.
 
+The reviewed report-by-report decision route is
+`wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md`.
+It covers every report in the 2026-08-26 and 2026-08-27 intake batches exactly
+once and separates adopted production invariants, corrections, rejected
+directions, research-only work, and facts requiring local proof.
+
 The reports are advisory research. They do not prove private source behavior,
 model correctness, browser execution, quality, P2P reachability,
 MemoryEndpoints continuity, deployment, or campaign progress. Local source,
@@ -197,11 +203,21 @@ Durable writes, supersession, conflicts, tombstones, reconciliation, and
 deletion are explicit.
 
 Local memory files remain the offline and device-local lane.
-MemoryEndpoints.com is authorized and strongly recommended as the portable
-cross-device memory backbone. Configuration or reachability is not a live
-continuity receipt. The production enrollment contract, scoped token flow,
-cross-browser restore, replay rejection, 25-company cleanup, and post-delete
-proof remain separately gated.
+MemoryEndpoints.com is authorized and strongly recommended with two distinct
+uses. First, agents across every ecosystem site use it directly for
+agent-to-agent long-term memory, meetings, handoffs, and coordination. Second,
+the TinyRustLM.com Connect plugin lets a user sign in to MemoryEndpoints.com
+and explicitly use it as the long-term-memory provider for TinyRustLM.com
+Connect. The lanes have separate identities, credentials, consent, scopes,
+provenance, and evidence; neither silently authorizes the other.
+
+During prelaunch, important memory may also be duplicated in current `.uai`,
+wiki, source-controlled public-safe notes, and approved private stores for
+resilience. Every maintained copy must remain current, secret-safe,
+provenance-labeled, and noncontradictory. Configuration or reachability is not
+a live continuity receipt. Production agent meetings, plugin enrollment,
+scoped token flow, cross-browser restore, replay rejection, 25-company
+cleanup, and post-delete proof remain separately gated.
 
 ### P2P And Fleet Operations
 
@@ -256,6 +272,25 @@ Do not add or retain:
 - stale documentation, stale publication logs, deployment from uncommitted
   source, or campaign counter inflation.
 
+## Historical Checkpoint Routes
+
+These immutable pages preserve detailed execution and correction evidence.
+They are reached from this canonical node rather than copied into every hot
+`.uai` file:
+
+| Checkpoint | Durable route |
+| --- | --- |
+| Post-/10 reviewed intake | `wiki/runtime-mirust/reports/tinyrustlm-post-v10-native-browser-release-intake-memory-2026-08-26.md` |
+| Qwen3 model-load correction | `wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md` |
+| Numerical execution terminal | `wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md` |
+| Composition /12 structural pass | `wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md` |
+| Source-terminal process identity correction | `wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-process-identity-correction-memory-2026-08-26.md` |
+| Source-terminal verification v1 | `wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-verification-v1-memory-2026-08-26.md` |
+
+Their historical MemoryEndpoints statements describe what those operations did
+or did not prove at the time. They do not override the current two-lane policy
+in this node and the report decision index.
+
 ## Manifest-Owned Intake Routes
 
 | Batch | Durable route | Principal use |
@@ -291,53 +326,53 @@ reports are consulted only for a named question or source audit.
 
 ## Current Worktree Truth
 
-The last committed and pushed green milestone is
-`a129fa3b50df4278234d863b138e3a8e9c65c9c3`, tree
-`dc582b42373155431a812f1837f884311088c7fd`. It added the worker-owned SLM2
-browser runtime. At that milestone, 1,691 of 1,694 Node tests passed with three
-intentional skips, the 23-observation release-surface gate passed, and the local
-Chromium release smoke passed 12 observations.
+The implementation checkpoint entering this memory consolidation is commit
+`5a9c097e66a83ceb6ee71ebe36462981e311baf6`, tree
+`e3ebbec3c910b60e54280eff4d4643196b28b87f`, followed by remote-exact memory
+checkpoint `da8bfacc138e4ab12291a9e90f77d6e5d62471b4`. At that checkpoint, the
+managed Release solution passed 252/252, the standard Node partition passed
+1,702 with zero failures and three declared skips, the focused browser/vector
+partition passed 19/19, formatting passed, and diff hygiene passed.
 
-The current uncommitted clean-cut work deletes the superseded SLM1 crate,
-runtime, packer, Rust browser harness, old WASM artifacts, old quality runner,
-and obsolete P2P smoke. It moves the canonical WASM artifact to
-`tinyrustlm/browser-runtime/`, rewrites build/test/deployment ownership, and
-updates maintained runtime documentation. Focused clean-cut, browser-runtime,
-manifest, and shell tests currently pass 41/41. This is work-in-progress
-evidence only until the full enterprise matrix passes, the change is committed
-and pushed, and remote equality is verified.
+The sole current Companion contract is `loopback-capability/4` with
+`acquire.v2`, `operation.v3`, and `operation-projection.v2`. It binds one
+explicit attempt to the exact pinned Qwen3 source, source-only routing, private
+create-only operation/source evidence, a canonical nine-file payload
+inventory, monotonic terminal state, and exact six-member fixed-chunk
+transfer. Superseded operation readers and arbitrary inventory identities are
+not accepted.
 
-One material product blocker remains in maintained browser code: `app.js` and
-`app/companion-bridge.js` still contain one-file catalog and obsolete REST
-bridge semantics. The managed companion already models the exact six-member
-composition and a scoped loopback capability protocol, but its operation path
-is not yet fully wired. The clean implementation must replace the browser
-bridge and delete old vocabulary; it must not keep both protocols.
+This is source and test evidence only. The production listener still returns
+typed `operation-not-available`: no production operation executor or source
+network owner exists. The browser client is not loaded by the product UI. No
+real source acquisition, conversion, model, numerical parity, browser chat,
+quality, P2P reachability, deployment, publication, agent meeting, user plugin
+connection, or live MemoryEndpoints lifecycle has been proven.
 
 ## Ordered Resume
 
-1. Finish maintained documentation and add tests that reject superseded
-   executable and documentation surfaces.
-2. Update the browser-runtime manifest's next-gate statement and regenerate
-   exact web identities.
-3. Replace the old browser companion/acquisition protocol with the current
-   six-member capability protocol; delete the old bridge and one-file
-   vocabulary.
-4. Run syntax, formatting, Cargo metadata/build/test/clippy/doc, .NET/Visual
-   Studio, complete Node, browser, accessibility, privacy, package, and
-   documentation gates.
-5. Commit and push the coherent green clean cut, fetch, and verify local,
-   tracking, `FETCH_HEAD`, and direct remote identity.
-6. Run the release-surface gate from clean remote-exact source and deploy only
-   if every affected site gate passes; verify public HTTPS bytes, headers,
-   service-worker state, publication log, and rollback identity.
+1. Keep the report corpus immutable, finish the bounded `.uai` consolidation,
+   and route active memory through this node and the decision index.
+2. Implement the preregistered exclusive restart-safe Companion source
+   operation owner with bounded pinned-source streaming, contained converter
+   launch, immutable terminal evidence, and independent six-member inspection.
+3. Wire the proven operation only after the production executor exists; then
+   load the sole browser client and delete the obsolete bridge and one-file
+   acquisition vocabulary in one green clean cut.
+4. Run syntax, formatting, Cargo metadata/build/test/clippy/doc, .NET, complete
+   Node, real browser, accessibility, privacy, package, documentation, and
+   release-surface gates.
+5. Commit and push every coherent green change, fetch, and verify local,
+   tracking, `FETCH_HEAD`, and direct remote equality.
+6. Deploy each affected site only from its bound green commit; verify public
+   HTTPS bytes, headers, service-worker state, publication log, and rollback.
 7. Register and execute a wholly new source-to-six-member conversion. Never
-   reuse `/10`.
+   reuse `/10` or its output.
 8. Establish composition, scalar, optimized-native, and real-browser numerical
    evidence before behavioral qualification.
-9. Qualify one model without repair or best-of-N, then prove the P2P-or-convert
-   user action, clean-profile chat, live MemoryEndpoints continuity, and
-   outside-observed P2P lanes.
+9. Qualify one model without repair or best-of-N, then prove P2P-or-convert,
+   clean-profile chat, direct agent coordination, the TinyRustLM.com Connect
+   MemoryEndpoints plugin lifecycle, and outside-observed P2P lanes.
 
 ## Objective Counters And Claims
 
@@ -361,8 +396,11 @@ and this route. The canonical deep link is:
 
 `wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md`
 
-This node supersedes stale UAI status text that says the worker manifest or
-scalar Cargo identity is still the active failure. Those failures were fixed
-in the committed green milestone; the current blocker is completion and full
-verification of the clean cut, especially browser companion/acquisition
-replacement.
+The report decision index is:
+
+`wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md`
+
+These nodes supersede stale UAI status and policy prose. Historical receipts
+and wiki records remain immutable, but current `.uai` memory contains only
+present-tense decisions, concise pointers, current blockers, and the two-lane
+MemoryEndpoints product rule.
