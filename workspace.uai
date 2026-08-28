@@ -1,8 +1,18 @@
 profile: tinyrustlm.source-workspace.v467
 project_name: TinyRustLM
 canonical_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-updated_utc: 2026-08-28T05:52:51Z
+updated_utc: 2026-08-28T06:41:57Z
 
+checkpoint_2026_08_28_companion_operation_and_artifact_boundary:
+  source: artifact_transfer_commit=75caaa0b9d08972c510cd048f853cbba8bee375c; operation_service_commit=0eb97b69508e490111eb9c77b4b0888bbdd5513d; latest_tree=ef45e775ab535447f074b4a337af26b4d2411c95
+  remote_equality: The latest local commit and tree equal a freshly fetched origin branch commit and tree; both coherent changes were pushed before this memory update.
+  verification: Managed Release solution=235 pass/0 fail/0 skip: Companion 108, Core 86, package boundary 41. Formatting and diff hygiene pass with zero warnings.
+  result: Companion now owns canonical operation projection, create-only same-ID cancellation intent, terminal-race-safe cancellation service semantics, cross-root-isolated journal locks, and bounded source-composition artifact transfer. Transfer independently re-inspects exact terminal evidence, closes six-member path and identity authority, uses fixed 4194304-byte chunks, verifies before serving, rehashes after the final chunk, and never exposes a private path.
+  release_truth: These are private source-controlled service components, not an active product route. The production host still returns proven operation-not-available because no real P2P-or-pinned-source acquisition executor exists; the browser client remains unloaded and CompanionBridge plus one-file acquisition/sharing semantics remain active release blockers. Do not wire a queued fiction or a fixture executor.
+  next_gate: Implement one real restart-safe acquisition executor and source/P2P custody, then connect operation service and artifact metadata to the strict server, activate the sole browser client, and delete CompanionBridge plus every one-file acquisition/sharing path in the same green clean cut.
+  deep_link: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md,20316,6e5a5b7cf7f3ad45008b14597a3616ee603da76cc500b69770de7280711785e4
+  memory_policy: MemoryEndpoints is authorized and strongly recommended for portable cross-device continuity; configured or reachable service state is not live lifecycle proof.
+  campaign_truth: 0/20 qualified; 0/50 browser; 0/25 live memory; 0/40 outside lanes; 0/20 catalog.
 checkpoint_2026_08_28_authenticated_companion_browser_client:
   source: commit=ac32cd3592de4c13bba84ffc8c2e4aef3a4eafd7; tree=b399f413bb33caac92583ea828af9c1c61d833f8
   remote_equality: Local HEAD and tree equal a freshly fetched origin branch commit and tree; the worktree was clean after push verification.

@@ -41,7 +41,11 @@ nonterminal root. It now also owns the private exact IPv4 Kestrel listener,
 pairing, session status, rotation, revocation, and truthful unavailable
 operation responses. `TinyRustLM.CompanionHost` owns one argument-free,
 interactive process entry point and one private per-user installation root.
-No browser capability client or artifact-transfer dispatch exists.
+The web source owns a strict memory-only capability client, and the managed
+component owns canonical operation projection, create-only cancellation
+intent, terminal-race-safe service semantics, and independently reverified
+fixed-chunk source-composition transfer. The client is not loaded, the service
+is not dispatched by the listener, and no real acquisition executor exists.
 No current route table or port is release authority.
 
 ## Decision
@@ -140,14 +144,17 @@ backend.
 
 ## Authoritative Evidence
 
-**Observed local fact**: the current managed solution passes 203 tests: 80
-Core tests, 38 package-boundary tests, and 85 Companion tests. The Companion
+**Observed local fact**: the current managed solution passes 235 tests: 86
+Core tests, 41 package-boundary tests, and 108 Companion tests. The Companion
 tests include real IPv4 TCP exchanges for exact bind, Host and Origin
 authority, CORS preflight, pairing, authenticated status, application errors,
 sequence replay, rotation lost-response replay, revocation, duplicate
 Content-Length, malformed framing, request-line, header-count, header-byte, and
-global-body parser limits. Release builds complete with zero warnings and zero
-errors, formatting requires no changes, and all 39 `/1`, `/2`, and `/3`
+global-body parser limits. They also cover exact operation-wire vectors,
+cross-root journal isolation, ten-way cancellation binding, terminal race
+precedence, complete member hashing, fixed-chunk assembly, concurrent reads,
+and final mutation rejection. Release builds complete with zero warnings and
+zero errors, formatting requires no changes, and all `/1`, `/2`, and `/3`
 registration tests pass.
 
 The private host accepts no arguments, derives one
@@ -274,8 +281,9 @@ restart, Companion restart, and OS restart need physical evidence.
 
 The source-acquisition owner, peer-discovery authority, and authenticated
 process-ownership protocol for an absent or nonterminal conversion root remain
-separate implementation gates. MemoryEndpoints is unauthorized and
-disconnected.
+separate implementation gates. MemoryEndpoints is authorized and strongly
+recommended for portable continuity, but it is outside this transport and has
+no authenticated live campaign receipt.
 
 ## Acceptance Tests
 
