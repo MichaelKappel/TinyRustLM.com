@@ -1,5 +1,5 @@
 profile: tinyrustlm.workspace.current.v1
-updated_utc: 2026-08-28T00:00:00Z
+updated_utc: 2026-08-29T00:00:00Z
 scope: authoritative current workspace and ecosystem routing
 sensitivity: internal; never publish this file
 
@@ -15,11 +15,13 @@ canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-p
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 companion_memory: wiki/runtime-mirust/reports/tinyrustlm-companion-source-operation-contract-memory-2026-08-28.md
 report_ledger: .uai/intake-outcome-ledger.uai
+source_authority_receipt: .uai/source-authority-consolidation-2026-08-29.uai
 
 read_order:
   - workspace.uai
   - .uai/totem.uai
   - .uai/taboo.uai
+  - .uai/source-authority-consolidation-2026-08-29.uai
   - wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
   - wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
   - .uai/short-term-memory.uai

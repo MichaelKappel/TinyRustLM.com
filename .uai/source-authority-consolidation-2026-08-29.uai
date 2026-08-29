@@ -1,0 +1,71 @@
+profile: tinyrustlm.source_authority_consolidation.v1
+observed_utc: 2026-08-29T00:00:00Z
+scope: TinyRustLM.com source checkout identity and clean-slate consolidation
+sensitivity: internal; contains local logical paths but no credentials, prompts, model bytes, or raw private evidence
+
+canonical_source:
+  root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  branch: codex/model-acquisition-v2
+  origin: https://github.com/MichaelKappel/TinyRustLM.com.git
+  observed_head: bc1773748001f6df18175e76168449f1c828ceb1
+  observed_tree: 955296c549d444704dd73f5e047ef1eaae67cce1
+  observed_direct_remote_head: bc1773748001f6df18175e76168449f1c828ceb1
+  authority: sole current source, build, test, release, and deployment checkout
+
+duplicate_observation:
+  former_root: E:\Source\Worktrees\source-checkin-recovery-20260819\TinyRustLM.com
+  branch: codex/model-acquisition-v2
+  origin: https://github.com/MichaelKappel/TinyRustLM.com.git
+  observed_head: 63694536a6a20903820327792428798a3c9436d0
+  observed_tree: ebc8f7db48f4dcfe497b4ae45e11096038b9b881
+  relation: strict ancestor of the canonical head
+  unique_commits: 0
+  commits_behind_direct_remote: 259
+  untracked_files: 0
+  local_diff_utf8_bytes: 31437
+  local_diff_sha256: 4330b82afceef8e986e244123857fc07def84c9c9cdf1423f65daf9e53daa850
+
+local_diff_decisions:
+  - path: artifacts/packages/.gitkeep
+    decision: reject deletion
+    reason: current package build and audit commands own artifacts/packages as the bounded default output root
+  - path: rust/crates/tinyrustlm-archive/fuzz/src/bin/replay_archive_corpus.rs
+    decision: reject deletion
+    reason: current frozen hostile-archive corpus replay and RID sanitizer contracts require this source
+  - path: rust/crates/tinyrustlm-archive/src/bin/tinyrustlm-archive-scan.rs
+    decision: reject deletion
+    reason: current bounded independent archive scanner packages and client verification require this process boundary
+  - path: rust/crates/tinyrustlm-durability/src/bin/tinyrustlm-directory-flush.rs
+    decision: reject deletion
+    reason: current directory durability protocol, package, controlled-power-loss, and receipt tests require this helper
+  - path: tinyrustlm/release/site-release-ledger.v1.json
+    decision: reject deletion
+    reason: current create-only site publication history, deployment manifest, release materialization, and HTTPS proof require this ledger
+
+merge_result:
+  unique_commits_moved: 0
+  uncommitted_changes_moved: 0
+  legacy_or_compatibility_code_retained: false
+  rationale: A clean-slate merge is semantic, not a union. The duplicate had no unique commits and every local deletion contradicted current tested contracts.
+
+verification:
+  source_policy_and_clean_cut: 15 passed, 0 failed
+  focused_archive_durability_release_and_chromium: 34 passed, 0 failed
+  canonical_worktree_dirty_before_policy_change: false
+  duplicate_path_absent_from_ecosystem_worktree_parent: true
+
+retirement:
+  source_registry_status: retired
+  former_root_absent: true
+  quarantine_root: E:\Source\.codex-tmp\retired-tinyrustlm-duplicate-20260829-63694536
+  quarantine_authority: none
+  quarantine_may_build_test_release_or_deploy: false
+  physical_purge: pending
+  physical_purge_blocker: The execution environment rejected both verified PowerShell deletion forms before process launch; no bypass was attempted.
+  protected_snapshot: E:\Source\Rust\TinyRustLM.com remains read-only, non-authoritative, and prohibited for source, build, test, release, or deployment use.
+
+permanent_invariant:
+  - Resolve TinyRustLM.com authority from workspace.uai before every source operation.
+  - Maintain exactly one authoritative checkout and one production contract; temporary scratch roots never become authority.
+  - If another duplicate appears, freeze it, inventory it, semantically consolidate only valid current work, run affected gates, push the canonical tree, and retire the duplicate.
+  - Historical executable source belongs only in Git history. Evidence may describe prior states but may not execute, deploy, or compete with current authority.

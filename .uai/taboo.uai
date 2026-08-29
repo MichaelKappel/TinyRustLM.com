@@ -1,5 +1,5 @@
 profile: tinyrustlm.taboo.current.v1
-updated_utc: 2026-08-28T00:00:00Z
+updated_utc: 2026-08-29T00:00:00Z
 role: prohibited directions
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
@@ -8,6 +8,16 @@ memory_endpoints_two_use_context:
   - Direct use: ecosystem agents use MemoryEndpoints.com for agent-to-agent long-term memory, meetings, handoffs, and coordination across all sites.
   - Separate plugin use: a TinyRustLM.com Connect user signs in to MemoryEndpoints.com and explicitly selects it as TinyRustLM.com Connect long-term memory.
   - Lane boundary: keep identity, credentials, consent, scopes, provenance, idempotency, and receipts separate; neither lane silently acts for the other.
+
+single_tinyrustlm_source_prohibitions:
+  - Do not create, adopt, maintain, edit, build, test, release, deploy, or describe more than one authoritative TinyRustLM.com source checkout.
+  - Do not treat a clone, copied directory, recovery tree, Git worktree, generated package, deployed web root, backup, evidence root, or protected damaged snapshot as a second source authority.
+  - Before any TinyRustLM.com work, resolve the canonical root from its current workspace.uai and verify the canonical path, branch, origin URL, local HEAD, tracking ref, FETCH_HEAD, direct remote ref, and worktree status; do not edit while identity is ambiguous.
+  - Fail closed before editing, building, testing, committing, releasing, or deploying when canonical authority cannot be proved or any second writable TinyRustLM.com checkout is discovered; consolidation and retirement must finish before work resumes.
+  - Every workspace registry, read order, build recipe, CI workflow, release command, and deployment manifest must name only the canonical authority; automated gates must reject pointers to duplicate, retired, quarantined, protected, or otherwise non-authoritative source.
+  - Temporary scratch or test worktrees must be explicitly owned, bounded, non-authoritative, contain no unique uncommitted product work, never deploy, and be removed after their operation.
+  - If duplication or divergence appears, make no new edits in the duplicate. Inventory its commits and local diff, move only valid current clean-slate work into the canonical tree, reject legacy, compatibility, fallback, and debt, run every affected gate, commit and push the canonical tree, and then retire the duplicate safely.
+  - Do not pull both trees forward, merge stale branches wholesale, preserve a second checkout as history, or keep obsolete executable code, schemas, routes, docs, or configuration active. Historical source belongs only in Git history; bounded evidence may describe it but must not execute or compete with current authority.
 
 prohibitions:
   - Do not add or retain legacy readers, compatibility, migrations, aliases, dual protocols, hidden fallback, response repair, hidden retry, best-of-N, low-quality patches, knowingly temporary architecture, or deferred cleanup.
