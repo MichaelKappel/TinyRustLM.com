@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="application-version" content="0.3.0">
-  <meta name="release-date" content="2026-08-24">
+  <meta name="application-version" content="0.4.0">
+  <meta name="release-date" content="2026-08-29">
   <title>Updates | TinyRustLM</title>
   <link rel="icon" href="data:,">
   <link rel="alternate" type="application/json" href="/.well-known/site-release.json" title="Current release">
@@ -23,10 +23,10 @@
       <div class="release-band-inner">
         <p class="eyebrow">Release record</p>
         <h1 id="updates-title">TinyRustLM updates</h1>
-        <p class="release-summary">Publishes the clean-slate SLM2 browser shell while keeping model acquisition local or direct P2P and withholding unavailable companion claims.</p>
+        <p class="release-summary">Publishes the sole worker-owned SLM2 browser runtime and authenticated local Companion control path without legacy execution code.</p>
         <p class="release-facts">
-          <span>Version <strong data-release-version>0.3.0</strong></span>
-          <span>Released <strong><time data-release-date datetime="2026-08-24">2026-08-24</time></strong></span>
+          <span>Version <strong data-release-version>0.4.0</strong></span>
+          <span>Released <strong><time data-release-date datetime="2026-08-29">2026-08-29</time></strong></span>
           <span>Last published <strong><time data-release-published-at>Awaiting live verification</time></strong></span>
         </p>
       </div>
@@ -34,10 +34,24 @@
     <section class="history" aria-labelledby="history-title">
       <div class="history-inner">
         <h2 id="history-title">Release history</h2>
+      <article class="release-entry" id="0.4.0">
+        <div class="release-entry-header">
+          <h3>Version <span data-release-version>0.4.0</span></h3>
+          <time data-release-date datetime="2026-08-29">2026-08-29</time>
+        </div>
+        <p>Publishes the sole worker-owned SLM2 browser runtime and authenticated local Companion control path without legacy execution code.</p>
+        <ul class="change-list">
+          <li><span class="change-type">added</span><span>Added the canonical SLM2 WebAssembly runtime, bounded loader, dedicated worker, typed runtime client, and Prompt2 request boundary.</span></li>
+          <li><span class="change-type">changed</span><span>Changed the browser app to one worker-owned SLM2 execution path and removed the obsolete in-page runtime implementation instead of retaining compatibility code.</span></li>
+          <li><span class="change-type">added</span><span>Added an authenticated, origin-bound Companion capability client with bounded model acquisition, conversion, verification, and activation operations.</span></li>
+          <li><span class="change-type">fixed</span><span>Closed the deployment inventory over every current runtime dependency so the published shell cannot reference missing worker, loader, capability, or WebAssembly files.</span></li>
+          <li><span class="change-type">security</span><span>Kept prompts, responses, model bytes, composition bytes, credentials, and private evidence outside TinyRustLM project servers and public release records.</span></li>
+        </ul>
+      </article>
       <article class="release-entry" id="0.3.0">
         <div class="release-entry-header">
-          <h3>Version <span data-release-version>0.3.0</span></h3>
-          <time data-release-date datetime="2026-08-24">2026-08-24</time>
+          <h3>Version <span>0.3.0</span></h3>
+          <time datetime="2026-08-24">2026-08-24</time>
         </div>
         <p>Publishes the clean-slate SLM2 browser shell while keeping model acquisition local or direct P2P and withholding unavailable companion claims.</p>
         <ul class="change-list">

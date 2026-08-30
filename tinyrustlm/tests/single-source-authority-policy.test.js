@@ -56,6 +56,10 @@ test("forbids duplicate source authority and wholesale stale-tree merges", () =>
   assert.match(taboo,
     /automated gates must reject pointers to duplicate, retired, quarantined, protected, or otherwise non-authoritative source/u);
   assert.match(taboo,
+    /Any committed change to a declared public artifact invalidates deployed-current status until a strictly newer release is published from one clean canonical commit/u);
+  assert.match(taboo,
+    /Never mask drift with stale metadata, a partial upload, an overwrite under an old version, or source-only success/u);
+  assert.match(taboo,
     /move only valid current clean-slate work into the canonical tree/u);
   assert.match(taboo,
     /Do not pull both trees forward, merge stale branches wholesale, preserve a second checkout as history/u);

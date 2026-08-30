@@ -154,6 +154,34 @@
           "summary": "Updated companion and browser-runtime guidance to distinguish implemented source from unavailable packages, deployment, and live proof."
         }
       ]
+    },
+    {
+      "releaseId": "tinyrustlm.com@0.4.0",
+      "version": "0.4.0",
+      "releaseDate": "2026-08-29",
+      "summary": "Publishes the sole worker-owned SLM2 browser runtime and authenticated local Companion control path without legacy execution code.",
+      "changes": [
+        {
+          "type": "added",
+          "summary": "Added the canonical SLM2 WebAssembly runtime, bounded loader, dedicated worker, typed runtime client, and Prompt2 request boundary."
+        },
+        {
+          "type": "changed",
+          "summary": "Changed the browser app to one worker-owned SLM2 execution path and removed the obsolete in-page runtime implementation instead of retaining compatibility code."
+        },
+        {
+          "type": "added",
+          "summary": "Added an authenticated, origin-bound Companion capability client with bounded model acquisition, conversion, verification, and activation operations."
+        },
+        {
+          "type": "fixed",
+          "summary": "Closed the deployment inventory over every current runtime dependency so the published shell cannot reference missing worker, loader, capability, or WebAssembly files."
+        },
+        {
+          "type": "security",
+          "summary": "Kept prompts, responses, model bytes, composition bytes, credentials, and private evidence outside TinyRustLM project servers and public release records."
+        }
+      ]
     }
   ],
   "publications": [
