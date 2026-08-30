@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="application-version" content="0.4.0">
-  <meta name="release-date" content="2026-08-29">
+  <meta name="application-version" content="0.4.1">
+  <meta name="release-date" content="2026-08-30">
   <title>Updates | TinyRustLM</title>
   <link rel="icon" href="data:,">
   <link rel="alternate" type="application/json" href="/.well-known/site-release.json" title="Current release">
@@ -23,10 +23,10 @@
       <div class="release-band-inner">
         <p class="eyebrow">Release record</p>
         <h1 id="updates-title">TinyRustLM updates</h1>
-        <p class="release-summary">Publishes the sole worker-owned SLM2 browser runtime and authenticated local Companion control path without legacy execution code.</p>
+        <p class="release-summary">Makes model selection more compact by removing the duplicate Edit Model command while preserving the single model chooser.</p>
         <p class="release-facts">
-          <span>Version <strong data-release-version>0.4.0</strong></span>
-          <span>Released <strong><time data-release-date datetime="2026-08-29">2026-08-29</time></strong></span>
+          <span>Version <strong data-release-version>0.4.1</strong></span>
+          <span>Released <strong><time data-release-date datetime="2026-08-30">2026-08-30</time></strong></span>
           <span>Last published <strong><time data-release-published-at>Awaiting live verification</time></strong></span>
         </p>
       </div>
@@ -34,10 +34,21 @@
     <section class="history" aria-labelledby="history-title">
       <div class="history-inner">
         <h2 id="history-title">Release history</h2>
+      <article class="release-entry" id="0.4.1">
+        <div class="release-entry-header">
+          <h3>Version <span data-release-version>0.4.1</span></h3>
+          <time data-release-date datetime="2026-08-30">2026-08-30</time>
+        </div>
+        <p>Makes model selection more compact by removing the duplicate Edit Model command while preserving the single model chooser.</p>
+        <ul class="change-list">
+          <li><span class="change-type">removed</span><span>Removed the duplicate Edit Model button from the model toolbar.</span></li>
+          <li><span class="change-type">changed</span><span>Kept Choose model as the sole command for opening model selection and reduced the toolbar to one row at supported desktop widths.</span></li>
+        </ul>
+      </article>
       <article class="release-entry" id="0.4.0">
         <div class="release-entry-header">
-          <h3>Version <span data-release-version>0.4.0</span></h3>
-          <time data-release-date datetime="2026-08-29">2026-08-29</time>
+          <h3>Version <span>0.4.0</span></h3>
+          <time datetime="2026-08-29">2026-08-29</time>
         </div>
         <p>Publishes the sole worker-owned SLM2 browser runtime and authenticated local Companion control path without legacy execution code.</p>
         <ul class="change-list">

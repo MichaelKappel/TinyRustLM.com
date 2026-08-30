@@ -61,6 +61,11 @@ test("retired text and script handoffs cannot return to the chooser", () => {
   assert.doesNotMatch(html, /Share Metadata|share metadata|share-metadata/);
 });
 
+test("the compact model toolbar has one chooser and no duplicate edit command", () => {
+  assert.match(html, /id="modelEditButton"[^>]*>[\s\S]*?id="modelToolbarName">Choose model</);
+  assert.doesNotMatch(html, /Edit Model|edit-model-button|data-open-model-popover/);
+});
+
 test("the browser routes companion acquisition to a truthful pending release", () => {
   assert.match(html, /id="companionPackageLink"[^>]+href="\/companion\/"/);
   assert.match(html, /id="companionPackageLink"[^>]+target="_blank"[^>]+rel="noopener noreferrer"/);
