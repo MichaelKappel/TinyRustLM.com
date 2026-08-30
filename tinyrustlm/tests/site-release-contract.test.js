@@ -41,13 +41,13 @@ function finalizedLedgerPath(context) {
   return writeFinalizedLedger(context);
 }
 
-test("source release ledger preserves history and one latest pending release", () => {
+test("source release ledger preserves history and one finalized latest release", () => {
   const result = parseReleaseLedger(fs.readFileSync(ledgerPath));
   assert.equal(result.ledger.site.siteId, "tinyrustlm.com");
   assert.equal(result.ledger.site.canonicalOrigin, "https://tinyrustlm.com");
   assert.equal(result.ledger.site.updatesPath, "/updates/");
   assert.equal(result.ledger.releases.length, 7);
-  assert.equal(result.ledger.publications.length, 6);
+  assert.equal(result.ledger.publications.length, 7);
   assert.equal(result.ledger.publications[0].releaseId, "tinyrustlm.com@0.1.0");
   assert.equal(result.ledger.publications[1].releaseId, "tinyrustlm.com@0.1.1");
   assert.equal(
@@ -62,9 +62,7 @@ test("source release ledger preserves history and one latest pending release", (
     result.ledger.publications[3].publicationId,
     "75d5f72656635eed58644b705acdf7c8fb18512fd2225f402563cf1756a2ea10"
   );
-  assert.equal(result.pendingRelease.releaseId, "tinyrustlm.com@0.4.0");
-  assert.equal(result.pendingRelease.version, "0.4.0");
-  assert.equal(result.pendingRelease.releaseDate, "2026-08-29");
+  assert.equal(result.pendingRelease, null);
   assert.deepEqual(result.ledger.publications[4], {
     publicationId: "aea1e08b74f6b7835473ffb482baeddd42c97346d0a08868a66574f1a5d089ce",
     releaseId: "tinyrustlm.com@0.2.1",
@@ -78,6 +76,13 @@ test("source release ledger preserves history and one latest pending release", (
     publishedAt: "2026-08-25T04:57:20.279Z",
     sourceRevision: "dca8a3a2107d8f6992291a59ae3eb1f319b332f4",
     sourceLedgerSha256: "6abb747cd2e50f684fbcf3c935e610660e8f41132d1da1ab782b7a1072cbd831"
+  });
+  assert.deepEqual(result.ledger.publications[6], {
+    publicationId: "c7e900472d59d97c0fec33b2ac73ec4f4c15b09e030e8646e5ca65efbcadc847",
+    releaseId: "tinyrustlm.com@0.4.0",
+    publishedAt: "2026-08-30T00:39:55.591Z",
+    sourceRevision: "fe8e49eb73332787dfe75040b0c39068bcfc5252",
+    sourceLedgerSha256: "96710b72b9d8a6afc6553dbaadcebf3c834c7dcbad6221a9fd9c00bb6b76a8ec"
   });
   assert.match(result.ledgerSha256, /^[a-f0-9]{64}$/);
 });
@@ -123,16 +128,25 @@ test("CLI materializes only finalized release state without a synthetic publicat
   assert.match(summary.publicationId, /^[a-f0-9]{64}$/u);
   validatePublicReleaseFiles({ ledgerPath: finalizedPath, outputRoot });
 
-  const pendingOutputRoot = path.join(withTemporaryDirectory(context), "pending");
-  const rejected = childProcess.spawnSync(process.execPath, [
+  const sourceOutputRoot = path.join(withTemporaryDirectory(context), "source");
+  const sourceResult = childProcess.spawnSync(process.execPath, [
     contractCliPath,
     "materialize-finalized",
     ledgerPath,
-    pendingOutputRoot
+    sourceOutputRoot
   ], { encoding: "utf8" });
-  assert.equal(rejected.status, 1);
-  assert.equal(rejected.stdout, "");
-  assert.equal(rejected.stderr, "Site release contract validation failed\n");
+  assert.equal(sourceResult.status, 0, sourceResult.stderr);
+  assert.equal(sourceResult.stderr, "");
+  const sourceSummary = JSON.parse(sourceResult.stdout);
+  assert.equal(sourceSummary.status, "pass");
+  assert.equal(sourceSummary.version, "0.4.0");
+  assert.equal(
+    sourceSummary.publicationId,
+    "c7e900472d59d97c0fec33b2ac73ec4f4c15b09e030e8646e5ca65efbcadc847"
+  );
+  const sourceRecords = validatePublicReleaseFiles({ ledgerPath, outputRoot: sourceOutputRoot });
+  assert.equal(sourceRecords.current.sourceRevision, "fe8e49eb73332787dfe75040b0c39068bcfc5252");
+  assert.equal(sourceRecords.current.publishedAt, "2026-08-30T00:39:55.591Z");
 });
 
 test("materializes canonical current and history records bound to one clean source revision", (context) => {

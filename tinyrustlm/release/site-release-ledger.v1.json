@@ -226,6 +226,13 @@
       "publishedAt": "2026-08-25T04:57:20.279Z",
       "sourceRevision": "dca8a3a2107d8f6992291a59ae3eb1f319b332f4",
       "sourceLedgerSha256": "6abb747cd2e50f684fbcf3c935e610660e8f41132d1da1ab782b7a1072cbd831"
+    },
+    {
+      "publicationId": "c7e900472d59d97c0fec33b2ac73ec4f4c15b09e030e8646e5ca65efbcadc847",
+      "releaseId": "tinyrustlm.com@0.4.0",
+      "publishedAt": "2026-08-30T00:39:55.591Z",
+      "sourceRevision": "fe8e49eb73332787dfe75040b0c39068bcfc5252",
+      "sourceLedgerSha256": "96710b72b9d8a6afc6553dbaadcebf3c834c7dcbad6221a9fd9c00bb6b76a8ec"
     }
   ]
 }
