@@ -1,6 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const crypto = require("node:crypto");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
@@ -8,6 +9,7 @@ const test = require("node:test");
 
 const {
   allSourceReviewBundleName,
+  authorityResultForStdout,
   canonicalArtifactsRoot,
   canonicalEcosystemAuthorityMarkers,
   canonicalEcosystemExemptStorageDirectoryNames,
@@ -33,6 +35,8 @@ const {
   ecosystemAuthorityMaximumDepth,
   ecosystemAuthorityScanScopes,
   ecosystemRepositories,
+  evidenceContainerDirectChildIdentity,
+  evidenceContainerHardLimits,
   evidenceOnlyRoots,
   externalBinaryReleaseEvidenceRoot,
   extractEcosystemSourceRootPolicyBlock,
@@ -41,8 +45,6 @@ const {
   isCanonicalPathSegment,
   isSourceArchiveName,
   localWorkspaceRoot,
-  privateTrainingEvidenceManifestProfile,
-  privateTrainingEvidenceProfile,
   readBoundedText,
   registeredBinaryReleaseArchiveProfiles,
   registeredBinaryReleaseEvidenceRoot,
@@ -64,7 +66,7 @@ const {
   verifyEcosystemSourceRootPolicyParity,
   verifyForbiddenPathAbsence,
   verifyGitIdentity,
-  verifyPrivateTrainingEvidenceProfile,
+  verifyBoundedEvidenceContainer,
   verifySingleSourceAuthority,
   verifySourceArchiveDiscovery
 } = require("../tools/verify-single-source-authority.js");
@@ -115,33 +117,49 @@ function literalPathExists(filePath) {
   }
 }
 
-// Returns the independently pinned aggregate contract for one small fixture.
-function syntheticPrivateTrainingEvidenceProfile(root) {
+// Returns one synthetic external policy without publishing fixture paths.
+function syntheticEvidenceContainerProfile(root, overrides = {}) {
   return Object.freeze({
-    directoryCount: 1,
-    extensions: Object.freeze({ ".json": 1, ".txt": 1 }),
-    fileCount: 2,
-    id: "tinyrustlm.private-training-evidence.synthetic.v1",
-    manifestProfile: privateTrainingEvidenceManifestProfile,
-    manifestSha256:
-      "8134fed08a3f113199c261d5046eee2a86f0a9262ca4818134b0ffb1728c5c81",
+    allowedDirectChildIdentities: Object.freeze([
+      evidenceContainerDirectChildIdentity("records")
+    ]),
     maximumDepth: 2,
-    privatePromptBearing: true,
+    maximumDirectories: 4,
+    maximumFileBytes: 4096,
+    maximumFiles: 16,
+    maximumTotalBytes: 16384,
     root,
-    totalBytes: 5
+    ...overrides
   });
 }
 
-// Creates and removes one operation-owned non-product evidence fixture.
-function withSyntheticPrivateTrainingEvidence(callback) {
+// Creates and removes one operation-owned bounded non-product fixture.
+function withSyntheticEvidenceContainer(callback) {
   const temporaryParent = fs.mkdtempSync(path.join(os.tmpdir(),
-    "tinyrustlm-private-evidence-"));
+    "tinyrustlm-authority-evidence-"));
   const root = path.join(temporaryParent, "evidence");
-  fs.mkdirSync(path.join(root, "alpha"), { recursive: true });
-  fs.writeFileSync(path.join(root, "alpha", "a.json"), "{}\n");
-  fs.writeFileSync(path.join(root, "beta.txt"), "ok");
+  const records = path.join(root, "records");
+  fs.mkdirSync(records, { recursive: true });
+  fs.writeFileSync(path.join(records, "record.json"), "{}\n");
+  fs.writeFileSync(path.join(records, "note.txt"), "ordinary evidence note\n");
+  fs.writeFileSync(path.join(records, "bounded.dat"),
+    Buffer.from([0x00, 0xff, 0x01, 0x80]));
+  fs.writeFileSync(path.join(records, "guide.md"), [
+    "# Evidence guide",
+    "",
+    "This is ordinary explanatory prose long enough to establish that the",
+    "fenced sample below is documentation rather than a copied source file.",
+    "The validator must keep bounded technical documentation eligible while",
+    "still rejecting standalone source material hidden under a data suffix.",
+    "",
+    "```js",
+    "const example = true;",
+    "module.exports = example;",
+    "```",
+    ""
+  ].join("\n"));
   try {
-    return callback(root, syntheticPrivateTrainingEvidenceProfile(root));
+    return callback(root, syntheticEvidenceContainerProfile(root));
   } finally {
     const relative = path.relative(path.resolve(os.tmpdir()),
       path.resolve(temporaryParent));
@@ -317,135 +335,253 @@ test("declares the required path as the sole TinyRustLM.com source checkout", ()
     /Fail closed if any recovered, dated, hidden, backup, Worktrees, evidence, or quarantine directory contains another TinyRustLM\.com source tree\./u);
 });
 
-test("binds the exact private training-evidence aggregate and manifest profile", () => {
-  assert.equal(privateTrainingEvidenceProfile.root,
-    "D:\\TinyRustLM-vnext-20260812\\temporary-relocation\\" +
-      "preserved-tinyrustlm-training-evidence-20260812-v1");
-  assert.equal(privateTrainingEvidenceProfile.maximumDepth, 2);
-  assert.equal(privateTrainingEvidenceProfile.directoryCount, 47);
-  assert.equal(privateTrainingEvidenceProfile.fileCount, 127);
-  assert.equal(privateTrainingEvidenceProfile.totalBytes, 820011);
-  assert.deepEqual(privateTrainingEvidenceProfile.extensions, {
-    ".json": 57,
-    ".jsonl": 28,
-    ".manifest": 18,
-    ".md": 9,
-    ".txt": 15
+test("uses a path-free bounded evidence-container policy", () => {
+  assert.deepEqual(evidenceContainerHardLimits, {
+    maximumContainers: 16,
+    maximumDepth: 8,
+    maximumDirectChildren: 64,
+    maximumDirectories: 256,
+    maximumFileBytes: 4 * 1024 * 1024,
+    maximumFiles: 1024,
+    maximumTotalBytes: 16 * 1024 * 1024
   });
-  assert.equal(privateTrainingEvidenceProfile.manifestSha256,
-    "79f4c232e956eef38c5fe962609a7666b90389624511bc86bc3d3fc80eff23a4");
-  assert.equal(privateTrainingEvidenceProfile.privatePromptBearing, true);
+  const directName = "records";
+  assert.equal(evidenceContainerDirectChildIdentity(directName),
+    `sha256:${crypto.createHash("sha256")
+      .update(directName, "utf8").digest("hex")}`);
 
-  withSyntheticPrivateTrainingEvidence((_root, profile) => {
-    const identity = verifyPrivateTrainingEvidenceProfile(profile);
-    assert.deepEqual(identity, {
-      directoryCount: 1,
-      extensions: { ".json": 1, ".txt": 1 },
-      fileCount: 2,
-      manifestProfile: "ordinal-df-lf-no-trailing-lf-v1",
-      manifestSha256:
-        "8134fed08a3f113199c261d5046eee2a86f0a9262ca4818134b0ffb1728c5c81",
-      privatePromptBearing: true,
-      profileId: "tinyrustlm.private-training-evidence.synthetic.v1",
-      totalBytes: 5
+  withSyntheticEvidenceContainer((root, profile) => {
+    assert.deepEqual(verifyBoundedEvidenceContainer(profile), {
+      verdict: "pass"
     });
-    assert.equal(Object.hasOwn(identity, "root"), false);
-    assert.equal(Object.hasOwn(identity, "files"), false);
+    const invalidProfiles = [
+      { ...profile, inventedExactInventory: true },
+      { ...profile, root: "relative-evidence" },
+      { ...profile, allowedDirectChildIdentities: ["records"] },
+      { ...profile, allowedDirectChildIdentities: [
+        profile.allowedDirectChildIdentities[0],
+        profile.allowedDirectChildIdentities[0]
+      ] },
+      { ...profile, maximumDepth: evidenceContainerHardLimits.maximumDepth + 1 },
+      { ...profile, maximumDirectories:
+        evidenceContainerHardLimits.maximumDirectories + 1 },
+      { ...profile, maximumFileBytes:
+        evidenceContainerHardLimits.maximumFileBytes + 1,
+        maximumTotalBytes: evidenceContainerHardLimits.maximumTotalBytes },
+      { ...profile, maximumFiles: evidenceContainerHardLimits.maximumFiles + 1 },
+      { ...profile, maximumTotalBytes:
+        evidenceContainerHardLimits.maximumTotalBytes + 1 }
+    ];
+    for (const invalid of invalidProfiles) {
+      assert.throws(() => verifyBoundedEvidenceContainer(invalid), (error) => {
+        assert.equal(error.code,
+          "source_authority_evidence_container_profile_invalid");
+        assert.equal(error.message.includes(root), false);
+        return true;
+      });
+    }
   });
+
+  const projected = authorityResultForStdout({
+    canonicalLayoutAvailable: true,
+    coverageClass: "registered-governed-roots-only",
+    localScanPerformed: true,
+    undisclosedFilesystemIdentity: "not-projected",
+    verdict: "pass",
+    wholeVolumeInventoryPerformed: false
+  });
+  assert.deepEqual(projected, {
+    canonicalLayoutAvailable: true,
+    coverageClass: "registered-governed-roots-only",
+    localScanPerformed: true,
+    verdict: "pass",
+    wholeVolumeInventoryPerformed: false
+  });
+  assert.equal(Object.hasOwn(projected, "undisclosedFilesystemIdentity"), false);
 });
 
-test("private training-evidence verification rejects every bounded mutation", () => {
+test("bounded evidence-container verification rejects hostile mutations", () => {
   const scenarios = [
     {
-      code: "source_authority_private_training_evidence_drift",
-      detail: "manifest_sha256",
-      label: "content digest drift",
+      code: "source_authority_evidence_container_bounds_exceeded",
+      detail: "depth",
+      label: "depth bound",
       prepare(root) {
-        fs.writeFileSync(path.join(root, "beta.txt"), "no");
+        const deep = path.join(root, "records", "one", "two");
+        fs.mkdirSync(deep, { recursive: true });
+        fs.writeFileSync(path.join(deep, "value.txt"), "bounded");
       }
     },
     {
-      code: "source_authority_private_training_evidence_drift",
-      detail: "total_bytes",
-      label: "byte-count drift",
-      prepare(root) {
-        fs.writeFileSync(path.join(root, "beta.txt"), "long");
-      }
-    },
-    {
-      code: "source_authority_private_training_evidence_drift",
-      detail: "file_count",
-      label: "file-count drift",
-      prepare(root) {
-        fs.rmSync(path.join(root, "beta.txt"));
-      }
-    },
-    {
-      code: "source_authority_private_training_evidence_drift",
+      code: "source_authority_evidence_container_bounds_exceeded",
       detail: "directory_count",
-      label: "directory-count drift",
-      prepare(root) {
-        fs.rmSync(path.join(root, "alpha"), { recursive: true });
-      }
-    },
-    {
-      code: "source_authority_private_training_evidence_drift",
-      detail: "extension_multiset",
-      label: "extension drift",
-      prepare(root) {
-        fs.renameSync(path.join(root, "beta.txt"), path.join(root, "beta.md"));
-      }
-    },
-    {
-      code: "source_authority_private_training_evidence_scan_incomplete",
-      detail: "depth_exceeded",
-      label: "deeper path",
+      label: "directory-count bound",
       prepare(root, profile) {
-        fs.mkdirSync(path.join(root, "alpha", "deep"));
-        fs.writeFileSync(path.join(root, "alpha", "deep", "value.json"), "x");
-        return { profile: { ...profile, directoryCount: 2 } };
+        fs.mkdirSync(path.join(root, "records", "extra"));
+        return { profile: syntheticEvidenceContainerProfile(root, {
+          maximumDirectories: 1
+        }) };
       }
     },
     {
-      code: "source_authority_private_training_evidence_forbidden_content",
+      code: "source_authority_evidence_container_bounds_exceeded",
+      detail: "file_count",
+      label: "file-count bound",
+      prepare(root) {
+        return { profile: syntheticEvidenceContainerProfile(root, {
+          maximumFiles: 3
+        }) };
+      }
+    },
+    {
+      code: "source_authority_evidence_container_bounds_exceeded",
+      detail: "bytes",
+      label: "byte bound",
+      prepare(root) {
+        fs.writeFileSync(path.join(root, "records", "note.txt"),
+          Buffer.alloc(5000, 0x61));
+      }
+    },
+    {
+      code: "source_authority_evidence_container_direct_child_invalid",
+      detail: "unexpected",
+      label: "unexpected direct child",
+      prepare(root) {
+        fs.writeFileSync(path.join(root, "unexpected.txt"), "unexpected");
+      }
+    },
+    {
+      code: "source_authority_evidence_container_direct_child_invalid",
+      detail: "missing",
+      label: "missing direct child",
+      prepare(root) {
+        fs.rmSync(path.join(root, "records"), { recursive: true });
+      }
+    },
+    {
+      code: "source_authority_evidence_container_forbidden_content",
       detail: "archive",
       label: "archive suffix",
       prepare(root) {
-        fs.renameSync(path.join(root, "beta.txt"), path.join(root, "bundle.zip"));
+        fs.renameSync(path.join(root, "records", "note.txt"),
+          path.join(root, "records", "bundle.zip"));
       }
     },
     {
-      code: "source_authority_private_training_evidence_forbidden_content",
+      code: "source_authority_evidence_container_forbidden_content",
       detail: "archive",
       label: "renamed archive magic",
       prepare(root) {
-        fs.writeFileSync(path.join(root, "beta.txt"),
+        fs.writeFileSync(path.join(root, "records", "note.txt"),
           Buffer.from([0x50, 0x4b, 0x03, 0x04]));
       }
     },
     {
-      code: "source_authority_private_training_evidence_forbidden_content",
+      code: "source_authority_evidence_container_forbidden_content",
       detail: "source_authority",
       label: "source authority marker",
       prepare(root) {
-        fs.renameSync(path.join(root, "beta.txt"),
-          path.join(root, "workspace.uai"));
+        fs.renameSync(path.join(root, "records", "note.txt"),
+          path.join(root, "records", "workspace.uai"));
       }
     },
     {
-      code: "source_authority_private_training_evidence_forbidden_content",
-      detail: "executable_magic",
+      code: "source_authority_evidence_container_forbidden_content",
+      detail: "source_authority",
+      label: "Git marker",
+      prepare(root) {
+        fs.mkdirSync(path.join(root, "records", ".git"));
+      }
+    },
+    {
+      code: "source_authority_evidence_container_forbidden_content",
+      detail: "source_authority",
+      label: "config path marker",
+      prepare(root) {
+        fs.renameSync(path.join(root, "records", "note.txt"),
+          path.join(root, "records", "runtime.config"));
+      }
+    },
+    {
+      code: "source_authority_evidence_container_forbidden_content",
+      detail: "executable",
+      label: "executable suffix",
+      prepare(root) {
+        fs.renameSync(path.join(root, "records", "note.txt"),
+          path.join(root, "records", "payload.dll"));
+      }
+    },
+    {
+      code: "source_authority_evidence_container_forbidden_content",
+      detail: "executable",
       label: "executable magic",
       prepare(root) {
-        fs.writeFileSync(path.join(root, "beta.txt"), Buffer.from("MZ"));
+        fs.writeFileSync(path.join(root, "records", "note.txt"),
+          Buffer.from("MZ"));
       }
     },
     {
-      code: "source_authority_private_training_evidence_scan_incomplete",
+      code: "source_authority_evidence_container_forbidden_content",
+      detail: "git",
+      label: "renamed Git config",
+      prepare(root) {
+        fs.writeFileSync(path.join(root, "records", "note.txt"),
+          "[core]\nrepositoryformatversion = 0\n");
+      }
+    },
+    {
+      code: "source_authority_evidence_container_forbidden_content",
+      detail: "authority",
+      label: "renamed authority file",
+      prepare(root) {
+        fs.writeFileSync(path.join(root, "records", "note.txt"), [
+          "profile: example.workspace.current.v1",
+          "authoritative_worktree:",
+          "  root: canonical-placeholder",
+          ""
+        ].join("\n"));
+      }
+    },
+    {
+      code: "source_authority_evidence_container_forbidden_content",
+      detail: "config",
+      label: "renamed package config",
+      prepare(root) {
+        fs.writeFileSync(path.join(root, "records", "note.txt"),
+          JSON.stringify({
+            dependencies: { example: "1.0.0" },
+            name: "example",
+            scripts: { test: "node --test" }
+          }));
+      }
+    },
+    {
+      code: "source_authority_evidence_container_forbidden_content",
+      detail: "source",
+      label: "renamed source file",
+      prepare(root) {
+        fs.writeFileSync(path.join(root, "records", "note.txt"), [
+          "use std::path::Path;",
+          "pub struct Example {",
+          "value: usize;",
+          "}",
+          "impl Example {",
+          "pub fn value(&self) -> usize {",
+          "let current = self.value;",
+          "current",
+          "}",
+          "}",
+          "const LIMIT: usize = 4;",
+          "pub fn build() -> Example { Example { value: LIMIT } }"
+        ].join("\n"));
+      }
+    },
+    {
+      code: "source_authority_evidence_container_scan_incomplete",
       detail: "unreadable_file",
       label: "unreadable file",
       prepare(root) {
-        const target = path.resolve(root, "beta.txt");
+        const target = path.resolve(root, "records", "note.txt");
         const fileSystem = Object.create(fs);
         fileSystem.readFileSync = (candidate, ...arguments_) => {
           if (path.resolve(candidate) === target) {
@@ -459,11 +595,11 @@ test("private training-evidence verification rejects every bounded mutation", ()
       }
     },
     {
-      code: "source_authority_private_training_evidence_scan_incomplete",
+      code: "source_authority_evidence_container_scan_incomplete",
       detail: "unstable_file",
       label: "unstable file",
       prepare(root) {
-        const target = path.resolve(root, "beta.txt");
+        const target = path.resolve(root, "records", "note.txt");
         const fileSystem = Object.create(fs);
         let targetRead = false;
         fileSystem.readFileSync = (candidate, ...arguments_) => {
@@ -486,11 +622,11 @@ test("private training-evidence verification rejects every bounded mutation", ()
       }
     },
     {
-      code: "source_authority_private_training_evidence_scan_incomplete",
+      code: "source_authority_evidence_container_scan_incomplete",
       detail: "reparse",
       label: "reparse file",
       prepare(root) {
-        const target = path.resolve(root, "beta.txt");
+        const target = path.resolve(root, "records", "note.txt");
         const fileSystem = Object.create(fs);
         fileSystem.lstatSync = (candidate) => {
           const stat = fs.lstatSync(candidate);
@@ -504,14 +640,41 @@ test("private training-evidence verification rejects every bounded mutation", ()
         };
         return { options: { fileSystem } };
       }
+    },
+    {
+      code: "source_authority_evidence_container_scan_incomplete",
+      detail: "unstable_directory",
+      label: "unstable directory",
+      prepare(root) {
+        const target = path.resolve(root, "records");
+        const fileSystem = Object.create(fs);
+        let targetRead = false;
+        fileSystem.readdirSync = (candidate, ...arguments_) => {
+          const entries = fs.readdirSync(candidate, ...arguments_);
+          if (path.resolve(candidate) === target) targetRead = true;
+          return entries;
+        };
+        fileSystem.lstatSync = (candidate) => {
+          const stat = fs.lstatSync(candidate);
+          if (!targetRead || path.resolve(candidate) !== target) return stat;
+          return {
+            ...stat,
+            isDirectory: () => stat.isDirectory(),
+            isFile: () => stat.isFile(),
+            isSymbolicLink: () => stat.isSymbolicLink(),
+            mtimeMs: stat.mtimeMs + 1
+          };
+        };
+        return { options: { fileSystem } };
+      }
     }
   ];
 
   for (const scenario of scenarios) {
-    withSyntheticPrivateTrainingEvidence((root, initialProfile) => {
+    withSyntheticEvidenceContainer((root, initialProfile) => {
       const prepared = scenario.prepare(root, initialProfile) || {};
       const profile = prepared.profile || initialProfile;
-      assert.throws(() => verifyPrivateTrainingEvidenceProfile(
+      assert.throws(() => verifyBoundedEvidenceContainer(
         profile, prepared.options || {}), (error) => {
         assert.equal(error.code, scenario.code, scenario.label);
         assert.equal(error.detail, scenario.detail, scenario.label);
@@ -561,22 +724,12 @@ test("rejects every second local source-marked TinyRustLM.com directory", () => 
   assert.equal(result.permittedBinaryReleaseEvidenceArchives.length, 83);
   assert.equal(result.permittedBinaryReleaseEvidenceArchives.filter((candidate) =>
     candidate.includes("UAIX.Browser.p2pRuntime.SeedHost.Tool")).length, 23);
-  assert.deepEqual(result.privateTrainingEvidence, {
-    directoryCount: 47,
-    extensions: {
-      ".json": 57,
-      ".jsonl": 28,
-      ".manifest": 18,
-      ".md": 9,
-      ".txt": 15
-    },
-    fileCount: 127,
-    manifestProfile: "ordinal-df-lf-no-trailing-lf-v1",
-    manifestSha256:
-      "79f4c232e956eef38c5fe962609a7666b90389624511bc86bc3d3fc80eff23a4",
-    privatePromptBearing: true,
-    profileId: "tinyrustlm.private-training-evidence.20260812.v1",
-    totalBytes: 820011
+  assert.deepEqual(authorityResultForStdout(result), {
+    canonicalLayoutAvailable: true,
+    coverageClass: "registered-governed-roots-only",
+    localScanPerformed: true,
+    verdict: "pass",
+    wholeVolumeInventoryPerformed: false
   });
   assert.equal(result.verdict, "pass");
 });

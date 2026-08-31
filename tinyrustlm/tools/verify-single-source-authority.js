@@ -4,6 +4,7 @@ const childProcess = require("node:child_process");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
+const { TextDecoder } = require("node:util");
 
 const repositoryRoot = path.resolve(__dirname, "../..");
 const canonicalRoot = "E:\\Source\\Rust\\TinyRustLM.com";
@@ -244,27 +245,16 @@ const evidenceOnlyRoots = Object.freeze([
     root: "E:\\Source\\.tinyrustlm-evidence\\source-root-relocation-staging-20260830-v1"
   })
 ]);
-const privateTrainingEvidenceManifestProfile =
-  "ordinal-df-lf-no-trailing-lf-v1";
-const privateTrainingEvidenceProfile = Object.freeze({
-  directoryCount: 47,
-  extensions: Object.freeze({
-    ".json": 57,
-    ".jsonl": 28,
-    ".manifest": 18,
-    ".md": 9,
-    ".txt": 15
-  }),
-  fileCount: 127,
-  id: "tinyrustlm.private-training-evidence.20260812.v1",
-  manifestProfile: privateTrainingEvidenceManifestProfile,
-  manifestSha256:
-    "79f4c232e956eef38c5fe962609a7666b90389624511bc86bc3d3fc80eff23a4",
-  maximumDepth: 2,
-  privatePromptBearing: true,
-  root: "D:\\TinyRustLM-vnext-20260812\\temporary-relocation\\" +
-    "preserved-tinyrustlm-training-evidence-20260812-v1",
-  totalBytes: 820011
+// Exact private evidence roots and inventories are caller-owned external data.
+// These power-of-two ceilings are only the public admission boundary.
+const evidenceContainerHardLimits = Object.freeze({
+  maximumContainers: 16,
+  maximumDepth: 8,
+  maximumDirectChildren: 64,
+  maximumDirectories: 256,
+  maximumFileBytes: 4 * 1024 * 1024,
+  maximumFiles: 1024,
+  maximumTotalBytes: 16 * 1024 * 1024
 });
 const registeredEvidenceRoot = evidenceOnlyRoots[0].root;
 const canonicalArtifactsRoot = path.join(canonicalRoot, "artifacts");
@@ -2296,58 +2286,167 @@ function hasExecutableMagic(content) {
     starts([0xbf, 0xba, 0xfe, 0xca]);
 }
 
-// Checks the exact aggregate contract accepted by the private evidence scanner.
-function validatePrivateTrainingEvidenceProfile(profile) {
-  const extensions = profile?.extensions;
-  const extensionEntries = extensions && typeof extensions === "object" &&
-    !Array.isArray(extensions) ? Object.entries(extensions) : [];
-  if (!profile || typeof profile.id !== "string" || profile.id.length === 0 ||
-      typeof profile.root !== "string" || !path.isAbsolute(profile.root) ||
-      !hasCanonicalPathSegments(profile.root) ||
-      !Number.isSafeInteger(profile.maximumDepth) || profile.maximumDepth < 0 ||
-      profile.maximumDepth > ecosystemAuthorityMaximumDepth ||
-      !Number.isSafeInteger(profile.directoryCount) ||
-      profile.directoryCount < 0 ||
-      !Number.isSafeInteger(profile.fileCount) || profile.fileCount < 0 ||
-      !Number.isSafeInteger(profile.totalBytes) || profile.totalBytes < 0 ||
-      profile.manifestProfile !== privateTrainingEvidenceManifestProfile ||
-      !/^[a-f0-9]{64}$/u.test(profile.manifestSha256 || "") ||
-      profile.privatePromptBearing !== true || extensionEntries.length === 0 ||
-      extensionEntries.some(([extension, count]) =>
-        !/^\.[a-z0-9]+$/u.test(extension) ||
-        !Number.isSafeInteger(count) || count < 1) ||
-      extensionEntries.reduce((sum, [, count]) => sum + count, 0) !==
-        profile.fileCount) {
-    fail("source_authority_private_training_evidence_profile_invalid");
+// Hashes a direct-child name without retaining or returning that name.
+function evidenceContainerDirectChildIdentity(name) {
+  if (!isCanonicalPathSegment(name) || Buffer.byteLength(name, "utf8") > 512) {
+    fail("source_authority_evidence_container_profile_invalid");
+  }
+  const normalized = name.normalize("NFC").toLowerCase();
+  return `sha256:${crypto.createHash("sha256")
+    .update(normalized, "utf8").digest("hex")}`;
+}
+
+function validateBoundedEvidenceContainerProfile(profile) {
+  const keys = ["allowedDirectChildIdentities", "maximumDepth",
+    "maximumDirectories", "maximumFileBytes", "maximumFiles",
+    "maximumTotalBytes", "root"];
+  const identities = profile?.allowedDirectChildIdentities;
+  const boundedInteger = (value, minimum, maximum) =>
+    Number.isSafeInteger(value) && value >= minimum && value <= maximum;
+  if (!hasExactKeys(profile, keys) || typeof profile.root !== "string" ||
+      !path.isAbsolute(profile.root) || !hasCanonicalPathSegments(profile.root) ||
+      !Array.isArray(identities) || identities.length === 0 ||
+      identities.length > evidenceContainerHardLimits.maximumDirectChildren ||
+      identities.some((identity) =>
+        !/^sha256:[a-f0-9]{64}$/u.test(identity)) ||
+      new Set(identities).size !== identities.length ||
+      !boundedInteger(profile.maximumDepth, 1,
+        evidenceContainerHardLimits.maximumDepth) ||
+      !boundedInteger(profile.maximumDirectories, 0,
+        evidenceContainerHardLimits.maximumDirectories) ||
+      !boundedInteger(profile.maximumFiles, 1,
+        evidenceContainerHardLimits.maximumFiles) ||
+      !boundedInteger(profile.maximumFileBytes, 1,
+        evidenceContainerHardLimits.maximumFileBytes) ||
+      !boundedInteger(profile.maximumTotalBytes, 1,
+        evidenceContainerHardLimits.maximumTotalBytes) ||
+      profile.maximumFileBytes > profile.maximumTotalBytes) {
+    fail("source_authority_evidence_container_profile_invalid");
   }
 }
 
-// Reads one private evidence tree and exposes only its aggregate identity.
-function verifyPrivateTrainingEvidenceProfile(
-  profile = privateTrainingEvidenceProfile,
-  options = {}
-) {
-  validatePrivateTrainingEvidenceProfile(profile);
+function evidenceClassificationText(text, extension) {
+  if (extension !== ".md" && extension !== ".markdown") return text;
+  const outside = [];
+  let fenced = false;
+  let balanced = true;
+  for (const line of text.replaceAll("\r\n", "\n").split("\n")) {
+    if (/^\s*(?:```|~~~)/u.test(line)) {
+      fenced = !fenced;
+      continue;
+    }
+    if (!fenced) outside.push(line);
+  }
+  if (fenced) balanced = false;
+  const prose = outside.join("\n");
+  return balanced && prose.replace(/\s+/gu, " ").trim().length >= 128
+    ? prose
+    : text;
+}
+
+function looksLikeCopiedSource(text) {
+  const lines = text.replaceAll("\r\n", "\n").split("\n")
+    .map((line) => line.trim()).filter(Boolean);
+  if (lines.length < 8) return false;
+  const codeLineCount = lines.filter((line) =>
+    /[{};]$/u.test(line) || /^(?:class|def|enum|fn|function|impl|import|let|mod|namespace|pub|struct|trait|use|using)\b/u
+      .test(line)).length;
+  if (codeLineCount < Math.ceil(lines.length / 2)) return false;
+  const families = [
+    [/^(?:pub\s+)?(?:async\s+)?fn\s+[A-Za-z_][A-Za-z0-9_]*\s*\(/mu,
+      /^(?:use|mod|impl|struct|enum|trait)\s+/mu,
+      /(?:^|\n)\s*(?:let|const)\s+(?:mut\s+)?[A-Za-z_]/mu],
+    [/^(?:const|let|var|function|class)\s+/mu,
+      /\b(?:import|export)\b|require\s*\(|module\.exports/u,
+      /=>|function\s*\(|class\s+[A-Za-z_]/u],
+    [/^using\s+(?:System|[A-Za-z_][A-Za-z0-9_.]+);/mu,
+      /\b(?:namespace|class|record|struct|interface)\s+[A-Za-z_]/u,
+      /\b(?:public|private|internal|protected)\s+/u],
+    [/^(?:from\s+\S+\s+import|import\s+\S+)/mu,
+      /^(?:async\s+)?def\s+[A-Za-z_][A-Za-z0-9_]*\s*\(/mu,
+      /^(?:class\s+[A-Za-z_]|if\s+__name__\s*==)/mu],
+    [/<html(?:\s|>)/iu, /<body(?:\s|>)/iu, /<script(?:\s|>)/iu]
+  ];
+  return families.some((patterns) => patterns.every((pattern) =>
+    pattern.test(text)));
+}
+
+// Returns only a generic rejection class; it never returns evidence text.
+function forbiddenEvidenceTextClass(content, extension) {
+  if (!Buffer.isBuffer(content) || content.includes(0)) return null;
+  let text;
+  try {
+    text = new TextDecoder("utf-8", { fatal: true }).decode(content);
+  } catch (_error) {
+    return null;
+  }
+  const classified = evidenceClassificationText(text, extension);
+  const normalized = classified.replaceAll("\r\n", "\n");
+  if (/^gitdir:\s*\S+/imu.test(normalized) ||
+      (/^\[core\]\s*$/imu.test(normalized) &&
+        /^\s*repositoryformatversion\s*=\s*\d+/imu.test(normalized)) ||
+      (/^\[remote\s+"[^"]+"\]\s*$/imu.test(normalized) &&
+        /^\s*url\s*=\s*\S+/imu.test(normalized))) return "git";
+  if ((/^profile:\s*[^\r\n]+\.workspace\.(?:current\.)?v\d+\s*$/imu
+    .test(normalized) && /^(?:authoritative_worktree|ecosystem_source_root_prohibitions):\s*$/imu
+    .test(normalized)) ||
+      (/^authoritative_worktree:\s*$/imu.test(normalized) &&
+        /^\s*root:\s*\S+/imu.test(normalized))) return "authority";
+  if ((/^\[package\]\s*$/imu.test(normalized) &&
+        /^\s*name\s*=\s*["'][^"']+["']\s*$/imu.test(normalized) &&
+        /^\[(?:dependencies|workspace)\]\s*$/imu.test(normalized)) ||
+      (/^Microsoft Visual Studio Solution File/iu.test(normalized) &&
+        /^Project\("\{[A-F0-9-]+\}"\)\s*=/imu.test(normalized)) ||
+      (/^\s*jobs:\s*$/imu.test(normalized) &&
+        /^\s*runs-on:\s*\S+/imu.test(normalized) &&
+        /^\s*steps:\s*$/imu.test(normalized))) return "config";
+  try {
+    const document = JSON.parse(normalized);
+    if (document && typeof document === "object" && !Array.isArray(document) &&
+        typeof document.name === "string") {
+      const packageSignals = ["scripts", "dependencies", "devDependencies",
+        "workspaces", "packageManager"].filter((key) =>
+        Object.hasOwn(document, key));
+      if (packageSignals.length >= 2) return "config";
+    }
+  } catch (_error) {
+    // Non-JSON evidence remains eligible for the other bounded classifiers.
+  }
+  return looksLikeCopiedSource(normalized) ? "source" : null;
+}
+
+function isExecutableEvidenceName(name) {
+  const lower = name.toLowerCase();
+  return [".dll", ".dylib", ".jar", ".so", ".wasm"].some((suffix) =>
+    lower.endsWith(suffix)) || sourceAuthorityEntrypointSuffixes.some(
+    (suffix) => lower.endsWith(suffix));
+}
+
+// Validates externally selected evidence without projecting its path or shape.
+function verifyBoundedEvidenceContainer(profile, options = {}) {
+  validateBoundedEvidenceContainerProfile(profile);
   const fileSystem = options.fileSystem || fs;
   const realpathNative = fileSystem?.realpathSync?.native;
   if (typeof fileSystem?.lstatSync !== "function" ||
       typeof fileSystem?.readdirSync !== "function" ||
       typeof fileSystem?.readFileSync !== "function" ||
       typeof realpathNative !== "function") {
-    fail("source_authority_private_training_evidence_profile_invalid");
+    fail("source_authority_evidence_container_profile_invalid");
   }
   const scanFailure = (detail) =>
-    fail("source_authority_private_training_evidence_scan_incomplete", detail);
+    fail("source_authority_evidence_container_scan_incomplete", detail);
   const forbidden = (detail) =>
-    fail("source_authority_private_training_evidence_forbidden_content", detail);
-  const drift = (detail) =>
-    fail("source_authority_private_training_evidence_drift", detail);
+    fail("source_authority_evidence_container_forbidden_content", detail);
+  const bounded = (detail) =>
+    fail("source_authority_evidence_container_bounds_exceeded", detail);
+  const directChildFailure = (detail) =>
+    fail("source_authority_evidence_container_direct_child_invalid", detail);
   const guarded = (operation, detail) => {
     try {
       return operation();
     } catch (error) {
       if (typeof error?.code === "string" &&
-          error.code.startsWith("source_authority_private_training_evidence_")) {
+          error.code.startsWith("source_authority_evidence_container_")) {
         throw error;
       }
       return scanFailure(detail);
@@ -2355,15 +2454,12 @@ function verifyPrivateTrainingEvidenceProfile(
   };
   const ordinal = (left, right) => left < right ? -1 : left > right ? 1 : 0;
   const root = path.resolve(profile.root);
-  const manifestLines = [];
-  const extensionCounts = Object.fromEntries(
-    Object.keys(profile.extensions).sort(ordinal).map((extension) =>
-      [extension, 0]));
+  const allowedDirectChildren = new Set(profile.allowedDirectChildIdentities);
+  const observedDirectChildren = new Set();
   let directoryCount = 0;
   let fileCount = 0;
   let totalBytes = 0;
 
-  // Requires every visited node to resolve directly inside the registered root.
   function requireDirectNode(candidate, expectedType, observedStat) {
     const stat = observedStat || guarded(() => fileSystem.lstatSync(candidate),
       "unreadable_entry");
@@ -2378,13 +2474,17 @@ function verifyPrivateTrainingEvidenceProfile(
     return stat;
   }
 
-  // Hashes one bounded stable file after rejecting source and executable forms.
-  function inspectFile(candidate, relativePath, observedStat) {
+  function inspectFile(candidate, observedStat) {
     const before = requireDirectNode(candidate, "file", observedStat);
     if (!Number.isSafeInteger(before.size) || before.size < 0) {
       scanFailure("invalid_file_size");
     }
-    if (before.size > profile.totalBytes) drift("total_bytes");
+    fileCount += 1;
+    if (fileCount > profile.maximumFiles) bounded("file_count");
+    if (before.size > profile.maximumFileBytes ||
+        before.size > profile.maximumTotalBytes - totalBytes) {
+      bounded("bytes");
+    }
     const content = guarded(() => fileSystem.readFileSync(candidate),
       "unreadable_file");
     const after = guarded(() => fileSystem.lstatSync(candidate),
@@ -2397,63 +2497,61 @@ function verifyPrivateTrainingEvidenceProfile(
       scanFailure("unstable_file");
     }
     if (hasArchiveContainerBytes(content)) forbidden("archive");
-    if (hasExecutableMagic(content)) forbidden("executable_magic");
-    const extension = path.extname(candidate).toLowerCase();
-    if (!Object.hasOwn(profile.extensions, extension)) {
-      drift("extension_multiset");
-    }
-    extensionCounts[extension] += 1;
-    if (extensionCounts[extension] > profile.extensions[extension]) {
-      drift("extension_multiset");
-    }
-    fileCount += 1;
-    if (fileCount > profile.fileCount) drift("file_count");
+    if (hasExecutableMagic(content)) forbidden("executable");
+    const textClass = forbiddenEvidenceTextClass(content,
+      path.extname(candidate).toLowerCase());
+    if (textClass) forbidden(textClass);
     totalBytes += content.length;
-    if (!Number.isSafeInteger(totalBytes) || totalBytes > profile.totalBytes) {
-      drift("total_bytes");
-    }
-    const digest = crypto.createHash("sha256").update(content).digest("hex");
-    manifestLines.push(`F\t${relativePath}\t${content.length}\t${digest}`);
   }
 
-  // Enumerates one directory without following aliases or truncating at depth.
   function inspectDirectory(directory, depth, observedStat) {
     const before = requireDirectNode(directory, "directory", observedStat);
     const entries = guarded(() => fileSystem.readdirSync(directory, {
       withFileTypes: true
     }), "unreadable_directory");
     if (!Array.isArray(entries)) scanFailure("unreadable_directory");
+    if (entries.length > profile.maximumDirectories + profile.maximumFiles) {
+      bounded("entry_count");
+    }
     const names = new Set();
     const accepted = [];
     for (const entry of entries) {
       if (!entry || typeof entry.name !== "string" ||
-          !isCanonicalPathSegment(entry.name)) {
+          !isCanonicalPathSegment(entry.name) ||
+          Buffer.byteLength(entry.name, "utf8") > 512) {
         scanFailure("noncanonical_entry");
       }
       const identity = entry.name.normalize("NFC").toLowerCase();
       if (names.has(identity)) scanFailure("noncanonical_entry");
       names.add(identity);
+      if (depth === 0) {
+        const directIdentity = evidenceContainerDirectChildIdentity(entry.name);
+        if (!allowedDirectChildren.has(directIdentity)) {
+          directChildFailure("unexpected");
+        }
+        observedDirectChildren.add(directIdentity);
+      }
       accepted.push(entry);
     }
     accepted.sort((left, right) => ordinal(left.name, right.name));
     for (const entry of accepted) {
       const child = path.join(directory, entry.name);
       const childDepth = depth + 1;
-      if (childDepth > profile.maximumDepth) scanFailure("depth_exceeded");
+      if (childDepth > profile.maximumDepth) bounded("depth");
       if (isSourceArchiveName(entry.name)) forbidden("archive");
+      if (isExecutableEvidenceName(entry.name)) forbidden("executable");
       if (isSourceAuthorityShapedPath(child, root)) forbidden("source_authority");
       const childStat = guarded(() => fileSystem.lstatSync(child),
         "unreadable_entry");
       if (childStat.isSymbolicLink()) scanFailure("reparse");
-      const relativePath = path.relative(root, child).split(path.sep).join("/");
       if (childStat.isDirectory()) {
-        requireDirectNode(child, "directory", childStat);
         directoryCount += 1;
-        if (directoryCount > profile.directoryCount) drift("directory_count");
-        manifestLines.push(`D\t${relativePath}`);
+        if (directoryCount > profile.maximumDirectories) {
+          bounded("directory_count");
+        }
         inspectDirectory(child, childDepth, childStat);
       } else if (childStat.isFile()) {
-        inspectFile(child, relativePath, childStat);
+        inspectFile(child, childStat);
       } else {
         scanFailure("non_regular_entry");
       }
@@ -2469,27 +2567,12 @@ function verifyPrivateTrainingEvidenceProfile(
   }
 
   inspectDirectory(root, 0);
-  if (directoryCount !== profile.directoryCount) drift("directory_count");
-  if (fileCount !== profile.fileCount) drift("file_count");
-  if (totalBytes !== profile.totalBytes) drift("total_bytes");
-  if (Object.keys(profile.extensions).some((extension) =>
-    extensionCounts[extension] !== profile.extensions[extension])) {
-    drift("extension_multiset");
+  if (observedDirectChildren.size !== allowedDirectChildren.size ||
+      [...allowedDirectChildren].some((identity) =>
+        !observedDirectChildren.has(identity))) {
+    directChildFailure("missing");
   }
-  manifestLines.sort(ordinal);
-  const manifestSha256 = crypto.createHash("sha256")
-    .update(manifestLines.join("\n"), "utf8").digest("hex");
-  if (manifestSha256 !== profile.manifestSha256) drift("manifest_sha256");
-  return Object.freeze({
-    directoryCount,
-    extensions: Object.freeze({ ...extensionCounts }),
-    fileCount,
-    manifestProfile: profile.manifestProfile,
-    manifestSha256,
-    privatePromptBearing: true,
-    profileId: profile.id,
-    totalBytes
-  });
+  return Object.freeze({ verdict: "pass" });
 }
 
 function verifyEvidenceOnlyRoot(profile) {
@@ -2549,7 +2632,6 @@ function verifySingleSourceAuthority(options = {}) {
         governedExternalSourceScopes.map((scope) => scope.root)),
       localScanPerformed,
       permittedBinaryReleaseEvidenceArchives: Object.freeze([]),
-      privateTrainingEvidence: null,
       wholeVolumeInventoryPerformed: false,
       unreadableRoots: Object.freeze([]),
       verdict: "not-performed"
@@ -2608,7 +2690,18 @@ function verifySingleSourceAuthority(options = {}) {
   verifyForbiddenPathAbsence(supersededSourceArchives,
     "source_authority_superseded_archive_present");
   for (const profile of evidenceOnlyRoots) verifyEvidenceOnlyRoot(profile);
-  const privateTrainingEvidence = verifyPrivateTrainingEvidenceProfile();
+  const evidenceContainerProfiles = Object.hasOwn(options,
+    "evidenceContainerProfiles") ? options.evidenceContainerProfiles : [];
+  if (!Array.isArray(evidenceContainerProfiles) ||
+      evidenceContainerProfiles.length >
+        evidenceContainerHardLimits.maximumContainers) {
+    fail("source_authority_evidence_container_profile_invalid");
+  }
+  for (const profile of evidenceContainerProfiles) {
+    verifyBoundedEvidenceContainer(profile, {
+      fileSystem: options.evidenceContainerFileSystem || fs
+    });
+  }
 
   const discoverLocal = options.discoverLocalSourceRoots ||
     discoverLocalSourceRoots;
@@ -2656,7 +2749,6 @@ function verifySingleSourceAuthority(options = {}) {
     permittedBinaryReleaseEvidenceArchives:
       archiveDiscovery.permittedBinaryReleaseArchives,
     policyPaths: policyVerification.policyPaths,
-    privateTrainingEvidence,
     unreadableRoots: Object.freeze([
       ...new Set([
         ...discovery.unreadable,
@@ -2666,6 +2758,25 @@ function verifySingleSourceAuthority(options = {}) {
     ].sort((left, right) => left.localeCompare(right))),
     wholeVolumeInventoryPerformed: false,
     verdict: "pass"
+  });
+}
+
+// Keeps CLI output useful while withholding scanned filesystem identities.
+function authorityResultForStdout(result) {
+  if (!result || typeof result !== "object" ||
+      typeof result.canonicalLayoutAvailable !== "boolean" ||
+      typeof result.coverageClass !== "string" ||
+      typeof result.localScanPerformed !== "boolean" ||
+      typeof result.wholeVolumeInventoryPerformed !== "boolean" ||
+      !["not-performed", "pass"].includes(result.verdict)) {
+    fail("source_authority_result_invalid");
+  }
+  return Object.freeze({
+    canonicalLayoutAvailable: result.canonicalLayoutAvailable,
+    coverageClass: result.coverageClass,
+    localScanPerformed: result.localScanPerformed,
+    verdict: result.verdict,
+    wholeVolumeInventoryPerformed: result.wholeVolumeInventoryPerformed
   });
 }
 
@@ -2686,7 +2797,7 @@ function cliVerificationOptions(arguments_) {
 function main() {
   const result = verifySingleSourceAuthority(
     cliVerificationOptions(process.argv.slice(2)));
-  process.stdout.write(`${JSON.stringify(result)}\n`);
+  process.stdout.write(`${JSON.stringify(authorityResultForStdout(result))}\n`);
 }
 
 if (require.main === module) {
@@ -2702,6 +2813,9 @@ if (require.main === module) {
 module.exports = Object.freeze({
   allSourceReviewBundleName,
   artifactReparsePolicy,
+  authorityResultForStdout,
+  evidenceContainerDirectChildIdentity,
+  evidenceContainerHardLimits,
   canonicalArtifactsRoot,
   canonicalEcosystemAuthorityMarkers,
   canonicalEcosystemExemptStorageDirectoryNames,
@@ -2738,8 +2852,6 @@ module.exports = Object.freeze({
   isSourceArchiveName,
   isCanonicalPathSegment,
   localWorkspaceRoot,
-  privateTrainingEvidenceManifestProfile,
-  privateTrainingEvidenceProfile,
   readBoundedText,
   registeredBinaryReleaseArchiveProfiles,
   registeredBinaryReleaseEvidenceRoot,
@@ -2762,7 +2874,7 @@ module.exports = Object.freeze({
   verifyEcosystemSourceRootPolicyParity,
   verifyForbiddenPathAbsence,
   verifyGitIdentity,
-  verifyPrivateTrainingEvidenceProfile,
+  verifyBoundedEvidenceContainer,
   verifySingleSourceAuthority,
   verifySourceArchiveDiscovery,
   extractEcosystemSourceRootPolicyBlock
