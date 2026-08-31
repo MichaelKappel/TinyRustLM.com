@@ -450,12 +450,13 @@ fn admits_one_explicit_local_demo_origin_without_reflection() {
 }
 
 #[test]
-fn origin_parser_accepts_one_canonical_origin_and_rejects_permissive_forms() {
+fn origin_parser_requires_https_except_for_explicit_canonical_loopback_http() {
     assert_eq!(
         DirectCompositionBrowserOrigin::production().as_str(),
         TINYRUSTLM_BROWSER_ORIGIN
     );
     for valid in [
+        "http://localhost:4173",
         "http://127.0.0.1:4173",
         "http://[::1]:4173",
         "https://peer.example.net",
@@ -470,6 +471,14 @@ fn origin_parser_accepts_one_canonical_origin_and_rejects_permissive_forms() {
     }
     for invalid in [
         "*",
+        "http://peer.direct-model.net",
+        "http://peer.direct-model.net:4173",
+        "http://localhost",
+        "http://127.0.0.1",
+        "http://[::1]",
+        "http://127.1:4173",
+        "http://[0:0:0:0:0:0:0:1]:4173",
+        "http://localhost:4173/",
         "https://tinyrustlm.com/",
         "https://tinyrustlm.com:443",
         "https://TINYRUSTLM.com",

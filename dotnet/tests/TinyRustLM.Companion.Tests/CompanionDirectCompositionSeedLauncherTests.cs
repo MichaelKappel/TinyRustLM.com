@@ -184,11 +184,36 @@ public sealed class CompanionDirectCompositionSeedLauncherTests : IDisposable
     }
 
     [Theory]
+    [InlineData("https://tinyrustlm.com")]
+    [InlineData("https://peer.direct-model.net")]
+    [InlineData("https://peer.direct-model.net:444")]
+    [InlineData("http://localhost:4173")]
+    [InlineData("http://127.0.0.1:4173")]
+    [InlineData("http://[::1]:4173")]
+    public void BrowserOriginRequiresHttpsOrExplicitCanonicalLoopbackHttp(string origin)
+    {
+        var configuration = CompanionDirectCompositionSeedLaunchConfiguration.Create(
+            BindAddress,
+            origin);
+
+        Assert.Equal(origin, configuration.AllowedBrowserOrigin);
+    }
+
+    [Theory]
     [InlineData("localhost:8080", AllowedOrigin, "direct-composition-seed-launch-bind")]
     [InlineData("127.0.0.1", AllowedOrigin, "direct-composition-seed-launch-bind")]
     [InlineData(BindAddress, "*", "direct-composition-seed-launch-origin")]
+    [InlineData(BindAddress, "http://peer.direct-model.net", "direct-composition-seed-launch-origin")]
+    [InlineData(BindAddress, "http://peer.direct-model.net:4173", "direct-composition-seed-launch-origin")]
+    [InlineData(BindAddress, "http://localhost", "direct-composition-seed-launch-origin")]
+    [InlineData(BindAddress, "http://127.0.0.1", "direct-composition-seed-launch-origin")]
+    [InlineData(BindAddress, "http://[::1]", "direct-composition-seed-launch-origin")]
+    [InlineData(BindAddress, "http://127.1:4173", "direct-composition-seed-launch-origin")]
+    [InlineData(BindAddress, "http://[0:0:0:0:0:0:0:1]:4173", "direct-composition-seed-launch-origin")]
     [InlineData(BindAddress, "http://user@127.0.0.1:4173", "direct-composition-seed-launch-origin")]
     [InlineData(BindAddress, "http://127.0.0.1:4173/path", "direct-composition-seed-launch-origin")]
+    [InlineData(BindAddress, "http://127.0.0.1:4173?query=yes", "direct-composition-seed-launch-origin")]
+    [InlineData(BindAddress, "http://127.0.0.1:4173#fragment", "direct-composition-seed-launch-origin")]
     [InlineData(BindAddress, "http://127.0.0.1:4173/", "direct-composition-seed-launch-origin")]
     public void BindAndOriginConfigurationMustBeExactCanonicalOrigins(
         string bind,

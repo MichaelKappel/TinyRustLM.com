@@ -1027,13 +1027,13 @@ internal static class CompanionDirectCompositionSeedLaunchValidation
         return endPoint;
     }
 
-    /// <summary>Requires one canonical HTTP(S) origin with no path, credentials, query, or fragment.</summary>
+    /// <summary>Requires canonical HTTPS or explicitly ported loopback HTTP without a URL suffix.</summary>
     internal static void RequireBrowserOrigin(string value)
     {
         if (value is not { Length: >= 8 and <= 256 } ||
             !value.All(static character => character is >= (char)0x21 and <= (char)0x7e) ||
             !Uri.TryCreate(value, UriKind.Absolute, out var uri) ||
-            uri.Scheme is not ("http" or "https") ||
+            (uri.Scheme != Uri.UriSchemeHttps && !IsExplicitLoopbackHttpOrigin(uri)) ||
             string.IsNullOrEmpty(uri.Host) ||
             !string.IsNullOrEmpty(uri.UserInfo) ||
             uri.AbsolutePath != "/" ||
@@ -1044,6 +1044,21 @@ internal static class CompanionDirectCompositionSeedLaunchValidation
             throw CompanionDirectCompositionSeedLaunchException.Create(
                 "direct-composition-seed-launch-origin");
         }
+    }
+
+    /// <summary>Recognizes only canonical local development hosts with an explicit non-default port.</summary>
+    private static bool IsExplicitLoopbackHttpOrigin(Uri uri)
+    {
+        if (uri.Scheme != Uri.UriSchemeHttp || uri.IsDefaultPort || uri.Port is < 1 or > 65_535)
+        {
+            return false;
+        }
+        if (string.Equals(uri.IdnHost, "localhost", StringComparison.Ordinal))
+        {
+            return true;
+        }
+        return IPAddress.TryParse(uri.IdnHost, out var address) &&
+            (address.Equals(IPAddress.Loopback) || address.Equals(IPAddress.IPv6Loopback));
     }
 
     /// <summary>Checks that reported HTTP readiness binds the configured address and allowed port.</summary>

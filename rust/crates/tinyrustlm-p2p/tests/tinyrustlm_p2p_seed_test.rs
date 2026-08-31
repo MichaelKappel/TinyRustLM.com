@@ -494,6 +494,9 @@ fn rejects_permissive_origin_forms_and_exits_after_one_bind_failure() {
     let fixture = fixture(root.path());
     for invalid in [
         "*",
+        "http://peer.direct-model.net:4173",
+        "http://localhost",
+        "http://127.0.0.1",
         "http://127.0.0.1:4173/path",
         "http://127.0.0.1:4173?query=yes",
         "http://one.example,http://two.example",

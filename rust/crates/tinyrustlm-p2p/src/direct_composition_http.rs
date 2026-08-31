@@ -8,7 +8,7 @@ use std::sync::{Arc, Mutex, MutexGuard, TryLockError};
 use std::thread::{self, JoinHandle};
 
 use tinyrustlm_composition2::{Acg2Graph, Acg2Policy, MemberRole};
-use url::Url;
+use url::{Host, Url};
 
 use crate::direct_http::{
     check_active, deadline_after, hex_lower, parse_request_head, read_header_block,
@@ -43,11 +43,21 @@ pub const DIRECT_COMPOSITION_MEMBER_NAMES: [&str; 6] = [
 pub struct DirectCompositionBrowserOrigin(String);
 
 impl DirectCompositionBrowserOrigin {
-    /// Parses one canonical HTTP(S) origin with no credentials or URL suffix.
+    /// Parses canonical HTTPS or explicitly ported loopback HTTP with no URL suffix.
     pub fn parse(value: &str) -> Result<Self, P2pError> {
         let parsed = Url::parse(value).map_err(|_| P2pError::new("p2p-composition-http-origin"))?;
         let canonical_origin = parsed.origin().ascii_serialization();
-        if !matches!(parsed.scheme(), "http" | "https")
+        let loopback = match parsed.host() {
+            Some(Host::Domain(host)) => host == "localhost",
+            Some(Host::Ipv4(address)) => address == std::net::Ipv4Addr::LOCALHOST,
+            Some(Host::Ipv6(address)) => address == std::net::Ipv6Addr::LOCALHOST,
+            None => false,
+        };
+        let transport_allowed = parsed.scheme() == "https"
+            || (parsed.scheme() == "http"
+                && loopback
+                && parsed.port().is_some_and(|port| port > 0));
+        if !transport_allowed
             || parsed.cannot_be_a_base()
             || parsed.host_str().is_none()
             || !parsed.username().is_empty()
