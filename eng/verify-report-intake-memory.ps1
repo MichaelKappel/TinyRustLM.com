@@ -380,8 +380,8 @@ $uaiFiles = @(
     Get-ChildItem -LiteralPath (Join-Path $rootPath '.uai') -Filter '*.uai' -File
     Get-Item -LiteralPath (Join-Path $rootPath 'workspace.uai')
 )
-if ($uaiFiles.Count -ne 21) {
-    Add-Failure "Expected 21 current UAI files; found $($uaiFiles.Count)."
+if ($uaiFiles.Count -ne 22) {
+    Add-Failure "Expected 22 current UAI files; found $($uaiFiles.Count)."
 }
 
 [int64]$uaiBytes = 0

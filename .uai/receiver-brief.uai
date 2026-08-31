@@ -4,7 +4,7 @@ canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-p
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 
 brief:
-  - Work only in the authoritative recovery root on codex/model-acquisition-v2; protect E:\Source\Rust\TinyRustLM.com and never write D:.
+  - Work only in E:\Source\Rust\TinyRustLM.com on codex/model-acquisition-v2; treat this exact non-reparse checkout as the sole source authority and never write D:.
   - TinyRustLM is prelaunch and clean-slate. Delete superseded implementations after verified replacement; add no compatibility or debt.
   - Current Companion source-operation contracts are green at implementation commit 5a9c097, but the listener truthfully returns operation-not-available and the browser client is not loaded.
   - The 47 newest reports are byte-exact, reviewed, ledgered, and routed by the decision index. They are advisory, not execution evidence.

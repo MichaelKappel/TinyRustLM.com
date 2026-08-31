@@ -24,6 +24,8 @@ rust/crates/tinyrustlm-archive/fuzz/artifacts/
 rust/crates/tinyrustlm-archive/fuzz/coverage/
 tinyrustlm/artifacts/playwright/**
 artifacts/native/**
+artifacts/converter/**
+artifacts/p2p-seed/**
 artifacts/packages/**
 artifacts/reports/**
 artifacts/training/**
@@ -52,6 +54,12 @@ pytorch_model*.bin
 model*.bin
 **/tensors/**/*.f32
 **/*.peer-pieces/**/*.bin
+*.slm2
+*.tokenizer2
+*.template2
+*.sampling2
+*.prompt2
+*.acg2
 *.slm
 !tinyrustlm/models/tiny-test-model.slm
 !tinyrustlm/models/tiny-test-model-tied.slm

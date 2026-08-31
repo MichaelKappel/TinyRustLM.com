@@ -1,27 +1,27 @@
 profile: tinyrustlm.workspace.current.v1
-updated_utc: 2026-08-29T00:00:00Z
+updated_utc: 2026-08-30T00:00:00Z
 scope: authoritative current workspace and ecosystem routing
 sensitivity: internal; never publish this file
 
 authoritative_worktree:
-  root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  root: E:\Source\Rust\TinyRustLM.com
   branch: codex/model-acquisition-v2
   remote: origin
-  protected_non_authoritative_tree: E:\Source\Rust\TinyRustLM.com
-  protected_rule: Never edit, reset, clean, repair, commit, push, or use the protected tree as current authority.
+  authority_rule: This exact non-reparse root is the sole local source, build, test, release, and deployment checkout.
+  duplicate_rule: Fail closed if any recovered, dated, hidden, backup, Worktrees, evidence, or quarantine directory contains another TinyRustLM.com source tree.
   scratch_rule: Use E:\Source\.codex-tmp or another explicitly owned E: root. Never write D:.
 
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 companion_memory: wiki/runtime-mirust/reports/tinyrustlm-companion-source-operation-contract-memory-2026-08-28.md
 report_ledger: .uai/intake-outcome-ledger.uai
-source_authority_receipt: .uai/source-authority-consolidation-2026-08-29.uai
+source_authority_receipt: .uai/source-authority-relocation-2026-08-30.uai
 
 read_order:
   - workspace.uai
   - .uai/totem.uai
   - .uai/taboo.uai
-  - .uai/source-authority-consolidation-2026-08-29.uai
+  - .uai/source-authority-relocation-2026-08-30.uai
   - wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
   - wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
   - .uai/short-term-memory.uai
@@ -70,13 +70,13 @@ source_control_and_release:
   - Never deploy uncommitted source or let marketing, docs, version, release date, publication log, and behavior drift.
 
 ecosystem_repositories:
-  - E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
-  - E:\Source\Worktrees\source-checkin-recovery-20260819\LMComposer.com
-  - E:\Source\Worktrees\source-checkin-recovery-20260819\MiniModel.MiRust.com
-  - E:\Source\Worktrees\source-checkin-recovery-20260819\MiniModel.org
-  - E:\Source\Worktrees\source-checkin-recovery-20260819\MiRust.com
-  - E:\Source\Worktrees\source-checkin-recovery-20260819\Runtime.MiRust.com
-  - E:\Source\Worktrees\source-checkin-recovery-20260819\TinyRustLM.MiRust.com
+  - E:\Source\Rust\TinyRustLM.com
+  - E:\Source\Rust\LMComposer.com
+  - E:\Source\Rust\MiniModel.MiRust.com
+  - E:\Source\Rust\MiniModel.org
+  - E:\Source\Rust\MiRust.com
+  - E:\Source\Rust\Runtime.MiRust.com
+  - E:\Source\Rust\TinyRustLM.MiRust.com
 
 resume:
   - Finish bounded UAI consolidation and report routing without changing raw reports.

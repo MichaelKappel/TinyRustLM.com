@@ -1,0 +1,26 @@
+{
+  "schema": "tinyrustlm.source_archive_and_demo_trace_retirement_result.v1",
+  "observed_utc": "2026-08-31T14:26:18.0907400Z",
+  "status": "performed",
+  "removed_target_count": 6,
+  "files_deleted": 52,
+  "directories_deleted": 12,
+  "logical_bytes_deleted": 1032108892,
+  "descendant_reparse_point_count": 0,
+  "source_archive_count": 2,
+  "source_history_manifest_sha256": "957c5a2ee4dd24ff9d32fcdeaf806cac41a76a1da7d7a4a9cc54e7c7a741e6b5",
+  "source_archive_sha256": [
+    "49fd75d45cf79fd6102bb2525543a0d3d360b948bd32a4510fadee992e9b4f7f",
+    "63634b1b89f2ccf21c7fa8faa93c9e85049aa3cf90d38f75b2cc60bb8f64550e"
+  ],
+  "synthetic_demo_trace_root_count": 5,
+  "one_shot_script_sha256": "9f1dd2e1aeba28bb4def8f5390a0b6274f01c23b0de1e6e79ff137b471a33769",
+  "one_shot_script_retained": false,
+  "all_exact_targets_absent_after_operation": true,
+  "claims": {
+    "historical_source_archives_retired": true,
+    "synthetic_demo_evidence_promoted": false,
+    "external_peer_reachability_proven": false,
+    "whole_volume_scanned": false
+  }
+}

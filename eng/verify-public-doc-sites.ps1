@@ -39,21 +39,11 @@ function Get-FileSha256 {
 function Resolve-DefaultSiteRoot {
     param([string]$SiteName)
 
-    if ($SiteName -eq "TinyRustLM.com") {
-        return $RepoRoot
+    $canonicalRoot = Join-Path $SourceRoot $SiteName
+    if (Test-Path -LiteralPath $canonicalRoot -PathType Container) {
+        return (Resolve-Path -LiteralPath $canonicalRoot).Path
     }
-
-    $candidates = @(
-        (Join-Path $SourceRoot "Worktrees/source-checkin-recovery-20260819/$SiteName"),
-        (Join-Path $SourceRoot "Rust/$SiteName"),
-        (Join-Path $SourceRoot $SiteName)
-    )
-    foreach ($candidate in $candidates) {
-        if (Test-Path -LiteralPath $candidate -PathType Container) {
-            return (Resolve-Path -LiteralPath $candidate).Path
-        }
-    }
-    return [IO.Path]::GetFullPath($candidates[0])
+    return [IO.Path]::GetFullPath($canonicalRoot)
 }
 
 function New-DocumentCheck {

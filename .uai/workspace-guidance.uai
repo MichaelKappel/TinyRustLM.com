@@ -1,11 +1,12 @@
 profile: tinyrustlm.workspace-guidance.current.v1
-updated_utc: 2026-08-28T00:00:00Z
+updated_utc: 2026-08-30T00:00:00Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 
 rules:
-  - Work only in E:\Source\.tinyrustlm-model-acquisition-recovered-20260819 for TinyRustLM implementation.
-  - Preserve E:\Source\Rust\TinyRustLM.com and every damaged, archive, evidence, or rehearsal tree.
+  - Work only in E:\Source\Rust\TinyRustLM.com for TinyRustLM implementation, build, test, release, and deployment.
+  - Before source work, require that exact root to be a direct non-reparse remote-exact checkout and require every other TinyRustLM.com source copy to be absent.
+  - Preserve immutable private evidence outside source authority, but delete damaged, recovered, dated, backup, rehearsal, worktree, and quarantine source copies after bounded inventory.
   - Use explicitly owned E: scratch roots; never write D: and avoid C: for large artifacts.
   - Third-party repositories belong under E:\Source\External\{project}; model and raw evidence bytes stay outside Git.
   - Never revert changes you did not make. Work with relevant concurrent changes and ignore unrelated ones.

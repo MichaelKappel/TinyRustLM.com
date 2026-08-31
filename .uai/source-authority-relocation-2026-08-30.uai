@@ -1,0 +1,62 @@
+profile: tinyrustlm.source_authority_relocation.v1
+observed_utc: 2026-08-31T11:36:41.897Z
+scope: TinyRustLM.com final source-root relocation, duplicate purge, and recurrence prevention
+sensitivity: internal; contains local logical paths but no credentials, prompts, model bytes, or raw private evidence
+canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+
+canonical_source:
+  root: E:\Source\Rust\TinyRustLM.com
+  branch: codex/model-acquisition-v2
+  origin: https://github.com/MichaelKappel/TinyRustLM.com.git
+  relocated_source_head: adfa0282a0e25f207339dd2c3ed9932d66b694c7
+  relocated_source_tree: 5c6d0105ca89e120e7f94197e49aab93aceff01e
+  observed_fetch_head: adfa0282a0e25f207339dd2c3ed9932d66b694c7
+  observed_direct_remote_head: adfa0282a0e25f207339dd2c3ed9932d66b694c7
+  authority: sole current source, build, test, release, and deployment checkout
+
+source_selection:
+  recovered_source_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+  recovered_source_status: clean and remote-exact before relocation
+  damaged_destination_status: invalid partial Git metadata plus stale source and separately custodied private evidence
+  valid_duplicate_heads:
+    - head: 63694536a6a20903820327792428798a3c9436d0
+      relation: strict ancestor
+      commits_behind_relocated_source: 262
+      unique_commits: 0
+    - head: 248470622b8b09febe876fb92133291eef346859
+      relation: strict ancestor
+      commits_behind_relocated_source: 264
+      unique_commits: 0
+  stale_local_deletions_rejected: 5
+  unique_source_work_moved_from_duplicates: 0
+  legacy_or_compatibility_code_retained: false
+
+relocation:
+  canonical_root_moved_to_required_location: true
+  private_evidence_separated_from_source_authority: true
+  physical_active_tinyrustlm_source_duplicates_remaining: 0
+  physical_ecosystem_source_copy_roots_remaining: 0
+  elevated_deletion_required: []
+  source_registry_status: sole
+
+physical_retirement:
+  request: tinyrustlm/release/source-copy-retirement-deploy-root-20260831-request.v1.json
+  request_sha256: 4dee42748d0a1c106acd1b133c227a9b41088d7229d29ff25119bb6a28c08a6c
+  result: tinyrustlm/release/source-copy-retirement-deploy-root-20260831-result.v1.json
+  result_sha256: a4a394ba4e9e6f1a07e37902b45206af1e7ff72fb8db8ccaa37da8aa1d4d881f
+  one_time_script_sha256: 60e5fa8880aff74a8ab656e45bae1e1bd14badaae5dcdfced0cc2ca507566c25
+  execution_attempt_count: 1
+  removed_target_count: 10
+  already_absent_target_count: 1
+  all_allowlisted_paths_absent: true
+  post_execution_source_authority_verdict: pass
+  raw_terminal_stream_retained: false
+  one_time_script_retained: false
+
+permanent_invariant:
+  - E:\Source\Rust\TinyRustLM.com is the sole local TinyRustLM.com source root.
+  - Every source operation resolves workspace.uai and fails closed unless path, non-reparse ancestry, branch, origin, HEAD, tracking ref, FETCH_HEAD, direct remote ref, and worktree status agree.
+  - Local verification scans every registered governed scope and neutral direct-child probe, fails closed on incomplete coverage, and rejects every second source-marked TinyRustLM.com directory found within those declared boundaries.
+  - Do not create temporary ecosystem source clones or worktrees outside the seven canonical roots. Isolated tests may create only bounded operation-owned non-product fixtures, and must physically remove them when their operation closes.
+  - Historical executable source belongs only in Git history. Private evidence may remain outside source but may not contain or act as an executable source checkout.

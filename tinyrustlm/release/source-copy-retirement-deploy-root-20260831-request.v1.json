@@ -1,0 +1,90 @@
+{
+  "schema": "tinyrustlm.source-copy-retirement-request.v1",
+  "request_id": "source-copy-retirement-deploy-root-20260831",
+  "logical_target": "ecosystem-rust-deploy-root",
+  "inventory": {
+    "file_count": 137,
+    "directory_count_including_root": 63,
+    "byte_length": 6942693,
+    "tree_manifest_sha256": "722436c3b3e258b2d5bcb64005472c3d845665658e1ada020314447651ab533a"
+  },
+  "non_git_files": {
+    "file_count": 89,
+    "byte_length": 6249220,
+    "manifest_sha256": "bbb3404b32997fee09435f215bc53e06a56b5e55485821d0585026b94b04e90a",
+    "roles": [
+      {
+        "role": "editable-source-config",
+        "file_count": 4,
+        "byte_length": 94444,
+        "manifest_sha256": "6b13271405d376fd3bc232dc06d87ad03a4f2f97d795e37d60ecc5200ba7dba4"
+      },
+      {
+        "role": "generated-site-package-output",
+        "file_count": 60,
+        "byte_length": 5659848,
+        "manifest_sha256": "1a133175eb951d94fcc7387e649f95db074167c3ff8c460211ba11ad86ae85a9"
+      },
+      {
+        "role": "receipt-checksum-evidence",
+        "file_count": 22,
+        "byte_length": 69714,
+        "manifest_sha256": "536f1b4136491c5ec78e3182994b44971ee87c2da7ef7cb8dfe4c350182a94f7"
+      },
+      {
+        "role": "binary-artifact",
+        "file_count": 3,
+        "byte_length": 425214,
+        "manifest_sha256": "000783207befe7ac4aa385cdf1a8070734d44ff69b38136a9151c7aa59e2dfb0"
+      }
+    ]
+  },
+  "source_zip_identities": [
+    {
+      "byte_length": 4720,
+      "sha256": "421c57a153bd6a4ebce69197579219bab359bebd287913d35a34d37cd3c9e5cc"
+    },
+    {
+      "byte_length": 17156,
+      "sha256": "2369ace8c135e2c215e6de79b5c786750a6aebad733f9b0e319121e38d56ebfc"
+    },
+    {
+      "byte_length": 36207,
+      "sha256": "070610607f896a467e825f05ba3505a63cdddc5d923a82838b32b5bbb7977482"
+    },
+    {
+      "byte_length": 57768,
+      "sha256": "b7815a06f7e53ac77eeb8705ab95f8e1ec1510fb95a4ff2c2c3171d8f953df8a"
+    }
+  ],
+  "legacy_wasm_identity": {
+    "byte_length": 141738,
+    "sha256": "9416cb0169cf8a9f61d7f12bd531d43fa887a29f95cc8e6871af4c3e33bcd6c3",
+    "copy_count": 3
+  },
+  "assessment": {
+    "migration_required": false,
+    "secrets_detected": 0
+  },
+  "retention_policy": {
+    "preserved_form": "bounded-evidence-identities-only",
+    "source_or_artifact_bytes_permitted": false,
+    "raw_evidence_permitted": false,
+    "filename_inventory_permitted": false
+  },
+  "execution_policy": {
+    "physical_deletion_required": true,
+    "maximum_retries": 0,
+    "rename_permitted": false,
+    "archive_permitted": false,
+    "quarantine_permitted": false,
+    "copy_permitted": false
+  },
+  "result_receipt": {
+    "relative_repository_path": "tinyrustlm/release/source-copy-retirement-deploy-root-20260831-result.v1.json",
+    "required": true,
+    "must_bind_request": true
+  },
+  "status": "preregistered-awaiting-physical-deletion",
+  "terminal": false
+}

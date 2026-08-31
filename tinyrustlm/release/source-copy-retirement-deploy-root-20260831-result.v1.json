@@ -1,0 +1,49 @@
+{
+  "schema": "tinyrustlm.source-copy-retirement-result.v1",
+  "request_id": "source-copy-retirement-deploy-root-20260831",
+  "logical_target": "ecosystem-rust-deploy-root",
+  "request_identity": {
+    "relative_repository_path": "tinyrustlm/release/source-copy-retirement-deploy-root-20260831-request.v1.json",
+    "sha256": "4dee42748d0a1c106acd1b133c227a9b41088d7229d29ff25119bb6a28c08a6c"
+  },
+  "execution": {
+    "one_time_script_sha256": "60e5fa8880aff74a8ab656e45bae1e1bd14badaae5dcdfced0cc2ca507566c25",
+    "elevated": true,
+    "attempt_count": 1,
+    "maximum_retries": 0,
+    "status": "removed"
+  },
+  "observed_at_utc": "2026-08-31T11:36:41.897Z",
+  "removed_target_inventory": {
+    "file_count": 137,
+    "directory_count_including_root": 63,
+    "byte_length": 6942693,
+    "tree_manifest_sha256": "722436c3b3e258b2d5bcb64005472c3d845665658e1ada020314447651ab533a"
+  },
+  "bounded_cleanup_totals": {
+    "removed_target_count": 10,
+    "already_absent_target_count": 1,
+    "removed_file_count": 9974,
+    "removed_directory_count_including_roots": 1883,
+    "removed_byte_length": 948649226
+  },
+  "independent_verification": {
+    "allowlisted_target_count": 11,
+    "all_allowlisted_targets_absent": true,
+    "unsafe_parent_count": 0,
+    "shared_junction_destination_absent": true,
+    "canonical_repository_count": 7,
+    "canonical_tinyrustlm_source_root_count": 1,
+    "discovered_source_archive_count": 0,
+    "unreadable_root_count": 0,
+    "source_authority_verdict": "pass"
+  },
+  "retention": {
+    "raw_terminal_stream_committed": false,
+    "private_path_inventory_committed": false,
+    "source_or_artifact_bytes_committed": false,
+    "one_time_script_retained": false
+  },
+  "status": "terminal-success",
+  "terminal": true
+}

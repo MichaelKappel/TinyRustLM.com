@@ -7,7 +7,7 @@ $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $SourceRoot = (Resolve-Path (Join-Path $RepoRoot "..")).Path
 
 if ([string]::IsNullOrWhiteSpace($SiteWorkspaceRoot)) {
-    $SiteWorkspaceRoot = Join-Path $SourceRoot "Worktrees/source-checkin-recovery-20260819"
+    $SiteWorkspaceRoot = $SourceRoot
 }
 $SiteWorkspaceRoot = [IO.Path]::GetFullPath($SiteWorkspaceRoot)
 

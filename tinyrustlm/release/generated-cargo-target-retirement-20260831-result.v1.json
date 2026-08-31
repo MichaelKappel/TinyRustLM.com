@@ -1,0 +1,22 @@
+{
+  "schema": "tinyrustlm.generated_cargo_target_retirement_result.v1",
+  "observed_utc": "2026-08-31T13:23:56.737Z",
+  "status": "deleted",
+  "target_logical_name": "superseded-vnext-cargo-target",
+  "target_was_direct_non_reparse_directory": true,
+  "descendant_reparse_point_count": 0,
+  "editable_source_marker_count": 0,
+  "files_deleted": 5714,
+  "directories_deleted": 1008,
+  "logical_bytes_deleted": 2708718401,
+  "target_absent_after_operation": true,
+  "one_shot_script_sha256": "9bbe580b047e88987b654fcd713210395fe341bba83c698833d2023df9b0d53d",
+  "one_shot_script_retained": false,
+  "claims": {
+    "editable_source_deleted": false,
+    "immutable_evidence_deleted": false,
+    "generated_build_output_retired": true,
+    "private_paths_committed": false,
+    "whole_volume_scanned": false
+  }
+}

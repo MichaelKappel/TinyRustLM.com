@@ -1,0 +1,40 @@
+{
+  "schema": "tinyrustlm.vnext_generated_and_source_copy_retirement_result.v1",
+  "observed_utc": "2026-08-31T14:30:53.2661413Z",
+  "status": "performed-after-bounded-continuation",
+  "target_logical_name": "superseded-vnext-generated-and-raw-copy-closure",
+  "removed_target_count": 29,
+  "files_deleted": 13327,
+  "directories_deleted": 5068,
+  "logical_bytes_deleted": 1264173435,
+  "descendant_reparse_point_count": 0,
+  "initial_operation": {
+    "status": "partial-failure",
+    "one_shot_script_sha256": "4ac9eb8d020c6447af50229a4555f02e4cef069c5bf464a2c12b4565815c2738",
+    "typed_failure": "file-share-delete-denied-by-concurrent-read-only-audit",
+    "failure_hidden": false
+  },
+  "continuation_operation": {
+    "status": "performed",
+    "one_shot_script_sha256": "20a411b77e592af2ae3c0ce39b1b4168897cfff4bceac34ebe8ac8149de3d862",
+    "files_deleted": 2377,
+    "directories_deleted": 946,
+    "logical_bytes_deleted": 53305674
+  },
+  "one_shot_scripts_retained": false,
+  "remaining_direct_children": [
+    "release-surface-evidence-2484706",
+    "release-surface-evidence-2c3a0ea",
+    "release-surface-evidence-9650ba4",
+    "release-surface-evidence-c1c27e1",
+    "release-surface-gate-evidence",
+    "temporary-relocation"
+  ],
+  "claims": {
+    "copied_raw_documentation_tree_retired": true,
+    "source_bearing_package_archives_retired": true,
+    "generated_build_and_test_outputs_retired": true,
+    "private_bounded_evidence_deleted": false,
+    "whole_volume_scanned": false
+  }
+}

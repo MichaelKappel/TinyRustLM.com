@@ -1,8 +1,8 @@
 profile: tinyrustlm.system-profile.current.v1
-updated_utc: 2026-08-28T00:00:00Z
+updated_utc: 2026-08-30T00:00:00Z
 product: TinyRustLM.com
 stage: prelaunch dogfood
-authoritative_root: E:\Source\.tinyrustlm-model-acquisition-recovered-20260819
+authoritative_root: E:\Source\Rust\TinyRustLM.com
 branch: codex/model-acquisition-v2
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
