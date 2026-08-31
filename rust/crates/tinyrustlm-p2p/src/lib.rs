@@ -6,6 +6,8 @@ use std::error::Error;
 use std::fmt;
 use std::path::{Path, PathBuf};
 
+mod direct_composition_http;
+mod direct_http;
 mod manifest;
 mod storage;
 
@@ -215,3 +217,18 @@ pub use storage::assemble_from_piece_directory;
 
 /// Parses and validates one exact canonical P2P manifest.
 pub use manifest::inspect_manifest;
+
+/// Fixed-route, identity-pinned direct HTTP peer transport.
+pub use direct_http::{
+    fetch_share_kit_from_http_peer, CancellationToken, DirectHttpLimits, DirectHttpServer,
+    FetchShareKitRequest, DIRECT_HTTP_ROUTE_PREFIX, MAXIMUM_DIRECT_ARTIFACT_BYTES,
+};
+
+/// Fixed-route browser transport for one exact six-member composition.
+pub use direct_composition_http::{
+    direct_composition_member_route, DirectCompositionBrowserOrigin, DirectCompositionDescriptor,
+    DirectCompositionHttpServer, DirectCompositionMemberDescriptor,
+    DIRECT_COMPOSITION_HTTP_MEMBER_MEDIA_TYPE, DIRECT_COMPOSITION_HTTP_PROTOCOL_PROFILE,
+    DIRECT_COMPOSITION_HTTP_ROUTE_PREFIX, DIRECT_COMPOSITION_MEMBER_NAMES,
+    MAXIMUM_DIRECT_COMPOSITION_BYTES, TINYRUSTLM_BROWSER_ORIGIN,
+};

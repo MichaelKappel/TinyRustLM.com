@@ -14,7 +14,7 @@ use crate::{
     ShareKitReport, MANIFEST_FILE_NAME, PIECE_DIRECTORY_NAME,
 };
 
-const COMPLETE_FILE_NAME: &str = ".complete";
+pub(crate) const COMPLETE_FILE_NAME: &str = ".complete";
 const OWNED_STAGE_MARKER: &str = ".tinyrustlm-p2p-owned-stage";
 const OWNED_STAGE_MARKER_BYTES: &[u8] = b"tinyrustlm-p2p-owned-stage/1\n";
 const MAXIMUM_ACG2_BYTES: u64 = 896;
@@ -261,14 +261,14 @@ fn hex_lower(bytes: &[u8]) -> String {
     output
 }
 
-fn piece_file_name(index: u64) -> Result<String, P2pError> {
+pub(crate) fn piece_file_name(index: u64) -> Result<String, P2pError> {
     if index >= 16_384 {
         return Err(P2pError::new("p2p-piece-index"));
     }
     Ok(format!("piece-{index:05}.bin"))
 }
 
-fn open_regular_file(path: &Path) -> Result<File, P2pError> {
+pub(crate) fn open_regular_file(path: &Path) -> Result<File, P2pError> {
     let metadata = fs::symlink_metadata(path).map_err(|_| P2pError::new("p2p-io"))?;
     if !metadata.file_type().is_file() || path_is_reparse(&metadata) {
         return Err(P2pError::new("p2p-path-type"));
@@ -276,7 +276,7 @@ fn open_regular_file(path: &Path) -> Result<File, P2pError> {
     File::open(path).map_err(|_| P2pError::new("p2p-io"))
 }
 
-fn canonical_regular_directory(path: &Path) -> Result<PathBuf, P2pError> {
+pub(crate) fn canonical_regular_directory(path: &Path) -> Result<PathBuf, P2pError> {
     let metadata = fs::symlink_metadata(path).map_err(|_| P2pError::new("p2p-io"))?;
     if !metadata.file_type().is_dir() || path_is_reparse(&metadata) {
         return Err(P2pError::new("p2p-path-type"));
@@ -296,7 +296,7 @@ fn path_is_reparse(metadata: &fs::Metadata) -> bool {
     metadata.file_type().is_symlink()
 }
 
-fn write_new_synced(path: &Path, bytes: &[u8]) -> Result<(), P2pError> {
+pub(crate) fn write_new_synced(path: &Path, bytes: &[u8]) -> Result<(), P2pError> {
     let mut output = OpenOptions::new()
         .write(true)
         .create_new(true)
@@ -308,20 +308,20 @@ fn write_new_synced(path: &Path, bytes: &[u8]) -> Result<(), P2pError> {
     output.sync_all().map_err(|_| P2pError::new("p2p-io"))
 }
 
-fn sync_directory(path: &Path) -> Result<(), P2pError> {
+pub(crate) fn sync_directory(path: &Path) -> Result<(), P2pError> {
     flush_owned_directory(path, Path::new("."), "p2p-directory-commit")
         .map(|_| ())
         .map_err(|error| P2pError::new(error.code()))
 }
 
-struct OwnedStage {
+pub(crate) struct OwnedStage {
     parent: PathBuf,
     path: PathBuf,
     promoted: bool,
 }
 
 impl OwnedStage {
-    fn create(output: &Path) -> Result<Self, P2pError> {
+    pub(crate) fn create(output: &Path) -> Result<Self, P2pError> {
         if fs::symlink_metadata(output).is_ok() {
             return Err(P2pError::new("p2p-output-exists"));
         }
@@ -366,11 +366,11 @@ impl OwnedStage {
         Err(P2pError::new("p2p-stage-collision"))
     }
 
-    fn path(&self) -> &Path {
+    pub(crate) fn path(&self) -> &Path {
         &self.path
     }
 
-    fn promote(&mut self, requested_output: &Path) -> Result<PathBuf, P2pError> {
+    pub(crate) fn promote(&mut self, requested_output: &Path) -> Result<PathBuf, P2pError> {
         if fs::symlink_metadata(requested_output).is_ok() {
             return Err(P2pError::new("p2p-output-exists"));
         }

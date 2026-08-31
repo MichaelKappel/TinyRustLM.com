@@ -2,6 +2,19 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
+    <TinyRustLmRepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)../../..'))</TinyRustLmRepoRoot>
+    <TinyRustLmCompanionHostRid Condition="'$(RuntimeIdentifier)' != ''">$(RuntimeIdentifier)</TinyRustLmCompanionHostRid>
+    <TinyRustLmCompanionHostRid Condition="'$(TinyRustLmCompanionHostRid)' == ''">$(NETCoreSdkRuntimeIdentifier)</TinyRustLmCompanionHostRid>
+    <TinyRustLmConverterConfiguration Condition="'$(Configuration)' == 'Release'">release</TinyRustLmConverterConfiguration>
+    <TinyRustLmConverterConfiguration Condition="'$(TinyRustLmConverterConfiguration)' == ''">debug</TinyRustLmConverterConfiguration>
+    <TinyRustLmConverterFileName Condition="'$(TinyRustLmCompanionHostRid)' == 'win-x64'">tinyrustlm-convert.exe</TinyRustLmConverterFileName>
+    <TinyRustLmConverterFileName Condition="'$(TinyRustLmConverterFileName)' == ''">tinyrustlm-convert</TinyRustLmConverterFileName>
+    <TinyRustLmConverterArtifactPath>$(TinyRustLmRepoRoot)\artifacts\converter\$(TinyRustLmCompanionHostRid)\$(TinyRustLmConverterFileName)</TinyRustLmConverterArtifactPath>
+    <TinyRustLmP2PSeedConfiguration Condition="'$(Configuration)' == 'Release'">release</TinyRustLmP2PSeedConfiguration>
+    <TinyRustLmP2PSeedConfiguration Condition="'$(TinyRustLmP2PSeedConfiguration)' == ''">debug</TinyRustLmP2PSeedConfiguration>
+    <TinyRustLmP2PSeedFileName Condition="'$(TinyRustLmCompanionHostRid)' == 'win-x64'">tinyrustlm-p2p-seed.exe</TinyRustLmP2PSeedFileName>
+    <TinyRustLmP2PSeedFileName Condition="'$(TinyRustLmP2PSeedFileName)' == ''">tinyrustlm-p2p-seed</TinyRustLmP2PSeedFileName>
+    <TinyRustLmP2PSeedArtifactPath>$(TinyRustLmRepoRoot)\artifacts\p2p-seed\$(TinyRustLmCompanionHostRid)\$(TinyRustLmP2PSeedFileName)</TinyRustLmP2PSeedArtifactPath>
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -9,4 +22,64 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\TinyRustLM.Companion\TinyRustLM.Companion.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(TinyRustLmConverterArtifactPath)">
+      <Link>tinyrustlm\tools\$(TinyRustLmCompanionHostRid)\$(TinyRustLmConverterFileName)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(TinyRustLmP2PSeedArtifactPath)">
+      <Link>tinyrustlm\tools\$(TinyRustLmCompanionHostRid)\$(TinyRustLmP2PSeedFileName)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+  <Target Name="BuildSourceDerivedCompanionConverter"
+          BeforeTargets="PrepareForBuild"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <Error Condition="'$(TinyRustLmCompanionHostRid)' != 'win-x64' and
+                      '$(TinyRustLmCompanionHostRid)' != 'linux-x64' and
+                      '$(TinyRustLmCompanionHostRid)' != 'linux-arm64'"
+           Text="Unsupported TinyRustLM Companion converter RID: $(TinyRustLmCompanionHostRid)" />
+    <Exec Condition="'$(OS)' == 'Windows_NT'"
+          Command="powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File &quot;$(TinyRustLmRepoRoot)\eng\build-converter.ps1&quot; -Configuration $(TinyRustLmConverterConfiguration) -Rid $(TinyRustLmCompanionHostRid)" />
+    <Exec Condition="'$(OS)' != 'Windows_NT'"
+          Command="bash &quot;$(TinyRustLmRepoRoot)/eng/build-converter.sh&quot; $(TinyRustLmConverterConfiguration) $(TinyRustLmCompanionHostRid)" />
+    <Error Condition="!Exists('$(TinyRustLmConverterArtifactPath)')"
+           Text="The source-derived TinyRustLM converter build did not produce $(TinyRustLmConverterArtifactPath)" />
+  </Target>
+  <Target Name="BuildSourceDerivedCompanionP2PSeed"
+          BeforeTargets="PrepareForBuild"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <Error Condition="'$(TinyRustLmCompanionHostRid)' != 'win-x64' and
+                      '$(TinyRustLmCompanionHostRid)' != 'linux-x64' and
+                      '$(TinyRustLmCompanionHostRid)' != 'linux-arm64'"
+           Text="Unsupported TinyRustLM Companion P2P seed RID: $(TinyRustLmCompanionHostRid)" />
+    <Exec Condition="'$(OS)' == 'Windows_NT'"
+          Command="powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File &quot;$(TinyRustLmRepoRoot)\eng\build-p2p-seed.ps1&quot; -Configuration $(TinyRustLmP2PSeedConfiguration) -Rid $(TinyRustLmCompanionHostRid)" />
+    <Exec Condition="'$(OS)' != 'Windows_NT'"
+          Command="bash &quot;$(TinyRustLmRepoRoot)/eng/build-p2p-seed.sh&quot; $(TinyRustLmP2PSeedConfiguration) $(TinyRustLmCompanionHostRid)" />
+    <Error Condition="!Exists('$(TinyRustLmP2PSeedArtifactPath)')"
+           Text="The source-derived TinyRustLM P2P seed build did not produce $(TinyRustLmP2PSeedArtifactPath)" />
+  </Target>
+  <Target Name="VerifyCompanionConverterOutput"
+          AfterTargets="Build"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <PropertyGroup>
+      <TinyRustLmConverterOutputPath>$(TargetDir)tinyrustlm\tools\$(TinyRustLmCompanionHostRid)\$(TinyRustLmConverterFileName)</TinyRustLmConverterOutputPath>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(TinyRustLmConverterOutputPath)')"
+           Text="The TinyRustLM Companion host output is missing $(TinyRustLmConverterOutputPath)" />
+  </Target>
+  <Target Name="VerifyCompanionP2PSeedOutput"
+          AfterTargets="Build"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <PropertyGroup>
+      <TinyRustLmP2PSeedOutputPath>$(TargetDir)tinyrustlm\tools\$(TinyRustLmCompanionHostRid)\$(TinyRustLmP2PSeedFileName)</TinyRustLmP2PSeedOutputPath>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(TinyRustLmP2PSeedOutputPath)')"
+           Text="The TinyRustLM Companion host output is missing $(TinyRustLmP2PSeedOutputPath)" />
+  </Target>
 </Project>

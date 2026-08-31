@@ -7,6 +7,10 @@ authors.workspace = true
 repository.workspace = true
 description = "Canonical fixed-piece direct transport and SLM2 composition admission."
 
+[[bin]]
+name = "tinyrustlm-p2p-seed"
+path = "src/bin/tinyrustlm_p2p_seed.rs"
+
 [dependencies]
 serde.workspace = true
 serde_json.workspace = true
@@ -15,6 +19,7 @@ tinyrustlm-composition2 = { path = "../tinyrustlm-composition2" }
 tinyrustlm-durability = { path = "../tinyrustlm-durability" }
 tinyrustlm-evidence = { path = "../tinyrustlm-evidence" }
 tinyrustlm-slm2 = { path = "../tinyrustlm-slm2" }
+url.workspace = true
 
 [lints]
 workspace = true

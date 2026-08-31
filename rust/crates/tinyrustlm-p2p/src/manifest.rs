@@ -6,7 +6,7 @@ use crate::{
     P2pError, P2pManifest, P2pPiece, PublicRedaction, MERKLE_PROFILE, P2P_MANIFEST_SCHEMA,
 };
 
-const MAXIMUM_MANIFEST_BYTES: usize = 2_097_152;
+pub(crate) const MAXIMUM_MANIFEST_BYTES: usize = 2_097_152;
 
 pub(crate) struct ManifestBindings<'a> {
     pub(crate) artifact_manifest_id: &'a str,

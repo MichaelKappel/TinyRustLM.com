@@ -187,7 +187,9 @@ public static class CompanionInstallation
         }
         try
         {
-            using var stream = new FileStream(recordPath, options);
+            using var stream = OperatingSystem.IsWindows()
+                ? CreateWindowsRecord(recordPath)
+                : new FileStream(recordPath, options);
             stream.Write(bytes);
             stream.Flush(flushToDisk: true);
             if (OperatingSystem.IsLinux())
@@ -199,6 +201,31 @@ public static class CompanionInstallation
         {
             throw new CompanionProtocolException("installation-record-create");
         }
+    }
+
+    [SupportedOSPlatform("windows")]
+    private static FileStream CreateWindowsRecord(string recordPath)
+    {
+        var current = CurrentWindowsUser();
+        var system = new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null);
+        var security = new FileSecurity();
+        security.SetAccessRuleProtection(isProtected: true, preserveInheritance: false);
+        security.SetOwner(current);
+        security.AddAccessRule(new FileSystemAccessRule(
+            current,
+            FileSystemRights.FullControl,
+            AccessControlType.Allow));
+        security.AddAccessRule(new FileSystemAccessRule(
+            system,
+            FileSystemRights.FullControl,
+            AccessControlType.Allow));
+        return new FileInfo(recordPath).Create(
+            FileMode.CreateNew,
+            FileSystemRights.Write,
+            FileShare.None,
+            bufferSize: 4_096,
+            FileOptions.WriteThrough,
+            security);
     }
 
     private static byte[] ReadBoundedRecord(string recordPath)

@@ -127,11 +127,51 @@ public sealed class ConversionToolTests
         using var fixture = new ConversionFixture("hang");
         var tool = fixture.Tool();
         var intent = tool.CreateCompositionIntent(fixture.Request());
-        using var cancellation = new CancellationTokenSource(TimeSpan.FromMilliseconds(100));
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
-            tool.ConvertCompositionAsync(intent, cancellation.Token));
+        var evidencePath = Path.Combine(fixture.OutputRoot, "composition.attempt.json");
+        var evidenceWritten = new TaskCompletionSource(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        using var watcher = new FileSystemWatcher(
+            Path.GetDirectoryName(fixture.OutputRoot)!,
+            Path.GetFileName(evidencePath))
+        {
+            IncludeSubdirectories = true,
+            NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite |
+                NotifyFilters.Size
+        };
+        void ObserveEvidence()
+        {
+            try
+            {
+                using var stream = new FileStream(
+                    evidencePath,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.None);
+                using var reader = new StreamReader(stream);
+                if (reader.ReadToEnd() == "preserved\n")
+                {
+                    evidenceWritten.TrySetResult();
+                }
+            }
+            catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+            {
+            }
+        }
+        watcher.Created += (_, _) => ObserveEvidence();
+        watcher.Changed += (_, _) => ObserveEvidence();
+        watcher.Error += (_, error) => evidenceWritten.TrySetException(error.GetException());
+        watcher.EnableRaisingEvents = true;
+
+        using var cancellation = new CancellationTokenSource();
+        var conversion = tool.ConvertCompositionAsync(intent, cancellation.Token);
+        ObserveEvidence();
+        var firstCompleted = await Task.WhenAny(conversion, evidenceWritten.Task);
+        Assert.Same(evidenceWritten.Task, firstCompleted);
+        await evidenceWritten.Task;
+        cancellation.Cancel();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => conversion);
         Assert.True(Directory.Exists(fixture.OutputRoot));
-        Assert.True(File.Exists(Path.Combine(fixture.OutputRoot, "composition.attempt.json")));
+        Assert.Equal("preserved\n", File.ReadAllText(evidencePath));
 
         await Assert.ThrowsAsync<IOException>(() =>
             tool.ConvertCompositionAsync(intent));

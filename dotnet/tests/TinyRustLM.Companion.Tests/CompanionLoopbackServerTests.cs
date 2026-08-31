@@ -167,7 +167,7 @@ public sealed class CompanionLoopbackServerTests
     }
 
     [Fact]
-    public async Task AuthenticatedStatusAndErrorsConsumeExactlyOneSequence()
+    public async Task AuthenticatedStatusAndNullServiceErrorsConsumeExactlyOneSequence()
     {
         await using var server = await StartServerAsync();
         using var session = await PairAsync(server, 0x41);
@@ -220,6 +220,540 @@ public sealed class CompanionLoopbackServerTests
         Assert.Equal(
             (ulong)4,
             CompanionLoopbackWire.DecodeSessionStatus(nextStatus.Body).AcceptedSequence);
+    }
+
+    [Fact]
+    public async Task SuppliedOperationServiceDispatchesCreateReadCancelAndFailure()
+    {
+        var root = Path.Combine(
+            Path.GetTempPath(),
+            $"tinyrustlm-loopback-operations-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(root);
+        try
+        {
+            var journal = new CompanionOperationJournal(
+                CompanionOperationJournal.CreateOwnedRoot(Path.Combine(root, "owned")));
+            var cancellableRequest = CompanionContractTests.Request() with
+            {
+                AttemptId = new string('3', 32)
+            };
+            var rejectedRequest = CompanionContractTests.Request() with
+            {
+                AttemptId = new string('4', 32)
+            };
+            var cancellableOperationId = CompanionContract.OperationId(cancellableRequest);
+            var rejectedOperationId = CompanionContract.OperationId(rejectedRequest);
+            var executor = new RecordingOperationExecutor(
+                ensureStarted: operationId =>
+                {
+                    if (operationId == cancellableOperationId)
+                    {
+                        var privateRoot = Path.Combine(root, "executor", operationId);
+                        _ = CompanionOperationTestEvidence.EnterAcquiringSource(
+                            journal,
+                            journal.Read(operationId),
+                            privateRoot,
+                            Path.Combine(privateRoot, "model-source"),
+                            Path.Combine(privateRoot, "tokenizer-source"),
+                            Path.Combine(privateRoot, "output"));
+                    }
+                    else if (operationId == rejectedOperationId)
+                    {
+                        journal.Advance(
+                            operationId,
+                            CompanionOperationState.Rejected,
+                            CompanionAcquisitionRoute.Source,
+                            errorCode: "source-rejected");
+                    }
+                    return Task.CompletedTask;
+                },
+                cancelAndWait: (operationId, _) =>
+                {
+                    journal.Advance(
+                        operationId,
+                        CompanionOperationState.Cancelled,
+                        CompanionAcquisitionRoute.Source);
+                    return Task.CompletedTask;
+                });
+            var service = new CompanionOperationService(
+                journal,
+                executor,
+                new CompanionArtifactTransfer(journal));
+            await using var server = await StartServerAsync(service);
+            using var session = await PairAsync(server, 0x42);
+
+            var createdResponse = await SendAsync(
+                server,
+                AuthenticatedRequest(
+                    server,
+                    session,
+                    "POST",
+                    OperationsPath,
+                    sequence: 1,
+                    CompanionLoopbackWire.EncodeAcquireRequest(cancellableRequest)));
+            Assert.Equal(200, createdResponse.Status);
+            Assert.Equal(Origin, createdResponse.Header("Access-Control-Allow-Origin"));
+            AssertProven(server, session, createdResponse, "POST", OperationsPath, 1);
+            var created = CompanionLoopbackWire.DecodeOperationProjection(
+                createdResponse.Body);
+            Assert.Equal(cancellableOperationId, created.OperationId);
+            Assert.Equal(CompanionOperationState.AcquiringSource, created.State);
+            Assert.Equal((ulong)0, created.PhaseCompletedBytes);
+            Assert.Equal(CompanionSourceDescriptor.PayloadBytes, created.PhaseTotalBytes);
+            Assert.True(created.PhaseCompletedBytes <= created.PhaseTotalBytes);
+
+            var statusPath = $"{OperationsPath}/{created.OperationId}";
+            var statusResponse = await SendAsync(
+                server,
+                AuthenticatedRequest(
+                    server,
+                    session,
+                    "GET",
+                    statusPath,
+                    sequence: 2,
+                    []));
+            AssertProven(server, session, statusResponse, "GET", statusPath, 2);
+            Assert.Equal(
+                created,
+                CompanionLoopbackWire.DecodeOperationProjection(statusResponse.Body));
+
+            var cancelPath = $"{statusPath}/cancel";
+            var cancelRequest = new CompanionCancelRequest(
+                CompanionLoopbackWire.CancelRequestSchema,
+                new string('c', 32));
+            var cancelResponse = await SendAsync(
+                server,
+                AuthenticatedRequest(
+                    server,
+                    session,
+                    "POST",
+                    cancelPath,
+                    sequence: 3,
+                    CompanionLoopbackWire.EncodeCancelRequest(cancelRequest)));
+            AssertProven(server, session, cancelResponse, "POST", cancelPath, 3);
+            Assert.Equal(
+                CompanionOperationState.Cancelled,
+                CompanionLoopbackWire.DecodeOperationProjection(cancelResponse.Body).State);
+
+            var rejectedResponse = await SendAsync(
+                server,
+                AuthenticatedRequest(
+                    server,
+                    session,
+                    "POST",
+                    OperationsPath,
+                    sequence: 4,
+                    CompanionLoopbackWire.EncodeAcquireRequest(rejectedRequest)));
+            AssertProven(server, session, rejectedResponse, "POST", OperationsPath, 4);
+            var rejected = CompanionLoopbackWire.DecodeOperationProjection(
+                rejectedResponse.Body);
+            Assert.Equal(rejectedOperationId, rejected.OperationId);
+            Assert.Equal(CompanionOperationState.Rejected, rejected.State);
+            Assert.Equal("source-rejected", rejected.ErrorCode);
+            Assert.Equal(2, executor.EnsureStartedCount);
+            Assert.Equal(1, executor.CancelCount);
+            Assert.Equal(cancelRequest.CancellationId, executor.CancellationIds.Single());
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
+    public async Task SuppliedOperationServiceServesBoundedMetadataProvenArtifactChunk()
+    {
+        var root = Path.Combine(
+            Path.GetTempPath(),
+            $"tinyrustlm-loopback-artifact-{Guid.NewGuid():N}");
+        try
+        {
+            using var fixture = new CompanionArtifactTransferTests.TransferFixture(
+                root,
+                "pass");
+            var available = await fixture.CreateAvailableAsync();
+            var service = new CompanionOperationService(
+                fixture.Journal,
+                new RecordingOperationExecutor(),
+                new CompanionArtifactTransfer(fixture.Journal));
+            await using var server = await StartServerAsync(service);
+            using var session = await PairAsync(server, 0x43);
+
+            var statusPath = $"{OperationsPath}/{available.OperationId}";
+            var statusResponse = await SendAsync(
+                server,
+                AuthenticatedRequest(
+                    server,
+                    session,
+                    "GET",
+                    statusPath,
+                    sequence: 1,
+                    []));
+            AssertProven(server, session, statusResponse, "GET", statusPath, 1);
+            Assert.Equal(
+                CompanionOperationState.Available,
+                CompanionLoopbackWire.DecodeOperationProjection(statusResponse.Body).State);
+
+            var chunkPath = $"{statusPath}/artifacts/model/chunks/0";
+            var chunkResponse = await SendAsync(
+                server,
+                AuthenticatedRequest(
+                    server,
+                    session,
+                    "GET",
+                    chunkPath,
+                    sequence: 2,
+                    []));
+            Assert.Equal(200, chunkResponse.Status);
+            Assert.Equal("application/octet-stream", chunkResponse.Header("Content-Type"));
+            Assert.Equal(Origin, chunkResponse.Header("Access-Control-Allow-Origin"));
+            Assert.InRange(
+                chunkResponse.Body.Length,
+                1,
+                CompanionArtifactTransfer.ChunkBytes);
+
+            var model = available.Artifacts!.Model;
+            var metadata = new CompanionArtifactResponseMetadata(
+                available.OperationId,
+                chunkResponse.Header("X-TinyRustLM-Artifact-Role"),
+                chunkResponse.Header("X-TinyRustLM-Artifact-Id"),
+                chunkResponse.Header("X-TinyRustLM-Artifact-SHA256"),
+                ParseUInt64Header(chunkResponse, "X-TinyRustLM-Artifact-Bytes"),
+                ParseUInt64Header(chunkResponse, "X-TinyRustLM-Chunk-Index"),
+                ParseUInt64Header(chunkResponse, "X-TinyRustLM-Chunk-Count"),
+                ParseUInt64Header(chunkResponse, "X-TinyRustLM-Chunk-Offset"),
+                ParseUInt64Header(chunkResponse, "X-TinyRustLM-Chunk-Bytes"));
+            Assert.Equal("model", metadata.ArtifactRole);
+            Assert.Equal(model.ArtifactId, metadata.ArtifactId);
+            Assert.Equal(model.Sha256, metadata.ArtifactSha256);
+            Assert.Equal(model.ByteCount, metadata.ArtifactBytes);
+            Assert.Equal((ulong)0, metadata.ChunkIndex);
+            Assert.Equal((ulong)1, metadata.ChunkCount);
+            Assert.Equal((ulong)0, metadata.ChunkOffset);
+            Assert.Equal(checked((ulong)chunkResponse.Body.Length), metadata.ChunkBytes);
+            Assert.Equal(model.Sha256, CompanionLoopbackProtocol.Sha256Hex(chunkResponse.Body));
+            Assert.Equal(
+                CompanionLoopbackProtocol.ComputeArtifactMetadataSha256(metadata),
+                chunkResponse.Header("X-TinyRustLM-Response-Metadata-SHA256"));
+            AssertProven(server, session, chunkResponse, "GET", chunkPath, 2);
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+            {
+                Directory.Delete(root, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task SuppliedOperationServiceRejectsUnboundAndArbitraryRequests()
+    {
+        var root = Path.Combine(
+            Path.GetTempPath(),
+            $"tinyrustlm-loopback-boundary-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(root);
+        try
+        {
+            var journal = new CompanionOperationJournal(
+                CompanionOperationJournal.CreateOwnedRoot(Path.Combine(root, "owned")));
+            var executor = new RecordingOperationExecutor();
+            var service = new CompanionOperationService(
+                journal,
+                executor,
+                new CompanionArtifactTransfer(journal));
+            await using var server = await StartServerAsync(service);
+            using var session = await PairAsync(server, 0x44);
+            var request = CompanionContractTests.Request() with
+            {
+                AttemptId = new string('5', 32)
+            };
+            var requestBody = CompanionLoopbackWire.EncodeAcquireRequest(request);
+            var arbitraryRoute =
+                $"{OperationsPath}/{new string('a', 64)}/run-local-command";
+
+            var routeResponse = await SendAsync(
+                server,
+                AuthenticatedRequest(
+                    server,
+                    session,
+                    "GET",
+                    arbitraryRoute,
+                    sequence: 1,
+                    []));
+            AssertError(routeResponse, 404, "route-not-found", cors: true, proven: false);
+
+            var wrongOrigin = await SendAsync(
+                server,
+                RequestWithBody(
+                    server,
+                    "POST",
+                    OperationsPath,
+                    requestBody,
+                    server.Host,
+                    "https://example.invalid",
+                    AuthenticatedHeaders(
+                        server,
+                        session,
+                        "POST",
+                        OperationsPath,
+                        sequence: 1,
+                        requestBody)));
+            AssertError(wrongOrigin, 403, "origin-invalid", cors: false, proven: false);
+
+            var wrongProofHeaders = AuthenticatedHeaders(
+                    server,
+                    session,
+                    "POST",
+                    OperationsPath,
+                    sequence: 1,
+                    requestBody)
+                .Select(header => header.StartsWith(
+                        "X-TinyRustLM-Request-Proof:",
+                        StringComparison.Ordinal)
+                    ? "X-TinyRustLM-Request-Proof: " +
+                        CompanionLoopbackProtocol.EncodeBase64Url(new byte[32])
+                    : header)
+                .ToArray();
+            var wrongProof = await SendAsync(
+                server,
+                RequestWithBody(
+                    server,
+                    "POST",
+                    OperationsPath,
+                    requestBody,
+                    server.Host,
+                    Origin,
+                    wrongProofHeaders));
+            AssertError(wrongProof, 403, "capability-invalid", cors: true, proven: false);
+
+            var arbitraryBody = Encoding.UTF8.GetBytes(
+                "{\"command\":\"convert\",\"path\":\"C:/private\",\"url\":\"https://example.invalid/model\"}");
+            var arbitrary = await SendAsync(
+                server,
+                AuthenticatedRequest(
+                    server,
+                    session,
+                    "POST",
+                    OperationsPath,
+                    sequence: 1,
+                    arbitraryBody));
+            AssertError(arbitrary, 400, "json-invalid", cors: true, proven: true);
+            AssertProven(server, session, arbitrary, "POST", OperationsPath, 1);
+
+            var foreignPath = $"{OperationsPath}/{new string('f', 64)}";
+            var foreign = await SendAsync(
+                server,
+                AuthenticatedRequest(
+                    server,
+                    session,
+                    "GET",
+                    foreignPath,
+                    sequence: 2,
+                    []));
+            AssertError(foreign, 404, "operation-not-found", cors: true, proven: true);
+            AssertProven(server, session, foreign, "GET", foreignPath, 2);
+
+            var valid = await SendAsync(
+                server,
+                AuthenticatedRequest(
+                    server,
+                    session,
+                    "POST",
+                    OperationsPath,
+                    sequence: 3,
+                    requestBody));
+            AssertProven(server, session, valid, "POST", OperationsPath, 3);
+            Assert.Equal(
+                CompanionContract.OperationId(request),
+                CompanionLoopbackWire.DecodeOperationProjection(valid.Body).OperationId);
+            Assert.Equal(1, executor.EnsureStartedCount);
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
+    public async Task NullSeedServiceReturnsOnlyAProvenUnavailableProjection()
+    {
+        await using var server = await StartServerAsync();
+        using var session = await PairAsync(server, 0x47);
+        var operationId = CompanionContractTests.Digest('a');
+        var body = CompanionLoopbackWire.EncodeDirectCompositionSeedStartRequest(
+            new CompanionDirectCompositionSeedStartRequest(
+                CompanionLoopbackWire.DirectCompositionSeedStartRequestSchema,
+                operationId));
+
+        var unavailable = await SendAsync(
+            server,
+            AuthenticatedRequest(
+                server,
+                session,
+                "POST",
+                DirectCompositionSeedsPath,
+                sequence: 1,
+                body));
+
+        AssertError(
+            unavailable,
+            409,
+            "direct-composition-seed-not-available",
+            cors: true,
+            proven: true);
+        AssertProven(
+            server,
+            session,
+            unavailable,
+            "POST",
+            DirectCompositionSeedsPath,
+            sequence: 1);
+
+        var arbitraryPath = $"{DirectCompositionSeedsPath}/{operationId}/command";
+        var arbitrary = await SendAsync(
+            server,
+            AuthenticatedRequest(
+                server,
+                session,
+                "GET",
+                arbitraryPath,
+                sequence: 2,
+                []));
+        AssertError(arbitrary, 404, "route-not-found", cors: true, proven: false);
+
+        var valid = await SendAsync(
+            server,
+            AuthenticatedRequest(server, session, "GET", SessionPath, sequence: 2, []));
+        Assert.Equal(200, valid.Status);
+        AssertProven(server, session, valid, "GET", SessionPath, sequence: 2);
+    }
+
+    [Fact]
+    public async Task SeedServiceRoutesBindIdentityProofsAndRejectCallerAuthority()
+    {
+        var root = Path.Combine(
+            Path.GetTempPath(),
+            $"tinyrustlm-companion-seed-http-{Guid.NewGuid():N}");
+        await using var harness = await CompanionDirectCompositionSeedTestHarness.CreateAsync(
+            root,
+            "success");
+        await using var seeds = harness.CreateService();
+        await using var server = await StartServerAsync(seedService: seeds);
+        using var session = await PairAsync(server, 0x48);
+        var start = new CompanionDirectCompositionSeedStartRequest(
+            CompanionLoopbackWire.DirectCompositionSeedStartRequestSchema,
+            harness.OperationId);
+        var startBody = CompanionLoopbackWire.EncodeDirectCompositionSeedStartRequest(start);
+
+        var startedResponse = await SendAsync(
+            server,
+            AuthenticatedRequest(
+                server,
+                session,
+                "POST",
+                DirectCompositionSeedsPath,
+                sequence: 1,
+                startBody));
+        Assert.Equal(200, startedResponse.Status);
+        var started = CompanionLoopbackWire.DecodeDirectCompositionSeedProjection(
+            startedResponse.Body);
+        Assert.Equal(harness.OperationId, started.OperationId);
+        Assert.Equal(CompanionDirectCompositionSeedState.Ready, started.State);
+        Assert.Equal(CompanionLoopbackProtocol.ProductionOrigin, started.AllowedBrowserOrigin);
+        AssertProven(
+            server,
+            session,
+            startedResponse,
+            "POST",
+            DirectCompositionSeedsPath,
+            sequence: 1);
+
+        var statusPath = $"{DirectCompositionSeedsPath}/{harness.OperationId}";
+        var statusResponse = await SendAsync(
+            server,
+            AuthenticatedRequest(
+                server,
+                session,
+                "GET",
+                statusPath,
+                sequence: 2,
+                []));
+        Assert.Equal(started, CompanionLoopbackWire.DecodeDirectCompositionSeedProjection(
+            statusResponse.Body));
+        AssertProven(server, session, statusResponse, "GET", statusPath, sequence: 2);
+
+        var foreignPath =
+            $"{DirectCompositionSeedsPath}/{CompanionContractTests.Digest('f')}";
+        var foreign = await SendAsync(
+            server,
+            AuthenticatedRequest(
+                server,
+                session,
+                "GET",
+                foreignPath,
+                sequence: 3,
+                []));
+        AssertError(
+            foreign,
+            404,
+            "direct-composition-seed-not-found",
+            cors: true,
+            proven: true);
+        AssertProven(server, session, foreign, "GET", foreignPath, sequence: 3);
+
+        var hostileBody = Encoding.UTF8.GetBytes(
+            $"{{\"schema\":\"{CompanionLoopbackWire.DirectCompositionSeedStartRequestSchema}\"," +
+            $"\"operationId\":\"{harness.OperationId}\"," +
+            "\"executablePath\":\"C:\\\\untrusted.exe\"}");
+        var hostile = await SendAsync(
+            server,
+            AuthenticatedRequest(
+                server,
+                session,
+                "POST",
+                DirectCompositionSeedsPath,
+                sequence: 4,
+                hostileBody));
+        AssertError(hostile, 400, "json-invalid", cors: true, proven: true);
+        AssertProven(
+            server,
+            session,
+            hostile,
+            "POST",
+            DirectCompositionSeedsPath,
+            sequence: 4);
+
+        var stopPath = $"{statusPath}/stop";
+        var stopBody = CompanionLoopbackWire.EncodeDirectCompositionSeedStopRequest(
+            new CompanionDirectCompositionSeedStopRequest(
+                CompanionLoopbackWire.DirectCompositionSeedStopRequestSchema));
+        var arbitraryPath = $"{stopPath}/extra";
+        var arbitrary = await SendAsync(
+            server,
+            AuthenticatedRequest(
+                server,
+                session,
+                "POST",
+                arbitraryPath,
+                sequence: 5,
+                stopBody));
+        AssertError(arbitrary, 404, "route-not-found", cors: true, proven: false);
+
+        var stoppedResponse = await SendAsync(
+            server,
+            AuthenticatedRequest(
+                server,
+                session,
+                "POST",
+                stopPath,
+                sequence: 5,
+                stopBody));
+        var stopped = CompanionLoopbackWire.DecodeDirectCompositionSeedProjection(
+            stoppedResponse.Body);
+        Assert.Equal(CompanionDirectCompositionSeedState.Stopped, stopped.State);
+        Assert.Equal(2UL, stopped.Sequence);
+        AssertProven(server, session, stoppedResponse, "POST", stopPath, sequence: 5);
     }
 
     [Fact]
@@ -665,12 +1199,20 @@ public sealed class CompanionLoopbackServerTests
         "/tinyrustlm-companion/1/session/rotation/commit";
     private static string RevokePath => "/tinyrustlm-companion/1/session/revoke";
     private static string OperationsPath => "/tinyrustlm-companion/1/operations";
+    private static string DirectCompositionSeedsPath =>
+        "/tinyrustlm-companion/1/direct-composition-seeds";
 
-    private static Task<CompanionLoopbackServer> StartServerAsync() =>
-        CompanionLoopbackServer.StartAsync(new CompanionInstallationIdentity(
-            Path.GetTempPath(),
-            InstallationId,
-            ProcessInstanceId));
+    private static Task<CompanionLoopbackServer> StartServerAsync(
+        CompanionOperationService? operationService = null,
+        CompanionDirectCompositionSeedService? seedService = null) =>
+        CompanionLoopbackServer.StartAsync(
+            new CompanionInstallationIdentity(
+                Path.GetTempPath(),
+                InstallationId,
+            ProcessInstanceId),
+            operationService: operationService,
+            seedService: seedService,
+            cancellationToken: default);
 
     private static CompanionPairingBeginRequest BeginRequest(byte value) => new(
         CompanionLoopbackWire.PairingBeginRequestSchema,
@@ -984,6 +1526,40 @@ public sealed class CompanionLoopbackServerTests
 
     private static int ParseContentLength(RawResponse response) =>
         int.Parse(response.Header("Content-Length"), CultureInfo.InvariantCulture);
+
+    private static ulong ParseUInt64Header(RawResponse response, string name) =>
+        ulong.Parse(response.Header(name), CultureInfo.InvariantCulture);
+
+    private sealed class RecordingOperationExecutor : ICompanionOperationExecutor
+    {
+        private readonly Func<string, Task> _ensureStarted;
+        private readonly Func<string, string, Task> _cancelAndWait;
+
+        internal RecordingOperationExecutor(
+            Func<string, Task>? ensureStarted = null,
+            Func<string, string, Task>? cancelAndWait = null)
+        {
+            _ensureStarted = ensureStarted ?? (_ => Task.CompletedTask);
+            _cancelAndWait = cancelAndWait ?? ((_, _) => Task.CompletedTask);
+        }
+
+        internal int EnsureStartedCount { get; private set; }
+        internal int CancelCount { get; private set; }
+        internal List<string> CancellationIds { get; } = [];
+
+        public Task EnsureStartedAsync(string operationId)
+        {
+            EnsureStartedCount++;
+            return _ensureStarted(operationId);
+        }
+
+        public Task CancelAndWaitAsync(string operationId, string cancellationId)
+        {
+            CancelCount++;
+            CancellationIds.Add(cancellationId);
+            return _cancelAndWait(operationId, cancellationId);
+        }
+    }
 
     private sealed class TestSession : IDisposable
     {

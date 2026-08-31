@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -111,13 +112,24 @@ var artifactMetadata = new[]
     new ArtifactMetadata(5, "acg2", "composition.acg2", "org.minimodel.acg2/2.0",
         "944ed9b5b0ee2605ebb9ac13f2e5388c181bc857fdbfc082e62e9ae7b07c79be")
 };
-var artifacts = artifactMetadata.Select(metadata =>
+var artifactPayloads = new byte[artifactMetadata.Length][];
+for (var index = 0; index < artifactMetadata.Length - 1; index++)
 {
-    var bytes = scenario == "large-pass" && metadata.Kind == "slm2"
+    artifactPayloads[index] = scenario == "large-pass" && index == 0
         ? Enumerable.Range(0, 4_194_321)
             .Select(static index => checked((byte)(index % 251)))
             .ToArray()
-        : Encoding.ASCII.GetBytes($"fixture-{metadata.Kind}");
+        : scenario == "rust-seed-pass"
+            ? Encoding.ASCII.GetBytes(
+                $"synthetic CLI {RustMemberRole(index)} bytes")
+            : Encoding.ASCII.GetBytes($"fixture-{artifactMetadata[index].Kind}");
+}
+artifactPayloads[^1] = scenario == "rust-seed-pass"
+    ? WriteAcg2(artifactPayloads, artifactMetadata)
+    : Encoding.ASCII.GetBytes($"fixture-{artifactMetadata[^1].Kind}");
+var artifacts = artifactMetadata.Select((metadata, index) =>
+{
+    var bytes = artifactPayloads[index];
     File.WriteAllBytes(Path.Combine(outputRoot, metadata.File), bytes);
     return new ArtifactIdentity(
         metadata,
@@ -134,7 +146,12 @@ var tokenizerReceipt = WriteEvidence(
     "tokenizer.tokenizer2.conversion-receipt.json",
     new { schema = "fixture.tokenizer-receipt", status = "pass" });
 
-var graphIdentitySha256 = Sha256Text("fixture-graph-identity");
+var graphIdentitySha256 = scenario == "rust-seed-pass"
+    ? Convert.ToHexString(artifactPayloads[^1].AsSpan(80, 32)).ToLowerInvariant()
+    : Sha256Text("fixture-graph-identity");
+var memberTableSha256 = scenario == "rust-seed-pass"
+    ? Convert.ToHexString(artifactPayloads[^1].AsSpan(112, 32)).ToLowerInvariant()
+    : Sha256Text("fixture-member-table");
 var receiptArtifacts = artifacts.Select(value => new
 {
     ordinal = value.Metadata.Ordinal,
@@ -169,8 +186,10 @@ var terminalReceipt = new
     graph = new
     {
         graphIdentitySha256,
-        memberTableSha256 = Sha256Text("fixture-member-table"),
-        resolvedMemberBytes = artifacts.Aggregate(0UL, (total, value) => total + value.ByteLength)
+        memberTableSha256,
+        resolvedMemberBytes = artifacts
+            .Take(scenario == "rust-seed-pass" ? 5 : 6)
+            .Aggregate(0UL, (total, value) => total + value.ByteLength)
     },
     componentReceipts = new
     {
@@ -301,6 +320,82 @@ static EvidenceIdentity WriteEvidence(string root, string file, object value)
     var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value) + "\n");
     File.WriteAllBytes(Path.Combine(root, file), bytes);
     return new EvidenceIdentity(file, checked((ulong)bytes.LongLength), Sha256Bytes(bytes));
+}
+
+/// <summary>Returns the exact Rust graph role for one fixed member ordinal.</summary>
+static string RustMemberRole(int index) => index switch
+{
+    0 => "model",
+    1 => "tokenizer",
+    2 => "template",
+    3 => "sampling",
+    4 => "prompt",
+    _ => throw new ArgumentOutOfRangeException(nameof(index))
+};
+
+/// <summary>Writes the exact 896-byte ACG2 graph used by the Rust seed CLI fixture.</summary>
+static byte[] WriteAcg2(
+    IReadOnlyList<byte[]> memberBytes,
+    IReadOnlyList<ArtifactMetadata> metadata)
+{
+    const int headerBytes = 256;
+    const int memberCount = 5;
+    const int memberRecordBytes = 128;
+    const int memberTableBytes = memberCount * memberRecordBytes;
+    const int fileBytes = headerBytes + memberTableBytes;
+    var artifact = new byte[fileBytes];
+    "ACG2\r\n\x1a\n"u8.CopyTo(artifact);
+    "minimodel.acg2\0\0"u8.CopyTo(artifact.AsSpan(8));
+    BinaryPrimitives.WriteUInt16LittleEndian(artifact.AsSpan(24), 2);
+    artifact[28] = 1;
+    artifact[29] = 1;
+    BinaryPrimitives.WriteUInt32LittleEndian(artifact.AsSpan(32), headerBytes);
+    BinaryPrimitives.WriteUInt32LittleEndian(artifact.AsSpan(36), memberCount);
+    BinaryPrimitives.WriteUInt32LittleEndian(artifact.AsSpan(40), memberRecordBytes);
+    BinaryPrimitives.WriteUInt64LittleEndian(artifact.AsSpan(48), fileBytes);
+    BinaryPrimitives.WriteUInt64LittleEndian(artifact.AsSpan(56), headerBytes);
+    BinaryPrimitives.WriteUInt64LittleEndian(artifact.AsSpan(64), memberTableBytes);
+
+    ulong resolvedBytes = 0;
+    for (var index = 0; index < memberCount; index++)
+    {
+        var offset = headerBytes + index * memberRecordBytes;
+        var code = checked((ushort)(index + 1));
+        var length = checked((ulong)memberBytes[index].LongLength);
+        resolvedBytes = checked(resolvedBytes + length);
+        BinaryPrimitives.WriteUInt16LittleEndian(artifact.AsSpan(offset), 1);
+        BinaryPrimitives.WriteUInt16LittleEndian(artifact.AsSpan(offset + 2), code);
+        BinaryPrimitives.WriteUInt16LittleEndian(artifact.AsSpan(offset + 4), code);
+        BinaryPrimitives.WriteUInt32LittleEndian(
+            artifact.AsSpan(offset + 8),
+            checked((uint)index));
+        BinaryPrimitives.WriteUInt64LittleEndian(artifact.AsSpan(offset + 16), length);
+        SHA256.HashData(memberBytes[index]).CopyTo(artifact.AsSpan(offset + 24));
+        Convert.FromHexString(metadata[index].FormatProfileSha256)
+            .CopyTo(artifact.AsSpan(offset + 56));
+    }
+    BinaryPrimitives.WriteUInt64LittleEndian(artifact.AsSpan(72), resolvedBytes);
+    var table = artifact.AsSpan(headerBytes, memberTableBytes);
+    var memberTableSha256 = SHA256.HashData(table);
+    var graphIdentitySha256 = Acg2GraphIdentity(table, resolvedBytes);
+    graphIdentitySha256.CopyTo(artifact.AsSpan(80));
+    memberTableSha256.CopyTo(artifact.AsSpan(112));
+    return artifact;
+}
+
+/// <summary>Derives the exact domain-separated ACG2 graph identity.</summary>
+static byte[] Acg2GraphIdentity(ReadOnlySpan<byte> memberTable, ulong resolvedBytes)
+{
+    Span<byte> framing = stackalloc byte[17];
+    BinaryPrimitives.WriteUInt16LittleEndian(framing, 2);
+    framing[4] = 1;
+    BinaryPrimitives.WriteUInt32LittleEndian(framing[5..], 5);
+    BinaryPrimitives.WriteUInt64LittleEndian(framing[9..], resolvedBytes);
+    using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+    hash.AppendData("tinyrustlm.acg2.champion-graph.v1\0"u8);
+    hash.AppendData(framing);
+    hash.AppendData(memberTable);
+    return hash.GetHashAndReset();
 }
 
 static string OperationId(

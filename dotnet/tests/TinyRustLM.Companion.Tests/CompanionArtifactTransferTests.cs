@@ -153,7 +153,7 @@ public sealed class CompanionArtifactTransferTests : IDisposable
         }
     }
 
-    private sealed class TransferFixture : IDisposable
+    internal sealed class TransferFixture : IDisposable
     {
         private readonly CompanionAcquireRequest _request;
 

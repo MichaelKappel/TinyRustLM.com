@@ -28,9 +28,15 @@ try
 {
     var stateRoot = ResolveStateRoot();
     var identity = CompanionInstallation.OpenOrCreate(stateRoot);
+    await using var operations =
+        CompanionProductionOperationRuntime.OpenFromPackageLayout(stateRoot);
+    await using var seeds =
+        CompanionProductionSeedRuntime.OpenFromPackageLayout(stateRoot);
     await using var server = await CompanionLoopbackServer.StartAsync(
         identity,
-        shutdown.Token).ConfigureAwait(false);
+        operationService: operations.OperationService,
+        seedService: seeds.SeedService,
+        cancellationToken: shutdown.Token).ConfigureAwait(false);
 
     var pairingCode = server.IssuePairingCode().Code;
     Console.Out.WriteLine(pairingCode);
@@ -110,6 +116,19 @@ static string PublicStartupCode(string code) => code switch
     "installation-owner" or
     "process-instance-id" or
     "host-invalid" or
+    "converter-tool-missing" or
+    "converter-tool-invalid" or
+    "operation-worker-asset-missing" or
+    "operation-worker-asset-invalid" or
+    "operation-platform-unsupported" or
+    "companion-operation-state-root" or
+    "operation-journal-invalid" or
+    "companion-operation-work-root" or
+    "source-lock-assets-invalid" or
+    "source-descriptor-invalid" or
+    "direct-composition-seed-state-invalid" or
+    "direct-composition-seed-tool-invalid" or
+    "direct-composition-seed-platform-unsupported" or
     "companion-unavailable" => code,
     _ => "unexpected-failure"
 };

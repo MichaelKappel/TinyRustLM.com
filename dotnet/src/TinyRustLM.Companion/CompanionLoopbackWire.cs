@@ -34,6 +34,12 @@ public static class CompanionLoopbackWire
         "tinyrustlm.companion.loopback.operation-projection.v2";
     public const string CancelRequestSchema =
         "tinyrustlm.companion.loopback.cancel-request.v1";
+    public const string DirectCompositionSeedStartRequestSchema =
+        "tinyrustlm.companion.loopback.direct-composition-seed-start-request.v1";
+    public const string DirectCompositionSeedStopRequestSchema =
+        "tinyrustlm.companion.loopback.direct-composition-seed-stop-request.v1";
+    public const string DirectCompositionSeedProjectionSchema =
+        "tinyrustlm.companion.loopback.direct-composition-seed-projection.v1";
     public const int MaximumInstallationRecordBytes = 4_096;
     public const int MaximumPairingBeginRequestBytes = 2_048;
     public const int MaximumPairingBeginResponseBytes = 4_096;
@@ -50,6 +56,9 @@ public static class CompanionLoopbackWire
     public const int MaximumAcquireRequestBytes = 65_536;
     public const int MaximumOperationProjectionBytes = 65_536;
     public const int MaximumCancelRequestBytes = 1_024;
+    public const int MaximumDirectCompositionSeedStartRequestBytes = 1_024;
+    public const int MaximumDirectCompositionSeedStopRequestBytes = 512;
+    public const int MaximumDirectCompositionSeedProjectionBytes = 2_048;
 
     private const ulong MaximumJsonSafeInteger = 9_007_199_254_740_991;
 
@@ -88,6 +97,12 @@ public static class CompanionLoopbackWire
         "operation-not-found",
         "operation-terminal",
         "operation-not-available",
+        "direct-composition-seed-not-found",
+        "direct-composition-seed-not-available",
+        "direct-composition-seed-operation-not-available",
+        "direct-composition-seed-conflict",
+        "direct-composition-seed-resource-limit",
+        "direct-composition-seed-identity-drift",
         "artifact-role-invalid",
         "artifact-chunk-invalid",
         "artifact-identity-drift",
@@ -849,6 +864,123 @@ public static class CompanionLoopbackWire
         return request;
     }
 
+    public static byte[] EncodeDirectCompositionSeedStartRequest(
+        CompanionDirectCompositionSeedStartRequest request)
+    {
+        ValidateDirectCompositionSeedStartRequest(request);
+        return EncodeNetworkJson(
+            MaximumDirectCompositionSeedStartRequestBytes,
+            writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("schema", request.Schema);
+                writer.WriteString("operationId", request.OperationId);
+                writer.WriteEndObject();
+            });
+    }
+
+    public static CompanionDirectCompositionSeedStartRequest
+        DecodeDirectCompositionSeedStartRequest(ReadOnlySpan<byte> bytes)
+    {
+        var properties = ParseNetworkObject(
+            bytes,
+            MaximumDirectCompositionSeedStartRequestBytes,
+            ["schema", "operationId"]);
+        var request = new CompanionDirectCompositionSeedStartRequest(
+            RequireString(properties[0]),
+            RequireString(properties[1]));
+        ValidateDirectCompositionSeedStartRequest(request);
+        RequireCanonical(bytes, EncodeDirectCompositionSeedStartRequest(request));
+        return request;
+    }
+
+    public static byte[] EncodeDirectCompositionSeedStopRequest(
+        CompanionDirectCompositionSeedStopRequest request)
+    {
+        ValidateDirectCompositionSeedStopRequest(request);
+        return EncodeNetworkJson(
+            MaximumDirectCompositionSeedStopRequestBytes,
+            writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("schema", request.Schema);
+                writer.WriteEndObject();
+            });
+    }
+
+    public static CompanionDirectCompositionSeedStopRequest
+        DecodeDirectCompositionSeedStopRequest(ReadOnlySpan<byte> bytes)
+    {
+        var properties = ParseNetworkObject(
+            bytes,
+            MaximumDirectCompositionSeedStopRequestBytes,
+            ["schema"]);
+        var request = new CompanionDirectCompositionSeedStopRequest(
+            RequireString(properties[0]));
+        ValidateDirectCompositionSeedStopRequest(request);
+        RequireCanonical(bytes, EncodeDirectCompositionSeedStopRequest(request));
+        return request;
+    }
+
+    public static byte[] EncodeDirectCompositionSeedProjection(
+        CompanionDirectCompositionSeedProjection projection)
+    {
+        ValidateDirectCompositionSeedProjection(projection);
+        return EncodeNetworkJson(
+            MaximumDirectCompositionSeedProjectionBytes,
+            writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("schema", projection.Schema);
+                writer.WriteString("operationId", projection.OperationId);
+                writer.WriteNumber("sequence", projection.Sequence);
+                writer.WriteString(
+                    "state",
+                    DirectCompositionSeedStateName(projection.State));
+                writer.WriteString("compositionId", projection.CompositionId);
+                WriteNullableString(writer, "protocol", projection.Protocol);
+                WriteNullableString(writer, "boundOrigin", projection.BoundOrigin);
+                WriteNullableString(
+                    writer,
+                    "allowedBrowserOrigin",
+                    projection.AllowedBrowserOrigin);
+                WriteNullableString(writer, "terminalCode", projection.TerminalCode);
+                writer.WriteEndObject();
+            });
+    }
+
+    public static CompanionDirectCompositionSeedProjection
+        DecodeDirectCompositionSeedProjection(ReadOnlySpan<byte> bytes)
+    {
+        var properties = ParseNetworkObject(
+            bytes,
+            MaximumDirectCompositionSeedProjectionBytes,
+            [
+                "schema",
+                "operationId",
+                "sequence",
+                "state",
+                "compositionId",
+                "protocol",
+                "boundOrigin",
+                "allowedBrowserOrigin",
+                "terminalCode"
+            ]);
+        var projection = new CompanionDirectCompositionSeedProjection(
+            RequireString(properties[0]),
+            RequireString(properties[1]),
+            RequireUInt64(properties[2]),
+            ParseDirectCompositionSeedState(RequireString(properties[3])),
+            RequireString(properties[4]),
+            RequireNullableString(properties[5]),
+            RequireNullableString(properties[6]),
+            RequireNullableString(properties[7]),
+            RequireNullableString(properties[8]));
+        ValidateDirectCompositionSeedProjection(projection);
+        RequireCanonical(bytes, EncodeDirectCompositionSeedProjection(projection));
+        return projection;
+    }
+
     private static void ValidateInstallationRecord(CompanionInstallationRecord record)
     {
         ArgumentNullException.ThrowIfNull(record);
@@ -1144,6 +1276,112 @@ public static class CompanionLoopbackWire
             "cancellation-id");
     }
 
+    private static void ValidateDirectCompositionSeedStartRequest(
+        CompanionDirectCompositionSeedStartRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        if (request.Schema != DirectCompositionSeedStartRequestSchema)
+        {
+            throw new CompanionProtocolException("contract-invalid");
+        }
+        try
+        {
+            CompanionContract.RequireDigest(
+                request.OperationId,
+                "direct-composition-seed-operation-id");
+        }
+        catch (CompanionContractException)
+        {
+            throw new CompanionProtocolException("contract-invalid");
+        }
+    }
+
+    private static void ValidateDirectCompositionSeedStopRequest(
+        CompanionDirectCompositionSeedStopRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        if (request.Schema != DirectCompositionSeedStopRequestSchema)
+        {
+            throw new CompanionProtocolException("contract-invalid");
+        }
+    }
+
+    private static void ValidateDirectCompositionSeedProjection(
+        CompanionDirectCompositionSeedProjection projection)
+    {
+        ArgumentNullException.ThrowIfNull(projection);
+        if (projection.Schema != DirectCompositionSeedProjectionSchema ||
+            projection.Sequence is 0 or > MaximumJsonSafeInteger)
+        {
+            throw new CompanionProtocolException("contract-invalid");
+        }
+        try
+        {
+            CompanionContract.RequireDigest(
+                projection.OperationId,
+                "direct-composition-seed-operation-id");
+            CompanionContract.RequireContentId(
+                projection.CompositionId,
+                "direct-composition-seed-composition-id");
+        }
+        catch (CompanionContractException)
+        {
+            throw new CompanionProtocolException("contract-invalid");
+        }
+
+        _ = DirectCompositionSeedStateName(projection.State);
+        if (projection.State == CompanionDirectCompositionSeedState.Ready)
+        {
+            if (projection.Protocol != CompanionDirectCompositionSeedLauncher.Protocol ||
+                projection.BoundOrigin is null ||
+                !IsDirectCompositionSeedBoundOrigin(projection.BoundOrigin) ||
+                projection.AllowedBrowserOrigin != CompanionLoopbackProtocol.ProductionOrigin ||
+                projection.TerminalCode is not null)
+            {
+                throw new CompanionProtocolException("contract-invalid");
+            }
+            return;
+        }
+
+        if (projection.Protocol is not null ||
+            projection.BoundOrigin is not null ||
+            projection.AllowedBrowserOrigin is not null ||
+            projection.TerminalCode is null ||
+            !IsWireErrorCode(projection.TerminalCode))
+        {
+            throw new CompanionProtocolException("contract-invalid");
+        }
+    }
+
+    private static bool IsDirectCompositionSeedBoundOrigin(string value)
+    {
+        return Uri.TryCreate(value, UriKind.Absolute, out var uri) &&
+            uri.Scheme == Uri.UriSchemeHttp &&
+            uri.Host == "127.0.0.1" &&
+            uri.Port is >= 1_024 and <= 65_535 &&
+            !uri.IsDefaultPort &&
+            string.IsNullOrEmpty(uri.UserInfo) &&
+            uri.AbsolutePath == "/" &&
+            string.IsNullOrEmpty(uri.Query) &&
+            string.IsNullOrEmpty(uri.Fragment) &&
+            value == $"http://127.0.0.1:{uri.Port}";
+    }
+
+    private static void WriteNullableString(
+        Utf8JsonWriter writer,
+        string propertyName,
+        string? value)
+    {
+        if (value is null)
+        {
+            writer.WriteNull(propertyName);
+        }
+        else
+        {
+            writer.WriteString(propertyName, value);
+        }
+    }
+
     private static void WriteArtifactSet(Utf8JsonWriter writer, CompanionArtifactSet artifacts)
     {
         writer.WriteStartObject("artifacts");
@@ -1215,6 +1453,24 @@ public static class CompanionLoopbackWire
         "cancelled" => CompanionOperationState.Cancelled,
         "rejected" => CompanionOperationState.Rejected,
         _ => throw new CompanionProtocolException("operation-state")
+    };
+
+    private static string DirectCompositionSeedStateName(
+        CompanionDirectCompositionSeedState value) => value switch
+    {
+        CompanionDirectCompositionSeedState.Ready => "ready",
+        CompanionDirectCompositionSeedState.Stopped => "stopped",
+        CompanionDirectCompositionSeedState.Failed => "failed",
+        _ => throw new CompanionProtocolException("contract-invalid")
+    };
+
+    private static CompanionDirectCompositionSeedState ParseDirectCompositionSeedState(
+        string value) => value switch
+    {
+        "ready" => CompanionDirectCompositionSeedState.Ready,
+        "stopped" => CompanionDirectCompositionSeedState.Stopped,
+        "failed" => CompanionDirectCompositionSeedState.Failed,
+        _ => throw new CompanionProtocolException("contract-invalid")
     };
 
     private static string AcquisitionRouteName(CompanionAcquisitionRoute value) => value switch
@@ -1464,3 +1720,20 @@ public sealed record CompanionRevokedResponse(
     bool Revoked);
 
 public sealed record CompanionLoopbackError(string Schema, string Code);
+
+public sealed record CompanionDirectCompositionSeedStartRequest(
+    string Schema,
+    string OperationId);
+
+public sealed record CompanionDirectCompositionSeedStopRequest(string Schema);
+
+public sealed record CompanionDirectCompositionSeedProjection(
+    string Schema,
+    string OperationId,
+    ulong Sequence,
+    CompanionDirectCompositionSeedState State,
+    string CompositionId,
+    string? Protocol,
+    string? BoundOrigin,
+    string? AllowedBrowserOrigin,
+    string? TerminalCode);

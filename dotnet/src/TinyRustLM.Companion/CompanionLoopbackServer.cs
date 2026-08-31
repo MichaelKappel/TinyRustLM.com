@@ -34,6 +34,8 @@ public sealed class CompanionLoopbackServer : IAsyncDisposable
         "/tinyrustlm-companion/1/session/rotation/commit";
     private const string RevokePath = "/tinyrustlm-companion/1/session/revoke";
     private const string OperationsPath = "/tinyrustlm-companion/1/operations";
+    private const string DirectCompositionSeedsPath =
+        "/tinyrustlm-companion/1/direct-composition-seeds";
     private const string CorsExposeHeaders =
         "content-length, content-type, x-tinyrustlm-session, x-tinyrustlm-epoch, " +
         "x-tinyrustlm-sequence, x-tinyrustlm-content-sha256, " +
@@ -122,17 +124,23 @@ public sealed class CompanionLoopbackServer : IAsyncDisposable
     private readonly WebApplication _application;
     private readonly string _installationId;
     private readonly string _processInstanceId;
+    private readonly CompanionOperationService? _operationService;
+    private readonly CompanionDirectCompositionSeedService? _seedService;
     private CompanionCapabilityState? _capabilityState;
     private int _disposeState;
 
     private CompanionLoopbackServer(
         WebApplication application,
         string installationId,
-        string processInstanceId)
+        string processInstanceId,
+        CompanionOperationService? operationService,
+        CompanionDirectCompositionSeedService? seedService)
     {
         _application = application;
         _installationId = installationId;
         _processInstanceId = processInstanceId;
+        _operationService = operationService;
+        _seedService = seedService;
     }
 
     public ushort Port { get; private set; }
@@ -147,9 +155,30 @@ public sealed class CompanionLoopbackServer : IAsyncDisposable
     internal int ActiveSessionCount =>
         Volatile.Read(ref _capabilityState)?.ActiveSessionCount ?? 0;
 
+    public static Task<CompanionLoopbackServer> StartAsync(
+        CompanionInstallationIdentity identity,
+        CancellationToken cancellationToken = default) =>
+        StartAsync(
+            identity,
+            operationService: null,
+            seedService: null,
+            cancellationToken: cancellationToken);
+
+    public static Task<CompanionLoopbackServer> StartAsync(
+        CompanionInstallationIdentity identity,
+        CompanionOperationService? operationService,
+        CancellationToken cancellationToken) =>
+        StartAsync(
+            identity,
+            operationService,
+            seedService: null,
+            cancellationToken);
+
     public static async Task<CompanionLoopbackServer> StartAsync(
         CompanionInstallationIdentity identity,
-        CancellationToken cancellationToken = default)
+        CompanionOperationService? operationService,
+        CompanionDirectCompositionSeedService? seedService,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(identity);
         CompanionLoopbackProtocol.RequireHexIdentifier(
@@ -199,7 +228,9 @@ public sealed class CompanionLoopbackServer : IAsyncDisposable
         owner = new CompanionLoopbackServer(
             application,
             identity.InstallationId,
-            identity.ProcessInstanceId);
+            identity.ProcessInstanceId,
+            operationService,
+            seedService);
         try
         {
             await application.StartAsync(cancellationToken).ConfigureAwait(false);
@@ -300,9 +331,21 @@ public sealed class CompanionLoopbackServer : IAsyncDisposable
 
             lease = Authenticate(state, context.Request, path, body);
             CompanionProvenResponse proven;
+            CompanionArtifactResponseMetadata? artifactMetadata = null;
             try
             {
-                proven = DispatchAuthenticated(lease, route, body);
+                var dispatched = await DispatchAuthenticatedAsync(
+                    lease,
+                    route,
+                    body,
+                    context.RequestAborted).ConfigureAwait(false);
+                proven = dispatched.Response;
+                artifactMetadata = dispatched.ArtifactMetadata;
+            }
+            catch (OperationCanceledException) when (
+                context.RequestAborted.IsCancellationRequested)
+            {
+                throw;
             }
             catch (CompanionProtocolException exception)
             {
@@ -320,7 +363,8 @@ public sealed class CompanionLoopbackServer : IAsyncDisposable
                 proven.CopyBody(),
                 cors: true,
                 proven,
-                route.IsChunk).ConfigureAwait(false);
+                route.IsChunk,
+                artifactMetadata).ConfigureAwait(false);
         }
         catch (LoopbackRequestException exception)
         {
@@ -658,25 +702,184 @@ public sealed class CompanionLoopbackServer : IAsyncDisposable
         }
     }
 
-    private static CompanionProvenResponse DispatchAuthenticated(
+    private async Task<AuthenticatedDispatch> DispatchAuthenticatedAsync(
         CompanionSessionLease lease,
         RouteDefinition route,
-        ReadOnlySpan<byte> body)
+        byte[] body,
+        CancellationToken cancellationToken)
     {
-        return route.Kind switch
+        switch (route.Kind)
         {
-            RouteKind.Session => lease.MaterializeSessionStatus(),
-            RouteKind.RotationBegin => lease.BeginRotationAndMaterializeResponse(
-                CompanionLoopbackWire.DecodeRotationBegin(body)),
-            RouteKind.RotationCommit => DispatchRotationCommit(lease, body),
-            RouteKind.Revoke => lease.RevokeAndMaterializeResponse(
-                CompanionLoopbackWire.DecodeRevokeRequest(body)),
-            RouteKind.OperationCreate or
-            RouteKind.OperationStatus or
-            RouteKind.OperationCancel or
-            RouteKind.ArtifactChunk => MaterializeOperationUnavailable(lease, route),
-            _ => throw new CompanionProtocolException("contract-invalid")
-        };
+            case RouteKind.Session:
+                return new AuthenticatedDispatch(lease.MaterializeSessionStatus());
+            case RouteKind.RotationBegin:
+                return new AuthenticatedDispatch(
+                    lease.BeginRotationAndMaterializeResponse(
+                        CompanionLoopbackWire.DecodeRotationBegin(body)));
+            case RouteKind.RotationCommit:
+                return new AuthenticatedDispatch(DispatchRotationCommit(lease, body));
+            case RouteKind.Revoke:
+                return new AuthenticatedDispatch(
+                    lease.RevokeAndMaterializeResponse(
+                        CompanionLoopbackWire.DecodeRevokeRequest(body)));
+            case RouteKind.OperationCreate:
+            case RouteKind.OperationStatus:
+            case RouteKind.OperationCancel:
+            case RouteKind.ArtifactChunk:
+                return await DispatchOperationAsync(
+                    lease,
+                    route,
+                    body,
+                    cancellationToken).ConfigureAwait(false);
+            case RouteKind.DirectCompositionSeedStart:
+            case RouteKind.DirectCompositionSeedStatus:
+            case RouteKind.DirectCompositionSeedStop:
+                return await DispatchDirectCompositionSeedAsync(
+                    lease,
+                    route,
+                    body,
+                    cancellationToken).ConfigureAwait(false);
+            default:
+                throw new CompanionProtocolException("contract-invalid");
+        }
+    }
+
+    private async Task<AuthenticatedDispatch> DispatchOperationAsync(
+        CompanionSessionLease lease,
+        RouteDefinition route,
+        byte[] body,
+        CancellationToken cancellationToken)
+    {
+        if (_operationService is null ||
+            route.InvalidOperationId ||
+            route.InvalidArtifactRole ||
+            route.InvalidChunkIndex)
+        {
+            return new AuthenticatedDispatch(
+                MaterializeOperationUnavailable(lease, route));
+        }
+
+        switch (route.Kind)
+        {
+            case RouteKind.OperationCreate:
+            {
+                var request = CompanionLoopbackWire.DecodeAcquireRequest(body);
+                var projection = await _operationService.CreateOrReadAsync(request)
+                    .WaitAsync(cancellationToken).ConfigureAwait(false);
+                return MaterializeOperationProjection(lease, projection);
+            }
+            case RouteKind.OperationStatus:
+                cancellationToken.ThrowIfCancellationRequested();
+                return MaterializeOperationProjection(
+                    lease,
+                    _operationService.Read(route.OperationId!));
+            case RouteKind.OperationCancel:
+            {
+                var request = CompanionLoopbackWire.DecodeCancelRequest(body);
+                var projection = await _operationService.CancelAndWaitAsync(
+                    route.OperationId!,
+                    request).WaitAsync(cancellationToken).ConfigureAwait(false);
+                return MaterializeOperationProjection(lease, projection);
+            }
+            case RouteKind.ArtifactChunk:
+            {
+                var chunk = await _operationService.ReadArtifactChunkAsync(
+                    route.OperationId!,
+                    route.ArtifactRole!,
+                    route.ChunkIndex!.Value,
+                    cancellationToken).ConfigureAwait(false);
+                return MaterializeArtifactChunk(lease, route, chunk);
+            }
+            default:
+                throw new CompanionProtocolException("contract-invalid");
+        }
+    }
+
+    private static AuthenticatedDispatch MaterializeOperationProjection(
+        CompanionSessionLease lease,
+        CompanionOperationProjection projection)
+    {
+        var responseBody = CompanionLoopbackWire.EncodeOperationProjection(projection);
+        return new AuthenticatedDispatch(lease.MaterializeResponse(
+            StatusCodes.Status200OK,
+            JsonContentType,
+            responseBody,
+            CompanionLoopbackProtocol.EmptySha256));
+    }
+
+    private async Task<AuthenticatedDispatch> DispatchDirectCompositionSeedAsync(
+        CompanionSessionLease lease,
+        RouteDefinition route,
+        byte[] body,
+        CancellationToken cancellationToken)
+    {
+        if (route.InvalidOperationId)
+        {
+            return new AuthenticatedDispatch(
+                MaterializeError(lease, "direct-composition-seed-not-found"));
+        }
+        if (_seedService is null)
+        {
+            return new AuthenticatedDispatch(
+                MaterializeError(lease, "direct-composition-seed-not-available"));
+        }
+
+        CompanionDirectCompositionSeedProjection projection;
+        switch (route.Kind)
+        {
+            case RouteKind.DirectCompositionSeedStart:
+                projection = await _seedService.StartOrReadAsync(
+                    CompanionLoopbackWire.DecodeDirectCompositionSeedStartRequest(body),
+                    cancellationToken).ConfigureAwait(false);
+                break;
+            case RouteKind.DirectCompositionSeedStatus:
+                projection = await _seedService.ReadAsync(
+                    route.OperationId!,
+                    cancellationToken).ConfigureAwait(false);
+                break;
+            case RouteKind.DirectCompositionSeedStop:
+                projection = await _seedService.StopAndWaitAsync(
+                    route.OperationId!,
+                    CompanionLoopbackWire.DecodeDirectCompositionSeedStopRequest(body),
+                    cancellationToken).ConfigureAwait(false);
+                break;
+            default:
+                throw new CompanionProtocolException("contract-invalid");
+        }
+
+        var responseBody = CompanionLoopbackWire.EncodeDirectCompositionSeedProjection(
+            projection);
+        return new AuthenticatedDispatch(lease.MaterializeResponse(
+            StatusCodes.Status200OK,
+            JsonContentType,
+            responseBody,
+            CompanionLoopbackProtocol.EmptySha256));
+    }
+
+    private static AuthenticatedDispatch MaterializeArtifactChunk(
+        CompanionSessionLease lease,
+        RouteDefinition route,
+        CompanionArtifactChunk chunk)
+    {
+        var metadata = chunk.Metadata;
+        if (chunk.Bytes.Length > CompanionArtifactTransfer.ChunkBytes ||
+            metadata.OperationId != route.OperationId! ||
+            metadata.ArtifactRole != route.ArtifactRole! ||
+            metadata.ChunkIndex != route.ChunkIndex!.Value ||
+            metadata.ChunkBytes != checked((ulong)chunk.Bytes.Length) ||
+            chunk.ContentSha256 != CompanionLoopbackProtocol.Sha256Hex(chunk.Bytes))
+        {
+            throw new CompanionProtocolException("internal-failure");
+        }
+
+        var metadataSha256 =
+            CompanionLoopbackProtocol.ComputeArtifactMetadataSha256(metadata);
+        var response = lease.MaterializeResponse(
+            StatusCodes.Status200OK,
+            BinaryContentType,
+            chunk.Bytes,
+            metadataSha256);
+        return new AuthenticatedDispatch(response, metadata);
     }
 
     private static CompanionProvenResponse DispatchRotationCommit(
@@ -784,7 +987,8 @@ public sealed class CompanionLoopbackServer : IAsyncDisposable
         byte[] body,
         bool cors,
         CompanionProvenResponse? proven,
-        bool isChunk)
+        bool isChunk,
+        CompanionArtifactResponseMetadata? artifactMetadata = null)
     {
         if (body.Length > (isChunk ? 4_194_304 : 16_384))
         {
@@ -809,12 +1013,35 @@ public sealed class CompanionLoopbackServer : IAsyncDisposable
                 proofContext.ResponseMetadataSha256;
             response.Headers["X-TinyRustLM-Response-Proof"] = proven.Proof;
         }
+        if (artifactMetadata is not null)
+        {
+            ApplyArtifactResponseHeaders(response, artifactMetadata);
+        }
 
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(
             context.RequestAborted);
         timeout.CancelAfter(isChunk ? ChunkResponseTimeout : ControlResponseTimeout);
         await response.Body.WriteAsync(body, timeout.Token).ConfigureAwait(false);
         await response.CompleteAsync().ConfigureAwait(false);
+    }
+
+    private static void ApplyArtifactResponseHeaders(
+        HttpResponse response,
+        CompanionArtifactResponseMetadata metadata)
+    {
+        response.Headers["X-TinyRustLM-Artifact-Role"] = metadata.ArtifactRole;
+        response.Headers["X-TinyRustLM-Artifact-Id"] = metadata.ArtifactId;
+        response.Headers["X-TinyRustLM-Artifact-SHA256"] = metadata.ArtifactSha256;
+        response.Headers["X-TinyRustLM-Artifact-Bytes"] =
+            metadata.ArtifactBytes.ToString(CultureInfo.InvariantCulture);
+        response.Headers["X-TinyRustLM-Chunk-Index"] =
+            metadata.ChunkIndex.ToString(CultureInfo.InvariantCulture);
+        response.Headers["X-TinyRustLM-Chunk-Count"] =
+            metadata.ChunkCount.ToString(CultureInfo.InvariantCulture);
+        response.Headers["X-TinyRustLM-Chunk-Offset"] =
+            metadata.ChunkOffset.ToString(CultureInfo.InvariantCulture);
+        response.Headers["X-TinyRustLM-Chunk-Bytes"] =
+            metadata.ChunkBytes.ToString(CultureInfo.InvariantCulture);
     }
 
     private static async Task TryWriteUnprovedErrorAsync(
@@ -901,6 +1128,11 @@ public sealed class CompanionLoopbackServer : IAsyncDisposable
                 HttpMethods.Post,
                 MaximumRequestBodyBytes,
                 Authenticated: true),
+            DirectCompositionSeedsPath => new RouteDefinition(
+                RouteKind.DirectCompositionSeedStart,
+                HttpMethods.Post,
+                CompanionLoopbackWire.MaximumDirectCompositionSeedStartRequestBytes,
+                Authenticated: true),
             _ => null
         };
         if (exact is not null)
@@ -911,8 +1143,37 @@ public sealed class CompanionLoopbackServer : IAsyncDisposable
         var segments = path.Split('/', StringSplitOptions.None);
         if (segments.Length < 5 || segments[0].Length != 0 ||
             segments[1] != "tinyrustlm-companion" ||
-            segments[2] != "1" ||
-            segments[3] != "operations")
+            segments[2] != "1")
+        {
+            throw Reject("route-not-found");
+        }
+
+        if (segments[3] == "direct-composition-seeds")
+        {
+            var invalidSeedOperationId = !IsLowerHex(segments[4], 64);
+            if (segments.Length == 5)
+            {
+                return new RouteDefinition(
+                    RouteKind.DirectCompositionSeedStatus,
+                    HttpMethods.Get,
+                    0,
+                    Authenticated: true,
+                    InvalidOperationId: invalidSeedOperationId,
+                    OperationId: segments[4]);
+            }
+            if (segments.Length == 6 && segments[5] == "stop")
+            {
+                return new RouteDefinition(
+                    RouteKind.DirectCompositionSeedStop,
+                    HttpMethods.Post,
+                    CompanionLoopbackWire.MaximumDirectCompositionSeedStopRequestBytes,
+                    Authenticated: true,
+                    InvalidOperationId: invalidSeedOperationId,
+                    OperationId: segments[4]);
+            }
+            throw Reject("route-not-found");
+        }
+        if (segments[3] != "operations")
         {
             throw Reject("route-not-found");
         }
@@ -925,7 +1186,8 @@ public sealed class CompanionLoopbackServer : IAsyncDisposable
                 HttpMethods.Get,
                 0,
                 Authenticated: true,
-                InvalidOperationId: invalidOperationId);
+                InvalidOperationId: invalidOperationId,
+                OperationId: segments[4]);
         }
         if (segments.Length == 6 && segments[5] == "cancel")
         {
@@ -934,7 +1196,8 @@ public sealed class CompanionLoopbackServer : IAsyncDisposable
                 HttpMethods.Post,
                 1_024,
                 Authenticated: true,
-                InvalidOperationId: invalidOperationId);
+                InvalidOperationId: invalidOperationId,
+                OperationId: segments[4]);
         }
         if (segments.Length == 9 &&
             segments[5] == "artifacts" &&
@@ -953,7 +1216,10 @@ public sealed class CompanionLoopbackServer : IAsyncDisposable
                 IsChunk: true,
                 InvalidOperationId: invalidOperationId,
                 InvalidArtifactRole: !validRole,
-                InvalidChunkIndex: !validIndex);
+                InvalidChunkIndex: !validIndex,
+                OperationId: segments[4],
+                ArtifactRole: segments[6],
+                ChunkIndex: validIndex ? chunkIndex : null);
         }
         throw Reject("route-not-found");
     }
@@ -1073,13 +1339,19 @@ public sealed class CompanionLoopbackServer : IAsyncDisposable
         "capability-sequence" or
         "rotation-proof-invalid" => StatusCodes.Status403Forbidden,
         "route-not-found" or
-        "operation-not-found" => StatusCodes.Status404NotFound,
+        "operation-not-found" or
+        "direct-composition-seed-not-found" => StatusCodes.Status404NotFound,
         "method-not-allowed" => StatusCodes.Status405MethodNotAllowed,
         "pairing-claim-conflict" or
         "session-request-in-flight" or
         "rotation-conflict" or
         "operation-terminal" or
         "operation-not-available" or
+        "direct-composition-seed-not-available" or
+        "direct-composition-seed-operation-not-available" or
+        "direct-composition-seed-conflict" or
+        "direct-composition-seed-resource-limit" or
+        "direct-composition-seed-identity-drift" or
         "artifact-identity-drift" => StatusCodes.Status409Conflict,
         "pairing-code-expired" or
         "pairing-consumed" or
@@ -1126,7 +1398,10 @@ public sealed class CompanionLoopbackServer : IAsyncDisposable
         OperationCreate,
         OperationStatus,
         OperationCancel,
-        ArtifactChunk
+        ArtifactChunk,
+        DirectCompositionSeedStart,
+        DirectCompositionSeedStatus,
+        DirectCompositionSeedStop
     }
 
     private sealed record RouteDefinition(
@@ -1137,7 +1412,14 @@ public sealed class CompanionLoopbackServer : IAsyncDisposable
         bool IsChunk = false,
         bool InvalidOperationId = false,
         bool InvalidArtifactRole = false,
-        bool InvalidChunkIndex = false);
+        bool InvalidChunkIndex = false,
+        string? OperationId = null,
+        string? ArtifactRole = null,
+        ulong? ChunkIndex = null);
+
+    private sealed record AuthenticatedDispatch(
+        CompanionProvenResponse Response,
+        CompanionArtifactResponseMetadata? ArtifactMetadata = null);
 
     private sealed class LoopbackRequestException : Exception
     {

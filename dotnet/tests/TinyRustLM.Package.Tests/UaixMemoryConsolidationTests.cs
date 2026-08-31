@@ -12,6 +12,35 @@ public sealed partial class UaixMemoryConsolidationTests
     private const string DecisionIndexRoute =
         "wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md";
 
+    private const string SourceAuthorityRelocationRecord =
+        ".uai/source-authority-relocation-2026-08-30.uai";
+
+    private static readonly string[] CurrentUaixMemoryPaths =
+    {
+        ".uai/architecture.uai",
+        ".uai/coding-standards.uai",
+        ".uai/credential-inventory.uai",
+        ".uai/file-handoff.uai",
+        ".uai/index.uai",
+        ".uai/intake-outcome-ledger.uai",
+        ".uai/long-term-memory.uai",
+        ".uai/memory-endpoints-coordination.uai",
+        ".uai/next-recursive-prompt.uai",
+        ".uai/operations.uai",
+        ".uai/receiver-brief.uai",
+        ".uai/report-synthesis.uai",
+        ".uai/short-term-memory.uai",
+        SourceAuthorityRelocationRecord,
+        ".uai/startup-packet.uai",
+        ".uai/system-profile.uai",
+        ".uai/taboo.uai",
+        ".uai/talisman.uai",
+        ".uai/test-plan.uai",
+        ".uai/totem.uai",
+        ".uai/workspace-guidance.uai",
+        "workspace.uai"
+    };
+
     private static readonly string[] CurrentBatchManifests =
     {
         "docs/report-intake/2026-08-26/post-v10-native-browser-release/MANIFEST.md",
@@ -26,17 +55,18 @@ public sealed partial class UaixMemoryConsolidationTests
         var paths = Directory
             .EnumerateFiles(root, "*.uai", SearchOption.AllDirectories)
             .Where(path => !IsGeneratedOrExternal(root, path))
-            .Append(Path.Combine(root, "workspace.uai"))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Select(path => Normalize(Path.GetRelativePath(root, path)))
             .OrderBy(path => path, StringComparer.Ordinal)
             .ToArray();
 
-        Assert.Equal(21, paths.Length);
+        Assert.Equal(CurrentUaixMemoryPaths, paths);
 
         long totalBytes = 0;
-        foreach (var path in paths)
+        foreach (var relative in paths)
         {
-            var relative = Normalize(Path.GetRelativePath(root, path));
+            var path = Path.Combine(
+                root,
+                relative.Replace('/', Path.DirectorySeparatorChar));
             var bytes = new FileInfo(path).Length;
             totalBytes += bytes;
 
@@ -44,12 +74,39 @@ public sealed partial class UaixMemoryConsolidationTests
             Assert.True(bytes <= ceiling, $"{relative} is {bytes} bytes; ceiling is {ceiling}.");
 
             var text = File.ReadAllText(path);
+            Assert.DoesNotMatch(StaleMemoryEndpointsPolicy(), text);
+            if (relative == SourceAuthorityRelocationRecord)
+            {
+                Assert.Contains(
+                    "profile: tinyrustlm.source_authority_relocation.v1",
+                    text,
+                    StringComparison.Ordinal);
+                Assert.Contains(
+                    "authority: sole current source, build, test, release, and deployment checkout",
+                    text,
+                    StringComparison.Ordinal);
+                Assert.Contains(
+                    "physical_active_tinyrustlm_source_duplicates_remaining: 0",
+                    text,
+                    StringComparison.Ordinal);
+                continue;
+            }
+
             Assert.Contains(CanonicalMemoryRoute, text, StringComparison.Ordinal);
             Assert.Contains(DecisionIndexRoute, text, StringComparison.Ordinal);
-            Assert.DoesNotMatch(StaleMemoryEndpointsPolicy(), text);
         }
 
         Assert.True(totalBytes <= 600_000, $"Current UAI memory is {totalBytes} bytes; ceiling is 600000.");
+
+        var workspace = File.ReadAllText(Path.Combine(root, "workspace.uai"));
+        Assert.Contains(
+            $"source_authority_receipt: {SourceAuthorityRelocationRecord}",
+            workspace,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            $"  - {SourceAuthorityRelocationRecord}",
+            workspace,
+            StringComparison.Ordinal);
     }
 
     [Fact]

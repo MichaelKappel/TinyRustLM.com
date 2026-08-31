@@ -15,7 +15,8 @@ internal static class CompanionOperationTestEvidence
         string modelSourceRoot,
         string tokenizerSourceRoot,
         string conversionOutputRoot,
-        string? installedConverterSha256 = null)
+        string? installedConverterSha256 = null,
+        string? installedWorkerSha256 = null)
     {
         var request = journal.ReadRequest(operation.OperationId);
         var sourceStagingRoot = FullPath(privateRoot, "source-staging");
@@ -25,7 +26,7 @@ internal static class CompanionOperationTestEvidence
             operation.OperationId,
             operation.RequestSha256,
             request.AttemptId,
-            CompanionContractTests.Digest('7'),
+            installedWorkerSha256 ?? CompanionContractTests.Digest('7'),
             installedConverterSha256 ?? CompanionContractTests.Digest('8'),
             CompanionSourceDescriptor.DescriptorId,
             CompanionSourceDescriptor.CacheLogicalId,
