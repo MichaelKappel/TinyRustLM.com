@@ -1,0 +1,39 @@
+profile: rust-site-family.workspace.current.v1
+updated_utc: 2026-09-04T00:00:00Z
+workspace_root: E:\Source\Rust
+scope: Current source routing for the TinyRustLM.com ecosystem.
+sensitivity: internal
+
+source_authority:
+  canonical_verifier: E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\verify-single-source-authority.js
+  required_before_work: Run the canonical verifier before every ecosystem edit, build, test, package, release, or deployment.
+  canonical_repositories:
+    - E:\Source\Rust\LMComposer.com | main | https://github.com/MichaelKappel/LMComposer.com.git
+    - E:\Source\Rust\MiniModel.MiRust.com | master | https://github.com/MichaelKappel/MiniModel.MiRust.com.git
+    - E:\Source\Rust\MiniModel.org | master | https://github.com/MichaelKappel/MiniModel.org.git
+    - E:\Source\Rust\MiRust.com | master | https://github.com/MichaelKappel/MiRust.com.git
+    - E:\Source\Rust\Runtime.MiRust.com | master | https://github.com/MichaelKappel/Runtime.MiRust.com.git
+    - E:\Source\Rust\TinyRustLM.com | codex/model-acquisition-v2 | https://github.com/MichaelKappel/TinyRustLM.com.git
+    - E:\Source\Rust\TinyRustLM.MiRust.com | master | https://github.com/MichaelKappel/TinyRustLM.MiRust.com.git
+  sole_source_rule: These seven direct physical non-reparse repositories are the only editable ecosystem source roots.
+  duplicate_rule: Do not create, retain, edit, build, test, commit, release, or deploy from a recovery clone, copied tree, Git worktree, archive, backup, quarantine, evidence root, deployment root, or loose source/config copy.
+  retirement_rule: A discovered duplicate remains blocking until valid clean-slate work is integrated into its canonical repository, the duplicate is physically removed, and a fresh governed scan proves absence.
+  temporary_rule: Operation-owned temporary roots may contain only bounded non-source output or minimal synthetic non-product fixtures, never Git metadata, workspace/taboo authority markers, unique product source, or deployment authority; remove them when the operation closes.
+  release_rule: Before release or deployment, commit and push coherent changes from each affected canonical repository, then require the verifier with --require-clean --require-remote-exact and independently confirm the direct remote ref.
+
+proof_boundary:
+  coverage: The verifier covers only its declared registered roots, depths, direct-child probes, and bounded evidence exceptions. It does not claim a whole-volume inventory.
+  protected_evidence: Immutable evidence may retain bounded non-source artifacts and historical facts, but never editable source authority or executable current instructions.
+  history: Git history and immutable evidence records preserve prior source history. Active routing files contain current instructions only.
+
+product_truth:
+  model_selection: TinyRustLM uses one compact P2P-first model chooser; technical source, peer, receipt, conversion, and Hugging Face controls belong under Advanced.
+  acquisition: Selecting a qualified model performs its admitted route, verifies exact bytes, installs to browser storage, activates it, and offers explicit local conversion only when the qualified peer route is unavailable or fails.
+  live_catalog: MiniModel.org currently has zero independently qualified model entries and zero externally proven peer lanes. Synthetic interview fixtures are test-only and never count as live model, P2P, browser, deployment, or campaign evidence.
+  failed_attempt: Qwen3 composition attempt /10 is immutable terminal failure and its candidate bytes must never be retried, repaired, adopted, or promoted.
+
+memory_endpoints:
+  agent_coordination: MemoryEndpoints.com is authorized for authenticated ecosystem agent-to-agent memory, meetings, and coordination.
+  connect_plugin: The separate MemoryEndpoints plugin is the strongly recommended portable-memory path for a consenting TinyRustLM.com Connect user.
+  local_memory: Local memory files remain supported for device-local and offline continuity.
+  evidence_rule: Authorization or configuration alone is not a live round; credentials, prompts, model bytes, and private payloads must remain secret and provenance-labeled.

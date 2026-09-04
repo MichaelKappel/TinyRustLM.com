@@ -50,8 +50,15 @@ const completeEvidenceFileNames = [
   "build.stdout.bin",
   "build.terminal.json"
 ];
+const temporaryRootPrefix = "tinyrustlm-build-custody-";
+const temporaryOwnershipMarkerName =
+  ".tinyrustlm-build-custody-test-root.json";
+const temporaryOwnershipSchema =
+  "tinyrustlm.test-owned-build-custody-root.v1";
 
+let temporaryParent;
 let temporaryRoot;
+let temporaryOwnershipBytes;
 let sourceRoot;
 let copiedOwnerPath;
 let copiedProfilePath;
@@ -92,6 +99,66 @@ function canonicalJson(value) {
 
 function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
+}
+
+function buildCustodyTemporaryParent() {
+  if (process.platform === "win32") {
+    return path.resolve(path.parse(repositoryRoot).root, "Temp",
+      "TinyRustLM-Test-Custody");
+  }
+  return path.resolve(os.tmpdir(), "TinyRustLM-Test-Custody");
+}
+
+function assertDirectDirectory(candidate, label) {
+  const stat = fs.lstatSync(candidate);
+  assert.equal(stat.isDirectory(), true, label);
+  assert.equal(stat.isSymbolicLink(), false, label);
+  assert.equal(fs.realpathSync.native(candidate), path.resolve(candidate), label);
+}
+
+function preflightNoStaleBuildCustodyRoots(parent) {
+  assertDirectDirectory(parent, "build custody temporary parent");
+  const stale = fs.readdirSync(parent, { withFileTypes: true }).filter((entry) =>
+    entry.name.startsWith(temporaryRootPrefix));
+  assert.equal(stale.length, 0,
+    "stale owned build-custody test root requires exact cleanup");
+}
+
+function removeOwnedBuildCustodyRoot() {
+  if (!temporaryRoot) return;
+  const resolvedParent = path.resolve(temporaryParent);
+  const resolvedRoot = path.resolve(temporaryRoot);
+  const relative = path.relative(resolvedParent, resolvedRoot);
+  assert.equal(path.dirname(resolvedRoot), resolvedParent,
+    "build custody temporary root must be a direct child");
+  assert.ok(relative.length > 0 && relative !== ".." &&
+    !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative),
+    "build custody temporary root containment");
+  assert.match(path.basename(resolvedRoot),
+    /^tinyrustlm-build-custody-[A-Za-z0-9_-]+$/u);
+  assertDirectDirectory(resolvedParent, "build custody temporary parent");
+  assertDirectDirectory(resolvedRoot, "build custody temporary root");
+  const markerPath = path.join(resolvedRoot, temporaryOwnershipMarkerName);
+  const markerStat = fs.lstatSync(markerPath);
+  assert.equal(markerStat.isFile(), true, "build custody ownership marker");
+  assert.equal(markerStat.isSymbolicLink(), false,
+    "build custody ownership marker");
+  assert.equal(fs.realpathSync.native(markerPath), path.resolve(markerPath),
+    "build custody ownership marker");
+  assert.ok(markerStat.size > 0 && markerStat.size <= 1024,
+    "build custody ownership marker bound");
+  assert.deepEqual(fs.readFileSync(markerPath), temporaryOwnershipBytes,
+    "build custody ownership marker identity");
+  fs.rmSync(resolvedRoot, {
+    force: false,
+    maxRetries: 5,
+    recursive: true,
+    retryDelay: 50
+  });
+  assert.equal(fs.existsSync(resolvedRoot), false,
+    "build custody temporary root removal");
+  temporaryRoot = undefined;
+  temporaryOwnershipBytes = undefined;
 }
 
 function artifact(filePath, maximumBytes = 17_179_869_184) {
@@ -613,6 +680,17 @@ function collectProcess(child) {
 
 before(() => {
   if (!isWindowsX64) return;
+  temporaryParent = buildCustodyTemporaryParent();
+  fs.mkdirSync(temporaryParent, { recursive: true });
+  if (process.platform === "win32") {
+    const sourceWorkspace = path.resolve(path.parse(repositoryRoot).root,
+      "Source");
+    const relativeToSource = path.relative(sourceWorkspace, temporaryParent);
+    assert.ok(relativeToSource === ".." ||
+      relativeToSource.startsWith(`..${path.sep}`),
+      "build custody fixtures must stay outside the governed source tree");
+  }
+  preflightNoStaleBuildCustodyRoots(temporaryParent);
   childProcess.execFileSync(locateCargo(), ["build", "--manifest-path",
     path.join(repositoryRoot, "Cargo.toml"), "-p", "tinyrustlm-build-custody", "--bin",
     "tinyrustlm-build-scratch-inspect"], {
@@ -622,7 +700,17 @@ before(() => {
     windowsHide: true
   });
   assert.ok(fs.statSync(templateScratchInspectorPath).isFile());
-  temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-build-custody-"));
+  temporaryRoot = fs.mkdtempSync(path.join(temporaryParent,
+    temporaryRootPrefix));
+  temporaryOwnershipBytes = Buffer.from(canonicalJson({
+    schema: temporaryOwnershipSchema,
+    ownerProcessId: process.pid,
+    ownershipId: crypto.randomBytes(16).toString("hex"),
+    rootName: path.basename(temporaryRoot)
+  }), "utf8");
+  fs.writeFileSync(path.join(temporaryRoot, temporaryOwnershipMarkerName),
+    temporaryOwnershipBytes, { flag: "wx" });
+  try {
   sourceRoot = path.resolve(temporaryRoot, "source");
   copiedOwnerPath = path.resolve(sourceRoot, "tinyrustlm", "tools",
     "build-custody-owner.js");
@@ -677,16 +765,43 @@ before(() => {
   sourceTree = runGit(["rev-parse", "HEAD^{tree}"]);
   owner = require(copiedOwnerPath);
   environmentTool = require(copiedEnvironmentOwnerPath);
+  } catch (error) {
+    try {
+      removeOwnedBuildCustodyRoot();
+    } catch (cleanupError) {
+      throw new AggregateError([error, cleanupError],
+        "build custody setup and exact cleanup failed");
+    }
+    throw error;
+  }
 });
 
 after(() => {
-  if (!temporaryRoot) return;
-  const temporaryParent = path.resolve(os.tmpdir());
-  const relative = path.relative(temporaryParent, temporaryRoot);
-  assert.ok(relative.length > 0 && relative !== ".." &&
-    !relative.startsWith(`..${path.sep}`));
-  assert.match(path.basename(temporaryRoot), /^tinyrustlm-build-custody-/u);
-  fs.rmSync(temporaryRoot, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
+  removeOwnedBuildCustodyRoot();
+});
+
+test("owns and bounds the copied build-custody source fixture", {
+  skip: !isWindowsX64
+}, () => {
+  assertDirectDirectory(temporaryParent, "build custody temporary parent");
+  assertDirectDirectory(temporaryRoot, "build custody temporary root");
+  assert.equal(path.dirname(temporaryRoot), temporaryParent);
+  assert.deepEqual(fs.readdirSync(temporaryParent, { withFileTypes: true })
+    .filter((entry) => entry.name.startsWith(temporaryRootPrefix))
+    .map((entry) => entry.name), [path.basename(temporaryRoot)]);
+  const markerPath = path.join(temporaryRoot, temporaryOwnershipMarkerName);
+  assert.deepEqual(fs.readFileSync(markerPath), temporaryOwnershipBytes);
+  const marker = JSON.parse(temporaryOwnershipBytes.toString("utf8"));
+  assert.deepEqual(Object.keys(marker), [
+    "schema",
+    "ownerProcessId",
+    "ownershipId",
+    "rootName"
+  ]);
+  assert.equal(marker.schema, temporaryOwnershipSchema);
+  assert.equal(marker.ownerProcessId, process.pid);
+  assert.match(marker.ownershipId, /^[0-9a-f]{32}$/u);
+  assert.equal(marker.rootName, path.basename(temporaryRoot));
 });
 
 test("freezes the sole prelaunch build-custody profile and owner identity", () => {

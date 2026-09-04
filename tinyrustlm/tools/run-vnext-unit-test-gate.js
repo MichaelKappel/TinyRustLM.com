@@ -5,6 +5,9 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const { runGate } = require("./run-vnext-campaign-release-surface-gate.js");
+const {
+  verifySingleSourceAuthority
+} = require("./verify-single-source-authority.js");
 
 const repositoryRoot = path.resolve(__dirname, "../..");
 const packageRoot = path.join(repositoryRoot, "tinyrustlm");
@@ -119,6 +122,7 @@ function printReleaseResult(result) {
 }
 
 async function main() {
+  verifySingleSourceAuthority({ repositoryRoot });
   const [operation, rawEvidenceRoot, ...extra] = process.argv.slice(2);
   if (operation === "standard" && rawEvidenceRoot === undefined && extra.length === 0) {
     runStandardUnitTests();

@@ -3,12 +3,20 @@
 const childProcess = require("node:child_process");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
 const { TextDecoder } = require("node:util");
 
 const repositoryRoot = path.resolve(__dirname, "../..");
 const canonicalRoot = "E:\\Source\\Rust\\TinyRustLM.com";
 const canonicalEcosystemRoot = "E:\\Source\\Rust";
+const canonicalEcosystemWorkspacePath = path.join(
+  canonicalEcosystemRoot, "workspace.uai");
+const canonicalEcosystemWorkspaceTemplatePath = path.join(
+  repositoryRoot, "tinyrustlm", "authority", "ecosystem-workspace.uai");
+const canonicalEcosystemWorkspacePolicyBytes = 4180;
+const canonicalEcosystemWorkspacePolicySha256 =
+  "9e6c5eff460818a802587e4052d05473ea704d3633e68783d44680feef247f3e";
 const localWorkspaceRoot = "E:\\Source";
 const requiredBranch = "codex/model-acquisition-v2";
 const requiredOrigin = "https://github.com/MichaelKappel/TinyRustLM.com.git";
@@ -66,6 +74,9 @@ const ecosystemRepositories = Object.freeze([
 const canonicalEcosystemTabooPaths = Object.freeze(
   ecosystemRepositories.map((profile) =>
     path.join(profile.root, ".uai", "taboo.uai")));
+const canonicalSingleTinyRustLmSourcePolicyBytes = 2872;
+const canonicalSingleTinyRustLmSourcePolicySha256 =
+  "b8a94b28d6630fa51ffd0b7f059ae50b0c88b145d7a4f6b02f69052cf9c7e7ea";
 const canonicalEcosystemSourceRootPolicyBlock = Object.freeze([
   "ecosystem_source_root_prohibitions:",
   "  - The only local editable source roots for this ecosystem are the seven direct repositories E:\\Source\\Rust\\LMComposer.com, E:\\Source\\Rust\\MiniModel.MiRust.com, E:\\Source\\Rust\\MiniModel.org, E:\\Source\\Rust\\MiRust.com, E:\\Source\\Rust\\Runtime.MiRust.com, E:\\Source\\Rust\\TinyRustLM.com, and E:\\Source\\Rust\\TinyRustLM.MiRust.com.",
@@ -196,20 +207,56 @@ const sourceAuthorityControlLeafNames = Object.freeze([
 ]);
 const sourceAuthorityEntrypointSuffixes = Object.freeze([
   ".bat",
+  ".c",
+  ".cc",
   ".cjs",
   ".cmd",
   ".com",
+  ".cpp",
   ".cs",
+  ".css",
   ".exe",
+  ".go",
+  ".h",
+  ".hpp",
+  ".html",
+  ".java",
   ".js",
+  ".jsx",
   ".mjs",
+  ".php",
   ".ps1",
   ".py",
+  ".rb",
   ".rs",
   ".sh",
   ".ts",
-  ".tsx"
+  ".tsx",
+  ".vue"
 ]);
+const sourceAuthorityConfigSuffixes = Object.freeze([
+  ".csproj",
+  ".fsproj",
+  ".props",
+  ".sln",
+  ".targets",
+  ".toml",
+  ".vcxproj",
+  ".yaml",
+  ".yml"
+]);
+const tinyRustLmGitEntrypointRelativePaths = Object.freeze([
+  "tinyrustlm/app/app.js",
+  "tinyrustlm/app/index.html",
+  "tinyrustlm/package.json",
+  "tinyrustlm/tools/build-custody-owner.js",
+  "tinyrustlm/tools/deploy-tinyrustlm-web.ps1",
+  "tinyrustlm/tools/verify-single-source-authority.js",
+  "tinyrustlm/tools/windows-x64-msvc-environment.js"
+]);
+const tinyRustLmGitEntrypointIdentities = new Set(
+  tinyRustLmGitEntrypointRelativePaths.map((candidate) =>
+    candidate.toLowerCase()));
 const sourceAuthorityPathSegmentNames = Object.freeze([
   ".config",
   ".git",
@@ -254,7 +301,7 @@ const evidenceContainerHardLimits = Object.freeze({
   maximumDirectories: 256,
   maximumFileBytes: 4 * 1024 * 1024,
   maximumFiles: 1024,
-  maximumTotalBytes: 16 * 1024 * 1024
+  maximumTotalBytes: 32 * 1024 * 1024
 });
 const registeredEvidenceRoot = evidenceOnlyRoots[0].root;
 const canonicalArtifactsRoot = path.join(canonicalRoot, "artifacts");
@@ -270,6 +317,84 @@ const registeredBinaryReleaseEvidenceRoots = Object.freeze([
 ]);
 const registeredBinaryNugetEvidenceRoot = path.join(
   registeredEvidenceArtifactsRoot, "browser-packages");
+const registeredNonSourceStorageReparseProfiles = Object.freeze([
+  Object.freeze({
+    root: "E:\\Source\\External\\TinyRustLM-models\\artifacts\\sha256",
+    target: path.join(os.homedir(), "External", "TinyRustLM-models",
+      "artifacts", "sha256")
+  }),
+  Object.freeze({
+    root: "E:\\Source\\External\\TinyRustLM-models\\checkpoints",
+    target: path.join(os.homedir(), "External", "TinyRustLM-models",
+      "checkpoints")
+  }),
+  Object.freeze({
+    root: "E:\\Source\\External\\TinyRustLM-models\\sources\\sha256",
+    target: path.join(os.homedir(), "External", "TinyRustLM-models",
+      "sources", "sha256")
+  }),
+  Object.freeze({
+    root: "E:\\Source\\External\\TinyRustLM-python\\source-screen-py312-v1",
+    target: path.join(os.homedir(), "External", "TinyRustLM-python",
+      "source-screen-py312-v1")
+  })
+]);
+const looseSourceExemptRoots = Object.freeze([
+  ...canonicalEcosystemPlainDirectoryNames.map((name) =>
+    path.join(canonicalEcosystemRoot, name)),
+  path.join(registeredEvidenceArtifactsRoot, "external"),
+  path.join(registeredEvidenceArtifactsRoot, "releases"),
+  path.join(registeredEvidenceArtifactsRoot, "seed-host-native")
+]);
+const registeredReleaseEvidenceContainerRoot =
+  governedExternalSourceScopes[3].root;
+const registeredReleaseEvidenceDirectChildren = Object.freeze([
+  "browser-smoke-20260801-aa71b38",
+  "browser-smoke-20260802-aa71b38",
+  "browser-smoke-20260802-aa71b38-r2",
+  "browser-smoke-20260802-release-contract-v1",
+  "campaign-dashboard-20260802T1536Z.json",
+  "clean-history-secret-scan-20260802",
+  "clean-history-secret-scan-20260802.json",
+  ["dashboard", "snapshots"].join("-"),
+  "source-clean-root-20260802",
+  "tinyrustlm-full-test-20260802.txt",
+  "tinyrustlm-full-test-clean-history-20260802.txt",
+  "tinyrustlm-web-deployment-20260801T1754349786628Z-8a8536158c9f.json",
+  "tinyrustlm-web-deployment-20260801T1803079801501Z-6b38e2e11e1d.json",
+  "tinyrustlm-web-deployment-20260801T1857290939365Z-e7e07e4db9ac.json",
+  "tinyrustlm-web-deployment-20260801T1943080933664Z-58d4bd85d1ad.json",
+  "tinyrustlm-web-deployment-20260801T2057555014795Z-ea808d88127c.json",
+  "tinyrustlm-web-deployment-20260801T2102476277474Z-588eef9cb099.json",
+  "tinyrustlm-web-deployment-20260801T2106227991144Z-b0a7661bec53.json",
+  "tinyrustlm-web-deployment-20260801T2109239716361Z-427b567764b7.json",
+  "tinyrustlm-web-deployment-20260801T2112297360399Z-31bd27ffe0ee.json",
+  "tinyrustlm-web-deployment-20260801T2118491669738Z-ed1505573490.json",
+  "tinyrustlm-web-deployment-20260801T2145134090034Z-34bb81f2201e.json",
+  "tinyrustlm-web-secret-scan-20260801T1754349786628Z-8a8536158c9f.json",
+  "tinyrustlm-web-secret-scan-20260801T1803079801501Z-6b38e2e11e1d.json",
+  "tinyrustlm-web-secret-scan-20260801T1857290939365Z-e7e07e4db9ac.json",
+  "tinyrustlm-web-secret-scan-20260801T1943080933664Z-58d4bd85d1ad.json",
+  "tinyrustlm-web-secret-scan-20260801T2057555014795Z-ea808d88127c.json",
+  "tinyrustlm-web-secret-scan-20260801T2102476277474Z-588eef9cb099.json",
+  "tinyrustlm-web-secret-scan-20260801T2106227991144Z-b0a7661bec53.json",
+  "tinyrustlm-web-secret-scan-20260801T2109239716361Z-427b567764b7.json",
+  "tinyrustlm-web-secret-scan-20260801T2112297360399Z-31bd27ffe0ee.json",
+  "tinyrustlm-web-secret-scan-20260801T2118491669738Z-ed1505573490.json",
+  "tinyrustlm-web-secret-scan-20260801T2145134090034Z-34bb81f2201e.json",
+  "tinyrustlm-web-secret-scan-evidence-20260801T1754349786628Z-8a8536158c9f",
+  "tinyrustlm-web-secret-scan-evidence-20260801T1803079801501Z-6b38e2e11e1d",
+  "tinyrustlm-web-secret-scan-evidence-20260801T1857290939365Z-e7e07e4db9ac",
+  "tinyrustlm-web-secret-scan-evidence-20260801T1943080933664Z-58d4bd85d1ad",
+  "tinyrustlm-web-secret-scan-evidence-20260801T2057555014795Z-ea808d88127c",
+  "tinyrustlm-web-secret-scan-evidence-20260801T2102476277474Z-588eef9cb099",
+  "tinyrustlm-web-secret-scan-evidence-20260801T2106227991144Z-b0a7661bec53",
+  "tinyrustlm-web-secret-scan-evidence-20260801T2109239716361Z-427b567764b7",
+  "tinyrustlm-web-secret-scan-evidence-20260801T2112297360399Z-31bd27ffe0ee",
+  "tinyrustlm-web-secret-scan-evidence-20260801T2118491669738Z-ed1505573490",
+  "tinyrustlm-web-secret-scan-evidence-20260801T2145134090034Z-34bb81f2201e",
+  "web-deployments"
+]);
 const registeredBinaryReleasePackageId =
   "UAIX.Browser.p2pRuntime.SeedHost.Tool";
 const registeredBinaryReleaseMaximumBytes = 64 * 1024 * 1024;
@@ -314,11 +439,45 @@ const ecosystemAuthorityScanScopes = Object.freeze([
     root: canonicalEcosystemRoot
   }),
   Object.freeze({
+    ecosystemOnly: true,
     maximumDepth: ecosystemAuthorityMaximumDepth,
-    root: registeredEvidenceRoot
+    optional: true,
+    root: path.join(localWorkspaceRoot, "Worktrees")
   }),
   Object.freeze({
+    ecosystemOnly: true,
     maximumDepth: ecosystemAuthorityMaximumDepth,
+    optional: true,
+    root: path.join(localWorkspaceRoot, ".codex-tmp")
+  }),
+  Object.freeze({
+    ecosystemOnly: true,
+    maximumDepth: ecosystemAuthorityMaximumDepth,
+    optional: true,
+    root: path.join(localWorkspaceRoot, ".codex-temp")
+  }),
+  Object.freeze({
+    ecosystemOnly: true,
+    maximumDepth: ecosystemAuthorityMaximumDepth,
+    optional: true,
+    root: path.join(localWorkspaceRoot, ".tinyrustlm-evidence")
+  }),
+  Object.freeze({
+    ecosystemOnly: true,
+    maximumDepth: ecosystemAuthorityMaximumDepth,
+    optional: true,
+    root: path.join(localWorkspaceRoot, "External")
+  }),
+  ...governedExternalSourceScopes.map((scope) => Object.freeze({
+    ecosystemOnly: true,
+    maximumDepth: scope.maximumDepth,
+    optional: true,
+    root: scope.root
+  })),
+  Object.freeze({
+    ecosystemOnly: true,
+    maximumDepth: ecosystemAuthorityMaximumDepth,
+    optional: true,
     root: externalBinaryReleaseEvidenceRoot
   })
 ]);
@@ -393,6 +552,19 @@ const supersededSourceArchives = Object.freeze([
 ]);
 const windowsReservedPathSegmentPattern =
   /^(?:aux|clock\$|com[1-9]|con|lpt[1-9]|nul|prn)(?:\..*)?$/iu;
+const registeredEvidenceContainerProfiles = Object.freeze([
+  Object.freeze({
+    allowedDirectChildIdentities: Object.freeze(
+      registeredReleaseEvidenceDirectChildren.map(
+        evidenceContainerDirectChildIdentity)),
+    maximumDepth: 6,
+    maximumDirectories: 128,
+    maximumFileBytes: 1024 * 1024,
+    maximumFiles: 256,
+    maximumTotalBytes: 32 * 1024 * 1024,
+    root: registeredReleaseEvidenceContainerRoot
+  })
+]);
 
 function fail(code, detail) {
   const error = new Error(detail ? `${code}: ${detail}` : code);
@@ -524,6 +696,58 @@ function isStrictDescendantPath(candidate, root) {
   const relative = path.relative(path.resolve(root), path.resolve(candidate));
   return relative.length !== 0 && relative !== ".." &&
     !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative);
+}
+
+// Matches only exact product/tool entrypoints relative to one enclosing Git root.
+function isTinyRustLmGitEntrypoint(candidate, gitRoot) {
+  if (typeof candidate !== "string" || typeof gitRoot !== "string" ||
+      !isStrictDescendantPath(candidate, gitRoot)) {
+    return false;
+  }
+  const relative = path.relative(path.resolve(gitRoot), path.resolve(candidate));
+  const identity = relative.split(/[\\/]+/u).join("/").toLowerCase();
+  return tinyRustLmGitEntrypointIdentities.has(identity);
+}
+
+function isCanonicalEcosystemRepositoryPath(candidate) {
+  return ecosystemRepositories.some((profile) => samePath(candidate, profile.root) ||
+    isStrictDescendantPath(candidate, profile.root));
+}
+
+// Classifies names only; broad governed scans never open arbitrary file bytes.
+function isLooseSourceAuthorityEntry(candidate, authorityRoot) {
+  if (typeof candidate !== "string" || candidate.length === 0 ||
+      typeof authorityRoot !== "string" || authorityRoot.length === 0) {
+    return false;
+  }
+  if (samePath(candidate, path.join(canonicalEcosystemRoot,
+    canonicalEcosystemLegacyArchiveName))) return false;
+  if (looseSourceExemptRoots.some((root) => samePath(candidate, root) ||
+      isStrictDescendantPath(candidate, root))) return false;
+  const lowerName = path.basename(candidate).normalize("NFC").toLowerCase();
+  const relative = path.relative(path.resolve(authorityRoot),
+    path.resolve(candidate));
+  if (relative.length === 0 || relative === ".." ||
+      relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
+    return true;
+  }
+  const sourceBearingDirectoryNames = new Set([
+    ".config", ".github", ".uai", ".vscode", "config", "entrypoint",
+    "entrypoints", "scripts", "source", "src", "tools"
+  ]);
+  const parentSegments = relative.split(/[\\/]+/u).slice(0, -1)
+    .map((segment) => segment.normalize("NFC").toLowerCase());
+  return sourceBearingDirectoryNames.has(lowerName) ||
+    parentSegments.some((segment) => sourceBearingDirectoryNames.has(segment)) ||
+    sourceAuthorityControlLeafNames.includes(lowerName) ||
+    lowerName === ".git" || lowerName.endsWith(".git") ||
+    lowerName === "cmakelists.txt" || lowerName === "composer.json" ||
+    lowerName === "go.mod" || lowerName === "go.sum" ||
+    lowerName === "pyproject.toml" || lowerName === "requirements.txt" ||
+    lowerName.startsWith("dockerfile.") ||
+    sourceAuthorityConfigSuffixes.some((suffix) => lowerName.endsWith(suffix)) ||
+    sourceAuthorityEntrypointSuffixes.some((suffix) =>
+      lowerName.endsWith(suffix));
 }
 
 function sameFileObservation(left, right) {
@@ -1129,7 +1353,7 @@ function readBoundedText(filePath, maximumBytes = 256 * 1024) {
 }
 
 // Extracts one normalized top-level policy block without changing repo sections.
-function extractEcosystemSourceRootPolicyBlock(source) {
+function extractNormalizedTopLevelPolicyBlock(source, heading) {
   if (typeof source !== "string" || source.length === 0 ||
       source.startsWith("\ufeff") || source.includes("\0")) {
     fail("source_authority_ecosystem_policy_invalid", "invalid_text");
@@ -1139,7 +1363,6 @@ function extractEcosystemSourceRootPolicyBlock(source) {
     fail("source_authority_ecosystem_policy_invalid", "invalid_line_endings");
   }
   const lines = normalized.split("\n");
-  const heading = "ecosystem_source_root_prohibitions:";
   const starts = lines.flatMap((line, index) => line === heading ? [index] : []);
   if (starts.length !== 1) {
     fail("source_authority_ecosystem_policy_invalid", "heading_count");
@@ -1154,6 +1377,16 @@ function extractEcosystemSourceRootPolicyBlock(source) {
   }
   while (end > start + 1 && lines[end - 1] === "") end -= 1;
   return `${lines.slice(start, end).join("\n")}\n`;
+}
+
+function extractEcosystemSourceRootPolicyBlock(source) {
+  return extractNormalizedTopLevelPolicyBlock(source,
+    "ecosystem_source_root_prohibitions:");
+}
+
+function extractSingleTinyRustLmSourcePolicyBlock(source) {
+  return extractNormalizedTopLevelPolicyBlock(source,
+    "single_tinyrustlm_source_prohibitions:");
 }
 
 // Requires every canonical repository to carry the generated policy verbatim.
@@ -1176,8 +1409,10 @@ function verifyEcosystemSourceRootPolicyParity(options = {}) {
       fail("source_authority_scan_incomplete", error?.path || policyPath);
     }
     let block;
+    let singleSourceBlock;
     try {
       block = extractEcosystemSourceRootPolicyBlock(source);
+      singleSourceBlock = extractSingleTinyRustLmSourcePolicyBlock(source);
     } catch (error) {
       if (error?.code !== "source_authority_ecosystem_policy_invalid") throw error;
       fail(error.code, `${policyPath}:${error.detail || "invalid_block"}`);
@@ -1186,10 +1421,88 @@ function verifyEcosystemSourceRootPolicyParity(options = {}) {
       fail("source_authority_ecosystem_policy_invalid",
         `${policyPath}:block_mismatch`);
     }
+    const singleSourceBytes = Buffer.from(singleSourceBlock, "utf8");
+    const singleSourceSha256 = crypto.createHash("sha256")
+      .update(singleSourceBytes)
+      .digest("hex");
+    if (singleSourceBytes.length !== canonicalSingleTinyRustLmSourcePolicyBytes ||
+        singleSourceSha256 !== canonicalSingleTinyRustLmSourcePolicySha256) {
+      fail("source_authority_ecosystem_policy_invalid",
+        `${policyPath}:single_tinyrustlm_source_block_mismatch`);
+    }
   }
   return Object.freeze({
     policyBlock: canonicalEcosystemSourceRootPolicyBlock,
-    policyPaths: Object.freeze([...policyPaths])
+    policyPaths: Object.freeze([...policyPaths]),
+    singleTinyRustLmSourcePolicyBytes: canonicalSingleTinyRustLmSourcePolicyBytes,
+    singleTinyRustLmSourcePolicySha256: canonicalSingleTinyRustLmSourcePolicySha256
+  });
+}
+
+// Requires the active root routing memory to equal one small tracked current-only policy.
+function verifyCanonicalEcosystemWorkspacePolicy(options = {}) {
+  const readText = options.readText || ((candidate, maximumBytes) =>
+    readBoundedText(candidate, maximumBytes));
+  if (typeof readText !== "function") {
+    fail("source_authority_workspace_policy_invalid", "reader");
+  }
+  if (!options.readText &&
+      (!directStat(canonicalEcosystemWorkspacePath, "file") ||
+        !directStat(canonicalEcosystemWorkspaceTemplatePath, "file"))) {
+    fail("source_authority_workspace_policy_invalid", "path");
+  }
+  let template;
+  let active;
+  try {
+    template = readText(
+      canonicalEcosystemWorkspaceTemplatePath,
+      canonicalEcosystemWorkspacePolicyBytes
+    );
+    active = readText(
+      canonicalEcosystemWorkspacePath,
+      canonicalEcosystemWorkspacePolicyBytes
+    );
+  } catch (error) {
+    if (error?.code === "source_authority_workspace_policy_invalid") throw error;
+    fail("source_authority_scan_incomplete", error?.path || "workspace_policy");
+  }
+  const templateBytes = Buffer.from(template, "utf8");
+  const digest = crypto.createHash("sha256").update(templateBytes).digest("hex");
+  if (templateBytes.byteLength !== canonicalEcosystemWorkspacePolicyBytes ||
+      digest !== canonicalEcosystemWorkspacePolicySha256 ||
+      active !== template || template.startsWith("\ufeff") ||
+      template.includes("\0") || template.includes("\r") ||
+      !template.endsWith("\n")) {
+    fail("source_authority_workspace_policy_invalid", "identity");
+  }
+  for (const forbidden of [
+    "Use only TinyRustLM recovery clone",
+    "usable_worktrees:",
+    "exact_resume:",
+    ".tinyrustlm-model-acquisition-recovered-",
+    "Worktrees\\source-checkin-recovery-",
+    "MemoryEndpoints remains unauthorized"
+  ]) {
+    if (template.includes(forbidden)) {
+      fail("source_authority_workspace_policy_invalid", "obsolete_instruction");
+    }
+  }
+  for (const required of [
+    "profile: rust-site-family.workspace.current.v1",
+    `workspace_root: ${canonicalEcosystemRoot}`,
+    `canonical_verifier: ${canonicalRoot}\\tinyrustlm\\tools\\verify-single-source-authority.js`,
+    "sole_source_rule: These seven direct physical non-reparse repositories are the only editable ecosystem source roots.",
+    "live_catalog: MiniModel.org currently has zero independently qualified model entries and zero externally proven peer lanes."
+  ]) {
+    if (!template.includes(required)) {
+      fail("source_authority_workspace_policy_invalid", "required_instruction");
+    }
+  }
+  return Object.freeze({
+    byteLength: templateBytes.byteLength,
+    path: canonicalEcosystemWorkspacePath,
+    sha256: digest,
+    templatePath: canonicalEcosystemWorkspaceTemplatePath
   });
 }
 
@@ -1567,7 +1880,10 @@ function discoverEcosystemAuthorityFiles(
   if (scanScopes.length === 0 || scanScopes.some((scope) =>
     !scope || typeof scope.root !== "string" || scope.root.length === 0 ||
     !hasCanonicalPathSegments(scope.root) ||
-    !Number.isSafeInteger(scope.maximumDepth) || scope.maximumDepth < 0)) {
+    !Number.isSafeInteger(scope.maximumDepth) || scope.maximumDepth < 0 ||
+    (scope.ecosystemOnly !== undefined &&
+      typeof scope.ecosystemOnly !== "boolean") ||
+    (scope.optional !== undefined && typeof scope.optional !== "boolean"))) {
     fail("source_authority_scan_scope_invalid");
   }
   const fileSystem = options.fileSystem || fs;
@@ -1600,6 +1916,28 @@ function discoverEcosystemAuthorityFiles(
   }
   const configuredExemptStorageIdentities = new Set(
     configuredExemptStorageRoots.map(pathIdentity));
+  const configuredStorageReparseProfiles = Object.hasOwn(options,
+    "nonSourceStorageReparseProfiles")
+    ? options.nonSourceStorageReparseProfiles
+    : registeredNonSourceStorageReparseProfiles;
+  if (!Array.isArray(configuredStorageReparseProfiles) ||
+      configuredStorageReparseProfiles.some((profile) =>
+        !profile || typeof profile.root !== "string" ||
+        typeof profile.target !== "string" ||
+        profile.root.length === 0 || profile.target.length === 0 ||
+        !hasCanonicalPathSegments(profile.root) ||
+        !hasCanonicalPathSegments(profile.target) ||
+        samePath(profile.root, profile.target) ||
+        isCanonicalEcosystemRepositoryPath(profile.root) ||
+        samePath(profile.target, localWorkspaceRoot) ||
+        isStrictDescendantPath(profile.target, localWorkspaceRoot)) ||
+      new Set(configuredStorageReparseProfiles.map((profile) =>
+        pathIdentity(profile.root))).size !== configuredStorageReparseProfiles.length) {
+    fail("source_authority_scan_scope_invalid");
+  }
+  const storageReparseProfilesByRoot = new Map(
+    configuredStorageReparseProfiles.map((profile) =>
+      [pathIdentity(profile.root), profile]));
   const scopeIdentities = scanScopes.map((scope) => pathIdentity(scope.root));
   if (new Set(scopeIdentities).size !== scopeIdentities.length) {
     fail("source_authority_scan_scope_invalid");
@@ -1618,7 +1956,9 @@ function discoverEcosystemAuthorityFiles(
   const reparseTargetDrift = new Set();
   const depthExceeded = new Set();
   const nonRegular = new Set();
+  const looseSourceFiles = new Set();
   const sourceArchives = new Set();
+  const partialGitRoots = new Set();
   const classifyBinaryRelease = options.classifyBinaryReleaseArchive ||
     ((candidate) => classifyRegisteredBinaryReleaseArchive(candidate, {
       fileSystem
@@ -1629,7 +1969,12 @@ function discoverEcosystemAuthorityFiles(
   const pending = scanScopes.map((scope) => ({
     depth: 0,
     directory: path.resolve(scope.root),
-    maximumDepth: scope.maximumDepth
+    ecosystemOnly: scope.ecosystemOnly === true,
+    gitRoot: null,
+    isScopeRoot: true,
+    maximumDepth: scope.maximumDepth,
+    optional: scope.optional === true,
+    scopeRoot: path.resolve(scope.root)
   }));
 
   // Normalizes an I/O failure into the scan's fail-closed path inventory.
@@ -1721,6 +2066,36 @@ function discoverEcosystemAuthorityFiles(
       classifyEvidenceLeafSymlink(resolvedCandidate, stat);
       return;
     }
+    const storageProfile = storageReparseProfilesByRoot.get(
+      pathIdentity(resolvedCandidate));
+    if (storageProfile) {
+      let target = resolvedTarget;
+      if (target === undefined) {
+        try {
+          target = realpathNative(resolvedCandidate);
+        } catch (error) {
+          recordUnreadable(error, resolvedCandidate);
+          return;
+        }
+      }
+      let targetStat;
+      let directTarget;
+      try {
+        targetStat = fileSystem.lstatSync(target);
+        directTarget = realpathNative(target);
+      } catch (error) {
+        recordUnreadable(error, resolvedCandidate);
+        return;
+      }
+      if (!stat?.isSymbolicLink() || !samePath(target, storageProfile.target) ||
+          !targetStat.isDirectory() || targetStat.isSymbolicLink() ||
+          !samePath(directTarget, storageProfile.target)) {
+        reparseTargetDrift.add(resolvedCandidate);
+        return;
+      }
+      permittedReparses.add(resolvedCandidate);
+      return;
+    }
     let target = resolvedTarget;
     if (target === undefined) {
       try {
@@ -1762,11 +2137,21 @@ function discoverEcosystemAuthorityFiles(
   }
 
   while (pending.length !== 0) {
-    const { depth, directory, maximumDepth } = pending.pop();
+    const {
+      depth,
+      directory,
+      ecosystemOnly,
+      gitRoot,
+      isScopeRoot,
+      maximumDepth,
+      optional,
+      scopeRoot
+    } = pending.pop();
     let directoryStat;
     try {
       directoryStat = fileSystem.lstatSync(directory);
     } catch (error) {
+      if (isScopeRoot && optional && isMissingPathError(error)) continue;
       recordUnreadable(error, directory);
       continue;
     }
@@ -1787,18 +2172,40 @@ function discoverEcosystemAuthorityFiles(
       recordUnreadable(error, directory);
       continue;
     }
-    for (const entry of canonicalDirectoryEntries(entries, directory,
-      nonCanonicalEntries)) {
+    const scannedEntries = canonicalDirectoryEntries(entries, directory,
+      nonCanonicalEntries);
+    for (const entry of scannedEntries) {
       if (typeof entry.isDirectory !== "function" ||
           typeof entry.isFile !== "function" ||
           typeof entry.isSymbolicLink !== "function") {
         fail("source_authority_discovery_invalid", directory);
       }
+    }
+    const directGitMarker = scannedEntries.find((entry) =>
+      entry.name.toLowerCase() === ".git" &&
+      (entry.isDirectory() || entry.isFile() || entry.isSymbolicLink()));
+    const effectiveGitRoot = directGitMarker ? directory : gitRoot;
+
+    for (const entry of scannedEntries) {
       const child = path.join(directory, entry.name);
       const lowerName = entry.name.toLowerCase();
-      const isMarker = markerNames.has(lowerName);
+      const sourceEntrypoint = effectiveGitRoot !== null &&
+        isTinyRustLmGitEntrypoint(child, effectiveGitRoot);
+      const ecosystemShaped = isEcosystemIdentityShapedPath(child);
+      const isMarker = markerNames.has(lowerName) &&
+        (!ecosystemOnly || ecosystemShaped);
       const isReviewBundle = lowerName === allSourceReviewBundleName;
-      if (isSourceArchiveName(entry.name)) {
+      const isSourceArchive = isSourceArchiveName(entry.name) &&
+        (!ecosystemOnly || ecosystemShaped);
+      const isLooseSource = !isCanonicalEcosystemRepositoryPath(child) &&
+        (!ecosystemOnly || ecosystemShaped) && !isMarker &&
+        !isReviewBundle && !isSourceArchive &&
+        isLooseSourceAuthorityEntry(child, scopeRoot);
+      if (sourceEntrypoint && !ecosystemRepositories.some((profile) =>
+        samePath(effectiveGitRoot, profile.root))) {
+        partialGitRoots.add(path.resolve(effectiveGitRoot));
+      }
+      if (isSourceArchive) {
         if (entry.isFile()) {
           try {
             if (classifyBinaryRelease(child)) {
@@ -1815,10 +2222,11 @@ function discoverEcosystemAuthorityFiles(
       }
       if (isMarker) markerFiles.add(path.resolve(child));
       if (isReviewBundle) reviewBundles.add(path.resolve(child));
+      if (isLooseSource) looseSourceFiles.add(path.resolve(child));
 
       let stat;
       if (entry.isDirectory() || entry.isSymbolicLink() ||
-          isMarker || isReviewBundle) {
+          isMarker || isReviewBundle || isLooseSource || sourceEntrypoint) {
         try {
           stat = fileSystem.lstatSync(child);
         } catch (error) {
@@ -1827,7 +2235,11 @@ function discoverEcosystemAuthorityFiles(
         }
       }
       if (entry.isSymbolicLink() || stat?.isSymbolicLink()) {
-        classifyReparse(child, stat);
+        if (storageReparseProfilesByRoot.has(pathIdentity(child)) ||
+            !ecosystemOnly || sourceEntrypoint || isMarker ||
+            isReviewBundle || isSourceArchive) {
+          classifyReparse(child, stat);
+        }
         continue;
       }
       if ((isMarker || isReviewBundle) && !stat?.isFile()) {
@@ -1853,7 +2265,12 @@ function discoverEcosystemAuthorityFiles(
       pending.push({
         depth: depth + 1,
         directory: child,
-        maximumDepth
+        ecosystemOnly,
+        gitRoot: effectiveGitRoot,
+        isScopeRoot: false,
+        maximumDepth,
+        optional: false,
+        scopeRoot
       });
     }
   }
@@ -1866,6 +2283,8 @@ function discoverEcosystemAuthorityFiles(
         left.localeCompare(right))),
     markerFiles: Object.freeze([...markerFiles].sort((left, right) =>
       left.localeCompare(right))),
+    looseSourceFiles: Object.freeze([...looseSourceFiles].sort((left, right) =>
+      left.localeCompare(right))),
     nonCanonicalEntries: Object.freeze([...nonCanonicalEntries].sort(
       (left, right) => left.localeCompare(right))),
     nonRegular: Object.freeze([...nonRegular].sort((left, right) =>
@@ -1876,6 +2295,8 @@ function discoverEcosystemAuthorityFiles(
       [...permittedBinaryReleaseArchives].sort((left, right) =>
         left.localeCompare(right))),
     permittedReparses: Object.freeze([...permittedReparses].sort((left, right) =>
+      left.localeCompare(right))),
+    partialGitRoots: Object.freeze([...partialGitRoots].sort((left, right) =>
       left.localeCompare(right))),
     reparses: Object.freeze([...reparses].sort((left, right) =>
       left.localeCompare(right))),
@@ -2029,9 +2450,11 @@ function verifyEcosystemAuthorityFileDiscovery(discovery) {
   const arrayFields = [
     "depthExceeded",
     "exemptNonSourceStorageRoots",
+    "looseSourceFiles",
     "markerFiles",
     "nonCanonicalEntries",
     "nonRegular",
+    "partialGitRoots",
     "permittedBinaryReleaseArchives",
     "permittedLeafSymlinks",
     "permittedReparses",
@@ -2058,6 +2481,13 @@ function verifyEcosystemAuthorityFileDiscovery(discovery) {
   ].sort((left, right) => left.localeCompare(right));
   if (incomplete.length !== 0) {
     fail("source_authority_scan_incomplete", incomplete.join(" | "));
+  }
+  if (discovery.looseSourceFiles.length !== 0) {
+    fail("source_authority_loose_source_present",
+      discovery.looseSourceFiles.join(" | "));
+  }
+  if (discovery.partialGitRoots.length !== 0) {
+    fail("source_authority_partial_git_source_present");
   }
   if (discovery.sourceArchives.length !== 0) {
     fail("source_authority_source_archive_present",
@@ -2601,6 +3031,17 @@ function verifyEvidenceOnlyRoot(profile) {
   }
 }
 
+function evidenceContainerProfilesForVerification(options = {}) {
+  const profiles = Object.hasOwn(options, "evidenceContainerProfiles")
+    ? options.evidenceContainerProfiles
+    : registeredEvidenceContainerProfiles;
+  if (!Array.isArray(profiles) ||
+      profiles.length > evidenceContainerHardLimits.maximumContainers) {
+    fail("source_authority_evidence_container_profile_invalid");
+  }
+  return profiles;
+}
+
 function verifySingleSourceAuthority(options = {}) {
   const root = path.resolve(options.repositoryRoot || repositoryRoot);
   if (!isDirectSourceRoot(root)) {
@@ -2649,6 +3090,7 @@ function verifySingleSourceAuthority(options = {}) {
   }
   const rootEntryDiscovery = discoverRootEntries();
   verifyCanonicalEcosystemRootEntryDiscovery(rootEntryDiscovery);
+  verifyCanonicalEcosystemWorkspacePolicy();
   verifyCanonicalEcosystemRepositories(options);
   const policyVerification = verifyEcosystemSourceRootPolicyParity();
   const binaryArchiveClassificationCache = new Map();
@@ -2690,13 +3132,8 @@ function verifySingleSourceAuthority(options = {}) {
   verifyForbiddenPathAbsence(supersededSourceArchives,
     "source_authority_superseded_archive_present");
   for (const profile of evidenceOnlyRoots) verifyEvidenceOnlyRoot(profile);
-  const evidenceContainerProfiles = Object.hasOwn(options,
-    "evidenceContainerProfiles") ? options.evidenceContainerProfiles : [];
-  if (!Array.isArray(evidenceContainerProfiles) ||
-      evidenceContainerProfiles.length >
-        evidenceContainerHardLimits.maximumContainers) {
-    fail("source_authority_evidence_container_profile_invalid");
-  }
+  const evidenceContainerProfiles =
+    evidenceContainerProfilesForVerification(options);
   for (const profile of evidenceContainerProfiles) {
     verifyBoundedEvidenceContainer(profile, {
       fileSystem: options.evidenceContainerFileSystem || fs
@@ -2825,8 +3262,14 @@ module.exports = Object.freeze({
   canonicalEcosystemPlainFileNames,
   canonicalEcosystemRepositoryNames,
   canonicalEcosystemRoot,
+  canonicalEcosystemWorkspacePath,
+  canonicalEcosystemWorkspacePolicyBytes,
+  canonicalEcosystemWorkspacePolicySha256,
+  canonicalEcosystemWorkspaceTemplatePath,
   canonicalEcosystemSourceRootPolicyBlock,
   canonicalEcosystemTabooPaths,
+  canonicalSingleTinyRustLmSourcePolicyBytes,
+  canonicalSingleTinyRustLmSourcePolicySha256,
   canonicalRoot,
   classifyRegisteredBinaryNugetArchive,
   classifyRegisteredBinaryReleaseArchive,
@@ -2837,6 +3280,7 @@ module.exports = Object.freeze({
   discoverEcosystemSourceRoots,
   discoverLocalSourceRoots,
   discoverSourceArchives,
+  evidenceContainerProfilesForVerification,
   effectiveScanScopes,
   ecosystemAuthorityMaximumDepth,
   ecosystemAuthorityScanScopes,
@@ -2848,6 +3292,8 @@ module.exports = Object.freeze({
   hasCanonicalPathSegments,
   isDirectSourceRoot,
   isEcosystemSourceMarkedRoot,
+  isLooseSourceAuthorityEntry,
+  isTinyRustLmGitEntrypoint,
   isSourceMarkedRoot,
   isSourceArchiveName,
   isCanonicalPathSegment,
@@ -2856,8 +3302,11 @@ module.exports = Object.freeze({
   registeredBinaryReleaseArchiveProfiles,
   registeredBinaryReleaseEvidenceRoot,
   registeredBinaryNugetEvidenceRoot,
+  registeredEvidenceContainerProfiles,
   registeredEvidenceArtifactsRoot,
   registeredEvidenceRoot,
+  registeredNonSourceStorageReparseProfiles,
+  registeredReleaseEvidenceContainerRoot,
   requiredBranch,
   requiredOrigin,
   sourceArchiveScanScopes,
@@ -2867,8 +3316,10 @@ module.exports = Object.freeze({
   supersededEcosystemSourceRoots,
   supersededLooseSourceFiles,
   supersededSourceRoots,
+  tinyRustLmGitEntrypointRelativePaths,
   verifyDiscovery,
   verifyCanonicalEcosystemRootEntryDiscovery,
+  verifyCanonicalEcosystemWorkspacePolicy,
   verifyEcosystemAuthorityFileDiscovery,
   verifyEcosystemDiscovery,
   verifyEcosystemSourceRootPolicyParity,
@@ -2877,5 +3328,6 @@ module.exports = Object.freeze({
   verifyBoundedEvidenceContainer,
   verifySingleSourceAuthority,
   verifySourceArchiveDiscovery,
-  extractEcosystemSourceRootPolicyBlock
+  extractEcosystemSourceRootPolicyBlock,
+  extractSingleTinyRustLmSourcePolicyBlock
 });

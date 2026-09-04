@@ -19,8 +19,14 @@ const {
   canonicalEcosystemPlainFileNames,
   canonicalEcosystemRepositoryNames,
   canonicalEcosystemRoot,
+  canonicalEcosystemWorkspacePath,
+  canonicalEcosystemWorkspacePolicyBytes,
+  canonicalEcosystemWorkspacePolicySha256,
+  canonicalEcosystemWorkspaceTemplatePath,
   canonicalEcosystemSourceRootPolicyBlock,
   canonicalEcosystemTabooPaths,
+  canonicalSingleTinyRustLmSourcePolicyBytes,
+  canonicalSingleTinyRustLmSourcePolicySha256,
   canonicalRoot,
   classifyRegisteredBinaryNugetArchive,
   classifyRegisteredBinaryReleaseArchive,
@@ -31,6 +37,7 @@ const {
   discoverLocalSourceRoots,
   discoverMarkedSourceRoots,
   discoverSourceArchives,
+  evidenceContainerProfilesForVerification,
   effectiveScanScopes,
   ecosystemAuthorityMaximumDepth,
   ecosystemAuthorityScanScopes,
@@ -40,16 +47,21 @@ const {
   evidenceOnlyRoots,
   externalBinaryReleaseEvidenceRoot,
   extractEcosystemSourceRootPolicyBlock,
+  extractSingleTinyRustLmSourcePolicyBlock,
   governedExternalSourceScopes,
   hasArchiveContainerMagic,
   isCanonicalPathSegment,
+  isLooseSourceAuthorityEntry,
   isSourceArchiveName,
   localWorkspaceRoot,
   readBoundedText,
   registeredBinaryReleaseArchiveProfiles,
   registeredBinaryReleaseEvidenceRoot,
+  registeredEvidenceContainerProfiles,
   registeredEvidenceArtifactsRoot,
   registeredEvidenceRoot,
+  registeredNonSourceStorageReparseProfiles,
+  registeredReleaseEvidenceContainerRoot,
   requiredBranch,
   requiredOrigin,
   sourceArchiveScanScopes,
@@ -59,8 +71,10 @@ const {
   supersededEcosystemSourceRoots,
   supersededLooseSourceFiles,
   supersededSourceRoots,
+  tinyRustLmGitEntrypointRelativePaths,
   verifyDiscovery,
   verifyCanonicalEcosystemRootEntryDiscovery,
+  verifyCanonicalEcosystemWorkspacePolicy,
   verifyEcosystemAuthorityFileDiscovery,
   verifyEcosystemDiscovery,
   verifyEcosystemSourceRootPolicyParity,
@@ -186,9 +200,11 @@ function canonicalAuthorityFileDiscovery(overrides = {}) {
   return {
     depthExceeded: [],
     exemptNonSourceStorageRoots: [...canonicalEcosystemExemptStorageRoots],
+    looseSourceFiles: [],
     markerFiles: [...canonicalEcosystemAuthorityMarkers],
     nonCanonicalEntries: [],
     nonRegular: [],
+    partialGitRoots: [],
     permittedBinaryReleaseArchives: [],
     permittedLeafSymlinks: [],
     permittedReparses: [],
@@ -335,6 +351,46 @@ test("declares the required path as the sole TinyRustLM.com source checkout", ()
     /Fail closed if any recovered, dated, hidden, backup, Worktrees, evidence, or quarantine directory contains another TinyRustLM\.com source tree\./u);
 });
 
+test("root workspace routing is one tracked current-only byte identity", () => {
+  const template = directAbsoluteText(canonicalEcosystemWorkspaceTemplatePath);
+  const active = directAbsoluteText(canonicalEcosystemWorkspacePath);
+  assert.equal(active, template);
+  assert.equal(Buffer.byteLength(template, "utf8"),
+    canonicalEcosystemWorkspacePolicyBytes);
+  assert.equal(crypto.createHash("sha256").update(template, "utf8").digest("hex"),
+    canonicalEcosystemWorkspacePolicySha256);
+  assert.deepEqual(verifyCanonicalEcosystemWorkspacePolicy(), {
+    byteLength: canonicalEcosystemWorkspacePolicyBytes,
+    path: canonicalEcosystemWorkspacePath,
+    sha256: canonicalEcosystemWorkspacePolicySha256,
+    templatePath: canonicalEcosystemWorkspaceTemplatePath
+  });
+  for (const forbidden of [
+    "Use only TinyRustLM recovery clone",
+    "usable_worktrees:",
+    "exact_resume:",
+    ".tinyrustlm-model-acquisition-recovered-",
+    "Worktrees\\source-checkin-recovery-",
+    "MemoryEndpoints remains unauthorized"
+  ]) {
+    assert.equal(template.includes(forbidden), false, forbidden);
+  }
+  for (const mutation of [
+    `${template}obsolete\n`,
+    template.replace("E:\\Source\\Rust\\TinyRustLM.com", "E:\\Source\\other"),
+    template.replace("zero independently qualified", "three independently qualified")
+  ]) {
+    assert.throws(
+      () => verifyCanonicalEcosystemWorkspacePolicy({
+        readText: (candidate) => candidate === canonicalEcosystemWorkspaceTemplatePath
+          ? template
+          : mutation
+      }),
+      (error) => error?.code === "source_authority_workspace_policy_invalid"
+    );
+  }
+});
+
 test("uses a path-free bounded evidence-container policy", () => {
   assert.deepEqual(evidenceContainerHardLimits, {
     maximumContainers: 16,
@@ -343,14 +399,28 @@ test("uses a path-free bounded evidence-container policy", () => {
     maximumDirectories: 256,
     maximumFileBytes: 4 * 1024 * 1024,
     maximumFiles: 1024,
-    maximumTotalBytes: 16 * 1024 * 1024
+    maximumTotalBytes: 32 * 1024 * 1024
   });
+  assert.equal(registeredEvidenceContainerProfiles.length, 1);
+  assert.equal(registeredEvidenceContainerProfiles[0].root,
+    registeredReleaseEvidenceContainerRoot);
+  assert.equal(registeredReleaseEvidenceContainerRoot,
+    "E:\\Source\\External\\TinyRustLM-release-evidence");
+  assert.equal(registeredEvidenceContainerProfiles[0]
+    .allowedDirectChildIdentities.length, 45);
+  assert.deepEqual(evidenceContainerProfilesForVerification(),
+    registeredEvidenceContainerProfiles);
+  assert.equal(registeredEvidenceContainerProfiles.some((profile) =>
+    profile.root.toLowerCase().startsWith("d:\\")), false);
   const directName = "records";
   assert.equal(evidenceContainerDirectChildIdentity(directName),
     `sha256:${crypto.createHash("sha256")
       .update(directName, "utf8").digest("hex")}`);
 
   withSyntheticEvidenceContainer((root, profile) => {
+    assert.deepEqual(evidenceContainerProfilesForVerification({
+      evidenceContainerProfiles: [profile]
+    }), [profile]);
     assert.deepEqual(verifyBoundedEvidenceContainer(profile), {
       verdict: "pass"
     });
@@ -935,11 +1005,40 @@ test("derives the exact 15-file ecosystem authority marker inventory", () => {
     path.join(registeredEvidenceRoot, "artifacts"));
   assert.deepEqual(ecosystemAuthorityScanScopes.map((scope) => scope.root), [
     canonicalEcosystemRoot,
-    registeredEvidenceRoot,
+    path.join(localWorkspaceRoot, "Worktrees"),
+    path.join(localWorkspaceRoot, ".codex-tmp"),
+    path.join(localWorkspaceRoot, ".codex-temp"),
+    path.join(localWorkspaceRoot, ".tinyrustlm-evidence"),
+    path.join(localWorkspaceRoot, "External"),
+    ...governedExternalSourceScopes.map((scope) => scope.root),
     externalBinaryReleaseEvidenceRoot
   ]);
-  assert.equal(ecosystemAuthorityScanScopes.every((scope) =>
-    scope.maximumDepth === ecosystemAuthorityMaximumDepth), true);
+  assert.deepEqual(ecosystemAuthorityScanScopes.map((scope) =>
+    scope.maximumDepth), [
+    ecosystemAuthorityMaximumDepth,
+    ecosystemAuthorityMaximumDepth,
+    ecosystemAuthorityMaximumDepth,
+    ecosystemAuthorityMaximumDepth,
+    ecosystemAuthorityMaximumDepth,
+    ecosystemAuthorityMaximumDepth,
+    3,
+    3,
+    ecosystemAuthorityMaximumDepth,
+    5,
+    ecosystemAuthorityMaximumDepth
+  ]);
+  for (const root of ["Worktrees", ".codex-tmp", ".codex-temp",
+    ".tinyrustlm-evidence", "External"]
+    .map((name) => path.join(localWorkspaceRoot, name))) {
+    const scope = ecosystemAuthorityScanScopes.find((candidate) =>
+      candidate.root === root);
+    assert.equal(scope.optional, true, root);
+    assert.equal(scope.ecosystemOnly, true, root);
+  }
+  assert.equal(ecosystemAuthorityScanScopes.slice(1).every((scope) =>
+    scope.ecosystemOnly === true), true);
+  assert.equal(ecosystemAuthorityScanScopes.slice(1).every((scope) =>
+    scope.optional === true), true);
   assert.equal(canonicalEcosystemAuthorityMarkers.length, 15);
   assert.equal(new Set(canonicalEcosystemAuthorityMarkers.map((candidate) =>
     candidate.toLowerCase())).size, 15);
@@ -953,6 +1052,97 @@ test("derives the exact 15-file ecosystem authority marker inventory", () => {
     assert.equal(canonicalEcosystemAuthorityMarkers.includes(
       path.join(profile.root, ".uai", "taboo.uai")), true, profile.id);
   }
+});
+
+test("strict governed scans reject a partial TinyRustLM Git source fixture", () => {
+  const governedRoot = path.resolve(os.tmpdir(),
+    "authority-partial-git-governed-root");
+  const partialRoot = path.join(governedRoot, "operation", "source");
+  const unrelatedRoot = path.join(governedRoot, "unrelated-repository");
+  const cacheRoot = path.join(governedRoot, "cache");
+  const stagingRoot = path.join(governedRoot, "staging");
+  const evidenceRoot = path.join(governedRoot, "evidence");
+  const partialTinyRoot = path.join(partialRoot, "tinyrustlm");
+  const partialToolsRoot = path.join(partialTinyRoot, "tools");
+  const unrelatedSourceRoot = path.join(unrelatedRoot, "src");
+  const cacheTinyRoot = path.join(cacheRoot, "tinyrustlm");
+  const cacheToolsRoot = path.join(cacheTinyRoot, "tools");
+  const stagingTinyRoot = path.join(stagingRoot, "tinyrustlm");
+  const stagingAppRoot = path.join(stagingTinyRoot, "app");
+
+  // The source fixture intentionally has Git plus copied entrypoints only.
+  const { fileSystem } = fakeAuthorityFileSystem(governedRoot, [
+    [governedRoot, [
+      { kind: "directory", name: "operation" },
+      { kind: "directory", name: "unrelated-repository" },
+      { kind: "directory", name: "cache" },
+      { kind: "directory", name: "staging" },
+      { kind: "directory", name: "evidence" }
+    ]],
+    [path.join(governedRoot, "operation"), [
+      { kind: "directory", name: "source" }
+    ]],
+    [partialRoot, [
+      { kind: "directory", name: ".git" },
+      { kind: "directory", name: "tinyrustlm" }
+    ]],
+    [path.join(partialRoot, ".git"), []],
+    [partialTinyRoot, [{ kind: "directory", name: "tools" }]],
+    [partialToolsRoot, [
+      { kind: "file", name: "build-custody-owner.js" },
+      { kind: "file", name: "windows-x64-msvc-environment.js" }
+    ]],
+    [unrelatedRoot, [
+      { kind: "directory", name: ".git" },
+      { kind: "directory", name: "src" },
+      { kind: "file", name: "workspace.uai" },
+      { kind: "file", name: "backup.zip" }
+    ]],
+    [path.join(unrelatedRoot, ".git"), []],
+    [unrelatedSourceRoot, [{ kind: "file", name: "app.js" }]],
+    [cacheRoot, [{ kind: "directory", name: "tinyrustlm" }]],
+    [cacheTinyRoot, [{ kind: "directory", name: "tools" }]],
+    [cacheToolsRoot, [
+      { kind: "file", name: "build-custody-owner.js" }
+    ]],
+    [stagingRoot, [{ kind: "directory", name: "tinyrustlm" }]],
+    [stagingTinyRoot, [{ kind: "directory", name: "app" }]],
+    [stagingAppRoot, [{ kind: "file", name: "app.js" }]],
+    [evidenceRoot, [
+      { kind: "file", name: "bounded-record.json" },
+      { kind: "reparse", name: "ordinary-library-link" }
+    ]]
+  ]);
+
+  const discovery = discoverEcosystemAuthorityFiles({
+    ecosystemOnly: true,
+    maximumDepth: ecosystemAuthorityMaximumDepth,
+    root: governedRoot
+  }, { fileSystem });
+  assert.deepEqual(discovery.partialGitRoots, [partialRoot]);
+  assert.equal(discovery.looseSourceFiles.includes(
+    path.join(stagingAppRoot, "app.js")), true);
+  assert.equal(discovery.looseSourceFiles.includes(
+    path.join(cacheToolsRoot, "build-custody-owner.js")), true);
+  assert.deepEqual(discovery.markerFiles, []);
+  assert.deepEqual(discovery.sourceArchives, []);
+  assert.deepEqual(discovery.reparses, []);
+  assert.deepEqual(discovery.unreadable, []);
+  assert.equal(tinyRustLmGitEntrypointRelativePaths.includes(
+    "tinyrustlm/tools/build-custody-owner.js"), true);
+  assert.equal(tinyRustLmGitEntrypointRelativePaths.includes(
+    "tinyrustlm/tools/windows-x64-msvc-environment.js"), true);
+  assert.throws(() => verifyEcosystemAuthorityFileDiscovery({
+    ...discovery,
+    markerFiles: [...canonicalEcosystemAuthorityMarkers]
+  }), (error) => error.code === "source_authority_loose_source_present" &&
+    error.detail.includes(path.join(stagingAppRoot, "app.js")));
+  assert.throws(() => verifyEcosystemAuthorityFileDiscovery({
+    ...discovery,
+    looseSourceFiles: [],
+    markerFiles: [...canonicalEcosystemAuthorityMarkers]
+  }), (error) => error.code === "source_authority_partial_git_source_present" &&
+    error.detail === undefined && !error.message.includes(partialRoot));
 });
 
 test("authority-file discovery scans ignored deploy staging without Git", () => {
@@ -1140,6 +1330,40 @@ test("authority-file discovery rejects artifact junction target drift", () => {
     markerFiles: [...canonicalEcosystemAuthorityMarkers]
   }), (error) => error.code === "source_authority_scan_incomplete" &&
     error.detail === `reparse_target_drift:${junctionPath}`);
+});
+
+test("authority-file discovery admits only registered non-source storage targets", () => {
+  const storageParent = "E:\\Source\\External\\TinyRustLM-storage-fixture";
+  const storageRoot = path.join(storageParent, "model-data");
+  const expectedTarget = path.join(os.homedir(), "External",
+    "TinyRustLM-storage-fixture", "model-data");
+  const driftTarget = path.join(os.homedir(), "External",
+    "TinyRustLM-storage-fixture", "wrong-data");
+  const profile = [{ root: storageRoot, target: expectedTarget }];
+
+  for (const [label, actualTarget, expectedField] of [
+    ["exact", expectedTarget, "permittedReparses"],
+    ["drift", driftTarget, "reparseTargetDrift"]
+  ]) {
+    const { fileSystem, readDirectories } = fakeAuthorityFileSystem(storageParent, [
+      [storageParent, [{ kind: "directory-reparse", name: "model-data" }]],
+      [expectedTarget, []],
+      [driftTarget, []]
+    ], { reparseTargets: [[storageRoot, actualTarget]] });
+    const discovery = discoverEcosystemAuthorityFiles({
+      ecosystemOnly: true,
+      maximumDepth: 2,
+      root: storageParent
+    }, {
+      fileSystem,
+      nonSourceStorageReparseProfiles: profile
+    });
+    assert.deepEqual(discovery[expectedField], [storageRoot], label);
+    assert.equal(readDirectories.includes(storageRoot), false, label);
+  }
+  assert.equal(registeredNonSourceStorageReparseProfiles.length, 4);
+  assert.equal(new Set(registeredNonSourceStorageReparseProfiles.map(
+    (candidate) => candidate.root.toLowerCase())).size, 4);
 });
 
 test("authority-file discovery rejects directory reparses inside evidence", () => {
@@ -2397,12 +2621,18 @@ test("forbids duplicate source authority and wholesale stale-tree merges", () =>
       "ecosystem_source_root_prohibitions:"), 1, profile.id);
     assert.equal(extractEcosystemSourceRootPolicyBlock(ecosystemTaboo),
       canonicalEcosystemSourceRootPolicyBlock, profile.id);
+    const singleSourceBlock = extractSingleTinyRustLmSourcePolicyBlock(
+      ecosystemTaboo);
+    assert.equal(Buffer.byteLength(singleSourceBlock, "utf8"),
+      canonicalSingleTinyRustLmSourcePolicyBytes, profile.id);
+    assert.equal(crypto.createHash("sha256").update(singleSourceBlock).digest("hex"),
+      canonicalSingleTinyRustLmSourcePolicySha256, profile.id);
   }
   assert.doesNotThrow(() => verifyEcosystemSourceRootPolicyParity());
   assert.match(directText("tinyrustlm/tools/deploy-tinyrustlm-web.ps1"),
     /verify-single-source-authority\.js/u);
   assert.match(directText("tinyrustlm/tools/deploy-tinyrustlm-web.ps1"),
-    /--require-clean --require-remote-exact/u);
+    /"--require-clean",\s*"--require-remote-exact"/u);
 });
 
 test("ecosystem policy parity rejects one stale or overclaiming repository", () => {
@@ -2422,6 +2652,28 @@ test("ecosystem policy parity rejects one stale or overclaiming repository", () 
     }
   }), (error) => error.code === "source_authority_ecosystem_policy_invalid" &&
     error.detail === `${stalePath}:block_mismatch`);
+});
+
+test("ecosystem policy parity rejects a stale single-source release rule", () => {
+  const sources = new Map(canonicalEcosystemTabooPaths.map((policyPath) =>
+    [policyPath, directAbsoluteText(policyPath)]));
+  const stalePath = canonicalEcosystemTabooPaths[0];
+  const releaseRule = "Any committed change to a declared public artifact " +
+    "invalidates deployed-current status";
+  const stalePolicy = sources.get(stalePath);
+  assert.equal(occurrences(stalePolicy, releaseRule), 2);
+  const singleBlock = extractSingleTinyRustLmSourcePolicyBlock(stalePolicy);
+  sources.set(stalePath, stalePolicy.replace(singleBlock,
+    singleBlock.replace(releaseRule,
+      "A committed public artifact may retain deployed-current status")));
+
+  assert.throws(() => verifyEcosystemSourceRootPolicyParity({
+    readText(candidate) {
+      return sources.get(candidate);
+    }
+  }), (error) => error.code === "source_authority_ecosystem_policy_invalid" &&
+    error.detail ===
+      `${stalePath}:single_tinyrustlm_source_block_mismatch`);
 });
 
 test("reconciles the sole-source receipt with the physical retired inventory", () => {
