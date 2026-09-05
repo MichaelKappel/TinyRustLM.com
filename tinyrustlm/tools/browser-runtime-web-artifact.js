@@ -23,6 +23,20 @@ const publicWasmPath = path.join(
   "tinyrustlm-browser-runtime.wasm"
 );
 const publicManifestPath = `${publicWasmPath}.manifest.json`;
+const encodedRustFlagSeparator = "\u001f";
+const ambientRustFlagVariables = Object.freeze([
+  "CARGO_BUILD_RUSTC",
+  "CARGO_ENCODED_RUSTFLAGS",
+  "RUSTC_WRAPPER",
+  "RUSTC_WORKSPACE_WRAPPER",
+  "RUSTFLAGS"
+]);
+const forbiddenBuildPathPatterns = Object.freeze([
+  /(?<![A-Za-z0-9+.-])[A-Za-z]:[\\/]/u,
+  /(?:^|[\x00-\x20"'`=(])\\\\(?:[?]\\)?[^\\/\x00-\x20]+[\\/]/u,
+  /(?:^|[\x00-\x20"'`=(])\/(?:Users|home|private|tmp|var\/tmp|Volumes)(?:[\\/])/u,
+  /(?:^|[\x00-\x20"'`=(])\/mnt\/[A-Za-z](?:[\\/])/u
+]);
 
 function invariant(condition, message) {
   if (!condition) {
@@ -44,6 +58,79 @@ function cargoExecutable() {
   return fs.existsSync(candidate) ? candidate : "cargo";
 }
 
+function existingRealPath(value) {
+  if (typeof value !== "string" || value.length === 0) return null;
+  const resolved = path.resolve(value);
+  return fs.existsSync(resolved) ? fs.realpathSync.native(resolved) : resolved;
+}
+
+function remapRoots(environment, options) {
+  const home = environment.USERPROFILE || environment.HOME || null;
+  const candidates = [
+    [options.sourceRoot || repositoryRoot, "tinyrustlm-workspace"],
+    [options.targetRoot || targetRoot, "cargo-target"],
+    [environment.CARGO_HOME || (home ? path.join(home, ".cargo") : null), "cargo-home"],
+    [environment.RUSTUP_HOME || (home ? path.join(home, ".rustup") : null), "rustup-home"],
+    [options.temporaryRoot || environment.TEMP || environment.TMP, "build-temp"],
+    [home, "build-home"]
+  ];
+  const seen = new Set();
+  const roots = [];
+  for (const [candidate, replacement] of candidates) {
+    if (!candidate) continue;
+    const source = existingRealPath(candidate);
+    if (!path.isAbsolute(source)) continue;
+    for (const variant of [source, source.replaceAll("\\", "/")]) {
+      const identity = process.platform === "win32" ? variant.toLowerCase() : variant;
+      if (seen.has(identity)) continue;
+      seen.add(identity);
+      roots.push(Object.freeze({ replacement, source: variant }));
+    }
+  }
+  return roots.sort((left, right) =>
+    right.source.length - left.source.length ||
+    left.replacement.localeCompare(right.replacement, "en") ||
+    left.source.localeCompare(right.source, "en")
+  );
+}
+
+function deterministicRustFlags(environment, options = {}) {
+  return Object.freeze([
+    ...remapRoots(environment, options).map(
+      ({ source, replacement }) => `--remap-path-prefix=${source}=${replacement}`
+    ),
+    "-Cdebuginfo=0",
+    "-Cstrip=symbols"
+  ]);
+}
+
+function createDeterministicBuildEnvironment(baseEnvironment, options = {}) {
+  const environment = { ...baseEnvironment };
+  for (const variableName of ambientRustFlagVariables) delete environment[variableName];
+  environment.CARGO_INCREMENTAL = "0";
+  environment.CARGO_NET_OFFLINE = "true";
+  if (options.targetRoot) environment.CARGO_TARGET_DIR = path.resolve(options.targetRoot);
+  environment.CARGO_ENCODED_RUSTFLAGS = deterministicRustFlags(
+    environment,
+    options
+  ).join(encodedRustFlagSeparator);
+  return environment;
+}
+
+function assertNoForbiddenBuildPaths(value) {
+  invariant(Buffer.isBuffer(value) || ArrayBuffer.isView(value),
+    "browser runtime WASM bytes are required");
+  const bytes = Buffer.isBuffer(value)
+    ? value
+    : Buffer.from(value.buffer, value.byteOffset, value.byteLength);
+  const binaryText = bytes.toString("latin1");
+  invariant(
+    forbiddenBuildPathPatterns.every((pattern) => !pattern.test(binaryText)),
+    "browser runtime WASM contains a forbidden build path"
+  );
+  return value;
+}
+
 function buildWasm() {
   const result = childProcess.spawnSync(cargoExecutable(), [
     "build",
@@ -59,7 +146,11 @@ function buildWasm() {
   ], {
     cwd: repositoryRoot,
     encoding: "utf8",
-    env: process.env,
+    env: createDeterministicBuildEnvironment(process.env, {
+      sourceRoot: repositoryRoot,
+      targetRoot,
+      temporaryRoot: process.env.TEMP || process.env.TMP
+    }),
     maxBuffer: 16 * 1024 * 1024,
     shell: false,
     windowsHide: true
@@ -69,10 +160,12 @@ function buildWasm() {
   const bytes = fs.readFileSync(builtWasmPath);
   invariant(bytes.length >= 8 && bytes.length <= loader.maximumWasmBytes,
     "browser runtime WASM size is invalid");
+  assertNoForbiddenBuildPaths(bytes);
   return bytes;
 }
 
 function buildManifest(bytes) {
+  assertNoForbiddenBuildPaths(bytes);
   const module = new WebAssembly.Module(bytes);
   const imports = WebAssembly.Module.imports(module).map((entry) => entry.name);
   const exports = WebAssembly.Module.exports(module).map((entry) => entry.name);
@@ -110,7 +203,9 @@ function requireEqualFile(filePath, expected, label) {
 }
 
 function verifyArtifact(artifact) {
+  assertNoForbiddenBuildPaths(artifact.wasmBytes);
   requireEqualFile(publicWasmPath, artifact.wasmBytes, "tracked browser runtime WASM");
+  assertNoForbiddenBuildPaths(fs.readFileSync(publicWasmPath));
   requireEqualFile(
     publicManifestPath,
     artifact.manifestBytes,
@@ -120,6 +215,7 @@ function verifyArtifact(artifact) {
 }
 
 function writeArtifact(artifact) {
+  assertNoForbiddenBuildPaths(artifact.wasmBytes);
   fs.writeFileSync(publicWasmPath, artifact.wasmBytes, { flag: "w" });
   fs.writeFileSync(publicManifestPath, artifact.manifestBytes, { flag: "w" });
   return verifyArtifact(artifact);
@@ -151,7 +247,9 @@ if (require.main === module) {
 }
 
 module.exports = Object.freeze({
+  assertNoForbiddenBuildPaths,
   builtWasmPath,
+  createDeterministicBuildEnvironment,
   publicManifestPath,
   publicWasmPath,
   buildManifest,
