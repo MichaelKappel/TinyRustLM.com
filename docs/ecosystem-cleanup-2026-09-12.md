@@ -336,3 +336,24 @@ lessons, evidence references and remaining review scope live in the canonical
   by the interrupted local browser test. Its updated full `-WhatIf` preflight
   passed. Pending scope is now 284 files and 1,843,591,346 logical bytes. The new
   deletion was also rejected with `blocked by policy`; those files remain.
+- Local browser cleanup and its recorded failure lessons were committed and
+  pushed as `b73dfeb`. The final actual zero-argument command passed all 12
+  observations and verified its own cleanup. The earlier two interrupted-test
+  artifacts remain in the separately reviewed, policy-blocked retirement scope.
+- MiRust's remaining observation-time correction is committed and pushed as
+  `b9420a1`; its worktree is clean. This metadata correction required no new
+  executable test or publication.
+- The developer portal's deployment and hostile-gate tests now use in-memory
+  filesystem/Git responses instead of copied tools, Git repositories and stages.
+  The source-authority pin now matches committed TinyRust gate `70e890e`, which
+  is byte-identical to the current canonical file. Git reads require the owning
+  canonical repository and have a timeout. Batch payload bytes are independently
+  rehashed against their Git object IDs; a same-length corruption test rejects
+  mismatched bytes even when the header claims the correct identity.
+- All 20 portal validator/preflight checks passed, including actual canonical CLI,
+  read-only Git and PowerShell execution. Whole-file coverage was 98.86% for the
+  virtual fixture, 94.70% for preflight and 74.17% for the deployment validator;
+  the new path and payload checks executed. Owned coverage scratch was removed.
+  This is committed and pushed as `1834857`. Existing 1.8.3 metadata, remaining
+  stage-producing tools and historical-copy tests still need reconciliation;
+  the source gate and these tests do not establish deployment readiness.
