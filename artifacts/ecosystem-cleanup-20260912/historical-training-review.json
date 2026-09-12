@@ -1,0 +1,2869 @@
+{
+  "schema": "tinyrustlm.historical-training-review.v1",
+  "reviewedUtc": "2026-09-12T19:03:22.379Z",
+  "sourceCommit": "97d66b1ced8bdb0335849bcc8ff7775a01bcb19e",
+  "scope": "Eight retained completed CPU training pilots; read-only byte and metadata review, no inference or training execution",
+  "modelRoot": "D:\\LLMs\\TinyRustLM",
+  "runs": [
+    {
+      "id": "qwen3-cognitive-liberty-v1/adapter-cpu-pilot-v1",
+      "root": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v1\\adapter-cpu-pilot-v1",
+      "trainingReceipt": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\tinyrustlm-training-receipt.json",
+        "byteLength": 1769,
+        "sha256": "08b0f4745d2a223b9e002e45d1c0608a1966de48f0a52ed56e65b72e0b31f493",
+        "content": {
+          "adapter_config_sha256": "sha256:3cd3fd583cca5474d2f56886b42ed9cafce9ad1bb74c24daa32c13c982e31408",
+          "adapter_model_sha256": "sha256:19e1d45cd046863d3a06bbcbaadeb059d6e9c204b4a9c73349debb2f7f5f4394",
+          "base_model_dir": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\external\\Qwen\\Qwen3-0.6B\\c1899de289a04d12100db370d81485cdf75e47ca",
+          "base_model_sha256": "sha256:f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b",
+          "base_tokenizer_sha256": "sha256:aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+          "dataset_id": "tinyrustlm-qwen3-cognitive-liberty-v1",
+          "eval_exclusion_policy": "rust-frozen-manifest-bound",
+          "frozen_dataset_manifest": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\qwen3-cognitive-liberty-v1\\dataset\\distillation-dataset.manifest",
+          "frozen_dataset_manifest_sha256": "sha256:2272288028ef21a552d7beb3df4e54acfc6369c8d2654494db5aeee5aaadf0b8",
+          "metrics": {
+            "epoch": 1,
+            "total_flos": 41494257598464,
+            "train_loss": 1.928486446539561,
+            "train_runtime": 193.9358,
+            "train_samples_per_second": 0.495,
+            "train_steps_per_second": 0.062
+          },
+          "recipe": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\training\\qwen3-cognitive-liberty-v1\\training-recipe-cpu-pilot.manifest",
+          "recipe_sha256": "sha256:ff404cfa3ea75c5cf802ca184a86c72a6d2a8d00d5738ac6c9c5d350fd24c0ad",
+          "record_count": 96,
+          "required_next_gate": "peft-to-trained-adapter-source-conversion-plus-raw-eval",
+          "schema": "tinyrustlm.distillation_training_receipt.v1",
+          "system_prompt_sha256": "sha256:7bf942863fca8bbf635fbe4c16d3159342ed17163991e2b8bec01f30cb3d52c8",
+          "teacher_reasoning_policy": "final-answer-only",
+          "training_engine": "transformers-peft-sequence-lora-v1"
+        }
+      },
+      "finalWeights": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\adapter_model.safetensors",
+        "byteLength": 20236472,
+        "sha256": "19e1d45cd046863d3a06bbcbaadeb059d6e9c204b4a9c73349debb2f7f5f4394"
+      },
+      "finalConfig": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\adapter_config.json",
+        "byteLength": 1238,
+        "sha256": "3cd3fd583cca5474d2f56886b42ed9cafce9ad1bb74c24daa32c13c982e31408"
+      },
+      "recipe": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\training\\qwen3-cognitive-liberty-v1\\training-recipe-cpu-pilot.manifest",
+        "byteLength": 1241,
+        "sha256": "ff404cfa3ea75c5cf802ca184a86c72a6d2a8d00d5738ac6c9c5d350fd24c0ad",
+        "matchesReceipt": true
+      },
+      "dataset": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\qwen3-cognitive-liberty-v1\\dataset\\distillation-dataset.manifest",
+        "byteLength": 88561,
+        "sha256": "2272288028ef21a552d7beb3df4e54acfc6369c8d2654494db5aeee5aaadf0b8",
+        "matchesReceipt": true
+      },
+      "checkpoint": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-12",
+        "files": [
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-12\\README.md",
+            "byteLength": 5364,
+            "sha256": "63901cb2fb43c78c44d5b0173f9e9b123cfbc42d02c983a04e33b2138d7bd4ef"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-12\\adapter_config.json",
+            "byteLength": 1238,
+            "sha256": "3cd3fd583cca5474d2f56886b42ed9cafce9ad1bb74c24daa32c13c982e31408"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-12\\adapter_model.safetensors",
+            "byteLength": 20236472,
+            "sha256": "19e1d45cd046863d3a06bbcbaadeb059d6e9c204b4a9c73349debb2f7f5f4394"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-12\\optimizer.pt",
+            "byteLength": 40688891,
+            "sha256": "a12d80d215bc0f7917107de2dea5eabaaa949577e8f990a2ef4f64fa5bf9ca90"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-12\\rng_state.pth",
+            "byteLength": 14391,
+            "sha256": "a3a1ffd9aa010364e9329d4de083649913a8ac7e5d5e8635a1618c6b9b794b40"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-12\\scheduler.pt",
+            "byteLength": 1465,
+            "sha256": "d1e0cdbcdf6e69d16e8de44d5ec1b8b79b55e9db72311fef82e21dd3b49ddf97"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-12\\trainer_state.json",
+            "byteLength": 2981,
+            "sha256": "f5aaca3f646ed0e32387474923cadcd9006daeeb8287f7a5852e020775b0079d"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-12\\training_args.bin",
+            "byteLength": 5201,
+            "sha256": "6379fdbf75b10df2db68257c1b6612510b992a40e4093695d305d24d826890d3"
+          }
+        ],
+        "trainerState": {
+          "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-12\\trainer_state.json",
+          "byteLength": 2981,
+          "sha256": "f5aaca3f646ed0e32387474923cadcd9006daeeb8287f7a5852e020775b0079d",
+          "content": {
+            "best_global_step": null,
+            "best_metric": null,
+            "best_model_checkpoint": null,
+            "epoch": 1,
+            "eval_steps": 500,
+            "global_step": 12,
+            "is_hyper_param_search": false,
+            "is_local_process_zero": true,
+            "is_world_process_zero": true,
+            "log_history": [
+              {
+                "epoch": 0.08333333333333333,
+                "grad_norm": 3.4213056564331055,
+                "learning_rate": 0,
+                "loss": 2.071840286254883,
+                "step": 1
+              },
+              {
+                "epoch": 0.16666666666666666,
+                "grad_norm": 3.5115325450897217,
+                "learning_rate": 0.0001,
+                "loss": 1.6453545093536377,
+                "step": 2
+              },
+              {
+                "epoch": 0.25,
+                "grad_norm": 4.084161281585693,
+                "learning_rate": 0.00009090909090909092,
+                "loss": 2.172626256942749,
+                "step": 3
+              },
+              {
+                "epoch": 0.3333333333333333,
+                "grad_norm": 3.2419686317443848,
+                "learning_rate": 0.00008181818181818183,
+                "loss": 1.81865656375885,
+                "step": 4
+              },
+              {
+                "epoch": 0.4166666666666667,
+                "grad_norm": 4.165985107421875,
+                "learning_rate": 0.00007272727272727273,
+                "loss": 2.27776837348938,
+                "step": 5
+              },
+              {
+                "epoch": 0.5,
+                "grad_norm": 3.650512218475342,
+                "learning_rate": 0.00006363636363636364,
+                "loss": 1.943075180053711,
+                "step": 6
+              },
+              {
+                "epoch": 0.5833333333333334,
+                "grad_norm": 2.5098211765289307,
+                "learning_rate": 0.000054545454545454546,
+                "loss": 1.5768705606460571,
+                "step": 7
+              },
+              {
+                "epoch": 0.6666666666666666,
+                "grad_norm": 3.0176405906677246,
+                "learning_rate": 0.00004545454545454546,
+                "loss": 2.384711980819702,
+                "step": 8
+              },
+              {
+                "epoch": 0.75,
+                "grad_norm": 2.7316365242004395,
+                "learning_rate": 0.000036363636363636364,
+                "loss": 1.6511894464492798,
+                "step": 9
+              },
+              {
+                "epoch": 0.8333333333333334,
+                "grad_norm": 2.2671005725860596,
+                "learning_rate": 0.000027272727272727273,
+                "loss": 1.5004774332046509,
+                "step": 10
+              },
+              {
+                "epoch": 0.9166666666666666,
+                "grad_norm": 2.4132304191589355,
+                "learning_rate": 0.000018181818181818182,
+                "loss": 2.29630446434021,
+                "step": 11
+              },
+              {
+                "epoch": 1,
+                "grad_norm": 3.6838533878326416,
+                "learning_rate": 0.000009090909090909091,
+                "loss": 1.802962303161621,
+                "step": 12
+              }
+            ],
+            "logging_steps": 1,
+            "max_steps": 12,
+            "num_input_tokens_seen": 0,
+            "num_train_epochs": 1,
+            "save_steps": 12,
+            "stateful_callbacks": {
+              "TrainerControl": {
+                "args": {
+                  "should_epoch_stop": false,
+                  "should_evaluate": false,
+                  "should_log": false,
+                  "should_save": true,
+                  "should_training_stop": true
+                },
+                "attributes": {}
+              }
+            },
+            "total_flos": 41494257598464,
+            "train_batch_size": 1,
+            "trial_name": null,
+            "trial_params": null
+          }
+        },
+        "weightsMatchFinal": true,
+        "configMatchesFinal": true,
+        "finalTrainingStep": true,
+        "disposition": "remove redundant completed checkpoint; retain receipt and trainer-state metadata here; no resumable run or model qualification"
+      },
+      "screen": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\qwen3-cognitive-liberty-v1\\adapter-cpu-pilot-v1-source-screen.json",
+        "exists": true,
+        "byteLength": 40174,
+        "sha256": "9ce4618025cff5a9e5a842b10389ed233ee74d120146c62fbd71d06a6779fe91",
+        "source_model_id": "Qwen/Qwen3-0.6B",
+        "source_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+        "adapter": {
+          "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v1\\adapter-cpu-pilot-v1",
+          "adapter_model_sha256": "19e1d45cd046863d3a06bbcbaadeb059d6e9c204b4a9c73349debb2f7f5f4394",
+          "adapter_config_sha256": "3cd3fd583cca5474d2f56886b42ed9cafce9ad1bb74c24daa32c13c982e31408"
+        },
+        "generation": {
+          "do_sample": false,
+          "repetition_penalty": 1,
+          "pad_token_id": 151645,
+          "eos_token_id": 151645,
+          "temperature": null,
+          "top_k": null,
+          "top_p": null
+        },
+        "device": "cpu",
+        "dtype": "float32",
+        "case_count": 8,
+        "cases": [
+          {
+            "index": 0,
+            "promptSha256": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+            "outputSha256": "0ecc2da2f7727eb94f4284d429d1218d537f733a5e8e44124fea0446a62bec20",
+            "outputTokenCount": 14,
+            "maxNewTokens": 32,
+            "elapsedSeconds": 2.18339769996237
+          },
+          {
+            "index": 1,
+            "promptSha256": "a0197253b92e371b4fcf97b676224fa22c23472dd15206cf8474850f310ef543",
+            "outputSha256": "10497aa523d5dee58ac61f3249d07ed15507c6e4964e9a3f89952e96756d0d73",
+            "outputTokenCount": 23,
+            "maxNewTokens": 48,
+            "elapsedSeconds": 3.2970103999832645
+          },
+          {
+            "index": 2,
+            "promptSha256": "edbcd2b87f6d29953820b8dbe60edbff9959a789ce4f06c0e9c9217703e24c78",
+            "outputSha256": "293f42cbef14ced4f4d5f73e0b017f99cbc4b3e58afbe1e7a5101f5d07b371cf",
+            "outputTokenCount": 29,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 4.132791700074449
+          },
+          {
+            "index": 3,
+            "promptSha256": "866a2f96296e565f84403dd1d7c2d07649b272fd936deb106cb72716f7f2c247",
+            "outputSha256": "60200bcae60ba334268ea6053acb812f01804f221404bf08c1d13666ac153386",
+            "outputTokenCount": 13,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 2.0381084999535233
+          },
+          {
+            "index": 4,
+            "promptSha256": "0b25a2195aa4b38c6411e4c70b3efa203d4b016f8a3cdb4e792d3b6886e4501c",
+            "outputSha256": "c8bf6db5c8935bbfee36f46ed909e15465367f11cd3d9fc7b75e40e484d4884e",
+            "outputTokenCount": 18,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 2.743597700027749
+          },
+          {
+            "index": 5,
+            "promptSha256": "d1792da7e0e73fd8235fd1dc2276a13ccea0d1bc97c5f75e359253188449712f",
+            "outputSha256": "cb9c6764115c5ad26a51f0e867193f89979ad7abd0ea987f92624e79303bdb00",
+            "outputTokenCount": 96,
+            "maxNewTokens": 96,
+            "elapsedSeconds": 13.138304800027981
+          },
+          {
+            "index": 6,
+            "promptSha256": "9f90ac993a539b6a5aa0b1a3ad2c0ae6834aaefc740b453f51ef1aa0aa598c33",
+            "outputSha256": "40f4bdc75404591d1c9b297f1969e952d779cbf0a93968bab47490b046de057b",
+            "outputTokenCount": 21,
+            "maxNewTokens": 48,
+            "elapsedSeconds": 3.0886923000216484
+          },
+          {
+            "index": 7,
+            "promptSha256": "f61e3e9226fac664f956e17791ca1454108d0f50c990938ec970998be283e6ee",
+            "outputSha256": "69a338c37048794dd5f187be3be8d1e86db6b5c9b65d4e0c000320ad847bbf27",
+            "outputTokenCount": 23,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 4.402329299948178
+          }
+        ]
+      }
+    },
+    {
+      "id": "qwen3-cognitive-liberty-v2/adapter-cpu-pilot-v1",
+      "root": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-pilot-v1",
+      "trainingReceipt": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-pilot-v1\\tinyrustlm-training-receipt.json",
+        "byteLength": 1772,
+        "sha256": "34c2d09f7502c8ad2fdece869af40333a0bcee0a98e018813f33bb3e67e44309",
+        "content": {
+          "adapter_config_sha256": "sha256:1a43ef9fcbb990773d7d19b9b518e76d4774d2592314dc66b93cb4551b8e2818",
+          "adapter_model_sha256": "sha256:070aa85a9f5c45d2d05e6375f6d11b25abb4e22261bf25538dab501f371dc4b0",
+          "base_model_dir": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\external\\Qwen\\Qwen3-0.6B\\c1899de289a04d12100db370d81485cdf75e47ca",
+          "base_model_sha256": "sha256:f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b",
+          "base_tokenizer_sha256": "sha256:aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+          "dataset_id": "tinyrustlm-qwen3-cognitive-liberty-v2",
+          "eval_exclusion_policy": "rust-frozen-manifest-bound",
+          "frozen_dataset_manifest": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\qwen3-cognitive-liberty-v2\\dataset\\distillation-dataset.manifest",
+          "frozen_dataset_manifest_sha256": "sha256:976b56cae40abe97122e664f42bba1349a9027575ad8dd002a7debf6c8ce47c5",
+          "metrics": {
+            "epoch": 1,
+            "total_flos": 18436249092096,
+            "train_loss": 3.7887035369873048,
+            "train_runtime": 89.6163,
+            "train_samples_per_second": 0.446,
+            "train_steps_per_second": 0.112
+          },
+          "recipe": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\training\\qwen3-cognitive-liberty-v2\\training-recipe-cpu-pilot-v1.manifest",
+          "recipe_sha256": "sha256:55ec6d410298872b88f45067a369c829d28b354ebd4bc66769e215763b77589a",
+          "record_count": 40,
+          "required_next_gate": "peft-to-trained-adapter-source-conversion-plus-raw-eval",
+          "schema": "tinyrustlm.distillation_training_receipt.v1",
+          "system_prompt_sha256": "sha256:7bf942863fca8bbf635fbe4c16d3159342ed17163991e2b8bec01f30cb3d52c8",
+          "teacher_reasoning_policy": "final-answer-only",
+          "training_engine": "transformers-peft-sequence-lora-v1"
+        }
+      },
+      "finalWeights": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-pilot-v1\\adapter_model.safetensors",
+        "byteLength": 20236472,
+        "sha256": "070aa85a9f5c45d2d05e6375f6d11b25abb4e22261bf25538dab501f371dc4b0"
+      },
+      "finalConfig": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-pilot-v1\\adapter_config.json",
+        "byteLength": 1238,
+        "sha256": "1a43ef9fcbb990773d7d19b9b518e76d4774d2592314dc66b93cb4551b8e2818"
+      },
+      "recipe": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\training\\qwen3-cognitive-liberty-v2\\training-recipe-cpu-pilot-v1.manifest",
+        "byteLength": 1241,
+        "sha256": "55ec6d410298872b88f45067a369c829d28b354ebd4bc66769e215763b77589a",
+        "matchesReceipt": true
+      },
+      "dataset": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\qwen3-cognitive-liberty-v2\\dataset\\distillation-dataset.manifest",
+        "byteLength": 40933,
+        "sha256": "976b56cae40abe97122e664f42bba1349a9027575ad8dd002a7debf6c8ce47c5",
+        "matchesReceipt": true
+      },
+      "checkpoint": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-pilot-v1\\checkpoint-10",
+        "files": [
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-pilot-v1\\checkpoint-10\\README.md",
+            "byteLength": 5364,
+            "sha256": "63901cb2fb43c78c44d5b0173f9e9b123cfbc42d02c983a04e33b2138d7bd4ef"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-pilot-v1\\checkpoint-10\\adapter_config.json",
+            "byteLength": 1238,
+            "sha256": "1a43ef9fcbb990773d7d19b9b518e76d4774d2592314dc66b93cb4551b8e2818"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-pilot-v1\\checkpoint-10\\adapter_model.safetensors",
+            "byteLength": 20236472,
+            "sha256": "070aa85a9f5c45d2d05e6375f6d11b25abb4e22261bf25538dab501f371dc4b0"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-pilot-v1\\checkpoint-10\\optimizer.pt",
+            "byteLength": 40688891,
+            "sha256": "b648b7d7eece7d158fe2818dbe3b4aee7940307922973a741a49bae8fca335c0"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-pilot-v1\\checkpoint-10\\rng_state.pth",
+            "byteLength": 14391,
+            "sha256": "d06887438e73feefed17feeaaf109b11a9a8827b78741a181ef83c9905e34f7e"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-pilot-v1\\checkpoint-10\\scheduler.pt",
+            "byteLength": 1465,
+            "sha256": "addd6d0eeebc4fcddbb320a8346229aacf290c32553bc8f47d6dbb2ebef3eb7e"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-pilot-v1\\checkpoint-10\\trainer_state.json",
+            "byteLength": 2509,
+            "sha256": "f345cd95a8afef5f21829cf4e29db0c130e74a8a7fa69384fe86cf1321e7c352"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-pilot-v1\\checkpoint-10\\training_args.bin",
+            "byteLength": 5201,
+            "sha256": "437c4507bbaa342b21dd4ba2a66bed43b69920d25f24f3f11f1e3243c637fe5c"
+          }
+        ],
+        "trainerState": {
+          "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-pilot-v1\\checkpoint-10\\trainer_state.json",
+          "byteLength": 2509,
+          "sha256": "f345cd95a8afef5f21829cf4e29db0c130e74a8a7fa69384fe86cf1321e7c352",
+          "content": {
+            "best_global_step": null,
+            "best_metric": null,
+            "best_model_checkpoint": null,
+            "epoch": 1,
+            "eval_steps": 500,
+            "global_step": 10,
+            "is_hyper_param_search": false,
+            "is_local_process_zero": true,
+            "is_world_process_zero": true,
+            "log_history": [
+              {
+                "epoch": 0.1,
+                "grad_norm": 6.586319446563721,
+                "learning_rate": 0,
+                "loss": 4.701406478881836,
+                "step": 1
+              },
+              {
+                "epoch": 0.2,
+                "grad_norm": 6.374912738800049,
+                "learning_rate": 0.0002,
+                "loss": 4.060842514038086,
+                "step": 2
+              },
+              {
+                "epoch": 0.3,
+                "grad_norm": 5.37521505355835,
+                "learning_rate": 0.00017777777777777779,
+                "loss": 3.916578531265259,
+                "step": 3
+              },
+              {
+                "epoch": 0.4,
+                "grad_norm": 3.9517769813537598,
+                "learning_rate": 0.00015555555555555556,
+                "loss": 3.8447635173797607,
+                "step": 4
+              },
+              {
+                "epoch": 0.5,
+                "grad_norm": 3.619215726852417,
+                "learning_rate": 0.00013333333333333334,
+                "loss": 3.980222702026367,
+                "step": 5
+              },
+              {
+                "epoch": 0.6,
+                "grad_norm": 3.700444459915161,
+                "learning_rate": 0.00011111111111111112,
+                "loss": 3.8027443885803223,
+                "step": 6
+              },
+              {
+                "epoch": 0.7,
+                "grad_norm": 3.5351829528808594,
+                "learning_rate": 0.00008888888888888889,
+                "loss": 3.0928730964660645,
+                "step": 7
+              },
+              {
+                "epoch": 0.8,
+                "grad_norm": 2.4979798793792725,
+                "learning_rate": 0.00006666666666666667,
+                "loss": 3.749235153198242,
+                "step": 8
+              },
+              {
+                "epoch": 0.9,
+                "grad_norm": 3.0137054920196533,
+                "learning_rate": 0.000044444444444444447,
+                "loss": 3.3076553344726562,
+                "step": 9
+              },
+              {
+                "epoch": 1,
+                "grad_norm": 3.0227274894714355,
+                "learning_rate": 0.000022222222222222223,
+                "loss": 3.430713653564453,
+                "step": 10
+              }
+            ],
+            "logging_steps": 1,
+            "max_steps": 10,
+            "num_input_tokens_seen": 0,
+            "num_train_epochs": 1,
+            "save_steps": 10,
+            "stateful_callbacks": {
+              "TrainerControl": {
+                "args": {
+                  "should_epoch_stop": false,
+                  "should_evaluate": false,
+                  "should_log": false,
+                  "should_save": true,
+                  "should_training_stop": true
+                },
+                "attributes": {}
+              }
+            },
+            "total_flos": 18436249092096,
+            "train_batch_size": 1,
+            "trial_name": null,
+            "trial_params": null
+          }
+        },
+        "weightsMatchFinal": true,
+        "configMatchesFinal": true,
+        "finalTrainingStep": true,
+        "disposition": "remove redundant completed checkpoint; retain receipt and trainer-state metadata here; no resumable run or model qualification"
+      },
+      "screen": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\qwen3-cognitive-liberty-v2\\adapter-cpu-pilot-v1-source-screen.json",
+        "exists": true,
+        "byteLength": 41175,
+        "sha256": "dd71744bf9b0c9fd617b05cb017c72b0c42213f1d386057ea987fa51f2f76c2f",
+        "source_model_id": "Qwen/Qwen3-0.6B",
+        "source_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+        "adapter": {
+          "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-pilot-v1",
+          "adapter_model_sha256": "070aa85a9f5c45d2d05e6375f6d11b25abb4e22261bf25538dab501f371dc4b0",
+          "adapter_config_sha256": "1a43ef9fcbb990773d7d19b9b518e76d4774d2592314dc66b93cb4551b8e2818"
+        },
+        "generation": {
+          "do_sample": false,
+          "repetition_penalty": 1,
+          "pad_token_id": 151645,
+          "eos_token_id": 151645,
+          "temperature": null,
+          "top_k": null,
+          "top_p": null
+        },
+        "device": "cpu",
+        "dtype": "float32",
+        "case_count": 8,
+        "cases": [
+          {
+            "index": 0,
+            "promptSha256": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+            "outputSha256": "069d4e43d21904769e6d771fa3dadd8342547b913d801ecdb92e50d770f5624c",
+            "outputTokenCount": 15,
+            "maxNewTokens": 32,
+            "elapsedSeconds": 2.323536999989301
+          },
+          {
+            "index": 1,
+            "promptSha256": "a0197253b92e371b4fcf97b676224fa22c23472dd15206cf8474850f310ef543",
+            "outputSha256": "b5d056088268bdac61fa529b19699e57f8636620780eeb113f5d4c43a02e3415",
+            "outputTokenCount": 33,
+            "maxNewTokens": 48,
+            "elapsedSeconds": 4.55846059997566
+          },
+          {
+            "index": 2,
+            "promptSha256": "edbcd2b87f6d29953820b8dbe60edbff9959a789ce4f06c0e9c9217703e24c78",
+            "outputSha256": "c2a9fb02b6461214f58e033a696dd2c507aad51b7f2e1dd830b903e46223cdda",
+            "outputTokenCount": 4,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 0.8376617999747396
+          },
+          {
+            "index": 3,
+            "promptSha256": "866a2f96296e565f84403dd1d7c2d07649b272fd936deb106cb72716f7f2c247",
+            "outputSha256": "f6ea9a52c17dcaa606bd4010e49e693659b78f69627a69cb41b90ff434688f76",
+            "outputTokenCount": 64,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 8.977292800089344
+          },
+          {
+            "index": 4,
+            "promptSha256": "0b25a2195aa4b38c6411e4c70b3efa203d4b016f8a3cdb4e792d3b6886e4501c",
+            "outputSha256": "3ee5015467eeef3d3607f65e8a073d443ee363a2987e5b780a0eb2627343a118",
+            "outputTokenCount": 34,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 4.807732000015676
+          },
+          {
+            "index": 5,
+            "promptSha256": "d1792da7e0e73fd8235fd1dc2276a13ccea0d1bc97c5f75e359253188449712f",
+            "outputSha256": "751fa2a4494109813a6d0ad951118e76573967052171bcc2496b475d43d9c1fb",
+            "outputTokenCount": 96,
+            "maxNewTokens": 96,
+            "elapsedSeconds": 12.872227999963798
+          },
+          {
+            "index": 6,
+            "promptSha256": "9f90ac993a539b6a5aa0b1a3ad2c0ae6834aaefc740b453f51ef1aa0aa598c33",
+            "outputSha256": "644cc2099f7c5d27c90df6f13948998eb5c2a528bcc31cb42a2be26cc455225c",
+            "outputTokenCount": 38,
+            "maxNewTokens": 48,
+            "elapsedSeconds": 5.306695300037973
+          },
+          {
+            "index": 7,
+            "promptSha256": "f61e3e9226fac664f956e17791ca1454108d0f50c990938ec970998be283e6ee",
+            "outputSha256": "9feec1fc61cb53a893c2bc300ecc141e94fc09028cb0f7938f0730595a68f63d",
+            "outputTokenCount": 16,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 2.6204078999580815
+          }
+        ]
+      }
+    },
+    {
+      "id": "qwen3-cognitive-liberty-v2/adapter-cpu-preservation-pilot-v2",
+      "root": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v2",
+      "trainingReceipt": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v2\\tinyrustlm-training-receipt.json",
+        "byteLength": 1783,
+        "sha256": "159dfb0cf5230d3a3c17173d41a834a7290b7c3ae45675c8f1b8923aafb4eed7",
+        "content": {
+          "adapter_config_sha256": "sha256:55d7c3213bf49d6c853a7a5d72216bbd40b3c4c16ef8098a4868f8612e92ff06",
+          "adapter_model_sha256": "sha256:df7a0814ddc5714fe2a7fd63a4ce14add0fe29351765afc6204215a6890cd1d0",
+          "base_model_dir": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\external\\Qwen\\Qwen3-0.6B\\c1899de289a04d12100db370d81485cdf75e47ca",
+          "base_model_sha256": "sha256:f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b",
+          "base_tokenizer_sha256": "sha256:aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+          "dataset_id": "tinyrustlm-qwen3-cognitive-liberty-v2",
+          "eval_exclusion_policy": "rust-frozen-manifest-bound",
+          "frozen_dataset_manifest": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\qwen3-cognitive-liberty-v2\\dataset\\distillation-dataset.manifest",
+          "frozen_dataset_manifest_sha256": "sha256:976b56cae40abe97122e664f42bba1349a9027575ad8dd002a7debf6c8ce47c5",
+          "metrics": {
+            "epoch": 1,
+            "total_flos": 18251154358272,
+            "train_loss": 4.247620415687561,
+            "train_runtime": 62.3058,
+            "train_samples_per_second": 0.642,
+            "train_steps_per_second": 0.16
+          },
+          "recipe": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\training\\qwen3-cognitive-liberty-v2\\training-recipe-cpu-preservation-pilot-v2.manifest",
+          "recipe_sha256": "sha256:c4f7a5a5bc0cb7e2b7a8a06c70fd290ff2a1e4b81d14b24dd5543af4dda99fe1",
+          "record_count": 40,
+          "required_next_gate": "peft-to-trained-adapter-source-conversion-plus-raw-eval",
+          "schema": "tinyrustlm.distillation_training_receipt.v1",
+          "system_prompt_sha256": "sha256:7bf942863fca8bbf635fbe4c16d3159342ed17163991e2b8bec01f30cb3d52c8",
+          "teacher_reasoning_policy": "final-answer-only",
+          "training_engine": "transformers-peft-sequence-lora-v1"
+        }
+      },
+      "finalWeights": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v2\\adapter_model.safetensors",
+        "byteLength": 2308432,
+        "sha256": "df7a0814ddc5714fe2a7fd63a4ce14add0fe29351765afc6204215a6890cd1d0"
+      },
+      "finalConfig": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v2\\adapter_config.json",
+        "byteLength": 1155,
+        "sha256": "55d7c3213bf49d6c853a7a5d72216bbd40b3c4c16ef8098a4868f8612e92ff06"
+      },
+      "recipe": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\training\\qwen3-cognitive-liberty-v2\\training-recipe-cpu-preservation-pilot-v2.manifest",
+        "byteLength": 1224,
+        "sha256": "c4f7a5a5bc0cb7e2b7a8a06c70fd290ff2a1e4b81d14b24dd5543af4dda99fe1",
+        "matchesReceipt": true
+      },
+      "dataset": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\qwen3-cognitive-liberty-v2\\dataset\\distillation-dataset.manifest",
+        "byteLength": 40933,
+        "sha256": "976b56cae40abe97122e664f42bba1349a9027575ad8dd002a7debf6c8ce47c5",
+        "matchesReceipt": true
+      },
+      "checkpoint": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v2\\checkpoint-10",
+        "files": [
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v2\\checkpoint-10\\README.md",
+            "byteLength": 5364,
+            "sha256": "63901cb2fb43c78c44d5b0173f9e9b123cfbc42d02c983a04e33b2138d7bd4ef"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v2\\checkpoint-10\\adapter_config.json",
+            "byteLength": 1155,
+            "sha256": "55d7c3213bf49d6c853a7a5d72216bbd40b3c4c16ef8098a4868f8612e92ff06"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v2\\checkpoint-10\\adapter_model.safetensors",
+            "byteLength": 2308432,
+            "sha256": "df7a0814ddc5714fe2a7fd63a4ce14add0fe29351765afc6204215a6890cd1d0"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v2\\checkpoint-10\\optimizer.pt",
+            "byteLength": 4679115,
+            "sha256": "d07c135f1d13a77a7144d00cdf4be3d6a90a6f998121facd3468b43686c1bcf4"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v2\\checkpoint-10\\rng_state.pth",
+            "byteLength": 14391,
+            "sha256": "96b8a9d05102b32d79dcd46868a5812b65059323d14189db112fa162259bab3a"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v2\\checkpoint-10\\scheduler.pt",
+            "byteLength": 1465,
+            "sha256": "58426b0ee18cf27d13aa5471f11e73833f996f12e3e11c03ddfa9be5ebc6fd43"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v2\\checkpoint-10\\trainer_state.json",
+            "byteLength": 2508,
+            "sha256": "308f248c54a14940f8d1d29dba9d68620eac7be81a7627096fdae09f14d3cc99"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v2\\checkpoint-10\\training_args.bin",
+            "byteLength": 5201,
+            "sha256": "e2965efa755e97bacb562f594426cc5f811a4bc75a7f0d217d08447044034b5b"
+          }
+        ],
+        "trainerState": {
+          "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v2\\checkpoint-10\\trainer_state.json",
+          "byteLength": 2508,
+          "sha256": "308f248c54a14940f8d1d29dba9d68620eac7be81a7627096fdae09f14d3cc99",
+          "content": {
+            "best_global_step": null,
+            "best_metric": null,
+            "best_model_checkpoint": null,
+            "epoch": 1,
+            "eval_steps": 500,
+            "global_step": 10,
+            "is_hyper_param_search": false,
+            "is_local_process_zero": true,
+            "is_world_process_zero": true,
+            "log_history": [
+              {
+                "epoch": 0.1,
+                "grad_norm": 1.6288396120071411,
+                "learning_rate": 0,
+                "loss": 4.701406478881836,
+                "step": 1
+              },
+              {
+                "epoch": 0.2,
+                "grad_norm": 1.473106861114502,
+                "learning_rate": 0.0001,
+                "loss": 4.060842514038086,
+                "step": 2
+              },
+              {
+                "epoch": 0.3,
+                "grad_norm": 1.5907071828842163,
+                "learning_rate": 0.00008888888888888889,
+                "loss": 4.1386003494262695,
+                "step": 3
+              },
+              {
+                "epoch": 0.4,
+                "grad_norm": 1.4395414590835571,
+                "learning_rate": 0.00007777777777777778,
+                "loss": 4.266249179840088,
+                "step": 4
+              },
+              {
+                "epoch": 0.5,
+                "grad_norm": 1.8281749486923218,
+                "learning_rate": 0.00006666666666666667,
+                "loss": 4.693211555480957,
+                "step": 5
+              },
+              {
+                "epoch": 0.6,
+                "grad_norm": 1.4219262599945068,
+                "learning_rate": 0.00005555555555555556,
+                "loss": 4.31328821182251,
+                "step": 6
+              },
+              {
+                "epoch": 0.7,
+                "grad_norm": 1.717620611190796,
+                "learning_rate": 0.000044444444444444447,
+                "loss": 3.8393962383270264,
+                "step": 7
+              },
+              {
+                "epoch": 0.8,
+                "grad_norm": 1.2543516159057617,
+                "learning_rate": 0.000033333333333333335,
+                "loss": 4.327462196350098,
+                "step": 8
+              },
+              {
+                "epoch": 0.9,
+                "grad_norm": 1.7094639539718628,
+                "learning_rate": 0.000022222222222222223,
+                "loss": 4.033486366271973,
+                "step": 9
+              },
+              {
+                "epoch": 1,
+                "grad_norm": 1.4830043315887451,
+                "learning_rate": 0.000011111111111111112,
+                "loss": 4.102261066436768,
+                "step": 10
+              }
+            ],
+            "logging_steps": 1,
+            "max_steps": 10,
+            "num_input_tokens_seen": 0,
+            "num_train_epochs": 1,
+            "save_steps": 10,
+            "stateful_callbacks": {
+              "TrainerControl": {
+                "args": {
+                  "should_epoch_stop": false,
+                  "should_evaluate": false,
+                  "should_log": false,
+                  "should_save": true,
+                  "should_training_stop": true
+                },
+                "attributes": {}
+              }
+            },
+            "total_flos": 18251154358272,
+            "train_batch_size": 1,
+            "trial_name": null,
+            "trial_params": null
+          }
+        },
+        "weightsMatchFinal": true,
+        "configMatchesFinal": true,
+        "finalTrainingStep": true,
+        "disposition": "remove redundant completed checkpoint; retain receipt and trainer-state metadata here; no resumable run or model qualification"
+      },
+      "screen": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v2-source-screen.json",
+        "exists": true,
+        "byteLength": 40334,
+        "sha256": "a8e251e2213951f57dfa0facdcbde38c923561014edd7a7213d51c18b2634d72",
+        "source_model_id": "Qwen/Qwen3-0.6B",
+        "source_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+        "adapter": {
+          "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v2",
+          "adapter_model_sha256": "df7a0814ddc5714fe2a7fd63a4ce14add0fe29351765afc6204215a6890cd1d0",
+          "adapter_config_sha256": "55d7c3213bf49d6c853a7a5d72216bbd40b3c4c16ef8098a4868f8612e92ff06"
+        },
+        "generation": {
+          "do_sample": false,
+          "repetition_penalty": 1,
+          "pad_token_id": 151645,
+          "eos_token_id": 151645,
+          "temperature": null,
+          "top_k": null,
+          "top_p": null
+        },
+        "device": "cpu",
+        "dtype": "float32",
+        "case_count": 8,
+        "cases": [
+          {
+            "index": 0,
+            "promptSha256": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+            "outputSha256": "414d47267ce74189b65acbe04bce9d23ec45d0263520a2e1b62913366b9a2234",
+            "outputTokenCount": 15,
+            "maxNewTokens": 32,
+            "elapsedSeconds": 2.0638883999781683
+          },
+          {
+            "index": 1,
+            "promptSha256": "a0197253b92e371b4fcf97b676224fa22c23472dd15206cf8474850f310ef543",
+            "outputSha256": "42ff12d00b43d441cbd288065cab814a40a3ba09d8f398ba3084b3bc9a666b60",
+            "outputTokenCount": 24,
+            "maxNewTokens": 48,
+            "elapsedSeconds": 3.329537000041455
+          },
+          {
+            "index": 2,
+            "promptSha256": "edbcd2b87f6d29953820b8dbe60edbff9959a789ce4f06c0e9c9217703e24c78",
+            "outputSha256": "4b657eeb9f0a50e76cd7e208d1ed3108de346e3498785fd9b06bd1075bee8b11",
+            "outputTokenCount": 62,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 8.48510020005051
+          },
+          {
+            "index": 3,
+            "promptSha256": "866a2f96296e565f84403dd1d7c2d07649b272fd936deb106cb72716f7f2c247",
+            "outputSha256": "bd2ae1ee54d8559c0f8cf833976eb437649ca4c4a401a52ae41078acf3693a8f",
+            "outputTokenCount": 26,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 3.6714089999441057
+          },
+          {
+            "index": 4,
+            "promptSha256": "0b25a2195aa4b38c6411e4c70b3efa203d4b016f8a3cdb4e792d3b6886e4501c",
+            "outputSha256": "0cb1868670850c7f38fdba361c5ccb2463110f8e915c0089ced753f2a2008f47",
+            "outputTokenCount": 19,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 2.740112300030887
+          },
+          {
+            "index": 5,
+            "promptSha256": "d1792da7e0e73fd8235fd1dc2276a13ccea0d1bc97c5f75e359253188449712f",
+            "outputSha256": "7364e009c5ab0bfd037fd364a2ed3f7e5c094f07057000ed652af079101dd138",
+            "outputTokenCount": 81,
+            "maxNewTokens": 96,
+            "elapsedSeconds": 10.495427899993956
+          },
+          {
+            "index": 6,
+            "promptSha256": "9f90ac993a539b6a5aa0b1a3ad2c0ae6834aaefc740b453f51ef1aa0aa598c33",
+            "outputSha256": "fb54d36ed75c49749f42e33e889fe9f9e2ea19c252c424813e070d9064a51266",
+            "outputTokenCount": 9,
+            "maxNewTokens": 48,
+            "elapsedSeconds": 1.3926560999825597
+          },
+          {
+            "index": 7,
+            "promptSha256": "f61e3e9226fac664f956e17791ca1454108d0f50c990938ec970998be283e6ee",
+            "outputSha256": "dfa69d807f23b7be0cf389a80599a555614f920a420e4f36456bde2ff979e6d8",
+            "outputTokenCount": 9,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 1.3982338999630883
+          }
+        ]
+      }
+    },
+    {
+      "id": "qwen3-cognitive-liberty-v2/adapter-cpu-preservation-pilot-v3",
+      "root": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v3",
+      "trainingReceipt": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v3\\tinyrustlm-training-receipt.json",
+        "byteLength": 1783,
+        "sha256": "248e5729645a0aeaa53d542fc7bf7de13156dd8fa8673e1e30664fdf8845cd07",
+        "content": {
+          "adapter_config_sha256": "sha256:1ab8acfa56d9bf8b93dae1311e4fe059bd7e5b343d7764b4ae31be341543f4ed",
+          "adapter_model_sha256": "sha256:b7f850f37fa96efacce0f1e43783e83114ceb27fc0c4e3d1af7447628cde87f7",
+          "base_model_dir": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\external\\Qwen\\Qwen3-0.6B\\c1899de289a04d12100db370d81485cdf75e47ca",
+          "base_model_sha256": "sha256:f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b",
+          "base_tokenizer_sha256": "sha256:aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+          "dataset_id": "tinyrustlm-qwen3-cognitive-liberty-v2",
+          "eval_exclusion_policy": "rust-frozen-manifest-bound",
+          "frozen_dataset_manifest": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\qwen3-cognitive-liberty-v2\\dataset\\distillation-dataset.manifest",
+          "frozen_dataset_manifest_sha256": "sha256:976b56cae40abe97122e664f42bba1349a9027575ad8dd002a7debf6c8ce47c5",
+          "metrics": {
+            "epoch": 3,
+            "total_flos": 54753463074816,
+            "train_loss": 4.086594557762146,
+            "train_runtime": 200.632,
+            "train_samples_per_second": 0.598,
+            "train_steps_per_second": 0.15
+          },
+          "recipe": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\training\\qwen3-cognitive-liberty-v2\\training-recipe-cpu-preservation-pilot-v3.manifest",
+          "recipe_sha256": "sha256:006eed6fc59ab4cbe23b52d6a16ffbdf1ad6cb247943e9bec5b72f97b72e8623",
+          "record_count": 40,
+          "required_next_gate": "peft-to-trained-adapter-source-conversion-plus-raw-eval",
+          "schema": "tinyrustlm.distillation_training_receipt.v1",
+          "system_prompt_sha256": "sha256:7bf942863fca8bbf635fbe4c16d3159342ed17163991e2b8bec01f30cb3d52c8",
+          "teacher_reasoning_policy": "final-answer-only",
+          "training_engine": "transformers-peft-sequence-lora-v1"
+        }
+      },
+      "finalWeights": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v3\\adapter_model.safetensors",
+        "byteLength": 2308432,
+        "sha256": "b7f850f37fa96efacce0f1e43783e83114ceb27fc0c4e3d1af7447628cde87f7"
+      },
+      "finalConfig": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v3\\adapter_config.json",
+        "byteLength": 1155,
+        "sha256": "1ab8acfa56d9bf8b93dae1311e4fe059bd7e5b343d7764b4ae31be341543f4ed"
+      },
+      "recipe": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\training\\qwen3-cognitive-liberty-v2\\training-recipe-cpu-preservation-pilot-v3.manifest",
+        "byteLength": 1224,
+        "sha256": "006eed6fc59ab4cbe23b52d6a16ffbdf1ad6cb247943e9bec5b72f97b72e8623",
+        "matchesReceipt": true
+      },
+      "dataset": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\qwen3-cognitive-liberty-v2\\dataset\\distillation-dataset.manifest",
+        "byteLength": 40933,
+        "sha256": "976b56cae40abe97122e664f42bba1349a9027575ad8dd002a7debf6c8ce47c5",
+        "matchesReceipt": true
+      },
+      "checkpoint": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v3\\checkpoint-30",
+        "files": [
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v3\\checkpoint-30\\README.md",
+            "byteLength": 5364,
+            "sha256": "63901cb2fb43c78c44d5b0173f9e9b123cfbc42d02c983a04e33b2138d7bd4ef"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v3\\checkpoint-30\\adapter_config.json",
+            "byteLength": 1155,
+            "sha256": "1ab8acfa56d9bf8b93dae1311e4fe059bd7e5b343d7764b4ae31be341543f4ed"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v3\\checkpoint-30\\adapter_model.safetensors",
+            "byteLength": 2308432,
+            "sha256": "b7f850f37fa96efacce0f1e43783e83114ceb27fc0c4e3d1af7447628cde87f7"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v3\\checkpoint-30\\optimizer.pt",
+            "byteLength": 4679115,
+            "sha256": "39c1bdc6f0f2f91be6929b0952fe990ca5d9b114c9c741d537480cb5713d36ea"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v3\\checkpoint-30\\rng_state.pth",
+            "byteLength": 14391,
+            "sha256": "9f954ef59eb9ed5d01699cab603bb5c3c212ec77662ede665d446ce9d927b1c1"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v3\\checkpoint-30\\scheduler.pt",
+            "byteLength": 1465,
+            "sha256": "bac33e33d111995b770adc1ca34f6e616f0dd6684dcf31450a328e9b8cef80a1"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v3\\checkpoint-30\\trainer_state.json",
+            "byteLength": 6014,
+            "sha256": "61a84a50dfc45eeca7ae60d741cd3cc958a14b651d7965eb1e75b1d755bcd8d0"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v3\\checkpoint-30\\training_args.bin",
+            "byteLength": 5201,
+            "sha256": "8a0fa722e1e831ecb6b3daf7c4c4816d24802ca3bb862b4da43a246c9382e453"
+          }
+        ],
+        "trainerState": {
+          "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v3\\checkpoint-30\\trainer_state.json",
+          "byteLength": 6014,
+          "sha256": "61a84a50dfc45eeca7ae60d741cd3cc958a14b651d7965eb1e75b1d755bcd8d0",
+          "content": {
+            "best_global_step": null,
+            "best_metric": null,
+            "best_model_checkpoint": null,
+            "epoch": 3,
+            "eval_steps": 500,
+            "global_step": 30,
+            "is_hyper_param_search": false,
+            "is_local_process_zero": true,
+            "is_world_process_zero": true,
+            "log_history": [
+              {
+                "epoch": 0.1,
+                "grad_norm": 1.6288396120071411,
+                "learning_rate": 0,
+                "loss": 4.701406478881836,
+                "step": 1
+              },
+              {
+                "epoch": 0.2,
+                "grad_norm": 1.473106861114502,
+                "learning_rate": 0.000033333333333333335,
+                "loss": 4.060842514038086,
+                "step": 2
+              },
+              {
+                "epoch": 0.3,
+                "grad_norm": 1.6088422536849976,
+                "learning_rate": 0.00006666666666666667,
+                "loss": 4.1482038497924805,
+                "step": 3
+              },
+              {
+                "epoch": 0.4,
+                "grad_norm": 1.450449824333191,
+                "learning_rate": 0.0001,
+                "loss": 4.280240058898926,
+                "step": 4
+              },
+              {
+                "epoch": 0.5,
+                "grad_norm": 1.8435876369476318,
+                "learning_rate": 0.0000962962962962963,
+                "loss": 4.7089948654174805,
+                "step": 5
+              },
+              {
+                "epoch": 0.6,
+                "grad_norm": 1.4338393211364746,
+                "learning_rate": 0.0000925925925925926,
+                "loss": 4.3181867599487305,
+                "step": 6
+              },
+              {
+                "epoch": 0.7,
+                "grad_norm": 1.7351136207580566,
+                "learning_rate": 0.00008888888888888889,
+                "loss": 3.838679313659668,
+                "step": 7
+              },
+              {
+                "epoch": 0.8,
+                "grad_norm": 1.2711966037750244,
+                "learning_rate": 0.00008518518518518518,
+                "loss": 4.318820476531982,
+                "step": 8
+              },
+              {
+                "epoch": 0.9,
+                "grad_norm": 1.7384759187698364,
+                "learning_rate": 0.00008148148148148148,
+                "loss": 4.010660648345947,
+                "step": 9
+              },
+              {
+                "epoch": 1,
+                "grad_norm": 1.5222874879837036,
+                "learning_rate": 0.00007777777777777778,
+                "loss": 4.072033882141113,
+                "step": 10
+              },
+              {
+                "epoch": 1.1,
+                "grad_norm": 1.2708734273910522,
+                "learning_rate": 0.00007407407407407407,
+                "loss": 4.26017427444458,
+                "step": 11
+              },
+              {
+                "epoch": 1.2,
+                "grad_norm": 1.6969830989837646,
+                "learning_rate": 0.00007037037037037038,
+                "loss": 3.9039745330810547,
+                "step": 12
+              },
+              {
+                "epoch": 1.3,
+                "grad_norm": 1.777647614479065,
+                "learning_rate": 0.00006666666666666667,
+                "loss": 3.235060691833496,
+                "step": 13
+              },
+              {
+                "epoch": 1.4,
+                "grad_norm": 1.452889084815979,
+                "learning_rate": 0.00006296296296296296,
+                "loss": 4.099039077758789,
+                "step": 14
+              },
+              {
+                "epoch": 1.5,
+                "grad_norm": 1.6439794301986694,
+                "learning_rate": 0.00005925925925925926,
+                "loss": 4.851844310760498,
+                "step": 15
+              },
+              {
+                "epoch": 1.6,
+                "grad_norm": 1.8623085021972656,
+                "learning_rate": 0.00005555555555555556,
+                "loss": 3.869687795639038,
+                "step": 16
+              },
+              {
+                "epoch": 1.7,
+                "grad_norm": 1.8068947792053223,
+                "learning_rate": 0.00005185185185185185,
+                "loss": 4.052264213562012,
+                "step": 17
+              },
+              {
+                "epoch": 1.8,
+                "grad_norm": 1.662160038948059,
+                "learning_rate": 0.00004814814814814815,
+                "loss": 3.5283985137939453,
+                "step": 18
+              },
+              {
+                "epoch": 1.9,
+                "grad_norm": 1.8072888851165771,
+                "learning_rate": 0.000044444444444444447,
+                "loss": 4.087427616119385,
+                "step": 19
+              },
+              {
+                "epoch": 2,
+                "grad_norm": 1.4737942218780518,
+                "learning_rate": 0.00004074074074074074,
+                "loss": 4.352485179901123,
+                "step": 20
+              },
+              {
+                "epoch": 2.1,
+                "grad_norm": 1.699885606765747,
+                "learning_rate": 0.000037037037037037037,
+                "loss": 4.052913665771484,
+                "step": 21
+              },
+              {
+                "epoch": 2.2,
+                "grad_norm": 1.6053624153137207,
+                "learning_rate": 0.000033333333333333335,
+                "loss": 3.9537789821624756,
+                "step": 22
+              },
+              {
+                "epoch": 2.3,
+                "grad_norm": 1.4303638935089111,
+                "learning_rate": 0.00002962962962962963,
+                "loss": 3.9333198070526123,
+                "step": 23
+              },
+              {
+                "epoch": 2.4,
+                "grad_norm": 1.7929178476333618,
+                "learning_rate": 0.000025925925925925925,
+                "loss": 4.089713096618652,
+                "step": 24
+              },
+              {
+                "epoch": 2.5,
+                "grad_norm": 1.531417727470398,
+                "learning_rate": 0.000022222222222222223,
+                "loss": 4.082880020141602,
+                "step": 25
+              },
+              {
+                "epoch": 2.6,
+                "grad_norm": 1.8818029165267944,
+                "learning_rate": 0.000018518518518518518,
+                "loss": 3.8146586418151855,
+                "step": 26
+              },
+              {
+                "epoch": 2.7,
+                "grad_norm": 1.5574462413787842,
+                "learning_rate": 0.000014814814814814815,
+                "loss": 4.223066806793213,
+                "step": 27
+              },
+              {
+                "epoch": 2.8,
+                "grad_norm": 1.698076605796814,
+                "learning_rate": 0.000011111111111111112,
+                "loss": 4.138384819030762,
+                "step": 28
+              },
+              {
+                "epoch": 2.9,
+                "grad_norm": 1.8796992301940918,
+                "learning_rate": 0.0000074074074074074075,
+                "loss": 3.6647188663482666,
+                "step": 29
+              },
+              {
+                "epoch": 3,
+                "grad_norm": 1.4490269422531128,
+                "learning_rate": 0.0000037037037037037037,
+                "loss": 3.945976972579956,
+                "step": 30
+              }
+            ],
+            "logging_steps": 1,
+            "max_steps": 30,
+            "num_input_tokens_seen": 0,
+            "num_train_epochs": 3,
+            "save_steps": 30,
+            "stateful_callbacks": {
+              "TrainerControl": {
+                "args": {
+                  "should_epoch_stop": false,
+                  "should_evaluate": false,
+                  "should_log": false,
+                  "should_save": true,
+                  "should_training_stop": true
+                },
+                "attributes": {}
+              }
+            },
+            "total_flos": 54753463074816,
+            "train_batch_size": 1,
+            "trial_name": null,
+            "trial_params": null
+          }
+        },
+        "weightsMatchFinal": true,
+        "configMatchesFinal": true,
+        "finalTrainingStep": true,
+        "disposition": "remove redundant completed checkpoint; retain receipt and trainer-state metadata here; no resumable run or model qualification"
+      },
+      "screen": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v3-source-screen.json",
+        "exists": true,
+        "byteLength": 41368,
+        "sha256": "59e126640cabbc7c61a1e1e0b7acd120c032628a05c6eea7f75a97224c02feba",
+        "source_model_id": "Qwen/Qwen3-0.6B",
+        "source_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+        "adapter": {
+          "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v2\\adapter-cpu-preservation-pilot-v3",
+          "adapter_model_sha256": "b7f850f37fa96efacce0f1e43783e83114ceb27fc0c4e3d1af7447628cde87f7",
+          "adapter_config_sha256": "1ab8acfa56d9bf8b93dae1311e4fe059bd7e5b343d7764b4ae31be341543f4ed"
+        },
+        "generation": {
+          "do_sample": false,
+          "repetition_penalty": 1,
+          "pad_token_id": 151645,
+          "eos_token_id": 151645,
+          "temperature": null,
+          "top_k": null,
+          "top_p": null
+        },
+        "device": "cpu",
+        "dtype": "float32",
+        "case_count": 8,
+        "cases": [
+          {
+            "index": 0,
+            "promptSha256": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+            "outputSha256": "4a7df18ea9be4b37c3253ea04b3bf1a4cc2e206404e5f47fbe3019f8b9352111",
+            "outputTokenCount": 15,
+            "maxNewTokens": 32,
+            "elapsedSeconds": 2.1598989000776783
+          },
+          {
+            "index": 1,
+            "promptSha256": "a0197253b92e371b4fcf97b676224fa22c23472dd15206cf8474850f310ef543",
+            "outputSha256": "42ff12d00b43d441cbd288065cab814a40a3ba09d8f398ba3084b3bc9a666b60",
+            "outputTokenCount": 24,
+            "maxNewTokens": 48,
+            "elapsedSeconds": 3.5037020000163466
+          },
+          {
+            "index": 2,
+            "promptSha256": "edbcd2b87f6d29953820b8dbe60edbff9959a789ce4f06c0e9c9217703e24c78",
+            "outputSha256": "4b657eeb9f0a50e76cd7e208d1ed3108de346e3498785fd9b06bd1075bee8b11",
+            "outputTokenCount": 62,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 7.991558299981989
+          },
+          {
+            "index": 3,
+            "promptSha256": "866a2f96296e565f84403dd1d7c2d07649b272fd936deb106cb72716f7f2c247",
+            "outputSha256": "809081e592847b9b8a415edbd5ac6fdf19185b172d37c8c6bd9e02f2199d1c95",
+            "outputTokenCount": 42,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 5.771751899970695
+          },
+          {
+            "index": 4,
+            "promptSha256": "0b25a2195aa4b38c6411e4c70b3efa203d4b016f8a3cdb4e792d3b6886e4501c",
+            "outputSha256": "0cb1868670850c7f38fdba361c5ccb2463110f8e915c0089ced753f2a2008f47",
+            "outputTokenCount": 19,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 2.986429200042039
+          },
+          {
+            "index": 5,
+            "promptSha256": "d1792da7e0e73fd8235fd1dc2276a13ccea0d1bc97c5f75e359253188449712f",
+            "outputSha256": "6dd2e5645ef7aad4f6e07cbe51c53155d95568ca46f064c852ddc7512366d8fe",
+            "outputTokenCount": 96,
+            "maxNewTokens": 96,
+            "elapsedSeconds": 14.072429399937391
+          },
+          {
+            "index": 6,
+            "promptSha256": "9f90ac993a539b6a5aa0b1a3ad2c0ae6834aaefc740b453f51ef1aa0aa598c33",
+            "outputSha256": "05561f286ac58fa2be9e33b422984197d5d68fe472ff47df4cfd18eaf40388f7",
+            "outputTokenCount": 30,
+            "maxNewTokens": 48,
+            "elapsedSeconds": 4.2689371999586
+          },
+          {
+            "index": 7,
+            "promptSha256": "f61e3e9226fac664f956e17791ca1454108d0f50c990938ec970998be283e6ee",
+            "outputSha256": "dfa69d807f23b7be0cf389a80599a555614f920a420e4f36456bde2ff979e6d8",
+            "outputTokenCount": 9,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 1.414141400018707
+          }
+        ]
+      }
+    },
+    {
+      "id": "qwen3-cognitive-liberty-v3/adapter-cpu-pilot-v1",
+      "root": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v1",
+      "trainingReceipt": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v1\\tinyrustlm-training-receipt.json",
+        "byteLength": 1773,
+        "sha256": "2e052d14b38141ae4736b92775148f45efcfa668105ec7533dd69cd65bfca1ab",
+        "content": {
+          "adapter_config_sha256": "sha256:1ab8acfa56d9bf8b93dae1311e4fe059bd7e5b343d7764b4ae31be341543f4ed",
+          "adapter_model_sha256": "sha256:3129e7e4989a91caaaa8e121a0198f494ca6ca6b23372b17c48831ea1e35c243",
+          "base_model_dir": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\external\\Qwen\\Qwen3-0.6B\\c1899de289a04d12100db370d81485cdf75e47ca",
+          "base_model_sha256": "sha256:f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b",
+          "base_tokenizer_sha256": "sha256:aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+          "dataset_id": "tinyrustlm-qwen3-cognitive-liberty-v3",
+          "eval_exclusion_policy": "rust-frozen-manifest-bound",
+          "frozen_dataset_manifest": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\qwen3-cognitive-liberty-v3\\dataset\\distillation-dataset.manifest",
+          "frozen_dataset_manifest_sha256": "sha256:d91ee7c2eddeb30771c307184d847580f21a8f3344b09ec7cce5c9a1d4bf0b38",
+          "metrics": {
+            "epoch": 1,
+            "total_flos": 44097032945664,
+            "train_loss": 2.986751427650452,
+            "train_runtime": 150.9868,
+            "train_samples_per_second": 0.662,
+            "train_steps_per_second": 0.166
+          },
+          "recipe": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\training\\qwen3-cognitive-liberty-v3\\training-recipe-cpu-pilot-v1.manifest",
+          "recipe_sha256": "sha256:f020b1897aa04411c01460adab77d01b9545c76823ed2e5888aeaa5d0c3ba082",
+          "record_count": 100,
+          "required_next_gate": "peft-to-trained-adapter-source-conversion-plus-raw-eval",
+          "schema": "tinyrustlm.distillation_training_receipt.v1",
+          "system_prompt_sha256": "sha256:7bf942863fca8bbf635fbe4c16d3159342ed17163991e2b8bec01f30cb3d52c8",
+          "teacher_reasoning_policy": "final-answer-only",
+          "training_engine": "transformers-peft-sequence-lora-v1"
+        }
+      },
+      "finalWeights": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v1\\adapter_model.safetensors",
+        "byteLength": 2308432,
+        "sha256": "3129e7e4989a91caaaa8e121a0198f494ca6ca6b23372b17c48831ea1e35c243"
+      },
+      "finalConfig": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v1\\adapter_config.json",
+        "byteLength": 1155,
+        "sha256": "1ab8acfa56d9bf8b93dae1311e4fe059bd7e5b343d7764b4ae31be341543f4ed"
+      },
+      "recipe": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\training\\qwen3-cognitive-liberty-v3\\training-recipe-cpu-pilot-v1.manifest",
+        "byteLength": 1212,
+        "sha256": "f020b1897aa04411c01460adab77d01b9545c76823ed2e5888aeaa5d0c3ba082",
+        "matchesReceipt": true
+      },
+      "dataset": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\qwen3-cognitive-liberty-v3\\dataset\\distillation-dataset.manifest",
+        "byteLength": 93131,
+        "sha256": "d91ee7c2eddeb30771c307184d847580f21a8f3344b09ec7cce5c9a1d4bf0b38",
+        "matchesReceipt": true
+      },
+      "checkpoint": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v1\\checkpoint-25",
+        "files": [
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v1\\checkpoint-25\\README.md",
+            "byteLength": 5364,
+            "sha256": "63901cb2fb43c78c44d5b0173f9e9b123cfbc42d02c983a04e33b2138d7bd4ef"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v1\\checkpoint-25\\adapter_config.json",
+            "byteLength": 1155,
+            "sha256": "1ab8acfa56d9bf8b93dae1311e4fe059bd7e5b343d7764b4ae31be341543f4ed"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v1\\checkpoint-25\\adapter_model.safetensors",
+            "byteLength": 2308432,
+            "sha256": "3129e7e4989a91caaaa8e121a0198f494ca6ca6b23372b17c48831ea1e35c243"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v1\\checkpoint-25\\optimizer.pt",
+            "byteLength": 4679115,
+            "sha256": "ebc966570e975f9a48a208773720509d0b650cfc9791560679d7f4db645e20c7"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v1\\checkpoint-25\\rng_state.pth",
+            "byteLength": 14391,
+            "sha256": "5fa3899e4e777f1ec4104ef9d72e7855a444590c0f051c373913cf8ed8a3868f"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v1\\checkpoint-25\\scheduler.pt",
+            "byteLength": 1465,
+            "sha256": "296e4adec8ebc33e8334e7640b46aec61987b2ef18bab1ca1297e69049e06836"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v1\\checkpoint-25\\trainer_state.json",
+            "byteLength": 5149,
+            "sha256": "9f2b1a71b74aae02b995000b7274d648140cf1f89dc493eb6a0352949e11144c"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v1\\checkpoint-25\\training_args.bin",
+            "byteLength": 5201,
+            "sha256": "1cdd0e46c7622d662eddeafdca4f2f557fb2b15ec355b6c0f0b3860ee10783fb"
+          }
+        ],
+        "trainerState": {
+          "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v1\\checkpoint-25\\trainer_state.json",
+          "byteLength": 5149,
+          "sha256": "9f2b1a71b74aae02b995000b7274d648140cf1f89dc493eb6a0352949e11144c",
+          "content": {
+            "best_global_step": null,
+            "best_metric": null,
+            "best_model_checkpoint": null,
+            "epoch": 1,
+            "eval_steps": 500,
+            "global_step": 25,
+            "is_hyper_param_search": false,
+            "is_local_process_zero": true,
+            "is_world_process_zero": true,
+            "log_history": [
+              {
+                "epoch": 0.04,
+                "grad_norm": 1.181964635848999,
+                "learning_rate": 0,
+                "loss": 3.3441715240478516,
+                "step": 1
+              },
+              {
+                "epoch": 0.08,
+                "grad_norm": 1.4614611864089966,
+                "learning_rate": 0.000033333333333333335,
+                "loss": 3.6031672954559326,
+                "step": 2
+              },
+              {
+                "epoch": 0.12,
+                "grad_norm": 1.5180835723876953,
+                "learning_rate": 0.00006666666666666667,
+                "loss": 3.6537294387817383,
+                "step": 3
+              },
+              {
+                "epoch": 0.16,
+                "grad_norm": 1.224778413772583,
+                "learning_rate": 0.0001,
+                "loss": 2.9238648414611816,
+                "step": 4
+              },
+              {
+                "epoch": 0.2,
+                "grad_norm": 1.3106309175491333,
+                "learning_rate": 0.00009545454545454546,
+                "loss": 2.6431198120117188,
+                "step": 5
+              },
+              {
+                "epoch": 0.24,
+                "grad_norm": 1.02104914188385,
+                "learning_rate": 0.00009090909090909092,
+                "loss": 3.3723554611206055,
+                "step": 6
+              },
+              {
+                "epoch": 0.28,
+                "grad_norm": 1.1578129529953003,
+                "learning_rate": 0.00008636363636363637,
+                "loss": 3.1747381687164307,
+                "step": 7
+              },
+              {
+                "epoch": 0.32,
+                "grad_norm": 1.5045839548110962,
+                "learning_rate": 0.00008181818181818183,
+                "loss": 3.0799267292022705,
+                "step": 8
+              },
+              {
+                "epoch": 0.36,
+                "grad_norm": 1.4337990283966064,
+                "learning_rate": 0.00007727272727272727,
+                "loss": 2.0754103660583496,
+                "step": 9
+              },
+              {
+                "epoch": 0.4,
+                "grad_norm": 1.734128475189209,
+                "learning_rate": 0.00007272727272727273,
+                "loss": 3.826378345489502,
+                "step": 10
+              },
+              {
+                "epoch": 0.44,
+                "grad_norm": 1.1308850049972534,
+                "learning_rate": 0.00006818181818181818,
+                "loss": 2.5351150035858154,
+                "step": 11
+              },
+              {
+                "epoch": 0.48,
+                "grad_norm": 1.070333480834961,
+                "learning_rate": 0.00006363636363636364,
+                "loss": 1.5309504270553589,
+                "step": 12
+              },
+              {
+                "epoch": 0.52,
+                "grad_norm": 1.2830888032913208,
+                "learning_rate": 0.0000590909090909091,
+                "loss": 1.836841106414795,
+                "step": 13
+              },
+              {
+                "epoch": 0.56,
+                "grad_norm": 1.328961968421936,
+                "learning_rate": 0.000054545454545454546,
+                "loss": 3.138000726699829,
+                "step": 14
+              },
+              {
+                "epoch": 0.6,
+                "grad_norm": 1.4619338512420654,
+                "learning_rate": 0.00005,
+                "loss": 3.2488694190979004,
+                "step": 15
+              },
+              {
+                "epoch": 0.64,
+                "grad_norm": 1.1974163055419922,
+                "learning_rate": 0.00004545454545454546,
+                "loss": 2.1909961700439453,
+                "step": 16
+              },
+              {
+                "epoch": 0.68,
+                "grad_norm": 1.5168629884719849,
+                "learning_rate": 0.000040909090909090915,
+                "loss": 3.2167699337005615,
+                "step": 17
+              },
+              {
+                "epoch": 0.72,
+                "grad_norm": 1.7841918468475342,
+                "learning_rate": 0.000036363636363636364,
+                "loss": 2.694880485534668,
+                "step": 18
+              },
+              {
+                "epoch": 0.76,
+                "grad_norm": 1.3070452213287354,
+                "learning_rate": 0.00003181818181818182,
+                "loss": 2.514702558517456,
+                "step": 19
+              },
+              {
+                "epoch": 0.8,
+                "grad_norm": 1.4836647510528564,
+                "learning_rate": 0.000027272727272727273,
+                "loss": 4.166012763977051,
+                "step": 20
+              },
+              {
+                "epoch": 0.84,
+                "grad_norm": 1.6726876497268677,
+                "learning_rate": 0.00002272727272727273,
+                "loss": 3.3560144901275635,
+                "step": 21
+              },
+              {
+                "epoch": 0.88,
+                "grad_norm": 1.156264066696167,
+                "learning_rate": 0.000018181818181818182,
+                "loss": 2.883176326751709,
+                "step": 22
+              },
+              {
+                "epoch": 0.92,
+                "grad_norm": 1.7084137201309204,
+                "learning_rate": 0.000013636363636363637,
+                "loss": 2.6368749141693115,
+                "step": 23
+              },
+              {
+                "epoch": 0.96,
+                "grad_norm": 1.9791555404663086,
+                "learning_rate": 0.000009090909090909091,
+                "loss": 3.938284158706665,
+                "step": 24
+              },
+              {
+                "epoch": 1,
+                "grad_norm": 1.3772635459899902,
+                "learning_rate": 0.0000045454545454545455,
+                "loss": 3.084435224533081,
+                "step": 25
+              }
+            ],
+            "logging_steps": 1,
+            "max_steps": 25,
+            "num_input_tokens_seen": 0,
+            "num_train_epochs": 1,
+            "save_steps": 25,
+            "stateful_callbacks": {
+              "TrainerControl": {
+                "args": {
+                  "should_epoch_stop": false,
+                  "should_evaluate": false,
+                  "should_log": false,
+                  "should_save": true,
+                  "should_training_stop": true
+                },
+                "attributes": {}
+              }
+            },
+            "total_flos": 44097032945664,
+            "train_batch_size": 1,
+            "trial_name": null,
+            "trial_params": null
+          }
+        },
+        "weightsMatchFinal": true,
+        "configMatchesFinal": true,
+        "finalTrainingStep": true,
+        "disposition": "remove redundant completed checkpoint; retain receipt and trainer-state metadata here; no resumable run or model qualification"
+      },
+      "screen": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v1-source-screen.json",
+        "exists": false
+      }
+    },
+    {
+      "id": "qwen3-cognitive-liberty-v3/adapter-cpu-pilot-v2",
+      "root": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v2",
+      "trainingReceipt": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v2\\tinyrustlm-training-receipt.json",
+        "byteLength": 1773,
+        "sha256": "c6ab1fcfa238de6379e02690cb75003d44df9d93de26e3a396e43dba1de2b40a",
+        "content": {
+          "adapter_config_sha256": "sha256:ac455ba3f7afeb3e7c14f81c0b0e210a396ea707d56fb719528c9e7e069a3551",
+          "adapter_model_sha256": "sha256:78b90b7b8f3fa0cb1ef0eeb12ffef4cf4df9379fd26784f3a105c7ee6d2d52d3",
+          "base_model_dir": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\external\\Qwen\\Qwen3-0.6B\\c1899de289a04d12100db370d81485cdf75e47ca",
+          "base_model_sha256": "sha256:f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b",
+          "base_tokenizer_sha256": "sha256:aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+          "dataset_id": "tinyrustlm-qwen3-cognitive-liberty-v3",
+          "eval_exclusion_policy": "rust-frozen-manifest-bound",
+          "frozen_dataset_manifest": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\qwen3-cognitive-liberty-v3\\dataset\\distillation-dataset.manifest",
+          "frozen_dataset_manifest_sha256": "sha256:d91ee7c2eddeb30771c307184d847580f21a8f3344b09ec7cce5c9a1d4bf0b38",
+          "metrics": {
+            "epoch": 1,
+            "total_flos": 44544244580352,
+            "train_loss": 2.8791755771636964,
+            "train_runtime": 222.0573,
+            "train_samples_per_second": 0.45,
+            "train_steps_per_second": 0.113
+          },
+          "recipe": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\training\\qwen3-cognitive-liberty-v3\\training-recipe-cpu-pilot-v2.manifest",
+          "recipe_sha256": "sha256:ea059936b60c0a8a3e8a621a788020a849ddd5b0fe63a7f6ce6bf4079c5ba5bc",
+          "record_count": 100,
+          "required_next_gate": "peft-to-trained-adapter-source-conversion-plus-raw-eval",
+          "schema": "tinyrustlm.distillation_training_receipt.v1",
+          "system_prompt_sha256": "sha256:7bf942863fca8bbf635fbe4c16d3159342ed17163991e2b8bec01f30cb3d52c8",
+          "teacher_reasoning_policy": "final-answer-only",
+          "training_engine": "transformers-peft-sequence-lora-v1"
+        }
+      },
+      "finalWeights": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v2\\adapter_model.safetensors",
+        "byteLength": 20236472,
+        "sha256": "78b90b7b8f3fa0cb1ef0eeb12ffef4cf4df9379fd26784f3a105c7ee6d2d52d3"
+      },
+      "finalConfig": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v2\\adapter_config.json",
+        "byteLength": 1237,
+        "sha256": "ac455ba3f7afeb3e7c14f81c0b0e210a396ea707d56fb719528c9e7e069a3551"
+      },
+      "recipe": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\training\\qwen3-cognitive-liberty-v3\\training-recipe-cpu-pilot-v2.manifest",
+        "byteLength": 1261,
+        "sha256": "ea059936b60c0a8a3e8a621a788020a849ddd5b0fe63a7f6ce6bf4079c5ba5bc",
+        "matchesReceipt": true
+      },
+      "dataset": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\qwen3-cognitive-liberty-v3\\dataset\\distillation-dataset.manifest",
+        "byteLength": 93131,
+        "sha256": "d91ee7c2eddeb30771c307184d847580f21a8f3344b09ec7cce5c9a1d4bf0b38",
+        "matchesReceipt": true
+      },
+      "checkpoint": {
+        "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v2\\checkpoint-25",
+        "files": [
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v2\\checkpoint-25\\README.md",
+            "byteLength": 5364,
+            "sha256": "63901cb2fb43c78c44d5b0173f9e9b123cfbc42d02c983a04e33b2138d7bd4ef"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v2\\checkpoint-25\\adapter_config.json",
+            "byteLength": 1237,
+            "sha256": "ac455ba3f7afeb3e7c14f81c0b0e210a396ea707d56fb719528c9e7e069a3551"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v2\\checkpoint-25\\adapter_model.safetensors",
+            "byteLength": 20236472,
+            "sha256": "78b90b7b8f3fa0cb1ef0eeb12ffef4cf4df9379fd26784f3a105c7ee6d2d52d3"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v2\\checkpoint-25\\optimizer.pt",
+            "byteLength": 40688891,
+            "sha256": "41a19259c45e011971f807b6450609e068c8530534f23cdb985d8e15572463a7"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v2\\checkpoint-25\\rng_state.pth",
+            "byteLength": 14391,
+            "sha256": "7c499a184c6b0e8ab63b64954b4b5ecc289db963a428c971d1851753ed7577b7"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v2\\checkpoint-25\\scheduler.pt",
+            "byteLength": 1465,
+            "sha256": "68e82453fa56e52b94a5ba63e02120d75df91907c7a48acfbea4d687f7f01e52"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v2\\checkpoint-25\\trainer_state.json",
+            "byteLength": 5150,
+            "sha256": "3843a3901066e56be45581ff9f0fbfb60aa38d4bc1d7d31fc08431701e3e81bc"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v2\\checkpoint-25\\training_args.bin",
+            "byteLength": 5201,
+            "sha256": "e8ac32f5b2c6cd8df3f5515c3325f2baaf2f048c7df4e7580709d3519c2ae626"
+          }
+        ],
+        "trainerState": {
+          "path": "D:\\LLMs\\TinyRustLM\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v2\\checkpoint-25\\trainer_state.json",
+          "byteLength": 5150,
+          "sha256": "3843a3901066e56be45581ff9f0fbfb60aa38d4bc1d7d31fc08431701e3e81bc",
+          "content": {
+            "best_global_step": null,
+            "best_metric": null,
+            "best_model_checkpoint": null,
+            "epoch": 1,
+            "eval_steps": 500,
+            "global_step": 25,
+            "is_hyper_param_search": false,
+            "is_local_process_zero": true,
+            "is_world_process_zero": true,
+            "log_history": [
+              {
+                "epoch": 0.04,
+                "grad_norm": 2.6299870014190674,
+                "learning_rate": 0,
+                "loss": 3.3441715240478516,
+                "step": 1
+              },
+              {
+                "epoch": 0.08,
+                "grad_norm": 3.267031192779541,
+                "learning_rate": 0.000016666666666666667,
+                "loss": 3.6031672954559326,
+                "step": 2
+              },
+              {
+                "epoch": 0.12,
+                "grad_norm": 3.1351287364959717,
+                "learning_rate": 0.000033333333333333335,
+                "loss": 3.6443839073181152,
+                "step": 3
+              },
+              {
+                "epoch": 0.16,
+                "grad_norm": 2.58898663520813,
+                "learning_rate": 0.00005,
+                "loss": 2.906754970550537,
+                "step": 4
+              },
+              {
+                "epoch": 0.2,
+                "grad_norm": 2.5795950889587402,
+                "learning_rate": 0.00004772727272727273,
+                "loss": 2.605093002319336,
+                "step": 5
+              },
+              {
+                "epoch": 0.24,
+                "grad_norm": 2.065873861312866,
+                "learning_rate": 0.00004545454545454546,
+                "loss": 3.3374783992767334,
+                "step": 6
+              },
+              {
+                "epoch": 0.28,
+                "grad_norm": 2.2569174766540527,
+                "learning_rate": 0.00004318181818181819,
+                "loss": 3.1209325790405273,
+                "step": 7
+              },
+              {
+                "epoch": 0.32,
+                "grad_norm": 2.8215484619140625,
+                "learning_rate": 0.000040909090909090915,
+                "loss": 3.002945899963379,
+                "step": 8
+              },
+              {
+                "epoch": 0.36,
+                "grad_norm": 2.791755437850952,
+                "learning_rate": 0.000038636363636363636,
+                "loss": 1.9948325157165527,
+                "step": 9
+              },
+              {
+                "epoch": 0.4,
+                "grad_norm": 2.8891689777374268,
+                "learning_rate": 0.000036363636363636364,
+                "loss": 3.6758227348327637,
+                "step": 10
+              },
+              {
+                "epoch": 0.44,
+                "grad_norm": 2.113152027130127,
+                "learning_rate": 0.00003409090909090909,
+                "loss": 2.4369001388549805,
+                "step": 11
+              },
+              {
+                "epoch": 0.48,
+                "grad_norm": 1.9733785390853882,
+                "learning_rate": 0.00003181818181818182,
+                "loss": 1.4483988285064697,
+                "step": 12
+              },
+              {
+                "epoch": 0.52,
+                "grad_norm": 2.149200677871704,
+                "learning_rate": 0.00002954545454545455,
+                "loss": 1.743922472000122,
+                "step": 13
+              },
+              {
+                "epoch": 0.56,
+                "grad_norm": 2.2503156661987305,
+                "learning_rate": 0.000027272727272727273,
+                "loss": 3.008963108062744,
+                "step": 14
+              },
+              {
+                "epoch": 0.6,
+                "grad_norm": 2.4645237922668457,
+                "learning_rate": 0.000025,
+                "loss": 3.1319522857666016,
+                "step": 15
+              },
+              {
+                "epoch": 0.64,
+                "grad_norm": 1.9888553619384766,
+                "learning_rate": 0.00002272727272727273,
+                "loss": 2.076265811920166,
+                "step": 16
+              },
+              {
+                "epoch": 0.68,
+                "grad_norm": 2.519382953643799,
+                "learning_rate": 0.000020454545454545457,
+                "loss": 3.0570106506347656,
+                "step": 17
+              },
+              {
+                "epoch": 0.72,
+                "grad_norm": 3.0391814708709717,
+                "learning_rate": 0.000018181818181818182,
+                "loss": 2.5218358039855957,
+                "step": 18
+              },
+              {
+                "epoch": 0.76,
+                "grad_norm": 2.140111207962036,
+                "learning_rate": 0.00001590909090909091,
+                "loss": 2.365652561187744,
+                "step": 19
+              },
+              {
+                "epoch": 0.8,
+                "grad_norm": 2.355428457260132,
+                "learning_rate": 0.000013636363636363637,
+                "loss": 3.9815526008605957,
+                "step": 20
+              },
+              {
+                "epoch": 0.84,
+                "grad_norm": 2.5755720138549805,
+                "learning_rate": 0.000011363636363636365,
+                "loss": 3.142570972442627,
+                "step": 21
+              },
+              {
+                "epoch": 0.88,
+                "grad_norm": 1.9001039266586304,
+                "learning_rate": 0.000009090909090909091,
+                "loss": 2.7794957160949707,
+                "step": 22
+              },
+              {
+                "epoch": 0.92,
+                "grad_norm": 2.8466005325317383,
+                "learning_rate": 0.000006818181818181818,
+                "loss": 2.469329595565796,
+                "step": 23
+              },
+              {
+                "epoch": 0.96,
+                "grad_norm": 2.7471582889556885,
+                "learning_rate": 0.0000045454545454545455,
+                "loss": 3.647883892059326,
+                "step": 24
+              },
+              {
+                "epoch": 1,
+                "grad_norm": 2.319697618484497,
+                "learning_rate": 0.0000022727272727272728,
+                "loss": 2.932072162628174,
+                "step": 25
+              }
+            ],
+            "logging_steps": 1,
+            "max_steps": 25,
+            "num_input_tokens_seen": 0,
+            "num_train_epochs": 1,
+            "save_steps": 25,
+            "stateful_callbacks": {
+              "TrainerControl": {
+                "args": {
+                  "should_epoch_stop": false,
+                  "should_evaluate": false,
+                  "should_log": false,
+                  "should_save": true,
+                  "should_training_stop": true
+                },
+                "attributes": {}
+              }
+            },
+            "total_flos": 44544244580352,
+            "train_batch_size": 1,
+            "trial_name": null,
+            "trial_params": null
+          }
+        },
+        "weightsMatchFinal": true,
+        "configMatchesFinal": true,
+        "finalTrainingStep": true,
+        "disposition": "remove redundant completed checkpoint; retain receipt and trainer-state metadata here; no resumable run or model qualification"
+      },
+      "screen": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\qwen3-cognitive-liberty-v3\\adapter-cpu-pilot-v2-source-screen.json",
+        "exists": false
+      }
+    },
+    {
+      "id": "smollm2-cognitive-liberty-v1/adapter-cpu-pilot-v1",
+      "root": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v1",
+      "trainingReceipt": {
+        "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\tinyrustlm-training-receipt.json",
+        "byteLength": 1753,
+        "sha256": "38a6de4720ce6558984776f2115fdb94f333da5663a2368c2219acd197d337c0",
+        "content": {
+          "adapter_config_sha256": "sha256:61ce9d8527185461475e2186a8b490342828ac52d84bbc4aa8651a236bbd36f4",
+          "adapter_model_sha256": "sha256:41a5627ef646c205579b2ad1c49db1861bc3bfa6721e0c30a8d3cc686ade3feb",
+          "base_model_dir": "D:\\LLMs\\HuggingFaceTB\\SmolLM2-1.7B-Instruct\\31b70e2e869a7173562077fd711b654946d38674",
+          "base_model_sha256": "sha256:f55217be716b6a997b97b9d8d7eb6fad02e00858f5010ec24f64603c3a98a0e8",
+          "base_tokenizer_sha256": "sha256:9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+          "dataset_id": "tinyrustlm-smollm2-cognitive-liberty-v1",
+          "eval_exclusion_policy": "rust-frozen-manifest-bound",
+          "frozen_dataset_manifest": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\smollm2-cognitive-liberty-v1\\dataset\\distillation-dataset.manifest",
+          "frozen_dataset_manifest_sha256": "sha256:bdf28e2eb470a96b0c7514b453082387a6b40ef3cd0b48cfc9170bf41ea7eb3b",
+          "metrics": {
+            "epoch": 1,
+            "total_flos": 136680943288320,
+            "train_loss": 2.4189255237579346,
+            "train_runtime": 325.6,
+            "train_samples_per_second": 0.307,
+            "train_steps_per_second": 0.077
+          },
+          "recipe": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\training\\smollm2-cognitive-liberty-v1\\training-recipe-cpu-pilot-v1.manifest",
+          "recipe_sha256": "sha256:a431a5bc9b60bea11f6c3f9f8747dcf8395f650208e1f4a4acc8837619e50982",
+          "record_count": 100,
+          "required_next_gate": "peft-to-trained-adapter-source-conversion-plus-raw-eval",
+          "schema": "tinyrustlm.distillation_training_receipt.v1",
+          "system_prompt_sha256": "sha256:2dce3011cffcb651acb5654e8e4d4270faf7c25aed4d1b363ae6adc603b38891",
+          "teacher_reasoning_policy": "final-answer-only",
+          "training_engine": "transformers-peft-sequence-lora-v1"
+        }
+      },
+      "finalWeights": {
+        "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\adapter_model.safetensors",
+        "byteLength": 3158328,
+        "sha256": "41a5627ef646c205579b2ad1c49db1861bc3bfa6721e0c30a8d3cc686ade3feb"
+      },
+      "finalConfig": {
+        "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\adapter_config.json",
+        "byteLength": 1130,
+        "sha256": "61ce9d8527185461475e2186a8b490342828ac52d84bbc4aa8651a236bbd36f4"
+      },
+      "recipe": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\training\\smollm2-cognitive-liberty-v1\\training-recipe-cpu-pilot-v1.manifest",
+        "byteLength": 1201,
+        "sha256": "a431a5bc9b60bea11f6c3f9f8747dcf8395f650208e1f4a4acc8837619e50982",
+        "matchesReceipt": true
+      },
+      "dataset": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\smollm2-cognitive-liberty-v1\\dataset\\distillation-dataset.manifest",
+        "byteLength": 93159,
+        "sha256": "bdf28e2eb470a96b0c7514b453082387a6b40ef3cd0b48cfc9170bf41ea7eb3b",
+        "matchesReceipt": true
+      },
+      "checkpoint": {
+        "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-25",
+        "files": [
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-25\\README.md",
+            "byteLength": 5322,
+            "sha256": "ce04f7c071dce9cd5723411256b02f8689dea3941026972e9e9163bf077f498a"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-25\\adapter_config.json",
+            "byteLength": 1130,
+            "sha256": "61ce9d8527185461475e2186a8b490342828ac52d84bbc4aa8651a236bbd36f4"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-25\\adapter_model.safetensors",
+            "byteLength": 3158328,
+            "sha256": "41a5627ef646c205579b2ad1c49db1861bc3bfa6721e0c30a8d3cc686ade3feb"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-25\\optimizer.pt",
+            "byteLength": 6370059,
+            "sha256": "61b691aacc14ce60efc5ce40ae84a5f0f061beccae9cbd7cd5f281f3052553f1"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-25\\rng_state.pth",
+            "byteLength": 14391,
+            "sha256": "cff83575ca05a6e89353509cbe4e35bc76827361135c475fee00234e7b6f8926"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-25\\scheduler.pt",
+            "byteLength": 1465,
+            "sha256": "296e4adec8ebc33e8334e7640b46aec61987b2ef18bab1ca1297e69049e06836"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-25\\trainer_state.json",
+            "byteLength": 5161,
+            "sha256": "b066a946667f1bc8104d3368426d725212ea1bb9d9f5c8f2ba3abcc1eae766b1"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-25\\training_args.bin",
+            "byteLength": 5201,
+            "sha256": "e83eb97b9a303b95da1167177c7fee5cb298feed4ab44e33e5bd24b732527836"
+          }
+        ],
+        "trainerState": {
+          "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v1\\checkpoint-25\\trainer_state.json",
+          "byteLength": 5161,
+          "sha256": "b066a946667f1bc8104d3368426d725212ea1bb9d9f5c8f2ba3abcc1eae766b1",
+          "content": {
+            "best_global_step": null,
+            "best_metric": null,
+            "best_model_checkpoint": null,
+            "epoch": 1,
+            "eval_steps": 500,
+            "global_step": 25,
+            "is_hyper_param_search": false,
+            "is_local_process_zero": true,
+            "is_world_process_zero": true,
+            "log_history": [
+              {
+                "epoch": 0.04,
+                "grad_norm": 0.14178040623664856,
+                "learning_rate": 0,
+                "loss": 2.5729029178619385,
+                "step": 1
+              },
+              {
+                "epoch": 0.08,
+                "grad_norm": 0.15476924180984497,
+                "learning_rate": 0.000033333333333333335,
+                "loss": 2.73382306098938,
+                "step": 2
+              },
+              {
+                "epoch": 0.12,
+                "grad_norm": 0.15054599940776825,
+                "learning_rate": 0.00006666666666666667,
+                "loss": 2.9412357807159424,
+                "step": 3
+              },
+              {
+                "epoch": 0.16,
+                "grad_norm": 0.12089769542217255,
+                "learning_rate": 0.0001,
+                "loss": 2.32174015045166,
+                "step": 4
+              },
+              {
+                "epoch": 0.2,
+                "grad_norm": 0.17379754781723022,
+                "learning_rate": 0.00009545454545454546,
+                "loss": 2.1387360095977783,
+                "step": 5
+              },
+              {
+                "epoch": 0.24,
+                "grad_norm": 0.12593504786491394,
+                "learning_rate": 0.00009090909090909092,
+                "loss": 2.651366949081421,
+                "step": 6
+              },
+              {
+                "epoch": 0.28,
+                "grad_norm": 0.1264781504869461,
+                "learning_rate": 0.00008636363636363637,
+                "loss": 2.4757471084594727,
+                "step": 7
+              },
+              {
+                "epoch": 0.32,
+                "grad_norm": 0.1970825344324112,
+                "learning_rate": 0.00008181818181818183,
+                "loss": 2.758068561553955,
+                "step": 8
+              },
+              {
+                "epoch": 0.36,
+                "grad_norm": 0.18470275402069092,
+                "learning_rate": 0.00007727272727272727,
+                "loss": 1.3124265670776367,
+                "step": 9
+              },
+              {
+                "epoch": 0.4,
+                "grad_norm": 0.23909427225589752,
+                "learning_rate": 0.00007272727272727273,
+                "loss": 3.101067304611206,
+                "step": 10
+              },
+              {
+                "epoch": 0.44,
+                "grad_norm": 0.17818062007427216,
+                "learning_rate": 0.00006818181818181818,
+                "loss": 2.205214738845825,
+                "step": 11
+              },
+              {
+                "epoch": 0.48,
+                "grad_norm": 0.17379307746887207,
+                "learning_rate": 0.00006363636363636364,
+                "loss": 1.379474401473999,
+                "step": 12
+              },
+              {
+                "epoch": 0.52,
+                "grad_norm": 0.1537562906742096,
+                "learning_rate": 0.0000590909090909091,
+                "loss": 1.342408299446106,
+                "step": 13
+              },
+              {
+                "epoch": 0.56,
+                "grad_norm": 0.3126545250415802,
+                "learning_rate": 0.000054545454545454546,
+                "loss": 2.49401593208313,
+                "step": 14
+              },
+              {
+                "epoch": 0.6,
+                "grad_norm": 0.2025165855884552,
+                "learning_rate": 0.00005,
+                "loss": 3.12568736076355,
+                "step": 15
+              },
+              {
+                "epoch": 0.64,
+                "grad_norm": 0.14234192669391632,
+                "learning_rate": 0.00004545454545454546,
+                "loss": 1.612571358680725,
+                "step": 16
+              },
+              {
+                "epoch": 0.68,
+                "grad_norm": 0.24363559484481812,
+                "learning_rate": 0.000040909090909090915,
+                "loss": 2.6560916900634766,
+                "step": 17
+              },
+              {
+                "epoch": 0.72,
+                "grad_norm": 0.279820054769516,
+                "learning_rate": 0.000036363636363636364,
+                "loss": 2.1961164474487305,
+                "step": 18
+              },
+              {
+                "epoch": 0.76,
+                "grad_norm": 0.2082286924123764,
+                "learning_rate": 0.00003181818181818182,
+                "loss": 1.9818809032440186,
+                "step": 19
+              },
+              {
+                "epoch": 0.8,
+                "grad_norm": 0.3081744611263275,
+                "learning_rate": 0.000027272727272727273,
+                "loss": 3.3128015995025635,
+                "step": 20
+              },
+              {
+                "epoch": 0.84,
+                "grad_norm": 0.36960533261299133,
+                "learning_rate": 0.00002272727272727273,
+                "loss": 2.651484966278076,
+                "step": 21
+              },
+              {
+                "epoch": 0.88,
+                "grad_norm": 0.3164692521095276,
+                "learning_rate": 0.000018181818181818182,
+                "loss": 2.1937859058380127,
+                "step": 22
+              },
+              {
+                "epoch": 0.92,
+                "grad_norm": 0.2293703258037567,
+                "learning_rate": 0.000013636363636363637,
+                "loss": 2.2706432342529297,
+                "step": 23
+              },
+              {
+                "epoch": 0.96,
+                "grad_norm": 0.3719780147075653,
+                "learning_rate": 0.000009090909090909091,
+                "loss": 3.199554443359375,
+                "step": 24
+              },
+              {
+                "epoch": 1,
+                "grad_norm": 0.3237646520137787,
+                "learning_rate": 0.0000045454545454545455,
+                "loss": 2.844292402267456,
+                "step": 25
+              }
+            ],
+            "logging_steps": 1,
+            "max_steps": 25,
+            "num_input_tokens_seen": 0,
+            "num_train_epochs": 1,
+            "save_steps": 25,
+            "stateful_callbacks": {
+              "TrainerControl": {
+                "args": {
+                  "should_epoch_stop": false,
+                  "should_evaluate": false,
+                  "should_log": false,
+                  "should_save": true,
+                  "should_training_stop": true
+                },
+                "attributes": {}
+              }
+            },
+            "total_flos": 136680943288320,
+            "train_batch_size": 1,
+            "trial_name": null,
+            "trial_params": null
+          }
+        },
+        "weightsMatchFinal": true,
+        "configMatchesFinal": true,
+        "finalTrainingStep": true,
+        "disposition": "remove redundant completed checkpoint; retain receipt and trainer-state metadata here; no resumable run or model qualification"
+      },
+      "screen": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v1-source-screen.json",
+        "exists": true,
+        "byteLength": 35328,
+        "sha256": "8049249cf3339595d6d6f16179992e6b7095c50a78281ceed250461d345cf19b",
+        "source_model_id": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
+        "source_revision": "31b70e2e869a7173562077fd711b654946d38674",
+        "adapter": {
+          "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v1",
+          "adapter_model_sha256": "41a5627ef646c205579b2ad1c49db1861bc3bfa6721e0c30a8d3cc686ade3feb",
+          "adapter_config_sha256": "61ce9d8527185461475e2186a8b490342828ac52d84bbc4aa8651a236bbd36f4"
+        },
+        "generation": {
+          "do_sample": false,
+          "repetition_penalty": 1,
+          "pad_token_id": 2,
+          "eos_token_id": 2,
+          "temperature": null,
+          "top_k": null,
+          "top_p": null
+        },
+        "device": "cpu",
+        "dtype": "float32",
+        "case_count": 8,
+        "cases": [
+          {
+            "index": 0,
+            "promptSha256": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+            "outputSha256": "1e3b84c1571a703b982501a73076a6f092eb781ac29cf84110ec931a5b6ab72d",
+            "outputTokenCount": 32,
+            "maxNewTokens": 32,
+            "elapsedSeconds": 9.60109749995172
+          },
+          {
+            "index": 1,
+            "promptSha256": "a0197253b92e371b4fcf97b676224fa22c23472dd15206cf8474850f310ef543",
+            "outputSha256": "5dee22b302c422679fde203e6be26be7d4438eacc27fcfc2ccdc4f94be7f3f2e",
+            "outputTokenCount": 36,
+            "maxNewTokens": 48,
+            "elapsedSeconds": 10.670035799965262
+          },
+          {
+            "index": 2,
+            "promptSha256": "edbcd2b87f6d29953820b8dbe60edbff9959a789ce4f06c0e9c9217703e24c78",
+            "outputSha256": "6f6a0453fc23fc132dfe798d707121d6062fe02192f2fc6659103015a245f142",
+            "outputTokenCount": 64,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 20.116948299924843
+          },
+          {
+            "index": 3,
+            "promptSha256": "866a2f96296e565f84403dd1d7c2d07649b272fd936deb106cb72716f7f2c247",
+            "outputSha256": "15c80eb058581820289d5a59d36db8f29400823edce369333030d54c2e74d71d",
+            "outputTokenCount": 22,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 7.223334800102748
+          },
+          {
+            "index": 4,
+            "promptSha256": "0b25a2195aa4b38c6411e4c70b3efa203d4b016f8a3cdb4e792d3b6886e4501c",
+            "outputSha256": "473461be2309c276f38808346ce350f331edafb3b5a7ef7c1836fd76cbed9516",
+            "outputTokenCount": 12,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 4.291483400040306
+          },
+          {
+            "index": 5,
+            "promptSha256": "d1792da7e0e73fd8235fd1dc2276a13ccea0d1bc97c5f75e359253188449712f",
+            "outputSha256": "9617e2bfa06fed80f1dc58a5815fb4a4ce42330185b0ba8a28f8aece4fc9f943",
+            "outputTokenCount": 93,
+            "maxNewTokens": 96,
+            "elapsedSeconds": 28.042584199924022
+          },
+          {
+            "index": 6,
+            "promptSha256": "9f90ac993a539b6a5aa0b1a3ad2c0ae6834aaefc740b453f51ef1aa0aa598c33",
+            "outputSha256": "625312e9f237804458ab454fcf006c061c121ff5cf912feb2c9e9fdb544403fb",
+            "outputTokenCount": 8,
+            "maxNewTokens": 48,
+            "elapsedSeconds": 3.0905609999317676
+          },
+          {
+            "index": 7,
+            "promptSha256": "f61e3e9226fac664f956e17791ca1454108d0f50c990938ec970998be283e6ee",
+            "outputSha256": "d8ddb5f4a2cee15c8d6879f5f5551787cf842e3504a455d55454ede5536246a0",
+            "outputTokenCount": 11,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 4.020904099917971
+          }
+        ]
+      }
+    },
+    {
+      "id": "smollm2-cognitive-liberty-v1/adapter-cpu-pilot-v2",
+      "root": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v2",
+      "trainingReceipt": {
+        "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v2\\tinyrustlm-training-receipt.json",
+        "byteLength": 1756,
+        "sha256": "edcad0cdade0d74527206079766afca3acf200ddd6bc3ac280f6922e62415816",
+        "content": {
+          "adapter_config_sha256": "sha256:72ce9028eb4d5ad2136c45ce01fb01af4c0444bca39cb9be74239e472d944d63",
+          "adapter_model_sha256": "sha256:6555c7816d7b9fe9fd07ee45a8d452955e5666fe085ebefa945f5f1a8bcf4a0f",
+          "base_model_dir": "D:\\LLMs\\HuggingFaceTB\\SmolLM2-1.7B-Instruct\\31b70e2e869a7173562077fd711b654946d38674",
+          "base_model_sha256": "sha256:f55217be716b6a997b97b9d8d7eb6fad02e00858f5010ec24f64603c3a98a0e8",
+          "base_tokenizer_sha256": "sha256:9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+          "dataset_id": "tinyrustlm-smollm2-cognitive-liberty-v1",
+          "eval_exclusion_policy": "rust-frozen-manifest-bound",
+          "frozen_dataset_manifest": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\smollm2-cognitive-liberty-v1\\dataset\\distillation-dataset.manifest",
+          "frozen_dataset_manifest_sha256": "sha256:bdf28e2eb470a96b0c7514b453082387a6b40ef3cd0b48cfc9170bf41ea7eb3b",
+          "metrics": {
+            "epoch": 1,
+            "total_flos": 137381314461696,
+            "train_loss": 2.3698618030548095,
+            "train_runtime": 437.1773,
+            "train_samples_per_second": 0.229,
+            "train_steps_per_second": 0.057
+          },
+          "recipe": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\training\\smollm2-cognitive-liberty-v1\\training-recipe-cpu-pilot-v2.manifest",
+          "recipe_sha256": "sha256:1198d6dee11e5b8762934df8ad2664f12cd2cb9ef8f3c329ecdff10366250b71",
+          "record_count": 100,
+          "required_next_gate": "peft-to-trained-adapter-source-conversion-plus-raw-eval",
+          "schema": "tinyrustlm.distillation_training_receipt.v1",
+          "system_prompt_sha256": "sha256:2dce3011cffcb651acb5654e8e4d4270faf7c25aed4d1b363ae6adc603b38891",
+          "teacher_reasoning_policy": "final-answer-only",
+          "training_engine": "transformers-peft-sequence-lora-v1"
+        }
+      },
+      "finalWeights": {
+        "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v2\\adapter_model.safetensors",
+        "byteLength": 36220072,
+        "sha256": "6555c7816d7b9fe9fd07ee45a8d452955e5666fe085ebefa945f5f1a8bcf4a0f"
+      },
+      "finalConfig": {
+        "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v2\\adapter_config.json",
+        "byteLength": 1212,
+        "sha256": "72ce9028eb4d5ad2136c45ce01fb01af4c0444bca39cb9be74239e472d944d63"
+      },
+      "recipe": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\training\\smollm2-cognitive-liberty-v1\\training-recipe-cpu-pilot-v2.manifest",
+        "byteLength": 1240,
+        "sha256": "1198d6dee11e5b8762934df8ad2664f12cd2cb9ef8f3c329ecdff10366250b71",
+        "matchesReceipt": true
+      },
+      "dataset": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\smollm2-cognitive-liberty-v1\\dataset\\distillation-dataset.manifest",
+        "byteLength": 93159,
+        "sha256": "bdf28e2eb470a96b0c7514b453082387a6b40ef3cd0b48cfc9170bf41ea7eb3b",
+        "matchesReceipt": true
+      },
+      "checkpoint": {
+        "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v2\\checkpoint-25",
+        "files": [
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v2\\checkpoint-25\\README.md",
+            "byteLength": 5322,
+            "sha256": "ce04f7c071dce9cd5723411256b02f8689dea3941026972e9e9163bf077f498a"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v2\\checkpoint-25\\adapter_config.json",
+            "byteLength": 1212,
+            "sha256": "72ce9028eb4d5ad2136c45ce01fb01af4c0444bca39cb9be74239e472d944d63"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v2\\checkpoint-25\\adapter_model.safetensors",
+            "byteLength": 36220072,
+            "sha256": "6555c7816d7b9fe9fd07ee45a8d452955e5666fe085ebefa945f5f1a8bcf4a0f"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v2\\checkpoint-25\\optimizer.pt",
+            "byteLength": 72624979,
+            "sha256": "fead01d4df9b4f3e82d0e1414d5bcdb856a570c26472817a15e34d3c9ee2c9cb"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v2\\checkpoint-25\\rng_state.pth",
+            "byteLength": 14391,
+            "sha256": "130e223d9320a4ce47f0c6f8c6bb4a81e5fec9215841ae71b15f433200a736c6"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v2\\checkpoint-25\\scheduler.pt",
+            "byteLength": 1465,
+            "sha256": "296e4adec8ebc33e8334e7640b46aec61987b2ef18bab1ca1297e69049e06836"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v2\\checkpoint-25\\trainer_state.json",
+            "byteLength": 5164,
+            "sha256": "1364ee789224ec88298697bcf91479a844bdfbcfa5494e4c18355ece07a240b3"
+          },
+          {
+            "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v2\\checkpoint-25\\training_args.bin",
+            "byteLength": 5201,
+            "sha256": "f09af1c127c4d05390b0522d20e6e415972a9be46a48976da9a8f7391fc78162"
+          }
+        ],
+        "trainerState": {
+          "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v2\\checkpoint-25\\trainer_state.json",
+          "byteLength": 5164,
+          "sha256": "1364ee789224ec88298697bcf91479a844bdfbcfa5494e4c18355ece07a240b3",
+          "content": {
+            "best_global_step": null,
+            "best_metric": null,
+            "best_model_checkpoint": null,
+            "epoch": 1,
+            "eval_steps": 500,
+            "global_step": 25,
+            "is_hyper_param_search": false,
+            "is_local_process_zero": true,
+            "is_world_process_zero": true,
+            "log_history": [
+              {
+                "epoch": 0.04,
+                "grad_norm": 0.25394895672798157,
+                "learning_rate": 0,
+                "loss": 2.5729029178619385,
+                "step": 1
+              },
+              {
+                "epoch": 0.08,
+                "grad_norm": 0.2682594060897827,
+                "learning_rate": 0.000033333333333333335,
+                "loss": 2.73382306098938,
+                "step": 2
+              },
+              {
+                "epoch": 0.12,
+                "grad_norm": 0.2606488764286041,
+                "learning_rate": 0.00006666666666666667,
+                "loss": 2.9396371841430664,
+                "step": 3
+              },
+              {
+                "epoch": 0.16,
+                "grad_norm": 0.2176452875137329,
+                "learning_rate": 0.0001,
+                "loss": 2.319545269012451,
+                "step": 4
+              },
+              {
+                "epoch": 0.2,
+                "grad_norm": 0.29267624020576477,
+                "learning_rate": 0.00009545454545454546,
+                "loss": 2.1272034645080566,
+                "step": 5
+              },
+              {
+                "epoch": 0.24,
+                "grad_norm": 0.22172459959983826,
+                "learning_rate": 0.00009090909090909092,
+                "loss": 2.6406004428863525,
+                "step": 6
+              },
+              {
+                "epoch": 0.28,
+                "grad_norm": 0.22665977478027344,
+                "learning_rate": 0.00008636363636363637,
+                "loss": 2.46024751663208,
+                "step": 7
+              },
+              {
+                "epoch": 0.32,
+                "grad_norm": 0.35085687041282654,
+                "learning_rate": 0.00008181818181818183,
+                "loss": 2.734900712966919,
+                "step": 8
+              },
+              {
+                "epoch": 0.36,
+                "grad_norm": 0.31312891840934753,
+                "learning_rate": 0.00007727272727272727,
+                "loss": 1.2811915874481201,
+                "step": 9
+              },
+              {
+                "epoch": 0.4,
+                "grad_norm": 0.39367857575416565,
+                "learning_rate": 0.00007272727272727273,
+                "loss": 3.050379514694214,
+                "step": 10
+              },
+              {
+                "epoch": 0.44,
+                "grad_norm": 0.3184374272823334,
+                "learning_rate": 0.00006818181818181818,
+                "loss": 2.1632158756256104,
+                "step": 11
+              },
+              {
+                "epoch": 0.48,
+                "grad_norm": 0.3008567690849304,
+                "learning_rate": 0.00006363636363636364,
+                "loss": 1.3421401977539062,
+                "step": 12
+              },
+              {
+                "epoch": 0.52,
+                "grad_norm": 0.2802037000656128,
+                "learning_rate": 0.0000590909090909091,
+                "loss": 1.3332538604736328,
+                "step": 13
+              },
+              {
+                "epoch": 0.56,
+                "grad_norm": 0.3789690136909485,
+                "learning_rate": 0.000054545454545454546,
+                "loss": 2.4142208099365234,
+                "step": 14
+              },
+              {
+                "epoch": 0.6,
+                "grad_norm": 0.3754187822341919,
+                "learning_rate": 0.00005,
+                "loss": 3.0741143226623535,
+                "step": 15
+              },
+              {
+                "epoch": 0.64,
+                "grad_norm": 0.281016081571579,
+                "learning_rate": 0.00004545454545454546,
+                "loss": 1.5870441198349,
+                "step": 16
+              },
+              {
+                "epoch": 0.68,
+                "grad_norm": 0.3612174093723297,
+                "learning_rate": 0.000040909090909090915,
+                "loss": 2.5783658027648926,
+                "step": 17
+              },
+              {
+                "epoch": 0.72,
+                "grad_norm": 0.6033218502998352,
+                "learning_rate": 0.000036363636363636364,
+                "loss": 2.1012744903564453,
+                "step": 18
+              },
+              {
+                "epoch": 0.76,
+                "grad_norm": 0.3370535671710968,
+                "learning_rate": 0.00003181818181818182,
+                "loss": 1.8949352502822876,
+                "step": 19
+              },
+              {
+                "epoch": 0.8,
+                "grad_norm": 0.42573851346969604,
+                "learning_rate": 0.000027272727272727273,
+                "loss": 3.2093591690063477,
+                "step": 20
+              },
+              {
+                "epoch": 0.84,
+                "grad_norm": 0.46858716011047363,
+                "learning_rate": 0.00002272727272727273,
+                "loss": 2.538351535797119,
+                "step": 21
+              },
+              {
+                "epoch": 0.88,
+                "grad_norm": 0.4714113175868988,
+                "learning_rate": 0.000018181818181818182,
+                "loss": 2.1499383449554443,
+                "step": 22
+              },
+              {
+                "epoch": 0.92,
+                "grad_norm": 0.3421671390533447,
+                "learning_rate": 0.000013636363636363637,
+                "loss": 2.185180902481079,
+                "step": 23
+              },
+              {
+                "epoch": 0.96,
+                "grad_norm": 0.44336482882499695,
+                "learning_rate": 0.000009090909090909091,
+                "loss": 3.0779476165771484,
+                "step": 24
+              },
+              {
+                "epoch": 1,
+                "grad_norm": 0.6484370827674866,
+                "learning_rate": 0.0000045454545454545455,
+                "loss": 2.7367711067199707,
+                "step": 25
+              }
+            ],
+            "logging_steps": 1,
+            "max_steps": 25,
+            "num_input_tokens_seen": 0,
+            "num_train_epochs": 1,
+            "save_steps": 25,
+            "stateful_callbacks": {
+              "TrainerControl": {
+                "args": {
+                  "should_epoch_stop": false,
+                  "should_evaluate": false,
+                  "should_log": false,
+                  "should_save": true,
+                  "should_training_stop": true
+                },
+                "attributes": {}
+              }
+            },
+            "total_flos": 137381314461696,
+            "train_batch_size": 1,
+            "trial_name": null,
+            "trial_params": null
+          }
+        },
+        "weightsMatchFinal": true,
+        "configMatchesFinal": true,
+        "finalTrainingStep": true,
+        "disposition": "remove redundant completed checkpoint; retain receipt and trainer-state metadata here; no resumable run or model qualification"
+      },
+      "screen": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\training\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v2-source-screen.json",
+        "exists": true,
+        "byteLength": 34798,
+        "sha256": "78203112e1701648402612bbb9dbe53492300288fda78520a5ed97e1983388a2",
+        "source_model_id": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
+        "source_revision": "31b70e2e869a7173562077fd711b654946d38674",
+        "adapter": {
+          "path": "D:\\LLMs\\TinyRustLM\\smollm2-cognitive-liberty-v1\\adapter-cpu-pilot-v2",
+          "adapter_model_sha256": "6555c7816d7b9fe9fd07ee45a8d452955e5666fe085ebefa945f5f1a8bcf4a0f",
+          "adapter_config_sha256": "72ce9028eb4d5ad2136c45ce01fb01af4c0444bca39cb9be74239e472d944d63"
+        },
+        "generation": {
+          "do_sample": false,
+          "repetition_penalty": 1,
+          "pad_token_id": 2,
+          "eos_token_id": 2,
+          "temperature": null,
+          "top_k": null,
+          "top_p": null
+        },
+        "device": "cpu",
+        "dtype": "float32",
+        "case_count": 8,
+        "cases": [
+          {
+            "index": 0,
+            "promptSha256": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+            "outputSha256": "c91b738dff77fe5387b0a343db06161a720916763800e2b0a8ed090b578aa490",
+            "outputTokenCount": 32,
+            "maxNewTokens": 32,
+            "elapsedSeconds": 9.982887499965727
+          },
+          {
+            "index": 1,
+            "promptSha256": "a0197253b92e371b4fcf97b676224fa22c23472dd15206cf8474850f310ef543",
+            "outputSha256": "5dee22b302c422679fde203e6be26be7d4438eacc27fcfc2ccdc4f94be7f3f2e",
+            "outputTokenCount": 36,
+            "maxNewTokens": 48,
+            "elapsedSeconds": 11.376722399960272
+          },
+          {
+            "index": 2,
+            "promptSha256": "edbcd2b87f6d29953820b8dbe60edbff9959a789ce4f06c0e9c9217703e24c78",
+            "outputSha256": "1b9da6b7891c94998bcb8efb7c491876f8dedacbc6c8599b7bfba600054b3350",
+            "outputTokenCount": 43,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 13.637528700055555
+          },
+          {
+            "index": 3,
+            "promptSha256": "866a2f96296e565f84403dd1d7c2d07649b272fd936deb106cb72716f7f2c247",
+            "outputSha256": "d8f0a1dca987f300ca1f48861614593917849dca5db5a29044aab7f937b7623c",
+            "outputTokenCount": 11,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 4.249772500013933
+          },
+          {
+            "index": 4,
+            "promptSha256": "0b25a2195aa4b38c6411e4c70b3efa203d4b016f8a3cdb4e792d3b6886e4501c",
+            "outputSha256": "473461be2309c276f38808346ce350f331edafb3b5a7ef7c1836fd76cbed9516",
+            "outputTokenCount": 12,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 6.377812999999151
+          },
+          {
+            "index": 5,
+            "promptSha256": "d1792da7e0e73fd8235fd1dc2276a13ccea0d1bc97c5f75e359253188449712f",
+            "outputSha256": "1cf63078bbb528fff0db12067acf88d47fb763cc731def38679d99bc349113b5",
+            "outputTokenCount": 96,
+            "maxNewTokens": 96,
+            "elapsedSeconds": 35.66628410003614
+          },
+          {
+            "index": 6,
+            "promptSha256": "9f90ac993a539b6a5aa0b1a3ad2c0ae6834aaefc740b453f51ef1aa0aa598c33",
+            "outputSha256": "625312e9f237804458ab454fcf006c061c121ff5cf912feb2c9e9fdb544403fb",
+            "outputTokenCount": 8,
+            "maxNewTokens": 48,
+            "elapsedSeconds": 3.304078600020148
+          },
+          {
+            "index": 7,
+            "promptSha256": "f61e3e9226fac664f956e17791ca1454108d0f50c990938ec970998be283e6ee",
+            "outputSha256": "d8ddb5f4a2cee15c8d6879f5f5551787cf842e3504a455d55454ede5536246a0",
+            "outputTokenCount": 11,
+            "maxNewTokens": 64,
+            "elapsedSeconds": 4.324968599947169
+          }
+        ]
+      }
+    }
+  ],
+  "checkpointFileCount": 64,
+  "checkpointLogicalBytes": 322367608,
+  "physicalDeletionPerformed": false,
+  "storageRecoveryMeasured": false
+}

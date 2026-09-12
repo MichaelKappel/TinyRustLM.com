@@ -116,6 +116,51 @@ It records exact source revision, input paths, case identities and computed
 metrics. Historical source paths in the golden predate consolidation; they do
 not authorize recreating those locations.
 
+## Retained CPU training pilots reviewed during cleanup
+
+Eight completed Qwen3/SmolLM2 pilot directories were read without executing
+training, inference or serialized optimizer state. All eight final adapter and
+configuration hashes match their training receipts. All eight retained recipe
+and frozen-dataset manifest hashes also match. Each final checkpoint has the
+same adapter/configuration bytes as its enclosing final output, and each
+trainer state reaches its declared final step and receipt epoch.
+
+The compact record preserves every training receipt and final trainer state,
+including scalar loss history, plus file identities and six available raw-screen
+identities. It is
+`artifacts/ecosystem-cleanup-20260912/historical-training-review.json`, SHA-256
+`65145da24d5bdafb8eab22e4c81e0161bdaf1c651fbfa157d378056f8f12b5b5`.
+The 64 redundant checkpoint files total 322,367,608 logical bytes. This inventory
+precedes deletion; a separate receipt must establish actual removal. Final
+adapter outputs and original raw screens are outside this checkpoint retirement.
+
+| ID | Observed result | Lesson and current application |
+| --- | --- | --- |
+| T1 | The 96-record Qwen3 v1 pilot reports training loss 1.9285, but its retained eight-case screen refuses a harmless low-battery planning request and provides no useful storage advice. | Training completion and low training loss do not establish useful conversation. Preserve raw ordinary-helpfulness checks alongside task-specific objectives. This is an observation of retained outputs, not a new controlled comparison with the base. |
+| T2 | The 40-record Qwen3 v2 first pilot repeats its inability to call a friend, answers storage advice with only “Keep it,” and fails the explicitly supplied current name. | Inspect complete generated answers for repetition, missing constraints and current-turn state. Aggregate loss cannot detect these failures; keep independent untouched behavioral evaluation before adoption. |
+| T3 | Qwen3 v2 runs named `preservation-pilot-v2` and `preservation-pilot-v3` both bind recipes and receipts declaring `transformers-peft-sequence-lora-v1`, with no recorded KL component metrics. | Folder names are not algorithm evidence. These runs cannot establish preservation-KL effectiveness. Use the exact recorded engine and method-specific metrics; do not silently relabel historical receipts. |
+| T4 | The one-epoch and three-epoch runs above report losses 4.2476 and 4.0866. Both arbitrarily choose the customer's deadline; the later run also fails to use the explicitly supplied current name. | More epochs and lower training loss are insufficient promotion criteria. This pair alone does not isolate a causal explanation or establish a general regression rate. |
+| T5 | The two 100-record SmolLM2-1.7B pilots report losses 2.4189 and 2.3699. Both treat a basic “test” message as something they cannot help with; the later run tells the low-battery user simply to call at 8 PM. | A larger model and a lower-loss adapter still need practical, bounded-response evaluation. Capability disclaimers can displace useful behavior. No size-based default selection follows from these runs. |
+| T6 | Qwen3 v3 has two valid training receipts, but the expected adjacent raw-screen files are absent. The retained provenance audit reports 100 approved SFT records, 56 edited draft/final differences and zero eligible preference pairs. | A training receipt is not a quality result; absence at these specific screen paths does not prove that no other evidence exists. Edited drafts do not create chosen/rejected preference labels. The audit's original report hash was rechecked; this review did not rerun its entire provenance graph. |
+| T7 | All eight completed checkpoint weight/configuration pairs duplicate the final output exactly; the checkpoint also retains optimizer, scheduler and RNG state. | Preserve the receipt and scalar training history once, then remove redundant completed checkpoints. Do not deserialize pickle-based optimizer files just to inventory them. Checkpoint retention must be bounded in active training tooling; this review does not make rejected runs resumable. |
+
+The six screens bind the actual retained adapter hashes and contain eight cases
+each. Their input/output hashes and output lengths are retained without copying
+their prompt or answer text into the inventory. Their original raw JSON remains
+under `artifacts/training/`. Cases reaching a token cap are not automatically
+classified as semantic failures or successful stops. No new pass percentage,
+current SLM2 qualification, release eligibility or server seed is claimed.
+
+The provenance-audit source is
+`artifacts/reports/qwen3-cognitive-liberty-v3-preference-provenance-audit.md`;
+its machine report is
+`artifacts/training/qwen3-cognitive-liberty-v3/preference-provenance-audit-v1.json`,
+historical SHA-256
+`a9b9bffb58d245d8f23174446f9b088be0d0190e2f33df4cd102cd2212e694d9`.
+Existing Qwen3 adapter rejection and the current independently qualified
+derivative requirement remain in force. Old receipt paths into former model
+locations are historical provenance, not permission to recreate those locations.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,
@@ -124,6 +169,6 @@ current code or test that should retain the lesson. Link a commit and compact
 receipt or hash. Distinguish measured results from proposals and research notes.
 If the evidence is insufficient, say what cannot be concluded.
 
-Remaining review includes earlier training/quality runs, generated release and
+Remaining review includes other training/quality runs, generated release and
 seed-host experiments, other Runtime/portal report bodies, and model-production
 tools. No blanket disposition for those experiments is established by this file.

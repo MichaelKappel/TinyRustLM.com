@@ -231,4 +231,20 @@ lessons, evidence references and remaining review scope live in the canonical
   Compact measurements are in
   `artifacts/ecosystem-cleanup-20260912/native-journal-coverage.json`; raw test and
   coverage scratch were removed. These checks execute synthetic native fixtures
-  and establish no real-model or public-server result.
+  and establish no real-model or public-server result. Committed and pushed as
+  `97d66b1`.
+- Eight completed CPU adapter pilots were reviewed against their actual retained
+  receipts, recipes, dataset manifests and six available raw behavior screens.
+  All eight adapter/configuration, recipe and dataset identities match. The
+  experiment-lessons report now records ordinary-helpfulness failures, the
+  difference between training loss and conversation quality, misleading
+  preservation folder names, and the missing preference-label authority.
+  Exact receipts, final scalar training history and screen identities are in
+  `artifacts/ecosystem-cleanup-20260912/historical-training-review.json`.
+- Each of those eight final checkpoints duplicates its retained final adapter
+  and configuration. Their 64 files total 322,367,608 logical bytes. Automatic
+  approval review blocked deletion before execution with `blocked by policy`;
+  all eight checkpoint folders remain. The canonical
+  `tinyrustlm/tools/remove-reviewed-training-checkpoints.ps1 -WhatIf` passed
+  complete hash/containment preflight. No model was executed or qualified, no
+  raw screen was removed, and no storage recovery is claimed.
