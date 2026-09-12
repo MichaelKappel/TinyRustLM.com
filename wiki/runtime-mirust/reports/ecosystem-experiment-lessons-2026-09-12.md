@@ -309,6 +309,53 @@ checkpoint claims. Keep dated evidence immutable while correcting active
 instructions, or old notes will cause duplicate implementations and misplaced
 model copies even after the code is cleaned up.
 
+## C22. Exercise retirement custody without recreating source copies
+
+Portal checkpoint `d17f77a` removes the source-retirement script's fixture CLI
+options, 40 conditional fixture branches and four fixture-only functions.
+The old harness created an OS temporary site with public/control source copies,
+fake authority-marker files and a copied mirror. Fixture mode bypassed canonical
+source and immutable production-identity checks. Those alternate roots and
+local copied-site transports are gone; the production definitions now have one
+canonical transaction path and can be imported without executing it.
+
+The replacement invokes the actual canonical PowerShell functions with remote
+files, directories, identities and transaction records represented only in
+memory. Tests retain the important failure behavior: reject identity drift
+before writes; reserve durable evidence before acquiring a lock; preserve
+ambiguous or foreign locks; revoke ownership after marker substitution; roll
+back unproven controls; keep proven guards; never restore a deleted source after
+a later deletion fails; and preserve terminal evidence if the final receipt
+cannot be written. Small actual create-only JSON write tests use the owning
+repository's bounded test output. Pester's temporary directory and TestDrive
+are contained there and removed. No project source or authority files are
+copied into those fixtures.
+
+The review also found that Node startup variables were disabled only around
+the first source preflight, then restored before later Node-dependent Git
+validation. They now stay disabled for the entire transaction and are restored
+on success or failure. Tests check both phases; the actual CLI with hostile
+startup variables reaches the existing unbound-transport rejection before
+credentials, remote requests or evidence creation.
+
+All five focused Node checks and 23 nested PowerShell checks pass. The broader
+seven-file Node suite has 58 passes and two existing physical-retirement
+failures: the reviewed 1.8.3 stage and 184-file raw mirror remain. No checks were
+skipped. Real canonical PHP GET/HEAD and private-route checks also pass.
+Pester command coverage is 184/198 (92.93%) for the changed state, transaction
+and environment functions, and 798/1329 (60.05%) for the whole script. This is
+not branch coverage or actual FTPS execution; simulated success cannot attest
+atomic behavior, outside-network readback or production deletion.
+
+The compact review is
+`TinyRustLM.MiRust.com/artifacts/ecosystem-cleanup-20260912/source-retirement-tool-review.json`,
+SHA-256 `40cf67421007dbb4f68ca12cdde39d39451a0a36d42265d80006f296b6647b27`.
+It binds the old Git identities, current tool/test bytes, verification scope
+and coverage limits. The existing deployment manifest and blocked transport
+authority remain unchanged. No public retirement, publication or measured
+storage recovery is claimed. Preserve these failure cases through the actual
+canonical implementation, rather than another executable source copy.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

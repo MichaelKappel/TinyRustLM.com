@@ -471,3 +471,21 @@ lessons, evidence references and remaining review scope live in the canonical
   The source-authority gate passed for its registered governed roots. No runtime
   code changed in this checkpoint, so no new model execution or runtime-test
   result is claimed.
+- Portal checkpoint `d17f77a` removes source-retirement fixture options, alternate
+  authority roots, four fixture-only functions and copied-site transport. Tests
+  call the canonical PowerShell functions with transport state in memory and
+  own all small JSON/Pester output under canonical artifacts. Node startup
+  options stay disabled across the entire transaction, including later Git
+  validation, and are restored afterward.
+- Five focused Node checks and 23 nested PowerShell checks pass. The complete
+  seven-file portal suite has 58 passes and the two existing physical-retirement
+  failures: the old stage and 184-file mirror remain. Zero skipped/cancelled.
+  Real PHP route checks passed; the actual production CLI still rejects the
+  unbound transport authority before credentials or network. Command coverage
+  is 92.93% for the changed state/transaction/environment functions and 60.05%
+  for the whole script; real FTPS and branch coverage remain unverified.
+- Lesson C22 and the portal's `source-retirement-tool-review.json` preserve
+  evidence and failure behavior without another source archive. Owned scratch
+  is removed. The eight committed portal files match their canonical bytes;
+  the initial deployment manifest is unchanged and no remote mutation,
+  production retirement receipt or storage recovery is claimed.
