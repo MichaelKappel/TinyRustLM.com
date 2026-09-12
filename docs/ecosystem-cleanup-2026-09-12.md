@@ -506,3 +506,25 @@ lessons, evidence references and remaining review scope live in the canonical
   remain open. No publication, historical/model deletion or measured storage
   recovery is claimed. All ten committed MiniModel files equal their reviewed
   bytes, and local HEAD, tracking, FETCH_HEAD and direct remote agree.
+- MiniModel checkpoint `672991b` replaces arbitrary manifest output and broad
+  public-prefix inclusion with stdout-only metadata and the exact current
+  22-file public closure. Independent Git blob hashes, current-byte equality,
+  ignored/untracked extra checks, bounded reads and deadlines now guard it.
+  Twenty CRLF-only worktree differences were normalized in place; all public
+  Git objects are unchanged and explicit LF attributes keep them stable.
+- Both actual publisher Node children now use reviewed read-leased identities
+  and exclude inherited NODE_* settings. A complete test run exposed native
+  termination stderr racing with process exit. The wrapper now verifies the
+  owned process handle after the diagnostic; a live child still fails.
+- The corrected full suite passed 64 Node and 27 nested Pester checks, with
+  zero skips/cancellations and three actual timeout terminations. Full current
+  JS metadata agrees with PowerShell materialization. The actual publisher
+  with hostile startup settings reaches stale-manifest rejection before public
+  admission or credentials. No new generator/bootstrap coverage percentage,
+  resistant-descendant termination or actual FTPS success is claimed.
+- Lesson C24 and `publication-command-review-20260912.json` retain identities,
+  the failure and proof limits. All ten committed MiniModel files match their
+  reviewed bytes; HEAD, tracking, FETCH_HEAD and direct remote agree. Owned
+  output was removed. Fresh release identity, model qualification, unbound
+  transport and hosting remain open. No production receipt, model deletion or
+  measured storage recovery was produced.

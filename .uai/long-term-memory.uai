@@ -1,5 +1,5 @@
 profile: tinyrustlm.long-term-memory.current.v1
-updated_utc: 2026-08-28T00:00:00Z
+updated_utc: 2026-09-12T23:46:42Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 
@@ -22,8 +22,8 @@ experiment_lessons_pointer:
   authority: Owner-requested synthesis of linked canonical source records and bounded results; historical evidence, not new execution or qualification.
   review_state: reviewed_for_named_records_only
   status: active_growing_review
-  last_reviewed_utc: 2026-09-12T23:12:19Z
-  sha256: ba07b4e04a2c0099f446f354d8033db91cc7dd19b7b5963735551a57f1b53ab9
+  last_reviewed_utc: 2026-09-12T23:46:42Z
+  sha256: d3debbe8def2df9562318e5ef185efefcabd4487dac17dbdf523ff624ef1d736
 
 durable_rules:
   - Preserve immutable failed operations and public bounded results; historical evidence creates no runtime compatibility path.

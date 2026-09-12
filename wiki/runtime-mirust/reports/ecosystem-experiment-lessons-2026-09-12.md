@@ -414,6 +414,63 @@ No production receipt, publication, model deletion or measured storage recovery
 is claimed. Preserve the custody behavior and experiment findings in canonical
 code, Git history and compact notes, without recreating a second source tree.
 
+<a id="c24"></a>
+
+## C24. Current publication bytes and verified command boundaries
+
+MiniModel.org commit `672991ba646cde761ba6a361fc20b5a24aaabbe0` follows
+C23 by removing arbitrary manifest output and replacing broad public-directory
+inclusion with an explicit 22-file boundary. The reviewed baseline is
+`ef924db7b721ed3fea371fb3f29416261d8f31b8`. The generator emits metadata to
+stdout, verifies only the canonical manifest, checks its owning source gate,
+rejects ignored/untracked public extras and validates each Git blob's object
+identity independently of a successful subprocess exit. Git reads have byte
+limits and deadlines. No staging directory or public source copy is created.
+
+Twenty canonical public files had CRLF differences from their Git objects.
+They were normalized in place only after proving those differences were solely
+line endings. Explicit attributes keep all 22 files byte-identical to existing
+committed source. Public Git content did not change. Current source totals
+110,790 bytes; the materialized publication bytes total 110,336. These are
+logical identity measurements, not recovered disk space or publication proof.
+
+Both Node invocations in the actual PowerShell publisher now use the reviewed
+Node executable, source gate and generator identities. Read leases remain open
+through execution. Every child excludes inherited NODE_* settings without
+altering its caller, drains bounded stdout/stderr concurrently and has a
+120-second deadline. Exact commit parameters also check length because end
+anchors alone can match before a trailing newline.
+
+One complete run exposed a real timeout-wrapper defect: native taskkill stderr
+replaced the original timeout exception even though the observed process IDs
+were subsequently absent. The wrapper now allows that native diagnostic to
+complete and checks the owned process handle afterward. A still-running child
+remains an error. The corrected full suite passed 64 Node checks and 27 nested
+Pester checks, including three actual Node timeout terminations. Resistant
+descendant-process behavior was not reproduced; root termination was verified.
+
+The actual generator emitted current metadata without a file write, and the
+actual PowerShell module accepted and materialized its complete 22-file result
+in memory. The actual publisher with hostile startup settings passed both Node
+boundaries, then rejected its stale manifest before public admission,
+credentials or receipt creation. The first direct CLI probe lacked this service
+account's established per-process Git safe-directory declarations and failed
+its unchanged source gate. Correcting the invocation environment required no
+global Git setting or relaxed authority check.
+
+The compact review is
+`MiniModel.org/artifacts/reports/publication-command-review-20260912.json`,
+12,705 bytes, SHA-256
+`a331f115fb3e2ee3588927ac596fe36ead03da1bc82d79c935fd20562187b5e5`.
+It binds current and old tool identities, the 22 public files, failures and
+verification scope. New generator/bootstrap line or branch coverage was not
+collected; the existing custody-module metric does not quantify those changes.
+Owned test output is removed. The prepared release, manifest, empty expired
+catalog and unbound transport are unchanged. Fresh release-identity preparation,
+model qualification and seed hosting remain open. No public-site request from
+the actual publisher, FTPS operation, production receipt, model deletion or
+measured storage recovery is claimed.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,
