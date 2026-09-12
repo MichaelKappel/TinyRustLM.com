@@ -207,9 +207,28 @@ lessons, evidence references and remaining review scope live in the canonical
   copied repository, rewritten converter, temporary source project or copied
   host build. Six integration/helper checks passed, including real authenticated
   loopback calls, four independent seed lifecycles, capacity rejection and
-  idempotent start/stop. Helper line coverage was 100%; C# coverage instrumentation
-  was unavailable. The canonical offline native build had zero warnings/errors,
+  idempotent start/stop. Helper line coverage was 100%; C# coverage was not
+  collected for that checkpoint. The canonical offline native build had zero warnings/errors,
   and all 44 affected native transfer/conversion/seed-service tests passed.
   Operation-owned scratch was removed. These are synthetic fixture results,
-  not model qualification or external P2P evidence. Other native test classes'
-  default scratch policies still need review before wider execution.
+  not model qualification or external P2P evidence. Committed and pushed as
+  `6617ca1`.
+- All ten companion-test files that used system temp or `.codex-tmp` now use
+  canonical, ownership-checked scratch. Their owner markers stay outside test
+  data so production empty-directory and exact-inventory checks remain intact.
+  Cleanup bounds enumeration and unlinks fixture directory links without
+  traversing their targets. Both native and JavaScript fixture roots are empty.
+- The wider native run initially passed 211 tests and exposed one real journal
+  race: readers could open a just-created history file before its writer finished.
+  Journal reads and writes now share a bounded reentrant in-process lock and
+  one exclusive process lock. Nested evidence reads reuse the held process lock;
+  all record validation remains. The previous polling exception workaround was
+  removed. Three deterministic partial-history reader cases and a separately
+  held process-lock case protect this behavior.
+- All 216 companion tests passed normally and under the already installed
+  Microsoft.CodeCoverage collector. Journal line coverage was 85.68%, including
+  all 33 changed instrumented lines; the new scratch helper reached 83.95%.
+  Compact measurements are in
+  `artifacts/ecosystem-cleanup-20260912/native-journal-coverage.json`; raw test and
+  coverage scratch were removed. These checks execute synthetic native fixtures
+  and establish no real-model or public-server result.

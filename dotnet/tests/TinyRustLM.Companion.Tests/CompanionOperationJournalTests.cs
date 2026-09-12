@@ -6,9 +6,8 @@ namespace TinyRustLM.Companion.Tests;
 
 public sealed class CompanionOperationJournalTests : IDisposable
 {
-    private readonly string _parent = Path.Combine(
-        Path.GetTempPath(),
-        $"tinyrustlm-companion-tests-{Guid.NewGuid():N}");
+    private readonly CanonicalTestScratch _scratch = new("tests");
+    private string _parent => _scratch.Path;
 
     [Fact]
     public void JournalPersistsCreateOnlyPhaseEvidenceAndTerminalComposition()
@@ -273,6 +272,87 @@ public sealed class CompanionOperationJournalTests : IDisposable
 
             Assert.Equal(0, journal.ActiveInProcessGateCount);
         }
+    }
+
+    /// <summary>Readers must not inspect a history file while the owning writer is publishing it.</summary>
+    [Theory]
+    [InlineData("read")]
+    [InlineData("request")]
+    [InlineData("existing")]
+    public async Task ConcurrentReadersWaitForACompleteHistoryRecord(string readerKind)
+    {
+        using var clock = new PausingTimeProvider();
+        var journal = CreateJournal(out var root, clock);
+        var request = CompanionContractTests.Request();
+        var created = journal.CreateOrRead(request);
+        var other = new CompanionOperationJournal(root);
+        var partialPath = Path.Combine(root, "operations", created.OperationId,
+            "history", "00000000000000000001.json");
+        clock.Arm();
+        var writer = Task.Factory.StartNew(() => journal.Advance(created.OperationId,
+            CompanionOperationState.Rejected, CompanionAcquisitionRoute.Source,
+            errorCode: "fixture-rejected"), CancellationToken.None,
+            TaskCreationOptions.LongRunning, TaskScheduler.Default);
+        Task<CompanionOperationRecord>? reader = null;
+        var partialCreated = false;
+        try
+        {
+            Assert.True(clock.Entered.Wait(TimeSpan.FromSeconds(5)));
+            // Hold the real operation lock while reproducing the observed zero-length write window.
+            File.WriteAllBytes(partialPath, []);
+            partialCreated = true;
+            using var started = new ManualResetEventSlim();
+            reader = Task.Factory.StartNew(() =>
+            {
+                started.Set();
+                if (readerKind == "existing") return other.CreateOrRead(request);
+                if (readerKind == "request") Assert.Equal(request, other.ReadRequest(created.OperationId));
+                return other.Read(created.OperationId);
+            }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            Assert.True(started.Wait(TimeSpan.FromSeconds(5)));
+            Assert.NotSame(reader, await Task.WhenAny(reader, Task.Delay(100)));
+            File.Delete(partialPath);
+            partialCreated = false;
+            clock.Continue.Set();
+            var written = await writer.WaitAsync(TimeSpan.FromSeconds(5));
+            Assert.Equal(written, await reader.WaitAsync(TimeSpan.FromSeconds(5)));
+            Assert.Equal(CompanionOperationState.Rejected, written.State);
+            Assert.Equal(0, journal.ActiveInProcessGateCount);
+        }
+        finally
+        {
+            try
+            {
+                if (partialCreated)
+                {
+                    Assert.Equal(0, new FileInfo(partialPath).Length);
+                    File.Delete(partialPath);
+                }
+            }
+            finally
+            {
+                clock.Continue.Set();
+                await writer;
+                if (reader is not null) await reader;
+            }
+        }
+    }
+
+    /// <summary>A separately held process lock yields a typed busy result and leaves no gate reference.</summary>
+    [Fact]
+    public void ReadRespectsAnExclusiveProcessLockAndReleasesItsGate()
+    {
+        var journal = CreateJournal(out var root);
+        var created = journal.CreateOrRead(CompanionContractTests.Request());
+        var lockPath = Path.Combine(root, "operations", created.OperationId, "operation.lock");
+        using (var held = new FileStream(lockPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+        {
+            var error = Assert.Throws<CompanionContractException>(() => journal.Read(created.OperationId));
+            Assert.Equal("journal-operation-busy", error.Code);
+            Assert.Equal(0, journal.ActiveInProcessGateCount);
+        }
+        Assert.Equal(created, journal.Read(created.OperationId));
+        Assert.Equal(0, journal.ActiveInProcessGateCount);
     }
 
     [Fact]
@@ -752,10 +832,7 @@ public sealed class CompanionOperationJournalTests : IDisposable
 
     public void Dispose()
     {
-        if (Directory.Exists(_parent))
-        {
-            Directory.Delete(_parent, recursive: true);
-        }
+        _scratch.Dispose();
     }
 
     private CompanionOperationJournal CreateJournal(
@@ -828,6 +905,35 @@ public sealed class CompanionOperationJournalTests : IDisposable
     {
         public override DateTimeOffset GetUtcNow() =>
             new(2026, 8, 24, 20, 0, 0, TimeSpan.Zero);
+    }
+
+    /// <summary>Pauses a single writer timestamp after it has acquired the actual operation lock.</summary>
+    private sealed class PausingTimeProvider : TimeProvider, IDisposable
+    {
+        private int _armed;
+        internal ManualResetEventSlim Entered { get; } = new();
+        internal ManualResetEventSlim Continue { get; } = new();
+
+        /// <summary>Arms the next timestamp without affecting initial operation creation.</summary>
+        internal void Arm() => Interlocked.Exchange(ref _armed, 1);
+
+        /// <summary>Exposes a deterministic in-progress write window, then returns a fixed valid timestamp.</summary>
+        public override DateTimeOffset GetUtcNow()
+        {
+            if (Interlocked.Exchange(ref _armed, 0) != 0)
+            {
+                Entered.Set();
+                if (!Continue.Wait(TimeSpan.FromSeconds(10))) throw new TimeoutException("Writer pause expired.");
+            }
+            return new(2026, 8, 24, 20, 0, 0, TimeSpan.Zero);
+        }
+
+        /// <summary>Releases synchronization resources after the writer and readers have exited.</summary>
+        public void Dispose()
+        {
+            Entered.Dispose();
+            Continue.Dispose();
+        }
     }
 
     private sealed record AcquisitionSetup(

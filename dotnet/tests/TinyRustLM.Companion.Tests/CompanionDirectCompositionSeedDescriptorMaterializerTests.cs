@@ -31,9 +31,8 @@ public sealed class CompanionDirectCompositionSeedDescriptorMaterializerTests : 
         "\"sha256\":\"ea016b755ed89dcd4b72a826b68ea42b1da5bbca1dec050441b2f1b199be4a97\"}]" +
         "}\n";
 
-    private readonly string _parent = Path.Combine(
-        ScratchRoot(),
-        $"tinyrustlm-companion-seed-{Guid.NewGuid():N}");
+    private readonly CanonicalTestScratch _scratch = new("seed");
+    private string _parent => _scratch.Path;
 
     [Fact]
     public async Task AvailableGraphClosedOperationWritesTheRustAcceptedDescriptorByteExactly()
@@ -337,31 +336,9 @@ public sealed class CompanionDirectCompositionSeedDescriptorMaterializerTests : 
     private static string Sha256(ReadOnlySpan<byte> bytes) =>
         Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
 
-    /// <summary>Uses the workspace drive when the process temp drive differs from it.</summary>
-    private static string ScratchRoot()
-    {
-        var repositoryRoot = AppContext.BaseDirectory;
-        while (!File.Exists(Path.Combine(repositoryRoot, "Cargo.toml")))
-        {
-            repositoryRoot = Directory.GetParent(repositoryRoot)?.FullName
-                ?? throw new DirectoryNotFoundException("Cannot locate repository root.");
-        }
-        var repositoryDrive = Path.GetPathRoot(repositoryRoot);
-        var tempDrive = Path.GetPathRoot(Path.GetTempPath());
-        if (OperatingSystem.IsWindows() &&
-            !string.Equals(repositoryDrive, tempDrive, StringComparison.OrdinalIgnoreCase))
-        {
-            return Path.Combine(repositoryDrive!, "Source", ".codex-tmp");
-        }
-        return Path.GetTempPath();
-    }
-
     /// <summary>Removes only this test class's uniquely owned temporary root.</summary>
     public void Dispose()
     {
-        if (Directory.Exists(_parent))
-        {
-            Directory.Delete(_parent, recursive: true);
-        }
+        _scratch.Dispose();
     }
 }

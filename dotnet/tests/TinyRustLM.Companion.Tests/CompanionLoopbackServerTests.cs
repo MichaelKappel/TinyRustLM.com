@@ -8,8 +8,13 @@ using Xunit;
 
 namespace TinyRustLM.Companion.Tests;
 
-public sealed class CompanionLoopbackServerTests
+public sealed class CompanionLoopbackServerTests : IDisposable
 {
+    private readonly CanonicalTestScratch _scratch = new("loopback");
+
+    /// <summary>Removes this test instance's owned canonical fixture container.</summary>
+    public void Dispose() => _scratch.Dispose();
+
     private const string InstallationId = "11111111111111111111111111111111";
     private const string ProcessInstanceId = "22222222222222222222222222222222";
     private const string Origin = "https://tinyrustlm.com";
@@ -225,9 +230,7 @@ public sealed class CompanionLoopbackServerTests
     [Fact]
     public async Task SuppliedOperationServiceDispatchesCreateReadCancelAndFailure()
     {
-        var root = Path.Combine(
-            Path.GetTempPath(),
-            $"tinyrustlm-loopback-operations-{Guid.NewGuid():N}");
+        var root = Path.Combine(_scratch.Path, "loopback-operations");
         Directory.CreateDirectory(root);
         try
         {
@@ -363,9 +366,7 @@ public sealed class CompanionLoopbackServerTests
     [Fact]
     public async Task SuppliedOperationServiceServesBoundedMetadataProvenArtifactChunk()
     {
-        var root = Path.Combine(
-            Path.GetTempPath(),
-            $"tinyrustlm-loopback-artifact-{Guid.NewGuid():N}");
+        var root = Path.Combine(_scratch.Path, "loopback-artifact");
         try
         {
             using var fixture = new CompanionArtifactTransferTests.TransferFixture(
@@ -449,9 +450,7 @@ public sealed class CompanionLoopbackServerTests
     [Fact]
     public async Task SuppliedOperationServiceRejectsUnboundAndArbitraryRequests()
     {
-        var root = Path.Combine(
-            Path.GetTempPath(),
-            $"tinyrustlm-loopback-boundary-{Guid.NewGuid():N}");
+        var root = Path.Combine(_scratch.Path, "loopback-boundary");
         Directory.CreateDirectory(root);
         try
         {
@@ -632,9 +631,7 @@ public sealed class CompanionLoopbackServerTests
     [Fact]
     public async Task SeedServiceRoutesBindIdentityProofsAndRejectCallerAuthority()
     {
-        var root = Path.Combine(
-            Path.GetTempPath(),
-            $"tinyrustlm-companion-seed-http-{Guid.NewGuid():N}");
+        var root = Path.Combine(_scratch.Path, "companion-seed-http");
         await using var harness = await CompanionDirectCompositionSeedTestHarness.CreateAsync(
             root,
             "success");
@@ -1202,12 +1199,12 @@ public sealed class CompanionLoopbackServerTests
     private static string DirectCompositionSeedsPath =>
         "/tinyrustlm-companion/1/direct-composition-seeds";
 
-    private static Task<CompanionLoopbackServer> StartServerAsync(
+    private Task<CompanionLoopbackServer> StartServerAsync(
         CompanionOperationService? operationService = null,
         CompanionDirectCompositionSeedService? seedService = null) =>
         CompanionLoopbackServer.StartAsync(
             new CompanionInstallationIdentity(
-                Path.GetTempPath(),
+                _scratch.Path,
                 InstallationId,
             ProcessInstanceId),
             operationService: operationService,

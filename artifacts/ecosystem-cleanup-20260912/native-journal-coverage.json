@@ -1,0 +1,27 @@
+{
+  "schema": "tinyrustlm.ecosystem-native-coverage.v1",
+  "observed_utc": "2026-09-12T18:49:57.847Z",
+  "tests_passed": 216,
+  "collector": "Microsoft.CodeCoverage 17.14.1",
+  "report_sha256": "f9fc135b90705d0cd115a77dd29f5bcfbf7b46295d1fcff08218c7c22bf87b7b",
+  "source_sha256": "904bd000f38ffef39780e1ea0d0825b490eb8750c8cbe5674b01cd9083ee2341",
+  "files": [
+    {
+      "filename": "E:/Source/Rust/TinyRustLM.com/dotnet/tests/TinyRustLM.Companion.Tests/CanonicalTestScratch.cs",
+      "instrumented_lines": 81,
+      "covered_lines": 68,
+      "line_percent": 83.95061728395062,
+      "changed_instrumented_lines": null,
+      "changed_covered_lines": null
+    },
+    {
+      "filename": "E:/Source/Rust/TinyRustLM.com/dotnet/src/TinyRustLM.Companion/CompanionOperationJournal.cs",
+      "instrumented_lines": 1110,
+      "covered_lines": 951,
+      "line_percent": 85.67567567567568,
+      "changed_instrumented_lines": 33,
+      "changed_covered_lines": 33
+    }
+  ],
+  "scope": "Current companion unit tests with synthetic fixtures; no model qualification or live seeding. Raw operation output removed after compact measurements were recorded."
+}

@@ -8,9 +8,8 @@ namespace TinyRustLM.Companion.Tests;
 
 public sealed class CompanionCapabilityStateTests : IDisposable
 {
-    private readonly string _root = Path.Combine(
-        Path.GetTempPath(),
-        $"tinyrustlm-companion-capability-{Guid.NewGuid():N}");
+    private readonly CanonicalTestScratch _scratch = new("capability");
+    private string _root => _scratch.Path;
 
     [Fact]
     public void InstallationIdentityIsCreateOnlyCanonicalAndProcessScoped()
@@ -466,10 +465,7 @@ public sealed class CompanionCapabilityStateTests : IDisposable
 
     public void Dispose()
     {
-        if (Directory.Exists(_root))
-        {
-            Directory.Delete(_root, recursive: true);
-        }
+        _scratch.Dispose();
     }
 
     private static CompanionCapabilityState NewState(

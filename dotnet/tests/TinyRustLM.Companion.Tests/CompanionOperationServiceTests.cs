@@ -5,9 +5,8 @@ namespace TinyRustLM.Companion.Tests;
 
 public sealed class CompanionOperationServiceTests : IDisposable
 {
-    private readonly string _parent = Path.Combine(
-        Path.GetTempPath(),
-        $"tinyrustlm-companion-service-{Guid.NewGuid():N}");
+    private readonly CanonicalTestScratch _scratch = new("service");
+    private string _parent => _scratch.Path;
 
     [Fact]
     public async Task CreateOrReadUsesOneDeterministicOperationAndRecoversItsProjection()
@@ -191,10 +190,7 @@ public sealed class CompanionOperationServiceTests : IDisposable
 
     public void Dispose()
     {
-        if (Directory.Exists(_parent))
-        {
-            Directory.Delete(_parent, recursive: true);
-        }
+        _scratch.Dispose();
     }
 
     private CompanionOperationJournal CreateJournal()

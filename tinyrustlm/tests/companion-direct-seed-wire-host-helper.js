@@ -63,6 +63,7 @@ function outputIsCurrent(prerequisites) {
     "src/TinyRustLM.Companion/CompanionDirectCompositionSeedService.cs",
     "src/TinyRustLM.Companion/CompanionLoopbackServer.cs",
     "src/TinyRustLM.Companion/CompanionLoopbackWire.cs",
+    "src/TinyRustLM.Companion/CompanionOperationJournal.cs",
     "tests/TinyRustLM.Companion.Tests/CompanionArtifactTransferTests.cs",
     "tests/TinyRustLM.Companion.Tests/CompanionDirectCompositionSeedServiceTests.cs",
     "tests/TinyRustLM.Companion.Tests/CompanionOperationTestEvidence.cs"

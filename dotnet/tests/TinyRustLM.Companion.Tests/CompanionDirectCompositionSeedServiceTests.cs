@@ -9,9 +9,8 @@ namespace TinyRustLM.Companion.Tests;
 
 public sealed class CompanionDirectCompositionSeedServiceTests : IDisposable
 {
-    private readonly string _parent = Path.Combine(
-        ScratchRoot(),
-        $"tinyrustlm-companion-seed-service-{Guid.NewGuid():N}");
+    private readonly CanonicalTestScratch _scratch = new("seed-service");
+    private string _parent => _scratch.Path;
 
     [Fact]
     public async Task StartReadAndStopAreIdempotentAndRetainTerminalEvidence()
@@ -378,18 +377,6 @@ public sealed class CompanionDirectCompositionSeedServiceTests : IDisposable
     private static CompanionDirectCompositionSeedStopRequest StopRequest() => new(
         CompanionLoopbackWire.DirectCompositionSeedStopRequestSchema);
 
-    private static string ScratchRoot()
-    {
-        var repositoryDrive = Path.GetPathRoot(RepositoryRoot());
-        var tempDrive = Path.GetPathRoot(Path.GetTempPath());
-        if (OperatingSystem.IsWindows() &&
-            !string.Equals(repositoryDrive, tempDrive, StringComparison.OrdinalIgnoreCase))
-        {
-            return Path.Combine(repositoryDrive!, "Source", ".codex-tmp");
-        }
-        return Path.GetTempPath();
-    }
-
     private static string RepositoryRoot()
     {
         var current = new DirectoryInfo(AppContext.BaseDirectory);
@@ -407,10 +394,7 @@ public sealed class CompanionDirectCompositionSeedServiceTests : IDisposable
 
     public void Dispose()
     {
-        if (Directory.Exists(_parent))
-        {
-            Directory.Delete(_parent, recursive: true);
-        }
+        _scratch.Dispose();
     }
 }
 

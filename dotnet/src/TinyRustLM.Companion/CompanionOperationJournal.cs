@@ -151,9 +151,11 @@ public sealed class CompanionOperationJournal
         }
     }
 
+    /// <summary>Reads one coherent committed history while excluding an in-progress mutation.</summary>
     public CompanionOperationRecord Read(string operationId)
     {
         RequireOperationId(operationId);
+        using var gate = AcquireOperationGate(operationId);
         var directory = RequireOperationDirectory(operationId);
         return ReadLatestRecord(directory, operationId);
     }
@@ -161,6 +163,7 @@ public sealed class CompanionOperationJournal
     public CompanionAcquireRequest ReadRequest(string operationId)
     {
         RequireOperationId(operationId);
+        using var gate = AcquireOperationGate(operationId);
         var path = Path.Combine(RequireOperationDirectory(operationId), "request.json");
         var bytes = ReadBoundedRegularFile(
             path,
@@ -189,16 +192,11 @@ public sealed class CompanionOperationJournal
     {
         CompanionOperationEvidenceCodec.Validate(intent);
         RequireOperationId(intent.OperationId);
-        var gate = TryAcquireOperationGate(intent.OperationId);
-        if (gate is null)
-        {
-            throw new CompanionContractException("journal-operation-busy");
-        }
+        var gate = AcquireOperationGate(intent.OperationId);
 
         try
         {
             var directory = RequireOperationDirectory(intent.OperationId);
-            using var processLock = AcquireProcessLock(Path.Combine(directory, "operation.lock"));
             var current = ReadLatestRecord(directory, intent.OperationId);
             var request = ReadRequest(intent.OperationId);
             if (current.State != CompanionOperationState.Queued ||
@@ -232,6 +230,7 @@ public sealed class CompanionOperationJournal
     public CompanionPersistedExecutionIntent ReadExecutionIntent(string operationId)
     {
         RequireOperationId(operationId);
+        using var gate = AcquireOperationGate(operationId);
         var current = Read(operationId);
         var bytes = ReadBoundedRegularFile(
             Path.Combine(RequireOperationDirectory(operationId), ExecutionIntentFileName),
@@ -253,16 +252,11 @@ public sealed class CompanionOperationJournal
     {
         CompanionOperationEvidenceCodec.Validate(intent);
         RequireOperationId(intent.OperationId);
-        var gate = TryAcquireOperationGate(intent.OperationId);
-        if (gate is null)
-        {
-            throw new CompanionContractException("journal-operation-busy");
-        }
+        var gate = AcquireOperationGate(intent.OperationId);
 
         try
         {
             var directory = RequireOperationDirectory(intent.OperationId);
-            using var processLock = AcquireProcessLock(Path.Combine(directory, "operation.lock"));
             var current = ReadLatestRecord(directory, intent.OperationId);
             var execution = ReadExecutionIntent(intent.OperationId);
             if (current.State != CompanionOperationState.Queued ||
@@ -299,6 +293,7 @@ public sealed class CompanionOperationJournal
         string operationId)
     {
         RequireOperationId(operationId);
+        using var gate = AcquireOperationGate(operationId);
         var current = Read(operationId);
         var bytes = ReadBoundedRegularFile(
             Path.Combine(
@@ -323,16 +318,11 @@ public sealed class CompanionOperationJournal
     {
         CompanionOperationEvidenceCodec.Validate(receipt);
         RequireOperationId(receipt.OperationId);
-        var gate = TryAcquireOperationGate(receipt.OperationId);
-        if (gate is null)
-        {
-            throw new CompanionContractException("journal-operation-busy");
-        }
+        var gate = AcquireOperationGate(receipt.OperationId);
 
         try
         {
             var directory = RequireOperationDirectory(receipt.OperationId);
-            using var processLock = AcquireProcessLock(Path.Combine(directory, "operation.lock"));
             var current = ReadLatestRecord(directory, receipt.OperationId);
             var execution = ReadExecutionIntent(receipt.OperationId);
             var acquisition = ReadSourceAcquisitionIntent(receipt.OperationId);
@@ -372,6 +362,7 @@ public sealed class CompanionOperationJournal
         string operationId)
     {
         RequireOperationId(operationId);
+        using var gate = AcquireOperationGate(operationId);
         var current = Read(operationId);
         var bytes = ReadBoundedRegularFile(
             Path.Combine(
@@ -396,16 +387,11 @@ public sealed class CompanionOperationJournal
     {
         CompanionSourceConversionIntentCodec.Validate(intent);
         RequireOperationId(intent.OperationId);
-        var gate = TryAcquireOperationGate(intent.OperationId);
-        if (gate is null)
-        {
-            throw new CompanionContractException("journal-operation-busy");
-        }
+        var gate = AcquireOperationGate(intent.OperationId);
 
         try
         {
             var directory = RequireOperationDirectory(intent.OperationId);
-            using var processLock = AcquireProcessLock(Path.Combine(directory, "operation.lock"));
             var current = ReadLatestRecord(directory, intent.OperationId);
             var execution = ReadExecutionIntent(intent.OperationId);
             var acquisition = ReadSourceAcquisitionReceipt(intent.OperationId);
@@ -468,6 +454,7 @@ public sealed class CompanionOperationJournal
     public CompanionPersistedSourceConversionIntent ReadSourceConversionIntent(string operationId)
     {
         RequireOperationId(operationId);
+        using var gate = AcquireOperationGate(operationId);
         var current = Read(operationId);
         var bytes = ReadBoundedRegularFile(
             Path.Combine(OperationDirectory(operationId), SourceConversionIntentFileName),
@@ -506,7 +493,6 @@ public sealed class CompanionOperationJournal
         try
         {
             var directory = RequireOperationDirectory(operationId);
-            using var processLock = AcquireProcessLock(Path.Combine(directory, "operation.lock"));
             var current = ReadLatestRecord(directory, operationId);
             var path = Path.Combine(directory, CancellationIntentFileName);
             if (File.Exists(path))
@@ -548,6 +534,7 @@ public sealed class CompanionOperationJournal
     public CompanionPersistedCancellationIntent ReadCancellationIntent(string operationId)
     {
         RequireOperationId(operationId);
+        using var gate = AcquireOperationGate(operationId);
         var directory = RequireOperationDirectory(operationId);
         var persisted = ReadCancellationIntentFile(
             Path.Combine(directory, CancellationIntentFileName));
@@ -571,16 +558,11 @@ public sealed class CompanionOperationJournal
         string? sourceConversionIntentSha256 = null)
     {
         RequireOperationId(operationId);
-        var gate = TryAcquireOperationGate(operationId);
-        if (gate is null)
-        {
-            throw new CompanionContractException("journal-operation-busy");
-        }
+        var gate = AcquireOperationGate(operationId);
 
         try
         {
             var directory = RequireOperationDirectory(operationId);
-            using var processLock = AcquireProcessLock(Path.Combine(directory, "operation.lock"));
             var current = ReadLatestRecord(directory, operationId);
             RepairCurrentCache(directory, operationId, current);
             if (route != current.Route)
@@ -1118,6 +1100,7 @@ public sealed class CompanionOperationJournal
         string operationId,
         ReadOnlySpan<byte> expectedRequest)
     {
+        using var gate = AcquireOperationGate(operationId);
         var directory = RequireOperationDirectory(operationId);
         var request = ReadBoundedRegularFile(
             Path.Combine(directory, "request.json"),
@@ -1201,51 +1184,33 @@ public sealed class CompanionOperationJournal
         }
     }
 
-    private OperationGateLease AcquireOperationGate(string operationId) =>
-        AcquireOperationGate(operationId, wait: true)
-            ?? throw new CompanionContractException("journal-operation-busy");
-
-    private OperationGateLease? TryAcquireOperationGate(string operationId) =>
-        AcquireOperationGate(operationId, wait: false);
-
-    private OperationGateLease? AcquireOperationGate(string operationId, bool wait)
+    /// <summary>Serializes bounded reads and writes; nested synchronous reads reuse the process lock.</summary>
+    private OperationGateLease AcquireOperationGate(string operationId)
     {
         var key = OperationDirectory(operationId);
         while (true)
         {
-            var entry = InProcessLocks.GetOrAdd(
-                key,
-                static value => new OperationGateEntry(value));
-            if (!entry.TryRetain())
-            {
-                continue;
-            }
-
+            var entry = InProcessLocks.GetOrAdd(key, static value => new OperationGateEntry(value));
+            if (!entry.TryRetain()) continue;
             var acquired = false;
+            FileStream? processLock = null;
             try
             {
-                if (wait)
+                var nested = Monitor.IsEntered(entry.OperationSyncRoot);
+                acquired = Monitor.TryEnter(entry.OperationSyncRoot, OperationGateWaitMilliseconds);
+                if (!acquired) throw new CompanionContractException("journal-operation-busy");
+                if (!nested)
                 {
-                    acquired = entry.Semaphore.Wait(OperationGateWaitMilliseconds);
+                    var directory = RequireOperationDirectory(operationId);
+                    processLock = AcquireProcessLock(Path.Combine(directory, "operation.lock"));
                 }
-                else
-                {
-                    acquired = entry.Semaphore.Wait(0);
-                }
-
-                if (!acquired)
-                {
-                    ReleaseOperationGateReference(entry);
-                    return null;
-                }
-                return new OperationGateLease(entry);
+                return new OperationGateLease(entry, processLock);
             }
             catch
             {
-                if (!acquired)
-                {
-                    ReleaseOperationGateReference(entry);
-                }
+                processLock?.Dispose();
+                if (acquired) Monitor.Exit(entry.OperationSyncRoot);
+                ReleaseOperationGateReference(entry);
                 throw;
             }
         }
@@ -1467,7 +1432,7 @@ public sealed class CompanionOperationJournal
     private sealed class OperationGateEntry(string key)
     {
         internal string Key { get; } = key;
-        internal SemaphoreSlim Semaphore { get; } = new(1, 1);
+        internal object OperationSyncRoot { get; } = new();
         internal object SyncRoot { get; } = new();
         internal int ReferenceCount { get; set; }
         internal bool Removed { get; set; }
@@ -1486,7 +1451,7 @@ public sealed class CompanionOperationJournal
         }
     }
 
-    private sealed class OperationGateLease(OperationGateEntry entry) : IDisposable
+    private sealed class OperationGateLease(OperationGateEntry entry, FileStream? processLock) : IDisposable
     {
         private OperationGateEntry? _entry = entry;
 
@@ -1497,8 +1462,12 @@ public sealed class CompanionOperationJournal
             {
                 return;
             }
-            retained.Semaphore.Release();
-            ReleaseOperationGateReference(retained);
+            try { processLock?.Dispose(); }
+            finally
+            {
+                Monitor.Exit(retained.OperationSyncRoot);
+                ReleaseOperationGateReference(retained);
+            }
         }
     }
 

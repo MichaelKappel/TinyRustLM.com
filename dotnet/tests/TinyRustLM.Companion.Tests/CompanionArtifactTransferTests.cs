@@ -7,9 +7,8 @@ namespace TinyRustLM.Companion.Tests;
 
 public sealed class CompanionArtifactTransferTests : IDisposable
 {
-    private readonly string _parent = Path.Combine(
-        Path.GetTempPath(),
-        $"tinyrustlm-companion-transfer-{Guid.NewGuid():N}");
+    private readonly CanonicalTestScratch _scratch = new("transfer");
+    private string _parent => _scratch.Path;
 
     [Fact]
     public async Task StreamsTheExactJournaledMemberInFixedVerifiedChunks()
@@ -147,10 +146,7 @@ public sealed class CompanionArtifactTransferTests : IDisposable
 
     public void Dispose()
     {
-        if (Directory.Exists(_parent))
-        {
-            Directory.Delete(_parent, recursive: true);
-        }
+        _scratch.Dispose();
     }
 
     internal sealed class TransferFixture : IDisposable

@@ -14,9 +14,8 @@ public sealed class CompanionDirectCompositionSeedLauncherTests : IDisposable
     private const string ProcessFileName = ".tinyrustlm-p2p-seed-fixture-process";
     private const string DescendantFileName = ".tinyrustlm-p2p-seed-fixture-descendant";
 
-    private readonly string _parent = Path.Combine(
-        ScratchRoot(),
-        $"tinyrustlm-companion-seed-launch-{Guid.NewGuid():N}");
+    private readonly CanonicalTestScratch _scratch = new("seed-launch");
+    private string _parent => _scratch.Path;
 
     [Fact]
     public async Task VerifiedPlanStartsOneFixtureAndReturnsExactReadiness()
@@ -360,18 +359,6 @@ public sealed class CompanionDirectCompositionSeedLauncherTests : IDisposable
         Assert.Fail($"Fixture process {processId} remained alive.");
     }
 
-    private static string ScratchRoot()
-    {
-        var repositoryDrive = Path.GetPathRoot(RepositoryRoot());
-        var tempDrive = Path.GetPathRoot(Path.GetTempPath());
-        if (OperatingSystem.IsWindows() &&
-            !string.Equals(repositoryDrive, tempDrive, StringComparison.OrdinalIgnoreCase))
-        {
-            return Path.Combine(repositoryDrive!, "Source", ".codex-tmp");
-        }
-        return Path.GetTempPath();
-    }
-
     private static string RepositoryRoot()
     {
         var current = new DirectoryInfo(AppContext.BaseDirectory);
@@ -389,9 +376,6 @@ public sealed class CompanionDirectCompositionSeedLauncherTests : IDisposable
 
     public void Dispose()
     {
-        if (Directory.Exists(_parent))
-        {
-            Directory.Delete(_parent, recursive: true);
-        }
+        _scratch.Dispose();
     }
 }

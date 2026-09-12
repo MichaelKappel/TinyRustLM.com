@@ -6,9 +6,8 @@ namespace TinyRustLM.Companion.Tests;
 
 public sealed class CompanionSourceConversionTests : IDisposable
 {
-    private readonly string _parent = Path.Combine(
-        Path.GetTempPath(),
-        $"tinyrustlm-companion-conversion-{Guid.NewGuid():N}");
+    private readonly CanonicalTestScratch _scratch = new("conversion");
+    private string _parent => _scratch.Path;
 
     [Fact]
     public async Task SourceBranchBecomesAvailableOnlyAfterCompleteCompositionVerification()
@@ -435,10 +434,7 @@ public sealed class CompanionSourceConversionTests : IDisposable
 
     public void Dispose()
     {
-        if (Directory.Exists(_parent))
-        {
-            Directory.Delete(_parent, recursive: true);
-        }
+        _scratch.Dispose();
     }
 
     private static (CompanionOperationJournal Journal, CompanionOperationRecord Created)

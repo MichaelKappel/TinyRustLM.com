@@ -9,9 +9,8 @@ namespace TinyRustLM.Companion.Tests;
 
 public sealed class CompanionProductionOperationExecutorTests : IDisposable
 {
-    private readonly string _parent = Path.Combine(
-        Path.GetTempPath(),
-        $"tinyrustlm-production-executor-{Guid.NewGuid():N}");
+    private readonly CanonicalTestScratch _scratch = new("production-executor");
+    private string _parent => _scratch.Path;
 
     [Fact]
     public void BuiltInSourceClosureHasOnlyPinnedFilesAndPublicDestinations()
@@ -346,10 +345,7 @@ public sealed class CompanionProductionOperationExecutorTests : IDisposable
 
     public void Dispose()
     {
-        if (Directory.Exists(_parent))
-        {
-            Directory.Delete(_parent, recursive: true);
-        }
+        _scratch.Dispose();
     }
 
     private ExecutorFixture<TTransport> CreateExecutorFixture<TTransport>(TTransport transport)
@@ -391,18 +387,10 @@ public sealed class CompanionProductionOperationExecutorTests : IDisposable
         using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
         while (true)
         {
-            try
+            var current = journal.Read(operationId);
+            if (current.State == expected)
             {
-                var current = journal.Read(operationId);
-                if (current.State == expected)
-                {
-                    return current;
-                }
-            }
-            catch (CompanionContractException error) when (
-                error.Code == "journal-record-read")
-            {
-                // Windows can briefly deny a concurrent read during current.json replacement.
+                return current;
             }
             await Task.Delay(25, timeout.Token);
         }
