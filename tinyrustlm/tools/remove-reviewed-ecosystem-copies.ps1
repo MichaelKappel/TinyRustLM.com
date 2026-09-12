@@ -27,6 +27,10 @@ $scripts = @(
         Path = 'E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\remove-reviewed-duplicate-qwen-source.ps1'
         Sha256 = 'ca04a99220c29050395daa982477661c18789ab185fe42c9deded9c5f89a5f4f'
     }
+    [pscustomobject]@{
+        Path = 'E:\Source\Rust\TinyRustLM.MiRust.com\tools\remove-reviewed-stage.ps1'
+        Sha256 = '2d659d2af00e0da3b8713ae0731732920e2f180e7e9a961ec2c93e6bd6d9ceea'
+    }
 )
 
 # Refuse linked script paths or a substituted cleanup implementation.

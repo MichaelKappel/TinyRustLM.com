@@ -357,3 +357,33 @@ lessons, evidence references and remaining review scope live in the canonical
   This is committed and pushed as `1834857`. Existing 1.8.3 metadata, remaining
   stage-producing tools and historical-copy tests still need reconciliation;
   the source gate and these tests do not establish deployment readiness.
+
+- The portal's current generators now emit only package/deployment metadata to
+  stdout. Validation reads the canonical public files, includes ignored public
+  extras, rejects links and surviving stages, and checks exact C2 byte identities.
+  Explicit LF attributes align the 27 public worktree files with Git. The
+  unreachable full-site publisher and unused stage-tree validator were removed;
+  the PowerShell wrapper keeps Node startup options disabled for both calls.
+- Current portal documentation now identifies MiniModel.org as default discovery
+  and P2P, permits its initial server seeds, and keeps HF/local/conversion/manual
+  peer settings under Advanced. It makes no claim of a qualified model or live seed.
+- Portal checkpoint `d938fcd` is committed and pushed. Of 56 checks, 55 passed and
+  one correctly fails because the reviewed stage remains; zero skips/cancellations.
+  Actual PHP route checks passed, and actual PowerShell with hostile Node options
+  rejected the stage without a validation-success or publication claim. Line
+  coverage is 90.97% for the validator and 96.80% for public policy. Lesson C20
+  and the portal's compact `canonical-release-tools-review.json` retain the details.
+- All 27 portal stage files match historical Git `24e4f87`, totaling 136,632
+  logical bytes with zero unique files. Automatic approval review rejected their
+  deletion with `blocked by policy`; the files remain. Its exact-path, hash-checked
+  owner-run retirement script passed WhatIf, including retained Git blob checks.
+  The existing combined owner-run command now covers this stage too. Its full
+  WhatIf passed: pending scope is 311 files and 1,843,727,978 logical bytes.
+  No physical removal, receipt creation or measured storage recovery is inferred.
+- Portal package-only checkpoint `07a2502` binds content `d938fcd`. All 27
+  canonical public files match Git exactly (137,219 logical bytes), including
+  the current package document. The real package generator emitted stdout only.
+  The real deployment generator reached its retired-stage check, failed there,
+  emitted zero stdout and left the old manifest unchanged. Compact proof and
+  current status are committed and pushed as `7a6f9db`. Stage removal and fresh
+  deployment metadata remain pending; this is not a published release.
