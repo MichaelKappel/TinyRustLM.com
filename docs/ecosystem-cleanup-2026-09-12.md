@@ -128,3 +128,30 @@ lessons, evidence references and remaining review scope live in the canonical
   instrumentation is unavailable. Public byte bindings still require refresh;
   this correction has not been deployed.
   Committed and pushed as developer portal `55dac9c`.
+
+- Removed the active v0 catalog/announcement, contact-book, receipt-ledger,
+  peer-status-file and companion-inventory-file workflows from the app. The
+  current signed six-member catalog is the sole discovery authority. Advanced
+  manual-peer checks count matching unexpired signed listings and do not claim
+  network reachability. Hugging Face discovery requires an explicit choice when
+  one source matches multiple current compositions. The 106 targeted checks and
+  50 desktop/mobile chooser checks passed; root/app parity covers 19 assets.
+  These UI changes still await their complete integration checkpoint.
+- Automatic review blocked removal of the obsolete announcement reader and its
+  test. Those two files and LMComposer's eight historical stage files remain.
+  `tinyrustlm/tools/remove-reviewed-retired-files.ps1` validated all ten exact
+  files with WhatIf and awaits owner execution. Its inventory SHA-256 is
+  `1a1205236ba881f2c25d2964876540ce3f0653f86a3579e5c791eeb1f9ce0922`;
+  the pending logical size is 20,586 bytes. The old announcement test remains
+  incompatible with the retired API; the full test suite is not claimed green.
+- Tightened the TinyRust preview to reject foreign Host headers, path aliases,
+  stale asset hashes and model-member declarations. Release metadata and three
+  affected fixture suites now use bounded canonical artifacts. Seventeen
+  server/shell/manifest checks passed, with 88.42% static-server line coverage.
+  This source preparation does not represent a published release.
+- Fixed runtime-client chunk transfer so producer offsets survive worker transfer,
+  and resolved the worker relative to the loaded client script. Ten unit checks
+  and three profile-ownership checks passed. A locked offline Rust/WASM build
+  initialized/released the actual worker in two fresh Edge profiles, then deleted
+  both. An initial missing-default-toolchain failure was resolved with the
+  already installed toolchain in the test process. No real model was loaded.

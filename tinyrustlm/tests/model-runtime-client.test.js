@@ -3,6 +3,9 @@
 const assert = require("node:assert/strict");
 const crypto = require("node:crypto");
 const test = require("node:test");
+const fs = require("node:fs");
+const path = require("node:path");
+const vm = require("node:vm");
 
 const clientApi = require("../app/model-runtime-client.js");
 const promptApi = require("../app/prompt2-request.js");
@@ -284,7 +287,10 @@ async function activate(client) {
   const source = activationArtifacts();
   const progress = [];
   const state = await client.activate(source.artifacts, (entry) => progress.push(entry));
-  assert.equal(source.buffers.every((buffer) => buffer.byteLength === 0), true);
+  assert.deepEqual(source.buffers.map((buffer) => buffer.byteLength),
+    [4, 2, 2, 65800, 512, 896]);
+  assert.equal(source.buffers.every((buffer) =>
+    new Uint8Array(buffer).every((value) => value === 0)), true);
   assert.equal(progress.length, 6);
   return state;
 }
@@ -328,6 +334,38 @@ test("top-window client initializes and activates exactly six streamed artifacts
   assert.equal(fake.terminateCount, 1);
 });
 
+test("artifact transfer preserves producer offset accounting after each yield", async () => {
+  const fake = new FakeWorker();
+  const client = createClient(fake);
+  await initialize(client);
+  const source = activationArtifacts();
+  const modelChunks = [
+    Uint8Array.from([1, 2]).buffer,
+    Uint8Array.from([3, 4]).buffer
+  ];
+  source.artifacts[0] = {
+    ...source.artifacts[0],
+    chunks: Object.freeze({
+      async *[Symbol.asyncIterator]() {
+        let offset = 0;
+        for (const buffer of modelChunks) {
+          yield Object.freeze({ offset, bytes: buffer });
+          offset += buffer.byteLength;
+        }
+      }
+    })
+  };
+
+  await client.activate(source.artifacts);
+
+  const modelCommands = fake.commands.filter((command) =>
+    command.kind === "artifact-chunk" && command.payload.artifactKind === "model");
+  assert.deepEqual(modelCommands.map((command) => command.payload.offset), [0, 2]);
+  assert.deepEqual(modelChunks.map((buffer) => buffer.byteLength), [2, 2]);
+  assert.equal(modelChunks.every((buffer) =>
+    new Uint8Array(buffer).every((value) => value === 0)), true);
+});
+
 test("top-window client preserves repeated raw output and completes one generation once", async () => {
   const fake = new FakeWorker();
   const client = createClient(fake);
@@ -335,6 +373,7 @@ test("top-window client preserves repeated raw output and completes one generati
   await activate(client);
   const request = promptRequest();
   const requestBuffer = request.buffer;
+  const requestByteLength = requestBuffer.byteLength;
   const steps = [];
   const output = await client.generate({
     conversationId: id("conversation"),
@@ -344,7 +383,8 @@ test("top-window client preserves repeated raw output and completes one generati
     signal: null,
     onStep: (step) => steps.push(step)
   });
-  assert.equal(requestBuffer.byteLength, 0);
+  assert.equal(requestBuffer.byteLength, requestByteLength);
+  assert.equal(new Uint8Array(requestBuffer).every((value) => value === 0), true);
   assert.equal(output.text, "echo echo");
   assert.deepEqual(output.tokenIds, [17, 17]);
   assert.equal(steps.length, 1);
@@ -454,4 +494,48 @@ test("text identities are deterministic, domain-separated, and lowercase SHA-256
   assert.equal(first, replay);
   assert.notEqual(first, other);
   assert.match(first, /^[0-9a-f]{64}$/u);
+});
+
+
+// Run the canonical client in memory with a browser's script/base URL boundary.
+function browserUrlHarness(document) {
+  const urls = [];
+  const context = vm.createContext({
+    document, URL, crypto: crypto.webcrypto, TextEncoder, TextDecoder,
+    Worker: class {
+      constructor(url) { urls.push(url); }
+      postMessage() {}
+      terminate() {}
+    },
+  });
+  vm.runInContext(fs.readFileSync(path.join(__dirname, "../app/model-runtime-client.js"), "utf8"), context, { filename: path.resolve(__dirname, "../app/model-runtime-client.js") });
+  return { api: context.TinyRustLMModelRuntimeClient, urls };
+}
+
+test("browser worker URLs follow the loaded client asset rather than the page route", () => {
+  const h = browserUrlHarness({ baseURI: "https://tinyrustlm.com/", currentScript: { src: "https://tinyrustlm.com/app/model-runtime-client.js?v=identity" } });
+  for (const [input, expected] of [
+    ["./model-runtime-worker.js", "https://tinyrustlm.com/app/model-runtime-worker.js"],
+    ["/app/model-runtime-worker.js", "https://tinyrustlm.com/app/model-runtime-worker.js"],
+    ["https://tinyrustlm.com/custom.js", "https://tinyrustlm.com/custom.js"],
+  ]) {
+    const client = h.api.createBrowserClient(input, 1000);
+    assert.equal(h.urls.at(-1), expected);
+    client.terminate("test-complete");
+  }
+  for (const input of [undefined, null, {}, "", "a".repeat(2049), "http://["]) {
+    const count = h.urls.length;
+    assert.throws(() => h.api.createBrowserClient(input, 1000), /model-runtime-client-worker-url/);
+    assert.equal(h.urls.length, count);
+  }
+  assert.throws(() => h.api.createBrowserClient("./worker.js", 999), /model-runtime-client-timeout/);
+});
+
+test("worker URL resolution preserves explicit callers when script location is unavailable", () => {
+  for (const document of [undefined, {}, { currentScript: { src: "" } }, { currentScript: { src: "http://[" }, baseURI: "https://tinyrustlm.com/" }]) {
+    const h = browserUrlHarness(document);
+    const client = h.api.createBrowserClient("./worker.js", 1000);
+    assert.deepEqual(h.urls, ["./worker.js"]);
+    client.terminate("test-complete");
+  }
 });

@@ -17,6 +17,19 @@
   const MAXIMUM_COMMAND_TIMEOUT_MILLISECONDS = 10 * 60 * 1000;
   const ID_PATTERN = /^[0-9a-f]{64}$/u;
   const ERROR_CODE_PATTERN = /^[a-z0-9][a-z0-9-]{0,159}$/u;
+  // Capture the client asset location while its script is executing, independent of page routes.
+  const browserClientScriptUrl = (() => {
+    const document = root && root.document;
+    const script = document && document.currentScript;
+    if (!script || typeof script.src !== "string" || script.src.length === 0) {
+      return null;
+    }
+    try {
+      return new root.URL(script.src, document.baseURI).href;
+    } catch (_) {
+      return null;
+    }
+  })();
   const MESSAGE_FIELDS = Object.freeze([
     "schema",
     "workerId",
@@ -821,11 +834,21 @@
               nextOffset + observedLength > byteLength) {
             fail("model-runtime-client-artifact-chunk");
           }
-          const event = await this.send("artifact-chunk", {
-            artifactKind: role,
-            offset: nextOffset,
-            bytes
-          }, context, [bytes]);
+          // Preserve producer buffer lengths for offset accounting, then erase transferred material.
+          const transferBytes = bytes.slice(0);
+          new Uint8Array(bytes).fill(0);
+          let event;
+          try {
+            event = await this.send("artifact-chunk", {
+              artifactKind: role,
+              offset: nextOffset,
+              bytes: transferBytes
+            }, context, [transferBytes]);
+          } finally {
+            if (transferBytes.byteLength > 0) {
+              new Uint8Array(transferBytes).fill(0);
+            }
+          }
           if (event.payload.artifactKind !== role ||
               event.payload.offset !== nextOffset ||
               event.payload.byteLength !== observedLength ||
@@ -1017,9 +1040,22 @@
     return new root.Worker(url, { name: "tinyrustlm-model-runtime" });
   }
 
+  // Resolve a sibling worker against the client script, preserving non-browser callers.
+  function resolveBrowserWorkerUrl(workerUrl) {
+    if (typeof workerUrl !== "string" || workerUrl.length < 1 || workerUrl.length > 2048) {
+      fail("model-runtime-client-worker-url", { terminal: true });
+    }
+    if (browserClientScriptUrl === null) return workerUrl;
+    try {
+      return new root.URL(workerUrl, browserClientScriptUrl).href;
+    } catch (_) {
+      fail("model-runtime-client-worker-url", { terminal: true });
+    }
+  }
+
   function createBrowserClient(workerUrl, commandTimeoutMilliseconds) {
     return new ModelRuntimeClient({
-      workerUrl,
+      workerUrl: resolveBrowserWorkerUrl(workerUrl),
       workerFactory: browserWorkerFactory,
       commandTimeoutMilliseconds
     });

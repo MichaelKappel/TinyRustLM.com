@@ -1,5 +1,5 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-12T16:59:53Z
+updated_utc: 2026-09-12T17:35:39.648Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 
@@ -13,9 +13,9 @@ ecosystem_cleanup:
   progress: docs/ecosystem-cleanup-2026-09-12.md
   lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md
   checkpoints: Catalog and P2P modules committed at 4e1ee34; verified admission, streaming hashes, atomic composition storage and companion installation committed at 3302239. All pushed to the existing branch.
-  verification: The 87 module checks, 54 application/acquisition checks, 25 desktop chooser checks, and cache/direct-peer browser checks passed. These use synthetic fixtures and do not qualify a real model.
-  remaining: Active v0 metadata flows, pending UI integration check-in, historical experiment and artifact retirement, real-model qualification, initial MiniModel seed hosting, and affected release metadata remain open.
-  blocked_deletions: Automatic review rejected Runtime historical docs and LMComposer historical stage removal. A reviewed Runtime PowerShell cleanup is awaiting owner execution; those bytes have not been claimed removed.
+  verification: Current UI passed 106 targeted checks and 50 desktop/mobile chooser checks; static server, shell and manifest passed 17 checks. Runtime client passed ten unit checks and actual compiled Rust/WASM initialization/release in two cleaned Edge profiles. Synthetic fixtures do not qualify a real model.
+  remaining: Pending UI and publication-tool integration check-ins, historical experiment and artifact retirement, real-model qualification, initial MiniModel seed hosting, and affected release metadata remain open.
+  blocked_deletions: Automatic review rejected Runtime historical docs, LMComposer historical stage files and two obsolete TinyRust announcement files. Exact-hash PowerShell cleanups await owner execution. All pending bytes are still reported present; the old announcement test remains incompatible with the retired API.
 
 historical_source_checkpoint:
   head_entering_work: da8bfacc138e4ab12291a9e90f77d6e5d62471b4
