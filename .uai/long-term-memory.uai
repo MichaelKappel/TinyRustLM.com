@@ -22,8 +22,8 @@ experiment_lessons_pointer:
   authority: Owner-requested synthesis of linked canonical source records and bounded results; historical evidence, not new execution or qualification.
   review_state: reviewed_for_named_records_only
   status: active_growing_review
-  last_reviewed_utc: 2026-09-12T21:12:21.750Z
-  sha256: c9eb1667d784de793061f396db5cb82302cbc029acc31acbd8c3af847b19c79b
+  last_reviewed_utc: 2026-09-12T21:33:54.707Z
+  sha256: 352793519c4bee8ac47e2e17eba74def25be08f8d6717a8e862f2356f7551bcc
 
 durable_rules:
   - Preserve immutable failed operations and public bounded results; historical evidence creates no runtime compatibility path.

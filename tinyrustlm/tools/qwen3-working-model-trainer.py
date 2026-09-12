@@ -14,7 +14,6 @@ import os
 import platform
 import random
 import re
-import shutil
 import site
 import subprocess
 import sys
@@ -39,7 +38,15 @@ ATTEMPT_OWNER_SCHEMA = "tinyrustlm.qwen3_cpu_training_attempt.v1"
 CHECKPOINT_RECEIPT_SCHEMA = "tinyrustlm.qwen3_cpu_checkpoint_receipt.v1"
 SEGMENT_RECEIPT_SCHEMA = "tinyrustlm.qwen3_cpu_training_segment.v1"
 TRAINING_EVENT_SCHEMA = "tinyrustlm.qwen3_cpu_training_event.v1"
-TRAINING_RECEIPT_SCHEMA = "tinyrustlm.qwen3_cpu_training_receipt.v1"
+TRAINING_RECEIPT_SCHEMA = "tinyrustlm.qwen3_cpu_training_receipt.v2"
+CHECKPOINT_RETIREMENT_SCHEMA = "tinyrustlm.qwen3_cpu_checkpoint_retirement.v1"
+CHECKPOINT_PAYLOAD_NAMES = {
+    "adapter_config.json",
+    "adapter_model.safetensors",
+    "trainer_state.pt",
+    "README.md",
+}
+MAX_CHECKPOINTS = 4096
 TERMINAL_REJECTION_SCHEMA = "tinyrustlm.qwen3_cpu_terminal_rejection.v1"
 TERMINAL_ARTIFACT_RECEIPT_SCHEMA = "tinyrustlm.qwen3_cpu_terminal_artifact_receipt.v1"
 INTERRUPTION_PLAN_SCHEMA = "tinyrustlm.qwen3_cpu_interruption_plan.v1"
@@ -80,8 +87,6 @@ CHECKPOINT_STAGING_PATTERN = re.compile(
 INTERRUPTED_CHECKPOINT_PATTERN = re.compile(
     r"checkpoint-([0-9]{6})\.([0-9a-f]{32})\.interrupted\Z"
 )
-CANDIDATE_STAGING_PATTERN = re.compile(r"\.candidate\.([0-9a-f]{32})\.staging\Z")
-INTERRUPTED_CANDIDATE_PATTERN = re.compile(r"candidate\.([0-9a-f]{32})\.interrupted\Z")
 TRAINING_EVENT_KEYS = {
     "schema",
     "global_update_step",
@@ -2170,7 +2175,6 @@ def initialize_attempt(
     order: Sequence[int],
     *,
     resume: bool,
-    allow_interrupted_staging: bool = False,
 ) -> dict[str, Any]:
     expected = _attempt_binding(inputs, order)
     owner_path = inputs.output_root / "attempt-owner.json"
@@ -2208,19 +2212,11 @@ def initialize_attempt(
         "segments",
         "rejections",
         "interrupted",
-        "candidate",
     }
-    candidate_staging = {
-        name for name in root_entries if CANDIDATE_STAGING_PATTERN.fullmatch(name)
-    }
-    unexpected = set(root_entries) - allowed_entries - candidate_staging
+    unexpected = set(root_entries) - allowed_entries
     if unexpected:
         raise ValueError(
             f"resume attempt contains unknown entries: {sorted(unexpected)}"
-        )
-    if candidate_staging and not allow_interrupted_staging:
-        raise ValueError(
-            "interrupted candidate staging is preserved and requires operator review before resume"
         )
     for segment in (inputs.output_root / "segments").iterdir():
         if not segment.is_dir() or _is_reparse(segment):
@@ -2239,9 +2235,11 @@ def initialize_attempt(
     return actual
 
 
-def verify_checkpoint_directory(
+def _read_checkpoint_receipt(
     path: Path, expected_parent_sha256: str | None
 ) -> CheckpointState:
+    """Validate immutable progress and file identities without requiring retired payloads."""
+    reject_reparse_chain(path, "checkpoint directory")
     match = CHECKPOINT_NAME_PATTERN.fullmatch(path.name)
     if match is None or not path.is_dir() or _is_reparse(path):
         raise ValueError("checkpoint directory name or type is invalid")
@@ -2337,11 +2335,26 @@ def verify_checkpoint_directory(
         require_sha256(parent_value, "checkpoint parent_checkpoint_receipt_sha256")
     if parent_value != expected_parent_sha256:
         raise ValueError("checkpoint parent chain drifted")
-    files = _tree_file_identities(path, {"checkpoint-receipt.json"})
-    if receipt["files"] != files or receipt["file_set_sha256"] != sha256_bytes(
+    files = receipt["files"]
+    if not isinstance(files, list) or not 3 <= len(files) <= 4:
+        raise ValueError("checkpoint payload file set is invalid")
+    names = []
+    for item in files:
+        if not isinstance(item, dict):
+            raise ValueError("checkpoint payload identity is invalid")
+        require_exact_keys(item, {"path", "bytes", "sha256"}, "checkpoint payload")
+        if (
+            not isinstance(item["path"], str)
+            or item["path"] not in CHECKPOINT_PAYLOAD_NAMES
+        ):
+            raise ValueError("checkpoint payload name is invalid")
+        require_integer(item["bytes"], "checkpoint payload bytes", 1, 2**63 - 1)
+        require_sha256(item["sha256"], "checkpoint payload sha256")
+        names.append(item["path"])
+    if names != sorted(set(names)) or receipt["file_set_sha256"] != sha256_bytes(
         canonical_json_bytes(files)
     ):
-        raise ValueError("checkpoint files changed after completion")
+        raise ValueError("checkpoint payload file set is invalid")
     if not any(item["path"] == "adapter_model.safetensors" for item in files):
         raise ValueError("checkpoint has no safe adapter weights")
     if not any(item["path"] == "adapter_config.json" for item in files):
@@ -2352,11 +2365,94 @@ def verify_checkpoint_directory(
     return CheckpointState(path, receipt, identity)
 
 
-def completed_checkpoints(output_root: Path) -> tuple[CheckpointState, ...]:
+def _checkpoint_payload_files(directory: Path) -> list[dict[str, Any]]:
+    """Read only the bounded flat payload set; never traverse a checkpoint child."""
+    reject_reparse_chain(directory, "checkpoint payload")
+    files = []
+    for count, path in enumerate(directory.iterdir(), start=1):
+        if count > 6:
+            raise ValueError("checkpoint directory entry bound exceeded")
+        reject_reparse_chain(path, "checkpoint member")
+        if path.name in {"checkpoint-receipt.json", "payload-retirement.json"}:
+            verify_regular_file(path, MAX_JSON_BYTES, "checkpoint metadata")
+            continue
+        if path.name not in CHECKPOINT_PAYLOAD_NAMES:
+            raise ValueError("checkpoint contains an unknown payload entry")
+        files.append({"path": path.name, **file_identity(path).json_value()})
+    return sorted(files, key=lambda item: item["path"])
+
+
+def _retirement_plan(
+    state: CheckpointState, successor: CheckpointState
+) -> dict[str, Any]:
+    """Bind deletion of predecessor bytes to an already verified successor receipt."""
+    return {
+        "schema": CHECKPOINT_RETIREMENT_SCHEMA,
+        "status": "payload-retirement-planned",
+        "checkpoint_receipt_sha256": state.receipt_identity.sha256,
+        "successor_checkpoint_receipt_sha256": successor.receipt_identity.sha256,
+        "preserved_evidence": "checkpoint-receipt.json",
+        "quality_claim": "none",
+    }
+
+
+def _verify_checkpoint_payload(
+    state: CheckpointState, successor: CheckpointState | None
+) -> None:
+    """Require complete current bytes, or a bound retirement plan and unchanged survivors."""
+    files = _checkpoint_payload_files(state.directory)
+    plan_path = state.directory / "payload-retirement.json"
+    if plan_path.exists():
+        if successor is None:
+            raise ValueError("latest checkpoint payload cannot be retired")
+        plan = read_json_object(plan_path, MAX_JSON_BYTES, "checkpoint retirement plan")
+        if plan != _retirement_plan(state, successor):
+            raise ValueError("checkpoint retirement successor binding drifted")
+        if any(item not in state.receipt["files"] for item in files):
+            raise ValueError("retiring checkpoint files changed after completion")
+    elif files != state.receipt["files"]:
+        raise ValueError("checkpoint files changed after completion")
+
+
+def verify_checkpoint_directory(
+    path: Path, expected_parent_sha256: str | None
+) -> CheckpointState:
+    """Verify a loadable checkpoint; receipt-only history is never a model input."""
+    state = _read_checkpoint_receipt(path, expected_parent_sha256)
+    _verify_checkpoint_payload(state, None)
+    return state
+
+
+def _verify_checkpoint_chain(entries: Sequence[Path]) -> tuple[CheckpointState, ...]:
+    """Check every receipt link, then payloads from the complete latest checkpoint backward."""
+    states = []
+    parent = None
+    for path in entries:
+        state = _read_checkpoint_receipt(path, parent)
+        states.append(state)
+        parent = state.receipt_identity.sha256
+    successor = None
+    for state in reversed(states):
+        _verify_checkpoint_payload(state, successor)
+        successor = state
+    return tuple(states)
+
+
+def _checkpoint_entries(output_root: Path) -> list[Path]:
+    """Bound checkpoint enumeration and reject linked ancestors before any traversal."""
     root = output_root / "checkpoints"
-    states: list[CheckpointState] = []
-    parent: str | None = None
-    entries = sorted(root.iterdir(), key=lambda path: path.name)
+    reject_reparse_chain(root, "checkpoint root")
+    entries = []
+    for path in root.iterdir():
+        entries.append(path)
+        if len(entries) > MAX_CHECKPOINTS:
+            raise ValueError("checkpoint count bound exceeded")
+    return sorted(entries, key=lambda path: path.name)
+
+
+def completed_checkpoints(output_root: Path) -> tuple[CheckpointState, ...]:
+    """Return verified progress history, with only the latest state eligible for resume."""
+    entries = _checkpoint_entries(output_root)
     staging = [
         path for path in entries if CHECKPOINT_STAGING_PATTERN.fullmatch(path.name)
     ]
@@ -2364,11 +2460,41 @@ def completed_checkpoints(output_root: Path) -> tuple[CheckpointState, ...]:
         raise ValueError(
             "interrupted checkpoint staging is preserved and requires operator review before resume"
         )
-    for path in entries:
-        state = verify_checkpoint_directory(path, parent)
-        states.append(state)
-        parent = state.receipt_identity.sha256
-    return tuple(states)
+    return _verify_checkpoint_chain(entries)
+
+
+def _retire_superseded_checkpoints(output_root: Path) -> tuple[CheckpointState, ...]:
+    """After attempt authorization, retain the newest payload and compact predecessor evidence."""
+    require_model_location(output_root, "checkpoint retention output")
+    states = completed_checkpoints(output_root)
+    # Preflight the whole chain before deleting any file; no recursive removal is used.
+    for state, successor in zip(states, states[1:]):
+        plan_path = state.directory / "payload-retirement.json"
+        if not plan_path.exists():
+            write_new_atomic(
+                plan_path, json_document_bytes(_retirement_plan(state, successor))
+            )
+            _fsync_directory(state.directory)
+        _verify_checkpoint_payload(state, successor)
+        pending = _checkpoint_payload_files(state.directory)
+        if pending:
+            latest = states[-1]
+            current = verify_checkpoint_directory(
+                latest.directory, latest.receipt["parent_checkpoint_receipt_sha256"]
+            )
+            if current != latest:
+                raise ValueError("latest checkpoint changed before retirement")
+        for item in pending:
+            path = state.directory / item["path"]
+            if file_identity(path).json_value() != {
+                key: item[key] for key in ("bytes", "sha256")
+            }:
+                raise ValueError("checkpoint payload changed before retirement")
+            path.unlink()
+        _fsync_directory(state.directory)
+        if _checkpoint_payload_files(state.directory):
+            raise ValueError("checkpoint payload retirement is incomplete")
+    return states
 
 
 def validate_checkpoint_schedule(
@@ -2435,10 +2561,6 @@ def _interruption_destination_name(source_relative_path: str) -> str:
         match = CHECKPOINT_STAGING_PATTERN.fullmatch(source.parts[1])
         if match is not None:
             return f"checkpoint-{match.group(1)}.{match.group(2)}.interrupted"
-    if len(source.parts) == 1:
-        match = CANDIDATE_STAGING_PATTERN.fullmatch(source.parts[0])
-        if match is not None:
-            return f"candidate.{match.group(1)}.interrupted"
     raise ValueError("interrupted output staging path is invalid")
 
 
@@ -2446,9 +2568,6 @@ def _interruption_source_path(destination_name: str) -> str:
     match = INTERRUPTED_CHECKPOINT_PATTERN.fullmatch(destination_name)
     if match is not None:
         return f"checkpoints/.checkpoint-{match.group(1)}.{match.group(2)}.staging"
-    match = INTERRUPTED_CANDIDATE_PATTERN.fullmatch(destination_name)
-    if match is not None:
-        return f".candidate.{match.group(1)}.staging"
     raise ValueError("interrupted output archive contains an unknown entry")
 
 
@@ -2569,18 +2688,14 @@ def quarantine_interrupted_output(inputs: VerifiedTrainingInputs) -> dict[str, A
     order = shuffled_record_indices(
         len(inputs.records), inputs.training_lock["training"]["shuffle_seed"]
     )
-    initialize_attempt(inputs, order, resume=True, allow_interrupted_staging=True)
-    checkpoint_root = inputs.output_root / "checkpoints"
+    initialize_attempt(inputs, order, resume=True)
     interrupted_root = inputs.output_root / "interrupted"
-    entries = sorted(checkpoint_root.iterdir(), key=lambda path: path.name)
+    entries = _checkpoint_entries(inputs.output_root)
     staging = [
         path for path in entries if CHECKPOINT_STAGING_PATTERN.fullmatch(path.name)
     ]
     regular = [path for path in entries if path not in staging]
-    parent: str | None = None
-    for path in regular:
-        state = verify_checkpoint_directory(path, parent)
-        parent = state.receipt_identity.sha256
+    _verify_checkpoint_chain(regular)
 
     results: list[dict[str, Any]] = []
     for stage in staging:
@@ -2588,19 +2703,6 @@ def quarantine_interrupted_output(inputs: VerifiedTrainingInputs) -> dict[str, A
             _quarantine_interrupted_stage(
                 stage, f"checkpoints/{stage.name}", interrupted_root
             )
-        )
-
-    candidate_staging = sorted(
-        (
-            path
-            for path in inputs.output_root.iterdir()
-            if CANDIDATE_STAGING_PATTERN.fullmatch(path.name)
-        ),
-        key=lambda path: path.name,
-    )
-    for stage in candidate_staging:
-        results.append(
-            _quarantine_interrupted_stage(stage, stage.name, interrupted_root)
         )
 
     for path in sorted(interrupted_root.iterdir(), key=lambda value: value.name):
@@ -2628,6 +2730,8 @@ def _write_checkpoint(
     *,
     eligible_for_candidate_selection: bool,
 ) -> CheckpointState:
+    """Commit and reverify one complete checkpoint before its predecessor can be retired."""
+    require_model_location(output_root, "checkpoint output")
     step = state["global_update_step"]
     final_name = f"checkpoint-{step:06d}"
     checkpoint_root = output_root / "checkpoints"
@@ -2654,11 +2758,10 @@ def _write_checkpoint(
             "torch_rng_state": torch.get_rng_state(),
         }
         torch.save(state_payload, stage / "trainer_state.pt")
-        for file_path in stage.iterdir():
-            if file_path.is_file():
-                with file_path.open("r+b") as stream:
-                    os.fsync(stream.fileno())
-        files = _tree_file_identities(stage)
+        files = _checkpoint_payload_files(stage)
+        for item in files:
+            with (stage / item["path"]).open("r+b") as stream:
+                os.fsync(stream.fileno())
         receipt = {
             "schema": CHECKPOINT_RECEIPT_SCHEMA,
             "status": "complete",
@@ -2994,6 +3097,9 @@ def _training_receipt(
         "curriculum_sha256": inputs.curriculum_identity.sha256,
         "record_count": len(inputs.records),
         "final_checkpoint_receipt_sha256": checkpoint.receipt_identity.sha256,
+        "adapter_directory": checkpoint.directory.relative_to(
+            inputs.output_root
+        ).as_posix(),
         "adapter_files": files,
         "adapter_file_set_sha256": sha256_bytes(canonical_json_bytes(files)),
         "metrics": metrics,
@@ -3007,42 +3113,19 @@ def _training_receipt(
 def _finalize_candidate(
     inputs: VerifiedTrainingInputs, checkpoint: CheckpointState, metrics: dict[str, Any]
 ) -> dict[str, Any]:
-    candidate = inputs.output_root / "candidate"
-    receipt_path = candidate / "training-receipt.json"
-    if candidate.exists():
-        reject_reparse_chain(candidate, "training candidate")
-        if not candidate.is_dir() or _is_reparse(candidate):
-            raise ValueError("training candidate is not a regular directory")
-        files = _tree_file_identities(candidate, {"training-receipt.json"})
-    else:
-        stage = inputs.output_root / f".candidate.{uuid.uuid4().hex}.staging"
-        stage.mkdir()
-        for name in ("adapter_model.safetensors", "adapter_config.json"):
-            target = stage / name
-            shutil.copyfile(checkpoint.directory / name, target)
-            with target.open("r+b") as stream:
-                os.fsync(stream.fileno())
-        files = _tree_file_identities(stage)
-        receipt = _training_receipt(inputs, checkpoint, metrics, files)
-        write_new_atomic(stage / "training-receipt.json", json_document_bytes(receipt))
-        _fsync_directory(stage)
-        os.rename(stage, candidate)
-        _fsync_directory(inputs.output_root)
-
-    if {item["path"] for item in files} != {
-        "adapter_model.safetensors",
-        "adapter_config.json",
-    }:
-        raise ValueError("training candidate adapter file set drifted")
-    checkpoint_files = {item["path"]: item for item in checkpoint.receipt["files"]}
-    if any(checkpoint_files.get(item["path"]) != item for item in files):
-        raise ValueError("training candidate differs from its final checkpoint")
+    """Publish one receipt pointing at the verified final adapter without copying its bytes."""
+    states = completed_checkpoints(inputs.output_root)
+    if not states or states[-1] != checkpoint:
+        raise ValueError("training candidate is not the latest verified checkpoint")
+    if checkpoint.receipt["eligible_for_candidate_selection"] is not True:
+        raise ValueError("training candidate is not the final eligible checkpoint")
+    _retire_superseded_checkpoints(inputs.output_root)
+    files = [
+        item
+        for item in checkpoint.receipt["files"]
+        if item["path"] in {"adapter_model.safetensors", "adapter_config.json"}
+    ]
     receipt = _training_receipt(inputs, checkpoint, metrics, files)
-    actual_receipt = read_json_object(
-        receipt_path, MAX_JSON_BYTES, "candidate training receipt"
-    )
-    if actual_receipt != receipt:
-        raise ValueError("candidate training receipt drifted")
     top_receipt_path = inputs.output_root / "training-receipt.json"
     if top_receipt_path.exists():
         top_receipt = read_json_object(
@@ -3076,6 +3159,7 @@ def run_training(inputs: VerifiedTrainingInputs, *, resume: bool) -> dict[str, A
         accumulation=accumulation,
         checkpoint_interval=training["checkpoint_interval_steps"],
     )
+    _retire_superseded_checkpoints(inputs.output_root)
     apply_required_environment(inputs.environment_spec)
     install_training_isolation_audit_hook()
     runtime_probe = probe_ml_runtime(inputs.environment_spec)
@@ -3260,6 +3344,7 @@ def run_training(inputs: VerifiedTrainingInputs, *, resume: bool) -> dict[str, A
                 )
                 parent_sha256 = checkpoint.receipt_identity.sha256
                 latest = checkpoint
+                _retire_superseded_checkpoints(inputs.output_root)
         event_stream.close()
         _finish_segment(segment, "complete")
         if latest is None or latest.receipt["global_update_step"] != total_updates:

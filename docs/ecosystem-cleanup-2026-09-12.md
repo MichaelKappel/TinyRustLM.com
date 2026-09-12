@@ -412,3 +412,20 @@ lessons, evidence references and remaining review scope live in the canonical
   and left the old manifest unchanged. The refreshed compact current-package
   proof is committed and pushed as `bfb3ac5`. These are local source/metadata
   results; the old manifest and both physical retirement failures remain open.
+- The pinned Qwen3 CPU trainer now retains only its newest resumable checkpoint
+  payload. Older immutable receipts preserve progress, cumulative losses and
+  exact file identities; create-only successor-bound plans make interrupted
+  retirement explicit. It checks the full chain and newest bytes before deleting
+  superseded payloads, rejects drift/unknown entries, and validates storage under
+  D:\LLMs\TinyRustLM. Receipt-only history cannot be loaded as a model.
+- Final training receipt v2 points to the existing final adapter instead of
+  copying it into a candidate directory. The obsolete candidate-copy writer and
+  staging readers are removed. Current training instructions require fresh exact
+  byte bindings; historical environment locks are not current authorization.
+- All 113 focused control/trainer/scratch checks passed, zero skips. Real writer
+  behavior was exercised with tiny synthetic bytes. Changed executable-line
+  coverage is 90.07% using standard-library trace; branch coverage and an ML run
+  were not performed. Ruff lint/format checks passed. Lesson T8 and compact proof
+  `artifacts/ecosystem-cleanup-20260912/checkpoint-retention-review.json` retain
+  the result. Owned fixtures were removed; no historical-model deletion, measured
+  storage recovery, new training, qualification or publication is claimed.

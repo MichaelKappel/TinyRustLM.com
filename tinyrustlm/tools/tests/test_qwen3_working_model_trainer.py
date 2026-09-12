@@ -850,35 +850,13 @@ class AttemptAndCheckpointTests(unittest.TestCase):
         self.assertEqual(first["quarantined_output_count"], 1)
         self.assertEqual(second, first)
 
-    def test_interrupted_candidate_is_preserved_before_resume(self) -> None:
-        checkpoint_root = self.root / "checkpoints"
-        interrupted_root = self.root / "interrupted"
-        checkpoint_root.mkdir()
-        interrupted_root.mkdir()
-        stage = self.root / f".candidate.{'b' * 32}.staging"
-        stage.mkdir()
-        (stage / "adapter_model.safetensors").write_bytes(b"partial adapter")
-        inputs = types.SimpleNamespace(
-            output_root=self.root,
-            records=(object(),),
-            training_lock={"training": {"shuffle_seed": 7}},
-        )
-
-        with mock.patch.object(MODULE, "initialize_attempt"):
-            result = MODULE.quarantine_interrupted_output(inputs)
-
-        destination = interrupted_root / f"candidate.{'b' * 32}.interrupted"
-        self.assertFalse(stage.exists())
-        self.assertEqual(
-            (destination / "adapter_model.safetensors").read_bytes(),
-            b"partial adapter",
-        )
-        self.assertEqual(result["quarantined_output_count"], 1)
-
-    def test_completed_candidate_recovers_missing_top_level_receipt(self) -> None:
-        checkpoint = MODULE.verify_checkpoint_directory(
-            self._checkpoint("checkpoint-000032"), None
-        )
+    def test_final_candidate_reuses_checkpoint_and_receipt_idempotently(self) -> None:
+        path = self._checkpoint("checkpoint-000032")
+        receipt_path = path / "checkpoint-receipt.json"
+        checkpoint_receipt = json.loads(receipt_path.read_text(encoding="ascii"))
+        checkpoint_receipt["eligible_for_candidate_selection"] = True
+        write_json(receipt_path, checkpoint_receipt)
+        checkpoint = MODULE.verify_checkpoint_directory(path, None)
         inputs = types.SimpleNamespace(
             output_root=self.root,
             profile={"profile_id": MODULE.EXPECTED_PROFILE_ID},
@@ -890,17 +868,314 @@ class AttemptAndCheckpointTests(unittest.TestCase):
         )
         metrics = {"loss_observation_count": 1}
 
-        first = MODULE._finalize_candidate(inputs, checkpoint, metrics)
-        (self.root / "training-receipt.json").unlink()
-        second = MODULE._finalize_candidate(inputs, checkpoint, metrics)
+        with mock.patch.object(MODULE, "require_model_location"):
+            first = MODULE._finalize_candidate(inputs, checkpoint, metrics)
+            second = MODULE._finalize_candidate(inputs, checkpoint, metrics)
 
         self.assertEqual(second, first)
+        self.assertEqual(first["adapter_directory"], "checkpoints/checkpoint-000032")
+        self.assertEqual(first["schema"], "tinyrustlm.qwen3_cpu_training_receipt.v2")
+        self.assertFalse((self.root / "candidate").exists())
+        self.assertEqual(len(list(self.root.rglob("adapter_model.safetensors"))), 1)
         self.assertEqual(
             json.loads(
                 (self.root / "training-receipt.json").read_text(encoding="ascii")
             ),
             first,
         )
+        with mock.patch.object(MODULE, "require_model_location"):
+            with self.assertRaisesRegex(
+                ValueError, "top-level training receipt drifted"
+            ):
+                MODULE._finalize_candidate(inputs, checkpoint, {"changed": 1})
+
+    def _two_checkpoints(self) -> tuple[Path, Path]:
+        """Create tiny synthetic predecessor/successor bytes with a real receipt chain."""
+        first = self._checkpoint("checkpoint-000032")
+        second = self._checkpoint(
+            "checkpoint-000064", MODULE.sha256_file(first / "checkpoint-receipt.json")
+        )
+        return first, second
+
+    def _retain(self) -> tuple[object, ...]:
+        """Substitute only the model location guard for operation-owned non-model fixtures."""
+        with mock.patch.object(MODULE, "require_model_location"):
+            return MODULE._retire_superseded_checkpoints(self.root)
+
+    def test_retention_keeps_one_payload_and_immutable_progress_chain(self) -> None:
+        first, second = self._two_checkpoints()
+        original_receipt = (first / "checkpoint-receipt.json").read_bytes()
+        states = self._retain()
+        self.assertEqual(self._retain(), states)
+        self.assertEqual(MODULE.completed_checkpoints(self.root), states)
+        self.assertEqual(
+            (first / "checkpoint-receipt.json").read_bytes(), original_receipt
+        )
+        self.assertEqual(
+            {path.name for path in first.iterdir()},
+            {"checkpoint-receipt.json", "payload-retirement.json"},
+        )
+        self.assertEqual(
+            (second / "adapter_model.safetensors").read_bytes(), b"adapter"
+        )
+        self.assertEqual(len(list(self.root.rglob("trainer_state.pt"))), 1)
+        MODULE.validate_checkpoint_schedule(
+            states, total_updates=128, accumulation=8, checkpoint_interval=32
+        )
+        with self.assertRaisesRegex(
+            ValueError, "latest checkpoint payload cannot be retired"
+        ):
+            MODULE.verify_checkpoint_directory(first, None)
+
+    def test_retention_rejects_non_model_storage_before_reading(self) -> None:
+        with mock.patch.object(MODULE, "completed_checkpoints") as read:
+            with self.assertRaisesRegex(ValueError, "inside D:/LLMs/TinyRustLM"):
+                MODULE._retire_superseded_checkpoints(self.root)
+            read.assert_not_called()
+
+    def test_retention_handles_empty_attempt_without_output(self) -> None:
+        (self.root / "checkpoints").mkdir()
+        self.assertEqual(self._retain(), ())
+        self.assertEqual(list((self.root / "checkpoints").iterdir()), [])
+
+    def test_retention_verifies_latest_before_deleting_predecessor(self) -> None:
+        first, second = self._two_checkpoints()
+        (second / "trainer_state.pt").write_bytes(b"drift")
+        with self.assertRaisesRegex(ValueError, "changed after completion"):
+            self._retain()
+        self.assertTrue((first / "adapter_model.safetensors").exists())
+        self.assertFalse((first / "payload-retirement.json").exists())
+
+    def test_retention_does_not_hide_missing_predecessor_without_plan(self) -> None:
+        first, _ = self._two_checkpoints()
+        (first / "trainer_state.pt").unlink()
+        with self.assertRaisesRegex(ValueError, "changed after completion"):
+            self._retain()
+        self.assertTrue((first / "adapter_model.safetensors").exists())
+
+    def test_retention_resumes_partial_deletion_only_after_bound_plan(self) -> None:
+        first, second = self._two_checkpoints()
+        original_unlink = Path.unlink
+        deleted = []
+
+        def interrupt(path: Path, *args: object, **kwargs: object) -> None:
+            """Simulate a filesystem failure after the first predecessor payload deletion."""
+            if len(deleted) == 1:
+                raise OSError("simulated disk interruption")
+            original_unlink(path, *args, **kwargs)
+            deleted.append(path)
+
+        with mock.patch.object(Path, "unlink", interrupt):
+            with self.assertRaisesRegex(OSError, "disk interruption"):
+                self._retain()
+        self.assertEqual(len(deleted), 1)
+        self.assertTrue((first / "payload-retirement.json").is_file())
+        self.assertEqual(len(MODULE.completed_checkpoints(self.root)), 2)
+        self._retain()
+        self.assertEqual(MODULE._checkpoint_payload_files(first), [])
+        self.assertTrue((second / "trainer_state.pt").is_file())
+
+    def test_retention_rejects_changed_survivor_after_interruption(self) -> None:
+        first, _ = self._two_checkpoints()
+        with mock.patch.object(Path, "unlink", side_effect=OSError("interrupted")):
+            with self.assertRaises(OSError):
+                self._retain()
+        (first / "adapter_model.safetensors").write_bytes(b"changed")
+        with self.assertRaisesRegex(ValueError, "retiring checkpoint files changed"):
+            self._retain()
+        self.assertTrue((first / "trainer_state.pt").is_file())
+
+    def test_retention_rejects_unbound_successor_and_latest_retirement(self) -> None:
+        first, second = self._two_checkpoints()
+        states = MODULE.completed_checkpoints(self.root)
+        plan = MODULE._retirement_plan(states[0], states[1])
+        plan["successor_checkpoint_receipt_sha256"] = "sha256:" + "f" * 64
+        write_json(first / "payload-retirement.json", plan)
+        with self.assertRaisesRegex(ValueError, "successor binding drifted"):
+            self._retain()
+        write_json(
+            first / "payload-retirement.json",
+            MODULE._retirement_plan(states[0], states[1]),
+        )
+        write_json(second / "payload-retirement.json", plan)
+        with self.assertRaisesRegex(
+            ValueError, "latest checkpoint payload cannot be retired"
+        ):
+            self._retain()
+        self.assertTrue((first / "trainer_state.pt").is_file())
+
+    def test_retention_rejects_unknown_or_linked_entries_without_traversal(
+        self,
+    ) -> None:
+        first, _ = self._two_checkpoints()
+        unknown = first / "unexpected"
+        unknown.mkdir()
+        with self.assertRaisesRegex(ValueError, "unknown payload entry"):
+            self._retain()
+        unknown.rmdir()
+        original_reparse = MODULE._is_reparse
+        with mock.patch.object(
+            MODULE,
+            "_is_reparse",
+            side_effect=lambda path: (
+                path == first / "adapter_model.safetensors" or original_reparse(path)
+            ),
+        ):
+            with self.assertRaisesRegex(ValueError, "reparse point"):
+                self._retain()
+        self.assertTrue((first / "trainer_state.pt").is_file())
+
+    def test_retention_binds_three_generations_without_keeping_old_payloads(
+        self,
+    ) -> None:
+        first, second = self._two_checkpoints()
+        self._retain()
+        third = self._checkpoint(
+            "checkpoint-000096", MODULE.sha256_file(second / "checkpoint-receipt.json")
+        )
+        self.assertEqual(len(self._retain()), 3)
+        self.assertEqual(len(list(self.root.rglob("adapter_model.safetensors"))), 1)
+        self.assertTrue((third / "adapter_model.safetensors").is_file())
+        self.assertEqual(MODULE._checkpoint_payload_files(first), [])
+        self.assertEqual(MODULE._checkpoint_payload_files(second), [])
+
+    def test_checkpoint_enumeration_is_bounded(self) -> None:
+        self._two_checkpoints()
+        with mock.patch.object(MODULE, "MAX_CHECKPOINTS", 1):
+            with self.assertRaisesRegex(ValueError, "count bound exceeded"):
+                MODULE.completed_checkpoints(self.root)
+
+    def test_writer_verifies_new_checkpoint_before_retention(self) -> None:
+        first = self._checkpoint("checkpoint-000032")
+        predecessor = MODULE.verify_checkpoint_directory(first, None)
+        progress = {
+            key: value
+            for key, value in predecessor.receipt.items()
+            if key
+            not in {
+                "schema",
+                "status",
+                "files",
+                "file_set_sha256",
+                "parent_checkpoint_receipt_sha256",
+                "eligible_for_candidate_selection",
+            }
+        }
+        progress.update(
+            global_update_step=64, next_record_offset=512, loss_observation_count=512
+        )
+
+        def save_adapter(directory: Path, *, safe_serialization: bool) -> None:
+            """Exercise the real writer with tiny synthetic bytes and an optional model card."""
+            self.assertTrue(safe_serialization)
+            (directory / "adapter_config.json").write_bytes(b"{}")
+            (directory / "adapter_model.safetensors").write_bytes(b"new adapter")
+            (directory / "README.md").write_bytes(b"synthetic test model card")
+
+        model = types.SimpleNamespace(save_pretrained=save_adapter)
+        optimizer = types.SimpleNamespace(state_dict=lambda: {})
+        torch = types.SimpleNamespace(
+            get_rng_state=lambda: b"rng",
+            save=lambda value, path: path.write_bytes(b"synthetic trainer state"),
+        )
+        with mock.patch.object(MODULE, "require_model_location"):
+            result = MODULE._write_checkpoint(
+                model,
+                optimizer,
+                torch,
+                self.root,
+                progress,
+                predecessor.receipt_identity.sha256,
+                eligible_for_candidate_selection=True,
+            )
+        self.assertTrue(result.receipt["eligible_for_candidate_selection"])
+        self.assertEqual(
+            (result.directory / "adapter_model.safetensors").read_bytes(),
+            b"new adapter",
+        )
+        self.assertTrue((first / "adapter_model.safetensors").is_file())
+        self._retain()
+        self.assertEqual(MODULE._checkpoint_payload_files(first), [])
+        self.assertTrue((result.directory / "README.md").is_file())
+        with mock.patch.object(MODULE, "require_model_location"):
+            with self.assertRaisesRegex(FileExistsError, "overwrite"):
+                MODULE._write_checkpoint(
+                    model,
+                    optimizer,
+                    torch,
+                    self.root,
+                    progress,
+                    predecessor.receipt_identity.sha256,
+                    eligible_for_candidate_selection=True,
+                )
+
+    def test_replacement_drift_after_plan_stops_before_deletion(self) -> None:
+        first, second = self._two_checkpoints()
+        original_write = MODULE.write_new_atomic
+
+        def drift_after_plan(path: Path, payload: bytes) -> None:
+            """Change the current replacement after preflight, before predecessor unlink."""
+            original_write(path, payload)
+            (second / "adapter_model.safetensors").write_bytes(b"changed")
+
+        with mock.patch.object(
+            MODULE, "write_new_atomic", side_effect=drift_after_plan
+        ):
+            with self.assertRaisesRegex(ValueError, "changed after completion"):
+                self._retain()
+        self.assertEqual((first / "adapter_model.safetensors").read_bytes(), b"adapter")
+
+    def test_retired_candidate_paths_are_rejected(self) -> None:
+        inputs = types.SimpleNamespace(output_root=self.root)
+        for name in (
+            "checkpoints",
+            "segments",
+            "rejections",
+            "interrupted",
+            "candidate",
+        ):
+            (self.root / name).mkdir()
+        write_json(self.root / "attempt-owner.json", {"synthetic": True})
+        with mock.patch.object(
+            MODULE, "_attempt_binding", return_value={"synthetic": True}
+        ):
+            with self.assertRaisesRegex(ValueError, "unknown entries"):
+                MODULE.initialize_attempt(inputs, [], resume=True)
+        for path in (
+            ".candidate." + "a" * 32 + ".staging",
+            "candidate." + "a" * 32 + ".interrupted",
+        ):
+            with self.assertRaisesRegex(ValueError, "invalid|unknown"):
+                MODULE._interruption_destination_name(path)
+            with self.assertRaisesRegex(ValueError, "unknown"):
+                MODULE._interruption_source_path(path)
+
+    def test_receipt_rejects_unsafe_or_duplicate_payload_names(self) -> None:
+        checkpoint = self._checkpoint("checkpoint-000032")
+        receipt_path = checkpoint / "checkpoint-receipt.json"
+        value = json.loads(receipt_path.read_text(encoding="ascii"))
+        for name in ("../outside", "D:/outside", "adapter_model.safetensors"):
+            with self.subTest(name=name):
+                value["files"][0]["path"] = name
+                value["file_set_sha256"] = MODULE.sha256_bytes(
+                    MODULE.canonical_json_bytes(value["files"])
+                )
+                write_json(receipt_path, value)
+                with self.assertRaisesRegex(
+                    ValueError, "payload (name|file set) is invalid"
+                ):
+                    MODULE.completed_checkpoints(self.root)
+
+    def test_final_candidate_rejects_early_or_stale_checkpoint(self) -> None:
+        first, second = self._two_checkpoints()
+        states = MODULE.completed_checkpoints(self.root)
+        inputs = types.SimpleNamespace(output_root=self.root)
+        with mock.patch.object(MODULE, "require_model_location"):
+            with self.assertRaisesRegex(ValueError, "latest verified checkpoint"):
+                MODULE._finalize_candidate(inputs, states[0], {})
+            with self.assertRaisesRegex(ValueError, "final eligible checkpoint"):
+                MODULE._finalize_candidate(inputs, states[1], {})
+        self.assertFalse((self.root / "training-receipt.json").exists())
 
     def test_terminal_decision_precedes_rejected_adapter_preservation(self) -> None:
         (self.root / "rejections").mkdir()

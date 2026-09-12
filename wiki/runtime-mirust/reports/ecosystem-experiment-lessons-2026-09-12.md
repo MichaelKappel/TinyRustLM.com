@@ -148,6 +148,30 @@ adapter outputs and original raw screens are outside this checkpoint retirement.
 | T5 | The two 100-record SmolLM2-1.7B pilots report losses 2.4189 and 2.3699. Both treat a basic “test” message as something they cannot help with; the later run tells the low-battery user simply to call at 8 PM. | A larger model and a lower-loss adapter still need practical, bounded-response evaluation. Capability disclaimers can displace useful behavior. No size-based default selection follows from these runs. |
 | T6 | Qwen3 v3 has two valid training receipts, but the expected adjacent raw-screen files are absent. The retained provenance audit reports 100 approved SFT records, 56 edited draft/final differences and zero eligible preference pairs. | A training receipt is not a quality result; absence at these specific screen paths does not prove that no other evidence exists. Edited drafts do not create chosen/rejected preference labels. The audit's original report hash was rechecked; this review did not rerun its entire provenance graph. |
 | T7 | All eight completed checkpoint weight/configuration pairs duplicate the final output exactly; the checkpoint also retains optimizer, scheduler and RNG state. | Preserve the receipt and scalar training history once, then remove redundant completed checkpoints. Do not deserialize pickle-based optimizer files just to inventory them. Checkpoint retention must be bounded in active training tooling; this review does not make rejected runs resumable. |
+| T8 | Reviewing the current pinned CPU trainer found that it kept every periodic payload and copied the final adapter into a separate candidate directory, despite final-only selection. | Keep one current resumable payload, retain immutable metrics and hash-linked predecessor receipts, and bind each retirement to a verified successor before deleting bytes. A final receipt should reference the same adapter. Retiring bytes must not erase lessons, permit earlier-checkpoint selection, or imply model quality. |
+
+T8 is implemented in `tinyrustlm/tools/qwen3-working-model-trainer.py`. Its
+current final receipt uses schema `tinyrustlm.qwen3_cpu_training_receipt.v2`
+and an `adapter_directory` pointing to the final checkpoint. The obsolete
+candidate-copy writer and candidate staging readers were removed. A retirement
+plan records intent; actual surviving files determine whether deletion finished.
+Explicit verified resume can complete a partial retirement only when the plan,
+receipt chain, newest payload and every surviving predecessor file still agree.
+The latest adapter, configuration and optimizer/RNG state remain available.
+
+All 113 control, trainer and canonical-scratch checks passed with zero skips.
+The real checkpoint writer was exercised using tiny synthetic bytes, including
+the optional model card; tests also cover three successive checkpoints,
+interrupted deletion, changed replacement/survivor bytes, missing payloads,
+invalid paths, linked entries, enumeration bounds and idempotent final receipts.
+Standard-library trace measured 90.07% of changed executable lines, with no
+branch coverage or ML training execution. Compact evidence:
+`artifacts/ecosystem-cleanup-20260912/checkpoint-retention-review.json`,
+SHA-256 `a9f60e1abcb2b5ff4d375975635eccc89c59e7fe20671054c7ebeb405b6972ae`.
+Owned synthetic fixtures were removed. No historical model was deleted, no
+storage recovery was measured, and no model qualification was established by
+these checks. This change requires fresh exact trainer/environment/authorization
+bindings; old locks and rejected experiments are not revived.
 
 The six screens bind the actual retained adapter hashes and contain eight cases
 each. Their input/output hashes and output lengths are retained without copying

@@ -324,12 +324,30 @@ Qwen3 non-thinking chat rendering, no truncation, rank-16 LoRA across all
 seven projection types, same-base adapter-disabled preservation KL, cumulative
 full-run metrics, preregistered stop rules, and final-checkpoint-only candidate
 selection. Complete checkpoints bind safe adapter bytes, optimizer state,
-RNG state, cumulative metrics, and the prior checkpoint receipt. Interrupted
-checkpoint or candidate staging must be moved, without deletion, into the
-owned `interrupted/` archive by the explicit quarantine command. A completed
-candidate can recover a missing top-level receipt idempotently. A terminal
-decision is durable before rejected adapter preservation starts and can never
-be resumed.
+RNG state, cumulative metrics, and the prior checkpoint receipt. After a new
+checkpoint is complete and verified, the trainer removes superseded payloads
+and retains their unchanged progress receipts. A create-only retirement plan
+binds each predecessor to its successor. The entire chain and current payload
+are checked before deletion; changed or unexpected files stop retirement.
+An interrupted deletion can finish during explicit verified resume, using only
+unchanged surviving files covered by that plan. Receipt-only history cannot be
+loaded as a checkpoint or selected as a candidate.
+
+Only the newest checkpoint retains adapter weights, configuration and optimizer/
+RNG state. The final `tinyrustlm.qwen3_cpu_training_receipt.v2` document uses
+`adapter_directory: checkpoints/checkpoint-NNNNNN` to identify those same bytes;
+there is no second `candidate/` model copy. Finalization is idempotent only when
+the existing receipt agrees exactly. Old candidate-copy staging is no longer an
+active format. Interrupted checkpoint staging still requires explicit review
+through the quarantine command before resume. A terminal decision is durable
+before rejected adapter preservation starts and can never be resumed.
+
+Training receipts, event metrics and file identities preserve experimental
+evidence; they do not make an intermediate checkpoint eligible for best-of-N
+selection. Before retiring other experimental payloads, record their observed
+outcome and lessons in the canonical experiment review. These retention changes
+alter the trainer's exact bytes, so older environment/training locks cannot
+authorize it. Capture fresh bindings after the prerequisite gates are complete.
 
 After the independent custody, curriculum, review, contamination, semantic,
 and training-lock gates exist, run the exact authorized inputs:
@@ -372,11 +390,13 @@ downstream SLM2/runtime/browser gate.
 - Private 280-case factor pack: not assembled or sealed.
 - Pilot curriculum and two-reviewer ledgers: not yet materialized or reviewed.
 - Semantic audit: not run.
-- Pinned CPU wheelhouse manifest v2 and environment lock v3: captured and independently
-  reverified locally; neither grants training authority.
-- Sole CPU trainer and hostile contract tests: implemented; 47 focused trainer
-  tests and 88 combined control/trainer tests, Ruff lint, Ruff formatting, and
-  the offline ML import probe pass locally.
+- Pinned CPU wheelhouse manifest v2 and environment lock v3: historical capture
+  evidence only; neither grants training authority or binds the current trainer.
+- Sole CPU trainer and hostile contract tests: implemented. Current retention
+  verification is recorded in
+  `artifacts/ecosystem-cleanup-20260912/checkpoint-retention-review.json` at the
+  repository root. Earlier 47/88-test and offline import results remain
+  historical; they are not fresh environment or training evidence.
 - CPU pilot authorization: not issued because the custody, curriculum,
   review, exclusion, and semantic artifacts remain incomplete.
 - Adapter training and merge: not run.
