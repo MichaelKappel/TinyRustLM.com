@@ -3,7 +3,10 @@
 
 const crypto = require("node:crypto");
 const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
+const { requireCanonicalArtifactPath } = require("./canonical-operation-scratch.js");
+const catalogApi = require("../app/minimodel-catalog-v1.js");
 
 const { chromium } = require("@playwright/test");
 const playwrightVersion = require("@playwright/test/package.json").version;
@@ -15,7 +18,7 @@ const {
   validateWebDeploymentManifest
 } = require("./web-deployment-manifest.js");
 
-const reportSchema = "tinyrustlm.web_release_browser_smoke.v5";
+const reportSchema = "tinyrustlm.web_release_browser_smoke.v6";
 const canonicalPublicOrigin = "https://tinyrustlm.com";
 const viewports = Object.freeze([
   Object.freeze({ name: "desktop", width: 1440, height: 1000 }),
@@ -30,6 +33,47 @@ const routes = Object.freeze([
 ]);
 const maximumErrorEvents = 32;
 const maximumNetworkEvents = 1024;
+/** Build fresh, current-schema empty fixtures; no request is sent to MiniModel. */
+function declaredCatalogMetadata(now = Date.now()) {
+  invariant(Number.isSafeInteger(now) && now >= 0 && now < 8e15,
+    "Browser smoke metadata time is invalid");
+  const freshness = {
+    revision: 1,
+    generated_at_utc: new Date(now - 60_000).toISOString().replace(/\.\d{3}Z$/, "Z"),
+    valid_until_utc: new Date(now + 60 * 60_000).toISOString().replace(/\.\d{3}Z$/, "Z")
+  };
+  return Object.freeze([
+    Object.freeze({
+      url: "https://minimodel.org/catalog/compositions.v1.json",
+      body: `${JSON.stringify({
+        schema: catalogApi.CATALOG_SCHEMA,
+        catalog_id: "tinyrustlm.release-smoke.empty",
+        ...freshness,
+        project_server_serves_model_bytes: false,
+        project_server_proxies_model_bytes: false,
+        project_server_runs_inference: false,
+        qualification_policy: "exact-current-evidence-required",
+        qualification_receipt_schema: catalogApi.QUALIFICATION_RECEIPT_SCHEMA,
+        browser_admission_schema: "tinyrustlm.browser-composition-admission/1",
+        peer_verification_keys: [],
+        revoked_qualification_receipt_ids: [],
+        supersessions: [],
+        entries: []
+      })}\n`
+    }),
+    Object.freeze({
+      url: "https://minimodel.org/catalog/peer-announcements.v1.json",
+      body: `${JSON.stringify({
+        schema: catalogApi.PEER_SCHEMA,
+        feed_id: "tinyrustlm.release-smoke.empty",
+        ...freshness,
+        project_server_serves_model_bytes: false,
+        project_server_proxies_model_bytes: false,
+        announcements: []
+      })}\n`
+    })
+  ]);
+}
 
 function invariant(condition, message) {
   if (!condition) throw new Error(message);
@@ -68,7 +112,7 @@ function requireBaseUrl(value) {
   }
   const loopback =
     url.protocol === "http:" &&
-    ["127.0.0.1", "localhost", "::1"].includes(url.hostname);
+    ["127.0.0.1", "localhost", "[::1]"].includes(url.hostname);
   const canonicalPublic =
     url.protocol === "https:" &&
     url.origin === canonicalPublicOrigin &&
@@ -129,12 +173,28 @@ function buildAllowedReleaseRequests(validation) {
     const expectedSearch = /\.(?:css|js)$/i.test(file.remote)
       ? `?v=sha256-${file.sha256}`
       : "";
-    requests.set(pathname, Object.freeze({ expectedSearch, pathname }));
+    requests.set(pathname, Object.freeze({
+      kind: "release-file",
+      expectedSearch,
+      pathname
+    }));
   }
-  requests.set("/", Object.freeze({ expectedSearch: "", pathname: "/" }));
-  requests.set("/app/", Object.freeze({ expectedSearch: "", pathname: "/app/" }));
-  requests.set("/companion/", Object.freeze({ expectedSearch: "", pathname: "/companion/" }));
-  requests.set("/updates/", Object.freeze({ expectedSearch: "", pathname: "/updates/" }));
+  for (const pathname of ["/", "/app/", "/companion/", "/updates/"]) {
+    requests.set(pathname, Object.freeze({
+      kind: "release-file",
+      expectedSearch: "",
+      pathname
+    }));
+  }
+  for (const metadata of declaredCatalogMetadata()) {
+    const url = new URL(metadata.url);
+    requests.set(url.href, Object.freeze({
+      kind: "catalog-metadata",
+      expectedSearch: "",
+      pathname: url.pathname,
+      body: metadata.body
+    }));
+  }
   return requests;
 }
 
@@ -154,18 +214,30 @@ function boundedUrlIdentity(value, expectedOrigin, allowedRequests) {
   const originIdentity = boundedMessageIdentity(url.origin);
   const pathnameIdentity = boundedMessageIdentity(url.pathname);
   const searchIdentity = boundedMessageIdentity(url.search);
-  const knownPath = allowedRequests.has(url.pathname);
+  const absoluteRequest = allowedRequests.get(url.href);
+  const sameOriginRequest = url.origin === expectedOrigin
+    ? allowedRequests.get(url.pathname)
+    : null;
+  const declaredRequest = absoluteRequest || sameOriginRequest;
+  const declaredMetadata = declaredRequest?.kind === "catalog-metadata";
+  const knownPath = Boolean(declaredRequest);
   const modelByteLike =
     url.pathname.toLowerCase().includes("/models/") ||
     url.pathname.toLowerCase().endsWith(".slm");
   return Object.freeze({
-    urlClass: url.origin === expectedOrigin ? "expected-origin" : "unexpected-origin",
+    urlClass: declaredMetadata
+      ? "declared-metadata-origin"
+      : url.origin === expectedOrigin
+        ? "expected-origin"
+        : "unexpected-origin",
     originSha256: originIdentity.messageSha256,
     originByteCount: originIdentity.messageByteCount,
     pathnameClass: modelByteLike
       ? "model-byte-like"
       : knownPath
-        ? "declared-release-path"
+        ? declaredMetadata
+          ? "declared-metadata-path"
+          : "declared-release-path"
         : "undeclared-path",
     pathname: knownPath ? url.pathname : null,
     pathnameSha256: pathnameIdentity.messageSha256,
@@ -187,9 +259,13 @@ function classifyReleaseRequest(value, method, expectedOrigin, allowedRequests) 
       identity: boundedUrlIdentity(value, expectedOrigin, allowedRequests)
     });
   }
-  const releaseRequest = allowedRequests.get(url.pathname);
+  const absoluteRequest = allowedRequests.get(url.href);
+  const sameOriginRequest = url.origin === expectedOrigin
+    ? allowedRequests.get(url.pathname)
+    : null;
+  const releaseRequest = absoluteRequest || sameOriginRequest;
   let reason = null;
-  if (url.origin !== expectedOrigin) reason = "unexpected-origin";
+  if (!releaseRequest && url.origin !== expectedOrigin) reason = "unexpected-origin";
   else if (method !== "GET") reason = "unexpected-method";
   else if (url.username || url.password || url.hash) reason = "credential-or-fragment";
   else if (!releaseRequest) reason = "undeclared-path";
@@ -197,6 +273,7 @@ function classifyReleaseRequest(value, method, expectedOrigin, allowedRequests) 
   return Object.freeze({
     allowed: reason === null,
     reason,
+    request: reason === null ? releaseRequest : null,
     identity: boundedUrlIdentity(url.href, expectedOrigin, allowedRequests)
   });
 }
@@ -252,6 +329,18 @@ async function runPageObservation(
       allowedRequests
     );
     if (classification.allowed) {
+      if (classification.request.kind === "catalog-metadata") {
+        await routeOperation.fulfill({
+          status: 200,
+          contentType: "application/json; charset=utf-8",
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Cache-Control": "no-store"
+          },
+          body: classification.request.body
+        });
+        return;
+      }
       await routeOperation.continue();
       return;
     }
@@ -320,6 +409,15 @@ async function runPageObservation(
         () => document.getElementById("wasmState")?.textContent?.trim() === "verified",
         null,
         { timeout: 30_000 }
+      );
+      await page.locator('#simpleModelList[aria-busy="false"]').waitFor({
+        state: "attached",
+        timeout: 30_000
+      });
+      observationInvariant(
+        (await page.locator("#simpleModelList").textContent()).trim() === "No models are listed yet.",
+        "catalog_empty_state_mismatch",
+        { expectedCatalogState: "verified-empty" }
       );
     }
     await page.waitForFunction(
@@ -430,8 +528,16 @@ async function runPageObservation(
 
     const expectedOrigin = baseUrl.origin;
     const unexpectedOriginValues = Array.from(new Set(
-      requests.map((request) => request.origin).filter((origin) => origin !== expectedOrigin)
+      requests
+        .filter((request) => request.target.urlClass === "unexpected-origin")
+        .map((request) => request.origin)
     )).sort();
+    const declaredMetadataRequestCount = requests.filter(
+      (request) => request.target.urlClass === "declared-metadata-origin"
+    ).length;
+    const declaredMetadataResponseCount = responses.filter(
+      (response) => response.target.urlClass === "declared-metadata-origin"
+    ).length;
     const unexpectedOrigins = unexpectedOriginValues.map((origin) => {
       const identity = boundedMessageIdentity(origin);
       return Object.freeze({
@@ -460,6 +566,8 @@ async function runPageObservation(
       failedRequests: Object.freeze(failedRequests),
       requestCount,
       responseCount,
+      declaredMetadataRequestCount,
+      declaredMetadataResponseCount,
       unexpectedOrigins: Object.freeze(unexpectedOrigins),
       modelByteRequestTargets: Object.freeze(
         modelByteRequests.slice(0, maximumErrorEvents).map((request) => request.target)
@@ -520,6 +628,16 @@ async function runPageObservation(
     observationInvariant(consoleErrorCount === 0, "console_error", diagnostic);
     observationInvariant(pageErrorCount === 0, "page_error", diagnostic);
     observationInvariant(failedRequestCount === 0, "request_failed", diagnostic);
+    observationInvariant(
+      declaredMetadataRequestCount === (route.kind === "application" ? 2 : 0),
+      "catalog_metadata_request_mismatch",
+      diagnostic
+    );
+    observationInvariant(
+      declaredMetadataResponseCount === declaredMetadataRequestCount,
+      "catalog_metadata_response_mismatch",
+      diagnostic
+    );
     observationInvariant(
       unexpectedOriginValues.length === 0,
       "unexpected_origin",
@@ -668,6 +786,8 @@ async function runPageObservation(
         : null,
       requestCount,
       responseCount,
+      declaredMetadataRequestCount,
+      declaredMetadataResponseCount,
       blockedRequestCount,
       unexpectedOriginCount: unexpectedOriginValues.length,
       failedRequestCount,
@@ -689,6 +809,7 @@ async function runPageObservation(
   }
 }
 
+/** Run with inherited canonical scratch so Playwright cannot scatter profiles. */
 async function runWebReleaseBrowserSmoke(options) {
   invariant(options && typeof options === "object",
     "Browser smoke options are required");
@@ -698,12 +819,7 @@ async function runWebReleaseBrowserSmoke(options) {
   const outputValue = String(options.outputDirectory || "");
   invariant(path.isAbsolute(outputValue), "Browser smoke output directory must be absolute");
   const outputDirectory = path.resolve(outputValue);
-  const repositoryRoot = path.resolve(__dirname, "..", "..");
-  const relativeOutput = path.relative(repositoryRoot, outputDirectory);
-  invariant(
-    relativeOutput.startsWith("..") || path.isAbsolute(relativeOutput),
-    "Browser smoke output directory must remain outside the source worktree"
-  );
+  requireCanonicalArtifactPath(outputDirectory);
   const releaseValidation = validateWebDeploymentManifest({
     siteRoot: options.siteRoot,
     manifestPath: options.manifestPath,
@@ -716,6 +832,12 @@ async function runWebReleaseBrowserSmoke(options) {
     publishedAt: releaseValidation.currentRelease.publishedAt,
     historyEntryCount: releaseValidation.releaseHistory.releases.length
   });
+  invariant(!fs.existsSync(outputDirectory), "Owned publication directory already exists");
+  // The CLI runner sets these before Playwright loads or creates any profile.
+  requireCanonicalArtifactPath(os.tmpdir());
+  for (const name of ["TEMP", "TMP", "TMPDIR"]) {
+    requireCanonicalArtifactPath(process.env[name]);
+  }
   createOwnedDirectory(outputDirectory);
   const startedAtUtc = new Date().toISOString();
   let browser = null;
@@ -725,7 +847,10 @@ async function runWebReleaseBrowserSmoke(options) {
   let operation = "browser-launch";
   let operationError = null;
   try {
-    browser = await chromium.launch({ headless: true });
+    browser = await chromium.launch({
+      headless: true,
+      channel: process.env.TINYRUSTLM_PLAYWRIGHT_CHANNEL || undefined
+    });
     browserVersion = browser.version();
     browserClosed = false;
     for (const route of routes) {
@@ -783,7 +908,8 @@ async function runWebReleaseBrowserSmoke(options) {
       : null,
     lastOperation: status === "pass" ? "complete" : operation,
     serviceWorkersBlocked: true,
-    networkPolicy: "exact-release-closure-deny-before-send",
+    networkPolicy: "exact-release-and-catalog-metadata-closure-deny-before-send",
+    catalogMode: "intercepted-current-empty-fixture",
     allowedRequestTargetCount: allowedRequests.size,
     reducedMotion: "reduce",
     routeCount: routes.length,
@@ -837,6 +963,7 @@ module.exports = Object.freeze({
   buildAllowedReleaseRequests,
   canonicalPublicOrigin,
   classifyReleaseRequest,
+  declaredCatalogMetadata,
   reportSchema,
   requireBaseUrl,
   requireSourceRevision,

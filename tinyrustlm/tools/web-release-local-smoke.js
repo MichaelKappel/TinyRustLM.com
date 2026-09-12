@@ -2,8 +2,11 @@
 "use strict";
 
 const fs = require("node:fs");
-const os = require("node:os");
 const path = require("node:path");
+const {
+  createOwnedTemporaryDirectory, removeOwnedTemporaryDirectory,
+  requireCanonicalSiteRoot
+} = require("./canonical-operation-scratch.js");
 
 const {
   materializeReleaseState,
@@ -14,35 +17,38 @@ const {
   runWebReleaseBrowserSmoke
 } = require("./web-release-browser-smoke.js");
 
+/** Reject invalid CLI and API inputs before creating operation output. */
 function invariant(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+/** Check canonical public files in place and always remove generated metadata. */
 async function runLocalWebReleaseSmoke(options) {
   invariant(options && typeof options === "object",
     "Local web release smoke options are required");
-  const siteRoot = path.resolve(options.siteRoot || path.join(__dirname, ".."));
-  const generatedRoot = fs.mkdtempSync(
-    path.join(os.tmpdir(), "tinyrustlm-local-release-assets-")
-  );
+  const siteRoot = requireCanonicalSiteRoot(options.siteRoot);
+  const owned = createOwnedTemporaryDirectory({ siteRoot });
+  const generatedRoot = path.join(owned.rootPath, "generated");
   const ledgerPath = path.join(siteRoot, "release", "site-release-ledger.v1.json");
-  const ledgerResult = parseReleaseLedger(fs.readFileSync(ledgerPath));
-  materializeReleaseState({
-    ledgerPath,
-    outputRoot: generatedRoot,
-    ...(ledgerResult.pendingRelease
-      ? {
-          sourceRevision: "0".repeat(40),
-          publishedAt: new Date().toISOString()
-        }
-      : {})
-  });
-  const server = await startStaticServer({ siteRoot, generatedRoot, port: 0 });
+  let server;
   try {
+    const ledgerResult = parseReleaseLedger(fs.readFileSync(ledgerPath));
+    materializeReleaseState({
+      ledgerPath,
+      outputRoot: generatedRoot,
+      ...(ledgerResult.pendingRelease
+        ? {
+            sourceRevision: "0".repeat(40),
+            publishedAt: new Date().toISOString()
+          }
+        : {})
+    });
+    server = await startStaticServer({ siteRoot, generatedRoot, port: 0 });
     const result = await runWebReleaseBrowserSmoke({
       baseUrl: server.origin,
       outputDirectory: options.outputDirectory,
       sourceRevision: "uncommitted",
+      siteRoot,
       generatedRoot
     });
     return Object.freeze({
@@ -52,13 +58,14 @@ async function runLocalWebReleaseSmoke(options) {
     });
   } finally {
     try {
-      await server.close();
+      await server?.close();
     } finally {
-      fs.rmSync(generatedRoot, { recursive: true, force: true });
+      removeOwnedTemporaryDirectory(owned);
     }
   }
 }
 
+/** Retain explicitly requested evidence; disposable runs use the zero-argument runner. */
 async function main() {
   const [outputDirectory, siteRoot, ...extra] = process.argv.slice(2);
   invariant(outputDirectory && extra.length === 0,

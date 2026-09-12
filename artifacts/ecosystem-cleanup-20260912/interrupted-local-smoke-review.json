@@ -1,0 +1,27 @@
+{
+  "schema": "tinyrustlm.interrupted-local-smoke-review/1",
+  "root": "E:/Source/Rust/TinyRustLM.com/tinyrustlm/artifacts/tests/tinyrustlm-local-web-smoke-ifOVpj",
+  "reason": "Parent test timed out at 30 seconds and cleanup raced the child. Child later produced these bounded UI artifacts. Test did not pass.",
+  "report": {
+    "schema": "tinyrustlm.web_release_browser_smoke.v6",
+    "status": "pass",
+    "startedAtUtc": "2026-09-12T20:04:27.831Z",
+    "completedAtUtc": "2026-09-12T20:04:58.886Z",
+    "observationCount": 12,
+    "browserClosed": true
+  },
+  "lesson": "Keep parent deadline longer than child deadline, forward cancellation, and prevent test worker environment leaking into the CLI.",
+  "retirement": "All remaining files are disposable output of this operation; source/model files absent.",
+  "files": [
+    {
+      "path": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\artifacts\\tests\\tinyrustlm-local-web-smoke-ifOVpj\\evidence\\browser-smoke-report.json",
+      "byteLength": 16809,
+      "sha256": "d89a244ca1aa35d842cc978b53e1645d7024b223d6d3938c20a9ef608860e43e"
+    },
+    {
+      "path": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\artifacts\\tests\\tinyrustlm-local-web-smoke-ifOVpj\\evidence\\updates-mobile.png",
+      "byteLength": 293706,
+      "sha256": "81b976d0ac485a7bdde03e6cf734288cec22da1ccd33503a93ccb0ea1b824056"
+    }
+  ]
+}

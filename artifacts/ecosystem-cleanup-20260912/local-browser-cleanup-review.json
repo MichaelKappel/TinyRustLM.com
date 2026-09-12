@@ -1,0 +1,65 @@
+{
+  "schema": "tinyrustlm.local-browser-cleanup-review/1",
+  "reviewedUtc": "2026-09-12T20:08:11.792Z",
+  "testCount": 24,
+  "passed": 24,
+  "failed": 0,
+  "skipped": 0,
+  "coverageTool": "Node 24.14.0 --experimental-test-coverage",
+  "coverageScope": "entire named tool files; Node test reporter aggregates subprocess coverage",
+  "sources": [
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "sha256": "746e1fafa344ef8d71a5a85864fc1eaf34085c65789f9beda820a247af7f399e",
+      "linePercent": 96.55,
+      "branchPercent": 94.59
+    },
+    {
+      "path": "tinyrustlm/tools/run-web-release-local-smoke.js",
+      "sha256": "a13933da13f91d5dcea6f0c963f29df97fc42110d2b5886e5b6ade99da1b08b3",
+      "linePercent": 87.57,
+      "branchPercent": 87.1
+    },
+    {
+      "path": "tinyrustlm/tools/web-release-local-smoke.js",
+      "sha256": "5957d07bf69554f02adedc70749f9a8ed7226460888cd29f619eb6e8163e368a",
+      "linePercent": 87.57,
+      "branchPercent": 87.1
+    },
+    {
+      "path": "tinyrustlm/tools/web-release-browser-smoke.js",
+      "sha256": "9d7416a207e2ce1532edfd4e4c53b3e15332674a4db9695f9b7336ac876fee47",
+      "linePercent": 79.81,
+      "branchPercent": 79.43
+    }
+  ],
+  "browser": {
+    "channel": "msedge",
+    "routes": 4,
+    "viewports": 3,
+    "observations": 12,
+    "catalogMode": "intercepted-current-empty-fixture",
+    "realModelExecuted": false,
+    "liveSeedProved": false
+  },
+  "actualZeroArgumentRunner": {
+    "status": "pass",
+    "observationCount": 12,
+    "reportSha256": "1a21cee7a8cff64d02da507bc6610d299f43dfbdaef244040e38a562199a0f69",
+    "temporaryOutputCleanup": "verified",
+    "observedUtc": "2026-09-12T20:11:13.465Z",
+    "rawDisposableOutputRetained": false
+  },
+  "sourceAuthorityGate": {
+    "verdict": "pass",
+    "coverageClass": "registered-governed-roots-only",
+    "wholeVolumeInventoryPerformed": false
+  },
+  "interruptedEarlierRun": {
+    "record": "artifacts/ecosystem-cleanup-20260912/interrupted-local-smoke-review.json",
+    "remainingFiles": 2,
+    "logicalBytes": 310515,
+    "deletionBlocked": true,
+    "reason": "blocked by policy"
+  }
+}

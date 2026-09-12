@@ -2,7 +2,6 @@
 
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
-const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 
@@ -13,6 +12,7 @@ const {
   buildAllowedReleaseRequests,
   canonicalPublicOrigin,
   classifyReleaseRequest,
+  declaredCatalogMetadata,
   requireBaseUrl,
   requireSourceRevision,
   runWebReleaseBrowserSmoke
@@ -20,7 +20,7 @@ const {
 const {
   validateWebDeploymentManifest
 } = require("../tools/web-deployment-manifest.js");
-const { materializeSourceReleaseState } = require("./site-release-test-fixture.js");
+const { materializeSourceReleaseState, temporaryDirectory } = require("./site-release-test-fixture.js");
 
 const siteRoot = path.resolve(__dirname, "..");
 
@@ -34,6 +34,7 @@ function generatedRelease(context) {
 test("browser smoke accepts only canonical public HTTPS or loopback HTTP", () => {
   assert.equal(requireBaseUrl(canonicalPublicOrigin).origin, canonicalPublicOrigin);
   assert.equal(requireBaseUrl("http://127.0.0.1:41873").hostname, "127.0.0.1");
+  assert.equal(requireBaseUrl("http://[::1]:41873").hostname, "[::1]");
   assert.throws(() => requireBaseUrl("https://example.com"), /allowed release boundary/);
   assert.throws(
     () => requireBaseUrl("https://user:secret@tinyrustlm.com"),
@@ -43,6 +44,21 @@ test("browser smoke accepts only canonical public HTTPS or loopback HTTP", () =>
     () => requireBaseUrl("https://tinyrustlm.com/?token=synthetic"),
     /allowed release boundary/
   );
+});
+
+test("intercepted empty metadata satisfies current catalog and peer contracts", () => {
+  const api = require("../app/minimodel-catalog-v1.js");
+  const now = Date.parse("2026-09-12T12:00:00Z");
+  const fixtures = declaredCatalogMetadata(now);
+  const catalog = api.validateCatalog(JSON.parse(fixtures[0].body), { now: new Date(now) });
+  const peers = api.validatePeerFeedDocument(JSON.parse(fixtures[1].body), { now: new Date(now) });
+  assert.deepEqual(catalog.entries, []);
+  assert.deepEqual(peers.announcements, []);
+  assert.equal(Date.parse(catalog.generated_at_utc), now - 60_000);
+  assert.equal(Date.parse(peers.valid_until_utc), now + 3_600_000);
+  for (const invalid of [NaN, -1, "today", 8e15]) {
+    assert.throws(() => declaredCatalogMetadata(invalid), /metadata time/);
+  }
 });
 
 test("uncommitted browser smoke authority is limited to loopback", () => {
@@ -90,6 +106,40 @@ test("browser smoke blocks undeclared traffic before send and hashes untrusted U
     ).allowed,
     true
   );
+  const catalogRequest = classifyReleaseRequest(
+    "https://minimodel.org/catalog/compositions.v1.json",
+    "GET",
+    expectedOrigin,
+    allowedRequests
+  );
+  assert.equal(catalogRequest.allowed, true);
+  assert.equal(catalogRequest.request.kind, "catalog-metadata");
+  assert.deepEqual(JSON.parse(catalogRequest.request.body).entries, []);
+  const catalogIdentity = boundedUrlIdentity(
+    "https://minimodel.org/catalog/compositions.v1.json",
+    expectedOrigin,
+    allowedRequests
+  );
+  assert.equal(catalogIdentity.urlClass, "declared-metadata-origin");
+  assert.equal(catalogIdentity.pathnameClass, "declared-metadata-path");
+  assert.equal(
+    classifyReleaseRequest(
+      "https://minimodel.org/catalog/compositions.v1.json",
+      "POST",
+      expectedOrigin,
+      allowedRequests
+    ).reason,
+    "unexpected-method"
+  );
+  assert.equal(
+    classifyReleaseRequest(
+      "https://minimodel.org/catalog/compositions.v1.json?unexpected=1",
+      "GET",
+      expectedOrigin,
+      allowedRequests
+    ).allowed,
+    false
+  );
   assert.equal(
     classifyReleaseRequest(
       `${expectedOrigin}/api/enroll/synthetic-secret`,
@@ -135,8 +185,7 @@ test("browser smoke preserves GET and hashes unexpected HTTP methods", () => {
 });
 
 test("browser smoke rejects a reused output directory before browser launch", async (context) => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-browser-smoke-path-"));
-  context.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const root = temporaryDirectory(context, "tinyrustlm-browser-smoke-path-");
   const outputDirectory = path.join(root, "existing");
   fs.mkdirSync(outputDirectory);
   const generatedRoot = generatedRelease(context);

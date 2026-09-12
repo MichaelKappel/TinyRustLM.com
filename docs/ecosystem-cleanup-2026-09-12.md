@@ -314,3 +314,25 @@ lessons, evidence references and remaining review scope live in the canonical
   files, eight completed training checkpoints and the duplicate Qwen source.
   All remain pending owner execution because automatic deletion was rejected;
   the wrapper must not be used by the agent to bypass that rejection.
+- The combined owner-run retirement command, duplicate-source proof and ten-file
+  retirement inventory were committed and pushed as `bc4009d`. Owner execution
+  remains pending; no removal is inferred from the successful preflight.
+- Local release checks now read canonical source files in place and use marked,
+  bounded project-artifact scratch for metadata, browser output and subprocesses.
+  Setup failure cleans generated metadata, and observation failure closes the
+  local server. Direct browser callers reject noncanonical scratch/output paths.
+  The zero-argument wrapper also rejects incomplete success envelopes.
+- An explicit verified-empty catalog assertion caught stale smoke fixtures and
+  millisecond timestamps that the actual current metadata contract rejects.
+  The corrected empty fixtures validate and the report identifies their simulated
+  nature. All 24 checks passed with zero skips, including 12 real Edge observations.
+  The four changed tools have 79.81%–96.55% line coverage. The actual CLI wrapper
+  passed all 12 observations and verified cleanup. Two files from an earlier interrupted run remain policy-blocked.
+  Registered source-authority checks also passed. Detailed evidence is in
+  `docs/architecture/2026-09-12-local-release-smoke-cleanup.md`; this does not
+  qualify a default model, prove a live seed, or close pending deployment gates.
+
+- The owner-run cleanup command additionally covers the two exact artifacts left
+  by the interrupted local browser test. Its updated full `-WhatIf` preflight
+  passed. Pending scope is now 284 files and 1,843,591,346 logical bytes. The new
+  deletion was also rejected with `blocked by policy`; those files remain.
