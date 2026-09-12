@@ -272,9 +272,26 @@ lessons, evidence references and remaining review scope live in the canonical
   passed, covering 1,519,207,673 logical bytes. The separate composition source
   lock expects LICENSE length 11,358 and hash `cfc7749b...`, while the training
   profile binds length 11,343 and hash `832dd9e0...`. That contract mismatch
-  remains unresolved and is recorded in `canonical-training-source-review.json`.
+  was recorded in `canonical-training-source-review.json`; its subsequent
+  correction is described below.
   No training, inference, qualification or deployment was performed.
 - A second seven-file Qwen3 source directory remains at
   `D:/LLMs/TinyRustLM/experiments/TinyRustLM-vnext-private/qwen3-source-c1899de-20260825-v1`.
   Its exact identity/current references still require review before retirement;
   it has not been deleted or counted as recovered storage.
+- The canonical training-storage fix, complete training-source closure and
+  test-scratch cleanup were committed and pushed as `1e3333a`.
+- A bounded anonymous read of LICENSE at the exact upstream revision confirmed
+  the training profile's identity. The current composition/source-acquisition
+  lock is now v2; the browser, compiled companion members, embedded locks, cache
+  identity and payload inventory agree. All nine actual source files match it.
+  The old source lock and failed historical operations are unchanged. Current
+  acquisition explicitly rejects the obsolete descriptor; a new independent
+  wire vector verifies the corrected request in both JS and C#.
+- All 218 native companion tests, 45 JS client/contract checks, eight Rust
+  composition checks and eleven integration/server/shell checks passed.
+  This includes the production JS client driving the real C# loopback seed host
+  with synthetic data. All 19 page asset hashes agree and owned test output is
+  removed. Details and precise boundaries are in
+  `docs/architecture/2026-09-12-qwen3-source-license-correction.md`. This fixes the
+  current license mismatch, without qualifying or publishing a model.

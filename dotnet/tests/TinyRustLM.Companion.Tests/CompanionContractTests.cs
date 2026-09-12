@@ -12,7 +12,7 @@ public sealed class CompanionContractTests
     {
         var bytes = File.ReadAllBytes(Path.Combine(
             AppContext.BaseDirectory,
-            "qwen3-0.6b-base-source-lock.v1.json"));
+            "qwen3-0.6b-base-source-lock.v2.json"));
         Assert.Equal(
             CompanionSourceDescriptor.ModelSourceLockSha256,
             Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant());
@@ -55,6 +55,37 @@ public sealed class CompanionContractTests
         Assert.Matches("^[0-9a-f]{64}$", first);
         Assert.Equal(first, second);
         Assert.NotEqual(first, nextAttempt);
+    }
+
+    /// <summary>The corrected descriptor must reject the obsolete acquisition identity.</summary>
+    [Fact]
+    public void RequestRejectsHistoricalSourceClosureAfterLicenseCorrection()
+    {
+        var historical = Request() with
+        {
+            ModelSourceLockSha256 = "e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d",
+            MaximumSourceBytes = 1_519_207_688
+        };
+        var error = Assert.Throws<CompanionContractException>(() =>
+            CompanionContract.ValidateAndNormalize(historical));
+        Assert.Equal("acquire-source-unsupported", error.Code);
+    }
+
+    /// <summary>Compiled transport members must match the exact embedded source lock.</summary>
+    [Fact]
+    public void CompiledAcquisitionMembersMatchEmbeddedSourceLock()
+    {
+        CompanionBuiltInSourceAssets.Validate();
+        using var document = JsonDocument.Parse(CompanionBuiltInSourceAssets.ModelLockBytes);
+        var files = document.RootElement.GetProperty("files").EnumerateObject()
+            .Select(static value => value.Value)
+            .ToDictionary(static value => value.GetProperty("path").GetString()!, StringComparer.Ordinal);
+        Assert.Equal(CompanionSourceDescriptor.FileCount, (uint)files.Count);
+        foreach (var member in CompanionSourceAcquisition.Files)
+        {
+            Assert.Equal(member.ByteLength, files[member.Path].GetProperty("byteLength").GetUInt64());
+            Assert.Equal(member.Sha256, files[member.Path].GetProperty("sha256").GetString());
+        }
     }
 
     [Fact]

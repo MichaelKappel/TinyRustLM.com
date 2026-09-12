@@ -4,8 +4,10 @@ Storage correction, September 12: model sources and training outputs belong only
 under `D:/LLMs/TinyRustLM`. The producer and trainer enforce this independently.
 The complete source now passes this training profile's nine-file check after its
 license and model card were consolidated beside the weights. The composition
-converter's separate source lock expects a different license hash; that mismatch
-remains unresolved. This is no conversion or model-quality result. Compact proof:
+converter now uses the corrected source-lock v2 with the same license identity.
+The historical v1 lock is retained only as prior evidence. This is no conversion
+or model-quality result. See `docs/architecture/2026-09-12-qwen3-source-license-correction.md`.
+Compact training-source proof:
 `artifacts/ecosystem-cleanup-20260912/canonical-training-source-review.json`.
 Historical environment measurements below do not authorize the changed tools.
 

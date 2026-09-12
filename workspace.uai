@@ -1,5 +1,5 @@
 profile: tinyrustlm.workspace.current.v1
-updated_utc: 2026-08-30T00:00:00Z
+updated_utc: 2026-09-12T19:39:47.406Z
 scope: authoritative current workspace and ecosystem routing
 sensitivity: internal; never publish this file
 
@@ -36,7 +36,7 @@ product_authority:
   clean_slate: No legacy readers, compatibility, migrations, aliases, dual contracts, hidden retry, repair, best-of-N, fallback, knowingly temporary architecture, or accepted debt.
   quality_rule: A rewrite is authorized when it yields the best current design; delete the superseded path after all callers, tests, and docs move together.
 
-current_source_checkpoint:
+historical_source_checkpoint:
   implementation_commit: 5a9c097e66a83ceb6ee71ebe36462981e311baf6
   implementation_tree: e3ebbec3c910b60e54280eff4d4643196b28b87f
   memory_checkpoint: da8bfacc138e4ab12291a9e90f77d6e5d62471b4
@@ -46,10 +46,29 @@ current_source_checkpoint:
 current_companion_truth:
   contract: loopback-capability/4 + acquire.v2 + operation.v3 + operation-projection.v2
   source: exact pinned Qwen/Qwen3-0.6B revision c1899de289a04d12100db370d81485cdf75e47ca
-  result: Strict source-operation and six-member artifact contracts are implemented and tested.
-  blocker: Production listener returns operation-not-available because no production executor or source-network owner exists.
-  browser: The browser client is not loaded by the product UI.
-  next_gate: Implement the preregistered exclusive restart-safe source owner, bounded pinned-source streaming, contained converter launch, terminal evidence, and independent six-member inspection.
+  source_lock: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json; sha256:50a8c29e36398a9a088e4d9a224dad186809d34b1e050299d3ce3de7a01b7d0e; descriptor /2 corrects the pinned upstream license identity. Historical source lock v1 is not admitted by current acquisition.
+  result: Production bounded source acquisition, exclusive operation ownership, contained converter launch, terminal reconciliation, independent six-member inspection/transfer, and listener wiring are implemented.
+  blocker: No authorized real-source acquisition receipt through this coordinator or qualified real model is established by current implementation and fixture evidence. Available and local seed readiness are not qualification or outside-network proof.
+  browser: Current worktree product UI loads the capability client, composition installer, and qualified direct-P2P acquisition path; this is source wiring, not real-model browser or deployment proof.
+  source_eligibility: The unchanged pinned Qwen3-0.6B remains rejected as a product model and is diagnostic ancestry only; a later derivative needs genuinely different bytes and independent untouched qualification.
+  numerical: Native and browser WASM share the scalar runtime. Historical composition /12 is structural-only; numerical v2 closed with source-trace-environment-drift, not parity. The numerical owner still binds that closed registration and model identity.
+  next_gate: Establish an eligible exact source checkpoint and fresh numerical owner/registration bindings, then obtain real native/WASM, quality, browser, and P2P evidence; never replay or adopt closed failed operations, including /10.
+  routing_boundary: These source-state pointers correct obsolete owner-missing and browser-unloaded guidance; earlier checkpoint hashes, test counts, wiki records, and terminal decisions remain historical and immutable.
+  source_paths:
+    - dotnet/src/TinyRustLM.Companion/CompanionProductionOperationRuntime.cs
+    - dotnet/src/TinyRustLM.Companion/CompanionProductionOperationExecutor.cs
+    - dotnet/src/TinyRustLM.Companion/CompanionProductionSourceAcquisition.cs
+    - dotnet/src/TinyRustLM.Companion/CompanionSourceDescriptor.cs
+    - dotnet/tools/TinyRustLM.CompanionHost/Program.cs
+    - tinyrustlm/app/index.html
+    - rust/crates/tinyrustlm-runtime/src/conversation.rs
+    - rust/crates/tinyrustlm-browser-runtime-wasm/src/lib.rs
+    - tinyrustlm/tools/qwen3-numerical-execution-owner.js
+  record_paths:
+    - docs/companion/README.md
+    - docs/architecture/2026-09-12-qwen3-source-license-correction.md
+    - contracts/vnext/qwen3-real-composition-execution-result.v12.json
+    - contracts/vnext/qwen3-numerical-source-terminal-verification-result.v2.json
 
 memory_endpoints_two_lane_policy:
   direct_agent_use: Agents working on every ecosystem site use MemoryEndpoints.com directly for agent-to-agent long-term memory, meetings, handoffs, and coordination.
@@ -81,7 +100,15 @@ ecosystem_repositories:
   - E:\Source\Rust\TinyRustLM.MiRust.com
 
 resume:
-  - Finish bounded UAI consolidation and report routing without changing raw reports.
-  - Implement and prove the real Companion source-operation owner.
-  - Load the sole browser client and delete the obsolete bridge/one-file acquisition path in one green clean cut.
-  - Prove one real model through composition, scalar, optimized-native, browser-WASM, quality, P2P-or-convert, clean-profile chat, both MemoryEndpoints lanes, release, and HTTPS readback.
+  - Use current_companion_truth and its source/record paths for current implementation state; do not rewrite historical evidence or infer qualification from this guidance correction.
+  - Advance an eligible exact source and fresh numerical bindings through real composition, scalar, optimized-native, browser-WASM, untouched quality, and clean-profile chat evidence.
+  - Qualify and seed distinct real models with current outside proof and catalog admission; both MemoryEndpoints lanes and release/HTTPS readback remain separate evidence gates.
+# Current owner direction, 2026-09-12: MiniModel.org may seed verified current
+# models directly from D:\LLMs\TinyRustLM. Prefer automatic small-model startup;
+# keep manual IP/peer, Hugging Face and local conversion in Advanced. This
+# supersedes older no-project-seed restrictions. Pre-release does not require
+# old model format/version compatibility. See docs/server-seeded-startup-2026-09-12.md
+# for implementation and remaining real-model/hosting blockers. The owner ran
+# the cleanup script; all 44 inventoried SLM1 files were independently verified
+# absent after the 2026-09-12T15:48:26Z receipt. Legacy code removal remains open.
+# No working public default or live seed is claimed.

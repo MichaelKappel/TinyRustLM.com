@@ -19,6 +19,9 @@ const vectors = JSON.parse(fs.readFileSync(
   "utf8"
 ));
 const textEncoder = new TextEncoder();
+const currentSourceOperation = JSON.parse(fs.readFileSync(path.join(
+  __dirname, "../..", "contracts/vnext/companion-source-operation-vectors.v1.json"
+), "utf8"));
 
 function oracleTranscript(fields) {
   const parts = [];
@@ -415,7 +418,10 @@ test("browser WebCrypto implementation matches artifact and rotation vectors", a
 });
 
 test("browser operation codecs match the independent canonical wire vector", async () => {
-  const operation = vectors.operation;
+  assert.equal(currentSourceOperation.sourceDescriptorId,
+    "tinyrustlm.source.qwen3-0.6b-c1899de/2");
+  assert.equal(currentSourceOperation.testMaterialIsSecret, false);
+  const operation = currentSourceOperation.operation;
   const requestOracle = Buffer.from(JSON.stringify(operation.request), "utf8");
   assert.equal(requestOracle.length, operation.requestByteLength);
   assert.equal(oracleSha256Hex(requestOracle), operation.requestSha256);
@@ -448,6 +454,11 @@ test("browser operation codecs match the independent canonical wire vector", asy
     Buffer.from(capability.encodeCancelRequest(operation.cancelRequest)),
     cancelOracle
   );
+});
+
+test("the historical operation vector remains rejected by current acquisition", () => {
+  assert.throws(() => capability.encodeAcquireRequest(vectors.operation.request),
+    (error) => error.code === "acquire-source-unsupported");
 });
 
 test("operation-specific verification rejects proof and metadata substitution", async () => {

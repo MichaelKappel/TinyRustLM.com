@@ -587,13 +587,13 @@ function acquireRequest() {
     sourceRepository: "Qwen/Qwen3-0.6B",
     sourceRevision: "c1899de289a04d12100db370d81485cdf75e47ca",
     modelSourceLockSha256:
-      "e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d",
+      "50a8c29e36398a9a088e4d9a224dad186809d34b1e050299d3ce3de7a01b7d0e",
     tokenizerSourceLockSha256:
       "1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70",
     compositionProfileSha256:
       "19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8",
     sourceAcquisitionApproved: true,
-    maximumSourceBytes: 1519207688
+    maximumSourceBytes: 1519207673
   };
 }
 

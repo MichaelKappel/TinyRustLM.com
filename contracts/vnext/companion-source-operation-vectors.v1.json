@@ -1,0 +1,83 @@
+{
+  "schema": "tinyrustlm.companion.source-operation-vectors.v1",
+  "profileId": "tinyrustlm.companion.loopback-capability/4",
+  "sourceDescriptorId": "tinyrustlm.source.qwen3-0.6b-c1899de/2",
+  "oracle": "independent-node-crypto-sha256-over-explicit-canonical-json-field-order",
+  "testMaterialIsSecret": false,
+  "modelExecution": false,
+  "operation": {
+    "request": {
+      "schema": "tinyrustlm.companion.acquire.v2",
+      "attemptId": "0123456789abcdef0123456789abcdef",
+      "route": "source",
+      "modelId": "qwen3-0.6b",
+      "sourceRepository": "Qwen/Qwen3-0.6B",
+      "sourceRevision": "c1899de289a04d12100db370d81485cdf75e47ca",
+      "modelSourceLockSha256": "50a8c29e36398a9a088e4d9a224dad186809d34b1e050299d3ce3de7a01b7d0e",
+      "tokenizerSourceLockSha256": "1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70",
+      "compositionProfileSha256": "19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8",
+      "sourceAcquisitionApproved": true,
+      "maximumSourceBytes": 1519207673
+    },
+    "requestByteLength": 573,
+    "requestSha256": "624f2a45e4a795647c672ef1db32005294311caf04d1a7b1a0b93319e3fa6c42",
+    "operationId": "624f2a45e4a795647c672ef1db32005294311caf04d1a7b1a0b93319e3fa6c42",
+    "projection": {
+      "schema": "tinyrustlm.companion.loopback.operation-projection.v2",
+      "operationId": "624f2a45e4a795647c672ef1db32005294311caf04d1a7b1a0b93319e3fa6c42",
+      "sequence": 7,
+      "state": "available",
+      "route": "source",
+      "phaseCompletedBytes": 605377909,
+      "phaseTotalBytes": 605377909,
+      "artifacts": {
+        "composition": {
+          "kind": "acg2",
+          "artifactId": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+          "byteCount": 4096
+        },
+        "model": {
+          "kind": "slm2",
+          "artifactId": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+          "byteCount": 598308416
+        },
+        "tokenizer": {
+          "kind": "tokenizer2",
+          "artifactId": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+          "byteCount": 7038773
+        },
+        "template": {
+          "kind": "template2",
+          "artifactId": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+          "byteCount": 8192
+        },
+        "sampling": {
+          "kind": "sampling2",
+          "artifactId": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+          "byteCount": 2048
+        },
+        "prompt": {
+          "kind": "prompt2",
+          "artifactId": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+          "sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+          "byteCount": 16384
+        }
+      },
+      "errorCode": null
+    },
+    "projectionByteLength": 1557,
+    "projectionSha256": "25af1456803488287a61cef411a5fc67d4370cc5bfb9e0ede86b484a64f97703",
+    "artifactByteTotal": 605377909,
+    "cancelRequest": {
+      "schema": "tinyrustlm.companion.loopback.cancel-request.v1",
+      "cancellationId": "00112233445566778899aabbccddeeff"
+    },
+    "cancelRequestByteLength": 112,
+    "cancelRequestSha256": "e644dc62a2a2f18a5f21b9ad3318f399f6d3153f5a195d8cbe34fd673e15ccab"
+  }
+}

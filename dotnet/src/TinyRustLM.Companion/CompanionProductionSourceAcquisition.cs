@@ -41,8 +41,8 @@ internal sealed class CompanionSourceAcquisition : IDisposable
     /// <summary>Gets the sole ordered source closure accepted by production acquisition.</summary>
     internal static readonly IReadOnlyList<CompanionBuiltInSourceFile> Files =
     [
-        new("LICENSE", 11_358,
-            "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        new("LICENSE", 11_343,
+            "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e",
             TokenizerMember: false),
         new("README.md", 13_965,
             "1ab64a26fcb3b461423b89a433a8c858f1bf8d4086f979cbb3ff878d47cf20e9",

@@ -1542,13 +1542,13 @@ mod tests {
     fn accepted_checked_in_model_and_tokenizer_locks_form_one_relationship() {
         let repository_root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../..");
         let relationship = validate_source_relationship(
-            &repository_root.join("contracts/vnext/qwen3-0.6b-base-source-lock.v1.json"),
+            &repository_root.join("contracts/vnext/qwen3-0.6b-base-source-lock.v2.json"),
             &repository_root.join("contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json"),
         )
         .expect("accepted source relationship");
         assert_eq!(
             relationship.model_lock_sha256,
-            "e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d"
+            "50a8c29e36398a9a088e4d9a224dad186809d34b1e050299d3ce3de7a01b7d0e"
         );
         assert_eq!(
             relationship.tokenizer_lock_sha256,
@@ -1587,7 +1587,7 @@ mod tests {
         let root = test_root("source-relationship-drift");
         fs::create_dir(&root).expect("root");
         let model: Value = serde_json::from_slice(include_bytes!(
-            "../../../../contracts/vnext/qwen3-0.6b-base-source-lock.v1.json"
+            "../../../../contracts/vnext/qwen3-0.6b-base-source-lock.v2.json"
         ))
         .expect("model lock");
         let tokenizer: Value = serde_json::from_slice(include_bytes!(

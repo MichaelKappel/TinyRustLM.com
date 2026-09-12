@@ -225,7 +225,14 @@ public sealed class CompanionLoopbackProtocolTests
     [Fact]
     public void OperationWiresMatchIndependentCanonicalVectors()
     {
-        var value = ReadVectors().GetProperty("operation");
+        using var current = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(
+            AppContext.BaseDirectory, "companion-source-operation-vectors.v1.json")));
+        Assert.Equal("tinyrustlm.companion.source-operation-vectors.v1",
+            current.RootElement.GetProperty("schema").GetString());
+        Assert.Equal(CompanionSourceDescriptor.DescriptorId,
+            current.RootElement.GetProperty("sourceDescriptorId").GetString());
+        Assert.False(current.RootElement.GetProperty("testMaterialIsSecret").GetBoolean());
+        var value = current.RootElement.GetProperty("operation");
         var request = AcquireRequest(value.GetProperty("request"));
         var requestBytes = CompanionLoopbackWire.EncodeAcquireRequest(request);
         Assert.Equal(value.GetProperty("requestByteLength").GetInt32(), requestBytes.Length);

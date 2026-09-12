@@ -173,7 +173,7 @@ public sealed class CompanionArtifactTransferTests : IDisposable
                     RepositoryRoot(),
                     "contracts",
                     "vnext",
-                    "qwen3-0.6b-base-source-lock.v1.json"),
+                    "qwen3-0.6b-base-source-lock.v2.json"),
                 ModelSourceLockPath);
             File.Copy(
                 Path.Combine(

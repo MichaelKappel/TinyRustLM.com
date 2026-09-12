@@ -9,7 +9,7 @@ const test = require("node:test");
 const repositoryRoot = path.resolve(__dirname, "../..");
 const paths = {
   profile: "contracts/vnext/qwen3-composition-conversion-profile.v4.json",
-  modelLock: "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json",
+  modelLock: "contracts/vnext/qwen3-0.6b-base-source-lock.v2.json",
   tokenizerLock: "contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json",
   rustModel: "rust/crates/tinyrustlm-convert/src/qwen3.rs",
   rustTokenizer: "rust/crates/tinyrustlm-convert/src/qwen_tokenizer2.rs",
