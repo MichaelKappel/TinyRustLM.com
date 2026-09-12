@@ -1,5 +1,14 @@
 # Qwen3 0.6B Working-Model Lane v1
 
+Storage correction, September 12: model sources and training outputs belong only
+under `D:/LLMs/TinyRustLM`. The producer and trainer enforce this independently.
+The complete source now passes this training profile's nine-file check after its
+license and model card were consolidated beside the weights. The composition
+converter's separate source lock expects a different license hash; that mismatch
+remains unresolved. This is no conversion or model-quality result. Compact proof:
+`artifacts/ecosystem-cleanup-20260912/canonical-training-source-review.json`.
+Historical environment measurements below do not authorize the changed tools.
+
 This directory preregisters the only authorized training lane for the first
 real TinyRustLM working-model vertical slice. It does **not** contain a trained
 adapter, merged checkpoint, passing source screen, converted model, or product
@@ -78,7 +87,8 @@ The external review manifest binds the exact profile, current control-program
 bytes, curriculum, rubric, record order, both primary ledger files, and the
 optional disagreement-only adjudication ledger. It has no training authority
 and contains no raw curriculum. All review manifests and ledgers must use
-absolute, non-reparse paths on `C:` or `E:` outside the Git worktree. The audit
+absolute, non-reparse paths outside Git. Use the owned training area under
+`D:/LLMs/TinyRustLM/training/qwen3-working-model-v1` for new model-related evidence. The audit
 reports only bounded identities and counts, and the training-lock verifier
 reopens every artifact instead of trusting the earlier report.
 
@@ -93,7 +103,7 @@ py -3 tinyrustlm/tools/qwen3-working-model-controls.py `
   initialize-holdout-custody `
   tinyrustlm/training/qwen3-0.6b-working-model-v1/profile.v1.json `
   qwen3-working-model-holdout-custody-v6 `
-  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-custody-v6
+  D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/private/holdout-custody-v6
 ```
 
 The development author and independent-audit author must receive separate
@@ -119,10 +129,10 @@ claim.
 py -3 tinyrustlm/tools/qwen3-working-model-controls.py `
   assemble-holdout-contributions `
   tinyrustlm/training/qwen3-0.6b-working-model-v1/profile.v1.json `
-  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-custody-v6/holdout-custody-plan.public.json `
-  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/development-contribution-complete.private.json `
-  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/independent-audit-contribution-complete.private.json `
-  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-assembly-v1
+  D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/private/holdout-custody-v6/holdout-custody-plan.public.json `
+  D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/private/development-contribution-complete.private.json `
+  D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/private/independent-audit-contribution-complete.private.json `
+  D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/private/holdout-assembly-v1
 ```
 
 The current public-safe `v6` plan is 51,462 bytes at SHA-256
@@ -153,7 +163,7 @@ the profile. The sealer combines those public cases with the 280 private cases
 to produce a 332-case hash-only exclusion index.
 
 Raw holdout prompts, answer anchors, entities, and the seed live outside Git on
-`C:` or `E:`. The public receipt contains commitments, hashes, counts, and
+`D:/LLMs/TinyRustLM/training/qwen3-working-model-v1`. The public receipt contains commitments, hashes, counts, and
 algorithm identities only. It contains no prompt, expected term, seed, private
 path, credential, or model byte.
 
@@ -162,14 +172,14 @@ Run the sealer only into a new external directory:
 ```powershell
 py -3 tinyrustlm/tools/qwen3-working-model-controls.py seal-holdouts `
   tinyrustlm/training/qwen3-0.6b-working-model-v1/profile.v1.json `
-  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-assembly-v1/factor-pack.private.json `
-  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-custody-v6/holdout-seed.private.bin `
-  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/holdout-assembly-v1/holdout-custody-receipt.public.json `
-  E:/TinyRustLM-vnext-evidence/qwen3-working-model-v1/holdout-seal-v1
+  D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/private/holdout-assembly-v1/factor-pack.private.json `
+  D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/private/holdout-custody-v6/holdout-seed.private.bin `
+  D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/private/holdout-assembly-v1/holdout-custody-receipt.public.json `
+  D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/evidence/holdout-seal-v1
 ```
 
 The command refuses an existing output directory, a symlinked input, an output
-inside the worktree, a non-`C:`/`E:` Windows drive, a wrong seed size, category
+inside the worktree, a disallowed storage location, a wrong seed size, category
 or split drift, malformed or unpinned evaluation fixtures, a factor pack not
 bound by the custody receipt, a seed outside the custody commitment, or a
 custody receipt from another control-program identity. There is no direct
@@ -203,12 +213,12 @@ not rewrite candidate text.
 ```powershell
 py -3 tinyrustlm/tools/qwen3-working-model-controls.py audit-curriculum `
   tinyrustlm/training/qwen3-0.6b-working-model-v1/profile.v1.json `
-  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/pilot-curriculum.jsonl `
-  E:/TinyRustLM-vnext-private/qwen3-working-model-v1/pilot-review-manifest.json `
-  E:/TinyRustLM-vnext-evidence/qwen3-working-model-v1/holdout-seal-v1/exclusion-index.private.json `
-  E:/TinyRustLM-vnext-evidence/qwen3-working-model-v1/semantic-audit-v1/receipt.json `
-  E:/TinyRustLM-vnext-evidence/qwen3-working-model-v1/curriculum-audit-v1.json `
-  --tombstones E:/TinyRustLM-vnext-private/qwen3-working-model-v1/tombstones.jsonl
+  D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/private/pilot-curriculum.jsonl `
+  D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/private/pilot-review-manifest.json `
+  D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/evidence/holdout-seal-v1/exclusion-index.private.json `
+  D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/evidence/semantic-audit-v1/receipt.json `
+  D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/evidence/curriculum-audit-v1.json `
+  --tombstones D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/private/tombstones.jsonl
 ```
 
 ## CPU Pilot Lock
@@ -219,7 +229,9 @@ configuration, curriculum, curriculum review manifest, contamination audit,
 holdout receipt, exclusion index, semantic receipt, tombstone lineage,
 environment lock, and training program. The lock verifier reopens both review
 ledgers and any adjudication ledger and requires the current control program.
-The output root must be a new external `C:` or `E:` directory.
+Model sources and new training output directories must be inside
+`D:/LLMs/TinyRustLM`; both lock issuance and the trainer independently enforce
+this boundary. C:, E:, X:, sibling-prefix aliases and linked model paths reject.
 
 The sole pilot recipe is assistant-only SFT with preservation KL, float32 CPU
 compute, rank-16 LoRA over all seven Qwen3 projection types, one epoch, an
@@ -255,7 +267,7 @@ The wheels occupy 170,527,657 bytes. Source distributions, editable installs,
 system site packages, unowned distributions, CUDA builds, and the forbidden
 package set are rejected.
 
-The current external v3 environment lock is 17,964 bytes at SHA-256
+The historical external v3 environment lock is 17,964 bytes at SHA-256
 `68c36c8492c59c0006e3bfa018b0d84dbc1832379733512c4e979b9a17ac49eb`.
 It binds every installed distribution file, distribution-set SHA-256
 `ae837c77159fce892b1626d947dc390a86f5d530fd5fe45f7890b905bf8db707`,
@@ -267,15 +279,18 @@ The lock says `training_authority: false`. The v1 wheelhouse manifest and v1/v2
 environment locks remain immutable invalidated history after the scheduler and
 trainer changed.
 
-Use create-only versioned outputs whenever the specification or trainer
-changes:
+Use freshly bound outputs whenever the specification or trainer changes. The
+paths below describe the intended canonical layout; this cleanup has not created
+that environment or a training authorization. Historical locks do not authorize
+the changed trainer. Retain compact outcome evidence and remove superseded
+model/checkpoint copies after verifying their replacement:
 
 ```powershell
-$python = 'E:/TinyRustLM-vnext-tools/qwen3-cpu-pilot-v1/venv/Scripts/python.exe'
+$python = 'D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/environment/venv/Scripts/python.exe'
 $trainer = 'tinyrustlm/tools/qwen3-working-model-trainer.py'
 $profile = 'tinyrustlm/training/qwen3-0.6b-working-model-v1/profile.v1.json'
 $environment = 'tinyrustlm/training/qwen3-0.6b-working-model-v1/cpu-environment.v1.json'
-$tools = 'E:/TinyRustLM-vnext-tools/qwen3-cpu-pilot-v1'
+$tools = 'D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/environment'
 
 & $python $trainer seal-wheelhouse `
   $environment "$tools/wheelhouse" "$tools/wheelhouse-manifest.v4.json"
@@ -318,10 +333,10 @@ After the independent custody, curriculum, review, contamination, semantic,
 and training-lock gates exist, run the exact authorized inputs:
 
 ```powershell
-$lock = 'E:/TinyRustLM-vnext-evidence/qwen3-working-model-v1/training-lock-v1.json'
-$source = 'E:/TinyRustLM-vnext-private/qwen3-working-model-v1/source'
-$curriculum = 'E:/TinyRustLM-vnext-private/qwen3-working-model-v1/pilot-curriculum.jsonl'
-$environmentLock = 'E:/TinyRustLM-vnext-tools/qwen3-cpu-pilot-v1/environment-lock.v3.json'
+$lock = 'D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/evidence/training-lock-v1.json'
+$source = 'D:/LLMs/TinyRustLM/sources/Qwen/Qwen3-0.6B/c1899de289a04d12100db370d81485cdf75e47ca'
+$curriculum = 'D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/private/pilot-curriculum.jsonl'
+$environmentLock = 'D:/LLMs/TinyRustLM/training/qwen3-working-model-v1/environment/environment-lock.v3.json'
 
 & $python $trainer verify-training-lock `
   $profile $lock $environment $environmentLock $source $curriculum

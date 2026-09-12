@@ -6,8 +6,9 @@ import importlib.util
 import json
 import subprocess
 import sys
-import tempfile
 import types
+from tinyrustlm.tools.tests.canonical_test_scratch import CanonicalTestScratch
+
 import unittest
 import zipfile
 from pathlib import Path
@@ -68,11 +69,9 @@ class FakeTokenizer:
 
 class EnvironmentSpecificationTests(unittest.TestCase):
     def setUp(self) -> None:
-        self._temporary = tempfile.TemporaryDirectory(prefix="qwen3-trainer-test-")
+        self._temporary = CanonicalTestScratch(prefix="qwen3-trainer-test-")
+        self.addCleanup(self._temporary.cleanup)
         self.root = Path(self._temporary.name)
-
-    def tearDown(self) -> None:
-        self._temporary.cleanup()
 
     def test_repository_environment_specification_is_exact(self) -> None:
         specification = MODULE.load_environment_spec(ENVIRONMENT_SPEC)
@@ -131,11 +130,9 @@ class EnvironmentSpecificationTests(unittest.TestCase):
 
 class WheelContractTests(unittest.TestCase):
     def setUp(self) -> None:
-        self._temporary = tempfile.TemporaryDirectory(prefix="qwen3-wheel-test-")
+        self._temporary = CanonicalTestScratch(prefix="qwen3-wheel-test-")
+        self.addCleanup(self._temporary.cleanup)
         self.root = Path(self._temporary.name)
-
-    def tearDown(self) -> None:
-        self._temporary.cleanup()
 
     def _wheel(self, name: str = "demo", version: str = "1.2.3") -> Path:
         path = self.root / f"{name}-{version}-py3-none-any.whl"
@@ -200,15 +197,13 @@ class WheelContractTests(unittest.TestCase):
 
 class InstalledDistributionContractTests(unittest.TestCase):
     def setUp(self) -> None:
-        self._temporary = tempfile.TemporaryDirectory(prefix="qwen3-distribution-test-")
+        self._temporary = CanonicalTestScratch(prefix="qwen3-distribution-test-")
+        self.addCleanup(self._temporary.cleanup)
         self.root = Path(self._temporary.name)
         self.site_packages = self.root / "Lib" / "site-packages"
         self.scripts = self.root / "Scripts"
         self.site_packages.mkdir(parents=True)
         self.scripts.mkdir()
-
-    def tearDown(self) -> None:
-        self._temporary.cleanup()
 
     def _distribution(self, reported: str, resolved: Path) -> object:
         class Distribution:
@@ -388,8 +383,14 @@ if blocked != 2:
 
 class TrainerAuthorizationFixture(unittest.TestCase):
     def setUp(self) -> None:
-        self._temporary = tempfile.TemporaryDirectory(prefix="qwen3-auth-test-")
+        self._temporary = CanonicalTestScratch(prefix="qwen3-auth-test-")
+        self.addCleanup(self._temporary.cleanup)
         self.root = Path(self._temporary.name)
+        # Independent authorization fixtures contain synthetic bytes, never a source copy.
+        self.enterContext(mock.patch.object(MODULE, "MODEL_STORAGE_ROOT", self.root))
+        self.enterContext(
+            mock.patch.object(MODULE, "REPOSITORY_ROOT", self.root / "source-authority")
+        )
         self.environment_lock = self.root / "environment-lock.json"
         self.environment_lock.write_text('{"fixture":true}\n', encoding="ascii")
         self.wheelhouse_manifest = self.root / "wheelhouse-manifest.json"
@@ -410,9 +411,6 @@ class TrainerAuthorizationFixture(unittest.TestCase):
         )
         self.training_lock = self.root / "training-lock.json"
         write_json(self.training_lock, self._training_lock_value(record_order))
-
-    def tearDown(self) -> None:
-        self._temporary.cleanup()
 
     def _write_source(self) -> None:
         values = {
@@ -545,6 +543,14 @@ class TrainerAuthorizationFixture(unittest.TestCase):
         self.assertEqual(summary["quality_claim"], "none")
         self.assertEqual(summary["record_count"], 1)
 
+    def test_training_authorization_rejects_misplaced_model_output(self) -> None:
+        """Even an otherwise valid training lock cannot select an old model root."""
+        value = json.loads(self.training_lock.read_text(encoding="utf-8"))
+        value["output_root"] = "E:/TinyRustLM-vnext-private/old-training-output"
+        write_json(self.training_lock, value)
+        with self.assertRaisesRegex(ValueError, "training output root.*inside"):
+            self._verify()
+
     def test_training_authorization_rejects_program_identity_drift_before_environment_probe(
         self,
     ) -> None:
@@ -657,11 +663,9 @@ class TrainerAuthorizationFixture(unittest.TestCase):
 
 class AttemptAndCheckpointTests(unittest.TestCase):
     def setUp(self) -> None:
-        self._temporary = tempfile.TemporaryDirectory(prefix="qwen3-checkpoint-test-")
+        self._temporary = CanonicalTestScratch(prefix="qwen3-checkpoint-test-")
+        self.addCleanup(self._temporary.cleanup)
         self.root = Path(self._temporary.name)
-
-    def tearDown(self) -> None:
-        self._temporary.cleanup()
 
     def _checkpoint(self, name: str, parent: str | None = None) -> Path:
         path = self.root / "checkpoints" / name
@@ -979,6 +983,53 @@ class AttemptAndCheckpointTests(unittest.TestCase):
         with self.assertRaisesRegex(FileExistsError, "overwrite"):
             MODULE.write_new_atomic(path, b"two\n")
         self.assertEqual(path.read_bytes(), b"one\n")
+
+
+class ModelStorageLocationTests(unittest.TestCase):
+    """Check the actual model-volume boundary without creating model files."""
+
+    def test_model_inputs_and_new_outputs_require_canonical_children(self) -> None:
+        """Accept the owner's exact subtree and reject older drives and aliases."""
+        for value in (
+            "D:/LLMs/TinyRustLM/sources/new-model",
+            "d:/llms/tinyrustlm/models/new-model",
+        ):
+            with self.subTest(path=value):
+                self.assertEqual(
+                    MODULE.require_model_location(Path(value), "model fixture"),
+                    Path(value),
+                )
+                MODULE.require_allowed_drive(Path(value), "model fixture")
+        for value in (
+            "E:/TinyRustLM",
+            "E:/Source/Rust/TinyRustLM.com/artifacts/model",
+            "C:/models/new",
+            "D:/LLMs/TinyRustLM-other/model",
+            "D:/LLMs/TinyRustLM",
+            "D:/LLMs/TinyRustLM/a/../model",
+            "X:/LLMS/model",
+            "relative/model",
+        ):
+            with self.subTest(path=value):
+                with self.assertRaisesRegex(ValueError, "model fixture"):
+                    MODULE.require_model_location(Path(value), "model fixture")
+        with self.assertRaisesRegex(ValueError, "model fixture"):
+            MODULE.require_allowed_drive(Path("D:/misplaced/model"), "model fixture")
+
+    def test_model_paths_reject_reparse_ancestors_and_dangling_new_leaf(self) -> None:
+        """A nonexistent target never permits an unchecked linked parent or leaf."""
+        target = Path("D:/LLMs/TinyRustLM/unused-fixture/model")
+        for linked in (target.parent, target):
+            with (
+                self.subTest(linked=linked),
+                mock.patch.object(
+                    MODULE,
+                    "_is_reparse",
+                    side_effect=lambda candidate: candidate == linked,
+                ),
+            ):
+                with self.assertRaisesRegex(ValueError, "model fixture.*reparse"):
+                    MODULE.require_model_location(target, "model fixture")
 
 
 if __name__ == "__main__":

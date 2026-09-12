@@ -37,6 +37,8 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
 
+MODEL_STORAGE_ROOT = Path("D:/LLMs/TinyRustLM")
+PROTECTED_SOURCE_ROOT = Path(__file__).resolve().parents[2]
 PROFILE_SCHEMA = "tinyrustlm.qwen3_working_model_profile.v1"
 HOLDOUT_CUSTODY_PLAN_SCHEMA = "tinyrustlm.holdout_custody_plan.v1"
 HOLDOUT_CONTRIBUTION_SCHEMA = "tinyrustlm.holdout_contribution.v1"
@@ -548,7 +550,7 @@ def _reject_reparse_chain(path: Path, label: str, *, include_leaf: bool = True) 
     candidate = path.absolute()
     parts = (candidate, *candidate.parents) if include_leaf else candidate.parents
     for part in parts:
-        if part.exists() and _is_symlink_or_reparse(part):
+        if _is_symlink_or_reparse(part):
             raise ValueError(
                 f"{label} path must not cross a symlink or reparse point: {part}"
             )
@@ -2090,12 +2092,8 @@ def _validate_holdout_custody_receipt(
 def _validate_external_output_root(output_root: Path) -> Path:
     if not output_root.is_absolute():
         raise ValueError("output root must be absolute")
-    drive = output_root.drive.upper()
-    if drive and drive not in {"C:", "E:"}:
-        raise ValueError(
-            "output root must be on C: or E:; D: and other drives are forbidden"
-        )
-    repository_root = Path(__file__).resolve().parents[2]
+    _require_allowed_storage_drive(output_root, "output root")
+    repository_root = PROTECTED_SOURCE_ROOT
     candidate = output_root.resolve(strict=False)
     try:
         candidate.relative_to(repository_root)
@@ -2115,11 +2113,27 @@ def _validate_external_output_root(output_root: Path) -> Path:
 
 
 def _require_allowed_storage_drive(path: Path, label: str) -> None:
+    """Allow evidence drives without permitting arbitrary model storage on D:."""
     drive = path.drive.upper()
+    if drive == "D:":
+        _require_model_location(path, label)
+        return
     if drive and drive not in {"C:", "E:"}:
-        raise ValueError(
-            f"{label} must be on C: or E:; D: and other drives are forbidden"
-        )
+        raise ValueError(f"{label} must use an allowed storage location")
+
+
+def _require_model_location(path: Path, label: str) -> Path:
+    """Independently confine authorization to direct canonical model storage."""
+    if not path.is_absolute() or ".." in path.parts:
+        raise ValueError(f"{label} must use a canonical absolute model path")
+    try:
+        relative = path.relative_to(MODEL_STORAGE_ROOT)
+    except ValueError as error:
+        raise ValueError(f"{label} must be inside D:/LLMs/TinyRustLM") from error
+    if not relative.parts:
+        raise ValueError(f"{label} must be a child of the model storage root")
+    _reject_reparse_chain(path, label)
+    return path
 
 
 def _require_external_evidence_location(path: Path, label: str) -> Path:
@@ -2128,7 +2142,7 @@ def _require_external_evidence_location(path: Path, label: str) -> Path:
     _require_allowed_storage_drive(path, label)
     _reject_reparse_chain(path, label)
     resolved = path.resolve()
-    repository_root = Path(__file__).resolve().parents[2]
+    repository_root = PROTECTED_SOURCE_ROOT
     try:
         resolved.relative_to(repository_root)
     except ValueError:
@@ -3799,7 +3813,7 @@ def freeze_training_lock(
             request["source_root"], "training lock request source_root", maximum=32768
         )
     )
-    _require_allowed_storage_drive(source_root, "training lock request source_root")
+    _require_model_location(source_root, "training lock request source_root")
     _reject_reparse_chain(source_root, "training lock request source_root")
     if not source_root.is_absolute() or not source_root.is_dir():
         raise ValueError(
@@ -3908,6 +3922,7 @@ def freeze_training_lock(
             request["output_root"], "training lock request output_root", maximum=32768
         )
     )
+    _require_model_location(output_root, "training lock request output_root")
     _validate_external_output_root(output_root)
     lock = {
         "schema": TRAINING_LOCK_SCHEMA,

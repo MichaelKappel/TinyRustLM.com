@@ -96,6 +96,7 @@ TRAINING_EVENT_KEYS = {
     "elapsed_wall_clock_seconds",
 }
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+MODEL_STORAGE_ROOT = Path("D:/LLMs/TinyRustLM")
 _TRAINING_ISOLATION_AUDIT_INSTALLED = False
 
 SPEC_KEYS = {
@@ -701,7 +702,7 @@ def reject_reparse_chain(path: Path, label: str, *, include_leaf: bool = True) -
     current = Path(parts[0])
     for part in parts[1:]:
         current /= part
-        if current.exists() and _is_reparse(current):
+        if _is_reparse(current):
             raise ValueError(f"{label} crosses a symlink or reparse point")
 
 
@@ -720,11 +721,28 @@ def verify_regular_file(
 
 
 def require_allowed_drive(path: Path, label: str) -> Path:
+    """Allow existing evidence drives and only the canonical model subtree on D:."""
     if not path.is_absolute():
         raise ValueError(f"{label} must be absolute")
     drive = path.drive.upper()
+    if drive == "D:":
+        return require_model_location(path, label)
     if drive not in {"C:", "E:"}:
-        raise ValueError(f"{label} must be on C: or E:")
+        raise ValueError(f"{label} must use an allowed storage location")
+    return path
+
+
+def require_model_location(path: Path, label: str) -> Path:
+    """Constrain model inputs/outputs before filesystem access, including new leaves."""
+    if not path.is_absolute() or ".." in path.parts:
+        raise ValueError(f"{label} must use a canonical absolute model path")
+    try:
+        relative = path.relative_to(MODEL_STORAGE_ROOT)
+    except ValueError as error:
+        raise ValueError(f"{label} must be inside D:/LLMs/TinyRustLM") from error
+    if not relative.parts:
+        raise ValueError(f"{label} must be a child of the model storage root")
+    reject_reparse_chain(path, label)
     return path
 
 
@@ -1698,6 +1716,8 @@ def _source_file_map(profile: dict[str, Any]) -> dict[str, FileIdentity]:
 
 
 def verify_source_root(profile: dict[str, Any], source_root: Path) -> Path:
+    """Read only a canonical model directory with the exact pinned source closure."""
+    require_model_location(source_root, "source root")
     source_root = require_external_path(source_root, "source root")
     if not source_root.is_dir():
         raise ValueError("source root must be a directory")
@@ -1967,7 +1987,10 @@ def verify_training_inputs(
     if review_evidence.get("record_count") != len(records):
         raise ValueError("review evidence record count drifted")
     output_root = require_external_path(
-        Path(require_string(lock["output_root"], "training output root")),
+        require_model_location(
+            Path(require_string(lock["output_root"], "training output root")),
+            "training output root",
+        ),
         "training output root",
         must_exist=False,
     )

@@ -248,3 +248,33 @@ lessons, evidence references and remaining review scope live in the canonical
   `tinyrustlm/tools/remove-reviewed-training-checkpoints.ps1 -WhatIf` passed
   complete hash/containment preflight. No model was executed or qualified, no
   raw screen was removed, and no storage recovery is claimed.
+- The training review and checkpoint-retirement script were committed and pushed
+  as `f5faae3`. Owner execution of the blocked eight-checkpoint removal remains
+  pending; the compact record preserves the results before deletion.
+- Both Qwen3 training tools incorrectly forbade D: while accepting models on C:
+  or E:. The lock producer and trainer now independently restrict model inputs
+  and outputs to children of `D:/LLMs/TinyRustLM`, including new output paths.
+  Their ancestry checks also reject dangling linked leaves. Model-related
+  evidence examples now use the canonical D: training area; obsolete E: root
+  examples were removed. Historical tool/environment locks remain historical.
+- The two Python test modules now use bounded, marked scratch under canonical
+  artifacts. Their synthetic source models contain fixture text; no source
+  repository or real model is copied. All 98 checks passed with zero skips.
+  Standard-library trace measured changed executable-line coverage of 95.65%
+  for the control tool, 95.00% for the trainer and 92.59% for the new scratch
+  helper. Ruff check/format and diff hygiene passed. The compact coverage record
+  is `artifacts/ecosystem-cleanup-20260912/training-storage-test-coverage.json`.
+- The actual source check initially rejected an incomplete seven-file source
+  directory. Its pinned LICENSE and README.md were still on E:. Both were
+  verified against the training profile and moved beside the existing weights
+  under `D:/LLMs/TinyRustLM/sources/Qwen/Qwen3-0.6B/c1899de289a04d12100db370d81485cdf75e47ca`.
+  No weight bytes were copied. The complete nine-file training-source check
+  passed, covering 1,519,207,673 logical bytes. The separate composition source
+  lock expects LICENSE length 11,358 and hash `cfc7749b...`, while the training
+  profile binds length 11,343 and hash `832dd9e0...`. That contract mismatch
+  remains unresolved and is recorded in `canonical-training-source-review.json`.
+  No training, inference, qualification or deployment was performed.
+- A second seven-file Qwen3 source directory remains at
+  `D:/LLMs/TinyRustLM/experiments/TinyRustLM-vnext-private/qwen3-source-c1899de-20260825-v1`.
+  Its exact identity/current references still require review before retirement;
+  it has not been deleted or counted as recovered storage.

@@ -5,9 +5,11 @@ from __future__ import annotations
 import importlib.util
 import json
 import sys
-import tempfile
+from tinyrustlm.tools.tests.canonical_test_scratch import CanonicalTestScratch
+
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "qwen3-working-model-controls.py"
@@ -72,10 +74,16 @@ class WorkingModelProfileTests(unittest.TestCase):
 
 class WorkingModelControlFixture:
     def setUp(self) -> None:
-        self._temporary = tempfile.TemporaryDirectory(
-            prefix="tinyrustlm-working-model-"
-        )
+        self._temporary = CanonicalTestScratch(prefix="tinyrustlm-working-model-")
+        self.addCleanup(self._temporary.cleanup)
         self.root = Path(self._temporary.name)
+        # Synthetic fixture storage stands in for the model volume; no model is built.
+        self.enterContext(mock.patch.object(MODULE, "MODEL_STORAGE_ROOT", self.root))
+        self.enterContext(
+            mock.patch.object(
+                MODULE, "PROTECTED_SOURCE_ROOT", self.root / "source-authority"
+            )
+        )
         self.source_dir = self.root / "source"
         self.source_dir.mkdir()
         self.source_model = self.source_dir / "model.safetensors"
@@ -127,9 +135,6 @@ class WorkingModelControlFixture:
             + "\n",
             encoding="utf-8",
         )
-
-    def tearDown(self) -> None:
-        self._temporary.cleanup()
 
     def _review_rubric_value(self) -> dict[str, object]:
         return {
@@ -1536,6 +1541,17 @@ class TrainingLockTests(WorkingModelControlFixture, unittest.TestCase):
         self.assertEqual(lock["authorized_operation"], "cpu-lora-pilot")
         self.assertFalse((self.root / "training-output").exists())
 
+        # Passing audits cannot authorize a model output outside its storage root.
+        value = json.loads(request.read_text(encoding="utf-8"))
+        value["output_root"] = "E:/TinyRustLM-vnext-private/old-training-output"
+        request.write_text(json.dumps(value), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "output_root.*inside"):
+            MODULE.freeze_training_lock(
+                MODULE.load_profile(self.profile),
+                request,
+                self.root / "misplaced-lock.json",
+            )
+
     def test_training_lock_refuses_failed_curriculum_audit(self) -> None:
         sealed, _ = self._seal()
         curriculum = self._write_curriculum(self._clean_records())
@@ -1584,6 +1600,55 @@ class TrainingLockTests(WorkingModelControlFixture, unittest.TestCase):
             MODULE.freeze_training_lock(
                 MODULE.load_profile(self.profile), request, self.root / "lock.json"
             )
+
+
+class ModelStorageLocationTests(unittest.TestCase):
+    """Check the actual model-volume boundary without creating model files."""
+
+    def test_model_inputs_and_new_outputs_require_canonical_children(self) -> None:
+        """Accept the owner's exact subtree and reject older drives and aliases."""
+        for value in (
+            "D:/LLMs/TinyRustLM/sources/new-model",
+            "d:/llms/tinyrustlm/models/new-model",
+        ):
+            with self.subTest(path=value):
+                self.assertEqual(
+                    MODULE._require_model_location(Path(value), "model fixture"),
+                    Path(value),
+                )
+                MODULE._require_allowed_storage_drive(Path(value), "model fixture")
+        for value in (
+            "E:/TinyRustLM",
+            "E:/Source/Rust/TinyRustLM.com/artifacts/model",
+            "C:/models/new",
+            "D:/LLMs/TinyRustLM-other/model",
+            "D:/LLMs/TinyRustLM",
+            "D:/LLMs/TinyRustLM/a/../model",
+            "X:/LLMS/model",
+            "relative/model",
+        ):
+            with self.subTest(path=value):
+                with self.assertRaisesRegex(ValueError, "model fixture"):
+                    MODULE._require_model_location(Path(value), "model fixture")
+        with self.assertRaisesRegex(ValueError, "model fixture"):
+            MODULE._require_allowed_storage_drive(
+                Path("D:/misplaced/model"), "model fixture"
+            )
+
+    def test_model_paths_reject_reparse_ancestors_and_dangling_new_leaf(self) -> None:
+        """A nonexistent target never permits an unchecked linked parent or leaf."""
+        target = Path("D:/LLMs/TinyRustLM/unused-fixture/model")
+        for linked in (target.parent, target):
+            with (
+                self.subTest(linked=linked),
+                mock.patch.object(
+                    MODULE,
+                    "_is_symlink_or_reparse",
+                    side_effect=lambda candidate: candidate == linked,
+                ),
+            ):
+                with self.assertRaisesRegex(ValueError, "model fixture.*reparse"):
+                    MODULE._require_model_location(target, "model fixture")
 
 
 if __name__ == "__main__":
