@@ -14,6 +14,17 @@ current_pointers:
   ontological_and_memory: wiki/runtime-mirust/reports/2026-08-27-memory-endpoints-submit-clean-cut-and-omi-intake.md
   report_hashes_and_dispositions: .uai/intake-outcome-ledger.uai
 
+experiment_lessons_pointer:
+  id: ecosystem-experiment-lessons-2026-09-12
+  path: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md
+  label: Reviewed experimental outcomes and lessons retained during cleanup
+  summary: Routes to observed conversion, process, receipt, browser-integrity and cleanup findings; lists remaining experiments requiring review before retirement.
+  authority: Owner-requested synthesis of linked canonical source records and bounded results; historical evidence, not new execution or qualification.
+  review_state: reviewed_for_named_records_only
+  status: active_growing_review
+  last_reviewed_utc: 2026-09-12T16:59:53Z
+  sha256: 4a6d0e3324e29781c5da0044a0295b67dad49d103cf3052153f24d0216300f5f
+
 durable_rules:
   - Preserve immutable failed operations and public bounded results; historical evidence creates no runtime compatibility path.
   - Do not duplicate large checkpoint prose here. Add or update one canonical wiki node, then route current UAI to it.

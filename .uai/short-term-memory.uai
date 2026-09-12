@@ -1,23 +1,36 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-08-28T00:00:00Z
+updated_utc: 2026-09-12T16:59:53Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 
 now:
-  task: Consolidate 47 reviewed reports into one durable decision index and replace 4.56 MB of duplicated/stale hot UAI memory with bounded current routing.
+  task: Active owner-authorized ecosystem cleanup across all seven canonical Rust repositories; concrete fixes, meaningful checks, regular commits and pushes. The full goal remains incomplete.
   preservation: Raw reports, manifests, syntheses, TDD deltas, ledger dispositions, wiki evidence, and immutable operation history remain intact.
   policy: MemoryEndpoints has two distinct authorized uses: direct agent coordination across sites and the separate TinyRustLM.com Connect user long-term-memory plugin.
-  redundancy: Synchronized current prelaunch memory copies are allowed for resilience; stale, contradictory, or secret-bearing copies are not.
+  redundancy: Keep one canonical source and model location, use Git for history, and keep bounded evidence compact. Record useful experimental lessons before retiring obsolete files.
 
-source_truth:
+ecosystem_cleanup:
+  progress: docs/ecosystem-cleanup-2026-09-12.md
+  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md
+  checkpoints: Catalog and P2P modules committed at 4e1ee34; verified admission, streaming hashes, atomic composition storage and companion installation committed at 3302239. All pushed to the existing branch.
+  verification: The 87 module checks, 54 application/acquisition checks, 25 desktop chooser checks, and cache/direct-peer browser checks passed. These use synthetic fixtures and do not qualify a real model.
+  remaining: Active v0 metadata flows, pending UI integration check-in, historical experiment and artifact retirement, real-model qualification, initial MiniModel seed hosting, and affected release metadata remain open.
+  blocked_deletions: Automatic review rejected Runtime historical docs and LMComposer historical stage removal. A reviewed Runtime PowerShell cleanup is awaiting owner execution; those bytes have not been claimed removed.
+
+historical_source_checkpoint:
   head_entering_work: da8bfacc138e4ab12291a9e90f77d6e5d62471b4
   implementation: 5a9c097e66a83ceb6ee71ebe36462981e311baf6
-  companion: Strict contracts are green, but listener returns operation-not-available and browser client is not loaded.
-  nonclaims: No real source operation, conversion, model, parity, browser chat, quality, P2P, deployment, publication, agent meeting, user plugin login, or live memory result.
+
+source_truth:
+  current_state_details: workspace.uai
+  companion: Production source owner, bounded acquisition, conversion, terminal inspection, transfer, and listener wiring exist; current worktree product UI loads the capability client and composition installer.
+  source_reference: dotnet/src/TinyRustLM.Companion/CompanionProductionOperationRuntime.cs
+  browser_reference: tinyrustlm/app/index.html
+  evidence_boundary: docs/companion/README.md
+  nonclaims: Implementation and fixture evidence establish no qualified real model, authorized real-source acquisition through this coordinator, numerical parity, real-model browser chat, live P2P, deployment, publication, or live memory result.
 
 next:
-  - Make consolidation tests, report verification, MemoryEndpoints policy tests, diff hygiene, and secret checks green.
-  - Commit, push, fetch, and verify remote equality.
-  - Resume the production Companion source owner and first-model vertical slice.
+  - For subsequent model work, use workspace.uai current_companion_truth and its source/record paths instead of obsolete owner-missing checkpoint prose.
+  - Establish an eligible exact source and fresh numerical bindings before pursuing real qualification and seeding; preserve closed failures and all counters.
 
 counters: 0/20, 0/50, 0/25, 0/40, 0/20.

@@ -64,3 +64,8 @@ evidence_prohibitions:
 # When a verified new version replaces an old version, retain only the current copy and remove the superseded bytes.
 # Preserve useful unique work in the canonical source or model root before deleting duplicates; keep receipts, not junk copies.
 # This explicit user directive supersedes older instructions allowing TinyRustLM source/model sprawl or forbidding the designated D: model store.
+
+# User directive 2026-09-12: retain experiment lessons, not obsolete copies
+# Before retiring an experiment, record its purpose, inputs/operation identity, observed outcome, useful lessons, uncertainty, and applicable current tests or code in the owning canonical repository.
+# Preserve compact evidence identities and Git references for failed as well as successful experiments; do not preserve copied source trees or superseded models merely as a substitute for recording what was learned.
+# Reviewed TinyRustLM and retired-Runtime findings begin at E:\Source\Rust\TinyRustLM.com\wiki\runtime-mirust\reports\ecosystem-experiment-lessons-2026-09-12.md; this is a growing review, not blanket proof that every experiment has been assessed.
