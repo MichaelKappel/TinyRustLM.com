@@ -12,7 +12,7 @@ recovered_code: Unique obsolete ecosystem-public-readback-v1.mjs preserved only 
 artifact_materialization: 24 canonical artifact junctions replaced with physical directories before external retirement; model payloads subsequently transfer to the designated D store.
 taboo_policy: All 4167 surviving taboo.uai files were verified to contain the current source/model/replacement directive.
 evidence_policy: Preserve meaningful bounded receipts inside the canonical repository; remove duplicate reports, generated source, caches, tooling environments, and superseded model payloads.
-verification_boundary: No cleanup-complete claim until physical absence and retained-file verification pass. No application functionality, model qualification, deployment, publication, or remote push is claimed.
+verification_boundary: Physical absence and retained-file verification passed. No application functionality, model qualification, deployment, or publication is claimed.
 validation: 47 source-authority tests passed; 83.97 percent line coverage; actual source-authority gate passed; physical whole-drive inventory has the separately recorded System Volume Information exclusion.
 physical_verification: All 51 retired roots absent; old physical C model store absent; 2552 preexisting source files checked with no unexpected change; 18 model hard-link pairs verified.
 model_duplicate_bytes_eliminated: 25546602912
