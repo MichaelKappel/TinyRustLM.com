@@ -489,3 +489,20 @@ lessons, evidence references and remaining review scope live in the canonical
   is removed. The eight committed portal files match their canonical bytes;
   the initial deployment manifest is unchanged and no remote mutation,
   production retirement receipt or storage recovery is claimed.
+- MiniModel.org checkpoint `ef924db` removes copied publication snapshots and
+  the snapshot writer/verifier/remover, Win32 directory identity binding and
+  source-copy test hook. Publication input stays in bounded memory, matched
+  against Git and the current canonical checkout and authenticated before
+  upload or partial rollback. No local source stage is created.
+- All 53 Node and 24 nested Pester checks pass, zero skips/cancellations. Tests
+  exercise actual canonical Git/current bytes and file publisher functions,
+  keeping remote observations in memory. The stale manifest's 422-byte catalog
+  is rejected against the 593-byte current file. Whole-module command coverage
+  is 238/545 (43.67%); no branch or full FTPS transaction coverage is claimed.
+- Lesson C23 and MiniModel's `publication-input-review-20260912.json` retain
+  identities, useful failure results and limits. Test output was removed;
+  prepared public records, catalog, deployment manifest and unbound transport
+  are unchanged. Node launcher/generator review and real model/hosting work
+  remain open. No publication, historical/model deletion or measured storage
+  recovery is claimed. All ten committed MiniModel files equal their reviewed
+  bytes, and local HEAD, tracking, FETCH_HEAD and direct remote agree.

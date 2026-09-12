@@ -356,6 +356,64 @@ authority remain unchanged. No public retirement, publication or measured
 storage recovery is claimed. Preserve these failure cases through the actual
 canonical implementation, rather than another executable source copy.
 
+<a id="c23"></a>
+
+## C23. Publication custody without copied site trees
+
+MiniModel.org checkpoint `ef924db7b721ed3fea371fb3f29416261d8f31b8`
+replaces its publication snapshots with bounded input held in memory. The
+reviewed baseline is Git `10820ca733cd8b8b70390c44e5a8929bd0a8b471`.
+The old writer reconstructed Git source files beneath an OS temporary snapshot
+parent; its test harness made mutable source copies, replacement directories
+and junction fixtures. Calling those directories operation-owned did not make
+them consistent with the owner's single-source requirement.
+
+The obsolete snapshot creator, verifier, remover, Win32 directory identity
+binding and optional blob-reader test hook are removed. The publisher now
+reads committed blobs and checks the current canonical files against their
+exact source lengths and digests. Prepared release records are materialized
+only in memory. A binding covers the operation, manifest, source commit/tree
+and ordered published file identities. Upload and partial rollback authenticate
+that input again, then consume its bytes without reopening mutable source.
+The limits are 500 files, 16 MiB per member and 64 MiB of retained payload.
+Git output and error streams are drained concurrently with byte limits and a
+30-second deadline; the prior synchronous reader had neither a deadline nor
+a memory bound. Empty files remain typed byte arrays and retain their actual
+SHA-256 identity.
+
+An actual Git/current-file test found that the existing manifest's catalog is
+422 bytes while the current catalog is 593 bytes. The older manifest still
+reproduces its bound historical commit, but it cannot publish the current
+checkout. Its input fails at the current-file size bound, before the later
+hash comparison. Preserve this early rejection; do not enlarge the bound or
+copy older files over the checkout to make publication pass. Separate tests
+also reject corruption when lengths remain equal.
+
+All 53 Node checks and 24 nested Pester checks pass, with no skipped or
+cancelled tests. The new tests exercise the actual canonical module and parsed
+publisher functions. Remote bytes, renames, failures and gate responses are
+represented in memory. Exact chunks, zero-length writes, incorrect offsets,
+substituted payloads, changed operation/manifest bindings, retained predecessor
+backups and authenticated partial rollback are checked. The first two
+no-read assertions counted earlier Describe-level calls in Pester 3; explicit
+It scope corrected that test isolation error without changing the guard.
+Whole-module Pester command coverage is 238/545 (43.67%); this does not include
+coverage from the separate custody harness or establish branch coverage,
+complete publisher transaction coverage, actual FTPS or remote atomicity.
+
+The compact review is
+`MiniModel.org/artifacts/reports/publication-input-review-20260912.json`,
+8,136 bytes, SHA-256
+`cd61233137f0c8a6261fd576002705b5d09152238fc7d077aeb864a97edc79ed`.
+It retains exact old Git and current code identities, failure observations and
+limits. Owned Pester output under canonical artifacts was physically removed.
+The transport remains intentionally unbound; the manifest, prepared public
+records and empty expired catalog were not rewritten. Bare Node invocation,
+the metadata generator, model qualification and seed hosting still need work.
+No production receipt, publication, model deletion or measured storage recovery
+is claimed. Preserve the custody behavior and experiment findings in canonical
+code, Git history and compact notes, without recreating a second source tree.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,
