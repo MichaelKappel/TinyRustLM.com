@@ -136,7 +136,7 @@ lessons, evidence references and remaining review scope live in the canonical
   network reachability. Hugging Face discovery requires an explicit choice when
   one source matches multiple current compositions. The 106 targeted checks and
   50 desktop/mobile chooser checks passed; root/app parity covers 19 assets.
-  These UI changes still await their complete integration checkpoint.
+  The complete integration checkpoint was committed and pushed as `fec548b`.
 - Automatic review blocked removal of the obsolete announcement reader and its
   test. Those two files and LMComposer's eight historical stage files remain.
   `tinyrustlm/tools/remove-reviewed-retired-files.ps1` validated all ten exact
@@ -168,7 +168,7 @@ lessons, evidence references and remaining review scope live in the canonical
   The compact evidence and lessons preserve those findings without restoring
   any of the nine absent old model payloads. No current qualification is implied.
 
-- Prepared the coherent current-only chooser integration checkpoint, including
+- Committed and pushed the current-only chooser integration as `fec548b`, including
   app assets, current acquisition/cache tests, declared publication paths,
   explicit source preview, and prepared-release labels. The 53 acquisition
   browser checks passed; three persistent-profile cases are intentionally
@@ -182,3 +182,34 @@ lessons, evidence references and remaining review scope live in the canonical
   and retirement changes are included; the larger existing deployment custody
   implementation remains uncommitted and requires separate review. The pending
   announcement-file deletion remains blocked and full release gates are open.
+
+- MiniModel.MiRust's metadata builders now emit stdout from one bounded canonical
+  Git commit. Its publisher reads canonical files and rechecks the exact locked
+  stream before transport. Route-smoke expectations are checked against committed
+  bytes, preserving the lesson from the historical heading-mismatch failure.
+  Fourteen tests passed, including 30 PowerShell checks with in-memory transport;
+  metadata line coverage was 98.80%. Committed and pushed as `04d05ac`.
+- MiniModel.MiRust prepared 1.1.1 documentation now states the authorized initial
+  server seed, cached/default startup and Advanced acquisition controls. Public
+  LF attributes keep Windows checkout bytes identical to Git digests. All 27
+  canonical public files passed publication preflight (92,555 logical bytes),
+  and real Edge checks passed for home/updates at desktop and mobile widths.
+  Source, checksums and manifest checkpoints `67026c6`, `cf1cc5c` and `b437611`
+  are pushed. No transport occurred; last publication remains 1.1.0.
+- Its retained `deploy/staging/1.1.0` contains 27 exact historical copies with
+  no unique work (87,424 logical bytes). Automatic approval review rejected
+  deletion with `blocked by policy`; the stage remains. Its compact inventory
+  and historical publish-failure lesson are committed. The exact-hash
+  `tools/remove-reviewed-stage.ps1 -WhatIf` passed; physical retirement awaits
+  owner execution, and no recovered-space claim is made.
+- TinyRust's C#/JS seed integration now uses a canonical native fixture host
+  and one conversion fixture with two synthetic input variants. It creates no
+  copied repository, rewritten converter, temporary source project or copied
+  host build. Six integration/helper checks passed, including real authenticated
+  loopback calls, four independent seed lifecycles, capacity rejection and
+  idempotent start/stop. Helper line coverage was 100%; C# coverage instrumentation
+  was unavailable. The canonical offline native build had zero warnings/errors,
+  and all 44 affected native transfer/conversion/seed-service tests passed.
+  Operation-owned scratch was removed. These are synthetic fixture results,
+  not model qualification or external P2P evidence. Other native test classes'
+  default scratch policies still need review before wider execution.

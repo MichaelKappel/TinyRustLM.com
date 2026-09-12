@@ -26,6 +26,9 @@ var tokenizerLock = args[3];
 var outputRoot = args[5];
 var scenario = File.ReadAllText(
     Path.Combine(modelSourceDirectory, ".tinyrustlm-conversion-fixture-scenario")).Trim();
+// Both seed scenarios use synthetic bytes; the variant tests distinct concurrent identities.
+var rustSeedScenario = scenario is "rust-seed-pass" or "rust-seed-variant-pass";
+var seedFixtureLabel = scenario == "rust-seed-variant-pass" ? "JS2" : "CLI";
 switch (scenario)
 {
     case "error":
@@ -119,12 +122,12 @@ for (var index = 0; index < artifactMetadata.Length - 1; index++)
         ? Enumerable.Range(0, 4_194_321)
             .Select(static index => checked((byte)(index % 251)))
             .ToArray()
-        : scenario == "rust-seed-pass"
+        : rustSeedScenario
             ? Encoding.ASCII.GetBytes(
-                $"synthetic CLI {RustMemberRole(index)} bytes")
+                $"synthetic {seedFixtureLabel} {RustMemberRole(index)} bytes")
             : Encoding.ASCII.GetBytes($"fixture-{artifactMetadata[index].Kind}");
 }
-artifactPayloads[^1] = scenario == "rust-seed-pass"
+artifactPayloads[^1] = rustSeedScenario
     ? WriteAcg2(artifactPayloads, artifactMetadata)
     : Encoding.ASCII.GetBytes($"fixture-{artifactMetadata[^1].Kind}");
 var artifacts = artifactMetadata.Select((metadata, index) =>
@@ -146,10 +149,10 @@ var tokenizerReceipt = WriteEvidence(
     "tokenizer.tokenizer2.conversion-receipt.json",
     new { schema = "fixture.tokenizer-receipt", status = "pass" });
 
-var graphIdentitySha256 = scenario == "rust-seed-pass"
+var graphIdentitySha256 = rustSeedScenario
     ? Convert.ToHexString(artifactPayloads[^1].AsSpan(80, 32)).ToLowerInvariant()
     : Sha256Text("fixture-graph-identity");
-var memberTableSha256 = scenario == "rust-seed-pass"
+var memberTableSha256 = rustSeedScenario
     ? Convert.ToHexString(artifactPayloads[^1].AsSpan(112, 32)).ToLowerInvariant()
     : Sha256Text("fixture-member-table");
 var receiptArtifacts = artifacts.Select(value => new
@@ -188,7 +191,7 @@ var terminalReceipt = new
         graphIdentitySha256,
         memberTableSha256,
         resolvedMemberBytes = artifacts
-            .Take(scenario == "rust-seed-pass" ? 5 : 6)
+            .Take(rustSeedScenario ? 5 : 6)
             .Aggregate(0UL, (total, value) => total + value.ByteLength)
     },
     componentReceipts = new

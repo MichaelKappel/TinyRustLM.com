@@ -20,6 +20,8 @@
                       ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\..\tools\TinyRustLM.P2PSeedFixtureTool\TinyRustLM.P2PSeedFixtureTool.csproj"
                       ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\..\tools\TinyRustLM.DirectSeedWireFixtureTool\TinyRustLM.DirectSeedWireFixtureTool.csproj"
+                      ReferenceOutputAssembly="false" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\contracts\vnext\companion-loopback-capability-vectors.v2.json"
