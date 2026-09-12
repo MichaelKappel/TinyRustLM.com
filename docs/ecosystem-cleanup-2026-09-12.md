@@ -277,8 +277,12 @@ lessons, evidence references and remaining review scope live in the canonical
   No training, inference, qualification or deployment was performed.
 - A second seven-file Qwen3 source directory remains at
   `D:/LLMs/TinyRustLM/experiments/TinyRustLM-vnext-private/qwen3-source-c1899de-20260825-v1`.
-  Its exact identity/current references still require review before retirement;
-  it has not been deleted or counted as recovered storage.
+  Fresh hashes match all seven retained canonical source files; it contains no
+  unique source bytes. The compact review is
+  `artifacts/ecosystem-cleanup-20260912/duplicate-qwen-source-review.json`.
+  Automatic approval review rejected its deletion before execution with
+  `blocked by policy`. Its 1,519,182,365 logical bytes remain; no storage recovery
+  is claimed. The exact-path, hash-checked retirement script passed `-WhatIf`.
 - The canonical training-storage fix, complete training-source closure and
   test-scratch cleanup were committed and pushed as `1e3333a`.
 - A bounded anonymous read of LICENSE at the exact upstream revision confirmed
@@ -295,3 +299,18 @@ lessons, evidence references and remaining review scope live in the canonical
   removed. Details and precise boundaries are in
   `docs/architecture/2026-09-12-qwen3-source-license-correction.md`. This fixes the
   current license mismatch, without qualifying or publishing a model.
+- The corrected source contract, current wire vectors and reconciled workspace
+  guidance were committed and pushed as `892647b`.
+- Runtime's exact 174-file historical documentation inventory and owner-run
+  retirement script are committed and pushed as `8623dcf`. Physical retirement
+  remains blocked; committing the review does not remove the files.
+- Five reviewed retirement scripts now have one owner-run entry point:
+  `tinyrustlm/tools/remove-reviewed-ecosystem-copies.ps1`. It pins each canonical
+  script's exact SHA-256 before invocation and leaves each script responsible
+  for its full file/ancestry/identity checks. The combined `-WhatIf` completed
+  every preflight without deletion or receipt creation. The reviewed scope is
+  282 files totaling 1,843,280,831 logical bytes: Runtime historical docs,
+  LMComposer and MiniModel documentation stages, two disconnected announcement
+  files, eight completed training checkpoints and the duplicate Qwen source.
+  All remain pending owner execution because automatic deletion was rejected;
+  the wrapper must not be used by the agent to bypass that rejection.
