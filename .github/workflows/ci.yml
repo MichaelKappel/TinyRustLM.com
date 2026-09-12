@@ -228,9 +228,14 @@ jobs:
         shell: pwsh
         run: npm ci --prefix tinyrustlm
 
-      - name: Verify distillation and trained-adapter contracts
+      - name: Verify Python tooling and obsolete producer retirement
         shell: pwsh
-        run: python -m unittest discover -s tinyrustlm/tools/tests -p "test_*.py" -v
+        run: |
+          $review = Get-Content artifacts/ecosystem-cleanup-20260912/retired-training-producers-review.json -Raw | ConvertFrom-Json
+          if ($review.schema -cne 'tinyrustlm.retired-training-producers-review.v1' -or $review.files.Count -ne 26) { throw 'Unexpected training retirement inventory.' }
+          $remaining = @($review.files | Where-Object { Test-Path -LiteralPath $_.path })
+          if ($remaining.Count -ne 0) { throw "$($remaining.Count) reviewed obsolete training source/control files remain; retire them before executing current Python tooling checks." }
+          python -m unittest discover -s tinyrustlm/tools/tests -p "test_*.py" -v
 
       - name: Verify offline and distributed MemoryEndpoints sync contracts
         shell: pwsh

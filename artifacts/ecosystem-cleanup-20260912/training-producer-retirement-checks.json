@@ -1,0 +1,34 @@
+{
+    "schema":  "tinyrustlm.training-producer-retirement-checks.v1",
+    "observedUtc":  "2026-09-12T21:47:44.6609859Z",
+    "directGuardChecks":  37,
+    "directGuardFailures":  0,
+    "scriptParse":  "pass",
+    "individualWhatIf":  "pass-26-files-no-mutation",
+    "ci":  "expected-failure-26-retired-files-remain",
+    "coverage":  "Pester 3.4.0 command coverage: 58/96 commands (60.42%). Below 75% target; exact-target destructive branch was not executed because physical retirement is policy-blocked. Read-only actual WhatIf and hostile guard checks were executed.",
+    "deletionReceiptAbsent":  true,
+    "scriptSha256":  "9038cc24701cabfec2b52b503c2a23462003078ec6f654e1c8676dc9bf6c7174",
+    "combinedWhatIf":  {
+                           "status":  "pass",
+                           "pendingReviewedFiles":  521,
+                           "pendingLogicalBytes":  1845899368,
+                           "newRemovalReceiptAbsent":  true,
+                           "physicalDeletionInferred":  false
+                       },
+    "pester":  {
+                   "tests":  5,
+                   "passed":  5,
+                   "failed":  0,
+                   "skipped":  0,
+                   "commandsAnalyzed":  96,
+                   "commandsExecuted":  58,
+                   "commandCoveragePercent":  60.42,
+                   "script":  "tinyrustlm/tools/tests/remove-reviewed-training-producers_test.ps1",
+                   "sha256":  "f3b255f043556441c0dd1565c4ae0ff2564a186539ebd6f611d98d048b0ef5de"
+               },
+    "missingHistoricalAssessmentPaths":  [
+                                             "artifacts/reports/qwen3-0.6b-topk-pilot-v1-assessment.md",
+                                             "artifacts/reports/qwen2.5-0.5b-topk-pilot-v1-assessment.md"
+                                         ]
+}

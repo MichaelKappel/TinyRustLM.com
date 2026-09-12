@@ -7,11 +7,23 @@ review workbooks, adapters, specialist proposals, and experiments are research
 infrastructure only. A successful dataset freeze, optimizer run, adapter export,
 or conversion does not establish assistant quality or product eligibility.
 
-The immediate product baseline is the immutable public
+The immutable public
 `Qwen/Qwen3-0.6B` source at revision
-`c1899de289a04d12100db370d81485cdf75e47ca`. Source screening, conversion,
-numerical proof, and untouched behavioral qualification precede any decision to
-train a derivative.
+`c1899de289a04d12100db370d81485cdf75e47ca` is terminally rejected as a product
+model. It is permitted only as ancestry for a distinct derivative in the
+[current working-model lane](../training/qwen3-0.6b-working-model-v1/README.md).
+That lane still requires independent evaluation custody, reviewed curriculum,
+fresh exact environment/training bindings, untouched derivative qualification,
+SLM2 conversion and native/WASM/browser evidence. No working default model is
+established by the research infrastructure.
+
+The older generic sequence/top-k trainer, teacher-cache builder and
+adapter-source/ALR1 exporter are retired designs. Their 18 recipes, two cache
+controls and three test modules have also been reviewed for removal. Automatic
+approval review blocked the 26-file deletion; those files physically remain
+pending the hash-checked owner cleanup command. Do not execute or restore that
+route. Exact source history and useful experimental lessons are retained in
+Git and `wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md`.
 
 ## No-Cheat Boundary
 
@@ -60,8 +72,8 @@ including cases where the correct answer must change.
 
 Use the smallest credible experiment first:
 
-1. screen the untouched source model under the declared product template and
-   sampling profile;
+1. screen an eligible new source under the declared product template and
+   sampling profile; do not replay terminally rejected exact bytes;
 2. run a small reviewed assistant-only SFT or sequence-distillation pilot;
 3. compare a low-rank adapter only if the sole current composition contract
    defines and validates that adapter type;
@@ -105,7 +117,8 @@ Estimate time rather than inventing measurements:
 ```text
 optimizer_steps = ceil(training_tokens / effective_tokens_per_step)
 wall_time = optimizer_steps * observed_seconds_per_step
-checkpoint_storage = checkpoint_count * bytes_per_checkpoint
+steady_checkpoint_storage = one_current_payload + compact_progress_receipts
+replacement_peak_storage = old_payload + verified_new_payload + compact_receipts
 ```
 
 Memory estimates separately account for parameters, gradients, optimizer

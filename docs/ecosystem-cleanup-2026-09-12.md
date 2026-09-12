@@ -429,3 +429,27 @@ lessons, evidence references and remaining review scope live in the canonical
   `artifacts/ecosystem-cleanup-20260912/checkpoint-retention-review.json` retain
   the result. Owned fixtures were removed; no historical-model deletion, measured
   storage recovery, new training, qualification or publication is claimed.
+- Current trainer retention and lesson T8 are committed/pushed as `33483be`;
+  all nine committed files exactly match their canonical worktree bytes.
+- The next review identifies an obsolete generic producer chain: sequence/top-k
+  trainer, importing teacher-cache builder, SmolLM2 adapter-source exporter,
+  their three tests, 18 recipes and two cache controls. All 26 files are retained
+  in Git `33483be`; exact identities and historical recipe parameters are in
+  `retired-training-producers-review.json`. Lessons T9-T11 retain loss-scaling,
+  token/distribution binding and serialized-factor validation findings.
+- The exporter targets the absent `tinyrustlm-slm-pack`/old adapter API; its
+  closed experiments are not current model-production authority. The research
+  guide now identifies Qwen3 base bytes as rejected product ancestry and routes
+  future work through the pinned lane. Obsolete executable restart instructions
+  were removed from the closed Qwen3 top-k README. Existing model/cache payloads
+  and unreviewed data-preparation tools remain outside this source retirement.
+- Automatic approval review rejected deleting the 26 files with `blocked by
+  policy`; all 207,667 logical bytes remain, freshly rehashed. The exact owner
+  script passed WhatIf, 37 read-only guard checks and five Pester tests. Command
+  coverage is 58/96 (60.42%), below the 75% target because the exact-target
+  destructive branch was not executed. CI reports the physical retirement
+  failure before running obsolete producer tests; no deletion is inferred.
+- The combined owner cleanup command includes this reviewed group and passed
+  full WhatIf. Pending scope is now 521 files and 1,845,899,368 logical bytes.
+  No new removal receipt or measured storage recovery exists. The missing raw
+  top-k assessment paths and remaining model/hosting/qualification work stay open.

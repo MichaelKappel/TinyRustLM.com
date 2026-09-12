@@ -35,6 +35,10 @@ $scripts = @(
         Path = 'E:\Source\Rust\TinyRustLM.MiRust.com\tools\remove-reviewed-runtime-mirror.ps1'
         Sha256 = 'ca110d073ac868e2d7199093c5f3c25a0eda4219f412ce4188b0a128ccbdae67'
     }
+    [pscustomobject]@{
+        Path = 'E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\remove-reviewed-training-producers.ps1'
+        Sha256 = '9038cc24701cabfec2b52b503c2a23462003078ec6f654e1c8676dc9bf6c7174'
+    }
 )
 
 # Refuse linked script paths or a substituted cleanup implementation.

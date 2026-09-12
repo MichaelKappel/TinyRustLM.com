@@ -21,12 +21,12 @@ untouched full-precision outputs improve on the unadapted source without
 regressing ordinary helpfulness, and the resulting `.slm` must independently
 pass the current native fixed-plus-seeded-holdout quality gate.
 
-Run the stages in order with the pinned ML Python environment:
-
-```powershell
-D:\LLMs\TinyRustLM\training-env-py312\Scripts\python.exe tinyrustlm\tools\build-distillation-logit-cache.py tinyrustlm\training\qwen3-0.6b-topk-pilot-v1\topk-cache-control-cpu-v1.local.json
-D:\LLMs\TinyRustLM\training-env-py312\Scripts\python.exe tinyrustlm\tools\train-distilled-lora.py tinyrustlm\training\qwen3-0.6b-topk-pilot-v1\training-recipe-topk-kd-cpu-v1.manifest
-```
+This is a closed historical experiment, not an executable restart procedure.
+The generic trainer, top-k cache builder and associated controls are reviewed
+for retirement. Their physical deletion remains blocked by automatic approval
+review. Exact source/control bytes remain in Git commit
+`33483be8ebdfb98b8f0ab58ed7e168da970fe523`; current training authority is defined
+only by the separate `qwen3-0.6b-working-model-v1` lane and its prerequisite gates.
 
 Keep raw source screens and rejection reports immutable. Never select a retry
 because it happened to produce the preferred answer.

@@ -173,6 +173,52 @@ storage recovery was measured, and no model qualification was established by
 these checks. This change requires fresh exact trainer/environment/authorization
 bindings; old locks and rejected experiments are not revived.
 
+## Retired generic training producers
+
+The next review traces the generic sequence/top-k trainer, its importing
+teacher-cache builder, the old SmolLM2 adapter-source exporter, their three
+test modules, 18 recipes and two cache controls. All 26 files are retained in
+Git commit `33483be8ebdfb98b8f0ab58ed7e168da970fe523`, with exact blob identities
+and any CRLF-only normalization recorded in
+`artifacts/ecosystem-cleanup-20260912/retired-training-producers-review.json`
+(SHA-256 `34dfbc3a7523ceeeecea5e96eec4b454f9daa074ad25d3e6e27dfb4826589efa`).
+Recipe parameters are historical method descriptions; their presence does not
+prove that every recipe ran.
+
+| ID | Reviewed observation | Lesson and current application |
+| --- | --- | --- |
+| T9 | The July 11 distillation memory records two invalid top-k runs caused by unnormalized custom loss during gradient accumulation. The inspected old Trainer subclasses set `model_accepts_loss_kwargs = False` in their later implementation. The historical corrected run and matched sequence baseline were still rejected for behavior. | Check the actual optimizer update scale, masks and separate SFT/KL metrics; a successful structural correction does not promote a model. The current pinned trainer explicitly divides its combined microbatch loss by accumulation and records both components. These are source observations; the old runs and Torch tests were not rerun here. |
+| T10 | The old cache producer requires identical teacher/student tokenizer bytes, binds rendered token IDs and assistant causal positions, resolves equal logits by token ID, and stores top-k probabilities plus normalized residual-tail mass. The consumer rejects token/position/dimension/hash drift. | Token-level supervision must preserve tokenizer, prompt, position and distribution identities. Retain these requirements for any separately authorized future method; do not re-enable a retired top-k implementation or use a rejected teacher as a product default. The current pinned lane uses same-base preservation KL and does not consume this cache format. |
+| T11 | The exporter checks factor shapes, dtype, finiteness, complete layer/module pairs and serialized f32 bounds, but emits the old adapter-source format for two SmolLM2 shapes. Its integration test invokes `tinyrustlm-slm-pack validate-adapter-source`, which is absent from the current Cargo workspace and Rust source. | Validate actual serialized numerical values through a current independent consumer. Useful numerical and provenance checks belong in the current format's implementation when needed; historical cross-language tests do not justify restoring ALR1, old model shapes or an absent package. |
+
+The generic trainer also has no checkpoint-count limit and copies a final
+adapter after periodic saves. The cache builder imports that trainer's contract;
+the ecosystem code-reference search found no importer outside this reviewed
+group. The separate pinned working-model lane is the current authority and
+already implements the T8 retention correction. The generic route is an
+obsolete producer chain, not another supported way around current training gates.
+
+The referenced top-k assessment reports were absent at their documented paths
+under canonical `artifacts/reports/`. The July 11 memory and the closed Qwen3
+pilot README retain historical rejection summaries, but their raw-output claims
+were not independently replayed or requalified in this review. The existing D:
+top-k model/cache directories were located; their payloads were not removed or
+given a blanket retirement disposition. Complete their separate evidence review
+before discarding useful experimental information.
+
+Automatic approval review rejected the exact-path 26-file source/control
+deletion before execution with `blocked by policy`. All 207,667 logical bytes
+were subsequently rehashed and remain unchanged. The hash-checked owner script
+`tinyrustlm/tools/remove-reviewed-training-producers.ps1` passed WhatIf, 37
+read-only guard checks and five persistent Pester tests, including linked metadata
+rejection. Pester 3.4 measured 58/96 commands (60.42%), below the 75% target;
+the exact-target destructive branch was not executed because physical retirement
+is policy-blocked. Current CI explicitly fails while any reviewed file
+remains, before executing the obsolete test modules. The combined owner cleanup
+WhatIf also passed; no removal receipt or measured storage recovery was produced.
+The guard evidence is
+`artifacts/ecosystem-cleanup-20260912/training-producer-retirement-checks.json`.
+
 The six screens bind the actual retained adapter hashes and contain eight cases
 each. Their input/output hashes and output lengths are retained without copying
 their prompt or answer text into the inventory. Their original raw JSON remains
