@@ -1,5 +1,5 @@
 profile: tinyrustlm.architecture.current.v1
-updated_utc: 2026-08-28T00:00:00Z
+updated_utc: 2026-09-12T22:15:46.200Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 
@@ -7,25 +7,27 @@ product:
   - One prelaunch clean-slate TinyRustLM product; no legacy or compatibility runtime.
   - Browser-local conversation UI with Rust/WASM execution and a downloadable Rust/.NET Companion for acquisition, conversion, and P2P hosting.
   - MiniModel.org supplies catalog/discovery metadata and never proxies model bytes.
+  - The owner authorizes MiniModel.org to serve the initial verified current model seeds directly from D:\LLMs\TinyRustLM. Hosting authorization does not establish a deployed seed or a qualified model.
 
 composition:
   members: model.slm2, tokenizer.tokenizer2, template.template2, sampling.sampling2, prompt.prompt2, composition.acg2
   identity: Installation, activation, transfer, runtime, evaluation, and release bind the exact six-member graph, not one filename or alias.
-  first_source: Qwen/Qwen3-0.6B at c1899de289a04d12100db370d81485cdf75e47ca
+  diagnostic_ancestor: Qwen/Qwen3-0.6B at c1899de289a04d12100db370d81485cdf75e47ca; unchanged weights are rejected as a product model, not an eligible default.
   qwen_oracle: 28 decoder layers, 16 query heads, 8 KV heads; model vocabulary capacity 151936 and tokenizer entries 151669 are distinct.
   quantization: mixed-Q8 is a project profile and implies no external packing format without exact contract evidence.
 
 proof_chain:
   - Pinned publisher framework is the upstream semantic oracle.
   - Scalar native is the reference for interpreting converted bytes.
-  - Optimized native and real-browser WASM are independent differential implementations.
+  - Current native and browser WASM share the scalar runtime; verify actual execution in both environments and keep any optimized-native claim separate.
   - Tokenizer, template, prompt, sampling, numerical, behavioral, browser, P2P, memory, and release gates remain separate.
 
 companion:
   contract: loopback-capability/4 + acquire.v2 + operation.v3 + operation-projection.v2
   operation: One explicit attempt, source-only route, exact pinned source and profile, create-only evidence, monotonic terminal state, and six-member fixed-chunk transfer.
-  current_blocker: Listener returns operation-not-available; no production executor or source-network owner exists; browser client is not loaded.
-  route_choice: Exact currently qualified peer composition first; otherwise explicit local pinned-source conversion. No instruction-file handoff or hidden fallback.
+  current_state: workspace.uai current_companion_truth is authoritative; production source ownership, acquisition, conversion, terminal inspection, transfer, listener and browser client wiring are implemented.
+  current_blocker: No real-source acquisition receipt through this coordinator or qualified real model is established; composition /12 is structural-only and numerical v2 closed with source-trace-environment-drift.
+  route_choice: Restore a usable eligible cached model or automatically acquire a small qualified MiniModel composition. HF, local files, conversion and manual peer/IP controls belong in Advanced; never silently convert or use remote inference.
 
 browser:
   - Dedicated worker owns composition, tokenizer, KV cache, generation, and cancellation.

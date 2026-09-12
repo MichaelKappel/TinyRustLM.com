@@ -1,26 +1,35 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-08-28T00:00:00Z
+updated_utc: 2026-09-12T22:15:46.200Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 
-current_checkpoint:
+historical_checkpoint:
   implementation_commit: 5a9c097e66a83ceb6ee71ebe36462981e311baf6
   memory_commit: da8bfacc138e4ab12291a9e90f77d6e5d62471b4
   verification: Managed 252/252; Node 1702 pass, 0 fail, 3 declared skips; focused browser/vector 19/19; formatting and diff hygiene pass.
-  companion: Strict source-operation and artifact contracts are implemented; production listener returns operation-not-available and browser client is not loaded.
+  boundary: These August 28 source/test counts are historical. They do not describe current implementation or establish real-model qualification or deployment.
+
+current_state:
+  authority: workspace.uai current_companion_truth
+  implementation: Production source acquisition, exclusive operation ownership, contained conversion, terminal reconciliation, six-member transfer and listener wiring exist; the product UI loads the capability client and composition installer.
+  blocker: No qualified real default model or real-source acquisition receipt through this coordinator is established. Numerical and outside-network seed evidence remain open.
+  source_review: artifacts/ecosystem-cleanup-20260912/public-source-metadata-review.json
+  hosting: docs/server-seeded-startup-2026-09-12.md
 
 active_operation:
-  name: UAI report-memory consolidation and two-lane MemoryEndpoints policy propagation
-  state: work in progress until complete tests, commit, push, and fresh remote equality
-  preserves: raw reports, manifests, syntheses, TDD deltas, ledger entries, immutable historical receipts, protected trees
-  replaces: duplicated hot checkpoint prose, stale current status, and obsolete MemoryEndpoints policy wording
+  name: Ecosystem cleanup and code-quality review of every project in E:\Source\Rust
+  state: in progress; current checkpoints and unresolved work are recorded in docs/ecosystem-cleanup-2026-09-12.md
+  preservation: Preserve unique work and useful experimental findings with compact evidence identities; retain source history in Git, not copied directories or obsolete executable archives.
+  storage: TinyRustLM source only in E:\Source\Rust\TinyRustLM.com; model payloads only in D:\LLMs\TinyRustLM; keep only verified replacements and leave X:\LLMS untouched.
+  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md
 
 next_product_operation:
-  - Preregister wholly new source-operation identities and absent roots.
-  - Implement one exclusive restart-safe source owner with bounded network and process custody.
-  - Stream and verify pinned Qwen source; launch converter once; independently inspect exact six-member output; close terminal evidence.
-  - Wire listener and load browser client only after real production ownership exists.
-  - Delete obsolete bridge and one-file acquisition vocabulary in the same green clean cut.
+  - Establish an eligible exact source checkpoint. The unchanged pinned Qwen3 weights remain rejected product ancestry; renamed repositories or template edits do not establish a new derivative.
+  - For the pinned training lane, obtain the required reviewed curriculum and independent holdout inputs plus fresh program/environment bindings; do not fabricate review or custody evidence.
+  - Use fresh numerical owner and operation registrations for an eligible source, then verify actual six-member composition, native/WASM agreement, untouched quality and useful browser chat. Do not replay closed failures.
+  - Prepare initial MiniModel.org server seeds using current qualified model bytes only from D:\LLMs\TinyRustLM. Hosting placement remains an unanswered owner decision; source implementation is not deployment evidence.
+  - Keep cache restoration and small qualified MiniModel acquisition as the beginner path; place HF, local files, conversion and manual peer/IP controls in Advanced.
+  - Continue remaining obsolete-code and experiment review, preserving findings before retirement and reporting blocked physical removals accurately.
 
 memory_operations:
   agent_lane: Direct MemoryEndpoints agent long-term memory, meetings, handoffs, and coordination across sites.

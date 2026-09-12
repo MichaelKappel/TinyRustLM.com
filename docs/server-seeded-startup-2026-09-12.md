@@ -73,7 +73,24 @@ tests; no whole-app coverage percentage is claimed. The installed Edge channel
 was used without downloading another browser copy.
 
 Implementation has advanced through the committed checkpoints and verification
-recorded in `docs/ecosystem-cleanup-2026-09-12.md`. The current chooser integration
-is prepared for its own source checkpoint. Source changes remain unpublished;
+recorded in `docs/ecosystem-cleanup-2026-09-12.md`, including chooser checkpoint
+`fec548b`. Source changes remain unpublished;
 real-model qualification, initial server hosting and full release gates remain
 open. Existing unfinished deployment work is preserved for separate review.
+
+A later exact-revision public metadata review compared two potential Qwen3
+derivatives with the rejected pinned source. PrimeIntellect's repository reports
+identical weight bytes and a changed tool-call template, so it would create a
+duplicate rather than supply new eligible weights. The instruction-finetuned
+candidate has different published weights but incomplete license/provenance
+records; it is not admitted yet and has not been run. The named sources, primary
+links, exact identities and limitations are recorded in lesson C21 of
+`wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md` and
+`artifacts/ecosystem-cleanup-20260912/public-source-metadata-review.json`.
+No weights, catalog entries or hosting changes resulted from this screening.
+
+The existing pinned training lane is another possible route to a new derivative,
+but its required reviewed curriculum, independent holdout inputs and fresh
+program/environment bindings are still prerequisites. They cannot be replaced
+with invented review identities or a synthetic model demonstration. See
+`tinyrustlm/training/qwen3-0.6b-working-model-v1/README.md`.

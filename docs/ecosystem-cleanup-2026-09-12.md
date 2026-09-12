@@ -453,3 +453,21 @@ lessons, evidence references and remaining review scope live in the canonical
   full WhatIf. Pending scope is now 521 files and 1,845,899,368 logical bytes.
   No new removal receipt or measured storage recovery exists. The missing raw
   top-k assessment paths and remaining model/hosting/qualification work stay open.
+- Exact-revision public metadata screening checked three named Qwen3 repositories
+  and verified 11 metadata files against publisher byte lengths and Git blob IDs.
+  PrimeIntellect reports the same rejected weight identity as the original Qwen
+  checkpoint, with a template change. A distinct instruction-finetuned candidate
+  lacks the required complete license/provenance records. Neither was acquired,
+  executed or qualified; the compact public-source-metadata review preserves
+  exact identities without saving another model or source copy.
+- Lesson C21 records this evidence and the need to compare weights before
+  treating a renamed repository as a new derivative. Four active UAI handoffs
+  now reflect implemented production acquisition/browser wiring and the approved
+  D:\LLMs\TinyRustLM model location; obsolete instructions to build that owner
+  again were removed. Historical intake receipts remain unchanged. The real
+  model, required training inputs and hosting placement decision remain open.
+  Compact-review consistency, local source-lock identity, lesson checksums,
+  canonical source references, current handoff wording and diff hygiene passed.
+  The source-authority gate passed for its registered governed roots. No runtime
+  code changed in this checkpoint, so no new model execution or runtime-test
+  result is claimed.

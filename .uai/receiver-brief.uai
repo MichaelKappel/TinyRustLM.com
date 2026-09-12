@@ -1,14 +1,16 @@
 profile: tinyrustlm.receiver-brief.current.v1
-updated_utc: 2026-08-28T00:00:00Z
+updated_utc: 2026-09-12T22:15:46.200Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 
 brief:
-  - Work only in E:\Source\Rust\TinyRustLM.com on codex/model-acquisition-v2; treat this exact non-reparse checkout as the sole source authority and never write D:.
+  - Work only in E:\Source\Rust\TinyRustLM.com on codex/model-acquisition-v2 for TinyRustLM source. Model payloads belong only in D:\LLMs\TinyRustLM; the owner's storage instruction supersedes the old D: prohibition. Leave X:\LLMS untouched.
   - TinyRustLM is prelaunch and clean-slate. Delete superseded implementations after verified replacement; add no compatibility or debt.
-  - Current Companion source-operation contracts are green at implementation commit 5a9c097, but the listener truthfully returns operation-not-available and the browser client is not loaded.
+  - Read workspace.uai current_companion_truth for current implementation. Production source ownership, acquisition, conversion, terminal inspection, transfer, listener and browser client wiring exist; old checkpoint 5a9c097 is historical.
   - The 47 newest reports are byte-exact, reviewed, ledgered, and routed by the decision index. They are advisory, not execution evidence.
   - MemoryEndpoints direct agent coordination and the TinyRustLM.com Connect user plugin are separate authorized lanes. Synchronized redundant prelaunch memory is allowed.
   - No model, browser, P2P, live memory, deployment, or publication claim exists beyond exact named receipts; counters remain zero.
-  - Next implement the real exclusive restart-safe source owner, then wire operation/transfer, load the sole client, and delete the old bridge/one-file flow.
+  - Continue the ecosystem cleanup in docs/ecosystem-cleanup-2026-09-12.md. Record experimental purpose, exact inputs, observed results, useful lessons and uncertainty before retiring obsolete files; use the canonical experiment-lessons record and Git history.
+  - Establish an eligible exact model and fresh numerical bindings before real qualification. The unchanged pinned Qwen3 weights remain rejected product ancestry, including byte-identical renamed repositories; see artifacts/ecosystem-cleanup-20260912/public-source-metadata-review.json.
+  - MiniModel.org may provide initial verified server seeds. Restore eligible cache or automatically acquire a small qualified starter, with HF/local/conversion/manual peer controls in Advanced. A real qualified model and the hosting placement decision remain open.
   - Commit and push every coherent green major change; deploy every affected site whenever its complete gate passes.

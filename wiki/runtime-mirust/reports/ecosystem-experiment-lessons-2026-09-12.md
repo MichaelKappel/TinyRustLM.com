@@ -273,6 +273,42 @@ checks, 55 pass; two correctly fail on the surviving stage and mirror.
 The replacement test independently verifies every retained Git blob.
 Historical prose belongs in Git rather than another active executable archive.
 
+## C21. Public source identities and obsolete current handoff instructions
+
+On September 12, a bounded metadata review checked three exact public
+repositories before any weight acquisition. Eleven model-card, configuration,
+tokenizer-configuration and license files were read from immutable revisions;
+each matched its publisher-reported byte length and Git blob ID. Weight
+identities below come from publisher Git LFS metadata, not newly downloaded or
+independently rehashed model payloads.
+
+| Exact source | Observation | Disposition and lesson |
+| --- | --- | --- |
+| `Qwen/Qwen3-0.6B@c1899de289a04d12100db370d81485cdf75e47ca` | Published weights remain 1,503,300,328 bytes at SHA-256 `f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b`, matching the current local source lock. | This is the already rejected product checkpoint, retained as diagnostic ancestry. A fresh metadata read is not a new model or qualification. |
+| `PrimeIntellect/Qwen3-0.6B@15aba67c8ec68aeac96f57ba7e31d373564ee03c` | The publisher describes a clone with tool-call template changes. Its published weight digest and length are identical to the Qwen checkpoint above. | Do not acquire it as a new derivative or create another stored copy. A different repository, revision or template does not establish different model weights or reopen a closed rejection. |
+| `andresnowak/Qwen3-0.6B-instruction-finetuned@9dc09e4ae93b7f35408f4128e0896b68ed3fd7a9` | Published weights differ. The reviewed revision has no bundled LICENSE, its card contains placeholder `licence` metadata, and the named parent/dataset are not bound to immutable revisions. The card documents a recipe, full prompt/completion loss, randomized templates and truncation concerns. | Not admitted for acquisition on this evidence. Missing provenance is not a measured model-quality failure. Reported multiple-choice benchmarks do not establish this application's independent chat, numerical, browser or seeding qualification. |
+
+Primary records: [Qwen repository](https://huggingface.co/Qwen/Qwen3-0.6B/tree/c1899de289a04d12100db370d81485cdf75e47ca),
+[PrimeIntellect card](https://huggingface.co/PrimeIntellect/Qwen3-0.6B/blob/15aba67c8ec68aeac96f57ba7e31d373564ee03c/README.md),
+and [instruction-finetuned card](https://huggingface.co/andresnowak/Qwen3-0.6B-instruction-finetuned/blob/9dc09e4ae93b7f35408f4128e0896b68ed3fd7a9/README.md).
+The compact review, including metadata URLs, byte counts, hashes, parsed
+architecture fields and exact reviewed file identities, is
+`artifacts/ecosystem-cleanup-20260912/public-source-metadata-review.json`,
+SHA-256 `3ede4040dbb9b7a989415ea4881976c36250fe2cf09abecfd1bf4ccc34352488`.
+This review is limited to the named sources. It downloaded no model weights,
+ran no model, changed no catalog or hosting, and made no storage-recovery claim.
+
+Four active UAI handoffs still described the production acquisition owner and
+browser client as missing; the receiver brief also prohibited D: writes.
+Current workspace/source evidence and the owner's model-storage instruction
+supersede that guidance. Architecture, operations, receiver and next-work notes
+now route to implemented ownership and the actual model/hosting blockers.
+The architecture note also correctly states that native and browser WASM share
+the current scalar runtime. Historical intake receipts retain their original
+checkpoint claims. Keep dated evidence immutable while correcting active
+instructions, or old notes will cause duplicate implementations and misplaced
+model copies even after the code is cleaned up.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

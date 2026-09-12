@@ -1,0 +1,300 @@
+{
+  "schema": "tinyrustlm.public-source-metadata-review.v1",
+  "observedAtUtc": "2026-09-12T22:15:46.200Z",
+  "canonicalSourceCommit": "57dae9136a9bf0c3e2d36a78734832f8fb1851dd",
+  "sourceLock": {
+    "path": "contracts/vnext/qwen3-0.6b-base-source-lock.v2.json",
+    "byteLength": 1901,
+    "sha256": "50a8c29e36398a9a088e4d9a224dad186809d34b1e050299d3ce3de7a01b7d0e"
+  },
+  "method": "Exact-revision primary publisher API and bounded raw metadata reads; all read source files checked against reported Git blob IDs and byte lengths; no model execution or payload acquisition.",
+  "scope": "Three named repositories only; not an exhaustive survey, upstream license judgment, acquisition receipt, or qualification decision for all derivatives.",
+  "candidates": [
+    {
+      "modelId": "Qwen/Qwen3-0.6B",
+      "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+      "gated": false,
+      "metadata": {
+        "url": "https://huggingface.co/api/models/Qwen/Qwen3-0.6B/revision/c1899de289a04d12100db370d81485cdf75e47ca?blobs=true",
+        "byteLength": 9946,
+        "sha256": "cdeef0b81514da9067d2945b57d73c3b0843bee4f23b976c47c119853ed9f2ad"
+      },
+      "cardMetadata": {
+        "library_name": "transformers",
+        "license": "apache-2.0",
+        "license_link": "https://huggingface.co/Qwen/Qwen3-0.6B/blob/main/LICENSE",
+        "pipeline_tag": "text-generation",
+        "base_model": [
+          "Qwen/Qwen3-0.6B-Base"
+        ]
+      },
+      "fileNames": [
+        ".gitattributes",
+        "LICENSE",
+        "README.md",
+        "config.json",
+        "generation_config.json",
+        "merges.txt",
+        "model.safetensors",
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "vocab.json"
+      ],
+      "publishedWeights": {
+        "path": "model.safetensors",
+        "byteLength": 1503300328,
+        "sha256": "f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b",
+        "identityBasis": "publisher Git LFS metadata; payload not downloaded or independently rehashed in this review"
+      },
+      "readFiles": [
+        {
+          "name": "README.md",
+          "url": "https://huggingface.co/Qwen/Qwen3-0.6B/raw/c1899de289a04d12100db370d81485cdf75e47ca/README.md",
+          "byteLength": 13965,
+          "sha256": "1ab64a26fcb3b461423b89a433a8c858f1bf8d4086f979cbb3ff878d47cf20e9",
+          "gitBlobId": "a50b19e76f5274f9ec99f5a5d99873dca5bff25e"
+        },
+        {
+          "name": "config.json",
+          "url": "https://huggingface.co/Qwen/Qwen3-0.6B/raw/c1899de289a04d12100db370d81485cdf75e47ca/config.json",
+          "byteLength": 726,
+          "sha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+          "gitBlobId": "f5c3703b78ae2a478ae15b247e9f855e0ce2107b"
+        },
+        {
+          "name": "tokenizer_config.json",
+          "url": "https://huggingface.co/Qwen/Qwen3-0.6B/raw/c1899de289a04d12100db370d81485cdf75e47ca/tokenizer_config.json",
+          "byteLength": 9732,
+          "sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+          "gitBlobId": "417d038a63fa3de29cfde265caedae14d1a58d92"
+        },
+        {
+          "name": "LICENSE",
+          "url": "https://huggingface.co/Qwen/Qwen3-0.6B/raw/c1899de289a04d12100db370d81485cdf75e47ca/LICENSE",
+          "byteLength": 11343,
+          "sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e",
+          "gitBlobId": "6634c8cc3133b3848ec74b9f275acaaa1ea618ab"
+        }
+      ],
+      "config": {
+        "architectures": [
+          "Qwen3ForCausalLM"
+        ],
+        "modelType": "qwen3",
+        "hiddenSize": 1024,
+        "intermediateSize": 3072,
+        "layers": 28,
+        "queryHeads": 16,
+        "keyValueHeads": 8,
+        "headDimension": 128,
+        "vocabularyCapacity": 151936,
+        "tiedWordEmbeddings": true,
+        "dtype": "bfloat16"
+      },
+      "tokenizerConfigChatTemplate": {
+        "byteLength": 4168,
+        "sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8"
+      },
+      "disposition": "unchanged previously rejected product checkpoint; diagnostic ancestry only"
+    },
+    {
+      "modelId": "PrimeIntellect/Qwen3-0.6B",
+      "revision": "15aba67c8ec68aeac96f57ba7e31d373564ee03c",
+      "gated": false,
+      "metadata": {
+        "url": "https://huggingface.co/api/models/PrimeIntellect/Qwen3-0.6B/revision/15aba67c8ec68aeac96f57ba7e31d373564ee03c?blobs=true",
+        "byteLength": 9960,
+        "sha256": "f22df55d22b1f2d0d7d807277213c2c1ec6dc4f0b716052961f1f8cc802dad01"
+      },
+      "cardMetadata": {
+        "library_name": "transformers",
+        "license": "apache-2.0",
+        "license_link": "https://huggingface.co/Qwen/Qwen3-0.6B/blob/main/LICENSE",
+        "pipeline_tag": "text-generation",
+        "base_model": [
+          "Qwen/Qwen3-0.6B-Base"
+        ]
+      },
+      "fileNames": [
+        ".gitattributes",
+        "LICENSE",
+        "README.md",
+        "added_tokens.json",
+        "chat_template.jinja",
+        "config.json",
+        "generation_config.json",
+        "merges.txt",
+        "model.safetensors",
+        "special_tokens_map.json",
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "vocab.json"
+      ],
+      "publishedWeights": {
+        "path": "model.safetensors",
+        "byteLength": 1503300328,
+        "sha256": "f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b",
+        "identityBasis": "publisher Git LFS metadata; payload not downloaded or independently rehashed in this review"
+      },
+      "readFiles": [
+        {
+          "name": "README.md",
+          "url": "https://huggingface.co/PrimeIntellect/Qwen3-0.6B/raw/15aba67c8ec68aeac96f57ba7e31d373564ee03c/README.md",
+          "byteLength": 297,
+          "sha256": "5eff9371fccab96eb2ffdf230552337f0a808263ac98a4555339ea55e288c7e6",
+          "gitBlobId": "c10ecfe82664faa0916cd629e7e4e14ea0c2de2d"
+        },
+        {
+          "name": "config.json",
+          "url": "https://huggingface.co/PrimeIntellect/Qwen3-0.6B/raw/15aba67c8ec68aeac96f57ba7e31d373564ee03c/config.json",
+          "byteLength": 726,
+          "sha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+          "gitBlobId": "f5c3703b78ae2a478ae15b247e9f855e0ce2107b"
+        },
+        {
+          "name": "tokenizer_config.json",
+          "url": "https://huggingface.co/PrimeIntellect/Qwen3-0.6B/raw/15aba67c8ec68aeac96f57ba7e31d373564ee03c/tokenizer_config.json",
+          "byteLength": 5373,
+          "sha256": "7971dcf60600ceaabb40691d53402eafc8883bc897a9c94019290e889812fa81",
+          "gitBlobId": "b860ffc1aee8e79f88f3773a40d1d0e131520309"
+        },
+        {
+          "name": "LICENSE",
+          "url": "https://huggingface.co/PrimeIntellect/Qwen3-0.6B/raw/15aba67c8ec68aeac96f57ba7e31d373564ee03c/LICENSE",
+          "byteLength": 11343,
+          "sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e",
+          "gitBlobId": "6634c8cc3133b3848ec74b9f275acaaa1ea618ab"
+        }
+      ],
+      "config": {
+        "architectures": [
+          "Qwen3ForCausalLM"
+        ],
+        "modelType": "qwen3",
+        "hiddenSize": 1024,
+        "intermediateSize": 3072,
+        "layers": 28,
+        "queryHeads": 16,
+        "keyValueHeads": 8,
+        "headDimension": 128,
+        "vocabularyCapacity": 151936,
+        "tiedWordEmbeddings": true,
+        "dtype": "bfloat16"
+      },
+      "tokenizerConfigChatTemplate": {
+        "present": false
+      },
+      "disposition": "do not acquire as a new derivative: same published weight digest and byte count as rejected checkpoint; publisher describes clone with changed tool-call chat template"
+    },
+    {
+      "modelId": "andresnowak/Qwen3-0.6B-instruction-finetuned",
+      "revision": "9dc09e4ae93b7f35408f4128e0896b68ed3fd7a9",
+      "gated": false,
+      "metadata": {
+        "url": "https://huggingface.co/api/models/andresnowak/Qwen3-0.6B-instruction-finetuned/revision/9dc09e4ae93b7f35408f4128e0896b68ed3fd7a9?blobs=true",
+        "byteLength": 3289,
+        "sha256": "5beff0ebb1ba702b771ebef4b9c2b0b5d302b2b4757c752d1a7643d95dd333f6"
+      },
+      "cardMetadata": {
+        "base_model": "unsloth/Qwen3-0.6B-Base",
+        "library_name": "transformers",
+        "model_name": "Qwen3-0.6B-instruction-finetuned",
+        "tags": [
+          "generated_from_trainer",
+          "unsloth",
+          "trl",
+          "sft"
+        ],
+        "licence": "license",
+        "datasets": [
+          "andresnowak/Instruction-finetuning-mixture-mnlp"
+        ],
+        "language": [
+          "en"
+        ]
+      },
+      "fileNames": [
+        ".gitattributes",
+        "README.md",
+        "added_tokens.json",
+        "config.json",
+        "generation_config.json",
+        "merges.txt",
+        "model.safetensors",
+        "special_tokens_map.json",
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "training_args.bin",
+        "vocab.json",
+        "wandb_run_id.txt"
+      ],
+      "publishedWeights": {
+        "path": "model.safetensors",
+        "byteLength": 1192135096,
+        "sha256": "f1ca93dff038dd37dc9e5f07f5120a7a486b46fa4535a3a237494fe05df4800e",
+        "identityBasis": "publisher Git LFS metadata; payload not downloaded or independently rehashed in this review"
+      },
+      "readFiles": [
+        {
+          "name": "README.md",
+          "url": "https://huggingface.co/andresnowak/Qwen3-0.6B-instruction-finetuned/raw/9dc09e4ae93b7f35408f4128e0896b68ed3fd7a9/README.md",
+          "byteLength": 6069,
+          "sha256": "201225e855f30b8afb60e47741d692cbfdf4e77abb2328506e8ad9af42fcb7dc",
+          "gitBlobId": "d4f733bdb464fab2a2ab1c0cdfb98031279f4e1f"
+        },
+        {
+          "name": "config.json",
+          "url": "https://huggingface.co/andresnowak/Qwen3-0.6B-instruction-finetuned/raw/9dc09e4ae93b7f35408f4128e0896b68ed3fd7a9/config.json",
+          "byteLength": 785,
+          "sha256": "0a13632b162634941b80f9d5edbf01770c0ee912581a736a767da26b7dc9595a",
+          "gitBlobId": "faa5860f67c643ad50a2455edd8fd82bdde6ee50"
+        },
+        {
+          "name": "tokenizer_config.json",
+          "url": "https://huggingface.co/andresnowak/Qwen3-0.6B-instruction-finetuned/raw/9dc09e4ae93b7f35408f4128e0896b68ed3fd7a9/tokenizer_config.json",
+          "byteLength": 5434,
+          "sha256": "8b816fdd2812ed1000846517aca9e080c7fd5f92046b7eefdf6504ada4bccefb",
+          "gitBlobId": "58dd69c04fc6765620bdd4559916f68a261539f5"
+        }
+      ],
+      "config": {
+        "architectures": [
+          "Qwen3ForCausalLM"
+        ],
+        "modelType": "qwen3",
+        "hiddenSize": 1024,
+        "intermediateSize": 3072,
+        "layers": 28,
+        "queryHeads": 16,
+        "keyValueHeads": 8,
+        "headDimension": 128,
+        "vocabularyCapacity": 151936,
+        "tiedWordEmbeddings": true,
+        "dtype": "bfloat16"
+      },
+      "tokenizerConfigChatTemplate": {
+        "present": false
+      },
+      "disposition": "not admitted for acquisition: distinct published weights, but no bundled LICENSE, invalid placeholder licence metadata, and unpinned parent/dataset identities in the reviewed card; not a model-quality failure",
+      "trainingObservations": [
+        "Card names dataset mixture and recipe parameters, but does not bind immutable parent or dataset revisions.",
+        "Card reports prompt-and-completion loss, randomized templates, and truncation concerns.",
+        "Reported multiple-choice benchmark results do not establish this application's untouched chat, numerical, browser, or seeding qualification."
+      ]
+    }
+  ],
+  "conclusions": [
+    "Repository name or recent revision does not prove new model bytes. Check exact weights before storing another copy.",
+    "Template changes alone do not reopen terminally rejected weights as a qualified model.",
+    "Distinct weights and benchmark claims are insufficient without the existing provenance and independent qualification gates."
+  ],
+  "claims": {
+    "modelWeightsDownloaded": false,
+    "modelExecutionPerformed": false,
+    "newModelQualified": false,
+    "sourceCopyCreated": false,
+    "storageRecovered": false,
+    "hostingChanged": false,
+    "catalogChanged": false
+  }
+}

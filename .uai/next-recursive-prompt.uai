@@ -1,9 +1,9 @@
 profile: tinyrustlm.next-goal.current.v1
-updated_utc: 2026-08-28T00:00:00Z
+updated_utc: 2026-09-12T22:15:46.200Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 
-goal: Deliver one real provenance-bound Qwen3-0.6B six-member SLM2 composition through the production Companion source operation, independent structural inspection, scalar/native/browser numerical proof, useful-model qualification, P2P-or-convert acquisition, genuine clean-profile multi-turn chat, both MemoryEndpoints lanes, source-controlled release, deployment, and HTTPS readback.
+goal: Continue the owner-requested cleanup and code-quality review across every project in E:\Source\Rust, including current-only SLM2, a real small working default through MiniModel.org and initial server seeds. Use docs/ecosystem-cleanup-2026-09-12.md for current scope and checkpoints; this goal is not complete at an audit or synthetic demonstration.
 
 start:
   - Read workspace.uai, .uai/totem.uai, .uai/taboo.uai, the canonical memory, the report decision index, and the current Companion memory.
@@ -11,10 +11,11 @@ start:
   - Preserve every immutable historical operation, especially /10; create wholly new preregistered identities for real execution.
 
 immediate_work:
-  - Complete this bounded UAI consolidation and commit/push it green.
-  - Implement the exclusive restart-safe production source owner with bounded pinned-source streaming, contained converter process custody, cancellation, immutable terminal evidence, and independent six-member inspection.
-  - Keep listener operation-not-available until the real owner exists; never wire a queued fiction or fixture executor.
-  - Load the sole browser client and delete the old bridge and one-file acquisition semantics only after matching production operation/transfer contracts are green.
+  - Use workspace.uai current_companion_truth for implemented production acquisition, operation ownership, conversion, terminal inspection, transfer, listener and browser client wiring. Do not rebuild these from obsolete August handoff prose.
+  - Continue remaining obsolete-code, model-artifact and experiment review. Preserve useful findings and compact identities before retirement; verify actual removals and keep blocked deletions explicit.
+  - Establish an eligible exact source and fresh numerical bindings. The pinned Qwen3 source is rejected product ancestry; artifacts/ecosystem-cleanup-20260912/public-source-metadata-review.json records the reviewed public candidates and why neither is admitted yet.
+  - The pinned training route still needs reviewed curriculum, independent holdout inputs and fresh exact program/environment bindings. Do not invent independent reviewers or reuse closed failed operations.
+  - Prepare authorized MiniModel.org initial seeds from D:\LLMs\TinyRustLM after qualification; resolve the outstanding hosting placement decision before dependent changes. Default to eligible cache or a small qualified MiniModel download, keeping technical choices in Advanced.
 
 ordered_gates:
   - Contract and hostile vectors.
@@ -29,6 +30,7 @@ ordered_gates:
   - Package/site release, publication logs, synchronized documentation, deployment, rollback, and HTTPS readback.
 
 hard_rules:
+  - Source has one canonical repository per project; TinyRustLM model payloads belong only under D:\LLMs\TinyRustLM. Do not create backup checkouts, source copies or scattered scratch; use Git for history and retain only verified replacements.
   - No legacy, compatibility, migration, alias, fallback, repair, hidden retry, best-of-N, debt, test weakening, fabricated evidence, or counter inflation.
   - Keep model/raw evidence/credentials outside Git and private prompts out of public records.
   - Duplicate prelaunch memory only when every maintained copy stays current, secret-safe, provenance-labeled, and noncontradictory.

@@ -21,6 +21,13 @@ ecosystem_cleanup:
   retired_training_producers: Generic sequence/top-k training, its cache builder and old adapter-source exporter are reviewed for retirement with three tests, 18 recipes and two controls. Git 33483be retains all 26 source/control files. Physical deletion was blocked by automatic approval review; all remain. Lessons T9-T11 and retired-training-producers-review.json preserve methods and uncertainty. The owner script passed WhatIf, 37 read-only guards and five Pester tests; command coverage 60.42 percent is below target because the destructive branch was not executed. CI correctly fails on surviving files. Combined WhatIf covers 521 files, 1845899368 logical bytes, with no removal/storage claim. Existing top-k model/cache payloads still need separate review.
   blocked_deletions: Automatic review rejected Runtime historical docs, LMComposer historical stage files, MiniModel.MiRust's 27-file historical stage and two obsolete TinyRust announcement files. Exact-hash PowerShell cleanups await owner execution. All pending bytes are still reported present; the old announcement test remains incompatible with the retired API.
 
+public_source_screening:
+  reviewed_utc: 2026-09-12T22:15:46.200Z
+  evidence: artifacts/ecosystem-cleanup-20260912/public-source-metadata-review.json
+  result: Eleven exact-revision public metadata files match publisher lengths and Git blob IDs. PrimeIntellect Qwen3 has the same published weight identity as rejected Qwen ancestry; the reviewed instruction-finetuned candidate has distinct weights but incomplete license/provenance records. No weights acquired, model executed, candidate qualified or hosting changed.
+  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md C21
+  handoff_correction: Active architecture, operations, receiver and next-work notes now route to implemented source ownership/browser wiring and actual model/hosting blockers; the receiver no longer contradicts approved D:\LLMs\TinyRustLM storage. Historical intake checkpoint records remain unchanged.
+
 historical_source_checkpoint:
   head_entering_work: da8bfacc138e4ab12291a9e90f77d6e5d62471b4
   implementation: 5a9c097e66a83ceb6ee71ebe36462981e311baf6
