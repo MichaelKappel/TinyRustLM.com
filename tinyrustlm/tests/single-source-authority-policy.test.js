@@ -391,6 +391,27 @@ test("root workspace routing is one tracked current-only byte identity", () => {
   }
 });
 
+test("rejects recreation of every storage root retired in the September consolidation", () => {
+  const retired = require("../../contracts/storage/retired-storage-roots-2026-09-12.json");
+  assert.equal(retired.length, 51);
+  for (const root of retired) {
+    assert.equal(supersededSourceRoots.includes(root), true, root);
+    assert.throws(() => verifyForbiddenPathAbsence(
+      supersededSourceRoots, "source_authority_superseded_root_present", {
+        fileSystem: {
+          // A virtual recreated directory exercises rejection without making a copy.
+          lstatSync(candidate) {
+            if (candidate === root) return {};
+            const error = new Error("absent");
+            error.code = "ENOENT";
+            throw error;
+          }
+        }
+      }), (error) => error.code === "source_authority_superseded_root_present" &&
+        error.detail === root);
+  }
+});
+
 test("uses a path-free bounded evidence-container policy", () => {
   assert.deepEqual(evidenceContainerHardLimits, {
     maximumContainers: 16,
@@ -401,13 +422,10 @@ test("uses a path-free bounded evidence-container policy", () => {
     maximumFiles: 1024,
     maximumTotalBytes: 32 * 1024 * 1024
   });
-  assert.equal(registeredEvidenceContainerProfiles.length, 1);
-  assert.equal(registeredEvidenceContainerProfiles[0].root,
-    registeredReleaseEvidenceContainerRoot);
+  assert.equal(registeredEvidenceContainerProfiles.length, 0);
   assert.equal(registeredReleaseEvidenceContainerRoot,
     "E:\\Source\\External\\TinyRustLM-release-evidence");
-  assert.equal(registeredEvidenceContainerProfiles[0]
-    .allowedDirectChildIdentities.length, 45);
+  assert.equal(supersededSourceRoots.includes(registeredReleaseEvidenceContainerRoot), true);
   assert.deepEqual(evidenceContainerProfilesForVerification(),
     registeredEvidenceContainerProfiles);
   assert.equal(registeredEvidenceContainerProfiles.some((profile) =>
@@ -791,9 +809,8 @@ test("rejects every second local source-marked TinyRustLM.com directory", () => 
   assert.deepEqual(result.discoveredRoots, [path.resolve(canonicalRoot)]);
   assert.deepEqual(result.discoveredEcosystemRoots,
     canonicalEcosystemDiscovery().roots);
-  assert.equal(result.permittedBinaryReleaseEvidenceArchives.length, 83);
-  assert.equal(result.permittedBinaryReleaseEvidenceArchives.filter((candidate) =>
-    candidate.includes("UAIX.Browser.p2pRuntime.SeedHost.Tool")).length, 23);
+  // Superseded packaged builds were physically removed during storage consolidation.
+  assert.deepEqual(result.permittedBinaryReleaseEvidenceArchives, []);
   assert.deepEqual(authorityResultForStdout(result), {
     canonicalLayoutAvailable: true,
     coverageClass: "registered-governed-roots-only",
@@ -1055,7 +1072,8 @@ test("derives the exact 15-file ecosystem authority marker inventory", () => {
 });
 
 test("strict governed scans reject a partial TinyRustLM Git source fixture", () => {
-  const governedRoot = path.resolve(os.tmpdir(),
+  // This filesystem is virtual; do not inherit exemptions from a canonical TEMP path.
+  const governedRoot = path.resolve(path.parse(canonicalRoot).root,
     "authority-partial-git-governed-root");
   const partialRoot = path.join(governedRoot, "operation", "source");
   const unrelatedRoot = path.join(governedRoot, "unrelated-repository");

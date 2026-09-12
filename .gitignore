@@ -33,7 +33,9 @@ artifacts/training/**
 !artifacts/packages/.gitkeep
 !artifacts/reports/.gitkeep
 
-# Generated packages and third-party review material stay in external storage.
+# Generated packages and bounded review material stay under this canonical root.
+artifacts/cleanup-20260912/**
+artifacts/retained-evidence/**
 artifacts/releases/**
 artifacts/browser-packages/**
 artifacts/seed-host-native/**
@@ -43,7 +45,7 @@ artifacts/performance/**
 artifacts/verification/**
 artifacts/seed-host-evidence/native-smoke/**
 
-# Model payloads belong in an operator-controlled external content-addressed store.
+# Model payloads belong only in D:\LLMs\TinyRustLM, outside source control.
 *.safetensors
 *.gguf
 *.onnx

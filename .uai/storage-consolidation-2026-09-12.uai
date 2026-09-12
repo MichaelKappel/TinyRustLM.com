@@ -1,0 +1,20 @@
+profile: tinyrustlm.storage-consolidation.2026-09-12
+status: complete
+authority: explicit current user instruction
+source_root: E:\Source\Rust\TinyRustLM.com
+model_root: D:\LLMs\TinyRustLM
+replacement_policy: Keep the verified current replacement and delete superseded bytes. Commit source regularly; never use copied checkouts as history.
+audit_root: artifacts/cleanup-20260912
+scan: 244262 directories and 7097547 files enumerated on E; reparse points not followed; System Volume Information denied access.
+intake: Canonical Content and Improvement buckets were placeholder-only at session start.
+source_preservation: Existing tracked and untracked canonical work is recorded in canonical-baseline.json and must remain intact.
+recovered_code: Unique obsolete ecosystem-public-readback-v1.mjs preserved only in Git branch archive/cleanup-20260912-readback at 134a38d2113d38bffe04c5581290fef252aea6cc.
+artifact_materialization: 24 canonical artifact junctions replaced with physical directories before external retirement; model payloads subsequently transfer to the designated D store.
+taboo_policy: All 4167 surviving taboo.uai files were verified to contain the current source/model/replacement directive.
+evidence_policy: Preserve meaningful bounded receipts inside the canonical repository; remove duplicate reports, generated source, caches, tooling environments, and superseded model payloads.
+verification_boundary: No cleanup-complete claim until physical absence and retained-file verification pass. No application functionality, model qualification, deployment, publication, or remote push is claimed.
+validation: 47 source-authority tests passed; 83.97 percent line coverage; actual source-authority gate passed; physical whole-drive inventory has the separately recorded System Volume Information exclusion.
+physical_verification: All 51 retired roots absent; old physical C model store absent; 2552 preexisting source files checked with no unexpected change; 18 model hard-link pairs verified.
+model_duplicate_bytes_eliminated: 25546602912
+durable_report: docs/storage-consolidation-2026-09-12.md
+model_manifest: D:\LLMs\TinyRustLM\storage-manifest-20260912.json

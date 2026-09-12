@@ -348,53 +348,6 @@ const looseSourceExemptRoots = Object.freeze([
 ]);
 const registeredReleaseEvidenceContainerRoot =
   governedExternalSourceScopes[3].root;
-const registeredReleaseEvidenceDirectChildren = Object.freeze([
-  "browser-smoke-20260801-aa71b38",
-  "browser-smoke-20260802-aa71b38",
-  "browser-smoke-20260802-aa71b38-r2",
-  "browser-smoke-20260802-release-contract-v1",
-  "campaign-dashboard-20260802T1536Z.json",
-  "clean-history-secret-scan-20260802",
-  "clean-history-secret-scan-20260802.json",
-  ["dashboard", "snapshots"].join("-"),
-  "source-clean-root-20260802",
-  "tinyrustlm-full-test-20260802.txt",
-  "tinyrustlm-full-test-clean-history-20260802.txt",
-  "tinyrustlm-web-deployment-20260801T1754349786628Z-8a8536158c9f.json",
-  "tinyrustlm-web-deployment-20260801T1803079801501Z-6b38e2e11e1d.json",
-  "tinyrustlm-web-deployment-20260801T1857290939365Z-e7e07e4db9ac.json",
-  "tinyrustlm-web-deployment-20260801T1943080933664Z-58d4bd85d1ad.json",
-  "tinyrustlm-web-deployment-20260801T2057555014795Z-ea808d88127c.json",
-  "tinyrustlm-web-deployment-20260801T2102476277474Z-588eef9cb099.json",
-  "tinyrustlm-web-deployment-20260801T2106227991144Z-b0a7661bec53.json",
-  "tinyrustlm-web-deployment-20260801T2109239716361Z-427b567764b7.json",
-  "tinyrustlm-web-deployment-20260801T2112297360399Z-31bd27ffe0ee.json",
-  "tinyrustlm-web-deployment-20260801T2118491669738Z-ed1505573490.json",
-  "tinyrustlm-web-deployment-20260801T2145134090034Z-34bb81f2201e.json",
-  "tinyrustlm-web-secret-scan-20260801T1754349786628Z-8a8536158c9f.json",
-  "tinyrustlm-web-secret-scan-20260801T1803079801501Z-6b38e2e11e1d.json",
-  "tinyrustlm-web-secret-scan-20260801T1857290939365Z-e7e07e4db9ac.json",
-  "tinyrustlm-web-secret-scan-20260801T1943080933664Z-58d4bd85d1ad.json",
-  "tinyrustlm-web-secret-scan-20260801T2057555014795Z-ea808d88127c.json",
-  "tinyrustlm-web-secret-scan-20260801T2102476277474Z-588eef9cb099.json",
-  "tinyrustlm-web-secret-scan-20260801T2106227991144Z-b0a7661bec53.json",
-  "tinyrustlm-web-secret-scan-20260801T2109239716361Z-427b567764b7.json",
-  "tinyrustlm-web-secret-scan-20260801T2112297360399Z-31bd27ffe0ee.json",
-  "tinyrustlm-web-secret-scan-20260801T2118491669738Z-ed1505573490.json",
-  "tinyrustlm-web-secret-scan-20260801T2145134090034Z-34bb81f2201e.json",
-  "tinyrustlm-web-secret-scan-evidence-20260801T1754349786628Z-8a8536158c9f",
-  "tinyrustlm-web-secret-scan-evidence-20260801T1803079801501Z-6b38e2e11e1d",
-  "tinyrustlm-web-secret-scan-evidence-20260801T1857290939365Z-e7e07e4db9ac",
-  "tinyrustlm-web-secret-scan-evidence-20260801T1943080933664Z-58d4bd85d1ad",
-  "tinyrustlm-web-secret-scan-evidence-20260801T2057555014795Z-ea808d88127c",
-  "tinyrustlm-web-secret-scan-evidence-20260801T2102476277474Z-588eef9cb099",
-  "tinyrustlm-web-secret-scan-evidence-20260801T2106227991144Z-b0a7661bec53",
-  "tinyrustlm-web-secret-scan-evidence-20260801T2109239716361Z-427b567764b7",
-  "tinyrustlm-web-secret-scan-evidence-20260801T2112297360399Z-31bd27ffe0ee",
-  "tinyrustlm-web-secret-scan-evidence-20260801T2118491669738Z-ed1505573490",
-  "tinyrustlm-web-secret-scan-evidence-20260801T2145134090034Z-34bb81f2201e",
-  "web-deployments"
-]);
 const registeredBinaryReleasePackageId =
   "UAIX.Browser.p2pRuntime.SeedHost.Tool";
 const registeredBinaryReleaseMaximumBytes = 64 * 1024 * 1024;
@@ -487,6 +440,7 @@ const artifactReparsePolicy = Object.freeze({
   registeredEvidenceRoot
 });
 const supersededSourceRoots = Object.freeze([
+  ...require("../../contracts/storage/retired-storage-roots-2026-09-12.json"),
   "D:\\tw\\26236864",
   "D:\\tw\\3116220",
   "E:\\Source\\.tinyrustlm-model-acquisition",
@@ -552,19 +506,8 @@ const supersededSourceArchives = Object.freeze([
 ]);
 const windowsReservedPathSegmentPattern =
   /^(?:aux|clock\$|com[1-9]|con|lpt[1-9]|nul|prn)(?:\..*)?$/iu;
-const registeredEvidenceContainerProfiles = Object.freeze([
-  Object.freeze({
-    allowedDirectChildIdentities: Object.freeze(
-      registeredReleaseEvidenceDirectChildren.map(
-        evidenceContainerDirectChildIdentity)),
-    maximumDepth: 6,
-    maximumDirectories: 128,
-    maximumFileBytes: 1024 * 1024,
-    maximumFiles: 256,
-    maximumTotalBytes: 32 * 1024 * 1024,
-    root: registeredReleaseEvidenceContainerRoot
-  })
-]);
+// The September consolidation retired the external container; its root is forbidden.
+const registeredEvidenceContainerProfiles = Object.freeze([]);
 
 function fail(code, detail) {
   const error = new Error(detail ? `${code}: ${detail}` : code);

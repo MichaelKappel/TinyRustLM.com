@@ -7,8 +7,9 @@ rules:
   - Work only in E:\Source\Rust\TinyRustLM.com for TinyRustLM implementation, build, test, release, and deployment.
   - Before source work, require that exact root to be a direct non-reparse remote-exact checkout and require every other TinyRustLM.com source copy to be absent.
   - Preserve immutable private evidence outside source authority, but delete damaged, recovered, dated, backup, rehearsal, worktree, and quarantine source copies after bounded inventory.
-  - Use explicitly owned E: scratch roots; never write D: and avoid C: for large artifacts.
-  - Third-party repositories belong under E:\Source\External\{project}; model and raw evidence bytes stay outside Git.
+  - Keep operation-owned scratch and build output under E:\Source\Rust\TinyRustLM.com\artifacts and remove it when the operation ends; never scatter extra source or tool environments across drive roots.
+  - TinyRustLM model payloads belong only under D:\LLMs\TinyRustLM and stay outside Git. This explicit 2026-09-12 user instruction supersedes the older prohibition on D: writes.
+  - Keep only the current copy when a verified replacement supersedes an older version; preserve source history through regular Git commits, not copied directories.
   - Never revert changes you did not make. Work with relevant concurrent changes and ignore unrelated ones.
   - Use apply_patch for manual edits, rg for discovery, focused tests first, then complete affected gates.
   - Commit and push each coherent green major change and verify fresh remote equality.

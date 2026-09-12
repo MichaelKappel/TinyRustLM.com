@@ -9,7 +9,9 @@ authoritative_worktree:
   remote: origin
   authority_rule: This exact non-reparse root is the sole local source, build, test, release, and deployment checkout.
   duplicate_rule: Fail closed if any recovered, dated, hidden, backup, Worktrees, evidence, or quarantine directory contains another TinyRustLM.com source tree.
-  scratch_rule: Use E:\Source\.codex-tmp or another explicitly owned E: root. Never write D:.
+  scratch_rule: Use operation-owned output below E:\Source\Rust\TinyRustLM.com\artifacts and remove it after use. Do not create scattered scratch, source, or tooling copies.
+  model_root: D:\LLMs\TinyRustLM
+  replacement_rule: Keep only the verified current replacement; delete superseded copies. Source history belongs in regular Git commits, not backup directories.
 
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
