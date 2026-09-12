@@ -40,7 +40,12 @@ ${changes}
       </article>`;
 }
 
-function renderUpdatesPage({ ledger, cssSha256, scriptSha256 }) {
+// Render ledger content with an explicit prepared or published status.
+function renderUpdatesPage({ ledger, cssSha256, scriptSha256, releaseLabel }) {
+  invariant(
+    releaseLabel === "Prepared" || releaseLabel === "Released",
+    "Release label must match publication state"
+  );
   const latest = ledger.releases.at(-1);
   const entries = Array.from(ledger.releases)
     .reverse()
@@ -74,7 +79,7 @@ function renderUpdatesPage({ ledger, cssSha256, scriptSha256 }) {
         <p class="release-summary">${escapeHtml(latest.summary)}</p>
         <p class="release-facts">
           <span>Version <strong data-release-version>${escapeHtml(latest.version)}</strong></span>
-          <span>Released <strong><time data-release-date datetime="${escapeHtml(latest.releaseDate)}">${escapeHtml(latest.releaseDate)}</time></strong></span>
+          <span>${releaseLabel} <strong><time data-release-date datetime="${escapeHtml(latest.releaseDate)}">${escapeHtml(latest.releaseDate)}</time></strong></span>
           <span>Last published <strong><time data-release-published-at>Awaiting live verification</time></strong></span>
         </p>
       </div>
@@ -113,19 +118,24 @@ function releasePaths(siteRoot) {
   });
 }
 
+// Derive public labels and asset identities from the current ledger.
 function expectedPage(siteRoot) {
   const locations = releasePaths(siteRoot);
-  const ledger = parseReleaseLedger(fs.readFileSync(locations.ledgerPath)).ledger;
+  const parsedLedger = parseReleaseLedger(fs.readFileSync(locations.ledgerPath));
+  const ledger = parsedLedger.ledger;
+  const releaseLabel = parsedLedger.pendingRelease ? "Prepared" : "Released";
   const cssSha256 = sha256File(locations.cssPath);
   const scriptSha256 = sha256File(locations.scriptPath);
   return Object.freeze({
     html: renderUpdatesPage({
       ledger,
       cssSha256,
-      scriptSha256
+      scriptSha256,
+      releaseLabel
     }),
     cssSha256,
     scriptSha256,
+    releaseLabel,
     locations,
     ledger
   });
@@ -146,18 +156,21 @@ function requireOne(source, pattern, label) {
   invariant(matches.length === 1, `${label} is missing or duplicated`);
 }
 
-function stampCompanionPage(source, latest, cssSha256, scriptSha256) {
+// Update each unique companion release field without treating a candidate as published.
+function stampCompanionPage(source, latest, cssSha256, scriptSha256, releaseLabel) {
   const normalized = source.replace(/\r\n/gu, "\n");
   const versionMetaPattern = /<meta name="application-version" content="[^"]+">/gu;
   const dateMetaPattern = /<meta name="release-date" content="[^"]+">/gu;
   const versionPattern = /data-release-version>[^<]+<\/span>/gu;
   const datePattern = /data-release-date datetime="[^"]+">[^<]+<\/time>/gu;
+  const releaseLabelPattern = /<span>(?:Prepared|Released) <strong><time data-release-date/gu;
   const cssPattern = /\.\.\/updates\/updates\.css\?v=sha256-[a-f0-9]{64}/gu;
   const scriptPattern = /\.\.\/app\/site-release\.js\?v=sha256-[a-f0-9]{64}/gu;
   requireOne(normalized, versionMetaPattern, "Companion application version metadata");
   requireOne(normalized, dateMetaPattern, "Companion release date metadata");
   requireOne(normalized, versionPattern, "Companion visible release version");
   requireOne(normalized, datePattern, "Companion visible release date");
+  requireOne(normalized, releaseLabelPattern, "Companion release status label");
   requireOne(normalized, cssPattern, "Companion updates stylesheet identity");
   requireOne(normalized, scriptPattern, "Companion release script identity");
   return normalized
@@ -175,10 +188,15 @@ function stampCompanionPage(source, latest, cssSha256, scriptSha256) {
       `data-release-date datetime="${escapeHtml(latest.releaseDate)}">` +
         `${escapeHtml(latest.releaseDate)}</time>`
     )
+    .replace(
+      releaseLabelPattern,
+      `<span>${releaseLabel} <strong><time data-release-date`
+    )
     .replace(cssPattern, `../updates/updates.css?v=sha256-${cssSha256}`)
     .replace(scriptPattern, `../app/site-release.js?v=sha256-${scriptSha256}`);
 }
 
+// Prepare coherent updates and companion views before either is written.
 function expectedReleaseSurfaces(siteRoot) {
   const updates = expectedPage(siteRoot);
   invariant(fs.existsSync(updates.locations.companionPath), "Companion page is missing");
@@ -188,11 +206,13 @@ function expectedReleaseSurfaces(siteRoot) {
       fs.readFileSync(updates.locations.companionPath, "utf8"),
       updates.ledger.releases.at(-1),
       updates.cssSha256,
-      updates.scriptSha256
+      updates.scriptSha256,
+      updates.releaseLabel
     )
   });
 }
 
+// Require matching versions, dates, labels and asset identities across all release surfaces.
 function verifyReleaseSurfaces(siteRoot) {
   const updates = expectedReleaseSurfaces(siteRoot);
   invariant(fs.existsSync(updates.locations.outputPath), "Updates page is missing");
@@ -228,6 +248,21 @@ function verifyReleaseSurfaces(siteRoot) {
   ]) {
     invariant(appShell.includes(fragment), `Release surface is missing: ${fragment}`);
   }
+  const releaseLabelPattern = new RegExp(
+    `<span>${updates.releaseLabel} <time data-release-date datetime="${latest.releaseDate}">`,
+    "g"
+  );
+  invariant(
+    (appShell.match(releaseLabelPattern) || []).length === 2,
+    `Application release surfaces must be labeled ${updates.releaseLabel}`
+  );
+  const oppositeLabel = updates.releaseLabel === "Prepared" ? "Released" : "Prepared";
+  invariant(
+    !appShell.includes(
+      `<span>${oppositeLabel} <time data-release-date datetime="${latest.releaseDate}">`
+    ),
+    `Application release surfaces contain the misleading ${oppositeLabel} label`
+  );
   requireOne(
     appShell,
     /src="\.\/site-release\.js\?v=sha256-[a-f0-9]{64}"/gu,

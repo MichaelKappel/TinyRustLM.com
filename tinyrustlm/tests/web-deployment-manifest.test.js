@@ -2,16 +2,16 @@
 
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
-const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 
 const {
   retiredPublicPaths,
   validateHostPolicy,
+  validateRetirementClosure,
   validateWebDeploymentManifest
 } = require("../tools/web-deployment-manifest.js");
-const { materializeSourceReleaseState } = require("./site-release-test-fixture.js");
+const { materializeSourceReleaseState, temporaryDirectory } = require("./site-release-test-fixture.js");
 
 const siteRoot = path.resolve(__dirname, "..");
 const deploymentManifestPath = path.join(
@@ -37,7 +37,9 @@ test("web deployment manifest is the exact no-model publication closure", (conte
     generatedRoot: materializedRelease(context)
   });
   const paths = new Set(result.files.map((file) => file.remote));
-  assert.equal(result.files.length, 26);
+  assert.equal(result.files.length, 30);
+  assert.equal(paths.has("app/minimodel-announcement.js"), false);
+  assert.ok(retiredPublicPaths.includes("app/minimodel-announcement.js"));
   assert.ok(paths.has("app/browser-model-admission.js"));
   assert.ok(paths.has("app/browser-runtime-loader.js"));
   assert.ok(paths.has("app/prompt2-request.js"));
@@ -45,6 +47,13 @@ test("web deployment manifest is the exact no-model publication closure", (conte
   assert.ok(paths.has("app/model-runtime-worker.js"));
   assert.ok(paths.has("app/memory-endpoints-enrollment.js"));
   assert.ok(paths.has("app/companion-capability.js"));
+  assert.ok(paths.has("app/minimodel-catalog-v1.js"));
+  assert.ok(paths.has("app/incremental-sha256.js"));
+  assert.ok(paths.has("app/catalog-admission-loader.js"));
+  assert.ok(paths.has("app/model-composition-store.js"));
+  assert.ok(paths.has("app/companion-composition-install.js"));
+  assert.ok(paths.has("app/p2p-composition-install.js"));
+  assert.equal(paths.has("app/companion-bridge.js"), false);
   assert.ok(paths.has("app/site-release.js"));
   assert.ok(paths.has("updates/index.html"));
   assert.ok(paths.has("companion/index.html"));
@@ -55,6 +64,18 @@ test("web deployment manifest is the exact no-model publication closure", (conte
   assert.equal(paths.has("runtime/tinyrustlm.wasm"), false);
   assert.equal(paths.has("runtime/tinyrustlm-simd.wasm"), false);
   assert.equal(Array.from(paths).some((entry) => /\.slm(?:\.|$)/i.test(entry)), false);
+  const orderedPaths = result.manifest.publish.map((entry) => entry.remote);
+  assert.deepEqual(
+    orderedPaths.filter((entry) => /(?:sha256|admission-loader|composition-(?:store|install))\.js$/u
+      .test(entry)),
+    [
+      "app/incremental-sha256.js",
+      "app/catalog-admission-loader.js",
+      "app/model-composition-store.js",
+      "app/companion-composition-install.js",
+      "app/p2p-composition-install.js"
+    ]
+  );
   assert.deepEqual(
     result.manifest.publish.slice(-5).map((entry) => entry.remote),
     [
@@ -68,6 +89,32 @@ test("web deployment manifest is the exact no-model publication closure", (conte
   assert.deepEqual(
     result.manifest.retire.map((entry) => entry.remote).sort(),
     Array.from(retiredPublicPaths).sort()
+  );
+  assert.ok(retiredPublicPaths.includes("app/companion-bridge.js"));
+  assert.ok(
+    result.manifest.retire.some((entry) => entry.remote === "app/companion-bridge.js")
+  );
+});
+
+test("retirement closure requires companion bridge absence evidence", () => {
+  const exactRetirement = retiredPublicPaths.map((remote) => ({ remote }));
+  assert.equal(
+    validateRetirementClosure(exactRetirement).has("app/companion-bridge.js"),
+    true
+  );
+  const missingBridge = exactRetirement.filter(
+    (entry) => entry.remote !== "app/companion-bridge.js"
+  );
+  assert.throws(
+    () => validateRetirementClosure(missingBridge),
+    /retired-path closure is incomplete/
+  );
+  assert.throws(
+    () => validateRetirementClosure(
+      exactRetirement,
+      new Set(["app/companion-bridge.js"])
+    ),
+    /Published and retired paths overlap/
   );
 });
 
@@ -101,10 +148,12 @@ test("web host policy blocks nested models, staging, backup, and source routes",
 });
 
 test("web deployment manifest fails closed on omitted, generated, or hosted model paths", (context) => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-deploy-manifest-"));
-  context.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const root = temporaryDirectory(context, "tinyrustlm-deploy-manifest-");
   const generatedRoot = materializedRelease(context);
   const baseline = JSON.parse(fs.readFileSync(deploymentManifestPath, "utf8"));
+  if (!baseline.retire.some((entry) => entry.remote === "app/companion-bridge.js")) {
+    baseline.retire.unshift({ remote: "app/companion-bridge.js" });
+  }
 
   const omittedPath = path.join(root, "omitted.json");
   const omitted = structuredClone(baseline);
@@ -177,15 +226,14 @@ test("web deployment manifest fails closed on omitted, generated, or hosted mode
 });
 
 test("web deployment manifest rejects a manifest reached through a junction", (context) => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-manifest-link-"));
+  const root = temporaryDirectory(context, "tinyrustlm-manifest-link-");
   const target = path.join(root, "target");
   const junction = path.join(root, "junction");
   context.after(() => {
     fs.rmSync(junction, { force: true });
-    fs.rmSync(root, { recursive: true, force: true });
   });
   fs.mkdirSync(target);
-  fs.copyFileSync(deploymentManifestPath, path.join(target, "manifest.json"));
+  fs.writeFileSync(path.join(target, "manifest.json"), "{}\n");
   fs.symlinkSync(target, junction, "junction");
   const generatedRoot = materializedRelease(context);
   assert.throws(
@@ -204,6 +252,12 @@ test("web deployment manifest rejects generated release bytes inside source", ()
       siteRoot,
       generatedRoot: path.join(siteRoot, "release")
     }),
-    /outside the source worktree/
+    /absolute child of canonical project artifacts/
   );
+});
+
+test("generated release output refuses artifacts parents, drive-root scratch and relative paths", () => {
+  for (const generatedRoot of ["relative", siteRoot, path.resolve(siteRoot, "artifacts"), path.resolve(siteRoot, "../artifacts"), path.resolve(siteRoot, "../../scratch")]) {
+    assert.throws(() => validateWebDeploymentManifest({ siteRoot, generatedRoot }), /absolute child of canonical project artifacts/);
+  }
 });

@@ -53,11 +53,7 @@
     "composition.acg2"
   ]);
   const DIRECT_COMPOSITION_ROUTE_PREFIX = "/tinyrustlm/direct-composition/v1";
-  const DIRECT_PEER_METADATA_PATHS = Object.freeze([
-    "/minimodel.peer_status.v0.json",
-    "/minimodel.peer_piece_set.v0",
-    "/minimodel.peer_companion_state.v0.json"
-  ]);
+
   const DIRECT_PEER_DENIED_HOSTS = Object.freeze([
     "tinyrustlm.com",
     "minimodel.org",
@@ -519,17 +515,7 @@
     return normalized;
   }
 
-  function buildDirectPeerMetadataUrl(peerBaseUrl, path) {
-    const baseUrl = normalizeDirectPeerBaseUrl(peerBaseUrl);
-    if (!DIRECT_PEER_METADATA_PATHS.includes(path)) {
-      reject("peer-url", "direct peer metadata endpoint path is unsupported");
-    }
-    const endpoint = new URL(path, baseUrl);
-    if (endpoint.pathname !== path || endpoint.search || endpoint.hash) {
-      reject("peer-url", "direct peer metadata endpoint path is invalid");
-    }
-    return endpoint.toString();
-  }
+
 
   function buildDirectCompositionMemberUrl(peerBaseUrl, compositionId, fileName) {
     const baseUrl = normalizeDirectPeerBaseUrl(peerBaseUrl);
@@ -546,7 +532,6 @@
 
   const directPeerUrlAuthority = Object.freeze({
     buildCompositionMemberUrl: buildDirectCompositionMemberUrl,
-    buildMetadataUrl: buildDirectPeerMetadataUrl,
     compositionRoutePrefix: DIRECT_COMPOSITION_ROUTE_PREFIX,
     normalizeBaseUrl: normalizeDirectPeerBaseUrl
   });

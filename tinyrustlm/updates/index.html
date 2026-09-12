@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="application-version" content="0.4.1">
-  <meta name="release-date" content="2026-08-30">
+  <meta name="application-version" content="0.5.0">
+  <meta name="release-date" content="2026-08-31">
   <title>Updates | TinyRustLM</title>
   <link rel="icon" href="data:,">
   <link rel="alternate" type="application/json" href="/.well-known/site-release.json" title="Current release">
@@ -23,10 +23,10 @@
       <div class="release-band-inner">
         <p class="eyebrow">Release record</p>
         <h1 id="updates-title">TinyRustLM updates</h1>
-        <p class="release-summary">Makes model selection more compact by removing the duplicate Edit Model command while preserving the single model chooser.</p>
+        <p class="release-summary">Simplifies startup around a verified cached composition or a small MiniModel.org server seed, with technical acquisition controls in Advanced.</p>
         <p class="release-facts">
-          <span>Version <strong data-release-version>0.4.1</strong></span>
-          <span>Released <strong><time data-release-date datetime="2026-08-30">2026-08-30</time></strong></span>
+          <span>Version <strong data-release-version>0.5.0</strong></span>
+          <span>Prepared <strong><time data-release-date datetime="2026-08-31">2026-08-31</time></strong></span>
           <span>Last published <strong><time data-release-published-at>Awaiting live verification</time></strong></span>
         </p>
       </div>
@@ -34,10 +34,23 @@
     <section class="history" aria-labelledby="history-title">
       <div class="history-inner">
         <h2 id="history-title">Release history</h2>
+      <article class="release-entry" id="0.5.0">
+        <div class="release-entry-header">
+          <h3>Version <span data-release-version>0.5.0</span></h3>
+          <time data-release-date datetime="2026-08-31">2026-08-31</time>
+        </div>
+        <p>Simplifies startup around a verified cached composition or a small MiniModel.org server seed, with technical acquisition controls in Advanced.</p>
+        <ul class="change-list">
+          <li><span class="change-type">changed</span><span>Restores an admitted cached composition first; otherwise automatically starts the smallest eligible MiniModel.org server-seeded composition, with visible progress and cancellation. Hugging Face, files, conversion and manual peer settings remain in Advanced.</span></li>
+          <li><span class="change-type">added</span><span>Added strict six-member catalog admission, bounded direct-peer streaming, browser OPFS persistence, restart verification, cancellation, and atomic activation.</span></li>
+          <li><span class="change-type">changed</span><span>Routes a qualified local-conversion result through the authenticated companion into the same verified browser cache and activation path.</span></li>
+          <li><span class="change-type">security</span><span>Keeps inference and prompts local, allows MiniModel.org to supply the initial verified seed, and distinguishes signed listings from current peer reachability. An unavailable or unqualified model is shown honestly.</span></li>
+        </ul>
+      </article>
       <article class="release-entry" id="0.4.1">
         <div class="release-entry-header">
-          <h3>Version <span data-release-version>0.4.1</span></h3>
-          <time data-release-date datetime="2026-08-30">2026-08-30</time>
+          <h3>Version <span>0.4.1</span></h3>
+          <time datetime="2026-08-30">2026-08-30</time>
         </div>
         <p>Makes model selection more compact by removing the duplicate Edit Model command while preserving the single model chooser.</p>
         <ul class="change-list">

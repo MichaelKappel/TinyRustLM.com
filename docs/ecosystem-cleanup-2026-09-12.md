@@ -167,3 +167,18 @@ lessons, evidence references and remaining review scope live in the canonical
   eight first-token choices; compressed variants matched between one and seven.
   The compact evidence and lessons preserve those findings without restoring
   any of the nine absent old model payloads. No current qualification is implied.
+
+- Prepared the coherent current-only chooser integration checkpoint, including
+  app assets, current acquisition/cache tests, declared publication paths,
+  explicit source preview, and prepared-release labels. The 53 acquisition
+  browser checks passed; three persistent-profile cases are intentionally
+  desktop-only and were skipped on mobile. Twelve additional desktop/mobile
+  shell checks passed, including public-host routing, offline status, keyboard
+  access, long labels and reduced motion. Forty-six acquisition-race and cache
+  tampering checks passed. An AST review removed 67 unreferenced constants left
+  by retired loaders; the affected 96 unit/boundary checks passed afterward.
+- Thirty-seven release/server/shell/fixture checks also passed against the
+  staged deployment validator loaded in memory. Only its required artifact-root
+  and retirement changes are included; the larger existing deployment custody
+  implementation remains uncommitted and requires separate review. The pending
+  announcement-file deletion remains blocked and full release gates are open.

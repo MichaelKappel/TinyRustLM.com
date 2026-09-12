@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="application-version" content="0.4.1">
-  <meta name="release-date" content="2026-08-30">
+  <meta name="application-version" content="0.5.0">
+  <meta name="release-date" content="2026-08-31">
   <title>TinyRustLM</title>
   <link rel="icon" href="data:,">
   <link rel="alternate" type="application/json" href="/.well-known/site-release.json" title="Current release">
   <link rel="alternate" type="application/json" href="/.well-known/site-release-history.json" title="Release history">
-  <link rel="stylesheet" href="./app/app.css?v=sha256-2beec095179c639edd1542f820afc89f0733cadfb2b36530de5f64597a06da7b">
+  <link rel="stylesheet" href="./app/app.css?v=sha256-c7eba56563a327d4db924b9c4dc4b6d49e0c95a6a27df1d169289d6df975cb4e">
 </head>
 <body>
   <svg class="icon-sprite" aria-hidden="true" focusable="false">
@@ -41,6 +41,7 @@
     <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-3"/></symbol>
     <symbol id="icon-network" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="7" r="3"/><circle cx="12" cy="18" r="3"/><path d="m8.5 7.4 7 5.2"/><path d="m15.7 8.8-2.5 6.4"/><path d="m8.1 8.6 2.3 6.5"/></symbol>
     <symbol id="icon-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.7L4 8.5"/><path d="M4 4v4.5h4.5"/></symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12"/><path d="M18 6 6 18"/></symbol>
     <symbol id="icon-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.7 2.7 0 0 1 5 1.4c0 2.2-2.5 2.3-2.5 4.1"/><path d="M12 18h.01"/></symbol>
     <symbol id="icon-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></symbol>
     <symbol id="icon-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a8.1 8.1 0 0 0 .1-1l2-1.5-2-3.4-2.4 1a7.3 7.3 0 0 0-1.7-1L15 6.5h-4l-.4 2.6c-.6.2-1.2.6-1.7 1l-2.4-1-2 3.4 2 1.5a8.1 8.1 0 0 0 .1 2l-2 1.5 2 3.4 2.4-1c.5.4 1.1.8 1.7 1l.4 2.6h4l.4-2.6c.6-.2 1.2-.6 1.7-1l2.4 1 2-3.4-2-1.5c.1-.3.1-.7.1-1Z"/></symbol>
@@ -48,7 +49,7 @@
     <symbol id="icon-dice" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="3"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></symbol>
   </svg>
 
-  <main class="app-shell" data-mode="simple" data-system-state="booting" data-rail-collapsed="false" data-sidebar-collapsed="false" data-conversation-state="empty" data-generation-state="idle">
+  <main class="app-shell" data-mode="simple" data-system-state="booting" data-rail-collapsed="true" data-sidebar-collapsed="false" data-conversation-state="empty" data-generation-state="idle">
     <aside class="left-sidebar" aria-label="TinyRustLM navigation">
       <header class="brand-header">
         <div class="brand-mark" aria-hidden="true"><svg><use href="#icon-cube"></use></svg></div>
@@ -80,17 +81,9 @@
           <h2 id="modelSetupHeading">Model Setup</h2>
         </div>
         <div class="setup-step-list">
-          <button id="sidebarLocalSetupButton" class="setup-step" type="button" data-sidebar-source="local" data-tooltip="Local composition" aria-pressed="true">
-            <svg aria-hidden="true"><use href="#icon-cube"></use></svg>
-            <span><strong>Local composition</strong><small>Import and verify all members.</small></span>
-          </button>
-          <button id="sidebarHfSetupButton" class="setup-step" type="button" data-sidebar-source="huggingface" data-tooltip="Hugging Face">
-            <svg aria-hidden="true"><use href="#icon-search"></use></svg>
-            <span><strong>Hugging Face</strong><small>Find sources; Rust converts.</small></span>
-          </button>
-          <button id="sidebarP2pSetupButton" class="setup-step" type="button" data-sidebar-source="p2p" data-tooltip="P2P import">
+          <button id="sidebarModelsButton" class="setup-step" type="button" data-open-model-popover data-tooltip="Choose model" aria-haspopup="dialog" aria-controls="simpleDiscoveryPanel" aria-expanded="false">
             <svg aria-hidden="true"><use href="#icon-network"></use></svg>
-            <span><strong>P2P import</strong><small>Use peer proof and manifests.</small></span>
+            <span><strong>Choose model</strong><small>Models from MiniModel.org.</small></span>
           </button>
           <button id="sidebarAdvancedToolsButton" class="setup-step" type="button" data-sidebar-action="advanced" data-tooltip="Advanced tools">
             <svg aria-hidden="true"><use href="#icon-sliders"></use></svg>
@@ -112,7 +105,7 @@
       <div class="sidebar-utilities" aria-label="Documentation, updates, and tools">
         <a class="icon-button" href="#" rel="noopener" aria-label="Runtime docs" data-tooltip="Runtime docs" data-doc-target="runtime"><svg><use href="#icon-book"></use></svg></a>
         <a class="icon-button" href="#" rel="noopener" aria-label="MiniModel docs" data-tooltip="MiniModel docs" data-doc-target="minimodel"><svg><use href="#icon-network"></use></svg></a>
-        <a class="icon-button" href="/updates/" aria-label="Updates and release history" data-tooltip="Updates v0.4.1"><svg><use href="#icon-history"></use></svg></a>
+        <a class="icon-button" href="/updates/" aria-label="Updates and release history" data-tooltip="Updates v0.5.0"><svg><use href="#icon-history"></use></svg></a>
         <button class="icon-button" type="button" data-sidebar-action="advanced" aria-label="Advanced tools" data-tooltip="Advanced tools"><svg><use href="#icon-sliders"></use></svg></button>
       </div>
     </aside>
@@ -120,12 +113,12 @@
     <section class="main-workspace grid" aria-label="Local AI chat workspace">
       <div id="privacyBadge" class="privacy-badge" data-offline-ready="false" title="Load and verify a local or P2P model before disconnecting. Local copied memory and the local sync queue remain optional. The TinyRustLM.com Connect plugin can use MemoryEndpoints.com for worldwide, cross-device long-term memory after explicit sign-in and provider selection.">
         <svg aria-hidden="true"><use href="#icon-shield"></use></svg>
-        <span>Local browser inference &bull; No prompts sent to a server</span>
+        <span>Runs locally after model setup &bull; No prompts sent to a server</span>
       </div>
 
       <section id="modelToolbar" class="model-toolbar" aria-label="Loaded local model">
         <div class="model-icon" aria-hidden="true"><svg><use href="#icon-cube"></use></svg></div>
-        <button id="modelEditButton" class="model-name-button" type="button" aria-haspopup="dialog" aria-expanded="false">
+        <button id="modelEditButton" class="model-name-button" type="button" aria-haspopup="dialog" aria-controls="simpleDiscoveryPanel" aria-expanded="false">
           <span id="modelToolbarName">Choose model</span>
           <svg aria-hidden="true"><use href="#icon-chevron"></use></svg>
         </button>
@@ -140,8 +133,8 @@
       </button>
 
       <a class="site-release-summary compact-release-summary" href="/updates/" aria-label="Updates and release history" data-site-release data-release-state="pending">
-        <span>v<span data-release-version>0.4.1</span></span>
-        <span>Released <time data-release-date datetime="2026-08-30">2026-08-30</time></span>
+        <span>v<span data-release-version>0.5.0</span></span>
+        <span>Prepared <time data-release-date datetime="2026-08-31">2026-08-31</time></span>
         <span>Last published <time data-release-published-at>Awaiting live verification</time></span>
       </a>
 
@@ -150,158 +143,40 @@
         <button id="advancedModeButton" class="mode-button" type="button" aria-pressed="false">Advanced Tools</button>
       </div>
 
-      <section id="simpleDiscoveryPanel" class="model-popover" hidden aria-label="Model source options">
-        <div class="source-option-grid" role="list" aria-label="Model source options">
-          <button id="simpleLocalSourceButton" class="source-option" type="button" data-source-option="local">
-            <span>Your Local Files</span>
-            <small>Fastest path. No network needed.</small>
-          </button>
-          <button id="simpleHfSourceButton" class="source-option" type="button" data-source-option="huggingface">
-            <span>Hugging Face</span>
-            <small>P2P first; converts locally otherwise.</small>
-          </button>
-          <button id="simpleP2pSourceButton" class="source-option" type="button" data-source-option="p2p">
-            <span>P2P Exchange</span>
-            <small>Use manifests or peer proof.</small>
-          </button>
+      <section id="simpleDiscoveryPanel" class="model-popover compact-model-picker" role="dialog" aria-modal="false" aria-busy="false" tabindex="-1" hidden aria-labelledby="simpleModelPickerTitle" aria-describedby="simpleModelPickerDescription">
+        <header class="model-picker-header">
+          <div>
+            <h2 id="simpleModelPickerTitle">Choose a model</h2>
+            <p id="simpleModelPickerDescription">Your starter model downloads from MiniModel.org and runs privately in this browser. You can choose another model here.</p>
+          </div>
+          <div class="model-picker-header-actions">
+            <button id="simpleModelRefreshButton" class="icon-button" type="button" aria-label="Refresh model list" title="Refresh model list">
+              <svg aria-hidden="true"><use href="#icon-reset"></use></svg>
+            </button>
+            <button id="simpleModelCloseButton" class="icon-button" type="button" aria-label="Close model chooser" title="Close model chooser">
+              <svg aria-hidden="true"><use href="#icon-close"></use></svg>
+            </button>
+          </div>
+        </header>
+        <div id="simpleModelPickerStatus" class="model-picker-status">Checking model list...</div>
+        <div id="simpleModelPickerAnnouncement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+        <div id="simpleModelList" class="simple-model-list" role="group" aria-label="Qualified catalog models and models open in this browser">
+          <div class="simple-model-empty">No models loaded yet.</div>
         </div>
-        <div id="simpleLocalSourcePanel" class="source-panel" data-source-panel="local">
-          <p>Local SLM2 compositions stay on this device and are checked before they run.</p>
-          <button id="simpleChooseLocalButton" class="secondary-action" type="button">Choose Composition</button>
-          <button id="simpleImportLocalModelButton" class="secondary-action" type="button">Import Selected Composition</button>
-          <label for="simpleLocalMemoryPackageFiles" title="Optional local copied memory that remains available offline in this browser.">UAIX memory deck</label>
-          <input id="simpleLocalMemoryPackageFiles" type="file" accept=".uai,.json,text/plain,application/json" multiple>
-          <button id="simpleInspectLocalMemoryPackageButton" class="secondary-action" type="button">Use Memory Deck</button>
-          <p id="simpleLocalMemoryPackageStatus" class="inline-status">memory deck optional</p>
-          <button id="simpleMemoryEndpointsSettingsButton" class="secondary-action" type="button" title="Configure the TinyRustLM.com Connect plugin to use MemoryEndpoints.com for worldwide long-term memory. Local copied memory and queued local sync remain available.">Connect Memory</button>
-          <p id="simpleMemoryEndpointsStatus" class="inline-status">web memory off</p>
+        <div class="model-picker-actions">
+          <button id="simpleModelActionButton" type="button" aria-describedby="simpleModelPickerStatus" disabled hidden>Cancel</button>
         </div>
-        <div id="simpleHfSourcePanel" class="source-panel" data-source-panel="huggingface" hidden>
-          <div class="source-search-controls">
-            <label for="simpleHfSearchInput">Hugging Face metadata search</label>
-            <p>Leave search empty to browse up to the top 100 TinyRustLM-ready candidates by Popular or New releases, or enter a model phrase.</p>
-            <div class="search-row hf-search-row">
-              <input id="simpleHfSearchInput" type="search" placeholder="TinyLlama" autocomplete="off" spellcheck="false">
-              <select id="simpleHfSortSelect" aria-label="Hugging Face browse order">
-                <option value="popular" selected>Popular</option>
-                <option value="new">New releases</option>
-              </select>
-              <button id="simpleHfSearchButton" type="button">Search Metadata</button>
-            </div>
-          </div>
-          <div class="source-flow-row">
-            <label class="toggle-row" for="simpleHfP2pToggle">
-              <input id="simpleHfP2pToggle" type="checkbox" checked>
-              <span>Enable P2P import and sharing</span>
-            </label>
-            <span id="simpleHfP2pStatus" class="flow-status">P2P on. Get model prefers a complete verified peer and converts locally when none is available.</span>
-          </div>
-          <p id="simpleHfP2pWarning" class="inline-status source-warning" hidden>P2P is off. Get model uses local companion conversion and keeps the verified composition on this computer.</p>
-          <div id="simpleHfFlowSummary" class="source-flow-summary" role="status" aria-label="Search result summary" aria-live="polite" hidden></div>
-          <ol id="simpleHfResults" class="model-results"></ol>
-        </div>
-        <div id="simpleP2pSourcePanel" class="source-panel" data-source-panel="p2p" hidden>
-          <div class="companion-connect-row" aria-label="Desktop companion connection">
-            <div class="companion-connect-copy">
-              <strong>Desktop companion</strong>
-              <span id="companionStatus" class="flow-status" role="status" aria-live="polite">Browser only / desktop companion not contacted</span>
-            </div>
-            <div class="companion-connect-actions">
-              <a id="companionPackageLink" class="secondary-action companion-package-link" href="/companion/" target="_blank" rel="noopener noreferrer" aria-describedby="companionAccessNotice">Get companion</a>
-              <button id="companionDetectButton" class="secondary-action" type="button" aria-describedby="companionAccessNotice">Connect desktop companion</button>
-              <button id="companionForgetButton" class="secondary-action" type="button" hidden>Forget pairing</button>
-            </div>
-          </div>
-          <p id="companionAccessNotice" class="flow-status companion-access-notice">TinyRustLM runs models in your browser. The desktop companion imports verified P2P models or converts pinned source revisions locally; model bytes never pass through TinyRustLM.com.</p>
-          <div id="companionPairingControls" class="search-row companion-pairing-row" hidden>
-            <label class="sr-only" for="companionPairingCode">One-time companion pairing code</label>
-            <input id="companionPairingCode" type="password" autocomplete="off" spellcheck="false" placeholder="One-time pairing code">
-            <button id="companionPairButton" type="button">Pair companion</button>
-            <label class="toggle-row companion-sharing-consent" for="companionSharingConsent">
-              <input id="companionSharingConsent" type="checkbox">
-              <span>Allow this browser to configure local P2P sharing</span>
-            </label>
-          </div>
-          <div id="companionImportProgress" class="companion-import-progress" hidden>
-            <progress id="companionImportProgressBar" aria-label="Model acquisition progress"></progress>
-            <span id="companionImportStage" class="inline-status">Waiting</span>
-            <button id="companionCancelImportButton" class="secondary-action" type="button">Cancel</button>
-          </div>
-          <details id="companionSharingControls" class="companion-sharing-controls" hidden>
-            <summary>Local P2P sharing</summary>
-            <p id="companionSharingStatus" class="inline-status" role="status" aria-live="polite">Fleet not initialized</p>
-            <div id="companionSharingInitializeRow" class="search-row">
-              <label class="sr-only" for="companionSharingFleetId">Local fleet name</label>
-              <input id="companionSharingFleetId" type="text" value="browser-seed-fleet" autocomplete="off" spellcheck="false" aria-label="Local fleet name">
-              <button id="companionSharingInitializeButton" type="button">Initialize fleet</button>
-            </div>
-            <label for="companionSharingModelSelect">Verified local model</label>
-            <select id="companionSharingModelSelect" aria-label="Verified model to configure for P2P sharing"></select>
-            <div class="companion-lane-grid">
-              <fieldset>
-                <legend>Seed lane A</legend>
-                <label for="companionSharingLaneABind">Bind address</label>
-                <input id="companionSharingLaneABind" type="text" value="0.0.0.0:18123" autocomplete="off" spellcheck="false">
-                <label for="companionSharingLaneAUrl">Public peer URL</label>
-                <input id="companionSharingLaneAUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="http:&#47;&#47;peer.example:18123/model/">
-              </fieldset>
-              <fieldset>
-                <legend>Seed lane B</legend>
-                <label for="companionSharingLaneBBind">Bind address</label>
-                <input id="companionSharingLaneBBind" type="text" value="0.0.0.0:18124" autocomplete="off" spellcheck="false">
-                <label for="companionSharingLaneBUrl">Public peer URL</label>
-                <input id="companionSharingLaneBUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="http:&#47;&#47;peer.example:18124/model/">
-              </fieldset>
-            </div>
-            <div class="companion-sharing-actions">
-              <button id="companionSharingAdmitButton" type="button">Add verified import</button>
-              <button id="companionSharingEnableButton" class="secondary-action" type="button">Enable fleet entry</button>
-              <button id="companionSharingDisableButton" class="secondary-action" type="button">Pause fleet entry</button>
-              <button id="companionSharingRemoveButton" class="secondary-action" type="button">Remove from fleet</button>
-            </div>
-            <p class="inline-status">Local enablement is not public proof. MiniModel publication still requires current outside-network verification.</p>
-          </details>
-          <p>Load MiniModel metadata or a local `models.v0.json` snapshot to find proof-ready peer imports. When no verified peer is available, the paired companion converts the reviewed immutable source directly.</p>
-          <label for="simplePeerBaseUrlInput">Known peer URL</label>
+        <div id="simpleCompanionPairing" class="simple-companion-pairing" hidden>
+          <p>Open the installed desktop companion, then enter its one-time code.</p>
           <div class="search-row">
-            <input id="simplePeerBaseUrlInput" type="url" inputmode="url" placeholder="127.0.0.1:8123/">
-            <button id="simpleSavePeerUrlButton" type="button">Use Peer</button>
-            <button id="simpleCheckPeerStatusButton" class="secondary-action" type="button">Check Peer</button>
+            <label class="sr-only" for="simpleCompanionPairingCode">One-time companion pairing code</label>
+            <input id="simpleCompanionPairingCode" type="password" autocomplete="off" spellcheck="false" placeholder="One-time pairing code">
+            <button id="simpleCompanionPairButton" type="button">Connect and continue</button>
           </div>
-          <p id="simplePeerUrlStatus" class="inline-status">Enter the consenting peer URL once; P2P imports will use it.</p>
-          <label for="simplePeerContactCardFile">Peer contact card JSON</label>
-          <input id="simplePeerContactCardFile" type="file" accept=".json,application/json">
-          <button id="simpleApplyPeerContactCardButton" class="secondary-action" type="button">Use Peer Card</button>
-          <label for="simplePeerContactBookFile">Peer contact book JSON</label>
-          <input id="simplePeerContactBookFile" type="file" accept=".json,application/json">
-          <button id="simpleApplyPeerContactBookButton" class="secondary-action" type="button">Use Peer Book</button>
-          <div id="simplePeerContactBookPeers" class="peer-contact-book-list" role="list" aria-label="Peer contact book peers" hidden></div>
-          <button id="simpleLoadCatalogButton" class="secondary-action" type="button">Load MiniModel Metadata</button>
-          <label for="simpleLocalCatalogFile">Local models.v0.json</label>
-          <input id="simpleLocalCatalogFile" type="file" accept=".json,application/json">
-          <button id="simpleImportLocalCatalogButton" class="secondary-action" type="button">Load Local Catalog</button>
-          <label for="simplePeerAnnouncementFile">Peer-source announcement/feed JSON</label>
-          <input id="simplePeerAnnouncementFile" type="file" accept=".json,application/json">
-          <button id="simpleApplyPeerAnnouncementButton" class="secondary-action" type="button">Apply Peer Feed</button>
-          <label for="simpleImportReceiptLedgerFile">Import receipt ledger JSON</label>
-          <input id="simpleImportReceiptLedgerFile" type="file" accept=".json,application/json">
-          <button id="simpleImportReceiptLedgerButton" class="secondary-action" type="button">Load Receipt Ledger</button>
-          <div id="simpleImportReceiptLedgerEntries" class="receipt-ledger-entry-list" role="list" aria-label="Import receipt ledger entries" hidden></div>
-          <label for="simplePeerStatusCheckFile">Peer status check JSON</label>
-          <input id="simplePeerStatusCheckFile" type="file" accept=".json,application/json">
-          <button id="simplePeerStatusCheckButton" class="secondary-action" type="button">Load Peer Status</button>
-          <label for="simplePeerCompanionInventoryFile">Peer companion inventory JSON</label>
-          <input id="simplePeerCompanionInventoryFile" type="file" accept=".json,application/json">
-          <button id="simplePeerCompanionInventoryButton" class="secondary-action" type="button">Load Companion Inventory</button>
-          <button id="simpleLocalConnectApprovalsButton" class="secondary-action" type="button">Local Connect Approvals</button>
-          <p id="simpleImportReceiptLedgerStatus" class="inline-status">receipt ledger optional</p>
-          <p id="simplePeerStatusCheckStatus" class="inline-status">peer status optional</p>
-          <p id="simplePeerCompanionInventoryStatus" class="inline-status">companion inventory optional</p>
-          <p id="simpleLocalConnectStatus" class="inline-status">Local Connect asks before app control.</p>
-          <ol id="simpleCatalogResults" class="model-results"></ol>
+          <a class="text-link-button" href="/companion/" target="_blank" rel="noopener noreferrer">Get the desktop companion</a>
         </div>
-        <button id="simpleOpenAdvancedDiscoveryButton" class="text-link-button" type="button">Open source details in Advanced Tools</button>
-        <div id="simpleDiscoveryStatus" class="helper-status" aria-live="polite">Choose a local composition or connect the P2P companion.</div>
+        <button id="simpleOpenAdvancedDiscoveryButton" class="text-link-button" type="button">Advanced model options</button>
+        <div id="simpleDiscoveryStatus" class="helper-status">Choose a model to continue.</div>
       </section>
 
       <section id="simpleErrorPanel" class="simple-error" hidden aria-live="polite">
@@ -312,7 +187,7 @@
       <section id="simpleExperience" class="chat-stage" aria-label="Chat mode">
         <div class="hero-icon" aria-hidden="true"><svg><use href="#icon-chat"></use></svg></div>
         <h2>Chat with your local model</h2>
-        <p>Run prompts privately in your browser. No data sent to a server.</p>
+        <p>Run prompts privately in your browser. Prompts and model bytes stay off TinyRustLM servers.</p>
 
         <div class="starter-grid" role="list" aria-label="Starter actions">
           <button class="starter-action" type="button" data-prompt-template="Summarize the text below in exactly two short complete sentences. Put a period after each sentence. Do not use bullets. Use only details from the text, and preserve product names and file-format names literally:" data-starter="summarize">
@@ -356,7 +231,7 @@
         <label class="sr-only" for="prompt">Prompt</label>
         <textarea id="prompt" rows="4" autocomplete="off" spellcheck="true" placeholder="Message your model..."></textarea>
         <div class="composer-footer">
-          <span id="composerHint">Ready for a message</span>
+          <span id="composerHint">Choose a model to begin</span>
           <button id="generateButton" class="send-button" type="submit" disabled aria-label="Send message" data-action="send">
             <svg class="send-icon" aria-hidden="true"><use href="#icon-send"></use></svg>
             <svg class="stop-icon" aria-hidden="true" hidden><use href="#icon-stop"></use></svg>
@@ -425,6 +300,38 @@
               <option value="" selected disabled>Choose a local or P2P model</option>
             </select>
             <p id="modelHelperText" class="helper-text">Exact technical model names are shown here for local verification.</p>
+
+            <div class="companion-connect-row" aria-label="Desktop companion connection">
+              <div class="companion-connect-copy">
+                <strong>Desktop companion</strong>
+                <span id="companionStatus" class="flow-status" role="status" aria-live="polite">Enter the one-time code when local conversion is needed</span>
+              </div>
+              <div class="companion-connect-actions">
+                <a id="companionPackageLink" class="secondary-action companion-package-link" href="/companion/" target="_blank" rel="noopener noreferrer" aria-describedby="companionAccessNotice">Get companion</a>
+                <button id="companionDetectButton" class="secondary-action" type="button" aria-describedby="companionAccessNotice">Connect desktop companion</button>
+                <button id="companionForgetButton" class="secondary-action" type="button" hidden>Forget pairing</button>
+              </div>
+            </div>
+            <p id="companionAccessNotice" class="flow-status companion-access-notice">When catalog metadata lists a qualified model with a current signed P2P announcement, TinyRustLM prefers a direct browser transfer; the announcement does not prove live reachability. Otherwise the app offers explicit on-device conversion of the pinned source through the desktop companion. Model bytes never pass through TinyRustLM.com.</p>
+            <p id="companionSeedStatus" class="inline-status" data-state="idle" data-code="none" role="status" aria-live="polite">Local direct sharing has not started. No public reachability or announcement is claimed.</p>
+            <div id="companionPairingControls" class="search-row companion-pairing-row" hidden>
+              <label class="sr-only" for="companionPairingCode">One-time companion pairing code</label>
+              <input id="companionPairingCode" type="password" autocomplete="off" spellcheck="false" placeholder="One-time pairing code">
+              <button id="companionPairButton" type="button">Pair companion</button>
+            </div>
+            <div id="companionImportProgress" class="companion-import-progress" hidden>
+              <progress id="companionImportProgressBar" aria-label="Model acquisition progress"></progress>
+              <span id="companionImportStage" class="inline-status">Waiting</span>
+              <button id="companionCancelImportButton" class="secondary-action" type="button">Cancel</button>
+            </div>
+
+            <label for="simplePeerBaseUrlInput">Known peer URL</label>
+            <div class="search-row">
+              <input id="simplePeerBaseUrlInput" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https:&#47;&#47;peer.example/">
+              <button id="simpleSavePeerUrlButton" type="button">Use Peer</button>
+              <button id="simpleCheckPeerStatusButton" class="secondary-action" type="button">Check Listing</button>
+            </div>
+            <p id="simplePeerUrlStatus" class="inline-status">Optional manual peer override. Public peers require HTTPS; HTTP is limited to explicit loopback use. A saved URL does not prove reachability.</p>
 
             <label for="localModelFile">Qualified local model bundle</label>
             <input id="localModelFile" type="file" accept=".slm2,.tokenizer2,.template2,.sampling2,.prompt2,.acg2,.browser-composition-admission.json,application/octet-stream,application/json" multiple>
@@ -512,44 +419,9 @@
             <p id="memoryEndpointsStatus" class="inline-status">web memory off</p>
             <pre id="memoryEndpointsSearchResults" class="memory-deck-context-preview" aria-label="MemoryEndpoints search results"></pre>
 
-            <label for="catalogUrlInput">Catalog URL</label>
-            <div class="search-row">
-              <input id="catalogUrlInput" type="url" autocomplete="off" spellcheck="false">
-              <button id="catalogLoadButton" type="button">Load</button>
-            </div>
-            <label for="localCatalogFile">Local models.v0.json</label>
-            <input id="localCatalogFile" type="file" accept=".json,application/json">
-            <button id="importLocalCatalogButton" class="secondary-action" type="button">Load Local Catalog</button>
-            <label for="peerContactCardFile">Peer contact card JSON</label>
-            <input id="peerContactCardFile" type="file" accept=".json,application/json">
-            <button id="applyPeerContactCardButton" class="secondary-action" type="button">Use Peer Card</button>
-            <label for="peerContactBookFile">Peer contact book JSON</label>
-            <input id="peerContactBookFile" type="file" accept=".json,application/json">
-            <button id="applyPeerContactBookButton" class="secondary-action" type="button">Use Peer Book</button>
-            <div id="peerContactBookPeers" class="peer-contact-book-list" role="list" aria-label="Peer contact book peers" hidden></div>
-            <label for="peerAnnouncementFile">Peer-source announcement/feed JSON</label>
-            <input id="peerAnnouncementFile" type="file" accept=".json,application/json">
-            <button id="applyPeerAnnouncementButton" class="secondary-action" type="button">Apply Peer Feed</button>
-            <label for="importReceiptLedgerFile">Import receipt ledger JSON</label>
-            <input id="importReceiptLedgerFile" type="file" accept=".json,application/json">
-            <button id="importReceiptLedgerButton" class="secondary-action" type="button">Load Receipt Ledger</button>
-            <p id="receiptLedgerStatus" class="inline-status">receipt ledger optional</p>
-            <div id="importReceiptLedgerEntries" class="receipt-ledger-entry-list" role="list" aria-label="Import receipt ledger entries" hidden></div>
-            <label for="peerStatusCheckFile">Peer status check JSON</label>
-            <input id="peerStatusCheckFile" type="file" accept=".json,application/json">
-            <button id="peerStatusCheckButton" class="secondary-action" type="button">Load Peer Status</button>
-            <button id="checkPeerStatusButton" class="secondary-action" type="button">Check Known Peer</button>
-            <p id="peerStatusCheckStatus" class="inline-status">peer status optional</p>
-            <label for="peerCompanionInventoryFile">Peer companion inventory JSON</label>
-            <input id="peerCompanionInventoryFile" type="file" accept=".json,application/json">
-            <button id="peerCompanionInventoryButton" class="secondary-action" type="button">Load Companion Inventory</button>
-            <p id="peerCompanionInventoryStatus" class="inline-status">companion inventory optional</p>
-            <p id="catalogStatus" class="inline-status">idle</p>
-            <ol id="catalogResults" class="model-results"></ol>
-
             <label for="hfSearchInput">Hugging Face metadata</label>
             <div class="search-row hf-search-row">
-              <input id="hfSearchInput" type="search" placeholder="TinyLlama" autocomplete="off" spellcheck="false">
+              <input id="hfSearchInput" type="search" autocomplete="off" spellcheck="false">
               <select id="hfSortSelect" aria-label="Hugging Face browse order">
                 <option value="popular" selected>Popular</option>
                 <option value="new">New releases</option>
@@ -695,8 +567,8 @@
 
     <footer class="footnote" id="appFooter">
       <a class="site-release-summary" href="/updates/" aria-label="Updates and release history" data-site-release data-release-state="pending">
-        <span>v<span data-release-version>0.4.1</span></span>
-        <span>Released <time data-release-date datetime="2026-08-30">2026-08-30</time></span>
+        <span>v<span data-release-version>0.5.0</span></span>
+        <span>Prepared <time data-release-date datetime="2026-08-31">2026-08-31</time></span>
         <span>Last published <time data-release-published-at>Awaiting live verification</time></span>
       </a>
     </footer>
@@ -725,16 +597,21 @@
   </dialog>
   <script src="./app/active-conversation.js?v=sha256-1efb8b0ca5fb8d0fee7a1f64f9573bf42bdcf1c5d6d3922cabd08d58f5a02926"></script>
   <script src="./app/calculator-tool.js?v=sha256-96e1fd491f059eb0d132472f76a6d0c6b26c575822875a36993ca5a8a6b35498"></script>
-  <script src="./app/companion-bridge.js?v=sha256-faf145fd8297ea5daf64444a6b8075668e62377a28e0549068cd4db78ee2de77"></script>
-  <script src="./app/minimodel-announcement.js?v=sha256-d338a15f932da4658503275bea1bbdf5a4125c547b70f87d3bc1ee4c52c648a4"></script>
+  <script src="./app/companion-capability.js?v=sha256-051710f583ceff1ed98e349aa2fa5fa70f278c0dfb436a496bb59c87728f6662"></script>
+  <script src="./app/minimodel-catalog-v1.js?v=sha256-4868dba65b57197b68de6f3e74987602b9728c5fa0cf28ca05ec2a3166c35333"></script>
+  <script src="./app/incremental-sha256.js?v=sha256-e28faf3a02617d3d6747a0061f10f20b756500ae727f5c02e18da9912c767095"></script>
   <script src="./app/memory-endpoints-enrollment.js?v=sha256-b64824e762a70374d410c3cb171c3ae600fc90f3e84401f58a6a8d1ae0da43b1"></script>
   <script src="./app/memory-endpoints-distributed-sync-v1.js?v=sha256-b115f61694d9eb937b027d9c7da6d52722dbc0c936b313cf8a08f978f0b8545c"></script>
   <script src="./app/memory-endpoints-sync.js?v=sha256-a9aae17bec0113a4dcdfec5b6639ae49e9c1a912c68693827baaf7f198509a83"></script>
   <script src="./app/browser-model-admission.js?v=sha256-87cdc059e71435f1572b3ad03fcce17701d5b73e83c3a6172e078a3349e5b683"></script>
+  <script src="./app/catalog-admission-loader.js?v=sha256-08dc9a91d34643ee9f9f07fa3fd2707d8a118dbd2de0b6d982c99cd8e8edf909"></script>
+  <script src="./app/model-composition-store.js?v=sha256-349c3589d49603e436e9860661296377de6fd777c5a0c9ca5447c03df4d0f3ca"></script>
+  <script src="./app/companion-composition-install.js?v=sha256-7099cf16f30fe3fdcebb69bdc3ec8a88db24e5b83df105966b6e1c03c41cf948"></script>
+  <script src="./app/p2p-composition-install.js?v=sha256-55a53359bb7af64062eb8b7505251af6eab487bc94a8105a92698830ea6ae8e4"></script>
   <script src="./app/browser-runtime-loader.js?v=sha256-cf189b9d010a8e3f7a7fe019fe1cebcf7e1bffc1a89a24322c6bc321deb922ce"></script>
   <script src="./app/prompt2-request.js?v=sha256-781b025f9b92664c5b4ee41698555b3a95efa0022754aba37632ffbe8d209405"></script>
   <script src="./app/model-runtime-client.js?v=sha256-5770b637ab2a5c7341fce0341d575f5ea2e7c8d92c62685b2b6811e9318b7393"></script>
   <script src="./app/site-release.js?v=sha256-6f8715fa77ad1a4bcc0c42a9050c0467825acdb402afe96e1a963cc535aea6a9"></script>
-  <script src="./app/app.js?v=sha256-3b49f828211abc03b8ab78cbb3ef3f1c867f3981a7b5013328f0ae3cbac96f32"></script>
+  <script src="./app/app.js?v=sha256-099fe9a0bc26eb3f28cc36f0e9b6579ac8ced6a69a772263e2e3e877b55229bc"></script>
 </body>
 </html>

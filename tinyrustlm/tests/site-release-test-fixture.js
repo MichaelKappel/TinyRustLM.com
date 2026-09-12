@@ -1,8 +1,10 @@
 "use strict";
 
 const fs = require("node:fs");
-const os = require("node:os");
+const crypto = require("node:crypto");
 const path = require("node:path");
+const { assertSafeDirectoryAncestry, assertSafeRegularFile, ensureSafeDirectory } =
+  require("../tools/immutable-publication-files.js");
 
 const {
   finalizeReleaseLedger,
@@ -14,11 +16,27 @@ const {
 const siteRoot = path.resolve(__dirname, "..");
 const sourceLedgerPath = path.join(siteRoot, "release", "site-release-ledger.v1.json");
 const sourceRevision = "a".repeat(40);
-const publishedAt = "2026-08-30T20:15:30.000Z";
+const publishedAt = "2026-08-31T23:15:30.000Z";
 
+/** Confine synthetic fixture output and cleanup to this test's owned artifacts. */
 function temporaryDirectory(context, prefix) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
-  context.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  if (typeof prefix !== "string" || !/^[a-z][a-z0-9-]{0,63}$/.test(prefix)) {
+    throw new Error("Fixture prefix must be a bounded lowercase name");
+  }
+  const parent = ensureSafeDirectory(path.join(siteRoot, "artifacts", "tests"));
+  const root = fs.mkdtempSync(path.join(parent, prefix));
+  const owner = crypto.randomUUID();
+  const marker = path.join(root, ".fixture-owner");
+  fs.writeFileSync(marker, owner, { flag: "wx" });
+  context.after(() => {
+    if (path.dirname(root) !== parent) throw new Error("Fixture cleanup escapes artifacts");
+    assertSafeDirectoryAncestry(root);
+    if (fs.readFileSync(assertSafeRegularFile(marker).filePath, "utf8") !== owner) {
+      throw new Error("Fixture ownership marker changed");
+    }
+    fs.rmSync(root, { recursive: true, force: true });
+    if (fs.existsSync(root)) throw new Error("Fixture remains after cleanup");
+  });
   return root;
 }
 

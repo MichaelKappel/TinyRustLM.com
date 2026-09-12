@@ -31,18 +31,18 @@
     },
     {
       "source": "source",
-      "local": "app/companion-bridge.js",
-      "remote": "app/companion-bridge.js"
-    },
-    {
-      "source": "source",
       "local": "app/companion-capability.js",
       "remote": "app/companion-capability.js"
     },
     {
       "source": "source",
-      "local": "app/minimodel-announcement.js",
-      "remote": "app/minimodel-announcement.js"
+      "local": "app/minimodel-catalog-v1.js",
+      "remote": "app/minimodel-catalog-v1.js"
+    },
+    {
+      "source": "source",
+      "local": "app/incremental-sha256.js",
+      "remote": "app/incremental-sha256.js"
     },
     {
       "source": "source",
@@ -63,6 +63,26 @@
       "source": "source",
       "local": "app/browser-model-admission.js",
       "remote": "app/browser-model-admission.js"
+    },
+    {
+      "source": "source",
+      "local": "app/catalog-admission-loader.js",
+      "remote": "app/catalog-admission-loader.js"
+    },
+    {
+      "source": "source",
+      "local": "app/model-composition-store.js",
+      "remote": "app/model-composition-store.js"
+    },
+    {
+      "source": "source",
+      "local": "app/companion-composition-install.js",
+      "remote": "app/companion-composition-install.js"
+    },
+    {
+      "source": "source",
+      "local": "app/p2p-composition-install.js",
+      "remote": "app/p2p-composition-install.js"
     },
     {
       "source": "source",
@@ -136,6 +156,12 @@
     }
   ],
   "retire": [
+    {
+      "remote": "app/minimodel-announcement.js"
+    },
+    {
+      "remote": "app/companion-bridge.js"
+    },
     {
       "remote": "app/models/qwen2.5-1.5b-instruct-q4.slm"
     },

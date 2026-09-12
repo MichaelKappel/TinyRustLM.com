@@ -22,6 +22,8 @@ const generatedReleasePaths = Object.freeze([
   ".well-known/site-release.json"
 ]);
 const retiredPublicPaths = Object.freeze([
+  "app/minimodel-announcement.js",
+  "app/companion-bridge.js",
   "app/models/Qwen2.5-1.5B-Instruct.LICENSE.txt",
   "app/models/Qwen2.5-1.5B-Instruct.NOTICE.md",
   "app/models/qwen2.5-1.5b-instruct-q4.conversation",
@@ -132,7 +134,7 @@ function expectedStaticPaths(siteRoot) {
     "index.html",
     ...browserRuntimeFiles,
     ...updateFiles
-  ].sort());
+  ].filter((file) => !retiredPublicPaths.includes(file)).sort());
 }
 
 // Validates the public Apache policy required before any web bytes may ship.
@@ -179,6 +181,27 @@ function validateHostPolicy(hostPolicy) {
   return true;
 }
 
+// Validate the exact removal plan and forbid overlap with current publication.
+function validateRetirementClosure(retire, publishedRemotePaths = new Set()) {
+  invariant(Array.isArray(retire) && retire.length > 0 && retire.length <= 64,
+    "Web deployment retirement list is invalid");
+  const remotePaths = publishedRemotePaths instanceof Set
+    ? publishedRemotePaths
+    : new Set(publishedRemotePaths);
+  const retirePaths = new Set();
+  retire.forEach((entry, index) => {
+    invariant(isPlainObject(entry), `retire[${index}] must be an object`);
+    requireExactSet(Object.keys(entry), ["remote"], `retire[${index}] fields`);
+    const remote = requireRelativePath(entry.remote, `retire[${index}].remote`);
+    invariant(!retirePaths.has(remote), `Retired public path is duplicated: ${remote}`);
+    invariant(!remotePaths.has(remote), `Published and retired paths overlap: ${remote}`);
+    retirePaths.add(remote);
+  });
+  requireExactSet(retirePaths, retiredPublicPaths, "Web deployment retired-path closure");
+  return retirePaths;
+}
+
+
 function readManifest(manifestPath) {
   let bytes;
   try {
@@ -202,10 +225,12 @@ function validateWebDeploymentManifest(options = {}) {
   );
   const generatedRoot = path.resolve(String(options.generatedRoot || ""));
   requireSafeDirectory(siteRoot, "TinyRustLM site root");
+  // Release metadata is bounded operation output, owned by this canonical repository.
+  const artifactParents = [path.resolve(__dirname, "../artifacts"), path.resolve(__dirname, "../../artifacts")];
   invariant(
     path.isAbsolute(String(options.generatedRoot || "")) &&
-      !isWithin(siteRoot, generatedRoot),
-    "Generated release root must be absolute and outside the source worktree"
+      artifactParents.some((parent) => generatedRoot !== parent && isWithin(parent, generatedRoot)),
+    "Generated release root must be an absolute child of canonical project artifacts"
   );
   requireSafeDirectory(generatedRoot, "Generated release root");
 
@@ -345,16 +370,7 @@ function validateWebDeploymentManifest(options = {}) {
   );
   validateHostPolicy(hostPolicy);
 
-  const retirePaths = new Set();
-  manifest.retire.forEach((entry, index) => {
-    invariant(isPlainObject(entry), `retire[${index}] must be an object`);
-    requireExactSet(Object.keys(entry), ["remote"], `retire[${index}] fields`);
-    const remote = requireRelativePath(entry.remote, `retire[${index}].remote`);
-    invariant(!retirePaths.has(remote), `Retired public path is duplicated: ${remote}`);
-    invariant(!remotePaths.has(remote), `Published and retired paths overlap: ${remote}`);
-    retirePaths.add(remote);
-  });
-  requireExactSet(retirePaths, retiredPublicPaths, "Web deployment retired-path closure");
+  validateRetirementClosure(manifest.retire, remotePaths);
 
   return Object.freeze({
     manifest: Object.freeze(manifest),
@@ -427,5 +443,6 @@ module.exports = Object.freeze({
   releaseLedgerRelativePath,
   retiredPublicPaths,
   validateHostPolicy,
+  validateRetirementClosure,
   validateWebDeploymentManifest
 });

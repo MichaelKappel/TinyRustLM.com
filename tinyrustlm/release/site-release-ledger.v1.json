@@ -198,6 +198,30 @@
           "summary": "Kept Choose model as the sole command for opening model selection and reduced the toolbar to one row at supported desktop widths."
         }
       ]
+    },
+    {
+      "releaseId": "tinyrustlm.com@0.5.0",
+      "version": "0.5.0",
+      "releaseDate": "2026-08-31",
+      "summary": "Simplifies startup around a verified cached composition or a small MiniModel.org server seed, with technical acquisition controls in Advanced.",
+      "changes": [
+        {
+          "type": "changed",
+          "summary": "Restores an admitted cached composition first; otherwise automatically starts the smallest eligible MiniModel.org server-seeded composition, with visible progress and cancellation. Hugging Face, files, conversion and manual peer settings remain in Advanced."
+        },
+        {
+          "type": "added",
+          "summary": "Added strict six-member catalog admission, bounded direct-peer streaming, browser OPFS persistence, restart verification, cancellation, and atomic activation."
+        },
+        {
+          "type": "changed",
+          "summary": "Routes a qualified local-conversion result through the authenticated companion into the same verified browser cache and activation path."
+        },
+        {
+          "type": "security",
+          "summary": "Keeps inference and prompts local, allows MiniModel.org to supply the initial verified seed, and distinguishes signed listings from current peer reachability. An unavailable or unqualified model is shown honestly."
+        }
+      ]
     }
   ],
   "publications": [

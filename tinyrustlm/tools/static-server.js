@@ -46,11 +46,16 @@ function writeResponse(request, response, statusCode, body, contentType, extraHe
   response.end(request.method === "HEAD" ? undefined : bytes);
 }
 
+/** Accept canonical origin-form paths before WHATWG URL normalization can hide aliases. */
 function canonicalRequestPath(requestUrl) {
   invariant(
     typeof requestUrl === "string" &&
       requestUrl.startsWith("/") &&
-      !/%2f|%5c/i.test(requestUrl),
+      requestUrl.length <= 2048 &&
+      !/[\\#\u0000-\u0020\u007f]/u.test(requestUrl) &&
+      !requestUrl.split("?", 1)[0].includes("%") &&
+      !requestUrl.split("?", 1)[0].includes("//") &&
+      requestUrl.split("?", 1)[0].split("/").every((part) => part !== "." && part !== ".."),
     "Loopback static request target is invalid"
   );
   let url;
@@ -90,6 +95,11 @@ function validateVersionQuery(searchParams, file) {
   );
 }
 
+/** Bind a development asset's cache key to the exact bytes returned now. */
+function validateSourceVersionQuery(searchParams, file, bytes) {
+  return validateVersionQuery(searchParams, { remote: file.remote, sha256: sha256(bytes) });
+}
+
 function readValidatedFile(file) {
   let bytes;
   try {
@@ -116,19 +126,105 @@ function buildFileMap(validation) {
   );
 }
 
-async function startStaticServer(options = {}) {
-  const siteRoot = path.resolve(options.siteRoot || path.join(__dirname, ".."));
-  const port = options.port === undefined ? 0 : Number(options.port);
-  invariant(Number.isInteger(port) && port >= 0 && port <= 65535,
-    "Loopback static server port is invalid");
-  const validation = validateWebDeploymentManifest({
+/** Resolve one declared source file through direct ancestors inside the site. */
+function sourceFile(siteRoot, relativePath) {
+  invariant(
+    typeof relativePath === "string" &&
+      relativePath.length > 0 &&
+      relativePath.length <= 512 &&
+      !relativePath.startsWith("/") &&
+      !relativePath.includes("\\") &&
+      !relativePath.includes("//") &&
+      !/[%:?#\u0000-\u0020\u007f]/u.test(relativePath) &&
+      relativePath.split("/").every((part) =>
+        part.length > 0 && part !== "." && part !== ".."),
+    "Loopback source artifact path is invalid"
+  );
+  const filePath = path.resolve(siteRoot, ...relativePath.split("/"));
+  const relative = path.relative(siteRoot, filePath);
+  invariant(
+    relative.length > 0 &&
+      relative !== ".." &&
+      !relative.startsWith(`..${path.sep}`) &&
+      !path.isAbsolute(relative),
+    "Loopback source artifact escapes the site root"
+  );
+  return assertSafeRegularFile(filePath).filePath;
+}
+
+/** Use only the bounded current public declaration, without claiming release validation. */
+function buildSourceFileMap(siteRoot) {
+  const deploymentManifestPath = sourceFile(
     siteRoot,
-    manifestPath: options.manifestPath,
-    generatedRoot: options.generatedRoot
-  });
-  const fileMap = buildFileMap(validation);
+    "deploy/web-deployment-manifest.v2.json"
+  );
+  let manifest;
+  try {
+    invariant(fs.statSync(deploymentManifestPath).size <= 256 * 1024,
+      "Loopback source manifest is too large");
+    manifest = JSON.parse(fs.readFileSync(deploymentManifestPath, "utf8"));
+  } catch (error) {
+    throw new Error("Loopback source manifest is unavailable");
+  }
+  invariant(manifest && typeof manifest === "object" && !Array.isArray(manifest),
+    "Loopback source manifest is invalid");
+  invariant(manifest.schema === "tinyrustlm.web_deployment_manifest.v2" &&
+    manifest.publicOrigin === "https://tinyrustlm.com" &&
+    manifest.deploymentScope === "browser-runtime-no-model-bytes",
+    "Loopback source manifest identity is invalid");
+  invariant(Array.isArray(manifest.publish) && manifest.publish.length > 0 && manifest.publish.length <= 96,
+    "Loopback source manifest publish list is invalid");
+
+  const files = new Map();
+  for (const entry of manifest.publish) {
+    invariant(entry && typeof entry === "object" && !Array.isArray(entry),
+      "Loopback source manifest entry is invalid");
+    const keys = Object.keys(entry);
+    invariant(
+      keys.length === 3 &&
+        ["local", "remote", "source"].every((key) => Object.hasOwn(entry, key)),
+      "Loopback source manifest entry fields are invalid"
+    );
+    invariant(entry.source === "source" || entry.source === "generated-release",
+      "Loopback source manifest entry source is invalid");
+    if (entry.source !== "source") continue;
+    invariant(entry.local === entry.remote,
+      "Loopback source manifest paths must preserve identity");
+    invariant(
+      !/(?:^|\/)models(?:\/|$)/iu.test(entry.remote) &&
+        !/\.(?:slm\d*|gguf|safetensors|tokenizer2|template2|sampling2|prompt2|acg2|tensor2)(?:\.|$)/iu.test(entry.remote),
+      "Loopback source manifest cannot expose model bytes"
+    );
+    const filePath = sourceFile(siteRoot, entry.local);
+    if (entry.remote === ".htaccess") continue;
+    const requestPath = `/${entry.remote}`;
+    invariant(!files.has(requestPath), "Loopback source manifest path is duplicated");
+    files.set(requestPath, Object.freeze({ filePath, remote: entry.remote }));
+  }
+  invariant(files.has("/index.html") && files.has("/app/index.html"),
+    "Loopback source manifest omits an application shell");
+  return files;
+}
+
+/** Recheck source-file ancestry on each request, including replacements after startup. */
+function readSourceFile(file) {
+  try {
+    return fs.readFileSync(assertSafeRegularFile(file.filePath).filePath);
+  } catch (error) {
+    throw new Error("Loopback source artifact is unavailable");
+  }
+}
+
+/** Share loopback HTTP policy while retaining distinct source and release byte checks. */
+function createLoopbackServer(fileMap, readFile, validateQuery) {
   const server = http.createServer((request, response) => {
     try {
+      const authority = request.headers.host;
+      const port = request.socket.localPort;
+      if (authority !== `127.0.0.1:${port}` && authority !== `localhost:${port}`) {
+        writeResponse(request, response, 421, "misdirected request");
+        return;
+      }
       if (request.method !== "GET" && request.method !== "HEAD") {
         writeResponse(
           request,
@@ -142,11 +238,15 @@ async function startStaticServer(options = {}) {
       }
       const target = canonicalRequestPath(request.url);
       const file = fileMap.get(target.pathname);
-      if (!file || !validateVersionQuery(target.searchParams, file)) {
+      if (!file) {
         writeResponse(request, response, 404, "not found");
         return;
       }
-      const bytes = readValidatedFile(file);
+      const bytes = readFile(file);
+      if (!validateQuery(target.searchParams, file, bytes)) {
+        writeResponse(request, response, 404, "not found");
+        return;
+      }
       writeResponse(
         request,
         response,
@@ -165,7 +265,11 @@ async function startStaticServer(options = {}) {
   server.keepAliveTimeout = 1_000;
   server.maxRequestsPerSocket = 100;
   server.maxConnections = 32;
+  return server;
+}
 
+/** Bind the requested loopback port and expose an idempotent owned shutdown. */
+async function listenLoopback(server, port, fileCount) {
   await new Promise((resolve, reject) => {
     const onError = () => reject(new Error("Loopback static server failed to bind"));
     server.once("error", onError);
@@ -179,7 +283,7 @@ async function startStaticServer(options = {}) {
   let closed = false;
   return Object.freeze({
     origin: `http://127.0.0.1:${address.port}`,
-    fileCount: fileMap.size,
+    fileCount,
     async close() {
       if (closed) return;
       await new Promise((resolve, reject) => {
@@ -194,14 +298,60 @@ async function startStaticServer(options = {}) {
   });
 }
 
-async function main() {
-  const [siteRoot, generatedRoot, portValue, ...extra] = process.argv.slice(2);
-  invariant(
-    siteRoot && generatedRoot && extra.length === 0,
-    "Usage: static-server.js <site-root> <generated-release-root> [port]"
+/** Serve a validated release and reject bytes that change after validation. */
+async function startStaticServer(options = {}) {
+  const siteRoot = path.resolve(options.siteRoot || path.join(__dirname, ".."));
+  const port = options.port === undefined ? 0 : Number(options.port);
+  invariant(Number.isInteger(port) && port >= 0 && port <= 65535,
+    "Loopback static server port is invalid");
+  const validation = validateWebDeploymentManifest({
+    siteRoot,
+    manifestPath: options.manifestPath,
+    generatedRoot: options.generatedRoot
+  });
+  const fileMap = buildFileMap(validation);
+  return listenLoopback(
+    createLoopbackServer(fileMap, readValidatedFile, validateVersionQuery),
+    port,
+    fileMap.size
   );
-  const port = portValue === undefined ? 0 : Number(portValue);
-  const instance = await startStaticServer({ siteRoot, generatedRoot, port });
+}
+
+/** Preview current declared source files at an ephemeral or explicit loopback port. */
+async function startSourceServer(options = {}) {
+  const siteRoot = path.resolve(options.siteRoot || path.join(__dirname, ".."));
+  const port = options.port === undefined ? 0 : Number(options.port);
+  invariant(Number.isInteger(port) && port >= 0 && port <= 65535,
+    "Loopback source server port is invalid");
+  const fileMap = buildSourceFileMap(siteRoot);
+  return listenLoopback(
+    createLoopbackServer(fileMap, readSourceFile, validateSourceVersionQuery),
+    port,
+    fileMap.size
+  );
+}
+
+/** Select explicit source preview or release mode and close only this process's listener. */
+async function main() {
+  const args = process.argv.slice(2);
+  let instance;
+  if (args[0] === "--source") {
+    const [, siteRoot, portValue, ...extra] = args;
+    invariant(
+      siteRoot && extra.length === 0,
+      "Usage: static-server.js --source <site-root> [port]"
+    );
+    const port = portValue === undefined ? 0 : Number(portValue);
+    instance = await startSourceServer({ siteRoot, port });
+  } else {
+    const [siteRoot, generatedRoot, portValue, ...extra] = args;
+    invariant(
+      siteRoot && generatedRoot && extra.length === 0,
+      "Usage: static-server.js <site-root> <generated-release-root> [port]"
+    );
+    const port = portValue === undefined ? 0 : Number(portValue);
+    instance = await startStaticServer({ siteRoot, generatedRoot, port });
+  }
   process.stdout.write(`${JSON.stringify({
     status: "ready",
     origin: instance.origin,
@@ -224,6 +374,7 @@ if (require.main === module) {
 
 module.exports = Object.freeze({
   canonicalRequestPath,
+  startSourceServer,
   startStaticServer,
   validateVersionQuery
 });

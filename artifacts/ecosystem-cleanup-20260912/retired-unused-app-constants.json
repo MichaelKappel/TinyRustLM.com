@@ -1,0 +1,275 @@
+{
+  "schema": "tinyrustlm.unused-binding-retirement/1",
+  "beforeSha256": "7d08915d3b949de049d7b9f87fc8f53aff98deac45fa7ecb5977ca40ed6d1857",
+  "afterSha256": "bf8c62497215387ccce08f0218ac95eca004a8e54e6e553575dc30396fc187fa",
+  "removed": [
+    {
+      "name": "promptFormats",
+      "sha256": "80cddb6e30b81d3364b7d7a851df57c6cde6eb4723fe658666de139da93ce093"
+    },
+    {
+      "name": "initialModels",
+      "sha256": "c1ee31052962fcbd527894c26bbd4a9f7362883deb5ef609e9ad93fa869cd073"
+    },
+    {
+      "name": "localModelMaxBytes",
+      "sha256": "5ff97e4d6a4f5adc29aa7f79d0d067d7e2e3674de0e528e0f7f584fe6b36d844"
+    },
+    {
+      "name": "localModelTransferChunkBytes",
+      "sha256": "21fac4d0b422d41b718c2fc9468b06327eb47de75db8b3d30be5bbd04833e3f8"
+    },
+    {
+      "name": "companionManifestMaxBytes",
+      "sha256": "1597aa0f7cb3f880c84f028b497f6b7ab019d98eee9aada21e4195516e5ec485"
+    },
+    {
+      "name": "peerPieceSetRoute",
+      "sha256": "a0d28d5ca35e135fbbc6e82abacbb160e30f3e0c19fb42bd5da621c3d08544b2"
+    },
+    {
+      "name": "catalogTextByteBudget",
+      "sha256": "7558562c698b1e01abca01c922341075f75384780bee48892640e978b417ff65"
+    },
+    {
+      "name": "catalogTextChunkByteBudget",
+      "sha256": "d5397f9a9071ea9411542f65fd755386e23075108b8bf94d9faace10dddf2cf5"
+    },
+    {
+      "name": "catalogMetadataTimeoutMs",
+      "sha256": "cc8c6d16a287316ea1278efc6b923e8b338f0ae819344366d3aa2d46b72564ab"
+    },
+    {
+      "name": "selectorContextTokenLimit",
+      "sha256": "bc17cf1edf9811e23aa575d5453d8b59bb273938d5ed12c3d3b81800b57e9005"
+    },
+    {
+      "name": "runtimePromptByteLimit",
+      "sha256": "1dabfbe9fa8202922bebd78add7df0ee7b50f8083307717c35a12f109bd6951c"
+    },
+    {
+      "name": "runtimeWasmKind",
+      "sha256": "dd1b2f249f4b6e8198fe88c3847ccbb5074659c7753b87302f45075d8894a1cb"
+    },
+    {
+      "name": "runtimeWasmStatus",
+      "sha256": "f9449681a9f307a5791321a5cc91f87b6b2fcc23221eecf33fd3625245ea3435"
+    },
+    {
+      "name": "runtimeWasmNextGate",
+      "sha256": "f29e93bf887776cafd55047b90bd61d1f58fad4eea84038951416599ee80fe7d"
+    },
+    {
+      "name": "selectorDefaultStrategy",
+      "sha256": "e8aad7bf885136811d37525c051ea03065b11fbf8c9295c0d2bacfa78b4c6e9f"
+    },
+    {
+      "name": "registryGenomeStrategy",
+      "sha256": "544491fb5d004e7366083c07c5699615eae5c2b570ac80a1979ca8f83047073c"
+    },
+    {
+      "name": "registryGenomeLineageStatus",
+      "sha256": "02b9067bbf10fe7d524523eaa03061ddb6b9d7deebc7c7feea9889ff679716fd"
+    },
+    {
+      "name": "registrySpeciesStrategy",
+      "sha256": "073b4bb6d09e679a46fd787d1386b72b2a3b798519b7b0aa578d6b726860c493"
+    },
+    {
+      "name": "registrySpeciesFitStatus",
+      "sha256": "e3f205fdcd1fbc267ff447e6dd2d5516ca8e978ab15da6cd5b190eddee333c6e"
+    },
+    {
+      "name": "registryNoveltyStrategy",
+      "sha256": "de079f17bae0b42a89d9a18f8206186e63d438ba6523809829baf944592bed18"
+    },
+    {
+      "name": "registryNoveltyStatus",
+      "sha256": "c71a8dbcfa081ffc6e575f61d29a71bf13d540da7763791356f53922b92ccbd2"
+    },
+    {
+      "name": "registryPopulationStrategy",
+      "sha256": "6274c728e466939df42f00424ea804c43160ba11ce88657d6e851ead5061f192"
+    },
+    {
+      "name": "registryPopulationStatus",
+      "sha256": "132b8ea691bbc510c8fe657a5e7505936c99432f4f545b7b39c62f460c17b470"
+    },
+    {
+      "name": "registryMateSelectionStrategy",
+      "sha256": "d00df396cc2bf25d1a08a89846ff84546118c48cf0fbe192cdb258a588b7562f"
+    },
+    {
+      "name": "registryMateSelectionParentPoolStatus",
+      "sha256": "a71ec3963f9a9cd11fdbcb72f3bc89e95b8431ae518f8b451bd673a906c00265"
+    },
+    {
+      "name": "registryMateSelectionAdmissionStatus",
+      "sha256": "9b73001c408581cd88c24beb4d9e39bc3e23c92368d566c6420a7d20ef023a27"
+    },
+    {
+      "name": "registryOperatorReceiptStatus",
+      "sha256": "77116c1518d9f0791d65ad31b8e7d75699caad86fec920086d89379b37d53932"
+    },
+    {
+      "name": "registryEvolutionRecipeVersion",
+      "sha256": "92dd93a5bb955da7af3788e2a4cd103b71fb0d32f8b69c8e2e0d82ffa35ed070"
+    },
+    {
+      "name": "registryEvolutionRecipeStrategy",
+      "sha256": "f23bd4de996da6d9e5b57066d7a45af2d6061678947fa3991b42867eee69c02d"
+    },
+    {
+      "name": "registryEvolutionRecipeStatus",
+      "sha256": "8e039e0ae655e0effa73efba40de5808326e663fb5bf73a8240442ee57332f40"
+    },
+    {
+      "name": "registryEvolutionSelectionSource",
+      "sha256": "198dc38241089426a0011ae96048f1710e49fe0b1e9b34fa6d05dd8c4d16b4f8"
+    },
+    {
+      "name": "registryEvolutionScheduleChecksumAlgorithm",
+      "sha256": "e5395ee63a10817faad8f843555300641b2f43186ad5010fec7a01065f7739be"
+    },
+    {
+      "name": "registryPhenotypeEvidenceStrategy",
+      "sha256": "5599f9a348d49cb564987adfe3447959d3a9732ead724708df98027782dea741"
+    },
+    {
+      "name": "registryPhenotypeEvidenceStatus",
+      "sha256": "c131316abfbc680ece4c843e13e3d53511563d4950e92bc1ea1fbefb23712c6d"
+    },
+    {
+      "name": "registryHeritableArtifactStrategy",
+      "sha256": "82ebe7522fb5a66290bd96f8df3b5a0b25fb9254d6da917d9b19a9ea7af53e27"
+    },
+    {
+      "name": "registryHeritableArtifactStatus",
+      "sha256": "e62bb5de8da060a0114b2ae1d742f9900646d0ef2639297a2cf78ee9f7c7b783"
+    },
+    {
+      "name": "registryFitnessVectorStatus",
+      "sha256": "3c01847bbe4f61be144c028d9f9d2f5e7ec969205cabc62c30b5f67e06572e82"
+    },
+    {
+      "name": "registrySourceManifestKind",
+      "sha256": "acc32f9d6825dbec90d3fbde22bf11c1043cc6b999b40841cf84172021479751"
+    },
+    {
+      "name": "registrySourceManifestStatus",
+      "sha256": "358384f1d5e65873e98c0aec611d065b9e72e6ebd3b3d7971c1c0c76be6262c6"
+    },
+    {
+      "name": "registrySourceManifestLayout",
+      "sha256": "1e5432a42171ab4f981ad7b3299451cc4c1d0c2496d0e8fb81e80bec8d28513c"
+    },
+    {
+      "name": "registrySourceReviewKind",
+      "sha256": "d17591bf3606fba7b682cd1dbe498906a242926df3d27a52c9dfafe0ee118c93"
+    },
+    {
+      "name": "registrySourceReviewStatus",
+      "sha256": "97a2d9709ab12642d4ae30f621151d2f3854a3c9b6148dab1be139bcee316808"
+    },
+    {
+      "name": "registrySourceReviewRequiredNextGate",
+      "sha256": "9dba1a7240c5b895fcb4d96071efca3f50585c830e241d0a4568c229c2afb36c"
+    },
+    {
+      "name": "registrySourceValidationGate",
+      "sha256": "7347aed0f0f066d406ef35fdc91a05786071487d563aa5ad592a90d453663127"
+    },
+    {
+      "name": "registrySourceValidationStatus",
+      "sha256": "da6936bf3b868e79a60f699da74ddf3ad2247c2defbf9d092840695abe509822"
+    },
+    {
+      "name": "registrySourceValidationDecision",
+      "sha256": "63c37f1a1d69e60dd2707688593983fe8d302ba284cd6b67d575ed608eb08929"
+    },
+    {
+      "name": "registrySourceValidationRequiredNextGate",
+      "sha256": "3040fa7913fc05bd1ebf4749e76712587d23e998d79c1b7639e121ba7f570849"
+    },
+    {
+      "name": "registryAdmissionStatus",
+      "sha256": "e1cc9cf71ea683281c9efee2e6f1a6e1c487ea72cac46f3e92d0580e4cafa80a"
+    },
+    {
+      "name": "registryAdmissionPromotionStatus",
+      "sha256": "ead5b96864a8f913d79912abe7501a90eb4110e5766bfa2e3c2b72992efcede6"
+    },
+    {
+      "name": "registryAdmissionRuntimeSmokeStatus",
+      "sha256": "2d7e05c3be988c8cef25e27fcbffb9ca676491c84aebfffafd5e70eb68c42b30"
+    },
+    {
+      "name": "registryAdmissionEvalStatus",
+      "sha256": "7b5963e0fbcfd861445003aabe16d8740d58c6fe6df0469b5d0ec14927b893ae"
+    },
+    {
+      "name": "registryAdmissionQualityGate",
+      "sha256": "16e1eb0736be14d4f1f3930a7638e9563abf3b73c80d763885120d3f33a9177a"
+    },
+    {
+      "name": "registryAdmissionPromotionDecision",
+      "sha256": "67fc00583c3de94ad4dfae094a8b12e21b6c115bc0dd49958f2f1cc4fda62749"
+    },
+    {
+      "name": "registryAdmissionBrowserSelectorStatus",
+      "sha256": "c7b8fe72758abffc0b123eac369ba39ac779904c36d63cc51626e2debb50f80f"
+    },
+    {
+      "name": "registryAdmissionPublicClaimStatus",
+      "sha256": "1fe4f697d8382808e4c503a5618ec8cfb76c82ab264f0b809a2b3cbe39120185"
+    },
+    {
+      "name": "registryAdmissionRequiredNextGate",
+      "sha256": "0151fafb8de12c44a4f8539010c054d09cdd10bbda4f032411859f88459cd92e"
+    },
+    {
+      "name": "selectorRegistryRequiredNextGate",
+      "sha256": "3e8632fd9c644a881cca5f5f59a942787d7b1a4b5b9af260aeb692a2c05b2f51"
+    },
+    {
+      "name": "selectorModelByteBudget",
+      "sha256": "e4a1854ad759bd74093052e8a7f8d65436d8a010d3ce56c7c6ddecc6996ea723"
+    },
+    {
+      "name": "selectorCompositionGraphByteBudget",
+      "sha256": "0d71cebe926ed0e878b632f96cf15341cc9b2172e492c9f21e122ba75fab1300"
+    },
+    {
+      "name": "selectorRegistryTextByteBudget",
+      "sha256": "d4a49f0e4c13ed0d5f1044f50814605e01954db23b53dd1e9e7101419c8c6102"
+    },
+    {
+      "name": "manifestTextByteBudget",
+      "sha256": "87bb6b33f999cd25dd4b99542df25a3b749a28fe9892941272a15c1135ed741e"
+    },
+    {
+      "name": "receiptTextByteBudget",
+      "sha256": "6fafadbef94481f8ece80fc1a9a0e0cd831f98ba66efc0148f5fede7cd7affb5"
+    },
+    {
+      "name": "evidenceTextByteBudget",
+      "sha256": "d9d2c3a6dd219f076dba706daf6123976c8a7e09d756cc8365bec0e92621f88f"
+    },
+    {
+      "name": "localFetchOptions",
+      "sha256": "3cec102eb5ae926fce6d4d212cfcd7e2105baf1efc923d537b93853f3a8847b9"
+    },
+    {
+      "name": "checksumMask",
+      "sha256": "e847ef77d8777c9cbb7a470c4682e0dcd4bc28a8ee46a1d04f4e810f2c126361"
+    },
+    {
+      "name": "checksumPrime",
+      "sha256": "247394b12bc8ede9dc734757f7ee42490bb62817a366e7d9fa0ff3bd34681d3f"
+    },
+    {
+      "name": "peerShareChunkBytes",
+      "sha256": "7015931bdb461cf7d959d7606ce40a4a8a635cd66b3288d2450c33d90f2c7f85"
+    }
+  ]
+}

@@ -1,12 +1,33 @@
 "use strict";
 
+const { execFileSync } = require("node:child_process");
 const path = require("path");
 const { defineConfig } = require("@playwright/test");
 
-const port = Number.parseInt(process.env.TINYRUSTLM_PLAYWRIGHT_PORT || "8187", 10);
+function allocateLoopbackPort() {
+  const script = [
+    "const net = require('node:net');",
+    "const server = net.createServer();",
+    "server.once('error', () => process.exit(1));",
+    "server.listen(0, '127.0.0.1', () => {",
+    "  const address = server.address();",
+    "  server.close(() => process.stdout.write(String(address.port)));",
+    "});"
+  ].join("\n");
+  return Number.parseInt(execFileSync(process.execPath, ["-e", script], {
+    encoding: "utf8",
+    windowsHide: true
+  }).trim(), 10);
+}
+
+const configuredPort = process.env.TINYRUSTLM_PLAYWRIGHT_PORT;
+const port = configuredPort === undefined
+  ? allocateLoopbackPort()
+  : Number.parseInt(configuredPort, 10);
 if (!Number.isInteger(port) || port < 1024 || port > 65535) {
   throw new Error("TINYRUSTLM_PLAYWRIGHT_PORT must be an unprivileged TCP port");
 }
+process.env.TINYRUSTLM_PLAYWRIGHT_PORT = String(port);
 
 const applicationOrigin = `http://127.0.0.1:${port}`;
 
@@ -31,6 +52,7 @@ module.exports = defineConfig({
     timeout: 10000
   },
   use: {
+    channel: process.env.TINYRUSTLM_PLAYWRIGHT_CHANNEL || undefined,
     baseURL: applicationOrigin,
     colorScheme: "dark",
     locale: "en-US",
@@ -44,10 +66,10 @@ module.exports = defineConfig({
     video: "off"
   },
   webServer: {
-    command: `node tools/static-server.js . ${port}`,
+    command: `node tools/static-server.js --source . ${port}`,
     cwd: __dirname,
     url: `http://127.0.0.1:${port}/`,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 30000
   },
   projects: [
