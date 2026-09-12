@@ -166,6 +166,43 @@ Existing Qwen3 adapter rejection and the current independently qualified
 derivative requirement remain in force. Old receipt paths into former model
 locations are historical provenance, not permission to recreate those locations.
 
+## Historical portal runtime mirror reviewed
+
+The September 12 comparison covers 184 obsolete files under the developer
+portal's `docs/runtime-portal/`, excluding the current boundary page and its
+two Apache access controls. Their 1,963,723 logical bytes are all retained in
+portal Git commit `7a6f9db1d33d9d19700af180917de2d45ccf9f89`.
+Of those files, 164 documents match already reviewed canonical Runtime/TinyRust
+material after CRLF normalization; the 24-page `runtime-pages.json` additionally
+matches Runtime's `data/pages.json` byte for byte. This review does not authorize
+keeping either redundant active snapshot indefinitely.
+
+The remaining differences include later browser/source-options descriptions,
+eval CLI coverage notes, and generated package/index metadata. These are
+historical prose claims and old SLM1/v0 workflows. No old model, converter,
+script, browser test, or deployment was executed to review them. Exact Git
+identity preserves later content without presenting it as a current contract.
+
+| Observation in retained material | Lesson and current application |
+| --- | --- |
+| The package README, deployment notes and health marker identify 1.0.6, while version.json identifies 1.0.7. | A directory of individually hashed historical files is not necessarily one coherent release. Keep source/package/deployment bindings separate and verify their agreement through the actual release entrypoints. The current portal C1/C2 and failing stage check are recorded in C20. |
+| Later eval notes explicitly add execution of the documented native binary against fixture evidence; earlier notes mention only an eval runner. | Exercise public CLI boundaries, arguments, exit status and emitted evidence in addition to library functions. Current source-license and JS/native integration checks are recorded in C11/C17; the historical statement alone is not a newly verified passing test. |
+| Browser notes distinguish a saved conversion/share script, metadata-only readiness, transferred bytes, receipt validation, and local generation. They also describe rejection before output when the advertised shard contract differs. | Report the completed action accurately and bind every transition to exact inputs and outputs. Metadata or a downloaded script must not be presented as a loaded working model. Preserve no-output-on-rejection checks in current composition acquisition; do not restore old formats or generated source kits. |
+| Peer settings rerendered accepted search rows without treating normalized rows as raw API payloads, preserving source metadata and conversion choices. The notes describe duplicate-feed, oversized-input, invalid timestamp and receipt-drift cases. | Keep raw-input validation separate from display state. Bound input before parsing and verify the visible accepted state after a settings change. Current catalog tests, byte admission checks and the explicit empty-catalog smoke assertion retain these principles; those current checks do not establish live seeds or model quality. |
+| Old beginner flows required local files, manual peer URLs, many JSON imports, and peer scripts; they rejected project-hosted seed routes. | These instructions conflict with the current owner requirement. Default to a usable eligible cache or small qualified MiniModel composition, permit initial MiniModel server seeds, and put HF/local/conversion/manual peer controls under Advanced. Never restore old first-run complexity while copying historical prose. |
+| Historical browser smokes used loopback mappings of the public host and fixture models, while broad model quality and external availability remained unproven. | Exercise canonical root routes in a real browser, but label fixture, loopback and empty-runtime evidence precisely. Preserve current real-model qualification, numerical agreement and outside-network seed requirements. |
+
+The compact identity/disposition record is
+`TinyRustLM.MiRust.com/artifacts/ecosystem-cleanup-20260912/historical-runtime-retirement-review.json`,
+SHA-256 `c0555bc18fde0b9232811444b45b8332d07fddf2d7efec57b8f024468b212108`.
+Automatic approval review subsequently rejected removing the 184 raw files
+with `blocked by policy`; they remain. The obsolete archive regenerator and
+its copied-repository tests were removed and are verified absent. Portal
+checkpoint `efce5c3` preserves the review and those changes. Of 57 focused
+checks, 55 pass; two correctly fail on the surviving stage and mirror.
+The replacement test independently verifies every retained Git blob.
+Historical prose belongs in Git rather than another active executable archive.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

@@ -387,3 +387,28 @@ lessons, evidence references and remaining review scope live in the canonical
   emitted zero stdout and left the old manifest unchanged. Compact proof and
   current status are committed and pushed as `7a6f9db`. Stage removal and fresh
   deployment metadata remain pending; this is not a published release.
+- Portal checkpoint `efce5c3` removes the obsolete Runtime archive regenerator
+  and its copied-repository tests (two files, 9,935 logical bytes; measured
+  storage recovery unknown). Current tests verify all 184 obsolete mirror files
+  against their immutable Git blob IDs and SHA-256 values. All useful differences
+  reviewed are recorded in the canonical experiment-lessons document.
+- Of 184 mirror files, 164 normalize to previously reviewed canonical documents;
+  the 24-page JSON additionally matches Runtime/data/pages.json byte for byte.
+  Later browser/source-options and eval/test notes, plus mixed 1.0.6/1.0.7
+  package markers, are retained as historical observations, not current runtime
+  support or newly executed tests. The 1,963,723 logical bytes remain in place
+  because automatic approval review rejected deletion with blocked by policy.
+- Current UAI points to compact reviews and Git instead of regenerating mirrors.
+  The public boundary page now permits initial MiniModel server seeds and keeps
+  advanced source controls out of beginner setup. The focused suite ran 57
+  checks: 55 passed, two fail on the surviving stage and mirror, zero skips.
+  Actual PHP and source-authority checks passed; owned scratch was removed.
+- The exact mirror-retirement owner script and updated combined command passed
+  WhatIf. Pending reviewed deletion scope is 495 files totaling 1,845,691,701
+  logical bytes. No receipt or physical deletion is inferred from that dry run.
+- Portal package-only `8fe3842` now binds content `efce5c3`. All 27 public
+  files match Git exactly (137,532 logical bytes). Actual deployment metadata
+  generation again reached and rejected the surviving stage, emitted no output
+  and left the old manifest unchanged. The refreshed compact current-package
+  proof is committed and pushed as `bfb3ac5`. These are local source/metadata
+  results; the old manifest and both physical retirement failures remain open.
