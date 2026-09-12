@@ -39,7 +39,7 @@ prohibitions:
   - Do not infer correctness, numerical parity, quality, browser readiness, P2P availability, memory continuity, deployment, or publication from source, report prose, file size, package creation, fixtures, mocks, local probes, or one attractive response.
   - Do not rerun, repair, adopt, promote, delete, or reinterpret immutable failed operations, including Qwen3 attempt /10.
   - Do not download TXT, JSON, README, PowerShell, or another instruction handoff when a user asks to acquire a model. Import an exact qualified peer composition or perform explicit local conversion.
-  - Do not proxy model bytes or prompts through project sites, silently use remote inference, accept arbitrary companion commands/paths/URLs, or publish secrets/private evidence.
+  - Do not proxy prompts, silently use remote inference, accept arbitrary companion commands/paths/URLs, or publish secrets/private evidence. Under the owner's 2026-09-12 instruction, MiniModel.org may serve the initial verified SLM2 seeds from D:\LLMs\TinyRustLM; TinyRustLM.com continues to serve the browser runtime without model payloads.
   - Do not let documentation, marketing, release logs, versions, source, deployed bytes, or HTTPS readback contradict each other.
 
 memory_endpoints_prohibitions:

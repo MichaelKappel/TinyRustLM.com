@@ -155,3 +155,15 @@ lessons, evidence references and remaining review scope live in the canonical
   initialized/released the actual worker in two fresh Edge profiles, then deleted
   both. An initial missing-default-toolchain failure was resolved with the
   already installed toolchain in the test process. No real model was loaded.
+
+- Runtime-client correction and owned profile helper committed and pushed as
+  `d684db0`. The companion capability reader now rejects empty chunks and more
+  than 65,536 chunks while retaining timeout/cancellation through body reads.
+  All 29 capability and independent cryptographic-vector checks passed.
+  The separate C#/JS seed integration test still contains copied-repository
+  fixture construction; it has not been run and must be corrected first.
+- Recorded nine historical quantization comparisons against eight source-golden
+  cases, verifying golden SHA-256 and equal prompt token IDs. F32 matched all
+  eight first-token choices; compressed variants matched between one and seven.
+  The compact evidence and lessons preserve those findings without restoring
+  any of the nine absent old model payloads. No current qualification is implied.

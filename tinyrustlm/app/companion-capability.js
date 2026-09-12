@@ -26,8 +26,12 @@
   const MAXIMUM_REVOCATION_MESSAGE_BYTES = 1024;
   const MAXIMUM_OPERATION_REQUEST_BYTES = 65536;
   const MAXIMUM_OPERATION_PROJECTION_BYTES = 65536;
+  const MAXIMUM_DIRECT_COMPOSITION_SEED_START_REQUEST_BYTES = 1024;
+  const MAXIMUM_DIRECT_COMPOSITION_SEED_STOP_REQUEST_BYTES = 512;
+  const MAXIMUM_DIRECT_COMPOSITION_SEED_PROJECTION_BYTES = 2048;
   const MAXIMUM_ERROR_RESPONSE_BYTES = 256;
   const MAXIMUM_ARTIFACT_CHUNK_BYTES = 4 * 1024 * 1024;
+  const MAXIMUM_RESPONSE_CHUNKS = 65536;
   const MAXIMUM_ARTIFACT_BYTES = 64 * 1024 * 1024 * 1024;
   const MAXIMUM_COMPOSITION_BYTES = 68 * 1024 * 1024 * 1024;
   const MAXIMUM_SOURCE_BYTES = 16 * 1024 * 1024 * 1024;
@@ -43,7 +47,8 @@
     rotationBegin: "/tinyrustlm-companion/1/session/rotation/begin",
     rotationCommit: "/tinyrustlm-companion/1/session/rotation/commit",
     revoke: "/tinyrustlm-companion/1/session/revoke",
-    operations: "/tinyrustlm-companion/1/operations"
+    operations: "/tinyrustlm-companion/1/operations",
+    directCompositionSeeds: "/tinyrustlm-companion/1/direct-composition-seeds"
   });
   const SCHEMAS = Object.freeze({
     pairingBeginRequest:
@@ -65,7 +70,13 @@
     acquire: "tinyrustlm.companion.acquire.v2",
     operationProjection:
       "tinyrustlm.companion.loopback.operation-projection.v2",
-    cancelRequest: "tinyrustlm.companion.loopback.cancel-request.v1"
+    cancelRequest: "tinyrustlm.companion.loopback.cancel-request.v1",
+    directCompositionSeedStartRequest:
+      "tinyrustlm.companion.loopback.direct-composition-seed-start-request.v1",
+    directCompositionSeedStopRequest:
+      "tinyrustlm.companion.loopback.direct-composition-seed-stop-request.v1",
+    directCompositionSeedProjection:
+      "tinyrustlm.companion.loopback.direct-composition-seed-projection.v1"
   });
   const ARTIFACT_ROLES = Object.freeze([
     "composition",
@@ -84,6 +95,12 @@
     "cancelled",
     "rejected"
   ]);
+  const DIRECT_COMPOSITION_SEED_STATES = Object.freeze([
+    "ready",
+    "stopped",
+    "failed"
+  ]);
+  const DIRECT_COMPOSITION_SEED_PROTOCOL = "tinyrustlm.direct-composition-http.v1";
   const OPERATION_ROUTE = "source";
   const SOURCE_DESCRIPTOR = Object.freeze({
     modelId: "qwen3-0.6b",
@@ -1469,6 +1486,160 @@
     }, MAXIMUM_REVOCATION_MESSAGE_BYTES, "cancel-request-wire");
   }
 
+  // Validate the exact operation identity admitted by a seed-start request.
+  function normalizeDirectCompositionSeedStartRequest(value) {
+    requireExactKeys(value, ["schema", "operationId"],
+      "direct-composition-seed-start-request");
+    if (value.schema !== SCHEMAS.directCompositionSeedStartRequest) {
+      throw new CompanionCapabilityError("direct-composition-seed-start-request-schema");
+    }
+    requireSha256(value.operationId, "direct-composition-seed-operation-id");
+    return Object.freeze({
+      schema: value.schema,
+      operationId: value.operationId
+    });
+  }
+
+  // Encode a bounded canonical seed-start request for the managed companion.
+  function encodeDirectCompositionSeedStartRequest(value) {
+    const request = normalizeDirectCompositionSeedStartRequest(value);
+    return canonicalJsonBytes({
+      schema: request.schema,
+      operationId: request.operationId
+    }, MAXIMUM_DIRECT_COMPOSITION_SEED_START_REQUEST_BYTES,
+    "direct-composition-seed-start-request-wire");
+  }
+
+  // Reject oversized or noncanonical seed-start bytes before use.
+  function decodeDirectCompositionSeedStartRequest(bytes) {
+    return decodeCanonicalJson(
+      bytes,
+      MAXIMUM_DIRECT_COMPOSITION_SEED_START_REQUEST_BYTES,
+      normalizeDirectCompositionSeedStartRequest,
+      encodeDirectCompositionSeedStartRequest,
+      "direct-composition-seed-start-request-wire"
+    );
+  }
+
+  // Require the current schema-only seed-stop request.
+  function normalizeDirectCompositionSeedStopRequest(value) {
+    requireExactKeys(value, ["schema"], "direct-composition-seed-stop-request");
+    if (value.schema !== SCHEMAS.directCompositionSeedStopRequest) {
+      throw new CompanionCapabilityError("direct-composition-seed-stop-request-schema");
+    }
+    return Object.freeze({ schema: value.schema });
+  }
+
+  // Encode the fixed current seed-stop wire shape.
+  function encodeDirectCompositionSeedStopRequest(value) {
+    const request = normalizeDirectCompositionSeedStopRequest(value);
+    return canonicalJsonBytes({ schema: request.schema },
+      MAXIMUM_DIRECT_COMPOSITION_SEED_STOP_REQUEST_BYTES,
+      "direct-composition-seed-stop-request-wire");
+  }
+
+  // Accept only bounded canonical seed-stop bytes.
+  function decodeDirectCompositionSeedStopRequest(bytes) {
+    return decodeCanonicalJson(
+      bytes,
+      MAXIMUM_DIRECT_COMPOSITION_SEED_STOP_REQUEST_BYTES,
+      normalizeDirectCompositionSeedStopRequest,
+      encodeDirectCompositionSeedStopRequest,
+      "direct-composition-seed-stop-request-wire"
+    );
+  }
+
+  // Limit a ready local seed to one explicit unprivileged IPv4 loopback port.
+  function requireDirectCompositionSeedBoundOrigin(value) {
+    const match = typeof value === "string"
+      ? /^http:\/\/127[.]0[.]0[.]1:([1-9][0-9]{3,4})$/u.exec(value)
+      : null;
+    const port = match ? Number(match[1]) : 0;
+    if (!match || !Number.isInteger(port) || port < 1024 || port > 65535) {
+      throw new CompanionCapabilityError("direct-composition-seed-bound-origin");
+    }
+    return value;
+  }
+
+  // Validate lifecycle identity and mutually exclusive ready/terminal fields.
+  function validateDirectCompositionSeedProjection(value) {
+    requireExactKeys(value, [
+      "schema", "operationId", "sequence", "state", "compositionId",
+      "protocol", "boundOrigin", "allowedBrowserOrigin", "terminalCode"
+    ], "direct-composition-seed-projection");
+    if (value.schema !== SCHEMAS.directCompositionSeedProjection) {
+      throw new CompanionCapabilityError("direct-composition-seed-projection-schema");
+    }
+    requireSha256(value.operationId, "direct-composition-seed-operation-id");
+    if (requireUInt(value.sequence, "direct-composition-seed-sequence") === 0) {
+      throw new CompanionCapabilityError("direct-composition-seed-sequence");
+    }
+    if (!DIRECT_COMPOSITION_SEED_STATES.includes(value.state)) {
+      throw new CompanionCapabilityError("direct-composition-seed-state");
+    }
+    requireContentId(value.compositionId, "direct-composition-seed-composition-id");
+    const protocol = requireNullableString(value.protocol,
+      "direct-composition-seed-protocol", 64);
+    const boundOrigin = requireNullableString(value.boundOrigin,
+      "direct-composition-seed-bound-origin", 64);
+    const allowedBrowserOrigin = requireNullableString(value.allowedBrowserOrigin,
+      "direct-composition-seed-browser-origin", 64);
+    const terminalCode = requireNullableString(value.terminalCode,
+      "direct-composition-seed-terminal-code", 64);
+    if (value.state === "ready") {
+      if (protocol !== DIRECT_COMPOSITION_SEED_PROTOCOL ||
+          boundOrigin === null ||
+          requireDirectCompositionSeedBoundOrigin(boundOrigin) !== boundOrigin ||
+          allowedBrowserOrigin !== PRODUCTION_ORIGIN ||
+          terminalCode !== null) {
+        throw new CompanionCapabilityError("direct-composition-seed-ready-fields");
+      }
+    } else if (protocol !== null || boundOrigin !== null ||
+        allowedBrowserOrigin !== null || terminalCode === null ||
+        !/^[a-z][a-z0-9-]{2,63}$/u.test(terminalCode)) {
+      throw new CompanionCapabilityError("direct-composition-seed-terminal-fields");
+    }
+    return Object.freeze({
+      schema: value.schema,
+      operationId: value.operationId,
+      sequence: value.sequence,
+      state: value.state,
+      compositionId: value.compositionId,
+      protocol,
+      boundOrigin,
+      allowedBrowserOrigin,
+      terminalCode
+    });
+  }
+
+  // Write one canonical bounded seed lifecycle projection.
+  function encodeDirectCompositionSeedProjection(value) {
+    const projection = validateDirectCompositionSeedProjection(value);
+    return canonicalJsonBytes({
+      schema: projection.schema,
+      operationId: projection.operationId,
+      sequence: projection.sequence,
+      state: projection.state,
+      compositionId: projection.compositionId,
+      protocol: projection.protocol,
+      boundOrigin: projection.boundOrigin,
+      allowedBrowserOrigin: projection.allowedBrowserOrigin,
+      terminalCode: projection.terminalCode
+    }, MAXIMUM_DIRECT_COMPOSITION_SEED_PROJECTION_BYTES,
+    "direct-composition-seed-projection-wire");
+  }
+
+  // Verify canonical bytes and lifecycle fields before exposing a projection.
+  function decodeDirectCompositionSeedProjection(bytes) {
+    return decodeCanonicalJson(
+      bytes,
+      MAXIMUM_DIRECT_COMPOSITION_SEED_PROJECTION_BYTES,
+      validateDirectCompositionSeedProjection,
+      encodeDirectCompositionSeedProjection,
+      "direct-composition-seed-projection-wire"
+    );
+  }
+
   function decodeOperationProjection(bytes) {
     return decodeCanonicalJson(
       bytes,
@@ -1654,11 +1825,12 @@
       return null;
     }
 
-    async pair(pairingCode) {
+    async pair(pairingCode, signal = null) {
       if (this.isPaired || this._pairingRecovery || this._rotationRecovery ||
           this._inFlight) {
         throw new CompanionCapabilityError("client-state");
       }
+      const parentSignal = requireAbortSignal(signal);
       const pairing = parsePairingCode(pairingCode);
       this._inFlight = true;
       let sessionKey = null;
@@ -1675,7 +1847,8 @@
           pairing.endpoint,
           ROUTES.pairingBegin,
           beginBytes,
-          MAXIMUM_PAIRING_BEGIN_RESPONSE_BYTES
+          MAXIMUM_PAIRING_BEGIN_RESPONSE_BYTES,
+          parentSignal
         );
         const begin = decodePairingBeginResponse(beginResponse.bytes);
         if (begin.claimId !== claimId || begin.browserNonce !== browserNonce) {
@@ -1720,7 +1893,7 @@
         };
         sessionKey = null;
         try {
-          return await this._completePendingPairing();
+          return await this._completePendingPairing(parentSignal);
         } catch (error) {
           if (this._pairingRecovery) {
             throw new CompanionCapabilityError("pairing-outcome-unknown");
@@ -1736,13 +1909,14 @@
       }
     }
 
-    async recoverPairing() {
+    async recoverPairing(signal = null) {
       if (!this._pairingRecovery || this.isPaired || this._inFlight) {
         throw new CompanionCapabilityError("client-state");
       }
+      const parentSignal = requireAbortSignal(signal);
       this._inFlight = true;
       try {
-        return await this._completePendingPairing();
+        return await this._completePendingPairing(parentSignal);
       } catch (error) {
         if (this._pairingRecovery) {
           throw new CompanionCapabilityError("pairing-outcome-unknown");
@@ -1907,7 +2081,71 @@
       return result.value;
     }
 
-    async getArtifactChunk(operationId, artifactRole, chunkIndex, expectedArtifact) {
+    // Start the named operation seed through the authenticated single-flight boundary.
+    async startDirectCompositionSeed(operationId, signal = null) {
+      requireSha256(operationId, "direct-composition-seed-operation-id");
+      const body = encodeDirectCompositionSeedStartRequest({
+        schema: SCHEMAS.directCompositionSeedStartRequest,
+        operationId
+      });
+      const result = await this._authenticatedJson(
+        "POST",
+        ROUTES.directCompositionSeeds,
+        body,
+        MAXIMUM_DIRECT_COMPOSITION_SEED_PROJECTION_BYTES,
+        decodeDirectCompositionSeedProjection,
+        { signal }
+      );
+      if (result.value.operationId !== operationId) {
+        throw new CompanionCapabilityError("direct-composition-seed-identity-drift");
+      }
+      return result.value;
+    }
+
+    // Read one seed lifecycle and reject an operation-identity mismatch.
+    async readDirectCompositionSeed(operationId, signal = null) {
+      requireSha256(operationId, "direct-composition-seed-operation-id");
+      const result = await this._authenticatedJson(
+        "GET",
+        `${ROUTES.directCompositionSeeds}/${operationId}`,
+        null,
+        MAXIMUM_DIRECT_COMPOSITION_SEED_PROJECTION_BYTES,
+        decodeDirectCompositionSeedProjection,
+        { signal }
+      );
+      if (result.value.operationId !== operationId) {
+        throw new CompanionCapabilityError("direct-composition-seed-identity-drift");
+      }
+      return result.value;
+    }
+
+    // Stop only the named seed and verify the returned operation identity.
+    async stopDirectCompositionSeed(operationId, signal = null) {
+      requireSha256(operationId, "direct-composition-seed-operation-id");
+      const body = encodeDirectCompositionSeedStopRequest({
+        schema: SCHEMAS.directCompositionSeedStopRequest
+      });
+      const result = await this._authenticatedJson(
+        "POST",
+        `${ROUTES.directCompositionSeeds}/${operationId}/stop`,
+        body,
+        MAXIMUM_DIRECT_COMPOSITION_SEED_PROJECTION_BYTES,
+        decodeDirectCompositionSeedProjection,
+        { signal }
+      );
+      if (result.value.operationId !== operationId) {
+        throw new CompanionCapabilityError("direct-composition-seed-identity-drift");
+      }
+      return result.value;
+    }
+
+    async getArtifactChunk(
+      operationId,
+      artifactRole,
+      chunkIndex,
+      expectedArtifact,
+      signal
+    ) {
       requireSha256(operationId, "artifact-operation-id");
       if (!ARTIFACT_ROLES.includes(artifactRole)) {
         throw new CompanionCapabilityError("artifact-role");
@@ -1925,7 +2163,8 @@
           operationId,
           artifactRole,
           chunkIndex
-        )
+        ),
+        { signal }
       );
       const metadata = result.metadata;
       const metadataSha256 = await computeArtifactMetadataSha256(metadata);
@@ -1965,7 +2204,7 @@
       this._inFlight = false;
     }
 
-    async _completePendingPairing() {
+    async _completePendingPairing(signal = null) {
       const pending = this._pairingRecovery;
       if (!pending) {
         throw new CompanionCapabilityError("client-state");
@@ -1976,7 +2215,8 @@
           pending.endpoint,
           ROUTES.pairingComplete,
           pending.completeBytes,
-          MAXIMUM_PAIRING_COMPLETE_RESPONSE_BYTES
+          MAXIMUM_PAIRING_COMPLETE_RESPONSE_BYTES,
+          signal
         );
       } catch (error) {
         if (error instanceof CompanionCapabilityError && error.status > 0 &&
@@ -2086,10 +2326,16 @@
       this._rotationRecovery = null;
     }
 
-    async _pairingRequest(endpoint, path, body, maximumResponseBytes) {
-      let response;
+    async _pairingRequest(
+      endpoint,
+      path,
+      body,
+      maximumResponseBytes,
+      signal = null
+    ) {
+      let result;
       try {
-        response = await fetchBounded(
+        result = await fetchBounded(
           this._fetch,
           `${endpoint}${path}`,
           {
@@ -2103,16 +2349,25 @@
             referrerPolicy: "no-referrer",
             keepalive: false
           },
-          this._timeoutMilliseconds
+          this._timeoutMilliseconds,
+          requireAbortSignal(signal),
+          async (response, boundedSignal) => {
+            const contentType = exactHeader(response.headers, "content-type");
+            const maximum = response.status === 200
+              ? maximumResponseBytes
+              : MAXIMUM_ERROR_RESPONSE_BYTES;
+            const bytes = await readBoundedResponse(
+              response,
+              maximum,
+              boundedSignal
+            );
+            return Object.freeze({ response, contentType, bytes });
+          }
         );
       } catch (error) {
         throw normalizeFetchError(error);
       }
-      const contentType = exactHeader(response.headers, "content-type");
-      const maximum = response.status === 200
-        ? maximumResponseBytes
-        : MAXIMUM_ERROR_RESPONSE_BYTES;
-      const bytes = await readBoundedResponse(response, maximum);
+      const { response, contentType, bytes } = result;
       if (response.status !== 200) {
         if (contentType !== "application/json") {
           throw new CompanionCapabilityError("pairing-response-media-type",
@@ -2161,8 +2416,9 @@
       options = {}
     ) {
       requireAllowedKeys(options, [
-        "responseKey", "allowRotationRecovery", "preserveOnAmbiguous"
+        "responseKey", "allowRotationRecovery", "preserveOnAmbiguous", "signal"
       ], "authenticated-options");
+      const parentSignal = requireAbortSignal(options.signal);
       const responseKey = options.responseKey || this._sessionKey;
       this._requireSession(options.allowRotationRecovery === true);
       if (this._inFlight) {
@@ -2204,7 +2460,7 @@
       this._inFlight = true;
       let response;
       try {
-        response = await fetchBounded(
+        const result = await fetchBounded(
           this._fetch,
           `${this._endpoint}${path}`,
           {
@@ -2220,12 +2476,22 @@
           },
           successContentType === "application/octet-stream"
             ? CHUNK_TIMEOUT_MILLISECONDS
-            : this._timeoutMilliseconds
+            : this._timeoutMilliseconds,
+          parentSignal,
+          async (boundedResponse, boundedSignal) => {
+            response = boundedResponse;
+            const maximum = response.status >= 200 && response.status < 300
+              ? maximumResponseBytes
+              : MAXIMUM_ERROR_RESPONSE_BYTES;
+            const bytes = await readBoundedResponse(
+              response,
+              maximum,
+              boundedSignal
+            );
+            return Object.freeze({ bytes });
+          }
         );
-        const maximum = response.status >= 200 && response.status < 300
-          ? maximumResponseBytes
-          : MAXIMUM_ERROR_RESPONSE_BYTES;
-        const bytes = await readBoundedResponse(response, maximum);
+        const { bytes } = result;
         const responseContentType = exactHeader(response.headers, "content-type");
         const contentSha256 = await sha256Hex(bytes);
         if (exactHeader(response.headers, "x-tinyrustlm-session") !== this._sessionId ||
@@ -2373,7 +2639,8 @@
     return requireUInt(parsed, "response-header-integer", maximum);
   }
 
-  async function readBoundedResponse(response, maximumBytes) {
+  // Read exactly the declared byte count while keeping cancellation and timeout active.
+  async function readBoundedResponse(response, maximumBytes, signal) {
     if (!response || !Number.isSafeInteger(response.status) ||
         response.status < 100 || response.status > 599 ||
         !Number.isSafeInteger(maximumBytes) || maximumBytes < 1 ||
@@ -2389,17 +2656,141 @@
         exactOptionalHeader(response.headers, "content-encoding") !== null) {
       throw new CompanionCapabilityError("response-framing");
     }
-    let buffer;
+    const boundedSignal = requireAbortSignal(signal);
+    if (!boundedSignal) {
+      throw new CompanionCapabilityError("response-invalid");
+    }
+    if (boundedSignal.aborted) {
+      throw abortReason(boundedSignal);
+    }
+    const bytes = new Uint8Array(declared);
+    let reader;
     try {
-      buffer = await response.arrayBuffer();
-    } catch (_error) {
+      if (!response.body || typeof response.body.getReader !== "function") {
+        throw new CompanionCapabilityError("response-body");
+      }
+      reader = response.body.getReader();
+      if (!reader || typeof reader.read !== "function" ||
+          typeof reader.cancel !== "function" ||
+          typeof reader.releaseLock !== "function") {
+        throw new CompanionCapabilityError("response-body");
+      }
+    } catch (error) {
+      if (error instanceof CompanionCapabilityError) {
+        throw error;
+      }
       throw new CompanionCapabilityError("response-body");
     }
-    const bytes = new Uint8Array(buffer);
-    if (bytes.byteLength !== declared || bytes.byteLength > maximumBytes) {
-      throw new CompanionCapabilityError("response-framing");
+
+    let offset = 0;
+    let chunkCount = 0;
+    let streamComplete = false;
+    try {
+      while (!streamComplete) {
+        const chunk = await readStreamChunk(reader, boundedSignal);
+        if (!chunk || typeof chunk.done !== "boolean") {
+          throw new CompanionCapabilityError("response-body");
+        }
+        if (chunk.done) {
+          streamComplete = true;
+          continue;
+        }
+        if (!(chunk.value instanceof Uint8Array)) {
+          throw new CompanionCapabilityError("response-body");
+        }
+        // Every delivered chunk must make progress inside the declared byte budget.
+        chunkCount += 1;
+        if (chunkCount > MAXIMUM_RESPONSE_CHUNKS ||
+            chunk.value.byteLength === 0 || chunk.value.byteLength > declared - offset ||
+            chunk.value.byteLength > maximumBytes - offset) {
+          throw new CompanionCapabilityError("response-framing");
+        }
+        bytes.set(chunk.value, offset);
+        offset += chunk.value.byteLength;
+      }
+      if (offset !== declared) {
+        throw new CompanionCapabilityError("response-framing");
+      }
+      return bytes;
+    } catch (error) {
+      if (error instanceof CompanionCapabilityError) {
+        throw error;
+      }
+      if (boundedSignal.aborted) {
+        throw error;
+      }
+      throw new CompanionCapabilityError("response-body");
+    } finally {
+      if (!streamComplete) {
+        cancelReader(reader);
+      } else {
+        releaseReader(reader);
+      }
     }
-    return bytes;
+  }
+
+  // Race each reader step with cancellation and always detach its abort listener.
+  function readStreamChunk(reader, signal) {
+    if (signal.aborted) {
+      return Promise.reject(abortReason(signal));
+    }
+    return new Promise((resolve, reject) => {
+      let settled = false;
+      const finish = (callback, value) => {
+        if (settled) return;
+        settled = true;
+        signal.removeEventListener("abort", onAbort);
+        callback(value);
+      };
+      const onAbort = () => finish(reject, abortReason(signal));
+      signal.addEventListener("abort", onAbort, { once: true });
+      if (signal.aborted) {
+        onAbort();
+        return;
+      }
+      Promise.resolve()
+        .then(() => reader.read())
+        .then(
+          (chunk) => finish(resolve, chunk),
+          (error) => finish(reject, error)
+        );
+    });
+  }
+
+  // Preserve typed abort reasons or provide a standard AbortError.
+  function abortReason(signal) {
+    if (signal.reason && typeof signal.reason === "object") {
+      return signal.reason;
+    }
+    const error = new Error("aborted");
+    error.name = "AbortError";
+    return error;
+  }
+
+  // Cancel an unfinished body and release its reader without awaiting hostile cleanup.
+  function cancelReader(reader) {
+    let cancellation = null;
+    try {
+      cancellation = reader.cancel();
+    } catch (_error) {
+      cancellation = null;
+    }
+    releaseReader(reader);
+    if (cancellation && typeof cancellation.then === "function") {
+      Promise.resolve(cancellation).then(
+        () => releaseReader(reader),
+        () => releaseReader(reader)
+      );
+    }
+  }
+
+  // Release the body lock, tolerating a pending reader cancellation.
+  function releaseReader(reader) {
+    try {
+      reader.releaseLock();
+    } catch (_error) {
+      // Cancellation may still be settling; cancelReader retries after it settles.
+    }
   }
 
   function exactOptionalHeader(headers, name) {
@@ -2417,17 +2808,77 @@
     return value;
   }
 
-  async function fetchBounded(fetchImplementation, url, options, timeoutMilliseconds) {
+  // Keep the timeout and parent cancellation active through complete body consumption.
+  async function fetchBounded(
+    fetchImplementation,
+    url,
+    options,
+    timeoutMilliseconds,
+    parentSignal,
+    consumeResponse
+  ) {
     if (typeof AbortController !== "function") {
       throw new CompanionCapabilityError("abort-controller-unavailable");
     }
+    const parent = requireAbortSignal(parentSignal);
+    if (typeof consumeResponse !== "function") {
+      throw new CompanionCapabilityError("response-invalid");
+    }
+    if (parent?.aborted) {
+      throw new CompanionCapabilityError("companion-request-aborted");
+    }
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), timeoutMilliseconds);
+    const onParentAbort = () => controller.abort();
+    if (parent) {
+      parent.addEventListener("abort", onParentAbort, { once: true });
+      if (parent.aborted) controller.abort();
+    }
+    let timeoutExpired = false;
+    const timeout = setTimeout(() => {
+      timeoutExpired = true;
+      controller.abort();
+    }, timeoutMilliseconds);
     try {
-      return await fetchImplementation(url, { ...options, signal: controller.signal });
+      const response = await fetchImplementation(
+        url,
+        { ...options, signal: controller.signal }
+      );
+      const result = await consumeResponse(response, controller.signal);
+      if (parent?.aborted) {
+        throw new CompanionCapabilityError("companion-request-aborted");
+      }
+      if (timeoutExpired) {
+        throw new CompanionCapabilityError("companion-timeout");
+      }
+      return result;
+    } catch (error) {
+      if (parent?.aborted) {
+        throw new CompanionCapabilityError("companion-request-aborted");
+      }
+      if (timeoutExpired) {
+        throw new CompanionCapabilityError("companion-timeout");
+      }
+      throw error;
     } finally {
       clearTimeout(timeout);
+      if (parent) {
+        parent.removeEventListener("abort", onParentAbort);
+      }
     }
+  }
+
+  // Accept an optional AbortSignal interface without coercing malformed inputs.
+  function requireAbortSignal(signal) {
+    if (signal === undefined || signal === null) {
+      return null;
+    }
+    if (typeof signal !== "object" ||
+        typeof signal.aborted !== "boolean" ||
+        typeof signal.addEventListener !== "function" ||
+        typeof signal.removeEventListener !== "function") {
+      throw new CompanionCapabilityError("abort-signal");
+    }
+    return signal;
   }
 
   function normalizeFetchError(error) {
@@ -2449,6 +2900,8 @@
     SCHEMAS,
     ARTIFACT_ROLES,
     OPERATION_STATES,
+    DIRECT_COMPOSITION_SEED_STATES,
+    DIRECT_COMPOSITION_SEED_PROTOCOL,
     SOURCE_DESCRIPTOR,
     DOMAINS,
     CompanionCapabilityError,
@@ -2502,6 +2955,12 @@
     encodeAcquireRequest,
     computeOperationId,
     encodeCancelRequest,
+    encodeDirectCompositionSeedStartRequest,
+    decodeDirectCompositionSeedStartRequest,
+    encodeDirectCompositionSeedStopRequest,
+    decodeDirectCompositionSeedStopRequest,
+    encodeDirectCompositionSeedProjection,
+    decodeDirectCompositionSeedProjection,
     decodeOperationProjection,
     encodeOperationProjection
   });

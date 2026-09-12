@@ -63,6 +63,53 @@ tests. The obsolete adapter and SLM1 formats are not being restored.
 | C7 | The first actual WASM browser check stopped before compilation because this process had no default rustup toolchain. | Record the effective toolchain environment before interpreting a build failure as a code defect. Selecting the already installed stable toolchain with process-local CARGO_HOME/RUSTUP_HOME/RUSTUP_TOOLCHAIN allowed the locked offline build and browser check to pass. | `tinyrustlm/tests/model-runtime-client-browser.test.js`; no machine-wide settings changed; this initializes an empty runtime and does not qualify a model |
 | C8 | A source-preview cache key accepted arbitrary hash-shaped values, and release tests required scratch outside the repository. | Bind cache keys to actual response bytes, reject foreign Host headers and normalized path aliases, and keep bounded test/release output under canonical artifacts. | Seventeen static-server, shell and manifest checks passed; static-server line coverage 88.42%; no publication |
 
+## Retained July quantization probes reviewed during cleanup
+
+The retained eight-case source golden and nine native probe sets were compared
+read-only on September 12. All prompt token-ID sequences match. All eight golden
+logit payloads match their recorded SHA-256 values; the review records fresh
+SHA-256 values for every probe payload and manifest. Historical non-SHA probe
+checksums were not reverified. This comparison executes no model and does not
+revise an old decision or establish current SLM2 qualification.
+
+| Historical probe | First-token argmax matches | Largest absolute logit difference |
+| --- | --- | --- |
+| F32 control | 8/8 | 0.0001191 |
+| Q4 | 1/8 | 22.3792 |
+| Mixed Q8/Q4 | 2/8 | 9.4830 |
+| Mixed output/down variant | 3/8 | 10.4276 |
+| Q8 | 6/8 | 3.6937 |
+| Q8 with F32 norms | 7/8 | 2.3459 |
+| Q5 | 4/8 | 5.2087 |
+| Q5 sensitive-tensor variant | 4/8 | 4.8293 |
+| Q8 edges with Q5 body | 4/8 | 4.6361 |
+
+The comparison found no mismatched nonfinite values. All nine referenced old
+model payloads are already absent; retaining those models is unnecessary to
+preserve these findings. Raw diagnostic logits have not been deleted in this
+review.
+
+These observations suggest prioritizing quantization and normalization handling
+when investigating that historical conversion path: the F32 control agrees
+closely while compressed variants differ despite identical prompt tokens.
+They do not establish which current implementation, tensor family, rounding rule
+or kernel caused a discrepancy. Keeping F32 norms improved the observed Q8
+comparison, but still changed one first-token choice. The mixed output/down
+variant improved the choice count while worsening maximum error: one aggregate
+metric cannot establish an overall improvement. First-token agreement also says
+nothing by itself about multi-token quality, browser memory, latency or chat.
+
+Use independent current reference/native/WASM checks, complete logit metrics,
+per-case identities and untouched semantic evaluation when changing a current
+composition. Never reintroduce SLM1 support or restore deleted payloads to repeat
+these old experiments.
+
+Compact evidence: `artifacts/ecosystem-cleanup-20260912/historical-logit-review.json`,
+SHA-256 `c7068630cbaaa2eacbd69df2108aba5221de163220915a5d51211d8e71fde29b`.
+It records exact source revision, input paths, case identities and computed
+metrics. Historical source paths in the golden predate consolidation; they do
+not authorize recreating those locations.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

@@ -23,7 +23,7 @@ experiment_lessons_pointer:
   review_state: reviewed_for_named_records_only
   status: active_growing_review
   last_reviewed_utc: 2026-09-12T16:59:53Z
-  sha256: 75b225167d82ec1ee392bbc63c644ffec6a9cc4df0077d21cce491f921e4632d
+  sha256: a9cc2c4ff9989c523033f3f0303703519225a617840ed0d02f01682c59003ecd
 
 durable_rules:
   - Preserve immutable failed operations and public bounded results; historical evidence creates no runtime compatibility path.
