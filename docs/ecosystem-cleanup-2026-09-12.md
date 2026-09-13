@@ -550,3 +550,26 @@ lessons, evidence references and remaining review scope live in the canonical
   MiniModel is clean and pushed. Owned output is removed; transport, qualification,
   seed hosting and broader blocked cleanup remain unresolved. No historical
   deletion or measured storage recovery was produced.
+
+### MiniModel catalog failure state and owned browser verification
+
+- Source d30114c clears failed/loading catalog actions, counts and obsolete
+  callbacks; only the newest verified request may render. Controls recover after
+  a valid reload. CSS is unchanged. The current package/review checkpoint
+  b33b1a783e20db23b77971be061388b7e4163285 is clean and pushed.
+- Browser verification uses an exact six-input local preview and installed Edge
+  with canonical Playwright. Profiles and temporary output stay in a bounded
+  owned artifact directory; screenshots remain in memory. Broad process matching,
+  manual CDP, arbitrary target/output arguments and suppressed cleanup failure
+  were removed. Browser and coverage output are verified absent.
+- The corrected full suite passed 74 Node and 27 nested Pester checks, including
+  eight desktop/mobile Edge observations. Catalog.js Node coverage is 90.76
+  percent lines and 80.82 percent branches; browser-helper coverage is 92.88 and
+  88.89 percent. Browser-evaluated functions are outside these metrics.
+- Lesson C26 and browser-catalog-review-20260912.json preserve fixture-clock
+  leakage, the shared-artifact-parent assertion race, coverage-temp containment,
+  corrections and actual evidence limits. Historical empty fixtures do not renew
+  authority or qualify models. The current catalog stays expired; transport,
+  qualification, live seeding and broader blocked cleanup remain unresolved.
+  Nothing was published and no historical/model deletion or measured storage
+  recovery is claimed.

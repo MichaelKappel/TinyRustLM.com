@@ -1,5 +1,5 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-13T00:16:43Z
+updated_utc: 2026-09-13T00:41:39Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 
@@ -45,6 +45,16 @@ minimodel_publication_binding_cleanup:
   change: Separate exact predecessor/candidate discovery bindings; current 22-file package and planned UTC publication date; JS and PowerShell materialization agree while preserving historical entries. Public status pointers and guides reflect authorized initial seeds and canonical TinyRustLM companion ownership.
   verification: Corrected full suite 67 Node and 27 nested Pester passes, zero skips/cancellations. Historical rejection fixtures read exact Git objects. Whole custody-module command coverage 241/562; no new generator/bootstrap/branch coverage percentage. Unchanged source gate passes for registered governed roots only.
   remaining: Actual publisher rejects current catalog expiry before public admission or credentials. No catalog renewal, qualified model, live seed or publication is claimed. Transport remains unbound. Later UTC publication requires reviewed metadata regeneration. Broader cleanup and previously blocked deletions remain outstanding. Owned output is removed; no measured storage recovery.
+
+minimodel_browser_catalog_cleanup:
+  checkpoint: MiniModel.org b33b1a783e20db23b77971be061388b7e4163285
+  public_source: d30114cac9326be104d0c441151caf0224425e3d
+  evidence: MiniModel.org/artifacts/reports/browser-catalog-review-20260912.json
+  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md C26
+  change: Catalog failure clears previous actions and misleading loading state; controls recover only after current verified data. Superseded requests cannot overwrite newer results. The browser tool uses owned canonical output and an exact local preview instead of scattered profiles/screenshots, manual CDP and broad process matching.
+  verification: Corrected full suite 74 Node and 27 nested Pester passes; eight real Edge observations. Explicit historical-clock fixtures prove empty/reload/recovery UI only. Current-clock cases reject actual expired source. CSS is unchanged and the two viewports have no horizontal overflow. Node line/branch coverage is 90.76/80.82 percent for catalog.js and 92.88/88.89 for the browser helper, excluding browser-evaluated code. Owned browser and parent coverage output are removed.
+  lessons_retained: Isolate fixture clocks in fresh browsers; verify one operation's exact output rather than a shared directory; contain the coverage collector before test startup. The first full run exposed the shared-parent assertion race and was corrected without weakening cleanup ownership.
+  remaining: Catalog remains empty and expired, transport unbound, and no qualified starter or live server seed is proved. Current 22-file publication metadata is prepared and pushed, not deployed. Broader cleanup and blocked deletions remain open; no measured storage recovery.
 
 portal_retirement_tool_cleanup:
   checkpoint: TinyRustLM.MiRust.com d17f77a

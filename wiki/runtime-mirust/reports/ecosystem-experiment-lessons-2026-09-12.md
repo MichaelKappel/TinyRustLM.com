@@ -524,6 +524,66 @@ a whole-volume inventory. Owned test output is removed. Transport remains
 unbound; real qualification and seed hosting remain open. No historical/model
 deletion, production receipt or measured storage recovery was produced.
 
+<a id="c26"></a>
+## C26. Browser failure states and cleanup need independent ownership
+
+Reviewing MiniModel's old browser tool exposed a product failure: expired or
+failed catalog loading changed the status line but left Loading placeholders,
+counts and old filter callbacks in place. The new loader clears previous actions
+and callbacks while loading, disables unusable controls on failure, and restores
+them only after verified recovery. A per-document operation identity prevents
+an older success or failure from overwriting a newer result. The content-bound
+script URL was updated after the existing assertion caught its stale hash.
+
+The old smoke tool wrote profiles and screenshots to system temp, managed a
+manual CDP/debugging-port loop, stopped processes through broad command-line
+matching, and suppressed cleanup errors. It now serves exactly six canonical
+public inputs from bounded memory on an owned ephemeral loopback listener and
+uses installed Edge with the existing canonical Playwright package. Browser and
+automation temporary output is bounded under one marked MiniModel artifacts
+operation. Screenshots are hashed in memory. Browsers and the listener close
+before directory/marker verification and removal; cleanup failure fails the run.
+No arbitrary URL or output path is accepted and no site source is copied.
+
+The first real browser run exposed fixture-clock leakage: the next viewport
+inherited the historical issuance-time clock and incorrectly appeared fresh.
+Each viewport now starts a fresh browser. Eight real Edge observations cover
+current expiry plus explicitly historical empty, HTTP 503 reload failure and
+recovered-empty states at desktop 1440x1000 and mobile 390x844. The historical
+clock is never freshness, model-qualification, seed or publication evidence.
+CSS bytes are unchanged; measured layouts have no horizontal overflow and the
+catalog begins inside the initial viewport. Screenshots were not retained or
+manually inspected, and no pixel comparison is claimed.
+
+The first full run passed 73/74 Node checks. Its cleanup assertion wrongly
+included a concurrently running Pester operation in the shared artifacts parent.
+The corrected assertion independently verifies only the browser operation's
+exact directory. Node's experimental coverage collector also creates temporary
+output before test helpers load. Its initial default-temp directory was removed
+by Node and no node-coverage directory remained in the service account temp
+listing. The corrected run set the parent process TMP/TEMP/TMPDIR to a separate
+owned canonical artifact directory and verified its removal afterward.
+
+The corrected full suite passed 74 Node and 27 nested Pester checks with zero
+skips/cancellations. Node coverage for catalog.js is 90.76 percent lines and
+80.82 percent branches; the browser helper is 92.88 percent lines and 88.89
+percent branches. These metrics exclude JavaScript executed inside Edge and
+some separate CLI invocations. Whole custody-module command coverage remains
+241/562. All browser and coverage output is absent after the completed run.
+
+Source is committed as d30114cac9326be104d0c441151caf0224425e3d; the current
+prepared-package/review checkpoint is b33b1a783e20db23b77971be061388b7e4163285,
+pushed to the established MiniModel remote. The source-free review is
+`MiniModel.org/artifacts/reports/browser-catalog-review-20260912.json`,
+17,481 bytes, SHA-256
+`d2773c30e137e15d99e5dd7bb4e328ca4637e50791e61c880d49f7298fa86e6f`.
+It preserves exact input identities, observed browser states, failures, coverage
+scope and cleanup evidence. The unchanged source gate passes for registered
+governed roots only. The 22-file package remains prepared: actual publication
+still refuses expired catalog authority before public admission or credentials.
+Transport, real qualification and server seeding remain unresolved. No historical
+or model deletion, publication or measured storage recovery is claimed.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,
