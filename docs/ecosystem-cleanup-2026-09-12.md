@@ -528,3 +528,25 @@ lessons, evidence references and remaining review scope live in the canonical
   output was removed. Fresh release identity, model qualification, unbound
   transport and hosting remain open. No production receipt, model deletion or
   measured storage recovery was produced.
+
+### MiniModel current publication bindings and preserved lessons
+
+- MiniModel public-source commits c73e266 and df51ec0 remove duplicated status
+  claims and correct stale seed/companion guidance. Checkpoint
+  4f6e8cfd5698081ce7fe25b956494ea62988d08f binds the current 22-file package,
+  separates predecessor/candidate discovery, and uses a reviewed UTC publication
+  date in both JSON materializers. Historical ledger entries are preserved.
+- Current candidate verification invokes the actual browser contract and refuses
+  expired catalog authority before public admission or credentials. No catalog
+  renewal or real model/seed claim was made. Source records remain prepared.
+- All 67 Node and 27 nested Pester checks pass after correcting two stale test
+  assumptions. Historical rejection fixtures read exact Git objects in memory.
+  Full JS/PowerShell materialization and actual publisher startup boundaries
+  pass. Whole custody-module command coverage is 241/562; no new generator or
+  bootstrap coverage percentage, browser smoke or FTPS success is claimed.
+- Lesson C25 and publication-binding-review-20260912.json preserve the defects,
+  failed checks, fixes, exact identities and evidence limits. The unchanged
+  source gate passes for registered governed roots, not the entire volume.
+  MiniModel is clean and pushed. Owned output is removed; transport, qualification,
+  seed hosting and broader blocked cleanup remain unresolved. No historical
+  deletion or measured storage recovery was produced.

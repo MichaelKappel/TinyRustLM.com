@@ -471,6 +471,59 @@ model qualification and seed hosting remain open. No public-site request from
 the actual publisher, FTPS operation, production receipt, model deletion or
 measured storage recovery is claimed.
 
+<a id="c25"></a>
+## C25. A new publication needs current candidate bindings and its own publication date
+
+MiniModel's old authority used the same discovery identities for the public
+predecessor and the new candidate, freezing the candidate to old catalog bytes.
+Both materializers also set last_publish_date from the August preparation date.
+Static page and agent-guide claims would still say prepared or last published
+1.1.1 after publishing the JSON records. Other guides prohibited authorized
+initial seeds and told agents to recreate the existing TinyRustLM companion.
+
+The authority now binds predecessor and candidate discovery separately while
+preserving the immutable predecessor receipt and historical ledger tail. The
+22-file manifest binds public source df51ec03a52f4862471dd79a9d989405db5f251f
+and planned UTC publication date 2026-09-13. JavaScript and PowerShell use that
+date; publication requires it to equal the UTC transaction-start day before
+credentials. A later day requires reviewed metadata regeneration. Source release
+records remain prepared; public status/date pointers lead to those JSON records.
+
+Candidate verification now uses the current browser contract, including validity
+windows and Ed25519 signature verification. The empty revision-3 catalog remains
+expired since 2026-09-09. Its historical issuance-time check passes; current-time
+verification refuses it. Metadata generation does not renew authority, qualify
+a model, or establish a live seed.
+
+The first complete run passed 65/67 Node and 26/27 nested Pester checks. One test
+expected expired while the actual contract reported stale. Another incorrectly
+used the advancing canonical manifest as an old rejection fixture. It now reads
+exact historical Git bytes in memory. The corrected suite passed all 67 Node
+and 27 nested Pester checks, with zero skips or cancellations. Full current JS
+metadata materializes identically through the actual PowerShell module. Tests
+reject substituted discovery, malformed dates, backdated materialization and
+rewritten history. The actual publisher with hostile Node startup settings
+stops at catalog expiry before public admission or credentials.
+
+Whole custody-module command coverage is 241/562. It does not quantify the
+standalone harness, new generator/bootstrap lines, branch coverage, an FTPS
+transaction or real acquisition. Existing actual Node deadline tests pass;
+resistant descendant termination was not reproduced. No browser smoke was run
+for these page-copy changes because its old scratch workflow still needs review;
+content and contract assertions were exercised.
+
+Public-source corrections are committed as c73e266 and df51ec0. The current
+package/binding checkpoint is 4f6e8cfd5698081ce7fe25b956494ea62988d08f, pushed
+to the established MiniModel remote. The compact source-free review is
+`MiniModel.org/artifacts/reports/publication-binding-review-20260912.json`,
+19,803 bytes, SHA-256
+`48b9211b89c91ff64ab8b3ece8a7311be4456500e43dc7573652a23a062bc5aa`.
+It binds before/after identities, all 22 public files, failures and proof limits.
+The unchanged source gate passes for registered governed roots only; it is not
+a whole-volume inventory. Owned test output is removed. Transport remains
+unbound; real qualification and seed hosting remain open. No historical/model
+deletion, production receipt or measured storage recovery was produced.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

@@ -1,5 +1,5 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-12T23:46:42Z
+updated_utc: 2026-09-13T00:16:43Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 
@@ -35,7 +35,16 @@ minimodel_publication_command_cleanup:
   lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md C24
   change: Metadata is stdout-only with an exact current public closure and independent Git blob hashes. All 22 canonical public files match existing Git bytes under LF attributes. Every Node child uses reviewed read-leased identities, stripped NODE_* settings, bounded pipes and a deadline.
   verification: Corrected complete suite 64 Node and 27 nested Pester passes, zero skips/cancellations. Actual full 22-file JS/PowerShell materialization and both publisher Node boundaries were exercised. Three actual timeout terminations pass after a native-stderr/exit race was fixed; no new bootstrap or generator coverage percentage is claimed.
-  remaining: The actual publisher stops at stale-manifest rejection before public admission. Fresh release identity, unbound transport, model qualification and hosting remain open. No publication, real seed, production receipt, model deletion or measured storage recovery.
+  remaining_at_checkpoint: The actual publisher stopped at stale-manifest rejection before public admission. Fresh release identity, unbound transport, model qualification and hosting remain open. No publication, real seed, production receipt, model deletion or measured storage recovery.
+
+minimodel_publication_binding_cleanup:
+  checkpoint: MiniModel.org 4f6e8cfd5698081ce7fe25b956494ea62988d08f
+  public_source: df51ec03a52f4862471dd79a9d989405db5f251f
+  evidence: MiniModel.org/artifacts/reports/publication-binding-review-20260912.json
+  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md C25
+  change: Separate exact predecessor/candidate discovery bindings; current 22-file package and planned UTC publication date; JS and PowerShell materialization agree while preserving historical entries. Public status pointers and guides reflect authorized initial seeds and canonical TinyRustLM companion ownership.
+  verification: Corrected full suite 67 Node and 27 nested Pester passes, zero skips/cancellations. Historical rejection fixtures read exact Git objects. Whole custody-module command coverage 241/562; no new generator/bootstrap/branch coverage percentage. Unchanged source gate passes for registered governed roots only.
+  remaining: Actual publisher rejects current catalog expiry before public admission or credentials. No catalog renewal, qualified model, live seed or publication is claimed. Transport remains unbound. Later UTC publication requires reviewed metadata regeneration. Broader cleanup and previously blocked deletions remain outstanding. Owned output is removed; no measured storage recovery.
 
 portal_retirement_tool_cleanup:
   checkpoint: TinyRustLM.MiRust.com d17f77a
