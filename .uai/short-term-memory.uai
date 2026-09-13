@@ -1,5 +1,5 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-13T00:41:39Z
+updated_utc: 2026-09-13T01:13:38Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 
@@ -55,6 +55,14 @@ minimodel_browser_catalog_cleanup:
   verification: Corrected full suite 74 Node and 27 nested Pester passes; eight real Edge observations. Explicit historical-clock fixtures prove empty/reload/recovery UI only. Current-clock cases reject actual expired source. CSS is unchanged and the two viewports have no horizontal overflow. Node line/branch coverage is 90.76/80.82 percent for catalog.js and 92.88/88.89 for the browser helper, excluding browser-evaluated code. Owned browser and parent coverage output are removed.
   lessons_retained: Isolate fixture clocks in fresh browsers; verify one operation's exact output rather than a shared directory; contain the coverage collector before test startup. The first full run exposed the shared-parent assertion race and was corrected without weakening cleanup ownership.
   remaining: Catalog remains empty and expired, transport unbound, and no qualified starter or live server seed is proved. Current 22-file publication metadata is prepared and pushed, not deployed. Broader cleanup and blocked deletions remain open; no measured storage recovery.
+
+numerical_environment_diagnostic_cleanup:
+  evidence: artifacts/ecosystem-cleanup-20260912/numerical-environment-review.json
+  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md C27
+  change: Source-owner validation preserves bounded typed environment errors while redacting arbitrary messages. Historical implementation assertions read frozen Git bytes in memory; numerical fixtures use owned canonical artifacts and verified setup-failure cleanup.
+  observation: The current D model-root training environment fails the existing runtime-lock configuration check and has different major package versions. This does not establish the exact cause of the historical generic numerical v2 failure. No weights or model framework were loaded.
+  verification: Eight Python tests pass; stdlib trace covers 43/43 executable lines in verify_environment, with no branch or whole-owner metric. Focused Node suite passes 22 with one unavailable pinned-framework test skipped. Ruff and unchanged registered-root source-authority gate pass. Owned fixture output is absent.
+  remaining: Historical contracts stay unchanged and closed. The current numerical owners still bind the historical source-lock/operation; a current licensed source, exact canonical reference environment and fresh reviewed bindings are required. Product-quality rejection is unchanged. No real numerical parity, default model, live seed, publication, historical/model deletion or measured storage recovery.
 
 portal_retirement_tool_cleanup:
   checkpoint: TinyRustLM.MiRust.com d17f77a

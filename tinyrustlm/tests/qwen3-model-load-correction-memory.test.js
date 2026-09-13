@@ -1,6 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const { execFileSync } = require("node:child_process");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -28,8 +29,12 @@ const hotRoutes = [
   ".uai/file-handoff.uai"
 ];
 
-function identity(relativePath) {
-  const bytes = fs.readFileSync(path.join(repositoryRoot, relativePath));
+/** Compare immutable memory with its recorded source history, without copying it. */
+function identity(relativePath, commit = null) {
+  const bytes = commit === null ? fs.readFileSync(path.join(repositoryRoot, relativePath))
+    : execFileSync("git", ["show", `${commit}:${relativePath}`], {
+      cwd: repositoryRoot, maxBuffer: 2 * 1024 * 1024, timeout: 30000, windowsHide: true
+    });
   return {
     byteLength: bytes.length,
     sha256: crypto.createHash("sha256").update(bytes).digest("hex")
@@ -54,7 +59,7 @@ test("durable model-load correction memory binds exact implementation evidence",
     "tinyrustlm/tools/qwen3-numerical-source-owner.py",
     "tinyrustlm/tools/qwen3-numerical-trace-verifier.js"
   ]) {
-    const value = identity(relativePath);
+    const value = identity(relativePath, "4891e8aa15523430e2050c8370baed593d7a19d9");
     assert.match(memory, new RegExp(value.sha256, "u"), relativePath);
   }
   assert.match(memory, /9f7be857927819e7946537c2562ef9238c06d8ba/u);

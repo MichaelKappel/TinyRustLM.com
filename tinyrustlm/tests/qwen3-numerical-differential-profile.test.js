@@ -3,10 +3,11 @@
 const assert = require("node:assert/strict");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
-const os = require("node:os");
 const path = require("node:path");
-const { spawnSync } = require("node:child_process");
+const { execFileSync, spawnSync } = require("node:child_process");
 const test = require("node:test");
+const { createOwnedTemporaryDirectory, removeOwnedTemporaryDirectory } =
+  require("../tools/canonical-operation-scratch.js");
 
 const {
   NumericalTraceVerificationError,
@@ -20,6 +21,8 @@ const profilePath = path.join(repositoryRoot, "contracts", "vnext",
   "qwen3-numerical-differential-profile.v1.json");
 const profileBytes = fs.readFileSync(profilePath);
 const profile = JSON.parse(profileBytes.toString("utf8"));
+// This closed profile records the implementations in its v2 registration parent.
+const historicalImplementationCommit = "4891e8aa15523430e2050c8370baed593d7a19d9";
 const oraclePython = process.env.TINYRUSTLM_QWEN3_NUMERICAL_ORACLE_PYTHON || "";
 const registrationSha256 = "9".repeat(64);
 const requestIdentity = Object.freeze({ byteLength: 1234, sha256: "8".repeat(64) });
@@ -48,8 +51,12 @@ function f32Hex(value) {
   return bytes.readUInt32LE(0).toString(16).padStart(8, "0");
 }
 
-function identity(relativePath) {
-  const bytes = fs.readFileSync(path.join(repositoryRoot, relativePath));
+/** Hash current contract bytes or read a frozen implementation from Git in memory. */
+function identity(relativePath, commit = null) {
+  const bytes = commit === null ? fs.readFileSync(path.join(repositoryRoot, relativePath))
+    : execFileSync("git", ["show", `${commit}:${relativePath}`], {
+      cwd: repositoryRoot, maxBuffer: 2 * 1024 * 1024, timeout: 30000, windowsHide: true
+    });
   return { path: relativePath, byteLength: bytes.length, sha256: sha256(bytes) };
 }
 
@@ -353,24 +360,33 @@ function writeRequest(parent, bundles, mutate = null) {
   return requestPath;
 }
 
+/** Contain synthetic traces in one owned canonical directory, including failed setup. */
 function fixture(mutations = {}) {
-  const parent = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-qwen3-numerical-"));
-  const bundles = {
-    source: writeBundle(parent, "source", mutations.source, mutations.sourceManifest),
-    reconstructed: writeBundle(parent, "reconstructed", mutations.reconstructed,
-      mutations.reconstructedManifest),
-    scalar: writeBundle(parent, "scalar", mutations.scalar, mutations.scalarManifest)
-  };
-  const requestPath = writeRequest(parent, bundles, mutations.request);
-  return {
-    parent,
-    bundles,
-    requestPath,
-    close() {
-      assert.equal(path.dirname(parent), os.tmpdir());
-      fs.rmSync(parent, { recursive: true, force: false });
-    }
-  };
+  const owned = createOwnedTemporaryDirectory({
+    temporaryParent: path.join(repositoryRoot, "artifacts/verification/qwen3-numerical-tests")
+  });
+  const parent = owned.rootPath;
+  try {
+    const bundles = {
+      source: writeBundle(parent, "source", mutations.source, mutations.sourceManifest),
+      reconstructed: writeBundle(parent, "reconstructed", mutations.reconstructed,
+        mutations.reconstructedManifest),
+      scalar: writeBundle(parent, "scalar", mutations.scalar, mutations.scalarManifest)
+    };
+    const requestPath = writeRequest(parent, bundles, mutations.request);
+    return {
+      parent,
+      bundles,
+      requestPath,
+      /** Delete only this fixture after checking its original ownership marker. */
+      close() {
+        removeOwnedTemporaryDirectory(owned);
+      }
+    };
+  } catch (error) {
+    removeOwnedTemporaryDirectory(owned);
+    throw error;
+  }
 }
 
 function treeIdentity(root) {
@@ -406,7 +422,7 @@ test("freezes report-derived clean-slate numerical authority boundaries", () => 
   ]);
 });
 
-test("binds every implementation and durable report-memory deep link by content", () => {
+test("binds closed implementation history and durable report-memory links by content", () => {
   for (const record of Object.values(profile.reportLineage)) {
     if (record && typeof record === "object" && record.path) {
       assert.deepEqual(record, identity(record.path));
@@ -414,7 +430,7 @@ test("binds every implementation and durable report-memory deep link by content"
   }
   for (const record of Object.values(profile.implementations)) {
     if (record.path) {
-      const actual = identity(record.path);
+      const actual = identity(record.path, historicalImplementationCommit);
       assert.equal(record.byteLength, actual.byteLength, record.path);
       assert.equal(record.sha256, actual.sha256, record.path);
     }
@@ -442,10 +458,14 @@ test("both private owners expose bounded dependency-free self-tests", () => {
     "tinyrustlm/tools/qwen3-slm2-reconstructed-owner.py",
     "tinyrustlm/tools/qwen3_numerical_environment_lock.py"
   ]) {
-    const result = spawnSync("py", ["-3.12", path.join(repositoryRoot, relative), "--self-test"], {
+    // Only dependency-free self-tests use the installed Python; framework tests stay pinned.
+    const result = spawnSync("py", ["-3", "-I", "-B",
+      path.join(repositoryRoot, relative), "--self-test"], {
       cwd: repositoryRoot,
       encoding: "utf8",
-      windowsHide: true
+      windowsHide: true,
+      timeout: 30000,
+      maxBuffer: 1024 * 1024
     });
     assert.equal(result.status, 0, `${relative}: ${result.stderr}`);
     assert.match(result.stdout, /"status": "pass"/u);
@@ -470,6 +490,20 @@ test("pinned Python executes synthetic Qwen3 hooks and reconstructed kernels", {
     assert.equal(result.status, 0, `${relative}: ${result.stderr}`);
     assert.match(result.stdout, /"status": "pass"/u);
   }
+});
+
+test("failed fixture setup removes its exact owned canonical output", () => {
+  let ownedRoot;
+  assert.throws(() => fixture({
+    /** Capture this operation's identity before deliberately failing request setup. */
+    request(request) {
+      ownedRoot = path.dirname(request.bundles.source.root);
+      throw new Error("fixture-setup-failure");
+    }
+  }), /fixture-setup-failure/u);
+  assert.equal(path.dirname(ownedRoot),
+    path.join(repositoryRoot, "artifacts/verification/qwen3-numerical-tests"));
+  assert.equal(fs.existsSync(ownedRoot), false);
 });
 
 test("read-only verifier passes identical complete traces without touching evidence", () => {

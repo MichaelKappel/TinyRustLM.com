@@ -1,5 +1,5 @@
 profile: tinyrustlm.test-plan.current.v1
-updated_utc: 2026-08-28T00:00:00Z
+updated_utc: 2026-09-13T01:13:38Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 
@@ -19,6 +19,8 @@ gate_3_composition:
   - Hostile-safe parsing, exact tensor registry/shapes, quantization semantics, tokenizer/model binding, Template2/Sampling2/Prompt2 closure, member digests, and no implicit defaults.
 
 gate_4_numerical:
+  - Before material execution, run the existing qwen3_numerical_environment_lock.py --verify-runtime preflight against the canonical lock using the intended interpreter; a training environment is not automatically the pinned numerical reference.
+  - Run py -3 -B -m unittest tinyrustlm.tools.tests.qwen3_numerical_source_owner_test for typed environment failure propagation. See ecosystem-experiment-lessons-2026-09-12.md C27 for the focused Node checks and explicit unavailable-framework limit.
   - Pinned source framework to scalar-native first-divergence vectors at tokenizer, template, embeddings, layers, logits, sampling, and tokens.
   - Optimized native and real-browser WASM differential gates with preregistered bounds, resource measurements, cancellation, poisoning, and recovery.
 

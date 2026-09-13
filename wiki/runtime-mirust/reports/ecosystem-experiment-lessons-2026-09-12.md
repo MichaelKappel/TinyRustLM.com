@@ -584,6 +584,83 @@ still refuses expired catalog authority before public admission or credentials.
 Transport, real qualification and server seeding remain unresolved. No historical
 or model deletion, publication or measured storage recovery is claimed.
 
+<a id="c27"></a>
+
+## C27. Preserve environment rejection causes before another numerical experiment
+
+The closed numerical v2 operation failed with the generic
+`source-trace-environment-drift` code before either numerical proof arrow ran.
+Review found that the source owner masked all environment-authority exceptions,
+including its already typed configuration, interpreter, package RECORD and
+closure failures. Current source now preserves only bounded, path-free
+`EnvironmentLockError` codes. Untyped exceptions and malformed codes still fail
+generically. The helper identity and environment-lock identity must pass before
+the authority module executes. An unused `math` import was removed.
+
+A read-only observation of `D:\LLMs\TinyRustLM\training-env-py312` is decisive
+about the environment available now. Python is 3.12.10, but its ordinary venv
+configuration lacks the lock helper's required `implementation` and
+`version_info` fields. The existing helper's `--verify-runtime` command rejects
+it with `qwen3-numerical-environment-config`; the corrected source-owner wrapper
+retains that cause as `source-trace-environment-config`. Neither check imported
+the model framework or loaded weights. The observed package versions are:
+
+| Package | Available training environment | Numerical reference lock |
+| --- | --- | --- |
+| torch | 2.13.0+cpu | 2.7.0 |
+| transformers | 5.13.1 | 4.51.0 |
+| accelerate | 1.14.0 | 1.14.0 |
+| psutil | 7.2.2 | 7.2.2 |
+| safetensors | 0.8.0 | 0.5.3 |
+| tokenizers | 0.22.2 | 0.21.1 |
+| numpy | 2.5.1 | 2.2.5 |
+
+Changing the configuration parser would not make this package set equal to the
+pinned reference. The present mismatch does not establish the exact cause of
+the historical v2 failure: its evidence did not retain that detail, and its old
+request names removed, disallowed locations. Do not recreate those locations or
+substitute this training environment to manufacture a reference pass. Run the
+existing output-free runtime-lock preflight before model loading and before
+registering another material operation.
+
+Eight stdlib Python tests cover accepted metadata, distinct typed failures,
+malformed and untyped messages, helper import failure, missing loaders and both
+request identity checks. Python 3.14.4 stdlib tracing observes all 43 executable
+lines in `verify_environment`; branch coverage and whole-owner coverage were
+not measured. Run these tests from the canonical root with
+`py -3 -B -m unittest tinyrustlm.tools.tests.qwen3_numerical_source_owner_test`.
+Ruff passes through the installed Python module.
+
+Affected historical tests now read the exact implementation bytes from Git
+parent `4891e8aa15523430e2050c8370baed593d7a19d9` in memory. They do not require
+current source to equal an immutable old experiment. The numerical verifier's
+synthetic traces now use marked canonical artifact output, including cleanup
+after setup failure, instead of OS-temp directories. All operation directories
+were verified absent. The first Node run failed two stdlib self-tests because
+`py -3.12` was no longer registered; using the installed interpreter for those
+dependency-free checks fixed the test-launch issue. Numerical framework tests
+still require their pinned interpreter.
+
+The corrected focused suite passes 22 Node tests, with one explicitly skipped
+pinned-framework hook/kernel test because no qualified oracle interpreter is
+supplied. The unchanged source gate passes for registered governed roots only.
+The source-free review is
+`artifacts/ecosystem-cleanup-20260912/numerical-environment-review.json`,
+8,421 bytes, SHA-256
+`1467ff2cd0ca47724bd17b614b8967082d2006abe5924916147535ea1290f7bd`.
+It binds reviewed source, unchanged historical contracts, observed environment,
+failures, corrections, checks and limits.
+
+The environment lock, numerical profile, preregistrations and terminal decision
+are unchanged. Current source differs from their frozen implementation bindings;
+the old operation remains closed and cannot be replayed. The numerical owners
+still reference the historical source lock and closed operation. A fresh
+current-license-bound source, exact environment closure and reviewed numerical
+owner/registration bindings remain necessary. The original Qwen base and old
+pilot adapter remain rejected for product quality. No new model, numerical
+parity, model conversation, catalog renewal, publication, live server seed,
+historical/model deletion or measured storage recovery is claimed.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

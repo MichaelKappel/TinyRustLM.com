@@ -17,11 +17,14 @@ const profile = JSON.parse(fs.readFileSync(path.join(repositoryRoot,
   "contracts/vnext/qwen3-numerical-differential-profile.v1.json"), "utf8"));
 
 test("source owner freezes one local IPv6 capability probe and denies alternatives", () => {
-  const result = spawnSync("py", ["-3.12", "-I", "-B", ownerPath,
+  // This stdlib-only policy test does not import the pinned numerical framework.
+  const result = spawnSync("py", ["-3", "-I", "-B", ownerPath,
     "--isolation-self-test"], {
     cwd: repositoryRoot,
     encoding: "utf8",
-    windowsHide: true
+    windowsHide: true,
+    timeout: 30000,
+    maxBuffer: 1024 * 1024
   });
   assert.equal(result.status, 0, result.stderr);
   assert.deepEqual(JSON.parse(result.stdout), {

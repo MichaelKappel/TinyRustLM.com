@@ -1,0 +1,197 @@
+{
+  "schema": "tinyrustlm.ecosystem_numerical_environment_review.v1",
+  "reviewedAtUtc": "2026-09-13T01:13:38.992Z",
+  "sourceParent": "60c88d587a1ebebc9f5055f4596b20659ba26aca",
+  "inputs": [
+    {
+      "path": "tinyrustlm/tools/qwen3-numerical-source-owner.py",
+      "byteLength": 51373,
+      "sha256": "cdac8d0fd943bfcfb2fbf0f73e485feebebb8c4c48ca3b465cc9c56982276502"
+    },
+    {
+      "path": "tinyrustlm/tools/tests/qwen3_numerical_source_owner_test.py",
+      "byteLength": 7115,
+      "sha256": "5f92d60b53a37398647e57df66b0b240370c7eff855cc63b6430eeb52b3317e8"
+    },
+    {
+      "path": "tinyrustlm/tests/qwen3-numerical-differential-profile.test.js",
+      "byteLength": 21884,
+      "sha256": "802146776d128cc273a379c0ba23f37d6613e87a7eaf5a145b6ee68d1ff731f0"
+    },
+    {
+      "path": "tinyrustlm/tests/qwen3-model-load-correction-memory.test.js",
+      "byteLength": 5156,
+      "sha256": "77405f9a3c886ef0d162ec4e968da92f7c6e49ad58e822f3ac507d0af4a1575b"
+    },
+    {
+      "path": "tinyrustlm/tests/qwen3-model-load-isolation.test.js",
+      "byteLength": 3232,
+      "sha256": "36b41c002dfd74e59f9b84e3af5fb80e59890597ab9daf97340dfc128719a74c"
+    },
+    {
+      "path": "tinyrustlm/tools/qwen3_numerical_environment_lock.py",
+      "byteLength": 25501,
+      "sha256": "64ae1891699187c3441e4327cce738f20d1cd7abf69a2fb1e54488a0d239f7be"
+    },
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "byteLength": 5822,
+      "sha256": "746e1fafa344ef8d71a5a85864fc1eaf34085c65789f9beda820a247af7f399e"
+    },
+    {
+      "path": "tinyrustlm/tools/verify-single-source-authority.js",
+      "byteLength": 141430,
+      "sha256": "f99083edfe7eae96279acafcb624eb88e1a26e43d5622d498711fe280691647d"
+    }
+  ],
+  "historical": [
+    {
+      "path": "contracts/vnext/qwen3-numerical-differential-profile.v1.json",
+      "byteLength": 17155,
+      "sha256": "c04abffe412f5032b3c66d6ce00ece4d27a5d89f3ae6678e742cc56ce64f86fc",
+      "unchangedFromParent": true
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json",
+      "byteLength": 30920,
+      "sha256": "4102fddd538a5a14d52c543a28a856dc61e95e978d2085b58f449f3be5250ae2",
+      "unchangedFromParent": true
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v1.json",
+      "byteLength": 24467,
+      "sha256": "469e003e6f50cb3e4bb0574e2bd72c5836edb938eea0345ca1a23b4bfc9906a1",
+      "unchangedFromParent": true
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v2.json",
+      "byteLength": 24806,
+      "sha256": "27b0f98a4b00b0561b4e50d7bf6d31d257a91f02c3f33f6c5a8197c652529c77",
+      "unchangedFromParent": true
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-source-terminal-verification-result.v2.json",
+      "byteLength": 7739,
+      "sha256": "0261525e59aefe4c19e4a3d5ec2afc5e59b26c0ef718c9ddaf2761757c8cc4fe",
+      "unchangedFromParent": true
+    }
+  ],
+  "ownerBefore": {
+    "byteLength": 50858,
+    "sha256": "86ad60c3fa2a409b1e138a185ffaa1da7a7ff3b529eebada1cc83a4b7884c129"
+  },
+  "fixtureOutputEntries": 0,
+  "scope": "Typed environment failures, read-only installed-environment observation, and canonical synthetic verifier fixtures; not model execution or qualification.",
+  "changes": [
+    "Preserve bounded path-free EnvironmentLockError codes through the source-owner boundary; untyped or malformed exceptions remain generic failures.",
+    "Remove unused math import.",
+    "Read closed numerical implementation identities from their exact Git registration parent in memory.",
+    "Replace OS-temp numerical fixtures with marked canonical operation output, including setup-failure cleanup.",
+    "Run dependency-free Python self-tests with the installed interpreter; pinned framework execution remains separate."
+  ],
+  "historicalImplementationCommit": "4891e8aa15523430e2050c8370baed593d7a19d9",
+  "currentTrainingEnvironment": {
+    "pythonVersion": "3.12.10",
+    "packages": {
+      "torch": "2.13.0+cpu",
+      "transformers": "5.13.1",
+      "accelerate": "1.14.0",
+      "psutil": "7.2.2",
+      "safetensors": "0.8.0",
+      "tokenizers": "0.22.2",
+      "numpy": "2.5.1"
+    },
+    "pyvenvConfig": {
+      "byteLength": 269,
+      "sha256": "29a60dc9fce1f73ad6aef1b6c6b415347b0f0427aa20edc2da46c86c522df070",
+      "keys": [
+        "command",
+        "executable",
+        "home",
+        "include-system-site-packages",
+        "version"
+      ]
+    }
+  },
+  "referenceEnvironmentRequiredPackages": {
+    "torch": "2.7.0",
+    "transformers": "4.51.0",
+    "accelerate": "1.14.0",
+    "psutil": "7.2.2",
+    "safetensors": "0.5.3",
+    "tokenizers": "0.21.1",
+    "numpy": "2.2.5"
+  },
+  "readOnlyObservations": [
+    {
+      "operation": "Existing environment helper --verify-runtime against the canonical environment lock",
+      "interpreter": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+      "exitCode": 1,
+      "code": "qwen3-numerical-environment-config"
+    },
+    {
+      "operation": "Current source owner verify_current_environment() against the same installed interpreter and canonical helper/lock",
+      "exitCode": 1,
+      "code": "source-trace-environment-config"
+    }
+  ],
+  "verification": {
+    "python": {
+      "pythonVersion": "3.14.4",
+      "tests": 8,
+      "successful": true,
+      "coverage": {
+        "method": "stdlib trace line events against function code object executable lines",
+        "function": "verify_environment",
+        "executableLines": 43,
+        "coveredLines": 43,
+        "missingLines": [],
+        "branchCoverage": "not measured"
+      },
+      "output": "----------------------------------------------------------------------\nRan 8 tests in 0.116s\n\nOK\n"
+    },
+    "node": {
+      "tests": 23,
+      "passed": 22,
+      "failed": 0,
+      "skipped": 1,
+      "cancelled": 0,
+      "skip": "Pinned synthetic framework hook/kernel execution: no qualified oracle interpreter supplied.",
+      "durationMilliseconds": 1343.0384,
+      "files": [
+        "tinyrustlm/tests/qwen3-model-load-environment-closure.test.js",
+        "tinyrustlm/tests/qwen3-model-load-isolation.test.js",
+        "tinyrustlm/tests/qwen3-model-load-correction-memory.test.js",
+        "tinyrustlm/tests/qwen3-numerical-differential-profile.test.js"
+      ]
+    },
+    "lint": {
+      "tool": "py -3.14 -m ruff check --no-cache",
+      "passed": true
+    },
+    "sourceAuthority": {
+      "verdict": "pass",
+      "coverageClass": "registered-governed-roots-only",
+      "wholeVolumeInventoryPerformed": false
+    }
+  },
+  "observedFailuresAndCorrections": [
+    "The first Node run passed 19, failed 2, skipped 1 because the dependency-free self-tests invoked an unavailable py -3.12 launcher registration. Corrected to installed Python without changing numerical environment pins.",
+    "Ruff was absent from PATH; the installed Python module worked and identified the unused math import, which was removed."
+  ],
+  "lessons": [
+    "Check the runtime lock directly before model loading and before registering a material operation.",
+    "Preserve typed rejection causes without leaking raw exception text or private paths.",
+    "The present training environment config/package mismatch does not establish the precise cause of historical numerical v2 environment drift.",
+    "Closed experiment tests bind historical Git bytes; current code needs fresh reviewed execution bindings.",
+    "An environment or synthetic numerical test pass cannot establish product-model quality."
+  ],
+  "limitations": [
+    "No historical operation replayed, model loaded, weights downloaded, source copied, reference environment created, or catalog renewed.",
+    "No real numerical parity, usable starter model, browser model conversation, or live server seeding established.",
+    "The source owner and numerical execution owner still reference the closed historical source-lock/operation. A fresh current-license-bound source, environment closure, numerical profile and owner registration remain required.",
+    "The original pinned Qwen base and the old pilot adapter remain product-quality rejected.",
+    "Branch coverage was not measured; the 43/43 Python metric covers only verify_environment, not the complete model owner.",
+    "No historical/model deletion or measured storage recovery."
+  ]
+}

@@ -12,7 +12,6 @@ import hashlib
 import importlib.metadata
 import importlib.util
 import json
-import math
 import os
 from pathlib import Path
 import re
@@ -122,6 +121,7 @@ def content_identity(path: Path, maximum_bytes: int, code: str) -> dict[str, Any
 
 
 def verify_environment(framework: dict[str, Any]) -> dict[str, Any]:
+    """Verify the bound runtime and preserve only typed, path-free rejection codes."""
     repository_root = Path(__file__).resolve(strict=True).parents[2]
     authority_path = repository_root / ENVIRONMENT_AUTHORITY_RELATIVE_PATH
     lock_path = repository_root / ENVIRONMENT_LOCK_RELATIVE_PATH
@@ -143,9 +143,19 @@ def verify_environment(framework: dict[str, Any]) -> dict[str, Any]:
             fail("source-trace-environment-authority")
         module = importlib.util.module_from_spec(specification)
         specification.loader.exec_module(module)
-        observed = module.verify_running_environment(
-            lock_path, lock["byteLength"], lock["sha256"]
-        )
+        try:
+            observed = module.verify_running_environment(
+                lock_path, lock["byteLength"], lock["sha256"]
+            )
+        except module.EnvironmentLockError as error:
+            code = error.code
+            if (
+                isinstance(code, str)
+                and len(code) <= 128
+                and re.fullmatch(r"qwen3-numerical-environment-[a-z0-9]+(?:-[a-z0-9]+)*", code)
+            ):
+                fail("source-trace-" + code.removeprefix("qwen3-numerical-"))
+            fail("source-trace-environment-drift")
     except SourceOwnerFailure:
         raise
     except Exception:

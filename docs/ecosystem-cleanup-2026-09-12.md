@@ -573,3 +573,25 @@ lessons, evidence references and remaining review scope live in the canonical
   qualification, live seeding and broader blocked cleanup remain unresolved.
   Nothing was published and no historical/model deletion or measured storage
   recovery is claimed.
+
+### Numerical environment diagnostics and experiment evidence
+
+- The source owner now preserves safe typed environment rejection causes while
+  redacting arbitrary exception text. Real read-only checks reject the current
+  training environment's configuration; its major package versions also differ
+  from the numerical reference lock. This observation cannot reconstruct the
+  precise cause of the old generic v2 failure.
+- Eight Python tests pass with 43/43 executable lines covered in the changed
+  validation function; branch and whole-owner coverage were not measured. The
+  focused Node suite passes 22 tests and skips one unavailable pinned-framework
+  test. Ruff and the unchanged registered-root source-authority gate pass.
+- Historical implementation assertions read exact Git bytes in memory. Synthetic
+  numerical fixtures and their setup-failure cleanup now stay inside owned
+  canonical artifacts. The stdlib test launcher no longer assumes a registered
+  Python 3.12 installation. All operation output was removed.
+- Lesson C27 and numerical-environment-review.json preserve exact identities,
+  observations, the failed checks and proof limits. Historical contracts remain
+  unchanged and their operations closed. A current licensed source, exact
+  reference environment, fresh numerical bindings, qualified default and server
+  seeding remain unresolved. No model execution, publication, historical/model
+  deletion or measured storage recovery was produced.
