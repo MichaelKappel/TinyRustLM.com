@@ -4,12 +4,13 @@ const assert = require("node:assert/strict");
 const childProcess = require("node:child_process");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
-const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 
 const owner = require("../tools/qwen3-numerical-execution-owner.js");
 const verifier = require("../tools/qwen3-numerical-source-terminal-verifier.js");
+const { createOwnedTemporaryDirectory, removeOwnedTemporaryDirectory } =
+  require("../tools/canonical-operation-scratch.js");
 
 const repositoryRoot = path.resolve(__dirname, "../..");
 const registrationPath = path.join(repositoryRoot,
@@ -68,9 +69,15 @@ function deepClone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+/** Synthetic historical receipts stay in owned artifacts and never run the closed model owner. */
 function fixture(t) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "qwen3-source-terminal-"));
-  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const owned = createOwnedTemporaryDirectory({ temporaryParent:
+    path.join(repositoryRoot, "artifacts/tests/numerical-source-terminal-verifier") });
+  const root = owned.rootPath;
+  t.after(() => {
+    removeOwnedTemporaryDirectory(owned);
+    assert.equal(fs.existsSync(root), false);
+  });
   const evidenceParent = path.join(root, "private-evidence");
   const sourceDirectory = path.join(root, "source");
   const compositionRoot = path.join(root, "composition");

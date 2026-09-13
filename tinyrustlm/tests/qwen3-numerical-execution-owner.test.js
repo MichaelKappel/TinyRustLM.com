@@ -3,11 +3,13 @@
 const assert = require("node:assert/strict");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
-const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 
 const owner = require("../tools/qwen3-numerical-execution-owner.js");
+const { createOwnedTemporaryDirectory, removeOwnedTemporaryDirectory } =
+  require("../tools/canonical-operation-scratch.js");
+const repositoryRoot = path.resolve(__dirname, "../..");
 
 const ZERO_SHA = "0".repeat(64);
 const TRACE_PROFILE_ID = "tinyrustlm.scalar-full-stage-f32le/1";
@@ -480,10 +482,15 @@ function deepClone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+/** Own and verify cleanup of bounded data fixtures under canonical artifacts. */
 function temporaryRoot(t) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-numerical-owner-"));
-  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  return root;
+  const owned = createOwnedTemporaryDirectory({ temporaryParent:
+    path.join(repositoryRoot, "artifacts/tests/numerical-execution-owner") });
+  t.after(() => {
+    removeOwnedTemporaryDirectory(owned);
+    assert.equal(fs.existsSync(owned.rootPath), false);
+  });
+  return owned.rootPath;
 }
 
 test("canonical JSON is recursively sorted, UTF-8, and LF terminated", () => {
@@ -772,13 +779,13 @@ test("derives all child requests from one registration without prompt or answer 
 
 test("captured process records a clean pass and does not overwrite streams", async (t) => {
   const root = temporaryRoot(t);
-  const script = path.join(root, "pass.js");
-  fs.writeFileSync(script, 'process.stdout.write("pass\\n");\n', { flag: "wx" });
+  const argumentsList = ["-e", 'process.stdout.write("pass\\n");'];
   const stdoutPath = path.join(root, "stdout.bin");
   const stderrPath = path.join(root, "stderr.bin");
-  const outcome = await owner.runCapturedProcess(process.execPath, [script], {
+  const outcome = await owner.runCapturedProcess(process.execPath, argumentsList, {
     stage: "source",
     workingDirectory: root,
+    scratchRoot: root,
     stdoutPath,
     stderrPath,
     maximumStdoutBytes: 64,
@@ -791,9 +798,10 @@ test("captured process records a clean pass and does not overwrite streams", asy
   assert.equal(fs.readFileSync(stdoutPath, "utf8"), "pass\n");
   assert.equal(outcome.stdout.byteLength, 5);
   assert.equal(outcome.stderr.byteLength, 0);
-  await assert.rejects(owner.runCapturedProcess(process.execPath, [script], {
+  await assert.rejects(owner.runCapturedProcess(process.execPath, argumentsList, {
     stage: "source",
     workingDirectory: root,
+    scratchRoot: root,
     stdoutPath,
     stderrPath: path.join(root, "stderr-2.bin"),
     maximumStdoutBytes: 64,
@@ -816,11 +824,10 @@ test("stderr, overflow, and timeout cannot be classified as process pass", async
       timeout: 50, field: "timedOut" }
   ];
   for (const item of cases) {
-    const script = path.join(root, `${item.name}.js`);
-    fs.writeFileSync(script, item.source, { flag: "wx" });
-    const outcome = await owner.runCapturedProcess(process.execPath, [script], {
+    const outcome = await owner.runCapturedProcess(process.execPath, ["-e", item.source], {
       stage: "source",
       workingDirectory: root,
+      scratchRoot: root,
       stdoutPath: path.join(root, `${item.name}.stdout.bin`),
       stderrPath: path.join(root, `${item.name}.stderr.bin`),
       maximumStdoutBytes: item.stdout,
@@ -831,6 +838,151 @@ test("stderr, overflow, and timeout cannot be classified as process pass", async
     assert.equal(owner.processPassed(outcome), false, item.name);
     if (item.field === "stderr") assert.ok(outcome.stderr.byteLength > 0);
     else assert.equal(outcome[item.field], true, item.name);
+  }
+});
+
+test("operation locations require canonical source, artifacts, and disjoint D model roots", (t) => {
+  const evidenceParent = temporaryRoot(t);
+  const valid = { repositoryRoot, evidenceParent,
+    sourceDirectory: "D:\\LLMs\\TinyRustLM\\source",
+    compositionRoot: "D:\\LLMs\\TinyRustLM\\composition" };
+  assert.doesNotThrow(() => owner.validateOperationLocations(valid));
+  for (const [key, value] of [
+    ["repositoryRoot", path.dirname(repositoryRoot)],
+    ["evidenceParent", repositoryRoot],
+    ["evidenceParent", path.join(repositoryRoot, "artifacts")],
+    ["sourceDirectory", "E:\\TinyRustLM-vnext-private\\source"],
+    ["compositionRoot", "X:\\LLMS\\composition"],
+    ["sourceDirectory", "D:\\LLMs\\TinyRustLM-other\\source"],
+    ["sourceDirectory", "D:\\LLMs\\TinyRustLM"],
+    ["sourceDirectory", "D:\\LLMs\\TinyRustLM\\..\\source"],
+    ["sourceDirectory", valid.compositionRoot],
+    ["sourceDirectory", `${valid.compositionRoot}\\child`],
+    ["compositionRoot", `${valid.sourceDirectory}\\child`],
+    ["compositionRoot", null]
+  ]) assert.throws(() => owner.validateOperationLocations({ ...valid, [key]: value }),
+    /numerical-execution-|canonical project artifacts/u, `${key}: ${value}`);
+});
+
+test("child environment keeps only OS support and canonical scratch with fixed runtime settings", (t) => {
+  const root = temporaryRoot(t);
+  const parent = { SystemRoot: process.env.SystemRoot, PATH: "untrusted-path",
+    NODE_OPTIONS: "--invalid-numerical-fixture-option", NODE_PATH: "untrusted-node-path",
+    PYTHONHOME: "untrusted-python-home", PYTHONPATH: "untrusted-python-path",
+    HF_TOKEN: "synthetic-token", TEMP: "untrusted-temp", OMP_NUM_THREADS: "42",
+    NODE_V8_COVERAGE: "untrusted-coverage" };
+  const before = { ...parent };
+  const environment = owner.createChildEnvironment(root, parent);
+  assert.deepEqual(parent, before);
+  assert.equal(Object.isFrozen(environment), true);
+  for (const key of ["NODE_OPTIONS", "NODE_PATH", "PYTHONHOME", "PYTHONPATH", "HF_TOKEN"]) {
+    assert.equal(Object.hasOwn(environment, key), false, key);
+  }
+  for (const key of ["HOME", "USERPROFILE", "TEMP", "TMP", "TMPDIR", "HF_HOME",
+    "HF_HUB_CACHE", "HF_DATASETS_CACHE", "TORCH_HOME", "APPDATA", "LOCALAPPDATA",
+    "XDG_CACHE_HOME", "XDG_CONFIG_HOME", "TORCHINDUCTOR_CACHE_DIR", "NUMBA_CACHE_DIR",
+    "TRITON_CACHE_DIR"]) {
+    assert.equal(environment[key], root, key);
+  }
+  assert.equal(environment.OMP_NUM_THREADS, "1");
+  assert.equal(environment.HF_HUB_OFFLINE, "1");
+  assert.equal(environment.HF_HUB_DISABLE_IMPLICIT_TOKEN, "1");
+  assert.equal(environment.TOKENIZERS_PARALLELISM, "false");
+  assert.equal(environment.NODE_V8_COVERAGE, "");
+  assert.throws(() => owner.createChildEnvironment(repositoryRoot, parent), /canonical/u);
+  assert.throws(() => owner.createChildEnvironment(path.join(root, "absent"), parent),
+    /numerical-execution-child-scratch/u);
+  if (process.platform === "win32") {
+    assert.equal(environment.PATH, path.join(process.env.SystemRoot, "System32"));
+    assert.equal(owner.createChildEnvironment(root, { systemroot: process.env.SystemRoot })
+      .SystemRoot, process.env.SystemRoot);
+    assert.throws(() => owner.createChildEnvironment(root, {}), /system-root/u);
+    assert.throws(() => owner.createChildEnvironment(root,
+      { SystemRoot: process.env.SystemRoot, SYSTEMROOT: process.env.SystemRoot }), /ambiguous/u);
+  }
+});
+
+test("invalid child locations reject before creating either capture or launching", async (t) => {
+  const root = temporaryRoot(t);
+  const options = { stage: "fixture", workingDirectory: repositoryRoot, scratchRoot: root,
+    stdoutPath: path.join(root, "stdout.bin"), stderrPath: path.join(root, "stderr.bin"),
+    maximumStdoutBytes: 64, maximumStderrBytes: 64, maximumDurationMilliseconds: 5000 };
+  assert.doesNotThrow(() => owner.validateProcessLocations(options));
+  for (const [key, value] of [
+    ["workingDirectory", path.dirname(repositoryRoot)],
+    ["scratchRoot", repositoryRoot],
+    ["stdoutPath", path.join(repositoryRoot, "forbidden-output.bin")],
+    ["stderrPath", path.join(repositoryRoot, "forbidden-error.bin")],
+    ["stdoutPath", "relative-output.bin"]
+  ]) {
+    await assert.rejects(owner.runCapturedProcess(process.execPath,
+      ["-e", 'throw new Error("must not launch");'], { ...options, [key]: value }),
+    /canonical|numerical-execution-child-stream/u, key);
+    assert.equal(fs.existsSync(options.stdoutPath), false);
+    assert.equal(fs.existsSync(options.stderrPath), false);
+  }
+});
+
+test("execute rejects a misplaced request before inspecting registration or creating outputs", async (t) => {
+  const root = temporaryRoot(t);
+  const requestPath = path.join(root, "request.json");
+  fs.writeFileSync(requestPath, owner.canonicalJsonBytes({ schema: owner.REQUEST_SCHEMA,
+    operationId: "qwen3-numerical-c1899de-4891e8a-20260826-v2", registration: null,
+    registrationSource: null, repositoryRoot: path.dirname(repositoryRoot), gitPath: null,
+    evidenceParent: root, sourceDirectory: "D:\\LLMs\\TinyRustLM\\source",
+    compositionRoot: "D:\\LLMs\\TinyRustLM\\composition", executables: null }), { flag: "wx" });
+  const before = fs.readdirSync(root);
+  await assert.rejects(owner.execute(requestPath), /numerical-execution-repository-root/u);
+  assert.deepEqual(fs.readdirSync(root), before);
+});
+
+test("real Node and isolated pinned Python children exclude injected parent settings", async (t) => {
+  const root = temporaryRoot(t);
+  const injected = { NODE_OPTIONS: "--invalid-numerical-fixture-option",
+    NODE_PATH: "untrusted-node-path", PYTHONHOME: "untrusted-python-home",
+    PYTHONPATH: "untrusted-python-path", NUMERICAL_PARENT_SENTINEL: "synthetic-only" };
+  const previous = Object.fromEntries(Object.keys(injected).map((key) => [key, process.env[key]]));
+  t.after(() => {
+    for (const [key, value] of Object.entries(previous)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+  });
+  Object.assign(process.env, injected);
+  const pythonPath = path.join(repositoryRoot,
+    "artifacts/external/qwen3-numerical-oracle/environment/Scripts/python.exe");
+  assert.equal(fs.existsSync(pythonPath), true, "The canonical pinned interpreter is required");
+  const probes = [
+    { name: "node", executable: process.execPath, args: ["-e", `
+      const assert = require("node:assert/strict");
+      for (const key of ${JSON.stringify(Object.keys(injected))})
+        assert.equal(process.env[key], undefined);
+      assert.equal(process.env.NODE_V8_COVERAGE, "");
+      assert.equal(process.env.TEMP, process.cwd());
+      process.stdout.write("isolated\\n");`] },
+    { name: "python", executable: pythonPath,
+      args: [...owner.ISOLATED_PYTHON_ARGUMENTS, "-c", [
+        "import os, sys",
+        "assert sys.version_info[:3] == (3, 12, 10)",
+        "assert sys.flags.isolated == sys.flags.ignore_environment == sys.flags.no_user_site == 1",
+        "assert sys.flags.dont_write_bytecode == sys.flags.utf8_mode == 1",
+        "assert sys.flags.safe_path and os.getcwd() not in sys.path",
+        `assert not any(key in os.environ for key in ${JSON.stringify(Object.keys(injected))})`,
+        "assert os.environ['TEMP'] == os.getcwd()",
+        "assert os.environ.get('NODE_V8_COVERAGE', '') == ''",
+        "print('isolated')"
+      ].join("\n")] }
+  ];
+  for (const probe of probes) {
+    const stdoutPath = path.join(root, `${probe.name}.stdout.bin`);
+    const outcome = await owner.runCapturedProcess(probe.executable, probe.args, {
+      stage: probe.name, workingDirectory: root, scratchRoot: root, stdoutPath,
+      stderrPath: path.join(root, `${probe.name}.stderr.bin`), maximumStdoutBytes: 64,
+      maximumStderrBytes: 1024, maximumDurationMilliseconds: 10000,
+      terminationPath: path.join(process.env.SystemRoot, "System32", "taskkill.exe")
+    });
+    assert.equal(owner.processPassed(outcome), true, probe.name);
+    assert.equal(fs.readFileSync(stdoutPath, "utf8").trim(), "isolated");
   }
 });
 

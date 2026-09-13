@@ -751,6 +751,64 @@ quality evidence, a working default and live MiniModel seeding remain open.
 No real checkpoint was loaded, model/publication was produced, historical/model
 deletion completed, or measured storage recovery claimed in this checkpoint.
 
+## C29. Explicit child environments still need protection from Node's defaults
+
+Reviewed against TinyRustLM parent `4ed06094cacd83e1d384244d5da553d8b987a4ff`.
+The numerical runner inherited its caller's full environment and started both
+Python trace owners without isolated-mode flags. Its request accepted arbitrary
+existing source, evidence and model roots. This was inadequate for a fresh run,
+even with exact package and executable hashes. Package identity does not establish
+the interpreter's startup mode, import search path, credentials or cache location.
+
+The runner now checks the canonical repository and artifact boundaries before
+opening output, requires separate model input roots below `D:\LLMs\TinyRustLM`,
+and validates both capture parents and scratch before opening either stream.
+Python stages receive `-I -B -X utf8`. Captured children and the exact-PID
+termination tool receive a minimal OS/runtime environment with existing canonical
+scratch for home, temporary and cache paths. The unchanged source-authority scan
+must pass before source-state verification and output creation. Both affected
+fixture families now use marker-owned canonical artifacts; process probes run
+inline without writing temporary executable scripts.
+
+The first ordinary focused run passed 20 tests. Instrumenting the five affected
+test files then produced **53 passes and three launch failures**. Inspection of
+Node 24.14.0's actual embedded `child_process` source established the cause:
+`copyProcessEnvToEnv` copies the parent's `NODE_V8_COVERAGE` when an explicit
+environment lacks that own property. That assignment threw on the frozen
+environment before spawning. Merely making the environment mutable would have
+restored unwanted output inheritance. An explicit empty `NODE_V8_COVERAGE`
+property now suppresses the copy. The same instrumented suite subsequently passed
+all **56 checks**, with zero skips or cancellations. Real Node and pinned Python
+3.12.10 probes verify startup-variable exclusion, canonical temp paths and Python
+isolation flags. Framework checks remain synthetic; they do not load a real
+checkpoint or establish model quality.
+
+V8 ranges reached 53/54 selected nonblank, non-comment, non-brace source lines in
+the three new boundary functions (98.15 percent). The non-Windows PATH assignment
+was not executed. This is a stated source-line measure, not whole-owner or branch
+coverage. Production numerical orchestration has not been run. Two preliminary
+inline harness attempts failed before tests or scratch creation because of
+PowerShell 5.1 native argument quoting and pipe encoding; stdin source with ASCII
+Unicode escapes fixed the harness without creating a script copy.
+
+The source gate was rerun with the established per-process Git trust list after
+an initial Git identity rejection. It still reports `source_authority_scan_incomplete`
+on the two C28 virtualenv links. The scanner was not changed, and no deletion
+rejection was retried. All C29-owned test and coverage output was removed; the
+policy-blocked C28 installer remains. No historical/model deletion, deployment
+or measured storage recovery occurred.
+
+Compact proof: `artifacts/ecosystem-cleanup-20260912/numerical-execution-boundary-review.json`,
+9,688 bytes, SHA-256
+`69691ceef72f54606a9c1cebb6833219e2a20529a08f959c48a35ac27c261326`.
+It binds the changed source/tests, supporting helpers, actual runtimes, embedded
+Node implementation and observed failures/results. The current differential
+profile still has no execution authority. The runner's closed v2 registration
+coupling must be replaced with fresh current bindings, including its helper
+dependencies, before any real numerical run. Historical contracts/results stay
+unchanged and closed. Qualification, a working default and MiniModel seeding are
+still open.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

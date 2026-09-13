@@ -29,6 +29,14 @@ claims remain false. Synthetic framework tests and environment admission pass;
 the current source-location scan is blocked by policy-rejected installer cleanup.
 See ecosystem experiment lesson C28 for exact evidence and limitations.
 
+The runner's child/output boundaries have been tightened in cleanup checkpoint
+C29: canonical source/artifact/model locations, a required source-authority scan,
+minimal child environments, explicit suppression of Node coverage inheritance,
+and isolated Python startup. These changes do not register an operation or revive
+the closed v2 request. Fresh owner and dependency bindings are still required.
+All 56 affected checks pass; the current source scan remains incomplete on the
+two policy-blocked installer links. Lesson C29 records failures and proof limits.
+
 ## SLM2 Model Format Checkpoint
 
 The model-byte format is a separate exact binary contract referenced by the

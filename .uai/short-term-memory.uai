@@ -1,5 +1,5 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-13T01:59:13Z
+updated_utc: 2026-09-13T02:30:39Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 
@@ -75,6 +75,14 @@ canonical_numerical_reference:
   pending_cleanup: Automatic review rejected the failed bootstrap removal and the two exact virtualenv capability-probe link removals. The unchanged source-authority scan is incomplete on those links. The installer root contains 431 regular files, 93 directories, two links and 296933889 logical bytes; no parent deletion or alternate API was used to retry a rejection.
   owner_cleanup: tinyrustlm/tools/remove-reviewed-numerical-installer-output.ps1; actual WhatIf preflight verifies the complete exact inventory. Run only by the owner after reviewing the pending cleanup; the retained canonical runtime is excluded.
   remaining: Remove the blocked temporary output and rerun the unchanged source gate; finish fresh numerical owner/registration bindings and real model qualification. No real checkpoint load, numerical parity, working default, live seed, deployment or measured storage recovery is claimed.
+
+numerical_execution_boundaries:
+  evidence: artifacts/ecosystem-cleanup-20260912/numerical-execution-boundary-review.json
+  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md C29
+  change: Canonical request/output/model locations, minimal child and termination environments, isolated Python startup, explicit empty NODE_V8_COVERAGE and unchanged source-authority preflight. Both affected fixture families use owned canonical artifacts and inline probes.
+  verification: All 56 affected checks pass with zero skips. Actual Node and pinned Python probes pass; framework tests are synthetic. V8 ranges reached 53/54 selected source lines in the three new boundary functions; no whole-owner or branch percentage. Owned test/coverage output removed.
+  experiment: The first instrumented suite had three launch failures because Node automatically copied ambient coverage into the frozen child environment. An explicit empty own property fixes both mutation and output inheritance; the failure and exact installed Node implementation are recorded.
+  remaining: Source scan is still incomplete on the two policy-blocked C28 links. Closed v2 metadata coupling remains; prepare fresh owner, registration and dependency bindings before a real operation. No real checkpoint, qualification, default, seed, deployment or measured storage recovery.
 
 portal_retirement_tool_cleanup:
   checkpoint: TinyRustLM.MiRust.com d17f77a

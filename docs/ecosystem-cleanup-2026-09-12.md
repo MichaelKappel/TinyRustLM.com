@@ -598,6 +598,26 @@ lessons, evidence references and remaining review scope live in the canonical
   Nothing was published and no historical/model deletion or measured storage
   recovery is claimed.
 
+### Numerical child-process and output boundaries
+
+- The runner now rejects misplaced repository, evidence and model roots before
+  creating output. Both Python stages use isolated mode, bytecode suppression
+  and UTF-8. Children and exact-PID termination receive a minimal environment
+  with canonical temporary/cache paths; startup variables and credentials are
+  excluded. The unchanged source-authority scan is required before execution.
+- All 56 affected checks pass with zero skips, including real Node/Python probes
+  and synthetic pinned-framework checks. V8 ranges reached 53/54 selected source
+  lines in the three new boundary functions (98.15 percent); no whole-owner,
+  branch or real numerical execution coverage is claimed. Two fixture families
+  use owned canonical artifacts and inline probes; their output was removed.
+- Lesson C29 and numerical-execution-boundary-review.json preserve the initial
+  three coverage-induced launch failures, the verified Node automatic coverage
+  propagation cause, its explicit-empty-variable correction and shell harness
+  limitations. Closed v2 contracts remain historical; fresh registration and
+  dependency bindings are still required. The source scan remains incomplete on
+  the two policy-blocked C28 links. No real model, default, seed, deployment,
+  historical/model removal or measured storage recovery was produced.
+
 ### Numerical environment diagnostics and experiment evidence
 
 - The source owner now preserves safe typed environment rejection causes while

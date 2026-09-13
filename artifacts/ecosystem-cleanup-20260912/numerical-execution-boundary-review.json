@@ -1,0 +1,219 @@
+{
+  "schema": "tinyrustlm.ecosystem_numerical_execution_boundary_review.v1",
+  "observedUtc": "2026-09-13T02:30:39.802Z",
+  "parentCommit": "4ed06094cacd83e1d384244d5da553d8b987a4ff",
+  "scope": "Launch and filesystem boundary preparation; no current real numerical registration",
+  "changes": [
+    "Require the canonical repository and strict canonical artifact containment before request output; require disjoint source/composition roots below D:\\LLMs\\TinyRustLM.",
+    "Validate working directory, both capture parents and scratch before opening either stream.",
+    "Supply a frozen minimal OS/runtime environment to each captured child and exact-PID termination tool; replace user/cache/temp paths with existing canonical scratch.",
+    "Launch both Python trace owners with -I -B -X utf8; exclude Node/Python startup injection and credential variables.",
+    "Set NODE_V8_COVERAGE to an explicit empty value to prevent Node's automatic parent-to-child coverage propagation and mutation of the frozen environment.",
+    "Run the unchanged source-authority gate before source-state verification or output creation.",
+    "Keep both affected test fixture families in marker-owned canonical artifacts and use inline process probes without copied executable scripts."
+  ],
+  "tests": {
+    "schema": "tinyrustlm.numerical_execution_boundary_test_observation.v1",
+    "observedUtc": "2026-09-13T02:30:39.802Z",
+    "tests": [
+      "qwen3-numerical-execution-owner.test.js",
+      "qwen3-numerical-source-terminal-verifier.test.js",
+      "qwen3-numerical-differential-execution-preregistration-v2.test.js",
+      "qwen3-numerical-differential-profile.test.js",
+      "qwen3-model-load-correction-memory.test.js"
+    ],
+    "exitCode": 0,
+    "summary": [
+      "ℹ tests 56",
+      "ℹ suites 0",
+      "ℹ pass 56",
+      "ℹ fail 0",
+      "ℹ cancelled 0",
+      "ℹ skipped 0",
+      "ℹ todo 0",
+      "ℹ duration_ms 15398.4322"
+    ],
+    "stdoutBytes": 4773,
+    "stdoutSha256": "77ff9f664056ee5b696a8d7ce488790a97f8a3c5ae63d09866c6d592c59e2c0d",
+    "stderr": "",
+    "coverage": {
+      "method": "V8 innermost containing range at first non-whitespace character, union across test workers; nonblank non-comment non-brace source lines in three changed boundary functions",
+      "metrics": [
+        {
+          "name": "validateOperationLocations",
+          "coveredLines": 17,
+          "totalLines": 17,
+          "uncoveredLines": []
+        },
+        {
+          "name": "createChildEnvironment",
+          "coveredLines": 26,
+          "totalLines": 27,
+          "uncoveredLines": [
+            1337
+          ]
+        },
+        {
+          "name": "validateProcessLocations",
+          "coveredLines": 10,
+          "totalLines": 10,
+          "uncoveredLines": []
+        }
+      ]
+    },
+    "failureOutput": null,
+    "ownedScratchRemoved": true
+  },
+  "failedObservations": [
+    {
+      "stage": "initial normal focused tests",
+      "result": "20 passed before adding the execute early-rejection test and instrumented coverage",
+      "meaning": "Normal tests did not expose Node's coverage-environment propagation."
+    },
+    {
+      "stage": "first instrumented five-file suite",
+      "passed": 53,
+      "failed": 3,
+      "skipped": 0,
+      "stdoutSha256": "65b0368867e780d3eb99221c7133a3933480d5024609b1147d232441ad0415b9",
+      "cause": "Node 24.14.0 child_process.copyProcessEnvToEnv assigns ambient NODE_V8_COVERAGE when explicit env lacks an own property; assignment to frozen env threw before spawn. Verified in installed Node's embedded child_process source.",
+      "correction": "Explicit own NODE_V8_COVERAGE empty value; identical five-file instrumented suite subsequently passed all 56 checks."
+    },
+    {
+      "stage": "shell test wrapper preparation",
+      "result": "Two syntax errors before test invocation or scratch creation",
+      "cause": "PowerShell 5.1 native argument quoting removed JavaScript quotes; its default pipe encoding converted the literal information symbol to a question mark.",
+      "correction": "Send inline source over stdin and use an ASCII Unicode escape; no temporary script written."
+    },
+    {
+      "stage": "source gate without per-process Git trust",
+      "result": "source_authority_git_identity_invalid",
+      "correction": "Rerun with the already established exact seven-repository per-process safe.directory list; no global Git change."
+    }
+  ],
+  "sourceAuthority": {
+    "implementationChanged": false,
+    "result": "source_authority_scan_incomplete",
+    "coverageClass": "registered-governed-roots-only",
+    "wholeVolumeInventoryPerformed": false,
+    "unreadableRelativePaths": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "disposition": "Prior automatic policy rejection still stands. No deletion retry, rename, truncation, alternate API or parent cleanup attempted."
+  },
+  "limits": {
+    "coverage": "53/54 selected nonblank non-comment non-brace source lines in the three new boundary functions were reached by V8; 98.15 percent. Non-Windows PATH assignment is unexecuted. No whole-owner or branch coverage percentage.",
+    "registration": "The existing runner remains coupled to closed v2 registration metadata. Current differential profile still marks execution authority unregistered. Fresh owner/registration/dependency bindings are required before a real run.",
+    "historicalEvidence": "Old registration, model-load result, terminal result, environment lock and differential profile remain byte-identical historical evidence. No old operation replay.",
+    "realCheckpointLoaded": false,
+    "numericalParityPassed": false,
+    "modelQualified": false,
+    "workingDefaultEstablished": false,
+    "publicSeedEstablished": false,
+    "deployed": false,
+    "historicalOrModelDeletionPerformed": false,
+    "blockedInstallerDeleted": false,
+    "measuredStorageRecoveryBytes": null,
+    "onlySyntheticFrameworkTests": true,
+    "temporaryOutput": "All C29-owned test and coverage roots removed by ownership-checked canonical scratch cleanup; unrelated policy-blocked C28 installer retained."
+  },
+  "sourceIdentities": [
+    {
+      "path": "tinyrustlm/tools/qwen3-numerical-execution-owner.js",
+      "current": {
+        "byteLength": 82705,
+        "sha256": "0ed683f0963a3578fefcbdfb50057edf287af365313d7a67c38f95bc72e18894"
+      },
+      "parent": {
+        "byteLength": 77939,
+        "sha256": "e21c1c8459a64abbdf47d98c81ca4b5526e7b156ce9a72079c0f735d3515955d"
+      }
+    },
+    {
+      "path": "tinyrustlm/tests/qwen3-numerical-execution-owner.test.js",
+      "current": {
+        "byteLength": 41927,
+        "sha256": "c6152effd98e68ae36d0d9a7fabcc78832b816cbc1fd5a7248136c42fb801c4f"
+      },
+      "parent": {
+        "byteLength": 33619,
+        "sha256": "f645735abc01f771aea8bff2bb3572c692b9f8f65c5955758e5ca72abea00336"
+      }
+    },
+    {
+      "path": "tinyrustlm/tests/qwen3-numerical-source-terminal-verifier.test.js",
+      "current": {
+        "byteLength": 16233,
+        "sha256": "492904411f7daca999395a5ae7a396f1bb70bc25980a3b7200b4766f08a08c84"
+      },
+      "parent": {
+        "byteLength": 15891,
+        "sha256": "cd8f6044e8f881f2a0fc8b6573131e8cfd2d6d494eef728bb748dd3a721c32ab"
+      }
+    },
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "current": {
+        "byteLength": 5822,
+        "sha256": "746e1fafa344ef8d71a5a85864fc1eaf34085c65789f9beda820a247af7f399e"
+      },
+      "parent": {
+        "byteLength": 5822,
+        "sha256": "746e1fafa344ef8d71a5a85864fc1eaf34085c65789f9beda820a247af7f399e"
+      }
+    },
+    {
+      "path": "tinyrustlm/tools/verify-single-source-authority.js",
+      "current": {
+        "byteLength": 141430,
+        "sha256": "f99083edfe7eae96279acafcb624eb88e1a26e43d5622d498711fe280691647d"
+      },
+      "parent": {
+        "byteLength": 141430,
+        "sha256": "f99083edfe7eae96279acafcb624eb88e1a26e43d5622d498711fe280691647d"
+      }
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-differential-profile.v2.json",
+      "current": {
+        "byteLength": 17082,
+        "sha256": "b1c9369df2b3b6210bc8e220f99a9f42a4fedd05a13ca4747a45ac8aebfe1fd2"
+      },
+      "parent": {
+        "byteLength": 17082,
+        "sha256": "b1c9369df2b3b6210bc8e220f99a9f42a4fedd05a13ca4747a45ac8aebfe1fd2"
+      }
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json",
+      "current": {
+        "byteLength": 30918,
+        "sha256": "918a5e96605a3aaaf2aaba977c0634783647016d30484f4345eeb98b5df0a283"
+      },
+      "parent": {
+        "byteLength": 30918,
+        "sha256": "918a5e96605a3aaaf2aaba977c0634783647016d30484f4345eeb98b5df0a283"
+      }
+    }
+  ],
+  "runtimeIdentities": [
+    {
+      "path": "C:\\Program Files\\nodejs\\node.exe",
+      "byteLength": 91380224,
+      "sha256": "63c259c81e5d472b5f11c8d506070130cb04a1ecf84b80377a34ed6ec9048088"
+    },
+    {
+      "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\external\\qwen3-numerical-oracle\\environment\\Scripts\\python.exe",
+      "byteLength": 104952,
+      "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a"
+    }
+  ],
+  "nodeChildProcessImplementation": {
+    "byteLength": 29564,
+    "sha256": "040a0305526268ada5937f6eadbe5cc8c8250639a963cf642b914d375a324afd",
+    "observedFunction": "copyProcessEnvToEnv",
+    "automaticPropagationVariable": "NODE_V8_COVERAGE",
+    "propertyPresenceSuppressesCopy": true
+  }
+}

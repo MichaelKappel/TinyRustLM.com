@@ -4,6 +4,13 @@ const childProcess = require("node:child_process");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
+const { requireCanonicalArtifactPath, requireCanonicalSiteRoot } =
+  require("./canonical-operation-scratch.js");
+const { verifySingleSourceAuthority } = require("./verify-single-source-authority.js");
+
+const CANONICAL_REPOSITORY_ROOT = path.resolve(__dirname, "../..");
+const MODEL_ROOT = "D:\\LLMs\\TinyRustLM";
+const ISOLATED_PYTHON_ARGUMENTS = Object.freeze(["-I", "-B", "-X", "utf8"]);
 
 const REQUEST_SCHEMA = "tinyrustlm.qwen3_numerical_execution_request.v2";
 const REGISTRATION_SCHEMA =
@@ -1002,6 +1009,27 @@ function validateRegistration(value) {
   return value;
 }
 
+/** Reject misplaced source, evidence, and model roots before creating any output. */
+function validateOperationLocations(request) {
+  invariant(request.repositoryRoot === CANONICAL_REPOSITORY_ROOT,
+    "numerical-execution-repository-root");
+  requireCanonicalSiteRoot(path.join(request.repositoryRoot, "tinyrustlm"));
+  requireCanonicalArtifactPath(request.evidenceParent);
+  for (const name of ["sourceDirectory", "compositionRoot"]) {
+    const value = request[name];
+    invariant(typeof value === "string" && path.win32.isAbsolute(value)
+      && path.win32.resolve(value) === value,
+    "numerical-execution-model-location");
+    const relative = path.win32.relative(MODEL_ROOT, value);
+    invariant(relative !== "" && relative !== ".." && !relative.startsWith("..\\")
+      && !path.win32.isAbsolute(relative), "numerical-execution-model-location");
+  }
+  const relative = path.win32.relative(request.sourceDirectory, request.compositionRoot);
+  const reverse = path.win32.relative(request.compositionRoot, request.sourceDirectory);
+  invariant([relative, reverse].every((value) => value === ".." || value.startsWith("..\\")),
+    "numerical-execution-model-root-overlap");
+}
+
 function validateRequest(requestPath) {
   const requestDocument = readCanonicalJson(requestPath, MAXIMUM_REQUEST_BYTES,
     "numerical-execution-request-json");
@@ -1011,6 +1039,7 @@ function validateRequest(requestPath) {
     "executables"], "numerical-execution-request-shape");
   invariant(request.schema === REQUEST_SCHEMA && validIdentifier(request.operationId),
     "numerical-execution-request-identity");
+  validateOperationLocations(request);
   exactKeys(request.registration, ["relativePath", "byteLength", "sha256"],
     "numerical-execution-registration-reference");
   invariant(request.registration.relativePath === REGISTRATION_RELATIVE_PATH,
@@ -1289,12 +1318,62 @@ function summarizeBuffer(bytes) {
     sha256: crypto.createHash("sha256").update(bytes).digest("hex") });
 }
 
+/** Keep runtime startup, credentials, and caches out of the inherited environment. */
+function createChildEnvironment(scratchRoot, parentEnvironment = process.env) {
+  const root = directDirectory(requireCanonicalArtifactPath(scratchRoot),
+    "numerical-execution-child-scratch");
+  const environment = Object.create(null);
+  // Only the OS directory is inherited; executable lookup uses the bound absolute paths.
+  const systemRootKeys = Object.keys(parentEnvironment)
+    .filter((key) => key.toUpperCase() === "SYSTEMROOT");
+  invariant(systemRootKeys.length <= 1, "numerical-execution-system-root-ambiguous");
+  if (process.platform === "win32") {
+    const systemRoot = directDirectory(parentEnvironment[systemRootKeys[0]],
+      "numerical-execution-system-root");
+    environment.SystemRoot = systemRoot;
+    environment.WINDIR = systemRoot;
+    environment.PATH = path.join(systemRoot, "System32");
+  } else {
+    environment.PATH = "/usr/bin:/bin";
+  }
+  for (const name of ["TEMP", "TMP", "TMPDIR", "HOME", "USERPROFILE", "APPDATA",
+    "LOCALAPPDATA", "XDG_CACHE_HOME", "XDG_CONFIG_HOME", "HF_HOME", "HF_HUB_CACHE",
+    "HF_DATASETS_CACHE", "TORCH_HOME", "TORCHINDUCTOR_CACHE_DIR", "NUMBA_CACHE_DIR",
+    "TRITON_CACHE_DIR"]) {
+    environment[name] = root;
+  }
+  for (const name of ["HF_HUB_OFFLINE", "TRANSFORMERS_OFFLINE", "HF_DATASETS_OFFLINE",
+    "HF_HUB_DISABLE_TELEMETRY", "HF_HUB_DISABLE_IMPLICIT_TOKEN", "OMP_NUM_THREADS",
+    "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS", "NUMEXPR_NUM_THREADS",
+    "VECLIB_MAXIMUM_THREADS"]) environment[name] = "1";
+  environment.TOKENIZERS_PARALLELISM = "false";
+  // Node otherwise copies ambient coverage into an explicit env (and mutates it).
+  environment.NODE_V8_COVERAGE = "";
+  return Object.freeze(environment);
+}
+
+/** Validate every child output parent before opening either create-only capture. */
+function validateProcessLocations(options) {
+  if (options.workingDirectory === CANONICAL_REPOSITORY_ROOT) {
+    requireCanonicalSiteRoot(path.join(options.workingDirectory, "tinyrustlm"));
+  } else {
+    directDirectory(requireCanonicalArtifactPath(options.workingDirectory),
+      "numerical-execution-child-working-directory");
+  }
+  for (const stream of [options.stdoutPath, options.stderrPath]) {
+    requireAbsolutePath(stream, "numerical-execution-child-stream");
+    directDirectory(requireCanonicalArtifactPath(path.dirname(stream)),
+      "numerical-execution-child-stream-parent");
+  }
+}
+
 function terminateOwnedProcess(child, options) {
   if (!child || child.pid === undefined) return Object.freeze({ requested: false, method: null });
   if (process.platform === "win32") {
     const result = childProcess.spawnSync(options.terminationPath,
       ["/PID", String(child.pid), "/T", "/F"], {
         cwd: options.workingDirectory,
+        env: options.childEnvironment,
         encoding: "buffer",
         maxBuffer: MAXIMUM_TERMINATION_OUTPUT_BYTES,
         timeout: 30000,
@@ -1320,6 +1399,8 @@ function terminateOwnedProcess(child, options) {
 
 function runCapturedProcess(executablePath, argumentsList, options) {
   return new Promise((resolve) => {
+    validateProcessLocations(options);
+    const childEnvironment = createChildEnvironment(options.scratchRoot);
     const stdoutCapture = createBoundedCapture(options.stdoutPath, options.maximumStdoutBytes);
     let stderrCapture;
     try {
@@ -1350,6 +1431,7 @@ function runCapturedProcess(executablePath, argumentsList, options) {
     try {
       child = childProcess.spawn(executablePath, argumentsList, {
         cwd: options.workingDirectory,
+        env: childEnvironment,
         windowsHide: true,
         shell: false,
         stdio: ["ignore", "pipe", "pipe"]
@@ -1364,7 +1446,7 @@ function runCapturedProcess(executablePath, argumentsList, options) {
       if (termination.requested) return;
       if (reason === "timeout") timedOut = true;
       if (reason === "overflow") killedForOverflow = true;
-      termination = terminateOwnedProcess(child, options);
+      termination = terminateOwnedProcess(child, { ...options, childEnvironment });
     };
     child.stdout.on("data", (chunk) => {
       try {
@@ -1493,6 +1575,9 @@ function createOwnerTerminal(state, status, reasonCode, launchedStages, verifier
 
 async function execute(requestPath) {
   const state = validateRequest(requestPath);
+  const authority = verifySingleSourceAuthority();
+  invariant(authority.verdict === "pass" && authority.localScanPerformed === true,
+    "numerical-execution-source-authority-not-pass");
   const artifacts = verifySourceState(state);
   invariant(artifacts.get("execution-owner").path.toLowerCase() === __filename.toLowerCase(),
     "numerical-execution-owner-path");
@@ -1546,11 +1631,13 @@ async function execute(requestPath) {
     const stageConfiguration = {
       source: { executable: executables.python,
         executablePath: state.executablePaths.pythonPath,
-        arguments: [artifacts.get("source-owner").path, requestFiles.source],
+        arguments: [...ISOLATED_PYTHON_ARGUMENTS,
+          artifacts.get("source-owner").path, requestFiles.source],
         stdout: names.sourceStdout, stderr: names.sourceStderr, terminal: names.sourceTerminal },
       reconstructed: { executable: executables.python,
         executablePath: state.executablePaths.pythonPath,
-        arguments: [artifacts.get("reconstructed-owner").path, requestFiles.reconstructed],
+        arguments: [...ISOLATED_PYTHON_ARGUMENTS,
+          artifacts.get("reconstructed-owner").path, requestFiles.reconstructed],
         stdout: names.reconstructedStdout, stderr: names.reconstructedStderr,
         terminal: names.reconstructedTerminal },
       scalar: { executable: executables.scalar,
@@ -1570,6 +1657,7 @@ async function execute(requestPath) {
         configuration.arguments, {
           stage,
           workingDirectory: state.repositoryRoot,
+          scratchRoot: paths.sourceScratchRoot,
           stdoutPath: evidence(configuration.stdout),
           stderrPath: evidence(configuration.stderr),
           maximumStdoutBytes: contract.processPolicy.maximumStdoutBytes,
@@ -1605,6 +1693,7 @@ async function execute(requestPath) {
         configuration.arguments, {
           stage: "verifier",
           workingDirectory: state.repositoryRoot,
+          scratchRoot: paths.sourceScratchRoot,
           stdoutPath: evidence(configuration.stdout), stderrPath: evidence(configuration.stderr),
           maximumStdoutBytes: contract.processPolicy.maximumStdoutBytes,
           maximumStderrBytes: contract.processPolicy.maximumStderrBytes,
@@ -1671,6 +1760,10 @@ if (require.main === module) {
 }
 
 module.exports = Object.freeze({
+  ISOLATED_PYTHON_ARGUMENTS,
+  createChildEnvironment,
+  validateOperationLocations,
+  validateProcessLocations,
   NumericalExecutionOwnerError,
   REGISTRATION_RELATIVE_PATH,
   REQUEST_SCHEMA,
