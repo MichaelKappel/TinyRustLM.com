@@ -22,20 +22,29 @@ current source/reconstructed producers, independent verifier and corrected
 numerical algorithm contracts are unchanged; these are current byte bindings,
 not another product generation or a compatibility fallback.
 
-The profile explicitly requires a fresh execution owner and registration.
-Numerical execution v2 and the old environment/profile remain closed historical
-evidence. Current real model-load, numerical parity, quality, P2P and release
-claims remain false. Synthetic framework tests and environment admission pass;
-the current source-location scan is blocked by policy-rejected installer cleanup.
-See ecosystem experiment lesson C28 for exact evidence and limitations.
+The profile binds the current `/3` execution owner and its canonical scratch,
+source-authority and storage-policy dependencies. The active reader accepts only
+request, owner-contract and registration v3. Closed v1/v2 execution metadata is
+rejected before output; its historical bytes remain independently verifiable.
+The current model's purpose is runtime diagnostics, and its product-quality
+rejection is explicit. Numerical cases, tolerances and one-launch limits are
+unchanged. A numerical result cannot promote this ancestry into a product model.
 
-The runner's child/output boundaries have been tightened in cleanup checkpoint
-C29: canonical source/artifact/model locations, a required source-authority scan,
-minimal child environments, explicit suppression of Node coverage inheritance,
-and isolated Python startup. These changes do not register an operation or revive
-the closed v2 request. Fresh owner and dependency bindings are still required.
-All 56 affected checks pass; the current source scan remains incomplete on the
-two policy-blocked installer links. Lesson C29 records failures and proof limits.
+Prepare implementation, tests, notes, source/environment checks and passing
+release gates before creating a fresh registration. Its final commit may change
+only `qwen3-numerical-differential-execution-preregistration.v3.json`. The operation
+ID must match the source-parent prefix and registration UTC date. All fourteen
+artifact roles and current locks must be bound. Standard checks must report zero
+failures and zero skips; the old fixed two-skip allowance is not inherited.
+No real v3 registration has been created.
+
+Canonical source/artifact/model locations, source-authority preflight, minimal
+child environments, explicit Node coverage suppression and isolated Python
+startup remain required. All 58 affected checks pass, including synthetic pinned
+framework tests. The source scan remains incomplete on two policy-blocked
+installer links; complete release checks, real model-load, numerical parity,
+qualification, P2P and release claims are not established. Experiment lessons
+C28-C30 retain exact evidence and limitations.
 
 ## SLM2 Model Format Checkpoint
 

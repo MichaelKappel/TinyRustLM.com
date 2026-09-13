@@ -18,7 +18,7 @@ const MODEL_SHA256 =
   "a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7";
 const SOURCE_LOCK_BYTE_LENGTH = 1901;
 const SOURCE_LOCK_SHA256 =
-  "e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d";
+  "50a8c29e36398a9a088e4d9a224dad186809d34b1e050299d3ce3de7a01b7d0e";
 const COMPOSITION_RESULT_BYTE_LENGTH = 18441;
 const COMPOSITION_RESULT_SHA256 =
   "0c3e84ad9ce6e22d9a164357c9a900d31825d0639f4f11077dab305f9cf3ef0e";
@@ -106,26 +106,30 @@ function registeredComparison() {
   };
 }
 
+/** Synthetic current contract values exercise validation without registering or launching a model. */
 function ownerContract() {
-  const operationId = "qwen3-numerical-c1899de-abcdef0-20260826-v2";
+  const operationId = "qwen3-numerical-c1899de-1111111-20260913-v3";
   return {
     schema: owner.OWNER_CONTRACT_SCHEMA,
     operationId,
     traceProfileId: TRACE_PROFILE_ID,
     implementationArtifacts: [
       artifact("execution-owner", "tinyrustlm/tools/qwen3-numerical-execution-owner.js"),
+      artifact("canonical-scratch", "tinyrustlm/tools/canonical-operation-scratch.js"),
+      artifact("source-authority", "tinyrustlm/tools/verify-single-source-authority.js"),
+      artifact("retired-storage-policy", "contracts/storage/retired-storage-roots-2026-09-12.json"),
       artifact("differential-profile",
-        "contracts/vnext/qwen3-numerical-differential-profile.v1.json"),
+        "contracts/vnext/qwen3-numerical-differential-profile.v2.json"),
       artifact("environment-authority",
         "tinyrustlm/tools/qwen3_numerical_environment_lock.py"),
       artifact("environment-lock",
-        "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json"),
+        "contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json"),
       artifact("source-owner", "tinyrustlm/tools/qwen3-numerical-source-owner.py"),
       artifact("reconstructed-owner", "tinyrustlm/tools/qwen3-slm2-reconstructed-owner.py"),
       artifact("scalar-source", "rust/crates/tinyrustlm-numerical-probe/src/main.rs"),
       artifact("scalar-profile", "contracts/vnext/scalar-numerical-probe-profile.v1.json"),
       artifact("verifier", "tinyrustlm/tools/qwen3-numerical-trace-verifier.js"),
-      artifact("source-lock", "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json"),
+      artifact("source-lock", "contracts/vnext/qwen3-0.6b-base-source-lock.v2.json"),
       artifact("composition-result",
         "contracts/vnext/qwen3-real-composition-execution-result.v12.json")
     ],
@@ -148,7 +152,7 @@ function ownerContract() {
     requests: {
       source: {
         schema: "tinyrustlm.qwen3_numerical_source_request.v2",
-        sourceLock: { relativePath: "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json",
+        sourceLock: { relativePath: "contracts/vnext/qwen3-0.6b-base-source-lock.v2.json",
           byteLength: SOURCE_LOCK_BYTE_LENGTH, sha256: SOURCE_LOCK_SHA256 },
         framework: {
           accelerateVersion: "1.14.0",
@@ -162,7 +166,7 @@ function ownerContract() {
             sha256: ZERO_SHA
           },
           environmentLock: {
-            relativePath: "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json",
+            relativePath: "contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json",
             byteLength: 1,
             sha256: ZERO_SHA
           },
@@ -199,7 +203,7 @@ function ownerContract() {
             sha256: ZERO_SHA
           },
           environmentLock: {
-            relativePath: "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json",
+            relativePath: "contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json",
             byteLength: 1,
             sha256: ZERO_SHA
           },
@@ -252,7 +256,7 @@ function ownerContract() {
       verification: {
         schema: "tinyrustlm.qwen3_numerical_trace_verification_request.v1",
         differentialProfile: {
-          relativePath: "contracts/vnext/qwen3-numerical-differential-profile.v1.json",
+          relativePath: "contracts/vnext/qwen3-numerical-differential-profile.v2.json",
           byteLength: 1,
           sha256: ZERO_SHA
         },
@@ -323,13 +327,14 @@ function ownerContract() {
   };
 }
 
+/** In-memory registration fixture; zero hashes and invented gate counts are never material authority. */
 function registration() {
   const contract = ownerContract();
   return {
     schema: owner.REGISTRATION_SCHEMA,
-    profileId: "tinyrustlm.qwen3-numerical-differential-execution/2",
+    profileId: "tinyrustlm.qwen3-numerical-differential-execution/3",
     status: "registered-before-private-request-roots-and-real-traces",
-    registeredAtUtc: "2026-08-26T12:00:00Z",
+    registeredAtUtc: "2026-09-13T12:00:00Z",
     registrationParentCommit: "1".repeat(40),
     registrationParentTree: "2".repeat(40),
     authority: {
@@ -354,10 +359,7 @@ function registration() {
       parentCommit: "1".repeat(40),
       parentTree: "2".repeat(40),
       allowedRegistrationCommitPaths: [
-        "contracts/vnext/README.md",
-        "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v2.json",
-        "docs/architecture/2026-08-26-qwen3-numerical-differential-execution-preregistration-v2.md",
-        "tinyrustlm/tests/qwen3-numerical-differential-execution-preregistration-v2.test.js"
+        "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v3.json"
       ],
       cleanAtRegistration: true,
       trackingFetchHeadAndRemoteExactAtRegistration: true
@@ -405,10 +407,10 @@ function registration() {
         sourceTree: "6".repeat(40)
       },
       standardGate: {
-        declaredInfrastructureOnlySkips: 2,
+        skipped: 0,
         failed: 0,
         passed: 1568,
-        total: 1570
+        total: 1568
       },
       thresholdBasis: {
         chosenBeforeRealTraceOutput: true,
@@ -432,11 +434,12 @@ function registration() {
       modelId: "Qwen/Qwen3-0.6B",
       modelSlm2: { byteLength: MODEL_BYTE_LENGTH, sha256: MODEL_SHA256 },
       numericalClaim: "unproven",
-      qualityClaim: "unproven",
+      qualityClaim: "terminally-rejected-for-product-use",
+      purpose: "runtime-diagnostic-only",
       revision: "c1899de289a04d12100db370d81485cdf75e47ca",
       sourceClosureRehashedBeforeRegistration: true,
       sourceLock: {
-        path: "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json",
+        path: "contracts/vnext/qwen3-0.6b-base-source-lock.v2.json",
         byteLength: SOURCE_LOCK_BYTE_LENGTH,
         sha256: SOURCE_LOCK_SHA256
       }
@@ -593,7 +596,7 @@ test("rejects noncanonical time and any registration path closure drift", () => 
   }
 
   const formerPath = registration();
-  formerPath.sourceAnchor.allowedRegistrationCommitPaths[1] =
+  formerPath.sourceAnchor.allowedRegistrationCommitPaths[0] =
     "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v1.json";
   assert.throws(() => owner.validateRegistration(formerPath),
     /numerical-execution-registration/u);
@@ -669,10 +672,10 @@ test("rejects operation, trace, implementation-role, and executable drift", () =
   }
 });
 
-test("rejects the closed v1 owner, registration, request, and source-template semantics", () => {
+test("rejects closed owner, registration, request, and source-template semantics", () => {
   assert.equal(owner.REGISTRATION_RELATIVE_PATH,
-    "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v2.json");
-  assert.equal(owner.REQUEST_SCHEMA, "tinyrustlm.qwen3_numerical_execution_request.v2");
+    "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v3.json");
+  assert.equal(owner.REQUEST_SCHEMA, "tinyrustlm.qwen3_numerical_execution_request.v3");
 
   const formerOwner = ownerContract();
   formerOwner.schema = "tinyrustlm.qwen3_numerical_execution_owner_contract.v1";
@@ -711,6 +714,64 @@ test("requires the exact corrected source-framework closure", () => {
   networkEnabled.requests.source.framework.networkAllowed = true;
   assert.throws(() => owner.validateOwnerContract(networkEnabled),
     /numerical-execution-source-framework/u);
+});
+
+test("current contracts reject every closed schema and superseded lock path", async (t) => {
+  const root = temporaryRoot(t);
+  for (const version of [1, 2]) {
+    const contract = ownerContract();
+    contract.schema = `tinyrustlm.qwen3_numerical_execution_owner_contract.v${version}`;
+    assert.throws(() => owner.validateOwnerContract(contract), /owner-contract/u);
+    const value = registration();
+    value.schema = `tinyrustlm.qwen3_numerical_differential_execution_preregistration.v${version}`;
+    assert.throws(() => owner.validateRegistration(value), /registration-identity/u);
+    const requestPath = path.join(root, `closed-request-${version}.json`);
+    fs.writeFileSync(requestPath, owner.canonicalJsonBytes({
+      schema: `tinyrustlm.qwen3_numerical_execution_request.v${version}`,
+      operationId: "closed-operation", registration: null, registrationSource: null,
+      repositoryRoot, gitPath: null, evidenceParent: root, sourceDirectory: null,
+      compositionRoot: null, executables: null
+    }), { flag: "wx" });
+    const before = fs.readdirSync(root);
+    await assert.rejects(owner.execute(requestPath), /request-identity/u);
+    assert.deepEqual(fs.readdirSync(root), before);
+  }
+  for (const role of ["source-lock", "environment-lock", "differential-profile"]) {
+    const contract = ownerContract();
+    const item = contract.implementationArtifacts.find((record) => record.role === role);
+    item.relativePath = item.relativePath.replace(".v2.json", ".v1.json");
+    assert.throws(() => owner.validateOwnerContract(contract), /implementation-artifact-path/u, role);
+  }
+  for (const role of ["canonical-scratch", "source-authority", "retired-storage-policy"]) {
+    const contract = ownerContract();
+    contract.implementationArtifacts = contract.implementationArtifacts.filter(
+      (record) => record.role !== role);
+    assert.throws(() => owner.validateOwnerContract(contract), /implementation-artifacts/u, role);
+  }
+});
+
+test("registration binds operation date and source parent and preserves the product rejection", () => {
+  const changedDate = registration();
+  changedDate.registeredAtUtc = "2026-09-14T12:00:00Z";
+  assert.throws(() => owner.validateRegistration(changedDate), /operation-binding/u);
+  const changedParent = registration();
+  changedParent.registrationParentCommit = "7".repeat(40);
+  changedParent.sourceAnchor.parentCommit = changedParent.registrationParentCommit;
+  changedParent.implementationCheckpoint.memoryCheckpointCommit = changedParent.registrationParentCommit;
+  assert.throws(() => owner.validateRegistration(changedParent), /operation-binding/u);
+  for (const [key, value] of [["qualityClaim", "unproven"], ["qualityClaim", "passed"],
+    ["purpose", "product-default"], ["purpose", null]]) {
+    const changed = registration();
+    changed.candidate[key] = value;
+    assert.throws(() => owner.validateRegistration(changed), /registration-candidate/u, key);
+  }
+  const skippedGate = registration();
+  skippedGate.implementationCheckpoint.standardGate.skipped = 1;
+  skippedGate.implementationCheckpoint.standardGate.total += 1;
+  assert.throws(() => owner.validateRegistration(skippedGate), /standard-gate/u);
+  const oldSkipAllowance = registration();
+  oldSkipAllowance.implementationCheckpoint.standardGate.declaredInfrastructureOnlySkips = 2;
+  assert.throws(() => owner.validateRegistration(oldSkipAllowance), /standard-gate/u);
 });
 
 test("rejects token digest drift, retries, duplicate private names, and unknown fields", () => {
@@ -927,7 +988,7 @@ test("execute rejects a misplaced request before inspecting registration or crea
   const root = temporaryRoot(t);
   const requestPath = path.join(root, "request.json");
   fs.writeFileSync(requestPath, owner.canonicalJsonBytes({ schema: owner.REQUEST_SCHEMA,
-    operationId: "qwen3-numerical-c1899de-4891e8a-20260826-v2", registration: null,
+    operationId: "qwen3-numerical-c1899de-1111111-20260913-v3", registration: null,
     registrationSource: null, repositoryRoot: path.dirname(repositoryRoot), gitPath: null,
     evidenceParent: root, sourceDirectory: "D:\\LLMs\\TinyRustLM\\source",
     compositionRoot: "D:\\LLMs\\TinyRustLM\\composition", executables: null }), { flag: "wx" });

@@ -809,6 +809,65 @@ dependencies, before any real numerical run. Historical contracts/results stay
 unchanged and closed. Qualification, a working default and MiniModel seeding are
 still open.
 
+## C30. Historical evidence must not remain active execution authority
+
+Reviewed against TinyRustLM parent `71f63fb69e014e1a8ae316b97335a38bd78336a3`.
+After C28 rebuilt and bound the reference environment and C29 tightened launch
+boundaries, the runner still accepted the closed v2 registration schemas. It
+named the superseded source-license, environment and differential-profile files,
+required an August operation identity and retained that experiment's fixed
+two-skip allowance and four-file documentation commit layout. Its explicit
+implementation list omitted the newly imported scratch and source-authority
+helpers and the scanner's storage-policy input.
+
+The active reader now accepts only v3 execution requests, owner contracts and
+registrations. It requires the current v2 lock/profile files and corrected
+source-license hash. Fourteen exact artifact roles bind the direct helpers and
+their policy input. Registration IDs derive from the source-parent prefix and
+canonical UTC registration date. Implementation, tests and notes must be
+committed first; the final registration commit can change only its new JSON
+record. Standard-gate counts require zero failures and zero skips. No real
+registration has been created, and synthetic fixture counts/hashes remain
+in-memory validation inputs rather than execution authority.
+
+The current profile also described this source's quality as unproven. That
+conflicted with the terminal product rejection recorded in
+`tinyrustlm-qwen3-working-model-training-controls-memory-2026-08-20.md` and later
+cleanup evidence. Both the current profile and registration validation now
+state `terminally-rejected-for-product-use` with `runtime-diagnostic-only`
+purpose. Negative checks reject relabeling the ancestry as unproven, passed or a
+product default. This change does not undo its rejection or produce an eligible
+derivative. The prepared `/3` owner and its three helper/policy identities are
+bound in the current profile, whose material-registration claim remains false.
+
+All **58 affected checks pass**, with zero skips or cancellations. They exercise
+closed request rejection before output, current paths, missing dependencies,
+operation-parent/date mismatch, forbidden quality promotion, the removed skip
+allowance, actual process isolation and synthetic pinned framework kernels.
+Historical registration and terminal tests retain explicit historical schemas
+and verify their evidence; they no longer require the active owner to accept
+closed metadata. V8 containing ranges reach 317/317 selected nonblank,
+non-comment, non-brace source lines in four changed validation functions. This
+is not whole-owner, branch, or real-model execution coverage.
+
+An independent Git/current comparison proves the 4,997-byte normalized source
+block containing the registered cases, thresholds, policies, process limits and
+evidence names is unchanged (SHA-256
+`b4b42f0710580d1ff84fa754581fee6965bd00ea452300633c310cbf596807f8`).
+The profile is unchanged outside current owner bindings, quality/purpose and
+the corresponding execution-status/order wording. Five named historical
+registration, terminal and lock/profile artifacts remain byte-identical.
+
+Compact proof: `artifacts/ecosystem-cleanup-20260912/numerical-current-registration-review.json`,
+9,061 bytes, SHA-256
+`a9f35b13c6968ca137e0028771e7f9873b9dded5215e02533801a85d13ca5e3f`.
+All owned test and coverage output was removed. Fresh reads still find the two
+policy-blocked C28 installer links and no owner cleanup receipt. No deletion
+retry, real checkpoint load, parity result, qualified default, seed, deployment,
+historical/model removal or measured storage recovery occurred. Passing fixture
+validation prepares the next registration; it does not supply the missing
+source/release gates or authorize replay of a closed experiment.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

@@ -66,7 +66,8 @@
     "compositionClaim": "structural-pass-only",
     "numericalClaim": "unproven",
     "browserClaim": "unproven",
-    "qualityClaim": "unproven"
+    "qualityClaim": "terminally-rejected-for-product-use",
+    "purpose": "runtime-diagnostic-only"
   },
   "diagnostics": {
     "modelLoad": {
@@ -106,7 +107,28 @@
       "runtimeVerification": "exact-installed-non-cache-file-closure-before-and-after-each-python-owner"
     },
     "soleExecutionOwner": {
-      "status": "requires-fresh-owner-and-registration",
+      "status": "implementation-prepared-registration-required",
+      "path": "tinyrustlm/tools/qwen3-numerical-execution-owner.js",
+      "byteLength": 83054,
+      "sha256": "423594402cb9ebe0ea6432ee7d30e32468dc06a5773a4f761f8a5b858de1beeb",
+      "profileId": "tinyrustlm.qwen3-numerical-execution-owner/3",
+      "dependencies": [
+        {
+          "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+          "byteLength": 5822,
+          "sha256": "746e1fafa344ef8d71a5a85864fc1eaf34085c65789f9beda820a247af7f399e"
+        },
+        {
+          "path": "tinyrustlm/tools/verify-single-source-authority.js",
+          "byteLength": 141430,
+          "sha256": "f99083edfe7eae96279acafcb624eb88e1a26e43d5622d498711fe280691647d"
+        },
+        {
+          "path": "contracts/storage/retired-storage-roots-2026-09-12.json",
+          "byteLength": 2889,
+          "sha256": "901d6df4be67a8c5cb96ea7959d3a2408bfb19ea36ac387e7d55c92231a9f695"
+        }
+      ],
       "historicalClosedOwner": {
         "path": "tinyrustlm/tools/qwen3-numerical-execution-owner.js",
         "byteLength": 77939,
@@ -382,7 +404,7 @@
   "execution": {
     "currentRealExecutionStatus": "not-registered-not-run",
     "requiredOrdering": [
-      "replace-closed-v2-owner-and-bind-current-source-environment-and-profile",
+      "bind-current-v3-owner-and-helper-dependencies-with-current-source-environment-and-profile",
       "finish-implementation-and-hostile-fixture-tests",
       "build-and-lock-offline-python-wheel-and-installed-closure",
       "commit-push-and-fresh-remote-verify-implementation",
@@ -394,7 +416,7 @@
       "sole-owner-invokes-source-reconstructed-scalar-and-read-only-verifier-at-most-once-in-order",
       "preserve-terminal-result-without-retry-overwrite-repair-or-tolerance-change"
     ],
-    "soleOwnerStatus": "closed-v2-owner-is-not-current-execution-authority",
+    "soleOwnerStatus": "current-v3-implementation-requires-fresh-registration",
     "processCardinalityAuthority": "sole-execution-owner",
     "sourceOutput": "create-only-preserve-partial-on-failure",
     "reconstructedOutput": "create-only-preserve-partial-on-failure",

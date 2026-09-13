@@ -12,11 +12,11 @@ const CANONICAL_REPOSITORY_ROOT = path.resolve(__dirname, "../..");
 const MODEL_ROOT = "D:\\LLMs\\TinyRustLM";
 const ISOLATED_PYTHON_ARGUMENTS = Object.freeze(["-I", "-B", "-X", "utf8"]);
 
-const REQUEST_SCHEMA = "tinyrustlm.qwen3_numerical_execution_request.v2";
+const REQUEST_SCHEMA = "tinyrustlm.qwen3_numerical_execution_request.v3";
 const REGISTRATION_SCHEMA =
-  "tinyrustlm.qwen3_numerical_differential_execution_preregistration.v2";
+  "tinyrustlm.qwen3_numerical_differential_execution_preregistration.v3";
 const OWNER_CONTRACT_SCHEMA =
-  "tinyrustlm.qwen3_numerical_execution_owner_contract.v2";
+  "tinyrustlm.qwen3_numerical_execution_owner_contract.v3";
 const SOURCE_REQUEST_SCHEMA = "tinyrustlm.qwen3_numerical_source_request.v2";
 const RECONSTRUCTED_REQUEST_SCHEMA = "tinyrustlm.qwen3_slm2_reconstructed_request.v1";
 const SCALAR_REQUEST_SCHEMA = "tinyrustlm.scalar-numerical-probe-request.v1";
@@ -29,7 +29,7 @@ const OWNER_TERMINAL_SCHEMA =
 const VERIFIER_RECEIPT_SCHEMA =
   "tinyrustlm.qwen3_numerical_trace_verification_receipt.v1";
 const REGISTRATION_RELATIVE_PATH =
-  "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v2.json";
+  "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v3.json";
 const MAXIMUM_REQUEST_BYTES = 1024 * 1024;
 const MAXIMUM_REGISTRATION_BYTES = 4 * 1024 * 1024;
 const MAXIMUM_SOURCE_CONTROLLED_FILE_BYTES = 64 * 1024 * 1024;
@@ -47,7 +47,7 @@ const FILE_NAME_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,159}$/u;
 const CANONICAL_UTC_SECONDS_PATTERN =
   /^\d{4}-(0[1-9]|1[0-2])-([0-2]\d|3[01])T([01]\d|2[0-3]):[0-5]\d:[0-5]\dZ$/u;
 const OPERATION_ID_PATTERN =
-  /^qwen3-numerical-c1899de-[a-f0-9]{7}-20260826-v2$/u;
+  /^qwen3-numerical-c1899de-[a-f0-9]{7}-[0-9]{8}-v3$/u;
 const STAGES = Object.freeze(["source", "reconstructed", "scalar", "verifier"]);
 const REGISTERED_TRACE_PROFILE_ID = "tinyrustlm.scalar-full-stage-f32le/1";
 const MODEL_BYTE_LENGTH = 598308416;
@@ -55,16 +55,12 @@ const MODEL_SHA256 =
   "a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7";
 const SOURCE_LOCK_BYTE_LENGTH = 1901;
 const SOURCE_LOCK_SHA256 =
-  "e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d";
+  "50a8c29e36398a9a088e4d9a224dad186809d34b1e050299d3ce3de7a01b7d0e";
 const COMPOSITION_RESULT_BYTE_LENGTH = 18441;
 const COMPOSITION_RESULT_SHA256 =
   "0c3e84ad9ce6e22d9a164357c9a900d31825d0639f4f11077dab305f9cf3ef0e";
-const REGISTRATION_COMMIT_PATHS = Object.freeze([
-  "contracts/vnext/README.md",
-  REGISTRATION_RELATIVE_PATH,
-  "docs/architecture/2026-08-26-qwen3-numerical-differential-execution-preregistration-v2.md",
-  "tinyrustlm/tests/qwen3-numerical-differential-execution-preregistration-v2.test.js"
-]);
+// Prepare implementation, tests and notes first; the final registration commit owns one file.
+const REGISTRATION_COMMIT_PATHS = Object.freeze([REGISTRATION_RELATIVE_PATH]);
 const REPORT_LINEAGE_PATHS = Object.freeze({
   architecture: "docs/architecture/2026-08-26-qwen3-numerical-successor-owner-clean-cut.md",
   correctedSynthesis:
@@ -274,15 +270,18 @@ const EVIDENCE_FILES = Object.freeze({
 });
 const IMPLEMENTATION_ARTIFACT_PATHS = Object.freeze({
   "execution-owner": "tinyrustlm/tools/qwen3-numerical-execution-owner.js",
-  "differential-profile": "contracts/vnext/qwen3-numerical-differential-profile.v1.json",
+  "canonical-scratch": "tinyrustlm/tools/canonical-operation-scratch.js",
+  "source-authority": "tinyrustlm/tools/verify-single-source-authority.js",
+  "retired-storage-policy": "contracts/storage/retired-storage-roots-2026-09-12.json",
+  "differential-profile": "contracts/vnext/qwen3-numerical-differential-profile.v2.json",
   "environment-authority": "tinyrustlm/tools/qwen3_numerical_environment_lock.py",
-  "environment-lock": "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json",
+  "environment-lock": "contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json",
   "source-owner": "tinyrustlm/tools/qwen3-numerical-source-owner.py",
   "reconstructed-owner": "tinyrustlm/tools/qwen3-slm2-reconstructed-owner.py",
   "scalar-source": "rust/crates/tinyrustlm-numerical-probe/src/main.rs",
   "scalar-profile": "contracts/vnext/scalar-numerical-probe-profile.v1.json",
   verifier: "tinyrustlm/tools/qwen3-numerical-trace-verifier.js",
-  "source-lock": "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json",
+  "source-lock": "contracts/vnext/qwen3-0.6b-base-source-lock.v2.json",
   "composition-result": "contracts/vnext/qwen3-real-composition-execution-result.v12.json"
 });
 const EXECUTABLE_BASENAMES = Object.freeze({
@@ -649,6 +648,7 @@ function validateSourceTemplate(template) {
     "numerical-execution-source-policy");
 }
 
+/** Validate only the current diagnostic contract; closed generations cannot launch. */
 function validateOwnerContract(contract) {
   exactKeys(contract, ["schema", "operationId", "traceProfileId",
     "implementationArtifacts", "executables", "cases", "requests", "processPolicy",
@@ -660,7 +660,7 @@ function validateOwnerContract(contract) {
     && contract.traceProfileId === REGISTERED_TRACE_PROFILE_ID,
   "numerical-execution-owner-contract");
   invariant(Array.isArray(contract.implementationArtifacts)
-    && contract.implementationArtifacts.length === 11,
+    && contract.implementationArtifacts.length === Object.keys(IMPLEMENTATION_ARTIFACT_PATHS).length,
   "numerical-execution-implementation-artifacts");
   const roles = new Set();
   for (const artifact of contract.implementationArtifacts) {
@@ -847,6 +847,7 @@ function validateZeroFailureGate(value, code) {
     && value.total === value.passed, code);
 }
 
+/** Require passing gates and exact source/build anchors without inheriting old skip allowances. */
 function validateImplementationCheckpoint(checkpoint, registration, contract) {
   exactKeys(checkpoint, ["cleanRelease", "focusedGate", "implementationCommit",
     "implementationTree", "memoryCheckpointCommit", "memoryCheckpointTree", "scalarBuild",
@@ -878,17 +879,8 @@ function validateImplementationCheckpoint(checkpoint, registration, contract) {
   validateZeroFailureGate(checkpoint.focusedGate,
     "numerical-execution-registration-focused-gate");
 
-  exactKeys(checkpoint.standardGate, ["declaredInfrastructureOnlySkips", "failed", "passed",
-    "total"], "numerical-execution-registration-standard-gate");
-  for (const key of ["declaredInfrastructureOnlySkips", "failed", "passed", "total"]) {
-    requireSafeInteger(checkpoint.standardGate[key], 0, 1000000,
-      "numerical-execution-registration-standard-gate");
-  }
-  invariant(checkpoint.standardGate.declaredInfrastructureOnlySkips === 2
-    && checkpoint.standardGate.failed === 0
-    && checkpoint.standardGate.passed >= 1
-    && checkpoint.standardGate.total === checkpoint.standardGate.passed + 2,
-  "numerical-execution-registration-standard-gate");
+  validateZeroFailureGate(checkpoint.standardGate,
+    "numerical-execution-registration-standard-gate");
 
   const scalarBuild = exactKeys(checkpoint.scalarBuild, ["cargoVersion", "crate",
     "executable", "host", "locked", "offline", "profile", "rustcVersion", "sourceCommit",
@@ -919,10 +911,11 @@ function validateImplementationCheckpoint(checkpoint, registration, contract) {
   }, "numerical-execution-registration-threshold-basis");
 }
 
+/** Bind the diagnostic ancestry while preserving its terminal product-quality rejection. */
 function validateCandidate(candidate, contract) {
   exactKeys(candidate, ["compositionClaim", "compositionResult", "licenseSpdx", "modelId",
     "modelSlm2", "numericalClaim", "qualityClaim", "revision",
-    "sourceClosureRehashedBeforeRegistration", "sourceLock"],
+    "sourceClosureRehashedBeforeRegistration", "sourceLock", "purpose"],
   "numerical-execution-registration-candidate");
   exactKeys(candidate.modelSlm2, ["byteLength", "sha256"],
     "numerical-execution-registration-candidate-model");
@@ -932,7 +925,8 @@ function validateCandidate(candidate, contract) {
     && candidate.modelSlm2.byteLength === MODEL_BYTE_LENGTH
     && candidate.modelSlm2.sha256 === MODEL_SHA256
     && candidate.numericalClaim === "unproven"
-    && candidate.qualityClaim === "unproven"
+    && candidate.qualityClaim === "terminally-rejected-for-product-use"
+    && candidate.purpose === "runtime-diagnostic-only"
     && candidate.revision === "c1899de289a04d12100db370d81485cdf75e47ca"
     && candidate.sourceClosureRehashedBeforeRegistration === true,
   "numerical-execution-registration-candidate");
@@ -940,7 +934,7 @@ function validateCandidate(candidate, contract) {
     "contracts/vnext/qwen3-real-composition-execution-result.v12.json",
   "numerical-execution-registration-candidate-composition");
   publicArtifactReference(candidate.sourceLock,
-    "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json",
+    "contracts/vnext/qwen3-0.6b-base-source-lock.v2.json",
   "numerical-execution-registration-candidate-source-lock");
   const artifacts = new Map(contract.implementationArtifacts
     .map((artifact) => [artifact.role, artifact]));
@@ -958,6 +952,7 @@ function validateCandidate(candidate, contract) {
   "numerical-execution-registration-candidate-binding");
 }
 
+/** Bind a fresh current registration to its parent and UTC date, never a replayed operation ID. */
 function validateRegistration(value) {
   exactKeys(value, ["schema", "profileId", "status", "registeredAtUtc",
     "registrationParentCommit", "registrationParentTree", "authority", "sourceAnchor",
@@ -965,7 +960,7 @@ function validateRegistration(value) {
     "outputBoundary", "claimBoundary", "campaignCounters"],
   "numerical-execution-registration-shape");
   invariant(value.schema === REGISTRATION_SCHEMA
-    && value.profileId === "tinyrustlm.qwen3-numerical-differential-execution/2"
+    && value.profileId === "tinyrustlm.qwen3-numerical-differential-execution/3"
     && value.status === "registered-before-private-request-roots-and-real-traces"
     && validCanonicalUtcSeconds(value.registeredAtUtc)
     && COMMIT_PATTERN.test(value.registrationParentCommit)
@@ -997,6 +992,10 @@ function validateRegistration(value) {
     && value.sourceAnchor.trackingFetchHeadAndRemoteExactAtRegistration === true,
   "numerical-execution-registration-source-anchor");
   const contract = validateOwnerContract(value.ownerContract);
+  const operationDate = value.registeredAtUtc.slice(0, 10).replaceAll("-", "");
+  invariant(contract.operationId ===
+    `qwen3-numerical-c1899de-${value.registrationParentCommit.slice(0, 7)}-${operationDate}-v3`,
+  "numerical-execution-registration-operation-binding");
   validateReportLineage(value.reportLineage);
   validateImplementationCheckpoint(value.implementationCheckpoint, value, contract);
   validateCandidate(value.candidate, contract);

@@ -102,10 +102,10 @@ function fixture(t) {
     fetchHeadExpected: true
   };
   const request = {
-    schema: owner.REQUEST_SCHEMA,
+    schema: "tinyrustlm.qwen3_numerical_execution_request.v2",
     operationId,
     registration: {
-      relativePath: owner.REGISTRATION_RELATIVE_PATH,
+      relativePath: "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v2.json",
       ...registrationIdentity
     },
     registrationSource,

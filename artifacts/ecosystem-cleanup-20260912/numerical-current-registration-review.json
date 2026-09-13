@@ -1,0 +1,213 @@
+{
+  "schema": "tinyrustlm.ecosystem_current_numerical_registration_review.v1",
+  "observedUtc": "2026-09-13T02:44:54.834Z",
+  "parentCommit": "71f63fb69e014e1a8ae316b97335a38bd78336a3",
+  "scope": "Replace active closed-v2 registration reader with current-v3 preparation; no actual operation registered",
+  "changes": [
+    "Current-only request, registration and owner-contract v3; old v1/v2 execution schemas rejected before output.",
+    "Current corrected source-lock.v2, environment-lock.v2 and differential-profile.v2 paths; exact corrected source-license hash.",
+    "Fourteen required artifact roles include canonical scratch, unchanged source-authority scanner and its retired-storage policy.",
+    "One-file final registration commit, with operation ID bound to source-parent prefix and canonical UTC registration date; no August operation literal.",
+    "Standard gate requires zero failed or skipped checks rather than inheriting the closed experiment's fixed two-skip allowance.",
+    "Candidate purpose is runtime-diagnostic-only and its terminal product-quality rejection is mandatory; no unproven/pass relabeling.",
+    "Current differential profile binds the prepared /3 owner and helpers while preserving historical owner identity and false material registration/quality/release claims.",
+    "Historical v2 registration/terminal tests use immutable historical schema identities and require active-owner rejection rather than continued execution compatibility."
+  ],
+  "tests": {
+    "schema": "tinyrustlm.numerical_current_registration_test_observation.v1",
+    "observedUtc": "2026-09-13T02:44:54.834Z",
+    "tests": [
+      "qwen3-numerical-execution-owner.test.js",
+      "qwen3-numerical-source-terminal-verifier.test.js",
+      "qwen3-numerical-differential-execution-preregistration-v2.test.js",
+      "qwen3-numerical-differential-profile.test.js",
+      "qwen3-model-load-correction-memory.test.js"
+    ],
+    "exitCode": 0,
+    "summary": [
+      "ℹ tests 58",
+      "ℹ suites 0",
+      "ℹ pass 58",
+      "ℹ fail 0",
+      "ℹ cancelled 0",
+      "ℹ skipped 0",
+      "ℹ todo 0",
+      "ℹ duration_ms 15794.3351"
+    ],
+    "stdoutBytes": 4956,
+    "stdoutSha256": "ddf26a7c2c2f65e4436348ec3ed17bbfbe17ca30c8540c1f91c034d8afe25364",
+    "stderr": "",
+    "coverage": {
+      "method": "V8 innermost containing range at first non-whitespace character, union across test workers; nonblank non-comment non-brace source lines in four changed current-registration functions",
+      "metrics": [
+        {
+          "name": "validateOwnerContract",
+          "coveredLines": 171,
+          "totalLines": 171,
+          "uncoveredLines": []
+        },
+        {
+          "name": "validateImplementationCheckpoint",
+          "coveredLines": 56,
+          "totalLines": 56,
+          "uncoveredLines": []
+        },
+        {
+          "name": "validateCandidate",
+          "coveredLines": 38,
+          "totalLines": 38,
+          "uncoveredLines": []
+        },
+        {
+          "name": "validateRegistration",
+          "coveredLines": 52,
+          "totalLines": 52,
+          "uncoveredLines": []
+        }
+      ]
+    },
+    "failureOutput": null,
+    "ownedScratchRemoved": true
+  },
+  "observedDefects": [
+    "Active runner still accepted closed v2 registration metadata, old lock paths and the old August operation identity after the reference runtime was replaced.",
+    "The current profile and runner candidate quality label said unproven despite the recorded terminal product rejection.",
+    "Closed registration's fixed two infrastructure skips and four-file documentation commit layout were copied into active validation.",
+    "Imported canonical scratch, source scanner and scanner policy were missing from explicit implementation artifact roles."
+  ],
+  "productDecisionAuthority": "wiki/runtime-mirust/reports/tinyrustlm-qwen3-working-model-training-controls-memory-2026-08-20.md",
+  "coverageLimits": "V8 containing-range observations reach 317/317 selected source lines in four changed registration validation functions; not whole-owner or branch coverage and not a real numerical execution.",
+  "temporaryOutput": "All owned test and coverage output was removed with marker/identity-checked canonical cleanup.",
+  "currentBlockers": {
+    "installerLinksStillPresent": true,
+    "ownerCleanupReceiptPresent": false,
+    "priorSourceGateResult": "source_authority_scan_incomplete",
+    "sourceGateImplementationChanged": false,
+    "policyRejectedDeletionRetried": false,
+    "newRegistrationFileCreated": false,
+    "fullCleanReleaseAndStandardGatesNotEstablished": true,
+    "unrelatedWorkPreserved": true
+  },
+  "claimBoundary": {
+    "oldOperationReplayed": false,
+    "realCheckpointLoaded": false,
+    "numericalParityPassed": false,
+    "modelQualified": false,
+    "workingDefaultEstablished": false,
+    "publicSeedEstablished": false,
+    "deployed": false,
+    "historicalOrModelDeletionPerformed": false,
+    "measuredStorageRecoveryBytes": null,
+    "runtimeAndFrameworkEvidence": "Real isolated-process probes and synthetic framework tests only"
+  },
+  "sourceIdentities": [
+    {
+      "path": "tinyrustlm/tools/qwen3-numerical-execution-owner.js",
+      "current": {
+        "byteLength": 83054,
+        "sha256": "423594402cb9ebe0ea6432ee7d30e32468dc06a5773a4f761f8a5b858de1beeb"
+      },
+      "parent": {
+        "byteLength": 82705,
+        "sha256": "0ed683f0963a3578fefcbdfb50057edf287af365313d7a67c38f95bc72e18894"
+      }
+    },
+    {
+      "path": "tinyrustlm/tests/qwen3-numerical-execution-owner.test.js",
+      "current": {
+        "byteLength": 45640,
+        "sha256": "f80b06510189f85b5acf44a0bde764b33382754d97d228e83482a6904b7b0a8c"
+      },
+      "parent": {
+        "byteLength": 41927,
+        "sha256": "c6152effd98e68ae36d0d9a7fabcc78832b816cbc1fd5a7248136c42fb801c4f"
+      }
+    },
+    {
+      "path": "tinyrustlm/tests/qwen3-numerical-source-terminal-verifier.test.js",
+      "current": {
+        "byteLength": 16310,
+        "sha256": "dbedb2805055e01b33c58deb1171ebaacb55f23b448e6dedbf8df5f3c592667c"
+      },
+      "parent": {
+        "byteLength": 16233,
+        "sha256": "492904411f7daca999395a5ae7a396f1bb70bc25980a3b7200b4766f08a08c84"
+      }
+    },
+    {
+      "path": "tinyrustlm/tests/qwen3-numerical-differential-execution-preregistration-v2.test.js",
+      "current": {
+        "byteLength": 12644,
+        "sha256": "8a61a9711b1a1b375219592de282b6fe6c09a708d83684ee5fb9c57de1dc328c"
+      },
+      "parent": {
+        "byteLength": 12552,
+        "sha256": "28b79126642b7ceaf3b478295ff1c133659bc21492e60aa4575d19db89b8f365"
+      }
+    },
+    {
+      "path": "tinyrustlm/tests/qwen3-numerical-differential-profile.test.js",
+      "current": {
+        "byteLength": 24685,
+        "sha256": "d5b25416d2ba08ecabdb4e47c4626e0224739178519e7cd3ba10b2ab2e8f0e30"
+      },
+      "parent": {
+        "byteLength": 23951,
+        "sha256": "38ff9e2fdbfb6c928f91a450daf9b50fcebec592eda954e34e53a45c6622ee64"
+      }
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-differential-profile.v2.json",
+      "current": {
+        "byteLength": 18093,
+        "sha256": "641ee132f8d7fc7d672cb7d9d5a6101e47284f48c419f9f9c901567b739e4937"
+      },
+      "parent": {
+        "byteLength": 17082,
+        "sha256": "b1c9369df2b3b6210bc8e220f99a9f42a4fedd05a13ca4747a45ac8aebfe1fd2"
+      }
+    }
+  ],
+  "unchangedRegisteredCasesAndPolicies": {
+    "byteLength": 4997,
+    "sha256": "b4b42f0710580d1ff84fa754581fee6965bd00ea452300633c310cbf596807f8",
+    "comparison": "Exact source block from REGISTERED_CASES through before IMPLEMENTATION_ARTIFACT_PATHS; line endings normalized"
+  },
+  "remainingProfileUnchanged": true,
+  "historicalArtifacts": [
+    {
+      "path": "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v2.json",
+      "byteLength": 24806,
+      "sha256": "27b0f98a4b00b0561b4e50d7bf6d31d257a91f02c3f33f6c5a8197c652529c77",
+      "unchanged": true
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-source-terminal-verification-result.v2.json",
+      "byteLength": 7739,
+      "sha256": "0261525e59aefe4c19e4a3d5ec2afc5e59b26c0ef718c9ddaf2761757c8cc4fe",
+      "unchanged": true
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-differential-profile.v1.json",
+      "byteLength": 17155,
+      "sha256": "c04abffe412f5032b3c66d6ce00ece4d27a5d89f3ae6678e742cc56ce64f86fc",
+      "unchanged": true
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json",
+      "byteLength": 30920,
+      "sha256": "4102fddd538a5a14d52c543a28a856dc61e95e978d2085b58f449f3be5250ae2",
+      "unchanged": true
+    },
+    {
+      "path": "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json",
+      "byteLength": 1901,
+      "sha256": "e24bf9d95a5631e0b7c44c192e4ec6b7ec4b8793e1597f9dad99f1257ecf582d",
+      "unchanged": true
+    }
+  ],
+  "productDecisionIdentity": {
+    "byteLength": 11384,
+    "sha256": "616c996be47a4e47eb9b7a5cbce646d1f3e1bbc60d116bb53b1f795aa2640ab6"
+  }
+}

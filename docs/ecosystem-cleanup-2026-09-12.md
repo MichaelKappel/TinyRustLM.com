@@ -618,6 +618,27 @@ lessons, evidence references and remaining review scope live in the canonical
   the two policy-blocked C28 links. No real model, default, seed, deployment,
   historical/model removal or measured storage recovery was produced.
 
+### Current numerical registration contract
+
+- Replaced active closed-v2 execution schemas, old lock paths and the August
+  operation identity with current-only v3 validation. Fourteen artifact roles
+  bind the owner, current components and imported helpers. The final registration
+  commit owns one file; operation IDs bind its parent and UTC date. Standard
+  gates now require zero skips rather than the historical fixed allowance.
+- The current profile binds the prepared owner and helper identities. Both it
+  and registration validation explicitly preserve the product-quality rejection
+  and diagnostic-only purpose of the Qwen ancestry. Existing cases, tolerances,
+  process limits and historical metadata are independently verified unchanged.
+- All 58 affected checks pass with zero skips. V8 ranges reach 317/317 selected
+  source lines in four changed validation functions; no whole-owner, branch or
+  real-model execution coverage is claimed. Owned output was removed. Lesson
+  C30 and numerical-current-registration-review.json retain exact bindings and
+  the distinction between evidence verification and active compatibility.
+- No real v3 registration exists. The two policy-blocked installer links remain,
+  and full source/release checks, real model qualification and initial seeding
+  remain open. No historical/model deletion, deployment or measured storage
+  recovery occurred.
+
 ### Numerical environment diagnostics and experiment evidence
 
 - The source owner now preserves safe typed environment rejection causes while

@@ -1,5 +1,5 @@
 profile: tinyrustlm.test-plan.current.v1
-updated_utc: 2026-09-13T02:30:39Z
+updated_utc: 2026-09-13T02:44:54Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 
@@ -21,7 +21,8 @@ gate_3_composition:
 gate_4_numerical:
   - Check qwen3-numerical-execution-owner.test.js with NODE_V8_COVERAGE confined to owned canonical artifacts; Node otherwise auto-propagates coverage into explicit child environments. Assert canonical output rejection before capture creation, startup-variable exclusion, isolated pinned Python and exact owned cleanup. C29 records all 56 affected checks passing and the unchanged source scan still incomplete.
   - Bind fresh execution metadata and all imported helper dependencies before material launch; runner boundary fixes do not revive closed v2 registration. Keep model roots below D:\LLMs\TinyRustLM and require the unchanged source-authority scan to pass before writing output.
-  - Current reference runtime is artifacts/external/qwen3-numerical-oracle/environment/Scripts/python.exe with contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json and qwen3-numerical-differential-profile.v2.json. The closed v2 execution owner is not current authority; fresh owner/registration bindings remain required.
+  - Current reference runtime is artifacts/external/qwen3-numerical-oracle/environment/Scripts/python.exe with contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json and qwen3-numerical-differential-profile.v2.json. The profile binds the prepared /3 owner and helpers; a fresh real v3 registration and complete material gates are still required.
+  - C30 rejects all closed execution schemas, old lock paths, missing helper bindings, mismatched operation parents/dates, inherited skip allowances and promotion of rejected diagnostic ancestry. All 58 affected checks pass. Preserve exact numerical cases, thresholds and historical bytes; fixture validation is not real registration.
   - Before material execution, run the existing qwen3_numerical_environment_lock.py --verify-runtime preflight against the canonical lock using the intended interpreter; a training environment is not automatically the pinned numerical reference.
   - Run py -3 -B -m unittest tinyrustlm.tools.tests.qwen3_numerical_source_owner_test for typed environment failure propagation. See ecosystem-experiment-lessons-2026-09-12.md C27 for the focused Node checks and explicit unavailable-framework limit.
   - Pinned source framework to scalar-native first-divergence vectors at tokenizer, template, embeddings, layers, logits, sampling, and tokens.

@@ -79,8 +79,10 @@ test("freezes one canonical output-free v2 numerical registration", () => {
   assert.equal(sha256(registrationBytes),
     "27b0f98a4b00b0561b4e50d7bf6d31d257a91f02c3f33f6c5a8197c652529c77");
   assert.deepEqual(registrationBytes, owner.canonicalJsonBytes(registration));
-  assert.equal(owner.validateRegistration(registration), registration);
-  assert.equal(registration.schema, owner.REGISTRATION_SCHEMA);
+  assert.throws(() => owner.validateRegistration(registration),
+    /numerical-execution-registration-identity/u);
+  assert.equal(registration.schema,
+    "tinyrustlm.qwen3_numerical_differential_execution_preregistration.v2");
   assert.equal(registration.profileId,
     "tinyrustlm.qwen3-numerical-differential-execution/2");
   assert.equal(registration.status,

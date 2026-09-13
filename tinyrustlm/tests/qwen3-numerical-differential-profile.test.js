@@ -417,6 +417,8 @@ test("freezes report-derived clean-slate numerical authority boundaries", () => 
   assert.equal(profile.authority.bestOfN, false);
   assert.equal(profile.execution.currentRealExecutionStatus, "not-registered-not-run");
   assert.equal(profile.candidate.numericalClaim, "unproven");
+  assert.equal(profile.candidate.qualityClaim, "terminally-rejected-for-product-use");
+  assert.equal(profile.candidate.purpose, "runtime-diagnostic-only");
   assert.equal(profile.trace.selectedModelStageCountPerToken, 255);
   assert.equal(expectedStages().length, 255);
   assert.deepEqual(profile.proofArrows.map((value) => value.id), [
@@ -462,9 +464,19 @@ test("preserves closed implementation history without adopting its execution aut
     assert.equal(record.sha256, actual.sha256, record.path);
   }
   assert.equal(profile.implementations.soleExecutionOwner.status,
-    "requires-fresh-owner-and-registration");
+    "implementation-prepared-registration-required");
   assert.equal(profile.implementations.soleExecutionOwner.historicalOperationMayBeReplayed, false);
-  assert.equal(profile.implementations.soleExecutionOwner.path, undefined);
+  assert.equal(profile.implementations.soleExecutionOwner.profileId,
+    "tinyrustlm.qwen3-numerical-execution-owner/3");
+  assert.equal(profile.execution.soleOwnerStatus,
+    "current-v3-implementation-requires-fresh-registration");
+  const dependencies = profile.implementations.soleExecutionOwner.dependencies;
+  assert.deepEqual(dependencies.map((record) => record.path), [
+    "tinyrustlm/tools/canonical-operation-scratch.js",
+    "tinyrustlm/tools/verify-single-source-authority.js",
+    "contracts/storage/retired-storage-roots-2026-09-12.json"
+  ]);
+  for (const record of dependencies) assert.deepEqual(record, identity(record.path));
   assert.equal(profile.claimBoundary.realOperationRegistered, false);
   assert.equal(profile.claimBoundary.publisherSourceModelLoadPassed, false);
   assert.equal(profile.claimBoundary.behavioralQualityPassed, false);

@@ -1,5 +1,5 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-13T02:30:39Z
+updated_utc: 2026-09-13T02:44:54Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 
@@ -82,7 +82,14 @@ numerical_execution_boundaries:
   change: Canonical request/output/model locations, minimal child and termination environments, isolated Python startup, explicit empty NODE_V8_COVERAGE and unchanged source-authority preflight. Both affected fixture families use owned canonical artifacts and inline probes.
   verification: All 56 affected checks pass with zero skips. Actual Node and pinned Python probes pass; framework tests are synthetic. V8 ranges reached 53/54 selected source lines in the three new boundary functions; no whole-owner or branch percentage. Owned test/coverage output removed.
   experiment: The first instrumented suite had three launch failures because Node automatically copied ambient coverage into the frozen child environment. An explicit empty own property fixes both mutation and output inheritance; the failure and exact installed Node implementation are recorded.
-  remaining: Source scan is still incomplete on the two policy-blocked C28 links. Closed v2 metadata coupling remains; prepare fresh owner, registration and dependency bindings before a real operation. No real checkpoint, qualification, default, seed, deployment or measured storage recovery.
+  remaining: Source scan is still incomplete on the two policy-blocked C28 links. The C30 current contract below replaces closed v2 metadata coupling and binds dependencies; real registration and material gates remain open. No real checkpoint, qualification, default, seed, deployment or measured storage recovery.
+
+current_numerical_registration_contract:
+  evidence: artifacts/ecosystem-cleanup-20260912/numerical-current-registration-review.json
+  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md C30
+  change: Active request, registration and owner contract accept only v3. Current locks, corrected source license and all fourteen artifact roles are required; operation IDs bind parent/date, final registration commits own one file and standard gates permit no skips. The current profile binds the prepared owner and helpers; its rejected model remains diagnostic-only.
+  verification: All 58 affected checks pass without skips. V8 reaches 317/317 selected source lines in four changed validators; no whole-owner or branch coverage. Exact registered cases, tolerances, process limits and five historical artifacts are unchanged. Owned test/coverage output removed.
+  remaining: No actual v3 registration exists. The two policy-blocked installer links remain and cleanup receipt is absent. Full source/release gates, fresh model-load/numerical evidence, eligible model qualification, default and live seeding remain open. No replay, historical/model deletion, deployment or measured storage recovery.
 
 portal_retirement_tool_cleanup:
   checkpoint: TinyRustLM.MiRust.com d17f77a
