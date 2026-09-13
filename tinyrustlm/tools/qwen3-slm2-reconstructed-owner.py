@@ -46,7 +46,7 @@ ARTIFACT_IDENTIFIER = re.compile(r"^[a-z0-9][a-z0-9._/-]*$")
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 PAYLOAD_DOMAIN = b"tinyrustlm.slm2.tensor-payload.mixed-q8-row.v1\0"
 ENVIRONMENT_LOCK_RELATIVE_PATH = (
-    "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json"
+    "contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json"
 )
 ENVIRONMENT_AUTHORITY_RELATIVE_PATH = (
     "tinyrustlm/tools/qwen3_numerical_environment_lock.py"

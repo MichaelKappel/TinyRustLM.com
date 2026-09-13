@@ -18,10 +18,12 @@ const {
 
 const repositoryRoot = path.resolve(__dirname, "../..");
 const profilePath = path.join(repositoryRoot, "contracts", "vnext",
-  "qwen3-numerical-differential-profile.v1.json");
+  "qwen3-numerical-differential-profile.v2.json");
 const profileBytes = fs.readFileSync(profilePath);
 const profile = JSON.parse(profileBytes.toString("utf8"));
-// This closed profile records the implementations in its v2 registration parent.
+const historicalProfile = JSON.parse(fs.readFileSync(path.join(repositoryRoot,
+  "contracts/vnext/qwen3-numerical-differential-profile.v1.json"), "utf8"));
+// The closed profile records the implementations in its v2 registration parent.
 const historicalImplementationCommit = "4891e8aa15523430e2050c8370baed593d7a19d9";
 const oraclePython = process.env.TINYRUSTLM_QWEN3_NUMERICAL_ORACLE_PYTHON || "";
 const registrationSha256 = "9".repeat(64);
@@ -329,7 +331,7 @@ function writeRequest(parent, bundles, mutate = null) {
     schema: "tinyrustlm.qwen3_numerical_trace_verification_request.v1",
     operationId: "fixture-numerical-operation",
     differentialProfile: {
-      relativePath: "contracts/vnext/qwen3-numerical-differential-profile.v1.json",
+      relativePath: "contracts/vnext/qwen3-numerical-differential-profile.v2.json",
       byteLength: profileBytes.length,
       sha256: sha256(profileBytes)
     },
@@ -422,7 +424,7 @@ test("freezes report-derived clean-slate numerical authority boundaries", () => 
   ]);
 });
 
-test("binds closed implementation history and durable report-memory links by content", () => {
+test("binds current reference components and durable report-memory links by content", () => {
   for (const record of Object.values(profile.reportLineage)) {
     if (record && typeof record === "object" && record.path) {
       assert.deepEqual(record, identity(record.path));
@@ -430,7 +432,7 @@ test("binds closed implementation history and durable report-memory links by con
   }
   for (const record of Object.values(profile.implementations)) {
     if (record.path) {
-      const actual = identity(record.path, historicalImplementationCommit);
+      const actual = identity(record.path);
       assert.equal(record.byteLength, actual.byteLength, record.path);
       assert.equal(record.sha256, actual.sha256, record.path);
     }
@@ -450,6 +452,22 @@ test("binds closed implementation history and durable report-memory links by con
   assert.equal(environmentDocument.wheelhouse.wheelCount, 31);
   assert.equal(environmentDocument.bootstrapEnvironment.distributions.length, 4);
   assert.equal(environmentDocument.runtimeEnvironment.distributions.length, 28);
+});
+
+test("preserves closed implementation history without adopting its execution authority", () => {
+  for (const record of Object.values(historicalProfile.implementations)) {
+    if (!record.path) continue;
+    const actual = identity(record.path, historicalImplementationCommit);
+    assert.equal(record.byteLength, actual.byteLength, record.path);
+    assert.equal(record.sha256, actual.sha256, record.path);
+  }
+  assert.equal(profile.implementations.soleExecutionOwner.status,
+    "requires-fresh-owner-and-registration");
+  assert.equal(profile.implementations.soleExecutionOwner.historicalOperationMayBeReplayed, false);
+  assert.equal(profile.implementations.soleExecutionOwner.path, undefined);
+  assert.equal(profile.claimBoundary.realOperationRegistered, false);
+  assert.equal(profile.claimBoundary.publisherSourceModelLoadPassed, false);
+  assert.equal(profile.claimBoundary.behavioralQualityPassed, false);
 });
 
 test("both private owners expose bounded dependency-free self-tests", () => {
@@ -596,6 +614,32 @@ test("rejects a syntactically valid cross-arm environment drift", () => {
       && error.code === "numerical-verifier-environment-binding");
   } finally {
     value.close();
+  }
+});
+
+test("rejects superseded profile and environment paths without compatibility", () => {
+  for (const kind of ["profile", "environment"]) {
+    const value = fixture(kind === "profile" ? {
+      /** An old profile cannot select a current verification operation. */
+      request(request) {
+        request.differentialProfile.relativePath =
+          "contracts/vnext/qwen3-numerical-differential-profile.v1.json";
+      }
+    } : {
+      /** A trace from the old environment cannot acquire a current binding. */
+      sourceManifest(manifest) {
+        manifest.implementation.environment.lock.relativePath =
+          "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json";
+      }
+    });
+    try {
+      assert.throws(() => verify([value.requestPath]), (error) =>
+        error instanceof NumericalTraceVerificationError && error.code ===
+          (kind === "profile" ? "numerical-verifier-profile-binding"
+            : "numerical-verifier-source-role"));
+    } finally {
+      value.close();
+    }
   }
 });
 

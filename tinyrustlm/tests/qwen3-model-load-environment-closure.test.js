@@ -13,9 +13,9 @@ const verifierSource = fs.readFileSync(path.join(repositoryRoot,
 const authoritySource = fs.readFileSync(path.join(repositoryRoot,
   "tinyrustlm/tools/qwen3_numerical_environment_lock.py"), "utf8");
 const lock = JSON.parse(fs.readFileSync(path.join(repositoryRoot,
-  "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json"), "utf8"));
+  "contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json"), "utf8"));
 const profile = JSON.parse(fs.readFileSync(path.join(repositoryRoot,
-  "contracts/vnext/qwen3-numerical-differential-profile.v1.json"), "utf8"));
+  "contracts/vnext/qwen3-numerical-differential-profile.v2.json"), "utf8"));
 const decisionPath = path.join(repositoryRoot,
   "docs/architecture/2026-08-26-qwen3-model-load-environment-closure-correction.md");
 

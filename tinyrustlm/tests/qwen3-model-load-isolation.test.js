@@ -14,7 +14,7 @@ const decisionSource = fs.readFileSync(path.join(repositoryRoot,
   "docs/architecture/2026-08-26-qwen3-source-model-load-isolation-correction.md"),
 "utf8");
 const profile = JSON.parse(fs.readFileSync(path.join(repositoryRoot,
-  "contracts/vnext/qwen3-numerical-differential-profile.v1.json"), "utf8"));
+  "contracts/vnext/qwen3-numerical-differential-profile.v2.json"), "utf8"));
 
 test("source owner freezes one local IPv6 capability probe and denies alternatives", () => {
   // This stdlib-only policy test does not import the pinned numerical framework.

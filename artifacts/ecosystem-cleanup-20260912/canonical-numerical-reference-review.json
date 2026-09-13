@@ -1,0 +1,279 @@
+{
+  "schema": "tinyrustlm.canonical_numerical_reference_review.v1",
+  "reviewedAtUtc": "2026-09-13T01:59:13.481Z",
+  "sourceParent": "46dcf77da860264c2342a04593f769b5fa3ebd78",
+  "inputs": [
+    {
+      "path": "tinyrustlm/tools/qwen3_numerical_environment_lock.py",
+      "byteLength": 25501,
+      "sha256": "9d5b2fe8a56e36410ba7219d37958f04fbebff68a4a56f1c6b0bc9f9f933a5dc"
+    },
+    {
+      "path": "tinyrustlm/tools/qwen3-numerical-source-owner.py",
+      "byteLength": 51373,
+      "sha256": "d4aadb65bb58756fc73544bb7a3e153b7942dce1566438e72b4469e73bdf1830"
+    },
+    {
+      "path": "tinyrustlm/tools/qwen3-slm2-reconstructed-owner.py",
+      "byteLength": 60272,
+      "sha256": "88ae027247e943232fb19da2ce60f16cfaa845f5efe62fba1d2debdfe38cde79"
+    },
+    {
+      "path": "tinyrustlm/tools/qwen3-numerical-trace-verifier.js",
+      "byteLength": 47068,
+      "sha256": "9460279c7bf5d2b7d3558616723452e43b621dd5059504bffb2ab6cd8bbe1304"
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json",
+      "byteLength": 30918,
+      "sha256": "918a5e96605a3aaaf2aaba977c0634783647016d30484f4345eeb98b5df0a283"
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-differential-profile.v2.json",
+      "byteLength": 17082,
+      "sha256": "b1c9369df2b3b6210bc8e220f99a9f42a4fedd05a13ca4747a45ac8aebfe1fd2"
+    },
+    {
+      "path": "contracts/vnext/qwen3-0.6b-base-source-lock.v2.json",
+      "byteLength": 1901,
+      "sha256": "50a8c29e36398a9a088e4d9a224dad186809d34b1e050299d3ce3de7a01b7d0e"
+    },
+    {
+      "path": "tinyrustlm/tools/remove-reviewed-numerical-installer-output.ps1",
+      "byteLength": 6954,
+      "sha256": "7d3612eb37b48184fc138ad27f6b93790f84e10a084d639fc470ea278e1e336d"
+    },
+    {
+      "path": "tinyrustlm/tests/remove-reviewed-numerical-installer-output_test.ps1",
+      "byteLength": 2360,
+      "sha256": "0dd983b7feb5b68651f6ab2b619acd7ab1e722dfda2992a32699b1a7284d353c"
+    },
+    {
+      "path": "tinyrustlm/tests/qwen3-model-load-environment-closure.test.js",
+      "byteLength": 4997,
+      "sha256": "814c2b452a46925f12edc0df881ba8677346446cbb0dd0b78abfdac1e4a26c61"
+    },
+    {
+      "path": "tinyrustlm/tests/qwen3-model-load-isolation.test.js",
+      "byteLength": 3232,
+      "sha256": "1a31d8dc68427d2634ef4df2697cefe104f31b820b9fb1a69852e803f00a249e"
+    },
+    {
+      "path": "tinyrustlm/tests/qwen3-numerical-differential-profile.test.js",
+      "byteLength": 23951,
+      "sha256": "38ff9e2fdbfb6c928f91a450daf9b50fcebec592eda954e34e53a45c6622ee64"
+    }
+  ],
+  "historical": [
+    {
+      "path": "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json",
+      "byteLength": 30920,
+      "sha256": "4102fddd538a5a14d52c543a28a856dc61e95e978d2085b58f449f3be5250ae2",
+      "unchangedFromParent": true
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-differential-profile.v1.json",
+      "byteLength": 17155,
+      "sha256": "c04abffe412f5032b3c66d6ce00ece4d27a5d89f3ae6678e742cc56ce64f86fc",
+      "unchangedFromParent": true
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v2.json",
+      "byteLength": 24806,
+      "sha256": "27b0f98a4b00b0561b4e50d7bf6d31d257a91f02c3f33f6c5a8197c652529c77",
+      "unchangedFromParent": true
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-source-terminal-verification-result.v2.json",
+      "byteLength": 7739,
+      "sha256": "0261525e59aefe4c19e4a3d5ec2afc5e59b26c0ef718c9ddaf2761757c8cc4fe",
+      "unchangedFromParent": true
+    }
+  ],
+  "installerReports": [
+    {
+      "fileName": "wheel-metadata.json",
+      "byteLength": 15442,
+      "sha256": "8cb3ef5adab7e2bd9acd5f603f6f203112a0b93531a817ce6633ad1e3088b8bb"
+    },
+    {
+      "fileName": "bootstrap-install.json",
+      "byteLength": 30597,
+      "sha256": "8eb3c39741095772138bd5d7d26448fc862ef21264093a6f17f8440c03ead420"
+    },
+    {
+      "fileName": "bootstrap-venv-install.json",
+      "byteLength": 30599,
+      "sha256": "fe36433643eb61445b815add0ea7728c8150f33f59657299ea0cbb58eaac7d96"
+    },
+    {
+      "fileName": "runtime-install.json",
+      "byteLength": 473751,
+      "sha256": "c1e9c7d8ec7ff9ed13d895c26d48ece44ab57e6c372f6c16ee80b5d28d3b03a1"
+    }
+  ],
+  "virtualenvCapabilityProbe": {
+    "fileName": "virtualenv/info.py",
+    "byteLength": 2076,
+    "sha256": "8e44740948bd30f92b177f5d3a6f6ad05a689ab1b53f4cfe7dd1dedf7d6a5a0e",
+    "observation": "Pinned virtualenv 20.31.2 fs_supports_symlink creates a Windows temporary link but does not remove the destination entry after the NamedTemporaryFile target closes."
+  },
+  "scope": "Canonical numerical reference components and exact installed environment. Fresh execution orchestration, real-model numerical parity, model quality and public seeding remain unproved.",
+  "runtimeRoot": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\external\\qwen3-numerical-oracle\\environment",
+  "runtime": {
+    "status": "pass",
+    "closure": {
+      "fileCount": 17677,
+      "byteLength": 1380702491,
+      "closureSha256": "54c357dca7bc249df177058f39566855b9680c113190b9c5e642015bb63a3e22",
+      "exclusions": [
+        "__pycache__-directories",
+        "pyc-files"
+      ]
+    },
+    "distributions": 28,
+    "pythonVersion": "3.12.10",
+    "launcher": {
+      "relativePath": "Scripts/python.exe",
+      "byteLength": 104952,
+      "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a"
+    },
+    "baseInterpreter": {
+      "basename": "python.exe",
+      "byteLength": 104952,
+      "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a"
+    }
+  },
+  "bootstrap": {
+    "status": "pass",
+    "closure": {
+      "fileCount": 221,
+      "byteLength": 29589904,
+      "closureSha256": "44c06b98e4505f4a699fa33620e0cc888b48551240823c69cec561797881f306",
+      "exclusions": [
+        "__pycache__-directories",
+        "pyc-files"
+      ]
+    },
+    "distributions": 4
+  },
+  "acquisition": {
+    "metadataOrigin": "https://pypi.org/pypi/{locked-name}/{locked-version}/json",
+    "downloadOrigin": "https://files.pythonhosted.org/",
+    "wheelCount": 31,
+    "byteLength": 258926452,
+    "allMetadataAndDownloadedIdentitiesMatchHistoricalWheelLock": true,
+    "yankedWheels": 0,
+    "wheelClosureSha256": "b13ee2929e033b4126584fdaf788efd892ab5e48812748793708fa9914f88b2b"
+  },
+  "installation": {
+    "installerPython": "3.14.4",
+    "installerPip": "26.0.1",
+    "referencePython": "3.12.10",
+    "virtualenv": "20.31.2",
+    "runtimePip": "25.0.1",
+    "networkDependencyResolution": false,
+    "bytecodeCompilation": false,
+    "pipCache": false,
+    "dependencyCheck": "No broken requirements found.",
+    "modelWeightsDownloaded": false
+  },
+  "currentSourceOwnerAdmission": {
+    "status": "pass",
+    "claim": "current-source-owner-environment-admission-only",
+    "environment": {
+      "authority": {
+        "relativePath": "tinyrustlm/tools/qwen3_numerical_environment_lock.py",
+        "byteLength": 25501,
+        "sha256": "9d5b2fe8a56e36410ba7219d37958f04fbebff68a4a56f1c6b0bc9f9f933a5dc"
+      },
+      "lock": {
+        "relativePath": "contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json",
+        "byteLength": 30918,
+        "sha256": "918a5e96605a3aaaf2aaba977c0634783647016d30484f4345eeb98b5df0a283",
+        "profileId": "tinyrustlm.qwen3-numerical-oracle-python-win-x64/2",
+        "runtimeClosureSha256": "54c357dca7bc249df177058f39566855b9680c113190b9c5e642015bb63a3e22"
+      }
+    }
+  },
+  "verification": {
+    "node": {
+      "exitCode": 0,
+      "tests": 25,
+      "passed": 25,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "durationMilliseconds": 11709.6325
+    },
+    "python": {
+      "tests": 8,
+      "passed": 8,
+      "failed": 0
+    },
+    "ruff": {
+      "passed": true
+    },
+    "cleanup": {
+      "tests": 5,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "commandsExecuted": 86,
+      "commandsAnalyzed": 132,
+      "coveragePercent": 65.15,
+      "limit": "Below 75 percent target; destructive cleanup and receipt-writing were not executed."
+    },
+    "sourceAuthority": {
+      "verdict": "scan-incomplete",
+      "code": "source_authority_scan_incomplete",
+      "unreadable": [
+        "install-temp/TmP6xn2evdh-b",
+        "install-temp/TmPeq63_hr7-b"
+      ],
+      "unchangedGate": true,
+      "wholeVolumeInventoryPerformed": false
+    }
+  },
+  "failuresAndCorrections": [
+    "pip --target bootstrap installed virtualenv's launcher under a directory different from its ../../bin/virtualenv.exe RECORD entry. Exact bootstrap validation rejected the missing recorded file; neither RECORD nor the verifier was relaxed.",
+    "The base Python distribution has no venv module. A new normal bootstrap environment was created by the pinned virtualenv module and installed through pip --python. The failed target bootstrap remains pending removal.",
+    "Both virtualenv creations left a dangling capability-probe symlink inside the explicitly contained TEMP directory. The unchanged source authority scan refuses those unreadable entries.",
+    "Automatic approval review rejected removal of the failed bootstrap and later removal of the two exact links, each with reason blocked by policy. Neither rejected action was rerouted through another API or a parent deletion.",
+    "The first cleanup preview used a provider-only PSIsContainer property on raw DirectoryInfo ancestors. The corrected implementation uses the DirectoryInfo type.",
+    "Pester 3 mocks initially leaked the changed-marker condition into later tests. Separate Context scopes fixed the test isolation; the complete five-test suite then passed."
+  ],
+  "pendingCleanup": {
+    "schema": "tinyrustlm.reviewed_numerical_installer_cleanup.v1",
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\qwen3-environment-install\\tinyrustlm-operation-C3ZUt9",
+    "regularFiles": 431,
+    "directories": 93,
+    "links": [
+      {
+        "relativePath": "install-temp/TmP6xn2evdh-b",
+        "target": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\qwen3-environment-install\\tinyrustlm-operation-C3ZUt9\\install-temp\\TmP6xn2evdh"
+      },
+      {
+        "relativePath": "install-temp/TmPeq63_hr7-b",
+        "target": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\qwen3-environment-install\\tinyrustlm-operation-C3ZUt9\\install-temp\\TmPeq63_hr7"
+      }
+    ],
+    "logicalByteLength": 296933889,
+    "inventorySha256": "df225a1d0b64260e6d7cb5cbbd9068c46a8f674bbe8b4de6244738d53be97be0",
+    "inventoryEncoding": "UTF-8; ordinal-sorted D/F/L tab-separated rows; LF terminator; paths relative with forward slashes; regular file length and SHA-256; normalized literal link target",
+    "markerSha256": "d00e2e7b22c64692521b97496a4c5b49bf35a2b3e63e062747aa22a8ed159472",
+    "automaticDeletionExecuted": false,
+    "ownerScript": "tinyrustlm/tools/remove-reviewed-numerical-installer-output.ps1",
+    "previewVerified": true,
+    "receiptCreated": false,
+    "runtimeRootExcluded": true
+  },
+  "limits": [
+    "One current canonical reference environment is retained; the installer temporary root remains due to rejected cleanup.",
+    "Current source and reconstructed producers and the independent verifier bind only the current environment/profile paths. Source validation uses the corrected licensed source lock.",
+    "The new differential profile explicitly requires fresh execution-owner and registration bindings. Historical v2 orchestration is not current execution authority.",
+    "No real model was loaded or traced, and no new model behavior, browser conversation, real P2P delivery, catalog renewal or public deployment was established.",
+    "The original base Qwen checkpoint and old pilot adapter remain rejected for product quality.",
+    "No historical/model deletion or measured storage recovery is claimed."
+  ]
+}

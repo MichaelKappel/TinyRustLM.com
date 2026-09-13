@@ -310,7 +310,7 @@ function validateEnvironmentBinding(value, code) {
     && Number.isSafeInteger(value.authority.byteLength) && value.authority.byteLength > 0
     && validDigest(value.authority.sha256)
     && value.lock.relativePath
-      === "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json"
+      === "contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json"
     && Number.isSafeInteger(value.lock.byteLength) && value.lock.byteLength > 0
     && validDigest(value.lock.sha256)
     && value.lock.profileId === "tinyrustlm.qwen3-numerical-oracle-python-win-x64/2"
@@ -502,7 +502,7 @@ function validateRequest(requestPath) {
   exactKeys(value.differentialProfile, ["relativePath", "byteLength", "sha256"],
     "numerical-verifier-profile-binding");
   invariant(value.differentialProfile.relativePath
-    === "contracts/vnext/qwen3-numerical-differential-profile.v1.json"
+    === "contracts/vnext/qwen3-numerical-differential-profile.v2.json"
     && Number.isSafeInteger(value.differentialProfile.byteLength)
     && value.differentialProfile.byteLength > 0
     && value.differentialProfile.byteLength <= MAXIMUM_PROFILE_BYTES

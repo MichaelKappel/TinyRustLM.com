@@ -25,7 +25,7 @@ RESULT_SCHEMA = "tinyrustlm.numerical_trace_bundle.v1"
 IMPLEMENTATION_ID = "tinyrustlm.qwen3-publisher-source-trace/2"
 TRACE_PROFILE_ID = "tinyrustlm.scalar-full-stage-f32le/1"
 SOURCE_LOCK_SCHEMA = "tinyrustlm.qwen3_source_lock.v1"
-SOURCE_LOCK_PATH = "contracts/vnext/qwen3-0.6b-base-source-lock.v1.json"
+SOURCE_LOCK_PATH = "contracts/vnext/qwen3-0.6b-base-source-lock.v2.json"
 MODEL_ID = "Qwen/Qwen3-0.6B"
 REVISION = "c1899de289a04d12100db370d81485cdf75e47ca"
 MAXIMUM_REQUEST_BYTES = 1024 * 1024
@@ -37,7 +37,7 @@ DIAGNOSTIC_MAXIMUM_SOURCE_FILE_BYTES = 1_600_000_000
 IDENTIFIER = re.compile(r"^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$")
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 ENVIRONMENT_LOCK_RELATIVE_PATH = (
-    "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json"
+    "contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json"
 )
 ENVIRONMENT_AUTHORITY_RELATIVE_PATH = (
     "tinyrustlm/tools/qwen3_numerical_environment_lock.py"

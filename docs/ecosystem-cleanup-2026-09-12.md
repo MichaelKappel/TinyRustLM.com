@@ -551,6 +551,30 @@ lessons, evidence references and remaining review scope live in the canonical
   seed hosting and broader blocked cleanup remain unresolved. No historical
   deletion or measured storage recovery was produced.
 
+### Canonical numerical reference environment
+
+- Rebuilt one pinned reference environment under this repository's artifacts
+  from 31 independently verified wheels. Exact validation passes for all 28
+  runtime distributions and 17,677 files. The new environment lock and
+  differential profile use current paths and the corrected source-license lock;
+  the source-owner wrapper admits the actual new runtime.
+- All 25 focused Node and eight Python checks pass, including the previously
+  unavailable pinned framework test. Five cleanup Pester tests pass; their
+  command coverage is 86/132 because no destructive branch was executed.
+  Existing numerical execution v2 remains closed and requires a fresh owner and
+  registration. No real checkpoint was loaded or qualified.
+- Lesson C28 and canonical-numerical-reference-review.json retain the bad
+  pip-target launcher RECORD, absent stdlib venv module, virtualenv's leaked
+  temporary link probes, PowerShell ancestor-property correction and Pester
+  mock-isolation correction. Neither old contracts nor package validation were
+  relaxed or rewritten to obtain passing results.
+- Automatic review rejected cleanup of the failed bootstrap and two exact
+  dangling links. Consequently the unchanged source-authority gate reports
+  scan-incomplete. The owner-run remove-reviewed-numerical-installer-output.ps1
+  has a verified WhatIf preview for 431 files, 93 directories, two links and
+  296,933,889 logical bytes. All of that temporary output remains; the retained
+  canonical runtime is excluded from removal. No storage recovery is claimed.
+
 ### MiniModel catalog failure state and owned browser verification
 
 - Source d30114c clears failed/loading catalog actions, counts and obsolete

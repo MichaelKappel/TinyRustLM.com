@@ -1,5 +1,5 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-13T01:13:38Z
+updated_utc: 2026-09-13T01:59:13Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
 
@@ -63,6 +63,18 @@ numerical_environment_diagnostic_cleanup:
   observation: The current D model-root training environment fails the existing runtime-lock configuration check and has different major package versions. This does not establish the exact cause of the historical generic numerical v2 failure. No weights or model framework were loaded.
   verification: Eight Python tests pass; stdlib trace covers 43/43 executable lines in verify_environment, with no branch or whole-owner metric. Focused Node suite passes 22 with one unavailable pinned-framework test skipped. Ruff and unchanged registered-root source-authority gate pass. Owned fixture output is absent.
   remaining: Historical contracts stay unchanged and closed. The current numerical owners still bind the historical source-lock/operation; a current licensed source, exact canonical reference environment and fresh reviewed bindings are required. Product-quality rejection is unchanged. No real numerical parity, default model, live seed, publication, historical/model deletion or measured storage recovery.
+
+canonical_numerical_reference:
+  evidence: artifacts/ecosystem-cleanup-20260912/canonical-numerical-reference-review.json
+  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md C28
+  runtime: artifacts/external/qwen3-numerical-oracle/environment/Scripts/python.exe
+  environment_lock: contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json
+  differential_profile: contracts/vnext/qwen3-numerical-differential-profile.v2.json
+  change: Rebuilt one exact canonical runtime from 31 verified wheel identities. Current source/reconstructed producers and verifier bind the new environment/profile; source validation uses the corrected licensed source lock. The new profile explicitly requires fresh execution orchestration and does not adopt closed v2 authority.
+  verification: Actual source-owner environment admission passes; 28 distributions and 17677 files validate. All 25 focused Node, eight Python and five cleanup Pester checks pass with zero skips. Ruff passes. Cleanup command coverage is 86/132, below target because destructive removal and receipt writing were not executed.
+  pending_cleanup: Automatic review rejected the failed bootstrap removal and the two exact virtualenv capability-probe link removals. The unchanged source-authority scan is incomplete on those links. The installer root contains 431 regular files, 93 directories, two links and 296933889 logical bytes; no parent deletion or alternate API was used to retry a rejection.
+  owner_cleanup: tinyrustlm/tools/remove-reviewed-numerical-installer-output.ps1; actual WhatIf preflight verifies the complete exact inventory. Run only by the owner after reviewing the pending cleanup; the retained canonical runtime is excluded.
+  remaining: Remove the blocked temporary output and rerun the unchanged source gate; finish fresh numerical owner/registration bindings and real model qualification. No real checkpoint load, numerical parity, working default, live seed, deployment or measured storage recovery is claimed.
 
 portal_retirement_tool_cleanup:
   checkpoint: TinyRustLM.MiRust.com d17f77a

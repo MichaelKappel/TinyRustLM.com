@@ -13,6 +13,22 @@ name a second product generation. The current implementation does not map,
 alias, upgrade, or fall back to a superseded TinyRustLM schema. Prior records
 remain non-executable audit evidence.
 
+## Current Numerical Reference Components
+
+`qwen3-numerical-oracle-environment-lock.v2.json` records the rebuilt canonical
+reference environment. `qwen3-numerical-differential-profile.v2.json` binds the
+current source/reconstructed producers, independent verifier and corrected
+`qwen3-0.6b-base-source-lock.v2.json` license identity. The package versions and
+numerical algorithm contracts are unchanged; these are current byte bindings,
+not another product generation or a compatibility fallback.
+
+The profile explicitly requires a fresh execution owner and registration.
+Numerical execution v2 and the old environment/profile remain closed historical
+evidence. Current real model-load, numerical parity, quality, P2P and release
+claims remain false. Synthetic framework tests and environment admission pass;
+the current source-location scan is blocked by policy-rejected installer cleanup.
+See ecosystem experiment lesson C28 for exact evidence and limitations.
+
 ## SLM2 Model Format Checkpoint
 
 The model-byte format is a separate exact binary contract referenced by the

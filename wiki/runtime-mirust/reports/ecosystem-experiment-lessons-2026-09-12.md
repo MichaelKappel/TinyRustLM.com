@@ -661,6 +661,96 @@ pilot adapter remain rejected for product quality. No new model, numerical
 parity, model conversation, catalog renewal, publication, live server seed,
 historical/model deletion or measured storage recovery is claimed.
 
+<a id="c28"></a>
+
+## C28. Rebuild one canonical reference environment and retain installer failures
+
+The missing numerical reference environment was rebuilt at
+`artifacts/external/qwen3-numerical-oracle/environment` inside the canonical
+TinyRustLM repository. All 31 wheel filenames, lengths and SHA-256 digests
+matched both PyPI metadata and downloaded bytes; none was yanked at review.
+The 258,926,452-byte wheel closure is unchanged from the historical lock.
+Installation used exact local wheels, disabled dependency resolution, pip cache
+and bytecode compilation, and confined temporary output before the first child
+started. No source checkout or model payload was copied.
+
+The new runtime passes `pip check` and the exact installed-file/RECORD validator:
+28 distributions, Python 3.12.10, 17,677 non-cache files and 1,380,702,491 logical
+bytes. Its closure SHA-256 is
+`54c357dca7bc249df177058f39566855b9680c113190b9c5e642015bb63a3e22`.
+The canonical environment lock is
+`contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json`,
+30,918 bytes, SHA-256
+`918a5e96605a3aaaf2aaba977c0634783647016d30484f4345eeb98b5df0a283`.
+It records this installation's actual identities, not an assertion that its
+files equal the removed environment. The old lock and failed operation remain
+unchanged.
+
+The source and reconstructed producers and independent verifier now bind the
+new environment/profile paths. Source validation uses the corrected licensed
+source lock v2. The current source-owner wrapper successfully revalidated the
+installed runtime against the new lock. The new differential profile explicitly
+requires a fresh execution owner and registration; its nested reference to the
+closed v2 owner is historical only. Current real model-load and numerical proof
+claims remain false. No compatibility branch admits the superseded paths.
+
+The formerly skipped synthetic framework test now runs: Qwen3 capture hooks and
+reconstructed NumPy kernels pass in the pinned runtime. The complete focused
+suite passes 25 Node tests with zero skips, including current bindings and
+rejection of old profile/environment paths; eight Python error-boundary tests
+also pass. Ruff passes. These results do not qualify the base Qwen checkpoint,
+whose product rejection remains unchanged.
+
+Three installation findings matter for future work:
+
+- A pip `--target` bootstrap put the virtualenv launcher somewhere different
+  from its recorded `../../bin/virtualenv.exe` path. The strict validator
+  correctly rejected it. A normal temporary bootstrap environment installed
+  through pip's `--python` interface passes with four distributions and 221
+  files. No package RECORD or verification rule was edited to obtain a pass.
+  The base interpreter has no stdlib `venv` module; the pinned virtualenv module
+  created the normal bootstrap instead. The [pip interpreter documentation](https://pip.pypa.io/en/stable/topics/python-option/)
+  describes managing an environment without installing pip into it first.
+- Pinned virtualenv 20.31.2 `info.py::fs_supports_symlink` creates a Windows
+  capability-probe link but does not remove the destination after its temporary
+  target closes. Two dangling links remained under the explicitly contained
+  installer TEMP directory. `--copies` did not avoid those probes. Confining
+  temporary output before interpreter/environment creation is necessary even
+  when the resulting environment itself contains ordinary files only.
+- PowerShell provider properties are not present on every raw .NET parent
+  DirectoryInfo object. The cleanup preview now checks the actual type.
+  Pester 3 negative mocks also needed separate Context scopes so a substituted
+  marker did not contaminate subsequent link/path rejection tests.
+
+Automatic approval review rejected deletion of the failed bootstrap and then
+deletion of the two exact links, each stating `blocked by policy`. The unchanged
+source-authority gate reports `source_authority_scan_incomplete` on those links.
+Neither operation was retried through another API, renamed, truncated, or
+repackaged as a parent deletion. The installer root remains pending cleanup:
+431 regular files, 93 directories, two links and 296,933,889 logical bytes.
+The retained reference runtime is outside that cleanup root.
+
+The owner-run command is
+`& 'E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\remove-reviewed-numerical-installer-output.ps1'`.
+Its actual `-WhatIf` preview verifies a complete independently matching inventory
+SHA-256 before any deletion. Five Pester tests pass. Command coverage is 86/132
+(65.15 percent), below the 75 percent target because destructive cleanup and
+receipt writing were not executed. The script removes only the two exact link
+entries first, rechecks the ordinary inventory, and then removes the reviewed
+temporary tree. No automatic invocation without `-WhatIf` was performed.
+
+The compact review is
+`artifacts/ecosystem-cleanup-20260912/canonical-numerical-reference-review.json`,
+11,935 bytes, SHA-256
+`a2c8470542c215fd9b4387d7d188a8d7302dde6e935688f8a7ea12d3ac0141a3`.
+It retains input and installer-report identities, runtime admission, test
+results, failure causes, cleanup fingerprint and limits without another archive
+of executable vendor code. Source-location verification remains incomplete
+until the blocked links are removed. Fresh orchestration, real numerical/model
+quality evidence, a working default and live MiniModel seeding remain open.
+No real checkpoint was loaded, model/publication was produced, historical/model
+deletion completed, or measured storage recovery claimed in this checkpoint.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

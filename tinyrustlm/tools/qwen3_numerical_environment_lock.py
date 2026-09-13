@@ -24,7 +24,7 @@ import zipfile
 SCHEMA = "tinyrustlm.qwen3_numerical_environment_lock.v1"
 PROFILE_ID = "tinyrustlm.qwen3-numerical-oracle-python-win-x64/2"
 OUTPUT_RELATIVE_PATH = Path(
-    "contracts/vnext/qwen3-numerical-oracle-environment-lock.v1.json"
+    "contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json"
 )
 MAXIMUM_JSON_BYTES = 4 * 1024 * 1024
 MAXIMUM_FILE_BYTES = 1024 * 1024 * 1024
