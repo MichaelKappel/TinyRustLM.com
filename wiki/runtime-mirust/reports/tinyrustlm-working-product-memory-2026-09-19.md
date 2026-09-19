@@ -62,6 +62,17 @@ the shared helper; two fresh builds still match the tracked runtime. See
 initial failures, corrected results and scope. No real model or public result is
 established; the source scan and delivery gates remain open.
 
+**C44 release-smoke alignment:** report v7 requires the verified empty chooser,
+zero startup runtime requests, deferred WASM and disabled generation. A separate
+production-loader probe binds both runtime artifacts to publication inputs.
+Visible status no longer claims WASM readiness before preparation. The final
+25 checks and twelve Edge observations pass, but earlier runs showed intermittent
+runtime `net::ERR_ABORTED` events despite exact byte verification. No attempted
+lifetime workaround established a reliable correction; speculative variants were
+removed and all error gates remain. Treat smoke stability as unresolved, not
+qualified by a green rerun. See
+`artifacts/ecosystem-cleanup-20260912/deferred-runtime-smoke-review.json`.
+
 Compare three routes by evidence:
 - Qualify an already useful compact checkpoint and adapt the sole runtime where justified.
 - Run a bounded new-derivative training experiment after inference, data and independent review readiness.

@@ -5,6 +5,41 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C44: reconcile the release smoke with deferred startup, September 19
+
+The release smoke still required eager WASM verification after C43 deliberately
+removed that startup dependency. It now requires a verified empty catalog, zero
+startup runtime requests, deferred runtime state and a present disabled send
+button. It separately invokes the production runtime loader and binds the actual
+downloaded module and canonical manifest to independently hashed publication
+inputs. The sole report schema is v7; no v6 compatibility reader was added.
+The visible status now says `Runs locally` instead of claiming `WASM ready`
+before preparation. Both existing shells remain in parity; styling is unchanged.
+
+The final affected suite passed all 25 checks with no skips, including twelve
+installed-Edge observations across four routes and three viewport sizes. Browser
+smoke Node line/branch coverage was 79.67/81.05 percent. Browser-evaluated callbacks
+are exercised by Edge but are not included as covered Node functions.
+
+**Release smoke stability remains unresolved.** The first run failed on an
+intermittent `net::ERR_ABORTED` event despite exact runtime bytes passing loader
+verification. Separate diagnostic runs both passed and failed. Retaining handles,
+responses, signals or controllers, omitting reader-lock release, and disabling
+HTTP keep-alive did not establish a reliable correction. A temporary no-signal
+diagnostic passed three times but was not adopted. The standalone smoke also
+failed during a discarded handle-retention variant. Those failures are retained;
+the final green run does not establish that the instability is fixed. All failed
+request, identity, privacy and layout gates remain in force. Speculative loader
+or browser-lifetime changes were removed.
+
+Evidence: `artifacts/ecosystem-cleanup-20260912/deferred-runtime-smoke-review.json`.
+Owned diagnostic output was removed and the scratch parents verified empty.
+Only logical file sizes were counted; physical recovery and output already
+removed by per-test cleanup were not measured. Seven canonical repositories were
+inventoried; this checkpoint changes TinyRustLM only. The source scan still stops
+at the same two policy-blocked installer links. No real model, seed, deployment
+or new material execution is claimed. Ternary/Bonsai research remains deferred.
+
 ## C43: defer and bound browser runtime preparation, September 19
 
 The empty-model page no longer waits for the runtime manifest or WASM before

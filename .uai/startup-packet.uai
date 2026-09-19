@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-19T23:07:11Z
+updated_utc: 2026-09-19T23:38:19Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  release_smoke: C44 aligns v7 with deferred startup and separately checks served runtime identities; visible status no longer claims premature WASM readiness. Final 25 checks pass, but intermittent Edge runtime ERR_ABORTED observations remain unresolved. Do not call a green rerun a repair; see deferred-runtime-smoke-review.json.
   runtime_lifetime: C43 defers runtime download until a model operation, adds one 60-second deadline and cancellation through the shared admission/runtime helper, and reserves activation ownership before waiting. 262 focused, 26 artifact/publication and 14 Edge chooser checks pass. See browser-runtime-lifetime-review.json; model/public gates remain open.
   runtime_bytes: C42 bounds decoded runtime downloads before allocation/copy and moves build checks into owned canonical artifacts. All 48 checks pass; two offline builds exactly reproduce the tracked WASM after binding virtual profile mapping. See browser-runtime-streaming-review.json. No promotion, real model or public result.
   admission_lifetime: C41 gives browser qualification/admission checks one 30-second deadline plus explicit cancellation. 218 JavaScript and eight installed-Edge fixture checks pass; see admission-lifetime-review.json. Real-model/public gates remain open.

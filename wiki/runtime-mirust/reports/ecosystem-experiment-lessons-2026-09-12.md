@@ -1442,6 +1442,35 @@ and the incomplete source scan are unchanged.
   ownership before the first new await, and test the actual served dependency
   graph; CommonJS unit success cannot prove browser script availability.
 
+## C44: startup checks must follow the product's actual readiness contract
+
+- **Question:** can the release smoke check deferred startup without discarding
+  verification of the runtime files that will later be downloaded?
+- **Exact inputs:** source, tests and unchanged runtime artifact identities are
+  bound in `artifacts/ecosystem-cleanup-20260912/deferred-runtime-smoke-review.json`.
+- **Method:** assert the fresh empty chooser before an independent invocation of
+  the production loader; compare both artifacts with publication-input hashes;
+  retain strict network, layout and error checks in all twelve Edge observations.
+- **Result:** the final 25 checks pass, with 79.67 percent Node line coverage for
+  the browser-smoke tool. Initial and diagnostic runs nevertheless intermittently
+  failed on runtime `net::ERR_ABORTED` events after exact bytes verified. Twelve
+  isolated minimal-page downloads passed. Stream-lock and response/signal/controller
+  retention diagnostics did not establish a reliable fix. A no-signal diagnostic
+  passed three times but was not retained; weakening cancellation or filtering
+  errors would not establish a cause. A later handle-retention suite passed while
+  its standalone command failed. That speculative implementation was removed.
+- **Uncertainty:** the cause of the intermittent network event remains unproven.
+  The [Fetch garbage-collection contract](https://fetch.spec.whatwg.org/#garbage-collection)
+  was consulted during debugging; it does not diagnose this local observation.
+  Final green checks do not prove stable release validation or useful inference.
+- **Decision:** keep the corrected readiness assertions, separate hash-bound
+  artifact probe and honest visible status. Preserve all failed requests as
+  blocking evidence. Continue the browser/network investigation in a new bounded
+  development check; no model experiment is reopened.
+- **Reusable lesson:** distinguish UI readiness, verified artifact bytes and
+  browser network completion. Do not pick a successful rerun as proof that an
+  intermittent failure has been repaired.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

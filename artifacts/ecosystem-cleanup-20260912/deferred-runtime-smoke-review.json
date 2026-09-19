@@ -1,0 +1,338 @@
+{
+  "schema": "tinyrustlm.deferred-runtime-smoke-review.v1",
+  "observedAtUtc": "2026-09-19T23:38:19Z",
+  "sourceParent": "6ce12cb358ca7c20d2188466e06cdc9115f1faae",
+  "status": "final-local-suite-passed-intermittent-edge-network-failure-unresolved-no-deployment",
+  "inputs": [
+    {
+      "path": "tinyrustlm/tools/web-release-browser-smoke.js",
+      "bytes": 39238,
+      "sha256": "1696ab64167b11d3e105de8a842105dc6425452e9716b96b9b8ad25e0cb9d94f"
+    },
+    {
+      "path": "tinyrustlm/tests/web-release-browser-smoke.test.js",
+      "bytes": 8182,
+      "sha256": "0c3c833d5aa4e8f1731c65bcb586ef5e6f9dfa09ba1e774da0c53e9edb570d3b"
+    },
+    {
+      "path": "tinyrustlm/tests/web-release-local-smoke.test.js",
+      "bytes": 6507,
+      "sha256": "7aa847a04fbb7b5475d76f4fb6b9627d0984873ad4400ee2ee5cef3917954954"
+    },
+    {
+      "path": "tinyrustlm/tests/run-web-release-local-smoke.test.js",
+      "bytes": 9020,
+      "sha256": "c4810045d5a61bea69a7bb2597b10767e35311c97ef4cfbafa45a00032f98d4a"
+    },
+    {
+      "path": "tinyrustlm/tests/static-shell-parity.test.js",
+      "bytes": 5127,
+      "sha256": "c20d60933c2f75bc60a243b2603545c26823a4aafdef4304c87e8e2bc634c89d"
+    },
+    {
+      "path": "tinyrustlm/tools/web-release-local-smoke.js",
+      "bytes": 2777,
+      "sha256": "5957d07bf69554f02adedc70749f9a8ed7226460888cd29f619eb6e8163e368a"
+    },
+    {
+      "path": "tinyrustlm/tools/run-web-release-local-smoke.js",
+      "bytes": 5952,
+      "sha256": "a13933da13f91d5dcea6f0c963f29df97fc42110d2b5886e5b6ade99da1b08b3"
+    },
+    {
+      "path": "tinyrustlm/tools/static-server.js",
+      "bytes": 13282,
+      "sha256": "f7a95852b57568b31b9a5602e63bf57396008cb74b44866d4c47318ba1191465"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48604,
+      "sha256": "956b669f1dd91b758b64fce1b6e8a334438ac41758b24c57004124eb2aeae61a"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48684,
+      "sha256": "bd8e7f7eea5df062c1f4f59489694c038e6e38bfef49531769f29ac2784f4abe"
+    },
+    {
+      "path": "tinyrustlm/app/browser-runtime-loader.js",
+      "bytes": 13096,
+      "sha256": "1836fb805c7be0a43508a54359fe3f128f9b4c1cbf888d2392908f8b4c6717b8"
+    },
+    {
+      "path": "tinyrustlm/app/operation-lifetime.js",
+      "bytes": 2292,
+      "sha256": "4a9d907a3c62b679f896d859e843124bf4252e6d2be0f8aacc7e754113a9f570"
+    },
+    {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm",
+      "bytes": 576379,
+      "sha256": "05e9a497f4aab23a1bc0bc4aed3027a2e4914f5aa70c0e79ecbeb50b5fbe8467"
+    },
+    {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
+      "bytes": 1209,
+      "sha256": "e6109eddda947f53cb00cf07f08e7779b49216c44f6ed54383fc16bb26452eb7"
+    },
+    {
+      "path": "tinyrustlm/deploy/web-deployment-manifest.v2.json",
+      "bytes": 4802,
+      "sha256": "3c97a713670f119a978a1aea1611169dfb7d9cf1974ad8ae7c4a201454a04df8"
+    },
+    {
+      "path": "docs/architecture/2026-09-12-local-release-smoke-cleanup.md",
+      "bytes": 4858,
+      "sha256": "895d0bd1b82aeb2c66d8a01dc4849c1e3f51c9f679071b99bbf8ac3f9b8d618e"
+    }
+  ],
+  "changes": [
+    "Sole browser-smoke v7 report observes empty catalog, no startup runtime requests, deferred runtime state and a present disabled send button.",
+    "Separate production-loader probe verifies current real runtime bytes and canonical manifest against independently hashed publication inputs, then wipes its returned WASM buffer.",
+    "Visible WASM ready claim replaced with Runs locally; existing shell structure and CSS preserved.",
+    "All request-failure, layout, privacy, model-absence and release-identity gates remain mandatory.",
+    "Speculative JSHandle/request/response/controller/signal retention, reader-release and header variants were not retained. Production loader and lifetime helper are byte-identical to parent."
+  ],
+  "checks": [
+    {
+      "name": "final-focused-suite",
+      "passed": 25,
+      "failed": 0,
+      "skipped": 0,
+      "durationMilliseconds": 8994.4624,
+      "browserObservations": 12,
+      "command": "node --experimental-test-coverage --test-coverage-include=tinyrustlm/tools/web-release-browser-smoke.js --test tinyrustlm/tests/web-release-browser-smoke.test.js tinyrustlm/tests/web-release-local-smoke.test.js tinyrustlm/tests/run-web-release-local-smoke.test.js tinyrustlm/tests/static-shell-parity.test.js",
+      "environment": "Node 24.14.0; Playwright 1.61.1; installed Microsoft Edge 153.0.4234.48; owned canonical TEMP/TMP/TMPDIR/NODE_V8_COVERAGE"
+    },
+    {
+      "name": "memory-guidance",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "UaixMemoryConsolidationTests"
+    }
+  ],
+  "coverage": {
+    "browserSmoke": {
+      "line": 79.67,
+      "branch": 81.05,
+      "function": 67.44
+    },
+    "scope": "Node V8 coverage; browser-evaluated callbacks execute in Edge but are not marked covered by Node. No whole-app coverage claimed."
+  },
+  "failureEvidence": {
+    "initialFocused": {
+      "passed": 24,
+      "failed": 1,
+      "route": "root",
+      "viewport": "narrow-desktop",
+      "detail": "request_failed",
+      "failedRequestPath": "/browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
+      "failure": "net::ERR_ABORTED",
+      "failureSha256": "7ba7a1709a2d7d220e120c927e0a7e90adf45c88b09ba912b237d705090d1d4e",
+      "failureByteCount": 16,
+      "verifiedRuntimeBytes": 576379,
+      "startupRuntimeRequests": 0
+    },
+    "isolatedMinimalPage": {
+      "contexts": 4,
+      "downloads": 12,
+      "passed": 12,
+      "failed": 0,
+      "scope": "Actual canonical loader/module, loopback source server, minimal intercepted HTML and no model."
+    },
+    "diagnostics": [
+      {
+        "variant": "Signal abort observer with original direct probe",
+        "result": "Runtime request failure reproduced; no signal abort event observed."
+      },
+      {
+        "variant": "Retain Response objects",
+        "result": "Failure reproduced; not retained."
+      },
+      {
+        "variant": "Observe reader cancellation/release",
+        "result": "Failure reproduced; no explicit cancel observed."
+      },
+      {
+        "variant": "Additional CDP Network observer",
+        "result": "One full pass and one failure; failed Fetch event had canceled true. No stable correction."
+      },
+      {
+        "variant": "Omit successful reader releaseLock in memory",
+        "result": "Two passes and one failure; not retained."
+      },
+      {
+        "variant": "Omit fetch signal in diagnostic wrapper",
+        "result": "Three full passes; not adopted because this does not establish cause or preserve transport cancellation."
+      },
+      {
+        "variant": "Retain signal objects",
+        "result": "One full pass; later handle-retention checks still failed."
+      },
+      {
+        "variant": "Retain probe handles until requestfinished",
+        "result": "25-check suite passed; standalone zero-argument command failed with local_web_release_smoke_failed and verified temporary cleanup. Removed."
+      },
+      {
+        "variant": "Retain AbortController objects",
+        "result": "Failure reproduced; not retained."
+      },
+      {
+        "variant": "Connection close response header",
+        "result": "Failure reproduced; not retained."
+      },
+      {
+        "variant": "Retain explicit Request objects",
+        "result": "Failure reproduced; not retained."
+      },
+      {
+        "variant": "Restore direct probe, then require a present disabled button",
+        "result": "Final 25-check suite passed. This does not prove intermittent failure fixed."
+      }
+    ],
+    "causalConclusion": "Unresolved. Successful artifact verification, network event completion and source-model usefulness are separate claims.",
+    "consultedPrimarySource": {
+      "url": "https://fetch.spec.whatwg.org/#garbage-collection",
+      "retrievedDate": "2026-09-19",
+      "use": "Debugging hypothesis only; not a diagnosis of this local observation."
+    }
+  },
+  "cleanup": {
+    "runs": [
+      {
+        "run": "initial-focused-failure",
+        "files": 6,
+        "logicalBytes": 8028029
+      },
+      {
+        "run": "isolated-loader-12-pass",
+        "files": 2,
+        "logicalBytes": 188
+      },
+      {
+        "run": "signal-observer-failure",
+        "files": 5,
+        "logicalBytes": 750152
+      },
+      {
+        "run": "retained-responses-failure",
+        "files": 7,
+        "logicalBytes": 1335922
+      },
+      {
+        "run": "reader-observer-failure",
+        "files": 5,
+        "logicalBytes": 865969
+      },
+      {
+        "run": "cdp-observer-pass",
+        "files": 15,
+        "logicalBytes": 2873490
+      },
+      {
+        "run": "cdp-observer-failure",
+        "files": 3,
+        "logicalBytes": 474458
+      },
+      {
+        "run": "no-release-lock-pass-1",
+        "files": 15,
+        "logicalBytes": 2873773
+      },
+      {
+        "run": "no-release-lock-failure",
+        "files": 4,
+        "logicalBytes": 474595
+      },
+      {
+        "run": "no-release-lock-pass-2",
+        "files": 15,
+        "logicalBytes": 2873537
+      },
+      {
+        "run": "no-signal-pass-1",
+        "files": 15,
+        "logicalBytes": 2873507
+      },
+      {
+        "run": "no-signal-pass-2",
+        "files": 15,
+        "logicalBytes": 2873525
+      },
+      {
+        "run": "no-signal-pass-3",
+        "files": 15,
+        "logicalBytes": 2873525
+      },
+      {
+        "run": "retained-signal-pass",
+        "files": 15,
+        "logicalBytes": 2873525
+      },
+      {
+        "run": "retained-handle-focused-pass",
+        "files": 6,
+        "logicalBytes": 8035100
+      },
+      {
+        "run": "retained-controllers-failure",
+        "files": 5,
+        "logicalBytes": 745527
+      },
+      {
+        "run": "connection-close-failure",
+        "files": 3,
+        "logicalBytes": 1135
+      },
+      {
+        "run": "retained-request-failure",
+        "files": 6,
+        "logicalBytes": 861504
+      },
+      {
+        "run": "restored-direct-probe-focused-pass",
+        "files": 6,
+        "logicalBytes": 8028242
+      },
+      {
+        "run": "final-focused-pass",
+        "files": 6,
+        "logicalBytes": 8028173
+      }
+    ],
+    "totalFiles": 169,
+    "totalLogicalBytes": 57743876,
+    "physicalStorageRecoveryMeasured": false,
+    "perTestEarlyRemovedBytesMeasured": false,
+    "standaloneVariantCleanup": "verified by zero-argument runner; its file/byte totals not separately measured",
+    "emptyParentsVerified": [
+      "artifacts/tests/deferred-runtime-smoke",
+      "tinyrustlm/artifacts/local-release"
+    ],
+    "priorBlockedPathsUntouched": true
+  },
+  "sourceGate": {
+    "status": "source_authority_scan_incomplete",
+    "paths": [
+      "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\qwen3-environment-install\\tinyrustlm-operation-C3ZUt9\\install-temp\\TmP6xn2evdh-b",
+      "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\qwen3-environment-install\\tinyrustlm-operation-C3ZUt9\\install-temp\\TmPeq63_hr7-b"
+    ]
+  },
+  "limits": [
+    "Release-smoke instability remains an open local issue; a green rerun is not a repair.",
+    "Catalog metadata is intercepted empty fixture data; mobile is viewport emulation.",
+    "No model qualification, material model execution, live seed, publication or live MemoryEndpoints claim.",
+    "Seven canonical repositories were inventoried; only TinyRustLM source changed.",
+    "Ternary/Bonsai/Hadamard research remains deferred; no weights or source copies were created."
+  ],
+  "lesson": {
+    "question": "How should release validation follow deferred runtime preparation?",
+    "exactInputs": "inputs array and sourceParent",
+    "method": "Actual Edge startup, independent runtime identities, hostile probe identities and bounded one-factor diagnostics.",
+    "result": "Corrected startup contract; final checks pass but intermittent network abort remains.",
+    "uncertainty": "Cause and stability unproven.",
+    "decision": "Keep strict gates and direct production-loader probe; discard unproven workarounds.",
+    "reusableLesson": "Separate UI readiness, byte verification and network completion; preserve all outcomes.",
+    "evidenceIdentity": "artifacts/ecosystem-cleanup-20260912/deferred-runtime-smoke-review.json"
+  }
+}

@@ -18,7 +18,7 @@ const {
   validateWebDeploymentManifest
 } = require("./web-deployment-manifest.js");
 
-const reportSchema = "tinyrustlm.web_release_browser_smoke.v6";
+const reportSchema = "tinyrustlm.web_release_browser_smoke.v7";
 const canonicalPublicOrigin = "https://tinyrustlm.com";
 const viewports = Object.freeze([
   Object.freeze({ name: "desktop", width: 1440, height: 1000 }),
@@ -33,6 +33,20 @@ const routes = Object.freeze([
 ]);
 const maximumErrorEvents = 32;
 const maximumNetworkEvents = 1024;
+const runtimeManifestPath = "/browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json";
+const runtimeWasmPath = "/browser-runtime/tinyrustlm-browser-runtime.wasm";
+
+/** Bind the browser loader's result to independently hashed publication inputs. */
+function verifyRuntimeArtifactProbe(probe, expected) {
+  invariant(probe && typeof probe.manifestText === "string" &&
+    Buffer.byteLength(probe.manifestText, "utf8") <= 16 * 1024 &&
+    probe.byteCount === expected.wasm.byteCount && probe.wasmSha256 === expected.wasm.sha256 &&
+    sha256(Buffer.from(probe.manifestText, "utf8")) === expected.manifest.sha256,
+  "Browser smoke runtime probe does not match the publication inputs");
+  return Object.freeze({ status: "verified", byteCount: expected.wasm.byteCount,
+    wasmSha256: expected.wasm.sha256, manifestSha256: expected.manifest.sha256 });
+}
+
 /** Build fresh, current-schema empty fixtures; no request is sent to MiniModel. */
 function declaredCatalogMetadata(now = Date.now()) {
   invariant(Number.isSafeInteger(now) && now >= 0 && now < 8e15,
@@ -294,6 +308,7 @@ function pushBounded(values, value, maximum) {
   if (values.length < maximum) values.push(value);
 }
 
+/** Observe the deferred empty UI before independently probing the downloadable runtime. */
 async function runPageObservation(
   browser,
   baseUrl,
@@ -406,7 +421,11 @@ async function runPageObservation(
     if (route.kind === "application") {
       await page.locator("#wasmState").waitFor({ state: "attached", timeout: 10_000 });
       await page.waitForFunction(
-        () => document.getElementById("wasmState")?.textContent?.trim() === "verified",
+        () => {
+          const list = document.getElementById("simpleModelList");
+          return list?.getAttribute("aria-busy") === "false" &&
+            list.textContent.trim() === "No models are listed yet.";
+        },
         null,
         { timeout: 30_000 }
       );
@@ -473,11 +492,13 @@ async function runPageObservation(
         appShellPresent: Boolean(appShell),
         browserModelAdmissionPresent: Boolean(window.TinyRustLMBrowserModelAdmission),
         browserRuntimeLoaderPresent: Boolean(window.TinyRustLMBrowserRuntimeLoader),
+        operationLifetimePresent: Boolean(window.TinyRustLMOperationLifetime),
         prompt2RequestPresent: Boolean(window.TinyRustLMPrompt2Request),
         modelRuntimeClientPresent: Boolean(window.TinyRustLMModelRuntimeClient),
         memoryEnrollmentPresent: Boolean(window.TinyRustLMMemoryEndpointsEnrollment),
         runtimeVariant: document.documentElement.dataset.runtimeVariant || "",
         wasmState: document.getElementById("wasmState")?.textContent?.trim() || "",
+        generateDisabled: document.getElementById("generateButton")?.disabled === true,
         modelLoadState: document.getElementById("modelLoadPill")?.textContent?.trim() || "",
         releaseSurfacePresent: Boolean(releaseSurface),
         releaseState: releaseSurface?.dataset.releaseState || "",
@@ -526,6 +547,24 @@ async function runPageObservation(
       };
     });
 
+    const startupRuntimeRequestCount = requests.filter(request =>
+      request.pathname === runtimeManifestPath || request.pathname === runtimeWasmPath).length;
+    let runtimeArtifactProbe = null;
+    if (route.kind === "application") {
+      observationInvariant(startupRuntimeRequestCount === 0, "unexpected_startup_runtime_request",
+        { startupRuntimeRequestCount });
+      // This calls the loader directly, without marking the app ready or creating a worker.
+      const probe = await page.evaluate(async ({ manifestUrl, wasmUrl }) => {
+        const api = window.TinyRustLMBrowserRuntimeLoader;
+        const asset = await api.load({ manifestUrl, wasmUrl,
+          fetchFunction: window.fetch.bind(window), timeoutMilliseconds: 30_000 });
+        try {
+          return { manifestText: api.serializeManifest(asset.manifest),
+            byteCount: asset.wasmBytes.byteLength, wasmSha256: asset.manifest.sha256 };
+        } finally { new Uint8Array(asset.wasmBytes).fill(0); }
+      }, { manifestUrl: runtimeManifestPath, wasmUrl: runtimeWasmPath });
+      runtimeArtifactProbe = verifyRuntimeArtifactProbe(probe, expectedRelease.runtimeArtifacts);
+    }
     const expectedOrigin = baseUrl.origin;
     const unexpectedOriginValues = Array.from(new Set(
       requests
@@ -577,8 +616,11 @@ async function runPageObservation(
           Object.freeze({ status: response.status, target: response.target })
         )
       ),
-      wasmState: boundedStateIdentity(state.wasmState, ["verified"]),
-      runtimeVariant: boundedStateIdentity(state.runtimeVariant, ["worker-owned-wasm"]),
+      wasmState: boundedStateIdentity(state.wasmState, ["waiting"]),
+      runtimeVariant: boundedStateIdentity(state.runtimeVariant, [""]),
+      startupRuntimeRequestCount,
+      runtimeArtifactProbe,
+      generateDisabled: state.generateDisabled,
       modelLoadState: boundedStateIdentity(
         state.modelLoadState,
         ["No model imported"]
@@ -696,18 +738,20 @@ async function runPageObservation(
       observationInvariant(
         state.browserModelAdmissionPresent &&
           state.browserRuntimeLoaderPresent &&
+          state.operationLifetimePresent &&
           state.prompt2RequestPresent &&
           state.modelRuntimeClientPresent &&
           state.memoryEnrollmentPresent,
         "required_browser_module_missing",
         diagnostic
       );
-      observationInvariant(state.wasmState === "verified", "wasm_not_verified", diagnostic);
+      observationInvariant(state.wasmState === "waiting", "runtime_not_deferred", diagnostic);
       observationInvariant(
-        state.runtimeVariant === "worker-owned-wasm",
+        state.runtimeVariant === "",
         "runtime_variant_invalid",
         diagnostic
       );
+      observationInvariant(state.generateDisabled, "generation_without_model", diagnostic);
       observationInvariant(
         state.modelLoadState === "No model imported",
         "unsupported_model_claim",
@@ -764,6 +808,9 @@ async function runPageObservation(
       viewport: Object.freeze({ width: viewport.width, height: viewport.height }),
       runtimeVariant: route.kind === "application" ? state.runtimeVariant : null,
       wasmState: route.kind === "application" ? state.wasmState : null,
+      startupRuntimeRequestCount,
+      runtimeArtifactProbe,
+      generateDisabled: route.kind === "application" ? state.generateDisabled : null,
       modelLoadState: route.kind === "application" ? state.modelLoadState : null,
       releaseState: state.releaseState,
       releaseVersion: state.releaseVersion,
@@ -830,7 +877,11 @@ async function runWebReleaseBrowserSmoke(options) {
     version: releaseValidation.currentRelease.version,
     releaseDate: releaseValidation.currentRelease.releaseDate,
     publishedAt: releaseValidation.currentRelease.publishedAt,
-    historyEntryCount: releaseValidation.releaseHistory.releases.length
+    historyEntryCount: releaseValidation.releaseHistory.releases.length,
+    runtimeArtifacts: Object.freeze({
+      wasm: releaseValidation.files.find(file => file.remote === runtimeWasmPath.slice(1)),
+      manifest: releaseValidation.files.find(file => file.remote === runtimeManifestPath.slice(1))
+    })
   });
   invariant(!fs.existsSync(outputDirectory), "Owned publication directory already exists");
   // The CLI runner sets these before Playwright loads or creates any profile.
@@ -967,5 +1018,6 @@ module.exports = Object.freeze({
   reportSchema,
   requireBaseUrl,
   requireSourceRevision,
-  runWebReleaseBrowserSmoke
+  runWebReleaseBrowserSmoke,
+  verifyRuntimeArtifactProbe
 });

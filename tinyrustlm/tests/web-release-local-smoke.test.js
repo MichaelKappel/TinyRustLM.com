@@ -49,14 +49,28 @@ test("local web release smoke proves the exact closure in real Chromium", {
   const report = JSON.parse(persistedBytes.toString("utf8"));
   assert.equal(report.browserClosed, true);
   assert.equal(report.catalogMode, "intercepted-current-empty-fixture");
-  assert.equal(report.schema, "tinyrustlm.web_release_browser_smoke.v6");
+  assert.equal(report.schema, "tinyrustlm.web_release_browser_smoke.v7");
   assert.equal(report.routeCount, 4);
   assert.equal(
     report.networkPolicy,
     "exact-release-and-catalog-metadata-closure-deny-before-send"
   );
   assert.equal(report.failureCode, null);
+  const runtimePath = path.resolve(__dirname, "../browser-runtime/tinyrustlm-browser-runtime.wasm");
+  const runtimeBytes = fs.readFileSync(runtimePath);
+  const runtimeManifestBytes = fs.readFileSync(runtimePath + ".manifest.json");
   for (const observation of report.observations) {
+    assert.equal(observation.startupRuntimeRequestCount, 0);
+    if (observation.surfaceKind === "application") {
+      assert.equal(observation.wasmState, "waiting");
+      assert.equal(observation.runtimeVariant, "");
+      assert.equal(observation.generateDisabled, true);
+      assert.deepEqual(observation.runtimeArtifactProbe, {
+        status: "verified", byteCount: runtimeBytes.length,
+        wasmSha256: crypto.createHash("sha256").update(runtimeBytes).digest("hex"),
+        manifestSha256: crypto.createHash("sha256").update(runtimeManifestBytes).digest("hex")
+      });
+    } else assert.equal(observation.runtimeArtifactProbe, null);
     assert.equal(observation.blockedRequestCount, 0);
     assert.equal(observation.unexpectedOriginCount, 0);
     const expectedMetadataCount = observation.surfaceKind === "application" ? 2 : 0;

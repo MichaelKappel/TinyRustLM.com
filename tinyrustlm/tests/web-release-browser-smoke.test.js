@@ -1,6 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
@@ -15,7 +16,8 @@ const {
   declaredCatalogMetadata,
   requireBaseUrl,
   requireSourceRevision,
-  runWebReleaseBrowserSmoke
+  runWebReleaseBrowserSmoke,
+  verifyRuntimeArtifactProbe
 } = require("../tools/web-release-browser-smoke.js");
 const {
   validateWebDeploymentManifest
@@ -23,6 +25,26 @@ const {
 const { materializeSourceReleaseState, temporaryDirectory } = require("./site-release-test-fixture.js");
 
 const siteRoot = path.resolve(__dirname, "..");
+
+test("runtime probe binds both artifacts to independently hashed release inputs", () => {
+  const manifestText = "canonical fixture manifest\n";
+  const digest = crypto.createHash("sha256").update(manifestText).digest("hex");
+  const expected = { wasm: { byteCount: 8, sha256: "a".repeat(64) },
+    manifest: { sha256: digest } };
+  const probe = { manifestText, byteCount: 8, wasmSha256: "a".repeat(64) };
+  assert.deepEqual(verifyRuntimeArtifactProbe(probe, expected), {
+    status: "verified", byteCount: 8, wasmSha256: "a".repeat(64), manifestSha256: digest
+  });
+  for (const invalid of [null, {}, { ...probe, byteCount: 9 },
+    { ...probe, wasmSha256: "b".repeat(64) }, { ...probe, manifestText: manifestText + " " },
+    { ...probe, manifestText: "x".repeat(16385) }]) {
+    assert.throws(() => verifyRuntimeArtifactProbe(invalid, expected), /publication inputs/);
+  }
+  assert.throws(() => verifyRuntimeArtifactProbe(probe,
+    { ...expected, wasm: { ...expected.wasm, sha256: "b".repeat(64) } }), /publication inputs/);
+  assert.throws(() => verifyRuntimeArtifactProbe(probe,
+    { ...expected, manifest: { sha256: "b".repeat(64) } }), /publication inputs/);
+});
 
 function generatedRelease(context) {
   return materializeSourceReleaseState(

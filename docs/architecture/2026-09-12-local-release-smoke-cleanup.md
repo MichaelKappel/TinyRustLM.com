@@ -59,3 +59,19 @@ parent deadline exceeds the child deadline. The corrected complete 24-test run
 passed. Deletion of the two earlier artifacts was rejected with `blocked by policy`.
 Their exact inventory and lesson are in `interrupted-local-smoke-review.json`;
 they remain pending in the owner-run ecosystem cleanup command.
+
+September 19 C44 follow-up: report v7 observes the verified empty chooser before
+probing runtime artifacts. Empty startup must make no runtime request, leave
+WASM deferred and keep the send button disabled. A separate production-loader
+probe checks real served WASM and the canonical manifest against independent
+publication-input hashes, then wipes its returned buffer. This probe does not
+activate a model or mark the app ready. The visible status says `Runs locally`.
+
+The final 25-check run passed, including all twelve Edge observations. Earlier
+runs intermittently recorded `net::ERR_ABORTED` for a runtime request even though
+its complete bytes verified. Temporary lifetime/stream/header variants did not
+establish a reliable fix and were discarded. The request-failure gate remains
+strict; a passing rerun is not proof that the instability is fixed. Keep this
+release-smoke issue open separately from model quality and public deployment.
+Exact inputs, failed diagnostics, final results and cleanup are recorded in
+`artifacts/ecosystem-cleanup-20260912/deferred-runtime-smoke-review.json`.
