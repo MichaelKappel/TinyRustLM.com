@@ -1,10 +1,9 @@
 "use strict";
 
 const crypto = require("node:crypto");
-const fs = require("node:fs");
-const path = require("node:path");
 const { sourceCandidateRejection } = require("./source-candidate-exclusions.js");
 const { createMetadataReader, MetadataReadError } = require("./huggingface-metadata.js");
+const { writeCandidateInventory: writeReport } = require("./huggingface-candidate-storage.js");
 
 const inventorySchema = "tinyrustlm.huggingface_supported_candidate_inventory.v2";
 const defaultBaseUrl = "https://huggingface.co";
@@ -428,27 +427,6 @@ async function discoverCandidates(options = {}) {
     candidates: Object.freeze(candidates),
     rejections: Object.freeze(rejections)
   });
-}
-
-// Writes one inventory through synced same-directory atomic replacement.
-function writeReport(outputPath, report) {
-  const target = path.resolve(String(outputPath || ""));
-  invariant(path.extname(target).toLowerCase() === ".json", "output path must end in .json");
-  fs.mkdirSync(path.dirname(target), { recursive: true });
-  const temporary = `${target}.${crypto.randomUUID()}.tmp`;
-  let descriptor;
-  try {
-    descriptor = fs.openSync(temporary, "wx", 0o600);
-    fs.writeFileSync(descriptor, `${JSON.stringify(report, null, 2)}\n`, "utf8");
-    fs.fsyncSync(descriptor);
-    fs.closeSync(descriptor);
-    descriptor = undefined;
-    fs.renameSync(temporary, target);
-  } finally {
-    if (descriptor !== undefined) fs.closeSync(descriptor);
-    fs.rmSync(temporary, { force: true });
-  }
-  return target;
 }
 
 // Runs the profile discovery CLI and reports an honest candidate shortfall.

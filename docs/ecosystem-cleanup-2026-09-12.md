@@ -5,6 +5,51 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C37: contain candidate output and verify complete cached sources, September 19
+
+Candidate acquisition accepted arbitrary output roots, followed existing file
+links, and had no exclusive writer. Its cached-receipt check verified only the
+files named by the receipt; an incomplete list could therefore omit required
+source bytes. Both discovery owners also wrote reports to unrestricted paths.
+
+Added one storage owner: absolute ordinary Windows model paths under
+`D:\LLMs\TinyRustLM`, canonical artifact subdirectories for reports, portable
+filenames, linked-file rejection, captured directory identity, and an exclusive
+acquisition lock. Abandoned locks require inspection and are not silently
+adopted. Partial writes use a validated open file descriptor. The candidate
+directory name hashes the full repository/revision identity to avoid separator
+collisions and overlong names; older directories are not migrated or adopted.
+Report publication is shared by both discovery tools instead of duplicated.
+
+Cached receipts must have the exact current shape, all expected files exactly
+once, current configuration/license/tokenizer/weight identities, and matching
+bytes on disk. Acquisition recomputes the advertised weight-set identity and
+rejects tokenizer/weight filename collisions. Failure after fetch cancels an
+unconsumed response; rejection does not trigger repair or another download.
+
+All 40 affected checks pass. Coverage is 100 percent lines/91.18 percent branches
+for the new storage owner and 88.93/85.37 percent for acquisition. The initial
+directory-swap test failed because Windows returned EPERM while the owner lock
+was open, before application identity validation ran. Its corrected test asserts
+that observed OS protection; this is not a proof of every filesystem race.
+Other cases cover traversal, junctions, hardlinks, concurrent owners, stale
+locks, post-fetch replacement, receipt omissions/tampering, and native HTTP
+transfer/resumption. No test uses a real model or modifies historical payloads.
+
+All owned synthetic model fixtures under the canonical D: store were removed
+and the fixture parent is empty. Owned source-side coverage output was removed:
+eight remaining files, 4210603 logical bytes; physical recovery was not measured.
+Model-fixture deletion byte totals were not separately aggregated. Evidence:
+`artifacts/ecosystem-cleanup-20260912/candidate-storage-review.json`.
+
+The next downloader correction is still necessary before material acquisition:
+large transfers check byte counts after writing, config/license responses are
+buffered before their final size check, and template/inventory reads need
+pre-read limits. The source scan still fails on the same two policy-blocked
+installer links. No blocked deletion was retried, model downloaded, closed
+experiment replayed, source qualified or public site deployed. Ternary research
+remains deferred.
+
 ## C36: bound candidate metadata while receiving it, September 19
 
 Replaced both discovery tools' duplicated whole-response JSON/text readers with

@@ -6,6 +6,7 @@ const path = require("node:path");
 const { Readable } = require("node:stream");
 const { pipeline } = require("node:stream/promises");
 const { sourceCandidateRejection } = require("./source-candidate-exclusions.js");
+const { requireFilename, requireModelOutputRoot, withCandidateDirectory } = require("./huggingface-candidate-storage.js");
 
 const inventorySchema = "tinyrustlm.huggingface_supported_candidate_inventory.v2";
 const receiptSchema = "tinyrustlm.huggingface_source_acquisition.v2";
@@ -46,14 +47,6 @@ function normalizeEvidenceUrl(value) {
   return url.toString();
 }
 
-// Validates one source filename that must remain in the candidate root.
-function requireFilename(value) {
-  const filename = String(value || "").trim();
-  invariant(/^[A-Za-z0-9][A-Za-z0-9._-]{0,159}$/.test(filename), "source filename is invalid");
-  invariant(filename !== "." && filename !== "..", "source filename is invalid");
-  return filename;
-}
-
 // Validates a digest-bearing source candidate from the discovery inventory.
 function requireCandidate(value) {
   invariant(isPlainObject(value), "candidate is invalid");
@@ -83,6 +76,8 @@ function requireCandidate(value) {
   const tokenizer = requireSourceFile(value.tokenizer, "tokenizer");
   invariant(isPlainObject(value.tokenizerConfig), "candidate tokenizerConfig is invalid");
   const tokenizerConfig = requireSourceFile(value.tokenizerConfig, "tokenizerConfig");
+  invariant(tokenizer.filename === "tokenizer.json" && tokenizerConfig.filename === "tokenizer_config.json",
+    "candidate tokenizer filenames are invalid");
   invariant(value.chatTemplateKind === "revision-chatml-template-v1",
     "candidate chat template kind is invalid");
   const chatTemplateSha256 = String(value.chatTemplateSha256 || "").toLowerCase();
@@ -91,6 +86,9 @@ function requireCandidate(value) {
   invariant(Array.isArray(value.weightFiles) && value.weightFiles.length >= 1 && value.weightFiles.length <= 64,
     "candidate weightFiles are invalid");
   const weightFiles = value.weightFiles.map((file) => requireSourceFile(file, "weight"));
+  invariant(weightFiles.every((file) => /^model(?:-\d{5}-of-\d{5})?\.safetensors$/.test(file.filename)) &&
+    new Set(weightFiles.map((file) => file.filename)).size === weightFiles.length,
+  "candidate weight filenames are invalid or duplicated");
   invariant(weightFiles.every((file) => file.sha256), "every weight requires SHA-256");
   const weightRejection = sourceCandidateRejection(modelId, revision, weightFiles);
   invariant(!weightRejection, weightRejection);
@@ -98,6 +96,10 @@ function requireCandidate(value) {
   invariant(Number.isSafeInteger(sourceWeightByteCount) && sourceWeightByteCount > 0 &&
     weightFiles.reduce((sum, file) => sum + file.byteCount, 0) === sourceWeightByteCount,
   "candidate sourceWeightByteCount is invalid");
+  const canonicalWeights = [...weightFiles].sort((left, right) => left.filename.localeCompare(right.filename))
+    .map((file) => `${file.filename}:${file.byteCount}:${file.sha256}`).join("\n");
+  invariant(crypto.createHash("sha256").update(canonicalWeights).digest("hex") === weightIdentity,
+    "candidate weightIdentity does not match its files");
   return Object.freeze({
     sourceTemplate,
     modelId,
@@ -138,9 +140,8 @@ function requireSourceFile(value, label) {
 // Maps one immutable candidate to an owned, path-safe source directory.
 function candidateDirectory(outputRoot, candidateValue) {
   const candidate = requireCandidate(candidateValue);
-  const root = path.resolve(String(outputRoot || ""));
-  invariant(String(outputRoot || "").trim().length > 0, "output root is required");
-  const slug = `${candidate.modelId.replace("/", "--")}--${candidate.revision}`;
+  const root = requireModelOutputRoot(outputRoot);
+  const slug = `source-${crypto.createHash("sha256").update(`${candidate.modelId.toLowerCase()}\n${candidate.revision}`).digest("hex")}`;
   const target = path.resolve(root, slug);
   invariant(target.startsWith(`${root}${path.sep}`), "candidate directory escaped the output root");
   return target;
@@ -178,11 +179,13 @@ async function gitBlobIdFile(filePath, byteCount) {
 }
 
 // Verifies exact size and every advertised identity for one local source file.
-async function verifyExpectedFile(filePath, expected) {
-  const stat = fs.statSync(filePath, { throwIfNoEntry: false });
+async function verifyExpectedFile(filePath, expected, guard) {
+  guard(filePath);
+  const stat = fs.lstatSync(filePath, { throwIfNoEntry: false });
   invariant(stat && stat.isFile(), `${expected.filename} is missing`);
   invariant(stat.size === expected.byteCount, `${expected.filename} byte count mismatch`);
   const sha256 = await sha256File(filePath);
+  guard(filePath);
   if (expected.sha256) {
     invariant(sha256 === expected.sha256, `${expected.filename} SHA-256 mismatch`);
   }
@@ -190,12 +193,17 @@ async function verifyExpectedFile(filePath, expected) {
     invariant(await gitBlobIdFile(filePath, stat.size) === expected.gitBlobId,
       `${expected.filename} Git blob identity mismatch`);
   }
+  guard(filePath);
+  const after = fs.lstatSync(filePath);
+  invariant(after.dev === stat.dev && after.ino === stat.ino && after.size === stat.size && after.mtimeMs === stat.mtimeMs,
+    `${expected.filename} changed during verification`);
   return Object.freeze({ filename: expected.filename, byteCount: stat.size, sha256 });
 }
 
 // Revalidates the revision-owned ChatML template against the inventory fingerprint.
-function verifyChatTemplate(directory, candidate) {
+function verifyChatTemplate(directory, candidate, guard) {
   const filePath = path.join(directory, candidate.tokenizerConfig.filename);
+  guard(filePath);
   const bytes = fs.readFileSync(filePath);
   invariant(bytes.length > 0 && bytes.length <= maximumSmallFileBytes,
     "tokenizer_config.json is oversized");
@@ -230,10 +238,12 @@ function syncFile(filePath) {
 async function downloadExpectedFile(url, directory, expected, settings, allowRestart = true,
   shortReadRetriesRemaining = maximumShortReadRetries) {
   const target = path.join(directory, expected.filename);
+  settings.guard(target);
   if (fs.existsSync(target)) {
-    return verifyExpectedFile(target, expected);
+    return verifyExpectedFile(target, expected, settings.guard);
   }
   const part = `${target}.part`;
+  settings.guard(part);
   const partStat = fs.statSync(part, { throwIfNoEntry: false });
   invariant(!partStat || partStat.isFile(), `${expected.filename} part path is invalid`);
   const start = partStat ? partStat.size : 0;
@@ -241,11 +251,13 @@ async function downloadExpectedFile(url, directory, expected, settings, allowRes
   if (start === expected.byteCount) {
     let verified;
     try {
-      verified = await verifyExpectedFile(part, expected);
+      verified = await verifyExpectedFile(part, expected, settings.guard);
     } catch (error) {
+      settings.guard(part);
       fs.rmSync(part, { force: true });
       throw error;
     }
+    settings.guard(target);
     fs.renameSync(part, target);
     return verified;
   }
@@ -256,69 +268,99 @@ async function downloadExpectedFile(url, directory, expected, settings, allowRes
     headers,
     signal: AbortSignal.timeout(settings.timeoutMs)
   });
-  invariant(response && response.ok, `${expected.filename} returned HTTP ${response ? response.status : "unknown"}`);
-  if (start > 0 && response.status === 200) {
-    invariant(allowRestart, `${expected.filename} server ignored Range twice`);
-    if (response.body && typeof response.body.cancel === "function") await response.body.cancel();
-    fs.rmSync(part, { force: true });
-    return downloadExpectedFile(
-      url, directory, expected, settings, false, shortReadRetriesRemaining);
-  }
-  invariant(start === 0 ? response.status === 200 : response.status === 206,
-    `${expected.filename} returned invalid resume status`);
-  if (start > 0) {
-    const contentRange = String(response.headers.get("content-range") || "");
-    invariant(contentRange.startsWith(`bytes ${start}-`), `${expected.filename} Content-Range mismatch`);
-  }
-  const contentLengthHeader = response.headers.get("content-length");
-  const contentLength = contentLengthHeader === null ? null : Number(contentLengthHeader);
-  const contentEncoding = String(response.headers.get("content-encoding") || "identity").toLowerCase();
-  if (Number.isSafeInteger(contentLength) && (contentEncoding === "" || contentEncoding === "identity")) {
-    invariant(contentLength === expected.byteCount - start, `${expected.filename} Content-Length mismatch`);
-  }
-  invariant(response.body, `${expected.filename} response body is missing`);
-  await pipeline(
-    Readable.fromWeb(response.body),
-    fs.createWriteStream(part, { flags: start > 0 ? "a" : "w", mode: 0o600 })
-  );
-  syncFile(part);
-  const completedSize = fs.statSync(part).size;
-  if (completedSize < expected.byteCount) {
-    if (shortReadRetriesRemaining > 0) {
-      return downloadExpectedFile(
-        url,
-        directory,
-        expected,
-        settings,
-        allowRestart,
-        shortReadRetriesRemaining - 1
-      );
-    }
-    throw new Error(
-      `${expected.filename} download ended early at ${completedSize} of ${expected.byteCount} bytes`);
-  }
-  if (completedSize > expected.byteCount) {
-    fs.rmSync(part, { force: true });
-    throw new Error(`${expected.filename} download exceeded its expected byte count`);
-  }
-  let verified;
   try {
-    verified = await verifyExpectedFile(part, expected);
-  } catch (error) {
-    fs.rmSync(part, { force: true });
-    throw error;
+    settings.guard(part);
+    settings.guard(target);
+    invariant(response && response.ok, `${expected.filename} returned HTTP ${response ? response.status : "unknown"}`);
+    if (start > 0 && response.status === 200) {
+      invariant(allowRestart, `${expected.filename} server ignored Range twice`);
+      if (response.body && typeof response.body.cancel === "function") await response.body.cancel();
+      settings.guard(part);
+      fs.rmSync(part, { force: true });
+      return downloadExpectedFile(
+        url, directory, expected, settings, false, shortReadRetriesRemaining);
+    }
+    invariant(start === 0 ? response.status === 200 : response.status === 206,
+      `${expected.filename} returned invalid resume status`);
+    if (start > 0) {
+      const contentRange = String(response.headers.get("content-range") || "");
+      invariant(contentRange.startsWith(`bytes ${start}-`), `${expected.filename} Content-Range mismatch`);
+    }
+    const contentLengthHeader = response.headers.get("content-length");
+    const contentLength = contentLengthHeader === null ? null : Number(contentLengthHeader);
+    const contentEncoding = String(response.headers.get("content-encoding") || "identity").toLowerCase();
+    if (Number.isSafeInteger(contentLength) && (contentEncoding === "" || contentEncoding === "identity")) {
+      invariant(contentLength === expected.byteCount - start, `${expected.filename} Content-Length mismatch`);
+    }
+    invariant(response.body, `${expected.filename} response body is missing`);
+    const source = Readable.fromWeb(response.body);
+    const before = settings.guard(part);
+    invariant(before ? before.size === BigInt(start) : start === 0, "candidate part changed before write");
+    const descriptor = fs.openSync(part, before ? "r+" : "wx", 0o600);
+    let opened;
+    try {
+      opened = fs.fstatSync(descriptor, { bigint: true });
+      const current = settings.guard(part);
+      invariant(current && current.dev === opened.dev && current.ino === opened.ino &&
+        (!before || (before.dev === opened.dev && before.ino === opened.ino)),
+      "candidate part identity changed before write");
+    } catch (error) {
+      fs.closeSync(descriptor);
+      source.destroy();
+      throw error;
+    }
+    await pipeline(
+      source,
+      fs.createWriteStream(part, { fd: descriptor, start, autoClose: true })
+    );
+    const completed = settings.guard(part);
+    invariant(completed && completed.dev === opened.dev && completed.ino === opened.ino,
+      "candidate part identity changed during write");
+    syncFile(part);
+    const completedSize = fs.statSync(part).size;
+    if (completedSize < expected.byteCount) {
+      if (shortReadRetriesRemaining > 0) {
+        return downloadExpectedFile(
+          url,
+          directory,
+          expected,
+          settings,
+          allowRestart,
+          shortReadRetriesRemaining - 1
+        );
+      }
+      throw new Error(
+        `${expected.filename} download ended early at ${completedSize} of ${expected.byteCount} bytes`);
+    }
+    if (completedSize > expected.byteCount) {
+      fs.rmSync(part, { force: true });
+      throw new Error(`${expected.filename} download exceeded its expected byte count`);
+    }
+    let verified;
+    try {
+      verified = await verifyExpectedFile(part, expected, settings.guard);
+    } catch (error) {
+      settings.guard(part);
+      fs.rmSync(part, { force: true });
+      throw error;
+    }
+    settings.guard(target);
+    fs.renameSync(part, target);
+    return verified;
+  } finally {
+    if (response?.body && !response.bodyUsed) Promise.resolve(response.body.cancel()).catch(() => {});
   }
-  fs.renameSync(part, target);
-  return verified;
 }
 
 // Fetches, bounds, hashes, and atomically writes one small evidence file.
 async function downloadSmallFile(url, target, expectedSha256, settings) {
+  settings.guard(target);
   if (fs.existsSync(target)) {
     const stat = fs.statSync(target);
     invariant(stat.isFile() && stat.size > 0 && stat.size <= maximumSmallFileBytes,
       `${path.basename(target)} is outside its size limit`);
     invariant(await sha256File(target) === expectedSha256, `${path.basename(target)} SHA-256 mismatch`);
+    settings.guard(target);
     return Object.freeze({ filename: path.basename(target), byteCount: stat.size, sha256: expectedSha256 });
   }
   const response = await settings.fetchImpl(url, {
@@ -326,36 +368,47 @@ async function downloadSmallFile(url, target, expectedSha256, settings) {
     redirect: "follow",
     signal: AbortSignal.timeout(settings.timeoutMs)
   });
-  invariant(response && response.ok, `${path.basename(target)} returned HTTP ${response ? response.status : "unknown"}`);
-  const contentLength = Number(response.headers.get("content-length"));
-  invariant(!Number.isSafeInteger(contentLength) || contentLength <= maximumSmallFileBytes,
-    `${path.basename(target)} is oversized`);
-  const bytes = Buffer.from(await response.arrayBuffer());
-  invariant(bytes.length > 0 && bytes.length <= maximumSmallFileBytes, `${path.basename(target)} is oversized`);
-  invariant(crypto.createHash("sha256").update(bytes).digest("hex") === expectedSha256,
-    `${path.basename(target)} SHA-256 mismatch`);
-  const temporary = `${target}.${crypto.randomUUID()}.tmp`;
-  fs.writeFileSync(temporary, bytes, { flag: "wx", mode: 0o600 });
-  syncFile(temporary);
-  fs.renameSync(temporary, target);
-  return Object.freeze({ filename: path.basename(target), byteCount: bytes.length, sha256: expectedSha256 });
+  try {
+    settings.guard(target);
+    invariant(response && response.ok, `${path.basename(target)} returned HTTP ${response ? response.status : "unknown"}`);
+    const contentLength = Number(response.headers.get("content-length"));
+    invariant(!Number.isSafeInteger(contentLength) || contentLength <= maximumSmallFileBytes,
+      `${path.basename(target)} is oversized`);
+    const bytes = Buffer.from(await response.arrayBuffer());
+    settings.guard(target);
+    invariant(bytes.length > 0 && bytes.length <= maximumSmallFileBytes, `${path.basename(target)} is oversized`);
+    invariant(crypto.createHash("sha256").update(bytes).digest("hex") === expectedSha256,
+      `${path.basename(target)} SHA-256 mismatch`);
+    const temporary = `${target}.${crypto.randomUUID()}.tmp`;
+    settings.guard(temporary);
+    fs.writeFileSync(temporary, bytes, { flag: "wx", mode: 0o600 });
+    syncFile(temporary);
+    fs.renameSync(temporary, target);
+    return Object.freeze({ filename: path.basename(target), byteCount: bytes.length, sha256: expectedSha256 });
+  } finally {
+    if (response?.body && !response.bodyUsed) Promise.resolve(response.body.cancel()).catch(() => {});
+  }
 }
 
 // Writes a JSON receipt through synced same-directory atomic replacement.
-function atomicWriteJson(filePath, value) {
+function atomicWriteJson(filePath, value, guard) {
+  guard(filePath);
   const temporary = `${filePath}.${crypto.randomUUID()}.tmp`;
   try {
+    guard(temporary);
     fs.writeFileSync(temporary, `${JSON.stringify(value, null, 2)}\n`, { flag: "wx", mode: 0o600 });
     syncFile(temporary);
     fs.renameSync(temporary, filePath);
   } finally {
+    guard(temporary);
     fs.rmSync(temporary, { force: true });
   }
 }
 
 // Loads a bounded acquisition receipt when it still binds the requested candidate.
-async function existingReceipt(directory, candidate) {
+async function existingReceipt(directory, candidate, guard) {
   const receiptPath = path.join(directory, "source-acquisition.json");
+  guard(receiptPath);
   const stat = fs.statSync(receiptPath, { throwIfNoEntry: false });
   if (!stat) return null;
   invariant(stat.isFile() && stat.size > 0 && stat.size <= maximumReceiptBytes,
@@ -363,23 +416,37 @@ async function existingReceipt(directory, candidate) {
   const receipt = JSON.parse(fs.readFileSync(receiptPath, "utf8"));
   invariant(receipt.schema === receiptSchema && receipt.status === "verified",
     "source acquisition receipt is invalid");
+  const keys = ["schema", "status", "verifiedUtc", "sourceTemplate", "modelId", "revision", "weightIdentity",
+    "sourceWeightByteCount", "chatTemplateKind", "chatTemplateSha256", "licenseId", "licenseEvidenceKind", "files"];
+  invariant(Object.keys(receipt).length === keys.length && keys.every((key) => Object.hasOwn(receipt, key)) &&
+    typeof receipt.verifiedUtc === "string" && Number.isFinite(Date.parse(receipt.verifiedUtc)),
+  "source acquisition receipt shape is invalid");
   invariant(receipt.modelId === candidate.modelId && receipt.revision === candidate.revision &&
     receipt.sourceTemplate === candidate.sourceTemplate && receipt.weightIdentity === candidate.weightIdentity &&
+    receipt.sourceWeightByteCount === candidate.sourceWeightByteCount && receipt.licenseId === candidate.licenseId &&
+    receipt.licenseEvidenceKind === candidate.licenseEvidenceKind &&
     receipt.chatTemplateKind === candidate.chatTemplateKind &&
     receipt.chatTemplateSha256 === candidate.chatTemplateSha256,
   "source acquisition receipt identity changed");
-  invariant(Array.isArray(receipt.files), "source acquisition receipt files are invalid");
-  for (const file of receipt.files) {
-    invariant(isPlainObject(file) && /^[A-Za-z0-9][A-Za-z0-9._-]{0,159}$/.test(file.filename),
-      "source acquisition receipt file is invalid");
+  const expectedFiles = [
+    { filename: "config.json", sha256: candidate.configSha256 }, candidate.tokenizer, candidate.tokenizerConfig,
+    { filename: "LICENSE", sha256: candidate.licenseSha256 }, ...candidate.weightFiles
+  ];
+  invariant(Array.isArray(receipt.files) && receipt.files.length === expectedFiles.length &&
+    receipt.files.every((file) => isPlainObject(file)) &&
+    new Set(receipt.files.map((file) => file.filename)).size === expectedFiles.length,
+  "source acquisition receipt file closure is invalid");
+  for (const expected of expectedFiles) {
+    const file = receipt.files.find((item) => item.filename === expected.filename);
+    invariant(file && Number.isSafeInteger(file.byteCount) && file.byteCount > 0 &&
+      Object.keys(file).length === 3 &&
+      /^[a-f0-9]{64}$/.test(file.sha256) && (!expected.sha256 || file.sha256 === expected.sha256) &&
+      (expected.byteCount === undefined ? file.byteCount <= maximumSmallFileBytes : file.byteCount === expected.byteCount),
+    "source acquisition receipt file identity is invalid");
     const localPath = path.join(directory, file.filename);
-    const localStat = fs.statSync(localPath, { throwIfNoEntry: false });
-    invariant(localStat && localStat.isFile() && localStat.size === file.byteCount,
-      `source acquisition receipt file changed: ${file.filename}`);
-    invariant(await sha256File(localPath) === file.sha256,
-      `source acquisition receipt digest changed: ${file.filename}`);
+    await verifyExpectedFile(localPath, { ...expected, byteCount: file.byteCount, sha256: file.sha256 }, guard);
   }
-  verifyChatTemplate(directory, candidate);
+  verifyChatTemplate(directory, candidate, guard);
   return Object.freeze(receipt);
 }
 
@@ -387,9 +454,6 @@ async function existingReceipt(directory, candidate) {
 async function acquireCandidate(candidateValue, outputRoot, options = {}) {
   const candidate = requireCandidate(candidateValue);
   const directory = candidateDirectory(outputRoot, candidate);
-  fs.mkdirSync(directory, { recursive: true });
-  const resumed = await existingReceipt(directory, candidate);
-  if (resumed) return resumed;
   const settings = {
     baseUrl: normalizeBaseUrl(options.baseUrl || defaultBaseUrl),
     fetchImpl: options.fetchImpl || globalThis.fetch,
@@ -398,57 +462,62 @@ async function acquireCandidate(candidateValue, outputRoot, options = {}) {
   invariant(typeof settings.fetchImpl === "function", "fetch implementation is required");
   invariant(Number.isSafeInteger(settings.timeoutMs) && settings.timeoutMs >= 1000,
     "download timeout is invalid");
-  const files = [];
-  files.push(await downloadSmallFile(
-    pinnedFileUrl(settings.baseUrl, candidate, "config.json"),
-    path.join(directory, "config.json"),
-    candidate.configSha256,
-    settings
-  ));
-  files.push(await downloadExpectedFile(
-    pinnedFileUrl(settings.baseUrl, candidate, candidate.tokenizer.filename),
-    directory,
-    candidate.tokenizer,
-    settings
-  ));
-  files.push(await downloadExpectedFile(
-    pinnedFileUrl(settings.baseUrl, candidate, candidate.tokenizerConfig.filename),
-    directory,
-    candidate.tokenizerConfig,
-    settings
-  ));
-  verifyChatTemplate(directory, candidate);
-  files.push(await downloadSmallFile(
-    candidate.licenseSourceUrl,
-    path.join(directory, "LICENSE"),
-    candidate.licenseSha256,
-    settings
-  ));
-  for (const weight of candidate.weightFiles) {
-    files.push(await downloadExpectedFile(
-      pinnedFileUrl(settings.baseUrl, candidate, weight.filename),
-      directory,
-      weight,
+  return withCandidateDirectory(directory, async (guard) => {
+    settings.guard = guard;
+    const resumed = await existingReceipt(directory, candidate, guard);
+    if (resumed) return resumed;
+    const files = [];
+    files.push(await downloadSmallFile(
+      pinnedFileUrl(settings.baseUrl, candidate, "config.json"),
+      path.join(directory, "config.json"),
+      candidate.configSha256,
       settings
     ));
-  }
-  const receipt = Object.freeze({
-    schema: receiptSchema,
-    status: "verified",
-    verifiedUtc: new Date().toISOString(),
-    sourceTemplate: candidate.sourceTemplate,
-    modelId: candidate.modelId,
-    revision: candidate.revision,
-    weightIdentity: candidate.weightIdentity,
-    sourceWeightByteCount: candidate.sourceWeightByteCount,
-    chatTemplateKind: candidate.chatTemplateKind,
-    chatTemplateSha256: candidate.chatTemplateSha256,
-    licenseId: candidate.licenseId,
-    licenseEvidenceKind: candidate.licenseEvidenceKind,
-    files: Object.freeze(files)
+    files.push(await downloadExpectedFile(
+      pinnedFileUrl(settings.baseUrl, candidate, candidate.tokenizer.filename),
+      directory,
+      candidate.tokenizer,
+      settings
+    ));
+    files.push(await downloadExpectedFile(
+      pinnedFileUrl(settings.baseUrl, candidate, candidate.tokenizerConfig.filename),
+      directory,
+      candidate.tokenizerConfig,
+      settings
+    ));
+    verifyChatTemplate(directory, candidate, guard);
+    files.push(await downloadSmallFile(
+      candidate.licenseSourceUrl,
+      path.join(directory, "LICENSE"),
+      candidate.licenseSha256,
+      settings
+    ));
+    for (const weight of candidate.weightFiles) {
+      files.push(await downloadExpectedFile(
+        pinnedFileUrl(settings.baseUrl, candidate, weight.filename),
+        directory,
+        weight,
+        settings
+      ));
+    }
+    const receipt = Object.freeze({
+      schema: receiptSchema,
+      status: "verified",
+      verifiedUtc: new Date().toISOString(),
+      sourceTemplate: candidate.sourceTemplate,
+      modelId: candidate.modelId,
+      revision: candidate.revision,
+      weightIdentity: candidate.weightIdentity,
+      sourceWeightByteCount: candidate.sourceWeightByteCount,
+      chatTemplateKind: candidate.chatTemplateKind,
+      chatTemplateSha256: candidate.chatTemplateSha256,
+      licenseId: candidate.licenseId,
+      licenseEvidenceKind: candidate.licenseEvidenceKind,
+      files: Object.freeze(files)
+    });
+    atomicWriteJson(path.join(directory, "source-acquisition.json"), receipt, guard);
+    return receipt;
   });
-  atomicWriteJson(path.join(directory, "source-acquisition.json"), receipt);
-  return receipt;
 }
 
 // Acquires a bounded contiguous selection from one validated discovery inventory.
@@ -496,6 +565,5 @@ module.exports = Object.freeze({
   acquireCandidate,
   acquireInventory,
   candidateDirectory,
-  receiptSchema,
-  sha256File
+  receiptSchema
 });

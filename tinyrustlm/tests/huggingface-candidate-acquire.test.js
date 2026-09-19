@@ -4,12 +4,12 @@ const assert = require("node:assert/strict");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const http = require("node:http");
-const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 const zlib = require("node:zlib");
 
 const acquire = require("../tools/huggingface-candidate-acquire.js");
+const { createSourceAcquisitionFixture } = require("./helpers/source-acquisition-fixture.js");
 
 // Hashes fixture bytes using the source acquisition digest contract.
 function sha256(bytes) {
@@ -77,7 +77,8 @@ test("resumes pinned files, verifies every digest, and reuses a complete receipt
     [`${modelRoot}/tokenizer_config.json`]: tokenizerConfig,
     "/LICENSE-2.0.txt": license
   });
-  const outputRoot = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-source-acquire-"));
+  const storage = createSourceAcquisitionFixture();
+  const outputRoot = storage.rootPath;
   const candidate = {
     sourceTemplate: "qwen3-0.6b-bpe",
     modelId,
@@ -126,7 +127,7 @@ test("resumes pinned files, verifies every digest, and reuses a complete receipt
     assert.equal(JSON.stringify(second).includes("authorization"), false);
   } finally {
     await fixture.close();
-    fs.rmSync(outputRoot, { recursive: true, force: true });
+    storage.remove();
   }
 });
 
@@ -142,7 +143,8 @@ test("rejects a downloaded source whose pinned digest does not match", async () 
     [`/Example/Bad/resolve/${revision}/tokenizer_config.json`]: tokenizerConfig,
     "/LICENSE-2.0.txt": Buffer.from("Apache License\nVersion 2.0\n")
   });
-  const outputRoot = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-source-acquire-"));
+  const storage = createSourceAcquisitionFixture();
+  const outputRoot = storage.rootPath;
   const candidate = {
     sourceTemplate: "qwen3-0.6b-bpe",
     modelId: "Example/Bad",
@@ -162,7 +164,7 @@ test("rejects a downloaded source whose pinned digest does not match", async () 
     chatTemplateKind: "revision-chatml-template-v1",
     chatTemplateSha256: sha256(Buffer.from(chatTemplate)),
     sourceWeightByteCount: bytes.length,
-    weightIdentity: "c".repeat(64),
+    weightIdentity: sha256(Buffer.from(`model.safetensors:${bytes.length}:${"d".repeat(64)}`)),
     weightFiles: [{ filename: "model.safetensors", byteCount: bytes.length, sha256: "d".repeat(64) }]
   };
 
@@ -174,7 +176,7 @@ test("rejects a downloaded source whose pinned digest does not match", async () 
     assert.equal(fs.existsSync(path.join(acquire.candidateDirectory(outputRoot, candidate), "source-acquisition.json")), false);
   } finally {
     await fixture.close();
-    fs.rmSync(outputRoot, { recursive: true, force: true });
+    storage.remove();
   }
 });
 
@@ -196,7 +198,8 @@ test("preserves repeated short reads and resumes them on the next acquisition", 
     [`${modelRoot}/tokenizer_config.json`]: tokenizerConfig,
     "/LICENSE-2.0.txt": license
   });
-  const outputRoot = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-source-short-read-"));
+  const storage = createSourceAcquisitionFixture();
+  const outputRoot = storage.rootPath;
   const candidate = {
     sourceTemplate: "qwen3-0.6b-bpe",
     modelId,
@@ -243,6 +246,6 @@ test("preserves repeated short reads and resumes them on the next acquisition", 
     assert.equal(fixture.requests.some((request) => request.range === "bytes=1028-"), true);
   } finally {
     await fixture.close();
-    fs.rmSync(outputRoot, { recursive: true, force: true });
+    storage.remove();
   }
 });

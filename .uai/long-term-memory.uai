@@ -1,5 +1,5 @@
 profile: tinyrustlm.long-term-memory.current.v1
-updated_utc: 2026-09-19T21:10:34Z
+updated_utc: 2026-09-19T21:31:24Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -13,8 +13,8 @@ pointers:
     authority: reviewed_guidance
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-19T21:10:34Z
-    sha256: 4683acbb358ea39fa01b7420c7989db098f11a9d7743311d9122ad9d4ee30782
+    last_reviewed_utc: 2026-09-19T21:31:24Z
+    sha256: ef569b078ff3951664d8d3e0a10a2b8b666a5bd7c3bc2e32e5fdf2c96a7bfe9d
   - id: report-decisions
     path: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
     label: September report decisions
@@ -36,21 +36,21 @@ pointers:
   - id: experiment-lessons
     path: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md
     label: Retained experiment lessons
-    summary: Open for C21-C36 observations, exact evidence, uncertainty and blocked retirement.
+    summary: Open for C21-C37 observations, exact evidence, uncertainty and blocked retirement.
     authority: reviewed_bounded_historical_evidence
     review_state: reviewed_for_routing_and_identity
     status: active_growing_review
-    last_reviewed_utc: 2026-09-19T21:10:34Z
-    sha256: 89c05067bf44c0876cdb638e616a9f0c33a950bb668c6a629f7047ac065859f8
+    last_reviewed_utc: 2026-09-19T21:31:24Z
+    sha256: db1e567d9911a7d892cc8d1fb71ba67ea4f41f8d3b37401182cb60685055649f
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for outstanding cleanup, C31 publication, C32 native/browser agreement, C34 Apache behavior, C35 source exclusions, C36 metadata bounds and remaining model/hosting limits.
+    summary: Open for outstanding cleanup, C31 publication, C32 native/browser agreement, C34 Apache behavior, C35 source exclusions, C36 metadata bounds, C37 storage/receipt checks and remaining model/hosting limits.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-19T21:10:34Z
-    sha256: 1aeec1a2568b15d6bcd075992b5b7cd7d73b1b066e17dc2a00e1f9abc3f474b3
+    last_reviewed_utc: 2026-09-19T21:31:24Z
+    sha256: a92c07a712df52a393b003a98ae27af37fa733944ec088ad83892fd692e8924f
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity

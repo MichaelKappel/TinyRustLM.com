@@ -1171,6 +1171,47 @@ count. The same incomplete source gate remains unresolved. Continue the
 canonical acquisition-output review; do not rerun a closed source experiment or
 treat a negative exclusion lookup as positive admission.
 
+## C37: cached acquisition needs complete file closure and owned output
+
+Question: could candidate tools scatter model bytes or report a cached source as
+verified without all of its files? Inspection found arbitrary output roots,
+link-following stat/write calls, no exclusive acquisition owner, and receipt
+reuse that iterated only the receipt's own list. Both report writers separately
+accepted arbitrary paths. These are storage/identity defects, not model results.
+
+The shared candidate storage owner now admits only ordinary canonical model
+paths and artifact report paths, checks portable filenames and file links,
+captures directory identity, and holds an exclusive lock during acquisition.
+Partial writes bind a validated file descriptor. Full repository/revision
+hashes prevent directory-name collisions. Old payload locations are not adopted,
+copied or migrated. Cached receipts require exact shape and complete unique
+file closure, then reverify each required digest and size against the candidate.
+Known rejected source identities still reject before filesystem/network effects.
+
+One initial test expected to replace an open candidate directory, but Windows
+refused its rename with EPERM. That was a failed test assumption, not a model
+failure or a demonstrated application-level race rejection. The revised case
+asserts the actual Windows lock behavior. Final result: 40 checks pass with no
+skips; storage coverage 100 percent lines and 91.18 percent branches, acquisition
+88.93 and 85.37 percent. Cases include junctions, hardlinks, stale/concurrent
+locks, replacement during fetch, missing/duplicated/changed receipt files,
+changed candidate evidence, and the existing native HTTP/resume paths.
+
+Owned synthetic model fixture roots were removed and their parent verified
+empty. Eight remaining source-side coverage files totalled 4210603 logical bytes
+and were removed; physical recovery was not measured and model-fixture bytes
+were not separately aggregated. See candidate-storage-review.json for exact
+input hashes and the retained failure classification.
+
+Reusable lesson: a receipt must be checked against the independently required
+file set, not used as the authority for which files exist. Canonical lexical
+paths alone do not exclude linked files or competing writers. These local
+checks do not establish model quality, distributed locking, power-loss durability
+or resistance to every privileged filesystem race. The next concrete fix is
+bounding payload writes and small-file/template/inventory reads before excess
+bytes reach disk or memory; current post-transfer limits remain insufficient.
+The incomplete source gate and real-model/publication prerequisites are unchanged.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

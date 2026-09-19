@@ -1,10 +1,9 @@
 "use strict";
 
 const crypto = require("node:crypto");
-const fs = require("node:fs");
-const path = require("node:path");
 const { sourceCandidateRejection } = require("./source-candidate-exclusions.js");
 const { createMetadataReader, MetadataReadError } = require("./huggingface-metadata.js");
+const { writeCandidateInventory: writeReport } = require("./huggingface-candidate-storage.js");
 
 const inventorySchema = "tinyrustlm.huggingface_candidate_inventory.v1";
 const defaultBaseUrl = "https://huggingface.co";
@@ -281,21 +280,6 @@ async function discoverCandidates(options = {}) {
     candidates: Object.freeze(candidates),
     rejections: Object.freeze(rejections)
   });
-}
-
-// Writes a report through same-directory atomic replacement.
-function writeReport(outputPath, report) {
-  const target = path.resolve(String(outputPath || ""));
-  invariant(path.extname(target).toLowerCase() === ".json", "output path must end in .json");
-  fs.mkdirSync(path.dirname(target), { recursive: true });
-  const temporary = `${target}.${crypto.randomUUID()}.tmp`;
-  try {
-    fs.writeFileSync(temporary, `${JSON.stringify(report, null, 2)}\n`, { encoding: "utf8", flag: "wx" });
-    fs.renameSync(temporary, target);
-  } finally {
-    fs.rmSync(temporary, { force: true });
-  }
-  return target;
 }
 
 // Runs the network discovery CLI and reports an honest shortfall via exit status.
