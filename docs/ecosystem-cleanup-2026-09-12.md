@@ -5,6 +5,45 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C38: enforce acquisition limits before writes and allocations, September 19
+
+Large downloads previously checked for excess bytes after writing the complete
+response. Configuration/license downloads buffered an unbounded response before
+their size check, and local template/inventory reads allocated before checking
+size. These defects are now corrected in the existing acquisition path.
+
+A decoded-byte limiter precedes the file writer. Resumed responses must bind
+the exact start, valid end and expected total; valid shorter ranges can continue
+within the existing retry limit. Compressed ranges are refused because their
+offsets do not establish decoded-file positions. Optional Content-Length values
+must be valid integers and agree with an identity-encoded range. The same request
+deadline now covers body consumption and writing. Overflow leaves only a bounded
+unverified partial; later transfer still verifies the complete file before promotion.
+
+Configuration/license streams use bounded buffer growth, preserving original
+bytes. Tokenizer metadata cannot advertise more than the existing 32 MiB small-file
+limit. A shared local reader checks size before allocation, binds the open file
+identity, handles short reads and detects mutations. It covers cached evidence,
+templates, receipts and CLI inventories. Evidence/receipt publication removes only
+its own temporary after failure and preserves a pre-existing name collision.
+
+All 49 affected checks pass, including actual loopback HTTP gzip expansion,
+oversized streamed bodies, contradictory ranges, body stalls, interrupted transfer
+resumption, local mutations and write/rename failures. Storage coverage is 100
+percent lines/93.33 percent branches; acquisition is 90.37/87.70 percent. Focused
+runs passed 12 and then 21 checks before the final 49-check coverage run.
+
+Owned D: synthetic fixtures were removed and their parent verified empty. Eight
+remaining source-side coverage files, 4322319 logical bytes, were removed;
+physical recovery and aggregate per-test fixture deletion bytes were not measured.
+Evidence: `artifacts/ecosystem-cleanup-20260912/acquisition-byte-limits-review.json`.
+
+This checkpoint does not download or qualify a real model, replay an experiment,
+change the quantization profile, or publish anything. Ternary/Bonsai research
+remains deferred. The two policy-blocked installer links still prevent source scan
+completion. Independent candidate admission, real numerical/browser quality and
+public seed/publication evidence remain required; these fixes do not pass those gates.
+
 ## C37: contain candidate output and verify complete cached sources, September 19
 
 Candidate acquisition accepted arbitrary output roots, followed existing file

@@ -1,0 +1,178 @@
+{
+  "schema": "tinyrustlm.acquisition-byte-limits-review.v1",
+  "observedAtUtc": "2026-09-19T21:46:57.991Z",
+  "sourceParent": "da9c2d8783f2aed4bc13e9e316521c07efd776e2",
+  "status": "bounded-acquisition-io-tested-no-real-model",
+  "environment": {
+    "node": "v24.14.0",
+    "platform": "win32",
+    "architecture": "x64"
+  },
+  "inputs": [
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-storage.js",
+      "bytes": 7153,
+      "sha256": "69fde9ed17a2bdaaccdb6fc3b663a519905bc4b9bda07fd3504db7ea49c31a7e"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+      "bytes": 28936,
+      "sha256": "bde2fea78d7b6abff04eeef994560f4244d3fdd110eb85454bdaaa92572ff899"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "bytes": 20494,
+      "sha256": "f927fd0259fdfbf87a2b26a11cd57e67ba914eadbc113ea2d797fb034cf2c914"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-qwen-candidates.js",
+      "bytes": 14187,
+      "sha256": "99149f5d223fd904b0866b77e2c262f8655d8f20f12e3a0b283095b41ca16f33"
+    },
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "bytes": 5822,
+      "sha256": "746e1fafa344ef8d71a5a85864fc1eaf34085c65789f9beda820a247af7f399e"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-metadata.js",
+      "bytes": 4158,
+      "sha256": "f6e26c0255a7eec38d35c116d4e1983fab42f33955e04074cb413f45ea97a341"
+    },
+    {
+      "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+      "bytes": 1885,
+      "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+    },
+    {
+      "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+      "bytes": 17290,
+      "sha256": "abb84b63d8fd59eaa335b7e2c7517cdf50c49f9a6f45117f9a22d5f47b9f7133"
+    },
+    {
+      "path": "tinyrustlm/tests/helpers/source-acquisition-fixture.js",
+      "bytes": 2446,
+      "sha256": "0fa5f31690fa4dd5923e8eb012ea83040d904d32aa46ef6cd5231f5fba275335"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-candidate-storage_test.js",
+      "bytes": 28363,
+      "sha256": "b15f2d251025f692d67e3e06f7e45646de43bd494de1f379426e5c7d813c55cf"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-candidate-acquire.test.js",
+      "bytes": 11123,
+      "sha256": "3c01d94f5dfdf4148486af0ed7d9b825721627d7bac2b6b8f318eb053c251461"
+    },
+    {
+      "path": "tinyrustlm/tests/canonical-operation-scratch_test.js",
+      "bytes": 4290,
+      "sha256": "8a884561b11804758d510c98c2a9e9a1195a99b852b3f7276db258e5b83788f2"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-metadata_test.js",
+      "bytes": 11127,
+      "sha256": "ffc249e2cae5e8f3b51d969cfa6eca3b5db1bc192b21f525b58e129a7b373696"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-supported-candidates.test.js",
+      "bytes": 6548,
+      "sha256": "041206bc62909e7795f6f9cd44ac55c8d02132f980da7f9cb1a6e361eb252023"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-qwen-candidates.test.js",
+      "bytes": 5221,
+      "sha256": "6dfac5eefa0514669dec6f7578e85792fe8c30818a7fd0caaa4d1449d6cc0cc4"
+    },
+    {
+      "path": "tinyrustlm/tests/source-candidate-exclusions_test.js",
+      "bytes": 7320,
+      "sha256": "b61953e2473d6c303b3b62fe0aaa00c96fe7dc36cda0ae7ba1e9d27e4692f1d9"
+    }
+  ],
+  "changes": [
+    "Reject oversized decoded chunks before forwarding them to disk; preserve only bounded unverified partials",
+    "Validate resumed range start/end/total, identity encoding and optional integer Content-Length",
+    "Apply the fetch deadline to body consumption and the write pipeline; validate 1000ms to four-hour timeout range",
+    "Bound incremental config/license buffers and preserve original bytes; reject tokenizer metadata over 32 MiB",
+    "Bound local evidence/template/receipt/inventory reads before allocation, through a checked file handle with mutation detection",
+    "Share evidence/receipt atomic byte publication, clean only its owned failed temporary and preserve pre-existing collisions"
+  ],
+  "tests": {
+    "passed": 49,
+    "failed": 0,
+    "skipped": 0,
+    "files": [
+      "tinyrustlm/tests/huggingface-candidate-storage_test.js",
+      "tinyrustlm/tests/huggingface-candidate-acquire.test.js",
+      "tinyrustlm/tests/canonical-operation-scratch_test.js",
+      "tinyrustlm/tests/huggingface-metadata_test.js",
+      "tinyrustlm/tests/huggingface-supported-candidates.test.js",
+      "tinyrustlm/tests/huggingface-qwen-candidates.test.js",
+      "tinyrustlm/tests/source-candidate-exclusions_test.js"
+    ],
+    "coverage": [
+      {
+        "file": "huggingface-candidate-storage.js",
+        "lines": 100,
+        "branches": 93.33,
+        "functions": 100
+      },
+      {
+        "file": "huggingface-candidate-acquire.js",
+        "lines": 90.37,
+        "branches": 87.7,
+        "functions": 84.09
+      },
+      {
+        "file": "source-acquisition-fixture.js",
+        "lines": 100,
+        "branches": 100,
+        "functions": 100
+      }
+    ],
+    "cases": [
+      "Oversized chunk preserves an initial three-byte partial; subsequent exact shorter range and remaining range complete successfully",
+      "Contradictory starts/ends/totals, unknown totals, unsafe numbers, malformed lengths and encoded ranges fail before appending",
+      "Actual Node fetch decodes a real HTTP gzip response; excess decoded bytes never reach the model file",
+      "A lying compressed length cannot bypass the 32 MiB streamed evidence limit; response cancellation is observed",
+      "Growing bounded evidence buffer preserves exact BOM and other bytes",
+      "Stalled evidence and weight bodies abort, release ownership and permit later correct acquisition",
+      "Bounded local reads handle short OS reads, reject oversize/links without reads and detect growth, truncation and early EOF",
+      "CLI rejects a 16 MiB plus one-byte sparse metadata inventory before parsing or acquisition",
+      "Failed sync/rename removes owned evidence temporary; exclusive-name collision preserves existing bytes",
+      "Existing canonical ownership, complete receipt, metadata bounds, source exclusion and interrupted HTTP resumption checks"
+    ],
+    "sequence": "Focused 12 passed; expanded focused 21 passed; final affected coverage suite 49 passed; no failed test runs in this checkpoint"
+  },
+  "cleanup": {
+    "modelFixtureParent": "D:\\LLMs\\TinyRustLM\\artifacts\\tests\\source-acquisition",
+    "modelFixtureParentEmpty": true,
+    "ownedSourceCoverageOutputRemoved": true,
+    "sourceCoverageFilesRemoved": 8,
+    "sourceCoverageLogicalBytesRemoved": 4322319,
+    "perTestFixtureDeletionBytesAggregated": false,
+    "physicalStorageRecoveryMeasured": false,
+    "historicalModelPayloadsModified": false
+  },
+  "sourceGate": {
+    "status": "source_authority_scan_incomplete",
+    "paths": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "blockedDeletionRetried": false
+  },
+  "remaining": [
+    "Cooperative ownership and tested fault cases do not establish power-loss durability or resistance to every privileged filesystem race",
+    "Source authority remains incomplete; independent candidate admission and material numerical/browser/quality gates remain required",
+    "No live candidate search, real model download, closed experiment replay, model qualification, public seed or deployment occurred",
+    "Ternary/Bonsai/Hadamard research remains deferred per owner direction"
+  ],
+  "memoryVerification": {
+    "testFilter": "FullyQualifiedName~UaixMemoryConsolidationTests",
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0
+  }
+}

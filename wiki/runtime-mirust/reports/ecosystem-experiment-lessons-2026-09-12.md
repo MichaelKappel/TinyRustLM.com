@@ -1212,6 +1212,45 @@ bounding payload writes and small-file/template/inventory reads before excess
 bytes reach disk or memory; current post-transfer limits remain insufficient.
 The incomplete source gate and real-model/publication prerequisites are unchanged.
 
+## C38: enforce byte bounds before consuming the resource
+
+Question: did acquisition size checks prevent disk and memory growth, or merely
+report it afterward? Source inspection found a final-size check after the large
+file pipeline, arrayBuffer consumption before the small-file limit, and local
+template/inventory reads before their size checks. The exact source/test inputs
+are hashed in `artifacts/ecosystem-cleanup-20260912/acquisition-byte-limits-review.json`.
+
+Method: put a decoded-byte transform before the disk writer; strictly validate
+range start/end/total and optional lengths; apply the request deadline to bodies;
+bound incremental small-file buffers; read local metadata through a size- and
+identity-checked handle; retain exclusive temporary ownership through failure.
+Use synthetic canonical D: fixtures and a real loopback HTTP gzip response,
+without executing any model. Inject oversized streams, contradictory ranges,
+stalls, local growth/truncation, sync/rename failures and temporary-name collisions.
+
+Result: 49 checks pass, no failures or skips. Focused runs passed 12 and 21 checks.
+Storage coverage is 100 percent lines/93.33 percent branches; acquisition is
+90.37/87.70 percent. The overflow case preserved its initial three-byte partial;
+a later correct response resumed through a shorter range and completed with the
+expected digest. Stalled evidence and weight bodies released their locks; failed
+publication removed its own temporary and preserved an existing collision.
+Small streamed evidence preserved exact original bytes through buffer growth.
+
+Decision: retain the corrections in the current acquisition path. Stop using
+post-write size checks or unbounded whole-response reads as resource controls.
+The reusable rule is to enforce a bound before forwarding bytes to the resource
+being protected; compressed Content-Length is not a decoded byte limit. A range
+prefix alone does not establish its end or total, and a pre-read stat alone does
+not bind a later path-based unbounded read to the inspected file.
+
+Uncertainty: cooperative local ownership and these fault cases do not prove every
+privileged filesystem race, production network behavior or power-loss durability.
+Eight owned source-side coverage files totalled 4322319 logical bytes and were
+removed; all owned model fixtures were removed and their parent is empty. Physical
+recovery and aggregate fixture bytes were not measured. No historical payload,
+blocked deletion, real candidate, experiment result or deployment was changed.
+The source scan and real-model/publication gates remain open; research is deferred.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

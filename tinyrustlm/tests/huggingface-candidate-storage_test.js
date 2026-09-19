@@ -3,8 +3,11 @@
 const assert = require("node:assert/strict");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
+const http = require("node:http");
 const path = require("node:path");
 const test = require("node:test");
+const zlib = require("node:zlib");
+const { spawnSync } = require("node:child_process");
 const storage = require("../tools/huggingface-candidate-storage.js");
 const acquire = require("../tools/huggingface-candidate-acquire.js");
 const supported = require("../tools/huggingface-supported-candidates.js");
@@ -255,4 +258,260 @@ test("both report writers use canonical artifacts and reject linked output", () 
     if (fs.existsSync(control)) fs.unlinkSync(control);
     removeOwnedTemporaryDirectory(owned);
   }
+});
+
+test("bounded local reads reject size and link violations before reading and detect mutations", (t) => {
+  const owned = createOwnedTemporaryDirectory({ temporaryParent: path.resolve("artifacts/tests/candidate-storage") });
+  const file = path.join(owned.rootPath, "input.json");
+  const link = path.join(owned.rootPath, "linked.json");
+  try {
+    fs.writeFileSync(file, "12345678");
+    const read = fs.readSync;
+    let reads = 0;
+    const mockedRead = t.mock.method(fs, "readSync", (fd, bytes, offset, length, position) => {
+      reads++;
+      return read(fd, bytes, offset, Math.min(length, 2), position);
+    });
+    for (const limit of [0, -1, 1.5, 33 * 1024 * 1024]) {
+      assert.throws(() => storage.readBoundedFile(file, limit), /limit/);
+    }
+    assert.throws(() => storage.readBoundedFile(file, 7), /size limit/);
+    assert.throws(() => storage.readBoundedFile(path.join(owned.rootPath, "absent"), 8), /size limit/);
+    fs.linkSync(file, link);
+    assert.throws(() => storage.readBoundedFile(file, 8), /linked/);
+    fs.unlinkSync(link);
+    assert.equal(reads, 0);
+    assert.equal(storage.readBoundedFile(file, 8).toString(), "12345678");
+    assert.equal(reads, 4, "Partial OS reads must fill the exact admitted buffer");
+    let guards = 0;
+    assert.throws(() => storage.readBoundedFile(file, 8, (target) => {
+      assert.equal(target, file);
+      if (++guards === 2) fs.appendFileSync(file, "growth");
+      return fs.lstatSync(target, { bigint: true });
+    }), /changed during bounded read/);
+    mockedRead.mock.restore();
+    const eof = t.mock.method(fs, "readSync", () => 0);
+    assert.throws(() => storage.readBoundedFile(file, 32), /ended during bounded read/);
+    eof.mock.restore();
+    const open = fs.openSync;
+    // Open with a writable handle only in this fault injection, so a change occurs before fstat.
+    const changedBefore = t.mock.method(fs, "openSync", (target, flags) => {
+      const fd = open(target, target === file ? "r+" : flags);
+      if (target === file) fs.ftruncateSync(fd, 1);
+      return fd;
+    });
+    assert.throws(() => storage.readBoundedFile(file, 32), /changed before bounded read/);
+    changedBefore.mock.restore();
+  } finally {
+    t.mock.restoreAll();
+    if (fs.existsSync(link)) fs.unlinkSync(link);
+    removeOwnedTemporaryDirectory(owned);
+  }
+});
+
+test("inventory CLI rejects an oversized sparse input before parsing or model output", () => {
+  const owned = createOwnedTemporaryDirectory({ temporaryParent: path.resolve("artifacts/tests/candidate-storage") });
+  const input = path.join(owned.rootPath, "inventory.json");
+  try {
+    const fd = fs.openSync(input, "wx");
+    try { fs.ftruncateSync(fd, 16 * 1024 * 1024 + 1); } finally { fs.closeSync(fd); }
+    const child = spawnSync(process.execPath, ["tinyrustlm/tools/huggingface-candidate-acquire.js", input,
+      "D:\\LLMs\\TinyRustLM"], { encoding: "utf8", windowsHide: true, timeout: 5000,
+      env: { ...process.env, NODE_V8_COVERAGE: "" } });
+    assert.ifError(child.error);
+    assert.equal(child.status, 1);
+    assert.match(child.stderr, /inventory.json is outside its size limit/);
+  } finally { removeOwnedTemporaryDirectory(owned); }
+});
+
+test("tokenizer sizes and timeout bounds fail before fetching or creating a candidate directory", async () => {
+  const owned = createSourceAcquisitionFixture();
+  const fixture = candidateFixture();
+  try {
+    for (const timeoutMs of [0, -1, 999, 1000.5, 4 * 60 * 60 * 1000 + 1, Number.MAX_SAFE_INTEGER]) {
+      await assert.rejects(acquire.acquireCandidate(fixture.candidate, owned.rootPath,
+        { fetchImpl: fixture.fetchImpl, timeoutMs }), /timeout/);
+    }
+    for (const key of ["tokenizer", "tokenizerConfig"]) {
+      const candidate = { ...fixture.candidate, [key]: { ...fixture.candidate[key], byteCount: 32 * 1024 * 1024 + 1 } };
+      await assert.rejects(acquire.acquireCandidate(candidate, owned.rootPath, { fetchImpl: fixture.fetchImpl }), /size limit/);
+    }
+    assert.equal(fixture.calls.length, 0);
+    assert.deepEqual(fs.readdirSync(owned.rootPath), [".fixture-owner"]);
+  } finally { owned.remove(); }
+});
+
+test("oversized resumed chunks cannot append past the range and a later transfer still resumes", async () => {
+  const owned = createSourceAcquisitionFixture();
+  const fixture = candidateFixture();
+  const directory = acquire.candidateDirectory(owned.rootPath, fixture.candidate);
+  const part = path.join(directory, "model.safetensors.part");
+  const weight = fixture.files["model.safetensors"];
+  let cancelled = false;
+  try {
+    fs.mkdirSync(directory);
+    fs.writeFileSync(part, weight.subarray(0, 3));
+    await assert.rejects(acquire.acquireCandidate(fixture.candidate, owned.rootPath, { fetchImpl: async (url, options) => {
+      if (!url.endsWith("model.safetensors")) return fixture.fetchImpl(url);
+      assert.equal(options.headers.Range, "bytes=3-");
+      return new Response(new ReadableStream({ start(controller) { controller.enqueue(Buffer.alloc(65536)); },
+        cancel() { cancelled = true; } }), { status: 206, headers: { "Content-Range": `bytes 3-${weight.length - 1}/${weight.length}` } });
+    } }), /exceeded its expected byte count/);
+    assert.equal(cancelled, true);
+    assert.deepEqual(fs.readFileSync(part), weight.subarray(0, 3));
+    assert.equal(fs.existsSync(path.join(directory, "source-acquisition.json")), false);
+    const ranges = [];
+    const receipt = await acquire.acquireCandidate(fixture.candidate, owned.rootPath, { fetchImpl: async (url, options) => {
+      if (!url.endsWith("model.safetensors")) return fixture.fetchImpl(url);
+      const start = Number(/^bytes=(\d+)-$/.exec(options.headers.Range)[1]);
+      const end = start === 3 ? 4 : weight.length - 1;
+      ranges.push(start);
+      return new Response(weight.subarray(start, end + 1), { status: 206,
+        headers: { "Content-Range": `bytes ${start}-${end}/${weight.length}`, "Content-Length": end - start + 1 } });
+    } });
+    assert.equal(receipt.status, "verified");
+    assert.deepEqual(ranges, [3, 5]);
+    assert.deepEqual(fs.readFileSync(path.join(directory, "model.safetensors")), weight);
+    assert.equal(fs.existsSync(part), false);
+  } finally { owned.remove(); }
+});
+
+test("range totals, endpoints, encoding and Content-Length must agree before appending", async () => {
+  const owned = createSourceAcquisitionFixture();
+  const fixture = candidateFixture();
+  const directory = acquire.candidateDirectory(owned.rootPath, fixture.candidate);
+  const part = path.join(directory, "model.safetensors.part");
+  const weight = fixture.files["model.safetensors"];
+  const validRange = `bytes 3-${weight.length - 1}/${weight.length}`;
+  try {
+    fs.mkdirSync(directory);
+    fs.writeFileSync(part, weight.subarray(0, 3));
+    const cases = [
+      { "Content-Range": "bytes 3-nonsense" }, { "Content-Range": "bytes 3-4/*" },
+      { "Content-Range": `bytes 3-2/${weight.length}` }, { "Content-Range": `bytes 2-4/${weight.length}` },
+      { "Content-Range": `bytes 3-${weight.length}/${weight.length}` },
+      { "Content-Range": `bytes 3-4/${weight.length + 1}` },
+      { "Content-Range": "bytes 3-4/9007199254740993" },
+      { "Content-Range": validRange, "Content-Encoding": "gzip" },
+      { "Content-Range": validRange, "Content-Length": "1" },
+      ...["-1", "abc", "1.5", "9007199254740993"].map((value) => ({ "Content-Range": validRange, "Content-Length": value }))
+    ];
+    for (const headers of cases) {
+      let cancelled = false;
+      await assert.rejects(acquire.acquireCandidate(fixture.candidate, owned.rootPath, { fetchImpl: async (url) => {
+        if (!url.endsWith("model.safetensors")) return fixture.fetchImpl(url);
+        return new Response(new ReadableStream({ cancel() { cancelled = true; } }), { status: 206, headers });
+      } }), /Content-Range|Content-Length|encoded range/);
+      assert.equal(cancelled, true);
+      assert.deepEqual(fs.readFileSync(part), weight.subarray(0, 3));
+    }
+  } finally { owned.remove(); }
+});
+
+test("real HTTP gzip expansion is limited by decoded bytes before disk writes", async () => {
+  const owned = createSourceAcquisitionFixture();
+  const fixture = candidateFixture();
+  const expanded = Buffer.alloc(128 * 1024, 0x61);
+  const compressed = zlib.gzipSync(expanded);
+  const server = http.createServer((_request, response) => {
+    response.writeHead(200, { "Content-Encoding": "gzip", "Content-Length": compressed.length });
+    response.end(compressed);
+  });
+  try {
+    await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+    await assert.rejects(acquire.acquireCandidate(fixture.candidate, owned.rootPath, { fetchImpl: async (url, options) => {
+      if (!url.endsWith("model.safetensors")) return fixture.fetchImpl(url);
+      return fetch(`http://127.0.0.1:${server.address().port}/`, options);
+    } }), /exceeded its expected byte count/);
+    const directory = acquire.candidateDirectory(owned.rootPath, fixture.candidate);
+    const part = path.join(directory, "model.safetensors.part");
+    assert.ok(fs.statSync(part).size <= fixture.candidate.sourceWeightByteCount);
+    assert.equal(fs.existsSync(path.join(directory, "model.safetensors")), false);
+    assert.equal(fs.existsSync(path.join(directory, "source-acquisition.json")), false);
+  } finally {
+    server.closeAllConnections();
+    await new Promise((resolve) => server.close(resolve));
+    owned.remove();
+  }
+});
+
+test("small evidence streams enforce decoded limits without writing oversized bodies", async () => {
+  const owned = createSourceAcquisitionFixture();
+  const fixture = candidateFixture();
+  const directory = acquire.candidateDirectory(owned.rootPath, fixture.candidate);
+  try {
+    let cancelled = false;
+    let pulls = 0;
+    const chunk = Buffer.alloc(1024 * 1024);
+    await assert.rejects(acquire.acquireCandidate(fixture.candidate, owned.rootPath, { fetchImpl: async () =>
+      new Response(new ReadableStream({ pull(controller) { pulls++; controller.enqueue(chunk); },
+        cancel() { cancelled = true; } }), { headers: { "Content-Encoding": "gzip", "Content-Length": "1" } })
+    }), /config.json is oversized/);
+    assert.equal(cancelled, true);
+    assert.ok(pulls <= 35, `Reader pulled ${pulls} chunks after its 32 MiB limit`);
+    assert.deepEqual(fs.readdirSync(directory), []);
+    for (const length of [String(32 * 1024 * 1024 + 1), "-1", "abc"]) {
+      cancelled = false;
+      await assert.rejects(acquire.acquireCandidate(fixture.candidate, owned.rootPath, { fetchImpl: async () =>
+        new Response(new ReadableStream({ cancel() { cancelled = true; } }), { headers: { "Content-Length": length } })
+      }), /oversized|Content-Length/);
+      assert.equal(cancelled, true);
+    }
+    const exact = Buffer.from(`\ufeff${"x".repeat(70000)}`);
+    const altered = { ...fixture.candidate, configSha256: digest(exact) };
+    await acquire.acquireCandidate(altered, owned.rootPath, { fetchImpl: async (url) => {
+      if (!url.endsWith("config.json") || url.endsWith("tokenizer_config.json")) return fixture.fetchImpl(url);
+      return new Response(new ReadableStream({ start(controller) {
+        controller.enqueue(exact.subarray(0, 65536)); controller.enqueue(exact.subarray(65536)); controller.close();
+      } }));
+    } });
+    assert.deepEqual(fs.readFileSync(path.join(directory, "config.json")), exact, "Original bytes must survive buffer growth");
+  } finally { owned.remove(); }
+});
+
+test("the body deadline cancels stalled evidence and weight streams and releases ownership", async () => {
+  const owned = createSourceAcquisitionFixture();
+  const fixture = candidateFixture();
+  const directory = acquire.candidateDirectory(owned.rootPath, fixture.candidate);
+  // AbortSignal.timeout is unref'ed; retain a test deadline while the injected body has no OS socket.
+  const keepAlive = setTimeout(() => {}, 5000);
+  try {
+    for (const target of ["config.json", "model.safetensors"]) {
+      let cancelled = false;
+      await assert.rejects(acquire.acquireCandidate(fixture.candidate, owned.rootPath, { timeoutMs: 1000,
+        fetchImpl: async (url) => {
+          if (new URL(url).pathname.split("/").pop() !== target) return fixture.fetchImpl(url);
+          return new Response(new ReadableStream({ cancel() { cancelled = true; } }));
+        } }), /abort/i);
+      assert.equal(cancelled, true);
+      assert.equal(fs.existsSync(path.join(directory, "source-acquisition.lock")), false);
+      assert.equal(fs.existsSync(path.join(directory, "source-acquisition.json")), false);
+      assert.equal(fs.readdirSync(directory).some((name) => name.endsWith(".tmp")), false);
+    }
+    assert.equal((await acquire.acquireCandidate(fixture.candidate, owned.rootPath,
+      { fetchImpl: fixture.fetchImpl })).status, "verified");
+  } finally { clearTimeout(keepAlive); owned.remove(); }
+});
+
+test("failed evidence promotion removes its temporary but preserves an exclusive-name collision", async (t) => {
+  const owned = createSourceAcquisitionFixture();
+  const fixture = candidateFixture();
+  const directory = acquire.candidateDirectory(owned.rootPath, fixture.candidate);
+  try {
+    for (const operation of ["fsyncSync", "renameSync"]) {
+      const fault = t.mock.method(fs, operation, () => { throw new Error(`injected ${operation} failure`); });
+      await assert.rejects(acquire.acquireCandidate(fixture.candidate, owned.rootPath, { fetchImpl: fixture.fetchImpl }),
+        new RegExp(`injected ${operation}`));
+      fault.mock.restore();
+      assert.deepEqual(fs.readdirSync(directory), []);
+    }
+    const collision = path.join(directory, "config.json.fixed.tmp");
+    fs.writeFileSync(collision, "preserve existing bytes", { flag: "wx" });
+    const uuid = t.mock.method(crypto, "randomUUID", () => "fixed");
+    await assert.rejects(acquire.acquireCandidate(fixture.candidate, owned.rootPath, { fetchImpl: fixture.fetchImpl }),
+      { code: "EEXIST" });
+    uuid.mock.restore();
+    assert.equal(fs.readFileSync(collision, "utf8"), "preserve existing bytes");
+    assert.equal(fs.existsSync(path.join(directory, "source-acquisition.lock")), false);
+  } finally { t.mock.restoreAll(); owned.remove(); }
 });

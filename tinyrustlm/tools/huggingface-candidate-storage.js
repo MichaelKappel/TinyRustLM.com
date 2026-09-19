@@ -50,6 +50,38 @@ function ordinaryFile(filePath) {
   return stat;
 }
 
+/** Compare the identity and mutation metadata of one ordinary file across a bounded read. */
+function sameFile(left, right) {
+  return left && right && right.isFile() && right.nlink === 1n && left.dev === right.dev &&
+    left.ino === right.ino && left.size === right.size && left.mtimeNs === right.mtimeNs &&
+    left.ctimeNs === right.ctimeNs;
+}
+
+/** Read at most the admitted size through an identity-checked handle, before allocating any payload. */
+function readBoundedFile(filePath, maximumBytes, guard = ordinaryFile) {
+  invariant(Number.isSafeInteger(maximumBytes) && maximumBytes > 0 && maximumBytes <= 32 * 1024 * 1024,
+    "local read limit is invalid");
+  const before = guard(filePath);
+  invariant(before && before.size > 0n && before.size <= BigInt(maximumBytes),
+    `${path.basename(filePath)} is outside its size limit`);
+  const descriptor = fs.openSync(filePath, "r");
+  try {
+    invariant(sameFile(before, fs.fstatSync(descriptor, { bigint: true })), "file changed before bounded read");
+    const bytes = Buffer.alloc(Number(before.size));
+    let offset = 0;
+    while (offset < bytes.length) {
+      const count = fs.readSync(descriptor, bytes, offset, bytes.length - offset, offset);
+      invariant(count > 0, "file ended during bounded read");
+      offset += count;
+    }
+    invariant(sameFile(before, fs.fstatSync(descriptor, { bigint: true })) && sameFile(before, guard(filePath)),
+      "file changed during bounded read");
+    return bytes;
+  } finally {
+    fs.closeSync(descriptor);
+  }
+}
+
 /** Capture an existing directory and recheck its identity before every guarded file operation. */
 function directoryGuard(directory, requireDirectory) {
   const root = requireDirectory(directory);
@@ -124,4 +156,5 @@ function writeCandidateInventory(outputPath, report) {
   return target;
 }
 
-module.exports = Object.freeze({ requireFilename, requireModelOutputRoot, withCandidateDirectory, writeCandidateInventory });
+module.exports = Object.freeze({ requireFilename, requireModelOutputRoot, readBoundedFile,
+  withCandidateDirectory, writeCandidateInventory });

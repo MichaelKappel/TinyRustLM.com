@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-19T21:31:24Z
+updated_utc: 2026-09-19T21:44:51Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -66,7 +66,8 @@ reviewed_storage_and_experiments:
   close_run: Preserve failed attempts and stages never started; a corrected implementation needs a new experiment. Transfer resumption is not scientific replay.
 
 current_limit:
-  c37: Canonical candidate/report storage, file-link checks, exclusive acquisition ownership and complete cached receipt closure have 40 passing checks. Synthetic model fixtures retired; no real model or public result. See candidate-storage-review.json. Next bound acquisition bytes before writing/reading; source scan and material/public gates remain open.
+  c38: Decoded-byte limits precede file writes, evidence buffering and local allocation; exact ranges and body deadlines are checked. Forty-nine affected checks pass, including gzip overflow, resumption and owned temporary cleanup. See acquisition-byte-limits-review.json. Fixtures retired; source scan, independent admission and real model/public gates remain open.
+  c37: Canonical candidate/report storage, file-link checks, exclusive acquisition ownership and complete cached receipt closure had 40 passing checks. Synthetic model fixtures retired; no real model or public result. See candidate-storage-review.json; C38 supplies later byte bounds.
   c36: Shared metadata reader replaces both unbounded discovery response paths with streamed byte limits, deadlines and typed evidence failures. Twenty-six historical checks passed, including native HTTP faults; no live discovery or model result. See huggingface-metadata-review.json. C37 supplies later output/receipt checks.
   c35: Both discovery owners and inventory acquisition enforce exact exclusions from 37 hashed assessments plus the owner's Qwen3 rejection. Fourteen historical checks passed; no live discovery, model run or positive admission. Its metadata reader finding was resolved by C36; see source-candidate-exclusions-review.json.
   maturity: Early alpha, never a working release; debt/obsolete/legacy prohibition is a requirement, not a cleanup-success claim.

@@ -1,10 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-19T21:31:24Z
+updated_utc: 2026-09-19T21:44:51Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
-  task: C37 contains candidate/report output, adds exclusive acquisition ownership and verifies complete cached receipts; 40 affected checks pass. Next fix pre-write/pre-read acquisition byte bounds, then unchanged real model/delivery gates. Ternary/Bonsai research stays deferred.
+  task: C38 enforces acquisition byte limits before writes/allocations, validates exact ranges, applies body deadlines and cleans owned failed temporaries; 49 affected checks pass. Continue candidate admission and actual model/delivery work within unchanged gates. Ternary/Bonsai research stays deferred.
   maturity: Early alpha, never a working release; no code debt, obsolete code or legacy support before the owner's official acceptance of a fully working release.
   broader_goal: Ecosystem cleanup and usable release remain incomplete.
   manifest: docs/report-intake/2026-09-19/working-product-research/MANIFEST.md
@@ -12,7 +12,8 @@ now:
   scope: Local guidance/custody/validation only; no model run, qualification, public seed, deployment or live MemoryEndpoints operation.
 
 current_source_state:
-  candidate_storage: C37 confines model paths to D:\LLMs\TinyRustLM and reports to canonical artifacts; rejects file links, locks each acquisition and verifies complete receipt closure against the candidate. Forty checks pass; all owned synthetic model fixtures removed. See candidate-storage-review.json. Payload write/read limits remain open before material acquisition.
+  candidate_bytes: C38 bounds decoded writes, streamed evidence and local reads; checks exact range totals and body deadlines; preserves resumable partials and removes only owned failed temporaries. Forty-nine checks pass; synthetic fixtures retired. See acquisition-byte-limits-review.json. No material/public gate passed.
+  candidate_storage: C37 confines model paths to D:\LLMs\TinyRustLM and reports to canonical artifacts; rejects file links, locks each acquisition and verifies complete receipt closure against the candidate. Forty historical checks passed; see candidate-storage-review.json. C38 supplies later byte-bound corrections.
   candidate_metadata: C36 bounds original decoded JSON/text bytes, rejects oversized search rows, aborts stalled responses and preserves metadata failure codes. Native loopback HTTP proves timeout/decompression/truncation handling; no external discovery or model execution. See huggingface-metadata-review.json.
   candidate_exclusions: Current contract source-candidate-exclusions.v1.json binds 37 verified historical assessments plus the owner-rejected Qwen3 source identity. Both discovery owners and inventory acquisition reject known revisions and known weight-file hashes; 14 checks pass. This is negative-only, not qualification. SmolLM2-1.7B and Qwen2.5-1.5B exact suggested revisions were already rejected; see C35.
   authority: workspace.uai current_companion_truth
@@ -33,7 +34,7 @@ known_blockers:
   - Training pilot needs genuine independent reviewers and holdout authors; no accepted derivative or 200000-record scale authorization follows from reports.
 
 next_decisions:
-  - Bound large acquisition writes and config/license/template/inventory reads before memory/disk growth. C37 fixes output ownership and receipt closure; metadata eligibility and absence from the C35 exclusion policy still do not grant quality/execution admission.
+  - Continue independent candidate admission and remaining model/hosting work. C35-C38 provide exact exclusions, bounded metadata/transfers, owned output and complete receipts; passing those checks still does not grant quality/execution admission or reopen a closed experiment.
   - Test exact eligible source usefulness before conversion; diagnose semantics/arithmetic separately; measure actual browser viability.
   - Establish actual LiteSpeed hosting capabilities, server TRACE rejection, remote paths, TLS/browser CORS and qualified member readbacks. C34 proves local Apache HTTP only, using an Alias and invalid-model fixtures. MiniModel seeding is authorized; no qualified payload or deployment gate pass exists.
   - Keep restore/default under the beginner path and technical acquisition controls under Advanced; do not claim ready without the complete model.
