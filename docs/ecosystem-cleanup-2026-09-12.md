@@ -5,6 +5,44 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C41: bound browser admission checks, September 19
+
+The browser checked qualification and admission documents before starting the
+model-transfer timeout. Those checks bounded bytes but could wait indefinitely
+for a fetch, body read or injected hash. Added one 30-second deadline spanning
+both documents and their hashes, with explicit caller cancellation and stable
+timeout/abort errors. The loader owns the fetch signal; the app passes its caller
+signal separately so cancellation cannot replace the deadline. Timers, listeners
+and stream locks are released, and invalid responses abort the owned fetch.
+
+The chooser now reports that checking the model took too long, clears its busy
+state and permits another explicit attempt. It never starts model transfer after
+that timeout. Existing byte, hash, qualification and six-member identity gates
+remain intact. Both static shells bind the updated script hashes; appearance is
+unchanged.
+
+Verification: 218 affected JavaScript checks pass without failures or skips.
+Loader line/branch/function coverage is 88.79/77.01/98.08 percent. Installed Edge
+passes four selected checks at each of desktop and mobile viewport sizes: stalled
+qualification, stalled admission, existing Cancel/deduplication, and altered
+receipt rejection. The two timeout cases advance the browser clock by 31 seconds
+and observe zero peer model requests. These are synthetic metadata fixtures on a
+local server, not real model, physical mobile, public network or seed evidence.
+
+Evidence: `artifacts/ecosystem-cleanup-20260912/admission-lifetime-review.json`.
+The initial new contract tests failed against the previous loader. An intermediate
+run also exposed two test defects (an incorrectly supplied response option and a
+stale wiring assertion); both were corrected before the final passing run. The
+final unit and browser harnesses removed 29 remaining owned files, 4119154 logical
+bytes; aggregate per-test fixture bytes and physical recovery were not measured.
+Both operation scratch parents are empty. Unrelated existing smoke output is
+preserved.
+
+The source-authority scan again reports the same two unreadable installer links.
+Their removals remain policy-blocked and were not retried. Source admission,
+numerical parity, a qualified default, real browser inference and public seed/
+publication evidence remain open. Ternary/Bonsai/Hadamard research stays deferred.
+
 ## C40: retire superseded task-screen executables, September 19
 
 The planning-ledger screen had four parallel evaluator implementations and two

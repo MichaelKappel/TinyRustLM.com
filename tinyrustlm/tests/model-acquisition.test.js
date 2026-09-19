@@ -538,6 +538,34 @@ const compositionMemberNames = Object.freeze([
   "composition.acg2"
 ]);
 
+test("acquisition passes caller cancellation without replacing the loader fetch signal", async () => {
+  const wiring = sourceSection(app, "  async function loadCatalogAdmission",
+    "  function catalogQualificationError");
+  const controller = new AbortController();
+  const loaderController = new AbortController();
+  const entry = { browserAdmission: {} };
+  let requestSignal;
+  const windowValue = {
+    crypto: {},
+    fetch(_url, options) {
+      assert.equal(this, windowValue);
+      requestSignal = options.signal;
+      return Promise.resolve("response");
+    }
+  };
+  const load = Function("window", "catalogAdmissionLoaderApi", "miniModelCatalogV1Api",
+    "browserModelAdmissionApi", wiring + "\nreturn loadCatalogAdmission;")(
+    windowValue, {
+      async load(options) {
+        assert.equal(options.signal, controller.signal);
+        return options.fetch("https://minimodel.org/test", { signal: loaderController.signal });
+      }
+    }, { CATALOG_URL: "https://minimodel.org/catalog" }, {}
+  );
+  assert.equal(await load(entry, controller.signal), "response");
+  assert.equal(requestSignal, loaderController.signal);
+});
+
 test("the basic path uses the exact strict catalog admission loader", () => {
   const wiring = sourceSection(
     app,
@@ -567,7 +595,7 @@ test("the basic path uses the exact strict catalog admission loader", () => {
   );
   assert.match(
     wiring,
-    /return catalogAdmissionLoaderApi\.load\(\{\s*catalogView: entry,\s*catalogBaseUrl: miniModelCatalogV1Api\.CATALOG_URL,\s*fetch: fetchAdmission,\s*admissionParser: browserModelAdmissionApi,\s*crypto: window\.crypto\s*\}\);/
+    /return catalogAdmissionLoaderApi\.load\(\{\s*catalogView: entry,\s*catalogBaseUrl: miniModelCatalogV1Api\.CATALOG_URL,\s*fetch: window\.fetch\.bind\(window\),\s*signal,\s*admissionParser: browserModelAdmissionApi,\s*crypto: window\.crypto\s*\}\);/
   );
   assert.match(catalogAdmissionLoader, /const MAXIMUM_ADMISSION_BYTES = 64 \* 1024;/);
   assert.match(catalogAdmissionLoader, /descriptor\.bytes < 1[\s\S]*?descriptor\.bytes > MAXIMUM_ADMISSION_BYTES/);
@@ -575,11 +603,11 @@ test("the basic path uses the exact strict catalog admission loader", () => {
   assert.match(resolution, /resolved\.hash \|\| resolved\.search/);
   assert.match(
     fetchBytes,
-    /await fetchFunction\(url, \{\s*method: "GET",\s*cache: "no-store",\s*credentials: "omit",\s*redirect: "error",\s*referrerPolicy: "no-referrer"\s*\}\)/
+    /await lifetime\.wait\(\(\) => fetchFunction\(url, \{\s*method: "GET",\s*cache: "no-store",\s*credentials: "omit",\s*redirect: "error",\s*referrerPolicy: "no-referrer",\s*signal: lifetime\.signal\s*\}\)\)/
   );
   assert.doesNotMatch(fetchBytes, /\bbody\s*:/);
   assert.match(fetchBytes, /declaredLength\(response, expectedBytes, maximumBytes, codePrefix\)/);
-  assert.match(fetchBytes, /readActualBytes\(response, expectedBytes, codePrefix\)/);
+  assert.match(fetchBytes, /readActualBytes\(response, expectedBytes, codePrefix, lifetime\)/);
   assert.match(load, /if \(`sha256:\$\{receiptDigest\}` !== catalog\.qualificationReceiptSha256\)/);
   assert.match(load, /if \(`sha256:\$\{digest\}` !== catalog\.descriptor\.sha256\)/);
   assert.match(load, /new TextDecoder\("utf-8", \{ fatal: true \}\)\.decode\(receiptBytes\)/);

@@ -1,0 +1,266 @@
+{
+  "schema": "tinyrustlm.admission-lifetime-review.v1",
+  "observedAtUtc": "2026-09-19T22:27:46Z",
+  "sourceParent": "63d05df138f0201767ac2765ea6bad614f3fe39b",
+  "status": "bounded-browser-admission-tested-locally-no-real-model-or-deployment",
+  "environment": {
+    "node": "v24.14.0",
+    "dotnetSdk": "10.0.401",
+    "edge": "153.0.4234.48",
+    "playwright": "1.61.1",
+    "platform": "win32",
+    "architecture": "x64",
+    "worktree": "Unrelated existing changes preserved; exact inputs below bind the reviewed source and selected test dependencies."
+  },
+  "inputs": [
+    {
+      "path": "tinyrustlm/app/catalog-admission-loader.js",
+      "bytes": 39387,
+      "sha256": "d33256d21c26d4cab8578a142f0dfbb6522049e78d7974dbbbd3c8e92a87d996"
+    },
+    {
+      "path": "tinyrustlm/app/app.js",
+      "bytes": 459822,
+      "sha256": "25b129619920cb0fb22f0d2bc51ab4277798ae51e5f21a9dc636ea14e57b703a"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48478,
+      "sha256": "29d1f1276fe382223438ae14fb310711b20ef49ee0df307eb54a6bd71a61f9a5"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48554,
+      "sha256": "85e816fc100c9eeee3fe767021439201fb10bdd08e71b9f83243c1ceaee633ff"
+    },
+    {
+      "path": "tinyrustlm/app/browser-model-admission.js",
+      "bytes": 14858,
+      "sha256": "87cdc059e71435f1572b3ad03fcce17701d5b73e83c3a6172e078a3349e5b683"
+    },
+    {
+      "path": "tinyrustlm/app/minimodel-catalog-v1.js",
+      "bytes": 74274,
+      "sha256": "4868dba65b57197b68de6f3e74987602b9728c5fa0cf28ca05ec2a3166c35333"
+    },
+    {
+      "path": "tinyrustlm/app/p2p-composition-install.js",
+      "bytes": 50486,
+      "sha256": "55a53359bb7af64062eb8b7505251af6eab487bc94a8105a92698830ea6ae8e4"
+    },
+    {
+      "path": "tinyrustlm/app/model-composition-store.js",
+      "bytes": 75227,
+      "sha256": "349c3589d49603e436e9860661296377de6fd777c5a0c9ca5447c03df4d0f3ca"
+    },
+    {
+      "path": "tinyrustlm/tests/catalog-admission-loader.test.js",
+      "bytes": 32210,
+      "sha256": "2f3b51f1c9ca0fe36413e99d27b5c0641748f3695c5ea5d2d2f6bb69b0e4723d"
+    },
+    {
+      "path": "tinyrustlm/tests/model-acquisition.test.js",
+      "bytes": 119467,
+      "sha256": "992444de696bc9f8d007e80bdb90c4c5eeb18c841741b2a0d8d20d145d03cc87"
+    },
+    {
+      "path": "tinyrustlm/tests/model-acquisition-boundary-regression.test.js",
+      "bytes": 54844,
+      "sha256": "1f6b1896a0b14ad0c1af999b941d354067618187f0a482732d54103bd8f81a24"
+    },
+    {
+      "path": "tinyrustlm/tests/p2p-composition-install.test.js",
+      "bytes": 45141,
+      "sha256": "356570a67bd3ea6354de021aac73a9ddd499019c3453f45329969503c37443da"
+    },
+    {
+      "path": "tinyrustlm/tests/model-composition-store.test.js",
+      "bytes": 85124,
+      "sha256": "d927da0d67a6ffc887fe727c146eccef656ed433dc64b012132b504e6ae380c7"
+    },
+    {
+      "path": "tinyrustlm/tests/static-shell-parity.test.js",
+      "bytes": 5096,
+      "sha256": "bfe5be4318bf87c5784435f056b7e6cfd0196a426121bab87cab936ade59f16c"
+    },
+    {
+      "path": "tinyrustlm/tests/site-release-test-fixture.js",
+      "bytes": 4746,
+      "sha256": "ec8c96f2b664a35d8f0babc4c5fbeaec93913358d35a9e5f8529fd98d3e315a9"
+    },
+    {
+      "path": "tinyrustlm/e2e/model-chooser.spec.js",
+      "bytes": 69948,
+      "sha256": "26a385f77b39b2e64540f0367c31fbd0890be295b2e68b742864f65d65fae0aa"
+    },
+    {
+      "path": "tinyrustlm/playwright.config.js",
+      "bytes": 2855,
+      "sha256": "26c7fdbcf0d5977a8eeae721d4bc84d393ffe3c07ce5fbb25b675e237fad0934"
+    },
+    {
+      "path": "tinyrustlm/tools/static-server.js",
+      "bytes": 13282,
+      "sha256": "f7a95852b57568b31b9a5602e63bf57396008cb74b44866d4c47318ba1191465"
+    },
+    {
+      "path": "tinyrustlm/tools/static-shell-parity.js",
+      "bytes": 5964,
+      "sha256": "100ae82d9151f592db9607a6803d316d45934b3f349b3533d9c6df9d1e28fdeb"
+    },
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "bytes": 5822,
+      "sha256": "746e1fafa344ef8d71a5a85864fc1eaf34085c65789f9beda820a247af7f399e"
+    }
+  ],
+  "change": {
+    "before": "Qualification/admission metadata is read before the model-transfer timeout. Fetch, body-read and hash awaits lacked one owned deadline; app cancellation was injected only through a fetch wrapper.",
+    "after": "One default 30000 ms deadline spans both documents and asynchronous hashes. The optional internal timeout is an integer in 1..120000. Caller cancellation is linked to the loader-owned fetch signal; all terminal paths dispose resources.",
+    "timeoutCode": "catalog-admission-timeout",
+    "abortCode": "catalog-admission-aborted",
+    "userMessage": "Checking the model took too long. Check your connection and try again.",
+    "unchanged": [
+      "Exact catalog, qualification, admission, byte-length and SHA-256 validation",
+      "Six-member current composition requirement",
+      "User-visible appearance",
+      "No automatic retry after failed admission"
+    ]
+  },
+  "checks": [
+    {
+      "name": "initial-new-contract-tests",
+      "pass": 1,
+      "fail": 6,
+      "scope": "Node counts include the failed parent test; old loader rejected the new lifetime options. No pre-change public-browser hang was measured."
+    },
+    {
+      "name": "intermediate-two-file-run",
+      "pass": 92,
+      "fail": 2,
+      "interpretation": "Test defects: response helper was supplied a string instead of its declaredLength option; wiring assertions still required the previous app fetch wrapper. Corrected before the final run."
+    },
+    {
+      "name": "affected-javascript-final",
+      "pass": 218,
+      "fail": 0,
+      "skipped": 0,
+      "coverage": {
+        "file": "tinyrustlm/app/catalog-admission-loader.js",
+        "linePercent": 88.79,
+        "branchPercent": 77.01,
+        "functionPercent": 98.08
+      },
+      "command": "@'\nconst fs=require('fs'),path=require('path'),{spawnSync}=require('child_process');\nconst {createOwnedTemporaryDirectory,removeOwnedTemporaryDirectory}=require('./tinyrustlm/tools/canonical-operation-scratch.js');\nconst owned=createOwnedTemporaryDirectory({temporaryParent:path.resolve('artifacts/tests/admission-lifetime')});\ntry{\n const args=['--experimental-test-coverage','--test-coverage-include=tinyrustlm/app/catalog-admission-loader.js','--test','tinyrustlm/tests/catalog-admission-loader.test.js','tinyrustlm/tests/model-acquisition.test.js','tinyrustlm/tests/model-acquisition-boundary-regression.test.js','tinyrustlm/tests/p2p-composition-install.test.js','tinyrustlm/tests/model-composition-store.test.js','tinyrustlm/tests/static-shell-parity.test.js'];\n const r=spawnSync(process.execPath,args,{cwd:process.cwd(),env:{...process.env,TEMP:owned.rootPath,TMP:owned.rootPath,TMPDIR:owned.rootPath,NODE_V8_COVERAGE:path.join(owned.rootPath,'coverage')},windowsHide:true,encoding:'utf8',timeout:60000,maxBuffer:2*1024*1024});\n const out=r.stdout||'';process.stdout.write(out.slice(out.lastIndexOf('\\u2139 tests')));if(r.status!==0)process.stdout.write(out);process.stderr.write(r.stderr||'');if(r.error)throw r.error;process.exitCode=r.status===0?0:1;\n}finally{\n let files=0,bytes=0;function count(p){for(const e of fs.readdirSync(p,{withFileTypes:true})){const n=path.join(p,e.name);if(e.isDirectory())count(n);else{files++;bytes+=fs.statSync(n).size;}}}count(owned.rootPath);removeOwnedTemporaryDirectory(owned);console.log(JSON.stringify({ownedRemoved:true,files,logicalBytes:bytes}));\n}\n'@ | node"
+    },
+    {
+      "name": "installed-edge-desktop",
+      "pass": 4,
+      "fail": 0,
+      "viewport": {
+        "width": 1365,
+        "height": 768
+      },
+      "command": "@'\nconst fs=require('fs'),path=require('path'),{spawnSync}=require('child_process');\nconst {createOwnedTemporaryDirectory,removeOwnedTemporaryDirectory}=require('./tinyrustlm/tools/canonical-operation-scratch.js');\nconst owned=createOwnedTemporaryDirectory({temporaryParent:path.resolve('artifacts/tests/admission-browser')});\ntry{\n const r=spawnSync(process.execPath,[path.resolve('tinyrustlm/node_modules/@playwright/test/cli.js'),'test','--config=playwright.config.js','--project=desktop','--workers=1','--retries=0','--reporter=line','--output='+path.join(owned.rootPath,'results'),'--grep=stalled .* document|dedupes re-entrant|rejects altered receipt','e2e/model-chooser.spec.js'],{cwd:path.resolve('tinyrustlm'),env:{...process.env,TEMP:owned.rootPath,TMP:owned.rootPath,TMPDIR:owned.rootPath,NODE_V8_COVERAGE:'',TINYRUSTLM_PLAYWRIGHT_CHANNEL:'msedge'},encoding:'utf8',windowsHide:true,timeout:120000,maxBuffer:2*1024*1024});\n process.stdout.write(r.stdout||'');process.stderr.write(r.stderr||'');if(r.error)throw r.error;process.exitCode=r.status===0?0:1;\n}finally{\n let files=0,bytes=0;function count(p){for(const e of fs.readdirSync(p,{withFileTypes:true})){const n=path.join(p,e.name);if(e.isDirectory())count(n);else{files++;bytes+=fs.statSync(n).size;}}}count(owned.rootPath);removeOwnedTemporaryDirectory(owned);console.log(JSON.stringify({ownedRemoved:true,files,logicalBytes:bytes}));\n}\n'@ | node"
+    },
+    {
+      "name": "installed-edge-mobile-viewport",
+      "pass": 4,
+      "fail": 0,
+      "physicalMobile": false,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "command": "@'\nconst fs=require('fs'),path=require('path'),{spawnSync}=require('child_process');\nconst {createOwnedTemporaryDirectory,removeOwnedTemporaryDirectory}=require('./tinyrustlm/tools/canonical-operation-scratch.js');\nconst owned=createOwnedTemporaryDirectory({temporaryParent:path.resolve('artifacts/tests/admission-browser')});\ntry{\n const r=spawnSync(process.execPath,[path.resolve('tinyrustlm/node_modules/@playwright/test/cli.js'),'test','--config=playwright.config.js','--project=mobile','--workers=1','--retries=0','--reporter=line','--output='+path.join(owned.rootPath,'results'),'--grep=stalled .* document|dedupes re-entrant|rejects altered receipt','e2e/model-chooser.spec.js'],{cwd:path.resolve('tinyrustlm'),env:{...process.env,TEMP:owned.rootPath,TMP:owned.rootPath,TMPDIR:owned.rootPath,NODE_V8_COVERAGE:'',TINYRUSTLM_PLAYWRIGHT_CHANNEL:'msedge'},encoding:'utf8',windowsHide:true,timeout:120000,maxBuffer:2*1024*1024});\n process.stdout.write(r.stdout||'');process.stderr.write(r.stderr||'');if(r.error)throw r.error;process.exitCode=r.status===0?0:1;\n}finally{\n let files=0,bytes=0;function count(p){for(const e of fs.readdirSync(p,{withFileTypes:true})){const n=path.join(p,e.name);if(e.isDirectory())count(n);else{files++;bytes+=fs.statSync(n).size;}}}count(owned.rootPath);removeOwnedTemporaryDirectory(owned);console.log(JSON.stringify({ownedRemoved:true,files,logicalBytes:bytes}));\n}\n'@ | node"
+    },
+    {
+      "name": "memory-consolidation",
+      "pass": 6,
+      "fail": 0,
+      "skipped": 0,
+      "command": "dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj --no-restore --filter FullyQualifiedName~UaixMemoryConsolidationTests --verbosity minimal"
+    },
+    {
+      "name": "static-shell-parity",
+      "assets": 19,
+      "result": "passed; only the two changed script identities regenerated in both shells"
+    },
+    {
+      "name": "diff-whitespace",
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "browserEvidence": {
+    "transport": "Local static app in actual installed Edge; routed synthetic catalog, qualification, admission and peer fixtures.",
+    "cases": [
+      "Stall qualification response, advance browser clock 31000 ms, verify timeout and zero peer model requests",
+      "Stall admission response, advance browser clock 31000 ms, verify timeout and zero peer model requests",
+      "Existing re-entrant acquisition deduplication and explicit Cancel behavior",
+      "Existing altered-receipt rejection before peer transfer or conversion"
+    ],
+    "timeoutState": {
+      "busy": false,
+      "cardEnabled": true,
+      "cancelHidden": true,
+      "generateEnabled": false,
+      "peerModelRequests": 0
+    },
+    "limitations": [
+      "Mobile viewport emulation is not a physical mobile test.",
+      "Clock advancement tests the timer/UI contract, not elapsed public latency.",
+      "No real weights, useful generation, qualification or reachable initial seed were established.",
+      "JavaScript timers cannot preempt synchronous computation or execute while a browser is suspended."
+    ]
+  },
+  "cleanup": {
+    "ownedParents": [
+      "artifacts/tests/admission-lifetime",
+      "artifacts/tests/admission-browser"
+    ],
+    "emptyAfter": true,
+    "runs": [
+      {
+        "name": "final-unit-coverage",
+        "remainingFilesRemoved": 7,
+        "logicalBytesRemoved": 2241728
+      },
+      {
+        "name": "edge-desktop",
+        "remainingFilesRemoved": 11,
+        "logicalBytesRemoved": 938713
+      },
+      {
+        "name": "edge-mobile-viewport",
+        "remainingFilesRemoved": 11,
+        "logicalBytesRemoved": 938713
+      }
+    ],
+    "remainingFilesRemoved": 29,
+    "logicalBytesRemoved": 4119154,
+    "aggregatePerTestFixtureBytes": null,
+    "physicalBytesRecovered": null,
+    "method": "Each harness retains exact ownership from canonical-operation-scratch.js, waits for child completion, counts remaining output, removes the owned tree and verifies absence. Unrelated existing smoke output remains untouched."
+  },
+  "sourceGate": {
+    "command": "node tinyrustlm/tools/verify-single-source-authority.js",
+    "exitCode": 1,
+    "result": "source_authority_scan_incomplete",
+    "unreadable": [
+      "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\qwen3-environment-install\\tinyrustlm-operation-C3ZUt9\\install-temp\\TmP6xn2evdh-b",
+      "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\qwen3-environment-install\\tinyrustlm-operation-C3ZUt9\\install-temp\\TmPeq63_hr7-b"
+    ],
+    "previouslyBlockedDeletionRetried": false
+  },
+  "boundaries": {
+    "realModelRun": false,
+    "liveSourceQuery": false,
+    "qualifiedDefault": false,
+    "publicSeed": false,
+    "deployment": false,
+    "ternaryResearch": "deferred",
+    "goalComplete": false,
+    "counters": "0/20 qualified; 0/50 browser; 0/25 live memory; 0/40 outside lanes; 0/20 catalog."
+  }
+}

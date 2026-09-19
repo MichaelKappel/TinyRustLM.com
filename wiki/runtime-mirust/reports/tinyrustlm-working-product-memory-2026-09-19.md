@@ -46,6 +46,8 @@ For each candidate, retain a compact matrix: exact source and weight identities;
 
 **C40 current task-screen owner:** v4 evaluator and v2 generator are the sole current planning-ledger screen implementations. Three superseded evaluators, the old generator and their combined test were removed; useful regression checks now exercise the current owner. All 17 historical JSON records and current sealed tool bytes are unchanged, and all five historical outcomes remain closed rejections. Twenty affected checks pass, including candidate exclusions; see `artifacts/ecosystem-cleanup-20260912/current-task-screen-review.json`. Historical records are evidence, never old-schema execution support or permission to retry a rejected checkpoint. No model ran in this cleanup.
 
+**C41 browser admission lifetime:** qualification and admission documents now share a 30-second deadline across fetch, body and hash stages, with explicit caller cancellation and resource cleanup. The chooser clears busy state and reports a useful timeout before model transfer. All 218 affected JavaScript checks and eight selected installed-Edge checks pass; mobile is viewport emulation, and metadata is synthetic. See `artifacts/ecosystem-cleanup-20260912/admission-lifetime-review.json`. This fixes waiting behavior without relaxing identity/quality gates or establishing a real default or public seed.
+
 Compare three routes by evidence:
 - Qualify an already useful compact checkpoint and adapt the sole runtime where justified.
 - Run a bounded new-derivative training experiment after inference, data and independent review readiness.

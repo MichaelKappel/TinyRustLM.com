@@ -1,5 +1,29 @@
 # Server-seeded startup
 
+## September 19 bounded admission checks
+
+Before model transfer, `catalog-admission-loader.js` verifies the catalog-bound
+qualification receipt and browser admission document. One 30000 ms deadline
+covers both fetches, streamed bodies and hashes. The optional internal
+`timeoutMilliseconds` setting must be an integer from 1 through 120000; it is not
+a beginner-facing control. The deadline does not reset between documents and is
+separate from the later model-transfer timeout.
+
+The app supplies its cancellation signal to the loader. The loader gives fetch
+its own linked signal and releases its timer/listener after success or failure.
+Cancellation reports `catalog-admission-aborted`; expiration reports
+`catalog-admission-timeout`. The latter displays: "Checking the model took too
+long. Check your connection and try again." The chooser clears the busy state and
+allows an explicit new attempt. No model transfer or automatic retry follows a
+failed admission check, and no byte, identity or qualification validation is
+relaxed.
+
+C41 tests include uncooperative fetch/read/hash promises and real installed Edge
+chooser checks with synthetic metadata. Desktop and mobile viewport timeout
+cases verify zero peer model requests. This does not prove public MiniModel
+availability, a qualified default or useful inference. Evidence:
+`artifacts/ecosystem-cleanup-20260912/admission-lifetime-review.json`.
+
 ## September 19 native seed contract correction
 
 The browser requires `X-TinyRustLM-Piece-Set-Id` on every member response. The

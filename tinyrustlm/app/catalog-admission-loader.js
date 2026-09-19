@@ -4,7 +4,7 @@
   const catalogApi = typeof module === "object" && module.exports
     ? require("./minimodel-catalog-v1.js")
     : root.TinyRustLMMiniModelCatalogV1;
-  const api = factory(catalogApi);
+  const api = factory(catalogApi, root);
   if (typeof module === "object" && module.exports) {
     module.exports = api;
   } else {
@@ -12,7 +12,7 @@
   }
 }(typeof globalThis === "object" ? globalThis : this,
 // Builds the dependency-injected loader without assuming a specific host runtime.
-function (catalogApi) {
+function (catalogApi, root) {
   "use strict";
 
   const ADMISSION_SCHEMA = "tinyrustlm.browser-composition-admission/1";
@@ -20,6 +20,8 @@ function (catalogApi) {
   const MAXIMUM_ADMISSION_BYTES = 64 * 1024;
   const MAXIMUM_QUALIFICATION_RECEIPT_BYTES = 128 * 1024;
   const MAXIMUM_RESPONSE_CHUNKS = 1024;
+  const DEFAULT_TIMEOUT_MILLISECONDS = 30_000;
+  const MAXIMUM_TIMEOUT_MILLISECONDS = 120_000;
   const MEMBER_NAMES = Object.freeze([
     "model.slm2",
     "tokenizer.tokenizer2",
@@ -152,7 +154,9 @@ function (catalogApi) {
     "fetch",
     "admissionParser"
   ]);
-  const OPTIONAL_OPTION_FIELDS = Object.freeze(["crypto", "hash"]);
+  const OPTIONAL_OPTION_FIELDS = Object.freeze([
+    "crypto", "hash", "signal", "timeoutMilliseconds"
+  ]);
 
   class CatalogAdmissionLoaderError extends Error {
     // Creates a stable typed rejection carrying the machine-readable verdict code.
@@ -327,13 +331,73 @@ function (catalogApi) {
     if (!catalogApi || typeof catalogApi.parseCanonicalJsonText !== "function") {
       reject("catalog-qualification-parser");
     }
+    const signal = source.signal === undefined || source.signal === null ? null : source.signal;
+    const timeoutMilliseconds = source.timeoutMilliseconds === undefined
+      ? DEFAULT_TIMEOUT_MILLISECONDS : source.timeoutMilliseconds;
+    if ((signal !== null && (typeof signal !== "object" ||
+        typeof signal.aborted !== "boolean" ||
+        typeof signal.addEventListener !== "function" ||
+        typeof signal.removeEventListener !== "function")) ||
+        !Number.isSafeInteger(timeoutMilliseconds) || timeoutMilliseconds < 1 ||
+        timeoutMilliseconds > MAXIMUM_TIMEOUT_MILLISECONDS) {
+      reject("catalog-admission-loader-options");
+    }
     return Object.freeze({
       catalogView: source.catalogView,
       catalogBaseUrl: source.catalogBaseUrl,
       fetchFunction: source.fetch,
       hashFunction: hasHash ? source.hash : null,
       digestFunction,
+      signal,
+      timeoutMilliseconds,
       parseAdmissionText: parseAdmissionText.bind(source.admissionParser)
+    });
+  }
+
+  // Owns one deadline and cancellation reason across both documents and their hashes.
+  function createLifetime(options) {
+    if (!root || typeof root.AbortController !== "function" ||
+        typeof root.setTimeout !== "function" || typeof root.clearTimeout !== "function") {
+      reject("catalog-admission-loader-options");
+    }
+    const controller = new root.AbortController();
+    let failure = null;
+    let rejectStopped;
+    const stopped = new Promise((_resolve, rejectPromise) => { rejectStopped = rejectPromise; });
+    // Pre-aborted callers can stop before any awaited operation attaches a race.
+    stopped.catch(() => {});
+    // Preserve the first terminal reason even if a deadline and caller abort race.
+    function stop(code) {
+      if (failure) return;
+      failure = new CatalogAdmissionLoaderError(code);
+      controller.abort(failure);
+      rejectStopped(failure);
+    }
+    const onAbort = () => stop("catalog-admission-aborted");
+    if (options.signal) {
+      options.signal.addEventListener("abort", onAbort, { once: true });
+      if (options.signal.aborted) onAbort();
+    }
+    const timer = root.setTimeout(() => stop("catalog-admission-timeout"),
+      options.timeoutMilliseconds);
+    return Object.freeze({
+      signal: controller.signal,
+      // Check before invoking a dependency, and stop waiting even if it ignores abort.
+      async wait(action) {
+        if (failure) throw failure;
+        const result = await Promise.race([Promise.resolve().then(() => {
+          if (failure) throw failure;
+          return action();
+        }), stopped]);
+        if (failure) throw failure;
+        return result;
+      },
+      // Release owned resources on success and every validation/cancellation failure.
+      dispose(error) {
+        root.clearTimeout(timer);
+        if (options.signal) options.signal.removeEventListener("abort", onAbort);
+        if (error && !controller.signal.aborted) controller.abort(error);
+      }
     });
   }
 
@@ -544,7 +608,7 @@ function (catalogApi) {
   }
 
   // Streams exactly the declared bytes into one bounded buffer and rejects drift.
-  async function readActualBytes(response, expectedBytes, codePrefix) {
+  async function readActualBytes(response, expectedBytes, codePrefix, lifetime) {
     let body;
     try {
       body = response.body;
@@ -566,7 +630,7 @@ function (catalogApi) {
       let chunks = 0;
       try {
         while (true) {
-          const item = await reader.read();
+          const item = await lifetime.wait(() => reader.read());
           if (!isPlainObject(item) || typeof item.done !== "boolean") {
             reject(`${codePrefix}-actual-length`);
           }
@@ -594,6 +658,12 @@ function (catalogApi) {
           throw error;
         }
         reject(`${codePrefix}-actual-length`);
+      } finally {
+        try {
+          if (typeof reader.releaseLock === "function") reader.releaseLock();
+        } catch (_error) {
+          // Release must not replace the original stream or cancellation verdict.
+        }
       }
       if (offset !== expectedBytes) {
         reject(`${codePrefix}-actual-length`);
@@ -610,18 +680,21 @@ function (catalogApi) {
     url,
     expectedBytes,
     maximumBytes,
-    codePrefix
+    codePrefix,
+    lifetime
   ) {
     let response;
     try {
-      response = await fetchFunction(url, {
+      response = await lifetime.wait(() => fetchFunction(url, {
         method: "GET",
         cache: "no-store",
         credentials: "omit",
         redirect: "error",
-        referrerPolicy: "no-referrer"
-      });
-    } catch (_error) {
+        referrerPolicy: "no-referrer",
+        signal: lifetime.signal
+      }));
+    } catch (error) {
+      if (error instanceof CatalogAdmissionLoaderError) throw error;
       reject(`${codePrefix}-fetch`);
     }
     try {
@@ -635,7 +708,7 @@ function (catalogApi) {
       reject(`${codePrefix}-fetch`);
     }
     declaredLength(response, expectedBytes, maximumBytes, codePrefix);
-    return readActualBytes(response, expectedBytes, codePrefix);
+    return readActualBytes(response, expectedBytes, codePrefix, lifetime);
   }
 
   // Encodes digest bytes as canonical lowercase hexadecimal text.
@@ -652,16 +725,18 @@ function (catalogApi) {
     if (options.hashFunction) {
       let value;
       try {
-        value = await options.hashFunction(bytes.slice());
-      } catch (_error) {
+        value = await options.lifetime.wait(() => options.hashFunction(bytes.slice()));
+      } catch (error) {
+        if (error instanceof CatalogAdmissionLoaderError) throw error;
         reject(code);
       }
       return requireRawSha256(value, code);
     }
     let digest;
     try {
-      digest = await options.digestFunction("SHA-256", bytes);
-    } catch (_error) {
+      digest = await options.lifetime.wait(() => options.digestFunction("SHA-256", bytes));
+    } catch (error) {
+      if (error instanceof CatalogAdmissionLoaderError) throw error;
       reject(code);
     }
     if (!(digest instanceof ArrayBuffer) || digest.byteLength !== 32) {
@@ -959,6 +1034,20 @@ function (catalogApi) {
   async function load(optionsValue) {
     const options = normalizeOptions(optionsValue);
     const catalog = normalizeCatalogView(options.catalogView);
+    const lifetime = createLifetime(options);
+    let failure = null;
+    try {
+      return await loadDocuments({ ...options, lifetime }, catalog);
+    } catch (error) {
+      failure = error;
+      throw error;
+    } finally {
+      lifetime.dispose(failure);
+    }
+  }
+
+  // Bind both streamed documents under the same operation lifetime and byte limits.
+  async function loadDocuments(options, catalog) {
     const receiptUrl = resolveAdmissionUrl(
       options.catalogBaseUrl,
       catalog.qualificationReceiptRoute
@@ -968,7 +1057,8 @@ function (catalogApi) {
       receiptUrl,
       catalog.qualificationReceiptBytes,
       MAXIMUM_QUALIFICATION_RECEIPT_BYTES,
-      "catalog-qualification"
+      "catalog-qualification",
+      options.lifetime
     );
     const receiptDigest = await hashBytes(
       options,
@@ -992,7 +1082,8 @@ function (catalogApi) {
       url,
       catalog.descriptor.bytes,
       MAXIMUM_ADMISSION_BYTES,
-      "catalog-admission"
+      "catalog-admission",
+      options.lifetime
     );
     const digest = await hashBytes(options, bytes, "catalog-admission-sha256");
     if (`sha256:${digest}` !== catalog.descriptor.sha256) {

@@ -1331,6 +1331,43 @@ were not measured. The two installer-link removals remain blocked, so source
 authority is still incomplete. Other execution tools and model payloads require
 their own review; no blanket retirement or execution admission follows.
 
+## C41: put a deadline around the whole admission operation
+
+Question: can first-run acquisition remain busy before the model-transfer timer
+starts? Exact source review found that qualification/admission fetches, body
+reads and asynchronous hashes had byte/identity bounds but no shared deadline.
+The app supplied cancellation only through a fetch wrapper. New lifetime-option
+tests failed against the previous loader; this is source and test evidence, not
+a measured historical public-browser outage.
+
+Method: give the loader one owned AbortController and deadline for both documents
+and hashes, pass the caller signal separately, race each asynchronous dependency
+against terminal cancellation, and release resources in finally paths. Preserve
+the first terminal reason and all existing validation. Test uncooperative
+dependencies, already-aborted callers, invalid options, success cleanup and
+validation failure. In actual Edge, stall either metadata document, advance the
+browser clock 31 seconds and inspect UI state and transfer requests.
+
+Result: 218 affected JavaScript checks pass; loader line/branch/function coverage
+is 88.79/77.01/98.08 percent. Four selected browser checks pass in desktop and four
+in mobile viewport emulation. Timeouts clear busy state and leave Generate
+disabled, with zero peer model requests. Existing cancellation/deduplication and
+altered-receipt checks also pass. An intermediate 92-pass/two-failure run exposed
+test setup/assertion mistakes, which were corrected before the final run.
+
+Decision and reusable lesson: byte limits do not bound elapsed waiting, and a
+downstream transfer timer does not protect upstream admission. Own one lifetime
+at the complete operation boundary, propagate a linked signal, stop waiting for
+uncooperative asynchronous dependencies, and keep the original failure while
+cleaning up. Browser clock tests exercise timeout behavior without waiting the
+full interval; they do not measure actual public latency or browser suspension.
+
+Evidence identity: `artifacts/ecosystem-cleanup-20260912/admission-lifetime-review.json`
+binds source, tests, harness commands and bounded results. Final harness cleanup
+removed 29 remaining files (4119154 logical bytes); per-test totals and physical
+recovery are unknown. No blocked deletion, real model run, live seed or deployment
+occurred. The source-authority scan still fails on the same two installer links.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

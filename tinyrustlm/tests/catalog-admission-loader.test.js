@@ -364,8 +364,11 @@ test("loads one exact canonical catalog admission with a body-free request", asy
     cache: "no-store",
     credentials: "omit",
     redirect: "error",
-    referrerPolicy: "no-referrer"
+    referrerPolicy: "no-referrer",
+    signal: requests[0].options.signal
   });
+  assert.ok(requests[0].options.signal instanceof AbortSignal);
+  assert.equal(requests[0].options.signal.aborted, false);
   assert.equal(Object.hasOwn(requests[0].options, "body"), false);
   assert.equal(result.admissionText, fixture.admissionText);
   assert.equal(result.admissionSha256, prefixedSha256(fixture.admissionBytes));
@@ -786,6 +789,142 @@ test("rejects missing, competing, or unknown injected dependencies", async () =>
     }),
     errorCode("catalog-admission-loader-options")
   );
+});
+
+test("admission cancellation before load makes no request", async () => {
+  const fixture = validCatalogView();
+  const controller = new AbortController();
+  controller.abort();
+  let requests = 0;
+  await assert.rejects(loader.load(loadOptions(fixture, () => {
+    requests += 1;
+  }, {
+    signal: controller.signal,
+    qualificationFetch: () => { requests += 1; }
+  })), errorCode("catalog-admission-aborted"));
+  assert.equal(requests, 0);
+});
+
+test("admission deadline covers stalled fetch and body reads at both stages", async (t) => {
+  for (const stage of ["qualification", "admission"]) {
+    for (const phase of ["fetch", "body"]) {
+      await t.test(stage + " " + phase, { timeout: 1500 }, async () => {
+        const fixture = validCatalogView();
+        let requestSignal;
+        let canceled = 0;
+        let released = 0;
+        let requests = 0;
+        const stalled = (_url, options) => {
+          requests += 1;
+          requestSignal = options.signal;
+          if (phase === "fetch") return new Promise(() => {});
+          const response = arrayBufferResponse(stage === "qualification"
+            ? fixture.qualificationReceiptBytes : fixture.admissionBytes);
+          response.body.getReader = () => ({
+            read: () => new Promise(() => {}),
+            cancel: () => { canceled += 1; return new Promise(() => {}); },
+            releaseLock: () => { released += 1; }
+          });
+          return response;
+        };
+        await assert.rejects(loader.load(loadOptions(fixture,
+          stage === "admission" ? stalled : () => assert.fail("second request started"),
+          {
+            timeoutMilliseconds: 20,
+            ...(stage === "qualification" ? { qualificationFetch: stalled } : {})
+          }
+        )), errorCode("catalog-admission-timeout"));
+        assert.equal(requests, 1);
+        assert.equal(requestSignal.aborted, true);
+        assert.equal(canceled, phase === "body" ? 1 : 0);
+        assert.equal(released, phase === "body" ? 1 : 0);
+      });
+    }
+  }
+});
+
+test("admission cancellation interrupts uncooperative fetch and hashing", async (t) => {
+  for (const phase of ["fetch", "hash"]) {
+    await t.test(phase, { timeout: 1500 }, async () => {
+      const fixture = validCatalogView();
+      const controller = new AbortController();
+      let begin;
+      const started = new Promise(resolve => { begin = resolve; });
+      let requests = 0;
+      const pending = loader.load(loadOptions(fixture, () => {
+        requests += 1;
+        assert.fail("admission fetch must not begin after cancellation");
+      }, {
+        signal: controller.signal,
+        qualificationFetch: () => {
+          requests += 1;
+          if (phase === "fetch") { begin(); return new Promise(() => {}); }
+          return arrayBufferResponse(fixture.qualificationReceiptBytes);
+        },
+        hash: value => {
+          if (phase === "hash") { begin(); return new Promise(() => {}); }
+          return hashFunction(value);
+        }
+      }));
+      const verdict = assert.rejects(pending, errorCode("catalog-admission-aborted"));
+      await started;
+      controller.abort();
+      await verdict;
+      assert.equal(requests, 1);
+    });
+  }
+});
+
+test("successful admission releases its deadline and caller cancellation listener", async () => {
+  const fixture = validCatalogView();
+  const controller = new AbortController();
+  const signals = [];
+  await loader.load(loadOptions(fixture, (_url, options) => {
+    signals.push(options.signal);
+    return arrayBufferResponse(fixture.admissionBytes);
+  }, {
+    signal: controller.signal,
+    timeoutMilliseconds: 40,
+    qualificationFetch: (_url, options) => {
+      signals.push(options.signal);
+      return arrayBufferResponse(fixture.qualificationReceiptBytes);
+    }
+  }));
+  assert.equal(signals.length, 2);
+  assert.equal(signals[0], signals[1]);
+  assert.notEqual(signals[0], controller.signal);
+  controller.abort();
+  await new Promise(resolve => setTimeout(resolve, 60));
+  assert.equal(signals[0].aborted, false);
+});
+
+test("invalid admission metadata aborts the response before further requests", async () => {
+  const fixture = validCatalogView();
+  let signal;
+  await assert.rejects(loader.load(loadOptions(fixture, () => {
+    assert.fail("admission request followed invalid qualification metadata");
+  }, {
+    qualificationFetch: (_url, options) => {
+      signal = options.signal;
+      return arrayBufferResponse(fixture.qualificationReceiptBytes, { declaredLength: "1" });
+    }
+  })), errorCode("catalog-qualification-declared-length"));
+  assert.equal(signal.aborted, true);
+});
+
+test("rejects invalid admission lifetime options before requests", async () => {
+  const fixture = validCatalogView();
+  const fetch = () => assert.fail("invalid options started a request");
+  for (const timeoutMilliseconds of [0, -1, 1.5, NaN, Infinity, "20", 120001]) {
+    await assert.rejects(loader.load(loadOptions(fixture, fetch, {
+      qualificationFetch: fetch, timeoutMilliseconds
+    })), errorCode("catalog-admission-loader-options"));
+  }
+  for (const signal of [false, {}, { aborted: false }]) {
+    await assert.rejects(loader.load(loadOptions(fixture, fetch, {
+      qualificationFetch: fetch, signal
+    })), errorCode("catalog-admission-loader-options"));
+  }
 });
 
 test("publishes the frozen UMD browser API when CommonJS is absent", () => {

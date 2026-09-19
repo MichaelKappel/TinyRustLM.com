@@ -675,6 +675,78 @@ test.describe("compact model chooser", () => {
     expect(admissionRequests).toBe(1);
   });
 
+  for (const stage of ["qualification", "admission"]) {
+    test("stops a stalled " + stage + " document before model transfer", async ({ page }) => {
+      const gate = deferred();
+      const served = deferred();
+      const peerId = "playwright.metadata-deadline";
+      const entry = catalogEntry({
+        entryId: "metadata-deadline",
+        displayName: "Metadata Deadline Fixture",
+        compositionSha: sha256("5"),
+        revisionCharacter: "5",
+        peerId
+      });
+      const admissionText = browserAdmissionFixture(entry);
+      let metadataRequests = 0;
+      let peerRequests = 0;
+      await page.clock.install({ time: fixtureNow });
+      await page.route(`${publicPeerBaseUrl}**`, route => {
+        peerRequests += 1;
+        return route.abort();
+      });
+      await openApplication(page, {
+        entries: [entry],
+        announcements: [peerAnnouncementFixture({
+          announcementId: peerId,
+          compositionId: entry.composition.composition_id,
+          pieceSetSha256: sha256("4")
+        })]
+      });
+      const routePath = stage === "qualification"
+        ? entry.qualification.receipt_route : entry.browser_admission.route;
+      const body = stage === "qualification"
+        ? canonicalJson(qualificationReceiptForEntry(entry)) : admissionText;
+      await page.route(`**${routePath}`, async route => {
+        metadataRequests += 1;
+        await gate.promise;
+        try {
+          await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Content-Length": String(Buffer.byteLength(body))
+            },
+            body
+          });
+        } finally {
+          served.resolve();
+        }
+      });
+      const card = page.locator("#simpleModelList [data-composition-id]");
+      await card.click();
+      await expect.poll(() => metadataRequests).toBe(1);
+      await expect(page.locator("#simpleModelList")).toHaveAttribute("aria-busy", "true");
+      try {
+        await page.clock.fastForward(31_000);
+        await expect(page.locator("#simpleModelPickerStatus")).toHaveText(
+          "P2P install stopped: Checking the model took too long. Check your connection and try again."
+        );
+        await expect(page.locator("#errorState")).toContainText("(catalog-admission-timeout)");
+        await expect(card).toBeEnabled();
+        await expect(page.locator("#simpleModelList")).toHaveAttribute("aria-busy", "false");
+        await expect(page.getByRole("button", { name: "Cancel model acquisition" })).toBeHidden();
+        await expect(page.locator("#generateButton")).toBeDisabled();
+      } finally {
+        gate.resolve();
+      }
+      await served.promise;
+      expect(metadataRequests).toBe(1);
+      expect(peerRequests).toBe(0);
+    });
+  }
+
   test("keeps chooser focus stable across an explicit catalog refresh", async ({ page }) => {
     await openApplication(page);
     const gate = deferred();

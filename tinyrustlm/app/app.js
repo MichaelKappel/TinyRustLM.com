@@ -1329,6 +1329,9 @@
     if (!value || value === "none") {
       return "";
     }
+    if (value === "catalog-admission-timeout") {
+      return "Checking the model took too long. Check your connection and try again.";
+    }
     if (value.toLowerCase().includes("catalog")) {
       return "The model list could not be loaded. Check the URL or try a local JSON list.";
     }
@@ -1674,17 +1677,16 @@
     return store;
   }
 
+  // Keep acquisition cancellation and the loader's metadata deadline on one signal chain.
   async function loadCatalogAdmission(entry, signal) {
     if (!entry || !entry.browserAdmission) {
       throw new Error("The selected catalog model has no browser admission");
     }
-    const fetchAdmission = signal
-      ? (url, options) => window.fetch(url, { ...options, signal })
-      : window.fetch.bind(window);
     return catalogAdmissionLoaderApi.load({
       catalogView: entry,
       catalogBaseUrl: miniModelCatalogV1Api.CATALOG_URL,
-      fetch: fetchAdmission,
+      fetch: window.fetch.bind(window),
+      signal,
       admissionParser: browserModelAdmissionApi,
       crypto: window.crypto
     });

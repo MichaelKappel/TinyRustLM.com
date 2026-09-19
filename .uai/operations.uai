@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-19T22:11:02Z
+updated_utc: 2026-09-19T22:27:46Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -66,6 +66,7 @@ reviewed_storage_and_experiments:
   close_run: Preserve failed attempts and stages never started; a corrected implementation needs a new experiment. Transfer resumption is not scientific replay.
 
 current_limit:
+  c41: Browser admission checks now own one deadline across fetch/read/hash stages and link caller cancellation. 218 affected JavaScript and eight Edge fixture checks pass; owned output removed. See admission-lifetime-review.json. No real model, public seed, deployment or source-gate pass.
   c40: V4 planning-ledger evaluator with generator v2 is the sole current owner; three superseded evaluators, old generator and combined test removed. Twenty affected checks pass; all 17 historical JSON records and current tool bytes unchanged. See current-task-screen-review.json. No replay, model qualification or source-gate pass.
   c39: Retired the incompatible Qwen-only v1 producer and dedicated test; useful Qwen2.5 checks now cover the sole current supported-profile producer and acquisition boundary. Present private/gated/disabled flags must be false in search and pinned metadata. Forty-five checks pass; see current-candidate-discovery-review.json. Source scan and real-model/public gates remain open.
   c38: Decoded-byte limits precede file writes, evidence buffering and local allocation; exact ranges and body deadlines are checked. Forty-nine affected checks pass, including gzip overflow, resumption and owned temporary cleanup. See acquisition-byte-limits-review.json. Fixtures retired; source scan, independent admission and real model/public gates remain open.
