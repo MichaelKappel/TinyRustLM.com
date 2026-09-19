@@ -1294,6 +1294,43 @@ recovery and aggregate fixture bytes were not measured. The source scan still
 has its two blocked links; no blocked removal, live query, model run or publication
 occurred. Other historical execution owners still require individual inspection.
 
+## C40: retain failed evidence without maintaining obsolete evaluators
+
+Question: do four planning-ledger evaluators still own distinct active contracts?
+Reference and diff review found that v4 incorporates the useful preceding
+semantics and binds generator v2's prior-prompt exclusion set. The older tools
+were only directly exercised by their combined test suite; dated JSON evidence
+retains their identities. No active callers were found in the other six
+canonical repositories' searched source and documentation paths.
+
+Method and decision: preserve every historical JSON byte and current sealed tool
+hash; port useful negative/identity checks onto v4; delete the three superseded
+evaluators, old generator and old combined test after exact containment and HEAD
+checks. Historical tests inspect immutable records and their linked identities,
+without old-schema execution support or wrappers.
+
+Result: the original 23 checks passed. The consolidated 15 checks plus five
+candidate-exclusion checks pass after removal. V4 line/branch/function coverage
+is 92.67/81.82/93.33 percent; generator v2 coverage is 88.97/90.79/91.89 percent.
+Six memory checks pass. Synthetic output stays under marked canonical scratch
+and is removed by test teardown even on failure. Frozen observations still report
+0/24 for Qwen2.5 0.5B, Qwen2.5 1.5B and LFM2 350M; 20/24 with three critical
+failures for Qwen3 1.7B; and 11/24 with seven critical failures for Qwen3 0.6B.
+All are rejected; no old experiment was replayed or promoted.
+
+Reusable lesson: evidence retention does not require retaining every executable
+that produced it. Preserve exact outcomes and identities, keep source history
+in Git, and move useful behavioral tests onto the single current owner. A
+synthetic source-screen pass grants no real model qualification.
+
+Evidence identity: `artifacts/ecosystem-cleanup-20260912/current-task-screen-review.json`
+binds all 17 retained JSON records, current inputs and five retired preimages.
+Removal accounts for 211494 source bytes and 2326493 remaining coverage/scratch
+bytes across 29 files; aggregate per-test fixture bytes and physical recovery
+were not measured. The two installer-link removals remain blocked, so source
+authority is still incomplete. Other execution tools and model payloads require
+their own review; no blanket retirement or execution admission follows.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

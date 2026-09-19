@@ -1,0 +1,356 @@
+{
+  "schema": "tinyrustlm.current-task-screen-review.v1",
+  "observedAtUtc": "2026-09-19T22:11:02.538Z",
+  "sourceParent": "bdd26bfc7bf22affe9f24f8ea563bd45abb34144",
+  "status": "superseded-executables-retired-current-tests-pass-no-real-model",
+  "environment": {
+    "node": "v24.14.0",
+    "platform": "win32",
+    "architecture": "x64"
+  },
+  "inputs": [
+    {
+      "path": "tinyrustlm/tools/task-specialist-source-screen-v4.js",
+      "bytes": 54682,
+      "sha256": "604b5dbb2e7d7a9f17be0b87f4b01a8fbb2d7e777911053c6fafb8547de3a87f"
+    },
+    {
+      "path": "tinyrustlm/tools/task-specialist-case-generator-v2.js",
+      "bytes": 21793,
+      "sha256": "6523cff2a9723dc0b62ceb603e0825fb2373d42faf72c35083fedf09ea1ec4d6"
+    },
+    {
+      "path": "tinyrustlm/tools/reference-raw-quality.py",
+      "bytes": 34527,
+      "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+    },
+    {
+      "path": "tinyrustlm/tools/campaign-evidence-store.js",
+      "bytes": 22040,
+      "sha256": "55e214606bf2dd23ca8b18fba79db079c0b2fbfa5eadedabe74ffaddd2909c43"
+    },
+    {
+      "path": "tinyrustlm/tools/durable-files.js",
+      "bytes": 2895,
+      "sha256": "085f14edda664db13a73a5fc76c9fbdadadd0d34b651712c1cdc306b476df12c"
+    },
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "bytes": 5822,
+      "sha256": "746e1fafa344ef8d71a5a85864fc1eaf34085c65789f9beda820a247af7f399e"
+    },
+    {
+      "path": "tinyrustlm/tests/task-specialist-source-screen-v4.test.js",
+      "bytes": 39099,
+      "sha256": "935d0eb362ae88b8a9de551eba0e46c85bb30d64d715ab7e30bd3bdce920816c"
+    },
+    {
+      "path": "tinyrustlm/tests/source-candidate-exclusions_test.js",
+      "bytes": 7125,
+      "sha256": "a90b086a48e2d09f8d73e335d5a6407c7268ed28fb7fcef3c88cec704f05eb54"
+    },
+    {
+      "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+      "bytes": 1885,
+      "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+    },
+    {
+      "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+      "bytes": 17290,
+      "sha256": "abb84b63d8fd59eaa335b7e2c7517cdf50c49f9a6f45117f9a22d5f47b9f7133"
+    }
+  ],
+  "retired": [
+    {
+      "path": "tinyrustlm/tools/task-specialist-source-screen.js",
+      "bytes": 46623,
+      "sha256": "0e665f80c51025418f2c0b1fa44bd4f298ea4a11e3f29d97bc42b4b5254836f3",
+      "absent": true,
+      "history": "bdd26bfc7bf22affe9f24f8ea563bd45abb34144"
+    },
+    {
+      "path": "tinyrustlm/tools/task-specialist-source-screen-v2.js",
+      "bytes": 47468,
+      "sha256": "aac64b639e053ccd368466913e80b45dd421cd0d4aac8849ff406d7005ec62b3",
+      "absent": true,
+      "history": "bdd26bfc7bf22affe9f24f8ea563bd45abb34144"
+    },
+    {
+      "path": "tinyrustlm/tools/task-specialist-source-screen-v3.js",
+      "bytes": 52369,
+      "sha256": "3990ce7ce32558c24058ba2327a4d855da54ebcd473ef6e1bfbffbc3053ebb1c",
+      "absent": true,
+      "history": "bdd26bfc7bf22affe9f24f8ea563bd45abb34144"
+    },
+    {
+      "path": "tinyrustlm/tools/task-specialist-case-generator.js",
+      "bytes": 17189,
+      "sha256": "2a7a3f5b972d50f7cc3ae443727ae340290640ada1e4ed22e48c3c965e2b3b71",
+      "absent": true,
+      "history": "bdd26bfc7bf22affe9f24f8ea563bd45abb34144"
+    },
+    {
+      "path": "tinyrustlm/tests/task-specialist-source-screen.test.js",
+      "bytes": 47845,
+      "sha256": "c1cd90bf3311621103355380bfff61ad581c8f9daba25a07f5b7c6a9d91e3a1f",
+      "absent": true,
+      "history": "bdd26bfc7bf22affe9f24f8ea563bd45abb34144"
+    }
+  ],
+  "preservedHistoricalRecords": [
+    {
+      "path": "tinyrustlm/experiments/task-specialists/code-diagnostic-ledger-exclusion-set.v1.json",
+      "bytes": 833,
+      "sha256": "7b1c92c4346293c4f047554c23b91ef0c13946c56647b188ec231a45071a5d67"
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-exclusion-set.v1.json",
+      "bytes": 7029,
+      "sha256": "ca308141f54e2d1df8c08e6bb1f0d9bca68df10aa736b1015e14d36a1dfc4879"
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-lfm2-350m-case-manifest.v1.json",
+      "bytes": 9820,
+      "sha256": "67a6969501bb9505bba5fb2e9ee2a94d8e299dfc8ac21d94faab5beaf9a517c1"
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-lfm2-350m-source-screen-observation.v2.json",
+      "bytes": 3733,
+      "sha256": "5e535478e6316ca381f63985c0a531777562e17c540e860d94723621aca22461"
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-lfm2-350m-source-screen-preregistration.v2.json",
+      "bytes": 4359,
+      "sha256": "5f95fa082e945f587eba06800eb72c6993b7d5daf2692b23a4c93cae14ec1eaf"
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-qwen25-05b-case-manifest.v1.json",
+      "bytes": 9821,
+      "sha256": "f27a36066d74b58921567c674da86835bf54470c7470a9d49c7163ed33c08494"
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-qwen25-05b-source-screen-observation.v1.json",
+      "bytes": 2669,
+      "sha256": "4efacb513a452e539218488ffb0d1c724be843b17f2d1f9d5f8f7764aca608d4"
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-qwen25-05b-source-screen-preregistration.v1.json",
+      "bytes": 4227,
+      "sha256": "a6dc1b3d86121bb114bedd19e0b80e52ccc7988388d54c879df2ba01e044b089"
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-qwen25-15b-case-manifest.v1.json",
+      "bytes": 9821,
+      "sha256": "2a52cfcf8d5035aba941b44297c6b3c030fc6e8a95cbcc7bd14e23f8255f631c"
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-qwen25-15b-source-screen-observation.v2.json",
+      "bytes": 3742,
+      "sha256": "fdd2729f911bda75db193907e72fd444d4b7935dd5a8617f779d83caab55f2c7"
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-qwen25-15b-source-screen-preregistration.v2.json",
+      "bytes": 4368,
+      "sha256": "cc432be3bd56cdcae5f0e6d8fee8fa2770f1acd2192c873a1efdc11f46cf9044"
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-qwen3-06b-case-manifest.v2.json",
+      "bytes": 10904,
+      "sha256": "63c321baf37bcb3028b9c5a10bf7b06f30f5805ad253c4f8db9fdbedd5d1063c"
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-qwen3-06b-source-screen-observation.v4.json",
+      "bytes": 4516,
+      "sha256": "41f162d6041f441752d534aab070bef2093a56337603ebe5a0da05017fd76796"
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-qwen3-06b-source-screen-preregistration.v4.json",
+      "bytes": 4689,
+      "sha256": "d3c20d56da1775929cc77a967471293359d2b6bbe5f17b83c6c5aaf98e2211b9"
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-qwen3-17b-case-manifest.v1.json",
+      "bytes": 9820,
+      "sha256": "1134e5b8b32664ae39a6710c4cdfb9ad45385368c1a3c19b42812e5e984444e8"
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-qwen3-17b-source-screen-observation.v3.json",
+      "bytes": 4293,
+      "sha256": "a839911609a12e5c97f690b48a94d710330ed65f21908f0511f478f630083df0"
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-qwen3-17b-source-screen-preregistration.v3.json",
+      "bytes": 4562,
+      "sha256": "6885858b71af39a15045e5ad3425a0a8125699347c71ee70bbb71b83ccf17835"
+    }
+  ],
+  "historicalOutcomes": [
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-lfm2-350m-source-screen-observation.v2.json",
+      "modelId": "LiquidAI/LFM2-350M",
+      "sourceRevision": "b3afba27815ee83a64b76162cef4d8a4780d6ca7",
+      "decision": "rejected",
+      "caseCount": 24,
+      "exactPassCount": 0,
+      "criticalFailureCount": 12,
+      "malformedOutputCount": 24,
+      "authorityUnchanged": true
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-qwen25-05b-source-screen-observation.v1.json",
+      "modelId": "Qwen/Qwen2.5-0.5B-Instruct",
+      "sourceRevision": "7ae557604adf67be50417f59c2c2f167def9a775",
+      "decision": "rejected",
+      "caseCount": 24,
+      "exactPassCount": 0,
+      "criticalFailureCount": 12,
+      "malformedOutputCount": 24,
+      "authorityUnchanged": true
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-qwen25-15b-source-screen-observation.v2.json",
+      "modelId": "Qwen/Qwen2.5-1.5B-Instruct",
+      "sourceRevision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+      "decision": "rejected",
+      "caseCount": 24,
+      "exactPassCount": 0,
+      "criticalFailureCount": 12,
+      "malformedOutputCount": 24,
+      "authorityUnchanged": true
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-qwen3-06b-source-screen-observation.v4.json",
+      "modelId": "Qwen/Qwen3-0.6B",
+      "sourceRevision": "c1899de289a04d12100db370d81485cdf75e47ca",
+      "decision": "rejected",
+      "caseCount": 24,
+      "exactPassCount": 11,
+      "criticalFailureCount": 7,
+      "malformedOutputCount": 12,
+      "authorityUnchanged": true
+    },
+    {
+      "path": "tinyrustlm/experiments/task-specialists/planning-constraint-ledger-qwen3-17b-source-screen-observation.v3.json",
+      "modelId": "Qwen/Qwen3-1.7B",
+      "sourceRevision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+      "decision": "rejected",
+      "caseCount": 24,
+      "exactPassCount": 20,
+      "criticalFailureCount": 3,
+      "malformedOutputCount": 0,
+      "authorityUnchanged": true
+    }
+  ],
+  "finding": "V4 incorporates predecessor task-screen semantics and generator v2 exposed-prompt exclusions. Older executables had only test callers plus frozen historical identity references.",
+  "changes": [
+    "Retire three superseded evaluators, v1 generator and combined old-version test; no compatibility wrapper or copied source archive",
+    "Move strict parsing, semantic-versus-malformed failure, critical stop rule, indexed/direct weight and parent/capture identity checks to v4",
+    "Reject obsolete registration schemas and authority/template drift in current tests",
+    "Preserve all 17 historical JSON byte identities and current evaluator/generator/capture bytes",
+    "Keep synthetic captures in marked canonical scratch and clean them in test teardown"
+  ],
+  "tests": {
+    "baseline": {
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Old 19-test suite plus current four checks, before edits"
+    },
+    "consolidated": {
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0
+    },
+    "final": {
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        "tinyrustlm/tests/task-specialist-source-screen-v4.test.js",
+        "tinyrustlm/tests/source-candidate-exclusions_test.js"
+      ]
+    },
+    "coverage": [
+      {
+        "file": "task-specialist-source-screen-v4.js",
+        "lines": 92.67,
+        "branches": 81.82,
+        "functions": 93.33
+      },
+      {
+        "file": "task-specialist-case-generator-v2.js",
+        "lines": 88.97,
+        "branches": 90.79,
+        "functions": 91.89
+      }
+    ],
+    "testCountChange": "The prior 23 task checks are consolidated into 15 current checks; four predecessor historical outcomes are checked without obsolete evaluators, and useful behavioral cases exercise v4. Five candidate-exclusion checks pass separately in the final combined run.",
+    "command": "node --experimental-test-coverage --test-coverage-include=tinyrustlm/tools/task-specialist-source-screen-v4.js --test-coverage-include=tinyrustlm/tools/task-specialist-case-generator-v2.js --test tinyrustlm/tests/task-specialist-source-screen-v4.test.js tinyrustlm/tests/source-candidate-exclusions_test.js",
+    "executionBoundary": "Coverage parent and child environment point to marked canonical artifacts; only synthetic captures and hash metadata used, no checkpoint inference or material replay"
+  },
+  "referenceReview": {
+    "currentTreeLiveImportsRemaining": 0,
+    "historicalReferences": "Frozen JSON registrations retain producer/evaluator identities as evidence; no old-version dispatch or execution support",
+    "otherRepositories": [
+      "LMComposer.com",
+      "MiniModel.MiRust.com",
+      "MiniModel.org",
+      "MiRust.com",
+      "Runtime.MiRust.com",
+      "TinyRustLM.MiRust.com"
+    ],
+    "boundary": "No matching active source/documentation references in searched paths; generated artifacts, raw/report intake, dependency and build directories excluded"
+  },
+  "cleanup": {
+    "retiredSourceLogicalBytes": 211494,
+    "retiredFiles": 5,
+    "gitHistoryPreserved": true,
+    "scratchParent": "artifacts/tests/task-screen-current-owner",
+    "scratchParentEmpty": true,
+    "ownedRuns": [
+      {
+        "run": "baseline",
+        "files": 24,
+        "logicalBytes": 1003977
+      },
+      {
+        "run": "consolidated",
+        "files": 2,
+        "logicalBytes": 356515
+      },
+      {
+        "run": "final",
+        "files": 3,
+        "logicalBytes": 966001
+      }
+    ],
+    "ownedOutputRemoved": true,
+    "remainingOwnedFilesRemoved": 29,
+    "remainingOwnedLogicalBytesRemoved": 2326493,
+    "perTestFixtureDeletionBytesAggregated": false,
+    "physicalStorageRecoveryMeasured": false,
+    "historicalModelPayloadsModified": false
+  },
+  "sourceGate": {
+    "status": "source_authority_scan_incomplete",
+    "paths": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "blockedDeletionRetried": false
+  },
+  "remaining": [
+    "Current task-screen code is a narrow source-capture evaluator, not real product qualification",
+    "All five historical experiments remain closed rejections; no invocation was authorized by retiring old code",
+    "Other historical execution tools, payloads and producer/consumer contracts require individual review",
+    "Source-authority scan, independent source admission, real numerical/browser/default/seed and publication gates remain open",
+    "No model download, inference, external candidate query or deployment occurred",
+    "Ternary/Bonsai/Hadamard research remains deferred"
+  ],
+  "memoryVerification": {
+    "testFilter": "FullyQualifiedName~UaixMemoryConsolidationTests",
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0
+  }
+}

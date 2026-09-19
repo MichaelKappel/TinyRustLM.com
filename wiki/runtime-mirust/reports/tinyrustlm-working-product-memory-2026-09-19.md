@@ -44,6 +44,8 @@ For each candidate, retain a compact matrix: exact source and weight identities;
 
 **C39 current discovery owner:** `huggingface-supported-candidates.js` is the sole producer for all three declared profiles. The incompatible Qwen-only v1 producer and its dedicated test were retired; the downloader still accepts only the current v2 inventory. Useful Qwen2.5 cases now exercise that producer/consumer boundary. Present private/gated/disabled flags must be false at search and pinned-revision stages; missing metadata is not access or provenance clearance. All 45 affected checks pass; see `artifacts/ecosystem-cleanup-20260912/current-candidate-discovery-review.json`. No live query, model acquisition or qualification follows from those fixtures.
 
+**C40 current task-screen owner:** v4 evaluator and v2 generator are the sole current planning-ledger screen implementations. Three superseded evaluators, the old generator and their combined test were removed; useful regression checks now exercise the current owner. All 17 historical JSON records and current sealed tool bytes are unchanged, and all five historical outcomes remain closed rejections. Twenty affected checks pass, including candidate exclusions; see `artifacts/ecosystem-cleanup-20260912/current-task-screen-review.json`. Historical records are evidence, never old-schema execution support or permission to retry a rejected checkpoint. No model ran in this cleanup.
+
 Compare three routes by evidence:
 - Qualify an already useful compact checkpoint and adapt the sole runtime where justified.
 - Run a bounded new-derivative training experiment after inference, data and independent review readiness.

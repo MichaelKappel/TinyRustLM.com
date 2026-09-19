@@ -5,6 +5,47 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C40: retire superseded task-screen executables, September 19
+
+The planning-ledger screen had four parallel evaluator implementations and two
+case generators. The v4 evaluator already owns the current contract, including
+the v2 generator's exposed-prompt exclusions. Removed the v1/v2/v3 evaluators,
+v1 generator and old combined test suite after verifying all five ordinary files
+against Git HEAD and their exact contained paths. Their 211494 logical bytes are
+retired from the worktree; Git retains source history without copied code trees.
+
+Moved useful parsing, malformed-versus-semantic failure, critical-case, direct
+and indexed weight identity, parent identity and capture/template checks to the
+current evaluator's suite. Current registrations explicitly reject old schemas
+and authority escalation. Tests now allocate marked scratch under canonical
+artifacts and remove it after success or failure.
+
+All 17 committed task-specialist JSON records remain byte-identical. The five
+closed experiments remain rejected: Qwen2.5 0.5B, Qwen2.5 1.5B and LFM2 350M each
+passed 0/24; Qwen3 1.7B passed 20/24 with three critical failures; Qwen3 0.6B
+passed 11/24 with seven critical failures. Those are historical observations,
+not fresh model runs. Record checks bind registrations, manifests, outcomes and
+non-authority without loading an obsolete evaluator. Current evaluator,
+generator and capture implementation bytes are unchanged; sealed tool identities
+are preserved. No experiment was reopened.
+
+Verification: original task suites passed 23 checks; the consolidated suite
+passes 15, and the final run including five candidate-exclusion checks passes
+20 with no failures or skips. Current evaluator coverage is 92.67% lines,
+81.82% branches and 93.33% functions; generator coverage is 88.97%, 90.79% and
+91.89% respectively. Six UAI memory checks also pass. No live source references
+to the retired executables remain in the searched active paths across all seven
+repositories. Historical JSON references are retained as evidence.
+
+Evidence: `artifacts/ecosystem-cleanup-20260912/current-task-screen-review.json`.
+Across baseline, focused and final coverage runs, 29 remaining owned files
+(2326493 logical bytes) were removed; per-test fixture totals and physical
+storage recovery were not measured. The canonical scratch parent is empty.
+Two previously policy-blocked installer links still prevent a complete source
+scan; no blocked deletion was retried. Other cleanup, source admission, numerical
+parity, qualified default, browser and public seed/publication work remains open.
+Ternary/Bonsai/Hadamard research stays deferred.
+
 ## C39: retire the incompatible discovery producer, September 19
 
 Removed `huggingface-qwen-candidates.js` and its dedicated old-format test. It
