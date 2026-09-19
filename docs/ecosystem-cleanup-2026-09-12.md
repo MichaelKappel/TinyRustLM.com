@@ -5,6 +5,44 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C43: defer and bound browser runtime preparation, September 19
+
+The empty-model page no longer waits for the runtime manifest or WASM before
+opening the cache and discovering models. Restore, P2P installation, companion
+installation and local import prepare the verified runtime when needed. Existing
+runtime/admission identity checks remain mandatory, and acquisition rechecks
+current qualification after that wait. Activation reserves ownership before the
+download; a superseded completion cannot register a model or replace its successor.
+
+The runtime and catalog admission loaders now share `operation-lifetime.js`.
+Runtime fetches, reads and hashing share one 60-second default deadline, with an
+explicit caller cancellation signal and a configurable 1-120000 ms test/caller
+budget. The admission loader retains its 30-second default. Timeout clears the
+chooser's busy state and reports a retry action. Cancellation reaches both fetch
+and reader waits; ignored or late dependency results cannot publish readiness.
+Decoded byte limits, canonical manifests, hashes and worker ownership still apply.
+
+All 262 focused checks and 26 artifact/publication checks pass. The latter include
+two fresh offline builds matching the unchanged tracked WASM. Fourteen installed
+Edge chooser checks pass across desktop and mobile viewport emulation, including
+zero runtime requests for an empty installation and timeout/cancellation before
+any peer model transfer. Runtime loader line/branch/function coverage is
+92.88/85.71/96.00 percent; the shared lifetime is 94.74/77.78/100.00 percent.
+
+Development failures are retained in the receipt: an initial unit run had missing
+injected dependencies and timed out; the first chooser run omitted the new script
+from the serving manifest, rejected admission before fetching and timed out.
+The new test also needed its explicit admission route. The corrected deployment
+closure contains 31 artifacts, including the shared helper, and both HTML shells
+bind 20 assets. No visual styling or public release was changed.
+
+Evidence: `artifacts/ecosystem-cleanup-20260912/browser-runtime-lifetime-review.json`.
+Owned scratch was removed and its six parents verified empty. Cleanup counts are
+logical file sizes, not measured physical recovery; per-test removed output is
+not included. No model was run or qualified, no seed or site was published, and
+the same two blocked installer links still prevent source scan completion.
+Ternary/Bonsai research remains deferred; the ecosystem goal remains incomplete.
+
 ## C42: bound runtime downloads and contain build verification, September 19
 
 The WASM loader previously checked body size only after `Response.arrayBuffer()`

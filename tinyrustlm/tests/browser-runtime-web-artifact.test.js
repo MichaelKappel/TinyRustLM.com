@@ -453,7 +453,9 @@ test("loader verifies fresh bytes without instantiating WASM in the top-window b
   });
   assert.equal(result.manifest.sha256, value.manifest.sha256);
   assert.equal(result.wasmBytes.byteLength, value.wasmBytes.length);
-  assert.deepEqual(calls.map((call) => call.options), [
+  assert.equal(calls[0].options.signal, calls[1].options.signal);
+  assert.equal(calls[0].options.signal.aborted, false);
+  assert.deepEqual(calls.map(({ options: { signal, ...options } }) => options), [
     { cache: "no-store", credentials: "omit" },
     { cache: "no-store", credentials: "omit" }
   ]);

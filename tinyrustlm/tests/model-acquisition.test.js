@@ -313,6 +313,9 @@ function companionBrowserInstallFunction(state, options = {}) {
     "renderSimpleModelPicker",
     "loadCatalogAdmission",
     "requireCurrentCatalogAdmission",
+    "ensureBrowserRuntimeAsset",
+    "throwIfAcquisitionAborted",
+    "assertAdmissionRuntime",
     "modelStoreManifest",
     "modelStoreAdmissionAuthority",
     "workerActivationStoreAdapter",
@@ -338,6 +341,9 @@ function companionBrowserInstallFunction(state, options = {}) {
     options.render || (() => {}),
     options.loadCatalogAdmission || (async () => ({ admission: {} })),
     options.requireCurrentCatalogAdmission || (() => true),
+    options.ensureBrowserRuntimeAsset || (async () => {}),
+    signal => { if (signal.aborted) throw Object.assign(new Error("cancelled"), { name: "AbortError" }); },
+    () => {},
     options.modelStoreManifest || (() => Object.freeze({ fixture: "manifest" })),
     options.modelStoreAdmissionAuthority || (() => Object.freeze({ fixture: "authority" })),
     (_store) => _store,
@@ -411,6 +417,11 @@ function companionAcquisitionRuntime(options = {}) {
     el: { modelState: {}, errorState: {} },
     loadCatalogAdmission: async () => ({ admission: {} }),
     requireCurrentCatalogAdmission: () => true,
+    ensureBrowserRuntimeAsset: async () => {},
+    throwIfAcquisitionAborted: signal => {
+      if (signal.aborted) throw Object.assign(new Error("cancelled"), { name: "AbortError" });
+    },
+    assertAdmissionRuntime: () => {},
     modelStoreManifest: () => ({}),
     modelStoreAdmissionAuthority: () => ({}),
     workerActivationStoreAdapter: (store) => store,
@@ -1050,6 +1061,38 @@ test("P2P route admission uses per-peer expiry from the actual catalog projectio
   assert.match(loader, /scheduleSimpleModelPeerExpiry\(state\.modelCatalogV1PeerDocument\);/);
 });
 
+test("runtime acquisition forwards cancellation and cannot publish a cancelled completion", async () => {
+  const source = sourceSection(app, "  async function ensureBrowserRuntimeAsset",
+    "  async function* storedCompositionChunks");
+  const runtimeState = { runtimeAsset: null };
+  let complete;
+  let forwarded;
+  let renders = 0;
+  const asset = { wasmBytes: new ArrayBuffer(8), manifest: {} };
+  const ensure = Function("state", "throwIfAcquisitionAborted", "browserRuntimeLoaderApi",
+    "paths", "window", "document", "setText", "el", "renderDiagnostics",
+    source + "; return ensureBrowserRuntimeAsset;")(
+    runtimeState, signal => { if (signal?.aborted) throw new Error("cancelled"); },
+    { load: options => { forwarded = options; return new Promise(resolve => { complete = resolve; }); } },
+    { runtimeWasmManifest: "manifest", runtimeWasm: "wasm" }, { fetch: () => {} },
+    { documentElement: { dataset: {} } }, () => {}, { wasmState: {} }, () => { renders++; });
+  const controller = new AbortController();
+  const pending = ensure(controller.signal);
+  assert.equal(forwarded.signal, controller.signal);
+  controller.abort();
+  complete(asset);
+  await assert.rejects(pending, /cancelled/);
+  assert.equal(runtimeState.runtimeAsset, null);
+  assert.equal(renders, 0);
+  const success = ensure();
+  complete(asset);
+  assert.equal(await success, asset);
+  assert.equal(runtimeState.runtimeAsset, asset);
+  assert.equal(renders, 1);
+  assert.equal(await ensure(), asset);
+  await assert.rejects(ensure(controller.signal), /cancelled/);
+});
+
 test("boot reopens and verifies the persistent active composition", () => {
   const boot = sourceSection(app, "  async function boot()", "  el.form.addEventListener");
   const openActive = sourceSection(
@@ -1068,10 +1111,8 @@ test("boot reopens and verifies the persistent active composition", () => {
     "    async function openActiveInternal(signal)"
   );
 
-  assert.match(
-    boot,
-    /await ensureBrowserRuntimeAsset\(\);[\s\S]*?cachedComposition = await ensureModelCompositionStore\(\)\.openActive\(\);/
-  );
+  assert.doesNotMatch(boot, /ensureBrowserRuntimeAsset/);
+  assert.match(boot, /cachedComposition = await ensureModelCompositionStore\(\)\.openActive\(\);/);
   assert.match(
     boot,
     /if \(cachedComposition\) \{[\s\S]*?await activateStoredComposition\(\s*cachedComposition,\s*"Your saved model is verified and ready\."\s*\);\s*state\.initialModelRestored = true;\s*state\.initialModelBootComplete = true;\s*return;/

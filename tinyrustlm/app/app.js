@@ -1332,6 +1332,9 @@
     if (value === "catalog-admission-timeout") {
       return "Checking the model took too long. Check your connection and try again.";
     }
+    if (value === "browser-runtime-timeout") {
+      return "Preparing the local runtime took too long. Check your connection and try again.";
+    }
     if (value.toLowerCase().includes("catalog")) {
       return "The model list could not be loaded. Check the URL or try a local JSON list.";
     }
@@ -2113,6 +2116,7 @@
     return true;
   }
 
+  // Reserve activation ownership before preparing runtime bytes or registering stored members.
   async function activateStoredComposition(
     storedComposition,
     readyText,
@@ -2121,7 +2125,6 @@
     suppliedToken
   ) {
     throwIfAcquisitionAborted(signal);
-    requireCurrentStoredComposition(storedComposition);
     const activationToken = suppliedToken ||
       createStoredCompositionActivationToken(storedComposition);
     if (activationToken.activationId !== storedComposition.activationId ||
@@ -2134,14 +2137,18 @@
       );
     }
     state.modelActivationCommitPending = activationToken;
-    const model = registerStoredComposition(storedComposition);
-    const admission = model.browserComposition.admission;
-    setLocalModelStatus(
-      `${admission.modelId} / saved in this browser / admission ` +
-        `${storedComposition.admissionAuthority.admissionSha256}`,
-      false
-    );
     try {
+      await ensureBrowserRuntimeAsset(signal);
+      throwIfAcquisitionAborted(signal);
+      requireStoredCompositionActivationOwner(storedComposition, activationToken);
+      requireCurrentStoredComposition(storedComposition);
+      const model = registerStoredComposition(storedComposition);
+      const admission = model.browserComposition.admission;
+      setLocalModelStatus(
+        `${admission.modelId} / saved in this browser / admission ` +
+          `${storedComposition.admissionAuthority.admissionSha256}`,
+        false
+      );
       const loaded = await loadSelectedModelWithConsent(signal, activationToken);
       throwIfAcquisitionAborted(signal);
       requireStoredCompositionActivationOwner(storedComposition, activationToken);
@@ -5334,6 +5341,10 @@
     try {
       const admissionRecord = await loadCatalogAdmission(entry, controller.signal);
       requireCurrentCatalogAdmission(entry, admissionRecord.admission);
+      await ensureBrowserRuntimeAsset(controller.signal);
+      throwIfAcquisitionAborted(controller.signal);
+      requireCurrentCatalogAdmission(entry, admissionRecord.admission);
+      assertAdmissionRuntime(admissionRecord.admission);
       setSimpleModelPickerStatus(
         `Downloading and verifying ${displayName} directly from the selected peer...`,
         false
@@ -5757,6 +5768,11 @@
       const admissionRecord = await loadCatalogAdmission(entry, controller.signal);
       requireCurrentCatalogAdmission(entry, admissionRecord.admission);
       if (sequence !== state.companion.pollSequence) return false;
+      await ensureBrowserRuntimeAsset(controller.signal);
+      throwIfAcquisitionAborted(controller.signal);
+      if (sequence !== state.companion.pollSequence) return false;
+      requireCurrentCatalogAdmission(entry, admissionRecord.admission);
+      assertAdmissionRuntime(admissionRecord.admission);
       state.companion.streamAbort = controller;
       renderSimpleModelPicker();
       const manifest = modelStoreManifest(admissionRecord);
@@ -9573,6 +9589,7 @@
       throw new Error("Browser composition admission is not canonical UTF-8");
     }
     const admission = browserModelAdmissionApi.parseAdmissionText(admissionText);
+    await ensureBrowserRuntimeAsset();
     assertAdmissionRuntime(admission);
     const filesByRole = new Map();
     for (const artifact of admission.artifacts) {
@@ -10537,16 +10554,21 @@ if (view.matches.length) {
     runPendingGenerationAction();
   }
 
-  async function ensureBrowserRuntimeAsset() {
+  // Fetch only for a model operation; cancellation must not publish a late verified asset.
+  async function ensureBrowserRuntimeAsset(signal) {
+    throwIfAcquisitionAborted(signal);
     if (state.runtimeAsset && state.runtimeAsset.wasmBytes instanceof ArrayBuffer &&
         state.runtimeAsset.wasmBytes.byteLength > 0) {
       return state.runtimeAsset;
     }
-    state.runtimeAsset = await browserRuntimeLoaderApi.load({
+    const asset = await browserRuntimeLoaderApi.load({
       manifestUrl: paths.runtimeWasmManifest,
       wasmUrl: paths.runtimeWasm,
-      fetchFunction: window.fetch.bind(window)
+      fetchFunction: window.fetch.bind(window),
+      signal
     });
+    throwIfAcquisitionAborted(signal);
+    state.runtimeAsset = asset;
     state.runtimeVariant = "worker-owned-wasm";
     document.documentElement.dataset.runtimeVariant = state.runtimeVariant;
     setText(el.wasmState, "verified", false);
@@ -10655,7 +10677,7 @@ if (view.matches.length) {
     state.hasContext = false;
     document.documentElement.dataset.activeModel = "";
     setInteractive(false);
-    setText(el.runtimeStatus, "Runtime verified; model activation cancelled", false);
+    setText(el.runtimeStatus, "Model activation cancelled", false);
     setText(el.modelState, "activation cancelled", false);
     setControls(false, true);
     return true;
@@ -10692,7 +10714,7 @@ if (view.matches.length) {
         }
         state.runtimeClient = null;
         state.runtimeState = null;
-        const runtimeAsset = await ensureBrowserRuntimeAsset();
+        const runtimeAsset = await ensureBrowserRuntimeAsset(signal);
         throwIfModelActivationCancelled(loadId, signal);
         client = modelRuntimeClientApi.createBrowserClient(paths.runtimeWorker, 10 * 60 * 1000);
         state.runtimeClient = client;
@@ -10801,7 +10823,7 @@ if (view.matches.length) {
       state.activeComposition = null;
       state.activeModelKey = "";
       setInteractive(false);
-      setText(el.runtimeStatus, "Runtime verified; choose a qualified composition", false);
+      setText(el.runtimeStatus, "Choose a qualified composition", false);
       setText(el.modelState, "choose six local members", false);
       setText(el.errorState, "none", false);
       renderProvenance("choose a qualified SLM2 composition", null, false);
@@ -11125,9 +11147,7 @@ if (view.matches.length) {
   // Verifies cached state before allowing the no-model path to auto-present the chooser.
   async function boot() {
     try {
-      setText(el.runtimeStatus, "Verifying browser runtime");
       setInteractive(false);
-      await ensureBrowserRuntimeAsset();
       setText(el.runtimeStatus, "Checking browser model cache", false);
       let cachedComposition = null;
       let cacheError = null;
@@ -11159,7 +11179,7 @@ if (view.matches.length) {
       paths.models = Object.create(null);
       if (state.localModel) paths.models[localModelKey] = state.localModel;
       renderModelOptions(paths.models, false);
-      setText(el.runtimeStatus, "Runtime verified; choose a qualified composition", false);
+      setText(el.runtimeStatus, "Choose a qualified composition", false);
       setText(
         el.modelState,
         cacheError ? "browser cache unavailable" : "choose a model",

@@ -4,7 +4,9 @@
   const catalogApi = typeof module === "object" && module.exports
     ? require("./minimodel-catalog-v1.js")
     : root.TinyRustLMMiniModelCatalogV1;
-  const api = factory(catalogApi, root);
+  const lifetimeApi = typeof module === "object" && module.exports
+    ? require("./operation-lifetime.js") : root.TinyRustLMOperationLifetime;
+  const api = factory(catalogApi, lifetimeApi);
   if (typeof module === "object" && module.exports) {
     module.exports = api;
   } else {
@@ -12,7 +14,7 @@
   }
 }(typeof globalThis === "object" ? globalThis : this,
 // Builds the dependency-injected loader without assuming a specific host runtime.
-function (catalogApi, root) {
+function (catalogApi, lifetimeApi) {
   "use strict";
 
   const ADMISSION_SCHEMA = "tinyrustlm.browser-composition-admission/1";
@@ -356,48 +358,15 @@ function (catalogApi, root) {
 
   // Owns one deadline and cancellation reason across both documents and their hashes.
   function createLifetime(options) {
-    if (!root || typeof root.AbortController !== "function" ||
-        typeof root.setTimeout !== "function" || typeof root.clearTimeout !== "function") {
+    if (!lifetimeApi || typeof lifetimeApi.create !== "function") {
       reject("catalog-admission-loader-options");
     }
-    const controller = new root.AbortController();
-    let failure = null;
-    let rejectStopped;
-    const stopped = new Promise((_resolve, rejectPromise) => { rejectStopped = rejectPromise; });
-    // Pre-aborted callers can stop before any awaited operation attaches a race.
-    stopped.catch(() => {});
-    // Preserve the first terminal reason even if a deadline and caller abort race.
-    function stop(code) {
-      if (failure) return;
-      failure = new CatalogAdmissionLoaderError(code);
-      controller.abort(failure);
-      rejectStopped(failure);
-    }
-    const onAbort = () => stop("catalog-admission-aborted");
-    if (options.signal) {
-      options.signal.addEventListener("abort", onAbort, { once: true });
-      if (options.signal.aborted) onAbort();
-    }
-    const timer = root.setTimeout(() => stop("catalog-admission-timeout"),
-      options.timeoutMilliseconds);
-    return Object.freeze({
-      signal: controller.signal,
-      // Check before invoking a dependency, and stop waiting even if it ignores abort.
-      async wait(action) {
-        if (failure) throw failure;
-        const result = await Promise.race([Promise.resolve().then(() => {
-          if (failure) throw failure;
-          return action();
-        }), stopped]);
-        if (failure) throw failure;
-        return result;
-      },
-      // Release owned resources on success and every validation/cancellation failure.
-      dispose(error) {
-        root.clearTimeout(timer);
-        if (options.signal) options.signal.removeEventListener("abort", onAbort);
-        if (error && !controller.signal.aborted) controller.abort(error);
-      }
+    return lifetimeApi.create({
+      signal: options.signal,
+      timeoutMilliseconds: options.timeoutMilliseconds,
+      abortError: new CatalogAdmissionLoaderError("catalog-admission-aborted"),
+      timeoutError: new CatalogAdmissionLoaderError("catalog-admission-timeout"),
+      optionsError: new CatalogAdmissionLoaderError("catalog-admission-loader-options")
     });
   }
 

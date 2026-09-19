@@ -493,6 +493,11 @@ test("browser install failure does not relabel an Available companion conversion
       appendConsole: (message) => consoleLines.push(message),
       setCompanionStatus: () => {},
       loadCatalogAdmission: async () => ({ admission: Object.freeze({}) }),
+      ensureBrowserRuntimeAsset: async () => {},
+      throwIfAcquisitionAborted: signal => {
+        if (signal.aborted) throw Object.assign(new Error("cancelled"), { name: "AbortError" });
+      },
+      assertAdmissionRuntime: () => {},
       requireCurrentCatalogAdmission: () => true,
       modelStoreManifest: () => Object.freeze({ fixture: "manifest" }),
       modelStoreAdmissionAuthority: () => Object.freeze({ fixture: "authority" }),
@@ -843,7 +848,8 @@ test("pre-turn qualification rejection issues no turn, generation, or runtime ca
   ]]);
 });
 
-test("stale activation unwind cannot clear or terminate its successor's pending token", async () => {
+for (const boundary of ["runtime", "worker"]) {
+test("stale " + boundary + " activation cannot clear or terminate its successor's pending token", async () => {
   const loadA = deferred();
   const loadB = deferred();
   const controllerA = new AbortController();
@@ -906,6 +912,8 @@ test("stale activation unwind cannot clear or terminate its successor's pending 
       requireCurrentStoredComposition: (storedComposition) => Object.freeze({
         modelId: storedComposition === storedA ? "fixture/a" : "fixture/b"
       }),
+      ensureBrowserRuntimeAsset: signal => boundary === "runtime" && signal === controllerA.signal
+        ? loadA.promise : Promise.resolve(),
       registerStoredComposition: (storedComposition) => Object.freeze({
         browserComposition: Object.freeze({
           admission: Object.freeze({
@@ -916,7 +924,10 @@ test("stale activation unwind cannot clear or terminate its successor's pending 
       }),
       setLocalModelStatus: () => {},
       loadSelectedModelWithConsent: (signal) => {
-        if (signal === controllerA.signal) return loadA.promise;
+        if (signal === controllerA.signal) {
+          assert.equal(boundary, "worker", "a stale runtime completion must not reach model loading");
+          return loadA.promise;
+        }
         if (signal === controllerB.signal) return loadB.promise;
         throw new Error("unexpected activation signal");
       },
@@ -955,8 +966,10 @@ test("stale activation unwind cannot clear or terminate its successor's pending 
   state.modelActivationAbort = controllerB;
   state.runtimeClient = successorClient;
 
-  loadA.reject(staleFailure);
-  await assert.rejects(activationA, (error) => error === staleFailure);
+  if (boundary === "worker") loadA.reject(staleFailure);
+  else loadA.resolve();
+  await assert.rejects(activationA, error => boundary === "worker" ? error === staleFailure :
+    error.code === "model-cache-activation-owner-mismatch");
   discardRejectedStoredActivation(tokenA);
 
   loadB.resolve({ loaded: true });
@@ -975,6 +988,7 @@ test("stale activation unwind cannot clear or terminate its successor's pending 
   assert.equal(successorClient.status, "active");
   assert.deepEqual(terminationReasons, []);
 });
+}
 
 test("indeterminate store commit never restores prior worker or publishes Ready", async () => {
   const admissionAuthority = Object.freeze({ fixture: "authority" });

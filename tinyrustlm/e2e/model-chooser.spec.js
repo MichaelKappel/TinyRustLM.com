@@ -473,6 +473,64 @@ async function expectChooserContentContained(page, selectors) {
 }
 
 test.describe("compact model chooser", () => {
+  test("opens the empty chooser without fetching the browser runtime", async ({ page }) => {
+    let requests = 0;
+    await page.route("**/browser-runtime/**", route => { requests++; return route.abort(); });
+    await openApplication(page);
+    await expect(page.locator("#simpleModelList")).toHaveAttribute("aria-busy", "false");
+    await expect(page.locator("#generateButton")).toBeDisabled();
+    expect(requests).toBe(0);
+  });
+
+  for (const action of ["timeout", "cancel"]) {
+    test("recovers from a stalled browser runtime through " + action, async ({ page }) => {
+      const gate = deferred();
+      const served = deferred();
+      const peerId = "playwright.runtime-deadline";
+      const entry = catalogEntry({ entryId: "runtime-deadline", displayName: "Runtime Fixture",
+        compositionSha: sha256("5"), revisionCharacter: "5", peerId });
+      const admissionText = browserAdmissionFixture(entry);
+      let runtimeRequests = 0;
+      let peerRequests = 0;
+      await page.clock.install({ time: fixtureNow });
+      await page.route(`**${entry.browser_admission.route}`, route => route.fulfill({
+        status: 200, contentType: "application/json",
+        headers: { "Access-Control-Allow-Origin": "*",
+          "Content-Length": String(Buffer.byteLength(admissionText)) }, body: admissionText
+      }));
+      await page.route(`${publicPeerBaseUrl}**`, route => { peerRequests++; return route.abort(); });
+      await page.route("**/browser-runtime/*.manifest.json", async route => {
+        runtimeRequests++;
+        await gate.promise;
+        try { await route.abort(); } finally { served.resolve(); }
+      });
+      await openApplication(page, { entries: [entry], announcements: [peerAnnouncementFixture({
+        announcementId: peerId, compositionId: entry.composition.composition_id,
+        pieceSetSha256: sha256("4") })] });
+      const card = page.locator("#simpleModelList [data-composition-id]");
+      await card.click();
+      await expect.poll(() => runtimeRequests).toBe(1);
+      try {
+        if (action === "timeout") {
+          await page.clock.fastForward(61_000);
+          await expect(page.locator("#simpleModelPickerStatus")).toHaveText(
+            "P2P install stopped: Preparing the local runtime took too long. Check your connection and try again.");
+          await expect(page.locator("#errorState")).toContainText("(browser-runtime-timeout)");
+        } else {
+          await page.getByRole("button", { name: "Cancel model acquisition" }).click();
+          await expect(page.locator("#simpleModelPickerStatus")).toHaveText("Model acquisition cancelled.");
+        }
+        await expect(card).toBeEnabled();
+        await expect(page.locator("#simpleModelList")).toHaveAttribute("aria-busy", "false");
+        await expect(page.locator("#generateButton")).toBeDisabled();
+        await expect(page.getByRole("button", { name: "Cancel model acquisition" })).toBeHidden();
+      } finally { gate.resolve(); }
+      await served.promise;
+      expect(peerRequests).toBe(0);
+      expect(runtimeRequests).toBe(1);
+    });
+  }
+
   test("bootstrap starts the server-seeded model without a chooser click and can cancel", async ({ page }) => {
     const entry = catalogEntry({ entryId: "bootstrap", displayName: "Starter",
       compositionSha: sha256("5"), revisionCharacter: "5", peerId: "bootstrap-peer" });

@@ -1,0 +1,292 @@
+{
+  "schema": "tinyrustlm.browser-runtime-lifetime-review.v1",
+  "observedAtUtc": "2026-09-19T23:07:11Z",
+  "sourceParent": "dfdcf131b4e4c58f2b72717020b1938b0e41be4f",
+  "status": "local-runtime-lifetime-startup-and-publication-closure-checks-pass-no-deployment",
+  "inputs": [
+    {
+      "path": "tinyrustlm/app/app.js",
+      "bytes": 460902,
+      "sha256": "7b8ffcad1b10934aac2b2b4bd2656c14c9d45bd8c3b20ca20d837361db56bd56"
+    },
+    {
+      "path": "tinyrustlm/app/browser-runtime-loader.js",
+      "bytes": 13096,
+      "sha256": "1836fb805c7be0a43508a54359fe3f128f9b4c1cbf888d2392908f8b4c6717b8"
+    },
+    {
+      "path": "tinyrustlm/app/catalog-admission-loader.js",
+      "bytes": 38187,
+      "sha256": "623bb655aacdb075ea575193a64ef91469c6eda545e54b1dd4718fcf22493951"
+    },
+    {
+      "path": "tinyrustlm/app/operation-lifetime.js",
+      "bytes": 2292,
+      "sha256": "4a9d907a3c62b679f896d859e843124bf4252e6d2be0f8aacc7e754113a9f570"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48602,
+      "sha256": "e607950480c20ae3d78f2c7a4dc016d76dcad59b5b29171e9a36059373d6af4e"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48682,
+      "sha256": "c046b3a8bc8c53f9647121704100725cd82faf445561f86d6176a4795e251307"
+    },
+    {
+      "path": "tinyrustlm/deploy/web-deployment-manifest.v2.json",
+      "bytes": 4802,
+      "sha256": "3c97a713670f119a978a1aea1611169dfb7d9cf1974ad8ae7c4a201454a04df8"
+    },
+    {
+      "path": "tinyrustlm/docs/browser-runtime.md",
+      "bytes": 8237,
+      "sha256": "15a948ffcf1f1c605862ec4de3e6655813e637789e91ed7ad8da644231ead727"
+    },
+    {
+      "path": "tinyrustlm/e2e/model-chooser.spec.js",
+      "bytes": 73036,
+      "sha256": "6e772b11934d96465b5b8d23bc491e4daba70489933a2956c8a7adc84921c3d1"
+    },
+    {
+      "path": "tinyrustlm/tests/browser-runtime-loader_test.js",
+      "bytes": 14650,
+      "sha256": "f4fbd3b204ae4b3644e6726f78a8d5ae8f089daefe8bd975f416399b81c8570d"
+    },
+    {
+      "path": "tinyrustlm/tests/browser-runtime-web-artifact.test.js",
+      "bytes": 19606,
+      "sha256": "13966316f87ac718929a1c187636a54cace0eefb0b779f2a51beaa28ac9de00b"
+    },
+    {
+      "path": "tinyrustlm/tests/model-acquisition-boundary-regression.test.js",
+      "bytes": 55547,
+      "sha256": "3151370236fa477e57035776956cd781519357cc605cf57469dea97d8079db7f"
+    },
+    {
+      "path": "tinyrustlm/tests/model-acquisition.test.js",
+      "bytes": 121540,
+      "sha256": "7b954df6d0c89a59e76c3bfea581788e3af48798645d26477fade685da7cc968"
+    },
+    {
+      "path": "tinyrustlm/tests/operation-lifetime_test.js",
+      "bytes": 3562,
+      "sha256": "66aeffa662279115b31a4a65ccfb7c9e55c0c534dfe550d47a08308c47faf759"
+    },
+    {
+      "path": "tinyrustlm/tests/static-shell-parity.test.js",
+      "bytes": 5127,
+      "sha256": "c20d60933c2f75bc60a243b2603545c26823a4aafdef4304c87e8e2bc634c89d"
+    },
+    {
+      "path": "tinyrustlm/tests/web-deployment-custody.test.js",
+      "bytes": 7363,
+      "sha256": "21bddd67da592da1d7c902fd9f51b5b1fab7363520f01050ea3bef8af5b0255e"
+    },
+    {
+      "path": "tinyrustlm/tests/web-deployment-manifest.test.js",
+      "bytes": 11975,
+      "sha256": "4c68f345ff731af733f6a157d2b2d2ecd0b39544a2549f67a58d97fc672467fd"
+    },
+    {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm",
+      "bytes": 576379,
+      "sha256": "05e9a497f4aab23a1bc0bc4aed3027a2e4914f5aa70c0e79ecbeb50b5fbe8467"
+    },
+    {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
+      "bytes": 1209,
+      "sha256": "e6109eddda947f53cb00cf07f08e7779b49216c44f6ed54383fc16bb26452eb7"
+    },
+    {
+      "path": "tinyrustlm/tests/catalog-admission-loader.test.js",
+      "bytes": 32210,
+      "sha256": "2f3b51f1c9ca0fe36413e99d27b5c0641748f3695c5ea5d2d2f6bb69b0e4723d"
+    },
+    {
+      "path": "tinyrustlm/tests/p2p-composition-install.test.js",
+      "bytes": 45141,
+      "sha256": "356570a67bd3ea6354de021aac73a9ddd499019c3453f45329969503c37443da"
+    },
+    {
+      "path": "tinyrustlm/tests/model-composition-store.test.js",
+      "bytes": 85124,
+      "sha256": "d927da0d67a6ffc887fe727c146eccef656ed433dc64b012132b504e6ae380c7"
+    },
+    {
+      "path": "tinyrustlm/tests/static-server.test.js",
+      "bytes": 10005,
+      "sha256": "8d8632c94fad00d3f0fe4719d3f414a49a845c35e40cd522b137be9f191a5fdb"
+    },
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "bytes": 6416,
+      "sha256": "c35f164205e68792510c9cfbb7287a9df58fa9ac28f9eec8471b3a2a746a98d6"
+    }
+  ],
+  "environment": {
+    "node": "v24.14.0",
+    "edge": "153.0.4234.48",
+    "playwright": "1.61.1",
+    "dotnetSdk": "10.0.401",
+    "platform": "win32",
+    "architecture": "x64",
+    "rust": "1.96.0"
+  },
+  "changes": [
+    "One shared operation-lifetime implementation replaces private admission lifetime logic and serves both loaders.",
+    "Runtime manifest/WASM fetch, read and hashing share a 60000 ms default deadline; caller option range 1..120000 ms. Admission retains its 30000 ms default.",
+    "Caller cancellation reaches fetch/read waits; late results cannot publish a verified app asset or start a stale activation.",
+    "Empty-model startup opens cache/catalog before any runtime download. Restore, P2P/companion install and Advanced local import obtain runtime bytes when required.",
+    "Activation reserves ownership before awaiting runtime bytes. Acquisition rechecks current qualification and exact runtime admission after waiting.",
+    "Current HTML shells bind 20 assets; serving/publication closure binds 31 artifacts including the shared helper."
+  ],
+  "observations": [
+    {
+      "name": "initial-focused-development-run",
+      "outcome": "incomplete-failure",
+      "reason": "Two displayed boundary-test failures and async ReferenceError from missing injected ensureBrowserRuntimeAsset; outer 60000 ms harness timeout. No aggregate pass claim.",
+      "nextAction": "Updated production-section test dependencies, preserving their assertions."
+    },
+    {
+      "name": "initial-chooser-development-run",
+      "outcome": "incomplete-failure",
+      "reason": "Shared helper omitted from serving manifest, producing catalog-admission-loader-options before metadata fetching. At least ten displayed failures before the 120000 ms harness timeout. New fixture also lacked its explicit admission response.",
+      "nextAction": "Added helper to serving closure and explicit fixture admission route; reran against corrected source."
+    },
+    {
+      "name": "final-focused",
+      "passed": 262,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Lifetime, runtime loader including loopback HTTP and installed Edge minimal WASM, admission loader, app acquisition, ownership boundaries, P2P install, composition store and shells."
+    },
+    {
+      "name": "final-artifact-publication",
+      "passed": 26,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Seven artifact checks including two fresh offline builds; five static-server checks; fourteen publication/custody checks."
+    },
+    {
+      "name": "final-chooser",
+      "passed": 14,
+      "failed": 0,
+      "retries": 0,
+      "scope": "Installed Edge desktop and emulated mobile viewports; empty page makes no runtime requests; manifest fetch timeout and Cancel recover without peer transfer; prior metadata deadline, altered receipt and duplicate-intent cases remain green."
+    },
+    {
+      "name": "memory-guidance",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "UaixMemoryConsolidationTests"
+    }
+  ],
+  "coverage": {
+    "runtimeLoader": {
+      "line": 92.88,
+      "branch": 85.71,
+      "function": 96
+    },
+    "catalogAdmissionLoader": {
+      "line": 88.47,
+      "branch": 76.08,
+      "function": 97.73
+    },
+    "operationLifetime": {
+      "line": 94.74,
+      "branch": 77.78,
+      "function": 100
+    },
+    "appIntegration": "Targeted production-function execution, source assertions and actual browser workflows; no whole-app percentage claimed."
+  },
+  "runtime": {
+    "bytes": 576379,
+    "sha256": "05e9a497f4aab23a1bc0bc4aed3027a2e4914f5aa70c0e79ecbeb50b5fbe8467",
+    "freshOfflineBuildsMatching": 2,
+    "promoted": false
+  },
+  "cleanup": {
+    "runs": [
+      {
+        "run": "initial-unit-incomplete",
+        "files": 8,
+        "logicalBytes": 4697805
+      },
+      {
+        "run": "unit-after-fixture-update",
+        "files": 9,
+        "logicalBytes": 5127799
+      },
+      {
+        "run": "publication-closure",
+        "files": 10,
+        "logicalBytes": 1903234
+      },
+      {
+        "run": "initial-browser-incomplete",
+        "files": 204,
+        "logicalBytes": 12640357
+      },
+      {
+        "run": "unit-after-ownership-fix",
+        "files": 9,
+        "logicalBytes": 5128048
+      },
+      {
+        "run": "final-browser",
+        "files": 11,
+        "logicalBytes": 957382
+      },
+      {
+        "run": "final-focused",
+        "files": 9,
+        "logicalBytes": 5130621
+      },
+      {
+        "run": "final-artifact-publication",
+        "files": 11,
+        "logicalBytes": 2635745
+      }
+    ],
+    "totalFiles": 271,
+    "totalLogicalBytes": 38220991,
+    "physicalStorageRecoveryMeasured": false,
+    "perTestEarlyRemovedBytesMeasured": false,
+    "emptyParentsVerified": [
+      "artifacts/tests/runtime-lifetime",
+      "artifacts/tests/runtime-lifetime-browser",
+      "artifacts/tests/runtime-lifetime-publication",
+      "artifacts/tests/runtime-lifetime-artifact",
+      "artifacts/tests/runtime-loader-browser",
+      "artifacts/tests/browser-runtime-build"
+    ],
+    "priorBlockedPathsUntouched": true
+  },
+  "limits": [
+    "Synthetic fixture behavior is not real-model numerical, quality or useful inference evidence.",
+    "Mobile is Edge viewport emulation, not physical mobile hardware.",
+    "Deadlines bound asynchronous waiting, not synchronous CPU work or total model installation.",
+    "No model payload, source snapshot, cloud service, public seed, deployment or live MemoryEndpoints operation was produced.",
+    "Current source-authority scan still fails on the same two policy-blocked installer paths; no removal was retried.",
+    "Canonical seven repositories remain discovered; this checkpoint changes TinyRustLM only.",
+    "Ternary/Bonsai/Hadamard research remains deferred."
+  ],
+  "sourceGate": {
+    "status": "source_authority_scan_incomplete",
+    "paths": [
+      "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\qwen3-environment-install\\tinyrustlm-operation-C3ZUt9\\install-temp\\TmP6xn2evdh-b",
+      "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\qwen3-environment-install\\tinyrustlm-operation-C3ZUt9\\install-temp\\TmPeq63_hr7-b"
+    ]
+  },
+  "lesson": {
+    "question": "Can a bounded runtime body still stall setup or outlive its activation?",
+    "method": "Deferred dependencies, cancellation races, actual served browser graph, publication closure and artifact reproduction.",
+    "result": "Deferral and shared lifetime bound waiting while ownership checks reject stale completions.",
+    "uncertainty": "No real default or public seed qualified.",
+    "decision": "Keep preparation inside model operations and include helper in serving closure.",
+    "reusableLesson": "Bound bytes, time and ownership independently; CommonJS success cannot prove browser script availability."
+  }
+}

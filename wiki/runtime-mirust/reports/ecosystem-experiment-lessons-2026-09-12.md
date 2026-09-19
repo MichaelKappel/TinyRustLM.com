@@ -1416,6 +1416,32 @@ real-model quality, numerical parity, live seed or deployment. Network wait
 limits remain separate from these byte limits; prior policy-blocked deletions
 and the incomplete source scan are unchanged.
 
+## C43: runtime byte limits also need a lifetime and an owning operation
+
+- **Question:** can a stalled runtime download prevent initial model discovery or
+  outlive the activation that requested it?
+- **Exact inputs:** current app, runtime/admission loaders, deployment manifest,
+  shared lifetime and affected tests are hash-bound in
+  `artifacts/ecosystem-cleanup-20260912/browser-runtime-lifetime-review.json`.
+- **Method:** deferred fetch/read/hash dependencies, cancellation and late-result
+  tests, actual Edge chooser traffic interception, exact deployment closure and
+  fresh offline artifact reproduction.
+- **Result:** 262 focused and 26 artifact/publication checks pass, plus 14 Edge
+  chooser checks. The empty chooser makes no runtime request; stalled preparation
+  can time out or be cancelled before model transfer. A stale activation cannot
+  overtake the owner that replaced it. Initial test-harness omissions and the
+  missing serving-manifest entry failed and are recorded without qualification
+  claims; corrected runs pass.
+- **Uncertainty:** browser checks use synthetic metadata and mobile viewport
+  emulation. Deadlines bound asynchronous waiting, not synchronous CPU work or
+  the entire installation. No useful model, live seed or deployment is proven.
+- **Decision:** share the lifetime implementation, defer runtime preparation to
+  model operations, preserve exact admission checks and recheck authority after
+  waiting. Add new browser dependencies to both script order and serving closure.
+- **Reusable lesson:** a byte bound does not bound waiting. Reserve operation
+  ownership before the first new await, and test the actual served dependency
+  graph; CommonJS unit success cannot prove browser script availability.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

@@ -46,7 +46,7 @@ test("CLI binds and re-verifies canonical publication inputs without copied payl
   const input = JSON.parse(bound.stdout);
   assert.equal(input.schema, "tinyrustlm.web_deployment_input.v1");
   assert.equal(input.status, "pass");
-  assert.equal(input.fileCount, 30);
+  assert.equal(input.fileCount, 31);
   assert.equal(input.files.length, input.fileCount);
   assert.match(input.inputId, /^[0-9a-f]{64}$/u);
   assert.equal(input.files.some((entry) => "filePath" in entry), false);

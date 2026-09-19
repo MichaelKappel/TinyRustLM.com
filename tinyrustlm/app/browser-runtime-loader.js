@@ -1,12 +1,14 @@
 (function (root, factory) {
   "use strict";
-  const api = factory(root);
+  const lifetimeApi = typeof module === "object" && module.exports
+    ? require("./operation-lifetime.js") : root.TinyRustLMOperationLifetime;
+  const api = factory(root, lifetimeApi);
   if (typeof module === "object" && module.exports) {
     module.exports = api;
   } else {
     root.TinyRustLMBrowserRuntimeLoader = api;
   }
-}(typeof globalThis === "object" ? globalThis : this, function (root) {
+}(typeof globalThis === "object" ? globalThis : this, function (root, lifetimeApi) {
   "use strict";
 
   const MANIFEST_SCHEMA = "tinyrustlm.browser-runtime-wasm-manifest/1";
@@ -15,6 +17,8 @@
   const MAXIMUM_MANIFEST_BYTES = 16 * 1024;
   const MAXIMUM_WASM_BYTES = 16 * 1024 * 1024;
   const MAXIMUM_MEMORY_BYTES = 3 * 1024 * 1024 * 1024;
+  const DEFAULT_TIMEOUT_MILLISECONDS = 60_000;
+  const MAXIMUM_TIMEOUT_MILLISECONDS = 120_000;
   const MANIFEST_FIELDS = Object.freeze([
     "schema",
     "profileId",
@@ -189,24 +193,28 @@
     return output;
   }
 
-  async function sha256Hex(value) {
+  // Hash verified-length bytes without exceeding the operation's shared deadline.
+  async function sha256Hex(value, lifetime) {
     let digest;
     try {
-      digest = await cryptoApi().subtle.digest("SHA-256", value);
-    } catch (_) {
+      digest = await lifetime.wait(() => cryptoApi().subtle.digest("SHA-256", value));
+    } catch (error) {
+      if (error instanceof BrowserRuntimeLoaderError) throw error;
       reject("browser-runtime-sha256");
     }
     return bytesToHex(new Uint8Array(digest));
   }
 
   // Read decoded bytes into one bounded buffer; declared wire size is not a decoded bound.
-  async function fetchBytes(fetchFunction, url, maximumBytes, code) {
+  async function fetchBytes(fetchFunction, url, maximumBytes, code, lifetime) {
     let response;
     let reader;
     let bytes;
     let complete = false;
     try {
-      response = await fetchFunction(url, { cache: "no-store", credentials: "omit" });
+      response = await lifetime.wait(() => fetchFunction(url, {
+        cache: "no-store", credentials: "omit", signal: lifetime.signal
+      }));
       if (!response || response.ok !== true || !response.body ||
           typeof response.body.getReader !== "function") {
         reject(code);
@@ -227,7 +235,7 @@
       bytes = new Uint8Array(maximumBytes);
       let offset = 0;
       while (true) {
-        const item = await reader.read();
+        const item = await lifetime.wait(() => reader.read());
         if (!item || typeof item.done !== "boolean") reject(code);
         if (item.done) break;
         if (!(item.value instanceof Uint8Array) || item.value.byteLength < 1 ||
@@ -241,7 +249,8 @@
       const result = offset === bytes.byteLength ? bytes : bytes.slice(0, offset);
       complete = true;
       return result;
-    } catch (_) {
+    } catch (error) {
+      if (error instanceof BrowserRuntimeLoaderError) throw error;
       reject(code);
     } finally {
       if (!complete) {
@@ -262,9 +271,11 @@
 
   // Bind streamed runtime bytes to the canonical manifest before returning them to the worker.
   async function load(options) {
+    const optionalFields = ["signal", "timeoutMilliseconds"].filter(
+      field => options && Object.hasOwn(options, field));
     const source = requireExactObject(
       options,
-      ["manifestUrl", "wasmUrl", "fetchFunction"],
+      ["manifestUrl", "wasmUrl", "fetchFunction", ...optionalFields],
       "browser-runtime-loader-options"
     );
     if (typeof source.manifestUrl !== "string" || !source.manifestUrl ||
@@ -272,11 +283,42 @@
         typeof source.fetchFunction !== "function") {
       reject("browser-runtime-loader-options");
     }
+    const signal = source.signal === undefined || source.signal === null ? null : source.signal;
+    const timeoutMilliseconds = source.timeoutMilliseconds === undefined
+      ? DEFAULT_TIMEOUT_MILLISECONDS : source.timeoutMilliseconds;
+    if ((signal !== null && (typeof signal !== "object" ||
+        typeof signal.aborted !== "boolean" || typeof signal.addEventListener !== "function" ||
+        typeof signal.removeEventListener !== "function")) ||
+        !Number.isSafeInteger(timeoutMilliseconds) || timeoutMilliseconds < 1 ||
+        timeoutMilliseconds > MAXIMUM_TIMEOUT_MILLISECONDS ||
+        !lifetimeApi || typeof lifetimeApi.create !== "function") {
+      reject("browser-runtime-loader-options");
+    }
+    const lifetime = lifetimeApi.create({
+      signal, timeoutMilliseconds,
+      abortError: new BrowserRuntimeLoaderError("browser-runtime-aborted"),
+      timeoutError: new BrowserRuntimeLoaderError("browser-runtime-timeout"),
+      optionsError: new BrowserRuntimeLoaderError("browser-runtime-loader-options")
+    });
+    let failure = null;
+    try {
+      return await loadBytes(source, lifetime);
+    } catch (error) {
+      failure = error;
+      throw error;
+    } finally {
+      lifetime.dispose(failure);
+    }
+  }
+
+  // Both responses and hashing share the caller's single operation deadline.
+  async function loadBytes(source, lifetime) {
     const manifestBytes = await fetchBytes(
       source.fetchFunction,
       source.manifestUrl,
       MAXIMUM_MANIFEST_BYTES,
-      "browser-runtime-manifest-fetch"
+      "browser-runtime-manifest-fetch",
+      lifetime
     );
     let manifest;
     try {
@@ -288,11 +330,12 @@
       source.fetchFunction,
       source.wasmUrl,
       manifest.byteCount,
-      "browser-runtime-wasm-fetch"
+      "browser-runtime-wasm-fetch",
+      lifetime
     );
     try {
       if (wasm.byteLength !== manifest.byteCount ||
-          await sha256Hex(wasm) !== manifest.sha256 ||
+          await sha256Hex(wasm, lifetime) !== manifest.sha256 ||
           !root.WebAssembly || typeof root.WebAssembly.validate !== "function" ||
           !root.WebAssembly.validate(wasm)) {
         reject("browser-runtime-wasm-identity");
@@ -311,6 +354,8 @@
     maximumManifestBytes: MAXIMUM_MANIFEST_BYTES,
     maximumWasmBytes: MAXIMUM_WASM_BYTES,
     maximumMemoryBytes: MAXIMUM_MEMORY_BYTES,
+    defaultTimeoutMilliseconds: DEFAULT_TIMEOUT_MILLISECONDS,
+    maximumTimeoutMilliseconds: MAXIMUM_TIMEOUT_MILLISECONDS,
     requiredExports: REQUIRED_EXPORTS,
     BrowserRuntimeLoaderError,
     normalizeManifest,

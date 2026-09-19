@@ -50,6 +50,18 @@ For each candidate, retain a compact matrix: exact source and weight identities;
 
 **C42 runtime download bounds:** the WASM loader enforces decoded byte limits while streaming, before copying, and uses the manifest's exact module size. Forty-eight affected checks pass, including local gzip/chunked HTTP, installed Edge fixtures and two offline builds identical to the tracked WASM. Runtime test scratch is canonical; only hard-link groups entirely inside the owned root may be removed. Child profile mapping now binds to the pinned toolchain owner. See `artifacts/ecosystem-cleanup-20260912/browser-runtime-streaming-review.json`. No runtime artifact was promoted; network wait limits and real model/public gates remain separate.
 
+**C43 runtime lifetime and startup:** the empty chooser no longer downloads WASM
+before cache/catalog discovery. Restore and installation obtain it under one
+60-second default deadline with acquisition cancellation. The catalog loader
+retains its 30-second budget through the same lifetime owner. Activation reserves
+its token before awaiting and rejects superseded completions; exact runtime and
+qualification checks remain. All 262 focused checks, 26 artifact/publication
+checks and 14 installed-Edge chooser checks pass. The deployment closure includes
+the shared helper; two fresh builds still match the tracked runtime. See
+`artifacts/ecosystem-cleanup-20260912/browser-runtime-lifetime-review.json` for
+initial failures, corrected results and scope. No real model or public result is
+established; the source scan and delivery gates remain open.
+
 Compare three routes by evidence:
 - Qualify an already useful compact checkpoint and adapt the sole runtime where justified.
 - Run a bounded new-derivative training experiment after inference, data and independent review readiness.

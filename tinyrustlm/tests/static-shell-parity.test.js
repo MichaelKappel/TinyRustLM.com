@@ -24,7 +24,7 @@ test("canonical app shell deterministically generates the public root shell", ()
   const result = verifyShells(siteRoot);
   assert.match(result.appShell, /<main class="app-shell"/);
   const references = new Set(result.references.map((entry) => entry.reference));
-  assert.equal(result.references.length, 19);
+  assert.equal(result.references.length, 20);
   assert.deepEqual(Array.from(references).sort(), [
     "./active-conversation.js",
     "./app.css",
@@ -42,6 +42,7 @@ test("canonical app shell deterministically generates the public root shell", ()
     "./minimodel-catalog-v1.js",
     "./model-composition-store.js",
     "./model-runtime-client.js",
+    "./operation-lifetime.js",
     "./p2p-composition-install.js",
     "./prompt2-request.js",
     "./site-release.js"

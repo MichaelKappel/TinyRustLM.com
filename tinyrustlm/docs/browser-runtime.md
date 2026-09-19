@@ -14,7 +14,7 @@ The public runtime artifact pair is:
 - `browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json`
 
 The manifest binds the WASM byte count, SHA-256, source crate, build profile,
-worker protocol, memory ceiling, imports, and exact exports. App startup uses
+worker protocol, memory ceiling, imports, and exact exports. Model operations use
 `app/browser-runtime-loader.js` to fetch both files, validate the manifest,
 hash the module, and reject identity drift before a worker is created.
 
@@ -28,8 +28,20 @@ streams produce the existing typed fetch errors; failure cancels the reader
 without waiting on cleanup, and every reader lock is released. Canonical JSON,
 exact final length, SHA-256 and WASM validation still apply.
 
-These limits bound loader-owned body buffers, not browser networking buffers,
-total process memory, model weights or elapsed network waiting. Public deployment
+The runtime loader shares `app/operation-lifetime.js` with the catalog admission
+loader. One 60-second default deadline covers both runtime responses and hashing;
+tests or callers may select 1–120,000 milliseconds. Acquisition cancellation reaches
+the fetch signal and pending reads. Waiting ends even if a dependency ignores abort;
+late results cannot become a verified runtime asset. Success and failure release
+the deadline and caller listener. Runtime timeout has a distinct retry message.
+
+Startup checks cached installation metadata and the catalog before fetching the
+runtime. An empty installation can show the chooser without requesting WASM.
+Restore, installation and local import retain exact runtime/admission matching
+before activation. The runtime deadline does not bound the entire model install.
+
+These limits bound loader-owned body buffers and asynchronous waiting, not browser
+networking buffers, total process memory, model weights or synchronous CPU work. Public deployment
 still requires independent readback of the exact released artifacts.
 
 The UI never calls WASM directly. `app/model-runtime-client.js` creates

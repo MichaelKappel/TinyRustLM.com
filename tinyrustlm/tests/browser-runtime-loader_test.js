@@ -68,6 +68,80 @@ test("runtime loader streams both bodies without using arrayBuffer", async () =>
   assert.equal(result.manifest.sha256, manifest.sha256);
 });
 
+test("runtime loader rejects invalid lifetime options before any request", async () => {
+  for (const options of [{ signal: {} }, { signal: "abort" },
+    ...[0, -1, 1.5, 120001, Infinity, "60"].map(timeoutMilliseconds => ({ timeoutMilliseconds }))]) {
+    await assert.rejects(loader.load({ manifestUrl: "manifest", wasmUrl: "wasm",
+      fetchFunction: () => assert.fail("invalid options fetched"), ...options }),
+    error => error.code === "browser-runtime-loader-options");
+  }
+  const controller = new AbortController();
+  controller.abort();
+  await assert.rejects(loader.load({ manifestUrl: "manifest", wasmUrl: "wasm",
+    signal: controller.signal, fetchFunction: () => assert.fail("pre-abort fetched") }),
+  error => error.code === "browser-runtime-aborted");
+});
+
+test("runtime loader bounds stalled fetches and readers at both stages", async t => {
+  for (const stage of ["manifest", "wasm"]) {
+    for (const stall of ["fetch", "reader"]) {
+      await t.test(stage + " " + stall, { timeout: 1500 }, async () => {
+        let childSignal;
+        let cancelled = 0;
+        let released = 0;
+        await assert.rejects(loader.load({ manifestUrl: "manifest", wasmUrl: "wasm",
+          timeoutMilliseconds: 20,
+          fetchFunction: async (url, options) => {
+            childSignal = options.signal;
+            if (url !== stage) return response(manifestBytes);
+            if (stall === "fetch") return new Promise(() => {});
+            return { ok: true, body: { getReader: () => ({
+              read: () => new Promise(() => {}),
+              cancel: () => { cancelled++; return new Promise(() => {}); },
+              releaseLock: () => { released++; }
+            }) } };
+          } }), error => error.code === "browser-runtime-timeout");
+        assert.equal(childSignal.aborted, true);
+        assert.equal(cancelled, stall === "reader" ? 1 : 0);
+        assert.equal(released, cancelled);
+      });
+    }
+  }
+});
+
+test("runtime caller cancellation interrupts ignored reads and never accepts late bytes", async () => {
+  const controller = new AbortController();
+  let finishRead;
+  let readStarted;
+  const started = new Promise(resolve => { readStarted = resolve; });
+  let released = false;
+  const result = loader.load({ manifestUrl: "manifest", wasmUrl: "wasm",
+    signal: controller.signal, fetchFunction: async () => ({ ok: true, body: { getReader: () => ({
+      read: () => { readStarted(); return new Promise(resolve => { finishRead = resolve; }); },
+      cancel: () => new Promise(() => {}), releaseLock: () => { released = true; }
+    }) } }) });
+  await started;
+  controller.abort();
+  await assert.rejects(result, error => error.code === "browser-runtime-aborted");
+  assert.equal(released, true);
+  finishRead({ done: false, value: manifestBytes });
+});
+
+test("runtime deadline includes hashing and wipes rejected WASM buffers", async t => {
+  let hashBytes;
+  let finishHash;
+  t.mock.method(globalThis.crypto.subtle, "digest", (_algorithm, bytes) => {
+    hashBytes = bytes;
+    return new Promise(resolve => { finishHash = resolve; });
+  });
+  await assert.rejects(loader.load({ manifestUrl: "manifest", wasmUrl: "wasm",
+    signal: null, timeoutMilliseconds: 20,
+    fetchFunction: async url => response(url === "manifest" ? manifestBytes : wasm) }),
+  error => error.code === "browser-runtime-timeout");
+  assert.deepEqual(Array.from(hashBytes), new Array(wasm.length).fill(0));
+  finishHash(new Uint8Array(32).buffer);
+});
+
 test("runtime loader stops on the first decoded overflow at each stage", async t => {
   for (const stage of ["manifest", "wasm"]) {
     await t.test(stage, { timeout: 1500 }, async () => {
@@ -171,9 +245,10 @@ async function fixtureServer(t) {
       reply.end("<!doctype html><title>Runtime loader fixture</title>");
       return;
     }
-    if (request.url === "/loader.js") {
+    if (request.url === "/loader.js" || request.url === "/lifetime.js") {
       reply.writeHead(200, { "Content-Type": "text/javascript" });
-      reply.end(fs.readFileSync(path.resolve(__dirname, "../app/browser-runtime-loader.js")));
+      reply.end(fs.readFileSync(path.resolve(__dirname, "../app/" +
+        (request.url === "/loader.js" ? "browser-runtime-loader.js" : "operation-lifetime.js"))));
       return;
     }
     const route = routes[request.url];
@@ -235,6 +310,7 @@ test("installed browser enforces streamed runtime byte bounds", { timeout: 30000
     });
     const page = await context.newPage();
     await page.goto(base);
+    await page.addScriptTag({ url: base + "/lifetime.js" });
     await page.addScriptTag({ url: base + "/loader.js" });
     const result = await page.evaluate(async () => {
       const load = async (manifestUrl, wasmUrl) => {
