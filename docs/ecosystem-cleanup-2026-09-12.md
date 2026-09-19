@@ -5,6 +5,32 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C33: MiniModel static seed preparation, September 19
+
+MiniModel checkpoint `b512402` adds a bounded generator for the existing
+Rust/companion six-member descriptor. It produces exact immutable member URLs,
+expected response identities and hash-bound per-directory header configuration.
+It performs no upload, credential access, source/model copying, signing or
+catalog renewal. Generated preparation explicitly cannot authorize publication.
+The existing site publisher's 22-file closure and admission gates are unchanged.
+
+All 69 affected MiniModel checks pass, including cross-project wire/profile
+identity, malformed/oversized/injected input rejection, exact URL/header output
+and the actual stdin CLI. Generator coverage is 90.85 percent lines and 97.22
+percent branches. The separate CLI subprocesses pass but are not instrumented
+by that percentage. Coverage output was kept in owned artifacts and removed.
+
+This is configuration preparation, not host execution. Apache was not found on
+PATH and the installed Docker client could not connect to its Linux engine;
+no service was started or image downloaded. Actual LiteSpeed override/module
+permissions, remote directory naming and six-member readback remain unverified.
+MiniModel's `deploy/static-seed.md` defines those gates, exact response semantics
+and remote payload retirement. Evidence is in its
+`artifacts/reports/static-seed-preparation-review-20260919.json` and lesson C33.
+No public files, model payloads or historical cleanup targets were changed.
+The incomplete source scan, unbound publication transport, qualified default
+and live seed remain open. Ternary research remains deferred.
+
 ## C32: native seed and browser identity agreement, September 19
 
 Fixed a real producer/consumer mismatch: the browser requires the piece-set

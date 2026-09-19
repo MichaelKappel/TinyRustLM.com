@@ -985,6 +985,54 @@ from the real producer. Verify the actual native server through browser Fetch
 with CORS enabled, and distinguish fixture-origin permission failures from
 server identity failures before changing production behavior.
 
+## C33: compile exact static seed configuration without claiming live serving
+
+Question: can MiniModel prepare the existing browser/native transfer contract
+for its observed static host without creating local model copies or inventing
+new format/qualification authority? MiniModel source parent was b33b1a7; the
+implementation is checkpoint b512402. Exact inputs and observed results are in
+`../MiniModel.org/artifacts/reports/static-seed-preparation-review-20260919.json`
+relative to the ecosystem source root's TinyRustLM directory. TinyRustLM C32
+checkpoint 8515972 supplies the current native piece-set identity convention.
+
+The compiler accepts at most 8 KiB of canonical UTF-8 descriptor bytes, validates
+the sole profiles, fixed six-member order, digest spelling and native size
+bounds, and hashes the exact bytes including their LF. It emits immutable remote
+member paths and a hash-bound configuration with exact CORS and identity fields.
+Length comes from actual server bytes, and encoded responses must be rejected
+rather than concealing Content-Encoding. Application composition storage owns
+persistence; no-store avoids another retained browser HTTP-cache payload.
+The tool cannot write files, sign, renew a catalog, fetch, upload or establish
+qualification. The site publisher still requires its existing admitted closure.
+
+Cross-project tests read the companion's independently asserted canonical wire
+fixture and hash the current ACG2 profile without executing or copying source.
+The first run passed 32/34 new checks: an incorrect root for the profile path and
+an overbroad assertion matching the word tokenizer caused two test failures.
+Those were corrected. A coverage run passed all 69 behavioral checks but exited
+1 because an empty NODE_V8_COVERAGE made the active experimental collector try
+mkdir(''). A concrete owned coverage directory fixed the collector; ordinary
+CLI children still explicitly suppress inherited coverage. The final 69 checks
+pass with zero skips, with 90.85 percent lines and 97.22 percent branches for
+the compiler. CLI subprocess behavior is tested separately from that coverage.
+
+Apache was not found on PATH; Docker's installed client reported that its Linux
+engine pipe was absent. No daemon was started, image downloaded or site changed.
+Apache/LiteSpeed primary documentation supports the proposed directives, but
+does not establish host execution, permitted overrides, colon-bearing remote
+directory names, actual compression behavior or byte readback. Those remain
+explicit host gates in MiniModel's deploy/static-seed.md. The two policy-blocked
+installer links still prevent a complete source scan. Qualification, current
+catalog authority, target custody and independent acquisition remain open.
+
+Decision: retain the concrete tested generator and require real host execution
+before promoting its output. Operation-owned test/coverage files were verified
+removed; no model or historical payload was removed. Reusable lessons: compiler
+success is separate from server behavior; bind preparation to exact producer
+bytes; distinguish child coverage suppression from collector output configuration.
+The next smallest experiment is executing one bounded generated configuration
+on an admitted Apache/LiteSpeed target and measuring real response semantics.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,
